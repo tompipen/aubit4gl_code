@@ -23965,7 +23965,7 @@ IS_ALL_MAKEFILE=`echo "$ALL_MAKEFILE" | sed -e 's/\//\\\\/g'`
 ##       Define permanent list of help files to build/install
 ## ==================================================================
 
-ALL_HELP="helpfile.hlp help_aubit.hlp help_ecpg.hlp help_sqlite.hlp 4glpc.hlp"
+ALL_HELP="helpfile.hlp help_aubit.hlp help_POSTGRESQL.hlp help_POSTGRESQL8.hlp help_SQLITE.hlp 4glpc.hlp"
 FORM_FILES="change$COMP_FORM_EXT options$COMP_FORM_EXT values$COMP_FORM_EXT "
 
 #Destination for files we use in build process, installation and when
@@ -62103,7 +62103,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.404 2008-04-09 17:52:47 mikeaubury Exp $
+| $Id: configure,v 1.405 2008-04-15 20:43:18 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

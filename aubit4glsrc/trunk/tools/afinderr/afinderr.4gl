@@ -14,8 +14,6 @@ code
 	static FILE * infile;
 	unsigned char indexrec[8];
 
-	static void myseterr( char *s);
-	static void fileerror(FILE *f, char *s);
 endcode
 
 define constant HELPMAXLEN 78
@@ -116,63 +114,4 @@ define
 	end if
 
 end function
-
-{*
- * 
- *	Display errors (if any) in lines of help form
- *
- *}
-local function myshowerrors()
-define 
-	i integer,
-	l_msg char(36)
-	
-	#clear form
-	
-	let i = 0
-		let msgerror[1].errline = msgerror[1].errline clipped
-		display msgerror[1].errline to s_help[1].helpline
-	while true
-		let i = i + 1
-		if i > msgerrcnt then exit while end if
-		if i > 16 then exit while end if
-		let msgerror[i].errline = msgerror[i].errline clipped
-		display msgerror[i].errline to s_help[i].helpline
-	end while
-	while i <= 17
-		display " " to s_help[i].helpline
-		let i = i + 1
-	end while
-end function
-
-code
-
-/*
- *
- *
- */
-static void
-fileerror(FILE *f, char *s)
-{
-int e;
-
-	myseterr( s );
-	
-	if( f == NULL )
-		myseterr( strerror(errno));
-	else if( (e = ferror(f)) != 0) {
-		myseterr( strerror(e));
-	}
-}
-
-static void
-myseterr( char *s)
-{
-int e;
-char *t;
-
-	fprintf(stderr, "%s\n", s );
-}
-
-endcode
 

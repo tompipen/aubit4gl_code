@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.3 2004-12-22 11:22:18 afalout Exp $
+# $Id: Makefile,v 1.4 2008-04-15 20:39:59 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -41,15 +41,21 @@ include ${ROOT}/incl/a4gl.mk
 DESTINATION=${ROOT}/${HELP_DESTINATION}/
 
 HLP_FILES=	help_aubit${A4GL_HLP_EXT} \
-			help_ecpg${A4GL_HLP_EXT} \
-			help_sqlite${A4GL_HLP_EXT}
+			help_POSTGRESQL${A4GL_HLP_EXT} \
+			help_POSTGRESQL8${A4GL_HLP_EXT} \
+			help_compat${A4GL_HLP_EXT} \
+			help_SQLITE${A4GL_HLP_EXT}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all: ${HLP_FILES}
-	cp $^ ${DESTINATION}
+	cp   help_aubit${A4GL_HLP_EXT}  ${DESTINATION}
+	cp   help_POSTGRESQL${A4GL_HLP_EXT}  ${DESTINATION}
+	cp   help_POSTGRESQL8${A4GL_HLP_EXT}  ${DESTINATION}
+	cp   help_SQLITE${A4GL_HLP_EXT}  ${DESTINATION}
+	cp   help_compat${A4GL_HLP_EXT}  ${DESTINATION}
 	@echo "Help files compiled."
 
 #%${A4GL_HLP_EXT}: $(notdir %.msg)
