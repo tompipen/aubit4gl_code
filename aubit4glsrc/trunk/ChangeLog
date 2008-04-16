@@ -1,4 +1,37 @@
 ---------------------------
+Wed Apr 16 08:09:25 BST 2008
+---------------------------
+1.10RC_12 Released
+---------------------------
+	
+	Help file update
+	
+	err_get and err_print fixup (uses help file to obtain error text)
+	
+	Help file update
+	
+	$GTKRC fixup - look for allow $GTKRC"_2" first - if not found
+	revert to $GTKRC
+	
+	Couple of simple helper scripts
+	
+	OUTER JOIN fixup
+	
+	fixup for CASE in sql statements
+	
+	Add IF.. ELSE.. ENDIF capability to convertsql files
+	
+	get_fldbuf fixup
+	
+	XML UI fixups
+	
+	Outer join fixup (Add LEFT OUTER syntax)
+	
+	XML UI fixups
+	
+	Outer join fixup
+	
+---------------------------
 Mon Apr 14 19:19:43 BST 2008
 ---------------------------
 1.10RC_11 Released
