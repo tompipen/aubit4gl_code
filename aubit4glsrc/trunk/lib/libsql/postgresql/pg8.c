@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.31 2008-04-09 16:11:03 mikeaubury Exp $
+# $Id: pg8.c,v 1.32 2008-04-16 07:01:35 mikeaubury Exp $
 #*/
 
 
@@ -2910,7 +2910,7 @@ SetErrno (PGresult * res)
     {
     "08000", "CONNECTION EXCEPTION", -1},
     {
-    "08003", "CONNECTION DOES NOT EXIST", -1},
+    "08003", "CONNECTION DOES NOT EXIST", -349},
     {
     "08006", "CONNECTION FAILURE", -1},
     {
@@ -3024,7 +3024,7 @@ SetErrno (PGresult * res)
     {
     "24000", "INVALID CURSOR STATE", -1},
     {
-    "25000", "INVALID TRANSACTION STATE", -1},
+    "25000", "INVALID TRANSACTION STATE", -255},
     {
     "25001", "ACTIVE SQL TRANSACTION", -1},
     {
@@ -3036,13 +3036,13 @@ SetErrno (PGresult * res)
     {
     "25004", "INAPPROPRIATE ISOLATION LEVEL FOR BRANCH TRANSACTION", -1},
     {
-    "25005", "NO ACTIVE SQL TRANSACTION FOR BRANCH TRANSACTION", -1},
+    "25005", "NO ACTIVE SQL TRANSACTION FOR BRANCH TRANSACTION", -255},
     {
     "25006", "READ ONLY SQL TRANSACTION", -1},
     {
     "25007", "SCHEMA AND DATA STATEMENT MIXING NOT SUPPORTED", -1},
     {
-    "25P01", "NO ACTIVE SQL TRANSACTION", -1},
+    "25P01", "NO ACTIVE SQL TRANSACTION", -255},
     {
     "25P02", "IN FAILED SQL TRANSACTION", -1},
     {
@@ -3132,7 +3132,7 @@ SetErrno (PGresult * res)
     {
     "42883", "UNDEFINED FUNCTION", -1},
     {
-    "42P01", "UNDEFINED TABLE", -1},
+    "42P01", "UNDEFINED TABLE", -206},
     {
     "42P02", "UNDEFINED PARAMETER", -1},
     {
@@ -3150,7 +3150,7 @@ SetErrno (PGresult * res)
     {
     "42P06", "DUPLICATE SCHEMA", -1},
     {
-    "42P07", "DUPLICATE TABLE", -1},
+    "42P07", "DUPLICATE TABLE", -310},
     {
     "42712", "DUPLICATE ALIAS", -1},
     {
