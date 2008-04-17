@@ -2585,7 +2585,10 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *input, va_list * ap)
 void
 UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 {
-  niy ();
+char *arr;
+
+arr=va_arg(*ap,char *);
+send_to_ui("<SCROLL BY=\"%d\" ARRAY=\"%s\"/>",n,arr);
 }
 
 int
