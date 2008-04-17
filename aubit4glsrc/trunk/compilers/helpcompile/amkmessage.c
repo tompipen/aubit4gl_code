@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.14 2006-07-17 11:08:35 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.15 2008-04-17 10:26:23 mikeaubury Exp $
 #*/
 
 /**
@@ -288,7 +288,7 @@ void
 mychkerr (FILE * f, char *s)
 {
   int e;
-  char errmsg[80];
+  char errmsg[256];
   SPRINTF2 (errmsg, "%s:%5s\n", progname, s);
   if (f <= 0)
 
