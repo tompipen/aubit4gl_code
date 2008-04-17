@@ -22,6 +22,7 @@ long lv_msgline;
 				lv_char=A4GL_char_pop();
 				lv_msgline=A4GL_pop_long();
 				if (lv_msgline) {
+					A4GL_debug("FOUND IN %s",file);
 					A4GL_trim_nl(lv_char);
 					return lv_char;
 				}
@@ -40,6 +41,9 @@ static char buff2[256];
 			de=readdir(d);
 			if (!de) break;
 		
+			if (strstr(de->d_name,"helpsql_")) { // These will get picked up separately...
+				continue;
+			}
 			if (!strstr(de->d_name,".iem") && ! strstr(de->d_name,".hlp") && ! strstr(de->d_name,acl_getenv("A4GL_HLP_EXT")))	
 			{
 				continue;
@@ -49,8 +53,10 @@ static char buff2[256];
 			strcat(buff2,de->d_name);
 			if (strlen(de->d_name)) {
 				char *lv_char;
+				
 				lv_char=check_for_msgno(buff2,n);
 				if (lv_char) {
+					A4GL_debug("FOUND IN %s file %s",buff2);
 					closedir(d); d=0;
 					return lv_char;
 				}
@@ -76,18 +82,18 @@ strcpy(buff,(char *)acl_getenv("AUBITDIR"));
 #else
 	strcat(buff,"/etc");
 #endif
-strcat(buff,"/help_");
+strcat(buff,"/helpsql_");
 strcat(buff, A4GLSQL_dbms_dialect());
 
 sprintf(buff2,"%s%s", buff, acl_getenv("A4GL_HLP_EXT"));
-A4GL_debug("Looking in file %s\n",buff2);
-if (A4GL_file_exists(buff2)) { ptr=internal_get_errmsg_from_helpfile(buff2,n); if (ptr) return ptr; }
+A4GL_debug("Looking in file '%s'\n",buff2);
+if (A4GL_file_exists(buff2)) { ptr=check_for_msgno(buff2,n); if (ptr) return ptr; } else {A4GL_debug("Skipping - no file");}
 sprintf(buff2,"%s.iem",buff);
-A4GL_debug("Looking in file %s\n",buff2);
-if (A4GL_file_exists(buff2)) { ptr=internal_get_errmsg_from_helpfile(buff2,n); if (ptr) return ptr; }
+A4GL_debug("Looking in file '%s'\n",buff2);
+if (A4GL_file_exists(buff2)) { ptr=check_for_msgno(buff2,n); if (ptr) return ptr; } else {A4GL_debug("Skipping - no file");}
 sprintf(buff2,"%s.hlp",buff);
-A4GL_debug("Looking in file %s\n",buff2);
-if (A4GL_file_exists(buff2)) { ptr=internal_get_errmsg_from_helpfile(buff2,n); if (ptr) return ptr; }
+A4GL_debug("Looking in file '%s'\n",buff2);
+if (A4GL_file_exists(buff2)) { ptr=check_for_msgno(buff2,n); if (ptr) return ptr; } else {A4GL_debug("Skipping - no file");}
 
 
 

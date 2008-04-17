@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.4 2008-04-15 20:39:59 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2008-04-17 07:29:16 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -52,9 +52,9 @@ HLP_FILES=	help_aubit${A4GL_HLP_EXT} \
 
 all: ${HLP_FILES}
 	cp   help_aubit${A4GL_HLP_EXT}  ${DESTINATION}
-	cp   help_POSTGRESQL${A4GL_HLP_EXT}  ${DESTINATION}
-	cp   help_POSTGRESQL8${A4GL_HLP_EXT}  ${DESTINATION}
-	cp   help_SQLITE${A4GL_HLP_EXT}  ${DESTINATION}
+	cp   help_POSTGRESQL${A4GL_HLP_EXT}  ${DESTINATION}helpsql_POSTGRES${A4GL_HLP_EXT}
+	cp   help_POSTGRESQL8${A4GL_HLP_EXT}  ${DESTINATION}helpsql_POSTGRES8${A4GL_HLP_EXT}
+	cp   help_SQLITE${A4GL_HLP_EXT}  ${DESTINATION}helpsql_SQLITE${A4GL_HLP_EXT}
 	cp   help_compat${A4GL_HLP_EXT}  ${DESTINATION}
 	@echo "Help files compiled."
 

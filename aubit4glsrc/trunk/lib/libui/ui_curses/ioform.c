@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.195 2008-04-09 08:35:48 mikeaubury Exp $
+# $Id: ioform.c,v 1.196 2008-04-17 07:29:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.195 2008-04-09 08:35:48 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.196 2008-04-17 07:29:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -2892,8 +2892,13 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 		A4GL_trim(buff2);
   }
 
-  A4GL_debug("setting field buffer to %s",buff2);
-  
+  A4GL_debug("setting field buffer to %s .. %d ",buff2, A4GL_get_field_width_w (field,1));
+
+
+
+  buff2[b]=0;
+
+
 
   xerrno = set_field_buffer (field, nbuff, buff2);
 
