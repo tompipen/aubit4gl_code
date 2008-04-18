@@ -16,22 +16,23 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DUMP_DIFF}
-#${DEFAULT_RUN}
-#	${DEFAULT_DIFF} 
+run: compile ; ${DEFAULT_DIFF}
+# ${DEFAULT_RUN}
+#	
+#	${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Report WORDWRAP test submitted by John"
+desc: ; @echo "Quick test of 'case' in a SQL statement"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
 form_test:				; @echo "0"
-report_test:			; @echo "1"
+report_test:			; @echo "0"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"
@@ -44,7 +45,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_DECIMAL DDL_DECIMAL CREATE_TEMP_TABLE UI_DISPLAY_LINE_MODE DISPLAY EXIT_PROGRAM_EXPR IF DEFINE_MONEY DEFINE_CHAR DDL_MONEY ANSI_INSERT "
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""

@@ -15,7 +15,7 @@ GET_FLDBUF cfld =
 GET_FLDBUF mfld =
 GET_FLDBUF ifld = 1
 GET_FLDBUF cfld = 2
-GET_FLDBUF mfld = 3.00
+GET_FLDBUF mfld = $3.00
 ifld NOT touched
 cfld NOT touched
 mfld NOT touched
@@ -78,16 +78,16 @@ NOT INFIELD ftl.cfld
 INFIELD ftl.mfld
 GET_FLDBUF ifld = 1
 GET_FLDBUF cfld = R1
-GET_FLDBUF ftl.mfld = 1.10
+GET_FLDBUF ftl.mfld = $1.10
 GET_FLDBUF ftl.ifld = 1
 GET_FLDBUF cfld = R1
-GET_FLDBUF ftl.mfld = 1.10
+GET_FLDBUF ftl.mfld = $1.10
 GET_FLDBUF ifld = 2
 GET_FLDBUF cfld = R2
-GET_FLDBUF ftl.mfld = 2.20
+GET_FLDBUF ftl.mfld = $2.20
 GET_FLDBUF ftl.ifld = 2
 GET_FLDBUF cfld = R2
-GET_FLDBUF ftl.mfld = 2.20
+GET_FLDBUF ftl.mfld = $2.20
 ifld NOT touched
 cfld NOT touched
 mfld NOT touched

@@ -12,7 +12,7 @@
 #using -eci will not work with any other Aubit configuration
 #NOTE: <*> = OK with -esqli
 #      <P> = OK with -ecp
-EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 1254"
+EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 1254 1410 1461 1462 1464 1608 1655 1705"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #766 (Key CONTROL-H was 49 and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
@@ -20,6 +20,14 @@ EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 1254"
 #976 <P> (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 <P> same ?
 #1254 Dynamic fields
+#1410 Wordwrap field
+#1464 limits
+#1461 limits
+#1462 limits
+#1608 wordwrap field
+#1614 wordwrap field
+#1655 wordwrap field
+
 
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
@@ -35,12 +43,13 @@ EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
 
 ######################
 #Tests that currently fail with -esqli (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703 1009"
+EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703 1009 1705"
 #80 (Decimal or money value exceeds maximum precision) http://aubit.com/mantis/bug_view_page.php?bug_id=0000605 # Can you double check - 80 works on mine
 #685 same
 #694 same
 #703 same
 #1009 Cursor not open. (same cursor declared twice)
+#1705 ansi outer join
 
 
 # --------------------------------------------------------------------------

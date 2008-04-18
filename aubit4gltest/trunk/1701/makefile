@@ -16,22 +16,21 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DUMP_DIFF}
-#${DEFAULT_RUN}
-#	${DEFAULT_DIFF} 
+run: compile ; ${DEFAULT_RUN}
+#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Report WORDWRAP test submitted by John"
+desc: ; @echo "Ensures 'next field' also continues an input"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
 form_test:				; @echo "0"
-report_test:			; @echo "1"
+report_test:			; @echo "0"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
 dump_screen_test:		; @echo "0"

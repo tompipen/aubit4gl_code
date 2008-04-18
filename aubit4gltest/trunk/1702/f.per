@@ -1,0 +1,38 @@
+database formonly
+screen
+{
+
+
+
+
+
+
+                        Item Type [f]
+
+	                Create Date
+			From[fr_date    ]
+			To  [to_date    ]
+
+
+
+
+
+
+ F1=Quit  F3=Select Document   F12=Execute
+}
+end
+
+attributes
+	f	 = formonly.cao_item type char,
+		   upshift, autonext,
+		   include = ("Y", "N", "B"),
+		   comments = " B=Both";
+	fr_date  = formonly.fr_create_dt type date,
+		   comments = " Enter From Date (mm/dd/yyyy)";
+	to_date  = formonly.to_create_dt type date,
+		   comments = " Enter To   Date (mm/dd/yyyy)";
+end
+
+instructions
+	delimiters " "
+end
