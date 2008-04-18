@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.158 2008-04-12 08:18:12 mikeaubury Exp $
+# $Id: conv.c,v 1.159 2008-04-18 08:36:17 mikeaubury Exp $
 #
 */
 
@@ -1319,6 +1319,51 @@ A4GL_stodec (void *a, void *z, int size)
 
 
 
+
+#ifdef NOTUSED
+char *get_money_as_string(fgldecimal *fgldec) {
+int has_neg=0;
+static char buff[200];
+int a;
+char *offbuff;
+int size;
+
+      //A4GL_debug ("Calling make_using.. ");
+      //strcpy (buff_14, "-");
+
+      if (fgldec->dec_data[0] & 128)
+        {
+          	has_neg = 1;
+		size=(fgldec->dec_data[0]-128)*256+fgldec->dec_data[1];
+      		offbuff = A4GL_make_using_tostring (fgldec, (size >> 8)+1, size & 255);
+        } else {
+		size=fgldec->dec_data[0]*256+fgldec->dec_data[1];
+      		offbuff = A4GL_make_using_tostring (fgldec, size >> 8, size & 255);
+	}
+		strcpy(buff,offbuff);
+
+      for (a = 0; a < strlen (buff); a++)
+        {
+          if (buff[a] == '-')
+            {
+              buff[a] = '$';
+            }
+        }
+
+      if (has_neg)
+        {
+          for (a = strlen (buff) - 1; a >= 0; a--)
+            {
+              if (buff[a] == '$')
+                {
+                  buff[a] = '-';
+                }
+            }
+        }
+	return buff;
+}
+#endif
+
 /**
  * Convert a decimal to string.
  *
@@ -1332,6 +1377,7 @@ A4GL_mdectos (void *z, void *w, int size)
 {
   char *buff;
   char buff2[200];
+  char buff3[200];
 
   buff = A4GL_dec_to_str (z, size);
 
@@ -1339,9 +1385,12 @@ A4GL_mdectos (void *z, void *w, int size)
 
   strcpy(buff2,buff);
   A4GL_ltrim(buff2);
+  if(strlen(buff2)<size) {
+		sprintf(buff3,"$%s",buff2);
+		strcpy(buff2,buff3);
+	}
 
   A4GL_string_set (w, buff2, size);
-
   A4GL_debug ("w = %s\n", A4GL_null_as_null(w));
   return 1;
 }
