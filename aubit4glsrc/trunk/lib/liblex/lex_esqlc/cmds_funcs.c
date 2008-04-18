@@ -15,6 +15,16 @@ extern command *parent_stack[];
 static int rep_print_entry=0;
 
 
+static struct command *find_in_command_stack(enum cmd_type e) {
+int z;
+  for (z = parent_stack_cnt-1; z>=0; z--)
+    {
+     if (parent_stack[z]->cmd_data.type==e) return parent_stack[z];
+    }
+
+	return NULL;
+}
+
 
 int clr_rep_print_entry(void) {
 	rep_print_entry=0;
@@ -429,6 +439,8 @@ print_error_cmd (struct_error_cmd * cmd_data)
 }
 
 
+
+
 /******************************************************************************/
 int
 print_ext_cmd (struct_ext_cmd * cmd_data)
@@ -439,9 +451,19 @@ print_ext_cmd (struct_ext_cmd * cmd_data)
       printc ("cmd_no_%d= -3;goto MENU_START_%d;\n", cmd_data->block_id, cmd_data->block_id);
       return 1;
     }
+
   if (cmd_data->what == EBC_PROMPT)
     {
-      printc ("SET(\"s_prompt\",_sio_%d,\"mode\",1);\n", cmd_data->block_id);
+	struct command *pcommand;
+
+	pcommand=find_in_command_stack(E_CMD_PROMPT_CMD);
+	if (pcommand==0) {
+		a4gl_yyerror("Not in a PROMPT");
+		return 0;
+	}
+        printc ("SET(\"s_prompt\",_sio_%d,\"mode\",1);\n", pcommand->cmd_data.command_data_u.prompt_cmd.sio);
+  	printc ("goto END_BLOCK_%d;", cmd_data->block_id);
+
       return 1;
     }
 
@@ -462,7 +484,6 @@ print_continue_cmd (struct_continue_cmd * cmd_data)
     {
       printc ("if (_fld_dr==-95) {A4GL_req_field(&_sio_%d,_inp_io_type,'0',\"0\",NULL,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n", cmd_data->sio_id);
       printc ("_fld_dr= -1;_exec_block= -1;\n");
-      return 1;
     }
 
   printc ("goto CONTINUE_BLOCK_%d;", cmd_data->block_id);
