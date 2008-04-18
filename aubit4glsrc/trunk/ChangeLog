@@ -1,4 +1,20 @@
 ---------------------------
+Fri Apr 18 12:22:23 BST 2008
+---------------------------
+1.10RC_13 Released
+---------------------------
+	
+	Fixup for CONTINUE and EXIT
+	
+	MONEY fixup
+	
+	err_get/err_print fixup
+	
+	Add SCROLL
+	
+	New build
+	
+---------------------------
 Wed Apr 16 08:09:25 BST 2008
 ---------------------------
 1.10RC_12 Released
