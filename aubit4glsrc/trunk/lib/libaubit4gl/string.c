@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.29 2008-04-02 09:53:36 mikeaubury Exp $
+# $Id: string.c,v 1.30 2008-04-19 11:16:02 mikeaubury Exp $
 #
 */
 
@@ -258,7 +258,7 @@ free(buff);
 
 int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize) {
 char buff[10000];
-int lines=0;
+//int lines=0;
 int cnt;
 
 cnt=width;
