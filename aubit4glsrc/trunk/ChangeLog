@@ -1,4 +1,22 @@
 ---------------------------
+Sat Apr 19 15:23:59 BST 2008
+---------------------------
+1.10RC_14 Released
+---------------------------
+	
+	add fgl_setcurrline
+	
+	Add cast (::) operator to sql parsing
+	
+	compile time warning fixups
+	
+	Add INCLUDE capability to convertsql files
+	
+	Fixup for CONTINUE and EXIT
+	
+	MONEY fixup
+	
+---------------------------
 Fri Apr 18 12:22:23 BST 2008
 ---------------------------
 1.10RC_13 Released
