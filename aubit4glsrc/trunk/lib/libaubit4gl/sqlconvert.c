@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.145 2008-04-14 18:19:41 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.146 2008-04-19 11:15:42 mikeaubury Exp $
 #
 */
 
@@ -687,47 +687,13 @@ return f;
 }
 
 
-static void
-A4GL_cv_fnlist (char *source, char *target, char *name)
-{
+static void read_conversion_file(FILE *fh,char *name) {
   char buff[201];
-  char path[201];
-  char buff_sm[201];
-  FILE *fh;
   char *t;
   int len;
 int line=0;
-  struct cvsql_data *conversion_rules = 0;
-  int conversion_rules_cnt = 0;
-
-  SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
-
-
-  strcpy (path, acl_getenv ("SQLCNVPATH"));
-  fh=cnfopen(path, buff_sm);
-  if (!fh) {
-
-  //if (buff[0] == '\0') {
-#ifdef SIMPLIFIED
-    	SPRINTF1 (path, "%s", DATADIR);
-#else
-	SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
-	fh=cnfopen(path, buff_sm);
-  	if (!fh) {
-            SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
-	    fh=cnfopen(path, buff_sm);
-	}
-#endif
-  //}
-  }
-
-
-
-  if (fh == NULL)
-    {
-      A4GL_debug ("failed to open file");
-      return;			/* NULL */
-    }
+  static struct cvsql_data *conversion_rules = 0;
+  static int conversion_rules_cnt = 0;
 
   /* each line of the file consists of a function name and
    * optional arguments.  Ignore lines starting with "#".
@@ -813,6 +779,8 @@ int line=0;
 		A4GL_assertion(if_stack_cnt<0,"IF stack confused while reading conversion file");
 		continue;
 	} 
+
+
 	
 	if (if_stack_cnt>0) {
 		int a;
@@ -822,6 +790,52 @@ int line=0;
 		}
 		if (!ok) continue; // Get the next line - we're not processing this one..
 	}
+
+
+	if (strncmp(t,"INCLUDE",len)==0) {
+		char buff_sm[2000];
+		char path[2000];
+		FILE *fh_new;
+		char *p1;
+			t+=len;
+			while (*t==' ') {
+					t++;
+			}
+       		p1=A4GL_cv_next_token (t, &len, 0);
+		A4GL_trim(p1);
+
+		// first - lets try an explicit file in the DBPATH
+		fh_new=A4GL_open_file_dbpath(p1);
+		if (!fh_new) { // Explicit file ? 
+			SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+			fh_new=cnfopen(path, p1);
+		}
+  		if (!fh_new) {
+            		SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	    		fh_new=cnfopen(path, p1);
+		}
+		if (!fh_new) { // Let try again - but we'll stick .cnv on the end...
+			strcpy(buff_sm,p1);
+			strcat(buff_sm,".cnv");
+			SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+			fh_new=cnfopen(path, buff_sm);
+		}
+  		if (!fh_new) {
+            		SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	    		fh_new=cnfopen(path, buff_sm);
+		}
+	 	if (!fh_new) {
+			FPRINTF(stderr,"FILE : %s\n", p1);
+			A4GL_assertion(1,"Unable to open sql convertion file used in an INCLUDE");
+		}
+		// If we get to here - we should be ok to read the file...
+		read_conversion_file(fh_new,name); // It'll be closed by the time we get back...
+		continue;
+        }
+
+
+
+
       conversion_rules_cnt++;
       conversion_rules = acl_realloc (conversion_rules, sizeof (*conversion_rules) * conversion_rules_cnt);
 
@@ -895,6 +909,47 @@ if ( if_stack_cnt!=0) {
   A4GL_add_pointer (name, SQL_CONVERSION_CNT, (void *) conversion_rules_cnt); // 64Bit OK
 
   return;
+}
+
+
+static void
+A4GL_cv_fnlist (char *source, char *target, char *name)
+{
+  char path[201];
+  char buff_sm[201];
+  FILE *fh;
+
+
+  SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
+
+
+  strcpy (path, acl_getenv ("SQLCNVPATH"));
+  fh=cnfopen(path, buff_sm);
+  if (!fh) {
+
+  //if (buff[0] == '\0') {
+#ifdef SIMPLIFIED
+    	SPRINTF1 (path, "%s", DATADIR);
+#else
+	SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+	fh=cnfopen(path, buff_sm);
+  	if (!fh) {
+            SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	    fh=cnfopen(path, buff_sm);
+	}
+#endif
+  //}
+  }
+
+
+
+  if (fh == NULL)
+    {
+      A4GL_debug ("failed to open file");
+      return;			/* NULL */
+    }
+
+    read_conversion_file(fh,name);
 }
 
 
