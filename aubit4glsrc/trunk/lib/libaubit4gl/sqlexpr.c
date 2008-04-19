@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.68 2008-04-15 06:33:38 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.69 2008-04-19 11:20:52 mikeaubury Exp $
 #
 */
 
@@ -145,6 +145,14 @@ add_select_list_item_list_once (struct s_select_list_item_list *p,
   return add_select_list_item_list (p, i);
 }
 
+struct s_select_list_item *new_select_list_item_cast(struct s_select_list_item *expr, char *cast) {
+  struct s_select_list_item *p;
+  p = empty_select_list_item (E_SLI_CAST_EXPR);
+  p->data.s_select_list_item_data_u.casting.expr = expr;
+  p->data.s_select_list_item_data_u.casting.datatype= acl_strdup_With_Context (cast);
+  return p;
+
+}
 
 struct s_select_list_item *
 new_select_list_item_char (char *s)
@@ -748,6 +756,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		A4GL_assertion(1,"These should all have been removed by now...");
 	return "";
 
+    case E_SLI_CAST_EXPR:
+      return
+	make_sql_string_and_free (kw_ob, get_select_list_item (select, p->data.s_select_list_item_data_u.casting.expr), acl_strdup_With_Context("::"),p->data.s_select_list_item_data_u.casting.datatype,kw_cb, NULL);
+	
     case E_SLI_DATETIME:
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
     case E_SLI_INTERVAL:
@@ -2565,6 +2577,8 @@ case E_SLI_BUILTIN_CONST_NULL:
 		return "E_SLI_QUERY";
 	case E_SLI_VARIABLE_USAGE_LIST:
 	return "E_SLI_VARIABLE_USAGE_LIST";
+	case E_SLI_CAST_EXPR:
+	return "E_SLI_CAST_EXPR";
     }
   return "Unknown";
 }

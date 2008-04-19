@@ -244,9 +244,19 @@ column_name_x:
 ;
 
 
+value_expression_initial_sli:
+        value_expression_initial_sli_nocast  {
+                $<s_select_list_item>$=$<s_select_list_item>1;
+        }
+        | value_expression_initial_sli_nocast  TYPECAST data_type {
+                $<s_select_list_item>$=new_select_list_item_cast($<s_select_list_item>1, $<str>3);
+        }
+
+;
 
 
-value_expression_initial_sli :
+
+value_expression_initial_sli_nocast :
         value_expression_complex_sli { $<s_select_list_item>1=$<s_select_list_item>1; }
         | var_ident_ibind_sli    {$<s_select_list_item>1=$<s_select_list_item>1;}
         | subquery_sli {  $<s_select_list_item>$=new_select_list_item_sq(E_SQE_DONT_CARE,$<s_select_list_item>1); }

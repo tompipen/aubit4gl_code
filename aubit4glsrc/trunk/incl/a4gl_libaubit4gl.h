@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.310 2008-04-15 20:43:43 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.311 2008-04-19 11:20:52 mikeaubury Exp $
 #
 */
 
@@ -1286,6 +1286,7 @@ enum cmd_types {
 
 
 int aclfgl_fgl_compare(int n);
+int aclfgl_fgl_username(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
 int aclfgl_fgl_round(int nargs);
 	int A4GL_set_a4gl_sqlca_errd(int n,int v);
@@ -2572,6 +2573,7 @@ struct s_select_list_item *new_select_list_item_column_from_transform(char *s);
 struct s_select_list_item *new_select_list_item_ibind (char *s);
 struct s_select_list_item *new_select_list_item_op_slil (struct s_select_list_item *left, struct s_select_list_item_list *right, enum e_sli op);
 struct s_select_list_item * new_select_list_item_variable_usage (struct variable_usage *v);
+struct s_select_list_item *new_select_list_item_cast(struct s_select_list_item *expr, char *cast);
 char *make_select_stmt_v2(char *upd_or_del_table, struct s_select *select, char *into_portion);
 #define make_select_stmt ERROR ERROR ERROR
 void preprocess_sql_statement (struct s_select *select);

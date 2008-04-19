@@ -2382,7 +2382,8 @@ enum e_sli {
         E_SLI_BUILTIN_CONST_NULL,
 	E_SLI_VARIABLE_USAGE,
 	E_SLI_VARIABLE_USAGE_IN_SELECT_LIST,
-	E_SLI_VARIABLE_USAGE_LIST
+	E_SLI_VARIABLE_USAGE_LIST,
+        E_SLI_CAST_EXPR
 
 };
 
@@ -2411,6 +2412,11 @@ struct s_sli_case {
 struct s_sli_case_element  {
         struct s_select_list_item *condition;
         struct s_select_list_item *response;
+};
+
+struct s_sli_cast {
+        struct s_select_list_item *expr;
+	str datatype;
 };
 
 struct sql_statement {
@@ -2624,6 +2630,8 @@ union s_select_list_item_data switch (enum e_sli type) {
         case E_SLI_QUERY_PLACEHOLDER:
 		void;
 
+        case E_SLI_CAST_EXPR:
+		struct s_sli_cast casting; 
 
         case E_SLI_ASC:
 		/*! struct s_select_list_item *expr; !*/

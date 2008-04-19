@@ -1,4 +1,5 @@
 DOUBLE_TO_SINGLE_QUOTES
+INCLUDE postgresfixes
 MATCHES_TO_REGEX
 TABLE_ALIAS_AS
 ADD_CASCADE
@@ -12,7 +13,6 @@ SELECT_INTO_TEMP_AS_CREATE_TEMP_AS
 TRIMSQLLIKEVAL
 # Postgres doesn't have one of these - so fake one
 DTYPE_ALIAS BYTE = TEXT
-
 
 # Postgres doesn't have one of these - so fake one
 DTYPE_ALIAS SMALLFLOAT = FLOAT
@@ -148,7 +148,7 @@ REPLACE_SQLFUNC ord = ascii(%s)
 
 
 IF LOBLAWSPECIAL = Y
-REPLACE_EXPR current year to second = localtimestamp()
+REPLACE_EXPR current year to second = localtimestamp(0)
 ELSE
 REPLACE_EXPR current year to second = to_char(now(), 'YYYY-MM-DD HH24:MI:SS')
 ENDIF

@@ -68,7 +68,7 @@ char_value \'[^\']*\'|\"[^\"]*\"
 "INTERVAL("{int_num}":"{int_num}[)]  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;}
 "INTERVAL("{int_num}":"{int_num}":"[0-9][0-9]"."{int_num}")"  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);   return INTERVAL_VALUE;}
 "INTERVAL("{int_num}":"[0-9][0-9]"."{int_num}")"  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);   return INTERVAL_VALUE;}
-
+"::" { return TYPECAST;}
 
 EOF
 
@@ -82,6 +82,7 @@ grep "token" 2.reqd | awk '{print $2}' | (while read a
 do
 #echo $a >> /dev/tty
 grep "^$a[ 	]" ../4glc/rules/data/kwords | awk '
+/^TYPECAST/ {next}
 /^DATETIME_VALUE/ {next}
 /^INTERVAL_VALUE/ {next}
 {

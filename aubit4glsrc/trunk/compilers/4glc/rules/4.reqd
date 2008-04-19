@@ -14,6 +14,8 @@
 %left KW_POWER KW_MOD
 /* %left KW_UNITS */
 %left UMINUS
+%left OPEN_BRACKET CLOSE_BRACKET
+%left TYPECAST
 
 %right COMMAND
 %token NUMBER_VALUE
