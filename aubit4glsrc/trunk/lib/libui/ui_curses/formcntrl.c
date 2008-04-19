@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.141 2008-04-09 08:35:48 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.142 2008-04-19 11:20:10 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.141 2008-04-09 08:35:48 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.142 2008-04-19 11:20:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -446,7 +446,7 @@ A4GL_debug("field=%d %p\n",attrib,sio->field_list);
 	      last_field, new_field);
 }
 
-int check_for_construct_large_for_key(int a) {
+static int check_for_construct_large_for_key(int a) {
 	if (a=='\t' || a=='\n' || a=='\r') return 0;
 	if (a==A4GLKEY_DOWN) return 0;
 	if (a==A4GLKEY_UP) return 0;

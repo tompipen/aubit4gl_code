@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.196 2008-04-17 07:29:16 mikeaubury Exp $
+# $Id: ioform.c,v 1.197 2008-04-19 11:20:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.196 2008-04-17 07:29:16 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.197 2008-04-19 11:20:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -146,7 +146,7 @@ int A4GL_field_name_match (FIELD * f, char *s);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
-int A4GL_wcswidth(char *mbs);		/* utf8 */
+//int A4GL_wcswidth(char *mbs);		/* utf8 */
 
 static int local_chk_field(struct s_form_dets *form,FIELD *f,int allfields) ;
 
@@ -2887,6 +2887,7 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 	  	buff2[b]=0;
 		A4GL_debug("Trimmed");
   }
+
   if (field_opts(field)&O_WRAP) {
 		A4GL_debug("Extra trim for the wordwrap");
 		A4GL_trim(buff2);
@@ -2895,8 +2896,10 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   A4GL_debug("setting field buffer to %s .. %d ",buff2, A4GL_get_field_width_w (field,1));
 
 
-
-  buff2[b]=0;
+  if (local_field_opts (field) & O_STATIC) {
+		// Trim to size...
+  			buff2[b]=0;
+  }
 
 
 

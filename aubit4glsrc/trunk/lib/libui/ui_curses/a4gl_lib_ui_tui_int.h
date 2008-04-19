@@ -267,7 +267,7 @@ int local_field_opts_on(FIELD *field, int opts);
 int local_field_opts_off(FIELD *field, int opts);
 int local_field_opts(const FIELD *field);
 void A4GL_dobeep(void);
-
+int use_invisible_as_color_9(void);
 
 	//int aclfgl_aclfgl_dump_screen(int n);
 

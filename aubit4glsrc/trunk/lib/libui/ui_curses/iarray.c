@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.143 2008-03-17 08:22:07 mikeaubury Exp $
+# $Id: iarray.c,v 1.144 2008-04-19 11:20:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.143 2008-03-17 08:22:07 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.144 2008-04-19 11:20:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -3548,7 +3548,7 @@ A4GL_double_chk_arr_line (struct s_inp_arr *s, int ln, char why)
   int b;
   int nv;
   //int isblank = 1;
-  int is_all_blank = 0;
+  //int is_all_blank = 0;
 
   if (ln < 0)
     return 1;
@@ -3564,7 +3564,7 @@ A4GL_debug("A4GL_double_chk_arr_line ******************************************"
       FIELD *f;
       int isnull;
       char *ptr;
-      char *p;
+      //char *p;
       f = s->field_list[0][b];
       fprop = (struct struct_scr_field *) (field_userptr (f));
 
