@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.9 2008-03-20 09:42:19 mikeaubury Exp $
+# $Id: Makefile,v 1.10 2008-04-19 12:40:59 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -16,7 +16,7 @@ include ${ROOT}/incl/Makefile-common
 #YACC=no
 
 ifeq "${LEX}" "no"
-	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.yy.c
+	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c
 	CFLAGS+=-DLEX_YY_PREGEN=1
 else
 	LEX_YY_C	=lex.yy.c
