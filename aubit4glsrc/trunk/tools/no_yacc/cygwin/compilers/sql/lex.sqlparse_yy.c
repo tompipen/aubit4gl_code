@@ -2872,7 +2872,7 @@ YY_RULE_SETUP
 case 37:
 YY_RULE_SETUP
 #line 70 "m2.lex"
-{ return TYPECAST;}
+{ return DOUBLE_COLON;}
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */

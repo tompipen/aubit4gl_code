@@ -274,7 +274,7 @@ value_expression_initial_sli:
         value_expression_initial_sli_nocast  {
                 $<s_select_list_item>$=$<s_select_list_item>1;
         }
-        | value_expression_initial_sli_nocast  TYPECAST data_type {
+        | value_expression_initial_sli_nocast  DOUBLE_COLON data_type {
                 $<s_select_list_item>$=new_select_list_item_cast($<s_select_list_item>1, $<str>3);
         }
 

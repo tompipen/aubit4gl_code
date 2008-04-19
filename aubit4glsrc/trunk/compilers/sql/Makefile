@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.10 2008-04-19 12:40:59 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2008-04-19 14:44:23 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -68,7 +68,7 @@ main.o: main.c
 m2.lex: gen_lex 2.reqd
 	${SH} gen_lex > $@
 
-2.reqd:	${KW_YH}
+2.reqd:	${KW_YH} not_used
 	fgrep -f not_used -v $< > $@
 
 ../4glc/rules/generated/kw.yh:
