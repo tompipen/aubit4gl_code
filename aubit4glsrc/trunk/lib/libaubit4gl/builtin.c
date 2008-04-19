@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.124 2008-04-15 20:40:58 mikeaubury Exp $
+# $Id: builtin.c,v 1.125 2008-04-19 14:23:58 mikeaubury Exp $
 #
 */
 
@@ -1566,6 +1566,16 @@ int aclfgl_fgl_dialog_setcurrline(int n) {
 	return 0;
 }
 
+int aclfgl_fgl_setcurrline(int n) {
+	int screen_line, array_row;
+	array_row = A4GL_pop_int();
+	screen_line = A4GL_pop_int();
+	A4GL_push_int(array_row);
+	aclfgl_fgl_set_arrline(1);
+	A4GL_push_int(screen_line);
+	aclfgl_fgl_set_scrline(1);
+	return 0;
+}
 int aclfgl_fgl_dialog_getfieldname(int n)  {
 //function returns the name of the current field.
 	A4GL_debug ("WARNING: fgl_dialog_getfieldname() not yet implemented!");
