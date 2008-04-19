@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.148 2008-04-19 12:48:47 mikeaubury Exp $
+# $Id: resource.c,v 1.149 2008-04-19 12:51:35 mikeaubury Exp $
 #
 */
 
@@ -1312,7 +1312,9 @@ char tried_to_read_from[20][2000];
 		fprintf(stderr," *********** ERROR IN CONFIGURATION ***********\n");
 		fprintf(stderr,"No aubitrc file has been found on your system\n");
 		if (strlen(acl_getenv("AUBITDIR"))==0) {
-			fprintf(stderr,"AUBITDIR is not set\n");
+			fprintf(stderr,"\nAUBITDIR is not set. This may mean that we can't find the default\n");
+			fprintf(stderr,"aubitrc file. Try setting AUBITDIR to point to your aubit4gl installation\n");
+			fprintf(stderr,"and try again\n\n");
 		}
 		fprintf(stderr,"I tried these files :\n");
 		for (a=0;a<tried_to_read_from_cnt;a++) {
