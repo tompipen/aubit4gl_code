@@ -1627,6 +1627,7 @@ define lv_uname,lv_passwd char(50)
 define lv_hasacl integer
 
 code
+A4GL_setenv("A4GL_SQLTYPE","pg8",1);
 if (inited) {
         // don't reconnect if we've already connected
         lv_hasacl=0;
