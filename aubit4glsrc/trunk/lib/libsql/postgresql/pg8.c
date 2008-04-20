@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.33 2008-04-20 11:50:39 mikeaubury Exp $
+# $Id: pg8.c,v 1.34 2008-04-20 13:33:46 mikeaubury Exp $
 #*/
 
 
@@ -1573,7 +1573,6 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 		}
 
 	default:
-	printf("Here : %s\n",ptr);
 	  A4GL_push_char (ptr);
 	  A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
 	    break;
