@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.146 2008-04-19 11:15:42 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.147 2008-04-20 11:50:39 mikeaubury Exp $
 #
 */
 
@@ -72,6 +72,11 @@ static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to);
 int if_stack[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 int if_stack_cnt=0;
 
+static int match_strncasecmp(char *s1,char *s2,int len);
+#include "generated/sql_convert_constants.h"
+
+
+#ifdef TOBEREMOVED
 static char *cvsql_names[] = {
   "CVSQL_NONE",
   "CVSQL_REPLACE",
@@ -192,17 +197,6 @@ static char *cvsql_names[] = {
 	"ENDOFLIST" 
 };
 
-/*
-struct ilist {
-        int i0;
-        int i1;
-        int i2;
-        int i3;
-        int i4;
-        int i5;
-} ;
-*/
-
 
 enum cvsql_type
 {
@@ -319,6 +313,7 @@ enum cvsql_type
 	CVSQL_FIRSTASLIMIT,
 	CVSQL_ALLOWTABLELESS,
 };
+#endif
 
 
 struct s_replace
@@ -368,7 +363,7 @@ int ncolumn_mappings = 0;
 */
 
 static void A4GL_cv_fnlist (char *source, char *target, char *name);
-int A4GL_cv_str_to_func (char *p, int len,int warnifnotfound);
+//int A4GL_cv_str_to_func (char *p, int len,int warnifnotfound);
 int A4GL_strwscmp (char *a, char *b);
 //int A4GL_strcasestr (char *h, char *n);
 static void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
@@ -970,7 +965,7 @@ A4GLSQLCV_check_sql (char *s,int *converted)
   *converted=1;
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
-      if (current_conversion_rules[b].type == CVSQL_REPLACE_CMD)
+      if (current_conversion_rules[b].type == CVSQL_REPLACE_COMMAND )
 	{
 
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
@@ -1742,6 +1737,9 @@ A4GL_assertion(1,"Surely this cant happen");
 return 1;
 }
 
+
+
+#ifdef TOBEREMOVED
 int
 A4GL_cv_str_to_func (char *p, int len,int warnifnotfound)
 {
@@ -1991,6 +1989,7 @@ A4GL_cv_str_to_func (char *p, int len,int warnifnotfound)
 	}
   return 0;
 }
+#endif
 
 
 

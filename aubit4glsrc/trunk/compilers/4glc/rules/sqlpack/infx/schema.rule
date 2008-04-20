@@ -64,11 +64,46 @@ cr_table_extra :
 
 
 cr_table_extra_entry : 
-	KW_IN space_name {SPRINTF1($<str>$," IN %s",$<str>2);add_feature("CREATE_TABLE_IN");}
-	| EXTENT_SIZE INT_VALUE {SPRINTF1($<str>$," EXTENT SIZE %s",$<str>2); add_feature("CREATE_TABLE_EXTENT_SIZE");}
-	| NEXT_SIZE INT_VALUE {SPRINTF1($<str>$," NEXT SIZE %s",$<str>2); add_feature("CREATE_TABLE_NEXT_SIZE"); }
-	| LOCK_MODE_PAGE {SPRINTF0($<str>$," LOCK MODE PAGE"); add_feature("CREATE_TABLE_LOCK_MODE"); }
-	| LOCK_MODE_ROW {SPRINTF0($<str>$," LOCK MODE ROW"); add_feature("CREATE_TABLE_LOCK_MODE");}
+	KW_IN space_name {
+			add_feature("CREATE_TABLE_IN");
+                        if (A4GLSQLCV_check_requirement("OMIT_TABLE_IN")) {
+                                strcpy($<str>$,"");
+			} else {
+				SPRINTF1($<str>$," IN %s",$<str>2);
+			}
+		}
+	| EXTENT_SIZE INT_VALUE {
+			add_feature("CREATE_TABLE_WITH_EXTENT_SIZE");
+                        if (A4GLSQLCV_check_requirement("OMIT_TABLE_EXTENTS")) {
+                                strcpy($<str>$,"");
+			} else {
+				SPRINTF1($<str>$," EXTENT SIZE %s",$<str>2); 
+			}
+	}
+	| NEXT_SIZE INT_VALUE {
+			add_feature("CREATE_TABLE_WITH_NEXT_EXTENT_SIZE");
+                        if (A4GLSQLCV_check_requirement("OMIT_TABLE_EXTENTS")) {
+                                strcpy($<str>$,"");
+			} else {
+				SPRINTF1($<str>$," NEXT SIZE %s",$<str>2); 
+			}
+	}
+	| LOCK_MODE_PAGE {
+			add_feature("CREATE_TABLE_LOCK_MODE"); 
+                        if (A4GLSQLCV_check_requirement("OMIT_LOCK_MODE")) {
+                                strcpy($<str>$,"");
+			} else {
+				SPRINTF0($<str>$," LOCK MODE PAGE"); 
+			}
+	}
+	| LOCK_MODE_ROW {
+			add_feature("CREATE_TABLE_LOCK_MODE");
+                        if (A4GLSQLCV_check_requirement("OMIT_LOCK_MODE")) {
+                                strcpy($<str>$,"");
+			} else {
+				SPRINTF0($<str>$," LOCK MODE ROW"); 
+			}
+	}
 ;
 
 space_name : NAMED;

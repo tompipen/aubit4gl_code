@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.43 2008-04-15 20:40:58 mikeaubury Exp $
+# $Id: Makefile,v 1.44 2008-04-20 11:50:39 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -277,6 +277,13 @@ ${ROOT}/common/dataio/form_x.x.h:
 
 ${ROOT}/common/dataio/fgl.x.h:
 	${MAKE} -C ${ROOT}/common/dataio fgl.x.h
+
+
+sqlconvert.o: sqlconvert.c ${ROOT}/lib/generated/sql_convert_constants.h
+	${CC}  ${CFLAGS_NO_PEDANTIC} -I${ROOT}/lib -c -o $@ $*.c
+
+${ROOT}/lib/generated/sql_convert_constants.h: ${ROOT}/lib/bin/convertsql.constants ${ROOT}/lib/bin/mk_convertsql
+	${SH} ${ROOT}/lib/bin/mk_convertsql ${ROOT}/lib/bin/convertsql.constants > ${ROOT}/lib/generated/sql_convert_constants.h
 
 ## ==================================================================
 ##                        Dependencies

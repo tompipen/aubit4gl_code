@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.32 2008-04-16 07:01:35 mikeaubury Exp $
+# $Id: pg8.c,v 1.33 2008-04-20 11:50:39 mikeaubury Exp $
 #*/
 
 
@@ -1455,88 +1455,132 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 
   for (b = 0; b < nfields; b++)
     {
+      static char *s = 0;
+      static int sl = -1;
+      int nsl;
+      char *ptr;
       if (PQgetisnull (res, row, b))
 	{
 	  A4GL_setnull (obind[b].dtype, (char *) obind[b].ptr, obind[b].size);
+	  continue;
 	}
-      else
+
+      ptr = PQgetvalue (res, row, b);
+      nsl = strlen (ptr);
+      if (nsl >= sl)
 	{
-	  static char *s = 0;
-	  static int sl = -1;
-	  int nsl;
-	  char *ptr;
+	  sl = nsl;
+	  s = realloc (s, sl + 2);
+	}
 
-	  ptr = PQgetvalue (res, row, b);
-	  nsl = strlen (ptr);
-	  if (nsl >= sl)
-	    {
-	      sl = nsl;
-	      s = realloc (s, sl + 2);
-	    }
+      switch (obind[b].dtype)
+	{
 
-	  if (obind[b].dtype == DTYPE_DATE)
-	    {
-	      char buff[2000];
-	      strcpy (buff, ptr);
-	      if (buff[4] == '-' && buff[7] == '-')
+	case DTYPE_DATE:
+	  {
+	    char buff[2000];
+	    strcpy (buff, ptr);
+	    if (buff[4] == '-' && buff[7] == '-')
+	      {
+		int m, d, y;
+		buff[4] = 0;
+		buff[7] = 0;
+		y = atoi (buff);
+		m = atoi (&buff[5]);
+		d = atoi (&buff[8]);
+		*(long *) obind[b].ptr = A4GL_gen_dateno (d, m, y);
+	      }
+	    else
+	      {
+		A4GL_push_char (ptr);
+		A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+	      }
+	    break;
+	  }
+
+	case DTYPE_CHAR:
+	  {
+	    char *s;
+	    s = strdup (ptr);
+	    A4GL_trim (s);
+	    if (strlen (s) > obind[b].size)
+	      {
+		// Too large -it'll get truncated...
+		warnings[0] = 'W';
+		warnings[1] = 'W';
+		A4GL_copy_sqlca_sqlawarn_string8 (warnings);
+	      }
+	    A4GL_push_char (ptr);
+	    A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+	    free (s);
+	    break;
+	  }
+
+
+
+	case DTYPE_TEXT:
+	case DTYPE_BYTE:
+	  {
+	    struct fgl_int_loc *a4gl;
+	    a4gl = obind[b].ptr;
+
+
+	    if (strlen (ptr))
+	      a4gl->isnull = 'N';
+
+	    if (a4gl->where == 'F')
+	      {
+		FILE *f;
+		f = fopen (a4gl->filename, "w");
+		fwrite (ptr, 1, strlen (ptr), f);
+		fclose (f);
+	      }
+	    else
+	      {
+		a4gl->memsize = strlen (ptr) + 1;
+		a4gl->ptr = A4GL_memdup (ptr, a4gl->memsize);
+	      }
+	    break;
+	  }
+
+
+	case DTYPE_DTIME:
 		{
-		  int m, d, y;
-		  buff[4] = 0;
-		  buff[7] = 0;
-		  y = atoi (buff);
-		  m = atoi (&buff[5]);
-		  d = atoi (&buff[8]);
-		  *(long *) obind[b].ptr = A4GL_gen_dateno (d, m, y);
-		}
-	      else
-		{
-		  A4GL_push_char (ptr);
-		  A4GL_pop_param (obind[b].ptr, obind[b].dtype,
-				  obind[b].size);
-		}
-	    }
-	  else
-	    {
-	      char *s;
-	      if (obind[b].dtype == DTYPE_CHAR)
-		{
-		  s = strdup (ptr);
-		  A4GL_trim (s);
-		  if (strlen (s) > obind[b].size)
-		    {
-		      // Too large -it'll get truncated...
-		      warnings[0] = 'W';
-		      warnings[1] = 'W';
-		      A4GL_copy_sqlca_sqlawarn_string8 (warnings);
-		    }
-		}
-
-		if (obind[b].dtype == DTYPE_TEXT || obind[b].dtype ==DTYPE_BYTE) {
-			struct fgl_int_loc *a4gl;
-			a4gl=obind[b].ptr;
-
-
-			if (strlen(ptr)) a4gl->isnull='N';
-
-			if (a4gl->where=='F') {
-				FILE *f;
-				f=fopen(a4gl->filename,"w");
-				fwrite( ptr, 1, strlen(ptr), f);
-				fclose(f);
+			char buff[2000];
+			if (ptr[2]=='/' && ptr[5]=='/') { // Its datestyle SQL == dd/mm/yy hh:mm:ss
+				strcpy(buff,ptr);
+				// eg : 
+				// 04/20/2008 10:34:53
+				// 0123456789
+				// 2008-04-20 10:34:53
+				buff[0]=ptr[6];
+				buff[1]=ptr[7];
+				buff[2]=ptr[8];
+				buff[3]=ptr[9];
+				buff[4]='-';
+				buff[5]=ptr[0];
+				buff[6]=ptr[1];
+				buff[7]='-';
+				buff[8]=ptr[3];
+				buff[9]=ptr[4];
+	  			A4GL_push_char (buff);
+	  			A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
 			} else {
-				a4gl->memsize=strlen(ptr)+1;
-				a4gl->ptr=A4GL_memdup(ptr, a4gl->memsize);
+	  			A4GL_push_char (ptr);
+	  			A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
 			}
-		} else {
-	      		A4GL_push_char (ptr);
-	      		A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+		break;
 		}
-	    }
+
+	default:
+	printf("Here : %s\n",ptr);
+	  A4GL_push_char (ptr);
+	  A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+	    break;
 	}
     }
   return 0;
 }
-
 
 
 static void free_prepare(struct s_prepare *n) {
