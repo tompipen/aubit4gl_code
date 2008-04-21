@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.411 2008-04-15 06:36:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.412 2008-04-21 14:45:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.411 2008-04-15 06:36:41 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.412 2008-04-21 14:45:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6483,6 +6483,9 @@ switch (l->data.type)  {
       check_for_variable (l->data.s_select_list_item_data_u.sq_expression.sq,dir);
       break;
 
+    case E_SLI_CAST_EXPR:
+      check_for_variable (l->data.s_select_list_item_data_u.casting.expr,dir);
+      break;
 
 
 
