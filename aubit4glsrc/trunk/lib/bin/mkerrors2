@@ -14,8 +14,10 @@
 
 if test "$COMSPEC" != ""; then 
 	SOURCES_X=`/bin/find ../.. -name "*.c"`
+	SORT=/usr/bin/sort
 else
 	SOURCES_X=`find ../.. -name "*.c"`
+	SORT=sort 
 fi
 
 SOURCES=""
@@ -85,5 +87,6 @@ END {
 		printf("%s|%s\n",errors[a],a);
 	}
 }
-' $SOURCES  |sort -n > mkerrors2.out
+' $SOURCES  | $SORT -n > mkerrors2.out
+
 
