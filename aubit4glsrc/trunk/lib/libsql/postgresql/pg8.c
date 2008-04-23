@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.34 2008-04-20 13:33:46 mikeaubury Exp $
+# $Id: pg8.c,v 1.35 2008-04-23 08:34:56 mikeaubury Exp $
 #*/
 
 
@@ -2730,10 +2730,9 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      free (str);
 		      break;
 
+		    case DTYPE_MONEY:
 		    case DTYPE_DECIMAL:
-		      A4GL_push_param (ibind[param].ptr,
-				       ibind[param].dtype +
-				       ENCODE_SIZE (ibind[param].size));
+		      A4GL_push_param (ibind[param].ptr, DTYPE_DECIMAL+ ENCODE_SIZE (ibind[param].size));
 		      str = A4GL_char_pop ();
 		      A4GL_lrtrim (str);
 		      strcat (buff2, pgescape_str (str,strlen(str)));
