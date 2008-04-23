@@ -15,8 +15,12 @@ var_ident_vl
 variable
 */
 
+var_ident_vl: var_ident_vl_n {$<ptr>$=$<ptr>1;}
+	| DOLLAR var_ident_vl_n {$<ptr>$=$<ptr>2;}
+	| COLON var_ident_vl_n {$<ptr>$=$<ptr>2;}
+; 
 
-var_ident_vl: variable_usage_expression {
+var_ident_vl_n: variable_usage_expression {
 		char errbuff[256];
 		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1 || ignore_var_usage_for_builtin_variable($<ptr>1)) { 
 			// Its not a variable - so we dont care about any errors..
@@ -29,7 +33,7 @@ var_ident_vl: variable_usage_expression {
 		}  else {
 			$<ptr>$=$<ptr>1;
 		}
-}
+	}
 ;
 
 obind_var_list: bind_var_list {
