@@ -1,4 +1,26 @@
 ---------------------------
+Wed Apr 23 10:23:07 BST 2008
+---------------------------
+1.10RC_15 Released
+---------------------------
+	
+	Add : for insert values
+	
+	Casting fixup
+	
+	Postgresql fixups Automate SQLConvert constants/detection routines
+	
+	New build
+	
+	add fgl_setcurrline
+	
+	Add cast (::) operator to sql parsing
+	
+	compile time warning fixups
+	
+	Add INCLUDE capability to convertsql files
+	
+---------------------------
 Sat Apr 19 15:23:59 BST 2008
 ---------------------------
 1.10RC_14 Released
