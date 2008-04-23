@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.144 2008-04-19 11:20:11 mikeaubury Exp $
+# $Id: iarray.c,v 1.145 2008-04-23 08:17:42 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.144 2008-04-19 11:20:11 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.145 2008-04-23 08:17:42 mikeaubury Exp $";
 #endif
 
 /**
@@ -584,7 +584,6 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem,
   strcpy (buff, fbuff);
   A4GL_trim (buff);
 
-
   really_ok = 1;
   A4GL_debug ("Calling pop_var2..");
   A4GL_pop_var2 ((char *) b[x_col].ptr + (y_row * elem), b[x_col].dtype, b[x_col].size);
@@ -1063,7 +1062,6 @@ process_key_press (struct s_inp_arr *arr, int a)
 	  	f = arr->field_list[arr->scr_line-1][arr->curr_attrib];
 		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, f, A4GL_memdup (&ptr, sizeof (struct s_movement)),0);
       		A4GL_add_to_control_stack (arr, FORMCONTROL_BEFORE_INSERT, arr->currentfield, 0, 0);
-	//A4GL_pause_execution();
 	      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, f, 0, 0);
 	      	A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, f, 0, 0);
 	}
@@ -2019,7 +2017,6 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
 
       if (last_field|| why=='Q')
 	{
-	//A4GL_pause_execution();
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 		A4GL_debug("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 		A4GL_debug("Checking curr_line_is_new : %d",arr->curr_line_is_new);
@@ -2399,7 +2396,6 @@ if (arr->fcntrl[a].state==99) {
 /******************************************************************************/
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_ROW)
     {
-	//A4GL_pause_execution();
 	A4GL_debug("A4GL_EVENT_AFT_ROW");
       new_state = 0;
       rval = A4GL_EVENT_AFT_ROW;

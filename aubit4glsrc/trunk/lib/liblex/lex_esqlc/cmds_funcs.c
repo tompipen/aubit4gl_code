@@ -2457,7 +2457,7 @@ int inp_flags=0;
 		}
 		dtype=encode_variable_datatype(v2->var_data.variable_data_u.v_simple.datatype, v2->var_data.variable_data_u.v_simple.dimensions[0], v2->var_data.variable_data_u.v_simple.dimensions[1]);
 
-	 	printc("{NULL,%d,%d,0,0,0}%s", dtype&DTYPE_MASK,DECODE_SIZE(dtype), (a==v->var_data.variable_data_u.v_record.variables.variables_len)?"":",");
+	 	printc("{NULL,%d,%d,0,0,0}%s /* 1 */", dtype&DTYPE_MASK,DECODE_SIZE(dtype), (a==v->var_data.variable_data_u.v_record.variables.variables_len)?"":",");
 	}
 	printc("};");
 
@@ -2499,7 +2499,9 @@ int inp_flags=0;
 	// Its a simple array of a single datatype
 	// just a little easier than the record !
   	cnt = 1;
-	printc("static struct BINDING obind[1]={ {NULL,%d,%d,0,0,0} };",v->var_data.variable_data_u.v_simple.datatype &DTYPE_MASK,DECODE_SIZE(v->var_data.variable_data_u.v_simple.datatype));
+	int dtype;
+		dtype=encode_variable_datatype(v->var_data.variable_data_u.v_simple.datatype, v->var_data.variable_data_u.v_simple.dimensions[0], v->var_data.variable_data_u.v_simple.dimensions[1]);
+	printc("static struct BINDING obind[1]={ {NULL,%d,%d,0,0,0} }; /* 2 */",dtype &DTYPE_MASK,DECODE_SIZE(dtype));
 	set_nonewlines();
 	printc("obind[0].ptr= &");
 	print_variable_usage(cmd_data->arrayname);
