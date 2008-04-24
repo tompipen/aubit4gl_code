@@ -15,7 +15,7 @@ all: $(ALL)
 clean:
 	rm ${PLUGINDIR}/libLEX_WRITE${SO_EXT}
 
-${PLUGINDIR}/libLEX_WRITE${SO_EXT}: write.c
+${PLUGINDIR}/libLEX_WRITE${SO_EXT}: write.o
 	 ${LD} ${SO_LDFLAGS}  -I$(ROOT)/incl -o $@ $< $(LINKLIBS)
 
 
