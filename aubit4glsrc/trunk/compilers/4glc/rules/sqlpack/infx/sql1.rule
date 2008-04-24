@@ -145,16 +145,18 @@ misc_infx_stmt: misc_infx_stmt_str {
 ;
 
 misc_infx_stmt_str: 
-	MISC_INFX_SQL  {
-		if (strcmp($<str>1,"SET LOG")==0) add_feature("SET_LOG");
-		if (strncmp($<str>1,"START DATABASE",14)==0) {
-			if (strstr($<str>1,"ANSI")) {
-				add_feature("START_DATABASE_WITH_LOG_MODE_ANSI");
-			} else {
-				add_feature("START_DATABASE_WITH_LOG");
-			}
-		}
-		SPRINTF1($<str>$,"%s",$<str>1); 
+	START_DATABASE identifier WITH_LOG_IN CHAR_VALUE MODE_ANSI {
+			add_feature("START_DATABASE_WITH_LOG_MODE_ANSI");
+			sprintf($<str>$,"START DATABASE %S WITH LOG IN %s MODE ANSI", $<str>2,$<str>4);
+	}
+	| START_DATABASE identifier WITH_LOG_IN CHAR_VALUE {
+			add_feature("START_DATABASE_WITH_LOG");
+			sprintf($<str>$,"START DATABASE %S WITH LOG IN %s", $<str>2,$<str>4);
+	}
+	| SET_CONSTRAINTS_ALL_IMMEDIATE
+	{
+			add_feature("SET_CONSTRAINTS_ALL_IMMEDIATE");
+			SPRINTF1($<str>$,"%s",$<str>1); 
 	}
 	| SET_BUFFERED_LOG {
 		add_feature("SET_BUFFERED_LOG");
