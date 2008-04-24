@@ -1074,7 +1074,7 @@ define lv_status integer
 
 if mv_makecompile then
 	if mv_verbose>=3 then
-		display "Make Compile - checking file times"
+		display "Make Compile - checking file times for ",lv_fname clipped, " and ",lv_new clipped
 	end if
 	if compare_file_times(lv_fname,lv_new) then
 		if mv_verbose>=2 then
@@ -1084,8 +1084,17 @@ if mv_makecompile then
 	end if
 end if
 
-if mv_verbose>=1 then
+#
+# Lets force the output filename to be what we're expecting it to
+# be - this gets around any issues with 'A4GL_LOCALOUTPUT' when
+# in a different directory
+#
+call aclfgl_setenv("OVERRIDE_OUTPUT",lv_base clipped)
+
+
+if mv_verbose>=2 then
 	display "Compiling ",lv_fname clipped
+	display "Hopefully generating : ", lv_base
 end if
 
 let lv_runstr=mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
