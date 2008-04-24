@@ -68,6 +68,8 @@ char_value \'[^\']*\'|\"[^\"]*\"
 "INTERVAL("{int_num}":"{int_num}[)]  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;}
 "INTERVAL("{int_num}":"{int_num}":"[0-9][0-9]"."{int_num}")"  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);   return INTERVAL_VALUE;}
 "INTERVAL("{int_num}":"[0-9][0-9]"."{int_num}")"  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);   return INTERVAL_VALUE;}
+"SET"{ws}"CONSTRAINTS"{ws}"ALL"{ws}"IMMEDIATE" { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MISC_INFX_SQL;} 
+
 "::" { return DOUBLE_COLON;}
 
 EOF
@@ -85,6 +87,7 @@ grep "^$a[ 	]" ../4glc/rules/data/kwords | awk '
 /^DOUBLE_COLON/ {next}
 /^DATETIME_VALUE/ {next}
 /^INTERVAL_VALUE/ {next}
+/^MISC_INFX_SQL/ {next}
 {
     #print "/* " $0 " */"
     printf("\n");
