@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.68 2008-03-09 12:13:00 mikeaubury Exp $
+# $Id: util.c,v 1.69 2008-04-24 16:44:48 mikeaubury Exp $
 #
 */
 
@@ -531,6 +531,7 @@ A4GLSQLCV_loadbuffer (char *fname)
   if (Sql_file == 0)
     {
       printf ("Unable to open input file\n");
+	exit(2);
     }
 
   if (stmts)
