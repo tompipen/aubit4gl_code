@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.44 2008-03-20 12:35:11 mikeaubury Exp $
+# $Id: rexp2.c,v 1.45 2008-04-24 17:48:27 mikeaubury Exp $
 #
 */
 
@@ -675,7 +675,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
     {
       if (z == RANGE)
 	{
-	  if (strlen(quote)==0) { return 0; }
+	  if (strlen(quote)==0) { return 0; } // Error out...
 	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (zz = 1; zz < constr_size; zz++)
 	    {
@@ -684,6 +684,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	      free (ptr);
 	    }
 	  strcat (buff3, quote);
+	  strcat (buff3, ")");
 	}
       else
 	{
@@ -692,7 +693,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	  if (constr_size >= 2)
 	    {
 		if (constr_size==2 && strlen(quote)==0) {
-			return 0;
+			return 0; // Error out...
 		}
 		A4GL_debug(".2 %d ", constr_size);
 	      strcat (buff3, quote);
@@ -709,7 +710,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		A4GL_debug(".3");
 	    }
 	  else {
-	  	if (strlen(quote)==0) { return 0; }
+	  	if (strlen(quote)==0) { return 0; } // Error out...
 	    	strcat (buff3, "''");
 		}
 	}
@@ -721,6 +722,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
     {
       if (z == RANGE)
 	{
+	  if (strlen(quote)==0) { return 0; } // Error out...
 	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (zz = 1; zz < constr_size; zz++)
 	    {
@@ -729,6 +731,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	      free (ptr);
 	    }
 	  strcat (buff3, quote);
+	  strcat (buff3, ")");
 	}
       else
 	{
@@ -736,6 +739,9 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		    constr_bits[0], quote);
 	  if (constr_size >= 2)
 	    {
+		if (constr_size==2 && strlen(quote)==0) {
+			return 0; // Error out...
+		}
 	      strcat (buff3, quote);
 	      for (zz = 2; zz < constr_size; zz++)
 		{
@@ -746,8 +752,10 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		}
 	      strcat (buff3, quote);
 	    }
-	  else
-	    strcat (buff3, "''");
+	  else {
+		if (strlen(quote)==0) {return 0;} // Error out...
+	    	strcat (buff3, "''");
+	   }
 	}
       strcat (buff3, "");
     }

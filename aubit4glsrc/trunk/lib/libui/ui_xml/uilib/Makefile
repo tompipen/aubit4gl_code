@@ -12,7 +12,7 @@ endif
 
 all: libuilib.a uirunner uirunner_s
 clean:
-	rm libuilib.so libuilib.a comms.o uilib.o xml/attr.o xml/triggers.o xml/triggers_act.o ../pipe.o ../debug.o uirunner uirunner_s
+	rm -f libuilib.so libuilib.a comms.o uilib.o xml/attr.o xml/triggers.o xml/triggers_act.o ../pipe.o ../debug.o uirunner uirunner_s
 
 
 libuilib.so: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
