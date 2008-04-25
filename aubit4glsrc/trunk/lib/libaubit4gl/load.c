@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.45 2008-03-26 18:30:33 mikeaubury Exp $
+# $Id: load.c,v 1.46 2008-04-25 08:03:49 mikeaubury Exp $
 #
 */
 
@@ -352,9 +352,10 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	  ibind[a].end_char_subscript = 0;
 	
 	  if (strlen(colptr[a])==0) {
-	  ibind[a].size = 1;
+	  	ibind[a].size = 1;
+		A4GL_setnull(ibind[a].dtype, ibind[a].ptr, 1);
 	  } else {
-	  ibind[a].size = strlen (colptr[a]);
+	  	ibind[a].size = strlen (colptr[a]);
 	  }
 	}
 
@@ -641,7 +642,6 @@ int l;
   strcpy (filename, fname);
   A4GL_trim (filename);
   p = A4GL_mja_fopen (filename, "r");
-
   if (p == 0)
     {
       A4GL_exitwith ("Could not open file for load");
@@ -709,7 +709,7 @@ int l;
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = DTYPE_CHAR;
-	  ibind[a].size = strlen (colptr[a]);
+	   ibind[a].size = strlen (colptr[a]);
 	}
       A4GL_debug ("EXECUTE SQL nfields=%d", nfields);
       A4GLSQL_execute_sql ("load", nfields, ibind);

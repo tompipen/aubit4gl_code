@@ -220,6 +220,39 @@ Kerry Sainsbury (kerry@kcbbs.gen.nz, kerry@quanta.co.nz)
 }
 
 
+FUNCTION get_oid(l_tabname)
+define l_tabname char(128)
+define lv_query char(1024)
+define l_tabid integer
+define lv_status integer
+
+let lv_query=" SELECT c.oid FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE pg_catalog.pg_table_is_visible(c.oid) AND c.relname ='",l_tabname clipped,"'"
+prepare p_qli1 from lv_query
+declare c_qli1 cursor for p_qli1
+open c_qli1 
+fetch c_qli1 into l_tabid
+
+let lv_status=sqlca.sqlcode
+
+close c_qli1
+
+if lv_status<0 then
+	return lv_status,0
+end if
+
+if l_tabid is null then
+	return 100,0
+end if
+
+
+if lv_status=100 then
+	return lv_status, 0
+else
+	return 0, l_tabid
+end if
+
+END FUNCTION
+
 
 
 FUNCTION load_info_columns(l_tabname)
@@ -232,26 +265,23 @@ define l_tabname char(255)
 define lv_colname char(19)
 define rpaginate integer
 define lv_query char(1024)
+define lv_ok integer
 
 
-let lv_query=" SELECT c.oid FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE pg_catalog.pg_table_is_visible(c.oid) AND c.relname ='",l_tabname clipped,"'"
+ CALL get_oid(l_tabname) returning lv_ok, l_tabid
 
-prepare p_qli1 from lv_query
-declare c_qli1 cursor for p_qli1
-open c_qli1 
-fetch c_qli1 into l_tabid
-
-   IF sqlca.sqlcode !=0 THEN
-	IF sqlca.sqlcode=100 THEN
+   IF lv_ok!=0 THEN
+	IF lv_ok=100 THEN
 		ERROR "Table ", l_tabname clipped," was not found.."
 		RETURN 0
 	END IF
 
+
+	LET sqlca.sqlcode=lv_ok
         IF check_and_report_error() THEN
       	   RETURN  0
         END IF
    END IF
-close c_qli1
 
 
 IF l_tabid IS NULL THEN
@@ -1201,9 +1231,46 @@ end if
 end function
 
 
-function load_info_indexes(lv_tabname)
-define lv_tabname char(255)
-return 0
+function load_info_indexes(l_tabname)
+define l_tabname char(255)
+define lv_oid integer
+define lv_ok integer
+define lv_buff char(512)
+define lv_str char(512)
+define lv_space integer
+
+ CALL get_oid(l_tabname) returning lv_ok, lv_oid
+
+   IF lv_ok!=0 THEN
+	IF lv_ok=100 THEN
+		ERROR "Table ", l_tabname clipped," was not found.."
+		RETURN 0
+	END IF
+
+
+	LET sqlca.sqlcode=lv_ok
+        IF check_and_report_error() THEN
+      	   RETURN  0
+        END IF
+   END IF
+
+let lv_str=" SELECT pg_catalog.pg_get_indexdef(i.indexrelid, 0, true) FROM pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_index i WHERE c.oid = '",lv_oid,"' AND c.oid = i.indrelid AND i.indexrelid = c2.oid ORDER BY i.indisprimary DESC, i.indisunique DESC, c2.relname "
+PREPARE p_load_indexes from  lv_str
+
+
+let lv_space=0
+DECLARE c_load_indexes CURSOR FOR p_load_indexes
+
+FOREACH  c_load_indexes  into lv_buff
+	if lv_space then
+			CALL add_to_display_file(" ")
+	else
+			let lv_space=1
+	end if
+        CALL add_to_display_file(lv_buff)
+END FOREACH
+
+return 1
 end function
 
 

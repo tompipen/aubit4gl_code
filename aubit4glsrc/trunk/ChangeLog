@@ -1,4 +1,18 @@
 ---------------------------
+Fri Apr 25 09:03:02 BST 2008
+---------------------------
+1.10RC_16 Released
+---------------------------
+	
+	Removed MISC_INFX_SQL
+	
+	Fixup for when LOCALOUTPUT is set
+	
+	New build
+	
+	Add : for insert values
+	
+---------------------------
 Wed Apr 23 10:23:07 BST 2008
 ---------------------------
 1.10RC_15 Released
