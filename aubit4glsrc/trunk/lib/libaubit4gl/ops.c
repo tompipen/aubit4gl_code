@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.128 2008-02-22 16:31:10 mikeaubury Exp $
+# $Id: ops.c,v 1.129 2008-04-25 13:43:28 mikeaubury Exp $
 #
 */
 
@@ -3066,24 +3066,39 @@ A4GL_debug("in A4GL_dt_char_ops");
         A4GL_get_top_of_stack (1, &dtype1, &sz1, (void *) &pdt1);
         A4GL_get_top_of_stack (2, &dtype2, &sz2, (void *) &pdt2);
 
-	dt1.stime=pdt2->stime;
-	dt1.ltime=pdt2->ltime;
+	if (pdt2) {
+		dt1.stime=pdt2->stime;
+		dt1.ltime=pdt2->ltime;
+	} else {
+		// we've not been passed the datetime..
+		dt1.stime=sz2>>4;
+		dt1.ltime=sz2&15;
+	}
 	p=A4GL_char_pop();
         A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
 
 	A4GL_debug("popped everything off...");
 // Lets try converting our string to a datetime with the same units as our datetime...
 	A4GL_push_char(p);
+
 	dt2.stime= dt1.stime;
 	dt2.ltime= dt1.ltime;
 	A4GL_debug("Pushed our character back on - converting to a datetime...");
 
+
         if (A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime)) {
 		// Success !
-		A4GL_debug("Converted ok");
-		A4GL_push_variable(&dt1,(ENCODE_SIZE(((dt1.stime * 16) + dt1.ltime)))+DTYPE_DTIME);
-		A4GL_push_variable(&dt2,(ENCODE_SIZE(((dt2.stime * 16) + dt2.ltime)))+DTYPE_DTIME);
-		A4GL_dt_dt_ops(op);
+		A4GL_trim(p);
+		if (strlen(p)) { // They might just be checking its not blank...
+			A4GL_debug("Converted ok");
+			A4GL_push_variable(&dt1,(ENCODE_SIZE(((dt1.stime * 16) + dt1.ltime)))+DTYPE_DTIME);
+			A4GL_push_variable(&dt2,(ENCODE_SIZE(((dt2.stime * 16) + dt2.ltime)))+DTYPE_DTIME);
+			A4GL_dt_dt_ops(op);
+		} else {
+			A4GL_push_variable(&dt1,(ENCODE_SIZE(((dt1.stime * 16) + dt1.ltime)))+DTYPE_DTIME);
+			A4GL_push_char(" ");
+			A4GL_char_char_ops(op);
+		}
 		return;
 	} else {
 		// OK - we cant do that...
