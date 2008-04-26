@@ -1369,3 +1369,9 @@ end for
 call finish_table_nocol()
 end function
 
+
+
+function info_db()
+        call niy()
+end function
+

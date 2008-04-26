@@ -357,7 +357,7 @@ WHILE lv_run
              IF lv_hadmenu THEN EXIT PROGRAM END IF
       WHEN 1 CALL create_db()
              IF lv_hadmenu THEN EXIT PROGRAM END IF
-      WHEN 2 CALL niy()
+      WHEN 2 CALL info_db()
              IF lv_hadmenu THEN EXIT PROGRAM END IF
       WHEN 3 CALL drop_db()
              IF lv_hadmenu THEN EXIT PROGRAM END IF

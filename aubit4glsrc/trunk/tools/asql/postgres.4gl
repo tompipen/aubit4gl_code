@@ -1235,9 +1235,11 @@ function load_info_indexes(l_tabname)
 define l_tabname char(255)
 define lv_oid integer
 define lv_ok integer
-define lv_buff char(512)
+define lv_buff char(1024)
+define lv_out char(1024)
 define lv_str char(512)
 define lv_space integer
+define lv_width integer
 
  CALL get_oid(l_tabname) returning lv_ok, lv_oid
 
@@ -1267,7 +1269,25 @@ FOREACH  c_load_indexes  into lv_buff
 	else
 			let lv_space=1
 	end if
-        CALL add_to_display_file(lv_buff)
+
+LET lv_width=0
+
+code
+if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
+	lv_width=A4GL_get_curr_width()-5;
+	A4GL_wordwrap_text(lv_buff,lv_out,lv_width, 1024);
+	strcpy(lv_buff,lv_out);
+}
+endcode
+
+if lv_width<=0 then
+        	CALL add_to_display_file(lv_buff)
+else
+	while lv_buff is not null and length(lv_buff)>0
+        	CALL add_to_display_file(lv_buff[1,lv_width])
+		LET lv_buff="   ",lv_buff[lv_width+1,1024]
+	end while
+end if
 END FOREACH
 
 return 1
@@ -1290,7 +1310,52 @@ end function
 
 function load_info_status(lv_tabname)
 define lv_tabname char(255)
-return 0
+define lv_ok,lv_oid integer
+define lv_char char(200)
+define lv_sql char(200)
+define lv_cnt_cols integer
+define lv_cnt_rows integer
+
+ CALL get_oid(lv_tabname) returning lv_ok, lv_oid
+
+   IF lv_ok!=0 THEN
+	IF lv_ok=100 THEN
+		ERROR "Table ", lv_tabname clipped," was not found.."
+		RETURN 0
+	END IF
+
+
+	LET sqlca.sqlcode=lv_ok
+        IF check_and_report_error() THEN
+      	   RETURN  0
+        END IF
+   END IF
+
+
+
+let lv_sql="select count(*) from ",lv_tabname
+prepare p_status1 from lv_sql
+execute p_status1 into lv_cnt_rows
+
+let lv_sql=" SELECT count(*) ",
+	" FROM pg_catalog.pg_attribute a ",
+	" WHERE a.attrelid = '",lv_oid using "<<<<<<<<<","' AND a.attnum > 0 AND NOT a.attisdropped "
+prepare p_status2 from lv_sql
+execute p_status2 into lv_cnt_cols
+
+#display lv_sql sleep 5
+
+CALL add_to_display_file("     " )
+CALL add_to_display_file("Table Name        " || lv_tabname clipped)
+CALL add_to_display_file("Number Of Rows    " || lv_cnt_rows clipped)
+CALL add_to_display_file("Number Of Columns " || lv_cnt_cols clipped)
+
+let lv_sql="SELECT reltuples FROM pg_catalog.pg_class c WHERE pg_catalog.pg_table_is_visible(c.oid) and c.oid=",lv_oid
+prepare p_status3 from lv_sql
+execute p_status3 into lv_cnt_rows
+CALL add_to_display_file("relTuples         " || lv_cnt_rows clipped)
+
+return 1
 end function
 
 
@@ -1909,3 +1974,76 @@ if sqlca.sqlcode=0 then
 end if
 return lv_found
 end function
+
+
+function show_info_db_server() 
+define lv_char char(30)
+	CALL open_display_file()
+
+	SELECT current_setting('server_version') into lv_char;
+        CALL add_to_display_file("Version            " ||lv_char)
+
+	SELECT current_setting('datestyle') into lv_char;
+        CALL add_to_display_file("Datestyle          " ||lv_char)
+
+
+	SELECT current_setting('timezone') into lv_char;
+        CALL add_to_display_file("Timezone           " ||lv_char)
+
+	SELECT current_setting('lc_numeric') into lv_char;
+        CALL add_to_display_file("Numeric            " ||lv_char)
+
+	SELECT current_setting('default_tablespace') into lv_char;
+        CALL add_to_display_file("Default tablespace " ||lv_char)
+
+
+	SELECT current_setting('deadlock_timeout') into lv_char;
+        CALL add_to_display_file("Deadlock timeout   " ||lv_char)
+
+        CALL do_paginate()
+
+end function
+
+function show_info_db() 
+define lv_query CHAR(400)
+define lv_cnt integer
+
+sql
+ 	SELECT count(*) into $lv_cnt
+	 FROM pg_catalog.pg_class c
+      LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner
+      LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE c.relkind IN ('r','')
+      AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+      AND pg_catalog.pg_table_is_visible(c.oid)
+end sql
+
+	CALL open_display_file()
+        CALL add_to_display_file("Number of Tables   " ||lv_cnt)
+        CALL do_paginate()
+
+end function
+
+
+function info_db()
+
+if not has_db() then
+                call select_db()
+end if
+
+
+if not has_db() then
+              return
+end if
+
+menu "DATABASE INFO"
+	command "Server" "Show server specific information"
+	        call show_info_db_server() 
+	command "Database" "Show database specific information"
+		call show_info_db()
+
+	command "Exit" "Exit menu"
+		exit menu
+end menu
+end function
+

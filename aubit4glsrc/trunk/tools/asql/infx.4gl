@@ -3467,3 +3467,6 @@ end function
 
 
 
+function info_db() 
+	call niy()
+end function
