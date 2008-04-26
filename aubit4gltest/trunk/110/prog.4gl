@@ -55,7 +55,7 @@ define
 		let done_load = 1
 	end if	
 }
-	if db_dialect() = 1 then #INFORMIX
+	if db_dialect() = 1 or db_dialect() = 4  then #INFORMIX
 		display "Performing Informix compatible load"
 		#This works fine on Informix, but fails on PostgreSQL with:
 		#Database error ('COPY delimiter must be a single character' in line 166.).
@@ -93,7 +93,6 @@ define DIALECT char (20)
 	
 	#need forward function in libaubit4gl, aclfgl_dbms_dialect()
 	--! let DIALECT = dbms_dialect() 
-	
 	if DIALECT is not null then
 	
 		case DIALECT
