@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.45 2008-04-24 17:48:27 mikeaubury Exp $
+# $Id: rexp2.c,v 1.46 2008-04-26 10:48:55 mikeaubury Exp $
 #
 */
 
@@ -110,7 +110,7 @@ static void convert_constr_buffer (char *str);
 // The 'range' character is the ':' - but this is valid for 
 // a datetime (hour/minute minute/second separator)
 // So - this flag is set when we're in a DATETIME field which has hours->minutes or minutes->seconds
-int allow_range_character=1; 
+int allow_range_character = 1;
 
 /*
 =====================================================================
@@ -215,7 +215,7 @@ A4GL_escape_single (char *s)
  * @return
  */
 char *
-A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dtype, int dtype_size)
+A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int dtype, int dtype_size)
 {
   char *ptr2;
   int a;
@@ -226,7 +226,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
   char using_dates[100][20];
   int z;
   int z2;
-	int zz;
+  int zz;
   int cnt;
   int k, k2 = 0;
   char lastchar;
@@ -234,46 +234,58 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
   char colname[256];
   char *ptr;
 
-  if (inc_quotes==3 || inc_quotes==4) {
-		if (dtype==DTYPE_DTIME) { 
-			char *p;
-			int a;
-			// DATETIME RANGE KLUDGE
-			// one problem we have is if we have a datetime - and a range
-			//
-			// Lets figure out how long out datetime should be
-			// Quick and dirty way is to measure the length of
-			// a 'CURRENT' with the same dimensions...
-			A4GL_push_current(dtype_size>>4, dtype_size&0xf);
-			p=A4GL_char_pop(); 
-	
-			if (strchr(p,':')) {	
-				// Darn - it contains a ':' - so we cant use this as a range character
-				allow_range_character=0;
-			} else {
-				allow_range_character=1;
-			}
-			a=strlen(p);
-			free(p);
-			if (strlen(val)>a && !A4GL_is_construct_op (val, 0)) {
-				if (val[a]==':') {
-					static char buffx[2000]; // Static so we can keep a reference to it..
-					// Those fools have specified a range..
-					// Lets convert it from a 'VAL1:VAL2' style range
-					// to a 'VAL1..VAL2' style range
-					strcpy(buffx,val);
-					buffx[a]=0;
-					strcat(buffx,"..");
-					strcat(buffx,&val[a+1]);
-					val=buffx;
-				}
-			}
-		}
-  } else {
-		allow_range_character=1;
-  }
+  if (inc_quotes == 3 || inc_quotes == 4)
+    {
+      if (dtype == DTYPE_DTIME)
+	{
+	  char *p;
+	  int a;
+	  // DATETIME RANGE KLUDGE
+	  // one problem we have is if we have a datetime - and a range
+	  //
+	  // Lets figure out how long out datetime should be
+	  // Quick and dirty way is to measure the length of
+	  // a 'CURRENT' with the same dimensions...
+	  A4GL_push_current (dtype_size >> 4, dtype_size & 0xf);
+	  p = A4GL_char_pop ();
 
-  for (a=0;a<100;a++) {strcpy(using_dates[a],"");}
+	  if (strchr (p, ':'))
+	    {
+	      // Darn - it contains a ':' - so we cant use this as a range character
+	      allow_range_character = 0;
+	    }
+	  else
+	    {
+	      allow_range_character = 1;
+	    }
+	  a = strlen (p);
+	  free (p);
+	  if (strlen (val) > a && !A4GL_is_construct_op (val, 0))
+	    {
+	      if (val[a] == ':')
+		{
+		  static char buffx[2000];	// Static so we can keep a reference to it..
+		  // Those fools have specified a range..
+		  // Lets convert it from a 'VAL1:VAL2' style range
+		  // to a 'VAL1..VAL2' style range
+		  strcpy (buffx, val);
+		  buffx[a] = 0;
+		  strcat (buffx, "..");
+		  strcat (buffx, &val[a + 1]);
+		  val = buffx;
+		}
+	    }
+	}
+    }
+  else
+    {
+      allow_range_character = 1;
+    }
+
+  for (a = 0; a < 100; a++)
+    {
+      strcpy (using_dates[a], "");
+    }
 
   if (tabname == 0)
     {
@@ -294,14 +306,14 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
   strcpy (buff3, "");
 #ifdef DEBUG
   {
-    A4GL_debug ("Colname = %s , val = %s incq=%d\n", colname, val,
-		inc_quotes);
+    A4GL_debug ("Colname = %s , val = %s incq=%d\n", colname, val, inc_quotes);
   }
 #endif
-  if (strcmp (val, "") == 0) {
-	A4GL_debug("Returning %s", buff3);
-    return buff3;
-  }
+  if (strcmp (val, "") == 0)
+    {
+      A4GL_debug ("Returning %s", buff3);
+      return buff3;
+    }
 
   constr_size = 0;
   constr_bits[constr_size++] = buffer;
@@ -344,18 +356,21 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 
       if (z > 0 && lastchar == 0)
 	{			/* last character was not a control */
-		if (z==RANGE_DOT_DOT) {
-	  		appendchr (buffer, '\n');
-	  		constr_bits[constr_size++] = &buffer[strlen (buffer)];
-	  		appendchr (buffer, ptr2[a]);
-	  		appendchr (buffer, ptr2[a]);
-			lastchar=0;
-			a++;
-		} else {
-	  		appendchr (buffer, '\n');
-	  		constr_bits[constr_size++] = &buffer[strlen (buffer)];
-	  		appendchr (buffer, ptr2[a]);
-		}
+	  if (z == RANGE_DOT_DOT)
+	    {
+	      appendchr (buffer, '\n');
+	      constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	      appendchr (buffer, ptr2[a]);
+	      appendchr (buffer, ptr2[a]);
+	      lastchar = 0;
+	      a++;
+	    }
+	  else
+	    {
+	      appendchr (buffer, '\n');
+	      constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	      appendchr (buffer, ptr2[a]);
+	    }
 	  A4GL_debug ("constr_size++ now %d", constr_size);
 	  /*constr_bits[constr_size++]=&ptr2[a]; */
 	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
@@ -373,7 +388,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	{
 	  if (z > 0 && lastchar > 0)
 	    {
-	      if (lastchar < OR && z == EQ )
+	      if (lastchar < OR && z == EQ)
 		{
 		  appendchr (buffer, ptr2[a]);
 		}
@@ -408,17 +423,16 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
-	 A4GL_debug ("constr_bits[zz]='%s'\n", constr_bits[zz]);
-	  
-	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0
-	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
+	  A4GL_debug ("constr_bits[zz]='%s'\n", constr_bits[zz]);
+
+	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
 	    {
 
-	      char *eptr=0;
+	      char *eptr = 0;
 	      k = 1;
 	      strtod (constr_bits[zz], &eptr);
 	      //strtol(constr_bits[zz], &eptr,10);
-	      A4GL_debug ("eptr=%p *eptr=%p constr_bits[zz]='%s'\n", eptr, *eptr,constr_bits[zz]);
+	      A4GL_debug ("eptr=%p *eptr=%p constr_bits[zz]='%s'\n", eptr, *eptr, constr_bits[zz]);
 	      if (eptr == 0)
 		k = 0;
 	      if (eptr)
@@ -429,11 +443,11 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		    }
 		}
 
-	      if (k || k2|| strlen(constr_bits[zz])==0);
+	      if (k || k2 || strlen (constr_bits[zz]) == 0);
 	      else
 		{
 		  /* error in numeric */
-		  A4GL_debug ("error in numeric k=%d k2=%d",k,k2);
+		  A4GL_debug ("error in numeric k=%d k2=%d", k, k2);
 		  return 0;
 		}
 	    }
@@ -443,7 +457,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 
   if (inc_quotes == 2)		/* Its a date */
     {
-	//A4GL_pause_execution();
+      //A4GL_pause_execution();
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
@@ -452,24 +466,25 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	      int n;
 	      if (A4GL_stod (constr_bits[zz], &n, 0) && !A4GL_isnull (DTYPE_DATE, (void *) &n))
 		{
-		char *p;
-			int b;
+		  char *p;
+		  int b;
 		  A4GL_debug ("CDATE Returns true for %s n=%d", constr_bits[zz], n);
-			for (b=0;b<100;b++) {
-				if (strlen(using_dates[b])==0)  break;
-			}
-			A4GL_push_date(n);
-			p=A4GL_char_pop();
-			A4GL_debug("Date really looks like : %s",p);
-			strcpy(using_dates[b], p);
-			free(p);
-			constr_bits[zz]=using_dates[b];
-			
+		  for (b = 0; b < 100; b++)
+		    {
+		      if (strlen (using_dates[b]) == 0)
+			break;
+		    }
+		  A4GL_push_date (n);
+		  p = A4GL_char_pop ();
+		  A4GL_debug ("Date really looks like : %s", p);
+		  strcpy (using_dates[b], p);
+		  free (p);
+		  constr_bits[zz] = using_dates[b];
+
 		}
 	      else
 		{
-		  A4GL_debug ("CDATE Returns false for %s or its null",
-			      constr_bits[zz]);
+		  A4GL_debug ("CDATE Returns false for %s or its null", constr_bits[zz]);
 		  return 0;
 		}
 
@@ -479,29 +494,32 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 
   if (inc_quotes == 3)		/* Its a datetime */
     {
-		
+
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
 	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
 	    {
 	      int n;
-		int parts[10];
-		char buff[2000];
-		struct A4GLSQL_dtime d;
-		if (!A4GL_valid_dt(constr_bits[zz], parts,dtype_size)) {
-			
-		  		A4GL_debug ("CDATETIME Returns false for %s or its null", constr_bits[zz]);
+	      int parts[10];
+	      char buff[2000];
+	      struct A4GLSQL_dtime d;
+	      if (!A4GL_valid_dt (constr_bits[zz], parts, dtype_size))
+		{
+
+		  A4GL_debug ("CDATETIME Returns false for %s or its null", constr_bits[zz]);
 		  return 0;
 		}
-		n=A4GL_ctodt(constr_bits[zz],&d,dtype_size);
-		if (n==0) {
-			return 0;
+	      n = A4GL_ctodt (constr_bits[zz], &d, dtype_size);
+	      if (n == 0)
+		{
+		  return 0;
 		}
-		A4GL_dttoc(&d,buff,40);
-		if (strlen(buff)!=strlen(constr_bits[zz])) {
-			// Too long or too short
-			return 0;
+	      A4GL_dttoc (&d, buff, 40);
+	      if (strlen (buff) != strlen (constr_bits[zz]))
+		{
+		  // Too long or too short
+		  return 0;
 		}
 
 	    }
@@ -516,17 +534,17 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	  if (A4GL_is_construct_op (constr_bits[zz], 0) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0) != OR))
 	    {
 	      int n;
-		int parts[10];
-		char buff[2000];
-		if (!A4GL_valid_int(constr_bits[zz], parts,0)) {
-		  	A4GL_debug ("CINTERVAL Returns false for %s or its null",
-			      constr_bits[zz]);
+	      int parts[10];
+	      char buff[2000];
+	      if (!A4GL_valid_int (constr_bits[zz], parts, 0))
+		{
+		  A4GL_debug ("CINTERVAL Returns false for %s or its null", constr_bits[zz]);
 		  return 0;
 		}
 
 	    }
 	}
-	
+
     }
 
   strcpy (buff2, "");
@@ -560,8 +578,8 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		  static char ptr3[2000];
 		  ptr = A4GL_escape_single (constr_bits[0]);
 		  SPRINTF3 (ptr2, "%s%s%s", quote, ptr, quote);
-		  sprintf(ptr3, "%s %s", colname, A4GLSQLCV_matches_string ("", ptr2, "\"\\\""));
-			A4GL_debug("Returning %s", ptr3);
+		  sprintf (ptr3, "%s %s", colname, A4GLSQLCV_matches_string ("", ptr2, "\"\\\""));
+		  A4GL_debug ("Returning %s", ptr3);
 		  return ptr3;
 		}
 	    }
@@ -675,7 +693,10 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
     {
       if (z == RANGE)
 	{
-	  if (strlen(quote)==0) { return 0; } // Error out...
+	  if (strlen (quote) == 0)
+	    {
+	      return 0;
+	    }			// Error out...
 	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (zz = 1; zz < constr_size; zz++)
 	    {
@@ -689,30 +710,35 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
       else
 	{
 	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote, constr_bits[0], quote);
-		A4GL_debug("..");
+	  A4GL_debug ("..");
 	  if (constr_size >= 2)
 	    {
-		if (constr_size==2 && strlen(quote)==0) {
-			return 0; // Error out...
+	      if (constr_size == 2 && strlen (quote) == 0)
+		{
+		  return 0;	// Error out...
 		}
-		A4GL_debug(".2 %d ", constr_size);
+	      A4GL_debug (".2 %d ", constr_size);
 	      strcat (buff3, quote);
-		
+
 	      for (zz = 2; zz < constr_size; zz++)
 		{
 		  ptr = A4GL_escape_single (constr_bits[zz]);
-		A4GL_debug("ptr=%s",ptr);
+		  A4GL_debug ("ptr=%s", ptr);
 		  A4GL_assertion (ptr == 0, "No returned pointer");
 		  strcat (buff3, ptr);
 		  free (ptr);
 		}
 	      strcat (buff3, quote);
-		A4GL_debug(".3");
+	      A4GL_debug (".3");
 	    }
-	  else {
-	  	if (strlen(quote)==0) { return 0; } // Error out...
-	    	strcat (buff3, "''");
-		}
+	  else
+	    {
+	      if (strlen (quote) == 0)
+		{
+		  return 0;
+		}		// Error out...
+	      strcat (buff3, "''");
+	    }
 	}
       strcat (buff3, "");
     }
@@ -722,7 +748,10 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
     {
       if (z == RANGE)
 	{
-	  if (strlen(quote)==0) { return 0; } // Error out...
+	  if (strlen (quote) == 0)
+	    {
+	      return 0;
+	    }			// Error out...
 	  SPRINTF2 (buff3, "(%s between '' and %s", colname, quote);
 	  for (zz = 1; zz < constr_size; zz++)
 	    {
@@ -735,12 +764,12 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 	}
       else
 	{
-	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote,
-		    constr_bits[0], quote);
+	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote, constr_bits[0], quote);
 	  if (constr_size >= 2)
 	    {
-		if (constr_size==2 && strlen(quote)==0) {
-			return 0; // Error out...
+	      if (constr_size == 2 && strlen (quote) == 0)
+		{
+		  return 0;	// Error out...
 		}
 	      strcat (buff3, quote);
 	      for (zz = 2; zz < constr_size; zz++)
@@ -752,10 +781,14 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes,int dt
 		}
 	      strcat (buff3, quote);
 	    }
-	  else {
-		if (strlen(quote)==0) {return 0;} // Error out...
-	    	strcat (buff3, "''");
-	   }
+	  else
+	    {
+	      if (strlen (quote) == 0)
+		{
+		  return 0;
+		}		// Error out...
+	      strcat (buff3, "''");
+	    }
 	}
       strcat (buff3, "");
     }
