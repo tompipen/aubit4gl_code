@@ -2153,6 +2153,7 @@ print_sql_block_cmd (struct_sql_block_cmd * cmd_data)
 {
 int a;
 struct expr_str_list *into_list=0;
+	int ibindcnt=0;
 char buff[20000]="";
 //static int sqlblock;
 //char tmpbuff[200];
@@ -2194,7 +2195,6 @@ int no;
   }
 
   for (a=0;a<cmd_data->list->list.list_len;a++) {
-	int ibindcnt=0;
 	expr_str *e;
 	e=cmd_data->list->list.list_val[a];
 	switch (e->expr_type) {
