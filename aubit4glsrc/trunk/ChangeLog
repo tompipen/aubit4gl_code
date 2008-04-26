@@ -1,4 +1,20 @@
 ---------------------------
+Sat Apr 26 20:33:58 BST 2008
+---------------------------
+1.10RC_17 Released
+---------------------------
+	
+	PG8 fixup
+	
+	Construct Fixup Some Postgresql asql_p.4ae info additions
+	
+	fix required for build test 1674
+	
+	indentation
+	
+	Small datetime fixup
+	
+---------------------------
 Fri Apr 25 09:03:02 BST 2008
 ---------------------------
 1.10RC_16 Released
