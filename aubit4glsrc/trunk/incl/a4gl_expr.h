@@ -18,6 +18,7 @@ struct expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameter
 struct expr_str *A4GL_new_expr_form_is_compiled(char *formname, expr_str_list *params,char *mod,int line);
 struct expr_str * A4GL_new_translated_string (char *value);
 
+
 struct expr_str *A4GL_new_literal_long_long (long value);
 struct expr_str *A4GL_new_literal_string (char *value);
 struct expr_str *A4GL_new_expr_temp(char *s,int dtype);

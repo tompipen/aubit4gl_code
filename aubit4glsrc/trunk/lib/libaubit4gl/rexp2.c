@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.47 2008-04-26 15:15:38 mikeaubury Exp $
+# $Id: rexp2.c,v 1.48 2008-04-27 14:44:15 mikeaubury Exp $
 #
 */
 
@@ -283,6 +283,16 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
       allow_range_character = 1;
     }
 
+
+  if (strncmp(val,"..",2)==0) { // We allow ..X and X.. to be <=X and >=X
+		// X.. is handled later
+		// we'll handle ..X now
+		//
+		// This also works for ':' - but thats handles separately
+	val[0]='<';
+	val[1]='=';
+  }
+
   for (a = 0; a < 100; a++)
     {
       strcpy (using_dates[a], "");
@@ -427,7 +437,6 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 
 
   A4GL_debug ("Buffer :%s\n", buffer);
-
   convert_constr_buffer (buffer);
 
 
@@ -475,8 +484,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
-	  if (A4GL_is_construct_op (constr_bits[zz], 0, NULL) == 0
-	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0, NULL) != OR))
+	  if (A4GL_is_construct_op (constr_bits[zz], 0, NULL) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0, NULL) != OR))
 	    {
 	      int n;
 	      if (A4GL_stod (constr_bits[zz], &n, 0) && !A4GL_isnull (DTYPE_DATE, (void *) &n))

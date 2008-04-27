@@ -112,7 +112,7 @@ struct command *new_locate_cmd(expr_str_list* p_variables, locate_pos *p_where);
 struct command *new_message_cmd(expr_str_list *p_expr, attrib *p_attributes, e_boolean p_wait);
 struct command *new_return_cmd(expr_str_list *p_retvals);
 struct command *new_execute_cmd(expr_str *connid, expr_str_list* p_inbind, expr_str_list* p_outbind, expr_str *p_sql_stmtid);
-struct command *new_sql_block_cmd( expr_str *connid, expr_str_list* p_list);
+struct command *new_sql_block_cmd( expr_str *connid, expr_str_list* p_list,int convert);
 struct command *new_let_cmd(expr_str_list* p_vars, expr_str_list *p_vals);
 struct command *new_case_cmd(expr_str* p_case_expr, struct whens *p_whens, commands *p_otherwise,int block_id);
 struct command *new_validate_cmd(expr_str_list* p_list, str_list* p_tablist);

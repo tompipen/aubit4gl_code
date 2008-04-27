@@ -113,3 +113,5 @@ ALLOWTABLELESS Allow tablesless selects (eg. SELECT USER;). If not set it will a
 OMIT_LOCK_MODE Omit the lock mode from a CREATE TABLE
 OMIT_TABLE_IN Omit the "IN space" from a CREATE TABLE
 OMIT_TABLE_EXTENTS Omit the "EXTENT SIZE #" and the "NEXT EXTENT #" from a CREATE TABLE
+ALLOW_TIMESTAMP_DATATYPE Allow the use of TIMESTAMP as an SQL datatype (if not set it will be replaced by DATETIME YEAR TO SECOND/FRACTION)
+ALLOW_TIME_DATATYPE Allow the use of TIME as an SQL datatype (if not set it will be replaced by DATETIME HOUR TO SECOND/FRACTION)

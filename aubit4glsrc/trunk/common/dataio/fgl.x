@@ -1005,6 +1005,7 @@ struct struct_whenever_cmd {
 struct struct_sql_block_cmd {
 	struct expr_str *connid;
 	struct expr_str_list* list;
+	int convert;
 };
 
 

@@ -500,9 +500,9 @@ dtype :
 		} 
 	|	DATETIME datetime_qual {
 			add_feature("DEFINE_DATETIME");
-		   push_type("struct_dtime",$<str>2,0);
-		   
+		   	push_type("struct_dtime",$<str>2,0);
 		} 
+	| time_dtypes
 	|	INTERVAL interval_qual {
 			add_feature("DEFINE_INTERVAL");
 		   push_type("struct_ival",$<str>2,0);
@@ -541,6 +541,45 @@ dtype :
 ;
 
 
+
+time_dtypes: 
+ TIME     { /* equivalent to Informix DATETIME HOUR TO FRACTION */
+	add_feature("DEFINE_DATETIME");
+   	push_type("struct_dtime","72",0);
+	
+ }
+ | TIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET   {
+	int n;
+	n=atoi($<str>3);
+	switch (n) {
+		case 0: push_type("struct_dtime","70",0); break; /* DATETIME HOUR TO SECOND */
+		case 1: push_type("struct_dtime","71",0); break; /*  DATETIME HOUR TO FRACTION(n) */
+		case 2: push_type("struct_dtime","72",0); break; /*  DATETIME HOUR TO FRACTION(n) */
+		case 3: push_type("struct_dtime","73",0); break; /*  DATETIME HOUR TO FRACTION(n) */
+		case 4: push_type("struct_dtime","74",0); break; /*  DATETIME HOUR TO FRACTION(n) */
+		case 5: push_type("struct_dtime","75",0); break; /*  DATETIME HOUR TO FRACTION(n) */
+		default: a4gl_yyerror("Invalid time"); YYERROR;
+	}
+    }
+ | TIMESTAMP {
+		push_type("struct_dtime","24",0); 	/* DATETIME YEAR TO FRACTION */ 
+   }
+ | TIMESTAMP OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+	int n;
+	n=atoi($<str>3);
+	switch (n) {
+		case 0: push_type("struct_dtime","22",0); break; 	/* DATETIME YEAR TO SECOND */
+		case 1: push_type("struct_dtime","23",0);break;  	/* DATETIME YEAR TO FRACTION(n) */
+		case 2: push_type("struct_dtime","24",0);break;  	/* DATETIME YEAR TO FRACTION(n) */
+		case 3: push_type("struct_dtime","25",0);break;  	/* DATETIME YEAR TO FRACTION(n) */
+		case 4: push_type("struct_dtime","26",0);break;  	/* DATETIME YEAR TO FRACTION(n) */
+		case 5: push_type("struct_dtime","27",0);break;  	/* DATETIME YEAR TO FRACTION(n) */
+		default: a4gl_yyerror("Invalid timestamp"); YYERROR;
+	}
+   }
+;
+
+
 op_prec :
 			|	OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 ;
@@ -574,8 +613,7 @@ datetime_qual :
 		   
 		} 	|	dtime_start KW_TO dtime_end {
 		   A4GL_debug("Real datetime %s to %s\n",$<str>1,$<str>3);
-		   SPRINTF1($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
-		    
+		   SPRINTF1($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));	
 		} 
 ;
 

@@ -2165,6 +2165,10 @@ int no;
 
   set_suppress_lines ();
   clr_bindings();
+  if (cmd_data->convert==1) {
+	a4gl_yyerror("Conversions cannot be used in an SQLBLOCK when generating ESQL/C code");
+	return 0;
+  }
 
 // Collect any 'intos...'
   for (a=0;a<cmd_data->list->list.list_len;a++) {
@@ -2229,9 +2233,9 @@ int no;
   print_conversions_g (input_bind,'i');
   A4GL_save_sql (buff, 0);
   A4GL_trim(buff);
-  if (strlen(buff)) {
-  	printc ("\nEXEC SQL %s;", buff);
-  }
+
+  printc ("\nEXEC SQL %s;", buff);
+
   print_conversions_g (into_list ,'o');
   printc ("}");
   clr_suppress_lines ();

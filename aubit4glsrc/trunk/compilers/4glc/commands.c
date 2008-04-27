@@ -1728,11 +1728,12 @@ struct command *c;
    return c;
 }
 
-struct command *new_sql_block_cmd(expr_str *p_connid, expr_str_list* p_list) {
+struct command *new_sql_block_cmd(expr_str *p_connid, expr_str_list* p_list,int convert) {
 struct command *c;
    c=new_command(E_CMD_SQL_BLOCK_CMD);
    c->cmd_data.command_data_u.sql_block_cmd.list=p_list;
    c->cmd_data.command_data_u.sql_block_cmd.connid=p_connid;
+   c->cmd_data.command_data_u.sql_block_cmd.convert=convert;
 
 //@  FIXME - inc_var_usage
 

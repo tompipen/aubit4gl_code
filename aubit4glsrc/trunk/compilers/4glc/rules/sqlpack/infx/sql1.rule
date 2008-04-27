@@ -906,6 +906,7 @@ exact_numeric_type:
 	| DATETIME s_curr KW_TO e_curr {SPRINTF2($<str>$,"DATETIME %s TO %s",$<str>2,$<str>4); add_feature("DDL_DATETIME");}
 	| DATETIME  {add_feature("DDL_DATETIME");}
 	| INTERVAL s_curr KW_TO e_curr {SPRINTF2($<str>$,"INTERVAL %s TO %s",$<str>2,$<str>4); add_feature("DDL_INTERVAL");}
+	| sql_time_dtypes {strcpy($<str>$,$<str>1);}
 	| INTERVAL {add_feature("DDL_INTERVAL");}
 	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET KW_TO e_curr {SPRINTF3($<str>$,"INTERVAL %s(%s) TO %s",$<str>2,$<str>4,$<str>7); add_feature("DDL_INTERVAL");}
 	| KW_TEXT {add_feature("DDL_TEXT");}
@@ -1282,5 +1283,57 @@ query_specification_ss_converted:  query_specification_select {
 		A4GL_free_select_stmt($<s_select>1);
 }
 ;
+
+
+sql_time_dtypes: 
+ TIME     { 
+	if (A4GLSQLCV_check_requirement("ALLOW_TIME_DATATYPE")) {
+       		strcpy($<str>$,"TIME"); break;
+	} else {
+       		strcpy($<str>$,"DATETIME HOUR TO FRACTION(2)"); break;
+	}
+ }
+ | TIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET   {
+	int n;
+       	n=atoi($<str>3);
+	if (A4GLSQLCV_check_requirement("ALLOW_TIME_DATATYPE")){ 
+		sprintf($<str>$,"TIME(%d)",n);
+	} else {
+        	switch (n) {
+                	case 0: strcpy($<str>$,"DATETIME HOUR TO SECOND"); break; 
+                	case 1: strcpy($<str>$,"DATETIME HOUR TO FRACTION(1)"); break;
+                	case 2: strcpy($<str>$,"DATETIME HOUR TO FRACTION(2)"); break;
+                	case 3: strcpy($<str>$,"DATETIME HOUR TO FRACTION(3)"); break;
+                	case 4: strcpy($<str>$,"DATETIME HOUR TO FRACTION(4)"); break;
+                	case 5: strcpy($<str>$,"DATETIME HOUR TO FRACTION(5)"); break;
+                	default: a4gl_yyerror("Invalid time"); YYERROR;
+        	}
+	}
+    }
+ | TIMESTAMP {
+	if (A4GLSQLCV_check_requirement("ALLOW_TIMESTAMP_DATATYPE")) {
+		strcpy($<str>$,"TIMESTAMP");
+	} else {
+                strcpy($<str>$,"DATETIME YEAR TO FRACTION(2)"); 
+	}
+ }
+ | TIMESTAMP OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+        int n;
+       	n=atoi($<str>3);
+	if (A4GLSQLCV_check_requirement("ALLOW_TIMESTAMP_DATATYPE")) {
+		sprintf($<str>$,"TIMESTAMP(%d)",n);
+	} else {
+        	switch (n) {
+                	case 0: strcpy($<str>$,"DATETIME YEAR TO SECOND"); break; 
+                	case 1: strcpy($<str>$,"DATETIME YEAR TO FRACTION(1)"); break;
+                	case 2: strcpy($<str>$,"DATETIME YEAR TO FRACTION(2)"); break;
+                	case 3: strcpy($<str>$,"DATETIME YEAR TO FRACTION(3)"); break;
+                	case 4: strcpy($<str>$,"DATETIME YEAR TO FRACTION(4)"); break;
+                	case 5: strcpy($<str>$,"DATETIME YEAR TO FRACTION(5)"); break;
+                	default: a4gl_yyerror("Invalid time"); YYERROR;
+        	}
+	}
+ }
+
 
 /* ========================= sql1.rule ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.36 2008-04-26 18:10:07 mikeaubury Exp $
+# $Id: pg8.c,v 1.37 2008-04-27 14:44:15 mikeaubury Exp $
 #*/
 
 
@@ -606,7 +606,26 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "interval minute to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x256; return; }
   if (A4GL_strstartswith (buff, "interval minute to fraction")) { *d = DTYPE_INTERVAL; *s = 0x259; return; }
   if (strcmp (buff, "interval second to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x266; return; }
+
   if (A4GL_strstartswith (buff, "interval second to fraction")) { *d = DTYPE_INTERVAL; *s = 0x269; return; }
+  if (A4GL_strstartswith (buff, "timestamp without time zone")) { *d = DTYPE_DTIME; *s = 24; return; }
+  if (A4GL_strstartswith (buff, "timestamp(0) without time zone")) { *d = DTYPE_DTIME; *s = 22; return; }
+  if (A4GL_strstartswith (buff, "timestamp(1) without time zone")) { *d = DTYPE_DTIME; *s = 23; return; }
+  if (A4GL_strstartswith (buff, "timestamp(2) without time zone")) { *d = DTYPE_DTIME; *s = 24; return; }
+  if (A4GL_strstartswith (buff, "timestamp(3) without time zone")) { *d = DTYPE_DTIME; *s = 25; return; }
+  if (A4GL_strstartswith (buff, "timestamp(4) without time zone")) { *d = DTYPE_DTIME; *s = 26; return; }
+  if (A4GL_strstartswith (buff, "timestamp(5) without time zone")) { *d = DTYPE_DTIME; *s = 27; return; }
+  if (A4GL_strstartswith (buff, "timestamp")) { *d = DTYPE_DTIME; *s = 24; return; }
+
+
+  if (A4GL_strstartswith (buff, "time without time zone")) { *d = DTYPE_DTIME; *s = 72; return; }
+  if (A4GL_strstartswith (buff, "time(0) without time zone")) { *d = DTYPE_DTIME; *s = 70; return; }
+  if (A4GL_strstartswith (buff, "time(1) without time zone")) { *d = DTYPE_DTIME; *s = 71; return; }
+  if (A4GL_strstartswith (buff, "time(2) without time zone")) { *d = DTYPE_DTIME; *s = 72; return; }
+  if (A4GL_strstartswith (buff, "time(3) without time zone")) { *d = DTYPE_DTIME; *s = 73; return; }
+  if (A4GL_strstartswith (buff, "time(4) without time zone")) { *d = DTYPE_DTIME; *s = 74; return; }
+  if (A4GL_strstartswith (buff, "time(5) without time zone")) { *d = DTYPE_DTIME; *s = 75; return; }
+  if (A4GL_strstartswith (buff, "time")) { *d = DTYPE_DTIME; *s = 72; return; }
 
 
   if (A4GL_strstartswith (buff, "character varying"))

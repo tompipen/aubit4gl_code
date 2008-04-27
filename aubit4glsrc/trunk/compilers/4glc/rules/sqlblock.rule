@@ -1,10 +1,16 @@
-sql_block_cmd : opt_use2_p KW_SQL {
+sql_block_cmd : opt_use2_p KW_SQL opt_conv {
 		sql_mode=1;
 		add_feature("SQL_BLOCK");
+		
 	} sql_block END_SQL {
 			sql_mode=0;
-			$<cmd>$=new_sql_block_cmd($<ptr>1, $<ptr_list>4);
+			$<cmd>$=new_sql_block_cmd($<ptr>1, $<ptr_list>5,$<integer_val>3);
 	}
+;
+
+opt_conv : {$<integer_val>$=-1;}
+	| WITH_CONVERSIONS {$<integer_val>$=1;}
+	| WITHOUT_CONVERSIONS {$<integer_val>$=0;}
 ;
 
 

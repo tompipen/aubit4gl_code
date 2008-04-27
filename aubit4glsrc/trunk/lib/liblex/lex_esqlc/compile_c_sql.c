@@ -1355,7 +1355,7 @@ struct struct_execute_cmd exec_cmd;
   //if (output_bind->list.list_len) u+=2;
   //if (input_bind->list.list_len)  u+=1;
   SPRINTF2(tmpbuff,"A4GLsb_%d%d",sqlblock++,line_for_cmd);
-  printc("A4GLSQL_add_prepare(\"%s\",(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0));",tmpbuff,escape_quotes_and_remove_nl(buff),line_for_cmd,0 /* never converted */);
+  printc("A4GLSQL_add_prepare(\"%s\",(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0));",tmpbuff,escape_quotes_and_remove_nl(buff),line_for_cmd,cmd_data->convert==0 /* never converted */);
 	exec_cmd.connid=NULL; 
 
         exec_cmd.sql_stmtid=A4GL_new_expr_simple_string(tmpbuff, ET_EXPR_IDENTIFIER);
