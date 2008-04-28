@@ -1,4 +1,23 @@
 ---------------------------
+Mon Apr 28 23:04:44 BST 2008
+---------------------------
+1.10RC_18 Released
+---------------------------
+	
+	Construct fixup for <>
+	
+	Add WITH CONVERSIONS/WITHOUT CONVERSIONS to SQLBLOCK Add TIME and
+	TIMESTAMP datatypes as synonyms for DATETIME
+	
+	PG8 fixup
+	
+	Construct Fixup Some Postgresql asql_p.4ae info additions
+	
+	fix required for build test 1674
+	
+	indentation
+	
+---------------------------
 Sat Apr 26 20:33:58 BST 2008
 ---------------------------
 1.10RC_17 Released
