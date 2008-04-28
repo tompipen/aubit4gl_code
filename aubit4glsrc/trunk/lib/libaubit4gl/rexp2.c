@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.48 2008-04-27 14:44:15 mikeaubury Exp $
+# $Id: rexp2.c,v 1.49 2008-04-28 07:37:26 mikeaubury Exp $
 #
 */
 
@@ -642,6 +642,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
       free (ptr);
 
 
+
       strcat (buff2, quote);
       for (zz = 1; zz < constr_size; zz++)
 	{
@@ -660,6 +661,10 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	  strcpy (buff2, " is not null");
 	}
       if (strcmp (buff2, "<>") == 0)
+	{
+	  strcpy (buff2, " is not null");
+	}
+      if (strcmp (buff2, "<>''") == 0)
 	{
 	  strcpy (buff2, " is not null");
 	}
@@ -948,6 +953,7 @@ A4GL_is_construct_op (char *str, int i, int *inc)
 	*inc = 1;
       return GTHN;
     }
+
   if (str[i] == '|')
     {
       if (inc)
