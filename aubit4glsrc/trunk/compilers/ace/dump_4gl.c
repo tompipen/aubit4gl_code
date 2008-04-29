@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include "../../common/dataio/report.xs.h"
 #include "a4gl_memhandling.h"
@@ -220,7 +221,7 @@ generate_order_by (struct select_stmts *ptr)
 	}
       if (a)
 	strcat (buff, ",");
-      strcat (buff, "lv_data.");
+      strcat (buff, "lr_data.");
       strcat (buff, this_report.variables.variables_val[b].name);
     }
   reporderby = buff;
@@ -244,7 +245,7 @@ dump_report ()
 
   fprintf (fout, "FUNCTION run_report_%s()\n", this_report.report_name);
   fprintf (fout, "# Variables\n");
-  fprintf (fout, "DEFINE lv_data RECORD\n");
+  fprintf (fout, "DEFINE lr_data RECORD\n");
   print_variables (CAT_SQL, 1);
   fprintf (fout, "END RECORD\n");
   fprintf (fout, "DEFINE lv_rid INTEGER\n");
@@ -261,7 +262,7 @@ dump_report ()
   	fprintf(fout,") WITH NO LOG\n");
 
 	if (use_insert_cursor) {
-  		fprintf(fout,"DECLARE c_i_%s CURSOR WITH HOLD FOR INSERT INTO tmp_data VALUES(lv_rid, lv_data.*)\n", this_report.report_name);
+  		fprintf(fout,"DECLARE c_i_%s CURSOR WITH HOLD FOR INSERT INTO tmp_data VALUES(lv_rid, lr_data.*)\n", this_report.report_name);
 	}
 	
   	fprintf(fout,"DECLARE c_t_%s CURSOR FOR SELECT * FROM tmp_data ORDER BY a4gl_rid\n", this_report.report_name);
@@ -274,8 +275,8 @@ dump_report ()
   fprintf (fout, "\n");
   dump_getdata ();
 
-  fprintf (fout, "REPORT rep_%s(lv_data)\n", this_report.report_name);
-  fprintf (fout, "DEFINE lv_data RECORD\n");
+  fprintf (fout, "REPORT rep_%s(lr_data)\n", this_report.report_name);
+  fprintf (fout, "DEFINE lr_data RECORD\n");
   print_variables (CAT_SQL, 1);
   fprintf (fout, "END RECORD\n");
   dump_output ();
@@ -452,8 +453,8 @@ dump_getdata ()
 	}
       fprintf (fout, "START REPORT rep_%s\n\n", this_report.report_name);
       if (!compat) {
-      		fprintf (fout, "FOREACH c_r_%s INTO lv_data.*\n", this_report.report_name);
-      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lv_data.*)\n", this_report.report_name);
+      		fprintf (fout, "FOREACH c_r_%s INTO lr_data.*\n", this_report.report_name);
+      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lr_data.*)\n", this_report.report_name);
       		fprintf (fout, "END FOREACH\n\n");
       } else {
       		fprintf (fout, "# For compatibility mode - we need to create a full copy of our data...\n\n");
@@ -462,7 +463,7 @@ dump_getdata ()
   			fprintf(fout,"OPEN c_i_%s\n", this_report.report_name);
 		}
       		fprintf (fout, "LET lv_rid=0\n");
-      		fprintf (fout, "FOREACH c_r_%s INTO lv_data.*\n", this_report.report_name);
+      		fprintf (fout, "FOREACH c_r_%s INTO lr_data.*\n", this_report.report_name);
 		if (use_insert_cursor) {
   			fprintf(fout,  "   LET lv_cnt=lv_cnt+1\n");
 			if (batch_size<100000) { // If its more than this - don't batch it at all...
@@ -470,7 +471,7 @@ dump_getdata ()
 			}
       			fprintf (fout, "   PUT c_i_%s\n", this_report.report_name);
 		} else {
-      			fprintf (fout, "   INSERT INTO tmp_data VALUES(lv_rid, lv_data.*)\n");
+      			fprintf (fout, "   INSERT INTO tmp_data VALUES(lv_rid, lr_data.*)\n");
 		}
       		fprintf (fout, "   LET lv_rid=lv_rid+1\n");
       		fprintf (fout, "END FOREACH\n");
@@ -480,8 +481,8 @@ dump_getdata ()
 		}
       		fprintf (fout, "\n");
       		fprintf (fout, "# we can now read our data (again) to generate the report\n\n");
-      		fprintf (fout, "FOREACH c_t_%s INTO lv_rid, lv_data.*\n", this_report.report_name);
-      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lv_data.*)\n", this_report.report_name);
+      		fprintf (fout, "FOREACH c_t_%s INTO lv_rid, lr_data.*\n", this_report.report_name);
+      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lr_data.*)\n", this_report.report_name);
       		fprintf (fout, "END FOREACH\n\n");
       }
       fprintf (fout, "FINISH REPORT rep_%s\n\n", this_report.report_name);
@@ -1134,7 +1135,7 @@ print_variable (int a, struct expr *sub1, struct expr *sub2)
 	if (printing_agg_functions) {
 	  	fprintf (fout, "tmp_data.%s", downshift (this_report.variables.variables_val[a].name));
 	} else {
-	  	fprintf (fout, "lv_data.%s", downshift (this_report.variables.variables_val[a].name));
+	  	fprintf (fout, "lr_data.%s", downshift (this_report.variables.variables_val[a].name));
 	}
 	}
 
@@ -1241,4 +1242,3 @@ acl_strdup_full (void *a, char *r, char *f, int l)
     }
   return p;
 }
-#include <stdio.h>
