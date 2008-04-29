@@ -1,0 +1,27 @@
+database formonly 
+screen size 24 by 80
+{
+
+ ----------------------------------------
+ XXXXXXXXXXX YYYYYYYYYY ZZZZZZZZZZZZZZZ
+ ----------------------------------------
+
+ [fpol      |ncta|scta  |N]
+ [fpol      |ncta|scta  |N]
+ [fpol      |ncta|scta  |N]
+ [fpol      |ncta|scta  |N]
+ [fpol      |ncta|scta  |N]
+
+ ----------------------------------------
+
+}
+end
+
+attributes
+fpol = formonly.polcfpol type date,FORMAT="dd/mm/yyyy",NOENTRY;
+ncta = formonly.polcncta type int,NOENTRY;
+scta = formonly.polcscta type int,NOENTRY;
+N    = FORMONLY.m_graba TYPE CHAR,NOENTRY;
+INSTRUCTIONS
+delimiters ".."
+screen record s_opci[5] (polcfpol, polcncta, polcscta)
