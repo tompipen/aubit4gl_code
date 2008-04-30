@@ -189,6 +189,9 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
   int match;
   struct on_events *evt_list;
   int nprints = 0;
+  struct commands master_list;
+  master_list.cmds.cmds_val = 0;
+  master_list.cmds.cmds_len = 0;
 
   *lineno = -1;
 
@@ -202,9 +205,16 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
       switch (cmds->cmds.cmds_val[a]->cmd_data.type)
 	{
 	case E_CMD_FOR_CMD:	// Shouldnt have these...
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Cant use a FOR here");
-	  return -1;
+		nprint_cnt=A4GL_check_lines_for_prints(cmds->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands,lineno, err );
+		// if nprint_cnt<0 then its already an error and its already set in lineno and err...
+		if (nprint_cnt>0) {
+	  		*lineno = cmds->cmds.cmds_val[a]->lineno;
+	  		strcpy (err, "Can't use a FOR that PRINTs in a PAGE HEADER or TRAILER");
+		}
+		if (nprint_cnt!=0) {
+	  		return -1;
+		}
+		break;
 
 	case E_CMD_IF_CMD:
 	  match = -99;
@@ -241,13 +251,28 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 	  break;
 
 	case E_CMD_FOREACH_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Can't use a FOREACH here");
-	  return -1;
+		nprint_cnt=A4GL_check_lines_for_prints(cmds->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands,lineno, err );
+		// if nprint_cnt<0 then its already an error and its already set in lineno and err...
+		if (nprint_cnt>0) {
+	  		*lineno = cmds->cmds.cmds_val[a]->lineno;
+	  		strcpy (err, "Can't use a FOREACH that PRINTs in a PAGE HEADER or TRAILER");
+		}
+		if (nprint_cnt!=0) {
+	  		return -1;
+		}
+		break;
 
 	case E_CMD_WHILE_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a WHILE here");
-	  return -1;
+		nprint_cnt=A4GL_check_lines_for_prints(cmds->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_commands,lineno, err );
+		// if nprint_cnt<0 then its already an error and its already set in lineno and err...
+		if (nprint_cnt>0) {
+	  		*lineno = cmds->cmds.cmds_val[a]->lineno;
+	  		strcpy (err, "Can't use a FOREACH that PRINTs in a PAGE HEADER or TRAILER");
+		}
+		if (nprint_cnt!=0) {
+	  		return -1;
+		}
+		break;
 
 
 	case E_CMD_CASE_CMD:
@@ -282,36 +307,58 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 
 
 
-	case E_CMD_MENU_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a MENU here");
-	  return -1;
+        case E_CMD_MENU_CMD:
+          evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.menu_cmd.events;
+      	  master_list.cmds.cmds_val = 0;
+      	  master_list.cmds.cmds_len = 0;
+          linearise_commands_from_events (&master_list, evt_list);
+	  nprint_cnt=A4GL_check_lines_for_prints(&master_list,lineno,err);
+	  if (nprint_cnt) { *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Cant use a PRINT in a MENU here"); return -1; }
+          break;
+        case E_CMD_PROMPT_CMD:
+          evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prompt_cmd.events;
+          linearise_commands_from_events (&master_list, evt_list);
+	  nprint_cnt=A4GL_check_lines_for_prints(&master_list,lineno,err);
+	  if (nprint_cnt) { *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Cant use a PRINT in a PROMPT here"); return -1; }
+          break;
 
-	case E_CMD_PROMPT_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a PROMPT here");
-	  return -1;
+        case E_CMD_DISPLAY_ARRAY_CMD:
+          evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.display_array_cmd.events;
+          linearise_commands_from_events (&master_list, evt_list);
+	  nprint_cnt=A4GL_check_lines_for_prints(&master_list,lineno,err);
+	  if (nprint_cnt) { *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Cant use a PRINT in a DISPLAY ARRAY here"); return -1; }
+          break;
 
-	case E_CMD_DISPLAY_ARRAY_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a DISPLAY ARRAY here");
-	  return -1;
+        case E_CMD_INPUT_CMD:
+          evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
+          linearise_commands_from_events (&master_list, evt_list);
+	  nprint_cnt=A4GL_check_lines_for_prints(&master_list,lineno,err);
+	  if (nprint_cnt) { *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Cant use a PRINT in an INPUT here"); return -1; }
+          break;
 
-	case E_CMD_INPUT_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a INPUT here");
-	  return -1;
+        case E_CMD_INPUT_ARRAY_CMD:
+          evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.events;
+          linearise_commands_from_events (&master_list, evt_list);
+	  nprint_cnt=A4GL_check_lines_for_prints(&master_list,lineno,err);
+	  if (nprint_cnt) { *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Cant use a PRINT in a INPUT ARRAY here"); return -1; }
+          break;
 
-	case E_CMD_INPUT_ARRAY_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a INPUT ARRAY here");
-	  return -1;
+        case E_CMD_CONSTRUCT_CMD:
+          evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
+          linearise_commands_from_events (&master_list, evt_list);
+	  nprint_cnt=A4GL_check_lines_for_prints(&master_list,lineno,err);
+	  if (nprint_cnt) { *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Cant use a PRINT in a CONSTRUCT here"); return -1; }
+          break;
 
-	case E_CMD_CONSTRUCT_CMD:
-	  *lineno = cmds->cmds.cmds_val[a]->lineno;
-	  strcpy (err, "Can't use a CONSTRUCT here");
-	  return -1;
 
+
+
+
+
+
+
+
+// Line counting ...
 	case E_CMD_PRINT_CMD:
 	  if (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.print_cmd.semi != EB_TRUE)
 	    {
