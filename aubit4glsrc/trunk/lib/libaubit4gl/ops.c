@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.129 2008-04-25 13:43:28 mikeaubury Exp $
+# $Id: ops.c,v 1.130 2008-04-30 12:52:51 mikeaubury Exp $
 #
 */
 
@@ -5318,8 +5318,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
 }
 
 char *
-A4GL_display_date (void *ptr, int size, int size_c,
-		   struct struct_scr_field *field_details, int display_type)
+A4GL_display_date (void *ptr, int size, int size_c, struct struct_scr_field *field_details, int display_type)
 {
   long a;
   static char buff_12[256];
@@ -5332,16 +5331,18 @@ A4GL_display_date (void *ptr, int size, int size_c,
 
   A4GL_debug ("A4GL_display_date..");
 
-  if (display_type == DISPLAY_TYPE_DISPLAY
-      || display_type == DISPLAY_TYPE_PRINT)
+  if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT)
     {
       if (A4GL_isnull (DTYPE_DATE, ptr))
 	{
-	  if (strchr(A4GL_get_dbdate(),'4')) {
-	  	strcpy (buff_12, "          ");
-	  } else {
-	  	strcpy (buff_12, "        ");
-	  }
+	  if (strchr (A4GL_get_dbdate (), '4'))
+	    {
+	      strcpy (buff_12, "          ");
+	    }
+	  else
+	    {
+	      strcpy (buff_12, "        ");
+	    }
 	}
       else
 	{
@@ -5411,8 +5412,7 @@ A4GL_display_date (void *ptr, int size, int size_c,
 
       if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
-	  strcpy (using_buff,
-		  (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
+	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	  A4GL_push_date (a);
 	  A4GL_push_char (using_buff);
 	  A4GL_pushop (OP_USING);
@@ -5425,15 +5425,38 @@ A4GL_display_date (void *ptr, int size, int size_c,
 	  ptr = A4GL_char_pop ();
 	  strcpy (buff_12, ptr);
 	  free (ptr);
+	  if (strlen (buff_12) > size_c)
+	    {
+	      char dbdate[200];
+	      char format[200];
+	      if (strlen (buff_12) == strlen ("01/01/2001"))
+		{		// we tried a 4 digit year - and it failed..
+		  // try a 2 digit year instead...
+		  strcpy (dbdate, A4GL_get_dbdate ());
+		  if (dbdate[0] == 'D' || dbdate[0] == 'd')
+		    {		// DMY...
+		      strcpy (format, "dd/mm/yy");
+		    }
+		  else
+		    {
+		      strcpy (format, "mm/dd/yy");
+		    }
+		  A4GL_push_date (a);
+		  A4GL_push_char (format);
+		  A4GL_pushop (OP_USING);
+		  A4GL_pop_char (buff_12, size_c);
+		}
+	    }
 	}
 
       A4GL_debug ("display_date Got '%s'", buff_12);
       /* pascal_v. Display stars when date does not fit in field as Informix */
-      if (strlen(buff_12) > size_c) {
-        A4GL_debug ("This does not fit in field (length = %d)", size_c);
-        memset(buff_12, '*', size_c);
-        buff_12[size_c] = 0;
-      }
+      if (strlen (buff_12) > size_c)
+	{
+	  A4GL_debug ("This does not fit in field (length = %d)", size_c);
+	  memset (buff_12, '*', size_c);
+	  buff_12[size_c] = 0;
+	}
       A4GL_debug ("Returning '%s'", buff_12);
       return buff_12;
     }
