@@ -1,9 +1,5 @@
 if_cmd	: 
 	KW_IF fgl_expr_c atline KW_THEN  commands_as_list {
-                if_print_stack_cnt++;
-                if_print_stack[if_print_stack_cnt][0]=0;
-                if_print_stack[if_print_stack_cnt][1]=0;
-                if_print_section[if_print_stack_cnt]=0;
 		add_feature("IF");
 	} atline op_else atline END_IF {
 		int a;
@@ -35,18 +31,6 @@ if_cmd	:
 			$<struct_if_cmd>$->truths.conditions.conditions_len++;
 		}
 		
-	        wt=get_curr_report_stack_whytype_1();
-		if (wt=='T') {
-			if (if_print_stack[if_print_stack_cnt][0]!=if_print_stack[if_print_stack_cnt][0]) {
-				a4gl_yyerror("Number of lines printed in an IF.. THEN must be the same for TRUE and FALSE");
-				YYERROR;
-			}
-			
-			if (if_print_stack_cnt>=1) {
-				if_print_stack[if_print_stack_cnt-1][if_print_section[if_print_stack_cnt-1]]+=if_print_stack[if_print_stack_cnt][0];
-			}
-		}
-		if_print_stack_cnt--;
 		set_cmdlineno($<integer_val>3);
 		$<cmd>$=new_if_cmd(&$<struct_if_cmd>$->truths, $<struct_if_cmd>$->whenfalse, $<integer_val>7,$<integer_val>9);
 	}

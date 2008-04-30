@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.313 2008-03-29 11:42:08 mikeaubury Exp $
+# $Id: mod.c,v 1.314 2008-04-30 12:53:24 mikeaubury Exp $
 #
 */
 
@@ -306,9 +306,9 @@ struct          rep_structure rep_struct;
 struct          pdf_rep_structure pdf_rep_struct;
 struct          form_attr form_attrib;
 /* struct          input_array_attribs curr_input_array_attribs; */
-int             if_print_stack[100][2];
-int     if_print_stack_cnt=0;
-int     if_print_section[100]={0,0,0,0};
+//int             if_print_stack[100][2];
+//int     if_print_stack_cnt=0;
+//int     if_print_section[100]={0,0,0,0};
 char    last_tmp_name[256]="";
 
 /******************************************************************************/

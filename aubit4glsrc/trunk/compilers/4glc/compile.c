@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.122 2008-03-29 11:42:07 mikeaubury Exp $
+# $Id: compile.c,v 1.123 2008-04-30 12:53:23 mikeaubury Exp $
 #*/
 
 /**
@@ -88,6 +88,7 @@ char currinfile_dirname[1024] = "";	/* path to 4gl file we are currently compili
 char errbuff[1024] = "";
 char yytext[1024] = "";
 int globals_only = 0;
+int posterror=0;
 int yyin_len;
 char *default_database = 0;
 void remove_file(char *base,char *ext) ;
@@ -1738,7 +1739,7 @@ a4gl_yyerror (char *s)
   SPRINTF1 (errfile, "%s.err", outputfile);
   a = 0;
 
-  if (fpos!=ld ) {
+  if (fpos!=ld || posterror) {
 	static char buff[512];
 	int ln=0;
 	// We've read the file completely - this is a post parse error...

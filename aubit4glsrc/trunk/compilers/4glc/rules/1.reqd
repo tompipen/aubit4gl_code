@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.90 2008-03-29 11:42:10 mikeaubury Exp $
+# $Id: 1.reqd,v 1.91 2008-04-30 12:53:24 mikeaubury Exp $
 #
 */
 
@@ -213,6 +213,7 @@ extern int 		in_cmd[];
 extern int 		fcall_cnt;
 extern int 		doing_declare;
 extern int 		message_cnt;
+extern int posterror; 
 extern int 		doing_a_print;
 extern char mv_parent_class[255];
 extern char *last_style;
@@ -222,9 +223,9 @@ extern struct 		rep_structure rep_struct;
 extern struct 		pdf_rep_structure pdf_rep_struct;
 extern struct 		form_attr form_attrib;
 extern struct 		input_array_attribs curr_input_array_attribs;
-extern int 		if_print_stack[100][2];
-extern int 	if_print_stack_cnt;
-extern int 	if_print_section[100];
+//extern int 		if_print_stack[100][2];
+//extern int 	if_print_stack_cnt;
+//extern int 	if_print_section[100];
 extern char 	last_tmp_name[256];
 
 extern char last_orderby_ascdesc;

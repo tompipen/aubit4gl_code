@@ -2677,15 +2677,15 @@ expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameters,int e
 expr_str_list *n;
 char errbuff[256];
 char scope;
-int a;
+int param_to_add;
 if (parameters==NULL) return parameters;
 
 
 n=A4GL_new_ptr_list(0);
 
 
-for (a=0;a<parameters->list.list_len;a++) {
-	switch (parameters->list.list_val[a]->expr_type) {
+for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
+	switch (parameters->list.list_val[param_to_add]->expr_type) {
 
 		case ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC:
 		case ET_EXPR_VARIABLE_USAGE:
@@ -2694,15 +2694,15 @@ for (a=0;a<parameters->list.list_len;a++) {
 				struct variable_usage *vu1;
 				struct variable_usage *last_vu;
 				struct expr_str_list *vlist;
-				if (parameters->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
-				vu1=parameters->list.list_val[a]->expr_str_u.expr_variable_usage;
+				if (parameters->list.list_val[param_to_add]->expr_type==ET_EXPR_VARIABLE_USAGE) {
+				vu1=parameters->list.list_val[param_to_add]->expr_str_u.expr_variable_usage;
 				} else {
-				vu1=parameters->list.list_val[a]->expr_str_u.expr_variable_usage_with_asc_desc->var_usage;
+				vu1=parameters->list.list_val[param_to_add]->expr_str_u.expr_variable_usage_with_asc_desc->var_usage;
 				}
 				A4GL_debug("Got : %s %d \n", cmds_get_variable_usage_as_string(vu1), err_if_whole_array);
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v1==0) {
-					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[param_to_add]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2733,7 +2733,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 								return 0;
 							} else {
 								// Just leave it as is...
-								A4GL_new_append_ptr_list(n,parameters->list.list_val[a]);
+								A4GL_new_append_ptr_list(n,parameters->list.list_val[param_to_add]);
 							} 
 						} else {
 							int a;
@@ -2744,7 +2744,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 							}
 						}
 				} else {
-					A4GL_new_append_ptr_list(n,parameters->list.list_val[a]);
+					A4GL_new_append_ptr_list(n,parameters->list.list_val[param_to_add]);
 				}
 			}
 			break;
@@ -2754,10 +2754,10 @@ for (a=0;a<parameters->list.list_len;a++) {
 				struct variable_usage *vu1;
 				struct variable *v;
 				struct expr_str *e;
-				vu1=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
+				vu1=new_variable_usage(0,parameters->list.list_val[param_to_add]->expr_str_u.expr_string,0);
 				v=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v==0) {
-					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[param_to_add]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2802,11 +2802,12 @@ for (a=0;a<parameters->list.list_len;a++) {
 				struct expr_str_list *vlist;
 				int start;
 				int end;
+				int a;
 				char buff1[2000];
 				char buff2[2000];
 				//struct expr_str *det;
 				struct expr_str_list *s;
-				s=parameters->list.list_val[a]->expr_str_u.expr_list;
+				s=parameters->list.list_val[param_to_add]->expr_str_u.expr_list;
 				A4GL_assertion(s->list.list_len!=2,"Not a through...");	
 				A4GL_assertion(s->list.list_val[0]->expr_type!=ET_EXPR_VARIABLE_USAGE,"Expecting a variable usage");
 				A4GL_assertion(s->list.list_val[1]->expr_type!=ET_EXPR_VARIABLE_USAGE,"Expecting a variable usage");
@@ -2816,7 +2817,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				strcpy(buff2,"");
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v1==0) {
-					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[param_to_add]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2826,7 +2827,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 				}
 				v2=find_variable_vu_ptr(errbuff, vu2, &scope, err_if_whole_array);
 				if (v2==0) {
-					set_yytext(expr_as_string_when_possible(parameters->list.list_val[a]));
+					set_yytext(expr_as_string_when_possible(parameters->list.list_val[param_to_add]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
@@ -2883,18 +2884,18 @@ for (a=0;a<parameters->list.list_len;a++) {
 					A4GL_assertion(1,"Unhandled..");
 					break;
 			} else {
-				A4GL_new_append_ptr_list(n,parameters->list.list_val[a]);
+				A4GL_new_append_ptr_list(n,parameters->list.list_val[param_to_add]);
 				break;
 			}
 	}
 }
 
 
-for (a=0;a<n->list.list_len;a++) {
+for (param_to_add=0;param_to_add<n->list.list_len;param_to_add++) {
 	char errbuff[256];
-        switch (n->list.list_val[a]->expr_type) {
+        switch (n->list.list_val[param_to_add]->expr_type) {
                 case ET_EXPR_VARIABLE_USAGE:
-			if (!ensure_variable(errbuff, n->list.list_val[a], err_if_whole_array)) {
+			if (!ensure_variable(errbuff, n->list.list_val[param_to_add], err_if_whole_array)) {
 				a4gl_yyerror(errbuff);
 				return 0;
 			}

@@ -426,28 +426,35 @@ format_actions : format_action  {
 
 format_action :
 	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P',""); } atline commands_as_list {
+		int lineno; char errmsg[256];
 	 	add_feature("REPORT_FIRST_PAGE_HEADER");
-		rep_struct.lines_in_first_header=if_print_stack[0][0];
-		pdf_rep_struct.lines_in_first_header=if_print_stack[0][0];
-
+		rep_struct.lines_in_first_header=A4GL_check_lines_for_prints($<commands>4,&lineno,errmsg);
+		pdf_rep_struct.lines_in_first_header=rep_struct.lines_in_first_header;
 		set_cmdlineno($<integer_val>3);
 		$<report_format_section_entry>$=new_report_format_section_entry(RB_FIRST_PAGE_HEADER,NULL, $<commands>4,0,$<integer_val>3);
 		}
-	| PAGE_TRAILER { 
-	 	add_feature("REPORT_PAGE_TRAILER");
-		push_report_block("TRAILER",'T',"");
-		if_print_stack[0][0]=0;
-		if_print_stack[0][1]=0;
- 			} atline commands_as_list {
-		rep_struct.lines_in_trailer=if_print_stack[0][0];
-		pdf_rep_struct.lines_in_trailer=if_print_stack[0][0];
+	| PAGE_TRAILER { add_feature("REPORT_PAGE_TRAILER"); push_report_block("TRAILER",'T',"");
+ 		} atline commands_as_list {
+		int lineno; char errmsg[256];
+		rep_struct.lines_in_trailer=A4GL_check_lines_for_prints($<commands>4,&lineno,errmsg);
+		pdf_rep_struct.lines_in_trailer=rep_struct.lines_in_trailer;
+	
+		if (rep_struct.lines_in_trailer==-1) {
+				yylineno=lineno;
+				posterror=1; /* Ensure the error file is reread - because the linenumber here will be after the PAGE TRAILER - not at the IF statement */
+		                a4gl_yyerror(errmsg);
+                                YYERROR;
+		}
+
+
 		set_cmdlineno($<integer_val>3);
 		$<report_format_section_entry>$=new_report_format_section_entry(RB_PAGE_TRAILER,NULL, $<commands>4,0,$<integer_val>3);
 	}
 	| PAGE_HEADER { push_report_block("HEADER",'p',""); } atline commands_as_list {
+		int lineno; char errmsg[256];
 	 	add_feature("REPORT_PAGE_HEADER");
-		rep_struct.lines_in_header=if_print_stack[0][0];
-		pdf_rep_struct.lines_in_header=if_print_stack[0][0];
+		rep_struct.lines_in_header=A4GL_check_lines_for_prints($<commands>4,&lineno,errmsg);
+		pdf_rep_struct.lines_in_header=rep_struct.lines_in_header;
 		set_cmdlineno($<integer_val>3);
 		$<report_format_section_entry>$=new_report_format_section_entry(RB_PAGE_HEADER,NULL, $<commands>4,0,$<integer_val>3);
 	}
@@ -529,10 +536,6 @@ skip_cmd :
 				int ni;
 				ni=atoi($<str>2);
 				$<cmd>$=new_skip_cmd(ni);
-				if (if_print_stack_cnt==0) if_print_section[0]=0;
-				if (get_curr_report_stack_whytype_1()=='T') {
-					if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=(int)n;
-				}
 			} else {
 				if (rep_type!=REP_TYPE_PDF) { 
 					a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; 
@@ -614,12 +617,6 @@ print_cmd : PRINT opt_rep_expr_list opt_semi_b {
 				a4gl_yyerror("You can't print within a loop in a PAGE HEADER or PAGE TRAILER");
 				YYERROR;
 			}
-		}
-	}
-	if ($<e_boolean>3==0) {
-			if (if_print_stack_cnt==0) if_print_section[0]=0;
-		if (wt=='T') {
-			if_print_stack[if_print_stack_cnt][if_print_section[if_print_stack_cnt]]+=1;
 		}
 	}
 } 
