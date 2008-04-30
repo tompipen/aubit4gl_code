@@ -24,6 +24,7 @@
 # +----------------------------------------------------------------------+
 code
 #undef UCHAR
+#define DTYPE_DATE      7
 #include "simple.h"
 char *A4GL_apisql_strdup (char *sql);
 //EXEC SQL include sqltypes;
@@ -457,6 +458,38 @@ strcpy(s,ptr);
 free(ptr);
 }
 
+
+// COnvert from YYYY-MM-DD to DBDATE format..
+static void
+conv_date (char *s)
+{
+  static char *last;
+  static char buff[2000];
+  int m, d, y;
+	char *ptr;
+  int dt;
+  strcpy (buff, s);
+
+  if (buff[4] == '-' && buff[7] == '-')
+    {
+
+      buff[4] = 0;
+      buff[7] = 0;
+      y = atoi (buff);
+      m = atoi (&buff[5]);
+      d = atoi (&buff[8]);
+      dt = A4GL_gen_dateno (d, m, y);
+      A4GL_push_date (dt);
+      // Fiddle about to get it back to an aubit date...
+      ptr = A4GL_char_pop ();
+      strcpy (s, ptr);
+      free (ptr);			// It was malloc'd - we dont want to waste memory
+    }
+
+}
+
+
+
 int
 printField (FILE * outputFile, int idx, char *descName)
 {
@@ -489,7 +522,6 @@ A4GL_debug("Getting details for index %d",index);
          :PRECISION = precision, :SCALE=scale,
          :NULLABLE=nullable, :NAME=name,
          :INDICATOR=indicator;cp_sqlca();
-
  A4GL_debug("%2d\t%s (type: %d length: %d precision: %d scale: %d\n"
  "\toctet_length: %d returned_octet_length: %d nullable: %d)\n\t= "
                  ,index,NAME,TYPE,LENGTH,PRECISION,SCALE
@@ -559,10 +591,14 @@ A4GL_debug("Getting details for index %d",index);
                 sprintf(buffer,"%.*f",PRECISION,DOUBLEVAR);
   			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
+
            case SQL3_DATE_TIME_TIMESTAMP:
                 exec sql get descriptor descExec value :index
                         :DATETIME_INTERVAL_CODE=datetime_interval_code,
                         :STRINGVAR=data;cp_sqlca();
+		if (A4GLSQLCV_check_requirement("UNLDATEASDBDATE")) {
+			conv_date(STRINGVAR);
+		}
                 sprintf(buffer,"%s",STRINGVAR);
                 break;
            case SQL3_INTERVAL:
