@@ -22,8 +22,9 @@ extern int set_dont_use_indicators;
 struct expr_str_list *input_bind=0;
 struct expr_str_list *output_bind=0;
 static char *get_esql_ident_as_string(expr_str *ptr);
-static char * get_ibind_usage (int a, char *context);
-char * get_ibind_usage_nl (int a, char *context) ; // Just the same but with a \n at the end...
+static char * get_ibind_usage_internal (int a, char *context);
+static char * get_ibind_usage (int a, char *context,struct expr_str *var);
+char * get_ibind_usage_nl (int a, char *context,struct expr_str *var) ; // Just the same but with a \n at the end...
 static char * get_obind_usage (int a, char *context);
 static char *get_esql_ident_as_string_for_function_calls(expr_str *ptr,int quote_string);
 int match_variable_usage(variable_usage *u1, variable_usage *u2);
@@ -270,7 +271,7 @@ empty.list.list_val=0;
       for (a = 0; a < using_bind->list.list_len; a++)
         {
           	if (a) printc (",");
-		printc("%s",get_ibind_usage_nl(a,"EXECUTE"));
+		printc("%s",get_ibind_usage_nl(a,"EXECUTE", using_bind->list.list_val[a]));
         }
       printc (";");
       clr_suppress_lines ();
@@ -326,7 +327,7 @@ empty.list.list_val=0;
       for (a = 0; a < using_bind->list.list_len; a++)
         {
           	if (a) printc (",");
-		printc("%s",get_ibind_usage_nl(a,"EXECUTE"));
+		printc("%s",get_ibind_usage_nl(a,"EXECUTE",using_bind->list.list_val[a]));
         }
       printc (";");
       clr_suppress_lines ();
@@ -351,11 +352,30 @@ print_exit_prog_cmd(&c);
 
 }
 
+// Get the string to use for binding an input variable in a peice of sql...
+char * get_ibind_usage (int a, char *context,struct expr_str *var) {
+static char smbuff[300];
+char *ptr;
+int dtype;
+
+	ptr=get_ibind_usage_internal(a,context);
+	dtype=get_binding_dtype(var)  & DTYPE_MASK;
+
+	if (A4GLSQLCV_check_requirement ("FORCE_DATE_CAST") && (dtype==DTYPE_DATE)) {
+		sprintf(smbuff,"((%s)::date)",ptr);
+		return smbuff;
+	} else {
+		return ptr;
+	}
+
+}
 
 // Get the string to use for binding an input variable in a peice of sql...
-char * get_ibind_usage (int a, char *context)
+static char * get_ibind_usage_internal (int a, char *context)
 {
   static char smbuff[256];
+
+
   if (!A4GLSQLCV_check_requirement ("USE_INDICATOR") || strcmp(context,"OPEN")==0 || set_dont_use_indicators)
     {
 
@@ -383,6 +403,10 @@ char * get_ibind_usage (int a, char *context)
 }
 
 
+
+
+
+
 char * get_obind_usage(int a,char *context) {
   static char smbuff[256];
           if (!A4GLSQLCV_check_requirement ("USE_INDICATOR") || set_dont_use_indicators)
@@ -404,21 +428,22 @@ char * get_obind_usage(int a,char *context) {
 	return smbuff;
 }
 
-char * get_ibind_usage_nl (int a, char *context) {
+char * get_ibind_usage_nl (int a, char *context,struct expr_str *var) {
 	static char buff[2000];
-	sprintf(buff,"%s\n",get_ibind_usage(a,context));
+	sprintf(buff,"%s\n",get_ibind_usage(a,context,var));
 	return buff;
 }
 
 
 //  Call back function which appends to the input or output bindings the
 //  variables found whilst processing a select, insert, update or delete...
-char * get_sql_variable_usage (variable_usage * u, char dir)
+char * get_sql_variable_usage_internal (variable_usage * u, char dir)
 {
   struct expr_str *e;
   int a;
   static char smbuff[2000];
   e = A4GL_new_expr_push_variable (u);
+
 
   switch (dir)
     {
@@ -475,6 +500,22 @@ char * get_sql_variable_usage (variable_usage * u, char dir)
 }
 
 
+char * get_sql_variable_usage (variable_usage * u, char dir) {
+	int dtype;
+
+	dtype=u->datatype;
+
+	if (A4GLSQLCV_check_requirement ("FORCE_DATE_CAST") && (dtype==DTYPE_DATE) && dir=='i') {
+		char *ptr;
+		static char smbuff[300];
+		ptr=get_sql_variable_usage_internal(u,dir);
+		sprintf(smbuff,"((%s)::date)",ptr);
+		return smbuff;
+	} else {
+		return get_sql_variable_usage_internal(u,dir);
+	}
+
+}
 
 
 char *get_sql_into_buff(struct expr_str_list *into) {
@@ -1079,7 +1120,7 @@ if (bind && bind->list.list_len) {
 				printc("'%s'", c_generation_trans_quote(bind->list.list_val[a]->expr_str_u.expr_string));
 				break;
 			case ET_EXPR_VARIABLE_USAGE:
-				printc("%s",get_ibind_usage (a,"PUT"));
+				printc("%s",get_ibind_usage (a,"PUT", bind->list.list_val[a]));
 				break;
 			default:
 				printc("%s", get_esql_ident_as_string(bind->list.list_val[a]));
@@ -1091,7 +1132,7 @@ if (bind && bind->list.list_len) {
 		} else {
 		for (a=0;a<n;a++) {
 			set_nonewlines();
-				printc("%s",get_ibind_usage (a,"PUT"));
+				printc("%s",get_ibind_usage (a,"PUT",  bind->list.list_val[a]));
 			if (a<n-1) printc(",");
 			clr_nonewlines();
 			}
@@ -1110,7 +1151,7 @@ if (bind && bind->list.list_len) {
 	    {
 	      if (a)
 		printc (",");
-		printc("%s", get_ibind_usage(a,"PUT2"));
+		printc("%s", get_ibind_usage(a,"PUT2",  bind->list.list_val[a]));
 	    }
 	}
     }
@@ -2120,7 +2161,7 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
       for (a = 0; a < ni; a++)
 	{
 	  //if (a) printc (",");
-	  printc ("   %s%s\n", get_ibind_usage(a,"OPEN"), a<(ni-1)?",":"");
+	  printc ("   %s%s\n", get_ibind_usage(a,"OPEN",using_bind->list.list_val[a]), a<(ni-1)?",":"");
 	}
 
       printc ("   ;");
@@ -2208,7 +2249,7 @@ int no;
 			break;
 
 		case ET_EXPR_VARIABLE_USAGE:
-			strcat(buff, get_ibind_usage(ibindcnt++,"SQLBLOCK"));
+			strcat(buff, get_ibind_usage(ibindcnt++,"SQLBLOCK",e));
 			strcat(buff,"\n");
 			break;
 
@@ -3043,7 +3084,7 @@ printc("/*******************************************************************/");
 	  for (a = 0; a < c; a++)
 	    {
 	      if (a) { strcat (ins_str, ","); }
-	      strcat(ins_str,get_ibind_usage(a,"REPORT"));
+	      strcat(ins_str,get_ibind_usage(a,"REPORT", funcbind->list.list_val[a]));
 	    }
 
 	  strcat (ins_str, ")");
