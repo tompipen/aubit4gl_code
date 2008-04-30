@@ -1,3 +1,7 @@
+CREATE TRUSTED LANGUAGE "plperl" HANDLER "plperl_call_handler";
+CREATE TRUSTED LANGUAGE "plpgsql" HANDLER "plpgsql_call_handler" VALIDATOR "plpgsql_validator";
+
+
 CREATE OR REPLACE FUNCTION next_seq_id() RETURNS trigger AS $$
 
     my ($col,$seq)=@_;
@@ -39,6 +43,58 @@ LANGUAGE plpgsql;
 
 
 
+CREATE OR REPLACE FUNCTION dt_extend (dt timestamp, starttime text, endtime text) RETURNS timestamp AS $$
+DECLARE
+        ls integer;
+        le integer;
+        ts timestamp;
+        tc integer; -- count the number of matches
+        lm_ls integer; -- last match
+        lm_le integer; -- last match
+
+BEGIN
+        ls=dt_string_to_int(starttime);
+        le=dt_string_to_int(endtime);
+
+
+        -- lets see if it just 'works'...
+        ts=dt;
+
+        if ts is not null then
+                return ts;
+        end if;
+
+        for ls in 1..6 LOOP
+                for le in 1..6 LOOP
+
+                        ts:=to_timestamp(dt, A4GL_gettimestring(ls,le));
+
+                        if ts is not null then
+                                tc:=tc+1;
+                                lm_ls:=ls;
+                                lm_le:=le;
+                        end if;
+
+                end loop;
+        end loop;
+
+        if le=6 then -- If we've got some seconds we might as well use them all
+                le:=11;
+        end if;
+
+        if tc=1 then
+                return to_timestamp(dt, A4GL_gettimestring(lm_ls,lm_le));
+        else
+                -- This will be null - because if it were not
+                -- it would have already been returned!
+                return to_timestamp(dt, A4GL_gettimestring(ls,le));
+        end if;
+END;
+$$
+
+LANGUAGE plpgsql;
+
+
 
 CREATE OR REPLACE FUNCTION dt_extend (dt text, starttime text, endtime text) RETURNS timestamp AS $$
 DECLARE
@@ -76,7 +132,7 @@ BEGIN
         end loop;
 
         if le=6 then -- If we've got some seconds we might as well use them all
-                let le:=11;
+                le:=11;
         end if;
 
         if tc=1 then
@@ -93,6 +149,14 @@ LANGUAGE plpgsql;
 
 
 
+
+CREATE OR REPLACE FUNCTION A4GL_gettimestring (p_starttime integer, p_endtime integer) RETURNS text AS $$
+ BEGIN
+	
+	return A4GL_gettimestring(p_starttime::text, p_endtime::text);
+ END;
+ $$
+LANGUAGE plpgsql;
 
 
 
