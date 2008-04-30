@@ -1,4 +1,23 @@
 ---------------------------
+Wed Apr 30 14:27:06 BST 2008
+---------------------------
+1.10RC_19 Released
+---------------------------
+	
+	Postgresql unload fixup for dates (unload to DBDATE format rather
+	than yyyy-mm-dd)
+	
+	number of lines in trailer fixup
+	
+	Try to display date using 2 digits for year when 4 digits wont fit
+	
+	time(#) fixup
+	
+	aace fixups
+	
+	Construct fixup for <>
+	
+---------------------------
 Mon Apr 28 23:04:44 BST 2008
 ---------------------------
 1.10RC_18 Released
