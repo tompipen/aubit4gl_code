@@ -185,6 +185,7 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 {
   int a;
   int cnt;
+  int nprint_cnt;
   int match;
   struct on_events *evt_list;
   int nprints = 0;
@@ -209,16 +210,16 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 	  match = -99;
 	  for (cnt = 0; cnt < cmds->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len; cnt++)
 	    {
-	      cnt =
+	      nprint_cnt =
 		A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.
 					     conditions_val[cnt].whentrue, lineno, err);
 	      if (match == -99)
 		{
-		  match = cnt;
+		  match = nprint_cnt;
 		}
 	      else
 		{
-		  if (match != cnt || cnt == -1)
+		  if (match != nprint_cnt || nprint_cnt == -1)
 		    {
 		      *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Mismatch in number of lines in PRINT used in IFs");
 		      return -1;	/* Fails... */
@@ -229,14 +230,14 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 	    {			// No match - so must be zero prints in the 'IF' section...
 	      match = 0;
 	    }
-	  cnt = A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse, lineno, err);
+	  nprint_cnt = A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse, lineno, err);
 
-	  if (match != cnt || cnt == -1)
+	  if (match != nprint_cnt || nprint_cnt == -1)
 	    {
 		      *lineno = cmds->cmds.cmds_val[a]->lineno; strcpy (err, "Mismatch in number of lines in PRINT used in IF and ELSE");
 	      return -1;	// Fails...
 	    }
-	  nprints += cnt;
+	  nprints += nprint_cnt;
 	  break;
 
 	case E_CMD_FOREACH_CMD:
@@ -253,16 +254,14 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 	  match = -99;
 	  for (cnt = 0; cnt < cmds->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; cnt++)
 	    {
-	      cnt =
-		A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[cnt]->
-					     when_commands, lineno, err);
+	      nprint_cnt = A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[cnt]-> when_commands, lineno, err);
 	      if (match == -99)
 		{
-		  match = cnt;
+		  match = nprint_cnt;
 		}
 	      else
 		{
-		  if (match != cnt || cnt == -1)
+		  if (match != nprint_cnt || nprint_cnt == -1)
 		    {
 		      *lineno = cmds->cmds.cmds_val[a]->lineno;
 		      strcpy (err, "Mismatch in number of lines in PRINT used");
@@ -271,14 +270,14 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 		}
 	    }
 
-	  cnt = A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise, lineno, err);
-	  if (match != cnt || cnt == -1)
+	  nprint_cnt = A4GL_check_lines_for_prints (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise, lineno, err);
+	  if (match != nprint_cnt || nprint_cnt == -1)
 	    {
 	      *lineno = cmds->cmds.cmds_val[a]->lineno;
 	      strcpy (err, "Mismatch in number of lines in PRINT used");
 	      return -1;	// Fails...
 	    }
-	  nprints += cnt;
+	  nprints += nprint_cnt;
 	  break;
 
 
