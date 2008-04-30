@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.37 2008-04-27 14:44:15 mikeaubury Exp $
+# $Id: pg8.c,v 1.38 2008-04-30 12:52:26 mikeaubury Exp $
 #*/
 
 
@@ -184,10 +184,10 @@ static int loaded=0;
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
-if (!loaded) {
+  if (!loaded) {
 	loaded++;
-A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
-}
+	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
+  }
 
   envname = acl_getenv ("PG_DBPATH");
 
@@ -608,23 +608,22 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "interval second to second") == 0) { *d = DTYPE_INTERVAL; *s = 0x266; return; }
 
   if (A4GL_strstartswith (buff, "interval second to fraction")) { *d = DTYPE_INTERVAL; *s = 0x269; return; }
-  if (A4GL_strstartswith (buff, "timestamp without time zone")) { *d = DTYPE_DTIME; *s = 24; return; }
-  if (A4GL_strstartswith (buff, "timestamp(0) without time zone")) { *d = DTYPE_DTIME; *s = 22; return; }
-  if (A4GL_strstartswith (buff, "timestamp(1) without time zone")) { *d = DTYPE_DTIME; *s = 23; return; }
-  if (A4GL_strstartswith (buff, "timestamp(2) without time zone")) { *d = DTYPE_DTIME; *s = 24; return; }
-  if (A4GL_strstartswith (buff, "timestamp(3) without time zone")) { *d = DTYPE_DTIME; *s = 25; return; }
-  if (A4GL_strstartswith (buff, "timestamp(4) without time zone")) { *d = DTYPE_DTIME; *s = 26; return; }
-  if (A4GL_strstartswith (buff, "timestamp(5) without time zone")) { *d = DTYPE_DTIME; *s = 27; return; }
+  if (A4GL_strstartswith (type, "timestamp without time zone")) { *d = DTYPE_DTIME; *s = 24; return; }
+  if (A4GL_strstartswith (type, "timestamp(0) without time zone")) { *d = DTYPE_DTIME; *s = 22; return; }
+  if (A4GL_strstartswith (type, "timestamp(1) without time zone")) { *d = DTYPE_DTIME; *s = 23; return; }
+  if (A4GL_strstartswith (type, "timestamp(2) without time zone")) { *d = DTYPE_DTIME; *s = 24; return; }
+  if (A4GL_strstartswith (type, "timestamp(3) without time zone")) { *d = DTYPE_DTIME; *s = 25; return; }
+  if (A4GL_strstartswith (type, "timestamp(4) without time zone")) { *d = DTYPE_DTIME; *s = 26; return; }
+  if (A4GL_strstartswith (type, "timestamp(5) without time zone")) { *d = DTYPE_DTIME; *s = 27; return; }
   if (A4GL_strstartswith (buff, "timestamp")) { *d = DTYPE_DTIME; *s = 24; return; }
 
-
-  if (A4GL_strstartswith (buff, "time without time zone")) { *d = DTYPE_DTIME; *s = 72; return; }
-  if (A4GL_strstartswith (buff, "time(0) without time zone")) { *d = DTYPE_DTIME; *s = 70; return; }
-  if (A4GL_strstartswith (buff, "time(1) without time zone")) { *d = DTYPE_DTIME; *s = 71; return; }
-  if (A4GL_strstartswith (buff, "time(2) without time zone")) { *d = DTYPE_DTIME; *s = 72; return; }
-  if (A4GL_strstartswith (buff, "time(3) without time zone")) { *d = DTYPE_DTIME; *s = 73; return; }
-  if (A4GL_strstartswith (buff, "time(4) without time zone")) { *d = DTYPE_DTIME; *s = 74; return; }
-  if (A4GL_strstartswith (buff, "time(5) without time zone")) { *d = DTYPE_DTIME; *s = 75; return; }
+  if (A4GL_strstartswith (type, "time without time zone")) { *d = DTYPE_DTIME; *s = 72; return; }
+  if (A4GL_strstartswith (type, "time(0) without time zone")) { *d = DTYPE_DTIME; *s = 70; return; }
+  if (A4GL_strstartswith (type, "time(1) without time zone")) { *d = DTYPE_DTIME; *s = 71; return; }
+  if (A4GL_strstartswith (type, "time(2) without time zone")) { *d = DTYPE_DTIME; *s = 72; return; }
+  if (A4GL_strstartswith (type, "time(3) without time zone")) { *d = DTYPE_DTIME; *s = 73; return; }
+  if (A4GL_strstartswith (type, "time(4) without time zone")) { *d = DTYPE_DTIME; *s = 74; return; }
+  if (A4GL_strstartswith (type, "time(5) without time zone")) { *d = DTYPE_DTIME; *s = 75; return; }
   if (A4GL_strstartswith (buff, "time")) { *d = DTYPE_DTIME; *s = 72; return; }
 
 
@@ -999,7 +998,37 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 	      int nsl;
 	      char *ptr;
 
-	      ptr = PQgetvalue (res2, a, b);
+	        ptr = PQgetvalue (res2, a, b);
+
+		if (PQftype(res2, b) == DATEOID && A4GLSQLCV_check_requirement("UNLDATEASDBDATE")) {
+	    			static char buff[2000];
+				int m, d, y;
+				int dt;
+	    			strcpy (buff, ptr);
+	    			if (buff[4] == '-' && buff[7] == '-')
+	      			{
+		
+					buff[4] = 0;
+					buff[7] = 0;
+					y = atoi (buff);
+					m = atoi (&buff[5]);
+					d = atoi (&buff[8]);
+					dt = A4GL_gen_dateno (d, m, y);
+	      			}
+	    			else
+	      			{
+					A4GL_push_char (ptr);
+					A4GL_pop_param (&dt,DTYPE_DATE,sizeof(dt));
+	      			}
+				
+				A4GL_push_date(dt);
+				// Fiddle about to get it back to an aubit date...
+				ptr=A4GL_char_pop();
+				strcpy(buff,ptr);
+				free(ptr); // It was malloc'd - we dont want to waste memory
+				ptr=buff;
+		}
+
 	      nsl = strlen (ptr);
 	      if (nsl >= sl)
 		{
