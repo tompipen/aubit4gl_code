@@ -1100,7 +1100,7 @@ print_declare_cmd (struct_declare_cmd * cmd_data)
 {
 int forUpdate=0;   // when porting - this always seemed blank - it goes in the SQL statement instead...
 char * sid_string;
-
+int upd_hold=0;
 // ---- 
         //struct expr_str *cursorname;
         //struct s_cur_def *declare_dets;
@@ -1113,7 +1113,15 @@ char * sid_string;
   clr_bindings();
   printc("{");
   sid_string=generate_sid_string_for_declare(cmd_data->declare_dets,&forUpdate);
-  printc ("A4GLSQL_declare_cursor(%d,%s,%d,%s);", forUpdate+cmd_data->with_hold==EB_TRUE?2:0, sid_string, cmd_data->scroll==EB_TRUE, get_ident_as_string(cmd_data->cursorname));
+
+  upd_hold=forUpdate;
+  if(cmd_data->with_hold==EB_TRUE) {
+		upd_hold+=2;
+  }
+
+//printf("forupdate=%d\n",forUpdate);
+//printf("with_hold=%d\n",cmd_data->with_hold==EB_TRUE?2:0);
+  printc ("A4GLSQL_declare_cursor(%d,%s,%d,%s);", upd_hold, sid_string, cmd_data->scroll==EB_TRUE, get_ident_as_string(cmd_data->cursorname));
   printc("}");
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
