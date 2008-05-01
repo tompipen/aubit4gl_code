@@ -1664,7 +1664,7 @@ if lv_ext_type=mv_output_type then
 		LET lv_new=lv_base clipped,get_ext(lv_ext_type)
 		IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
 			# Trim off any leading path - it'll be dumped in the local directory
-			let lv_new=fglc_basename(lv_new)
+			let lv_new=get_basename(lv_new)
 		END IF
 	else
 		LET lv_new=mv_output
@@ -1673,7 +1673,7 @@ else
 	LET lv_new=lv_base clipped,get_ext(lv_ext_type)
 	IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
 		# Trim off any leading path - it'll be dumped in the local directory
-		let lv_new=fglc_basename(lv_new)
+		let lv_new=get_basename(lv_new)
 	END IF
 end if 
 
@@ -1704,21 +1704,3 @@ END IF
 END FUNCTION
 
 
-FUNCTION fglc_basename(lv_new)
-define lv_new char(512)
-
-code
-{
-char *lv_ptr;
-char *buff;
-buff=strdup(lv_new);
-A4GL_trim(buff);
-lv_ptr=buff;
-a4gl_basename(lv_ptr);
-strcpy(lv_new,lv_ptr);
-free(buff);
-}
-endcode
-
-return lv_new
-end function
