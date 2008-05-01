@@ -1089,7 +1089,6 @@ end if
 # be - this gets around any issues with 'A4GL_LOCALOUTPUT' when
 # in a different directory
 #
-call aclfgl_setenv("OVERRIDE_OUTPUT",lv_base clipped)
 
 
 if mv_verbose>=2 then
@@ -1663,11 +1662,19 @@ if lv_ext_type=mv_output_type then
 
 	if mv_output="" or mv_output is null then
 		LET lv_new=lv_base clipped,get_ext(lv_ext_type)
+		IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
+			# Trim off any leading path - it'll be dumped in the local directory
+			let lv_new=fglc_basename(lv_new)
+		END IF
 	else
 		LET lv_new=mv_output
 	end if
 else
 	LET lv_new=lv_base clipped,get_ext(lv_ext_type)
+	IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
+		# Trim off any leading path - it'll be dumped in the local directory
+		let lv_new=fglc_basename(lv_new)
+	END IF
 end if 
 
 
@@ -1695,3 +1702,23 @@ IF lv_type="EC" THEN
 	CALL remove_file(get_fname(lv_fname clipped,"H"))
 END IF
 END FUNCTION
+
+
+FUNCTION fglc_basename(lv_new)
+define lv_new char(512)
+
+code
+{
+char *lv_ptr;
+char *buff;
+buff=strdup(lv_new);
+A4GL_trim(buff);
+lv_ptr=buff;
+a4gl_basename(lv_ptr);
+strcpy(lv_new,lv_ptr);
+free(buff);
+}
+endcode
+
+return lv_new
+end function
