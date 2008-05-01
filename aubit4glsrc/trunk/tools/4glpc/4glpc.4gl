@@ -115,7 +115,6 @@ define use_indicators integer
 	initialize 	mv_db, 
 			mv_stage,
 			mv_namespace,
-			mv_output,
 			mv_compile_4gl,
 			mv_compile_4gl_opts,
 			mv_compile_c,
@@ -293,7 +292,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   END IF
 
   LET mv_lexdialect=fgl_getenv("A4GL_LEXDIALECT")
-
+  initialize mv_output to null
 
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
@@ -334,6 +333,10 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	END CASE
   END FOR
 
+if mv_verbose>3 then
+	display "mv_output=", mv_output
+end if
+
 
   if mv_lextype="EC" and (mv_lexdialect is null  or mv_lexdialect matches " " ) THEN
 		CALL aclfgl_setenv("A4GL_LEXDIALECT","INFORMIX")
@@ -343,7 +346,6 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   if mv_verbose>=3 then
   		display "mv_lextype=",mv_lextype," dialect=",mv_lexdialect
   end if
-
   CALL init()
 
 code
@@ -494,6 +496,9 @@ endcode
 	end if
   END IF
 
+if mv_verbose>3 then
+	display "mv_output=", mv_output
+end if
 
 
   LET mv_stage=mv_output_type
@@ -801,8 +806,8 @@ endcode
 	
 			call run_link(mv_output)
 		else
-			let mv_output=get_fname(mv_output,"DLL")
-			call run_link(mv_output)
+			let lv_output=get_fname(mv_output,"DLL")
+			call run_link(lv_output)
 		end if
 	ELSE
 		call run_link(mv_output)
@@ -1662,7 +1667,9 @@ end if
 
 
 if lv_ext_type=mv_output_type then
-
+if mv_verbose>3 then
+	display "We're producing final output, mv_output=", mv_output
+end if
 	if mv_output="" or mv_output is null then
 		LET lv_new=lv_base clipped,get_ext(lv_ext_type)
 		IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
