@@ -111,16 +111,11 @@ select_statement_ss_str_converted:
 
 curs_forupdate : {strcpy($<str>$,"");}
                 | FOR_UPDATE {
-                        if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) { strcpy($<str>$,""); } else {
-			strcpy($<str>$," FOR UPDATE");
-			}
+			strcpy($<str>$,A4GLSQLCV_get_forupdate(NULL));
 		}
                 | FOR_UPDATE_OF cur_update_list {
-                        if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) { strcpy($<str>$,""); } else {
-
-			sprintf($<str>$," FOR UPDATE OF %s",$<str>2);
-}
-}
+			strcpy($<str>$,A4GLSQLCV_get_forupdate($<str>2));
+		}
 ;
 
 cur_update_list : colident { strcpy($<str>$,$<str>1); } 

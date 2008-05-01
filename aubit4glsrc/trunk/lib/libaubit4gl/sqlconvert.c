@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.150 2008-05-01 12:46:32 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.151 2008-05-01 19:46:23 mikeaubury Exp $
 #
 */
 
@@ -1279,6 +1279,9 @@ static int check_requirement_i (char *s)
   A4GL_debug ("A4GLSQLCV_check_requirement(%s) - no", s);
   return 0;
 }
+
+
+
 
 int A4GLSQLCV_check_requirement (char *s) {
 int n;
@@ -3846,4 +3849,29 @@ if (s->table_elements.tables.tables_len) {
 free(s->table_elements.tables.tables_val);
 s->table_elements.tables.tables_len=0;
 s->table_elements.tables.tables_val=0;
+}
+
+
+
+char *A4GLSQLCV_get_forupdate (char *collist) {
+static char buff[2000];
+            if ( A4GLSQLCV_check_requirement("FOR_UPDATE_DROP_COLLIST")) {
+			collist=NULL;
+		}
+            if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) {
+                               strcpy(buff,"");
+            } else {
+			if (collist) {
+			
+                                sprintf(buff," FOR UPDATE OF %s",collist);
+			} else {
+                                sprintf(buff," FOR UPDATE");
+			}
+            }
+
+	
+            if ( A4GLSQLCV_check_requirement("FOR_UPDATE_NOWAIT")) {
+			strcat(buff," NOWAIT");
+		}
+return buff;
 }

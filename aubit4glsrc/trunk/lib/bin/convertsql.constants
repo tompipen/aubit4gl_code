@@ -118,3 +118,5 @@ ALLOW_TIME_DATATYPE Allow the use of TIME as an SQL datatype (if not set it will
 UNLDATEASDBDATE Force unload for Postgresql in DBDATE format datestyle would normally use YYYY-MM-DD
 FORCE_DATE_CAST Forces the use of a date cast when binding a date datatype (seems to be required for recent versions of Postgres)
 NO_DECLARE_INTO Restrict compilation of DECLARE SELECT .. INTO because its not supported by the RDBMS
+FOR_UPDATE_DROP_COLLIST Drop the column list from a FOR UPDATE cursor
+FOR_UPDATE_NOWAIT Add NOWAIT to a FOR UPDATE 
