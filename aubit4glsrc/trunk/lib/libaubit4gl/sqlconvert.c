@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.149 2008-05-01 12:43:55 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.150 2008-05-01 12:46:32 mikeaubury Exp $
 #
 */
 
@@ -1252,7 +1252,7 @@ static int check_requirement_i (char *s)
   if (a == 0)
     {
 	FILE *f;
-	f=fopen("/tmp/Unknown.sqlconversion","w");
+	f=fopen("/tmp/Unknown.sqlconversion","a");
 	if (f) {
 		fprintf(f,"%s\n",s);
 		fclose(f);
