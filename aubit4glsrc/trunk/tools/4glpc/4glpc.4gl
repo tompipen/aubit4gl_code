@@ -328,6 +328,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "--neverconvert"	
 					CALL aclfgl_setenv("A4GL_NEVERCONVERT","Y")
 					continue for
+
+		WHEN "--output"		let a=a+1 let mv_output=arg_val(a) continue for
+		WHEN "-o"		let a=a+1 let mv_output=arg_val(a) continue for
 	END CASE
   END FOR
 
