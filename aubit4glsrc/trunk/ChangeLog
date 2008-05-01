@@ -1,4 +1,27 @@
 ---------------------------
+Thu May  1 13:50:20 BST 2008
+---------------------------
+1.10RC_20 Released
+---------------------------
+	
+	A4GL_LOCALOUTPUT fixup
+	
+	Snall postgresql fixups
+	
+	add explicit date casting for postgres when generating ESQL/C code
+	(Theres a bug in postgres 8.3 which results in problems when doing
+	date arithmetic)
+	
+	Postgresql unload fixup for dates (unload to DBDATE format rather
+	than yyyy-mm-dd)
+	
+	number of lines in trailer fixup
+	
+	Try to display date using 2 digits for year when 4 digits wont fit
+	
+	time(#) fixup
+	
+---------------------------
 Wed Apr 30 14:27:06 BST 2008
 ---------------------------
 1.10RC_19 Released
