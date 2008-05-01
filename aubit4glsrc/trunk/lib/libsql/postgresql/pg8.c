@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.38 2008-04-30 12:52:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.39 2008-05-01 15:47:32 mikeaubury Exp $
 #*/
 
 
@@ -2264,10 +2264,9 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
   if (scroll)
     {
-      if (upd_hold)
+      if (upd_hold &2 ) // Explicit WITH HOLD
 	{
-	  SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR WITH HOLD FOR %s",
-		    cursname, sid->select);
+	  SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR WITH HOLD FOR %s", cursname, sid->select);
 	}
       else
 	{
@@ -2275,29 +2274,38 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	  ttype = PQtransactionStatus (current_con);
 	  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
 	    {
-	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR FOR %s", cursname,
-			sid->select);
+	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR FOR %s", cursname, sid->select);
 	    }
 	  else
 	    {
-	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR WITH HOLD FOR %s",
-			cursname, sid->select);
+	      SPRINTF2 (buff, " DECLARE %s SCROLL CURSOR WITH HOLD FOR %s", cursname, sid->select);
 	    }
 	}
     }
   else
     {
-      if (upd_hold)
+      if (upd_hold & 2) // Explicit WITH HOLD
 	{
-	  SPRINTF2 (buff, " DECLARE %s CURSOR WITH HOLD FOR %s", cursname,
-		    sid->select);
+	  SPRINTF2 (buff, " DECLARE %s CURSOR WITH HOLD FOR %s", cursname, sid->select);
 	}
       else
 	{
 	  int ttype;
+	  int use_with_hold=1;
+
+	
 	  ttype = PQtransactionStatus (current_con);
+
 	  if (ttype == PQTRANS_ACTIVE || ttype == PQTRANS_INTRANS)
 	    {
+		use_with_hold=0;
+		}
+
+	if (strstr(sid->select," FOR UPDATE ")  ) {
+			use_with_hold=0;
+	}
+
+	if (!use_with_hold) {
 	      SPRINTF2 (buff, " DECLARE %s CURSOR FOR %s", cursname,
 			sid->select);
 	    }
