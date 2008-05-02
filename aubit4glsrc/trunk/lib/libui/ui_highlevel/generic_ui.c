@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.131 2008-04-14 09:26:37 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.132 2008-05-02 18:37:59 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2985,10 +2985,12 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
   int a;
   char *ptr;
   struct struct_scr_field *fprop;
-  void *mform;
+  void *mform=0;
 
 
   a = A4GL_find_field_no (f, sio);
+
+	  mform = sio->currform->form;
 
   if (a == -1)
     {
@@ -3018,7 +3020,6 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
       if (sio->currform->currentfield)
 	{
 	  A4GL_debug ("Got current field %p\n", sio->currform->currentfield);
-	  mform = sio->currform->form;
 	  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (f));
 
 	  A4GL_debug ("Got form %p", sio->currform->form);
@@ -3066,10 +3067,9 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 	      if (ptr == 0)
 		{
 		  A4GL_error_nobox (acl_getenv ("FIELD_CONSTR_EXPR"), 0);
-		A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
-
-		  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
-                  A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
+			A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+		  	A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+                  	A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);
 
 		  return 0;
 		}
