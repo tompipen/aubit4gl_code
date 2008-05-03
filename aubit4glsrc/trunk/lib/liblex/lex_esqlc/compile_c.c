@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.413 2008-04-30 18:25:04 mikeaubury Exp $
+# $Id: compile_c.c,v 1.414 2008-05-03 11:58:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.413 2008-04-30 18:25:04 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.414 2008-05-03 11:58:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6165,7 +6165,7 @@ print_ident (struct expr_str *ptr)
 
   if (ptr->expr_type == ET_EXPR_VARIABLE_IDENTIFIER) // a _VARIABLE
     {
-      printc("%s", local_expr_as_string (ptr->expr_str_u.expr_expr));
+      printc("aclfgli_str_to_id(%s)", local_expr_as_string (ptr->expr_str_u.expr_expr));
 
       return;
     }

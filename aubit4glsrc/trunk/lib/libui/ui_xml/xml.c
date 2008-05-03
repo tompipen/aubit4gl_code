@@ -7,7 +7,7 @@
 extern struct s_attr *last_attr;
 FILE *def_stderr=NULL;
 char stderr_fname[2000];
-
+char *set_current_display_delims=0;
 
 #include <stdarg.h>
 int mn_id = 0;
@@ -29,6 +29,13 @@ static int get_inc_quotes(int a) ;
 
 #define niy() A4GL_niy((char *)__PRETTY_FUNCTION__)
 char *generate_construct_result (struct s_screenio *s);
+
+
+static char *ignull(char *s) {
+if (s) return s;
+return "";
+
+}
 
 int
 A4GL_win_stack_cnt (void)
@@ -281,7 +288,7 @@ if (text==0) text="";
       // this will callback to our UILIB_A4GL_read_metrics function..
       send_to_ui
 	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" ", name, x, y, attrib);
-	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", text, style, error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
+	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", ignull(text), ignull(style), error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
 	send_to_ui(">");
       send_to_ui ("<FORM>");
       form = A4GL_read_form (fname, name);
@@ -293,7 +300,7 @@ if (text==0) text="";
       send_to_ui
 	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"",
 	 name, x, y, attrib, fname);
-	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", text, style, error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
+	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", ignull(text), ignull(style), error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
 
 
 	send_to_ui("/>");
@@ -1396,8 +1403,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1,
-		  p2);
+      send_to_ui ("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1, ignull(p2));
       free (p1);
       free (p2);
       return;
@@ -1412,7 +1418,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
       send_to_ui ("<SETKEYLABEL DIALOG=\"0\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1,
-		  p2);
+		  ignull(p2));
       free (p1);
       free (p2);
       return;
@@ -1586,7 +1592,7 @@ UILIB_aclfgl_set_window_title (int nargs)
 {
 char *s;
 s=A4GL_char_pop();
-send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (s));
+send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (ignull(s)));
 free(s);
 return 0;
 }
@@ -1942,7 +1948,7 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos,
   int a;
   send_to_ui
     ("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%s\" BUTTON=\"%s\" />",
-     title, uilib_xml_escape (text), def, pos, icon, danger, winbutton);
+     ignull(title), uilib_xml_escape (ignull(text)), def, pos, icon, danger, winbutton);
   send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
   a = get_event_from_ui ();
@@ -2001,7 +2007,8 @@ if (style==0) style="";
   send_to_ui
     ("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\" STYLE=\"%s\" TEXT=\"%s\" />",
      s, x, y, w, h, form_line, error_line, prompt_line, menu_line,
-     comment_line, message_line, border, attrib,style,text);
+     comment_line, message_line, border, attrib,ignull(style),ignull(text));
+
 
 
   return (void *) 1;
@@ -2649,3 +2656,10 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
   niy ();
 }
 
+
+
+int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
+        if (set_current_display_delims) free(set_current_display_delims);
+        set_current_display_delims=A4GL_char_pop();
+        return 0;
+}
