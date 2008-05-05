@@ -357,11 +357,16 @@ char * get_ibind_usage (int a, char *context,struct expr_str *var) {
 static char smbuff[300];
 char *ptr;
 int dtype;
+int ignore_cast=0;
 
 	ptr=get_ibind_usage_internal(a,context);
 	dtype=get_binding_dtype(var)  & DTYPE_MASK;
+	if (strcmp(context,"OPEN")!=0) { ignore_cast++; }
+	if (strcmp(context,"EXECUTE")!=0) { ignore_cast++; }
 
-	if (A4GLSQLCV_check_requirement ("FORCE_DATE_CAST") && (dtype==DTYPE_DATE)) {
+
+	//  We cant use OPEN with casts for some reason...
+	if (A4GLSQLCV_check_requirement ("FORCE_DATE_CAST") && (dtype==DTYPE_DATE) && !ignore_cast) { 
 		sprintf(smbuff,"((%s)::date)",ptr);
 		return smbuff;
 	} else {
