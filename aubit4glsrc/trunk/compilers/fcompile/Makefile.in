@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.68 2007-06-20 07:04:57 mikeaubury Exp $
+# $Id: Makefile.in,v 1.69 2008-05-06 20:06:15 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -179,6 +179,24 @@ where.o : 		form_x.h
 y.tab.o :       screen.yacc
 
 
+dump_form.o: dump_form.c common.h global.h
+	${CC} ${CFLAGS} -c dump_form.c
+	
+
+formgen_4gl : dump_form.o decompile_4gl.o 
+	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+
+make_binfiles: make_binfiles.c
+	gcc -o make_binfiles make_binfiles.c
+
+common.h: common.4gl make_binfiles
+	make_binfiles common.4gl file_common > common.h
+
+global.h: global.4gl make_binfiles
+	make_binfiles global.4gl file_global > global.h
+
+
+
 ## ==================================================================
 ##                          Clean Targets
 ## ==================================================================
@@ -203,5 +221,6 @@ lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
+
 
 #-----------------------------------------------------------------------

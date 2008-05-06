@@ -48,3 +48,6 @@ t_expression *add_list_expr (t_expression * ptr, t_expression * expr);
 
 int doing_4gl(void );
 void dump_form_desc (struct_form * f,char *fname);
+void dump_global_4gl(void);
+void dump_common_4gl(void);
+void set_single_file_mode(void);

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.13 2008-05-06 15:44:16 briantan Exp $
+# $Id: dump_form.c,v 1.14 2008-05-06 20:06:17 mikeaubury Exp $
 #*/
 
 /**
@@ -44,6 +44,10 @@
 */
 
 #include "a4gl_fcompile_int.h"
+
+int single_file_mode=0;
+#include "global.h"
+#include "common.h"
 
 /*
 =====================================================================
@@ -146,12 +150,29 @@ int split_table_field(char *fullname, char *tablename, char *fieldname);
 =====================================================================
 */
 
+static char *decode_colour(int n) {
+	switch (n) {
+
+        case 0: return "BLACK";
+       case 4: return "BLUE";
+       case 2: return "GREEN";
+       case 6: return "CYAN";
+       case 1: return "RED";
+       case 5: return "MAGENTA";
+       case 7: return "WHITE";
+       case 3: return "YELLOW";
+	}
+ return "Other";
+}
 
 static char *decode_comparitor(char *s) {
 	if (strcmp(s,"NOTIN")==0) return "NOT IN";
 	return s;
 }
 
+char *get_oidname(void) {
+	return A4GLSQLCV_get_sqlconst ("ROWID");
+}
 
 
 #define TRIM_MUNG
@@ -690,7 +711,12 @@ printf("now in get_join_tables\n");
 
 //    print_control_block(f, fout);
 
-    fprintf(fout,"GLOBALS \"global.4gl\"\n");
+    fprintf(fout,"DATABASE %s\n", f->dbname);
+    if (single_file_mode) {
+	fprintf(fout,"%s",file_global);
+    } else {
+    	fprintf(fout,"GLOBALS \"global.4gl\"\n");
+    }
     fprintf(fout,"\n");
     for (t = 0; t < f->tables.tables_len; t++) {
 	fprintf (fout,"    DEFINE gr_%-20s RECORD LIKE %20s.*\n",
@@ -832,7 +858,6 @@ printf("now in table_screen\n");
     }
     fprintf(fout,"\n");
 	
-printf("now in main program\n");
     fprintf(fout,"    CALL prog_init()\n");
     fprintf(fout,"    DEFER INTERRUPT\n");
     fprintf(fout,"\n");
@@ -1168,7 +1193,7 @@ printf("now in query_by_example\n");
 	if (mt) {
           fprintf(fout,"      END IF\n");
 	}
-        fprintf(fout,"      LET query_text = \"SELECT oid,* from %s\",\n",
+        fprintf(fout,"      LET query_text = \"SELECT %s,* from %s\",\n", get_oidname(),
 			       f->tables.tables_val[t].tabname);
         fprintf(fout,"          \" WHERE \", where_part CLIPPED\n");
         fprintf(fout,"         #\" ORDER BY aaa, bbb\"\n");
@@ -1548,6 +1573,11 @@ printf("now in input_record\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
+
+    if (single_file_mode) {
+	fprintf(fout,"%s",file_common);
+    }
+
 //    dump_attr_lookup(f, fout);
 
     fclose(fout);
@@ -1699,12 +1729,19 @@ int b;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_RIGHT) continue;
 			fprintf (fout,", %s",desc_bool[a->bool_attribs.bool_attribs_val[b]]);
 		}
+
 		if (a->colours.colours_len) {
 			int b;
 			for (b = 0; b < a->colours.colours_len;b++){
-				fprintf (fout,"        colour=%d WHERE ",
-					(int)a->colours.colours_val[b].colour);
+			t_expression *expr;
+			expr=a->colours.colours_val[b].whereexpr;
+			  if (expr->itemtype == ITEMTYPE_INT && expr->u_expression_u.intval==1) {
+				fprintf (fout,",   color=%s", decode_colour((int)a->colours.colours_val[b].colour));
+			}  else {
+
+				fprintf (fout,",   color=%s WHERE ", decode_colour((int)a->colours.colours_val[b].colour)); 
 				dump_expr (fout,a->colours.colours_val[b].whereexpr, 0);
+			}
 			}
 		}
 }
@@ -1810,7 +1847,7 @@ dump_expr (FILE *fout, t_expression * expr, int lvl)
 
   if (expr->itemtype == ITEMTYPE_INT)
     {
-      fprintf (fout, "%%%d", expr->u_expression_u.intval);
+      fprintf (fout, "%d", expr->u_expression_u.intval);
     }
 
   if (expr->itemtype == ITEMTYPE_SPECIAL)
@@ -2189,6 +2226,7 @@ if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,be
 			a= get_attr_from_field(f, act->u_action_u.cmd_let->field_tag);
 			if (!a) continue;
 			break;
+		default: break;
 		  }
 		  if (!a) continue;
 		  if (strcmp(f->attributes.attributes_val[a].tabname,
@@ -2199,6 +2237,7 @@ if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,be
 		    switch (f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]) {
 //		      case FA_B_NOENTRY: reject_field++; break;
 		      case FA_B_NOUPDATE: reject_field++; break;
+			default: break;
 		    }
 		  }
 		  if (reject_field) continue;
@@ -2328,5 +2367,20 @@ int split_table_field(char *fullname, char *tablename, char *fieldname) {
     fieldname[idx] = 0;
     return star;
 }
+
+
+void dump_global_4gl(void) {
+	printf("%s", file_global);
+}
+
+void dump_common_4gl(void) {
+    	printf("GLOBALS \"global.4gl\"\n");
+	printf("%s", file_common);
+}
+
+void set_single_file_mode(void) {
+	single_file_mode=1;
+}
+
 
 /* ================================ EOF ============================= */
