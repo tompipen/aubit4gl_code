@@ -233,7 +233,7 @@ void
 dump_report ()
 {
 
-  fprintf (fout, "#GLOBALS \"global.4gl\"\n");
+  fprintf (fout, "DATABASE %s\n", this_report.dbname);
   fprintf (fout, "# PARAM\n");
   print_variables (CAT_PARAM, 0);
   fprintf (fout, "# VARIABLE\n");
@@ -245,13 +245,11 @@ dump_report ()
   fprintf (fout, "END RECORD\n");
   fprintf (fout, "DEFINE lv_rid INTEGER\n");
   fprintf (fout, "DEFINE lv_cnt INTEGER\n");
-//  print_variables (CAT_PARAM, 0);
-//  print_variables (CAT_VARIABLE, 0);
   fprintf (fout, "\n");
-  fprintf (fout, "#  IF NOT job_init() THEN\n");
-  fprintf (fout, "#    EXIT PROGRAM\n");
-  fprintf (fout, "#  END IF\n");
-  fprintf (fout, "\n");
+//  fprintf (fout, "#  IF NOT job_init() THEN\n");
+//  fprintf (fout, "#    EXIT PROGRAM\n");
+//  fprintf (fout, "#  END IF\n");
+//  fprintf (fout, "\n");
   fprintf (fout, "# start of initialisation\n");
   fprintf (fout,"  LET lv_cnt=0\n");
 
@@ -277,7 +275,7 @@ dump_report ()
   fprintf (fout, "\n");
   dump_getdata ();
   fprintf (fout, "\n");
-  fprintf (fout, "#  CALL job_prnt()\n");
+//  fprintf (fout, "#  CALL job_prnt()\n");
   fprintf (fout, "END MAIN\n");
   fprintf (fout, "\n");
 

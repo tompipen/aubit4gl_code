@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.11 2008-01-31 17:12:06 briantan Exp $
+# $Id: dump_form.c,v 1.12 2008-05-06 04:48:29 briantan Exp $
 #*/
 
 /**
@@ -96,8 +96,10 @@ struct struct_join_tables {
 	        struct s_join_fields {
 		    int master_colno;
 		    char *master_colname;
+		    int master_datatype;
 		    int detail_colno;
 		    char *detail_colname;
+		    int detail_datatype;
 	        } *join_fields_val;
 	} join_fields;
     } *join_tables_val;
@@ -664,14 +666,21 @@ printf("now in get_join_tables\n");
 		    jf->join_fields_val[i].master_colno = a;
 		    jf->join_fields_val[i].master_colname =
 			f->attributes.attributes_val[a].colname;
+		    jf->join_fields_val[i].master_datatype =
+			f->attributes.attributes_val[a].datatype;
 		    jf->join_fields_val[i].detail_colno = b;
 		    jf->join_fields_val[i].detail_colname =
 			f->attributes.attributes_val[b].colname;
-//	printf ("   get i=%d master=%d %s detail=%d %s\n", i+1,
+		    jf->join_fields_val[i].detail_datatype =
+			f->attributes.attributes_val[b].datatype;
+// datatype: 0-char 1-num 7-date
+//	printf ("   get i=%d master=%d %s %d detail=%d %s %d\n", i+1,
 //		jf->join_fields_val[i].master_colno,
 //		jf->join_fields_val[i].master_colname,
+//		jf->join_fields_val[i].master_datatype,
 //		jf->join_fields_val[i].detail_colno,
-//		jf->join_fields_val[i].detail_colname);
+//		jf->join_fields_val[i].detail_colname,
+//		jf->join_fields_val[i].detail_datatype);
 		    i++;
 		    break;
 		}
@@ -729,10 +738,10 @@ printf("now in get_join_tables\n");
 
     fprintf (fout,"   # n,1 tablename n,2 tabledesc\n");
     for (t=0; t<f->tables.tables_len; t++) {
-      	    fprintf (fout,"    LET ga_table_name[%d,1] = \"%s\"\n",
+      	    fprintf (fout,"    LET ga_table_name[%d] = \"%s\"\n",
 		t+1, f->tables.tables_val[t].tabname);
-      	    fprintf (fout,"    LET ga_table_name[%d,2] =   \"%s\"\n",
-		t+1, f->tables.tables_val[t].tabname);
+//      	    fprintf (fout,"    LET ga_table_name[%d,2] =   \"%s\"\n",
+//		t+1, f->tables.tables_val[t].tabname);
     }
     fprintf(fout,"\n");
 
@@ -1043,19 +1052,57 @@ printf("now in query_by_example\n");
 		jf = &(j.join_tables_val[m].join_fields);
 		if (j.join_tables_val[m].master_tabno != t-1) continue;
 		if (j.join_tables_val[m].detail_tabno != t) continue;
+/*
+                for (a=0; a<jf->join_fields_len;a++) {
+                    if (!printed) {
+                        fprintf(fout,"        LET where_part =\n");
+                        printed++;
+                    } else {
+                        fprintf(fout,",\n");
+                        fprintf(fout,"            \"AND \",\n");
+                    }
+                    fprintf (fout,"            \"%s.%s = '\", gr_%s.%s CLIPPED, \"'\"",
+                        j.join_tables_val[m].detail_tabname,
+                        jf->join_fields_val[a].detail_colname,
+                        j.join_tables_val[m].master_tabname,
+                        jf->join_fields_val[a].master_colname);
+                }
+*/
+
 		for (a=0; a<jf->join_fields_len;a++) {
+		    fprintf(fout,"        LET where_part =");
 		    if (!printed) {
-			fprintf(fout,"        LET where_part =\n");
 			printed++;
 		    } else {
-			fprintf(fout,",\n");
-			fprintf(fout,"            \"AND \",\n");
+			fprintf(fout," where_part CLIPPED, \" AND \",");
 		    }
-		    fprintf (fout,"            \"%s.%s = '\", gr_%s.%s CLIPPED, \"'\"",
+		    fprintf(fout," \" %s.%s \"\n",
 			j.join_tables_val[m].detail_tabname,
-			jf->join_fields_val[a].detail_colname,
+			jf->join_fields_val[a].detail_colname);
+		    fprintf(fout,"        IF gr_%s.%s IS NOT NULL THEN\n",
 			j.join_tables_val[m].master_tabname,
 			jf->join_fields_val[a].master_colname);
+			
+		    fprintf(fout,"          LET where_part = where_part CLIPPED,  ");
+		    if (jf->join_fields_val[a].master_datatype == 0 ||
+		        jf->join_fields_val[a].master_datatype == 7) {
+			fprintf(fout,"\" = '\", ");
+		    } else {
+			fprintf(fout,"\" = \", ");
+		    }
+		    fprintf(fout,"gr_%s.%s CLIPPED",
+			j.join_tables_val[m].master_tabname,
+			jf->join_fields_val[a].master_colname);
+		    if (jf->join_fields_val[a].master_datatype == 0 ||
+		        jf->join_fields_val[a].master_datatype == 7) {
+			fprintf(fout,", \"'\"\n");
+		    } else {
+			fprintf(fout,"\n");
+		    }
+		    fprintf(fout,"        ELSE\n");
+		    fprintf(fout,"          LET where_part = where_part CLIPPED,  ");
+		    fprintf(fout,"\" IS NULL\"\n");
+		    fprintf(fout,"        END IF\n");
 		}
 		if (printed) {
 		    fprintf(fout,"\n");
@@ -1086,6 +1133,26 @@ printf("now in query_by_example\n");
 	    }
 	    if (attr_found) {
 	      fprintf(fout,"\n");
+	    }
+	    attr_found = 0; printed = 0;
+	    for (a=0;a<f->attributes.attributes_len;a++) {
+		if (strcmp(f->attributes.attributes_val[a].tabname,
+			       f->tables.tables_val[t].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,s, a);
+		if (!ptr) continue;
+		if (!attr_found) {
+		    fprintf(fout,"            ON KEY CONTROL-C\n");
+		    fprintf(fout,"              CLEAR\n");
+		    attr_found++;
+		}
+		if (printed) fprintf(fout, ",\n");
+		fprintf(fout,"                    %s",
+			f->attributes.attributes_val[a].colname);
+		printed++;
+	    }
+	    if (attr_found) {
+	      fprintf(fout,"\n");
+	      fprintf(fout,"          END CONSTRUCT\n");
 	    }
         }
         fprintf(fout,"        END CASE # gv_screen_no\n");
