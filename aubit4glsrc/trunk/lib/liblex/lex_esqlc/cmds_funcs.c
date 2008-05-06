@@ -1514,6 +1514,7 @@ int
 print_whenever_cmd (struct_whenever_cmd * cmd_data)
 {
   //set_whento (cmd_data->whencode);
+  printc("/* WHENEVER..*/ ");
   set_whenever (cmd_data->whencode, cmd_data->whento);
   return 1;
 }
@@ -3002,7 +3003,11 @@ int n;
   }
   add_function_to_header (cmd_data->repname,cmd_data->namespace, 2,0);
   printc ("%s%s(%d,REPORT_SENDDATA);\n", cmd_data->namespace, cmd_data->repname, n);
+  printc("if (aclfgli_get_err_flg()) {");
   print_copy_status_with_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
+  printc("} else {");
+  print_copy_status_not_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
+  printc("}");
   return 1;
 }
 
@@ -3010,8 +3015,12 @@ int n;
 int print_finish_cmd(struct_finish_cmd *cmd_data) {
   print_cmd_start ();
   add_function_to_header (cmd_data->repname,cmd_data->namespace, 2,0);
-  printc ("%s%s(0,REPORT_FINISH);\n", cmd_data->namespace, cmd_data->repname);
+  printc("%s%s(0,REPORT_FINISH);\n", cmd_data->namespace, cmd_data->repname);
+  printc("if (aclfgli_get_err_flg()) {");
   print_copy_status_with_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
+  printc("} else {");
+  print_copy_status_not_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
+  printc("}");
   return 1;
 }
 

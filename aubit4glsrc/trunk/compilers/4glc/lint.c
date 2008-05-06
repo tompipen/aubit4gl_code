@@ -781,8 +781,13 @@ currfunc=f->funcname;
 	if (r->cmd_data.type==E_CMD_LET_CMD) {
 		expr_str_list * expr_list=0;
                 expr_str_list * varlist;
-		  int from_exprs;
+		int from_exprs;
+
 		expr_list=r->cmd_data.command_data_u.let_cmd.vals;
+		if (expr_list==0) {
+			// LET ? = NULL
+			continue;
+		}
 		expr_list = A4GL_rationalize_list (expr_list);
   		from_exprs = A4GL_new_list_get_count (expr_list);
 
