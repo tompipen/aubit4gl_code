@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.12 2008-05-06 04:48:29 briantan Exp $
+# $Id: dump_form.c,v 1.13 2008-05-06 15:44:16 briantan Exp $
 #*/
 
 /**
@@ -738,10 +738,10 @@ printf("now in get_join_tables\n");
 
     fprintf (fout,"   # n,1 tablename n,2 tabledesc\n");
     for (t=0; t<f->tables.tables_len; t++) {
-      	    fprintf (fout,"    LET ga_table_name[%d] = \"%s\"\n",
+      	    fprintf (fout,"    LET ga_table_name[%d,1] = \"%s\"\n",
 		t+1, f->tables.tables_val[t].tabname);
-//      	    fprintf (fout,"    LET ga_table_name[%d,2] =   \"%s\"\n",
-//		t+1, f->tables.tables_val[t].tabname);
+      	    fprintf (fout,"    LET ga_table_name[%d,2] =   \"%s\"\n",
+		t+1, f->tables.tables_val[t].tabname);
     }
     fprintf(fout,"\n");
 
