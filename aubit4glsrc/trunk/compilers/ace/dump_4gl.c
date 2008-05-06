@@ -9,6 +9,7 @@ int compat=0; 			// Create a temp table so we can do report aggregates during th
 int use_insert_cursor=0;  	// Use an insert cursor to insert into that temp table we're using for ACE compatibility
 int format_section_is_last=0;
 int batch_size=100;
+char function_name[2000]="MAIN";
 /*
 # 4GL code generator
 #
@@ -118,6 +119,15 @@ main (int argc, char *argv[])
 			a++;
 			continue;
 		}
+
+		if (strcmp(argv[a],"-F")==0) {
+			used[a]=1;
+			used[a+1]=1;
+			strcpy(function_name, argv[a+1]);
+			a++;
+			continue;
+		}
+
 		if (strcmp(argv[a],"-B")==0) {
 			used[a]=1;
 			used[a+1]=1;
@@ -164,6 +174,7 @@ main (int argc, char *argv[])
 	fprintf(stderr,"               -C -I  Use INSERT cursor for compatibilty mode\n");
 	fprintf(stderr,"                         (required Transaction logging\n");
 	fprintf(stderr,"               -C -I -B n  Batch into 'n' inserts per transaction\n");
+	fprintf(stderr,"               -F function name [defaults to MAIN]\n");
 
       exit (0);
     }
@@ -207,7 +218,7 @@ generate_order_by (struct select_stmts *ptr)
       strcpy (buff, "");
       return buff;
     }
-  strcpy (buff, "ORDER EXTERNAL BY ");
+  strcpy (buff, "ORDER EXTERNAL BY\n");
   
   for (a = 0; a < ptr->orderby_list.orderby_list_len; a++)
     {
@@ -220,8 +231,8 @@ generate_order_by (struct select_stmts *ptr)
 		exit(30);
 	}
       if (a)
-	strcat (buff, ",");
-      strcat (buff, "lr_data.");
+	strcat (buff, ",\n");
+      strcat (buff, "  lr_data.");
       strcat (buff, this_report.variables.variables_val[b].name);
     }
   reporderby = buff;
@@ -234,39 +245,43 @@ dump_report ()
 {
 
   fprintf (fout, "DATABASE %s\n", this_report.dbname);
+  fprintf (fout, "# PARAM\n");
   print_variables (CAT_PARAM, 0);
+  fprintf (fout, "# VARIABLE\n");
   print_variables (CAT_VARIABLE, 0);
-  fprintf (fout, "\n\n");
-  fprintf (fout, "MAIN\n");
-  fprintf (fout, "   CALL run_report_%s()\n", this_report.report_name);
-  fprintf (fout, "END MAIN\n");
   fprintf (fout, "\n");
-
-
-  fprintf (fout, "FUNCTION run_report_%s()\n", this_report.report_name);
-  fprintf (fout, "# Variables\n");
+  if (strcmp(function_name,"MAIN")==0) {
+  	fprintf (fout, "MAIN\n");
+  } else {
+  	fprintf (fout, "FUNCTION %s()\n",function_name);
+	}
   fprintf (fout, "DEFINE lr_data RECORD\n");
   print_variables (CAT_SQL, 1);
   fprintf (fout, "END RECORD\n");
   fprintf (fout, "DEFINE lv_rid INTEGER\n");
-  fprintf(fout,"DEFINE lv_cnt INTEGER\n");
-
-  fprintf(fout,"LET lv_cnt=0\n");
+  fprintf (fout, "DEFINE lv_cnt INTEGER\n");
+  fprintf (fout, "\n");
+//  fprintf (fout, "#  IF NOT job_init() THEN\n");
+//  fprintf (fout, "#    EXIT PROGRAM\n");
+//  fprintf (fout, "#  END IF\n");
+//  fprintf (fout, "\n");
+  fprintf (fout, "# start of initialisation\n");
+  fprintf (fout,"  LET lv_cnt=0\n");
 
   if (compat) {
-  	fprintf(fout,"WHENEVER ERROR CONTINUE\n");
-  	fprintf(fout,"DROP TABLE tmp_data\n");
-  	fprintf(fout,"CREATE TEMP TABLE tmp_data (\n");
- 	fprintf(fout,"   a4gl_rid INTEGER,\n");
-  	print_variables (CAT_SQL, 1);
-  	fprintf(fout,") WITH NO LOG\n");
+        fprintf(fout,"  WHENEVER ERROR CONTINUE\n");
+        fprintf(fout,"  DROP TABLE tmp_data\n");
+        fprintf(fout,"  CREATE TEMP TABLE tmp_data (\n");
+        fprintf(fout,"   a4gl_rid INTEGER,\n");
+        print_variables (CAT_SQL, 1);
+        fprintf(fout,") WITH NO LOG\n");
 
-	if (use_insert_cursor) {
-  		fprintf(fout,"DECLARE c_i_%s CURSOR WITH HOLD FOR INSERT INTO tmp_data VALUES(lv_rid, lr_data.*)\n", this_report.report_name);
-	}
-	
-  	fprintf(fout,"DECLARE c_t_%s CURSOR FOR SELECT * FROM tmp_data ORDER BY a4gl_rid\n", this_report.report_name);
-  	fprintf(fout,"WHENEVER ERROR STOP\n");
+        if (use_insert_cursor) {
+                fprintf(fout,"  DECLARE c_i_%s CURSOR WITH HOLD FOR INSERT INTO tmp_data VALUES(lv_rid, lr_data.*)\n", this_report.report_name);
+        }
+
+        fprintf(fout,"  DECLARE c_t_%s CURSOR FOR SELECT * FROM tmp_data ORDER BY a4gl_rid\n", this_report.report_name);
+        fprintf(fout,"  WHENEVER ERROR STOP\n");
   }
 
   print_set_params ();
@@ -274,11 +289,20 @@ dump_report ()
   fprintf (fout, "# end of initialisation\n");
   fprintf (fout, "\n");
   dump_getdata ();
+  fprintf (fout, "\n");
+//  fprintf (fout, "#  CALL job_prnt()\n");
+  if (strcmp(function_name,"MAIN")==0) {
+  fprintf (fout, "END MAIN\n");
+  } else {
+  fprintf (fout, "END FUNCTION\n");
+  }
+  fprintf (fout, "\n");
 
   fprintf (fout, "REPORT rep_%s(lr_data)\n", this_report.report_name);
   fprintf (fout, "DEFINE lr_data RECORD\n");
   print_variables (CAT_SQL, 1);
   fprintf (fout, "END RECORD\n");
+  fprintf (fout, "\n");
   dump_output ();
   fprintf (fout, "\n");
   fprintf (fout, "\n");
@@ -431,7 +455,7 @@ dump_getdata ()
 
 	  if (a == this_report.getdata.get_data_u.selects.selects_len - 1)
 	    {
-	      fprintf (fout, "DECLARE c_r_%s CURSOR ",this_report.report_name);
+	      fprintf (fout, "  DECLARE c_%s CURSOR ",this_report.report_name);
 		if (use_insert_cursor) {
 			fprintf(fout," WITH HOLD ");
 		} 
@@ -451,11 +475,12 @@ dump_getdata ()
 
 
 	}
-      fprintf (fout, "START REPORT rep_%s\n\n", this_report.report_name);
+      fprintf (fout, "  START REPORT rep_%s # TO spool_file\n\n",
+		this_report.report_name);
       if (!compat) {
-      		fprintf (fout, "FOREACH c_r_%s INTO lr_data.*\n", this_report.report_name);
-      		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lr_data.*)\n", this_report.report_name);
-      		fprintf (fout, "END FOREACH\n\n");
+      		fprintf (fout, "  FOREACH c_%s INTO lr_data.*\n", this_report.report_name);
+      		fprintf (fout, "    OUTPUT TO REPORT rep_%s (lr_data.*)\n", this_report.report_name);
+      		fprintf (fout, "  END FOREACH\n\n");
       } else {
       		fprintf (fout, "# For compatibility mode - we need to create a full copy of our data...\n\n");
 		if (use_insert_cursor) {
@@ -483,10 +508,10 @@ dump_getdata ()
       		fprintf (fout, "# we can now read our data (again) to generate the report\n\n");
       		fprintf (fout, "FOREACH c_t_%s INTO lv_rid, lr_data.*\n", this_report.report_name);
       		fprintf (fout, "  OUTPUT TO REPORT rep_%s (lr_data.*)\n", this_report.report_name);
-      		fprintf (fout, "END FOREACH\n\n");
+      		fprintf (fout, "END FOREACH\n");
       }
-      fprintf (fout, "FINISH REPORT rep_%s\n\n", this_report.report_name);
-      fprintf (fout, "END FUNCTION\n\n");
+      fprintf (fout, "  FINISH REPORT rep_%s\n", this_report.report_name);
+//      fprintf (fout, "END FUNCTION\n\n");
     }
   else
     {
