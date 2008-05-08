@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.312 2008-05-01 19:46:23 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.313 2008-05-08 14:22:23 mikeaubury Exp $
 #
 */
 
@@ -513,8 +513,8 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) ;
 #define DTYPE_INT8         17
 #define DTYPE_SERIAL8      18
 
-
 #define DTYPE_OBJECT    99
+#define DTYPE_DYNAMIC_ARRAY      98
 
 #define DTYPE_MASK 		255	/* bit pattern for data type */
 #define DTYPE_MALLOCED 	256

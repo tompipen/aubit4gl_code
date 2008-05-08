@@ -124,7 +124,19 @@ for (a=0;a<parameters->list.list_len;a++) {
 		for (b=0;b<var_list->variables.variables_len;b++) {
 		A4GL_assertion(var_list->variables.variables_val[b]->names.names.names_len>1,"Unexpected number of names");
 		if (strcmp(var_list->variables.variables_val[b]->names.names.names_val[0].name, parameters->list.list_val[a]->expr_str_u.expr_string)==0) { // Found it
+
+
+			if (var_list->variables.variables_val[b]->arr_subscripts.arr_subscripts_len && var_list->variables.variables_val[b]->arr_subscripts.arr_subscripts_val[0]==-1) {
+				// Dynamic array..
+					u=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
+					u->datatype=DTYPE_DYNAMIC_ARRAY;
+					u->scope='L';
+					A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(u));
+				continue;
+			}
+
 			switch (var_list->variables.variables_val[b]->var_data.variable_type) {
+			
 				case VARIABLE_TYPE_SIMPLE:
 					u=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
 					A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(u));
@@ -359,11 +371,22 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 
 	      if (v->arr_subscripts.arr_subscripts_len)
 		{
+	  		if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len) {
+				if (vu->subscripts.subscripts_len==0 && v->arr_subscripts.arr_subscripts_len) {
+					if (v->arr_subscripts.arr_subscripts_val[0]==-1) {
+						// Its a dynamic array..
+						//
+	  				vu->datatype = DTYPE_DYNAMIC_ARRAY;
+		
+					return v;
+					}
+				}
+	  		}
 		  // We have an array variable...
 		  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array)
 		    {
 		      set_yytext(var_section);
-		      sprintf (errbuff, "'%s' subscript count mismatch (1) %d != %d", var_section, v->arr_subscripts.arr_subscripts_len, vu->subscripts.subscripts_len);
+		      sprintf (errbuff, "'%s' subscript count mismatch (1.1) %d != %d", var_section, v->arr_subscripts.arr_subscripts_len, vu->subscripts.subscripts_len);
 		      return 0;
 		    }
 		}
@@ -432,11 +455,22 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 
 	  vu->variable_id = a;
 	  vu->datatype = -2;	// RECORD...
+	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len) {
+		if (vu->subscripts.subscripts_len==0 && v->arr_subscripts.arr_subscripts_len) {
+			if (v->arr_subscripts.arr_subscripts_val[0]==-1) {
+				// Its a dynamic array..
+				//
+	  		vu->datatype = DTYPE_DYNAMIC_ARRAY;
+
+			return v;
+			}
+		}
+	  }
 
 	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array ) 
 		{
-			set_yytext(var_section);
-		      sprintf (errbuff, "'%s' subscript count mismatch (2)", var_section);
+		      set_yytext(var_section);
+		      sprintf (errbuff, "'%s' subscript count mismatch (2.1)", var_section);
 		      return 0;
 		}
 			

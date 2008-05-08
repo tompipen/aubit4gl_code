@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.116 2007-12-17 18:10:37 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.117 2008-05-08 14:22:23 mikeaubury Exp $
 */
 
 /**
@@ -513,6 +513,12 @@ int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repnam
 void A4GL_pop_report_section (struct rep_structure *rep, int rb);
 void A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb) ;
 int A4GL_always_output_report(struct rep_structure *rep) ;
+
+void *A4GL_alloc_dynarr(void *var_ptr, void *old_ptr,int dim1,int dim2,int dim3,int dim4,int dim5,int total_bytes,int isRealloc)  ;
+void A4GL_dynarr_free(void *var_ptr,void *old_ptr);
+void A4GL_isdynarr_allocated(void *var_ptr);
+void A4GL_dynarr_extent(void *var_ptr,int dim) ;
+void A4GL_push_dynamic_array(void *p, int sz);
 
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
 #  if __WORDSIZE == 64

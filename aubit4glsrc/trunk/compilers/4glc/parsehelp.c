@@ -2549,6 +2549,15 @@ char scope;
 		a4gl_yyerror("Subscripting error");
 	}
 
+
+	if (nsubscripts_got==0 && nsubscripts_expected>0) {
+		if (v_top->arr_subscripts.arr_subscripts_val[0]==-1) { 	// Its a dynamic array..
+
+			A4GL_new_append_ptr_list(l,e);
+			return ;
+		}
+	}
+
 	if (nsubscripts_got==0 && nsubscripts_expected>0) {
 		struct variable_usage *vu_new;
 		struct variable_usage *vu_next;
@@ -2725,10 +2734,17 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 						last_vu->next=0;
 
 						A4GL_debug("Got to here.. %d %d\n", v1->arr_subscripts.arr_subscripts_len, last_vu->subscripts.subscripts_len);
-
+				
 						if (v1->arr_subscripts.arr_subscripts_len && last_vu->subscripts.subscripts_len!=v1->arr_subscripts.arr_subscripts_len) {
+							int is_dynamic_array=0;
 							// Its also an array..
-							if (err_if_whole_array) {
+							if ( v1->arr_subscripts.arr_subscripts_len==1 &&  last_vu->subscripts.subscripts_len==0) {
+									if ( v1->arr_subscripts.arr_subscripts_val[0]==-1) {
+										is_dynamic_array=1;
+									}
+							}
+
+							if (err_if_whole_array && ! is_dynamic_array) {
 								a4gl_yyerror("You cant use this variable here because its an array");
 								return 0;
 							} else {

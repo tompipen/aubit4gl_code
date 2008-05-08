@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.34 2008-02-12 12:46:58 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.35 2008-05-08 14:22:23 mikeaubury Exp $
 */
 
 /**
@@ -172,6 +172,8 @@ char *A4GL_get_esql_connection(void);
 void *A4GL_get_curr_report(void);
 void A4GL_set_curr_report(void *);
 void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
+
+
 //void A4GLSQL_map_tname(char *db, char *code);
 //void A4GLSQL_unmap_tname(char *db);
 //int A4GLSQL_is_tname_mapped(char *code);

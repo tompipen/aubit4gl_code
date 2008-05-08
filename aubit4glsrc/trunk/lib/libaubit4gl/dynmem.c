@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.5 2005-07-15 18:28:08 mikeaubury Exp $
+# $Id: dynmem.c,v 1.6 2008-05-08 14:22:23 mikeaubury Exp $
 #
 */
 
@@ -38,12 +38,13 @@ struct s_dyn_allocation {
 	void *mem_ptr;
 };
 
+/*
 
 void *A4GL_alloc_dynarr(void *var_ptr, void *old_ptr,int dim1,int dim2,int dim3,int dim4,int dim5,int total_bytes,int isRealloc)  ;
 void A4GL_dynarr_free(void *var_ptr,void *old_ptr);
 void A4GL_isdynarr_allocated(void *var_ptr);
 void A4GL_dynarr_extent(void *var_ptr,int dim) ;
-
+*/
 
 
 static char *dyn_ptr_name(void *var_ptr)  {
@@ -134,4 +135,8 @@ struct s_dyn_allocation *a;
 		return;
 	}
 	A4GL_push_int(0);
+}
+
+void A4GL_push_dynamic_array(void *p, int sz) {
+	A4GL_assertion(1,"passing dynamic arrays is not implemented yet");
 }

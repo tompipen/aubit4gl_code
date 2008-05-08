@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.415 2008-05-06 20:00:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.416 2008-05-08 14:22:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.415 2008-05-06 20:00:35 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.416 2008-05-08 14:22:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -214,6 +214,7 @@ extern int get_rep_no_orderby (void);
 //int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) ;
 void print_variable_usage_for_bind(expr_str *v) ;
 static void print_function_variable_init (variable_list * fvars);
+int chk_ibind_select_internal(struct s_select *s);
 //char *get_variable_usage_as_string(struct variable_usage *u ) ;
 /*
 =====================================================================
@@ -2067,7 +2068,7 @@ int attr;
 void
 print_form_attrib_v2 (int iswindow, struct attrib *form_attrib)
 {
-int frm_attr;
+//int frm_attr;
 char *buffer[20];
 if (form_attrib==0) {
 	printc("%d,255,255,255,255,0,255,255,(0xffff)", iswindow);
@@ -2472,18 +2473,30 @@ if (!A4GL_doing_pcode()) {
 }
 
   for (a=0;a<bind->list.list_len;a++) {
+        int dtype;
+        dtype=get_binding_dtype(bind->list.list_val[a]);
 	if (i=='r') {
 		set_nonewlines();
     		printc ("_rbind[%d].ptr= (&", a);
 		print_variable_usage(bind->list.list_val[a]);
     		printc (");\n");
 		clr_nonewlines();
+		if ((dtype & DTYPE_MASK)==DTYPE_DYNAMIC_ARRAY) {
+			set_nonewlines();
+    			printc ("_rbind[%d].size= sizeof(struct _dynelem_%s);",  a,get_bottom_level_variable_name( bind->list.list_val[a])); 
+			clr_nonewlines();
+		}
 	} else {
 		set_nonewlines();
     		printc ("_fbind[%d].ptr= &", a);
 		print_variable_usage(bind->list.list_val[a]);
     		printc (";");
 		clr_nonewlines();
+		if ((dtype & DTYPE_MASK)==DTYPE_DYNAMIC_ARRAY) {
+			set_nonewlines();
+    			printc ("_fbind[%d].size= sizeof(struct _dynelem_%s);",  a,get_bottom_level_variable_name( bind->list.list_val[a])); 
+			clr_nonewlines();
+		}
 
 	}
   }
@@ -3359,9 +3372,9 @@ void print_end_record (char *vname, struct variable *v, int level)
 			sprintf(smbuff,"%d",v->arr_subscripts.arr_subscripts_val[a]);
 			strcat(buff,smbuff);
 		}
-	  if (v->arr_subscripts.arr_subscripts_len >= 0)
+	  if (v->arr_subscripts.arr_subscripts_len >= 0 && strcmp(buff,"-1")!=0)
 	    {
-	      printc ("} %s[%s]; /*1 */\n", vname, buff);
+	      printc ("} %s[%s]; /* 1 */\n", vname, buff);
 	    }
 	  else
 	    {
@@ -4795,6 +4808,42 @@ clr_suppress_lines();
 	}
     }
 
+
+  if (v->arr_subscripts.arr_subscripts_len ) {
+		if (v->arr_subscripts.arr_subscripts_val[0]==-1) { // Dynamic array
+		switch (v->var_data.variable_type) {
+			case VARIABLE_TYPE_SIMPLE:
+      				if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR) {
+					printc("struct _dynelem_%s { char dummyname[%d];};", name,v->var_data.variable_data_u.v_simple.dimensions[0]+1);
+					printc("char **%s=0;",name,name);
+				} else {
+					printc("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype), name);
+					printc("%s *%s=0;",local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype),name);
+				}
+				break;
+				
+			case VARIABLE_TYPE_RECORD:
+			case  VARIABLE_TYPE_OBJECT: {
+			int a;
+			printc("struct _dynelem_%s {",name);
+      			for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++) {
+	  		struct variable *next_v;
+	  			next_v = v->var_data.variable_data_u.v_record.variables.variables_val[a];
+	  					tmp_ccnt++;
+	        		print_variable_new (next_v, scope, level + 1);
+				tmp_ccnt--;
+			}
+			printc("};");
+			printc("struct _dynelem_%s *%s=0;",name,name);
+			}
+		}
+		return;
+  }
+	}
+
+
+
+
   if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
     {
       char tmpbuff[256];
@@ -4809,8 +4858,7 @@ clr_suppress_lines();
 	    }
 	  else
 	    {
-	      SPRINTF2 (tmpbuff, "%s *%s",
-		       local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype), name);
+	              SPRINTF2 (tmpbuff, "%s *%s", local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype), name);
 	    }
 	}
 
@@ -4841,13 +4889,13 @@ clr_suppress_lines();
       for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
 	{
 	  struct variable *next_v;
-	  next_v = v->var_data.variable_data_u.v_record.variables.variables_val[a];
-		tmp_ccnt++;
-	  print_variable_new (next_v, scope, level + 1);
+	  	next_v = v->var_data.variable_data_u.v_record.variables.variables_val[a];
+	  	tmp_ccnt++;
+	        print_variable_new (next_v, scope, level + 1);
 		tmp_ccnt--;
 	}
       print_end_record (name, v, level);
-clr_suppress_lines();
+      clr_suppress_lines();
       return;
     }
 
@@ -5306,6 +5354,7 @@ expr_str_list *expanded_params;
         }
       printc ("#");
 	expanded_params=expand_parameters(&function_definition->variables,function_definition->parameters);
+		yylineno=function_definition->lineno;
       print_param_g ('f', function_definition->funcname, expanded_params );
 
       if (local_isGenStackInfo ())
@@ -5940,6 +5989,7 @@ expr_str *substring_end;
         	substring=is_substring_variable_usage_in_expr(ptr,&substring_start, &substring_end);
 
 	if (!substring) {
+
 		switch (get_binding_dtype(ptr) & DTYPE_MASK) {
 	  		case DTYPE_INT: printc ("A4GL_push_long("); 
 					print_variable_usage(ptr);
@@ -5955,6 +6005,12 @@ expr_str *substring_end;
 					break;
 	  		case DTYPE_SMFLOAT: printc ("A4GL_push_float("); 
 					print_variable_usage(ptr);
+					printc(");");
+					break;
+	  		case DTYPE_DYNAMIC_ARRAY: 
+					printc ("A4GL_push_dynamic_array("); 
+					print_variable_usage(ptr);
+					printc(",sizeof(struct _dynelem_%s)",generation_get_variable_usage_as_string(ptr->expr_str_u.expr_variable_usage));
 					printc(");");
 					break;
 	  		default: 
@@ -6553,7 +6609,7 @@ int chk_ibind_select_internal(struct s_select *s) {
 int a;
 int ok=1;
 struct s_select snew;
-struct s_select_list_item_list *slist;
+//struct s_select_list_item_list *slist;
 struct s_select_list_item *ptr;
 
 memcpy(&snew,s,sizeof(snew));
