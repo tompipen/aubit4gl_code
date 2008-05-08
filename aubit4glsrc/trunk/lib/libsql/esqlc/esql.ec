@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.202 2008-04-12 12:51:19 mikeaubury Exp $
+# $Id: esql.ec,v 1.203 2008-05-08 13:34:20 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.202 2008-04-12 12:51:19 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.203 2008-05-08 13:34:20 mikeaubury Exp $";
 #endif
 
 
@@ -2726,6 +2726,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       switch (getCursorType (upd_hold, scroll))
 	{
 	case SIMPLE:
+	case FOR_UPDATE:
 	EXEC SQL DECLARE: cursorName CURSOR FOR:statementName;
 	  break;
 	case SIMPLE_SCROLL:
@@ -2741,7 +2742,9 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	EXEC SQL DECLARE: cursorName CURSOR WITH HOLD FOR:statementName;
 	  break;
 	default:
+		A4GL_assertion(1,"Invalid cursor type");
       /** @todo : Assign an error code  */
+
 	  return (struct s_cid *) 0;
 	}
 
