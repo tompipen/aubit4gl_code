@@ -5,7 +5,7 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
 #include "linearise.h"
-expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
+//expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
 int nomain=0;
 
 //expr_str* get_expr_datatype(int n);
@@ -2175,6 +2175,11 @@ if (dbg) {printf("DBG:In scan functions : %s %d\n", infuncname,calltree_entry); 
 			if (r->cmd_data.type==E_CMD_START_CMD) { // 
 					int b;
 					b=find_function(r->cmd_data.command_data_u.start_cmd.repname);
+					if (b<0) {
+						yylineno=r->lineno;
+						A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",  r->cmd_data.command_data_u.start_cmd.repname);
+						continue;
+					}
 					A4GL_assertion(b<0,"Couldnt find report");
 					if (calltree[b]==0) {
 						// No - ok - spider down into this function to get all the functions that it calls...
@@ -2188,6 +2193,11 @@ if (dbg) {printf("DBG:In scan functions : %s %d\n", infuncname,calltree_entry); 
 					int b;
 					//printf("%s\n", r->cmd_data.command_data_u.finish_cmd.repname);
 					b=find_function(r->cmd_data.command_data_u.finish_cmd.repname);
+					if (b<0) {
+						yylineno=r->lineno;
+						A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",  r->cmd_data.command_data_u.finish_cmd.repname);
+						continue;
+					}
 					A4GL_assertion(b<0,"Couldnt find report");
 					if (calltree[b]==0) {
 						// No - ok - spider down into this function to get all the functions that it calls...
@@ -2212,6 +2222,11 @@ if (dbg) {printf("DBG:In scan functions : %s %d\n", infuncname,calltree_entry); 
 					int b;
 					//printf("%s\n", r->cmd_data.command_data_u.output_cmd.repname);
 					b=find_function(r->cmd_data.command_data_u.output_cmd.repname);
+					if (b<0) {
+						yylineno=r->lineno;
+						A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",  r->cmd_data.command_data_u.output_cmd.repname);
+						continue;
+					}
 					A4GL_assertion(b<0,"Couldnt find report");
 					if (calltree[b]==0) {
 						// No - ok - spider down into this function to get all the functions that it calls...
@@ -2470,6 +2485,7 @@ if (fname)  {
 				fr=&m->module_entry_u.report_definition;
 				fprototypes[a].proto_type=PROTO_REPORT;
 				fprototypes[a].pname=fr->funcname;
+				fr->parameters=expand_parameters(&fr->variables, fr->parameters);
 				if (fr->parameters==0) {
 					fprototypes[a].nparams=0;
 				} else {
@@ -2489,6 +2505,7 @@ if (fname)  {
 				{
 				struct s_pdf_report_definition *fr;
 				fr=&m->module_entry_u.pdf_report_definition;
+				fr->parameters=expand_parameters(&fr->variables, fr->parameters);
 				fprototypes[a].proto_type=PROTO_REPORT;
 				fprototypes[a].pname=fr->funcname;
 				if (fr->parameters==0) {
@@ -2680,6 +2697,87 @@ if (fname)  {
 		}
 	}
    }
+
+
+
+        for (a=0;a< this_module.module_entries.module_entries_len;a++) {
+                struct module_entry *m;
+		char *repname=0;
+			int r_outputed=0;
+			int r_started=0;
+			int r_finished=0;
+		int lineno;
+                m=this_module.module_entries.module_entries_val[a];
+                switch (m->met_type) {
+			case E_MET_REPORT_DEFINITION: 
+				{
+				struct s_report_definition *fr;
+				fr=&m->module_entry_u.report_definition;
+				lineno=fr->lineno;
+				repname=fr->funcname;
+				break;
+
+			case E_MET_PDF_REPORT_DEFINITION: 
+				{
+				struct s_pdf_report_definition *fr;
+				fr=&m->module_entry_u.pdf_report_definition;
+				lineno=fr->lineno;
+				repname=fr->funcname;
+
+				break;
+			default:
+				repname=0;
+				break;
+		}
+
+		if (repname==0) continue; // its not a report...
+
+   // Look for OUTPUT 
+   		for (a=0;a<all_cmds->cmds.cmds_len;a++) {
+			switch (all_cmds->cmds.cmds_val[a]->cmd_data.type) {
+				case E_CMD_OUTPUT_CMD:
+					if (strcmp( all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.output_cmd.repname,repname)==0) {
+						r_outputed++;
+					}
+						break;
+				case E_CMD_FINISH_CMD:
+					if (strcmp( all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.finish_cmd.repname,repname)==0) {
+						r_finished++;
+					}
+				break;
+				case E_CMD_START_CMD:
+					if (strcmp( all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.start_cmd.repname,repname)==0) {
+						r_started++;
+					}
+				break;
+				default: break;
+			}
+				
+		}
+		yylineno=lineno;
+		if (!r_started && ! r_outputed && ! r_finished) {
+			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTUSED", "Report is never used",repname);
+		} else {
+		if (!r_started) {
+			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
+			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTSTART", "Report is never started",repname);
+		}
+		if (!r_outputed) {
+			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
+			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTOUTPUT", "Report is never OUTPUTed",repname);
+		}
+		if (!r_finished) {
+			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
+			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTFINISHED", "Report is never finished",repname);
+		}
+
+	}
+	}
+   }
+
+}
+
+
 
    // CURRENT WINDOW IS or CLOSE WINDOW but not OPENED...
    for (a=0;a<all_cmds->cmds.cmds_len;a++) {
