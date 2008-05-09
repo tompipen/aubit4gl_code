@@ -1,8 +1,12 @@
-
-#include "a4gl_libaubit4gl.h"
+#include "a4gl_4glc_int.h"
 #include "lint.h"
-#include "a4gl_expr.h"
-void A4GL_warn (char *s);
+
+//#include "a4gl_libaubit4gl.h"
+//#include "lint.h"
+//#include "a4gl_expr.h"
+//char *expr_as_string_when_possible(expr_str *e);
+//
+//void A4GL_warn (char *s);
 
 
 

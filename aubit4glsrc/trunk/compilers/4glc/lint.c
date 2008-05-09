@@ -2333,6 +2333,7 @@ int bad_load=0;
 int main_cnt=0;
 struct commands *all_cmds=0;
 char *fname;
+int mcnt;
 
 
 fname=acl_getenv_not_set_as_0("CFUNCSFILE");
@@ -2698,16 +2699,17 @@ if (fname)  {
 	}
    }
 
+printf("Here : %d\n", this_module.module_entries.module_entries_len);
 
-
-        for (a=0;a< this_module.module_entries.module_entries_len;a++) {
+   for (mcnt=0;mcnt< this_module.module_entries.module_entries_len;mcnt++) {
                 struct module_entry *m;
 		char *repname=0;
+		char *module;
 			int r_outputed=0;
 			int r_started=0;
 			int r_finished=0;
 		int lineno;
-                m=this_module.module_entries.module_entries_val[a];
+                m=this_module.module_entries.module_entries_val[mcnt];
                 switch (m->met_type) {
 			case E_MET_REPORT_DEFINITION: 
 				{
@@ -2715,7 +2717,9 @@ if (fname)  {
 				fr=&m->module_entry_u.report_definition;
 				lineno=fr->lineno;
 				repname=fr->funcname;
+				module=fr->module;
 				break;
+				}
 
 			case E_MET_PDF_REPORT_DEFINITION: 
 				{
@@ -2723,8 +2727,10 @@ if (fname)  {
 				fr=&m->module_entry_u.pdf_report_definition;
 				lineno=fr->lineno;
 				repname=fr->funcname;
+				module=fr->module;
 
 				break;
+				}
 			default:
 				repname=0;
 				break;
@@ -2732,51 +2738,45 @@ if (fname)  {
 
 		if (repname==0) continue; // its not a report...
 
-   // Look for OUTPUT 
+   		// Look for OUTPUT 
    		for (a=0;a<all_cmds->cmds.cmds_len;a++) {
 			switch (all_cmds->cmds.cmds_val[a]->cmd_data.type) {
 				case E_CMD_OUTPUT_CMD:
-					if (strcmp( all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.output_cmd.repname,repname)==0) {
+					if (strcmp( all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,repname)==0) {
 						r_outputed++;
 					}
-						break;
+					break;
 				case E_CMD_FINISH_CMD:
-					if (strcmp( all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.finish_cmd.repname,repname)==0) {
+					if (strcmp( all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,repname)==0) {
 						r_finished++;
 					}
-				break;
+					break;
 				case E_CMD_START_CMD:
-					if (strcmp( all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.start_cmd.repname,repname)==0) {
+					if (strcmp( all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,repname)==0) {
 						r_started++;
 					}
-				break;
+					break;
 				default: break;
 			}
 				
 		}
 		yylineno=lineno;
 		if (!r_started && ! r_outputed && ! r_finished) {
-			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTUSED", "Report is never used",repname);
+			A4GL_lint (module, yylineno, "REPNOTUSED", "Report is never used",repname);
 		} else {
-		if (!r_started) {
-			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
-			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTSTART", "Report is never started",repname);
-		}
-		if (!r_outputed) {
-			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
-			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTOUTPUT", "Report is never OUTPUTed",repname);
-		}
-		if (!r_finished) {
-			yylineno=all_cmds->cmds.cmds_val[a]->lineno;
-			A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "REPNOTFINISHED", "Report is never finished",repname);
-		}
+			if (!r_started) {
+				A4GL_lint (module, yylineno, "REPNOTSTART", "Report is never started",repname);
+			}
+			if (!r_outputed) {
+				A4GL_lint (module, yylineno, "REPNOTOUTPUT", "Report is never OUTPUTed",repname);
+			}
+			if (!r_finished) {
+				A4GL_lint (module, yylineno, "REPNOTFINISHED", "Report is never finished",repname);
+			}
 
-	}
-	}
-   }
+   		}
 
-}
-
+  }
 
 
    // CURRENT WINDOW IS or CLOSE WINDOW but not OPENED...
