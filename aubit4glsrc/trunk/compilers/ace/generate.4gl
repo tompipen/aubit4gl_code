@@ -93,7 +93,12 @@ end function
 function get_cols() 
 define lv_ok INTEGER
 code
- lv_ok=A4GLSQL_next_column (mv_colname, &mv_coltype, &mv_colsize) ;
+{
+char *ptr;
+strcpy(mv_colname,"");
+ lv_ok=A4GLSQL_next_column (&ptr, &mv_coltype, &mv_colsize) ;
+if (ptr) strcpy(mv_colname,ptr);
+}
 endcode
 return lv_ok
 end function
