@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.99 2007-11-09 11:27:46 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.100 2008-05-10 08:02:19 mikeaubury Exp $
 #
 */
 
@@ -1006,6 +1006,28 @@ char buff[2000];
 	A4GL_decstr_convert(buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, sizeof(buff));
 	a4gl_using_from_string(str,s,fmt,buff,0);
   }
+}
+
+char *A4GL_get_target_dialect(char *lex_default,char *lex_compile_time_target) {
+static char buff[2000]="";
+static int isset=0;
+char *curr_dialect;
+
+	if (isset) {
+		return buff;
+	}
+	curr_dialect=acl_getenv_not_set_as_0("A4GL_TARGETDIALECT");
+	if (curr_dialect) {
+			strcpy(buff, curr_dialect);
+			isset++;
+			return  curr_dialect;
+	}
+	if (lex_compile_time_target && strlen(lex_compile_time_target)) {
+		strcpy(buff, lex_compile_time_target);
+		return buff;
+	}
+	strcpy(buff, lex_default);
+	return buff;
 }
 
 

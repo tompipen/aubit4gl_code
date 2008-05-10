@@ -27,6 +27,9 @@
 
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
+#ifndef TARGETDIALECT
+#define TARGETDIALECT "SAP"
+#endif
 
 #ifdef __cplusplus
 extern "C"

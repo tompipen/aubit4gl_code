@@ -1565,24 +1565,24 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
       break;
     case E_DIALECT_INFORMIX:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",_s);");
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",A4GL_get_target_dialect(\"INFORMIX\",TARGETDIALECT),_s);");
       break;
     case E_DIALECT_POSTGRES:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\",_s);");
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",A4GL_get_target_dialect(\"POSTGRES\",TARGETDIALECT),_s);");
       break;
     case E_DIALECT_SAPDB:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\",_s);"
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",A4GL_get_target_dialect(\"SAP\",TARGETDIALECT),_s);"
 	 );
       break;
     case E_DIALECT_INGRES:
       printc
-	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\",_s);"
+	("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",A4GL_get_target_dialect(\"INGRES\",TARGETDIALECT),_s);"
 	 );
       break;
     case E_DIALECT_INFOFLEX:
-      printc ("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFOFLEX\",_s);");
+      printc ("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",A4GL_get_target_dialect(\"INFOFLEX\",TARGETDIALECT),_s);");
       break;
     }
 

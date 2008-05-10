@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.416 2008-05-08 14:22:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.417 2008-05-10 08:02:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.416 2008-05-08 14:22:23 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.417 2008-05-10 08:02:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -804,7 +804,8 @@ open_outfile (void)
 
   if (acl_getenv_not_set_as_0("A4GL_TARGETDIALECT")) {
   	FPRINTF (hfile, "#define TARGETDIALECT \"%s\"\n", acl_getenv_not_set_as_0("A4GL_TARGETDIALECT"));
-  }
+  } 
+  
 
   outfile = A4GL_mja_fopen (filename_for_c, "w");
   if (outfile == 0)
@@ -4212,7 +4213,7 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
 	  else
 	    {
 
-	      printc ("{NULL,%d,%d,0,0,0}%c /* MJA */",
+	      printc ("{NULL,%d,%d,0,0,0}%c",
 		      (int) get_binding_dtype (lbind->list.list_val[a]) & 0xffff,
 		      (int) get_binding_dtype (lbind->list.list_val[a]) >> 16,
 		/*

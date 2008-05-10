@@ -16,6 +16,9 @@ extern "C"
 {
 #endif
 #include "a4gl_incl_4gldef.h"
+#ifndef TARGETDIALECT
+#define TARGETDIALECT "INGRES"
+#endif
 
 
 #ifdef HAVE_CONFIG_H
@@ -67,8 +70,8 @@ extern "C"
 
 /* A4GL_copy_sqlca_sqlawarn_string8(sqlca.sqlwarn) */
 #ifndef NO_SQL_TRANSLATION
-#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("INGRES",s,_module_name,__LINE__)
-#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml("INGRES",s,_module_name,l)
+#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml(A4GL_get_target_dialect("INGRES",TARGETDIALECT),s,_module_name,__LINE__)
+#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml(A4GL_get_target_dialect("INGRES",TARGETDIALECT),s,_module_name,l)
 #else
 #define CONVERTSQL(s) s
 #define CONVERTSQL_LN(s,l) s

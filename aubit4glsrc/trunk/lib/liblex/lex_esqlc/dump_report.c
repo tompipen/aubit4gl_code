@@ -485,7 +485,7 @@ pr_nongroup_report_agg_clr(aggregates);
 	   report_cnt, a);
     }
 	if (!printed_every) {
-		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING;\n", report_cnt);
+		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING;goto rep_ctrl%d_%d;\n", report_cnt,0);
 		print_rep_ret (report_cnt,0);
 		printc("}");
 	}
@@ -651,12 +651,13 @@ struct startrep rep_default;
   	print_expr(rep->s1);
   	printc ("_r=A4GL_char_pop(); strcpy(_rep.output_loc_str,_r);free(_r);\n");
   } else {
-  	printc ("strcpy(_rep.output_loc_str,\"\");\n");
+  	printc ("strcpy(_rep.output_loc_str,\"stdout\");\n");
   }
   printc ("} else {");
   printc ("     strcpy(_rep.output_loc_str,_rout2);\n");
   printc ("}");
   printc ("if (strlen(_rout1)==0){\n");
+	if ( rep->towhat=='-') rep->towhat='F';
   printc ("_rep.output_mode='%c';\n", rep->towhat);
   printc ("} else {");
   printc ("_rep.output_mode=_rout1[0];\n");

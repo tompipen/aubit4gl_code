@@ -19,6 +19,10 @@
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
 
+#ifndef TARGETDIALECT
+#define TARGETDIALECT "INFORMIX"
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {

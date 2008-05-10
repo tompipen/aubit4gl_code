@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infoflex.h,v 1.3 2006-09-20 09:36:20 mikeaubury Exp $
+# $Id: a4gl_esql_infoflex.h,v 1.4 2008-05-10 08:02:19 mikeaubury Exp $
 #
 */
 
@@ -34,6 +34,10 @@
 #include "sqltypes.h"
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
+
+#ifndef TARGETDIALECT
+#define TARGETDIALECT "INFOFLEX"
+#endif
 
 #ifdef __cplusplus
 extern "C"
@@ -88,12 +92,12 @@ extern "C"
 #undef ALWAYS_CONVERT_PREPARED
 
 
-#ifdef ALWAYS_CONVERT_PREPARED
-#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("INFOFLEX",s,_module_name,__LINE__)
-#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml("INFOFLEX",s,_module_name,l)
+#ifndef ALWAYS_CONVERT_PREPARED
+        #define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml(A4GL_get_target_dialect("INFOFLEX",TARGETDIALECT),s,_module_name,__LINE__)
+        #define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml(A4GL_get_target_dialect("INFOFLEX",TARGETDIALECT),s,_module_name,l)
 #else
-#define CONVERTSQL(s) s
-#define CONVERTSQL_LN(s,l) s
+        #define CONVERTSQL(s) s
+        #define CONVERTSQL_LN(s,l) s
 #endif
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.117 2008-05-08 14:22:23 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.118 2008-05-10 08:02:19 mikeaubury Exp $
 */
 
 /**
@@ -519,6 +519,8 @@ void A4GL_dynarr_free(void *var_ptr,void *old_ptr);
 void A4GL_isdynarr_allocated(void *var_ptr);
 void A4GL_dynarr_extent(void *var_ptr,int dim) ;
 void A4GL_push_dynamic_array(void *p, int sz);
+
+char *A4GL_get_target_dialect(char *lex_default,char *lex_compile_time_target);
 
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
 #  if __WORDSIZE == 64

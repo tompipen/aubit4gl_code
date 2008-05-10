@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql_infx.h,v 1.31 2007-08-16 21:49:45 mikeaubury Exp $
+# $Id: a4gl_esql_infx.h,v 1.32 2008-05-10 08:02:19 mikeaubury Exp $
 #
 */
 
@@ -44,6 +44,10 @@
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
 #include "ifxtypes.h"
+
+#ifndef TARGETDIALECT
+#define TARGETDIALECT "INFORMIX"
+#endif
 
 #ifdef __cplusplus
 extern "C"
@@ -102,8 +106,8 @@ extern "C"
 
 
 #ifdef ALWAYS_CONVERT_PREPARED
-#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml("INFORMIX",s,_module_name,__LINE__)
-#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml("INFORMIX",s,_module_name,l)
+#define CONVERTSQL(s) A4GLSQLCV_convert_sql_ml(A4GL_get_target_dialect("INFORMIX",TARGETDIALECT),s,_module_name,__LINE__)
+#define CONVERTSQL_LN(s,l) A4GLSQLCV_convert_sql_ml(A4GL_get_target_dialect("INFORMIX",TARGETDIALECT),s,_module_name,l)
 #else
 #define CONVERTSQL(s) s
 #define CONVERTSQL_LN(s,l) s
