@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.417 2008-05-10 08:02:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.418 2008-05-11 22:13:49 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.417 2008-05-10 08:02:19 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.418 2008-05-11 22:13:49 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6621,6 +6621,7 @@ snew.having=0;
 snew.group_by=0;
 
 preprocess_sql_statement (&snew);
+
 if (snew.next) {
 	if (!chk_ibind_select(snew.next)) {
 		ok=0;
@@ -6682,7 +6683,7 @@ get_select (struct s_select *s, char *forUpdate)
     {
       strcpy (ptr, str);
     }
-  return ptr;
+  return lowlevel_chk_sql(ptr);
 }
 
 

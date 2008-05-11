@@ -4,6 +4,7 @@
 #include "compile_c.h"
 #include "cmd_funcs.h"
 #define set_nonewlines() set_nonewlines_full(__LINE__)
+char *lowlevel_chk_sql(char *s) ;
 
 extern int line_for_cmd;
 extern int tmp_ccnt;
@@ -17,6 +18,8 @@ struct expr_str_list *input_bind=0;
 struct expr_str_list *output_bind=0;
 
 
+#define A4GL_PARAM_START "@@a4gl_param "
+#define A4GL_PARAM_END " @@"
 
 /******************************************************************************/
 /*                            HELPER  COMMANDS                                */
@@ -52,6 +55,7 @@ void print_generation_copy_status() {
 
 char *get_sql_variable_usage (variable_usage *u ,char dir) {
 	struct expr_str *e;
+	static char buff[256];
 	e=A4GL_new_expr_push_variable(u);
 
 	switch (dir) {
@@ -59,8 +63,18 @@ char *get_sql_variable_usage (variable_usage *u ,char dir) {
 		case 'o': A4GL_new_append_ptr_list(output_bind, e); break;
 	}
 
-	/* For normal C generation - we'll just return a placeholder.. */
-	return "?";
+
+	if (dir=='o') {
+		return "?";
+	}
+
+	if (dir=='i') {
+		sprintf(buff,"%s%05d%s",A4GL_PARAM_START,input_bind->list.list_len-1,A4GL_PARAM_END);
+		return buff;
+	}
+
+	A4GL_assertion(1,"Inccorect dir for bindtype");
+	return NULL;
 }
 
 char *get_sql_into_buff(struct expr_str_list *into) {
@@ -671,7 +685,7 @@ int converted;
   // escaped so we can use it in a string...
   // We'll get back whether there was any conversion done - which we can then put
   // into the prepare later...
-  ptr=escape_quotes_and_remove_nl(get_insert_cmd(cmd_data,&converted));
+  ptr=escape_quotes_and_remove_nl(lowlevel_chk_sql(get_insert_cmd(cmd_data,&converted)));
 
 
   if (input_bind && input_bind->list.list_len) {
@@ -714,7 +728,7 @@ int converted=0;
   // escaped so we can use it in a string...
   // We'll get back whether there was any conversion done - which we can then put
   // into the prepare later...
-  ptr=escape_quotes_and_remove_nl(get_delete_cmd(cmd_data,&converted));
+  ptr=escape_quotes_and_remove_nl(lowlevel_chk_sql(get_delete_cmd(cmd_data,&converted)));
 
 
   if (input_bind && input_bind->list.list_len) {
@@ -869,6 +883,12 @@ print_select_cmd (struct_select_cmd * cmd_data)
 
   search_sql_variables (&cmd_data->sql->list_of_items,'i');
   sql=get_select (cmd_data->sql, cmd_data->forupdate);
+
+  if (strlen(sql)==0) {
+		A4GL_assertion(1,"No select statement generated");
+  }
+//printf("sql=%s\n",sql);
+
   output_bind=cmd_data->sql->into;
 
   if (input_bind) {
@@ -918,7 +938,7 @@ print_select_cmd (struct_select_cmd * cmd_data)
       ptr = sql;
     }
 
-  ptr=escape_quotes_and_remove_nl(ptr);
+  ptr=escape_quotes_and_remove_nl(lowlevel_chk_sql(ptr));
   os=snprintf (b2, sizeof(b2),"A4GLSQL_prepare_select(%s,%s,\"%s\",_module_name,%d,%d,%d)", i, o, ptr,line_for_cmd,converted, 0);
 
   if (cmd_data->sql->sf && cmd_data->sql->sf->into_temp && strlen(cmd_data->sql->sf->into_temp)) {
@@ -965,7 +985,7 @@ int converted=0;
   // escaped so we can use it in a string...
   // We'll get back whether there was any conversion done - which we can then put
   // into the prepare later...
-  ptr=escape_quotes_and_remove_nl(get_update_cmd(cmd_data,&converted));
+  ptr=escape_quotes_and_remove_nl(lowlevel_chk_sql(get_update_cmd(cmd_data,&converted)));
 
   if (input_bind && input_bind->list.list_len) {
 	int c;
@@ -1003,7 +1023,7 @@ static char buff[64000];
 		int c;
 		// Its an insert cursor...
   		// Firstly - clear down the input_bind and output_bind
-  		ptr=escape_quotes_and_remove_nl(get_insert_cmd(declare_dets->insert_cmd,&converted));
+  		ptr=escape_quotes_and_remove_nl(lowlevel_chk_sql(get_insert_cmd(declare_dets->insert_cmd,&converted)));
   		if (input_bind && input_bind->list.list_len) {
 			// We used some variables...
   			c = print_bind_definition_g (input_bind,'i');
@@ -1384,3 +1404,90 @@ struct struct_execute_cmd exec_cmd;
 
 
 
+/* This function reorders the input bind to make sure it
+ * matches out place holders.
+ * This is needed because we just have a ? and not a numbered
+ * placeholder and we cant easily determine the order in which the input
+ * binding will be bound when you've got queries, subqueries, unions etc...
+ *
+ * So - i the code to determine the placeholders - we just put in a 'code' defined by A4GL_PARAM_START%05dA4GL_PARAM_END
+ * and that tells us where in the input bind this parameter is currently found.
+ * We then need to 'adjust' the input binding to move these to the correct sequential order..
+ * */
+char *lowlevel_chk_sql(char *sorig) {
+int pcnt=0;
+int *list;
+static char *buff=0;
+char *sbuff;
+int buffcnt=0;
+int a;
+expr_str_list *new_input_bind=0;
+int need_to_change=0;
+int sbuffsz;
+
+/*
+	if (buff) {
+		free(buff);
+		buff=0;
+	}
+*/
+
+
+	// Is there a binding ? 
+	if(input_bind==0) return sorig;
+
+	// Does it have a length ? 
+	if(input_bind->list.list_len==0) return sorig;
+
+	// Does it contain some numbered parameters  ? 
+ 	if (strstr(sorig,A4GL_PARAM_START)==0) return sorig;
+
+	buff=malloc(strlen(sorig));
+	sbuffsz=strlen(sorig)+200;
+	sbuff=malloc(sbuffsz);
+	memset(sbuff,0,sbuffsz);
+	strcpy(sbuff,sorig);
+
+
+	list=malloc(sizeof(int)*input_bind->list.list_len);
+	for (a=0;a<=strlen(sbuff);a++) {
+		if (strncmp(&sbuff[a],A4GL_PARAM_START,strlen(A4GL_PARAM_START))==0) {
+			char scanbuff[200];
+			int param=-1;
+			char smbuff[200];
+			memset(smbuff,0,200);
+			// We've found a parameters
+			strncpy(smbuff,&sbuff[a],5+strlen(A4GL_PARAM_START)+strlen(A4GL_PARAM_END));
+			sprintf(scanbuff,"%s%%05d%s", A4GL_PARAM_START,A4GL_PARAM_END);
+			sscanf(smbuff,scanbuff,&param);
+			A4GL_assertion(param<0,"Invalid parameter number");
+			if (param!=pcnt) { need_to_change=1; }
+			list[pcnt++]=param;
+			a+=strlen(smbuff)-1;
+			buff[buffcnt++]='?';
+		} else {
+			buff[buffcnt++]=sbuff[a];
+		}
+	}
+
+	buff[buffcnt]=0;
+	//strcpy(sorig,buff);
+	free(sbuff);
+	//free(buff);
+	A4GL_assertion(pcnt!=input_bind->list.list_len,"Did not get the correct parameter sequence");
+	if (need_to_change)  {
+		new_input_bind=malloc(sizeof(struct expr_str_list));
+		new_input_bind->list.list_len=0;
+		new_input_bind->list.list_val=0;
+		for (a=0;a<input_bind->list.list_len;a++) {
+			A4GL_new_append_ptr_list(new_input_bind, input_bind->list.list_val[list[a]]); 
+		}
+		// Get rid of our old input bind...
+                free(input_bind->list.list_val);
+		free(input_bind);
+		// And replace with our new and improved one...
+		input_bind=new_input_bind;
+	}
+        return buff;
+}
+   

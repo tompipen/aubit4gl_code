@@ -485,7 +485,7 @@ pr_nongroup_report_agg_clr(aggregates);
 	   report_cnt, a);
     }
 	if (!printed_every) {
-		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING;goto rep_ctrl%d_%d;\n", report_cnt,0);
+		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING;"); //goto rep_ctrl%d_%d;\n", report_cnt,0);
 		print_rep_ret (report_cnt,0);
 		printc("}");
 	}

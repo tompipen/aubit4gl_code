@@ -3393,3 +3393,9 @@ printc("/*******************************************************************/");
 
 }
 
+
+
+/* This function does nothing for esql/c generation bit is needed for non-esqlc generation  */
+char *lowlevel_chk_sql(char *s) {
+	return s;
+}
