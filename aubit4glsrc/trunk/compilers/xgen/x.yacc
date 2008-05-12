@@ -706,7 +706,7 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 	fprintf(cfo,"int output_%s(char *rn,%s r,int isptr,int arr) {\n",$<str>2,$<str>2);
 
     /* sepatately defining and initialising to prevent compiler watnings about
-    unised variable: */
+    unused variable: */
 	fprintf(cfo,"char *name;\n");
 	fprintf(cfo,"name=\"%s\";\n",$<str>2);
 
@@ -725,10 +725,17 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 			dumping_command_data++;
 		}
 	}
-
-	//fprintf(cfo,"if (!output_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
-
-fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;\n",$<str>2, $<str>6, $<str>6);
+	//printf("sw_elem=%s\n", sw_elem);
+	if (!strncmp(sw_elem,"int ",4)==0) {
+		char buff[2000];
+		char *ptr;
+		strcpy(buff,sw_elem);
+		ptr=strchr(buff,' ');
+		*ptr=0;
+		fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr,&output_%s)) return 0;\n",$<str>2, $<str>6, $<str>6,buff);
+	} else {
+		fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr,NULL)) return 0;\n",$<str>2, $<str>6, $<str>6);
+	}
 
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",$<str>2,$<str>2);
@@ -738,7 +745,6 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
 
 
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
-	//fprintf(cfi,"if (!input_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 	fprintf(cfi,"if (!input_start_union(\"%s\",\"%s\",(int *)&r->%s,rn,isptr,arr)) return 0;\n",$<str>2,$<str>6, $<str>6);
 
 	fprintf(hsf,"struct %s {\n",$<str>2);
@@ -750,15 +756,15 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
 
 } OPEN_BRACE union_list CLOSE_BRACE SEMICOLON {
 	fprintf(cfo,"} /* switch */\n");
-	//fprintf(cfo,"if (!output_end_union(\"%s\",rn)) return 0;\n",$<str>2);
 	fprintf(cfo,"if (!output_end_union(\"%s\",\"%s\",r.%s, rn)) return 0;\n",$<str>2,$<str>6, $<str>6);
 	fprintf(cfo," return 1;\n}\n\n");
 
 	fprintf(cfi,"} /* switch */\n");
-	//fprintf(cfi,"if (!input_end_union(\"%s\",rn)) return 0;\n",$<str>2);
  	fprintf(cfi,"if (!input_end_union(\"%s\",\"%s\",r->%s,rn)) return 0;\n",$<str>2,$<str>6, $<str>6);
 	fprintf(cfi," return 1;\n}\n\n");
 	fprintf(hsf,"} %s_u;\n};\ntypedef struct %s %s;\n",$<str>2,$<str>2,$<str>2);
+
+
 	if (strcmp($<str>2,"command_data")==0) {
 		if (cmd_file) {
 			fprintf(cmd_file,"} /* end of switch */\n");

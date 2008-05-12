@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.16 2008-02-15 16:09:58 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.17 2008-05-12 12:30:34 mikeaubury Exp $
 #*/
 
 /**
@@ -344,7 +344,6 @@ A4GLPacker_output_start_struct (char *s, char *n, int ptr, int isarr)
   A4GL_pr1 ();
   structs_cnt++;
   structs[structs_cnt] = 0;
-
   if (isarr == -1)
     fprintf (outfile, "\"%s\"=> {", n);	/*, s); */
   else
@@ -370,9 +369,11 @@ A4GLPacker_output_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_start_union (char *s, char *en, int e, char *n, int ptr, int isarr)
+A4GLPacker_output_start_union (char *s, char *en, int e, char *n, int ptr, int isarr,void *enumcallback)
 {
-  if (!output_int(en,e,ptr,isarr)) return 0;
+int (*callback)(char *rn,int r,int isptr,int arr);
+  // A4GLPacker_output_int (char *name, int val, int ptr, int isarr)
+
   A4GL_pr1 ();
   structs_cnt++;
   structs[structs_cnt] = 0;
@@ -384,6 +385,12 @@ A4GLPacker_output_start_union (char *s, char *en, int e, char *n, int ptr, int i
     {
       fprintf (outfile, "\"%d\"=> {", isarr);
     }
+  callback=enumcallback;
+  if (callback) {
+  		if (!callback(en,e,ptr,isarr)) return 0;
+  } else {
+  		if (!output_int(en,e,ptr,isarr)) return 0;
+	}
   return 1;
 }
 
@@ -432,6 +439,7 @@ int
 A4GLPacker_output_enum (char *rn, char *name, char *s, int d)
 {
   A4GL_pr1 ();
+//printf("%s %s %s\n",rn,name,s);
   fprintf (outfile, "\"%s\"=>\"%s\"", rn, s);
   return 1;
 }

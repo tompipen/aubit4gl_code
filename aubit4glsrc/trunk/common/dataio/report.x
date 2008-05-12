@@ -262,9 +262,11 @@ struct a4gl_report_function {
 	string name<>;
 };
 
+
 struct acerep_commands {
 	struct acerep_command commands<>;
 };
+
 
 union acerep_command  switch (cmdtypes cmd_type) {
 	case CMD_NULL   :       int null;
@@ -280,6 +282,7 @@ union acerep_command  switch (cmdtypes cmd_type) {
 	case CMD_BLOCK	: 	struct acerep_commands acerep_commands;
 	case CMD_CALL	: 	struct cmd_call cmd_call;
 };
+
 
 enum formattype {
 	FORMAT_PAGE_HEADER,

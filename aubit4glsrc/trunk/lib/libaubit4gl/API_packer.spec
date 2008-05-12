@@ -14,8 +14,8 @@ output_string char* name,char* val,int ptr,int isarr -> int
 output_double char* name,double val,int ptr,int isarr -> int
 output_start_struct char* s,char* n,int ptr,int isarr -> int
 output_end_struct char* s,char* n -> int
-output_start_union char* s char* enumname int enum_val char* n,int ptr,int isarr -> int
-output_start_union_data char* s char* enumname int enum_val char* n,int ptr,int isarr -> int
+output_start_union char* s char* enumname int enum_val char* n,int ptr,int isarr void* enumcallback -> int
+* output_start_union_data char* s char* enumname int enum_val char* n,int ptr,int isarr -> int
 output_nullptr char* s char* structname int isunion -> int
 output_okptr char* s -> int
 output_end_union char* s,char* en,int e,char* n -> int

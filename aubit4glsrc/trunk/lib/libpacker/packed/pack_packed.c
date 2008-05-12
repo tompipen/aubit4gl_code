@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.38 2008-02-15 16:08:40 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.39 2008-05-12 12:30:33 mikeaubury Exp $
 #*/
 
 /**
@@ -373,7 +373,7 @@ A4GLPacker_output_end_struct (char *s, char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_start_union (char *s, char *en, int e,char *n, int ptr, int isarr)
+A4GLPacker_output_start_union (char *s, char *en, int e,char *n, int ptr, int isarr, void* enumcallback)
 {
 if (!output_int(en,e,ptr,isarr)) return 0;
   return 1;
