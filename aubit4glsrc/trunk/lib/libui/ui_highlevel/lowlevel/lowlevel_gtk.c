@@ -21,7 +21,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.132 2008-04-15 13:52:09 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.133 2008-05-12 16:48:45 mikeaubury Exp $";
 #endif
 
 
@@ -4550,7 +4550,29 @@ void A4GL_LL_opening_form(char *a,char *b) {
   
  
 void A4GL_LL_direct_to_ui(char *t, char *s) {
-  /* Does nothing - required by api.. */
+	if (strcmp(t,"SEND")==0 && (strcmp(s,"MAXIMISE")==0 || strcmp(s,"MAXIMIZE")==0 ) ) {
+		if (appWin) {
+			gtk_window_maximize(appWin);
+		}
+	}
+
+	if (strcmp(t,"SEND")==0 && (strcmp(s,"UNMAXIMISE")==0 || strcmp(s,"UNMAXIMIZE")==0 ) ) {
+		if (appWin) {
+			gtk_window_unmaximize(appWin);
+		}
+	}
+
+	if (strcmp(t,"SEND")==0 && (strcmp(s,"MINIMISE")==0 || strcmp(s,"MINIMIZE")==0 ) ) {
+		if (appWin) {
+			gtk_window_iconify(appWin);
+		}
+	}
+
+	if (strcmp(t,"SEND")==0 && (strcmp(s,"UNMINIMISE")==0 || strcmp(s,"UNMINIMIZE")==0 ) ) {
+		if (appWin) {
+			gtk_window_deiconify(appWin);
+		}
+	}
 }
 
 
