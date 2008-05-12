@@ -1,4 +1,30 @@
 ---------------------------
+Mon May 12 13:47:54 BST 2008
+---------------------------
+1.10RC_23 Released
+---------------------------
+	
+	File format fixups
+	
+	ACE fixups
+	
+	Some tidy ups on the compilers to make them more consistent
+	
+	Select parameter fix Report fixup for reporting to STDOUT
+	
+	TARGETDIALECT Fixup Report output 'new parser' bug fix (use
+	file/stdout as default )
+	
+	Fix generate_aace getting column names
+	
+	An enhancement request: can we have colon (:) as a synonym for $
+	inside SQL ... END SQL too?
+	
+	Dynamic array fixups
+	
+	Small declare cursor fixup
+	
+---------------------------
 Thu May  8 15:33:41 BST 2008
 ---------------------------
 1.10RC_22 Released

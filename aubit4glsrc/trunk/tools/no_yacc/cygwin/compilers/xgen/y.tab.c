@@ -871,10 +871,10 @@ static const yytype_uint16 yyrline[] =
      526,   526,   529,   547,   570,   576,   576,   576,   576,   576,
      579,   579,   620,   620,   623,   629,   635,   641,   647,   653,
      661,   666,   667,   669,   670,   671,   672,   673,   674,   675,
-     676,   682,   690,   694,   701,   713,   701,   774,   774,   777,
-     777,   781,   781,   801,   801,   805,   824,   824,   828,   839,
-     840,   842,   842,   846,   846,   849,   849,   850,   850,   851,
-     854,   859
+     676,   682,   690,   694,   701,   713,   701,   780,   780,   783,
+     783,   787,   787,   807,   807,   811,   830,   830,   834,   845,
+     846,   848,   848,   852,   852,   855,   855,   856,   856,   857,
+     860,   865
 };
 #endif
 
@@ -2269,7 +2269,7 @@ yyreduce:
 	fprintf(cfo,"int output_%s(char *rn,%s r,int isptr,int arr) {\n",(yyvsp[(2) - (4)].str),(yyvsp[(2) - (4)].str));
 
     /* sepatately defining and initialising to prevent compiler watnings about
-    unised variable: */
+    unused variable: */
 	fprintf(cfo,"char *name;\n");
 	fprintf(cfo,"name=\"%s\";\n",(yyvsp[(2) - (4)].str));
 
@@ -2293,10 +2293,17 @@ yyreduce:
 			dumping_command_data++;
 		}
 	}
-
-	//fprintf(cfo,"if (!output_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
-
-fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;\n",(yyvsp[(2) - (7)].str), (yyvsp[(6) - (7)].str), (yyvsp[(6) - (7)].str));
+	//printf("sw_elem=%s\n", sw_elem);
+	if (!strncmp(sw_elem,"int ",4)==0) {
+		char buff[2000];
+		char *ptr;
+		strcpy(buff,sw_elem);
+		ptr=strchr(buff,' ');
+		*ptr=0;
+		fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr,&output_%s)) return 0;\n",(yyvsp[(2) - (7)].str), (yyvsp[(6) - (7)].str), (yyvsp[(6) - (7)].str),buff);
+	} else {
+		fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr,NULL)) return 0;\n",(yyvsp[(2) - (7)].str), (yyvsp[(6) - (7)].str), (yyvsp[(6) - (7)].str));
+	}
 
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",(yyvsp[(2) - (7)].str),(yyvsp[(2) - (7)].str));
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",(yyvsp[(2) - (7)].str),(yyvsp[(2) - (7)].str));
@@ -2306,7 +2313,6 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
 
 
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
-	//fprintf(cfi,"if (!input_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 	fprintf(cfi,"if (!input_start_union(\"%s\",\"%s\",(int *)&r->%s,rn,isptr,arr)) return 0;\n",(yyvsp[(2) - (7)].str),(yyvsp[(6) - (7)].str), (yyvsp[(6) - (7)].str));
 
 	fprintf(hsf,"struct %s {\n",(yyvsp[(2) - (7)].str));
@@ -2320,18 +2326,18 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 56:
-#line 751 "x.yacc"
+#line 757 "x.yacc"
     {
 	fprintf(cfo,"} /* switch */\n");
-	//fprintf(cfo,"if (!output_end_union(\"%s\",rn)) return 0;\n",$<str>2);
 	fprintf(cfo,"if (!output_end_union(\"%s\",\"%s\",r.%s, rn)) return 0;\n",(yyvsp[(2) - (12)].str),(yyvsp[(6) - (12)].str), (yyvsp[(6) - (12)].str));
 	fprintf(cfo," return 1;\n}\n\n");
 
 	fprintf(cfi,"} /* switch */\n");
-	//fprintf(cfi,"if (!input_end_union(\"%s\",rn)) return 0;\n",$<str>2);
  	fprintf(cfi,"if (!input_end_union(\"%s\",\"%s\",r->%s,rn)) return 0;\n",(yyvsp[(2) - (12)].str),(yyvsp[(6) - (12)].str), (yyvsp[(6) - (12)].str));
 	fprintf(cfi," return 1;\n}\n\n");
 	fprintf(hsf,"} %s_u;\n};\ntypedef struct %s %s;\n",(yyvsp[(2) - (12)].str),(yyvsp[(2) - (12)].str),(yyvsp[(2) - (12)].str));
+
+
 	if (strcmp((yyvsp[(2) - (12)].str),"command_data")==0) {
 		if (cmd_file) {
 			fprintf(cmd_file,"} /* end of switch */\n");
@@ -2345,7 +2351,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 61:
-#line 781 "x.yacc"
+#line 787 "x.yacc"
     {
 	if (dumping_command_data) {
 		char buff[200];
@@ -2365,7 +2371,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 65:
-#line 805 "x.yacc"
+#line 811 "x.yacc"
     {
 	if (dumping_command_data) {
 		fprintf(cmd_file,"); break;\n");
@@ -2386,7 +2392,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
     break;
 
   case 68:
-#line 828 "x.yacc"
+#line 834 "x.yacc"
     {
 	char *ptr;
 	ptr=acl_strdup((yyvsp[(1) - (1)].str));
@@ -2400,7 +2406,7 @@ fprintf(cfo,"if (!output_start_union(\"%s\",\"%s\",r.%s,rn,isptr,arr)) return 0;
 
 
 /* Line 1267 of yacc.c.  */
-#line 2404 "y.tab.c"
+#line 2410 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2614,7 +2620,7 @@ yyreturn:
 }
 
 
-#line 865 "x.yacc"
+#line 871 "x.yacc"
 
 
 
