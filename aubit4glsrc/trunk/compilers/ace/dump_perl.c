@@ -5,6 +5,7 @@ void A4GL_bname (char *str, char *str1, char *str2);
 
 int compile_ace_report (char *filename);
 int conv_out (char *fname);
+void show_usage(char *argv0) ;
 
 int
 main (int argc, char *argv[])
@@ -13,14 +14,18 @@ main (int argc, char *argv[])
 
   if (argc != 2)
     {
-      printf ("Usage:\n%s ace-report.ace\n", argv[0]);
-      exit (1);
+	show_usage(argv[0]);
+      	exit (1);
     }
+
+  if (strstr(argv[1],".aarc") || strcmp(argv[1],"-?")==0 || strcmp(argv[1],"-h")==0 ) {
+		show_usage(argv[0]);
+		exit(1);
+  }
 
   A4GL_build_user_resources ();
 
   A4GL_setenv ("A4GL_PACKER","PERL",1);
-
   rval = compile_ace_report (argv[1]);
   printf ("Got rval as %d\n", rval);
 
@@ -78,4 +83,11 @@ conv_out (char *fname)
   fclose (f_in);
   fclose (f_out);
   return 1;
+}
+
+
+void show_usage(char *argv0) {
+      	printf ("Usage:\n   %s ace-report.ace\n", argv0);
+      	printf("\nNOTE : This program will *compile* the from the source '.ace' file.\n");
+	printf("it ***does not*** accept a .aarc file as a parameter\n");
 }

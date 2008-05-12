@@ -10,6 +10,7 @@ int use_insert_cursor=0;  	// Use an insert cursor to insert into that temp tabl
 int format_section_is_last=0;
 int batch_size=100;
 char function_name[2000]="MAIN";
+void show_usage(char *argv0) ;
 /*
 # 4GL code generator
 #
@@ -105,7 +106,12 @@ main (int argc, char *argv[])
   char *name_param;
   fout = stdout;
   used=malloc(sizeof(int)*argc);
+
   for (a=0;a<argc;a++) {
+		if (strcmp(argv[a],"-?")==0 || strcmp(argv[a],"-h")==0) {
+			show_usage(argv[0]);
+			exit(1);
+		}
 		used[a]=0;
 	}
   used[0]=1;
@@ -169,13 +175,7 @@ main (int argc, char *argv[])
   }
   if (nused != 1)
     {
-      fprintf (stderr, "Usage %s [options] filename [-o output] ( Where filename is a compile report eg. simple.aarc )\n", argv[0]);
-	fprintf(stderr,"    options :  -C  ACE Aggregate compatibilty mode\n");
-	fprintf(stderr,"               -C -I  Use INSERT cursor for compatibilty mode\n");
-	fprintf(stderr,"                         (required Transaction logging\n");
-	fprintf(stderr,"               -C -I -B n  Batch into 'n' inserts per transaction\n");
-	fprintf(stderr,"               -F function name [defaults to MAIN]\n");
-
+	show_usage(argv[0]);
       exit (0);
     }
 
@@ -186,13 +186,20 @@ main (int argc, char *argv[])
   A4GL_build_user_resources ();
 
   memset (&this_report, 0, sizeof (struct report));
+  a = A4GL_read_data_from_file ("report", &this_report, name_param);
 
+  if (!a)
+    {
+	char buff[2000];
+	strcpy(buff, name_param);
+	strcat(name_param,".aarc");
   a = A4GL_read_data_from_file ("report", &this_report, name_param);
 
   if (!a)
     {
       fprintf (stderr, "Bad format\n");
       exit (1);
+	}
     }
 
 
@@ -1266,4 +1273,16 @@ acl_strdup_full (void *a, char *r, char *f, int l)
       exit (1);
     }
   return p;
+}
+
+void show_usage(char *argv0) {
+      	fprintf (stderr, "Usage %s [options] filename [-o output] ( Where filename is a compile report eg. simple.aarc )\n", argv0);
+	fprintf(stderr,"    options :  -C  ACE Aggregate compatibilty mode\n");
+	fprintf(stderr,"               -C -I  Use INSERT cursor for compatibilty mode\n");
+	fprintf(stderr,"                         (required Transaction logging\n");
+	fprintf(stderr,"               -C -I -B n  Batch into 'n' inserts per transaction\n");
+	fprintf(stderr,"               -F function name [defaults to MAIN]\n");
+	fprintf(stderr,"\n");
+	fprintf(stderr,"eg\n    %s -o output.4gl -C simple.aarc\n",argv0);
+	fprintf(stderr,"\n");
 }

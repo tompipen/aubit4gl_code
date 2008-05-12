@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.11 2005-03-31 13:35:36 afalout Exp $
+# $Id: fileio.c,v 1.12 2008-05-12 08:34:41 mikeaubury Exp $
 #*/
 
 /**
@@ -160,25 +160,40 @@ compile_ace_report (char *filename)
   strcpy (c, filename);
 
   A4GL_bname (c, a, b);
+  yyin=0;
 
-  if (b[0] == 0)
+  if (!strchr(c,'.'))
     {
-      strcat (c, ".ace");
+	char buff[2000];
+	strcpy(buff,c);
+      	strcat (buff, ".aace");
+  	yyin = (FILE *) A4GL_mja_fopen (buff, "r");
+	if (yyin==0)  {
+		strcpy(buff,c);
+      		strcat (buff, ".ace");
+  		yyin = (FILE *) A4GL_mja_fopen (buff, "r");
+	}
+
     }
+
+
+  a4gl_ace_yydebug = 0;
 
 
   strcpy (outputfilename, a);
   /* strcat(outputfilename,".aarc"); */
 
+  if (yyin==0) {
+  	yyin = (FILE *) A4GL_mja_fopen (c, "r");
+  }
 
-  yyin = (FILE *) A4GL_mja_fopen (c, "r");
 
-  a4gl_ace_yydebug = 0;
+
 
   if (yyin == 0)
     {
 
-      printf ("Error opening file : %s\n", c);
+      fprintf (stderr,"Error opening file : %s\n", c);
       return 2;
     }
 
@@ -189,7 +204,6 @@ compile_ace_report (char *filename)
     {
       check_sql_columns ();
       A4GL_write_report ();
-      printf ("Ok\n");
       return 0;
     }
   else
