@@ -27,12 +27,17 @@ main (int argc, char *argv[])
 
   A4GL_setenv ("A4GL_PACKER","PERL",1);
   rval = compile_ace_report (argv[1]);
-  printf ("Got rval as %d\n", rval);
 
   if (rval == 0)
     {
       printf ("Report compiled OK\nConverting to perl program\n");
-      exit (conv_out (argv[1]));
+      if (conv_out (argv[1])) {
+		printf("Generated code ok\n");
+		exit(0);
+	} else {
+		printf("Failed to generate code\n");
+		exit(1);
+	}
     }
   else
     {
@@ -48,6 +53,7 @@ conv_out (char *fname)
   FILE *f_in;
   FILE *f_out;
   char buff[256];
+  char inbuff[256];
   int ch;
   char c[256];
   char b[256];
@@ -55,17 +61,26 @@ conv_out (char *fname)
   strcpy (c, fname);
   A4GL_bname (c, a, b);
 
-  sprintf (buff, "%s.aarc.pl", a);
-  f_in = fopen (buff, "r");
+  if (strlen(a)) {
+  	sprintf (inbuff, "%s.aarc.pl", a);
+  	sprintf (buff, "%s.run.pl", a);
+  } else {
+  	sprintf (inbuff, "%s.aarc.pl", b);
+  	sprintf (buff, "%s.run.pl", b);
+  }
+  f_in = fopen (inbuff, "r");
 
   if (f_in == 0)
     {
-      printf ("Unable to open generated output file %s\n", buff);
+      printf ("Unable to open generated output file %s\n", inbuff);
       return 0;
     }
 
-  sprintf (buff, "%s.run.pl", a);
   f_out = fopen (buff, "w");
+  if (f_out==0) {
+      printf ("Unable to open generated output file %s\n", buff);
+      return 0;
+  }
 
   fprintf (f_out, "#!/usr/local/bin/perl  -w\n");
   fprintf (f_out, "use DBI;\n");
@@ -82,6 +97,7 @@ conv_out (char *fname)
   fprintf (f_out, "\n\nreport::run_report(\\%%report);\n\n");
   fclose (f_in);
   fclose (f_out);
+  unlink(inbuff);
   return 1;
 }
 

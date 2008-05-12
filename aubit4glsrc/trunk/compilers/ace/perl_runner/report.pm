@@ -81,7 +81,7 @@ sub reset_aggs {
 		$fmtid=$report->{report}{aggs}{$j}{format_id};
 		$aggtype=$report->{report}{aggs}{$j}{aggtypes};
 
-		$fmtcat=$report->{"report"}{"fmt"}{$fmtid}{"formattype"};
+		$fmtcat=$report->{"report"}{"fmt"}{$fmtid}{"category"};
 		$fmtcol=$report->{"report"}{"fmt"}{$fmtid}{"column"};
 
 	 	if (($fmtcat eq "FORMAT_AFTER_GROUP" or $fmtcat eq "FORMAT_BEFORE_GROUP") && ($thisvar eq $fmtcol)) {
@@ -219,16 +219,21 @@ sub process_expr_complex {
 	my ($expr)=shift @_;
 	my ($left,$right,$op);
 
+	$op=$expr->{"expr"}{"operand"};
+
 	$left=eval_expr($expr->{"expr"}{"expr1"});
 
-	$op=$expr->{"expr"}{"expr_operands"};
 
 	$right=eval_expr($expr->{"expr"}{"expr2"});
 
 # following 2 lines to fix concation problem
-if ( ! defined $right ) { $right=""; }
-if ( ! defined $left ) { $left=""; }
-	if ($op eq "EXPR_CONCAT") {return $left.$right;}
+	if ( ! defined $right ) { $right=""; }
+	if ( ! defined $left ) { $left=""; }
+
+	if ($op eq "EXPR_CONCAT") {
+			return $left.$right;
+		}
+
 	if ($op eq "EXPR_MUL") {return do_math($left,'*',$right);}
 	if ($op eq "EXPR_ADD") {return do_math($left,'+',$right);}
 	if ($op eq "EXPR_SUB") {return do_math($left,'-',$right);}
@@ -422,7 +427,6 @@ sub process_expr_variable {
 
 
 	if ($report->{"report"}{"variables"}{$varid}{"name"} eq "lineno") {
-		print "reading lineno - $lineno\n";
 		$report->{"report"}{"variables"}{$varid}{"dataspace"}=$lineno;
 	}
 
@@ -445,6 +449,32 @@ sub process_expr_variable {
 	return $val;
 }
 
+#------------------------------------------------------------
+#-- A variable
+#--
+#------------------------------------------------------------
+sub process_expr_variable_sub {
+	my ($expr)=shift @_;
+	my ($varid,$val);
+	my  ($subscript_start,$subscript_end,$len);
+
+
+	$val=process_expr_variable($expr->{"var_usage"});
+	if (defined($expr->{"var_usage"}{"subscript1"})) {
+		$subscript_start=eval_expr($expr->{"var_usage"}{"subscript1"});
+		if (defined($expr->{"var_usage"}{"subscript2"})) {
+			$subscript_end=eval_expr($expr->{"var_usage"}{"subscript2"});
+		} else {
+			$subscript_end=$subscript_start;
+		}
+		# print "Substring .. : $subscript_start $subscript_end\n";
+		$len=($subscript_end-$subscript_start)+1;
+		$val=substr($val,$subscript_start-1,$len); # its base 0 ..
+	}
+
+	return $val;
+}
+
 
 #------------------------------------------------------------
 #-- Evaluate an expression.
@@ -458,22 +488,23 @@ sub eval_expr {
 		die("No expression passed in!");
 	}
 
-	$et=$expr->{"exprtype"};
+	$et=$expr->{"type"};
 	if (!defined($et)) {
 		die("No expression type specified");
 	}
-	if ($et eq "EXPRTYPE_NULL") { return process_expr_null($expr); }
-	if ($et eq "EXPRTYPE_INT")  { return process_expr_int($expr); }
-	if ($et eq "EXPRTYPE_DOUBLE")  { return process_expr_double($expr); }
-	if ($et eq "EXPRTYPE_STRING")  { return process_expr_string($expr); }
-	if ($et eq "EXPRTYPE_VARIABLE")  { return process_expr_variable($expr); }
-	if ($et eq "EXPRTYPE_BUILTIN")  { return process_expr_builtin($expr); }
-	if ($et eq "EXPRTYPE_COMPLEX")  { return process_expr_complex($expr); }
-	if ($et eq "EXPRTYPE_SIMPLE")  { return process_expr_simple($expr); }
-	if ($et eq "EXPRTYPE_LIST")  { return process_expr_list($expr); }
-	if ($et eq "EXPRTYPE_COMPARE")  { return process_expr_compare($expr); }
-	if ($et eq "EXPRTYPE_FCALL")  { return process_expr_fcall($expr); }
-	if ($et eq "EXPRTYPE_AGG")  { return process_expr_agg($expr); }
+	if ($et eq "EXPRTYPE_NULL") 		{ return process_expr_null($expr); }
+	if ($et eq "EXPRTYPE_INT")  		{ return process_expr_int($expr); }
+	if ($et eq "EXPRTYPE_DOUBLE")  		{ return process_expr_double($expr); }
+	if ($et eq "EXPRTYPE_STRING")  		{ return process_expr_string($expr); }
+	if ($et eq "EXPRTYPE_VARIABLE")  	{ return process_expr_variable($expr); }
+	if ($et eq "EXPRTYPE_VARIABLE_SUB")  	{ return process_expr_variable_sub($expr); }
+	if ($et eq "EXPRTYPE_BUILTIN")  	{ return process_expr_builtin($expr); }
+	if ($et eq "EXPRTYPE_COMPLEX")  	{ return process_expr_complex($expr); }
+	if ($et eq "EXPRTYPE_SIMPLE")  		{ return process_expr_simple($expr); }
+	if ($et eq "EXPRTYPE_LIST")  		{ return process_expr_list($expr); }
+	if ($et eq "EXPRTYPE_COMPARE") 		{ return process_expr_compare($expr); }
+	if ($et eq "EXPRTYPE_FCALL")  		{ return process_expr_fcall($expr); }
+	if ($et eq "EXPRTYPE_AGG")  		{ return process_expr_agg($expr); }
 
 die "Unknown expression $et\n";
 	
@@ -651,7 +682,7 @@ sub cmd_call 		{
 sub do_command {
 	my ($cmd)=shift @_;
 	my ($ct);
-	$ct=$cmd->{"cmdtypes"};
+	$ct=$cmd->{"cmd_type"};
 	if ($ct eq "CMD_NULL") {return cmd_null($cmd->{"cmd_null"}); }
 	if ($ct eq "CMD_IF") {return cmd_if($cmd->{"cmd_if"});}
 	if ($ct eq "CMD_WHILE") {return cmd_while($cmd->{"cmd_while"});}
@@ -707,19 +738,23 @@ while ($report->{"report"}{"inputs"}{$a}) {
 sub has_format {
 
 my ($category,$data)=@_;
-my($a);
+my($a,$matchto);
 $a=0;
 
 while ($report->{"report"}{"fmt"}{$a}) {
-	if ($report->{"report"}{"fmt"}{$a}{"formattype"} eq $category) {
-
+	if ($report->{"report"}{"fmt"}{$a}{"category"} eq $category) {
 
 		if (!defined($data)) {
 			return $a;
 		}
-
-		if ($data eq $report->{"report"}{"fmt"}{$a}{"column"}) {
-			return $a;
+		if (defined($report->{"report"}{"fmt"}{$a}{"column"})) {
+			$matchto=$report->{"report"}{"fmt"}{$a}{"column"};
+		}  else {
+			$matchto="";
+		}
+	
+		if ($data eq $matchto) {
+				return $a;
 		}
 	}
 	$a++;
@@ -1043,7 +1078,6 @@ for $i (0 .. $#{$ref} ) {
 	# Do before group ofs
 	#
 	#
-
 	# Do the current row...
 	process_format("FORMAT_ON_EVERY_ROW","");
 

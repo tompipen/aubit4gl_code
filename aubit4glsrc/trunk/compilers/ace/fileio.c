@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.12 2008-05-12 08:34:41 mikeaubury Exp $
+# $Id: fileio.c,v 1.13 2008-05-12 11:24:49 mikeaubury Exp $
 #*/
 
 /**
@@ -58,7 +58,7 @@ extern int a4gl_ace_yydebug;	/* defined in y.tab.c */
 /*int yydebug;*/
 /*#endif */
 
-char outputfile[132];
+char outputfile[256]="";
 int lineno;
 int colno;
 int ignorekw = 0;
@@ -173,18 +173,17 @@ compile_ace_report (char *filename)
       		strcat (buff, ".ace");
   		yyin = (FILE *) A4GL_mja_fopen (buff, "r");
 	}
+  	strcpy (outputfilename, c);
 
     }
 
 
   a4gl_ace_yydebug = 0;
-
-
-  strcpy (outputfilename, a);
   /* strcat(outputfilename,".aarc"); */
 
   if (yyin==0) {
   	yyin = (FILE *) A4GL_mja_fopen (c, "r");
+  	strcpy (outputfilename, a);
   }
 
 
