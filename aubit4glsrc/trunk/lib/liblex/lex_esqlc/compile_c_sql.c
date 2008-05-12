@@ -1476,6 +1476,10 @@ int sbuffsz;
 	//free(buff);
 	A4GL_assertion(pcnt!=input_bind->list.list_len,"Did not get the correct parameter sequence");
 	if (need_to_change)  {
+		if (A4GL_isyes(acl_getenv("ERRCHECKPARAM"))) {
+			a4gl_yyerror("This would have caused problems");
+			return "<Blah>";
+		}
 		new_input_bind=malloc(sizeof(struct expr_str_list));
 		new_input_bind->list.list_len=0;
 		new_input_bind->list.list_val=0;
