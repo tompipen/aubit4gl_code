@@ -1,4 +1,24 @@
 ---------------------------
+Tue May 13 21:18:53 BST 2008
+---------------------------
+1.10RC_24 Released
+---------------------------
+	
+	further fixup for MID 0001133: Type casting doesn't work in *.4gl
+	programs.
+	
+	Add :	      call aclfgl_send_to_ui("MAXIMISE")	 call
+	aclfgl_send_to_ui("MINIMISE")	      call
+	aclfgl_send_to_ui("UNMAXIMISE") 	call
+	aclfgl_send_to_ui("UNMIMINISE") for HL_GTK
+	
+	File format fixups
+	
+	ACE fixups
+	
+	Some tidy ups on the compilers to make them more consistent
+	
+---------------------------
 Mon May 12 13:47:54 BST 2008
 ---------------------------
 1.10RC_23 Released
