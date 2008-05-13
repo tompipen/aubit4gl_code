@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.39 2008-05-01 15:47:32 mikeaubury Exp $
+# $Id: pg8.c,v 1.40 2008-05-13 19:54:17 mikeaubury Exp $
 #*/
 
 
@@ -2775,7 +2775,17 @@ int a;
 	      if (A4GL_isnull
 		  (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
 		{
-		  strcat (buff2, "NULL");
+		
+		  switch (ibind[param].dtype) {
+
+	
+			case DTYPE_DATE:
+		  		strcat (buff2, "(NULL::date)");
+				break;
+			default:
+		  		strcat (buff2, "NULL");
+				break;
+		}
 		}
 	      else
 		{
