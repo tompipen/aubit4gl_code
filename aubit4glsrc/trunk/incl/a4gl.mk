@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.62 2007-06-13 16:36:19 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.63 2008-05-13 20:29:06 mikeaubury Exp $
 
 ##########################################################################
 #
@@ -126,26 +126,14 @@ AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ###########################
 # A4GL C-code Compiler command
 #do we want to use 4glpc shell script, or will we invoke 4glc directly
-ifdef COMSPEC
-	#We are on Windows
-	ifeq "${MINGW}" ""
-		#On Windows, but not using MinGW - so we are using CygWin
-		#on CygWin (not MinGW) we have to use 4glpc because of the bug in 
-		#CygWin implementation of getopt_long()
-		USE_4GLPC	=1
-	else
-		#On Windows, using MinGW
-		#We should use 4glc since we may not have shell installed
-		#and 3glpc is a shell script
-		USE_4GLPC	=0
-	endif
-endif
+USE_4GLPC	=1
+
 ifeq "${USE_4GLPC}" "1"
 	#We are forced to use 4glpc
 	ifneq "${FGLPCEXEC}" ""
-		A4GL_FGLC	=${FGLPCEXEC}
+		A4GL_FGLC	=4glpc -fPIC
 	else
-		A4GL_FGLC	=4glpc
+		A4GL_FGLC	=4glpc -fPIC
 	endif
 	A4GL_CC_CMD     =${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
 else
