@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile_4gl.c,v 1.1 2008-05-06 20:06:16 mikeaubury Exp $
+# $Id: decompile_4gl.c,v 1.2 2008-05-13 07:03:21 mikeaubury Exp $
 #
 */
 
@@ -47,6 +47,22 @@
 =====================================================================
 */
 
+static void show_usage(char *argv0) {
+        printf ("Usage:\n");
+	printf (" Using common files :\n");
+	printf ("    %s filename [modulename]\n", argv0);
+	printf ("    When using common files you need two shared 4gl modules which are not form dependant :\n");
+      	printf ("       %s --generate-global    Generate the shared helper module 'global.4gl'\n", argv0);
+      	printf ("       %s --generate-common    Generate the shared helper module 'common.4gl'\n", argv0);
+	printf ("    for security - these are written to stdout - you should redirect them manually - eg:\n");
+	printf ("       %s --generate-global > global.4gl\n",argv0);
+	printf ("       %s --generate-common > common.4gl\n",argv0);
+	printf ("\n");
+	printf (" Using one single file :\n");
+	printf ("    %s --single-file filename [modulename]\n", argv0);
+}
+
+
 int main (int argc, char *argv[])
 {
   struct struct_form the_form;
@@ -57,22 +73,18 @@ int main (int argc, char *argv[])
   char *module;
   char form[32];
 
+  A4GL_fgl_start(argc,argv);
+
   if (argc < 2)
     {
-        printf ("Usage:\n");
-	printf (" Using common files :\n");
-	printf ("    %s filename [modulename]\n", argv[0]);
-	printf ("    When using common files you need two shared 4gl modules which are not form dependant :\n");
-      	printf ("       %s --generate-global    Generate the shared helper module 'global.4gl'\n", argv[0]);
-      	printf ("       %s --generate-common    Generate the shared helper module 'common.4gl'\n", argv[0]);
-	printf ("    for security - these are written to stdout - you should redirect them manually - eg:\n");
-	printf ("       %s --generate-global > global.4gl\n",argv[0]);
-	printf ("       %s --generate-common > common.4gl\n",argv[0]);
-	printf ("\n");
-	printf (" Using one single file :\n");
-	printf ("    %s --single-file filename [modulename]\n", argv[0]);
+	show_usage(argv[0]);
         exit (0);
     }
+
+  if (strcmp(argv[1],"-?")==0|| strcmp(argv[1],"-h")==0) {
+	show_usage(argv[0]);
+        exit (0);
+  }
 
   if (strcmp(argv[1],"--generate-global")==0) {
 			dump_global_4gl();
@@ -96,9 +108,12 @@ int main (int argc, char *argv[])
   memset (&the_form, 0, sizeof (struct_form));
 
   strcpy(form,argv[offset]);
-  strcat(form,".afr");
-  A4GL_debug("opening form %s\n",form);
   a = A4GL_read_data_from_file ("struct_form", &the_form, form);
+  if (!a) {
+  	strcat(form,".afr");
+  	A4GL_debug("opening form %s\n",form);
+  	a = A4GL_read_data_from_file ("struct_form", &the_form, form);
+  }
 
   if (!a)
     {

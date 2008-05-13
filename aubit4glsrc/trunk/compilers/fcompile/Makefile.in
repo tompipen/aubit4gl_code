@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.69 2008-05-06 20:06:15 mikeaubury Exp $
+# $Id: Makefile.in,v 1.70 2008-05-13 07:03:20 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -42,7 +42,7 @@ CFLAGS 			+=${C_LOCAL_IFLAGS} @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 EXE_CFLAGS      +=-I${ROOT}/lib/libincl -I. ${C_IFLAGS}
 
-ALL	 			=${ROOT}/bin/fcompile ${ROOT}/bin/fdecompile ${ROOT}/bin/fshow ${ROOT}/bin/default_frm
+ALL	 			=${ROOT}/bin/fcompile ${ROOT}/bin/fdecompile ${ROOT}/bin/fshow ${ROOT}/bin/default_frm ${ROOT}/bin/formgen_4gl
 
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=${ROOT}/bin/fdecompile-j
@@ -183,7 +183,7 @@ dump_form.o: dump_form.c common.h global.h
 	${CC} ${CFLAGS} -c dump_form.c
 	
 
-formgen_4gl : dump_form.o decompile_4gl.o 
+${ROOT}/bin/formgen_4gl : dump_form.o decompile_4gl.o 
 	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
 
 make_binfiles: make_binfiles.c

@@ -135,11 +135,11 @@ REPLACE_SQLCONST user = cast(user as char(8))
 #REPLACE_SQLCONST today = date(now())
 REPLACE_SQLCONST today = current_date
 REPLACE_SQLCONST time = current_time(0)
-REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)::int
-REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)::int
-REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)::int
-REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)::int
-REPLACE_SQLFUNC weekday = date_part('DOW',%s::timestamp with time zone)::int
+REPLACE_SQLFUNC year = date_part('YEAR',(%s)::timestamp with time zone)::int
+REPLACE_SQLFUNC month = date_part('MONTH',(%s)::timestamp with time zone)::int
+REPLACE_SQLFUNC day = date_part('DAY',(%s)::timestamp with time zone)::int
+REPLACE_SQLFUNC dow = date_part('DOW',(%s)::timestamp with time zone)::int
+REPLACE_SQLFUNC weekday = date_part('DOW',(%s)::timestamp with time zone)::int
 REPLACE_SQLFUNC nvl = COALESCE(%s)
 
 REPLACE_SQLFUNC ascii = chr(%s)
