@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.22 2008-02-15 14:56:26 mikeaubury Exp $
+# $Id: Makefile,v 1.23 2008-05-15 13:40:59 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -63,6 +63,7 @@ LIBPACKERXML_PATH   =libpacker/xml
 LIBPACKERGZPACKED_PATH   =libpacker/gzpacked
 
 LIBLEXPERL_PATH		=liblex/lex_perl
+LIBLEXWRITE_PATH		=liblex/lex_write
 #OBSOLETE - LIBLEXC_PATH   		=liblex/lex_c
 LIBLEXEC_PATH  		=liblex/lex_esqlc
 
@@ -160,6 +161,8 @@ LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h
 					$(wildcard ${LIBLEXEC_PATH}/Makefile) ${ALL_H}
 LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
 					$(wildcard ${LIBLEXPERL_PATH}/Makefile) ${ALL_H}
+LIBLEXWRITE_DEPS		=$(wildcard ${LIBLEXWRITE_PATH}/*.c) $(wildcard ${LIBLEXWRITE_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
+					$(wildcard ${LIBLEXWRITE_PATH}/Makefile) ${ALL_H}
 					
 					
 LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXREPORTPDF_PATH}/*.h) \
@@ -268,6 +271,10 @@ endif
 LEX_PERL: ${PLUGINDIR}/libLEX_PERL${SO_EXT}
 ${PLUGINDIR}/libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
 	${MAKE} -C ${LIBLEXPERL_PATH}
+
+LEX_WRITE: ${PLUGINDIR}/libLEX_WRITE${SO_EXT}
+${PLUGINDIR}/libLEX_WRITE${SO_EXT}: ${LIBLEXWRITE_DEPS}
+	${MAKE} -C ${LIBLEXWRITE_PATH}
 
 #Note: Both C and EC are now build from same dir; liblex/lex_c dir is obsolete
 ${PLUGINDIR}/libLEX_C${SO_EXT} ${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}

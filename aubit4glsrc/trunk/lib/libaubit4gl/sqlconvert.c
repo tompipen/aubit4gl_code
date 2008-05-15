@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.151 2008-05-01 19:46:23 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.152 2008-05-15 13:41:00 mikeaubury Exp $
 #
 */
 
@@ -75,7 +75,21 @@ int if_stack_cnt=0;
 static int match_strncasecmp(char *s1,char *s2,int len);
 #include "generated/sql_convert_constants.h"
 
-
+enum cond_conditions {
+	COND_NOT_SET,
+	INT_EQ,
+	INT_NE,
+	INT_LE,
+	INT_GE,
+	INT_LT,
+	INT_GT,
+	STR_EQ,
+	STR_NE,
+	STR_LE,
+	STR_GE,
+	STR_LT,
+	STR_GT,
+};
 
 
 struct s_replace
@@ -449,8 +463,10 @@ static void read_conversion_file(FILE *fh,char *name) {
   char *t;
   int len;
 int line=0;
+char thisline[2000];
   static struct cvsql_data *conversion_rules = 0;
   static int conversion_rules_cnt = 0;
+
 
   /* each line of the file consists of a function name and
    * optional arguments.  Ignore lines starting with "#".
@@ -463,12 +479,13 @@ int line=0;
       if (*t == '#')
 	continue;
 
+	sprintf(thisline,"File %s Line : %d ", name, line);
 //printf("t=%s len=%d\n",t,len);
 	if (strncmp(t,"IF",len)==0) {
 			char ptest[200]="<notset>";
 			char pval[200]="<notset>";
 			char *p1;
-			char *cond=0;
+			enum cond_conditions cond=COND_NOT_SET;
 			int ok=0;
 			t+=len;
 			while (*t==' ') {
@@ -477,50 +494,112 @@ int line=0;
 			// Lets split the IF into its component parts..
        			p1=A4GL_cv_next_token (t, &len, 0);
 			if (p1==0) {
+				FPRINTF(stderr, "%s\n", thisline);
 				A4GL_assertion(1,"Invalid condition in convertion file IF");
 			}
 			strncpy(ptest,p1,len); ptest[len]=0;
 			t+=len;
 			while (*t==' ') t++;
       			t = A4GL_cv_next_token (t, &len, 0);
+
+			// String comparisions
       			if (t && len == 1 && strncmp(t,"=",1)==0) {
-				cond="=";
+				cond=STR_EQ;
 	  			p1 = A4GL_cv_next_token ((t + len), &len, 0);
 			} 
+      			if (t && len == 1 && strncmp(t,"<",1)==0) { cond=STR_LT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 1 && strncmp(t,">",1)==0) { cond=STR_GT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+
       			if (t && len == 2 && (strncmp(t,"!=",1)==0 || strncmp(t,"<>",1)==0)) {
-				cond="!=";
+				cond=STR_NE;
 	  			p1 = A4GL_cv_next_token ((t + len), &len, 0);
 			} 
 
-			if (cond==0) {
-				A4GL_assertion(1,"No condition when reading conversion file");
+      			if (t && len == 2 && (strncmp(t,">=",1)==0) ) { cond=STR_GE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 2 && (strncmp(t,"<=",1)==0) ) { cond=STR_LE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+
+			// Integer comparisons
+      			if (t && len == 2 && (strncmp(t,"eq",1)==0) ) { cond=INT_EQ; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 2 && (strncmp(t,"ne",1)==0) ) { cond=INT_NE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 2 && (strncmp(t,"ge",1)==0) ) { cond=INT_GE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 2 && (strncmp(t,"gt",1)==0) ) { cond=INT_GT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 2 && (strncmp(t,"le",1)==0) ) { cond=INT_LE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+      			if (t && len == 2 && (strncmp(t,"lt",1)==0) ) { cond=INT_LT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+
+
+			if (cond==COND_NOT_SET) {
+				FPRINTF(stderr, "%s\n", thisline);
+				FPRINTF(stderr, "Got : %s, expecteding <,>, =,>=,<=,!=, <>, ne, eq, ge, gt,lt,lr\n",t);
+				A4GL_assertion(1,"No valid condition on an IF when reading conversion file");
+				return;
 			}
 			strncpy(pval,p1,len); pval[len]=0;
 
 			if (strcmp(pval,"<notset>")==0) {
+				FPRINTF(stderr, "%s\n", thisline);
 				A4GL_assertion(1,"Invalid condition in convertion file IF");
+				return;
 			}
 
-			// Test for equality ...
-			if (A4GL_cv_str_to_func(ptest,strlen(ptest),0) && A4GLSQLCV_check_requirement (ptest)) {
-				if (A4GL_isyes(pval)) {
-					ok=1;
-				} else {
-					ok=0;
-				}
-			} else {
-				if (strcmp(acl_getenv(ptest),pval)==0) {
-					ok=1;
-				} else {
-					ok=0;
-				}
+			ok=0;
+			switch (cond) {
+				case STR_EQ:
+				case STR_NE:
+				case STR_GT:
+				case STR_LT:
+				case STR_GE:
+				case STR_LE:
+
+					// Test for equality ...
+					if (A4GL_cv_str_to_func(ptest,strlen(ptest),0) && A4GLSQLCV_check_requirement (ptest)) {
+						if (A4GL_isyes(pval)) {
+							
+							ok=1;
+						} else {
+							ok=0;
+						}
+						if (cond==STR_NE) {
+							ok=!ok;
+						}
+					} else {
+						int comp;
+						comp=strcmp(acl_getenv(ptest),pval);
+						if (cond==STR_EQ) ok=(comp==0);
+						if (cond==STR_NE) ok=(comp!=0);
+						if (cond==STR_LT) ok=(comp<0);
+						if (cond==STR_LE) ok=(comp<=0);
+						if (cond==STR_GT) ok=(comp>0);
+						if (cond==STR_GE) ok=(comp>=0);
+					}
+					break;
+				case INT_EQ:
+				case INT_NE:
+				case INT_GT:
+				case INT_LT:
+				case INT_GE:
+				case INT_LE:
+					{
+						int t1;
+						int t2;
+						t1=atoi(acl_getenv(ptest));
+						t2=atoi(pval);
+						if (cond==STR_EQ) ok=(t1==t2);
+						if (cond==STR_NE) ok=(t1!=t2);
+						if (cond==STR_LT) ok=(t1<t2);
+						if (cond==STR_LE) ok=(t1<=t2);
+						if (cond==STR_GT) ok=(t1>t2);
+						if (cond==STR_GE) ok=(t1>=t2);
+						
+					}
+					break;
+				default: 
+					FPRINTF(stderr,"%s\n", thisline);
+					A4GL_assertion(1,"SHould not happen");
+					
 			}
 
-			// Now - If we're doing a != - just invert our equality test...
-			if (strcmp(cond,"!=")==0) {
-				ok=!ok;
-			}
-			A4GL_debug("%s %s %s, %d",ptest,cond,pval,ok);
+
+			A4GL_debug("%s %d %s, %d",ptest,cond,pval,ok);
 			// Add it to our if stack...
 			if_stack[if_stack_cnt++]=ok;
 			continue;
@@ -533,7 +612,10 @@ int line=0;
 
 	if (strncmp(t,"ENDIF",len)==0) {
 		if_stack_cnt--;
-		A4GL_assertion(if_stack_cnt<0,"IF stack confused while reading conversion file");
+		if (if_stack_cnt<0) {
+			FPRINTF(stderr, "%s\n", thisline);
+			A4GL_assertion(1,"IF stack confused while reading conversion file");
+		}
 		continue;
 	} 
 
@@ -547,7 +629,23 @@ int line=0;
 		}
 		if (!ok) continue; // Get the next line - we're not processing this one..
 	}
+	if (strncmp(t,"PRINT",len)==0) {
+		char *p1;
+       		p1=strchr(t,' ');
+		if (p1) {
+			PRINTF("SQLCONVERT (%s): %s\n",thisline, p1);
+		}
+		continue;
+	}
 
+	if (strncmp(t,"DEBUG",len)==0) {
+		char *p1;
+       		p1=strchr(t,' ');
+		if (p1) {
+			A4GL_debug("SQLCONVERT (%s): %s\n",thisline, p1);
+		}
+		continue;
+	}
 
 	if (strncmp(t,"INCLUDE",len)==0) {
 		char buff_sm[2000];
@@ -582,6 +680,7 @@ int line=0;
 	    		fh_new=cnfopen(path, buff_sm);
 		}
 	 	if (!fh_new) {
+			FPRINTF(stderr,"%s\n", thisline);
 			FPRINTF(stderr,"FILE : %s\n", p1);
 			A4GL_assertion(1,"Unable to open sql convertion file used in an INCLUDE");
 		}
@@ -657,6 +756,7 @@ int line=0;
 
     }
 if ( if_stack_cnt!=0) {
+	FPRINTF(stderr,"%s\n", thisline);
 	A4GL_assertion(1,"IF stack corrupted");
  }
 

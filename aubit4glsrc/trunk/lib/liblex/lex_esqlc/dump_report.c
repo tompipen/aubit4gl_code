@@ -461,6 +461,12 @@ pr_nongroup_report_agg_clr(aggregates);
 	printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING; goto rep_ctrl%d_%d;}\n", report_cnt, a);
 	}
 
+      /* on every row */
+      if (rf->entries.entries_val  [a]->rb_block.rb == RB_FORMAT_EVERY_ROW) {
+	printed_every=1;
+	printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_NOTHING; goto rep_ctrl%d_%d;}\n", report_cnt, a);
+      }
+
       /* before group of */
       if (rf->entries.entries_val  [a]->rb_block.rb ==  RB_BEFORE_GROUP_OF)
 	printc

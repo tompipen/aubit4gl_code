@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.313 2008-05-08 14:22:23 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.314 2008-05-15 13:40:57 mikeaubury Exp $
 #
 */
 
@@ -1593,6 +1593,9 @@ void A4GL_push_decimal_str(char *p);
   int A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size);
   void A4GL_set_convmatrix (int dtype1, int dtype2, void *ptr);
   void A4GL_assertion (int a, char *s);
+
+#define A4GL_assertion(a,b) A4GL_assertion_full(a,b,__FILE__,__LINE__)
+void A4GL_assertion_full (int a, char *s, char *mod, int ln);
 int A4GL_stodec (void *a, void *z, int size);
 int A4GL_stol (void *aa, void *zi, int sz_ignore);
 int A4GL_valid_int (char *s, int *data, int size);

@@ -34,6 +34,9 @@ static int asserting=0;
 }
 
 
+#ifdef A4GL_assertion 
+#undef  A4GL_assertion
+#endif
 
 /**
  * Assert if an expression is true.
@@ -49,6 +52,28 @@ A4GL_assertion (int a, char *s)
 /* A4GL_debug("Assertion ? a=%d s=%s",a,s); */
 if (a) {
 	A4GL_assertion_failed(s);
+}
+}
+
+
+#
+
+/**
+ * Assert if an expression is true.
+ *
+ * @param a The result of the expression:
+ *   - 0 : The expression was true.
+ *   - Otherwise : The expression was not true.
+ * @param s The message if the expression is not true.
+ */
+void
+A4GL_assertion_full (int a, char *s,char *mod, int ln)
+{
+/* A4GL_debug("Assertion ? a=%d s=%s",a,s); */
+if (a) {
+	char buff[2000];
+	sprintf(buff,"%s (File:%s Line:%d)",s, mod,ln);
+	A4GL_assertion_failed(buff);
 }
 }
 

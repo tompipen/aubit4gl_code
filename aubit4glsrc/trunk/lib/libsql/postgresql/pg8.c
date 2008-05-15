@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.40 2008-05-13 19:54:17 mikeaubury Exp $
+# $Id: pg8.c,v 1.41 2008-05-15 13:41:01 mikeaubury Exp $
 #*/
 
 
@@ -177,17 +177,15 @@ char *p = NULL;
     char uname_acl[256];
     char passwd_acl[256];
 static int loaded=0;
-
+      PGresult *res = 0;
+char versionBuff[200];
+char *ptr;
 
   int i;
 
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
-  if (!loaded) {
-	loaded++;
-	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
-  }
 
   envname = acl_getenv ("PG_DBPATH");
 
@@ -317,28 +315,36 @@ static int loaded=0;
 
     }
   PQsetNoticeProcessor (current_con, defaultNoticeProcessor, 0);
+
+
+
+
   CanUseSavepoints = 0;
   if (current_con)
     {
-      PGresult *res = 0;
       PGresult *res2 = 0;
 
 #if  ( PG_VERSION_NUM > 80100 )
-      currServerVersion = PQserverVersion (current_con);
+        currServerVersion = PQserverVersion (current_con);
+	
       if (currServerVersion >= 80100)
 	{
+	
 	  if (!A4GL_isyes (acl_getenv ("DISABLESAVEPOINTS")))
 	    {
 	      CanUseSavepoints = 1;
 	    }
 	}
 #else
+	{
+	char *ptr;
       // work it out by trying it..
       res2 = PQexec (current_con, "BEGIN WORK");
       PQclear (res2);
       res = PQexec (current_con, "SAVEPOINT pr1");
       res2 = PQexec (current_con, "COMMIT WORK");
       PQclear (res2);
+
       if (PQresultStatus (res) == PGRES_COMMAND_OK)
 	{
 	  if (!A4GL_isyes (acl_getenv ("DISABLESAVEPOINTS")))
@@ -346,10 +352,43 @@ static int loaded=0;
 	      CanUseSavepoints = 1;
 	    }
 	}
-      PQclear (res);
+
+      	PQclear (res);
+
+
+
+	}
 #endif
     }
 
+	res=PQexec(current_con, "SELECT version()");
+	ptr=PQgetvalue (res, 0, 0);
+	if (strcmp(ptr,"7.4informix1.8")==0) {
+  		A4GL_setenv("A4GL_PATCHEDPG","Y",1);
+  			A4GL_setenv("A4GL_PGVERSION","70408",1);
+	} else {
+		ptr=strchr(ptr,' ');
+		if (ptr) {
+			char buff2[200];
+			int maj,min,rev;
+			int a;
+			int b=0;
+  			sprintf(buff2,"%s",ptr+1);
+			ptr=strchr(buff2,' ');
+			if (ptr) {*ptr=0; }
+			a=sscanf(buff2,"%d.%d.%d",&maj,&min,&rev);
+			if (a==3) {
+				sprintf(versionBuff,"%d%02d%02d",maj,min,rev);
+  				A4GL_setenv("A4GL_PGVERSION",versionBuff,1);
+			}
+		}
+        	PQclear (res);
+	}
+
+  if (!loaded) {
+	loaded++;
+	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
+  }
 
   A4GL_add_pointer ("default", SESSCODE, current_con);
   return 0;

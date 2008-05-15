@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.54 2008-04-15 08:57:54 mikeaubury Exp $
+# $Id: sql_common.c,v 1.55 2008-05-15 13:40:59 mikeaubury Exp $
 #
 */
 
@@ -1666,5 +1666,12 @@ char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr) {
 
       return 0;
     }
+
+
+
+
+char *A4GL_get_clobbered_from(char *s) {
+	return s;
+}
 
 // ================================ EOF ================================

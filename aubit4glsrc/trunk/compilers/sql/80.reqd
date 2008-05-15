@@ -1,7 +1,9 @@
 identifier: NAMED | reserved_word
 ;
 
-fetch_cursor_name_p: NAMED
+fetch_cursor_name_p: NAMED {
+                      $<ptr>$=A4GL_new_expr_simple_string(A4GL_get_clobbered_from($<str>$), ET_EXPR_IDENTIFIER);
+	}
 ;
 
 real_number : NUMBER_VALUE 

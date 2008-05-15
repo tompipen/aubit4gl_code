@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.63 2008-05-13 20:29:06 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.64 2008-05-15 13:40:57 mikeaubury Exp $
 
 ##########################################################################
 #
@@ -131,9 +131,9 @@ USE_4GLPC	=1
 ifeq "${USE_4GLPC}" "1"
 	#We are forced to use 4glpc
 	ifneq "${FGLPCEXEC}" ""
-		A4GL_FGLC	=4glpc -fPIC
+		A4GL_FGLC	=4glpc ${PIC}
 	else
-		A4GL_FGLC	=4glpc -fPIC
+		A4GL_FGLC	=4glpc ${PIC}
 	endif
 	A4GL_CC_CMD     =${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
 else

@@ -2150,14 +2150,21 @@ return 0;
 }
 
 
+#ifdef A4GL_assertion
+#undef A4GL_assertion
+#endif
+
 int A4GL_assertion(int n, char *s) {
 if (n) {
-printf("%s\n",s);
-exit(2);
+	printf("%s\n",s);
+	exit(2);
 }
 return 0;
 }
 
+int A4GL_assertion_full(int n, char *s,char *mod, int ln) {
+	A4GL_assertion(n,s);
+}
 
 
 static void local_trim (char *p)

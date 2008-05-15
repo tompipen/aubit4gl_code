@@ -184,7 +184,9 @@ strcpy(buff,"");
         fake_select.where_clause = 0;
         if (updateCmd->where_clause)
           {
-            fake_select.where_clause = updateCmd->where_clause->expr_str_u.sl_item;
+            if (updateCmd->where_clause->expr_type != ET_EXPR_WHERE_CURRENT_OF) {
+            	fake_select.where_clause = updateCmd->where_clause->expr_str_u.sl_item;
+		}
           }
         fake_select.group_by = 0;
         fake_select.next = 0;

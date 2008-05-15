@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.133 2008-04-14 09:23:45 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.134 2008-05-15 13:40:59 mikeaubury Exp $
 #
 */
 
@@ -432,14 +432,18 @@ A4GL_isno (char *s)
 void
 A4GL_generateError (char *str, char *fileName, int lineno)
 {
+char *rprog;
+rprog=A4GL_get_running_program();
+if (rprog==0) rprog="Unknown";
+if (fileName==0) fileName="Unknown";
 if (A4GL_get_err_txt()) {
-      SPRINTF6 (str, "Program %s stopped at '%s', line number %d.\nError status number %d.\n[%s]\n%s.\n", A4GL_get_running_program(),
+      SPRINTF6 (str, "Program %s stopped at '%s', line number %d.\nError status number %d.\n[%s]\n%s.\n", rprog,
 	       fileName,
 	       lineno,
 	       (int) a4gl_status, A4GL_get_err_txt(),
 	       A4GL_err_print (a4gl_status, a4gl_sqlca.sqlerrm));
 } else {
-      SPRINTF5 (str, "Program %s stopped at '%s', line number %d.\nError status number %d.\n%s.\n", A4GL_get_running_program(),
+      SPRINTF5 (str, "Program %s stopped at '%s', line number %d.\nError status number %d.\n%s.\n", rprog,
 	       fileName,
 	       lineno,
 	       (int) a4gl_status,
@@ -459,8 +463,11 @@ if (A4GL_get_err_txt()) {
 static void
 A4GL_generateErrorSkipped (char *str, char *fileName, int lineno)
 {
+char *rprog;
+rprog=A4GL_get_running_program();
+if (rprog==0) rprog="Unknown";
       SPRINTF5 (str,
-	       "Program %s CONTINUEd after error at '%s', line number %d.\nError status number %d.\n%s.\n", A4GL_get_running_program(),
+	       "Program %s CONTINUEd after error at '%s', line number %d.\nError status number %d.\n%s.\n", rprog,
 	       fileName,
 	       lineno,
 	       (int) a4gl_status,
@@ -493,6 +500,8 @@ A4GL_chk_err (int lineno, char *fname)
   char s[2048];
   char *errhook=0;
 static int dying=0;
+
+
 #ifdef DEBUG
   {
     A4GL_debug ("Checking exit status %d %s",lineno,fname);
@@ -534,6 +543,9 @@ static int dying=0;
 #ifdef DEBUG
       A4GL_debug ("Write error to screen...");
 #endif
+   
+	if (fname==0) fname="Unknown";
+
       if (strcmp (fname, "Unknown") != 0 && A4GL_has_errorlog ())
 	{
 	  A4GL_push_char (s);

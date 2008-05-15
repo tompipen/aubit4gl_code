@@ -23730,7 +23730,7 @@ fi
 ALL_LIBS="$NEED_4GLC_ALL_libs $NEED_4GLPC_ALL_libs"
 
 ALL_PLUGINS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MSG_NATIVE UI_CONSOLE \
-		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_report \
+		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_report LEX_WRITE \
 		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA \
 		SQLPARSE_NONE SQLPARSE_INFORMIX DATA_module_definition \
 		$LIBLOGICAL_BUILD"
@@ -62103,7 +62103,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.406 2008-04-17 07:28:56 mikeaubury Exp $
+| $Id: configure,v 1.407 2008-05-15 13:39:55 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

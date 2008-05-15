@@ -665,6 +665,16 @@ end if
 
 	END CASE
 
+
+	if lv_arg matches "--sqltype=*"	then
+			let mv_sqltype=lv_arg
+			# Skip the "--sqltype=*"		
+			let mv_sqltype=mv_sqltype[11, 255]
+			#display "A4GL_SQLTYPE=",mv_sqltype clipped
+			call aclfgl_setenv("A4GL_SQLTYPE",mv_sqltype clipped)
+		continue for
+	end if
+
 	# If we get to here its either a compile option thats not recognised or
 	# its a filename...
 
