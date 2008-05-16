@@ -409,7 +409,10 @@ currfunc=f->funcname;
 
    for (a=0;a<f->variables.variables.variables_len;a++) {
 		char *localname;
+		struct variable *v;
+		v=f->variables.variables.variables_val[a];
 		localname=f->variables.variables.variables_val[a]->names.names.names_val[0].name;
+		//printf("Checking %s flags=%d v->usage=%d assigned=%d\n", localname,f->variables.variables.variables_val[a]->flags, v->usage, v->assigned);
 
 		check_variable_name(d->module_name, "Local", f->variables.variables.variables_val[a]);
 

@@ -1035,7 +1035,9 @@ struct command *new_unload_cmd(expr_str *connid, expr_str * p_sql, struct expr_s
 struct command *c;
    c=new_command(E_CMD_UNLOAD_CMD);
    c->cmd_data.command_data_u.unload_cmd.connid=connid;
+
    c->cmd_data.command_data_u.unload_cmd.sql=p_sql;
+
    c->cmd_data.command_data_u.unload_cmd.filename=p_filename;
    c->cmd_data.command_data_u.unload_cmd.delimiter=p_delimiter;
    //c->cmd_data.command_data_u.unload_cmd.inbind=p_inbind;

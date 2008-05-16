@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.35 2008-05-06 21:27:50 mikeaubury Exp $
+# $Id: Makefile,v 1.36 2008-05-16 08:35:37 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -110,7 +110,7 @@ ifdef COMSPEC
     4GL_LIB     =-l4glc
 endif
 
-ALL				+=${ROOT}/bin/4glc
+ALL				+=${ROOT}/bin/4glc fgllint
 
 C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
 #-I${ROOT}/lib -I${ROOT}/lib/libincl

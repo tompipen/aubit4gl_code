@@ -20,8 +20,7 @@ fgl_expr_c :
 	| builtin_expr
 	| pdf_expr
 	| literal_expr 
-	| variable_entry {
-	}
+	| variable_entry 
 	| KW_MINUS fgl_expr_c %prec UMINUS	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
 	}
@@ -215,9 +214,11 @@ variable_entry :
 				a4gl_yyerror(errbuff);
 				YYERROR;
 			}
+			inc_var_usage($<ptr>$);
 	}
 	| variable_usage_expression OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
 		$<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1)); 
+		inc_var_usage($<ptr>$);
 	}
 	| variable_usage_expression THRU variable_usage_expression {
 		char errbuff[256];
@@ -225,12 +226,8 @@ variable_entry :
                 $<ptr>$->expr_type=ET_EXPR_THROUGH;
                 A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
                 A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
-/*
-		$<ptr>$=A4GL_new_expr_list();
-                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
-                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
-*/
 		$<ptr>$=ensure_variable(errbuff,$<ptr>$,1);
+		inc_var_usage($<ptr>$);
 		if ($<ptr>$==0) {
 			a4gl_yyerror(errbuff);
 			YYERROR;

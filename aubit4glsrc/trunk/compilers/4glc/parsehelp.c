@@ -2387,6 +2387,7 @@ struct expr_str *ensure_variable(char *errbuff, struct expr_str *ptr, int err_if
 if (!set_var_dtype(errbuff, ptr, err_if_whole_array)) {
 	ptr=0;
 }
+
 return ptr;
 }
 
