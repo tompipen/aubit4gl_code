@@ -168,7 +168,9 @@ expanded_ibind_var_list: e_ibind_var_list {
 
 
 expanded_obind_var_list: obind_var_list {
+		int a;
 		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1); 
+		inc_var_assigned_from_binding_list($<ptr_list>$);
 	}
 ;
 

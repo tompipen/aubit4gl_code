@@ -2075,6 +2075,7 @@ struct s_select_list_item *rval=NULL;
 					e=elist->list.list_val[a];
 					ensure_variable(errbuff, e,1);
 					local_add_select_list_item_list(slist, new_select_list_item_variable_usage(e->expr_str_u.expr_variable_usage));
+					inc_var_usage(e);
 		}
 		rval=new_select_list_item_variable_usage_list(slist);
 		return rval;
@@ -2086,6 +2087,7 @@ struct s_select_list_item *rval=NULL;
 		//struct expr_str_list *l;
 		int is_record=0;
 		variable_usage *u;
+		inc_var_usage(e);
 		u=usage_bottom_level(e->expr_str_u.expr_variable_usage);
 		if (u->datatype==-2) {
 				is_record=1;
