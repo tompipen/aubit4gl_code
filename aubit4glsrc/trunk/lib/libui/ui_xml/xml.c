@@ -1059,16 +1059,22 @@ int
 UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 {
   struct s_screenio *sreal;
+int context;
   sreal = s;
 
   A4GL_debug ("FORM LOOP\n");
+
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) s) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();	// Context..
 
   if (init)
     {
       //A4GL_push_char("XML");
       //A4GL_push_int(((long)s) &0xffffffff);
-
       uilib_set_field_list_directly ((char *) sreal->field_list);
+      clr_exiting_context (context);
 
 
       if (sreal->mode == MODE_CONSTRUCT)
@@ -1109,13 +1115,6 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
   while (1)
     {
       int a = 0;
-      int context = 0;
-
-      A4GL_push_char ("XML");
-      A4GL_push_int (((long) s) & 0xffffffff);
-      uilib_get_context (2);
-      context = A4GL_pop_int ();	// Context..
-
 
       if (isset_exiting_context(context,0)) {
 		clr_exiting_context (context);
@@ -1701,6 +1700,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
       A4GL_push_int ((long) vinp & (0xffffffff));
       uilib_get_context (2);
       context = A4GL_pop_long ();
+      clr_exiting_context (context);
 
       ninp = A4GL_get_count ();
 
