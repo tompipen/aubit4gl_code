@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.418 2008-05-11 22:13:49 mikeaubury Exp $
+# $Id: compile_c.c,v 1.419 2008-05-20 12:54:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.418 2008-05-11 22:13:49 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.419 2008-05-20 12:54:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1615,8 +1615,11 @@ real_print_expr (struct expr_str *ptr)
 
 	case ET_EXPR_MEMBER_FCALL:
 	    {
+        a4gl_yyerror("Member calls are not implemented yet");
+         return ;
+      printf("line_for_cmd=%d\n",line_for_cmd);
 		A4GL_assertion(1,"Not implemented yet");
-#ifdef FIXME
+#ifdef  NOT_YET
 	      int a;
 	      struct expr_str_list *l;
 	      struct s_expr_member_function_call *p;
@@ -1634,9 +1637,7 @@ real_print_expr (struct expr_str *ptr)
 		}
 	      printc ("{");
 	      printc ("      int _retvars;");
-
   	      printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", p->lib, scan_variable (p->lib), p->fname, A4GL_new_list_get_count (p->parameters));
-
 	      printc ("      if (_retvars!=1) {");
 	      printc ("          A4GLSQL_set_status(-3001,0);");
 	      printc ("          A4GL_chk_err(%d,\"%s\");", p->line, p->module);
@@ -1644,7 +1645,6 @@ real_print_expr (struct expr_str *ptr)
 	      printc ("          A4GL_push_null(2,0);");
 	      printc ("      }");
 	      printc ("}");
-	    }
 #endif
 	  }
 
@@ -6164,6 +6164,13 @@ switch (s->expr_type) {
 
 		if (fcall->parameters==0 || (fcall->parameters && fcall->parameters->list.list_len==0)) {
 			sprintf(rbuff, "A4GL_get_single_int_returned_from_call(%s%s(0))", fcall->namespace, fcall->fname);
+			return rbuff;
+		}
+
+		if (fcall->parameters && strcmp(fcall->fname,"length")==0 &&  fcall->parameters->list.list_len==1) {
+              char buff[20000];
+              sprintf(buff,"A4GL_get_length(%s)",local_expr_as_string(fcall->parameters->list.list_val[0]));
+              strcpy(rbuff,buff);
 			return rbuff;
 		}
 

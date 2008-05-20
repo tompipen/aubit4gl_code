@@ -800,7 +800,7 @@ end if
 
 
 	display "WARNING : ",lv_arg clipped," not recognised - passing to C-compiler/Linker"
-	call usg()
+	#call usg()
    end for
 
    if mv_verbose>=3 then

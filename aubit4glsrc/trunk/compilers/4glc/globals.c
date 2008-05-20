@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.43 2008-04-09 16:16:35 mikeaubury Exp $
+# $Id: globals.c,v 1.44 2008-05-20 12:54:31 mikeaubury Exp $
 #
 */
 
@@ -513,7 +513,7 @@ generate_globals_for (char *s)
 
   strcpy (buff, s);
 
-
+//printf("generate_globals_for %s",s);
 
   /*NOTE: we will get path in s only if it was specified in GLOBALS declaration*/
   if (strchr (buff, '/'))

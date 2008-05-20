@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.91 2008-04-30 12:53:24 mikeaubury Exp $
+# $Id: 1.reqd,v 1.92 2008-05-20 12:54:32 mikeaubury Exp $
 #
 */
 
@@ -240,6 +240,7 @@ int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 void print_expr_list_concat (struct expr_str_list *l);
 
 
+
 //char *get_namespace (char *s);
 
 #define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
@@ -320,6 +321,7 @@ extern struct report_orderby_section *current_orderby;
 	struct command *cmd;
 	struct commands *commands;
 	struct attrib *attrib;
+	struct menu_attrib *menu_attrib;
 
 	//struct binding_list *binding_list;
 	struct s_select_finish *s_select_finish;

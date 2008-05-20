@@ -9,18 +9,34 @@ menu_cmd	:	MENU atline {
 				map_ui("MENU");
    				push_blockcommand("MENU");
 				$<integer_val>$=get_sio_id("MENU");
-				clr_menu_attribs();
+				//clr_menu_attribs();
 			}
 			menu_title op_menu_attribs events_menu END_MENU {
 				set_cmdlineno($<integer_val>2);
-				$<cmd>$=new_menu_cmd($<ptr>4,$<attrib>5,$<on_events>6, $<integer_val>3, menu_attrib_comment,menu_attrib_style, menu_attrib_image);
+				$<cmd>$=new_menu_cmd($<ptr>4,$<attrib>5,$<on_events>6, $<integer_val>3, 
+                  $<menu_attrib>5->menu_attrib_comment,
+                  $<menu_attrib>5->menu_attrib_style, 
+                     $<menu_attrib>5->menu_attrib_image
+                     );
    				pop_blockcommand("MENU");
 				}
 ;
 
-op_menu_attribs:  { $<attrib>$=0;}
+op_menu_attribs:  { 
+      printf("1\n");
+			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
+      $<menu_attrib>$->attrib=0;
+         $<menu_attrib>$->menu_attrib_comment=0;
+         $<menu_attrib>$->menu_attrib_style=0;
+         $<menu_attrib>$->menu_attrib_image=0;
+}
 	| ATTRIBUTES OPEN_BRACKET menu_attribs CLOSE_BRACKET {	
-			$<attrib>$=$<attrib>3;
+      printf("2\n");
+			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
+			$<menu_attrib>$->attrib=$<attrib>3;
+         $<menu_attrib>$->menu_attrib_comment=get_menu_attrib('C');
+         $<menu_attrib>$->menu_attrib_style=get_menu_attrib('S');
+         $<menu_attrib>$->menu_attrib_image=get_menu_attrib('I');
 		}
 ;
 	

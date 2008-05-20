@@ -127,6 +127,7 @@ void STag_TRIGGERED(void)
 		if (A_TRIGGERED_PROGRAMNAME) lexed_attr.programname=strdup(A_TRIGGERED_PROGRAMNAME);
                 if (A_TRIGGERED_FILELEN) lexed_attr.filelen=atoi(A_TRIGGERED_FILELEN);
 
+                printf("Triggered %s\n", lexed_attr.programname);
 		
 	}
 	

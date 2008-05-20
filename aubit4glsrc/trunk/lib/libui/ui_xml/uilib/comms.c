@@ -134,10 +134,14 @@ int port;
 
 
   if (local_acl_getenv("AFGLSERVER")) {
-  	netaddress=local_acl_getenv("AFGLSERVER");
+  	   netaddress=local_acl_getenv("AFGLSERVER");
   }
   port= atoport (netport, "tcp");
   addr = atoaddr (netaddress);
+  if (addr==0) {
+            fprintf(stderr, "Error : Unable to identify address for AFGLSERVER\n");
+              exit(2);
+          }
 
   memset ((char *) &address, 0, sizeof (address));
   address.sin_family = AF_INET;
@@ -348,6 +352,7 @@ get_event_from_ui ()
     }
 
 
+  printf("Id=%s\n",attr->id);
 
   if (attr->id)
     {
@@ -380,6 +385,7 @@ get_event_from_ui ()
 	}
       if (strcmp (attr->id, "EXEC") == 0)
 	{
+            printf("----> EXEC %s\n", attr->programname);
             system(attr->programname);
               n=-105;
 	}
