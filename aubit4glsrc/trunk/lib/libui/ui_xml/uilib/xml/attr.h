@@ -35,6 +35,7 @@ struct s_attr {
 	char *infield;
         char *fileid;
         int filelen;
+         char *programname;
 
 } ;
 

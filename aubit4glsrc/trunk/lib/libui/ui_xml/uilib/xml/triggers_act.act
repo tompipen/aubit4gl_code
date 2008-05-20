@@ -61,6 +61,7 @@ return n;
 		lexed_attr.infield=0;
                 lexed_attr.filelen=-1;
                 lexed_attr.fileid=0;
+                lexed_attr.programname=0;
 
 		if ({ID}) lexed_attr.id=strdup({ID}); 
 		if ({TYPE}) lexed_attr.type=strdup({TYPE}); 
@@ -71,6 +72,7 @@ return n;
 		if ({LASTKEY}) lexed_attr.lastkey=strdup({LASTKEY}); 
 		if ({INFIELD}) lexed_attr.infield=strdup({ARRCOUNT}); 
 		if ({FILEID}) lexed_attr.fileid=strdup({FILEID});
+		if ({PROGRAMNAME}) lexed_attr.programname=strdup({PROGRAMNAME});
                 if ({FILELEN}) lexed_attr.filelen=atoi({FILELEN});
 
 		
