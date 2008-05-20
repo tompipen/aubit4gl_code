@@ -378,6 +378,11 @@ get_event_from_ui ()
 	{
 	  n = -103;
 	}
+      if (strcmp (attr->id, "EXEC") == 0)
+	{
+            system(attr->programname);
+              n=-105;
+	}
 
       if (strcmp (attr->id, "INTERRUPT") == 0)
 	{

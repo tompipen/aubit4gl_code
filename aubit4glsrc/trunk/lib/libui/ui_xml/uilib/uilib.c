@@ -1060,6 +1060,14 @@ uilib_menu_start (int nargs)
   int cmenu;
   int ln;
   char *mod;
+  char *comment;
+  char *image;
+  char *style;
+
+
+image=charpop();
+style=charpop();
+comment=charpop();
 
   mt = charpop ();
   ln=POPint();
@@ -1073,7 +1081,7 @@ uilib_menu_start (int nargs)
   UIdebug (5,"Menu start context=%d for %s %d\n", cmenu, mod, ln);
   pushint (cmenu);
   suspend_flush (1);
-  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt);
+  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt,comment,style,image);
   
   return 0;
 }

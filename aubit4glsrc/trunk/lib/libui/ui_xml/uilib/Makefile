@@ -10,7 +10,8 @@ else
 	TRIGGERS_O=xml/triggers.o xml/triggers_act.o
 endif
 
-all: libuilib.a uirunner uirunner_s
+all: libuilib.a 
+#uirunner uirunner_s
 clean:
 	rm -f libuilib.so libuilib.a comms.o uilib.o xml/attr.o xml/triggers.o xml/triggers_act.o ../pipe.o ../debug.o uirunner uirunner_s
 

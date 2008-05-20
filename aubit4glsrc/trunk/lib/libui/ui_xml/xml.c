@@ -456,7 +456,10 @@ UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type,
   A4GL_push_char (mn);
   A4GL_push_int (ln);
   A4GL_push_char (title);
-  uilib_menu_start (3);
+A4GL_push_char(comment);
+A4GL_push_char(style);
+A4GL_push_char(image);
+  uilib_menu_start (6);
   mn_id = 0;
 
   return (void *) ln;
@@ -1059,22 +1062,27 @@ int
 UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 {
   struct s_screenio *sreal;
-int context;
+  int Context;
   sreal = s;
 
   A4GL_debug ("FORM LOOP\n");
 
-  A4GL_push_char ("XML");
-  A4GL_push_int (((long) s) & 0xffffffff);
-  uilib_get_context (2);
-  context = A4GL_pop_int ();	// Context..
+
+  if (init) {
+      int context;
+      A4GL_push_char ("XML");
+      A4GL_push_int (((long) s) & 0xffffffff);
+      uilib_get_context (2);
+      context = A4GL_pop_int ();	// Context..
+        if (context) { clr_exiting_context (context); }
+  }
+
 
   if (init)
     {
       //A4GL_push_char("XML");
       //A4GL_push_int(((long)s) &0xffffffff);
       uilib_set_field_list_directly ((char *) sreal->field_list);
-      clr_exiting_context (context);
 
 
       if (sreal->mode == MODE_CONSTRUCT)
@@ -1097,6 +1105,11 @@ int context;
 	  uilib_construct_start (cno);
 	  dump_events (evt);
 	  uilib_construct_initialised (0);
+      A4GL_push_char ("XML");
+      A4GL_push_int (((long) s) & 0xffffffff);
+  uilib_get_context (2);
+  Context = A4GL_pop_int ();	// Context..
+        if (Context) { clr_exiting_context (Context); }
 	}
       else
 	{
@@ -1107,17 +1120,26 @@ int context;
 	  uilib_input_start (4);
 	  dump_events (evt);
 	  uilib_input_initialised (0);
+      A4GL_push_char ("XML");
+      A4GL_push_int (((long) s) & 0xffffffff);
+  uilib_get_context (2);
+  Context = A4GL_pop_int ();	// Context..
+        if (Context) { clr_exiting_context (Context); }
 	}
 
     }
 
 
+      A4GL_push_char ("XML");
+      A4GL_push_int (((long) s) & 0xffffffff);
+  uilib_get_context (2);
+  Context = A4GL_pop_int ();	// Context..
   while (1)
     {
       int a = 0;
 
-      if (isset_exiting_context(context,0)) {
-		clr_exiting_context (context);
+      if (isset_exiting_context(Context,0)) {
+		clr_exiting_context (Context);
 		// We had an AFTER INPUT - now we need to exit the input cleanly...
 	  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    	{
@@ -1127,13 +1149,13 @@ int context;
 
       if (sreal->mode == MODE_CONSTRUCT)
 	{
-	  A4GL_push_int (context);
+	  A4GL_push_int (Context);
 	  uilib_construct_loop (1);
 	}
       else
 	{
 	  int b;
-	  A4GL_push_int (context);
+	  A4GL_push_int (Context);
 	  for (b = 0; b < sreal->novars; b++)
 	    {
 	      A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
@@ -1150,7 +1172,7 @@ int context;
 
      if (sreal->mode != MODE_CONSTRUCT && last_attr->sync.nvalues) { 
 		int b;
-		A4GL_push_int(context);
+		A4GL_push_int(Context);
 		uilib_input_get_values(1); 
 	         for (b = sreal->novars-1; b>=0; b--) {
           		A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype ,sreal->vars[b].size);
@@ -1163,16 +1185,16 @@ int context;
 	    {
 	      if (last_attr->sync.nvalues)
 		{
-		  set_construct_clause (context, generate_construct_result (sreal));
+		  set_construct_clause (Context, generate_construct_result (sreal));
 		}
 	      else
 		{
-		  set_construct_clause (context, strdup (sreal->vars[0].ptr));
+		  set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 		}
 	    } 
 
 	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
-	    		set_exiting_context(context,-100);
+	    		set_exiting_context(Context,-100);
 			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
 	    }
 
@@ -1187,11 +1209,11 @@ int context;
 	  int_flag=1;
 	  if (sreal->mode == MODE_CONSTRUCT)
 	    {
-	      set_construct_clause (context, strdup (sreal->vars[0].ptr));
+	      set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 	    }
 
 	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
-	    		set_exiting_context(context,-101);
+	    		set_exiting_context(Context,-101);
 			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
 	    }
 
