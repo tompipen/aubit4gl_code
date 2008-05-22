@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ingres.ec,v 1.2 2006-10-10 05:45:49 afalout Exp $
+# $Id: ingres.ec,v 1.3 2008-05-22 11:55:51 mikeaubury Exp $
 #*/
 
 
@@ -771,7 +771,9 @@ printf ("Done fetching\n");
 
 
 
-
+char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
+        return s; // dont worry - we'll try later to implement something 'proper'
+}
 
 
 

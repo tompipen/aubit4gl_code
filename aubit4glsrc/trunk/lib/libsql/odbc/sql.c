@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.203 2008-03-20 09:48:49 mikeaubury Exp $
+# $Id: sql.c,v 1.204 2008-05-22 11:55:52 mikeaubury Exp $
 #
 */
 
@@ -5734,6 +5734,10 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
     ignore_next_sql_error = 0;
     return sql_ok(rc);
 //    return False;
+}
+
+char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
+	return s; // dont worry - we'll try later to implement something 'proper'
 }
 
 /* ================================ EOF ================================ */

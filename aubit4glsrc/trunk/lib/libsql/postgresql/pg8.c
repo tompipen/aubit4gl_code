@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.41 2008-05-15 13:41:01 mikeaubury Exp $
+# $Id: pg8.c,v 1.42 2008-05-22 11:55:53 mikeaubury Exp $
 #*/
 
 
@@ -3633,6 +3633,30 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
 
 }
 
+
+char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
+char sqlstmt[200];
+static char buff[200];
+PGresult *res;
+if (!current_con) return s;
+
+sprintf(sqlstmt,"SELECT oid FROM pg_class  WHERE pg_table_is_visible(oid) AND relname='%s'",s);
+res=PQexec(current_con,sqlstmt);
+if (!res) return s;
+
+switch (PQresultStatus (res)) {
+	case PGRES_TUPLES_OK:
+	case PGRES_COMMAND_OK:
+		// We're ok !
+		strcpy(buff,PQgetvalue(res,0,0));
+       		PQclear (res);
+		return buff;
+	default: break;
+}
+
+PQclear (res);
+return s;
+}
 
 
 /* =============================== EOF ============================== */

@@ -4,11 +4,11 @@ CFLAGS=-s -c
 
 .SUFFIXES:
 .SUFFIXES: .msg .hlp .4gl .o .per .frm .ace .arc .c .4go
-.c.o:
+.c.ao:
 	gcc $(CFLAGS) random.c key_press.c
 .msg.hlp:
 	mkmessage $< 
-.4gl.o:
+.4gl.ao:
 	${FGLPCEXEC} $(CFLAGS) altris.4gl
 .per.frm: 
 	fcompiple $<
@@ -27,5 +27,5 @@ EXE: $(EXE)
 
 RDS: $(RDS)
 
-altris.4ae : altris.o key_press.o random.o
-	${FGLPCEXEC} altris.o key_press.o random.o -o altris1.4ae
+altris.4ae : altris.ao key_press.o random.o
+	${FGLPCEXEC} altris.ao key_press.o random.o -o altris1.4ae

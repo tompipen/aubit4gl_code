@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.314 2008-05-15 13:40:57 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.315 2008-05-22 11:55:42 mikeaubury Exp $
 #
 */
 
@@ -2752,6 +2752,7 @@ int A4GL_get_single_int_returned_from_call(int n);
 int A4GL_islocated(struct fgl_int_loc *p);
 int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize);
 char *A4GL_get_errmsg_from_helpfiles(int n);
+int A4GL_never_dlmagic_cache(char *s);
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

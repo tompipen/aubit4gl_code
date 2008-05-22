@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.130 2008-04-30 12:52:51 mikeaubury Exp $
+# $Id: ops.c,v 1.131 2008-05-22 11:55:46 mikeaubury Exp $
 #
 */
 
@@ -167,6 +167,18 @@ double a4gl_local_trunc(double d) {
 	if (d<0) return ceil(d);
 	return floor(d);
 }
+
+
+
+
+int A4GL_dtype_function_char_getlength(char *base, int nparam) {
+	if (nparam!=0) { return 0; }
+	A4GL_push_char(base);
+	return aclfgl_length(1);
+}
+
+
+
 
 char *
 A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
@@ -5988,6 +6000,8 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", (void *)A4GL_display_interval);
   A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", (void *)A4GL_display_byte);
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *)A4GL_display_text);
+
+  A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *)A4GL_dtype_function_char_getlength);
 
   add_int8_support();
 

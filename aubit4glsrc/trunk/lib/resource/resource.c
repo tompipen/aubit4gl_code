@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.149 2008-04-19 12:51:35 mikeaubury Exp $
+# $Id: resource.c,v 1.150 2008-05-22 11:56:08 mikeaubury Exp $
 #
 */
 
@@ -161,6 +161,7 @@ struct str_resource builtin_resource[] = {
   {"DBBLOBBUF", "64"},
   {"DBCENTURY", "C"},
   {"DBDELIMITER", "|"},
+  {"COMPILEARGC","--compiled-version"},
   {"USEPAGEKEYS", "Y"},
   {"EMBEDBARCODE", "Y"},
   {"FORCE_ROLLBACK_AT_EXIT","Y"},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.203 2008-05-08 13:34:20 mikeaubury Exp $
+# $Id: esql.ec,v 1.204 2008-05-22 11:55:49 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.203 2008-05-08 13:34:20 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.204 2008-05-22 11:55:49 mikeaubury Exp $";
 #endif
 
 
@@ -590,6 +590,20 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
   return 0;
 }
 
+
+
+char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *p_tabname) {
+exec sql begin declare section;
+static char buff[2000];
+int n=0;
+char *tabname;
+exec sql end declare section;
+tabname=p_tabname;
+
+exec sql select created into $n from systables where tabname=$tabname;
+sprintf(buff,"%d",n);
+return buff;
+}
 
 /**
  * Close the default connection.

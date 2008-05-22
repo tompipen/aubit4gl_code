@@ -2404,7 +2404,7 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 277 "fgl.infx.yacc"
+#line 278 "fgl.infx.yacc"
 {
 
 
@@ -2451,6 +2451,7 @@ typedef union YYSTYPE
 	struct command *cmd;
 	struct commands *commands;
 	struct attrib *attrib;
+	struct menu_attrib *menu_attrib;
 
 	//struct binding_list *binding_list;
 	struct s_select_finish *s_select_finish;
@@ -2492,7 +2493,7 @@ typedef union YYSTYPE
 	struct s_update_pair *upd_pair;
 	}
 /* Line 1489 of yacc.c.  */
-#line 2496 "y.tab.h"
+#line 2497 "y.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

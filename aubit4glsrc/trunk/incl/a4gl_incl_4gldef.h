@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.118 2008-05-10 08:02:19 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.119 2008-05-22 11:55:42 mikeaubury Exp $
 */
 
 /**
@@ -258,6 +258,11 @@ struct s_constr_list {char *tabname;char *colname;char *value;char*fldbuf;};
   ACL_Menu;
 
 
+struct sDependantTable {
+	char *tabname;
+	char *checksuminfo;
+};
+
 /* This prototypes should be created by 4glc, in assist.h, but they are not.
 in any case , since the need to exist when compiling 4gl code, they need to be
 here.
@@ -422,7 +427,7 @@ void A4GL_set_err_txt(char *s);
   int A4GL_req_field (void *s, char itype,char type,...);
   void aclfgli_pr_message (int attr, int wait,int nexpr);
   void A4GL_push_disp_bind (void *b, int n);
-  void A4GL_fgl_start (int nargs, char *argv[]);
+  int A4GL_fgl_start (int nargs, char *argv[]);
   void A4GLSTK_initFunctionCallStack (void);
   void A4GL_fgl_end (void);
   void A4GL_system_run (int a);
@@ -494,6 +499,10 @@ struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 #define BIND_RECOPY
 struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
 #endif
+void A4GL_check_dependant_tables(char *module_name, const char *CompileTimeSQLType,  const struct sDependantTable *dependantTables) ;
+
+
+
 
 
 #include "a4gl_rep_structure.h"
@@ -506,6 +515,7 @@ int A4GL_init_agg(void **aggptr, int type);
 int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) ;
 int A4GL_report_lineno(struct rep_structure *rep);
 void A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);
+
 int A4GL_pdf_pdffunc(void* p,char* fname,int n) ;
 
 void A4GL_free_report (struct rep_structure *rep);

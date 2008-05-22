@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.30 2007-06-25 14:33:33 gyver309 Exp $
+# $Id: datatypes.c,v 1.31 2008-05-22 11:55:45 mikeaubury Exp $
 #
 */
 
@@ -381,6 +381,9 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
 
   ptr = A4GL_get_datatype_function_i (dtype, buff);
 
+  if (ptr==0) {
+  	ptr = A4GL_get_datatype_function_i (dtype & DTYPE_MASK, buff);
+  }
   if (ptr == 0)
     {
       A4GL_exitwith ("Unable to find function");

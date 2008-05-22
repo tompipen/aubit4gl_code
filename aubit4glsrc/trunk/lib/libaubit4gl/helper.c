@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.64 2008-03-14 16:51:53 mikeaubury Exp $
+# $Id: helper.c,v 1.65 2008-05-22 11:55:46 mikeaubury Exp $
 #
 */
 
@@ -995,14 +995,14 @@ A4GL_get_last_field_name (char *s)
  * @return
  */
 void
-A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm)
+A4GL_add_compiled_form (char *s, char *formtype, char *packer, char *frm)
 {
   A4GL_debug ("Adding compiled form name='%s' ptr=%p\n", s, frm);
   if (!(A4GL_has_pointer (s, COMPILED_FORM)))
     {
       A4GL_add_pointer (s, COMPILED_FORM, frm);
-      A4GL_add_pointer (s, COMPILED_FORM_PACKER, packer);
-      A4GL_add_pointer (s, COMPILED_FORM_FORMTYPE, formtype);
+      A4GL_add_pointer (s, COMPILED_FORM_PACKER, strdup(packer));
+      A4GL_add_pointer (s, COMPILED_FORM_FORMTYPE, strdup(formtype));
     }
 }
 
@@ -1028,14 +1028,18 @@ A4GL_read_form (char *s, char *p)
   #endif
   if (A4GL_has_pointer (s, COMPILED_FORM))
     {
+	char *formtype;
+	char *packer;
       A4GL_debug ("COMPILED_FORM!");
       strcpy (old_packer, acl_getenv ("A4GL_PACKER"));
       strcpy (old_formtype, acl_getenv ("A4GL_FORMTYPE"));
       A4GL_debug ("Saved old packer=%s formtype=%s", old_packer, old_formtype);
       A4GLFORM_clrlibptr ();
       A4GLPACKER_clrlibptr ();
-      A4GL_setenv ("A4GL_FORMTYPE", A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE), 1);
-      A4GL_setenv ("A4GL_PACKER", A4GL_find_pointer_val (s, COMPILED_FORM_PACKER), 1);
+	formtype=A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE);
+	packer=A4GL_find_pointer_val (s, COMPILED_FORM_PACKER);
+      A4GL_setenv ("A4GL_FORMTYPE", formtype, 1);
+      A4GL_setenv ("A4GL_PACKER", packer, 1);
     }
   strcpy (buff, s);
 

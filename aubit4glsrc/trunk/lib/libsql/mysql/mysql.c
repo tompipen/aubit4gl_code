@@ -39,7 +39,7 @@ static int A4GL_fill_array_databases (int mx, char *arr1, int szarr1,
 				      char *arr2, int szarr2);
 static int A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type);
 
-void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+//void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 int A4GL_inttoc (void *a1, void *b, int size);
 
 /*****************************************************************************/
@@ -889,7 +889,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
     {
       // Some error...
       A4GL_debug ("Err : %s (%p)\n", mysql_stmt_error (stmt), stmt);	
-	A4GL_set_errm( mysql_stmt_error (stmt));
+	A4GL_set_errm( (char *)mysql_stmt_error (stmt));
 
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
       if (mysql_errno (conn) == 1295)
@@ -1935,8 +1935,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	    {
 	      copy_out_n = sid->no;
 	    }
-	  fetch_from_mysql_to_aubit (sid->hstmt, sid->hstmt, sid->obind,
-				     copy_out_n);
+	  fetch_from_mysql_to_aubit (sid->hstmt, sid->hstmt, sid->obind, copy_out_n);
 	}
 
       A4GL_free_associated_mem (sid->hstmt);
@@ -2578,4 +2577,45 @@ A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 
     }
   return ptr;
+}
+
+
+char *
+A4GLSQLLIB_A4GLSQL_get_table_checksum (char *s)
+{
+  char sqlstmt[200];
+  MYSQL_STMT *stmt;
+  static char cmtime[100];
+  static char version[100];
+  static char buff[200];
+  struct BINDING mysql_obind[] = {
+    {&cmtime, 0, 100, 0, 0, 0},
+    {&version, 0, 100, 0, 0, 0},
+  };
+
+  if (conn)
+    {
+      stmt = mysql_stmt_init (conn);
+      sprintf (sqlstmt, "select CREATE_TIME, VERSION FROM INFORMATION_SCHEMA.TABLES WHERE table_name='%s'", s);
+      if (mysql_stmt_prepare (stmt, sqlstmt, strlen (sqlstmt))) { // Some error...
+	      	mysql_stmt_close (stmt);
+		return s;
+      }
+
+
+      A4GL_debug("%s\n", sqlstmt);
+
+      if (mysql_stmt_execute (stmt)) {
+	      		mysql_stmt_close (stmt);
+		return s;
+	}
+	  //mysql_stmt_bind_result (stmt, mysql_obind);
+	  fetch_from_mysql_to_aubit (stmt, stmt, mysql_obind, 2);
+	  A4GL_trim (cmtime);
+	  A4GL_trim (version);
+	sprintf(buff,"%s- version %s",cmtime,version);
+	      	mysql_stmt_close (stmt);
+	  return buff;
+    }
+    return s;			// Oh well - we tried...
 }

@@ -1616,12 +1616,19 @@ struct globals_definition {
 	variable_list exported_global_variables;
 };
 
+
+struct s_dependant_tables {
+	str tabname;
+	str checksuminfo;
+};
+
 struct module_definition {
 	str mod_dbname;
 	str namespace;
 	str force_ui;
 	str debug_filename;
 	str external_datatypes<>;
+	str compile_time_sqltype;
 	struct fgl_comment comment_list<>;
 	struct file_description imported_files<>;
 	enum e_boolean schema_only;
@@ -1630,10 +1637,12 @@ struct module_definition {
 	long compiled_time;
 	struct str_list *global_files;
 	struct s_exchange_clobber clobberings<>;
+	struct s_dependant_tables dependant_tables<>;
 	variable_list module_variables;
 	variable_list exported_global_variables;
 	variable_list imported_global_variables;
 	module_entry_ptr module_entries<>;
+	
 };
 
 

@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.419 2008-05-20 12:54:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.420 2008-05-22 11:55:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.419 2008-05-20 12:54:35 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.420 2008-05-22 11:55:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -672,8 +672,11 @@ open_outfile (void)
 {
   char err[132];
   char *ptr;
+  char *logtxt;
   char *outputfilename;
   char *override;
+time_t ttime;
+char buff[256];
   override = acl_getenv_not_set_as_0 ("OVERRIDE_OUTPUT");
   outputfilename = current_module->module_name;
 
@@ -816,7 +819,26 @@ open_outfile (void)
 
   A4GL_debug ("Output file is %s", filename_for_c);
 
+
   FPRINTF (outfile, "#define fgldate long\n");
+	logtxt=acl_getenv_not_set_as_0("FGLLOGTXT");
+	if (logtxt==0) logtxt="Not Set";
+	
+  FPRINTF (outfile, "static char const _rcsid[]=\"$FGLIdent: Compiler-%s%d Log:%s $\";\n",A4GL_internal_version(),A4GL_internal_build(),logtxt);
+
+  FPRINTF (outfile, "static void a4gl_show_compiled_version(void) {\n");
+  FPRINTF (outfile, "printf(\"Log: %s\\n\");\n",escape_quotes_and_remove_nl(logtxt));
+  FPRINTF (outfile, "printf(\"Aubit4GL Version: %s%d\\n\");\n",A4GL_internal_version(),A4GL_internal_build());
+time(&ttime);
+	strcpy(buff,ctime(&ttime));
+	A4GL_trim_nl(buff);
+	
+  FPRINTF (outfile, "printf(\"Compiled Time %s\\n\");\n",buff);
+  FPRINTF (outfile, "exit(0);\n");
+  FPRINTF (outfile, "}\n\n");
+
+  
+
   if (doing_esql ())
     {
       switch (esql_type ())
@@ -1615,29 +1637,63 @@ real_print_expr (struct expr_str *ptr)
 
 	case ET_EXPR_MEMBER_FCALL:
 	    {
-        a4gl_yyerror("Member calls are not implemented yet");
-         return ;
-      printf("line_for_cmd=%d\n",line_for_cmd);
-		A4GL_assertion(1,"Not implemented yet");
-#ifdef  NOT_YET
 	      int a;
+		struct expr_str *vu_e;
+			int nparam=0;
 	      struct expr_str_list *l;
+	struct variable_usage *vu;
+	struct variable_usage *vu_top;
+	struct variable *v;
+	char errbuff[256];
+	char scope;
+	struct variable_usage *vu_n;
 	      struct s_expr_member_function_call *p;
-	      if (ptr)
-		{
+	char *func;
+	char *s;
+	int datatype;
+	struct variable_usage *vu_bottom;
 		  p = ptr->expr_str_u.expr_member_function_call;
 		  l = p->parameters;
+		nparam=0;
 		  if (l)
 		    {
+			nparam=l->list.list_len;
 		      for (a = 0; a < l->list.list_len; a++)
 			{
 			  real_print_expr (l->list.list_val[a]);
 			}
 		    }
-		}
 	      printc ("{");
 	      printc ("      int _retvars;");
-  	      printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", p->lib, scan_variable (p->lib), p->fname, A4GL_new_list_get_count (p->parameters));
+		vu_e=p->var_usage_ptr;
+		vu=0;
+		switch (vu_e->expr_type) {
+			case ET_EXPR_VARIABLE_USAGE : 
+				vu_top=vu_e->expr_str_u.expr_variable_usage;
+				break;
+			default: break;
+		}
+		if (vu_top==0) {
+				a4gl_yyerror("Unable to get variable usage");
+				return;
+		}
+			vu=vu_top;
+
+		while (vu->next) {
+			vu_n=vu;
+			vu=vu->next;
+		}
+		// When  we get to here vu_n should be the last portion of the variale
+		// vu should be the function
+		vu_n->next=0;
+		func=vu->variable_name;
+		s=generation_get_variable_usage_as_string(vu_top);
+		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+		vu_bottom=usage_bottom_level(vu_top);
+		datatype=vu_bottom->datatype & DTYPE_MASK;
+	//A4GL_pause_execution();
+  	      printc ("_retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype,func, nparam);
+
 	      printc ("      if (_retvars!=1) {");
 	      printc ("          A4GLSQL_set_status(-3001,0);");
 	      printc ("          A4GL_chk_err(%d,\"%s\");", p->line, p->module);
@@ -1645,7 +1701,6 @@ real_print_expr (struct expr_str *ptr)
 	      printc ("          A4GL_push_null(2,0);");
 	      printc ("      }");
 	      printc ("}");
-#endif
 	  }
 
 	  break;
@@ -5255,6 +5310,8 @@ if (!A4GL_doing_pcode()) {
   printc ("_done_init_module_variables=0;");
 
   printc("A4GL_check_version(_module_name,\"%s\",%d);",A4GL_internal_version(),A4GL_internal_build()); 
+  printc("A4GL_check_dependant_tables(_module_name, _CompileTimeSQLType, _dependantTables);"); 
+
   print_nullify ('M', mvars);
   tmp_ccnt--;
   printc ("}");
@@ -5506,6 +5563,8 @@ int
 LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 {
 int a;
+char buff1[1000];
+char buff2[2000];
 LEX_initlib();
 strcpy(this_module_name,m->module_name);
  current_module = m;
@@ -5514,6 +5573,17 @@ strcpy(this_module_name,m->module_name);
       open_outfile () ; // this_module_name);
       if (outfile == 0)
 	return 0;
+printc("static const char *_CompileTimeSQLType=\"%s\";\n", m->compile_time_sqltype);
+printc("static const struct sDependantTable _dependantTables[]= {");
+for (a=0;a<m->dependant_tables.dependant_tables_len;a++) {
+	strcpy(buff1, escape_quotes_and_remove_nl(m->dependant_tables.dependant_tables_val[a].tabname));
+	strcpy(buff2,escape_quotes_and_remove_nl(m->dependant_tables.dependant_tables_val[a].checksuminfo));
+	printc("  {\"%s\",\"%s\"},",buff1,buff2);
+}
+printc("  {0,0}");
+printc("};");
+printc("#");
+
   if (m->imported_global_variables.variables.variables_len)
     {
       for (a = 0; a < m->imported_global_variables.variables.variables_len; a++)
@@ -5979,15 +6049,21 @@ return -1;
 
 
 void print_push_variable_usage (expr_str *ptr) {
-		struct variable_usage *u;
+struct variable_usage *u;
 int substring=0;
+struct variable *v;
+char errbuff[255];
+char scope;
 expr_str *substring_start;
 expr_str *substring_end;
-        	A4GL_assertion(ptr->expr_type!=ET_EXPR_VARIABLE_USAGE,"Not a variable usage");
 
-		set_nonewlines();
-		u=ptr->expr_str_u.expr_variable_usage;
-        	substring=is_substring_variable_usage_in_expr(ptr,&substring_start, &substring_end);
+       	A4GL_assertion(ptr->expr_type!=ET_EXPR_VARIABLE_USAGE,"Not a variable usage");
+	set_nonewlines();
+	u=ptr->expr_str_u.expr_variable_usage;
+
+       	substring=is_substring_variable_usage_in_expr(ptr,&substring_start, &substring_end);
+	v=find_variable_vu_ptr(errbuff, u, &scope,0);
+
 
 	if (!substring) {
 
@@ -6422,7 +6498,7 @@ void print_fgllib_start (char *db, int is_schema,char *force_ui, char *debug_fil
 	}
       else
 	{
-	  printc ("\nA4GL_fgl_start(argc,argv);\n");
+	  printc ("\nif (A4GL_fgl_start(argc,argv)) {a4gl_show_compiled_version();}\n");
 	}
     }
 

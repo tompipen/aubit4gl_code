@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.152 2008-05-15 13:41:00 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.153 2008-05-22 11:55:46 mikeaubury Exp $
 #
 */
 
@@ -1410,7 +1410,7 @@ char *ptr;
 
   colname = A4GL_confirm_colname (tabname, colname);
 
-  if (tabname)
+  if (tabname && strlen(tabname))
     {
       SPRINTF2 (buff, "%s.%s", tabname, colname);
     }

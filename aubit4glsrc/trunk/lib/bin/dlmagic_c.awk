@@ -82,7 +82,7 @@ if (selfonly) {
 	print "return " lib_prefix xlib "_initlib();"
 } else {
 	print "typedef int (*x_func)(void);"
-	print "static x_func func;";
+	print "static x_func func=0;";
 	print "   libptr=(void *)A4GL_dl_openlibrary(\"" xlib "\",acl_getenv(\"" env "\"));"
 	print "   if (libptr==0) {"
 	print "      A4GL_exitwith(\"Unable to open " xlib " library...\");"
@@ -208,7 +208,7 @@ if (c==0) {
 }
 print ");"
 
-printf("static x_func_%s func_%s;\n",funccnt,funccnt)
+printf("static x_func_%s func_%s=0;\n",funccnt,funccnt)
 }
 
 print "#ifdef DEBUG_SPEC"
@@ -240,7 +240,9 @@ if (selfonly) {
 		print "return rval;"
 	}
 } else {
-	print "   func_" funccnt "=(x_func_" funccnt ")A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
+	print "   if (func_" funccnt "==0 || A4GL_never_dlmagic_cache(\"" lib_prefix cfname "\")) {"
+	print "        func_" funccnt "=(x_func_" funccnt ")A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
+        print "   }"
 	
 
 	if (rtype=="void")

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.24 2007-03-07 22:47:11 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.25 2008-05-22 11:56:00 mikeaubury Exp $
 #*/
 
 /**
@@ -338,6 +338,10 @@ char *
 A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 {
   return 0;
+}
+
+char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
+        return s; // dont worry - we'll try later to implement something 'proper'
 }
 
 /* =============================== EOF ============================== */

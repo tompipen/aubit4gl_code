@@ -75,6 +75,9 @@ A4GLSQL_describe_stmt char* stmt int colno int type -> long
 * Used for LOAD and a few other bits - not essential..
 A4GLSQL_fill_array int mx char* arr1 int szarr1 char* arr2 int szarr2 char* service int mode char* info -> int
 
+* Get a checksum for a table to see if its changed
+* might just be the created date for example
+A4GLSQL_get_table_checksum char* tabname -> char*
 
 A4GLSQL_map_tname char* code char* db -> void
 A4GLSQL_unmap_tname char* code -> void

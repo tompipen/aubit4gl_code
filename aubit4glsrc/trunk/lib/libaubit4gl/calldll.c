@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.73 2008-02-13 16:02:06 mikeaubury Exp $
+# $Id: calldll.c,v 1.74 2008-05-22 11:55:44 mikeaubury Exp $
 #
 */
 
@@ -779,6 +779,11 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
 }
 
+
+int A4GL_never_dlmagic_cache(char *s) {
+//
+return 0;
+}
 
 
 

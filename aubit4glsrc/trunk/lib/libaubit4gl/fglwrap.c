@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.134 2008-05-15 13:40:59 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.135 2008-05-22 11:55:45 mikeaubury Exp $
 #
 */
 
@@ -164,14 +164,14 @@ int A4GL_has_initialized(void) {
  * @param nargs The number of arguments.
  * @param argv The arguments values.
  */
-void
+int
 A4GL_fgl_start (int nargs, char *argv[])
 {
 int a, result;
 int b = 0;
 void *ptr;
 char *p;
-
+int compiled_with_version=0;
 	if (fgl_initialised==0) {
 		fgl_initialised++;
 	} else {
@@ -231,6 +231,9 @@ char *p;
   	b = 0;
 	for (a = 0; a < MAX_ARGS; a++) {
 		if (a < nargs) {
+				if (strcmp(argv[a], acl_getenv("COMPILEARGC"))==0) {
+						compiled_with_version=1;
+				}
 			p_args[b++] = acl_strdup (argv[a]);
 		} else {
 			p_args[b++] = 0;
@@ -299,6 +302,7 @@ char *p;
 #ifdef DEBUG
   A4GL_debug ("fgl_start done");
 #endif
+return compiled_with_version;
 }
 
 /**
@@ -1543,5 +1547,29 @@ int  A4GL_aubit_strcasestr (char *h, char *n) {
         return rval;
 }
 
+
+
+// Check the checksums for dependant tables to see if they've changed...
+//
+void A4GL_check_dependant_tables(char *module_name, const char *CompileTimeSQLType,  const struct sDependantTable *dependantTables) {
+int  failed=0;
+int a;
+if (A4GL_isyes(acl_getenv("CHECKTABLEVERSIONS"))) {
+	if (strcmp(acl_getenv("A4GL_SQLTYPE"),CompileTimeSQLType)!=0) {
+		// Can't compare - different sql types..
+		return;
+	}
+	for (a=0;dependantTables[a].tabname;a++) {
+
+		if (strcmp(dependantTables[a].checksuminfo, A4GLSQL_get_table_checksum(dependantTables[a].tabname))!=0) {
+        		if (!failed) {A4GL_gotolinemode();}
+			failed++;
+			fprintf(stderr, "Table %s appears to have changed since compilation\n", dependantTables[a].tabname);
+		}
+	}
+	if (failed) exit(3);
+}
+
+}
 
 /* ================================= EOF ============================= */
