@@ -176,6 +176,6 @@ struct binding_comp_list *copy_togenbind(int i) ;
 int inc_var_usage_from_binding_list(struct expr_str_list *l);
 struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, char *scope, int err_if_whole_array) ;
 struct variable_usage *check_var_usage (struct variable_usage *v);
-struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array);
+struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array,int lvl);
 
 #endif

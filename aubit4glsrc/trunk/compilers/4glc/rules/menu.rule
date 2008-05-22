@@ -23,7 +23,6 @@ menu_cmd	:	MENU atline {
 ;
 
 op_menu_attribs:  { 
-      printf("1\n");
 			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
       $<menu_attrib>$->attrib=0;
          $<menu_attrib>$->menu_attrib_comment=0;
@@ -31,7 +30,6 @@ op_menu_attribs:  {
          $<menu_attrib>$->menu_attrib_image=0;
 }
 	| ATTRIBUTES OPEN_BRACKET menu_attribs CLOSE_BRACKET {	
-      printf("2\n");
 			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
 			$<menu_attrib>$->attrib=$<attrib>3;
          $<menu_attrib>$->menu_attrib_comment=get_menu_attrib('C');

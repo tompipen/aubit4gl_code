@@ -742,6 +742,9 @@ struct menu_attrib {
            struct expr_str *menu_attrib_style;
            struct expr_str *menu_attrib_image;
 };
+void add_dependant_table(char *s);
+
+int has_variable_name (struct vname_name_list *namelist, char *name);
 
 #endif   //ifndef _A4GL_4GLC_INT_H_
 

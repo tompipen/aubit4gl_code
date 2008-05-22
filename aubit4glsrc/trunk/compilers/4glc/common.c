@@ -23,18 +23,51 @@ char namespace[256] = "aclfgl_";
 static void append_record_entries(struct record_variable *rec_var, struct variable_usage *parent, struct expr_str_list *rval) ;
 static int encode_size(int dtype, int dim1,int dim2) ;
 
+static int compare_var (struct variable **vv1, struct variable **vv2) {
+struct variable *v1;
+struct variable *v2;
+v1=*vv1;
+v2=*vv2;
+A4GL_assertion ((v1==0 || v2==0), "Invalid pointer");
+return strcmp(v1->names.names.names_val[0].name,v2->names.names.names_val[0].name);
+}
 
-static int
-has_name (struct vname_name_list *namelist, char *name)
+void sort_variables(void *ptr, int n) {
+        qsort(ptr,  n, sizeof( void*), (void *)compare_var);
+}
+
+
+struct variable *find_variable_quick(char *name, struct variable **list, int cnt) {
+        struct variable *v;
+        struct variable vsearch;
+        struct vname names;
+	struct variable **vs;
+        names.name=name;
+        vsearch.names.names.names_val=&names;
+        vsearch.names.names.names_len=1;
+	v=&vsearch;
+	vs=&v;
+        vs=bsearch((void*)vs, list, cnt, sizeof(void *), (void *)compare_var);
+	if (vs) {
+		return *vs;
+	} else {
+		return 0;
+	}
+	return 0;
+}
+
+ int
+has_variable_name (struct vname_name_list *namelist, char *name)
 {
   int c;
-
   if (name == 0)
     return 0;
+//printf("has_name : %s namelist : %p %d\n",name,namelist, namelist->names.names_len);
 
   for (c = 0; c < namelist->names.names_len; c++)
     {
       if (A4GL_aubit_strcasecmp (namelist->names.names_val[c].name, name) == 0)
+      //if (strcmp (namelist->names.names_val[c].name, name) == 0)
         return 1;
     }
   return 0;
@@ -164,7 +197,7 @@ for (a=0;a<parameters->list.list_len;a++) {
 		}
 }
 for (a=0;a<rval->list.list_len;a++) {
-find_variable_vu_in (errbuff, rval->list.list_val[a]->expr_str_u.expr_variable_usage , var_list->variables.variables_val, var_list->variables.variables_len,1);
+find_variable_vu_in (errbuff, rval->list.list_val[a]->expr_str_u.expr_variable_usage , var_list->variables.variables_val, var_list->variables.variables_len,1,0);
 }
 return rval;
 }
@@ -207,31 +240,79 @@ return 1;
 
 
 
-
 static void append_record_entries(struct record_variable *rec_var, struct variable_usage *parent, struct expr_str_list *rval) {
 int c;
 struct variable_usage *u;
+struct variable_usage *unew;
 struct variable_usage *p;
-
-
+struct record_variable *next_rec;
+int dim=0;
+int dim1;
+int dim2;
+int dim3;
+int c1;
+int c2;
+int c3;
 		for (c=0;c<rec_var->variables.variables_len;c++) {
 			u=new_variable_usage(0,rec_var->variables.variables_val[c]->names.names.names_val[0].name,0);
 			p=A4GL_memdup(parent,sizeof(struct variable_usage));
 			p->next=0;
 			append_variable_usage(p,u);
 
+			dim=0;
+			dim1=1;
+			dim2=1;
+			dim3=1;
 
-			switch  (rec_var->variables.variables_val[c]->var_data.variable_type) {
-				case VARIABLE_TYPE_SIMPLE:
-					A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(p));
-					break;
+			if (rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_len>0) {
+				if (rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[0]>0) {
+					dim=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_len;
+				}
+			} 
 
-				case VARIABLE_TYPE_RECORD:
-					append_record_entries(&rec_var->variables.variables_val[c]->var_data.variable_data_u.v_record,p,rval);
-					break;
-				default:
-					A4GL_assertion(1,"Not handled");
+
+			if (dim) {
+					if (dim==1) {
+						dim1=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[0];
+					}
+					if (dim==2) {
+						dim1=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[0];
+						dim2=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[1];
+					}
+					if (dim==3) {
+						dim1=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[0];
+						dim2=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[1];
+						dim3=rec_var->variables.variables_val[c]->arr_subscripts.arr_subscripts_val[2];
+					}
 			}
+
+
+			for (c1=0;c1<dim1;c1++) {
+			for (c2=0;c2<dim2;c2++) {
+			for (c3=0;c3<dim3;c3++) {
+
+				if (dim) {
+					struct variable_usage *vu_bottom;
+					unew=clone_variable_usage(p); vu_bottom=unew; while (vu_bottom->next) vu_bottom=vu_bottom->next;
+
+                                        vu_bottom->subscripts.subscripts_val=malloc(sizeof(expr_str *)*dim);
+                                        vu_bottom->subscripts.subscripts_len=dim;
+                                          vu_bottom->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(c1+1);
+                                                        if (dim>1) vu_bottom->subscripts.subscripts_val[1]=A4GL_new_literal_long_long(c2+1);
+                                                        if (dim>2) vu_bottom->subscripts.subscripts_val[2]=A4GL_new_literal_long_long(c3+1);
+
+				} else {
+					unew=p;
+				}
+
+				switch  (rec_var->variables.variables_val[c]->var_data.variable_type) {
+					case VARIABLE_TYPE_SIMPLE: A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(unew)); break;
+					case VARIABLE_TYPE_RECORD: append_record_entries(&rec_var->variables.variables_val[c]->var_data.variable_data_u.v_record,unew,rval); break;
+					default: A4GL_assertion(1,"Not handled");
+				}
+			}
+			}
+		}
 				
 		}
 }
@@ -244,7 +325,7 @@ struct variable_usage *
 new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 {
   struct variable_usage *newv;
-  int a;
+  //int a;
   newv = acl_malloc2 (sizeof (struct variable_usage));
 
   newv->variable_name = acl_strdup (partname);
@@ -307,38 +388,9 @@ append_variable_usage (struct variable_usage *old,
 
 
 
-struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array)
-{
-  char *var_section;
-  //char var_nextsection[256];
-  int a;
-  struct variable *v;
 
-  /* If we have no variables at this level - we can't do anything */
-  if (list == 0)
-    {
-      return 0;
-    }
+struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *var_section,  struct variable_usage *vu,int a,int err_if_whole_array,int level) {
 
-
-
-  for (a = 0; a < cnt; a++)
-    {
-      if (list == 0)
-	{
-	  A4GL_assertion (1, "find_variable_in passed an invalid list");
-	}
-      v = list[a];
-      if (v == 0)
-	{
-	  A4GL_assertion (1, "find_variable_in passed an invalid list");
-	}
-
-      var_section = vu->variable_name;
-
-      /* Can we find the name at this point ? */
-      if (!has_name (&v->names, var_section) && !strcmp (var_section, "*") == 0)
-	continue;		/* No */
 
       /* If we get to here we've found our name! */
       /* Now we need to know what to do next.... */
@@ -353,7 +405,7 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 	{
 	  /*debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name); */
 	  /*a4gl_yyerror("This is the name of a function!"); */
-	  continue;
+		return 0;
 	}
 
       if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE || v->var_data.variable_type == VARIABLE_TYPE_CONSTANT)
@@ -470,7 +522,7 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array ) 
 		{
 		      set_yytext(var_section);
-		      sprintf (errbuff, "'%s' subscript count mismatch (2.1)", var_section);
+		      sprintf (errbuff, "'%s' subscript count mismatch (2.1) [%d subscripts - expecting %d]", var_section, vu->subscripts.subscripts_len, v->arr_subscripts.arr_subscripts_len);
 		      return 0;
 		}
 			
@@ -492,7 +544,7 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 
 	  return find_variable_vu_in (errbuff, next,
 				      v->var_data.variable_data_u.v_record.variables.variables_val,
-				      v->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array);
+				      v->var_data.variable_data_u.v_record.variables.variables_len, 0,level+1);
 	}
 
 
@@ -505,7 +557,6 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 	  	struct variable_usage *next;
 		struct variable *vrec;
 		next = vu->next;
-//A4GL_pause_execution();
 		avar=&v->var_data.variable_data_u.v_assoc;
 	  	vu->variable_id = a;
 
@@ -540,15 +591,109 @@ struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu,
 
           return find_variable_vu_in (errbuff, next,
                                       vrec->var_data.variable_data_u.v_record.variables.variables_val,
-                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array);
+                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array,level+1);
 
 		
 	}
 
+
+  return NULL;
+}
+
+
+struct variable *
+find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt, int err_if_whole_array, int level)
+{
+  char *var_section;
+  //char var_nextsection[256];
+  int a;
+  struct variable *v;
+  struct variable *r;
+
+  /* If we have no variables at this level - we can't do anything */
+  if (list == 0)
+    {
+      return 0;
     }
 
-  return 0;
+
+
+  var_section = vu->variable_name;
+
+  if (!A4GL_isno (acl_getenv ("VARSRCHOPTIMISE")))
+    {
+      if (level == 0)
+	{
+	  r = find_variable_quick (var_section, list, cnt);
+	  if (r)
+	    {
+	      int b;
+	      a = -1;
+	      for (b = 0; b < cnt; b++)
+		{
+		  if (list[b] == r)
+		    {
+		      a = b;
+		      break;
+		    }
+		}
+	      if (a != -1)
+		{
+		  r = find_variable_vu_in_p2 (errbuff, r, var_section, vu, a, err_if_whole_array, level);
+		  if (r)
+		    return r;
+		}
+	    }
+
+
+	  return 0;
+	}
+    }
+
+
+
+
+  for (a = 0; a < cnt; a++)
+    {
+      if (list == 0)
+	{
+	  A4GL_assertion (1, "find_variable_in passed an invalid list");
+	}
+
+
+
+
+      v = list[a];
+
+
+      if (v == 0)
+	{
+	  A4GL_assertion (1, "find_variable_in passed an invalid list");
+	}
+
+      /* Can we find the name at this point ? */
+      if (!has_variable_name (&v->names, var_section) && !strcmp (var_section, "*") == 0)
+	continue;		/* No */
+
+      // Hopefully - we've found the start of it...
+      r = find_variable_vu_in_p2 (errbuff, v, var_section, vu, a, err_if_whole_array, level);
+      if (r)
+	{
+	  if (level == 0)
+	    {
+	      if (!A4GL_isno (acl_getenv ("VARSRCHOPTIMISE")))
+		{
+		  A4GL_assertion (1, "Found it the long way - not the short way\n");
+		}
+	    }
+	  return r;
+	}
+    }
+  return NULL;
 }
+
+
+
 
 
 

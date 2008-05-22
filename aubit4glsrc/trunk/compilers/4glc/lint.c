@@ -680,6 +680,7 @@ currfunc=f->funcname;
 					A4GL_lint (f->module, r->lineno, "CS.NOOTHERWISE","CASE has no OTHERWISE", 0);
 		}
 	}
+printf("Check function b=%d\n", r->cmd_data.type);
 	if (r->cmd_data.type==E_CMD_CALL_CMD) 
                                         {
 					int cnt1;
@@ -1127,7 +1128,7 @@ struct module_entry *m;
 
    for (a=0;a<d->module_entries.module_entries_len;a++) {
 	//struct s_function_definition *f;
-
+printf("a=%d of %d\n",a, d->module_entries.module_entries_len);
 	switch (d->module_entries.module_entries_val[a]->met_type) {
 
         	case E_MET_MAIN_DEFINITION:
@@ -1135,6 +1136,7 @@ struct module_entry *m;
 			m=this_module.module_entries.module_entries_val[a];
 			set_lint_module(m->module_entry_u.function_definition.module);
 			lint_warnings( d->module_entries.module_entries_val[a]->module_entry_u.function_definition.extra_warnings.extra_warnings_len, d->module_entries.module_entries_val[a]->module_entry_u.function_definition.extra_warnings.extra_warnings_val );
+		//printf("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
 			if (calltree[a]!=0 || nomain) {
 				printf("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
 				check_function (d, &d->module_entries.module_entries_val[a]->module_entry_u.function_definition);
@@ -2702,7 +2704,6 @@ if (fname)  {
 	}
    }
 
-printf("Here : %d\n", this_module.module_entries.module_entries_len);
 
    for (mcnt=0;mcnt< this_module.module_entries.module_entries_len;mcnt++) {
                 struct module_entry *m;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.44 2008-05-20 12:54:31 mikeaubury Exp $
+# $Id: globals.c,v 1.45 2008-05-22 11:39:49 mikeaubury Exp $
 #
 */
 
@@ -83,7 +83,7 @@ extern char currinfile_dirname[1024];	/*path to 4gl file we are currently compil
 
 /* Externally callable (non-static) functions */
 
-
+#ifdef OLD
 
 /* static functions declared here */
 static void write_variable_header (FILE * f, struct variable *v);
@@ -158,6 +158,235 @@ write_global_float (FILE * f, char *name, double val)
 {
   FPRINTF (f, "%s=%f\n", name, val);
 }
+
+
+#endif
+
+/**
+ * Compile the 4gl source with -G option to generate the .glb file
+ *
+ * This file is then readed to generate the externs in C.
+ *
+ * @param s The 4gl file name (without extension).
+ */
+static void
+generate_globals_for (char *s)
+{
+  char buff[1024];
+  char dirname[1024];
+  char fname[1024];
+  char *ptr;
+  char nocfile[256];
+
+
+#ifdef DEBUG
+  A4GL_debug ("In generate_globals_for\n");
+#endif
+
+  strcpy (buff, s);
+
+//printf("generate_globals_for %s",s);
+
+  /*NOTE: we will get path in s only if it was specified in GLOBALS declaration*/
+  if (strchr (buff, '/'))
+    {
+      strcpy (dirname, buff);
+      ptr = strrchr (dirname, '/');
+      *ptr = 0;
+      ptr++;
+      strcpy (fname, ptr);
+    }
+  else
+    {
+#ifdef __WIN32__
+  		if (strchr (buff, '\\'))
+#else
+  		if (0) 
+#endif
+    		{
+      			strcpy (dirname, buff);
+      			ptr = strrchr (dirname, '\\');
+      			*ptr = 0;
+      			ptr++;
+      			strcpy (fname, ptr);
+			
+    		}  else {
+
+      			if (currinfile_dirname)
+				{
+	  			/*use path that was passed to 4glc with 4gl file name of main 4gl*/
+	  			/*source file we are compiling, if any*/
+	  			strcpy (dirname, currinfile_dirname);
+			
+			} else {
+	  			strcpy (dirname, ".");
+			}
+      			strcpy (fname, buff);
+		}
+    }
+
+
+
+
+  strcpy (nocfile, acl_getenv ("A4GL_NOCFILE"));
+#ifdef MSVC
+  putenv("A4GL_NOCFILE=Yes");
+#else
+  A4GL_setenv ("A4GL_NOCFILE", "Yes", 1);
+#endif
+  ptr = strchr (fname, '.');
+  *ptr = 0;
+#ifdef DEBUG
+  A4GL_debug ("Trying to compile globals file %s in %s\n", fname, dirname);
+
+  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
+    {
+      SPRINTF0 (buff, "mv debug.out debug1.out");
+      A4GL_debug ("Preserving debug.out: %s\n", buff);
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
+      system (buff);
+    }
+#endif
+  /*why cd? just pass the path in file name... */
+  
+
+#ifdef __WIN32__
+// cc 2004.11.24 need to check for -d flag from parent process 
+ if (has_default_database ()) 
+ { 
+ 	char db[64]; 
+ 	strcpy (db, get_default_database ()); 
+ 	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
+ 	A4GL_trim (db); 
+ 	SPRINTF3 (buff, "4glc -d %s --globals \"%s\\%s.4gl\"", db, dirname, fname); 
+ } 
+ else 
+ { 
+ 	SPRINTF2 (buff, "4glc --globals \"%s\\%s.4gl\"", dirname, fname); 
+ } 
+#else
+// cc 2004.11.24 need to check for -d flag from parent process 
+ if (has_default_database ()) 
+ { 
+ 	char db[64]; 
+ 	strcpy (db, get_default_database ()); 
+ 	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
+ 	A4GL_trim (db); 
+ 	SPRINTF3 (buff, "4glc -d %s --globals '%s/%s.4gl'", db, dirname, fname); 
+ } 
+ else 
+ { 
+ 	SPRINTF2 (buff, "4glc --globals '%s/%s.4gl'", dirname, fname); 
+ } 
+#endif
+ // cc end change 
+
+
+#ifdef DEBUG
+  A4GL_debug ("Executing system call: %s\n", buff);
+#endif
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
+  system (buff);
+#ifdef MSVC
+  putenv("A4GL_NOCFILE=Y");
+#else
+  A4GL_setenv ("A4GL_NOCFILE", nocfile, 1);
+#endif
+#ifdef DEBUG
+  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
+    {
+      SPRINTF (buff, "mv debug.out debug-globals.out");
+      A4GL_debug ("Preserving debug.out: %s\n", buff);
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
+      system (buff);
+      SPRINTF (buff, "mv debug1.out debug.out");
+      A4GL_debug ("Restoring debug.out: %s\n", buff);
+      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
+      system (buff);
+    }
+#endif
+
+}
+
+
+/**
+ *
+ *
+ * @param
+ */
+void
+read_glob (char *s)
+{
+  FILE *f;
+  char ii[255];
+  char iii[256];
+  char *fname;
+  char *dbname;
+  int schemaonly;
+  int gvars;
+  int start = 0;
+  int a;
+int b;
+  struct globals_definition g;
+
+  /* MJA - NEWVARIABLE*/
+  strcpy (ii, s);
+  strcat (ii, ".glb");
+#ifdef DEBUG
+  A4GL_debug ("Trying to open globals file %s\n", ii);
+#endif
+
+  strcpy (ii, s);
+  strcat (ii, ".glb");
+  a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
+		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
+  if (!a) {
+     		generate_globals_for (ii);
+  }
+  a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
+	if (!a) {
+  		strcpy (iii, currinfile_dirname);
+  		strcat (iii, "/");
+   		strcat (iii, ii);
+      		generate_globals_for (iii);
+  		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,iii);
+		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
+ }
+
+ if (!a) {
+ 	FPRINTF (stderr, "Error: Couldnt open globals file %s, in . and %s\n", ii, currinfile_dirname);
+	  exit (7);
+	}
+A4GLSQL_set_status(0,0);
+  dbname=g.mod_dbname;
+  schemaonly=g.schema_only;
+
+  if (strlen (dbname) > 0)
+    {
+	set_module_dbname(dbname, schemaonly);
+      	open_db (dbname);
+    }
+
+  gvars=g.exported_global_variables.variables.variables_len;
+  start = list_imported_global_cnt;
+  list_imported_global_cnt += gvars;
+
+  if (list_imported_global_cnt > list_imported_global_alloc)
+    {
+      list_imported_global_alloc = list_imported_global_cnt;
+    }
+
+  list_imported_global =
+    acl_realloc (list_imported_global,
+	     sizeof (struct variable *) * list_imported_global_alloc);
+
+  b=0;
+  for (a = start; a < list_imported_global_cnt; a++)
+    {
+	list_imported_global[a]=g.exported_global_variables.variables.variables_val[b++];
+    }
+}
+
 
 
 
@@ -248,7 +477,7 @@ dump_gvars (void)
 
 
 
-
+#ifdef OLD
 /**
  *
  *
@@ -488,234 +717,6 @@ write_variable_function (FILE * f, struct variable *v)
 {
 
 
-}
-
-/**
- * Compile the 4gl source with -G option to generate the .glb file
- *
- * This file is then readed to generate the externs in C.
- *
- * @param s The 4gl file name (without extension).
- */
-static void
-generate_globals_for (char *s)
-{
-  char buff[1024];
-  char dirname[1024];
-  char fname[1024];
-  char *ptr;
-  char nocfile[256];
-
-
-#ifdef DEBUG
-  A4GL_debug ("In generate_globals_for\n");
-#endif
-
-  strcpy (buff, s);
-
-//printf("generate_globals_for %s",s);
-
-  /*NOTE: we will get path in s only if it was specified in GLOBALS declaration*/
-  if (strchr (buff, '/'))
-    {
-      strcpy (dirname, buff);
-      ptr = strrchr (dirname, '/');
-      *ptr = 0;
-      ptr++;
-      strcpy (fname, ptr);
-    }
-  else
-    {
-#ifdef __WIN32__
-  		if (strchr (buff, '\\'))
-#else
-  		if (0) 
-#endif
-    		{
-      			strcpy (dirname, buff);
-      			ptr = strrchr (dirname, '\\');
-      			*ptr = 0;
-      			ptr++;
-      			strcpy (fname, ptr);
-			
-    		}  else {
-
-      			if (currinfile_dirname)
-				{
-	  			/*use path that was passed to 4glc with 4gl file name of main 4gl*/
-	  			/*source file we are compiling, if any*/
-	  			strcpy (dirname, currinfile_dirname);
-			
-			} else {
-	  			strcpy (dirname, ".");
-			}
-      			strcpy (fname, buff);
-		}
-    }
-
-
-
-
-  strcpy (nocfile, acl_getenv ("A4GL_NOCFILE"));
-#ifdef MSVC
-  putenv("A4GL_NOCFILE=Yes");
-#else
-  A4GL_setenv ("A4GL_NOCFILE", "Yes", 1);
-#endif
-  ptr = strchr (fname, '.');
-  *ptr = 0;
-#ifdef DEBUG
-  A4GL_debug ("Trying to compile globals file %s in %s\n", fname, dirname);
-
-  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
-    {
-      SPRINTF0 (buff, "mv debug.out debug1.out");
-      A4GL_debug ("Preserving debug.out: %s\n", buff);
-      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
-      system (buff);
-    }
-#endif
-  /*why cd? just pass the path in file name... */
-  
-
-#ifdef __WIN32__
-// cc 2004.11.24 need to check for -d flag from parent process 
- if (has_default_database ()) 
- { 
- 	char db[64]; 
- 	strcpy (db, get_default_database ()); 
- 	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
- 	A4GL_trim (db); 
- 	SPRINTF3 (buff, "4glc -d %s --globals \"%s\\%s.4gl\"", db, dirname, fname); 
- } 
- else 
- { 
- 	SPRINTF2 (buff, "4glc --globals \"%s\\%s.4gl\"", dirname, fname); 
- } 
-#else
-// cc 2004.11.24 need to check for -d flag from parent process 
- if (has_default_database ()) 
- { 
- 	char db[64]; 
- 	strcpy (db, get_default_database ()); 
- 	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
- 	A4GL_trim (db); 
- 	SPRINTF3 (buff, "4glc -d %s --globals '%s/%s.4gl'", db, dirname, fname); 
- } 
- else 
- { 
- 	SPRINTF2 (buff, "4glc --globals '%s/%s.4gl'", dirname, fname); 
- } 
-#endif
- // cc end change 
-
-
-#ifdef DEBUG
-  A4GL_debug ("Executing system call: %s\n", buff);
-#endif
-      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
-  system (buff);
-#ifdef MSVC
-  putenv("A4GL_NOCFILE=Y");
-#else
-  A4GL_setenv ("A4GL_NOCFILE", nocfile, 1);
-#endif
-#ifdef DEBUG
-  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
-    {
-      SPRINTF (buff, "mv debug.out debug-globals.out");
-      A4GL_debug ("Preserving debug.out: %s\n", buff);
-      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
-      system (buff);
-      SPRINTF (buff, "mv debug1.out debug.out");
-      A4GL_debug ("Restoring debug.out: %s\n", buff);
-      if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
-      system (buff);
-    }
-#endif
-
-}
-
-
-/**
- *
- *
- * @param
- */
-void
-read_glob (char *s)
-{
-  FILE *f;
-  char ii[255];
-  char iii[256];
-  char *fname;
-  char *dbname;
-  int schemaonly;
-  int gvars;
-  int start = 0;
-  int a;
-int b;
-  struct globals_definition g;
-
-  /* MJA - NEWVARIABLE*/
-  strcpy (ii, s);
-  strcat (ii, ".glb");
-#ifdef DEBUG
-  A4GL_debug ("Trying to open globals file %s\n", ii);
-#endif
-
-  strcpy (ii, s);
-  strcat (ii, ".glb");
-  a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
-		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
-  if (!a) {
-     		generate_globals_for (ii);
-  }
-  a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
-	if (!a) {
-  		strcpy (iii, currinfile_dirname);
-  		strcat (iii, "/");
-   		strcat (iii, ii);
-      		generate_globals_for (iii);
-  		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,iii);
-		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
- }
-
- if (!a) {
- 	FPRINTF (stderr, "Error: Couldnt open globals file %s, in . and %s\n", ii, currinfile_dirname);
-	  exit (7);
-	}
-A4GLSQL_set_status(0,0);
-  dbname=g.mod_dbname;
-  schemaonly=g.schema_only;
-
-  if (strlen (dbname) > 0)
-    {
-	set_module_dbname(dbname, schemaonly);
-      	open_db (dbname);
-    }
-
-  gvars=g.exported_global_variables.variables.variables_len;
-  start = list_imported_global_cnt;
-  list_imported_global_cnt += gvars;
-
-  if (list_imported_global_cnt > list_imported_global_alloc)
-    {
-      list_imported_global_alloc = list_imported_global_cnt;
-    }
-
-  list_imported_global =
-    acl_realloc (list_imported_global,
-	     sizeof (struct variable *) * list_imported_global_alloc);
-
-  b=0;
-  for (a = start; a < list_imported_global_cnt; a++)
-    {
-      //list_imported_global[a] = acl_malloc2 (sizeof (struct variable));
-	list_imported_global[a]=g.exported_global_variables.variables.variables_val[b++];
-      //read_variable_header (f, list_imported_global[a]);
-    }
-  //fclose (f);
 }
 
 
@@ -1065,5 +1066,6 @@ int a;
     }
 
 }
+#endif
 
 /* ================================ EOF =================================== */

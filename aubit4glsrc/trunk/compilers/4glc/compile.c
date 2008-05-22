@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.123 2008-04-30 12:53:23 mikeaubury Exp $
+# $Id: compile.c,v 1.124 2008-05-22 11:39:49 mikeaubury Exp $
 #*/
 
 /**
@@ -1276,6 +1276,8 @@ compiled_4gl++;
   this_module.external_datatypes.external_datatypes_len = 0;
   this_module.external_datatypes.external_datatypes_val = 0;
 
+	this_module.dependant_tables.dependant_tables_len=0;
+	this_module.dependant_tables.dependant_tables_val=0;
 
   this_module.clobberings.clobberings_val=0;
   this_module.clobberings.clobberings_len=0;
@@ -1285,8 +1287,10 @@ compiled_4gl++;
 		A4GL_debug ("after yyparse\n");
 	#endif
 
-	this_module.force_ui=get_force_ui();
 	this_module.debug_filename=get_debug_filename();
+	this_module.force_ui=get_force_ui();
+
+	this_module.compile_time_sqltype=strdup(acl_getenv("A4GL_SQLTYPE"));
 
 
 	//A4GL_lexer_parsed_fgl ();

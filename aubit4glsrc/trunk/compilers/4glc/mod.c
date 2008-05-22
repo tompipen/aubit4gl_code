@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.315 2008-05-20 12:54:31 mikeaubury Exp $
+# $Id: mod.c,v 1.316 2008-05-22 11:39:50 mikeaubury Exp $
 #
 */
 
@@ -4508,17 +4508,16 @@ menu_attrib_image=0;
 
 }
 
-
 struct expr_str * get_menu_attrib(char type) {
-                if (type=='S') {
-                                        return menu_attrib_style;
-                                                }
-                        if (type=='C') {
-                                                return menu_attrib_comment;
-                                                        }
-                                if (type=='I') {
-                                                        return menu_attrib_image;
-                                                                }
+        if (type=='S') {
+                return menu_attrib_style;
+        }
+        if (type=='C') {
+                return menu_attrib_comment;
+        }
+        if (type=='I') {
+                return menu_attrib_image;
+        }
 }
 
 

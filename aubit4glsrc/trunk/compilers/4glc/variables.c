@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.95 2008-03-16 14:28:47 mikeaubury Exp $
+# $Id: variables.c,v 1.96 2008-05-22 11:39:51 mikeaubury Exp $
 #
 */
 
@@ -62,11 +62,12 @@ int scopes_cnt = 0;
 int class_cnt = 0;
 
 
+int uses_constants=0;
 
 
 /******************************************************************************/
 /* Prototypes of static functions in this module...*/
-static int has_name (struct vname_name_list *namelist, char *name);
+//static int has_name (struct vname_name_list *namelist, char *name);
 static char get_variable_user_system (void);
 static struct variable *make_constant (char *name, char *value,
 				       char *int_or_char);
@@ -173,18 +174,6 @@ char variable_scope = 'm';
 
 /******************************************************************************/
 
-#ifdef MOVED
-int encode_size(int dtype, int dim1,int dim2) {
-	switch (dtype) {
-		case DTYPE_CHAR:
-		case DTYPE_VCHAR:	
-			return dtype+(dim1<<16);
-		default: 
-			return dtype+(dim1<<16);
-			return dtype;
-	}
-}
-#endif
 
 
 void
@@ -489,6 +478,14 @@ variable_action (int category, char *name, char *type, char *n,
 
   if (strcmp (function, "add_constant") == 0 && mode == 0)
     {
+	int builtin_Constant_usage=0;
+   	if (A4GL_aubit_strcasecmp(name,"notfound")==0) builtin_Constant_usage++;
+ 	if (A4GL_aubit_strcasecmp(name,"true")==0)     builtin_Constant_usage++;
+ 	if (A4GL_aubit_strcasecmp(name,"false")==0)    builtin_Constant_usage++;
+
+	if (!builtin_Constant_usage) {
+		uses_constants++;
+	}
       mode = MODE_ADD_CONSTANT;
     }
   if (strcmp (function, "push_dim") == 0 && mode == 0)
@@ -799,6 +796,8 @@ make_function (char *name, int record_cnt)
 
   scope = get_current_variable_scope ();
 
+
+#ifdef  NOPE
   if (class_cnt == 0)
     set_current_variable_scope ('g');
 
@@ -829,6 +828,9 @@ make_function (char *name, int record_cnt)
   curr_v[record_cnt] = local_v;
   add_to_scope (0, 1);
   curr_v[record_cnt] = 0;
+#endif
+
+
   set_current_variable_scope (scope);
 }
 
@@ -951,6 +953,7 @@ add_to_scope (int record_cnt, int unroll)
   variable_holder = 0;
 
   scope = get_current_variable_scope ();
+//printf("Scope=%c\n",scope);
   if (unroll == 0)
     {
 
@@ -1027,6 +1030,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'g')
 	{
+
 	  SPRINTF0 (local_scope, "g");
 	  variable_holder = &list_global;
 	  counter = &list_global_cnt;
@@ -1174,69 +1178,6 @@ add_to_scope (int record_cnt, int unroll)
 		if (strcmp(curr_v[record_cnt]->names.names.names_val[0].name,"quit_flag")==0) issystem=1;
 		if (strcmp(curr_v[record_cnt]->names.names.names_val[0].name,"fgl_user")==0) issystem=1;
 
-#ifdef MOVED_TO_LINT
-/*
-		switch (get_current_variable_scope()) {
-			case 'G':
-				if ( !issystem) {
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='g' ) {
-					sprintf(buff, "Coding Standards: Global variable (%s) does not begin with 'g'", curr_v[record_cnt]->names.names.names_val[0].name);
-					A4GL_lint(buff); // COMMENTED OUT
-				} else {
-					if (!is_valid_vname(curr_v[record_cnt], get_current_variable_scope())) {
-						sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", curr_v[record_cnt]->names.names.names_val[0].name);
-						A4GL_lint(buff); // COMMENTED OUT
-					}
-				}
-				}
-				break;
-			case 'g':
-				if ( !issystem) {
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='g'  ) {
-					sprintf(buff, "Coding Standards: Global variable (%s) does not begin with 'g'", curr_v[record_cnt]->names.names.names_val[0].name);
-					A4GL_lint(buff); // COMMENTED OUT
-				}  else {
-					if (!is_valid_vname(curr_v[record_cnt], get_current_variable_scope())) {
-						sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", curr_v[record_cnt]->names.names.names_val[0].name);
-						A4GL_lint(buff); // COMMENTED OUT
-					}
-				}
-				}
-				break;
-
-			case 'm':
-			case 'M':
-				if ( !issystem) {
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='m' ) {
-					sprintf(buff, "Coding Standards: Module variable (%s) does not begin with 'm'", curr_v[record_cnt]->names.names.names_val[0].name);
-					A4GL_lint(buff); // COMMENTED OUT
-				}  else {
-					if (!is_valid_vname(curr_v[record_cnt], get_current_variable_scope())) {
-						sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", curr_v[record_cnt]->names.names.names_val[0].name);
-						A4GL_lint(buff); // COMMENTED OUT
-					}
-				}
-				}
-				
-				break;
-			case 'l':
-			case 'L':
-				if ( !issystem) {
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='l') {
-					sprintf(buff, "Coding Standards: Local variable (%s) does not begin with 'l'", curr_v[record_cnt]->names.names.names_val[0].name);
-					A4GL_lint(buff); // COMMENTED OUT
-				} else {
-					if (!is_valid_vname(curr_v[record_cnt], get_current_variable_scope())) {
-						sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", curr_v[record_cnt]->names.names.names_val[0].name);
-						A4GL_lint(buff); // COMMENTED OUT
-					}
-				}
-				}
-				break;
-			default: printf("UNknown scope %c\n", get_current_variable_scope());
-		}
-*/
-#endif
 
 
 
@@ -1259,52 +1200,6 @@ add_to_scope (int record_cnt, int unroll)
 	}
     } else {
 
-#ifdef MOVED_TO_LINT
-/*
-	if (record_cnt==0 && (curr_v[record_cnt]->var_data.variable_type == VARIABLE_TYPE_SIMPLE
-          || curr_v[record_cnt]->var_data.variable_type == VARIABLE_TYPE_RECORD
-          || curr_v[record_cnt]->var_data.variable_type == VARIABLE_TYPE_OBJECT
-          || curr_v[record_cnt]->var_data.variable_type == VARIABLE_TYPE_ASSOC)
-) {
-		int issystem;
-		issystem=is_system_variable( curr_v[record_cnt]->names.names.names_val[0].name);
-
-		if (strcmp(curr_v[record_cnt]->names.names.names_val[0].name,"int_flag")==0) issystem=1;
-		if (strcmp(curr_v[record_cnt]->names.names.names_val[0].name,"quit_flag")==0) issystem=1;
-		if (strcmp(curr_v[record_cnt]->names.names.names_val[0].name,"fgl_user")==0) issystem=1;
-
-		switch (get_current_variable_scope()) {
-			case 'G':
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='g'  &&  !issystem) {
-					printf("%s %c \n", curr_v[record_cnt]->names.names.names_val[0].name,  curr_v[record_cnt]->user_system);
-					A4GL_lint("Global variable does not begin with 'g'"); // COMMENTED OUT
-				}
-				break;
-			case 'g':
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='g'  &&  !issystem) {
-					printf("%s %c \n", curr_v[record_cnt]->names.names.names_val[0].name,  curr_v[record_cnt]->user_system);
-					A4GL_lint("Global variable does not begin with 'g' ???"); // COMMENTED OUT
-				}
-				break;
-			case 'M':
-				printf("Module : %s\n", curr_v[record_cnt]->names.names.names_val[0].name);
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='m'  && !issystem) {
-					printf("%s %c \n", curr_v[record_cnt]->names.names.names_val[0].name,  curr_v[record_cnt]->user_system);
-					A4GL_lint("Module variable does not begin with 'm'"); // COMMENTED OUT
-				}
-				break;
-			case 'L':
-				if (  curr_v[record_cnt]->names.names.names_val[0].name[0]!='l'  &&  !issystem) {
-					printf("%s %c \n", curr_v[record_cnt]->names.names.names_val[0].name,  curr_v[record_cnt]->user_system);
-					A4GL_lint("Local variable does not begin with 'l'"); // COMMENTED OUT
-				}
-				break;
-			default: printf("UNknown scope\n");
-		}
-			
-	}
-*/
-#endif
 			
 
    }
@@ -1318,22 +1213,6 @@ add_to_scope (int record_cnt, int unroll)
 
 
 
-/******************************************************************************/
-static int
-has_name (struct vname_name_list *namelist, char *name)
-{
-  int c;
-
-  if (name == 0)
-    return 0;
-
-  for (c = 0; c < namelist->names.names_len; c++)
-    {
-      if (A4GL_aubit_strcasecmp (namelist->names.names_val[c].name, name) == 0)
-	return 1;
-    }
-  return 0;
-}
 
 
 /******************************************************************************/
@@ -1385,7 +1264,7 @@ find_variable_in (char *s, struct variable **list, int cnt)
 	  A4GL_assertion (1, "find_variable_in passed an invalid list");
 	}
       /* Can we find the name at this point ? */
-      if (!has_name (&v->names, var_section)
+      if (!has_variable_name (&v->names, var_section)
 	  && !strcmp (var_section, "*") == 0)
 	continue;		/* No */
 
@@ -1467,180 +1346,6 @@ find_variable_in (char *s, struct variable **list, int cnt)
   return 0;
 }
 
-#ifdef MOVED
-struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array)
-{
-  char *var_section;
-  //char var_nextsection[256];
-  int a;
-  struct variable *v;
-
-  /* If we have no variables at this level - we can't do anything */
-  if (list == 0)
-    {
-      return 0;
-    }
-
-
-
-  for (a = 0; a < cnt; a++)
-    {
-      if (list == 0)
-	{
-	  A4GL_assertion (1, "find_variable_in passed an invalid list");
-	}
-      v = list[a];
-      if (v == 0)
-	{
-	  A4GL_assertion (1, "find_variable_in passed an invalid list");
-	}
-
-      var_section = vu->variable_name;
-
-      /* Can we find the name at this point ? */
-      if (!has_name (&v->names, var_section) && !strcmp (var_section, "*") == 0)
-	continue;		/* No */
-
-      /* If we get to here we've found our name! */
-      /* Now we need to know what to do next.... */
-
-      A4GL_debug ("v->var_data.variable_type=%d\n", v->var_data.variable_type);
-      if (v->var_data.variable_type > 10 || v->var_data.variable_type < 0)
-	{
-	  A4GL_assertion (1, "Internal error");
-	}
-
-      if (v->var_data.variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
-	{
-	  /*debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name); */
-	  /*a4gl_yyerror("This is the name of a function!"); */
-	  continue;
-	}
-
-      if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE || v->var_data.variable_type == VARIABLE_TYPE_CONSTANT)
-	{
-	  if (vu->next == 0)
-	    {
-	      /* This is too easy... */
-	      vu->variable_id = a;
-	
-	      vu->datatype = encode_size(
-					v->var_data.variable_data_u.v_simple.datatype, 
-					v->var_data.variable_data_u.v_simple.dimensions[0],
-					v->var_data.variable_data_u.v_simple.dimensions[1])
-				;
-
-	      if (v->arr_subscripts.arr_subscripts_len)
-		{
-		  // We have an array variable...
-		  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array)
-		    {
-			set_yytext(var_section);
-		      sprintf (errbuff, "'%s' subscript count mismatch (1) %d != %d", var_section, v->arr_subscripts.arr_subscripts_len, vu->subscripts.subscripts_len);
-			A4GL_assertion(1,"FIXME");
-		      return 0;
-		    }
-		}
-	      else
-		{
-		  // We have a non-array variable...
-		  if (vu->subscripts.subscripts_len)
-		    {
-		      // Can we move it to be a subscript instead ? 
-		      if (vu->substrings_start == 0)
-			{
-			  if ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_CHAR || (v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_VCHAR)
-			    {
-			      if (vu->subscripts.subscripts_len <= 2)
-				{
-				  // move our subscripts to be substrings..
-				  vu->substrings_start = vu->subscripts.subscripts_val[0];
-				  if (vu->subscripts.subscripts_len > 1)
-				    {
-				      vu->substrings_end = vu->subscripts.subscripts_val[1];
-				    }
-				  free (vu->subscripts.subscripts_val);
-				  vu->subscripts.subscripts_val = 0;
-				  vu->subscripts.subscripts_len = 0;
-				}
-			      else
-				{
-				  sprintf (errbuff, "%s is not an array", var_section);
-				  return 0;
-				}
-			    }
-			  else
-			    {
-			      sprintf (errbuff, "%s is not an array or a string", var_section);
-			      return 0;
-			    }
-			}
-		      else
-			{
-			  sprintf (errbuff, "%s already has a substring", var_section);
-			  return 0;
-			}
-		    }
-		  else
-		    {
-		      // Cool - its not a subscript and we dont need one..
-		      return v;
-		    }
-		}
-
-	      return v;
-	    }
-	  else
-	    {
-	      sprintf (errbuff, "%s is not a record", var_section);
-	      return 0;
-	    }
-	}
-
-
-      if (v->var_data.variable_type == VARIABLE_TYPE_RECORD || v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
-	{
-
-	  struct variable_usage *next;
-	  next = vu->next;
-
-	  vu->variable_id = a;
-	  vu->datatype = -2;	// RECORD...
-
-
-	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array) 
-		{
-			set_yytext(var_section);
-		      sprintf (errbuff, "'%s' subscript count mismatch (2)", var_section);
-		      return 0;
-		}
-			
-
-	  if (next == 0)
-	    {
-	      return v;
-	    }
-
-	  if (strcmp (next->variable_name, "*") == 0)
-	    {
-	      return v;
-	    }
-
-	  return find_variable_vu_in (errbuff, next,
-				      v->var_data.variable_data_u.v_record.variables.variables_val,
-				      v->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array);
-	}
-
-      if (v->var_data.variable_type == VARIABLE_TYPE_ASSOC)
-	{
-	  A4GL_assertion (1, "FIXME");
-	}
-
-    }
-
-  return 0;
-}
-#endif
 
 /******************************************************************************/
 struct variable *
@@ -1941,238 +1646,6 @@ get_current_variable_scope (void)
 
 
 
-#ifdef MOVED
-
-/******************************************************************************/
-void
-print_variables (void)
-{
-
-  char scope;
-
-  /* MJA - NEWVARIABLE */
-
-  A4GL_debug
-    ("/**********************************************************/\n");
-  A4GL_debug
-    ("/******************* Variable definitions *****************/\n");
-  A4GL_debug
-    ("/**********************************************************/\n");
-
-
-  scope = get_current_variable_scope ();
-
-  A4GL_debug ("Scope=%c\n", scope);
-
-  if (scope == 'l' || scope == 'R')
-    {
-      print_local_variables ();
-    }
-
-  if (scope == 'g')
-    {
-      print_global_variables ();
-#ifdef DEBUG
-      A4GL_debug ("***** DUMP GVARS ****");
-#endif
-
-      if (only_doing_globals ())
-	{
-	  dump_gvars ();
-	  exit (0);
-	}
-    }
-
-
-  if (scope == 'm')
-    {
-      print_module_variables ();
-    }
-
-  if (scope == 'C')
-    {
-      print_class_variables ();
-    }
-
-}
-#endif
-
-
-
-#ifdef MOVED
-/******************************************************************************/
-void
-print_local_variables (void)
-{
-  int a;
-
-  A4GL_debug ("printing local variables\n");
-  for (a = 0; a < list_local_cnt; a++)
-    {
-      print_variable_new (list_local[a], 'L', 0);
-    }
-
-}
-
-
-/******************************************************************************/
-void
-print_class_variables (void)
-{
-  int a;
-
-  for (a = 0; a < list_class_cnt; a++)
-    {
-      print_variable_new (list_class[a], 'C', 0);
-    }
-}
-
-
-/******************************************************************************/
-void
-print_module_variables (void)
-{
-  int a;
-
-  for (a = 0; a < list_module_cnt; a++)
-    {
-      print_variable_new (list_module[a], 'M', 0);
-    }
-
-}
-
-
-int
-is_external_global (char *s)
-{
-  int a;
-  for (a = 0; a < list_external_global_cnt; a++)
-    {
-      if (strcmp (list_external_global[a]->names.name, s) == 0)
-	return 1;
-    }
-  return 0;
-}
-
-
-/******************************************************************************/
-void
-print_global_variables (void)
-{
-  int a;
-  for (a = 0; a < list_imported_global_cnt; a++)
-    {
-      print_variable_new (list_imported_global[a], 'G', 0);
-
-    }
-
-  for (a = 0; a < list_global_cnt; a++)
-    {
-      if (!is_external_global (list_global[a]->names.name))
-	{
-	  print_variable_new (list_global[a], 'g', 0);
-	}
-    }
-}
-
-
-#endif
-
-
-#ifdef MOVED
-
-/******************************************************************************/
-/**
- * Identifies the data type from a string and convert it to numeric with
- * the goal of being more easyli used.
- *
- * @todo organize some defines to the data types.
- *
- * @param s The string where the data type will be scanned
- * @return The data type in numeric code
- */
-int
-find_type (char *s)
-{
-  char errbuff[80];
-  static char types[20][80];
-  //char buff[20];
-  int a;
-  //int b;
-  static int set_types = 0;
-  if (set_types == 0)
-    {
-      for (a = 0; a < 15; a++)
-	{
-	  strcpy (types[a], rettype_integer (a));
-	}
-      set_types = 1;
-    }
-
-  for (a = 0; a < 15; a++)
-    {
-      if (strcmp (types[a], s) == 0)
-	{
-	  return a;
-	}
-    }
-
-  A4GL_debug ("Looking for type '%s'", s);
-
-  if (A4GL_find_datatype_out (s) != -1)
-    {
-      A4GL_debug ("Found it...");
-      return A4GL_find_datatype_out (s);
-    }
-
-  A4GL_debug ("Not found - keep looking");
-  A4GL_debug ("find_type %s\n", s);
-  if (strcmp ("char", s) == 0)
-    return 0;
-  if (strcmp ("long", s) == 0)
-    return 2;
-  if (strcmp ("integer", s) == 0)
-    return 1;
-  if (strcmp ("int", s) == 0)
-    return 1;
-  if (strcmp ("short", s) == 0)
-    return 1;
-  if (strcmp ("double", s) == 0)
-    return 3;
-  if (strcmp ("float", s) == 0)
-    return 4;
-  if (strcmp ("fgldecimal", s) == 0)
-    return 5;
-  if (strcmp ("serial", s) == 0)
-    return 6;
-  if (strcmp ("fgldate", s) == 0)
-    return 7;
-  if (strcmp ("fglmoney", s) == 0)
-    return 8;
-  if (strcmp ("struct_dtime", s) == 0)
-    return 10;
-  if (strcmp ("fglbyte", s) == 0)
-    return 11;
-  if (strcmp ("fgltext", s) == 0)
-    return 12;
-  if (strcmp ("varchar", s) == 0)
-    return 13;
-  if (strcmp ("struct_ival", s) == 0)
-    return 14;
-  if (strcmp ("_RECORD", s) == 0)
-    return -2;
-  if (strcmp ("form", s) == 0)
-    return 9;
-  if (strncmp ("struct _class_struct_", s, 21) == 0)
-    {
-      return -3;
-    }
-  A4GL_debug ("Invalid type : '%s'\n", s);
-  SPRINTF1 (errbuff, "Internal Error (Invalid type : '%s')\n", s);
-  a4gl_yyerror (errbuff);
-  return 0;
-}
-#endif
 
 
 
@@ -2237,32 +1710,6 @@ isrecvariable (char *s)
 }
 
 
-
-#ifdef MOVED
-void
-make_arr_str (char *s, struct variable *v)
-{
-  int a;
-  char buff[256];
-  strcpy (s, "");
-  for (a = 0; a < MAX_ARR_SUB; a++)
-    {
-      if (v->arr_subscripts[a])
-	{
-	  if (a)
-	    {
-	      strcat (s, "][");
-	    }
-	  SPRINTF1 (buff, "%d", v->arr_subscripts[a]);
-	  strcat (s, buff);
-	}
-      else
-	{
-	  break;
-	}
-    }
-}
-#endif
 
 
 /******************************************************************************/
@@ -2495,6 +1942,8 @@ check_for_constant (char *name, char *buff)
 {
   struct variable *v;
   int dbg = 0;
+
+  
   /*char buff2[256]; */
   strcpy (buff, name);
 
@@ -2511,6 +1960,17 @@ check_for_constant (char *name, char *buff)
   if (in_define)
     return 0;
 
+
+// Constants can be costly to search for..
+// if we're not using them (over the builtin ones) - we can ignore this expense..
+  if (uses_constants==0){  
+	int builtin_Constant_usage=0;
+   		if (A4GL_aubit_strcasecmp(name,"notfound")==0) builtin_Constant_usage++;
+ 		if (A4GL_aubit_strcasecmp(name,"true")==0)     builtin_Constant_usage++;
+ 		if (A4GL_aubit_strcasecmp(name,"false")==0)    builtin_Constant_usage++;
+
+	 	if (!builtin_Constant_usage) return 0; // none defined - so no point in searching
+  }
 
   v = find_variable_ptr (buff);
 
@@ -2566,45 +2026,6 @@ check_for_constant (char *name, char *buff)
 }
 
 
-#ifdef MOVED
-
-/******************************************************************************/
-static void
-strip_bracket (char *s)
-{
-  char buff[2048];
-  int a;
-  int c = 0;
-  int f = 0;
-
-  A4GL_debug ("strip_bracket %s\n", s);
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] == '[')
-	f++;
-
-      if (f == 0 && s[a] != ' ')
-	{
-	  buff[c++] = s[a];
-	  buff[c] = 0;
-	  if (c >= sizeof (buff))
-	    {
-	      A4GL_assertion (1, "buff in strip_bracket too small");
-	    }
-	}
-      if (s[a] == ']')
-	f--;
-    }
-  if (c >= sizeof (buff))
-    {
-      A4GL_assertion (1, "buff in strip_bracket too small");
-    }
-  buff[c] = 0;
-  strcpy (s, buff);
-}
-
-
-#endif
 /******************************************************************************/
 int
 split_record (char *s, struct variable **v_record, struct variable **v1,
@@ -3346,37 +2767,6 @@ split_record_list (char *s, char *prefix, struct record_list *list,
 
 
 
-#ifdef OLD
-/******************************************************************************/
-int
-push_bind_rec (char *s, char bindtype)
-{
-  int a;
-/*int dtype;*/
-/*int size;*/
-/*char buff[256];*/
-  struct record_list *list;
-  A4GL_debug ("In push_bind_rec : '%s'", s);
-
-  list = split_record_list (s, "", 0, bindtype);
-  A4GL_debug ("Got list : %p", list);
-
-  if (list == 0)
-    {
-      a4gl_yyerror ("OOps\n");
-      return -1;
-    }
-
-
-  for (a = 0; a < list->records_cnt; a++)
-    {
-      add_bind (bindtype, list->list[a]->name);
-    }
-
-  return 1;
-}
-
-#endif
 
 
 /******************************************************************************/
@@ -3412,64 +2802,6 @@ get_next_variable (struct variable *record, struct variable *v1,
   return 0;
 }
 
-#ifdef OLD
-struct expr_str *
-print_push_rec (char *s, void **b, int always_list)
-{
-  int a;
-  int dtype;
-  int size;
-  //char buff[256];
-  struct record_list *list;
-  struct expr_str *vlist;
-
-
-  list = split_record_list (s, "", 0, ' ');
-
-
-  if (list == 0 || list->records_cnt==0)
-    {
-      a4gl_yyerror ("OOps\n");
-      return 0;
-    }
-
-  if (list->records_cnt > 1 || always_list)
-    {
-      vlist = A4GL_new_expr_list ();
-      for (a = 0; a < list->records_cnt; a++)
-	{
-	  struct expr_str *p;
-	  dtype =
-	    list->list[a]->variable->var_data.variable_data_u.v_simple.datatype;
-	  size =
-	    list->list[a]->variable->var_data.variable_data_u.v_simple.
-	    dimensions[0];
-	  dtype += size << 16;
-
-	  p = A4GL_new_expr_push_variable (list->list[a]->name, dtype, find_variable_scope(list->list[a]->name)); inc_var_usage(list->list[a]->name);
-
-
-	  //
-	  A4GL_new_append_ptr_list (vlist->expr_str_u.expr_list, p);
-	}
-      return vlist;
-    }
-  else
-    {
-      struct expr_str *p;
-      dtype = list->list[0]->variable->var_data.variable_data_u.v_simple.datatype;
-      size =
-	list->list[0]->variable->var_data.variable_data_u.v_simple.dimensions[0];
-      dtype += size << 16;
-      p = A4GL_new_expr_push_variable (list->list[0]->name, dtype, find_variable_scope(list->list[0]->name)); inc_var_usage(list->list[0]->name);
-      return p;
-
-    }
-
-  //return list->records_cnt;
-
-}
-#endif
 
 
 /******************************************************************************/
@@ -3918,7 +3250,7 @@ return " ";
 struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, char *scope, int err_if_whole_array) {
   struct variable *ptr;
   strcpy(errbuff,"");
-  ptr = find_variable_vu_in (errbuff, v, list_local, list_local_cnt, err_if_whole_array);
+  ptr = find_variable_vu_in (errbuff, v, list_local, list_local_cnt, err_if_whole_array,0);
   if (ptr)
     {
 	v->scope='L';
@@ -3927,7 +3259,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, c
       return ptr;
     }
 
-  ptr = find_variable_vu_in (errbuff, v, list_module, list_module_cnt, err_if_whole_array);
+  ptr = find_variable_vu_in (errbuff, v, list_module, list_module_cnt, err_if_whole_array,0);
   if (ptr)
     {
 	v->scope='M';
@@ -3936,7 +3268,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, c
       return ptr;
     }
 
-  ptr = find_variable_vu_in (errbuff, v, list_global, list_global_cnt, err_if_whole_array);
+  ptr = find_variable_vu_in (errbuff, v, list_global, list_global_cnt, err_if_whole_array,0);
   if (ptr)
     {
 	v->scope='G';
@@ -3945,7 +3277,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, c
       return ptr;
     }
 
-  ptr = find_variable_vu_in (errbuff, v, list_imported_global, list_imported_global_cnt, err_if_whole_array);
+  ptr = find_variable_vu_in (errbuff, v, list_imported_global, list_imported_global_cnt, err_if_whole_array,0);
   if (ptr)
     {
 	v->scope='g';
@@ -3960,49 +3292,3 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, c
 
 
 
-#ifdef MOVED
-
-	int is_valid_vname(struct variable *v,char scope) { 
-	char *nm;
-	nm=v->names.names.names_val[0].name; 
-
-	if (strlen(nm)<4)  return 0; // too short for sn_
-	if (nm[2]!='_') return 0;
-
-	if (nm[1]=='v') {
-			return 1;
-	}
-
-	switch (v->var_data.variable_type) {
-		case VARIABLE_TYPE_SIMPLE:
-			switch (v-> var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) {
-				case DTYPE_CHAR: if (nm[1]!='c') return 0; else return 1;
-				case DTYPE_SMINT: if (nm[1]!='b' && nm[1]!='s') return 0; else return 1;
-				case DTYPE_SERIAL: 
-				case DTYPE_INT: if (nm[1]!='n') return 0; else return 1;
-				case DTYPE_DATE: if (nm[1]!='d') return 0; else return 1;
-				case DTYPE_DECIMAL: if (nm[1]!='l') return 0; else return 1;
-				case DTYPE_INTERVAL: if (nm[1]!='i') return 0; else return 1;
-			} 
-			// No specific rule - so must be ok...
-			return 1;
-
-		case VARIABLE_TYPE_RECORD:
-				if (nm[1]!='r') return 0; else return 1;
-
-
-
-		case VARIABLE_TYPE_ASSOC:
-		case VARIABLE_TYPE_CONSTANT:
-		case VARIABLE_TYPE_FUNCTION_DECLARE:
-		case VARIABLE_TYPE_OBJECT:
-		case VARIABLE_TYPE_LINKED: return 1;
-
-
-		//case VARIABLE_TYPE_ARRAY:
-		//if (nm[1]!='a') return 0; else return 1;
-	}
-
-	return 1;
-}
-#endif

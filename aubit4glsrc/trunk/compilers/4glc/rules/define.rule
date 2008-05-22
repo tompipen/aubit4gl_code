@@ -238,6 +238,7 @@ record_variable :
 		   A4GL_debug("Like\n");
 		   
 		}  define_table_name KW_DOT KW_MULTIPLY {
+			add_dependant_table($<str>3);
 		   A4GL_debug("Link Table : %s\n",$<str>3);
 		                     push_rectab($<str>3);
 		                     pop_record();
@@ -249,6 +250,7 @@ record_variable :
 		   A4GL_debug("Like\n");
 		   
 		}  define_table_name PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET {
+			add_dependant_table($<str>3);
 		       A4GL_debug("Table:%s\n",$<str>3);
 			add_feature("DEFINE_LINKED");
 		       add_link_to($<str>3,$<str>6);
@@ -589,10 +591,12 @@ like_var :
 		LIKE define_table_name KW_DOT col_name {
 			add_feature("DEFINE_LIKE");
 		   SPRINTF2($<str>$,"%s.%s",$<str>2,$<str>4);
+			add_dependant_table($<str>2);
 		    A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
 		   
 		} 
 		| LIKE CHAR_VALUE KW_DOT define_table_name KW_DOT col_name {
+			add_dependant_table($<str>4);
 		   	SPRINTF2($<str>$,"%s.%s",$<str>4,$<str>6);
 		}
 ;
