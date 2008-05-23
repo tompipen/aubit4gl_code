@@ -809,7 +809,7 @@ end if
    end if
 
 
-   if mv_stage="EXE" or mv_stage="DLL" THEN
+   if mv_stage="EXE" or mv_stage="DLL" or mv_stage="LIB" THEN
 	if mv_stage matches "DLL" THEN
 		let mv_make_dll=1
 		if mv_output matches "*.*" then
