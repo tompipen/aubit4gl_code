@@ -819,9 +819,16 @@ end if
 			let lv_output=get_fname(mv_output,"DLL")
 			call run_link(lv_output)
 		end if
-	ELSE
+	END IF
+
+	IF mv_stage="EXE" then
 		call run_link(mv_output)
 	end if
+
+	IF mv_stage="LIB" then
+		call run_link_lib(mv_output)
+	end if
+
    end if
 
 end main
@@ -1477,6 +1484,73 @@ end if
 call check_exit_status(lv_status,lv_output,lv_runstr)
 
 end function
+
+
+################################################################################
+function run_link_lib(lv_output)
+define lv_status integer
+define  lv_output char(512)
+define lv_runstr char(10240)
+
+if mv_makecompile then
+	if mv_verbose>=3 then
+		display "Make Compile - checking file times"
+	end if
+	if compare_file_times(mv_newest_obj,lv_output) then
+		if mv_verbose>=2 then
+			display "Make Compile specified - file skipped as ",lv_output clipped, " is newer than ",mv_newest_obj clipped
+		end if
+		return
+	end if
+end if
+
+
+
+let mv_warnfile=lv_output clipped,get_ext("WARN")
+let mv_errfile=lv_output clipped,get_ext("ERR")
+
+let lv_runstr="rm -f ",lv_output 
+RUN lv_runstr CLIPPED RETURNING lv_status
+let lv_runstr="ar rc ",lv_output clipped, " ", mv_objects
+
+if mv_verbose>=1 then
+	display "Archiving ",lv_output  clipped
+end if
+if mv_verbose>=2 then
+	display lv_runstr clipped
+end if
+if mv_verbose>=4 then
+	display "OBJECTS       : ",mv_objects clipped
+end if
+
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
+
+if mv_verbose>=5 then
+	display "Ran command"
+end if
+call check_exit_status(lv_status,lv_output,lv_runstr)
+
+RUN lv_runstr CLIPPED RETURNING lv_status
+let lv_runstr="ranlib ",lv_output clipped
+
+if mv_verbose>=2 then
+	display lv_runstr clipped
+end if
+
+RUN lv_runstr CLIPPED RETURNING lv_status
+
+if mv_verbose>=5 then
+	display "Ran command"
+end if
+call check_exit_status(lv_status,lv_output,lv_runstr)
+
+
+
+end function
+
+
+
 
 function add_obj(lv_obj)
 define lv_obj char(256)
