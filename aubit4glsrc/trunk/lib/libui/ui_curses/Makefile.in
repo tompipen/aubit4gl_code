@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2008-03-11 10:23:57 mikeaubury Exp $
+# $Id: Makefile.in,v 1.20 2008-05-23 10:11:38 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -94,6 +94,9 @@ ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o \
 
 all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
+
+
+core: ${PLUGINDIR}/libUI_TUI${SO_EXT}
 
 ${PLUGINDIR}/libUI_TUI${SO_EXT}: ${ALLOBJ}
 	${LD} ${SO_LDFLAGS} -o $@ $^ @CURSES_LIB_PATH@  @CURSES_LIB_NAME@  ${LINKLIBS}

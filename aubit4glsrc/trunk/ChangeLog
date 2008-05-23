@@ -1,4 +1,27 @@
 ---------------------------
+Fri May 23 11:05:17 BST 2008
+---------------------------
+1.10RC_25 Released
+---------------------------
+	
+	Added compile time table checksums for dependant tables Added data
+	to store compilation info (available by running any .4ae with
+	--compiled-version) re-added Member function calls (parser2 issue)
+	
+	compile time optimisations.  Added extra header info (including
+	'dependant' tables) Some small code clearups
+	
+	lint fixup
+	
+	PG8 fixup Add filename and line number for assert fails add extra
+	operators for tests in convertsql files fix FORMAT EVERY ROW
+	
+	Build issue fixup
+	
+	further fixup for MID 0001133: Type casting doesn't work in *.4gl
+	programs.
+	
+---------------------------
 Tue May 13 21:18:53 BST 2008
 ---------------------------
 1.10RC_24 Released

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.36 2008-05-16 08:35:37 mikeaubury Exp $
+# $Id: Makefile,v 1.37 2008-05-23 10:11:38 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -112,6 +112,9 @@ endif
 
 ALL				+=${ROOT}/bin/4glc fgllint
 
+
+core: ${ROOT}/bin/4glc 
+
 C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
 #-I${ROOT}/lib -I${ROOT}/lib/libincl
 CFLAGS			+=${C_LOCAL_IFLAGS} ${RPCLIB_INCLUDE} ${CURSES_INC_PATH}
@@ -154,7 +157,7 @@ all: a4gl_4glc_int.h ${ALL}
 
 a4gl_4glc_int.h: API_lex.c API_parse.c
 
-${ROOT}/bin/4glc: ${4GLCAOBJ}
+${ROOT}/bin/4glc: ${4GLCAOBJ} 
 	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
 ifeq "${STRIP_EXECUTABLES}" "yes"
 	${CP}  $@${EXEEXT} $@-strip${EXEEXT}
@@ -248,9 +251,9 @@ ${GENRULES}/kw.c ${GENRULES}/single_words.rule  \
 rules/generated/kw.h rules/generated/y.tab.h:
 	${MAKE} -C rules $(MKNAME)
 
-4glc.o: 				rules/generated/kw.h rules/generated/y.tab.h
-dim.o: 					rules/generated/kw.h rules/generated/y.tab.h
-compile.o: 				rules/generated/kw.h rules/generated/y.tab.h
+4glc.o: 				rules/generated/kw.h rules/generated/y.tab.h a4gl_4glc_int.h ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_parse.h
+dim.o: 					rules/generated/kw.h rules/generated/y.tab.h a4gl_4glc_int.h ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_parse.h
+compile.o: 				rules/generated/kw.h rules/generated/y.tab.h a4gl_4glc_int.h ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_parse.h
 
 mod.o: 					mod.c ${Y_TAB_C}
 ${GENRULES}/y.tab.o: 	../fcompile/form_x.h
