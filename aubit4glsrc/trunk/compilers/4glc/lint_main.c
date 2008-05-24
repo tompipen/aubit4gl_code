@@ -27,7 +27,7 @@ if (argc<2) {
 	printf("Usage : %s infile infile...\n",argv[0]);
 	exit(2);
 }
-
+A4GL_build_user_resources ();
 open_lintfile(0);
 
 m=malloc(sizeof(struct module_definition)*(argc-1));

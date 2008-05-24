@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2007-06-19 18:16:15 mikeaubury Exp $
+# $Id: Makefile.in,v 1.21 2008-05-24 16:06:01 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -58,6 +58,7 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 		-D"PLUGINDIR=\"${PLUGINDIR}\""   \
 		-D"HAVE_IFX_IUS=\"${HAVE_IFX_IUS}\""   \
 		-D"A4GL_C_COMP=\"${CC}\""  \
+		-D"MAKE=\"${MAKE}\""  \
 		-D"A4GL_RDYNAMIC=\"${RDYNAMIC}\""  
 
 

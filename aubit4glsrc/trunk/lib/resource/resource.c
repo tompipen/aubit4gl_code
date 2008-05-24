@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.150 2008-05-22 11:56:08 mikeaubury Exp $
+# $Id: resource.c,v 1.151 2008-05-24 16:06:01 mikeaubury Exp $
 #
 */
 
@@ -180,6 +180,7 @@ struct str_resource builtin_resource[] = {
   {"A4GL_NO_CONV_ERR","Y"},
   {"DBPRINT", "lp"},
   {"ACLCCOMP", "cc"},
+  {"A4GL_MAKE", MAKE},
   {"A4GL_NULL_DECIMAL_IF_BAD", "Y"},
   {"ACL_MOUSE", "N"},
   {"TARGET", CONFIGURED_TARGET},
