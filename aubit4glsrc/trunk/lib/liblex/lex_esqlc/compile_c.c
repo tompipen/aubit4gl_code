@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.420 2008-05-22 11:55:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.421 2008-05-28 15:52:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.420 2008-05-22 11:55:47 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.421 2008-05-28 15:52:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6051,7 +6051,7 @@ return -1;
 void print_push_variable_usage (expr_str *ptr) {
 struct variable_usage *u;
 int substring=0;
-struct variable *v;
+struct variable *v_var;
 char errbuff[255];
 char scope;
 expr_str *substring_start;
@@ -6062,7 +6062,7 @@ expr_str *substring_end;
 	u=ptr->expr_str_u.expr_variable_usage;
 
        	substring=is_substring_variable_usage_in_expr(ptr,&substring_start, &substring_end);
-	v=find_variable_vu_ptr(errbuff, u, &scope,0);
+	//v_var=find_variable_vu_ptr(errbuff, u, &scope,0);
 
 
 	if (!substring) {

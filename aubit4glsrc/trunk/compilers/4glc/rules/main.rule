@@ -166,7 +166,6 @@ func_def	: ldeffunction {
     				pop_blockcommand("FUNC");
     				clr_function_constants ();
     				A4GL_lex_printcomment("/*end function*/\n");
-				
     				A4GL_chk_and_clr_labels();
 				map_function_end();
   			}

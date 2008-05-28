@@ -925,6 +925,8 @@ report_def : rep_or_localrep
 			map_report_end();
                 	$<module_entry>$=new_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<startrep>11, $<report_orderby_section>12, $<report_format_section>14 ,$<integer_val>4) ;
 			set_variables(&$<module_entry>$->module_entry_u.report_definition.variables,'L');
+			clr_function_constants();
+			 A4GL_chk_and_clr_labels();
 		}
 ;
 
@@ -1000,6 +1002,9 @@ pdf_report_def : pdf_rep_or_localrep {
 		pop_blockcommand("REPORT"); 
                 $<module_entry>$=new_pdf_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<pdf_startrep>11, $<report_orderby_section>12, $<report_format_section>14,$<integer_val>4 ) ;
 			set_variables(&$<module_entry>$->module_entry_u.pdf_report_definition.variables,'L');
+
+			clr_function_constants();
+			 A4GL_chk_and_clr_labels();
 
 		
 
