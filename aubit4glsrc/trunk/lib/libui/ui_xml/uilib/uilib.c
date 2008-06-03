@@ -2315,7 +2315,9 @@ void set_construct_clause(int context, char *ptr) {
 
 
 static int field_match(char *a,char *b) {
-	fprintf(stderr,"Field  name match : %s %s\n",a,b);
+	if (a==0) return 0;
+	if (b==0) return 0;
+	fprintf(stderr,"Field  name match : '%s' '%s'\n",a,b);
 	if(strcmp(a,b)==0) return 1;
 	return 0;
 }
