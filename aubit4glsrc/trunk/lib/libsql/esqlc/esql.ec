@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.204 2008-05-22 11:55:49 mikeaubury Exp $
+# $Id: esql.ec,v 1.205 2008-06-03 09:17:23 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.204 2008-05-22 11:55:49 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.205 2008-06-03 09:17:23 mikeaubury Exp $";
 #endif
 
 
@@ -3221,8 +3221,6 @@ dataType=p_datatype;
   //if (indicator == -1) { return 0; } 
 
 
-
-
   switch (dataType)
     {
     case DTYPE_CHAR:
@@ -3244,6 +3242,7 @@ dataType=p_datatype;
 	}
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:indicator=INDICATOR, :char_var = DATA;
       if (indicator == -1) { return 0; } 
+	
 
       if (char_var[0]) {
       	A4GL_trim (char_var);
@@ -5208,8 +5207,15 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	    case CLVCHARTYPE:
 #endif
 	    case CVCHARTYPE:
+		{
+		int blen=0;
 	        alen = stripl((char *) ptr, col->sqllen);
-	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
+		// sqllen seems to retain the maximum size used so far which isnt what we want
+		// use the length instead...
+		blen=strlen(ptr);
+	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, blen);
+		}
+		
 	      break;
 
 
