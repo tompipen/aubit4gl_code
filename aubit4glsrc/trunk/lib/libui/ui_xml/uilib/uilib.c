@@ -49,6 +49,7 @@ struct uiconstruct
   char *setfield;
   int num_field_data;
   char **field_data;
+  char **field_content_data;
   char *infield;
 };
 
@@ -1458,6 +1459,7 @@ uilib_construct_start (int nargs)
   int cconstruct = -1;
   char *attr;
   char **args;
+  int nfields;
   int ln;
   char *mod;
   attr = charpop ();
@@ -1477,6 +1479,7 @@ uilib_construct_start (int nargs)
   contexts[cconstruct].ui.construct.infield = 0;
   contexts[cconstruct].ui.construct.num_field_data = 0; 
   contexts[cconstruct].ui.construct.field_data = 0; 
+  contexts[cconstruct].ui.construct.field_content_data = 0; 
   UIdebug(5,"Construct - state=%d",  contexts[cconstruct].state);
   suspend_flush (1); 
 	UIdebug(5, "Construct start - state=%d", contexts[cconstruct].state);
@@ -1487,6 +1490,17 @@ uilib_construct_start (int nargs)
       send_to_ui ("<COLUMN NAME=\"%s\"/>", args[a]);
     }
   send_to_ui ("</COLUMNS>");
+   nfields=nargs-1;
+
+      contexts[cconstruct].ui.construct.num_field_data	= nfields;
+      contexts[cconstruct].ui.construct.field_data     	= malloc (sizeof (char *) * nfields);
+      contexts[cconstruct].ui.construct.field_content_data	= malloc (sizeof (char *) * nfields);
+
+	for (a=0;a< contexts[cconstruct].ui.construct.num_field_data;a++) {
+			contexts[cconstruct].ui.construct.field_data[a]        =0;
+			contexts[cconstruct].ui.construct.field_content_data[a]=0;
+	}
+
   //pushint (cconstruct);
   return 0;
 }
@@ -1533,8 +1547,21 @@ uilib_construct_loop (int nargs)
 
   if (last_attr->sync.nvalues)
     {
-      /* Got a construct result... */
-             contexts[context].ui.construct.constr_clause = last_attr->sync.vals[0].value;
+	int a;
+      	/* Got a construct result... */
+        contexts[context].ui.construct.constr_clause = last_attr->sync.vals[0].value;
+	for (a=0;a<last_attr->sync.nvalues;a++) {
+		if (contexts[context].ui.construct.field_content_data[a]) {
+			free(contexts[context].ui.construct.field_content_data[a]);
+			contexts[context].ui.construct.field_content_data[a]=0;
+		}
+		if (contexts[context].ui.construct.field_data[a]) {
+			free(contexts[context].ui.construct.field_data[a]);
+			contexts[context].ui.construct.field_data[a]=0;
+		}
+        	contexts[context].ui.construct.field_content_data[a] 	= last_attr->sync.vals[a].value;
+		contexts[context].ui.construct.field_data[a]		= last_attr->sync.vals[a].fieldname;
+	}
     }
   
   if (last_attr->infield) {
@@ -1571,6 +1598,17 @@ uilib_free_construct (int nargs)
 
   if (contexts[context].ui.construct.constr_clause)
     free (contexts[context].ui.construct.constr_clause);
+
+  if (contexts[context].ui.construct.field_content_data) {
+	int a;
+	for (a=0;a< contexts[context].ui.construct.num_field_data;a++) {
+		free(contexts[context].ui.construct.field_content_data);
+		contexts[context].ui.construct.field_content_data=0;
+	}
+	free(contexts[context].ui.construct.field_content_data);
+	contexts[context].ui.construct.field_content_data=0;
+  }
+  
 
   send_to_ui ("<FREE TYPE=\"CONSTRUCT\" CONTEXT=\"%d\"/>", context);
   return 0;
@@ -2099,6 +2137,57 @@ int uilib_getfldbuf(int nargs) {
 			}
 			return nfields;
 		}
+
+
+ 		if (contexts[context].type==UIINPUTARRAY) {
+			int a;
+			int b;
+			char **flist;
+			int nflist;
+			int currline;
+			flist=contexts[context].ui.inputarray.field_data;
+			nflist=contexts[context].ui.inputarray.num_field_data;
+			currline=contexts[context].ui.inputarray.arr_line;
+			for (b=0;b<nfields;b++) {
+				int pushed=0;
+				for (a=0;a<nflist;a++) {
+					if (field_match(flist[a],fields[b])) {
+							PUSHquote(contexts[context].ui.inputarray.variable_data[currline][a]);
+							pushed++;
+							break;
+					}
+				}
+				if (!pushed) {
+						PUSHquote("<notfound>");
+				}
+			}
+			return nfields;
+		}
+
+
+
+ 		if (contexts[context].type==UICONSTRUCT) {
+			int a;
+			int b;
+			char **flist;
+			int nflist;
+			flist=contexts[context].ui.construct.field_data;
+			nflist=contexts[context].ui.construct.num_field_data;
+			for (b=0;b<nfields;b++) {
+				int pushed=0;
+				for (a=0;a<nflist;a++) {
+					if (field_match(flist[a],fields[b])) {
+							PUSHquote(contexts[context].ui.construct.field_content_data[a]);
+							pushed++;
+							break;
+					}
+				}
+				if (!pushed) {
+							PUSHquote("<notfound>");
+				}
+			}
+			return nfields;
+		}
 	}
 
 	fprintf(stderr,"******** UNSUPPORTED GETFLDBUF OPERATION **********\n");
@@ -2176,6 +2265,7 @@ return 0;
 
 int A4GL_assertion_full(int n, char *s,char *mod, int ln) {
 	A4GL_assertion(n,s);
+	return 0;
 }
 
 

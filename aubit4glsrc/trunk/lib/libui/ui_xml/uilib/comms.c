@@ -5,20 +5,34 @@
  *     */
 #include <stdlib.h>
 #include <sys/types.h>
+
+
+#ifdef WIN32
+#error "Unable to compile on win32 atm"
+#else
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <sys/un.h>
+#endif
+
+#include <sys/time.h>
+
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
 
 
+
 #define NOPROXY
 
 #ifdef NOPROXY
+#ifdef WIN32
+
+#else
 #include <netinet/in.h>
 #include <netdb.h>
-#endif
+#endif /* win32 */
+#endif /* NOPROXY */
 
 #include "xml/attr.h"
 #include "../debug.h"
