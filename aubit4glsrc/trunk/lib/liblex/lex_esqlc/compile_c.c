@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.421 2008-05-28 15:52:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.422 2008-06-04 10:27:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.421 2008-05-28 15:52:35 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.422 2008-06-04 10:27:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -823,15 +823,15 @@ char buff[256];
   FPRINTF (outfile, "#define fgldate long\n");
 	logtxt=acl_getenv_not_set_as_0("FGLLOGTXT");
 	if (logtxt==0) logtxt="Not Set";
+time(&ttime);
+	strcpy(buff,ctime(&ttime));
+	A4GL_trim_nl(buff);
 	
-  FPRINTF (outfile, "static char const _rcsid[]=\"$FGLIdent: Compiler-%s%d Log:%s $\";\n",A4GL_internal_version(),A4GL_internal_build(),logtxt);
+  FPRINTF (outfile, "static char const _rcsid[]=\"$FGLIdent: %s.4gl Compiler-%s%d Time:%s Log:%s $\";\n",this_module_name, A4GL_internal_version(),A4GL_internal_build(),buff, logtxt);
 
   FPRINTF (outfile, "static void a4gl_show_compiled_version(void) {\n");
   FPRINTF (outfile, "printf(\"Log: %s\\n\");\n",escape_quotes_and_remove_nl(logtxt));
   FPRINTF (outfile, "printf(\"Aubit4GL Version: %s%d\\n\");\n",A4GL_internal_version(),A4GL_internal_build());
-time(&ttime);
-	strcpy(buff,ctime(&ttime));
-	A4GL_trim_nl(buff);
 	
   FPRINTF (outfile, "printf(\"Compiled Time %s\\n\");\n",buff);
   FPRINTF (outfile, "exit(0);\n");
