@@ -2038,6 +2038,25 @@ struct module_entry *c;
    return c;
 }
 
+
+struct module_entry *new_import_package(char *package ,int lineno) {
+struct module_entry *c;
+   c=new_module_entry(E_MET_IMPORT_PACKAGE);
+   c->module_entry_u.import_package_definition.package_name=strdup(package);
+   c->module_entry_u.import_package_definition.module=A4GL_compiling_module_basename();
+   c->module_entry_u.import_package_definition.lineno=lineno;
+   return c;
+}
+
+struct module_entry *new_import_datatype(char *dtype_name ,int lineno) {
+struct module_entry *c;
+   c=new_module_entry(E_MET_IMPORT_DATATYPE);
+   c->module_entry_u.import_datatype_definition.dtype_name=strdup(dtype_name);
+   c->module_entry_u.import_datatype_definition.module=A4GL_compiling_module_basename();
+   c->module_entry_u.import_datatype_definition.lineno=lineno;
+   return c;
+}
+
 struct module_entry *new_module_code_cmd(struct command *cmd)  {
 struct module_entry *c;
    c=new_module_entry(E_MET_CMD);

@@ -10,13 +10,15 @@ import_m : IMPORT_FUNCTION identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 import_package:
 	 IMPORT_PACKAGE identifier {
 		A4GL_lexer_import_package($<str>2);
+		$<module_entry>$= new_import_package($<str>2,yylineno);
 	}
 ;
 
 
 
 module_import: IMPORT_DATATYPE identifier { 
-		add_ex_dtype($<str>2); 
+			add_ex_dtype($<str>2); 
+			$<module_entry>$= new_import_datatype($<str>2,yylineno);
 		} 
 ;
 

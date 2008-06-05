@@ -17,7 +17,7 @@ for b=1 to 10
 	# This one returns a value...
 	call a.nextprime() returning a
 	display a
-	display a.nextprime()
+	display "And the next will be : ", a.nextprime()
 end for
 
 

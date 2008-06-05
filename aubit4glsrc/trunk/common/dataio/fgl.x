@@ -2841,7 +2841,9 @@ enum module_entry_type {
 	E_MET_IMPORT_FUNCTION_DEFINITION,
 	E_MET_IMPORT_LEGACY_DEFINITION,
 	E_MET_FORMHANDLER_DEFINITION,
-	E_MET_CLASS_DEFINITION
+	E_MET_CLASS_DEFINITION,
+	E_MET_IMPORT_DATATYPE,
+	E_MET_IMPORT_PACKAGE
 };
 
 
@@ -2871,6 +2873,18 @@ struct s_import_legacy_definition {
 	int colno;
 };
 
+
+struct s_import_datatype {
+	str dtype_name;
+	str module;
+	int lineno;
+};
+struct s_import_package {
+	str package_name;
+	str module;
+	int lineno;
+};
+
 struct s_formhandler_definition {
 	str formhandler_name;
 	struct on_events *before_events;
@@ -2886,6 +2900,8 @@ union module_entry switch (enum module_entry_type met_type)  {
 
 	case E_MET_IMPORT_FUNCTION_DEFINITION: 	struct s_import_function_definition import_function_definition;
 	case E_MET_IMPORT_LEGACY_DEFINITION: 	struct s_import_legacy_definition  	import_legacy_definition;
+	case E_MET_IMPORT_DATATYPE: 	struct s_import_datatype  	import_datatype_definition;
+	case E_MET_IMPORT_PACKAGE: 	struct s_import_package  	import_package_definition;
 
 	/* The following is a fake comment so xgen_new can process it - DO NOT REMOVE THAT COMMENT! */
 	case E_MET_MAIN_DEFINITION:   	/*! struct s_function_definition    function_definition; !*/

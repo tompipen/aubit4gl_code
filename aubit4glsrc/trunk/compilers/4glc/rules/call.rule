@@ -15,6 +15,10 @@ call_ext: function_call_expr opt_return {
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>1),$<ptr_list>2);
 		//start_bind('i',0);
 	}
+   | variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
+                $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace("-"));
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>5);
+   }
    | DIALOGKEYSETLABEL OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_fcall("fgl_dialog_setkeylabel",$<ptr_list>3,infilename,lastlineno,get_namespace("fgl_dialog_setkeylabel"));
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
@@ -51,10 +55,6 @@ call_ext: function_call_expr opt_return {
 
 	
    | pdf_functions {$<cmd>$=$<cmd>1;}
-   | ensured_variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
-                $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1));
-   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>5);
-     }
 
 ;
 

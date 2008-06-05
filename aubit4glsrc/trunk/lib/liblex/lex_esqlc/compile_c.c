@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.422 2008-06-04 10:27:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.423 2008-06-05 12:49:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.422 2008-06-04 10:27:57 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.423 2008-06-05 12:49:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1691,7 +1691,6 @@ real_print_expr (struct expr_str *ptr)
 		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
-	//A4GL_pause_execution();
   	      printc ("_retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype,func, nparam);
 
 	      printc ("      if (_retvars!=1) {");
@@ -2642,6 +2641,26 @@ void real_print_expr_list (struct expr_str_list *l)
 }
 
 
+static void
+real_print_class_func_call (char *var, char *identifier,
+                            struct expr_str *args, int args_cnt)
+{
+  printcomment ("/* printing parameters */");
+  if (args) real_print_expr (args);
+  printcomment ("/* done printing parameters */");
+  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+          if (A4GL_doing_pcode()) {
+                printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
+          } else {
+                printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
+          }
+
+  printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", var, scan_variable (var), identifier, args_cnt);
+print_reset_state_after_call(0);
+
+}
+
+
 
 /**
  *
@@ -2656,7 +2675,6 @@ real_print_func_call (t_expr_str * fcall)
 //  NOTE - ANYTHING IN HERE SHOULD PROBABLY BE DUPLICATED IN THE 'real_print_expr' ROUTINE...
 //
  
-
 
 
   if (fcall->expr_type == ET_EXPR_FCALL)
@@ -2717,18 +2735,69 @@ real_print_func_call (t_expr_str * fcall)
 
 
   if (fcall->expr_type==ET_EXPR_MEMBER_FCALL)  {
-      //struct s_expr_member_function_call *p;
-      //struct expr_str_list *expr;
-      //int nargs;
-	A4GL_assertion(1,"FIXME");
-/*
-      p=fcall->expr_str_u.expr_member_function_call;
-      expr=A4GL_rationalize_list(p->parameters);
-      nargs = A4GL_new_list_get_count (expr);
-      real_print_expr_list (expr);
+      struct s_expr_member_function_call *p;
+      struct expr_str_list *expr;
+      int nargs;
+	      int a;
+		struct expr_str *vu_e;
+			int nparam=0;
+	      struct expr_str_list *l;
+	struct variable_usage *vu;
+	struct variable_usage *vu_top;
+	struct variable *v;
+	char errbuff[256];
+	char scope;
+	struct variable_usage *vu_n;
+	char *func;
+	char *s;
+	int datatype;
+	struct variable_usage *vu_bottom;
 
-	real_print_class_func_call (p->lib, p->fname,0, nargs);
-*/
+      		p=fcall->expr_str_u.expr_member_function_call;
+		  //p = ptr->expr_str_u.expr_member_function_call;
+		  l = p->parameters;
+		nparam=0;
+		  if (l)
+		    {
+			nparam=l->list.list_len;
+		      for (a = 0; a < l->list.list_len; a++)
+			{
+			  real_print_expr (l->list.list_val[a]);
+			}
+		    }
+	      printc ("{");
+	      printc ("      int _retvars;");
+		vu_e=p->var_usage_ptr;
+		vu=0;
+		switch (vu_e->expr_type) {
+			case ET_EXPR_VARIABLE_USAGE : 
+				vu_top=vu_e->expr_str_u.expr_variable_usage;
+				break;
+			default: break;
+		}
+		if (vu_top==0) {
+				a4gl_yyerror("Unable to get variable usage");
+				return;
+		}
+			vu=vu_top;
+
+		while (vu->next) {
+			vu_n=vu;
+			vu=vu->next;
+		}
+		// When  we get to here vu_n should be the last portion of the variale
+		// vu should be the function
+		vu_n->next=0;
+		func=vu->variable_name;
+		s=generation_get_variable_usage_as_string(vu_top);
+		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+		vu_bottom=usage_bottom_level(vu_top);
+		datatype=vu_bottom->datatype & DTYPE_MASK;
+      		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+  	      printc ("A4GLSQL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype,func, nparam);
+
+      print_reset_state_after_call(0);
+
 	return;
   }
 
@@ -5445,7 +5514,6 @@ expr_str_list *expanded_params;
 
   printc ("#");
 
-
   if (function_definition->func_commands)
     {
       for (a = 0; a < function_definition->func_commands->cmds.cmds_len; a++)
@@ -5615,6 +5683,7 @@ printc("#");
   for (a = 0; a < m->module_entries.module_entries_len; a++)
     {
       int ok = 1;
+	char *s;
 
 	parent_stack_cnt=0;
 
@@ -5631,6 +5700,20 @@ printc("#");
 			);
 		//struct s_import_function_definition import_function_definition;
 		break;
+	case E_MET_IMPORT_DATATYPE:
+		s=m->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.dtype_name;
+	  	A4GLEXDATA_initlib (s);
+  		if (A4GL_has_datatype_function_n (s, "INCLUDE")) {
+			char ss[25600];
+			  char *(*function) (void);
+
+      			function = A4GL_get_datatype_function_n (s, "INCLUDE");
+      			A4GL_debug ("function=%p\n", function);
+      			strcpy (ss, function ());
+		  	printh ("#include <%s.h>\n", ss);
+		}
+		break;
+
           case E_MET_IMPORT_LEGACY_DEFINITION:    
 		print_import_legacy( m->module_entries.module_entries_val[a]->module_entry_u.import_legacy_definition.funcname);
 		break;
