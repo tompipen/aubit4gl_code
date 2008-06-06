@@ -121,6 +121,8 @@ static void load_blacklist (void);
 static void load_blacklist_from (char *ptr);
 static int is_on_list (int list, char *s);
 static void add_to_list (int list, char *s);
+static char *get_orig_from_clobber(char *s) ;
+
 
 
 /******************************************************************/
@@ -1478,7 +1480,7 @@ print_ident (struct expr_str *ptr)
 {
   if (ptr->expr_type == ET_EXPR_IDENTIFIER)
     {
-      printc ("%s", ptr->expr_str_u.expr_string);
+      printc ("%s", get_orig_from_clobber(ptr->expr_str_u.expr_string));
       return;
     }
 
@@ -3713,6 +3715,15 @@ open_outfile (void)
 }
 
 
+static char *get_orig_from_clobber(char *s) {
+int a;
+	for (a=0;a<curr_module->clobberings.clobberings_len;a++) {
+		if (strcmp(curr_module->clobberings.clobberings_val[a].new,s)==0) {
+			return curr_module->clobberings.clobberings_val[a].important;
+		}
+	}
+	return s;
+}
 
 int
 LEXLIB_A4GL_write_generated_code (struct module_definition *m)
@@ -5700,6 +5711,7 @@ print_display_array_p1 (expr_str * arrvar, expr_str * srec, char *scroll, attrib
     }
   else
     {
+	set_nonewlines();
       printc ("DISPLAY ARRAY ");
       real_print_expr (arrvar);
       printc (" TO ");
@@ -5714,6 +5726,7 @@ print_display_array_p1 (expr_str * arrvar, expr_str * srec, char *scroll, attrib
 	      printc (")");
 	    }
 	}
+	clr_nonewlines();
     }
 
   tmp_ccnt++;
@@ -7307,7 +7320,7 @@ if (last_parent!=parent) {
 		}
 	      clr_nonewlines ();
 	    }
-
+	    }
 
 	  if (r->cmd_data.command_data_u.foreach_cmd.outputvals && r->cmd_data.command_data_u.foreach_cmd.outputvals->list.list_len)
 	    {
@@ -7356,7 +7369,6 @@ if (last_parent!=parent) {
 
 		  tmp_ccnt--;
 		}
-	    }
 
 
 	}
@@ -9275,6 +9287,7 @@ if (last_parent!=parent) {
 
 
     case E_CMD_SELECT_CMD:
+	need_daylight();
       print_connid (r->cmd_data.command_data_u.select_cmd.connid);
       preprocess_sql_statement (r->cmd_data.command_data_u.select_cmd.sql);
       search_variables (&r->cmd_data.command_data_u.select_cmd.sql->list_of_items);
@@ -9830,3 +9843,5 @@ local_a4gl_yyerror (char *s)
   fprintf (stderr, "%s", s);
   exit (2);
 }
+
+
