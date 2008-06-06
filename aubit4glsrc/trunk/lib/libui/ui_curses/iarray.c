@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.145 2008-04-23 08:17:42 mikeaubury Exp $
+# $Id: iarray.c,v 1.146 2008-06-06 13:16:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.145 2008-04-23 08:17:42 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.146 2008-06-06 13:16:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -985,10 +985,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 			    arr->scr_line + 1, arr->arr_line + 1,
 			    0, 'D');
       } else {
-	  A4GL_debug("Calling down newmovement -> existing data");
-          A4GL_newMovement (arr,
-			    arr->scr_line + 1, arr->arr_line + 1,
-			    arr->curr_attrib, 'D');
+          	A4GL_newMovement (arr, arr->scr_line + 1, arr->arr_line + 1, arr->curr_attrib, 'D');
       } 
 	A4GL_debug("DOWN\n");
 	
