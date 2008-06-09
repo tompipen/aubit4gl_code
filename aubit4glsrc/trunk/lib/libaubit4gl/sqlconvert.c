@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.153 2008-05-22 11:55:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.154 2008-06-09 17:41:52 mikeaubury Exp $
 #
 */
 
@@ -526,7 +526,6 @@ char thisline[2000];
       			if (t && len == 2 && (strncmp(t,"le",1)==0) ) { cond=INT_LE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
       			if (t && len == 2 && (strncmp(t,"lt",1)==0) ) { cond=INT_LT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
 
-
 			if (cond==COND_NOT_SET) {
 				FPRINTF(stderr, "%s\n", thisline);
 				FPRINTF(stderr, "Got : %s, expecteding <,>, =,>=,<=,!=, <>, ne, eq, ge, gt,lt,lr\n",t);
@@ -583,13 +582,12 @@ char thisline[2000];
 						int t2;
 						t1=atoi(acl_getenv(ptest));
 						t2=atoi(pval);
-						if (cond==STR_EQ) ok=(t1==t2);
-						if (cond==STR_NE) ok=(t1!=t2);
-						if (cond==STR_LT) ok=(t1<t2);
-						if (cond==STR_LE) ok=(t1<=t2);
-						if (cond==STR_GT) ok=(t1>t2);
-						if (cond==STR_GE) ok=(t1>=t2);
-						
+						if (cond==INT_EQ) ok=(t1==t2);
+						if (cond==INT_NE) ok=(t1!=t2);
+						if (cond==INT_LT) ok=(t1<t2);
+						if (cond==INT_LE) ok=(t1<=t2);
+						if (cond==INT_GT) ok=(t1>t2);
+						if (cond==INT_GE) ok=(t1>=t2);
 					}
 					break;
 				default: 

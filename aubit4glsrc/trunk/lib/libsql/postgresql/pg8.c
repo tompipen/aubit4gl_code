@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.42 2008-05-22 11:55:53 mikeaubury Exp $
+# $Id: pg8.c,v 1.43 2008-06-09 17:41:53 mikeaubury Exp $
 #*/
 
 
@@ -185,7 +185,6 @@ char *ptr;
 
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-
 
   envname = acl_getenv ("PG_DBPATH");
 
@@ -363,8 +362,8 @@ char *ptr;
 
 	res=PQexec(current_con, "SELECT version()");
 	ptr=PQgetvalue (res, 0, 0);
-	if (strcmp(ptr,"7.4informix1.8")==0) {
-  		A4GL_setenv("A4GL_PATCHEDPG","Y",1);
+	if (strstr(ptr,"7.4informix1.8")) {
+  			A4GL_setenv("A4GL_PATCHEDPG","Y",1);
   			A4GL_setenv("A4GL_PGVERSION","70408",1);
 	} else {
 		ptr=strchr(ptr,' ');
