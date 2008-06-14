@@ -1,4 +1,22 @@
 ---------------------------
+Sat Jun 14 13:00:10 BST 2008
+---------------------------
+1.10RC_26 Released
+---------------------------
+	
+	CONVERTSQL fixup
+	
+	Small formatting update for FGL generation
+	
+	Small aubit4gl extension fixups
+	
+	Update FGLIdent information stored
+	
+	small unload fixup
+	
+	mid 1142
+	
+---------------------------
 Fri May 23 11:05:17 BST 2008
 ---------------------------
 1.10RC_25 Released
