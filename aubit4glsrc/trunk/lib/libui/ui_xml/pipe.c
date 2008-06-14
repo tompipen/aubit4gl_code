@@ -188,6 +188,7 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 {
   size_t bytes_sent = 0;
   int this_write;
+  FILE *flog;
 
   ensure_sock(sockfd);
   while (bytes_sent < count)
@@ -197,6 +198,13 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
       do
 	{
 	errno=0;
+	if (1) { // LOG ...
+		flog=fopen("logproxy.out","a");
+		if (flog) {
+			fwrite(buf,count - bytes_sent,1,flog);
+		}
+		fclose(flog);
+	}
 	  this_write = write (sockfd, buf, count - bytes_sent);
 		loop_cnt++;
 

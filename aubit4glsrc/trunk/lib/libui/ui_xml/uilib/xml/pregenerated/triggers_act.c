@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2008/05/20 11:03:25.
+ * Generated 2008/06/11 17:54:54.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -127,7 +127,6 @@ void STag_TRIGGERED(void)
 		if (A_TRIGGERED_PROGRAMNAME) lexed_attr.programname=strdup(A_TRIGGERED_PROGRAMNAME);
                 if (A_TRIGGERED_FILELEN) lexed_attr.filelen=atoi(A_TRIGGERED_FILELEN);
 
-                printf("Triggered %s\n", lexed_attr.programname);
 		
 	}
 	

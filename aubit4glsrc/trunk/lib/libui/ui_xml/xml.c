@@ -1869,6 +1869,7 @@ long ln;
 int rval;
 prompt=vprompt;
 
+
 ln = (long) prompt;
 
 if (startingPrompt) {
@@ -1885,10 +1886,11 @@ context = A4GL_pop_long ();
 
 while (1) {
 	A4GL_push_long(context);
-	uilib_prompt_loop(0);
+	uilib_prompt_loop(1);
 	rval=A4GL_pop_long();
 	if (rval>0) {
 		prompt->mode = 2;
+                A4GL_push_long(context); uilib_free_prompt(1);
 		return rval;
 	}
 	if (rval==-100) {
@@ -1912,6 +1914,12 @@ while (1) {
 	  	int_flag=1;
 	}
 }
+
+fprintf(stderr, "prompt loop mode :%d\n", prompt->mode);
+if (prompt->mode==2) {
+                A4GL_push_long(context); uilib_free_prompt(1);
+}
+
 
 return 1;
 }
