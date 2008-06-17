@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.96 2008-05-22 11:39:51 mikeaubury Exp $
+# $Id: variables.c,v 1.97 2008-06-17 10:48:03 mikeaubury Exp $
 #
 */
 
@@ -1035,6 +1035,13 @@ add_to_scope (int record_cnt, int unroll)
 	  variable_holder = &list_global;
 	  counter = &list_global_cnt;
 	  alloc = &list_global_alloc;
+
+	  for (a=0;a<list_global_cnt;a++) {
+			if (list_global[a]->var_data.variable_type==VARIABLE_TYPE_CONSTANT) {
+				uses_constants++;
+				break;
+			}
+	  }
 		/*
 		if (chk_already_defined(curr_v[record_cnt]->names.names.names_val[0].name,scope)) {
 				char buff[256];
@@ -1058,6 +1065,12 @@ add_to_scope (int record_cnt, int unroll)
 	  variable_holder = &list_imported_global;
 	  counter = &list_imported_global_cnt;
 	  alloc = &list_imported_global_alloc;
+	  for (a=0;a<list_imported_global_cnt;a++) {
+			if (list_imported_global[a]->var_data.variable_type==VARIABLE_TYPE_CONSTANT) {
+				uses_constants++;
+				break;
+			}
+	  }
 	}
 
       if (scope == 'm')
@@ -1963,7 +1976,7 @@ check_for_constant (char *name, char *buff)
 
 // Constants can be costly to search for..
 // if we're not using them (over the builtin ones) - we can ignore this expense..
-  if (uses_constants==0){  
+  if (uses_constants==0 && !A4GL_isno(acl_getenv("CONSTANT_OPTIMISE"))){  
 	int builtin_Constant_usage=0;
    		if (A4GL_aubit_strcasecmp(name,"notfound")==0) builtin_Constant_usage++;
  		if (A4GL_aubit_strcasecmp(name,"true")==0)     builtin_Constant_usage++;
