@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.100 2008-05-10 08:02:19 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.101 2008-06-19 15:37:32 mikeaubury Exp $
 #
 */
 
@@ -437,7 +437,6 @@ char *dot;
  
   int lb=0;
   int cb=0;
-
 //printf("DEBUG %s\n",numeric);
 
   for (a=0;a<strlen(fmt);a++) {
@@ -600,11 +599,15 @@ char *dot;
 
   if (CHAR_INDEX (fmt, '.'))
     {
+	char *buff;
       strcpy (fm1, fmt);
       p = (char *) CHAR_INDEX (fm1, '.');
       p[0] = 0;
       strcpy (fm2, CHAR_INDEX (fmt, '.') + 1);
-      num_places=strlen(fm2);
+	buff=strdup(fm2);
+	A4GL_trim(buff);
+      num_places=strlen(buff);
+	free(buff);
     }
   else
     {
