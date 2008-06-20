@@ -209,6 +209,12 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 		loop_cnt++;
 
 		if(errno) {
+			printf("Errno=%d\n",errno); sleep(1);
+			if (errno==32) {
+				exit(1);
+			}
+
+			
 			if (errno==EBADF || errno==EBADR) {
 				// something wrong - so die..
 				break;
@@ -274,7 +280,7 @@ pipe_flush (int sockfd)
       pipe_sock_write (sockfd, sock_buff[sockfd], strlen (sock_buff[sockfd]));
 	if (!handshaking) {
       		SPRINTF(buff,"</COMMANDS>\n</ENVELOPE>\n");
-	}
+     }
      
       pipe_sock_write (sockfd, buff, strlen (buff));
       fsync (sockfd);

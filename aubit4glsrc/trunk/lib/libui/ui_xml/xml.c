@@ -267,7 +267,7 @@ int
 UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
 			   int error_line, int prompt_line, int menu_line,
 			   int border, int comment_line, int message_line,
-			   int attrib,char *text, char *style)
+			   int attrib,char *style, char *text)
 {
 //int rval;
   char *fname;
@@ -376,7 +376,7 @@ UILIB_A4GL_open_form (char *name)
     {
       // Nope - lets send a non-xml form instead..
       // this will callback to our UILIB_A4GL_read_metrics function..
-      send_to_ui ("<OPENFORM FORM=\"%s\">", name, buff);
+      send_to_ui ("<OPENFORM FORMNAME=\"%s\">", name, buff);
       send_to_ui ("<FORM>");
       form = A4GL_read_form (buff, name);
       send_to_ui ("</FORM>");
@@ -384,7 +384,7 @@ UILIB_A4GL_open_form (char *name)
     }
   else
     {
-      send_to_ui ("<OPENFORM FORM=\"%s\" SOURCE=\"%s\"/>", name, buff);
+      send_to_ui ("<OPENFORM FORMNAME=\"%s\" SOURCE=\"%s\"/>", name, buff);
     }
 
   free (s);
@@ -394,14 +394,14 @@ UILIB_A4GL_open_form (char *name)
 void
 UILIB_A4GL_close_form (char *name)
 {
-  send_to_ui ("<CLOSEFORM FORM=\"%s\"/>", name);
+  send_to_ui ("<CLOSEFORM FORMNAME=\"%s\"/>", name);
 }
 
 int
 UILIB_A4GL_disp_form (char *name, int attr)
 {
   int rval = 0;
-  send_to_ui ("<DISPLAYFORM FORM=\"%s\" ATTRIBUTE=\"%d\"/>", name, attr);
+  send_to_ui ("<DISPLAYFORM FORMNAME=\"%s\" ATTRIBUTE=\"%d\"/>", name, attr);
   return rval;
 }
 
@@ -995,7 +995,8 @@ dump_events (struct aclfgl_event_list *e)
   for (a = 0; e[a].event_type; a++)
     {
       char **fields;
-      if (e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN)
+
+      if (e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN || e[a].event_type==A4GL_EVENT_BEFORE_INP)
 	{
 	  continue;
 	}
@@ -1164,6 +1165,14 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	}
       a = A4GL_pop_int ();
 
+  if (a == 0)
+    {
+      if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+	{
+	  return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+	}
+    }
+
       if (a == 0)
 	continue;
       if (a == -1)
@@ -1261,7 +1270,7 @@ UILIB_aclfgl_aclfgl_add_to_toolbar (int n)
   buttonText = A4GL_char_pop ();
   tag = A4GL_char_pop ();
   send_to_ui
-    ("<ADDTOTOOLBAR TAG='%s' BUTTON='%s' IMAGE='%s' TOOLTOP='%s' KEYVAL='%d' ALWAYSSHOW='%d'/>",
+    ("<ADDTOTOOLBAR TAG='%s' BUTTON='%s' IMAGE='%s' TOOLTIP='%s' KEYVAL='%d' ALWAYSSHOW='%d'/>",
      uilib_xml_escape (tag), uilib_xml_escape (buttonText),
      uilib_xml_escape (img), uilib_xml_escape (toolTip), keyval, alwaysShow);
 
@@ -1452,6 +1461,11 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
 void
 UILIB_A4GL_ui_exit (int exitstatus)
 {
+static int exiting=0;
+if (exiting) return;
+exiting++;
+
+
 #define MAX_LINE_LEN 256
   if (def_stderr) {
 	fclose(def_stderr);
@@ -1898,7 +1912,7 @@ while (1) {
 		if (last_attr->sync.nvalues) {
                 	int b;
                 	A4GL_push_int(context);
-                	uilib_input_get_values(1);
+                	uilib_get_prompt_result(1);
 			rvalstr=A4GL_char_pop();
         	} else {
 			rvalstr=strdup("");
@@ -1907,11 +1921,13 @@ while (1) {
 		A4GL_push_char(rvalstr);
 		free(rvalstr);
 		prompt->mode = 2;
+		break;
 	}
 
 	if (rval==-101) {
 		prompt->mode = 2;
 	  	int_flag=1;
+		break;
 	}
 }
 
@@ -1921,6 +1937,7 @@ if (prompt->mode==2) {
 }
 
 
+printf("prompt->mode=%d\n",prompt->mode);
 return 1;
 }
 
@@ -2011,7 +2028,7 @@ XML_A4GL_assertion (int n, char *s)
 void *
 UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
 		      int prompt_line, int menu_line, int border,
-		      int comment_line, int message_line, int attrib,char *text, char *style)
+		      int comment_line, int message_line, int attrib,char *style, char *text)
 {
 //void* rval;
   int x, y, w, h;
@@ -2090,7 +2107,7 @@ UILIB_A4GL_add_menu_action (void *menu, char *action, int cmd_no_on_timeout)
 static void
 A4GL_make_label (int frow, int fcol, char *label)
 {
-  send_to_ui ("<LABEL ROW=\"%d\" COLUMN=\"%d\">%s</LABEL>", frow, fcol,
+  send_to_ui ("<FORMLABEL ROW=\"%d\" COLUMN=\"%d\">%s</FORMLABEL>", frow, fcol,
 	      uilib_xml_escape (label));
 }
 
@@ -2098,13 +2115,13 @@ A4GL_make_label (int frow, int fcol, char *label)
 static void
 A4GL_make_field (int frow, int fcol, int rows, int cols, char *widget,
 		 char *config, char *inc, void *id, char *tab_and_col,
-		 char *action)
+		 char *action,int attr_no)
 {
   send_to_ui
-    ("<FIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\" CONFIG=\"%s\" INC=\"%s\" ID=\"%d\" TABCOL=\"%s\" ACTION=\"%s\"/>",
+    ("<FORMFIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\" CONFIG=\"%s\" INC=\"%s\" ID=\"%d\" TABCOL=\"%s\" ACTION=\"%s\" ATTRIBUTE_NO=\"%d\"/>",
      frow, fcol, rows, cols, uilib_xml_escape (widget),
      uilib_xml_escape (config), uilib_xml_escape (inc), (long) id,
-     uilib_xml_escape (tab_and_col), uilib_xml_escape (action));
+     uilib_xml_escape (tab_and_col), uilib_xml_escape (action), attr_no);
 }
 
 
@@ -2224,15 +2241,15 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   n = formdets->fileform->metrics.metrics_len;
   A4GL_debug ("metrics len=%d", n);
 
+  send_to_ui("<SCREENS MAXCOL=\"%d\" MAXLINE=\"%d\">", formdets->fileform->maxcol, formdets->fileform->maxline);
 
+  send_to_ui("<SCREENLAYOUT>", formdets->fileform->maxcol, formdets->fileform->maxline);
   for (metric_no = 0; metric_no < n; metric_no++)
     {
 
 
       formdets->fileform->metrics.metrics_val[metric_no].pos_code = 0;
-      A4GL_debug ("checking label %s\n",
-		  formdets->fileform->metrics.metrics_val[metric_no].label);
-
+      A4GL_debug ("checking label %s\n", formdets->fileform->metrics.metrics_val[metric_no].label);
 
       if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) !=
 	  0)
@@ -2247,8 +2264,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
       else
 	{
 	  int attr_no;
-	  attr_no =
-	    A4GL_find_attrib_from_metric (formdets->fileform, metric_no);
+	  attr_no = A4GL_find_attrib_from_metric (formdets->fileform, metric_no);
 	  if (attr_no == -1)
 	    continue;
 	  widget = 0;
@@ -2309,12 +2325,106 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 			   formdets->fileform->metrics.
 			   metrics_val[metric_no].w, widget,
 			   config, include, fprop,
-			   make_tab_and_col (fprop->tabname,
-					     fprop->colname), action);
+			   make_tab_and_col (fprop->tabname, fprop->colname), action,attr_no);
 
 	}
-
     }
+
+  send_to_ui("</SCREENLAYOUT>");
+  send_to_ui("</SCREENS>");
+
+  send_to_ui("<SCREENRECORDS>");
+// We also need to send the screen records as these might be used....
+   for (n=0;n<formdets->fileform->records.records_len;n++) {
+		int attr;
+		send_to_ui("<SCREENRECORD NAME=\"%s\" SIZE=\"%d\">", formdets->fileform->records.records_val[n].name, formdets->fileform->records.records_val[n].dim);
+		for (attr=0;attr<formdets->fileform->records.records_val[n].attribs.attribs_len;attr++) {
+			int attr_no;
+			attr_no= formdets->fileform->records.records_val[n].attribs.attribs_val[attr];
+	      		fprop = &formdets->fileform->attributes.attributes_val[attr_no];
+			send_to_ui("<ATTRIBUTE ATTRIBUTE_NO=\"%d\" NAME=\"%s\"/>", formdets->fileform->records.records_val[n].attribs.attribs_val[attr], fprop->colname);
+		}
+		send_to_ui("</SCREENRECORD>");
+   }
+  send_to_ui("</SCREENRECORDS>");
+  send_to_ui("<ATTRIBUTES>");
+   for (n=0;n<formdets->fileform->attributes.attributes_len;n++) {
+		int b;
+		struct struct_scr_field *f;
+		f=&formdets->fileform->attributes.attributes_val[n];
+		send_to_ui("<ATTRIB ATTRIBUTE_NO=\"%d\" DATATYPE=\"%d\" DATATYPE_SIZE=\"%d\" DYNAMIC=\"%d\" REVERSE=\"%d\" >",
+				n,
+				f->datatype,
+				f->dtype_size,
+				f->dynamic,
+				f->do_reverse);
+		for  (b=0;b<f->str_attribs.str_attribs_len;b++) {
+			switch (f->str_attribs.str_attribs_val[b].type) {
+        			case FA_S_INCLUDE:
+        			case FA_S_WIDGET:
+        			case FA_S_CONFIG:
+        			case FA_S_ACTION:
+					break;
+
+        			case FA_S_PICTURE:
+					send_to_ui("<ATTRIB_PICTURE>%s</ATTRIB_PICTURE>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
+					break;
+        			case FA_S_FORMAT:
+					send_to_ui("<ATTRIB_FORMAT>%s</ATTRIB_FORMAT>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
+					break;
+        			case FA_S_DEFAULT:
+					send_to_ui("<ATTRIB_DEFAULT>%s</ATTRIB_DEFAULT>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
+					break;
+        			case FA_S_PROGRAM:
+					send_to_ui("<ATTRIB_PROGRAM>%s</ATTRIB_PROGRAM>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
+					break;
+        			case FA_S_COMMENTS:
+					send_to_ui("<ATTRIB_COMMENTS>%s</ATTRIB_COMMENTS>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
+					break;
+        			case FA_S_CLASS:
+					send_to_ui("<ATTRIB_CLASS>%s</ATTRIB_CLASS>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
+					break;
+
+			}
+		}
+
+		for  (b=0;b<f->bool_attribs.bool_attribs_len;b++) {
+			switch (f->bool_attribs.bool_attribs_val[b]) {
+				        case FA_B_AUTONEXT:
+				        send_to_ui("<ATTRIB_AUTONEXT/>");  break;
+        				case FA_B_REVERSE:
+        				send_to_ui("<ATTRIB_REVERSE/>");  break;
+        				case FA_B_INVISIBLE:
+        				send_to_ui("<ATTRIB_INVISIBLE/>");  break;
+        				case FA_B_NOENTRY:
+        				send_to_ui("<ATTRIB_NOENTRY/>");  break;
+        				case FA_B_VERIFY:
+        				send_to_ui("<ATTRIB_VERIFY/>");  break;
+        				case FA_B_WORDWRAP:
+        				send_to_ui("<ATTRIB_WORDWRAP/>");  break;
+        				case FA_B_COMPRESS:
+        				send_to_ui("<ATTRIB_COMPRESS/>");  break;
+        				case FA_B_UPSHIFT:
+        				send_to_ui("<ATTRIB_UPSHIFT/>");  break;
+        				case FA_B_DOWNSHIFT:
+        				send_to_ui("<ATTRIB_DOWNSHIFT/>");  break;
+        				case FA_B_REQUIRED:
+        				send_to_ui("<ATTRIB_REQUIRED/>");  break;
+        				case FA_B_NOUPDATE:
+        				send_to_ui("<ATTRIB_NOUPDATE/>");  break;
+        				case FA_B_QUERYCLEAR:
+        				send_to_ui("<ATTRIB_QUERYCLEAR/>");  break;
+        				case FA_B_ZEROFILL:
+        				send_to_ui("<ATTRIB_ZEROFILL/>");  break;
+        				case FA_B_RIGHT:
+        				send_to_ui("<ATTRIB_RIGHT/>");  break;
+
+			}
+		}
+		send_to_ui("</ATTRIB>");
+   }
+  send_to_ui("</ATTRIBUTES>");
+
 
   return 1;
 }
