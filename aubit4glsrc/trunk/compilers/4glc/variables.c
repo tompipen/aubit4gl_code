@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.97 2008-06-17 10:48:03 mikeaubury Exp $
+# $Id: variables.c,v 1.98 2008-06-21 09:51:43 mikeaubury Exp $
 #
 */
 
@@ -1038,7 +1038,7 @@ add_to_scope (int record_cnt, int unroll)
 
 	  for (a=0;a<list_global_cnt;a++) {
 			if (list_global[a]->var_data.variable_type==VARIABLE_TYPE_CONSTANT) {
-				uses_constants++;
+				//uses_constants++;
 				break;
 			}
 	  }
@@ -1067,7 +1067,7 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &list_imported_global_alloc;
 	  for (a=0;a<list_imported_global_cnt;a++) {
 			if (list_imported_global[a]->var_data.variable_type==VARIABLE_TYPE_CONSTANT) {
-				uses_constants++;
+				//uses_constants++;
 				break;
 			}
 	  }

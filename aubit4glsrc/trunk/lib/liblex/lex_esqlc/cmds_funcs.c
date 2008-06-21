@@ -1189,19 +1189,19 @@ print_open_window_cmd (struct_open_window_cmd * cmd_data)
 
   if (cmd_data->attributes && cmd_data->attributes->style && strlen(cmd_data->attributes->style))
     {
-      printc (",%s", cmd_data->attributes->style);
+      printc (",%s /* STYLE */", cmd_data->attributes->style);
     }
   else
     {
-      printc (",0");
+      printc (",0 /* STYLE */");
     }
   if (cmd_data->attributes && cmd_data->attributes->text && strlen(cmd_data->attributes->text))
     {
-      printc (",%s", cmd_data->attributes->text);
+      printc (",%s /* TEXT */", cmd_data->attributes->text);
     }
   else
     {
-      printc (",0");
+      printc (",0 /* TEXT */");
     }
   printc (");\n");
 

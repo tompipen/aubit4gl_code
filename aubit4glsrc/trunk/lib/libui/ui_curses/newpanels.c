@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.153 2008-04-09 08:35:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.154 2008-06-21 09:51:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.153 2008-04-09 08:35:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.154 2008-06-21 09:51:44 mikeaubury Exp $";
 #endif
 
 /**
@@ -1933,7 +1933,7 @@ void *
 	   int error_line,
 	   int prompt_line,
 	   int menu_line,
-	   int border, int comment_line, int message_line, int attrib, char *text, char *style)
+	   int border, int comment_line, int message_line, int attrib, char *style, char *text)
 {
   WINDOW *win;
   int x, y, w, h;
@@ -1975,7 +1975,7 @@ int
 		int error_line,
 		int prompt_line,
 		int menu_line,
-		int border, int comment_line, int message_line, int attrib, char *text, char *style)
+		int border, int comment_line, int message_line, int attrib, char *style, char *text)
 {
   int x, y, w, h;
   char *s;

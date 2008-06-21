@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.45 2007-10-15 17:11:32 mikeaubury Exp $";
+  "$Id: forms.c,v 1.46 2008-06-21 09:51:44 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -53,7 +53,7 @@ UILIB_A4GL_cr_window (char *s,
 		      int prompt_line,
 		      int menu_line,
 		      int border, int comment_line, int message_line,
-		      int attrib,char *text, char *style)
+		      int attrib,char *style, char *text)
 {
   void *win;
   int x, y, w, h;
@@ -96,7 +96,7 @@ UILIB_A4GL_cr_window_form (char *namet,
 			   int prompt_line,
 			   int menu_line,
 			   int border, int comment_line, int message_line,
-			   int attrib,char *text, char *style)
+			   int attrib,char *style, char *text)
 {
   int x, y, w, h;
   char *s;
