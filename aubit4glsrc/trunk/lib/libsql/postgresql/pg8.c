@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.44 2008-06-24 16:43:01 mikeaubury Exp $
+# $Id: pg8.c,v 1.45 2008-06-24 16:45:20 mikeaubury Exp $
 #*/
 
 
@@ -3642,6 +3642,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
 char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 char sqlstmt[200];
 static char buff[200];
+char *ptr;
 PGresult *res;
 if (!current_con) return s;
 
@@ -3653,7 +3654,9 @@ switch (PQresultStatus (res)) {
 	case PGRES_TUPLES_OK:
 	case PGRES_COMMAND_OK:
 		// We're ok !
-		strcpy(buff,PQgetvalue(res,0,0));
+		ptr=PQgetvalue(res,0,0);
+		if (ptr==0) ptr="<notfound>";
+		strcpy(buff,ptr);
        		PQclear (res);
 		return buff;
 	default: break;
