@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.43 2008-06-09 17:41:53 mikeaubury Exp $
+# $Id: pg8.c,v 1.44 2008-06-24 16:43:01 mikeaubury Exp $
 #*/
 
 
@@ -743,6 +743,12 @@ fixtype (char *type, int *d, int *s)
     {
       *d = DTYPE_INTERVAL;
       *s = 0x249; //000e;
+    }
+
+  if (strcmp (buff, "text") == 0)
+    {
+      *d = DTYPE_TEXT;
+      *s = 0x0; //000e;
     }
 
 
