@@ -225,10 +225,15 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 			}
 		    }
 		}
+
 	      if (anyfound)
 		{
 		  strcat (buff, ")");
 		  anyfound = 0;
+		} else {
+	char buff2[256];
+			sprintf(buff2,", OUTER %s", alias_buff);
+			strcat(buff,buff2);
 		}
 	    }
 	}
