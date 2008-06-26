@@ -156,6 +156,9 @@ endcode
 	if mv_silent=0 then
 		display "ADBSCHEMA (c) 2005-2007 Aubit Computing Ltd"
 	end if
+	if mv_mode=1 and length(lv_output) > 0 then
+		call outstr("ADBSCHEMA (c) 2005-2007 Aubit Computing Ltd")
+	end if
 
 	if lv_procname is not null then
 		call dump_proc(lv_procname)
