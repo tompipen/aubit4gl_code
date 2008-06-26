@@ -212,6 +212,9 @@ static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when
 		if (strstr(when_str,"ERR_CHK_ERROR")) {
       			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l, when_code);
 		}
+		if (strstr(when_str,"ERR_CHK_SQLERROR")) {
+      			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l, when_code);
+		}
     		return 0;
   }
 

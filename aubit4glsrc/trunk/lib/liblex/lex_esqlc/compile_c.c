@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.423 2008-06-05 12:49:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.424 2008-06-26 17:50:49 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.423 2008-06-05 12:49:15 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.424 2008-06-26 17:50:49 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -132,7 +132,7 @@ int curr_lineno=0;
 //int doing_a_report=0;
 //static int find_slice(char *av, char *s, int w) ;
 //void merge_files (void);
-char this_module_name[256];
+char this_module_name[256]="";
 char filename_for_h[132];
 char filename_for_c[132];
 char filename_for_output[132];
@@ -681,7 +681,7 @@ char buff[256];
   outputfilename = current_module->module_name;
 
 
-  if (this_module_name == 0)
+  if (strlen(this_module_name) == 0)
     {
       A4GL_assertion (1,"NO output file name");
     }
@@ -1542,8 +1542,7 @@ real_print_expr (struct expr_str *ptr)
 		    printc ("{");
 		    printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
 		    printc ("A4GLSQL_set_status(-3001,0);");
-		    printc ("A4GL_chk_err(%d,_module_name);",
-			    ptr->expr_str_u.expr_function_call->line);
+		    printc ("A4GL_chk_err(%d,_module_name);", ptr->expr_str_u.expr_function_call->line);
 		    printc ("}");
 		    printc ("}");
 		    if (strcmp(ptr->expr_str_u.expr_function_call->fname,"set_count")!=0) { printc ("%s", get_reset_state_after_call (0)); }
@@ -1556,6 +1555,31 @@ real_print_expr (struct expr_str *ptr)
   		if (is_in_report()) { clr_doing_a_report_call(1); }
 	}
 	    break;
+
+
+
+	case ET_EXPR_PDF_FCALL:
+	{
+        	struct s_expr_pdf_function_call *p;
+        	p=ptr->expr_str_u.expr_pdf_function_call;
+        	real_print_expr_list (p->parameters);
+        	printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+        	if (is_in_report ())
+        	{
+                	printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", p->fname, p->fname, p->parameters->list.list_len);
+        	}
+        	else
+        	{
+                	printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", p->fname, p->parameters->list.list_len);
+        	}
+		printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
+		printc ("A4GLSQL_set_status(-3001,0);");
+		printc ("A4GL_chk_err(%d,_module_name);", ptr->expr_str_u.expr_function_call->line);
+		printc ("}");
+		printc("}");
+
+	}
+	break;
 
 
 	case ET_EXPR_SHARED_FCALL:
@@ -2718,7 +2742,7 @@ real_print_func_call (t_expr_str * fcall)
 	  	printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
 	  }
 	}
-  		if (is_in_report()) { clr_doing_a_report_call(4); }
+  	if (is_in_report()) { clr_doing_a_report_call(4); }
       if (strcmp(p->fname,"set_count")!=0) {print_reset_state_after_call (0);}
       return;
     }
@@ -2874,6 +2898,24 @@ real_print_func_call (t_expr_str * fcall)
 		printc("free(_packer);free(_formtype);");
 		printh ("extern char compiled_form_%s[];\n", x->formname->expr_str_u.expr_string);
 		return ;
+  }
+
+
+  if (fcall->expr_type==ET_EXPR_PDF_FCALL) {	
+	struct s_expr_pdf_function_call *p;
+	p=fcall->expr_str_u.expr_pdf_function_call;
+  	real_print_expr_list (p->parameters);
+  	printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+  	if (is_in_report ())
+    	{
+      		printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", p->fname, p->fname, p->parameters->list.list_len);
+    	}
+  	else
+    	{
+      		printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", p->fname, p->parameters->list.list_len);
+    	}
+
+	return;
   }
 
   A4GL_assertion (1, "Internal error - expecting a function call");
@@ -6778,26 +6820,30 @@ int ok=1;
 struct s_select snew;
 //struct s_select_list_item_list *slist;
 struct s_select_list_item *ptr;
-
+struct s_select *next;
 memcpy(&snew,s,sizeof(snew));
 snew.list_of_items.list.list_len=0;
 snew.list_of_items.list.list_val=0;
 snew.where_clause=0;
 snew.having=0;
 snew.group_by=0;
+next=snew.next;
+snew.next=0;
 
 preprocess_sql_statement (&snew);
 
-if (snew.next) {
-	if (!chk_ibind_select(snew.next)) {
+if (next) {
+	if (!chk_ibind_select_internal(next)) {
 		ok=0;
 	}
 }
+
 
 for (a=0;a<snew.list_of_items.list.list_len;a++) {
 	ptr=snew.list_of_items.list.list_val[a];
 
 	if (ptr->data.type==E_SLI_VARIABLE_USAGE) {
+		//printf("%s\n",generation_get_variable_usage_as_string (ptr->data.s_select_list_item_data_u.var_usage));
 		ptr->data.type=E_SLI_VARIABLE_USAGE_IN_SELECT_LIST;
 		ok=0;
 	}
