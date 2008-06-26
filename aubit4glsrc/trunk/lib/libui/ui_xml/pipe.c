@@ -89,6 +89,7 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 {
 
 
+	      FILE *flog;
   int bytes_read;
   char buff[2];
   int total_count = 0;
@@ -142,11 +143,14 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
     		current_position[0] = 0;
 		FPRINTF(stderr, "Partial : %s\n\n\n\n", str);
   		UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
+
+	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str); } fclose (flog);
 		return 1;
 	}
     }
   if (count > 0)
     current_position[0] = 0;
+	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str); } fclose (flog);
   UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
   return 1;
 }
@@ -167,21 +171,41 @@ pipe_sock_read (int sockfd, char *buf, size_t count)
 {
   size_t bytes_read = 0;
   int this_read;
-
+char *borig;
+borig=buf;
   while (bytes_read < count)
     {
-      do
-	this_read = read (sockfd, buf, count - bytes_read);
+      do this_read = read (sockfd, buf, count - bytes_read); 
+
       while ((this_read < 0));
+
+
+
       if (this_read < 0)
 	return this_read;
-      else if (this_read == 0)
-	return bytes_read;
+
+
+      if (this_read == 0)
+	{
+	  if (bytes_read > 0)
+	    {
+	      FILE *flog;
+	      flog = fopen ("logproxy.in", "a");
+	      if (flog)
+		{
+		  fwrite (borig, bytes_read, 1, flog);
+		}
+	      fclose (flog);
+	    }
+	  return bytes_read;
+	}
       bytes_read += this_read;
       buf += this_read;
     }
   return count;
 }
+
+
 
 int
 pipe_sock_write (int sockfd, char *buf, size_t count)

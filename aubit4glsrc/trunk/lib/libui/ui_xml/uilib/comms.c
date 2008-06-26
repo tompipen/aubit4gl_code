@@ -366,7 +366,7 @@ get_event_from_ui ()
     }
 
 
-  printf("Id=%s\n",attr->id);
+  //printf("Id=%s\n",attr->id);
 
   if (attr->id)
     {

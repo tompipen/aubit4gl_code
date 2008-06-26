@@ -730,6 +730,8 @@ uilib_prompt_start (int n)
   
 
   cprompt = new_context (UIPROMPT,mod,ln);
+  
+  contexts[cprompt].ui.prompt.promptresult=0;
   suspend_flush (1);
   send_to_ui ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" >", cprompt, prompt_attr, field_attr, promptstr, charmode, helpno);
   free (field_attr);
@@ -1154,7 +1156,7 @@ uilib_input_loop (int nargs)
 {
   int context;
   int i;
-  int changed;
+  int changed=0;
   int a;
   char **args;
 
@@ -1173,8 +1175,9 @@ uilib_input_loop (int nargs)
     {
       UIdebug (5,"not initialized\n");
       contexts[context].state = UI_WANT_BEFORE_INPUT;
-      contexts[context].ui.input.num_field_data = 0;
-      contexts[context].ui.input.field_data = 0;
+      //contexts[context].ui.input.num_field_data = 0;
+      //contexts[context].ui.input.field_data = 0;
+  	//contexts[context].ui.input.variable_data=0;
       // Return -1 to intialize all the control blocks..
       pushint (-1);
       return 1;
@@ -1191,7 +1194,7 @@ uilib_input_loop (int nargs)
     }
 
 
-
+  if (nargs) {
   if (contexts[context].ui.input.variable_data)
     {
       UIdebug (5,"Got variable_data\n");
@@ -1201,8 +1204,7 @@ uilib_input_loop (int nargs)
 	  if (strcmp (contexts[context].ui.input.variable_data[a], args[a]) !=
 	      0)
 	    {			// Its changed
-	      UIdebug (5,"WAS %s NOW %s\n",
-		     contexts[context].ui.input.variable_data[a], args[a]);
+	      UIdebug (5,"WAS %s NOW %s\n", contexts[context].ui.input.variable_data[a], args[a]);
 	      free (contexts[context].ui.input.variable_data[a]);	// Remove old value
 	      contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
 	      contexts[context].ui.input.changed[a] = 1;	// Mark as changed
@@ -1223,7 +1225,6 @@ uilib_input_loop (int nargs)
       UIdebug (5,"alloced changed\n");
       contexts[context].ui.input.variable_data =
 	malloc (sizeof (char *) * contexts[context].ui.input.nfields);
-
       contexts[context].ui.input.num_field_data = contexts[context].ui.input.nfields;
       contexts[context].ui.input.field_data = malloc (sizeof (char *) * contexts[context].ui.input.nfields);
 		for (a=0;a< contexts[context].ui.input.num_field_data;a++) {
@@ -1239,6 +1240,7 @@ uilib_input_loop (int nargs)
 	  changed++;
 	}
     }
+  }
 
   if (changed)			// Although only a single field has changed - we'll send the whole lot
     // we can always change this later...
@@ -1285,6 +1287,8 @@ uilib_input_loop (int nargs)
     {
       for (a=0;a<last_attr->sync.nvalues;a++) {
 		if (contexts[context].ui.input.num_field_data<last_attr->sync.nvalues) {
+			printf("contexts[context].ui.input.num_field_data=%d ", contexts[context].ui.input.num_field_data);
+			printf("last_attr->sync.nvalues=%d\n",last_attr->sync.nvalues);
 			A4GL_assertion(1,"too many values sent back");
 		}
 		if (contexts[context].ui.input.variable_data[a]) {
@@ -1350,17 +1354,32 @@ uilib_input_start (int nargs)
   char *attr;
   int ln;
   char *mod;
+  int nfields;
+int a;
+
+  nfields=POPint();
   attr = charpop ();
   todefs=POPint();
   ln=POPint();
   mod=charpop();
+
   cinput = new_context (UIINPUT,mod,ln);
   contexts[cinput].ui.input.variable_data = 0;
+
   contexts[cinput].ui.input.field_data = 0;
   contexts[cinput].ui.input.num_field_data = 0;
   contexts[cinput].ui.input.changed = 0;
   contexts[cinput].ui.input.setfield = 0;
-  contexts[cinput].ui.input.nfields = 0;
+
+      contexts[cinput].ui.input.num_field_data		= nfields;
+      contexts[cinput].ui.input.field_data     		= malloc (sizeof (char *) * nfields);
+      contexts[cinput].ui.input.variable_data     	= malloc (sizeof (char *) * nfields);
+      contexts[cinput].ui.input.nfields = nfields;
+
+	for (a=0;a< contexts[cinput].ui.input.num_field_data;a++) {
+			contexts[cinput].ui.input.field_data[a]        =0;
+			contexts[cinput].ui.input.variable_data[a]        =0;
+	}
   suspend_flush (1);
   send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\">\n%s", cinput, attr,todefs, last_field_list);
   //pushint (cinput);
