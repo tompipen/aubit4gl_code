@@ -1,6 +1,6 @@
 {**
  * @file
- * Describe the test here
+ * Check generated datetime schema with adbschema
  * @process TEST_GENERAL
  *}
  
