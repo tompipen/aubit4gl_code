@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.46 2008-02-11 17:13:13 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.47 2008-06-26 17:55:19 mikeaubury Exp $
 #*/
 
 /**
@@ -756,7 +756,7 @@ A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
 
 
 int
-A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
+A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 {
   char *ptr;
   int a;
@@ -906,6 +906,50 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       return 0;
     }
 
+  if (strcmp(fname,"add_table_cell")==0) {
+		int table;
+		int column;
+		int row;
+		char *text;
+		char *optlist="";
+
+		if (nargs>=5) {
+			optlist=A4GL_char_pop();
+		}
+		text=A4GL_char_pop();
+		row=A4GL_pop_long();
+		column=A4GL_pop_long();
+		table=A4GL_pop_long();
+		table=PDF_add_table_cell(p->pdf_ptr, table,column,row,text,strlen(text),optlist);
+		A4GL_push_int(table);
+		return 1;
+  }
+
+  if (strcmp(fname,"fit_table")==0) {
+		int table;
+		double llx;
+		double lly;
+		double urx;
+		double ury;
+		char *optlist="";
+		char *rval;
+
+		if (nargs>=5) {
+			optlist=A4GL_char_pop();
+		}
+		ury=A4GL_pop_double();
+		urx=A4GL_pop_double();
+		lly=A4GL_pop_double();
+		llx=A4GL_pop_double();
+		table=A4GL_pop_long();
+
+		rval=PDF_fit_table(p->pdf_ptr, table, llx,lly,urx,ury,optlist);
+		A4GL_push_char(rval);
+		return 1;
+  }
+
+
+
   if (strcmp(fname,"page_col_inches")==0) {
 	  double f1;
       	f1 = A4GL_pop_double ();
@@ -1036,7 +1080,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int n)
       float fx, fy, fw, fh;
       char *text, *mode, *feature;
       int c;
-	if (n==7) {
+	if (nargs==7) {
       		feature = A4GL_char_pop ();
 	} else {
 		feature="";

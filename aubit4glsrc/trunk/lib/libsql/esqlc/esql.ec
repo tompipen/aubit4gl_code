@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.205 2008-06-03 09:17:23 mikeaubury Exp $
+# $Id: esql.ec,v 1.206 2008-06-26 17:55:19 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.205 2008-06-03 09:17:23 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.206 2008-06-26 17:55:19 mikeaubury Exp $";
 #endif
 
 
@@ -2534,8 +2534,6 @@ char buff[255];
       error_just_in_case ();
       return 1;
     }
-
-
 
 
 

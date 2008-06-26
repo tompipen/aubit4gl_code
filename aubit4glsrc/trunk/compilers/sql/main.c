@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.13 2008-02-11 17:13:09 mikeaubury Exp $
+# $Id: main.c,v 1.14 2008-06-26 17:55:19 mikeaubury Exp $
 #
 */
 
@@ -75,7 +75,7 @@ int pcnt=0;
 int converted=0;
 
 	if (argc<2) {
-		printf("Usage : %s filename [dbname]\n",argv[0]);
+		printf("Usage : %s filename [dbname [dialect]]\n",argv[0]);
 		exit(2);
 	}
 	A4GL_init_gen_stack();
