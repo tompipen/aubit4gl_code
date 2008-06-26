@@ -52,9 +52,10 @@ call_ext: function_call_expr opt_return {
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>7);
         }
 
-
+/*
 	
    | pdf_functions {$<cmd>$=$<cmd>1;}
+*/
 
 ;
 

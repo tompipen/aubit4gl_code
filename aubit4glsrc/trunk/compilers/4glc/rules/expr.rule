@@ -588,7 +588,9 @@ function_call_expr:
 		add_to_call_list_by_expr($<ptr>$);
 
                 }
-
+	| pdf_functions_expr {
+		$<ptr>$=$<ptr>1;
+	}
 
 ;
 

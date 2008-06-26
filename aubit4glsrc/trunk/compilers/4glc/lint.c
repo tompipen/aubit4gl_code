@@ -624,6 +624,19 @@ check_function (struct module_definition *d, struct s_function_definition *f)
 
 	}
 
+      if (r->cmd_data.type == E_CMD_SELECT_CMD)
+      {
+		struct s_select *s;
+		int ncols;
+		int nvars;
+		s=r->cmd_data.command_data_u.select_cmd.sql;
+		nvars=s->into->list.list_len;
+		ncols=s->select_list->list.list_len;
+		if (nvars!=ncols) {
+		      A4GL_lint (f->module, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
+		}
+      }
+ 
 
       if (r->cmd_data.type == E_CMD_LABEL_CMD)
 	{

@@ -1023,7 +1023,8 @@ case ET_EXPR_VARIABLE_USAGE :
                expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
 
 
-
+case ET_EXPR_BRACKET:
+	return expr_datatype(p->expr_str_u.expr_expr);
 
     case ET_EXPR_OP_SUB:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
