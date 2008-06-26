@@ -1,6 +1,7 @@
 define mv_exprtext byte
 
 
+
 define lv_colnames array[2000] of char(128) #in IDS varchar(128,0)
 define mv_idx_cnt smallint
 define lv_st record
@@ -272,7 +273,7 @@ define lv_q1 char(512)
 					let lv_str= " " 
 				end if
 			when 1
-				let lv_str=lv_sc.colname clipped," ",lv_sc.coltype using "<<<<<&"," ",lv_sc.collength using "<<<<<&"
+				let lv_str=lv_sc.colname clipped," ",lv_sc.coltype using "<<<<<&"," ",decode_collength(lv_sc.coltype, lv_sc.collength) using "<<<<<&"
 				call outstr(lv_str) 
 				let lv_str= " "
 			when 2
@@ -983,3 +984,124 @@ let p_stname=p_fulldb clipped, p_stname clipped
 call dump_table(p_stname,0,0,0)
 let mv_real_table=""
 END FUNCTION
+
+
+code
+
+#ifndef DTYPE_DECIMAL
+#define DTYPE_DECIMAL 5
+#endif
+
+#ifndef DTYPE_MONEY
+#define DTYPE_MONEY 8
+#endif
+
+#ifndef DTYPE_DTIME
+#define DTYPE_DTIME 10
+#endif
+
+#ifndef DTYPE_INTERVAL
+#define DTYPE_INTERVAL 14
+#endif
+
+#define TU_END(qual) (qual & 0xf)
+#define TU_START(qual) ((qual>>4) & 0xf)
+#define TU_LEN(qual) ((qual>>8) & 0xff)
+
+
+#define TU_YEAR 0
+#define TU_MONTH 2
+#define TU_DAY 4
+#define TU_HOUR 6
+#define TU_MINUTE 8
+#define TU_SECOND 10
+#define TU_FRAC 12
+#define TU_F1 11
+#define TU_F2 12
+#define TU_F3 13
+#define TU_F4 14
+#define TU_F5 15
+
+
+static int
+Infx_dt_to_A4gl_dt (int n)
+{
+  switch (n)
+    {
+    case TU_YEAR:
+      return 1;
+    case TU_MONTH:
+      return 2;
+    case TU_DAY:
+      return 3;
+    case TU_HOUR:
+      return 4;
+    case TU_MINUTE:
+      return 5;
+    case TU_SECOND:
+      return 6;
+    case TU_F1:
+      return 7;
+    case TU_F2:
+      return 8;
+    case TU_F3:
+      return 9;
+    case TU_F4:
+      return 10;
+    case TU_F5:
+      return 11;
+    }
+  // Shouldn't get to here
+  return 3;
+}
+
+
+static long
+fixlength (int dtype, int length)
+{
+  int n1, n2,n3;
+  if (dtype > 255)
+    dtype -= 256;
+  A4GL_debug ("Got datatype : %d length %d\n", dtype, length);
+  if (dtype==DTYPE_DECIMAL||dtype==DTYPE_MONEY) {
+        int a1,a2;
+        a1=length&0xff;
+        a2=length>>8;
+        if (a1==0xff) {
+                a1=2; a2+=5;
+                if (a2>32) a2=32;
+                length=(a2<<8)+a1;
+                return length;
+        }
+
+  }
+
+
+  if (dtype == DTYPE_DTIME)
+    {
+      n1 = Infx_dt_to_A4gl_dt (TU_START (length));
+      n2 = Infx_dt_to_A4gl_dt (TU_END (length));
+      return (n1 * 16) + n2;
+    }
+
+  if (dtype == DTYPE_INTERVAL)
+    {
+      n1 = Infx_dt_to_A4gl_dt (TU_START (length));
+      n2 = Infx_dt_to_A4gl_dt (TU_END (length));
+      n3 = length>>8;
+
+      return (n3<<8)+(n1 * 16) + n2;
+    }
+
+  return length;
+}
+endcode
+
+function decode_collength(lv_t, lv_l) 
+define lv_t,lv_l integer
+code
+lv_t=fixlength (lv_t,lv_l);
+endcode
+return lv_t
+end function
+
