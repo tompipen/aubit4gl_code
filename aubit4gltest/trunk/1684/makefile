@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_DUMP_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "Check adbschema generated for datetime schema"
 
 db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
