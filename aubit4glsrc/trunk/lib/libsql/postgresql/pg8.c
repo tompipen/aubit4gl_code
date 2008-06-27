@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.45 2008-06-24 16:45:20 mikeaubury Exp $
+# $Id: pg8.c,v 1.46 2008-06-27 06:47:15 mikeaubury Exp $
 #*/
 
 
@@ -603,6 +603,7 @@ A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 static void
 fixtype (char *type, int *d, int *s)
 {
+FILE *errd;
   //PGresult *r;
   char buff[256];
   //char *typname;
@@ -751,6 +752,12 @@ fixtype (char *type, int *d, int *s)
       *s = 0x0; //000e;
     }
 
+  if (strcmp (buff, "booleanx") == 0)
+    {
+      *d = DTYPE_SMINT;
+      *s = 0x0; //000e;
+    }
+
 
   if (*d == -1)
     {
@@ -759,6 +766,15 @@ fixtype (char *type, int *d, int *s)
 
 
       A4GL_debug ("Ooops - Unknown datatype : %s", type);
+      //printf ("Ooops - Unknown datatype : %s", type);
+      errd=fopen("/tmp/errdtypes.out","a");
+      if (errd) {
+		fprintf(errd,"%s\n", type);
+		fclose(errd);
+      }
+     chmod("/tmp/errdtypes.out",0666);
+      
+
       //A4GL_exitwith_sql ("Invalid datatype for Aubit4GL");
     }
   return;
