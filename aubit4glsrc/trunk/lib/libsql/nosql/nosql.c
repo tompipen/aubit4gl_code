@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.44 2008-06-27 11:56:36 mikeaubury Exp $
+# $Id: nosql.c,v 1.45 2008-06-27 13:01:55 mikeaubury Exp $
 #*/
 
 /**
@@ -117,7 +117,7 @@ t_expr_str_list* A4GLSQLLIB_A4GLSQL_get_validation_expr(char* tabname,char* coln
 void* A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid, int singleton) NOPE0
 
 
-void A4GLSQL_free_prepare (void* sid ) {
+void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 /* does nothing in this driver */
 }
 

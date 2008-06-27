@@ -536,10 +536,12 @@ table_reference_list:
 	}
 	| table_reference_list KW_COMMA OUTER tname {
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>4,E_OUTER_NORMAL,NULL);
+		A4GL_warn("OUTER join *may* be be portable to non-informix database");
 		add_feature("SELECT_OUTER");
 	}
 	| table_reference_list KW_COMMA OUTER OPEN_BRACKET table_reference_list CLOSE_BRACKET {
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>5,E_OUTER_NORMAL,NULL);
+		A4GL_warn("OUTER join *may* be be portable to non-informix database");
 		add_feature("SELECT_OUTER");
 	}
 /*
