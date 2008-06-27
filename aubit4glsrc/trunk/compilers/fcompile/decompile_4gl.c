@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile_4gl.c,v 1.2 2008-05-13 07:03:21 mikeaubury Exp $
+# $Id: decompile_4gl.c,v 1.3 2008-06-27 11:56:34 mikeaubury Exp $
 #
 */
 
@@ -88,12 +88,12 @@ int main (int argc, char *argv[])
 
   if (strcmp(argv[1],"--generate-global")==0) {
 			dump_global_4gl();
-			exit(1);
+			exit(0);
   }
 
   if (strcmp(argv[1],"--generate-common")==0) {
 			dump_common_4gl();
-			exit(1);
+			exit(0);
   }
 
   if (strcmp(argv[1],"--single-file")==0) {

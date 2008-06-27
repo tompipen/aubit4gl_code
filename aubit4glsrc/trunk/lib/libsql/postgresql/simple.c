@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.36 2008-05-22 11:55:55 mikeaubury Exp $
+# $Id: simple.c,v 1.37 2008-06-27 11:56:37 mikeaubury Exp $
 #*/
 
 
@@ -1039,5 +1039,10 @@ int A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid,int singleton) {
 char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 	return s;
 }
+
+void A4GLSQL_free_prepare (void* sid ) {
+/* does nothing in this driver */
+ }
+
 
 /* =============================== EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.43 2007-02-20 19:24:04 gyver309 Exp $
+# $Id: nosql.c,v 1.44 2008-06-27 11:56:36 mikeaubury Exp $
 #*/
 
 /**
@@ -116,6 +116,10 @@ void* A4GLSQLLIB_A4GLSQL_declare_cursor(int upd_hold,void* sid,int scroll,char* 
 t_expr_str_list* A4GLSQLLIB_A4GLSQL_get_validation_expr(char* tabname,char* colname) NOPE0
 void* A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid, int singleton) NOPE0
 
+
+void A4GLSQL_free_prepare (void* sid ) {
+/* does nothing in this driver */
+}
 
 int A4GLSQLLIB_SQL_initlib()  {
 // Does nothing

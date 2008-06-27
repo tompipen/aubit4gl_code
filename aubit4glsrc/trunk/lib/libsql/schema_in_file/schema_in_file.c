@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.25 2008-05-22 11:56:00 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.26 2008-06-27 11:56:37 mikeaubury Exp $
 #*/
 
 /**
@@ -343,5 +343,10 @@ A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
         return s; // dont worry - we'll try later to implement something 'proper'
 }
+
+
+void A4GLSQL_free_prepare (void* sid ) {
+/* does nothing in this driver */
+ }
 
 /* =============================== EOF ============================== */

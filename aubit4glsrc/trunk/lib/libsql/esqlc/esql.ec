@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.206 2008-06-26 17:55:19 mikeaubury Exp $
+# $Id: esql.ec,v 1.207 2008-06-27 11:56:36 mikeaubury Exp $
 #
 */
 
@@ -192,7 +192,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.206 2008-06-26 17:55:19 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.207 2008-06-27 11:56:36 mikeaubury Exp $";
 #endif
 
 
@@ -285,6 +285,10 @@ static void A4GL_sql_exitwith(char *s) {
 }
 
 
+
+void A4GLSQL_free_prepare (void* sid ) {
+/* does nothing in this driver */
+ }
 
 
 /**
@@ -5297,6 +5301,7 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 ********************************************************************************
 ********************************************************************************
 */
+
 
 
 #endif

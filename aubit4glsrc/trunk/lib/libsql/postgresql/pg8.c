@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.46 2008-06-27 06:47:15 mikeaubury Exp $
+# $Id: pg8.c,v 1.47 2008-06-27 11:56:37 mikeaubury Exp $
 #*/
 
 
@@ -3682,5 +3682,9 @@ PQclear (res);
 return s;
 }
 
+
+void A4GLSQL_free_prepare (void* sid ) {
+// does nothing in this driver
+}
 
 /* =============================== EOF ============================== */

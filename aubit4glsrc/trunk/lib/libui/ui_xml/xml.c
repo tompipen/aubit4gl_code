@@ -5,9 +5,9 @@
 #include "uilib/xml/attr.h"
 #include "a4gl_API_ui_lib.h"
 extern struct s_attr *last_attr;
-FILE *def_stderr=NULL;
+FILE *def_stderr = NULL;
 char stderr_fname[2000];
-char *set_current_display_delims=0;
+char *set_current_display_delims = 0;
 
 #include <stdarg.h>
 int mn_id = 0;
@@ -23,17 +23,20 @@ struct s_windows
 struct s_windows *win_stack[MAXWIN];
 int win_stack_cnt = 0;
 int XML_A4GL_assertion (int n, char *s);
-int startingPrompt=0;
+int startingPrompt = 0;
 
-static int get_inc_quotes(int a) ;
+static int get_inc_quotes (int a);
 
 #define niy() A4GL_niy((char *)__PRETTY_FUNCTION__)
 char *generate_construct_result (struct s_screenio *s);
 
 
-static char *ignull(char *s) {
-if (s) return s;
-return "";
+static char *
+ignull (char *s)
+{
+  if (s)
+    return s;
+  return "";
 
 }
 
@@ -55,7 +58,7 @@ A4GL_niy (char *func)
 
 int exiting_context[100];
 int exiting_context_state[100];
-int exiting_context_cnt=0;
+int exiting_context_cnt = 0;
 
 
 void
@@ -118,7 +121,7 @@ isset_exiting_context (int n, int *state)
 	  return 1;
 	}
     }
-return 0;
+  return 0;
 }
 
 
@@ -126,7 +129,7 @@ static void
 A4GL_XML_opening_form_xml (char *formname, char *formfile, char *fbuff)
 {
   int a;
-  suspend_flush(1);
+  suspend_flush (1);
   send_to_ui ("<XMLFORM NAME=\"%s\" FILE=\"%s\">", formname, formfile);
   for (a = 0; a < strlen (fbuff); a += 256)
     {
@@ -136,8 +139,8 @@ A4GL_XML_opening_form_xml (char *formname, char *formfile, char *fbuff)
       send_to_ui ("%s", uilib_xml_escape (b));
     }
   send_to_ui ("</XMLFORM>");
-  suspend_flush(-1);
-flush_ui();
+  suspend_flush (-1);
+  flush_ui ();
 }
 
 static int
@@ -170,7 +173,7 @@ A4GL_XML_opening_form (char *formfile, char *formname)
     }
   else
     {
-	printf("Unable to open file '%s'\n", buff);
+      printf ("Unable to open file '%s'\n", buff);
       return 0;
     }
 }
@@ -266,8 +269,7 @@ add_window (char *s, int w, int h, int border)
 int
 UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
 			   int error_line, int prompt_line, int menu_line,
-			   int border, int comment_line, int message_line,
-			   int attrib,char *style, char *text)
+			   int border, int comment_line, int message_line, int attrib, char *style, char *text)
 {
 //int rval;
   char *fname;
@@ -277,8 +279,10 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   fname = A4GL_char_pop ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
-if (style==0) style="";
-if (text==0) text="";
+  if (style == 0)
+    style = "";
+  if (text == 0)
+    text = "";
 
   A4GL_trim (fname);
 // Can we find a pregenerated XML form ? 
@@ -286,10 +290,11 @@ if (text==0) text="";
     {
       // Nope - lets send a non-xml form instead..
       // this will callback to our UILIB_A4GL_read_metrics function..
+      send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" ", name, x, y, attrib);
       send_to_ui
-	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" ", name, x, y, attrib);
-	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", ignull(text), ignull(style), error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
-	send_to_ui(">");
+	(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"",
+	 ignull (text), ignull (style), error_line, prompt_line, menu_line, border, comment_line, message_line);
+      send_to_ui (">");
       send_to_ui ("<FORM>");
       form = A4GL_read_form (fname, name);
       send_to_ui ("</FORM>");
@@ -297,13 +302,13 @@ if (text==0) text="";
     }
   else
     {
+      send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"", name, x, y, attrib, fname);
       send_to_ui
-	("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"",
-	 name, x, y, attrib, fname);
-	send_to_ui(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"", ignull(text), ignull(style), error_line, prompt_line,  menu_line, border,  comment_line,  message_line);
+	(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"",
+	 ignull (text), ignull (style), error_line, prompt_line, menu_line, border, comment_line, message_line);
 
 
-	send_to_ui("/>");
+      send_to_ui ("/>");
     }
 
 
@@ -424,9 +429,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
       x2 = A4GL_pop_int ();
       x3 = A4GL_pop_int ();
       x4 = A4GL_pop_int ();
-      send_to_ui
-	("<DRAWBOX arg1=\"%d\" arg2=\"%d\" arg3=\"%d\" arg4=\"%d\" />", x1,
-	 x2, x3, x4);
+      send_to_ui ("<DRAWBOX arg1=\"%d\" arg2=\"%d\" arg3=\"%d\" arg4=\"%d\" />", x1, x2, x3, x4);
     }
   if (n == 5)
     {
@@ -435,9 +438,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
       x3 = A4GL_pop_int ();
       x4 = A4GL_pop_int ();
       x5 = A4GL_pop_int ();
-      send_to_ui
-	("<DRAWBOX arg1=\"%d\" arg2=\"%d\" arg3=\"%d\" arg4=\"%d\" arg5=\"%d\"/>",
-	 x1, x2, x3, x4, x5);
+      send_to_ui ("<DRAWBOX arg1=\"%d\" arg2=\"%d\" arg3=\"%d\" arg4=\"%d\" arg5=\"%d\"/>", x1, x2, x3, x4, x5);
     }
 
   return rval;
@@ -445,9 +446,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
 
 
 void *
-UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type,
-				      int help_no, char *comment, char *style,
-				      char *image)
+UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type, int help_no, char *comment, char *style, char *image)
 {
   static char mn[20] = "XML";
   static long ln = 0;
@@ -456,9 +455,9 @@ UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type,
   A4GL_push_char (mn);
   A4GL_push_int (ln);
   A4GL_push_char (title);
-A4GL_push_char(comment);
-A4GL_push_char(style);
-A4GL_push_char(image);
+  A4GL_push_char (comment);
+  A4GL_push_char (style);
+  A4GL_push_char (image);
   uilib_menu_start (6);
   mn_id = 0;
 
@@ -466,8 +465,7 @@ A4GL_push_char(image);
 }
 
 void
-UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig,
-			    char *desc, int helpno, int attr)
+UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig, char *desc, int helpno, int attr)
 {
   static long ln = 0;
   long context;
@@ -562,11 +560,14 @@ UILIB_A4GL_menu_loop_v2 (void *menu, void *evt)
       uilib_menu_loop (1);
       a = A4GL_pop_int ();
 
-      if (a == -1) continue;
+      if (a == -1)
+	continue;
 
-      if (a == -2) continue;
+      if (a == -2)
+	continue;
 
-      if (a == 0) continue;
+      if (a == 0)
+	continue;
       return a - 1;
       break;
     }
@@ -631,13 +632,17 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
       return 1;
     }
 
- 
+
   A4GL_make_field_slist_from_ap (&list, ap);
-  if (list.field_name_list[0].fpos!=0 && list.field_name_list[0].fpos!=1) {
-  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname, list.field_name_list[0].fpos);
-	} else {
-  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, list.field_name_list[0].fname);
-	}
+  if (list.field_name_list[0].fpos != 0 && list.field_name_list[0].fpos != 1)
+    {
+      send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname,
+		  list.field_name_list[0].fpos);
+    }
+  else
+    {
+      send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, list.field_name_list[0].fname);
+    }
 
   return rval;
 }
@@ -674,8 +679,7 @@ UILIB_A4GL_req_field_input_array (void *sv, char type, va_list * ap)
 
   A4GL_make_field_slist_from_ap (&list, ap);
 
-  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context,
-	      list.field_name_list[0].fname, list.field_name_list[0].fpos);
+  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname, list.field_name_list[0].fpos);
 
 
   return rval;
@@ -694,8 +698,7 @@ UILIB_A4GL_menu_hide_ap (void *menu, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
-      send_to_ui ("<HIDEOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context,
-		  argp);
+      send_to_ui ("<HIDEOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, argp);
     }
   return rval;
 }
@@ -712,8 +715,7 @@ UILIB_A4GL_menu_show_ap (void *menu, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
-      send_to_ui ("<SHOWOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context,
-		  argp);
+      send_to_ui ("<SHOWOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, argp);
     }
   return 0;
 }
@@ -772,7 +774,7 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
     }
   strcat (buff, "</FIELDLIST>");
   f = field_list;
-  *f = strdup(buff);
+  *f = strdup (buff);
   return 1;
 }
 
@@ -996,7 +998,7 @@ dump_events (struct aclfgl_event_list *e)
     {
       char **fields;
 
-      if (e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN || e[a].event_type==A4GL_EVENT_BEFORE_INP)
+      if (e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN || e[a].event_type == A4GL_EVENT_BEFORE_INP)
 	{
 	  continue;
 	}
@@ -1012,13 +1014,14 @@ dump_events (struct aclfgl_event_list *e)
 
 
 
-	if (e[a].field==0) {
-		  A4GL_push_int (a + 1);
-		  A4GL_push_char (decode_event_id (e[a].event_type));
-		  A4GL_push_char ("");
-		  uilib_event (3);
-			continue;
-	} 
+      if (e[a].field == 0)
+	{
+	  A4GL_push_int (a + 1);
+	  A4GL_push_char (decode_event_id (e[a].event_type));
+	  A4GL_push_char ("");
+	  uilib_event (3);
+	  continue;
+	}
 
       fields = get_field_codes (e[a].field);
 
@@ -1034,8 +1037,7 @@ dump_events (struct aclfgl_event_list *e)
 	    }
 	  else
 	    {
-	      if (e[a].event_type == A4GL_EVENT_BEFORE_INP
-		  || e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN)
+	      if (e[a].event_type == A4GL_EVENT_BEFORE_INP || e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN)
 		{
 		  //printc ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (event_id));
 		  A4GL_push_int (a + 1);
@@ -1069,14 +1071,18 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
   A4GL_debug ("FORM LOOP\n");
 
 
-  if (init) {
+  if (init)
+    {
       int context;
       A4GL_push_char ("XML");
       A4GL_push_int (((long) s) & 0xffffffff);
       uilib_get_context (2);
       context = A4GL_pop_int ();	// Context..
-        if (context) { clr_exiting_context (context); }
-  }
+      if (context)
+	{
+	  clr_exiting_context (context);
+	}
+    }
 
 
   if (init)
@@ -1106,56 +1112,66 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  uilib_construct_start (cno);
 	  dump_events (evt);
 	  uilib_construct_initialised (0);
-      A4GL_push_char ("XML");
-      A4GL_push_int (((long) s) & 0xffffffff);
-  uilib_get_context (2);
-  Context = A4GL_pop_int ();	// Context..
-        if (Context) { clr_exiting_context (Context); }
+	  A4GL_push_char ("XML");
+	  A4GL_push_int (((long) s) & 0xffffffff);
+	  uilib_get_context (2);
+	  Context = A4GL_pop_int ();	// Context..
+	  if (Context)
+	    {
+	      clr_exiting_context (Context);
+	    }
 	}
       else
 	{
-		int with_defaults;
+	  int with_defaults;
 	  A4GL_push_char ("XML");
 	  A4GL_push_int (((long) s) & 0xffffffff);
-	  with_defaults=sreal->mode & 0x1;
-	  if (with_defaults) {
-		// Need to set all the values to null..
-		//
-	  	A4GL_push_int (0);
-	  } else {
-	  	A4GL_push_int (1);
-	  }
+	  with_defaults = sreal->mode & 0x1;
+	  if (with_defaults)
+	    {
+	      // Need to set all the values to null..
+	      //
+	      A4GL_push_int (0);
+	    }
+	  else
+	    {
+	      A4GL_push_int (1);
+	    }
 	  A4GL_push_int (sreal->attrib);
 	  A4GL_push_int (sreal->nfields);
 	  uilib_input_start (5);
 	  dump_events (evt);
 	  uilib_input_initialised (0);
-      A4GL_push_char ("XML");
-      A4GL_push_int (((long) s) & 0xffffffff);
-  uilib_get_context (2);
-  Context = A4GL_pop_int ();	// Context..
-        if (Context) { clr_exiting_context (Context); }
+	  A4GL_push_char ("XML");
+	  A4GL_push_int (((long) s) & 0xffffffff);
+	  uilib_get_context (2);
+	  Context = A4GL_pop_int ();	// Context..
+	  if (Context)
+	    {
+	      clr_exiting_context (Context);
+	    }
 	}
 
     }
 
 
-      A4GL_push_char ("XML");
-      A4GL_push_int (((long) s) & 0xffffffff);
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) s) & 0xffffffff);
   uilib_get_context (2);
   Context = A4GL_pop_int ();	// Context..
   while (1)
     {
       int a = 0;
 
-      if (isset_exiting_context(Context,0)) {
-		clr_exiting_context (Context);
-		// We had an AFTER INPUT - now we need to exit the input cleanly...
-	  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
-	    	{
-	      		return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
-	    	}
-      }
+      if (isset_exiting_context (Context, 0))
+	{
+	  clr_exiting_context (Context);
+	  // We had an AFTER INPUT - now we need to exit the input cleanly...
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	    {
+	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
+	    }
+	}
 
       if (sreal->mode == MODE_CONSTRUCT)
 	{
@@ -1167,28 +1183,30 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  int b;
 	  A4GL_push_int (Context);
 
-	// ONly send if WITHOUT DEFAULTS or if its 'with defaults' then only if its not the first time around
-	  if (init && (sreal->mode&1)) {
-	  	uilib_input_loop ( 1);
-	  }
-          else {
-	  for (b = 0; b < sreal->novars; b++)
+	  // ONly send if WITHOUT DEFAULTS or if its 'with defaults' then only if its not the first time around
+	  if (init && (sreal->mode & 1))
 	    {
-	      A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
+	      uilib_input_loop (1);
 	    }
-	  
-	  uilib_input_loop (sreal->novars + 1);
-          }
+	  else
+	    {
+	      for (b = 0; b < sreal->novars; b++)
+		{
+		  A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
+		}
+
+	      uilib_input_loop (sreal->novars + 1);
+	    }
 	}
       a = A4GL_pop_int ();
 
-  if (a == 0)
-    {
-      if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+      if (a == 0)
 	{
-	  return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+	  if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+	    {
+	      return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+	    }
 	}
-    }
 
       if (a == 0)
 	continue;
@@ -1196,13 +1214,15 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	continue;
 
 
-     if (sreal->mode != MODE_CONSTRUCT && last_attr->sync.nvalues) { 
-		int b;
-		A4GL_push_int(Context);
-		uilib_input_get_values(1); 
-	         for (b = sreal->novars-1; b>=0; b--) {
-          		A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype ,sreal->vars[b].size);
-			}
+      if (sreal->mode != MODE_CONSTRUCT && last_attr->sync.nvalues)
+	{
+	  int b;
+	  A4GL_push_int (Context);
+	  uilib_input_get_values (1);
+	  for (b = sreal->novars - 1; b >= 0; b--)
+	    {
+	      A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype, sreal->vars[b].size);
+	    }
 	}
 
       if (a == -100)
@@ -1217,11 +1237,12 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 		{
 		  set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 		}
-	    } 
+	    }
 
-	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
-	    		set_exiting_context(Context,-100);
-			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
+	    {
+	      set_exiting_context (Context, -100);
+	      return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
 	    }
 
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
@@ -1232,15 +1253,16 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
       if (a == -101)
 	{			// Interrupt
-	  int_flag=1;
+	  int_flag = 1;
 	  if (sreal->mode == MODE_CONSTRUCT)
 	    {
 	      set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 	    }
 
-	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
-	    		set_exiting_context(Context,-101);
-			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
+	    {
+	      set_exiting_context (Context, -101);
+	      return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
 	    }
 
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
@@ -1261,7 +1283,7 @@ UILIB_A4GL_push_constr (void *s)
   A4GL_push_int (((long) s) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
-  A4GL_push_int(context);
+  A4GL_push_int (context);
   uilib_construct_query (1);
   return 1;
 }
@@ -1288,8 +1310,7 @@ UILIB_aclfgl_aclfgl_add_to_toolbar (int n)
   tag = A4GL_char_pop ();
   send_to_ui
     ("<ADDTOTOOLBAR TAG='%s' BUTTON='%s' IMAGE='%s' TOOLTIP='%s' KEYVAL='%d' ALWAYSSHOW='%d'/>",
-     uilib_xml_escape (tag), uilib_xml_escape (buttonText),
-     uilib_xml_escape (img), uilib_xml_escape (toolTip), keyval, alwaysShow);
+     uilib_xml_escape (tag), uilib_xml_escape (buttonText), uilib_xml_escape (img), uilib_xml_escape (toolTip), keyval, alwaysShow);
 
 
 
@@ -1306,9 +1327,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
     }
   else
     {
-      send_to_ui
-	("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\">%s</DISPLAYAT>", x, y,
-	 a, uilib_xml_escape (s));
+      send_to_ui ("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\">%s</DISPLAYAT>", x, y, a, uilib_xml_escape (s));
     }
 }
 
@@ -1325,14 +1344,14 @@ int
 UILIB_A4GLUI_ui_init (int argc, char **argv)
 {
   int a;
-  char *nm[]={
-		"DBPATH",
-		"DBDATE",
-		0
+  char *nm[] = {
+    "DBPATH",
+    "DBDATE",
+    0
   };
   if (!connect_ui ())
     {
-	fprintf(stderr,"Unable to connect to the client\n");
+      fprintf (stderr, "Unable to connect to the client\n");
       return 0;
     }
 
@@ -1344,16 +1363,18 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
   add_window ("screen", 80, 24, 0);
 
   send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\">", argv[0], get_ui_id ('r'));
-  for (a=0;nm[a];a++) {
-  	send_to_ui ("<ENV NAME=\"%s\" VALUE=\"%s\"/>", nm[a],uilib_xml_escape( acl_getenv(nm[a])));
-  }
+  for (a = 0; nm[a]; a++)
+    {
+      send_to_ui ("<ENV NAME=\"%s\" VALUE=\"%s\"/>", nm[a], uilib_xml_escape (acl_getenv (nm[a])));
+    }
 
-  send_to_ui("</PROGRAMSTARTUP>");
-   tmpnam(stderr_fname);
-   def_stderr=fopen(stderr_fname,"w");
-   if (def_stderr) {
-		A4GL_set_stderr(def_stderr);
-   }
+  send_to_ui ("</PROGRAMSTARTUP>");
+  tmpnam (stderr_fname);
+  def_stderr = fopen (stderr_fname, "w");
+  if (def_stderr)
+    {
+      A4GL_set_stderr (def_stderr);
+    }
   flush_ui ();
   return 1;
 }
@@ -1368,7 +1389,7 @@ static void
 A4GL_XML_opening_file_xml (char *filename, char *fbuff)
 {
   int a;
-  suspend_flush(1);
+  suspend_flush (1);
   send_to_ui ("<FILE NAME=\"%s\">", filename);
   for (a = 0; a < strlen (fbuff); a += 256)
     {
@@ -1378,8 +1399,8 @@ A4GL_XML_opening_file_xml (char *filename, char *fbuff)
       send_to_ui ("%s", uilib_xml_escape (b));
     }
   send_to_ui ("</FILE>");
-  suspend_flush(-1);
-	flush_ui();
+  suspend_flush (-1);
+  flush_ui ();
 }
 
 static int
@@ -1413,14 +1434,19 @@ SendFile (char *filename)
 }
 
 
-static int GetFile(char *id,char *filename) {
-	if (uilib_save_file(id,filename)) {
-		A4GL_push_int(1);
-		return 1;
-	} else {
-		A4GL_push_int(0);
-		return 1;
-	}
+static int
+GetFile (char *id, char *filename)
+{
+  if (uilib_save_file (id, filename))
+    {
+      A4GL_push_int (1);
+      return 1;
+    }
+  else
+    {
+      A4GL_push_int (0);
+      return 1;
+    }
 }
 
 void
@@ -1445,9 +1471,9 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      GetFile (p1,p2);
-	free(p1);
-	free(p2);
+      GetFile (p1, p2);
+      free (p1);
+      free (p2);
 
       return;
     }
@@ -1460,7 +1486,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1, ignull(p2));
+      send_to_ui ("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1, ignull (p2));
       free (p1);
       free (p2);
       return;
@@ -1474,8 +1500,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("<SETKEYLABEL DIALOG=\"0\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1,
-		  ignull(p2));
+      send_to_ui ("<SETKEYLABEL DIALOG=\"0\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1, ignull (p2));
       free (p1);
       free (p2);
       return;
@@ -1488,31 +1513,38 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
 void
 UILIB_A4GL_ui_exit (int exitstatus)
 {
-static int exiting=0;
-if (exiting) return;
-exiting++;
+  static int exiting = 0;
+  if (exiting)
+    return;
+  exiting++;
 
 
 #define MAX_LINE_LEN 256
-  if (def_stderr) {
-	fclose(def_stderr);
-	def_stderr=fopen(stderr_fname,"r");
+  if (def_stderr)
+    {
+      fclose (def_stderr);
+      def_stderr = fopen (stderr_fname, "r");
 
-  	send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\">", exitstatus, get_ui_id ('r'));
-	if (def_stderr) {
-		char buf[MAX_LINE_LEN+1]; 
-    		while (fgets(buf, MAX_LINE_LEN+1, def_stderr)) {
-			if (feof(def_stderr)) break;
-			A4GL_trim(buf);
-			send_to_ui("<line>%s</line>",buf);
-    		}
+      send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\">", exitstatus, get_ui_id ('r'));
+      if (def_stderr)
+	{
+	  char buf[MAX_LINE_LEN + 1];
+	  while (fgets (buf, MAX_LINE_LEN + 1, def_stderr))
+	    {
+	      if (feof (def_stderr))
+		break;
+	      A4GL_trim (buf);
+	      send_to_ui ("<line>%s</line>", buf);
+	    }
 	}
-	send_to_ui("</PROGRAMSTOP>");
-	unlink(stderr_fname);
-  } else {
-  	send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", exitstatus, get_ui_id ('r'));
-  }
-  
+      send_to_ui ("</PROGRAMSTOP>");
+      unlink (stderr_fname);
+    }
+  else
+    {
+      send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", exitstatus, get_ui_id ('r'));
+    }
+
   flush_ui ();
 }
 
@@ -1525,9 +1557,7 @@ UILIB_A4GL_movewin (char *winname, int absol)
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
 
-  send_to_ui
-    ("<MOVEWINDOW WINDOW=\"%s\"/ x=\"%d\" y=\"%d\" ABSOLUTE=\"%d\" >",
-     winname, x, y, absol);
+  send_to_ui ("<MOVEWINDOW WINDOW=\"%s\"/ x=\"%d\" y=\"%d\" ABSOLUTE=\"%d\" >", winname, x, y, absol);
 
   return rval;
 }
@@ -1560,49 +1590,51 @@ UILIB_A4GL_remove_window (char *win_name)
 }
 
 int
-UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib,
-			int scrollf, int scrollw, void *evt)
+UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, int scrollf, int scrollw, void *evt)
 {
-char buff[2000];
-int a,b;
-int n;
-struct s_disp_arr *d;
-int context;
-int rval;
-d=(struct s_disp_arr *)disp;
+  char buff[2000];
+  int a, b;
+  int n;
+  struct s_disp_arr *d;
+  int context;
+  int rval;
+  d = (struct s_disp_arr *) disp;
 
-	if (d->srec==0) {
-		d->srec=(void *)srecname;
-      		d->last_arr = -1;
-      		d->scr_line = 1;
-      		d->arr_line = 1;
-      		d->cntrl = 1;
-      		d->highlight = 0;
-      		d->attribute = attrib;
+  if (d->srec == 0)
+    {
+      d->srec = (void *) srecname;
+      d->last_arr = -1;
+      d->scr_line = 1;
+      d->arr_line = 1;
+      d->cntrl = 1;
+      d->highlight = 0;
+      d->attribute = attrib;
 
-  		SPRINTF(buff,"<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>",srecname);
-		uilib_set_field_list_directly(buff);
-	
-      		A4GL_push_char ("XML");
-      		A4GL_push_int (((long) disp) & 0xffffffff);
-		A4GL_push_int(attrib);
+      SPRINTF (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
+      uilib_set_field_list_directly (buff);
 
-		A4GL_push_int(d->no_arr);
-		uilib_set_count(1);
-		uilib_display_array_start(3);
-		uilib_array_lines_start(0);
+      A4GL_push_char ("XML");
+      A4GL_push_int (((long) disp) & 0xffffffff);
+      A4GL_push_int (attrib);
 
-		for (a=0;a<d->no_arr;a++) {
-			A4GL_push_int(a);
-			for (b=0;b<d->nbind;b++) {
-				char *cptr;
-          			cptr = (char *) d->binding[b].ptr + d->arr_elemsize * (a);
-          			A4GL_push_param (cptr, d->binding[b].dtype + ENCODE_SIZE (d->binding[b].size));
-			}
-			uilib_display_array_line(d->nbind+1);
-		}
-		uilib_array_lines_end(0);
-	  	dump_events (evt);
+      A4GL_push_int (d->no_arr);
+      uilib_set_count (1);
+      uilib_display_array_start (3);
+      uilib_array_lines_start (0);
+
+      for (a = 0; a < d->no_arr; a++)
+	{
+	  A4GL_push_int (a);
+	  for (b = 0; b < d->nbind; b++)
+	    {
+	      char *cptr;
+	      cptr = (char *) d->binding[b].ptr + d->arr_elemsize * (a);
+	      A4GL_push_param (cptr, d->binding[b].dtype + ENCODE_SIZE (d->binding[b].size));
+	    }
+	  uilib_display_array_line (d->nbind + 1);
+	}
+      uilib_array_lines_end (0);
+      dump_events (evt);
 /*
                 CALL UILIB_START_EVENTS()
                 CALL UILIB_EVENT(1,"ONKEY","F1")
@@ -1610,40 +1642,54 @@ d=(struct s_disp_arr *)disp;
 */
 
 
-		uilib_display_array_initialised(0);
+      uilib_display_array_initialised (0);
+    }
+
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) disp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+  A4GL_push_int (context);
+
+
+  uilib_display_array_loop (1);
+  rval = A4GL_pop_int ();
+
+  if (rval == 0)
+    {
+      if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
+	{
+	  return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
 	}
+    }
 
-A4GL_push_char ("XML");
-A4GL_push_int (((long) disp) & 0xffffffff);
-uilib_get_context(2);
-context=A4GL_pop_int();
-A4GL_push_int(context);
+  if (last_attr)
+    {
+      if (last_attr->arrline)
+	A4GL_set_arr_curr (last_attr->arrline);
+      if (last_attr->arrcount)
+	A4GL_set_arr_count (last_attr->arrcount);
+      if (last_attr->scrline)
+	A4GL_set_scr_line (last_attr->scrline);
+    }
 
-
-  uilib_display_array_loop(1);
-  rval=A4GL_pop_int();
-
-  if (rval==0) {
-	if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
-		return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+  if (rval == -100)
+    {
+      // ACCEPT...
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	{
+	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	}
-  }
-
-  if (last_attr) {
-	if (last_attr->arrline) A4GL_set_arr_curr(last_attr->arrline);
-	if (last_attr->arrcount) A4GL_set_arr_count(last_attr->arrcount);
-	if (last_attr->scrline) A4GL_set_scr_line(last_attr->scrline);
-  }
-
-  if (rval==-100) { 	
-	// ACCEPT...
-  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
-  }
-  if (rval==-101) { 	
-	// INTERRUPT
-	int_flag=1;
-  	if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt)) { return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt); }
-  }
+    }
+  if (rval == -101)
+    {
+      // INTERRUPT
+      int_flag = 1;
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	{
+	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
+	}
+    }
 
   return rval;
 }
@@ -1652,11 +1698,11 @@ A4GL_push_int(context);
 int
 UILIB_aclfgl_set_window_title (int nargs)
 {
-char *s;
-s=A4GL_char_pop();
-send_to_ui("<SETWINDOWTITLE TEXT=\"%s\"/>",uilib_xml_escape (ignull(s)));
-free(s);
-return 0;
+  char *s;
+  s = A4GL_char_pop ();
+  send_to_ui ("<SETWINDOWTITLE TEXT=\"%s\"/>", uilib_xml_escape (ignull (s)));
+  free (s);
+  return 0;
 }
 
 void
@@ -1665,11 +1711,14 @@ UILIB_A4GL_finish_screenio (void *sio, char *siotype)
   A4GL_push_char ("XML");
   A4GL_push_int (((long) sio) & 0xffffffff);
   uilib_get_context (2);
-  if (strcmp(siotype,"s_inp_arr")==0) {
-  	uilib_free_input_array(1);
-  } else {
-  	uilib_free_input (1);
-  }
+  if (strcmp (siotype, "s_inp_arr") == 0)
+    {
+      uilib_free_input_array (1);
+    }
+  else
+    {
+      uilib_free_input (1);
+    }
 }
 
 void
@@ -1769,7 +1818,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 
       if (defs == 0 && ninp)
 	{
-		A4GL_debug("CLEARING down array - we want defaults\n");
+	  A4GL_debug ("CLEARING down array - we want defaults\n");
 	  for (acnt = 0; acnt < ninp; acnt++)
 	    {
 	      int b;
@@ -1831,28 +1880,29 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	}
     }
 
-  if (rval>=0 || rval== -100) {
-  // If we've got to here we need to copy down our values...
-  while (1)
+  if (rval >= 0 || rval == -100)
     {
-      int gc_arr_cnt;
-      int b;
-      A4GL_push_int (context);
-      uilib_has_array_values (1);
-      gc_arr_cnt = A4GL_pop_long ();
-      if (gc_arr_cnt <= 0)
-	break;
-      A4GL_push_long (context);
-      A4GL_push_long (gc_arr_cnt);
-      uilib_input_get_array_values (2);
-      for (b = inp->nbind-1; b>=0; b--)
+      // If we've got to here we need to copy down our values...
+      while (1)
 	{
-	  char *cptr;
-	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (gc_arr_cnt-1);
-	  A4GL_pop_var2 (cptr, inp->binding[b].dtype, inp->binding[b].size);
+	  int gc_arr_cnt;
+	  int b;
+	  A4GL_push_int (context);
+	  uilib_has_array_values (1);
+	  gc_arr_cnt = A4GL_pop_long ();
+	  if (gc_arr_cnt <= 0)
+	    break;
+	  A4GL_push_long (context);
+	  A4GL_push_long (gc_arr_cnt);
+	  uilib_input_get_array_values (2);
+	  for (b = inp->nbind - 1; b >= 0; b--)
+	    {
+	      char *cptr;
+	      cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (gc_arr_cnt - 1);
+	      A4GL_pop_var2 (cptr, inp->binding[b].dtype, inp->binding[b].size);
+	    }
 	}
     }
-  }
 
   if (last_attr)
     {
@@ -1867,10 +1917,11 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
     {
       A4GL_debug ("ACCEPT....\n");
       // ACCEPT...
-	    if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
-	    		set_exiting_context(context,-100);
-			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
-	    }
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
+	{
+	  set_exiting_context (context, -100);
+	  return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	}
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
 	  int a;
@@ -1884,12 +1935,13 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
     {
       // INTERRUPT
       int_flag = 1;
-	set_exiting_context(context,-101);
+      set_exiting_context (context, -101);
 
-        if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt)) {
-	    		set_exiting_context(context,-101);
-			return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
-        }
+      if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
+	{
+	  set_exiting_context (context, -101);
+	  return A4GL_has_event (A4GL_EVENT_AFTER_INP, evt);
+	}
       //A4GL_push_int (context); uilib_free_input_array(1);
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
@@ -1904,276 +1956,284 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 int
 UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 {
-long context;
-struct s_prompt *prompt;
-long ln;
-int rval;
-prompt=vprompt;
+  long context;
+  struct s_prompt *prompt;
+  long ln;
+  int rval;
+  prompt = vprompt;
 
 
-ln = (long) prompt;
+  ln = (long) prompt;
 
-if (startingPrompt) {
-	startingPrompt=0;
-	  dump_events (evt_list);
-	uilib_prompt_initialised(0);
-}
+  if (startingPrompt)
+    {
+      startingPrompt = 0;
+      dump_events (evt_list);
+      uilib_prompt_initialised (0);
+    }
 
-A4GL_push_char ("XML");
+  A4GL_push_char ("XML");
+  A4GL_push_int (ln);
+  uilib_get_context (2);
+  context = A4GL_pop_long ();
+	printf("loop : Prompt context: %d\n",context);
 
-A4GL_push_int (ln);
-uilib_get_context (2);
-context = A4GL_pop_long ();
-
-while (1) {
-	A4GL_push_long(context);
-	uilib_prompt_loop(1);
-	rval=A4GL_pop_long();
-	if (rval>0) {
-		prompt->mode = 2;
-                A4GL_push_long(context); uilib_free_prompt(1);
-		return rval;
-	}
-	if (rval==-100) {
-		char *rvalstr;
-		if (last_attr->sync.nvalues) {
-                	int b;
-                	A4GL_push_int(context);
-                	uilib_get_prompt_result(1);
-			rvalstr=A4GL_char_pop();
-        	} else {
-			rvalstr=strdup("");
-		}
-
-		A4GL_push_char(rvalstr);
-		free(rvalstr);
-		prompt->mode = 2;
-		break;
-	}
-
-	if (rval==-101) {
-		prompt->mode = 2;
-	  	int_flag=1;
-		break;
-	}
-}
-
-//fprintf(stderr, "prompt loop mode :%d\n", prompt->mode);
-if (prompt->mode==2) {
-                A4GL_push_long(context); uilib_free_prompt(1);
-}
-
-
-	//printf("prompt->mode=%d\n",prompt->mode);
-	return 1;
-	}
-
-	int
-	UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+  while (1)
+    {
+      A4GL_push_long (context);
+      uilib_prompt_loop (1);
+      rval = A4GL_pop_long ();
+      if (rval > 0)
 	{
-	  int rval;
-	  char *promptstr;
-	  static long ln = 0;
-	  long context;
-	struct s_prompt *prompt;
-	  ln = (long) prompt;
-	  promptstr=A4GL_char_pop();
-		prompt=vprompt;
-		prompt->mode=-1;
-	
-
-
-	  A4GL_push_char ("XML");
-	  A4GL_push_int (ln);
-	  uilib_get_context (2);
-	  context = A4GL_pop_long ();
-	  A4GL_push_char ("XML");
-	  A4GL_push_int (ln);
-	  A4GL_push_char(promptstr);
-	  A4GL_push_long(ap); // attribute for prompt
-	  A4GL_push_long(af); // attribute for prompt
-	  A4GL_push_long(c);
-	  A4GL_push_long(h);
-	  startingPrompt++;
-	  uilib_prompt_start(7);
-
-	  rval=1;
+	  prompt->mode = 2;
+	  A4GL_push_long (context);
+	  uilib_free_prompt (1);
 	  return rval;
 	}
-
-
-	void
-	UILIB_A4GL_reset_state_for (void *sio, char *siotype)
+      if (rval == -100)
 	{
-	}
-
-
-
-
-	int
-	UILIB_A4GL_screen_mode (int sm)
-	{
-	  return 1;
-	}
-
-
-
-	char *
-	UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos,
-				       char *icon, int danger, int winbutton)
-	{
-	//char* rval;
-	  int a;
-	  send_to_ui
-	    ("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%s\" BUTTON=\"%s\" />",
-	     ignull(title), uilib_xml_escape (ignull(text)), def, pos, icon, danger, winbutton);
-	  send_to_ui ("<WAITFOREVENT/>");
-	  flush_ui ();
-	  a = get_event_from_ui ();
-	  if (a == -100)
+	  char *rvalstr;
+	  if (last_attr->sync.nvalues)
 	    {
-	      return "cancel";
+	      int b;
+	      A4GL_push_int (context);
+	      uilib_get_prompt_result (1);
+	      rvalstr = A4GL_char_pop ();
 	    }
-	  if (a == -101)
+	  else
 	    {
-	      return "yes";
-	    }
-	  if (a == -102)
-	    {
-	      return "no";
-	    }
-	  return "InvalidReturnedValue";
-	}
-
-
-	int
-	XML_A4GL_assertion (int n, char *s)
-	{
-	  if (!n)
-	    return 0;
-	  FPRINTF (def_stderr, "************ ASSERTION FAILED %s\n", s);
-	  fflush (stdout);
-	  exit (4);
-	}
-
-	void *
-	UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
-			      int prompt_line, int menu_line, int border,
-			      int comment_line, int message_line, int attrib,char *style, char *text)
-	{
-	//void* rval;
-	  int x, y, w, h;
-	  w = A4GL_pop_int ();
-	  h = A4GL_pop_int ();
-	  x = A4GL_pop_int ();
-	  y = A4GL_pop_int ();
-	if (style==0) style="";
-
-	  if (A4GL_has_pointer (s, WINCODE))
-	    {
-	#ifdef DEBUG
-	      {
-		A4GL_debug ("Window already exists");
-	      }
-	#endif
-	      A4GL_set_errm (s);
-	      A4GL_exitwith ("Window already exists (%s)");
-	      return 0;
+	      rvalstr = strdup ("");
 	    }
 
-	  A4GL_add_pointer (s, WINCODE, (void *) 1);	// Just some value - maybe later we'll do something useful with it...
-	  send_to_ui
-	    ("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\" STYLE=\"%s\" TEXT=\"%s\" />",
-	     s, x, y, w, h, form_line, error_line, prompt_line, menu_line,
-	     comment_line, message_line, border, attrib,ignull(style),ignull(text));
-
-
-
-	  return (void *) 1;
+	  A4GL_push_char (rvalstr);
+	  free (rvalstr);
+	  prompt->mode = 2;
+	  break;
 	}
 
-
-
-	int
-	UILIB_A4GL_set_fields (void *sio)
+      if (rval == -101)
 	{
-	  return 1;
+	  prompt->mode = 2;
+	  int_flag = 1;
+	  break;
 	}
+    }
 
-	void
-	UILIB_A4GL_add_menu_timeout (void *menu, char timeout_type, int timeoutlen,
-				     int cmd_no_on_timeout, long *timeoutvar)
+//fprintf(stderr, "prompt loop mode :%d\n", prompt->mode);
+  if (prompt->mode == 2)
+    {
+      A4GL_push_long (context);
+      uilib_free_prompt (1);
+    }
+
+
+  //printf("prompt->mode=%d\n",prompt->mode);
+  return 1;
+}
+
+int
+UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+{
+  int rval;
+  char *promptstr;
+  static long ln = 0;
+  long context;
+  struct s_prompt *prompt;
+  prompt = vprompt;
+  ln = (long) prompt;
+  promptstr = A4GL_char_pop ();
+  prompt->mode = -1;
+
+
+
+  A4GL_push_char ("XML");
+  //A4GL_push_int (ln);
+  //uilib_get_context (2);
+  //context = A4GL_pop_long ();
+//printf("Prompt context: %d\n",context);
+  A4GL_push_char ("XML");
+  A4GL_push_int (ln);
+  A4GL_push_char (promptstr);
+  A4GL_push_long (ap);		// attribute for prompt
+  A4GL_push_long (af);		// attribute for prompt
+  A4GL_push_long (c);
+  A4GL_push_long (h);
+  startingPrompt++;
+  uilib_prompt_start (7);
+
+  rval = 1;
+  return rval;
+}
+
+
+void
+UILIB_A4GL_reset_state_for (void *sio, char *siotype)
+{
+}
+
+
+
+
+int
+UILIB_A4GL_screen_mode (int sm)
+{
+  return 1;
+}
+
+
+
+char *
+UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, char *icon, int danger, int winbutton)
+{
+  //char* rval;
+  int a;
+  send_to_ui
+    ("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%s\" BUTTON=\"%s\" />",
+     ignull (title), uilib_xml_escape (ignull (text)), def, pos, icon, danger, winbutton);
+  send_to_ui ("<WAITFOREVENT/>");
+  flush_ui ();
+  a = get_event_from_ui ();
+  if (a == -100)
+    {
+      return "cancel";
+    }
+  if (a == -101)
+    {
+      return "yes";
+    }
+  if (a == -102)
+    {
+      return "no";
+    }
+  return "InvalidReturnedValue";
+}
+
+
+int
+XML_A4GL_assertion (int n, char *s)
+{
+  if (!n)
+    return 0;
+  FPRINTF (def_stderr, "************ ASSERTION FAILED %s\n", s);
+  fflush (stdout);
+  exit (4);
+}
+
+void *
+UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
+		      int prompt_line, int menu_line, int border,
+		      int comment_line, int message_line, int attrib, char *style, char *text)
+{
+  //void* rval;
+  int x, y, w, h;
+  w = A4GL_pop_int ();
+  h = A4GL_pop_int ();
+  x = A4GL_pop_int ();
+  y = A4GL_pop_int ();
+  if (style == 0)
+    style = "";
+
+  if (A4GL_has_pointer (s, WINCODE))
+    {
+#ifdef DEBUG
+      {
+	A4GL_debug ("Window already exists");
+      }
+#endif
+      A4GL_set_errm (s);
+      A4GL_exitwith ("Window already exists (%s)");
+      return 0;
+    }
+
+  A4GL_add_pointer (s, WINCODE, (void *) 1);	// Just some value - maybe later we'll do something useful with it...
+  send_to_ui
+    ("<CREATEWINDOW NAME=\"%s\" X=\"%d\" Y=\"%d\" W=\"%d\" H=\"%d\" FORMLINE=\"%d\" ERRORLINE=\"%d\" PROMPTLINE=\"%d\" MENULINE=\"%d\" COMMENTLINE=\"%d\" MESSAGELINE=\"%d\" BORDER=\"%d\" ATTRIBUTE=\"%d\" STYLE=\"%s\" TEXT=\"%s\" />",
+     s, x, y, w, h, form_line, error_line, prompt_line, menu_line,
+     comment_line, message_line, border, attrib, ignull (style), ignull (text));
+
+
+
+  return (void *) 1;
+}
+
+
+
+int
+UILIB_A4GL_set_fields (void *sio)
+{
+  return 1;
+}
+
+void
+UILIB_A4GL_add_menu_timeout (void *menu, char timeout_type, int timeoutlen, int cmd_no_on_timeout, long *timeoutvar)
+{
+  static long ln = 0;
+  long context;
+  ln = (long) menu;
+  A4GL_push_char ("XML");
+  A4GL_push_int (ln);
+  uilib_get_context (2);
+  context = A4GL_pop_long ();
+
+  mn_id++;
+  send_to_ui
+    ("<MENUTIMEOUT CONTEXT=\"%d\" ID=\"%d\" CMD_NO=\"%d\" TYPE=\"%c\" TIMEOUT=\"%d\" />",
+     context, mn_id, cmd_no_on_timeout, timeoutlen);
+}
+
+void
+UILIB_A4GL_add_menu_action (void *menu, char *action, int cmd_no_on_timeout)
+{
+  static long ln = 0;
+  long context;
+  ln = (long) menu;
+  A4GL_push_char ("XML");
+  A4GL_push_int (ln);
+  uilib_get_context (2);
+  context = A4GL_pop_long ();
+  mn_id++;
+  send_to_ui
+    ("<MENUACTION CONTEXT=\"%d\" ID=\"%d\" ACTION=\"%s\" CMD_NO_TIMEOUT=\"%d\" />", context, mn_id, action, cmd_no_on_timeout);
+}
+
+
+static void
+A4GL_make_label (int frow, int fcol, char *label)
+{
+  send_to_ui ("<FORMLABEL ROW=\"%d\" COLUMN=\"%d\">%s</FORMLABEL>", frow, fcol, uilib_xml_escape (label));
+}
+
+
+static void
+A4GL_make_field (int frow, int fcol, int rows, int cols, char *widget,
+		 char *config, char *inc, void *id, char *tab_and_col, char *action, int attr_no)
+{
+  send_to_ui
+    ("<FORMFIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\" CONFIG=\"%s\" INC=\"%s\" ID=\"%d\" TABCOL=\"%s\" ACTION=\"%s\" ATTRIBUTE_NO=\"%d\"/>",
+     frow, fcol, rows, cols, uilib_xml_escape (widget),
+     uilib_xml_escape (config), uilib_xml_escape (inc), (long) id,
+     uilib_xml_escape (tab_and_col), uilib_xml_escape (action), attr_no);
+}
+
+
+
+static char *
+A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
+{
+  int b;
+  if (fprop == 0)
+    return 0;
+  if (fprop->str_attribs.str_attribs_val == 0)
+    return 0;
+  for (b = 0; b < fprop->str_attribs.str_attribs_len; b++)
+    {
+      if (fprop->str_attribs.str_attribs_val[b].type == type)
 	{
-	  static long ln = 0;
-	  long context;
-	  ln = (long) menu;
-	  A4GL_push_char ("XML");
-	  A4GL_push_int (ln);
-	  uilib_get_context (2);
-	  context = A4GL_pop_long ();
-
-	  mn_id++;
-	  send_to_ui
-	    ("<MENUTIMEOUT CONTEXT=\"%d\" ID=\"%d\" CMD_NO=\"%d\" TYPE=\"%c\" TIMEOUT=\"%d\" />",
-	     context, mn_id, cmd_no_on_timeout, timeoutlen);
+	  return fprop->str_attribs.str_attribs_val[b].value;
 	}
-
-	void
-	UILIB_A4GL_add_menu_action (void *menu, char *action, int cmd_no_on_timeout)
-	{
-	  static long ln = 0;
-	  long context;
-	  ln = (long) menu;
-	  A4GL_push_char ("XML");
-	  A4GL_push_int (ln);
-	  uilib_get_context (2);
-	  context = A4GL_pop_long ();
-	  mn_id++;
-	  send_to_ui
-	    ("<MENUACTION CONTEXT=\"%d\" ID=\"%d\" ACTION=\"%s\" CMD_NO_TIMEOUT=\"%d\" />",
-	     context, mn_id, action, cmd_no_on_timeout);
-	}
-
-
-	static void
-	A4GL_make_label (int frow, int fcol, char *label)
-	{
-	  send_to_ui ("<FORMLABEL ROW=\"%d\" COLUMN=\"%d\">%s</FORMLABEL>", frow, fcol,
-		      uilib_xml_escape (label));
-	}
-
-
-	static void
-	A4GL_make_field (int frow, int fcol, int rows, int cols, char *widget,
-			 char *config, char *inc, void *id, char *tab_and_col,
-			 char *action,int attr_no)
-	{
-	  send_to_ui
-	    ("<FORMFIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\" CONFIG=\"%s\" INC=\"%s\" ID=\"%d\" TABCOL=\"%s\" ACTION=\"%s\" ATTRIBUTE_NO=\"%d\"/>",
-	     frow, fcol, rows, cols, uilib_xml_escape (widget),
-	     uilib_xml_escape (config), uilib_xml_escape (inc), (long) id,
-	     uilib_xml_escape (tab_and_col), uilib_xml_escape (action), attr_no);
-	}
-
-
-
-	static char *
-	A4GL_decode_str_fprop (struct_scr_field * fprop, int type)
-	{
-	  int b;
-	  if (fprop == 0)
-	    return 0;
-	  if (fprop->str_attribs.str_attribs_val == 0)
-	    return 0;
-	  for (b = 0; b < fprop->str_attribs.str_attribs_len; b++)
-	    {
-	      if (fprop->str_attribs.str_attribs_val[b].type == type)
-		{
-		  return fprop->str_attribs.str_attribs_val[b].value;
-		}
-	    }
-	  return "";
-	}
+    }
+  return "";
+}
 
 	/**
 	 *  * Find fields
@@ -2182,66 +2242,63 @@ if (prompt->mode==2) {
 	 *     * @param metric_no The metric sequence number.
 	 *      * @return The metric number.
 	 *       */
-	static int
-	A4GL_find_fields_no_metric (struct_form * f, int metric_no)
+static int
+A4GL_find_fields_no_metric (struct_form * f, int metric_no)
+{
+  int a, b;
+  A4GL_debug ("BB - Looking for metric : %d\n", metric_no);
+  for (a = 0; a < f->fields.fields_len; a++)
+    {
+      for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
 	{
-	  int a, b;
-	  A4GL_debug ("BB - Looking for metric : %d\n", metric_no);
-	  for (a = 0; a < f->fields.fields_len; a++)
+	  if (f->fields.fields_val[a].metric.metric_val[b] == metric_no)
 	    {
-	      for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
-		{
-		  if (f->fields.fields_val[a].metric.metric_val[b] == metric_no)
-		    {
-		      A4GL_debug ("Found metric : %d\n", f);
-		      return a;
-		    }
-		}
+	      A4GL_debug ("Found metric : %d\n", f);
+	      return a;
 	    }
-	  A4GL_debug ("Metric not found %d", metric_no);
-	  return -1;
 	}
+    }
+  A4GL_debug ("Metric not found %d", metric_no);
+  return -1;
+}
 
 
-	static int
-	A4GL_find_attrib_from_field (struct_form * f, int field_no)
+static int
+A4GL_find_attrib_from_field (struct_form * f, int field_no)
+{
+  int a;
+  A4GL_debug ("AA\n");
+  A4GL_debug ("field_no=%d\n", field_no);
+  if (field_no == -1)
+    return -1;
+  for (a = 0; a < f->attributes.attributes_len; a++)
+    {
+      if (f->attributes.attributes_val[a].field_no == field_no)
 	{
-	  int a;
-	  A4GL_debug ("AA\n");
-	  A4GL_debug ("field_no=%d\n", field_no);
-	  if (field_no == -1)
-	    return -1;
-	  for (a = 0; a < f->attributes.attributes_len; a++)
-	    {
-	      if (f->attributes.attributes_val[a].field_no == field_no)
-		{
-		  A4GL_debug ("Found field %d @ %d - %s\n", field_no, a,
-			      f->attributes.attributes_val[a].colname);
-		  return a;
-		}
-	    }
-	  A4GL_debug ("Not found\n");
-	  return -1;
-
+	  A4GL_debug ("Found field %d @ %d - %s\n", field_no, a, f->attributes.attributes_val[a].colname);
+	  return a;
 	}
+    }
+  A4GL_debug ("Not found\n");
+  return -1;
+
+}
 
 
 
-	static int
-	A4GL_find_attrib_from_metric (struct_form * f, int metric_no)
-	{
-	  return A4GL_find_attrib_from_field (f,
-					      A4GL_find_fields_no_metric (f,
-									  metric_no));
-	}
+static int
+A4GL_find_attrib_from_metric (struct_form * f, int metric_no)
+{
+  return A4GL_find_attrib_from_field (f, A4GL_find_fields_no_metric (f, metric_no));
+}
 
-	static char *
-	make_tab_and_col (char *t, char *c)
-	{
-	  static char buff[256];
-	  SPRINTF2 (buff, "%s.%s", t, c);
-	  return buff;
-	}
+static char *
+make_tab_and_col (char *t, char *c)
+{
+  static char buff[256];
+  SPRINTF2 (buff, "%s.%s", t, c);
+  return buff;
+}
 
 
 	/**
@@ -2250,327 +2307,367 @@ if (prompt->mode==2) {
 	 *  @todo Validate the calls to A4GL_make_label that alocates space to a FIELD
 	 *  struct and assigns the pointer to integers.
 	 */
-	int
-	UILIB_A4GL_read_metrics (void *formdetsv)
+int
+UILIB_A4GL_read_metrics (void *formdetsv)
+{
+  struct s_form_dets *formdets;
+  int metric_no, n;
+  char delims[3][2];
+  char *widget;
+  char *config;
+  char *include;
+  struct struct_scr_field *fprop = 0;
+  char *action;
+
+  formdets = formdetsv;
+  delims[0][0] = formdets->fileform->delim[0];
+  delims[1][0] = formdets->fileform->delim[1];
+  delims[2][0] = formdets->fileform->delim[2];
+  delims[0][1] = 0;
+  delims[1][1] = 0;
+  delims[2][1] = 0;
+  n = formdets->fileform->metrics.metrics_len;
+  A4GL_debug ("metrics len=%d", n);
+
+  send_to_ui ("<SCREENS MAXCOL=\"%d\" MAXLINE=\"%d\">", formdets->fileform->maxcol, formdets->fileform->maxline);
+
+  send_to_ui ("<SCREENLAYOUT>", formdets->fileform->maxcol, formdets->fileform->maxline);
+  for (metric_no = 0; metric_no < n; metric_no++)
+    {
+
+
+      formdets->fileform->metrics.metrics_val[metric_no].pos_code = 0;
+      A4GL_debug ("checking label %s\n", formdets->fileform->metrics.metrics_val[metric_no].label);
+
+      if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) != 0)
 	{
-	  struct s_form_dets *formdets;
-	  int metric_no, n;
-	  char delims[3][2];
-	  char *widget;
-	  char *config;
-	  char *include;
-	  struct struct_scr_field *fprop = 0;
-	  char *action;
-
-	  formdets = formdetsv;
-	  delims[0][0] = formdets->fileform->delim[0];
-	  delims[1][0] = formdets->fileform->delim[1];
-	  delims[2][0] = formdets->fileform->delim[2];
-	  delims[0][1] = 0;
-	  delims[1][1] = 0;
-	  delims[2][1] = 0;
-	  n = formdets->fileform->metrics.metrics_len;
-	  A4GL_debug ("metrics len=%d", n);
-
-	  send_to_ui("<SCREENS MAXCOL=\"%d\" MAXLINE=\"%d\">", formdets->fileform->maxcol, formdets->fileform->maxline);
-
-	  send_to_ui("<SCREENLAYOUT>", formdets->fileform->maxcol, formdets->fileform->maxline);
-	  for (metric_no = 0; metric_no < n; metric_no++)
+	  A4GL_make_label (formdets->fileform->metrics.metrics_val[metric_no].
+			   y,
+			   formdets->fileform->metrics.metrics_val[metric_no].
+			   x, formdets->fileform->metrics.metrics_val[metric_no].label);
+	}
+      else
+	{
+	  int attr_no;
+	  attr_no = A4GL_find_attrib_from_metric (formdets->fileform, metric_no);
+	  if (attr_no == -1)
+	    continue;
+	  widget = 0;
+	  config = 0;
+	  include = 0;
+	  action = 0;
+	  if (attr_no >= 0)
 	    {
+	      fprop = &formdets->fileform->attributes.attributes_val[attr_no];
+	      A4GL_debug ("attr_no=%d fprop=%p", attr_no, fprop);
 
-
-	      formdets->fileform->metrics.metrics_val[metric_no].pos_code = 0;
-	      A4GL_debug ("checking label %s\n", formdets->fileform->metrics.metrics_val[metric_no].label);
-
-	      if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) !=
-		  0)
+	      widget = A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
+	      config = A4GL_decode_str_fprop (fprop, FA_S_CONFIG);
+	      include = 0;
+	      if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
 		{
-		  A4GL_make_label (formdets->fileform->metrics.metrics_val[metric_no].
-				   y,
-				   formdets->fileform->metrics.metrics_val[metric_no].
-				   x,
-				   formdets->fileform->metrics.metrics_val[metric_no].
-				   label);
+		  include = A4GL_get_str_attribute (fprop, FA_S_INCLUDE);
 		}
 	      else
 		{
-		  int attr_no;
-		  attr_no = A4GL_find_attrib_from_metric (formdets->fileform, metric_no);
-		  if (attr_no == -1)
-		    continue;
-		  widget = 0;
-		  config = 0;
 		  include = 0;
+		}
+	      action = 0;
+	      if (A4GL_has_str_attribute (fprop, FA_S_ACTION))
+		{
+		  action = A4GL_get_str_attribute (fprop, FA_S_ACTION);
+		}
+	      else
+		{
 		  action = 0;
-		  if (attr_no >= 0)
-		    {
-		      fprop = &formdets->fileform->attributes.attributes_val[attr_no];
-		      A4GL_debug ("attr_no=%d fprop=%p", attr_no, fprop);
-
-		      widget = A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
-		      config = A4GL_decode_str_fprop (fprop, FA_S_CONFIG);
-		      include = 0;
-		      if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
-			{
-			  include = A4GL_get_str_attribute (fprop, FA_S_INCLUDE);
-			}
-		      else
-			{
-			  include = 0;
-			}
-		      action = 0;
-		      if (A4GL_has_str_attribute (fprop, FA_S_ACTION))
-			{
-			  action = A4GL_get_str_attribute (fprop, FA_S_ACTION);
-			}
-		      else
-			{
-			  action = 0;
-			}
-		    }
-		  else
-		    {
-		      widget = 0;
-		      config = 0;
-		      include = 0;
-		      action = 0;
-		    }
-
-		  if (widget == 0)
-		    widget = "";
-		  if (config == 0)
-		    config = "";
-		  if (include == 0)
-		    include = "";
-		  if (action == 0)
-		    action = "";
-
-
-
-		  A4GL_make_field (formdets->fileform->metrics.
-				   metrics_val[metric_no].y,
-				   formdets->fileform->metrics.
-				   metrics_val[metric_no].x,
-				   formdets->fileform->metrics.
-				   metrics_val[metric_no].h,
-				   formdets->fileform->metrics.
-				   metrics_val[metric_no].w, widget,
-				   config, include, fprop,
-				   make_tab_and_col (fprop->tabname, fprop->colname), action,attr_no);
-
 		}
 	    }
-
-	  send_to_ui("</SCREENLAYOUT>");
-	  send_to_ui("</SCREENS>");
-
-	  send_to_ui("<SCREENRECORDS>");
-	// We also need to send the screen records as these might be used....
-	   for (n=0;n<formdets->fileform->records.records_len;n++) {
-			int attr;
-			send_to_ui("<SCREENRECORD NAME=\"%s\" SIZE=\"%d\">", formdets->fileform->records.records_val[n].name, formdets->fileform->records.records_val[n].dim);
-			for (attr=0;attr<formdets->fileform->records.records_val[n].attribs.attribs_len;attr++) {
-				int attr_no;
-				attr_no= formdets->fileform->records.records_val[n].attribs.attribs_val[attr];
-				fprop = &formdets->fileform->attributes.attributes_val[attr_no];
-				send_to_ui("<ATTRIBUTE ATTRIBUTE_NO=\"%d\" NAME=\"%s\"/>", formdets->fileform->records.records_val[n].attribs.attribs_val[attr], fprop->colname);
-			}
-			send_to_ui("</SCREENRECORD>");
-	   }
-	  send_to_ui("</SCREENRECORDS>");
-	  send_to_ui("<ATTRIBUTES>");
-	   for (n=0;n<formdets->fileform->attributes.attributes_len;n++) {
-			int b;
-			struct struct_scr_field *f;
-			f=&formdets->fileform->attributes.attributes_val[n];
-			send_to_ui("<ATTRIB ATTRIBUTE_NO=\"%d\" DATATYPE=\"%d\" DATATYPE_SIZE=\"%d\" DYNAMIC=\"%d\" REVERSE=\"%d\" >",
-					n,
-					f->datatype,
-					f->dtype_size,
-					f->dynamic,
-					f->do_reverse);
-			for  (b=0;b<f->str_attribs.str_attribs_len;b++) {
-				switch (f->str_attribs.str_attribs_val[b].type) {
-					case FA_S_INCLUDE:
-					case FA_S_WIDGET:
-					case FA_S_CONFIG:
-					case FA_S_ACTION:
-						break;
-
-					case FA_S_PICTURE:
-						send_to_ui("<ATTRIB_PICTURE>%s</ATTRIB_PICTURE>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
-						break;
-					case FA_S_FORMAT:
-						send_to_ui("<ATTRIB_FORMAT>%s</ATTRIB_FORMAT>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
-						break;
-					case FA_S_DEFAULT:
-						send_to_ui("<ATTRIB_DEFAULT>%s</ATTRIB_DEFAULT>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
-						break;
-					case FA_S_PROGRAM:
-						send_to_ui("<ATTRIB_PROGRAM>%s</ATTRIB_PROGRAM>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
-						break;
-					case FA_S_COMMENTS:
-						send_to_ui("<ATTRIB_COMMENTS>%s</ATTRIB_COMMENTS>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
-						break;
-					case FA_S_CLASS:
-						send_to_ui("<ATTRIB_CLASS>%s</ATTRIB_CLASS>", uilib_xml_escape(f->str_attribs.str_attribs_val[b].value));
-						break;
-
-				}
-			}
-
-			for  (b=0;b<f->bool_attribs.bool_attribs_len;b++) {
-				switch (f->bool_attribs.bool_attribs_val[b]) {
-						case FA_B_AUTONEXT:
-						send_to_ui("<ATTRIB_AUTONEXT/>");  break;
-						case FA_B_REVERSE:
-						send_to_ui("<ATTRIB_REVERSE/>");  break;
-						case FA_B_INVISIBLE:
-						send_to_ui("<ATTRIB_INVISIBLE/>");  break;
-						case FA_B_NOENTRY:
-						send_to_ui("<ATTRIB_NOENTRY/>");  break;
-						case FA_B_VERIFY:
-						send_to_ui("<ATTRIB_VERIFY/>");  break;
-						case FA_B_WORDWRAP:
-						send_to_ui("<ATTRIB_WORDWRAP/>");  break;
-						case FA_B_COMPRESS:
-						send_to_ui("<ATTRIB_COMPRESS/>");  break;
-						case FA_B_UPSHIFT:
-						send_to_ui("<ATTRIB_UPSHIFT/>");  break;
-						case FA_B_DOWNSHIFT:
-						send_to_ui("<ATTRIB_DOWNSHIFT/>");  break;
-						case FA_B_REQUIRED:
-						send_to_ui("<ATTRIB_REQUIRED/>");  break;
-						case FA_B_NOUPDATE:
-						send_to_ui("<ATTRIB_NOUPDATE/>");  break;
-						case FA_B_QUERYCLEAR:
-						send_to_ui("<ATTRIB_QUERYCLEAR/>");  break;
-						case FA_B_ZEROFILL:
-						send_to_ui("<ATTRIB_ZEROFILL/>");  break;
-						case FA_B_RIGHT:
-						send_to_ui("<ATTRIB_RIGHT/>");  break;
-
-				}
-			}
-			send_to_ui("</ATTRIB>");
-	   }
-	  send_to_ui("</ATTRIBUTES>");
-
-
-	  return 1;
-	}
-
-	char *generate_construct_result (struct s_screenio *s)
-	{
-	int a;
-	char *ptr;
-	int flg=0;
-	char *buff=0;
-
-	for (a=0;a<last_attr->sync.nvalues;a++) {
-
-
-		// @@ FIXME - use the proper details from the construct structure in uilib/uilib.c
-		ptr=A4GL_construct (s->constr[a].tabname, s->constr[a].colname,
-					last_attr->sync.vals[a].value,get_inc_quotes(last_attr->sync.vals[0].fieldtype),
-					last_attr->sync.vals[0].fieldtype &DTYPE_MASK, last_attr->sync.vals[0].fieldtype>>16);
-		if (ptr==0) { /* Some error... */
-			if (buff) free(buff);
-			return 0;
-		}
-
-		if (strlen(ptr)) {
-			flg++;
-			if (buff) {
-				buff=realloc(buff,strlen(buff)+strlen(ptr)+10);
-				strcat(buff," and ");
-				strcat(buff,ptr);
-			} else {
-				buff=strdup(ptr);
-			}
-		}
-	}
-
-	if (!buff) buff=strdup(" 1=1");
-	return buff;
-	}
-
-
-	static int get_inc_quotes(int a) {
-	     if ((a & DTYPE_MASK ) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR) return 1;
-		if ((a & DTYPE_MASK) == DTYPE_DATE) return 2;
-		if ((a & DTYPE_MASK) == DTYPE_DTIME) return 3;
-		if ((a & DTYPE_MASK) == DTYPE_INTERVAL) return 4;
-		return 0;
-	}
-
-
-
-	int UILIB_UI_initlib() {
-		return 1;
-	}
-
-
-	int
-	UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
-	{
-	  int rval=0;
-	  int context;
-	  char *argp;
-	  int infield;
-	  A4GL_push_char ("XML");
-	  A4GL_push_int (((long) inp) & 0xffffffff);
-	  uilib_get_context (2);
-	  context = A4GL_pop_int ();
-
-	  while ((argp = va_arg (*ap, char *)))
+	  else
 	    {
-	      int i;
-	      i = va_arg (*ap, int);
-	      A4GL_trim (argp);
-		A4GL_push_int(context);
-		A4GL_push_char(argp);
-		uilib_infield(2);
-		infield=A4GL_pop_long();
-		if (infield) {rval=1; break;}
+	      widget = 0;
+	      config = 0;
+	      include = 0;
+	      action = 0;
 	    }
 
-	  return rval;
+	  if (widget == 0)
+	    widget = "";
+	  if (config == 0)
+	    config = "";
+	  if (include == 0)
+	    include = "";
+	  if (action == 0)
+	    action = "";
+
+
+
+	  A4GL_make_field (formdets->fileform->metrics.
+			   metrics_val[metric_no].y,
+			   formdets->fileform->metrics.
+			   metrics_val[metric_no].x,
+			   formdets->fileform->metrics.
+			   metrics_val[metric_no].h,
+			   formdets->fileform->metrics.
+			   metrics_val[metric_no].w, widget,
+			   config, include, fprop, make_tab_and_col (fprop->tabname, fprop->colname), action, attr_no);
+
 	}
+    }
 
-	int
-	UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
+  send_to_ui ("</SCREENLAYOUT>");
+  send_to_ui ("</SCREENS>");
+
+  send_to_ui ("<SCREENRECORDS>");
+  // We also need to send the screen records as these might be used....
+  for (n = 0; n < formdets->fileform->records.records_len; n++)
+    {
+      int attr;
+      send_to_ui ("<SCREENRECORD NAME=\"%s\" SIZE=\"%d\">", formdets->fileform->records.records_val[n].name,
+		  formdets->fileform->records.records_val[n].dim);
+      for (attr = 0; attr < formdets->fileform->records.records_val[n].attribs.attribs_len; attr++)
 	{
-	  int rval=0;
-	  int context;
-	  char *argp;
-	  int infield;
-	  A4GL_push_char ("XML");
-	  A4GL_push_int (((long) inp) & 0xffffffff);
-	  uilib_get_context (2);
-	  context = A4GL_pop_int ();
-
-	  while ((argp = va_arg (*ap, char *)))
+	  int attr_no;
+	  attr_no = formdets->fileform->records.records_val[n].attribs.attribs_val[attr];
+	  fprop = &formdets->fileform->attributes.attributes_val[attr_no];
+	  send_to_ui ("<ATTRIBUTE ATTRIBUTE_NO=\"%d\" NAME=\"%s\"/>",
+		      formdets->fileform->records.records_val[n].attribs.attribs_val[attr], fprop->colname);
+	}
+      send_to_ui ("</SCREENRECORD>");
+    }
+  send_to_ui ("</SCREENRECORDS>");
+  send_to_ui ("<ATTRIBUTES>");
+  for (n = 0; n < formdets->fileform->attributes.attributes_len; n++)
+    {
+      int b;
+      struct struct_scr_field *f;
+      f = &formdets->fileform->attributes.attributes_val[n];
+      send_to_ui ("<ATTRIB ATTRIBUTE_NO=\"%d\" DATATYPE=\"%d\" DATATYPE_SIZE=\"%d\" DYNAMIC=\"%d\" REVERSE=\"%d\" >",
+		  n, f->datatype, f->dtype_size, f->dynamic, f->do_reverse);
+      for (b = 0; b < f->str_attribs.str_attribs_len; b++)
+	{
+	  switch (f->str_attribs.str_attribs_val[b].type)
 	    {
-	      int i;
-	      i = va_arg (*ap, int);
-	      A4GL_trim (argp);
-		A4GL_push_int(context);
-		A4GL_push_char(argp);
-		uilib_infield(2);
-		infield=A4GL_pop_long();
-		if (infield) {rval=1; break;}
-	    }
+	    case FA_S_INCLUDE:
+	    case FA_S_WIDGET:
+	    case FA_S_CONFIG:
+	    case FA_S_ACTION:
+	      break;
 
-	  return rval;
+	    case FA_S_PICTURE:
+	      send_to_ui ("<ATTRIB_PICTURE>%s</ATTRIB_PICTURE>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
+	      break;
+	    case FA_S_FORMAT:
+	      send_to_ui ("<ATTRIB_FORMAT>%s</ATTRIB_FORMAT>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
+	      break;
+	    case FA_S_DEFAULT:
+	      send_to_ui ("<ATTRIB_DEFAULT>%s</ATTRIB_DEFAULT>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
+	      break;
+	    case FA_S_PROGRAM:
+	      send_to_ui ("<ATTRIB_PROGRAM>%s</ATTRIB_PROGRAM>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
+	      break;
+	    case FA_S_COMMENTS:
+	      send_to_ui ("<ATTRIB_COMMENTS>%s</ATTRIB_COMMENTS>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
+	      break;
+	    case FA_S_CLASS:
+	      send_to_ui ("<ATTRIB_CLASS>%s</ATTRIB_CLASS>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
+	      break;
+
+	    }
 	}
 
-	void
-	UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
+      for (b = 0; b < f->bool_attribs.bool_attribs_len; b++)
 	{
-	  char *field_list;
-	  UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap);
-	  send_to_ui("<CLEAR todefault=\"%d\">%s</CLEAR>",to_defaults,field_list);
+	  switch (f->bool_attribs.bool_attribs_val[b])
+	    {
+	    case FA_B_AUTONEXT:
+	      send_to_ui ("<ATTRIB_AUTONEXT/>");
+	      break;
+	    case FA_B_REVERSE:
+	      send_to_ui ("<ATTRIB_REVERSE/>");
+	      break;
+	    case FA_B_INVISIBLE:
+	      send_to_ui ("<ATTRIB_INVISIBLE/>");
+	      break;
+	    case FA_B_NOENTRY:
+	      send_to_ui ("<ATTRIB_NOENTRY/>");
+	      break;
+	    case FA_B_VERIFY:
+	      send_to_ui ("<ATTRIB_VERIFY/>");
+	      break;
+	    case FA_B_WORDWRAP:
+	      send_to_ui ("<ATTRIB_WORDWRAP/>");
+	      break;
+	    case FA_B_COMPRESS:
+	      send_to_ui ("<ATTRIB_COMPRESS/>");
+	      break;
+	    case FA_B_UPSHIFT:
+	      send_to_ui ("<ATTRIB_UPSHIFT/>");
+	      break;
+	    case FA_B_DOWNSHIFT:
+	      send_to_ui ("<ATTRIB_DOWNSHIFT/>");
+	      break;
+	    case FA_B_REQUIRED:
+	      send_to_ui ("<ATTRIB_REQUIRED/>");
+	      break;
+	    case FA_B_NOUPDATE:
+	      send_to_ui ("<ATTRIB_NOUPDATE/>");
+	      break;
+	    case FA_B_QUERYCLEAR:
+	      send_to_ui ("<ATTRIB_QUERYCLEAR/>");
+	      break;
+	    case FA_B_ZEROFILL:
+	      send_to_ui ("<ATTRIB_ZEROFILL/>");
+	      break;
+	    case FA_B_RIGHT:
+	      send_to_ui ("<ATTRIB_RIGHT/>");
+	      break;
+
+	    }
+	}
+      send_to_ui ("</ATTRIB>");
+    }
+  send_to_ui ("</ATTRIBUTES>");
+
+
+  return 1;
+}
+
+char *
+generate_construct_result (struct s_screenio *s)
+{
+  int a;
+  char *ptr;
+  int flg = 0;
+  char *buff = 0;
+
+  for (a = 0; a < last_attr->sync.nvalues; a++)
+    {
+
+
+      // @@ FIXME - use the proper details from the construct structure in uilib/uilib.c
+      ptr = A4GL_construct (s->constr[a].tabname, s->constr[a].colname,
+			    last_attr->sync.vals[a].value, get_inc_quotes (last_attr->sync.vals[0].fieldtype),
+			    last_attr->sync.vals[0].fieldtype & DTYPE_MASK, last_attr->sync.vals[0].fieldtype >> 16);
+      if (ptr == 0)
+	{			/* Some error... */
+	  if (buff)
+	    free (buff);
+	  return 0;
+	}
+
+      if (strlen (ptr))
+	{
+	  flg++;
+	  if (buff)
+	    {
+	      buff = realloc (buff, strlen (buff) + strlen (ptr) + 10);
+	      strcat (buff, " and ");
+	      strcat (buff, ptr);
+	    }
+	  else
+	    {
+	      buff = strdup (ptr);
+	    }
+	}
+    }
+
+  if (!buff)
+    buff = strdup (" 1=1");
+  return buff;
+}
+
+
+static int
+get_inc_quotes (int a)
+{
+  if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR)
+    return 1;
+  if ((a & DTYPE_MASK) == DTYPE_DATE)
+    return 2;
+  if ((a & DTYPE_MASK) == DTYPE_DTIME)
+    return 3;
+  if ((a & DTYPE_MASK) == DTYPE_INTERVAL)
+    return 4;
+  return 0;
+}
+
+
+
+int
+UILIB_UI_initlib ()
+{
+  return 1;
+}
+
+
+int
+UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
+{
+  int rval = 0;
+  int context;
+  char *argp;
+  int infield;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) inp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+      A4GL_push_int (context);
+      A4GL_push_char (argp);
+      uilib_infield (2);
+      infield = A4GL_pop_long ();
+      if (infield)
+	{
+	  rval = 1;
+	  break;
+	}
+    }
+
+  return rval;
+}
+
+int
+UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
+{
+  int rval = 0;
+  int context;
+  char *argp;
+  int infield;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) inp) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+      A4GL_push_int (context);
+      A4GL_push_char (argp);
+      uilib_infield (2);
+      infield = A4GL_pop_long ();
+      if (infield)
+	{
+	  rval = 1;
+	  break;
+	}
+    }
+
+  return rval;
+}
+
+void
+UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
+{
+  char *field_list;
+  UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap);
+  send_to_ui ("<CLEAR todefault=\"%d\">%s</CLEAR>", to_defaults, field_list);
 }
 
 int
@@ -2584,17 +2681,17 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   uilib_get_context (2);
   context = A4GL_pop_int ();
 
-  A4GL_push_int(context);
-  n=1;
+  A4GL_push_int (context);
+  n = 1;
   while ((argp = va_arg (*ap, char *)))
     {
       int i;
       i = va_arg (*ap, int);
       A4GL_trim (argp);
-	A4GL_push_char(argp);
-		n++;
+      A4GL_push_char (argp);
+      n++;
     }
-  n=uilib_getfldbuf(n);
+  n = uilib_getfldbuf (n);
   return n;
 }
 
@@ -2609,17 +2706,17 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
   uilib_get_context (2);
   context = A4GL_pop_int ();
 
-  A4GL_push_int(context);
-  n=1;
+  A4GL_push_int (context);
+  n = 1;
   while ((argp = va_arg (*ap, char *)))
     {
       int i;
       i = va_arg (*ap, int);
       A4GL_trim (argp);
-	A4GL_push_char(argp);
-		n++;
+      A4GL_push_char (argp);
+      n++;
     }
-  n=uilib_getfldbuf(n);
+  n = uilib_getfldbuf (n);
   return n;
 }
 
@@ -2636,8 +2733,7 @@ UILIB_A4GL_disp_h_menu (void *menu)
 
 
 int
-UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
-				      void *listv)
+UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
 {
   int rval;
   niy ();
@@ -2659,6 +2755,7 @@ UILIB_A4GL_widget_name_match (void *w, char *name)
   niy ();
   return rval;
 }
+
 int
 UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 {
@@ -2694,10 +2791,10 @@ UILIB_A4GL_gui_run_til_no_more ()
 int
 UILIB_aclfgl_a4gl_set_page (int n)
 {
-int b;
+  int b;
   b = A4GL_pop_int ();
-  send_to_ui ("<SETPAGE=\%d\"/>",b);
-return 0;
+  send_to_ui ("<SETPAGE=\%d\"/>", b);
+  return 0;
 }
 
 int
@@ -2766,34 +2863,40 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *input, va_list * ap)
 void
 UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 {
-char *arr;
+  char *arr;
 
-arr=va_arg(*ap,char *);
-send_to_ui("<SCROLL BY=\"%d\" ARRAY=\"%s\"/>",n,arr);
+  arr = va_arg (*ap, char *);
+  send_to_ui ("<SCROLL BY=\"%d\" ARRAY=\"%s\"/>", n, arr);
 }
 
 int
 UILIB_A4GL_get_key (int timeout)
 {
   char buff[2000];
-int a;
-char *s;
+  int a;
+  char *s;
   send_to_ui ("<GETKEY/><WAITFOREVENT/>");
   flush_ui ();
   a = get_event_from_ui ();
-  uilib_last_received_key(0);
-  s=A4GL_char_pop();
-  if (s) {
+  uilib_last_received_key (0);
+  s = A4GL_char_pop ();
+  if (s)
+    {
 
-	if (strlen(s)==0) {
-		a=0; 
-	} else {
-  		a=atoi(s);
-		free(s);
+      if (strlen (s) == 0)
+	{
+	  a = 0;
 	}
-  }  else {
-	a=0;
-  }
+      else
+	{
+	  a = atoi (s);
+	  free (s);
+	}
+    }
+  else
+    {
+      a = 0;
+    }
   return a;
 }
 
@@ -2811,7 +2914,7 @@ UILIB_aclfgl_fgl_set_arrline (int nparam)
 {
   int b;
   b = A4GL_pop_int ();
-  send_to_ui ("<SETARRLINE=\%d\"/>",b);
+  send_to_ui ("<SETARRLINE=\%d\"/>", b);
   return 0;
 }
 
@@ -2820,7 +2923,7 @@ UILIB_aclfgl_fgl_set_scrline (int nparam)
 {
   int b;
   b = A4GL_pop_int ();
-  send_to_ui ("<SETSCRLINE=\%d\"/>",b);
+  send_to_ui ("<SETSCRLINE=\%d\"/>", b);
   return 0;
 }
 
@@ -2832,8 +2935,11 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
 
 
 
-int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
-        if (set_current_display_delims) free(set_current_display_delims);
-        set_current_display_delims=A4GL_char_pop();
-        return 0;
+int
+UILIB_aclfgl_aclfgl_set_display_field_delimiters (int n)
+{
+  if (set_current_display_delims)
+    free (set_current_display_delims);
+  set_current_display_delims = A4GL_char_pop ();
+  return 0;
 }

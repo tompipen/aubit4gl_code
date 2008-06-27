@@ -2619,3 +2619,9 @@ A4GLSQLLIB_A4GLSQL_get_table_checksum (char *s)
     }
     return s;			// Oh well - we tried...
 }
+
+
+void A4GLSQL_free_prepare (void* sid ) {
+/* does nothing in this driver */
+ }
+
