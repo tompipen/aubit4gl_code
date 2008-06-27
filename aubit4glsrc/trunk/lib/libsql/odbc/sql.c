@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.205 2008-06-27 08:17:48 mikeaubury Exp $
+# $Id: sql.c,v 1.206 2008-06-27 09:42:44 mikeaubury Exp $
 #
 */
 
@@ -1062,7 +1062,7 @@ A4GLSQL_find_cursor (char *cname)
 static Bool prepare_statement_internal(struct s_sid *sid, char *s)
 {
     SQLRETURN rc;
-    sid->select = acl_strdup(s);
+    if (sid->select) { free(sid->select); sid->select=0; } sid->select = acl_strdup(s);
     sid->hstmt = NULL;
 
     A4GL_dbg("In prepare_statement_internal: sid=%p, sid->select=\"%s\", s=\"%s\"", sid, sid->select, s);
@@ -1230,6 +1230,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
 	    nsid = acl_malloc2 (sizeof (struct s_sid));
 	    A4GL_trc("Malloced nsid=%p", nsid);
 	    nsid->extra_info = 0;
+            nsid->select=0;
 	    sid_set_owns_bindings(nsid, False);
 	    sid_set_singleton(nsid, True);
 
@@ -1621,27 +1622,6 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
         }
         else
         {
-#ifdef ndef
-            struct BINDING *b;
-            int a;
-            A4GL_trc ("We dont have a binding - but I'll make one");
-            b = acl_malloc2 (sizeof (struct BINDING) * ni);
-
-            for (a = ni - 1; a >= 0; a--)
-            {
-                b[a].ptr = A4GL_char_pop ();
-                A4GL_trc ("Got string as '%s' a=%d\n", b[a].ptr, a);
-                b[a].dtype = 0;
-                b[a].size = strlen (b[a].ptr);
-                A4GL_trc ("Got size as '%d' a=%d\n", b[a].size, a);
-            }
-
-            for (a = 0; a < ni; a++)
-            {
-                A4GL_trc ("%d %d %s", b[a].dtype, b[a].size, b[a].ptr);
-            }
-#endif
-
             if (!A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) cid->statement->hstmt))
 	    {
 		if (save_ni != -1)
@@ -2892,7 +2872,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
         double d;
         A4GL_dbg ("Allocate for decimal");
         ptr = bind->ptr;
-        p = acl_malloc2 (sizeof (double));
+        p = A4GL_alloc_associated_mem ((void *) hstmt, sizeof (double));
         dtype = bind->dtype + ENCODE_SIZE (bind->size);
         A4GL_push_variable (bind->ptr, dtype);
         d = A4GL_pop_double ();
@@ -2922,12 +2902,10 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
         else
         {
             SQLINTEGER *sz;
-            sz = acl_malloc2 (sizeof (SQLINTEGER));
+            sz = A4GL_alloc_associated_mem ((void *)hstmt, sizeof (SQLINTEGER));
             *sz = size_c;
             A4GL_trc ("Calling setparam2");
-            retval = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos,
-                    conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype],
-                    size, k, ptr_to_use, sz);
+            retval = A4GL_newSQLSetParam ((SQLHSTMT) hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, ptr_to_use, sz);
         }
     }
     else
