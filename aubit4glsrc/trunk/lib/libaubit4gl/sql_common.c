@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.55 2008-05-15 13:40:59 mikeaubury Exp $
+# $Id: sql_common.c,v 1.56 2008-06-27 11:46:49 mikeaubury Exp $
 #
 */
 
@@ -323,22 +323,6 @@ A4GLSQL_close_session (char *sessname)
 
 
 
-#ifdef REMOVED_NO_LONGER_REQUIRED
-/**
- * Prepare an sql statement.
- *
- * @param s a string with the statement to be prepared.
- * @return
- */
-/* int --- struct s_sid * in sql.c */
-struct s_sid *
-XxxA4GLSQL_prepare_sql (char *s)
-{
-	A4GL_assertion(1,"FIXME");
-  return (struct s_sid *) A4GLSQL_prepare_select (0, 0, 0, 0, s,"__prepare",0,0);
-}
-#endif
-
 
 
 /**
@@ -357,7 +341,10 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
 {
 	char buff[256];
   char uniq_id[100];
+  void *sid;
   char *ptr;
+  char *sold;
+  
   A4GL_debug ("must_convert=%d\n", must_convert);
 
   SPRINTF1(buff,"%s",mod);
@@ -368,14 +355,32 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
 	 *ptr=0;
   }
   
+  sold=s;
   if (must_convert)
     {
-      //s = A4GL_apisql_strdup (s);
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
       s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted);
     }
+
+
+  
   SPRINTF2(uniq_id,"a4gl_st_%s_%d",buff,line);
-  return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id, singleton); 
+  sid=A4GLSQL_find_prepare (uniq_id);
+  if (sid) {
+  	A4GLSQL_free_prepare(sid); A4GL_del_pointer (uniq_id, PRECODE);
+  }
+
+  sid=A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id, singleton); 
+
+  if (s!=sold) {
+  	if (sid) {
+		//A4GL_pause_execution();
+  	A4GL_set_associated_mem(sid,s);
+		}
+  }
+ A4GL_add_pointer (uniq_id,PRECODE, sid);
+  
+  return (struct s_sid *) sid;
 }
 
 
@@ -716,9 +721,10 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
   sid = vsid;
 
 
-  //if (A4GL_has_pointer (pname, PRECODE))  {
-	  //A4GLSQL_free_cursor(pname);
-  //}
+  if (A4GL_has_pointer (pname, PRECODE))  {
+	  A4GLSQL_free_prepare(vsid);
+  	 A4GL_del_pointer (pname, PRECODE);
+  }
 
 
   if (sid)

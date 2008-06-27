@@ -2,7 +2,7 @@
 
 static void *last_orig=0;
 static struct mem_extra *last_ptr=0;
-static void *A4GL_set_associated_mem(void *orig,void *newbytes) ;
+void *A4GL_set_associated_mem(void *orig,void *newbytes) ;
 void A4GL_rm_associated_mem(void *orig,void *newbytes) ;
 void A4GL_mark_as_freed_associated_mem(void *orig,void *newbytes) ;
 

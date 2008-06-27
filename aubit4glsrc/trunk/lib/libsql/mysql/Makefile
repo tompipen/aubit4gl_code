@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2006-11-04 11:10:03 afalout Exp $
+# $Id: Makefile,v 1.10 2008-06-27 11:46:50 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -72,7 +72,7 @@ ${PLUGINDIR}/libSQL_mysql${SO_EXT} : ${OBJS}
 # 		in 64 bin machine too (using 'linux32' utility)
 #If you need it, please adjust configure.in to take case of your situation properly
 #If you need help - please let me know (andrej at falout dot org)
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${L_FLAGS} ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -L/lib  -o $@ $^ ${L_FLAGS} ${LINKLIBS}
 
 ##############################################
 #MySQL native plug-in, statically linked agains static library
@@ -103,7 +103,7 @@ ${PLUGINDIR}/libSQL_mysqlS${SO_EXT} : ${OBJS}
 #uses. You can get the full list of libraries by executing mysql_config --libmysqld-libs.
 libSQL_mysqldb${SO_EXT} : ${PLUGINDIR}/libSQL_mysqldb${SO_EXT}
 ${PLUGINDIR}/libSQL_mysqldb${SO_EXT} : ${OBJS_DB}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${L_FLAGS} ${LINKLIBS_DB} ${shell mysql_config --libmysqld-libs}
+	${LD} ${SO_LDFLAGS} -L/lib -o $@ $^ ${L_FLAGS} ${LINKLIBS_DB} ${shell mysql_config --libmysqld-libs}
 	@echo "Compiled static embedded MySQL plug-in OK"
 	
 
