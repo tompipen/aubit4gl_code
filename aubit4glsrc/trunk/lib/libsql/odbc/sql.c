@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.204 2008-05-22 11:55:52 mikeaubury Exp $
+# $Id: sql.c,v 1.205 2008-06-27 08:17:48 mikeaubury Exp $
 #
 */
 
@@ -1119,7 +1119,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni,
     sid_set_owns_sqlstr(sid, True);
 
     // I'm going to copy the bindings....
-    sid->ibind = acl_malloc2 (sizeof (struct BINDING) * ni);
+    sid->ibind = acl_malloc2 ( sizeof (struct BINDING) * ni);
     memcpy (sid->ibind, ibind, sizeof (struct BINDING) * ni);
     sid->obind = acl_malloc2 (sizeof (struct BINDING) * no);
     memcpy (sid->obind, obind, sizeof (struct BINDING) * no);
@@ -1138,10 +1138,13 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni,
     else
     {
 	exitwith_sql_odbc_errm ("Preparing statement failed: %s", s);
-	if (sid_get_singleton(sid))
+	if (sid_get_singleton(sid)) {
 	    sql_free_sid(&sid);
-	else
+	    free(sid);
+	} else {
 	    A4GL_free_hstmt(&sid->hstmt);
+	    free(sid);
+	}
 	return NULL;
     }
 }
@@ -1331,10 +1334,12 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid,
     {
 	exitwith_sql_odbc_errm ("declare_cursor: Cannot set cursor name (%s)", cursname);
 	cid = 0;
-	if (sid_get_singleton(nsid))
+	if (sid_get_singleton(nsid)) {
 	    sql_free_sid(&nsid);
-	else
+	} else {
 	    A4GL_free_hstmt(&nsid->hstmt);
+	}
+
         acl_free(cid);
 	return 0;
     }
@@ -1372,8 +1377,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
     {
 	if (sid_get_owns_bindings(sid))
 	{
-	    if (sid->ibind)
+	    if (sid->ibind) {
 		acl_free (sid->ibind);
+	    }
 	    sid_set_owns_bindings(sid, False);
 	}
 	sid->ibind=binding;
