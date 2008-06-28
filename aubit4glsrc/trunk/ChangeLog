@@ -1,4 +1,37 @@
 ---------------------------
+Sat Jun 28 09:12:09 BST 2008
+---------------------------
+1.10RC_27 Released
+---------------------------
+	
+	sql memory leak fixups
+	
+	Added 'boolean' as a recognised datatype for LIKE within 'pg8'
+	
+	Add (c) to schema file
+	
+	1146: -fileschema for datetime fields is invalid, (EC mode)
+	
+	pdf_function fixup Added SQL errors to be logged in errorlog when
+	continued over when ERRLOG_CONTINUE_ERRORS is set
+	
+	pdf_function fixup
+	
+	indent
+	
+	1144: pg8 : compile error: Assertion failed in define like
+	unexistant table
+	
+	MID 1143: pg.8: Compile error: DEFINE LIKE text column, can't
+	LOCATE
+	
+	libUI_XML fixups
+	
+	fix for build test 1709
+	
+	CONSTANT fixup
+	
+---------------------------
 Sat Jun 14 13:00:10 BST 2008
 ---------------------------
 1.10RC_26 Released
