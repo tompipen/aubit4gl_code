@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.98 2008-06-21 09:51:43 mikeaubury Exp $
+# $Id: variables.c,v 1.99 2008-06-29 07:44:41 mikeaubury Exp $
 #
 */
 
@@ -482,7 +482,6 @@ variable_action (int category, char *name, char *type, char *n,
    	if (A4GL_aubit_strcasecmp(name,"notfound")==0) builtin_Constant_usage++;
  	if (A4GL_aubit_strcasecmp(name,"true")==0)     builtin_Constant_usage++;
  	if (A4GL_aubit_strcasecmp(name,"false")==0)    builtin_Constant_usage++;
-
 	if (!builtin_Constant_usage) {
 		uses_constants++;
 	}
@@ -1067,7 +1066,7 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &list_imported_global_alloc;
 	  for (a=0;a<list_imported_global_cnt;a++) {
 			if (list_imported_global[a]->var_data.variable_type==VARIABLE_TYPE_CONSTANT) {
-				//uses_constants++;
+				uses_constants++;
 				break;
 			}
 	  }
