@@ -559,9 +559,9 @@ A4GL_debug("Getting details for index %d",index);
 			exec sql get descriptor descExec value :index :DOUBLEVAR=data;cp_sqlca();
 
                 	if (display_mode==DISPLAY_DOWN) {
-                        	sprintf (buffer, "%f", DOUBLEVAR);
+                        	sprintf (buffer, "%lf", DOUBLEVAR);
                 	} else {
-                        	sprintf (buffer, "%*f", columnWidths[idx-1],DOUBLEVAR);
+                        	sprintf (buffer, "%*lf", columnWidths[idx-1],DOUBLEVAR);
                 	}
   				if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 }
