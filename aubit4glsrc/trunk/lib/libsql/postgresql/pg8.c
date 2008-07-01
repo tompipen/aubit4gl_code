@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.48 2008-06-27 13:01:56 mikeaubury Exp $
+# $Id: pg8.c,v 1.49 2008-07-01 06:47:42 mikeaubury Exp $
 #*/
 
 
@@ -752,7 +752,7 @@ FILE *errd;
       *s = 0x0; //000e;
     }
 
-  if (strcmp (buff, "booleanx") == 0)
+  if (strcmp (buff, "boolean") == 0)
     {
       *d = DTYPE_SMINT;
       *s = 0x0; //000e;
