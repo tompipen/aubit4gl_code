@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.132 2008-05-02 18:37:59 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.133 2008-07-01 21:16:37 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3318,7 +3318,7 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 }
 
 int
-UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,char *style)
 {
   char *promptstr;
   struct s_prompt *promptx;

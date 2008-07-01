@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.56 2008-06-27 11:46:49 mikeaubury Exp $
+# $Id: sql_common.c,v 1.57 2008-07-01 21:16:35 mikeaubury Exp $
 #
 */
 
@@ -359,7 +359,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
   if (must_convert)
     {
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
-      s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted);
+      s = strdup(A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted));
     }
 
 

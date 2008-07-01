@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.147 2007-12-05 18:17:57 mikeaubury Exp $
+# $Id: curslib.c,v 1.148 2008-07-01 21:16:36 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.147 2007-12-05 18:17:57 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.148 2008-07-01 21:16:36 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1047,7 +1047,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   {
     char _p[36];
     int _fld_dr;
-    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0);
+    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0,"","");
     while (GET_AS_INT ("s_prompt", _p, "mode") != 2)
       {
 	static struct aclfgl_event_list _sio_evt[] = { {0} };

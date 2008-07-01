@@ -6,7 +6,7 @@
 #include "a4gl_API_ui_lib.h"
 extern struct s_attr *last_attr;
 FILE *def_stderr = NULL;
-char stderr_fname[2000];
+char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
 
 #include <stdarg.h>
@@ -1538,11 +1538,13 @@ UILIB_A4GL_ui_exit (int exitstatus)
 	    }
 	}
       send_to_ui ("</PROGRAMSTOP>");
+	fclose(def_stderr);
       unlink (stderr_fname);
     }
   else
     {
       send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", exitstatus, get_ui_id ('r'));
+      unlink (stderr_fname);
     }
 
   flush_ui ();
@@ -2032,7 +2034,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 }
 
 int
-UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,char *style)
 {
   int rval;
   char *promptstr;
@@ -2058,8 +2060,10 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_push_long (af);		// attribute for prompt
   A4GL_push_long (c);
   A4GL_push_long (h);
+  A4GL_push_char(text);
+  A4GL_push_char(style);
   startingPrompt++;
-  uilib_prompt_start (7);
+  uilib_prompt_start (9);
 
   rval = 1;
   return rval;
@@ -2208,11 +2212,11 @@ static void
 A4GL_make_field (int frow, int fcol, int rows, int cols, char *widget,
 		 char *config, char *inc, void *id, char *tab_and_col, char *action, int attr_no)
 {
-  send_to_ui
-    ("<FORMFIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\" CONFIG=\"%s\" INC=\"%s\" ID=\"%d\" TABCOL=\"%s\" ACTION=\"%s\" ATTRIBUTE_NO=\"%d\"/>",
-     frow, fcol, rows, cols, uilib_xml_escape (widget),
-     uilib_xml_escape (config), uilib_xml_escape (inc), (long) id,
-     uilib_xml_escape (tab_and_col), uilib_xml_escape (action), attr_no);
+  	send_to_ui ("<FORMFIELD ROW=\"%d\" COLUMN=\"%d\" ROWS=\"%d\" COLS=\"%d\" WIDGET=\"%s\"",frow, fcol, rows, cols, uilib_xml_escape (widget));
+ 	send_to_ui(" CONFIG=\"%s\"",uilib_xml_escape (config));
+	send_to_ui(" INC=\"%s\" ID=\"%d\"",uilib_xml_escape (inc), (long) id);
+	send_to_ui(" TABCOL=\"%s\"",uilib_xml_escape (tab_and_col));
+	send_to_ui(" ACTION=\"%s\" ATTRIBUTE_NO=\"%d\"/>", uilib_xml_escape (action), attr_no);
 }
 
 
@@ -2942,4 +2946,12 @@ UILIB_aclfgl_aclfgl_set_display_field_delimiters (int n)
     free (set_current_display_delims);
   set_current_display_delims = A4GL_char_pop ();
   return 0;
+}
+
+
+void cleanup() {
+if (def_stderr) fclose(def_stderr);
+if (strlen(stderr_fname)) {
+      unlink (stderr_fname);
+}
 }

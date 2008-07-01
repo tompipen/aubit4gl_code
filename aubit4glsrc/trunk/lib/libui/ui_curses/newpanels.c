@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.154 2008-06-21 09:51:44 mikeaubury Exp $
+# $Id: newpanels.c,v 1.155 2008-07-01 21:16:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.154 2008-06-21 09:51:44 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.155 2008-07-01 21:16:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -1979,7 +1979,7 @@ int
 {
   int x, y, w, h;
   char *s;
-  char buff[132];
+  char buff[1320];
   char name[256];
   struct s_form_dets *form;
   WINDOW *win;

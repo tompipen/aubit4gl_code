@@ -2669,6 +2669,8 @@ int
 print_prompt_cmd (struct_prompt_cmd * cmd_data)
 {
   int timeout = 0;
+char *style;
+char *text;
   //struct expr_str_list*prompt_str;
   //struct attrib *prompt_str_attrib;
   //struct attrib *prompt_fld_attrib;
@@ -2710,7 +2712,17 @@ print_prompt_cmd (struct_prompt_cmd * cmd_data)
 		printc("free(_s);");
 		printc("}");
 	}
-  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno);
+if (cmd_data->prompt_fld_attrib) {
+	text=cmd_data->prompt_fld_attrib->text;
+	if (strlen(text)==0) text="\"\"";
+	style=cmd_data->prompt_fld_attrib->style;
+	if (strlen(style)==0) text="\"\"";
+	
+} else {
+	text="\"\"";
+	style="\"\"";
+}
+  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field,%s,%s)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno, text,style);
   tmp_ccnt++;
   printc ("while (1) {");
   tmp_ccnt++;

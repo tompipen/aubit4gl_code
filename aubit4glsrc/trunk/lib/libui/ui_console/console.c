@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.38 2008-06-21 09:51:43 mikeaubury Exp $
+# $Id: console.c,v 1.39 2008-07-01 21:16:36 mikeaubury Exp $
 #*/
 
 /**
@@ -544,7 +544,7 @@ A4GL_menu_attrib (void* menuv, int attr, va_list ap)
  * @todo Describe function
  */
 int
- UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text, char *style)
 {
   char *promptstr;
   int width;

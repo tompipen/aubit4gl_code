@@ -116,6 +116,8 @@ get_ui_id (char c)
       return clientui_sock_write;
     }
 UIdebug(0,"No 'r' or 'w' for get_ui_id");
+
+	cleanup();
 exit(2);
 return 0;
 }
@@ -154,6 +156,7 @@ int port;
   addr = atoaddr (netaddress);
   if (addr==0) {
             fprintf(stderr, "Error : Unable to identify address for AFGLSERVER\n");
+	cleanup();
               exit(2);
           }
 
@@ -167,6 +170,7 @@ int port;
   if (clientui_sock_read < 0)
     {
       perror ("opening stream socket");
+	cleanup();
       exit (1);
     }
   UIdebug (3, "Got socket\n");
@@ -218,6 +222,7 @@ connect_ui_proxy (void)
       if (clientui_sock_read < 0)
 	{
 	  perror ("opening stream socket");
+	cleanup();
 	  exit (1);
 	}
 	UIdebug(3,"Got socket\n");
@@ -297,6 +302,7 @@ get_event_from_ui ()
       if (!pipe_sock_gets (clientui_sock_read, buff, 2550))
 	{
 	  UIdebug (2, "PIPE CLOSED - client disconnected ?\n");
+	cleanup();
 	  exit (0);
 	}
 
@@ -349,6 +355,7 @@ get_event_from_ui ()
 	  if (localbuff == 0)
 	    {
 	      UIdebug (0, "Unable to allocate memory");
+	cleanup();
 	      exit (1);
 	    }
 	  strcat (localbuff, buff);
@@ -373,6 +380,7 @@ get_event_from_ui ()
       int n = -1;
       if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999") == 0)
 	{
+	cleanup();
 	  exit (2);
 	}
 
@@ -421,6 +429,7 @@ get_event_from_ui ()
     }
 
   UIdebug (0, "End of get_event_from_ui - shouldn't happen");
+	cleanup();
   exit (2);
 }
 
