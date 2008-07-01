@@ -513,7 +513,6 @@ printField (FILE * outputFile, int idx, char *descName)
 char fmt[255];
   int rc = 0;
 index=idx;
-
 A4GL_debug("Getting details for index %d",index);
  exec sql get descriptor descExec value :index
          :TYPE = type,
@@ -528,6 +527,7 @@ A4GL_debug("Getting details for index %d",index);
                  ,OCTET_LENGTH,RETURNED_OCTET_LENGTH,NULLABLE);
 
 
+//printf("\nPRINT FIELD NAME=%s TYPE=%d LENGTH=%d\n",NAME, TYPE,LENGTH);
         if (INDICATOR==-1) sprintf(buffer,"");
         else switch (TYPE)
         {
@@ -556,12 +556,12 @@ A4GL_debug("Getting details for index %d",index);
                 else
                 {  
 		
-			exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
+			exec sql get descriptor descExec value :index :DOUBLEVAR=data;cp_sqlca();
 
                 	if (display_mode==DISPLAY_DOWN) {
-                        	sprintf (buffer, "%f", FLOATVAR);
+                        	sprintf (buffer, "%f", DOUBLEVAR);
                 	} else {
-                        	sprintf (buffer, "%*f", columnWidths[idx-1],FLOATVAR);
+                        	sprintf (buffer, "%*f", columnWidths[idx-1],DOUBLEVAR);
                 	}
   				if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 }
