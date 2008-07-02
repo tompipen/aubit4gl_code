@@ -2715,8 +2715,9 @@ char *text;
 if (cmd_data->prompt_fld_attrib) {
 	text=cmd_data->prompt_fld_attrib->text;
 	if (strlen(text)==0) text="\"\"";
+
 	style=cmd_data->prompt_fld_attrib->style;
-	if (strlen(style)==0) text="\"\"";
+	if (strlen(style)==0) style="\"\"";
 	
 } else {
 	text="\"\"";
