@@ -725,7 +725,8 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
 {
   A4GL_push_char (s);
   A4GL_push_int (attr);
-  uilib_message (2);
+  A4GL_push_int (wait);
+  uilib_message (3);
 }
 
 void
