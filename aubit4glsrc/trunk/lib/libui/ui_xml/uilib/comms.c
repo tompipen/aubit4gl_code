@@ -282,6 +282,23 @@ send_to_ui (char *s, ...)
 }
 
 
+void
+send_to_ui_no_nl (char *s, ...)
+{
+  static va_list args;
+  struct timeval tn={0,0};
+  char buff[1000000];
+  va_start (args, s);
+  vsprintf (buff, s, args);
+  UIdebug (4,"[[%s]]\n", buff);
+  pipe_sock_puts (clientui_sock_write, buff);
+	something++;
+  gettimeofday(&tn,0);
+  if (tn.tv_sec-tl.tv_sec>5) {
+		//timeout_flush_ui();
+  		tl.tv_sec=tn.tv_sec;
+  }
+}
 
 
 

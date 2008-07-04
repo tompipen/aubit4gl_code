@@ -154,7 +154,11 @@ xml_escape (char *s)
   int l;
   int b;
   int allocated;
+
+
   c = 0;
+
+
   if (strchr (s, '&'))
     c++;
   if (strchr (s, '<'))
@@ -177,7 +181,7 @@ xml_escape (char *s)
     }
 
   l = strlen (s);
-  allocated = l * 5 + 1;
+  allocated = (l * 6) + 1;
 
   if (l > last_len)
     {
@@ -238,7 +242,7 @@ xml_escape (char *s)
 	  int z1;
 	  char buff2[20];
 	  z1 = ((unsigned char) s[a]);
-	  sprintf (buff2, "&#%d;", z1);
+	  sprintf (buff2, "&#x%02X;", z1);
 	  for (z1 = 0; z1 < strlen (buff2); z1++)
 	    {
 	      buff[b++] = buff2[z1];
@@ -247,6 +251,10 @@ xml_escape (char *s)
 	}
       buff[b++] = s[a];
     }
+if (b>=allocated) {
+
+fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
+}
   A4GL_assertion (b >= allocated, "XML escape buffer too small");
   buff[b] = 0;
   return buff;
@@ -364,6 +372,7 @@ charpop (void)
 static void
 PUSHquote (char *s)
 {
+  
   pushquote (s, strlen (s));
 }
 
@@ -887,7 +896,13 @@ uilib_get_prompt_result (int nargs)
   context = POPint ();
   if (contexts[context].ui.prompt.promptresult)
     {
-      PUSHquote (contexts[context].ui.prompt.promptresult);
+	if (strlen(contexts[context].ui.prompt.promptresult)) {
+      		PUSHquote (contexts[context].ui.prompt.promptresult);
+	} else {
+		char buff[10];
+		memset(buff,0,10);
+  		pushquote (buff, 1);
+	}
     }
   else
     {
@@ -1200,12 +1215,16 @@ uilib_free_input (int nargs)
 
   contexts[context].state = UI_FREE;
 
-  if (contexts[context].ui.input.changed)
+  if (contexts[context].ui.input.changed) {
     free (contexts[context].ui.input.changed);
+	contexts[context].ui.input.changed=0;
+  }
 
 
-  if (contexts[context].ui.input.variable_data)
+  if (contexts[context].ui.input.variable_data) {
     free (contexts[context].ui.input.variable_data);
+	contexts[context].ui.input.variable_data=0;
+  }
 
 
 
@@ -1306,10 +1325,16 @@ uilib_input_loop (int nargs)
 	  UIdebug (5, "Got variable_data\n");
 	  for (a = 0; a < nargs; a++)
 	    {
-
+	printf("vd=%s args=%s\n", contexts[context].ui.input.variable_data[a], args[a]);
 	      if (contexts[context].ui.input.variable_data[a] == 0)
 		{
-		  contexts[context].ui.input.changed[a] = 0;	// Mark as changed
+			if (args[a]) {
+		  			contexts[context].ui.input.changed[a] = 1;	// Mark as changed
+					contexts[context].ui.input.variable_data[a] = args[a]; 
+		      			changed++;
+			} else {
+		  			contexts[context].ui.input.changed[a] = 0;	// Mark as changed
+			}
 		}
 	      else
 		{
@@ -1356,15 +1381,15 @@ uilib_input_loop (int nargs)
  init=1;
       for (a = 0; a < contexts[context].ui.input.nfields; a++) {
 		if (contexts[context].ui.input.variable_data[a]!=0) {
+			printf("Variable_data @ %d means its not init\n",a);
 			init=0;
 			break;
 		}
 	}
-
+printf("init=%d changed=%d\n", init, changed);
   if (changed || init==0 )			// Although only a single field has changed - we'll send the whole lot
     // we can always change this later...
     {
-     
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CHANGED=\"%d\">", context,changed);
 	
       // Changed data...
@@ -1484,7 +1509,7 @@ uilib_input_start (int nargs)
   char *attr;
   int ln;
   char *mod;
-  int nfields;
+  int nfields=0;
   int a;
 
   nfields = POPint ();
@@ -1492,9 +1517,10 @@ uilib_input_start (int nargs)
   todefs = POPint ();
   ln = POPint ();
   mod = charpop ();
- nfields++;
+
+ //nfields++;
+
   cinput = new_context (UIINPUT, mod, ln);
-  contexts[cinput].ui.input.variable_data = 0;
 
   contexts[cinput].ui.input.field_data = 0;
   contexts[cinput].ui.input.num_field_data = 0;
@@ -1504,11 +1530,13 @@ uilib_input_start (int nargs)
   contexts[cinput].ui.input.num_field_data = nfields;
   contexts[cinput].ui.input.changed = malloc (sizeof (int) * nfields);
   contexts[cinput].ui.input.field_data = malloc (sizeof (char *) * nfields);
-printf("Allocating .ui.input.variable_data for %d fields\n", nfields);
   contexts[cinput].ui.input.variable_data = malloc (sizeof (char *) * nfields);
+
+//printf("Allocating .ui.input.variable_data for %d fields\n", nfields);
+
   contexts[cinput].ui.input.nfields = nfields;
 
-  for (a = 0; a < contexts[cinput].ui.input.num_field_data; a++)
+  for (a = 0; a < nfields;  a++)
     {
       contexts[cinput].ui.input.changed[a] = 0;
       contexts[cinput].ui.input.field_data[a] = 0;
@@ -1754,8 +1782,11 @@ uilib_free_construct (int nargs)
   context = POPint ();
   contexts[context].state = UI_FREE;
 
+
+/*
   if (contexts[context].ui.construct.constr_clause)
     free (contexts[context].ui.construct.constr_clause);
+*/
 
   if (contexts[context].ui.construct.field_content_data)
     {

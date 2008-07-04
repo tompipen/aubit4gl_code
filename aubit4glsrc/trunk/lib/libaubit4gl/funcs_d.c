@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.101 2008-06-19 15:37:32 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.102 2008-07-04 07:10:00 mikeaubury Exp $
 #
 */
 
@@ -412,8 +412,8 @@ static char buff[100];
 void
 a4gl_using_from_string (char *str, int s, char *fmt, char *numeric,int isneg)
 {
-  int dig[MAXDIG];
-  int pnt[MAXPNT];
+  //int dig[MAXDIG];
+  //int pnt[MAXPNT];
 char *dot;
   //char number[1000]="";
   char fm1[128]="", fm2[128]="";
@@ -424,7 +424,7 @@ char *dot;
   char canfloat_head[] = "*-+($";
   char rep_digit[] = "*&#<-+()$";
   char buff[800]="";
-  int a=0, variable_called_b=0;
+  int v_a=0, variable_called_b=0;
   int isprnt = 0;
   char buff_decimal[2000];
   char buff_integer[2000];
@@ -439,9 +439,9 @@ char *dot;
   int cb=0;
 //printf("DEBUG %s\n",numeric);
 
-  for (a=0;a<strlen(fmt);a++) {
-	if (fmt[a]=='(') lb++;
-	if (fmt[a]==')') cb++;
+  for (v_a=0;v_a<strlen(fmt);v_a++) {
+	if (fmt[v_a]=='(') lb++;
+	if (fmt[v_a]==')') cb++;
   }
 
   memset(str,0,s);
@@ -468,9 +468,9 @@ char *dot;
 			return;
 		}
 		*ptr=0;
-		for (a=0;a<strlen(buff2);a++) {
-			if (buff2[a]=='(') buff2[a]='#';
-			if (buff2[a]==')') buff2[a]='#';
+		for (v_a=0;v_a<strlen(buff2);v_a++) {
+			if (buff2[v_a]=='(') buff2[v_a]='#';
+			if (buff2[v_a]==')') buff2[v_a]='#';
 		}
 			//printf("buff2=%s %lf \n",buff2, never_neg);
 		a4gl_using_from_string(fmt2, sizeof(fmt2),buff2,numeric,0);
@@ -503,8 +503,8 @@ char *dot;
 			return;
 		}
 		*ptr=0;
-		for (a=0;a<strlen(buff2);a++) {
-			if (buff2[a]=='(') buff2[a]='#';
+		for (v_a=0;v_a<strlen(buff2);v_a++) {
+			if (buff2[v_a]=='(') buff2[v_a]='#';
 		}
 
 		//printf("%s %s\n",fmt,fmt2);
@@ -517,10 +517,10 @@ char *dot;
 			ptr=strchr(fmt,')');	if (ptr) { *ptr=' ';}
 		} else {
 			// need to move the '('...
-			for (a=0;a<strlen(fmt);a++) {
-				if (fmt[a]=='(' && fmt[a+1]==' ') {
-					fmt[a]=' ';
-					fmt[a+1]='(';
+			for (v_a=0;v_a<strlen(fmt);v_a++) {
+				if (fmt[v_a]=='(' && fmt[v_a+1]==' ') {
+					fmt[v_a]=' ';
+					fmt[v_a+1]='(';
 				} 
 			}
 		}
@@ -544,8 +544,8 @@ char *dot;
 			return;
 		}
 		*ptr=0;
-		for (a=0;a<strlen(buff2);a++) {
-			if (buff2[a]==')') buff2[a]='#';
+		for (v_a=0;v_a<strlen(buff2);v_a++) {
+			if (buff2[v_a]==')') buff2[v_a]='#';
 		}
 
 		//printf("%s %s\n",fmt,fmt2);
@@ -558,10 +558,10 @@ char *dot;
 			ptr=strchr(fmt,')');	if (ptr) { *ptr=' ';}
 		} else {
 			// need to move the ')'...
-			for (a=0;a<strlen(fmt);a++) {
-				if (fmt[a]==' ' && fmt[a+1]==')') {
-					fmt[a]=')';
-					fmt[a+1]=' ';
+			for (v_a=0;v_a<strlen(fmt);v_a++) {
+				if (fmt[v_a]==' ' && fmt[v_a+1]==')') {
+					fmt[v_a]=')';
+					fmt[v_a+1]=' ';
 				} 
 			}
 		}
@@ -574,16 +574,17 @@ char *dot;
 	return;
   }
 
-
-  for (a = 0; a < MAXPNT; a++)
+/*
+  for (v_a = 0; v_a < MAXPNT; v_a++)
     {
-      pnt[a] = 0;
+      pnt[v_a] = 0;
     }
 
-  for (a = 0; a < MAXDIG; a++)
+  for (v_a = 0; v_a < MAXDIG; v_a++)
     {
-      dig[a] = 0;
+      dig[v_a] = 0;
     }
+*/
 
 
   M_main= m_apm_init();
@@ -681,7 +682,8 @@ char *dot;
 
   if (num_places>64 || strlen(ptr_decimal)>=64) {
       // Its too big...
-      memset (str, '*', a);
+      memset (str, '*', s); str[s]=0;
+      
       return;
     }
   strcat(buff_decimal,"000000000000000000000000000000000");
@@ -689,7 +691,7 @@ char *dot;
   strcpy (str, fmt);
   variable_called_b = 30;
   isprnt = 1;
-
+//printf("--->%s\n",buff_decimal);
   // first, ensure the format string is wide enough to hold the number
   // if not, try drop trailing decimals, otherwise flag overflow with *'s
   {
@@ -711,22 +713,22 @@ char *dot;
 		}
 	}
     // count format string number place holders, up to decimal point
-    for (a = 0; a < (int)strlen (fmt); a++)
+    for (v_a = 0; v_a < (int)strlen (fmt); v_a++)
       {
-	if (fmt[a] == '.')
+	if (fmt[v_a] == '.')
 	  break;
-	if (CHAR_INDEX (rep_digit, fmt[a]))
+	if (CHAR_INDEX (rep_digit, fmt[v_a]))
 	  f_cnt++;
       }
     // count format string number place holders, after the decimal point
-    while (a < (int)strlen (fmt))
+    while (v_a < (int)strlen (fmt))
       {
-	if (CHAR_INDEX (rep_digit, fmt[a]))
+	if (CHAR_INDEX (rep_digit, fmt[v_a]))
 	  d_cnt++;
-	a++;
+	v_a++;
       }
     // count the digits in the integer part of the number
-    for (a = variable_called_b; (a > 0 && buff_integer[a] != ' '); a--)
+    for (v_a = variable_called_b; (v_a > 0 && buff_integer[v_a] != ' '); v_a--)
       n_cnt++;
 
 
@@ -737,15 +739,15 @@ char *dot;
     if (f_cnt < n_cnt +has_money)
       {
         A4GL_debug ("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
-	a = (int)strlen (fmt);
-	if (a > s)
-	  a = s;
+	v_a = (int)strlen (fmt);
+	if (v_a > s)
+	  v_a = s;
 
 
-	if (n_cnt > a )
+	if (n_cnt > v_a )
 	  {
 	    // no way this number can fit, fill with stars ...
-	    memset (str, '*', a);
+	    memset (str, '*', s); str[s]=0;
 	    return;
 	  }
 
@@ -756,16 +758,16 @@ char *dot;
 	    // round off decimal places only if FORMAT_OVERFLOW allows it
 	    if (isneg)
 	      {
-		memset (fmt, '-', (size_t)a);
+		memset (fmt, '-', (size_t)v_a);
 		//num = 0 - num;
 	      }
 	    else
 	      {
-		memset (fmt, '#', (size_t)a);
+		memset (fmt, '#', (size_t)v_a);
 	      }
-	    if (n_cnt < a)
+	    if (n_cnt < v_a)
 	      fmt[n_cnt] = '.';
-	    if ((a - n_cnt > d_cnt) || (A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
+	    if ((v_a - n_cnt > d_cnt) || (A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
 	      {
 	 	A4GL_debug ("trying fmt=%s", fmt);
 		a4gl_using_from_string(str, s,fmt, numeric,isneg);
@@ -773,106 +775,106 @@ char *dot;
 	      }
 	  }
 	// default is to use the strict I4GL behaviour, stars
-	memset (str, '*', a);
+	memset (str, '*', s); str[s]=0;
 	return;
       }
   }
 
-  for (a = (int)strlen (fm1) - 1; a >= 0; a--)
+  for (v_a = (int)strlen (fm1) - 1; v_a >= 0; v_a--)
     {
-      if (CHAR_INDEX (rep_digit, fm1[a]))
+      if (CHAR_INDEX (rep_digit, fm1[v_a]))
 	{
 	if (variable_called_b>=0) {
 		A4GL_debug("%c\n", buff_integer[variable_called_b]);
 	  if (((buff_integer[variable_called_b] == '0' && buff_integer[variable_called_b - 1] == ' ') || buff_integer[variable_called_b] == ' ') && isprnt == 1) isprnt = 0;
 	}
-	  str[a] = buff_integer[variable_called_b--];
+	  str[v_a] = buff_integer[variable_called_b--];
 	  if (!isprnt)
 	    {
-	      if (fm1[a] == '#')
+	      if (fm1[v_a] == '#')
 		{
-		  str[a] = ' ';
+		  str[v_a] = ' ';
 		  continue;
 		}
-	      if (fm1[a] == '*')
+	      if (fm1[v_a] == '*')
 		{
-		  str[a] = '*';
+		  str[v_a] = '*';
 		  continue;
 		}
-	      if (fm1[a] == '&')
+	      if (fm1[v_a] == '&')
 		{
-		  str[a] = '0';
+		  str[v_a] = '0';
 		  continue;
 		}
-	      if (fm1[a] == '<')
+	      if (fm1[v_a] == '<')
 		{
-		  str[a] = '<';
+		  str[v_a] = '<';
 		  continue;
 		}
-	      p = CHAR_INDEX (canfloat_head, fm1[a]);
+	      p = CHAR_INDEX (canfloat_head, fm1[v_a]);
 	      if (p)
 		{
 		  p[0] = 1;
-		  if (fm1[a] == '+' && isneg)
+		  if (fm1[v_a] == '+' && isneg)
 		    {
-		      str[a] = '-';
+		      str[v_a] = '-';
 		      continue;
 		    }
-		  if (fm1[a] == '+' && !isneg)
+		  if (fm1[v_a] == '+' && !isneg)
 		    {
-		      str[a] = '+';
+		      str[v_a] = '+';
 		      continue;
 		    }
-		  if (fm1[a] == '-' && isneg)
+		  if (fm1[v_a] == '-' && isneg)
 		    {
-		      str[a] = '-';
+		      str[v_a] = '-';
 		      continue;
 		    }
-		  if (fm1[a] == '-' && !isneg)
+		  if (fm1[v_a] == '-' && !isneg)
 		    {
-		      str[a] = ' ';
+		      str[v_a] = ' ';
 		      continue;
 		    }
-		  if (fm1[a] == '(')
+		  if (fm1[v_a] == '(')
 		    {
 		      if (isneg)
 			{
-			  str[a] = '(';
+			  str[v_a] = '(';
 			  continue;
 			}
 		      else
 			{
-			  str[a] = ' ';
+			  str[v_a] = ' ';
 			  continue;
 			}
 		    }
-		  if (fm1[a] == ')' && isneg)
+		  if (fm1[v_a] == ')' && isneg)
 		    {
-		      str[a] = ')';
+		      str[v_a] = ')';
 		      continue;
 		    }
-		  str[a] = fm1[a];
+		  str[v_a] = fm1[v_a];
 		  continue;
 		}
 	      else
 		{
-		  str[a] = ' ';
+		  str[v_a] = ' ';
 		  continue;
 		}
-	      str[a] = fm1[a];
+	      str[v_a] = fm1[v_a];
 	    }
 	}
       else
 	{
-	  if (buff_integer[variable_called_b] == ' ' && str[a] == ',')
+	  if (buff_integer[variable_called_b] == ' ' && str[v_a] == ',')
 	    {
-	      if (fm1[a + 1] == '<')
+	      if (fm1[v_a + 1] == '<')
 		{
-		  str[a] = '<';
+		  str[v_a] = '<';
 		}
 	      else
 		{
-		   str[a]=0x01; 
+		   str[v_a]=0x01; 
 		}
 	    }
 	}
@@ -881,31 +883,31 @@ char *dot;
 
 	A4GL_debug("s=%s\n",str);
 
-  for (a = 0; a < (int)strlen (fm2); a++)
+  for (v_a = 0; v_a < (int)strlen (fm2); v_a++)
     {
-      A4GL_debug("a=%d fm[a]=%c",a,fm2[a]);
-      if (CHAR_INDEX (rep_digit, fm2[a]))
+      A4GL_debug("a=%d fm[a]=%c",v_a,fm2[v_a]);
+      if (CHAR_INDEX (rep_digit, fm2[v_a]))
 	{
-	  if (fm2[a] == ')')
+	  if (fm2[v_a] == ')')
 	    {
 	      if (isneg)
 		{
-		  str[a + (int)strlen (fm1) + 1] = ')';
+		  str[v_a + (int)strlen (fm1) + 1] = ')';
 		  continue;
 		}
 	      else
 		{
-		  str[a + (int)strlen (fm1) + 1] = ' ';
+		  str[v_a + (int)strlen (fm1) + 1] = ' ';
 		  continue;
 		}
 	    }
-	  A4GL_debug("setting str[%d]=%c",a + (int)strlen (fm1) + 1,ptr_decimal[variable_called_b]);
-	  str[a + (int)strlen (fm1) + 1] = ptr_decimal[variable_called_b++];
+	  A4GL_debug("setting str[%d]=%c",v_a + (int)strlen (fm1) + 1,ptr_decimal[variable_called_b]);
+	  str[v_a + (int)strlen (fm1) + 1] = ptr_decimal[variable_called_b++];
 	}
       else
 	{
-	  A4GL_debug("setting str[%d]=%c",a + (int)strlen (fm1) + 1,fm2[a]);
-	  str[a + (int)strlen (fm1) + 1] = fm2[a];
+	  A4GL_debug("setting str[%d]=%c",v_a + (int)strlen (fm1) + 1,fm2[v_a]);
+	  str[v_a + (int)strlen (fm1) + 1] = fm2[v_a];
 	}
     }
 
@@ -925,60 +927,60 @@ char *dot;
   if (ptr)
     {
       variable_called_b = 0;
-      for (a = 0; a < (int)strlen (str); a++)
+      for (v_a = 0; v_a < (int)strlen (str); v_a++)
 	{
-	  if (str[a] == '<')
+	  if (str[v_a] == '<')
 	    {
-	      if (str[a + 1] == ',')
-		str[a + 1] = '<';
+	      if (str[v_a + 1] == ',')
+		str[v_a + 1] = '<';
 	      continue;
 	    }
-	  if (!isneg && str[a] == '-' && str[a + 1] == '<')
+	  if (!isneg && str[v_a] == '-' && str[v_a + 1] == '<')
 	    continue;
-	  buff[variable_called_b++] = str[a];
+	  buff[variable_called_b++] = str[v_a];
 	}
       buff[variable_called_b] = 0;
       strcpy (str, buff);
     }
 
    A4GL_debug("str=%s",str);
-   for (a=0;a<(int)strlen(str);a++) {
+   for (v_a=0;v_a<(int)strlen(str);v_a++) {
 		A4GL_debug("Here");
-	if (str[a]==0x01) {
+	if (str[v_a]==0x01) {
 		A4GL_debug("Here as well");
 
-		if (a==0) str[a]=' ';
-		else str[a]=str[a-1];
+		if (v_a==0) str[v_a]=' ';
+		else str[v_a]=str[v_a-1];
 
 
-		if (a==1) {
-			if (str[a-1]=='$' ) { str[a-1]=' '; }
-			if (str[a-1]=='-' ) { str[a-1]=' '; }
-			if (str[a-1]=='(' ) { str[a-1]=' '; }
+		if (v_a==1) {
+			if (str[v_a-1]=='$' ) { str[v_a-1]=' '; }
+			if (str[v_a-1]=='-' ) { str[v_a-1]=' '; }
+			if (str[v_a-1]=='(' ) { str[v_a-1]=' '; }
 		}
 
-		if (a>=2) {
-			if (str[a-1]=='$' && str[a-2]!='$') { str[a-1]=' '; }
-			if (str[a-1]=='-' && str[a-2]!='-') { str[a-1]=' '; }
-			if (str[a-1]=='(' && str[a-2]!='(') { str[a-1]=' '; }
+		if (v_a>=2) {
+			if (str[v_a-1]=='$' && str[v_a-2]!='$') { str[v_a-1]=' '; }
+			if (str[v_a-1]=='-' && str[v_a-2]!='-') { str[v_a-1]=' '; }
+			if (str[v_a-1]=='(' && str[v_a-2]!='(') { str[v_a-1]=' '; }
 		}
 	}
    }
-   for (a = strlen(str)-1; a >= 0; --a)
+   for (v_a = strlen(str)-1; v_a >= 0; --v_a)
    {
-       if (str[a] == '.')
-	   str[a] = a4gl_convfmts.ui_decfmt.decsep;
-       else if (str[a] == a4gl_convfmts.ui_decfmt.decsep)
-	   str[a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
+       if (str[v_a] == '.')
+	   str[v_a] = a4gl_convfmts.ui_decfmt.decsep;
+       else if (str[v_a] == a4gl_convfmts.ui_decfmt.decsep)
+	   str[v_a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
    }
 
 if (has_money && !strchr(str,'$')) {
 		int first_non_space=-1;
 		A4GL_debug("Lacking money");
 		// Lacking money!
-		for (a=0;a<strlen(str);a++) {
-			if (str[a]!=' ') {
-				first_non_space=a;
+		for (v_a=0;v_a<strlen(str);v_a++) {
+			if (str[v_a]!=' ') {
+				first_non_space=v_a;
 				break;
 			}
 		}

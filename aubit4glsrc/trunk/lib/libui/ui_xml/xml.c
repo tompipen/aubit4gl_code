@@ -1138,7 +1138,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	      A4GL_push_int (1);
 	    }
 	  A4GL_push_int (sreal->attrib);
-	  A4GL_push_int (sreal->nfields);
+	  A4GL_push_int (sreal->novars);
 	  uilib_input_start (5);
 	  dump_events (evt);
 	  uilib_input_initialised (0);
@@ -1292,7 +1292,8 @@ int
 UILIB_aclfgl_aclfgl_add_to_toolbar (int n)
 {
   char *tag;
-  int keyval, alwaysShow;
+  char * keyval;
+  int  alwaysShow;
   char *toolTip;
   char *img;
   char *buttonText;
@@ -1303,13 +1304,13 @@ UILIB_aclfgl_aclfgl_add_to_toolbar (int n)
       return 0;
     }
   alwaysShow = A4GL_pop_int ();
-  keyval = A4GL_pop_int ();
+  keyval = A4GL_char_pop ();
   toolTip = A4GL_char_pop ();
   img = A4GL_char_pop ();
   buttonText = A4GL_char_pop ();
   tag = A4GL_char_pop ();
   send_to_ui
-    ("<ADDTOTOOLBAR TAG='%s' BUTTON='%s' IMAGE='%s' TOOLTIP='%s' KEYVAL='%d' ALWAYSSHOW='%d'/>",
+    ("<ADDTOTOOLBAR TAG='%s' BUTTON='%s' IMAGE='%s' TOOLTIP='%s' KEYVAL='%s' ALWAYSSHOW='%d'/>",
      uilib_xml_escape (tag), uilib_xml_escape (buttonText), uilib_xml_escape (img), uilib_xml_escape (toolTip), keyval, alwaysShow);
 
 
@@ -1335,6 +1336,8 @@ void
 UILIB_A4GL_sleep_i ()
 {
   int a;
+
+  flush_ui ();
   a = A4GL_pop_int ();
   sleep (a);
 }
@@ -1385,26 +1388,67 @@ UILIB_A4GLUI_set_intr ()
   send_to_ui ("<SETINTR/>");
 }
 
+
+
+static char
+hex_digit (int n)
+{
+  if (n >= 0 && n <= 9)
+    return n + '0';
+  if (n == 10)
+    return 'a';
+  if (n == 11)
+    return 'b';
+  if (n == 12)
+    return 'c';
+  if (n == 13)
+    return 'd';
+  if (n == 14)
+    return 'e';
+  if (n == 15)
+    return 'f';
+printf("n=%d\n",n);
+  return 'x';
+}
+
+
+
 static void
-A4GL_XML_opening_file_xml (char *filename, char *fbuff)
+A4GL_send_xml_for_binary_file (char *filename, char *fbuff,char *remotename,int len)
 {
   int a;
+  char *buff=0;
+char buff2[2000];
+  char *ptr;
+  int l;
+int cnt;
+  char *send;
   suspend_flush (1);
-  send_to_ui ("<FILE NAME=\"%s\">", filename);
-  for (a = 0; a < strlen (fbuff); a += 256)
-    {
-      char b[300];
-      strncpy (b, &fbuff[a], 256);
-      b[256] = 0;
-      send_to_ui ("%s", uilib_xml_escape (b));
-    }
+  if (remotename==0) {
+  	send_to_ui_no_nl ("<FILE NAME=\"%s\">", filename);
+  } else {
+  	send_to_ui_no_nl ("<FILE NAME=\"%s\" CLIENTNAME=\"%s\">", uilib_xml_escape(filename),uilib_xml_escape(remotename)) ;
+  }
+  cnt=0;
+  A4GL_base64_encode(fbuff,len,&buff);
+  l=strlen(buff);
+  ptr=buff;
+  
+  while (cnt<l) {
+	strncpy(buff2,ptr,256);
+	buff2[256]=0;
+  	send_to_ui_no_nl ("%s", buff2);
+	cnt+=256;
+	ptr+=256;
+  }
+
   send_to_ui ("</FILE>");
   suspend_flush (-1);
   flush_ui ();
 }
 
 static int
-SendFile (char *filename)
+SendFile (char *filename, char *remotename)
 {
   FILE *f;
   char *fbuff;
@@ -1419,11 +1463,14 @@ SendFile (char *filename)
       fseek (f, 0, SEEK_END);
       l = ftell (f);
       rewind (f);
-      fbuff = malloc (l + 1);
+      fbuff = malloc (l);
       fread (fbuff, l, 1, f);
-      fbuff[l] = 0;
+      //fbuff[l] = 0;
       fclose (f);
-      A4GL_XML_opening_file_xml (filename, fbuff);
+
+      A4GL_send_xml_for_binary_file (filename, fbuff, remotename,l);
+
+
       free (fbuff);
       return 1;
     }
@@ -1458,9 +1505,27 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
+  if (strcmp (what, "NAMEDFILE") == 0)
+    {
+     char *p1;
+     char *p2;
+     p2=A4GL_char_pop();
+	p1=A4GL_char_pop();
+      if (SendFile (p1,p2)) {
+		A4GL_push_int(1);
+	} else {
+		A4GL_push_int(0);
+	}
+      return;
+    }
+
   if (strcmp (what, "FILE") == 0)
     {
-      SendFile (string);
+      if (SendFile (string,0)) {
+		A4GL_push_int(1);
+	} else {
+		A4GL_push_int(0);
+	}
       return;
     }
 
@@ -1477,6 +1542,11 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
 
       return;
     }
+
+  if (strcmp(what,"EXECUTE")==0) {
+      send_to_ui ("<EXECUTE>%s</EXECUTE>", string);
+	return;
+  }
 
   if (strcmp (what, "dialog_setkeylabel") == 0)
     {

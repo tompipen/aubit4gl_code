@@ -15,7 +15,7 @@
 #include "pipe.h"
 #include "debug.h"
 
-int stream_buff_size=50000;
+int stream_buff_size=500000;
 
 //#define stream_buff_size 50000
 char **sock_buff=0;
@@ -144,13 +144,13 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 		FPRINTF(stderr, "Partial : %s\n\n\n\n", str);
   		UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
 
-	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str); } fclose (flog);
+	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str);  fclose (flog); }
 		return 1;
 	}
     }
   if (count > 0)
     current_position[0] = 0;
-	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str); } fclose (flog);
+	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str);  fclose (flog);}
   UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
   return 1;
 }
@@ -194,8 +194,8 @@ borig=buf;
 	      if (flog)
 		{
 		  fwrite (borig, bytes_read, 1, flog);
-		}
 	      fclose (flog);
+		}
 	    }
 	  return bytes_read;
 	}
@@ -226,8 +226,8 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 		flog=fopen("logproxy.out","a");
 		if (flog) {
 			fwrite(buf,count - bytes_sent,1,flog);
-		}
 		fclose(flog);
+		}
 	}
 	  this_write = write (sockfd, buf, count - bytes_sent);
 		loop_cnt++;
@@ -290,6 +290,7 @@ void
 pipe_flush (int sockfd)
 {
   if (cantflush)  {
+	
 	UIdebug(4,"INTERNAL ERROR CANT FLUSH ATM - cantflush=%d\n",cantflush);
 	FPRINTF(stderr, "INTERNAL ERROR CANT FLUSH ATM\n");
 	exit(1);

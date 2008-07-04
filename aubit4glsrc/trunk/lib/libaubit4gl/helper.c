@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.65 2008-05-22 11:55:46 mikeaubury Exp $
+# $Id: helper.c,v 1.66 2008-07-04 07:10:00 mikeaubury Exp $
 #
 */
 
@@ -1152,11 +1152,23 @@ char *s;
 }
 
 
-int aclfgl_aclfgl_sendfile_to_ui(int n) {
+int aclfgl_aclfgl_client_execute(int n) {
 char *s;
 	s=A4GL_char_pop();
-	A4GL_direct_to_ui("FILE",s);
+	A4GL_direct_to_ui("EXECUTE",s);
 	return 0;
+}
+
+
+int aclfgl_aclfgl_sendfile_to_ui(int n) {
+char *s;
+        if (n==1) {
+		s=A4GL_char_pop();
+		A4GL_direct_to_ui("FILE",s);
+        } else {
+		A4GL_direct_to_ui("NAMEDFILE","");
+	}
+	return 1;
 }
 
 int aclfgl_aclfgl_getclientfile(int n) {
@@ -1425,6 +1437,182 @@ void tea_8c_decipher(const unsigned long *const v,unsigned long *const w,
 	         
 	         w[0]=y; w[1]=z;
 }
+
+
+
+
+
+
+// Base64 encoding/decoding - lifted pretty much verbatim from CURL (license says this is fine...)
+
+static void decodeQuantum(unsigned char *dest, const char *src)
+{
+  unsigned int x = 0;
+  int i;
+  for(i = 0; i < 4; i++) {
+    if(src[i] >= 'A' && src[i] <= 'Z')
+      x = (x << 6) + (unsigned int)(src[i] - 'A' + 0);
+    else if(src[i] >= 'a' && src[i] <= 'z')
+      x = (x << 6) + (unsigned int)(src[i] - 'a' + 26);
+    else if(src[i] >= '0' && src[i] <= '9')
+      x = (x << 6) + (unsigned int)(src[i] - '0' + 52);
+    else if(src[i] == '+')
+      x = (x << 6) + 62;
+    else if(src[i] == '/')
+      x = (x << 6) + 63;
+    else if(src[i] == '=')
+      x = (x << 6);
+  }
+
+  dest[2] = (unsigned char)(x & 255);
+  x >>= 8;
+  dest[1] = (unsigned char)(x & 255);
+  x >>= 8;
+  dest[0] = (unsigned char)(x & 255);
+}
+
+
+/*
+ *  * A4GL/Curl_base64_decode() (renamed to avoid any potential clashes...)
+ *   *
+ *    * Given a base64 string at src, decode it and return an allocated memory in
+ *     * the *outptr. Returns the length of the decoded data.
+ *      */
+
+
+size_t A4GL_base64_decode(const char *src, unsigned char **outptr)
+{
+  int length = 0;
+  int equalsTerm = 0;
+  int i;
+  int numQuantums;
+  unsigned char lastQuantum[3];
+  size_t rawlen=0;
+  unsigned char *newstr;
+
+  *outptr = NULL;
+
+  while((src[length] != '=') && src[length])
+    length++;
+  /* A maximum of two = padding characters is allowed */
+  if(src[length] == '=') {
+    equalsTerm++;
+    if(src[length+equalsTerm] == '=')
+      equalsTerm++;
+  }
+  numQuantums = (length + equalsTerm) / 4;
+
+  /* Don't allocate a buffer if the decoded length is 0 */
+  if (numQuantums <= 0)
+    return 0;
+
+  rawlen = (numQuantums * 3) - equalsTerm;
+
+  /* The buffer must be large enough to make room for the last quantum
+ *   (which may be partially thrown out) and the zero terminator. */
+  newstr = malloc(rawlen+4);
+  if(!newstr)
+    return 0;
+
+  *outptr = newstr;
+
+  /* Decode all but the last quantum (which may not decode to a
+ *   multiple of 3 bytes) */
+  for(i = 0; i < numQuantums - 1; i++) {
+    decodeQuantum((unsigned char *)newstr, src);
+    newstr += 3; src += 4;
+  }
+
+  /* This final decode may actually read slightly past the end of the buffer
+ *   if the input string is missing pad bytes.  This will almost always be
+ *     harmless. */
+  decodeQuantum(lastQuantum, src);
+  for(i = 0; i < 3 - equalsTerm; i++)
+    newstr[i] = lastQuantum[i];
+
+  newstr[i] = 0; /* zero terminate */
+  return rawlen;
+}
+
+/* ---- Base64 Encoding --- */
+static const char table64[]=
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+
+
+/*
+ *  * A4GL/Curl_base64_encode()
+ *   *
+ *    * Returns the length of the newly created base64 string. The third argument
+ *     * is a pointer to an allocated area holding the base64 data. If something
+ *      * went wrong, -1 is returned.
+ *       *
+ *        */
+size_t A4GL_base64_encode(const char *inp, size_t insize, char **outptr)
+{
+  unsigned char ibuf[3];
+  unsigned char obuf[4];
+  int i;
+  int inputparts;
+  char *output;
+  char *base64data;
+
+  char *indata = (char *)inp;
+
+  *outptr = NULL; /* set to NULL in case of failure before we reach the end */
+
+  if(0 == insize)
+    insize = strlen(indata);
+
+  base64data = output = (char*)malloc(insize*4/3+4);
+  if(NULL == output)
+    return 0;
+
+  while(insize > 0) {
+    for (i = inputparts = 0; i < 3; i++) {
+      if(insize > 0) {
+        inputparts++;
+        ibuf[i] = *indata;
+        indata++;
+        insize--;
+      }
+      else
+        ibuf[i] = 0;
+    }
+    obuf [0] = (ibuf [0] & 0xFC) >> 2;
+    obuf [1] = ((ibuf [0] & 0x03) << 4) | ((ibuf [1] & 0xF0) >> 4);
+    obuf [2] = ((ibuf [1] & 0x0F) << 2) | ((ibuf [2] & 0xC0) >> 6);
+    obuf [3] = ibuf [2] & 0x3F;
+
+    switch(inputparts) {
+    case 1: /* only one byte read */
+      snprintf(output, 5, "%c%c==",
+               table64[obuf[0]],
+               table64[obuf[1]]);
+      break;
+    case 2: /* two bytes read */
+      snprintf(output, 5, "%c%c%c=",
+               table64[obuf[0]],
+               table64[obuf[1]],
+               table64[obuf[2]]);
+      break;
+    default:
+      snprintf(output, 5, "%c%c%c%c",
+               table64[obuf[0]],
+               table64[obuf[1]],
+               table64[obuf[2]],
+               table64[obuf[3]] );
+      break;
+    }
+    output += 4;
+  }
+  *output=0;
+  *outptr = base64data; /* make it return the actual data memory */
+
+  return strlen(base64data); /* return the length of the new data */
+}
+/* ---- End of Base64 Encoding ---- */
+
 
 
 
