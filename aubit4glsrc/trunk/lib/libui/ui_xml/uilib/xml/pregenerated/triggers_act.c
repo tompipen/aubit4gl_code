@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2008/07/03 20:11:37.
+ * Generated 2008/07/04 09:10:28.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -187,15 +187,15 @@ void ETag_SYNCVALUE(void)
 	{
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
-                if (lexed_attr.fileid && lexed_attr.filelen)  {
-                        char *ptr;
-                        sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
-                        ptr=pcdata;
-
-                        memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
-                } else {
+                //if (lexed_attr.fileid && lexed_attr.filelen)  {
+                        //char *ptr;
+                        //sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
+                        //ptr=pcdata;
+//
+                        //memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
+                //} else {
                         sync.vals[sync.nvalues-1].value=strdup(pcdata);
-                }
+                //}
 
                 if (A_SYNCVALUE_FIELDTYPE) {
                         sync.vals[sync.nvalues-1].fieldtype=atoi(A_SYNCVALUE_FIELDTYPE);

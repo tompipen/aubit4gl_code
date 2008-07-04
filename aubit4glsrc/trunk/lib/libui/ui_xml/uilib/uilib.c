@@ -608,9 +608,11 @@ uilib_message (int nargs)
 {
   char *s;
   char *a;
+  int wait;
+  wait=POPint();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("<MESSAGE ATTRIBUTE=\"%s\">%s</MESSAGE>", a, xml_escape (s));
+  send_to_ui ("<MESSAGE ATTRIBUTE=\"%s\" WAIT=\"%d\">%s</MESSAGE>", a, wait, xml_escape (s));
   free (s);
   free (a);
   return 0;
@@ -2322,23 +2324,32 @@ uilib_save_file (char *id, char *s)
 {
   FILE *f;
   int i;
+
   send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (id));
   flush_ui ();
   i = get_event_from_ui ();
+
   if (i != -103)
     {
       return 0;
     }
+
   if (strcmp (last_attr->fileid, id) != 0)
     {
       // Invalid id
       return 0;
     }
+
   f = fopen (s, "w");
   if (f)
     {
+	char *buff;
+	int len;
+	len=A4GL_base64_decode(last_attr->sync.vals[0].value, &buff);
+printf("Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, len, last_attr->filelen);
       //printf("FILELEN : %d\n", last_attr->filelen);
-      fwrite (last_attr->sync.vals[0].value, last_attr->filelen, 1, f);
+      fwrite (buff, len, 1, f);
+	free(buff);
       fclose (f);
     }
 
