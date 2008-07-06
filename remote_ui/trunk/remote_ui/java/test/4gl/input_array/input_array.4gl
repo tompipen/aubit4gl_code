@@ -1,0 +1,19 @@
+
+{**
+ * 4gl program to test the input command for the aubit4gl User Interface
+ *}
+
+main
+  define first_field char(30)
+  define second_field char(20)
+  define var_one char(30)
+  define var_two char(20)
+  define record_array ARRAY[20] OF RECORD
+    var_one CHAR(20),
+    var_two CHAR(30)
+  END RECORD
+
+  open form form_name FROM "my_form"
+  INPUT ARRAY record_array WITHOUT DEFAULTS FROM screen_array.*
+end main
+

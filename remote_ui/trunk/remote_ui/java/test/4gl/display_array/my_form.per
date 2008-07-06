@@ -1,0 +1,14 @@
+DATABASE formonly
+
+SCREEN {
+  [field_one           ] [field_two]
+  [field_one           ] [field_two]
+  [field_one           ] [field_two]
+  [field_one           ] [field_two]
+}
+
+ATTRIBUTES
+  field_one = formonly.first_field;
+  field_two = formonly.second_field;
+INSTRUCTIONS 
+  SCREEN RECORD screen_array[4] (field_one,field_two)
