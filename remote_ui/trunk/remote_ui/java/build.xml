@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 
-<!--*
- *  Copyright (c) 2008 The Aubit Development Team. 
- *  All rights reserved. See CREDITS file.
- *  
- *  
- *  This file is part of Aubit 4gl.
- *
- *  Aubit 4gl is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as 
- *  published by the Free Software Foundation.
- *
- *  Aubit 4gl is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+<!--
+ !  Copyright (c) 2008 The Aubit Development Team. 
+ !  All rights reserved. See CREDITS file.
+ !  
+ !  
+ !  This file is part of Aubit 4gl.
+ !
+ !  Aubit 4gl is free software: you can redistribute it and/or modify
+ !  it under the terms of the GNU General Public License version 2 as 
+ !  published by the Free Software Foundation.
+ !
+ !  Aubit 4gl is distributed in the hope that it will be useful,
+ !  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ !  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ !  GNU General Public License for more details.
+ !
+ !  You should have received a copy of the GNU General Public License
+ !  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
  !-->
 
 <!--
@@ -40,14 +40,27 @@
        <mkdir dir="class_applet"/>
 	   <javac debug="yes" debuglevel="lines,vars,source"
 	   	      srcdir="src" destdir="build/classes"/>
-	   <jar destfile="build/j4glui.jar" basedir="build/classes"/>
+	   <jar destfile="build/j4glui.jar" basedir="build/classes">
+		<manifest>
+			<attribute name="Main-Class" value="org.aubit4gl.remote_client.swing_ui.Main"/>
+		    <attribute name="Built-By" value="${user.name}"/>
+		    <section name="common">
+		      <attribute name="Specification-Title" value="Aubit 4gl remote UI"/>
+		      <attribute name="Specification-Version" value="${version}"/>
+		      <attribute name="Specification-Vendor" value="The Aubit 4gl team"/>
+		      <attribute name="Implementation-Title" value="Aubit 4gl remote java UI"/>
+		      <attribute name="Implementation-Version" value="${version} ${TODAY}"/> 
+		      <attribute name="Implementation-Vendor" value="Moredata, Lda"/>
+		    </section>
+		  </manifest>
+		</jar>
     </target>
 
     <!--
      ! Deletes the entire build directory and any compiled jar
      !-->
     <target name="clean">
-        <delete dir="class"/> 
+        <delete file="build/classes/**/*.class"/> 
     	<delete file="j4glui.jar"/>
     </target>
 
