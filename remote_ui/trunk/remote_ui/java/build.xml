@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<!--*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ !-->
+
+<!--
+ ! Compilation of the whole Aubit 4gl Java remote user interface.
+ ! 
+ ! It is a swing project. 
+ ! The project generated is a .jar file
+ !-->
+
+<project name="j4glui" default="build" basedir=".">
+	
+	<target name="rebuild" depends="clean,build"/>
+	
+	<!--
+	 ! Build the applet that connects with the remote terminal and package it into
+	 ! a jar file.
+	 ! TODO : The debug should be controled by parameters
+	 !-->
+	<target name="build">
+       <mkdir dir="class_applet"/>
+	   <javac debug="yes" debuglevel="lines,vars,source"
+	   	      srcdir="src" destdir="build/classes"/>
+	   <jar destfile="build/j4glui.jar" basedir="build/classes"/>
+    </target>
+
+    <!--
+     ! Deletes the entire build directory and any compiled jar
+     !-->
+    <target name="clean">
+        <delete dir="class"/> 
+    	<delete file="j4glui.jar"/>
+    </target>
+
+</project>
