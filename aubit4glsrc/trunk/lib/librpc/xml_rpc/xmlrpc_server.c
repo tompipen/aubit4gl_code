@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_server.c,v 1.7 2005-03-31 13:35:58 afalout Exp $
+# $Id: xmlrpc_server.c,v 1.8 2008-07-06 11:34:41 mikeaubury Exp $
 #*/
 
 

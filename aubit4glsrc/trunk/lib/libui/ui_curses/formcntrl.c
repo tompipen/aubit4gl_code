@@ -21,14 +21,14 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.142 2008-04-19 11:20:10 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.143 2008-07-06 11:34:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.142 2008-04-19 11:20:10 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.143 2008-07-06 11:34:44 mikeaubury Exp $";
 #endif
 /**
  * @file

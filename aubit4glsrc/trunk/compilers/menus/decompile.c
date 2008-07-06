@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.17 2005-03-31 13:35:36 afalout Exp $
+# $Id: decompile.c,v 1.18 2008-07-06 11:34:27 mikeaubury Exp $
 #*/
 
 /**

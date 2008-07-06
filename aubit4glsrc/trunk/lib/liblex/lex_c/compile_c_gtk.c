@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.16 2005-03-09 15:14:44 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.17 2008-07-06 11:34:36 mikeaubury Exp $
 #
 */
 

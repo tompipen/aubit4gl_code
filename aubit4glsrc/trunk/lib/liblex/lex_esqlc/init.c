@@ -21,16 +21,16 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.18 2008-02-11 17:13:12 mikeaubury Exp $
+# $Id: init.c,v 1.19 2008-07-06 11:34:38 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: init.c,v 1.18 2008-02-11 17:13:12 mikeaubury Exp $";
+		"$Id: init.c,v 1.19 2008-07-06 11:34:38 mikeaubury Exp $";
 #endif
 void printc (char *fmt, ...);
 

@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.13 2008-02-11 17:13:13 mikeaubury Exp $
+# $Id: menu_gtk.c,v 1.14 2008-07-06 11:34:49 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu_gtk.c,v 1.13 2008-02-11 17:13:13 mikeaubury Exp $";
+  "$Id: menu_gtk.c,v 1.14 2008-07-06 11:34:49 mikeaubury Exp $";
 #endif
 
 

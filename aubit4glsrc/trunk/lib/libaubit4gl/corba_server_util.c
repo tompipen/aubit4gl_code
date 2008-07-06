@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.32 2008-04-14 09:23:45 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.33 2008-07-06 11:34:29 mikeaubury Exp $
 #
 */
 

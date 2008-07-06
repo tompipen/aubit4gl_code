@@ -22,10 +22,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.14 2005-07-23 09:01:16 mikeaubury Exp $
+# $Id: readmsg.c,v 1.15 2008-07-06 11:34:39 mikeaubury Exp $
 #*/
 
 /**

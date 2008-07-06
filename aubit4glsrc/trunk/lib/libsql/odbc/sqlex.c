@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.28 2008-03-20 09:48:50 mikeaubury Exp $
+# $Id: sqlex.c,v 1.29 2008-07-06 11:34:42 mikeaubury Exp $
 #
 */
 

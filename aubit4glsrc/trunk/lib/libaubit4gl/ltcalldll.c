@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ltcalldll.c,v 1.2 2006-02-12 09:56:30 mikeaubury Exp $
+# $Id: ltcalldll.c,v 1.3 2008-07-06 11:34:31 mikeaubury Exp $
 #
 */
 

@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.27 2008-06-27 13:01:56 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.28 2008-07-06 11:34:43 mikeaubury Exp $
 #*/
 
 /**

@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.31 2007-10-15 20:38:57 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.32 2008-07-06 11:34:31 mikeaubury Exp $
 #*/
 
 /**

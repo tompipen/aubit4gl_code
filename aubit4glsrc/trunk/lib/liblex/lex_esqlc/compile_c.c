@@ -21,16 +21,16 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.424 2008-06-26 17:50:49 mikeaubury Exp $
+# $Id: compile_c.c,v 1.425 2008-07-06 11:34:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.424 2008-06-26 17:50:49 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.425 2008-07-06 11:34:37 mikeaubury Exp $";
 #endif
 /**
  * @file

@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.57 2008-07-01 21:16:35 mikeaubury Exp $
+# $Id: sql_common.c,v 1.58 2008-07-06 11:34:33 mikeaubury Exp $
 #
 */
 

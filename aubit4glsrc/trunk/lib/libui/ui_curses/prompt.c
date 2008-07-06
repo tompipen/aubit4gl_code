@@ -21,14 +21,14 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.73 2008-07-01 21:16:37 mikeaubury Exp $
+# $Id: prompt.c,v 1.74 2008-07-06 11:34:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.73 2008-07-01 21:16:37 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.74 2008-07-06 11:34:48 mikeaubury Exp $";
 #endif
 
 /**

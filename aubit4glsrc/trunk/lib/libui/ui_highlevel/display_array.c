@@ -21,14 +21,14 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.37 2007-04-27 15:29:02 mikeaubury Exp $
+# $Id: display_array.c,v 1.38 2008-07-06 11:34:48 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.37 2007-04-27 15:29:02 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.38 2008-07-06 11:34:48 mikeaubury Exp $";
 #endif
 /**
  * @file

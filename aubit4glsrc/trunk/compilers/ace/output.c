@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.9 2005-03-31 13:35:36 afalout Exp $
+# $Id: output.c,v 1.10 2008-07-06 11:34:25 mikeaubury Exp $
 #*/
 
 /**

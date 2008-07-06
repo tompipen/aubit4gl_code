@@ -21,10 +21,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.126 2008-06-05 12:49:15 mikeaubury Exp $
+# $Id: builtin.c,v 1.127 2008-07-06 11:34:29 mikeaubury Exp $
 #
 */
 
