@@ -1,0 +1,313 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CEB7F438-082F-437E-BF40-EADC6B3DF53B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>AubitDesktop</AssemblyName>
+    <RootNamespace>AubitDesktop</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox1.Designer.cs">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AubitTSBtn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EnvelopeReader.cs" />
+    <Compile Include="Eval.cs" />
+    <Compile Include="FGLApplicationPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLButtonFieldWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLDateFieldWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLForm.cs" />
+    <Compile Include="FGLOptions.cs" />
+    <Compile Include="FGLPixmapFieldWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLScreenRecord.cs" />
+    <Compile Include="FGLTextFieldWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLTxtControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FGLTxtControl.Designer.cs">
+      <DependentUpon>FGLTxtControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FGLUsing.cs" />
+    <Compile Include="FGLWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="frmConsole.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConsole.Designer.cs">
+      <DependentUpon>frmConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HelperClasses.cs" />
+    <Compile Include="Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login.Designer.cs">
+      <DependentUpon>Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MacroEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MacroEditor.Designer.cs">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainAppWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainAppWindow.Designer.cs">
+      <DependentUpon>MainAppWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Network.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="PromptWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PromptWindow.Designer.cs">
+      <DependentUpon>PromptWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs" />
+    <Compile Include="samp.cs" />
+    <Compile Include="ScratchPad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScratchPad.Designer.cs">
+      <DependentUpon>ScratchPad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToolBarImages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ToolBarImages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UIContextConstruct.cs" />
+    <Compile Include="UIContextInput.cs" />
+    <Compile Include="UIContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UIContextPrompt.cs" />
+    <Compile Include="UIContexts.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FGLTxtControl.resx">
+      <DependentUpon>FGLTxtControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmConsole.resx">
+      <DependentUpon>frmConsole.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login.resx">
+      <DependentUpon>Login.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MacroEditor.resx">
+      <DependentUpon>MacroEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainAppWindow.resx">
+      <DependentUpon>MainAppWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PromptWindow.resx">
+      <DependentUpon>PromptWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScratchPad.resx">
+      <DependentUpon>ScratchPad.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToolBarImages.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ToolBarImages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="images\accept.png" />
+    <Content Include="images\arr2beg.png" />
+    <Content Include="images\arr2end.png" />
+    <Content Include="images\arr2left.png" />
+    <Content Include="images\arr2righ.png" />
+    <Content Include="images\arrdown.png" />
+    <Content Include="images\arright.png" />
+    <Content Include="images\arrleft.png" />
+    <Content Include="images\arrup.png" />
+    <Content Include="images\attention.png" />
+    <Content Include="images\Aubit.gif" />
+    <Content Include="images\Aubit.ico" />
+    <Content Include="images\auflist.png" />
+    <Content Include="images\backsl.png" />
+    <Content Include="images\balloon.png" />
+    <Content Include="images\bell.png" />
+    <Content Include="images\bigcombo.png" />
+    <Content Include="images\calc.png" />
+    <Content Include="images\calendar.png" />
+    <Content Include="images\camera.png" />
+    <Content Include="images\cancel.png" />
+    <Content Include="images\cascade.png" />
+    <Content Include="images\circle.png" />
+    <Content Include="images\combo.png" />
+    <Content Include="images\copy.png" />
+    <Content Include="images\cup.png" />
+    <Content Include="images\cut.png" />
+    <Content Include="images\debug_break.png" />
+    <Content Include="images\debug_break_disabled.png" />
+    <Content Include="images\debug_break_disabled_marker.png" />
+    <Content Include="images\debug_break_marker.png" />
+    <Content Include="images\debug_logo.png" />
+    <Content Include="images\debug_marker.png" />
+    <Content Include="images\debug_restart.png" />
+    <Content Include="images\debug_runtocursor.png" />
+    <Content Include="images\debug_stepinto.png" />
+    <Content Include="images\debug_stepout.png" />
+    <Content Include="images\debug_stepover.png" />
+    <Content Include="images\delete.png" />
+    <Content Include="images\dircrea.png" />
+    <Content Include="images\diropen.png" />
+    <Content Include="images\disk.png" />
+    <Content Include="images\drucken.png" />
+    <Content Include="images\ek.png" />
+    <Content Include="images\empty.png" />
+    <Content Include="images\eraser.png" />
+    <Content Include="images\exclamation.png" />
+    <Content Include="images\exit.png" />
+    <Content Include="images\export.png" />
+    <Content Include="images\feldhilf.png" />
+    <Content Include="images\fileclose.png" />
+    <Content Include="images\filefind.png" />
+    <Content Include="images\fileopen.png" />
+    <Content Include="images\fileprint.png" />
+    <Content Include="images\filesave.png" />
+    <Content Include="images\find.png" />
+    <Content Include="images\findfile.png" />
+    <Content Include="images\first.png" />
+    <Content Include="images\forwind.png" />
+    <Content Include="images\garbage.png" />
+    <Content Include="images\garbage2.png" />
+    <Content Include="images\gobegin.png" />
+    <Content Include="images\goend.png" />
+    <Content Include="images\goforw.png" />
+    <Content Include="images\gorev.png" />
+    <Content Include="images\group.png" />
+    <Content Include="images\hand.png" />
+    <Content Include="images\heart.png" />
+    <Content Include="images\help.png" />
+    <Content Include="images\helpques.png" />
+    <Content Include="images\hilfe.png" />
+    <Content Include="images\hook.png" />
+    <Content Include="images\import.png" />
+    <Content Include="images\information.png" />
+    <Content Include="images\key.png" />
+    <Content Include="images\kopier.png" />
+    <Content Include="images\korr.png" />
+    <Content Include="images\last.png" />
+    <Content Include="images\letter.png" />
+    <Content Include="images\lingua.png" />
+    <Content Include="images\lock.png" />
+    <Content Include="images\mag.png" />
+    <Content Include="images\mail.png" />
+    <Content Include="images\message.png" />
+    <Content Include="images\minus.png" />
+    <Content Include="images\neu.png" />
+    <Content Include="images\new.png" />
+    <Content Include="images\next.png" />
+    <Content Include="images\note.png" />
+    <Content Include="images\notebook.png" />
+    <Content Include="images\ok.png" />
+    <Content Include="images\open.png" />
+    <Content Include="images\open_alt.png" />
+    <Content Include="images\paste.png" />
+    <Content Include="images\pen.png" />
+    <Content Include="images\phone.png" />
+    <Content Include="images\plus.png" />
+    <Content Include="images\pointer.png" />
+    <Content Include="images\pos.png" />
+    <Content Include="images\prev.png" />
+    <Content Include="images\printer.png" />
+    <Content Include="images\prop.png" />
+    <Content Include="images\quest.png" />
+    <Content Include="images\question.png" />
+    <Content Include="images\quit.png" />
+    <Content Include="images\refresh.png" />
+    <Content Include="images\rewind.png" />
+    <Content Include="images\service.png" />
+    <Content Include="images\services.png" />
+    <Content Include="images\smiley.png" />
+    <Content Include="images\speaker.png" />
+    <Content Include="images\ssmiley.png" />
+    <Content Include="images\start.png" />
+    <Content Include="images\stop.png" />
+    <Content Include="images\suchen.png" />
+    <Content Include="images\sum.png" />
+    <Content Include="images\text.png" />
+    <Content Include="images\tilehorz.png" />
+    <Content Include="images\tilevert.png" />
+    <Content Include="images\time.png" />
+    <Content Include="images\uplevel.png" />
+    <Content Include="images\user.png" />
+    <Content Include="images\vor.png" />
+    <Content Include="images\weiteres.png" />
+    <Content Include="images\wizard.png" />
+    <Content Include="images\zoom.png" />
+    <Content Include="images\zurueck.png" />
+    <Content Include="README.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,344 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+using System.Text;
+using System.Drawing;
+
+namespace AubitDesktop2
+{
+
+    // A text widget fgl field widget...
+    public class FGLTextFieldWidget : FGLWidget, IFGLField
+    {
+        string _ContextType;
+        private int id;
+        TextBox t;
+        Panel p;
+        Label l;
+
+
+        public int tabIndex
+        {
+            set
+            {
+                t.TabIndex = value;
+            }
+        }
+
+        public bool hasFocus
+        {
+            get
+            {
+                if (t.Enabled && t.Focused) return true;
+                return false;
+            }
+        }
+
+        
+        public void setFocus()
+        {
+            t.Focus();
+        }
+
+        override public Color BackColor
+        {
+            set
+            {
+                this.t.BackColor = value;
+                this.l.BackColor = value;
+            }
+            get
+            {
+                return this.t.BackColor;
+            }
+            
+        }
+
+        public string ContextType
+        {  // The current ContextType - a field may appear differently if its used in a construct or input..
+            set
+            {
+
+                _ContextType = value;
+                if (_ContextType == "" || this.NoEntry)
+                {
+                    l.Visible = true;
+                    t.Visible = false;
+                }
+                else
+                {
+                    l.Visible = false;
+                    t.Visible = true;
+
+                }
+
+
+            }
+
+        }
+
+
+
+        public Control WindowsWidget
+        {
+            get
+            {
+                return (Control)p;
+            }
+        }
+
+        new public bool Enabled
+        {
+            get
+            {
+                return t.Enabled;
+            }
+            set
+            {
+                t.Enabled = value;
+            }
+        }
+
+
+        override public string Text // The current fields value
+        {
+            get
+            {
+                return t.Text;
+            }
+            set
+            {
+                string val;
+                val = value;
+                if (val != t.Text)
+                {
+                    this.FieldTextChanged = true;
+                }
+
+
+                if (_ContextType == "INPUT")
+                {
+                    if (this.format != null)
+                    {
+                        if (this.format.Length > 0)
+                        {
+                            val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
+                        }
+                    }
+                }
+
+
+                l.Text = val;
+                t.Text = val;
+            }
+        }
+
+        public FGLTextFieldWidget()
+        {
+            t.Width = Width;
+            t.Height = Height;
+            l.Height = Height;
+            l.Width = Width;
+
+            p = new Panel();
+            l = new Label();
+            l.TextAlign = ContentAlignment.MiddleLeft;
+            t = new System.Windows.Forms.TextBox();
+            t.Visible = true;
+            t.Enabled = true;
+            p.Location = this.Location;
+            p.Height=Height;
+            p.Width = Width;
+
+            this.Downshift = false;
+            this.Upshift = false;
+            this.AutoNext = false;
+            this.format = null;
+            this.NoEntry = false;
+        }
+
+        public int MaxLength
+        {
+            get{
+                   return t.MaxLength;
+            } 
+            set {
+                t.MaxLength=value;
+            }
+            
+
+        }
+
+
+        public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
+        {
+
+            //this._WidgetDetails = new FGLWidget();
+            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo,incl);
+
+            p = new Panel();
+            l = new Label();
+            l.TextAlign = ContentAlignment.MiddleLeft;
+            t = new System.Windows.Forms.TextBox();
+            t.Visible = true;
+            t.Enabled = true;
+            p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
+            p.AutoSize = true;
+
+            t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+
+            if (columns > 2)
+            {
+                t.Width = GuiLayout.get_gui_w(columns + 1);
+            }
+            else
+            {
+                t.Width = GuiLayout.get_gui_w(3);
+            }
+
+            t.MaxLength = columns;
+
+            //t.KeyDown += new KeyEventHandler(t_KeyDown);
+            //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
+            l.Size = t.Size;
+            if (Upshift)
+            {
+                t.CharacterCasing = CharacterCasing.Upper;
+            }
+
+            if (Downshift)
+            {
+                t.CharacterCasing = CharacterCasing.Lower;
+            }
+
+            l.Visible = true;
+            l.BorderStyle = BorderStyle.Fixed3D;
+            p.Controls.Add(t);
+            p.Controls.Add(l);
+            p.Size = t.Size;
+
+            t.LostFocus += new EventHandler(t_LostFocus);
+            t.GotFocus += new EventHandler(t_GotFocus);
+            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            t.Click += new EventHandler(t_Click);
+
+            this.id = id;
+        }
+
+
+
+
+
+        void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            bool ign = false;
+            if (this._ContextType == "INPUT")
+            {
+                #region REQUIRED CHECK
+                if (this.Required)
+                {
+                    if (t.Text.Length == 0)
+                    {
+                        if (this.fieldValidationFailed != null)
+                        {
+                            this.fieldValidationFailed(this, "REQUIRED", out ign);
+                        }
+                        if (!ign)
+                        {
+                            e.Cancel = true;
+                        }
+                        else
+                        {
+                            e.Cancel = false;
+                        }
+                    }
+
+                }
+                #endregion
+
+                #region
+                if (this.includeValues!=null)
+                {
+                    bool ok=false;
+                    foreach (string s in this.includeValues)
+                    {
+                        if (s.Contains("\t"))
+                        {
+                            string l, r;
+                            string[] arr;
+                            arr = s.Split('\t');
+                            l = arr[0];
+                            r = arr[1];
+                            
+                            if (FGLUtils.compare_range(this.Text,l, r,this.datatype,this.datatype_length,this.format))
+                            {
+                                ok = true;
+                            }
+                        }
+                        else
+                        {
+                            if (s == "NULL" && this.Text == "")
+                            {
+                                ok = true;
+                            }
+                            if (s == this.Text)
+                            {
+                                ok = true;
+                            }
+                        }
+                    }
+
+                    ign = false;
+                    if (!ok)
+                    {
+                        this.fieldValidationFailed(this, "INCLUDE", out ign);
+                    }
+
+                    if (!ign)
+                    {
+                        e.Cancel = true;
+                    }
+                    else
+                    {
+                        e.Cancel = false;
+                    }
+                    
+                }
+#endregion
+            }
+        }
+
+
+        void t_GotFocus(object sender, EventArgs e)
+        {
+            if (this.beforeFieldID != "" && this.onUIEvent!=null && _ContextType != "")
+            {
+                this.onUIEvent(this, this.beforeFieldID, "");
+            }
+
+        }
+
+        void t_LostFocus(object sender, EventArgs e)
+        {
+            if (this.afterFieldID != "" && this.onUIEvent!=null && _ContextType!="")
+            {
+                this.onUIEvent(this, this.afterFieldID, "");
+            }
+            
+        }
+
+
+        void t_Click(object sender, EventArgs e)
+        {
+            if (this.onActionID != "" && this.onUIEvent != null && _ContextType != "")
+            {
+                this.onUIEvent(this, this.onActionID, "");
+            }
+        }
+
+
+
+    }
+
+
+}

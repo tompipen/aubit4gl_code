@@ -1,0 +1,1166 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections;
+using System.Windows.Forms;
+using System.Text;
+using System.Drawing;
+using System.IO;
+
+
+
+namespace AubitDesktop2
+{
+    public class FGLApplicationPanel : Panel
+    {
+        public int ApplicationEnvelopeID;
+        private List<UIContext> contexts;
+        private List<AubitTSBtn> Fkeys;
+        private string _errortext;
+        private string _commenttext;
+        private string _messagetext;
+        private string _linedisplaytext;
+        private List<ToolStripItem> toolStrip1;
+        private string Application;
+        private string Username;
+        private ToolTip tooltips;
+        // Toolstrip buttons....
+        private AubitTSBtn tsBtnAccept;
+        private AubitTSBtn tsBtnCancel;
+        public List<object> commands;
+        FGLWindowStack ApplicationWindows;
+        public Hashtable serverEnviron;
+        FGLOpenedForms OpenForms;
+        private List<AubitTSBtn> programButtons;
+        //private Control parentControl;
+        private frmMainAppWindow TopWindow; // The window containing the table control
+        public  string lastKey;
+
+        string LineDisplayText
+        {
+            get
+            {
+                return _linedisplaytext;
+            }
+            set
+            {
+                _linedisplaytext = value;
+                TopWindow.LineDisplayText = value;
+            }
+        }
+
+        string ErrorText
+        {
+            get
+            {
+                return _errortext;
+            }
+            set
+            {
+                _errortext = value;
+                TopWindow.ErrorText = value;
+            }
+        }
+
+        string CommentText
+        {
+            get
+            {
+                return _commenttext;
+            }
+            set
+            {
+                _commenttext = value;
+                TopWindow.CommentText = value;
+            }
+        }
+
+        string MessageText
+        {
+            get
+            {
+                return _messagetext;
+            }
+            set
+            {
+                _messagetext = value;
+                TopWindow.MessageText = value;
+            }
+
+        }
+
+        UIContext _currentContext;
+
+        UIContext currentContext {
+            get
+            {
+                return _currentContext;
+            }
+            set
+            {
+                _currentContext = value;
+                TopWindow.currentContext = value;
+            }
+        }
+        
+
+        public FGLApplicationPanel(frmMainAppWindow topwin, string pUsername, string pApplication,int ID)
+        {
+            FGLWindow winScreen;
+            TopWindow = topwin;
+            this.ApplicationEnvelopeID = ID;
+            this.OpenForms = new FGLOpenedForms();
+            tooltips = new ToolTip();
+            contexts = new List<UIContext>();
+            commands = new List<object>();
+            //this.parentControl = parentControl;
+            this.Application = pApplication;
+            this.Username = pUsername;
+            ApplicationWindows = new FGLWindowStack(this);
+            winScreen = new FGLWindow("SCREEN");
+            this.programButtons = new List<AubitTSBtn>();
+            
+            this.Controls.Add(winScreen.WindowWidget);
+            ApplicationWindows.PushWindow(winScreen);
+            this.toolStrip1 = new List<ToolStripItem>();
+            this.AutoScroll = true;
+            this.SetAutoScrollMargin(5, 5);
+            
+            this.Fkeys = new List<AubitTSBtn>();
+            this.AutoSize = true;
+            this.Dock = DockStyle.Fill;
+            this.Visible = true;
+            this.Enabled = true;
+            /*
+            for (int a = 1; a <= 36; a++)
+            {
+                AddToolBarKey("F" + a, "");
+            }
+             * */
+            //parentControl.Controls.Add(this);
+
+        }
+
+
+        public void SetMenuBarButtons(Control a)
+        {
+            TopWindow.SetMenuBarButtons(a);
+        }
+
+        public void AddToolBarKey(string Key, string ID)
+        {
+            string txt;
+
+            txt = FGLUtils.getKeyNameFromFGLKeyCode(Key);
+
+            AddToolBarKey(Key, txt, ID);
+        }
+
+
+
+        void UIContext_EventTriggered(object source, string ID, string TriggeredText)
+        {
+            if (TriggeredText == "")
+            {
+                TriggeredText="<TRIGGERED ID=\""+ID+"\"/>";
+            }
+           TopWindow.SendString(TriggeredText);
+        }
+
+
+        public bool hasKeyInOnkeyEventList(List<ONKEY_EVENT> keylist, string key)
+        {
+            foreach (ONKEY_EVENT e in keylist)
+            {
+                if (e.KEY == key)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool hasKeyInToolbar(string key)
+        {
+            foreach (AubitTSBtn o in Fkeys)
+            {
+                if (o.ActiveKey == key) return true;
+            }
+            return false;
+        }
+
+        internal AubitTSBtn getKeyFromToolbar(string key)
+        {
+            foreach (AubitTSBtn o in Fkeys)
+            {
+                if (o.ActiveKey == key) return o;
+            }
+            return null;
+        }
+
+        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys,bool showAcceptInterrupt)
+        {
+            // We dont want any keys active ? 
+            if (keys == null)
+            {
+                foreach (AubitTSBtn o in Fkeys)
+                {
+                    o.Visible = false;
+                }
+                tsBtnCancel.Visible = false;
+                tsBtnAccept.Visible = false;
+            }
+            else
+            {
+                ensureAcceptInterruptButtonsOnToolStrip();
+
+                
+                        if (showAcceptInterrupt)
+                        {
+                            tsBtnAccept.Visible=true;
+                            tsBtnCancel.Visible=true;
+                        }
+                        else
+                        {
+                            tsBtnAccept.Visible=false;
+                            tsBtnCancel.Visible=false;
+                            
+                        }
+              
+
+                // Ok - there are some keys - but not all of them will be used..
+                // so we need to remove any that are not in use by making them invisible
+                foreach (AubitTSBtn o in Fkeys)
+                {
+                    
+                    
+                        if (!hasKeyInOnkeyEventList(keys, o.ActiveKey))
+                        {
+                            o.Visible = false;
+                        }
+                    
+                }
+
+
+                // we'll move through our keys and enable them...
+                foreach (ONKEY_EVENT key in keys)
+                {
+                    AubitTSBtn o;
+
+                    // Has the key already been added ? 
+                    if (!hasKeyInToolbar(key.KEY))
+                    {
+                        // Dang - we need to add it..
+                        AddToolBarKey(key.KEY, key.ID);
+                    }
+
+                    // This should never fail - because we've added it if it was missing!
+                    o=getKeyFromToolbar(key.KEY);
+                    if (o == null)
+                    {
+                        throw new Exception("This shouldn't happen - key is missing from menubar");
+                    }
+                    else
+                    {
+                        o.Visible = true;
+                        o.ID = key.ID;
+                    }
+                }
+
+            }
+            TopWindow.setToolbar(toolStrip1);
+        }
+
+
+        void b_Click(object sender, EventArgs e)
+        {
+            string reply;
+            AubitTSBtn o;
+            o = (AubitTSBtn)sender;
+            reply = null;
+            if (o.ID == null)
+            {
+               
+                if (o.ActiveKey == "DIE")
+                {
+                    reply = o.ActiveKey;
+                }
+            } else {
+                reply = o.ID;
+            }
+            if (reply == null) return;
+            TopWindow. n.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
+
+        }
+
+        public void ensureAcceptInterruptButtonsOnToolStrip()
+        {
+            if (toolStrip1.Count == 0)
+            {
+                addDefaultToolstripItems();
+            }
+
+        }
+
+        public void AddToolBarKey(string Key, string Text, string ID)
+        {
+            AubitTSBtn b;
+
+            ensureAcceptInterruptButtonsOnToolStrip();
+
+            // Does it already exist ? 
+            for (int a = 0; a < Fkeys.Count; a++)
+            {
+                if (Fkeys[a].ActiveKey == Key)
+                {
+                    //Fkeys[a].Text = Text;
+                    return;
+                }
+            }
+
+            // No - Create a new one..
+            b = new AubitTSBtn();
+            b.isProgramAdded = false;
+            b.ActiveKey = Key;
+            b.Text = Text;
+            b.ID = ID;
+            b.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            b.Visible = false;
+            b.Click += new EventHandler(b_Click);
+            Fkeys.Add(b);
+            this.toolStrip1.Add(b);
+        }
+
+        public void SetToolBarKeyLabel(string Key, string Text)
+        {
+            AubitTSBtn b;
+
+            ensureAcceptInterruptButtonsOnToolStrip();
+
+            // Does it already exist ? 
+            for (int a = 0; a < Fkeys.Count; a++)
+            {
+                if (Fkeys[a].ActiveKey == Key)
+                {
+                    Fkeys[a].Text = Text;
+                    return;
+                }
+            }
+            AddToolBarKey(Key, Text, "");
+        }
+
+        private void addDefaultToolstripItems()
+        {
+            
+                
+                tsBtnAccept = new AubitDesktop2.AubitTSBtn();
+                tsBtnCancel = new AubitDesktop2.AubitTSBtn();
+
+                // 
+                // tsBtnAccept
+                // 
+                this.tsBtnAccept.ActiveKey = "ACCEPT";
+                this.tsBtnAccept.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnAccept.ID = "ACCEPT";
+                this.tsBtnAccept.Image = global::AubitDesktop.ToolBarImages.accept;
+                this.tsBtnAccept.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnAccept.Name = "tsBtnAccept";
+                this.tsBtnAccept.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnAccept.Text = "Accept";
+                this.tsBtnAccept.Click += new System.EventHandler(this.tsBtnAccept_Click);
+            
+                // 
+                // tsBtnCancel
+                // 
+                this.tsBtnCancel.ActiveKey = "INTERRUPT";
+                this.tsBtnCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnCancel.ID = "INTERRUPT";
+                this.tsBtnCancel.Image = global::AubitDesktop.ToolBarImages.cancel;
+                this.tsBtnCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnCancel.Name = "tsBtnCancel";
+                this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnCancel.Text = "Cancel";
+                this.tsBtnCancel.Click += new System.EventHandler(this.tsBtnCancel_Click);
+
+                this.tsBtnAccept.Visible = true;
+                this.tsBtnCancel.Visible = true;
+                this.toolStrip1.Add(tsBtnAccept);
+                this.toolStrip1.Add(tsBtnCancel);
+        }
+
+
+        /*
+        public void ShowAcceptInterruptButtons()
+        {
+
+            tsBtnAccept.Visible = true;
+            tsBtnCancel.Visible = true;
+
+        }
+         * */
+
+        private void tsBtnCancel_Click(object sender, EventArgs e)
+        {
+            string eventText = "<TRIGGERED ID=\"INTERRUPT\"/>";
+            TopWindow.SendString(eventText);
+            currentContext.DeactivateContext();
+        }
+
+
+        private void tsBtnAccept_Click(object sender, EventArgs e)
+        {
+            string eventText = currentContext.getAcceptString();
+            if (eventText != null)
+            {
+                TopWindow.SendString(eventText);
+            }
+            currentContext.DeactivateContext();
+        }
+
+        public void TabSelected()
+        {
+            TopWindow.MessageText = this.MessageText;
+            TopWindow.ErrorText = this.ErrorText;
+            TopWindow.CommentText = this.CommentText;
+            TopWindow.LineDisplayText = this.LineDisplayText;
+            
+        }
+
+        public void setErrorTextFromFieldValidation(string s)
+        {
+            // May want to do this some other way...
+            this.ErrorText = s;
+        }
+
+        public void ConsumeEnvelopeCommands()
+        {
+            int cnt = 0;
+            List<object> run_commands;
+            if (this.commands == null) return;
+            if (this.commands.Count == 0) return;
+
+            this.SuspendLayout();
+
+            // Make a copy of our commands to run through
+            run_commands = new List<object>();
+            foreach (object a in this.commands)
+            {
+                run_commands.Add(a);
+            }
+            
+            ErrorText="";
+
+            cnt = 0;
+            // Go through one at a time...
+            foreach (object a in run_commands)
+            {
+                TopWindow.setProgress( run_commands.Count,cnt);
+                cnt++;
+                
+                #region PROGRAMSTARTUP
+                if (a is PROGRAMSTARTUP)
+                {
+                    PROGRAMSTARTUP p;
+                    string progname;
+                    p = (PROGRAMSTARTUP)a;
+                    this.Text = "Running : " + p.PROGRAMNAME + ", Logged in as " + this.Username + ", UniqID :" + p.ID;
+                    progname = p.PROGRAMNAME;
+                    if (progname.StartsWith("/"))
+                    {
+                        progname = progname.Substring(progname.LastIndexOf("/") + 1);
+                    }
+                    
+                    this.TopWindow.addNewTabPage(Convert.ToInt32(p.ID), progname, this);
+
+
+                    SetServerEnviron ( p.ENV);
+                    commands.Remove(a);
+                    //MessageBox.Show("Application would like to start! Program=" + p.PROGRAMNAME + " ID=" + p.ID);
+                    continue;
+                }
+                #endregion
+
+                if (a is FILE)
+                {
+                    FILE f;
+                    FileStream fs=null;
+                    BinaryWriter sw;
+                    byte[] data;
+                    f = (FILE)a;
+                    if (f.CLIENTNAME!=null && f.CLIENTNAME.Length>0)
+                    {
+                        fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
+                        }
+                        catch (Exception Ex)
+                        {
+                            MessageBox.Show(Ex.ToString());
+                        }
+                    }
+                    if (fs != null)
+                    {
+                        sw = new BinaryWriter(fs);
+                        data = Convert.FromBase64String(f.Text);
+                        sw.Write(data);
+                        sw.Flush();
+                        sw.Close();
+                        fs.Close();
+                    }
+                    commands.Remove(a);
+                    continue;
+                }
+
+                if (a is EXECUTE)
+                {
+                    //MessageBox.Show(((EXECUTE)a).Text,"EXECUTE");
+                    System.Diagnostics.Process.Start(((EXECUTE)a).Text);
+                    commands.Remove(a);
+                    continue;
+                }
+
+                if (a is UIDIRECT)
+                {
+                    MessageBox.Show(((UIDIRECT)a).Text,"UIDIRECT");
+                    commands.Remove(a);
+                    continue;
+                }
+
+                if (a is SETWINDOWTITLE)
+                {
+                    this.TopWindow.setTabTitle(this,((SETWINDOWTITLE)a).TEXT);
+                    commands.Remove(a);
+                    continue;
+                }
+                if (a is SETKEYLABEL)
+                {
+                    SETKEYLABEL k;
+                    k = (SETKEYLABEL)a;
+                    SetToolBarKeyLabel(k.LABEL, k.TEXT);
+                    commands.Remove(a);
+                    continue;
+                }
+
+                #region CLEARFORM
+                if (a is CLEARFORM)
+                {
+                    commands.Remove(a);
+                    continue;
+                } 
+                #endregion
+                #region CLEARWINDOW
+                if (a is CLEARWINDOW)
+                {
+                    CLEARWINDOW c;
+                    c = (CLEARWINDOW)a;
+                    ApplicationWindows.ClearWindow(c.WINDOW);
+                    commands.Remove(a);
+                    continue;
+                } 
+                #endregion
+
+                #region NEXTFIELD
+                if (a is NEXTFIELD)
+                {
+                    NEXTFIELD f;
+                    f = (NEXTFIELD)a;
+                    
+                    if (Convert.ToInt32(f.CONTEXT) >= 0)
+                    {
+                        contexts[Convert.ToInt32(f.CONTEXT)].setNextField(f.FIELD);
+                    }
+                    else
+                    {
+                        ApplicationWindows.setNextField(f.FIELD);
+                    }
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+
+                #region CURRENTWINDOW
+                if (a is CURRENTWINDOW)
+                {
+                    CURRENTWINDOW c;
+                    c = (CURRENTWINDOW)a;
+                    ApplicationWindows.MoveWindowToTop(c.WINDOW);
+                    commands.Remove(a);
+                    continue;
+                } 
+                #endregion
+
+                #region CLOSEWINDOW
+                if (a is CLOSEWINDOW)
+                {
+                    CLOSEWINDOW c;
+                    c = (CLOSEWINDOW)a;
+                    ApplicationWindows.PopWindow(c.WINDOW);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+
+                #region OPTIONS
+                if (a is OPTIONS)
+                {
+                    OPTIONS o;
+                    o = (OPTIONS)a;
+                    FGLOptions.SetOption(o.TYPE, o.VALUE);
+                    commands.Remove(a);
+                    continue;
+                } 
+                #endregion
+                #region ADDTOTOOLBAR
+                if (a is ADDTOTOOLBAR)
+                {
+                    AubitTSBtn btn;
+                    ADDTOTOOLBAR o;
+
+                    btn=null;
+                    o = (ADDTOTOOLBAR)a;
+                    foreach (AubitTSBtn b in programButtons)
+                    {
+                        if (b.programTag == o.TAG)
+                        {
+                            btn = b; break;
+                        }
+                    }
+                    if (btn == null)
+                    {
+                        btn = new AubitTSBtn();
+                        btn.programTag = o.TAG;
+                        programButtons.Add(btn);
+                    }
+                    btn.ActiveKey = o.KEYVAL;
+                    btn.isProgramAdded = true;
+                    btn.Text = o.BUTTON;
+                    btn.programTag = o.TAG;
+                    btn.Click += b_Click;
+                    try
+                    {
+                        Image i = (Image)resourceInterface.getObject(o.IMAGE.ToLower());
+                        if (i!=null)
+                        {
+                            btn.Image = i;
+                        }
+                        else
+                        {
+                            btn.Image = new Bitmap(o.IMAGE);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    btn.ToolTipText = o.TOOLTIP;
+                    toolStrip1.Add(btn);
+                    commands.Remove(a);
+                    continue;
+                } 
+
+                #endregion
+                #region DISPLAYFORM
+                if (a is DISPLAYFORM)
+                {
+                    DISPLAYFORM d;
+                    FGLForm frm = null;
+                    d = (DISPLAYFORM)a;
+                    frm = OpenForms.getForm(d.FORMNAME);
+                    if (frm != null)
+                    {
+                        ApplicationWindows.setForm(frm);
+                        this.MinimumSize = new System.Drawing.Size(GuiLayout.get_gui_w(ApplicationWindows.minimumScreenWidth), GuiLayout.get_gui_h(ApplicationWindows.minimumScreenHeight));
+                        //this.BorderStyle = BorderStyle.Fixed3D;
+                        //this.BackColor = System.Drawing.Color.Red;
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Unable to find form " + d.FORMNAME);
+                    }
+                    commands.Remove(a);
+                    continue;
+
+                } 
+                #endregion
+                #region DISPLAYAT
+                if (a is DISPLAYAT)
+                {
+                    MessageBox.Show("DISPLAY .. AT is not support for GUI - please recode your application");
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region REQUESTFILE
+                if (a is REQUESTFILE)
+                {
+                    string s="";
+                    long flen = -1;
+                    string fileID;
+                    FileStream f;
+                    REQUESTFILE r;
+                    byte[] fileContents=null;
+
+                    r=(REQUESTFILE)a;
+                    fileID = r.FILEID;
+                    try
+                    {
+                        f = new FileStream(r.FILEID, FileMode.Open, FileAccess.Read);
+                        BinaryReader sr = new BinaryReader(f);
+                        flen = f.Length;
+                        fileContents = sr.ReadBytes((int)f.Length);
+                        sr.Close();
+                        f.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        fileID = "";
+                    }
+
+                    if (fileContents != null)
+                    {
+                        s = "<TRIGGERED ID=\"FILEREQUEST\" FILEID=\"" + System.Security.SecurityElement.Escape(fileID) + "\" FILELEN=\"" + flen + "\">";
+                        s += "<SYNCVALUES><SYNCVALUE>";
+                        s += Convert.ToBase64String(fileContents);
+                        s += "</SYNCVALUE></SYNCVALUES>";
+                        s += "</TRIGGERED>";
+                        TopWindow.SendString(s);
+                    }
+                    
+                    commands.Remove(a);
+
+                    continue;
+                }
+                #endregion
+                #region OPENFORM
+                if (a is OPENFORM)
+                {
+                    OPENFORM o = (OPENFORM)a;
+                    FGLForm frm = new FGLForm(o.FORM);
+                    OpenForms.addForm(o.FORMNAME, frm);
+
+                    commands.Remove(a);
+                    continue;
+                } 
+                #endregion
+                #region MENU
+                if (a is MENU)
+                {
+                    MENU theMenu = (MENU)a;
+                    contexts.Insert(Convert.ToInt32(theMenu.CONTEXT), new UIMenuContext(this, theMenu));
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region PROMPT
+                if (a is PROMPT)
+                {
+                    PROMPT thePrompt = (PROMPT)a;
+                    contexts.Insert(Convert.ToInt32(thePrompt.CONTEXT), new UIPromptContext(this, thePrompt));
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region OPENWINDOWWITHFORM
+                if (a is OPENWINDOWWITHFORM)
+                {
+                    FGLForm frm;
+                    FGLWindow win;
+                    bool border;
+                    OPENWINDOWWITHFORM w;
+                    w = (OPENWINDOWWITHFORM)a;
+
+
+                    frm = new FGLForm(w.FORM);
+                    if (w.BORDER == "0") border = false; else border = true;
+                    win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), border);
+
+                    win.setForm(frm, false);
+
+                    win.sizeWindow(frm);
+
+                    // Our 'window' might be a proper windows forms window (with title bar etc)
+                    // in which case - we dont want to add it to our windows panel - but just 
+                    // let it float...
+                    if (win.isContainable)
+                    {
+                        this.Controls.Add(win.WindowWidget);
+                    }
+
+                    if (win.isModal)
+                    {
+                        // This doesn't seem to work atm - gettting errors 
+                        // saying you cant show it as its already visible - even though its not!
+                            win.WindowWidget.Visible = false;
+                         TopWindow.ShowDialog(win.WindowWidget);
+                    }
+
+                    ApplicationWindows.PushWindow(win);
+                    this.MinimumSize = new System.Drawing.Size(GuiLayout.get_gui_w(ApplicationWindows.minimumScreenWidth), GuiLayout.get_gui_h(ApplicationWindows.minimumScreenHeight));
+                    commands.Remove(a);
+                    continue;
+
+                }
+                #endregion
+                #region CREATEWINDOW
+                if (a is CREATEWINDOW)
+                {
+                    FGLWindow win;
+                    bool border;
+                    CREATEWINDOW w;
+                    w = (CREATEWINDOW)a;
+                    if (w.BORDER == "0") border = false; else border = true;
+                    win = new FGLWindow(w.NAME, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERRORLINE), Convert.ToInt32(w.PROMPTLINE), Convert.ToInt32(w.MENULINE), Convert.ToInt32(w.COMMENTLINE), Convert.ToInt32(w.MESSAGELINE), border);
+
+                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H));             
+
+                    // Our 'window' might be a proper windows forms window (with title bar etc)
+                    // in which case - we dont want to add it to our windows panel - but just 
+                    // let it float...
+                    if (win.isContainable)
+                    {
+                        this.Controls.Add(win.WindowWidget);
+                    }
+
+                    if (win.isModal)
+                    {
+                        // This doesn't seem to work atm - gettting errors 
+                        // saying you cant show it as its already visible - even though its not!
+                        win.WindowWidget.Visible = false;
+                        TopWindow.ShowDialog(win.WindowWidget);
+                    }
+
+                    ApplicationWindows.PushWindow(win);
+                    this.MinimumSize = new System.Drawing.Size(GuiLayout.get_gui_w(ApplicationWindows.minimumScreenWidth), GuiLayout.get_gui_h(ApplicationWindows.minimumScreenHeight));
+                    commands.Remove(a);
+                    continue;
+
+                }
+                #endregion
+
+
+                #region CONSTRUCT
+                if (a is CONSTRUCT)
+                {
+                    CONSTRUCT i;
+                    i = (CONSTRUCT)a;
+
+                    contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIConstructContext(this, i));
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region INPUT
+                if (a is INPUT)
+                {
+                    INPUT i;
+                    i = (INPUT)a;
+                    
+                    contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIInputContext(this, i));
+
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region DISPLAYTO
+                if (a is DISPLAYTO)
+                {
+                    DISPLAYTO d;
+                    d = (DISPLAYTO)a;
+                    ApplicationWindows.DisplayTo(d);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region ERROR
+                if (a is ERROR)
+                {
+                    ERROR e;
+                    e = (ERROR)a;
+                    ErrorText = e.Text;
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region MESSAGE
+                if (a is MESSAGE)
+                {
+                    MESSAGE b;
+                    b = (MESSAGE)a;
+                    if (Convert.ToInt32(b.WAIT) != 0)
+                    {
+                        MessageBox.Show(b.Text,"Application Message");
+                    }
+                    else
+                    {
+                        MessageText = b.Text;
+                    }
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region DISPLAY
+                if (a is DISPLAY)
+                {
+                    DISPLAY theDISPLAY = (DISPLAY)a;
+                    this.TopWindow.AddTextToConsole(theDISPLAY.Text[0]);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+
+                #region HIDEOPTION
+                if (a is HIDEOPTION)
+                {
+                    HIDEOPTION ho;
+                    UIMenuContext mc;
+                    ho = (HIDEOPTION)a;
+
+                    int idx = Convert.ToInt32(ho.CONTEXT);
+                    mc = (UIMenuContext)contexts[idx];
+                    mc.hideOption(ho.OPTION);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region PROGRAMSTOP
+                if (a is PROGRAMSTOP)
+                {
+                    PROGRAMSTOP p;
+                    p = (PROGRAMSTOP)a;
+                    if (Convert.ToInt32(p.EXITCODE) != 0)
+                    {
+                        string txt = "";
+                        int idx;
+                        for (idx = 0; idx < p.line.Length; idx++)
+                        {
+                            txt += p.line[idx].Text + "\n";
+                        }
+                        MessageBox.Show("Program Exited with non-zero exit status\n" + txt);
+                    }
+                    commands.Remove(a);
+                    TopWindow.clrWaitCursor();
+                    TopWindow.removeTabPage(this);
+                    continue;
+                }
+                #endregion
+
+                #region FREE
+                if (a is FREE)
+                {
+                    FREE f;
+                    f = (FREE)a;
+                    contexts[Convert.ToInt32(f.CONTEXT)].FreeContext();
+                    contexts[Convert.ToInt32(f.CONTEXT)] = null;
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region SHOWOPTION
+                if (a is SHOWOPTION)
+                {
+                    SHOWOPTION so;
+                    UIMenuContext mc;
+                    so = (SHOWOPTION)a;
+
+                    int idx = Convert.ToInt32(so.CONTEXT);
+                    mc = (UIMenuContext)contexts[idx];
+                    mc.showOption(so.OPTION);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region WAITFOREVENT
+                if (a is WAITFOREVENT)
+                {
+                    //string rval;
+                    WAITFOREVENT w;
+
+                    w = (WAITFOREVENT)a;
+                    //MessageBox.Show("Here" );
+                    int idx;
+                    for (idx = 0; idx < contexts.Count; idx++)
+                    {
+
+                        if (idx == Convert.ToInt32(w.CONTEXT))
+                        { // This is the active context
+                            if (contexts[idx] != null)
+                            {
+                                TopWindow.clrWaitCursor();
+                                contexts[idx].ActivateContext(UIContext_EventTriggered,w.VALUES);
+                                currentContext = contexts[idx];
+                            }
+                            else
+                            {
+                                MessageBox.Show("Internal error - no context object");
+                            }
+                        }
+                        else
+                        {
+                            if (contexts[idx] != null)
+                            {
+                                contexts[idx].DeactivateContext();
+                            }
+                        }
+                        commands.Remove(a);
+                    }
+                    continue;
+                }
+                #endregion
+                commands.Remove(a);
+                this.TopWindow.AddTextToConsole(" Unhandled: " + a.ToString());
+                MessageBox.Show(" Unhandled: " + a.ToString());
+            }
+            try {
+                // This may fail if the window is closed because the application that
+                // was in it is now closed - but we dont care about updating the progress bar in an invisible window ;-)
+            TopWindow.setProgress(0,0);
+                }
+            catch (Exception e) {
+                }
+
+            // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
+            this.ResumeLayout();
+        }
+
+        
+
+
+        public string getServerEnviron(string n)
+        {
+            if (serverEnviron.ContainsKey(n))
+            {
+                return (string)serverEnviron[n];
+            }
+            return "";
+        }
+
+        private void SetServerEnviron(ENV[] eNV)
+        {
+            serverEnviron = new Hashtable();
+            for (int a = 0; a < eNV.Length; a++)
+            {
+                serverEnviron.Add(eNV[a].NAME, eNV[a].VALUE);
+            }
+        }
+
+        internal void NavigateToTab() {
+            if (currentContext!=null)
+            {
+                currentContext.NavigateToTab();
+            }
+        }
+
+        internal void NavigateAwayTab()
+        {
+            if (currentContext != null)
+            {
+                currentContext.NavigateAwayTab();
+            }
+        }
+
+
+        internal void setPrompt(Control p)
+        {
+            
+            p.Width = this.Width-10;
+            ApplicationWindows.setPrompt(p);
+        }
+
+
+        internal void ActivatePrompt(UIEventHandler UIPromptContext_EventTriggered)
+        {
+            // Not sure this needs to do anything....
+        }
+
+        internal void RemovePrompt(Control p)
+        {
+            ApplicationWindows.ClearPrompt(p);
+        }
+
+        /*
+        internal void doTest()
+        {
+            ApplicationWindows.doInput(null);
+        }
+         * */
+
+
+        public void SetContext(string contextType)
+        {
+            ApplicationWindows.SetContext(contextType);
+        }
+
+        public void SetContext(string contextType, List<IFGLField> pfields, UIContext currContext)
+        {
+            ApplicationWindows.SetContext(contextType, pfields, currContext);
+        }
+
+        public List<FGLFoundField> FindFields(FIELD[] fieldlist)
+        {
+            return ApplicationWindows.FindFields(fieldlist);
+        }
+
+        public List<FGLFoundField> FindFields(string[] fieldlist)
+        {
+            return ApplicationWindows.FindFields(fieldlist);
+        }
+
+
+
+        /*
+        internal void HideAcceptInterruptButtons()
+        {
+            tsBtnAccept.Visible = false;
+            tsBtnCancel.Visible = false;
+        }
+        */
+        
+
+        internal void SetContext(string p, List<FGLFoundField> activeFields, UIContext currContext)
+        {
+            int cnt = 0;
+            List<IFGLField> l = new List<IFGLField>();
+            foreach (FGLFoundField fld in activeFields) {
+                fld.fglField.tabIndex = cnt++;
+                l.Add(fld.fglField);
+            }
+            SetContext(p, l,currContext);
+        }
+
+        internal List<FGLFoundField> FindField(string p)
+        {
+            string[] arr;
+            List<FGLFoundField> l;
+            arr=new string[1];
+            arr[0] = p;
+            l=FindFields(arr);
+            return l;
+
+            
+            
+        }
+
+        internal void setLastKey(string keycode)
+        {
+            this.lastKey = keycode;
+        }
+
+
+        /// <summary>
+        /// Finds all fields with a specified 'Action' tag
+        /// </summary>
+        /// <param name="p">tag to search for</param>
+        /// <returns>All matching fields with the specified action tag</returns>
+        internal List<FGLFoundField> FindAction(string p)
+        {
+            List<FGLFoundField> l;
+            
+            l= ApplicationWindows.FindAction(p);
+            return l;
+        }
+    }
+
+}
