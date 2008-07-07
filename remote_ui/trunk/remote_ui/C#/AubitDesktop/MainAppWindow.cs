@@ -12,13 +12,6 @@ using System.Windows.Forms;
 namespace AubitDesktop2
 {
 
-    public enum showMode
-    {
-        ShowAlways, 
-        ShowNever,
-        ShowAuto
-
-    };
 
     public partial class frmMainAppWindow : Form
     {
@@ -63,7 +56,7 @@ namespace AubitDesktop2
             }
         }
 
-        showMode _showToolbar;
+        showMode _showToolbar; 
 
         showMode showToolbar
         {
@@ -906,11 +899,13 @@ namespace AubitDesktop2
         private void alwaysToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.showMenuBar = showMode.ShowAlways;
+            
         }
 
         private void neverMenubarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.showMenuBar = showMode.ShowNever;
+            
         }
 
         private void autoMenubarToolStripMenuItem_Click(object sender, EventArgs e)
