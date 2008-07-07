@@ -9,7 +9,7 @@ using System.Xml;
 
 
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     public partial class Login : Form
     {
@@ -85,6 +85,12 @@ namespace AubitDesktop2
              * */
             MacroEditor m = new MacroEditor();
             m.ShowDialog();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            ScratchPad sp = new ScratchPad();
+            sp.Show();
         }
 
         

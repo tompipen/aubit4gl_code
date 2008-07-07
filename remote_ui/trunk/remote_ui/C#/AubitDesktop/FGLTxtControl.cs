@@ -6,7 +6,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     public partial class FGLTxtControl : UserControl
     {

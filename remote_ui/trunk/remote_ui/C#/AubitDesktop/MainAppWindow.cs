@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
 
 
@@ -722,7 +722,22 @@ namespace AubitDesktop2
                         return "ACCEPT"; // Should be detected from the options...
 
                         
-
+                    case Keys.Down:
+                        return "Down";
+                    case Keys.Up:
+                        return "Up";
+                    case Keys.Left:
+                        return "Left";
+                    case Keys.Right:
+                        return "Right";
+                    case Keys.PageUp:
+                        return "PgUp";
+                    case Keys.PageDown:
+                        return "PgDown";
+                    case Keys.Insert:
+                        return "Insert";
+                    case Keys.Delete:
+                        return "Delete";
                     case Keys.F1:
                         return "F1";
                     case Keys.F2:
@@ -841,12 +856,13 @@ namespace AubitDesktop2
 
         private void frmMainAppWindow_KeyDown(object sender, KeyEventArgs e)
         {
-                            string key="";
-                            string fglKey;
-                key = decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
-                if (key == null) return;
+            string key="";
+            string fglKey;
+            key = decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
+            if (key == null) return;
 
             setLastKeyInApplication(key);
+
             foreach (ToolStripItem i in topWindowToolStrip.Items)
             {
 
@@ -858,7 +874,8 @@ namespace AubitDesktop2
                     fglKey = FGLUtils.getKeyNameFromFGLKeyCode(a.ActiveKey);
                     if (fglKey==key)
                     {
-                        a.PerformClick();
+
+                        a.clickHandler(a, new EventArgs());
                         e.Handled = true;
                         e.SuppressKeyPress = true;
                         return;
@@ -869,6 +886,12 @@ namespace AubitDesktop2
             
 
 
+        }
+
+
+        public void setComment(string txt)
+        {
+            this.CommentText = txt;
         }
   
         void setLastKeyInApplication(string keycode) {

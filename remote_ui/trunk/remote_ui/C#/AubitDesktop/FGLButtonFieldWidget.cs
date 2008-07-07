@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Text;
 using System.Drawing;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     // A picture widget fgl field widget...
     class FGLButtonFieldWidget : FGLWidget, IFGLField

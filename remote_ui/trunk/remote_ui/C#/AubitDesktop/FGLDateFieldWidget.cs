@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Text;
 using System.Drawing;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     // A text widget fgl field widget...
     class FGLDateFieldWidget : FGLWidget, IFGLField

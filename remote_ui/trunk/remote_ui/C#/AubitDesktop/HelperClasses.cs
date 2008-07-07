@@ -4,7 +4,7 @@ using System.Collections;
 using System.Windows.Forms;
 using System.Text;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     class resourceInterface
     {
@@ -12,7 +12,8 @@ namespace AubitDesktop2
         public static object getObject(string name)
         {
             object obj = null;
-            if (rm == null) rm = new System.Resources.ResourceManager("AubitDesktop2.Properties.Resources", typeof(AubitDesktop2.Properties.Settings).Assembly);
+            
+            if (rm == null) rm = new System.Resources.ResourceManager("AubitDesktop.Properties.Resources", typeof( AubitDesktop.Properties.Settings).Assembly);
             try
             {
                 obj = rm.GetObject(name);
@@ -161,6 +162,11 @@ namespace AubitDesktop2
             set;
         }
 
+        string comment
+        {
+            get;
+        }
+
         void setFocus();
 
         int tabIndex
@@ -168,6 +174,8 @@ namespace AubitDesktop2
             set;
         }
 
+
+        void setToolTip(ToolTip tooltips, string p);
     }
 
     
@@ -516,6 +524,11 @@ namespace AubitDesktop2
         {
             return windows[0].FindAction(actionName);
         }
+
+        internal List<FGLFoundField> FindFieldArray(FIELD[] fieldlist)
+        {
+            return windows[0].FindFieldArray(fieldlist);
+        }
     }
 
     public class FGLFoundField
@@ -823,7 +836,23 @@ namespace AubitDesktop2
         {
             return CurrentForm.FindAction(actionName);
         }
+
+        internal List<FGLFoundField> FindFieldArray(FIELD[] fieldlist)
+        {
+            return CurrentForm.FindFieldArray(fieldlist);
+        }
     }
+
+
+
+    public enum showMode
+    {
+        ShowAlways,
+        ShowNever,
+        ShowAuto
+
+    };
+
 
     public static class FGLUtils
     {

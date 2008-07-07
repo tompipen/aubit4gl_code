@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Text;
 using System.Drawing;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
 
 

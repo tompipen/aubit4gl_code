@@ -4,7 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Security;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     class UIConstructContext : UIContext
     {

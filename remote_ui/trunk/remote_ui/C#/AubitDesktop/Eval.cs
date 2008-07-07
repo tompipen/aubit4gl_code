@@ -8,7 +8,7 @@ using System.IO;
 using System.Diagnostics;
 
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     class Eval
     {
@@ -69,7 +69,7 @@ namespace AubitDesktop2
             oCParams.GenerateInMemory = true;
 
             string s = "using System.Windows.Forms;" + nl +
-                        "namespace AubitDesktop2{" + nl +
+                        "namespace AubitDesktop{" + nl +
                         " class EvalRunTime {" + nl +
                         "  public object EvaluateIt() {" + nl +
                         code +nl +
@@ -102,7 +102,7 @@ namespace AubitDesktop2
             if (oCResults == null) return;
 
                 oAssy = oCResults.CompiledAssembly;
-                oExecInstance = oAssy.CreateInstance("AubitDesktop2.EvalRunTime");
+                oExecInstance = oAssy.CreateInstance("AubitDesktop.EvalRunTime");
                 if (oExecInstance == null)
                 {
                     System.Windows.Forms.MessageBox.Show("Unable to locate function");

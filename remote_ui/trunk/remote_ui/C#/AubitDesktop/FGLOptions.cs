@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     class FGLOptions
     {

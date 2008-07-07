@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 using System.Text;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     class FGLScreenRecord
     {

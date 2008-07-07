@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
 
     public delegate void ServerDisconnectedEventHandler(object sender, ServerEventArgs e);
@@ -84,7 +84,7 @@ namespace AubitDesktop2
             SocketStyleBlock,
             SocketStyleEnvelope
         };
-        SocketStyle sockStyle;
+        AubitNetwork.SocketStyle sockStyle;
 
         /// <summary>
         /// Occurs when this client failed on connecting to server.
@@ -136,13 +136,13 @@ namespace AubitDesktop2
         }
 
 
-        public AubitNetwork(SocketStyle s)
+        public AubitNetwork(AubitNetwork.SocketStyle s)
         {
             this.sockStyle = s;
         }
 
         public void SendString(string s) {
-            if (sockStyle==SocketStyle.SocketStyleLine||sockStyle==SocketStyle.SocketStyleEnvelope) {
+            if (sockStyle==AubitNetwork.SocketStyle.SocketStyleLine||sockStyle==AubitNetwork.SocketStyle.SocketStyleEnvelope) {
                 s = s + "\n";
             }
            byte[] msg = System.Text.Encoding.ASCII.GetBytes(s);
@@ -266,10 +266,10 @@ namespace AubitDesktop2
                         this.ConnectionDied(sender, new EventArgs());
                     }
                 }
-                
 
 
-                if (this.sockStyle == SocketStyle.SocketStyleLine ||this.sockStyle == SocketStyle.SocketStyleEnvelope )
+
+                if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
                 {
                     index = cmd.IndexOf('\n');
                     while (index >= 0)
@@ -283,7 +283,7 @@ namespace AubitDesktop2
                                 Envelope = "";
                                 inEnvelope = true;
                             }
-                            if (inEnvelope && this.sockStyle == SocketStyle.SocketStyleEnvelope)
+                            if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
                             {
                                 Envelope += (c+"\n");
                             }
@@ -321,7 +321,7 @@ namespace AubitDesktop2
 
         public void setEnvelopeMode()
         {
-            this.sockStyle = SocketStyle.SocketStyleEnvelope;
+            this.sockStyle = AubitNetwork.SocketStyle.SocketStyleEnvelope;
         }
 
         /// <summary>

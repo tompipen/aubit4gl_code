@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     partial class ADAboutBox : Form
     {

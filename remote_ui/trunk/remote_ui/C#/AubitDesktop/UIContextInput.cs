@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     class UIInputContext : UIContext
     {
@@ -171,8 +171,10 @@ namespace AubitDesktop2
                     break;
                 }
             }
-
+            
         }
+
+
 
 
 
@@ -213,7 +215,7 @@ namespace AubitDesktop2
             }
 
 
-
+            mainWin.CommentText = CurrentField.fglField.comment;
 
 
             #region setup after field event IDs
@@ -297,12 +299,18 @@ namespace AubitDesktop2
                 {
                     f.fglField.Text = values[cnt++].Text;
                 }
+
+                
+                
             }
 
             if (!_contextIsActive)
             {
                 _contextIsActive = true;
             }
+
+            
+            
         }
 
 

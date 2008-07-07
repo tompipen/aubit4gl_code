@@ -5,7 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
 
     class FGLForm
@@ -18,6 +18,9 @@ namespace AubitDesktop2
         public int maxline;
         //int n = 0;
         Panel thisFormsPanel;
+        private ToolTip tooltips;
+
+        
 
         public Control control
         {
@@ -43,13 +46,16 @@ namespace AubitDesktop2
             this.thisFormsPanel.Top = 15;
             this.thisFormsPanel.Left = 5;
             //thisFormsPanel.AutoScroll = true;
+            tooltips = new ToolTip();
+            tooltips.ShowAlways = true;
+            
 
             this.maxcol = Convert.ToInt32(f.SCREENS.MAXCOL);
             this.maxline = Convert.ToInt32(f.SCREENS.MAXLINE);
 
             this.thisFormsPanel.Width = GuiLayout.get_gui_x(Convert.ToInt32(f.SCREENS.MAXCOL));
             this.thisFormsPanel.Height = GuiLayout.get_gui_y(Convert.ToInt32(f.SCREENS.MAXLINE));
-
+            this.thisFormsPanel.AutoSize = true;
             // this.BorderStyle = BorderStyle.FixedSingle;
 
             ScreenRecords = new List<FGLScreenRecord>();
@@ -125,12 +131,14 @@ namespace AubitDesktop2
                         // We'll assume we've already seen a message box telling us...
                         continue;
                     }
-
+                    
                     // Set the context type
                     fld.ContextType = ""; // We're not using this field in any context...
                     
 
                     fields.Add(fld);
+                    fld.setToolTip(tooltips, fld.comment);
+                    //tooltips.SetToolTip(fld.WindowsWidget, fld.comment);
                     this.thisFormsPanel.Controls.Add(fld.WindowsWidget);
                    
                 }
@@ -397,6 +405,29 @@ namespace AubitDesktop2
                 }
             }
             return l;
+        }
+
+        internal List<FGLFoundField> FindFieldArray(FIELD[] fieldlist)
+        {
+            List<FGLFoundField> fldlist;
+            fldlist = new List<FGLFoundField>();
+
+            foreach (FIELD ff in fieldlist)
+            {
+                string f;
+                f = ff.NAME;
+                List<FGLFoundField> flds;
+                flds = FindField(f, true);
+                if (flds != null)
+                {
+                    foreach (FGLFoundField fld in flds)
+                    {
+                        fldlist.Add(fld);
+                    }
+                }
+            }
+            return fldlist;
+            
         }
     }
 }

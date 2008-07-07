@@ -8,7 +8,7 @@ using System.IO;
 
 
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     public class FGLApplicationPanel : Panel
     {
@@ -26,16 +26,31 @@ namespace AubitDesktop2
         // Toolstrip buttons....
         private AubitTSBtn tsBtnAccept;
         private AubitTSBtn tsBtnCancel;
+
+        private AubitTSBtn tsBtnUp;
+        private AubitTSBtn tsBtnDown;
+
+        private AubitTSBtn tsBtnPgUp;
+        private AubitTSBtn tsBtnPgDown;
+        private AubitTSBtn tsBtnInsert;
+        private AubitTSBtn tsBtnDelete;
+
         public List<object> commands;
         FGLWindowStack ApplicationWindows;
-        public Hashtable serverEnviron;
+        private Hashtable serverEnviron;
+
+        public Hashtable ServerEnviron
+        {
+            get { return serverEnviron; }
+            set { serverEnviron = value; }
+        }
         FGLOpenedForms OpenForms;
         private List<AubitTSBtn> programButtons;
         //private Control parentControl;
         private frmMainAppWindow TopWindow; // The window containing the table control
         public  string lastKey;
 
-        string LineDisplayText
+        public string LineDisplayText
         {
             get
             {
@@ -44,11 +59,11 @@ namespace AubitDesktop2
             set
             {
                 _linedisplaytext = value;
-                TopWindow.LineDisplayText = value;
+                TopWindow.LineDisplayText =value;
             }
         }
 
-        string ErrorText
+        public string ErrorText
         {
             get
             {
@@ -61,7 +76,7 @@ namespace AubitDesktop2
             }
         }
 
-        string CommentText
+        public string CommentText
         {
             get
             {
@@ -74,7 +89,7 @@ namespace AubitDesktop2
             }
         }
 
-        string MessageText
+        public string MessageText
         {
             get
             {
@@ -197,7 +212,13 @@ namespace AubitDesktop2
             return null;
         }
 
-        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys,bool showAcceptInterrupt)
+
+        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, bool showAcceptInterrupt)
+        {
+            setActiveToolBarKeys(keys,showAcceptInterrupt,false,false);
+        }
+
+        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys,bool showAcceptInterrupt,bool showUpDownButtons,bool showInsertDeleteButtons)
         {
             // We dont want any keys active ? 
             if (keys == null)
@@ -223,9 +244,32 @@ namespace AubitDesktop2
                         {
                             tsBtnAccept.Visible=false;
                             tsBtnCancel.Visible=false;
-                            
                         }
-              
+
+                        if (showInsertDeleteButtons)
+                        {
+                             tsBtnDelete.Visible = true;
+                            tsBtnInsert.Visible=true;
+                        } else {
+                            tsBtnDelete.Visible = false;
+                            tsBtnInsert.Visible = false;
+                        }
+
+                        if (showUpDownButtons)
+                        {
+                            tsBtnPgUp.Visible = true;
+                            tsBtnPgDown.Visible = true;
+                            tsBtnUp.Visible = true;
+                            tsBtnDown.Visible = true;
+                        }
+                        else
+                        {
+                            tsBtnPgUp.Visible = false;
+                            tsBtnPgDown.Visible = false;
+                            tsBtnUp.Visible = false;
+                            tsBtnDown.Visible = false;
+                        }
+
 
                 // Ok - there are some keys - but not all of them will be used..
                 // so we need to remove any that are not in use by making them invisible
@@ -268,6 +312,68 @@ namespace AubitDesktop2
 
             }
             TopWindow.setToolbar(toolStrip1);
+        }
+
+
+        void tsBtnUp_Click(object sender, EventArgs e)
+        {
+            if (currentContext is UIDisplayArrayContext)
+            {
+                UIDisplayArrayContext dc;
+                dc = (UIDisplayArrayContext)currentContext;
+                dc.upkeyPressed();
+                return;
+                
+            }
+            throw new NotImplementedException();
+        }
+
+        void tsBtnDown_Click(object sender, EventArgs e)
+        {
+            if (currentContext is UIDisplayArrayContext)
+            {
+                UIDisplayArrayContext dc;
+                dc = (UIDisplayArrayContext)currentContext;
+                dc.downkeyPressed();
+                return;
+            }
+            throw new NotImplementedException();
+            
+        }
+
+
+        void tsBtnInsert_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void tsBtnDelete_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void tsBtnPgDown_Click(object sender, EventArgs e)
+        {
+            if (currentContext is UIDisplayArrayContext)
+            {
+                UIDisplayArrayContext dc;
+                dc = (UIDisplayArrayContext)currentContext;
+                dc.pgDownkeyPressed();
+                return;
+            }
+            throw new NotImplementedException();
+        }
+
+        void tsBtnPgUp_Click(object sender, EventArgs e)
+        {
+            if (currentContext is UIDisplayArrayContext)
+            {
+                UIDisplayArrayContext dc;
+                dc = (UIDisplayArrayContext)currentContext;
+                dc.pgUpkeyPressed();
+                return;
+            }
+            throw new NotImplementedException();
         }
 
 
@@ -323,6 +429,7 @@ namespace AubitDesktop2
             b.ActiveKey = Key;
             b.Text = Text;
             b.ID = ID;
+            
             b.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             b.Visible = false;
             b.Click += new EventHandler(b_Click);
@@ -352,8 +459,15 @@ namespace AubitDesktop2
         {
             
                 
-                tsBtnAccept = new AubitDesktop2.AubitTSBtn();
-                tsBtnCancel = new AubitDesktop2.AubitTSBtn();
+                tsBtnAccept = new AubitDesktop.AubitTSBtn();
+                tsBtnCancel = new AubitDesktop.AubitTSBtn();
+                tsBtnUp = new AubitTSBtn();
+                tsBtnDown = new AubitTSBtn();
+                tsBtnPgUp = new AubitTSBtn();
+                tsBtnPgDown = new AubitTSBtn();
+                tsBtnInsert = new AubitTSBtn();
+                tsBtnDelete = new AubitTSBtn();
+                
 
                 // 
                 // tsBtnAccept
@@ -366,7 +480,7 @@ namespace AubitDesktop2
                 this.tsBtnAccept.Name = "tsBtnAccept";
                 this.tsBtnAccept.Size = new System.Drawing.Size(23, 22);
                 this.tsBtnAccept.Text = "Accept";
-                this.tsBtnAccept.Click += new System.EventHandler(this.tsBtnAccept_Click);
+                this.tsBtnAccept.clickHandler= new System.EventHandler(this.tsBtnAccept_Click);
             
                 // 
                 // tsBtnCancel
@@ -379,12 +493,105 @@ namespace AubitDesktop2
                 this.tsBtnCancel.Name = "tsBtnCancel";
                 this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
                 this.tsBtnCancel.Text = "Cancel";
-                this.tsBtnCancel.Click += new System.EventHandler(this.tsBtnCancel_Click);
+                this.tsBtnCancel.clickHandler = new System.EventHandler(this.tsBtnCancel_Click);
 
                 this.tsBtnAccept.Visible = true;
                 this.tsBtnCancel.Visible = true;
                 this.toolStrip1.Add(tsBtnAccept);
                 this.toolStrip1.Add(tsBtnCancel);
+                // tsBtnUp
+                //
+                this.tsBtnUp.ActiveKey = "Up";
+                this.tsBtnUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnUp.ID = "Up";
+                this.tsBtnUp.Image = global::AubitDesktop.ToolBarImages.arrup;
+                this.tsBtnUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnUp.Name = "tsBtnUp";
+                this.tsBtnUp.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnUp.Text = "Up";
+                this.tsBtnUp.clickHandler = new System.EventHandler(tsBtnUp_Click);
+
+                this.tsBtnUp.Visible = true;
+                this.toolStrip1.Add(tsBtnUp);
+
+                // tsBtnDown
+                //
+                this.tsBtnDown.ActiveKey = "Down";
+                this.tsBtnDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnDown.ID = "Down";
+                this.tsBtnDown.Image = global::AubitDesktop.ToolBarImages.arrdown;
+                this.tsBtnDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnDown.Name = "tsBtnDown";
+                this.tsBtnDown.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnDown.Text = "Down";
+                this.tsBtnDown.clickHandler = new System.EventHandler(this.tsBtnDown_Click);
+
+                this.tsBtnDown.Visible = true;
+                this.toolStrip1.Add(tsBtnDown);
+
+
+                // tsBtnPgDown
+                //
+                this.tsBtnPgDown.ActiveKey = "PgDn";
+                this.tsBtnPgDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnPgDown.ID = "PgDn";
+                this.tsBtnPgDown.Image = global::AubitDesktop.ToolBarImages.arrpgdown;
+                this.tsBtnPgDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnPgDown.Name = "tsBtnPgDown";
+                this.tsBtnPgDown.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnPgDown.Text = "PgDn";
+                this.tsBtnPgDown.clickHandler = new System.EventHandler(this.tsBtnPgDown_Click);
+
+                this.tsBtnPgDown.Visible = true;
+                this.toolStrip1.Add(tsBtnPgDown);
+                // tsBtnPgUp
+                //
+                this.tsBtnPgUp.ActiveKey = "PgUp";
+                this.tsBtnPgUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnPgUp.ID = "PgUp";
+                this.tsBtnPgUp.Image = global::AubitDesktop.ToolBarImages.arrpgup;
+                this.tsBtnPgUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnPgUp.Name = "tsBtnPgUp";
+                this.tsBtnPgUp.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnPgUp.Text = "PgUp";
+                this.tsBtnPgUp.clickHandler = new System.EventHandler(this.tsBtnPgUp_Click);
+
+                this.tsBtnPgUp.Visible = true;
+                this.toolStrip1.Add(tsBtnPgUp);
+
+                // tsBtnInsert
+                //
+                this.tsBtnInsert.ActiveKey = "Insert";
+                this.tsBtnInsert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnInsert.ID = "Insert";
+                this.tsBtnInsert.Image = global::AubitDesktop.ToolBarImages.neu;
+                this.tsBtnInsert.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnInsert.Name = "tsBtnInsert";
+                this.tsBtnInsert.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnInsert.Text = "Insert";
+                this.tsBtnInsert.clickHandler = new System.EventHandler(this.tsBtnInsert_Click);
+
+                this.tsBtnInsert.Visible = true;
+                this.toolStrip1.Add(tsBtnInsert);
+                // tsBtnDelete
+                //
+                this.tsBtnDelete.ActiveKey = "Delete";
+                this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                this.tsBtnDelete.ID = "Delete";
+                this.tsBtnDelete.Image = global::AubitDesktop.ToolBarImages.delete;
+                this.tsBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+                this.tsBtnDelete.Name = "tsBtnDelete";
+                this.tsBtnDelete.Size = new System.Drawing.Size(23, 22);
+                this.tsBtnDelete.Text = "Delete";
+                this.tsBtnDelete.clickHandler = new System.EventHandler(this.tsBtnDelete_Click);
+
+                this.tsBtnDelete.Visible = true;
+                this.toolStrip1.Add(tsBtnDelete);
+
+
+
+
+
         }
 
 
@@ -839,7 +1046,15 @@ namespace AubitDesktop2
 
                 }
                 #endregion
-
+                #region DISPLAYARRAY
+                if (a is DISPLAYARRAY)
+                {
+                    DISPLAYARRAY da = (DISPLAYARRAY)a;
+                    contexts.Insert(Convert.ToInt32(da.CONTEXT), new UIDisplayArrayContext(this,da));
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
 
                 #region CONSTRUCT
                 if (a is CONSTRUCT)
@@ -1160,6 +1375,17 @@ namespace AubitDesktop2
             
             l= ApplicationWindows.FindAction(p);
             return l;
+        }
+
+        internal List<FGLFoundField> FindFieldArray(FIELD[] fieldlist)
+        {
+            return ApplicationWindows.FindFieldArray(fieldlist);
+            
+        }
+
+        internal void clrErrorTextFromFieldValidation()
+        {
+            ErrorText = "";
         }
     }
 

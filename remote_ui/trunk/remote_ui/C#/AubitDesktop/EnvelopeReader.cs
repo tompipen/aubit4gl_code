@@ -4,7 +4,7 @@ using System.Xml;
 using System.IO;
 using System.Collections;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {   
     //
     //  *** NOTE TO SELF ***

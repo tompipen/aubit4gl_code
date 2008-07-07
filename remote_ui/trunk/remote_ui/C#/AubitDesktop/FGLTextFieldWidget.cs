@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Text;
 using System.Drawing;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
 
     // A text widget fgl field widget...
@@ -16,6 +16,12 @@ namespace AubitDesktop2
         Panel p;
         Label l;
 
+        public new void setToolTip(ToolTip t, string s)
+        {
+            t.SetToolTip(this.l, s);
+            t.SetToolTip(this.p, s);
+            t.SetToolTip(this.t, s);
+        }
 
         public int tabIndex
         {
@@ -64,12 +70,25 @@ namespace AubitDesktop2
                 {
                     l.Visible = true;
                     t.Visible = false;
+                    //t.ReadOnly = true;
                 }
                 else
                 {
                     l.Visible = false;
                     t.Visible = true;
-
+                    if (_ContextType == "DISPLAYARRAY")
+                    {
+                        t.Visible = true;
+                        l.Visible = false;
+                        t.ReadOnly = true;
+                        //t.Enabled = true;
+                    }
+                    else
+                    {
+                        t.Visible = true;
+                        l.Visible = false;
+                        t.ReadOnly = false;
+                    }
                 }
 
 
@@ -125,6 +144,16 @@ namespace AubitDesktop2
                             val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
                         }
                     }
+                    
+                }
+
+                if (_ContextType == "")
+                {
+                    if (val!=null)
+                    {
+                        val = val.TrimEnd(null);
+                    }
+                    
                 }
 
 
@@ -135,17 +164,23 @@ namespace AubitDesktop2
 
         public FGLTextFieldWidget()
         {
+            p = new Panel();
+            l = new Label();
+            t = new System.Windows.Forms.TextBox();
+            
+            l.TextAlign = ContentAlignment.MiddleLeft;
+            
             t.Width = Width;
             t.Height = Height;
             l.Height = Height;
             l.Width = Width;
 
-            p = new Panel();
-            l = new Label();
+            this.SetWidget();
             l.TextAlign = ContentAlignment.MiddleLeft;
-            t = new System.Windows.Forms.TextBox();
-            t.Visible = true;
+            
+            t.Visible = false;
             t.Enabled = true;
+            l.Visible = true;
             p.Location = this.Location;
             p.Height=Height;
             p.Width = Width;
@@ -156,6 +191,8 @@ namespace AubitDesktop2
             this.format = null;
             this.NoEntry = false;
         }
+
+
 
         public int MaxLength
         {
@@ -173,7 +210,7 @@ namespace AubitDesktop2
         public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
         {
 
-            //this._WidgetDetails = new FGLWidget();
+            
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo,incl);
 
             p = new Panel();
@@ -221,7 +258,9 @@ namespace AubitDesktop2
             t.GotFocus += new EventHandler(t_GotFocus);
             t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             t.Click += new EventHandler(t_Click);
-
+            t.ReadOnly = true;
+            t.Visible = true;
+            
             this.id = id;
         }
 
@@ -315,7 +354,7 @@ namespace AubitDesktop2
             {
                 this.onUIEvent(this, this.beforeFieldID, "");
             }
-
+            
         }
 
         void t_LostFocus(object sender, EventArgs e)

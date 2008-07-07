@@ -4,7 +4,7 @@ using System.Collections;
 using System.Text;
 using System.Windows.Forms;
 
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     public class FGLWidget : ContainerControl
     {
@@ -14,6 +14,7 @@ namespace AubitDesktop2
         string _Action;
         string _Config;
         string _Widget;
+        string _comment;
 
         int _row;
         int _column;
@@ -43,6 +44,19 @@ namespace AubitDesktop2
             {
                 _afterFieldID = value;
             }
+        }
+
+        public string comment
+        {
+            get
+            {
+                return _comment;
+            }
+        }
+
+        public void setToolTip(ToolTip t, string s)
+        {
+
         }
 
         public string onActionID
@@ -288,8 +302,16 @@ namespace AubitDesktop2
          _columns=-1;
          _id=-1;
          _FieldTextChanged=false;
-            
+         _comment = "";
         }
+
+        internal void SetWidget() {
+
+            
+            attrib = new ATTRIB();
+
+        }
+
 
         internal void SetWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
@@ -304,6 +326,12 @@ namespace AubitDesktop2
             _Widget = widget;
             _Config = config;
             _id = id;
+            _comment = "";
+            if (thisAttribute.ATTRIB_COMMENTS != null)
+            {
+                
+                _comment = thisAttribute.ATTRIB_COMMENTS.Text;
+            }
 
             includeValues = null;
 

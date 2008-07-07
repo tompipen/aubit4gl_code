@@ -130,6 +130,20 @@ namespace AubitDesktop {
             }
         }
         
+        internal static System.Drawing.Bitmap arrpgdown {
+            get {
+                object obj = ResourceManager.GetObject("arrpgdown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap arrpgup {
+            get {
+                object obj = ResourceManager.GetObject("arrpgup", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap arrup {
             get {
                 object obj = ResourceManager.GetObject("arrup", resourceCulture);

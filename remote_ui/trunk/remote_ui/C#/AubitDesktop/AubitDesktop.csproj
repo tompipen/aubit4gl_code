@@ -107,7 +107,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="samp.cs" />
     <Compile Include="ScratchPad.cs">
       <SubType>Form</SubType>
@@ -121,6 +125,7 @@
       <DependentUpon>ToolBarImages.resx</DependentUpon>
     </Compile>
     <Compile Include="UIContextConstruct.cs" />
+    <Compile Include="UIContextDisplayArray.cs" />
     <Compile Include="UIContextInput.cs" />
     <Compile Include="UIContextMenu.cs">
       <SubType>Component</SubType>
@@ -174,7 +179,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Properties\Settings.settings" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\accept.png" />
@@ -185,6 +193,8 @@
     <Content Include="images\arrdown.png" />
     <Content Include="images\arright.png" />
     <Content Include="images\arrleft.png" />
+    <Content Include="images\arrpgdown.png" />
+    <Content Include="images\arrpgup.png" />
     <Content Include="images\arrup.png" />
     <Content Include="images\attention.png" />
     <Content Include="images\Aubit.gif" />

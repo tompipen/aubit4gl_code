@@ -1,4 +1,4 @@
-namespace AubitDesktop2
+namespace AubitDesktop
 {
     partial class frmMainAppWindow
     {
