@@ -129,8 +129,31 @@ static void
 A4GL_XML_opening_form_xml (char *formname, char *formfile, char *fbuff)
 {
   int a;
+  char *buff;
+char buff2[2000];
+int len;
+int l;
+char *ptr;
+
+  int cnt;
   suspend_flush (1);
   send_to_ui ("<XMLFORM NAME=\"%s\" FILE=\"%s\">", formname, formfile);
+
+  cnt=0;
+  len=strlen(fbuff);
+  A4GL_base64_encode(fbuff,len,&buff);
+  l=strlen(buff);
+  ptr=buff;
+  
+  while (cnt<l) {
+	strncpy(buff2,ptr,256);
+	buff2[256]=0;
+  	send_to_ui_no_nl ("%s", buff2);
+	cnt+=256;
+	ptr+=256;
+  }
+free(buff);
+/*
   for (a = 0; a < strlen (fbuff); a += 256)
     {
       char b[300];
@@ -138,6 +161,7 @@ A4GL_XML_opening_form_xml (char *formname, char *formfile, char *fbuff)
       b[256] = 0;
       send_to_ui ("%s", uilib_xml_escape (b));
     }
+*/
   send_to_ui ("</XMLFORM>");
   suspend_flush (-1);
   flush_ui ();
