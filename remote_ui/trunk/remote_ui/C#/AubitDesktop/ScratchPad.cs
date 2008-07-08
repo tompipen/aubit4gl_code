@@ -19,7 +19,7 @@ namespace AubitDesktop
         private void ScratchPad_Load(object sender, EventArgs e)
         {
             dataGridView1.ColumnCount = 5;
-            dataGridView1.RowCount = 0;
+      //      dataGridView1.RowCount = 0;
             dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
 
 
@@ -60,6 +60,11 @@ namespace AubitDesktop
             dataGridView1.Columns[3].DisplayIndex = 1;
             dataGridView1.Columns[4].DisplayIndex = 2;
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "Blah";
         }
     }
 }

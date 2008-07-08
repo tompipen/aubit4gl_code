@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
@@ -180,9 +200,9 @@ namespace AubitDesktop
         {
             int cnt = 0;
 
-            
-            mainWin.SetContext("");
-            mainWin.SetContext("CONSTRUCT", activeFields, this);
+
+            mainWin.SetContext(FGLContextType.ContextNone);
+            mainWin.SetContext(FGLContextType.ContextConstruct, activeFields, this);
             mainWin.setActiveToolBarKeys(KeyList,true);
 
             EventTriggered = UIInputContext_EventTriggered;
@@ -261,7 +281,7 @@ namespace AubitDesktop
                     ffield.fglField.onActionID = e.ID;
                     ffield.fglField.onUIEvent = onActionTriggered;
                     ffield.fglField.Enabled = true;
-                    ffield.fglField.ContextType = "CONSTRUCT";
+                    ffield.fglField.ContextType = FGLContextType.ContextConstruct;
                 }
 
             }
@@ -306,7 +326,7 @@ namespace AubitDesktop
         {
 
             mainWin.setActiveToolBarKeys(null,false);
-            mainWin.SetContext("");
+            mainWin.SetContext(FGLContextType.ContextNone);
 
             _contextIsActive = false;
             EventTriggered = null;

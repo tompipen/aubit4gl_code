@@ -1,3 +1,23 @@
+/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,8 +30,16 @@ namespace AubitDesktop
         private bool _contextIsActive;
         private FGLApplicationPanel mainWin;
         //private int currentRow;
-        //private int nextRow;
-
+        
+        private enum MoveType {
+            MoveTypeNoPendingMovement,
+            MoveTypeDown,
+            MoveTypeUp,
+            MoveTypeTo,
+            MoveTypePageDown,
+            MoveTypePageUp
+        };
+        private MoveType nextMove;
         /// <summary>
         /// Total number of rows in the dataset
         /// </summary>
@@ -59,53 +87,115 @@ namespace AubitDesktop
         public void downkeyPressed()
         {
             mainWin.clrErrorTextFromFieldValidation();
-            
+
             if (arrLine < nRows)
             {
-                arrLine++;
-                scrLine++;
-                if (scrLine > scrRecLines)
+                // If we've got a before row *and* an after row - we need to send to packets back - but 
+                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
+                // so - we'll store the movement and do it later...
+                if (beforeRow != null && afterRow != null)
                 {
-                    scrLine = scrRecLines;
-                    redisplay_arr(true);
-                }
-                else
-                {
-                    redisplay_arr(false);
-                }
-                lastarrLine = arrLine;
-            }
-            else
-            {
-                // Tried to move off the bottom of the display array...
-                mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
-            }
-        }
-        
+                    // We've got to send the before/after row triggers..
+                    nextMove = MoveType.MoveTypeDown;
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
 
-        public void upkeyPressed()
-        {
-            mainWin.clrErrorTextFromFieldValidation();
-            if (arrLine > 1)
-            {
-                scrLine--;
-                arrLine--;
-                if (scrLine == 0)
-                {
-                    scrLine = 1;
-                    redisplay_arr(true);
                 }
                 else
                 {
-                    redisplay_arr(false);
+                    if (afterRow != null)
+                    {
+                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    }
+
+                    moveDown();
+                    if (beforeRow != null)
+                    {
+                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+
+                    }
+
                 }
-                lastarrLine = arrLine;
             }
             else
             {
                 // Tried to move off the top...
                 mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
             }
+        }
+
+        private void moveDown()
+        {
+            arrLine++;
+            scrLine++;
+            if (scrLine > scrRecLines)
+            {
+                scrLine = scrRecLines;
+                redisplay_arr(true);
+            }
+            else
+            {
+                redisplay_arr(false);
+            }
+            lastarrLine = arrLine;
+            setFocusToCurrentRow();
+        }
+        
+
+        public void upkeyPressed()
+        {
+            mainWin.clrErrorTextFromFieldValidation();
+
+            if (arrLine > 1)
+            {
+                // If we've got a before row *and* an after row - we need to send to packets back - but 
+                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
+                // so - we'll store the movement and do it later...
+                if (beforeRow != null && afterRow != null)
+                {
+                    // We've got to send the before/after row triggers..
+                    nextMove = MoveType.MoveTypeUp;
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+
+                }
+                else
+                {
+                    if (afterRow != null)
+                    {
+                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    }
+
+                    moveUp();
+
+                    if (beforeRow != null)
+                    {
+                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+
+                    }
+
+                }
+            }
+            else
+            {
+                // Tried to move off the top...
+                mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
+            }
+        }
+
+        private void moveUp()
+        {
+            scrLine--;
+            arrLine--;
+            if (scrLine == 0)
+            {
+                scrLine = 1;
+                redisplay_arr(true);
+            }
+            else
+            {
+                redisplay_arr(false);
+            }
+            lastarrLine = arrLine;
+            setFocusToCurrentRow();
         }
 
         public void pgUpkeyPressed()
@@ -131,6 +221,7 @@ namespace AubitDesktop
             mainWin = f;
             this.arrLine = 1;
             this.scrLine = 1;
+            this.nextMove= 0;
             this.lastarrLine = -1;
             this.nRows = Convert.ToInt32(p.ARRCOUNT);
             Data = p.ROWS;
@@ -210,7 +301,7 @@ namespace AubitDesktop
             {
                 screenRecord[scr_line-1][a].fglField.Text=this.Data[lineno-1].VALUES[a].Text;
             }
-            setFocusToCurrentRow();
+            
         }
 
         private void redisplay_arr(bool redisp_all)
@@ -245,13 +336,12 @@ namespace AubitDesktop
                     clrScrRecordLine(a + 1);
                 }
             }
-            setFocusToCurrentRow();
+            //setFocusToCurrentRow();
         }
 
 
         private void setFocusToCurrentRow()
         {
-
                     screenRecord[scrLine-1][0].fglField.setFocus();
         }
 
@@ -270,11 +360,41 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values)
         {
-            mainWin.SetContext("");
-            mainWin.SetContext("DISPLAYARRAY", activeFields, this);
+            //mainWin.SetContext(FGLContextType.ContextNone);
+            mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this);
             mainWin.setActiveToolBarKeys(KeyList, true,true,false);
+            if (nextMove == MoveType.MoveTypeNoPendingMovement)
+            {
+                setFocusToCurrentRow();
+            }
+
+            if (nextMove != MoveType.MoveTypeNoPendingMovement)
+            {
+                // Theres a pending movement...
+                switch (nextMove)
+                {
+                    case MoveType.MoveTypeUp:
+                        moveUp();
+                        if (beforeRow != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
+                    case MoveType.MoveTypeDown:
+                        moveDown();
+                        if (beforeRow != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
+                }
+            }
             redisplay_arr(true);
-            setFocusToCurrentRow();
+            
             this.EventTriggered = UIDisplayArrayContext_EventTriggered;
 
             if (!_contextIsActive)
@@ -288,8 +408,8 @@ namespace AubitDesktop
         public void DeactivateContext()
         {
             mainWin.setActiveToolBarKeys(null, false);
-            
-            mainWin.SetContext("");
+
+            mainWin.SetContext(FGLContextType.ContextNone);
             
             EventTriggered = null;
             _contextIsActive = false;

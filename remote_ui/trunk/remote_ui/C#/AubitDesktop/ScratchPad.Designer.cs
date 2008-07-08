@@ -31,11 +31,13 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.fglTextFieldWidget1 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget2 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget3 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget4 = new AubitDesktop.FGLTextFieldWidget();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -79,22 +81,12 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 100);
             this.tableLayoutPanel1.TabIndex = 6;
             // 
-            // trackBar1
-            // 
-            this.trackBar1.Location = new System.Drawing.Point(500, 12);
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBar1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.trackBar1.RightToLeftLayout = true;
-            this.trackBar1.Size = new System.Drawing.Size(42, 100);
-            this.trackBar1.TabIndex = 7;
-            this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
             // fglTextFieldWidget1
             // 
             this.fglTextFieldWidget1.afterFieldID = null;
             this.fglTextFieldWidget1.AutoNext = false;
             this.fglTextFieldWidget1.beforeFieldID = null;
+            this.fglTextFieldWidget1.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
             this.fglTextFieldWidget1.datatype_length = 0;
             this.fglTextFieldWidget1.Downshift = false;
             this.fglTextFieldWidget1.FieldTextChanged = true;
@@ -117,6 +109,7 @@
             this.fglTextFieldWidget2.afterFieldID = null;
             this.fglTextFieldWidget2.AutoNext = false;
             this.fglTextFieldWidget2.beforeFieldID = null;
+            this.fglTextFieldWidget2.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
             this.fglTextFieldWidget2.datatype_length = 0;
             this.fglTextFieldWidget2.Downshift = false;
             this.fglTextFieldWidget2.FieldTextChanged = true;
@@ -139,6 +132,7 @@
             this.fglTextFieldWidget3.afterFieldID = null;
             this.fglTextFieldWidget3.AutoNext = false;
             this.fglTextFieldWidget3.beforeFieldID = null;
+            this.fglTextFieldWidget3.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
             this.fglTextFieldWidget3.datatype_length = 0;
             this.fglTextFieldWidget3.Downshift = false;
             this.fglTextFieldWidget3.FieldTextChanged = true;
@@ -161,6 +155,7 @@
             this.fglTextFieldWidget4.afterFieldID = null;
             this.fglTextFieldWidget4.AutoNext = false;
             this.fglTextFieldWidget4.beforeFieldID = null;
+            this.fglTextFieldWidget4.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
             this.fglTextFieldWidget4.datatype_length = 0;
             this.fglTextFieldWidget4.Downshift = false;
             this.fglTextFieldWidget4.FieldTextChanged = true;
@@ -178,11 +173,41 @@
             this.fglTextFieldWidget4.Text = "fglTextFieldWidget4";
             this.fglTextFieldWidget4.Upshift = false;
             // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(500, 12);
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trackBar1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.trackBar1.RightToLeftLayout = true;
+            this.trackBar1.Size = new System.Drawing.Size(42, 100);
+            this.trackBar1.TabIndex = 7;
+            this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.None;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(166, 206);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 8;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(423, 212);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // ScratchPad
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(599, 298);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
@@ -208,5 +233,7 @@
         private FGLTextFieldWidget fglTextFieldWidget3;
         private FGLTextFieldWidget fglTextFieldWidget4;
         private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button1;
     }
 }

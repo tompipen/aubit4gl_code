@@ -1,3 +1,23 @@
+/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -5,6 +25,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.ComponentModel;
 using System.Windows.Forms;
+using Tamir.SharpSsh;
+using Tamir.SharpSsh.jsch;
+
 
 namespace AubitDesktop
 {
@@ -25,6 +48,7 @@ namespace AubitDesktop
     public class ReceivedEventArgs : EventArgs
     {
         private TcpClient s;
+       
         private string msg;
 
         public string Data
@@ -70,13 +94,24 @@ namespace AubitDesktop
     }
 
 
+
+
+
+
+
     public class AubitNetwork
     {
         private TcpClient tcpClient;
+
+        private ssh sshExec;
+
+        private System.IO.Stream sshStreamRead;
+        private System.IO.Stream sshStreamWrite;
+
         private IPAddress ipAddress;
-        private NetworkStream stream;
-        private BackgroundWorker bwReceiver;   
-        
+        private NetworkStream tcpStream;
+        private BackgroundWorker bwReceiver;
+        private bool useSSH=false;
   
         public enum SocketStyle
         {
@@ -85,6 +120,11 @@ namespace AubitDesktop
             SocketStyleEnvelope
         };
         AubitNetwork.SocketStyle sockStyle;
+
+
+
+        // Transport agnostic methods : 
+        #region TRANSPORT AGNOSTIC ROUTINES
 
         /// <summary>
         /// Occurs when this client failed on connecting to server.
@@ -105,13 +145,6 @@ namespace AubitDesktop
                     ConnectingFailed(this, e);
             }
         }
-
-       public bool isConnected() {
-           if (tcpClient == null) return false;
-           if (tcpClient.Connected) return true;
-           return false;
-       }
-
         public event EventHandler ConnectionDied;
 
 
@@ -136,29 +169,25 @@ namespace AubitDesktop
         }
 
 
-        public AubitNetwork(AubitNetwork.SocketStyle s)
-        {
-            this.sockStyle = s;
-        }
 
-        public void SendString(string s) {
-            if (sockStyle==AubitNetwork.SocketStyle.SocketStyleLine||sockStyle==AubitNetwork.SocketStyle.SocketStyleEnvelope) {
-                s = s + "\n";
-            }
-           byte[] msg = System.Text.Encoding.ASCII.GetBytes(s);
-           try
-           {
-               stream.Write(msg, 0, msg.Length);
-           }
-           catch (Exception ex)
-           {
-               if (this.ConnectionDied != null)
-               {
-                   this.ConnectionDied(stream, new EventArgs());
-               }
 
-           }
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Occurs when this client disconnected from the remote server.
@@ -239,7 +268,68 @@ namespace AubitDesktop
                     ServerDisconnected(this, e);
             }
         }
-         
+
+
+
+
+
+
+
+
+
+
+
+        public void NewConnection(string server, int port,string username, string password,string application)
+        {
+            if (useSSH)
+            {
+                NewConnectionSSH(server, port, username, password,application);
+            }
+            else
+            {
+                NewConnectionTCP(server, port);
+            }
+        }
+
+
+        public AubitNetwork(AubitNetwork.SocketStyle s)
+        {
+            this.sockStyle = s;
+        }
+
+        public void SendString(string s)
+        {
+            if (sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
+            {
+                s = s + "\n";
+            }
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(s);
+            try
+            {
+                streamWrite(msg, 0, msg.Length);
+            }
+            catch (Exception ex)
+            {
+                if (this.ConnectionDied != null)
+                {
+                    this.ConnectionDied(null, new EventArgs());
+                }
+
+            }
+        }
+
+        private void streamWrite(byte[] msg, int p, int p_3)
+        {
+            if (useSSH)
+            {
+                sshStreamWrite.Write(msg, p, p_3);
+            }
+            else
+            {
+                tcpStream.Write(msg, p, p_3);
+            }
+        }
+
 
        private void bwReceiver_doWork(object sender , DoWorkEventArgs e)
         {
@@ -248,7 +338,7 @@ namespace AubitDesktop
             string Envelope="";
             e.Result = true;
 
-            while (this.tcpClient.Connected)
+            while (this.isConnected())
             {
                 int index;
                 //Read the command's Type.
@@ -256,7 +346,7 @@ namespace AubitDesktop
 
                 try
                 {
-                    int readBytes = this.stream.Read(buffer, 0, buffer.Length);
+                    int readBytes = streamRead(buffer, 0, buffer.Length);
                     if (readBytes == 0)
                         break;
                     cmd += System.Text.Encoding.ASCII.GetString(buffer, 0, readBytes);
@@ -290,13 +380,13 @@ namespace AubitDesktop
 
                             if (!inEnvelope)
                             {
-                                this.OnReceivedFromServer(new ReceivedEventArgs(this.tcpClient, c));
+                                this.OnReceivedFromServer(new ReceivedEventArgs(null, c));
                             }
 
                             if (c.StartsWith("</ENVELOPE>"))
                             {
                                 inEnvelope = false;
-                                this.OnReceivedEnvelopeFromServer( new ReceivedEventArgs(this.tcpClient, Envelope));
+                                this.OnReceivedEnvelopeFromServer( new ReceivedEventArgs(null, Envelope));
                                 Envelope = "";
                             }
                         }
@@ -318,18 +408,82 @@ namespace AubitDesktop
             this.Disconnect();
         }
 
+        private int streamRead(byte[] buffer, int p, int p_3)
+        {
+            if (useSSH)
+            {
+                return sshStreamRead.Read(buffer, p, p_3);
+            }
+            else
+            {
+                return tcpStream.Read(buffer, p, p_3);
+            }
+
+        }
+
 
         public void setEnvelopeMode()
         {
             this.sockStyle = AubitNetwork.SocketStyle.SocketStyleEnvelope;
         }
 
+        private void bwReceiver_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            bool b;
+            b = (bool)e.Result;
+
+            if (b)
+                this.OnConnectingFailed(new EventArgs());
+            else
+                this.OnConnectingSuccessed(new EventArgs());
+
+            ((BackgroundWorker)sender).Dispose();
+        }
+        #endregion
+
+        #region TRANSPORT SWITCHING ROUTINES
+
+        public bool Disconnect()
+        {
+            if (useSSH)
+            {
+                return Disconnect_SSH();
+            }
+            else
+            {
+                return Disconnect_TCP();
+            }
+        }
+
+
+
+
+        public bool isConnected()
+        {
+            if (useSSH)
+            {
+                return sshExec.isConnected();
+            }
+            else
+            {
+                if (tcpClient == null) return false;
+                if (tcpClient.Connected) return true;
+            }
+            return false;
+        }
+        #endregion
+
+
+
+        #region TCP direct connect routines
+
         /// <summary>
         /// Disconnect the client from the server and returns true if the client had been disconnected from the server.
         /// </summary>
         /// <returns>True if the client had been disconnected from the server,otherwise false.</returns>
-        public bool Disconnect()
+        private bool Disconnect_TCP()
         {
+
             if (this.tcpClient != null && this.tcpClient.Connected)
             {
                 try
@@ -347,23 +501,12 @@ namespace AubitDesktop
 
             }
             else
+            {
                 return true;
+            }
         } 
 
-        private void bwReceiver_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            bool b;
-            b = (bool)e.Result;
-
-            if (b)
-                this.OnConnectingFailed(new EventArgs());
-            else
-                this.OnConnectingSuccessed(new EventArgs());
-
-            ((BackgroundWorker)sender).Dispose();
-        }
-
-        public void NewConnection(string server, int port)
+        public void NewConnectionTCP(string server, int port)
         {
             tcpClient = new TcpClient();
             ipAddress = Dns.GetHostEntry(server).AddressList[0];
@@ -387,7 +530,7 @@ namespace AubitDesktop
 
             if (tcpClient.Connected)
             {
-                stream = tcpClient.GetStream();
+                tcpStream = tcpClient.GetStream();
                 this.bwReceiver = new BackgroundWorker();
             
                 bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
@@ -398,8 +541,127 @@ namespace AubitDesktop
             }
             else
             {
-                stream = null;
+                tcpStream = null;
             }
         }
+        #endregion
+
+        #region SSH specific routines
+        public void NewConnectionSSH(string server, int port, string username, string password,string application)
+        {
+            if (port == 3490) port = 22;
+
+            sshExec = new ssh(server, username,password,application, port);
+            
+
+            try
+            {
+                sshExec.execute();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+
+            setEnvelopeMode();
+            sshStreamWrite = sshExec.sIn;
+            sshStreamRead = sshExec.sOut;
+            //sshExec.RunCommand(application);
+
+            this.bwReceiver = new BackgroundWorker();
+
+            bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
+            bwReceiver.WorkerSupportsCancellation = true;
+            bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
+            bwReceiver.RunWorkerAsync();
+            
+
+            /*
+            sshShell = new JSch(); 
+            
+
+            sshSession=sshShell.getSession(username,server);
+            
+            // if we're still using the default port - switch to the default ssh port instead..
+            
+            sshSession.setPort(port);
+            
+
+            if (password != null) sshSession.setPassword(password);
+
+            try
+            {
+                sshSession.connect();
+            } catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+            
+            Channel channel=sshSession.openChannel("exec");
+            ChannelExec e; 
+            e=(ChannelExec)channel;
+            e.setCommand(application);
+            channel.connect();
+            
+
+
+            if (bwReceiver != null)
+            {
+                if (bwReceiver.IsBusy)
+                {
+                    bwReceiver.CancelAsync();
+                }
+                bwReceiver = null;
+            }
+
+            if (channel.isConnected())
+            {
+                sshStreamRead = channel.getOutputStream();
+                sshStreamWrite = channel.getInputStream();
+                this.bwReceiver = new BackgroundWorker();
+
+                bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
+                bwReceiver.WorkerSupportsCancellation = true;
+                bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
+                bwReceiver.RunWorkerAsync();
+                sshSession.run();
+                
+            }
+            else
+            {
+                sshStreamRead = null;
+                sshStreamWrite = null;
+            }
+             * */
+
+        }
+
+        private bool Disconnect_SSH()
+        {
+
+
+            if (this.sshExec != null && this.sshExec.isConnected())
+            {
+                try
+                {
+                    //this.tcpClient.Shutdown(SocketShutdown.Both);
+                    this.sshExec.Disconnect();
+                    this.bwReceiver.CancelAsync();
+                    this.OnDisconnectedFromServer(new EventArgs());
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+
+            }
+            else
+            {
+                return true;
+            }
+        } 
+#endregion
     }
 }
