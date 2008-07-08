@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -133,7 +153,7 @@ namespace AubitDesktop
                     }
                     
                     // Set the context type
-                    fld.ContextType = ""; // We're not using this field in any context...
+                    fld.ContextType = FGLContextType.ContextNone; // We're not using this field in any context...
                     
 
                     fields.Add(fld);
@@ -346,7 +366,7 @@ namespace AubitDesktop
 
         }
 
-        public void SetContext(string contextType)
+        public void SetContext(FGLContextType contextType)
         {
             this.thisFormsPanel.SuspendLayout();
             // Set *all* fields...
@@ -359,7 +379,7 @@ namespace AubitDesktop
         }
 
 
-        public void SetContext(string contextType, List<IFGLField> pfields)
+        public void SetContext(FGLContextType contextType, List<IFGLField> pfields)
         {
             
             this.thisFormsPanel.SuspendLayout();
@@ -374,7 +394,7 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    i.ContextType = "";
+                    i.ContextType = FGLContextType.ContextNone;
                 }
             }
             this.thisFormsPanel.ResumeLayout();

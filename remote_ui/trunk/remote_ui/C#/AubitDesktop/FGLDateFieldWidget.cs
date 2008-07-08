@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text;
@@ -9,7 +29,7 @@ namespace AubitDesktop
     // A text widget fgl field widget...
     class FGLDateFieldWidget : FGLWidget, IFGLField
     {
-        string _ContextType;
+        FGLContextType _ContextType;
         /*
         private FGLWidget _WidgetDetails;
 
@@ -40,13 +60,13 @@ namespace AubitDesktop
         }
 
 
-        public string ContextType
+        public FGLContextType ContextType
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             set
             {
 
                 _ContextType = value;
-                if (_ContextType == ""  )
+                if (_ContextType == FGLContextType.ContextNone)
                 {
                     l.Visible = true;
                     t.Visible = false;

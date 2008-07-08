@@ -1,3 +1,23 @@
+/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,11 +36,13 @@ namespace AubitDesktop
     public partial class frmMainAppWindow : Form
     {
 
-        public AubitNetwork n;
+        public AubitNetwork stdNetworkConnection;
         private frmConsole mainConsole;
         public UIContext currentContext = null;
+        private bool showEvelopeProgress = false;
         private string Application;
         private string Username;
+  
         private string Password;
         private bool updating;
         private bool connectionTypeSSH;
@@ -165,7 +187,7 @@ namespace AubitDesktop
         {
             AubitTSBtn o;
             o=(AubitTSBtn)sender;
-            n.SendString("<TRIGGERED ID=\"" + o.ID + "\"/>");
+            stdNetworkConnection.SendString("<TRIGGERED ID=\"" + o.ID + "\"/>");
 
         }
 
@@ -198,29 +220,35 @@ namespace AubitDesktop
             this.hasApplicationTree = false;
 
 
-            if (connectionTypeSSH)
-            {
-               
-                
-            } else {
-                n = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
-                n.ReceivedFromServer += new ReceivedEventHandler(n_ReceivedFromServer);
-                n.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
-                n.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
-                n.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+
+                stdNetworkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
+                stdNetworkConnection.ReceivedFromServer += new ReceivedEventHandler(n_ReceivedFromServer);
+                stdNetworkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
+                stdNetworkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
+                stdNetworkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
                 try
                 {
-                    n.NewConnection(server, port);
+                    stdNetworkConnection.NewConnection(server, port,username,password,app);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
-                if (!this.n.isConnected())
+
+                if (!this.stdNetworkConnection.isConnected())
                 {
+
+                    // This message box should be surplus to requirements...
+                    MessageBox.Show("Failure in connection");
+
+
                     this.Dispose();
                 }
-            }
+                else
+                {
+                    this.Show();
+                }
+
            
         }
 
@@ -432,20 +460,20 @@ namespace AubitDesktop
 
         public void SendString(string text) {
             setWaitCursor();
-            n.SendString(text);
+            stdNetworkConnection.SendString(text);
 
         }
 
         void UIContext_EventTriggered(object source, string ID, string TriggeredText)
         {
             setWaitCursor();
-           n.SendString(TriggeredText);
+           stdNetworkConnection.SendString(TriggeredText);
         }
 
 
         private void button1_Click(object sender, EventArgs e)
         {
-            n.SendString(txtSend.Text);
+            stdNetworkConnection.SendString(txtSend.Text);
             button1.Enabled = false;
         }
 
@@ -486,8 +514,8 @@ namespace AubitDesktop
             if (e.Data == "FAILED TO START")
             {
                 MessageBox.Show("Application did not start\nIs that the correct Application name ? ");
-                n.Disconnect();
-                n = null;
+                stdNetworkConnection.Disconnect();
+                stdNetworkConnection = null;
                 //myConsole.Visible = false;
                 return;
             }
@@ -495,8 +523,8 @@ namespace AubitDesktop
             if (e.Data == "AUTHFAILED")
             {
                 MessageBox.Show("Incorrect login details - connection refused");
-                n.Disconnect();
-                n = null;
+                stdNetworkConnection.Disconnect();
+                stdNetworkConnection = null;
                 return;
             }
             MessageBox.Show(e.Data);
@@ -607,25 +635,31 @@ namespace AubitDesktop
 
         internal void setProgress(int maxVal, int currVal)
         {
-
-            try
+            if (showEvelopeProgress)
             {
-
-                if (maxVal > 0)
+                try
                 {
-                    toolStripProgressBar2.Visible = true;
-                    toolStripProgressBar2.Value = currVal;
-                    toolStripProgressBar2.Maximum = maxVal;
 
+                    if (maxVal > 0)
+                    {
+                        toolStripProgressBar2.Visible = true;
+                        toolStripProgressBar2.Value = currVal;
+                        toolStripProgressBar2.Maximum = maxVal;
+
+                    }
+                    else
+                    {
+                        toolStripProgressBar2.Visible = false;
+                    }
                 }
-                else
+                catch
                 {
-                    toolStripProgressBar2.Visible = false;
+
                 }
             }
-            catch
+            else
             {
-
+                toolStripProgressBar2.Visible = false;
             }
         }
 
@@ -862,6 +896,7 @@ namespace AubitDesktop
             if (key == null) return;
 
             setLastKeyInApplication(key);
+            this.ErrorText = "";
 
             foreach (ToolStripItem i in topWindowToolStrip.Items)
             {

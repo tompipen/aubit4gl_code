@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Windows.Forms;
@@ -25,6 +45,17 @@ namespace AubitDesktop
             return obj;
         }
     }
+
+    public enum FGLContextType
+    {
+        ContextNone,
+        ContextInput,
+        ContextConstruct,
+        ContextDisplayArray,
+        ContextInputArray,
+        ContextMenu,
+        ContextPrompt
+    };
 
     class GuiLayout
     {
@@ -137,8 +168,8 @@ namespace AubitDesktop
             get;
         }
          * */
-        
-        string ContextType
+
+        FGLContextType ContextType
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             set;
         }
@@ -494,12 +525,12 @@ namespace AubitDesktop
 
         }
 
-        internal void SetContext(string contextType)
+        internal void SetContext(FGLContextType contextType)
         {
             windows[0].SetContext(contextType);
         }
 
-        internal void SetContext(string contextType, List<IFGLField> pfields, UIContext currContext)
+        internal void SetContext(FGLContextType contextType, List<IFGLField> pfields, UIContext currContext)
         {
             windows[0].SetContext(contextType,pfields,  currContext);
         }
@@ -805,12 +836,12 @@ namespace AubitDesktop
         }
 
 
-        internal void SetContext(string contextType)
+        internal void SetContext(FGLContextType contextType)
         {
             CurrentForm.SetContext(contextType);
         }
 
-        internal void SetContext(string contextType, List<IFGLField> pfields, UIContext currContext)
+        internal void SetContext(FGLContextType contextType, List<IFGLField> pfields, UIContext currContext)
         {
             CurrentForm.SetContext(contextType, pfields);
         }

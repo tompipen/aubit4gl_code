@@ -87,12 +87,13 @@ namespace AubitDesktop
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(100, 20);
             this.txtUsername.TabIndex = 4;
-            this.txtUsername.Text = "User";
+            this.txtUsername.Text = "aubit4gl";
             // 
             // txtPassword
             // 
             this.txtPassword.Location = new System.Drawing.Point(85, 47);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(100, 20);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.Text = "CM";
@@ -103,7 +104,7 @@ namespace AubitDesktop
             this.txtServer.Name = "txtServer";
             this.txtServer.Size = new System.Drawing.Size(179, 20);
             this.txtServer.TabIndex = 6;
-            this.txtServer.Text = "212.23.14.59";
+            this.txtServer.Text = "192.168.2.217";
             // 
             // txtApplication
             // 
@@ -111,7 +112,7 @@ namespace AubitDesktop
             this.txtApplication.Name = "txtApplication";
             this.txtApplication.Size = new System.Drawing.Size(179, 20);
             this.txtApplication.TabIndex = 7;
-            this.txtApplication.Text = "menuprog";
+            this.txtApplication.Text = "display_array";
             // 
             // btnConnect
             // 
@@ -135,7 +136,7 @@ namespace AubitDesktop
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 125);
+            this.button1.Location = new System.Drawing.Point(12, 127);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 10;
@@ -145,7 +146,7 @@ namespace AubitDesktop
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(93, 125);
+            this.button2.Location = new System.Drawing.Point(93, 127);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 11;

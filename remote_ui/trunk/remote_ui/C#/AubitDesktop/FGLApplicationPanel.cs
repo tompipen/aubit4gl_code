@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Windows.Forms;
@@ -317,6 +337,7 @@ namespace AubitDesktop
 
         void tsBtnUp_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
@@ -330,6 +351,7 @@ namespace AubitDesktop
 
         void tsBtnDown_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
@@ -344,16 +366,19 @@ namespace AubitDesktop
 
         void tsBtnInsert_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             throw new NotImplementedException();
         }
 
         void tsBtnDelete_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             throw new NotImplementedException();
         }
 
         void tsBtnPgDown_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
@@ -366,6 +391,7 @@ namespace AubitDesktop
 
         void tsBtnPgUp_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
@@ -381,6 +407,7 @@ namespace AubitDesktop
         {
             string reply;
             AubitTSBtn o;
+            this.ErrorText = "";
             o = (AubitTSBtn)sender;
             reply = null;
             if (o.ID == null)
@@ -394,7 +421,7 @@ namespace AubitDesktop
                 reply = o.ID;
             }
             if (reply == null) return;
-            TopWindow. n.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
+            TopWindow. stdNetworkConnection.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
 
         }
 
@@ -607,6 +634,7 @@ namespace AubitDesktop
 
         private void tsBtnCancel_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             string eventText = "<TRIGGERED ID=\"INTERRUPT\"/>";
             TopWindow.SendString(eventText);
             currentContext.DeactivateContext();
@@ -615,6 +643,7 @@ namespace AubitDesktop
 
         private void tsBtnAccept_Click(object sender, EventArgs e)
         {
+            this.ErrorText = "";
             string eventText = currentContext.getAcceptString();
             if (eventText != null)
             {
@@ -1303,12 +1332,12 @@ namespace AubitDesktop
          * */
 
 
-        public void SetContext(string contextType)
+        public void SetContext(FGLContextType contextType)
         {
             ApplicationWindows.SetContext(contextType);
         }
 
-        public void SetContext(string contextType, List<IFGLField> pfields, UIContext currContext)
+        public void SetContext(FGLContextType contextType, List<IFGLField> pfields, UIContext currContext)
         {
             ApplicationWindows.SetContext(contextType, pfields, currContext);
         }
@@ -1332,9 +1361,9 @@ namespace AubitDesktop
             tsBtnCancel.Visible = false;
         }
         */
-        
 
-        internal void SetContext(string p, List<FGLFoundField> activeFields, UIContext currContext)
+
+        internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext)
         {
             int cnt = 0;
             List<IFGLField> l = new List<IFGLField>();

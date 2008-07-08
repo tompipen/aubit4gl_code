@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  Copyright (c) 2008 The Aubit Development Team. 
+ *  All rights reserved. See CREDITS file.
+ *  
+ *  
+ *  This file is part of Aubit 4gl.
+ *
+ *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 2 as 
+ *  published by the Free Software Foundation.
+ *
+ *  Aubit 4gl is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text;
@@ -10,7 +30,7 @@ namespace AubitDesktop
     // A text widget fgl field widget...
     public class FGLTextFieldWidget : FGLWidget, IFGLField
     {
-        string _ContextType;
+        FGLContextType _ContextType;
         private int id;
         TextBox t;
         Panel p;
@@ -60,28 +80,34 @@ namespace AubitDesktop
             
         }
 
-        public string ContextType
+        public FGLContextType ContextType
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             set
             {
 
                 _ContextType = value;
-                if (_ContextType == "" || this.NoEntry)
+                if (_ContextType == FGLContextType.ContextNone || this.NoEntry)
                 {
                     l.Visible = true;
                     t.Visible = false;
-                    //t.ReadOnly = true;
                 }
                 else
                 {
-                    l.Visible = false;
-                    t.Visible = true;
-                    if (_ContextType == "DISPLAYARRAY")
+                    if (_ContextType == FGLContextType.ContextDisplayArray)
                     {
-                        t.Visible = true;
-                        l.Visible = false;
-                        t.ReadOnly = true;
-                        //t.Enabled = true;
+                        if (t.Visible != true)
+                        {
+                            t.Visible = true;
+                        }
+                        if (l.Visible != false)
+                        {
+                            l.Visible = false;
+                        }
+                        if (t.ReadOnly != true)
+                        {
+                            t.ReadOnly = true;
+                        }
+
                     }
                     else
                     {
@@ -135,7 +161,7 @@ namespace AubitDesktop
                 }
 
 
-                if (_ContextType == "INPUT")
+                if (_ContextType == FGLContextType.ContextInput || _ContextType == FGLContextType.ContextDisplayArray)
                 {
                     if (this.format != null)
                     {
@@ -147,7 +173,7 @@ namespace AubitDesktop
                     
                 }
 
-                if (_ContextType == "")
+                if (_ContextType == FGLContextType.ContextNone)
                 {
                     if (val!=null)
                     {
@@ -159,6 +185,8 @@ namespace AubitDesktop
 
                 l.Text = val;
                 t.Text = val;
+                //t.SelectionLength = 0;
+                //System.Threading.Thread.Sleep(100);
             }
         }
 
@@ -271,7 +299,7 @@ namespace AubitDesktop
         void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool ign = false;
-            if (this._ContextType == "INPUT")
+            if (this._ContextType == FGLContextType.ContextInput)
             {
                 #region REQUIRED CHECK
                 if (this.Required)
@@ -350,7 +378,7 @@ namespace AubitDesktop
 
         void t_GotFocus(object sender, EventArgs e)
         {
-            if (this.beforeFieldID != "" && this.onUIEvent!=null && _ContextType != "")
+            if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.beforeFieldID, "");
             }
@@ -359,7 +387,7 @@ namespace AubitDesktop
 
         void t_LostFocus(object sender, EventArgs e)
         {
-            if (this.afterFieldID != "" && this.onUIEvent!=null && _ContextType!="")
+            if (this.afterFieldID != "" && this.onUIEvent!=null && _ContextType!=FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.afterFieldID, "");
             }
@@ -369,7 +397,7 @@ namespace AubitDesktop
 
         void t_Click(object sender, EventArgs e)
         {
-            if (this.onActionID != "" && this.onUIEvent != null && _ContextType != "")
+            if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.onActionID, "");
             }
