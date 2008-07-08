@@ -1692,6 +1692,8 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, int s
 
       A4GL_push_int (d->no_arr);
       uilib_set_count (1);
+
+      A4GL_push_int (d->nbind);
       uilib_display_array_start (3);
       uilib_array_lines_start (0);
 

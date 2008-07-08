@@ -1827,6 +1827,7 @@ uilib_get_context (int nargs)
   int a;
   line = POPint ();
   mod = charpop ();
+  UIdebug (5, "get context request for module=%s line=%d ncontexts=%d",  mod, line, ncontexts);
   for (a = 0; a < ncontexts; a++)
     {
       if (contexts[a].lineno == line && contexts[a].state != UI_FREE)
@@ -1899,6 +1900,9 @@ uilib_display_array_start (int nargs)
   char *attr;
   int ln;
   char *mod;
+  int nbind;
+
+  nbind=POPint();
   attr = charpop ();
   ln = POPint ();
   mod = charpop ();
@@ -1912,7 +1916,7 @@ uilib_display_array_start (int nargs)
   m_scr_line = 0;
 
   suspend_flush (1);
-  send_to_ui ("<DISPLAYARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\">\n%s", ci, attr, m_arr_count, last_field_list);
+  send_to_ui ("<DISPLAYARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" ARRVARIABLES=\"%d\">\n%s", ci, attr, m_arr_count, nbind,last_field_list);
   //pushint (cinput);
   return 0;
 }
