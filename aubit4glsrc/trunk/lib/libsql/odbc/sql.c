@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.209 2008-07-09 09:53:48 mikeaubury Exp $
+# $Id: sql.c,v 1.210 2008-07-09 15:28:32 mikeaubury Exp $
 #
 */
 
@@ -1456,6 +1456,12 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     if (sid == 0)
     {
 	exitwith_sql_odbc_errm ("Statement (%s) could not be found", "<sid == 0>");
+	return -1;
+    }
+
+    if (sid->hstmt == 0)
+    {
+	exitwith_sql_odbc_errm ("Statement (%s) did not contain a hstmt", "<sid == 0>");
 	return -1;
     }
     A4GL_dbg ("Executing immediate: %s", sid->select);
