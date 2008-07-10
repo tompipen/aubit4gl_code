@@ -309,31 +309,20 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
     text = "";
 
   A4GL_trim (fname);
+  send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"", name, x, y, attrib, fname);
+      send_to_ui
+	(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\">",
+	 ignull (text), ignull (style), error_line, prompt_line, menu_line, border, comment_line, message_line);
+
+
 // Can we find a pregenerated XML form ? 
   if (!A4GL_XML_opening_form (fname, name))
     {
-      // Nope - lets send a non-xml form instead..
-      // this will callback to our UILIB_A4GL_read_metrics function..
-      send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" ", name, x, y, attrib);
-      send_to_ui
-	(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"",
-	 ignull (text), ignull (style), error_line, prompt_line, menu_line, border, comment_line, message_line);
-      send_to_ui (">");
       send_to_ui ("<FORM>");
       form = A4GL_read_form (fname, name);
       send_to_ui ("</FORM>");
-      send_to_ui ("</OPENWINDOWWITHFORM>");
     }
-  else
-    {
-      send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"", name, x, y, attrib, fname);
-      send_to_ui
-	(" TEXT=\"%s\" STYLE=\"%s\" ERROR_LINE=\"%d\" PROMPT_LINE=\"%d\" MENU_LINE=\"%d\" BORDER=\"%d\" COMMENT_LINE=\"%d\" MESSAGE_LINE=\"%d\"",
-	 ignull (text), ignull (style), error_line, prompt_line, menu_line, border, comment_line, message_line);
-
-
-      send_to_ui ("/>");
-    }
+  send_to_ui ("</OPENWINDOWWITHFORM>");
 
 
 
@@ -400,21 +389,20 @@ UILIB_A4GL_open_form (char *name)
   A4GLSQL_set_status (0, 0);
 
 
+
+
+  send_to_ui ("<OPENFORM FORMNAME=\"%s\" SOURCE=\"%s\">", name, buff);
 // Can we find a pregenerated XML form ? 
+//
   if (!A4GL_XML_opening_form (buff, name))
     {
       // Nope - lets send a non-xml form instead..
       // this will callback to our UILIB_A4GL_read_metrics function..
-      send_to_ui ("<OPENFORM FORMNAME=\"%s\">", name, buff);
       send_to_ui ("<FORM>");
       form = A4GL_read_form (buff, name);
       send_to_ui ("</FORM>");
-      send_to_ui ("</OPENFORM>");
     }
-  else
-    {
-      send_to_ui ("<OPENFORM FORMNAME=\"%s\" SOURCE=\"%s\"/>", name, buff);
-    }
+    send_to_ui ("</OPENFORM>");
 
   free (s);
   return 0;			// Success...
