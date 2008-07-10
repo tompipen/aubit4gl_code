@@ -136,7 +136,6 @@ int l;
 char *ptr;
 
   int cnt;
-  suspend_flush (1);
   send_to_ui ("<XMLFORM NAME=\"%s\" FILE=\"%s\">", formname, formfile);
 
   cnt=0;
@@ -163,8 +162,6 @@ free(buff);
     }
 */
   send_to_ui ("</XMLFORM>");
-  suspend_flush (-1);
-  flush_ui ();
 }
 
 static int
@@ -308,6 +305,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   if (text == 0)
     text = "";
 
+  suspend_flush (1);
   A4GL_trim (fname);
   send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" SOURCE=\"%s\"", name, x, y, attrib, fname);
       send_to_ui
@@ -323,6 +321,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
       send_to_ui ("</FORM>");
     }
   send_to_ui ("</OPENWINDOWWITHFORM>");
+  suspend_flush (-1);
 
 
 
@@ -389,6 +388,7 @@ UILIB_A4GL_open_form (char *name)
   A4GLSQL_set_status (0, 0);
 
 
+  suspend_flush (1);
 
 
   send_to_ui ("<OPENFORM FORMNAME=\"%s\" SOURCE=\"%s\">", name, buff);
@@ -403,6 +403,7 @@ UILIB_A4GL_open_form (char *name)
       send_to_ui ("</FORM>");
     }
     send_to_ui ("</OPENFORM>");
+  suspend_flush (-1);
 
   free (s);
   return 0;			// Success...
