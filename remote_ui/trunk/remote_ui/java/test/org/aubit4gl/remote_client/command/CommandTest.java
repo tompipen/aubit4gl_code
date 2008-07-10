@@ -107,12 +107,12 @@ public class CommandTest extends TestCase {
 			assertEquals(1, mc.getId());
 			assertEquals("First command",mc.getText());
 			WaitForEvent w = (WaitForEvent) conn.receive();
-			MenuCommandChoosed mcc = new MenuCommandChoosed(1);
+			MenuCommandChoosed mcc = new MenuCommandChoosed(1,conn);
 			conn.send(mcc);
 			Display d = (Display) conn.receive();
 			w = (WaitForEvent) conn.receive();
 			assertEquals("First command choosed",d.getText());
-			mcc = new MenuCommandChoosed(2);
+			mcc = new MenuCommandChoosed(2,conn);
 			conn.send(mcc);
 			Free free = (Free) conn.receive();
 			ProgramStop pe = (ProgramStop) conn.receive();

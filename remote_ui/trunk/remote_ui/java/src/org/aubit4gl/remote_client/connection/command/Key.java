@@ -44,10 +44,15 @@ public class Key {
 	 * TODO : Implement it
 	 */
 	private int encodeKey(String key) {
-		
+		return 0;
 	}
 	
+	/**
+	 * TODO : Implement it
+	 * @param _keyCode
+	 * @return
+	 */
 	private String decodeKey(int _keyCode) {
-		
+		return "";
 	}
 }
