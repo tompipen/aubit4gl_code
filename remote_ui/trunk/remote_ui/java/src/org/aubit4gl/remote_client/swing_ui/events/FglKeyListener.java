@@ -42,74 +42,29 @@ import org.aubit4gl.remote_client.connection.UIResponse;
  * 
  * Examples : a, A, CONTROL-A, F11, TAB, BACK-TAB, ALT-F1, CONTROL-ALT-D
  * 
+ * TODO : Kyes not yet correctly recognized:
+ *    CONTROL-number
+ *    CONTROL-punctiation
+ *    ENTER
+ *    TAB
+ *    BACK-TAB
  * @author Sérgio Ferreira
  */
 public class FglKeyListener implements KeyListener {
 	HashMap<String,UIResponse> listeningKeys;
 
 	private String lastKey;
-
-
-	/**
-	 * A string representation of the key(s) that was pressed by the user. 
-	 * @param e The key event that was ocurred.
-	 */
-	private String keyString(KeyEvent e) {
-		StringBuffer s = new StringBuffer();
-
-		switch ( e.getKeyCode() ) {
-		case KeyEvent.VK_CONTROL:
-		case KeyEvent.VK_ALT:
-		case KeyEvent.VK_SHIFT:
-		case KeyEvent.VK_CAPS_LOCK:
-			break;
-
-		default:
-			System.out.println("Code " + KeyEvent.getKeyText(e.getKeyCode()));
-		s.append( e.getKeyChar());
-		System.out.println("Key recognized : <" + s + ">" );
-		}
-
-		return s.toString();
-	}
+	private int keyPressed;
 
 	/**
-	 * A string representation of the key(s) that was pressed by the user. 
-	 * @param e The key event that was ocurred.
+	 * Executed by the listener when a good key as been typed.
+	 * 
+	 * @param s A string containing a key that was hitted.
 	 */
-	private String keyStringControlAlt(KeyEvent e) {
-		StringBuffer s = new StringBuffer();
-
-		if ( e.isControlDown() && e.getKeyCode() != KeyEvent.VK_CONTROL )
-			s.append("CONTROL-");
-		if ( e.isAltDown() && e.getKeyCode() != KeyEvent.VK_ALT )
-			s.append("ALT-");
-
-		switch ( e.getKeyCode() ) {
-		case KeyEvent.VK_CONTROL:
-		case KeyEvent.VK_ALT:
-		case KeyEvent.VK_SHIFT:
-		case KeyEvent.VK_CAPS_LOCK:
-			break;
-		case KeyEvent.VK_ESCAPE:
-			s.append(KeyEvent.getKeyText(e.getKeyCode()));
-			break;
-		default:
-			int sum = 0;
-		    Toolkit t = Toolkit.getDefaultToolkit();
-		    if ( ! e.isShiftDown() && ! t.getLockingKeyState(e.VK_CAPS_LOCK) )
-		    	sum = 32;
-		    char ch = (char) (e.getKeyCode() + sum);
-		    s.append(ch);
-
-		}
-		System.out.println("Key recognized : <" + s + ">" );
-		return s.toString();
-	}
-
-	private String keyStringActionKey(KeyEvent e) {
-		System.out.println("Key recognized : <" + KeyEvent.getKeyText(e.getKeyCode()) + ">" );
-		return KeyEvent.getKeyText(e.getKeyCode());
+	public void keyHitted(String s) {
+		System.out.println("Key hitted : " + s);
+		if ( isListeningKey(s) )
+		  answerToFgl(s);
 	}
 
 	/**
@@ -135,6 +90,8 @@ public class FglKeyListener implements KeyListener {
 	 * Answer to 4gl with the command that is listening a specific key.
 	 * The command is on an UIResponse object that know what to send to 4gl.
 	 * 
+	 * TODO : It should fire an event. Not necessarilly answer to 4gl
+	 * 
 	 * @param key The Key triggered
 	 * @throws FGLUIException 
 	 */
@@ -148,52 +105,105 @@ public class FglKeyListener implements KeyListener {
 		}
 	}
 
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		//System.out.println(" Key released : " + e.getKeyCode());
+	/**
+	 * Check if the key is to be ignored on keyPressed method.
+	 * 
+	 * @param e The event occurred
+	 * @return TRUE : Is to be ignored, FALSE otherwise
+	 */
+	public boolean ignoreOnKeyPressed(KeyEvent e) {
+		switch ( e.getKeyCode() ) {
+		  case KeyEvent.VK_ESCAPE:
+		  case KeyEvent.VK_ENTER:
+		  case KeyEvent.VK_SPACE:
+			return false;
+		}
+		
+		if ( e.isControlDown() || e.isAltDown() || e.isShiftDown() ) {
+			switch (e.getKeyCode() ) {
+			  case KeyEvent.VK_ALT:
+			  case KeyEvent.VK_CONTROL:
+			  case KeyEvent.VK_SHIFT:
+				return true;
+			}
+		} else {
+			if ( ! e.isActionKey() )
+				return true;
+		}
+		if ( e.isShiftDown() && (!e.isControlDown() && !e.isAltDown()))
+			return true;
+		return false;
 	}
 
+
+	/**
+	 * Executed when the user pressed the key down.
+	 * 
+	 * @param e The key event that ocurred. 
+	 */
 	public void keyPressed(KeyEvent e) {
+		if ( ignoreOnKeyPressed(e))
+			return;
+
 		if ( e.isActionKey() ) {
-			keyStringActionKey(e);
+			String s = keyStringActionKey(e);
+			keyHitted(s);
 			return;
 		}
 
-		if ( !e.isControlDown() && ! e.isAltDown() && e.getKeyCode() != KeyEvent.VK_ESCAPE)
-			return;
+		keyPressed = e.getKeyCode();
+		String s = keyStringControlAlt(e);
+		keyHitted(s);
+	}
 
-		keyStringControlAlt(e);
+	/**
+	 * Check wich key(s) should be ignored to bre treated by keyTyped()
+	 * @param e
+	 * @return
+	 */
+	public boolean ignoreOnKeyTyped(KeyEvent e) {
+		if ( e.isControlDown() || e.isAltDown() 
+				|| keyPressed == KeyEvent.VK_ENTER
+				|| keyPressed == KeyEvent.VK_SPACE
+				|| keyPressed == KeyEvent.VK_ESCAPE)
+			return true;
+		return false;
 	}
 
 
 	/**
-	 * There are key(s) that should be recognized here
+	 * Method executed when the user type a key.
+	 * 
+	 * The most "normal" keys like letters and numbers (s) are recognized 
+     * here.
+     * 
+     * @param e The keyboard event that was ocurred.
 	 */
 	public void keyTyped(KeyEvent e) {
 
-		if ( e.isControlDown() || e.isAltDown() || e.getKeyCode() == KeyEvent.VK_ESCAPE)
+		if ( ignoreOnKeyTyped(e))
 			return;
-		keyString(e);
+		String s = keyString(e);
+		keyHitted(s);
 	}
 
 	/**
-	 * Just for test.
-	 * TODO : Remove when ready
-	 * @param args
+	 * Executed when the user liberates the key that he pressed.
+	 * 
+	 * @param e The event was ocurred
 	 */
-	public static void main(String args[]) {
-		JFrame f = new JFrame();
-		f.setSize(new Dimension(500,200));
-		FglKeyListener kl = new FglKeyListener();
-		f.addKeyListener(kl);
-		char c = 68; // + 32;
-		int i = c;
-		c = (char)i;
-		System.out.println(" Char " + c);
-		System.out.println(" Int " + i);
-		f.setVisible(true);
+	public void keyReleased(KeyEvent e) {
+		keyPressed = -1;
+
 	}
 
+    
+	/**
+	 * Get the hash map that contains the keys that have meaning and 
+	 * should be answered to.
+	 * 
+	 * @return The map with the keys and event object
+	 */
 	public HashMap<String, UIResponse> getListeningKeys() {
 		return listeningKeys;
 	}
@@ -207,6 +217,102 @@ public class FglKeyListener implements KeyListener {
 	public void setListeningKeys(HashMap<String, UIResponse> listeningKeys) {
 		this.listeningKeys = listeningKeys;
 		System.out.println("Listening keys assigned");
+	}
+
+	/**
+	 * A string representation of the key(s) that was pressed by the user.
+	 *  
+	 * @param e The key event that was ocurred.
+	 * @return The string representation of the key.
+	 */
+	private String keyString(KeyEvent e) {
+		StringBuffer s = new StringBuffer();
+		switch ( e.getKeyCode() ) {
+		case KeyEvent.VK_CONTROL:
+		case KeyEvent.VK_ALT:
+		case KeyEvent.VK_SHIFT:
+		case KeyEvent.VK_CAPS_LOCK:
+			break;
+
+		default:
+		s.append( e.getKeyChar());
+		//System.out.println("Key recognized 1 : <" + s + ">" );
+		}
+
+		return s.toString();
+	}
+
+	/**
+	 * Convert the event to a string reprsesentation of the key that was 
+	 * pressed.
+	 * 
+	 * This is just for key(s) with CONTROL and ALT pressed.
+	 *  
+	 * @param e The key event that was ocurred.
+	 * @return The string representation of the key 
+	 */
+	private String keyStringControlAlt(KeyEvent e) {
+		StringBuffer s = new StringBuffer();
+
+		if ( e.isControlDown() && e.getKeyCode() != KeyEvent.VK_CONTROL )
+			s.append("CONTROL-");
+		if ( e.isAltDown() && e.getKeyCode() != KeyEvent.VK_ALT )
+			s.append("ALT-");
+
+		switch ( e.getKeyCode() ) {
+		case KeyEvent.VK_CONTROL:
+		case KeyEvent.VK_ALT:
+		case KeyEvent.VK_SHIFT:
+		case KeyEvent.VK_CAPS_LOCK:
+			break;
+		case KeyEvent.VK_ESCAPE:
+		case KeyEvent.VK_ENTER:
+		case KeyEvent.VK_SPACE:
+			s.append(KeyEvent.getKeyText(e.getKeyCode()));
+			break;
+		default:
+			int sum = 0;
+		Toolkit t = Toolkit.getDefaultToolkit();
+		if ( ! e.isShiftDown() && ! t.getLockingKeyState(e.VK_CAPS_LOCK) )
+			sum = 32;
+		char ch = (char) (e.getKeyCode() + sum);
+		s.append(ch);
+
+		}
+		//System.out.println("Key recognized : <" + s + ">" );
+		return s.toString();
+	}
+
+	/**
+	 * Management of the special action key(s) and conversion to a string.
+	 * 
+	 * The action key(s) are the ones to do something like the F keys, HOME
+	 * Arrow, etc.
+	 * 
+	 * @param e The key event that has ocurred. 
+	 * @return The string representation of the specific key
+	 */
+	private String keyStringActionKey(KeyEvent e) {
+		//System.out.println("Key recognized 2 : <" + KeyEvent.getKeyText(e.getKeyCode()) + ">" );
+		return KeyEvent.getKeyText(e.getKeyCode());
+	}
+	
+	/**
+	 * Just for test.
+	 * TODO : Remove when ready
+	 * @param args
+	 */
+	public static void main(String args[]) {
+		JFrame f = new JFrame();
+		f.setSize(new Dimension(500,200));
+		FglKeyListener kl = new FglKeyListener();
+		f.addKeyListener(kl);
+//		char c = 68; // + 32;
+//		int i = c;
+//		c = (char)i;
+//		System.out.println(" Char " + c);
+//		System.out.println(" Int " + i);
+		f.setVisible(true);
 	}
 
 }
