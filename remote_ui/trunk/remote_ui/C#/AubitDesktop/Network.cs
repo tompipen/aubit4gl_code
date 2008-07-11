@@ -93,16 +93,18 @@ namespace AubitDesktop
         }
     }
 
-
-
-
-
-
-
     public class AubitNetwork
     {
+        private string connectionType;
         private TcpClient tcpClient;
+        internal string server;
+        internal string username;
+        internal string password;
+        internal string application;
+        internal bool connectionFailed;
+        private frmMainAppWindow appwin;
 
+        
         private ssh sshExec;
 
         private System.IO.Stream sshStreamRead;
@@ -111,7 +113,7 @@ namespace AubitDesktop
         private IPAddress ipAddress;
         private NetworkStream tcpStream;
         private BackgroundWorker bwReceiver;
-        private bool useSSH=false;
+        private bool useExplicitStreams;
   
         public enum SocketStyle
         {
@@ -240,9 +242,22 @@ namespace AubitDesktop
         /// <param name="e">EventArgs.</param>
         protected virtual void OnReceivedEnvelopeFromServer(ReceivedEventArgs e)
         {
+            int cnt = 0;
+            while (ReceivedEnvelopeFromServer == null)
+            {
+                System.Threading.Thread.Sleep(100);
+                cnt++;
+                if (cnt > 40)
+                {
+                    MessageBox.Show("No envelope handler ????");
+                    this.Disconnect();
+                    return;
+                }
+            }
             
-                                    ReceivedEnvelopeFromServer(this, e);
-            
+            //
+          ReceivedEnvelopeFromServer(this, e);
+
         }
     
  
@@ -273,21 +288,43 @@ namespace AubitDesktop
 
 
 
-
-
-
-
-
-
-        public void NewConnection(string server, int port,string username, string password,string application)
+        public void NewConnection(string server, string port, string username, string password, string application, string ConnectionType, frmMainAppWindow appWindow)
         {
-            if (useSSH)
+            connectionFailed = false;
+            this.connectionType = ConnectionType;
+            this.username = username;
+            this.password = password;
+            this.application = application;
+            this.server = server;
+            this.appwin = appWindow;
+
+
+
+            switch (ConnectionType)
             {
-                NewConnectionSSH(server, port, username, password,application);
-            }
-            else
-            {
-                NewConnectionTCP(server, port);
+                case "SSH":
+                    useExplicitStreams = true;
+                    NewConnectionSSH(server, port, username, password, application);
+                    break;
+
+                case "SSHT":
+                    useExplicitStreams = true;
+                    NewConnectionSSH(server, port, username, password, application);
+                    break;
+
+                case "PROXY":
+                    useExplicitStreams = false;
+                    NewConnectionTCP(server, port);
+                    if (tcpStream == null)
+                    {
+                        this.appwin.Close();
+                        this.appwin.Dispose();
+                        this.appwin = null;
+                    }
+                    break;
+
+                default:
+                    throw new ApplicationException("Invalid Connection type");
             }
         }
 
@@ -295,6 +332,32 @@ namespace AubitDesktop
         public AubitNetwork(AubitNetwork.SocketStyle s)
         {
             this.sockStyle = s;
+            this.application = "Unknown";
+        }
+
+        public AubitNetwork(AubitNetwork.SocketStyle s, TcpClient c)
+        {
+            this.sockStyle = s;
+            this.username = "Unknown";
+            this.password = "Unknown";
+            this.application = "Unknown";
+            this.useExplicitStreams = false;
+            this.tcpClient = c;
+            if (bwReceiver != null)
+            {
+                if (bwReceiver.IsBusy)
+                {
+                    bwReceiver.CancelAsync();
+                }
+                bwReceiver = null;
+            }
+            
+            this.bwReceiver = new BackgroundWorker();
+            tcpStream = tcpClient.GetStream();
+            bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
+            bwReceiver.WorkerSupportsCancellation = true;
+            bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
+            bwReceiver.RunWorkerAsync();
         }
 
         public void SendString(string s)
@@ -320,7 +383,7 @@ namespace AubitDesktop
 
         private void streamWrite(byte[] msg, int p, int p_3)
         {
-            if (useSSH)
+            if (useExplicitStreams)
             {
                 sshStreamWrite.Write(msg, p, p_3);
             }
@@ -338,19 +401,32 @@ namespace AubitDesktop
             string Envelope="";
             e.Result = true;
 
-            while (this.isConnected())
+            while (true)
             {
                 int index;
                 //Read the command's Type.
+                //System.Diagnostics.Debug.WriteLine("In loop...");
                 byte[] buffer = new byte[256];
-
+                if (this.isConnected() == false)
+                {
+                    System.Diagnostics.Debug.WriteLine("Connection dropped");   
+                    break;
+                }
                 try
                 {
                     int readBytes = streamRead(buffer, 0, buffer.Length);
                     if (readBytes == 0)
                         break;
-                    cmd += System.Text.Encoding.ASCII.GetString(buffer, 0, readBytes);
+                    if (readBytes >= 0)
+                    {
+                        cmd += System.Text.Encoding.ASCII.GetString(buffer, 0, readBytes);
+                    }
+                    else
+                    {
+                        cmd = "";
+                    }
                 } catch (Exception ex) {
+                    System.Diagnostics.Debug.WriteLine("Exceptioned..");
                     if (this.ConnectionDied != null)
                     {
                         this.ConnectionDied(sender, new EventArgs());
@@ -365,7 +441,10 @@ namespace AubitDesktop
                     while (index >= 0)
                     {
                         string c;
+                        
                         c = cmd.Substring(0, index);
+                        //if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope) { MessageBox.Show("c=" + c); }
+
                         if (c.Length > 0)
                         {
                             if (c.StartsWith("<ENVELOPE"))
@@ -385,8 +464,12 @@ namespace AubitDesktop
 
                             if (c.StartsWith("</ENVELOPE>"))
                             {
+                                int cnt = 0;
                                 inEnvelope = false;
-                                this.OnReceivedEnvelopeFromServer( new ReceivedEventArgs(null, Envelope));
+
+                                
+                                    this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
+                                
                                 Envelope = "";
                             }
                         }
@@ -404,22 +487,16 @@ namespace AubitDesktop
                     }
                 }
             }
-            this.OnServerDisconnected(new ServerEventArgs(this.tcpClient));
-            this.Disconnect();
+
+            if (this.isConnected() == false)
+            {
+                System.Diagnostics.Debug.WriteLine("isconnected is false");
+                this.OnServerDisconnected(new ServerEventArgs(this.tcpClient));
+                this.Disconnect();
+            }
         }
 
-        private int streamRead(byte[] buffer, int p, int p_3)
-        {
-            if (useSSH)
-            {
-                return sshStreamRead.Read(buffer, p, p_3);
-            }
-            else
-            {
-                return tcpStream.Read(buffer, p, p_3);
-            }
-
-        }
+  
 
 
         public void setEnvelopeMode()
@@ -445,7 +522,7 @@ namespace AubitDesktop
 
         public bool Disconnect()
         {
-            if (useSSH)
+            if (useExplicitStreams)
             {
                 return Disconnect_SSH();
             }
@@ -456,13 +533,39 @@ namespace AubitDesktop
         }
 
 
+        private int streamRead(byte[] buffer, int p, int p_3)
+        {
+            if (useExplicitStreams)
+            {
+                int a = 0;
+                try
+                {
+                    a = sshStreamRead.Read(buffer, p, p_3);
+                    if (a < 0)
+                    {
+                        this.Disconnect();
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
+                }
+                return a;
+            }
+            else
+            {
+                return tcpStream.Read(buffer, p, p_3);
+            }
 
+        }
 
         public bool isConnected()
         {
-            if (useSSH)
+            if (useExplicitStreams)
             {
-                return sshExec.isConnected();
+                bool isConnected;
+                isConnected = sshExec.isConnected();
+                return isConnected;
             }
             else
             {
@@ -506,8 +609,10 @@ namespace AubitDesktop
             }
         } 
 
-        public void NewConnectionTCP(string server, int port)
+        public void NewConnectionTCP(string server, string sport)
         {
+            int port = Convert.ToInt32(sport);
+            if (port == 0) port = 3490;
             tcpClient = new TcpClient();
             ipAddress = Dns.GetHostEntry(server).AddressList[0];
             try
@@ -517,6 +622,8 @@ namespace AubitDesktop
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                tcpStream = null;
+                return;
             }
 
             if (bwReceiver != null)
@@ -532,11 +639,12 @@ namespace AubitDesktop
             {
                 tcpStream = tcpClient.GetStream();
                 this.bwReceiver = new BackgroundWorker();
-            
+                this.ReceivedFromServer += new ReceivedEventHandler(n_ReceivedFromServer);
                 bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
                 bwReceiver.WorkerSupportsCancellation = true;
-                bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
+                bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);        
                 bwReceiver.RunWorkerAsync();
+                
 
             }
             else
@@ -547,8 +655,17 @@ namespace AubitDesktop
         #endregion
 
         #region SSH specific routines
-        public void NewConnectionSSH(string server, int port, string username, string password,string application)
+        public void NewConnectionSSH(string server, string sport, string username, string password,string application)
         {
+            int port;
+            if (sport == null) port = 22;
+            else {
+                if (sport.Trim()=="") {
+                    port=22;
+                } else {
+                    port= Convert.ToInt32(sport);
+                }
+            }
             if (port == 3490) port = 22;
 
             sshExec = new ssh(server, username,password,application, port);
@@ -563,6 +680,16 @@ namespace AubitDesktop
                 MessageBox.Show(e.ToString());
             }
 
+            if (this.connectionType == "SSH")
+            { 
+                // Execute only - we can finish here...
+                // the program should start on the server and dial back
+                // to the client in listenmode...
+                return;
+            }
+
+
+
             setEnvelopeMode();
             sshStreamWrite = sshExec.sIn;
             sshStreamRead = sshExec.sOut;
@@ -576,65 +703,7 @@ namespace AubitDesktop
             bwReceiver.RunWorkerAsync();
             
 
-            /*
-            sshShell = new JSch(); 
-            
-
-            sshSession=sshShell.getSession(username,server);
-            
-            // if we're still using the default port - switch to the default ssh port instead..
-            
-            sshSession.setPort(port);
-            
-
-            if (password != null) sshSession.setPassword(password);
-
-            try
-            {
-                sshSession.connect();
-            } catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return;
-            }
-            
-            Channel channel=sshSession.openChannel("exec");
-            ChannelExec e; 
-            e=(ChannelExec)channel;
-            e.setCommand(application);
-            channel.connect();
-            
-
-
-            if (bwReceiver != null)
-            {
-                if (bwReceiver.IsBusy)
-                {
-                    bwReceiver.CancelAsync();
-                }
-                bwReceiver = null;
-            }
-
-            if (channel.isConnected())
-            {
-                sshStreamRead = channel.getOutputStream();
-                sshStreamWrite = channel.getInputStream();
-                this.bwReceiver = new BackgroundWorker();
-
-                bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
-                bwReceiver.WorkerSupportsCancellation = true;
-                bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
-                bwReceiver.RunWorkerAsync();
-                sshSession.run();
-                
-            }
-            else
-            {
-                sshStreamRead = null;
-                sshStreamWrite = null;
-            }
-             * */
-
+        
         }
 
         private bool Disconnect_SSH()
@@ -663,5 +732,69 @@ namespace AubitDesktop
             }
         } 
 #endregion
+
+
+
+
+        void n_ReceivedFromServer(object sender, ReceivedEventArgs e)
+        {
+            if (e.Data == "PROTOCOL?")
+            {
+                ((AubitNetwork)sender).SendString("UIVERSION 1.0");
+                return;
+            }
+
+            if (e.Data == "PROGRAMNAME?")
+            {
+                ((AubitNetwork)sender).SendString(this.application);
+                return;
+            }
+
+            if (e.Data == "USER?")
+            {
+                ((AubitNetwork)sender).SendString(this.username);
+                return;
+            }
+
+            if (e.Data == "PASSWORD?")
+            {
+                ((AubitNetwork)sender).SendString(this.password);
+                return;
+            }
+
+            if (e.Data == "START")
+            {
+                
+                ((AubitNetwork)sender).setEnvelopeMode();
+               
+                Program.myConsole.ClearText();
+                
+                appwin.Show();
+                return;
+            }
+
+            if (e.Data == "FAILED TO START")
+            {
+                MessageBox.Show("Application did not start\nIs that the correct Application name ? ");
+                this.Disconnect();
+                this.connectionFailed = true;
+                appwin.Dispose();
+                appwin = null;
+                
+                return;
+            }
+
+            if (e.Data == "AUTHFAILED")
+            {
+                MessageBox.Show("Incorrect login details - connection refused");
+                this.Disconnect();
+                this.connectionFailed = true;
+                appwin.Dispose();
+                appwin = null;
+                //stdNetworkConnection = null;
+                return;
+            }
+            MessageBox.Show(e.Data);
+        }
     }
 }

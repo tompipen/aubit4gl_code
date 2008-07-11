@@ -104,13 +104,19 @@ namespace AubitDesktop
                 {
                     if (afterRow != null)
                     {
-                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        if (this.EventTriggered != null)
+                        {
+                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
                     }
 
                     moveDown();
                     if (beforeRow != null)
                     {
-                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        if (this.EventTriggered != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
 
                     }
 
@@ -139,7 +145,34 @@ namespace AubitDesktop
             lastarrLine = arrLine;
             setFocusToCurrentRow();
         }
-        
+
+
+        private void movePgDown()
+        {
+            arrLine += this.scrRecLines;
+            if (arrLine > this.nRows)
+            {
+                arrLine = this.nRows;
+            }
+            while (arrLine<scrLine) scrLine--;
+            redisplay_arr(true);
+            lastarrLine = arrLine;
+            setFocusToCurrentRow();
+        }
+
+        private void movePgUp()
+        {
+            if (arrLine <= scrLine) scrLine = 1;
+            arrLine = arrLine - this.scrRecLines;
+            while (arrLine - scrLine < 0) arrLine++;
+            if (arrLine < 1)
+            {
+                throw new ApplicationException("ArrLine < 1 shouldn't happen");
+            }
+            redisplay_arr(true);
+            lastarrLine = arrLine;
+            setFocusToCurrentRow();
+        }
 
         public void upkeyPressed()
         {
@@ -200,13 +233,97 @@ namespace AubitDesktop
 
         public void pgUpkeyPressed()
         {
+            mainWin.clrErrorTextFromFieldValidation();
 
+            if (arrLine >scrRecLines)
+            {
+
+                // If we've got a before row *and* an after row - we need to send to packets back - but 
+                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
+                // so - we'll store the movement and do it later...
+                if (beforeRow != null && afterRow != null)
+                {
+                    // We've got to send the before/after row triggers..
+                    nextMove = MoveType.MoveTypePageUp;
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+
+                }
+                else
+                {
+                    if (afterRow != null)
+                    {
+                        if (this.EventTriggered != null)
+                        {
+                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+                    }
+
+                    movePgUp();
+                    if (beforeRow != null)
+                    {
+                        if (this.EventTriggered != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+
+                    }
+
+                }
+            }
+            else
+            {
+                // Tried to move off the top...
+                mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
+            }
         }
 
         public void pgDownkeyPressed()
         {
+            mainWin.clrErrorTextFromFieldValidation();
 
+            if (arrLine < nRows)
+            {
+               
+                // If we've got a before row *and* an after row - we need to send to packets back - but 
+                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
+                // so - we'll store the movement and do it later...
+                if (beforeRow != null && afterRow != null)
+                {
+                    // We've got to send the before/after row triggers..
+                    nextMove = MoveType.MoveTypePageDown;
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+
+                }
+                else
+                {
+                    if (afterRow != null)
+                    {
+                        if (this.EventTriggered != null)
+                        {
+                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+                    }
+
+                    movePgDown();
+                    if (beforeRow != null)
+                    {
+                        if (this.EventTriggered != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+
+                    }
+
+                }
+            }
+            else
+            {
+                // Tried to move off the top...
+                mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
+            }
         }
+
+
 
         public string getAcceptString()
         {
@@ -375,6 +492,24 @@ namespace AubitDesktop
                 {
                     case MoveType.MoveTypeUp:
                         moveUp();
+                        if (beforeRow != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
+                    case MoveType.MoveTypePageUp:
+                        movePgUp();
+                        if (beforeRow != null)
+                        {
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
+                    case MoveType.MoveTypePageDown:
+                        movePgDown();
                         if (beforeRow != null)
                         {
                             this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");

@@ -49,6 +49,8 @@ namespace AubitDesktop
             this.Controls.Add(this.txtConsoleText);
             this.Name = "frmConsole";
             this.Text = "Console";
+            this.Load += new System.EventHandler(this.frmConsole_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmConsole_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

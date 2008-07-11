@@ -47,5 +47,15 @@ namespace AubitDesktop
             if (txtConsoleText.Text.Length > 0) this.Visible = true;
             else this.Visible = false;
         }
+
+        private void frmConsole_Load(object sender, EventArgs e)
+        {
+            Program.setWindowPosition(this.GetType().ToString(), this);
+        }
+
+        private void frmConsole_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.saveWindowPosition(this.GetType().ToString(), this);
+        }
     }
 }

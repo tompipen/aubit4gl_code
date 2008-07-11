@@ -562,6 +562,9 @@ namespace AubitDesktop
         }
     }
 
+
+
+
     public class FGLFoundField
     {
         public IFGLField fglField;
@@ -918,7 +921,151 @@ namespace AubitDesktop
                 return ',';
             }
         }
-        
+
+
+        internal static string decodeKeycode(bool controlkey, bool shiftkey, bool altkey, Keys keyCode)
+        {
+            if (shiftkey == false && altkey == false && controlkey == false)
+            {
+                switch (keyCode)
+                {
+
+
+                    case Keys.Escape:
+                        return "ACCEPT"; // Should be detected from the options...
+
+
+                    case Keys.Down:
+                        return "Down";
+                    case Keys.Up:
+                        return "Up";
+                    case Keys.Left:
+                        return "Left";
+                    case Keys.Right:
+                        return "Right";
+                    case Keys.PageUp:
+                        return "PgUp";
+                    case Keys.PageDown:
+                        return "PgDown";
+                    case Keys.Insert:
+                        return "Insert";
+                    case Keys.Delete:
+                        return "Delete";
+                    case Keys.F1:
+                        return "F1";
+                    case Keys.F2:
+                        return "F2";
+                    case Keys.F3:
+                        return "F3";
+                    case Keys.F4:
+                        return "F4";
+                    case Keys.F5:
+                        return "F5";
+                    case Keys.F6:
+                        return "F6";
+                    case Keys.F7:
+                        return "F7";
+                    case Keys.F8:
+                        return "F8";
+                    case Keys.F9:
+                        return "F9";
+                    case Keys.F10:
+                        return "F10";
+                    case Keys.F11:
+                        return "F11";
+                    case Keys.F12:
+                        return "F12";
+                    case Keys.F13:
+                        return "F13";
+                    case Keys.F14:
+                        return "F14";
+                    case Keys.F15:
+                        return "F15";
+                    case Keys.F16:
+                        return "F16";
+                    case Keys.F17:
+                        return "F17";
+                    case Keys.F18:
+                        return "F18";
+                    case Keys.F19:
+                        return "F19";
+                    case Keys.F20:
+                        return "F20";
+                    case Keys.F21:
+                        return "F21";
+                    case Keys.F22:
+                        return "F22";
+                    case Keys.F23:
+                        return "F23";
+                    case Keys.F24:
+                        return "F24";
+
+                }
+            }
+
+            if (shiftkey == false && altkey == false && controlkey == true)
+            {
+                switch (keyCode)
+                {
+                    case Keys.A:
+                        return "Control-A";
+                    case Keys.B:
+                        return "Control-B";
+                    case Keys.C:
+                        return "INTERRUPT";
+                    case Keys.D:
+                        return "Control-D";
+                    case Keys.E:
+                        return "Control-E";
+                    case Keys.F:
+                        return "Control-F";
+                    case Keys.G:
+                        return "Control-G";
+                    case Keys.H:
+                        return "Control-H";
+                    case Keys.I:
+                        return "Control-I";
+                    case Keys.J:
+                        return "Control-J";
+                    case Keys.K:
+                        return "Control-K";
+                    case Keys.L:
+                        return "Control-L";
+                    case Keys.M:
+                        return "Control-M";
+                    case Keys.N:
+                        return "Control-N";
+                    case Keys.O:
+                        return "Control-O";
+                    case Keys.P:
+                        return "Control-P";
+                    case Keys.Q:
+                        return "Control-Q";
+                    case Keys.R:
+                        return "Control-R";
+                    case Keys.S:
+                        return "Control-S";
+                    case Keys.T:
+                        return "Control-T";
+                    case Keys.U:
+                        return "Control-U";
+                    case Keys.V:
+                        return "Control-V";
+                    case Keys.W:
+                        return "Control-W";
+                    case Keys.X:
+                        return "Control-X";
+                    case Keys.Y:
+                        return "Control-Y";
+                    case Keys.Z:
+                        return "Control-Z";
+
+                }
+            }
+            return null;
+        }
+
+
 
         public static string getKeyNameFromFGLKeyCode(string key)
         {
@@ -1074,6 +1221,33 @@ namespace AubitDesktop
                 }
             }
         }
+
+                    static public Hashtable splitIntoConfig(string Line)
+        {
+            Hashtable Config = new Hashtable();
+            return splitIntoConfig(Config, Line);
+        }
+
+        public static Hashtable splitIntoConfig(Hashtable Config, string Line)
+        {
+            string[] l = Line.Split(';');
+            foreach (string s in l)
+            {       
+                string[] v = s.Split('=');
+                Config[v[0].ToUpper()] = v[1];
+            }
+            return Config;
+        }
+
+
+        public static void Log(string s)
+        {
+            if (false)
+            {
+                Console.WriteLine(s);
+            }
+        }
+        
 
 
         public enum FGLDataTypes

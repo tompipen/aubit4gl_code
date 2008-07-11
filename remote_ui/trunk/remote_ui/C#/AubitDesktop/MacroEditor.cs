@@ -84,5 +84,15 @@ namespace AubitDesktop
         {
             this.Close();
         }
+
+        private void MacroEditor_Load(object sender, EventArgs e)
+        {
+            Program.setWindowPosition(this.GetType().ToString(), this);
+        }
+
+        private void MacroEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.saveWindowPosition(this.GetType().ToString(), this);
+        }
     }
 }

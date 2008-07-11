@@ -446,6 +446,8 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string FORMNAME;
 
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string SOURCE;
         /// <remarks/>
         public FORM FORM;
     }
@@ -552,6 +554,8 @@ namespace AubitDesktop
     public class CREATEWINDOW
     {
 
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string SOURCE;
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ATTRIBUTE;

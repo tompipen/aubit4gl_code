@@ -23,71 +23,62 @@ using Tamir.SharpSsh.jsch;
 using Tamir.SharpSsh;
 using System.Text;
 using System.Collections;
+using System.Windows.Forms;
 
 
 namespace AubitDesktop
 {
-    /// <summary>
-    /// A user info for getting user data
-    /// </summary>
-    public class MyUserInfo : UserInfo
+
+
+    public class MyUserInfo : UserInfo, UIKeyboardInteractive
     {
-        /// <summary>
-        /// Holds the user password
-        /// </summary>
-        private String passwd;
+        string password = "";
 
-        public MyUserInfo(string password)
+
+        public void setPassword(string val)
         {
-            passwd = password;
-        }
-        /// <summary>
-        /// Returns the user password
-        /// </summary>
-        public String getPassword() { 
-            return passwd; 
-        }
-        public void setPassword(string p) { 
-            passwd = p; 
+            password = val;
         }
 
-        /// <summary>
-        /// Prompt the user for a Yes/No input
-        /// </summary>
-        public bool promptYesNo(String str)
+        public String getPassphrase()
+        {
+            return password;
+        }
+
+        public String getPassword()
+        {
+            return password;
+        }
+
+        public bool promptPassphrase(String arg0)
         {
             return true;
         }
 
-        /// <summary>
-        /// Returns the user passphrase (passwd for the private key file)
-        /// </summary>
-        public String getPassphrase() { 
-            return passwd; 
-        }
-
-        /// <summary>
-        /// Prompt the user for a passphrase (passwd for the private key file)
-        /// </summary>
-        public bool promptPassphrase(String message) { 
-            return true; 
-        }
-
-        /// <summary>
-        /// Prompt the user for a password
-        /// </summary>\
-        public bool promptPassword(String message)
+        public bool promptPassword(String arg0)
         {
             return true;
         }
 
-        /// <summary>
-        /// Shows a message to the user
-        /// </summary>
-        public void showMessage(String message)
+        public bool promptYesNo(String arg0)
         {
-            System.Windows.Forms.MessageBox.Show(message);
+            return true;
         }
+
+        public void showMessage(String arg0)
+        {
+            MessageBox.Show(arg0);
+        }
+
+        #region UIKeyboardInteractive Members
+
+        public string[] promptKeyboardInteractive(string destination, string name, string instruction, string[] prompt, bool[] echo)
+        {
+            return new string[] { password };
+            
+        }
+
+        #endregion
     }
 
 
@@ -96,7 +87,6 @@ namespace AubitDesktop
     {
         string remoteHost;
         string command = null;
-        string privateKeyFile;
         string userName;
         private string password;
         UserInfo userInfo;
@@ -127,9 +117,10 @@ namespace AubitDesktop
 
 
             jsch = new JSch();
+            jsch.setKnownHosts("hostsfile");
             try
             {
-                session = jsch.getSession(userName, remoteHost, port);
+                session = jsch.getSession(userName, remoteHost);
             }
             catch (JSchException e)
             {
@@ -138,24 +129,35 @@ namespace AubitDesktop
                         e.toString());
             }
 
-            
-            Hashtable config = new Hashtable();
+            MyUserInfo ui = new MyUserInfo();
+            ui.setPassword(this.password); 
+           
+            session.setUserInfo(ui);
+            session.connect();
+
+            //session.setPassword(password);           
+
+            //System.Collections.Hashtable config = new Hashtable();
             //config.Add("StrictHostKeyChecking", "no");
             //System.Windows.Forms.MessageBox.Show(session.getConfig("StrictHostKeyChecking"));
             //session.setConfig(config);
            
-            session.setUserInfo(new MyUserInfo(password));
-            //session.setPassword(password);
+            //session.setUserInfo(new MyUserInfo(password));
+
+            /*
             try
             {
                 session.connect();
             }
             catch (JSchException e)
             {
+               
                 throw new ApplicationException("Cannot connect to host " +
                         remoteHost + ":" + port + " : " +
                         e.toString());
+                
             }
+        */
         }
 
 
@@ -165,6 +167,8 @@ namespace AubitDesktop
  */
         private void remoteExecute()
         {
+            System.IO.Stream server;
+            System.Diagnostics.Debug.WriteLine("RemoteExecute");
             try
             {
                 channel = session.openChannel("exec");
@@ -177,8 +181,8 @@ namespace AubitDesktop
             }
 
             ((ChannelExec)channel).setCommand(command);
-            channel.setInputStream(null);
-            //System.IO.Stream inStream = null;
+            //channel.setInputStream(null);
+            /*
             try
             {
                 sIn = channel.getInputStream();
@@ -190,6 +194,9 @@ namespace AubitDesktop
                         remoteHost + ":" + port + " : " +
                         e.ToString());
             }
+
+             */
+            server =   new Tamir.Streams.CombinedStream(channel.getInputStream(), channel.getOutputStream());
 
             try
             {
@@ -203,13 +210,23 @@ namespace AubitDesktop
             }
 
 
+            sIn = server;
+            sOut = server;
+
 
         }
 
         public bool isConnected()
         {
-            if (session == null) return false;
-            return session.isConnected();
+
+            bool sessionConnected = false;
+            bool channelConnected = false;
+
+            if (session != null) { sessionConnected = session.isConnected(); }
+            if (channel != null) { channelConnected = channel.isConnected(); }
+            System.Diagnostics.Debug.WriteLine("SC=" + sessionConnected + " CC=" + channelConnected);
+          //  MessageBox.Show("SC="+sessionConnected+" CC="+channelConnected);
+            return sessionConnected;
         }
 
         /**
@@ -222,6 +239,9 @@ namespace AubitDesktop
             session.disconnect();
         }
     }
+
+
 }
+
 
 

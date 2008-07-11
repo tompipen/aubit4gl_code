@@ -48,25 +48,12 @@ namespace AubitDesktop
             this.applicationHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aubit4GLGUIHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.topWindowToolStrip = new System.Windows.Forms.ToolStrip();
-            this.EnvReaderTimer = new System.Windows.Forms.Timer(this.components);
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.MenuBarPanel = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.txtSend = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.applicationLauncherPanel = new System.Windows.Forms.Panel();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menubarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.applicationLauncherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alwaysMenubarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.neverMenubarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoMenubarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.applicationLauncherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alwaysALToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.neverALToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.autoALToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,18 +61,31 @@ namespace AubitDesktop
             this.alwaysToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.neverToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.topWindowToolStrip = new System.Windows.Forms.ToolStrip();
+            this.EnvReaderTimer = new System.Windows.Forms.Timer(this.components);
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.applicationLauncherPanel = new System.Windows.Forms.Panel();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.MenuBarPanel = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtSend = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.MenuBarPanel.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.applicationLauncherPanel.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.MenuBarPanel.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -233,6 +233,109 @@ namespace AubitDesktop
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menubarToolStripMenuItem,
+            this.applicationLauncherToolStripMenuItem,
+            this.toolbarToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // menubarToolStripMenuItem
+            // 
+            this.menubarToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.alwaysMenubarToolStripMenuItem,
+            this.neverMenubarToolStripMenuItem,
+            this.autoMenubarToolStripMenuItem});
+            this.menubarToolStripMenuItem.Name = "menubarToolStripMenuItem";
+            this.menubarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.menubarToolStripMenuItem.Text = "Menubar";
+            // 
+            // alwaysMenubarToolStripMenuItem
+            // 
+            this.alwaysMenubarToolStripMenuItem.Name = "alwaysMenubarToolStripMenuItem";
+            this.alwaysMenubarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.alwaysMenubarToolStripMenuItem.Text = "Always";
+            this.alwaysMenubarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolStripMenuItem_Click);
+            // 
+            // neverMenubarToolStripMenuItem
+            // 
+            this.neverMenubarToolStripMenuItem.Name = "neverMenubarToolStripMenuItem";
+            this.neverMenubarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.neverMenubarToolStripMenuItem.Text = "Never";
+            this.neverMenubarToolStripMenuItem.Click += new System.EventHandler(this.neverMenubarToolStripMenuItem_Click);
+            // 
+            // autoMenubarToolStripMenuItem
+            // 
+            this.autoMenubarToolStripMenuItem.Name = "autoMenubarToolStripMenuItem";
+            this.autoMenubarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.autoMenubarToolStripMenuItem.Text = "Auto";
+            this.autoMenubarToolStripMenuItem.Click += new System.EventHandler(this.autoMenubarToolStripMenuItem_Click);
+            // 
+            // applicationLauncherToolStripMenuItem
+            // 
+            this.applicationLauncherToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.alwaysALToolStripMenuItem1,
+            this.neverALToolStripMenuItem1,
+            this.autoALToolStripMenuItem1});
+            this.applicationLauncherToolStripMenuItem.Name = "applicationLauncherToolStripMenuItem";
+            this.applicationLauncherToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.applicationLauncherToolStripMenuItem.Text = "Application Launcher";
+            // 
+            // alwaysALToolStripMenuItem1
+            // 
+            this.alwaysALToolStripMenuItem1.Name = "alwaysALToolStripMenuItem1";
+            this.alwaysALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.alwaysALToolStripMenuItem1.Text = "Always";
+            this.alwaysALToolStripMenuItem1.Click += new System.EventHandler(this.alwaysALToolStripMenuItem1_Click);
+            // 
+            // neverALToolStripMenuItem1
+            // 
+            this.neverALToolStripMenuItem1.Name = "neverALToolStripMenuItem1";
+            this.neverALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.neverALToolStripMenuItem1.Text = "Never";
+            this.neverALToolStripMenuItem1.Click += new System.EventHandler(this.neverALToolStripMenuItem1_Click);
+            // 
+            // autoALToolStripMenuItem1
+            // 
+            this.autoALToolStripMenuItem1.Name = "autoALToolStripMenuItem1";
+            this.autoALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.autoALToolStripMenuItem1.Text = "Auto";
+            this.autoALToolStripMenuItem1.Click += new System.EventHandler(this.autoALToolStripMenuItem1_Click);
+            // 
+            // toolbarToolStripMenuItem
+            // 
+            this.toolbarToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.alwaysToolbarToolStripMenuItem,
+            this.neverToolbarToolStripMenuItem,
+            this.autoToolbarToolStripMenuItem});
+            this.toolbarToolStripMenuItem.Name = "toolbarToolStripMenuItem";
+            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.toolbarToolStripMenuItem.Text = "Toolbar";
+            // 
+            // alwaysToolbarToolStripMenuItem
+            // 
+            this.alwaysToolbarToolStripMenuItem.Name = "alwaysToolbarToolStripMenuItem";
+            this.alwaysToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.alwaysToolbarToolStripMenuItem.Text = "Always";
+            this.alwaysToolbarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolbarToolStripMenuItem_Click);
+            // 
+            // neverToolbarToolStripMenuItem
+            // 
+            this.neverToolbarToolStripMenuItem.Name = "neverToolbarToolStripMenuItem";
+            this.neverToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.neverToolbarToolStripMenuItem.Text = "Never";
+            this.neverToolbarToolStripMenuItem.Click += new System.EventHandler(this.neverToolbarToolStripMenuItem_Click);
+            // 
+            // autoToolbarToolStripMenuItem
+            // 
+            this.autoToolbarToolStripMenuItem.Name = "autoToolbarToolStripMenuItem";
+            this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.autoToolbarToolStripMenuItem.Text = "Auto";
+            this.autoToolbarToolStripMenuItem.Click += new System.EventHandler(this.autoToolbarToolStripMenuItem_Click);
+            // 
             // topWindowToolStrip
             // 
             this.topWindowToolStrip.Location = new System.Drawing.Point(0, 24);
@@ -264,6 +367,63 @@ namespace AubitDesktop
             this.splitContainer1.Size = new System.Drawing.Size(1073, 568);
             this.splitContainer1.SplitterDistance = 879;
             this.splitContainer1.TabIndex = 7;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.applicationLauncherPanel);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.panel1);
+            this.splitContainer2.Size = new System.Drawing.Size(879, 568);
+            this.splitContainer2.SplitterDistance = 141;
+            this.splitContainer2.TabIndex = 18;
+            // 
+            // applicationLauncherPanel
+            // 
+            this.applicationLauncherPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.applicationLauncherPanel.Controls.Add(this.treeView1);
+            this.applicationLauncherPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.applicationLauncherPanel.Location = new System.Drawing.Point(0, 0);
+            this.applicationLauncherPanel.Name = "applicationLauncherPanel";
+            this.applicationLauncherPanel.Size = new System.Drawing.Size(141, 568);
+            this.applicationLauncherPanel.TabIndex = 18;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(0, 0);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(137, 564);
+            this.treeView1.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.tabControl1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(734, 568);
+            this.panel1.TabIndex = 7;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.ShowToolTips = true;
+            this.tabControl1.Size = new System.Drawing.Size(730, 564);
+            this.tabControl1.TabIndex = 15;
             // 
             // MenuBarPanel
             // 
@@ -323,166 +483,6 @@ namespace AubitDesktop
             this.label1.TabIndex = 14;
             this.label1.Text = "Send";
             // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.applicationLauncherPanel);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.panel1);
-            this.splitContainer2.Size = new System.Drawing.Size(879, 568);
-            this.splitContainer2.SplitterDistance = 141;
-            this.splitContainer2.TabIndex = 18;
-            // 
-            // panel1
-            // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Controls.Add(this.tabControl1);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(734, 568);
-            this.panel1.TabIndex = 7;
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(730, 564);
-            this.tabControl1.TabIndex = 15;
-            // 
-            // applicationLauncherPanel
-            // 
-            this.applicationLauncherPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.applicationLauncherPanel.Controls.Add(this.treeView1);
-            this.applicationLauncherPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.applicationLauncherPanel.Location = new System.Drawing.Point(0, 0);
-            this.applicationLauncherPanel.Name = "applicationLauncherPanel";
-            this.applicationLauncherPanel.Size = new System.Drawing.Size(141, 568);
-            this.applicationLauncherPanel.TabIndex = 18;
-            // 
-            // treeView1
-            // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(137, 564);
-            this.treeView1.TabIndex = 0;
-            // 
-            // viewToolStripMenuItem
-            // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menubarToolStripMenuItem,
-            this.applicationLauncherToolStripMenuItem,
-            this.toolbarToolStripMenuItem});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
-            this.viewToolStripMenuItem.Text = "View";
-            // 
-            // menubarToolStripMenuItem
-            // 
-            this.menubarToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.alwaysMenubarToolStripMenuItem,
-            this.neverMenubarToolStripMenuItem,
-            this.autoMenubarToolStripMenuItem});
-            this.menubarToolStripMenuItem.Name = "menubarToolStripMenuItem";
-            this.menubarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.menubarToolStripMenuItem.Text = "Menubar";
-            // 
-            // applicationLauncherToolStripMenuItem
-            // 
-            this.applicationLauncherToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.alwaysALToolStripMenuItem1,
-            this.neverALToolStripMenuItem1,
-            this.autoALToolStripMenuItem1});
-            this.applicationLauncherToolStripMenuItem.Name = "applicationLauncherToolStripMenuItem";
-            this.applicationLauncherToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.applicationLauncherToolStripMenuItem.Text = "Application Launcher";
-            // 
-            // alwaysMenubarToolStripMenuItem
-            // 
-            this.alwaysMenubarToolStripMenuItem.Name = "alwaysMenubarToolStripMenuItem";
-            this.alwaysMenubarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.alwaysMenubarToolStripMenuItem.Text = "Always";
-            this.alwaysMenubarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolStripMenuItem_Click);
-            // 
-            // neverMenubarToolStripMenuItem
-            // 
-            this.neverMenubarToolStripMenuItem.Name = "neverMenubarToolStripMenuItem";
-            this.neverMenubarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.neverMenubarToolStripMenuItem.Text = "Never";
-            this.neverMenubarToolStripMenuItem.Click += new System.EventHandler(this.neverMenubarToolStripMenuItem_Click);
-            // 
-            // autoMenubarToolStripMenuItem
-            // 
-            this.autoMenubarToolStripMenuItem.Name = "autoMenubarToolStripMenuItem";
-            this.autoMenubarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.autoMenubarToolStripMenuItem.Text = "Auto";
-            this.autoMenubarToolStripMenuItem.Click += new System.EventHandler(this.autoMenubarToolStripMenuItem_Click);
-            // 
-            // alwaysALToolStripMenuItem1
-            // 
-            this.alwaysALToolStripMenuItem1.Name = "alwaysALToolStripMenuItem1";
-            this.alwaysALToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.alwaysALToolStripMenuItem1.Text = "Always";
-            this.alwaysALToolStripMenuItem1.Click += new System.EventHandler(this.alwaysALToolStripMenuItem1_Click);
-            // 
-            // neverALToolStripMenuItem1
-            // 
-            this.neverALToolStripMenuItem1.Name = "neverALToolStripMenuItem1";
-            this.neverALToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.neverALToolStripMenuItem1.Text = "Never";
-            this.neverALToolStripMenuItem1.Click += new System.EventHandler(this.neverALToolStripMenuItem1_Click);
-            // 
-            // autoALToolStripMenuItem1
-            // 
-            this.autoALToolStripMenuItem1.Name = "autoALToolStripMenuItem1";
-            this.autoALToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-            this.autoALToolStripMenuItem1.Text = "Auto";
-            this.autoALToolStripMenuItem1.Click += new System.EventHandler(this.autoALToolStripMenuItem1_Click);
-            // 
-            // toolbarToolStripMenuItem
-            // 
-            this.toolbarToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.alwaysToolbarToolStripMenuItem,
-            this.neverToolbarToolStripMenuItem,
-            this.autoToolbarToolStripMenuItem});
-            this.toolbarToolStripMenuItem.Name = "toolbarToolStripMenuItem";
-            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.toolbarToolStripMenuItem.Text = "Toolbar";
-            // 
-            // alwaysToolbarToolStripMenuItem
-            // 
-            this.alwaysToolbarToolStripMenuItem.Name = "alwaysToolbarToolStripMenuItem";
-            this.alwaysToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.alwaysToolbarToolStripMenuItem.Text = "Always";
-            this.alwaysToolbarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolbarToolStripMenuItem_Click);
-            // 
-            // neverToolbarToolStripMenuItem
-            // 
-            this.neverToolbarToolStripMenuItem.Name = "neverToolbarToolStripMenuItem";
-            this.neverToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.neverToolbarToolStripMenuItem.Text = "Never";
-            this.neverToolbarToolStripMenuItem.Click += new System.EventHandler(this.neverToolbarToolStripMenuItem_Click);
-            // 
-            // autoToolbarToolStripMenuItem
-            // 
-            this.autoToolbarToolStripMenuItem.Name = "autoToolbarToolStripMenuItem";
-            this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.autoToolbarToolStripMenuItem.Text = "Auto";
-            this.autoToolbarToolStripMenuItem.Click += new System.EventHandler(this.autoToolbarToolStripMenuItem_Click);
-            // 
             // frmMainAppWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -499,6 +499,8 @@ namespace AubitDesktop
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMainAppWindow";
             this.Text = "Aubit4GL Desktop Client";
+            this.Load += new System.EventHandler(this.frmMainAppWindow_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMainAppWindow_FormClosed);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmMainAppWindow_KeyPress);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMainAppWindow_KeyDown);
             this.statusStrip1.ResumeLayout(false);
@@ -508,14 +510,14 @@ namespace AubitDesktop
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
-            this.MenuBarPanel.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
             this.applicationLauncherPanel.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.MenuBarPanel.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

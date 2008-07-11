@@ -139,5 +139,15 @@ namespace AubitDesktop
                 }
             }
         }
+
+        private void PromptWindow_Load(object sender, EventArgs e)
+        {
+            Program.setWindowPosition(this.GetType().ToString() , this);
+        }
+
+        private void PromptWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.saveWindowPosition(this.GetType().ToString(), this);
+        }
     }
 }

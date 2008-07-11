@@ -125,5 +125,15 @@ namespace AubitDesktop
         {
             this.Close();
         }
+
+        private void ADAboutBox_Load(object sender, EventArgs e)
+        {
+            Program.setWindowPosition(this.GetType().ToString(), this);
+        }
+
+        private void ADAboutBox_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.saveWindowPosition(this.GetType().ToString(), this);
+        }
     }
 }

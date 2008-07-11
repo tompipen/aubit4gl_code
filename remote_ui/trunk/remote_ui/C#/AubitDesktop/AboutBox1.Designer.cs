@@ -153,6 +153,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About AubitDesktop";
+            this.Load += new System.EventHandler(this.ADAboutBox_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ADAboutBox_FormClosed);
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();

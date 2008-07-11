@@ -86,6 +86,8 @@
             this.Name = "MacroEditor";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "MacroEditor";
+            this.Load += new System.EventHandler(this.MacroEditor_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MacroEditor_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

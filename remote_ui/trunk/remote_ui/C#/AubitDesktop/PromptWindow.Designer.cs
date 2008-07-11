@@ -80,6 +80,8 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "PromptWindow";
             this.Text = "Prompt";
+            this.Load += new System.EventHandler(this.PromptWindow_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PromptWindow_FormClosed);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);

@@ -671,9 +671,11 @@ namespace AubitDesktop
         {
             int cnt = 0;
             List<object> run_commands;
+
+            //System.Diagnostics.Debug.WriteLine("In consume envelope commands (bottom level)");
             if (this.commands == null) return;
             if (this.commands.Count == 0) return;
-
+            //System.Diagnostics.Debug.WriteLine("consuming...");
             this.SuspendLayout();
 
             // Make a copy of our commands to run through
@@ -682,16 +684,17 @@ namespace AubitDesktop
             {
                 run_commands.Add(a);
             }
-            
+            //System.Diagnostics.Debug.WriteLine("Copied");
             ErrorText="";
 
             cnt = 0;
             // Go through one at a time...
             foreach (object a in run_commands)
             {
+                //System.Diagnostics.Debug.WriteLine("IN foreach");
                 TopWindow.setProgress( run_commands.Count,cnt);
                 cnt++;
-                
+                //System.Diagnostics.Debug.WriteLine("Consuming event : " + cnt + " of " + run_commands.Count);
                 #region PROGRAMSTARTUP
                 if (a is PROGRAMSTARTUP)
                 {

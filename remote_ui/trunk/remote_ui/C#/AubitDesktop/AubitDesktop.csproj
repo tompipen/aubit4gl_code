@@ -22,11 +22,23 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DiffieHellman, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ssh_dlls\DiffieHellman.dll</HintPath>
+    </Reference>
+    <Reference Include="Org.Mentalis.Security, Version=1.0.13.715, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ssh_dlls\Org.Mentalis.Security.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tamir.SharpSSH, Version=1.1.1.13, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ssh_dlls\Tamir.SharpSSH.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutBox1.cs">
@@ -68,6 +80,18 @@
     <Compile Include="FGLWidget.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="frmShortcut.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmShortcut.Designer.cs">
+      <DependentUpon>frmShortcut.cs</DependentUpon>
+    </Compile>
+    <Compile Include="mainfrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mainfrm.Designer.cs">
+      <DependentUpon>mainfrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmConsole.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,12 +99,6 @@
       <DependentUpon>frmConsole.cs</DependentUpon>
     </Compile>
     <Compile Include="HelperClasses.cs" />
-    <Compile Include="Login.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Login.Designer.cs">
-      <DependentUpon>Login.cs</DependentUpon>
-    </Compile>
     <Compile Include="MacroEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,6 +137,8 @@
     <Compile Include="ScratchPad.Designer.cs">
       <DependentUpon>ScratchPad.cs</DependentUpon>
     </Compile>
+    <Compile Include="ssh.cs">
+    </Compile>
     <Compile Include="ToolBarImages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -142,12 +162,16 @@
       <DependentUpon>FGLTxtControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmShortcut.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmShortcut.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="mainfrm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>mainfrm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmConsole.resx">
       <DependentUpon>frmConsole.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Login.resx">
-      <DependentUpon>Login.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MacroEditor.resx">
@@ -185,6 +209,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DiffieHellman.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\accept.png" />
     <Content Include="images\arr2beg.png" />
     <Content Include="images\arr2end.png" />
@@ -314,7 +341,13 @@
     <Content Include="images\wizard.png" />
     <Content Include="images\zoom.png" />
     <Content Include="images\zurueck.png" />
+    <Content Include="Org.Mentalis.Security.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="README.txt" />
+    <Content Include="Tamir.SharpSSH.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
