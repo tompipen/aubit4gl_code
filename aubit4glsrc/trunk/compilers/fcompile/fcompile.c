@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.62 2008-07-06 11:34:26 mikeaubury Exp $
+# $Id: fcompile.c,v 1.63 2008-07-12 06:58:04 mikeaubury Exp $
 #*/
 
 /**
@@ -289,7 +289,24 @@ YYSTYPE yylval;
 #endif
 
 
+int reposition_to_line(int lineno, FILE *yyin) {
+      static char buff[512];
+        int ln=0;
+	int ld=0;
+        // We've read the file completely - this is a post parse error...
+        rewind(yyin);
+        while (1) {
+                if (feof(yyin)) break;
+                memset(buff,0,sizeof(buff));
+                fgets(buff,sizeof(buff),yyin);
+                if (strchr(buff,'\n')) ln++;
+                if (ln>lineno) break;
+                ld=ftell (yyin);
+                //ld=fpos;
+        }
+	return ld;
 
+}
 
 /**
  * Executed by the parser when it enconters some error
@@ -303,6 +320,7 @@ a4gl_form_yyerror (char *s)
   FILE *f;
   long ld;
   ld = ftell(yyin); //buffpos ();
+  ld=reposition_to_line(yylineno, yyin);
   sprintf (errfile, "%s.err", outputfilename);
   f = A4GL_write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);

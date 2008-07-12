@@ -88,6 +88,7 @@
 
 --! 	{if (in_screen_section) REJECT; }
 	
+#.*$ {if (in_screen_section) REJECT; }
 --[^!^\n].* 	{if (in_screen_section) REJECT; }
 
 "uses extended" 	{
@@ -280,6 +281,38 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "as"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AS;}
 "noupdate"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOUPDATE;}
 "left"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
+
+
+
+ 
+"page"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PAGE;}
+"hbox"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_HBOX;}
+"vbox"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_VBOX;}
+"grid"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_GRID;}
+"group"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_GROUP;}
+"table"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_TABLE;}
+"folder"	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FOLDER;}
+"style"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_STYLE;}
+"layout"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_LAYOUT;}
+"hidden"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_HIDDEN;}
+"scroll"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_SCROLL;}
+"TEXTEDIT"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_TEXTEDIT;}
+"EDIT"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_EDIT;}
+"DATEEDIT"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DATEEDIT;}
+"BUTTONEDIT"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_BUTTONEDIT;}
+"LABEL"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_LABEL;}
+"IMAGE"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_IMAGE;}
+"FONTPITCH"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FONTPITCH;}
+"FIXED"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FIXED;}
+"VARIABLE"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_VARIABLE;}
+"WANTNORETURNS"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_WANTNORETURNS;}
+"WANTTABS"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_WANTTABS;}
+
+
+
+
+
+
 
 "zerofill"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_ZEROFILL;}
 "right"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_RIGHT;}

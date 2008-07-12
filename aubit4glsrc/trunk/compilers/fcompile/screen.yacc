@@ -131,13 +131,14 @@ FORMONLY COMMENT
 %token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_TOTAL KW_RIGHT KW_ZEROFILL
 %token KW_USES_EXTENDED SPECIAL_DBNAME
 %token KW_ACTION
-
-
+%token KW_PAGE KW_HBOX KW_VBOX KW_GRID KW_GROUP  KW_TABLE KW_FOLDER KW_STYLE KW_LAYOUT KW_HIDDEN
+%token KW_TEXTEDIT KW_BUTTONEDIT KW_LABEL KW_EDIT KW_DATEEDIT  KW_SCROLL  KW_IMAGE
+%token KW_FONTPITCH KW_FIXED KW_VARIABLE KW_WANTNORETURNS KW_WANTTABS
 %%
 
 /* rules */
 form_def : 
-database_section screen_section op_table_section attribute_section op_instruction_section {
+database_section screen_or_layout_section op_table_section attribute_section op_instruction_section {
 A4GL_check_compiled_form();
 A4GL_write_form();}
 ;
@@ -173,6 +174,113 @@ dbname :
 	| named_or_kw_st
 	| named_or_kw_st ATSIGN named_or_kw_any {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
+
+
+screen_or_layout_section : 
+	screen_section
+	| layout_section
+;
+
+
+vbox_section:
+	KW_VBOX opt_layout_ident layout_attributes layout_items KW_END
+;
+
+
+hbox_section:
+	KW_HBOX opt_layout_ident layout_attributes layout_items KW_END
+;
+
+group_section:
+	KW_GROUP opt_layout_ident layout_attributes layout_container KW_END
+	/* only one item in a group */
+;
+
+folder_section:
+	KW_FOLDER opt_layout_ident layout_attributes pages KW_END
+
+pages: page
+	| pages page
+;
+
+
+page: 
+	KW_PAGE opt_layout_ident layout_attributes layout_container KW_END
+;
+
+opt_layout_ident: 
+	{strcpy($<str>$,"");}
+	 |  named_or_kw_any
+;
+
+grid_section:
+	KW_GRID 
+		{ in_screen_section=1; colno=0;   lineno=0; scr++; if (scr>1) newscreen=1; sprintf($<str>$,"%d", scr); }
+	opt_layout_ident   layout_attributes
+        OPEN_BRACE 
+		{ ignorekw=1; lineno=0; }
+        screen_layout
+        CLOSE_BRACE
+		{ignorekw=0; in_screen_section=0;}
+	KW_END {
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+
+
+table_section:
+	KW_TABLE
+		{ in_screen_section=1; colno=0; lineno=0; scr++; if (scr>1) newscreen=1;  sprintf($<str>$,"%d", scr);}
+ 	opt_layout_ident   layout_attributes
+        OPEN_BRACE 
+		{ ignorekw=1; lineno=0; }
+        screen_layout
+        CLOSE_BRACE
+		{ignorekw=0; in_screen_section=0;}
+	KW_END {
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+
+layout_attributes: 
+	| OPEN_BRACKET layout_attribute_list CLOSE_BRACKET
+;
+
+layout_attribute: 
+	KW_STYLE EQUAL CHAR_VALUE
+	| KW_HIDDEN
+;
+
+layout_attribute_list:
+	layout_attribute
+	| layout_attribute_list layout_attribute
+;
+
+
+layout_items:
+	layout_container
+	| layout_items layout_container
+;
+
+layout_container:
+	vbox_section
+	| hbox_section
+	| group_section
+	| folder_section
+	| grid_section
+	| table_section
+;
+
+layout_section:
+	KW_LAYOUT
+	layout_container
+	op_end
+;
+
+
+
 
 screen_section : screens_section | screen_section screens_section ;
 
@@ -440,14 +548,25 @@ field_tag_list :
 field_tag | field_tag_list field_tag
 ;
 
-field_tag : 
-field_tag_name {
-	A4GL_make_downshift($<str>1);
-	strcpy(currftag,$<str>1);
-	fldno=A4GL_find_field($<str>1);
-} 
-fpart_list 
-SEMICOLON
+
+op_field_tag_type:
+	{strcpy($<str>$,"Edit");}
+	| KW_EDIT {strcpy($<str>$,"Edit");}
+	| KW_TEXTEDIT {strcpy($<str>$,"TextEdit");}
+	| KW_LABEL {strcpy($<str>$,"Label");}
+	| KW_DATEEDIT {strcpy($<str>$,"DateEdit");}
+	| KW_BUTTONEDIT {strcpy($<str>$,"ButtonEdit");}
+;
+
+
+field_tag :  op_field_tag_type
+		field_tag_name {
+			A4GL_make_downshift($<str>2);
+			strcpy(currftag,$<str>2);
+			fldno=A4GL_find_field($<str>2);
+		} 
+		fpart_list 
+		SEMICOLON
 ;
 
 fpart_list : 
@@ -859,7 +978,9 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { fld->dynamic=atoi($<str>4); A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 | DYNAMIC  { fld->dynamic=-1; A4GL_debug("dynamic=-1"); }
 | SQLONLY  { printf("Warning %s is not implemented for 4GL\n",$<str>1); }
+
 | NOENTRY { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
+
 | NOUPDATE { A4GL_add_bool_attr(fld,FA_B_NOUPDATE); }
 | PICTURE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PICTURE,$<str>3); }
 | PROGRAM EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_PROGRAM,$<str>3); }
@@ -876,7 +997,20 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 }
 | WORDWRAP NONCOMPRESS {
 	A4GL_add_bool_attr(fld,FA_B_WORDWRAP);
-};
+}
+
+
+
+/* Extended attributes */
+| KW_HIDDEN { A4GL_add_bool_attr(fld,FA_B_HIDDEN); }
+| KW_WANTNORETURNS { A4GL_add_bool_attr(fld,FA_B_WANTNORETURNS); }
+| KW_WANTTABS { A4GL_add_bool_attr(fld,FA_B_WANTTABS); }
+| KW_FONTPITCH EQUAL KW_FIXED { A4GL_add_bool_attr(fld,FA_B_FONTPITCHFIXED); }
+| KW_FONTPITCH EQUAL KW_VARIABLE { A4GL_add_bool_attr(fld,FA_B_FONTPITCHVARIABLE); }
+| KW_SCROLL { A4GL_add_bool_attr(fld,FA_B_SCROLL); }
+| KW_IMAGE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_IMAGE,$<str>3); }
+;
+
 
 
 def_val : 
