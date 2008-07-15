@@ -55,6 +55,9 @@
     <Compile Include="FGLApplicationPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FGLBrowserFieldWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FGLButtonFieldWidget.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -1489,6 +1489,9 @@ namespace AubitDesktop
         public string Y;
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string SOURCE;
+        /// <remarks/>
         public FORM FORM;
     }
 

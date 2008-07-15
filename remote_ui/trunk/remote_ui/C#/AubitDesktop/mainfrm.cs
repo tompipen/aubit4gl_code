@@ -35,7 +35,18 @@ namespace AubitDesktop
             this.Port = port;
             this.StartMinimised = startMinimised;
             this.server = new TcpListener(IPAddress.Any, Convert.ToInt32(Port));
-
+            if (this.AllowEdit == false  )
+            {
+                btnShortcutAdd.Visible = false;
+                btnDuplicate.Visible = false;
+                btnShortcutEdit.Visible = false;
+                btnShortcutRemove.Visible = false;
+                btnShortcutAdd.Visible = false;
+                cbAllowExec.Enabled = false;
+                cbReceiveFile.Enabled = false;
+                cbSendFile.Enabled = false;
+                tbInterruptKey.ReadOnly =true;
+            }
 
             if (ListenMode)
             {
@@ -431,6 +442,30 @@ namespace AubitDesktop
         private void tbInterruptKey_TextChanged(object sender, EventArgs e)
         {
             lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text);
+        }
+
+        private void btnDuplicate_Click(object sender, EventArgs e)
+        {
+            if (lstShortcuts.SelectedIndex != -1)
+            {
+                AubitDesktop.Xml.Shortcut s;
+AubitDesktop.Xml.Shortcut snew;
+                s=Program.AppSettings.Shortcuts[lstShortcuts.SelectedIndex];
+                snew = new AubitDesktop.Xml.Shortcut();
+                snew.Application=s.Application;
+                snew.Password=s.Password;
+                snew.Port=s.Port;
+                snew.PromptForPassword=s.PromptForPassword;
+                snew.Protocol=s.Protocol;
+                snew.Server=s.Server;
+                snew.Title=s.Title.Trim()+ "(Copy)";
+                snew.User=s.User;
+
+
+                Program.AppSettings.Shortcuts.Add(snew);
+                ShowShortcuts();
+                
+            }
         }
     }
 }

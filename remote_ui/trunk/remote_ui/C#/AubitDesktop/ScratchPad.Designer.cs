@@ -31,13 +31,14 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.fglTextFieldWidget1 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget2 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget3 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget4 = new AubitDesktop.FGLTextFieldWidget();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -58,9 +59,9 @@
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 276);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 557);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(599, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(681, 22);
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -80,98 +81,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 100);
             this.tableLayoutPanel1.TabIndex = 6;
-            // 
-            // fglTextFieldWidget1
-            // 
-            this.fglTextFieldWidget1.afterFieldID = null;
-            this.fglTextFieldWidget1.AutoNext = false;
-            this.fglTextFieldWidget1.beforeFieldID = null;
-            this.fglTextFieldWidget1.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
-            this.fglTextFieldWidget1.datatype_length = 0;
-            this.fglTextFieldWidget1.Downshift = false;
-            this.fglTextFieldWidget1.FieldTextChanged = true;
-            this.fglTextFieldWidget1.fieldValidationFailed = null;
-            this.fglTextFieldWidget1.format = null;
-            this.fglTextFieldWidget1.Location = new System.Drawing.Point(3, 3);
-            this.fglTextFieldWidget1.MaxLength = 32767;
-            this.fglTextFieldWidget1.Name = "fglTextFieldWidget1";
-            this.fglTextFieldWidget1.NoEntry = false;
-            this.fglTextFieldWidget1.onActionID = null;
-            this.fglTextFieldWidget1.onUIEvent = null;
-            this.fglTextFieldWidget1.Required = false;
-            this.fglTextFieldWidget1.Size = new System.Drawing.Size(75, 23);
-            this.fglTextFieldWidget1.TabIndex = 0;
-            this.fglTextFieldWidget1.Text = "fglTextFieldWidget1";
-            this.fglTextFieldWidget1.Upshift = false;
-            // 
-            // fglTextFieldWidget2
-            // 
-            this.fglTextFieldWidget2.afterFieldID = null;
-            this.fglTextFieldWidget2.AutoNext = false;
-            this.fglTextFieldWidget2.beforeFieldID = null;
-            this.fglTextFieldWidget2.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
-            this.fglTextFieldWidget2.datatype_length = 0;
-            this.fglTextFieldWidget2.Downshift = false;
-            this.fglTextFieldWidget2.FieldTextChanged = true;
-            this.fglTextFieldWidget2.fieldValidationFailed = null;
-            this.fglTextFieldWidget2.format = null;
-            this.fglTextFieldWidget2.Location = new System.Drawing.Point(103, 3);
-            this.fglTextFieldWidget2.MaxLength = 32767;
-            this.fglTextFieldWidget2.Name = "fglTextFieldWidget2";
-            this.fglTextFieldWidget2.NoEntry = false;
-            this.fglTextFieldWidget2.onActionID = null;
-            this.fglTextFieldWidget2.onUIEvent = null;
-            this.fglTextFieldWidget2.Required = false;
-            this.fglTextFieldWidget2.Size = new System.Drawing.Size(75, 23);
-            this.fglTextFieldWidget2.TabIndex = 1;
-            this.fglTextFieldWidget2.Text = "fglTextFieldWidget2";
-            this.fglTextFieldWidget2.Upshift = false;
-            // 
-            // fglTextFieldWidget3
-            // 
-            this.fglTextFieldWidget3.afterFieldID = null;
-            this.fglTextFieldWidget3.AutoNext = false;
-            this.fglTextFieldWidget3.beforeFieldID = null;
-            this.fglTextFieldWidget3.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
-            this.fglTextFieldWidget3.datatype_length = 0;
-            this.fglTextFieldWidget3.Downshift = false;
-            this.fglTextFieldWidget3.FieldTextChanged = true;
-            this.fglTextFieldWidget3.fieldValidationFailed = null;
-            this.fglTextFieldWidget3.format = null;
-            this.fglTextFieldWidget3.Location = new System.Drawing.Point(3, 53);
-            this.fglTextFieldWidget3.MaxLength = 32767;
-            this.fglTextFieldWidget3.Name = "fglTextFieldWidget3";
-            this.fglTextFieldWidget3.NoEntry = false;
-            this.fglTextFieldWidget3.onActionID = null;
-            this.fglTextFieldWidget3.onUIEvent = null;
-            this.fglTextFieldWidget3.Required = false;
-            this.fglTextFieldWidget3.Size = new System.Drawing.Size(75, 23);
-            this.fglTextFieldWidget3.TabIndex = 2;
-            this.fglTextFieldWidget3.Text = "fglTextFieldWidget3";
-            this.fglTextFieldWidget3.Upshift = false;
-            // 
-            // fglTextFieldWidget4
-            // 
-            this.fglTextFieldWidget4.afterFieldID = null;
-            this.fglTextFieldWidget4.AutoNext = false;
-            this.fglTextFieldWidget4.beforeFieldID = null;
-            this.fglTextFieldWidget4.datatype = AubitDesktop.FGLUtils.FGLDataTypes.DTYPE_CHAR;
-            this.fglTextFieldWidget4.datatype_length = 0;
-            this.fglTextFieldWidget4.Downshift = false;
-            this.fglTextFieldWidget4.FieldTextChanged = true;
-            this.fglTextFieldWidget4.fieldValidationFailed = null;
-            this.fglTextFieldWidget4.format = null;
-            this.fglTextFieldWidget4.Location = new System.Drawing.Point(103, 53);
-            this.fglTextFieldWidget4.MaxLength = 32767;
-            this.fglTextFieldWidget4.Name = "fglTextFieldWidget4";
-            this.fglTextFieldWidget4.NoEntry = false;
-            this.fglTextFieldWidget4.onActionID = null;
-            this.fglTextFieldWidget4.onUIEvent = null;
-            this.fglTextFieldWidget4.Required = false;
-            this.fglTextFieldWidget4.Size = new System.Drawing.Size(75, 23);
-            this.fglTextFieldWidget4.TabIndex = 3;
-            this.fglTextFieldWidget4.Text = "fglTextFieldWidget4";
-            this.fglTextFieldWidget4.Upshift = false;
             // 
             // trackBar1
             // 
@@ -201,11 +110,109 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // webBrowser1
+            // 
+            this.webBrowser1.Location = new System.Drawing.Point(69, 284);
+            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowser1.Name = "webBrowser1";
+            this.webBrowser1.Size = new System.Drawing.Size(510, 250);
+            this.webBrowser1.TabIndex = 10;
+            this.webBrowser1.Url = new System.Uri("http://www.google.com", System.UriKind.Absolute);
+            // 
+            // fglTextFieldWidget1
+            // 
+            this.fglTextFieldWidget1.afterFieldID = null;
+            this.fglTextFieldWidget1.AutoNext = false;
+            this.fglTextFieldWidget1.beforeFieldID = null;
+            this.fglTextFieldWidget1.datatype_length = 0;
+            this.fglTextFieldWidget1.Downshift = false;
+            this.fglTextFieldWidget1.FieldTextChanged = true;
+            this.fglTextFieldWidget1.fieldValidationFailed = null;
+            this.fglTextFieldWidget1.format = null;
+            this.fglTextFieldWidget1.Location = new System.Drawing.Point(3, 3);
+            this.fglTextFieldWidget1.MaxLength = 32767;
+            this.fglTextFieldWidget1.Name = "fglTextFieldWidget1";
+            this.fglTextFieldWidget1.NoEntry = false;
+            this.fglTextFieldWidget1.onActionID = null;
+            this.fglTextFieldWidget1.onUIEvent = null;
+            this.fglTextFieldWidget1.Required = false;
+            this.fglTextFieldWidget1.Size = new System.Drawing.Size(75, 23);
+            this.fglTextFieldWidget1.TabIndex = 0;
+            this.fglTextFieldWidget1.Text = "fglTextFieldWidget1";
+            this.fglTextFieldWidget1.Upshift = false;
+            // 
+            // fglTextFieldWidget2
+            // 
+            this.fglTextFieldWidget2.afterFieldID = null;
+            this.fglTextFieldWidget2.AutoNext = false;
+            this.fglTextFieldWidget2.beforeFieldID = null;
+            this.fglTextFieldWidget2.datatype_length = 0;
+            this.fglTextFieldWidget2.Downshift = false;
+            this.fglTextFieldWidget2.FieldTextChanged = true;
+            this.fglTextFieldWidget2.fieldValidationFailed = null;
+            this.fglTextFieldWidget2.format = null;
+            this.fglTextFieldWidget2.Location = new System.Drawing.Point(103, 3);
+            this.fglTextFieldWidget2.MaxLength = 32767;
+            this.fglTextFieldWidget2.Name = "fglTextFieldWidget2";
+            this.fglTextFieldWidget2.NoEntry = false;
+            this.fglTextFieldWidget2.onActionID = null;
+            this.fglTextFieldWidget2.onUIEvent = null;
+            this.fglTextFieldWidget2.Required = false;
+            this.fglTextFieldWidget2.Size = new System.Drawing.Size(75, 23);
+            this.fglTextFieldWidget2.TabIndex = 1;
+            this.fglTextFieldWidget2.Text = "fglTextFieldWidget2";
+            this.fglTextFieldWidget2.Upshift = false;
+            // 
+            // fglTextFieldWidget3
+            // 
+            this.fglTextFieldWidget3.afterFieldID = null;
+            this.fglTextFieldWidget3.AutoNext = false;
+            this.fglTextFieldWidget3.beforeFieldID = null;
+            this.fglTextFieldWidget3.datatype_length = 0;
+            this.fglTextFieldWidget3.Downshift = false;
+            this.fglTextFieldWidget3.FieldTextChanged = true;
+            this.fglTextFieldWidget3.fieldValidationFailed = null;
+            this.fglTextFieldWidget3.format = null;
+            this.fglTextFieldWidget3.Location = new System.Drawing.Point(3, 53);
+            this.fglTextFieldWidget3.MaxLength = 32767;
+            this.fglTextFieldWidget3.Name = "fglTextFieldWidget3";
+            this.fglTextFieldWidget3.NoEntry = false;
+            this.fglTextFieldWidget3.onActionID = null;
+            this.fglTextFieldWidget3.onUIEvent = null;
+            this.fglTextFieldWidget3.Required = false;
+            this.fglTextFieldWidget3.Size = new System.Drawing.Size(75, 23);
+            this.fglTextFieldWidget3.TabIndex = 2;
+            this.fglTextFieldWidget3.Text = "fglTextFieldWidget3";
+            this.fglTextFieldWidget3.Upshift = false;
+            // 
+            // fglTextFieldWidget4
+            // 
+            this.fglTextFieldWidget4.afterFieldID = null;
+            this.fglTextFieldWidget4.AutoNext = false;
+            this.fglTextFieldWidget4.beforeFieldID = null;
+            this.fglTextFieldWidget4.datatype_length = 0;
+            this.fglTextFieldWidget4.Downshift = false;
+            this.fglTextFieldWidget4.FieldTextChanged = true;
+            this.fglTextFieldWidget4.fieldValidationFailed = null;
+            this.fglTextFieldWidget4.format = null;
+            this.fglTextFieldWidget4.Location = new System.Drawing.Point(103, 53);
+            this.fglTextFieldWidget4.MaxLength = 32767;
+            this.fglTextFieldWidget4.Name = "fglTextFieldWidget4";
+            this.fglTextFieldWidget4.NoEntry = false;
+            this.fglTextFieldWidget4.onActionID = null;
+            this.fglTextFieldWidget4.onUIEvent = null;
+            this.fglTextFieldWidget4.Required = false;
+            this.fglTextFieldWidget4.Size = new System.Drawing.Size(75, 23);
+            this.fglTextFieldWidget4.TabIndex = 3;
+            this.fglTextFieldWidget4.Text = "fglTextFieldWidget4";
+            this.fglTextFieldWidget4.Upshift = false;
+            // 
             // ScratchPad
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(599, 298);
+            this.ClientSize = new System.Drawing.Size(681, 579);
+            this.Controls.Add(this.webBrowser1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.trackBar1);
@@ -235,5 +242,6 @@
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.WebBrowser webBrowser1;
     }
 }

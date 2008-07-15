@@ -135,6 +135,9 @@ namespace AubitDesktop
                         case "PIXMAP":
                             fld = new FGLPixmapFieldWidget(thisAttrib,Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO),formfld.INC);
                             break;
+                        case "BROWSER":
+                            fld = new FGLBrowserFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                            break;
                         case "BUTTON":
                             fld = new FGLButtonFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
                             break;
@@ -348,8 +351,15 @@ namespace AubitDesktop
                 for (int a=0;a<d.VALUES.Length;a++) {
                     if (fldlist[a].fglField.format != null)
                     {
-                        string s;
-                        s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VALUES[a].Text, fldlist[a].fglField.datatype);
+                        string s="";
+                        try
+                        {
+                            s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VALUES[a].Text, fldlist[a].fglField.datatype);
+                        }
+                        catch (Exception e)
+                        {
+                            // Does nothing..
+                        }
                         fldlist[a].fglField.Text = s;
                     }
                     else

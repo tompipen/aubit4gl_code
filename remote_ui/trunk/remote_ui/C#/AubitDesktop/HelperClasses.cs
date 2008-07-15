@@ -101,9 +101,17 @@ namespace AubitDesktop
         }
     }
 
+
+ 
     // We'll abstract all our widget implementation behind an interface
     public interface IFGLField
     {
+
+        UIFieldValidationHandler fieldValidationFailed
+        {
+            get;
+            set;
+        }
 
         string ColumnName
         {
@@ -163,11 +171,6 @@ namespace AubitDesktop
             get;
         }
 
-        /* FGLWidget WidgetDetails
-        {
-            get;
-        }
-         * */
 
         FGLContextType ContextType
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
@@ -1353,6 +1356,124 @@ namespace AubitDesktop
             DTYPE_SERIAL8 = 18
 
         };
+
+
+        static public bool IsValidForType(FGLDataTypes datatype, string value, string format)
+        {
+            
+            switch (datatype)
+            {
+
+                case FGLDataTypes.DTYPE_TEXT:
+                case FGLDataTypes.DTYPE_NULL:
+                case FGLDataTypes.DTYPE_BYTE:
+                case FGLDataTypes.DTYPE_VCHAR:
+                case FGLDataTypes.DTYPE_NCHAR:
+                case FGLDataTypes.DTYPE_CHAR:
+                    return true;
+
+
+                case FGLDataTypes.DTYPE_INTERVAL:
+                case FGLDataTypes.DTYPE_DTIME:
+                    return true;
+
+
+                case FGLDataTypes.DTYPE_DECIMAL:
+                case FGLDataTypes.DTYPE_FLOAT:
+                case FGLDataTypes.DTYPE_SMFLOAT:
+                case FGLDataTypes.DTYPE_MONEY:
+                    {
+                        Double d;
+                        if (Double.TryParse(value, out d))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                case FGLUtils.FGLDataTypes.DTYPE_DATE:
+                    {
+                        DateTime dt;
+                        bool ok = false;
+                        try
+                        {
+                            if (format != null)
+                            {
+                                dt = FGLUtils.getDate(value, FGLUtils.fglFormatToDotNetFormat(format));
+                                ok = true;
+                            }
+                            else
+                            {
+                                dt = FGLUtils.getDate(value);
+                                ok = true;
+                            }
+                        }
+                        catch { }
+
+                        if (ok)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                   
+
+                case FGLDataTypes.DTYPE_SERIAL:
+                case FGLUtils.FGLDataTypes.DTYPE_INT:
+                    {
+                        Int32 n;
+                        if (Int32.TryParse(value, out n))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return  false;
+                        }
+                    }
+
+                case FGLDataTypes.DTYPE_SERIAL8:
+                case FGLDataTypes.DTYPE_INT8:
+                    {
+                        Int64 n;
+                        if (Int64.TryParse(value, out n))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                        
+                    }
+
+
+                case FGLUtils.FGLDataTypes.DTYPE_SMINT:
+                    {
+                        Int16 n;
+                        if (Int16.TryParse(value, out n))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+             
+                default:
+                    throw new ApplicationException("Datatype field checking not handled for " + datatype.ToString());
+            }
+            
+        }
+
+
 
         internal static DateTime getDate(string s) {
             DateTime t;

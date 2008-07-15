@@ -209,7 +209,11 @@ namespace AubitDesktop
         }
 
 
-
+        void inputFieldValidationHandler(object source, string failedText, out bool ignore)
+        {
+            ignore = false;
+            mainWin.setErrorTextFromFieldValidation(failedText);
+        }
 
         public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values)
         {
@@ -220,6 +224,9 @@ namespace AubitDesktop
 
             mainWin.setActiveToolBarKeys(KeyList,true);
             this.EventTriggered = UIInputContext_EventTriggered;
+            foreach (FGLFoundField f in activeFields) {
+                f.fglField.fieldValidationFailed = inputFieldValidationHandler;
+            }
 
 
             if (setCurrentField != null) // Next field has been registered..

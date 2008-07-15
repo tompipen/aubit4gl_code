@@ -59,6 +59,7 @@ namespace AubitDesktop
             this.tbInterruptKey = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.lblKeyCode = new System.Windows.Forms.Label();
+            this.btnDuplicate = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -146,6 +147,7 @@ namespace AubitDesktop
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnDuplicate);
             this.groupBox2.Controls.Add(this.pictureBox1);
             this.groupBox2.Controls.Add(this.btnShortcutExecute);
             this.groupBox2.Controls.Add(this.btnShortcutEdit);
@@ -169,7 +171,7 @@ namespace AubitDesktop
             // 
             // btnShortcutExecute
             // 
-            this.btnShortcutExecute.Location = new System.Drawing.Point(6, 128);
+            this.btnShortcutExecute.Location = new System.Drawing.Point(6, 154);
             this.btnShortcutExecute.Name = "btnShortcutExecute";
             this.btnShortcutExecute.Size = new System.Drawing.Size(75, 23);
             this.btnShortcutExecute.TabIndex = 3;
@@ -351,6 +353,16 @@ namespace AubitDesktop
             this.lblKeyCode.Size = new System.Drawing.Size(100, 23);
             this.lblKeyCode.TabIndex = 17;
             // 
+            // btnDuplicate
+            // 
+            this.btnDuplicate.Location = new System.Drawing.Point(6, 106);
+            this.btnDuplicate.Name = "btnDuplicate";
+            this.btnDuplicate.Size = new System.Drawing.Size(75, 23);
+            this.btnDuplicate.TabIndex = 11;
+            this.btnDuplicate.Text = "Duplicate";
+            this.btnDuplicate.UseVisualStyleBackColor = true;
+            this.btnDuplicate.Click += new System.EventHandler(this.btnDuplicate_Click);
+            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -411,5 +423,6 @@ namespace AubitDesktop
         private System.Windows.Forms.CheckBox cbSendFile;
         private System.Windows.Forms.CheckBox cbAllowExec;
         private System.Windows.Forms.Label lblKeyCode;
+        private System.Windows.Forms.Button btnDuplicate;
     }
 }

@@ -1,4 +1,5 @@
-﻿/*
+
+/*
  *  Copyright (c) 2008 The Aubit Development Team. 
  *  All rights reserved. See CREDITS file.
  *  
@@ -31,7 +32,7 @@ namespace AubitDesktop
 
 
     // A picture widget fgl field widget...
-    class FGLPixmapFieldWidget : FGLWidget, IFGLField
+    class FGLBrowserFieldWidget : FGLWidget, IFGLField
     {
 
         FGLContextType _ContextType;
@@ -64,7 +65,7 @@ namespace AubitDesktop
         }
 
 
-        PictureBox pb;
+       System.Windows.Forms.WebBrowser pb;
 
         public void setFocus()
         {
@@ -96,62 +97,48 @@ namespace AubitDesktop
         {
             get
             {
-                return pb.ImageLocation;
+                
+                return pb.Url.ToString();
 
             }
             set
+            
             {
-                if (value != pb.ImageLocation)
+                if (pb.Url == null)
                 {
                     this.FieldTextChanged = true;
                 }
-                pb.ImageLocation = value;
+                else
+                {
+                    if (value != pb.Url.ToString())
+                    {
+                        this.FieldTextChanged = true;
+                    }
+                }
+                pb.Url= new Uri(value);
             }
         }
 
-        public FGLPixmapFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        public FGLBrowserFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
             //this._WidgetDetails = new FGLWidget();
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
-            pb = new PictureBox();
+            pb = new WebBrowser();
 
             #region SetImageFromFile
-            if (configSettings.ContainsKey("FILENAME"))
+            if (configSettings.ContainsKey("URL"))
             {
                 string dir;
-                Image obj;
-
-                obj = (Image)resourceInterface.getObject((string)configSettings["FILENAME"]);
-                //pb.BackColor = Color.AliceBlue;
-
-
-                if (obj != null)
-                {
-                    pb.Image = obj;
-                }
-                else
-                {
-                    dir = "c:/images" ; //Properties.  Resources.ImageDirectory;
-                    if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
-                    {
-                        dir = dir + "/";
-                    }
-                    try
-                    {
-                        pb.Load(dir + "/" + (string)configSettings["FILENAME"]);
-                    }
-                    catch
-                    {
-                        ;
-                    }
-                }
+                pb.Url = new Uri((string)configSettings["URL"]);
             }
             #endregion
-
+            pb.ScrollBarsEnabled = true;
             SizeControl(pb);
-            pb.SizeMode = PictureBoxSizeMode.StretchImage;
+
+
             pb.Visible = true;
             pb.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column - 1), GuiLayout.get_gui_y(row));
         }
     }
 }
+

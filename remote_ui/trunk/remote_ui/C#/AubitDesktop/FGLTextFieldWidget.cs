@@ -281,10 +281,10 @@ namespace AubitDesktop
             p.Controls.Add(t);
             p.Controls.Add(l);
             p.Size = t.Size;
-
+            t.CausesValidation = true;
             t.LostFocus += new EventHandler(t_LostFocus);
             t.GotFocus += new EventHandler(t_GotFocus);
-            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             t.Click += new EventHandler(t_Click);
             t.ReadOnly = true;
             t.Visible = true;
@@ -295,10 +295,105 @@ namespace AubitDesktop
 
 
 
+        bool validateField(object field)
+        {
+            bool ign = false;
+
+            if (this._ContextType == FGLContextType.ContextInput)
+            {
+                #region REQUIRED CHECK
+                if (this.Required)
+                {
+                    if (t.Text.Length == 0)
+                    {
+                        if (this.fieldValidationFailed != null)
+                        {
+                            this.fieldValidationFailed(this, "REQUIRED", out ign);
+                        }
+                        if (!ign)
+                        {
+                           return false;
+                        }
+                    }
+
+                }
+                #endregion
+                #region Datatype Check
+                if (!FGLUtils.IsValidForType(this.datatype, t.Text, this.format))
+                {
+                    if (this.fieldValidationFailed != null)
+                    {
+                        this.fieldValidationFailed(this, "DATATYPE", out ign);
+                    }
+                    if (!ign)
+                    {
+                        return false;
+                    }
+                }
+                #endregion
+                #region Include value check
+                if (this.includeValues != null)
+                {
+                    bool ok = false;
+                    foreach (string s in this.includeValues)
+                    {
+                        if (s.Contains("\t"))
+                        {
+                            string l, r;
+                            string[] arr;
+                            arr = s.Split('\t');
+                            l = arr[0];
+                            r = arr[1];
+
+                            if (FGLUtils.compare_range(this.Text, l, r, this.datatype, this.datatype_length, this.format))
+                            {
+                                ok = true;
+                            }
+                        }
+                        else
+                        {
+                            if (s == "NULL" && this.Text == "")
+                            {
+                                ok = true;
+                            }
+                            if (s == this.Text)
+                            {
+                                ok = true;
+                            }
+                        }
+                    }
+
+                    ign = false;
+                    if (!ok)
+                    {
+                        this.fieldValidationFailed(this, "INCLUDE", out ign);
+                    }
+
+                    if (!ign)
+                    {
+                        return false;
+                    }
+
+
+                }
+                #endregion
+            }
+            return true;
+        }
+
 
         void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool ign = false;
+            if (!validateField(sender))
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                e.Cancel = false;
+            }
+            /*
             if (this._ContextType == FGLContextType.ContextInput)
             {
                 #region REQUIRED CHECK
@@ -322,8 +417,24 @@ namespace AubitDesktop
 
                 }
                 #endregion
-
-                #region
+                #region Datatype Check
+                if (!FGLUtils.IsValidForType(this.datatype,t.Text,this.format))
+                {
+                    if (this.fieldValidationFailed != null)
+                    {
+                        this.fieldValidationFailed(this, "DATATYPE", out ign);
+                    }
+                    if (!ign)
+                    {
+                        e.Cancel = true;
+                    }
+                    else
+                    {
+                        e.Cancel = false;
+                    }
+                }
+                #endregion
+                #region Include value check
                 if (this.includeValues!=null)
                 {
                     bool ok=false;
@@ -372,10 +483,12 @@ namespace AubitDesktop
                     
                 }
 #endregion
-            }
+             }
+             * */
+          
         }
 
-
+  
         void t_GotFocus(object sender, EventArgs e)
         {
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
@@ -387,9 +500,16 @@ namespace AubitDesktop
 
         void t_LostFocus(object sender, EventArgs e)
         {
-            if (this.afterFieldID != "" && this.onUIEvent!=null && _ContextType!=FGLContextType.ContextNone)
+            if (!validateField(sender))
             {
-                this.onUIEvent(this, this.afterFieldID, "");
+                ((Control)sender).Focus();
+            }
+            else
+            {
+                if (this.afterFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
+                {
+                    this.onUIEvent(this, this.afterFieldID, "");
+                }
             }
             
         }
