@@ -55,4 +55,8 @@ public class Key {
 	private String decodeKey(int _keyCode) {
 		return "";
 	}
+	
+	public String toString() {
+		return key;
+	}
 }

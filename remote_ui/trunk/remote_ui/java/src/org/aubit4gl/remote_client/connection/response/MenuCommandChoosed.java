@@ -22,27 +22,47 @@ package org.aubit4gl.remote_client.connection.response;
 
 import org.aubit4gl.remote_client.connection.Connection;
 import org.aubit4gl.remote_client.connection.UIResponse;
+import org.aubit4gl.remote_client.swing_ui.events.UIEvent;
 
 /**
  * Represent an answer to a menu option choosed by the user in the user interface.
- * 
+ * TODO : The menu command choosed should be a UIEvent and not necessarilly an UIResponse
  * @author Sérgio Ferreira
  */
-public class MenuCommandChoosed extends UIResponse  {
+public abstract class MenuCommandChoosed extends UIResponse implements UIEvent {
     private int commandChoosed;
 	
-   
+    /**
+     * @param o The event object 
+     */
+    public abstract void actionPerformed(Object o);
+    
+    /**
+     * Default constructor
+     */
+    public MenuCommandChoosed() {
+    }
+    
     /**
      * Create a response to send to the 4gl because the user 
      * choosed a menu option
      * 
      * @param commandChoosed The number of the menu command/option choosed by the user
      */
-	public MenuCommandChoosed(int commandChoosed,Connection _connection) {
+	public MenuCommandChoosed(int commandChoosed) {
 		super();
 		this.commandChoosed = commandChoosed;
-		this.connection = _connection;
 		buildCommand();
+	}
+	
+	
+	/**
+	 * Getter for command choosed by the user.
+	 * 
+	 * @return The command choosed by the user.
+	 */
+	public int getCommandChoosed() {
+		return commandChoosed;
 	}
 
 	/**
@@ -51,4 +71,5 @@ public class MenuCommandChoosed extends UIResponse  {
 	public void buildCommand() {
 		strXml="<TRIGGERED ID='" + commandChoosed + "'/>\n";
 	}
+
 }

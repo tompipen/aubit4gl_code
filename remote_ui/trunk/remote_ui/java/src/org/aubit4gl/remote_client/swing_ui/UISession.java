@@ -108,7 +108,8 @@ public class UISession {
 	 * Initialize the user interface panel
 	 * 
 	 * TODO : Take the frame code. The frame should be global and one
-	 * TODO : The size of each cell should be parametrized.
+	 * TODO : The size of each cell should be parametrized and decided based 
+	 * on the font size
 	 */
 	private void initUiPanel() {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

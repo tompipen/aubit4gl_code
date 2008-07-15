@@ -32,18 +32,15 @@ public class MenuCommandUI extends JButton {
 	MenuCommand menuCommand;
 
 	public MenuCommandUI(MenuCommand menuCommand) {
-		super();
+		super(menuCommand.getText());
 		this.menuCommand = menuCommand;
-		setText(menuCommand.getText());
 		setToolTipText(menuCommand.getDescription());
-		// TODO : Get the KEY
 		setBorderPainted(false);
 		// Maybe I need to take the border off and put when mouse over
 		// setMnemonic with the Key
-		/* TODO : Check the events for key and mouse
-        addKeyListener(mEvents);
-        addMouseListener(mMenuEvents);
-        setName(s);
-        */
+	}
+	
+	public String getDescription() {
+		return menuCommand.getDescription();
 	}
 }

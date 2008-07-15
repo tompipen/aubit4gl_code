@@ -42,16 +42,16 @@ import org.aubit4gl.remote_client.connection.UIResponse;
  * 
  * Examples : a, A, CONTROL-A, F11, TAB, BACK-TAB, ALT-F1, CONTROL-ALT-D
  * 
- * TODO : Kyes not yet correctly recognized:
+ * TODO : Keys not yet correctly recognized:
  *    CONTROL-number
- *    CONTROL-punctiation
+ *    CONTROL-punctuation
  *    ENTER
  *    TAB
  *    BACK-TAB
  * @author Sérgio Ferreira
  */
 public class FglKeyListener implements KeyListener {
-	HashMap<String,UIResponse> listeningKeys;
+	HashMap<String,UIEvent> listeningKeys;
 
 	private String lastKey;
 	private int keyPressed;
@@ -63,8 +63,14 @@ public class FglKeyListener implements KeyListener {
 	 */
 	public void keyHitted(String s) {
 		System.out.println("Key hitted : " + s);
-		if ( isListeningKey(s) )
-		  answerToFgl(s);
+		try {
+			if ( isListeningKey(s) )
+				fireEvent(s);
+		} catch (Exception e) {
+			// TODO : Handle the exception in a proper way
+			System.out.println("An exception as ocurred : " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -95,14 +101,14 @@ public class FglKeyListener implements KeyListener {
 	 * @param key The Key triggered
 	 * @throws FGLUIException 
 	 */
-	private void answerToFgl(String key) throws FGLUIException {
+	private void fireEvent(String key) throws FGLUIException {
 		// TODO : Answer to 4gl
-		UIResponse response = listeningKeys.get(key);
-		try {
-			response.send();
-		} catch (FGLUIException e) {
-			throw new FGLUIException("Cannot answer to 4gl " + e.getMessage());
-		}
+		UIEvent response = listeningKeys.get(key);
+		//try {
+			response.actionPerformed(key);
+		//} catch (FGLUIException e) {
+			//throw new FGLUIException("Cannot answer to 4gl " + e.getMessage());
+		//}
 	}
 
 	/**
@@ -113,17 +119,17 @@ public class FglKeyListener implements KeyListener {
 	 */
 	public boolean ignoreOnKeyPressed(KeyEvent e) {
 		switch ( e.getKeyCode() ) {
-		  case KeyEvent.VK_ESCAPE:
-		  case KeyEvent.VK_ENTER:
-		  case KeyEvent.VK_SPACE:
+		case KeyEvent.VK_ESCAPE:
+		case KeyEvent.VK_ENTER:
+		case KeyEvent.VK_SPACE:
 			return false;
 		}
-		
+
 		if ( e.isControlDown() || e.isAltDown() || e.isShiftDown() ) {
 			switch (e.getKeyCode() ) {
-			  case KeyEvent.VK_ALT:
-			  case KeyEvent.VK_CONTROL:
-			  case KeyEvent.VK_SHIFT:
+			case KeyEvent.VK_ALT:
+			case KeyEvent.VK_CONTROL:
+			case KeyEvent.VK_SHIFT:
 				return true;
 			}
 		} else {
@@ -175,9 +181,9 @@ public class FglKeyListener implements KeyListener {
 	 * Method executed when the user type a key.
 	 * 
 	 * The most "normal" keys like letters and numbers (s) are recognized 
-     * here.
-     * 
-     * @param e The keyboard event that was ocurred.
+	 * here.
+	 * 
+	 * @param e The keyboard event that was ocurred.
 	 */
 	public void keyTyped(KeyEvent e) {
 
@@ -197,14 +203,14 @@ public class FglKeyListener implements KeyListener {
 
 	}
 
-    
+
 	/**
 	 * Get the hash map that contains the keys that have meaning and 
 	 * should be answered to.
 	 * 
 	 * @return The map with the keys and event object
 	 */
-	public HashMap<String, UIResponse> getListeningKeys() {
+	public HashMap<String, UIEvent> getListeningKeys() {
 		return listeningKeys;
 	}
 
@@ -214,7 +220,7 @@ public class FglKeyListener implements KeyListener {
 	 * 
 	 * @param listeningKeys An hash map with the keys
 	 */
-	public void setListeningKeys(HashMap<String, UIResponse> listeningKeys) {
+	public void setListeningKeys(HashMap<String, UIEvent> listeningKeys) {
 		this.listeningKeys = listeningKeys;
 		System.out.println("Listening keys assigned");
 	}
@@ -235,7 +241,7 @@ public class FglKeyListener implements KeyListener {
 			break;
 
 		default:
-		s.append( e.getKeyChar());
+			s.append(e.getKeyChar());
 		//System.out.println("Key recognized 1 : <" + s + ">" );
 		}
 
@@ -268,7 +274,7 @@ public class FglKeyListener implements KeyListener {
 		case KeyEvent.VK_ESCAPE:
 		case KeyEvent.VK_ENTER:
 		case KeyEvent.VK_SPACE:
-			s.append(KeyEvent.getKeyText(e.getKeyCode()));
+			s.append(KeyEvent.getKeyText(e.getKeyCode()).toUpperCase());
 			break;
 		default:
 			int sum = 0;
@@ -294,9 +300,9 @@ public class FglKeyListener implements KeyListener {
 	 */
 	private String keyStringActionKey(KeyEvent e) {
 		//System.out.println("Key recognized 2 : <" + KeyEvent.getKeyText(e.getKeyCode()) + ">" );
-		return KeyEvent.getKeyText(e.getKeyCode());
+		return KeyEvent.getKeyText(e.getKeyCode()).toUpperCase();
 	}
-	
+
 	/**
 	 * Just for test.
 	 * TODO : Remove when ready
@@ -313,6 +319,10 @@ public class FglKeyListener implements KeyListener {
 //		System.out.println(" Char " + c);
 //		System.out.println(" Int " + i);
 		f.setVisible(true);
+	}
+
+	public String getLastKey() {
+		return lastKey;
 	}
 
 }

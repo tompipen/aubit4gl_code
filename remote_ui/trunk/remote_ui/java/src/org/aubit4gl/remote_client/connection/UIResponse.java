@@ -27,7 +27,6 @@ package org.aubit4gl.remote_client.connection;
  */
 public abstract class UIResponse {
 	protected String strXml;
-	protected Connection connection;
 	
 	public byte[] getBytes() {
 		return strXml.getBytes();
@@ -43,9 +42,13 @@ public abstract class UIResponse {
 		return strXml;
 	}
 	
-	public void send() throws FGLUIException {
+	public void send(Connection connection) throws FGLUIException {
 		System.out.println("Send a response");
 		connection.send(this);
+	}
+	
+	public String getCommand() {
+		return strXml;
 	}
 	
 	public abstract void buildCommand();
