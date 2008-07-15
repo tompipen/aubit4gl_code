@@ -1231,6 +1231,9 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
       if (sreal->mode != MODE_CONSTRUCT && last_attr->sync.nvalues)
 	{
 	  int b;
+
+	  // @FIXME Do we want to do this if its an ON KEY  ?
+	  //
 	  A4GL_push_int (Context);
 	  uilib_input_get_values (1);
 	  for (b = sreal->novars - 1; b >= 0; b--)

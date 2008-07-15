@@ -195,6 +195,7 @@ int port;
       return 0;
     }
   UIdebug (3, "set envelope\n");
+//sleep(30);
   set_envelope_mode ();
 
   return 1;
