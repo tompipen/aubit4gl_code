@@ -27,21 +27,28 @@ namespace AubitDesktop
 {
     class FGLOptions
     {
-        static public int MenuLine;
-        static public int CommentLine;
-        static public int ErrorLine;
-        static public int PromptLine;
-        static public int FormLine;
-        static public int MessageLine;
-        static public string InsertKey="";
-        static public string DeleteKey="";
-        static public string NextKey="";
-        static public string PreviousKey="";
-        static public string AcceptKey="";
-        static public bool InputWrap = false;
+         public int MenuLine;
+         public int CommentLine;
+         public int ErrorLine;
+         public int PromptLine;
+         public int FormLine;
+         public int MessageLine;
+         public string InsertKey="";
+         public string DeleteKey="";
+         public string NextKey="";
+         public string PreviousKey="";
+         public string AcceptKey="";
+         public bool InputWrap = false;
 
 
-        static public void SetOption(string s, string val)
+        public FGLOptions()
+        {
+            this.MenuLine = 1;
+            this.AcceptKey="Esc";
+            this.InputWrap=false;
+   
+        }
+         public void SetOption(string s, string val)
         {
             switch (s)
             {

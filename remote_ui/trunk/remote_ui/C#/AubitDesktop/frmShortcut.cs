@@ -268,6 +268,11 @@ namespace AubitDesktop.Xml
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
         public Protocol[] Protocols;
 
+        public bool allowExec;
+        public bool allowSendFile;
+        public bool allowReceiveFile;
+        public string interruptKey;
+
         /// <remarks/>
         //public Shortcuts Shortcuts;
         public List<Shortcut> Shortcuts;

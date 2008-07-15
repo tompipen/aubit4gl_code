@@ -932,7 +932,7 @@ namespace AubitDesktop
 
 
                     case Keys.Escape:
-                        return "ACCEPT"; // Should be detected from the options...
+                        return "Escape"; // Should be detected from the options...
 
 
                     case Keys.Down:
@@ -1001,6 +1001,8 @@ namespace AubitDesktop
                         return "F24";
 
                 }
+
+                return keyCode.ToString();
             }
 
             if (shiftkey == false && altkey == false && controlkey == true)
@@ -1012,7 +1014,7 @@ namespace AubitDesktop
                     case Keys.B:
                         return "Control-B";
                     case Keys.C:
-                        return "INTERRUPT";
+                        return "Control-C";
                     case Keys.D:
                         return "Control-D";
                     case Keys.E:
@@ -1065,6 +1067,84 @@ namespace AubitDesktop
             return null;
         }
 
+
+        public static string getKeyCodeFromKeyName(string keyname)
+        {
+            string txt = keyname;
+
+            switch (keyname.ToUpper())
+            {
+                case "F1": txt = "3000"; break;
+                case "F2": txt = "3001"; break;
+                case "F3": txt = "3002"; break;
+                case "F4": txt = "3003"; break;
+                case "F5": txt = "3004"; break;
+                case "F6": txt = "3005"; break;
+                case "F7": txt = "3006"; break;
+                case "F8": txt = "3007"; break;
+                case "F9": txt = "3008"; break;
+                case "F10": txt = "3009"; break;
+                case "F11": txt = "3010"; break;
+                case "F12": txt = "3011"; break;
+                case "F13": txt = "3012"; break;
+                case "F14": txt = "3013"; break;
+                case "F15": txt = "3014"; break;
+                case "F16": txt = "3015"; break;
+                case "F17": txt = "3016"; break;
+                case "F18": txt = "3017"; break;
+                case "F19": txt = "3018"; break;
+                case "F20": txt = "3019"; break;
+                case "F21": txt = "F21"; break;
+                case "F22": txt = "F22"; break;
+                case "F23": txt = "F23"; break;
+                case "F24": txt = "F24"; break;
+                case "F25": txt = "F25"; break;
+                case "F26": txt = "F26"; break;
+                case "F27": txt = "F27"; break;
+                case "F28": txt = "F28"; break;
+                case "F29": txt = "F29"; break;
+                case "F30": txt = "F30"; break;
+                case "F31": txt = "F31"; break;
+                case "F32": txt = "F32"; break;
+                case "UP": txt = "2000"; break;
+                case "DOWN": txt = "2001"; break;
+                case "LEFT": txt = "2002"; break;
+                case "RIGHT": txt = "2003"; break;
+                case "HELP": txt = "2008"; break;
+                case "PREVPAGE": txt = "2006"; break;
+                case "ACCEPT": txt = "2016"; break;
+                case "ESC": txt = "27"; break;
+                case "ESCAPE": txt = "27"; break;
+
+                case "CONTROL-A": txt = "1"; break;
+                case "CONTROL-B": txt = "2"; break;
+                case "CONTROL-C": txt = "3"; break;
+                case "CONTROL-D": txt = "4"; break;
+                case "CONTROL-E": txt = "5"; break;
+                case "CONTROL-F": txt = "6"; break;
+                case "CONTROL-G": txt = "7"; break;
+                case "CONTROL-H": txt = "8"; break;
+                case "CONTROL-I": txt = "9"; break;
+                case "CONTROL-J": txt = "10"; break;
+                case "CONTROL-K": txt = "11"; break;
+                case "CONTROL-L": txt = "12"; break;
+                case "CONTROL-M": txt = "13"; break;
+                case "CONTROL-N": txt = "14"; break;
+                case "CONTROL-O": txt = "15"; break;
+                case "CONTROL-P": txt = "16"; break;
+                case "CONTROL-Q": txt = "17"; break;
+                case "CONTROL-R": txt = "18"; break;
+                case "CONTROL-S": txt = "19"; break;
+                case "CONTROL-T": txt = "20"; break;
+                case "CONTROL-U": txt = "21"; break;
+                case "CONTROL-V": txt = "22"; break;
+                case "CONTROL-W": txt = "23"; break;
+                case "CONTROL-X": txt = "24"; break;
+                case "CONTROL-Y": txt = "25"; break;
+                case "CONTROL-Z": txt = "26"; break;
+            }
+            return txt;
+        }
 
 
         public static string getKeyNameFromFGLKeyCode(string key)

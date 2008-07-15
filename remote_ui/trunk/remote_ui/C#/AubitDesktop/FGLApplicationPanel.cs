@@ -32,6 +32,7 @@ namespace AubitDesktop
 {
     public class FGLApplicationPanel : Panel
     {
+        private FGLOptions options;
         public int ApplicationEnvelopeID;
         private List<UIContext> contexts;
         private List<AubitTSBtn> Fkeys;
@@ -69,6 +70,12 @@ namespace AubitDesktop
         //private Control parentControl;
         private frmMainAppWindow TopWindow; // The window containing the table control
         public  string lastKey;
+
+
+        public string getAcceptKey()
+        {
+            return options.AcceptKey;
+        }
 
         public string LineDisplayText
         {
@@ -153,6 +160,8 @@ namespace AubitDesktop
             ApplicationWindows = new FGLWindowStack(this);
             winScreen = new FGLWindow("SCREEN");
             this.programButtons = new List<AubitTSBtn>();
+            this.options = new FGLOptions();
+
             
             this.Controls.Add(winScreen.WindowWidget);
             ApplicationWindows.PushWindow(winScreen);
@@ -720,34 +729,41 @@ namespace AubitDesktop
 
                 if (a is FILE)
                 {
-                    FILE f;
-                    FileStream fs=null;
-                    BinaryWriter sw;
-                    byte[] data;
-                    f = (FILE)a;
-                    if (f.CLIENTNAME!=null && f.CLIENTNAME.Length>0)
+                    if (Program.AppSettings.allowReceiveFile)
                     {
-                        fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
+                        FILE f;
+                        FileStream fs = null;
+                        BinaryWriter sw;
+                        byte[] data;
+                        f = (FILE)a;
+                        if (f.CLIENTNAME != null && f.CLIENTNAME.Length > 0)
+                        {
+                            fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
+                            }
+                            catch (Exception Ex)
+                            {
+                                MessageBox.Show(Ex.ToString());
+                            }
+                        }
+                        if (fs != null)
+                        {
+                            sw = new BinaryWriter(fs);
+                            data = Convert.FromBase64String(f.Text);
+                            sw.Write(data);
+                            sw.Flush();
+                            sw.Close();
+                            fs.Close();
+                        }
                     }
                     else
                     {
-                        try
-                        {
-                            fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
-                        }
-                        catch (Exception Ex)
-                        {
-                            MessageBox.Show(Ex.ToString());
-                        }
-                    }
-                    if (fs != null)
-                    {
-                        sw = new BinaryWriter(fs);
-                        data = Convert.FromBase64String(f.Text);
-                        sw.Write(data);
-                        sw.Flush();
-                        sw.Close();
-                        fs.Close();
+                        MessageBox.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
                     }
                     commands.Remove(a);
                     continue;
@@ -756,7 +772,14 @@ namespace AubitDesktop
                 if (a is EXECUTE)
                 {
                     //MessageBox.Show(((EXECUTE)a).Text,"EXECUTE");
-                    System.Diagnostics.Process.Start(((EXECUTE)a).Text);
+                    if (Program.AppSettings.allowExec)
+                    {
+                        System.Diagnostics.Process.Start(((EXECUTE)a).Text);
+                    }
+                    else
+                    {
+                        MessageBox.Show("The 4GL program tried to execute " + ((EXECUTE)a).Text + " but this is disallowed by the Aubit Desktop Client settings");
+                    }
                     commands.Remove(a);
                     continue;
                 }
@@ -847,7 +870,7 @@ namespace AubitDesktop
                 {
                     OPTIONS o;
                     o = (OPTIONS)a;
-                    FGLOptions.SetOption(o.TYPE, o.VALUE);
+                    options.SetOption(o.TYPE, o.VALUE);
                     commands.Remove(a);
                     continue;
                 } 
@@ -935,39 +958,45 @@ namespace AubitDesktop
                 #region REQUESTFILE
                 if (a is REQUESTFILE)
                 {
-                    string s="";
-                    long flen = -1;
-                    string fileID;
-                    FileStream f;
-                    REQUESTFILE r;
-                    byte[] fileContents=null;
+                    if (Program.AppSettings.allowSendFile)
+                    {
+                        string s = "";
+                        long flen = -1;
+                        string fileID;
+                        FileStream f;
+                        REQUESTFILE r;
+                        byte[] fileContents = null;
 
-                    r=(REQUESTFILE)a;
-                    fileID = r.FILEID;
-                    try
-                    {
-                        f = new FileStream(r.FILEID, FileMode.Open, FileAccess.Read);
-                        BinaryReader sr = new BinaryReader(f);
-                        flen = f.Length;
-                        fileContents = sr.ReadBytes((int)f.Length);
-                        sr.Close();
-                        f.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        fileID = "";
-                    }
+                        r = (REQUESTFILE)a;
+                        fileID = r.FILEID;
+                        try
+                        {
+                            f = new FileStream(r.FILEID, FileMode.Open, FileAccess.Read);
+                            BinaryReader sr = new BinaryReader(f);
+                            flen = f.Length;
+                            fileContents = sr.ReadBytes((int)f.Length);
+                            sr.Close();
+                            f.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            fileID = "";
+                        }
 
-                    if (fileContents != null)
-                    {
-                        s = "<TRIGGERED ID=\"FILEREQUEST\" FILEID=\"" + System.Security.SecurityElement.Escape(fileID) + "\" FILELEN=\"" + flen + "\">";
-                        s += "<SYNCVALUES><SYNCVALUE>";
-                        s += Convert.ToBase64String(fileContents);
-                        s += "</SYNCVALUE></SYNCVALUES>";
-                        s += "</TRIGGERED>";
-                        TopWindow.SendString(s);
+                        if (fileContents != null)
+                        {
+                            s = "<TRIGGERED ID=\"FILEREQUEST\" FILEID=\"" + System.Security.SecurityElement.Escape(fileID) + "\" FILELEN=\"" + flen + "\">";
+                            s += "<SYNCVALUES><SYNCVALUE>";
+                            s += Convert.ToBase64String(fileContents);
+                            s += "</SYNCVALUE></SYNCVALUES>";
+                            s += "</TRIGGERED>";
+                            TopWindow.SendString(s);
+                        }
                     }
-                    
+                    else
+                    {
+                        MessageBox.Show("The 4GL program tried to request a file  " + ((REQUESTFILE)a).FILEID + " but this is disallowed by the Aubit Desktop Client settings");
+                    }
                     commands.Remove(a);
 
                     continue;

@@ -53,6 +53,12 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.cbAllowExec = new System.Windows.Forms.CheckBox();
+            this.cbSendFile = new System.Windows.Forms.CheckBox();
+            this.cbReceiveFile = new System.Windows.Forms.CheckBox();
+            this.tbInterruptKey = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblKeyCode = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -202,6 +208,12 @@ namespace AubitDesktop
             // 
             // tpOptions
             // 
+            this.tpOptions.Controls.Add(this.lblKeyCode);
+            this.tpOptions.Controls.Add(this.label1);
+            this.tpOptions.Controls.Add(this.tbInterruptKey);
+            this.tpOptions.Controls.Add(this.cbReceiveFile);
+            this.tpOptions.Controls.Add(this.cbSendFile);
+            this.tpOptions.Controls.Add(this.cbAllowExec);
             this.tpOptions.Controls.Add(this.lstIPAddress);
             this.tpOptions.Location = new System.Drawing.Point(4, 22);
             this.tpOptions.Name = "tpOptions";
@@ -216,7 +228,7 @@ namespace AubitDesktop
             this.lstIPAddress.FormattingEnabled = true;
             this.lstIPAddress.Location = new System.Drawing.Point(8, 6);
             this.lstIPAddress.Name = "lstIPAddress";
-            this.lstIPAddress.Size = new System.Drawing.Size(244, 95);
+            this.lstIPAddress.Size = new System.Drawing.Size(375, 95);
             this.lstIPAddress.TabIndex = 11;
             // 
             // tpConnections
@@ -284,6 +296,61 @@ namespace AubitDesktop
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // cbAllowExec
+            // 
+            this.cbAllowExec.AutoSize = true;
+            this.cbAllowExec.Location = new System.Drawing.Point(270, 107);
+            this.cbAllowExec.Name = "cbAllowExec";
+            this.cbAllowExec.Size = new System.Drawing.Size(93, 17);
+            this.cbAllowExec.TabIndex = 12;
+            this.cbAllowExec.Text = "Allow Execute";
+            this.cbAllowExec.UseVisualStyleBackColor = true;
+            // 
+            // cbSendFile
+            // 
+            this.cbSendFile.AutoSize = true;
+            this.cbSendFile.Location = new System.Drawing.Point(270, 128);
+            this.cbSendFile.Name = "cbSendFile";
+            this.cbSendFile.Size = new System.Drawing.Size(98, 17);
+            this.cbSendFile.TabIndex = 13;
+            this.cbSendFile.Text = "Allow Send File";
+            this.cbSendFile.UseVisualStyleBackColor = true;
+            // 
+            // cbReceiveFile
+            // 
+            this.cbReceiveFile.AutoSize = true;
+            this.cbReceiveFile.Location = new System.Drawing.Point(270, 149);
+            this.cbReceiveFile.Name = "cbReceiveFile";
+            this.cbReceiveFile.Size = new System.Drawing.Size(113, 17);
+            this.cbReceiveFile.TabIndex = 14;
+            this.cbReceiveFile.Text = "Allow Receive File";
+            this.cbReceiveFile.UseVisualStyleBackColor = true;
+            // 
+            // tbInterruptKey
+            // 
+            this.tbInterruptKey.Location = new System.Drawing.Point(81, 111);
+            this.tbInterruptKey.Name = "tbInterruptKey";
+            this.tbInterruptKey.Size = new System.Drawing.Size(100, 20);
+            this.tbInterruptKey.TabIndex = 15;
+            this.tbInterruptKey.TextChanged += new System.EventHandler(this.tbInterruptKey_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 111);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Interrupt Key";
+            // 
+            // lblKeyCode
+            // 
+            this.lblKeyCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblKeyCode.Location = new System.Drawing.Point(81, 134);
+            this.lblKeyCode.Name = "lblKeyCode";
+            this.lblKeyCode.Size = new System.Drawing.Size(100, 23);
+            this.lblKeyCode.TabIndex = 17;
+            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,6 +372,7 @@ namespace AubitDesktop
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tpOptions.ResumeLayout(false);
+            this.tpOptions.PerformLayout();
             this.tpConnections.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).EndInit();
             this.ResumeLayout(false);
@@ -337,5 +405,11 @@ namespace AubitDesktop
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ListBox lstIPAddress;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbInterruptKey;
+        private System.Windows.Forms.CheckBox cbReceiveFile;
+        private System.Windows.Forms.CheckBox cbSendFile;
+        private System.Windows.Forms.CheckBox cbAllowExec;
+        private System.Windows.Forms.Label lblKeyCode;
     }
 }

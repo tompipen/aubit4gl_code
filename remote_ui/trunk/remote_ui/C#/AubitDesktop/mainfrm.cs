@@ -69,6 +69,50 @@ namespace AubitDesktop
 
             //PrograLoadShortcuts();
             ShowShortcuts();
+
+
+            if (Program.AppSettings.allowExec == true)
+            {
+                cbAllowExec.Checked = true;
+            }
+            else
+            {
+                cbAllowExec.Checked = false;
+            }
+
+            if (Program.AppSettings.allowReceiveFile == true)
+            {
+                cbReceiveFile.Checked = true;
+            }
+            else
+            {
+               cbReceiveFile.Checked = false;
+            }
+
+            if (Program.AppSettings.allowSendFile == true)
+            {
+                cbSendFile.Checked = true;
+            }
+            else
+            {
+                cbSendFile.Checked = false;
+            }
+            if (Program.AppSettings.interruptKey != null)
+            {
+                tbInterruptKey.Text = Program.AppSettings.interruptKey;
+                showInterruptKeycode();
+            }
+            else
+            {
+                tbInterruptKey.Text = "Control-C";
+                showInterruptKeycode();
+            }
+
+        }
+
+        private void showInterruptKeycode()
+        {
+            lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text);
         }
 
 
@@ -382,6 +426,11 @@ namespace AubitDesktop
             Program.SaveSettings();
             
             Application.Exit();
+        }
+
+        private void tbInterruptKey_TextChanged(object sender, EventArgs e)
+        {
+            lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text);
         }
     }
 }

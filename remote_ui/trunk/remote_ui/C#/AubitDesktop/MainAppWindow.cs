@@ -684,6 +684,18 @@ namespace AubitDesktop
             string fglKey;
             key = FGLUtils.decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
             if (key == null) return;
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(Program.AppSettings.interruptKey))
+            {
+                key = "INTERRUPT";
+            }
+
+            if (FGLUtils.getKeyCodeFromKeyName(key) == getCurrentApplicationAcceptKey())
+            {
+                key = "ACCEPT";
+            }
+
+            
+            if (key == null) return;
 
             setLastKeyInApplication(key);
             this.ErrorText = "";
@@ -718,7 +730,31 @@ namespace AubitDesktop
         {
             this.CommentText = txt;
         }
-  
+
+
+        string getCurrentApplicationAcceptKey()
+        {
+         
+            FGLApplicationPanel fGLApplicationPanel = null;
+            TabPage tp = tabControl1.SelectedTab;
+            if (tp == null) { return "Esc"; }
+
+            foreach (Control c in tp.Controls)
+            {
+                if (c is FGLApplicationPanel)
+                {
+                    fGLApplicationPanel = (FGLApplicationPanel)tp.Controls[0];
+                }
+            }
+
+
+            if (fGLApplicationPanel != null)
+            {
+                return fGLApplicationPanel.getAcceptKey();
+            }
+
+            return "Esc";
+        }
         void setLastKeyInApplication(string keycode) {
             FGLApplicationPanel fGLApplicationPanel = null;
             TabPage tp = tabControl1.SelectedTab;

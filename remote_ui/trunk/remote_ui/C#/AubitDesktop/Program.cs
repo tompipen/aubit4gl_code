@@ -68,6 +68,18 @@ namespace AubitDesktop
             myConsole = new frmConsole();
             myConsole.Visible = false;
 
+            if (Program.AppSettings.interruptKey == null)
+            {
+                Program.AppSettings.interruptKey = "Control-C";
+            }
+            else
+            {
+                if (Program.AppSettings.interruptKey.Trim(). Length == 0)
+                {
+                    Program.AppSettings.interruptKey = "Control-C";
+                }
+            }
+
             for (int a = 0; a < args.Length; a++)
             {
 
