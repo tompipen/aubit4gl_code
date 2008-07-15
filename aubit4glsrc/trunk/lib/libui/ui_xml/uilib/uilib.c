@@ -2540,7 +2540,7 @@ uilib_infield (int n)
 
   if (f)
     {
-      if (field_match (fld, f) == 0)
+      if (field_match (fld, f) )
 	{
 	  pushint (1);
 	}
