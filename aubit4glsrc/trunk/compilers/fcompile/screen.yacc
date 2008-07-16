@@ -93,6 +93,8 @@ char *chk_alias(char *s);
 	struct s_control_block *control_block;
 	struct s_lookups *lookups;
 	struct s_lookup *lookup;
+	struct  s_layout_attributes  *layout_attrib;
+	struct s_layout *layout;
 }
 %left KW_OR
 %left KW_AND
@@ -177,35 +179,81 @@ dbname :
 
 
 screen_or_layout_section : 
-	screen_section
-	| layout_section
+	screen_section  {
+			the_form.layout=NULL;
+	}
+	| layout_section {
+			the_form.layout=$<layout>1;
+	}
 ;
 
 
 vbox_section:
-	KW_VBOX opt_layout_ident layout_attributes layout_items KW_END
+	KW_VBOX opt_layout_ident layout_attributes layout_items KW_END {
+			$<layout>$=$<layout>4;
+			$<layout>$->id=strdup($<str>2);
+			$<layout>$->attrib=$<layout_attrib>3;
+			$<layout>$->layout_type=LAYOUT_VBOX;
+	}
 ;
 
 
 hbox_section:
-	KW_HBOX opt_layout_ident layout_attributes layout_items KW_END
+	KW_HBOX opt_layout_ident layout_attributes layout_items KW_END {
+			$<layout>$=$<layout>4;
+			$<layout>$->id=strdup($<str>2);
+			$<layout>$->attrib=$<layout_attrib>3;
+			$<layout>$->layout_type=LAYOUT_VBOX;
+	}
 ;
 
 group_section:
-	KW_GROUP opt_layout_ident layout_attributes layout_container KW_END
-	/* only one item in a group */
+	KW_GROUP opt_layout_ident layout_attributes layout_items KW_END {
+			$<layout>$=$<layout>4;
+			$<layout>$->id=strdup($<str>2);
+			$<layout>$->attrib=$<layout_attrib>3;
+			$<layout>$->layout_type=LAYOUT_VBOX;
+			/* only one item in a group */
+			if ( $<layout>$->children.children_len!=1) {
+				yyerror("A GROUP must contain 1 and only 1 child item");
+			}
+	}
 ;
 
 folder_section:
-	KW_FOLDER opt_layout_ident layout_attributes pages KW_END
+	KW_FOLDER opt_layout_ident layout_attributes pages KW_END {
+		 $<layout>$=$<layout>4;
+		 $<layout>$->id=strdup($<str>2);
+		 $<layout>$->attrib=$<layout_attrib>3;
+	}
+;
 
-pages: page
-	| pages page
+
+pages: 	page {
+		$<layout>$=malloc(sizeof(struct s_layout));
+		$<layout>$->layout_type=LAYOUT_FOLDER;
+		$<layout>$->id="NOTSET";
+		$<layout>$->attrib=0;
+		$<layout>$->screen_no=-1;
+		$<layout>$->children.children_val=0;
+		$<layout>$->children.children_len=0;
+		add_child($<layout>$, $<layout>1);
+	}
+	| pages page {
+		add_child($<layout>1, $<layout>2);
+		$<layout>$=$<layout>1;
+	}
 ;
 
 
 page: 
-	KW_PAGE opt_layout_ident layout_attributes layout_container KW_END
+	KW_PAGE opt_layout_ident layout_attributes layout_container KW_END  {
+			$<layout>$=$<layout>4;
+			$<layout>$->id=strdup($<str>2);
+			$<layout>$->attrib=$<layout_attrib>3;
+			$<layout>$->layout_type=LAYOUT_PAGE;
+	}
+
 ;
 
 opt_layout_ident: 
@@ -223,7 +271,13 @@ grid_section:
         CLOSE_BRACE
 		{ignorekw=0; in_screen_section=0;}
 	KW_END {
-		strcpy($<str>$,$<str>2);
+		$<layout>$=malloc(sizeof(struct s_layout));
+		$<layout>$->layout_type=LAYOUT_GRID;
+		$<layout>$->id=strdup($<str>3);
+		$<layout>$->attrib=$<layout_attrib>4;
+		$<layout>$->screen_no=atol($<str>2);
+		$<layout>$->children.children_val=0;
+		$<layout>$->children.children_len=0;
 	}
 ;
 
@@ -239,44 +293,79 @@ table_section:
         CLOSE_BRACE
 		{ignorekw=0; in_screen_section=0;}
 	KW_END {
-		strcpy($<str>$,$<str>2);
+		//strcpy($<str>$,$<str>2);
+		$<layout>$=malloc(sizeof(struct s_layout));
+		$<layout>$->layout_type=LAYOUT_TABLE;
+		$<layout>$->id=strdup($<str>3);
+		$<layout>$->attrib=$<layout_attrib>4;
+		$<layout>$->screen_no=atol($<str>2);
+		$<layout>$->children.children_val=0;
+		$<layout>$->children.children_len=0;
 	}
 ;
 
 
-layout_attributes: 
-	| OPEN_BRACKET layout_attribute_list CLOSE_BRACKET
+layout_attributes:  {
+		$<layout_attrib>$=0;
+		}
+	| OPEN_BRACKET { new_layout_attribs(); } layout_attribute_list CLOSE_BRACKET {
+		$<layout_attrib>$=get_layout_attrib();
+	}
 ;
 
 layout_attribute: 
-	KW_STYLE EQUAL CHAR_VALUE
-	| KW_HIDDEN
+	KW_STYLE EQUAL CHAR_VALUE {
+		add_str_layout_attrib(FA_S_STYLE, $<str>3);
+	}
+	| KW_HIDDEN {
+		add_bool_layout_attrib(FA_B_HIDDEN);
+	}
 ;
 
 layout_attribute_list:
-	layout_attribute
+	layout_attribute 
 	| layout_attribute_list layout_attribute
 ;
 
 
 layout_items:
-	layout_container
-	| layout_items layout_container
+	layout_container {
+		$<layout>$=malloc(sizeof(struct s_layout));
+		$<layout>$->layout_type=LAYOUT_NOTSET;
+		$<layout>$->id="NOTSET";
+		$<layout>$->attrib=0;
+		$<layout>$->screen_no=-1;
+		$<layout>$->children.children_val=0;
+		$<layout>$->children.children_len=0;
+		add_child($<layout>$, $<layout>1);
+	}
+	| layout_items layout_container {
+		add_child($<layout>1, $<layout>2);
+		$<layout>$=$<layout>1;
+	}
 ;
 
 layout_container:
 	vbox_section
+		{ $<layout>$=$<layout>1; }
 	| hbox_section
+		{ $<layout>$=$<layout>1;}
 	| group_section
+		{ $<layout>$=$<layout>1;}
 	| folder_section
+		{ $<layout>$=$<layout>1;}
 	| grid_section
+		{ $<layout>$=$<layout>1;}
 	| table_section
+		{ $<layout>$=$<layout>1;}
 ;
 
 layout_section:
 	KW_LAYOUT
-	layout_container
-	op_end
+	layout_container 
+	op_end {
+		$<layout>$=$<layout>2;
+	}
 ;
 
 
@@ -566,7 +655,15 @@ field_tag :  op_field_tag_type
 			fldno=A4GL_find_field($<str>2);
 		} 
 		fpart_list 
-		SEMICOLON
+		SEMICOLON {
+			if (strcmp($<str>1,"Edit")!=0) {
+				if (A4GL_has_str_attribute(fld,FA_S_WIDGET)) {
+					yyerror("Field already has a widget");
+				} else {
+					A4GL_add_str_attr(fld,FA_S_WIDGETTYPE,$<str>1);
+				}
+			}
+		}
 ;
 
 fpart_list : 
@@ -704,7 +801,8 @@ op_field_desc
 			att_condition=strdup(att_condition);
 			A4GL_trim(att_condition);
 			if (strlen(att_condition)) {
-				A4GL_assertion(1,"Conditions in upscol are not handled yet");
+				//printf("%s\n", att_condition);
+				fprintf(stderr, "Conditions in upscol are not handled yet (%s)",att_condition);
 			}
 		}
 		if (!used) {
@@ -1993,8 +2091,30 @@ st_kword :
      | KW_ZEROFILL 
      | KW_USES_EXTENDED 
      | KW_ACTION 
-
-
+/*
+     | KW_PAGE 
+     | KW_HBOX 
+     | KW_VBOX 
+     | KW_GRID 
+     | KW_GROUP 
+     | KW_TABLE 
+     | KW_FOLDER 
+     | KW_STYLE 
+     | KW_LAYOUT 
+     | KW_HIDDEN
+     | KW_TEXTEDIT 
+     | KW_BUTTONEDIT 
+     | KW_LABEL 
+     | KW_EDIT 
+     | KW_DATEEDIT 
+     | KW_SCROLL  
+     | KW_IMAGE
+     | KW_FONTPITCH 
+     | KW_FIXED 
+     | KW_VARIABLE 
+     | KW_WANTNORETURNS 
+     | KW_WANTTABS
+*/
 
 ;
 
@@ -2123,6 +2243,30 @@ any_kword :
      | KW_ZEROFILL 
      | KW_USES_EXTENDED 
      | KW_ACTION 
+/*
+     | KW_PAGE 
+     | KW_HBOX 
+     | KW_VBOX 
+     | KW_GRID 
+     | KW_GROUP 
+     | KW_TABLE 
+     | KW_FOLDER 
+     | KW_STYLE 
+     | KW_LAYOUT 
+     | KW_HIDDEN
+     | KW_TEXTEDIT 
+     | KW_BUTTONEDIT 
+     | KW_LABEL 
+     | KW_EDIT 
+     | KW_DATEEDIT 
+     | KW_SCROLL  
+     | KW_IMAGE
+     | KW_FONTPITCH 
+     | KW_FIXED 
+     | KW_VARIABLE 
+     | KW_WANTNORETURNS 
+     | KW_WANTTABS
+*/
 ;
 
 

@@ -335,3 +335,4 @@
 336|Invalid DBDATE format(3)
 337|string is too long to convert to BOOLEAN
 338|string value cannot be converted to BOOLEAN
+340|Statement (%s) did not contain a hstmt

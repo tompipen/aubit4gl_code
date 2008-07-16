@@ -595,8 +595,8 @@ UILIB_A4GL_next_option (void *menu, char *nextopt)
   A4GL_push_int ((long) menu);
   uilib_get_context (2);
   context = A4GL_pop_long ();
-  A4GL_push_char (nextopt);
   A4GL_push_int (context);
+  A4GL_push_char (nextopt);
   uilib_next_option (2);
   return;
 }

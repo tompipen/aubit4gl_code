@@ -22395,7 +22395,7 @@ add_feature("DDL_PRIMARY_KEY");
 #line 9644 "fgl.infx.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (4)].u_table),(yyvsp[(4) - (4)].u_table),E_OUTER_NORMAL,NULL);
-		A4GL_warn("OUTER join *may* be be portable to non-informix database");
+		A4GL_warn("OUTER join *may* not be portable to non-informix database");
 		add_feature("SELECT_OUTER");
 	}
     break;
@@ -22404,7 +22404,7 @@ add_feature("DDL_PRIMARY_KEY");
 #line 9649 "fgl.infx.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (6)].u_table),(yyvsp[(5) - (6)].u_table),E_OUTER_NORMAL,NULL);
-		A4GL_warn("OUTER join *may* be be portable to non-informix database");
+		A4GL_warn("OUTER join *may* not be portable to non-informix database");
 		add_feature("SELECT_OUTER");
 	}
     break;

@@ -3037,12 +3037,15 @@ int print_finish_cmd(struct_finish_cmd *cmd_data) {
   printc("}");
 
   if (cmd_data->conv_c) {
-		struct struct_convert_cmd cc;
-		cc.namespace=cmd_data->namespace;
-		cc.repname=cmd_data->repname;
-		cc.conv_c=cmd_data->conv_c;
-	 print_convert_cmd (&cc);
-	 printc("%s%s(3,REPORT_FREE);", cmd_data->namespace, cmd_data->repname);
+		if (cmd_data->conv_c->towhat=='M') { // ignore it - its a CONVERT TO MANY...
+		} else {
+			struct struct_convert_cmd cc;
+			cc.namespace=cmd_data->namespace;
+			cc.repname=cmd_data->repname;
+			cc.conv_c=cmd_data->conv_c;
+	 		print_convert_cmd (&cc);
+	 		printc("%s%s(3,REPORT_FREE);", cmd_data->namespace, cmd_data->repname);
+		}
   }
 
   return 1;

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.156 2008-07-06 11:34:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.157 2008-07-16 17:48:06 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.156 2008-07-06 11:34:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.157 2008-07-16 17:48:06 mikeaubury Exp $";
 #endif
 
 /**
@@ -174,8 +174,8 @@ A4GL_pointer_code (int c)
       return "'window'";
     case CURCODE:
       return "'cursor'";
-    case PRECODE:
-      return "'prepare statement'";
+    //case PRECODE:
+      //return "'prepare statement'";
     case FORMCODE:
       return "'form'";
     case S_WINDOWSCODE:

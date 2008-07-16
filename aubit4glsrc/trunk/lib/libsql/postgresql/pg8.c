@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.50 2008-07-06 11:34:43 mikeaubury Exp $
+# $Id: pg8.c,v 1.51 2008-07-16 17:48:05 mikeaubury Exp $
 #*/
 
 
@@ -3040,7 +3040,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
   if (ptr == 0)
     {
 
-      ptr = A4GL_find_pointer_val (currname, PRECODE);
+      ptr = A4GLSQL_find_prepare (currname);
 
       if (ptr == 0)
 	{

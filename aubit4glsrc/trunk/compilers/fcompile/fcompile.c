@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.63 2008-07-12 06:58:04 mikeaubury Exp $
+# $Id: fcompile.c,v 1.64 2008-07-16 17:47:59 mikeaubury Exp $
 #*/
 
 /**
@@ -289,7 +289,7 @@ YYSTYPE yylval;
 #endif
 
 
-int reposition_to_line(int lineno, FILE *yyin) {
+static int reposition_to_line(int lineno, FILE *yyin) {
       static char buff[512];
         int ln=0;
 	int ld=0;
@@ -538,6 +538,62 @@ downshift (char *a)
     }
   return buff;
 }
+
+
+
+
+
+//********************************************************************************
+//               LAYOUT ATTRIBUTE HANDLING
+//********************************************************************************
+// Rather than 'reinvent the wheel' - we'll use a pretend field 
+// and add attributes to that for the layout attributes because
+// we already have all the routines for doing that..
+// What we'll then do - is copy these into a layout_attributes structure when
+// we need to use those values..
+struct struct_scr_field f_holder_for_layout_attributes;
+
+void add_child(struct s_layout *parent, struct s_layout *child) {
+	if (parent->children.children_len==0) {
+		parent->children.children_val=NULL; /* just to make sure... */
+	}
+	parent->children.children_len++;
+	parent->children.children_val=realloc(parent->children.children_val, sizeof(struct s_layout *)*parent->children.children_len);
+	parent->children.children_val[parent->children.children_len-1]=child;
+	
+}
+
+void add_bool_layout_attrib(enum FIELD_ATTRIBUTES_BOOL attrib) {
+	A4GL_add_bool_attr(&f_holder_for_layout_attributes, attrib);
+}
+	
+
+void add_str_layout_attrib(enum FA_ATTRIBUTES_STRING attrib, char *value)  {
+	A4GL_add_str_attr(&f_holder_for_layout_attributes, attrib, strdup(value));
+}
+
+struct s_layout_attributes *get_layout_attrib(void ) {
+	struct s_layout_attributes *la;
+	la=malloc(sizeof(struct s_layout_attributes));
+	la->str_attribs.str_attribs_len=f_holder_for_layout_attributes.str_attribs.str_attribs_len;
+	la->str_attribs.str_attribs_val=f_holder_for_layout_attributes.str_attribs.str_attribs_val;
+	la->bool_attribs.bool_attribs_len=f_holder_for_layout_attributes.bool_attribs.bool_attribs_len;
+	la->bool_attribs.bool_attribs_val=f_holder_for_layout_attributes.bool_attribs.bool_attribs_val;
+	return la;
+}
+
+void new_layout_attribs(void) {
+	f_holder_for_layout_attributes.str_attribs.str_attribs_len=0;
+	f_holder_for_layout_attributes.str_attribs.str_attribs_val=0;
+	f_holder_for_layout_attributes.bool_attribs.bool_attribs_len=0;
+	f_holder_for_layout_attributes.bool_attribs.bool_attribs_val=0;
+}
+
+//********************************************************************************
+//            END OF LAYOUT ATTRIBUTE HANDLING
+//********************************************************************************
+
+
 
 
 /* ================================== EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.316 2008-07-06 11:34:28 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.317 2008-07-16 17:47:59 mikeaubury Exp $
 #
 */
 
@@ -315,8 +315,8 @@
 #define PANCODE 		'1'
 #define WINCODE 		'2'
 #define CURCODE 		'3'
-#define PRECODE 		'4'
-#define PRECODE_R 		'5'
+//#define PRECODE 		'4'
+//#define PRECODE_R 		'5'
 #define FORMCODE 		'7'
 #define S_WINDOWSCODE 		'8'
 #define S_FORMDETSCODE 		'9'
@@ -848,6 +848,7 @@ struct s_module_error {
   int A4GL_ask_int (char *prompt);	/*  prompt for an integer from user  */
   double A4GL_ask_dbl (char *prompt);	/*  prompt for an integer from user  */
   double get_now_as_double(void);
+	char *A4GL_get_username(void);
   int A4GL_ask_verify (char *prompt);	/*  prompt for verification  */
   unsigned int getcursor (void);	/* Returns the shape of the current cursor */
   void A4GL_strip_nl (char *str);
@@ -2753,6 +2754,19 @@ int A4GL_islocated(struct fgl_int_loc *p);
 int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize);
 char *A4GL_get_errmsg_from_helpfiles(int n);
 int A4GL_never_dlmagic_cache(char *s);
+void A4GL_removePreparedStatementBySid(void *sid);
+void *A4GL_set_associated_mem(void *orig,void *newbytes);
+//int A4GL_findPreparedStatementbySid (void *sid) ;
+void A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_data);
+//int A4GL_findPreparedStatement (char *name);
+//int A4GL_findPreparedStatementByUniq (char *name);
+void * A4GL_getSIDByUniq (char *name);
+void A4GL_removePreparedStatement(char *name);
+int
+A4GL_apisql_has_sess (char *sessname);
+char *A4GL_get_clobbered_from(char *s) ;
+
+
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

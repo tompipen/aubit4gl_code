@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.208 2008-06-27 13:01:54 mikeaubury Exp $
+# $Id: esql.ec,v 1.209 2008-07-16 17:48:00 mikeaubury Exp $
 #
 */
 
@@ -107,7 +107,7 @@ $include sqlca;
 #include "a4gl_incl_4gldef.h"
 char unloadBuffer[BUFSIZ];
 //static void A4GL_quick_trim(char *s) ;
-#define PRECODEEC '|'
+//#define PRECODEEC '|'
 
 //extern sqlca_struct a4gl_sqlca;
 dll_export sqlca_struct a4gl_sqlca;
@@ -178,6 +178,7 @@ EXEC SQL END DECLARE SECTION;
 static int error_just_in_case (void);
 static int processPreStatementBinds (struct s_sid *sid);
 
+static void freeStatement(struct s_sid *sid) ;
 
 EXEC SQL include sqlca;
 
@@ -192,7 +193,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.208 2008-06-27 13:01:54 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.209 2008-07-16 17:48:00 mikeaubury Exp $";
 #endif
 
 
@@ -287,7 +288,7 @@ static void A4GL_sql_exitwith(char *s) {
 
 
 void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
-/* does nothing in this driver */
+	freeStatement(sid);
 }
 
 
@@ -952,11 +953,28 @@ getConnectionForDatabase (char *databaseName)
 
 
 static void freeStatement(struct s_sid *sid) {
-	A4GL_del_pointer(sid->statementName, PRECODEEC);
-        if (sid->select) {
-                       free(sid->select);
-        }
-       free(sid);
+/*
+	if (sid->statementName) {
+		
+		if (A4GL_has_pointer(sid->statementName, PRECODEEC))  {
+			A4GL_del_pointer(sid->statementName, PRECODEEC);
+		}
+
+		if (A4GL_has_pointer(sid->statementName, PRECODE))  {
+			A4GL_del_pointer(sid->statementName, PRECODE);
+		}
+	}
+*/
+
+        	if (sid->select) {
+                       	free(sid->select);
+        	}
+        	sid->statementName=0;
+        	memset(sid,0, sizeof(sid));
+        	free(sid);
+		A4GL_removePreparedStatementBySid(sid);
+
+	//}
 }
 
 /**
@@ -972,6 +990,7 @@ static void freeStatement(struct s_sid *sid) {
 static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *uniqid)
 {
   struct s_sid *sid = acl_malloc2 (sizeof (struct s_sid));
+  struct s_sid *sidold;
 
 
   sid->select = strdup (s);
@@ -989,19 +1008,16 @@ static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDIN
   sid->inputDescriptorName = 0;
   sid->outputDescriptorName = 0;
   sid->extra_info = 0;
-  
-  if (A4GL_has_pointer(uniqid, PRECODEEC)) {
-		struct s_sid *sidold;
-		sidold=A4GL_find_pointer(uniqid, PRECODEEC);
-		if (sidold) {
-			freeStatement(sidold);
-		}
-  	A4GL_del_pointer(uniqid, PRECODEEC);
-  } else {
-	A4GL_debug("Not there %s\n", uniqid);
+
+
+  sidold=A4GL_getSIDByUniq(uniqid);
+
+  if (sidold) {
+	A4GLSQL_free_prepare(sidold);
   }
+
+
   A4GL_debug("add_pointer : %s\n", uniqid);
-  A4GL_add_pointer(uniqid, PRECODEEC, sid);
 
   return sid;
 }
@@ -1035,17 +1051,25 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
   }
   free (s_internal);
 
+
+  sid=A4GLSQL_find_prepare (uniqId);
+  if (sid) {
+	statementName=uniqId;
+        A4GLSQL_free_prepare(sid);
+        A4GL_removePreparedStatementBySid(sid);
+	EXEC SQL FREE :statementName;
+  }
+
   sid = newStatement (ibind, ni, obind, no, s,uniqId);
 
 
   statementName = sid->statementName;
   statementText = sid->select;
 
-  if (A4GL_has_pointer(sid->statementName, PRECODE)) { 
-	EXEC SQL FREE :statementName;
-  }
 
-  A4GLSQL_add_prepare(sid->statementName,sid);
+
+
+  //A4GLSQL_add_prepare(sid->statementName,sid);
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
   EXEC SQL PREPARE:statementName FROM:statementText;
 
@@ -1053,7 +1077,8 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
   if (isSqlError ())
     {
-	freeStatement(sid);
+	A4GLSQLLIB_A4GLSQL_free_prepare(sid); 
+
 
       //A4GLSQL_del_prepare(sid->statementName);
       A4GLSQL_set_status (sqlca.sqlcode, 1);
@@ -2779,11 +2804,14 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 void
 A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 {
+
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
   EXEC SQL END DECLARE SECTION;
+void *sid;
 
-  if (A4GL_has_pointer (s, CURCODE))
+
+ if (A4GL_has_pointer (s, CURCODE))
     {
   	struct s_cid *cursorIdentification;
       cursorIdentification = A4GL_find_pointer (s, CURCODE);
@@ -2794,38 +2822,28 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
 
       free (cursorIdentification);
       A4GL_del_pointer (s, CURCODE);
-      if (A4GL_has_pointer (s, PRECODE))
-	{			/* Prepared instead ? */
-	  A4GL_del_pointer (s, PRECODE);
-	  A4GL_del_pointer (s, PRECODE_R);
-	}
+
+
+      sid=A4GLSQL_find_prepare (s);
+      if (sid) { A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid); }
+
+
     }
   else
     {
 
 
+         sid=A4GLSQL_find_prepare (cursorName);
+         if (sid) {
+              A4GLSQL_free_prepare(sid);
+              A4GL_removePreparedStatementBySid(sid);
+        }
 
-      if (A4GL_has_pointer (s, PRECODE))
-	{			/* Prepared instead ? */
-  	struct s_sid *statementIdentification;
-	  statementIdentification = A4GL_find_pointer (s, PRECODE);	/* Prepared instead ? */
-	  if (statementIdentification == 0)
-	    {
-	      //A4GL_exitwith("Statement/Cursor not found"); 
-	      return;
-	    }
 
-	  EXEC SQL FREE:cursorName;
-	  A4GL_del_pointer (s, PRECODE);
-	  A4GL_del_pointer (s, PRECODE_R);
-	  if (statementIdentification->select) {
-	  	free(statementIdentification->select);
-	  	statementIdentification->select=0;
-	  }
-	  free (statementIdentification);
-	A4GL_del_pointer (s, PRECODEEC);
+        EXEC SQL FREE:cursorName;
+
+
 	  return;
-	}
     }
 
 
@@ -3662,33 +3680,6 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
   return 0;
 */
 }
-#ifdef libaubit4gl
-/**
- * Find a prepared statement.
- *
- * There should be a global strucutre or array where to store all the
- * prepared statements.
- *
- * @todo : The mode should be used for something.
- *
- * @param pname The statement name.
- * @param mode
- * @return 
- *   - A pointer to the structure found in the tree.
- *   - 0 : The structure was not found
- */
-void *
-A4GLSQL_find_prepare (char *pname)
-{
-  struct s_sid *ptr;
-
-  A4GL_set_errm (pname);
-  ptr = (struct s_sid *) A4GL_find_pointer_val (pname, PRECODE);
-  if (ptr)
-    return ptr;
-  return (struct s_sid *) 0;
-}
-#endif
 
 /**
  * FLUSH CURSOR 4gl statement implementation.

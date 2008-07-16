@@ -1231,7 +1231,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
   //char *mystr;
   double d;
   double *dptr;
-  long *len;
+  unsigned long *len;
   int dtype;
 
   if (A4GL_isnull (ibind->dtype, ibind->ptr))
@@ -1443,7 +1443,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
   //char *mystr;
   double d;
   double *dptr;
-  long *len;
+  unsigned long *len;
   int dtype;
 
   if (ind && phase == PHASE_POST_FETCH)
@@ -2279,7 +2279,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
   if (ptr == 0)
     {
 
-  	ptr = A4GL_find_pointer_val (currname, PRECODE);
+  	ptr = A4GLSQL_find_prepare (currname);
 
   	if (ptr == 0)
     	{
@@ -2407,7 +2407,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	  int prc;
 	  int sz;
 	  my_bool *ind;
-	  long *longs;
+	  unsigned long *longs;
 	  int *dtypes;
 	  int *sizes;
 
@@ -2417,7 +2417,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	  b = malloc (sizeof (MYSQL_BIND) * nresultcols);
 	  buffs = malloc (sizeof (void *) * nresultcols);
 	  ind = malloc (sizeof (my_bool) * nresultcols);
-	  longs = malloc (sizeof (long) * nresultcols);
+	  longs = malloc (sizeof (unsigned long) * nresultcols);
 	  sizes = malloc (sizeof (int) * nresultcols);
 	  dtypes = malloc (sizeof (int) * nresultcols);
 

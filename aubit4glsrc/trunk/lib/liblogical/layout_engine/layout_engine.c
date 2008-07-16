@@ -117,7 +117,7 @@ int main (int argc, char *argv[])
 
   if (fake_argc != 3)
     {
-      printf ("Usage %s type file-name\n", argv[0]);
+      printf ("Usage %s type file-name [-lrf filename] [-defaultdir dir] [-sendto email-addr] [-display display]\n", argv[0]);
       exit (1);
     }
 

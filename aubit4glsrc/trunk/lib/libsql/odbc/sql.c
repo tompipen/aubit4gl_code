@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.210 2008-07-09 15:28:32 mikeaubury Exp $
+# $Id: sql.c,v 1.211 2008-07-16 17:48:01 mikeaubury Exp $
 #
 */
 
@@ -2099,7 +2099,7 @@ void A4GLSQLLIB_A4GLSQL_free_prepare (void *vsid) {
 		struct s_sid *sid;
 		sid=vsid;
 	    	sql_free_sid(&sid);
-            	//A4GL_del_pointer (cname, PRECODE);
+		A4GL_removePreparedStatementBySid(sid);
 }
 
 /**
@@ -2129,7 +2129,8 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
         if (sid != 0)
         {
 	    sql_free_sid(&sid);
-            A4GL_del_pointer (cname, PRECODE);
+		A4GL_removePreparedStatementBySid(sid);
+            //A4GL_del_pointer (cname, PRECODE);
             return;
         }
 	exitwith_sql_odbc_errm ("Can't free cursor (%s) that hasn't been defined", cname);
@@ -3111,7 +3112,11 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
     
     A4GL_trc("In sql_free_sid sid=%p &sid=%p", *sid, sid);
 
-    if ((*sid)->statementName!=0) { A4GL_del_pointer ((*sid)->statementName, PRECODE); }
+/*
+    if ((*sid)->statementName!=0) { 
+		A4GL_del_pointer ((*sid)->statementName, PRECODE); 
+	}
+*/
 
     ignore_next_sql_error = 1;
     rc = A4GL_free_hstmt(&((*sid)->hstmt));
@@ -3129,6 +3134,7 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
 	    acl_free ((*sid)->obind);
     }
     acl_free (*sid);
+    A4GL_removePreparedStatementBySid(*sid);
     return rc;
 }
 /**
