@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.127 2008-07-06 11:34:29 mikeaubury Exp $
+# $Id: builtin.c,v 1.128 2008-07-16 16:51:56 mikeaubury Exp $
 #
 */
 
@@ -866,11 +866,12 @@ A4GL_errorlog (char *fname, int l, int nargs)
       A4GL_push_current (4, 6);
       time_str = A4GL_char_pop ();
 
-      FPRINTF (error_log_file, "Date: %s    Time: %s\n", date_str, time_str);
       if (A4GL_isyes (acl_getenv ("EXTENDED_ERRORLOG")))
 	{
-	  FPRINTF (error_log_file, "MODULE : %s    Line: %d\n", fname, l);
-
+      		FPRINTF (error_log_file, "Date: %s    Time: %s  User: %s\n", date_str, time_str,A4GL_get_username());
+	  	FPRINTF (error_log_file, "MODULE : %s    Line: %d\n", fname, l);
+	} else {
+      		FPRINTF (error_log_file, "Date: %s    Time: %s\n", date_str, time_str);
 	}
       FPRINTF (error_log_file, "%s\n", s);
       fflush (error_log_file);

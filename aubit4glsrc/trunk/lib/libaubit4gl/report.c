@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.160 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: report.c,v 1.161 2008-07-16 16:51:56 mikeaubury Exp $
 #
 */
 
@@ -2501,7 +2501,7 @@ void *agg;
 
 	A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
 	if (agg==0) {
-		*agg_type=d1+ENCODE_SIZE(s1);
+		*agg_type=d1 +ENCODE_SIZE(s1);
 		if (*agg_type & DTYPE_MALLOCED) { *agg_type -= DTYPE_MALLOCED; }
 		*aggused=0;
 		switch (d1&DTYPE_MASK) {
@@ -2562,6 +2562,7 @@ void *agg;
 				if (type=='S') {
 					int ndig;
 					ndig=s1&0xff;
+					if (ndig>16) ndig=16;
 					agg=malloc(sizeof(fgldecimal)); 
 					A4GL_push_int(0);
 					A4GL_pop_var2(agg,DTYPE_DECIMAL,0x2000+ndig);

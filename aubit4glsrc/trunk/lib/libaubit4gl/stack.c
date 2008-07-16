@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.206 2008-07-06 11:34:33 mikeaubury Exp $
+# $Id: stack.c,v 1.207 2008-07-16 16:51:56 mikeaubury Exp $
 #
 */
 
@@ -1810,18 +1810,21 @@ A4GL_debug("51 Have data");
 call_list--;
 }
 
+
+
+
+
 /**
  *
  *
  * @return
  */
-void
-A4GL_push_user (void)
-{
+
+char *A4GL_get_username(void) {
   int a;
   struct passwd *p;
 #ifdef MSVC
-  A4GL_push_char("XXXX");
+  return "XXXX";
 #else
 #ifndef DOING_CM
 #ifndef __MINGW32__
@@ -1829,13 +1832,21 @@ A4GL_push_user (void)
   a = getuid ();
   p = getpwuid (a);
 #else
-  PRINTF ("FIXME: no getuid() / getpwuid() on MinGW\n");
+	return "XXXX";
 #endif
 
-  A4GL_push_char (p->pw_name);
+  return p->pw_name;
 #endif
 #endif
+
 }
+
+
+void A4GL_push_user (void)
+{
+  A4GL_push_char (A4GL_get_username());
+}
+
 
 /**
  *

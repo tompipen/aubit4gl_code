@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.132 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: ops.c,v 1.133 2008-07-16 16:51:56 mikeaubury Exp $
 #
 */
 
@@ -230,22 +230,62 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 
 /******************************************************************************/
 
-void A4GL_dec_dec_ops(int op) {
+void
+A4GL_dec_dec_ops (int op)
+{
   fgldecimal a;
   fgldecimal b;
   fgldecimal dc;
-long l1;
-long l2;
-double dbl;
-int d;
+  long l1;
+  long l2;
+  double dbl;
+  int d;
+  int d1, d2, s1, s2, ndig1, ndec1, ndig2, ndec2;
+  char *ptr1;
+  char *ptr2;
+  int res_dec;
+  int res_dig;
+  int res1;
+  int res2;
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+  A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
+
+  ndig1 = s1 >> 8;
+  ndec1 = s1 & 0xff;
+
+  ndig2 = s2 >> 8;
+  ndec2 = s2 & 0xff;
+
+
   //char *a1;
   //char *a2;
-  A4GL_pop_var2(&b,5,0x4020);
-  A4GL_pop_var2(&a,5,0x4020);
-A4GL_debug("dec_dec_ops");
+  A4GL_pop_var2 (&b, DTYPE_DECIMAL, s1);
+  A4GL_pop_var2 (&a, DTYPE_DECIMAL, s2);
+
+  res1=ndig1-ndec1;
+  res2=ndig2-ndec2;
+  if (res1<res2)  {
+		res_dig=res2; 
+	} else  {
+		res_dig=res1;
+	}
+
+       if (ndec1<ndec2) {
+		res_dec=ndec2;
+	} else {
+		res_dec=ndec1;
+	}
+
+  res_dig+=res_dec;
+//printf("%d , %d\n", res_dig, res_dec);
+  A4GL_debug ("dec_dec_ops");
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-		if (isCompare(op)) { A4GL_push_int(0); return; }
+      if (isCompare (op))
+	{
+	  A4GL_push_int (0);
+	  return;
+	}
       A4GL_push_null (DTYPE_DECIMAL, 0);
       return;
     }
@@ -253,37 +293,56 @@ A4GL_debug("dec_dec_ops");
     {
       A4GL_debug ("OK - neither is null");
     }
-  A4GL_init_dec(&dc,64,32);
+
 
   switch (op)
     {
     case OP_ADD:
-	a4gl_decadd(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,32);
-      return;
-    case OP_SUB:
-	a4gl_decsub(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,32);
-      return;
-    case OP_MULT:
-	a4gl_decmul(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,32);
+	if (res_dig>31) res_dig=31; if (res_dec>res_dig) res_dec=0;
+
+      A4GL_init_dec (&dc, res_dig+1, res_dec);
+      a4gl_decadd (&a, &b, &dc);
+      A4GL_push_dec_dec (&dc, 0, 32);
       return;
 
+    case OP_SUB:
+	if (res_dig>31) res_dig=31; if (res_dec>res_dig) res_dec=0;
+      A4GL_init_dec (&dc, res_dig+1, res_dec);
+      a4gl_decsub (&a, &b, &dc);
+      A4GL_push_dec_dec (&dc, 0, 32);
+      return;
+
+    case OP_MULT:
+	res_dig=ndig1+ndig2;
+	res_dec=ndec1+ndec2;
+	if (res_dig>31) res_dig=31; 
+
+	if (res_dec>res_dig) {
+		res_dig=32;
+		res_dec=16;
+	}
+      A4GL_init_dec (&dc, res_dig, res_dec);
+      a4gl_decmul (&a, &b, &dc);
+      A4GL_push_dec_dec (&dc, 0, 32);
+      return;
 
     case OP_DIV:
-	a4gl_decdiv(&a,&b,&dc);
-        A4GL_push_dec_dec (&dc,0,32);
-	return;
+      A4GL_init_dec (&dc, 32, 16);
+      a4gl_decdiv (&a, &b, &dc);
+      A4GL_push_dec_dec (&dc, 0, 32);
+      return;
 
     case OP_MOD:
-	a4gl_dectolong(&a,&l1);
-	a4gl_dectolong(&b,&l2);
-        A4GL_push_long (l1 % l2);
+	if (res_dig>31) res_dig=31; if (res_dec>res_dig) res_dec=0;
+      A4GL_init_dec (&dc, res_dig+1, res_dec);
+      a4gl_dectolong (&a, &l1);
+      a4gl_dectolong (&b, &l2);
+      A4GL_push_long (l1 % l2);
       return;
 
     case OP_POWER:
-	a4gl_dectolong(&b,&l2);
+      A4GL_init_dec (&dc, 64, 32);
+      a4gl_dectolong (&b, &l2);
       if (l2 == 0)
 	{
 	  A4GL_push_long (1);
@@ -291,34 +350,43 @@ A4GL_debug("dec_dec_ops");
 	}
       if (l2 == 1)
 	{
-	a4gl_dectodbl(&a,&dbl);
+	  a4gl_dectodbl (&a, &dbl);
 	  A4GL_push_float (dbl);
 	  return;
 	}
 
-      a4gl_deccopy(&dc, &a);
-      for (d = 1; d < l2; d++) a4gl_decmul(&dc, &a,&dc);
-      A4GL_push_dec_dec (&dc,0,32);
+      a4gl_deccopy (&dc, &a);
+      for (d = 1; d < l2; d++)
+	a4gl_decmul (&dc, &a, &dc);
+      A4GL_push_dec_dec (&dc, 0, 32);
       return;
 
     case OP_LESS_THAN:
-	A4GL_push_int (a4gl_deccmp(&a,&b)<0) ; return;
+      A4GL_push_int (a4gl_deccmp (&a, &b) < 0);
+      return;
     case OP_GREATER_THAN:
-	A4GL_push_int (a4gl_deccmp(&a,&b)>0) ; return;
+      A4GL_push_int (a4gl_deccmp (&a, &b) > 0);
+      return;
     case OP_LESS_THAN_EQ:
-	A4GL_push_int (a4gl_deccmp(&a,&b)<=0) ; return;
+      A4GL_push_int (a4gl_deccmp (&a, &b) <= 0);
+      return;
     case OP_GREATER_THAN_EQ:
-	A4GL_push_int (a4gl_deccmp(&a,&b)>=0) ; return;
+      A4GL_push_int (a4gl_deccmp (&a, &b) >= 0);
+      return;
     case OP_EQUAL:
-	A4GL_push_int (a4gl_deccmp(&a,&b)==0) ; return;
+      A4GL_push_int (a4gl_deccmp (&a, &b) == 0);
+      return;
     case OP_NOT_EQUAL:
-	A4GL_push_int (a4gl_deccmp(&a,&b)!=0) ; return;
+      A4GL_push_int (a4gl_deccmp (&a, &b) != 0);
+      return;
     }
 
   A4GL_exitwith ("Unknown operation");
   A4GL_push_int (0);
   return;
 }
+
+
 /******************************************************************************/
 
 static void A4GL_mon_dec_ops(int op) {

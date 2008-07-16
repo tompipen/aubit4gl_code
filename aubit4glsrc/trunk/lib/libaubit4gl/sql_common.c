@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.58 2008-07-06 11:34:33 mikeaubury Exp $
+# $Id: sql_common.c,v 1.59 2008-07-16 16:51:56 mikeaubury Exp $
 #
 */
 
@@ -63,6 +63,19 @@ static int must_convert = 0;
 
 char save_esql_session[256];
 
+
+struct s_prepared_statement {
+	char preparedStatementName[256];
+	char anonymousName[256];
+	void *sid;
+	void *extra_data;
+};
+
+struct s_prepared_statement *preparedStatements=0;
+int npreparedStatements=0;
+
+static int A4GL_findPreparedStatementbySid (void *sid);
+static int A4GL_findPreparedStatementByUniq (char *name);
 //char *find_table (struct s_select *select, struct s_select_list_item *i);
 
 /*
@@ -93,6 +106,7 @@ struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni,
 					struct BINDING *ibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 
+static int A4GL_findPreparedStatement (char *name);
 
 
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
@@ -365,9 +379,11 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
 
   
   SPRINTF2(uniq_id,"a4gl_st_%s_%d",buff,line);
+
   sid=A4GLSQL_find_prepare (uniq_id);
   if (sid) {
-  	A4GLSQL_free_prepare(sid); A4GL_del_pointer (uniq_id, PRECODE);
+  	A4GLSQL_free_prepare(sid); 
+	A4GL_removePreparedStatementBySid(sid);
   }
 
   sid=A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id, singleton); 
@@ -375,10 +391,12 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
   if (s!=sold) {
   	if (sid) {
 		//A4GL_pause_execution();
-  	A4GL_set_associated_mem(sid,s);
+  		A4GL_set_associated_mem(sid,s);
 		}
   }
- A4GL_add_pointer (uniq_id,PRECODE, sid);
+
+ //A4GL_add_pointer (uniq_id,PRECODE, sid);
+ A4GL_addPreparedStatement ("ANON", uniq_id, sid,NULL);
   
   return (struct s_sid *) sid;
 }
@@ -718,12 +736,45 @@ int
 A4GLSQL_add_prepare (char *pname, void *vsid)
 {
   struct s_sid *sid;
+  int a;
   sid = vsid;
 
+  a=A4GL_findPreparedStatement(pname);
+  if (a>=0) {
+	void *p;
+	p=preparedStatements[a].sid;
+	A4GLSQL_free_prepare(p);
+	preparedStatements[a].sid=0;
+	strcpy(preparedStatements[a].preparedStatementName,"");
+  }
+
+
+  if (sid==0) {
+	return 0;
+  }
+
+
+  a=A4GL_findPreparedStatementbySid(sid);
+  if (a>=0) { 
+	if (strcmp(preparedStatements[a].preparedStatementName,"ANON")!=0) {
+		A4GL_assertion(1,"expected ANON...");
+		return 0;
+	}
+	strcpy(preparedStatements[a].preparedStatementName, pname);
+	return 1;
+  } else {
+	A4GL_assertion(1,"Couldn't find prepared statement");
+	return 0;
+  }
+  
+  
+#ifdef OLD
 
   if (A4GL_has_pointer (pname, PRECODE))  {
-	  A4GLSQL_free_prepare(vsid);
-  	 A4GL_del_pointer (pname, PRECODE);
+	void *p;
+	  //p=A4GL_find_pointer(pname,PRECODE);
+	  //A4GLSQL_free_prepare(p);
+  	  A4GL_del_pointer (pname, PRECODE);
   }
 
 
@@ -740,6 +791,8 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
     {
       return 0;
     }
+
+#endif
 }
 
 
@@ -782,6 +835,26 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 }
 
 
+void *A4GLSQL_find_prepare (char *pname) {
+int a;
+
+a=A4GL_findPreparedStatement(pname);
+if (a>=0) {
+	return preparedStatements[a].sid ;
+}
+
+a=A4GL_findPreparedStatementByUniq(pname);
+if (a>=0) {
+	return preparedStatements[a].sid ;
+}
+
+return NULL;
+}
+
+
+
+#ifdef NDEF
+
 /**
  *  * Find a prepared statement.
  *  *
@@ -800,6 +873,9 @@ void *
 A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
+ //if (strcmp(pname,"a4gl_st_prepare_29")==0) {
+	//A4GL_pause_execution();
+//}
   A4GL_debug ("Find prepare : %s\n", pname);
   A4GL_set_errm (pname);
   ptr = (struct s_sid *) A4GL_find_pointer_val (pname, PRECODE);
@@ -812,6 +888,7 @@ A4GLSQL_find_prepare (char *pname)
   return (void *) 0;
 //struct s_sid 
 }
+#endif
 
 
 #ifdef NDEF
@@ -1679,5 +1756,138 @@ char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr) {
 char *A4GL_get_clobbered_from(char *s) {
 	return s;
 }
+
+
+
+
+
+// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
+static int A4GL_findPreparedStatement (char *name)
+{
+int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
+	    {
+	      return a;
+	    }
+	}
+    }
+  return -1;
+}
+
+// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
+static int A4GL_findPreparedStatementByUniq (char *name)
+{
+int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (strcmp (name, preparedStatements[a].anonymousName) == 0)
+	    {
+	      return a;
+	    }
+	}
+    }
+  return -1;
+}
+
+// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
+void *
+A4GL_getSIDByUniq (char *name)
+{
+int a;
+  a=A4GL_findPreparedStatementByUniq(name);
+  if (a>=0) {
+	return preparedStatements[a].sid;
+  }
+  return NULL;
+}
+
+
+// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
+static int A4GL_findPreparedStatementbySid (void *sid)
+{
+int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (sid == preparedStatements[a].sid && strlen(preparedStatements[a].preparedStatementName))
+	    {
+	      return a;
+	    }
+	}
+    }
+  return -1;
+}
+
+
+
+void A4GL_removePreparedStatement(char *name) {
+	int a;
+	a=A4GL_findPreparedStatement(name);
+	strcpy(preparedStatements[a].preparedStatementName,"");
+}
+
+void A4GL_removePreparedStatementBySid(void *sid) {
+int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (sid == preparedStatements[a].sid && strlen(preparedStatements[a].preparedStatementName))
+	    {
+		strcpy(preparedStatements[a].preparedStatementName,"");
+	    }
+	}
+    }
+}
+
+
+void
+A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_data)
+{
+  int a;
+  int found = -1;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+
+	  if (strcmp(preparedStatements[a].preparedStatementName,"ANON")==0) continue;
+
+	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
+	    {
+	      A4GL_assertion (1, "Statement already exists");
+	    }
+
+	  if (strlen (preparedStatements[a].preparedStatementName) == 0)
+	    {
+	      found = a;
+	      break;
+	    }
+	}
+    }
+
+  if (found == -1)
+    {
+      // no free space...
+      npreparedStatements++;
+      preparedStatements = acl_realloc (preparedStatements, npreparedStatements * sizeof (preparedStatements[0]));
+      found = npreparedStatements - 1;
+    }
+  strcpy (preparedStatements[found].preparedStatementName, name);
+  strcpy (preparedStatements[found].anonymousName, name);
+  preparedStatements[found].sid = sid;
+  preparedStatements[found].extra_data = extra_data;
+}
+
+
+
+
 
 // ================================ EOF ================================
