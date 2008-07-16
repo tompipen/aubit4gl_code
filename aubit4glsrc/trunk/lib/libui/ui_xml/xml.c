@@ -2181,7 +2181,7 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
   //char* rval;
   int a;
   send_to_ui
-    ("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%s\" BUTTON=\"%s\" />",
+    ("<WINQUESTION TITLE=\"%s\" TEXT=\"%s\" DEFAULT=\"%s\" POS=\"%s\" ICON=\"%s\" DANGER=\"%d\" BUTTON=\"%d\" />",
      ignull (title), uilib_xml_escape (ignull (text)), def, pos, icon, danger, winbutton);
   send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
