@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.70 2008-07-06 11:34:33 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.71 2008-07-17 16:28:13 mikeaubury Exp $
 #
 */
 
@@ -1565,7 +1565,6 @@ void
 make_list_in_subselect_stmt (struct s_select *orig, struct s_select *next)
 {
   int a;
-
   for (a = 0; a < orig->table_elements.tables.tables_len; a++)
     {
       A4GLSQLPARSE_add_table_to_table_list (&next->table_elements,
@@ -2754,6 +2753,7 @@ make_list_item_list_from_select (struct s_select *select,
       break;
 
     case E_SLI_SUBQUERY:
+	preprocess_sql_statement(p->data.s_select_list_item_data_u.subquery);
       make_list_in_subselect_stmt (select, p->data.s_select_list_item_data_u.subquery);
       break;
 
