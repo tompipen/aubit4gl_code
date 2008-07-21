@@ -3,7 +3,7 @@
 
 
 FILE *ofile;
-void write_xml_form(char *fname, struct_form *f) ;
+void write_xml_form(FILE *ofile, char *fname, struct_form *f) ;
 static char *get_sql_dtype ( int dtype);
 void print_label_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char*why) ;
 void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char*why) ;
@@ -27,95 +27,7 @@ int printed_attributes[1000];
 int nprintedattributes=0;
 
 
-/**
- *  *
- *   * @todo Describe function
- *    */
-int
-A4GLPACKER_initlib (void)
-{
-  return 1;
-}
 
-/**
- *  *
- *   * @todo Describe function
- *    */
-int
-A4GLPacker_A4GL_can_pack_all (char *name)
-{
-    return 1;
-}
-
-/*
- *    We don't need to worry about these two functions
- *       as we're doing the whole thing in one go using xdr
- *       */
-int
-A4GLPacker_A4GL_open_packer (char *fname, char dir,char *packname)
-{
-  return 1;
-}
-
-void
-A4GLPacker_A4GL_close_packer (char dir)
-{
-  return;
-}
-
-/**
- *  *
- *   * @todo Describe function
- *    */
-int
-A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
-{
-
-        if (strcmp(name,"struct_form")==0) {
-                char buff[256];
-                char *override;
-                override=acl_getenv_not_set_as_0("OVERRIDE_OUTPUT");
-
-                if (override) {
-                        strcpy(buff,override);
-                } else {
-                        if (!A4GL_env_option_set ("A4GL_LOCALOUTPUT")) {
-                                strcpy(buff,filename);
-                        } else {
-                                char *ptr;
-                              ptr = filename;
-                                if (rindex (ptr, '/')) {
-                                        ptr = rindex (ptr, '/') + 1;
-                                }
-                                strcpy(buff,ptr);
-
-                        }
-                        strcat(buff,".xml");
-                }
-                ofile=fopen(buff,"wb");
-
-                if (ofile) {
-                        int c;
-                        fprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-                        int b=0;
-			write_xml_form(filename, s);
-                        fclose(ofile);
-                } else {
-                        return 0;
-                }
-        return 1;
-        }
-
-
-	A4GL_assertion(1,"Unhandled datatype for FORMXML packer");
-	return 0;
-}
-
-int A4GLPacker_A4GL_pack_remove_file(char *fname) {
-        char buff[512];
-        sprintf (buff, "%s.xml",fname);
-        return A4GL_delete_file(buff);
-}
 
 int hasPrintedAttribute(int n) {
 int a;
@@ -356,7 +268,7 @@ char posbuf[200];
 
 // Prints a field thats defined as a label widgettype
 void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
-char *s;
+//char *s;
 char buff[2000];
  get_attribs(f, attr_no, buff,1);
 char posbuf[200];
@@ -378,7 +290,7 @@ char posbuf[200];
 
 // Prints a field thats defined as a label widgettype
 void print_unknown_widget_attr(struct_form *f, char *widget, int metric_no, int attr_no,int oldstyle,char *why) {
-char *s;
+//char *s;
 char buff[2000];
  get_attribs(f, attr_no, buff,1);
 char posbuf[200];
@@ -403,7 +315,7 @@ char posbuf[200];
 
 // Prints a field thats defined as a label widgettype
 void print_dateedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
-char *s;
+//char *s;
 char buff[2000];
 char posbuf[200];
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x , f->metrics.metrics_val[metric_no].w);
@@ -429,7 +341,7 @@ char posbuf[200];
 
 // Prints a field thats defined as a label widgettype
 void print_textedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
-char *s;
+//char *s;
 char buff[2000];
 char posbuf[200];
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x,  f->metrics.metrics_val[metric_no].w);
@@ -463,7 +375,7 @@ char posbuf[200];
 
 // Prints a field thats defined as a label widgettype
 void print_label_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
-char *s;
+//char *s;
 char posbuf[200];
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x,  f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
@@ -573,7 +485,7 @@ fieldNo=attr_no;
 
 int get_attrno_for_metric(struct_form *f, int metric_no) {
 int a;
-int found=0;
+//int found=0;
 
 for (a=0;a<f->attributes.attributes_len;a++) {
 	//if ( f->attributes.attributes_val[a].field_no==0) continue;
@@ -610,7 +522,7 @@ if (!found) {
 
 
 void get_layout_attribs(struct s_layout *layout, char *buff) {
-int a;
+//int a;
 char smbuff[200];
 struct struct_scr_field fprop1;
 struct struct_scr_field *fprop;
@@ -681,7 +593,7 @@ int a;
 
 void dump_grid(struct_form *f, struct s_layout *layout) {
 char buff[2000];
-int a;
+//int a;
 	
 	get_layout_attribs(layout,buff);
 	if (layout->children.children_len!=0) {
@@ -853,31 +765,16 @@ A4GL_assertion(max_scr<0,"No screens");
 
 for (scr=1; scr<=max_scr;scr++) {
 	dump_screen(f,scr,SCRMODE_SCREEN,"");
-#ifdef MOVED
-	get_screen_size_dims(f, scr, &mw,&mh);
-	fprintf(ofile,"<Screen width=\"%d\" height=\"%d\">\n",  mw,mh);
-	for (a=0;a<f->metrics.metrics_len;a++) { 	
-		if (f->metrics.metrics_val[a].scr!=scr)  continue;
-		if (strlen(f->metrics.metrics_val[a].label)) {
-			if (isline(f->metrics.metrics_val[a].label)) {
-				fprintf(ofile,"<HLine posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n",f->metrics.metrics_val[a].y, f->metrics.metrics_val[a].x, strlen(f->metrics.metrics_val[a].label));
-			} else {
-				fprintf(ofile,"<Label text=\"%s\" posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n",xml_escape(f->metrics.metrics_val[a].label), f->metrics.metrics_val[a].y, f->metrics.metrics_val[a].x, strlen(f->metrics.metrics_val[a].label));
-			}
-		} else {
-			// Its a field...
-			print_field(f, a);
-		}
-	}
-	fprintf(ofile,"</Screen>\n");
-#endif
 }
 }
 
 
 
 
-void write_xml_form(char *fname, struct_form *f) {
+void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
+	ofile=wofile;
+
+        fprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(ofile,"<Form name=\"%s\" sqlDbName=\"%s\" width=\"%d\" height=\"%d\" delimiters=\"%s\">\n",fname, f->dbname, f->maxcol, f->maxline, f->delim);
 	if (f->layout==0) {
 		// Its a screen not a layout
@@ -887,6 +784,7 @@ void write_xml_form(char *fname, struct_form *f) {
 	}
 	printRecordView(f);
  	fprintf(ofile,"</Form>\n");
+        fclose(ofile);
 				
 }
 
@@ -1112,9 +1010,9 @@ decode_ival_define2 (int n)
 
 static char * get_sql_dtype ( int dtype)
 {
-  int a;
-  int cnt;
-  char buff[256];
+  //int a;
+  //int cnt;
+  //char buff[256];
   static char buff_dtype[256];
   int dtype_sz;
 
