@@ -406,23 +406,23 @@ void print_dateedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 char *s;
 char buff[2000];
 char posbuf[200];
-	sprintf(posbuf," posY=\"%d\" posX=\"%d\" ", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x , f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
  get_attribs(f, attr_no, buff,1);
 
 	if (oldstyle) {
-			fprintf(ofile, "<DateEdit %s width=\"%d\" %s gridWidth=\"%d\"/>\n", 
+			fprintf(ofile, "<DateEdit %s width=\"%d\" %s />\n", 
 				buff,
-			f->metrics.metrics_val[metric_no].w, posbuf,
-			f->metrics.metrics_val[metric_no].w);
+			f->metrics.metrics_val[metric_no].w, posbuf
+			);
 
         } else {
-			fprintf(ofile, "<DateEdit %s width=\"%d\" gridWidth=\"%d\"/>\n", 
+			fprintf(ofile, "<DateEdit %s width=\"%d\" %s />\n", 
 				buff,
-				f->metrics.metrics_val[metric_no].w, posbuf,
-				f->metrics.metrics_val[metric_no].w);
+				f->metrics.metrics_val[metric_no].w, posbuf
+				);
         }
 	return ;
 }
@@ -432,7 +432,7 @@ void print_textedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 char *s;
 char buff[2000];
 char posbuf[200];
-	sprintf(posbuf," posY=\"%d\" posX=\"%d\" ", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x,  f->metrics.metrics_val[metric_no].w);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x,  f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
@@ -465,7 +465,7 @@ char posbuf[200];
 void print_label_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
 char *s;
 char posbuf[200];
-	sprintf(posbuf," posY=\"%d\" posX=\"%d\" ", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x,  f->metrics.metrics_val[metric_no].w);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x,  f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
@@ -642,6 +642,18 @@ strcpy(buff,"");
 	if (A4GL_has_bool_attribute(fprop, FA_B_FONTPITCHFIXED)) { strcat(buff, " fontPitch=\"fixed\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_FONTPITCHVARIABLE)) { strcat(buff, " fontPitch=\"variable\""); }
 
+}
+
+void dump_group(struct_form *f, struct s_layout *layout) {
+	A4GL_assertion(1,"Not implemented dump_group (no examples)");
+}
+
+
+void dump_folder(struct_form *f, struct s_layout *layout) {
+	A4GL_assertion(1,"Not implemented dump_folder (no examples)");
+}
+void dump_page(struct_form *f, struct s_layout *layout) {
+	A4GL_assertion(1,"Not implemented dump_page (no examples)");
 }
 
 void dump_vbox(struct_form *f, struct s_layout *layout) {
