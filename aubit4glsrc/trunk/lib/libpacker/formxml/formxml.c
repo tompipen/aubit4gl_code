@@ -469,6 +469,7 @@ char posbuf[200];
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
+
 	if (oldstyle) {
 			fprintf(ofile, "<RipLABEL width=\"%d\" %s />\n", 
 			f->metrics.metrics_val[metric_no].w,posbuf);
@@ -691,6 +692,7 @@ int a;
 
 void dump_table(struct_form *f, struct s_layout *layout) {
 char buff[2000];
+char buff_tabcol[2000];
 int a;
 int scr;
 int dim=-1;
@@ -719,7 +721,7 @@ char scrname[200];
 		
 
 
-    	fprintf (ofile, "<Table pageSize=\"%d\" tabName=\"%s\">\n",dim, scrname);
+    	fprintf (ofile, "<Table pageSize=\"%d\" tabName=\"%s\" %s>\n",dim, scrname,buff);
 
 
   for (a = 0; a < f->metrics.metrics_len; a++) {
@@ -730,9 +732,15 @@ char scrname[200];
 		if (hasPrintedAttribute(attr_no)) continue;
 		addPrintedAttribute(attr_no);
   		tabIndex++;
-      		fprintf (ofile, "<TableColumn name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" >\n", 
+
+	
+	
+		get_attribs(f, attr_no, buff_tabcol,0);
+
+      		fprintf (ofile, "<TableColumn name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\">\n", 
+
 	       			f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
-	       			f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff,
+	       			f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff_tabcol,
 	       			tabIndex);
 
       		print_widget (f, a, attr_no,"Table");
