@@ -83,6 +83,12 @@
     <Compile Include="FGLWidget.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmShortcut.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -142,6 +148,7 @@
     </Compile>
     <Compile Include="ssh.cs">
     </Compile>
+    <Compile Include="StartMenuXMLParser.cs" />
     <Compile Include="ToolBarImages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -164,6 +171,10 @@
     <EmbeddedResource Include="FGLTxtControl.resx">
       <DependentUpon>FGLTxtControl.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmLogin.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmLogin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmShortcut.resx">
       <SubType>Designer</SubType>

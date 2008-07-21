@@ -39,12 +39,19 @@ namespace AubitDesktop
             this.tpShortcuts = new System.Windows.Forms.TabPage();
             this.lstShortcuts = new System.Windows.Forms.ListBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnDuplicate = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.btnShortcutExecute = new System.Windows.Forms.Button();
             this.btnShortcutEdit = new System.Windows.Forms.Button();
             this.btnShortcutRemove = new System.Windows.Forms.Button();
             this.btnShortcutAdd = new System.Windows.Forms.Button();
             this.tpOptions = new System.Windows.Forms.TabPage();
+            this.lblKeyCode = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tbInterruptKey = new System.Windows.Forms.TextBox();
+            this.cbReceiveFile = new System.Windows.Forms.CheckBox();
+            this.cbSendFile = new System.Windows.Forms.CheckBox();
+            this.cbAllowExec = new System.Windows.Forms.CheckBox();
             this.lstIPAddress = new System.Windows.Forms.ListBox();
             this.tpConnections = new System.Windows.Forms.TabPage();
             this.lstConnections = new System.Windows.Forms.DataGridView();
@@ -53,13 +60,6 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.cbAllowExec = new System.Windows.Forms.CheckBox();
-            this.cbSendFile = new System.Windows.Forms.CheckBox();
-            this.cbReceiveFile = new System.Windows.Forms.CheckBox();
-            this.tbInterruptKey = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lblKeyCode = new System.Windows.Forms.Label();
-            this.btnDuplicate = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -159,10 +159,20 @@ namespace AubitDesktop
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             // 
+            // btnDuplicate
+            // 
+            this.btnDuplicate.Location = new System.Drawing.Point(6, 106);
+            this.btnDuplicate.Name = "btnDuplicate";
+            this.btnDuplicate.Size = new System.Drawing.Size(75, 23);
+            this.btnDuplicate.TabIndex = 11;
+            this.btnDuplicate.Text = "Duplicate";
+            this.btnDuplicate.UseVisualStyleBackColor = true;
+            this.btnDuplicate.Click += new System.EventHandler(this.btnDuplicate_Click);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::AubitDesktop.Properties.Resources.Aubit;
-            this.pictureBox1.Location = new System.Drawing.Point(17, 192);
+            this.pictureBox1.Location = new System.Drawing.Point(15, 151);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(54, 47);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -171,7 +181,7 @@ namespace AubitDesktop
             // 
             // btnShortcutExecute
             // 
-            this.btnShortcutExecute.Location = new System.Drawing.Point(6, 154);
+            this.btnShortcutExecute.Location = new System.Drawing.Point(5, 216);
             this.btnShortcutExecute.Name = "btnShortcutExecute";
             this.btnShortcutExecute.Size = new System.Drawing.Size(75, 23);
             this.btnShortcutExecute.TabIndex = 3;
@@ -224,6 +234,61 @@ namespace AubitDesktop
             this.tpOptions.TabIndex = 1;
             this.tpOptions.Text = "Options";
             this.tpOptions.UseVisualStyleBackColor = true;
+            // 
+            // lblKeyCode
+            // 
+            this.lblKeyCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblKeyCode.Location = new System.Drawing.Point(81, 134);
+            this.lblKeyCode.Name = "lblKeyCode";
+            this.lblKeyCode.Size = new System.Drawing.Size(100, 23);
+            this.lblKeyCode.TabIndex = 17;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 111);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 13);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Interrupt Key";
+            // 
+            // tbInterruptKey
+            // 
+            this.tbInterruptKey.Location = new System.Drawing.Point(81, 111);
+            this.tbInterruptKey.Name = "tbInterruptKey";
+            this.tbInterruptKey.Size = new System.Drawing.Size(100, 20);
+            this.tbInterruptKey.TabIndex = 15;
+            this.tbInterruptKey.TextChanged += new System.EventHandler(this.tbInterruptKey_TextChanged);
+            // 
+            // cbReceiveFile
+            // 
+            this.cbReceiveFile.AutoSize = true;
+            this.cbReceiveFile.Location = new System.Drawing.Point(270, 149);
+            this.cbReceiveFile.Name = "cbReceiveFile";
+            this.cbReceiveFile.Size = new System.Drawing.Size(113, 17);
+            this.cbReceiveFile.TabIndex = 14;
+            this.cbReceiveFile.Text = "Allow Receive File";
+            this.cbReceiveFile.UseVisualStyleBackColor = true;
+            // 
+            // cbSendFile
+            // 
+            this.cbSendFile.AutoSize = true;
+            this.cbSendFile.Location = new System.Drawing.Point(270, 128);
+            this.cbSendFile.Name = "cbSendFile";
+            this.cbSendFile.Size = new System.Drawing.Size(98, 17);
+            this.cbSendFile.TabIndex = 13;
+            this.cbSendFile.Text = "Allow Send File";
+            this.cbSendFile.UseVisualStyleBackColor = true;
+            // 
+            // cbAllowExec
+            // 
+            this.cbAllowExec.AutoSize = true;
+            this.cbAllowExec.Location = new System.Drawing.Point(270, 107);
+            this.cbAllowExec.Name = "cbAllowExec";
+            this.cbAllowExec.Size = new System.Drawing.Size(93, 17);
+            this.cbAllowExec.TabIndex = 12;
+            this.cbAllowExec.Text = "Allow Execute";
+            this.cbAllowExec.UseVisualStyleBackColor = true;
             // 
             // lstIPAddress
             // 
@@ -297,71 +362,6 @@ namespace AubitDesktop
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // cbAllowExec
-            // 
-            this.cbAllowExec.AutoSize = true;
-            this.cbAllowExec.Location = new System.Drawing.Point(270, 107);
-            this.cbAllowExec.Name = "cbAllowExec";
-            this.cbAllowExec.Size = new System.Drawing.Size(93, 17);
-            this.cbAllowExec.TabIndex = 12;
-            this.cbAllowExec.Text = "Allow Execute";
-            this.cbAllowExec.UseVisualStyleBackColor = true;
-            // 
-            // cbSendFile
-            // 
-            this.cbSendFile.AutoSize = true;
-            this.cbSendFile.Location = new System.Drawing.Point(270, 128);
-            this.cbSendFile.Name = "cbSendFile";
-            this.cbSendFile.Size = new System.Drawing.Size(98, 17);
-            this.cbSendFile.TabIndex = 13;
-            this.cbSendFile.Text = "Allow Send File";
-            this.cbSendFile.UseVisualStyleBackColor = true;
-            // 
-            // cbReceiveFile
-            // 
-            this.cbReceiveFile.AutoSize = true;
-            this.cbReceiveFile.Location = new System.Drawing.Point(270, 149);
-            this.cbReceiveFile.Name = "cbReceiveFile";
-            this.cbReceiveFile.Size = new System.Drawing.Size(113, 17);
-            this.cbReceiveFile.TabIndex = 14;
-            this.cbReceiveFile.Text = "Allow Receive File";
-            this.cbReceiveFile.UseVisualStyleBackColor = true;
-            // 
-            // tbInterruptKey
-            // 
-            this.tbInterruptKey.Location = new System.Drawing.Point(81, 111);
-            this.tbInterruptKey.Name = "tbInterruptKey";
-            this.tbInterruptKey.Size = new System.Drawing.Size(100, 20);
-            this.tbInterruptKey.TabIndex = 15;
-            this.tbInterruptKey.TextChanged += new System.EventHandler(this.tbInterruptKey_TextChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 111);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 13);
-            this.label1.TabIndex = 16;
-            this.label1.Text = "Interrupt Key";
-            // 
-            // lblKeyCode
-            // 
-            this.lblKeyCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblKeyCode.Location = new System.Drawing.Point(81, 134);
-            this.lblKeyCode.Name = "lblKeyCode";
-            this.lblKeyCode.Size = new System.Drawing.Size(100, 23);
-            this.lblKeyCode.TabIndex = 17;
-            // 
-            // btnDuplicate
-            // 
-            this.btnDuplicate.Location = new System.Drawing.Point(6, 106);
-            this.btnDuplicate.Name = "btnDuplicate";
-            this.btnDuplicate.Size = new System.Drawing.Size(75, 23);
-            this.btnDuplicate.TabIndex = 11;
-            this.btnDuplicate.Text = "Duplicate";
-            this.btnDuplicate.UseVisualStyleBackColor = true;
-            this.btnDuplicate.Click += new System.EventHandler(this.btnDuplicate_Click);
             // 
             // mainfrm
             // 

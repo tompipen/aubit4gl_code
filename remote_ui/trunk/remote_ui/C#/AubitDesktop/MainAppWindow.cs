@@ -351,11 +351,13 @@ namespace AubitDesktop
         void n_DisconnectedFromServer(object sender, EventArgs e)
         {
             EnvReaderTimer_Tick(null, null);
+            MessageBox.Show("Disconnected from server (1)");
             this.Dispose();
         }
 
         void n_ConnectingFailed(object sender, EventArgs e)
         {
+            MessageBox.Show("Disconnected from server (2)");
             this.Dispose();
         }
 
@@ -428,6 +430,7 @@ namespace AubitDesktop
                 if (tp.Controls.Contains(appPanel))
                 {
                     tabControl1.TabPages.Remove(tp);
+                   
                     appPanel.Dispose();
                     appPanel = null;
                     if (this.tabControl1.TabCount == 0)
@@ -466,7 +469,7 @@ namespace AubitDesktop
         {
             if (updating) return;
 
-            //MessageBox.Show("Timer ticked");
+           
             EnvReaderTimer.Enabled = false;
             if (EnvReaderTimer.Interval != 100)
             {
@@ -478,7 +481,7 @@ namespace AubitDesktop
 
         private void ConsumeEnvelopeCommands()
         {
-            //System.Diagnostics.Debug.WriteLine("In consume envelope commands (top level)");
+           
             int a=0;
             while (a<RunningApplications.Count)
             {
@@ -604,7 +607,7 @@ namespace AubitDesktop
             {
                     for (int a = 0; a < toolStrip.Count;a++ )
                     {
-                        //MessageBox.Show("Adding : " + toolStrip[a]);
+                        
                         this.topWindowToolStrip.Items.Add(toolStrip[a]);
                     }   
             }
@@ -711,8 +714,14 @@ namespace AubitDesktop
                     fglKey = FGLUtils.getKeyNameFromFGLKeyCode(a.ActiveKey);
                     if (fglKey==key)
                     {
-
-                        a.clickHandler(a, new EventArgs());
+                        if (a.clickHandler != null)
+                        {
+                            a.clickHandler(a, new EventArgs());
+                        }
+                        else
+                        {
+                            MessageBox.Show("No click handler ?");
+                        }
                         e.Handled = true;
                         e.SuppressKeyPress = true;
                         return;
@@ -837,8 +846,117 @@ namespace AubitDesktop
             Program.saveWindowPosition(this.GetType().ToString() + stdNetworkConnection.application, this);
             stdNetworkConnection.Disconnect();
         }
+
+
+        public void loadApplicationLauncherTree(string XMLFile)
+        {
+            AubitDesktop.Xml.StartMenu sMenu=null;
+            System.Xml.Serialization.XmlSerializer reader = new
+            System.Xml.Serialization.XmlSerializer(typeof(AubitDesktop.Xml.StartMenu));
+            System.IO.StreamReader file =
+                new System.IO.StreamReader(XMLFile);
+
             
- 
+            try
+            {
+                // Deserialize the content of the file into the settings...
+                sMenu = (AubitDesktop.Xml.StartMenu)reader.Deserialize(file);    
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show( e.ToString(),"Unable to load Menu");
+            }
+            if (sMenu != null)
+            {
+                showApplicationMenu(sMenu);
+            }
+            else
+            {
+                hasApplicationTree = false;
+                showOrHideApplicationLauncher();
+            }
+        }
+
         
+
+        private void showApplicationMenu(AubitDesktop.Xml.StartMenu sMenu)
+        {
+            applicationLauncherTreeView.Nodes.Clear();
+            TreeNode root = new TreeNode(sMenu.text);
+
+            hasApplicationTree = true;
+            showOrHideApplicationLauncher();
+            
+            applicationLauncherTreeView.Nodes.Add(root);
+            foreach (AubitDesktop.Xml.StartMenuGroup n in sMenu.StartMenuGroup)
+            {
+                addTreeNodes(root, n);
+            }
+
+            root.Expand();
+        }
+
+        private void addTreeNodes(TreeNode root, AubitDesktop.Xml.StartMenuGroup startMenuGroup)
+        {
+            bool hasCommands=false;
+            TreeNode node;
+            node=new TreeNode(startMenuGroup.text);
+            root.Nodes.Add(node);
+            foreach (object o in startMenuGroup.Items) {
+                if (o is AubitDesktop.Xml.StartMenuGroup) {
+                    addTreeNodes(node,(AubitDesktop.Xml.StartMenuGroup)o);
+                }
+
+                if (o is AubitDesktop.Xml.StartMenuCommand) {
+                    TreeNode cmdNode;
+                    AubitDesktop.Xml.StartMenuCommand smc;
+                    smc=(AubitDesktop.Xml.StartMenuCommand)o;
+                    cmdNode=new launcherCmdNode(smc.text,smc.exec);
+                    node.Nodes.Add(cmdNode);
+                    
+                    hasCommands = true;
+                }   
+            }
+            if (!hasCommands) node.Expand();
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            loadApplicationLauncherTree("//dell2800/tmp/startmenu.xml");
+        }
+
+        private void applicationLauncherTreeView_DoubleClick(object sender, EventArgs e)
+        {
+            
+            if (applicationLauncherTreeView.SelectedNode is launcherCmdNode)
+            {
+                launcherCmdNode l = (launcherCmdNode)applicationLauncherTreeView.SelectedNode;
+                stdNetworkConnection.SendString("<TRIGGERED ID=\"EXEC\" PROGRAMNAME=\""+ System.Security.SecurityElement.Escape(l.cmd)+"\"/>");
+                
+            }
+        }
+        
+    }
+
+    class launcherCmdNode : TreeNode
+    {
+
+        private string _cmd;
+        public string cmd
+        {
+            get
+            {
+                return _cmd;
+            }
+        }
+        public launcherCmdNode(string text, string cmd): base(text)
+        {
+            this._cmd = cmd;
+        }
     }
 }

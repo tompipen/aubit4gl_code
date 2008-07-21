@@ -269,6 +269,33 @@ namespace AubitDesktop
     }
 
 
+
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+    public class DRAWBOX
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string arg1;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string arg2;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string arg3;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string arg4;
+    }
+
+
+
+
     /// <remarks/>
     public class DISPLAYAT
     {
@@ -473,6 +500,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("CURRENTWINDOW", Type = typeof(CURRENTWINDOW))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAY", Type = typeof(DISPLAY))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYAT", Type = typeof(DISPLAYAT))]
+        [System.Xml.Serialization.XmlElementAttribute("DRAWBOX", Type = typeof(DRAWBOX))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYFORM", Type = typeof(DISPLAYFORM))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYTO", Type = typeof(DISPLAYTO))]
         [System.Xml.Serialization.XmlElementAttribute("DUMPSCREEN", Type = typeof(DUMPSCREEN))]
@@ -482,7 +510,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("MENU", Type = typeof(MENU))]
         [System.Xml.Serialization.XmlElementAttribute("MESSAGE", Type = typeof(MESSAGE))]
         [System.Xml.Serialization.XmlElementAttribute("ERROR", Type = typeof(MESSAGE))]
-        //[System.Xml.Serialization.XmlElementAttribute("OPENFORM", Type = typeof(OPENFORM))]
+        [System.Xml.Serialization.XmlElementAttribute("NEXTOPTION", Type = typeof(NEXTOPTION))]
         [System.Xml.Serialization.XmlElementAttribute("OPENWINDOWWITHFORM", Type = typeof(OPENWINDOWWITHFORM))]
         [System.Xml.Serialization.XmlElementAttribute("OPTIONS", Type = typeof(OPTIONS))]
         [System.Xml.Serialization.XmlElementAttribute("PROGRAMSTARTUP", Type = typeof(PROGRAMSTARTUP))]
@@ -744,6 +772,21 @@ namespace AubitDesktop
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class NEXTOPTION
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string CONTEXT;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string OPTION;
+
+    }
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class ERROR
     {
 
@@ -975,6 +1018,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CURRENTWINDOW), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYAT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(DRAWBOX), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYTO), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DUMPSCREEN), IsNullable = false)]
@@ -984,7 +1028,6 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(MENU), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(MESSAGE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ERROR), IsNullable = false)]
-        //[System.Xml.Serialization.XmlArrayItem(Type = typeof(OPENFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(OPENWINDOWWITHFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(OPTIONS), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(PROGRAMSTARTUP), IsNullable = false)]
@@ -993,6 +1036,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(WAITFOREVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTFIELD), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(HIDEOPTION), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETKEYLABEL), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETWINDOWTITLE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(REQUESTFILE), IsNullable = false)]
@@ -1188,6 +1232,15 @@ namespace AubitDesktop
     }
 
     /// <remarks/>
+    public class ATTRIB_PICTURE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string Text;
+    }
+
+    /// <remarks/>
     public class ATTRIB_DOWNSHIFT
     {
     }
@@ -1245,6 +1298,9 @@ namespace AubitDesktop
 
         /// <remarks/>
         public ATTRIB_PROGRAM ATTRIB_PROGRAM;
+
+        /// <remarks/>
+        public ATTRIB_PROGRAM ATTRIB_PICTURE;
 
         /// <remarks/>
         public ATTRIB_COMMENTS ATTRIB_COMMENTS;
@@ -1494,6 +1550,9 @@ namespace AubitDesktop
         /// <remarks/>
         public FORM FORM;
     }
+
+
+
 
 
 

@@ -248,6 +248,7 @@ namespace AubitDesktop
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "frmShortcut";
             this.Text = "Shortcut";
             this.Load += new System.EventHandler(this.frmShortcut_Load);

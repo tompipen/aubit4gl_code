@@ -86,13 +86,15 @@ namespace AubitDesktop
             {
 
                 _ContextType = value;
-                if (_ContextType == FGLContextType.ContextNone || this.NoEntry)
+                if (_ContextType == FGLContextType.ContextNone)
                 {
                     l.Visible = true;
                     t.Visible = false;
                 }
                 else
                 {
+
+
                     if (_ContextType == FGLContextType.ContextDisplayArray)
                     {
                         if (t.Visible != true)
@@ -111,9 +113,25 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        t.Visible = true;
-                        l.Visible = false;
-                        t.ReadOnly = false;
+                        if (_ContextType == FGLContextType.ContextConstruct)
+                        {
+                            t.Visible = true;
+                            l.Visible = false;
+                            t.ReadOnly = false;
+                        } else {
+                            if (this.NoEntry)
+                            {
+                                t.Visible = false;
+                                l.Visible = true;
+                                t.ReadOnly = false;
+                            }
+                            else
+                            {
+                                t.Visible = true;
+                                l.Visible = false;
+                                t.ReadOnly = false;
+                            }
+                        }
                     }
                 }
 
@@ -495,6 +513,12 @@ namespace AubitDesktop
             {
                 this.onUIEvent(this, this.beforeFieldID, "");
             }
+
+            if (this.onGotFocus!=null)
+            {
+                this.onGotFocus(this,  this.comment);
+            }
+            
             
         }
 

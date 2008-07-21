@@ -317,6 +317,7 @@ namespace AubitDesktop
                     NewConnectionTCP(server, port);
                     if (tcpStream == null)
                     {
+                        
                         this.appwin.Close();
                         this.appwin.Dispose();
                         this.appwin = null;
@@ -415,8 +416,11 @@ namespace AubitDesktop
                 try
                 {
                     int readBytes = streamRead(buffer, 0, buffer.Length);
-                    if (readBytes == 0)
-                        break;
+                    //if (readBytes == 0)
+                    //{
+                    //    break;
+                    //}
+
                     if (readBytes >= 0)
                     {
                         cmd += System.Text.Encoding.ASCII.GetString(buffer, 0, readBytes);
@@ -443,8 +447,7 @@ namespace AubitDesktop
                         string c;
                         
                         c = cmd.Substring(0, index);
-                        //if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope) { MessageBox.Show("c=" + c); }
-
+                        
                         if (c.Length > 0)
                         {
                             if (c.StartsWith("<ENVELOPE"))

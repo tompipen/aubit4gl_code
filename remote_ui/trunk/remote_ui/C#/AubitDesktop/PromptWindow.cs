@@ -50,9 +50,12 @@ namespace AubitDesktop
             {
                 this.Text = attribtext;
             }
-            if ((FieldAttr & 0x20000) > 0)
-            { // Invisible
-                promptTextBox.PasswordChar = '*';
+            if (FieldAttr != -1)
+            {
+                if ((FieldAttr & 0x20000) > 0)
+                { // Invisible
+                    promptTextBox.PasswordChar = '*';
+                }
             }
             
         }

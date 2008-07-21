@@ -160,6 +160,12 @@ namespace AubitDesktop
             set;
         }
 
+        UIGotFocusHandler onGotFocus
+        {
+            get;
+            set;
+        }
+
         UIEventHandler onUIEvent
         {
             get;
@@ -1152,8 +1158,17 @@ namespace AubitDesktop
 
         public static string getKeyNameFromFGLKeyCode(string key)
         {
+            Int32 keycode;
             string txt = key;
-
+            if (Int32.TryParse(key, out keycode))
+            {
+                if (keycode < 127 && keycode > ' ')
+                {
+                    char c;
+                    c = Convert.ToChar(keycode);
+                    return c.ToString();
+                }
+            }
             switch (key)
             {
                 case "3000": txt = "F1"; break;
@@ -1360,6 +1375,7 @@ namespace AubitDesktop
 
         static public bool IsValidForType(FGLDataTypes datatype, string value, string format)
         {
+            if (value.Trim() == "") return true;
             
             switch (datatype)
             {

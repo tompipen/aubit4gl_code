@@ -157,12 +157,13 @@ namespace AubitDesktop
                 //mainWin.setActiveToolBarKeys(null,false);
                 if (promptStyle == "WINDOW")
                 {
+                    
                     promptForm.Dispose();
                 }
                 else
                 {
                     mainWin.RemovePrompt(promptForm.GetPromptControls());
-                    promptForm.Dispose();
+                    //promptForm.Dispose();
                     promptForm = null;
                 }
                 _contextIsActive = false;

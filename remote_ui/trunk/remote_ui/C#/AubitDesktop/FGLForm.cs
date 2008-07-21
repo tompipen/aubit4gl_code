@@ -104,6 +104,8 @@ namespace AubitDesktop
                     l.AutoSize = true;
                     l.Top = GuiLayout.get_gui_y(Convert.ToInt32(flabel.ROW));
                     l.Left = GuiLayout.get_gui_x(Convert.ToInt32(flabel.COLUMN));
+                    l.Height = 1;
+                    l.Width = 1;
                     labels.Add(l);
                     this.thisFormsPanel.Controls.Add(l);
                     continue;

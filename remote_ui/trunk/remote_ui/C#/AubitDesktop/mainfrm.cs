@@ -302,6 +302,8 @@ namespace AubitDesktop
         private void btnShortcutExecute_Click(object sender, EventArgs e)
         {
             AubitNetwork connection;
+            string userName;
+            string passWord;
             AubitDesktop.Xml.Shortcut s;
             if (lstShortcuts.SelectedIndex<0) {
                 MessageBox.Show("No shortcut selected");
@@ -309,7 +311,25 @@ namespace AubitDesktop
             }
             s = Program.AppSettings.Shortcuts[lstShortcuts.SelectedIndex];
 
-            connection = createNetworkConnection(s.Server, s.User, s.Password, s.Application,s.Port,getProtocol(s.Protocol));
+            userName = s.User;
+            passWord = s.Password;
+            if (s.PromptForPassword)
+            {
+                frmLogin flogin;
+                flogin = new frmLogin();
+                flogin.Username = userName;
+                flogin.Password = passWord;
+                if (flogin.ShowDialog(this)==DialogResult.OK) {
+                    userName = flogin.Username;
+                    passWord = flogin.Password;
+                } else {
+                    return;
+                }
+                flogin.Dispose();
+                 
+
+            }
+            connection = createNetworkConnection(s.Server, userName, passWord, s.Application,s.Port,getProtocol(s.Protocol));
 
             if (connection == null) return;
              

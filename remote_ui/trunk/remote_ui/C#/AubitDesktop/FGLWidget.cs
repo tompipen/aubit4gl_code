@@ -49,6 +49,7 @@ namespace AubitDesktop
 
         private UIFieldValidationHandler _fieldValidationFailed;
         private UIEventHandler _onUIEvent;
+        private UIGotFocusHandler _onGotFocus;
 
         public string _afterFieldID;
         public string _beforeFieldID;
@@ -124,6 +125,18 @@ namespace AubitDesktop
             get
             {
                 return _onUIEvent;
+            }
+        }
+
+        public UIGotFocusHandler onGotFocus
+        {
+            set
+            {
+                _onGotFocus = value;
+            }
+            get
+            {
+                return _onGotFocus;
             }
         }
 
@@ -391,12 +404,7 @@ namespace AubitDesktop
 
             }
 
-            /*
-            if (configSettings["INCLUDE"] != null)
-            {
-                MessageBox.Show("Here");
-            }
-             */
+
         }
 
 

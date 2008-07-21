@@ -468,7 +468,8 @@ namespace AubitDesktop
             
             b.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
             b.Visible = false;
-            b.Click += new EventHandler(b_Click);
+            //b.Click += new EventHandler(b_Click);
+            b.clickHandler = b_Click;
             Fkeys.Add(b);
             this.toolStrip1.Add(b);
         }
@@ -726,7 +727,7 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
-
+                #region FILE
                 if (a is FILE)
                 {
                     if (Program.AppSettings.allowReceiveFile)
@@ -768,7 +769,8 @@ namespace AubitDesktop
                     commands.Remove(a);
                     continue;
                 }
-
+                #endregion
+                #region EXECUTE
                 if (a is EXECUTE)
                 {
                     //MessageBox.Show(((EXECUTE)a).Text,"EXECUTE");
@@ -783,20 +785,24 @@ namespace AubitDesktop
                     commands.Remove(a);
                     continue;
                 }
-
+                #endregion
+                #region UIDIRECT
                 if (a is UIDIRECT)
                 {
                     MessageBox.Show(((UIDIRECT)a).Text,"UIDIRECT");
                     commands.Remove(a);
                     continue;
                 }
-
+                #endregion
+                #region SETWINDOWTITLE
                 if (a is SETWINDOWTITLE)
                 {
                     this.TopWindow.setTabTitle(this,((SETWINDOWTITLE)a).TEXT);
                     commands.Remove(a);
                     continue;
                 }
+                #endregion
+                #region SETKEYLABEL
                 if (a is SETKEYLABEL)
                 {
                     SETKEYLABEL k;
@@ -805,7 +811,7 @@ namespace AubitDesktop
                     commands.Remove(a);
                     continue;
                 }
-
+                #endregion
                 #region CLEARFORM
                 if (a is CLEARFORM)
                 {
@@ -823,7 +829,6 @@ namespace AubitDesktop
                     continue;
                 } 
                 #endregion
-
                 #region NEXTFIELD
                 if (a is NEXTFIELD)
                 {
@@ -842,7 +847,6 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
-
                 #region CURRENTWINDOW
                 if (a is CURRENTWINDOW)
                 {
@@ -853,7 +857,6 @@ namespace AubitDesktop
                     continue;
                 } 
                 #endregion
-
                 #region CLOSEWINDOW
                 if (a is CLOSEWINDOW)
                 {
@@ -864,7 +867,6 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
-
                 #region OPTIONS
                 if (a is OPTIONS)
                 {
@@ -950,7 +952,8 @@ namespace AubitDesktop
                 #region DISPLAYAT
                 if (a is DISPLAYAT)
                 {
-                    MessageBox.Show("DISPLAY .. AT is not support for GUI - please recode your application");
+                    Console.WriteLine("DISPLAY .. AT is not support for GUI - please recode your application");
+                 //   MessageBox.Show("DISPLAY .. AT is not support for GUI - please recode your application");
                     commands.Remove(a);
                     continue;
                 }
@@ -1006,8 +1009,16 @@ namespace AubitDesktop
                 if (a is OPENFORM)
                 {
                     OPENFORM o = (OPENFORM)a;
-                    FGLForm frm = new FGLForm(o.FORM);
-                    OpenForms.addForm(o.FORMNAME, frm);
+                    
+                    if (o.FORM.ATTRIBUTES != null)
+                    {
+                        FGLForm frm = new FGLForm(o.FORM);
+                        OpenForms.addForm(o.FORMNAME, frm);
+                    }
+                    else
+                    {
+                        Console.WriteLine("No form!!!");
+                    }
 
                     commands.Remove(a);
                     continue;
@@ -1116,7 +1127,6 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
-
                 #region CONSTRUCT
                 if (a is CONSTRUCT)
                 {
@@ -1186,7 +1196,6 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
-
                 #region HIDEOPTION
                 if (a is HIDEOPTION)
                 {
@@ -1197,6 +1206,21 @@ namespace AubitDesktop
                     int idx = Convert.ToInt32(ho.CONTEXT);
                     mc = (UIMenuContext)contexts[idx];
                     mc.hideOption(ho.OPTION);
+                    commands.Remove(a);
+                    continue;
+                }
+
+                #endregion
+                #region NEXTOPTION
+                if (a is NEXTOPTION)
+                {
+                    NEXTOPTION ho;
+                    UIMenuContext mc;
+                    ho = (NEXTOPTION)a;
+
+                    int idx = Convert.ToInt32(ho.CONTEXT);
+                    mc = (UIMenuContext)contexts[idx];
+                    mc.nextOption(ho.OPTION);
                     commands.Remove(a);
                     continue;
                 }
@@ -1222,7 +1246,6 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
-
                 #region FREE
                 if (a is FREE)
                 {

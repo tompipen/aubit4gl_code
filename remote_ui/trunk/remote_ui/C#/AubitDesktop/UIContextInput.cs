@@ -215,6 +215,12 @@ namespace AubitDesktop
             mainWin.setErrorTextFromFieldValidation(failedText);
         }
 
+
+        void inputGotFocus(object source,string comment)
+        {
+            mainWin.CommentText = comment;
+        }
+
         public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values)
         {
             int cnt = 0;
@@ -224,8 +230,10 @@ namespace AubitDesktop
 
             mainWin.setActiveToolBarKeys(KeyList,true);
             this.EventTriggered = UIInputContext_EventTriggered;
+
             foreach (FGLFoundField f in activeFields) {
                 f.fglField.fieldValidationFailed = inputFieldValidationHandler;
+                f.fglField.onGotFocus = inputGotFocus;
             }
 
 
@@ -242,7 +250,7 @@ namespace AubitDesktop
             }
 
 
-            mainWin.CommentText = CurrentField.fglField.comment;
+            //mainWin.CommentText = CurrentField.fglField.comment;
 
 
             #region setup after field event IDs
@@ -339,6 +347,8 @@ namespace AubitDesktop
             
             
         }
+
+
 
 
         public void DeactivateContext()

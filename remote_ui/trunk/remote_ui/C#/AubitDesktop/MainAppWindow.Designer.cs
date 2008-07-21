@@ -57,6 +57,7 @@ namespace AubitDesktop
             this.alwaysALToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.neverALToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.autoALToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alwaysToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.neverToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,7 +67,7 @@ namespace AubitDesktop
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.applicationLauncherPanel = new System.Windows.Forms.Panel();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.applicationLauncherTreeView = new System.Windows.Forms.TreeView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.MenuBarPanel = new System.Windows.Forms.Panel();
@@ -279,7 +280,8 @@ namespace AubitDesktop
             this.applicationLauncherToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.alwaysALToolStripMenuItem1,
             this.neverALToolStripMenuItem1,
-            this.autoALToolStripMenuItem1});
+            this.autoALToolStripMenuItem1,
+            this.loadToolStripMenuItem});
             this.applicationLauncherToolStripMenuItem.Name = "applicationLauncherToolStripMenuItem";
             this.applicationLauncherToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.applicationLauncherToolStripMenuItem.Text = "Application Launcher";
@@ -304,6 +306,13 @@ namespace AubitDesktop
             this.autoALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
             this.autoALToolStripMenuItem1.Text = "Auto";
             this.autoALToolStripMenuItem1.Click += new System.EventHandler(this.autoALToolStripMenuItem1_Click);
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.loadToolStripMenuItem.Text = "Load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // toolbarToolStripMenuItem
             // 
@@ -382,26 +391,29 @@ namespace AubitDesktop
             // 
             this.splitContainer2.Panel2.Controls.Add(this.panel1);
             this.splitContainer2.Size = new System.Drawing.Size(879, 568);
-            this.splitContainer2.SplitterDistance = 141;
+            this.splitContainer2.SplitterDistance = 339;
             this.splitContainer2.TabIndex = 18;
             // 
             // applicationLauncherPanel
             // 
             this.applicationLauncherPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.applicationLauncherPanel.Controls.Add(this.treeView1);
+            this.applicationLauncherPanel.Controls.Add(this.applicationLauncherTreeView);
             this.applicationLauncherPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.applicationLauncherPanel.Location = new System.Drawing.Point(0, 0);
             this.applicationLauncherPanel.Name = "applicationLauncherPanel";
-            this.applicationLauncherPanel.Size = new System.Drawing.Size(141, 568);
+            this.applicationLauncherPanel.Size = new System.Drawing.Size(339, 568);
             this.applicationLauncherPanel.TabIndex = 18;
             // 
-            // treeView1
+            // applicationLauncherTreeView
             // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(137, 564);
-            this.treeView1.TabIndex = 0;
+            this.applicationLauncherTreeView.BackColor = System.Drawing.SystemColors.Window;
+            this.applicationLauncherTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.applicationLauncherTreeView.Location = new System.Drawing.Point(0, 0);
+            this.applicationLauncherTreeView.Name = "applicationLauncherTreeView";
+            this.applicationLauncherTreeView.Size = new System.Drawing.Size(335, 564);
+            this.applicationLauncherTreeView.TabIndex = 0;
+            this.applicationLauncherTreeView.DoubleClick += new System.EventHandler(this.applicationLauncherTreeView_DoubleClick);
+            this.applicationLauncherTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // panel1
             // 
@@ -411,7 +423,7 @@ namespace AubitDesktop
             this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(734, 568);
+            this.panel1.Size = new System.Drawing.Size(536, 568);
             this.panel1.TabIndex = 7;
             // 
             // tabControl1
@@ -422,7 +434,7 @@ namespace AubitDesktop
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.ShowToolTips = true;
-            this.tabControl1.Size = new System.Drawing.Size(730, 564);
+            this.tabControl1.Size = new System.Drawing.Size(532, 564);
             this.tabControl1.TabIndex = 15;
             // 
             // MenuBarPanel
@@ -555,7 +567,7 @@ namespace AubitDesktop
         private System.Windows.Forms.Panel applicationLauncherPanel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView applicationLauncherTreeView;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menubarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem alwaysMenubarToolStripMenuItem;
@@ -569,6 +581,7 @@ namespace AubitDesktop
         private System.Windows.Forms.ToolStripMenuItem alwaysToolbarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem neverToolbarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoToolbarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
 
     }
 }

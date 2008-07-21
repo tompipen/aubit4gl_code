@@ -43,6 +43,7 @@ namespace AubitDesktop
 
             this.Text = ButtonText;
             this._ID = ID;
+            this.TabIndex = 1;
         }
     }
 
@@ -208,8 +209,22 @@ namespace AubitDesktop
 
         public void FreeContext()
         {
-            menuPanel.Dispose();
+            
+           // menuPanel.Dispose();
             menuPanel = null;
+        }
+
+        internal void nextOption(string text)
+        {
+            // Does nothing...
+            for (int a = 0; a < menuPanel.Controls.Count; a++)
+            {
+                if (menuPanel.Controls[a].Text == text)
+                {
+                    menuPanel.Controls[a].Focus();
+                    return;
+                }
+            }
         }
     }
 
