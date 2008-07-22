@@ -12,6 +12,7 @@ void print_textedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 void print_entry (struct_form *f, int metric_no, int attr_no,char *why) ;
 void print_unknown_widget_attr(struct_form *f, char *widget, int metric_no, int attr_no,int oldstyle,char *why) ;
 void dump_layout(struct_form *f, struct s_layout *layout) ;
+void print_image_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
 static char * xml_escape (char *s);
 
 enum e_scrmodes {
@@ -144,6 +145,9 @@ if (mode==1) { // the label/button/field itself
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTNORETURNS)) { strcat(buff, " wantReturns=\"0\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_FONTPITCHFIXED)) { strcat(buff, " fontPitch=\"fixed\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_FONTPITCHVARIABLE)) { strcat(buff, " fontPitch=\"variable\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_AUTOSCALE)) { strcat(buff, " autoScale=\"1\""); }
+	if (A4GL_has_str_attribute(fprop, FA_S_PIXELWIDTH)) { sprintf(smbuff, " pixelWidth=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELWIDTH))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_PIXELHEIGHT)) { sprintf(smbuff, " pixelHeight=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELHEIGHT))); strcat(buff,smbuff);}
 }
 
 
@@ -201,6 +205,10 @@ if (new_style_widget) {
 		print_dateedit_attr(f,metric_no,attr_no,0,why);
 		return;
 	}
+	if (A4GL_aubit_strcasecmp(new_style_widget,"Image")==0) {
+		print_image_attr(f,metric_no,attr_no,0,why);
+		return;
+	}
 	if (A4GL_aubit_strcasecmp(new_style_widget,"TextEdit")==0) {
 		print_textedit_attr(f,metric_no,attr_no,0,why);
 		return;
@@ -224,6 +232,10 @@ if (old_style_widget) {
 	}
 	if (A4GL_aubit_strcasecmp(old_style_widget,"DateEdit")==0) {
 		print_dateedit_attr(f,metric_no,attr_no,1,why);
+		return;
+	}
+	if (A4GL_aubit_strcasecmp(old_style_widget,"Image")==0) {
+		print_image_attr(f,metric_no,attr_no,1,why);
 		return;
 	}
 	if (A4GL_aubit_strcasecmp(old_style_widget,"TextEdit")==0) {
@@ -267,8 +279,8 @@ char posbuf[200];
 void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
 //char *s;
 char buff[2000];
- get_attribs(f, attr_no, buff,1);
 char posbuf[200];
+ get_attribs(f, attr_no, buff,1);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -284,6 +296,27 @@ char posbuf[200];
 	return ;
 }
 
+// Prints a field thats defined as a image widgettype
+void print_image_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
+//char *s;
+char buff[2000];
+char posbuf[200];
+
+ get_attribs(f, attr_no, buff,1);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	if (strcmp(why,"Table")==0) {
+		strcpy(posbuf,""); // posX and posY are not used for tables...
+	}
+
+
+	if (oldstyle) {
+			fprintf(ofile, "<Image %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+
+        } else {
+			fprintf(ofile, "<Image %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+        }
+	return ;
+}
 
 // Prints a field thats defined as a label widgettype
 void print_unknown_widget_attr(struct_form *f, char *widget, int metric_no, int attr_no,int oldstyle,char *why) {

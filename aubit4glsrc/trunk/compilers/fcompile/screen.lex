@@ -97,6 +97,7 @@
 }
 "like"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(LIKE);}
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
+"schema"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
 "attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
 "screen"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN);}
@@ -307,6 +308,19 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "VARIABLE"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_VARIABLE;}
 "WANTNORETURNS"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_WANTNORETURNS;}
 "WANTTABS"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_WANTTABS;}
+"AUTOSCALE"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_AUTOSCALE;}
+"PIXELWIDTH"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PIXELWIDTH;}
+"PIXELHEIGHT"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PIXELHEIGHT;}
+"SCROLLBARS=BOTH"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_SCROLLBARS_BOTH;}
+"SCROLLBARS=VERTICAL"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_SCROLLBARS_V;}
+"SCROLLBARS=HORIZONAL"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_SCROLLBARS_H;}
+"STRETCH=Y"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_STRETCH_Y;}
+"STRETCH=BOTH"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_STRETCH_BOTH;}
+"ITEMS"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_ITEMS;}
+"VALUEMAX"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_VALUEMAX;}
+"VALUEMIN"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_VALUEMIN;}
+"PROGRESSBAR"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PROGRESSBAR;}
+"COMBOBOX"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_COMBOBOX;}
 
 
 

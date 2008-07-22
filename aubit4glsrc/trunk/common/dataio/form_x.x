@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.20 2008-07-16 17:47:57 mikeaubury Exp $
+# $Id: form_x.x,v 1.21 2008-07-22 15:12:00 mikeaubury Exp $
 #*/
 
 /**
@@ -87,7 +87,13 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_WANTTABS,
 	FA_B_WANTNORETURNS,
 	FA_B_FONTPITCHFIXED,
-	FA_B_FONTPITCHVARIABLE
+	FA_B_FONTPITCHVARIABLE,
+	FA_B_AUTOSCALE,
+	FA_B_STRETCH_BOTH,
+	FA_B_STRETCH_Y,
+	FA_B_SCROLLBARS_BOTH,
+	FA_B_SCROLLBARS_VERTICAL,
+	FA_B_SCROLLBARS_HORIZONAL
 	
 };
 
@@ -116,7 +122,13 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_ACTION,
 	FA_S_IMAGE,
 	FA_S_STYLE,
-	FA_S_WIDGETTYPE
+	FA_S_WIDGETTYPE,
+	FA_S_PIXELWIDTH,
+	FA_S_PIXELHEIGHT,
+	FA_S_VALUEMIN,
+	FA_S_VALUEMAX,
+	FA_S_ITEMS,
+	FA_S_TEXT
 };
 
 struct struct_field_attr_string {

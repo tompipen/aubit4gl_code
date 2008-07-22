@@ -136,6 +136,10 @@ FORMONLY COMMENT
 %token KW_PAGE KW_HBOX KW_VBOX KW_GRID KW_GROUP  KW_TABLE KW_FOLDER KW_STYLE KW_LAYOUT KW_HIDDEN
 %token KW_TEXTEDIT KW_BUTTONEDIT KW_LABEL KW_EDIT KW_DATEEDIT  KW_SCROLL  KW_IMAGE
 %token KW_FONTPITCH KW_FIXED KW_VARIABLE KW_WANTNORETURNS KW_WANTTABS
+%token KW_AUTOSCALE KW_PIXELWIDTH KW_PIXELHEIGHT
+
+%token KW_SCROLLBARS_BOTH KW_SCROLLBARS_V KW_SCROLLBARS_H KW_STRETCH_Y KW_STRETCH_BOTH KW_ITEMS KW_VALUEMAX KW_VALUEMIN
+%token KW_PROGRESSBAR KW_COMBOBOX
 %%
 
 /* rules */
@@ -189,7 +193,7 @@ screen_or_layout_section :
 
 
 vbox_section:
-	KW_VBOX opt_layout_ident layout_attributes layout_items KW_END {
+	KW_VBOX opt_layout_ident layout_attributes op_layout_items KW_END {
 			$<layout>$=$<layout>4;
 			$<layout>$->id=strdup($<str>2);
 			$<layout>$->attrib=$<layout_attrib>3;
@@ -199,7 +203,7 @@ vbox_section:
 
 
 hbox_section:
-	KW_HBOX opt_layout_ident layout_attributes layout_items KW_END {
+	KW_HBOX opt_layout_ident layout_attributes op_layout_items KW_END {
 			$<layout>$=$<layout>4;
 			$<layout>$->id=strdup($<str>2);
 			$<layout>$->attrib=$<layout_attrib>3;
@@ -208,7 +212,7 @@ hbox_section:
 ;
 
 group_section:
-	KW_GROUP opt_layout_ident layout_attributes layout_items KW_END {
+	KW_GROUP opt_layout_ident layout_attributes op_layout_items KW_END {
 			$<layout>$=$<layout>4;
 			$<layout>$->id=strdup($<str>2);
 			$<layout>$->attrib=$<layout_attrib>3;
@@ -320,11 +324,31 @@ layout_attribute:
 	| KW_HIDDEN {
 		add_bool_layout_attrib(FA_B_HIDDEN);
 	}
+	| KW_TEXT EQUAL CHAR_VALUE {
+		add_str_layout_attrib(FA_S_TEXT, $<str>3); //@FIXME ADD
+	}
+	| KW_ACTION EQUAL NAMED {
+		add_str_layout_attrib(FA_S_TEXT, $<str>3); //@FIXME ADD
+	}
 ;
 
 layout_attribute_list:
 	layout_attribute 
 	| layout_attribute_list layout_attribute
+;
+
+
+op_layout_items: {
+		$<layout>$=malloc(sizeof(struct s_layout));
+		                $<layout>$->layout_type=LAYOUT_NOTSET;
+                		$<layout>$->id="NOTSET";
+                		$<layout>$->attrib=0;
+                		$<layout>$->screen_no=-1;
+                		$<layout>$->children.children_val=0;
+                		$<layout>$->children.children_len=0;
+		}
+	| layout_items {$<layout>$=$<layout>1;}
+
 ;
 
 
@@ -645,6 +669,9 @@ op_field_tag_type:
 	| KW_LABEL {strcpy($<str>$,"Label");}
 	| KW_DATEEDIT {strcpy($<str>$,"DateEdit");}
 	| KW_BUTTONEDIT {strcpy($<str>$,"ButtonEdit");}
+	| KW_IMAGE {strcpy($<str>$,"Image");}
+	| KW_PROGRESSBAR {strcpy($<str>$,"ProgressBar");} //@FIXME Add
+	| KW_COMBOBOX {strcpy($<str>$,"ComboBox");} //@FIXME Add
 ;
 
 
@@ -1101,12 +1128,24 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 
 /* Extended attributes */
 | KW_HIDDEN { A4GL_add_bool_attr(fld,FA_B_HIDDEN); }
+| KW_AUTOSCALE { A4GL_add_bool_attr(fld,FA_B_AUTOSCALE); }
 | KW_WANTNORETURNS { A4GL_add_bool_attr(fld,FA_B_WANTNORETURNS); }
 | KW_WANTTABS { A4GL_add_bool_attr(fld,FA_B_WANTTABS); }
 | KW_FONTPITCH EQUAL KW_FIXED { A4GL_add_bool_attr(fld,FA_B_FONTPITCHFIXED); }
 | KW_FONTPITCH EQUAL KW_VARIABLE { A4GL_add_bool_attr(fld,FA_B_FONTPITCHVARIABLE); }
 | KW_SCROLL { A4GL_add_bool_attr(fld,FA_B_SCROLL); }
 | KW_IMAGE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_IMAGE,$<str>3); }
+| KW_PIXELHEIGHT EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_PIXELHEIGHT,$<str>3); }
+| KW_PIXELWIDTH EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_PIXELWIDTH,$<str>3); }
+| KW_SCROLLBARS_BOTH  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_BOTH); } // @FIXME ADD
+| KW_SCROLLBARS_V  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_VERTICAL); } // @FIXME ADD
+| KW_SCROLLBARS_H  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_HORIZONAL); } // @FIXME ADD
+| KW_STRETCH_Y  { A4GL_add_bool_attr(fld,FA_B_STRETCH_Y); } // @FIXME ADD
+| KW_STRETCH_BOTH  { A4GL_add_bool_attr(fld,FA_B_STRETCH_BOTH); } // @FIXME ADD
+| KW_ITEMS  EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); A4GL_add_str_attr(fld,FA_S_ITEMS,$<str>$); } // @FIXME ADD
+| KW_VALUEMAX EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_VALUEMAX,$<str>3); } // @FIXME ADD
+| KW_VALUEMIN EQUAL NUMBER_VALUE{ A4GL_add_str_attr(fld,FA_S_VALUEMIN,$<str>3); } // @FIXME ADD
+| KW_STYLE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld, FA_S_STYLE, $<str>3); } // @FIXME ADD
 ;
 
 
