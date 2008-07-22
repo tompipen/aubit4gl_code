@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.59 2008-07-16 16:51:56 mikeaubury Exp $
+# $Id: sql_common.c,v 1.60 2008-07-22 21:21:34 mikeaubury Exp $
 #
 */
 
@@ -1711,7 +1711,7 @@ char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr) {
 	strcpy(syscolatt, acl_getenv("A4GL_SYSCOL_ATT"));
 
       SPRINTF1 (cname, "chkscatt_%d", cntsql_0++);
-      sprintf(tmpSql,"select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno",syscolatt, attr,syscolatt,tabname,colname);
+      SPRINTF5(tmpSql,"select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno",syscolatt, attr,syscolatt,tabname,colname);
 
       A4GLSQL_declare_cursor (0,(void *) A4GLSQL_prepare_select (NULL, 0, NULL, 0, tmpSql,"__internal_stack",1,0,0), 0, cname);
       
@@ -1739,7 +1739,7 @@ char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr) {
 	  	if (cnt==seq) {
 			A4GL_trim(tmpvar);
 			if (strcmp(attr,"color")==0) {
-				sprintf(tmpvar,"%d",tmpvar_i);
+				SPRINTF1(tmpvar,"%d",tmpvar_i);
 			}
 			//printf("%s-->%s\n",attr, tmpvar);
 			return tmpvar;
@@ -1767,6 +1767,7 @@ static int A4GL_findPreparedStatement (char *name)
 int a;
   if (npreparedStatements)
     {
+		//printf("npreparedStatements=%d for %s\n", npreparedStatements, name);
       for (a = 0; a < npreparedStatements; a++)
 	{
 	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)

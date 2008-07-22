@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.161 2008-07-16 16:51:56 mikeaubury Exp $
+# $Id: report.c,v 1.162 2008-07-22 21:21:33 mikeaubury Exp $
 #
 */
 
@@ -1469,20 +1469,31 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   char buff[1024];
   int a;
   void *x;
-  A4GL_debug ("Add row report table");
-  SPRINTF1 (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b,0));
+char b2[200];
 
-  for (a = 0; a < n; a++)
-    {
-      if (a)
-	strcat (buff, ",");
-      strcat (buff, "?");
-    }
-  strcat (buff, ")");
-  A4GL_debug ("Attempting to execute %s\n", buff);
-  x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff,"__internal_report",1,0,0);
-  A4GL_debug ("x=%p\n", x);
-  A4GLSQL_execute_implicit_sql (x, 1,0,0);
+  sprintf(b2, "a4glrp_%lx%d", (long)(b),n);
+  x=A4GLSQL_find_prepare(b2);
+  if (x==NULL) {
+  	A4GL_debug ("Add row report table");
+  	SPRINTF1 (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b,0));
+
+  	for (a = 0; a < n; a++)
+    	{
+      	if (a)
+		strcat (buff, ",");
+      	strcat (buff, "?");
+    	}
+  	strcat (buff, ")");
+  
+  	A4GL_debug ("Attempting to execute %s\n", buff);
+  	x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff,"__internal_report",1,0,0);
+  	A4GL_debug ("x=%p\n", x);
+	//printf("Adding %p as %s\n",x,b2);
+	A4GLSQL_add_prepare(b2, x);
+  } 
+//printf("Executing %p\n",x);
+  A4GLSQL_execute_implicit_sql (x, 0,0,0);
+  //A4GLSQL_free_prepare(x);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
 
@@ -1608,9 +1619,13 @@ A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
 void
 A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
 {
+char b2[200];
   A4GLSQL_close_cursor (cursor_for_rep_tab (b));
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0,0), 1,0,0);
   A4GL_free_duplicate_binding (reread, n);
+  sprintf(b2, "a4glrp_%lx%d", (long)(b),n);
+  A4GLSQL_free_cursor(b2);
+
 }
 
 /**
