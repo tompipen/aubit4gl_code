@@ -12,6 +12,7 @@ void print_textedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 void print_entry (struct_form *f, int metric_no, int attr_no,char *why) ;
 void print_unknown_widget_attr(struct_form *f, char *widget, int metric_no, int attr_no,int oldstyle,char *why) ;
 void dump_layout(struct_form *f, struct s_layout *layout) ;
+static char * xml_escape (char *s);
 
 enum e_scrmodes {
 	SCRMODE_GRID,
@@ -84,10 +85,6 @@ return 1;
 
 
 
-// Flesh this out later ;-)
-char *xml_escape(char *s) {
-	return s;
-}
 
 
 
@@ -136,12 +133,12 @@ if (mode==1) { // the label/button/field itself
 	if (A4GL_has_bool_attribute(fprop, FA_B_UPSHIFT)) { strcat(buff, " shift=\"up\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTONEXT)) { strcat(buff, " autoNext=\"1\""); }
-	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_ACTION)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_IMAGE)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_STYLE)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_COMMENTS)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_PICTURE)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_CONFIG)); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_ACTION))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_IMAGE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_STYLE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_COMMENTS))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PICTURE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_CONFIG))); strcat(buff,smbuff);}
 	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLL)) { strcat(buff, " scroll=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTTABS)) { strcat(buff, " wantTabs=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTNORETURNS)) { strcat(buff, " wantReturns=\"0\""); }
@@ -301,10 +298,10 @@ char posbuf[200];
 
 
 	if (oldstyle) {
-			fprintf(ofile, "<%s %s width=\"%d\" %s />\n",widget,  buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "<Widget Type=\"%s\" %s width=\"%d\" %s />\n",xml_escape(widget),  buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "<%s %s width=\"%d\" %s/>\n", widget, buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "<Widget Type=\"%s\" %s width=\"%d\" %s/>\n", xml_escape(widget), buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	return ;
 }
@@ -543,12 +540,12 @@ strcpy(buff,"");
 	if (A4GL_has_bool_attribute(fprop, FA_B_UPSHIFT)) { strcat(buff, " shift=\"up\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTONEXT)) { strcat(buff, " autoNext=\"1\""); }
-	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_ACTION)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_IMAGE)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_STYLE)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_COMMENTS)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_PICTURE)); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", A4GL_get_str_attribute (fprop, FA_S_CONFIG)); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_ACTION))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_IMAGE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_STYLE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_COMMENTS))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PICTURE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_CONFIG))); strcat(buff,smbuff);}
 	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLL)) { strcat(buff, " scroll=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTTABS)) { strcat(buff, " wantTabs=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTNORETURNS)) { strcat(buff, " wantReturns=\"0\""); }
@@ -1004,6 +1001,123 @@ decode_ival_define2 (int n)
     }
   A4GL_assertion (1, "Unknown CURRENT 8.1");
   return "";
+}
+
+
+
+static char * xml_escape (char *s)
+{
+  static char *buff = 0;
+  static int last_len = 0;
+  int c;
+  int a;
+  int l;
+  int b;
+  int allocated;
+
+
+  c = 0;
+
+
+  if (strchr (s, '&'))
+    c++;
+  if (strchr (s, '<'))
+    c++;
+  if (strchr (s, '>'))
+    c++;
+  if (strchr (s, '"'))
+    c++;
+  if (strchr (s, '\''))
+    c++;
+  if (strchr (s, '\n'))
+    c++;
+  if (strchr (s, '\r'))
+    c++;
+
+
+  if (c == 0)
+    {
+      return s;
+    }
+
+  l = strlen (s);
+  allocated = (l * 6) + 1;
+
+  if (l > last_len)
+    {
+      buff = realloc (buff, allocated);
+      last_len = l;
+    }
+
+  b = 0;
+  for (a = 0; a < l; a++)
+    {
+      if (s[a] == '>')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'g';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '<')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'l';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '&')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'a';
+	  buff[b++] = 'm';
+	  buff[b++] = 'p';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '"')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'q';
+	  buff[b++] = 'u';
+	  buff[b++] = 'o';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '\'')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'a';
+	  buff[b++] = 'p';
+	  buff[b++] = 'o';
+	  buff[b++] = 's';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] < 31 || s[a] > 126)
+	{
+	  int z1;
+	  char buff2[20];
+	  z1 = ((unsigned char) s[a]);
+	  sprintf (buff2, "&#x%02X;", z1);
+	  for (z1 = 0; z1 < strlen (buff2); z1++)
+	    {
+	      buff[b++] = buff2[z1];
+	    }
+	  continue;
+	}
+      buff[b++] = s[a];
+    }
+if (b>=allocated) {
+
+fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
+}
+  A4GL_assertion (b >= allocated, "XML escape buffer too small");
+  buff[b] = 0;
+  return buff;
 }
 
 

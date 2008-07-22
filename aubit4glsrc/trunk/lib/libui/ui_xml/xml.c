@@ -1522,6 +1522,23 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
+  if (strcmp (what, "SET") == 0)
+    {
+	char *val;
+	char *name;
+	char buff1[2000];
+	char buff2[2000];
+	val=A4GL_char_pop();
+	name=A4GL_char_pop();
+	strcpy(buff1, uilib_xml_escape (name));
+	strcpy(buff2, uilib_xml_escape (val));
+	free(name);
+	free(val);
+	
+      send_to_ui ("<UIOPTION NAME=\"%s\" VALUE=\"%s\"/>", buff1,buff2);
+      return;
+	}
+
   if (strcmp (what, "NAMEDFILE") == 0)
     {
      char *p1;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.21 2008-07-06 11:34:26 mikeaubury Exp $
+# $Id: dump.c,v 1.22 2008-07-22 09:09:37 mikeaubury Exp $
 #*/
 
 /**
@@ -57,11 +57,15 @@ char *desc_str[] = {
   "FORMAT",
   "DEFAULT",
   "PROGRAM",
-  "WIDGET",
+  "WIDGET", /* old style */
   "CONFIG",
   "COMMENTS",
   "CLASS",
   "ACTION",
+  "IMAGE",
+  "STYLE",
+  "WIDGETTYPE", /* new style */
+
   0
 };
 
@@ -76,6 +80,17 @@ char *desc_bool[] = {
   "UPSHIFT",
   "DOWNSHIFT",
   "REQUIRED",
+  "NOUPDATE",
+  "QUERYCLEAR",
+  "ZEROFILL",
+  "RIGHT",
+  "HIDDEN",
+  "SCROLL",
+  "WANTTABS",
+  "WANTNORETURNS",
+  "FONTPITCHFIXED",
+  "FONTPITCHVARIABLE",
+
   0
 };
 

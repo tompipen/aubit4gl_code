@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.67 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: helper.c,v 1.68 2008-07-22 09:09:38 mikeaubury Exp $
 #
 */
 
@@ -1144,6 +1144,11 @@ char prefixed_name[256];
 	return ret;
 }
 
+
+
+
+
+// Send some text to the UI
 int aclfgl_aclfgl_send_to_ui(int n) {
 char *s;
 	s=A4GL_char_pop();
@@ -1151,6 +1156,10 @@ char *s;
 	return 0;
 }
 
+int aclfgl_aclfgl_client_set(int n) {
+	A4GL_direct_to_ui("SET","");
+	return 0;
+}
 
 int aclfgl_aclfgl_client_execute(int n) {
 char *s;
