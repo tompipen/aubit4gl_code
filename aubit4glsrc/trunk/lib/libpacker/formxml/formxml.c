@@ -13,6 +13,8 @@ void print_entry (struct_form *f, int metric_no, int attr_no,char *why) ;
 void print_unknown_widget_attr(struct_form *f, char *widget, int metric_no, int attr_no,int oldstyle,char *why) ;
 void dump_layout(struct_form *f, struct s_layout *layout) ;
 void print_image_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
+void print_combobox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
+void print_progressbar_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
 static char * xml_escape (char *s);
 
 enum e_scrmodes {
@@ -66,7 +68,7 @@ int a;
         for (a=0;a<f->metrics.metrics_len;a++) {
 		if (f->metrics.metrics_val[a].scr!=scr)  continue;
 		if (f->metrics.metrics_val[a].y>mh) { mh=f->metrics.metrics_val[a].y; }
-		if (f->metrics.metrics_val[a].x+ f->metrics.metrics_val[a].w>mw) { mw=f->metrics.metrics_val[a].x+ f->metrics.metrics_val[a].w; }
+		if ((f->metrics.metrics_val[a].x+ f->metrics.metrics_val[a].w)>mw) { mw=f->metrics.metrics_val[a].x+ f->metrics.metrics_val[a].w; }
 
         }
 	*width=mw;
@@ -86,7 +88,26 @@ return 1;
 
 
 
+char *conv_to_xml_include(char *s) {
+static char buff[2000];
+char *ptr;
+strcpy(buff,s);
+while (1) {
+	ptr=strchr(buff,'\n');
+	if (ptr==0) break;
+	*ptr='|';
+}
+while (1) {
+	ptr=strchr(buff,'\t');
+	if (ptr==0) break;
+	*ptr=':';
+}
 
+
+//@FIXME - a NULL in the include is printed as NULL 
+return buff;
+
+}
 
 
 // Check if a field uses a specified metric
@@ -124,6 +145,10 @@ if (mode==0) { // FormField
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, " noEntry=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, " required=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN)) { strcat(buff, " hidden=\"1\""); }
+	if (A4GL_has_str_attribute(fprop, FA_S_INCLUDE)) { 
+			sprintf(smbuff, " include=\"%s\"", xml_escape(conv_to_xml_include(A4GL_get_str_attribute (fprop, FA_S_INCLUDE)))); 
+			strcat(buff,smbuff);}
+	
 	if (f->attributes.attributes_val[attr_no].not_null) {
 	 	strcat(buff, " notNull=\"1\""); 
 	}
@@ -132,7 +157,9 @@ if (mode==0) { // FormField
 
 if (mode==1) { // the label/button/field itself
 	if (A4GL_has_bool_attribute(fprop, FA_B_UPSHIFT)) { strcat(buff, " shift=\"up\""); }
-	if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
+	else {
+		if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
+	}
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTONEXT)) { strcat(buff, " autoNext=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_ACTION))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_IMAGE))); strcat(buff,smbuff);}
@@ -145,9 +172,22 @@ if (mode==1) { // the label/button/field itself
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTNORETURNS)) { strcat(buff, " wantReturns=\"0\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_FONTPITCHFIXED)) { strcat(buff, " fontPitch=\"fixed\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_FONTPITCHVARIABLE)) { strcat(buff, " fontPitch=\"variable\""); }
+
+	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLLBARS_BOTH)) { strcat(buff, " scrollBars=\"both\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLLBARS_VERTICAL)) { strcat(buff, " scrollBars=\"vertical\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLLBARS_HORIZONAL)) { strcat(buff, " scrollBars=\"horizontal\""); }
+
+	if (A4GL_has_bool_attribute(fprop, FA_B_STRETCH_Y)) { strcat(buff, " stretch=\"y\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_STRETCH_BOTH)) { strcat(buff, " stretch=\"both\""); }
+
+
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTOSCALE)) { strcat(buff, " autoScale=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_PIXELWIDTH)) { sprintf(smbuff, " pixelWidth=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELWIDTH))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_PIXELHEIGHT)) { sprintf(smbuff, " pixelHeight=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELHEIGHT))); strcat(buff,smbuff);}
+
+
+	if (A4GL_has_str_attribute(fprop, FA_S_VALUEMIN)) { sprintf(smbuff, " valueMin=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEMIN))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_VALUEMAX)) { sprintf(smbuff, " valueMax=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEMAX))); strcat(buff,smbuff);}
 }
 
 
@@ -209,6 +249,14 @@ if (new_style_widget) {
 		print_image_attr(f,metric_no,attr_no,0,why);
 		return;
 	}
+	if (A4GL_aubit_strcasecmp(new_style_widget,"ComboBox")==0) {
+		print_combobox_attr(f,metric_no,attr_no,0,why);
+		return;
+	}
+	if (A4GL_aubit_strcasecmp(new_style_widget,"ProgressBar")==0) {
+		print_progressbar_attr(f,metric_no,attr_no,0,why);
+		return;
+	}
 	if (A4GL_aubit_strcasecmp(new_style_widget,"TextEdit")==0) {
 		print_textedit_attr(f,metric_no,attr_no,0,why);
 		return;
@@ -236,6 +284,14 @@ if (old_style_widget) {
 	}
 	if (A4GL_aubit_strcasecmp(old_style_widget,"Image")==0) {
 		print_image_attr(f,metric_no,attr_no,1,why);
+		return;
+	}
+	if (A4GL_aubit_strcasecmp(old_style_widget,"ComboBox")==0) {
+		print_combobox_attr(f,metric_no,attr_no,1,why);
+		return;
+	}
+	if (A4GL_aubit_strcasecmp(old_style_widget,"ProgressBar")==0) {
+		print_progressbar_attr(f,metric_no,attr_no,1,why);
 		return;
 	}
 	if (A4GL_aubit_strcasecmp(old_style_widget,"TextEdit")==0) {
@@ -292,6 +348,68 @@ char posbuf[200];
 
         } else {
 			fprintf(ofile, "<ButtonEdit %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+        }
+	return ;
+}
+
+
+
+void print_combobox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
+//char *s;
+char buff[2000];
+char posbuf[200];
+
+struct_scr_field *fprop;
+fprop=&f->attributes.attributes_val[attr_no];
+ get_attribs(f, attr_no, buff,1);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	if (strcmp(why,"Table")==0) {
+		strcpy(posbuf,""); // posX and posY are not used for tables...
+	}
+
+
+	if (oldstyle) {
+			fprintf(ofile, "<ComboBox %s width=\"%d\" %s>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+
+        } else {
+			fprintf(ofile, "<ComboBox %s width=\"%d\" %s>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+        }
+	// print the items...
+	if (A4GL_has_str_attribute(fprop, FA_S_ITEMS)) { 
+			char *ptr;
+		char *p2;
+			strcpy(buff, A4GL_get_str_attribute (fprop, FA_S_ITEMS));
+			ptr=buff;
+			while (ptr) {
+				p2=strchr(ptr,'\n');
+				if (p2) *p2=0;
+				fprintf(ofile, "<Item name=\"%s\" text=\"%s\"/>\n", ptr,ptr);
+				if (p2==0) break;
+				ptr=p2+1;
+			}
+	}
+	fprintf(ofile, "</ComboBox>\n");
+	return ;
+}
+
+
+
+void print_progressbar_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
+//char *s;
+char buff[2000];
+char posbuf[200];
+ get_attribs(f, attr_no, buff,1);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	if (strcmp(why,"Table")==0) {
+		strcpy(posbuf,""); // posX and posY are not used for tables...
+	}
+
+
+	if (oldstyle) {
+			fprintf(ofile, "<ProgressBar %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+
+        } else {
+			fprintf(ofile, "<ProgressBar %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	return ;
 }
@@ -390,9 +508,11 @@ char posbuf[200];
 	}
 
 	if (oldstyle) {
-			fprintf(ofile, "<TextEdit %s width=\"%d\" %s />\n", 
-				buff,
-			f->metrics.metrics_val[metric_no].w,posbuf);
+		if (oldstyle==2) {
+			fprintf(ofile, "<TextEdit %s width=\"%d\" scrollBars=\"none\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
+		} else {
+			fprintf(ofile, "<TextEdit %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
+		}
 
         } else {
 			fprintf(ofile, "<TextEdit %s width=\"%d\" %s />\n", 
@@ -571,11 +691,14 @@ strcpy(buff,"");
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, " required=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN)) { strcat(buff, " hidden=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_UPSHIFT)) { strcat(buff, " shift=\"up\""); }
-	if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
+	else {
+		if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
+	}
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTONEXT)) { strcat(buff, " autoNext=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_ACTION))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_IMAGE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_STYLE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_COMMENTS))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PICTURE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_CONFIG))); strcat(buff,smbuff);}
@@ -593,10 +716,26 @@ void dump_group(struct_form *f, struct s_layout *layout) {
 
 
 void dump_folder(struct_form *f, struct s_layout *layout) {
-	A4GL_assertion(1,"Not implemented dump_folder (no examples)");
+char buff[2000];
+int a;
+	get_layout_attribs(layout,buff);
+	fprintf(ofile,"<Folder %s>\n",buff);
+	for (a=0;a<layout->children.children_len;a++) {
+		dump_layout(f, layout->children.children_val[a]);
+	}
+	fprintf(ofile,"</Folder>\n");
 }
+
+
 void dump_page(struct_form *f, struct s_layout *layout) {
-	A4GL_assertion(1,"Not implemented dump_page (no examples)");
+char buff[2000];
+int a;
+	get_layout_attribs(layout,buff);
+	fprintf(ofile,"<Page %s>\n",buff);
+	for (a=0;a<layout->children.children_len;a++) {
+		dump_layout(f, layout->children.children_val[a]);
+	}
+	fprintf(ofile,"</Page>\n");
 }
 
 void dump_vbox(struct_form *f, struct s_layout *layout) {
