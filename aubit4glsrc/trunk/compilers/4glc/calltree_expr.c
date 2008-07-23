@@ -58,6 +58,13 @@ FILE *f;
 	}
       break;
 
+    case ET_EXPR_IDENTIFIER:
+	{
+		char buff[23000];
+		sprintf(buff,"%s", e->expr_str_u.expr_string);
+      return strdup(buff);
+	}
+      break;
 
     case ET_EXPR_VARIABLE_USAGE:
         return expr_get_variable_usage_as_string(e->expr_str_u.expr_variable_usage);

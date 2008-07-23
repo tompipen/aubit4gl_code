@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.153 2008-07-17 16:28:16 mikeaubury Exp $
+# $Id: resource.c,v 1.154 2008-07-23 13:00:00 mikeaubury Exp $
 #
 */
 
@@ -207,7 +207,7 @@ struct str_resource builtin_resource[] = {
   {"ARR_DIR_MSG",	" There are no more rows in the direction you are going "},
   {"INPARRAY_FULL_MSG"," Cannot insert another row - the input array is full "},
   {"NOSELECTVARWARNING","N"},
-  //{"NEVER_CONVERT_COLUMN","Y"},
+  {"NEVER_CONVERT_COLUMN","Y"},
   {"MENUCSELECT", "0"},
   {"MENUCTITLE", "0"},
   {"MENUCNORMAL", "0"},

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: clobber.c,v 1.2 2008-07-06 11:34:23 mikeaubury Exp $
+# $Id: clobber.c,v 1.3 2008-07-23 12:58:57 mikeaubury Exp $
 #
 */
 
@@ -155,7 +155,8 @@ char *
 do_clobbering (module_definition *mod, char *f, char *s)
 {
   static char buff[256];
-
+int l;
+int a;
   if (A4GL_isyes (acl_getenv ("A4GL_NOCLOBBER")))
     {
       SPRINTF1 (buff, "%s", s);
@@ -167,9 +168,17 @@ do_clobbering (module_definition *mod, char *f, char *s)
     }
 
   if (strlen(f)) {
-  SPRINTF2 (buff, "%s_%s", f, s);
+  	SPRINTF2 (buff, "%s_%s", f, s);
   } else {
-  SPRINTF1 (buff, "%s",  s);
+  	SPRINTF1 (buff, "%s",  s);
+  }
+  l=strlen(buff);
+  for (a=0;a<l;a++) {
+	if (buff[a]>='a'&& buff[a]<='z') continue;
+	if (buff[a]>='A'&& buff[a]<='Z') continue;
+	if (buff[a]>='0'&& buff[a]<='9') continue;
+	if (buff[a]=='_') continue;
+	buff[a]='_';
   }
 
   if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSCLOBBER")))
@@ -192,6 +201,8 @@ char *
 do_clobbering_sql (module_definition *mod, char *f, char *s)
 {
   static char buff[256];
+int a;
+int l;
 
   if (A4GL_isyes (acl_getenv ("A4GL_NOSQLCLOBBER")))
     {
@@ -209,6 +220,14 @@ do_clobbering_sql (module_definition *mod, char *f, char *s)
   SPRINTF1 (buff, "%s",  s);
   }
 
+  l=strlen(buff);
+  for (a=0;a<l;a++) {
+	if (buff[a]>='a' && buff[a]<='z') continue;
+	if (buff[a]>='A' && buff[a]<='Z') continue;
+	if (buff[a]>='0'&& buff[a]<='9') continue;
+	if (buff[a]=='_') continue;
+	buff[a]='_';
+  }
   if (A4GL_isyes (acl_getenv ("A4GL_ALWAYSSQLCLOBBER")))
     {
       if (!has_clobber (mod, buff))
