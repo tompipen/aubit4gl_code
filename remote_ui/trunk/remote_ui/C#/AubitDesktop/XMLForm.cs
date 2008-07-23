@@ -105,6 +105,7 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("RecordView", Type = typeof(RecordView))]
             [System.Xml.Serialization.XmlElementAttribute("Screen", Type = typeof(Screen))]
+            [System.Xml.Serialization.XmlElementAttribute("Table", Type = typeof(Table))]
             [System.Xml.Serialization.XmlElementAttribute("VBox", Type = typeof(VBox))]
             [System.Xml.Serialization.XmlElementAttribute("HBox", Type = typeof(HBox))]
             public object[] XmlFormItems;

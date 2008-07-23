@@ -61,6 +61,47 @@ namespace AubitDesktop
         }
 
 
+
+
+        void addLayoutToParent(ContainerControl parent, object child)
+        {
+                string type;
+                type=o.GetType().ToString();
+                switch (type)
+                {
+                    case "AubitDesktop.Xml.XMLForm.VBox":
+                        {
+                        }
+                        break;
+                    case "AubitDesktop.Xml.XMLForm.HBox":
+                        {
+                        }
+                        break;
+                    case "AubitDesktop.Xml.XMLForm.Table":
+                        {
+                        }
+                        break;
+                    case "AubitDesktop.Xml.XMLForm.Grid":
+                        {
+                        }
+                        break;
+                    case "AubitDesktop.Xml.XMLForm.Folder":
+                        {
+                        }
+                        break;
+                    case "AubitDesktop.Xml.XMLForm.Page":
+                        {
+                        }
+                        break;
+                    case "AubitDesktop.Xml.XMLForm.Screen":
+                        {
+                        }
+                        break;
+                    default:
+                        throw new ApplicationException("Invalid object to add to parent for xmlform");
+                }
+        }
+
         public FGLForm(XMLFORM f)
         {
             AubitDesktop.Xml.XMLForm.Form theForm;
@@ -71,7 +112,7 @@ namespace AubitDesktop
             ser = new XmlSerializer(t);
             data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
             TextReader txtr = new StringReader(data);
-            theForm=(AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
+            theForm = (AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
 
             this.maxcol = Convert.ToInt32(theForm.width);
             this.maxline = Convert.ToInt32(theForm.height);
@@ -81,29 +122,47 @@ namespace AubitDesktop
             fields = new List<IFGLField>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
-
-            this.thisFormsPanel.AutoSize = true;
+            thisFormsPanel.AutoSize = true;
 
             ScreenRecords = new List<FGLScreenRecord>();
             foreach (object o in theForm.XmlFormItems)
             {
-                if (o is AubitDesktop.Xml.XMLForm.RecordView)
-                {
-                    FGLScreenRecord r;
-                    AubitDesktop.Xml.XMLForm.RecordView sr;
-                    sr = (AubitDesktop.Xml.XMLForm.RecordView)o;
-                    if (sr.Link == null) continue;
-                    r = new FGLScreenRecord(sr.tabName);
-                    foreach (AubitDesktop.Xml.XMLForm.Link l in sr.Link) 
-                    {
-                        r.AddAttribute(l);
-                    }
-                    ScreenRecords.Add(r);
-                }
-                
-            }
+                string type;
 
-           // MessageBox.Show(data, "Not implemented yet");
+                type=o.GetType().ToString();
+                switch (type) 
+                {
+                    case "AubitDesktop.Xml.XMLForm.RecordView":
+                        {
+                            FGLScreenRecord r;
+                            AubitDesktop.Xml.XMLForm.RecordView sr;
+                            sr = (AubitDesktop.Xml.XMLForm.RecordView)o;
+                            if (sr.Link == null) continue;
+                            r = new FGLScreenRecord(sr.tabName);
+                            foreach (AubitDesktop.Xml.XMLForm.Link l in sr.Link)
+                            {
+                                r.AddAttribute(l);
+                            }
+                            ScreenRecords.Add(r);
+                        }
+                        break;
+
+                    case "AubitDesktop.Xml.XMLForm.VBox":
+                    case "AubitDesktop.Xml.XMLForm.HBox":
+                    case "AubitDesktop.Xml.XMLForm.Table":
+                    case "AubitDesktop.Xml.XMLForm.Grid":
+                    case "AubitDesktop.Xml.XMLForm.Folder":
+                    case "AubitDesktop.Xml.XMLForm.Page":
+                    case "AubitDesktop.Xml.XMLForm.Screen":
+                        addLayoutToParent(thisFormsPanel, o);
+                        break;
+
+                    default:
+                        throw new ApplicationException("Invalid object to add to parent for xmlform (top level)");
+                }
+
+                // MessageBox.Show(data, "Not implemented yet");
+            }
         }
 
 

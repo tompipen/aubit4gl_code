@@ -35,6 +35,10 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.fglTextFieldWidget1 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget2 = new AubitDesktop.FGLTextFieldWidget();
             this.fglTextFieldWidget3 = new AubitDesktop.FGLTextFieldWidget();
@@ -42,6 +46,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -95,7 +100,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(166, 206);
+            this.textBox1.Location = new System.Drawing.Point(272, 178);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 20);
             this.textBox1.TabIndex = 8;
@@ -119,6 +124,40 @@
             this.webBrowser1.TabIndex = 10;
             this.webBrowser1.Url = new System.Uri("http://www.google.com", System.UriKind.Absolute);
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.AutoSize = true;
+            this.flowLayoutPanel1.Controls.Add(this.textBox2);
+            this.flowLayoutPanel1.Controls.Add(this.textBox3);
+            this.flowLayoutPanel1.Controls.Add(this.textBox4);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(26, 206);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(180, 170);
+            this.flowLayoutPanel1.TabIndex = 11;
+            this.flowLayoutPanel1.WrapContents = false;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(3, 3);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.TabIndex = 0;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(3, 29);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.TabIndex = 1;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(3, 55);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.TabIndex = 2;
+            // 
             // fglTextFieldWidget1
             // 
             this.fglTextFieldWidget1.afterFieldID = null;
@@ -134,6 +173,7 @@
             this.fglTextFieldWidget1.Name = "fglTextFieldWidget1";
             this.fglTextFieldWidget1.NoEntry = false;
             this.fglTextFieldWidget1.onActionID = null;
+            this.fglTextFieldWidget1.onGotFocus = null;
             this.fglTextFieldWidget1.onUIEvent = null;
             this.fglTextFieldWidget1.Required = false;
             this.fglTextFieldWidget1.Size = new System.Drawing.Size(75, 23);
@@ -156,6 +196,7 @@
             this.fglTextFieldWidget2.Name = "fglTextFieldWidget2";
             this.fglTextFieldWidget2.NoEntry = false;
             this.fglTextFieldWidget2.onActionID = null;
+            this.fglTextFieldWidget2.onGotFocus = null;
             this.fglTextFieldWidget2.onUIEvent = null;
             this.fglTextFieldWidget2.Required = false;
             this.fglTextFieldWidget2.Size = new System.Drawing.Size(75, 23);
@@ -178,6 +219,7 @@
             this.fglTextFieldWidget3.Name = "fglTextFieldWidget3";
             this.fglTextFieldWidget3.NoEntry = false;
             this.fglTextFieldWidget3.onActionID = null;
+            this.fglTextFieldWidget3.onGotFocus = null;
             this.fglTextFieldWidget3.onUIEvent = null;
             this.fglTextFieldWidget3.Required = false;
             this.fglTextFieldWidget3.Size = new System.Drawing.Size(75, 23);
@@ -200,6 +242,7 @@
             this.fglTextFieldWidget4.Name = "fglTextFieldWidget4";
             this.fglTextFieldWidget4.NoEntry = false;
             this.fglTextFieldWidget4.onActionID = null;
+            this.fglTextFieldWidget4.onGotFocus = null;
             this.fglTextFieldWidget4.onUIEvent = null;
             this.fglTextFieldWidget4.Required = false;
             this.fglTextFieldWidget4.Size = new System.Drawing.Size(75, 23);
@@ -212,6 +255,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(681, 579);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.webBrowser1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
@@ -225,6 +269,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,5 +289,9 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.WebBrowser webBrowser1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }
