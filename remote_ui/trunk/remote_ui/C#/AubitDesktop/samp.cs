@@ -168,6 +168,18 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string OPTION;
     }
+    /// <remarks/>
+    public class UIOPTION
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string NAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string VALUE;
+    }
 
     /// <remarks/>
     public class DISPLAYTO
@@ -463,6 +475,23 @@ namespace AubitDesktop
         public string NAME;
     }
 
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class XMLFORM
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string FILE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string NAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string Text;
+    }
+
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
@@ -477,6 +506,8 @@ namespace AubitDesktop
         public string SOURCE;
         /// <remarks/>
         public FORM FORM;
+
+        public XMLFORM XMLFORM;
     }
 
 
@@ -519,6 +550,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("WAITFOREVENT", Type = typeof(WAITFOREVENT))]
         [System.Xml.Serialization.XmlElementAttribute("NEXTFIELD", Type = typeof(NEXTFIELD))]
         [System.Xml.Serialization.XmlElementAttribute("HIDEOPTION", Type = typeof(HIDEOPTION))]
+        [System.Xml.Serialization.XmlElementAttribute("UIOPTION", Type = typeof(UIOPTION))]
         [System.Xml.Serialization.XmlElementAttribute("SETKEYLABEL", Type = typeof(SETKEYLABEL))]
         [System.Xml.Serialization.XmlElementAttribute("SETWINDOWTITLE", Type = typeof(SETWINDOWTITLE))]
         [System.Xml.Serialization.XmlElementAttribute("REQUESTFILE", Type = typeof(REQUESTFILE))]
@@ -1036,6 +1068,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(WAITFOREVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTFIELD), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(HIDEOPTION), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETKEYLABEL), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETWINDOWTITLE), IsNullable = false)]
@@ -1549,6 +1582,7 @@ namespace AubitDesktop
         public string SOURCE;
         /// <remarks/>
         public FORM FORM;
+        public XMLFORM XMLFORM;
     }
 
 

@@ -24,6 +24,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Xml.Serialization;
+using System.Xml;
+using System.IO;
 
 namespace AubitDesktop
 {
@@ -31,7 +34,7 @@ namespace AubitDesktop
     class FGLForm
     {
         private List<IFGLField> fields;
-        private List<Label> labels;
+        //private List<Label> labels;
         private List<FGLScreenRecord> ScreenRecords;
         
         public int maxcol;
@@ -57,15 +60,61 @@ namespace AubitDesktop
             thisFormsPanel = null;
         }
 
+
+        public FGLForm(XMLFORM f)
+        {
+            AubitDesktop.Xml.XMLForm.Form theForm;
+            System.Type t;
+            string data;
+            XmlSerializer ser;
+            t = typeof(AubitDesktop.Xml.XMLForm.Form);
+            ser = new XmlSerializer(t);
+            data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
+            TextReader txtr = new StringReader(data);
+            theForm=(AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
+
+            this.maxcol = Convert.ToInt32(theForm.width);
+            this.maxline = Convert.ToInt32(theForm.height);
+            tooltips = new ToolTip();
+            tooltips.ShowAlways = true;
+
+            fields = new List<IFGLField>();
+            thisFormsPanel = new Panel();
+            thisFormsPanel.Visible = true;
+
+            this.thisFormsPanel.AutoSize = true;
+
+            ScreenRecords = new List<FGLScreenRecord>();
+            foreach (object o in theForm.XmlFormItems)
+            {
+                if (o is AubitDesktop.Xml.XMLForm.RecordView)
+                {
+                    FGLScreenRecord r;
+                    AubitDesktop.Xml.XMLForm.RecordView sr;
+                    sr = (AubitDesktop.Xml.XMLForm.RecordView)o;
+                    if (sr.Link == null) continue;
+                    r = new FGLScreenRecord(sr.tabName);
+                    foreach (AubitDesktop.Xml.XMLForm.Link l in sr.Link) 
+                    {
+                        r.AddAttribute(l);
+                    }
+                    ScreenRecords.Add(r);
+                }
+                
+            }
+
+           // MessageBox.Show(data, "Not implemented yet");
+        }
+
+
         public FGLForm(FORM f)
         {
-            labels = new List<Label>();
+            //labels = new List<Label>();
             fields = new List<IFGLField>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
             this.thisFormsPanel.Top = 15;
             this.thisFormsPanel.Left = 5;
-            //thisFormsPanel.AutoScroll = true;
             tooltips = new ToolTip();
             tooltips.ShowAlways = true;
             
@@ -106,7 +155,7 @@ namespace AubitDesktop
                     l.Left = GuiLayout.get_gui_x(Convert.ToInt32(flabel.COLUMN));
                     l.Height = 1;
                     l.Width = 1;
-                    labels.Add(l);
+                    //labels.Add(l);
                     this.thisFormsPanel.Controls.Add(l);
                     continue;
                 }
@@ -169,8 +218,7 @@ namespace AubitDesktop
                 }
 
             }
-            #endregion
-            
+            #endregion 
         }
 
         void fld_onAction(object source, string ID, string TriggeredText)

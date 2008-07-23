@@ -44,6 +44,7 @@ namespace AubitDesktop
         private string Application;
         private string Username;
         private ToolTip tooltips;
+        FGLWindow winScreen;
         // Toolstrip buttons....
         private AubitTSBtn tsBtnAccept;
         private AubitTSBtn tsBtnCancel;
@@ -147,7 +148,7 @@ namespace AubitDesktop
 
         public FGLApplicationPanel(frmMainAppWindow topwin, string pUsername, string pApplication,int ID)
         {
-            FGLWindow winScreen;
+           
             TopWindow = topwin;
             this.ApplicationEnvelopeID = ID;
             this.OpenForms = new FGLOpenedForms();
@@ -905,15 +906,8 @@ namespace AubitDesktop
                     btn.Click += b_Click;
                     try
                     {
-                        Image i = (Image)resourceInterface.getObject(o.IMAGE.ToLower());
-                        if (i!=null)
-                        {
-                            btn.Image = i;
-                        }
-                        else
-                        {
-                            btn.Image = new Bitmap(o.IMAGE);
-                        }
+                        //Image i = getImageFromName(o.IMAGE);
+                        btn.Image=FGLUtils.getImageFromName( o.IMAGE);
                     }
                     catch
                     {
@@ -1005,19 +999,92 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+                #region UIOPTION
+                if (a is UIOPTION)
+                {
+                    UIOPTION u;
+                    u = (UIOPTION)a;
+                    switch (u.NAME)
+                    {
+                        case "MENUBAR":
+                            switch (u.VALUE.ToUpper())
+                            {
+                                case "AUTO":
+                                    TopWindow.showMenuBar = showMode.ShowAuto;
+                                    break;
+                                case "ALWAYS":
+                                    TopWindow.showMenuBar = showMode.ShowAlways;
+                                    break;
+                                case "NEVER":
+                                    TopWindow.showMenuBar = showMode.ShowNever;
+                                    break;
+                            }
+                            break;
+                        case "TOOLBAR":
+                            switch (u.VALUE.ToUpper())
+                            {
+                                case "AUTO":
+                                    TopWindow.showToolbar= showMode.ShowAuto;
+                                    break;
+                                case "ALWAYS":
+                                    TopWindow.showToolbar = showMode.ShowAlways;
+                                    break;
+                                case "NEVER":
+                                    TopWindow.showToolbar = showMode.ShowNever;
+                                    break;
+                            }
+                            break;
+
+                        case "APPLICATIONLAUNCHER":
+                            switch (u.VALUE.ToUpper())
+                            {
+                                case "AUTO":
+                                    TopWindow.showApplicationLauncher = showMode.ShowAuto;
+                                    break;
+                                case "ALWAYS":
+                                    TopWindow.showApplicationLauncher = showMode.ShowAlways;
+                                    break;
+                                case "NEVER":
+                                    TopWindow.showApplicationLauncher = showMode.ShowNever;
+                                    break;
+                            }
+                            break;
+
+                        case "SHOWAPPLICATIONTREE":
+                            TopWindow.loadApplicationLauncherTree(u.VALUE);
+                            break;
+                        case "WORKSPACEBACKGROUND":
+                            //this.BackgroundImage = FGLUtils.getImageFromName(u.VALUE);
+                            //this.BackgroundImageLayout = ImageLayout.Stretch;
+                            winScreen.WindowWidget.BackgroundImage = FGLUtils.getImageFromName(u.VALUE);
+                            winScreen.WindowWidget.BackgroundImageLayout = ImageLayout.Center;
+                            break;
+                    }
+                    commands.Remove(a);
+
+                    continue;
+                }
+                #endregion
                 #region OPENFORM
                 if (a is OPENFORM)
                 {
                     OPENFORM o = (OPENFORM)a;
-                    
-                    if (o.FORM.ATTRIBUTES != null)
+                    if (o.XMLFORM != null)
                     {
-                        FGLForm frm = new FGLForm(o.FORM);
+                        FGLForm frm = new FGLForm(o.XMLFORM);
                         OpenForms.addForm(o.FORMNAME, frm);
                     }
                     else
                     {
-                        Console.WriteLine("No form!!!");
+                        if (o.FORM.ATTRIBUTES != null)
+                        {
+                            FGLForm frm = new FGLForm(o.FORM);
+                            OpenForms.addForm(o.FORMNAME, frm);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No form!!!");
+                        }
                     }
 
                     commands.Remove(a);
@@ -1051,8 +1118,14 @@ namespace AubitDesktop
                     OPENWINDOWWITHFORM w;
                     w = (OPENWINDOWWITHFORM)a;
 
-
-                    frm = new FGLForm(w.FORM);
+                    if (w.XMLFORM != null)
+                    {
+                        frm = new FGLForm(w.XMLFORM);
+                    }
+                    else
+                    {
+                        frm = new FGLForm(w.FORM);
+                    }
                     if (w.BORDER == "0") border = false; else border = true;
                     win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), border);
 
@@ -1323,6 +1396,8 @@ namespace AubitDesktop
             // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
             this.ResumeLayout();
         }
+
+
 
         
 

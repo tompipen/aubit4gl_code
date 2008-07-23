@@ -40,7 +40,20 @@ namespace AubitDesktop
             Attributes = new List<FGLScreenRecordAttributes>();
         }
 
+        public FGLScreenRecord(string Name)
+        {
+            //FGLScreenRecordAttributes z;
+            this.name = Name;
+            this.dim = 1;
+            Attributes = new List<FGLScreenRecordAttributes>();
+        }
+
         public void AddAttribute(ATTRIBUTE a)
+        {
+            Attributes.Add(new FGLScreenRecordAttributes(a));
+        }
+
+        public void AddAttribute(AubitDesktop.Xml.XMLForm.Link a)
         {
             Attributes.Add(new FGLScreenRecordAttributes(a));
         }

@@ -162,6 +162,7 @@
     </Compile>
     <Compile Include="UIContextPrompt.cs" />
     <Compile Include="UIContexts.cs" />
+    <Compile Include="XMLForm.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutBox1.resx">

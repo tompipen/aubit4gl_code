@@ -487,5 +487,23 @@ AubitDesktop.Xml.Shortcut snew;
                 
             }
         }
+
+        private void cbAllowExec_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.AppSettings.allowExec = cbAllowExec.Checked;
+            Program.SaveSettings();
+        }
+
+        private void cbSendFile_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.AppSettings.allowSendFile = cbSendFile.Checked;
+            Program.SaveSettings();
+        }
+
+        private void cbReceiveFile_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.AppSettings.allowReceiveFile = this.cbReceiveFile.Checked;
+            Program.SaveSettings();
+        }
     }
 }

@@ -61,7 +61,7 @@ namespace AubitDesktop
             }
         }
 
-        showMode showApplicationLauncher
+        public showMode showApplicationLauncher
         {
             get
             {
@@ -74,9 +74,9 @@ namespace AubitDesktop
             }
         }
 
-        showMode _showToolbar; 
+        showMode _showToolbar;
 
-        showMode showToolbar
+        public showMode showToolbar
         {
             get
             {
@@ -134,7 +134,7 @@ namespace AubitDesktop
 
 
         showMode _showMenuBar;
-        showMode showMenuBar
+        public showMode showMenuBar
         {
             get
             {
@@ -351,13 +351,13 @@ namespace AubitDesktop
         void n_DisconnectedFromServer(object sender, EventArgs e)
         {
             EnvReaderTimer_Tick(null, null);
-            MessageBox.Show("Disconnected from server (1)");
+            //MessageBox.Show("Disconnected from server (1)");
             this.Dispose();
         }
 
         void n_ConnectingFailed(object sender, EventArgs e)
         {
-            MessageBox.Show("Disconnected from server (2)");
+            //MessageBox.Show("Disconnected from server (2)");
             this.Dispose();
         }
 

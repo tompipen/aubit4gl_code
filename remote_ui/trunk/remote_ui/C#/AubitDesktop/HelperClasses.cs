@@ -230,6 +230,13 @@ namespace AubitDesktop
             this.Name = a.NAME;
         }
 
+
+        public FGLScreenRecordAttributes(AubitDesktop.Xml.XMLForm.Link a)
+        {
+            this.AttributeNo = Convert.ToInt32(a.fieldIdRef);
+            this.Name = a.colName;
+        }
+
         FGLScreenRecordAttributes()
         {
 
@@ -931,6 +938,19 @@ namespace AubitDesktop
             }
         }
 
+
+        internal static System.Drawing.Image getImageFromName(string name)
+        {
+            System.Drawing.Image i = (System.Drawing.Image)resourceInterface.getObject(name.ToLower());
+            if (i != null)
+            {
+                return i;
+            }
+            else
+            {
+                return new System.Drawing.Bitmap(name);
+            }
+        }
 
         internal static string decodeKeycode(bool controlkey, bool shiftkey, bool altkey, Keys keyCode)
         {

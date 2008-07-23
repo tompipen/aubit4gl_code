@@ -269,6 +269,7 @@ namespace AubitDesktop
             this.cbReceiveFile.TabIndex = 14;
             this.cbReceiveFile.Text = "Allow Receive File";
             this.cbReceiveFile.UseVisualStyleBackColor = true;
+            this.cbReceiveFile.CheckedChanged += new System.EventHandler(this.cbReceiveFile_CheckedChanged);
             // 
             // cbSendFile
             // 
@@ -279,6 +280,7 @@ namespace AubitDesktop
             this.cbSendFile.TabIndex = 13;
             this.cbSendFile.Text = "Allow Send File";
             this.cbSendFile.UseVisualStyleBackColor = true;
+            this.cbSendFile.CheckedChanged += new System.EventHandler(this.cbSendFile_CheckedChanged);
             // 
             // cbAllowExec
             // 
@@ -289,6 +291,7 @@ namespace AubitDesktop
             this.cbAllowExec.TabIndex = 12;
             this.cbAllowExec.Text = "Allow Execute";
             this.cbAllowExec.UseVisualStyleBackColor = true;
+            this.cbAllowExec.CheckedChanged += new System.EventHandler(this.cbAllowExec_CheckedChanged);
             // 
             // lstIPAddress
             // 
