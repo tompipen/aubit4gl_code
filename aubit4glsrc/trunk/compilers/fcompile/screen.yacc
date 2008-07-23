@@ -216,7 +216,7 @@ group_section:
 			$<layout>$=$<layout>4;
 			$<layout>$->id=strdup($<str>2);
 			$<layout>$->attrib=$<layout_attrib>3;
-			$<layout>$->layout_type=LAYOUT_VBOX;
+			$<layout>$->layout_type=LAYOUT_GROUP;
 			/* only one item in a group */
 			if ( $<layout>$->children.children_len!=1) {
 				yyerror("A GROUP must contain 1 and only 1 child item");
@@ -251,11 +251,14 @@ pages: 	page {
 
 
 page: 
-	KW_PAGE opt_layout_ident layout_attributes layout_container KW_END  {
+	KW_PAGE opt_layout_ident layout_attributes op_layout_items KW_END  {
 			$<layout>$=$<layout>4;
 			$<layout>$->id=strdup($<str>2);
 			$<layout>$->attrib=$<layout_attrib>3;
 			$<layout>$->layout_type=LAYOUT_PAGE;
+			if ( $<layout>$->children.children_len!=1) {
+				yyerror("A PAGE must contain 1 and only 1 child item");
+			}
 	}
 
 ;
@@ -325,10 +328,10 @@ layout_attribute:
 		add_bool_layout_attrib(FA_B_HIDDEN);
 	}
 	| KW_TEXT EQUAL CHAR_VALUE {
-		add_str_layout_attrib(FA_S_TEXT, $<str>3); //@FIXME ADD
+		add_str_layout_attrib(FA_S_TEXT, $<str>3); 
 	}
 	| KW_ACTION EQUAL NAMED {
-		add_str_layout_attrib(FA_S_TEXT, $<str>3); //@FIXME ADD
+		add_str_layout_attrib(FA_S_TEXT, $<str>3); 
 	}
 ;
 
@@ -670,8 +673,8 @@ op_field_tag_type:
 	| KW_DATEEDIT {strcpy($<str>$,"DateEdit");}
 	| KW_BUTTONEDIT {strcpy($<str>$,"ButtonEdit");}
 	| KW_IMAGE {strcpy($<str>$,"Image");}
-	| KW_PROGRESSBAR {strcpy($<str>$,"ProgressBar");} //@FIXME Add
-	| KW_COMBOBOX {strcpy($<str>$,"ComboBox");} //@FIXME Add
+	| KW_PROGRESSBAR {strcpy($<str>$,"ProgressBar");} 
+	| KW_COMBOBOX {strcpy($<str>$,"ComboBox");} 
 ;
 
 
@@ -1137,15 +1140,15 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | KW_IMAGE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_IMAGE,$<str>3); }
 | KW_PIXELHEIGHT EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_PIXELHEIGHT,$<str>3); }
 | KW_PIXELWIDTH EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_PIXELWIDTH,$<str>3); }
-| KW_SCROLLBARS_BOTH  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_BOTH); } // @FIXME ADD
-| KW_SCROLLBARS_V  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_VERTICAL); } // @FIXME ADD
-| KW_SCROLLBARS_H  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_HORIZONAL); } // @FIXME ADD
-| KW_STRETCH_Y  { A4GL_add_bool_attr(fld,FA_B_STRETCH_Y); } // @FIXME ADD
-| KW_STRETCH_BOTH  { A4GL_add_bool_attr(fld,FA_B_STRETCH_BOTH); } // @FIXME ADD
-| KW_ITEMS  EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); A4GL_add_str_attr(fld,FA_S_ITEMS,$<str>$); } // @FIXME ADD
-| KW_VALUEMAX EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_VALUEMAX,$<str>3); } // @FIXME ADD
-| KW_VALUEMIN EQUAL NUMBER_VALUE{ A4GL_add_str_attr(fld,FA_S_VALUEMIN,$<str>3); } // @FIXME ADD
-| KW_STYLE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld, FA_S_STYLE, $<str>3); } // @FIXME ADD
+| KW_SCROLLBARS_BOTH  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_BOTH); } 
+| KW_SCROLLBARS_V  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_VERTICAL); } 
+| KW_SCROLLBARS_H  { A4GL_add_bool_attr(fld,FA_B_SCROLLBARS_HORIZONAL); } 
+| KW_STRETCH_Y  { A4GL_add_bool_attr(fld,FA_B_STRETCH_Y); } 
+| KW_STRETCH_BOTH  { A4GL_add_bool_attr(fld,FA_B_STRETCH_BOTH); } 
+| KW_ITEMS  EQUAL OPEN_BRACKET items_list CLOSE_BRACKET { A4GL_add_str_attr(fld,FA_S_ITEMS,$<str>4); } 
+| KW_VALUEMAX EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_VALUEMAX,$<str>3); } 
+| KW_VALUEMIN EQUAL NUMBER_VALUE{ A4GL_add_str_attr(fld,FA_S_VALUEMIN,$<str>3); } 
+| KW_STYLE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld, FA_S_STYLE, $<str>3); } 
 ;
 
 
@@ -1387,10 +1390,29 @@ incl_list : incl_entry | incl_list COMMA incl_entry {
 	sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
 };
 
+items_list : items_entry | items_list COMMA items_entry {
+	sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
+};
+
 
 number_value : NUMBER_VALUE | PLUS NUMBER_VALUE | MINUS NUMBER_VALUE {sprintf($<str>$,"-%s",$<str>2);}
 ;
 
+items_entry : 
+	CHAR_VALUE   { 
+		if (strlen($<str>1)==2) { /* "" */
+			strcpy($<str>$,"");
+		} else {
+			strcpy($<str>$,A4GL_char_val($<str>1)); 
+		}
+	}
+	| NAMED   {strcpy($<str>$,$<str>1); }
+	| CH   {strcpy($<str>$,$<str>1);}
+	| number_value 
+	| KW_NULL {
+		strcpy($<str>$,"");
+	}
+;
 
 incl_entry : 
 CHAR_VALUE   { 
@@ -1418,7 +1440,6 @@ CHAR_VALUE   {
 | KW_NULL {
 	sprintf($<str>$,"NULL");
 }
-
 ;
 
 opt_dec_ext : {

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.162 2008-07-22 21:21:33 mikeaubury Exp $
+# $Id: report.c,v 1.163 2008-07-23 08:48:24 mikeaubury Exp $
 #
 */
 
@@ -1624,7 +1624,7 @@ char b2[200];
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0,0,0,0,A4GL_drop_temp_tab (b),"__internal_report",99,0,0), 1,0,0);
   A4GL_free_duplicate_binding (reread, n);
   sprintf(b2, "a4glrp_%lx%d", (long)(b),n);
-  A4GLSQL_free_cursor(b2);
+  A4GLSQL_free_cursor(b2); // Actually a free prepare - but its the same function ;-)
 
 }
 
