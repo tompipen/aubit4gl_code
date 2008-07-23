@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.20 2007-11-23 09:50:53 mikeaubury Exp $
+# $Id: form_x.x,v 1.21 2008-07-23 16:25:17 mikeaubury Exp $
 #*/
 
 /**
@@ -81,7 +81,19 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_NOUPDATE,
 	FA_B_QUERYCLEAR,
 	FA_B_ZEROFILL,
-	FA_B_RIGHT
+	FA_B_RIGHT,
+	FA_B_HIDDEN,
+	FA_B_SCROLL,
+	FA_B_WANTTABS,
+	FA_B_WANTNORETURNS,
+	FA_B_FONTPITCHFIXED,
+	FA_B_FONTPITCHVARIABLE,
+	FA_B_AUTOSCALE,
+	FA_B_STRETCH_BOTH,
+	FA_B_STRETCH_Y,
+	FA_B_SCROLLBARS_BOTH,
+	FA_B_SCROLLBARS_VERTICAL,
+	FA_B_SCROLLBARS_HORIZONAL
 	
 };
 
@@ -107,7 +119,16 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_CONFIG,
 	FA_S_COMMENTS,
 	FA_S_CLASS,
-	FA_S_ACTION
+	FA_S_ACTION,
+	FA_S_IMAGE,
+	FA_S_STYLE,
+	FA_S_WIDGETTYPE,
+	FA_S_PIXELWIDTH,
+	FA_S_PIXELHEIGHT,
+	FA_S_VALUEMIN,
+	FA_S_VALUEMAX,
+	FA_S_ITEMS,
+	FA_S_TEXT
 };
 
 struct struct_field_attr_string {
@@ -274,6 +295,34 @@ struct struct_labels
 	int  scr;
   };
 
+enum elayout_type {
+	LAYOUT_GRID,
+	LAYOUT_HBOX,
+	LAYOUT_VBOX,
+	LAYOUT_GROUP,
+	LAYOUT_FOLDER,
+	LAYOUT_PAGE,
+	LAYOUT_TABLE,
+	LAYOUT_NOTSET
+};
+
+struct s_layout_attributes {
+    	struct struct_field_attr_string str_attribs<>;
+    	enum   FIELD_ATTRIBUTES_BOOL bool_attribs<>;
+	
+};
+
+
+typedef struct s_layout *layoutptr;
+
+struct s_layout {
+	enum elayout_type layout_type;
+	string id<>;
+	struct s_layout_attributes *attrib;
+	int screen_no;
+	layoutptr children<>;
+};
+
 struct struct_form
 	{
 	long magic;
@@ -293,6 +342,7 @@ struct struct_form
 	struct s_control_block control_blocks<>;
 	struct struct_master_of  master_of<>;
 	struct s_composites composites<>;
+	struct s_layout *layout;
 	string magic2<>;
 };
 
@@ -351,6 +401,7 @@ struct s_at_if {
 	struct u_action *if_true;
 	struct u_action *if_false;
 };
+
 
 struct s_at_let {
 	struct u_expression *field_tag;

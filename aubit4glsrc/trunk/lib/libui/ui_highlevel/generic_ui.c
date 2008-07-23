@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.133 2008-07-01 21:16:37 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.134 2008-07-23 16:25:19 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1204,6 +1204,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 				       metrics_val[metric_no].label);
 	  formdets->form_fields[cnt++] = (void *)
 	    formdets->fileform->metrics.metrics_val[metric_no].field;
+A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
+
 	  formdets->form_fields[cnt] = 0;
 	}
       else
@@ -1277,6 +1279,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 
 	  formdets->form_fields[cnt++] =
 	    (void *) formdets->fileform->metrics.metrics_val[metric_no].field;
+A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
+
 	  formdets->form_fields[cnt] = 0;
 
 
@@ -1291,6 +1295,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	    formdets->form_fields[cnt++] =
 	      (void *) formdets->fileform->metrics.metrics_val[metric_no].
 	      dlm1;
+A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 
 
 	  formdets->fileform->metrics.metrics_val[metric_no].dlm2 =
@@ -1306,6 +1311,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	    formdets->form_fields[cnt++] =
 	      (void *) formdets->fileform->metrics.metrics_val[metric_no].
 	      dlm2;
+A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 
 	  A4GL_debug ("Making field 5");
 

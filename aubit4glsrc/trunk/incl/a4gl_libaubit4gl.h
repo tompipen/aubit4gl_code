@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.317 2008-07-16 17:47:59 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.318 2008-07-23 16:25:18 mikeaubury Exp $
 #
 */
 
@@ -1994,7 +1994,7 @@ int A4GL_input_required_handling(void) ;
     int attrib_str;
   };
 
-
+#define MAX_FORM_FIELDS 4096
 
 
   struct s_form_dets            /* taken from a4gl_dbform.h */
@@ -2010,7 +2010,7 @@ int A4GL_input_required_handling(void) ;
     void *form;
     int fields_cnt;
     int currentmetrics;
-    void *form_fields[1024];
+    void *form_fields[MAX_FORM_FIELDS];
     void *currentfield;
   };
 

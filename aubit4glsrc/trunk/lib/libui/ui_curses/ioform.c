@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.198 2008-07-06 11:34:48 mikeaubury Exp $
+# $Id: ioform.c,v 1.199 2008-07-23 16:25:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.198 2008-07-06 11:34:48 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.199 2008-07-23 16:25:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -370,69 +370,64 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   A4GL_debug ("metrics len=%d", n);
   for (a = 0; a < n; a++)
     {
+	int scr;
+	int x;
+	int y;
+	int w;
+	int h;
+	char *label;
+	x= formdets->fileform->metrics.metrics_val[a].x;
+	y= formdets->fileform->metrics.metrics_val[a].y;
+	w= formdets->fileform->metrics.metrics_val[a].w;
+	h= formdets->fileform->metrics.metrics_val[a].h;
+	scr= formdets->fileform->metrics.metrics_val[a].scr;
+	label= formdets->fileform->metrics.metrics_val[a].label;
+
+
       formdets->fileform->metrics.metrics_val[a].pos_code = 0;
-      A4GL_debug ("checking label %s\n",
-		  formdets->fileform->metrics.metrics_val[a].label);
+      A4GL_debug ("checking label %s\n",label);
 
 
-      if (strlen (formdets->fileform->metrics.metrics_val[a].label) != 0)
+      if (strlen (label) != 0)
 	{
-	  formdets->fileform->metrics.metrics_val[a].field =
-	    (long) A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
-				   y,
-				   formdets->fileform->metrics.metrics_val[a].
-				   x,
-				   formdets->fileform->metrics.metrics_val[a].
-				   label);
-	  formdets->form_fields[cnt++] =
-	    (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
+	  formdets->fileform->metrics.metrics_val[a].field = (long) A4GL_make_label ( y, x, label);
+	
+	  formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
+		A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
 	}
       else
 	{
 	  A4GL_debug ("Making field");
 	  formdets->fileform->metrics.metrics_val[a].field =
-	    (long) A4GL_make_field (formdets->fileform->metrics.metrics_val[a].
-				   y,
-				   formdets->fileform->metrics.metrics_val[a].
-				   x,
-				   formdets->fileform->metrics.metrics_val[a].
-				   h,
-				   formdets->fileform->metrics.metrics_val[a].
-				   w);
+	    (long) A4GL_make_field ( y, x, h, w);
 	  formdets->form_fields[cnt++] =
 	    (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
+		A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
 	  formdets->fileform->metrics.metrics_val[a].dlm1 =(long)
-	    A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
-				   y,
-				   formdets->fileform->metrics.metrics_val[a].
-				   x - 1, delims[0]);
+	    A4GL_make_label ( y, x - 1, delims[0]);
 	  formdets->form_fields[cnt++] =
 	    (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
+		A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 	  formdets->fileform->metrics.metrics_val[a].dlm2 =(long)
-	     A4GL_make_label (formdets->fileform->metrics.metrics_val[a].
-				   y,
-				   formdets->fileform->metrics.metrics_val[a].
-				   x +
-				   formdets->fileform->metrics.metrics_val[a].
-				   w, delims[1]);
+	     A4GL_make_label ( y, x + w, delims[1]);
 	  formdets->form_fields[cnt++] =
 	    (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm2;
+		A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
 	}
 
 
-      if (lscr != formdets->fileform->metrics.metrics_val[a].scr)
+      if (lscr != scr)
 	{
-	  lscr = formdets->fileform->metrics.metrics_val[a].scr;
-	  set_new_page ((FIELD *) formdets->fileform->metrics.metrics_val[a].
-			field, 1);
+	  lscr = scr;
+	  set_new_page ((FIELD *) formdets->fileform->metrics.metrics_val[a].  field, 1);
 	}
 
 
 
-      if (strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
+      if (strlen (label) == 0)
 	{
 	  if (last_field == -1)
 	    {
@@ -443,8 +438,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  A4GL_debug ("LAST_FIELD1 -CHK111");
 	}
 
-      if (lfieldscr != formdets->fileform->metrics.metrics_val[a].scr
-	  && strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
+      if (lfieldscr != scr
+	  && strlen (label) == 0)
 	{
 
 	  formdets->fileform->metrics.metrics_val[a].pos_code += POS_FIRST;
@@ -457,8 +452,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  lfieldscr = formdets->fileform->metrics.metrics_val[a].scr;
 	}
       A4GL_debug ("LAST_FIELD3 -CHK111 a=%d label='%s'", a,
-		  formdets->fileform->metrics.metrics_val[a].label);
-      if (strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
+		  label);
+      if (strlen (label) == 0)
 	last_field = a;
     }
 
