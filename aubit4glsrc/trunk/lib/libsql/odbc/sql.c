@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.211 2008-07-16 17:48:01 mikeaubury Exp $
+# $Id: sql.c,v 1.212 2008-07-23 12:53:39 mikeaubury Exp $
 #
 */
 
@@ -2128,7 +2128,8 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
         sid = A4GLSQL_find_prepare (cname);
         if (sid != 0)
         {
-	    sql_free_sid(&sid);
+		A4GLSQL_free_prepare(sid); 
+	    	//sql_free_sid(&sid);
 		A4GL_removePreparedStatementBySid(sid);
             //A4GL_del_pointer (cname, PRECODE);
             return;
@@ -5731,8 +5732,10 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
 
     if (rc == SQL_INVALID_HANDLE)
     {
+	if (!ignore_next_sql_error) {
 	if (A4GLSQL_set_status (-2, 0))
             set_global_status(-2, "HY000", "Invalid handle - error info unavailable");
+	}
 	ignore_next_sql_error = 0;
         return False;
     }
