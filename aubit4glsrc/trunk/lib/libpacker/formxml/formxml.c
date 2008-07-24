@@ -496,6 +496,7 @@ char posbuf[200];
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
+//printf("Heigh=%d\n",  f->metrics.metrics_val[metric_no].h);
         get_attribs(f, attr_no, buff,1);
  	if (strstr(buff, " scroll=")==0 && oldstyle!=2) { 
 		// Seems to always have scroll=1
@@ -580,17 +581,38 @@ for (a=0;a<f->records.records_len;a++) {
 }
 }
 
+
+int fieldOccursMultipleTimes(struct_form *f, int attr_no,int *dim) {
+int field_no;
+field_no= f->attributes.attributes_val[attr_no].field_no;
+dim=f->fields.fields_val[field_no].metric.metric_len;
+return (f->fields.fields_val[field_no].metric.metric_len>1);
+}
+
 void
 print_field_attribute (struct_form * f, int metric_no, int attr_no)
 {
   char buff[2000];
   int dim;
+  int dim1;
+  int ismatrix;
 
 
   get_attribs (f, attr_no, buff, 0);
 
 fieldNo=attr_no;
-  if (isInScreenArray (f, attr_no, &dim,NULL))
+  if (isInScreenArray (f, attr_no, &dim1,NULL)) {
+		ismatrix=1;
+		dim=dim1;
+  } else {
+	if (fieldOccursMultipleTimes(f, attr_no,&dim1)) {
+		ismatrix=1;
+		dim=dim1;
+	} else {
+		ismatrix=0;
+	}
+ }
+ if (ismatrix) 
     {
 
 	if (hasPrintedAttribute(attr_no)) return;
