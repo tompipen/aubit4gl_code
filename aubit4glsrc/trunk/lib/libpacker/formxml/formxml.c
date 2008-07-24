@@ -593,8 +593,8 @@ void
 print_field_attribute (struct_form * f, int metric_no, int attr_no)
 {
   char buff[2000];
-  int dim;
-  int dim1;
+  int dim=0;
+  int dim1=0;
   int ismatrix;
 
 
