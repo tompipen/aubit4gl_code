@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.425 2008-07-06 11:34:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.426 2008-07-24 12:28:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.425 2008-07-06 11:34:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.426 2008-07-24 12:28:27 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1566,11 +1566,11 @@ real_print_expr (struct expr_str *ptr)
         	printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
         	if (is_in_report ())
         	{
-                	printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", p->fname, p->fname, p->parameters->list.list_len);
+                	printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname,  p->parameters->list.list_len);
         	}
         	else
         	{
-                	printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", p->fname, p->parameters->list.list_len);
+                	printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->fname, p->parameters->list.list_len);
         	}
 		printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
 		printc ("A4GLSQL_set_status(-3001,0);");
@@ -2908,11 +2908,11 @@ real_print_func_call (t_expr_str * fcall)
   	printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   	if (is_in_report ())
     	{
-      		printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", p->fname, p->fname, p->parameters->list.list_len);
+      		printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname, p->parameters->list.list_len);
     	}
   	else
     	{
-      		printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", p->fname, p->parameters->list.list_len);
+      		printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->fname, p->parameters->list.list_len);
     	}
 
 	return;

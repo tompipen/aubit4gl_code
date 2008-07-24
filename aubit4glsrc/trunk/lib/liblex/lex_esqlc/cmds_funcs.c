@@ -1831,11 +1831,11 @@ print_pdf_call_cmd (struct_pdf_call_cmd * cmd_data)
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   if (is_in_report ())
     {
-      printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s);\n", p->fname, p->fname, p->parameters->list.list_len);
+      printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname, p->parameters->list.list_len);
     }
   else
     {
-      printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", p->fname, p->parameters->list.list_len);
+      printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->fname, p->parameters->list.list_len);
     }
 
   print_returning_g (2, cmd_data->returning, 0);
