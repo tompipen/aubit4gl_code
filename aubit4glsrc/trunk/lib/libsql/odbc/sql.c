@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.212 2008-07-23 12:53:39 mikeaubury Exp $
+# $Id: sql.c,v 1.213 2008-07-24 17:16:48 mikeaubury Exp $
 #
 */
 
@@ -2663,8 +2663,11 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   ptr_to_use = bind->ptr;
 
   set_conv_4gl_to_c ();
-  if (bind->libptr ) { acl_free(bind->libptr); }
+  if (bind->libptr ) { acl_free(bind->libptr);
+		bind->libptr=0;
+		 }
 
+  bind->libptr =0;
   if (bind->dtype == DTYPE_DATE)
     {
       bind->libptr = A4GL_bind_date (bind, (long *) bind->ptr);
