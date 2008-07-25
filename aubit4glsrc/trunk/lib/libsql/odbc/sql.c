@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.213 2008-07-24 17:16:48 mikeaubury Exp $
+# $Id: sql.c,v 1.214 2008-07-25 15:12:53 gyver309 Exp $
 #
 */
 
@@ -309,27 +309,31 @@ int fgl_sizes[] = {
 /**
  *
  */
-int convpos_sql_to_4gl[15] = {
-    9999,       /** 0 */
-    0,          /** SQL_CHAR */
-    3,          /** SQL_NUMERIC */
-    5,          /** SQL_DECIMAL */
-    2,          /** SQL_INTEGER */
-    1,          /** SQL_SMINT */
-    3,          /** SQL_FLOAT  */
-    4,          /** SQL_REAL */
-    3,          /** SQL_DOUBLE  8 */
-    7,          /** SQL_DATE 9  */
-    10,         /** SQL_TIME 10 */
-    10,         /** SQL_TIMESTAMP 11 */
-    0           /** SQL_VARCHAR  12 */
+#define UDT 9999 // unknown datatyp
+int convpos_sql_to_4gl[16] = {
+    UDT,          /** 0 */
+    DTYPE_CHAR,   /** SQL_CHAR 1 */
+    DTYPE_FLOAT,  /** SQL_NUMERIC 2 */
+    DTYPE_DECIMAL,/** SQL_DECIMAL 3 */
+    DTYPE_INT,    /** SQL_INTEGER 4 */
+    DTYPE_SMINT,  /** SQL_SMINT 5 */
+    DTYPE_FLOAT,  /** SQL_FLOAT  6 */
+    DTYPE_SMFLOAT,/** SQL_REAL 7 */
+    DTYPE_FLOAT,  /** SQL_DOUBLE  8 */
+    7,            /** SQL_DATE 9  */
+    10,           /** SQL_TIME 10 */
+    10,           /** SQL_TIMESTAMP 11 */
+    DTYPE_VCHAR,  /** SQL_VARCHAR  12 */
+    UDT,         // 13
+    UDT,         // 14
+    UDT          // 15
 };
 
 
 /**
  *
  */
-int convneg_sql_to_4gl[15] = {
+int convneg_sql_to_4gl[16] = {
     9999,       /** 0 */
     12,         /** SQL_LONGVARCHAR */
     11,         /** SQL_BINARY */
@@ -337,7 +341,15 @@ int convneg_sql_to_4gl[15] = {
     11,         /** SQL_LONGVARBINARY */
     2,          /** SQL_BIGINT */
     1,          /** SQL_TINYINT */
-    1           /** SQL_BIT */
+    1,          /** SQL_BIT */
+    UDT,        // 8
+    UDT,        // 9
+    UDT,        // 10
+    UDT,        // 11
+    UDT,        // 12
+    UDT,        // 13
+    UDT,        // 14
+    UDT         // 15
 };
 
 
@@ -397,6 +409,7 @@ static void cache_try_add_coldata(char *colname, int colidx, struct sql_col_info
 static Bool cache_try_get_coldata(char *tabname, char *colname, int colNo, struct sql_col_info_data *ci);
 static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname, struct sql_col_info_data *ci);
 static void sql_clear_column_info(struct sql_col_info_data *ci, Bool clearTableData);
+static int conv_sqlsdim (int ndtype, int sdim, int scale);
 static int conv_sqlprec (int ndtype, int sdim, int scale);
 static unsigned long conv_sqldtype (int sqldtype, int sdim);
 static char *type_id_to_name_fallback(int type_id);
@@ -3066,6 +3079,98 @@ A4GL_new_hstmt (SQLHSTMT * phstmt)
     return status;
 }
 
+int conv_sqlsdim (int ndtype, int sdim, int scale)
+{
+    int retval = sdim;
+    //if (ndtype == DTYPE_DTIME || ndtype == 11)
+    if (ndtype == DTYPE_DTIME)
+    {
+        if (strcmp (dbms_dialect, "INFORMIX") == 0)
+        {
+	    switch (sdim)
+	    {
+	      case 0x17: // y2f 
+		retval = 0x19; break;
+	      case 0x13: // y2s 
+		retval = 0x16; break;
+	      case 0x10: // y2i 
+		retval = 0x15; break;
+	      case 0x0d: // y2h 
+		retval = 0x14; break;
+	      case 0x07: // y2m 
+		retval = 0x12; break;
+	      case 0x04: // y2y 
+		retval = 0x11; break;
+
+	      case 0x12: // m2f 
+		retval = 0x29; break;
+	      case 0x0e: // m2s 
+		retval = 0x26; break;
+//	      case 0x0b: // m2i 
+//		retval = 0x25; break;
+//	      case 0x08: // m2h 
+//		retval = 0x24; break;
+	      case 0x05: // m2d 
+		retval = 0x23; break;
+//	      case 0x02: // m2m 
+//		retval = 0x22; break;
+
+	      case 0x0f: // d2f 
+		retval = 0x39; break;
+//	      case 0x0b: // d2s 
+//		retval = 0x36; break;
+//	      case 0x08: // d2i 
+//		retval = 0x35; break;
+//	      case 0x05: // d2h 
+//		retval = 0x34; break;
+//	      case 0x02: // d2d 
+//		retval = 0x33; break;
+
+	      case 0x0c: // h2f 
+		retval = 0x49; break;
+//	      case 0x05: // h2i 
+//		retval = 0x45; break;
+//	      case 0x02: // h2h 
+//		retval = 0x44; break;
+
+	      case 0x09: // i2f 
+		retval = 0x59; break;
+//	      case 0x05: // i2s 
+//		retval = 0x56; break;
+//	      case 0x02: // i2i 
+//		retval = 0x55; break;
+
+	      case 0x06: // s2f 
+		retval = 0x69; break;
+//	      case 0x02: // s2s 
+//		retval = 0x66; break;
+
+	      case 0x03: // f2f 
+		retval = 0x89; break;
+
+//		h2s sqldtype=92(0x5c) prec= 8(0x08) scale=0(0x0) out=13(0xd)
+//		y2d sqldtype=91(0x5b) prec=10(0x0a) scale=0(0x0) out=7(0x7)
+	    
+//	    A4GL_setnull(10,&dt_h2s,0x46); /*1 */
+//	    A4GL_setnull(10,&dt_y2d,0x13); /*1 */
+
+//	    A4GL_setnull(10,&t,0x48); /*1 */
+//	    4GL_setnull(7,&d,0x4); /*1 */
+	      default:
+		A4GL_dbg ("WARNING: Unsupported datetme range (sdim=0x%02x), assuming defeult 0x%02x)", sdim, retval);
+		retval = 0x17;
+	    }
+        }
+	else
+	{
+	    retval = 0x46;
+            A4GL_dbg ("WARNING: Possibly unsupported datetme range (sdim=0x%02x), assuming defeult 0x%02x)", sdim, retval);
+	}
+    }
+    return retval;
+}
+
+
 int conv_sqlprec (int ndtype, int sdim, int scale)
 {
     if (ndtype == DTYPE_DECIMAL)
@@ -3164,6 +3269,22 @@ static unsigned long conv_sqldtype (int sqldtype, int sdim)
     }
 #endif
 
+#ifdef SQL_TYPE_TIME
+    if (sqldtype == SQL_TYPE_TIME)
+    {
+        A4GL_dbg ("returning (sqldtype=SQL_TYPE_TIME)->DTYPE_TIME");
+        return DTYPE_DTIME;
+    }
+#endif
+
+#ifdef SQL_TYPE_TIMESTAMP
+    if (sqldtype == SQL_TYPE_TIMESTAMP)
+    {
+        A4GL_dbg ("returning (sqldtype=SQL_TYPE_TIMESTAMP)->DTYPE_DTIME");
+	return DTYPE_DTIME;
+    }
+#endif
+
     if (sqldtype == SQL_TIME)
     {
         A4GL_dbg ("returning (sqldtype=SQL_TIME)->DTYPE_DTIME");
@@ -3171,9 +3292,9 @@ static unsigned long conv_sqldtype (int sqldtype, int sdim)
     }
 
     if (sqldtype >= 0)
-        ndtype = convpos_sql_to_4gl[sqldtype];
+        ndtype = convpos_sql_to_4gl[sqldtype & 0xf];
     else
-        ndtype = convneg_sql_to_4gl[sqldtype * -1];
+        ndtype = convneg_sql_to_4gl[(sqldtype * -1) & 0xf];
 
 
     if (ndtype == 0)
@@ -3521,8 +3642,9 @@ static int sql_get_next_column_info(struct sql_col_info_data *ci)
 
     fgldtype = conv_sqldtype(ci->dtype, ci->prec);
 
-    if (fgldtype == DTYPE_DTIME)
-        ci->prec = 0x46;
+//    if (fgldtype == DTYPE_DTIME)
+//        ci->prec = 0x46;
+    ci->prec = conv_sqlsdim(fgldtype, ci->prec, ci->bd.scale);
 
 /*    ci->dtype = conv_sqldtype(ci->bd.dt, ci->prec);
     if (ci->bd.dt == SQL_TIME)
