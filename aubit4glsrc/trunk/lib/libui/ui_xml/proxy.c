@@ -590,6 +590,7 @@ int pwok;
   sprintf (buff, "%d", getpid ());	// PID will be the PID of the child process...
 
   UIdebug (5,"Creating pipes\n");
+  setenv("PROXYUSER",usr,1);
   // Now - tell our child process who we are...
   setenv ("PROXYID", buff, 1);
   sock_s = create_pipes ();
