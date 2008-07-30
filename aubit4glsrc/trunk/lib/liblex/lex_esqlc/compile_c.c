@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.426 2008-07-24 12:28:27 mikeaubury Exp $
+# $Id: compile_c.c,v 1.427 2008-07-30 13:26:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.426 2008-07-24 12:28:27 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.427 2008-07-30 13:26:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1068,7 +1068,8 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
   os = vsnprintf (buff, sizeof (buff), fmt, *ap);
   if (os >= sizeof (buff))
     {
-	yylineno=line_for_cmd; a4gl_yyerror ("Internal error - string too big\n");
+      yylineno = line_for_cmd;
+      a4gl_yyerror ("Internal error - string too big\n");
       exit (0);
     }
 
@@ -1082,7 +1083,7 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
   if (A4GL_isyes (acl_getenv ("INCLINES")))
     {
       static int last_line = -1;
-
+	int lcr;
       for (a = 0; a < strlen (buff); a++)
 	{
 	  if (buff[a] == '\n')
@@ -1090,7 +1091,7 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
 	      if (suppress_lines == 0 && strstr (buff, "EXEC SQL") == 0)
 		{
 		  last_line = line_for_cmd;
-		  if (current_module && current_module->module_name!= 0)
+		  if (current_module && current_module->module_name != 0)
 		    {
 		      FPRINTF (outfile, "\n#line %d \"%s.4gl\"\n", line_for_cmd, current_module->module_name);
 		    }
@@ -1102,16 +1103,24 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
 	      else
 		{
 		  if (new_lines == 0)
-		    {
+		    {	
+			lcr=1;
 		      FPRINTF (outfile, "\n");
 		    }
 		}
 	    }
 	  else
 	    {
+			if (buff[a]=='\n' || buff[a]=='\r') lcr=1; else lcr=0;
 	      FPRINTF (outfile, "%c", buff[a]);
 	    }
 	}
+	if (new_lines==0) {
+		if (!lcr) {
+	      FPRINTF (outfile, "\n");
+		}
+	}
+	
     }
   else
     {
@@ -1136,8 +1145,6 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
       fflush (outfile);
     }
 }
-
-
 
 /**
  * Print the generated definitions to the target header file (.h)
