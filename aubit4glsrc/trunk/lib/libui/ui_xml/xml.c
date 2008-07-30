@@ -1341,7 +1341,11 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
   if (x == -1 && y == -1)
     {
-      send_to_ui ("<DISPLAY>%s</DISPLAY>", uilib_xml_escape (s));
+	if (A4GL_isyes(acl_getenv("DISPLAYLOCAL"))) {
+		printf("%s\n",s);
+	} else {
+      		send_to_ui ("<DISPLAY>%s</DISPLAY>", uilib_xml_escape (s));
+	}
     }
   else
     {
