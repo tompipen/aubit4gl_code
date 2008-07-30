@@ -559,8 +559,12 @@ int pwok;
   if (strcmp(passwd,"CM")==0) { 
 		pwok=1;
   } else {
-		if (strcmp(passwd,get_passwd(usr))==0) {
+		char *pw;
+		pw=get_passwd(usr);
+		if (pw) {
+		if (strcmp(passwd,pw)==0) {
 			pwok=1;
+		}
 		}
   }
 	if (!pwok) {
@@ -898,7 +902,7 @@ char uname[200];
 char passwd[200];
 
   ptr = getenv ("A4GL_PROXYPASSWD");
-
+  if (ptr==0) return 0;
   f = fopen (ptr, "r");
 
   if (f == 0)
@@ -968,7 +972,9 @@ char passwd[200];
   int printed = 0;
   FILE *fout;
   ptr = getenv ("A4GL_PROXYPASSWD");
-strcpy(fname,ptr);
+  if (ptr==0) return 0;
+
+  strcpy(fname,ptr);
 
   f = fopen (ptr, "r");
 
