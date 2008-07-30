@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.73 2008-04-09 17:53:40 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.74 2008-07-30 10:22:04 mikeaubury Exp $
 #
 */
 
@@ -183,8 +183,25 @@ strcpy(dbName,dbname);
 
 void* ESQLAPI_A4GL_db_connected(char *dbname) {
 void *ptr=0;
+char *logging;
+FILE *logfile;
 #ifdef DIALECT_POSTGRES
+
 	ptr=local_get_connection();
+	if (ptr) {
+		logging=acl_getenv_not_set_as_0("ECPGLOGGING");
+		if (logging) {
+			logfile=NULL;
+			if (strcmp(logging,"stderr")==0) { logfile=stderr; }
+			if (strcmp(logging,"stdout")==0) { logfile=stdout; }
+			if (logfile==NULL) {
+				logfile=fopen(logging,"w");
+			}
+			if (logfile) {
+				ECPGdebug(1,logfile);
+			}
+		}
+	}
 #endif
 return ptr;
 }
