@@ -450,7 +450,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		      // Can we move it to be a subscript instead ? 
 		      if (vu->substrings_start == 0)
 			{
-			  if ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_CHAR || (v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_VCHAR)
+			  if ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_CHAR || ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_VCHAR)  || ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_NCHAR))
 			    {
 			      if (vu->subscripts.subscripts_len <= 2)
 				{
@@ -722,6 +722,7 @@ static int encode_size(int dtype, int dim1,int dim2) {
         switch (dtype) {
                 case DTYPE_CHAR:
                 case DTYPE_VCHAR:
+                case DTYPE_NCHAR:
                         return dtype+(dim1<<16);
                 default:
                         return dtype+(dim1<<16);

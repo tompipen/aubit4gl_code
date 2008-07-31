@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.428 2008-07-30 14:29:16 mikeaubury Exp $
+# $Id: compile_c.c,v 1.429 2008-07-31 11:44:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.428 2008-07-30 14:29:16 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.429 2008-07-31 11:44:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4918,7 +4918,7 @@ clr_suppress_lines();
 		if (v->arr_subscripts.arr_subscripts_val[0]==-1) { // Dynamic array
 		switch (v->var_data.variable_type) {
 			case VARIABLE_TYPE_SIMPLE:
-      				if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR) {
+      				if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR ) {
 					printc("struct _dynelem_%s { char dummyname[%d];};", name,v->var_data.variable_data_u.v_simple.dimensions[0]+1);
 					printc("char **%s=0;",name,name);
 				} else {
@@ -4967,7 +4967,7 @@ clr_suppress_lines();
 	    }
 	}
 
-      if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR)
+      if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR  || v->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR)
 	{			/* Its a 'char' (may need varchar & friends too...*/
 
 

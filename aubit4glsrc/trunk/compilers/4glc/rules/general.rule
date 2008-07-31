@@ -181,7 +181,7 @@ cvariable : ensured_variable_usage_expression  {
 			YYERROR;
 		} else {
 		dtype=dtype &DTYPE_MASK;
-		if (dtype!=DTYPE_CHAR && dtype!=DTYPE_VCHAR) {
+		if (dtype!=DTYPE_CHAR && dtype!=DTYPE_VCHAR &&  dtype!=DTYPE_NCHAR ) {
 			a4gl_yyerror("Only a character variable can be used for this");
 			YYERROR;
 		}
@@ -211,8 +211,8 @@ char_or_var_vl : CHAR_VALUE {
 				YYERROR;
 			} else {
 				dtype=dtype&DTYPE_MASK; 
-                		if (dtype!=DTYPE_CHAR&&dtype!=DTYPE_VCHAR) {
-					a4gl_yyerror("Variable must be of type charr..");YYERROR; 
+                		if (dtype!=DTYPE_CHAR&&dtype!=DTYPE_VCHAR && dtype!=DTYPE_NCHAR) {
+					a4gl_yyerror("Variable must be of type char..");YYERROR; 
 				}
 			}
 			$<ptr>$=$<ptr>1;
