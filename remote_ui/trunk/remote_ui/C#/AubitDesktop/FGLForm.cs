@@ -63,10 +63,10 @@ namespace AubitDesktop
 
 
 
-        void addLayoutToParent(ContainerControl parent, object child)
+        void addLayoutToParent(Control parent, object child)
         {
                 string type;
-                type=o.GetType().ToString();
+                type=parent.GetType().ToString();
                 switch (type)
                 {
                     case "AubitDesktop.Xml.XMLForm.VBox":
@@ -154,7 +154,7 @@ namespace AubitDesktop
                     case "AubitDesktop.Xml.XMLForm.Folder":
                     case "AubitDesktop.Xml.XMLForm.Page":
                     case "AubitDesktop.Xml.XMLForm.Screen":
-                        addLayoutToParent(thisFormsPanel, o);
+                        addLayoutToParent((Control)thisFormsPanel, o);
                         break;
 
                     default:
