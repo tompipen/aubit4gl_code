@@ -121,6 +121,8 @@ REPLACE_SQLCONST user = cast(user as char(8))
 
 REPLACE_SQLFUNC ascii = chr(%s)
 REPLACE_SQLFUNC ord = ascii(%s)
+REPLACE_SQLFUNC upshift=upper(%s)
+REPLACE_SQLFUNC downshift=lower(%s)
 
 REPLACE_EXPR current year to fraction(3) = now()
 REPLACE_EXPR current year to fraction(5) = now()

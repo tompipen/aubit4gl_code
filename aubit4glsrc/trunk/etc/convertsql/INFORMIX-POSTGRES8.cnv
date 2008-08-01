@@ -144,7 +144,8 @@ REPLACE_SQLFUNC nvl = COALESCE(%s)
 
 REPLACE_SQLFUNC ascii = chr(%s)
 REPLACE_SQLFUNC ord = ascii(%s)
-
+REPLACE_SQLFUNC upshift=upper(%s)
+REPLACE_SQLFUNC downshift=lower(%s)
 
 IF LOBLAWSPECIAL = Y
 REPLACE_EXPR current year to second = localtimestamp(0)
