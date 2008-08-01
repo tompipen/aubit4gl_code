@@ -62,22 +62,22 @@ namespace AubitDesktop
 
         public static int get_gui_y(int y)
         {
-            return (y * 22) + 5;
+            return (y * Program.AppSettings.yscale) + 5;
         }
 
         public static int get_gui_x(int x)
         {
-            return (x * 9) + 5;
+            return (x * Program.AppSettings.xscale) + 5;
         }
 
         public static int get_gui_h(int p)
         {
-            return (p * 22);
+            return (p * Program.AppSettings.yscale);
         }
 
         internal static int get_gui_w(int x)
         {
-            return (x * 9);
+            return (x * Program.AppSettings.xscale);
         }
 
     }
