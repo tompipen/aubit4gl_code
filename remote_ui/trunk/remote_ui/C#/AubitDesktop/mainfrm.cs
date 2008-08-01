@@ -118,6 +118,8 @@ namespace AubitDesktop
                 tbInterruptKey.Text = "Control-C";
                 showInterruptKeycode();
             }
+            nbYScale.Value = Program.AppSettings.yscale;
+            nbXScale.Value = Program.AppSettings.xscale;
 
         }
 
@@ -503,6 +505,18 @@ AubitDesktop.Xml.Shortcut snew;
         private void cbReceiveFile_CheckedChanged(object sender, EventArgs e)
         {
             Program.AppSettings.allowReceiveFile = this.cbReceiveFile.Checked;
+            Program.SaveSettings();
+        }
+
+        private void nbYScale_ValueChanged(object sender, EventArgs e)
+        {
+            Program.AppSettings.yscale = (int)nbYScale.Value;
+            Program.SaveSettings();
+        }
+
+        private void nbXScale_ValueChanged(object sender, EventArgs e)
+        {
+            Program.AppSettings.xscale = (int)nbXScale.Value;
             Program.SaveSettings();
         }
     }
