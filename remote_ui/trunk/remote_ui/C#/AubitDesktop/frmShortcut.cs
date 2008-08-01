@@ -272,6 +272,8 @@ namespace AubitDesktop.Xml
         public bool allowSendFile;
         public bool allowReceiveFile;
         public string interruptKey;
+        public int yscale;
+        public int xscale;
 
         /// <remarks/>
         //public Shortcuts Shortcuts;
