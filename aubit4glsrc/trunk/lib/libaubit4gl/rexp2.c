@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.50 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: rexp2.c,v 1.51 2008-08-04 14:48:39 mikeaubury Exp $
 #
 */
 
@@ -160,7 +160,7 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
   if (likeormatch == 'L')
     {
       MULTICHAR = '%';
-      SINGLECHAR = '.';
+      SINGLECHAR = '_';
       BRACECHAR = ' ';
     }
   else
