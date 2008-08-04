@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.318 2008-07-23 16:25:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.319 2008-08-04 18:49:39 mikeaubury Exp $
 #
 */
 
@@ -1319,6 +1319,7 @@ void A4GL_cleanup_undeleted_files(void);
 
 
 
+#define REP_TYPE_NOTSET 			0
 #define REP_TYPE_PDF 			1
 #define REP_TYPE_NORMAL 		2
 #define REPORT_START 			-1
@@ -1345,7 +1346,7 @@ void A4GL_cleanup_undeleted_files(void);
 int A4GL_via_functionname(char *repname,void *vr,void *vfunction) ;
 void* A4GL_get_curr_report(void) ;
 void A4GL_set_curr_report(void *c) ;
-
+char *A4GL_get_pdf_encoding(void) ;
 
 #define ERR_BADNOARGS 			1000
 #define ABORT 					1

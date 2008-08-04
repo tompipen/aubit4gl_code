@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.163 2008-07-23 08:48:24 mikeaubury Exp $
+# $Id: report.c,v 1.164 2008-08-04 18:48:45 mikeaubury Exp $
 #
 */
 
@@ -69,7 +69,7 @@ void A4GL_close_report_file(struct rep_structure *rep) ;
 static int email_report (char *fname, char *otype);
 static void free_header (struct rep_structure *rep);
 static char *cursor_for_rep_tab (void *b);
-
+char pdf_encoding[200]="winansi";
 
 
 void print_header_entries (struct rep_structure *rep);
@@ -2697,4 +2697,21 @@ if (agg) {
 return 1;
 }
 
+int aclfgl_aclfgl_set_pdf_encoding() {
+char *p;
+p=A4GL_char_pop();
+strcpy(pdf_encoding,p);
+free(p);
+return 0;
+}
+
+
+int aclfgl_aclfgl_get_pdf_encoding() {
+A4GL_push_char(pdf_encoding);
+return 1;
+}
+
+char *A4GL_get_pdf_encoding(void) {
+return pdf_encoding;
+}
 /* ============================= EOF ================================ */
