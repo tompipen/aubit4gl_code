@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.317 2008-07-06 11:34:25 mikeaubury Exp $
+# $Id: mod.c,v 1.318 2008-08-04 18:56:33 mikeaubury Exp $
 #
 */
 
@@ -209,7 +209,7 @@ struct expr_str *menu_attrib_image=0;
 
 /*static int    const_cnt = 0;*/
 
-int rep_type = 0;	      /** The report type */
+int rep_type = REP_TYPE_NOTSET;	      /** The report type */
 
 /*int           last_var_found = -1;*/
 
