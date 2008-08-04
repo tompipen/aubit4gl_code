@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.48 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.49 2008-08-04 18:48:21 mikeaubury Exp $
 #*/
 
 /**
@@ -472,7 +472,7 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
   PDF_begin_page (p->pdf_ptr, p->page_width, p->page_length);
   A4GL_debug ("Done\n");
   A4GL_debug ("find font %s\n", p->font_name);
-  p->font = PDF_findfont (p->pdf_ptr, p->font_name, "winansi", 0);
+  p->font = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
 
   if (p->font < 0)
     {
@@ -637,7 +637,7 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
       ptr = A4GL_char_pop ();
       strcpy (p->font_name, ptr);
       acl_free (ptr);
-      a = PDF_findfont (p->pdf_ptr, p->font_name, "winansi", 0);
+      a = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
       if (a < 0)
 	{
 	  A4GL_exitwith ("Unable to locate font");
@@ -1010,7 +1010,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       ptr = A4GL_char_pop ();
       strcpy (p->font_name, ptr);
       acl_free (ptr);
-      a = PDF_findfont (p->pdf_ptr, p->font_name, "winansi", 0);
+      a = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
       if (a < 0)
 	{
 	  A4GL_exitwith ("Unable to locate font");
