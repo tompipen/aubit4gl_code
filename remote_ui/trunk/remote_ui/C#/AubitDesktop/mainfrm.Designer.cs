@@ -46,6 +46,10 @@ namespace AubitDesktop
             this.btnShortcutRemove = new System.Windows.Forms.Button();
             this.btnShortcutAdd = new System.Windows.Forms.Button();
             this.tpOptions = new System.Windows.Forms.TabPage();
+            this.nbXScale = new System.Windows.Forms.NumericUpDown();
+            this.nbYScale = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.lblKeyCode = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tbInterruptKey = new System.Windows.Forms.TextBox();
@@ -60,20 +64,16 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.nbYScale = new System.Windows.Forms.NumericUpDown();
-            this.nbXScale = new System.Windows.Forms.NumericUpDown();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tpOptions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nbXScale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).BeginInit();
             this.tpConnections.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nbXScale)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -245,6 +245,50 @@ namespace AubitDesktop
             this.tpOptions.Text = "Options";
             this.tpOptions.UseVisualStyleBackColor = true;
             // 
+            // nbXScale
+            // 
+            this.nbXScale.Location = new System.Drawing.Point(81, 209);
+            this.nbXScale.Name = "nbXScale";
+            this.nbXScale.Size = new System.Drawing.Size(45, 20);
+            this.nbXScale.TabIndex = 21;
+            this.nbXScale.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.nbXScale.ValueChanged += new System.EventHandler(this.nbXScale_ValueChanged);
+            // 
+            // nbYScale
+            // 
+            this.nbYScale.Location = new System.Drawing.Point(81, 183);
+            this.nbYScale.Name = "nbYScale";
+            this.nbYScale.Size = new System.Drawing.Size(45, 20);
+            this.nbYScale.TabIndex = 20;
+            this.nbYScale.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.nbYScale.ValueChanged += new System.EventHandler(this.nbYScale_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(17, 210);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(52, 13);
+            this.label3.TabIndex = 19;
+            this.label3.Text = "X Scaling";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(17, 183);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(52, 13);
+            this.label2.TabIndex = 18;
+            this.label2.Text = "Y Scaling";
+            // 
             // lblKeyCode
             // 
             this.lblKeyCode.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -376,60 +420,6 @@ namespace AubitDesktop
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 183);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(52, 13);
-            this.label2.TabIndex = 18;
-            this.label2.Text = "Y Scaling";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 210);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(52, 13);
-            this.label3.TabIndex = 19;
-            this.label3.Text = "X Scaling";
-            // 
-            // nbYScale
-            // 
-            this.nbYScale.Location = new System.Drawing.Point(81, 183);
-            this.nbYScale.Minimum = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.nbYScale.Name = "nbYScale";
-            this.nbYScale.Size = new System.Drawing.Size(45, 20);
-            this.nbYScale.TabIndex = 20;
-            this.nbYScale.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.nbYScale.ValueChanged += new System.EventHandler(this.nbYScale_ValueChanged);
-            // 
-            // nbXScale
-            // 
-            this.nbXScale.Location = new System.Drawing.Point(81, 209);
-            this.nbXScale.Minimum = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.nbXScale.Name = "nbXScale";
-            this.nbXScale.Size = new System.Drawing.Size(45, 20);
-            this.nbXScale.TabIndex = 21;
-            this.nbXScale.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.nbXScale.ValueChanged += new System.EventHandler(this.nbXScale_ValueChanged);
-            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -452,10 +442,10 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tpOptions.ResumeLayout(false);
             this.tpOptions.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nbXScale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).EndInit();
             this.tpConnections.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nbXScale)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
