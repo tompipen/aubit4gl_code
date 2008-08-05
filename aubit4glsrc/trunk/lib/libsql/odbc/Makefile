@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2008-03-20 15:14:02 mikeaubury Exp $
+# $Id: Makefile,v 1.17 2008-08-05 17:14:30 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -43,7 +43,7 @@ CFLAGS					+=${C_LOCAL_IFLAGS}
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
 LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
-OBJECTS					=sql.o sqlex.o array.o
+OBJECTS					=sql.o sqlex.o array.o sqlstates.o
 LINK_ALL	=-L/usr/local/lib
 #LD_RUN_PATH 			=${INFORMIXDIR}/lib/esql
 

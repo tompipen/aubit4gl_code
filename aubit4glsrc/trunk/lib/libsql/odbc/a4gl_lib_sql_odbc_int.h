@@ -172,7 +172,7 @@ SQLUINTEGER A4GL_display_size (SQLSMALLINT coltype, SQLUINTEGER collen, SQLCHAR*
 void A4GL_init_typeinfo(void);
 char * A4GL_type_id_to_name(int type_id);
 
-
+int get_fake_error(char *sqlstate);
 #include "a4gl_lib_sql_int.h"
 #include "a4gl_API_sql_lib.h"
 #include "a4gl_expr.h"

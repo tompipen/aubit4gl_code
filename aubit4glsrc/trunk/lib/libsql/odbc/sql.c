@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.214 2008-07-25 15:12:53 gyver309 Exp $
+# $Id: sql.c,v 1.215 2008-08-05 17:14:31 mikeaubury Exp $
 #
 */
 
@@ -5745,6 +5745,26 @@ A4GL_set_sqlca (SQLHSTMT hstmt, char *s)
     rc = SQLError (henv, hdbc, hstmt, (SQLCHAR*)odbc_sqlstate, &nativeerr,
                                 (SQLCHAR*)errmsg, sizeof(errmsg), &msglen);
 #endif
+
+    if (nativeerr==0) {
+		// no error number was given!
+		// If we got an error - we really should set it to something...
+		// but only - if its important...
+		int need_fake_error=1;
+		if (strncmp( odbc_sqlstate,"00",2)==0) { // OK
+				need_fake_error=0;
+		}
+		if (strncmp( odbc_sqlstate,"01",2)==0) { // Warning..
+				need_fake_error=0;
+		}
+		if (need_fake_error) {	
+			// its important - try to get an informix error number
+			// from the sqlstate...
+			// get_fake_error should be  'extended' at some point to try to get
+			// some real errors.
+			nativeerr=get_fake_error(odbc_sqlstate);
+		}
+	}
 
     // Some checks
     if (sql_failed(rc))
