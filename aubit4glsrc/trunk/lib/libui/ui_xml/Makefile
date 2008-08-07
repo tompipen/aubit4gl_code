@@ -4,13 +4,13 @@ ROOT=../../..
 include ${ROOT}/incl/Makefile-common
 
 
-CFLAGS+=-I$(AUBITDIR)/incl -I. -Iuilib
+CFLAGS+=-I$(ROOT)/incl -I. -Iuilib
 
 
 all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
 
-${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a 
-	${LD} ${SO_LDFLAGS}  -o $@  xml.o -Bstatic  -Luilib -luilib
+${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
+	${LD} ${SO_LDFLAGS}  -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib
 
 proxy: proxy.o pipe.o debug.o
 	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o

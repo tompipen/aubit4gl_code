@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include "a4gl_libaubit4gl.h"
 #include "comms.h"
 #include "uilib.h"
@@ -9,7 +10,12 @@ FILE *def_stderr = NULL;
 char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
 
-#include <stdarg.h>
+int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
+
+
+
+char reading_form_id[200];
+char reading_form_name[200];
 int mn_id = 0;
 struct s_windows
 {
@@ -40,6 +46,11 @@ ignull (char *s)
 
 }
 
+static set_reading_form(char *form_id, char *form_name) {
+	//printf("%s %s\n",form_id, form_name);
+	strcpy(reading_form_id, form_id);
+	strcpy(reading_form_name, form_name);
+}
 int
 A4GL_win_stack_cnt (void)
 {
@@ -165,7 +176,7 @@ free(buff);
 }
 
 static int
-A4GL_XML_opening_form (char *formfile, char *formname)
+A4GL_XML_opening_form (char *formfile, char *formname,int append_xml)
 {
   FILE *f;
   char *fbuff;
@@ -175,7 +186,9 @@ A4GL_XML_opening_form (char *formfile, char *formname)
   A4GL_trim (buff);
   strcpy (buff_formname, formname);
   A4GL_trim (buff_formname);
-  strcat (buff, ".xml");
+  if (append_xml) {
+  	strcat (buff, ".xml");
+  }
   f = A4GL_open_file_dbpath (buff);
 
   if (f)
@@ -194,7 +207,7 @@ A4GL_XML_opening_form (char *formfile, char *formname)
     }
   else
     {
-      printf ("Unable to open file '%s'\n", buff);
+      //printf ("Unable to open file '%s'\n", buff);
       return 0;
     }
 }
@@ -314,11 +327,10 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
 
 
 // Can we find a pregenerated XML form ? 
-  if (!A4GL_XML_opening_form (fname, name))
+  if (!A4GL_XML_opening_form (fname, name,1))
     {
-      send_to_ui ("<FORM>");
+	set_reading_form(fname,name);
       form = A4GL_read_form (fname, name);
-      send_to_ui ("</FORM>");
     }
   send_to_ui ("</OPENWINDOWWITHFORM>");
   suspend_flush (-1);
@@ -394,13 +406,12 @@ UILIB_A4GL_open_form (char *name)
   send_to_ui ("<OPENFORM FORMNAME=\"%s\" SOURCE=\"%s\">", name, buff);
 // Can we find a pregenerated XML form ? 
 //
-  if (!A4GL_XML_opening_form (buff, name))
+  if (!A4GL_XML_opening_form (buff, name,1))
     {
       // Nope - lets send a non-xml form instead..
       // this will callback to our UILIB_A4GL_read_metrics function..
-      send_to_ui ("<FORM>");
+	set_reading_form(buff,name);
       form = A4GL_read_form (buff, name);
-      send_to_ui ("</FORM>");
     }
     send_to_ui ("</OPENFORM>");
   suspend_flush (-1);
@@ -2432,8 +2443,29 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   char *include;
   struct struct_scr_field *fprop = 0;
   char *action;
+  int generated_xml_form=0;
 
   formdets = formdetsv;
+  if (generate_xml_forms) {
+		FILE *f;
+		char buff[200];
+		tmpnam(buff);
+		//strcpy(buff,"tmp.xml");
+		f=fopen(buff,"w");
+		if (f) {
+			write_xml_form(f,reading_form_id,formdets->fileform) ;
+	  		if (A4GL_XML_opening_form (buff, reading_form_id,0)) {
+				generated_xml_form=1;
+			}
+
+		}
+		unlink(buff);
+  } 
+
+  if (generated_xml_form) {
+	return;
+  }
+	
   delims[0][0] = formdets->fileform->delim[0];
   delims[1][0] = formdets->fileform->delim[1];
   delims[2][0] = formdets->fileform->delim[2];
@@ -2443,6 +2475,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   n = formdets->fileform->metrics.metrics_len;
   A4GL_debug ("metrics len=%d", n);
 
+      send_to_ui ("<FORM>");
   send_to_ui ("<SCREENS MAXCOL=\"%d\" MAXLINE=\"%d\">", formdets->fileform->maxcol, formdets->fileform->maxline);
 
   send_to_ui ("<SCREENLAYOUT>", formdets->fileform->maxcol, formdets->fileform->maxline);
@@ -2641,6 +2674,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
       send_to_ui ("</ATTRIB>");
     }
   send_to_ui ("</ATTRIBUTES>");
+      send_to_ui ("</FORM>");
 
 
   return 1;
