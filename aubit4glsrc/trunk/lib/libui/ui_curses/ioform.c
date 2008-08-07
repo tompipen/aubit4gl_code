@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.199 2008-07-23 16:25:19 mikeaubury Exp $
+# $Id: ioform.c,v 1.200 2008-08-07 08:50:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.199 2008-07-23 16:25:19 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.200 2008-08-07 08:50:21 mikeaubury Exp $";
 #endif
 
 /**
@@ -4475,6 +4475,31 @@ chk_for_picture (FIELD * f, char *buff)
   A4GL_trim (buff);
 }
 
+/// This fuction extracts the portion of 'fmt' in 'str' for the search term 'srch'
+/// eg get_data_from_formatted_field("dd","01/01/2002","dd/mm/yyyy")
+/// this has a sideeffect in that the format will have any matching terms replaced by spaces.
+/// so - after this call - fmt will be "  /01/2002"
+/// this is done so you can search for longer terms first - like mmm or ddd and not have them confused a
+/// later search for mm or dd...
+static char *get_data_from_formatted_field(char *srch,char *str, char *fmt) {
+char *ptr;
+int offset;
+static char buff[200];
+A4GL_debug("get_data_from_formatted_field called with '%s' '%s' '%s'", srch,str,fmt);
+ptr=strstr(fmt,srch);
+if (ptr==0) {
+		A4GL_debug("Searching for %s failed in %s", srch,fmt);
+		return 0;
+}
+offset=ptr-fmt;
+A4GL_debug("Offset=%d\n",offset);
+strncpy(buff,&str[offset],strlen(srch));
+buff[strlen(srch)]=0;
+A4GL_debug("Searching for %s in %s got %s", srch,fmt, buff);
+memset(fmt+offset,' ',strlen(srch));
+return buff;
+}
+
 
 
 char *
@@ -4485,40 +4510,128 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
   A4GL_debug ("FLD_DATA_IGNORE_FORMAT : %s\n", fld_data);
 //  if (ptr)
 //    {
-      // It could the that there are some literals or other characters
-      // in fld_data that we need to take out first...
-      //
-      A4GL_debug ("Has format");
-      if (fprop->datatype == DTYPE_SMINT || fprop->datatype == DTYPE_INT
-	  || fprop->datatype == DTYPE_DECIMAL
-	  || fprop->datatype == DTYPE_MONEY || fprop->datatype == DTYPE_FLOAT
-	  || fprop->datatype == DTYPE_SMFLOAT)
+  // It could the that there are some literals or other characters
+  // in fld_data that we need to take out first...
+  //
+  A4GL_debug ("Has format");
+  if (fprop->datatype == DTYPE_SMINT || fprop->datatype == DTYPE_INT
+      || fprop->datatype == DTYPE_DECIMAL
+      || fprop->datatype == DTYPE_MONEY || fprop->datatype == DTYPE_FLOAT || fprop->datatype == DTYPE_SMFLOAT)
+    {
+      static char buff_new[256];
+      int a;
+      int c = 0;
+      memset (buff_new, 0, 255);
+
+      for (a = 0; a < strlen (fld_data); a++)
 	{
-	  static char buff_new[256];
-	  int a;
-	  int c = 0;
-	  memset (buff_new, 0, 255);
-
-	  for (a = 0; a < strlen (fld_data); a++)
+	  if (!A4GL_is_meaningful_in_decfmt (A4GL_get_convfmts ()->ui_decfmt, fld_data[a]))
+	    continue;
+	  if (fld_data[a] == A4GL_get_convfmts ()->ui_decfmt.decsep)
 	    {
-	      if ( ! A4GL_is_meaningful_in_decfmt(A4GL_get_convfmts()->ui_decfmt, fld_data[a]))
-		  continue;
-	      if (fld_data[a] == A4GL_get_convfmts()->ui_decfmt.decsep)
-	      {
-	        buff_new[c++] = A4GL_get_convfmts()->posix_decfmt.decsep;
-	        continue;
-	      }
-	      buff_new[c++] = fld_data[a];
+	      buff_new[c++] = A4GL_get_convfmts ()->posix_decfmt.decsep;
+	      continue;
 	    }
-	  fld_data = buff_new;
-	  A4GL_debug ("COPY -> %s instead", fld_data);
+	  buff_new[c++] = fld_data[a];
 	}
+      fld_data = buff_new;
+      A4GL_debug ("COPY -> %s instead", fld_data);
+    }
 
-//    }
+
+  if (fprop->datatype == DTYPE_DATE)
+    {
+      int adate;
+      if (A4GL_stod (fld_data, &adate, 0) == 1)
+	{
+	  char *d;
+	  static char buff_new[256];
+	  A4GL_push_date (adate);
+	  d = A4GL_char_pop ();
+	  strcpy (buff_new, d);
+	  free (d);
+	  fld_data = buff_new;
+
+	}
+      else
+	{
+	  if (ptr)
+	    {
+	      char tmpbuff[200];
+		char format[256];
+	      static char buff_new[256];
+	      int mm;
+	      int rval;
+	      char *mmm_s;
+	      int mmm;
+	      int dd;
+	      int yyyy;
+	      int yy;
+	      char *d;
+	      memset (buff_new, 0, 255);
+		strcpy(format,ptr); // 'format' will get changed by the calls to get_data_from_formatted_field
+		A4GL_debug("fld_data=%s\n",fld_data);
+	      strcpy (tmpbuff, fld_data);
+	      mmm_s = get_data_from_formatted_field ("mmm", tmpbuff, format);
+	      if (mmm_s)
+		{
+		  int a;
+		  for (a = 1; a <= 12; a++)
+		    {
+		      if (strcmp (A4GL_find_str_resource_int ("_MON", a), mmm_s) == 0)
+			{
+			  mmm = a;
+			  break;
+			}
+		    }
+		}
+	      else
+		{
+	      d = get_data_from_formatted_field ("mm", tmpbuff, format);
+
+	      if (d)
+		mmm = atol (d);
+	      else
+		mmm = -1;
+		}
+
+	      // Just removed any 'ddd' - they are ignored...
+	      d = get_data_from_formatted_field ("ddd", tmpbuff, format);
+
+	      d = get_data_from_formatted_field ("dd", tmpbuff, format);
+	      if (d)
+		dd = atol (d);
+	      else
+		dd = -1;
+	      d = get_data_from_formatted_field ("yyyy", tmpbuff, format);
+	      if (d)
+		yy = atol (d);
+	      else{
+	      d = get_data_from_formatted_field ("yy", tmpbuff, format);
+	      if (d)
+		yy = A4GL_modify_year (atol (d));
+	      else
+		yy = -1;
+		}
+
+		if (dd==-1 || mmm==-1 || yy==-1) {
+			// Couldn't figure  out one of them...
+			A4GL_exitwith("Unable to determine date from format");
+			return "";
+		}
+		A4GL_debug("Got dd=%d mmm=%d yy=%d",dd,mmm,yy);
+	      rval = A4GL_gen_dateno (dd, mmm, yy);
+	      A4GL_push_date (rval);
+	      d = A4GL_char_pop ();
+	      strcpy (buff_new, d);
+	      free (d);
+	      fld_data = buff_new;
+	    }
+	}
+    }
   A4GL_debug ("Returning : %s", fld_data);
   return fld_data;
 }
-
 
 
 int
@@ -4530,6 +4643,9 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
   int dsize;
 
   fld_data = A4GL_fld_data_ignore_format (fprop, fld_data);
+   if (fld_data==0) {
+		return 0;
+	}
   A4GL_debug ("Got fld_data as : %s", fld_data);
   if (A4GL_is_numeric_datatype(fprop->datatype))
   {
