@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.430 2008-08-12 10:28:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.431 2008-08-12 17:38:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.430 2008-08-12 10:28:46 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.431 2008-08-12 17:38:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -148,6 +148,7 @@ struct module_entry *current_entry = 0;
 
 struct variable_list * current_entry_variables=0;
 
+char *generate_ispdf(void) ;
 
 
 /*
@@ -1160,7 +1161,7 @@ void A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
  */
 void print_rep_ret (int report_cnt,int addit)
 {
-  if (addit) printc("A4GL_%spop_report_section(&_rep,%d);",ispdf (), rep_print_code++);
+  if (addit) printc("A4GL_%spop_report_section(&_rep,%d);",generate_ispdf (), rep_print_code++);
   printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
 }
 
@@ -1332,7 +1333,7 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->expr_str_u.expr_expr);
 	  if (current_cmd->cmd_data.type==E_CMD_PRINT_CMD)
 	    {
-	      printc ("A4GL_%sset_column(&_rep);", ispdf ());
+	      printc ("A4GL_%sset_column(&_rep);", generate_ispdf ());
 	    }
 	  else
 	    {
@@ -6072,7 +6073,7 @@ void print_variable_usage_for_bind(expr_str *v) {
 // should be use?
 // If its a pdfreport - most of the calls are prefixed with 'pdf_'
 // to distiguish them from the normal report...
-char *ispdf() {
+char *generate_ispdf() {
       switch (current_entry->met_type) {
 	case E_MET_REPORT_DEFINITION: return "";
 	case E_MET_PDF_REPORT_DEFINITION: return "pdf_";

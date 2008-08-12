@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.318 2008-08-04 18:56:33 mikeaubury Exp $
+# $Id: mod.c,v 1.319 2008-08-12 17:38:35 mikeaubury Exp $
 #
 */
 
@@ -3066,7 +3066,7 @@ get_upd_using_queries (void)
  *   - pdf_ Otherwise
  */
 char *
-ispdf (void)
+compile_ispdf (void)
 {
   if (rep_type == REP_TYPE_NORMAL)
     return "";

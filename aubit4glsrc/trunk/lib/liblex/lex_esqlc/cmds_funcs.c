@@ -102,7 +102,7 @@ int
 print_skip_to_top_cmd (void)
 {
   print_cmd_start ();
-  printc ("A4GL_%sskip_top_of_page(&_rep,0);\n", ispdf ());
+  printc ("A4GL_%sskip_top_of_page(&_rep,0);\n", generate_ispdf ());
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -3066,7 +3066,7 @@ int print_term_rep_cmd(struct_term_rep_cmd *cmd_data) {
 int print_need_cmd(struct_need_cmd *cmd_data) {
   print_cmd_start ();
   print_expr(cmd_data->expr);
-  printc ("A4GL_%sneed_lines(&_rep);\n", ispdf ());
+  printc ("A4GL_%sneed_lines(&_rep);\n", generate_ispdf ());
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -3075,7 +3075,7 @@ int print_need_cmd(struct_need_cmd *cmd_data) {
 int print_skip_cmd(struct_skip_cmd *cmd_data) {
   print_cmd_start ();
   printc ("A4GL_push_int(%d);", cmd_data->lines );
-  printc ("A4GL_%saclfgli_skip_lines(&_rep);\n", ispdf ());
+  printc ("A4GL_%saclfgli_skip_lines(&_rep);\n", generate_ispdf ());
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -3131,15 +3131,15 @@ int a;
 			// We're not printing the WORDWRAP - we need to decode the
 			// wordwrap and change our print accordingly...
 			print_expr(e->expr_str_u.expr_wordwrap->expr);
-    			printc ("A4GL_%srep_print(&_rep,1,1,_wordwrap,%d);\n", ispdf (),rep_print_entry++);
+    			printc ("A4GL_%srep_print(&_rep,1,1,_wordwrap,%d);\n", generate_ispdf (),rep_print_entry++);
 			printc("}");
 		} else {
 			print_expr(e);
-    			printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", ispdf (), wrap,rep_print_entry++);
+    			printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", generate_ispdf (), wrap,rep_print_entry++);
 		}
   }
   }
-  printc ("A4GL_%srep_print(&_rep,0,%d,0,-1);\n", ispdf (), cmd_data->semi==EB_TRUE);
+  printc ("A4GL_%srep_print(&_rep,0,%d,0,-1);\n", generate_ispdf (), cmd_data->semi==EB_TRUE);
 
 
   print_copy_status_not_sql (0);
@@ -3154,7 +3154,7 @@ int print_print_file_cmd(struct_print_file_cmd *cmd_data) {
   printc("char *_r;");
   print_expr(cmd_data->filename);
   printc("_r=A4GL_char_pop();");
-  printc ("%sA4GL_rep_file_print(&_rep,_r,%d);\n", ispdf (), cmd_data->semi==EB_TRUE);
+  printc ("%sA4GL_rep_file_print(&_rep,_r,%d);\n", generate_ispdf (), cmd_data->semi==EB_TRUE);
   printc("free(_r);");
   printc("}");
   print_copy_status_not_sql (0);

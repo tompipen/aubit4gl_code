@@ -730,19 +730,19 @@ return "";
  *    * Generate the C implementation to the output file.
  *     */
 static void
-print_format_every_row (expr_str_list* bind,char *ispdf)
+print_format_every_row (expr_str_list* bind,char *ispdf_str)
 {
 
   if( bind==0) return;
   if(bind->list.list_len==0) return;
   printc ("{int _rr;for (_rr=0;_rr<%d;_rr++) {", bind->list.list_len);
   printc ("A4GL_push_char(_rbindvarname[_rr]);\n");
-  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_push_long(19); A4GL_set_column(&_rep);A4GL_%srep_print(&_rep,1,1,0,-1); \n",ispdf,ispdf);
+  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_push_long(19); A4GL_set_column(&_rep);A4GL_%srep_print(&_rep,1,1,0,-1); \n",ispdf_str,ispdf_str);
   printc ("A4GL_push_variable(_rbind[_rr].ptr,_rbind[_rr].dtype);");
-  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_%srep_print(&_rep,0,0,0,-1);\n",ispdf,ispdf);
+  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_%srep_print(&_rep,0,0,0,-1);\n",ispdf_str,ispdf_str);
   printc ("}");
   printc ("A4GL_push_char(\" \");");
-  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_%srep_print(&_rep,0,0,0,-1);",ispdf,ispdf);
+  printc ("A4GL_%srep_print(&_rep,1,1,0,-1); A4GL_%srep_print(&_rep,0,0,0,-1);",ispdf_str,ispdf_str);
   printc ("}");
 
 }
@@ -759,14 +759,14 @@ static void
 print_format_section (report_format_section * report_format_section, int report_cnt, int rep_type,expr_str_list *parameters)
 {
   int a;
-  char *ispdf;
+  char *ispdf_str;
   if (rep_type == REP_TYPE_NORMAL)
     {
-      ispdf = "";
+      ispdf_str = "";
     }
   else
     {
-      ispdf = "pdf_";
+      ispdf_str = "pdf_";
     }
   printcomment ("/* FORMAT SECTION */");
 
@@ -778,7 +778,7 @@ print_format_section (report_format_section * report_format_section, int report_
       printc ("rep_ctrl%d_%d:\n", report_cnt, a);
       clr_rep_print_entry ();
       tmp_ccnt++;
-      printc ("A4GL_%spush_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);", ispdf,
+      printc ("A4GL_%spush_report_section(&_rep,_module_name,_reportName,%d,'%c',\"%s\",%d);", ispdf_str,
 	      report_format_section->entries.entries_val[a]->lineno,
 	      decode_whytype (report_format_section->entries.entries_val[a]->rb_block),
 	      decode_why (report_format_section->entries.entries_val[a]->rb_block,
@@ -789,13 +789,13 @@ print_format_section (report_format_section * report_format_section, int report_
 	if (report_format_section->entries.entries_val[a]->rb_block.rb==RB_FORMAT_EVERY_ROW) {
 		printc("/* FORMAT EVERY ROW */");
 
-		print_format_every_row(parameters, ispdf);
+		print_format_every_row(parameters, ispdf_str);
 
         } else {
       		dump_commands (report_format_section->entries.entries_val[a]->rep_sec_commands);
 	}
 
-      printc ("A4GL_%spop_report_section(&_rep,%d);", ispdf, a);
+      printc ("A4GL_%spop_report_section(&_rep,%d);", ispdf_str, a);
       printc ("goto report%d_ctrl; /* G1 */\n\n", report_cnt);
       tmp_ccnt--;
     }
