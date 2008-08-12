@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.429 2008-07-31 11:44:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.430 2008-08-12 10:28:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.429 2008-07-31 11:44:07 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.430 2008-08-12 10:28:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6352,10 +6352,19 @@ int a;
 		print_field(&flist->field_list_entries.field_list_entries_val[a]);
 	}
 	clr_nonewlines();
-
 }
 
 
+void remove_field_subscripts_from_field_list(struct fh_field_list *flist) {
+int a;
+	for (a=0;a<flist->field_list_entries.field_list_entries_len;a++) {
+		struct fh_field_entry*field ;
+		field=&flist->field_list_entries.field_list_entries_val[a];
+		if (field->fieldsub) {
+			field->fieldsub=0;
+		}
+	}
+}
 void
 print_ident (struct expr_str *ptr)
 {

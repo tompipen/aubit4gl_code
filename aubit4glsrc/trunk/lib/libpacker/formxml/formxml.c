@@ -24,12 +24,18 @@ enum e_scrmodes {
 void dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra);
 
 int printed_attributes[1000];
-  static int tabIndex = 0;
-  static int fieldNo = 0;
+static int tabIndex;
+static int fieldNo ;
 //int attributeFieldIDRef[1000];
 
-int nprintedattributes=0;
+int nprintedattributes;
 
+
+int initialize_xmlpacker() {
+	tabIndex=0;
+	fieldNo=0;
+	nprintedattributes=0;
+}
 
 
 
@@ -963,6 +969,7 @@ for (scr=1; scr<=max_scr;scr++) {
 
 
 void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
+	initialize_xmlpacker();
 	ofile=wofile;
 
         fprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");

@@ -868,6 +868,8 @@ print_scroll_cmd (struct_scroll_cmd * cmd_data)
   print_expr (cmd_data->val);
 	printc("_scrollval=A4GL_pop_long();");
   printc ("A4GL_acli_scroll(_scrollval,\n");
+  remove_field_subscripts_from_field_list(cmd_data->srec);
+
   print_field_list (cmd_data->srec);
   printc (",NULL,0);\n");
   printc("}");
