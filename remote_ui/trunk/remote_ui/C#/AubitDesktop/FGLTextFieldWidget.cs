@@ -183,7 +183,7 @@ namespace AubitDesktop
                 {
                     if (this.format != null)
                     {
-                        if (this.format.Length > 0)
+                        if (this.format.Length > 0 && val!=null)
                         {
                             val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
                         }
