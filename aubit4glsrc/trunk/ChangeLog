@@ -1,4 +1,42 @@
 ---------------------------
+Wed Aug 13 07:32:56 BST 2008
+---------------------------
+1.10RC_29 Released
+---------------------------
+	
+	Always send an XMLFORM...
+	
+	Format fixups
+	
+	check pdf_functions are not called from within a normal report
+	
+	Add encodings for pdf reports
+	
+	Use '_' as a single character wildcard for LIKE
+	
+	Add NCHAR
+	
+	Add ECPGLOGGING
+	
+	Add DISPLAYLOCAL
+	
+	Add some basic user authentication
+	
+	Added partial support for less generic datetime data types,
+	currently for Informix only.
+	
+	PDF report fixups
+	
+	Report performance fixups
+	
+	XML form generation (not used for reading forms - just writing
+	them)
+	
+	Fix FINISH REPORT .. CONVERT TO
+	
+	Move XMLFORM
+	
+---------------------------
 Wed Jul  9 11:28:13 BST 2008
 ---------------------------
 1.10RC_28 Released
