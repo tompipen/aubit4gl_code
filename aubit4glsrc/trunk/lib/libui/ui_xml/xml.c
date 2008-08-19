@@ -10,7 +10,7 @@ FILE *def_stderr = NULL;
 char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
 
-int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
+int generate_xml_forms=-1; // Automatically generate XML form files where no XML file exists
 
 
 
@@ -1396,7 +1396,13 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     }
 
   add_window ("screen", 80, 24, 0);
-
+  if (generate_xml_forms==-1) {
+	if (A4GL_isyes(acl_getenv("ALWAYSUSEXMLFORMS"))) {
+		generate_xml_forms=1;
+	} else {
+		generate_xml_forms=0;
+	}
+  }
   send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\">", argv[0], get_ui_id ('r'));
   for (a = 0; nm[a]; a++)
     {
