@@ -147,11 +147,11 @@ misc_infx_stmt: misc_infx_stmt_str {
 misc_infx_stmt_str: 
 	START_DATABASE identifier WITH_LOG_IN CHAR_VALUE MODE_ANSI {
 			add_feature("START_DATABASE_WITH_LOG_MODE_ANSI");
-			sprintf($<str>$,"START DATABASE %S WITH LOG IN %s MODE ANSI", $<str>2,$<str>4);
+			sprintf($<str>$,"START DATABASE %s WITH LOG IN %s MODE ANSI", $<str>2,$<str>4);
 	}
 	| START_DATABASE identifier WITH_LOG_IN CHAR_VALUE {
 			add_feature("START_DATABASE_WITH_LOG");
-			sprintf($<str>$,"START DATABASE %S WITH LOG IN %s", $<str>2,$<str>4);
+			sprintf($<str>$,"START DATABASE %s WITH LOG IN %s", $<str>2,$<str>4);
 	}
 	| SET_CONSTRAINTS_ALL_IMMEDIATE
 	{
