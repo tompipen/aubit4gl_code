@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.431 2008-08-12 17:38:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.432 2008-08-22 13:50:19 gyver309 Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.431 2008-08-12 17:38:36 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.432 2008-08-22 13:50:19 gyver309 Exp $";
 #endif
 /**
  * @file
@@ -5089,8 +5089,6 @@ char * local_rettype (char *s)
 	    }
 	}
 	initialized = 1;
-	if (A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
-	    vals[12] = vals[0];
 
     }
 

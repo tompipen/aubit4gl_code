@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.215 2008-08-05 17:14:31 mikeaubury Exp $
+# $Id: sql.c,v 1.216 2008-08-22 13:50:21 gyver309 Exp $
 #
 */
 
@@ -3296,6 +3296,8 @@ static unsigned long conv_sqldtype (int sqldtype, int sdim)
     else
         ndtype = convneg_sql_to_4gl[(sqldtype * -1) & 0xf];
 
+    if (ndtype = 12 && A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
+	ndtype = DTYPE_CHAR;
 
     if (ndtype == 0)
     {
