@@ -325,6 +325,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "VALUEMIN"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_VALUEMIN;}
 "PROGRESSBAR"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PROGRESSBAR;}
 "COMBOBOX"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_COMBOBOX;}
+"BROWSER"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_BROWSER;}
 
 
 

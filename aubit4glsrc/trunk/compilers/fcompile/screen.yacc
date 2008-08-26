@@ -139,7 +139,7 @@ FORMONLY COMMENT
 %token KW_AUTOSCALE KW_PIXELWIDTH KW_PIXELHEIGHT
 
 %token KW_SCROLLBARS_BOTH KW_SCROLLBARS_V KW_SCROLLBARS_H KW_STRETCH_Y KW_STRETCH_BOTH KW_ITEMS KW_VALUEMAX KW_VALUEMIN
-%token KW_PROGRESSBAR KW_COMBOBOX OPTIONS
+%token KW_PROGRESSBAR KW_COMBOBOX OPTIONS KW_BROWSER
 %%
 
 /* rules */
@@ -675,6 +675,7 @@ op_field_tag_type:
 	| KW_IMAGE {strcpy($<str>$,"Image");}
 	| KW_PROGRESSBAR {strcpy($<str>$,"ProgressBar");} 
 	| KW_COMBOBOX {strcpy($<str>$,"ComboBox");} 
+	| KW_BROWSER {strcpy($<str>$,"Browser");} 
 ;
 
 
