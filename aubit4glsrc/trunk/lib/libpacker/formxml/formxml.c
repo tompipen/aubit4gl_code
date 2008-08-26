@@ -595,6 +595,12 @@ dim=f->fields.fields_val[field_no].metric.metric_len;
 return (f->fields.fields_val[field_no].metric.metric_len>1);
 }
 
+int fieldOccursHowManyTimes(struct_form *f, int attr_no,int *dim) {
+int field_no;
+field_no= f->attributes.attributes_val[attr_no].field_no;
+dim=f->fields.fields_val[field_no].metric.metric_len;
+f->fields.fields_val[field_no].metric.metric_len;
+}
 void
 print_field_attribute (struct_form * f, int metric_no, int attr_no)
 {
@@ -614,6 +620,9 @@ fieldNo=attr_no;
 	if (fieldOccursMultipleTimes(f, attr_no,&dim1)) {
 		ismatrix=1;
 		dim=dim1;
+		if (dim==0) {
+			dim=fieldOccursHowManyTimes(f, attr_no,&dim1);
+		}
 	} else {
 		ismatrix=0;
 	}
