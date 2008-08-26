@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.128 2008-07-16 16:51:56 mikeaubury Exp $
+# $Id: builtin.c,v 1.129 2008-08-26 16:15:14 mikeaubury Exp $
 #
 */
 
@@ -57,7 +57,7 @@ int 	mv_arr_count = 0;
 int 	mv_arr_curr = 0;
 int 	mv_scr_line = 0;
 FILE *	error_log_file = 0;
-
+int mLastCursor=0;
 /*
 =====================================================================
                     Functions prototypes
@@ -1620,6 +1620,18 @@ int aclfgl_fgl_setkeylabel(int n)  {
 	//free(p1);
 	//free(p2);
 	return 0;
+}
+
+void A4GL_set_last_cursor(int n) {
+	mLastCursor=n;
+}
+
+int aclfgl_fgl_dialog_setcursor(int n) {
+	A4GL_direct_to_ui("dialog_setcursor",(char *)n);
+}
+
+int aclfgl_fgl_dialog_getcursor(int n) {
+	return mLastCursor;
 }
 
 int aclfgl_fgl_dialog_setkeylabel(int n)  {

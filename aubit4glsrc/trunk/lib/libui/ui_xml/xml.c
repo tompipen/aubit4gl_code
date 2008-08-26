@@ -1631,6 +1631,16 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
+  if (strcmp (what, "dialog_setcursor") == 0)
+    {
+      //int a;
+      //int params;
+      int cpos;
+	cpos=A4GL_pop_long();
+      send_to_ui ("<SETCURSOR POSITION=\"%d\"/>",cpos);
+      return;
+    }
+
   FPRINTF (def_stderr, "unhandled direct to ui call\n");
 
 }
@@ -2469,7 +2479,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   } 
 
   if (generated_xml_form) {
-	return;
+	return 1;
   }
 	
   delims[0][0] = formdets->fileform->delim[0];

@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2008/07/15 10:51:19.
+ * Generated 2008/08/26 17:06:40.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -110,6 +110,7 @@ void STag_TRIGGERED(void)
 		lexed_attr.arrline=0;
 		lexed_attr.arrcount=0;
 		lexed_attr.lastkey=0;
+		lexed_attr.lastcursor=0;
 		lexed_attr.infield=0;
                 lexed_attr.filelen=-1;
                 lexed_attr.fileid=0;
@@ -122,6 +123,7 @@ void STag_TRIGGERED(void)
 		if (A_TRIGGERED_ARRLINE) lexed_attr.arrline=atoi(A_TRIGGERED_ARRLINE); 
 		if (A_TRIGGERED_ARRCOUNT) lexed_attr.arrcount=atoi(A_TRIGGERED_ARRCOUNT); 
 		if (A_TRIGGERED_LASTKEY) lexed_attr.lastkey=strdup(A_TRIGGERED_LASTKEY); 
+		if (A_TRIGGERED_LASTCURSOR) lexed_attr.lastcursor=atol(A_TRIGGERED_LASTCURSOR); 
 		if (A_TRIGGERED_INFIELD) lexed_attr.infield=strdup(A_TRIGGERED_INFIELD); 
 		if (A_TRIGGERED_FILEID) lexed_attr.fileid=strdup(A_TRIGGERED_FILEID);
 		if (A_TRIGGERED_PROGRAMNAME) lexed_attr.programname=strdup(A_TRIGGERED_PROGRAMNAME);
@@ -135,7 +137,7 @@ void STag_TRIGGERED(void)
 
 void ETag_TRIGGERED(void)
 {
-#line 82 "triggers_act.act"
+#line 84 "triggers_act.act"
 
 	 
 	{
@@ -147,7 +149,7 @@ void ETag_TRIGGERED(void)
 
 void STag_SYNCVALUES(void)
 {
-#line 90 "triggers_act.act"
+#line 92 "triggers_act.act"
 
 	 
 	{
@@ -169,7 +171,7 @@ void STag_SYNCVALUES(void)
 
 void ETag_SYNCVALUES(void)
 {
-#line 108 "triggers_act.act"
+#line 110 "triggers_act.act"
 
 	 
 	{
@@ -181,7 +183,7 @@ void ETag_SYNCVALUES(void)
 
 void ETag_SYNCVALUE(void)
 {
-#line 116 "triggers_act.act"
+#line 118 "triggers_act.act"
 
 	 
 	{
@@ -212,7 +214,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 143 "triggers_act.act"
+#line 145 "triggers_act.act"
 
 	 
 	{
@@ -228,7 +230,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 154 "triggers_act.act"
+#line 156 "triggers_act.act"
 
 	 
 	{
@@ -244,7 +246,7 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 166 "triggers_act.act"
+#line 168 "triggers_act.act"
 
 	 
 	{
@@ -262,7 +264,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 180 "triggers_act.act"
+#line 182 "triggers_act.act"
 
 
 /* XML application entry points. */

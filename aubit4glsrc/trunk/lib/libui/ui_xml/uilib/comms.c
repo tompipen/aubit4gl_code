@@ -392,7 +392,7 @@ get_event_from_ui ()
 
 
   //printf("Id=%s\n",attr->id);
-
+  A4GL_set_last_cursor(attr->lastcursor);
   if (attr->id)
     {
       int n = -1;
@@ -445,6 +445,7 @@ get_event_from_ui ()
       last_attr = attr;
       return n;
     }
+   
 
   UIdebug (0, "End of get_event_from_ui - shouldn't happen");
 	cleanup();

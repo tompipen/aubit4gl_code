@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.320 2008-08-26 11:31:05 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.321 2008-08-26 16:15:12 mikeaubury Exp $
 #
 */
 
@@ -1265,6 +1265,7 @@ enum cmd_types {
 
   void A4GL_fgl_end_4gl_0 (void);
   void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
+void A4GL_set_last_cursor(int n);
   void A4GL_display_at (int n, int a);
   void A4GL_push_dtime (struct A4GLSQL_dtime *p);
   void A4GL_push_int (short p);
