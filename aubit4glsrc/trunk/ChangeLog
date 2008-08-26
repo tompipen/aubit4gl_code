@@ -1,4 +1,24 @@
 ---------------------------
+Tue Aug 26 14:38:31 BST 2008
+---------------------------
+1.10RC_30 Released
+---------------------------
+	
+	small fixup for variable name remapping
+	
+	Add BYTE COPY for parameters to function (uses 'COPYOF') Add some
+	options for FCOMPILE minor 4glc syntax fixups
+	
+	Add matrix size when theres no INSTRUCTIONS screen record
+	
+	trivial fix...
+	
+	ODBC_LONGVARCHAR_AS_CHAR conversion code moved from
+	liblex/lex_esqlc/compile_c.c to libsql/odbc/sql.c
+	
+	New build
+	
+---------------------------
 Wed Aug 13 07:32:56 BST 2008
 ---------------------------
 1.10RC_29 Released
