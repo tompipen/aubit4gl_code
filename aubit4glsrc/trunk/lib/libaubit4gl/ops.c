@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.133 2008-07-16 16:51:56 mikeaubury Exp $
+# $Id: ops.c,v 1.134 2008-08-26 11:31:10 mikeaubury Exp $
 #
 */
 
@@ -6072,6 +6072,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *)A4GL_dtype_function_char_getlength);
 
   add_int8_support();
+	add_reference_support();
 
 
 

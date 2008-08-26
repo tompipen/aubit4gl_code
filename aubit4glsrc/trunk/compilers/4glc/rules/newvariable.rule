@@ -47,7 +47,7 @@ obind_var_list: bind_var_list {
 ;
 
 
-opt_cw_ebind_var_list: expanded_obind_var_list 
+opt_cw_ebind_var_list: func_call_args 
 	|  OPEN_SQUARE expanded_obind_var_list CLOSE_SQUARE { $<ptr_list>$=$<ptr_list>2;}
 ;
 
@@ -218,7 +218,10 @@ fparam_var_list:        func_def_var {
 
 func_def_var: 
 		identifier {
-			$<ptr>$=A4GL_new_expr_simple_string($<str>1, ET_EXPR_PARAMETER);
+			$<ptr>$=A4GL_new_expr_param($<str>1, EB_FALSE);
+		}
+		| ASCOPY identifier {
+			$<ptr>$=A4GL_new_expr_param($<str>2, EB_TRUE);
 		}
 ;
 

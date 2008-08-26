@@ -135,73 +135,106 @@ is_builtin_func (char *s)
 
 
 
-expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) {
-struct expr_str_list *rval;
-char errbuff[256];
-int a;
-struct variable_usage *u;
 
-rval=malloc(sizeof(expr_str_list));
-rval->list.list_len=0;
-rval->list.list_val=0;
+expr_str_list *
+expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
+{
+  struct expr_str_list *rval;
+  char errbuff[256];
+  int a;
+  struct variable_usage *u;
 
-if (!check_parameters(errbuff,var_list, parameters)) {
-	A4GL_assertion(1, "Invalid parameter list");
-	return 0;
-}
-if (parameters==0)  return parameters;
+  rval = malloc (sizeof (expr_str_list));
+  rval->list.list_len = 0;
+  rval->list.list_val = 0;
 
-for (a=0;a<parameters->list.list_len;a++) {
-		int b;
-		int found=0;
-		for (b=0;b<var_list->variables.variables_len;b++) {
-		A4GL_assertion(var_list->variables.variables_val[b]->names.names.names_len>1,"Unexpected number of names");
-		if (strcmp(var_list->variables.variables_val[b]->names.names.names_val[0].name, parameters->list.list_val[a]->expr_str_u.expr_string)==0) { // Found it
+  if (!check_parameters (errbuff, var_list, parameters))
+    {
+      A4GL_assertion (1, "Invalid parameter list");
+      return 0;
+    }
+  if (parameters == 0)
+    return parameters;
+
+  for (a = 0; a < parameters->list.list_len; a++)
+    {
+      int b;
+      int found = 0;
+      for (b = 0; b < var_list->variables.variables_len; b++)
+	{
+	  A4GL_assertion (var_list->variables.variables_val[b]->names.names.names_len > 1, "Unexpected number of names");
+	  if (strcmp
+	      (var_list->variables.variables_val[b]->names.names.names_val[0].name,
+	       parameters->list.list_val[a]->expr_str_u.expr_param.expr_string) == 0)
+	    {			// Found it
 
 
-			if (var_list->variables.variables_val[b]->arr_subscripts.arr_subscripts_len && var_list->variables.variables_val[b]->arr_subscripts.arr_subscripts_val[0]==-1) {
-				// Dynamic array..
-					u=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
-					u->datatype=DTYPE_DYNAMIC_ARRAY;
-					u->scope='L';
-					A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(u));
-				continue;
-			}
-
-			switch (var_list->variables.variables_val[b]->var_data.variable_type) {
-			
-				case VARIABLE_TYPE_SIMPLE:
-					u=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
-					A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(u));
-					// Cant pass in an array...
-					//find_variable_vu_in (errbuff, u, var_list->variables.variables_val, var_list->variables.variables_len,1);
-					break;
-
-				case VARIABLE_TYPE_RECORD:
-					{
-					struct record_variable *rec_var;
-					rec_var=&var_list->variables.variables_val[b]->var_data.variable_data_u.v_record;
-					u=new_variable_usage(0,parameters->list.list_val[a]->expr_str_u.expr_string,0);
-					u->datatype=-2;
-					u->scope='L'; /* must be local - its a parameter... */
-					append_record_entries(rec_var, u, rval);
-					}
-
-					break;
-				default:
-					A4GL_assertion(1,"Not handled");
-			}
-			found++;
-			break;
-			}
+	      if (var_list->variables.variables_val[b]->arr_subscripts.arr_subscripts_len
+		  && var_list->variables.variables_val[b]->arr_subscripts.arr_subscripts_val[0] == -1)
+		{
+		  // Dynamic array..
+		  u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
+		  u->datatype = DTYPE_DYNAMIC_ARRAY;
+		  u->scope = 'L';
+		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u));
+		  continue;
 		}
-}
-for (a=0;a<rval->list.list_len;a++) {
-find_variable_vu_in (errbuff, rval->list.list_val[a]->expr_str_u.expr_variable_usage , var_list->variables.variables_val, var_list->variables.variables_len,1,0);
-}
-return rval;
-}
 
+	      if (parameters->list.list_val[a]->expr_str_u.expr_param.isReference)
+		{
+		  // We've found it - but its a byte copt so we dont care too much.
+		  u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
+		  u->datatype = DTYPE_REFERENCE;
+		  u->scope = 'L';	/* must be local - its a parameter... */
+		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u));
+		  found++;
+		  break;
+		}
+	      else
+		{
+
+		  switch (var_list->variables.variables_val[b]->var_data.variable_type)
+		    {
+
+		    case VARIABLE_TYPE_SIMPLE:
+		      u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
+		      A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u));
+		      // Cant pass in an array...
+		      //find_variable_vu_in (errbuff, u, var_list->variables.variables_val, var_list->variables.variables_len,1);
+		      break;
+
+		    case VARIABLE_TYPE_RECORD:
+		      {
+			struct record_variable *rec_var;
+			rec_var = &var_list->variables.variables_val[b]->var_data.variable_data_u.v_record;
+			u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
+			u->datatype = -2;
+			u->scope = 'L';	/* must be local - its a parameter... */
+			append_record_entries (rec_var, u, rval);
+		      }
+
+		      break;
+		    default:
+		      A4GL_assertion (1, "Not handled");
+		    }
+		  found++;
+		  break;
+		}
+	    }
+	}
+    }
+  for (a = 0; a < rval->list.list_len; a++)
+    {
+	struct variable_usage *p;
+	p=rval->list.list_val[a]->expr_str_u.expr_variable_usage;
+       if (p->datatype!=DTYPE_REFERENCE) {
+      		find_variable_vu_in (errbuff, rval->list.list_val[a]->expr_str_u.expr_variable_usage, var_list->variables.variables_val,
+			   var_list->variables.variables_len, 1, 0);
+	}
+    }
+
+  return rval;
+}
 
 
 
@@ -222,14 +255,14 @@ for (a=0;a<parameters->list.list_len;a++) {
 
 	for (b=0;b<var_list->variables.variables_len;b++) {
 		A4GL_assertion(var_list->variables.variables_val[b]->names.names.names_len>1,"Unexpected number of names");
-		if (strcmp(var_list->variables.variables_val[b]->names.names.names_val[0].name, parameters->list.list_val[a]->expr_str_u.expr_string)==0) { // Found it
+		if (strcmp(var_list->variables.variables_val[b]->names.names.names_val[0].name, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string)==0) { // Found it
 			found++;
 			break;
 		}
 	}
 
 	if (!found) {
-		set_yytext(parameters->list.list_val[a]->expr_str_u.expr_string);
+		set_yytext(parameters->list.list_val[a]->expr_str_u.expr_param.expr_string);
 	        strcpy(errbuff,"Variable has not been defined");
                 return 0;
 	}

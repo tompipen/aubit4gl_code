@@ -1993,9 +1993,15 @@ enum e_expr_type {
 		ET_EXPR_ASSOC,
 
 		ET_EXPR_CURSOR_NAME_FUNCTION,
+		ET_EXPR_REFERENCE,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 };
 
+
+struct s_expr_parameter {
+	  enum e_boolean isReference;
+          str  expr_string;
+};
 
 
 
@@ -2022,6 +2028,10 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_LAST:
 		void;
 
+	case ET_EXPR_PARAMETER:
+		struct s_expr_parameter  expr_param;
+
+
 	case ET_EXPR_TRANSLATED_STRING:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_LITERAL_DOUBLE_STR:
@@ -2037,8 +2047,6 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_REPORT_EMAIL:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_IDENTIFIER:
-                /*! str                                    expr_string; !*/
-	case ET_EXPR_PARAMETER:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_SQLBLOCK_TEXT: 	
                str                                    expr_string; 
@@ -2235,6 +2243,8 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_OP_SECOND:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_WHERE_CURRENT_OF:
+                /*! struct expr_str                         *expr_expr; !*/
+	case ET_EXPR_REFERENCE:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_NEG:
                 struct expr_str                         *expr_expr;

@@ -2262,7 +2262,7 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 				struct variable_usage *vu1;
 				struct variable *v;
 				struct expr_str *e;
-				vu1=new_variable_usage(0,parameters->list.list_val[param_to_add]->expr_str_u.expr_string,0);
+				vu1=new_variable_usage(0,parameters->list.list_val[param_to_add]->expr_str_u.expr_param.expr_string,0);
 				v=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 				if (v==0) {
 					set_yytext(expr_as_string_when_possible(parameters->list.list_val[param_to_add]));

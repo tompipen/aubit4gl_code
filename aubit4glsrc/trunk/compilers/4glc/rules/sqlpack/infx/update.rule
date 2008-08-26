@@ -107,6 +107,41 @@ set_clause_list_uc:
 		$<update_cmd>$=$<update_cmd>2;
 		add_feature("UPDATE_COLUMN_EQ_VALUE_LIST");
     }
+
+
+
+    | XSET_MULTIPLY_EQUAL upd_val_list_slil {
+		char buff[200];
+		SPRINTF1(buff,"%s.*", $<str>2);
+#ifdef SQLCOMPILER
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
+#else
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .* 
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		$<update_cmd>$->where_clause=0;
+
+#endif
+	}
+    | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_slil  {
+		char buff[200];
+		SPRINTF1(buff,"%s.*", $<str>2);
+#ifdef SQLCOMPILER
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
+#else
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .*
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		//$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
+		$<update_cmd>$->where_clause=0;
+#endif
+	}
+
+/*
     | XSET_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
 		char buff[200];
 		SPRINTF1(buff,"%s.*", $<str>2);
@@ -116,7 +151,7 @@ set_clause_list_uc:
 		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
 		$<update_cmd>$->connid=0;
 		$<update_cmd>$->table=0;
-		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .* 
 		$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
 		$<update_cmd>$->where_clause=0;
 
@@ -131,11 +166,14 @@ set_clause_list_uc:
 		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
 		$<update_cmd>$->connid=0;
 		$<update_cmd>$->table=0;
-		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .* 
 		$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
 		$<update_cmd>$->where_clause=0;
 #endif
 	}
+*/
+
+
 ;
 
 

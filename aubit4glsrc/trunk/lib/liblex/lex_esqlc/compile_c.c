@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.432 2008-08-22 13:50:19 gyver309 Exp $
+# $Id: compile_c.c,v 1.433 2008-08-26 11:31:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.432 2008-08-22 13:50:19 gyver309 Exp $";
+		"$Id: compile_c.c,v 1.433 2008-08-26 11:31:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1979,7 +1979,18 @@ real_print_expr (struct expr_str *ptr)
                 printc("A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",field_name_as_char(ptr->expr_str_u.expr_field_entry)); 
 		break;
 
-
+	case ET_EXPR_REFERENCE:	
+		{
+		char *var_usage_str;
+		expr_str *referenced_expression;
+		referenced_expression=ptr->expr_str_u.expr_expr;
+		if (referenced_expression->expr_type!=ET_EXPR_VARIABLE_USAGE) {
+			a4gl_yyerror("Cant apply a reference to a non-variable expression");
+		} 
+		var_usage_str=generation_get_variable_usage_as_string(ptr->expr_str_u.expr_expr->expr_str_u.expr_variable_usage);
+		printc("A4GL_push_reference(&%s,sizeof(%s));",var_usage_str,var_usage_str);
+		}
+		break;
 	case ET_EXPR_GET_FLDBUF: 
 	  printc ("{");
 	  printc ("int _retvars;");
@@ -2511,6 +2522,15 @@ if (!A4GL_doing_pcode()) {
 		print_variable_usage(bind->list.list_val[a]);
     		printc (";");
 		clr_nonewlines();
+
+		if ((dtype & DTYPE_MASK)==DTYPE_REFERENCE) {
+			set_nonewlines();
+    			printc ("_fbind[%d].size= sizeof(",a);
+			print_variable_usage(bind->list.list_val[a]);
+			printc(");");
+			clr_nonewlines();
+		}
+
 		if ((dtype & DTYPE_MASK)==DTYPE_DYNAMIC_ARRAY) {
 			set_nonewlines();
     			printc ("_fbind[%d].size= sizeof(struct _dynelem_%s);",  a,get_bottom_level_variable_name( bind->list.list_val[a])); 
@@ -5487,7 +5507,10 @@ expr_str_list *expanded_params;
         }
       tmp_ccnt++;
       print_function_variable_init (&function_definition->variables);
+      printc("{int _lstatus=a4gl_status;");
       printc ("A4GL_pop_params(_fbind,%d);\n", expanded_params->list.list_len);
+      printc("if (_lstatus!=a4gl_status) { A4GL_chk_err(%d,_module_name);  }",function_definition->lineno );
+      printc("}");
 
     }
 

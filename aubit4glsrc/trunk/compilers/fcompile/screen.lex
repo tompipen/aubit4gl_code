@@ -231,6 +231,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "dec" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
 "money" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONEY;}
 "widget" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WIDGET;}
+"options" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OPTIONS;}
 "config" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CONFIG;}
 "black" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BLACK;}
 "blue" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BLUE;}

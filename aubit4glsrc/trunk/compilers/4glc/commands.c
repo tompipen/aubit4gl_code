@@ -253,7 +253,13 @@ FILE *f;
         case ET_EXPR_OP_SPACES:
                 return " ";
 	case ET_EXPR_PARAMETER:
-		return e->expr_str_u.expr_string;
+		if ( e->expr_str_u.expr_param.isReference==EB_TRUE) {
+			char buff[200];
+			sprintf(buff,"REFERENCE %s", e->expr_str_u.expr_param.expr_string);
+			return strdup(buff);
+		} else {
+			return e->expr_str_u.expr_param.expr_string;
+		}
 
         case ET_EXPR_TIME_EXPR: return "TIME";
         case ET_EXPR_TODAY: return "TODAY";

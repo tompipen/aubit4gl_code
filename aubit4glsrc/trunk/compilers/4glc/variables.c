@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.100 2008-07-06 11:34:25 mikeaubury Exp $
+# $Id: variables.c,v 1.101 2008-08-26 11:30:56 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       struct variable *v,
 					       char bindtype);
 int is_valid_vname(struct variable *v, char scope);
+static char *remap_top_level_variables(char *invarname) ;
 void make_function (char *name, int record_cnt);
 //int has_fbind(char *s) ;
 int chk_already_defined(char *s, char scope);
@@ -731,10 +732,13 @@ variable_action (int category, char *name, char *type, char *n,
       /* Is this the first name at this level ? */
       if (curr_v[record_cnt] == 0)
 	{
+	char *mapped_name;
 	  A4GL_debug ("First at level");
 	  curr_v[record_cnt] = acl_malloc2 (sizeof (struct variable));
 	  curr_v[record_cnt]->names.names.names_val = malloc (sizeof (vname));
 	  curr_v[record_cnt]->names.names.names_len = 1;
+		mapped_name=remap_top_level_variables(name);
+	if (mapped_name) name=mapped_name;
 	  curr_v[record_cnt]->names.names.names_val[0].name =
 	    acl_strdup (name);
 
@@ -3127,15 +3131,34 @@ has_fbind (char *s)
 }
 */
 
+static char *remap_top_level_variables(char *invarname) {
+	if (strcmp(invarname,"index")==0) {
+		return "a4gl_index";
+	}
+	return 0;
+}
+
+
 struct variable_usage *check_var_usage (struct variable_usage *v) {
+char *ptr;
+
 if (strcmp(v->variable_name,"sqlca")==0) {
 	v->variable_name="a4gl_sqlca";
 }
+
 if (strcmp(v->variable_name,"status")==0) {
 	v->variable_name="a4gl_status";
 }
+
+ptr=remap_top_level_variables(v->variable_name);
+
+if (ptr) {
+	v->variable_name=ptr;
+}
+
 return v;
 }
+
 
 
 

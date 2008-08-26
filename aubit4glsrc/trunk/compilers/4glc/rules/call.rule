@@ -48,7 +48,6 @@ call_ext: function_call_expr opt_return {
 		ensure_variable(errbuff, $<ptr>3,1);
                 p1=A4GL_new_prepend_ptr_list($<ptr_list>5,$<ptr>3);
 		$<ptr>$=A4GL_new_expr_shared_fcall("channel", "write",p1,infilename,lastlineno, get_namespace("channel::write"));
-                /* $<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"write\"",infilename,lastlineno,$<ptr>3, $<ptr_list>5, get_namespace("channel::write")); */
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>7);
         }
 
@@ -76,6 +75,9 @@ opt_without_waiting: {$<integer_val>$=0;} | WITHOUT_WAITING {$<integer_val>$=1;}
 
 opt_func_call_args : { $<ptr_list>$=0; }
 		|  func_expr_call_args { $<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); }
+;
+
+func_call_args :  func_expr_call_args { $<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); }
 ;
 
 func_expr_call_args	: func_arg { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }

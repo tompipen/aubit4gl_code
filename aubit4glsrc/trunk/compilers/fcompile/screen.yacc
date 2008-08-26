@@ -139,7 +139,7 @@ FORMONLY COMMENT
 %token KW_AUTOSCALE KW_PIXELWIDTH KW_PIXELHEIGHT
 
 %token KW_SCROLLBARS_BOTH KW_SCROLLBARS_V KW_SCROLLBARS_H KW_STRETCH_Y KW_STRETCH_BOTH KW_ITEMS KW_VALUEMAX KW_VALUEMIN
-%token KW_PROGRESSBAR KW_COMBOBOX
+%token KW_PROGRESSBAR KW_COMBOBOX OPTIONS
 %%
 
 /* rules */
@@ -1091,6 +1091,7 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 }
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { A4GL_add_str_attr(fld,FA_S_DEFAULT,$<str>3); }
+| OPTIONS EQUAL def_val { A4GL_add_str_attr(fld,FA_S_OPTIONS,$<str>3); }
 | DISPLAY LIKE named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
 | DISPLAY LIKE named_or_kw_any DOT named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
 | VALIDATE LIKE named_or_kw_any {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
@@ -2099,6 +2100,7 @@ st_kword :
      | KW_NONSPACE 
      | SQLONLY 
      | WIDGET 
+     | OPTIONS 
      | CONFIG 
      | COMPARISON 
      | LESSTHAN 
@@ -2254,6 +2256,7 @@ any_kword :
      | SQL_VAR 
      | SQLONLY 
      | WIDGET 
+     | OPTIONS 
      | CONFIG 
      | COMPARISON 
      | LESSTHAN 

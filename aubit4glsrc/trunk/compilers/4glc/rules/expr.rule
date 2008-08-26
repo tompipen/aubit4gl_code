@@ -554,6 +554,9 @@ function_call_expr:
 			$<ptr>$=A4GL_new_literal_string(do_clobbering_sql(&this_module, clobber,downshift(A4GL_strip_quotes($<ptr>3->expr_str_u.expr_string)))) ;
 		}
 	}
+	| REFERENCE OPEN_BRACKET variable_usage_expression CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_reference($<ptr>3); 
+	}
 	| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
 		add_feature("ET_EXPR_GET_FLDBUF");
 		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 

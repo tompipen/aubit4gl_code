@@ -43,7 +43,8 @@ void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 struct expr_str *A4GL_new_expr_simple (enum e_expr_type type);
 struct expr_str *A4GL_new_expr_neg(struct expr_str *ptr);
 struct expr_str *A4GL_new_expr_push_variable(struct variable_usage *v) ;
-
+struct expr_str *A4GL_new_expr_reference(struct expr_str *expr) ;
+struct expr_str *A4GL_new_expr_param(char *name, int isReference);
 void * A4GL_append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr);
 int A4GL_length_expr (struct expr_str *ptr);
 struct expr_str_list *A4GL_new_ptr_list(struct expr_str *ptr);

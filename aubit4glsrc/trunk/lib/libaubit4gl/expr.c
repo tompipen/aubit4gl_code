@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.25 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: expr.c,v 1.26 2008-08-26 11:31:10 mikeaubury Exp $
 #
 */
 
@@ -150,6 +150,7 @@ case ET_EXPR_EXTERNAL: return "ET_EXPR_EXTERNAL";
 case ET_EXPR_GET_FLDBUF: return "ET_EXPR_GET_FLDBUF";
 case ET_EXPR_WORDWRAP: return "ET_EXPR_WORDWRAP";
 //case ET_EXPR_SUBSTRING: return "ET_EXPR_SUBSTRING";
+case ET_EXPR_CURSOR_NAME_FUNCTION: return "ET_EXPR_CURSOR_NAME_FUNCTION";
 case ET_EXPR_OP_NOT_IN:return "ET_EXPR_OP_NOT_IN";
 case ET_EXPR_NOT_EXISTS_SUBQUERY:return "ET_EXPR_NOT_EXISTS_SUBQUERY";
 case ET_EXPR_EXISTS_SUBQUERY:return "ET_EXPR_EXISTS_SUBQUERY";
@@ -204,6 +205,7 @@ case ET_E_V_OR_LIT_NOVALUE: return "ET_E_V_OR_LIT_NOVALUE";
 case ET_EXPR_THROUGH: return "ET_EXPR_THROUGH";
 case ET_EXPR_WHERE_CURRENT_OF: return "ET_EXPR_WHERE_CURRENT_OF";
 case ET_EXPR_ASSOC: return "ET_EXPR_ASSOC";
+case ET_EXPR_REFERENCE: return "ET_EXPR_REFERENCE";
 
 }
 PRINTF("Expression Type : %d\n",e);
@@ -336,7 +338,21 @@ struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right,
   return ptr;
 }
 
+struct expr_str *A4GL_new_expr_reference(struct expr_str *expr) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_REFERENCE);
+      ptr_new->expr_str_u.expr_expr=expr;
+      return ptr_new;
+}
 
+
+struct expr_str *A4GL_new_expr_param(char *name, int isReference) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_PARAMETER);
+      ptr_new->expr_str_u.expr_param.expr_string=strdup(name);
+      ptr_new->expr_str_u.expr_param.isReference=isReference;
+      return ptr_new;
+}
 
 struct expr_str *A4GL_new_literal_double_str (char *value)
 {

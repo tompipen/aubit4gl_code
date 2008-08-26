@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.21 2008-07-22 15:12:00 mikeaubury Exp $
+# $Id: form_x.x,v 1.22 2008-08-26 11:30:55 mikeaubury Exp $
 #*/
 
 /**
@@ -128,7 +128,8 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_VALUEMIN,
 	FA_S_VALUEMAX,
 	FA_S_ITEMS,
-	FA_S_TEXT
+	FA_S_TEXT,
+	FA_S_OPTIONS
 };
 
 struct struct_field_attr_string {

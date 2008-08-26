@@ -1030,8 +1030,7 @@ pdf_functions_expr :
 op_wordwrap:
 	{$<ptr>$=0;} 
  	| KW_WORDWRAP { $<ptr>$=A4GL_new_literal_long_long(0);} // @ FIXME - use default right margin
-	| KW_WORDWRAP RIGHT_MARGIN INT_VALUE { $<ptr>$=A4GL_new_literal_long_long(atoi($<str>3));} 
-	| KW_WORDWRAP RIGHT_MARGIN variable_usage_expression { $<ptr>$=$<ptr>3; }
+	| KW_WORDWRAP RIGHT_MARGIN fgl_expr_c { $<ptr>$=$<ptr>3; }
 ;
 
 /* ============================ report.rule ========================== */

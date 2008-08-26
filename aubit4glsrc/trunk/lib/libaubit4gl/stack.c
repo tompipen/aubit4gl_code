@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.207 2008-07-16 16:51:56 mikeaubury Exp $
+# $Id: stack.c,v 1.208 2008-08-26 11:31:11 mikeaubury Exp $
 #
 */
 
@@ -1990,6 +1990,14 @@ nt_gettimeofday (struct timeval *p, struct timezone *tz /* IGNORED */ )
 #endif
 
 
+void A4GL_push_reference(void *x,int l) {
+struct s_pass_reference *ptr;
+ptr=malloc(sizeof(struct s_pass_reference));
+ptr->bytes=x;
+ptr->nbytes=l;
+//printf("Pushing reference to %p with %d bytes\n",x,l);
+A4GL_push_param( ptr, DTYPE_REFERENCE + DTYPE_MALLOCED);
+}
 /**
  *
  *
