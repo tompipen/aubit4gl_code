@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.101 2008-08-26 11:30:56 mikeaubury Exp $
+# $Id: variables.c,v 1.102 2008-08-26 12:57:34 mikeaubury Exp $
 #
 */
 
@@ -91,7 +91,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       struct variable *v,
 					       char bindtype);
 int is_valid_vname(struct variable *v, char scope);
-static char *remap_top_level_variables(char *invarname) ;
+char *remap_top_level_variables(char *invarname) ;
 void make_function (char *name, int record_cnt);
 //int has_fbind(char *s) ;
 int chk_already_defined(char *s, char scope);
@@ -737,8 +737,10 @@ variable_action (int category, char *name, char *type, char *n,
 	  curr_v[record_cnt] = acl_malloc2 (sizeof (struct variable));
 	  curr_v[record_cnt]->names.names.names_val = malloc (sizeof (vname));
 	  curr_v[record_cnt]->names.names.names_len = 1;
-		mapped_name=remap_top_level_variables(name);
+	
+	mapped_name=remap_top_level_variables(name);
 	if (mapped_name) name=mapped_name;
+
 	  curr_v[record_cnt]->names.names.names_val[0].name =
 	    acl_strdup (name);
 
@@ -963,6 +965,7 @@ add_to_scope (int record_cnt, int unroll)
       orig = curr_v[record_cnt];
       if (curr_v[record_cnt]->names.names.names_len>1) {
 	for (a=0;a<orig->names.names.names_len;a++) {
+	char *mapped_name;
 		
 	      v_new = acl_malloc2 (sizeof (struct variable));
 	      memcpy (v_new, orig, sizeof (struct variable));
@@ -970,7 +973,10 @@ add_to_scope (int record_cnt, int unroll)
 	      curr_v[record_cnt] = v_new;
 	      curr_v[record_cnt]->names.names.names_val=malloc(sizeof(vname));
 	      curr_v[record_cnt]->names.names.names_len=1;
-              curr_v[record_cnt]->names.names.names_val[0].name= strdup(orig->names.names.names_val[a].name);
+	mapped_name=remap_top_level_variables(orig->names.names.names_val[a].name);
+	if (mapped_name==0) mapped_name=(orig->names.names.names_val[a].name);
+
+              curr_v[record_cnt]->names.names.names_val[0].name= strdup(mapped_name);
               curr_v[record_cnt]->names.names.names_val[0].alias= 0;
 	      add_to_scope (record_cnt, 1);
 	    }
@@ -3131,7 +3137,7 @@ has_fbind (char *s)
 }
 */
 
-static char *remap_top_level_variables(char *invarname) {
+ char *remap_top_level_variables(char *invarname) {
 	if (strcmp(invarname,"index")==0) {
 		return "a4gl_index";
 	}

@@ -218,10 +218,16 @@ fparam_var_list:        func_def_var {
 
 func_def_var: 
 		identifier {
-			$<ptr>$=A4GL_new_expr_param($<str>1, EB_FALSE);
+			char *name;
+			name=remap_top_level_variables($<str>1);
+			if (!name) name=$<str>1;
+			$<ptr>$=A4GL_new_expr_param(name, EB_FALSE);
 		}
 		| ASCOPY identifier {
-			$<ptr>$=A4GL_new_expr_param($<str>2, EB_TRUE);
+			char *name;
+			name=remap_top_level_variables($<str>2);
+			if (!name) name=$<str>2;
+			$<ptr>$=A4GL_new_expr_param(name, EB_TRUE);
 		}
 ;
 
