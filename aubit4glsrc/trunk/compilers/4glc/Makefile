@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.37 2008-05-23 10:11:38 mikeaubury Exp $
+# $Id: Makefile,v 1.38 2008-08-26 14:41:00 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -320,8 +320,8 @@ fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o
 	cp fglcalltree $(AUBITDIR)/bin
 
 #fglsplit: split.o API_lex.o  linearise.o
-#$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
-#cp $@ $(AUBITDIR)/bin
+	#$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	#cp $@ $(AUBITDIR)/bin
 
 fgllink: write_4gl.o API_lex.o
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl

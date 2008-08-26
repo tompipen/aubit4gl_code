@@ -48,7 +48,12 @@ obind_var_list: bind_var_list {
 
 
 opt_cw_ebind_var_list: func_call_args 
-	|  OPEN_SQUARE expanded_obind_var_list CLOSE_SQUARE { $<ptr_list>$=$<ptr_list>2;}
+	|  OPEN_SQUARE func_call_args CLOSE_SQUARE { 
+	         int a;
+                $<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>2,0,1);
+                inc_var_assigned_from_binding_list($<ptr_list>$);
+        }
+
 ;
 
 

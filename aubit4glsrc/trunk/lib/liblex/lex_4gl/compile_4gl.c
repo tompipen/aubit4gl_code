@@ -2692,12 +2692,14 @@ static int
 get_var_expr_dtype (struct expr_str *p)
 {
   struct variable_usage *u;
+char errbuff[200];
   if (p->expr_type != ET_EXPR_VARIABLE_USAGE)
     {
       A4GL_assertion (1, "Should be ET_EXPR_VARIABLE_USAGE");
     }
+return get_variable_dtype_from_variable_usage_expression(errbuff, p);
   u = p->expr_str_u.expr_variable_usage;
-  return u->scope;
+  return u->datatype;
 }
 
 static void
@@ -4648,6 +4650,9 @@ print_event_list (on_events * e, int isMenu)
 	    }
 	  break;
 
+	case EVENT_ON_ACTION :
+		printc("ON ACTION...");
+		break;
 	case EVENT_MENU_COMMAND:
 
 	  {
@@ -5915,6 +5920,17 @@ print_let_manyvars_g (expr_str_list * expr_list, expr_str_list * varlist)
       scope = get_var_expr_scope (varlist->list.list_val[a]);
       if (tolower (scope) == 'm' && A4GL_isyes (acl_getenv ("REMOVEMODVARS")))
 	{
+	if (expr_list ==0) {
+		  // Fools - They want to set a variable to null -
+		  // and they're assigning it - thats very very naughty....
+		  printh ("#REQUIRETEMP %s lv_tmp_%x %d\n", get_currfuncname (), get_var_expr_dtype (varlist->list.list_val[0]),
+			  get_var_expr_dtype (varlist->list.list_val[0]));
+		  printc ("INITIALIZE lv_tmp_%x TO NULL", get_var_expr_dtype (varlist->list.list_val[0]));
+		  printc ("CALL ");
+		  print_varbind (varlist->list.list_val[0], 'W', 0);
+		  printc (" lv_tmp_%x)", get_var_expr_dtype (varlist->list.list_val[0]));
+		  continue;
+	} else {
 	  if (expr_list->list.list_len == 1)
 	    {
 	      if (expr_list->list.list_val[0]->expr_type == ET_EXPR_NULL)
@@ -5930,6 +5946,7 @@ print_let_manyvars_g (expr_str_list * expr_list, expr_str_list * varlist)
 		  continue;
 		}
 	    }
+		}
 
 
 	  set_nonewlines ();
