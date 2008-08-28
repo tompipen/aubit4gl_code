@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.321 2008-08-26 16:15:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.322 2008-08-28 10:38:49 mikeaubury Exp $
 #
 */
 
@@ -1294,7 +1294,12 @@ void A4GL_set_last_cursor(int n);
   void A4GL_whats_in_a_string(char *s,int *d,int *sz);
 
 
+int A4GL_isblank(int n) ;
+int A4GL_GetNumberOfComments(void);
 int aclfgl_fgl_compare(int n);
+int aclfgl_fgl_setcurrline(int n);
+int aclfgl_fgl_dialog_setcursor(int n) ;
+int aclfgl_fgl_dialog_getcursor(int n) ;
 int aclfgl_fgl_username(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
 int aclfgl_fgl_round(int nargs);
@@ -2666,6 +2671,8 @@ int aclfgl_aclfgl_getcwd (int a);
 int aclfgl_aclfgl_replace_start(int nargs);
 int aclfgl_aclfgl_call_in_shared(int a) ;
 void add_int8_support(void);
+void add_reference_support(void);
+int A4GL_dttoc (void *a, void *b, int size);
 int A4GL_wcswidth(char *mbs);
 
 

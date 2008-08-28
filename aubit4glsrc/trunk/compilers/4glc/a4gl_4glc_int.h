@@ -745,6 +745,8 @@ struct menu_attrib {
 void add_dependant_table(char *s);
 
 int has_variable_name (struct vname_name_list *namelist, char *name);
+void A4GL_set_clobber (char *c);
+void set_module_dbname(char *db,e_boolean isschema);
 
 #endif   //ifndef _A4GL_4GLC_INT_H_
 

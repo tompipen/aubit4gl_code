@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.31 2008-07-06 11:34:35 mikeaubury Exp $
+# $Id: string.c,v 1.32 2008-08-28 10:38:50 mikeaubury Exp $
 #
 */
 
@@ -272,7 +272,7 @@ while (cnt<strlen(buff)) {
 	}
 	// Need to pad out...
 	for (a=1;a<width;a++) {
-		if (isblank(buff[cnt-a-1])) {
+		if (A4GL_isblank(buff[cnt-a-1])) {
 			int b;
 			for (b=0;b<a;b++) {
 				insert_character(buff,cnt-a-1,' ');

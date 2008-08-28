@@ -1492,8 +1492,11 @@ char            dbsarea[FASIZ];
 ndbs=0;
 
 sqlca.sqlcode=0;
-
 sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+if (sqlca.sqlcode<0) {
+	EXEC SQL connect to default;
+	sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+}
 endcode
 
 if sqlca.sqlcode!=0 then
@@ -1564,6 +1567,10 @@ char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
 
  sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+if (sqlca.sqlcode<0) {
+	EXEC SQL connect to default;
+	sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+}
 
 endcode
 

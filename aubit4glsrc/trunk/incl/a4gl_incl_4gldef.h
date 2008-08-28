@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.120 2008-07-06 11:34:28 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.121 2008-08-28 10:38:49 mikeaubury Exp $
 */
 
 /**
@@ -329,6 +329,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 
 void A4GL_setnull (int type, void *buff, int size);
 void A4GL_trim (char *p);
+//void A4GL_trim_nl (char *p);
 void A4GL_trim_not_nl (char *p);
 char *A4GL_strncpyz(char *dest, const char *src, size_t n);
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.65 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: others.c,v 1.66 2008-08-28 10:38:50 mikeaubury Exp $
 #
 */
 
@@ -736,15 +736,13 @@ int aclfgl_aclfgl_read_pipe(int nargs)
 #endif
 
 
-#if defined (__MINGW32__)
 
-int isblank(int n) {
+int A4GL_isblank(int n) {
 	if (n==' ') return 1;
 	if (n=='\t') return 1;
 	return 0;
 }
 
 
-#endif
 
 /* ============================== EOF ========================== */

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.28 2008-07-06 11:34:43 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.29 2008-08-28 10:38:51 mikeaubury Exp $
 #*/
 
 /**
@@ -48,6 +48,7 @@
   */
 
 #include "a4gl_lib_sql_int.h"
+#include "a4gl_expr.h"
 extern sqlca_struct a4gl_sqlca;
 /*
 =====================================================================
@@ -64,8 +65,7 @@ extern sqlca_struct a4gl_sqlca;
 
 FILE *f_db_in;
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
-static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr,
-						       char *val);
+//static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val);
 //void * A4GL_new_expr (char *value);
 //void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 /* We only need to implement the functions used by the compiler :
@@ -155,7 +155,11 @@ A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
   return A4GL_global_A4GLSQL_get_sqlerrm ();
 }
 
+
+
+#ifdef OBSOLETE
 /**
+ *
  *
  * @todo Describe function
  */
@@ -179,6 +183,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
     }
   return 0;
 }
+#endif
 
 /**
  *
@@ -276,6 +281,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 }
 
 
+#ifdef OBSOLETE
 static struct expr_str_list *
 A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 {
@@ -310,6 +316,7 @@ A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
     }
   return ptr;
 }
+#endif
 
 t_expr_str_list *
 A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)

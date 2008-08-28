@@ -5,6 +5,7 @@
 #include <mysql.h>
 #include <stdio.h>
 #include "../a4gl_lib_sql_int.h"
+#include "a4gl_expr.h"
 
 //dll_export sqlca_struct a4gl_sqlca;
 //dll_export int status;

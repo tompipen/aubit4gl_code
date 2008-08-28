@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.160 2008-07-06 11:34:29 mikeaubury Exp $
+# $Id: conv.c,v 1.161 2008-08-28 10:38:50 mikeaubury Exp $
 #
 */
 
@@ -162,7 +162,7 @@ int A4GL_ltodec (void *a, void *z, int size);
 int A4GL_btob (void *a, void *b, int size);
 
 int A4GL_dtos (void *aa, void *zz, int size);
-int A4GL_dttoc (void *a, void *b, int size);
+//int A4GL_dttoc (void *a, void *b, int size);
 int A4GL_dtof (void *aa, void *zz, int sz_ignore);
 int A4GL_dtovc (void *aa, void *zz, int sz_ignore);
 int A4GL_dtosf (void *aa, void *zz, int sz_ignore);

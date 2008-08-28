@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.210 2008-08-01 11:35:14 mikeaubury Exp $
+# $Id: esql.ec,v 1.211 2008-08-28 10:38:50 mikeaubury Exp $
 #
 */
 
@@ -73,7 +73,7 @@ WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commne
 =====================================================================
 */
 
-int A4GL_dttoc (void *a, void *b, int size);
+//int A4GL_dttoc (void *a, void *b, int size);
 
 #define KAGEL_UNLOAD
 
@@ -105,6 +105,7 @@ $include sqlca;
 //#endif
 
 #include "a4gl_incl_4gldef.h"
+#include "a4gl_expr.h"
 char unloadBuffer[BUFSIZ];
 //static void A4GL_quick_trim(char *s) ;
 //#define PRECODEEC '|'
@@ -193,7 +194,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.210 2008-08-01 11:35:14 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.211 2008-08-28 10:38:50 mikeaubury Exp $";
 #endif
 
 

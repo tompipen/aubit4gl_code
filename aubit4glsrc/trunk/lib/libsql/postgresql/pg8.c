@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.51 2008-07-16 17:48:05 mikeaubury Exp $
+# $Id: pg8.c,v 1.52 2008-08-28 10:38:51 mikeaubury Exp $
 #*/
 
 
@@ -37,6 +37,9 @@
 #include "pg_config.h"
 //#include "postgresql/server/catalog/pg_type.h"
 #include "a4gl_lib_sql_int.h"
+#include <sys/stat.h>
+
+#include "a4gl_expr.h"
 #define DTYPE_CHAR      0
 #define DTYPE_SMINT     1
 #define DTYPE_INT       2

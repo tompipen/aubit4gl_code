@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.46 2008-07-06 11:34:24 mikeaubury Exp $
+# $Id: globals.c,v 1.47 2008-08-28 10:38:47 mikeaubury Exp $
 #
 */
 
@@ -212,7 +212,7 @@ generate_globals_for (char *s)
 			
     		}  else {
 
-      			if (currinfile_dirname)
+      			if (currinfile_dirname && strlen(currinfile_dirname))
 				{
 	  			/*use path that was passed to 4glc with 4gl file name of main 4gl*/
 	  			/*source file we are compiling, if any*/

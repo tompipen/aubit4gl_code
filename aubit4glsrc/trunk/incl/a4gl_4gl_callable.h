@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.36 2008-07-06 11:34:28 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.37 2008-08-28 10:38:49 mikeaubury Exp $
 */
 
 /**
@@ -167,6 +167,7 @@ int aclfgl_aclfgl_setenv(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
 int A4GL_setenv(char *name, char *value, int overwrite);
 int A4GL_isyes(char *s);
+int A4GL_isno(char *s);
 void A4GL_set_esql_connection(char *s);
 char *A4GL_get_esql_connection(void);
 void *A4GL_get_curr_report(void);
