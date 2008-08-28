@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.433 2008-08-26 11:31:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.434 2008-08-28 08:11:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.433 2008-08-26 11:31:15 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.434 2008-08-28 08:11:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -148,7 +148,7 @@ struct module_entry *current_entry = 0;
 
 struct variable_list * current_entry_variables=0;
 
-char *generate_ispdf(void) ;
+//char *generate_ispdf(void) ;
 
 
 /*
@@ -4962,6 +4962,10 @@ clr_suppress_lines();
 			printc("};");
 			printc("struct _dynelem_%s *%s=0;",name,name);
 			}
+			break;
+			default:
+				A4GL_assertion(1,"Not expecting this type of variable");
+			break;
 		}
 		return;
   }
@@ -5693,6 +5697,9 @@ printc("#");
 
       switch (m->module_entries.module_entries_val[a]->met_type)
         {
+		case E_MET_IMPORT_PACKAGE:
+			// Does nothing - just keep the -Wall option happy..
+			break;
            case E_MET_IMPORT_FUNCTION_DEFINITION:  
 		
 		print_import(

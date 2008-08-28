@@ -4,6 +4,8 @@
 #include "compile_c.h"
 #include "cmd_funcs.h"
 #define set_nonewlines() set_nonewlines_full(__LINE__)
+//char *generate_ispdf(void) ;
+//void remove_field_subscripts_from_field_list(struct fh_field_list *flist);
 
 static int idle_cnt = 0;
 

@@ -29,3 +29,8 @@ char *generation_get_variable_usage_as_string(struct variable_usage *u );
 char *make_sql_bind_g (expr_str_list *bind,char type);
 int get_binding_dtype(expr_str *e);
 void print_Constant(int type, char *vv);
+char *generate_ispdf(void) ;
+void remove_field_subscripts_from_field_list(struct fh_field_list *flist);
+
+char * get_sql_variable_usage_internal (variable_usage * u, char dir) ;
+char *lowlevel_chk_sql(char *sorig) ;

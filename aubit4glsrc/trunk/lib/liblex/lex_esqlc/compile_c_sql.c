@@ -4,7 +4,7 @@
 #include "compile_c.h"
 #include "cmd_funcs.h"
 #define set_nonewlines() set_nonewlines_full(__LINE__)
-char *lowlevel_chk_sql(char *s) ;
+//char *lowlevel_chk_sql(char *s) ;
 
 extern int line_for_cmd;
 extern int tmp_ccnt;
