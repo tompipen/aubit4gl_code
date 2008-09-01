@@ -104,7 +104,7 @@ DTYPE_ALIAS INTERVAL SECOND (2) TO FRACTION(2)=CHAR(20)
 
 OMIT_NO_LOG
 USE_INDICATOR
-REPLACE rowid = tid
+REPLACE_SQLCONST rowid = tid
 REPLACE today = date('today')
 REPLACE current year to second = date('now')
 REPLACE current year to fraction(5) = date('now')
