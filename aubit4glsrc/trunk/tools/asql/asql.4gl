@@ -311,7 +311,10 @@ function check_and_report_error()
 define lv_a integer
 define lv_err1 char(255)
 define lv_err2 char(255)
-
+define lv_isam_err integer
+code
+lv_isam_err=get_isam_error();
+endcode
 
 if sqlca.sqlcode>=0 then
 	return 0
@@ -320,10 +323,12 @@ end if
 let lv_err2=get_db_err_msg(sqlca.sqlcode)
 
 if get_exec_mode()=0 then
-	error lv_err2
+	if lv_isam_err<0 then
+	error sqlca.sqlcode using "######",lv_isam_err using "######",": ",lv_err2 clipped
+	else
+	error sqlca.sqlcode using "######",": ",lv_err2 clipped
+	end if
 	sleep 1 # After an error (check and report)
-#else
-	#display lv_err2
 end if
 return 1
 end function

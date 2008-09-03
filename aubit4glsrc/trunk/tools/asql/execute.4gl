@@ -463,7 +463,21 @@ end_query: ;
 		if (exec_mode!=EXEC_MODE_FILE) {
 			sprintf(msg,"Q:%d %d - ( %s ) (%d)",qry_type, raffected, get_qry_msg(qry_type,raffected), exec_mode);
 		} else {
+			if (get_isam_error()<0) {
+				char buff_isam[2000];
+				int s1;
+				char *ptr;
+			        A4GL_push_int(get_isam_error());
+        			aclfgl_get_db_err_msg(1);
+        			ptr=A4GL_char_pop();
+        			A4GL_trim(ptr);
+				sprintf(buff_isam,"                ( Error %d - %s )\n",get_isam_error(), ptr);
+				sprintf(msg,"Q:%4d %6d - ( %s )\n%sError in line %d\nNear character position %d\n",qry_type, raffected, get_qry_msg(qry_type,raffected), buff_isam, ln,c);
+				free(ptr);
+			} else {
 			sprintf(msg,"Q:%d %d - ( %s )\nError in line %d\nNear character position %d\n",qry_type, raffected, get_qry_msg(qry_type,raffected), ln,c);
+			}
+			
 		}
 	} else {
 		sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
@@ -954,7 +968,10 @@ repeat_query:;
 	      char buff[244];
 	      A4GL_debug ("Fetching..");
 	      b = execute_sql_fetch (&raffected, err_at_colptr);
-
+		if (b<0) {
+			a4gl_status=b;
+			aclfgl_check_and_report_error(0);
+		}
 
 	      if (exec_mode == EXEC_MODE_INTERACTIVE)
 		{

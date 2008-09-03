@@ -835,6 +835,13 @@ columnNames[numberOfColumns]=0;
 return totsize;
 }
 
+
+
+
+int get_isam_error() {
+	return 0;
+}
+
 /******************************************************************************/
 int execute_sql_fetch(int *raffected, int *errat) {
 int a;
@@ -2082,4 +2089,6 @@ menu "DATABASE INFO"
 		exit menu
 end menu
 end function
+
+
 

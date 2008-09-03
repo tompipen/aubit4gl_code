@@ -894,6 +894,12 @@ if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
 
 }
 
+
+int get_isam_error() {
+        return 0;
+}
+
+
 int execute_sql_fetch(int *raffected, int *err_at_col) {
 	int coltype;
 	int colsize;

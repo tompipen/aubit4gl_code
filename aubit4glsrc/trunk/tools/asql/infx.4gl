@@ -74,6 +74,8 @@ void *A4GL_alloc_associated_mem(void *orig,int nbytes);
 off_t bpos = 0;
 
 
+int isam_error=0;
+
 #define min(a, b ) ((a < b) ? a : b)
 
 struct sqlda *master_desc=0;
@@ -238,7 +240,7 @@ define lv_code integer
 define lv_err1 char(255)
 define lv_err2 char(255)
 code
-rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
+rgetmsg(lv_code,lv_err1,sizeof(lv_err1));
 sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
 A4GL_trim(lv_err2);
 endcode
@@ -328,6 +330,8 @@ define rpaginate integer
       	   RETURN  0
         END IF
    END IF
+        CALL add_to_display_file("Column name         Type")
+        CALL add_to_display_file(" ")
 
 
    DECLARE info_curs CURSOR FOR
@@ -341,6 +345,11 @@ define rpaginate integer
       LET i = i + 1
 
       LET lv_buff = lv_colname," " ,get_type(l_coltype, l_collength)
+	#if l_coltype>255 then
+      		#LET lv_buff[70,80]="yes"
+	#else
+		#LET lv_buff[70,80]="no"
+	#end if
         CALL add_to_display_file(lv_buff)
    END FOREACH
 
@@ -683,10 +692,21 @@ end function
 code
 
 
+int get_isam_error() {
+	return isam_error;
+}
+
+
+
 void
 cp_sqlca ()
 {
   a4gl_sqlca.sqlcode = sqlca.sqlcode;
+
+  if (a4gl_sqlca.sqlcode < 0)
+    {
+		isam_error = sqlca.sqlerrd[1];
+    }
 }
 
 
@@ -1048,6 +1068,13 @@ execute_query_1 (int *raffected,int *errat)
 
 execute_select_free ()
 {
+int save_sqlca_sqlcode;
+
+  // If there was some previous error - we dont want to overwrite it
+  // with the status from just trying to free things - so keep a copy..
+  save_sqlca_sqlcode=sqlca.sqlcode;
+
+
   EXEC SQL CLOSE crExec;
   cp_sqlca ();
   EXEC SQL free stExec;
@@ -1060,6 +1087,12 @@ execute_select_free ()
       A4GL_debug ("EXEC ERR3");
       return 0;
     }
+
+  if (save_sqlca_sqlcode<0) {
+	sqlca.sqlcode=save_sqlca_sqlcode;
+	a4gl_sqlca.sqlcode = sqlca.sqlcode;
+
+  }
   return 1;
 }
 
@@ -1248,7 +1281,14 @@ A4GL_debug("Fetching");
 /* FETCH1.... */
       prepare_for_fetch_into_descriptor(master_desc,master_qualifiers);
       EXEC SQL FETCH crExec USING DESCRIPTOR master_desc;
-
+/*
+printf("%d\n",sqlca.sqlerrd[0]);
+printf("%d\n",sqlca.sqlerrd[1]);
+printf("%d\n",sqlca.sqlerrd[2]);
+printf("%d\n",sqlca.sqlerrd[3]);
+printf("%d\n",sqlca.sqlerrd[4]);
+printf("%d\n",sqlca.sqlerrd[5]);
+*/
 
   cp_sqlca ();
 
@@ -1493,14 +1533,16 @@ ndbs=0;
 
 sqlca.sqlcode=0;
 sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+
 if (sqlca.sqlcode<0) {
 	EXEC SQL connect to default;
 	sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
 }
+
 endcode
 
-if sqlca.sqlcode!=0 then
-	error "Some error getting databases"
+if sqlca.sqlcode<0 and ndbs=0 then
+	error "Some error getting databases : ",sqlca.sqlcode
 	sleep 1 # getting db error
         if check_and_report_error() then
         	return
