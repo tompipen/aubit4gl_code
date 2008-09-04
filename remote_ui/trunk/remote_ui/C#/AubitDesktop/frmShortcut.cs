@@ -40,7 +40,7 @@ namespace AubitDesktop
                 txtTitle.Text = shortcut.Title;
 
                 txtUser.Text = shortcut.User;
-                   
+                
 
                 lstProtocol.ClearSelected();
 
@@ -52,6 +52,10 @@ namespace AubitDesktop
                         break;
                     }
                     
+                }
+                if (shortcut.Port != null && shortcut.Port.Length > 0)
+                {
+                    txtPort.Text = shortcut.Port;
                 }
             }
         }
@@ -74,6 +78,7 @@ namespace AubitDesktop
             shortcut.PromptForPassword = cbPromptPassword.Checked;
             shortcut.Protocol = Program.AppSettings.Protocols[this.lstProtocol.SelectedIndex].Code;
             shortcut.Server = txtServer.Text;
+            shortcut.Port = txtPort.Text;
             shortcut.Title = txtTitle.Text;
             shortcut.User = txtUser.Text;
 

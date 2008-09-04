@@ -63,47 +63,107 @@ namespace AubitDesktop
 
 
 
-        void addLayoutToParent(Control parent, object child)
+        void addLayoutToParent(string type , object parent, object child)
         {
-                string type;
-                type=parent.GetType().ToString();
+            
+
+            //this.thisFormsPanel.Controls.Add(fld.WindowsWidget);
+
                 switch (type)
                 {
                     case "AubitDesktop.Xml.XMLForm.VBox":
                         {
+                            AubitDesktop.Xml.XMLForm.VBox p;
+                            p = (AubitDesktop.Xml.XMLForm.VBox)parent;
+                            
                         }
                         break;
                     case "AubitDesktop.Xml.XMLForm.HBox":
                         {
+                            AubitDesktop.Xml.XMLForm.HBox p;
+                            p = (AubitDesktop.Xml.XMLForm.HBox)parent;
                         }
                         break;
                     case "AubitDesktop.Xml.XMLForm.Table":
                         {
+                            AubitDesktop.Xml.XMLForm.Table p;
+                            p = (AubitDesktop.Xml.XMLForm.Table)parent;
                         }
                         break;
                     case "AubitDesktop.Xml.XMLForm.Grid":
                         {
+                            AubitDesktop.Xml.XMLForm.Grid p;
+                            p = (AubitDesktop.Xml.XMLForm.Grid)parent;
                         }
                         break;
-                    case "AubitDesktop.Xml.XMLForm.Folder":
-                        {
-                        }
-                        break;
+                    
                     case "AubitDesktop.Xml.XMLForm.Page":
                         {
+                            AubitDesktop.Xml.XMLForm.Page p;
+                            p = (AubitDesktop.Xml.XMLForm.Page)parent;
                         }
                         break;
+
                     case "AubitDesktop.Xml.XMLForm.Screen":
                         {
+
+                            AubitDesktop.Xml.XMLForm.Screen p;
+                            Panel thisScreensPanel;
+                            p = (AubitDesktop.Xml.XMLForm.Screen)parent;
+
+                            thisScreensPanel = new Panel();
+                            thisScreensPanel.Visible = true;                           
+            
+                            foreach (object a in p.Items)
+                            {
+                                switch (a.GetType().ToString()) {
+                                    case "AubitDesktop.Xml.XMLForm.FormField":
+                                        {
+                                            AubitDesktop.Xml.XMLForm.FormField ff;
+                                            ff = (AubitDesktop.Xml.XMLForm.FormField)a;
+                                            object fld = makeXMLFieldWidget(ff);
+                                        }
+                                        break;
+                                    case "AubitDesktop.Xml.XMLForm.HLine":
+                                        {
+                                            AubitDesktop.Xml.XMLForm.HLine hl;
+                                            hl = (AubitDesktop.Xml.XMLForm.HLine)a;
+                                        }
+                                        break;
+                                    case "AubitDesktop.Xml.XMLForm.Label":
+                                        {
+                                            AubitDesktop.Xml.XMLForm.Label lb;
+                                            lb = (AubitDesktop.Xml.XMLForm.Label)a;
+                                        }
+                                        break;
+                                    case "AubitDesktop.Xml.XMLForm.Matrix":
+                                        {
+                                            AubitDesktop.Xml.XMLForm.Matrix ma;
+                                            ma = (AubitDesktop.Xml.XMLForm.Matrix)a;
+                                        }
+                                        break;
+                                }
+                            }
                         }
                         break;
+
                     default:
                         throw new ApplicationException("Invalid object to add to parent for xmlform");
                 }
         }
 
+        private object makeXMLFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
         public FGLForm(XMLFORM f)
         {
+
+            fields = new List<IFGLField>();
+
+            
+
             AubitDesktop.Xml.XMLForm.Form theForm;
             System.Type t;
             string data;
@@ -154,7 +214,7 @@ namespace AubitDesktop
                     case "AubitDesktop.Xml.XMLForm.Folder":
                     case "AubitDesktop.Xml.XMLForm.Page":
                     case "AubitDesktop.Xml.XMLForm.Screen":
-                        addLayoutToParent((Control)thisFormsPanel, o);
+                        addLayoutToParent(type, (Control)thisFormsPanel, o);
                         break;
 
                     default:
@@ -208,14 +268,28 @@ namespace AubitDesktop
                     FORMLABEL flabel = (FORMLABEL)o;
                     Label l;
                     l = new Label();
-                    l.Text = flabel.Text;
-                    l.AutoSize = true;
-                    l.Top = GuiLayout.get_gui_y(Convert.ToInt32(flabel.ROW));
-                    l.Left = GuiLayout.get_gui_x(Convert.ToInt32(flabel.COLUMN));
-                    l.Height = 1;
-                    l.Width = 1;
-                    //labels.Add(l);
-                    this.thisFormsPanel.Controls.Add(l);
+                    if (isJustLines(flabel.Text))
+                    {
+                        Panel p;
+                        p = new Panel();
+                        p.Top = GuiLayout.get_gui_y(Convert.ToInt32(flabel.ROW));
+                        p.Left = GuiLayout.get_gui_x(Convert.ToInt32(flabel.COLUMN));
+                        p.Height = 4;
+                        p.Width = GuiLayout.get_gui_w(flabel.Text.Length + 1)-1;
+                        p.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+                        this.thisFormsPanel.Controls.Add(p);
+                    }
+                    else
+                    {
+                        l.Text = flabel.Text;
+                        l.AutoSize = true;
+                        l.Top = GuiLayout.get_gui_y(Convert.ToInt32(flabel.ROW));
+                        l.Left = GuiLayout.get_gui_x(Convert.ToInt32(flabel.COLUMN));
+                        l.Height = 1;
+                        l.Width = 1;
+                        //labels.Add(l);
+                        this.thisFormsPanel.Controls.Add(l);
+                    }
                     continue;
                 }
 
@@ -223,61 +297,80 @@ namespace AubitDesktop
                 {
                     IFGLField fld;
 
-                    fld = null;
-
                     FORMFIELD formfld = (FORMFIELD)o;
                     thisAttrib = f.ATTRIBUTES[Convert.ToInt32(formfld.ATTRIBUTE_NO)];
-                    switch (formfld.WIDGET.ToUpper())
-                    {
-                        case "": // Default widget is a text box field...
-                        case "TEXT":
-                            if ((Convert.ToInt32(thisAttrib.DATATYPE) & 255) == 7 && thisAttrib.ATTRIB_FORMAT==null)
-                            { 
-                                // Its a date
-                                fld = new FGLDateFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
-                            }
-                            else
-                            {
-                                fld = new FGLTextFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO),formfld.INC);
-                            }
-                            break;
-
-                        case "PIXMAP":
-                            fld = new FGLPixmapFieldWidget(thisAttrib,Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO),formfld.INC);
-                            break;
-                        case "BROWSER":
-                            fld = new FGLBrowserFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
-                            break;
-                        case "BUTTON":
-                            fld = new FGLButtonFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
-                            break;
-
-
-                        default:
-                            MessageBox.Show("Unhandled widget type : " + formfld.WIDGET);
-                            break;
-                    }
-
-                    if (fld == null)
-                    {
-                        // Shit - we didn't manage to create one.
-                        // We'll assume we've already seen a message box telling us...
-                        continue;
-                    }
-                    
-                    // Set the context type
-                    fld.ContextType = FGLContextType.ContextNone; // We're not using this field in any context...
-                    
-
-                    fields.Add(fld);
-                    fld.setToolTip(tooltips, fld.comment);
-                    //tooltips.SetToolTip(fld.WindowsWidget, fld.comment);
-                    this.thisFormsPanel.Controls.Add(fld.WindowsWidget);
-                   
+                    fld = makeFieldWidget(thisAttrib, formfld);
                 }
 
             }
             #endregion 
+        }
+
+        private bool isJustLines(string p)
+        {
+            string underlines;
+            string minuses;
+            
+            underlines = new string('_', p.Length);
+            minuses = new string('-', p.Length);
+            if (p == underlines || p == minuses) return true;
+            return false;
+        }
+
+        private IFGLField makeFieldWidget(ATTRIB thisAttrib,  FORMFIELD formfld)
+        {
+            IFGLField fld;
+            fld = null;
+            switch (formfld.WIDGET.ToUpper())
+            {
+                case "": // Default widget is a text box field...
+                case "TEXT":
+                    if ((Convert.ToInt32(thisAttrib.DATATYPE) & 255) == 7 && thisAttrib.ATTRIB_FORMAT == null)
+                    {
+                        // Its a date
+                        fld = new FGLDateFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                    }
+                    else
+                    {
+                        fld = new FGLTextFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                    }
+                    break;
+
+                case "PIXMAP":
+                    fld = new FGLPixmapFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                    break;
+                case "BROWSER":
+                    fld = new FGLBrowserFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                    break;
+                case "BUTTON":
+                    fld = new FGLButtonFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                    break;
+
+
+                default:
+                    MessageBox.Show("Unhandled widget type : " + formfld.WIDGET);
+                    break;
+            }
+
+            if (fld == null)
+            {
+                // Shit - we didn't manage to create one.
+                // We'll assume we've already seen a message box telling us...
+
+            }
+            else
+            {
+
+                // Set the context type
+                fld.ContextType = FGLContextType.ContextNone; // We're not using this field in any context...
+
+
+                fields.Add(fld);
+                fld.setToolTip(tooltips, fld.comment);
+                this.thisFormsPanel.Controls.Add(fld.WindowsWidget);
+            }
+
+            return fld;
         }
 
         void fld_onAction(object source, string ID, string TriggeredText)

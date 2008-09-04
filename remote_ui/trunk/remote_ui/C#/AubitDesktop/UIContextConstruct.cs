@@ -194,9 +194,9 @@ namespace AubitDesktop
         }
 
 
-        
 
-        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values)
+
+        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             int cnt = 0;
 

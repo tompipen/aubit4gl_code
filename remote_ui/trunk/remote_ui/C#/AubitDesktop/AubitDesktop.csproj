@@ -7,6 +7,27 @@
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>AubitDesktop</AssemblyName>
     <RootNamespace>AubitDesktop</RootNamespace>
+    <ManifestCertificateThumbprint>DCD0658E771F07B4E408A235214797D27CDDC375</ManifestCertificateThumbprint>
+    <ManifestKeyFile>AubitDesktop_TemporaryKey.pfx</ManifestKeyFile>
+    <GenerateManifests>true</GenerateManifests>
+    <SignManifests>true</SignManifests>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>ftp://www.aubit.com/public_html/aubit4gl/aubitdesktop/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>http://www.aubit.com/aubit4gl/aubitdesktop/</InstallUrl>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>AubitDesktop_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -157,6 +178,7 @@
     <Compile Include="UIContextConstruct.cs" />
     <Compile Include="UIContextDisplayArray.cs" />
     <Compile Include="UIContextInput.cs" />
+    <Compile Include="UIContextInputArray.cs" />
     <Compile Include="UIContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -218,15 +240,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="AubitDesktop_TemporaryKey.pfx" />
+    <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DiffieHellman.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="images\accept.png" />
     <Content Include="images\arr2beg.png" />
     <Content Include="images\arr2end.png" />
@@ -356,13 +377,14 @@
     <Content Include="images\wizard.png" />
     <Content Include="images\zoom.png" />
     <Content Include="images\zurueck.png" />
-    <Content Include="Org.Mentalis.Security.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="README.txt" />
-    <Content Include="Tamir.SharpSSH.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

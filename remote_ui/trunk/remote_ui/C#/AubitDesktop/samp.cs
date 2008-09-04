@@ -763,7 +763,21 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ARRVARIABLES;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string WITHOUT_DEFAULTS;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ALLOWINSERT;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ALLOWDELETE;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string NONEWLINES;
+
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
@@ -992,6 +1006,12 @@ namespace AubitDesktop
          */
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(VALUE), IsNullable = false)]
         public VALUE[] VALUES;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public ROW[] ROWS;
+
+        
     }
 
 

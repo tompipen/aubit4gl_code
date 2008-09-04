@@ -475,7 +475,7 @@ namespace AubitDesktop
         {
         }
 
-        public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values)
+        public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             //mainWin.SetContext(FGLContextType.ContextNone);
             mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this);

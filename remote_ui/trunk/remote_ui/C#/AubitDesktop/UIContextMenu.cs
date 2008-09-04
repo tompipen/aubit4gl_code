@@ -176,7 +176,7 @@ namespace AubitDesktop
 
 
 
-        public void ActivateContext(UIEventHandler UIMenuContext_EventTriggered, VALUE[] values)
+        public void ActivateContext(UIEventHandler UIMenuContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             mainWin.setActiveToolBarKeys(keyList,false);
             EventTriggered += new UIEventHandler(UIMenuContext_EventTriggered);

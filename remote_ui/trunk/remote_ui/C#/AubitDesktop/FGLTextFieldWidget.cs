@@ -64,6 +64,8 @@ namespace AubitDesktop
         public void setFocus()
         {
             t.Focus();
+            t.Select();
+            t.SelectionLength = 0;
         }
 
         override public Color BackColor
@@ -317,7 +319,7 @@ namespace AubitDesktop
         {
             bool ign = false;
 
-            if (this._ContextType == FGLContextType.ContextInput)
+            if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
             {
                 #region REQUIRED CHECK
                 if (this.Required)
@@ -396,6 +398,9 @@ namespace AubitDesktop
                 }
                 #endregion
             }
+
+
+
             return true;
         }
 

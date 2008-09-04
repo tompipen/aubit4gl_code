@@ -221,7 +221,7 @@ namespace AubitDesktop
             mainWin.CommentText = comment;
         }
 
-        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values)
+        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             int cnt = 0;
             mainWin.SetContext(FGLContextType.ContextNone);

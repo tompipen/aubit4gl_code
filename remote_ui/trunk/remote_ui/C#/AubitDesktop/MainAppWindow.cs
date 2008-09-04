@@ -685,16 +685,37 @@ namespace AubitDesktop
         {
             string key="";
             string fglKey;
+            string keycode;
+
             key = FGLUtils.decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
             if (key == null) return;
+
+
+
+
+            keycode = FGLUtils.getKeyCodeFromKeyName(key);
+            string acceptKey = getCurrentApplicationKey("ACCEPT", "Esc");
+            string insertKey = getCurrentApplicationKey("INSERT", "F1");
+            string deleteKey = getCurrentApplicationKey("DELETE", "F2");
+
+
             if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(Program.AppSettings.interruptKey))
             {
                 key = "INTERRUPT";
             }
 
-            if (FGLUtils.getKeyCodeFromKeyName(key) == getCurrentApplicationAcceptKey())
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("ACCEPT","Escape")))
             {
                 key = "ACCEPT";
+            }
+
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("INSERT","F1")))
+            {
+                key = "INSERT";
+            }
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("DELETE","F2")))
+            {
+                key = "DELETE";
             }
 
             
@@ -741,6 +762,7 @@ namespace AubitDesktop
         }
 
 
+        /*
         string getCurrentApplicationAcceptKey()
         {
          
@@ -764,6 +786,39 @@ namespace AubitDesktop
 
             return "Esc";
         }
+        */
+
+
+
+        string getCurrentApplicationKey(string keyType, string defaultKey)
+        {
+
+            FGLApplicationPanel fGLApplicationPanel = null;
+            TabPage tp = tabControl1.SelectedTab;
+            if (tp == null) { return defaultKey; }
+
+            foreach (Control c in tp.Controls)
+            {
+                if (c is FGLApplicationPanel)
+                {
+                    fGLApplicationPanel = (FGLApplicationPanel)tp.Controls[0];
+                }
+            }
+
+
+            if (fGLApplicationPanel != null)
+            {
+                string rval=
+                fGLApplicationPanel.getApplicationKey(keyType);
+                if (rval != "") return rval;
+            }
+
+            return defaultKey;
+        }
+
+
+
+
         void setLastKeyInApplication(string keycode) {
             FGLApplicationPanel fGLApplicationPanel = null;
             TabPage tp = tabControl1.SelectedTab;

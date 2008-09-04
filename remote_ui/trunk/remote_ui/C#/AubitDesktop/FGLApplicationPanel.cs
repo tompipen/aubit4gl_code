@@ -73,9 +73,16 @@ namespace AubitDesktop
         public  string lastKey;
 
 
-        public string getAcceptKey()
+        public string getApplicationKey(string keyType)
         {
-            return options.AcceptKey;
+            switch (keyType)
+            {
+                case "ACCEPT": return options.AcceptKey;
+                case "INSERT": return options.InsertKey;
+                case "DELETE": return options.DeleteKey;
+            }
+
+            throw new ApplicationException("Invalid keytype for getApplicationKey " + keyType);
         }
 
         public string LineDisplayText
@@ -356,6 +363,14 @@ namespace AubitDesktop
                 return;
                 
             }
+            if (currentContext is UIInputArrayContext)
+            {
+                UIInputArrayContext dc;
+                dc = (UIInputArrayContext)currentContext;
+                dc.upkeyPressed();
+                return;
+
+            }
             throw new NotImplementedException();
         }
 
@@ -369,6 +384,15 @@ namespace AubitDesktop
                 dc.downkeyPressed();
                 return;
             }
+            if (currentContext is UIInputArrayContext)
+            {
+                UIInputArrayContext dc;
+                dc = (UIInputArrayContext)currentContext;
+                dc.downkeyPressed();
+                return;
+            }
+
+
             throw new NotImplementedException();
             
         }
@@ -377,13 +401,26 @@ namespace AubitDesktop
         void tsBtnInsert_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
-            throw new NotImplementedException();
+            if (currentContext is UIInputArrayContext)
+            {
+                UIInputArrayContext dc;
+                dc = (UIInputArrayContext)currentContext;
+                dc.InsertkeyPressed();
+                return;
+            }
         }
 
         void tsBtnDelete_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
-            throw new NotImplementedException();
+            this.ErrorText = "";
+            if (currentContext is UIInputArrayContext)
+            {
+                UIInputArrayContext dc;
+                dc = (UIInputArrayContext)currentContext;
+                dc.DeletekeyPressed();
+                return;
+            }
         }
 
         void tsBtnPgDown_Click(object sender, EventArgs e)
@@ -393,6 +430,14 @@ namespace AubitDesktop
             {
                 UIDisplayArrayContext dc;
                 dc = (UIDisplayArrayContext)currentContext;
+                dc.pgDownkeyPressed();
+                return;
+            }
+
+            if (currentContext is UIInputArrayContext)
+            {
+                UIInputArrayContext dc;
+                dc = (UIInputArrayContext)currentContext;
                 dc.pgDownkeyPressed();
                 return;
             }
@@ -406,6 +451,13 @@ namespace AubitDesktop
             {
                 UIDisplayArrayContext dc;
                 dc = (UIDisplayArrayContext)currentContext;
+                dc.pgUpkeyPressed();
+                return;
+            }
+            if (currentContext is UIInputArrayContext)
+            {
+                UIInputArrayContext dc;
+                dc = (UIInputArrayContext)currentContext;
                 dc.pgUpkeyPressed();
                 return;
             }
@@ -599,7 +651,7 @@ namespace AubitDesktop
 
                 // tsBtnInsert
                 //
-                this.tsBtnInsert.ActiveKey = "Insert";
+                this.tsBtnInsert.ActiveKey = "INSERT";
                 this.tsBtnInsert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnInsert.ID = "Insert";
                 this.tsBtnInsert.Image = global::AubitDesktop.ToolBarImages.neu;
@@ -611,9 +663,11 @@ namespace AubitDesktop
 
                 this.tsBtnInsert.Visible = true;
                 this.toolStrip1.Add(tsBtnInsert);
+
+
                 // tsBtnDelete
                 //
-                this.tsBtnDelete.ActiveKey = "Delete";
+                this.tsBtnDelete.ActiveKey = "DELETE";
                 this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnDelete.ID = "Delete";
                 this.tsBtnDelete.Image = global::AubitDesktop.ToolBarImages.delete;
@@ -1191,6 +1245,15 @@ namespace AubitDesktop
 
                 }
                 #endregion
+                #region INPUTARRAY
+                if (a is INPUTARRAY)
+                {
+                    INPUTARRAY ia = (INPUTARRAY)a;
+                    contexts.Insert(Convert.ToInt32(ia.CONTEXT), new UIInputArrayContext(this, ia));
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
                 #region DISPLAYARRAY
                 if (a is DISPLAYARRAY)
                 {
@@ -1361,7 +1424,7 @@ namespace AubitDesktop
                             if (contexts[idx] != null)
                             {
                                 TopWindow.clrWaitCursor();
-                                contexts[idx].ActivateContext(UIContext_EventTriggered,w.VALUES);
+                                contexts[idx].ActivateContext(UIContext_EventTriggered,w.VALUES, w.ROWS);
                                 currentContext = contexts[idx];
                             }
                             else

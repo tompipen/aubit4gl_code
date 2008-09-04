@@ -46,7 +46,7 @@ namespace AubitDesktop
         /// Activate a context
         /// </summary>
         /// <param name="e">Event handler to call when a TRIGGERED packet is to be returned</param>
-        void ActivateContext(UIEventHandler e,VALUE[] values);
+        void ActivateContext(UIEventHandler e,VALUE[] values,ROW[] rows);
 
         /// <summary>
         /// Deactivate the context - stop listening for actions
