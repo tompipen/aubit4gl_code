@@ -157,7 +157,7 @@ xml_escape (char *s)
 
 
   c = 0;
-
+  //if (s==0) return "";
 
   if (strchr (s, '&'))
     c++;
@@ -2043,6 +2043,16 @@ uilib_input_array_start (int nargs)
   int todefs;
   int arrsize;
   int nvals;
+int allow_insert;
+int allow_delete;
+int inp_flags;
+
+
+inp_flags=POPint();
+allow_delete=POPint();
+allow_insert=POPint();
+
+
 
   nvals = POPint ();		// Number of variables in the array (per line)
   arrsize = POPint ();		// number of elements in the array
@@ -2081,8 +2091,10 @@ uilib_input_array_start (int nargs)
     }
 
   suspend_flush (1);
-  send_to_ui ("<INPUTARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" MAXARRSIZE=\"%d\" WITHOUT_DEFAULTS=\"%d\">\n%s", ci,
-	      attr, m_arr_count, arrsize, todefs, last_field_list);
+  send_to_ui ("<INPUTARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" MAXARRSIZE=\"%d\" WITHOUT_DEFAULTS=\"%d\" ARRVARIABLES=\"%d\" ALLOWINSERT=\"%d\" ALLOWDELETE=\"%d\" NONEWLINES=\"%d\">\n%s", ci,
+	      attr, m_arr_count, arrsize, todefs, nvals,
+		allow_insert,allow_delete,inp_flags,
+last_field_list);
   return 0;
 }
 
@@ -2148,6 +2160,12 @@ send_input_array_change (int ci)
   int a;
   int b;
   int need_to_send = 0;
+
+  //if (contexts[ci].ui.inputarray.field_data==NULL) {
+	//need_to_send=1;
+  //} 
+
+
   for (a = 0; a < contexts[ci].ui.inputarray.maxarrsize; a++)
     {
       if (contexts[ci].ui.inputarray.changed_rows[a])

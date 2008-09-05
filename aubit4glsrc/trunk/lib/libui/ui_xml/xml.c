@@ -1929,11 +1929,14 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
   int acnt;
   int ninp;
   inp = vinp;
+  int count;
+  count = A4GL_get_count ();
 
   if (init)
     {
       char buff[2000];
-      A4GL_push_int (A4GL_get_count ());
+      int a;
+      A4GL_push_int (count);
       uilib_set_count (1);
       suspend_flush (1);
       SPRINTF (buff, "<FIELDLIST><FIELD NAME=\"%s.*\"/></FIELDLIST>", srecname);
@@ -1945,7 +1948,10 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
       A4GL_push_int (attrib);
       A4GL_push_int (inp->arr_size);
       A4GL_push_int (inp->nbind);
-      uilib_input_array_start (6);
+	A4GL_push_int(inp->allow_insert);
+	A4GL_push_int(inp->allow_delete);
+	A4GL_push_int(inp->inp_flags);
+      uilib_input_array_start (9);
 
       A4GL_push_char ("XML");
       A4GL_push_int ((long) vinp & (0xffffffff));
@@ -1953,28 +1959,28 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
       context = A4GL_pop_long ();
       clr_exiting_context (context);
 
-      ninp = A4GL_get_count ();
-
-      if (defs == 0 && ninp)
-	{
-	  A4GL_debug ("CLEARING down array - we want defaults\n");
-	  for (acnt = 0; acnt < ninp; acnt++)
-	    {
-	      int b;
-	      for (b = 0; b < inp->nbind; b++)
-		{
-		  char *cptr;
-		  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
-		  A4GL_setnull (inp->binding[b].dtype, cptr, inp->binding[b].size);
-		}
-	    }
-	}
-
-
-
+      ninp = count;
       dump_events (evt);
       uilib_input_array_initialised (0);
       suspend_flush (-1);
+
+      if (defs == 0)
+	{
+	  if (ninp)
+	    {
+	      A4GL_debug ("CLEARING down array - we want defaults\n");
+	      for (acnt = 0; acnt < ninp; acnt++)
+		{
+		  int b;
+		  for (b = 0; b < inp->nbind; b++)
+		    {
+		      char *cptr;
+		      cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
+		      A4GL_setnull (inp->binding[b].dtype, cptr, inp->binding[b].size);
+		    }
+		}
+	    }
+	}
     }
 
   if (context == -1)
@@ -1986,10 +1992,8 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
     }
 
 
-  uilib_arr_count (0);
-  ninp = A4GL_pop_long ();
 
-  for (acnt = 0; acnt < ninp; acnt++)
+  for (acnt = 0; acnt < count; acnt++)
     {
       int b;
       A4GL_push_int (context);
@@ -1998,6 +2002,10 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	{
 	  char *cptr;
 	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
+	//printf("DTYPE=%d\n",inp->binding[b].dtype );
+	//if ((inp->binding[b].dtype  & DTYPE_MASK)==DTYPE_CHAR) {
+			//printf("Pushing  : %s\n", cptr);
+	//}
 	  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
 	}
       uilib_input_array_sync (inp->nbind + 2);
@@ -2019,7 +2027,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	}
     }
 
-  if (rval >= 0 || rval == -100)
+  if (rval > 0 || rval == -100)
     {
       // If we've got to here we need to copy down our values...
       while (1)
