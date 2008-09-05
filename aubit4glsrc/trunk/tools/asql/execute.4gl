@@ -317,6 +317,11 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 } 
 
 
+//for (a=0;a<list_cnt;a++) {
+//printf("%d. %c %d %s\n", a,list[a].type, list[a].lineno,list[a].stmt);
+//}
+
+
 
 	for (a=0;a<list_cnt;a++) {
 		char *p;

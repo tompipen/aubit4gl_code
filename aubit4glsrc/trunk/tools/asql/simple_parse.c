@@ -114,6 +114,9 @@ int in_create_procedure;
 				a=asql_yylex();
 				if (a==0) break;
 				strcat(buff,yylval.str);
+				if (a==KW_NL) {
+					line++;
+				}
 				if (a==KW_END_PROCEDURE) {
 					break;
 				}

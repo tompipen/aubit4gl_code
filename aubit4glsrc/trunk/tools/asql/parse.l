@@ -41,6 +41,8 @@ void count(void);
 "where"			{ count(); return(KW_WHERE); }
 create[ \t\v\f]*procedure	{ count(); return(KW_CREATE_PROCEDURE); }
 end[ \t\v\f]*procedure		{ count(); return(KW_END_PROCEDURE); }
+create[ \t\v\f]*function	{ count(); return(KW_CREATE_PROCEDURE); }
+end[ \t\v\f]*function		{ count(); return(KW_END_PROCEDURE); }
 load[ \t\v\f]*from	{ count(); return(KW_LOAD); }
 unload[ \t\v\f]*to	{ count(); return(KW_UNLOAD); }
 output[ \t\v\f]*to	{ count(); return(KW_OUTPUT_TO); }
