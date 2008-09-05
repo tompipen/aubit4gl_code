@@ -492,6 +492,7 @@ endcode
 if sqlca.sqlcode>=0 then
 	if exec_mode=0 or exec_mode=2 then
 		message msg clipped
+		display " "
 	else
 code
 		fflush(stdout);
@@ -499,8 +500,6 @@ code
 		fprintf(stderr,"%s\n",msg);
 		fflush(stderr);
 endcode
-
-		display " "
 	end if
 
 	if qry_type=1 and get_exec_mode()!=1 then
