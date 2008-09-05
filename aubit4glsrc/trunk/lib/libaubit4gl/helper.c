@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.68 2008-07-22 09:09:38 mikeaubury Exp $
+# $Id: helper.c,v 1.69 2008-09-05 18:26:23 mikeaubury Exp $
 #
 */
 
@@ -1623,6 +1623,37 @@ size_t A4GL_base64_encode(const char *inp, size_t insize, char **outptr)
 /* ---- End of Base64 Encoding ---- */
 
 
+
+
+void A4GL_change_trailing_zeros_for_leading_spaces(char *s) {
+int dp=-1;
+int len;
+char buff[2000];
+int newlen;
+int a;
+len=strlen(s);
+for (a=0;a<len;a++) {
+	if (s[a]==a4gl_convfmts.printf_decfmt.decsep) {
+		dp=a;
+		break;
+	}
+}
+if (dp==-1) return;
+
+for (a=len-1;a>dp+1;a--) {
+	if (s[a]=='0') s[a]=' ';
+	else break;
+}
+A4GL_trim(s);
+newlen=strlen(s);
+if (newlen<len) {
+	memset(buff,' ',sizeof(buff));
+	buff[sizeof(buff)-1]=0;
+	strcpy(&buff[len-newlen],s);
+	strcpy(s,buff);
+}
+
+}
 
 
 /* =================================== EOF ============================= */
