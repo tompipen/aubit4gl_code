@@ -133,7 +133,28 @@ namespace AubitDesktop
 
         public void DeletekeyPressed()
         {
-            MessageBox.Show("Delete key not implemented yet");
+            if (!allowDelete)
+            {
+                mainWin.setErrorTextFromFieldValidation("ARR_DEL_MSG");
+                return;
+            }
+            for (int a = arrLine; a <= nRows; a++)
+            {
+                for (int col = 0; col < nCols; col++)
+                {
+                    Data[a-1, col] = Data[a , col];
+                }
+                rowDataChanged[a-1] = true;
+
+            
+            }
+            for (int col = 0; col < nCols; col++)
+            {
+                Data[nRows, col] = "";
+            }
+            rowDataChanged[nRows - 1] = true;
+            nRows--;
+            drawArrAll();   
         }
 
         public void InsertkeyPressed()
@@ -208,6 +229,7 @@ namespace AubitDesktop
                     }
 
                 }
+         
             }
             else
             {
