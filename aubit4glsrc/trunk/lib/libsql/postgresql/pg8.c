@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.52 2008-08-28 10:38:51 mikeaubury Exp $
+# $Id: pg8.c,v 1.53 2008-09-05 12:59:54 mikeaubury Exp $
 #*/
 
 
@@ -294,6 +294,8 @@ char *ptr;
     A4GL_debug ("login=%s", u);
   if (p)
     A4GL_debug ("passwd=%s", p);
+
+  A4GL_set_connection_username(u);
 
   current_con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, u,p);
   if (current_con == NULL)

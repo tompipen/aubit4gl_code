@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.155 2008-07-06 11:34:33 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.156 2008-09-05 12:59:43 mikeaubury Exp $
 #
 */
 
@@ -2853,6 +2853,7 @@ static char *
 get_dollared_sql_var (char *s)
 {
   static char buff[256];
+  char buff2[256];
   char *c;
 
   if (A4GL_aubit_strcasecmp (s, "$TODAY") == 0)
@@ -2878,6 +2879,14 @@ get_dollared_sql_var (char *s)
       A4GL_push_user ();
       c = A4GL_char_pop ();
       SPRINTF1 (buff, "'%s'", c);
+      acl_free (c);
+      return buff;
+    }
+
+
+  if (A4GL_aubit_strcasecmp (s, "$DBUSER") == 0)
+    {
+      SPRINTF1 (buff, "'%s'", A4GL_get_connection_username());
       acl_free (c);
       return buff;
     }
@@ -3298,9 +3307,13 @@ get_dollared_sql_var (char *s)
     }				// ,11 aint working yet..
 
 
-
+  sprintf(buff2,&s[1]);
+  if (acl_getenv_not_set_as_0(buff2)) {
+	strcpy(buff,acl_getenv_not_set_as_0(buff2));
+	return buff;
+  }
   strcpy (buff, s);
-  return s;
+  return buff;
 }
 #endif
 

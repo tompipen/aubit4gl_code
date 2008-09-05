@@ -601,6 +601,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 
   A4GL_debug ("Connecting : u=%s p=%s dbname=%s", u, p, dbname);
 
+
+  A4GL_set_connection_username(u);
+
   if (strcmp (dbname, "DEFAULT") == 0)
     {
       if (!mysql_real_connect

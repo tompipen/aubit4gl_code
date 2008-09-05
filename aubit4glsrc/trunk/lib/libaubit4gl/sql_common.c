@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.60 2008-07-22 21:21:34 mikeaubury Exp $
+# $Id: sql_common.c,v 1.61 2008-09-05 12:59:42 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,7 @@ static char source_dialect[64] = "INFORMIX";
 static int must_convert = 0;
 
 char save_esql_session[256];
-
+char lastDBUserName[256]="";
 
 struct s_prepared_statement {
 	char preparedStatementName[256];
@@ -1485,6 +1485,25 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
 }
 
 
+
+void A4GL_set_connection_username(char *u) {
+// Sets the username that we last tried to connect to a database with...
+if (u) {
+	strcpy(lastDBUserName,u);
+} else {
+	strcpy(lastDBUserName,"");
+}
+}
+
+
+char * A4GL_get_connection_username(void) {
+	return lastDBUserName;
+}
+
+int aclfgl_aclfgl_get_connection_username(int a) {
+	A4GL_push_char(lastDBUserName);
+	return 1;
+}
 
 int
 A4GL_sqlid_encrypt (void)

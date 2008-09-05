@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.217 2008-08-25 16:31:23 gyver309 Exp $
+# $Id: sql.c,v 1.218 2008-09-05 12:59:53 mikeaubury Exp $
 #
 */
 
@@ -2314,6 +2314,9 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
     if (pwd_p)
         strcpy (pwd, pwd_p);
     A4GL_trim (uid);
+
+    A4GL_set_connection_username(uid);
+
     A4GL_trim (pwd);
     A4GL_trim (server);
     /*
