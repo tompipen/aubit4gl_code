@@ -117,6 +117,9 @@ The possible directives are listed below:
       REPLACE_EXPR sysdate = current year to second
       REPLACE_EXPR today = date(now())
 
+ REPLACE_SQLCONST before = after
+	Replace sql constant. Currently only TODAY, TIME, ROWID and USER, TRUE, FALSE are acceptable terms
+
  REPLACE COMMAND before = after
 
    Replace, but only if the whole SQL statement matches the 'before' string
