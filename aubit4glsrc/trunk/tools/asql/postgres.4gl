@@ -560,8 +560,10 @@ A4GL_debug("Getting details for index %d",index);
 
                 	if (display_mode==DISPLAY_DOWN) {
                         	sprintf (buffer, "%lf", DOUBLEVAR);
+				A4GL_change_trailing_zeros_for_leading_spaces(buffer);
                 	} else {
                         	sprintf (buffer, "%*lf", columnWidths[idx-1],DOUBLEVAR);
+				A4GL_change_trailing_zeros_for_leading_spaces(buffer);
                 	}
   				if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 }
@@ -580,16 +582,20 @@ A4GL_debug("Getting details for index %d",index);
         	}
   		if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
+
            case SQL3_FLOAT:
            case SQL3_REAL:
                 exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
                 sprintf(buffer,"%.*f",PRECISION,FLOATVAR);
+		A4GL_change_trailing_zeros_for_leading_spaces(buffer);
   		if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
+
            case SQL3_DOUBLE_PRECISION:
                 exec sql get descriptor descExec value :index :DOUBLEVAR=data;cp_sqlca();
-                sprintf(buffer,"%.*f",PRECISION,DOUBLEVAR);
-  			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
+                sprintf(buffer,"%.*lf",PRECISION,DOUBLEVAR);
+		A4GL_change_trailing_zeros_for_leading_spaces(buffer);
+  		if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 break;
 
            case SQL3_DATE_TIME_TIMESTAMP:
