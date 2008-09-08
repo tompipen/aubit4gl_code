@@ -19,16 +19,17 @@ struct s_attr *xml_parse(char *s) {
         myinputlim=strlen(s);
         myinputptr=inbuff;
         memset(&lexed_attr,0, sizeof(struct s_attr));
+
 	if (strlen(s)< 1000) {
-        UIdebug(3,"INPUT = %s\n",s);
+        	UIdebug(3,"INPUT = %s\n",s);
 	}
 
         if (xml_yylex()) {
                 printf("X1 - yylex returned true\n");
                 return &lexed_attr;
         } else {
-                return &lexed_attr;
                 printf("X2 - yylex returned false\n");
+                return &lexed_attr;
         }
 }
 

@@ -325,6 +325,13 @@ get_event_from_ui ()
 	}
 
 
+	//printf("Buff=%s\n",buff);
+	if (strcmp(buff,"<PING/>")==0) {
+		// Just a 'keep-alive' indicator.....
+		continue;
+	}
+
+
       if (localbuff == 0)
 	{
 	  // This is our first line- is it a single line 'TRIGGERED' ? 
@@ -348,6 +355,8 @@ get_event_from_ui ()
 		    }
 		}
 	    }
+
+
 	  if (strlen (buff))
 	    {
 	      localbuff = strdup (buff);

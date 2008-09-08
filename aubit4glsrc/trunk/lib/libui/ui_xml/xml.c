@@ -12,8 +12,31 @@ char *set_current_display_delims = 0;
 
 int generate_xml_forms=-1; // Automatically generate XML form files where no XML file exists
 
+void dump_form_labels(void) ;
+
+#include "lib/libpacker/formxml/formxml.h"
+
+#ifdef MOVED
+char screen[200][200];
 
 
+
+struct s_field
+{
+  int y;
+  int x;
+  int w;
+  char *label;
+  int field_start;
+
+};
+
+struct s_field *screen_convert_fields = 0;
+int nfields = 0;
+#endif
+
+
+//void make_screen (struct_form * f);
 char reading_form_id[200];
 char reading_form_name[200];
 int mn_id = 0;
@@ -2346,11 +2369,13 @@ UILIB_A4GL_add_menu_action (void *menu, char *action, int cmd_no_on_timeout)
 }
 
 
+#ifdef OBSOLETE
 static void
 A4GL_make_label (int frow, int fcol, char *label)
 {
   send_to_ui ("<FORMLABEL ROW=\"%d\" COLUMN=\"%d\">%s</FORMLABEL>", frow, fcol, uilib_xml_escape (label));
 }
+#endif
 
 
 static void
@@ -2469,6 +2494,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   char *action;
   int generated_xml_form=0;
 
+
+
   formdets = formdetsv;
   if (generate_xml_forms) {
 		FILE *f;
@@ -2503,6 +2530,12 @@ UILIB_A4GL_read_metrics (void *formdetsv)
   send_to_ui ("<SCREENS MAXCOL=\"%d\" MAXLINE=\"%d\">", formdets->fileform->maxcol, formdets->fileform->maxline);
 
   send_to_ui ("<SCREENLAYOUT>", formdets->fileform->maxcol, formdets->fileform->maxline);
+
+
+  merge_labels(formdets->fileform,1); // using 1 because we want to dump Screen 1
+
+  dump_form_labels();
+
   for (metric_no = 0; metric_no < n; metric_no++)
     {
 
@@ -2512,10 +2545,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 
       if (strlen (formdets->fileform->metrics.metrics_val[metric_no].label) != 0)
 	{
-	  A4GL_make_label (formdets->fileform->metrics.metrics_val[metric_no].
-			   y,
-			   formdets->fileform->metrics.metrics_val[metric_no].
-			   x, formdets->fileform->metrics.metrics_val[metric_no].label);
+		continue;
+	  	//A4GL_make_label (formdets->fileform->metrics.metrics_val[metric_no].  y, formdets->fileform->metrics.metrics_val[metric_no].  x, formdets->fileform->metrics.metrics_val[metric_no].label);
 	}
       else
 	{
@@ -3117,9 +3148,290 @@ UILIB_aclfgl_aclfgl_set_display_field_delimiters (int n)
 }
 
 
-void cleanup() {
+void cleanup(void) {
 if (def_stderr) fclose(def_stderr);
 if (strlen(stderr_fname)) {
       unlink (stderr_fname);
 }
 }
+
+#ifdef MOVED
+void
+merge_labels (struct s_form_dets *formdets)
+{
+	make_screen(formdets->fileform);
+}
+
+
+void
+new_field (int y, int x, int w, char because_of, int fstart)
+{
+  char buff[200];
+  strcpy (buff, &screen[y][x]);
+  buff[w] = 0;
+
+  nfields++;
+  screen_convert_fields = realloc (screen_convert_fields, sizeof (struct s_field) * nfields);
+  screen_convert_fields[nfields - 1].x = x;
+  screen_convert_fields[nfields - 1].y = y;
+  screen_convert_fields[nfields - 1].w = w;
+  screen_convert_fields[nfields - 1].label = strdup (buff);
+  screen_convert_fields[nfields - 1].field_start = fstart;
+}
+#endif
+
+
+
+
+void dump_form_labels(void) {
+int a;
+int nfields;
+nfields=get_num_labels();
+for (a=0;a<nfields;a++) {
+	int x;
+	int y;
+	char *label;
+	get_label(a,&label,&x,&y);
+  send_to_ui ("<FORMLABEL ROW=\"%d\" COLUMN=\"%d\">%s</FORMLABEL>", 
+			y,
+			x, uilib_xml_escape (label));
+}
+
+}
+
+#ifdef MOVED
+int
+has_label (int x, int y, int w, int set, int fy)
+{
+  int a;
+  int ok;
+  int start_in;
+  int end_in;
+// Find any labels matching on this line over this field
+  for (a = 0; a < nfields; a++)
+    {
+      //printf("%d %d %d (%d %d)\n",x,y,w,fields[a].x,fields[a].y);
+      if (screen_convert_fields[a].label == 0)
+	continue;
+
+      if (screen_convert_fields[a].y != y)
+	continue;
+
+      //
+      //         LABEL
+      //
+      //          [ ]                   /1
+      //          [                 ]   /2
+      //     [     ]                    /3
+      //    [             ]             /4
+      //
+      //
+      ok = 0;
+      start_in = 0;
+      if (x >= screen_convert_fields[a].x && x <= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
+	start_in = 1;
+
+
+      end_in = 0;
+      if (x + w >= screen_convert_fields[a].x
+	  && x + w <= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
+	end_in = 1;
+
+
+      if (end_in || start_in)
+	ok = 1;
+      if (x <= screen_convert_fields[a].x && x + w >= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
+	ok = 2;
+
+      if (set && ok && 0 )
+	{
+	  screen_convert_fields[a].field_start = x;
+	  screen_convert_fields[a].y = fy;
+
+	  return ok;
+	}
+      if (ok)
+	return ok;
+    }
+
+  return 0;
+}
+
+
+void make_screen (struct_form * f)
+{
+  int x, y;
+  int spc;
+  int a;
+  int fno;
+  int b;
+
+  if (f->maxcol > 200 || f->maxline > 200)
+    {
+      printf ("Too wide or too long\n");
+      exit (1);
+    }
+  for (y = 0; y < f->maxline; y++)
+    {
+      memset (screen[y], ' ', f->maxcol);
+      screen[y][f->maxcol + 1] = 0;
+    }
+
+  for (a = 0; a < f->metrics.metrics_len; a++)
+    {
+      int w;
+      x = f->metrics.metrics_val[a].x;
+      y = f->metrics.metrics_val[a].y;
+      w = f->metrics.metrics_val[a].w;
+
+      if (f->metrics.metrics_val[a].scr != 1)
+	{
+	  printf ("Not on a single screen\n");
+	  exit (1);
+	}
+
+
+      if (f->metrics.metrics_val[a].label[0] == '\n')
+	continue;		// Ignore graphics characters-  line drawing
+      if (strncmp(f->metrics.metrics_val[a].label ,"nl;",3)==0) {
+		continue;
+	}
+
+
+      if (strlen (f->metrics.metrics_val[a].label))
+	{
+	  strncpy (&screen[y][x], f->metrics.metrics_val[a].label,
+		   strlen (f->metrics.metrics_val[a].label));
+	}
+      else
+	{
+	  screen[y][x] = 1;
+	  screen[y][x + w + 1] = 2;
+	}
+    }
+
+
+// We've now got our screen reassembled - now look for any fields which are single spaced delimited...
+//
+//
+
+  for (y = 0; y < f->maxline; y++)
+    {
+
+      // Convert all ':' to spaces - they'd look rubbish anyway....
+      for (x = 0; x < f->maxcol; x++)
+	{
+	  if (screen[y][x] == ':')
+	    screen[y][x] = ' ';
+	}
+
+      for (x = 0; x < f->maxcol; x++)
+	{
+	  int because_of=0;
+	  int w;
+	  int w2;
+	  int fstart = -1;
+	  if (screen[y][x] != ' ' && screen[y][x] != 1 && screen[y][x] != 2)
+	    {
+	      for (w = x + 1; w <= f->maxcol; w++)
+		{
+		  if (screen[y][w - 1] == ' ' && screen[y][w] == 0)
+		    {
+		      because_of = ' ';
+		      break;
+		    }		// more than 1 space
+		  if (screen[y][w - 1] == ' ' && screen[y][w] == ' ')
+		    {
+		      because_of = ' ';
+		      break;
+		    }		// more than 1 space
+		  if (screen[y][w] == 1 || screen[y][w] == 2)
+		    {
+		      because_of = '[';
+		      fstart = w;
+		      break;
+		    }		// a field
+		}
+
+	      if (because_of == ' ')
+		{
+		  for (w2 = w; w2 < f->maxcol; w2++)
+		    {
+		      if (screen[y][w2] == ' ')
+			continue;
+		      if (screen[y][w2] == 1)
+			{
+			  fstart = w2;
+			  break;
+			}
+		      break;
+		    }
+		}
+	      new_field (y, x, w - x - 1, because_of, fstart);
+	      memset (&screen[y][x], ' ', w - x - 1);
+	    }
+	}
+    }
+
+
+  for (a = 0; a < f->attributes.attributes_len; a++)
+    {
+      int mno;
+      int ok;
+      int w;
+
+      fno = f->attributes.attributes_val[a].field_no;
+      if (f->fields.fields_val[fno].metric.metric_len <= 1)
+	continue;
+      mno = f->fields.fields_val[fno].metric.metric_val[0];
+
+      // We've got an array of these - normally they'd all start at the same 'x' - so lets check
+      x = f->metrics.metrics_val[mno].x;
+      y = f->metrics.metrics_val[mno].y;
+      ok = 1;
+
+      for (b = 1; b < f->fields.fields_val[fno].metric.metric_len; b++)
+	{
+	  mno = f->fields.fields_val[fno].metric.metric_val[b];
+	  if (x != f->metrics.metrics_val[mno].x)
+	    {
+	      ok = 0;
+	      break;
+	    }
+	  if (y + b != f->metrics.metrics_val[mno].y)
+	    {
+	      ok = 0;
+	      break;
+	    }			// Must be contiguous down the page too
+	}
+      if (ok == 0)
+	continue;
+
+      // if we've got to here all ourt fields line up
+      //
+      mno = f->fields.fields_val[fno].metric.metric_val[0];
+      w = f->metrics.metrics_val[mno].w;
+      x = f->metrics.metrics_val[mno].x;
+      y = f->metrics.metrics_val[mno].y;
+
+      if (has_label (x, y - 1, w, 0, y))
+	{
+	  //printf("Found 1\n");
+	  has_label (x, y - 1, w, 1, y);
+	}
+      else
+	{
+	  if (has_label (x, y - 2, w, 0, y))
+	    {
+	      //printf("Found 2\n");
+	      has_label (x, y - 2, w, 1, y);
+	    }
+	}
+
+
+    }
+
+
+}
+
+#endif
