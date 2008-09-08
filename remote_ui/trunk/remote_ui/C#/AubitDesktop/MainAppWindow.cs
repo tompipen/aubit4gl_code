@@ -445,9 +445,12 @@ namespace AubitDesktop
         }
 
 
-        public void SendString(string text) {
-            setWaitCursor();
+        
+        public void SendString(string text,bool callSetWaitCursor) {
+            if (callSetWaitCursor) { setWaitCursor(); }
+
             stdNetworkConnection.SendString(text);
+            //resetPing();
 
         }
 

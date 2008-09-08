@@ -56,6 +56,9 @@ namespace AubitDesktop
         private AubitTSBtn tsBtnPgDown;
         private AubitTSBtn tsBtnInsert;
         private AubitTSBtn tsBtnDelete;
+        private DateTime lastPing;
+        private bool lastPingIsSet = false;
+        private TimeSpan pingInterval = new TimeSpan(0, 0, 20);
 
         public List<object> commands;
         FGLWindowStack ApplicationWindows;
@@ -215,7 +218,7 @@ namespace AubitDesktop
             {
                 TriggeredText="<TRIGGERED ID=\""+ID+"\"/>";
             }
-           TopWindow.SendString(TriggeredText);
+           TopWindow.SendString(TriggeredText,true);
         }
 
 
@@ -489,8 +492,8 @@ namespace AubitDesktop
 
         public void ensureAcceptInterruptButtonsOnToolStrip()
         {
-            if (toolStrip1.Count == 0)
-            {
+            if (tsBtnAccept==null) {
+            
                 addDefaultToolstripItems();
             }
 
@@ -701,7 +704,7 @@ namespace AubitDesktop
         {
             this.ErrorText = "";
             string eventText = "<TRIGGERED ID=\"INTERRUPT\"/>";
-            TopWindow.SendString(eventText);
+            TopWindow.SendString(eventText,true);
             currentContext.DeactivateContext();
         }
 
@@ -712,7 +715,7 @@ namespace AubitDesktop
             string eventText = currentContext.getAcceptString();
             if (eventText != null)
             {
-                TopWindow.SendString(eventText);
+                TopWindow.SendString(eventText,true);
             }
             currentContext.DeactivateContext();
         }
@@ -732,11 +735,46 @@ namespace AubitDesktop
             this.ErrorText = s;
         }
 
+        /*
+        public void resetPing() {
+            lastPing = DateTime.Now;
+        }
+        */
+
+
+        /// <summary>
+        /// Force a response every n seconds to ensure that the line is kept alive
+        /// This is called from 'ConsumeEnvelopeCommands' which in turn is called from a timer...
+        /// </summary>
+        public void SendPing()
+        {
+
+            DateTime n;
+            
+            n=DateTime.Now;
+            if (lastPingIsSet == false)
+            {
+                lastPing = n;
+                lastPingIsSet = true;
+            }
+            else
+            {
+                if (n.Subtract(lastPing) > pingInterval)
+                {
+                    lastPing = n;
+                    //MessageBox.Show("Ping!");
+                    TopWindow.SendString("<PING/>",false);
+                }
+            }
+            
+        }
+
+
         public void ConsumeEnvelopeCommands()
         {
             int cnt = 0;
             List<object> run_commands;
-
+            SendPing();
             //System.Diagnostics.Debug.WriteLine("In consume envelope commands (bottom level)");
             if (this.commands == null) return;
             if (this.commands.Count == 0) return;
@@ -1041,7 +1079,7 @@ namespace AubitDesktop
                             s += Convert.ToBase64String(fileContents);
                             s += "</SYNCVALUE></SYNCVALUES>";
                             s += "</TRIGGERED>";
-                            TopWindow.SendString(s);
+                            TopWindow.SendString(s,true);
                         }
                     }
                     else
