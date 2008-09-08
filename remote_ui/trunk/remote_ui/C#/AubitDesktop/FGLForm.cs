@@ -33,7 +33,7 @@ namespace AubitDesktop
 
     class FGLForm
     {
-        private List<IFGLField> fields;
+        private List<FGLWidget> fields;
         //private List<Label> labels;
         private List<FGLScreenRecord> ScreenRecords;
         
@@ -63,7 +63,7 @@ namespace AubitDesktop
 
 
 
-        void addLayoutToParent(string type , object parent, object child)
+        void addLayoutToParent(string type , Control parent, object child)
         {
             
 
@@ -74,46 +74,51 @@ namespace AubitDesktop
                     case "AubitDesktop.Xml.XMLForm.VBox":
                         {
                             AubitDesktop.Xml.XMLForm.VBox p;
-                            p = (AubitDesktop.Xml.XMLForm.VBox)parent;
+                            p = (AubitDesktop.Xml.XMLForm.VBox)child;
                             
                         }
                         break;
                     case "AubitDesktop.Xml.XMLForm.HBox":
                         {
                             AubitDesktop.Xml.XMLForm.HBox p;
-                            p = (AubitDesktop.Xml.XMLForm.HBox)parent;
+                            p = (AubitDesktop.Xml.XMLForm.HBox)child;
                         }
                         break;
                     case "AubitDesktop.Xml.XMLForm.Table":
                         {
                             AubitDesktop.Xml.XMLForm.Table p;
-                            p = (AubitDesktop.Xml.XMLForm.Table)parent;
+                            p = (AubitDesktop.Xml.XMLForm.Table)child;
                         }
                         break;
                     case "AubitDesktop.Xml.XMLForm.Grid":
                         {
                             AubitDesktop.Xml.XMLForm.Grid p;
-                            p = (AubitDesktop.Xml.XMLForm.Grid)parent;
+                            p = (AubitDesktop.Xml.XMLForm.Grid)child;
                         }
                         break;
                     
                     case "AubitDesktop.Xml.XMLForm.Page":
                         {
                             AubitDesktop.Xml.XMLForm.Page p;
-                            p = (AubitDesktop.Xml.XMLForm.Page)parent;
+                            p = (AubitDesktop.Xml.XMLForm.Page)child;
                         }
                         break;
 
                     case "AubitDesktop.Xml.XMLForm.Screen":
                         {
-
+                            // This is a 'converted' xml form still
+                            // based on an old screen layout...
                             AubitDesktop.Xml.XMLForm.Screen p;
                             Panel thisScreensPanel;
-                            p = (AubitDesktop.Xml.XMLForm.Screen)parent;
+                            p = (AubitDesktop.Xml.XMLForm.Screen)child;
 
                             thisScreensPanel = new Panel();
-                            thisScreensPanel.Visible = true;                           
-            
+                            thisScreensPanel.Visible = true;
+                            thisScreensPanel.Top = 0;
+                            thisScreensPanel.Left = 0;
+                            thisScreensPanel.AutoSize = true;
+                            parent.Controls.Add(thisScreensPanel);
+
                             foreach (object a in p.Items)
                             {
                                 switch (a.GetType().ToString()) {
@@ -121,25 +126,69 @@ namespace AubitDesktop
                                         {
                                             AubitDesktop.Xml.XMLForm.FormField ff;
                                             ff = (AubitDesktop.Xml.XMLForm.FormField)a;
-                                            object fld = makeXMLFieldWidget(ff);
+                                            FGLWidget fld = makeXMLFieldWidget(ff);
+                                            if (fld!=null)
+                                            {
+                                                thisScreensPanel.Controls.Add(fld.WindowsWidget);
+                                            }
                                         }
                                         break;
+
+
                                     case "AubitDesktop.Xml.XMLForm.HLine":
                                         {
                                             AubitDesktop.Xml.XMLForm.HLine hl;
                                             hl = (AubitDesktop.Xml.XMLForm.HLine)a;
+                                            // We'll fake a like by using a panel with a border...
+                                            Panel p_for_line;
+                                            p_for_line = new Panel();
+                                            p_for_line.Top = GuiLayout.get_gui_y(Convert.ToInt32(hl.posY));
+                                            p_for_line.Left = GuiLayout.get_gui_x(Convert.ToInt32(hl.posX));
+                                            p_for_line.Height = 4;
+                                            p_for_line.Width = GuiLayout.get_gui_w(Convert.ToInt32(hl.gridWidth) + 1) - 1;
+                                            p_for_line.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+                                            thisScreensPanel.Controls.Add(p_for_line);
                                         }
                                         break;
+
                                     case "AubitDesktop.Xml.XMLForm.Label":
                                         {
                                             AubitDesktop.Xml.XMLForm.Label lb;
                                             lb = (AubitDesktop.Xml.XMLForm.Label)a;
+                                            Label l;
+                                            l = new Label();
+                                            if (isJustLines(lb.text))
+                                            {
+                                                // We'll fake a line by using a panel with a border...
+                                                Panel p_for_line;
+                                                p_for_line = new Panel();
+                                                p_for_line.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
+                                                p_for_line.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
+                                                p_for_line.Height = 4;
+                                                p_for_line.Width = GuiLayout.get_gui_w(lb.text.Length + 1) - 1;
+                                                p_for_line.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+                                                thisScreensPanel.Controls.Add(p_for_line);
+                                            }
+                                            else
+                                            {
+                                                l.Text = lb.text;
+                                                l.AutoSize = true;
+                                                l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
+                                                l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
+                                                l.Height = 1;
+                                                l.Width = 1;
+                                                //labels.Add(l);
+                                                thisScreensPanel.Controls.Add(l);
+                                            }
                                         }
                                         break;
+
+
                                     case "AubitDesktop.Xml.XMLForm.Matrix":
                                         {
                                             AubitDesktop.Xml.XMLForm.Matrix ma;
                                             ma = (AubitDesktop.Xml.XMLForm.Matrix)a;
+                                            throw new NotImplementedException("Matrix not implemented");
                                         }
                                         break;
                                 }
@@ -152,15 +201,167 @@ namespace AubitDesktop
                 }
         }
 
-        private object makeXMLFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff)
+
+
+        
+        /// <summary>
+        /// create a 'widget' - this is used when its a 'widget' from an XML form - but not a specific widget
+        /// This routine should work out and call the correct 'widget specific' widget constructor..
+        /// </summary>
+        /// <param name="ffx"></param>
+        /// <param name="widget"></param>
+        public FGLWidget makegenericFGLWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Widget widget)
         {
-            throw new Exception("The method or operation is not implemented.");
+ 
+
+            switch (widget.Type.ToUpper())
+            {
+                case "PIXMAP":
+
+                    {
+                        AubitDesktop.Xml.XMLForm.Image b = new AubitDesktop.Xml.XMLForm.Image();
+                        b.action = widget.action;
+                        //b.comments = widget.comments;
+                        b.gridWidth = widget.gridWidth;
+                        b.posX = widget.posX;
+                        b.posY = widget.posY;
+                        //b.text = "";
+                        b.width = widget.width;
+                        return new FGLPixmapFieldWidget(ffx, b, widget.config);
+                    }
+                    
+
+                case "BUTTON":
+                    {
+                        AubitDesktop.Xml.XMLForm.ButtonEdit b = new AubitDesktop.Xml.XMLForm.ButtonEdit();
+                        b.action = widget.action;
+                        //b.comments = widget.comments;
+                        b.gridWidth = widget.gridWidth;
+                        b.posX = widget.posX;
+                        b.posY = widget.posY;
+                        //b.text = "";
+                        b.width = widget.width;
+                        return new FGLButtonFieldWidget(ffx, b,widget.config);
+                    }
+                    
+
+                case "BROWSER":
+                    {
+                        AubitDesktop.Xml.XMLForm.Browser b = new AubitDesktop.Xml.XMLForm.Browser();
+                       
+                        b.comments = widget.comments;
+                        b.gridWidth = widget.gridWidth;
+                        b.posX = widget.posX;
+                        b.posY = widget.posY;
+                        b.text = "";
+                        b.width = widget.width;
+                        return new FGLBrowserFieldWidget(ffx, b,widget.config);
+                    }
+                    
+
+                default:
+                    MessageBox.Show("Unhandled widget type");
+                    break;
+            }
+
+            throw new NotImplementedException("UNhandled widget " + widget.Type.ToUpper());
+            
+        }
+
+
+        private FGLWidget makeXMLFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff)
+        {
+
+            FGLWidget fld;
+            string widgetType;
+            fld = null;
+            widgetType = ff.Items[0].GetType().ToString();
+
+            switch (widgetType)
+            {
+
+
+
+                
+                case "AubitDesktop.Xml.XMLForm.Widget":
+                    fld = makegenericFGLWidget(ff, (AubitDesktop.Xml.XMLForm.Widget)ff.Items[0]);
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.DateEdit":
+                    fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.DateEdit)ff.Items[0],"");
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.TextEdit":
+                    {
+                        
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0],"");
+                    }
+
+                    break;
+
+
+                case "AubitDesktop.Xml.XMLForm.Edit":
+                    if (ff.sqlType != null && ff.sqlType == "DATE")  //&& thisAttrib.ATTRIB_FORMAT == null)
+                    {
+                        // Its a date
+                        fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],"");
+                    }
+                    else
+                    {
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0]);
+                    }
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.Image":
+                    fld = new FGLPixmapFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Image)ff.Items[0],"");
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.Browser":
+                    fld = new FGLBrowserFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Browser)ff.Items[0],"");
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.ButtonEdit":
+                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0],"");
+                    break;
+
+
+                case "AubitDesktop.Xml.XMLForm.ComboBox":
+                case "AubitDesktop.Xml.XMLForm.Label":
+                case "AubitDesktop.Xml.XMLForm.RipLABEL":
+                case "AubitDesktop.Xml.XMLForm.ProgressBar":
+                
+
+                default:
+                    MessageBox.Show("Unhandled widget type : " + widgetType);
+                    break;
+            }
+
+            if (fld == null)
+            {
+                // Shit - we didn't manage to create one.
+                // We'll assume we've already seen a message box telling us...
+
+            }
+            else
+            {
+
+                // Set the context type
+                fld.ContextType = FGLContextType.ContextNone; // We're not using this field in any context...
+
+
+                fields.Add(fld);
+                fld.setToolTip(tooltips, fld.comment);
+                
+            }
+
+            return fld;
+            
         }
 
         public FGLForm(XMLFORM f)
         {
 
-            fields = new List<IFGLField>();
+            fields = new List<FGLWidget>();
 
             
 
@@ -169,17 +370,36 @@ namespace AubitDesktop
             string data;
             XmlSerializer ser;
             t = typeof(AubitDesktop.Xml.XMLForm.Form);
+            if (f.Text == null)
+            {
+                MessageBox.Show("XML form was not passed to frontend");
+                return;
+            }
+            if (f.Text.Length == 0)
+            {
+                MessageBox.Show("XML form was passed to frontend but was empty");
+                return;
+            }
             ser = new XmlSerializer(t);
+            
             data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
             TextReader txtr = new StringReader(data);
-            theForm = (AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
+            try
+            {
+                theForm = (AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Unable to process XML file:" + e.ToString());
+                return;
+            }
 
             this.maxcol = Convert.ToInt32(theForm.width);
             this.maxline = Convert.ToInt32(theForm.height);
             tooltips = new ToolTip();
             tooltips.ShowAlways = true;
 
-            fields = new List<IFGLField>();
+            fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
             thisFormsPanel.AutoSize = true;
@@ -229,7 +449,7 @@ namespace AubitDesktop
         public FGLForm(FORM f)
         {
             //labels = new List<Label>();
-            fields = new List<IFGLField>();
+            fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
             this.thisFormsPanel.Top = 15;
@@ -295,7 +515,7 @@ namespace AubitDesktop
 
                 if (o is FORMFIELD)
                 {
-                    IFGLField fld;
+                    FGLWidget fld;
 
                     FORMFIELD formfld = (FORMFIELD)o;
                     thisAttrib = f.ATTRIBUTES[Convert.ToInt32(formfld.ATTRIBUTE_NO)];
@@ -317,9 +537,9 @@ namespace AubitDesktop
             return false;
         }
 
-        private IFGLField makeFieldWidget(ATTRIB thisAttrib,  FORMFIELD formfld)
+        private FGLWidget makeFieldWidget(ATTRIB thisAttrib,  FORMFIELD formfld)
         {
-            IFGLField fld;
+            FGLWidget fld;
             fld = null;
             switch (formfld.WIDGET.ToUpper())
             {
@@ -440,7 +660,7 @@ namespace AubitDesktop
                 }
             }
 
-            foreach (IFGLField fld in fields)
+            foreach (FGLWidget fld in fields)
             {
                 bool found = false;
                 string foundNameShort="<notSet>";
@@ -558,7 +778,7 @@ namespace AubitDesktop
                         {
                             s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VALUES[a].Text, fldlist[a].fglField.datatype);
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
                             // Does nothing..
                         }
@@ -582,7 +802,7 @@ namespace AubitDesktop
         {
             this.thisFormsPanel.SuspendLayout();
             // Set *all* fields...
-            foreach (IFGLField i in fields)
+            foreach (FGLWidget i in fields)
             {
                 i.ContextType = contextType;
             }
@@ -591,12 +811,12 @@ namespace AubitDesktop
         }
 
 
-        public void SetContext(FGLContextType contextType, List<IFGLField> pfields)
+        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields)
         {
             
             this.thisFormsPanel.SuspendLayout();
             // We'll only set the active fields...
-            foreach (IFGLField i in this.fields)
+            foreach (FGLWidget i in this.fields)
             {
                 if (pfields.Contains(i))
                 {
@@ -628,7 +848,7 @@ namespace AubitDesktop
         {
             List<FGLFoundField> l;
             l = new List<FGLFoundField>();
-            foreach (IFGLField fld in fields)
+            foreach (FGLWidget fld in fields)
             {
                 if (fld.Action == actionName)
                 {

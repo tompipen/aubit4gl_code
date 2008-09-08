@@ -35,6 +35,9 @@ namespace AubitDesktop
         string _Config;
         string _Widget;
         string _comment;
+        internal FGLContextType _ContextType;
+
+
 
         int _row;
         int _column;
@@ -43,6 +46,8 @@ namespace AubitDesktop
         int _id;
         bool _FieldTextChanged;
         public Hashtable configSettings;
+
+
         ATTRIB attrib;
         
 
@@ -54,6 +59,62 @@ namespace AubitDesktop
         public string _afterFieldID;
         public string _beforeFieldID;
         public string _onActionID;
+
+
+
+        // Virtual members - must be overriden by widget implementation...
+        public virtual void ContextTypeChanged()
+        {
+            throw new ApplicationException("Not implemented");
+
+        }
+
+
+        public override string Text // The current fields value
+        {
+            get
+            {
+                throw new ApplicationException("Not implemented");
+
+            }
+            set
+            {
+                throw new ApplicationException("Not implemented");
+            }
+        }
+        public virtual void setFocus()
+        {
+            throw new NotImplementedException("Should be overridden");
+        }
+
+        public virtual int tabIndex
+        {
+            set
+            {
+
+                throw new NotImplementedException("Should be overridden");
+            }
+        }
+
+
+        public virtual bool hasFocus
+        {
+            get
+            {
+                throw new NotImplementedException("Should be overridden");
+            }
+        }
+
+        public virtual Control WindowsWidget
+        {
+            get
+            {
+                throw new NotImplementedException("Should be overridden");
+            }
+        }
+
+
+
 
         public string afterFieldID
         {
@@ -92,6 +153,23 @@ namespace AubitDesktop
             }
         }
 
+
+        
+
+        public FGLContextType ContextType
+        {  // The current ContextType - a field may appear differently if its used in a construct or input..
+            set
+            {
+                if (_ContextType != value)
+                {
+                    _ContextType = value;
+                    ContextTypeChanged();
+                }
+            }
+        }
+
+
+        
         public string beforeFieldID
         {
             get
@@ -168,6 +246,8 @@ namespace AubitDesktop
                 }
             }
         }
+
+
 
         public string format
         {
@@ -319,6 +399,11 @@ namespace AubitDesktop
             }
         }
 
+        
+
+
+
+
 
         public FGLWidget()
         {
@@ -343,6 +428,40 @@ namespace AubitDesktop
             
             attrib = new ATTRIB();
 
+        }
+
+
+
+        internal int decode_datatype_size(string p)
+        {
+
+            return 0;
+        }
+
+        internal int decode_datatype(string p)
+        {
+            p=p.TrimStart(' ');
+            if (p.StartsWith("DECIMAL")) return 5;
+            if (p.StartsWith("CHAR")) return 0;
+            if (p.StartsWith("VARCHAR")) return 13;
+            if (p.StartsWith("DATETIME")) return 10;
+            if (p.StartsWith("INTERVAL")) return 14;
+
+            switch (p)
+            {
+                case "SERIAL": return 6;
+                case "SMALLINT": return 1;
+                case "INTEGER": return 2;
+                case "DATE": return 7;
+
+                case "FLOAT": return 3;
+                case "SMALLFLOAT": return 4;
+
+
+                default:  // probably not a great fallback but better than nothing..
+                    return 0;
+            }
+                   
         }
 
 
@@ -373,6 +492,7 @@ namespace AubitDesktop
             this._afterFieldID = "";
             this._onActionID = "";
             this._beforeFieldID = "";
+            if (_Config == null) _Config = "";
 
             configSettings = FGLWidgetConfigSettings.GetSettings(_Config);
 
@@ -406,6 +526,185 @@ namespace AubitDesktop
 
 
         }
+
+
+
+        internal ATTRIB createAttribForWidget(AubitDesktop.Xml.XMLForm.FormField ff)
+        {
+            ATTRIB a = new ATTRIB();
+
+
+            if (ff.noEntry != null) { a.ATTRIB_NOENTRY = new ATTRIB_NOENTRY(); }
+            if (ff.required != null) { a.ATTRIB_REQUIRED = new ATTRIB_REQUIRED(); }
+
+            if (ff.hidden != null)
+            {
+                a.ATTRIB_INVISIBLE = new ATTRIB_INVISIBLE();
+            }
+            if (ff.sqlType != null)
+            {
+                a.DATATYPE = decode_datatype(ff.sqlType).ToString();
+                a.DATATYPE_SIZE = decode_datatype_size(ff.sqlType).ToString();
+            }
+            a.ATTRIBUTE_NO = ff.fieldId;
+
+
+
+            if (ff.defaultValue != null)
+            {
+                a.ATTRIB_DEFAULT = new ATTRIB_DEFAULT();
+                a.ATTRIB_DEFAULT.Text = ff.defaultValue;
+            }
+
+            return a;
+        }
+
+
+        bool validateField(object field)
+        {
+            bool ign = false;
+
+            if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
+            {
+                #region REQUIRED CHECK
+                if (this.Required)
+                {
+                    if (Text.Length == 0)
+                    {
+                        if (this.fieldValidationFailed != null)
+                        {
+                            this.fieldValidationFailed(this, "FIELD_REQD_MSG", out ign);
+                        }
+                        if (!ign)
+                        {
+                            return false;
+                        }
+                    }
+
+                }
+                #endregion
+                #region Datatype Check
+                if (!FGLUtils.IsValidForType(this.datatype, Text, this.format))
+                {
+                    if (this.fieldValidationFailed != null)
+                    {
+                        this.fieldValidationFailed(this, "FIELD_ERROR_MSG", out ign);
+                    }
+                    if (!ign)
+                    {
+                        return false;
+                    }
+                }
+                #endregion
+                #region Include value check
+                if (this.includeValues != null)
+                {
+                    bool ok = false;
+                    foreach (string s in this.includeValues)
+                    {
+                        if (s.Contains("\t"))
+                        {
+                            string l, r;
+                            string[] arr;
+                            arr = s.Split('\t');
+                            l = arr[0];
+                            r = arr[1];
+
+                            if (FGLUtils.compare_range(this.Text, l, r, this.datatype, this.datatype_length, this.format))
+                            {
+                                ok = true;
+                            }
+                        }
+                        else
+                        {
+                            if (s == "NULL" && this.Text == "")
+                            {
+                                ok = true;
+                            }
+                            if (s == this.Text)
+                            {
+                                ok = true;
+                            }
+                        }
+                    }
+
+                    ign = false;
+                    if (!ok)
+                    {
+                        this.fieldValidationFailed(this, "FIELD_INCL_MSG", out ign);
+                    }
+
+                    if (!ign)
+                    {
+                        return false;
+                    }
+
+
+                }
+                #endregion
+            }
+
+
+
+            return true;
+        }
+
+
+        internal void t_Click(object sender, EventArgs e)
+        {
+            if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
+            {
+                this.onUIEvent(this, this.onActionID, "");
+            }
+        }
+
+        internal void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+            if (!validateField(sender))
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                e.Cancel = false;
+            }
+        }
+
+
+        internal void t_GotFocus(object sender, EventArgs e)
+        {
+            if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
+            {
+                this.onUIEvent(this, this.beforeFieldID, "");
+            }
+
+            if (this.onGotFocus != null)
+            {
+                this.onGotFocus(this, this.comment);
+            }
+
+
+        }
+
+        internal void t_LostFocus(object sender, EventArgs e)
+        {
+            if (!validateField(sender))
+            {
+                ((Control)sender).Focus();
+            }
+            else
+            {
+                if (this.afterFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
+                {
+                    this.onUIEvent(this, this.afterFieldID, "");
+                }
+            }
+
+        }
+
+
+        
 
 
         public int attributeNo
@@ -457,6 +756,9 @@ namespace AubitDesktop
             }
 
         }
+
+
+
 
         public void SizeControl(Control c)
         {

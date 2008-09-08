@@ -532,7 +532,7 @@ namespace AubitDesktop
 
         public void SetToolBarKeyLabel(string Key, string Text)
         {
-            AubitTSBtn b;
+            
 
             ensureAcceptInterruptButtonsOnToolStrip();
 
@@ -731,6 +731,17 @@ namespace AubitDesktop
 
         public void setErrorTextFromFieldValidation(string s)
         {
+            switch (s)
+            {
+                case "ARR_DIR_MSG": s = " There are no more rows in the direction you are going "; break;
+                case "FIELD_ERROR_MSG": s = " Error in field "; break;
+                case "FIELD_INCL_MSG": s = " This value is not among the valid possibilities "; break;
+                case "FIELD_REQD_MSG": s = " This field required an entered value "; break;
+                case "FIELD_PICTURE_MSG": s = " You cannot use this editing feature because a picture exists "; break;
+                
+                case "INPARRAY_FULL_MSG": s = " Cannot insert another row - the input array is full "; break;
+
+            }
             // May want to do this some other way...
             this.ErrorText = s;
         }
@@ -1067,7 +1078,7 @@ namespace AubitDesktop
                             sr.Close();
                             f.Close();
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
                             fileID = "";
                         }
@@ -1491,7 +1502,7 @@ namespace AubitDesktop
                 // was in it is now closed - but we dont care about updating the progress bar in an invisible window ;-)
             TopWindow.setProgress(0,0);
                 }
-            catch (Exception e) {
+            catch (Exception ) {
                 }
 
             // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
@@ -1568,7 +1579,7 @@ namespace AubitDesktop
             ApplicationWindows.SetContext(contextType);
         }
 
-        public void SetContext(FGLContextType contextType, List<IFGLField> pfields, UIContext currContext)
+        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
         {
             ApplicationWindows.SetContext(contextType, pfields, currContext);
         }
@@ -1597,7 +1608,7 @@ namespace AubitDesktop
         internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext)
         {
             int cnt = 0;
-            List<IFGLField> l = new List<IFGLField>();
+            List<FGLWidget> l = new List<FGLWidget>();
             foreach (FGLFoundField fld in activeFields) {
                 fld.fglField.tabIndex = cnt++;
                 l.Add(fld.fglField);

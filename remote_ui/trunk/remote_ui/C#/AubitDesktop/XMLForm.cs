@@ -48,6 +48,13 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+            
+
         }
 
         /// <remarks/>
@@ -73,6 +80,19 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string autoNext;
+
         }
 
         /// <remarks/>
@@ -192,6 +212,10 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string defaultValue;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string include;
 
             /// <remarks/>
@@ -233,6 +257,7 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
             [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
             [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
+            [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
             public object[] Items;
         }
 
@@ -276,6 +301,13 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+
+            
         }
 
         /// <remarks/>
@@ -299,6 +331,14 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
 
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+            
+                        /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute()]
             public Item[] Item;
@@ -366,6 +406,15 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+                        /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
         }
 
         /// <remarks/>
@@ -400,6 +449,13 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+                        /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
         }
 
         /// <remarks/>
@@ -426,6 +482,45 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+                        /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+        public class Browser
+        {
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string comments;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string gridWidth;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string posX;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string posY;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string text;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string width;
+            
         }
 
         /// <remarks/>
@@ -456,6 +551,14 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+                        /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
         }
 
         /// <remarks/>
@@ -544,6 +647,14 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
         }
 
         /// <remarks/>
@@ -619,7 +730,13 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlElementAttribute("ProgressBar", Type = typeof(ProgressBar))]
             [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
             [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
+            [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
             [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
+
+
+
+
+
             public object[] Items;
         }
 
@@ -695,6 +812,7 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlElementAttribute("ProgressBar", Type = typeof(ProgressBar))]
             [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
             [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
+            [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
             [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
             public object[] Items;
         }

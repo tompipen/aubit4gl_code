@@ -10,7 +10,7 @@ namespace AubitDesktop
 {
     public partial class frmLogin : Form
     {
-        private bool _okcancel;
+        //private bool _okcancel;
 
         private string _username;
 

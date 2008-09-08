@@ -85,11 +85,11 @@ namespace AubitDesktop
         private static string a4gl_using_from_string(string fmt, string value, bool isneg)
         {
 
-            string dot;
+            
             string overflow;
             string fm1 = "";
             string fm2 = "";
-            string ptr = "";
+            
             string str_as_string;
             bool has_money = false;
             int p = 0;
@@ -143,7 +143,7 @@ namespace AubitDesktop
 
                 char[] buff2;
 
-                string fmt2;
+                
                 int eob;
                 buff = fmt.Substring(fmt.IndexOf("(") + 1);
                 eob = buff.IndexOf(")");
@@ -183,7 +183,7 @@ namespace AubitDesktop
                 {
                     if (fmt.IndexOf("(") >= 0 && fmt.IndexOf(")") >= 0)
                     {
-                        int l;
+                        
                         fmt=fmt.Replace("(", " ");
                         fmt=fmt.Replace(")", " ");
                     }

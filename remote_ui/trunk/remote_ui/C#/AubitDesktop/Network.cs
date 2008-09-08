@@ -372,7 +372,7 @@ namespace AubitDesktop
             {
                 streamWrite(msg, 0, msg.Length);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 if (this.ConnectionDied != null)
                 {
@@ -429,7 +429,7 @@ namespace AubitDesktop
                     {
                         cmd = "";
                     }
-                } catch (Exception ex) {
+                } catch (Exception ) {
                     System.Diagnostics.Debug.WriteLine("Exceptioned..");
                     if (this.ConnectionDied != null)
                     {
@@ -467,7 +467,7 @@ namespace AubitDesktop
 
                             if (c.StartsWith("</ENVELOPE>"))
                             {
-                                int cnt = 0;
+                                
                                 inEnvelope = false;
 
                                 

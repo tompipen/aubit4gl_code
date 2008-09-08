@@ -167,7 +167,7 @@ namespace AubitDesktop
 
             if (nRows >= maxRows)
             {
-                mainWin.setErrorTextFromFieldValidation("ARR_FULL_MSG");
+                mainWin.setErrorTextFromFieldValidation("INPARRAY_FULL_MSG");
                 return;
             }
 
@@ -348,9 +348,9 @@ namespace AubitDesktop
 
         private void copyFieldData()
         {
-            int a;
+            
             int topline;
-            a=0;
+            
             
             
             topline = arrLine - scrLine + 1;
@@ -757,7 +757,7 @@ namespace AubitDesktop
         public string getSyncValues()
         {
             string s;
-            int sub;
+            
             copyFieldData();
 
             s = "<SYNCROWS>";
@@ -819,7 +819,7 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UInputArrayContext_EventTriggered, VALUE[] val, ROW[] rows)
         {
-            int cnt = 0;
+            //int cnt = 0;
 
             inputFocusActive = false;
 
@@ -983,9 +983,9 @@ namespace AubitDesktop
                 {
                     // We should always get a full set of values
                     for (int a=0;a<this.nCols;a++) {
-                        bool isNew=false;
-                        //if (rows[row].VALUES[a].CHANGED == null) isNew = true;
-                        if (rows[row].VALUES[a].Text == null) isNew = true;
+                        //bool isNew=false;
+                        
+                        //if (rows[row].VALUES[a].Text == null) isNew = true;
 
                         if (row>this.nRows) {
                             Data[Convert.ToInt32(rows[row].SUBSCRIPT)-1,a]=activeFields[a].fglField.defaultValue;

@@ -28,16 +28,15 @@ using System.Drawing;
 namespace AubitDesktop
 {
     // A picture widget fgl field widget...
-    class FGLButtonFieldWidget : FGLWidget, IFGLField
+    class FGLButtonFieldWidget : FGLWidget
     {
 
-        FGLContextType _ContextType;
+        //FGLContextType _ContextType;
 
-        public FGLContextType ContextType
+        public override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            set
-            {
-                _ContextType = value;
+            
+                
                 if (_ContextType == FGLContextType.ContextNone)
                 {
                     this.Enabled = false;
@@ -46,11 +45,11 @@ namespace AubitDesktop
                 {
                     this.Enabled = true;
                 }
-            }
+            
         }
 
 
-        public int tabIndex
+        public override int tabIndex
         {
             set
             {
@@ -58,7 +57,7 @@ namespace AubitDesktop
             }
         }
 
-        public bool hasFocus
+        public override bool hasFocus
         {
             get
             {
@@ -69,12 +68,12 @@ namespace AubitDesktop
 
         Button b;
 
-        public void setFocus()
+        public override void setFocus()
         {
             b.Focus();
         }
 
-        public Control WindowsWidget
+        public override Control WindowsWidget
         {
             get
             {
@@ -117,14 +116,30 @@ namespace AubitDesktop
             }
         }
 
+        public FGLButtonFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ButtonEdit button,string config)
+        {
+
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+
+
+            createWidget(a, Convert.ToInt32(button.posY), Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            
+        }
+
         public FGLButtonFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
 
+            createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+        }
+
+        private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        {
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             b = new Button();
             SizeControl(b);
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
-            b.Click+=new EventHandler(b_Click);
+            b.Click += new EventHandler(b_Click);
         }
     }
 }

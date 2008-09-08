@@ -102,6 +102,9 @@ namespace AubitDesktop
     }
 
 
+
+
+    /*
  
     // We'll abstract all our widget implementation behind an interface
     public interface IFGLField
@@ -217,6 +220,7 @@ namespace AubitDesktop
 
         void setToolTip(ToolTip tooltips, string p);
     }
+     * */
 
     
     class FGLScreenRecordAttributes
@@ -546,7 +550,7 @@ namespace AubitDesktop
             windows[0].SetContext(contextType);
         }
 
-        internal void SetContext(FGLContextType contextType, List<IFGLField> pfields, UIContext currContext)
+        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
         {
             windows[0].SetContext(contextType,pfields,  currContext);
         }
@@ -583,13 +587,13 @@ namespace AubitDesktop
 
     public class FGLFoundField
     {
-        public IFGLField fglField;
+        public FGLWidget fglField;
         public string shortName;
         public string fullName;
         public string useName;
         
 
-        public FGLFoundField(string useName, string shortName,string fullName, IFGLField f)
+        public FGLFoundField(string useName, string shortName,string fullName, FGLWidget f)
         {
             this.fglField = f;
             
@@ -860,7 +864,7 @@ namespace AubitDesktop
             CurrentForm.SetContext(contextType);
         }
 
-        internal void SetContext(FGLContextType contextType, List<IFGLField> pfields, UIContext currContext)
+        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
         {
             CurrentForm.SetContext(contextType, pfields);
         }

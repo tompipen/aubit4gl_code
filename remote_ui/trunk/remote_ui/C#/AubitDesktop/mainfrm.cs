@@ -55,7 +55,7 @@ namespace AubitDesktop
                 {
                     this.server.Start();
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
                     MessageBox.Show("Unable to start socket listener, is another instance already running?", "Aubit Desktop");
                     this.Close();
@@ -241,7 +241,7 @@ namespace AubitDesktop
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            int a;
+            
             //bool updList = false;
             
             // Disable the time 
@@ -258,7 +258,7 @@ namespace AubitDesktop
             if (this.server.Pending())
             {
                 System.Net.IPEndPoint ep;
-                System.Net.IPEndPoint lp;
+                //System.Net.IPEndPoint lp;
               
                 TcpClient client = server.AcceptTcpClient();
                 //nConnections++;

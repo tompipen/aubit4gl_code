@@ -341,6 +341,7 @@ namespace AubitDesktop
             this.nextMove= 0;
             this.lastarrLine = -1;
             this.nRows = Convert.ToInt32(p.ARRCOUNT);
+            onActionList = new List<ON_ACTION_EVENT>();
             Data = p.ROWS;
             
             beforeRow = null;
@@ -475,10 +476,35 @@ namespace AubitDesktop
         {
         }
 
+
+
+        public void onActionTriggered(object source, string ID, string TriggeredText)
+        {
+            if (TriggeredText == "")
+            {
+                TriggeredText =    "<TRIGGERED ID=\""+ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>";
+            }
+
+            this.EventTriggered(source, ID, TriggeredText);
+        }
+
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             //mainWin.SetContext(FGLContextType.ContextNone);
             mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this);
+
+            foreach (ON_ACTION_EVENT e in onActionList)
+            {
+                foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION))
+                {
+                    ffield.fglField.onActionID = e.ID;
+                    ffield.fglField.onUIEvent = onActionTriggered;
+                    ffield.fglField.Enabled = true;
+                    ffield.fglField.ContextType = FGLContextType.ContextInput;
+                }
+
+            }
+
             mainWin.setActiveToolBarKeys(KeyList, true,true,false);
             if (nextMove == MoveType.MoveTypeNoPendingMovement)
             {

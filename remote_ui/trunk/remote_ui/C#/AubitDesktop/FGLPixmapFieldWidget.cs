@@ -31,23 +31,15 @@ namespace AubitDesktop
 
 
     // A picture widget fgl field widget...
-    class FGLPixmapFieldWidget : FGLWidget, IFGLField
+    class FGLPixmapFieldWidget : FGLWidget
     {
 
-        FGLContextType _ContextType;
-
-        public FGLContextType ContextType
-        {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            set
-            {
-
-                _ContextType = value;
-
-            }
+        public override void ContextTypeChanged()
+        {
+            // Does nothing...
         }
 
-
-        public int tabIndex
+        public override int tabIndex
         {
             set
             {
@@ -55,7 +47,7 @@ namespace AubitDesktop
             }
         }
 
-        public bool hasFocus
+        public override bool hasFocus
         {
             get
             {
@@ -66,12 +58,12 @@ namespace AubitDesktop
 
         PictureBox pb;
 
-        public void setFocus()
+        public override void setFocus()
         {
             pb.Focus();
         }
 
-        public Control WindowsWidget
+        public override Control WindowsWidget
         {
             get
             {
@@ -109,9 +101,24 @@ namespace AubitDesktop
             }
         }
 
+        public FGLPixmapFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff,AubitDesktop.Xml.XMLForm.Image pixmap,string config)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+
+
+            createWidget(a, Convert.ToInt32(pixmap.posY), Convert.ToInt32(pixmap.posX), 1, Convert.ToInt32(pixmap.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            
+        }
+
         public FGLPixmapFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
-            //this._WidgetDetails = new FGLWidget();
+            
+            createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+        }
+
+        private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        {
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             pb = new PictureBox();
 
@@ -131,7 +138,7 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    dir = "c:/images" ; //Properties.  Resources.ImageDirectory;
+                    dir = "c:/images"; //Properties.  Resources.ImageDirectory;
                     if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
                     {
                         dir = dir + "/";

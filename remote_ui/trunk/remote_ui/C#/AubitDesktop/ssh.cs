@@ -89,7 +89,7 @@ namespace AubitDesktop
         string command = null;
         string userName;
         private string password;
-        UserInfo userInfo;
+        //UserInfo userInfo;
         int port = 22;
         protected Session session;
         private Channel channel;

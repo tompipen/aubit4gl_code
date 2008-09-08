@@ -28,9 +28,9 @@ namespace AubitDesktop
 {
 
     // A text widget fgl field widget...
-    public class FGLTextFieldWidget : FGLWidget, IFGLField
+    public class FGLTextFieldWidget : FGLWidget
     {
-        FGLContextType _ContextType;
+        //FGLContextType _ContextType;
         private int id;
         TextBox t;
         Panel p;
@@ -43,7 +43,7 @@ namespace AubitDesktop
             t.SetToolTip(this.t, s);
         }
 
-        public int tabIndex
+        public override int tabIndex
         {
             set
             {
@@ -51,7 +51,7 @@ namespace AubitDesktop
             }
         }
 
-        public bool hasFocus
+        public override bool hasFocus
         {
             get
             {
@@ -61,7 +61,7 @@ namespace AubitDesktop
         }
 
         
-        public void setFocus()
+        public override void setFocus()
         {
             t.Focus();
             t.Select();
@@ -82,69 +82,67 @@ namespace AubitDesktop
             
         }
 
-        public FGLContextType ContextType
+        public override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            set
+
+
+            //_ContextType = value;
+            if (_ContextType == FGLContextType.ContextNone)
+            {
+                l.Visible = true;
+                t.Visible = false;
+            }
+            else
             {
 
-                _ContextType = value;
-                if (_ContextType == FGLContextType.ContextNone)
+
+                if (_ContextType == FGLContextType.ContextDisplayArray)
                 {
-                    l.Visible = true;
-                    t.Visible = false;
+                    if (t.Visible != true)
+                    {
+                        t.Visible = true;
+                    }
+                    if (l.Visible != false)
+                    {
+                        l.Visible = false;
+                    }
+                    if (t.ReadOnly != true)
+                    {
+                        t.ReadOnly = true;
+                    }
+
                 }
                 else
                 {
-
-
-                    if (_ContextType == FGLContextType.ContextDisplayArray)
+                    if (_ContextType == FGLContextType.ContextConstruct)
                     {
-                        if (t.Visible != true)
-                        {
-                            t.Visible = true;
-                        }
-                        if (l.Visible != false)
-                        {
-                            l.Visible = false;
-                        }
-                        if (t.ReadOnly != true)
-                        {
-                            t.ReadOnly = true;
-                        }
-
+                        t.Visible = true;
+                        l.Visible = false;
+                        t.ReadOnly = false;
                     }
                     else
                     {
-                        if (_ContextType == FGLContextType.ContextConstruct)
+                        if (this.NoEntry)
+                        {
+                            t.Visible = false;
+                            l.Visible = true;
+                            t.ReadOnly = false;
+                        }
+                        else
                         {
                             t.Visible = true;
                             l.Visible = false;
                             t.ReadOnly = false;
-                        } else {
-                            if (this.NoEntry)
-                            {
-                                t.Visible = false;
-                                l.Visible = true;
-                                t.ReadOnly = false;
-                            }
-                            else
-                            {
-                                t.Visible = true;
-                                l.Visible = false;
-                                t.ReadOnly = false;
-                            }
                         }
                     }
                 }
-
-
             }
 
         }
 
 
 
-        public Control WindowsWidget
+        public override Control WindowsWidget
         {
             get
             {
@@ -255,11 +253,105 @@ namespace AubitDesktop
         }
 
 
-        public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
+        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.TextEdit edit,string config)
         {
+            ATTRIB a;
+            a = createAttribForWidget(ffx);
+            if (edit.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = edit.format;
+            }
+
+
+
+            if (edit.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = edit.comments;
+            }
+
+            if (edit.autoNext != null && edit.autoNext == "1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+            if (edit.shift != null)
+            {
+                if (edit.shift == "down")
+                {
+                    a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
+                }
+                else
+                {
+                    a.ATTRIB_UPSHIFT = new ATTRIB_UPSHIFT();
+                }
+            }
 
             
-            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo,incl);
+            createTextWidget(a,
+                Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
+
+        }
+
+
+        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ffx);
+            if (edit.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = edit.format;
+            }
+            
+
+
+            if (edit.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = edit.comments;
+            }
+
+            if (edit.autoNext != null && edit.autoNext=="1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+            if (edit.shift!=null)
+            {
+                if (edit.shift == "down")
+                {
+                    a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
+                }
+                else
+                {
+                    a.ATTRIB_UPSHIFT = new ATTRIB_UPSHIFT();
+                }
+            }
+
+            
+            createTextWidget(a, Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
+            
+            
+        }
+
+        
+
+
+
+
+
+        public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
+        {
+            createTextWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+        }
+
+        private void createTextWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        {
+
+
+            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             p = new Panel();
             l = new Label();
@@ -308,249 +400,13 @@ namespace AubitDesktop
             t.Click += new EventHandler(t_Click);
             t.ReadOnly = true;
             t.Visible = true;
-            
+
             this.id = id;
         }
 
 
 
 
-        bool validateField(object field)
-        {
-            bool ign = false;
-
-            if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
-            {
-                #region REQUIRED CHECK
-                if (this.Required)
-                {
-                    if (t.Text.Length == 0)
-                    {
-                        if (this.fieldValidationFailed != null)
-                        {
-                            this.fieldValidationFailed(this, "REQUIRED", out ign);
-                        }
-                        if (!ign)
-                        {
-                           return false;
-                        }
-                    }
-
-                }
-                #endregion
-                #region Datatype Check
-                if (!FGLUtils.IsValidForType(this.datatype, t.Text, this.format))
-                {
-                    if (this.fieldValidationFailed != null)
-                    {
-                        this.fieldValidationFailed(this, "DATATYPE", out ign);
-                    }
-                    if (!ign)
-                    {
-                        return false;
-                    }
-                }
-                #endregion
-                #region Include value check
-                if (this.includeValues != null)
-                {
-                    bool ok = false;
-                    foreach (string s in this.includeValues)
-                    {
-                        if (s.Contains("\t"))
-                        {
-                            string l, r;
-                            string[] arr;
-                            arr = s.Split('\t');
-                            l = arr[0];
-                            r = arr[1];
-
-                            if (FGLUtils.compare_range(this.Text, l, r, this.datatype, this.datatype_length, this.format))
-                            {
-                                ok = true;
-                            }
-                        }
-                        else
-                        {
-                            if (s == "NULL" && this.Text == "")
-                            {
-                                ok = true;
-                            }
-                            if (s == this.Text)
-                            {
-                                ok = true;
-                            }
-                        }
-                    }
-
-                    ign = false;
-                    if (!ok)
-                    {
-                        this.fieldValidationFailed(this, "INCLUDE", out ign);
-                    }
-
-                    if (!ign)
-                    {
-                        return false;
-                    }
-
-
-                }
-                #endregion
-            }
-
-
-
-            return true;
-        }
-
-
-        void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            bool ign = false;
-            if (!validateField(sender))
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                e.Cancel = false;
-            }
-            /*
-            if (this._ContextType == FGLContextType.ContextInput)
-            {
-                #region REQUIRED CHECK
-                if (this.Required)
-                {
-                    if (t.Text.Length == 0)
-                    {
-                        if (this.fieldValidationFailed != null)
-                        {
-                            this.fieldValidationFailed(this, "REQUIRED", out ign);
-                        }
-                        if (!ign)
-                        {
-                            e.Cancel = true;
-                        }
-                        else
-                        {
-                            e.Cancel = false;
-                        }
-                    }
-
-                }
-                #endregion
-                #region Datatype Check
-                if (!FGLUtils.IsValidForType(this.datatype,t.Text,this.format))
-                {
-                    if (this.fieldValidationFailed != null)
-                    {
-                        this.fieldValidationFailed(this, "DATATYPE", out ign);
-                    }
-                    if (!ign)
-                    {
-                        e.Cancel = true;
-                    }
-                    else
-                    {
-                        e.Cancel = false;
-                    }
-                }
-                #endregion
-                #region Include value check
-                if (this.includeValues!=null)
-                {
-                    bool ok=false;
-                    foreach (string s in this.includeValues)
-                    {
-                        if (s.Contains("\t"))
-                        {
-                            string l, r;
-                            string[] arr;
-                            arr = s.Split('\t');
-                            l = arr[0];
-                            r = arr[1];
-                            
-                            if (FGLUtils.compare_range(this.Text,l, r,this.datatype,this.datatype_length,this.format))
-                            {
-                                ok = true;
-                            }
-                        }
-                        else
-                        {
-                            if (s == "NULL" && this.Text == "")
-                            {
-                                ok = true;
-                            }
-                            if (s == this.Text)
-                            {
-                                ok = true;
-                            }
-                        }
-                    }
-
-                    ign = false;
-                    if (!ok)
-                    {
-                        this.fieldValidationFailed(this, "INCLUDE", out ign);
-                    }
-
-                    if (!ign)
-                    {
-                        e.Cancel = true;
-                    }
-                    else
-                    {
-                        e.Cancel = false;
-                    }
-                    
-                }
-#endregion
-             }
-             * */
-          
-        }
-
-  
-        void t_GotFocus(object sender, EventArgs e)
-        {
-            if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
-            {
-                this.onUIEvent(this, this.beforeFieldID, "");
-            }
-
-            if (this.onGotFocus!=null)
-            {
-                this.onGotFocus(this,  this.comment);
-            }
-            
-            
-        }
-
-        void t_LostFocus(object sender, EventArgs e)
-        {
-            if (!validateField(sender))
-            {
-                ((Control)sender).Focus();
-            }
-            else
-            {
-                if (this.afterFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
-                {
-                    this.onUIEvent(this, this.afterFieldID, "");
-                }
-            }
-            
-        }
-
-
-        void t_Click(object sender, EventArgs e)
-        {
-            if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
-            {
-                this.onUIEvent(this, this.onActionID, "");
-            }
-        }
 
 
 

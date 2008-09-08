@@ -32,11 +32,12 @@ namespace AubitDesktop
 
 
     // A picture widget fgl field widget...
-    class FGLBrowserFieldWidget : FGLWidget, IFGLField
+    class FGLBrowserFieldWidget : FGLWidget
     {
 
-        FGLContextType _ContextType;
+        //FGLContextType _ContextType;
 
+        /*
         public FGLContextType ContextType
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             set
@@ -46,9 +47,9 @@ namespace AubitDesktop
 
             }
         }
+        */
 
-
-        public int tabIndex
+        public override int tabIndex
         {
             set
             {
@@ -56,7 +57,7 @@ namespace AubitDesktop
             }
         }
 
-        public bool hasFocus
+        public override bool hasFocus
         {
             get
             {
@@ -67,12 +68,12 @@ namespace AubitDesktop
 
        System.Windows.Forms.WebBrowser pb;
 
-        public void setFocus()
+        public override void setFocus()
         {
             pb.Focus();
         }
 
-        public Control WindowsWidget
+        public override Control WindowsWidget
         {
             get
             {
@@ -81,19 +82,9 @@ namespace AubitDesktop
             }
         }
 
-        public new bool Enabled
-        {
-            get
-            {
-                return false;
-            }
-            set
-            {
 
-            }
-        }
 
-        public new string Text // The current fields value
+        public override string Text // The current fields value
         {
             get
             {
@@ -119,16 +110,16 @@ namespace AubitDesktop
             }
         }
 
-        public FGLBrowserFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+
+        private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
-            //this._WidgetDetails = new FGLWidget();
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             pb = new WebBrowser();
 
             #region SetImageFromFile
             if (configSettings.ContainsKey("URL"))
             {
-                string dir;
+
                 pb.Url = new Uri((string)configSettings["URL"]);
             }
             #endregion
@@ -139,6 +130,40 @@ namespace AubitDesktop
             pb.Visible = true;
             pb.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column - 1), GuiLayout.get_gui_y(row));
         }
+
+
+
+
+        public FGLBrowserFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Browser browser, string config)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+
+                if (browser.comments != null)
+                {
+
+                    a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                    a.ATTRIB_COMMENTS.Text = browser.comments;
+                }
+
+
+            createWidget(a, Convert.ToInt32(browser.posY), Convert.ToInt32(browser.posX), 1, Convert.ToInt32(browser.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            
+        }
+
+
+        public FGLBrowserFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        {
+
+            createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+        }
+
+
+
+
+
+
+        
     }
 }
 

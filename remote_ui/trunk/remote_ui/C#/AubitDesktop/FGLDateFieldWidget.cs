@@ -27,9 +27,9 @@ using System.Drawing;
 namespace AubitDesktop
 {
     // A text widget fgl field widget...
-    class FGLDateFieldWidget : FGLWidget, IFGLField
+    class FGLDateFieldWidget : FGLWidget
     {
-        FGLContextType _ContextType;
+        //FGLContextType _ContextType;
         /*
         private FGLWidget _WidgetDetails;
 
@@ -42,7 +42,7 @@ namespace AubitDesktop
         }
          * */
 
-        public int tabIndex
+        public override int tabIndex
         {
             set
             {
@@ -50,7 +50,7 @@ namespace AubitDesktop
             }
         }
 
-        public bool hasFocus
+        public override bool hasFocus
         {
             get
             {
@@ -60,12 +60,11 @@ namespace AubitDesktop
         }
 
 
-        public FGLContextType ContextType
+        public override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            set
-            {
+            
 
-                _ContextType = value;
+                //_ContextType = value;
                 if (_ContextType == FGLContextType.ContextNone)
                 {
                     l.Visible = true;
@@ -78,14 +77,14 @@ namespace AubitDesktop
                 }
 
 
-            }
+            
         }
 
         DateTimePicker t;
         Panel p;
         Label l;
 
-        public Control WindowsWidget
+        public override Control WindowsWidget
         {
             get
             {
@@ -93,7 +92,7 @@ namespace AubitDesktop
             }
         }
 
-        public void setFocus()
+        public override void setFocus()
         {
            t.Focus();
         }
@@ -128,11 +127,86 @@ namespace AubitDesktop
             }
         }
 
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.DateEdit edit,string config)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+            if (edit.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = edit.format;
+            }
+
+
+
+            if (edit.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = edit.comments;
+            }
+
+            if (edit.autoNext != null && edit.autoNext == "1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+            
+
+            createWidget(a, Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+        }
+
+
+
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Edit edit,string config)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+            if (edit.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = edit.format;
+            }
+
+
+
+            if (edit.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = edit.comments;
+            }
+
+            if (edit.autoNext != null && edit.autoNext == "1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+            if (edit.shift != null)
+            {
+                if (edit.shift == "down")
+                {
+                    a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
+                }
+                else
+                {
+                    a.ATTRIB_UPSHIFT = new ATTRIB_UPSHIFT();
+                }
+            }
+
+            createWidget(a, Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "",config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+        }
+
+
         public FGLDateFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
         {
-       
-            //his._WidgetDetails = new FGLWidget();
-            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo,incl);
+
+            createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+
+        }
+
+        private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        {
+
+            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             p = new Panel();
             l = new Label();
@@ -167,102 +241,9 @@ namespace AubitDesktop
             t.LostFocus += new EventHandler(t_LostFocus);
             t.GotFocus += new EventHandler(t_GotFocus);
             t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-
         }
 
-        void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            // Need to copy from textfield...
-        }
-
-        void t_GotFocus(object sender, EventArgs e)
-        {
-            
-        }
-
-        void t_LostFocus(object sender, EventArgs e)
-        {
-            
-        }
-        /*
-        public string ColumnName
-        {
-            get { return _WidgetDetails.ColumnName; }
-        }
-
-        public UIEventHandler onUIEvent
-        {
-            get { return _WidgetDetails.onUIEvent; }
-        }
-        public string defaultValue
-        {
-            get { return _WidgetDetails.defaultValue; }
-        }
-
-
-        public string afterFieldID
-        {
-            get
-            {
-                return _WidgetDetails.afterFieldID;
-            }
-            set
-            {
-                _WidgetDetails.afterFieldID = value;
-            }
-        }
-
-        public string beforeFieldID
-        {
-            get
-            {
-                return _WidgetDetails.beforeFieldID;
-            }
-            set
-            {
-                _WidgetDetails.beforeFieldID = value;
-            }
-        }
-
-        UIEventHandler IFGLField.onUIEvent
-        {
-            get
-            {
-                return _WidgetDetails.onUIEvent;
-            }
-            set
-            {
-                _WidgetDetails.onUIEvent = value;
-            }
-        }
-
-
-        public string TableName
-        {
-            get { return _WidgetDetails.TableName; }
-        }
-
-        public int attributeNo
-        {
-            get { return _WidgetDetails.attributeNo; }
-        }
-        */
-        #region IFGLField Members
-
-/*
-        public string onActionID
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-        */
-        #endregion
+       
     }
 
 
