@@ -39,6 +39,8 @@ namespace AubitDesktop
 
         private void btnOk_Click(object sender, EventArgs e)
         {
+            _password = tbPassword.Text;
+            _username = tbUsername.Text;
             this.DialogResult = DialogResult.OK;
             
             this.Close();
