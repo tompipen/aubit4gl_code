@@ -15,6 +15,7 @@ static struct s_attr lexed_attr;
 static struct s_syncvalues sync;
 
 struct s_attr *xml_parse(char *s) {
+	int rval;
         inbuff=s;
         myinputlim=strlen(s);
         myinputptr=inbuff;
@@ -24,11 +25,11 @@ struct s_attr *xml_parse(char *s) {
         	UIdebug(3,"INPUT = %s\n",s);
 	}
 
-        if (xml_yylex()) {
-                printf("X1 - yylex returned true\n");
+        rval=xml_yylex(); 
+	if (rval==0) {
                 return &lexed_attr;
         } else {
-                printf("X2 - yylex returned false\n");
+                printf("X2 - yylex failed (%s) rval=%d\n",s,rval);
                 return &lexed_attr;
         }
 }
