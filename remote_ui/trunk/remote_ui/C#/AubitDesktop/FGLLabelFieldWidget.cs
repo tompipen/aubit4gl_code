@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Copyright (c) 2008 The Aubit Development Team. 
  *  All rights reserved. See CREDITS file.
  *  
@@ -28,26 +28,16 @@ using System.Drawing;
 namespace AubitDesktop
 {
     // A picture widget fgl field widget...
-    class FGLButtonFieldWidget : FGLWidget
+    class FGLLabelFieldWidget : FGLWidget
     {
 
-        //FGLContextType _ContextType;
+        
 
         public override void ContextTypeChanged()
-        {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            
-                
-                if (_ContextType == FGLContextType.ContextNone)
-                {
-                    this.Enabled = false;
-                    b.Enabled = false;
-                }
-                else
-                {
-                    this.Enabled = true;
-                    b.Enabled = true;
-                }
-            
+        {
+
+            // We dont care...
+     
         }
 
 
@@ -55,7 +45,7 @@ namespace AubitDesktop
         {
             set
             {
-                b.TabIndex = value;
+                // Cant tabIndex into a Label...
             }
         }
 
@@ -68,18 +58,18 @@ namespace AubitDesktop
         }
 
 
-        Button b;
+        Label l;
 
         public override void setFocus()
         {
-            b.Focus();
+            
         }
 
         public override Control WindowsWidget
         {
             get
             {
-                return (Control)b;
+                return (Control)l;
             }
         }
 
@@ -87,12 +77,11 @@ namespace AubitDesktop
         {
             get
             {
-                
-                return b.Enabled;
+                return l.Enabled;
             }
             set
             {
-                b.Enabled=value;
+                l.Enabled = value;
             }
         }
 
@@ -100,12 +89,12 @@ namespace AubitDesktop
         {
             get
             {
-                return b.Text;
+                return l.Text;
 
             }
             set
             {
-                b.Text=value;
+                l.Text = value;
             }
         }
 
@@ -117,18 +106,21 @@ namespace AubitDesktop
             }
         }
 
-        public FGLButtonFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ButtonEdit button,string config)
+        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Label label, string config)
         {
-
             ATTRIB a;
             a = createAttribForWidget(ff);
-
-
-            createWidget(a, Convert.ToInt32(button.posY), Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
-            
+            createWidget(a, Convert.ToInt32(label.posY), Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
-        public FGLButtonFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+            createWidget(a, Convert.ToInt32(label.posY), Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+        }
+
+        public FGLLabelFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
 
             createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
@@ -137,10 +129,11 @@ namespace AubitDesktop
         private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
-            b = new Button();
-            SizeControl(b);
+            l = new Label();
+            SizeControl(l);
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
-            b.Click += new EventHandler(b_Click);
+            l.Click += new EventHandler(b_Click);
         }
     }
 }
+

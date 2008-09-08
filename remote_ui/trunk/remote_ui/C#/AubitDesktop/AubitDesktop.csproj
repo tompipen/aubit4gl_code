@@ -86,6 +86,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLForm.cs" />
+    <Compile Include="FGLLabelFieldWidget.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FGLOptions.cs" />
     <Compile Include="FGLPixmapFieldWidget.cs">
       <SubType>Component</SubType>
