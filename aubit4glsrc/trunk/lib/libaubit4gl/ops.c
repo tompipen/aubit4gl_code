@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.134 2008-08-26 11:31:10 mikeaubury Exp $
+# $Id: ops.c,v 1.135 2008-09-09 17:30:38 mikeaubury Exp $
 #
 */
 
@@ -247,6 +247,8 @@ A4GL_dec_dec_ops (int op)
   int res_dig;
   int res1;
   int res2;
+  char buff_a[101];
+  char buff_b[101];
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
   A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
 
@@ -261,6 +263,24 @@ A4GL_dec_dec_ops (int op)
   //char *a2;
   A4GL_pop_var2 (&b, DTYPE_DECIMAL, s1);
   A4GL_pop_var2 (&a, DTYPE_DECIMAL, s2);
+  if (ndig2==64 && ndec2==32) {
+	int cnt;
+	int len;
+  	A4GL_dectos(&a,buff_a,100); A4GL_remove_trailing_zeros_and_leading_spaces(buff_a);
+	len=strlen(buff_a);
+	ndig2=len; ndec2=0;
+	for (cnt=0;cnt<len;cnt++) { if (buff_a[cnt]=='.') { ndec2=len-cnt; break; } }
+	
+  }
+  if (ndig1==64 && ndec1==32) {
+	int cnt;
+	int len;
+  	A4GL_dectos(&b,buff_b,100); A4GL_remove_trailing_zeros_and_leading_spaces(buff_b);
+	len=strlen(buff_a);
+	ndig1=len; ndec1=0;
+	for (cnt=0;cnt<len;cnt++) { if (buff_b[cnt]=='.') { ndec1=len-cnt; break; } }
+  }
+  
 
   res1=ndig1-ndec1;
   res2=ndig2-ndec2;

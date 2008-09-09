@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.69 2008-09-05 18:26:23 mikeaubury Exp $
+# $Id: helper.c,v 1.70 2008-09-09 17:30:19 mikeaubury Exp $
 #
 */
 
@@ -1655,6 +1655,29 @@ if (newlen<len) {
 
 }
 
+void A4GL_remove_trailing_zeros_and_leading_spaces(char *s) {
+int dp=-1;
+int len;
+char buff[2000];
+int newlen;
+int a;
+A4GL_lrtrim(s);
+len=strlen(s);
+for (a=0;a<len;a++) {
+	if (s[a]==a4gl_convfmts.printf_decfmt.decsep) {
+		dp=a;
+		break;
+	}
+}
+if (dp==-1) return;
+
+for (a=len-1;a>dp+1;a--) {
+	if (s[a]=='0') s[a]=' ';
+	else break;
+}
+A4GL_trim(s);
+
+}
 
 /* =================================== EOF ============================= */
 
