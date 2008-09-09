@@ -127,7 +127,7 @@ namespace AubitDesktop
             }
         }
 
-        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.DateEdit edit,string config)
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.DateEdit edit,string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
@@ -152,12 +152,12 @@ namespace AubitDesktop
 
             
 
-            createWidget(a, Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
 
 
-        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Edit edit,string config)
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Edit edit,string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
@@ -192,7 +192,7 @@ namespace AubitDesktop
                 }
             }
 
-            createWidget(a, Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "",config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "",config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
 

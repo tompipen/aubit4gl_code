@@ -15,7 +15,7 @@ namespace AubitDesktop
         {
             InitializeComponent();
         }
-
+/*
         private void ScratchPad_Load(object sender, EventArgs e)
         {
             dataGridView1.ColumnCount = 5;
@@ -66,5 +66,6 @@ namespace AubitDesktop
         {
             textBox1.Text = "Blah";
         }
+ * */
     }
 }

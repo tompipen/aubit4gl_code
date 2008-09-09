@@ -59,8 +59,33 @@ namespace AubitDesktop
         public string _afterFieldID;
         public string _beforeFieldID;
         public string _onActionID;
+        private bool _isOnSelectedRow;
+
+        /// <summary>
+        /// Used to indicate if this widget is on the current row in a
+        /// display array/input array...
+        /// </summary>
+        public bool isOnSelectedRow
+        {
+            set
+            {
+                if (_isOnSelectedRow != value)
+                {
+                    _isOnSelectedRow = value;
+                    setIsOnSelectedRow(value);
+                }
+            }
+            get
+            {
+                return _isOnSelectedRow;
+            }
+        }
 
 
+        public virtual void setIsOnSelectedRow(bool isSelected)
+        {
+
+        }
 
         // Virtual members - must be overriden by widget implementation...
         public virtual void ContextTypeChanged()

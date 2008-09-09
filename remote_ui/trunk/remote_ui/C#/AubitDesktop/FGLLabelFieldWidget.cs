@@ -106,18 +106,18 @@ namespace AubitDesktop
             }
         }
 
-        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Label label, string config)
+        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Label label, string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
-            createWidget(a, Convert.ToInt32(label.posY), Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, Convert.ToInt32(label.posY)+index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
-        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config)
+        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
-            createWidget(a, Convert.ToInt32(label.posY), Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, Convert.ToInt32(label.posY)+index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
         public FGLLabelFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)

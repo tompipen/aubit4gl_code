@@ -22,6 +22,7 @@ namespace AubitDesktop
         private string AutoRun = "";
         private string Port;
         private bool StartMinimised;
+        private int currentListenPort;
         frmMainAppWindow AppWin;
         //ArrayList Shortcuts = new ArrayList();
 
@@ -34,7 +35,8 @@ namespace AubitDesktop
             this.AutoRun = xAutorun;
             this.Port = port;
             this.StartMinimised = startMinimised;
-            this.server = new TcpListener(IPAddress.Any, Convert.ToInt32(Port));
+            currentListenPort = Convert.ToInt32(Port);
+            this.server = new TcpListener(IPAddress.Any, currentListenPort);
             if (this.AllowEdit == false  )
             {
                 btnShortcutAdd.Visible = false;
@@ -46,6 +48,9 @@ namespace AubitDesktop
                 cbReceiveFile.Enabled = false;
                 cbSendFile.Enabled = false;
                 tbInterruptKey.ReadOnly =true;
+                nbXScale.Enabled = false;
+                nbYScale.Enabled = false;
+                txtPort.Enabled = false;
             }
 
             if (ListenMode)
@@ -120,7 +125,7 @@ namespace AubitDesktop
             }
             nbYScale.Value = Program.AppSettings.yscale;
             nbXScale.Value = Program.AppSettings.xscale;
-
+            txtPort.Text = Program.AppSettings.Port;
         }
 
         private void showInterruptKeycode()
@@ -154,11 +159,32 @@ namespace AubitDesktop
 
         private void ShowShortcuts()
         {
+            string wasSelected = null;
+            if (lstShortcuts.SelectedIndex >= 0)
+            {
+                wasSelected
+                    = lstShortcuts.Text;
+            }
+
+
+
+
             lstShortcuts.Items.Clear();
             foreach (AubitDesktop.Xml.Shortcut s in Program.AppSettings.Shortcuts)
             {
-                   lstShortcuts.Items.Add(s.Title);   
+                lstShortcuts.Items.Add(s.Title);
             }
+
+            if (wasSelected != null)
+            {
+                int idx;
+                idx = lstShortcuts.FindString(wasSelected);
+                if (idx >= 0)
+                {
+                    lstShortcuts.SelectedIndex = idx;
+                }
+            }
+
         }
 
 
@@ -192,6 +218,8 @@ namespace AubitDesktop
         {
             if (lstShortcuts.SelectedIndex >= 0)
             {
+                
+
                 frmShortcut s = new frmShortcut(Program.AppSettings.Shortcuts[lstShortcuts.SelectedIndex]);
                 s.ShowDialog();
 
@@ -471,7 +499,8 @@ namespace AubitDesktop
             if (lstShortcuts.SelectedIndex != -1)
             {
                 AubitDesktop.Xml.Shortcut s;
-AubitDesktop.Xml.Shortcut snew;
+                int idx;
+                AubitDesktop.Xml.Shortcut snew;
                 s=Program.AppSettings.Shortcuts[lstShortcuts.SelectedIndex];
                 snew = new AubitDesktop.Xml.Shortcut();
                 snew.Application=s.Application;
@@ -483,9 +512,17 @@ AubitDesktop.Xml.Shortcut snew;
                 snew.Title=s.Title.Trim()+ "(Copy)";
                 snew.User=s.User;
 
-
+                
                 Program.AppSettings.Shortcuts.Add(snew);
+                Program.SaveSettings();
                 ShowShortcuts();
+                idx = lstShortcuts.FindString(snew.Title);
+                if (idx >= 0)
+                {
+                    lstShortcuts.SelectedIndex = idx;
+                }
+                
+                
                 
             }
         }
@@ -518,6 +555,39 @@ AubitDesktop.Xml.Shortcut snew;
         {
             Program.AppSettings.xscale = (int)nbXScale.Value;
             Program.SaveSettings();
+        }
+
+        private void btnShortcutRemove_Click(object sender, EventArgs e)
+        {
+            if (lstShortcuts.SelectedIndex >= 0)
+            {
+                DialogResult r= MessageBox.Show("Are you sure you want to remove this item", "Delete shortcut", MessageBoxButtons.YesNo);
+                if (r==DialogResult.Yes) {
+
+                
+
+                
+                    Program.AppSettings.Shortcuts.RemoveAt (lstShortcuts.SelectedIndex);
+                    Program.SaveSettings();
+                    ShowShortcuts();
+                }
+                
+            }
+        }
+
+        private void txtPort_TextChanged(object sender, EventArgs e)
+        {
+            if (currentListenPort != Convert.ToInt32(txtPort.Text))
+            {
+                lblPortWarn.Visible = true;
+            }
+            else
+            {
+                lblPortWarn.Visible = false;
+            }
+            Program.AppSettings.Port = txtPort.Text;
+            Program.SaveSettings();
+
         }
     }
 }

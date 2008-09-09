@@ -35,6 +35,14 @@ namespace AubitDesktop
         TextBox t;
         Panel p;
         Label l;
+        
+
+
+        public override void setIsOnSelectedRow(bool isSelected)
+        {
+            isOnSelectedRow = isSelected;
+            adjustDisplayPropertiesForContext();            
+        }
 
         public new void setToolTip(ToolTip t, string s)
         {
@@ -85,19 +93,27 @@ namespace AubitDesktop
         public override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
 
+            
+            
 
             //_ContextType = value;
-            if (_ContextType == FGLContextType.ContextNone)
+            adjustDisplayPropertiesForContext();
+
+        }
+
+        private void adjustDisplayPropertiesForContext()
+        {
+            p.BorderStyle = BorderStyle.None;
+
+            switch (_ContextType)
             {
-                l.Visible = true;
-                t.Visible = false;
-            }
-            else
-            {
+                case FGLContextType.ContextNone:
+                    l.Visible = true;
+                    t.Visible = false;
+                    break;
 
 
-                if (_ContextType == FGLContextType.ContextDisplayArray)
-                {
+                case FGLContextType.ContextDisplayArray:
                     if (t.Visible != true)
                     {
                         t.Visible = true;
@@ -110,33 +126,45 @@ namespace AubitDesktop
                     {
                         t.ReadOnly = true;
                     }
+                    if (isOnSelectedRow)
+                    {
+                        p.BorderStyle = BorderStyle.FixedSingle;
+                        
+                        //t.BorderStyle = BorderStyle.FixedSingle;
+                        //l.BorderStyle = BorderStyle.FixedSingle;
+                    }
+                    else
+                    {
+                        p.BorderStyle = BorderStyle.None;
+                        //t.BorderStyle = BorderStyle.Fixed3D;
+                        //l.BorderStyle = BorderStyle.Fixed3D;
+                    }
+                    break;
 
-                }
-                else
-                {
-                    if (_ContextType == FGLContextType.ContextConstruct)
+
+                case FGLContextType.ContextConstruct:
+                    t.Visible = true;
+                    l.Visible = false;
+                    t.ReadOnly = false;
+                    break;
+
+                default:
+                    if (this.NoEntry)
+                    {
+                        t.Visible = false;
+                        l.Visible = true;
+                        t.ReadOnly = false;
+                    }
+                    else
                     {
                         t.Visible = true;
                         l.Visible = false;
                         t.ReadOnly = false;
                     }
-                    else
-                    {
-                        if (this.NoEntry)
-                        {
-                            t.Visible = false;
-                            l.Visible = true;
-                            t.ReadOnly = false;
-                        }
-                        else
-                        {
-                            t.Visible = true;
-                            l.Visible = false;
-                            t.ReadOnly = false;
-                        }
-                    }
-                }
+                    break;
+
             }
+        
 
         }
 
@@ -208,12 +236,22 @@ namespace AubitDesktop
             }
         }
 
+
+        /*
         public FGLTextFieldWidget()
         {
             p = new Panel();
             l = new Label();
             t = new System.Windows.Forms.TextBox();
             
+            //p.Margin = new Padding(0, 0, 0, 0);
+            //p.Padding = new Padding(0, 0, 0, 0);
+            //l.Margin = new Padding(0, 0, 0, 0);
+            //l.Padding = new Padding(0, 0, 0, 0);
+            //t.Margin = new Padding(0, 0, 0, 0);
+            //t.Padding = new Padding(0, 0, 0, 0);
+            
+
             l.TextAlign = ContentAlignment.MiddleLeft;
             
             t.Width = Width;
@@ -228,16 +266,19 @@ namespace AubitDesktop
             t.Enabled = true;
             l.Visible = true;
             p.Location = this.Location;
+            //p.AutoSize = true;
             p.Height=Height;
             p.Width = Width;
-
+            
             this.Downshift = false;
             this.Upshift = false;
             this.AutoNext = false;
             this.format = null;
             this.NoEntry = false;
-        }
 
+            setIsOnSelectedRow(false);
+        }
+        */
 
 
         public int MaxLength
@@ -253,7 +294,7 @@ namespace AubitDesktop
         }
 
 
-        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.TextEdit edit,string config)
+        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.TextEdit edit,string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ffx);
@@ -290,12 +331,12 @@ namespace AubitDesktop
 
             
             createTextWidget(a,
-                Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
+                Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
 
         }
 
 
-        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit)
+        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ffx);
@@ -331,7 +372,7 @@ namespace AubitDesktop
             }
 
             
-            createTextWidget(a, Convert.ToInt32(edit.posY), Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
+            createTextWidget(a, Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
             
             
         }
@@ -357,10 +398,22 @@ namespace AubitDesktop
             l = new Label();
             l.TextAlign = ContentAlignment.MiddleLeft;
             t = new System.Windows.Forms.TextBox();
+
+
+            p.Margin = new Padding(0, 0, 0, 0);
+            p.Padding = new Padding(0, 0, 0, 0);
+            l.Margin = new Padding(0, 0, 0, 0);
+            l.Padding = new Padding(0, 0, 0, 0);
+            t.Margin = new Padding(0, 0, 0, 0);
+            t.Padding = new Padding(0, 0, 0, 0);
+
+
             t.Visible = true;
             t.Enabled = true;
             p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             p.AutoSize = true;
+
+
 
             t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
 
@@ -387,12 +440,12 @@ namespace AubitDesktop
             {
                 t.CharacterCasing = CharacterCasing.Lower;
             }
-
             l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
             p.Controls.Add(t);
             p.Controls.Add(l);
-            p.Size = t.Size;
+
+            p.Size = l.Size;
             t.CausesValidation = true;
             t.LostFocus += new EventHandler(t_LostFocus);
             t.GotFocus += new EventHandler(t_GotFocus);

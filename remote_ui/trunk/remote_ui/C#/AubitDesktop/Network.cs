@@ -618,6 +618,7 @@ namespace AubitDesktop
             if (port == 0) port = 3490;
             tcpClient = new TcpClient();
             ipAddress = Dns.GetHostEntry(server).AddressList[0];
+            Application.DoEvents();
             try
             {
                 tcpClient.Connect(ipAddress, port);

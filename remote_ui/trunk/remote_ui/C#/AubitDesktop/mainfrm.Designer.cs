@@ -64,6 +64,9 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtPort = new System.Windows.Forms.TextBox();
+            this.lblPortWarn = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -213,6 +216,7 @@ namespace AubitDesktop
             this.btnShortcutRemove.TabIndex = 1;
             this.btnShortcutRemove.Text = "Remove";
             this.btnShortcutRemove.UseVisualStyleBackColor = true;
+            this.btnShortcutRemove.Click += new System.EventHandler(this.btnShortcutRemove_Click);
             // 
             // btnShortcutAdd
             // 
@@ -226,6 +230,9 @@ namespace AubitDesktop
             // 
             // tpOptions
             // 
+            this.tpOptions.Controls.Add(this.lblPortWarn);
+            this.tpOptions.Controls.Add(this.txtPort);
+            this.tpOptions.Controls.Add(this.label5);
             this.tpOptions.Controls.Add(this.nbXScale);
             this.tpOptions.Controls.Add(this.nbYScale);
             this.tpOptions.Controls.Add(this.label3);
@@ -247,7 +254,7 @@ namespace AubitDesktop
             // 
             // nbXScale
             // 
-            this.nbXScale.Location = new System.Drawing.Point(81, 209);
+            this.nbXScale.Location = new System.Drawing.Point(81, 186);
             this.nbXScale.Name = "nbXScale";
             this.nbXScale.Size = new System.Drawing.Size(45, 20);
             this.nbXScale.TabIndex = 21;
@@ -260,7 +267,7 @@ namespace AubitDesktop
             // 
             // nbYScale
             // 
-            this.nbYScale.Location = new System.Drawing.Point(81, 183);
+            this.nbYScale.Location = new System.Drawing.Point(81, 160);
             this.nbYScale.Name = "nbYScale";
             this.nbYScale.Size = new System.Drawing.Size(45, 20);
             this.nbYScale.TabIndex = 20;
@@ -274,7 +281,7 @@ namespace AubitDesktop
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(17, 210);
+            this.label3.Location = new System.Drawing.Point(17, 188);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(52, 13);
             this.label3.TabIndex = 19;
@@ -283,7 +290,7 @@ namespace AubitDesktop
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 183);
+            this.label2.Location = new System.Drawing.Point(17, 162);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(52, 13);
             this.label2.TabIndex = 18;
@@ -420,6 +427,33 @@ namespace AubitDesktop
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 214);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(71, 13);
+            this.label5.TabIndex = 23;
+            this.label5.Text = "Listen on port";
+            // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(81, 211);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(51, 20);
+            this.txtPort.TabIndex = 24;
+            this.txtPort.TextChanged += new System.EventHandler(this.txtPort_TextChanged);
+            // 
+            // lblPortWarn
+            // 
+            this.lblPortWarn.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblPortWarn.Location = new System.Drawing.Point(138, 211);
+            this.lblPortWarn.Name = "lblPortWarn";
+            this.lblPortWarn.Size = new System.Drawing.Size(217, 31);
+            this.lblPortWarn.TabIndex = 25;
+            this.lblPortWarn.Text = "Note : Changing the port will only take effect when you restart the application";
+            this.lblPortWarn.Visible = false;
+            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -487,5 +521,8 @@ namespace AubitDesktop
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown nbXScale;
         private System.Windows.Forms.NumericUpDown nbYScale;
+        private System.Windows.Forms.TextBox txtPort;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblPortWarn;
     }
 }

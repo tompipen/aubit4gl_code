@@ -223,7 +223,7 @@ namespace AubitDesktop
             AppSettings.AllowEdit = true;
             AppSettings.AutoRun = null;
             AppSettings.ListenMode = true;
-            AppSettings.Port = "1300";
+            AppSettings.Port = "1350";
 
             AppSettings.Protocols = protocols;
             AppSettings.Shortcuts = null;

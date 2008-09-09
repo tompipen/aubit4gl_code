@@ -134,7 +134,7 @@ namespace AubitDesktop
 
 
 
-        public FGLBrowserFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Browser browser, string config)
+        public FGLBrowserFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Browser browser, string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
@@ -147,7 +147,7 @@ namespace AubitDesktop
                 }
 
 
-            createWidget(a, Convert.ToInt32(browser.posY), Convert.ToInt32(browser.posX), 1, Convert.ToInt32(browser.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, Convert.ToInt32(browser.posY)+index, Convert.ToInt32(browser.posX), 1, Convert.ToInt32(browser.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
             
         }
 

@@ -721,6 +721,14 @@ namespace AubitDesktop.Xml.XMLForm
             public string tabIndex;
 
             /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string defaultValue;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string include;
+
+            /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
             [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
             [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]

@@ -335,7 +335,7 @@ namespace AubitDesktop.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;Settings xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Port=&quot;1300&quot; AllowEdit=&quot;true&quot; StartMinimized=&quot;false&quot; ListenMode=&quot;true&quot; allowExec=&quot;true&quot; allowSendFile=&quot;true&quot; allowReceiveFile=&quot;true&quot; interruptKey=&quot;control-c&quot; yscale=&quot;22&quot; xscale=&quot;9&quot;&gt;
+        ///&lt;Settings xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Port=&quot;1350&quot; AllowEdit=&quot;true&quot; StartMinimized=&quot;false&quot; ListenMode=&quot;true&quot; allowExec=&quot;true&quot; allowSendFile=&quot;true&quot; allowReceiveFile=&quot;true&quot; interruptKey=&quot;control-c&quot; yscale=&quot;22&quot; xscale=&quot;9&quot;&gt;
         ///  &lt;Protocols&gt;
         ///    &lt;Protocol Code=&quot;SSHT&quot; Command=&quot;Internal&quot; Name=&quot;SSH (Tunnel)&quot; Description=&quot;SSH(Tunnel) : Uses SSH to create a tunnel to the server which can then be used by the cl [rest of string was truncated]&quot;;.
         /// </summary>

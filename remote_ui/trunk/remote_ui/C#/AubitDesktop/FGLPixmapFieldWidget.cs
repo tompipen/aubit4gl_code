@@ -101,13 +101,13 @@ namespace AubitDesktop
             }
         }
 
-        public FGLPixmapFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff,AubitDesktop.Xml.XMLForm.Image pixmap,string config)
+        public FGLPixmapFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff,AubitDesktop.Xml.XMLForm.Image pixmap,string config,int index)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
 
 
-            createWidget(a, Convert.ToInt32(pixmap.posY), Convert.ToInt32(pixmap.posX), 1, Convert.ToInt32(pixmap.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, Convert.ToInt32(pixmap.posY)+index, Convert.ToInt32(pixmap.posX), 1, Convert.ToInt32(pixmap.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
             
         }
 

@@ -591,15 +591,17 @@ namespace AubitDesktop
         public string shortName;
         public string fullName;
         public string useName;
-        
+        public int subscript;  
 
-        public FGLFoundField(string useName, string shortName,string fullName, FGLWidget f)
+        public FGLFoundField(string useName, string shortName,string fullName, FGLWidget f,int subscript)
         {
             this.fglField = f;
             
             this.shortName = shortName;
             this.fullName = fullName;
             this.useName = useName;
+            this.subscript = subscript;
+            Console.WriteLine(fullName + "[" + subscript + "]");
         }
 
         internal bool isField(string fieldName)

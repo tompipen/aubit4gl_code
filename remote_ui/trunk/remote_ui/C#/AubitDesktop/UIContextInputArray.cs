@@ -643,8 +643,28 @@ namespace AubitDesktop
         {
             setContextForCurrentRow();
             Console.WriteLine("set focus : CurrentFieldNo=" + CurrentFieldNo);
+
+
+            for (int row = 0; row < this.scrRecLines; row++)
+            {
+                for (int col = 0; col < this.nCols; col++)
+                {
+                    if (row == scrLine - 1)
+                    {
+                        screenRecord[row,col].fglField.isOnSelectedRow = true;
+                    }
+                    else
+                    {
+                        screenRecord[row,col].fglField.isOnSelectedRow = false;
+                    }
+                }
+            }
+
             if (CurrentFieldNo == -1) CurrentFieldNo = 0;
             screenRecord[scrLine - 1,CurrentFieldNo].fglField.setFocus();
+
+
+
         }
 
         public void setNextField(string fieldName)

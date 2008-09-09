@@ -68,7 +68,7 @@ namespace AubitDesktop
         private int scrRecLines;
 
         private ROW[] Data;
-        private FGLFoundField[][] screenRecord;
+        private FGLFoundField[,] screenRecord;
         private List<ONKEY_EVENT> KeyList;
         private event UIEventHandler EventTriggered;
 
@@ -388,13 +388,14 @@ namespace AubitDesktop
             activeFields = f.FindFieldArray(p.FIELDLIST);
             scrRecLines = activeFields.Count / nCols;
             cnt = 0;
-            screenRecord=new FGLFoundField[scrRecLines][];
+            screenRecord=new FGLFoundField[scrRecLines,nCols];
+
             for (int a = 0; a < scrRecLines; a++)
             {
-                screenRecord[a] = new FGLFoundField[nCols];
+                //screenRecord[a] = new FGLFoundField[nCols];
                 for (int b = 0; b < nCols; b++)
                 {
-                    screenRecord[a][b] = activeFields[cnt++];
+                    screenRecord[a,b] = activeFields[cnt++];
                 }
             }
             
@@ -405,7 +406,7 @@ namespace AubitDesktop
         {
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line-1][a].fglField.Text = "";
+                screenRecord[scr_line-1,a].fglField.Text = "";
             }
         }
 
@@ -417,7 +418,7 @@ namespace AubitDesktop
             scr_line = lineno - topline + 1;
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line-1][a].fglField.Text=this.Data[lineno-1].VALUES[a].Text;
+                screenRecord[scr_line-1,a].fglField.Text=this.Data[lineno-1].VALUES[a].Text;
             }
             
         }
@@ -460,7 +461,22 @@ namespace AubitDesktop
 
         private void setFocusToCurrentRow()
         {
-                    screenRecord[scrLine-1][0].fglField.setFocus();
+            for (int row = 0; row < this.scrRecLines; row++)
+            {
+                for (int col = 0; col < this.nCols; col++)
+                {
+                    if (row == scrLine - 1)
+                    {
+                        screenRecord[row,col].fglField.isOnSelectedRow = true;
+                    }
+                    else
+                    {
+                        screenRecord[row,col].fglField.isOnSelectedRow = false;
+                    }
+                }
+            }
+
+            screenRecord[scrLine-1,0].fglField.setFocus();
         }
 
         public void setNextField(string fieldName)

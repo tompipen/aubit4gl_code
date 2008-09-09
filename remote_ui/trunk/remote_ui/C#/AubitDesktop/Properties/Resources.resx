@@ -502,7 +502,7 @@
   </data>
   <data name="DefaultSettings" xml:space="preserve">
     <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Port="1300" AllowEdit="true" StartMinimized="false" ListenMode="true" allowExec="true" allowSendFile="true" allowReceiveFile="true" interruptKey="control-c" yscale="22" xscale="9"&gt;
+&lt;Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Port="1350" AllowEdit="true" StartMinimized="false" ListenMode="true" allowExec="true" allowSendFile="true" allowReceiveFile="true" interruptKey="control-c" yscale="22" xscale="9"&gt;
   &lt;Protocols&gt;
     &lt;Protocol Code="SSHT" Command="Internal" Name="SSH (Tunnel)" Description="SSH(Tunnel) : Uses SSH to create a tunnel to the server which can then be used by the client" ListenMode="false" DefaultPort="22" /&gt;
     &lt;Protocol Code="SSH" Command="Internal" Name="SSH (Exec)" Description="SSH(Exec) : Uses SSH to start a command on the server, which then calls back to the client via Listenmode" ListenMode="true" DefaultPort="22" /&gt;
