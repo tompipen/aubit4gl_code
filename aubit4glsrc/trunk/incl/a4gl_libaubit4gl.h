@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.323 2008-09-05 12:59:48 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.324 2008-09-09 18:02:30 mikeaubury Exp $
 #
 */
 
@@ -2774,6 +2774,8 @@ int A4GL_get_single_int_returned_from_call(int n);
 int A4GL_islocated(struct fgl_int_loc *p);
 int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize);
 char *A4GL_get_errmsg_from_helpfiles(int n);
+
+void A4GL_change_trailing_zeros_for_leading_spaces(char *s);
 int A4GL_never_dlmagic_cache(char *s);
 void A4GL_removePreparedStatementBySid(void *sid);
 void *A4GL_set_associated_mem(void *orig,void *newbytes);

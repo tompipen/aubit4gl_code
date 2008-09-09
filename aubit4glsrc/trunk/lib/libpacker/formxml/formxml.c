@@ -2,9 +2,11 @@
 #include "a4gl_libaubit4gl.h"
 
 
-FILE *ofile;
-void write_xml_form(FILE *ofile, char *fname, struct_form *f) ;
 static char *get_sql_dtype ( int dtype);
+static char * xml_escape (char *s);
+FILE *ofile;
+/*
+void write_xml_form(FILE *ofile, char *fname, struct_form *f) ;
 void print_label_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char*why) ;
 void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char*why) ;
 void print_dateedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char*why) ;
@@ -15,13 +17,34 @@ void dump_layout(struct_form *f, struct s_layout *layout) ;
 void print_image_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
 void print_combobox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
 void print_progressbar_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
-static char * xml_escape (char *s);
+void dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra);
+*/
 
 enum e_scrmodes {
 	SCRMODE_GRID,
 	SCRMODE_SCREEN
 };
-void dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra);
+#include "formxml.h"
+
+
+
+char screen[200][200];
+
+struct s_field
+{
+  int y;
+  int x;
+  int w;
+  char *label;
+  int field_start;
+
+};
+
+struct s_field *screen_convert_fields = 0;
+int nfields = 0;
+
+
+
 
 int printed_attributes[1000];
 static int tabIndex;
@@ -35,6 +58,7 @@ int initialize_xmlpacker() {
 	tabIndex=0;
 	fieldNo=0;
 	nprintedattributes=0;
+	return 1;
 }
 
 
@@ -185,11 +209,14 @@ if (mode==1) { // the label/button/field itself
 
 	if (A4GL_has_bool_attribute(fprop, FA_B_STRETCH_Y)) { strcat(buff, " stretch=\"y\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_STRETCH_BOTH)) { strcat(buff, " stretch=\"both\""); }
+	if (A4GL_has_str_attribute(fprop, FA_S_DEFAULT)) { sprintf(smbuff, " defaultValue=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_DEFAULT))); strcat(buff,smbuff);}
 
 
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTOSCALE)) { strcat(buff, " autoScale=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_PIXELWIDTH)) { sprintf(smbuff, " pixelWidth=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELWIDTH))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_PIXELHEIGHT)) { sprintf(smbuff, " pixelHeight=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELHEIGHT))); strcat(buff,smbuff);}
+
+	if (A4GL_has_str_attribute(fprop, FA_S_FORMAT)) { sprintf(smbuff, " format=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_FORMAT))); strcat(buff,smbuff);}
 
 
 	if (A4GL_has_str_attribute(fprop, FA_S_VALUEMIN)) { sprintf(smbuff, " valueMin=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEMIN))); strcat(buff,smbuff);}
@@ -331,7 +358,7 @@ char posbuf[200];
 
 	get_attribs(f, attr_no, buff,1);
 
-	fprintf(ofile, "<Edit width=\"%d\" %s %s/>\n",
+	fprintf(ofile, "  <Edit width=\"%d\" %s %s/>\n",
                         f->metrics.metrics_val[metric_no].w,
 			buff, posbuf);
 
@@ -350,10 +377,10 @@ char posbuf[200];
 
 
 	if (oldstyle) {
-			fprintf(ofile, "<ButtonEdit %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <ButtonEdit %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "<ButtonEdit %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <ButtonEdit %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	return ;
 }
@@ -375,10 +402,10 @@ fprop=&f->attributes.attributes_val[attr_no];
 
 
 	if (oldstyle) {
-			fprintf(ofile, "<ComboBox %s width=\"%d\" %s>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <ComboBox %s width=\"%d\" %s>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "<ComboBox %s width=\"%d\" %s>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <ComboBox %s width=\"%d\" %s>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	// print the items...
 	if (A4GL_has_str_attribute(fprop, FA_S_ITEMS)) { 
@@ -389,12 +416,12 @@ fprop=&f->attributes.attributes_val[attr_no];
 			while (ptr) {
 				p2=strchr(ptr,'\n');
 				if (p2) *p2=0;
-				fprintf(ofile, "<Item name=\"%s\" text=\"%s\"/>\n", ptr,ptr);
+				fprintf(ofile, "    <Item name=\"%s\" text=\"%s\"/>\n", ptr,ptr);
 				if (p2==0) break;
 				ptr=p2+1;
 			}
 	}
-	fprintf(ofile, "</ComboBox>\n");
+	fprintf(ofile, "  </ComboBox>\n");
 	return ;
 }
 
@@ -412,10 +439,10 @@ char posbuf[200];
 
 
 	if (oldstyle) {
-			fprintf(ofile, "<ProgressBar %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <ProgressBar %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "<ProgressBar %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <ProgressBar %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	return ;
 }
@@ -434,10 +461,10 @@ char posbuf[200];
 
 
 	if (oldstyle) {
-			fprintf(ofile, "<Image %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <Image %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "<Image %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <Image %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	return ;
 }
@@ -455,10 +482,10 @@ char posbuf[200];
 
 
 	if (oldstyle) {
-			fprintf(ofile, "<Widget Type=\"%s\" %s width=\"%d\" %s />\n",xml_escape(widget),  buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <Widget Type=\"%s\" %s width=\"%d\" %s />\n",xml_escape(widget),  buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "<Widget Type=\"%s\" %s width=\"%d\" %s/>\n", xml_escape(widget), buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "  <Widget Type=\"%s\" %s width=\"%d\" %s/>\n", xml_escape(widget), buff, f->metrics.metrics_val[metric_no].w, posbuf);
         }
 	return ;
 }
@@ -479,13 +506,13 @@ char posbuf[200];
  get_attribs(f, attr_no, buff,1);
 
 	if (oldstyle) {
-			fprintf(ofile, "<DateEdit %s width=\"%d\" %s />\n", 
+			fprintf(ofile, "  <DateEdit %s width=\"%d\" %s />\n", 
 				buff,
 			f->metrics.metrics_val[metric_no].w, posbuf
 			);
 
         } else {
-			fprintf(ofile, "<DateEdit %s width=\"%d\" %s />\n", 
+			fprintf(ofile, "  <DateEdit %s width=\"%d\" %s />\n", 
 				buff,
 				f->metrics.metrics_val[metric_no].w, posbuf
 				);
@@ -516,13 +543,13 @@ char posbuf[200];
 
 	if (oldstyle) {
 		if (oldstyle==2) {
-			fprintf(ofile, "<TextEdit %s width=\"%d\" scrollBars=\"none\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
+			fprintf(ofile, "  <TextEdit %s width=\"%d\" scrollBars=\"none\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
 		} else {
-			fprintf(ofile, "<TextEdit %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
+			fprintf(ofile, "  <TextEdit %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
 		}
 
         } else {
-			fprintf(ofile, "<TextEdit %s width=\"%d\" %s />\n", 
+			fprintf(ofile, "  <TextEdit %s width=\"%d\" %s />\n", 
 				buff,
 				f->metrics.metrics_val[metric_no].w, posbuf);
         }
@@ -540,11 +567,11 @@ char posbuf[200];
 	}
 
 	if (oldstyle) {
-			fprintf(ofile, "<RipLABEL width=\"%d\" %s />\n", 
+			fprintf(ofile, "  <RipLABEL width=\"%d\" %s />\n", 
 			f->metrics.metrics_val[metric_no].w,posbuf);
 
         } else {
-			fprintf(ofile, "<Label width=\"%d\" %s />\n", 
+			fprintf(ofile, "  <Label width=\"%d\" %s />\n", 
 				f->metrics.metrics_val[metric_no].w,posbuf);
         }
 	return ;
@@ -591,16 +618,18 @@ for (a=0;a<f->records.records_len;a++) {
 int fieldOccursMultipleTimes(struct_form *f, int attr_no,int *dim) {
 int field_no;
 field_no= f->attributes.attributes_val[attr_no].field_no;
-dim=f->fields.fields_val[field_no].metric.metric_len;
+*dim=f->fields.fields_val[field_no].metric.metric_len;
 return (f->fields.fields_val[field_no].metric.metric_len>1);
 }
 
 int fieldOccursHowManyTimes(struct_form *f, int attr_no,int *dim) {
 int field_no;
 field_no= f->attributes.attributes_val[attr_no].field_no;
-dim=f->fields.fields_val[field_no].metric.metric_len;
-f->fields.fields_val[field_no].metric.metric_len;
+*dim=f->fields.fields_val[field_no].metric.metric_len;
+return f->fields.fields_val[field_no].metric.metric_len;
 }
+
+
 void
 print_field_attribute (struct_form * f, int metric_no, int attr_no)
 {
@@ -905,6 +934,296 @@ void dump_form_layout(struct_form *f) {
 }
 
 
+
+
+void
+new_field (int y, int x, int w, char because_of, int fstart)
+{
+  char buff[200];
+  strcpy (buff, &screen[y][x]);
+  buff[w] = 0;
+
+  nfields++;
+  screen_convert_fields = realloc (screen_convert_fields, sizeof (struct s_field) * nfields);
+  screen_convert_fields[nfields - 1].x = x;
+  screen_convert_fields[nfields - 1].y = y;
+  screen_convert_fields[nfields - 1].w = w;
+  screen_convert_fields[nfields - 1].label = strdup (buff);
+  screen_convert_fields[nfields - 1].field_start = fstart;
+}
+
+
+
+
+int
+has_label (int x, int y, int w, int set, int fy)
+{
+  int a;
+  int ok;
+  int start_in;
+  int end_in;
+// Find any labels matching on this line over this field
+  for (a = 0; a < nfields; a++)
+    {
+      //printf("%d %d %d (%d %d)\n",x,y,w,fields[a].x,fields[a].y);
+      if (screen_convert_fields[a].label == 0)
+	continue;
+
+      if (screen_convert_fields[a].y != y)
+	continue;
+
+      //
+      //         LABEL
+      //
+      //          [ ]                   /1
+      //          [                 ]   /2
+      //     [     ]                    /3
+      //    [             ]             /4
+      //
+      //
+      ok = 0;
+      start_in = 0;
+      if (x >= screen_convert_fields[a].x && x <= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
+	start_in = 1;
+
+
+      end_in = 0;
+      if (x + w >= screen_convert_fields[a].x
+	  && x + w <= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
+	end_in = 1;
+
+
+      if (end_in || start_in)
+	ok = 1;
+      if (x <= screen_convert_fields[a].x && x + w >= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
+	ok = 2;
+
+      if (set && ok && 0 )
+	{
+	  screen_convert_fields[a].field_start = x;
+	  screen_convert_fields[a].y = fy;
+
+	  return ok;
+	}
+      if (ok)
+	return ok;
+    }
+
+  return 0;
+}
+
+void make_screen (struct_form * f,int scr)
+{
+  int x, y;
+  int spc;
+  int a;
+  int fno;
+  int b;
+
+  if (f->maxcol > 200 || f->maxline > 200)
+    {
+      printf ("Too wide or too long\n");
+      exit (1);
+    }
+  for (y = 0; y < f->maxline; y++)
+    {
+      memset (screen[y], ' ', f->maxcol);
+      screen[y][f->maxcol + 1] = 0;
+    }
+
+  for (a = 0; a < f->metrics.metrics_len; a++)
+    {
+      int w;
+      x = f->metrics.metrics_val[a].x;
+      y = f->metrics.metrics_val[a].y;
+      w = f->metrics.metrics_val[a].w;
+
+      if (f->metrics.metrics_val[a].scr != scr)
+	{
+		continue;
+	}
+
+
+      if (f->metrics.metrics_val[a].label[0] == '\n')
+	continue;		// Ignore graphics characters-  line drawing
+
+      if (strncmp(f->metrics.metrics_val[a].label ,"nl;",3)==0) {
+		continue;
+	}
+
+
+      if (strlen (f->metrics.metrics_val[a].label))
+	{
+	  strncpy (&screen[y][x], f->metrics.metrics_val[a].label,
+		   strlen (f->metrics.metrics_val[a].label));
+	}
+      else
+	{
+	  screen[y][x] = 1;
+	  screen[y][x + w + 1] = 2;
+	}
+    }
+
+
+// We've now got our screen reassembled - now look for any fields which are single spaced delimited...
+//
+//
+
+  for (y = 0; y < f->maxline; y++)
+    {
+
+      // Convert all ':' to spaces - they'd look rubbish anyway....
+      for (x = 0; x < f->maxcol; x++)
+	{
+	  if (screen[y][x] == ':')
+	    screen[y][x] = ' ';
+	}
+
+      for (x = 0; x < f->maxcol; x++)
+	{
+	  int because_of=0;
+	  int w;
+	  int w2;
+	  int fstart = -1;
+	  if (screen[y][x] != ' ' && screen[y][x] != 1 && screen[y][x] != 2)
+	    {
+	      for (w = x + 1; w <= f->maxcol; w++)
+		{
+		  if (screen[y][w - 1] == ' ' && screen[y][w] == 0)
+		    {
+		      because_of = ' ';
+		      break;
+		    }		// more than 1 space
+		  if (screen[y][w - 1] == ' ' && screen[y][w] == ' ')
+		    {
+		      because_of = ' ';
+		      break;
+		    }		// more than 1 space
+		  if (screen[y][w] == 1 || screen[y][w] == 2)
+		    {
+		      because_of = '[';
+		      fstart = w;
+		      break;
+		    }		// a field
+		}
+
+	      if (because_of == ' ')
+		{
+		  for (w2 = w; w2 < f->maxcol; w2++)
+		    {
+		      if (screen[y][w2] == ' ')
+			continue;
+		      if (screen[y][w2] == 1)
+			{
+			  fstart = w2;
+			  break;
+			}
+		      break;
+		    }
+		}
+	      new_field (y, x, w - x - 1, because_of, fstart);
+	      memset (&screen[y][x], ' ', w - x - 1);
+	    }
+	}
+    }
+
+
+  for (a = 0; a < f->attributes.attributes_len; a++)
+    {
+      int mno;
+      int ok;
+      int w;
+
+      fno = f->attributes.attributes_val[a].field_no;
+      if (f->fields.fields_val[fno].metric.metric_len <= 1)
+	continue;
+      mno = f->fields.fields_val[fno].metric.metric_val[0];
+
+      // We've got an array of these - normally they'd all start at the same 'x' - so lets check
+      x = f->metrics.metrics_val[mno].x;
+      y = f->metrics.metrics_val[mno].y;
+      ok = 1;
+
+      for (b = 1; b < f->fields.fields_val[fno].metric.metric_len; b++)
+	{
+	  mno = f->fields.fields_val[fno].metric.metric_val[b];
+	  if (x != f->metrics.metrics_val[mno].x)
+	    {
+	      ok = 0;
+	      break;
+	    }
+	  if (y + b != f->metrics.metrics_val[mno].y)
+	    {
+	      ok = 0;
+	      break;
+	    }			// Must be contiguous down the page too
+	}
+      if (ok == 0)
+	continue;
+
+      // if we've got to here all ourt fields line up
+      //
+      mno = f->fields.fields_val[fno].metric.metric_val[0];
+      w = f->metrics.metrics_val[mno].w;
+      x = f->metrics.metrics_val[mno].x;
+      y = f->metrics.metrics_val[mno].y;
+
+      if (has_label (x, y - 1, w, 0, y))
+	{
+	  //printf("Found 1\n");
+	  has_label (x, y - 1, w, 1, y);
+	}
+      else
+	{
+	  if (has_label (x, y - 2, w, 0, y))
+	    {
+	      //printf("Found 2\n");
+	      has_label (x, y - 2, w, 1, y);
+	    }
+	}
+
+
+    }
+
+
+}
+
+
+
+
+int merge_labels(struct_form *f, int scr) {
+	if (screen_convert_fields) {free(screen_convert_fields);  screen_convert_fields=0;}
+  	if (nfields) nfields=0;
+	make_screen(f,scr);
+	return 1;
+}
+
+
+
+
+
+
+int dump_xml_labels() {
+int a;
+for (a=0;a<nfields;a++) {
+	
+	  if (isline (screen_convert_fields[a].label))
+	    {
+	      fprintf (ofile, "<HLine posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n", screen_convert_fields[a].y,
+		       screen_convert_fields[a].x, strlen (screen_convert_fields[a].label));
+	    }
+	  else
+	    {
+	      fprintf (ofile, "<Label text=\"%s\" posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n",
+		       xml_escape (screen_convert_fields[a].label), screen_convert_fields[a].y, screen_convert_fields[a].x,
+		       strlen (screen_convert_fields[a].label));
+	    }
+	
+}
+return 1;
+}
+
+
 void
 dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 {
@@ -912,6 +1231,7 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
   int a;
   int mh = 0;
   get_screen_size_dims (f, scr, &mw, &mh);
+
 
   switch (scrmode) {
 	case SCRMODE_SCREEN:
@@ -922,13 +1242,19 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
       		fprintf (ofile, "<Grid width=\"%d\" height=\"%d\">\n", mw, mh);
 			break;
     }
-
+  merge_labels(f, scr);
+  dump_xml_labels();
+  
   for (a = 0; a < f->metrics.metrics_len; a++)
     {
       if (f->metrics.metrics_val[a].scr != scr)
 	continue;
+
       if (strlen (f->metrics.metrics_val[a].label))
 	{
+		continue; // Labels get dumped via 'dump_label'
+
+#ifdef OLD
 	  if (isline (f->metrics.metrics_val[a].label))
 	    {
 	      fprintf (ofile, "<HLine posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n", f->metrics.metrics_val[a].y,
@@ -940,6 +1266,7 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 		       xml_escape (f->metrics.metrics_val[a].label), f->metrics.metrics_val[a].y, f->metrics.metrics_val[a].x,
 		       strlen (f->metrics.metrics_val[a].label));
 	    }
+#endif
 	}
       else
 	{
@@ -980,6 +1307,9 @@ for (scr=1; scr<=max_scr;scr++) {
 void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
 	initialize_xmlpacker();
 	ofile=wofile;
+
+
+
 
         fprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(ofile,"<Form name=\"%s\" sqlDbName=\"%s\" width=\"%d\" height=\"%d\" delimiters=\"%s\">\n",fname, f->dbname, f->maxcol, f->maxline, f->delim);
@@ -1394,3 +1724,16 @@ return buff_dtype;
 
 }
 
+
+
+int get_num_labels(void) {
+	return nfields;
+}
+
+
+int get_label(int n, char **label, int *x,int *y) {
+  *label=screen_convert_fields[n].label;
+  *x=screen_convert_fields[n].x ;
+  *y=screen_convert_fields[n].y ;
+	return 1;
+}

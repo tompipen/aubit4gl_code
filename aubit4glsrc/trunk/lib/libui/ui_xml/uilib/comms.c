@@ -145,13 +145,18 @@ connect_ui_noproxy (void)
   int cnt;
 int type=SOCK_STREAM;
 int port;
-  char *netport="1300";
+  char *netport="1350";
   char *netaddress = "localhost";
 
 
   if (local_acl_getenv("AFGLSERVER")) {
   	   netaddress=local_acl_getenv("AFGLSERVER");
   }
+  if (local_acl_getenv("AFGLPORT")) {
+  	   netport=local_acl_getenv("AFGLPORT");
+  }
+
+
   port= atoport (netport, "tcp");
   addr = atoaddr (netaddress);
   if (addr==0) {

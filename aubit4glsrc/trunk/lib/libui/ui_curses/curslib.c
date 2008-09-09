@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.149 2008-07-06 11:34:44 mikeaubury Exp $
+# $Id: curslib.c,v 1.150 2008-09-09 18:02:31 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.149 2008-07-06 11:34:44 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.150 2008-09-09 18:02:31 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -609,7 +609,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
     {
       c = A4GL_pop_int ();
       c = infx_to_curses[c % 8];
-      A4GL_debug ("drawbox Been passes a colour");
+      A4GL_debug ("drawbox Been passed a colour");
     }
   else
     {

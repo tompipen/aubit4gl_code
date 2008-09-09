@@ -338,6 +338,7 @@ layout_attribute:
 layout_attribute_list:
 	layout_attribute 
 	| layout_attribute_list layout_attribute
+	| layout_attribute_list COMMA layout_attribute
 ;
 
 
