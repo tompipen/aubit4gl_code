@@ -1,4 +1,46 @@
 ---------------------------
+Wed Sep 10 11:25:23 BST 2008
+---------------------------
+1.10RC_31 Released
+---------------------------
+	
+	0001167: Simple arithmetic bug
+	
+	remove extra \n in asql
+	
+	0001149: pg8: error in sum(), format error
+	
+	0001156: cannot create functions
+	
+	minor UI_XML fixups
+	
+	Small patch to enable the retrival of the connection username via
+	aclfgl_get_connection_username() or via REPLACE_SQLCONST
+	USER=$DBUSER in the convertsql file.
+	
+	1159: asql_i.4ae doesn't recognize locking problems
+	
+	Ensure REPLACE_SQLCONST is used for ROWID -> OID conversion (MID
+	1166)
+	
+	More warnings fixups
+	
+	Warnings fixups
+	
+	add fgl_dialog_setcursor and fgl_dialog_getcursor
+	
+	Add  browser as a widget type
+	
+	Minor channel::write fixup
+	
+	small fixup for variable name remapping
+	
+	Add BYTE COPY for parameters to function (uses 'COPYOF') Add some
+	options for FCOMPILE minor 4glc syntax fixups
+	
+	Add matrix size when theres no INSTRUCTIONS screen record
+	
+---------------------------
 Tue Aug 26 14:38:31 BST 2008
 ---------------------------
 1.10RC_30 Released
