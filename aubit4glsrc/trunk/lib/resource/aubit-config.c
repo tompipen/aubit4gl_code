@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.27 2008-07-06 11:34:49 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.28 2008-09-10 11:26:09 mikeaubury Exp $
 #
 */
 
@@ -60,6 +60,13 @@
                     Functions prototypes
 =====================================================================
 */
+
+/* replacements for functions normally in libaubit4gl */
+void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
+int A4GL_set_line_extended (char *s, long l, const char *level, const char * func);
+int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
+
+
 
 extern void A4GL_build_user_resources (void);
 extern void A4GL_exitwith (void);
@@ -210,9 +217,9 @@ A4GL_set_line (void)
 /**
  * Dummy function
  */
-void
-A4GL_set_line_extended (void)
+int A4GL_set_line_extended (char *s, long l, const char *level, const char * func)
 {
+return 1;
 }
 
 
