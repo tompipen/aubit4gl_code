@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2007-10-16 12:53:13 mikeaubury Exp $
+# $Id: Makefile.in,v 1.21 2008-09-11 17:45:27 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -48,6 +48,11 @@ endif
 ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
+ifeq "${HAVE_LIBQRENCODE}" "1"
+	QRLIB=-lqrencode
+else 	
+	QRLIB=""
+endif
 
 OBJECTS_NOPDF	=nopdf.o
 OBJECTS_PDF		=has_pdf.o ../liblogical/pdf/process/pdf_barcode.o
@@ -61,7 +66,7 @@ all: ${ALL}
 
 ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
 #WARNING: On Windows libs must be et the end
-	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf
+	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf ${QRLIB}
 
 ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}

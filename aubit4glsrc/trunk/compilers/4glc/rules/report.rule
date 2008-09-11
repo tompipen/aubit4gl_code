@@ -943,6 +943,92 @@ rep_where :  { strcpy($<str>$,"");
 
 
 
+pdf_specific_cmd : 
+	SET_COLOR fgl_expr_c KW_COMMA fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("setcolor",NULL, $<ptr>2,$<ptr>4,$<ptr>6,NULL);
+	}
+	| SET_STROKE_COLOR fgl_expr_c KW_COMMA fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("setstrokecolor",NULL, $<ptr>2,$<ptr>4,$<ptr>6,NULL);
+	}
+	| SET_FILL_COLOR fgl_expr_c KW_COMMA fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("setfillcolor",NULL, $<ptr>2,$<ptr>4,$<ptr>6,NULL);
+	}
+	| STROKE {
+			$<cmd>$=new_pdf_specific_cmd("stroke",NULL, NULL);
+	}
+	| SET_PARAMETER fgl_expr_c KW_COMMA fgl_expr_c  {
+			$<cmd>$=new_pdf_specific_cmd("set_parameter",NULL, $<ptr>2,$<ptr>4,NULL);
+	}
+	| MOVE_TO  fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("moveto",NULL, report_position_expr_x($<ptr>4) , report_position_expr_y($<ptr>2),NULL);
+	}
+	| MOVE_TO_TOP  fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("moveto_top",NULL, report_position_expr_x($<ptr>4), report_position_expr_y($<ptr>2),NULL);
+	}
+	| LINE_TO  fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("lineto",NULL, report_position_expr_x($<ptr>4), report_position_expr_y($<ptr>2),NULL);
+	}
+	| LINETO_TOP  fgl_expr_c KW_COMMA fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("lineto_top",NULL, report_position_expr_x($<ptr>4), report_position_expr_y($<ptr>2),NULL);
+	}
+
+	| BOOKMARK fgl_expr_c KW_COMMA fgl_expr_c opt_return {
+			$<cmd>$=new_pdf_specific_cmd("bookmark",$<ptr_list>5, $<ptr>2,$<ptr>4,NULL);
+	}
+	| BARCODETYPE fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("barcode_type",NULL, $<ptr>2,NULL);
+	}
+	| BARCODE fgl_expr_c KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("barcode",NULL, 
+				report_position_current_x(),
+				report_position_current_y(),
+				$<ptr>4,
+				$<ptr>6,
+				$<ptr>2,
+				 NULL);
+	}
+	| BARCODE_NO_TEXT fgl_expr_c KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("barcode_no_text",NULL, 
+				report_position_current_x(),
+				report_position_current_y(),
+				$<ptr>4,
+				$<ptr>6,
+				$<ptr>2,
+				 NULL);
+	}
+	| BARCODE fgl_expr_c KW_AT fgl_expr_c KW_COMMA fgl_expr_c KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("barcode",NULL, 
+				report_position_expr_x($<ptr>6),
+				report_position_expr_y($<ptr>4),
+				$<ptr>8,
+				$<ptr>10,
+				$<ptr>2,
+				 NULL);
+	}
+	| BARCODE_NO_TEXT fgl_expr_c KW_AT fgl_expr_c KW_COMMA fgl_expr_c KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("barcode_no_text",NULL,
+				report_position_expr_x($<ptr>6),
+				report_position_expr_y($<ptr>4),
+				$<ptr>8,
+				$<ptr>10,
+ 				$<ptr>2,
+				 NULL);
+	}
+
+	| FILL_STROKE {
+			$<cmd>$=new_pdf_specific_cmd("fill_stroke",NULL, NULL);
+	}
+	| KW_FILL {
+			$<cmd>$=new_pdf_specific_cmd("fill",NULL, NULL);
+	}
+	| SET_FONT_SIZE  fgl_expr_c  {
+			$<cmd>$=new_pdf_specific_cmd("set_font_size",NULL, $<ptr>2,NULL);
+	}
+	| SET_FONT_NAME  fgl_expr_c  {
+			$<cmd>$=new_pdf_specific_cmd("set_font_name",NULL, $<ptr>2,NULL);
+	}
+;
+
 pause_cmd : 
 	PAUSE pause_msg {
 		if (!in_command("REPORT")) {

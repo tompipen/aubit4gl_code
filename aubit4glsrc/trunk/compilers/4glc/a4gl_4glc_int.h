@@ -734,6 +734,13 @@ void A4GL_new_append_ptr_list_with_expand(expr_str_list *l,struct expr_str *e);
 cons_list* append_constr_col_list(struct cons_list *c ,struct cons_list_entry *new_entry);
 int ignore_var_usage_for_builtin_variable(expr_str *str );
 int A4GL_check_lines_for_prints(struct commands *cmds,int *lineno, char*errmsg);
+char *remap_top_level_variables(char *invarname) ;
+struct module_entry *new_import_package(char *package ,int lineno);
+struct module_entry *new_import_datatype(char *dtype_name ,int lineno);
+struct expr_str * get_menu_attrib(char type);
+char *describe_subscripts(int n, int *nvals );
+char * describe_variable (struct variable *v);
+char *describe_variable_usage(variable_usage *u);
 
 
 struct menu_attrib {
@@ -743,10 +750,24 @@ struct menu_attrib {
            struct expr_str *menu_attrib_image;
 };
 void add_dependant_table(char *s);
+void sort_variables(void *ptr, int n) ;
+
+struct variable *find_variable_quick(char *name, struct variable **list, int cnt) ;
+struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *var_section,  struct variable_usage *vu,int a,int err_if_whole_array,int level) ;
+int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr);
+char * compile_ispdf (void);
+char *decode_cursorname(struct expr_str *s_i);
 
 int has_variable_name (struct vname_name_list *namelist, char *name);
+#ifndef DEFINED_SET_CLOBBER
+#define DEFINED_SET_CLOBBER
 void A4GL_set_clobber (char *c);
+#endif
+
+#ifndef DEFINED_SET_MODULE_DBNAME
+#define DEFINED_SET_MODULE_DBNAME
 void set_module_dbname(char *db,e_boolean isschema);
+#endif
 
 #endif   //ifndef _A4GL_4GLC_INT_H_
 

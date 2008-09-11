@@ -1994,6 +1994,11 @@ enum e_expr_type {
 
 		ET_EXPR_CURSOR_NAME_FUNCTION,
 		ET_EXPR_REFERENCE,
+		ET_EXPR_PDF_X,
+		ET_EXPR_PDF_Y,
+		ET_EXPR_PDF_CURRENT_X,
+		ET_EXPR_PDF_CURRENT_Y,
+                ET_EXPR_CM,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 };
 
@@ -2025,6 +2030,8 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_MENU_ALL: /*! void; !*/
 	case ET_E_V_OR_LIT_NOVALUE: /*!		void; !*/
 	case ET_EXPR_MODULE_FUNC: /*!         void; !*/
+	case ET_EXPR_PDF_CURRENT_X: /*! void; !*/
+	case ET_EXPR_PDF_CURRENT_Y: /*! void; !*/
 	case ET_EXPR_LAST:
 		void;
 
@@ -2210,6 +2217,8 @@ ET_EXPR_PROMPT_RESULT  */
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_POINTS:
                 /*! struct expr_str                         *expr_expr; !*/
+	case ET_EXPR_CM:
+                /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_MM:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_INCHES:
@@ -2246,6 +2255,11 @@ ET_EXPR_PROMPT_RESULT  */
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_REFERENCE:
                 /*! struct expr_str                         *expr_expr; !*/
+        case ET_EXPR_PDF_X:
+                /*! struct expr_str                         *expr_expr; !*/
+        case ET_EXPR_PDF_Y:
+                /*! struct expr_str                         *expr_expr; !*/
+
 	case ET_EXPR_NEG:
                 struct expr_str                         *expr_expr;
 	case ET_EXPR_VARIABLE_USAGE:

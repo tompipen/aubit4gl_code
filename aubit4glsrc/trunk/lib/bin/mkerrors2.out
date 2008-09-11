@@ -338,3 +338,5 @@
 340|Statement (%s) did not contain a hstmt
 342|Unable to determine date from format
 344|Incompatible storage size
+346|Invalid barcode type
+347|Unable to generate QR code

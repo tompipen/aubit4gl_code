@@ -120,7 +120,7 @@ struct command *new_display_b_n_cmd(expr_str_list* p_vars, attrib *p_attributes)
 struct command *new_foreach_cmd(expr_str *connid, expr_str * p_cursorname, expr_str_list* p_inputvals, expr_str_list* p_outputvals, commands *p_cmds);
 struct command *new_if_cmd(if_conds *p_truths,commands *p_whenfalse,int else_lineno, int last_lineno);
 struct command *new_pdf_call_cmd(expr_str* p_fcall,expr_str_list* p_returning);
-
+struct command *new_pdf_specific_cmd (char *p_type, struct expr_str_list *return_values, ...);
 
 struct on_event *new_event(e_event event_type, void *data, commands *cmds,int lineno);
 struct menuoption *new_menu_option(str_list  *keys, struct expr_str *mnoption, struct expr_str *mndescription, int helpno);

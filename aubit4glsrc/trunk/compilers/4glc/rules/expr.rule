@@ -601,13 +601,16 @@ function_call_expr:
 
 pdf_expr : fgl_expr_c KW_POINTS  {
  			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_POINTS);
-	}
+		}
 		|  fgl_expr_c  MM     {
  			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_MM);
-	}
+		}
+		|  fgl_expr_c  CM     {
+ 			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_CM);
+		}
 		|  fgl_expr_c INCHES     {
  			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_INCHES);
-	}
+		}
 	;
 
 

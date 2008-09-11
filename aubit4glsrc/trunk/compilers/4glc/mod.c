@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.319 2008-08-12 17:38:35 mikeaubury Exp $
+# $Id: mod.c,v 1.320 2008-09-11 17:45:26 mikeaubury Exp $
 #
 */
 
@@ -4518,6 +4518,7 @@ struct expr_str * get_menu_attrib(char type) {
         if (type=='I') {
                 return menu_attrib_image;
         }
+	return NULL;
 }
 
 

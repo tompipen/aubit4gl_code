@@ -6,9 +6,13 @@
 #include "lint.h"
 #include "parsehelp.h"
 
+extern char infilename[];
 extern int yylineno;
 extern int token_read_on_line;
 extern int token_read_on_col;
+
+extern int rep_type;
+
 struct commands * linearise_commands(struct commands *master_list, struct commands *cmds) ;
 //static char *get_expr_list_as_string(struct expr_str_list *l) ;
 //static void linearise_commands_from_events(struct commands *master_list, struct on_events* evt_list) ;
@@ -1803,8 +1807,11 @@ struct command *c;
    return c;
 }
 
+
+
 struct command *new_pdf_call_cmd(expr_str* p_fcall,expr_str_list* p_returning) {
 struct command *c;
+	A4GL_assertion(1,"No longer used?");
    c=new_command(E_CMD_PDF_CALL_CMD);
    c->cmd_data.command_data_u.pdf_call_cmd.fcall=p_fcall;
    c->cmd_data.command_data_u.pdf_call_cmd.returning=p_returning;
@@ -2230,6 +2237,44 @@ struct command *c;
    c->cmd_data.command_data_u.set_session_cmd.s2=p_s2;
    c->cmd_data.command_data_u.set_session_cmd.s3=p_s3;
    return c;
+}
+
+
+
+struct command * new_pdf_specific_cmd (char *p_type, struct expr_str_list *return_values, ...)
+{
+  struct command *c;
+  struct expr_str_list *parameters = NULL;
+  struct expr_str *parameter;
+  struct expr_str *function_call_expr;
+  va_list ap;
+  char buff[200];
+  va_start (ap, return_values);
+
+ if (rep_type==REP_TYPE_NORMAL) {
+	a4gl_yyerror("You can't use this command is a normal REPORT");
+	return NULL;
+ }
+  // Firstly - lets collect any parameters...
+  parameters = A4GL_new_ptr_list (NULL);
+  while (1)
+    {
+      parameter = va_arg (ap, expr_str*);
+      if (parameter == NULL)
+	break;
+      parameters = A4GL_new_append_ptr_list (parameters, parameter);
+    }
+
+  va_end(ap);
+  sprintf(buff,"\"%s\"", p_type);
+
+  // Now - create an expression for the function call...
+  function_call_expr = A4GL_new_expr_pdf_fcall (buff,parameters,infilename,yylineno,get_namespace(buff));
+
+  // Now - create the function call itself
+  c=new_call_cmd(chk_expr(function_call_expr),return_values);
+
+  return c;
 }
 
 

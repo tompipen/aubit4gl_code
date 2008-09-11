@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.102 2008-08-26 12:57:34 mikeaubury Exp $
+# $Id: variables.c,v 1.103 2008-09-11 17:45:26 mikeaubury Exp $
 #
 */
 
@@ -91,7 +91,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       struct variable *v,
 					       char bindtype);
 int is_valid_vname(struct variable *v, char scope);
-char *remap_top_level_variables(char *invarname) ;
+//char *remap_top_level_variables(char *invarname) ;
 void make_function (char *name, int record_cnt);
 //int has_fbind(char *s) ;
 int chk_already_defined(char *s, char scope);

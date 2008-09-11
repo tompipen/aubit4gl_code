@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.324 2008-09-09 18:02:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.325 2008-09-11 17:45:27 mikeaubury Exp $
 #
 */
 
@@ -1324,7 +1324,8 @@ int aclfgl_fgl_round(int nargs);
 #define RM(struct,ptr) A4GL_get_set(struct,ptr,GETSETRM,0,0)
 
 #include "a4gl_rep_structure.h"
-
+void A4GL_get_current_pdf_x(struct pdf_rep_structure *rep) ;
+void A4GL_get_current_pdf_y(struct pdf_rep_structure *rep) ;
 
 
 void A4GL_cleanup_undeleted_files(void);
@@ -2675,10 +2676,13 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 int aclfgl_aclfgl_getcwd (int a);
 int aclfgl_aclfgl_replace_start(int nargs);
 int aclfgl_aclfgl_call_in_shared(int a) ;
+int aclfgl_aclfgl_set_pdf_encoding(int n);
+int aclfgl_aclfgl_get_pdf_encoding(int n);
 void add_int8_support(void);
 void add_reference_support(void);
 int A4GL_dttoc (void *a, void *b, int size);
 int A4GL_wcswidth(char *mbs);
+void A4GL_remove_trailing_zeros_and_leading_spaces(char *s) ;
 
 
 

@@ -149,6 +149,7 @@
 	#define HAVE_ECPG_GET_CONNECTION 0
 	#define HAVE_ECPGGET_CONNECTION 0
 	#define HAVE_U_INT 0
+	#define HAVE_LIBQRENCODE	 0
 	#define HAVE_SMTPLIB_PART_END 0
 
 	//See a4gl_esql_posthres.h and resource.c for usage of USING_PG_COPTS

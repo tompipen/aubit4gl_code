@@ -17,7 +17,12 @@ struct on_events *new_event_list(on_event *evt);
 void *get_def_mn_file(void);
 void A4GL_add_extra_warning(int yylineno, char *msg);
 void A4GL_clr_extra_warnings(void);
-void A4GL_set_clobber(char *c);
+
+#ifndef DEFINED_SET_CLOBBER
+#define DEFINED_SET_CLOBBER
+void A4GL_set_clobber (char *c);
+#endif
+
 void A4GL_set_extra_warnings(int *n, struct lint_warning **l);
 /* These are defined in the API_lex */
 //int FGLPARSE_A4GL_lexer_find_type(char *s);
@@ -40,7 +45,11 @@ void pop_blockcommand(char *cmd_type);
 void push_like(char *t);
 void push_rectab(char *t);
 void push_report_block(char *why, char whytype, char *var);
-void set_module_dbname(char *db, e_boolean isschema);
+#ifndef DEFINED_SET_MODULE_DBNAME
+#define DEFINED_SET_MODULE_DBNAME
+void set_module_dbname(char *db,e_boolean isschema);
+#endif
+
 void set_variables(variable_list *v, char why);
 void set_whenever(int c, char *p);
 void set_whenever_from_store(void);

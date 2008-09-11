@@ -9,7 +9,6 @@
 #include "pdf_barcode.h"
 int codetype=-1;
 
-#define HAVE_LIBQRENCODE
 
 #ifdef HAVE_LIBQRENCODE
 
@@ -436,7 +435,6 @@ alldone:;
 
 #else 
 //  HAVE_LIBQRENCODE not defined...
-
 void generate_qrcode(PDF *p,char *str, double xpos,double ypos,double pdfwidth, double pdfheight, double p_page_height )  {
 	A4GL_exitwith("Unable to generate QR code");
 }

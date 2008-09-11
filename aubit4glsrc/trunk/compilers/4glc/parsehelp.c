@@ -5,7 +5,7 @@
 #include "var_handling.h"
 #include "trim_spaces.h"
 
-void sort_variables(void *ptr, int n) ;
+//void sort_variables(void *ptr, int n) ;
 extern struct cmds command_stack[CMD_STACK_SIZE];
 extern int nblock_no;
 extern struct s_report_stack report_stack[REPORTSTACKSIZE];
