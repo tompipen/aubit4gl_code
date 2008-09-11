@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.71 2008-07-17 16:28:13 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.72 2008-09-11 15:12:31 mikeaubury Exp $
 #
 */
 
@@ -2239,7 +2239,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
     	}
 
   } else {
-      	if (!A4GLSQLCV_check_runtime_requirement ("ALLOWTABLELESS")) {
+      	if (A4GLSQLCV_check_runtime_requirement ("FAKETABLELESS")) {
 		strcat(buff," FROM systables WHERE tabid=1");
       	}
   }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.164 2008-08-04 18:48:45 mikeaubury Exp $
+# $Id: report.c,v 1.165 2008-09-11 15:12:31 mikeaubury Exp $
 #
 */
 
@@ -1907,6 +1907,8 @@ int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char
 	return 1;
 }
 
+
+
 int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
 {
 
@@ -2085,6 +2087,19 @@ report_write_entry (struct rep_structure *rep, char type)
 }
 
 
+// Push onto the stack the current position down the page..
+void A4GL_get_current_pdf_y(struct pdf_rep_structure *rep) {
+	double d;
+	d=rep->line_no;
+	A4GL_push_double(d);
+}
+
+// Push onto the stack the current position across the page..
+void A4GL_get_current_pdf_x(struct pdf_rep_structure *rep) {
+	double d;
+	d=rep->col_no + rep->left_margin;
+	A4GL_push_double(d);
+}
 
 
 
@@ -2697,7 +2712,7 @@ if (agg) {
 return 1;
 }
 
-int aclfgl_aclfgl_set_pdf_encoding() {
+int aclfgl_aclfgl_set_pdf_encoding(int n ) {
 char *p;
 p=A4GL_char_pop();
 strcpy(pdf_encoding,p);
@@ -2706,7 +2721,7 @@ return 0;
 }
 
 
-int aclfgl_aclfgl_get_pdf_encoding() {
+int aclfgl_aclfgl_get_pdf_encoding(int n) {
 A4GL_push_char(pdf_encoding);
 return 1;
 }

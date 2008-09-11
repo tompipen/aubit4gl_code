@@ -994,15 +994,25 @@ report_cnt++;
 
 
 	  printc (" ");
+
+
+  if (rep_type == REP_TYPE_NORMAL) {
   printc("if (acl_ctrl==REPORT_CONVERT) {");
   printc("char *_f; char *_o; char *_l; int _to_pipe; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); _to_pipe=A4GL_pop_int();\n");
   printc("A4GL_convert_report(&_rep,_f,_o,_l,_to_pipe);");
   printc("return ;");
   printc("}");
+  }
+
+
+  if (rep_type == REP_TYPE_NORMAL) {
   printc("if (acl_ctrl==REPORT_FREE) {");
   printc("A4GL_free_report(&_rep);");
   printc("return ;");
   printc("}");
+  }
+
+
   printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
   printc ("   A4GL_pop_char(_rout2,254);A4GL_trim(_rout2);\n");
   printc ("   A4GL_pop_char(_rout1,254);A4GL_trim(_rout1);\n");

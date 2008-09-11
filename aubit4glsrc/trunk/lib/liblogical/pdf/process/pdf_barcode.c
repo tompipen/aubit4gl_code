@@ -7,6 +7,16 @@
 //#include "../../common/a4gl_lle.h"
 //#include "../../processor/API_process.h"
 #include "pdf_barcode.h"
+int codetype=-1;
+
+#define HAVE_LIBQRENCODE
+
+#ifdef HAVE_LIBQRENCODE
+
+#include <qrencode.h>
+QRcode *QRcode_encodeMask(QRinput *input, int mask);
+
+#endif
 
 int width;
 int height;
@@ -258,6 +268,40 @@ static void TermBarPDF39(PDF *p) {
 }
 
 
+static void setcodetype(void ) {
+	if (A4GL_isyes(acl_getenv("BARCODE25"))) {
+		codetype=25;
+	}
+	
+	if (A4GL_isyes(acl_getenv("BARCODE39"))) {
+		codetype=39;
+	}
+	
+	if (A4GL_isyes(acl_getenv("BARCODEQR"))) {
+		codetype=99;
+	}
+	if (codetype==-1) {
+		codetype=39;
+	}
+}
+
+
+void set_barcode_type(char *s) {
+	if (A4GL_aubit_strcasecmp(s,"39")==0) {
+		codetype=39;
+		return ;
+	}
+	if (A4GL_aubit_strcasecmp(s,"25")==0) {
+		codetype=25;
+		return ;
+	}
+	if (A4GL_aubit_strcasecmp(s,"QR")==0) {
+		codetype=99;
+		return ;
+	}
+	A4GL_exitwith("Invalid barcode type");
+}
+
 // Adapted from : 
 // # Filename: bc.4gl
 // # Desc    : Barcodes on Laser Printers
@@ -271,14 +315,17 @@ int char_length1;
 int i;
 double bar_length, bar_scale;
 char *S;
-int codetype=39;
 
-if (A4GL_isyes(acl_getenv("BARCODE25"))) {
-	codetype=25;
+if (codetype==-1) {
+	setcodetype();
 }
 
-if (A4GL_isyes(acl_getenv("BARCODE39"))) {
-	codetype=39;
+
+
+
+if (codetype==99) {
+	generate_qrcode(p,str, xpos, ypos,x ,y, p_page_height) ;
+	return ;
 }
 
 if (codetype==39) {
@@ -320,3 +367,79 @@ if (codetype==25) {
 
 
 }
+
+
+#ifdef HAVE_LIBQRENCODE
+
+void
+generate_qrcode (PDF * p, char *str, double xpos, double ypos, double pdfwidth, double pdfheight, double p_page_height)
+{
+  int ret = -1;
+  int version = 1;
+  int level = QR_ECLEVEL_L;
+  int mask = -1;
+  QRcode *qrcode;
+  QRinput *input = 0;
+  int x;
+  int y;
+//int w;
+  unsigned char *pdata;
+  double width;
+  double width_multiplier;
+
+  input = QRinput_new2 (version, level);
+  ret = QRinput_append (input, QR_MODE_8, strlen (str), (unsigned char *) str);
+  if (ret < 0)
+    goto alldone;
+  QRinput_setVersion (input, version);
+  QRinput_setErrorCorrectionLevel (input, level);
+  qrcode = QRcode_encodeMask (input, mask);
+
+  if (qrcode == NULL)
+    goto alldone;
+  ypos-=pdfheight;
+
+
+  // Width in 'pixels'
+  width = qrcode->width;
+  // get a multiplier to get the size for each 'pixel'
+  width_multiplier = pdfwidth / width;
+
+  PDF_setlinewidth (p, 0.000001);	// we dont really want a line - so make it really thin ;-)
+  pdata = qrcode->data;
+  for (y = 0; y < width; y++)
+    {
+      for (x = 0; x < width; x++)
+	{
+	  double xd;
+	  double yd;
+	  xd = xpos + (x * width_multiplier);
+	  yd = (y * width_multiplier);
+
+	  if ((*pdata) & 1)
+	    {
+	      PDF_rect (p, xd, p_page_height - ( ypos + yd) , width_multiplier, width_multiplier);
+	    }
+	  pdata++;
+	}
+    }
+  PDF_fill_stroke (p);
+
+alldone:;
+  if (input) { QRinput_free (input); }
+  if (qrcode) { QRcode_free (qrcode); }
+  if (ret < 0) { A4GL_exitwith ("Unable to generate QR code"); }
+}
+
+
+
+
+#else 
+//  HAVE_LIBQRENCODE not defined...
+
+void generate_qrcode(PDF *p,char *str, double xpos,double ypos,double pdfwidth, double pdfheight, double p_page_height )  {
+	A4GL_exitwith("Unable to generate QR code");
+}
+
+#endif
+

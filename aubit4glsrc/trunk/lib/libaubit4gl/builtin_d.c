@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.94 2008-07-06 11:34:29 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.95 2008-09-11 15:12:31 mikeaubury Exp $
 #
 */
 
@@ -313,9 +313,41 @@ void A4GL_push_decimal_str(char *p) {
 	int size;
 	int ndig;
 	int ndec;
-	A4GL_init_dec(&d,64,32);
-	A4GL_str_to_dec(p,&d);
+	int decpos;
+        char buff[2000];
+	int l;
+	strcpy(buff,p);
 
+	ndig=64;
+	ndec=32;
+	A4GL_remove_trailing_zeros_and_leading_spaces(buff);
+	l=strlen(buff);
+	if (l) {
+		int a;
+		decpos=-1;
+		for (a=0;a<l;a++) {
+			if (buff[a]=='.' || buff[a]==',') {
+				// we wont break here - we'll just keep looking
+				// because the ',' or '.' might be a thousands separator character
+				decpos=a;
+			}
+		}
+		if (decpos==-1) {
+			// Nothing found - strange given that it was a decimal...
+			ndig=l;
+			ndec=0;
+		} else {
+			ndec=l-decpos-1;
+			ndig=l;
+		}
+		A4GL_assertion(ndec>ndig,"More decimal places than digits");
+		if (ndec>64) ndec=64;
+		if (ndig>32) ndig=32;
+	}
+	
+	A4GL_init_dec(&d,ndig,ndec);
+	A4GL_str_to_dec(buff,&d);
+	
 	ndig=NUM_DIG (d.dec_data);
         ndec=NUM_DEC(d.dec_data);
 	if (ndig<ndec) { A4GL_assertion(1,"Insufficent digits"); }

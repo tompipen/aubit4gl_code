@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.27 2008-08-26 13:41:54 mikeaubury Exp $
+# $Id: expr.c,v 1.28 2008-09-11 15:12:31 mikeaubury Exp $
 #
 */
 
@@ -207,11 +207,14 @@ case ET_EXPR_WHERE_CURRENT_OF: return "ET_EXPR_WHERE_CURRENT_OF";
 case ET_EXPR_ASSOC: return "ET_EXPR_ASSOC";
 case ET_EXPR_REFERENCE: return "ET_EXPR_REFERENCE";
 
+case ET_EXPR_PDF_X: return "ET_EXPR_PDF_X";
+case ET_EXPR_PDF_Y : return "ET_EXPR_PDF_Y";
+case ET_EXPR_PDF_CURRENT_X : return "ET_EXPR_PDF_CURRENT_X";
+case ET_EXPR_PDF_CURRENT_Y : return "ET_EXPR_PDF_CURRENT_Y";
 }
 PRINTF("Expression Type : %d\n",e);
 return "Oopps - dont know";
 }
-/* =========================== EOF ================================ */
 
 
 
@@ -243,6 +246,9 @@ int A4GL_new_list_get_count(struct expr_str_list *l) {
 	        if (l==0) return 0;
 		        return l->list.list_len;
 }
+
+
+
 
 
 // A list of expressions can contain another list -
@@ -864,6 +870,31 @@ struct expr_str *A4GL_expr_in_sq(struct expr_str *expr, int invert,struct s_sele
 }
 
 
+struct expr_str *report_position_expr_x(struct expr_str *expr) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_PDF_X);
+      ptr_new->expr_str_u.expr_expr=expr;
+      return ptr_new;
+}
+
+struct expr_str *report_position_expr_y(struct expr_str *expr) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_PDF_Y);
+      ptr_new->expr_str_u.expr_expr=expr;
+      return ptr_new;
+}
+
+struct expr_str *report_position_current_y(void ) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_PDF_CURRENT_Y);
+      return ptr_new;
+}
+
+struct expr_str *report_position_current_x(void ) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_PDF_CURRENT_X);
+      return ptr_new;
+}
 
 /*****************************************************************************/
 /* All code after here is OLD stuff which is badly written and bad to use    */
@@ -1236,3 +1267,6 @@ struct str_list *n;
         }
         return n;
 }
+
+
+/* =========================== EOF ================================ */

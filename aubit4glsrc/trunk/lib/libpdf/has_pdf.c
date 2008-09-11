@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.49 2008-08-04 18:48:21 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.50 2008-09-11 15:12:33 mikeaubury Exp $
 #*/
 
 /**
@@ -47,7 +47,7 @@
 #define USE_PDFLIB_H
 #include "a4gl_lib_exreport_pdf_int.h"
 void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text);
-
+void set_barcode_type(char *s);
 
 
 #define SECTION_NORMAL 0
@@ -858,12 +858,28 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	str=A4GL_char_pop();
 	h=A4GL_pop_double();
 	w=A4GL_pop_double();
+
+	// These should probably always be <0 - but we'll correct it anyway...
+	if (w<0) w=0-w;
+	if (h<0) h=0-h;
+
 	y=A4GL_pop_double();
 	x=A4GL_pop_double();
 	y=y+h;
+
 	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length,1);
+
 	free(str);
       return 0;
+    }
+
+  if (strcmp (fname, "barcode_type") == 0)
+    {
+	char *str;
+	str=A4GL_char_pop();
+	set_barcode_type(str);
+	free(str);
+	return 0;
     }
 
   if (strcmp (fname, "barcode_no_text") == 0)
@@ -873,6 +889,10 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	str=A4GL_char_pop();
 	h=A4GL_pop_double();
 	w=A4GL_pop_double();
+	// These should probably always be <0 - but we'll correct it anyway...
+	if (w<0) w=0-w;
+	if (h<0) h=0-h;
+
 	y=A4GL_pop_double();
 	x=A4GL_pop_double();
 	y=y+h;

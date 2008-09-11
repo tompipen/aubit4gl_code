@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.434 2008-08-28 08:11:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.435 2008-09-11 15:12:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.434 2008-08-28 08:11:13 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.435 2008-09-11 15:12:32 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1398,6 +1398,10 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->expr_str_u.expr_expr);
 	  printc ("A4GL_push_double(-2.83465);A4GL_pushop(OP_MULT);");
 	  break;
+	case ET_EXPR_CM:
+	  real_print_expr (ptr->expr_str_u.expr_expr);
+	  printc ("A4GL_push_double(-28.3465);A4GL_pushop(OP_MULT);");
+
 	case ET_EXPR_INCHES:
 	  real_print_expr (ptr->expr_str_u.expr_expr);
 	  printc ("A4GL_push_double(-72.0);A4GL_pushop(OP_MULT);");
@@ -1916,6 +1920,7 @@ real_print_expr (struct expr_str *ptr)
 	  	real_print_expr (ptr->expr_str_u.expr_expr);
 		printc("aclfgl_time(1);");break;
 
+
 	case ET_EXPR_INFIELD:
 		if (A4GL_doing_pcode()) {
 		if (ptr->expr_str_u.expr_infield->sio_id!=-1) {
@@ -2037,7 +2042,42 @@ real_print_expr (struct expr_str *ptr)
 		print_expr(ptr->expr_str_u.expr_expr);
 		printc("acl_get_cursorname();");
 		break;
-		
+
+
+        case ET_EXPR_PDF_X:
+		print_expr(ptr->expr_str_u.expr_expr);
+		if (is_in_report ()) {
+			printc("A4GL_convert_to_pdf_x(&_rep);");
+		} else {
+			printc("A4GL_convert_to_pdf_x(NULL);");
+		}
+		break;
+
+        case ET_EXPR_PDF_Y:
+		print_expr(ptr->expr_str_u.expr_expr);
+		if (is_in_report ()) {
+			printc("A4GL_convert_to_pdf_y(&_rep);");
+		} else {
+			printc("A4GL_convert_to_pdf_y(NULL);");
+		}
+		break;
+
+        case ET_EXPR_PDF_CURRENT_X:
+		if (is_in_report ()) {
+			printc("A4GL_get_current_pdf_x(&_rep);");
+		} else {
+			printc("A4GL_get_current_pdf_x(NULL);");
+		}
+		break;
+
+        case ET_EXPR_PDF_CURRENT_Y:
+		if (is_in_report ()) {
+			printc("A4GL_get_current_pdf_y(&_rep);");
+		} else {
+			printc("A4GL_get_current_pdf_y(NULL);");
+		}
+		break;
+
 		
 	      default: 
 					       	
@@ -2871,7 +2911,7 @@ real_print_func_call (t_expr_str * fcall)
     	}
   	else
     	{
-      		printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->fname, p->parameters->list.list_len);
+      		printc ("_retvars=A4GL_pdf_pdffunc(NULL,%s,%d);\n", p->fname, p->parameters->list.list_len);
     	}
 
 	return;

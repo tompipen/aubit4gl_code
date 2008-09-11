@@ -109,7 +109,7 @@ FORCE_HOLD_ALWAYS Force use of HOLD cursor for all cursors *except* HOLD cursors
 FORCE_HOLD_NEVER Never force the use of HOLD cursors
 FORCE_HOLD_EXCEPT_UPDATE Force use of HOLD cursor for all cursors *except* HOLD cursors
 FIRSTASLIMIT Replace "SELECT FIRST # ... " with "SELECT ... LIMIT #"
-ALLOWTABLELESS Allow tablesless selects (eg. SELECT USER;). If not set it will add 'FROM systables WHERE tabid=1"
+FAKETABLELESS Fake tablesless selects (eg. SELECT USER;). If set it will add 'FROM systables WHERE tabid=1"
 OMIT_LOCK_MODE Omit the lock mode from a CREATE TABLE
 OMIT_TABLE_IN Omit the "IN space" from a CREATE TABLE
 OMIT_TABLE_EXTENTS Omit the "EXTENT SIZE #" and the "NEXT EXTENT #" from a CREATE TABLE
