@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.50 2008-09-11 15:12:33 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.51 2008-09-12 13:36:32 fortiz Exp $
 #*/
 
 /**
@@ -699,7 +699,9 @@ double oy;
   if (n < 0)
     {
       /* exitwith("Unable to open file %s %s",type,blob->filename); */
-      A4GL_exitwith ("Unable to open file.");
+      /* An empty blob or invalid type (bmp) is also error,
+         so just ignore and continue */
+      /* A4GL_exitwith ("Unable to open file."); */
       return;
     }
 
