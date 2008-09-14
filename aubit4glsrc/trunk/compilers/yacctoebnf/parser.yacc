@@ -25,7 +25,7 @@ struct s_parser_start *start;
 	struct s_parser_start *s_parser_start;
 }
 
-%token NAMED INTVAL CHAR_VALUE NUMBER_VALUE CH OPTIONAL PREC
+%token NAMED INTVAL CHAR_VALUE NUMBER_VALUE CH OPTIONAL PREC ERROR
 
 %%
 
@@ -62,6 +62,7 @@ section_entry : section_item  		{$<s_section_entry>$=new_section_entry(NULL, $<s
 section_item : 	NAMED 		{$<s_section_item>$=new_section_item__1($<str>1);}
 	|       CHAR_VALUE 	{$<s_section_item>$=new_section_item__2($<str>1);}
 	|       OPTIONAL 	{$<s_section_item>$=new_section_item__2($<str>1);}
+	| 	ERROR  {$<s_section_item>$=NULL;}
 	|       PREC NAMED	{
 				char buff[100];
 				sprintf(buff,"%%prec PGKW_%s",$<str>2);

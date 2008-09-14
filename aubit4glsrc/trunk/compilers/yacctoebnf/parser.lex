@@ -81,6 +81,7 @@
 <body>\'\' 				{strcpy(yylval.str,A4GL_strip_quotes(yytext)); return CHAR_VALUE;}
 <body>OPTIONAL		{strcpy(yylval.str, yytext);colno+=strlen(yytext); return(OPTIONAL); }
 <body>%prec 		{strcpy(yylval.str, yytext);colno+=strlen(yytext); return(PREC); }
+<body>error		{strcpy(yylval.str, yytext);colno+=strlen(yytext); return(ERROR); }
 <body>[a-zA-Z]+[a-zA-Z\_0-9]*		{strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED); }
 <body>[a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);}
 <body>. {return yytext[0];}

@@ -17,6 +17,7 @@
 [\r\n]  	;
 [ 	] 	;
 
+"error"		{ return ERROR;}
 [a-z_]+ 	{   strcpy(yylval.str, yytext); return NAMED;}
 \'[^\']+\'  	{  strcpy(yylval.str, yytext); return STRING;}
 "\."  		{return DOT;}

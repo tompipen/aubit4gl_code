@@ -202,7 +202,9 @@ return NULL;
 int walktree(struct s_parser_start *parser_start, char *name, char *calledby,int lvl) {
 	int a,b,c;
 
-if (lvl>10) return 0 ; // too deep...
+if (lvl>10) {
+	return 0 ; // too deep...
+}
 
 
 	for (a=0;a<parser_start->nitems;a++) {
@@ -263,6 +265,8 @@ for (a=0;a<parser_start->nitems;a++) {
 		}
 	
 		printf(".\n");
+	} else {
+		fprintf(stderr,"Too deep for %s\n", startnodename);
 	}
 
 
@@ -439,10 +443,10 @@ get_text (char *s)
   //int arr;
   struct s_kw *local_kwords;
   int a;
-int c;
+  int c;
 
 
-
+strcpy(buff,"");
   for (c=0;;c++) {
   local_kwords = A4GL_lexer_get_hashed_list (c);
 	if (local_kwords==0) break;
@@ -452,22 +456,35 @@ int c;
       if (strcmp (local_kwords[a].name, s) == 0)
 	{
 	  int b;
+	  if (strlen(buff)) {
+			strcat(buff,"|");
+	  }
+
 	  for (b = 0; local_kwords[a].vals[b]; b++)
 	    {
+
 		  if (b) strcat (buff, " ");
 		  else {
-				strcpy (buff, "\"");
+			strcat (buff, "\"");
 		  }
 	      strcat (buff, local_kwords[a].vals[b]);
 	    }
-			strcat(buff,"\"");
-	  return buff;
+	strcat(buff,"\"");
+	  //return buff;
 	}
     }
 
 
     }
-
+  if (strlen(buff)) {
+	if (strstr(buff,"|")) {
+		char buff2[2000];
+	
+		sprintf(buff2,"(%s)",buff);
+		strcpy(buff,buff2);
+	}
+		return buff;
+	}
 
   return s;
 }
