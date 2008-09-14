@@ -27,7 +27,7 @@ case_cmd	: CASE atline op_case_fgl_expr_c  {
 
 op_then :
        | KW_THEN
-
+;
 
 when_unit : when_command  {
 			$<whens>$=malloc(sizeof(whens));

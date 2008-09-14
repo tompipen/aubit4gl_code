@@ -80,6 +80,10 @@ struct rb_blocks {
 	struct rb_blocks *blocks;
 	int nblocks;
 	int curr_rb;
+	double bluebar_r;
+	double bluebar_g;
+	double bluebar_b;
+	int bluebar_style;
   };
 
 #endif

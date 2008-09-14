@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.51 2008-09-12 13:36:32 fortiz Exp $
+# $Id: has_pdf.c,v 1.52 2008-09-14 10:48:21 mikeaubury Exp $
 #*/
 
 /**
@@ -68,6 +68,57 @@ void A4GLREPORT_initlib (void);
 =====================================================================
 */
 
+
+double fill_color_r=0.0;
+double fill_color_g=0.0;
+double fill_color_b=0.0;
+double stroke_color_r=0.0;
+double stroke_color_g=0.0;
+double stroke_color_b=0.0;
+
+static void A4GL_setcolor(PDF *p, const char *fstype, const char *colorspace, double c1, double c2, double c3, double c4) {
+
+if (strcmp(colorspace,"rgb")!=0) {
+	A4GL_assertion(1,"A4GL_setcolor must be rgb");
+}
+
+if (strcmp(fstype,"fill")==0) {
+	fill_color_r=c1;
+	fill_color_g=c2;
+	fill_color_b=c3;
+	PDF_setcolor(p,fstype,colorspace,c1,c2,c3,c4);
+	return;
+}
+
+if (strcmp(fstype,"stroke")==0) {
+	stroke_color_r=c1;
+	stroke_color_g=c2;
+	stroke_color_b=c3;
+	PDF_setcolor(p,fstype,colorspace,c1,c2,c3,c4);
+	return;
+}
+if (strcmp(fstype,"both")==0) {
+	fill_color_r=c1;
+	fill_color_g=c2;
+	fill_color_b=c3;
+	stroke_color_r=c1;
+	stroke_color_g=c2;
+	stroke_color_b=c3;
+	PDF_setcolor(p,fstype,colorspace,c1,c2,c3,c4);
+	return;
+}
+
+A4GL_assertion(1,"unexpected fstype");
+}
+
+
+static void A4GL_resetcolor(PDF *p) {
+	PDF_setcolor(p,"fill","rgb",fill_color_r, fill_color_g,fill_color_b,0);
+	PDF_setcolor(p,"stroke","rgb",stroke_color_r, stroke_color_g,stroke_color_b,0);
+}
+
+
+
 /**
  *
  * a = number to pop
@@ -82,6 +133,8 @@ A4GLPDFREP_A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin, int w
 int entry=0;
   char *str;
   struct pdf_rep_structure *rep;
+  static int resetting=0;
+
   rep = vrep;
 
   A4GL_debug ("In rep_print");
@@ -192,6 +245,7 @@ int entry=0;
 
       A4GLPDFREP_A4GL_pdf_skip_by (rep, 0.0 - rep->top_margin);
       rep->report (0, REPORT_PAGEHEADER);
+	return;
     }
 
   A4GL_debug ("Popping %d parameters", a);
@@ -211,13 +265,13 @@ int entry=0;
 	  str =  A4GL_report_char_pop ();
 	  A4GL_pdf_move (rep); 
 	  PDF_show (rep->pdf_ptr, str);
-	  A4GL_debug ("Adding %f to col_no\n",
-		      A4GL_pdf_metric (strlen (str), 'c', rep));
+	  A4GL_debug ("Adding %f to col_no\n", A4GL_pdf_metric (strlen (str), 'c', rep));
 	  rep->col_no += A4GL_pdf_metric (strlen (str), 'c', rep);
 	  acl_free (str);
 	}
       A4GL_pdf_move (rep);
     }
+
   A4GL_debug ("Newline : %d", s);
 
   if (s == 0)
@@ -424,7 +478,6 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
     double b;
       for (z = 0; z < a; z++)
 	{
-		printf("%d %lf %lf \n",a, ad,b);
   		b = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
 
 	  A4GL_pdf_rep_print (rep, 0, 0, 0, -4);
@@ -486,6 +539,68 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
 
   A4GL_debug ("set font\n");
   PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+
+// do we need bluebars ? 
+  if (p->bluebar_style!=E_BLUEBAR_NONE) {
+	//double printable;
+	double eachline;
+		double ypos;
+
+	//printable = p->page_height - (p->top_margin);
+  	//eachline = printable / h;
+  	eachline = A4GLPDFREP_A4GL_pdf_size (1, 'l', p);
+  	PDF_setcolor (p->pdf_ptr, "both", "rgb", p->bluebar_r, p->bluebar_g, p->bluebar_b, 0);
+  	PDF_setlinewidth (p->pdf_ptr, eachline / 20);
+
+    if (p->bluebar_style == E_BLUEBAR_5LINE)
+        {
+		int a;
+	ypos=p->page_length-p->top_margin;
+          for (a = 0; ; a += 2)
+            {
+              //char *ptr;
+              int bb;
+	      //double ypos_spacing;
+              float spacing;
+              spacing = 0;
+              spacing -= 2.0 * (float) eachline / 10;
+              for (bb = 0; bb < 5; bb++)
+                {
+                  spacing -= 2.0 * (float) eachline / 10;
+                  PDF_moveto (p->pdf_ptr, (0), ypos + spacing);
+                  PDF_lineto (p->pdf_ptr, (p->page_width),ypos+spacing);
+                }
+		ypos=ypos-(eachline*2);
+		if (ypos+eachline<p->bottom_margin) break;
+            }
+      PDF_stroke (p->pdf_ptr);
+        }
+
+      if (p->bluebar_style == E_BLUEBAR_RECTANGLE)
+        {
+	int a;
+	ypos=p->page_length-(p->top_margin+eachline);
+
+          for (a = 0; ; a += 2)
+            {
+              //char *ptr;
+              //int bb;
+              float offset;
+		//ypos=a * eachline;
+              //spacing -= (float) eachline / 10;
+              offset = 2.0 * (float) eachline / 10;
+		if (ypos+eachline>(p->page_length)) break;
+                PDF_rect (p->pdf_ptr, (0), ypos -offset , p->page_width, eachline*0.9); PDF_fill_stroke (p->pdf_ptr);
+		ypos=ypos-(eachline*2);
+		if (ypos+eachline<p->bottom_margin) break;
+            }
+        }
+
+
+	A4GL_resetcolor(p->pdf_ptr);
+
+  }
+
   A4GL_debug ("ok!\n");
   return 1;
 }
@@ -511,6 +626,7 @@ void
 A4GL_pdf_move (struct pdf_rep_structure *p)
 {
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
+  //printf ("Move to %f %f\n", p->col_no, p->line_no);
   PDF_set_text_pos (p->pdf_ptr, p->col_no, p->page_length - p->line_no);
 }
 
@@ -802,7 +918,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       f3 = A4GL_pop_double ();
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
-      PDF_setcolor (p->pdf_ptr, "both","rgb",f1, f2,f3,0);
+      A4GL_setcolor (p->pdf_ptr, "both","rgb",f1, f2,f3,0);
       return 0;
     }
   if (strcmp (fname, "setstrokecolor") == 0)
@@ -813,7 +929,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       f3 = A4GL_pop_double ();
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
-      PDF_setcolor (p->pdf_ptr, "stroke","rgb",f1, f2,f3,0);
+      A4GL_setcolor (p->pdf_ptr, "stroke","rgb",f1, f2,f3,0);
       return 0;
     }
 
@@ -843,7 +959,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       f3 = A4GL_pop_double ();
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
-      PDF_setcolor (p->pdf_ptr, "fill","rgb",f1, f2,f3,0);
+      A4GL_setcolor (p->pdf_ptr, "fill","rgb",f1, f2,f3,0);
       return 0;
     }
 

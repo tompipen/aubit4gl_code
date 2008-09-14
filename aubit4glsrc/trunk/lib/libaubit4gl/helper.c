@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.71 2008-09-11 15:12:31 mikeaubury Exp $
+# $Id: helper.c,v 1.72 2008-09-14 10:48:21 mikeaubury Exp $
 #
 */
 
@@ -1692,6 +1692,7 @@ void A4GL_convert_to_pdf_x(void) {
 	double d;
 	d=A4GL_pop_double();
 	d*=-1.0;
+
 	A4GL_push_double(d);
 }
 

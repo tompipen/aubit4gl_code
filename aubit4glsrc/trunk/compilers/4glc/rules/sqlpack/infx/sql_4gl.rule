@@ -153,7 +153,7 @@ flush_cmd : opt_use2_p FLUSH fetch_cursor_name_p  {
 ;
 
 declare_cmd :
-	 opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR KW_FOR cursor_specification1_all_ss {insql=0;chk4var=0;}  {
+	 opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR KW_FOR cursor_specification1_all_ss {insql=0;chk4var=0;
 		add_feature("CURSOR_SELECT");
 		check_cursor_name($<ptr>3);
 		$<cmd>$=new_declare_cmd($<ptr>1,$<ptr>3,&$<curDef>6, 0,0,EB_TRUE);
@@ -161,7 +161,7 @@ declare_cmd :
 		ADDMAP("Declare Cursor",$<str>3);
 		doing_declare=0;
 	}
-	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR KW_FOR cursor_specification1_ins_ss {insql=0;chk4var=0;}  {
+	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR KW_FOR cursor_specification1_ins_ss {insql=0;chk4var=0;
 		add_feature("CURSOR_SELECT");
 
 		check_cursor_name($<ptr>3);
@@ -170,7 +170,7 @@ declare_cmd :
 		ADDMAP("Declare Cursor",$<str>3);
 		doing_declare=0;
 	}
-	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR WITH_HOLD KW_FOR cursor_specification1_ins_ss {insql=0;chk4var=0;}  {
+	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR WITH_HOLD KW_FOR cursor_specification1_ins_ss {insql=0;chk4var=0;
 		add_feature("CURSOR_SELECT");
 		check_cursor_name($<ptr>3);
 
@@ -179,7 +179,7 @@ declare_cmd :
 		ADDMAP("Declare Cursor",$<str>3);
 		doing_declare=0;
 	}
-	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR WITH_HOLD KW_FOR cursor_specification1_all_ss {insql=0;chk4var=0;}  {
+	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR WITH_HOLD KW_FOR cursor_specification1_all_ss {insql=0;chk4var=0;
 		add_feature("CURSOR_SELECT");
 		add_feature("HOLD_CURSOR");
 		check_cursor_name($<ptr>3);
@@ -188,7 +188,7 @@ declare_cmd :
 		doing_declare=0;
 	}
 
-        | opt_use2_p DECLARE declare_cursor_name_and_clr_p SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+        | opt_use2_p DECLARE declare_cursor_name_and_clr_p SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;
 		add_feature("CURSOR_SELECT");
 		add_feature("SCROLL_CURSOR");
 		check_cursor_name($<ptr>3);
@@ -197,7 +197,7 @@ declare_cmd :
 		ADDMAP("Declare Cursor",$<str>3);
 		doing_declare=0;
 	}
-       	| opt_use2_p DECLARE declare_cursor_name_and_clr_p SCROLL_CURSOR WITH_HOLD KW_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+       	| opt_use2_p DECLARE declare_cursor_name_and_clr_p SCROLL_CURSOR WITH_HOLD KW_FOR cursor_specification_sel_ss {insql=0;chk4var=0;
 		add_feature("CURSOR_SELECT");
 		add_feature("SCROLL_CURSOR");
 		add_feature("HOLD_CURSOR");
@@ -336,7 +336,7 @@ colident: identifier
 in_select_statement: select_statement_ss_select {
 	$<s_select>$=$<s_select>1;
 }
-
+;
 
 set_database_cmd :
        DATABASE var_ident_qchar_e op_db_exclusive {

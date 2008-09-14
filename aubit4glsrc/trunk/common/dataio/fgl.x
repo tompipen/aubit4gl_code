@@ -624,6 +624,19 @@ struct startrep {
         str with_top_of_page;
 };
 
+enum bluebar_style {
+	E_BLUEBAR_NONE,
+	E_BLUEBAR_RECTANGLE,
+	E_BLUEBAR_5LINE
+};
+
+
+struct bluebar {
+	enum bluebar_style style;
+	double r;
+	double g;
+	double b;
+};
 
 struct pdf_startrep {
 	char towhat;
@@ -643,6 +656,7 @@ struct pdf_startrep {
 	enum e_boolean isdefault;
 	enum e_boolean ascii_height;
 	enum e_boolean ascii_width;
+	struct bluebar bluebar;
 }
 ;
 

@@ -541,6 +541,12 @@ struct pdf_startrep rep_default;
   printc ("_rep.finishing=0;\n");
   printc ("_rep.nblocks=0;\n");
   printc ("_rep.blocks=0;\n");
+
+  printc ("_rep.bluebar_r=%lf;\n",rep->bluebar.r);
+  printc ("_rep.bluebar_g=%lf;\n",rep->bluebar.g);
+  printc ("_rep.bluebar_b=%lf;\n",rep->bluebar.b);
+  printc ("_rep.bluebar_style=%d;\n",rep->bluebar.style);
+
   printc ("_rep.repName=_reportName;\n");
   printc ("_rep.modName=_module_name;\n");
 

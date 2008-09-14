@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.320 2008-09-11 17:45:26 mikeaubury Exp $
+# $Id: mod.c,v 1.321 2008-09-14 10:48:09 mikeaubury Exp $
 #
 */
 
@@ -1969,7 +1969,10 @@ pdf_init_report_structure (struct pdf_rep_structure *rep)
   rep->page_width = -595.0;	/* A4 */
 
   rep->right_margin = rep->page_width - (2 * rep->left_margin);
-
+  rep->bluebar_style=E_BLUEBAR_NONE;
+  rep->bluebar_r=0.9;
+  rep->bluebar_g=0.9;
+  rep->bluebar_b=1.00;
   rep->page_no = 0;
   rep->printed_page_no = 0;
   rep->line_no = 0.0;

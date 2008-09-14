@@ -801,6 +801,7 @@ pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_comman
 
 nval: nval_number KW_POINTS {SPRINTF1($<str>$,"-%f",atof($<str>1));}
 	| nval_number INCHES {SPRINTF1($<str>$,"-%f",atof($<str>1)*72.0); }
+	| nval_number CM {SPRINTF1($<str>$,"-%f",atof($<str>1)*28.3465); }
 	| nval_number MM     {SPRINTF1($<str>$,"-%f",atof($<str>1)*2.83465);}
 	| nval_number        {SPRINTF1($<str>$,"%f",atof($<str>1));} 
 ;
@@ -822,6 +823,10 @@ pdf_op_output_section : {$<pdf_startrep>$=0;} | OUTPUT pdf_output_commands
          	$<pdf_startrep>$->fontname=strdup(pdf_rep_struct.font_name);
         	$<pdf_startrep>$->fontsize=pdf_rep_struct.font_size;
         	$<pdf_startrep>$->papersize=pdf_rep_struct.paper_size;
+		$<pdf_startrep>$->bluebar.style=pdf_rep_struct.bluebar_style;
+		$<pdf_startrep>$->bluebar.r=pdf_rep_struct.bluebar_r;
+		$<pdf_startrep>$->bluebar.g=pdf_rep_struct.bluebar_g;
+		$<pdf_startrep>$->bluebar.b=pdf_rep_struct.bluebar_b;
         	$<pdf_startrep>$->pageheadersize=0.0;
         	$<pdf_startrep>$->firstpageheadersize=0.0;
          	$<pdf_startrep>$->pagetrailersize=0.0;
@@ -860,13 +865,45 @@ pdf_output_command :
 | DEFAULT
 | ASCII_HEIGHT_ALL
 | ASCII_WIDTH_ALL
+| BLUEBAR  {
+		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
+}
+| BLUEBAR_STYLE_EQUAL_RECTANGLE {
+		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
+	}
+| BLUEBAR_STYLE_EQUAL_LINE {
+		pdf_rep_struct.bluebar_style=E_BLUEBAR_5LINE;
+	}
+| BLUEBAR_COLOR_EQUAL NUMBER_VALUE KW_COMMA NUMBER_VALUE KW_COMMA NUMBER_VALUE {
+		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
+		pdf_rep_struct.bluebar_r=atof($<str>2);
+		pdf_rep_struct.bluebar_g=atof($<str>4);
+		pdf_rep_struct.bluebar_b=atof($<str>6);
+	
+	}
+| BLUEBAR_STYLE_EQUAL_RECTANGLE_COLOR_EQUAL NUMBER_VALUE KW_COMMA NUMBER_VALUE KW_COMMA NUMBER_VALUE {
+		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
+		pdf_rep_struct.bluebar_r=atof($<str>2);
+		pdf_rep_struct.bluebar_g=atof($<str>4);
+		pdf_rep_struct.bluebar_b=atof($<str>6);
+	}
+| BLUEBAR_STYLE_EQUAL_LINE_COLOR_EQUAL NUMBER_VALUE KW_COMMA NUMBER_VALUE KW_COMMA NUMBER_VALUE {
+		pdf_rep_struct.bluebar_style=E_BLUEBAR_5LINE;
+		pdf_rep_struct.bluebar_r=atof($<str>2);
+		pdf_rep_struct.bluebar_g=atof($<str>4);
+		pdf_rep_struct.bluebar_b=atof($<str>6);
+	}
 ;
 
 
 op_rep_order_by : {
 	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY_IMPLICIT, NULL);
-}
-| ORDER KW_BY obind_var_list_ord
+} 
+	| rep_order_by
+;
+
+rep_order_by : 
+ORDER KW_BY obind_var_list_ord
 {
 	add_feature("REPORT_ORDER_BY");
 	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY, $<ptr_list>3);
@@ -1115,7 +1152,7 @@ pdf_functions_expr :
 
 op_wordwrap:
 	{$<ptr>$=0;} 
- 	| KW_WORDWRAP { $<ptr>$=A4GL_new_literal_long_long(0);} // @ FIXME - use default right margin
+ 	| KW_WORDWRAP { $<ptr>$=A4GL_new_literal_long_long(0);} /* @ FIXME - use default right margin */
 	| KW_WORDWRAP RIGHT_MARGIN fgl_expr_c { $<ptr>$=$<ptr>3; }
 ;
 
