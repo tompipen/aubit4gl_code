@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.52 2008-09-14 10:48:21 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.53 2008-09-14 15:44:27 mikeaubury Exp $
 #*/
 
 /**
@@ -77,7 +77,7 @@ double stroke_color_g=0.0;
 double stroke_color_b=0.0;
 
 static void A4GL_setcolor(PDF *p, const char *fstype, const char *colorspace, double c1, double c2, double c3, double c4) {
-
+printf("Set color\n");
 if (strcmp(colorspace,"rgb")!=0) {
 	A4GL_assertion(1,"A4GL_setcolor must be rgb");
 }
@@ -113,6 +113,7 @@ A4GL_assertion(1,"unexpected fstype");
 
 
 static void A4GL_resetcolor(PDF *p) {
+printf("reset color\n");
 	PDF_setcolor(p,"fill","rgb",fill_color_r, fill_color_g,fill_color_b,0);
 	PDF_setcolor(p,"stroke","rgb",stroke_color_r, stroke_color_g,stroke_color_b,0);
 }

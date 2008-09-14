@@ -515,6 +515,11 @@ struct pdf_startrep rep_default;
   	rep_default.with_right_margin = rep_default.with_page_width - (2 * rep_default.with_left_margin);
   	rep_default.fontsize = 10;
   	rep_default.papersize = 0;
+	rep_default.bluebar.style=E_BLUEBAR_NONE;
+	rep_default.bluebar.r=0;
+	rep_default.bluebar.g=0;
+	rep_default.bluebar.b=0;
+
   	//rep_default.lines_in_header = 0;
   	//rep_default.lines_in_first_header = 0;
   	//rep_default.lines_in_trailer = 0;
