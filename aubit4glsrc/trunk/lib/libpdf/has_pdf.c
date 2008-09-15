@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.54 2008-09-14 15:51:00 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.55 2008-09-15 09:32:52 mikeaubury Exp $
 #*/
 
 /**
@@ -948,6 +948,16 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	A4GL_push_int(a);
 	free(buf);
 	return 1;
+	}
+   if (strcmp(fname,"add_bookmark_no_ret")==0) {
+	char *buf;
+	int a;
+	a=A4GL_pop_int();
+	buf=A4GL_char_pop();
+	a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	//A4GL_push_int(a);
+	//free(buf);
+	return 0;
 	}
 
   if (strcmp (fname, "setfillcolor") == 0)

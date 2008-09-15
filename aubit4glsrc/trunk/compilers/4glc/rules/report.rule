@@ -143,10 +143,14 @@ op_with_dim:
 	}
 ;
 
+
+op_comma: 
+	| KW_COMMA
+;
+
 with_list:
 	with_entry
-	| with_list KW_COMMA with_entry
-	| with_list with_entry
+	| with_list op_comma with_entry
 ;
 
 with_entry:
@@ -1010,7 +1014,20 @@ pdf_specific_cmd :
 	}
 
 	| BOOKMARK fgl_expr_c KW_COMMA fgl_expr_c opt_return {
-			$<cmd>$=new_pdf_specific_cmd("bookmark",$<ptr_list>5, $<ptr>2,$<ptr>4,NULL);
+			if ($<ptr_list>5==NULL) {
+			$<cmd>$=new_pdf_specific_cmd("add_bookmark_no_ret",$<ptr_list>5, $<ptr>4,$<ptr>2,NULL);
+			} else {
+			$<cmd>$=new_pdf_specific_cmd("add_bookmark",$<ptr_list>5, $<ptr>4,$<ptr>2,NULL);
+			}
+	}
+	| BOOKMARK fgl_expr_c opt_return {
+			struct expr_str *p;
+			p=A4GL_new_literal_long_long(0);
+			if ($<ptr_list>3==NULL) {
+				$<cmd>$=new_pdf_specific_cmd("add_bookmark_no_ret",$<ptr_list>3, $<ptr>2,p,NULL);
+			} else {
+				$<cmd>$=new_pdf_specific_cmd("add_bookmark",$<ptr_list>3, $<ptr>2,p,NULL);
+			}
 	}
 	| BARCODETYPE fgl_expr_c {
 			$<cmd>$=new_pdf_specific_cmd("barcode_type",NULL, $<ptr>2,NULL);
