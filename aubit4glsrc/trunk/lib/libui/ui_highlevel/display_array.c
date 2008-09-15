@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.38 2008-07-06 11:34:48 mikeaubury Exp $
+# $Id: display_array.c,v 1.39 2008-09-15 12:28:41 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.38 2008-07-06 11:34:48 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.39 2008-09-15 12:28:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -921,7 +921,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp,int iscurr,  int blank, int att
 
   va_start (ap, first_only);
 
-  nofields = A4GL_gen_field_list (&field_list, formdets, 9999, &ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, 9999, &ap,0);
 
   A4GL_debug ("disp_arr_fields_v2 - %d fields", nofields);
 

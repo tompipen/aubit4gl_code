@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.134 2008-07-23 16:25:19 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.135 2008-09-15 12:28:41 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1490,7 +1490,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   }
 #endif
   A4GL_debug ("disp_fields");
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap,0);
   A4GL_debug ("Number of fields=%d ", nofields, n);
 
   if (nofields < 0)
@@ -1636,13 +1636,13 @@ for (a=0;a<list->nfields;a++) {                                       // MID 101
 
 int
 A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
-		     int max_number, va_list * ap)
+		     int max_number, va_list * ap,int replace_0)
 {
   struct s_field_name_list list;
   int n;
   list.field_name_list = 0;
 
-  A4GL_make_field_slist_from_ap (&list, ap);
+  A4GL_make_field_slist_from_ap (&list, ap, replace_0);
   n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
 
   if (field_status_strip_tabname && n==-1 && !A4GL_isno(acl_getenv("FIELDTOUCHEDTABLEFIXUP"))) { // MID 1014

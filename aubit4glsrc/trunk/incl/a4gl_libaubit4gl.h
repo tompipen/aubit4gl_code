@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.325 2008-09-11 17:45:27 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.326 2008-09-15 12:28:37 mikeaubury Exp $
 #
 */
 
@@ -2326,7 +2326,7 @@ int A4GL_was_last_empty(void);
 void A4GL_clr_last_was_empty(void);
 void A4GL_push_date_expr(void);
 void A4GL_push_time_expr(void);
-void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap);
+void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap,int replace_0);
 int aclfgl_aclfgl_setenv(int n);
 int A4GL_setenv(char *name, char *value, int overwrite);
 char * acl_getenv_only (char *s);

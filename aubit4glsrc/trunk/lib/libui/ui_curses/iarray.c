@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.147 2008-07-06 11:34:44 mikeaubury Exp $
+# $Id: iarray.c,v 1.148 2008-09-15 12:28:40 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.147 2008-07-06 11:34:44 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.148 2008-09-15 12:28:40 mikeaubury Exp $";
 #endif
 
 /**
@@ -1115,7 +1115,7 @@ gen_field_list_vals (void *a, void *b, int nv, ...)
   va_list *ptr;
   va_start (va, nv);
   ptr = &va;
-  return A4GL_gen_field_list (a, b, nv, &va);
+  return A4GL_gen_field_list (a, b, nv, &va,0);
 }
 
 /**

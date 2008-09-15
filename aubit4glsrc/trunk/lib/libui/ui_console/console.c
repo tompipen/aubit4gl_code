@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.40 2008-07-06 11:34:43 mikeaubury Exp $
+# $Id: console.c,v 1.41 2008-09-15 12:28:39 mikeaubury Exp $
 #*/
 
 /**
@@ -638,7 +638,7 @@ int UILIB_A4GL_fgl_getfldbuf_ia_ap(void* inp,va_list* ap)  NOPE0
 int UILIB_A4GL_fgl_infield_ap(void* inp,va_list* ap)  NOPE0
 int UILIB_A4GL_fgl_infield_ia_ap(void* inp,va_list* ap)  NOPE0
 int UILIB_A4GL_form_loop_v2(void* s,int init,void* evt)  NOPE0
-int UILIB_A4GL_gen_field_chars_ap(void* field_list,void* formdets,va_list* ap)  NOPE0
+int UILIB_A4GL_gen_field_chars_ap(void* field_list,void* formdets,va_list* ap,int replace_0)  NOPE0
 int UILIB_A4GL_gen_field_list_from_slist(void* field_listv,void* formdetsv,void* listv)  NOPE0
 int UILIB_A4GL_get_curr_height(void )  NOPE0
 int UILIB_A4GL_get_key(int timeout)  NOPE0

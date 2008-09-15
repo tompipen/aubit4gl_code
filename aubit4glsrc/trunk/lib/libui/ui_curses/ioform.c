@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.200 2008-08-07 08:50:21 mikeaubury Exp $
+# $Id: ioform.c,v 1.201 2008-09-15 12:28:40 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.200 2008-08-07 08:50:21 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.201 2008-09-15 12:28:40 mikeaubury Exp $";
 #endif
 
 /**
@@ -1939,7 +1939,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   }
 #endif
   A4GL_debug ("disp_fields");
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap,0);
   A4GL_debug ("Number of fields=%d ", nofields, n);
 
   if (nofields < 0)
@@ -1996,8 +1996,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
  * @todo Describe function
  */
 int
-UILIB_A4GL_gen_field_chars_ap (void *field_listv, void *formdetsv,
-			       va_list * ap)
+UILIB_A4GL_gen_field_chars_ap (void *field_listv, void *formdetsv, va_list * ap,int replace_0)
 {
   int a;
   FIELD ***field_list;
@@ -2006,7 +2005,7 @@ UILIB_A4GL_gen_field_chars_ap (void *field_listv, void *formdetsv,
   field_list = field_listv;
   formdets = formdetsv;
 
-  a = A4GL_gen_field_list (field_list, formdets, 9999, ap);
+  a = A4GL_gen_field_list (field_list, formdets, 9999, ap,replace_0);
   return a;
 }
 
@@ -2277,13 +2276,12 @@ for (a=0;a<list->nfields;a++) {
  * @todo Describe function
  */
 int
-A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets,
-		     int max_number, va_list * ap)
+A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0)
 {
   struct s_field_name_list list;
   int n;
   list.field_name_list = 0;
-  A4GL_make_field_slist_from_ap (&list, ap);
+  A4GL_make_field_slist_from_ap (&list, ap,replace_0);
 
   n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
 
@@ -2708,7 +2706,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
 #endif
   A4GL_debug ("set_arr_fields");
   ptr = &ap;
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap,0);
   A4GL_debug ("Number of fields=%d", nofields);
   for (a = nofields; a >= 0; a--)
     {
@@ -3122,7 +3120,7 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
 
   s = inp;
 
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
   for (a = 0; a <= c; a++)
     {
       if (field_list[a] == (FIELD *) inp_current_field)
@@ -3175,7 +3173,7 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 
 
 
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,s->scr_line);
   for (a = 0; a <= c; a++)
     {
       if (field_list[a] == (FIELD *) inp_current_field)
@@ -3208,8 +3206,9 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
 
 
   s = inp;
+  
 
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
   nr = 0;
   for (a = 0; a <= c; a++)
     {
@@ -3257,33 +3256,43 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
   int a;
   int nr;
   int b;
+  int x;
 
   s = inp;
 
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+
+
+
+  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,s->scr_line);
   nr = 0;
   for (a = 0; a <= c; a++)
     {
       FIELD *f;
       int nv;
       f = field_list[a];	// f will always be in the first rows of screen fields..
-      nv=s->nbind;
-	if (s->start_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+      nv = s->nbind;
+
+      if (s->start_slice != -1)
+	{
+	  nv = s->end_slice - s->start_slice + 1;
+	}
 
       for (b = 0; b < nv; b++)
 	{
-	  if (f == s->field_list[0][b])
+	  for (x = 0; x < s->srec->dim; x++)
 	    {
-	      char *buff;
-	      // Found @ position b...
-	      A4GL_push_char (field_buffer
-			      (s->field_list[s->scr_line - 1][b], 0));
-	      buff =
-		strdup (field_buffer (s->field_list[s->scr_line - 1][b], 0));
-	      chk_for_picture (field_list[a], buff);
-	      A4GL_push_char (buff);
-	      acl_free (buff);
-	      nr++;
+
+	      if (f == s->field_list[x][b])
+		{
+		  char *buff;
+		  // Found @ position b...
+		  A4GL_push_char (field_buffer (f, 0));
+		  buff = strdup (field_buffer (f, 0));
+		  chk_for_picture (field_list[a], buff);
+		  A4GL_push_char (buff);
+		  acl_free (buff);
+		  nr++;
+		}
 	    }
 	}
     }
@@ -3915,7 +3924,7 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 
 
   field_status_strip_tabname=1;
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0); /* s->scr_line ???? */
   field_status_strip_tabname=0;
   if (c >= 0)
     {
@@ -4002,7 +4011,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 
 
   field_status_strip_tabname=1;
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
+  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
   field_status_strip_tabname=0;
 
 
@@ -4091,8 +4100,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
   A4GL_debug ("clr_Fields_ap");
 
   c =
-    UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1),
-				   ap);
+    UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap,0);
 
   for (a = 0; a <= c; a++)
     {

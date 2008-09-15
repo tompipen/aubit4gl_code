@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.68 2008-07-06 11:34:48 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.69 2008-09-15 12:28:41 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.68 2008-07-06 11:34:48 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.69 2008-09-15 12:28:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1352,7 +1352,7 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 
   A4GL_debug ("req_field");
 
-  a = A4GL_gen_field_list (&ptr, s->currform, 1, ap);
+  a = A4GL_gen_field_list (&ptr, s->currform, 1, ap,0);
 
   if (a >= 0)
     {

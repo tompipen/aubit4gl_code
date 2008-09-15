@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.62 2008-07-06 11:34:48 mikeaubury Exp $
+# $Id: input_array.c,v 1.63 2008-09-15 12:28:42 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.62 2008-07-06 11:34:48 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.63 2008-09-15 12:28:42 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1070,7 +1070,7 @@ gen_field_list_vals (void *a, void *b, int nv, ...)
   va_list *ptr;
   va_start (va, nv);
   ptr = &va;
-  return A4GL_gen_field_list (a, b, nv, &va);
+  return A4GL_gen_field_list (a, b, nv, &va,0);
 }
 
 /**
@@ -3382,7 +3382,7 @@ A4GL_set_arr_fields (int n, int attr, ...)
 #endif
   A4GL_debug ("set_arr_fields");
   ptr = &ap;
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap,0);
   A4GL_debug ("Number of fields=%d", nofields);
   for (a = nofields; a >= 0; a--)
     {

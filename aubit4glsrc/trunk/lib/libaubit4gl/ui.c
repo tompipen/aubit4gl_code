@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.77 2008-07-06 11:34:35 mikeaubury Exp $
+# $Id: ui.c,v 1.78 2008-09-15 12:28:39 mikeaubury Exp $
 #
 */
 
@@ -265,7 +265,7 @@ int A4GL_gen_field_chars (void ***field_list, void *formdets, ...)
   va_list ap;
   int a;
   va_start (ap, formdets);
-  a=A4GL_gen_field_chars_ap(field_list, formdets, &ap);
+  a=A4GL_gen_field_chars_ap(field_list, formdets, &ap,0);
   va_end(ap);
 
   return a;
@@ -916,7 +916,10 @@ b=0;
 	return buff;
 }
 
-void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap) {
+
+/// replace_0 is used for Input Array to replace a non-specified 
+/// subscript with the current row in the input array...
+void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap,int replace_0) {
         int f; // F is field number - should be int ? 
         //long f;
         char *s;
@@ -932,6 +935,11 @@ void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap)
                 list->nfields++;
                 list->field_name_list=realloc(list->field_name_list, sizeof(list->field_name_list[0])*list->nfields);
                 list->field_name_list[list->nfields-1].fname=s;
+		if (f==0) {
+			if (replace_0>0) {
+				f=replace_0-1; //0 based - not 1 based like the s->scr_line
+			}
+		}
                 list->field_name_list[list->nfields-1].fpos=f;
         }
 }
