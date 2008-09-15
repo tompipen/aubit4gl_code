@@ -27,34 +27,94 @@ namespace AubitDesktop
 {
     class FGLOptions
     {
-         public int MenuLine;
-         public int CommentLine;
-         public int ErrorLine;
-         public int PromptLine;
-         public int FormLine;
-         public int MessageLine;
+        private int _promptline;
+        private int _menuline;
+        private int _commentline;
+        private int _errorline;
+        private int _formline;
+        private int _messageline;
+
+        public int MenuLine
+        {
+            get
+            {
+                return decodeLine(_menuline);
+            }
+        }
+
+        public int CommentLine
+        {
+            get
+            {
+                return decodeLine(_commentline);
+            }
+        }
+
+        public int ErrorLine
+        {
+            get
+            {
+                return decodeLine(_errorline);
+            }
+        }
+
+        public int PromptLine
+        {
+            get
+            {
+                return decodeLine(_promptline);
+            }
+        }
+
+        public int FormLine
+        {
+            get
+            {
+                return decodeLine(_formline);
+            }
+        }
+
+        public int MessageLine
+        {
+            get
+            {
+                return decodeLine(_messageline);
+            }
+        }
+
+
          public string InsertKey="";
          public string DeleteKey="";
          public string NextKey="";
          public string PreviousKey="";
          public string AcceptKey="";
          public bool InputWrap = false;
+        public int screenHeight=25;
 
 
         public FGLOptions()
         {
-            this.MenuLine = 1;
+            this._messageline = 1;
             this.AcceptKey="Esc";
             this.InputWrap=false;
-   
+            this._promptline = 1;
         }
+
+
+        public int decodeLine(int line)
+        {
+            if (line > 0) return line;
+            return screenHeight +line;
+        }
+
+
          public void SetOption(string s, string val)
         {
             switch (s)
             {
 
                 case "m":
-                    MenuLine = Convert.ToInt32(val);
+                    _menuline = Convert.ToInt32(val);
                     break;
 
                 case "W":
@@ -69,19 +129,19 @@ namespace AubitDesktop
                     break;
 
                 case "C":
-                    CommentLine = Convert.ToInt32(val);
+                    _commentline = Convert.ToInt32(val);
                     break;
                 case "E":
-                    ErrorLine = Convert.ToInt32(val);
+                    _errorline = Convert.ToInt32(val);
                     break;
                 case "F":
-                    FormLine = Convert.ToInt32(val);
+                    _formline = Convert.ToInt32(val);
                     break;
                 case "M":
-                    MessageLine = Convert.ToInt32(val);
+                    _messageline = Convert.ToInt32(val);
                     break;
                 case "P":
-                    PromptLine = Convert.ToInt32(val);
+                    _promptline = Convert.ToInt32(val);
                     break;
                 case "I":
                     InsertKey = val; break;

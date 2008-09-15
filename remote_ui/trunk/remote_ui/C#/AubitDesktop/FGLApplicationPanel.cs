@@ -1552,7 +1552,7 @@ namespace AubitDesktop
         {
             
             p.Width = this.Width-10;
-            ApplicationWindows.setPrompt(p);
+            ApplicationWindows.setPrompt(p, this.options.PromptLine);
         }
 
 

@@ -391,9 +391,15 @@ namespace AubitDesktop
         }
 
 
-        internal void setPrompt(Control p)
+        internal void setPrompt(Control p,int promptLineFromOptions)
         {
-            p.Top = 15;
+            // Try seeing if we have a specific prompt line...
+            int promptLine = windows[0].prompt_line;
+            if ( promptLine== 255)
+            {
+               promptLine = promptLineFromOptions;
+            }
+            p.Top = GuiLayout.get_gui_y(promptLine);
             p.Left = 5;
             windows[0].WindowWidget.Controls.Add(p);
             p.Visible = true;
@@ -624,17 +630,18 @@ namespace AubitDesktop
         string text;
         string style;
         public bool isModal;
-        int error_line;
-        int prompt_line;
-        int menu_line;
-        int comment_line;
-        int message_line;
+        internal int error_line;
+        internal int prompt_line;
+        internal int menu_line;
+        internal int comment_line;
+        internal int message_line;
         public bool border;
         public int LineHeight;
         public int CharWidth;
         public bool isContainable;
         public Control WindowWidget;
         bool KeepFormOpenWhenWindowCloses;
+        
 
         public bool hasForm
         {
@@ -954,7 +961,13 @@ namespace AubitDesktop
             }
             else
             {
-                return new System.Drawing.Bitmap(name);
+                try
+                {
+                    i = new System.Drawing.Bitmap(name);
+                } catch (Exception) {
+                }
+                if (i!=null) return i;
+                return (System.Drawing.Image)resourceInterface.getObject("attention");
             }
         }
 

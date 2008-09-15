@@ -268,6 +268,10 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string comments;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string action;
 
             /// <remarks/>
@@ -301,6 +305,7 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]

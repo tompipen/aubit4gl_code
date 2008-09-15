@@ -63,86 +63,215 @@ namespace AubitDesktop
 
         #region XML Form handling
 
-        void addLayoutToParentForXmlForm(string type , Control parent, object child)
+        void addLayoutToParentForXmlForm(Control parent, object child)
         {
-            
 
+            string detectedType;
+            detectedType = child.GetType().ToString();
             //this.thisFormsPanel.Controls.Add(fld.WindowsWidget);
 
-                switch (type)
-                {
-                    case "AubitDesktop.Xml.XMLForm.VBox":
-                        {
-                            AubitDesktop.Xml.XMLForm.VBox p;
-                            p = (AubitDesktop.Xml.XMLForm.VBox)child;
-                            
-                        }
-                        break;
-                    case "AubitDesktop.Xml.XMLForm.HBox":
-                        {
-                            AubitDesktop.Xml.XMLForm.HBox p;
-                            p = (AubitDesktop.Xml.XMLForm.HBox)child;
-                        }
-                        break;
-                    case "AubitDesktop.Xml.XMLForm.Table":
-                        {
-                            AubitDesktop.Xml.XMLForm.Table p;
-                            p = (AubitDesktop.Xml.XMLForm.Table)child;
-                        }
-                        break;
-                    case "AubitDesktop.Xml.XMLForm.Grid":
-                        {
-                            AubitDesktop.Xml.XMLForm.Grid p;
-                            p = (AubitDesktop.Xml.XMLForm.Grid)child;
-                        }
-                        break;
-                    
-                    case "AubitDesktop.Xml.XMLForm.Page":
-                        {
-                            AubitDesktop.Xml.XMLForm.Page p;
-                            p = (AubitDesktop.Xml.XMLForm.Page)child;
-                        }
-                        break;
-
-                    case "AubitDesktop.Xml.XMLForm.Screen":
-                        {
-                            // This is a 'converted' xml form still
-                            // based on an old screen layout...
-                            AubitDesktop.Xml.XMLForm.Screen p;
-                            Panel thisScreensPanel;
-                            p = (AubitDesktop.Xml.XMLForm.Screen)child;
-
-                            thisScreensPanel = new Panel();
-                            thisScreensPanel.Visible = true;
-                            thisScreensPanel.Top = 0;
-                            thisScreensPanel.Left = 0;
-                            thisScreensPanel.AutoSize = true;
-                            parent.Controls.Add(thisScreensPanel);
-
-                            foreach (object a in p.Items)
-                            {
-                                createAndAddItemForXMLForm(thisScreensPanel, a);
-                            }
-                        }
-                        break;
-
-                    default:
-                        throw new ApplicationException("Invalid object to add to parent for xmlform");
-                }
-        }
-
-        private void createAndAddItemForXMLForm(Panel thisScreensPanel, object a)
-        {
-            switch (a.GetType().ToString())
+            switch (detectedType)
             {
+                #region VBOX
+                case "AubitDesktop.Xml.XMLForm.VBox":
+                    {
+                        AubitDesktop.Xml.XMLForm.VBox p;
+                        p = (AubitDesktop.Xml.XMLForm.VBox)child;
+
+                        FlowLayoutPanel thisLayoutControlsPanel;
+                        p = (AubitDesktop.Xml.XMLForm.VBox)child;
+
+                        thisLayoutControlsPanel = new FlowLayoutPanel();
+                        thisLayoutControlsPanel.Visible = true;
+                        thisLayoutControlsPanel.Top = 0;
+                        thisLayoutControlsPanel.Left = 0;
+                        thisLayoutControlsPanel.AutoSize = true;
+                        thisLayoutControlsPanel.FlowDirection = FlowDirection.TopDown;
+                        parent.Controls.Add(thisLayoutControlsPanel);
+
+                        foreach (object a in p.Items)
+                        {
+                            addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
+                        }
+
+                    }
+                    break;
+                #endregion
+
+                #region HBOX
+                case "AubitDesktop.Xml.XMLForm.HBox":
+                    {
+                        AubitDesktop.Xml.XMLForm.HBox p;
+                        p = (AubitDesktop.Xml.XMLForm.HBox)child;
+                        FlowLayoutPanel thisLayoutControlsPanel;
+                        
+
+                        thisLayoutControlsPanel = new FlowLayoutPanel();
+                        thisLayoutControlsPanel.Visible = true;
+                        thisLayoutControlsPanel.Top = 0;
+                        thisLayoutControlsPanel.Left = 0;
+                        thisLayoutControlsPanel.AutoSize = true;
+                        thisLayoutControlsPanel.FlowDirection = FlowDirection.LeftToRight;
+                        parent.Controls.Add(thisLayoutControlsPanel);
+
+                        foreach (object a in p.Items)
+                        {
+                            addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
+                        }
+                    }
+                    break;
+                #endregion
+
+                #region Table
+                case "AubitDesktop.Xml.XMLForm.Table":
+                    {
+                        AubitDesktop.Xml.XMLForm.Table p;
+                        p = (AubitDesktop.Xml.XMLForm.Table)child;
+                    }
+                    break;
+                #endregion
+                #region Grid
+                case "AubitDesktop.Xml.XMLForm.Grid":
+                    {
+                        AubitDesktop.Xml.XMLForm.Grid p;
+                        int height;
+                        int width;
+                        p = (AubitDesktop.Xml.XMLForm.Grid)child;
+                        Panel thisScreensPanel;
+                        
+
+                        thisScreensPanel = new Panel();
+                        thisScreensPanel.Visible = true;
+                        thisScreensPanel.Top = 0;
+                        thisScreensPanel.Left = 0;
+
+                        height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
+                        width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+
+                        thisScreensPanel.AutoSize = false;
+                        thisScreensPanel.Height = GuiLayout.get_gui_h(height+1);
+                        thisScreensPanel.Width = GuiLayout.get_gui_w(width+1);
+
+                 //       thisScreensPanel.BackColor = Color.Purple;
+                        
+
+                        foreach (object a in p.Items)
+                        {
+                            addLayoutToParentForXmlForm(thisScreensPanel, a);
+                        }
+                        parent.Controls.Add(thisScreensPanel);
+                    }
+                    break;
+                #endregion
+                #region Page
+                case "AubitDesktop.Xml.XMLForm.Page":
+                    {
+                        AubitDesktop.Xml.XMLForm.Page p;
+                        p = (AubitDesktop.Xml.XMLForm.Page)child;
+                        foreach (object a in p.Items)
+                        {
+                            addLayoutToParentForXmlForm(parent, a);
+                        }
+                    }
+                    break;
+                #endregion
+                    
+                #region Folder
+                case "AubitDesktop.Xml.XMLForm.Page[]":
+                    {
+                   //     int maxHeight = 0;
+                   //     int maxWidth = 0;
+                        AubitDesktop.Xml.XMLForm.Page[] p;
+                        p = (AubitDesktop.Xml.XMLForm.Page[])child;
+
+
+
+                        TabControl tb = new TabControl();
+       
+                        tb.Visible = true;
+                        tb.Top = 0;
+                        tb.Left = 0;
+
+                        parent.Controls.Add(tb);
+               
+                        tb.Size = parent.Size;
+                        tb.Dock = DockStyle.Fill;
+
+
+
+                        
+
+
+
+
+                        //tb.Dock = DockStyle.Fill;
+                        for (int a = 0; a < p.Length; a++)
+                        {
+                            TabPage tp;
+                            Panel tpp;
+                            if (p[a].text != null) { tp = new TabPage(p[a].text); } else { tp = new TabPage("Page " + a); }
+
+                            
+
+                            // We're adding a panel into our tabpage with autosize on it
+                            // we can then look up the size of that panel to 
+                            // work out how large to make our tabcontrol...
+                            tpp = new Panel();
+                            tpp.SuspendLayout();
+                            tpp.AutoSize = true;
+                     
+                  //          tpp.BorderStyle = BorderStyle.FixedSingle;
+                             
+                            
+                            addLayoutToParentForXmlForm(tpp, p[a]);
+                            
+                            tpp.ResumeLayout(true);
+                           
+                            tpp.Show();
+                            
+                            //tpp.AutoScroll = true;
+                        
+                            tp.Controls.Add(tpp);
+                            tb.TabPages.Add(tp);
+                        }
+                       
+                   
+
+                    }
+                    break;
+                                    #endregion
+                     
+                #region screen
+                case "AubitDesktop.Xml.XMLForm.Screen":
+                    {
+                        // This is a 'converted' xml form still
+                        // based on an old screen layout...
+                        AubitDesktop.Xml.XMLForm.Screen p;
+                        Panel thisScreensPanel;
+                        p = (AubitDesktop.Xml.XMLForm.Screen)child;
+
+                        thisScreensPanel = new Panel();
+                        thisScreensPanel.Visible = true;
+                        thisScreensPanel.Top = 0;
+                        thisScreensPanel.Left = 0;
+                        thisScreensPanel.AutoSize = true;
+                        parent.Controls.Add(thisScreensPanel);
+
+                        foreach (object a in p.Items)
+                        {
+                            addLayoutToParentForXmlForm(thisScreensPanel, a);
+                        }
+                    }
+                    break;
+                #endregion
                 case "AubitDesktop.Xml.XMLForm.FormField":
                     {
                         AubitDesktop.Xml.XMLForm.FormField ff;
-                        ff = (AubitDesktop.Xml.XMLForm.FormField)a;
-                        FGLWidget fld = makeXMLFieldWidget(ff,0 /* not in a matrix - so subscript is 0 */);
+                        ff = (AubitDesktop.Xml.XMLForm.FormField)child;
+                        FGLWidget fld = makeXMLFieldWidget(ff, 0 /* not in a matrix - so subscript is 0 */);
                         if (fld != null)
                         {
-                            thisScreensPanel.Controls.Add(fld.WindowsWidget);
+                            parent.Controls.Add(fld.WindowsWidget);
                         }
                     }
                     break;
@@ -151,7 +280,7 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.HLine":
                     {
                         AubitDesktop.Xml.XMLForm.HLine hl;
-                        hl = (AubitDesktop.Xml.XMLForm.HLine)a;
+                        hl = (AubitDesktop.Xml.XMLForm.HLine)child;
                         // We'll fake a like by using a panel with a border...
                         Panel p_for_line;
                         p_for_line = new Panel();
@@ -160,14 +289,14 @@ namespace AubitDesktop
                         p_for_line.Height = 4;
                         p_for_line.Width = GuiLayout.get_gui_w(Convert.ToInt32(hl.gridWidth) + 1) - 1;
                         p_for_line.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-                        thisScreensPanel.Controls.Add(p_for_line);
+                        parent.Controls.Add(p_for_line);
                     }
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Label":
                     {
                         AubitDesktop.Xml.XMLForm.Label lb;
-                        lb = (AubitDesktop.Xml.XMLForm.Label)a;
+                        lb = (AubitDesktop.Xml.XMLForm.Label)child;
                         Label l;
                         l = new Label();
                         if (isJustLines(lb.text))
@@ -180,7 +309,7 @@ namespace AubitDesktop
                             p_for_line.Height = 4;
                             p_for_line.Width = GuiLayout.get_gui_w(lb.text.Length + 1) - 1;
                             p_for_line.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-                            thisScreensPanel.Controls.Add(p_for_line);
+                            parent.Controls.Add(p_for_line);
                         }
                         else
                         {
@@ -191,7 +320,7 @@ namespace AubitDesktop
                             l.Height = 1;
                             l.Width = 1;
                             //labels.Add(l);
-                            thisScreensPanel.Controls.Add(l);
+                            parent.Controls.Add(l);
                         }
                     }
                     break;
@@ -200,44 +329,74 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.Matrix":
                     {
                         AubitDesktop.Xml.XMLForm.Matrix ma;
-                        ma = (AubitDesktop.Xml.XMLForm.Matrix)a;
-                        
-                        for (int i = 0; i < Convert.ToInt32(ma.pageSize); i++)
+                        AubitDesktop.Xml.XMLForm.TextEdit te;
+                        ma = (AubitDesktop.Xml.XMLForm.Matrix)child;
+                        Type t;
+                        t = ma.Items[0].GetType();
+                        if (t.ToString() == "AubitDesktop.Xml.XMLForm.TextEdit")
                         {
-                            for (int itm = 0; itm < ma.Items.Length; itm++)
-                            {
-                                FGLWidget fld;
-                                // All our constructors use a FormField
-                                // but we've got a 'Matrix' - so lets create a new
-                                // FormField we can use for this....
-                                AubitDesktop.Xml.XMLForm.FormField ff = new AubitDesktop.Xml.XMLForm.FormField() ;
-                                ff.colName = ma.colName;
-                                ff.defaultValue = ma.defaultValue;
-                                ff.include=ma.include;
-                                ff.fieldId = ma.fieldId;
-                                ff.name = ma.name;
-                                ff.noEntry = ma.noEntry;
-                                ff.notNull = ma.notNull;
-                                ff.required = ma.required;
-                                ff.sqlTabName = ma.sqlTabName;
-                                ff.sqlType = ma.sqlType;
-                                ff.Items=new object[1];
-                                ff.Items[0] = ma.Items[itm];
-                                
-                                fld=makeXMLFieldWidget(ff, i);
-                                if (fld != null)
-                                {
-                                    thisScreensPanel.Controls.Add(fld.WindowsWidget);
-                                }
+                            FGLWidget fld;
+                            te = (AubitDesktop.Xml.XMLForm.TextEdit)ma.Items[0];
+                            te.height = ma.pageSize;
+                            // This isn't really a Matrix, its a multiline
+                            // text edit field...
+                            AubitDesktop.Xml.XMLForm.FormField ff = createFormFieldFromMatrix(ma, 0);
 
-                                //ma.Items[a];
+                            fld = makeXMLFieldWidget(ff, 0);
+                            if (fld != null)
+                            {
+                                parent.Controls.Add(fld.WindowsWidget);
                             }
                         }
-                       // throw new NotImplementedException("Matrix not implemented");
+                        else
+                        {
+                            for (int i = 0; i < Convert.ToInt32(ma.pageSize); i++)
+                            {
+                                for (int itm = 0; itm < ma.Items.Length; itm++)
+                                {
+                                    FGLWidget fld;
+                                    // All our constructors use a FormField
+                                    // but we've got a 'Matrix' - so lets create a new
+                                    // FormField we can use for this....
+                                    
+                                    AubitDesktop.Xml.XMLForm.FormField ff=createFormFieldFromMatrix(ma, itm);
+
+                                    fld = makeXMLFieldWidget(ff, i);
+                                    if (fld != null)
+                                    {
+                                        parent.Controls.Add(fld.WindowsWidget);
+                                    }
+
+                                    //ma.Items[a];
+                                }
+                            }
+                        }
                     }
                     break;
+                default:
+                    throw new ApplicationException("Invalid object to add to parent for xmlform");
             }
         }
+
+        private static AubitDesktop.Xml.XMLForm.FormField createFormFieldFromMatrix(AubitDesktop.Xml.XMLForm.Matrix ma, int itm)
+        {
+            AubitDesktop.Xml.XMLForm.FormField ff = new AubitDesktop.Xml.XMLForm.FormField();
+            ff.colName = ma.colName;
+            ff.defaultValue = ma.defaultValue;
+            ff.include = ma.include;
+            ff.fieldId = ma.fieldId;
+            ff.name = ma.name;
+            ff.noEntry = ma.noEntry;
+            ff.notNull = ma.notNull;
+            ff.required = ma.required;
+            ff.sqlTabName = ma.sqlTabName;
+            ff.sqlType = ma.sqlType;
+            ff.Items = new object[1];
+            ff.Items[0] = ma.Items[itm];
+            return ff;
+        }
+
+
 
 
 
@@ -350,9 +509,14 @@ namespace AubitDesktop
 
                 case "AubitDesktop.Xml.XMLForm.TextEdit":
                     {
-                        
-                        
                         fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0],"",index);
+                    }
+
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.ButtonEdit":
+                    {
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0], "", index);
                     }
 
                     break;
@@ -378,7 +542,7 @@ namespace AubitDesktop
                     fld = new FGLBrowserFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Browser)ff.Items[0],"",index);
                     break;
 
-                case "AubitDesktop.Xml.XMLForm.ButtonEdit":
+                case "AubitDesktop.Xml.XMLForm.Button":
                     fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0],"",index);
                     break;
 
@@ -467,6 +631,7 @@ namespace AubitDesktop
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
             thisFormsPanel.AutoSize = true;
+            thisFormsPanel.Dock = DockStyle.Fill;
 
             ScreenRecords = new List<FGLScreenRecord>();
             foreach (object o in theForm.XmlFormItems)
@@ -495,10 +660,10 @@ namespace AubitDesktop
                     case "AubitDesktop.Xml.XMLForm.HBox":
                     case "AubitDesktop.Xml.XMLForm.Table":
                     case "AubitDesktop.Xml.XMLForm.Grid":
-                    case "AubitDesktop.Xml.XMLForm.Folder":
+                    case "AubitDesktop.Xml.XMLForm.Page[]": /* Really a Folder... */
                     case "AubitDesktop.Xml.XMLForm.Page":
                     case "AubitDesktop.Xml.XMLForm.Screen":
-                        addLayoutToParentForXmlForm(type, (Control)thisFormsPanel, o);
+                        addLayoutToParentForXmlForm( thisFormsPanel, o);
                         break;
 
                     default:
@@ -612,7 +777,7 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        fld = new FGLTextFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                        fld = new FGLTextFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC,false);
                     }
                     break;
 

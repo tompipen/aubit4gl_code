@@ -35,6 +35,7 @@ namespace AubitDesktop
         TextBox t;
         Panel p;
         Label l;
+        Button b;
         
 
 
@@ -331,9 +332,65 @@ namespace AubitDesktop
 
             
             createTextWidget(a,
-                Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
+                Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
+            
+        }
+
+
+        public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ButtonEdit edit, string config, int index)
+        {
+            ATTRIB a;
+            string action="";
+            string image="";
+            a = createAttribForWidget(ffx);
+
+            
+            if (edit.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = edit.format;
+            }
+
+            if (edit.action != null)
+            {
+                action = (string)edit.action;
+            }
+
+            if (edit.image!=null)
+            {
+                image = (string)edit.image;
+            }
+
+            if (edit.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = edit.comments;
+            }
+
+            if (edit.autoNext != null && edit.autoNext == "1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+            if (edit.shift != null)
+            {
+                if (edit.shift == "down")
+                {
+                    a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
+                }
+                else
+                {
+                    a.ATTRIB_UPSHIFT = new ATTRIB_UPSHIFT();
+                }
+            }
+
+
+            createTextWidget(a,
+                Convert.ToInt32(edit.posY) + index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), action, config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include, true,image);
 
         }
+
+
 
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit,int index)
@@ -361,7 +418,7 @@ namespace AubitDesktop
 
             if (edit.shift!=null)
             {
-                if (edit.shift == "down")
+                if (edit.shift == "aubit")
                 {
                     a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
                 }
@@ -372,7 +429,7 @@ namespace AubitDesktop
             }
 
             
-            createTextWidget(a, Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
+            createTextWidget(a, Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
             
             
         }
@@ -383,14 +440,17 @@ namespace AubitDesktop
 
 
 
-        public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
+        public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl,bool buttonEdit)
         {
-            createTextWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            createTextWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl, buttonEdit, "");
         }
 
-        private void createTextWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+
+
+        private void createTextWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, bool buttonEdit, string buttonImage)
         {
 
+            int bcol=0;
 
             this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
@@ -415,7 +475,52 @@ namespace AubitDesktop
 
 
 
-            t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+            if (rows > 1)
+            {
+                t.Multiline = true;
+            }  else {
+                t.Multiline = false;
+            }
+
+            if (buttonEdit)
+            {
+
+                if (configSettings["BUTTONWIDTH"]!=null)
+                {
+                    bcol = Convert.ToInt32((string)configSettings["BUTTONWIDTH"]);
+                }
+                else
+                {
+
+                    if (columns > 10)
+                    {
+                        bcol = 5;
+                    }
+                    else
+                    {
+                        if (columns > 5)
+                        {
+                            bcol = 2;
+                        }
+                        else
+                        {
+                            bcol = 1;
+                        }
+                    }
+                }
+
+
+            }
+
+
+            // Any columns used for the button must be subtracted from the length of the 
+            // textbox..
+               
+            t.Size = new Size(GuiLayout.get_gui_w(columns-bcol), GuiLayout.get_gui_h(rows));
+            l.Size = new Size(GuiLayout.get_gui_w(columns - bcol), GuiLayout.get_gui_h(rows));
+            p.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+
+
 
             if (columns > 2)
             {
@@ -440,17 +545,66 @@ namespace AubitDesktop
             {
                 t.CharacterCasing = CharacterCasing.Lower;
             }
+
+
             l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
+
+
+            if (buttonEdit)
+            {
+
+                b = new Button();
+                if (configSettings["TEXT"] != null)
+                {
+                    b.Text = (string)configSettings["TEXT"];
+                }
+                else
+                {
+                    b.Text = "!";
+                }
+
+                b.Size = new Size(GuiLayout.get_gui_w(bcol), GuiLayout.get_gui_h(rows)-4);
+                b.Top = 0;
+                if (configSettings["IMAGE"] == null)
+                {
+                    b.Image = FGLUtils.getImageFromName("zoom");
+                }
+                else
+                {
+                    b.Image = FGLUtils.getImageFromName((string)configSettings["IMAGE"]);
+                }
+
+                b.Left = t.Width + 1;
+                //b.Left = GuiLayout.get_gui_x(column) ;     /* thats 2 pixels - not 2 characters */
+                b.Visible = true;
+            }
+            else
+            {
+                b = null;
+            }
+
             p.Controls.Add(t);
             p.Controls.Add(l);
+            if (b!=null)
+            {
+                p.Controls.Add(b);
+            }
 
-            p.Size = l.Size;
+           // p.Size = l.Size;
+
             t.CausesValidation = true;
             t.LostFocus += new EventHandler(t_LostFocus);
             t.GotFocus += new EventHandler(t_GotFocus);
             //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-            t.Click += new EventHandler(t_Click);
+            if (b != null)
+            {
+                b.Click += new EventHandler(t_Click);
+            }
+            else
+            {
+                t.Click += new EventHandler(t_Click);
+            }
             t.ReadOnly = true;
             t.Visible = true;
 

@@ -132,6 +132,7 @@ namespace AubitDesktop
             l = new Label();
             SizeControl(l);
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
+            if (this.Text == "") this.Text = tabcol;
             l.Click += new EventHandler(b_Click);
         }
     }
