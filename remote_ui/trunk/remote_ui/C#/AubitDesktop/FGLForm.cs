@@ -97,7 +97,6 @@ namespace AubitDesktop
                     }
                     break;
                 #endregion
-
                 #region HBOX
                 case "AubitDesktop.Xml.XMLForm.HBox":
                     {
@@ -121,7 +120,6 @@ namespace AubitDesktop
                     }
                     break;
                 #endregion
-
                 #region Table
                 case "AubitDesktop.Xml.XMLForm.Table":
                     {
@@ -174,8 +172,7 @@ namespace AubitDesktop
                         }
                     }
                     break;
-                #endregion
-                    
+                #endregion            
                 #region Folder
                 case "AubitDesktop.Xml.XMLForm.Page[]":
                     {
@@ -239,8 +236,7 @@ namespace AubitDesktop
 
                     }
                     break;
-                                    #endregion
-                     
+                                    #endregion          
                 #region screen
                 case "AubitDesktop.Xml.XMLForm.Screen":
                     {
@@ -264,6 +260,7 @@ namespace AubitDesktop
                     }
                     break;
                 #endregion
+                #region FormField
                 case "AubitDesktop.Xml.XMLForm.FormField":
                     {
                         AubitDesktop.Xml.XMLForm.FormField ff;
@@ -275,8 +272,8 @@ namespace AubitDesktop
                         }
                     }
                     break;
-
-
+                #endregion
+                #region HLine
                 case "AubitDesktop.Xml.XMLForm.HLine":
                     {
                         AubitDesktop.Xml.XMLForm.HLine hl;
@@ -292,7 +289,8 @@ namespace AubitDesktop
                         parent.Controls.Add(p_for_line);
                     }
                     break;
-
+                #endregion
+                #region Label
                 case "AubitDesktop.Xml.XMLForm.Label":
                     {
                         AubitDesktop.Xml.XMLForm.Label lb;
@@ -324,8 +322,8 @@ namespace AubitDesktop
                         }
                     }
                     break;
-
-
+                #endregion
+                #region Matrix
                 case "AubitDesktop.Xml.XMLForm.Matrix":
                     {
                         AubitDesktop.Xml.XMLForm.Matrix ma;
@@ -373,6 +371,7 @@ namespace AubitDesktop
                         }
                     }
                     break;
+                #endregion
                 default:
                     throw new ApplicationException("Invalid object to add to parent for xmlform");
             }
