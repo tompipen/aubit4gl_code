@@ -31,11 +31,10 @@ void add_terminal(char *terminal, char *text) {
 	terminal_list[nterminals-1].fake_terminal_text=strdup(text);
 }
 
-void load_terminals() {
-FILE *f;
+
+void load_file(FILE *f) {
 char buff[200];
 char buff2[200];
-f=fopen("entries","r");
 while (1) {
 	char *ptr;
 	char *p2;
@@ -54,6 +53,17 @@ while (1) {
 	sprintf(buff2,"\"%s\"",ptr);
 	add_terminal(buff,buff2);
 }
+}
+void load_terminals() {
+FILE *f;
+f=fopen("entries","r");
+load_file(f);
+f=fopen("commands","r");
+load_file(f);
+
+
+
+
 upto=nterminals-1;
 	//add_terminal("op_param_var_list","\'<PARAMETERS>\'");
 	//add_terminal("obind_var_list_ord","\'<variable_list>\'");
@@ -77,6 +87,9 @@ upto=nterminals-1;
 	add_terminal("USER_DTYPE_ORIG","\"<olduserdefinedtype>\"");
 	add_terminal("KW_DOT","\".\"");
 	add_terminal("KW_COMMA","\",\"");
+	add_terminal("KW_CSTART","\"code\"");
+	add_terminal("CLINE","\"<embedded c code>\"");
+	add_terminal("KW_CEND","\"endcode\"");
 	add_terminal("CHAR_VALUE","\"character-string\"");
 	add_terminal("nval_number","\"number_value\"");
 }
@@ -202,7 +215,7 @@ return NULL;
 int walktree(struct s_parser_start *parser_start, char *name, char *calledby,int lvl) {
 	int a,b,c;
 
-if (lvl>10) {
+if (lvl>14) {
 	return 0 ; // too deep...
 }
 
