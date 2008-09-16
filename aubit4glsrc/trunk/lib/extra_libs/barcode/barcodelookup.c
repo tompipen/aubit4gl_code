@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: barcodelookup.c,v 1.2 2008-07-06 11:34:29 mikeaubury Exp $
+# $Id: barcodelookup.c,v 1.3 2008-09-16 19:02:05 mikeaubury Exp $
 #*/
 
 
@@ -44,6 +44,8 @@
 =====================================================================
 */
 
+
+#ifdef HAVE_XMLRPC_H
 #include "barcodelookup.h"
 static int initialized=0;
 /*
@@ -287,6 +289,13 @@ A4GL_trim(str);
 
   return 1;
 }
+
+#else
+int aclfgl_a4gl_lookup_barcode (int n)  {
+	return 0;
+}
+
+#endif
 
 
 
