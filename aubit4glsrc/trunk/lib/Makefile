@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2008-05-15 13:40:59 mikeaubury Exp $
+# $Id: Makefile,v 1.24 2008-09-16 17:25:48 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -69,6 +69,9 @@ LIBLEXEC_PATH  		=liblex/lex_esqlc
 
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
+LIBROMAN_PATH		=extra_libs/roman
+LIBERRHOOK_PATH		=extra_libs/errhook
+LIBBARCODE_PATH		=extra_libs/barcode
 LIBSTRING_PATH		=extra_libs/string
 LIBCHANNEL_PATH		=extra_libs/channel
 LIBESQLCHELPER_PATH	=libesql
@@ -566,6 +569,18 @@ ${PLUGINDIR}/libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE} \
 ${PLUGINDIR}/libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 	$(MAKE) -C ${LIBFILE_PATH}
 
+
+${PLUGINDIR}/libA4GL_roman${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+	$(MAKE) -C ${LIBROMAN_PATH}
+
+
+${PLUGINDIR}/liberrhook_sample${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+	$(MAKE) -C ${LIBERRHOOK_PATH}
+
+${PLUGINDIR}/libbarcode${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+	$(MAKE) -C ${LIBBARCODE_PATH}
+
+
 ${PLUGINDIR}/libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
 
@@ -583,6 +598,8 @@ ${PLUGINDIR}/libA4GL_pcre${SO_EXT}: ${4GLC} ${LIBPCRE_DEPS}
 
 ${PLUGINDIR}/libA4GL_sxml${SO_EXT}: ${4GLC} ${LIBSXML_DEPS}
 	$(MAKE) -C ${LIBSXML_PATH}
+
+
 
 ${PLUGINDIR}/libA4GL_HTML${SO_EXT}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@

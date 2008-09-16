@@ -8,9 +8,9 @@ CFLAGS              :=-I.. -I${LIBROOT}/libincl ${CLIENT_CFLAGS} ${CFLAGS}
 OBJS_RPC= barcodelookup.o
 
 
-all: barcodelookup${SO_EXT} testbarcode
+all: ${PLUGINDIR}/libbarcode${SO_EXT} testbarcode
 
-barcodelookup${SO_EXT}: ${OBJS_RPC}
+${PLUGINDIR}/libbarcode${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
 	cp $@ $(AUBITDIR)
 
