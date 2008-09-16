@@ -29,18 +29,6 @@ static void read_block (void);
 void free_report(void *report) ;
 
 static struct r_report *report;
-/*
-#if defined (__MINGW32__)
-
-int isblank(int n) {
-	if (n==' ') return 1;
-	if (n=='\t') return 1;
-	return 0;
-}
-
-
-#endif
-*/
 
 static int read_int (void)
 {
@@ -111,7 +99,7 @@ static void trim (char *s)
   b = 0;
   for (a = strlen (s) - 1; a > 0; a--)
     {
-      if (isblank (s[a])) s[a]=0;
+      if (A4GL_isblank (s[a])) s[a]=0;
 	else break;
     }
 }
