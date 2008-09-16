@@ -2,6 +2,10 @@
 export AUBITDIR=c:/gnu/cygwin/usr/src/aubit/aubit4glsrc
 #export AUBITDIR=/usr/src/aubit/aubit4glsrc
 
+rm /usr/bin/aubit-config.exe
+rm /usr/bin/aubit
+rm /usr/src/aubit/aubit4glsrc/bin/aubit-config.exe
+
 /usr/bin/find lib -name "*.a" -exec rm {} \;
 /usr/bin/find bin -name "*.a" -exec rm {} \;
 /usr/bin/find . -name "*.dll" -exec rm {} \;
@@ -17,8 +21,9 @@ then
 	
 	rm /usr/lib/libaubit4gl*
 	rm /usr/lib/lib4glc*
-	./configure --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --prefix=/usr/src/aubit/aubit4glbin
+	rm -r plugins-*
 	make -k cleanall
+	./configure --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --prefix=/usr/src/aubit/aubit4glbin
 
 fi
 
@@ -64,8 +69,10 @@ then
 	sh makestatic_win32.sh 4gl
 	cp asql_si.exe /usr/src/aubit/aubit4glsrc/bin
 	cp /usr/src/aubit/aubit4glsrc/lib/libaubit4gl*.dll /usr/src/aubit/aubit4glsrc/bin
+	rm /usr/bin/aubit-config.exe
+	rm /usr/bin/aubit
 	#scp -r /usr/src/aubit/aubit4glsrc aubit4gl@192.168.2.217:/tmp/aubit4glsrc.win32
-	sh win32bin
+	sh /usr/src/aubit/aubit4glsrc/win32bin
 else
 	echo "Make failed"
 fi
