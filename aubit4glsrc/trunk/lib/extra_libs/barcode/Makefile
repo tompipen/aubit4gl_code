@@ -8,7 +8,10 @@ CFLAGS              :=-I.. -I${LIBROOT}/libincl ${CLIENT_CFLAGS} ${CFLAGS}
 OBJS_RPC= barcodelookup.o
 
 
-all: ${PLUGINDIR}/libbarcode${SO_EXT} testbarcode
+ALL=${PLUGINDIR}/libbarcode${SO_EXT} testbarcode
+
+all:  $(ALL)
+
 
 ${PLUGINDIR}/libbarcode${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
