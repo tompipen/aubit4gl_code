@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.72 2008-09-14 10:48:21 mikeaubury Exp $
+# $Id: helper.c,v 1.73 2008-09-16 19:07:40 mikeaubury Exp $
 #
 */
 
@@ -43,7 +43,7 @@
 =====================================================================
 */
 
-
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 void A4GLPACKER_clrlibptr (void);
