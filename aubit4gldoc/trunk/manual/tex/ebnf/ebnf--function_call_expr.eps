@@ -1,0 +1,3768 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 1548 5731
+%%Title: ebnf--function_call_expr.eps
+%%CreationDate: 09:12:40 Sep 16 2008
+%%Creator:  (using ebnf2ps v4.3)
+%%DocumentNeededResources: font Helvetica-Bold
+%%+ font Courier
+%%+ font Helvetica
+%%+ font Courier-BoldOblique
+%%Pages: 0
+%%EndComments
+
+%%BeginProlog
+
+/#ebnf2ps#dict 230 dict def
+#ebnf2ps#dict begin
+
+% Initiliaze variables to avoid name-conflicting with document variables.
+% This is the case when using `bind' operator.
+/-fillp-		0 def		/h		0 def
+/-ox-			0 def		/half		0 def
+/-oy-			0 def		/height		0 def
+/-save-			0 def		/ow		0 def
+/Ascent			0 def		/quarter	0 def
+/Descent		0 def		/rXX		0 def
+/Effect			0 def		/rYY		0 def
+/FontHeight		0 def		/rwidth		0 def
+/LineThickness		0 def		/rxx		0 def
+/OverlinePosition	0 def		/ryy		0 def
+/SpaceBackground	0 def		/shadow		0 def
+/StrikeoutPosition	0 def		/shape		0 def
+/UnderlinePosition	0 def		/shapecolor	0 def
+/XBox			0 def		/space		0 def
+/XX			0 def		/st		1 string def
+/Xshadow		0 def		/w		0 def
+/YBox			0 def		/width		0 def
+/YY			0 def		/xi		0 def
+/Yshadow		0 def		/xo		0 def
+/arrow			0 def		/xp		0 def
+/bg			false def	/xt		0 def
+/bgcolor		0 def		/xw		0 def
+/bordercolor		0 def		/xx		0 def
+/borderwidth		0 def		/yi		0 def
+/dd			0 def		/yo		0 def
+/entry			0 def		/yp		0 def
+/foreground		0 def		/yt		0 def
+					/yy		0 def
+
+
+% ISOLatin1Encoding stolen from ps_init.ps in GhostScript 2.6.1.4:
+/ISOLatin1Encoding where
+{pop}
+{% -- The ISO Latin-1 encoding vector isn't known, so define it.
+ % -- The first half is the same as the standard encoding,
+ % -- except for minus instead of hyphen at code 055.
+ /ISOLatin1Encoding
+  StandardEncoding 0  45 getinterval aload pop
+  /minus
+  StandardEncoding 46 82 getinterval aload pop
+ %*** NOTE: the following are missing in the Adobe documentation,
+ %*** but appear in the displayed table:
+ %*** macron at 0225, dieresis at 0230, cedilla at 0233, space at 0240.
+ % 0200 (128)
+  /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+  /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef
+  /dotlessi /grave /acute /circumflex /tilde /macron /breve /dotaccent
+  /dieresis /.notdef /ring /cedilla /.notdef /hungarumlaut /ogonek /caron
+ % 0240 (160)
+  /space /exclamdown /cent /sterling
+	/currency /yen /brokenbar /section
+  /dieresis /copyright /ordfeminine /guillemotleft
+	/logicalnot /hyphen /registered /macron
+  /degree /plusminus /twosuperior /threesuperior
+	/acute /mu /paragraph /periodcentered
+  /cedilla /onesuperior /ordmasculine /guillemotright
+	/onequarter /onehalf /threequarters /questiondown
+ % 0300 (192)
+  /Agrave /Aacute /Acircumflex /Atilde
+	/Adieresis /Aring /AE /Ccedilla
+  /Egrave /Eacute /Ecircumflex /Edieresis
+	/Igrave /Iacute /Icircumflex /Idieresis
+  /Eth /Ntilde /Ograve /Oacute
+	/Ocircumflex /Otilde /Odieresis /multiply
+  /Oslash /Ugrave /Uacute /Ucircumflex
+	/Udieresis /Yacute /Thorn /germandbls
+ % 0340 (224)
+  /agrave /aacute /acircumflex /atilde
+	/adieresis /aring /ae /ccedilla
+  /egrave /eacute /ecircumflex /edieresis
+	/igrave /iacute /icircumflex /idieresis
+  /eth /ntilde /ograve /oacute
+	/ocircumflex /otilde /odieresis /divide
+  /oslash /ugrave /uacute /ucircumflex
+	/udieresis /yacute /thorn /ydieresis
+ 256 packedarray def
+}ifelse
+
+/reencodeFontISO	%def
+{dup
+ length 12 add dict	% Make a new font (a new dict the same size
+			% as the old one) with room for our new symbols.
+
+ begin			% Make the new font the current dictionary.
+  {1 index /FID ne
+   {def}{pop pop}ifelse
+  }forall		% Copy each of the symbols from the old dictionary
+			% to the new one except for the font ID.
+
+  currentdict /FontType get 0 ne
+  {/Encoding ISOLatin1Encoding def}if	% Override the encoding with
+					% the ISOLatin1 encoding.
+
+  % Use the font's bounding box to determine the ascent, descent,
+  % and overall height; don't forget that these values have to be
+  % transformed using the font's matrix.
+
+  %          ^    (x2 y2)
+  %          |       |
+  %          |       v
+  %          |  +----+ - -
+  %          |  |    |   ^
+  %          |  |    |   | Ascent (usually > 0)
+  %          |  |    |   |
+  % (0 0) -> +--+----+-------->
+  %             |    |   |
+  %             |    |   v Descent (usually < 0)
+  % (x1 y1) --> +----+ - -
+
+  currentdict /FontType get 0 ne
+  {/FontBBox load aload pop		% -- x1 y1 x2 y2
+   FontMatrix transform /Ascent  exch def pop
+   FontMatrix transform /Descent exch def pop}
+  {/PrimaryFont FDepVector 0 get def
+   PrimaryFont /FontBBox get aload pop
+   PrimaryFont /FontMatrix get transform /Ascent exch def pop
+   PrimaryFont /FontMatrix get transform /Descent exch def pop
+  }ifelse
+
+  /FontHeight Ascent Descent sub def	% use `sub' because descent < 0
+
+  % Define these in case they're not in the FontInfo
+  % (also, here they're easier to get to).
+  /UnderlinePosition  Descent 0.70 mul def
+  /OverlinePosition   Descent UnderlinePosition sub Ascent add def
+  /StrikeoutPosition  Ascent 0.30 mul def
+  /LineThickness      FontHeight 0.05 mul def
+  /Xshadow            FontHeight  0.08 mul def
+  /Yshadow            FontHeight -0.09 mul def
+  /SpaceBackground    Descent neg UnderlinePosition add def
+  /XBox               Descent neg def
+  /YBox               LineThickness 0.7 mul def
+
+  currentdict	% Leave the new font on the stack
+ end		% Stop using the font as the current dictionary
+ definefont	% Put the font into the font dictionary
+ pop		% Discard the returned font
+}bind def
+
+% Font definition
+/DefFont{findfont exch scalefont reencodeFontISO}def
+
+% Font selection
+/F
+{findfont
+ dup /Ascent            get /Ascent            exch def
+ dup /Descent           get /Descent           exch def
+ dup /FontHeight        get /FontHeight        exch def
+ dup /UnderlinePosition get /UnderlinePosition exch def
+ dup /OverlinePosition  get /OverlinePosition  exch def
+ dup /StrikeoutPosition get /StrikeoutPosition exch def
+ dup /LineThickness     get /LineThickness     exch def
+ dup /Xshadow           get /Xshadow           exch def
+ dup /Yshadow           get /Yshadow           exch def
+ dup /SpaceBackground   get /SpaceBackground   exch def
+ dup /XBox              get /XBox              exch def
+ dup /YBox              get /YBox              exch def
+ setfont
+}def
+
+/BG
+{dup /bg exch def
+ {mark 4 1 roll ]}
+ {[ 1.0 1.0 1.0 ]}
+ ifelse
+ /bgcolor exch def
+}def
+
+% stack:  --
+/FillBgColor{bgcolor aload pop setrgbcolor fill}bind def
+
+% stack:  fill-or-not lower-x lower-y upper-x upper-y  |-  --
+/doRect
+{/rYY exch def
+ /rXX exch def
+ /ryy exch def
+ /rxx exch def
+ gsave
+ newpath
+ rXX rYY moveto
+ rxx rYY lineto
+ rxx ryy lineto
+ rXX ryy lineto
+ closepath
+ % top of stack: fill-or-not
+ {FillBgColor}
+ {LineThickness setlinewidth stroke}
+ ifelse
+ grestore
+}bind def
+
+% stack:  string fill-or-not  |-  --
+/doOutline
+{/-fillp- exch def
+ /-ox- currentpoint /-oy- exch def def
+ gsave
+ LineThickness setlinewidth
+ {st 0 3 -1 roll put
+  st dup true charpath
+  -fillp- {gsave FillBgColor grestore}if
+  stroke stringwidth
+  -oy- add /-oy- exch def
+  -ox- add /-ox- exch def
+  -ox- -oy- moveto
+ }forall
+ grestore
+ -ox- -oy- moveto
+}bind def
+
+% stack:  fill-or-not delta  |-  --
+/doBox
+{/dd exch def
+ xx XBox sub dd sub yy YBox sub dd sub
+ XX XBox add dd add YY YBox add dd add
+ doRect
+}bind def
+
+% stack:  string  |-  --
+/doShadow
+{gsave
+ Xshadow Yshadow rmoveto
+ false doOutline
+ grestore
+}bind def
+
+% stack:  position  |-  --
+/Hline
+{currentpoint exch pop add dup
+ gsave
+ newpath
+ xx exch moveto
+ XX exch lineto
+ closepath
+ LineThickness setlinewidth stroke
+ grestore
+}bind def
+
+% stack:  string  |-  --
+% effect: 1  - underline  2   - strikeout  4  - overline
+%         8  - shadow     16  - box        32 - outline
+/S
+{/xx currentpoint dup Descent add /yy exch def
+ Ascent add /YY exch def def
+ dup stringwidth pop xx add /XX exch def
+ Effect 8 and 0 ne
+ {/yy yy Yshadow add def
+  /XX XX Xshadow add def
+ }if
+ bg
+ {true
+  Effect 16 and 0 ne
+  {SpaceBackground doBox}
+  {xx yy XX YY doRect}
+  ifelse
+ }if						% background
+ Effect 16 and 0 ne{false 0 doBox}if		% box
+ Effect 8  and 0 ne{dup doShadow}if		% shadow
+ Effect 32 and 0 ne
+ {true doOutline}				% outline
+ {show}						% normal text
+ ifelse
+ Effect 1  and 0 ne{UnderlinePosition Hline}if	% underline
+ Effect 2  and 0 ne{StrikeoutPosition Hline}if	% strikeout
+ Effect 4  and 0 ne{OverlinePosition  Hline}if	% overline
+}bind def
+
+
+
+% === begin EBNF settings
+
+/fP            10.000 /Helvetica-Bold DefFont
+/ForegroundP   [0.000 0.000 0.000] def % Black
+/BackgroundP   [1.000 1.000 1.000] def % White
+/EffectP       0 def
+/fT            7.000 /Courier DefFont
+/ForegroundT   [0.000 0.000 0.000] def % Black
+/BackgroundT   [1.000 1.000 1.000] def % White
+/EffectT       0 def
+/BorderWidthT  1.000 def
+/BorderColorT  [0.000 0.000 0.000] def % Black
+/ShapeT        2 def
+/ShadowT       false def
+/fNT           7.000 /Helvetica DefFont
+/ForegroundNT  [0.000 0.000 0.000] def % Black
+/BackgroundNT  [1.000 1.000 1.000] def % White
+/EffectNT      0 def
+/BorderWidthNT 1.000 def
+/BorderColorNT [0.000 0.000 1.000] def % Blue
+/ShapeNT       0 def
+/ShadowNT      false def
+/fS            7.000 /Courier-BoldOblique DefFont
+/ForegroundS   [0.000 0.000 0.000] def % Black
+/BackgroundS   [1.000 1.000 1.000] def % Gray95
+/EffectS       0 def
+/BorderWidthS  0.500 def
+/BorderColorS  [0.000 0.000 0.000] def % Black
+/ShapeS        2 def
+/ShadowS       false def
+/fE            7.000 /Courier-BoldOblique DefFont
+/ForegroundE   [0.000 0.000 0.000] def % Black
+/BackgroundE   [1.000 1.000 1.000] def % Gray90
+/EffectE       0 def
+/BorderWidthE  0.250 def
+/BorderColorE  [0.000 0.000 0.000] def % Black
+/ShapeE        2 def
+/ShadowE       false def
+/fR            7.000 /Courier-BoldOblique DefFont
+/ForegroundR   [0.000 0.000 0.000] def % Black
+/BackgroundR   [1.000 1.000 1.000] def % Gray85
+/EffectR       0 def
+/BorderWidthR  0.000 def
+/BorderColorR  [0.000 0.000 0.000] def % Black
+/ShapeR        2 def
+/ShadowR       false def
+/ExtraWidth    1.453 def
+/ArrowScale    1.000 def
+/DefaultWidth  0.600 def
+/LineWidth     1.000 def
+/LineColor     [0.000 0.000 0.000] def % Black
+/ArrowShape    5 def
+/ChartShape    1 def
+/UserArrow{}def
+
+% === end   EBNF settings
+
+
+% === begin EBNF engine
+
+% --- Basic Definitions
+
+/fS F
+/SpaceS FontHeight 0.5 mul def
+/HeightS FontHeight FontHeight add def
+
+/fE F
+/SpaceE FontHeight 0.5 mul def
+/HeightE FontHeight FontHeight add def
+
+/fR F
+/SpaceR FontHeight 0.5 mul def
+/HeightR FontHeight FontHeight add def
+
+/fT F
+/SpaceT FontHeight 0.5 mul def
+/HeightT FontHeight FontHeight add def
+
+/fNT F
+/SpaceNT FontHeight 0.5 mul def
+/HeightNT FontHeight FontHeight add def
+
+/T HeightT HeightNT add 0.5 mul def
+/hT   T 0.5  mul def
+/hT2 hT 0.5  mul ArrowScale mul def
+/hT4 hT 0.25 mul ArrowScale mul def
+
+/Er 0.1 def	% Error factor
+
+
+/c{currentpoint}bind def
+/xyi{/xi c /yi exch def def}bind def
+/xyo{/xo c /yo exch def def}bind def
+/xyp{/xp c /yp exch def def}bind def
+/xyt{/xt c /yt exch def def}bind def
+
+% vertical movement: x y height vm
+/vm{add moveto}bind def
+
+% horizontal movement: x y width hm
+/hm{3 -1 roll exch add exch moveto}bind def
+
+% set color: [R G B] SetRGB
+/SetRGB{aload pop setrgbcolor}bind def
+
+% filling gray area: gray-scale FillGray
+/FillGray{gsave setgray fill grestore}bind def
+
+% filling color area: [R G B] FillRGB
+/FillRGB{gsave SetRGB fill grestore}bind def
+
+/Stroke{LineWidth setlinewidth LineColor SetRGB stroke}bind def
+/StrokeShape{borderwidth setlinewidth bordercolor SetRGB stroke}bind def
+/Gstroke{gsave Stroke grestore}bind def
+
+% Empty Line: width EL
+/EL{0 rlineto Gstroke}bind def
+
+% --- Arrows
+
+/Down{hT2 neg hT4 neg rlineto}bind def
+
+/Arrow
+{hT2 neg hT4 rmoveto
+ hT2 hT4 neg rlineto
+ Down
+}bind def
+
+/ArrowPath{c newpath moveto Arrow closepath}bind def
+
+/UpPath
+{c newpath moveto
+ hT2 neg 0   rmoveto
+ 0       hT4 rlineto
+ hT2 hT4 neg rlineto
+ closepath
+}bind def
+
+/DownPath
+{c newpath moveto
+ hT2 neg 0   rmoveto
+ 0   hT4 neg rlineto
+ hT2     hT4 rlineto
+ closepath
+}bind def
+
+%>Right Arrow: RA
+%    \
+% *---+
+%    /
+/RA-vector
+[{}					% 0  - none
+ {hT2 neg hT4 rlineto}			% 1  - semi-up
+ {Down}					% 2  - semi-down
+ {Arrow}				% 3  - simple
+ {Gstroke ArrowPath}			% 4  - transparent
+ {Gstroke ArrowPath 1 FillGray}		% 5  - hollow
+ {Gstroke ArrowPath LineColor FillRGB}	% 6  - full
+ {Gstroke UpPath 1 FillGray}		% 7  - semi-up-hollow
+ {Gstroke UpPath LineColor FillRGB}	% 8  - semi-up-full
+ {Gstroke DownPath 1 FillGray}		% 9  - semi-down-hollow
+ {Gstroke DownPath LineColor FillRGB}	% 10 - semi-down-full
+ {Gstroke gsave UserArrow grestore}	% 11 - user
+]def
+
+/RA
+{hT 0 rlineto
+ c
+ RA-vector ArrowShape get exec
+ Gstroke
+ moveto
+ ExtraWidth 0 rmoveto
+}def
+
+% rotation DrawArrow
+/DrawArrow
+{gsave
+ 0 0 translate
+ rotate
+ RA
+ c
+ grestore
+ rmoveto
+}def
+
+%>Left Arrow: LA
+%  /
+% +---*
+%  \
+/LA{180 DrawArrow}def
+
+%>Up Arrow: UA
+%  +
+% /|\
+%  |
+%  *
+/UA{90 DrawArrow}def
+
+%>Down Arrow: DA
+%  *
+%  |
+% \|/
+%  +
+/DA{270 DrawArrow}def
+
+% --- Corners
+
+%>corner Right Descendent: height arrow corner_RD
+%   _             | arrow
+%  /   height > 0 |  0 - none
+% |               |  1 - right
+% *    ---------- |  2 - left
+% |               |  3 - vertical
+%  \   height < 0 |
+%   -             |
+/cRD0-vector
+[% 0 - none
+ {0 h rlineto
+  hT 0 rlineto}
+ % 1 - right
+ {0 h rlineto
+  RA}
+ % 2 - left
+ {hT 0 rmoveto xyi
+  LA
+  0 h neg rlineto
+  xi yi moveto}
+ % 3 - vertical
+ {hT h rmoveto xyi
+  hT neg 0 rlineto
+  h 0 gt{DA}{UA}ifelse
+  xi yi moveto}
+]def
+
+/cRD-vector
+[{cRD0-vector arrow get exec}	% 0 - miter
+ {0 0 0 h hT h rcurveto}	% 1 - rounded
+ {hT h rlineto}			% 2 - bevel
+]def
+
+/corner_RD
+{/arrow exch def /h exch def
+ cRD-vector ChartShape get exec
+ Gstroke
+}def
+
+%>corner Right Ascendent: height arrow corner_RA
+%                 | arrow
+%    | height > 0 |  0 - none
+%   /             |  1 - right
+% *-   ---------- |  2 - left
+%   \             |  3 - vertical
+%    | height < 0 |
+%                 |
+/cRA0-vector
+[% 0 - none
+ {hT 0 rlineto
+  0 h rlineto}
+ % 1 - right
+ {RA
+  0 h rlineto}
+ % 2 - left
+ {hT h rmoveto xyi
+  0 h neg rlineto
+  LA
+  xi yi moveto}
+ % 3 - vertical
+ {hT h rmoveto xyi
+  h 0 gt{DA}{UA}ifelse
+  hT neg 0 rlineto
+  xi yi moveto}
+]def
+
+/cRA-vector
+[{cRA0-vector arrow get exec}	% 0 - miter
+ {0 0 hT 0 hT h rcurveto}	% 1 - rounded
+ {hT h rlineto}			% 2 - bevel
+]def
+
+/corner_RA
+{/arrow exch def /h exch def
+ cRA-vector ChartShape get exec
+ Gstroke
+}def
+
+%>corner Left Descendent: height arrow corner_LD
+%  _              | arrow
+%   \  height > 0 |  0 - none
+%    |            |  1 - right
+%    * ---------- |  2 - left
+%    |            |  3 - vertical
+%   /  height < 0 |
+%  -              |
+/cLD0-vector
+[% 0 - none
+ {0 h rlineto
+  hT neg 0 rlineto}
+ % 1 - right
+ {hT neg h rmoveto xyi
+  RA
+  0 h neg rlineto
+  xi yi moveto}
+ % 2 - left
+ {0 h rlineto
+  LA}
+ % 3 - vertical
+ {hT neg h rmoveto xyi
+  hT 0 rlineto
+  h 0 gt{DA}{UA}ifelse
+  xi yi moveto}
+]def
+
+/cLD-vector
+[{cLD0-vector arrow get exec}	% 0 - miter
+ {0 0 0 h hT neg h rcurveto}	% 1 - rounded
+ {hT neg h rlineto}		% 2 - bevel
+]def
+
+/corner_LD
+{/arrow exch def /h exch def
+ cLD-vector ChartShape get exec
+ Gstroke
+}def
+
+%>corner Left Ascendent: height arrow corner_LA
+%                 | arrow
+% |    height > 0 |  0 - none
+%  \              |  1 - right
+%   -* ---------- |  2 - left
+%  /              |  3 - vertical
+% |    height < 0 |
+%                 |
+/cLA0-vector
+[% 0 - none
+ {hT neg 0 rlineto
+  0 h rlineto}
+ % 1 - right
+ {hT neg h rmoveto xyi
+  0 h neg rlineto
+  RA
+  xi yi moveto}
+ % 2 - left
+ {LA
+  0 h rlineto}
+ % 3 - vertical
+ {hT neg h rmoveto xyi
+  h 0 gt{DA}{UA}ifelse
+  hT 0 rlineto
+  xi yi moveto}
+]def
+
+/cLA-vector
+[{cLA0-vector arrow get exec}		% 0 - miter
+ {0 0 hT neg 0 hT neg h rcurveto}	% 1 - rounded
+ {hT neg h rlineto}			% 2 - bevel
+]def
+
+/corner_LA
+{/arrow exch def /h exch def
+ cLA-vector ChartShape get exec
+ Gstroke
+}def
+
+% --- Flow Stuff
+
+% height prepare_height |- line_height corner_height corner_height
+/prepare_height
+{dup 0 gt
+ {T sub hT}
+ {T add hT neg}ifelse
+ dup
+}def
+
+%>Left Alternative: height LAlt
+%      _
+%     /
+%    |   height > 0
+%    |
+%   /
+% *-     ----------
+%   \
+%    |
+%    |   height < 0
+%     \
+%      -
+/LAlt
+{dup 0 eq
+ {T exch rlineto}
+ {dup abs T lt
+  {0.5 mul dup
+   1 corner_RA
+   0 corner_RD}
+  {prepare_height
+   1 corner_RA
+   exch 0 exch rlineto
+   0 corner_RD
+  }ifelse
+ }ifelse
+}def
+
+%>Left Loop: height LLoop
+%   _
+%  /
+% |      height > 0
+% |
+%  \
+%   -*   ----------
+%  /
+% |
+% |      height < 0
+%  \
+%   -
+/LLoop
+{prepare_height
+ 3 corner_LA
+ exch 0 exch rlineto
+ 0 corner_RD
+}def
+
+%>Right Alternative: height RAlt
+% _
+%  \
+%   |    height > 0
+%   |
+%    \
+%     -* ----------
+%    /
+%   |
+%   |    height < 0
+%  /
+% -
+/RAlt
+{dup 0 eq
+ {T neg exch rlineto}
+ {dup abs T lt
+  {0.5 mul dup
+   1 corner_LA
+   0 corner_LD}
+  {prepare_height
+   1 corner_LA
+   exch 0 exch rlineto
+   0 corner_LD
+  }ifelse
+ }ifelse
+}def
+
+%>Right Loop: height RLoop
+%  _
+%   \
+%    |   height > 0
+%    |
+%   /
+% *-     ----------
+%   \
+%    |
+%    |   height < 0
+%   /
+%  -
+/RLoop
+{prepare_height
+ 1 corner_RA
+ exch 0 exch rlineto
+ 0 corner_LD
+}def
+
+% --- Terminal, Non-terminal and Special Basics
+
+% string width prepare-width |- string
+/prepare-width
+{/width exch def
+ dup stringwidth pop space add space add width exch sub ExtraWidth sub 0.5 mul
+ /w exch def
+}def
+
+% string width begin-right
+/begin-right
+{xyo
+ prepare-width
+ w hT sub EL
+ RA
+}def
+
+% end-right
+/end-right
+{xo width add Er add yo moveto
+ w Er add neg EL
+ xo yo moveto
+}def
+
+% string width begin-left
+/begin-left
+{xyo
+ prepare-width
+ w EL
+}def
+
+% end-left
+/end-left
+{xo width add Er add yo moveto
+ hT w sub Er add EL
+ LA
+ xo yo moveto
+}def
+
+/ShapePath-vector
+[% 0 - miter
+ {xx yy moveto
+  xx YY lineto
+  XX YY lineto
+  XX yy lineto}
+ % 1 - rounded
+ {/half YY yy sub 0.5 mul abs def
+  xx half add YY moveto
+  0 0 half neg 0 half neg half neg rcurveto
+  0 0 0 half neg half half neg rcurveto
+  XX xx sub abs half sub half sub 0 rlineto
+  0 0 half 0 half half rcurveto
+  0 0 0 half half neg half rcurveto}
+ % 2 - bevel
+ {/quarter YY yy sub 0.25 mul abs def
+  xx quarter add YY moveto
+  quarter neg quarter neg rlineto
+  0 quarter quarter add neg rlineto
+  quarter quarter neg rlineto
+  XX xx sub abs quarter sub quarter sub 0 rlineto
+  quarter quarter rlineto
+  0 quarter quarter add rlineto
+  quarter neg quarter rlineto}
+]def
+
+/doShapePath
+{newpath
+ ShapePath-vector shape get exec
+ closepath
+}def
+
+/doShapeShadow
+{gsave
+ Xshadow Xshadow add Xshadow add
+ Yshadow Yshadow add Yshadow add translate
+ doShapePath
+ 0.9 FillGray
+ grestore
+}def
+
+/doShape
+{gsave
+ doShapePath
+ shapecolor FillRGB
+ StrokeShape
+ grestore
+}def
+
+% string SBound |- string
+/SBound
+{/xx c dup /yy exch def
+ FontHeight add /YY exch def def
+ dup stringwidth pop xx add /XX exch def
+ Effect 8 and 0 ne
+ {/yy yy YShadow add def
+  /XX XX XShadow add def
+ }if
+}def
+
+% string SBox
+/SBox
+{gsave
+ c space sub moveto
+ SBound
+ /XX XX space add space add def
+ /YY YY space add def
+ /yy yy space sub def
+ shadow{doShapeShadow}if
+ doShape
+ space Descent abs rmoveto
+ foreground SetRGB S
+ grestore
+}def
+
+% --- Terminal
+
+% TeRminal: string TR
+/TR
+{/Effect EffectT def
+ /shape ShapeT def
+ /shapecolor BackgroundT def
+ /borderwidth BorderWidthT def
+ /bordercolor BorderColorT def
+ /foreground ForegroundT def
+ /shadow ShadowT def
+ SBox
+}def
+
+%>Right Terminal: string width RT |- x y
+/RT
+{xyt
+ /fT F
+ /space SpaceT def
+ begin-right
+ TR
+ end-right
+ xt yt
+}def
+
+%>Left Terminal: string width LT |- x y
+/LT
+{xyt
+ /fT F
+ /space SpaceT def
+ begin-left
+ TR
+ end-left
+ xt yt
+}def
+
+%>Right Terminal Default: string width RTD |- x y
+/RTD
+{/-save- BorderWidthT def
+ /BorderWidthT BorderWidthT DefaultWidth add def
+ RT
+ /BorderWidthT -save- def
+}def
+
+%>Left Terminal Default: string width LTD |- x y
+/LTD
+{/-save- BorderWidthT def
+ /BorderWidthT BorderWidthT DefaultWidth add def
+ LT
+ /BorderWidthT -save- def
+}def
+
+% --- Non-Terminal
+
+% Non-Terminal: string NT
+/NT
+{/Effect EffectNT def
+ /shape ShapeNT def
+ /shapecolor BackgroundNT def
+ /borderwidth BorderWidthNT def
+ /bordercolor BorderColorNT def
+ /foreground ForegroundNT def
+ /shadow ShadowNT def
+ SBox
+}def
+
+%>Right Non-Terminal: string width RNT |- x y
+/RNT
+{xyt
+ /fNT F
+ /space SpaceNT def
+ begin-right
+ NT
+ end-right
+ xt yt
+}def
+
+%>Left Non-Terminal: string width LNT |- x y
+/LNT
+{xyt
+ /fNT F
+ /space SpaceNT def
+ begin-left
+ NT
+ end-left
+ xt yt
+}def
+
+%>Right Non-Terminal Default: string width RNTD |- x y
+/RNTD
+{/-save- BorderWidthNT def
+ /BorderWidthNT BorderWidthNT DefaultWidth add def
+ RNT
+ /BorderWidthNT -save- def
+}def
+
+%>Left Non-Terminal Default: string width LNTD |- x y
+/LNTD
+{/-save- BorderWidthNT def
+ /BorderWidthNT BorderWidthNT DefaultWidth add def
+ LNT
+ /BorderWidthNT -save- def
+}def
+
+% --- Special
+
+% SPecial: string SP
+/SP
+{/Effect EffectS def
+ /shape ShapeS def
+ /shapecolor BackgroundS def
+ /borderwidth BorderWidthS def
+ /bordercolor BorderColorS def
+ /foreground ForegroundS def
+ /shadow ShadowS def
+ SBox
+}def
+
+%>Right SPecial: string width RSP |- x y
+/RSP
+{xyt
+ /fS F
+ /space SpaceS def
+ begin-right
+ SP
+ end-right
+ xt yt
+}def
+
+%>Left SPecial: string width LSP |- x y
+/LSP
+{xyt
+ /fS F
+ /space SpaceS def
+ begin-left
+ SP
+ end-left
+ xt yt
+}def
+
+%>Right SPecial Default: string width RSPD |- x y
+/RSPD
+{/-save- BorderWidthS def
+ /BorderWidthS BorderWidthS DefaultWidth add def
+ RSP
+ /BorderWidthS -save- def
+}def
+
+%>Left SPecial Default: string width LSPD |- x y
+/LSPD
+{/-save- BorderWidthS def
+ /BorderWidthS BorderWidthS DefaultWidth add def
+ LSP
+ /BorderWidthS -save- def
+}def
+
+% --- Repeat and Except basics
+
+/begin-direction
+{/w width rwidth sub 0.5 mul def
+ width 0 rmoveto}def
+
+/end-direction
+{gsave
+ /xx c entry add /YY exch def def
+ /yy YY height sub def
+ /XX xx rwidth add def
+ shadow{doShapeShadow}if
+ doShape
+ grestore
+}def
+
+/right-direction
+{begin-direction
+ w neg EL
+ xt yt moveto
+ w hT sub EL RA
+ end-direction
+}def
+
+/left-direction
+{begin-direction
+ hT w sub EL LA
+ xt yt moveto
+ w EL
+ end-direction
+}def
+
+% --- Repeat
+
+% entry height width rwidth begin-repeat
+/begin-repeat
+{/rwidth exch def
+ /width exch def
+ /height exch def
+ /entry exch def
+ /fR F
+ /space SpaceR def
+ /Effect EffectR def
+ /shape ShapeR def
+ /shapecolor BackgroundR def
+ /borderwidth BorderWidthR def
+ /bordercolor BorderColorR def
+ /foreground ForegroundR def
+ /shadow ShadowR def
+ xyt
+}def
+
+% string end-repeat |- x y
+/end-repeat
+{gsave
+ space Descent rmoveto
+ foreground SetRGB S
+ c Descent sub
+ grestore
+ exch space add exch moveto
+ xt yt
+}def
+
+%>Right RePeat: string entry height width rwidth RRP |- x y
+/RRP{begin-repeat right-direction end-repeat}def
+
+%>Left RePeat: string entry height width rwidth LRP |- x y
+/LRP{begin-repeat left-direction end-repeat}def
+
+% --- Except
+
+% entry height width rwidth begin-except
+/begin-except
+{/rwidth exch def
+ /width exch def
+ /height exch def
+ /entry exch def
+ /fE F
+ /space SpaceE def
+ /Effect EffectE def
+ /shape ShapeE def
+ /shapecolor BackgroundE def
+ /borderwidth BorderWidthE def
+ /bordercolor BorderColorE def
+ /foreground ForegroundE def
+ /shadow ShadowE def
+ xyt
+}def
+
+% x-width end-except |- x y
+/end-except
+{gsave
+ space space add add Descent rmoveto
+ (-) foreground SetRGB S
+ grestore
+ space 0 rmoveto
+ xt yt
+}def
+
+%>Right EXcept: x-width entry height width rwidth REX |- x y
+/REX{begin-except right-direction end-except}def
+
+%>Left EXcept: x-width entry height width rwidth LEX |- x y
+/LEX{begin-except left-direction end-except}def
+
+% --- Sequence
+
+%>Beginning Of Sequence: BOS |- x y
+/BOS{currentpoint}bind def
+
+%>End Of Sequence: x y x1 y1 EOS |- x y
+/EOS{pop pop}bind def
+
+% --- Production
+
+%>Beginning Of Production: string width height BOP |- y x
+/BOP
+{xyp
+ neg yp add /yw exch def
+ xp add T sub /xw exch def
+ dup length 0 gt	% empty string ==> no production name
+ {/Effect EffectP def
+  /fP F ForegroundP SetRGB BackgroundP aload pop true BG S
+  /Effect 0 def
+  ( :) S false BG}if
+ xw yw moveto
+ hT EL RA
+ xp yw moveto
+ T EL
+ yp xp
+}def
+
+%>End Of Production: y x delta EOP
+/EOPH{add exch moveto}bind def			% horizontal
+/EOPV{exch pop sub 0 exch moveto}bind def	% vertical
+
+% --- Empty Alternative
+
+%>Empty Alternative: width EA |- x y
+/EA
+{gsave
+ Er add 0 rlineto
+ Stroke
+ grestore
+ c
+}def
+
+% --- Alternative
+
+%>AlTernative: h1 h2 ... hn n width AT |- x y
+/AT
+{xyo xo add /xw exch def
+ xw yo moveto
+ Er EL
+ {xw yo moveto
+  dup RAlt
+  xo yo moveto
+  LAlt}repeat
+ xo yo
+}def
+
+% --- Optional
+
+%>OPtional: height width OP |- x y
+/OP
+{xyo
+ T sub /ow exch def
+ ow Er sub 0 rmoveto
+ T Er add EL
+ neg dup RAlt
+ ow T sub neg EL
+ xo yo moveto
+ LAlt
+ xo yo moveto
+ T EL
+ xo yo
+}def
+
+% --- List Flow
+
+%>One or More: height width OM |- x y
+/OM
+{xyo
+ /ow exch def
+ ow Er add 0 rmoveto
+ T Er add neg EL
+ dup RLoop
+ xo T add yo moveto
+ LLoop
+ xo yo moveto
+ T EL
+ xo yo
+}def
+
+%>Zero or More: h2 h1 width ZM |- x y
+/ZM
+{xyo
+ Er add EL
+ Er neg 0 rmoveto
+ dup RAlt
+ exch dup RLoop
+ xo yo moveto
+ exch dup LAlt
+ exch LLoop
+ yo add xo T add exch moveto
+ xo yo
+}def
+
+% === end EBNF engine
+
+
+end
+
+% x y #ebnf2ps#begin
+/#ebnf2ps#begin
+{#ebnf2ps#dict begin /#ebnf2ps#save save def
+ moveto false BG 0.0 0.0 0.0 setrgbcolor}def
+
+/#ebnf2ps#end{showpage #ebnf2ps#save restore end}def
+
+%%EndProlog
+
+0 5722.886 #ebnf2ps#begin
+(function_call_expr) 1547.764 2862.578 BOP
+2847.455 2824.946 2802.438 2779.929 2757.421 2667.387 2337.316 2164.279 1991.243 1818.206 1645.170 1472.133 1299.097 1126.060 953.024 779.987 606.951 433.914 260.878 87.841 -85.195 -258.232 -431.268 -604.305 -777.341 -950.378 -1123.414 -1228.925 -1251.434 -1273.942 -1296.451 -1318.959 -1341.468 -1409.347 -1454.717 -1500.088 -1533.850 -1556.359 -1578.867 -1668.901 -1819.783 -1887.662 -1955.541 -2023.420 -2248.858 -2474.297 -2542.176 -2610.055 -2632.563 -2655.072 -2700.442 -2768.321 -2847.455 53 1515.810 AT
+BOS
+(DATE) 362.814 RT
+362.814 hm
+( \(  ) 362.814 RT
+362.814 hm
+(<expression>) 396.414 RT
+396.414 hm
+( \)  ) 362.814 RT
+EOS
+-22.509 vm
+BOS
+(TIME) 362.814 RT
+362.814 hm
+( \(  ) 362.814 RT
+362.814 hm
+(<expression>) 396.414 RT
+396.414 hm
+( \)  ) 362.814 RT
+EOS
+-22.509 vm
+BOS
+(MONTH) 365.964 RT
+365.964 hm
+( \(  ) 361.764 RT
+361.764 hm
+(<expression>) 395.364 RT
+395.364 hm
+( \)  ) 361.764 RT
+EOS
+-22.509 vm
+BOS
+(DAY ) 362.814 RT
+362.814 hm
+( \(  ) 362.814 RT
+362.814 hm
+(<expression>) 396.414 RT
+396.414 hm
+( \)  ) 362.814 RT
+EOS
+-22.509 vm
+BOS
+(YEAR) 362.814 RT
+362.814 hm
+( \(  ) 362.814 RT
+362.814 hm
+(<expression>) 396.414 RT
+396.414 hm
+( \)  ) 362.814 RT
+EOS
+-90.034 vm
+BOS
+(INTERVAL) 57.915 RT
+57.915 hm
+( \(  ) 41.115 RT
+41.115 hm
+53.988 -53.988 2 524.355 AT
+(character-string) 493.401 RT
+-107.976 vm
+84.760 50.291 -84.760 3 493.401 AT
+BOS
+( -  ) 201.840 RT
+201.840 hm
+(numeric_time_interval) 260.606 RNT
+EOS
+-34.470 vm
+11.254 -11.254 2 462.447 AT
+(<integer value>) 431.493 RT
+-22.509 vm
+BOS
+(<integer value>) 159.231 RT
+159.231 hm
+( -  ) 113.031 RT
+113.031 hm
+(<integer value>) 159.231 RT
+EOS
+EOS
+-135.051 vm
+101.288 78.780 56.271 33.763 11.254 -11.254 -33.763 -56.271 -78.780 -101.288 10 462.447 AT
+BOS
+(<integer value>) 215.746 RT
+215.746 hm
+(<integer value>) 215.746 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 119.423 RT
+119.423 hm
+(<integer value>) 119.423 RT
+119.423 hm
+( :  ) 73.223 RT
+73.223 hm
+(<integer value>) 119.423 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 87.315 RT
+87.315 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( :  ) 41.115 RT
+41.115 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( :  ) 41.115 RT
+41.115 hm
+(<integer value>) 87.315 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 87.315 RT
+87.315 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( :  ) 41.115 RT
+41.115 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( :  ) 41.115 RT
+41.115 hm
+(<numeric value>) 87.315 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 159.231 RT
+159.231 hm
+( :  ) 113.031 RT
+113.031 hm
+(<integer value>) 159.231 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 104.779 RT
+104.779 hm
+( :  ) 58.579 RT
+58.579 hm
+(<integer value>) 104.779 RT
+104.779 hm
+( :  ) 58.579 RT
+58.579 hm
+(<integer value>) 104.779 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 104.779 RT
+104.779 hm
+( :  ) 58.579 RT
+58.579 hm
+(<integer value>) 104.779 RT
+104.779 hm
+( :  ) 58.579 RT
+58.579 hm
+(<numeric value>) 104.779 RT
+EOS
+-22.509 vm
+BOS
+(<integer value>) 159.231 RT
+159.231 hm
+( :  ) 113.031 RT
+113.031 hm
+(<numeric value>) 159.231 RT
+EOS
+-22.509 vm
+(<numeric value>) 431.493 RT
+-22.509 vm
+BOS
+( .  ) 192.646 RT
+192.646 hm
+(<integer value>) 238.846 RT
+EOS
+EOS
+EOS
+EOS
+524.355 hm
+( \)  ) 41.115 RT
+41.115 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 289.370 AT
+(YEAR) 258.416 RT
+-22.509 vm
+(MONTH) 258.416 RT
+-22.509 vm
+(DAY ) 258.416 RT
+-22.509 vm
+(HOUR) 258.416 RT
+-22.509 vm
+(MINUTE) 258.416 RT
+-22.509 vm
+(SECOND) 258.416 RT
+-22.509 vm
+BOS
+(FRACTION) 57.915 RT
+57.915 hm
+15.123 200.500 OP
+BOS
+( \(  ) 41.115 RT
+41.115 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( \)  ) 41.115 RT
+EOS
+EOS
+EOS
+EOS
+289.370 hm
+15.123 200.500 OP
+BOS
+( \(  ) 41.115 RT
+41.115 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( \)  ) 41.115 RT
+EOS
+EOS
+200.500 hm
+( TO ) 41.115 RT
+41.115 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 289.370 AT
+(YEAR) 258.416 RT
+-22.509 vm
+(MONTH) 258.416 RT
+-22.509 vm
+(DAY ) 258.416 RT
+-22.509 vm
+(HOUR) 258.416 RT
+-22.509 vm
+(MINUTE) 258.416 RT
+-22.509 vm
+(SECOND) 258.416 RT
+-22.509 vm
+BOS
+(FRACTION) 57.915 RT
+57.915 hm
+15.123 200.500 OP
+BOS
+( \(  ) 41.115 RT
+41.115 hm
+(<integer value>) 87.315 RT
+87.315 hm
+( \)  ) 41.115 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+-330.071 vm
+BOS
+(DATETIME) 178.393 RT
+178.393 hm
+( \(  ) 161.593 RT
+161.593 hm
+(character-string) 211.993 RT
+211.993 hm
+( \)  ) 161.593 RT
+161.593 hm
+90.388 771.286 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 329.529 AT
+(YEAR) 298.575 RT
+-22.509 vm
+(MONTH) 298.575 RT
+-22.509 vm
+(DAY ) 298.575 RT
+-22.509 vm
+(HOUR) 298.575 RT
+-22.509 vm
+(MINUTE) 298.575 RT
+-22.509 vm
+(SECOND) 298.575 RT
+-22.509 vm
+BOS
+(FRACTION) 77.995 RT
+77.995 hm
+15.123 220.580 OP
+BOS
+( \(  ) 47.809 RT
+47.809 hm
+(<integer value>) 94.009 RT
+94.009 hm
+( \)  ) 47.809 RT
+EOS
+EOS
+EOS
+EOS
+329.529 hm
+( TO ) 81.274 RT
+81.274 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 329.529 AT
+(YEAR) 298.575 RT
+-22.509 vm
+(MONTH) 298.575 RT
+-22.509 vm
+(DAY ) 298.575 RT
+-22.509 vm
+(HOUR) 298.575 RT
+-22.509 vm
+(MINUTE) 298.575 RT
+-22.509 vm
+(SECOND) 298.575 RT
+-22.509 vm
+BOS
+(FRACTION) 77.995 RT
+77.995 hm
+15.123 220.580 OP
+BOS
+( \(  ) 47.809 RT
+47.809 hm
+(<integer value>) 94.009 RT
+94.009 hm
+( \)  ) 47.809 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 179.233 RT
+179.233 hm
+( \(  ) 162.433 RT
+162.433 hm
+(<integer value>) 208.633 RT
+208.633 hm
+( \)  ) 162.433 RT
+162.433 hm
+90.388 772.126 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 329.809 AT
+(YEAR) 298.855 RT
+-22.509 vm
+(MONTH) 298.855 RT
+-22.509 vm
+(DAY ) 298.855 RT
+-22.509 vm
+(HOUR) 298.855 RT
+-22.509 vm
+(MINUTE) 298.855 RT
+-22.509 vm
+(SECOND) 298.855 RT
+-22.509 vm
+BOS
+(FRACTION) 78.135 RT
+78.135 hm
+15.123 220.720 OP
+BOS
+( \(  ) 47.855 RT
+47.855 hm
+(<integer value>) 94.055 RT
+94.055 hm
+( \)  ) 47.855 RT
+EOS
+EOS
+EOS
+EOS
+329.809 hm
+( TO ) 81.554 RT
+81.554 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 329.809 AT
+(YEAR) 298.855 RT
+-22.509 vm
+(MONTH) 298.855 RT
+-22.509 vm
+(DAY ) 298.855 RT
+-22.509 vm
+(HOUR) 298.855 RT
+-22.509 vm
+(MINUTE) 298.855 RT
+-22.509 vm
+(SECOND) 298.855 RT
+-22.509 vm
+BOS
+(FRACTION) 78.135 RT
+78.135 hm
+15.123 220.720 OP
+BOS
+( \(  ) 47.855 RT
+47.855 hm
+(<integer value>) 94.055 RT
+94.055 hm
+( \)  ) 47.855 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 179.233 RT
+179.233 hm
+( \(  ) 162.433 RT
+162.433 hm
+(<numeric value>) 208.633 RT
+208.633 hm
+( \)  ) 162.433 RT
+162.433 hm
+90.388 772.126 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 329.809 AT
+(YEAR) 298.855 RT
+-22.509 vm
+(MONTH) 298.855 RT
+-22.509 vm
+(DAY ) 298.855 RT
+-22.509 vm
+(HOUR) 298.855 RT
+-22.509 vm
+(MINUTE) 298.855 RT
+-22.509 vm
+(SECOND) 298.855 RT
+-22.509 vm
+BOS
+(FRACTION) 78.135 RT
+78.135 hm
+15.123 220.720 OP
+BOS
+( \(  ) 47.855 RT
+47.855 hm
+(<integer value>) 94.055 RT
+94.055 hm
+( \)  ) 47.855 RT
+EOS
+EOS
+EOS
+EOS
+329.809 hm
+( TO ) 81.554 RT
+81.554 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 329.809 AT
+(YEAR) 298.855 RT
+-22.509 vm
+(MONTH) 298.855 RT
+-22.509 vm
+(DAY ) 298.855 RT
+-22.509 vm
+(HOUR) 298.855 RT
+-22.509 vm
+(MINUTE) 298.855 RT
+-22.509 vm
+(SECOND) 298.855 RT
+-22.509 vm
+BOS
+(FRACTION) 78.135 RT
+78.135 hm
+15.123 220.720 OP
+BOS
+( \(  ) 47.855 RT
+47.855 hm
+(<integer value>) 94.055 RT
+94.055 hm
+( \)  ) 47.855 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 126.223 RT
+126.223 hm
+( \(  ) 109.423 RT
+109.423 hm
+(<integer value>) 155.623 RT
+155.623 hm
+( :  ) 109.423 RT
+109.423 hm
+(<integer value>) 155.623 RT
+155.623 hm
+( \)  ) 109.423 RT
+109.423 hm
+90.388 719.117 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 312.139 AT
+(YEAR) 281.185 RT
+-22.509 vm
+(MONTH) 281.185 RT
+-22.509 vm
+(DAY ) 281.185 RT
+-22.509 vm
+(HOUR) 281.185 RT
+-22.509 vm
+(MINUTE) 281.185 RT
+-22.509 vm
+(SECOND) 281.185 RT
+-22.509 vm
+BOS
+(FRACTION) 69.300 RT
+69.300 hm
+15.123 211.885 OP
+BOS
+( \(  ) 44.910 RT
+44.910 hm
+(<integer value>) 91.110 RT
+91.110 hm
+( \)  ) 44.910 RT
+EOS
+EOS
+EOS
+EOS
+312.139 hm
+( TO ) 63.885 RT
+63.885 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 312.139 AT
+(YEAR) 281.185 RT
+-22.509 vm
+(MONTH) 281.185 RT
+-22.509 vm
+(DAY ) 281.185 RT
+-22.509 vm
+(HOUR) 281.185 RT
+-22.509 vm
+(MINUTE) 281.185 RT
+-22.509 vm
+(SECOND) 281.185 RT
+-22.509 vm
+BOS
+(FRACTION) 69.300 RT
+69.300 hm
+15.123 211.885 OP
+BOS
+( \(  ) 44.910 RT
+44.910 hm
+(<integer value>) 91.110 RT
+91.110 hm
+( \)  ) 44.910 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 126.223 RT
+126.223 hm
+( \(  ) 109.423 RT
+109.423 hm
+(<integer value>) 155.623 RT
+155.623 hm
+( :  ) 109.423 RT
+109.423 hm
+(<numeric value>) 155.623 RT
+155.623 hm
+( \)  ) 109.423 RT
+109.423 hm
+90.388 719.117 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 312.139 AT
+(YEAR) 281.185 RT
+-22.509 vm
+(MONTH) 281.185 RT
+-22.509 vm
+(DAY ) 281.185 RT
+-22.509 vm
+(HOUR) 281.185 RT
+-22.509 vm
+(MINUTE) 281.185 RT
+-22.509 vm
+(SECOND) 281.185 RT
+-22.509 vm
+BOS
+(FRACTION) 69.300 RT
+69.300 hm
+15.123 211.885 OP
+BOS
+( \(  ) 44.910 RT
+44.910 hm
+(<integer value>) 91.110 RT
+91.110 hm
+( \)  ) 44.910 RT
+EOS
+EOS
+EOS
+EOS
+312.139 hm
+( TO ) 63.885 RT
+63.885 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 312.139 AT
+(YEAR) 281.185 RT
+-22.509 vm
+(MONTH) 281.185 RT
+-22.509 vm
+(DAY ) 281.185 RT
+-22.509 vm
+(HOUR) 281.185 RT
+-22.509 vm
+(MINUTE) 281.185 RT
+-22.509 vm
+(SECOND) 281.185 RT
+-22.509 vm
+BOS
+(FRACTION) 69.300 RT
+69.300 hm
+15.123 211.885 OP
+BOS
+( \(  ) 44.910 RT
+44.910 hm
+(<integer value>) 91.110 RT
+91.110 hm
+( \)  ) 44.910 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 96.774 RT
+96.774 hm
+( \(  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( :  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( :  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( \)  ) 79.974 RT
+79.974 hm
+90.388 689.667 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 302.323 AT
+(YEAR) 271.369 RT
+-22.509 vm
+(MONTH) 271.369 RT
+-22.509 vm
+(DAY ) 271.369 RT
+-22.509 vm
+(HOUR) 271.369 RT
+-22.509 vm
+(MINUTE) 271.369 RT
+-22.509 vm
+(SECOND) 271.369 RT
+-22.509 vm
+BOS
+(FRACTION) 64.392 RT
+64.392 hm
+15.123 206.977 OP
+BOS
+( \(  ) 43.274 RT
+43.274 hm
+(<integer value>) 89.474 RT
+89.474 hm
+( \)  ) 43.274 RT
+EOS
+EOS
+EOS
+EOS
+302.323 hm
+( TO ) 54.068 RT
+54.068 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 302.323 AT
+(YEAR) 271.369 RT
+-22.509 vm
+(MONTH) 271.369 RT
+-22.509 vm
+(DAY ) 271.369 RT
+-22.509 vm
+(HOUR) 271.369 RT
+-22.509 vm
+(MINUTE) 271.369 RT
+-22.509 vm
+(SECOND) 271.369 RT
+-22.509 vm
+BOS
+(FRACTION) 64.392 RT
+64.392 hm
+15.123 206.977 OP
+BOS
+( \(  ) 43.274 RT
+43.274 hm
+(<integer value>) 89.474 RT
+89.474 hm
+( \)  ) 43.274 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 96.774 RT
+96.774 hm
+( \(  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( :  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( :  ) 79.974 RT
+79.974 hm
+(<numeric value>) 126.174 RT
+126.174 hm
+( \)  ) 79.974 RT
+79.974 hm
+90.388 689.667 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 302.323 AT
+(YEAR) 271.369 RT
+-22.509 vm
+(MONTH) 271.369 RT
+-22.509 vm
+(DAY ) 271.369 RT
+-22.509 vm
+(HOUR) 271.369 RT
+-22.509 vm
+(MINUTE) 271.369 RT
+-22.509 vm
+(SECOND) 271.369 RT
+-22.509 vm
+BOS
+(FRACTION) 64.392 RT
+64.392 hm
+15.123 206.977 OP
+BOS
+( \(  ) 43.274 RT
+43.274 hm
+(<integer value>) 89.474 RT
+89.474 hm
+( \)  ) 43.274 RT
+EOS
+EOS
+EOS
+EOS
+302.323 hm
+( TO ) 54.068 RT
+54.068 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 302.323 AT
+(YEAR) 271.369 RT
+-22.509 vm
+(MONTH) 271.369 RT
+-22.509 vm
+(DAY ) 271.369 RT
+-22.509 vm
+(HOUR) 271.369 RT
+-22.509 vm
+(MINUTE) 271.369 RT
+-22.509 vm
+(SECOND) 271.369 RT
+-22.509 vm
+BOS
+(FRACTION) 64.392 RT
+64.392 hm
+15.123 206.977 OP
+BOS
+( \(  ) 43.274 RT
+43.274 hm
+(<integer value>) 89.474 RT
+89.474 hm
+( \)  ) 43.274 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 144.460 RT
+144.460 hm
+( \(  ) 127.660 RT
+127.660 hm
+(<integer value>) 173.860 RT
+173.860 hm
+(<integer value>) 173.860 RT
+173.860 hm
+( \)  ) 127.660 RT
+127.660 hm
+90.388 737.354 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 318.218 AT
+(YEAR) 287.264 RT
+-22.509 vm
+(MONTH) 287.264 RT
+-22.509 vm
+(DAY ) 287.264 RT
+-22.509 vm
+(HOUR) 287.264 RT
+-22.509 vm
+(MINUTE) 287.264 RT
+-22.509 vm
+(SECOND) 287.264 RT
+-22.509 vm
+BOS
+(FRACTION) 72.340 RT
+72.340 hm
+15.123 214.925 OP
+BOS
+( \(  ) 45.924 RT
+45.924 hm
+(<integer value>) 92.124 RT
+92.124 hm
+( \)  ) 45.924 RT
+EOS
+EOS
+EOS
+EOS
+318.218 hm
+( TO ) 69.964 RT
+69.964 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 318.218 AT
+(YEAR) 287.264 RT
+-22.509 vm
+(MONTH) 287.264 RT
+-22.509 vm
+(DAY ) 287.264 RT
+-22.509 vm
+(HOUR) 287.264 RT
+-22.509 vm
+(MINUTE) 287.264 RT
+-22.509 vm
+(SECOND) 287.264 RT
+-22.509 vm
+BOS
+(FRACTION) 72.340 RT
+72.340 hm
+15.123 214.925 OP
+BOS
+( \(  ) 45.924 RT
+45.924 hm
+(<integer value>) 92.124 RT
+92.124 hm
+( \)  ) 45.924 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 106.770 RT
+106.770 hm
+( \(  ) 89.970 RT
+89.970 hm
+(<integer value>) 136.170 RT
+136.170 hm
+(<integer value>) 136.170 RT
+136.170 hm
+( :  ) 89.970 RT
+89.970 hm
+(<integer value>) 136.170 RT
+136.170 hm
+( \)  ) 89.970 RT
+89.970 hm
+90.388 699.664 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 305.655 AT
+(YEAR) 274.701 RT
+-22.509 vm
+(MONTH) 274.701 RT
+-22.509 vm
+(DAY ) 274.701 RT
+-22.509 vm
+(HOUR) 274.701 RT
+-22.509 vm
+(MINUTE) 274.701 RT
+-22.509 vm
+(SECOND) 274.701 RT
+-22.509 vm
+BOS
+(FRACTION) 66.058 RT
+66.058 hm
+15.123 208.643 OP
+BOS
+( \(  ) 43.830 RT
+43.830 hm
+(<integer value>) 90.030 RT
+90.030 hm
+( \)  ) 43.830 RT
+EOS
+EOS
+EOS
+EOS
+305.655 hm
+( TO ) 57.400 RT
+57.400 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 305.655 AT
+(YEAR) 274.701 RT
+-22.509 vm
+(MONTH) 274.701 RT
+-22.509 vm
+(DAY ) 274.701 RT
+-22.509 vm
+(HOUR) 274.701 RT
+-22.509 vm
+(MINUTE) 274.701 RT
+-22.509 vm
+(SECOND) 274.701 RT
+-22.509 vm
+BOS
+(FRACTION) 66.058 RT
+66.058 hm
+15.123 208.643 OP
+BOS
+( \(  ) 43.830 RT
+43.830 hm
+(<integer value>) 90.030 RT
+90.030 hm
+( \)  ) 43.830 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 84.156 RT
+84.156 hm
+( \(  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( :  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( :  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( \)  ) 67.356 RT
+67.356 hm
+90.388 677.050 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+298.117 hm
+( TO ) 49.862 RT
+49.862 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 84.156 RT
+84.156 hm
+( \(  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( :  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( :  ) 67.356 RT
+67.356 hm
+(<numeric value>) 113.556 RT
+113.556 hm
+( \)  ) 67.356 RT
+67.356 hm
+90.388 677.050 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+298.117 hm
+( TO ) 49.862 RT
+49.862 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 126.223 RT
+126.223 hm
+( \(  ) 109.423 RT
+109.423 hm
+(<integer value>) 155.623 RT
+155.623 hm
+( -  ) 109.423 RT
+109.423 hm
+(<integer value>) 155.623 RT
+155.623 hm
+( \)  ) 109.423 RT
+109.423 hm
+90.388 719.117 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 312.139 AT
+(YEAR) 281.185 RT
+-22.509 vm
+(MONTH) 281.185 RT
+-22.509 vm
+(DAY ) 281.185 RT
+-22.509 vm
+(HOUR) 281.185 RT
+-22.509 vm
+(MINUTE) 281.185 RT
+-22.509 vm
+(SECOND) 281.185 RT
+-22.509 vm
+BOS
+(FRACTION) 69.300 RT
+69.300 hm
+15.123 211.885 OP
+BOS
+( \(  ) 44.910 RT
+44.910 hm
+(<integer value>) 91.110 RT
+91.110 hm
+( \)  ) 44.910 RT
+EOS
+EOS
+EOS
+EOS
+312.139 hm
+( TO ) 63.885 RT
+63.885 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 312.139 AT
+(YEAR) 281.185 RT
+-22.509 vm
+(MONTH) 281.185 RT
+-22.509 vm
+(DAY ) 281.185 RT
+-22.509 vm
+(HOUR) 281.185 RT
+-22.509 vm
+(MINUTE) 281.185 RT
+-22.509 vm
+(SECOND) 281.185 RT
+-22.509 vm
+BOS
+(FRACTION) 69.300 RT
+69.300 hm
+15.123 211.885 OP
+BOS
+( \(  ) 44.910 RT
+44.910 hm
+(<integer value>) 91.110 RT
+91.110 hm
+( \)  ) 44.910 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 96.774 RT
+96.774 hm
+( \(  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( -  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( -  ) 79.974 RT
+79.974 hm
+(<integer value>) 126.174 RT
+126.174 hm
+( \)  ) 79.974 RT
+79.974 hm
+90.388 689.667 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 302.323 AT
+(YEAR) 271.369 RT
+-22.509 vm
+(MONTH) 271.369 RT
+-22.509 vm
+(DAY ) 271.369 RT
+-22.509 vm
+(HOUR) 271.369 RT
+-22.509 vm
+(MINUTE) 271.369 RT
+-22.509 vm
+(SECOND) 271.369 RT
+-22.509 vm
+BOS
+(FRACTION) 64.392 RT
+64.392 hm
+15.123 206.977 OP
+BOS
+( \(  ) 43.274 RT
+43.274 hm
+(<integer value>) 89.474 RT
+89.474 hm
+( \)  ) 43.274 RT
+EOS
+EOS
+EOS
+EOS
+302.323 hm
+( TO ) 54.068 RT
+54.068 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 302.323 AT
+(YEAR) 271.369 RT
+-22.509 vm
+(MONTH) 271.369 RT
+-22.509 vm
+(DAY ) 271.369 RT
+-22.509 vm
+(HOUR) 271.369 RT
+-22.509 vm
+(MINUTE) 271.369 RT
+-22.509 vm
+(SECOND) 271.369 RT
+-22.509 vm
+BOS
+(FRACTION) 64.392 RT
+64.392 hm
+15.123 206.977 OP
+BOS
+( \(  ) 43.274 RT
+43.274 hm
+(<integer value>) 89.474 RT
+89.474 hm
+( \)  ) 43.274 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 106.770 RT
+106.770 hm
+( \(  ) 89.970 RT
+89.970 hm
+(<integer value>) 136.170 RT
+136.170 hm
+( -  ) 89.970 RT
+89.970 hm
+(<integer value>) 136.170 RT
+136.170 hm
+(<integer value>) 136.170 RT
+136.170 hm
+( \)  ) 89.970 RT
+89.970 hm
+90.388 699.664 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 305.655 AT
+(YEAR) 274.701 RT
+-22.509 vm
+(MONTH) 274.701 RT
+-22.509 vm
+(DAY ) 274.701 RT
+-22.509 vm
+(HOUR) 274.701 RT
+-22.509 vm
+(MINUTE) 274.701 RT
+-22.509 vm
+(SECOND) 274.701 RT
+-22.509 vm
+BOS
+(FRACTION) 66.058 RT
+66.058 hm
+15.123 208.643 OP
+BOS
+( \(  ) 43.830 RT
+43.830 hm
+(<integer value>) 90.030 RT
+90.030 hm
+( \)  ) 43.830 RT
+EOS
+EOS
+EOS
+EOS
+305.655 hm
+( TO ) 57.400 RT
+57.400 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 305.655 AT
+(YEAR) 274.701 RT
+-22.509 vm
+(MONTH) 274.701 RT
+-22.509 vm
+(DAY ) 274.701 RT
+-22.509 vm
+(HOUR) 274.701 RT
+-22.509 vm
+(MINUTE) 274.701 RT
+-22.509 vm
+(SECOND) 274.701 RT
+-22.509 vm
+BOS
+(FRACTION) 66.058 RT
+66.058 hm
+15.123 208.643 OP
+BOS
+( \(  ) 43.830 RT
+43.830 hm
+(<integer value>) 90.030 RT
+90.030 hm
+( \)  ) 43.830 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 84.156 RT
+84.156 hm
+( \(  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( -  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( -  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( \)  ) 67.356 RT
+67.356 hm
+90.388 677.050 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+298.117 hm
+( TO ) 49.862 RT
+49.862 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 69.080 RT
+69.080 hm
+( \(  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( -  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( -  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( :  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( \)  ) 52.280 RT
+52.280 hm
+90.388 661.974 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 293.091 AT
+(YEAR) 262.137 RT
+-22.509 vm
+(MONTH) 262.137 RT
+-22.509 vm
+(DAY ) 262.137 RT
+-22.509 vm
+(HOUR) 262.137 RT
+-22.509 vm
+(MINUTE) 262.137 RT
+-22.509 vm
+(SECOND) 262.137 RT
+-22.509 vm
+BOS
+(FRACTION) 59.776 RT
+59.776 hm
+15.123 202.361 OP
+BOS
+( \(  ) 41.736 RT
+41.736 hm
+(<integer value>) 87.936 RT
+87.936 hm
+( \)  ) 41.736 RT
+EOS
+EOS
+EOS
+EOS
+293.091 hm
+( TO ) 44.837 RT
+44.837 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 293.091 AT
+(YEAR) 262.137 RT
+-22.509 vm
+(MONTH) 262.137 RT
+-22.509 vm
+(DAY ) 262.137 RT
+-22.509 vm
+(HOUR) 262.137 RT
+-22.509 vm
+(MINUTE) 262.137 RT
+-22.509 vm
+(SECOND) 262.137 RT
+-22.509 vm
+BOS
+(FRACTION) 59.776 RT
+59.776 hm
+15.123 202.361 OP
+BOS
+( \(  ) 41.736 RT
+41.736 hm
+(<integer value>) 87.936 RT
+87.936 hm
+( \)  ) 41.736 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 58.312 RT
+58.312 hm
+( \(  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( -  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( -  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( :  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( :  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( \)  ) 41.512 RT
+41.512 hm
+90.388 651.205 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 289.502 AT
+(YEAR) 258.548 RT
+-22.509 vm
+(MONTH) 258.548 RT
+-22.509 vm
+(DAY ) 258.548 RT
+-22.509 vm
+(HOUR) 258.548 RT
+-22.509 vm
+(MINUTE) 258.548 RT
+-22.509 vm
+(SECOND) 258.548 RT
+-22.509 vm
+BOS
+(FRACTION) 57.981 RT
+57.981 hm
+15.123 200.566 OP
+BOS
+( \(  ) 41.137 RT
+41.137 hm
+(<integer value>) 87.337 RT
+87.337 hm
+( \)  ) 41.137 RT
+EOS
+EOS
+EOS
+EOS
+289.502 hm
+( TO ) 41.248 RT
+41.248 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 289.502 AT
+(YEAR) 258.548 RT
+-22.509 vm
+(MONTH) 258.548 RT
+-22.509 vm
+(DAY ) 258.548 RT
+-22.509 vm
+(HOUR) 258.548 RT
+-22.509 vm
+(MINUTE) 258.548 RT
+-22.509 vm
+(SECOND) 258.548 RT
+-22.509 vm
+BOS
+(FRACTION) 57.981 RT
+57.981 hm
+15.123 200.566 OP
+BOS
+( \(  ) 41.137 RT
+41.137 hm
+(<integer value>) 87.337 RT
+87.337 hm
+( \)  ) 41.137 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 58.312 RT
+58.312 hm
+( \(  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( -  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( -  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( :  ) 41.512 RT
+41.512 hm
+(<integer value>) 87.712 RT
+87.712 hm
+( :  ) 41.512 RT
+41.512 hm
+(<numeric value>) 87.712 RT
+87.712 hm
+( \)  ) 41.512 RT
+41.512 hm
+90.388 651.205 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 289.502 AT
+(YEAR) 258.548 RT
+-22.509 vm
+(MONTH) 258.548 RT
+-22.509 vm
+(DAY ) 258.548 RT
+-22.509 vm
+(HOUR) 258.548 RT
+-22.509 vm
+(MINUTE) 258.548 RT
+-22.509 vm
+(SECOND) 258.548 RT
+-22.509 vm
+BOS
+(FRACTION) 57.981 RT
+57.981 hm
+15.123 200.566 OP
+BOS
+( \(  ) 41.137 RT
+41.137 hm
+(<integer value>) 87.337 RT
+87.337 hm
+( \)  ) 41.137 RT
+EOS
+EOS
+EOS
+EOS
+289.502 hm
+( TO ) 41.248 RT
+41.248 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 289.502 AT
+(YEAR) 258.548 RT
+-22.509 vm
+(MONTH) 258.548 RT
+-22.509 vm
+(DAY ) 258.548 RT
+-22.509 vm
+(HOUR) 258.548 RT
+-22.509 vm
+(MINUTE) 258.548 RT
+-22.509 vm
+(SECOND) 258.548 RT
+-22.509 vm
+BOS
+(FRACTION) 57.981 RT
+57.981 hm
+15.123 200.566 OP
+BOS
+( \(  ) 41.137 RT
+41.137 hm
+(<integer value>) 87.337 RT
+87.337 hm
+( \)  ) 41.137 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 84.156 RT
+84.156 hm
+( \(  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( -  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( :  ) 67.356 RT
+67.356 hm
+(<integer value>) 113.556 RT
+113.556 hm
+( \)  ) 67.356 RT
+67.356 hm
+90.388 677.050 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+298.117 hm
+( TO ) 49.862 RT
+49.862 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 298.117 AT
+(YEAR) 267.163 RT
+-22.509 vm
+(MONTH) 267.163 RT
+-22.509 vm
+(DAY ) 267.163 RT
+-22.509 vm
+(HOUR) 267.163 RT
+-22.509 vm
+(MINUTE) 267.163 RT
+-22.509 vm
+(SECOND) 267.163 RT
+-22.509 vm
+BOS
+(FRACTION) 62.289 RT
+62.289 hm
+15.123 204.874 OP
+BOS
+( \(  ) 42.573 RT
+42.573 hm
+(<integer value>) 88.773 RT
+88.773 hm
+( \)  ) 42.573 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 69.080 RT
+69.080 hm
+( \(  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( -  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( :  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( :  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( \)  ) 52.280 RT
+52.280 hm
+90.388 661.974 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 293.091 AT
+(YEAR) 262.137 RT
+-22.509 vm
+(MONTH) 262.137 RT
+-22.509 vm
+(DAY ) 262.137 RT
+-22.509 vm
+(HOUR) 262.137 RT
+-22.509 vm
+(MINUTE) 262.137 RT
+-22.509 vm
+(SECOND) 262.137 RT
+-22.509 vm
+BOS
+(FRACTION) 59.776 RT
+59.776 hm
+15.123 202.361 OP
+BOS
+( \(  ) 41.736 RT
+41.736 hm
+(<integer value>) 87.936 RT
+87.936 hm
+( \)  ) 41.736 RT
+EOS
+EOS
+EOS
+EOS
+293.091 hm
+( TO ) 44.837 RT
+44.837 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 293.091 AT
+(YEAR) 262.137 RT
+-22.509 vm
+(MONTH) 262.137 RT
+-22.509 vm
+(DAY ) 262.137 RT
+-22.509 vm
+(HOUR) 262.137 RT
+-22.509 vm
+(MINUTE) 262.137 RT
+-22.509 vm
+(SECOND) 262.137 RT
+-22.509 vm
+BOS
+(FRACTION) 59.776 RT
+59.776 hm
+15.123 202.361 OP
+BOS
+( \(  ) 41.736 RT
+41.736 hm
+(<integer value>) 87.936 RT
+87.936 hm
+( \)  ) 41.736 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-173.036 vm
+BOS
+(DATETIME) 69.080 RT
+69.080 hm
+( \(  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( -  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( :  ) 52.280 RT
+52.280 hm
+(<integer value>) 98.480 RT
+98.480 hm
+( :  ) 52.280 RT
+52.280 hm
+(<numeric value>) 98.480 RT
+98.480 hm
+( \)  ) 52.280 RT
+52.280 hm
+90.388 661.974 OP
+BOS
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 293.091 AT
+(YEAR) 262.137 RT
+-22.509 vm
+(MONTH) 262.137 RT
+-22.509 vm
+(DAY ) 262.137 RT
+-22.509 vm
+(HOUR) 262.137 RT
+-22.509 vm
+(MINUTE) 262.137 RT
+-22.509 vm
+(SECOND) 262.137 RT
+-22.509 vm
+BOS
+(FRACTION) 59.776 RT
+59.776 hm
+15.123 202.361 OP
+BOS
+( \(  ) 41.736 RT
+41.736 hm
+(<integer value>) 87.936 RT
+87.936 hm
+( \)  ) 41.736 RT
+EOS
+EOS
+EOS
+EOS
+293.091 hm
+( TO ) 44.837 RT
+44.837 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 293.091 AT
+(YEAR) 262.137 RT
+-22.509 vm
+(MONTH) 262.137 RT
+-22.509 vm
+(DAY ) 262.137 RT
+-22.509 vm
+(HOUR) 262.137 RT
+-22.509 vm
+(MINUTE) 262.137 RT
+-22.509 vm
+(SECOND) 262.137 RT
+-22.509 vm
+BOS
+(FRACTION) 59.776 RT
+59.776 hm
+15.123 202.361 OP
+BOS
+( \(  ) 41.736 RT
+41.736 hm
+(<integer value>) 87.936 RT
+87.936 hm
+( \)  ) 41.736 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+-105.511 vm
+BOS
+(ACLFGL_SIZEOF) 393.264 RT
+393.264 hm
+( \(  ) 355.464 RT
+355.464 hm
+([variable]) 380.664 RT
+380.664 hm
+( \)  ) 355.464 RT
+EOS
+-22.509 vm
+BOS
+(ACLFGL_ADDRESSOF) 402.714 RT
+402.714 hm
+( \(  ) 352.314 RT
+352.314 hm
+([variable]) 377.514 RT
+377.514 hm
+( \)  ) 352.314 RT
+EOS
+-22.509 vm
+BOS
+(fgl_isdynarr_allocated) 421.614 RT
+421.614 hm
+( \(  ) 346.014 RT
+346.014 hm
+([variable]) 371.214 RT
+371.214 hm
+( \)  ) 346.014 RT
+EOS
+-22.509 vm
+BOS
+(fgl_dynarr_extentsize) 295.076 RT
+295.076 hm
+( \(  ) 223.676 RT
+223.676 hm
+([variable]) 248.876 RT
+248.876 hm
+( ,  ) 223.676 RT
+223.676 hm
+(<integer value>) 269.876 RT
+269.876 hm
+( \)  ) 223.676 RT
+EOS
+-22.509 vm
+BOS
+(FIELD_TO_WIDGET) 397.464 RT
+397.464 hm
+( \(  ) 351.264 RT
+351.264 hm
+(<field name>) 384.864 RT
+384.864 hm
+( \)  ) 351.264 RT
+EOS
+-22.509 vm
+BOS
+(ID_TO_INT) 378.564 RT
+378.564 hm
+( \(  ) 357.564 RT
+357.564 hm
+(<field name>) 391.164 RT
+391.164 hm
+( \)  ) 357.564 RT
+EOS
+-67.879 vm
+BOS
+(INFIELD) 352.587 RT
+352.587 hm
+( \(  ) 339.987 RT
+339.987 hm
+26.378 26.378 452.295 ZM
+11.254 -11.254 2 421.341 AT
+(<field name>) 390.387 RT
+-22.509 vm
+(character-string) 390.387 RT
+EOS
+26.378 vm
+421.341 EA
+EOS
+452.295 hm
+( \)  ) 339.987 RT
+EOS
+-45.370 vm
+BOS
+(FIELD_TOUCHED) 383.426 RT
+383.426 hm
+( \(  ) 345.626 RT
+345.626 hm
+15.123 15.123 410.180 ZM
+(<field name>) 379.226 RT
+15.123 vm
+379.226 EA
+EOS
+410.180 hm
+( \)  ) 345.626 RT
+EOS
+-45.370 vm
+BOS
+11.254 -11.254 2 419.241 AT
+(NOT FIELD_TOUCHED) 388.287 RT
+-22.509 vm
+(NOT FIELD_TOUCHED) 388.287 RT
+EOS
+419.241 hm
+( \(  ) 333.687 RT
+333.687 hm
+15.123 15.123 398.241 ZM
+(<field name>) 367.287 RT
+15.123 vm
+367.287 EA
+EOS
+398.241 hm
+( \)  ) 333.687 RT
+EOS
+-33.763 vm
+BOS
+(UPSHIFT) 372.264 RT
+372.264 hm
+( \(  ) 359.664 RT
+359.664 hm
+(<expression>) 393.264 RT
+393.264 hm
+( \)  ) 359.664 RT
+EOS
+-22.509 vm
+BOS
+(DOWNSHIFT) 378.564 RT
+378.564 hm
+( \(  ) 357.564 RT
+357.564 hm
+(<expression>) 391.164 RT
+391.164 hm
+( \)  ) 357.564 RT
+EOS
+-22.509 vm
+BOS
+(ASCII) 727.728 RT
+727.728 hm
+(<expression>) 757.128 RT
+EOS
+-90.034 vm
+BOS
+(EXTEND) 166.809 RT
+166.809 hm
+( \(  ) 158.409 RT
+158.409 hm
+(<expression>) 192.009 RT
+192.009 hm
+90.388 809.218 OP
+BOS
+( ,  ) 70.439 RT
+70.439 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 318.693 AT
+(YEAR) 287.739 RT
+-22.509 vm
+(MONTH) 287.739 RT
+-22.509 vm
+(DAY ) 287.739 RT
+-22.509 vm
+(HOUR) 287.739 RT
+-22.509 vm
+(MINUTE) 287.739 RT
+-22.509 vm
+(SECOND) 287.739 RT
+-22.509 vm
+BOS
+(FRACTION) 72.577 RT
+72.577 hm
+15.123 215.162 OP
+BOS
+( \(  ) 46.003 RT
+46.003 hm
+(<integer value>) 92.203 RT
+92.203 hm
+( \)  ) 46.003 RT
+EOS
+EOS
+EOS
+EOS
+318.693 hm
+( TO ) 70.439 RT
+70.439 hm
+67.526 45.017 22.509 0.000 -22.509 -45.017 -67.526 7 318.693 AT
+(YEAR) 287.739 RT
+-22.509 vm
+(MONTH) 287.739 RT
+-22.509 vm
+(DAY ) 287.739 RT
+-22.509 vm
+(HOUR) 287.739 RT
+-22.509 vm
+(MINUTE) 287.739 RT
+-22.509 vm
+(SECOND) 287.739 RT
+-22.509 vm
+BOS
+(FRACTION) 72.577 RT
+72.577 hm
+15.123 215.162 OP
+BOS
+( \(  ) 46.003 RT
+46.003 hm
+(<integer value>) 92.203 RT
+92.203 hm
+( \)  ) 46.003 RT
+EOS
+EOS
+EOS
+EOS
+EOS
+EOS
+809.218 hm
+( \)  ) 158.409 RT
+EOS
+-150.881 vm
+BOS
+(UI . INTERFACE .) 313.150 RT
+313.150 hm
+(identifier) 287.950 RT
+287.950 hm
+( \(  ) 262.750 RT
+262.750 hm
+26.378 26.378 358.258 ZM
+11.254 -11.254 2 327.304 AT
+(<expression>) 296.350 RT
+-22.509 vm
+(NULL) 296.350 RT
+EOS
+26.378 vm
+327.304 EA
+EOS
+358.258 hm
+( \)  ) 262.750 RT
+EOS
+-67.879 vm
+BOS
+(UI . WINDOW .) 303.070 RT
+303.070 hm
+(identifier) 290.470 RT
+290.470 hm
+( \(  ) 265.270 RT
+265.270 hm
+26.378 26.378 360.778 ZM
+11.254 -11.254 2 329.824 AT
+(<expression>) 298.870 RT
+-22.509 vm
+(NULL) 298.870 RT
+EOS
+26.378 vm
+329.824 EA
+EOS
+360.778 hm
+( \)  ) 265.270 RT
+EOS
+-67.879 vm
+BOS
+(UI . FORM .) 296.350 RT
+296.350 hm
+(identifier) 292.150 RT
+292.150 hm
+( \(  ) 266.950 RT
+266.950 hm
+26.378 26.378 362.458 ZM
+11.254 -11.254 2 331.504 AT
+(<expression>) 300.550 RT
+-22.509 vm
+(NULL) 300.550 RT
+EOS
+26.378 vm
+331.504 EA
+EOS
+362.458 hm
+( \)  ) 266.950 RT
+EOS
+-67.879 vm
+BOS
+(identifier) 366.237 RT
+366.237 hm
+( \(  ) 341.037 RT
+341.037 hm
+26.378 26.378 436.545 ZM
+11.254 -11.254 2 405.591 AT
+(<expression>) 374.637 RT
+-22.509 vm
+(NULL) 374.637 RT
+EOS
+26.378 vm
+405.591 EA
+EOS
+436.545 hm
+( \)  ) 341.037 RT
+EOS
+-225.439 vm
+BOS
+(channel : : read) 186.737 RT
+186.737 hm
+( \(  ) 136.337 RT
+136.337 hm
+(<expression>) 169.937 RT
+169.937 hm
+( ,  ) 136.337 RT
+136.337 hm
+( [  ) 136.337 RT
+136.337 hm
+99.530 110.785 446.499 ZM
+67.526 0.000 -67.526 3 415.545 AT
+16.881 -16.881 2 384.591 AT
+([variable]) 353.637 RT
+-33.763 vm
+BOS
+([variable]) 111.761 RT
+111.761 hm
+11.254 -11.254 2 130.115 AT
+(THROUGH) 99.161 RT
+-22.509 vm
+(THRU) 99.161 RT
+EOS
+130.115 hm
+([variable]) 111.761 RT
+EOS
+EOS
+-67.526 vm
+BOS
+( $  ) 88.726 RT
+88.726 hm
+16.881 -16.881 2 295.865 AT
+([variable]) 264.911 RT
+-33.763 vm
+BOS
+([variable]) 82.186 RT
+82.186 hm
+11.254 -11.254 2 100.540 AT
+(THROUGH) 69.586 RT
+-22.509 vm
+(THRU) 69.586 RT
+EOS
+100.540 hm
+([variable]) 82.186 RT
+EOS
+EOS
+EOS
+-67.526 vm
+BOS
+( :  ) 88.726 RT
+88.726 hm
+16.881 -16.881 2 295.865 AT
+([variable]) 264.911 RT
+-33.763 vm
+BOS
+([variable]) 82.186 RT
+82.186 hm
+11.254 -11.254 2 100.540 AT
+(THROUGH) 69.586 RT
+-22.509 vm
+(THRU) 69.586 RT
+EOS
+100.540 hm
+([variable]) 82.186 RT
+EOS
+EOS
+EOS
+EOS
+99.530 vm
+415.545 EA
+EOS
+446.499 hm
+( ]  ) 136.337 RT
+136.337 hm
+( \)  ) 136.337 RT
+EOS
+-225.438 vm
+BOS
+(channel : : read) 232.182 RT
+232.182 hm
+( \(  ) 181.782 RT
+181.782 hm
+(<expression>) 215.382 RT
+215.382 hm
+( ,  ) 181.782 RT
+181.782 hm
+99.530 110.785 491.945 ZM
+67.526 0.000 -67.526 3 460.991 AT
+16.881 -16.881 2 430.037 AT
+([variable]) 399.083 RT
+-33.763 vm
+BOS
+([variable]) 126.910 RT
+126.910 hm
+11.254 -11.254 2 145.264 AT
+(THROUGH) 114.310 RT
+-22.509 vm
+(THRU) 114.310 RT
+EOS
+145.264 hm
+([variable]) 126.910 RT
+EOS
+EOS
+-67.526 vm
+BOS
+( $  ) 111.449 RT
+111.449 hm
+16.881 -16.881 2 318.588 AT
+([variable]) 287.634 RT
+-33.763 vm
+BOS
+([variable]) 89.760 RT
+89.760 hm
+11.254 -11.254 2 108.114 AT
+(THROUGH) 77.160 RT
+-22.509 vm
+(THRU) 77.160 RT
+EOS
+108.114 hm
+([variable]) 89.760 RT
+EOS
+EOS
+EOS
+-67.526 vm
+BOS
+( :  ) 111.449 RT
+111.449 hm
+16.881 -16.881 2 318.588 AT
+([variable]) 287.634 RT
+-33.763 vm
+BOS
+([variable]) 89.760 RT
+89.760 hm
+11.254 -11.254 2 108.114 AT
+(THROUGH) 77.160 RT
+-22.509 vm
+(THRU) 77.160 RT
+EOS
+108.114 hm
+([variable]) 89.760 RT
+EOS
+EOS
+EOS
+EOS
+99.530 vm
+460.991 EA
+EOS
+491.945 hm
+( \)  ) 181.782 RT
+EOS
+-67.879 vm
+BOS
+(identifier) 248.358 RT
+248.358 hm
+(: : ) 223.158 RT
+223.158 hm
+(identifier) 248.358 RT
+248.358 hm
+( \(  ) 223.158 RT
+223.158 hm
+26.378 26.378 318.666 ZM
+11.254 -11.254 2 287.712 AT
+(<expression>) 256.758 RT
+-22.509 vm
+(NULL) 256.758 RT
+EOS
+26.378 vm
+287.712 EA
+EOS
+318.666 hm
+( \)  ) 223.158 RT
+EOS
+-67.879 vm
+BOS
+(SHARED) 198.478 RT
+198.478 hm
+(identifier) 215.278 RT
+215.278 hm
+( IN ) 190.078 RT
+190.078 hm
+(identifier) 215.278 RT
+215.278 hm
+( \(  ) 190.078 RT
+190.078 hm
+26.378 26.378 285.586 ZM
+11.254 -11.254 2 254.632 AT
+(<expression>) 223.678 RT
+-22.509 vm
+(NULL) 223.678 RT
+EOS
+26.378 vm
+254.632 EA
+EOS
+285.586 hm
+( \)  ) 190.078 RT
+EOS
+-22.508 vm
+BOS
+(CURSOR_NAME) 384.864 RT
+384.864 hm
+( \(  ) 355.464 RT
+355.464 hm
+(<expression>) 389.064 RT
+389.064 hm
+( \)  ) 355.464 RT
+EOS
+-22.509 vm
+BOS
+(COPYOF) 371.214 RT
+371.214 hm
+( \(  ) 362.814 RT
+362.814 hm
+([variable]) 388.014 RT
+388.014 hm
+( \)  ) 362.814 RT
+EOS
+-45.370 vm
+BOS
+(GET_FLDBUF) 373.976 RT
+373.976 hm
+( \(  ) 348.776 RT
+348.776 hm
+15.123 15.123 413.330 ZM
+(<field name>) 382.376 RT
+15.123 vm
+382.376 EA
+EOS
+413.330 hm
+( \)  ) 348.776 RT
+EOS
+-67.879 vm
+BOS
+(EXTERNAL) 109.241 RT
+109.241 hm
+11.254 -11.254 2 173.795 AT
+(character-string) 142.841 RT
+-22.509 vm
+(identifier) 142.841 RT
+EOS
+173.795 hm
+( :  ) 92.441 RT
+92.441 hm
+11.254 -11.254 2 256.026 AT
+(identifier) 225.072 RT
+-22.509 vm
+BOS
+(identifier) 83.424 RT
+83.424 hm
+( .  ) 58.224 RT
+58.224 hm
+(identifier) 83.424 RT
+EOS
+EOS
+256.026 hm
+( [  ) 92.441 RT
+92.441 hm
+(<expression>) 126.041 RT
+126.041 hm
+( ]  ) 92.441 RT
+92.441 hm
+( \(  ) 92.441 RT
+92.441 hm
+26.378 26.378 187.949 ZM
+11.254 -11.254 2 156.995 AT
+(<expression>) 126.041 RT
+-22.509 vm
+(NULL) 126.041 RT
+EOS
+26.378 vm
+156.995 EA
+EOS
+187.949 hm
+( \)  ) 92.441 RT
+92.441 hm
+15.123 169.595 OP
+(WITHOUT WAITING) 138.641 RT
+EOS
+EOS
+-79.133 vm
+BOS
+(PDF_FUNCTION) 251.158 RT
+251.158 hm
+( \(  ) 217.558 RT
+217.558 hm
+(character-string) 267.958 RT
+267.958 hm
+( ,  ) 217.558 RT
+217.558 hm
+26.378 26.378 313.066 ZM
+11.254 -11.254 2 282.112 AT
+(<expression>) 251.158 RT
+-22.509 vm
+(NULL) 251.158 RT
+EOS
+26.378 vm
+282.112 EA
+EOS
+313.066 hm
+( \)  ) 217.558 RT
+EOS
+EOS
+EOS
+#ebnf2ps#end
+%%EOF
