@@ -59,7 +59,7 @@ trim (char *s)
   b = 0;
   for (a = strlen (s) - 1; a > 0; a--)
     {
-      if (isblank (s[a]))
+      if (A4GL_isblank (s[a]))
 	continue;
       s[a + 1] = 0;
       return;

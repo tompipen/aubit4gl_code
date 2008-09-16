@@ -2,7 +2,7 @@
 
 struct s_state_lookup {
 char *sqlstate;
-int errno;
+int error_no;
 };
 
 static struct s_state_lookup slookups[]={
@@ -14,7 +14,7 @@ int get_fake_error(char *sqlstate) {
 int a;
 for (a=0;slookups[a].sqlstate;a++) {
 	if (strcmp(slookups[a].sqlstate,sqlstate)==0) {
-			return slookups[a].errno;
+			return slookups[a].error_no;
 	}
 }
 if (sqlstate[0]=='0' && sqlstate[1]=='0') return 0;
