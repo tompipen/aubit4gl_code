@@ -589,5 +589,10 @@ namespace AubitDesktop
             Program.SaveSettings();
 
         }
+
+        private void tpOptions_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

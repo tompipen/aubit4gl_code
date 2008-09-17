@@ -46,6 +46,9 @@ namespace AubitDesktop
             this.btnShortcutRemove = new System.Windows.Forms.Button();
             this.btnShortcutAdd = new System.Windows.Forms.Button();
             this.tpOptions = new System.Windows.Forms.TabPage();
+            this.lblPortWarn = new System.Windows.Forms.Label();
+            this.txtPort = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.nbXScale = new System.Windows.Forms.NumericUpDown();
             this.nbYScale = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
@@ -64,9 +67,6 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtPort = new System.Windows.Forms.TextBox();
-            this.lblPortWarn = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -251,6 +251,34 @@ namespace AubitDesktop
             this.tpOptions.TabIndex = 1;
             this.tpOptions.Text = "Options";
             this.tpOptions.UseVisualStyleBackColor = true;
+            this.tpOptions.Click += new System.EventHandler(this.tpOptions_Click);
+            // 
+            // lblPortWarn
+            // 
+            this.lblPortWarn.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblPortWarn.Location = new System.Drawing.Point(138, 211);
+            this.lblPortWarn.Name = "lblPortWarn";
+            this.lblPortWarn.Size = new System.Drawing.Size(217, 31);
+            this.lblPortWarn.TabIndex = 25;
+            this.lblPortWarn.Text = "Note : Changing the port will only take effect when you restart the application";
+            this.lblPortWarn.Visible = false;
+            // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(81, 211);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(51, 20);
+            this.txtPort.TabIndex = 24;
+            this.txtPort.TextChanged += new System.EventHandler(this.txtPort_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 214);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(71, 13);
+            this.label5.TabIndex = 23;
+            this.label5.Text = "Listen on port";
             // 
             // nbXScale
             // 
@@ -307,6 +335,7 @@ namespace AubitDesktop
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(8, 111);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(67, 13);
@@ -426,33 +455,6 @@ namespace AubitDesktop
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 214);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(71, 13);
-            this.label5.TabIndex = 23;
-            this.label5.Text = "Listen on port";
-            // 
-            // txtPort
-            // 
-            this.txtPort.Location = new System.Drawing.Point(81, 211);
-            this.txtPort.Name = "txtPort";
-            this.txtPort.Size = new System.Drawing.Size(51, 20);
-            this.txtPort.TabIndex = 24;
-            this.txtPort.TextChanged += new System.EventHandler(this.txtPort_TextChanged);
-            // 
-            // lblPortWarn
-            // 
-            this.lblPortWarn.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblPortWarn.Location = new System.Drawing.Point(138, 211);
-            this.lblPortWarn.Name = "lblPortWarn";
-            this.lblPortWarn.Size = new System.Drawing.Size(217, 31);
-            this.lblPortWarn.TabIndex = 25;
-            this.lblPortWarn.Text = "Note : Changing the port will only take effect when you restart the application";
-            this.lblPortWarn.Visible = false;
             // 
             // mainfrm
             // 
