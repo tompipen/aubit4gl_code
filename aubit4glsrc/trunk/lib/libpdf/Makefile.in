@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2008-09-11 17:45:27 mikeaubury Exp $
+# $Id: Makefile.in,v 1.22 2008-09-17 21:02:16 fortiz Exp $
 #
 
 ROOT        =../..
@@ -51,7 +51,7 @@ endif
 ifeq "${HAVE_LIBQRENCODE}" "1"
 	QRLIB=-lqrencode
 else 	
-	QRLIB=""
+	QRLIB=
 endif
 
 OBJECTS_NOPDF	=nopdf.o

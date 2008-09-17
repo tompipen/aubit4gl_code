@@ -10,7 +10,7 @@
 int codetype=-1;
 
 
-#ifdef HAVE_LIBQRENCODE
+#if HAVE_LIBQRENCODE
 
 #include <qrencode.h>
 QRcode *QRcode_encodeMask(QRinput *input, int mask);
@@ -368,7 +368,7 @@ if (codetype==25) {
 }
 
 
-#ifdef HAVE_LIBQRENCODE
+#if HAVE_LIBQRENCODE
 
 void
 generate_qrcode (PDF * p, char *str, double xpos, double ypos, double pdfwidth, double pdfheight, double p_page_height)
