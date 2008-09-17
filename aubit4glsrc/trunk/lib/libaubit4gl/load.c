@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.47 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: load.c,v 1.48 2008-09-17 16:20:09 mikeaubury Exp $
 #
 */
 
@@ -350,6 +350,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	  ibind[a].dtype = DTYPE_CHAR;
 	  ibind[a].start_char_subscript = 0;
 	  ibind[a].end_char_subscript = 0;
+	  ibind[a].libptr=0;
 	
 	  if (strlen(colptr[a])==0) {
 	  	ibind[a].size = 1;
