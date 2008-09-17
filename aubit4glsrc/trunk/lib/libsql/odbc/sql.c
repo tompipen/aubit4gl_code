@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.219 2008-09-17 13:47:17 mikeaubury Exp $
+# $Id: sql.c,v 1.220 2008-09-17 16:32:33 mikeaubury Exp $
 #
 */
 
@@ -2755,7 +2755,10 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     A4GL_debug ("In A4GL_ibind_column, pos=%i, bind=%p hstmt=%p)", pos, bind, hstmt);
     A4GL_trc   ("dtype=%d size=%d ptr=%p isnull=%i", bind->dtype, bind->size, bind->ptr, isnull);
 
-    if (bind->libptr ) { acl_free(bind->libptr);  bind->libptr=0;}
+    if (bind->libptr ) { 
+		acl_free(bind->libptr);  
+		bind->libptr=0;
+	}
     ptr_to_use = bind->ptr;
 
     if (bind->dtype == DTYPE_DATE && A4GL_isyes (acl_getenv ("BINDDATEASINT")))
