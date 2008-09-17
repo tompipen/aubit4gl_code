@@ -32034,7 +32034,7 @@ fi
 	 if test "$ac_cv_lib_qrencode_qrinput_new2" = "yes"; then
 		HAVE_LIBQRENCODE=1
 	 else
-		HAVE_LIBQRENCODE=1
+		HAVE_LIBQRENCODE=0
 	 fi
 
 fi
@@ -62221,7 +62221,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.409 2008-09-16 17:25:41 mikeaubury Exp $
+| $Id: configure,v 1.410 2008-09-17 19:09:49 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
