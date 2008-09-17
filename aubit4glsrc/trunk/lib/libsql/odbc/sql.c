@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.218 2008-09-05 12:59:53 mikeaubury Exp $
+# $Id: sql.c,v 1.219 2008-09-17 13:47:17 mikeaubury Exp $
 #
 */
 
@@ -2755,7 +2755,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     A4GL_debug ("In A4GL_ibind_column, pos=%i, bind=%p hstmt=%p)", pos, bind, hstmt);
     A4GL_trc   ("dtype=%d size=%d ptr=%p isnull=%i", bind->dtype, bind->size, bind->ptr, isnull);
 
-    if (bind->libptr ) { acl_free(bind->libptr); }
+    if (bind->libptr ) { acl_free(bind->libptr);  bind->libptr=0;}
     ptr_to_use = bind->ptr;
 
     if (bind->dtype == DTYPE_DATE && A4GL_isyes (acl_getenv ("BINDDATEASINT")))
@@ -2842,6 +2842,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
                 x = A4GL_char_pop ();
                 SPRINTF1 (p->uDate.date_c, "%s", x);
                 acl_free (x);
+		x=0;
             }
             else
             {
@@ -3244,6 +3245,7 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
 	    acl_free ((*sid)->ibind);
 	if ((*sid)->obind)
 	    acl_free ((*sid)->obind);
+	(*sid)->ibind=0; (*sid)->obind=0;
     }
     acl_free (*sid);
     A4GL_removePreparedStatementBySid(*sid);
@@ -3940,8 +3942,9 @@ A4GL_ibind_column_arr (int pos, char *s, HSTMT hstmt)
 void
 A4GL_init_typeinfo()
 {
-    if (type_info_size)
+    if (type_info_size) {
 	free(type_info);
+	}
     type_info_size = 0;
     type_warning_issued = 0;
     type_info = NULL;
