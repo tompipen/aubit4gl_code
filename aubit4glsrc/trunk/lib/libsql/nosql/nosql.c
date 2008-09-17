@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.46 2008-07-06 11:34:42 mikeaubury Exp $
+# $Id: nosql.c,v 1.47 2008-09-17 12:21:47 mikeaubury Exp $
 #*/
 
 /**
@@ -115,7 +115,11 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal(char* fname,char* delims,char* sql1
 void* A4GLSQLLIB_A4GLSQL_declare_cursor(int upd_hold,void* sid,int scroll,char* cursname) NOPE0
 t_expr_str_list* A4GLSQLLIB_A4GLSQL_get_validation_expr(char* tabname,char* colname) NOPE0
 void* A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid, int singleton) NOPE0
-
+int A4GLSQLLIB_A4GLSQL_next_column_detailed(char** colname,int* dtype,int* size,int* prec,int* raw_dtype) NOPE0
+char* A4GLSQLLIB_A4GLSQL_get_table_checksum(char* tabname) NOPE0
+void A4GLSQLLIB_A4GLSQL_map_tname(char* code,char* db) NOPE
+void A4GLSQLLIB_A4GLSQL_unmap_tname(char* code) NOPE
+int A4GLSQLLIB_A4GLSQL_is_tname_mapped(char* code) NOPE0
 
 void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 /* does nothing in this driver */

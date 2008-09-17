@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2006-07-27 16:04:18 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2008-09-17 12:21:47 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -78,6 +78,11 @@ ${ROOT}/bin/amkmessage:
 ${ROOT}/bin/4glc:
 	${MAKE} -C ${ROOT}/compilers/4glc
 	
+$(ROOT)/lib/libaubit4gl/libaubit4gl_static.a:
+	${MAKE} -C ${ROOT}/lib/libaubit4gl -f Makefile.static
+	
+4glpc.static: $(ROOT)/lib/libaubit4gl/libaubit4gl_static.a
+	"gcc" 4glpc.o times.o readsettings.o -g -o ../../bin/4glpc.static -L/home/aubit4gl/aubit4glsrc/lib/libaubit4gl -laubit4gl_static -L$(INFORMIXDIR)/lib -L$(INFORMIXDIR)/lib/esql `esql -libs` -lncurses -lform -lpanel -lz -lm -lncurses
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.51 2008-04-12 08:18:13 mikeaubury Exp $
+# $Id: Makefile,v 1.52 2008-09-17 12:21:48 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -322,6 +322,10 @@ show:
 
 refresh.noyacc: lex.yy.c
 	cp lex.asql_yy.c lex_pregen.c
+
+asql_i_static.4ae:
+	$(INFORMIXDIR)/bin/esql -static -g  ifx_asql.ao ifx_connection_menu.ao ifx_menus.ao ifx_pick.ao ifx_database.ao ifx_main_menu.ao ifx_query.ao ifx_session.ao ifx_table.ao ifx_execute.ao ifx_paginate.ao ifx_cedit.ao ifx_filehand.ao ifx_load.ao ifx_form.ao ifx_tools.ao ifx_user_menu.ao ifx_report.ao lex.asql_yy.o simple_parse.o dir.o ifx_infx.ao -o asql_i_static.4ae -L/home/aubit4gl/aubit4glsrc/lib -laubit4gl_static -L/home/aubit4gl/aubit4glsrc/lib/libaubit4gl  -lm -lncurses -L$(INFORMIXDIR)/lib -L$(INFORMIXDIR)/lib/esql  -lncurses -lform -lpanel -lz
+
 
 ## ==================================================================
 ##                              clean
