@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.321 2008-09-14 10:48:09 mikeaubury Exp $
+# $Id: mod.c,v 1.322 2008-09-18 14:51:13 mikeaubury Exp $
 #
 */
 
@@ -3516,7 +3516,6 @@ int idtype, isize;
 	if ((idtype &  DTYPE_MASK )==DTYPE_SERIAL) {
 		A4GL_warn("Updating a serial column");
 	}
-	
     }
 }
 
@@ -4974,14 +4973,29 @@ if (sfc->col) {
 }
 
 
-str_list *generate_update_column_list_for(char *tabname) {
+// generate_update_column_list_for - generates a column list for an update statement
+// Value_list may be adjusted if there is a SERIAL column (to drop that value)
+//
+str_list *generate_update_column_list_for(char *tabname, struct s_select_list_item_list *value_list) {
 char colname[2000];
-  int isize = 0;
-  int idtype = 0;
-  char *ccol;
+int isize = 0;
+int idtype = 0;
+char *ccol;
 struct str_list *l;
 int rval;
+// We might need a new value list if we're generating and it 
+// includes a serial column - because we'll need to remove that value from our
+// list...
+struct s_select_list_item_list value_list_new;
+int cnt=0;
+int colcnt=0;
+int uses_serial=0;
 l=NULL;
+
+
+	value_list_new.list.list_len=0;
+	value_list_new.list.list_val=0;
+
 
       strcpy (colname, "");
       rval = A4GLSQL_get_columns (tabname, colname, &idtype, &isize);
@@ -4999,15 +5013,35 @@ l=NULL;
         {
           colname[0] = 0;
           rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-          strcpy (colname, ccol);
+	
           if (rval == 0)
             break;
-          trim_spaces (colname);
-	  add_str_list(l, colname);
-          //A4GL_4glc_push_gen (UPDCOL, colname);
-        }
-      A4GLSQL_end_get_columns ();
 
+          strcpy (colname, ccol);
+          trim_spaces (colname);
+
+	  if ((idtype & DTYPE_MASK)==DTYPE_SERIAL ) {
+			uses_serial=1;
+	  }  else {
+	  	add_str_list(l, colname);	
+		if (colcnt<value_list->list.list_len) {
+			add_select_list_item_list (&value_list_new, value_list->list.list_val[colcnt]);
+		}
+		cnt++;
+	  }
+	colcnt++;
+        }
+        A4GLSQL_end_get_columns ();
+
+	if (cnt!=value_list_new.list.list_len) {
+		a4gl_yyerror("Number of columns does not match number of values");
+	}
+
+	if (uses_serial) {
+		A4GL_warn("Serial column dropped from UPDATE statement (serial columns cannot be updated)");
+		value_list->list.list_len= value_list_new.list.list_len;
+		value_list->list.list_val= value_list_new.list.list_val;
+	}
 	return l;
 }
 
@@ -5066,6 +5100,7 @@ struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l) {
  l=rationalize_select_list_item_list(l);
  return l;
 }
+
 
 
 /* ================================= EOF ============================= */
