@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.53 2008-09-05 12:59:54 mikeaubury Exp $
+# $Id: pg8.c,v 1.54 2008-09-18 17:40:51 mikeaubury Exp $
 #*/
 
 
@@ -57,7 +57,7 @@
 char unloadBuffer[BUFSIZ];
 //extern sqlca_struct sqlca;
 int sqlcode;
-static void fixtype (char *ptr, int *d, int *s);
+static void fixtype (char *ptr, int *d, int *s,char *defaultval);
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 static void defaultNoticeProcessor (void *arg, const char *message);
 static void SetErrno (PGresult * res);
@@ -485,7 +485,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 
 // This is nicked from psql ...
   SPRINTF1 (buff,
-	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid and pg_table_is_visible(b.oid) AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
+	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum, (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128) FROM pg_catalog.pg_attrdef d WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef) FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid and pg_table_is_visible(b.oid) AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' ORDER BY a.attnum",
 	    tabname);
 
   resGC = PQexec (current_con, buff);
@@ -566,7 +566,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
     {
       colptr = "character(1)";
     }
-  fixtype (colptr, dtype, size);
+  fixtype (colptr, dtype, size,  PQgetvalue (resGC, curr_colno, 5));
 
 
   curr_colno++;
@@ -606,7 +606,7 @@ A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 
 
 static void
-fixtype (char *type, int *d, int *s)
+fixtype (char *type, int *d, int *s,char *defaultval)
 {
 FILE *errd;
   //PGresult *r;
@@ -621,6 +621,7 @@ FILE *errd;
   *d = -1;
   strcpy (buff, type);
 
+//printf("%s %s\n",buff, defaultval);
   if (strchr (buff, '('))
     {
       l1 = strchr (buff, '(');
@@ -702,7 +703,11 @@ FILE *errd;
 
   if (strcmp (buff, "integer") == 0 || strcmp (buff, "bigint") == 0)
     {
-      *d = DTYPE_INT;
+	if (strstr(defaultval,"nextval")) { // A serial is normally a integer nextval('...'::text)
+      		*d = DTYPE_SERIAL;
+	} else {
+      		*d = DTYPE_INT;
+	}
       *s = sizeof (long);
     }
 
@@ -2135,7 +2140,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
   A4GL_trim (tabname);
 
   SPRINTF1 (buff,
-	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' and pg_table_is_visible(b.oid) ORDER BY a.attnum",
+	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod, (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128) FROM pg_catalog.pg_attrdef d WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)   FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' and pg_table_is_visible(b.oid) ORDER BY a.attnum",
 	    tabname);
 
   res = Execute (buff, 0);
@@ -2146,7 +2151,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
       int dtype;
       int prc;
       cnt = a;
-      fixtype (PQgetvalue (res, a, 1), &dtype, &prc);
+      fixtype (PQgetvalue (res, a, 1), &dtype, &prc, PQgetvalue (res, a, 7));
 
       if (arr1 != 0)
 	{
