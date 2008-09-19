@@ -755,9 +755,9 @@ define lv_qry char(256)
 	
 	if lv_t="all" then
 		if lv_systables = 1 then
-				let lv_qry="select tabname from systables "
+				let lv_qry="select tabname,created,tabid from systables order by created,tabid"
 		else
-				let lv_qry="select tabname from systables where tabid>99"
+				let lv_qry="select tabname,created,tabid from systables where tabid>99 order by created,tabid"
 		end if
 		
 		prepare p_get_tables2 from lv_qry

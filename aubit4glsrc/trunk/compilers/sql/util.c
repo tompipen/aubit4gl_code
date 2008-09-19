@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.70 2008-07-06 11:34:27 mikeaubury Exp $
+# $Id: util.c,v 1.71 2008-09-19 09:02:27 mikeaubury Exp $
 #
 */
 
@@ -1457,7 +1457,7 @@ static void trim_spaces (char *s)
 
 
 
-str_list *generate_update_column_list_for(char *tabname) {
+str_list *generate_update_column_list_for(char *tabname,struct s_select_list_item_list *value_list) {
 char colname[2000];
   int isize = 0;
   int idtype = 0;

@@ -27,7 +27,7 @@ char *get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted);
 char *get_update_cmd(struct struct_update_cmd *updateCmd, int *converted) ;
 char * get_delete_cmd (struct struct_delete_cmd *deleteCmd, int *converted) ;
 
-str_list *generate_update_column_list_for(char *tabname);
+str_list *generate_update_column_list_for(char *tabname,struct s_select_list_item_list *valuelist);
 int sqlparse_yylex(void);
 extern int place_holder_cnt;
 void A4GL_warn(char *s);
