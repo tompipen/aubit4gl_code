@@ -1864,6 +1864,8 @@ uilib_get_context (int nargs)
     }
 // critical...
   UIdebug (0, "CRITICAL ERROR - COULD NOT FIND CONTEXT\n\n");
+  //A4GL_pause_execution();
+exit(99);
   pushint (-1);
   return 1;
 }

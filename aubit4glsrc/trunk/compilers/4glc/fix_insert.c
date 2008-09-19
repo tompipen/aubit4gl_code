@@ -18,14 +18,11 @@ extern char current_ins_table[256];
 
 
 
-#ifndef IS_SERIAL
-#define IS_SERIAL 'V'
-#endif
 
-static int is_serial_column(char *tabname,char *colname) {
+int A4GL_has_serial_column_marker(char *tabname,char *colname) {
 	char buff[256];
 	SPRINTF2(buff,"%s.%s",tabname,colname);
-	if (A4GL_has_pointer(buff,'V')) {
+	if (A4GL_has_pointer(buff,TAB_COL_IS_SERIAL)) {
 		return 1;
 	}
 	return 0;
@@ -123,7 +120,7 @@ fix_insert_expr (int mode)
 	  		if (rval == 0)
 	    		break;
 	  		trim_spaces (colname);
-			if (is_serial_column(current_ins_table, colname)) idtype=DTYPE_SERIAL;
+			if (A4GL_has_serial_column_marker(current_ins_table, colname)) idtype=DTYPE_SERIAL;
 	  		A4GL_4glc_push_gen (INSCOL, colname);
 			idtypes=acl_realloc(idtypes,sizeof(int)*  A4GL_4glc_gen_cnt(INSCOL));
 			idtypes[A4GL_4glc_gen_cnt(INSCOL)-1]=idtype;
@@ -149,7 +146,7 @@ fix_insert_expr (int mode)
 	  		if (rval == 0)
 	    		break;
 	  		trim_spaces (colname);
-			if (is_serial_column(current_ins_table, colname)) idtype=DTYPE_SERIAL;
+			if (A4GL_has_serial_column_marker(current_ins_table, colname)) idtype=DTYPE_SERIAL;
 	  		A4GL_4glc_push_gen (TCOL, colname);
 
 

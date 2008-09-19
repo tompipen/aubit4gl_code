@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.326 2008-09-15 12:28:37 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.327 2008-09-19 13:15:48 mikeaubury Exp $
 #
 */
 
@@ -335,7 +335,7 @@
 #define RECALL_LOG_ENTRIES	'W'
 //unused? #define GOTO_USED		'Z'
 #define FEATURE_USED		'X'
-//unused? #define HP_IS_SERIAL		'V'
+#define TAB_COL_IS_SERIAL	'g'
 #define LAST_STRING_EXPR       'V'
 #define LAST_STRING		'T'
 #define LAST_STRING_START	'U'

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.61 2008-09-05 12:59:42 mikeaubury Exp $
+# $Id: sql_common.c,v 1.62 2008-09-19 13:15:49 mikeaubury Exp $
 #
 */
 
@@ -763,7 +763,7 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
 	strcpy(preparedStatements[a].preparedStatementName, pname);
 	return 1;
   } else {
-	A4GL_assertion(1,"Couldn't find prepared statement");
+	//A4GL_assertion(1,"Couldn't find prepared statement");
 	return 0;
   }
   

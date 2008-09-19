@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.322 2008-09-18 14:51:13 mikeaubury Exp $
+# $Id: mod.c,v 1.323 2008-09-19 13:15:46 mikeaubury Exp $
 #
 */
 
@@ -4138,6 +4138,10 @@ void
 add_serial_column (char *t, char *c)
 {
   // Doesn't do anything just yet....
+
+        char buff[256];
+        SPRINTF2(buff,"%s.%s",t,c);
+        A4GL_add_pointer(buff,TAB_COL_IS_SERIAL, (void *)1);
 }
 
 
@@ -5020,7 +5024,7 @@ l=NULL;
           strcpy (colname, ccol);
           trim_spaces (colname);
 
-	  if ((idtype & DTYPE_MASK)==DTYPE_SERIAL ) {
+	  if ((idtype & DTYPE_MASK)==DTYPE_SERIAL || A4GL_has_serial_column_marker(tabname,colname) ) {
 			uses_serial=1;
 	  }  else {
 	  	add_str_list(l, colname);	

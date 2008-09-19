@@ -757,6 +757,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr);
 char * compile_ispdf (void);
 char *decode_cursorname(struct expr_str *s_i);
+int A4GL_has_serial_column_marker(char *tabname,char *colname) ;
 
 int has_variable_name (struct vname_name_list *namelist, char *name);
 #ifndef DEFINED_SET_CLOBBER
