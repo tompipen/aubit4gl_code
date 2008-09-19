@@ -264,13 +264,23 @@ fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
 
 static char *
 xml_escape (char *s) {
+char *rval;
 static int n=0;
 static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
-if (buff[n]) {free(buff[n]); buff[n]=0;}
+
+if (buff[n]) {
+	free(buff[n]); 
+	buff[n]=0;
+}
+
 buff[n]=strdup(xml_escape_int(s));
 
 
-return buff[n];
+rval=buff[n];
+n++;
+if (n>=5)  n=0;
+return rval;
+
 }
 
 char *
