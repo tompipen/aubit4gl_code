@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2008-05-23 10:11:38 mikeaubury Exp $
+# $Id: Makefile.in,v 1.21 2008-09-19 11:20:32 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -85,7 +85,7 @@ endif
 ##                              Source files
 ## ==================================================================
 
-ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o \
+ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o acs_mappings.o \
 	array.o iarray.o prompt.o generic_ui.o
 
 ## ==================================================================

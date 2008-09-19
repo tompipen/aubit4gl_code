@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.157 2008-07-16 17:48:06 mikeaubury Exp $
+# $Id: newpanels.c,v 1.158 2008-09-19 11:20:33 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.157 2008-07-16 17:48:06 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.158 2008-09-19 11:20:33 mikeaubury Exp $";
 #endif
 
 /**
@@ -67,7 +67,6 @@ dll_import sqlca_struct sqlca;
 
 void A4GL_monitor_key_pressed(int a) ;
 int monitoring=-1;
-
 WINDOW * A4GL_window_on_top_ign_menu (void);
 void A4GL_make_window_with_this_form_current(void *form);
 /*
@@ -787,6 +786,7 @@ A4GL_mja_gotoxy (int x, int y)
  * Renamed from 'print' to 'tui_print'
  * @todo Describe function
  */
+/*
 void
 A4GL_tui_print ( char *fmt, ...)
 {
@@ -805,11 +805,15 @@ A4GL_debug("addsr : %s",buff);
 
   A4GL_mja_wrefresh (currwin);
 }
+*/
 
-void A4GL_tui_printr (int refreshwin, char *fmt, ...)
+void
+A4GL_tui_printr (int refreshwin, char *fmt, ...)
 {
   va_list args;
   char buff[256];
+  int *n = 0;
+  int l;
 #ifdef DEBUG
   {
     A4GL_debug ("In tui_print");
@@ -818,9 +822,50 @@ void A4GL_tui_printr (int refreshwin, char *fmt, ...)
   A4GL_chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
-A4GL_debug("addsr : %s",buff);
-  waddstr (currwin, buff);
-  if (refreshwin) A4GL_mja_wrefresh (currwin);
+  A4GL_debug ("addsr : %s", buff);
+
+  if (A4GL_isyes (acl_getenv ("ENABLEACSMAPPING")) || 1)
+    {
+      int uses_mappings = 0;
+      int a;
+      l = strlen (buff);
+      n = malloc (sizeof (int) * l);
+
+      for (a = 0; a < l; a++)
+	{
+	  n[a] = A4GL_has_acs_mapping ((unsigned char) buff[a]);
+	  if (n[a])
+	    uses_mappings++;
+	}
+
+      if (uses_mappings)
+	{
+	  for (a = 0; a < l; a++)
+	    {
+	      if (n[a])
+		{
+		  waddch (currwin, n[a] | A_ALTCHARSET);
+		}
+	      else
+		{
+		  waddch (currwin, buff[a]);
+		}
+	    }
+
+	}
+      else
+	{
+	  waddstr (currwin, buff);
+	}
+      if (n)
+	free (n);
+    }
+  else
+    {
+      waddstr (currwin, buff);
+    }
+  if (refreshwin)
+    A4GL_mja_wrefresh (currwin);
 }
 
 /**

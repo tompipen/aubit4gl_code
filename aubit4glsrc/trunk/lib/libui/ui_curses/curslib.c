@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.150 2008-09-09 18:02:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.151 2008-09-19 11:20:33 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.150 2008-09-09 18:02:31 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.151 2008-09-19 11:20:33 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1322,7 +1322,7 @@ A4GL_init_curses_stuff ()
 
 
   A4GL_mja_gotoxy (1, 1);
-  A4GL_tui_print ("                                 ");
+  A4GL_tui_printr (1,"                                 ");
   UILIB_A4GL_zrefresh ();
 
 
@@ -3453,6 +3453,7 @@ int local_field_opts(const FIELD *field) {
 	A4GL_debug_print_field_opts((FIELD *)field);
 	return field_opts(field);
 }
+
 
 
 /* ============================== EOF ============================== */

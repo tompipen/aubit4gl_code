@@ -278,6 +278,8 @@ void A4GL_set_array_mode (int type);
 	/* =============== from a4gl_tui_attr_list.h ============== */
 
 
+int A4GL_has_acs_mapping(int ascii_val) ;
+
 #ifdef OBJECTMODULE
 attributes attributes_list[] = {
   (int) 0x0, "BLACK", COLOR_BLACK, 0,
