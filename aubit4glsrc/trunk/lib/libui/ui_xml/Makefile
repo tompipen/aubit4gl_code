@@ -23,6 +23,6 @@ uilib/libuilib.a:
 
 
 clean: 
-	rm -f ${PLUGINDIR}/libUI_XML${SO_EXT} `aubit-config DEFAULT_PLUGINDIR`/libUI_XML${SO_EXT} libUI_XML${SO_EXT}
+	rm -f ${PLUGINDIR}/libUI_XML${SO_EXT} `aubit-config DEFAULT_PLUGINDIR`/libUI_XML${SO_EXT} libUI_XML${SO_EXT} debug.o pipe.o proxy.o
 	cd uilib && make clean 
 	cd uilib/xml && make clean

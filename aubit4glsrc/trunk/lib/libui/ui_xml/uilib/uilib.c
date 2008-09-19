@@ -145,7 +145,7 @@ hex_digit (int n)
 
 
 static char *
-xml_escape (char *s)
+xml_escape_int (char *s)
 {
   static char *buff = 0;
   static int last_len = 0;
@@ -260,6 +260,18 @@ fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
   return buff;
 }
 
+
+
+static char *
+xml_escape (char *s) {
+static int n=0;
+static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
+if (buff[n]) {free(buff[n]); buff[n]=0;}
+buff[n]=strdup(xml_escape_int(s));
+
+
+return buff[n];
+}
 
 char *
 uilib_xml_escape (char *s)
@@ -823,7 +835,7 @@ uilib_prompt_start (int n)
   suspend_flush (1);
   send_to_ui
     ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" ATTRIB_STYLE=\"%s\" ATTRIB_TEXT=\"%s\">",
-     cprompt, prompt_attr, field_attr, promptstr, charmode, helpno, style, text);
+     cprompt, prompt_attr, field_attr, xml_escape(promptstr), charmode, helpno, xml_escape(style), xml_escape(text));
   free (field_attr);
   free (prompt_attr);
   free (promptstr);
@@ -1063,7 +1075,7 @@ uilib_menu_add (int nargs)
   context = POPint ();
   send_to_ui
     ("<MENUCOMMAND CONTEXT=\"%d\" KEYS=\"%s\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\" HELPNO=\"%d\"/>",
-     context, keys, id, mn, desc, helpno);
+     context, xml_escape(keys), id, xml_escape(mn), xml_escape(desc), helpno);
   return 0;
 }
 
@@ -1081,7 +1093,7 @@ uilib_menu_set (int nargs)
   id = POPint ();
   context = POPint ();
 
-  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context, id, mn, desc);
+  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context, id, xml_escape(mn), xml_escape(desc));
   return 0;
 }
 
@@ -1185,8 +1197,8 @@ uilib_menu_start (int nargs)
   UIdebug (5, "Menu start context=%d for %s %d\n", cmenu, mod, ln);
   pushint (cmenu);
   suspend_flush (1);
-  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt, comment,
-	      style, image);
+  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt, xml_escape(comment),
+	      xml_escape(style), xml_escape(image));
 
   return 0;
 }
@@ -1623,7 +1635,7 @@ uilib_next_field (int nargs)
       return 0;
     }
 
-  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, opt);
+  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, xml_escape(opt));
 
   free (opt);
   return 0;

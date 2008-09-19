@@ -680,7 +680,7 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
     }
 
 
-  A4GL_make_field_slist_from_ap (&list, ap);
+  A4GL_make_field_slist_from_ap (&list, ap,0);
   if (list.field_name_list[0].fpos != 0 && list.field_name_list[0].fpos != 1)
     {
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname,
@@ -724,7 +724,7 @@ UILIB_A4GL_req_field_input_array (void *sv, char type, va_list * ap)
     }
 
 
-  A4GL_make_field_slist_from_ap (&list, ap);
+  A4GL_make_field_slist_from_ap (&list, ap,arr->scr_line);
 
   send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname, list.field_name_list[0].fpos);
 
@@ -797,7 +797,7 @@ UILIB_A4GL_set_option_value_for_current_window (char type, long keyval)
 
 
 int
-UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
+UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap,int replace_0)
 {
   char buff[20000];
   char smbuff[200];
@@ -810,12 +810,13 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap)
       int i;
       i = va_arg (*ap, int);
       A4GL_trim (argp);
-      if (i == 1)
+      if (i == 1 )
 	{
 	  SPRINTF (smbuff, "<FIELD NAME=\"%s\"/>", argp);
 	}
       else
 	{
+	if (i==0) i=replace_0;
 	  SPRINTF (smbuff, "<FIELD NAME=\"%s[%d]\"/>", argp, i);
 	}
       strcat (buff, smbuff);
@@ -2869,7 +2870,7 @@ void
 UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 {
   char *field_list;
-  UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap);
+  UILIB_A4GL_gen_field_chars_ap (&field_list, UILIB_A4GL_get_curr_form (1), ap,0);
   send_to_ui ("<CLEAR todefault=\"%d\">%s</CLEAR>", to_defaults, field_list);
 }
 
