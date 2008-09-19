@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.50 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: pointers.c,v 1.51 2008-09-19 11:24:39 mikeaubury Exp $
 #
 */
 
@@ -126,6 +126,9 @@ A4GL_strcmpare (const void *a, const void *b)
 }
 
 
+///
+/// Print a list of all the assigned pointers
+///
 int aclfgl_aclfgl_walk_pointers(int n) {
 	print_ptr_stack();
 	return 0;

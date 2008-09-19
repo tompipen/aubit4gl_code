@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.41 2008-09-15 12:28:39 mikeaubury Exp $
+# $Id: console.c,v 1.42 2008-09-19 11:24:39 mikeaubury Exp $
 #*/
 
 /**
@@ -699,6 +699,10 @@ int UILIB_UI_initlib(void) {
 
 void UILIB_A4GL_direct_to_ui(char *t, char *s) {
 // Does nothing - require by the API...
+}
+
+
+int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
 }
 
 

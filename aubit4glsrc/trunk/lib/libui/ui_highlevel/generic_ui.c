@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.135 2008-09-15 12:28:41 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.136 2008-09-19 11:24:39 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -4306,5 +4306,11 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos,
 
 void UILIB_A4GL_direct_to_ui(char *t,char *s) {
 	A4GL_LL_direct_to_ui(t, s);
+}
+
+
+
+int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
+return 0;
 }
 

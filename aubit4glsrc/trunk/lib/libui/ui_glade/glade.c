@@ -771,3 +771,8 @@ UILIB_A4GL_screen_mode (int a)
 
 void UILIB_A4GLUI_set_intr(void ) {
 }
+
+int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
+return 0;
+}
+

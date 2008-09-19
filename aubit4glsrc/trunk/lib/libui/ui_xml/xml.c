@@ -69,6 +69,11 @@ ignull (char *s)
 
 }
 
+int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
+return 0;
+}
+
+
 static set_reading_form(char *form_id, char *form_name) {
 	//printf("%s %s\n",form_id, form_name);
 	strcpy(reading_form_id, form_id);
