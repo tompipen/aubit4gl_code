@@ -1,4 +1,45 @@
 ---------------------------
+Mon Sep 22 08:29:35 BST 2008
+---------------------------
+1.10RC_33 Released
+---------------------------
+	
+	Add aclfgl_add_acs_mapping for translating characters to alternate
+	character set characters
+	
+	detect 'serial' in a better way
+	
+	Almost cosmetic change around the ODBC_LONGVARCHAR_AS_CHAR
+	conversion.
+	
+	automatically drop a serial column when doing an UPDATE *=* Now
+	issues a warning : Serial column dropped from UPDATE statement
+	(serial columns cannot be updated)
+	
+	,
+	
+	win32 fixup
+	
+	Fixups for using 'static' libaubit4gl
+	
+	win32 fixup
+	
+	win32 fixup
+	
+	win32
+	
+	win32 fixup
+	
+	Win32 fixup
+	
+	get_fldbuf fix for INPUT ARRAY
+	
+	PDF Bookmark fixup
+	
+	Some PDF report fixups - added BLUEBAR option Minor parser cleanups
+	(removed missing ';' etc)
+	
+---------------------------
 Sun Sep 14 15:49:35 BST 2008
 ---------------------------
 1.10RC_32 Released
