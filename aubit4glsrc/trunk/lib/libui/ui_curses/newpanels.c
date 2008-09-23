@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.158 2008-09-19 11:20:33 mikeaubury Exp $
+# $Id: newpanels.c,v 1.159 2008-09-23 12:38:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.158 2008-09-19 11:20:33 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.159 2008-09-23 12:38:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -2041,6 +2041,17 @@ int
   y = A4GL_pop_int ();
   strcpy (buff, s);
   A4GL_trim (buff);
+  if (A4GL_has_pointer (name, WINCODE))
+    {
+#ifdef DEBUG
+      {
+ A4GL_debug ("Window already exists");
+      }
+#endif
+      A4GL_set_errm (name);
+      A4GL_exitwith ("Window already exists (%s)");
+      return 0;
+    }
 
   A4GL_debug ("reading file %s - name=%s", buff, name);
   a4gl_status = 0;

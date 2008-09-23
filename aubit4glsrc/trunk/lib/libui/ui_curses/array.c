@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.55 2008-09-23 09:38:58 mikeaubury Exp $
+# $Id: array.c,v 1.56 2008-09-23 12:38:48 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.55 2008-09-23 09:38:58 mikeaubury Exp $";
+		"$Id: array.c,v 1.56 2008-09-23 12:38:48 mikeaubury Exp $";
 #endif
 
 
@@ -53,6 +53,8 @@ int set_scrline_da (int np);
 int set_arrline_da (int np);
 char *a_strchr(char *s,char c);
 //int A4GL_get_attr_from_string (char *s);
+//
+//
 
 /*
 =====================================================================
