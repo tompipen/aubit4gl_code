@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.54 2008-09-15 12:28:40 mikeaubury Exp $
+# $Id: array.c,v 1.55 2008-09-23 09:38:58 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.54 2008-09-15 12:28:40 mikeaubury Exp $";
+		"$Id: array.c,v 1.55 2008-09-23 09:38:58 mikeaubury Exp $";
 #endif
 
 
@@ -1014,6 +1014,7 @@ if (ptr==0) {
 *ptr=0;
 
 A4GL_debug("barr=%s",barr);
+A4GL_assertion(f->fileform==NULL,"No fileform");
 srec_no=A4GL_find_srec(f->fileform,barr);
 
 if (srec_no==-1) {
