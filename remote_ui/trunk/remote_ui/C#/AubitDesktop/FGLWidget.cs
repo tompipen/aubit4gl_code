@@ -36,16 +36,13 @@ namespace AubitDesktop
         string _Widget;
         string _comment;
         internal FGLContextType _ContextType;
-
-
-
         int _row;
         int _column;
         int _rows;
         int _columns;
         int _id;
         bool _FieldTextChanged;
-        public Hashtable configSettings;
+        internal Hashtable configSettings;
 
 
         ATTRIB attrib;
@@ -56,16 +53,16 @@ namespace AubitDesktop
         private UIEventHandler _onUIEvent;
         private UIGotFocusHandler _onGotFocus;
 
-        public string _afterFieldID;
-        public string _beforeFieldID;
-        public string _onActionID;
+        internal string _afterFieldID;
+        internal string _beforeFieldID;
+        internal string _onActionID;
         private bool _isOnSelectedRow;
 
         /// <summary>
         /// Used to indicate if this widget is on the current row in a
         /// display array/input array...
         /// </summary>
-        public bool isOnSelectedRow
+        internal bool isOnSelectedRow
         {
             set
             {
@@ -82,13 +79,13 @@ namespace AubitDesktop
         }
 
 
-        public virtual void setIsOnSelectedRow(bool isSelected)
+        internal virtual void setIsOnSelectedRow(bool isSelected)
         {
 
         }
 
         // Virtual members - must be overriden by widget implementation...
-        public virtual void ContextTypeChanged()
+        internal virtual void ContextTypeChanged()
         {
             throw new ApplicationException("Not implemented");
 
@@ -99,14 +96,16 @@ namespace AubitDesktop
         {
             get
             {
-                throw new ApplicationException("Not implemented");
+                return WindowsWidget.Text;
 
             }
             set
             {
-                throw new ApplicationException("Not implemented");
+                WindowsWidget.Text = value;
             }
         }
+
+
         public virtual void setFocus()
         {
             throw new NotImplementedException("Should be overridden");
@@ -122,6 +121,67 @@ namespace AubitDesktop
         }
 
 
+        public new virtual bool Visible
+        {
+            get
+            {
+                return WindowsWidget.Visible;
+            }
+            set
+            {
+                WindowsWidget.Visible = value;
+            }
+        }
+
+        public  new virtual int Top
+        {
+            get
+            {
+                return WindowsWidget.Top;
+            }
+            set
+            {
+                WindowsWidget.Top = value;
+            }
+        }
+
+        public new virtual int Width
+        {
+            get
+            {
+                return WindowsWidget.Width;
+            }
+            set
+            {
+                WindowsWidget.Width = value;
+            }
+        }
+
+        public new virtual int Left
+        {
+            get
+            {
+                return WindowsWidget.Left;
+            }
+            set
+            {
+                WindowsWidget.Left = value;
+            }
+        }
+
+        public new virtual int Height
+        {
+            get
+            {
+                return WindowsWidget.Height;
+            }
+            set
+            {
+                WindowsWidget.Height = value;
+            }
+        }
+        
+
         public virtual bool hasFocus
         {
             get
@@ -130,7 +190,7 @@ namespace AubitDesktop
             }
         }
 
-        public virtual Control WindowsWidget
+        internal virtual Control WindowsWidget
         {
             get
             {
@@ -207,7 +267,7 @@ namespace AubitDesktop
             }
         }
 
-        public UIFieldValidationHandler fieldValidationFailed
+        internal UIFieldValidationHandler fieldValidationFailed
         {
             set
             {
@@ -727,10 +787,6 @@ namespace AubitDesktop
             }
 
         }
-
-
-        
-
 
         public int attributeNo
         {
