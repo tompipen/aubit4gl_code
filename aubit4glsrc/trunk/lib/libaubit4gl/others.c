@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.66 2008-08-28 10:38:50 mikeaubury Exp $
+# $Id: others.c,v 1.67 2008-09-23 14:41:28 mikeaubury Exp $
 #
 */
 
@@ -482,7 +482,7 @@ int
 A4GL_find_srec (struct_form * fd, char *name)
 {
   int a;
-
+A4GL_assertion(fd==0,"No struct_form passed to A4GL_find_rec");
   A4GL_debug ("No of records : %d", fd->records.records_len);
 
   for (a = 0; a < fd->records.records_len; a++)

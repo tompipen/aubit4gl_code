@@ -754,7 +754,7 @@ void sort_variables(void *ptr, int n) ;
 
 struct variable *find_variable_quick(char *name, struct variable **list, int cnt) ;
 struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *var_section,  struct variable_usage *vu,int a,int err_if_whole_array,int level) ;
-int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr);
+//int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr);
 char * compile_ispdf (void);
 char *decode_cursorname(struct expr_str *s_i);
 int A4GL_has_serial_column_marker(char *tabname,char *colname) ;

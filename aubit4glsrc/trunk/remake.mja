@@ -79,13 +79,6 @@ mkdir -p /home/aubit4gl/aubit4gl/help
 cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 
 
-cd /home/aubit4gl/aubit4gltest
-
-if [ "$2" = "" ]
-then
-echo "No testing..."
-exit
-fi
 
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_write
 make
@@ -101,6 +94,11 @@ make
 cd /home/aubit4gl/aubit4glsrc/tools/test_rep
 4glpc report.4gl -o report
 
+if [ "$2" = "" ]
+then
+echo "No testing..."
+exit
+fi
 
 cd /home/aubit4gl/aubit4gltest
 find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
