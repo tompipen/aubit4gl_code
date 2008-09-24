@@ -23,6 +23,9 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Windows.Forms;
 using System.Text;
+using System.IO;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace AubitDesktop
 {
@@ -223,7 +226,7 @@ namespace AubitDesktop
      * */
 
     
-    class FGLScreenRecordAttributes
+    public class FGLScreenRecordAttributes
     {
         public int AttributeNo;
         public string Name;
@@ -586,6 +589,11 @@ namespace AubitDesktop
         {
             return windows[0].FindFieldArray(fieldlist);
         }
+
+        internal void saveWindow()
+        {
+            windows[0].saveForm();
+        }
     }
 
 
@@ -622,7 +630,7 @@ namespace AubitDesktop
 
     class FGLWindow
     {
-        FGLForm CurrentForm;
+        internal FGLForm CurrentForm;
         public string windowName;
         public int x;
         public int y;
@@ -865,6 +873,18 @@ namespace AubitDesktop
         public void sizeWindowToFill()
         {
             WindowWidget.Dock = DockStyle.Fill;
+        }
+
+
+
+        internal void saveForm()
+        {
+            if (this.CurrentForm!=null)
+            {
+                this.CurrentForm.saveForm();
+            }
+
+            
         }
 
 

@@ -26,11 +26,11 @@ using System.Text;
 
 namespace AubitDesktop
 {
-    class FGLScreenRecord
+    public class FGLScreenRecord
     {
         public string name;
-        int dim;
-        List<FGLScreenRecordAttributes> Attributes;
+        private int dim;
+        private List<FGLScreenRecordAttributes> Attributes;
 
         public FGLScreenRecord(string Name, int dim)
         {

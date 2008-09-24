@@ -59,8 +59,36 @@ namespace AubitDesktop
             }
         }
 
+        public override int Left
+        {
+            get
+            {
+                return p.Left;
+            }
+            set
+            {
+                p.Left = value;
 
-        public override void ContextTypeChanged()
+            }
+        }
+
+        public override int Width
+        {
+            get
+            {
+                return p.Width;
+            }
+            set
+            {
+                p.Width = value;
+                l.Width = value;
+                t.Width = value;
+            }
+        }
+
+
+
+        internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             
 
@@ -84,7 +112,7 @@ namespace AubitDesktop
         Panel p;
         Label l;
 
-        public override Control WindowsWidget
+        internal override Control WindowsWidget
         {
             get
             {
@@ -126,6 +154,8 @@ namespace AubitDesktop
                 t.Text = value;
             }
         }
+
+
 
         public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.DateEdit edit,string config,int index)
         {

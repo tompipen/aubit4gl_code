@@ -73,7 +73,8 @@ namespace AubitDesktop
             pb.Focus();
         }
 
-        public override Control WindowsWidget
+
+        internal override Control WindowsWidget
         {
             get
             {

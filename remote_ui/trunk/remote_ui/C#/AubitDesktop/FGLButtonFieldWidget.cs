@@ -33,7 +33,7 @@ namespace AubitDesktop
 
         //FGLContextType _ContextType;
 
-        public override void ContextTypeChanged()
+        internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             
                 
@@ -75,7 +75,7 @@ namespace AubitDesktop
             b.Focus();
         }
 
-        public override Control WindowsWidget
+        internal override Control WindowsWidget
         {
             get
             {
@@ -127,6 +127,9 @@ namespace AubitDesktop
             createWidget(a, Convert.ToInt32(button.posY)+index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
             
         }
+
+
+
 
         public FGLButtonFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {

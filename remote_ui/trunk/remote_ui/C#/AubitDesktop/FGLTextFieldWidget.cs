@@ -39,7 +39,7 @@ namespace AubitDesktop
         
 
 
-        public override void setIsOnSelectedRow(bool isSelected)
+        internal override void setIsOnSelectedRow(bool isSelected)
         {
             isOnSelectedRow = isSelected;
             adjustDisplayPropertiesForContext();            
@@ -51,6 +51,35 @@ namespace AubitDesktop
             t.SetToolTip(this.p, s);
             t.SetToolTip(this.t, s);
         }
+
+
+        public override int Left
+        {
+            get
+            {
+                return p.Left;
+            }
+            set
+            {
+                p.Left = value;
+
+            }
+        }
+
+        public override  int Width
+        {
+            get
+            {
+                return p.Width;
+            }
+            set
+            {
+                p.Width = value;
+                l.Width = value;
+                t.Width = value;
+            }
+        }
+
 
         public override int tabIndex
         {
@@ -91,7 +120,7 @@ namespace AubitDesktop
             
         }
 
-        public override void ContextTypeChanged()
+        internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
 
             
@@ -165,13 +194,11 @@ namespace AubitDesktop
                     break;
 
             }
-        
-
         }
 
 
 
-        public override Control WindowsWidget
+        internal override Control WindowsWidget
         {
             get
             {
@@ -229,11 +256,19 @@ namespace AubitDesktop
                     
                 }
 
-
-                l.Text = val;
+                if (t.PasswordChar == '*')
+                {
+                    string s;
+                    s = new string(t.PasswordChar, t.Text.Length);
+                    l.Text = s;
+                    
+                }
+                else
+                {
+                    l.Text = val;
+                }
                 t.Text = val;
-                //t.SelectionLength = 0;
-                //System.Threading.Thread.Sleep(100);
+                
             }
         }
 
@@ -434,7 +469,7 @@ namespace AubitDesktop
             
         }
 
-        
+
 
 
 
@@ -458,7 +493,10 @@ namespace AubitDesktop
             l = new Label();
             l.TextAlign = ContentAlignment.MiddleLeft;
             t = new System.Windows.Forms.TextBox();
-
+            if (thisAttribute.ATTRIB_INVISIBLE!=null)
+            {
+                t.PasswordChar = '*';
+            }
 
             p.Margin = new Padding(0, 0, 0, 0);
             p.Padding = new Padding(0, 0, 0, 0);

@@ -31,10 +31,10 @@ namespace AubitDesktop
 
 
     // A picture widget fgl field widget...
-    class FGLPixmapFieldWidget : FGLWidget
+    public class FGLPixmapFieldWidget : FGLWidget
     {
 
-        public override void ContextTypeChanged()
+        internal override void ContextTypeChanged()
         {
             // Does nothing...
         }
@@ -63,7 +63,7 @@ namespace AubitDesktop
             pb.Focus();
         }
 
-        public override Control WindowsWidget
+        internal override Control WindowsWidget
         {
             get
             {

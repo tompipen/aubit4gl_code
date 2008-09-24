@@ -381,6 +381,7 @@ namespace AubitDesktop
             
             FGLApplicationPanel appPanel;
 
+            if (e.Data == "") return;
             updating = true;
             
             enew = EnvReader.ReadFromXml(e.Data);
@@ -997,6 +998,35 @@ namespace AubitDesktop
                 stdNetworkConnection.SendString("<TRIGGERED ID=\"EXEC\" PROGRAMNAME=\""+ System.Security.SecurityElement.Escape(l.cmd)+"\"/>");
                 
             }
+        }
+
+        private void saveWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            FGLApplicationPanel fGLApplicationPanel = null;
+            TabPage tp = tabControl1.SelectedTab;
+            if (tp == null) { return; }
+
+            foreach (Control c in tp.Controls)
+            {
+                if (c is FGLApplicationPanel)
+                {
+                    fGLApplicationPanel = (FGLApplicationPanel)tp.Controls[0];
+                }
+            }
+
+
+            if (fGLApplicationPanel != null)
+            {
+                fGLApplicationPanel.saveWindow();
+            }
+        
+        }
+
+        private void macroEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MacroEditor me = new MacroEditor();
+            me.Show();
         }
         
     }

@@ -41,7 +41,7 @@ namespace AubitDesktop
         private string _messagetext;
         private string _linedisplaytext;
         private List<ToolStripItem> toolStrip1;
-        private string Application;
+        private string ApplicationName;
         private string Username;
         private ToolTip tooltips;
         FGLWindow winScreen;
@@ -72,7 +72,7 @@ namespace AubitDesktop
         FGLOpenedForms OpenForms;
         private List<AubitTSBtn> programButtons;
         //private Control parentControl;
-        private frmMainAppWindow TopWindow; // The window containing the table control
+        private frmMainAppWindow TopWindow; // The window containing the tabpage control
         public  string lastKey;
 
 
@@ -166,7 +166,7 @@ namespace AubitDesktop
             contexts = new List<UIContext>();
             commands = new List<object>();
             //this.parentControl = parentControl;
-            this.Application = pApplication;
+            this.ApplicationName = pApplication;
             this.Username = pUsername;
             ApplicationWindows = new FGLWindowStack(this);
             winScreen = new FGLWindow("SCREEN");
@@ -1367,6 +1367,7 @@ namespace AubitDesktop
                     else
                     {
                         MessageText = b.Text;
+                        Application.DoEvents();
                     }
                     commands.Remove(a);
                     continue;
@@ -1573,6 +1574,10 @@ namespace AubitDesktop
         }
          * */
 
+        public void saveWindow()
+        {
+            ApplicationWindows.saveWindow();
+        }
 
         public void SetContext(FGLContextType contextType)
         {

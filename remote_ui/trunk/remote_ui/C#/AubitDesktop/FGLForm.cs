@@ -31,16 +31,16 @@ using System.IO;
 namespace AubitDesktop
 {
 
-    class FGLForm
+    public class FGLForm
     {
-        private List<FGLWidget> fields;
+        public List<FGLWidget> fields;
         //private List<Label> labels;
         private List<FGLScreenRecord> ScreenRecords;
         
         public int maxcol;
         public int maxline;
         //int n = 0;
-        Panel thisFormsPanel;
+        private Panel thisFormsPanel;
         private ToolTip tooltips;
 
         
@@ -773,10 +773,12 @@ namespace AubitDesktop
                     {
                         // Its a date
                         fld = new FGLDateFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+
                     }
                     else
                     {
                         fld = new FGLTextFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC,false);
+
                     }
                     break;
 
@@ -896,9 +898,16 @@ namespace AubitDesktop
 
             if (colName.Contains("["))
             {
+                int idx;
                 //string tokens;
-                dim = Convert.ToInt32(colName.Substring(colName.IndexOf("[") + 1, colName.Length - 2));
-                colName = colName.Substring(0, colName.IndexOf("[") - 1);
+
+                //dim = Convert.ToInt32(colName.Substring(colName.IndexOf("[") + 1, colName.Length - 2));
+                idx = colName.IndexOf("[");
+                string s = colName.Substring(idx);
+                s=s.Replace("]", "");
+                
+                dim = Convert.ToInt32(s);
+                colName = colName.Substring(0, idx - 1);
             }
 
             if (tabName != "")
@@ -1159,6 +1168,45 @@ namespace AubitDesktop
 
 
             return fldlist;
+            
+        }
+
+
+
+        private String UTF8ByteArrayToString(Byte[] characters)
+        {
+
+            UTF8Encoding encoding = new UTF8Encoding();
+
+            String constructedString = encoding.GetString(characters);
+
+            return (constructedString);
+
+        }
+
+        internal void saveForm()
+        {
+            String XmlizedString = null;
+            int a;
+            MessageBox.Show("Not implemented yet");
+            /*
+            MemoryStream memoryStream = new MemoryStream();
+            
+
+            XmlSerializer xs = new XmlSerializer(this.GetType());
+
+            XmlTextWriter xmlTextWriter = new XmlTextWriter(memoryStream, Encoding.UTF8);
+
+
+
+            xs.Serialize(xmlTextWriter, this);
+
+            memoryStream = (MemoryStream)xmlTextWriter.BaseStream;
+
+            XmlizedString = UTF8ByteArrayToString(memoryStream.ToArray());
+
+            MessageBox.Show(XmlizedString);
+             * */
             
         }
     }

@@ -62,6 +62,7 @@ namespace AubitDesktop
             this.alwaysToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.neverToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topWindowToolStrip = new System.Windows.Forms.ToolStrip();
             this.EnvReaderTimer = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -75,6 +76,7 @@ namespace AubitDesktop
             this.txtSend = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.macroEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -239,7 +241,9 @@ namespace AubitDesktop
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menubarToolStripMenuItem,
             this.applicationLauncherToolStripMenuItem,
-            this.toolbarToolStripMenuItem});
+            this.toolbarToolStripMenuItem,
+            this.saveWindowToolStripMenuItem,
+            this.macroEditorToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -344,6 +348,13 @@ namespace AubitDesktop
             this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.autoToolbarToolStripMenuItem.Text = "Auto";
             this.autoToolbarToolStripMenuItem.Click += new System.EventHandler(this.autoToolbarToolStripMenuItem_Click);
+            // 
+            // saveWindowToolStripMenuItem
+            // 
+            this.saveWindowToolStripMenuItem.Name = "saveWindowToolStripMenuItem";
+            this.saveWindowToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.saveWindowToolStripMenuItem.Text = "Save Window";
+            this.saveWindowToolStripMenuItem.Click += new System.EventHandler(this.saveWindowToolStripMenuItem_Click);
             // 
             // topWindowToolStrip
             // 
@@ -496,6 +507,13 @@ namespace AubitDesktop
             this.label1.TabIndex = 14;
             this.label1.Text = "Send";
             // 
+            // macroEditorToolStripMenuItem
+            // 
+            this.macroEditorToolStripMenuItem.Name = "macroEditorToolStripMenuItem";
+            this.macroEditorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.macroEditorToolStripMenuItem.Text = "Macro Editor";
+            this.macroEditorToolStripMenuItem.Click += new System.EventHandler(this.macroEditorToolStripMenuItem_Click);
+            // 
             // frmMainAppWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -583,6 +601,8 @@ namespace AubitDesktop
         private System.Windows.Forms.ToolStripMenuItem neverToolbarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoToolbarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem macroEditorToolStripMenuItem;
 
     }
 }

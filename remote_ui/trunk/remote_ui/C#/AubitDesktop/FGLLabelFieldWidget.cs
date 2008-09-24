@@ -33,7 +33,7 @@ namespace AubitDesktop
 
         
 
-        public override void ContextTypeChanged()
+        internal override void ContextTypeChanged()
         {
 
             // We dont care...
@@ -65,7 +65,7 @@ namespace AubitDesktop
             
         }
 
-        public override Control WindowsWidget
+        internal override Control WindowsWidget
         {
             get
             {
@@ -119,6 +119,7 @@ namespace AubitDesktop
             a = createAttribForWidget(ff);
             createWidget(a, Convert.ToInt32(label.posY)+index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
+
 
         public FGLLabelFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
