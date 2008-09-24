@@ -20,10 +20,12 @@ void print_progressbar_attr(struct_form *f, int metric_no, int attr_no,int oldst
 void dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra);
 */
 
+/*
 enum e_scrmodes {
 	SCRMODE_GRID,
 	SCRMODE_SCREEN
 };
+*/
 #include "formxml.h"
 
 

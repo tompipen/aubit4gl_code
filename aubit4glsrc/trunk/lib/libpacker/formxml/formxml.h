@@ -1,3 +1,8 @@
+enum e_scrmodes {
+        SCRMODE_GRID,
+        SCRMODE_SCREEN
+};
+
 /* formxml.c */
 int initialize_xmlpacker(void);
 int hasPrintedAttribute(int n);

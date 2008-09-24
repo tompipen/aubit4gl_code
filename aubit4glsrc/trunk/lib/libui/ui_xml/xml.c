@@ -10,7 +10,7 @@ FILE *def_stderr = NULL;
 char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
 
-int generate_xml_forms=-1; // Automatically generate XML form files where no XML file exists
+int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
 
 void dump_form_labels(void) ;
 
@@ -74,11 +74,14 @@ return 0;
 }
 
 
-static set_reading_form(char *form_id, char *form_name) {
+static int set_reading_form(char *form_id, char *form_name) {
 	//printf("%s %s\n",form_id, form_name);
 	strcpy(reading_form_id, form_id);
 	strcpy(reading_form_name, form_name);
+	return 1;
 }
+
+
 int
 A4GL_win_stack_cnt (void)
 {
