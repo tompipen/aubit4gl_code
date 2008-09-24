@@ -139,7 +139,7 @@ FORMONLY COMMENT
 %token KW_AUTOSCALE KW_PIXELWIDTH KW_PIXELHEIGHT
 
 %token KW_SCROLLBARS_BOTH KW_SCROLLBARS_V KW_SCROLLBARS_H KW_STRETCH_Y KW_STRETCH_BOTH KW_ITEMS KW_VALUEMAX KW_VALUEMIN
-%token KW_PROGRESSBAR KW_COMBOBOX OPTIONS KW_BROWSER
+%token KW_PROGRESSBAR KW_COMBOBOX OPTIONS KW_BROWSER KW_VALUECHECKED KW_VALUEUNCHECKED KW_CHECKBOX
 %%
 
 /* rules */
@@ -676,6 +676,7 @@ op_field_tag_type:
 	| KW_IMAGE {strcpy($<str>$,"Image");}
 	| KW_PROGRESSBAR {strcpy($<str>$,"ProgressBar");} 
 	| KW_COMBOBOX {strcpy($<str>$,"ComboBox");} 
+	| KW_CHECKBOX {strcpy($<str>$,"CheckBox");} 
 	| KW_BROWSER {strcpy($<str>$,"Browser");} 
 ;
 
@@ -1151,6 +1152,12 @@ AUTONEXT { A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | KW_ITEMS  EQUAL OPEN_BRACKET items_list CLOSE_BRACKET { A4GL_add_str_attr(fld,FA_S_ITEMS,$<str>4); } 
 | KW_VALUEMAX EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_VALUEMAX,$<str>3); } 
 | KW_VALUEMIN EQUAL NUMBER_VALUE{ A4GL_add_str_attr(fld,FA_S_VALUEMIN,$<str>3); } 
+
+| KW_VALUECHECKED EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_VALUECHECKED,$<str>3); } 
+| KW_VALUEUNCHECKED EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_VALUEUNCHECKED,$<str>3); } 
+| KW_VALUECHECKED EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_VALUECHECKED,$<str>3); } 
+| KW_VALUEUNCHECKED EQUAL NUMBER_VALUE { A4GL_add_str_attr(fld,FA_S_VALUEUNCHECKED,$<str>3); } 
+| KW_TEXT EQUAL CHAR_VALUE { A4GL_add_str_attr(fld,FA_S_TEXT,$<str>3); } 
 | KW_STYLE EQUAL CHAR_VALUE { A4GL_add_str_attr(fld, FA_S_STYLE, $<str>3); } 
 ;
 

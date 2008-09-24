@@ -223,6 +223,10 @@ if (mode==1) { // the label/button/field itself
 
 	if (A4GL_has_str_attribute(fprop, FA_S_VALUEMIN)) { sprintf(smbuff, " valueMin=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEMIN))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_VALUEMAX)) { sprintf(smbuff, " valueMax=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEMAX))); strcat(buff,smbuff);}
+
+	if (A4GL_has_str_attribute(fprop, FA_S_VALUECHECKED)) { sprintf(smbuff, " valueChecked=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUECHECKED))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_VALUEUNCHECKED)) { sprintf(smbuff, " valueUnchecked=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEUNCHECKED))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
 }
 
 
@@ -286,6 +290,10 @@ if (new_style_widget) {
 	}
 	if (A4GL_aubit_strcasecmp(new_style_widget,"ComboBox")==0) {
 		print_combobox_attr(f,metric_no,attr_no,0,why);
+		return;
+	}
+	if (A4GL_aubit_strcasecmp(new_style_widget,"CheckBox")==0) {
+		print_checkbox_attr(f,metric_no,attr_no,0,why);
 		return;
 	}
 	if (A4GL_aubit_strcasecmp(new_style_widget,"ProgressBar")==0) {
@@ -388,6 +396,28 @@ char posbuf[200];
 }
 
 
+void print_checkbox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
+//char *s;
+char buff[2000];
+char posbuf[200];
+
+struct_scr_field *fprop;
+fprop=&f->attributes.attributes_val[attr_no];
+ get_attribs(f, attr_no, buff,1);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	if (strcmp(why,"Table")==0) {
+		strcpy(posbuf,""); // posX and posY are not used for tables...
+	}
+
+
+	if (oldstyle) {
+			fprintf(ofile, "  <CheckBox %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+
+        } else {
+			fprintf(ofile, "  <CheckBox %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+        }
+	return ;
+}
 
 void print_combobox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
 //char *s;
