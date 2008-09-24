@@ -13,7 +13,7 @@ main
 	display "--------------------------------------------------------------"
 
 	let basedttm = '2003-05-31 12:00:00'
-	let basedate = '08/26/2003'
+	let basedate = mdy(8,26,2003)
 
 	display "Using base values:"
 	display "-> Datetime: ", basedttm

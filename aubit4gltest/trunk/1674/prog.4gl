@@ -28,7 +28,7 @@ let a_ffin = p_fech + 30
 insert into clconfac values (3, p_prod, p_nubo, p_nuca, a_fini, a_ffin)
 
 let w_tipf = 9
-SQL
+SQL 
 SELECT FIRST 1 conftipf INTO $w_tipf FROM clconfac
         WHERE confprod = $p_prod AND confnubo = $p_nubo AND
               confnuca = $p_nuca AND $p_fech BETWEEN conffini AND confffin

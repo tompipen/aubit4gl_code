@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Compile only, case inside page header loop for ever"
+desc: ; @echo "Compile only case inside page header loop for ever"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"

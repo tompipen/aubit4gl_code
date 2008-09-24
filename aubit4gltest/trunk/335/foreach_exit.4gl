@@ -1,11 +1,11 @@
 database test1
 
 MAIN
-	DEFINE tab_id SMALLINT
+	DEFINE tab_id INTEGER
 	DEFINE tab_name CHAR(18)
 	DEFINE str char(128)
 
-	LET str = "select tabid, tabname from systables"
+	LET str = "select tabid, tabname from systables order by tabid"
 	PREPARE st FROM str
 	DECLARE cr CURSOR FOR st
   FOREACH cr into tab_id, tab_name
