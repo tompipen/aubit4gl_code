@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.win32,v 1.6 2008-02-15 17:20:44 mikeaubury Exp $
+# $Id: Makefile.win32,v 1.7 2008-09-24 09:49:29 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -75,7 +75,7 @@ LINKLIBS	=-L${LIBROOT} -Lc:/gnu/pdc27_ming_w32 -L$(ROOT)/tools/cygwin/libform -l
 ##                              Source files
 ## ==================================================================
 
-ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o \
+ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o acs_mappings.o \
 	array.o iarray.o prompt.o generic_ui.o
 
 ## ==================================================================

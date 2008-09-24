@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.74 2008-07-06 11:34:48 mikeaubury Exp $
+# $Id: prompt.c,v 1.75 2008-09-24 09:49:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.74 2008-07-06 11:34:48 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.75 2008-09-24 09:49:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -116,6 +116,7 @@ int
 		A4GL_exitwith("No prompt window created");
 		return 0;
   }
+A4GL_debug("derwin = %p",p);
   prompt->win = p;
   buff[width]=0;
   wprintw(p,"%s",buff);
@@ -398,17 +399,14 @@ int was_aborted=0;
       }
 #endif
       strcpy (buff, field_buffer (prompt->field, 0));
+	set_field_buffer(prompt->label,0,"");
+	set_field_buffer(prompt->field,0,"");
       A4GL_trim (buff);
 
       A4GL_push_char (buff);
       prompt->mode = 2;
 	
       unpost_form (prompt->f);
-	//free_form(prompt->f);
-	//a=free_field(prompt->field);
-	//printf("a=%d\n",a);
-	//free_field(prompt->label);
-      //free_form(prompt->f);
       A4GL_debug("Calling clear_prmpt");
       A4GL_clear_prompt (prompt);
       return 0;
@@ -627,6 +625,60 @@ int A4GL_curses_to_aubit(int a) {
 	if (a==-1&&orig_a!=a) {int_flag=1;} // A map to -1 is an interrupt...
 	return a;
 }
+
+
+
+
+
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+A4GL_clear_prompt (struct s_prompt *prmt)
+{
+  WINDOW *p;
+//int a;
+//FIELD **sarr;
+
+
+#ifdef DEBUG
+  A4GL_debug ("Clearing prompt...");
+#endif
+
+  p = prmt->win;
+
+
+#ifdef __WIN3x2__
+  {
+  int width;
+  char *buff;
+  WINDOW *cw;
+  width = UILIB_A4GL_get_curr_width ();
+  cw = (WINDOW *) A4GL_get_currwin ();
+  buff=malloc(width+1);
+  memset(buff,' ',width);
+  buff[width]=0;
+  wmove(cw,0,0);
+  wprintw(cw,buff);
+  free(buff);
+  UILIB_A4GL_zrefresh ();
+  }
+#else
+if (p)
+    {
+      werase(p);
+      delwin (p);
+      A4GL_debug ("delwin : %p", p);
+      prmt->win = 0;
+      UILIB_A4GL_zrefresh ();
+    }
+#endif
+
+}
+
 
 
 /* ============================== EOF ============================== */

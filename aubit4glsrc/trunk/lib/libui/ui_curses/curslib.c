@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.151 2008-09-19 11:20:33 mikeaubury Exp $
+# $Id: curslib.c,v 1.152 2008-09-24 09:49:29 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.151 2008-09-19 11:20:33 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.152 2008-09-24 09:49:29 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1886,6 +1886,7 @@ A4GL_clear_menu (ACL_Menu * menu)
 #endif
 
 
+#ifdef MOVED
 /**
  *
  * @todo Describe function
@@ -1931,7 +1932,9 @@ if (p)
     }
 #endif
 
+
 }
+#endif
 
 
 
