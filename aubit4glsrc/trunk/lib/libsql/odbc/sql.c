@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.221 2008-09-18 16:56:21 gyver309 Exp $
+# $Id: sql.c,v 1.222 2008-09-25 13:40:10 mikeaubury Exp $
 #
 */
 
@@ -2270,6 +2270,36 @@ A4GL_display_size (SQLSMALLINT coltype, SQLUINTEGER collen, SQLCHAR* colname)
     }
 }
 
+
+static char * decode_sqlite_server (char *server)
+{
+  FILE *f;
+  static char usedPath[10000];
+char *rval;
+
+  rval=server;
+  if (server)
+    {
+      if (strlen (server))
+	{
+	f=A4GL_open_file_dbpath_plus_path(server,".",usedPath);
+	  if (f)
+	    {
+	      fclose (f);
+		A4GL_debug("Using : %s\n",usedPath);
+	      rval = usedPath;
+	    }
+	}
+    }
+
+  /// @todo
+  /// Sqlite will create a database if this database name does not exist
+  /// there is a good argument that we should not do this in Aubit4GL
+  /// and should instead fire off some error...
+  ///
+  return rval;
+}
+
 /**
  * Connects to a database.
  *
@@ -2379,7 +2409,11 @@ uid by mistake...
     rc = SQLSetConnectOption (hdbc, SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED);
     chk_rc(rc, 0, "SQLSetConnectOption(SQL_CUR_USE_IF_NEEDED)");
 #endif
-
+    if (strstr(acl_getenv("SQLTYPE"),"sqlite")) {
+	// if we're going direct - we can search DBPATH for database
+	// this doesn't work if we're going via a driver manager...
+    	server=decode_sqlite_server(server);
+    }
     rc = SQLConnect (hdbc, (SQLCHAR*)server, SQL_NTS, (SQLCHAR*)uid, SQL_NTS, (SQLCHAR*)pwd, SQL_NTS);
     chk_rc (rc, 0, "SQLConnect");
 
@@ -3268,8 +3302,10 @@ static unsigned long conv_sqldtype (int sqldtype, int sdim)
     int ndtype;
     A4GL_dbg ("In conv_sqldtype: encoding sqldtype=%d, sdim=%d", sqldtype, sdim);
 
-    if (sqldtype == -1 && A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR"))
+    if (sqldtype == -1 && A4GLSQLCV_check_requirement("ODBC_LONGVARCHAR_AS_CHAR")) {
+	//printf("Overload...\n");
 	return DTYPE_CHAR;
+	}
 
     //#if (ODBCVER >= 0x0300)
 #ifdef SQL_TYPE_DATE

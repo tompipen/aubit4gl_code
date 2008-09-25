@@ -100,7 +100,6 @@ NOT_EQUAL_AS_LESS_GREATER_THAN
 FAKE_ROWID_NAME
 EXPAND_COLUMNS
 DTYPE_ALIAS
-ODBC_LONGVARCHAR_AS_CHAR
 NO_UPDATE_TABLE
 NEVER_CONVERT Ignore ALL SQL translations
 NEVER_CONVERT_COLUMN Ignore all translations on column names (typically - dont try to prepend with table name)
@@ -120,3 +119,4 @@ FORCE_DATE_CAST Forces the use of a date cast when binding a date datatype (seem
 NO_DECLARE_INTO Restrict compilation of DECLARE SELECT .. INTO because its not supported by the RDBMS
 FOR_UPDATE_DROP_COLLIST Drop the column list from a FOR UPDATE cursor
 FOR_UPDATE_NOWAIT Add NOWAIT to a FOR UPDATE 
+ODBC_LONGVARCHAR_AS_CHAR Force what would be a TEXT to be a CHAR because of a misleading reply from ODBC

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.47 2008-08-28 10:38:47 mikeaubury Exp $
+# $Id: globals.c,v 1.48 2008-09-25 13:40:05 mikeaubury Exp $
 #
 */
 
@@ -319,13 +319,15 @@ read_glob (char *s)
 {
   FILE *f;
   char ii[255];
+  char ii4gl[255];
+  char iiglb[255];
   char iii[256];
   char *fname;
   char *dbname;
   int schemaonly;
   int gvars;
   int start = 0;
-  int a;
+  int a=0;
 int b;
   struct globals_definition g;
 
@@ -337,12 +339,34 @@ int b;
 #endif
 
   strcpy (ii, s);
+  strcpy (ii4gl, s);
+  strcpy (iiglb, s);
   strcat (ii, ".glb");
-  a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
-		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
+
+
+  strcat (ii4gl, ".4gl");
+
+  strcpy(iiglb,ii);
+
+  if (strcmp(acl_getenv("A4GL_PACKER"),"PACKED")==0) {
+  	strcat(iiglb,acl_getenv("A4GL_PACKED_EXT"));
+  }
+  if (strcmp(acl_getenv("A4GL_PACKER"),"GZPACKED")==0) {
+  	strcat(iiglb,acl_getenv("A4GL_PACKED_EXT"));
+  }
+  if (strcmp(acl_getenv("A4GL_PACKER"),"XML")==0) {
+  	strcat(iiglb,acl_getenv("A4GL_XML_EXT"));
+  }
+
+  if (A4GL_file_exists(iiglb) && A4GL_file_is_newer(iiglb,ii4gl)) {
+  	a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
+  }
+  aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
   if (!a) {
      		generate_globals_for (ii);
   }
+
+
   a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
 	if (!a) {
   		strcpy (iii, currinfile_dirname);
@@ -426,7 +450,6 @@ dump_gvars (void)
 
           strcpy (ii, ptr);
   }
-
   strcat (ii, ".glb");
   g=malloc(sizeof(globals_definition));
   memset(g,0,sizeof(*g));

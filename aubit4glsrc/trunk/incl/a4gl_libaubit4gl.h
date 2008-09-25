@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.327 2008-09-19 13:15:48 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.328 2008-09-25 13:40:06 mikeaubury Exp $
 #
 */
 
@@ -2792,7 +2792,7 @@ void A4GL_removePreparedStatement(char *name);
 int
 A4GL_apisql_has_sess (char *sessname);
 char *A4GL_get_clobbered_from(char *s) ;
-
+int A4GL_file_is_newer(char*lv_f1, char *lv_f2);
 
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */

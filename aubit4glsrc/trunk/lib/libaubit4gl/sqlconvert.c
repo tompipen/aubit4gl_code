@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.156 2008-09-05 12:59:43 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.157 2008-09-25 13:40:06 mikeaubury Exp $
 #
 */
 
@@ -434,7 +434,6 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
   	if (!A4GL_compile_time_convert())  return;
   }
 
-  
   if (!A4GL_has_pointer (buff, SQL_CONVERSION))
     {
       A4GL_cv_fnlist (source_dialect, target_dialect, buff);
