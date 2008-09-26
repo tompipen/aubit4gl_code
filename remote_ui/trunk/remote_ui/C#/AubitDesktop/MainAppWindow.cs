@@ -688,8 +688,9 @@ namespace AubitDesktop
         private void frmMainAppWindow_KeyDown(object sender, KeyEventArgs e)
         {
             string key="";
-            string fglKey;
+
             string keycode;
+            string rkey = "";
 
             key = FGLUtils.decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
             if (key == null) return;
@@ -705,21 +706,21 @@ namespace AubitDesktop
 
             if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(Program.AppSettings.interruptKey))
             {
-                key = "INTERRUPT";
+                rkey = "INTERRUPT";
             }
 
             if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("ACCEPT","Escape")))
             {
-                key = "ACCEPT";
+                rkey = "ACCEPT";
             }
 
             if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("INSERT","F1")))
             {
-                key = "INSERT";
+                rkey = "INSERT";
             }
             if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("DELETE","F2")))
             {
-                key = "DELETE";
+                rkey = "DELETE";
             }
 
             
@@ -728,6 +729,25 @@ namespace AubitDesktop
             setLastKeyInApplication(key);
             this.ErrorText = "";
 
+            // Check for an explicit key name..
+            if (CheckForToolStripKey(e, key)) return;
+
+
+            if (rkey != "")
+            {
+                // Check for a 4GL key name (insert, delete, accept, escape etc)
+                if (CheckForToolStripKey(e, rkey)) return;
+            }
+            // Key wasnt found...
+
+            
+
+
+        }
+
+        private bool CheckForToolStripKey(KeyEventArgs e, string key)
+        {
+            string fglKey;
             foreach (ToolStripItem i in topWindowToolStrip.Items)
             {
 
@@ -737,7 +757,7 @@ namespace AubitDesktop
                     if (i.Visible == false) continue;
                     a = (AubitTSBtn)i;
                     fglKey = FGLUtils.getKeyNameFromFGLKeyCode(a.ActiveKey);
-                    if (fglKey==key)
+                    if (fglKey == key)
                     {
                         if (a.clickHandler != null)
                         {
@@ -749,14 +769,12 @@ namespace AubitDesktop
                         }
                         e.Handled = true;
                         e.SuppressKeyPress = true;
-                        return;
+                        return true;
                     }
 
                 }
             }
-            
-
-
+            return false;
         }
 
 

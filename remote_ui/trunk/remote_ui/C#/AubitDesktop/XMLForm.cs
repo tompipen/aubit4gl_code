@@ -249,6 +249,7 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
             [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
+            [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
             [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
             [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
             [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]
@@ -315,9 +316,10 @@ namespace AubitDesktop.Xml.XMLForm
             
         }
 
+
         /// <remarks/>
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
-        public class ComboBox
+        public class CheckBox
         {
 
             /// <remarks/>
@@ -336,10 +338,57 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
 
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string comments;
+
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string valueChecked;
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string valueUnchecked;
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string text;
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+        public class ComboBox
+        {
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string comments;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string gridWidth;
+
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string shift;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string posX;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string posY;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string width;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string format;
 
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string autoNext;
             
                         /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -736,6 +785,7 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
             [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
+            [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
             [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
             [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
             [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]
@@ -818,6 +868,7 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
             [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
+            [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
             [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
             [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
             [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]

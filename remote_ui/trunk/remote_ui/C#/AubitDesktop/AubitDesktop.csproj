@@ -77,25 +77,25 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLBrowserFieldWidget.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLButtonFieldWidget.cs">
-      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLCheckboxFieldWidget.cs">
+    </Compile>
+    <Compile Include="FGLComboBoxFieldWidget.cs">
     </Compile>
     <Compile Include="FGLDateFieldWidget.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLForm.cs" />
     <Compile Include="FGLLabelFieldWidget.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLOptions.cs" />
     <Compile Include="FGLPixmapFieldWidget.cs">
-      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FGLProgressBarFieldWidget.cs">
     </Compile>
     <Compile Include="FGLScreenRecord.cs" />
     <Compile Include="FGLTextFieldWidget.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLTxtControl.cs">
       <SubType>UserControl</SubType>
@@ -105,7 +105,6 @@
     </Compile>
     <Compile Include="FGLUsing.cs" />
     <Compile Include="FGLWidget.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FieldOverlay.cs" />
     <Compile Include="frmFieldOverlay.cs">

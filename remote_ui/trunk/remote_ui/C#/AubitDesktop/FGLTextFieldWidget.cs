@@ -36,8 +36,6 @@ namespace AubitDesktop
         Panel p;
         Label l;
         Button b;
-        
-
 
         internal override void setIsOnSelectedRow(bool isSelected)
         {
@@ -196,8 +194,6 @@ namespace AubitDesktop
             }
         }
 
-
-
         internal override Control WindowsWidget
         {
             get
@@ -273,50 +269,6 @@ namespace AubitDesktop
         }
 
 
-        /*
-        public FGLTextFieldWidget()
-        {
-            p = new Panel();
-            l = new Label();
-            t = new System.Windows.Forms.TextBox();
-            
-            //p.Margin = new Padding(0, 0, 0, 0);
-            //p.Padding = new Padding(0, 0, 0, 0);
-            //l.Margin = new Padding(0, 0, 0, 0);
-            //l.Padding = new Padding(0, 0, 0, 0);
-            //t.Margin = new Padding(0, 0, 0, 0);
-            //t.Padding = new Padding(0, 0, 0, 0);
-            
-
-            l.TextAlign = ContentAlignment.MiddleLeft;
-            
-            t.Width = Width;
-            t.Height = Height;
-            l.Height = Height;
-            l.Width = Width;
-
-            this.SetWidget();
-            l.TextAlign = ContentAlignment.MiddleLeft;
-            
-            t.Visible = false;
-            t.Enabled = true;
-            l.Visible = true;
-            p.Location = this.Location;
-            //p.AutoSize = true;
-            p.Height=Height;
-            p.Width = Width;
-            
-            this.Downshift = false;
-            this.Upshift = false;
-            this.AutoNext = false;
-            this.format = null;
-            this.NoEntry = false;
-
-            setIsOnSelectedRow(false);
-        }
-        */
-
-
         public int MaxLength
         {
             get{
@@ -325,9 +277,8 @@ namespace AubitDesktop
             set {
                 t.MaxLength=value;
             }
-            
-
         }
+
 
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.TextEdit edit,string config,int index)
@@ -370,7 +321,6 @@ namespace AubitDesktop
                 Convert.ToInt32(edit.posY)+index, Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
             
         }
-
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ButtonEdit edit, string config, int index)
         {
@@ -425,9 +375,6 @@ namespace AubitDesktop
 
         }
 
-
-
-
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit,int index)
         {
             ATTRIB a;
@@ -453,7 +400,7 @@ namespace AubitDesktop
 
             if (edit.shift!=null)
             {
-                if (edit.shift == "aubit")
+                if (edit.shift == "down")
                 {
                     a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
                 }
@@ -469,18 +416,10 @@ namespace AubitDesktop
             
         }
 
-
-
-
-
-
-
         public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl,bool buttonEdit)
         {
             createTextWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl, buttonEdit, "");
         }
-
-
 
         private void createTextWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, bool buttonEdit, string buttonImage)
         {
@@ -508,7 +447,8 @@ namespace AubitDesktop
 
             t.Visible = true;
             t.Enabled = true;
-            p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
+            SizeControl(p);
+            //p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             p.AutoSize = true;
 
 

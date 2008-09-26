@@ -1006,7 +1006,7 @@ namespace AubitDesktop
                     btn.isProgramAdded = true;
                     btn.Text = o.BUTTON;
                     btn.programTag = o.TAG;
-                    btn.Click += b_Click;
+                    btn.clickHandler = b_Click;
                     try
                     {
                         //Image i = getImageFromName(o.IMAGE);

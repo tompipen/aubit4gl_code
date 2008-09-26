@@ -545,18 +545,29 @@ namespace AubitDesktop
                     fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0],"",index);
                     break;
 
+                case "AubitDesktop.Xml.XMLForm.CheckBox":
+                    fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], "", index);
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.ComboBox":
+                    fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], "", index);
+                    break;
 
                
                 case "AubitDesktop.Xml.XMLForm.Label":
                     fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Label)ff.Items[0], "",index);
                     break;
+
                 case "AubitDesktop.Xml.XMLForm.RipLABEL":
                     fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.RipLABEL)ff.Items[0], "",index);
                     break;
 
-                case "AubitDesktop.Xml.XMLForm.ComboBox":
+
                 case "AubitDesktop.Xml.XMLForm.ProgressBar":
-                
+                    fld = new FGLProgressBarFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ProgressBar)ff.Items[0], "", index);
+                    break;
+
+
 
                 default:
                     MessageBox.Show("Unhandled widget type : " + widgetType);

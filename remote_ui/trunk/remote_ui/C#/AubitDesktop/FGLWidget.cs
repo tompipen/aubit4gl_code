@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace AubitDesktop
 {
-    public class FGLWidget : ContainerControl
+    public class FGLWidget /* : ContainerControl */
     {
         int _attributeNo;
         string _TableName;
@@ -35,6 +35,8 @@ namespace AubitDesktop
         string _Config;
         string _Widget;
         string _comment;
+        int _pixelheight;
+        int _pixelwidth;
         internal FGLContextType _ContextType;
         int _row;
         int _column;
@@ -91,8 +93,32 @@ namespace AubitDesktop
 
         }
 
+        public virtual System.Drawing.Color BackColor
+        {
+            get
+            {
+                return WindowsWidget.BackColor;
+            }
+            set
+            {
+                WindowsWidget.BackColor = value;
+            }
+        }
 
-        public override string Text // The current fields value
+        public  bool Enabled
+        {
+            get
+            {
+                return WindowsWidget.Enabled;
+            }
+            set
+            {
+                WindowsWidget.Enabled = value;
+            }
+        }
+
+
+        public virtual string Text // The current fields value
         {
             get
             {
@@ -121,7 +147,7 @@ namespace AubitDesktop
         }
 
 
-        public new virtual bool Visible
+        public  virtual bool Visible
         {
             get
             {
@@ -133,7 +159,7 @@ namespace AubitDesktop
             }
         }
 
-        public  new virtual int Top
+        public   virtual int Top
         {
             get
             {
@@ -145,7 +171,7 @@ namespace AubitDesktop
             }
         }
 
-        public new virtual int Width
+        public  virtual int Width
         {
             get
             {
@@ -157,7 +183,7 @@ namespace AubitDesktop
             }
         }
 
-        public new virtual int Left
+        public  virtual int Left
         {
             get
             {
@@ -169,7 +195,7 @@ namespace AubitDesktop
             }
         }
 
-        public new virtual int Height
+        public  virtual int Height
         {
             get
             {
@@ -756,6 +782,7 @@ namespace AubitDesktop
             }
         }
 
+       
 
         internal void t_GotFocus(object sender, EventArgs e)
         {
@@ -861,6 +888,8 @@ namespace AubitDesktop
             {
                 c.Width = GuiLayout.get_gui_w(Convert.ToInt32((string)configSettings["WIDTH"]));
             }
+
+
             c.Visible = true;
             c.Location = new System.Drawing.Point(GuiLayout.get_gui_x(_column - 1), GuiLayout.get_gui_y(_row));
         }
