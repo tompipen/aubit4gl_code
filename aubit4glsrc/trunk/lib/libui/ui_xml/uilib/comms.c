@@ -216,7 +216,9 @@ connect_ui_proxy (void)
     {
       UIdebug (1,"No socket specified via PROXYPIPE - running standalone\n"); fflush(stdout);
       clientui_sock_read = 0;	// STDIN
-      clientui_sock_write = 2;	// STDOUT
+      clientui_sock_write = 1;	// STDOUT
+	
+	//stdout=fopen("/dev/null","w");
     }
   else
     {

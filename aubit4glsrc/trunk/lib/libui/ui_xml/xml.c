@@ -1133,9 +1133,9 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
       int context;
       A4GL_push_char ("XML");
       A4GL_push_int (((long) s) & 0xffffffff);
-      uilib_get_context (2);
+      uilib_get_context_dont_care_if_doesnt_exist (2);
       context = A4GL_pop_int ();	// Context..
-      if (context)
+      if (context>=0)
 	{
 	  clr_exiting_context (context);
 	}

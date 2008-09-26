@@ -47,6 +47,7 @@ int nfields = 0;
 
 
 
+void print_checkbox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) ;
 
 int printed_attributes[1000];
 static int tabIndex;

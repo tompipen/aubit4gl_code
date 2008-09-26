@@ -1840,15 +1840,8 @@ uilib_construct_initialised (int nargs)
 }
 
 
-
-int
-uilib_get_context (int nargs)
-{
-  char *mod;
-  int line;
+static int get_context_for_modline(char *mod,int line,int fail_if_not_there) {
   int a;
-  line = POPint ();
-  mod = charpop ();
   UIdebug (5, "get context request for module=%s line=%d ncontexts=%d",  mod, line, ncontexts);
   for (a = 0; a < ncontexts; a++)
     {
@@ -1862,12 +1855,38 @@ uilib_get_context (int nargs)
 	    }
 	}
     }
-// critical...
-  UIdebug (0, "CRITICAL ERROR - COULD NOT FIND CONTEXT\n\n");
-  //A4GL_pause_execution();
-exit(99);
+
+if (fail_if_not_there) {
+	// critical...
+  	UIdebug (0, "CRITICAL ERROR - COULD NOT FIND CONTEXT\n\n");
+	fprintf(stderr,"CRITICAL ERROR - COULD NOT FIND CONTEXT\n");
+  	//A4GL_pause_execution();
+	exit(99);
+}
+
   pushint (-1);
   return 1;
+}
+
+
+
+int uilib_get_context_dont_care_if_doesnt_exist(int n) {
+  char *mod;
+  int line;
+  line = POPint ();
+  mod = charpop ();
+  get_context_for_modline(mod,line,0);
+}
+
+int
+uilib_get_context (int nargs)
+{
+  char *mod;
+  int line;
+  int a;
+  line = POPint ();
+  mod = charpop ();
+  get_context_for_modline(mod,line,1);
 }
 
 int
