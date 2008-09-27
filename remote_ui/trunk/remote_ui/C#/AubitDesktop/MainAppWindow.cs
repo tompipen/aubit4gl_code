@@ -928,11 +928,19 @@ namespace AubitDesktop
         public void loadApplicationLauncherTree(string XMLFile)
         {
             AubitDesktop.Xml.StartMenu sMenu=null;
+            System.IO.StreamReader file = null;
             System.Xml.Serialization.XmlSerializer reader = new
             System.Xml.Serialization.XmlSerializer(typeof(AubitDesktop.Xml.StartMenu));
-            System.IO.StreamReader file =
-                new System.IO.StreamReader(XMLFile);
-
+            try
+            {
+                 file =
+                    new System.IO.StreamReader(XMLFile);
+            }
+            catch (Exception e) 
+            {
+                MessageBox.Show(e.ToString(), "Error getting XML application launcher file");
+                return;
+            }
             
             try
             {

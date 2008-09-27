@@ -157,6 +157,7 @@ namespace AubitDesktop
         {
 
             createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            SizeControl(pb);
         }
 
 

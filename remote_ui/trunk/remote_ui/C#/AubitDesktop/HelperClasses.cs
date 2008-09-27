@@ -971,6 +971,52 @@ namespace AubitDesktop
             }
         }
 
+        public  static System.Drawing.Image getImageFromImagePath(string f, string path)
+        {
+            string[] arr;
+            System.Drawing.Image i;
+            i = getImageFromImageFile(f);
+            if (i != null) return i;
+
+            if (path.Contains(";"))
+            {
+                arr = path.Split(';');
+            }
+            else
+            {
+                arr = path.Split(':');
+            }
+
+            foreach (string a in arr)
+            {
+             
+                string fullname;
+                if (!a.EndsWith("/") && !a.EndsWith("\\"))
+                {
+                    fullname = a + "/" + f;
+                } else {
+                    fullname=a+f;
+                }
+
+                 i = getImageFromImageFile(fullname);
+                 if (i != null) return i;
+            }
+            return null;
+        }
+
+        public static System.Drawing.Image getImageFromImageFile(string f)
+        {
+
+            System.Drawing.Image i;
+            try
+            {
+                i = System.Drawing.Image.FromFile(f);
+                if (i != null) return i;
+            }
+            catch { }
+
+            return null;
+        }
 
         internal static System.Drawing.Image getImageFromName(string name)
         {
@@ -981,12 +1027,25 @@ namespace AubitDesktop
             }
             else
             {
+
                 try
                 {
                     i = new System.Drawing.Bitmap(name);
                 } catch (Exception) {
                 }
                 if (i!=null) return i;
+
+
+                i = getImageFromImagePath(name, "C:/aubit4gl;" + Properties.Resources.ImageDirectory);
+                try
+                {
+                    i = new System.Drawing.Bitmap(name);
+                }
+                catch (Exception)
+                {
+                }
+                if (i != null) return i;
+
                 return (System.Drawing.Image)resourceInterface.getObject("attention");
             }
         }

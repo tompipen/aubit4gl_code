@@ -97,9 +97,12 @@ namespace AubitDesktop
                 {
                     this.FieldTextChanged = true;
                 }
-                pb.ImageLocation = value;
+                pb.Image=FGLUtils.getImageFromName ( value);
             }
         }
+
+
+
 
         public FGLPixmapFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff,AubitDesktop.Xml.XMLForm.Image pixmap,string config,int index)
         {
@@ -128,7 +131,7 @@ namespace AubitDesktop
                 string dir;
                 Image obj;
 
-                obj = (Image)resourceInterface.getObject((string)configSettings["FILENAME"]);
+                obj = (Image) FGLUtils.getImageFromName((string)configSettings["FILENAME"]);
                 //pb.BackColor = Color.AliceBlue;
 
 

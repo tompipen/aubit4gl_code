@@ -702,7 +702,11 @@ namespace AubitDesktop
             this.thisFormsPanel.Left = 5;
             tooltips = new ToolTip();
             tooltips.ShowAlways = true;
-            
+            if (f == null)
+            {
+                MessageBox.Show("Unable to open form");
+                return;
+            }
 
             this.maxcol = Convert.ToInt32(f.SCREENS.MAXCOL);
             this.maxline = Convert.ToInt32(f.SCREENS.MAXLINE);
