@@ -81,14 +81,15 @@ static int set_reading_form(char *form_id, char *form_name) {
 	return 1;
 }
 
-
-int
+/*
+static int
 A4GL_win_stack_cnt (void)
 {
   return win_stack_cnt;
 }
+*/
 
-int
+static int
 A4GL_niy (char *func)
 {
   char buff[245];
@@ -103,7 +104,7 @@ int exiting_context_state[100];
 int exiting_context_cnt = 0;
 
 
-void
+static void
 clr_exiting_context (int n)
 {
   int a;
@@ -117,7 +118,7 @@ clr_exiting_context (int n)
 }
 
 
-void
+static void
 set_exiting_context (int n, int state)
 {
   int a;
@@ -150,7 +151,7 @@ set_exiting_context (int n, int state)
 }
 
 
-int
+static int
 isset_exiting_context (int n, int *state)
 {
   int a;
@@ -170,7 +171,7 @@ isset_exiting_context (int n, int *state)
 static void
 A4GL_XML_opening_form_xml (char *formname, char *formfile, char *fbuff)
 {
-  int a;
+  //int a;
   char *buff;
 char buff2[2000];
 int len;
@@ -245,7 +246,7 @@ A4GL_XML_opening_form (char *formfile, char *formname,int append_xml)
 
 
 
-void *
+static void *
 A4GL_win_stack (struct s_windows *w, char *name, int op)
 {
   int a;
@@ -316,7 +317,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 }
 
 
-void
+static void
 add_window (char *s, int w, int h, int border)
 {
   struct s_windows *win;
@@ -999,7 +1000,7 @@ decode_event_id (int i)
 }
 
 
-char **
+static char **
 get_field_codes (char *fields)
 {
   char s[10240];
@@ -1459,7 +1460,7 @@ UILIB_A4GLUI_set_intr ()
 }
 
 
-
+/*
 static char
 hex_digit (int n)
 {
@@ -1480,19 +1481,19 @@ hex_digit (int n)
 printf("n=%d\n",n);
   return 'x';
 }
-
+*/
 
 
 static void
 A4GL_send_xml_for_binary_file (char *filename, char *fbuff,char *remotename,int len)
 {
-  int a;
+  //int a;
   char *buff=0;
 char buff2[2000];
   char *ptr;
   int l;
 int cnt;
-  char *send;
+  //char *send;
   suspend_flush (1);
   if (remotename==0) {
   	send_to_ui_no_nl ("<FILE NAME=\"%s\">", filename);
@@ -1763,7 +1764,7 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, int s
 {
   char buff[2000];
   int a, b;
-  int n;
+  //int n;
   struct s_disp_arr *d;
   int context;
   int rval;
@@ -1967,7 +1968,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
   if (init)
     {
       char buff[2000];
-      int a;
+      //int a;
       A4GL_push_int (count);
       uilib_set_count (1);
       suspend_flush (1);
@@ -2155,7 +2156,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
   A4GL_push_int (ln);
   uilib_get_context (2);
   context = A4GL_pop_long ();
-	printf("loop : Prompt context: %d\n",context);
+	A4GL_debug("loop : Prompt context: %d\n",context);
 
   while (1)
     {
@@ -2174,7 +2175,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 	  char *rvalstr;
 	  if (last_attr->sync.nvalues)
 	    {
-	      int b;
+	      //int b;
 	      A4GL_push_int (context);
 	      uilib_get_prompt_result (1);
 	      rvalstr = A4GL_char_pop ();
@@ -2216,7 +2217,7 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,
   int rval;
   char *promptstr;
   static long ln = 0;
-  long context;
+  //long context;
   struct s_prompt *prompt;
   prompt = vprompt;
   ln = (long) prompt;
@@ -2682,6 +2683,8 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	    case FA_S_CLASS:
 	      send_to_ui ("<ATTRIB_CLASS>%s</ATTRIB_CLASS>", uilib_xml_escape (f->str_attribs.str_attribs_val[b].value));
 	      break;
+	default: 
+		break;
 
 	    }
 	}
@@ -2732,6 +2735,57 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	    case FA_B_RIGHT:
 	      send_to_ui ("<ATTRIB_RIGHT/>");
 	      break;
+
+	case FA_B_HIDDEN:
+		send_to_ui ("<ATTRIB_HIDDEN/>");
+		break;
+
+	case FA_B_SCROLL:
+		send_to_ui ("<ATTRIB_SCROLL/>");
+		break;
+
+	case FA_B_WANTTABS:
+		send_to_ui ("<ATTRIB_WANTTABS/>");
+		break;
+
+	case FA_B_WANTNORETURNS:
+		send_to_ui ("<ATTRIB_WANTNORETURNS/>");
+		break;
+
+	case FA_B_FONTPITCHFIXED:
+		send_to_ui ("<ATTRIB_FONTPITCHFIXED/>");
+		break;
+
+	case FA_B_FONTPITCHVARIABLE:
+		send_to_ui ("<ATTRIB_FONTPITCHVARIABLE/>");
+		break;
+
+	case FA_B_AUTOSCALE:
+		send_to_ui ("<ATTRIB_AUTOSCALE/>");
+		break;
+
+	case FA_B_STRETCH_BOTH:
+		send_to_ui ("<ATTRIB_FA_B_STRETCH_BOTH/>");
+		break;
+
+	case FA_B_STRETCH_Y:
+		send_to_ui ("<ATTRIB_STRETCH_Y/>");
+		break;
+
+	case FA_B_SCROLLBARS_BOTH:
+		send_to_ui ("<ATTRIB_SCROLLBARS_BOTH/>");
+		break;
+
+	case FA_B_SCROLLBARS_VERTICAL:
+		send_to_ui ("<ATTRIB_SCROLLBARS_VERTICAL/>");
+		break;
+
+	case FA_B_SCROLLBARS_HORIZONAL:
+		send_to_ui ("<ATTRIB_SCROLLBARS_HORIZONAL/>");
+		break;
+
+	default:
+		break;
 
 	    }
 	}
@@ -3084,13 +3138,13 @@ UILIB_A4GL_acli_scroll_ap (int n, va_list * ap)
 int
 UILIB_A4GL_get_key (int timeout)
 {
-  char buff[2000];
+  //char buff[2000];
   int a;
   char *s;
   send_to_ui ("<GETKEY/><WAITFOREVENT/>");
   flush_ui ();
   a = get_event_from_ui ();
-  uilib_last_received_key (0);
+  uilib_last_received_key ();
   s = A4GL_char_pop ();
   if (s)
     {

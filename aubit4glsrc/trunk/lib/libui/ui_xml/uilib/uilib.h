@@ -86,4 +86,7 @@ int uilib_infield(int n);
 int uilib_lastkey(int n);
 int uilib_save_file(char *id, char *s);
 void set_construct_clause(int context, char *ptr);
+int uilib_get_context_dont_care_if_doesnt_exist(int n) ;
+int
+uilib_last_received_key (void );
 

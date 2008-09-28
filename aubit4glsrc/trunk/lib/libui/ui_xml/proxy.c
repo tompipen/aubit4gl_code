@@ -683,7 +683,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
   int retval;
   int a;
   int max = 0;
-  int timeoutconnect;
+  //int timeoutconnect;
   struct sockaddr_in their_addr;	// connector's address information
   int latest_ui = 0;
   socklen_t sin_size;
@@ -893,7 +893,7 @@ void set_timeout_flush_sock(int n) {
 static char *get_passwd(char*username) {
 char *ptr;
 FILE *f;
-  char fname[256];
+  //char fname[256];
   char buff[300];
   char buff_orig[300];
   char *ptr_fields[2];

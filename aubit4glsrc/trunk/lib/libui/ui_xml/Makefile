@@ -19,7 +19,7 @@ noproxy: noproxy.o pipe.o debug.o
 	${CC} ${CFLAGS_NO_PEDANTIC} -g -o noproxy noproxy.o pipe.o debug.o
 
 uilib/libuilib.a: 
-	cd uilib && make -f Makefile.libaubit4gl libuilib.a
+	cd uilib && make -f Makefile libuilib.a
 
 
 clean: 

@@ -1,11 +1,17 @@
+ROOT=../../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+
 
 NAME=`uname | tr '-' '_'`
-CFLAGS=-fPIC -g -Wall  -Iaubit4gl -I$(AUBITDIR)/incl
+CFLAGS=-fPIC -g -Wall  -Iaubit4gl -I$(AUBITDIR)/incl -I$(ROOT)/lib/libui/ui_xml -I$(ROOT)/lib/libui/ui_xml/uilib
 HASFLEXML:=$(shell type flexml 2> /dev/null)
 
 ifeq "$(HASFLEXML)" ""
 	TRIGGERS_O=xml/pregenerated/triggers.o xml/pregenerated/triggers_act.o
-	CFLAGS+=-Ixml/pregenerated -Ixml
+	CFLAGS+=-Ixml/pregenerated -Ixml 
 else
 	TRIGGERS_O=xml/triggers.o xml/triggers_act.o
 endif
@@ -16,9 +22,8 @@ clean:
 	rm -f libuilib.so libuilib.a comms.o uilib.o xml/attr.o xml/triggers.o xml/triggers_act.o ../pipe.o ../debug.o uirunner uirunner_s
 
 
-libuilib.so: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
-	gcc -fPIC -g -shared -o libuilib.so $^
-	#cp libuilib.so $(AUBITDIR)/lib
+libuilib${SO_EXT}: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
+	 ${LD} ${SO_LDFLAGS} -o libuilib${SO_EXT} $^
 
 libuilib.a: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
 	ar rc $@ $^

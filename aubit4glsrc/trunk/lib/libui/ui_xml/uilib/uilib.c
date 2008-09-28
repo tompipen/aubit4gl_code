@@ -8,6 +8,8 @@
 #include "uilib.h"
 #include "comms.h"
 #include "fglsys.h"
+void A4GL_push_null (int dtype,int size);
+size_t A4GL_base64_decode(const char *src, unsigned char **outptr);
 
 static void local_trim (char *p);
 void brpoint (void);		// DUMMY FUNCTION USED FOR DEBUGGING...
@@ -123,6 +125,7 @@ struct ui_context *contexts = 0;
 static char **get_args (int nargs);
 static void send_input_array_change (int ci);
 
+/*
 static char
 hex_digit (int n)
 {
@@ -142,6 +145,7 @@ hex_digit (int n)
     return 'f';
   return 'x';
 }
+*/
 
 
 static char *
@@ -1349,7 +1353,6 @@ uilib_input_loop (int nargs)
 	  UIdebug (5, "Got variable_data\n");
 	  for (a = 0; a < nargs; a++)
 	    {
-	printf("vd=%s args=%s\n", contexts[context].ui.input.variable_data[a], args[a]);
 	      if (contexts[context].ui.input.variable_data[a] == 0)
 		{
 			if (args[a]) {
@@ -1405,12 +1408,12 @@ uilib_input_loop (int nargs)
  init=1;
       for (a = 0; a < contexts[context].ui.input.nfields; a++) {
 		if (contexts[context].ui.input.variable_data[a]!=0) {
-			printf("Variable_data @ %d means its not init\n",a);
+			UIdebug(6,"Variable_data @ %d means its not init\n",a);
 			init=0;
 			break;
 		}
 	}
-printf("init=%d changed=%d\n", init, changed);
+UIdebug(5, "init=%d changed=%d\n", init, changed);
   if (changed || init==0 )			// Although only a single field has changed - we'll send the whole lot
     // we can always change this later...
     {
@@ -1875,7 +1878,7 @@ int uilib_get_context_dont_care_if_doesnt_exist(int n) {
   int line;
   line = POPint ();
   mod = charpop ();
-  get_context_for_modline(mod,line,0);
+  return get_context_for_modline(mod,line,0);
 }
 
 int
@@ -1883,10 +1886,10 @@ uilib_get_context (int nargs)
 {
   char *mod;
   int line;
-  int a;
+  //int a;
   line = POPint ();
   mod = charpop ();
-  get_context_for_modline(mod,line,1);
+  return get_context_for_modline(mod,line,1);
 }
 
 int
@@ -2408,10 +2411,10 @@ uilib_save_file (char *id, char *s)
   f = fopen (s, "w");
   if (f)
     {
-	char *buff;
+	unsigned char *buff;
 	int len;
 	len=A4GL_base64_decode(last_attr->sync.vals[0].value, &buff);
-printf("Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, len, last_attr->filelen);
+	UIdebug(4,"Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, len, last_attr->filelen);
       //printf("FILELEN : %d\n", last_attr->filelen);
       fwrite (buff, len, 1, f);
 	free(buff);
@@ -2423,7 +2426,7 @@ printf("Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, l
 
 
 int
-uilib_last_received_key ()
+uilib_last_received_key (void )
 {
   PUSHquote (last_attr->lastkey);
   return 1;
@@ -2460,7 +2463,7 @@ int
 uilib_getfldbuf (int nargs)
 {
   int context;
-  char *fld;
+  //char *fld;
   int nfields;
   char **fields;
   int a;
@@ -2645,6 +2648,8 @@ uilib_fgl_drawbox (int n)
 #ifdef A4GL_assertion
 #undef A4GL_assertion
 #endif
+
+
 
 int
 A4GL_assertion (int n, char *s)

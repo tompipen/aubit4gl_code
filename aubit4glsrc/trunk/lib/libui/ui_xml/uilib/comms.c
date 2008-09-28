@@ -12,6 +12,9 @@
 #else
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #endif
 
 #include <sys/time.h>
@@ -38,6 +41,10 @@
 #include "../debug.h"
 #include "../pipe.h"
 #include "comms.h"
+
+void A4GL_set_last_cursor(int n);
+
+
 struct timeval tl={0,0}; // Last time the flush happend....
 int something=0;
 
@@ -47,7 +54,8 @@ int clientui_sock_write = 0;
 struct s_attr *last_attr = 0;
 
 char sockbuff[20000] = "";
-static void timeout_flush_ui (void);
+//static void timeout_flush_ui (void);
+void A4GL_trim (char *p);
 
 
 #ifdef NOPROXY
@@ -479,7 +487,7 @@ flush_ui ()
 	something=0;
 }
 
-
+/*
 static void timeout_flush_ui ()
 {
   UIdebug (4,"FLUSH UI : %d\n",clientui_sock_write);
@@ -491,6 +499,6 @@ static void timeout_flush_ui ()
   }
   gettimeofday(&tl,0);
 }
-
+*/
 
 

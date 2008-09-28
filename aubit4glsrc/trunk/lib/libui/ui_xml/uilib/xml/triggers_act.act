@@ -7,6 +7,7 @@
 #include <stdlib.h>                  
 #include <string.h>
 #include "attr.h"
+#include "debug.h"
 static char *inbuff=0;
 char *myinputptr;
 int myinputlim;
