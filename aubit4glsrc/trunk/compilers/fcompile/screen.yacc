@@ -1925,6 +1925,7 @@ func_call: KW_CALL named_or_kw_any OPEN_BRACKET {
 			$<fcall>$->list_parameters.list_parameters_len=0;
 			$<fcall>$->list_parameters.list_parameters_val=0;
 	} op_func_call_args CLOSE_BRACKET {
+		$<fcall>$=$<fcall>4;
 		if ($<el>5) {
 			listitem *l;
 			$<fcall>$->list_parameters.list_parameters_len=$<el>5->nlist;

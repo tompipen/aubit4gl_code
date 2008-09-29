@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.17 2008-09-29 15:37:25 mikeaubury Exp $
+# $Id: dump_form.c,v 1.18 2008-09-29 15:50:16 mikeaubury Exp $
 #*/
 
 /**
@@ -1604,7 +1604,13 @@ static char buff[2000];
 if ((type & DTYPE_MASK)==DTYPE_CHAR) return "";
 if ((type & DTYPE_MASK)==DTYPE_SMINT) return " TYPE SMALLINT";
 if ((type & DTYPE_MASK)==DTYPE_INT) return " TYPE INTEGER";
-sprintf(buff,"TYPE(%d,%d)",type,n);
+if ((type & DTYPE_MASK)==DTYPE_DATE) return " TYPE DATE";
+if ((type & DTYPE_MASK)==DTYPE_FLOAT) return " TYPE FLOAT";
+if ((type & DTYPE_MASK)==DTYPE_SMFLOAT) return " TYPE SMALLFLOAT";
+if ((type & DTYPE_MASK)==DTYPE_MONEY) return " TYPE MONEY";
+if ((type & DTYPE_MASK)==DTYPE_DECIMAL) return " TYPE DECIMAL";
+
+sprintf(buff," TYPE(%d,%d)",type,n);
 return buff;
 }
 
