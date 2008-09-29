@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.16 2008-07-22 09:09:37 mikeaubury Exp $
+# $Id: dump_form.c,v 1.17 2008-09-29 15:37:25 mikeaubury Exp $
 #*/
 
 /**
@@ -1993,6 +1993,21 @@ dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl
     }
 
 
+
+  if (expr->itemtype == ITEMTYPE_FCALL)
+    {
+        struct s_at_call *c;
+        c=expr->u_expression_u.call;
+      fprintf(fout, "%s(", c->fname);
+
+      for (a=0;a<c->list_parameters.list_parameters_len;a++) {
+                dump_expr_instructions(f, fout, c->list_parameters.list_parameters_val[a],lvl+1);
+        }
+      fprintf(fout, ")");
+    }
+
+
+
 }
 
 
@@ -2059,12 +2074,14 @@ printf("now in print_display_only s=%d\n",s);
 //	  printf("     field type %d\n",
 //		act->u_action_u.cmd_if->test_condition->itemtype);
 			switch (act->u_action_u.cmd_if->test_condition->itemtype) {
-			  case 3:
+			  case ITEMTYPE_FIELD:
 	    a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
 				break;
-			  case 4:
+			  case ITEMTYPE_COMPLEX:
 	    a= get_attr_from_field(f, act->u_action_u.cmd_if->test_condition->u_expression_u.complex_expr->item1);
 				break;
+			default :
+				A4GL_assertion(1,"Unexpected field expression");
 		        }
 			if (!a) continue;
 			break;
@@ -2221,12 +2238,14 @@ if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,be
 
 		    case ACTION_TYPE_IF:
 			switch (act->u_action_u.cmd_if->test_condition->itemtype) {
-			  case 3:
-	    a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
+			  case ITEMTYPE_FIELD:
+	    				a= get_attr_from_field(f, act->u_action_u.cmd_if->if_true->u_action_u.cmd_let->field_tag);
 				break;
-			  case 4:
-	    a= get_attr_from_field(f, act->u_action_u.cmd_if->test_condition->u_expression_u.complex_expr->item1);
+			  case ITEMTYPE_COMPLEX:
+	    				a= get_attr_from_field(f, act->u_action_u.cmd_if->test_condition->u_expression_u.complex_expr->item1);
 				break;
+			default :
+				A4GL_assertion(1,"Unexpected field expression");
 		        }
 			if (!a) continue;
 			break;

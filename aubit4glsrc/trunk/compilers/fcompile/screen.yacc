@@ -46,10 +46,7 @@ extern char *tablist[];
 int A4GL_get_dtype_size(void) ;
 //int A4GL_get_attr_from_string (char *s);
 
-struct local_expr_list {
-	listitem *expr_list;
-	int nlist;
-};
+//struct local_expr_list { listitem *expr_list; int nlist; };
 
 
 int in_screen_section=0;
@@ -1923,6 +1920,7 @@ master_of:
 
 func_call: KW_CALL named_or_kw_any OPEN_BRACKET {
 			$<fcall>$=malloc(sizeof(struct s_at_call));
+			memset($<fcall>$,0,sizeof(struct s_at_call));
 			$<fcall>$->fname=strdup($<str>2);
 			$<fcall>$->list_parameters.list_parameters_len=0;
 			$<fcall>$->list_parameters.list_parameters_val=0;
@@ -1987,7 +1985,9 @@ single_expression:
 	| evalue  { $<expr>$=$<expr>1; }
 	| KWNOT expression { $<expr>$=create_not_expr($<expr>2); }
 	| OPEN_BRACKET expression CLOSE_BRACKET { $<expr>$=$<expr>2; }
-	| fcall_name OPEN_BRACKET op_expression_list CLOSE_BRACKET { $<expr>$=$<expr>3; }
+	| fcall_name OPEN_BRACKET op_func_call_args CLOSE_BRACKET { 
+			$<expr>$=create_fcall($<str>1,$<el>3);
+	}
 	| KW_TOTAL KW_OF field_tag_name { $<expr>$=create_field_expr($<str>3); }
 	| expression COMPARISON expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| expression LESSTHAN expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
@@ -2162,6 +2162,7 @@ st_kword :
      | KW_ZEROFILL 
      | KW_USES_EXTENDED 
      | KW_ACTION 
+	| KW_ITEMS
 /*
      | KW_PAGE 
      | KW_HBOX 
@@ -2315,6 +2316,7 @@ any_kword :
      | KW_ZEROFILL 
      | KW_USES_EXTENDED 
      | KW_ACTION 
+	| KW_ITEMS
 /*
      | KW_PAGE 
      | KW_HBOX 

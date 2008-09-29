@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.64 2008-07-16 17:47:59 mikeaubury Exp $
+# $Id: fcompile.c,v 1.65 2008-09-29 15:37:25 mikeaubury Exp $
 #*/
 
 /**
@@ -73,6 +73,7 @@ dll_import struct struct_form the_form;	/* defined in libaubit4gl */
 
 int silent=0;
 char outputfile[132];
+int perform_mode=0;
 int ignorekw = 0;
 int colno = 0;
 int lineno = 0;
@@ -160,6 +161,16 @@ main (int argc, char *argv[])
 	      	silent=1;
 		continue;
       }
+
+      if (strcmp(argv[cnt],"-perform")==0) {
+	      	perform_mode=1;
+		continue;
+      }
+      if (strcmp(argv[cnt],"-?")==0) {
+		usage(argv[0]);
+		
+      }
+
       if (strcmp (argv[cnt], "-v") == 0)
 	{
 	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
@@ -414,7 +425,19 @@ if (a==-1) {
 void
 usage (char *s)
 {
-  printf ("Usage\n   %s [-c] filename[.per] [path/compiledform.ext]\n", s);
+  printf ("Usage\n   %s [-c] [-s|-q] [-d dbname] [-v|-vfull] filename[.per] [path/compiledform.ext]\n\n", s);
+  printf ("  -?        Display this help message\b\n");
+  printf ("  -s,-q     Silent mode\n\n");
+  printf ("  -v,-vfull Display version information\n\n");
+  printf ("  -d dbname Use 'dbname' rather than the database name in the form\n\n");
+  printf ("  -perform  Turn on 'Perform' compatibility (SQL forms)\n");
+  printf ("               This doesnt implement the SQL functionality\n");
+  printf ("               but still stores the data so it can be used by\n");
+  printf ("               other aubit4gl tools (like dump_4gl)\n\n");
+  printf ("  -c        Generates a .c file which can be linked with a 4gl program\n");
+  printf ("               The 4gl program needs to call 'form_is_compiled' to use the form:\n");
+  printf ("                eg.    call form_is_compiled(someform,\"MEMPACKED\",\"GENERIC\");\n");
+
   exit (0);
 }
 
@@ -453,6 +476,7 @@ return x;
 }
 
 int doing_4gl(void) {
+	if (perform_mode==1) return 0;
 	if (A4GL_isyes(acl_getenv("FGLFRMCOMPILE"))) return 1;
 	if (A4GL_isno(acl_getenv("FGLFRMCOMPILE"))) return 0;
 	if (fcompile) return 1;

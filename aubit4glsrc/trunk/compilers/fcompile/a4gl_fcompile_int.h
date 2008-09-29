@@ -3,6 +3,11 @@
 
 #include "a4gl_libaubit4gl.h"
 
+struct local_expr_list {
+        listitem *expr_list;
+        int nlist;
+};
+
 
 /* ============== from a4gl_fcomp_fcompile.h ======================= */
 
@@ -45,6 +50,9 @@ t_expression *create_expr_expr (t_complex_expr * expr);
 t_expression *create_expr_comp_expr (t_expression * expr1,
 				     t_expression * expr2, char *comp);
 t_expression *add_list_expr (t_expression * ptr, t_expression * expr);
+
+t_expression *
+create_fcall(char *name, struct local_expr_list *el) ;
 
 int doing_4gl(void );
 void dump_form_desc (struct_form * f,char *fname);

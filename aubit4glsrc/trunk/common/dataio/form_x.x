@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.23 2008-09-24 16:23:46 mikeaubury Exp $
+# $Id: form_x.x,v 1.24 2008-09-29 15:37:24 mikeaubury Exp $
 #*/
 
 /**
@@ -360,7 +360,8 @@ enum ITEMTYPES {
 	ITEMTYPE_SPECIAL=5,
 	ITEMTYPE_LIST=6,
 	ITEMTYPE_NOT=7,
-	ITEMTYPE_EXITNOW=8
+	ITEMTYPE_EXITNOW=8,
+	ITEMTYPE_FCALL=9
 };
 
 enum EXPRESSIONTYPES {
@@ -380,7 +381,7 @@ struct listitemlist  {
 };
 
 
-union u_expression switch (int itemtype) {
+union u_expression switch (enum ITEMTYPES  itemtype) {
 	case ITEMTYPE_INT     : int intval;
 	case ITEMTYPE_CHAR    : string charval<>;
 	case ITEMTYPE_FIELD   : string field<>;
@@ -388,6 +389,7 @@ union u_expression switch (int itemtype) {
 	case ITEMTYPE_SPECIAL : string special<>;
 	case ITEMTYPE_LIST    : struct listitemlist listy<>;
 	case ITEMTYPE_NOT     : struct u_expression *notexpr;
+	case ITEMTYPE_FCALL   : struct s_at_call *call;
 };
 
 typedef struct s_complex_expr t_complex_expr; 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.18 2008-07-06 11:34:26 mikeaubury Exp $
+# $Id: where.c,v 1.19 2008-09-29 15:37:25 mikeaubury Exp $
 #
 */
 
@@ -62,6 +62,7 @@
 void print_lvl (int lvl);
 void dump_expr (t_expression * expr, int lvl);
 
+
 /*
 =====================================================================
                     Functions definitions
@@ -97,6 +98,24 @@ create_int_expr (long intval)
   ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_INT;
   ptr->u_expression_u.intval = intval;
+  return ptr;
+}
+
+
+t_expression *
+create_fcall(char *name, struct local_expr_list *el) {
+  t_expression *ptr;
+  ptr = acl_malloc2 (sizeof (t_expression));
+  ptr->itemtype = ITEMTYPE_FCALL;
+  ptr->u_expression_u.call=malloc(sizeof(struct s_at_call));
+  ptr->u_expression_u.call->fname=strdup(name);
+if (el) {
+  ptr->u_expression_u.call->list_parameters.list_parameters_len=el->nlist;
+  ptr->u_expression_u.call->list_parameters.list_parameters_val=el->expr_list;
+} else {
+  ptr->u_expression_u.call->list_parameters.list_parameters_len=0;
+  ptr->u_expression_u.call->list_parameters.list_parameters_val=0;
+}
   return ptr;
 }
 
@@ -295,6 +314,18 @@ dump_expr (t_expression * expr, int lvl)
       dump_expr (ptr2->item2, lvl + 1);
       printf (")");
 
+    }
+  if (expr->itemtype == ITEMTYPE_FCALL)
+    {
+	struct s_at_call *c;
+      print_lvl (lvl);
+	c=expr->u_expression_u.call;
+      printf("%s(", c->fname);
+	
+      for (a=0;a<c->list_parameters.list_parameters_len;a++) {
+		dump_expr(c->list_parameters.list_parameters_val[a],lvl+1);
+	}
+      printf(")");
     }
 
   if (lvl == 0)
