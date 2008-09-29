@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.228 2008-09-11 17:45:26 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.229 2008-09-29 08:17:39 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -41,6 +41,7 @@ LIBS=
 #MUST be here - it will be used by make "shell" commands
 SH				=@SH@
 SHELL			:=${SH}
+LTPIC=@LTPIC@
 
 #Workaround for Informix installers messing up libphtread:
 LD_LIBRARY_PATH			:=/lib:${LD_LIBRARY_PATH}
@@ -619,7 +620,7 @@ FAIL_OK             =-
 #ifneq "${GCC_VER}" "${GCC_VER_SPEC1}"
 ifneq "${GCC_NO_PIC}" "1"
 	#cc1: warning: -fPIC ignored for target (all code is position independent)
-	PIC					=@PIC@
+	PIC					=@APIC@
 endif
 
 ifeq "${TARGET_OS}" "solaris"
