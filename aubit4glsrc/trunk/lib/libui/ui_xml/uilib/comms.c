@@ -422,7 +422,7 @@ get_event_from_ui ()
       int n = -1;
       if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999") == 0)
 	{
-	cleanup();
+	  cleanup();
 	  exit (2);
 	}
 

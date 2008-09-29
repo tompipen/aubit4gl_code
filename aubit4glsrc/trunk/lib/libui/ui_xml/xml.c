@@ -3226,10 +3226,16 @@ UILIB_aclfgl_aclfgl_set_display_field_delimiters (int n)
 
 
 void cleanup(void) {
-if (def_stderr) fclose(def_stderr);
-if (strlen(stderr_fname)) {
-      unlink (stderr_fname);
-}
+//printf("CLEANUP\n");
+      	pipe_clear();
+      	send_to_ui ("<PROGRAMSTOP ID=\"%d\"/>",  get_ui_id ('r'));
+	 flush_ui ();
+
+      	unlink (stderr_fname);
+	if (def_stderr) fclose(def_stderr);
+	if (strlen(stderr_fname)) {
+      		unlink (stderr_fname);
+	}
 }
 
 #ifdef MOVED
