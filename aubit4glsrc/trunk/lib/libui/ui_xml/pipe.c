@@ -59,7 +59,7 @@ static void ensure_sock(int n) {
 int a;
 
 
-if (n>nsock) {
+if (n>=nsock) {
 	sock_buff=realloc(sock_buff,sizeof(char *)*(n+1));
 }
 
