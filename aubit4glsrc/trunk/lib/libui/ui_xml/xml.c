@@ -15,6 +15,8 @@ int generate_xml_forms=1; // Automatically generate XML form files where no XML 
 void dump_form_labels(void) ;
 
 #include "lib/libpacker/formxml/formxml.h"
+static int last_w=1;
+static int last_h=1;
 
 #ifdef MOVED
 char screen[200][200];
@@ -218,6 +220,8 @@ A4GL_XML_opening_form (char *formfile, char *formname,int append_xml)
   A4GL_trim (buff);
   strcpy (buff_formname, formname);
   A4GL_trim (buff_formname);
+
+  last_h=1; last_w=1;
   if (append_xml) {
   	strcat (buff, ".xml");
   }
@@ -251,7 +255,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 {
   int a;
   int b;
-
+//printf("Win_stack called with %p %s %c\n",w,name,op);
   if (op == '^')
     {
       A4GL_win_stack (w, name, '+');
@@ -259,7 +263,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
       return 0;
     }
 
-  if (w == 0)
+  if (w == NULL)
     {
       for (a = 0; a < MAXWIN; a++)
 	{
@@ -278,9 +282,9 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 	}
     }
 
-  if (w == 0)
+  if (w == NULL)
     {
-      FPRINTF (def_stderr, "**** WINDOW NOT FOUND *****");
+      FPRINTF (def_stderr, "**** WINDOW NOT FOUND %s op=%c *****",name,op);
       return 0;
     }
 
@@ -342,6 +346,8 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   int x;
   int y;
   struct s_form_dets *form;
+
+
   fname = A4GL_char_pop ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
@@ -349,6 +355,9 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
     style = "";
   if (text == 0)
     text = "";
+
+
+
 
   suspend_flush (1);
   A4GL_trim (fname);
@@ -367,6 +376,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   send_to_ui ("</OPENWINDOWWITHFORM>");
   suspend_flush (-1);
 
+  add_window (name, last_w, last_h, border);
 
 
   return 0;
@@ -1737,6 +1747,7 @@ void
 UILIB_A4GL_hide_window (char *winname)
 {
   send_to_ui ("<HIDEWINDOW WINDOW=\"%s\"/>", winname);
+   A4GL_win_stack (NULL, winname, 'v');
   //A4GL_win_stack(0,win_name,'!');
 }
 
@@ -1744,7 +1755,7 @@ void
 UILIB_A4GL_show_window (char *winname)
 {
   send_to_ui ("<SHOWWINDOW WINDOW=\"%s\"/>", winname);
-  A4GL_win_stack (0, winname, '^');
+  A4GL_win_stack (NULL, winname, '^');
 }
 
 void
@@ -1758,6 +1769,7 @@ UILIB_A4GL_remove_window (char *win_name)
 {
   A4GL_del_pointer (win_name, WINCODE);
   send_to_ui ("<CLOSEWINDOW WINDOW=\"%s\"/>", win_name);
+	A4GL_win_stack (NULL, win_name, '-');
 }
 
 int
@@ -2335,6 +2347,7 @@ UILIB_A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
      comment_line, message_line, border, attrib, ignull (style), ignull (text));
 
 
+  add_window (s,w, h, border);
 
   return (void *) 1;
 }
