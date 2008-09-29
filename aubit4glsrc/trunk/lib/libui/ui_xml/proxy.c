@@ -688,7 +688,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
   int latest_ui = 0;
   socklen_t sin_size;
 
-
+//printf("wait_for_some_action\n");
 
   memset (&sin_size, 0, sizeof (sin_size));
   memset (&their_addr, 0, sizeof (their_addr));
@@ -727,6 +727,8 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		}
 	    }
 	}
+
+
       if (!any && has_connected)
 	{
 	  // nothing left to do..
@@ -749,7 +751,6 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
       tv.tv_sec = 1;
       tv.tv_usec = 0;
       retval = select (max + 1, &rfds, NULL, NULL, &tv);
-
       if (retval == 0)
 	{
 	

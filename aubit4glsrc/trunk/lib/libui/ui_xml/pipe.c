@@ -285,6 +285,23 @@ static int is_just_start(char *s,int n) {
 	return 0;
 }
 
+
+void
+pipe_clear (void) {
+	UIdebug(2,"Critical problem... program is exiting");
+
+	
+	if (cantflush) {
+	int sockfd;
+		// Because we are quitting - force the flush
+		cantflush=0;
+
+		for (sockfd=0;sockfd<=nsock;sockfd++) {
+		sock_buff[sockfd]=0;
+		}
+	}
+}
+
 /* this isn't a real socket flush - just emptying our buffer... */
 void
 pipe_flush (int sockfd)

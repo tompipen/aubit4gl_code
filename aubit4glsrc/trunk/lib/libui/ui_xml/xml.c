@@ -1692,7 +1692,7 @@ UILIB_A4GL_ui_exit (int exitstatus)
     {
       fclose (def_stderr);
       def_stderr = fopen (stderr_fname, "r");
-
+      pipe_clear();
       send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\">", exitstatus, get_ui_id ('r'));
       if (def_stderr)
 	{
@@ -1711,6 +1711,7 @@ UILIB_A4GL_ui_exit (int exitstatus)
     }
   else
     {
+      pipe_clear();
       send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", exitstatus, get_ui_id ('r'));
       unlink (stderr_fname);
     }

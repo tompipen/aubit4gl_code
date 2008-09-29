@@ -1736,6 +1736,11 @@ static char * get_sql_dtype ( int dtype)
       sprintf (buff_dtype, " DECIMAL(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
       break;
 
+    case DTYPE_MONEY:
+      sprintf (buff_dtype, " MONEY(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
+      break;
+
+
     case DTYPE_DTIME:
       sprintf (buff_dtype, " DATETIME %s TO %s", decode_dt (dtype_sz, 1), decode_dt (dtype_sz, 2));
       break;

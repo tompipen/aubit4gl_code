@@ -1278,9 +1278,9 @@ acl_strdup_full (void *a, char *r, char *f, int l)
 void show_usage(char *argv0) {
       	fprintf (stderr, "Usage %s [options] filename [-o output] ( Where filename is a compile report eg. simple.aarc )\n", argv0);
 	fprintf(stderr,"    options :  -C  ACE Aggregate compatibilty mode\n");
-	fprintf(stderr,"               -C -I  Use INSERT cursor for compatibilty mode\n");
+	fprintf(stderr,"               -I  Use INSERT cursor for compatibilty mode\n");
 	fprintf(stderr,"                         (required Transaction logging\n");
-	fprintf(stderr,"               -C -I -B n  Batch into 'n' inserts per transaction\n");
+	fprintf(stderr,"               -B n  Batch into 'n' inserts per transaction\n");
 	fprintf(stderr,"               -F function name [defaults to MAIN]\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"eg\n    %s -o output.4gl -C simple.aarc\n",argv0);
