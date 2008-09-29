@@ -1046,6 +1046,25 @@ namespace AubitDesktop
 
                 } 
                 #endregion
+                #region CLOSEFORM
+                if (a is CLOSEFORM)
+                {
+                    CLOSEFORM d;
+                    FGLForm frm = null;
+                    d = (CLOSEFORM)a;
+                    frm = OpenForms.getForm(d.FORMNAME);
+                    if (frm != null)
+                    {
+                        OpenForms.removeForm(d.FORMNAME);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Unable to find form " + d.FORMNAME);
+                    }
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
                 #region DISPLAYAT
                 if (a is DISPLAYAT)
                 {
@@ -1437,6 +1456,7 @@ namespace AubitDesktop
                 {
                     FREE f;
                     f = (FREE)a;
+                    contexts[Convert.ToInt32(f.CONTEXT)].DeactivateContext();
                     contexts[Convert.ToInt32(f.CONTEXT)].FreeContext();
                     contexts[Convert.ToInt32(f.CONTEXT)] = null;
                     commands.Remove(a);
@@ -1530,6 +1550,10 @@ namespace AubitDesktop
             for (int a = 0; a < eNV.Length; a++)
             {
                 serverEnviron.Add(eNV[a].NAME, eNV[a].VALUE);
+                if (eNV[a].NAME == "DBDATE")
+                {
+                    FGLUtils.DBDATE = eNV[a].VALUE;
+                }
             }
         }
 

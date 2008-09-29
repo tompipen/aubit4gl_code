@@ -243,7 +243,7 @@ namespace AubitDesktop
             l.TextAlign = ContentAlignment.MiddleLeft;
             t = new System.Windows.Forms.DateTimePicker();
             t.Format = DateTimePickerFormat.Custom;
-            t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; //@ FIXME - DBDATE Dependant..
+            t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; 
             t.Visible = true;
             t.Enabled = true;
             p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));

@@ -355,6 +355,7 @@ namespace AubitDesktop
             
             this.bwReceiver = new BackgroundWorker();
             tcpStream = tcpClient.GetStream();
+            
             bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
             bwReceiver.WorkerSupportsCancellation = true;
             bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
@@ -796,6 +797,13 @@ namespace AubitDesktop
                 appwin.Dispose();
                 appwin = null;
                 //stdNetworkConnection = null;
+                return;
+            }
+            if (e.Data == "TIMEOUT")
+            {
+                MessageBox.Show("Timeout...");
+                appwin.Dispose();
+                appwin = null;
                 return;
             }
             MessageBox.Show(e.Data);

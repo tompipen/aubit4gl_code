@@ -847,10 +847,12 @@ namespace AubitDesktop
         {
             string underlines;
             string minuses;
+            string equals;
             
             underlines = new string('_', p.Length);
             minuses = new string('-', p.Length);
-            if (p == underlines || p == minuses) return true;
+            equals = new string('=', p.Length);
+            if (p == underlines || p == minuses || p==equals) return true;
             return false;
         }
 
