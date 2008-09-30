@@ -29,35 +29,28 @@ namespace AubitDesktop
     // A text widget fgl field widget...
     class FGLDateFieldWidget : FGLWidget
     {
-        //FGLContextType _ContextType;
-        /*
-        private FGLWidget _WidgetDetails;
 
-        public FGLWidget WidgetDetails
-        {
-            get
-            {
-                return _WidgetDetails;
-            }
-        }
-         * */
+        DateTimePicker t;
+        Panel p;
+        Label l;
 
-        public override int tabIndex
+
+
+
+
+        internal override void setIsOnSelectedRow(bool isSelected)
         {
-            set
-            {
-                t.TabIndex = value;
-            }
+            isOnSelectedRow = isSelected;
+            adjustDisplayPropertiesForContext();
         }
 
-        public override bool hasFocus
+        public new void setToolTip(ToolTip t, string s)
         {
-            get
-            {
-                if (t.Enabled && t.Focused) return true;
-                return false;
-            }
+            t.SetToolTip(this.l, s);
+            t.SetToolTip(this.p, s);
+            t.SetToolTip(this.t, s);
         }
+
 
         public override int Left
         {
@@ -87,30 +80,117 @@ namespace AubitDesktop
         }
 
 
+        public override int tabIndex
+        {
+            set
+            {
+                t.TabIndex = value;
+            }
+        }
 
-        internal override void ContextTypeChanged()
-        {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            
-
-                //_ContextType = value;
-                if (_ContextType == FGLContextType.ContextNone)
-                {
-                    l.Visible = true;
-                    t.Visible = false;
-                }
-                else
-                {
-                    l.Visible = false;
-                    t.Visible = true;
-                }
+        public override bool hasFocus
+        {
+            get
+            {
+                if (t.Enabled && t.Focused) return true;
+                return false;
+            }
+        }
 
 
+        public override void setFocus()
+        {
+            t.Focus();
+            t.Select();
             
         }
 
-        DateTimePicker t;
-        Panel p;
-        Label l;
+        override public Color BackColor
+        {
+            set
+            {
+                this.t.BackColor = value;
+                this.l.BackColor = value;
+            }
+            get
+            {
+                return this.t.BackColor;
+            }
+
+        }
+
+        internal override void ContextTypeChanged()
+        {  // The current ContextType - a field may appear differently if its used in a construct or input..
+
+
+
+
+            //_ContextType = value;
+            adjustDisplayPropertiesForContext();
+
+        }
+
+        private void adjustDisplayPropertiesForContext()
+        {
+            p.BorderStyle = BorderStyle.None;
+
+            switch (_ContextType)
+            {
+                case FGLContextType.ContextNone:
+                    l.Visible = true;
+                    t.Visible = false;
+                    break;
+
+
+                case FGLContextType.ContextDisplayArray:
+                    if (t.Visible != true)
+                    {
+                        t.Visible = true;
+                    }
+                    if (l.Visible != false)
+                    {
+                        l.Visible = false;
+                    }
+
+                    if (isOnSelectedRow)
+                    {
+                        p.BorderStyle = BorderStyle.FixedSingle;
+
+                        //t.BorderStyle = BorderStyle.FixedSingle;
+                        //l.BorderStyle = BorderStyle.FixedSingle;
+                    }
+                    else
+                    {
+                        p.BorderStyle = BorderStyle.None;
+                        //t.BorderStyle = BorderStyle.Fixed3D;
+                        //l.BorderStyle = BorderStyle.Fixed3D;
+                    }
+                    break;
+
+
+                case FGLContextType.ContextConstruct:
+                    t.Visible = true;
+                    l.Visible = false;
+                    
+                    break;
+
+                default:
+                    if (this.NoEntry)
+                    {
+                        t.Visible = false;
+                        l.Visible = true;
+                        
+                    }
+                    else
+                    {
+                        t.Visible = true;
+                        l.Visible = false;
+                        
+                    }
+                    break;
+
+            }
+        }
 
         internal override Control WindowsWidget
         {
@@ -120,12 +200,7 @@ namespace AubitDesktop
             }
         }
 
-        public override void setFocus()
-        {
-           t.Focus();
-        }
-
-        public new bool Enabled
+        new public bool Enabled
         {
             get
             {
@@ -138,7 +213,7 @@ namespace AubitDesktop
         }
 
 
-        public override string Text // The current fields value
+        override public string Text // The current fields value
         {
             get
             {
@@ -146,14 +221,54 @@ namespace AubitDesktop
             }
             set
             {
-                if (value != t.Text)
+                string val;
+                val = value;
+                if (val != t.Text)
                 {
                     this.FieldTextChanged = true;
                 }
-                l.Text = value;
-                t.Text = value;
+
+
+                if (_ContextType == FGLContextType.ContextInput || _ContextType==FGLContextType.ContextInputArray ||  _ContextType == FGLContextType.ContextDisplayArray)
+                {
+                    if (this.format != null)
+                    {
+
+
+
+
+
+                        if (this.format.Length > 0 && val != null)
+                        {
+                            val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
+                        }
+                    }
+
+                }
+
+                if (_ContextType == FGLContextType.ContextNone)
+                {
+                    if (val != null)
+                    {
+                        val = val.TrimEnd(null);
+                    }
+
+                }
+
+
+                    l.Text = val;
+                t.Text = val;
+
             }
         }
+
+
+
+
+
+
+
+
 
 
 
@@ -271,6 +386,7 @@ namespace AubitDesktop
             t.LostFocus += new EventHandler(t_LostFocus);
             t.GotFocus += new EventHandler(t_GotFocus);
             t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            adjustDisplayPropertiesForContext();
         }
 
        
