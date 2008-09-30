@@ -1899,8 +1899,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   truncated = 0;
   if (execute_sql (sid->hstmt, sid->select, ibind, nibind, 0, 0))
     {
-      int nresultcols;
-      int copy_out_n;
+      int nresultcols=0;
+      int copy_out_n=0;
       int nrows;
 
       // Get all the details in one go - lets us get our rowcount ;-)
