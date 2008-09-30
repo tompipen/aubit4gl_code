@@ -544,12 +544,15 @@ int qry_type;
 p=s;
 *err_at_col=1;
 free_bind();
+  if (type >= '1' && type <= '9')
+    return 255;
+
 A4GL_assertion(s==0,"No query");
 //if (s==0) return -1;
    if (strncasecmp(s,"database",8)==0) { return 1; }
    if (type>='1'&&type<='9') return 255;
    qry_type=0;
-   if (type!='S'&&type!='s') qry_type=255;
+   if (type!='S'&&type!='s') qry_type=257;
 
 	//A4GL_push_char(s);
 	//aclfgl_prepareit(1);

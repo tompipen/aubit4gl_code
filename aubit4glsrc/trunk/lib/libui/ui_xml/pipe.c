@@ -271,7 +271,8 @@ void timeout_flush(int sockfd) {
 }
 
 char *get_leadin(int n) {
-static char leadin[200];
+static char leadin[400];
+
    if (!handshaking) {
  		SPRINTF (leadin, "<ENVELOPE ID=\"%d\">\n<COMMANDS>\n",n);
 		return leadin;

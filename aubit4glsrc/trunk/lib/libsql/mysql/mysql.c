@@ -211,6 +211,7 @@ int np;
   *fgldtype = 0;
   *fglprc = 0;
 
+//printf("Dt=%d\n",dt);
   switch (dt)
     {
     case 246: 			// MYSQL_TYPE_NEWDECIMAL:
@@ -228,6 +229,10 @@ int np;
 
     case MYSQL_TYPE_DECIMAL:
       *fgldtype = DTYPE_FLOAT;
+      *fglprc = 0;
+      break;
+    case MYSQL_TYPE_INT24:
+      *fgldtype = DTYPE_INT;
       *fglprc = 0;
       break;
     case MYSQL_TYPE_TINY:
@@ -260,9 +265,6 @@ int np;
     case MYSQL_TYPE_LONGLONG:
       *fgldtype = DTYPE_FLOAT;
       *fglprc = 0;
-      break;
-    case MYSQL_TYPE_INT24:
-      niy_dtype (dt);
       break;
     case MYSQL_TYPE_DATE:
       *fgldtype = DTYPE_DATE;
@@ -1823,7 +1825,6 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	  warnings[0] = 'W';
 	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 	}
-
       A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
       return 0;
     }
@@ -1832,12 +1833,14 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 
 
   A4GL_set_a4gl_sqlca_errd (2, mysql_stmt_affected_rows (stmt));
+  A4GL_set_a4gl_sqlca_errd (0, mysql_stmt_affected_rows (stmt));
 
   A4GL_set_a4gl_sqlca_errd (1, 0);
   id = mysql_stmt_insert_id (stmt);
   if (id == 0)
     {
       A4GL_set_a4gl_sqlca_errd (1, mysql_stmt_affected_rows (stmt));
+	//printf("%d affected\n",  mysql_stmt_affected_rows (stmt));
       //a4gl_sqlca.sqlerrd[1] = mysql_stmt_affected_rows (stmt);
     }
   else

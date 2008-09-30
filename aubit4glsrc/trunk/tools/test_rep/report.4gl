@@ -4,8 +4,8 @@ define lv_pass array[10] of  char(50)
 define lv_result char(1)
 define lv_skip_reason char(20)
 define lv_ts array[10] of char(19)
-define lv_vs array[10] of decimal(4,2)
-define lv_vb array[10] of smallint
+define lv_vs array[10] of char(10)
+define lv_vb array[10] of char(10)
 define lv_codes array[10] of char(10)
 define mv_prepare integer
 define mv_short_only char(20)
@@ -488,7 +488,7 @@ if l=2 then
 	let lv_str="<td><small>",lv_t clipped,"</td>"
 end if
 if l=3 then
-	let lv_str= "<td><small>",lv_vs[a] using "&.&&","-",lv_vb[a],"</small></td>"
+	let lv_str= "<td><small>",lv_vs[a] clipped,"-",lv_vb[a] clipped,"</small></td>"
 end if
 return lv_str
 end function

@@ -48,7 +48,7 @@ extern
 
 
 union  {
-	char str[2550];
+	char str[20000];
 	char *s;
 	struct element elem;
 } yylval;
