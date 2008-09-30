@@ -1366,7 +1366,7 @@ namespace AubitDesktop
             {
                
 
-                switch (_dbdate)
+                switch (_dbdate.ToUpper())
                 {
                     case "DMY4/":
                         return "dd/MM/yyyy";

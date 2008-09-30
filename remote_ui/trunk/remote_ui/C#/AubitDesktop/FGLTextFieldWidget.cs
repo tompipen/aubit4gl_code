@@ -231,7 +231,7 @@ namespace AubitDesktop
                 }
 
 
-                if (_ContextType == FGLContextType.ContextInput || _ContextType == FGLContextType.ContextDisplayArray)
+                if (_ContextType == FGLContextType.ContextInput || _ContextType == FGLContextType.ContextInputArray || _ContextType == FGLContextType.ContextDisplayArray)
                 {
                     if (this.format != null)
                     {
