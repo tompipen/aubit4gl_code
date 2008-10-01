@@ -143,7 +143,13 @@ end if
 
 
 initialize lv_r,lv_skip_reason to null
+whenever error continue
 execute  px1 INTO lv_r,lv_skip_reason USING lv_test, lv_ts[lv_no]
+if sqlca.sqlcode<0 then
+	display "Error getting result,skip reason for test_no=",lv_test, " timestamp=", lv_ts[lv_no]
+	exit program 2
+end if
+whenever error stop
 
 
 
