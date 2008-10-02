@@ -347,19 +347,19 @@ set_database_cmd :
 
 
 
-load_cmd :  opt_use2_p LOAD_FROM ufile opt_delim INSERT_INTO table_name_not_for_column_prefix opt_col_list {
+load_cmd :  opt_use2_p LOAD_FROM ufile opt_delim_load INSERT_INTO table_name_not_for_column_prefix opt_col_list {
         //A4GL_add_crud("INSERT",$<str>6);
         add_feature("LOAD_FROM_INSERT_INTO");
         $<cmd>$=new_load_cmd($<ptr>1,$<ptr>3, $<ptr>4,NULL,$<str>6,$<str_list>7);
 }
-| opt_use2_p LOAD_FROM ufile opt_delim ensured_variable_usage_expression {
+| opt_use2_p LOAD_FROM ufile opt_delim_load ensured_variable_usage_expression {
         add_feature("LOAD_FROM_VARIABLE");
         $<cmd>$=new_load_cmd($<ptr>1,$<ptr>3, $<ptr>4,$<ptr>5,NULL,NULL);
 }
 
 ;
 
-unload_cmd :  opt_use2_p UNLOAD_TO ufile opt_delim uselect_statement2_p  {
+unload_cmd :  opt_use2_p UNLOAD_TO ufile opt_delim_unload uselect_statement2_p  {
         add_feature("UNLOAD_TO");
 	/* if (strcasecmp($<sql_string>5," WHERE ")==0) { add_feature("UNLOAD_TO_SELECT_WHERE"); } */ /* @FIXME - add this back in... */
         add_feature("UNLOAD_TO");
@@ -416,7 +416,16 @@ opt_into_sel :  {
 ;
 
 
-opt_delim :     { $<ptr>$=0; }
+opt_delim_load :     { $<ptr>$=0; }
+                | DELIMITER char_or_var_vl { $<ptr>$=$<ptr>2; }
+		| KW_USING_FILTER identifier {
+                	$<ptr>$=A4GL_new_expr_funcdef($<str>2,get_namespace($<str>2));
+        	}
+;
+
+
+
+opt_delim_unload :     { $<ptr>$=0; }
                 | DELIMITER char_or_var_vl { $<ptr>$=$<ptr>2; }
 ;
 

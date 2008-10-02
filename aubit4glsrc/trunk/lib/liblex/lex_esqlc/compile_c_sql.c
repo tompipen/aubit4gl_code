@@ -779,8 +779,10 @@ print_load_cmd (struct_load_cmd * cmd_data)
   printc("char *_filename;");
   if (cmd_data->delimiter) {
   	printc("char *_delimiter=0;");
+  	printc("void *_filterfunc=NULL;");
   } else {
   	printc("char *_delimiter=\"|\";");
+  	printc("void *_filterfunc=NULL;");
   }
   if (cmd_data->sqlvar) {
   	printc("char *_sql;");
@@ -789,20 +791,27 @@ print_load_cmd (struct_load_cmd * cmd_data)
   printc("_filename=A4GL_char_pop();");
 
   if (cmd_data->delimiter) {	
-	print_expr(cmd_data->delimiter);
-	printc("_delimiter=A4GL_char_pop();");
+	if (cmd_data->delimiter->expr_type==ET_EXPR_FUNC) {
+                add_function_to_header(cmd_data->delimiter->expr_str_u.expr_func.funcname,cmd_data->delimiter->expr_str_u.expr_func.namespace,1,0);
+                printc("_filterfunc=%s%s;",cmd_data->delimiter->expr_str_u.expr_func.namespace,cmd_data->delimiter->expr_str_u.expr_func.funcname);
+                printc ("_delimiter=0;");
+
+	} else {
+		print_expr(cmd_data->delimiter);
+		printc("_delimiter=A4GL_char_pop();");
+	}
   }
   
   if (cmd_data->sqlvar) {
 	print_expr(cmd_data->sqlvar);
 	printc("_sql=A4GL_char_pop();");
-  	printc ("A4GLSQL_load_data_str(_filename,_delimiter,_sql);\n");
+  	printc ("A4GLSQL_load_data_str(_filename,_delimiter,_filterfunc,_sql);\n");
 	printc("free(_sql);");
 	
   } else {
 	int a;
 	set_nonewlines();
-  	printc ("A4GLSQL_load_data(_filename,_delimiter,\"%s\"\n",cmd_data->tabname);
+  	printc ("A4GLSQL_load_data(_filename,_delimiter,_filterfunc, \"%s\"\n",cmd_data->tabname);
 	if (cmd_data->collist) {
 		for (a=0;a<cmd_data->collist->str_list_entry.str_list_entry_len;a++) {
 			printc(",");

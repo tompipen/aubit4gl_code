@@ -682,6 +682,10 @@ end if
 		let mv_link_opts=mv_link_opts clipped," ",lv_arg
 		continue for
 	end if
+	if lv_arg matches "-Wall" then
+		let mv_compile_c_opts=mv_compile_c_opts clipped," ",lv_arg
+		continue for
+	end if
 
 	if lv_arg matches "-I*" then
 		if lv_arg="-I" then

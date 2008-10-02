@@ -2912,6 +2912,7 @@ print_load_cmd (struct_load_cmd * cmd_data)
 {
 int has_collist;
 int issql=0;
+int uses_filter=0;
 // ---- 
   //struct expr_str * connid;
   //struct expr_str* filename;
@@ -2924,6 +2925,7 @@ int issql=0;
   print_use_session (cmd_data->connid);
 
   printc ("{");
+  printc ("void *_filterfunc=NULL;");
   printc ("\nEXEC SQL BEGIN DECLARE SECTION; ");
 
   printc ("char _filename[512];");
@@ -2946,12 +2948,22 @@ int issql=0;
 
   if (cmd_data->delimiter)
     {
-      print_expr (cmd_data->delimiter);
-      printc ("_delimiter=A4GL_char_pop();");
+        if (cmd_data->delimiter->expr_type==ET_EXPR_FUNC) {
+                //char *p;
+                //p=cmd_data->delimiter->expr_str_u.expr_func;
+                add_function_to_header(cmd_data->delimiter->expr_str_u.expr_func.funcname,cmd_data->delimiter->expr_str_u.expr_func.namespace,1,0);
+                printc("_filterfunc=%s%s;",cmd_data->delimiter->expr_str_u.expr_func.namespace,cmd_data->delimiter->expr_str_u.expr_func.funcname);
+      		printc ("_delimiter=0;");
+		uses_filter=1;
+        } else {
+      		print_expr (cmd_data->delimiter);
+      		printc ("_delimiter=A4GL_char_pop();");
+                printc("_filterfunc=NULL;");
+	}
     }
 
 
-  if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD"))
+  if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD") && ! uses_filter)
     {
       if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD_FULL_PATH"))
 	{
@@ -2982,7 +2994,7 @@ int issql=0;
 	{
 	  print_expr (cmd_data->sqlvar);
 	  printc ("_sql=A4GL_char_pop();");
-	  printc ("A4GLSQL_load_data_str(_filename,_delimiter,_sql);\n");
+	  printc ("A4GLSQL_load_data_str(_filename,_delimiter,_filterfunc, _sql);\n");
 	  printc ("free(_sql);");
 		issql=0;
 	}
@@ -2990,7 +3002,7 @@ int issql=0;
 	{
 	  int a;
 	  set_nonewlines ();
-	  printc ("A4GLSQL_load_data(_filename,_delimiter,\"%s\"\n", cmd_data->tabname);
+	  printc ("A4GLSQL_load_data(_filename,_delimiter,_filterfunc, \"%s\"\n", cmd_data->tabname);
 	  if (cmd_data->collist)
 	    {
 	      for (a = 0; a < cmd_data->collist->str_list_entry.str_list_entry_len; a++)

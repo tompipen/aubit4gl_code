@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.49 2008-10-02 10:57:09 mikeaubury Exp $
+# $Id: load.c,v 1.50 2008-10-02 13:34:54 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,7 @@
 #define LOADBUFFSIZE 32000
 
 
+static int doing_load=0;
 /*
 =====================================================================
                     Variables definitions
@@ -81,7 +82,7 @@ extern sqlca_struct a4gl_sqlca;
 =====================================================================
 */
 
-int A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...);
+//int A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...);
 
 /*
 =====================================================================
@@ -210,8 +211,9 @@ stripnlload (char *s, char delim)
 //printf("strlen=%d actual=%d s[a-1]=%d\n",a,strlen(s), s[a-1]);
   if (s[a - 1] == '\n')
     {
-      if (s[a - 2] != delim)
+      if (s[a - 2] != delim) {
 	s[a - 1] = delim;
+	}
       else
 	s[a - 1] = 0;
     }
@@ -221,7 +223,18 @@ stripnlload (char *s, char delim)
 
 
 
-
+static int clr_colptr(int freeit) {
+int a;
+for (a=0;a<MAXLOADCOLS;a++) {
+	if (freeit) {
+		if (colptr[a]) {
+			free(colptr[a]);
+		}
+	}
+	colptr[a]=NULL;
+}
+return 1;
+}
 
 #ifdef LOAD_ORIG
 /**
@@ -240,12 +253,12 @@ stripnlload (char *s, char delim)
  *    - 1 : OK
  */
 int
-A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
+A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 {
   va_list ap;
   char *colname;
   int cnt = 0;
-  char delim;
+  char delim=0;
   int nfields;
   int lineno = 0;
  
@@ -255,10 +268,18 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   struct BINDING *ibind = 0;
   char buff[255];
   int a;
+//printf("%d %s\n",doing_load,fname);
+
+  if (doing_load) {
+		A4GL_exitwith("Cant do a load within a load...");
+		return 0;
+  }
+  doing_load++;
 
 //void *v;
-
-  delim = delims[0];
+  if (delims) {
+  	delim = delims[0];
+  }
 
 
   A4GL_debug ("In load_data - LOAD_ORIG");
@@ -271,6 +292,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   if (p == 0)
     {
       A4GL_exitwith ("Could not open file for load");
+  	doing_load=0;
       return 0;
     }
 
@@ -289,9 +311,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
     {
       /* get columns from database */
       A4GL_debug ("Getting columns from database");
-      cnt =
-	A4GLSQL_fill_array (MAXLOADCOLS, (char *) col_list, MAXCOLLENGTH - 1,
-			    0, 0, "COLUMNS", 0, tabname);
+      cnt = A4GLSQL_fill_array (MAXLOADCOLS, (char *) col_list, MAXCOLLENGTH - 1, 0, 0, "COLUMNS", 0, tabname);
 
     }
 
@@ -303,6 +323,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	a4gl_sqlca.sqlcode=0; a4gl_status=0;
 	A4GL_set_errm(tabname);
       	A4GL_exitwith ("Error in getting number of columns for load (does the table '%s' exist?)");
+  	doing_load=0;
       return 0;
     }
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
@@ -313,14 +334,19 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   A4GL_debug ("Adding prepare.. for %s",insertstr);
 
 
-  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",23,0,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",23,0,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
+	doing_load=0;
+return 0; }
 
+  if (filterfunc) {
+		clr_colptr(0);
+  }
 
   while (1)
     {
      strcpy(loadbuff,"");
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
-      A4GL_debug ("Read line '%s'\n", loadbuff); fflush(stdout);
+      A4GL_debug ("Read line '%s'\n", loadbuff); 
 	if (feof(p) && strlen(loadbuff)) {
 		if (loadbuff[strlen(loadbuff)-1]!='\n') {
 			strcat(loadbuff,"\n");
@@ -331,15 +357,52 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       
       lineno++;
       stripnlload (loadbuff, delim);
-      nfields = find_delims (delim);
+      A4GL_debug ("Read line '%s'\n", loadbuff); 
+	if (filterfunc) {
+		// We're using a filter function.
+		// this is a special 4gl function which we pass in the string
+		// and it returns the values to insert
+		//
+		// If the function returns no values - then we skip the line.....
+		//
+		int a;
+		int (*func) (int);
+		int ml;
+		func=filterfunc;
+		clr_colptr(1);
+
+  		ml=strlen(loadbuff);
+  		if (loadbuff[ml-2]=='\r' && loadbuff[ml-1]=='\n') {
+                	loadbuff[ml-2]=0;
+        	}
+  		if (loadbuff[ml-1]=='\n') {
+                	loadbuff[ml-1]=0;
+        	}
+
+		// Push the current line 
+		A4GL_push_char(loadbuff);
+		// Call the function with 1 parameter
+		nfields=func(1);
+		// Did we get any values ? 
+		if (nfields==0) continue; /* We're skipping this line.. */
+		// Put them into our column data pointers...
+		// we'll need to free these - hence all the clr_colptr's around...
+		for (a=nfields-1;a>=0;a--) {
+			colptr[a]=A4GL_char_pop();
+		}
+	} else {
+      		nfields = find_delims (delim);
+	}
       A4GL_debug("nfields=%d number of columns=%d", nfields, cnt);
 	if (nfields==0 && delim==0) nfields=1; // No delimiter - whole line...
 
       if (nfields != cnt)
 	{
-	  SPRINTF2 (buff, "%d!=%d", nfields, cnt);
+  	if (filterfunc) { clr_colptr(1); }
+	  SPRINTF3 (buff, "%d!=%d @ %d", nfields, cnt,lineno);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
+	doing_load=0;
 	  return 0;
 	}
 
@@ -373,16 +436,20 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       if (a4gl_status != 0 || A4GL_get_a4gl_sqlca_sqlcode()!=0)
 	{
+  	if (filterfunc) { clr_colptr(1); }
 	  SPRINTF1 (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
   		fclose (p);
+	doing_load=0;
 	  return 0;
 	}
       if (feof (p)) { A4GL_debug ("Got to end of the file"); break; }
     }
   a4gl_sqlca.sqlerrd[2]=lineno; // sqlerrd[3] in 4gl
   fclose (p);
+  	if (filterfunc) { clr_colptr(1); }
+	doing_load=0;
   return 1;
 }
 
@@ -408,12 +475,12 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
  *    - 1 : OK
  */
 int
-A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
+A4GLSQL_load_data (char *fname, char *delims, void*filterfunc, char *tabname, ...)
 {
   va_list ap;
   char *colname;
   int cnt = 0;
-  char delim;
+  char delim=0;
   int nfields;
   int lineno = 0;
  
@@ -426,6 +493,14 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   struct BINDING fake_ibind[1]={{0,0,0,0,0,0}};
   int use_insert_cursor=-1;
 
+  if (doing_load) {
+		A4GL_exitwith("Cant do a load within a load...");
+		return 0;
+  }
+  doing_load=1;
+
+
+  A4GL_assertion(filterfunc!=NULL,"Not implemented - thought we were using LOAD_ORIG");
 
   if (use_insert_cursor==-1) {
   	if (A4GL_isyes(acl_getenv("USECURSORFORLOAD"))) {
@@ -450,6 +525,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   if (p == 0)
     {
       A4GL_exitwith ("Could not open file for load");
+  	doing_load=0;
       return 0;
     }
 
@@ -479,6 +555,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   if (cnt == 0)
     {
       A4GL_exitwith ("Error in getting number of columns for load");
+  	doing_load=0;
       return 0;
     }
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
@@ -509,7 +586,9 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 		 A4GLSQL_open_cursor("a4gl_load",0,0);
 
   } else {
-  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",22,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+  		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,insertstr,"__internal_load",22,0)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
+		doing_load=0;
+		return 0; }
   }
 
 
@@ -534,9 +613,10 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       if (nfields != cnt)
 	{
-	  SPRINTF1 (buff, "%d", cnt);
+	  SPRINTF1 (buff, "%d!=%d @ %d", nfields,cnt,lineno);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
+		doing_load=0;
 	  return 0;
 	}
 
@@ -589,6 +669,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
   		fclose (p);
+		doing_load=0;
 	  return 0;
 	}
     }
@@ -601,6 +682,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   if (ibind) free(ibind);
   a4gl_sqlca.sqlerrd[2]=lineno; // sqlerrd[3] in 4gl
   fclose (p);
+	doing_load=0;
   return 1;
 }
 
@@ -624,13 +706,15 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
  *    - 0 : Error executing the load
  *    - 1 : OK
  */
+
+
 int
-A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
+A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_orig)
 {
   //va_list ap;
   //char *colname;
   int cnt = 0;
-  char delim;
+  char delim=0;
   int nfields;
   int lineno = 0;
   //char *insertstr;
@@ -642,7 +726,15 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 int l;
   int prepared=0;
   static char *sqlstmt=0;
-  delim = delims[0];
+
+  if (doing_load) {
+		A4GL_exitwith("Cant do a load within a load...");
+		return 0;
+  }
+  doing_load=1;
+  if (delims) {
+   	delim = delims[0];
+  }
 
   if (sqlstmt) free(sqlstmt);
   sqlstmt=acl_strdup(sqlstmt_orig);
@@ -653,11 +745,15 @@ int l;
   if (p == 0)
     {
       A4GL_exitwith ("Could not open file for load");
+	doing_load=0;
       return 0;
     }
   cnt=0;
   l=strlen(sqlstmt);
   for (a=0;a<l;a++) { if (sqlstmt[a]=='?') cnt++; }
+  if (filterfunc) {
+		clr_colptr(0);
+  }
 
 
   while (1)
@@ -671,14 +767,50 @@ int l;
 	}
       stripnlload (loadbuff, delim);
       A4GL_debug ("Read line '%s'", loadbuff);
+	if (filterfunc) {
+		// We're using a filter function.
+		// this is a special 4gl function which we pass in the string
+		// and it returns the values to insert
+		//
+		// If the function returns no values - then we skip the line.....
+		//
+		int a;
+		int (*func) (int);
+		int ml;
+		func=filterfunc;
+		clr_colptr(1);
+
+  		ml=strlen(loadbuff);
+  		if (loadbuff[ml-2]=='\r' && loadbuff[ml-1]=='\n') {
+                	loadbuff[ml-2]=0;
+        	}
+  		if (loadbuff[ml-1]=='\n') {
+                	loadbuff[ml-1]=0;
+        	}
+
+		// Push the current line 
+		A4GL_push_char(loadbuff);
+		// Call the function with 1 parameter
+		nfields=func(1);
+		// Did we get any values ? 
+		if (nfields==0) continue; /* We're skipping this line.. */
+		// Put them into our column data pointers...
+		// we'll need to free these - hence all the clr_colptr's around...
+		for (a=nfields-1;a>=0;a--) {
+			colptr[a]=A4GL_char_pop();
+		}
+	} else {
       nfields = find_delims (delim);
+	}
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
 
       if (nfields != cnt && cnt)
 	{
-	  SPRINTF1 (buff, "%d", cnt);
+	  SPRINTF3 (buff, "%d!=%d @ %d", nfields,cnt,lineno);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
+  		if (filterfunc) { clr_colptr(1); }
+	doing_load=0;
 	  return 0;
 	}
 
@@ -700,7 +832,9 @@ int l;
 		}
 
   		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0,0,0,0,sqlstmt,"_internal_load",24,0,0)) != 1) { 
+  			if (filterfunc) { clr_colptr(1); }
 			A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
+	doing_load=0;
 			return 0; 
 		}
 
@@ -730,7 +864,115 @@ int l;
 	}
     }
   fclose (p);
+  if (filterfunc) { clr_colptr(1); }
+	doing_load=0;
   return 1;
+}
+
+
+
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define LBUFSIZ 1000
+
+
+
+int
+aclfgl_aclfgl_parse_csv (int n)
+{
+
+  static char *line1=0;
+  static char *line2=0;
+  static char *line3=0;		/* Each field in the line */
+  char *stptr;
+  int idx = 0;
+  int lcount = 0;		/* Cell Seperator */
+  int xcnt=0;
+
+
+  if (line1) {free(line1); line1=0;}
+  if (line2) {free(line2); line2=0;}
+  if (line3) {free(line3); line3=0;}
+
+  line1 = A4GL_char_pop ();
+  line2=strdup(line1);
+  line3=strdup(line1);
+
+    lcount = 0;
+    strcpy (line2, line1);
+    stptr = line2;
+
+/* start going character by character thro the line */
+    while (*stptr != '\0')
+      {
+	lcount++;
+/* If field begins with " */
+	if (*stptr == '"')
+	  {
+	    int flag = 0;
+	    idx = 0;
+	    while (flag == 0)
+	      {
+
+		stptr++;
+/* Find corresponding closing " */
+		while (*stptr != '"')
+		  {
+		    line3[idx] = *stptr;
+		    idx++;
+		    stptr++;
+		  }
+
+		stptr++;
+		if (*stptr != '\0' && *stptr == ',')
+		  {
+
+		    line3[idx] = '\0';
+		xcnt++;
+			A4GL_push_char(line3);
+		    flag = 1;
+		  }
+		else if (*stptr != '\0' && *stptr == '"')
+		  {
+		    line3[idx] = *stptr;
+		    idx++;
+		  }
+		else
+		  {
+
+		    line3[idx] = '\0';
+		xcnt++;
+			A4GL_push_char(line3);
+		    flag = 1;
+		  }
+	      }
+	  }
+	else
+	  {
+	    idx = 0;
+	    while (*stptr != '\0' && *stptr != ',')
+	      {
+		line3[idx] = *stptr;
+		idx++;
+		stptr++;
+	      }
+	    line3[idx] = '\0';
+		xcnt++;
+		A4GL_push_char(line3);
+	  }
+	if (*stptr != '\0' && *stptr == ',')
+	  stptr++;
+	strcpy (line2, stptr);
+	stptr = line2;
+      }
+
+	return xcnt;
+
+
 }
 
 

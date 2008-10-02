@@ -342,3 +342,4 @@
 346|Invalid barcode type
 347|Unable to generate QR code
 348|Error in getting number of columns for load (does the table '%s' exist?)
+350|Cant do a load within a load...

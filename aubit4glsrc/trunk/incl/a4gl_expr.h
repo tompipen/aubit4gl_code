@@ -17,6 +17,7 @@ struct expr_str *A4GL_new_literal_long_str (char *value);
 struct expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameters,int err_if_not_var,int err_if_whole_array) ;
 struct expr_str *A4GL_new_expr_form_is_compiled(char *formname, expr_str_list *params,char *mod,int line);
 struct expr_str * A4GL_new_translated_string (char *value);
+struct expr_str *A4GL_new_expr_funcdef(char *funcname, char *namespace);
 
 struct expr_str *report_position_expr_x(struct expr_str *expr) ;
 struct expr_str *report_position_expr_y(struct expr_str *expr) ;

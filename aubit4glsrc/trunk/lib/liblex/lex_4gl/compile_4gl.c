@@ -8835,8 +8835,12 @@ if (last_parent!=parent) {
       real_print_variable_or_literal (r->cmd_data.command_data_u.load_cmd.filename, "\"\"");
       if (r->cmd_data.command_data_u.load_cmd.delimiter)
 	{
-	  printc (" DELIMITER ");
-	  real_print_variable_or_literal (r->cmd_data.command_data_u.load_cmd.delimiter, "\"|\"");
+		if (r->cmd_data.command_data_u.load_cmd.delimiter->expr_type==ET_EXPR_FUNC) {
+			printc(" USING FILTER %s", r->cmd_data.command_data_u.load_cmd.delimiter->expr_str_u.expr_func.funcname);
+		} else {
+	  		printc (" DELIMITER ");
+	  		real_print_variable_or_literal (r->cmd_data.command_data_u.load_cmd.delimiter, "\"|\"");
+		}
 	}
       if (strlen (r->cmd_data.command_data_u.load_cmd.tabname))
 	{

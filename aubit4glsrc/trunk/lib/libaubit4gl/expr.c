@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.28 2008-09-11 15:12:31 mikeaubury Exp $
+# $Id: expr.c,v 1.29 2008-10-02 13:34:54 mikeaubury Exp $
 #
 */
 
@@ -211,11 +211,12 @@ case ET_EXPR_PDF_X: return "ET_EXPR_PDF_X";
 case ET_EXPR_PDF_Y : return "ET_EXPR_PDF_Y";
 case ET_EXPR_PDF_CURRENT_X : return "ET_EXPR_PDF_CURRENT_X";
 case ET_EXPR_PDF_CURRENT_Y : return "ET_EXPR_PDF_CURRENT_Y";
+case ET_EXPR_CM : return "ET_EXPR_CM";
+case ET_EXPR_FUNC : return "ET_EXPR_FUNC";
 }
 PRINTF("Expression Type : %d\n",e);
 return "Oopps - dont know";
 }
-
 
 
 
@@ -351,6 +352,13 @@ struct expr_str *A4GL_new_expr_reference(struct expr_str *expr) {
       return ptr_new;
 }
 
+struct expr_str *A4GL_new_expr_funcdef(char *funcname, char *namespace) {
+      struct expr_str *ptr_new;
+      ptr_new=A4GL_new_expr_simple (ET_EXPR_FUNC);
+      ptr_new->expr_str_u.expr_func.funcname=strdup(funcname);
+      ptr_new->expr_str_u.expr_func.namespace=strdup(namespace);
+      return ptr_new;
+}
 
 struct expr_str *A4GL_new_expr_param(char *name, int isReference) {
       struct expr_str *ptr_new;

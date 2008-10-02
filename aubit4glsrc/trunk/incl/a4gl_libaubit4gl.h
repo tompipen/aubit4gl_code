@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.329 2008-09-29 08:17:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.330 2008-10-02 13:34:54 mikeaubury Exp $
 #
 */
 
@@ -1959,7 +1959,7 @@ int A4GL_input_required_handling(void) ;
 	void *label;
   };
 
-  int load_data (char *fname, char *delims, char *tabname, ...);
+  int A4GLSQL_load_data (char *fname, char *delims, void*filterfunc, char *tabname, ...);
   int set_scrline_ia (int np);
   int set_arrline_ia (int np);
   struct struct_screen_record *A4GL_get_srec (char *name);
@@ -2064,7 +2064,7 @@ A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
 void *
 A4GL_read_form (char *s, char *p);
 int
-A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt);
+A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt);
 void
 A4GL_in_in_ops (int op);
 int

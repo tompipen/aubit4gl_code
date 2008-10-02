@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.37 2008-08-28 10:38:49 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.38 2008-10-02 13:34:54 mikeaubury Exp $
 */
 
 /**
@@ -72,7 +72,7 @@ extern "C"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
 
-int A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...);
+int A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int rep_end);
 void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
