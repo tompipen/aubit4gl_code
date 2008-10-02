@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.23 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: dates.c,v 1.24 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -112,7 +112,7 @@ int A4GL_y2kmode (int yr);
 static long gen_dateno2 (int day, int month, int year);
 static int get_yr (int d);
 int A4GL_get_month (int d);
-int A4GL_days_in_month(int m,int y) ;
+int A4GL_days_in_month (int m, int y);
 
 /*
 =====================================================================
@@ -160,9 +160,10 @@ A4GL_day_in_week (day, month, year)
   long temp;
 
   temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1) + A4GL_day_in_year (day, month, year);
-  if (temp<0) { // Before year 1
-	return 0;
-  }
+  if (temp < 0)
+    {				// Before year 1
+      return 0;
+    }
   if (temp < FIRST_MISSING_DAY)
     return ((temp - 1 + SATURDAY) % 7);
   if (temp >= (FIRST_MISSING_DAY + NUMBER_MISSING_DAYS))
@@ -183,24 +184,27 @@ static long
 gen_dateno2 (int day, int month, int year)
 {
   long temp;
-  if (month < 1 || month > 12) {
-		A4GL_debug("Invalid Month");
-    return DATE_INVALID;
-	}
-  if (day < 1) {
-	A4GL_debug("Invalid date (<1)");
+  if (month < 1 || month > 12)
+    {
+      A4GL_debug ("Invalid Month");
+      return DATE_INVALID;
+    }
+  if (day < 1)
+    {
+      A4GL_debug ("Invalid date (<1)");
 
-    return DATE_INVALID;
-	}
-  if (day > days_in_month[leap_year (year)][month]) {
-	A4GL_debug("Invalid date (>month end)");
-    return DATE_INVALID;
-	}
+      return DATE_INVALID;
+    }
+  if (day > days_in_month[leap_year (year)][month])
+    {
+      A4GL_debug ("Invalid date (>month end)");
+      return DATE_INVALID;
+    }
 
-  if (year<0 || year>9999) return DATE_INVALID;
+  if (year < 0 || year > 9999)
+    return DATE_INVALID;
 
-  temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
-    + A4GL_day_in_year (day, month, year);
+  temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1) + A4GL_day_in_year (day, month, year);
   return temp - EPOCH;
 }
 
@@ -224,12 +228,12 @@ A4GL_gen_dateno (int day, int month, int year)
 #endif
   z = gen_dateno2 (day, month, year);
 
-  A4GL_debug("z=%d\n",z);
+  A4GL_debug ("z=%d\n", z);
   if (z == DATE_INVALID)
     {
-        //A4GL_exitwith ("Invalid date");
-	A4GL_debug("Invalid date ? %ld %ld ",z,DATE_INVALID);
-	return z;
+      //A4GL_exitwith ("Invalid date");
+      A4GL_debug ("Invalid date ? %ld %ld ", z, DATE_INVALID);
+      return z;
     }
   return z;
 }
@@ -246,12 +250,13 @@ get_yr (int d)
   int e;
   int h, l;
   A4GL_debug ("D=%d\n", d);
-  if (d == DATE_INVALID )
+  if (d == DATE_INVALID)
     return d;
   e = (int) ((double) (d - 13 + EPOCH) / 365.2425) + 1;
   h = A4GL_gen_dateno (31, 12, e);
 
-  if (h==DATE_INVALID) return h;
+  if (h == DATE_INVALID)
+    return h;
 
   /*l=gen_dateno(1,1,e); */
   while (1)
@@ -296,9 +301,10 @@ A4GL_get_month (int d)
     return d;
   year = get_yr (d);
   day = d - A4GL_gen_dateno (1, 1, year) + 1;
-  if (day==DATE_INVALID) {
-	return day;
-  }
+  if (day == DATE_INVALID)
+    {
+      return day;
+    }
   leap = leap_year (year);
   for (i = 1; i <= 12; i++)
     {
@@ -322,19 +328,20 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
   int i, leap;
   int year;
   A4GL_debug ("d=%d\n", d);
-  *day=0;
-  *mn=0;
-  *yr=0;
-  if (d == DATE_INVALID )
+  *day = 0;
+  *mn = 0;
+  *yr = 0;
+  if (d == DATE_INVALID)
     return 0;
   year = get_yr (d);
-  A4GL_debug("YEAR = %d\n",year);
+  A4GL_debug ("YEAR = %d\n", year);
   *day = d - A4GL_gen_dateno (1, 1, year) + 1;
 
-  if (*day==DATE_INVALID) return 0;
+  if (*day == DATE_INVALID)
+    return 0;
 
   leap = leap_year (year);
-  A4GL_debug("leap=%d\n",leap);
+  A4GL_debug ("leap=%d\n", leap);
   for (i = 1; i <= 12; i++)
     {
       *day -= days_in_month[leap][i];
@@ -346,7 +353,7 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
     }
   *mn = i;
   *yr = year;
-  A4GL_debug("All done..");
+  A4GL_debug ("All done..");
   return 1;
 }
 
@@ -391,7 +398,7 @@ A4GL_y2kmode (int yr)
 #ifdef DEBUG
       /* {DEBUG} */
       {
- A4GL_debug ("Year is ok");
+	A4GL_debug ("Year is ok");
       }
 #endif
       return yr;
@@ -402,7 +409,7 @@ A4GL_y2kmode (int yr)
 #ifdef DEBUG
       /* {DEBUG} */
       {
- A4GL_debug ("y2ktype not set");
+	A4GL_debug ("y2ktype not set");
       }
 #endif
       ptr = acl_getenv ("AUBIT_Y2K");
@@ -413,7 +420,7 @@ A4GL_y2kmode (int yr)
 #ifdef DEBUG
       /* {DEBUG} */
       {
- A4GL_debug ("y2ktype set to %d", y2ktype);
+	A4GL_debug ("y2ktype set to %d", y2ktype);
       }
 #endif
       if (y2ktype == 0)
@@ -442,7 +449,7 @@ A4GL_y2kmode (int yr)
   /* this is right ! - not y2k specific  epoch = 1899 */
 
 
-/* year = local_time->tm_year + 1900;  *//*DEBUGGING */
+  /* year = local_time->tm_year + 1900;  *//*DEBUGGING */
   year = 1997;
 
 #ifdef DEBUG
@@ -502,10 +509,12 @@ A4GL_y2kmode (int yr)
 }
 
 
-int A4GL_days_in_month(int m,int y) {
-int leap;
+int
+A4GL_days_in_month (int m, int y)
+{
+  int leap;
   leap = leap_year (y);
-    return days_in_month[leap][m];
+  return days_in_month[leap][m];
 }
 
 /* ============================= EOF =============================== */

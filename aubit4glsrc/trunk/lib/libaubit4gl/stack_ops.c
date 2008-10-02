@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.22 2008-07-06 11:34:34 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.23 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -43,7 +43,7 @@ A4GL_process_stack_op_other (int d)
   int s1;
   //int ptr1;
   long ptr1;
-A4GL_debug("A4GL_process_stack_op_other");
+  A4GL_debug ("A4GL_process_stack_op_other");
   if (d == OP_IN || d == OP_NOTIN)
     {
       int a;
@@ -51,7 +51,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       int eql;
       A4GL_debug ("OP_IN Set");
       a = A4GL_pop_int ();
-      A4GL_debug ("OP_IN Set checking against %d values",a);
+      A4GL_debug ("OP_IN Set checking against %d values", a);
       while (a >= 1)
 	{
 	  A4GL_debug ("Getting base value from stack.. a=%d", a);
@@ -62,18 +62,20 @@ A4GL_debug("A4GL_process_stack_op_other");
 	  A4GL_pushop (OP_EQUAL);
 	  A4GL_debug ("Pushed OP_EQUAL");
 	  eql = A4GL_pop_long ();
-	  if (A4GL_isnull(DTYPE_INT,(void *)&eql)) eql=0;
-	  if (eql) ok = 1;
-	  A4GL_debug ("Got OP_EQUAL  = %d (%x) ok=%d\n", eql,eql,ok);
-	
+	  if (A4GL_isnull (DTYPE_INT, (void *) &eql))
+	    eql = 0;
+	  if (eql)
+	    ok = 1;
+	  A4GL_debug ("Got OP_EQUAL  = %d (%x) ok=%d\n", eql, eql, ok);
+
 	  a--;
 	}
       A4GL_debug ("Setting ok=%d\n", ok);
-      A4GL_drop_param ();		/* Get rid of the base... */
+      A4GL_drop_param ();	/* Get rid of the base... */
       if (d == OP_IN)
- A4GL_push_int (ok);
+	A4GL_push_int (ok);
       else
- A4GL_push_int (!ok);
+	A4GL_push_int (!ok);
       return;
     }
 
@@ -87,20 +89,20 @@ A4GL_debug("A4GL_process_stack_op_other");
       char cname[256];
       char tmpvar[256];
       struct BINDING ibind[] = {
-	{&tmpvar, 0, 255,0,0,0}
+	{&tmpvar, 0, 255, 0, 0, 0}
       };			/* end of binding */
       SPRINTF1 (cname, "chkin_%d", cntsql_0++);
-	memset(tmpvar,0,255);
+      memset (tmpvar, 0, 255);
       s = A4GL_char_pop ();
       A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
       A4GLSQL_set_sqlca_sqlcode (0);
       {
 	int n;
 	struct BINDING *ibind;
-	struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
+	struct BINDING obind[] = { {0, 0, 0, 0, 0, 0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
-		A4GL_debug("declare - binding : %d\n",n);
-	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s,"__internal_stackops",1,0,0), 0, cname);
+	A4GL_debug ("declare - binding : %d\n", n);
+	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s, "__internal_stackops", 1, 0, 0), 0, cname);
       }
       if (a4gl_status != 0)
 	{
@@ -109,7 +111,7 @@ A4GL_debug("A4GL_process_stack_op_other");
 	}
       free (s);
       A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor ( cname,0,0);
+      A4GLSQL_open_cursor (cname, 0, 0);
       if (a4gl_status != 0)
 	{
 	  A4GL_drop_param ();
@@ -129,11 +131,11 @@ A4GL_debug("A4GL_process_stack_op_other");
 	    ok = 1;
 	  a--;
 	}
-      A4GL_drop_param ();		/* Get rid of the base */
+      A4GL_drop_param ();	/* Get rid of the base */
       if (d == OP_IN_SELECT)
- A4GL_push_int (ok);
+	A4GL_push_int (ok);
       else
- A4GL_push_int (!ok);
+	A4GL_push_int (!ok);
       return;
     }
 
@@ -145,8 +147,8 @@ A4GL_debug("A4GL_process_stack_op_other");
       static int cntsql_1 = 0;
       char cname[256];
 
-      struct BINDING ibind[] = { {&tmpvar, 0, 255,0,0,0} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0,0,0,0} };	/* end of binding */
+      struct BINDING ibind[] = { {&tmpvar, 0, 255, 0, 0, 0} };	/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0, 0, 0, 0} };	/* end of binding */
       struct BINDING *dbind;
       void *prep;
 
@@ -162,7 +164,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       A4GL_debug ("s=%s\n", s);
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_debug ("Prepare seelct...");
-      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s,"__internal_stackops",2,0,0);
+      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s, "__internal_stackops", 2, 0, 0);
       A4GL_debug ("Declare");
       free (s);
       A4GLSQL_declare_cursor (0, prep, 0, cname);
@@ -173,7 +175,7 @@ A4GL_debug("A4GL_process_stack_op_other");
 	  return;
 	}
       A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor (cname,0,0);
+      A4GLSQL_open_cursor (cname, 0, 0);
       A4GL_debug ("opened cursor");
       if (a4gl_status != 0)
 	{
@@ -194,9 +196,9 @@ A4GL_debug("A4GL_process_stack_op_other");
 	}
       A4GL_debug ("ok=%d", ok);
       if (d == OP_EXISTS)
- A4GL_push_int (ok);
+	A4GL_push_int (ok);
       else
- A4GL_push_int (!ok);
+	A4GL_push_int (!ok);
       return;
     }
 
@@ -207,8 +209,8 @@ A4GL_debug("A4GL_process_stack_op_other");
 struct BINDING *
 bind_recopy (struct BINDING *b, int n, struct BINDING *c)
 {
-static char *tmpcp=0;
-  if (n == 0 || c==0)
+  static char *tmpcp = 0;
+  if (n == 0 || c == 0)
     {
       free (b);
       return 0;

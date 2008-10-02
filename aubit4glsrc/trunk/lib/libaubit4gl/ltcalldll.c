@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ltcalldll.c,v 1.3 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: ltcalldll.c,v 1.4 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -49,11 +49,11 @@
 
 
 #ifndef SO_EXT
-	#ifdef WIN32
-		#define SO_EXT "dll"
-	#else
-		#define SO_EXT "so"
-	#endif
+#ifdef WIN32
+#define SO_EXT "dll"
+#else
+#define SO_EXT "so"
+#endif
 #endif
 
 
@@ -108,9 +108,13 @@ A4GL_nullfunc (void)
 }
 
 
-int A4GL_isnullfunc(void *ptr) {
-if (ptr==(void *)A4GL_nullfunc) return 1;
-else return 0;
+int
+A4GL_isnullfunc (void *ptr)
+{
+  if (ptr == (void *) A4GL_nullfunc)
+    return 1;
+  else
+    return 0;
 }
 
 /**
@@ -135,7 +139,7 @@ void *
 A4GL_dl_openlibrary (char *type, char *p)
 {
   lt_dlhandle dllhandle;
-  static int started=0;
+  static int started = 0;
   static char buff[1024];
   char buff2[1024];
   static char tmpbuff[1024];
@@ -143,55 +147,76 @@ A4GL_dl_openlibrary (char *type, char *p)
   //char soext_2[256];
   char *plugin_name;
   char *aplugins;
-  SPRINTF2 (tmpbuff, "lib%s_%s", type,p);
+  SPRINTF2 (tmpbuff, "lib%s_%s", type, p);
   plugin_name = tmpbuff;
 
 
-  if (!started) {
-	  int errors;
-	  //char buff[256];
-	  started++;
-	  errors=lt_dlinit();
-	  if (errors) { A4GL_debug("lt_dlinit fails : %s",lt_dlerror()); }
-	  //LTDL_SET_PRELOADED_SYMBOLS();
+  if (!started)
+    {
+      int errors;
+      //char buff[256];
+      started++;
+      errors = lt_dlinit ();
+      if (errors)
+	{
+	  A4GL_debug ("lt_dlinit fails : %s", lt_dlerror ());
+	}
+      //LTDL_SET_PRELOADED_SYMBOLS();
 
 #ifndef SIMPLIFIED
-	  aplugins=acl_getenv_not_set_as_0("AUBITPLUGINDIR");
+      aplugins = acl_getenv_not_set_as_0 ("AUBITPLUGINDIR");
 
-	  if (aplugins) {
-		  	A4GL_debug("Adding %s to searchpath",aplugins);
-		  	errors=lt_dladdsearchdir(aplugins);
-	  		if (errors) { A4GL_debug("lt_dladdsearchdir fails : %s",lt_dlerror()); }
-	  }
+      if (aplugins)
+	{
+	  A4GL_debug ("Adding %s to searchpath", aplugins);
+	  errors = lt_dladdsearchdir (aplugins);
+	  if (errors)
+	    {
+	      A4GL_debug ("lt_dladdsearchdir fails : %s", lt_dlerror ());
+	    }
+	}
 
 
 #else
-	   aplugins=AUBITPLUGINDIR;
-	   if (aplugins) {
-	  	if (strlen(aplugins)==0) {
-	  		aplugins=0;
-	 	}
-  	  }
-	  if (aplugins) {
-		  	A4GL_debug("Adding %s to searchpath",aplugins);
+      aplugins = AUBITPLUGINDIR;
+      if (aplugins)
+	{
+	  if (strlen (aplugins) == 0)
+	    {
+	      aplugins = 0;
+	    }
+	}
+      if (aplugins)
+	{
+	  A4GL_debug ("Adding %s to searchpath", aplugins);
 
-		  	errors=lt_dladdsearchdir(aplugins);
-	  		if (errors) { A4GL_debug("lt_dladdsearchdir fails : %s",lt_dlerror()); }
-		}
-	  if (acl_getenv_not_set_as_0("AUBITDIR")) {
-	  	SPRINTF1(buff,"%s/lib/aubit4gl",acl_getenv("AUBITDIR"));
-		  	A4GL_debug("Adding %s to searchpath",buff);
-	  	errors=lt_dladdsearchdir(buff);
-	  	if (errors) { A4GL_debug("lt_dladdsearchdir fails : %s",lt_dlerror()); }
-	  }
-		  	A4GL_debug("Adding . to searchpath",buff);
-  	errors=lt_dladdsearchdir(".");
-  	if (errors) { A4GL_debug("lt_dladdsearchdir fails : %s",lt_dlerror()); }
+	  errors = lt_dladdsearchdir (aplugins);
+	  if (errors)
+	    {
+	      A4GL_debug ("lt_dladdsearchdir fails : %s", lt_dlerror ());
+	    }
+	}
+      if (acl_getenv_not_set_as_0 ("AUBITDIR"))
+	{
+	  SPRINTF1 (buff, "%s/lib/aubit4gl", acl_getenv ("AUBITDIR"));
+	  A4GL_debug ("Adding %s to searchpath", buff);
+	  errors = lt_dladdsearchdir (buff);
+	  if (errors)
+	    {
+	      A4GL_debug ("lt_dladdsearchdir fails : %s", lt_dlerror ());
+	    }
+	}
+      A4GL_debug ("Adding . to searchpath", buff);
+      errors = lt_dladdsearchdir (".");
+      if (errors)
+	{
+	  A4GL_debug ("lt_dladdsearchdir fails : %s", lt_dlerror ());
+	}
 #endif
 
 
 
-  }
+    }
 
 
 
@@ -204,18 +229,18 @@ A4GL_dl_openlibrary (char *type, char *p)
          have to store it to be able to use it twice */
       SPRINTF1 (buff2, "%s", lt_dlerror ());
 
-      PRINTF ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
-      PRINTF ("Error msg: %s\n", A4GL_null_as_null(buff2));
+      PRINTF ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null (buff));
+      PRINTF ("Error msg: %s\n", A4GL_null_as_null (buff2));
 
-      A4GL_debug ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null(buff));
-      A4GL_debug ("Error msg: %s\n", A4GL_null_as_null(buff2));
+      A4GL_debug ("Error: can't open DLL %s - STOP\n", A4GL_null_as_null (buff));
+      A4GL_debug ("Error msg: %s\n", A4GL_null_as_null (buff2));
 
       A4GL_exitwith ("Error: can't open DLL - STOP. See debug.out");
       //FIXME: why is A4GL_exitwith not exiting???
-	A4GL_fgl_die_with_msg(44,"Cannot open DLL");
+      A4GL_fgl_die_with_msg (44, "Cannot open DLL");
 
     }
-  A4GL_debug("Associating handle %p with dll %s,%s",dllhandle,type,p);
+  A4GL_debug ("Associating handle %p with dll %s,%s", dllhandle, type, p);
   return dllhandle;
 }
 
@@ -235,11 +260,11 @@ A4GL_dl_openlibrary (char *type, char *p)
 void *
 A4GL_find_func (void *v_dllhandle, char *func)
 {
-	char tempbuff[256];
-	lt_dlhandle handle;
-	handle=v_dllhandle;
+  char tempbuff[256];
+  lt_dlhandle handle;
+  handle = v_dllhandle;
 
-  	int (*func_ptr) (void);
+  int (*func_ptr) (void);
 
 
 /*
@@ -250,35 +275,35 @@ A4GL_find_func (void *v_dllhandle, char *func)
  see $AUBITDIR/libltdl/ltdl.c
 */
 
-  strcpy(tempbuff,func);
-  inc_usage(func);
+  strcpy (tempbuff, func);
+  inc_usage (func);
 
-  A4GL_debug ("35 find_func: Finding pointer to DLL function %s\n", A4GL_null_as_null(tempbuff));
+  A4GL_debug ("35 find_func: Finding pointer to DLL function %s\n", A4GL_null_as_null (tempbuff));
 
   if (handle == 0)
     {
-      A4GL_debug ("Not found - bad handle (%s)",func);
+      A4GL_debug ("Not found - bad handle (%s)", func);
       A4GL_exitwith ("Could not open shared library");
       return badfunc;
     }
 
-  A4GL_debug("Finding %s in %p",tempbuff,handle);
+  A4GL_debug ("Finding %s in %p", tempbuff, handle);
 
   func_ptr = lt_dlsym (handle, tempbuff);
   A4GL_debug ("35 Got %p", func_ptr);
-  if ((void *)func_ptr == (void *)0)
+  if ((void *) func_ptr == (void *) 0)
     {
-	char buff[256];
-      	A4GL_debug ("1 Function Not found : %s dll : %p",tempbuff,handle);
-	A4GL_debug("-->%s\n",lt_dlerror());
-      	A4GL_exitwith ("Could not find function in shared library");
-	SPRINTF1(buff,"Error:Could not find function in shared library (%s)- STOP",func);
-      	A4GL_fgl_die_with_msg(43,buff);
-	return badfunc;
+      char buff[256];
+      A4GL_debug ("1 Function Not found : %s dll : %p", tempbuff, handle);
+      A4GL_debug ("-->%s\n", lt_dlerror ());
+      A4GL_exitwith ("Could not find function in shared library");
+      SPRINTF1 (buff, "Error:Could not find function in shared library (%s)- STOP", func);
+      A4GL_fgl_die_with_msg (43, buff);
+      return badfunc;
     }
 
 
-  return (void *)func_ptr;
+  return (void *) func_ptr;
 }
 
 /**
@@ -293,12 +318,10 @@ void *
 A4GL_find_func_double (void *v_dllhandle, char *func)
 {
   double (*func_ptr) (void);
-	lt_dlhandle handle;
-	handle=v_dllhandle;
-inc_usage(func);
-  A4GL_debug
-    ("find_func_double: Finding pointer to DLL function %s which returns a double\n",
-     func);
+  lt_dlhandle handle;
+  handle = v_dllhandle;
+  inc_usage (func);
+  A4GL_debug ("find_func_double: Finding pointer to DLL function %s which returns a double\n", func);
 
   SPRINTF1 (tempbuff, "%s", func);
 
@@ -307,11 +330,11 @@ inc_usage(func);
     {
       A4GL_debug ("Not found - bad handle");
       A4GL_exitwith ("Could not open share library");
-      return (void *)badfunc;
+      return (void *) badfunc;
     }
 
 
-  A4GL_debug("Finding %s in %p",tempbuff,handle);
+  A4GL_debug ("Finding %s in %p", tempbuff, handle);
   func_ptr = lt_dlsym (handle, tempbuff);
 
   A4GL_debug ("Got %p", func_ptr);
@@ -319,9 +342,9 @@ inc_usage(func);
     {
       A4GL_debug ("Function Not found");
       A4GL_exitwith ("Could not find function in shared library");
-      return (void *)badfunc;
+      return (void *) badfunc;
     }
-  return (void *)func_ptr;
+  return (void *) func_ptr;
 }
 
 /**
@@ -332,30 +355,30 @@ void *
 A4GL_find_func_allow_missing (void *v_dllhandle, char *func)
 {
   int (*func_ptr) (void);
-	lt_dlhandle handle;
-	handle=v_dllhandle;
+  lt_dlhandle handle;
+  handle = v_dllhandle;
 
-  inc_usage(func);
-  strcpy(tempbuff,func);
+  inc_usage (func);
+  strcpy (tempbuff, func);
 
-  A4GL_debug ("find_func_allow_missing: Finding pointer to DLL function %s\n",
-	 A4GL_null_as_null(func));
+  A4GL_debug ("find_func_allow_missing: Finding pointer to DLL function %s\n", A4GL_null_as_null (func));
 
 
   if (handle == 0)
     {
       /*  A4GL_exitwith ("2: Non-existing function (%s) called in DLL",func); */
-      return (void *)&badfunc;
+      return (void *) &badfunc;
     }
-  A4GL_debug("Finding %s in %p",tempbuff,handle);
+  A4GL_debug ("Finding %s in %p", tempbuff, handle);
   func_ptr = lt_dlsym (handle, tempbuff);
 
-  if ((void *)func_ptr == (void *)0) {
-	  A4GL_debug("Not found - but I don't care");
-    return (void *)&A4GL_nullfunc;
+  if ((void *) func_ptr == (void *) 0)
+    {
+      A4GL_debug ("Not found - but I don't care");
+      return (void *) &A4GL_nullfunc;
     }
-  A4GL_debug("Found !");
-  return (void *)func_ptr;
+  A4GL_debug ("Found !");
+  return (void *) func_ptr;
 }
 
 
@@ -378,30 +401,32 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   lt_dlhandle handle;
 
 
-  A4GL_debug("Call 4gl dll : %s %s %d",filename,function,args);
+  A4GL_debug ("Call 4gl dll : %s %s %d", filename, function, args);
 
   A4GLSQL_set_status (0, 0);
   strcpy (nfile, filename);
 
-  if (strncmp(nfile,"a4gl_",5)==0) { /* Do upshift on A4GL */
-	nfile[0]='A';
-	nfile[1]='4';
-	nfile[2]='G';
-	nfile[3]='L';
-  }
-A4GL_debug("nfile=%s\n",A4GL_null_as_null(nfile));
+  if (strncmp (nfile, "a4gl_", 5) == 0)
+    {				/* Do upshift on A4GL */
+      nfile[0] = 'A';
+      nfile[1] = '4';
+      nfile[2] = 'G';
+      nfile[3] = 'L';
+    }
+  A4GL_debug ("nfile=%s\n", A4GL_null_as_null (nfile));
 
-strcpy(nfunc,"");
-if (strncmp(function,"aclfglclass",11)!=0)  {
-  strcpy (nfunc, "aclfgl_");
-}
+  strcpy (nfunc, "");
+  if (strncmp (function, "aclfglclass", 11) != 0)
+    {
+      strcpy (nfunc, "aclfgl_");
+    }
 
   strcat (nfunc, function);
   A4GL_trim (nfunc);
   A4GL_trim (nfile);
-  A4GL_debug ("Calling %s in file %s with %d args", A4GL_null_as_null(nfunc), A4GL_null_as_null(nfile), args);
+  A4GL_debug ("Calling %s in file %s with %d args", A4GL_null_as_null (nfunc), A4GL_null_as_null (nfile), args);
 
-  A4GL_debug ("Trying %s", A4GL_null_as_null(filename));
+  A4GL_debug ("Trying %s", A4GL_null_as_null (filename));
 
   handle = lt_dlopen (filename);
 
@@ -412,7 +437,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
       return -1;
     }
 
-  A4GL_debug("Finding %s in %p",nfunc,handle);
+  A4GL_debug ("Finding %s in %p", nfunc, handle);
   func_ptr = lt_dlsym (handle, nfunc);
 
   if (func_ptr == NULL)
@@ -439,36 +464,38 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
  * @param args The arguments ???
  */
 int
-A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind)
+A4GL_call_4gl_dll_bound (char *filename, char *function, int ni, struct BINDING *ibind, int no, struct BINDING *obind)
 {
   lt_dlhandle handle;
   //char buff[512];
   char nfunc[256];
   char nfile[256];
-  int (*func_ptr_b) (int,void*,int,void*);
+  int (*func_ptr_b) (int, void *, int, void *);
   int a;
-  A4GL_debug("Call 4gl dll bound : %s %s %d %d",filename,function,ni,no);
+  A4GL_debug ("Call 4gl dll bound : %s %s %d %d", filename, function, ni, no);
 
   A4GLSQL_set_status (0, 0);
   strcpy (nfile, filename);
 
-  if (strncmp(nfile,"a4gl_",5)==0) { /* Do upshift on A4GL */
-	nfile[0]='A';
-	nfile[1]='4';
-	nfile[2]='G';
-	nfile[3]='L';
-  }
-A4GL_debug("nfile=%s\n",A4GL_null_as_null(nfile));
+  if (strncmp (nfile, "a4gl_", 5) == 0)
+    {				/* Do upshift on A4GL */
+      nfile[0] = 'A';
+      nfile[1] = '4';
+      nfile[2] = 'G';
+      nfile[3] = 'L';
+    }
+  A4GL_debug ("nfile=%s\n", A4GL_null_as_null (nfile));
 
-strcpy(nfunc,"");
-if (strncmp(function,"aclfglclass",11)!=0)  {
-  strcpy (nfunc, "aclfgl_");
-}
+  strcpy (nfunc, "");
+  if (strncmp (function, "aclfglclass", 11) != 0)
+    {
+      strcpy (nfunc, "aclfgl_");
+    }
   strcat (nfunc, function);
   A4GL_trim (nfunc);
   A4GL_trim (nfile);
 
-  A4GL_debug ("Trying %s", A4GL_null_as_null(filename));
+  A4GL_debug ("Trying %s", A4GL_null_as_null (filename));
   handle = lt_dlopenext (filename);
 
 
@@ -479,7 +506,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
       return -1;
     }
 
-  A4GL_debug("Finding %s in %p",nfunc,handle);
+  A4GL_debug ("Finding %s in %p", nfunc, handle);
   func_ptr_b = lt_dlsym (handle, nfunc);
 
   if (func_ptr_b == NULL)
@@ -490,7 +517,7 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
     }
 
   A4GL_debug ("Calling function");
-  a = func_ptr_b (ni,ibind,no,obind);
+  a = func_ptr_b (ni, ibind, no, obind);
   return a;
 
 }
@@ -499,18 +526,23 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
 
 
 #define TRACE_DLL_CALLS
-void inc_usage (char *s) {
-static FILE *usg=0;
+void
+inc_usage (char *s)
+{
+  static FILE *usg = 0;
 #ifdef TRACE_DLL_CALLS
-if (A4GL_isyes(acl_getenv("TRACEDLL"))) {
-	if (usg==0) {
-		usg=fopen("trace.txt","w");
+  if (A4GL_isyes (acl_getenv ("TRACEDLL")))
+    {
+      if (usg == 0)
+	{
+	  usg = fopen ("trace.txt", "w");
 	}
 
-	if (usg!=0) {
-		FPRINTF(usg,"%s\n",s);
+      if (usg != 0)
+	{
+	  FPRINTF (usg, "%s\n", s);
 	}
-}
+    }
 #endif
 }
 

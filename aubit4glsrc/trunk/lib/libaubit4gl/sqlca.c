@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlca.c,v 1.8 2008-07-06 11:34:33 mikeaubury Exp $
+# $Id: sqlca.c,v 1.9 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -69,39 +69,46 @@ A4GL_get_a4gl_sqlca_sqlcode (void)
   return a4gl_sqlca.sqlcode;
 }
 
-int A4GL_set_a4gl_sqlca_errd(int n,int v) {
-	a4gl_sqlca.sqlerrd[n]=v;
-	return 0;
+int
+A4GL_set_a4gl_sqlca_errd (int n, int v)
+{
+  a4gl_sqlca.sqlerrd[n] = v;
+  return 0;
 }
 
 
-int A4GL_set_a4gl_sqlca_sqlstate(char *s) {
-	strcpy(a4gl_sqlca.sqlstate,s);
-	return 0;
+int
+A4GL_set_a4gl_sqlca_sqlstate (char *s)
+{
+  strcpy (a4gl_sqlca.sqlstate, s);
+  return 0;
 }
 
-void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7) {
+void
+A4GL_copy_sqlca_sqlawarn_8chars (char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7)
+{
 
-a4gl_sqlca.sqlawarn[0]=c0;
-a4gl_sqlca.sqlawarn[1]=c1;
-a4gl_sqlca.sqlawarn[2]=c2;
-a4gl_sqlca.sqlawarn[3]=c3;
-a4gl_sqlca.sqlawarn[4]=c4;
-a4gl_sqlca.sqlawarn[5]=c5;
-a4gl_sqlca.sqlawarn[6]=c6;
-a4gl_sqlca.sqlawarn[7]=c7;
-a4gl_sqlca.sqlawarn[8]=0;
+  a4gl_sqlca.sqlawarn[0] = c0;
+  a4gl_sqlca.sqlawarn[1] = c1;
+  a4gl_sqlca.sqlawarn[2] = c2;
+  a4gl_sqlca.sqlawarn[3] = c3;
+  a4gl_sqlca.sqlawarn[4] = c4;
+  a4gl_sqlca.sqlawarn[5] = c5;
+  a4gl_sqlca.sqlawarn[6] = c6;
+  a4gl_sqlca.sqlawarn[7] = c7;
+  a4gl_sqlca.sqlawarn[8] = 0;
 }
 
-void A4GL_copy_sqlca_sqlawarn_string8( char *c) {
-a4gl_sqlca.sqlawarn[0]=c[0];
-a4gl_sqlca.sqlawarn[1]=c[1];
-a4gl_sqlca.sqlawarn[2]=c[2];
-a4gl_sqlca.sqlawarn[3]=c[3];
-a4gl_sqlca.sqlawarn[4]=c[4];
-a4gl_sqlca.sqlawarn[5]=c[5];
-a4gl_sqlca.sqlawarn[6]=c[6];
-a4gl_sqlca.sqlawarn[7]=c[7];
-a4gl_sqlca.sqlawarn[8]=0;
+void
+A4GL_copy_sqlca_sqlawarn_string8 (char *c)
+{
+  a4gl_sqlca.sqlawarn[0] = c[0];
+  a4gl_sqlca.sqlawarn[1] = c[1];
+  a4gl_sqlca.sqlawarn[2] = c[2];
+  a4gl_sqlca.sqlawarn[3] = c[3];
+  a4gl_sqlca.sqlawarn[4] = c[4];
+  a4gl_sqlca.sqlawarn[5] = c[5];
+  a4gl_sqlca.sqlawarn[6] = c[6];
+  a4gl_sqlca.sqlawarn[7] = c[7];
+  a4gl_sqlca.sqlawarn[8] = 0;
 }
-

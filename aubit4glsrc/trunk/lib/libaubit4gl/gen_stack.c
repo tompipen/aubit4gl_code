@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.7 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.8 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -57,37 +57,48 @@
 #include "a4gl_gen_stack.h"
 #define FEATURE_USED            'X'
 
-void A4GL_4glc_clr_gen(int stk_no) {
-	int c;
-		for (c=0;c<gen_stack_cnt[stk_no];c++) {
-				if (gen_stack_ptr[stk_no][c]) {
-						free(gen_stack_ptr[stk_no][c]);
-						gen_stack_ptr[stk_no][c]=0;
-				}
-					
-		}
-	free(gen_stack_ptr[stk_no]);
-	gen_stack_ptr[stk_no]=0;
-	gen_stack_alloc[stk_no]=0;
-	gen_stack_cnt[stk_no]=0;
-
-}
-
-int A4GL_4glc_gen_cnt(int a) {
-		return gen_stack_cnt[a];
-}
-
-char *A4GL_4glc_get_gen(int a,int n) {
-		return gen_stack_ptr[a][n];
-}
-
-void A4GL_init_gen_stack(void) {
-	int c;
-	for (c=0;c<GEN_STACKS;c++) {
-			gen_stack_ptr[c]=0;
-			gen_stack_cnt[c]=0;
-			gen_stack_alloc[c]=0;
+void
+A4GL_4glc_clr_gen (int stk_no)
+{
+  int c;
+  for (c = 0; c < gen_stack_cnt[stk_no]; c++)
+    {
+      if (gen_stack_ptr[stk_no][c])
+	{
+	  free (gen_stack_ptr[stk_no][c]);
+	  gen_stack_ptr[stk_no][c] = 0;
 	}
+
+    }
+  free (gen_stack_ptr[stk_no]);
+  gen_stack_ptr[stk_no] = 0;
+  gen_stack_alloc[stk_no] = 0;
+  gen_stack_cnt[stk_no] = 0;
+
+}
+
+int
+A4GL_4glc_gen_cnt (int a)
+{
+  return gen_stack_cnt[a];
+}
+
+char *
+A4GL_4glc_get_gen (int a, int n)
+{
+  return gen_stack_ptr[a][n];
+}
+
+void
+A4GL_init_gen_stack (void)
+{
+  int c;
+  for (c = 0; c < GEN_STACKS; c++)
+    {
+      gen_stack_ptr[c] = 0;
+      gen_stack_cnt[c] = 0;
+      gen_stack_alloc[c] = 0;
+    }
 }
 
 /**
@@ -99,22 +110,27 @@ void
 A4GL_4glc_push_gen (int a, char *s)
 {
   int c;
-  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
-  c=gen_stack_cnt[a];
+  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null (s), gen_stack_cnt[a]);
+  c = gen_stack_cnt[a];
 
-  if (c>=gen_stack_alloc[a] || gen_stack_ptr[a]==0) { // Allocate some more space...
-	  int d;
-	  gen_stack_alloc[a]+=1024;
-	  A4GL_debug("Allocating more space for generic stack %d (%d rows)",a,gen_stack_alloc[a]);
-	  gen_stack_ptr[a]=realloc(gen_stack_ptr[a],gen_stack_alloc[a]*sizeof(char *));
-	  for (d=gen_stack_cnt[a];d<gen_stack_alloc[a];d++) gen_stack_ptr[a][d]=0;
-  }
+  if (c >= gen_stack_alloc[a] || gen_stack_ptr[a] == 0)
+    {				// Allocate some more space...
+      int d;
+      gen_stack_alloc[a] += 1024;
+      A4GL_debug ("Allocating more space for generic stack %d (%d rows)", a, gen_stack_alloc[a]);
+      gen_stack_ptr[a] = realloc (gen_stack_ptr[a], gen_stack_alloc[a] * sizeof (char *));
+      for (d = gen_stack_cnt[a]; d < gen_stack_alloc[a]; d++)
+	gen_stack_ptr[a][d] = 0;
+    }
 
-  if (s==0) {
-  	gen_stack_ptr[a][gen_stack_cnt[a]++]=0;
-  } else {
-  	gen_stack_ptr[a][gen_stack_cnt[a]++]=strdup(s);
-  }
+  if (s == 0)
+    {
+      gen_stack_ptr[a][gen_stack_cnt[a]++] = 0;
+    }
+  else
+    {
+      gen_stack_ptr[a][gen_stack_cnt[a]++] = strdup (s);
+    }
 }
 
 
@@ -141,11 +157,12 @@ A4GL_4glc_copy_gen (int a, int b)
 char *
 A4GL_4glc_pop_gen (int a)
 {
-  static char *last=0;
-  if (last) free(last);
+  static char *last = 0;
+  if (last)
+    free (last);
   gen_stack_cnt[a]--;
-  last=strdup(gen_stack_ptr[a][gen_stack_cnt[a]]);
-  free(gen_stack_ptr[a][gen_stack_cnt[a]]);
+  last = strdup (gen_stack_ptr[a][gen_stack_cnt[a]]);
+  free (gen_stack_ptr[a][gen_stack_cnt[a]]);
   return last;
 }
 
@@ -161,10 +178,11 @@ A4GL_4glc_pop_all_gen (int a, char *s)
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
-      if (z > 0) A4GL_debug ("%s ", A4GL_null_as_null(s));
-      A4GL_debug ("%s", A4GL_null_as_null(gen_stack_ptr[a][z]));
+      if (z > 0)
+	A4GL_debug ("%s ", A4GL_null_as_null (s));
+      A4GL_debug ("%s", A4GL_null_as_null (gen_stack_ptr[a][z]));
     }
-  A4GL_4glc_clr_gen(a);
+  A4GL_4glc_clr_gen (a);
   //gen_stack_cnt[a] = 0;
 }
 
@@ -172,7 +190,7 @@ void
 A4GL_4glc_dump_updvals (void)
 {
   int a;
-  PRINTF("UPDCOL=%d UPDVAL=%d UPDVAL2=%d\n",UPDCOL,UPDVAL,UPDVAL2);
+  PRINTF ("UPDCOL=%d UPDVAL=%d UPDVAL2=%d\n", UPDCOL, UPDVAL, UPDVAL2);
   for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
     {
       PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack_ptr[UPDCOL][a]);
@@ -180,11 +198,11 @@ A4GL_4glc_dump_updvals (void)
 
   for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
     {
-      PRINTF ("UPDVAL[%d] : %s\n", a,gen_stack_ptr[UPDVAL][a]);
+      PRINTF ("UPDVAL[%d] : %s\n", a, gen_stack_ptr[UPDVAL][a]);
     }
   for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
     {
-      PRINTF ("UPDVAL2[%d]: %s\n", a,gen_stack_ptr[UPDVAL2][a]);
+      PRINTF ("UPDVAL2[%d]: %s\n", a, gen_stack_ptr[UPDVAL2][a]);
     }
 }
 

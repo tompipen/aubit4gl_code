@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.32 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: datatypes.c,v 1.33 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -107,8 +107,7 @@ static void *libptr = 0;
 extern void A4GL_add_default_operations (void);	/* in ops.c */
 void A4GL_add_default_datatypes (void);
 static int (*A4GL_func_dt) (void);
-int A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname,
-			      int nparam);
+int A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam);
 
 
 /*
@@ -209,7 +208,8 @@ int
 A4GL_has_datatype_function_i (int a, char *funcname)
 {
   int n;
-  if (!inited) A4GL_init_datatypes ();
+  if (!inited)
+    A4GL_init_datatypes ();
   a = a & DTYPE_MASK;
 
   //printf("DTPE %d  %s\n", a,funcname);
@@ -292,7 +292,7 @@ A4GL_find_datatype_out (char *name)
 	  char *(*function) (void);
 	  function = A4GL_get_datatype_function_i (a, "OUTPUT");
 	  A4GL_debug ("Got function as %p - comparing %s and %s", function,
-		 A4GL_null_as_null(function ()), A4GL_null_as_null(name));
+		      A4GL_null_as_null (function ()), A4GL_null_as_null (name));
 	  if (A4GL_aubit_strcasecmp (function (), name) == 0)
 	    return a;
 	}
@@ -314,7 +314,7 @@ A4GL_find_datatype (char *name)
   if (!inited)
     A4GL_init_datatypes ();
 
-A4GL_debug("Find datatype : %s\n",name);
+  A4GL_debug ("Find datatype : %s\n", name);
 
   for (a = 0; a < MAX_DTYPE; a++)
     {
@@ -322,7 +322,7 @@ A4GL_debug("Find datatype : %s\n",name);
       if (dtypes[a].name == 0)
 	continue;
 
-A4GL_debug("Find datatype : %s = %s ? \n",name,dtypes[a].name);
+      A4GL_debug ("Find datatype : %s = %s ? \n", name, dtypes[a].name);
       if (A4GL_aubit_strcasecmp (dtypes[a].name, name) == 0)
 	{
 	  return a;
@@ -343,14 +343,11 @@ A4GL_add_datatype_function_i (int a, char *funcname, void *func)
 {
   if (!inited)
     A4GL_init_datatypes ();
-  A4GL_debug ("Adding function %s to datatype %d (%p)", A4GL_null_as_null(funcname), a, func);
+  A4GL_debug ("Adding function %s to datatype %d (%p)", A4GL_null_as_null (funcname), a, func);
 
-  dtypes[a].funcs = realloc (dtypes[a].funcs,
-			     (dtypes[a].funcs_len +
-			      1) * sizeof (struct dtype_functions *));
+  dtypes[a].funcs = realloc (dtypes[a].funcs, (dtypes[a].funcs_len + 1) * sizeof (struct dtype_functions *));
 
-  dtypes[a].funcs[dtypes[a].funcs_len] =
-    acl_malloc2 (sizeof (struct dtype_functions));
+  dtypes[a].funcs[dtypes[a].funcs_len] = acl_malloc2 (sizeof (struct dtype_functions));
   dtypes[a].funcs[dtypes[a].funcs_len]->name = funcname;
   dtypes[a].funcs[dtypes[a].funcs_len]->function = func;
 
@@ -371,9 +368,8 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
   char buff[256];
   int nret;
 
-  A4GL_debug ("in call_datatype_function obj=%p dtype=%d funcname=%s nparam=%d",
-	 obj, dtype, A4GL_null_as_null(funcname), nparam);
-  SPRINTF1 (buff, ":%s", A4GL_null_as_null(funcname));
+  A4GL_debug ("in call_datatype_function obj=%p dtype=%d funcname=%s nparam=%d", obj, dtype, A4GL_null_as_null (funcname), nparam);
+  SPRINTF1 (buff, ":%s", A4GL_null_as_null (funcname));
 
   if (!inited)
     A4GL_init_datatypes ();
@@ -381,9 +377,10 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
 
   ptr = A4GL_get_datatype_function_i (dtype, buff);
 
-  if (ptr==0) {
-  	ptr = A4GL_get_datatype_function_i (dtype & DTYPE_MASK, buff);
-  }
+  if (ptr == 0)
+    {
+      ptr = A4GL_get_datatype_function_i (dtype & DTYPE_MASK, buff);
+    }
   if (ptr == 0)
     {
       A4GL_exitwith ("Unable to find function");
@@ -408,7 +405,7 @@ A4GL_add_datatype_function_n (char *name, char *funcname, void *func)
   int a;
   if (!inited)
     A4GL_init_datatypes ();
-  A4GL_debug ("Add_datatype_function_n : %s %s %p", A4GL_null_as_null(name), A4GL_null_as_null(funcname), func);
+  A4GL_debug ("Add_datatype_function_n : %s %s %p", A4GL_null_as_null (name), A4GL_null_as_null (funcname), func);
   a = A4GL_find_datatype (name);
   if (a == -1)
     return 0;
@@ -477,7 +474,7 @@ A4GL_add_conversion (char *from, char *to, void *func)
       A4GL_debug ("Unable to resolve either from or to");
       return;
     }
-  A4GL_debug ("Adding conversion from %s(%d) to %s(%d) with %p", A4GL_null_as_null(from), a, A4GL_null_as_null(to), b, func);
+  A4GL_debug ("Adding conversion from %s(%d) to %s(%d) with %p", A4GL_null_as_null (from), a, A4GL_null_as_null (to), b, func);
   A4GL_set_convmatrix (a, b, func);
 
 }
@@ -531,12 +528,10 @@ aclfgl_load_datatype (int nargs)
   return 0;
 }
 
-int A4GL_is_numeric_datatype(int dtype)
+int
+A4GL_is_numeric_datatype (int dtype)
 {
-    return  dtype == DTYPE_DECIMAL ||
-	    dtype == DTYPE_FLOAT ||
-	    dtype == DTYPE_SMFLOAT ||
-	    dtype == DTYPE_MONEY;
+  return dtype == DTYPE_DECIMAL || dtype == DTYPE_FLOAT || dtype == DTYPE_SMFLOAT || dtype == DTYPE_MONEY;
 }
 
 /* =============================== EOF ================================ */

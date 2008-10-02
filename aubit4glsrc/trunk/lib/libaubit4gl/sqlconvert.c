@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.157 2008-09-25 13:40:06 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.158 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -46,8 +46,8 @@
 static char *get_dollared_sql_var (char *s);
 static char *A4GL_cv_next_token (char *p, int *len, int dot);
 static char *A4GL_space_out (char *s);
-int is_compile_time_convert=1;
-char lastFieldData[256]="";
+int is_compile_time_convert = 1;
+char lastFieldData[256] = "";
 
 /*
 =====================================================================
@@ -65,30 +65,31 @@ static void load_column_mappings_i (char *ptr);
 static void load_table_mappings_i (char *ptr);
 char fake_rowid_column[256];
 static int loaded_columns = 0;
-void chk_loaded_mappings(void) ;
-static char * A4GLSQLCV_datetime_value_internal (char *s,char *from, char*to);
-static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to);
+void chk_loaded_mappings (void);
+static char *A4GLSQLCV_datetime_value_internal (char *s, char *from, char *to);
+static char *A4GLSQLCV_interval_value_internal (char *s, char *from, char *to);
 
-int if_stack[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int if_stack_cnt=0;
+int if_stack[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+int if_stack_cnt = 0;
 
-static int match_strncasecmp(char *s1,char *s2,int len);
+static int match_strncasecmp (char *s1, char *s2, int len);
 #include "generated/sql_convert_constants.h"
 
-enum cond_conditions {
-	COND_NOT_SET,
-	INT_EQ,
-	INT_NE,
-	INT_LE,
-	INT_GE,
-	INT_LT,
-	INT_GT,
-	STR_EQ,
-	STR_NE,
-	STR_LE,
-	STR_GE,
-	STR_LT,
-	STR_GT,
+enum cond_conditions
+{
+  COND_NOT_SET,
+  INT_EQ,
+  INT_NE,
+  INT_LE,
+  INT_GE,
+  INT_LT,
+  INT_GT,
+  STR_EQ,
+  STR_NE,
+  STR_LE,
+  STR_GE,
+  STR_LT,
+  STR_GT,
 };
 
 
@@ -168,15 +169,16 @@ void A4GL_cv_delchstr (char *p, int n);
 char *A4GL_cv_unqstrstr (char *str, char *word);
 char *A4GL_cv_lastnonblank (char *str);
 
-long last_cnt=0;
+long last_cnt = 0;
 
-struct save_queries {
-	char *fromsql;
-	char *tosql;
-	int last_cnt;
-} ;
+struct save_queries
+{
+  char *fromsql;
+  char *tosql;
+  int last_cnt;
+};
 
-int init_saved_queries=1;
+int init_saved_queries = 1;
 
 
 #define NUM_SAVED_QUERIES 100
@@ -191,93 +193,107 @@ struct save_queries saved_queries[NUM_SAVED_QUERIES];
 */
 
 
-static void do_init_saved_queries(void) {
-	int  a;
-		init_saved_queries=0;
-	for (a=0;a<NUM_SAVED_QUERIES;a++) {
-		saved_queries[a].fromsql=0;
-		saved_queries[a].tosql=0;
-		saved_queries[a].last_cnt=-1;
-	}
+static void
+do_init_saved_queries (void)
+{
+  int a;
+  init_saved_queries = 0;
+  for (a = 0; a < NUM_SAVED_QUERIES; a++)
+    {
+      saved_queries[a].fromsql = 0;
+      saved_queries[a].tosql = 0;
+      saved_queries[a].last_cnt = -1;
+    }
 }
 
 
 
 
-static void add_query(char *fromsql,char *tosql) {
-int a;
-int low_cnt=-1;
-int low_cnt_a=-1;
-	for (a=0;a<NUM_SAVED_QUERIES;a++) {
-		if (saved_queries[a].fromsql==0) {
-				saved_queries[a].fromsql=strdup(fromsql);
-				saved_queries[a].tosql=strdup(tosql);
-				saved_queries[a].last_cnt=last_cnt++;
-				return ;
-		}
-		if (low_cnt==-1 || saved_queries[a].last_cnt<low_cnt) {
-			low_cnt=saved_queries[a].last_cnt;
-			low_cnt_a=a;
-		}
+static void
+add_query (char *fromsql, char *tosql)
+{
+  int a;
+  int low_cnt = -1;
+  int low_cnt_a = -1;
+  for (a = 0; a < NUM_SAVED_QUERIES; a++)
+    {
+      if (saved_queries[a].fromsql == 0)
+	{
+	  saved_queries[a].fromsql = strdup (fromsql);
+	  saved_queries[a].tosql = strdup (tosql);
+	  saved_queries[a].last_cnt = last_cnt++;
+	  return;
 	}
-	A4GL_assertion(low_cnt_a==-1,"Ooops");
-	A4GL_assertion(low_cnt==-1,"Ooops");
+      if (low_cnt == -1 || saved_queries[a].last_cnt < low_cnt)
+	{
+	  low_cnt = saved_queries[a].last_cnt;
+	  low_cnt_a = a;
+	}
+    }
+  A4GL_assertion (low_cnt_a == -1, "Ooops");
+  A4GL_assertion (low_cnt == -1, "Ooops");
 
-	acl_free(saved_queries[low_cnt_a].fromsql);
-	acl_free(saved_queries[low_cnt_a].tosql);
-	saved_queries[low_cnt_a].fromsql=strdup(fromsql);
-	saved_queries[low_cnt_a].tosql=strdup(tosql);
-	saved_queries[low_cnt_a].last_cnt=last_cnt++;
+  acl_free (saved_queries[low_cnt_a].fromsql);
+  acl_free (saved_queries[low_cnt_a].tosql);
+  saved_queries[low_cnt_a].fromsql = strdup (fromsql);
+  saved_queries[low_cnt_a].tosql = strdup (tosql);
+  saved_queries[low_cnt_a].last_cnt = last_cnt++;
 }
 
 
 
 
 
-static int has_query(char *s,char **cp) {
-	int a;
-	if (init_saved_queries) {
-		do_init_saved_queries();
-		return 0;
-	}
+static int
+has_query (char *s, char **cp)
+{
+  int a;
+  if (init_saved_queries)
+    {
+      do_init_saved_queries ();
+      return 0;
+    }
 
-	for (a=0;a<NUM_SAVED_QUERIES;a++) {
-		if (saved_queries[a].fromsql==0) continue;
+  for (a = 0; a < NUM_SAVED_QUERIES; a++)
+    {
+      if (saved_queries[a].fromsql == 0)
+	continue;
 
-		if  (strcmp(saved_queries[a].fromsql,s)==0) {
-			saved_queries[a].last_cnt=last_cnt++;
-			*cp=saved_queries[a].tosql;
-			return 1;
-		}
+      if (strcmp (saved_queries[a].fromsql, s) == 0)
+	{
+	  saved_queries[a].last_cnt = last_cnt++;
+	  *cp = saved_queries[a].tosql;
+	  return 1;
 	}
-	return 0;
+    }
+  return 0;
 }
 
 
 char *
-A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int converted)
+A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, int converted)
 {
   char *sql_new;
   char *sql;
-  int cache ;
+  int cache;
   //int converted=0;
 
   //int a;
   sql = sqlx;
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
 
-  cache = A4GL_isyes(acl_getenv("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
-  if (cache && has_query(sqlx,&sql_new)) {
-	return sql_new;
-  }
+  cache = A4GL_isyes (acl_getenv ("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
+  if (cache && has_query (sqlx, &sql_new))
+    {
+      return sql_new;
+    }
 
-  if (strcmp (source_dialect, target_dialect) == 0
-      && (!A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
+  if (strcmp (source_dialect, target_dialect) == 0 && (!A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
     {
       return sql;
     }
 
-  if (A4GLSQLCV_check_requirement("NEVER_CONVERT"))
+  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
     {
       return sql;
     }
@@ -302,9 +318,10 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
 	}
 
       A4GL_debug ("Translates to %s", sql_new);
-      if (converted!=1) {
-      	sql_new = A4GLSQLCV_check_sql (sql_new,&converted);
-      }
+      if (converted != 1)
+	{
+	  sql_new = A4GLSQLCV_check_sql (sql_new, &converted);
+	}
       if (sql_new == 0)
 	{
 	  A4GL_assertion (1, "Failed to convert SQL (2)");
@@ -319,7 +336,7 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx,int
   A4GL_debug ("check_sql.. %s", sql_new);
 
   if (cache)
-      add_query(sqlx,sql_new);
+    add_query (sqlx, sql_new);
   return sql_new;
 }
 
@@ -427,18 +444,20 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
   A4GL_debug ("Load convert : %s %s", source_dialect, target_dialect);
 
-  if (!A4GL_isno(acl_getenv("COMPILETIMEFIX"))) {
-  	// The following function will return 0 
-  	// IFF - we're compiling 
-  	//       AND we're not compiling to ESQL/C code
-  	if (!A4GL_compile_time_convert())  return;
-  }
+  if (!A4GL_isno (acl_getenv ("COMPILETIMEFIX")))
+    {
+      // The following function will return 0 
+      // IFF - we're compiling 
+      //       AND we're not compiling to ESQL/C code
+      if (!A4GL_compile_time_convert ())
+	return;
+    }
 
   if (!A4GL_has_pointer (buff, SQL_CONVERSION))
     {
       A4GL_cv_fnlist (source_dialect, target_dialect, buff);
     }
-  
+
 
   current_conversion_rules = A4GL_find_pointer (buff, SQL_CONVERSION);
   current_conversion_rules_cnt = (long) A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
@@ -446,23 +465,27 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 
 
 
-static FILE *cnfopen(char *path,char *buff_sm) {
-FILE *f;
-char buff[512];
-sprintf(buff,"%s%s",path,buff_sm);
-A4GL_debug("Trying to cnfopen %s", buff);
-f=fopen(buff,"r");
-A4GL_debug("Trying to cnfopen %s - f=%p", buff,f);
-return f;
+static FILE *
+cnfopen (char *path, char *buff_sm)
+{
+  FILE *f;
+  char buff[512];
+  sprintf (buff, "%s%s", path, buff_sm);
+  A4GL_debug ("Trying to cnfopen %s", buff);
+  f = fopen (buff, "r");
+  A4GL_debug ("Trying to cnfopen %s - f=%p", buff, f);
+  return f;
 }
 
 
-static void read_conversion_file(FILE *fh,char *name) {
+static void
+read_conversion_file (FILE * fh, char *name)
+{
   char buff[201];
   char *t;
   int len;
-int line=0;
-char thisline[2000];
+  int line = 0;
+  char thisline[2000];
   static struct cvsql_data *conversion_rules = 0;
   static int conversion_rules_cnt = 0;
 
@@ -472,219 +495,310 @@ char thisline[2000];
    */
   while (fgets (buff, 200, fh))
     {
-	line++;
+      line++;
       if ((t = A4GL_cv_next_token (buff, &len, 0)) == NULL)
 	continue;
       if (*t == '#')
 	continue;
 
-	sprintf(thisline,"File %s Line : %d ", name, line);
+      sprintf (thisline, "File %s Line : %d ", name, line);
 //printf("t=%s len=%d\n",t,len);
-	if (strncmp(t,"IF",len)==0) {
-			char ptest[200]="<notset>";
-			char pval[200]="<notset>";
-			char *p1;
-			enum cond_conditions cond=COND_NOT_SET;
-			int ok=0;
-			t+=len;
-			while (*t==' ') {
-					t++;
-			}
-			// Lets split the IF into its component parts..
-       			p1=A4GL_cv_next_token (t, &len, 0);
-			if (p1==0) {
-				FPRINTF(stderr, "%s\n", thisline);
-				A4GL_assertion(1,"Invalid condition in convertion file IF");
-			}
-			strncpy(ptest,p1,len); ptest[len]=0;
-			t+=len;
-			while (*t==' ') t++;
-      			t = A4GL_cv_next_token (t, &len, 0);
+      if (strncmp (t, "IF", len) == 0)
+	{
+	  char ptest[200] = "<notset>";
+	  char pval[200] = "<notset>";
+	  char *p1;
+	  enum cond_conditions cond = COND_NOT_SET;
+	  int ok = 0;
+	  t += len;
+	  while (*t == ' ')
+	    {
+	      t++;
+	    }
+	  // Lets split the IF into its component parts..
+	  p1 = A4GL_cv_next_token (t, &len, 0);
+	  if (p1 == 0)
+	    {
+	      FPRINTF (stderr, "%s\n", thisline);
+	      A4GL_assertion (1, "Invalid condition in convertion file IF");
+	    }
+	  strncpy (ptest, p1, len);
+	  ptest[len] = 0;
+	  t += len;
+	  while (*t == ' ')
+	    t++;
+	  t = A4GL_cv_next_token (t, &len, 0);
 
-			// String comparisions
-      			if (t && len == 1 && strncmp(t,"=",1)==0) {
-				cond=STR_EQ;
-	  			p1 = A4GL_cv_next_token ((t + len), &len, 0);
-			} 
-      			if (t && len == 1 && strncmp(t,"<",1)==0) { cond=STR_LT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 1 && strncmp(t,">",1)==0) { cond=STR_GT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+	  // String comparisions
+	  if (t && len == 1 && strncmp (t, "=", 1) == 0)
+	    {
+	      cond = STR_EQ;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 1 && strncmp (t, "<", 1) == 0)
+	    {
+	      cond = STR_LT;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 1 && strncmp (t, ">", 1) == 0)
+	    {
+	      cond = STR_GT;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
 
-      			if (t && len == 2 && (strncmp(t,"!=",1)==0 || strncmp(t,"<>",1)==0)) {
-				cond=STR_NE;
-	  			p1 = A4GL_cv_next_token ((t + len), &len, 0);
-			} 
+	  if (t && len == 2 && (strncmp (t, "!=", 1) == 0 || strncmp (t, "<>", 1) == 0))
+	    {
+	      cond = STR_NE;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
 
-      			if (t && len == 2 && (strncmp(t,">=",1)==0) ) { cond=STR_GE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 2 && (strncmp(t,"<=",1)==0) ) { cond=STR_LE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+	  if (t && len == 2 && (strncmp (t, ">=", 1) == 0))
+	    {
+	      cond = STR_GE;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 2 && (strncmp (t, "<=", 1) == 0))
+	    {
+	      cond = STR_LE;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
 
-			// Integer comparisons
-      			if (t && len == 2 && (strncmp(t,"eq",1)==0) ) { cond=INT_EQ; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 2 && (strncmp(t,"ne",1)==0) ) { cond=INT_NE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 2 && (strncmp(t,"ge",1)==0) ) { cond=INT_GE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 2 && (strncmp(t,"gt",1)==0) ) { cond=INT_GT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 2 && (strncmp(t,"le",1)==0) ) { cond=INT_LE; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
-      			if (t && len == 2 && (strncmp(t,"lt",1)==0) ) { cond=INT_LT; p1 = A4GL_cv_next_token ((t + len), &len, 0); } 
+	  // Integer comparisons
+	  if (t && len == 2 && (strncmp (t, "eq", 1) == 0))
+	    {
+	      cond = INT_EQ;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 2 && (strncmp (t, "ne", 1) == 0))
+	    {
+	      cond = INT_NE;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 2 && (strncmp (t, "ge", 1) == 0))
+	    {
+	      cond = INT_GE;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 2 && (strncmp (t, "gt", 1) == 0))
+	    {
+	      cond = INT_GT;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 2 && (strncmp (t, "le", 1) == 0))
+	    {
+	      cond = INT_LE;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+	  if (t && len == 2 && (strncmp (t, "lt", 1) == 0))
+	    {
+	      cond = INT_LT;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
 
-			if (cond==COND_NOT_SET) {
-				FPRINTF(stderr, "%s\n", thisline);
-				FPRINTF(stderr, "Got : %s, expecteding <,>, =,>=,<=,!=, <>, ne, eq, ge, gt,lt,lr\n",t);
-				A4GL_assertion(1,"No valid condition on an IF when reading conversion file");
-				return;
-			}
-			strncpy(pval,p1,len); pval[len]=0;
+	  if (cond == COND_NOT_SET)
+	    {
+	      FPRINTF (stderr, "%s\n", thisline);
+	      FPRINTF (stderr, "Got : %s, expecteding <,>, =,>=,<=,!=, <>, ne, eq, ge, gt,lt,lr\n", t);
+	      A4GL_assertion (1, "No valid condition on an IF when reading conversion file");
+	      return;
+	    }
+	  strncpy (pval, p1, len);
+	  pval[len] = 0;
 
-			if (strcmp(pval,"<notset>")==0) {
-				FPRINTF(stderr, "%s\n", thisline);
-				A4GL_assertion(1,"Invalid condition in convertion file IF");
-				return;
-			}
+	  if (strcmp (pval, "<notset>") == 0)
+	    {
+	      FPRINTF (stderr, "%s\n", thisline);
+	      A4GL_assertion (1, "Invalid condition in convertion file IF");
+	      return;
+	    }
 
-			ok=0;
-			switch (cond) {
-				case STR_EQ:
-				case STR_NE:
-				case STR_GT:
-				case STR_LT:
-				case STR_GE:
-				case STR_LE:
+	  ok = 0;
+	  switch (cond)
+	    {
+	    case STR_EQ:
+	    case STR_NE:
+	    case STR_GT:
+	    case STR_LT:
+	    case STR_GE:
+	    case STR_LE:
 
-					// Test for equality ...
-					if (A4GL_cv_str_to_func(ptest,strlen(ptest),0) && A4GLSQLCV_check_requirement (ptest)) {
-						if (A4GL_isyes(pval)) {
-							
-							ok=1;
-						} else {
-							ok=0;
-						}
-						if (cond==STR_NE) {
-							ok=!ok;
-						}
-					} else {
-						int comp;
-						comp=strcmp(acl_getenv(ptest),pval);
-						if (cond==STR_EQ) ok=(comp==0);
-						if (cond==STR_NE) ok=(comp!=0);
-						if (cond==STR_LT) ok=(comp<0);
-						if (cond==STR_LE) ok=(comp<=0);
-						if (cond==STR_GT) ok=(comp>0);
-						if (cond==STR_GE) ok=(comp>=0);
-					}
-					break;
-				case INT_EQ:
-				case INT_NE:
-				case INT_GT:
-				case INT_LT:
-				case INT_GE:
-				case INT_LE:
-					{
-						int t1;
-						int t2;
-						t1=atoi(acl_getenv(ptest));
-						t2=atoi(pval);
-						if (cond==INT_EQ) ok=(t1==t2);
-						if (cond==INT_NE) ok=(t1!=t2);
-						if (cond==INT_LT) ok=(t1<t2);
-						if (cond==INT_LE) ok=(t1<=t2);
-						if (cond==INT_GT) ok=(t1>t2);
-						if (cond==INT_GE) ok=(t1>=t2);
-					}
-					break;
-				default: 
-					FPRINTF(stderr,"%s\n", thisline);
-					A4GL_assertion(1,"SHould not happen");
-					
-			}
+	      // Test for equality ...
+	      if (A4GL_cv_str_to_func (ptest, strlen (ptest), 0) && A4GLSQLCV_check_requirement (ptest))
+		{
+		  if (A4GL_isyes (pval))
+		    {
+
+		      ok = 1;
+		    }
+		  else
+		    {
+		      ok = 0;
+		    }
+		  if (cond == STR_NE)
+		    {
+		      ok = !ok;
+		    }
+		}
+	      else
+		{
+		  int comp;
+		  comp = strcmp (acl_getenv (ptest), pval);
+		  if (cond == STR_EQ)
+		    ok = (comp == 0);
+		  if (cond == STR_NE)
+		    ok = (comp != 0);
+		  if (cond == STR_LT)
+		    ok = (comp < 0);
+		  if (cond == STR_LE)
+		    ok = (comp <= 0);
+		  if (cond == STR_GT)
+		    ok = (comp > 0);
+		  if (cond == STR_GE)
+		    ok = (comp >= 0);
+		}
+	      break;
+	    case INT_EQ:
+	    case INT_NE:
+	    case INT_GT:
+	    case INT_LT:
+	    case INT_GE:
+	    case INT_LE:
+	      {
+		int t1;
+		int t2;
+		t1 = atoi (acl_getenv (ptest));
+		t2 = atoi (pval);
+		if (cond == INT_EQ)
+		  ok = (t1 == t2);
+		if (cond == INT_NE)
+		  ok = (t1 != t2);
+		if (cond == INT_LT)
+		  ok = (t1 < t2);
+		if (cond == INT_LE)
+		  ok = (t1 <= t2);
+		if (cond == INT_GT)
+		  ok = (t1 > t2);
+		if (cond == INT_GE)
+		  ok = (t1 >= t2);
+	      }
+	      break;
+	    default:
+	      FPRINTF (stderr, "%s\n", thisline);
+	      A4GL_assertion (1, "SHould not happen");
+
+	    }
 
 
-			A4GL_debug("%s %d %s, %d",ptest,cond,pval,ok);
-			// Add it to our if stack...
-			if_stack[if_stack_cnt++]=ok;
-			continue;
-	} 
-
-	if (strncmp(t,"ELSE",len)==0) {
-		if_stack[if_stack_cnt-1]=!if_stack[if_stack_cnt-1];
-		continue;
+	  A4GL_debug ("%s %d %s, %d", ptest, cond, pval, ok);
+	  // Add it to our if stack...
+	  if_stack[if_stack_cnt++] = ok;
+	  continue;
 	}
 
-	if (strncmp(t,"ENDIF",len)==0) {
-		if_stack_cnt--;
-		if (if_stack_cnt<0) {
-			FPRINTF(stderr, "%s\n", thisline);
-			A4GL_assertion(1,"IF stack confused while reading conversion file");
-		}
-		continue;
-	} 
-
-
-	
-	if (if_stack_cnt>0) {
-		int a;
-		int ok=1;
-		for (a=0;a<if_stack_cnt;a++) {
-			if (if_stack[a]==0) {ok=0; break;}
-		}
-		if (!ok) continue; // Get the next line - we're not processing this one..
-	}
-	if (strncmp(t,"PRINT",len)==0) {
-		char *p1;
-       		p1=strchr(t,' ');
-		if (p1) {
-			PRINTF("SQLCONVERT (%s): %s\n",thisline, p1);
-		}
-		continue;
+      if (strncmp (t, "ELSE", len) == 0)
+	{
+	  if_stack[if_stack_cnt - 1] = !if_stack[if_stack_cnt - 1];
+	  continue;
 	}
 
-	if (strncmp(t,"DEBUG",len)==0) {
-		char *p1;
-       		p1=strchr(t,' ');
-		if (p1) {
-			A4GL_debug("SQLCONVERT (%s): %s\n",thisline, p1);
-		}
-		continue;
+      if (strncmp (t, "ENDIF", len) == 0)
+	{
+	  if_stack_cnt--;
+	  if (if_stack_cnt < 0)
+	    {
+	      FPRINTF (stderr, "%s\n", thisline);
+	      A4GL_assertion (1, "IF stack confused while reading conversion file");
+	    }
+	  continue;
 	}
 
-	if (strncmp(t,"INCLUDE",len)==0) {
-		char buff_sm[2000];
-		char path[2000];
-		FILE *fh_new;
-		char *p1;
-			t+=len;
-			while (*t==' ') {
-					t++;
-			}
-       		p1=A4GL_cv_next_token (t, &len, 0);
-		A4GL_trim(p1);
 
-		// first - lets try an explicit file in the DBPATH
-		fh_new=A4GL_open_file_dbpath(p1);
-		if (!fh_new) { // Explicit file ? 
-			SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
-			fh_new=cnfopen(path, p1);
+
+      if (if_stack_cnt > 0)
+	{
+	  int a;
+	  int ok = 1;
+	  for (a = 0; a < if_stack_cnt; a++)
+	    {
+	      if (if_stack[a] == 0)
+		{
+		  ok = 0;
+		  break;
 		}
-  		if (!fh_new) {
-            		SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
-	    		fh_new=cnfopen(path, p1);
-		}
-		if (!fh_new) { // Let try again - but we'll stick .cnv on the end...
-			strcpy(buff_sm,p1);
-			strcat(buff_sm,".cnv");
-			SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
-			fh_new=cnfopen(path, buff_sm);
-		}
-  		if (!fh_new) {
-            		SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
-	    		fh_new=cnfopen(path, buff_sm);
-		}
-	 	if (!fh_new) {
-			FPRINTF(stderr,"%s\n", thisline);
-			FPRINTF(stderr,"FILE : %s\n", p1);
-			A4GL_assertion(1,"Unable to open sql convertion file used in an INCLUDE");
-		}
-		// If we get to here - we should be ok to read the file...
-		read_conversion_file(fh_new,name); // It'll be closed by the time we get back...
-		continue;
-        }
+	    }
+	  if (!ok)
+	    continue;		// Get the next line - we're not processing this one..
+	}
+      if (strncmp (t, "PRINT", len) == 0)
+	{
+	  char *p1;
+	  p1 = strchr (t, ' ');
+	  if (p1)
+	    {
+	      PRINTF ("SQLCONVERT (%s): %s\n", thisline, p1);
+	    }
+	  continue;
+	}
+
+      if (strncmp (t, "DEBUG", len) == 0)
+	{
+	  char *p1;
+	  p1 = strchr (t, ' ');
+	  if (p1)
+	    {
+	      A4GL_debug ("SQLCONVERT (%s): %s\n", thisline, p1);
+	    }
+	  continue;
+	}
+
+      if (strncmp (t, "INCLUDE", len) == 0)
+	{
+	  char buff_sm[2000];
+	  char path[2000];
+	  FILE *fh_new;
+	  char *p1;
+	  t += len;
+	  while (*t == ' ')
+	    {
+	      t++;
+	    }
+	  p1 = A4GL_cv_next_token (t, &len, 0);
+	  A4GL_trim (p1);
+
+	  // first - lets try an explicit file in the DBPATH
+	  fh_new = A4GL_open_file_dbpath (p1);
+	  if (!fh_new)
+	    {			// Explicit file ? 
+	      SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+	      fh_new = cnfopen (path, p1);
+	    }
+	  if (!fh_new)
+	    {
+	      SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	      fh_new = cnfopen (path, p1);
+	    }
+	  if (!fh_new)
+	    {			// Let try again - but we'll stick .cnv on the end...
+	      strcpy (buff_sm, p1);
+	      strcat (buff_sm, ".cnv");
+	      SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+	      fh_new = cnfopen (path, buff_sm);
+	    }
+	  if (!fh_new)
+	    {
+	      SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	      fh_new = cnfopen (path, buff_sm);
+	    }
+	  if (!fh_new)
+	    {
+	      FPRINTF (stderr, "%s\n", thisline);
+	      FPRINTF (stderr, "FILE : %s\n", p1);
+	      A4GL_assertion (1, "Unable to open sql convertion file used in an INCLUDE");
+	    }
+	  // If we get to here - we should be ok to read the file...
+	  read_conversion_file (fh_new, name);	// It'll be closed by the time we get back...
+	  continue;
+	}
 
 
 
@@ -693,14 +807,14 @@ char thisline[2000];
       conversion_rules = acl_realloc (conversion_rules, sizeof (*conversion_rules) * conversion_rules_cnt);
 
 
-      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len,1);
+      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len, 1);
       conversion_rules[conversion_rules_cnt - 1].data.from = 0;
       conversion_rules[conversion_rules_cnt - 1].data.to = 0;
       if (t)
 	{
 	  A4GL_debug ("Loaded convertion ---> %d %s\n",
 		      conversion_rules[conversion_rules_cnt - 1].type,
-		      cvsql_names[conversion_rules[conversion_rules_cnt - 1].  type]);
+		      cvsql_names[conversion_rules[conversion_rules_cnt - 1].type]);
 	}
       A4GL_trim (t);
       /* get the argument list, A4GL_strip off leading = sign */
@@ -738,8 +852,7 @@ char thisline[2000];
 		  while (*right == '=' || *right == ' ' || *right == '\t')
 		    right++;
 		  A4GL_trim (right);
-		  conversion_rules[conversion_rules_cnt - 1].data.to =
-		    acl_strdup (right);
+		  conversion_rules[conversion_rules_cnt - 1].data.to = acl_strdup (right);
 		}
 	      else
 		{
@@ -752,15 +865,16 @@ char thisline[2000];
 
 
     }
-if ( if_stack_cnt!=0) {
-	FPRINTF(stderr,"%s\n", thisline);
-	A4GL_assertion(1,"IF stack corrupted");
- }
+  if (if_stack_cnt != 0)
+    {
+      FPRINTF (stderr, "%s\n", thisline);
+      A4GL_assertion (1, "IF stack corrupted");
+    }
 
   fclose (fh);
 
   A4GL_add_pointer (name, SQL_CONVERSION, (void *) conversion_rules);
-  A4GL_add_pointer (name, SQL_CONVERSION_CNT, (void *) conversion_rules_cnt); // 64Bit OK
+  A4GL_add_pointer (name, SQL_CONVERSION_CNT, (void *) conversion_rules_cnt);	// 64Bit OK
 
   return;
 }
@@ -778,22 +892,24 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 
 
   strcpy (path, acl_getenv ("SQLCNVPATH"));
-  fh=cnfopen(path, buff_sm);
-  if (!fh) {
+  fh = cnfopen (path, buff_sm);
+  if (!fh)
+    {
 
-  //if (buff[0] == '\0') {
+      //if (buff[0] == '\0') {
 #ifdef SIMPLIFIED
-    	SPRINTF1 (path, "%s", DATADIR);
+      SPRINTF1 (path, "%s", DATADIR);
 #else
-	SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
-	fh=cnfopen(path, buff_sm);
-  	if (!fh) {
-            SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
-	    fh=cnfopen(path, buff_sm);
+      SPRINTF1 (path, "%s/convertsql", acl_getenv ("AUBITETC"));
+      fh = cnfopen (path, buff_sm);
+      if (!fh)
+	{
+	  SPRINTF1 (path, "%s/etc/convertsql", acl_getenv ("AUBITDIR"));
+	  fh = cnfopen (path, buff_sm);
 	}
 #endif
-  //}
-  }
+      //}
+    }
 
 
 
@@ -803,7 +919,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
       return;			/* NULL */
     }
 
-    read_conversion_file(fh,name);
+  read_conversion_file (fh, name);
 }
 
 
@@ -814,30 +930,33 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 // it will be called from the main SQL parser to do the final tidying up....
 //
 char *
-A4GLSQLCV_check_sql (char *s,int *converted)
+A4GLSQLCV_check_sql (char *s, int *converted)
 {
   int b;
   static char *buff = 0;
-  char *ptr=0;
+  char *ptr = 0;
   A4GL_assertion (s == 0, "No pointer");
   A4GL_debug ("check sql : %s\n", s);
-  *converted=1;
+  *converted = 1;
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
-      if (current_conversion_rules[b].type == CVSQL_REPLACE_COMMAND )
+      if (current_conversion_rules[b].type == CVSQL_REPLACE_COMMAND)
 	{
 
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
-		static char buff[2000]="";
-		char *ptr;
-	      	ptr=current_conversion_rules[b].data.to;
-		if (ptr && strstr(ptr,"%s")){ 
-			A4GL_make_downshift(lastFieldData);
-			sprintf(buff,ptr,lastFieldData);
-			return buff;
-		} else {
-			return ptr;
+	      static char buff[2000] = "";
+	      char *ptr;
+	      ptr = current_conversion_rules[b].data.to;
+	      if (ptr && strstr (ptr, "%s"))
+		{
+		  A4GL_make_downshift (lastFieldData);
+		  sprintf (buff, ptr, lastFieldData);
+		  return buff;
+		}
+	      else
+		{
+		  return ptr;
 		}
 	    }
 	}
@@ -845,18 +964,15 @@ A4GLSQLCV_check_sql (char *s,int *converted)
 
   A4GL_debug ("check sql 2\n");
   ptr = acl_malloc2 (strlen (s) * 2 + 1000);
-  
+
   strcpy (ptr, s);
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE)
 	{
-	  if (A4GL_aubit_strcasestr (ptr, current_conversion_rules[b].data.from) !=
-	      0)
+	  if (A4GL_aubit_strcasestr (ptr, current_conversion_rules[b].data.from) != 0)
 	    {
-	      A4GL_cvsql_replace_str (ptr,
-				      current_conversion_rules[b].data.from,
-				      current_conversion_rules[b].data.to);
+	      A4GL_cvsql_replace_str (ptr, current_conversion_rules[b].data.from, current_conversion_rules[b].data.to);
 	    }
 	}
     }
@@ -911,8 +1027,7 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
   A4GL_debug ("Alias : '%s'\n", s);
 
   A4GL_debug ("Alias ? %s %s %s %x\n", t, c, v, dtype);
-  if (A4GLSQLCV_check_requirement ("OMIT_SERIAL_COL_FROM_INSERT")
-      && dtype == DTYPE_SERIAL)
+  if (A4GLSQLCV_check_requirement ("OMIT_SERIAL_COL_FROM_INSERT") && dtype == DTYPE_SERIAL)
     {
       return "";
     }
@@ -924,8 +1039,7 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (sv, current_conversion_rules[b].data.from) == 0)
 	    {
-	      A4GL_debug ("Substitute : %s\n",
-			  current_conversion_rules[b].data.to);
+	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -947,13 +1061,10 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	{
 	  if (current_conversion_rules[b].type == CVSQL_INSERT_ALIAS_COLUMN)
 	    {
-	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from)
-		  == 0)
+	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
-		  A4GL_debug ("Substitute : %s\n",
-			      current_conversion_rules[b].data.to);
-		  SPRINTF2 (buff, "%s(%s",
-			    current_conversion_rules[b].data.to, ptr2);
+		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
 	    }
@@ -967,8 +1078,7 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
-	      A4GL_debug ("Substitute : %s\n",
-			  current_conversion_rules[b].data.to);
+	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -990,13 +1100,10 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	{
 	  if (current_conversion_rules[b].type == CVSQL_INSERT_ALIAS_COLUMN)
 	    {
-	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from)
-		  == 0)
+	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
-		  A4GL_debug ("Substitute : %s\n",
-			      current_conversion_rules[b].data.to);
-		  SPRINTF2 (buff, "%s(%s",
-			    current_conversion_rules[b].data.to, ptr2);
+		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
 	    }
@@ -1034,8 +1141,7 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (sv, current_conversion_rules[b].data.from) == 0)
 	    {
-	      A4GL_debug ("Substitute : %s\n",
-			  current_conversion_rules[b].data.to);
+	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1057,13 +1163,10 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	{
 	  if (current_conversion_rules[b].type == CVSQL_INSERT_ALIAS_VALUE)
 	    {
-	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from)
-		  == 0)
+	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
-		  A4GL_debug ("Substitute : %s\n",
-			      current_conversion_rules[b].data.to);
-		  SPRINTF2 (buff, "%s(%s",
-			    current_conversion_rules[b].data.to, ptr2);
+		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
 	    }
@@ -1077,8 +1180,7 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
-	      A4GL_debug ("Substitute : %s\n",
-			  current_conversion_rules[b].data.to);
+	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1100,13 +1202,10 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	{
 	  if (current_conversion_rules[b].type == CVSQL_INSERT_ALIAS_VALUE)
 	    {
-	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from)
-		  == 0)
+	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
-		  A4GL_debug ("Substitute : %s\n",
-			      current_conversion_rules[b].data.to);
-		  SPRINTF2 (buff, "%s(%s",
-			    current_conversion_rules[b].data.to, ptr2);
+		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
 	    }
@@ -1132,8 +1231,7 @@ A4GLSQLCV_dtype_alias (char *s)
 	{
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
-	      A4GL_debug ("Substitute : %s\n",
-			  current_conversion_rules[b].data.to);
+	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1142,9 +1240,10 @@ A4GLSQLCV_dtype_alias (char *s)
   if (strchr (s, '('))
     {
       static char buff[256];
-      static char *ptr=0;
+      static char *ptr = 0;
       char *ptr2;
-	if (ptr) free(ptr);
+      if (ptr)
+	free (ptr);
       ptr = acl_strdup (s);
       ptr2 = strchr (ptr, '(');
       *ptr2 = 0;
@@ -1155,10 +1254,8 @@ A4GLSQLCV_dtype_alias (char *s)
 	    {
 	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
-		  A4GL_debug ("Substitute : %s\n",
-			      current_conversion_rules[b].data.to);
-		  SPRINTF2 (buff, "%s(%s",
-			    current_conversion_rules[b].data.to, ptr2);
+		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
 	    }
@@ -1193,7 +1290,7 @@ A4GL_cvsql_replace_str (char *buff, char *from, char *to)
   buff2 = acl_realloc (buff2, l);
   A4GL_debug ("replace_str from :%s to %s", from, to);
   strcpy (buff2, "");
-  ln=strlen (buff);
+  ln = strlen (buff);
   for (a = 0; a <= ln; a++)
     {
       int ok_to_replace;	// We only want to replace whole words...
@@ -1211,9 +1308,7 @@ A4GL_cvsql_replace_str (char *buff, char *from, char *to)
 
 
 
-      if (sq == 0 && dq == 0
-	  && strncasecmp (&buff[a], from, strlen (from)) == 0
-	  && ok_to_replace == 1)
+      if (sq == 0 && dq == 0 && strncasecmp (&buff[a], from, strlen (from)) == 0 && ok_to_replace == 1)
 	{
 	  strcat (buff2, to);
 	  cnt = strlen (buff2);
@@ -1248,7 +1343,7 @@ A4GLSQLCV_check_expr (char *s)
   int b;
   static char *buff = 0;
 
-  A4GL_debug("%s\n",s);
+  A4GL_debug ("%s\n", s);
 
   buff = acl_realloc (buff, strlen (s) * 2 + 1000);
   strcpy (buff, s);
@@ -1257,25 +1352,20 @@ A4GLSQLCV_check_expr (char *s)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_EXPR)
 	{
-	
+
 	  if (A4GL_aubit_strcasestr (buff, current_conversion_rules[b].data.from) != 0)
 	    {
 	      char *to;
 	      if (current_conversion_rules[b].data.to[0] == '$')
 		{
-		  to =
-		    get_dollared_sql_var (current_conversion_rules[b].data.
-					  to);
+		  to = get_dollared_sql_var (current_conversion_rules[b].data.to);
 		}
 	      else
 		{
 		  to = current_conversion_rules[b].data.to;
 		}
-	      A4GL_debug ("Converting %s to %s in %s\n",
-			  current_conversion_rules[b].data.from, to, buff);
-	      A4GL_cvsql_replace_str (buff,
-				      current_conversion_rules[b].data.from,
-				      to);
+	      A4GL_debug ("Converting %s to %s in %s\n", current_conversion_rules[b].data.from, to, buff);
+	      A4GL_cvsql_replace_str (buff, current_conversion_rules[b].data.from, to);
 	      A4GL_debug ("Converted: %s\n", buff);
 	    }
 	}
@@ -1317,18 +1407,24 @@ A4GLSQLCV_generate_current (char *from, char *to)
 }
 
 
-int A4GLSQLCV_check_runtime_requirement (char *s) {
-	if (!A4GL_compile_time_convert()) {
-		return 0;
-	} else {
-		return A4GLSQLCV_check_requirement(s) ;
-	}
+int
+A4GLSQLCV_check_runtime_requirement (char *s)
+{
+  if (!A4GL_compile_time_convert ())
+    {
+      return 0;
+    }
+  else
+    {
+      return A4GLSQLCV_check_requirement (s);
+    }
 }
 
 
 
 
-static int check_requirement_i (char *s)
+static int
+check_requirement_i (char *s)
 {
   int a;
   int b;
@@ -1343,16 +1439,17 @@ static int check_requirement_i (char *s)
     }
 
 
-  a = A4GL_cv_str_to_func (s, strlen (s),1);
+  a = A4GL_cv_str_to_func (s, strlen (s), 1);
   A4GL_debug ("Checking for a type %d\n", a);
 
   if (a == 0)
     {
-	FILE *f;
-	f=fopen("/tmp/Unknown.sqlconversion","a");
-	if (f) {
-		fprintf(f,"%s\n",s);
-		fclose(f);
+      FILE *f;
+      f = fopen ("/tmp/Unknown.sqlconversion", "a");
+      if (f)
+	{
+	  fprintf (f, "%s\n", s);
+	  fclose (f);
 	}
       A4GL_debug ("WARNING : Unknown type : %s", s);
       return 0;			// I don't know what they are talking about...
@@ -1380,34 +1477,40 @@ static int check_requirement_i (char *s)
 
 
 
-int A4GLSQLCV_check_requirement (char *s) {
-int n;
-n=(int)A4GL_find_pointer(s,HASREQUIREMENT);
-if (n==0) {
-	n=check_requirement_i(s);
-	if (n==0) n=99999;
-	A4GL_add_pointer(s,HASREQUIREMENT,(void *)n);
-}
-if (n==99999) n=0;
-return n;
+int
+A4GLSQLCV_check_requirement (char *s)
+{
+  int n;
+  n = (int) A4GL_find_pointer (s, HASREQUIREMENT);
+  if (n == 0)
+    {
+      n = check_requirement_i (s);
+      if (n == 0)
+	n = 99999;
+      A4GL_add_pointer (s, HASREQUIREMENT, (void *) n);
+    }
+  if (n == 99999)
+    n = 0;
+  return n;
 }
 
 char *
 A4GLSQLCV_check_colname (char *tabname, char *colname)
 {
- static char buff[256];
-char *ptr;
+  static char buff[256];
+  char *ptr;
 
 
-  ptr=strchr(colname,'.') ;
-	if (ptr) {
-		ptr++;
-		colname=ptr;
-	}
+  ptr = strchr (colname, '.');
+  if (ptr)
+    {
+      ptr++;
+      colname = ptr;
+    }
 
   colname = A4GL_confirm_colname (tabname, colname);
 
-  if (tabname && strlen(tabname))
+  if (tabname && strlen (tabname))
     {
       SPRINTF2 (buff, "%s.%s", tabname, colname);
     }
@@ -1531,7 +1634,7 @@ A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r)
     {
       char *func;
       func = current_conversion_rules[rule - 1].data.from;
-	A4GL_assertion(func==0,"Expecting a substring function") ;
+      A4GL_assertion (func == 0, "Expecting a substring function");
       if (n == 1)
 	{
 	  SPRINTF3 (buff, "%s(%s,%s,1)", func, colname, l);
@@ -1539,11 +1642,14 @@ A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r)
 	}
       if (n == 2)
 	{
-	  if (strcmp(l,"1")==0) {
-	  	SPRINTF4 (buff, "%s(%s,%s,%s)", func, colname, l, r);
-	  } else {
-	  	SPRINTF5 (buff, "%s(%s,%s,(%s)-(%s)+1)", func, colname, l, r, l);
-	  }
+	  if (strcmp (l, "1") == 0)
+	    {
+	      SPRINTF4 (buff, "%s(%s,%s,%s)", func, colname, l, r);
+	    }
+	  else
+	    {
+	      SPRINTF5 (buff, "%s(%s,%s,(%s)-(%s)+1)", func, colname, l, r, l);
+	    }
 	  return buff;
 	}
     }
@@ -1569,40 +1675,49 @@ A4GLSQLCV_make_substr (char *colname, int i0, int i1, int i2)
 }
 
 
-static int match_strncasecmp(char *s1,char *s2,int len) {
-	char p1[200];
-	char p2[200];
-	int l1;
-	int l2;
-	strncpy(p1,s1,len+1);
-	strncpy(p2,s2,len+1);
-	p1[len+1]=0;
-	p2[len+1]=0;
-	if (strchr(p1,' ') || strchr(p1,'\n')) {
-		A4GL_trim(p1);
-	}
-	if (strchr(p2,' ') || strchr(p2,'\n')) {
-		A4GL_trim(p2);
-	}
-	l1=strlen(p1);
-	l2=strlen(p2);
+static int
+match_strncasecmp (char *s1, char *s2, int len)
+{
+  char p1[200];
+  char p2[200];
+  int l1;
+  int l2;
+  strncpy (p1, s1, len + 1);
+  strncpy (p2, s2, len + 1);
+  p1[len + 1] = 0;
+  p2[len + 1] = 0;
+  if (strchr (p1, ' ') || strchr (p1, '\n'))
+    {
+      A4GL_trim (p1);
+    }
+  if (strchr (p2, ' ') || strchr (p2, '\n'))
+    {
+      A4GL_trim (p2);
+    }
+  l1 = strlen (p1);
+  l2 = strlen (p2);
 
-	if (l1==l2) {
-		if (strncasecmp(p1,p2,len)==0) return 0;
-		else return 1;
-	}
+  if (l1 == l2)
+    {
+      if (strncasecmp (p1, p2, len) == 0)
+	return 0;
+      else
+	return 1;
+    }
 
-	if (l1>l2) {
-		return strncasecmp(p1,p2,len);
-	}
+  if (l1 > l2)
+    {
+      return strncasecmp (p1, p2, len);
+    }
 
-	// If p2 is greater than p1 - it can't match...
-	if (l1<l2) {
-		return 1;
-	}
+  // If p2 is greater than p1 - it can't match...
+  if (l1 < l2)
+    {
+      return 1;
+    }
 
-A4GL_assertion(1,"Surely this cant happen");
-return 1;
+  A4GL_assertion (1, "Surely this cant happen");
+  return 1;
 }
 
 
@@ -1781,25 +1896,31 @@ CV_matches (char *type, char *string, char *esc)
   static char buff[1024];
   int a;
 
-  if (strncmp(string,"'@@VARIABLE[",12)==0) {
-	return string;
-  }
+  if (strncmp (string, "'@@VARIABLE[", 12) == 0)
+    {
+      return string;
+    }
 
-  if (strcmp(string,"?")==0) {
-	int hr;
-	hr = A4GLSQLCV_check_requirement ("MATCHES_VAR_FUNC");
-	if (hr) {
-		if (strcmp(esc,"?")!=0) {
-			sprintf(buff,"%s(?,'%s')",current_conversion_rules[hr - 1].data.from,esc);
-		} else {
-			//@ FIXME
-			sprintf(buff,"%s(?,'?')",current_conversion_rules[hr - 1].data.from);
-		}
-		return buff;
+  if (strcmp (string, "?") == 0)
+    {
+      int hr;
+      hr = A4GLSQLCV_check_requirement ("MATCHES_VAR_FUNC");
+      if (hr)
+	{
+	  if (strcmp (esc, "?") != 0)
+	    {
+	      sprintf (buff, "%s(?,'%s')", current_conversion_rules[hr - 1].data.from, esc);
+	    }
+	  else
+	    {
+	      //@ FIXME
+	      sprintf (buff, "%s(?,'?')", current_conversion_rules[hr - 1].data.from);
+	    }
+	  return buff;
 	}
-		
 
-  }
+
+    }
 
 
   if (string[0] != '\'')
@@ -1854,25 +1975,30 @@ CV_matches (char *type, char *string, char *esc)
 
 	if (type[0] != '~' && (string[a] == '%' || string[a] == '_'))
 	  {
-		if (A4GL_isyes(acl_getenv("DOING_CM"))) {
-	    		strcat (buff, "\\\\");
-		} else {
-	    		strcat (buff, "\\");
-		}
+	    if (A4GL_isyes (acl_getenv ("DOING_CM")))
+	      {
+		strcat (buff, "\\\\");
+	      }
+	    else
+	      {
+		strcat (buff, "\\");
+	      }
 	  }
 
 
-	
-        if (type[0]=='~' && string[a]=='\'') { 
-			if (strstr(buff,".*")) {
-				strcat(buff,"$"); 
-			}
-	}
+
+	if (type[0] == '~' && string[a] == '\'')
+	  {
+	    if (strstr (buff, ".*"))
+	      {
+		strcat (buff, "$");
+	      }
+	  }
 	smallvar[0] = string[a];
 	smallvar[1] = 0;
 	strcat (buff, smallvar);
       }
-  }
+    }
 
   return buff;
 }
@@ -1986,30 +2112,39 @@ A4GL_cv_delchstr (char *str, int n)
 
 
 
-static void remove_ws_and_upshift(char *s) {
-char p[64000];
-int a;
-int c=0;
-strcpy(p,s);
-for (a=0;a<strlen(s);a++) {
-	if (!isspace(s[a])) {
-		if (s[a]=='(' || s[a]==')') {
-			if (!isspace(p[c-1])) {
-					p[c++]=' ';
-			}
+static void
+remove_ws_and_upshift (char *s)
+{
+  char p[64000];
+  int a;
+  int c = 0;
+  strcpy (p, s);
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (!isspace (s[a]))
+	{
+	  if (s[a] == '(' || s[a] == ')')
+	    {
+	      if (!isspace (p[c - 1]))
+		{
+		  p[c++] = ' ';
 		}
-		p[c++]=toupper(s[a]);
-		if (s[a]=='(' || s[a]==')') {
-			p[c++]=' ';
-		}
-		continue;
+	    }
+	  p[c++] = toupper (s[a]);
+	  if (s[a] == '(' || s[a] == ')')
+	    {
+	      p[c++] = ' ';
+	    }
+	  continue;
 	}
-	if (c==0) continue;
-	if (isspace(p[c-1])) continue;
-	p[c++]=toupper(s[a]);
-}
-p[c]=0;
-strcpy(s,p);
+      if (c == 0)
+	continue;
+      if (isspace (p[c - 1]))
+	continue;
+      p[c++] = toupper (s[a]);
+    }
+  p[c] = 0;
+  strcpy (s, p);
 }
 
 
@@ -2021,37 +2156,41 @@ A4GL_strwscmp (char *a, char *b)
   char o1[64000];
   char o2[64000];
   int lastWasWs;
-  char fieldData[256]="";
+  char fieldData[256] = "";
   b_i = 0;
-  
-  strcpy(o1 ,a);
-  strcpy(o2 ,b);
+
+  strcpy (o1, a);
+  strcpy (o2, b);
   b_i = 0;
-  lastWasWs=0;
+  lastWasWs = 0;
 
-  remove_ws_and_upshift(o1);
-  remove_ws_and_upshift(o2);
+  remove_ws_and_upshift (o1);
+  remove_ws_and_upshift (o2);
 
-	A4GL_trim(o1);
-	A4GL_trim(o2);
+  A4GL_trim (o1);
+  A4GL_trim (o2);
 
-  if (strstr(o2,"%S")) {
-	int r;
-	int chars=0;
-	char buff[2000];
-	strcpy(buff,o2);
-	strcat(buff,"%n");
-	a_i=-1;
-	r=sscanf(o1,buff,&fieldData,&chars);
-	if (r>=1 && strlen(o1)==chars) {
-		a_i=0;
+  if (strstr (o2, "%S"))
+    {
+      int r;
+      int chars = 0;
+      char buff[2000];
+      strcpy (buff, o2);
+      strcat (buff, "%n");
+      a_i = -1;
+      r = sscanf (o1, buff, &fieldData, &chars);
+      if (r >= 1 && strlen (o1) == chars)
+	{
+	  a_i = 0;
 	}
-  } else {
+    }
+  else
+    {
 
-  	a_i = strcmp (o1, o2);
-  }
+      a_i = strcmp (o1, o2);
+    }
 
-  strcpy(lastFieldData,fieldData);
+  strcpy (lastFieldData, fieldData);
 
 
   return a_i;
@@ -2061,48 +2200,51 @@ A4GL_strwscmp (char *a, char *b)
 
 
 
-int is_fake_rowid_column(char*s) {
+int
+is_fake_rowid_column (char *s)
+{
   int hr;
 
   hr = A4GLSQLCV_check_requirement ("FAKE_ROWID_NAME");
 
-  if (hr) {
+  if (hr)
+    {
       char *x;
-     	x = current_conversion_rules[hr - 1].data.from;
-		if (x) {
-	  		if (strcmp(s,x)==0) {
-		  			return 1;
-	  		}
-		}
-  }
+      x = current_conversion_rules[hr - 1].data.from;
+      if (x)
+	{
+	  if (strcmp (s, x) == 0)
+	    {
+	      return 1;
+	    }
+	}
+    }
   return 0;
 }
 
 
 char *
-A4GLSQLCV_make_ival_extend (char *ival, char *from, char *from_len, char *to,
-			    int extend)
+A4GLSQLCV_make_ival_extend (char *ival, char *from, char *from_len, char *to, int extend)
 {
   static char buff[256];
   int hr;
   char *xx;
-char *ival2;
+  char *ival2;
 
-  ival2=A4GLSQLCV_interval_value_internal(ival,NULL,NULL);
+  ival2 = A4GLSQLCV_interval_value_internal (ival, NULL, NULL);
 
   hr = A4GLSQLCV_check_requirement ("INTERVAL_EXTEND_FUNCTION");
   if (hr)
     {
       xx = current_conversion_rules[hr - 1].data.from;
-      ival2=A4GLSQLCV_interval_value_internal(ival,from,to);
+      ival2 = A4GLSQLCV_interval_value_internal (ival, from, to);
       if (from_len == 0)
 	{
 	  SPRINTF4 (buff, "%s(%s,'%s',0,'%s')", xx, ival2, from, to);
 	}
       else
 	{
-	  SPRINTF5 (buff, "%s(%s,'%s',%s,'%s')", xx, ival2, from, from_len,
-		    to);
+	  SPRINTF5 (buff, "%s(%s,'%s',%s,'%s')", xx, ival2, from, from_len, to);
 	}
 
     }
@@ -2123,8 +2265,7 @@ char *ival2;
 	{
 	  if (extend)
 	    {
-	      SPRINTF4 (buff, "EXTEND(%s,%s(%s) TO %s)", ival2, from, from_len,
-			to);
+	      SPRINTF4 (buff, "EXTEND(%s,%s(%s) TO %s)", ival2, from, from_len, to);
 	    }
 	  else
 	    {
@@ -2144,12 +2285,12 @@ A4GLSQLCV_make_dtime_extend (char *dval, char *from, char *to, int extend)
   char *xx;
   char *dval2;
 
-  dval2=A4GLSQLCV_datetime_value(dval);
+  dval2 = A4GLSQLCV_datetime_value (dval);
 
   hr = A4GLSQLCV_check_requirement ("DATETIME_EXTEND_FUNCTION");
   if (hr)
     {
-      dval2=A4GLSQLCV_datetime_value_internal(dval, from,to);
+      dval2 = A4GLSQLCV_datetime_value_internal (dval, from, to);
       xx = current_conversion_rules[hr - 1].data.from;
       SPRINTF4 (buff, "%s(%s,'%s','%s')", xx, dval2, from, to);
     }
@@ -2169,7 +2310,8 @@ A4GLSQLCV_make_dtime_extend (char *dval, char *from, char *to, int extend)
 
 
 
-static char * A4GLSQLCV_datetime_value_internal (char *s,char *from,char *to)
+static char *
+A4GLSQLCV_datetime_value_internal (char *s, char *from, char *to)
 {
   static char buff[256];
   int hr;
@@ -2185,10 +2327,13 @@ static char * A4GLSQLCV_datetime_value_internal (char *s,char *from,char *to)
 	      xx = current_conversion_rules[hr - 1].data.from;
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
-		if (from==NULL) {
-	      		SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
-		} else {
-	      		SPRINTF4 (buff, "%s_extended(\'%s\','%s','%s')", xx, ptr,from,to);
+	      if (from == NULL)
+		{
+		  SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
+		}
+	      else
+		{
+		  SPRINTF4 (buff, "%s_extended(\'%s\','%s','%s')", xx, ptr, from, to);
 		}
 	      acl_free (ptr);
 	      return buff;
@@ -2203,11 +2348,12 @@ static char * A4GLSQLCV_datetime_value_internal (char *s,char *from,char *to)
 char *
 A4GLSQLCV_datetime_value (char *s)
 {
-	return A4GLSQLCV_datetime_value_internal(s,NULL,NULL);
+  return A4GLSQLCV_datetime_value_internal (s, NULL, NULL);
 }
 
 
-static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to)
+static char *
+A4GLSQLCV_interval_value_internal (char *s, char *from, char *to)
 {
   static char buff[256];
   int hr;
@@ -2223,10 +2369,13 @@ static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to)
 	      xx = current_conversion_rules[hr - 1].data.from;
 	      ptr = acl_strdup (&s[9]);
 	      ptr[strlen (ptr) - 1] = 0;
-		if (from==NULL) {
-	      		SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
-		} else {
-	      		SPRINTF4 (buff, "%s_extended(\'%s\','%s','%s')", xx, ptr,from,to);
+	      if (from == NULL)
+		{
+		  SPRINTF2 (buff, "%s(\'%s\')", xx, ptr);
+		}
+	      else
+		{
+		  SPRINTF4 (buff, "%s_extended(\'%s\','%s','%s')", xx, ptr, from, to);
 		}
 	      acl_free (ptr);
 	      return buff;
@@ -2241,7 +2390,7 @@ static char * A4GLSQLCV_interval_value_internal (char *s,char *from,char *to)
 char *
 A4GLSQLCV_interval_value (char *s)
 {
-	return A4GLSQLCV_interval_value_internal(s,NULL,NULL);
+  return A4GLSQLCV_interval_value_internal (s, NULL, NULL);
 }
 
 
@@ -2272,7 +2421,7 @@ A4GLSQLCV_check_fullpath (char *s)
 char *
 A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
 {
-  static char *ptr=0;
+  static char *ptr = 0;
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL"))
     {
@@ -2281,27 +2430,25 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
       A4GL_debug ("Creating temp table called %s", tabname);
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
 	{
-		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
+	  A4GL_debug ("Adding LOG_TEMP_TABLE for %s", tabname);
 	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	}
-      SPRINTF2 (ptr,
-		"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",
-		tabname, sel);
+      SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, sel);
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
     {
       //if (ptr) free(ptr);
-	ptr = acl_malloc2 (strlen (sel) + 2000);
-	A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
-	if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
-	  {
-		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
-	    A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
-	  }
-        SPRINTF2 (ptr, "INSERT INTO SESSION.%s %s", tabname, sel);
-	return ptr;
+      ptr = acl_malloc2 (strlen (sel) + 2000);
+      A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
+      if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
+	{
+	  A4GL_debug ("Adding LOG_TEMP_TABLE for %s", tabname);
+	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
+	}
+      SPRINTF2 (ptr, "INSERT INTO SESSION.%s %s", tabname, sel);
+      return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS"))
@@ -2331,11 +2478,11 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
     }
 
 
-      //if (ptr) free(ptr);
+  //if (ptr) free(ptr);
   ptr = acl_malloc2 (strlen (sel) + 2000);
   SPRINTF2 (ptr, "%s %s", sel, lp);
   return ptr;
- return 0;
+  return 0;
 }
 
 
@@ -2345,97 +2492,118 @@ A4GLSQLCV_add_temp_table (char *tabname)
 {
   if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
     {
-		A4GL_debug("Adding LOG_TEMP_TABLE for %s", tabname);
+      A4GL_debug ("Adding LOG_TEMP_TABLE for %s", tabname);
       A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
     }
 
 }
 
 char *
-A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra,
-			     char *oplog)
+A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra, char *oplog)
 {
-  static char *ptr=0;
+  static char *ptr = 0;
 
   //if (ptr) free(ptr);
 
-  ptr = acl_malloc2 (strlen (tabname) + strlen (elements) + strlen (extra) +
-		 strlen (oplog) + 1000);
+  ptr = acl_malloc2 (strlen (tabname) + strlen (elements) + strlen (extra) + strlen (oplog) + 1000);
 
-  save_temp_table (tabname,0);
-      if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
-	{
-	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
-	}
+  save_temp_table (tabname, 0);
+  if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
+    {
+      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
+    }
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
     {
       A4GL_debug ("Creating temp table called TABLE : %s", tabname);
 
       //if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE)) { A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1); }
-  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-      		SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, A4GL_space_out (elements));
-	} else {
-      		SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, A4GL_space_out (elements));
+      if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+	{
+	  SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname,
+		    A4GL_space_out (elements));
+	}
+      else
+	{
+	  SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname,
+		    A4GL_space_out (elements));
 	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_CREATE_HASH"))
     {
-  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-      		SPRINTF4 (ptr, "CREATE TABLE #%s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
-	} else {
-      		SPRINTF4 (ptr, "CREATE TABLE #%s (%s) %s %s", tabname, elements, extra, oplog);
+      if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+	{
+	  SPRINTF4 (ptr, "CREATE TABLE #%s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+	}
+      else
+	{
+	  SPRINTF4 (ptr, "CREATE TABLE #%s (%s) %s %s", tabname, elements, extra, oplog);
 	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_GLOBAL_TEMP_DELETE"))
     {
-  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT DELETE ROWS", tabname, elements);
-	} else {
-      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT DELETE ROWS", tabname, elements);
+      if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+	{
+	  SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT DELETE ROWS", tabname, elements);
+	}
+      else
+	{
+	  SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT DELETE ROWS", tabname, elements);
 	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE"))
     {
-  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT PRESERVE ROWS", tabname, elements);
-	} else {
-      		SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT PRESERVE ROWS", tabname, elements);
+      if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+	{
+	  SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS ON COMMIT PRESERVE ROWS", tabname, elements);
+	}
+      else
+	{
+	  SPRINTF2 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) ON COMMIT PRESERVE ROWS", tabname, elements);
 	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_GLOBAL_TEMPORARY"))
     {
-  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-      		SPRINTF4 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
-	} else {
-      		SPRINTF4 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
+      if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+	{
+	  SPRINTF4 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+	}
+      else
+	{
+	  SPRINTF4 (ptr, "CREATE GLOBAL TEMPORARY TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
 	}
       return ptr;
     }
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_TEMPORARY"))
     {
-  	if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-      		SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
-	} else {
-      		SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
+      if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+	{
+	  SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+	}
+      else
+	{
+	  SPRINTF4 (ptr, "CREATE TEMPORARY TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
 	}
       return ptr;
     }
 
-  if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
-  	SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
-  } else {
-  	SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
-  }
+  if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
+    {
+      SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) WITH OIDS %s %s", tabname, elements, extra, oplog);
+    }
+  else
+    {
+      SPRINTF4 (ptr, "CREATE TEMP TABLE %s (%s) %s %s", tabname, elements, extra, oplog);
+    }
   return ptr;
 }
 
@@ -2447,13 +2615,11 @@ A4GLSQLCV_rencol (char *tabname, char *colname, char *ncolname)
   static char buff[256];
   if (A4GLSQLCV_check_requirement ("RENAME_COLUMN_AS_ALTER_TABLE"))
     {
-      SPRINTF3 (buff, "ALTER TABLE %s RENAME COLUMN %s TO %s", tabname,
-		colname, ncolname);
+      SPRINTF3 (buff, "ALTER TABLE %s RENAME COLUMN %s TO %s", tabname, colname, ncolname);
     }
   else
     {
-      SPRINTF3 (buff, "RENAME COLUMN %s.%s TO %s", tabname, colname,
-		ncolname);
+      SPRINTF3 (buff, "RENAME COLUMN %s.%s TO %s", tabname, colname, ncolname);
     }
   return buff;
 }
@@ -2487,15 +2653,12 @@ A4GLSQLCV_get_sqlconst (char *s)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_SQLCONST)
 	{
-	  if (A4GL_aubit_strcasecmp (s, current_conversion_rules[b].data.from)
-	      == 0)
+	  if (A4GL_aubit_strcasecmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
 	      char *to;
 	      if (current_conversion_rules[b].data.to[0] == '$')
 		{
-		  to =
-		    get_dollared_sql_var (current_conversion_rules[b].data.
-					  to);
+		  to = get_dollared_sql_var (current_conversion_rules[b].data.to);
 		}
 	      else
 		{
@@ -2511,15 +2674,12 @@ A4GLSQLCV_get_sqlconst (char *s)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_EXPR)
 	{
-	  if (A4GL_aubit_strcasecmp (s, current_conversion_rules[b].data.from)
-	      == 0)
+	  if (A4GL_aubit_strcasecmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
 	      char *to;
 	      if (current_conversion_rules[b].data.to[0] == '$')
 		{
-		  to =
-		    get_dollared_sql_var (current_conversion_rules[b].data.
-					  to);
+		  to = get_dollared_sql_var (current_conversion_rules[b].data.to);
 		}
 	      else
 		{
@@ -2529,90 +2689,93 @@ A4GLSQLCV_get_sqlconst (char *s)
 	    }
 	}
     }
-  if (strcmp(s,"TRUE")==0) return "1";
-  if (strcmp(s,"FALSE")==0) return "0";
+  if (strcmp (s, "TRUE") == 0)
+    return "1";
+  if (strcmp (s, "FALSE") == 0)
+    return "0";
   return s;
 }
 
 
-static int sql_convert_func(char *srcfmt, char *srcparam, char *dstbuf, int dstbuf_size)
+static int
+sql_convert_func (char *srcfmt, char *srcparam, char *dstbuf, int dstbuf_size)
 {
-    int i, len;
-    char *fmt;
-    char *param;
-    char *tparam[10];
-    int dstidx;
-    int param_count;
-    int param_start;
-    int j;
+  int i, len;
+  char *fmt;
+  char *param;
+  char *tparam[10];
+  int dstidx;
+  int param_count;
+  int param_start;
+  int j;
 
-    memset(dstbuf, 0, dstbuf_size);
+  memset (dstbuf, 0, dstbuf_size);
 
-    if (srcfmt == NULL)
+  if (srcfmt == NULL)
     {
-	dstbuf[0] = 0;
-	return 0;
+      dstbuf[0] = 0;
+      return 0;
     }
 
-    if (strstr(srcfmt, "%s")) // simple conversion
+  if (strstr (srcfmt, "%s"))	// simple conversion
     {
-        sprintf(dstbuf, srcfmt, srcparam ? srcparam : "");
-	return 0;
+      sprintf (dstbuf, srcfmt, srcparam ? srcparam : "");
+      return 0;
     }
 
-    memset(tparam, 0, sizeof(tparam));
-    param = strdup(srcparam ? srcparam : "") ;
-    len = strlen(param);
-    param_start = 0; 
-    param_count = 0; 
-    for (i = 0; i < len; ++i)
+  memset (tparam, 0, sizeof (tparam));
+  param = strdup (srcparam ? srcparam : "");
+  len = strlen (param);
+  param_start = 0;
+  param_count = 0;
+  for (i = 0; i < len; ++i)
     {
-	if (param_count > 9)
-	    break;
-	if (param[i] == ',' || i == len-1)
+      if (param_count > 9)
+	break;
+      if (param[i] == ',' || i == len - 1)
 	{
-	    if (param[i] == ',')
-		param[i] = 0;
-	    tparam[param_count++] = param + param_start;
-	    param_start = i+1;
+	  if (param[i] == ',')
+	    param[i] = 0;
+	  tparam[param_count++] = param + param_start;
+	  param_start = i + 1;
 	}
     }
 
-    fmt = strdup(srcfmt);
-    len = strlen(fmt);
-    dstbuf[0] = fmt[0];
-    dstidx = 0;
-    for (i = 0; i < len; ++i)
+  fmt = strdup (srcfmt);
+  len = strlen (fmt);
+  dstbuf[0] = fmt[0];
+  dstidx = 0;
+  for (i = 0; i < len; ++i)
     {
-	if (dstidx >= dstbuf_size-1)
+      if (dstidx >= dstbuf_size - 1)
 	{
-	    acl_free(param);
-	    acl_free(fmt);
-	    return 0;
+	  acl_free (param);
+	  acl_free (fmt);
+	  return 0;
 	}
-	if (fmt[i] == '%' && fmt[i+1] >= '1' && fmt[i+1] <= '9' )
+      if (fmt[i] == '%' && fmt[i + 1] >= '1' && fmt[i + 1] <= '9')
 	{
-	    if (tparam[fmt[i+1] - '1'] != NULL)
+	  if (tparam[fmt[i + 1] - '1'] != NULL)
 	    {
-		for (j = 0; tparam[fmt[i+1] - '1'][j] != 0; ++j)
+	      for (j = 0; tparam[fmt[i + 1] - '1'][j] != 0; ++j)
 		{
-		    if (dstidx >= dstbuf_size-1)
+		  if (dstidx >= dstbuf_size - 1)
 		    {
-			acl_free(param);
-			acl_free(fmt);
-			return 0;
+		      acl_free (param);
+		      acl_free (fmt);
+		      return 0;
 		    }
-		    dstbuf[dstidx++] = tparam[fmt[i+1] - '1'][j];
+		  dstbuf[dstidx++] = tparam[fmt[i + 1] - '1'][j];
 		}
 	    }
-	    ++i;
+	  ++i;
 	}
-	else
-	    dstbuf[dstidx++] = fmt[i];
+      else
+	dstbuf[dstidx++] = fmt[i];
     }
-    acl_free(param);
-    acl_free(fmt);
-    return 1;
+  acl_free (param);
+  acl_free (fmt);
+  return 1;
 }
 
 char *
@@ -2625,22 +2788,19 @@ A4GLSQLCV_sql_func (char *f, char *param)
     param = "";
   SPRINTF2 (buff, "%s(%s)", f, param);
 
-  if (!A4GL_compile_time_convert()) return buff;
+  if (!A4GL_compile_time_convert ())
+    return buff;
 
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_SQLFUNC)
 	{
-	  if (A4GL_aubit_strcasecmp (f, current_conversion_rules[b].data.from)
-	      == 0)
+	  if (A4GL_aubit_strcasecmp (f, current_conversion_rules[b].data.from) == 0)
 	    {
-		if (sql_convert_func(
-			current_conversion_rules[b].data.to, param, 
-			buff, sizeof(buff)) == 0)
+	      if (sql_convert_func (current_conversion_rules[b].data.to, param, buff, sizeof (buff)) == 0)
 		{
-		    A4GL_debug ("Conversion error (CVSQL_REPLACE_SQLFUNC) %s->%s(%s)",
-			    current_conversion_rules[b].data.from,
-			    current_conversion_rules[b].data.to, param);
+		  A4GL_debug ("Conversion error (CVSQL_REPLACE_SQLFUNC) %s->%s(%s)",
+			      current_conversion_rules[b].data.from, current_conversion_rules[b].data.to, param);
 		}
 	      break;
 	    }
@@ -2671,15 +2831,14 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 	      // Looks like an IF - THEN - ELSE 
 	      //
 	      SPRINTF3 (buff, "DECODE(%s,%s,%s)",
-		       get_select_list_item (select,
-					     i->elements.elements_val[0]->data.s_select_list_item_data_u.
-					     sqlcaseelement.condition),
-		       get_select_list_item (select,
-					     i->elements.elements_val[0]->data.s_select_list_item_data_u.
-					     sqlcaseelement.response),
-		       get_select_list_item (select,
-					     i->elements.elements_val[1]->data.s_select_list_item_data_u.
-					     sqlcaseelement.response));
+			get_select_list_item (select,
+					      i->elements.elements_val[0]->data.s_select_list_item_data_u.
+					      sqlcaseelement.condition),
+			get_select_list_item (select,
+					      i->elements.elements_val[0]->data.s_select_list_item_data_u.
+					      sqlcaseelement.response),
+			get_select_list_item (select,
+					      i->elements.elements_val[1]->data.s_select_list_item_data_u.sqlcaseelement.response));
 	      return buff;
 	    }
 	}
@@ -2695,8 +2854,7 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 	  ii = &p->data.s_select_list_item_data_u.sqlcaseelement;
 	  if (ii->condition)
 	    {
-	      SPRINTF1 (small_buff1, " WHEN %s THEN ",
-		       get_select_list_item (select, ii->condition));
+	      SPRINTF1 (small_buff1, " WHEN %s THEN ", get_select_list_item (select, ii->condition));
 	    }
 	  else
 	    {
@@ -2722,17 +2880,17 @@ A4GLSQLCV_check_tablename (char *t)
   A4GL_debug ("TABLE : %s\n", t);
 
   // runtime mapping of table names
-  codeu = strdup(t);
-  A4GL_convupper(codeu);
-  ptr = A4GL_find_pointer(codeu, RUNTIME_MAPPED_TNAME);
+  codeu = strdup (t);
+  A4GL_convupper (codeu);
+  ptr = A4GL_find_pointer (codeu, RUNTIME_MAPPED_TNAME);
   if (ptr)
-  {
-      A4GL_debug("table name mapped: \"%s\"(code) \"%s\"(db)\n", codeu, ptr);
+    {
+      A4GL_debug ("table name mapped: \"%s\"(code) \"%s\"(db)\n", codeu, ptr);
       t = ptr;
-  }
-  acl_free(codeu);
+    }
+  acl_free (codeu);
 
-  if (strstr (t, "amarta")&& A4GL_isyes(acl_getenv("AMARTA_TO_SOAL")))
+  if (strstr (t, "amarta") && A4GL_isyes (acl_getenv ("AMARTA_TO_SOAL")))
     {
       int a;
       int b;
@@ -2885,7 +3043,7 @@ get_dollared_sql_var (char *s)
 
   if (A4GL_aubit_strcasecmp (s, "$DBUSER") == 0)
     {
-      SPRINTF1 (buff, "'%s'", A4GL_get_connection_username());
+      SPRINTF1 (buff, "'%s'", A4GL_get_connection_username ());
       acl_free (c);
       return buff;
     }
@@ -3306,11 +3464,12 @@ get_dollared_sql_var (char *s)
     }				// ,11 aint working yet..
 
 
-  sprintf(buff2,&s[1]);
-  if (acl_getenv_not_set_as_0(buff2)) {
-	strcpy(buff,acl_getenv_not_set_as_0(buff2));
-	return buff;
-  }
+  sprintf (buff2, &s[1]);
+  if (acl_getenv_not_set_as_0 (buff2))
+    {
+      strcpy (buff, acl_getenv_not_set_as_0 (buff2));
+      return buff;
+    }
   strcpy (buff, s);
   return buff;
 }
@@ -3373,28 +3532,42 @@ A4GL_space_out (char *s)
 
 
 static void
-add_table_mapping (char *db, char *instance, char *tab, char* newtab)
+add_table_mapping (char *db, char *instance, char *tab, char *newtab)
 {
   ntable_mappings++;
-A4GL_debug("ADD MAP db=%s inst=%s tab=%s newtab=%s\n", db,instance,tab,newtab);
+  A4GL_debug ("ADD MAP db=%s inst=%s tab=%s newtab=%s\n", db, instance, tab, newtab);
   table_mappings = acl_realloc (table_mappings, sizeof (struct table_remap) * ntable_mappings);
-  table_mappings[ntable_mappings - 1].orig_db= strdup (db);
+  table_mappings[ntable_mappings - 1].orig_db = strdup (db);
   table_mappings[ntable_mappings - 1].orig_instance = strdup (instance);
   table_mappings[ntable_mappings - 1].tabname = strdup (tab);
   table_mappings[ntable_mappings - 1].newtabname = strdup (newtab);
 }
 
 static void
-load_table_mappings (void) {
-char *ptr;
+load_table_mappings (void)
+{
+  char *ptr;
   ptr = acl_getenv ("TABLE_MAP");
-  if (ptr) { if (strlen (ptr)) {load_table_mappings_i(ptr);}}
+  if (ptr)
+    {
+      if (strlen (ptr))
+	{
+	  load_table_mappings_i (ptr);
+	}
+    }
   ptr = acl_getenv ("LOCAL_COLUMN_MAP");
-  if (ptr) { if (strlen (ptr)) {load_table_mappings_i(ptr);}}
+  if (ptr)
+    {
+      if (strlen (ptr))
+	{
+	  load_table_mappings_i (ptr);
+	}
+    }
 }
 
 
-static void load_table_mappings_i (char *ptr)
+static void
+load_table_mappings_i (char *ptr)
 {
   FILE *f;
   char buff[256];
@@ -3402,17 +3575,19 @@ static void load_table_mappings_i (char *ptr)
   char *c1;
   char *c2;
   char *c;
-	char db[200];
-	char inst[200];
-	char tabname[200];
+  char db[200];
+  char inst[200];
+  char tabname[200];
 
-  f = fopen (ptr, "r"); if (f == 0) return;
+  f = fopen (ptr, "r");
+  if (f == 0)
+    return;
 
 
   while (1)
     {
-	char *p_at;
-	char *p_colon;
+      char *p_at;
+      char *p_colon;
       c1 = 0;
       c2 = 0;
       c = fgets (buff, 256, f);
@@ -3429,35 +3604,48 @@ static void load_table_mappings_i (char *ptr)
 	  c1++;
 	}
 
-	strcpy(db,"");
-	strcpy(inst,"");
-	strcpy(tabname,"");
-	p_at=strchr(t,'@');
-	p_colon=strchr(t,':');
-	
-	if (p_at) {
-		if (p_colon) {
-			*p_colon=0; p_colon++;
-			*p_at=0; p_at++;
-			strcpy(db,buff);
-			strcpy(inst,p_at);
-			strcpy(tabname,p_colon);
-		} else {
-			*p_at=0; p_at++;
-			strcpy(tabname,buff);
-			strcpy(inst,p_at);
-		}
-	} else {
-		if (strchr(t,':')) {
-			*p_colon=0; p_colon++;
-			strcpy(db,buff);
-			strcpy(tabname,p_colon);
-		} else {
-			strcpy(tabname,buff);
-		}
+      strcpy (db, "");
+      strcpy (inst, "");
+      strcpy (tabname, "");
+      p_at = strchr (t, '@');
+      p_colon = strchr (t, ':');
+
+      if (p_at)
+	{
+	  if (p_colon)
+	    {
+	      *p_colon = 0;
+	      p_colon++;
+	      *p_at = 0;
+	      p_at++;
+	      strcpy (db, buff);
+	      strcpy (inst, p_at);
+	      strcpy (tabname, p_colon);
+	    }
+	  else
+	    {
+	      *p_at = 0;
+	      p_at++;
+	      strcpy (tabname, buff);
+	      strcpy (inst, p_at);
+	    }
+	}
+      else
+	{
+	  if (strchr (t, ':'))
+	    {
+	      *p_colon = 0;
+	      p_colon++;
+	      strcpy (db, buff);
+	      strcpy (tabname, p_colon);
+	    }
+	  else
+	    {
+	      strcpy (tabname, buff);
+	    }
 	}
 
-      add_table_mapping (db,inst,tabname,c1);
+      add_table_mapping (db, inst, tabname, c1);
     }
 }
 
@@ -3466,27 +3654,39 @@ static void
 add_mapping (char *t, char *c1, char *c2)
 {
   ncolumn_mappings++;
-  column_mappings =
-    acl_realloc (column_mappings,
-	     sizeof (struct column_remap) * ncolumn_mappings);
+  column_mappings = acl_realloc (column_mappings, sizeof (struct column_remap) * ncolumn_mappings);
   column_mappings[ncolumn_mappings - 1].tabname = strdup (t);
   column_mappings[ncolumn_mappings - 1].from_col = strdup (c1);
   column_mappings[ncolumn_mappings - 1].to_col = strdup (c2);
 }
 
 static void
-load_column_mappings (void) {
-char *ptr;
+load_column_mappings (void)
+{
+  char *ptr;
   ptr = acl_getenv ("COLUMN_MAP");
-  if (ptr) { if (strlen (ptr)) {load_column_mappings_i(ptr);}}
+  if (ptr)
+    {
+      if (strlen (ptr))
+	{
+	  load_column_mappings_i (ptr);
+	}
+    }
   ptr = acl_getenv ("LOCAL_COLUMN_MAP");
-  if (ptr) { if (strlen (ptr)) {load_column_mappings_i(ptr);}}
+  if (ptr)
+    {
+      if (strlen (ptr))
+	{
+	  load_column_mappings_i (ptr);
+	}
+    }
 }
 
 
 
 
-static void load_column_mappings_i (char *ptr)
+static void
+load_column_mappings_i (char *ptr)
 {
   FILE *f;
   char buff[256];
@@ -3496,7 +3696,9 @@ static void load_column_mappings_i (char *ptr)
   char *c;
   //ptr = acl_getenv ("COLUMN_MAP");
 
-  f = fopen (ptr, "r"); if (f == 0) return;
+  f = fopen (ptr, "r");
+  if (f == 0)
+    return;
 
 
   while (1)
@@ -3537,8 +3739,15 @@ static void load_column_mappings_i (char *ptr)
 
 
 
-void chk_loaded_mappings(void) {
-  if (!loaded_columns) { loaded_columns = 1; load_column_mappings (); load_table_mappings(); }
+void
+chk_loaded_mappings (void)
+{
+  if (!loaded_columns)
+    {
+      loaded_columns = 1;
+      load_column_mappings ();
+      load_table_mappings ();
+    }
 }
 
 
@@ -3549,13 +3758,12 @@ A4GL_confirm_colname (char *t, char *c)
   static char buff[256];
   int a;
 
-  chk_loaded_mappings();
+  chk_loaded_mappings ();
   for (a = 0; a < ncolumn_mappings; a++)
     {
       if (t == 0)
 	t = "<NOTSET>";
-      if (strcmp (t, column_mappings[a].tabname) == 0
-	  && strcmp (c, column_mappings[a].from_col) == 0)
+      if (strcmp (t, column_mappings[a].tabname) == 0 && strcmp (c, column_mappings[a].from_col) == 0)
 	{
 	  strcpy (buff, column_mappings[a].to_col);
 	  return buff;
@@ -3804,19 +4012,23 @@ int  A4GL_aubit_strcasestr (char *h, char *n) {
 	return rval;
 }*/
 
-void A4GL_set_compile_time_convert(int a) {
-	is_compile_time_convert=a;
+void
+A4GL_set_compile_time_convert (int a)
+{
+  is_compile_time_convert = a;
 }
 
-int A4GL_compile_time_convert(void) {
-	return is_compile_time_convert;
+int
+A4GL_compile_time_convert (void)
+{
+  return is_compile_time_convert;
 }
 
 
 int
 A4GL_new_escape_quote_owner (void)
 {
-return 0;
+  return 0;
 
   if (A4GLSQLCV_check_requirement ("QUOTE_OWNER"))
 
@@ -3834,154 +4046,185 @@ return 0;
   return 1;
 }
 
-char *A4GLSQLCV_db_tablename(char *dbname, char*instance, char*ownerized_tablename ) {
-static char buff[512];
-int a;
-    chk_loaded_mappings();
-    if (A4GL_isyes(acl_getenv("ALWAYSIGNDBNAMETAB"))) {
-		dbname=NULL;
-		instance=NULL;
-	}
+char *
+A4GLSQLCV_db_tablename (char *dbname, char *instance, char *ownerized_tablename)
+{
+  static char buff[512];
+  int a;
+  chk_loaded_mappings ();
+  if (A4GL_isyes (acl_getenv ("ALWAYSIGNDBNAMETAB")))
+    {
+      dbname = NULL;
+      instance = NULL;
+    }
 
-	if (dbname==NULL && instance==NULL) {
-		strcpy(buff,ownerized_tablename);
-	} else {
-		if ( instance==NULL) {
-			sprintf(buff,"%s:%s", dbname, ownerized_tablename);
-		} else {
-			if ( dbname==NULL) {
-				sprintf(buff,"%s@%s", instance, ownerized_tablename);
-			} else {
-				sprintf(buff,"%s@%s:%s", dbname, instance, ownerized_tablename);
-			}
-		}
+  if (dbname == NULL && instance == NULL)
+    {
+      strcpy (buff, ownerized_tablename);
+    }
+  else
+    {
+      if (instance == NULL)
+	{
+	  sprintf (buff, "%s:%s", dbname, ownerized_tablename);
 	}
-	if (dbname==0) dbname="";
-	if (instance==0) instance="";
-	for (a=0;a<ntable_mappings;a++) {
-		if (strcmp(table_mappings[a].orig_db, dbname)!=0)  continue;
-		if (strcmp(table_mappings[a].orig_instance, instance)!=0)  continue;
-		if (strcmp(table_mappings[a].tabname, ownerized_tablename)!=0)  continue;
-		return table_mappings[a].newtabname;
+      else
+	{
+	  if (dbname == NULL)
+	    {
+	      sprintf (buff, "%s@%s", instance, ownerized_tablename);
+	    }
+	  else
+	    {
+	      sprintf (buff, "%s@%s:%s", dbname, instance, ownerized_tablename);
+	    }
 	}
-	return buff;
+    }
+  if (dbname == 0)
+    dbname = "";
+  if (instance == 0)
+    instance = "";
+  for (a = 0; a < ntable_mappings; a++)
+    {
+      if (strcmp (table_mappings[a].orig_db, dbname) != 0)
+	continue;
+      if (strcmp (table_mappings[a].orig_instance, instance) != 0)
+	continue;
+      if (strcmp (table_mappings[a].tabname, ownerized_tablename) != 0)
+	continue;
+      return table_mappings[a].newtabname;
+    }
+  return buff;
 }
 
 char *
 A4GLSQLCV_ownerize_tablename (char *owner, char *table)
 {
-    static char *buf = NULL;
-    static int allocSize = 0;
-    static int forceNoQuoteOwner = 0;
-    static int ignoreOwner = 0;
-    static int escapeQuoteOwner = 0;
-    static char *defaultOwner = NULL;
-    int newSize;
+  static char *buf = NULL;
+  static int allocSize = 0;
+  static int forceNoQuoteOwner = 0;
+  static int ignoreOwner = 0;
+  static int escapeQuoteOwner = 0;
+  static char *defaultOwner = NULL;
+  int newSize;
 
-    chk_loaded_mappings();
+  chk_loaded_mappings ();
 
-    newSize = (defaultOwner ? strlen(defaultOwner) : 0)
-            + (owner        ? strlen(owner)        : 0)
-            + strlen(table)
-            + 10;
-    if (newSize > allocSize)
+  newSize = (defaultOwner ? strlen (defaultOwner) : 0) + (owner ? strlen (owner) : 0) + strlen (table) + 10;
+  if (newSize > allocSize)
     {
-        buf = acl_realloc(buf, newSize);
-        if (allocSize == 0) // first pass - initialize statics
-        {
-            if (A4GLSQLCV_check_requirement("STRIP_QUOTES_FROM_OWNER"))
-                forceNoQuoteOwner = 1;
-            if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))
-                ignoreOwner = 1;
-            if (A4GL_new_escape_quote_owner())
-                escapeQuoteOwner = 1;
-        }
-        allocSize = newSize;
+      buf = acl_realloc (buf, newSize);
+      if (allocSize == 0)	// first pass - initialize statics
+	{
+	  if (A4GLSQLCV_check_requirement ("STRIP_QUOTES_FROM_OWNER"))
+	    forceNoQuoteOwner = 1;
+	  if (A4GLSQLCV_check_requirement ("IGNORE_OWNER"))
+	    ignoreOwner = 1;
+	  if (A4GL_new_escape_quote_owner ())
+	    escapeQuoteOwner = 1;
+	}
+      allocSize = newSize;
     }
-    defaultOwner = acl_getenv("A4GL_DEFAULT_OWNER");
-    if (defaultOwner)
+  defaultOwner = acl_getenv ("A4GL_DEFAULT_OWNER");
+  if (defaultOwner)
     {
-        A4GL_trim(defaultOwner);
-        if (strlen(defaultOwner) == 0)
-            defaultOwner = NULL;
+      A4GL_trim (defaultOwner);
+      if (strlen (defaultOwner) == 0)
+	defaultOwner = NULL;
     }
 
-    if (ignoreOwner)
+  if (ignoreOwner)
     {
-        SPRINTF1(buf, "%s", table);
-        return A4GLSQLCV_check_tablename(buf);
+      SPRINTF1 (buf, "%s", table);
+      return A4GLSQLCV_check_tablename (buf);
 //        return buf;
     }
-    else
+  else
     {
-        if (defaultOwner && !owner) // default owner given and no owner specified in parameter
-            owner = defaultOwner;
+      if (defaultOwner && !owner)	// default owner given and no owner specified in parameter
+	owner = defaultOwner;
 
-        if (forceNoQuoteOwner)
-        {
-            if (owner)
-                SPRINTF2(buf, "%s.%s", A4GL_strip_quotes(owner), table);
-            else
-                SPRINTF1(buf, "%s", table);
-            return A4GLSQLCV_check_tablename(buf);
+      if (forceNoQuoteOwner)
+	{
+	  if (owner)
+	    SPRINTF2 (buf, "%s.%s", A4GL_strip_quotes (owner), table);
+	  else
+	    SPRINTF1 (buf, "%s", table);
+	  return A4GLSQLCV_check_tablename (buf);
 //            return buf;
-        }
-        if (escapeQuoteOwner)
-        {
-            if (owner)
-                SPRINTF2(buf, "\\\"%s\\\".%s", A4GL_strip_quotes(owner), table);
-            else
-                SPRINTF1(buf, "%s", table);
-            return A4GLSQLCV_check_tablename(buf);
+	}
+      if (escapeQuoteOwner)
+	{
+	  if (owner)
+	    SPRINTF2 (buf, "\\\"%s\\\".%s", A4GL_strip_quotes (owner), table);
+	  else
+	    SPRINTF1 (buf, "%s", table);
+	  return A4GLSQLCV_check_tablename (buf);
 //            return buf;
-        }
-        else
-        {
-            if (owner)
-                SPRINTF2(buf, "\"%s\".%s", A4GL_strip_quotes(owner), table);
-            else
-                SPRINTF1(buf, "%s", table);
-            return A4GLSQLCV_check_tablename(buf);
+	}
+      else
+	{
+	  if (owner)
+	    SPRINTF2 (buf, "\"%s\".%s", A4GL_strip_quotes (owner), table);
+	  else
+	    SPRINTF1 (buf, "%s", table);
+	  return A4GLSQLCV_check_tablename (buf);
 //            return buf;
-        }
+	}
     }
 }
- 
 
-void A4GL_free_select_stmt(struct s_select *s) {
-int a;
-if (s->table_elements.tables.tables_len) {
-	for (a=0;a<s->table_elements.tables.tables_len;a++) {
-		if (s->table_elements.tables.tables_val[a].tabname) free(s->table_elements.tables.tables_val[a].tabname);
-		if (s->table_elements.tables.tables_val[a].alias) free(s->table_elements.tables.tables_val[a].alias);
+
+void
+A4GL_free_select_stmt (struct s_select *s)
+{
+  int a;
+  if (s->table_elements.tables.tables_len)
+    {
+      for (a = 0; a < s->table_elements.tables.tables_len; a++)
+	{
+	  if (s->table_elements.tables.tables_val[a].tabname)
+	    free (s->table_elements.tables.tables_val[a].tabname);
+	  if (s->table_elements.tables.tables_val[a].alias)
+	    free (s->table_elements.tables.tables_val[a].alias);
 	}
+    }
+  free (s->table_elements.tables.tables_val);
+  s->table_elements.tables.tables_len = 0;
+  s->table_elements.tables.tables_val = 0;
 }
-free(s->table_elements.tables.tables_val);
-s->table_elements.tables.tables_len=0;
-s->table_elements.tables.tables_val=0;
-}
 
 
 
-char *A4GLSQLCV_get_forupdate (char *collist) {
-static char buff[2000];
-            if ( A4GLSQLCV_check_requirement("FOR_UPDATE_DROP_COLLIST")) {
-			collist=NULL;
-		}
-            if ( A4GLSQLCV_check_requirement("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement("EMULATE_FOR_UPDATE")) {
-                               strcpy(buff,"");
-            } else {
-			if (collist) {
-			
-                                sprintf(buff," FOR UPDATE OF %s",collist);
-			} else {
-                                sprintf(buff," FOR UPDATE");
-			}
-            }
+char *
+A4GLSQLCV_get_forupdate (char *collist)
+{
+  static char buff[2000];
+  if (A4GLSQLCV_check_requirement ("FOR_UPDATE_DROP_COLLIST"))
+    {
+      collist = NULL;
+    }
+  if (A4GLSQLCV_check_requirement ("NO_FOR_UPDATE") || A4GLSQLCV_check_requirement ("EMULATE_FOR_UPDATE"))
+    {
+      strcpy (buff, "");
+    }
+  else
+    {
+      if (collist)
+	{
 
-	
-            if ( A4GLSQLCV_check_requirement("FOR_UPDATE_NOWAIT")) {
-			strcat(buff," NOWAIT");
-		}
-return buff;
+	  sprintf (buff, " FOR UPDATE OF %s", collist);
+	}
+      else
+	{
+	  sprintf (buff, " FOR UPDATE");
+	}
+    }
+
+
+  if (A4GLSQLCV_check_requirement ("FOR_UPDATE_NOWAIT"))
+    {
+      strcat (buff, " NOWAIT");
+    }
+  return buff;
 }

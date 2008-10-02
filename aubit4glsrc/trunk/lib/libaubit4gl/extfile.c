@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.30 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: extfile.c,v 1.31 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -67,7 +67,7 @@ void A4GL_set_lang_file (char *fname_orig);
 
 int aclfgl_a4gl_show_help (int a);
 int aclfgli_show_help (int n);
-char * A4GL_get_helpfilename (void);
+char *A4GL_get_helpfilename (void);
 //int aclfgl_aclfgl_libhelp_showhelp(int helpno);
 //void A4GL_set_last_outfile (char *s);
 
@@ -100,7 +100,7 @@ A4GL_set_help_file (char *fname)
     free (curr_help_filename);
   curr_help_filename = acl_strdup (fname);
 
-  helpfile =  A4GL_open_file_dbpath (fname);
+  helpfile = A4GL_open_file_dbpath (fname);
 
   if (helpfile == 0)
     {
@@ -190,7 +190,7 @@ A4GL_set_lang_file (char *fname_orig)
 int
 aclfgl_a4gl_show_help (int a)
 {
-  A4GL_assertion(a!=1,"show help takes 1 parameter");
+  A4GL_assertion (a != 1, "show help takes 1 parameter");
 
   //a = A4GL_pop_int ();
   aclfgli_show_help (a);
@@ -217,21 +217,21 @@ A4GL_get_translated_id (char *no_c)
   max_width = 0;
   cnt = 0;
   no = atoi (no_c);
-  A4GL_debug("no=%d (from %s)",no,no_c);
+  A4GL_debug ("no=%d (from %s)", no, no_c);
   cptr = language_file_contents;
   if (cptr == 0)
     {
       A4GL_exitwith ("No language file");
       return "<unknown>";
     }
-  cptr+=4;
+  cptr += 4;
 
   //ptr = (short *) (language_file_contents);
 
   while (1)
     {
-      mno =  cptr[0] * 256 + cptr[1];
-      A4GL_debug ("pos=%d (%x)", mno,mno);
+      mno = cptr[0] * 256 + cptr[1];
+      A4GL_debug ("pos=%d (%x)", mno, mno);
 
 
       if (mno == -1 || mno > no)
@@ -242,17 +242,16 @@ A4GL_get_translated_id (char *no_c)
 	  break;
 	}
 
-	len = cptr[2] * 256 + cptr[3];
+      len = cptr[2] * 256 + cptr[3];
 
-	offset = cptr[4] * 16777216 // 256 ^ 3
-	        + cptr[5] * 65536   // 256 ^ 2
-		        + cptr[6] * 256
-			 +cptr[7];
+      offset = cptr[4] * 16777216	// 256 ^ 3
+	+ cptr[5] * 65536	// 256 ^ 2
+	+ cptr[6] * 256 + cptr[7];
 
 
       if (mno == no)
 	{
-	  cptr = language_file_contents + offset ;
+	  cptr = language_file_contents + offset;
 	  A4GL_debug ("returning %p", cptr);
 	  return cptr;
 
@@ -293,7 +292,7 @@ aclfgli_show_help (int n)
       A4GL_push_long (a);
       aclfgl_aclfgl_libhelp_showhelp (2);
     }
-	return 1;
+  return 1;
 
 }
 

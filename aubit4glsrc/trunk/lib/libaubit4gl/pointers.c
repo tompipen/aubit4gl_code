@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.51 2008-09-19 11:24:39 mikeaubury Exp $
+# $Id: pointers.c,v 1.52 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -61,7 +61,7 @@
 
 
 
-#define NOSTRCPYMAP /* Dont worry about strcpy/strcat checking */
+#define NOSTRCPYMAP		/* Dont worry about strcpy/strcat checking */
 #include "a4gl_libaubit4gl_int.h"
 
 
@@ -129,10 +129,13 @@ A4GL_strcmpare (const void *a, const void *b)
 ///
 /// Print a list of all the assigned pointers
 ///
-int aclfgl_aclfgl_walk_pointers(int n) {
-	print_ptr_stack();
-	return 0;
+int
+aclfgl_aclfgl_walk_pointers (int n)
+{
+  print_ptr_stack ();
+  return 0;
 }
+
 /**
  * Function to be executed when iterating in one node.
  *
@@ -166,7 +169,7 @@ A4GL_action (const void *nodep, const VISIT which, const int depth)
       break;
     case leaf:
       datap = *(struct s_node **) nodep;
-       printf ("%s%s %p\n\r", buff, datap->name, datap->ptr);
+      printf ("%s%s %p\n\r", buff, datap->name, datap->ptr);
       break;
     }
   return;
@@ -194,7 +197,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 
 
 
-  A4GL_assertion(buff==0,"Unable to allocate memory");
+  A4GL_assertion (buff == 0, "Unable to allocate memory");
   buff->name[0] = type;
   buff->name[1] = 0;
   strcat (buff->name, orig_name);
@@ -206,7 +209,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
     {
       anode = *(struct s_node **) a;
       anode->ptr = ptr;
-	free(buff);
+      free (buff);
 
 #ifdef ADD_POINTER_TO_POINTER
       SPRINTF1 (ptrchar, ">%p", buff->ptr);
@@ -220,7 +223,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 	  DELETE_X (&buff2);
 	  strcpy (anode->name, "======");
 	  free (anode);
-	free(buff);
+	  free (buff);
 	}
 #endif
     }
@@ -254,7 +257,8 @@ A4GL_find_pointer (const char *pname, char t)
   struct s_node *anode;
   void *a;
 
-  if (strlen(pname)>=TXT_LEN-1) return 0;
+  if (strlen (pname) >= TXT_LEN - 1)
+    return 0;
   buff.name[0] = t;
   buff.name[1] = 0;
   strcat (buff.name, pname);
@@ -286,7 +290,7 @@ A4GL_find_pointer (const char *pname, char t)
 void
 print_ptr_stack (void)
 {
-  twalk (root, (void(*)(const void *nodep, const VISIT which, const int depth)) A4GL_action);
+  twalk (root, (void (*)(const void *nodep, const VISIT which, const int depth)) A4GL_action);
 }
 
 /**
@@ -314,12 +318,12 @@ A4GL_del_pointer (char *pname, char t)
       anode = *(struct s_node **) a1;
 
 #ifdef ADD_POINTER_TO_POINTER
-      SPRINTF1 (ptrchar, ">%p", anode->ptr); // Was buff
+      SPRINTF1 (ptrchar, ">%p", anode->ptr);	// Was buff
       strcpy (buff2.name, ptrchar);
       a = FIND_X (&buff2);
       if (a)
 	{
-  	struct s_node *anode;
+	  struct s_node *anode;
 	  anode = *(struct s_node **) a;
 	  DELETE_X (&buff2);
 	  strcpy (anode->name, "======");
@@ -329,8 +333,8 @@ A4GL_del_pointer (char *pname, char t)
 
       DELETE_X (buff);
       free (anode);
-    } 
-    free (buff);
+    }
+  free (buff);
 }
 
 
@@ -365,7 +369,7 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
   struct s_node *anode;
   void *a;
 
-A4GL_assertion(1,"Obsoleted function");
+  A4GL_assertion (1, "Obsoleted function");
 
   SPRINTF1 (buff.name, ">%p", ptr);
   buff.ptr = 0;
@@ -417,9 +421,8 @@ A4GL_has_pointer (char *pname, char t)
  * Totally public domain.
  */
  /*LINTLIBRARY*/
-
 #if HAVE_SEARCH_H  && ! defined(__MINGW32__)
-	//MinGW 3.1.0 introduced search.h, but where are this functions?
+  //MinGW 3.1.0 introduced search.h, but where are this functions?
 #else
 /**
  * find or insert datum into search tree
@@ -434,7 +437,7 @@ A4GL_has_pointer (char *pname, char t)
        key;
      register node **
        rootp;
-     int (*compar) (const void *l,const void *r);
+     int (*compar) (const void *l, const void *r);
 {
   register node *q;
 
@@ -473,7 +476,7 @@ node *
 tdelete (key, rootp, compar)
      char *key;			/* key to be deleted */
      register node **rootp;	/* address of the root of tree */
-     int (*compar) (const void *l,const void *r);		/* comparison function */
+     int (*compar) (const void *l, const void *r);	/* comparison function */
 {
   node *p;
   register node *q;
@@ -527,15 +530,12 @@ tdelete (key, rootp, compar)
  * @todo Describe function
  */
 static void
-trecurse (
-node *root, void (*action)(void *,int ,int ), int level)
+trecurse (node * root, void (*action) (void *, int, int), int level)
 {
-  if (root->left == (struct node_t *) 0 && root->right == (struct node_t *) 0) { 
-		(*action) ((void *)root, 
-				(int)(leaf), 
-					(int)level
-		);
-	}
+  if (root->left == (struct node_t *) 0 && root->right == (struct node_t *) 0)
+    {
+      (*action) ((void *) root, (int) (leaf), (int) level);
+    }
   else
     {
       (*action) (root, preorder, level);
@@ -585,7 +585,7 @@ twalk (node * root, void *act)
  *   - 0 : Key not found in the tree.
  *   - 1 : Key found in the tree.
  */
-node * tfind (char *key, register node ** rootp, int (*compar) (const void *l,const void *r))
+node * tfind (char *key, register node ** rootp, int (*compar) (const void *l, const void *r))
 {
   if (rootp == (struct node_t **) 0)
     return ((struct node_t *) 0);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.63 2008-10-02 10:57:09 mikeaubury Exp $
+# $Id: sql_common.c,v 1.64 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -62,17 +62,18 @@ static char source_dialect[64] = "INFORMIX";
 static int must_convert = 0;
 
 char save_esql_session[256];
-char lastDBUserName[256]="";
+char lastDBUserName[256] = "";
 
-struct s_prepared_statement {
-	char preparedStatementName[256];
-	char anonymousName[256];
-	void *sid;
-	void *extra_data;
+struct s_prepared_statement
+{
+  char preparedStatementName[256];
+  char anonymousName[256];
+  void *sid;
+  void *extra_data;
 };
 
-struct s_prepared_statement *preparedStatements=0;
-int npreparedStatements=0;
+struct s_prepared_statement *preparedStatements = 0;
+int npreparedStatements = 0;
 
 static int A4GL_findPreparedStatementbySid (void *sid);
 static int A4GL_findPreparedStatementByUniq (char *name);
@@ -102,8 +103,7 @@ void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void A4GLSQL_set_sqlerrm (char *m, char *p);
 
 
-struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni,
-					struct BINDING *ibind);
+struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 
 static int A4GL_findPreparedStatement (char *name);
@@ -131,11 +131,11 @@ static int A4GL_findPreparedStatement (char *name);
 int
 A4GLSQL_set_status (int a, int sql)
 {
-  if (aclfgli_get_err_flg() )
-  {
-      A4GL_debug("set_status: errflg is set - not setting new status %d", a);
+  if (aclfgli_get_err_flg ())
+    {
+      A4GL_debug ("set_status: errflg is set - not setting new status %d", a);
       return 0;
-  }
+    }
 
   A4GL_debug ("A4GLSQL_set_status(%d,%d)", a, sql);
 
@@ -143,10 +143,10 @@ A4GLSQL_set_status (int a, int sql)
     {
       a4gl_status = a;
       if (sql)
-        a4gl_sqlca.sqlcode = a;
+	a4gl_sqlca.sqlcode = a;
 
       if (a < 0)
-	  aclfgli_set_err_flg ();
+	aclfgli_set_err_flg ();
       A4GL_debug ("Status set to %d", a);
       return 1;
     }
@@ -161,25 +161,24 @@ A4GLSQL_set_status (int a, int sql)
 	}
       else
 	{
-	  A4GL_debug
-	    ("Status set to %d and errflg is set - not setting it to %d/%d",
-	     a4gl_status, a, sql);
+	  A4GL_debug ("Status set to %d and errflg is set - not setting it to %d/%d", a4gl_status, a, sql);
 	  return 0;
 	}
     }
 }
 
 
-void A4GL_status_ok(int sql_too) {
-	//
+void
+A4GL_status_ok (int sql_too)
+{
+  //
 }
 
 void
 A4GLSQL_set_sqlerrm (char *m, char *p)
 {
   static FILE *flog = 0;
-  if (A4GL_isyes (acl_getenv ("A4GL_LOGSQLERR"))
-      && (strlen (m) || strlen (p)))
+  if (A4GL_isyes (acl_getenv ("A4GL_LOGSQLERR")) && (strlen (m) || strlen (p)))
     {
       if (flog == 0)
 	{
@@ -196,8 +195,8 @@ A4GLSQL_set_sqlerrm (char *m, char *p)
       A4GL_debug ("Nullpointer, doing nothing!");
       return;
     }
-  strncpy (a4gl_sqlca.sqlerrm, m,sizeof(a4gl_sqlca.sqlerrm));
-  a4gl_sqlca.sqlerrm[sizeof(a4gl_sqlca.sqlerrm)]=0;
+  strncpy (a4gl_sqlca.sqlerrm, m, sizeof (a4gl_sqlca.sqlerrm));
+  a4gl_sqlca.sqlerrm[sizeof (a4gl_sqlca.sqlerrm)] = 0;
   strncpy (a4gl_sqlca.sqlerrp, p, 8);
   a4gl_sqlca.sqlerrp[8] = 0;
 }
@@ -351,53 +350,58 @@ A4GLSQL_close_session (char *sessname)
  */
 /* int -- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *mod,int line,int converted, int singleton)
+A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s, char *mod, int line, int converted,
+			int singleton)
 {
-	char buff[256];
+  char buff[256];
   char uniq_id[100];
   void *sid;
   char *ptr;
   char *sold;
-  
+
   A4GL_debug ("must_convert=%d\n", must_convert);
 
-  SPRINTF1(buff,"%s",mod);
+  SPRINTF1 (buff, "%s", mod);
 
-  ptr=strchr(buff,'.');
+  ptr = strchr (buff, '.');
 
-  if (ptr) {
-	 *ptr=0;
-  }
-  
-  sold=s;
+  if (ptr)
+    {
+      *ptr = 0;
+    }
+
+  sold = s;
   if (must_convert)
     {
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
-      s = strdup(A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s,converted));
+      s = strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
     }
 
 
-  
-  SPRINTF2(uniq_id,"a4gl_st_%s_%d",buff,line);
 
-  sid=A4GLSQL_find_prepare (uniq_id);
-  if (sid) {
-  	A4GLSQL_free_prepare(sid); 
-	A4GL_removePreparedStatementBySid(sid);
-  }
+  SPRINTF2 (uniq_id, "a4gl_st_%s_%d", buff, line);
 
-  sid=A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s,uniq_id, singleton); 
+  sid = A4GLSQL_find_prepare (uniq_id);
+  if (sid)
+    {
+      A4GLSQL_free_prepare (sid);
+      A4GL_removePreparedStatementBySid (sid);
+    }
 
-  if (s!=sold) {
-  	if (sid) {
-		//A4GL_pause_execution();
-  		A4GL_set_associated_mem(sid,s);
-		}
-  }
+  sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
 
- //A4GL_add_pointer (uniq_id,PRECODE, sid);
- A4GL_addPreparedStatement ("ANON", uniq_id, sid,NULL);
-  
+  if (s != sold)
+    {
+      if (sid)
+	{
+	  //A4GL_pause_execution();
+	  A4GL_set_associated_mem (sid, s);
+	}
+    }
+
+  //A4GL_add_pointer (uniq_id,PRECODE, sid);
+  A4GL_addPreparedStatement ("ANON", uniq_id, sid, NULL);
+
   return (struct s_sid *) sid;
 }
 
@@ -411,14 +415,13 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
  */
 /* int -- void in sql;.c */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDING *ibind,int converted)
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDING *ibind, int converted)
 {
   if (must_convert)
     {
       //sql1 = A4GL_apisql_strdup (sql1);
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
-      sql1 =
-	A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1,converted);
+      sql1 = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1, converted);
     }
   A4GL_trim (fname);
   A4GLSQL_unload_data_internal (fname, delims, sql1, nbind, ibind);
@@ -436,10 +439,11 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BI
 char *
 A4GLSQL_translate (char *sql1)
 {
-   char *s;
-    s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1,0);
-	if (s) return s;
-return sql1;
+  char *s;
+  s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1, 0);
+  if (s)
+    return s;
+  return sql1;
 }
 
 
@@ -539,7 +543,8 @@ A4GL_apisql_add_sess (char *sessname)
 
 
 int
-A4GL_apisql_has_sess (char *sessname) {
+A4GL_apisql_has_sess (char *sessname)
+{
   struct sess *p;
   struct sess *p2 = NULL;
   p2 = NULL;
@@ -553,9 +558,9 @@ A4GL_apisql_has_sess (char *sessname) {
 	  p = p->next;
 	  continue;
 	}
-	return 1;
+      return 1;
     }
-return 0;
+  return 0;
 }
 
 /**
@@ -566,28 +571,28 @@ return 0;
 void
 A4GL_apisql_set_sess (char *sessname)
 {
-    struct sess *p;
-    struct sess *pprev = NULL;
-    struct sess *pprev_curr = NULL;
+  struct sess *p;
+  struct sess *pprev = NULL;
+  struct sess *pprev_curr = NULL;
 
-    p = curr_sess;
-    while (p != NULL)
+  p = curr_sess;
+  while (p != NULL)
     {
-	if (strcmp (p->sessname, sessname) == 0)
+      if (strcmp (p->sessname, sessname) == 0)
 	{
-	    if (pprev)
-		pprev->next = p->next;
-	    else
-		break; // already on top
-	    pprev_curr = curr_sess;
-	    curr_sess = p;
-	    curr_sess->next = pprev_curr;
-	    break;
+	  if (pprev)
+	    pprev->next = p->next;
+	  else
+	    break;		// already on top
+	  pprev_curr = curr_sess;
+	  curr_sess = p;
+	  curr_sess->next = pprev_curr;
+	  break;
 	}
-	pprev = p;
-	p = p->next;
+      pprev = p;
+      p = p->next;
     }
-    A4GL_apisql_must_convert ();
+  A4GL_apisql_must_convert ();
 }
 
 /**
@@ -657,16 +662,15 @@ A4GL_apisql_must_convert (void)
   /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
    */
   must_convert = 0;
-  if (A4GL_compile_time_convert()==0) {
-		return;
-  }
+  if (A4GL_compile_time_convert () == 0)
+    {
+      return;
+    }
   A4GL_debug ("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",
-	      acl_getenv ("SQLCONVERT"), source_dialect,
-	      curr_sess->dbms_dialect);
+	      acl_getenv ("SQLCONVERT"), source_dialect, curr_sess->dbms_dialect);
   if (A4GL_isyes (acl_getenv ("SQLCONVERT")) && (source_dialect[0] > '\0')
       && (curr_sess->dbms_dialect[0] > '\0')
-      && ((strcmp (curr_sess->dbms_dialect, source_dialect) != 0)
-	  || A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
+      && ((strcmp (curr_sess->dbms_dialect, source_dialect) != 0) || A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
     {
       A4GL_debug ("Setting Must convert");
       if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
@@ -686,8 +690,7 @@ A4GL_apisql_must_convert (void)
 
 
 int
-A4GLSQL_swap_bind_stmt (char *stmt, char t, char **sb, int *sc, void *bind,
-			int cnt)
+A4GLSQL_swap_bind_stmt (char *stmt, char t, char **sb, int *sc, void *bind, int cnt)
 {
   struct s_sid *p;
   p = A4GLSQL_find_prepare (stmt);
@@ -739,43 +742,50 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
   int a;
   sid = vsid;
 
-  a=A4GL_findPreparedStatement(pname);
-  if (a>=0) {
-	void *p;
-	p=preparedStatements[a].sid;
-	A4GLSQL_free_prepare(p);
-	preparedStatements[a].sid=0;
-	strcpy(preparedStatements[a].preparedStatementName,"");
-  }
+  a = A4GL_findPreparedStatement (pname);
+  if (a >= 0)
+    {
+      void *p;
+      p = preparedStatements[a].sid;
+      A4GLSQL_free_prepare (p);
+      preparedStatements[a].sid = 0;
+      strcpy (preparedStatements[a].preparedStatementName, "");
+    }
 
 
-  if (sid==0) {
-	return 0;
-  }
+  if (sid == 0)
+    {
+      return 0;
+    }
 
 
-  a=A4GL_findPreparedStatementbySid(sid);
-  if (a>=0) { 
-	if (strcmp(preparedStatements[a].preparedStatementName,"ANON")!=0) {
-		A4GL_assertion(1,"expected ANON...");
-		return 0;
+  a = A4GL_findPreparedStatementbySid (sid);
+  if (a >= 0)
+    {
+      if (strcmp (preparedStatements[a].preparedStatementName, "ANON") != 0)
+	{
+	  A4GL_assertion (1, "expected ANON...");
+	  return 0;
 	}
-	strcpy(preparedStatements[a].preparedStatementName, pname);
-	return 1;
-  } else {
-	//A4GL_assertion(1,"Couldn't find prepared statement");
-	return 0;
-  }
-  
-  
+      strcpy (preparedStatements[a].preparedStatementName, pname);
+      return 1;
+    }
+  else
+    {
+      //A4GL_assertion(1,"Couldn't find prepared statement");
+      return 0;
+    }
+
+
 #ifdef OLD
 
-  if (A4GL_has_pointer (pname, PRECODE))  {
-	void *p;
-	  //p=A4GL_find_pointer(pname,PRECODE);
-	  //A4GLSQL_free_prepare(p);
-  	  A4GL_del_pointer (pname, PRECODE);
-  }
+  if (A4GL_has_pointer (pname, PRECODE))
+    {
+      void *p;
+      //p=A4GL_find_pointer(pname,PRECODE);
+      //A4GLSQL_free_prepare(p);
+      A4GL_del_pointer (pname, PRECODE);
+    }
 
 
   if (sid)
@@ -819,7 +829,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
   ibind = vibind;
   A4GL_debug ("ESQL : A4GLSQL_execute_sql");
   sid = A4GLSQL_find_prepare (pname);	// ,0
-  
+
   if (sid != 0)
     {
       //sid->ibind = ibind;
@@ -835,20 +845,24 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 }
 
 
-void *A4GLSQL_find_prepare (char *pname) {
-int a;
+void *
+A4GLSQL_find_prepare (char *pname)
+{
+  int a;
 
-a=A4GL_findPreparedStatement(pname);
-if (a>=0) {
-	return preparedStatements[a].sid ;
-}
+  a = A4GL_findPreparedStatement (pname);
+  if (a >= 0)
+    {
+      return preparedStatements[a].sid;
+    }
 
-a=A4GL_findPreparedStatementByUniq(pname);
-if (a>=0) {
-	return preparedStatements[a].sid ;
-}
+  a = A4GL_findPreparedStatementByUniq (pname);
+  if (a >= 0)
+    {
+      return preparedStatements[a].sid;
+    }
 
-return NULL;
+  return NULL;
 }
 
 
@@ -873,8 +887,8 @@ void *
 A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
- //if (strcmp(pname,"a4gl_st_prepare_29")==0) {
-	//A4GL_pause_execution();
+  //if (strcmp(pname,"a4gl_st_prepare_29")==0) {
+  //A4GL_pause_execution();
 //}
   A4GL_debug ("Find prepare : %s\n", pname);
   A4GL_set_errm (pname);
@@ -909,8 +923,7 @@ A4GL_log_sql_prepared (char *s)
     return;
 
   // Firstly - MAPSQL should be a directory...
-  SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (),
-	    getpid ());
+  SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (), getpid ());
   fout = fopen (buff, "a");
   if (fout == 0)
     {				// Maybe - its just a file ?
@@ -961,8 +974,7 @@ A4GL_log_sql_prepared_map (char *s)
   if (logfnameset == 0)
     {
       // Firstly - MAPSQL should be a directory...
-      SPRINTF3 (buff, "%s/%s_%d.map", fname, A4GL_get_running_program (),
-		getpid ());
+      SPRINTF3 (buff, "%s/%s_%d.map", fname, A4GL_get_running_program (), getpid ());
       fout = fopen (buff, "a");
       if (fout == 0)
 	{			// Maybe - its just a file ?
@@ -1023,7 +1035,8 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 
 /* Add a table structure to a structure representing the FROM clause of a select */
 struct s_table *
-A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2, e_outer_type is_outer,struct s_select_list_item *outer_join_condition)
+A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2, e_outer_type is_outer,
+			       struct s_select_list_item *outer_join_condition)
 {
   struct s_table *p;
   struct s_table *o;
@@ -1033,8 +1046,8 @@ A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2, e_outer_t
     {
       o = A4GLSQLPARSE_new_tablename ("@", "@");
       o->outer_next = t2;
-	o->outer_type=is_outer;
-	o->outer_join_condition=outer_join_condition;
+      o->outer_type = is_outer;
+      o->outer_join_condition = outer_join_condition;
       o->next = 0;
       t2 = o;
     }
@@ -1055,8 +1068,7 @@ A4GLSQLPARSE_append_tablename (struct s_table *t1, struct s_table *t2, e_outer_t
 */
 
 struct s_table_list *
-A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t,
-				      char *a)
+A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a)
 {
   if (tl == 0)
     {
@@ -1081,9 +1093,7 @@ A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t,
 
 /* Generate the string representing the FROM clause for a SELECT */
 int
-A4GLSQLPARSE_from_clause_collect_tables (struct s_select *select,
-					 struct s_table *t,
-					 struct s_table_list *tl)
+A4GLSQLPARSE_from_clause_collect_tables (struct s_select *select, struct s_table *t, struct s_table_list *tl)
 {
   int a = 0;
 
@@ -1111,9 +1121,7 @@ A4GLSQLPARSE_from_clause_collect_tables (struct s_select *select,
 
 
 int
-A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
-				struct s_table *t, char *fill,
-				struct s_table_list *tl)
+A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left, struct s_table *t, char *fill, struct s_table_list *tl)
 {
   char buff[2000];
   int a = 0;
@@ -1188,22 +1196,35 @@ A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left,
 
 
 // Debugging routing to print the where clause out...
-static void A4GL_print_from_clause(struct s_table *t,int lvl) {
-int a;
-for (a=0;a<lvl;a++) { printf("   "); }
-printf("%s\n", t->tabname);
-if (t->outer_next) {
-	for (a=0;a<lvl;a++) { printf("   "); }
-	
-	printf("=>");
-	A4GL_print_from_clause(t->outer_next,lvl+1);
-}
-if (t->next) {
-	for (a=0;a<lvl;a++) { printf("   "); }
-	printf("->");
-	A4GL_print_from_clause (t->next,lvl+1);
-}
-printf("\n");
+static void
+A4GL_print_from_clause (struct s_table *t, int lvl)
+{
+  int a;
+  for (a = 0; a < lvl; a++)
+    {
+      printf ("   ");
+    }
+  printf ("%s\n", t->tabname);
+  if (t->outer_next)
+    {
+      for (a = 0; a < lvl; a++)
+	{
+	  printf ("   ");
+	}
+
+      printf ("=>");
+      A4GL_print_from_clause (t->outer_next, lvl + 1);
+    }
+  if (t->next)
+    {
+      for (a = 0; a < lvl; a++)
+	{
+	  printf ("   ");
+	}
+      printf ("->");
+      A4GL_print_from_clause (t->next, lvl + 1);
+    }
+  printf ("\n");
 }
 
 
@@ -1214,22 +1235,24 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
   char buff[2000];
   char lastt[2000];
   int a = 0;
-  char ob[2]="("; // Open bracket
-  char cb[2]=")"; // close bracket
+  char ob[2] = "(";		// Open bracket
+  char cb[2] = ")";		// close bracket
 
   // Some SQLS dont like the brackets following the outers - so allow then to be removed...
-  if (A4GLSQLCV_check_requirement ("OUTER_JOINS_NB")) { 	
-		ob[0]=' ';
-		cb[0]=' ';
-  }
+  if (A4GLSQLCV_check_requirement ("OUTER_JOINS_NB"))
+    {
+      ob[0] = ' ';
+      cb[0] = ' ';
+    }
 
 
   if (A4GLSQLCV_check_requirement ("FIX_OUTER_JOINS"))
     {
       a = A4GLSQLPARSE_from_clause_join (select, t, fill, tl);
- 	if (a==0) {
-			printf("Cant do :\n");
-			A4GL_print_from_clause(t,0);
+      if (a == 0)
+	{
+	  printf ("Cant do :\n");
+	  A4GL_print_from_clause (t, 0);
 	}
     }
 
@@ -1255,12 +1278,12 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
 	{
 	  switch (t->outer_type)
 	    {
-	    case E_OUTER_NONE:	
-		{
+	    case E_OUTER_NONE:
+	      {
 		char outer[2000];
 		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
-			strcat(buff,outer);
-		}
+		strcat (buff, outer);
+	      }
 	      break;
 
 	    case E_OUTER_NORMAL:
@@ -1289,21 +1312,25 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
 		a++;
 		strcpy (outer, "");
 		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
-		strcat (buff, " LEFT OUTER JOIN "); strcat(buff,ob);
+		strcat (buff, " LEFT OUTER JOIN ");
+		strcat (buff, ob);
 		strcat (buff, outer);
 		ptr = get_select_list_item (select, t->outer_join_condition);
-		if (t->outer_join_condition->data.type==E_SLI_BRACKET_EXPR) {
-			strcat(buff,cb);
-			strcat (buff, " ON ");
-			strcat (buff, ptr);
-	
-		} else {
-			strcat(buff,cb);
-			strcat (buff, " ON (");
-			strcat (buff, ptr);
-			strcat (buff, ")");
-		}
-			acl_free (ptr);
+		if (t->outer_join_condition->data.type == E_SLI_BRACKET_EXPR)
+		  {
+		    strcat (buff, cb);
+		    strcat (buff, " ON ");
+		    strcat (buff, ptr);
+
+		  }
+		else
+		  {
+		    strcat (buff, cb);
+		    strcat (buff, " ON (");
+		    strcat (buff, ptr);
+		    strcat (buff, ")");
+		  }
+		acl_free (ptr);
 		break;
 	      }
 
@@ -1321,21 +1348,24 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
 		strcpy (outer, "");
 		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
 		strcat (buff, " INNER JOIN ");
-		strcat(buff,ob);
+		strcat (buff, ob);
 		strcat (buff, outer);
 		ptr = get_select_list_item (select, t->outer_join_condition);
-		if (t->outer_join_condition->data.type==E_SLI_BRACKET_EXPR) {
-			strcat(buff,cb);
-			strcat (buff, " ON ");
-			strcat (buff, ptr);
-	
-		} else {
-			strcat(buff,cb);
-			strcat (buff, " ON (");
-			strcat (buff, ptr);
-			strcat (buff, ")");
-		}
-			acl_free (ptr);
+		if (t->outer_join_condition->data.type == E_SLI_BRACKET_EXPR)
+		  {
+		    strcat (buff, cb);
+		    strcat (buff, " ON ");
+		    strcat (buff, ptr);
+
+		  }
+		else
+		  {
+		    strcat (buff, cb);
+		    strcat (buff, " ON (");
+		    strcat (buff, ptr);
+		    strcat (buff, ")");
+		  }
+		acl_free (ptr);
 		break;
 	      }
 
@@ -1400,36 +1430,44 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
 
 
   // First off - lets make sure the file is encrypted...
-  A4GL_sqlid_encrypt();
+  A4GL_sqlid_encrypt ();
 
   ptr = acl_getenv_not_set_as_0 ("A4GL_SQLACL");
-	if (ptr) {
-		if (!A4GL_file_exists(ptr)) ptr=0;
-	}
+  if (ptr)
+    {
+      if (!A4GL_file_exists (ptr))
+	ptr = 0;
+    }
 
-  if (ptr==0) {
-		ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
-		if (ptr) {
-			if (!A4GL_file_exists(ptr)) ptr=0;
-		}
-  }
+  if (ptr == 0)
+    {
+      ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
+      if (ptr)
+	{
+	  if (!A4GL_file_exists (ptr))
+	    ptr = 0;
+	}
+    }
 
   if (ptr == 0)
     {
 #if defined( __MINGW32__ ) || defined(MSVC)
       if (strlen (fname) == 0)
 	{
-		char *aubitdir;
-		aubitdir=acl_getenv("AUBITDIR");
-		if (aubitdir) {
-			if (strlen(aubitdir)) {
-				strcpy(fname,aubitdir);
-				strcat(fname,"/etc/aubit4gl.acl");
-			}
+	  char *aubitdir;
+	  aubitdir = acl_getenv ("AUBITDIR");
+	  if (aubitdir)
+	    {
+	      if (strlen (aubitdir))
+		{
+		  strcpy (fname, aubitdir);
+		  strcat (fname, "/etc/aubit4gl.acl");
 		}
-	  	if (strlen(fname)==0) {
-			strcpy (fname, "c:\\aubit4gl\\aubit4gl.acl");
-		}
+	    }
+	  if (strlen (fname) == 0)
+	    {
+	      strcpy (fname, "c:\\aubit4gl\\aubit4gl.acl");
+	    }
 	}
 #else
       strcpy (fname, acl_getenv ("HOME"));
@@ -1529,23 +1567,32 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
 
 
 
-void A4GL_set_connection_username(char *u) {
+void
+A4GL_set_connection_username (char *u)
+{
 // Sets the username that we last tried to connect to a database with...
-if (u) {
-	strcpy(lastDBUserName,u);
-} else {
-	strcpy(lastDBUserName,"");
-}
-}
-
-
-char * A4GL_get_connection_username(void) {
-	return lastDBUserName;
+  if (u)
+    {
+      strcpy (lastDBUserName, u);
+    }
+  else
+    {
+      strcpy (lastDBUserName, "");
+    }
 }
 
-int aclfgl_aclfgl_get_connection_username(int a) {
-	A4GL_push_char(lastDBUserName);
-	return 1;
+
+char *
+A4GL_get_connection_username (void)
+{
+  return lastDBUserName;
+}
+
+int
+aclfgl_aclfgl_get_connection_username (int a)
+{
+  A4GL_push_char (lastDBUserName);
+  return 1;
 }
 
 int
@@ -1562,12 +1609,15 @@ A4GL_sqlid_encrypt (void)
   FILE *fout;
   ptr = acl_getenv_not_set_as_0 ("A4GL_SQLACL");
 
-  if (ptr==0) {
-		ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
-		if (ptr) {
-			if (!A4GL_file_exists(ptr)) ptr=0;
-		}
-  }
+  if (ptr == 0)
+    {
+      ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
+      if (ptr)
+	{
+	  if (!A4GL_file_exists (ptr))
+	    ptr = 0;
+	}
+    }
 
 
 
@@ -1669,7 +1719,7 @@ A4GL_sqlid_encrypt (void)
 		  SPRINTF1 (passwd, "!%s", buff);
 		}
 	      printed = 1;
-	      FPRINTF (fout,"%s:%s:%s\n", ptr_fields[0], uname, passwd);
+	      FPRINTF (fout, "%s:%s:%s\n", ptr_fields[0], uname, passwd);
 	    }
 	}
 
@@ -1685,23 +1735,30 @@ A4GL_sqlid_encrypt (void)
   fclose (fout);
   fclose (f);
 
-  if (unlink(fname)==0) { // All good!
-  	rename("encrypted.aclfile",fname);
-  } else {
-	A4GL_exitwith("Unable to remove original ACL file");
-	return 0;
-  }
+  if (unlink (fname) == 0)
+    {				// All good!
+      rename ("encrypted.aclfile", fname);
+    }
+  else
+    {
+      A4GL_exitwith ("Unable to remove original ACL file");
+      return 0;
+    }
 
   return 1;
 }
 
 
-char *A4GL_get_esql_connection(void) {
-	return save_esql_session;
+char *
+A4GL_get_esql_connection (void)
+{
+  return save_esql_session;
 }
 
-void A4GL_set_esql_connection(char *s) {
-	strcpy(save_esql_session,s);
+void
+A4GL_set_esql_connection (char *s)
+{
+  strcpy (save_esql_session, s);
 }
 
 
@@ -1725,24 +1782,33 @@ struct s_select_list *A4GLSQLPARSE_new_select_list_str(char *expr,char *alias) {
 /*
 */
 
-int A4GL_ESQL_cursor_is_open(char *s) {
-	if (A4GL_has_pointer(s,ESQL_CURSOR_OPEN)) {
-		return 1;
-	}
-return 0;
+int
+A4GL_ESQL_cursor_is_open (char *s)
+{
+  if (A4GL_has_pointer (s, ESQL_CURSOR_OPEN))
+    {
+      return 1;
+    }
+  return 0;
 
 }
 
-void A4GL_ESQL_set_cursor_is_open(char *s) {
-	if (!A4GL_has_pointer(s,ESQL_CURSOR_OPEN)) {
-		A4GL_add_pointer(s,ESQL_CURSOR_OPEN,(void *)1);
-	}
+void
+A4GL_ESQL_set_cursor_is_open (char *s)
+{
+  if (!A4GL_has_pointer (s, ESQL_CURSOR_OPEN))
+    {
+      A4GL_add_pointer (s, ESQL_CURSOR_OPEN, (void *) 1);
+    }
 }
 
-void A4GL_ESQL_set_cursor_is_closed(char *s) {
-	if (A4GL_has_pointer(s,ESQL_CURSOR_OPEN)) {
-		A4GL_del_pointer(s,ESQL_CURSOR_OPEN);
-	}
+void
+A4GL_ESQL_set_cursor_is_closed (char *s)
+{
+  if (A4GL_has_pointer (s, ESQL_CURSOR_OPEN))
+    {
+      A4GL_del_pointer (s, ESQL_CURSOR_OPEN);
+    }
 }
 
 
@@ -1753,70 +1819,81 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) {
 
 
 
-char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr) {
-      static int cntsql_0 = 0;
-      char cname[256];
-      static char tmpvar[256];
-	int tmpvar_i;
-      char tmpSql[2000];
-	char syscolatt[2000];
-	int cnt=0;
+char *
+A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
+{
+  static int cntsql_0 = 0;
+  char cname[256];
+  static char tmpvar[256];
+  int tmpvar_i;
+  char tmpSql[2000];
+  char syscolatt[2000];
+  int cnt = 0;
 
 
-      struct BINDING ibind_str[] = {
-	{&tmpvar, 0, 255,0,0,0}
-      };			/* end of binding */
-      struct BINDING ibind_int[] = {
-	{&tmpvar_i, 2, 0,0,0,0}
-      };			/* end of binding */
+  struct BINDING ibind_str[] = {
+    {&tmpvar, 0, 255, 0, 0, 0}
+  };				/* end of binding */
+  struct BINDING ibind_int[] = {
+    {&tmpvar_i, 2, 0, 0, 0, 0}
+  };				/* end of binding */
 
-	strcpy(syscolatt, acl_getenv("A4GL_SYSCOL_ATT"));
+  strcpy (syscolatt, acl_getenv ("A4GL_SYSCOL_ATT"));
 
-      SPRINTF1 (cname, "chkscatt_%d", cntsql_0++);
-      SPRINTF5(tmpSql,"select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno",syscolatt, attr,syscolatt,tabname,colname);
+  SPRINTF1 (cname, "chkscatt_%d", cntsql_0++);
+  SPRINTF5 (tmpSql, "select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno", syscolatt, attr, syscolatt, tabname,
+	    colname);
 
-      A4GLSQL_declare_cursor (0,(void *) A4GLSQL_prepare_select (NULL, 0, NULL, 0, tmpSql,"__internal_stack",1,0,0), 0, cname);
-      
-      if (a4gl_status != 0)
-	{
-		return 0;
-	}
-      A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor (cname,0,0);
-      if (a4gl_status != 0)
-	{
-	return 0;
-	}
-	cnt=0;
+  A4GLSQL_declare_cursor (0, (void *) A4GLSQL_prepare_select (NULL, 0, NULL, 0, tmpSql, "__internal_stack", 1, 0, 0), 0, cname);
 
-      while (1)
-	{
-		strcpy(tmpvar,"");
-		if (strcmp(attr,"color")==0) {
-	  		A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_int);
-		} else {
-	  		A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_str);
-		}
-	  	if (a4gl_status != 0) break;
-	  	if (cnt==seq) {
-			A4GL_trim(tmpvar);
-			if (strcmp(attr,"color")==0) {
-				SPRINTF1(tmpvar,"%d",tmpvar_i);
-			}
-			//printf("%s-->%s\n",attr, tmpvar);
-			return tmpvar;
-		}
-	  cnt++;
-	}
-
+  if (a4gl_status != 0)
+    {
       return 0;
     }
+  A4GLSQL_set_sqlca_sqlcode (0);
+  A4GLSQL_open_cursor (cname, 0, 0);
+  if (a4gl_status != 0)
+    {
+      return 0;
+    }
+  cnt = 0;
+
+  while (1)
+    {
+      strcpy (tmpvar, "");
+      if (strcmp (attr, "color") == 0)
+	{
+	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_int);
+	}
+      else
+	{
+	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_str);
+	}
+      if (a4gl_status != 0)
+	break;
+      if (cnt == seq)
+	{
+	  A4GL_trim (tmpvar);
+	  if (strcmp (attr, "color") == 0)
+	    {
+	      SPRINTF1 (tmpvar, "%d", tmpvar_i);
+	    }
+	  //printf("%s-->%s\n",attr, tmpvar);
+	  return tmpvar;
+	}
+      cnt++;
+    }
+
+  return 0;
+}
 
 
 
 
-char *A4GL_get_clobbered_from(char *s) {
-	return s;
+char *
+A4GL_get_clobbered_from (char *s)
+{
+  return s;
 }
 
 
@@ -1824,12 +1901,13 @@ char *A4GL_get_clobbered_from(char *s) {
 
 
 // Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-static int A4GL_findPreparedStatement (char *name)
+static int
+A4GL_findPreparedStatement (char *name)
 {
-int a;
+  int a;
   if (npreparedStatements)
     {
-		//printf("npreparedStatements=%d for %s\n", npreparedStatements, name);
+      //printf("npreparedStatements=%d for %s\n", npreparedStatements, name);
       for (a = 0; a < npreparedStatements; a++)
 	{
 	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
@@ -1842,9 +1920,10 @@ int a;
 }
 
 // Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-static int A4GL_findPreparedStatementByUniq (char *name)
+static int
+A4GL_findPreparedStatementByUniq (char *name)
 {
-int a;
+  int a;
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)
@@ -1862,24 +1941,26 @@ int a;
 void *
 A4GL_getSIDByUniq (char *name)
 {
-int a;
-  a=A4GL_findPreparedStatementByUniq(name);
-  if (a>=0) {
-	return preparedStatements[a].sid;
-  }
+  int a;
+  a = A4GL_findPreparedStatementByUniq (name);
+  if (a >= 0)
+    {
+      return preparedStatements[a].sid;
+    }
   return NULL;
 }
 
 
 // Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-static int A4GL_findPreparedStatementbySid (void *sid)
+static int
+A4GL_findPreparedStatementbySid (void *sid)
 {
-int a;
+  int a;
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)
 	{
-	  if (sid == preparedStatements[a].sid && strlen(preparedStatements[a].preparedStatementName))
+	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
 	    {
 	      return a;
 	    }
@@ -1890,21 +1971,25 @@ int a;
 
 
 
-void A4GL_removePreparedStatement(char *name) {
-	int a;
-	a=A4GL_findPreparedStatement(name);
-	strcpy(preparedStatements[a].preparedStatementName,"");
+void
+A4GL_removePreparedStatement (char *name)
+{
+  int a;
+  a = A4GL_findPreparedStatement (name);
+  strcpy (preparedStatements[a].preparedStatementName, "");
 }
 
-void A4GL_removePreparedStatementBySid(void *sid) {
-int a;
+void
+A4GL_removePreparedStatementBySid (void *sid)
+{
+  int a;
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)
 	{
-	  if (sid == preparedStatements[a].sid && strlen(preparedStatements[a].preparedStatementName))
+	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
 	    {
-		strcpy(preparedStatements[a].preparedStatementName,"");
+	      strcpy (preparedStatements[a].preparedStatementName, "");
 	    }
 	}
     }
@@ -1921,7 +2006,8 @@ A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_da
       for (a = 0; a < npreparedStatements; a++)
 	{
 
-	  if (strcmp(preparedStatements[a].preparedStatementName,"ANON")==0) continue;
+	  if (strcmp (preparedStatements[a].preparedStatementName, "ANON") == 0)
+	    continue;
 
 	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
 	    {

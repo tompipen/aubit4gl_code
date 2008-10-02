@@ -15,11 +15,11 @@ ensure_bind (long *a_bindp, long need, struct binding_comp *b)
   while (a_bind <= need)
     {
       if (a_bind == 0)
-        a_bind = 2000;          // Start off small :-)
+	a_bind = 2000;		// Start off small :-)
       else
-        {
-          a_bind = a_bind * 2;  // just double it ?
-        }
+	{
+	  a_bind = a_bind * 2;	// just double it ?
+	}
     }
   b = realloc (b, sizeof (struct binding_comp) * a_bind);
   A4GL_debug ("ensure bind Allocted %d\n", a_bind);
@@ -44,19 +44,19 @@ A4GL_strip_bracket (char *s)
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '[')
-        f++;
+	f++;
 
       if (f == 0 && s[a] != ' ')
-        {
-          buff[c++] = s[a];
-          buff[c] = 0;
-          if (c >= sizeof (buff))
-            {
-              A4GL_assertion (1, "buff in strip_bracket too small");
-            }
-        }
+	{
+	  buff[c++] = s[a];
+	  buff[c] = 0;
+	  if (c >= sizeof (buff))
+	    {
+	      A4GL_assertion (1, "buff in strip_bracket too small");
+	    }
+	}
       if (s[a] == ']')
-        f--;
+	f--;
     }
   if (c >= sizeof (buff))
     {
@@ -67,7 +67,8 @@ A4GL_strip_bracket (char *s)
 }
 
 
-int A4GL_bad_identifiers(char *S) {
-	return 0;
+int
+A4GL_bad_identifiers (char *S)
+{
+  return 0;
 }
-

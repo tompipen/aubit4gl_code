@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.22 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: match.c,v 1.23 2008-10-02 17:40:50 mikeaubury Exp $
 #*/
 
 /**
@@ -98,8 +98,7 @@ char C_ESCAPE = '\\';
 
 BOOLEAN A4GL_is_pattern (char *pattern);
 BOOLEAN A4GL_is_valid_pattern (char *pattern, int *error_type);
-int A4GL_matche_after_star (register char *pattern, register char *text,
-			    char m, char s, char b);
+int A4GL_matche_after_star (register char *pattern, register char *text, char m, char s, char b);
 int fast_match_after_star (register char *pattern, register char *text);
 
 BOOLEAN A4GL_match (char *p, char *t, char m, char s, char b);
@@ -298,8 +297,7 @@ A4GL_is_valid_pattern (char *p, int *error_type)
  *
  */
 int
-A4GL_matche (register char *p, register char *t, char multi, char single,
-	     char brace)
+A4GL_matche (register char *p, register char *t, char multi, char single, char brace)
 {
   register char range_start, range_end;	/* start and end in range */
 
@@ -392,11 +390,12 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
  *
  * 
  */
-	              if (*p == '\\')
-	                           {
-	                            range_start = range_end = *++p;
-	                            }
-	              else  range_start = range_end = *p;
+		      if (*p == '\\')
+			{
+			  range_start = range_end = *++p;
+			}
+		      else
+			range_start = range_end = *p;
 
 		      /* if end of pattern then bad pattern (Missing ']') */
 
@@ -434,7 +433,7 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
 		      /* if the text character is in range then A4GL_match found.
 		         make sure the range letters have the proper
 		         relationship to one another before comparison */
-	A4GL_debug("Range : %c %c",range_start,range_end);
+		      A4GL_debug ("Range : %c %c", range_start, range_end);
 
 		      if (range_start < range_end)
 			{
@@ -465,7 +464,7 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
 
 		  if (member_match)
 		    {
-			    A4GL_debug("member_match");
+		      A4GL_debug ("member_match");
 		      while (*p != ']')
 			{
 			  /* bad pattern (Missing ']') */
@@ -491,7 +490,7 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
 		  else
 		    {
 		      /* must A4GL_match this character exactly */
-		      A4GL_debug("Literal matching : %c %c",*p,*t);
+		      A4GL_debug ("Literal matching : %c %c", *p, *t);
 		      if (*p != *t)
 			return MATCH_LITERAL;
 		    }
@@ -522,8 +521,7 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
  * @param t The text to be checked.
  */
 int
-A4GL_matche_after_star (register char *p, register char *t, char m, char s,
-			char b)
+A4GL_matche_after_star (register char *p, register char *t, char m, char s, char b)
 {
   register int match = 0;
   register int nextp;
@@ -582,8 +580,7 @@ A4GL_matche_after_star (register char *p, register char *t, char m, char s,
 	match = MATCH_ABORT;
 
     }
-  while (match != MATCH_VALID &&
-	 match != MATCH_ABORT && match != MATCH_PATTERN);
+  while (match != MATCH_VALID && match != MATCH_ABORT && match != MATCH_PATTERN);
 
   /* return result */
 

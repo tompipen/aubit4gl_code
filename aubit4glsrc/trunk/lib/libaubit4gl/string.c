@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.32 2008-08-28 10:38:50 mikeaubury Exp $
+# $Id: string.c,v 1.33 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -85,18 +85,20 @@ A4GL_string_set (char *ptr, char *b, int size)
 {
   static char buff[50000];
 
-A4GL_assertion(b==0,"No source string");
-A4GL_assertion(ptr==0,"No destination string");
-A4GL_assertion(size<0,"Invalid size");
+  A4GL_assertion (b == 0, "No source string");
+  A4GL_assertion (ptr == 0, "No destination string");
+  A4GL_assertion (size < 0, "Invalid size");
 
-if (size==0) {
-	strcpy(ptr,b);
-	return;
-}
-  if (size>50000) {
-		A4GL_assertion(1,"Buff not big enough in string_set");
-  }
-  memset(&buff[0],0,size);
+  if (size == 0)
+    {
+      strcpy (ptr, b);
+      return;
+    }
+  if (size > 50000)
+    {
+      A4GL_assertion (1, "Buff not big enough in string_set");
+    }
+  memset (&buff[0], 0, size);
   strncpy (buff, b, size);
   strncpy (ptr, buff, size);
   ptr[size] = 0;		/* MJA 16.08.2001 */
@@ -117,10 +119,11 @@ A4GL_new_string (int a)
 {
   char *ptr;
   //A4GL_debug ("In A4GL_new_string %d (%x)\n", a,a);
-	if (a>65000) {
-		A4GL_exitwith("Dubious string size");
-		return "";
-	}
+  if (a > 65000)
+    {
+      A4GL_exitwith ("Dubious string size");
+      return "";
+    }
   ptr = (char *) acl_malloc (a + 2, "New string");	/* 1 for NULL 1 for extra */
   memset (ptr, 0, a + 2);
   //A4GL_debug ("Aclmalloc returns %p", ptr);
@@ -236,67 +239,81 @@ A4GL_strnullcmp (char *s1, char *s2)
 
 
 
-static void insert_character(char *string, int pos, char c) {
-char *buff;
-char smbuff[2];
-buff=malloc(strlen(string)+2);
+static void
+insert_character (char *string, int pos, char c)
+{
+  char *buff;
+  char smbuff[2];
+  buff = malloc (strlen (string) + 2);
 
-if (pos>0) {
-	strncpy(buff,string,pos);
-	buff[pos]=0;
-} else {
-	strcpy(buff,"");
+  if (pos > 0)
+    {
+      strncpy (buff, string, pos);
+      buff[pos] = 0;
+    }
+  else
+    {
+      strcpy (buff, "");
+    }
+  smbuff[0] = c;
+  smbuff[1] = 0;
+  strcat (buff, smbuff);
+  strcat (buff, &string[pos]);
+  strcpy (string, buff);
+  free (buff);
 }
-smbuff[0]=c;
-smbuff[1]=0;
-strcat(buff,smbuff);
-strcat(buff,&string[pos]);
-strcpy(string,buff);
-free(buff);
-}
 
 
-int A4GL_wordwrap_text(char *in, char *out,int width, int maxsize) {
-char buff[10000];
+int
+A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
+{
+  char buff[10000];
 //int lines=0;
-int cnt;
+  int cnt;
 
-cnt=width;
-strcpy(buff,in);
-A4GL_trim(buff);
-while (cnt<strlen(buff)) {
-	int a;
-	int have_blanked=0;
-	if (buff[cnt-1]==' '|| buff[cnt]==' ')  {
-		cnt+=width;
+  cnt = width;
+  strcpy (buff, in);
+  A4GL_trim (buff);
+  while (cnt < strlen (buff))
+    {
+      int a;
+      int have_blanked = 0;
+      if (buff[cnt - 1] == ' ' || buff[cnt] == ' ')
+	{
+	  cnt += width;
 	}
-	// Need to pad out...
-	for (a=1;a<width;a++) {
-		if (A4GL_isblank(buff[cnt-a-1])) {
-			int b;
-			for (b=0;b<a;b++) {
-				insert_character(buff,cnt-a-1,' ');
-				
-			}
-			have_blanked++;
-			break;
-		} 
-	}
-	if (!have_blanked) {
-		break;
-	}
-	cnt+=width;
-}
-A4GL_trim(buff);
-if (strlen(buff)>maxsize) {
-		A4GL_debug("Too large to fit... %s (%d) %d",buff,strlen(buff),maxsize);
-		strcpy(out,in);
-		return 0; // We're too long to fit...
-}
+      // Need to pad out...
+      for (a = 1; a < width; a++)
+	{
+	  if (A4GL_isblank (buff[cnt - a - 1]))
+	    {
+	      int b;
+	      for (b = 0; b < a; b++)
+		{
+		  insert_character (buff, cnt - a - 1, ' ');
 
-A4GL_debug("fits %s",buff);
-strcpy(out,buff);
-return 1;
+		}
+	      have_blanked++;
+	      break;
+	    }
+	}
+      if (!have_blanked)
+	{
+	  break;
+	}
+      cnt += width;
+    }
+  A4GL_trim (buff);
+  if (strlen (buff) > maxsize)
+    {
+      A4GL_debug ("Too large to fit... %s (%d) %d", buff, strlen (buff), maxsize);
+      strcpy (out, in);
+      return 0;			// We're too long to fit...
+    }
+
+  A4GL_debug ("fits %s", buff);
+  strcpy (out, buff);
+  return 1;
 }
 
 /* ============================= EOF ================================ */

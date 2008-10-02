@@ -1,7 +1,7 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
-int dying=0;
+int dying = 0;
 
 // --- from fglwrap.c
 void
@@ -24,7 +24,7 @@ A4GL_fgl_die_with_msg (int n, char *s)
       A4GL_debug ("In screen mode - ending curses...");
 #endif
       A4GL_gotolinemode ();
-      A4GL_stop_ui(n);
+      A4GL_stop_ui (n);
     }
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
@@ -49,7 +49,7 @@ A4GL_fgl_die (int n)
 
 
 
-  A4GL_stop_ui(n);
+  A4GL_stop_ui (n);
 
 
   if (A4GL_isscrmode ())
@@ -57,7 +57,7 @@ A4GL_fgl_die (int n)
 #ifdef DEBUG
       A4GL_debug ("In screen mode - ending curses...");
 #endif
-      A4GL_stop_ui(n);
+      A4GL_stop_ui (n);
       //A4GL_gotolinemode ();
     }
   A4GL_close_database ();
@@ -65,4 +65,3 @@ A4GL_fgl_die (int n)
   A4GL_debug ("End of program - exit(%d).", n);
   exit (n);
 }
-

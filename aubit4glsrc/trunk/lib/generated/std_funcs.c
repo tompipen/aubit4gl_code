@@ -41,6 +41,7 @@ char *builtin_aclfgl_functions[]={
 "aclfgl_set_display_field_delimiters",
 "aclfgl_set_pdf_encoding",
 "aclfgl_setenv",
+"aclfgl_split_on_delimiter",
 "aclfgl_text_as_str",
 "aclfgl_walk_pointers",
 "arg_val",

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.15 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: dataio.c,v 1.16 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -93,7 +93,8 @@ A4GL_read_data_from_file_generic (char *package, char *datatype, void *ptr, char
 {
   char buff[256];
 #ifdef DEBUG
-  A4GL_debug ("Read_data_from_file : %s %s %p %s",A4GL_null_as_null(package),  A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
+  A4GL_debug ("Read_data_from_file : %s %s %p %s", A4GL_null_as_null (package), A4GL_null_as_null (datatype), ptr,
+	      A4GL_null_as_null (filename));
 #endif
   libptr = (void *) A4GL_dl_openlibrary ("DATA", package);
   if (libptr == 0)
@@ -117,15 +118,17 @@ A4GL_read_data_from_file_generic (char *package, char *datatype, void *ptr, char
 int
 A4GL_read_data_from_file (char *datatype, void *ptr, char *filename)
 {
-	return A4GL_read_data_from_file_generic(datatype,datatype,ptr,filename);
+  return A4GL_read_data_from_file_generic (datatype, datatype, ptr, filename);
 }
 
 
-int A4GL_write_data_to_file (char *datatype, void *ptr, char *filename) {
+int
+A4GL_write_data_to_file (char *datatype, void *ptr, char *filename)
+{
 // Most often - the datatype and the package are the same
 // sometimes - we just want to write a subset of the data
 // so here - we just pass the datatype as the package name and the variable type..
-return A4GL_write_data_to_file_generic(datatype,datatype,ptr,filename);
+  return A4GL_write_data_to_file_generic (datatype, datatype, ptr, filename);
 }
 
 /**
@@ -135,13 +138,14 @@ return A4GL_write_data_to_file_generic(datatype,datatype,ptr,filename);
  * @param
  * @param
  */
-int A4GL_write_data_to_file_generic (char *package, char *datatype, void *ptr, char *filename)
+int
+A4GL_write_data_to_file_generic (char *package, char *datatype, void *ptr, char *filename)
 {
   char buff[256];
   int result;
 #ifdef DEBUG
-  A4GL_debug ("Write data to file : package=%s datatype=%s ptr=%p file=%s\n",A4GL_null_as_null(package),
-	 A4GL_null_as_null(datatype), ptr, A4GL_null_as_null(filename));
+  A4GL_debug ("Write data to file : package=%s datatype=%s ptr=%p file=%s\n", A4GL_null_as_null (package),
+	      A4GL_null_as_null (datatype), ptr, A4GL_null_as_null (filename));
 #endif
   libptr = (void *) A4GL_dl_openlibrary ("DATA", package);
   if (libptr == 0)
@@ -150,25 +154,28 @@ int A4GL_write_data_to_file_generic (char *package, char *datatype, void *ptr, c
       return 0;
     }
 
-  if (ptr) {
-  	SPRINTF1 (buff, "write_%s", datatype);
-  } else {
-	return A4GL_pack_remove_file(filename);
-  }
+  if (ptr)
+    {
+      SPRINTF1 (buff, "write_%s", datatype);
+    }
+  else
+    {
+      return A4GL_pack_remove_file (filename);
+    }
 
 #ifdef DEBUG
-  A4GL_debug ("Looking for function : %s", A4GL_null_as_null(buff));
+  A4GL_debug ("Looking for function : %s", A4GL_null_as_null (buff));
 #endif
 
   A4GL_func = A4GL_find_func (libptr, buff);
 #ifdef DEBUG
-  A4GL_debug ("Calling %s(ptr=%p,filename=%s)", A4GL_null_as_null(buff), ptr, A4GL_null_as_null(filename));
+  A4GL_debug ("Calling %s(ptr=%p,filename=%s)", A4GL_null_as_null (buff), ptr, A4GL_null_as_null (filename));
 #endif
 
   result = A4GL_func (ptr, filename);
 
 #ifdef DEBUG
-  A4GL_debug ("Returned from %s\n", A4GL_null_as_null(buff));
+  A4GL_debug ("Returned from %s\n", A4GL_null_as_null (buff));
 #endif
 
   return result;

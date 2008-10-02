@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.26 2008-07-06 11:34:35 mikeaubury Exp $
+# $Id: translate.c,v 1.27 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -134,7 +134,7 @@ A4GL_make_trans_list (void)
   char *filename;
   FILE *file;
   char buff[TRANSLINESIZE];
-int l;
+  int l;
 
   if (translate_list != (void *) -1)
     return;
@@ -165,7 +165,7 @@ int l;
       A4GL_stripnl (buff);
       if (buff[0] == '#')
 	continue;
-l= strlen (buff);
+      l = strlen (buff);
       for (a = 1; a < l - 1; a++)
 	{
 	  if (buff[a] == ':' && buff[a + 1] == '=' && buff[a - 1] != '/')
@@ -174,18 +174,24 @@ l= strlen (buff);
 	      int b;
 	      int c;
 	      ptr2 = &buff[a + 2];
-	      p=malloc(strlen(ptr2)*2+10); // Allow plenty of space..
+	      p = malloc (strlen (ptr2) * 2 + 10);	// Allow plenty of space..
 	      buff[a] = 0;
-	      c=0;
-	      p[c++]='"';
-	      for (b=0;ptr2[b];b++) {
-		      if (ptr2[b]!='"') p[c++]=ptr2[b];
-		      else {p[c++]='\\'; p[c++]=ptr2[b];}
-	      }
-	      p[c++]='"';
-	      p[c]=0;
+	      c = 0;
+	      p[c++] = '"';
+	      for (b = 0; ptr2[b]; b++)
+		{
+		  if (ptr2[b] != '"')
+		    p[c++] = ptr2[b];
+		  else
+		    {
+		      p[c++] = '\\';
+		      p[c++] = ptr2[b];
+		    }
+		}
+	      p[c++] = '"';
+	      p[c] = 0;
 	      A4GL_add_translate (1, buff, p, 0);
-	      free(p);
+	      free (p);
 	    }
 
 	  if (buff[a] == ':' && buff[a + 1] == '>' && buff[a - 1] != '/')
@@ -212,9 +218,10 @@ A4GL_dumpstring (char *s, long n, char *fname)
   static int ident = 0;
   int a;
 
-  if (ident==0 && strlen (acl_getenv ("DUMPSTRINGS_START"))) {
-	  ident=atoi(acl_getenv ("DUMPSTRINGS_START"));
-  }
+  if (ident == 0 && strlen (acl_getenv ("DUMPSTRINGS_START")))
+    {
+      ident = atoi (acl_getenv ("DUMPSTRINGS_START"));
+    }
 
   if (strlen (acl_getenv ("DUMPSTRINGS")))
     {
@@ -232,9 +239,7 @@ A4GL_dumpstring (char *s, long n, char *fname)
 	}
 
       list_of_strings_len++;
-      list_of_strings =
-	(char **) realloc (list_of_strings,
-			   list_of_strings_len * sizeof (char *));
+      list_of_strings = (char **) realloc (list_of_strings, list_of_strings_len * sizeof (char *));
       list_of_strings[list_of_strings_len - 1] = s;
 
       if (A4GL_aubit_strcasecmp ((char *) acl_getenv ("DUMPSTRINGS"), "ident") == 0)
@@ -262,10 +267,7 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
   char buff[2048];
 
   translate_list_cnt++;
-  translate_list =
-    (struct translate_string *) realloc (translate_list,
-					 sizeof (struct translate_string) *
-					 translate_list_cnt);
+  translate_list = (struct translate_string *) realloc (translate_list, sizeof (struct translate_string) * translate_list_cnt);
   translate_list[translate_list_cnt - 1].from = acl_strdup (from);
   A4GL_debug ("Adding %s -> %s mode %d", from, to, mode);
   if (mode == 1)

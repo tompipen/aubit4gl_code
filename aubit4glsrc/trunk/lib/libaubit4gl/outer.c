@@ -79,8 +79,8 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
   char buff[2000];
   struct s_table *last_t = 0;
   int a = 0;
-  char ob[2]="("; // Open bracket
-  char cb[2]=")"; // close bracket
+  char ob[2] = "(";		// Open bracket
+  char cb[2] = ")";		// close bracket
   strcpy (buff, "");
 
 /*(
@@ -91,10 +91,11 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 
 
   // Some SQLS dont like the brackets following the outers - so allow then to be removed...
-  if (A4GLSQLCV_check_requirement ("OUTER_JOINS_NB")) {
-                ob[0]=' ';
-                cb[0]=' ';
-  }
+  if (A4GLSQLCV_check_requirement ("OUTER_JOINS_NB"))
+    {
+      ob[0] = ' ';
+      cb[0] = ' ';
+    }
 
 
 
@@ -183,8 +184,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 	    case E_INNER:
 	      {
 		char buff2[2000];
-		SPRINTF2 (buff2, " INNER JOIN %s ON ( %s )", alias_buff,
-			  get_select_list_item (select, t->outer_join_condition));
+		SPRINTF2 (buff2, " INNER JOIN %s ON ( %s )", alias_buff, get_select_list_item (select, t->outer_join_condition));
 		strcat (buff, buff2);
 	      }
 	      break;
@@ -246,10 +246,12 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 		{
 		  strcat (buff, ")");
 		  anyfound = 0;
-		} else {
-	char buff2[256];
-			sprintf(buff2,", OUTER %s", alias_buff);
-			strcat(buff,buff2);
+		}
+	      else
+		{
+		  char buff2[256];
+		  sprintf (buff2, ", OUTER %s", alias_buff);
+		  strcat (buff, buff2);
 		}
 	    }
 	}

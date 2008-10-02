@@ -18,27 +18,31 @@ time....
 
 
 /* ------------ functions from compile_[c|perl].c -------------- */
-void A4GL_lex_printc(char* fmt,... ) {
-va_list ap;
-   va_start(ap,fmt);
-   A4GL_internal_lex_printc(fmt,&ap);
-   va_end(ap);
+void
+A4GL_lex_printc (char *fmt, ...)
+{
+  va_list ap;
+  va_start (ap, fmt);
+  A4GL_internal_lex_printc (fmt, &ap);
+  va_end (ap);
 }
 
 /* printh (char *fmt, ...) */
-void A4GL_lex_printh(char* fmt,... ) {
-    va_list ap;
-   va_start(ap,fmt);
-   A4GL_internal_lex_printh(fmt,&ap);
-   va_end(ap);
+void
+A4GL_lex_printh (char *fmt, ...)
+{
+  va_list ap;
+  va_start (ap, fmt);
+  A4GL_internal_lex_printh (fmt, &ap);
+  va_end (ap);
 }
 
 /* void printcomment (char *fmt,...) */
-void A4GL_lex_printcomment(char* fmt,... ) {
-va_list ap;
-   va_start(ap,fmt);
-   A4GL_internal_lex_printcomment(fmt,&ap);
-   va_end(ap);
+void
+A4GL_lex_printcomment (char *fmt, ...)
+{
+  va_list ap;
+  va_start (ap, fmt);
+  A4GL_internal_lex_printcomment (fmt, &ap);
+  va_end (ap);
 }
-
-

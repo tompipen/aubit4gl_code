@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.19 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: read_dty.c,v 1.20 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 #include "a4gl_libaubit4gl_int.h"
 
 static char *last_tab;
-int A4GL_get_dtype_size(void) ;
+int A4GL_get_dtype_size (void);
 /*
 =====================================================================
                     Functions definitions
@@ -124,16 +124,17 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
   int isize;
 
   b = 0;
-  last_size=0;
-  last_tab=0;
+  last_size = 0;
+  last_tab = 0;
 
   if (strlen (tabname) != 0)
     {
       rval = A4GLSQL_read_columns (tabname, colname, &idtype, &isize);
-      if (rval != 0) {
-  	last_tab=tabname;
-	last_size=isize;
-	return idtype;
+      if (rval != 0)
+	{
+	  last_tab = tabname;
+	  last_size = isize;
+	  return idtype;
 	}
       else
 	return -1;
@@ -148,22 +149,27 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
   for (a = 0; tablist[a] != 0; a++)
     {
       b = A4GLSQL_read_columns (tablist[a], colname, &idtype, &isize);
-	last_size=isize;
-      if (b != 0) {
-	last_tab=tablist[a];
-	return idtype;
+      last_size = isize;
+      if (b != 0)
+	{
+	  last_tab = tablist[a];
+	  return idtype;
 	}
     }
 
   return -1;
 }
 
-int A4GL_get_dtype_size(void) {
-	return last_size;
+int
+A4GL_get_dtype_size (void)
+{
+  return last_size;
 }
 
-char * A4GL_get_found_in_tab(void) {
-	return last_tab;
+char *
+A4GL_get_found_in_tab (void)
+{
+  return last_tab;
 }
 
 /* ========================= EOF ============================== */

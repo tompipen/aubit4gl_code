@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.25 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: interval.c,v 1.26 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -54,8 +54,8 @@
 
 //extern int errno;
 static int rval_type;
-static struct ival rval_ival;		/* 1 */
-static double rval_double;		/* 2 */
+static struct ival rval_ival;	/* 1 */
+static double rval_double;	/* 2 */
 
 
 /*
@@ -64,14 +64,13 @@ static double rval_double;		/* 2 */
 =====================================================================
 */
 
-/* int 		 A4GL_valid_int 		(char *s, int *data,int size); *//* in conv.c */
+										 /* int 		 A4GL_valid_int 		(char *s, int *data,int size); *//* in conv.c */
 int A4GL_mk_int_size (int s, int l);
 
 double A4GL_get_rval_double (void);
 struct ival *A4GL_get_rval_ival (void);
 int A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *d);
-int A4GL_op_ival (struct ival *a, struct ival *b,
-	     double double_val, char op, char param);
+int A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op, char param);
 
 
 /*
@@ -152,20 +151,22 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
     {
     case 2:
       data[1] += data[0] * 12;
-	data[0]=0;
+      data[0] = 0;
       break;			/* Month */
     case 4:
       data[3] += data[2] * 24;
-	data[2]=0;
+      data[2] = 0;
       break;			/* Hour */
     case 5:
       data[4] += data[2] * 24 * 60 + data[3] * 60;
-	data[2]=0;
-	data[3]=0;
+      data[2] = 0;
+      data[3] = 0;
       break;			/* Minute */
     case 6:
       data[5] += data[2] * 24 * 60 * 60 + data[3] * 60 * 60 + data[4] * 60;
-	data[2]=0;data[3]=0;data[4]=0;
+      data[2] = 0;
+      data[3] = 0;
+      data[4] = 0;
       break;			/* Second */
     }
 
@@ -180,23 +181,35 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   i->i_seconds = data[5];
   i->i_fractions = data[6];
 
-  i->is_neg=0;
+  i->is_neg = 0;
 
-  if (i->i_years<0) 	{ i->i_years*=-1; i->is_neg=1; }
-  if (i->i_days<0) 	{ i->i_days*=-1; i->is_neg=1; }
-  if (i->i_hours<0) 	{ i->i_hours*=-1; i->is_neg=1; }
-  if (i->i_minutes<0) 	{ i->i_minutes*=-1; i->is_neg=1; }
-  if (i->i_seconds<0) 	{ i->i_seconds*=-1; i->is_neg=1; }
+  if (i->i_years < 0)
+    {
+      i->i_years *= -1;
+      i->is_neg = 1;
+    }
+  if (i->i_days < 0)
+    {
+      i->i_days *= -1;
+      i->is_neg = 1;
+    }
+  if (i->i_hours < 0)
+    {
+      i->i_hours *= -1;
+      i->is_neg = 1;
+    }
+  if (i->i_minutes < 0)
+    {
+      i->i_minutes *= -1;
+      i->is_neg = 1;
+    }
+  if (i->i_seconds < 0)
+    {
+      i->i_seconds *= -1;
+      i->is_neg = 1;
+    }
 
-  A4GL_debug ("Normalized data %d %d %d %d %d %d %d",
-	data[0],
-	data[1],
-	data[2],
-	data[3],
-	data[4],
-	data[5],
-	data[6]
-);
+  A4GL_debug ("Normalized data %d %d %d %d %d %d %d", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
 
 
 #ifdef OBSOLETE
@@ -213,12 +226,10 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
     SPRINTF2 (buff, "0000%0*d0000000000000", v3, data[1]);
 
   if (v2 == 3)
-    SPRINTF6 (buff, "000000%0*d%02d%02d%02d%s",
-	     v3, data[2], data[3], data[4], data[5], fractions);
+    SPRINTF6 (buff, "000000%0*d%02d%02d%02d%s", v3, data[2], data[3], data[4], data[5], fractions);
 
   if (v2 == 4)
-    SPRINTF5 (buff, "00000000%0*d%02d%02d%s",
-	     v3, data[3], data[4], data[5], fractions);
+    SPRINTF5 (buff, "00000000%0*d%02d%02d%s", v3, data[3], data[4], data[5], fractions);
 
   if (v2 == 5)
     SPRINTF4 (buff, "0000000000%0*d%02d%s", v3, data[4], data[5], fractions);
@@ -253,8 +264,7 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
  */
 
 int
-A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
-	 char param)
+A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op, char param)
 {
   int data_a[10];
   int data_b[10];
@@ -265,17 +275,16 @@ A4GL_op_ival (struct ival *a, struct ival *b, double double_val, char op,
   int val2;
   int val3;
   int size;
-int isneg_a;
-int isneg_b;
-int isneg_r;
+  int isneg_a;
+  int isneg_b;
+  int isneg_r;
   //char buff[256];
 
   double v1 = 0;
   double v2;
   double r1 = 0;
 
-  A4GL_debug ("In A4GL_op_ival a=%p b=%p dv=%lf op=%c param=%c", a, b, double_val, op,
-	 param);
+  A4GL_debug ("In A4GL_op_ival a=%p b=%p dv=%lf op=%c param=%c", a, b, double_val, op, param);
 
   if (param == 'd')		/* We're using a double - so ignore 'b' */
     {
@@ -289,17 +298,17 @@ int isneg_r;
   A4GL_debug ("Converting intervals to strings...");
 
 
-  A4GL_decode_interval (a, data_a,&isneg_a);
-  A4GL_decode_interval (b, data_b,&isneg_b);
+  A4GL_decode_interval (a, data_a, &isneg_a);
+  A4GL_decode_interval (b, data_b, &isneg_b);
 
-  rval_ival.is_neg=0;
-  rval_ival.i_years=0;
-  rval_ival.i_months=0;
-  rval_ival.i_days=0;
-  rval_ival.i_hours=0;
-  rval_ival.i_minutes=0;
-  rval_ival.i_seconds=0;
-  rval_ival.i_fractions=0;
+  rval_ival.is_neg = 0;
+  rval_ival.i_years = 0;
+  rval_ival.i_months = 0;
+  rval_ival.i_days = 0;
+  rval_ival.i_hours = 0;
+  rval_ival.i_minutes = 0;
+  rval_ival.i_seconds = 0;
+  rval_ival.i_fractions = 0;
 
 
   A4GL_debug ("Got interval data");
@@ -347,19 +356,16 @@ int isneg_r;
       rval_ival.stime = 0x53;
       rval_ival.ltime = 0xb;
       A4GL_debug ("v1 = %d + %d + %d + %d + %lf", data_a[2] * 60 * 60 * 24,
-	     data_a[3] * 60 * 60, data_a[4] * 60, data_a[5],
-	     (double) (data_a[6]) / 100000.0);
+		  data_a[3] * 60 * 60, data_a[4] * 60, data_a[5], (double) (data_a[6]) / 100000.0);
 
-      v1 =
-	data_a[2] * 60 * 60 * 24 + data_a[3] * 60 * 60 + data_a[4] * 60 +
-	data_a[5] + (double) (data_a[6]) / 100000.0;
-      v2 =
-	data_b[2] * 60 * 60 * 24 + data_b[3] * 60 * 60 + data_b[4] * 60 +
-	data_b[5] + (double) (data_b[6]) / 100000.0;
+      v1 = data_a[2] * 60 * 60 * 24 + data_a[3] * 60 * 60 + data_a[4] * 60 + data_a[5] + (double) (data_a[6]) / 100000.0;
+      v2 = data_b[2] * 60 * 60 * 24 + data_b[3] * 60 * 60 + data_b[4] * 60 + data_b[5] + (double) (data_b[6]) / 100000.0;
     }
 
-  if (isneg_a) v1*=-1.0;
-  if (isneg_b) v2*=-1.0;
+  if (isneg_a)
+    v1 *= -1.0;
+  if (isneg_b)
+    v2 *= -1.0;
 
 
 
@@ -424,16 +430,21 @@ int isneg_r;
     }
   A4GL_debug ("r1=%lf mode=%d\n", r1, mode);
 
-   for(cnt=0;cnt<10;cnt++) {
+  for (cnt = 0; cnt < 10; cnt++)
+    {
       data_r[cnt] = 0;
-   }
-  isneg_r=0;
+    }
+  isneg_r = 0;
 
   if (mode == 1)
     {				/* we have a number of years in r1 */
       double yd, md;
       int y = 0;
-      if (r1<0) {r1*=-1; isneg_r=1;}
+      if (r1 < 0)
+	{
+	  r1 *= -1;
+	  isneg_r = 1;
+	}
       yd = floor (r1);
       md = (r1 - y) * 12.0;
       data_r[0] = yd;
@@ -444,7 +455,11 @@ int isneg_r;
     {
       double sd, fd;
       int s;
-      if (r1<0) {r1*=-1; isneg_r=1;}
+      if (r1 < 0)
+	{
+	  r1 *= -1;
+	  isneg_r = 1;
+	}
       sd = floor (r1);
       fd = r1 - sd;
       A4GL_debug ("sd=%lf fd=%lf\n", sd, fd);
@@ -467,7 +482,7 @@ int isneg_r;
   val3 = (rval_ival.stime >> 4) & 15;
 
   size = A4GL_mk_int_size (rval_ival.stime, rval_ival.ltime);
-	rval_ival.is_neg=isneg_r;
+  rval_ival.is_neg = isneg_r;
 
   A4GL_conv_invdatatoc (data_r, val1, val2, val3, &rval_ival);
 
@@ -491,37 +506,37 @@ A4GL_mk_int_size (int s, int l)
  * @param data
  */
 void
-A4GL_decode_interval (struct ival *ival, int *data,int *isneg)
+A4GL_decode_interval (struct ival *ival, int *data, int *isneg)
 {
   int i;
   /*char buff[256];
-  int cnt = 0;
-  char buff2[64]; */
+     int cnt = 0;
+     char buff2[64]; */
   int s1;
   int s2;
   /*int c;
-  int cpc;
-  int c2;
-  int ltime; */
+     int cpc;
+     int c2;
+     int ltime; */
 
   /*
-  char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
-    "SECOND", "FRACTION",
-    0
-  };
-  */
+     char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
+     "SECOND", "FRACTION",
+     0
+     };
+   */
   /*
-  int spc[] = {
-    0,
-    4,
-    2,
-    2,
-    2,
-    2,
-    2,
-    5
-  };
-*/
+     int spc[] = {
+     0,
+     4,
+     2,
+     2,
+     2,
+     2,
+     2,
+     5
+     };
+   */
   A4GL_debug ("Decoding interval into component parts");
 
   for (i = 0; i < 10; i++)
@@ -563,8 +578,7 @@ A4GL_decode_interval (struct ival *ival, int *data,int *isneg)
 
   for (cpc = s1; cpc < ltime; cpc++)
     {
-      A4GL_debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt,
-	     cnt + c2);
+      A4GL_debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt, cnt + c2);
       data[cpc - 1] = atoi (buff2);
 
       buff2[0] = buff[cnt + c2];
@@ -605,8 +619,8 @@ A4GL_decode_interval (struct ival *ival, int *data,int *isneg)
   data[4] = ival->i_minutes;
   data[5] = ival->i_seconds;
   data[6] = ival->i_fractions;
-   *isneg=ival->is_neg;
-  A4GL_debug("Y %d M %d D %d  H %d M %d S %d F %d", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
+  *isneg = ival->is_neg;
+  A4GL_debug ("Y %d M %d D %d  H %d M %d S %d F %d", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
 
 }
 

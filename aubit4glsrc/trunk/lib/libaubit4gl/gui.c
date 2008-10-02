@@ -6,10 +6,10 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #ifdef htons
-	#undef htons
+#undef htons
 #endif
 #ifdef htonl
-	#undef htonl
+#undef htonl
 #endif
 
 #include <stdio.h>
@@ -29,18 +29,18 @@
 
 int A4GL_last_error (void);
 #if (defined(WIN32) && ! defined(__CYGWIN__))
-	#define USE_WINSOCK
-	int A4GL_get_connection (int socket_type, u_short port, int *listener);
+#define USE_WINSOCK
+int A4GL_get_connection (int socket_type, u_short port, int *listener);
 #endif
 
 #ifndef USE_WINSOCK
-	#define SOCKET int
+#define SOCKET int
 #endif
 
 #ifdef USE_WINSOCK
-	#ifndef EINTR
-		#define EINTR WSAEINTR
-	#endif
+#ifndef EINTR
+#define EINTR WSAEINTR
+#endif
 #endif
 
 #include <errno.h>		/* EINTR */
@@ -52,7 +52,7 @@ int A4GL_last_error (void);
 */
 
 SOCKET sock = 0;
-int connected=0;
+int connected = 0;
 int listensock = -1;
 void A4GL_init_wsock (void);
 
@@ -64,29 +64,38 @@ void A4GL_init_wsock (void);
 
 
 #ifdef TEST
-main() {
-	A4GL_start_monitor();
+main ()
+{
+  A4GL_start_monitor ();
 }
 #endif
 
 
-int A4GL_has_monitor(void) {
-	return connected;
+int
+A4GL_has_monitor (void)
+{
+  return connected;
 }
 
-void A4GL_start_monitor (void)
+void
+A4GL_start_monitor (void)
 {
   char *p;
   int port = -1;
-  
+
   p = acl_getenv ("MONITORPORT");
-  if (p==0) p="";
+  if (p == 0)
+    p = "";
   A4GL_init_wsock ();
-  if (p) { if (strcmp (p, "") == 0) p = 0; }
+  if (p)
+    {
+      if (strcmp (p, "") == 0)
+	p = 0;
+    }
   if (p == 0)
     {
-      connected=0;
-	A4GL_debug("No monitoring");
+      connected = 0;
+      A4GL_debug ("No monitoring");
       return;
     }
 
@@ -97,10 +106,12 @@ void A4GL_start_monitor (void)
       A4GL_exitwith ("Unable to start TCP session");
     }
 
-  PRINTF("Waiting on port : %d for monitor\n",port);
+  PRINTF ("Waiting on port : %d for monitor\n", port);
   sock = A4GL_get_connection (SOCK_STREAM, port, &listensock);
-  if (A4GL_sock_puts (sock, "INIT\n")) connected = 1;
-  else connected=0;
+  if (A4GL_sock_puts (sock, "INIT\n"))
+    connected = 1;
+  else
+    connected = 0;
 }
 
 void
@@ -121,7 +132,7 @@ A4GL_monitor_close (void)
  */
 
 int
-atoport (char *service,char *proto)
+atoport (char *service, char *proto)
 {
   int port;
   long int lport;
@@ -130,7 +141,8 @@ atoport (char *service,char *proto)
 
   // First try to read it from /etc/services
   serv = getservbyname (service, proto);
-  if (serv != NULL) port = serv->s_port;
+  if (serv != NULL)
+    port = serv->s_port;
   else
     {				// Not in services, maybe a number?
       lport = strtol (service, &errpos, 0);
@@ -211,7 +223,7 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
 
   memset ((char *) &address, 0, sizeof (address));
   address.sin_family = AF_INET;
-	PRINTF("Port now : %d\n",port);
+  PRINTF ("Port now : %d\n", port);
   address.sin_port = port;
   address.sin_addr.s_addr = htonl (INADDR_ANY);
 
@@ -225,11 +237,9 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
   if (listener != NULL)
     *listener = listening_socket;
 
-  setsockopt (listening_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr,
-	      sizeof (reuse_addr));
+  setsockopt (listening_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof (reuse_addr));
 
-  if (bind (listening_socket, (struct sockaddr *) &address,
-	    sizeof (address)) < 0)
+  if (bind (listening_socket, (struct sockaddr *) &address, sizeof (address)) < 0)
     {
       perror ("bind");
       close (listening_socket);
@@ -262,7 +272,8 @@ A4GL_get_connection (int socket_type, u_short port, int *listener)
 	    }
 
 	  close (listening_socket);	/* Close our copy of this socket */
-	  if (listener != NULL) *listener = -1;	/* Closed in this process.  We are not responsible for it. */
+	  if (listener != NULL)
+	    *listener = -1;	/* Closed in this process.  We are not responsible for it. */
 	}
       return connected_socket;
     }
@@ -373,9 +384,11 @@ A4GL_sock_read (int sockfd, char *buf, size_t count)
 int
 A4GL_sock_write_int (char *buf, size_t count)
 {
-	if (sock) return A4GL_sock_write(sock,buf,count);
-	return 1;
+  if (sock)
+    return A4GL_sock_write (sock, buf, count);
+  return 1;
 }
+
 /**
  * This is just like the write() system call, accept that it will
  * make sure that all data is transmitted.
@@ -393,10 +406,12 @@ A4GL_sock_write (int sockfd, char *buf, size_t count)
 
   while (bytes_sent < count)
     {
-      do this_write = write (sockfd, buf, count - bytes_sent);
+      do
+	this_write = write (sockfd, buf, count - bytes_sent);
       while ((this_write < 0) && (A4GL_last_error () == EINTR));
-      if (this_write <= 0) {
-			return this_write;
+      if (this_write <= 0)
+	{
+	  return this_write;
 	}
       bytes_sent += this_write;
       buf += this_write;
@@ -462,8 +477,8 @@ A4GL_sock_gets (int sockfd, char *str, size_t count)
 	  if (bytes_read < 0 || retval < 0 || connected == 0)
 	    {
 	      /* The other side may have closed unexpectedly */
-		connected=0;
-		return 0 ;
+	      connected = 0;
+	      return 0;
 	    }
 
 	  if (bytes_read)
@@ -487,8 +502,10 @@ A4GL_sock_gets (int sockfd, char *str, size_t count)
 int
 A4GL_monitor_puts_int (char *str)
 {
-  if (connected) return A4GL_sock_puts (sock, str);
-  else return 1;
+  if (connected)
+    return A4GL_sock_puts (sock, str);
+  else
+    return 1;
 }
 
 /**
@@ -506,7 +523,8 @@ A4GL_sock_puts (int sockfd, char *str)
 /**
  * Initialize windows sockets.
  */
-void A4GL_init_wsock (void)
+void
+A4GL_init_wsock (void)
 {
 #ifdef USE_WINSOCK
   WSADATA wsaData;
@@ -517,7 +535,7 @@ void A4GL_init_wsock (void)
       err = WSAStartup (MAKEWORD (1, 1), &wsaData);
       if (err)
 	{
-	  A4GL_assertion (1,"Error Starting Winsock");
+	  A4GL_assertion (1, "Error Starting Winsock");
 	}
     }
   started = 1;

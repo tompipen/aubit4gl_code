@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.22 2008-07-06 11:34:33 mikeaubury Exp $
+# $Id: screen.c,v 1.23 2008-10-02 17:40:50 mikeaubury Exp $
 #*/
 
 /**
@@ -92,23 +92,24 @@ A4GL_find_attribute (struct s_form_dets *f, int field_no)
 
 
 int
-A4GL_chk_iskey (char *base,char *iot,char *keys)
+A4GL_chk_iskey (char *base, char *iot, char *keys)
 {
   char *k;
   char s[256];
   //int processed_onkey;
   long processed_onkey;
 
-   //processed_onkey=(int)GET(iot,base,"processed_onkey"); // 64Bit OK
-   processed_onkey=(long)GET(iot,base,"processed_onkey"); // 64Bit OK
+  //processed_onkey=(int)GET(iot,base,"processed_onkey"); // 64Bit OK
+  processed_onkey = (long) GET (iot, base, "processed_onkey");	// 64Bit OK
 
 // Has our key already been handled somewhere ?
 //
-if (processed_onkey==0) {
-        A4GL_debug("In A4GL_processed_onkey_v2");
-	A4GL_debug("Already handled...");
-	return 0; 
-}
+  if (processed_onkey == 0)
+    {
+      A4GL_debug ("In A4GL_processed_onkey_v2");
+      A4GL_debug ("Already handled...");
+      return 0;
+    }
 
 
 // Nope - carry on then....

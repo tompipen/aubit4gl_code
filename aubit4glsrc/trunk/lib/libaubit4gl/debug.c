@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.61 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: debug.c,v 1.62 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -56,7 +56,7 @@ extern sqlca_struct a4gl_sqlca;
 #define DEBUG_NOTREQUIRED 	2
 #define DEBUG_REQUIRED 		1
 #define DEBUG_DONTKNOW 		0
-static char *getTimecode(void) ;
+static char *getTimecode (void);
 
 
 /*
@@ -67,11 +67,11 @@ static char *getTimecode(void) ;
 
 FILE *debugfile = 0;
 int nodebug = DEBUG_DONTKNOW;
-static char g_fname[1024]="NotSet";
+static char g_fname[1024] = "NotSet";
 static char g_function[128];
 static char g_level[64];
 static int g_lineno;
-static int opened_debug_output=0;
+static int opened_debug_output = 0;
 
 static char arg0[15] = "**undefined**";
 
@@ -100,34 +100,44 @@ static void open_debugfile (void);
 static void
 open_debugfile (void)
 {
-static char debugfilename[256]="";
-if (strlen(debugfilename)==0) {
-	char *ptr;
-	strcpy(debugfilename,"debug.out");
-	ptr=acl_getenv("A4GL_DEBUGFILE");
-	if (ptr) {
-		if (strlen(ptr)) strcpy(debugfilename,ptr);
+  static char debugfilename[256] = "";
+  if (strlen (debugfilename) == 0)
+    {
+      char *ptr;
+      strcpy (debugfilename, "debug.out");
+      ptr = acl_getenv ("A4GL_DEBUGFILE");
+      if (ptr)
+	{
+	  if (strlen (ptr))
+	    strcpy (debugfilename, ptr);
 	}
-}
+    }
 
-  if (!opened_debug_output ) {
-    	opened_debug_output++;
-    	debugfile = fopen (debugfilename, "w");
-   } else {
-    	debugfile = fopen (debugfilename, "a");
-   }
+  if (!opened_debug_output)
+    {
+      opened_debug_output++;
+      debugfile = fopen (debugfilename, "w");
+    }
+  else
+    {
+      debugfile = fopen (debugfilename, "a");
+    }
   if (debugfile == 0)
     {
       PRINTF ("Unable to open debug.out - check directory permissions...\n");
-	A4GL_fgl_die(2);
+      A4GL_fgl_die (2);
     }
 }
 
 
 
 void
-A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func, char *fmt, ...) {
-  if (nodebug == DEBUG_NOTREQUIRED) { return ; }
+A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func, char *fmt, ...)
+{
+  if (nodebug == DEBUG_NOTREQUIRED)
+    {
+      return;
+    }
   if (nodebug == 1)
     {
       strcpy (g_fname, fname);
@@ -138,25 +148,30 @@ A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const 
 
   static va_list args;
 #define MAX_DEBUG 90000
-  static char buff[MAX_DEBUG+1];
+  static char buff[MAX_DEBUG + 1];
   static int a;
-  static int dbg_level=-1;
+  static int dbg_level = -1;
   static char buff_n[20];
-  static int indebug=0;
-  static int lastnow=0;
-int isNow;
+  static int indebug = 0;
+  static int lastnow = 0;
+  int isNow;
 
 
-  if (nodebug == DEBUG_NOTREQUIRED) { return; }
+  if (nodebug == DEBUG_NOTREQUIRED)
+    {
+      return;
+    }
 
-  if (indebug) return;
+  if (indebug)
+    return;
   indebug++;
 
 
-  if (strlen(fmt)==0) {
-		A4GL_assertion(1,"No format for debug");
-		A4GL_pause_execution();
-  }
+  if (strlen (fmt) == 0)
+    {
+      A4GL_assertion (1, "No format for debug");
+      A4GL_pause_execution ();
+    }
 
   if (nodebug == DEBUG_DONTKNOW)
     {
@@ -165,81 +180,89 @@ int isNow;
       else
 	{
 	  nodebug = DEBUG_NOTREQUIRED;
-	  indebug=0;
+	  indebug = 0;
 	  return;
 	}
     }
 
 
-  if (isdigit(fmt[0])) {
-	if (!isdigit(fmt[1])) {
-		buff_n[0]=fmt[0];
-		buff_n[1]=0;
-	} else {
-		buff_n[0]=fmt[0];
-		buff_n[1]=fmt[1];
-		buff_n[2]=0;
-	}
-	if (dbg_level==-1)  {
-  		dbg_level=atoi(acl_getenv("DEBUG_LEVEL"));
-	}
-  	a=atoi(buff_n);
-  	if (a && dbg_level && a > dbg_level) {
-		indebug=0;
-		return;
-  	}
-  }
-
-  if (strncmp(g_fname,"API",3)==0) {
-		char buff2[MAX_DEBUG+100];
-		SPRINTF1(buff2,"API %s\n",buff);
-#ifdef USE_MONITOR
-		A4GL_monitor_puts_int(buff2);
-#endif
-  }
-
-  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0
-      || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
+  if (isdigit (fmt[0]))
     {
-        va_start (args, fmt);
-	memset(buff,0,sizeof(buff));
+      if (!isdigit (fmt[1]))
+	{
+	  buff_n[0] = fmt[0];
+	  buff_n[1] = 0;
+	}
+      else
+	{
+	  buff_n[0] = fmt[0];
+	  buff_n[1] = fmt[1];
+	  buff_n[2] = 0;
+	}
+      if (dbg_level == -1)
+	{
+	  dbg_level = atoi (acl_getenv ("DEBUG_LEVEL"));
+	}
+      a = atoi (buff_n);
+      if (a && dbg_level && a > dbg_level)
+	{
+	  indebug = 0;
+	  return;
+	}
+    }
+
+  if (strncmp (g_fname, "API", 3) == 0)
+    {
+      char buff2[MAX_DEBUG + 100];
+      SPRINTF1 (buff2, "API %s\n", buff);
+#ifdef USE_MONITOR
+      A4GL_monitor_puts_int (buff2);
+#endif
+    }
+
+  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0 || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
+    {
+      va_start (args, fmt);
+      memset (buff, 0, sizeof (buff));
 
 #ifdef  HAVE_VSNPRINTF
-	VSNPRINTF (buff, MAX_DEBUG,fmt, args);
+      VSNPRINTF (buff, MAX_DEBUG, fmt, args);
 #else
-      	VSPRINTF (buff, fmt, args);
+      VSPRINTF (buff, fmt, args);
 #endif
 
-	buff[MAX_DEBUG]=0;
+      buff[MAX_DEBUG] = 0;
 
-  	open_debugfile ();
+      open_debugfile ();
 
-  	if (!debugfile) return;
+      if (!debugfile)
+	return;
 
-	isNow=time(0);
-	if (lastnow!=isNow) {
-		FPRINTF (debugfile, "\n*** TIMECODE %s\n\n",getTimecode());
-		lastnow=isNow;
-        }
+      isNow = time (0);
+      if (lastnow != isNow)
+	{
+	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", getTimecode ());
+	  lastnow = isNow;
+	}
 
 
       if (buff[strlen (buff) - 1] != ':')
 	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %s%s",
-		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg(),
-		 g_function, g_function[0] == 0 ? "": "() ");
+		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode, aclfgli_get_err_flg (),
+		 g_function, g_function[0] == 0 ? "" : "() ");
       else
-	FPRINTF (debugfile, "%-20s                       "," ");
+	FPRINTF (debugfile, "%-20s                       ", " ");
 
-	if (a_strchr(buff,'\n')) 
-      		FPRINTF (debugfile, " %s", buff);
-	else
-      		FPRINTF (debugfile, " %s\n", buff);
+      if (a_strchr (buff, '\n'))
+	FPRINTF (debugfile, " %s", buff);
+      else
+	FPRINTF (debugfile, " %s\n", buff);
 
-	fclose(debugfile);
-	debugfile=0;
+      fclose (debugfile);
+      debugfile = 0;
 
     }
-  indebug=0;
+  indebug = 0;
 
 }
 
@@ -253,25 +276,30 @@ void
 A4GL_debug_full_extended (char *fmt, ...)
 {
   static va_list args;
-  static char buff[MAX_DEBUG+1];
+  static char buff[MAX_DEBUG + 1];
   static int a;
-  static int dbg_level=-1;
+  static int dbg_level = -1;
   static char buff_n[20];
-  static int indebug=0;
-  static int lastnow=0;
-int isNow;
+  static int indebug = 0;
+  static int lastnow = 0;
+  int isNow;
 
 
-  if (nodebug == DEBUG_NOTREQUIRED) { return; }
+  if (nodebug == DEBUG_NOTREQUIRED)
+    {
+      return;
+    }
 
-  if (indebug) return;
+  if (indebug)
+    return;
   indebug++;
 
 
-  if (strlen(fmt)==0) {
-		A4GL_assertion(1,"No format for debug");
-		A4GL_pause_execution();
-  }
+  if (strlen (fmt) == 0)
+    {
+      A4GL_assertion (1, "No format for debug");
+      A4GL_pause_execution ();
+    }
 
   if (nodebug == DEBUG_DONTKNOW)
     {
@@ -280,81 +308,89 @@ int isNow;
       else
 	{
 	  nodebug = DEBUG_NOTREQUIRED;
-	  indebug=0;
+	  indebug = 0;
 	  return;
 	}
     }
 
 
-  if (isdigit(fmt[0])) {
-	if (!isdigit(fmt[1])) {
-		buff_n[0]=fmt[0];
-		buff_n[1]=0;
-	} else {
-		buff_n[0]=fmt[0];
-		buff_n[1]=fmt[1];
-		buff_n[2]=0;
-	}
-	if (dbg_level==-1)  {
-  		dbg_level=atoi(acl_getenv("DEBUG_LEVEL"));
-	}
-  	a=atoi(buff_n);
-  	if (a && dbg_level && a > dbg_level) {
-		indebug=0;
-		return;
-  	}
-  }
-
-  if (strncmp(g_fname,"API",3)==0) {
-		char buff2[MAX_DEBUG+100];
-		SPRINTF1(buff2,"API %s\n",buff);
-#ifdef USE_MONITOR
-		A4GL_monitor_puts_int(buff2);
-#endif
-  }
-
-  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0
-      || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
+  if (isdigit (fmt[0]))
     {
-        va_start (args, fmt);
-	memset(buff,0,sizeof(buff));
+      if (!isdigit (fmt[1]))
+	{
+	  buff_n[0] = fmt[0];
+	  buff_n[1] = 0;
+	}
+      else
+	{
+	  buff_n[0] = fmt[0];
+	  buff_n[1] = fmt[1];
+	  buff_n[2] = 0;
+	}
+      if (dbg_level == -1)
+	{
+	  dbg_level = atoi (acl_getenv ("DEBUG_LEVEL"));
+	}
+      a = atoi (buff_n);
+      if (a && dbg_level && a > dbg_level)
+	{
+	  indebug = 0;
+	  return;
+	}
+    }
+
+  if (strncmp (g_fname, "API", 3) == 0)
+    {
+      char buff2[MAX_DEBUG + 100];
+      SPRINTF1 (buff2, "API %s\n", buff);
+#ifdef USE_MONITOR
+      A4GL_monitor_puts_int (buff2);
+#endif
+    }
+
+  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0 || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
+    {
+      va_start (args, fmt);
+      memset (buff, 0, sizeof (buff));
 
 #ifdef  HAVE_VSNPRINTF
-	VSNPRINTF (buff, MAX_DEBUG,fmt, args);
+      VSNPRINTF (buff, MAX_DEBUG, fmt, args);
 #else
-      	VSPRINTF (buff, fmt, args);
+      VSPRINTF (buff, fmt, args);
 #endif
 
-	buff[MAX_DEBUG]=0;
+      buff[MAX_DEBUG] = 0;
 
-  	open_debugfile ();
+      open_debugfile ();
 
-  	if (!debugfile) return;
+      if (!debugfile)
+	return;
 
-	isNow=time(0);
-	if (lastnow!=isNow) {
-		FPRINTF (debugfile, "\n*** TIMECODE %s\n\n",getTimecode());
-		lastnow=isNow;
-        }
+      isNow = time (0);
+      if (lastnow != isNow)
+	{
+	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", getTimecode ());
+	  lastnow = isNow;
+	}
 
 
       if (buff[strlen (buff) - 1] != ':')
 	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %s%s",
-		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg(),
-		 g_function, g_function[0] == 0 ? "": "() ");
+		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode, aclfgli_get_err_flg (),
+		 g_function, g_function[0] == 0 ? "" : "() ");
       else
-	FPRINTF (debugfile, "%-20s                       "," ");
+	FPRINTF (debugfile, "%-20s                       ", " ");
 
-	if (a_strchr(buff,'\n')) 
-      		FPRINTF (debugfile, " %s", buff);
-	else
-      		FPRINTF (debugfile, " %s\n", buff);
+      if (a_strchr (buff, '\n'))
+	FPRINTF (debugfile, " %s", buff);
+      else
+	FPRINTF (debugfile, " %s\n", buff);
 
-	fclose(debugfile);
-	debugfile=0;
+      fclose (debugfile);
+      debugfile = 0;
 
     }
-  indebug=0;
+  indebug = 0;
 }
 
 /**
@@ -368,25 +404,30 @@ A4GL_debug_full (char *fmt, ...)
 {
   static va_list args;
 //#define MAX_DEBUG 10000
-  static char buff[MAX_DEBUG+1];
+  static char buff[MAX_DEBUG + 1];
   static int a;
-  static int dbg_level=-1;
+  static int dbg_level = -1;
   static char buff_n[20];
-  static int indebug=0;
-  static int lastnow=0;
-int isNow;
+  static int indebug = 0;
+  static int lastnow = 0;
+  int isNow;
 
 
-  if (nodebug == DEBUG_NOTREQUIRED) { return; }
+  if (nodebug == DEBUG_NOTREQUIRED)
+    {
+      return;
+    }
 
-  if (indebug) return;
+  if (indebug)
+    return;
   indebug++;
 
 
-  if (strlen(fmt)==0) {
-		A4GL_assertion(1,"No format for debug");
-		A4GL_pause_execution();
-  }
+  if (strlen (fmt) == 0)
+    {
+      A4GL_assertion (1, "No format for debug");
+      A4GL_pause_execution ();
+    }
 
   if (nodebug == DEBUG_DONTKNOW)
     {
@@ -395,7 +436,7 @@ int isNow;
       else
 	{
 	  nodebug = DEBUG_NOTREQUIRED;
-	  indebug=0;
+	  indebug = 0;
 	  return;
 	}
     }
@@ -405,66 +446,73 @@ int isNow;
       open_debugfile ();
     }
 
-  if (isdigit(fmt[0])) {
-	if (!isdigit(fmt[1])) {
-		buff_n[0]=fmt[0];
-		buff_n[1]=0;
-	} else {
-		buff_n[0]=fmt[0];
-		buff_n[1]=fmt[1];
-		buff_n[2]=0;
+  if (isdigit (fmt[0]))
+    {
+      if (!isdigit (fmt[1]))
+	{
+	  buff_n[0] = fmt[0];
+	  buff_n[1] = 0;
 	}
-	if (dbg_level==-1)  {
-  		dbg_level=atoi(acl_getenv("DEBUG_LEVEL"));
+      else
+	{
+	  buff_n[0] = fmt[0];
+	  buff_n[1] = fmt[1];
+	  buff_n[2] = 0;
 	}
-  	a=atoi(buff_n);
-  	if (a && dbg_level && a > dbg_level) {
-		indebug=0;
-		return;
-  	}
-  }
+      if (dbg_level == -1)
+	{
+	  dbg_level = atoi (acl_getenv ("DEBUG_LEVEL"));
+	}
+      a = atoi (buff_n);
+      if (a && dbg_level && a > dbg_level)
+	{
+	  indebug = 0;
+	  return;
+	}
+    }
 
-  if (strncmp(g_fname,"API",3)==0) {
-		char buff2[MAX_DEBUG+100];
-		SPRINTF1(buff2,"API %s\n",buff);
+  if (strncmp (g_fname, "API", 3) == 0)
+    {
+      char buff2[MAX_DEBUG + 100];
+      SPRINTF1 (buff2, "API %s\n", buff);
 #ifdef USE_MONITOR
-		A4GL_monitor_puts_int(buff2);
+      A4GL_monitor_puts_int (buff2);
 #endif
-  }
+    }
 
-  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0
-      || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
+  if (strcmp ("ALL", acl_getenv ("DEBUG")) == 0 || strcmp (g_fname, acl_getenv ("DEBUG")) == 0)
     {
       va_start (args, fmt);
-	memset(buff,0,sizeof(buff));
+      memset (buff, 0, sizeof (buff));
 
 #ifdef  HAVE_VSNPRINTF
-	VSNPRINTF (buff, MAX_DEBUG,fmt, args);
+      VSNPRINTF (buff, MAX_DEBUG, fmt, args);
 #else
-      	VSPRINTF (buff, fmt, args);
+      VSPRINTF (buff, fmt, args);
 #endif
 
-	isNow=time(0);
-	if (lastnow!=isNow) {
-		FPRINTF (debugfile, "\n*** TIMECODE %s\n\n",getTimecode());
-		lastnow=isNow;
-        }
+      isNow = time (0);
+      if (lastnow != isNow)
+	{
+	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", getTimecode ());
+	  lastnow = isNow;
+	}
 
-	buff[MAX_DEBUG]=0;
+      buff[MAX_DEBUG] = 0;
       if (buff[strlen (buff) - 1] != ':')
 	FPRINTF (debugfile, "%-20s %-6d (%6ld,%6ld,%1d)",
-		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg());
+		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode, aclfgli_get_err_flg ());
       else
-	FPRINTF (debugfile, "%-20s                       "," ");
+	FPRINTF (debugfile, "%-20s                       ", " ");
 
-	if (a_strchr(buff,'\n')) 
-      		FPRINTF (debugfile, " %s", buff);
-	else
-      		FPRINTF (debugfile, " %s\n", buff);
+      if (a_strchr (buff, '\n'))
+	FPRINTF (debugfile, " %s", buff);
+      else
+	FPRINTF (debugfile, " %s\n", buff);
 
       fflush (debugfile);
     }
-  indebug=0;
+  indebug = 0;
 }
 
 
@@ -475,7 +523,10 @@ int isNow;
 int
 A4GL_set_line_extended (char *fname, long lineno, const char *level, const char *func)
 {
-  if (nodebug == DEBUG_NOTREQUIRED) { return 0; }
+  if (nodebug == DEBUG_NOTREQUIRED)
+    {
+      return 0;
+    }
   if (nodebug == 1)
     {
       strcpy (g_fname, fname);
@@ -493,7 +544,10 @@ A4GL_set_line_extended (char *fname, long lineno, const char *level, const char 
 int
 A4GL_set_line (char *fname, long lineno)
 {
-  if (nodebug == DEBUG_NOTREQUIRED) { return 0; }
+  if (nodebug == DEBUG_NOTREQUIRED)
+    {
+      return 0;
+    }
   if (nodebug == 1)
     {
       strcpy (g_fname, fname);
@@ -611,8 +665,10 @@ a4gl_basename (char **ppsz)
 
 
 
-static char *getTimecode(void) {
-static char buff[30]="";
+static char *
+getTimecode (void)
+{
+  static char buff[30] = "";
   int mja_day;
   struct tm *local_time;
   int month, year;		/* ch, yflag; */
@@ -624,13 +680,12 @@ static char buff[30]="";
   mja_day = local_time->tm_mday;
 
   SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
-	   year, month, mja_day, local_time->tm_hour,
-	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec
-	   /* , 0 */
-	   /* no support for fractions of a second yet */
+	    year, month, mja_day, local_time->tm_hour, local_time->tm_min, local_time->tm_sec, tv1.tv_usec
+	    /* , 0 */
+	    /* no support for fractions of a second yet */
     );
   buff[27] = 0;
- 
+
   return buff;
 }
 

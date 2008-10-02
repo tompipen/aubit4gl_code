@@ -1,24 +1,29 @@
 #include "a4gl_libaubit4gl_int.h"
 
-int A4GL_init_curl(void) ;
-int A4GL_has_curl(void) ;
+int A4GL_init_curl (void);
+int A4GL_has_curl (void);
 
 #if HAVE_LIBCURL
 
 #include <curl/curl.h>
 
-int A4GL_init_curl(void) {
-	static int initialized=0;
-	if (!initialized) {
-		initialized++;
-		curl_global_init( CURL_GLOBAL_ALL);
-	}
-	return 1;
+int
+A4GL_init_curl (void)
+{
+  static int initialized = 0;
+  if (!initialized)
+    {
+      initialized++;
+      curl_global_init (CURL_GLOBAL_ALL);
+    }
+  return 1;
 }
 
 
-int A4GL_has_curl(void) {
-	return 0;
+int
+A4GL_has_curl (void)
+{
+  return 0;
 }
 
 
@@ -75,433 +80,435 @@ int A4GL_has_curl(void) {
 
 #include <curl/curl.h>
 
-enum fcurl_type_e { CFTYPE_NONE=0, CFTYPE_FILE=1, CFTYPE_CURL=2 };
+enum fcurl_type_e
+{ CFTYPE_NONE = 0, CFTYPE_FILE = 1, CFTYPE_CURL = 2 };
 
 struct fcurl_data
 {
-    enum fcurl_type_e type;     /* type of handle */
-    union {
-        CURL *curl;
-        FILE *file;
-    } handle;                   /* handle */
+  enum fcurl_type_e type;	/* type of handle */
+  union
+  {
+    CURL *curl;
+    FILE *file;
+  } handle;			/* handle */
 
-    char *buffer;               /* buffer to store cached data*/
-    int buffer_len;             /* currently allocated buffers length */
-    int buffer_pos;             /* end of data in buffer*/
-    int still_running;          /* Is background url fetch still in progress */
+  char *buffer;			/* buffer to store cached data */
+  int buffer_len;		/* currently allocated buffers length */
+  int buffer_pos;		/* end of data in buffer */
+  int still_running;		/* Is background url fetch still in progress */
 };
 
 typedef struct fcurl_data URL_FILE;
 
 /* exported functions */
-URL_FILE *url_fopen(char *url,const char *operation);
-int url_fclose(URL_FILE *file);
-int url_feof(URL_FILE *file);
-size_t url_fread(void *ptr, size_t size, size_t nmemb, URL_FILE *file);
-char * url_fgets(char *ptr, int size, URL_FILE *file);
-void url_rewind(URL_FILE *file);
+URL_FILE *url_fopen (char *url, const char *operation);
+int url_fclose (URL_FILE * file);
+int url_feof (URL_FILE * file);
+size_t url_fread (void *ptr, size_t size, size_t nmemb, URL_FILE * file);
+char *url_fgets (char *ptr, int size, URL_FILE * file);
+void url_rewind (URL_FILE * file);
 
 /* we use a global one for convenience */
 CURLM *multi_handle;
 
 /* curl calls this routine to get more data */
 static size_t
-write_callback(char *buffer,
-               size_t size,
-               size_t nitems,
-               void *userp)
+write_callback (char *buffer, size_t size, size_t nitems, void *userp)
 {
-    char *newbuff;
-    int rembuff;
+  char *newbuff;
+  int rembuff;
 
-    URL_FILE *url = (URL_FILE *)userp;
-    size *= nitems;
+  URL_FILE *url = (URL_FILE *) userp;
+  size *= nitems;
 
-    rembuff=url->buffer_len - url->buffer_pos;//remaining space in buffer
+  rembuff = url->buffer_len - url->buffer_pos;	//remaining space in buffer
 
-    if(size > rembuff)
+  if (size > rembuff)
     {
-        //not enuf space in buffer
-        newbuff=realloc(url->buffer,url->buffer_len + (size - rembuff));
-        if(newbuff==NULL)
-        {
-            fprintf(A4GL_get_stderr(),"callback buffer grow failed\n");
-            size=rembuff;
-        }
-        else
-        {
-            /* realloc suceeded increase buffer size*/
-            url->buffer_len+=size - rembuff;
-            url->buffer=newbuff;
+      //not enuf space in buffer
+      newbuff = realloc (url->buffer, url->buffer_len + (size - rembuff));
+      if (newbuff == NULL)
+	{
+	  fprintf (A4GL_get_stderr (), "callback buffer grow failed\n");
+	  size = rembuff;
+	}
+      else
+	{
+	  /* realloc suceeded increase buffer size */
+	  url->buffer_len += size - rembuff;
+	  url->buffer = newbuff;
 
-            /*printf("Callback buffer grown to %d bytes\n",url->buffer_len);*/
-        }
+	  /*printf("Callback buffer grown to %d bytes\n",url->buffer_len); */
+	}
     }
 
-    memcpy(&url->buffer[url->buffer_pos], buffer, size);
-    url->buffer_pos += size;
+  memcpy (&url->buffer[url->buffer_pos], buffer, size);
+  url->buffer_pos += size;
 
-    /*fprintf(stderr, "callback %d size bytes\n", size);*/
+  /*fprintf(stderr, "callback %d size bytes\n", size); */
 
-    return size;
+  return size;
 }
 
 /* use to attempt to fill the read buffer up to requested number of bytes */
 static int
-fill_buffer(URL_FILE *file,int want,int waittime)
+fill_buffer (URL_FILE * file, int want, int waittime)
 {
-    fd_set fdread;
-    fd_set fdwrite;
-    fd_set fdexcep;
-    int maxfd;
-    struct timeval timeout;
-    int rc;
+  fd_set fdread;
+  fd_set fdwrite;
+  fd_set fdexcep;
+  int maxfd;
+  struct timeval timeout;
+  int rc;
 
-    /* only attempt to fill buffer if transactions still running and buffer
-     * doesnt exceed required size already
-     */
-    if((!file->still_running) || (file->buffer_pos > want))
-        return 0;
+  /* only attempt to fill buffer if transactions still running and buffer
+   * doesnt exceed required size already
+   */
+  if ((!file->still_running) || (file->buffer_pos > want))
+    return 0;
 
-    /* attempt to fill buffer */
-    do
+  /* attempt to fill buffer */
+  do
     {
-        FD_ZERO(&fdread);
-        FD_ZERO(&fdwrite);
-        FD_ZERO(&fdexcep);
+      FD_ZERO (&fdread);
+      FD_ZERO (&fdwrite);
+      FD_ZERO (&fdexcep);
 
-        /* set a suitable timeout to fail on */
-        timeout.tv_sec = 60; /* 1 minute */
-        timeout.tv_usec = 0;
+      /* set a suitable timeout to fail on */
+      timeout.tv_sec = 60;	/* 1 minute */
+      timeout.tv_usec = 0;
 
-        /* get file descriptors from the transfers */
-        curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
+      /* get file descriptors from the transfers */
+      curl_multi_fdset (multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 
-        /* In a real-world program you OF COURSE check the return code of the
-           function calls, *and* you make sure that maxfd is bigger than -1
-           so that the call to select() below makes sense! */
+      /* In a real-world program you OF COURSE check the return code of the
+         function calls, *and* you make sure that maxfd is bigger than -1
+         so that the call to select() below makes sense! */
 
-        rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+      rc = select (maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
 
-        switch(rc) {
-        case -1:
-            /* select error */
-            break;
+      switch (rc)
+	{
+	case -1:
+	  /* select error */
+	  break;
 
-        case 0:
-            break;
+	case 0:
+	  break;
 
-        default:
-            /* timeout or readable/writable sockets */
-            /* note we *could* be more efficient and not wait for
-             * CURLM_CALL_MULTI_PERFORM to clear here and check it on re-entry
-             * but that gets messy */
-            while(curl_multi_perform(multi_handle, &file->still_running) ==
-                  CURLM_CALL_MULTI_PERFORM);
+	default:
+	  /* timeout or readable/writable sockets */
+	  /* note we *could* be more efficient and not wait for
+	   * CURLM_CALL_MULTI_PERFORM to clear here and check it on re-entry
+	   * but that gets messy */
+	  while (curl_multi_perform (multi_handle, &file->still_running) == CURLM_CALL_MULTI_PERFORM);
 
-            break;
-        }
-    } while(file->still_running && (file->buffer_pos < want));
-    return 1;
+	  break;
+	}
+    }
+  while (file->still_running && (file->buffer_pos < want));
+  return 1;
 }
 
 /* use to remove want bytes from the front of a files buffer */
 static int
-use_buffer(URL_FILE *file,int want)
+use_buffer (URL_FILE * file, int want)
 {
-    /* sort out buffer */
-    if((file->buffer_pos - want) <=0)
+  /* sort out buffer */
+  if ((file->buffer_pos - want) <= 0)
     {
-        /* ditch buffer - write will recreate */
-        if(file->buffer)
-            free(file->buffer);
+      /* ditch buffer - write will recreate */
+      if (file->buffer)
+	free (file->buffer);
 
-        file->buffer=NULL;
-        file->buffer_pos=0;
-        file->buffer_len=0;
+      file->buffer = NULL;
+      file->buffer_pos = 0;
+      file->buffer_len = 0;
     }
-    else
+  else
     {
-        /* move rest down make it available for later */
-        memmove(file->buffer,
-                &file->buffer[want],
-                (file->buffer_pos - want));
+      /* move rest down make it available for later */
+      memmove (file->buffer, &file->buffer[want], (file->buffer_pos - want));
 
-        file->buffer_pos -= want;
+      file->buffer_pos -= want;
     }
-    return 0;
+  return 0;
 }
 
 
 
 URL_FILE *
-url_fopen(char *url,const char *operation)
+url_fopen (char *url, const char *operation)
 {
-    /* this code could check for URLs or types in the 'url' and
-       basicly use the real fopen() for standard files */
+  /* this code could check for URLs or types in the 'url' and
+     basicly use the real fopen() for standard files */
 
-    int decompress_when_possible=0;
-    URL_FILE *file;
-    (void)operation;
+  int decompress_when_possible = 0;
+  URL_FILE *file;
+  (void) operation;
 
-    A4GL_init_curl();
+  A4GL_init_curl ();
 
-    if (strchr(operation,'z'))  {
-		static char buff[256];
-		int a;
-		int b=0;
-		for (a=0;a<strlen(operation);a++) {
-			if (operation[a]!='z') {
-				buff[b++]=operation[a];
-			}
-		}
-		buff[b]=0;
-		operation=buff;
-		decompress_when_possible=1;
-	}		
-
-    file = (URL_FILE *)malloc(sizeof(URL_FILE));
-    if(!file)
-        return NULL;
-
-    memset(file, 0, sizeof(URL_FILE));
-
-    if((file->handle.file=gzfopen(url,operation)))
+  if (strchr (operation, 'z'))
     {
-        file->type = CFTYPE_FILE; /* marked as URL */
+      static char buff[256];
+      int a;
+      int b = 0;
+      for (a = 0; a < strlen (operation); a++)
+	{
+	  if (operation[a] != 'z')
+	    {
+	      buff[b++] = operation[a];
+	    }
+	}
+      buff[b] = 0;
+      operation = buff;
+      decompress_when_possible = 1;
     }
-    else
+
+  file = (URL_FILE *) malloc (sizeof (URL_FILE));
+  if (!file)
+    return NULL;
+
+  memset (file, 0, sizeof (URL_FILE));
+
+  if ((file->handle.file = gzfopen (url, operation)))
     {
-        file->type = CFTYPE_CURL; /* marked as URL */
-        file->handle.curl = curl_easy_init();
+      file->type = CFTYPE_FILE;	/* marked as URL */
+    }
+  else
+    {
+      file->type = CFTYPE_CURL;	/* marked as URL */
+      file->handle.curl = curl_easy_init ();
 
-        curl_easy_setopt(file->handle.curl, CURLOPT_URL, url);
-        curl_easy_setopt(file->handle.curl, CURLOPT_WRITEDATA, file);
-        curl_easy_setopt(file->handle.curl, CURLOPT_VERBOSE, FALSE);
-        curl_easy_setopt(file->handle.curl, CURLOPT_WRITEFUNCTION, write_callback);
+      curl_easy_setopt (file->handle.curl, CURLOPT_URL, url);
+      curl_easy_setopt (file->handle.curl, CURLOPT_WRITEDATA, file);
+      curl_easy_setopt (file->handle.curl, CURLOPT_VERBOSE, FALSE);
+      curl_easy_setopt (file->handle.curl, CURLOPT_WRITEFUNCTION, write_callback);
 
-	if (decompress_when_possible) {
-		if (strstr(url,".gz") || strstr(url,".zip") || 1) {
-			// It looks compressed - and we want to decompress...
-        		curl_easy_setopt(file->handle.curl, CURLOPT_ENCODING, "");
-		}
+      if (decompress_when_possible)
+	{
+	  if (strstr (url, ".gz") || strstr (url, ".zip") || 1)
+	    {
+	      // It looks compressed - and we want to decompress...
+	      curl_easy_setopt (file->handle.curl, CURLOPT_ENCODING, "");
+	    }
 	}
 
-        if(!multi_handle)
-            multi_handle = curl_multi_init();
+      if (!multi_handle)
+	multi_handle = curl_multi_init ();
 
-        curl_multi_add_handle(multi_handle, file->handle.curl);
+      curl_multi_add_handle (multi_handle, file->handle.curl);
 
-        /* lets start the fetch */
-        while(curl_multi_perform(multi_handle, &file->still_running) ==
-              CURLM_CALL_MULTI_PERFORM );
+      /* lets start the fetch */
+      while (curl_multi_perform (multi_handle, &file->still_running) == CURLM_CALL_MULTI_PERFORM);
 
-        if((file->buffer_pos == 0) && (!file->still_running))
-        {
-            /* if still_running is 0 now, we should return NULL */
+      if ((file->buffer_pos == 0) && (!file->still_running))
+	{
+	  /* if still_running is 0 now, we should return NULL */
 
-            /* make sure the easy handle is not in the multi handle anymore */
-            curl_multi_remove_handle(multi_handle, file->handle.curl);
+	  /* make sure the easy handle is not in the multi handle anymore */
+	  curl_multi_remove_handle (multi_handle, file->handle.curl);
 
-            /* cleanup */
-            curl_easy_cleanup(file->handle.curl);
+	  /* cleanup */
+	  curl_easy_cleanup (file->handle.curl);
 
-            free(file);
+	  free (file);
 
-            file = NULL;
-        }
+	  file = NULL;
+	}
     }
-    return file;
+  return file;
 }
 
 int
-url_fclose(URL_FILE *file)
+url_fclose (URL_FILE * file)
 {
-    int ret=0;/* default is good return */
+  int ret = 0;			/* default is good return */
 
-    A4GL_init_curl();
-    switch(file->type)
+  A4GL_init_curl ();
+  switch (file->type)
     {
     case CFTYPE_FILE:
-        ret=gzfclose(file->handle.file); /* passthrough */
-        break;
+      ret = gzfclose (file->handle.file);	/* passthrough */
+      break;
 
     case CFTYPE_CURL:
-        /* make sure the easy handle is not in the multi handle anymore */
-        curl_multi_remove_handle(multi_handle, file->handle.curl);
+      /* make sure the easy handle is not in the multi handle anymore */
+      curl_multi_remove_handle (multi_handle, file->handle.curl);
 
-        /* cleanup */
-        curl_easy_cleanup(file->handle.curl);
-        break;
+      /* cleanup */
+      curl_easy_cleanup (file->handle.curl);
+      break;
 
-    default: /* unknown or supported type - oh dear */
-        ret=EOF;
-        errno=EBADF;
-        break;
+    default:			/* unknown or supported type - oh dear */
+      ret = EOF;
+      errno = EBADF;
+      break;
 
     }
 
-    if(file->buffer)
-        free(file->buffer);/* free any allocated buffer space */
+  if (file->buffer)
+    free (file->buffer);	/* free any allocated buffer space */
 
-    free(file);
+  free (file);
 
-    return ret;
+  return ret;
 }
 
 int
-url_feof(URL_FILE *file)
+url_feof (URL_FILE * file)
 {
-    int ret=0;
+  int ret = 0;
 
-    A4GL_init_curl();
-    switch(file->type)
+  A4GL_init_curl ();
+  switch (file->type)
     {
     case CFTYPE_FILE:
-        ret=gzfeof(file->handle.file);
-        break;
+      ret = gzfeof (file->handle.file);
+      break;
 
     case CFTYPE_CURL:
-        if((file->buffer_pos == 0) && (!file->still_running))
-            ret = 1;
-        break;
-    default: /* unknown or supported type - oh dear */
-        ret=-1;
-        errno=EBADF;
-        break;
+      if ((file->buffer_pos == 0) && (!file->still_running))
+	ret = 1;
+      break;
+    default:			/* unknown or supported type - oh dear */
+      ret = -1;
+      errno = EBADF;
+      break;
     }
-    return ret;
+  return ret;
 }
 
 size_t
-url_fread(void *ptr, size_t size, size_t nmemb, URL_FILE *file)
+url_fread (void *ptr, size_t size, size_t nmemb, URL_FILE * file)
 {
-    size_t want;
+  size_t want;
 
-    A4GL_init_curl();
-    switch(file->type)
+  A4GL_init_curl ();
+  switch (file->type)
     {
     case CFTYPE_FILE:
-        want=gzfread(ptr,size,nmemb,file->handle.file);
-        break;
+      want = gzfread (ptr, size, nmemb, file->handle.file);
+      break;
 
     case CFTYPE_CURL:
-        want = nmemb * size;
+      want = nmemb * size;
 
-        fill_buffer(file,want,1);
+      fill_buffer (file, want, 1);
 
-        /* check if theres data in the buffer - if not fill_buffer()
-         * either errored or EOF */
-        if(!file->buffer_pos)
-            return 0;
+      /* check if theres data in the buffer - if not fill_buffer()
+       * either errored or EOF */
+      if (!file->buffer_pos)
+	return 0;
 
-        /* ensure only available data is considered */
-        if(file->buffer_pos < want)
-            want = file->buffer_pos;
+      /* ensure only available data is considered */
+      if (file->buffer_pos < want)
+	want = file->buffer_pos;
 
-        /* xfer data to caller */
-        memcpy(ptr, file->buffer, want);
+      /* xfer data to caller */
+      memcpy (ptr, file->buffer, want);
 
-        use_buffer(file,want);
+      use_buffer (file, want);
 
-        want = want / size;     /* number of items - nb correct op - checked
-                                 * with glibc code*/
+      want = want / size;	/* number of items - nb correct op - checked
+				 * with glibc code*/
 
-        /*printf("(fread) return %d bytes %d left\n", want,file->buffer_pos);*/
-        break;
+      /*printf("(fread) return %d bytes %d left\n", want,file->buffer_pos); */
+      break;
 
-    default: /* unknown or supported type - oh dear */
-        want=0;
-        errno=EBADF;
-        break;
+    default:			/* unknown or supported type - oh dear */
+      want = 0;
+      errno = EBADF;
+      break;
 
     }
-    return want;
+  return want;
 }
 
 char *
-url_fgets(char *ptr, int size, URL_FILE *file)
+url_fgets (char *ptr, int size, URL_FILE * file)
 {
-    int want = size - 1;/* always need to leave room for zero termination */
-    int loop;
-    A4GL_init_curl();
+  int want = size - 1;		/* always need to leave room for zero termination */
+  int loop;
+  A4GL_init_curl ();
 
-    switch(file->type)
+  switch (file->type)
     {
     case CFTYPE_FILE:
-        ptr = gzfgets(ptr,size,file->handle.file);
-        break;
+      ptr = gzfgets (ptr, size, file->handle.file);
+      break;
 
     case CFTYPE_CURL:
-        fill_buffer(file,want,1);
+      fill_buffer (file, want, 1);
 
-        /* check if theres data in the buffer - if not fill either errored or
-         * EOF */
-        if(!file->buffer_pos)
-            return NULL;
+      /* check if theres data in the buffer - if not fill either errored or
+       * EOF */
+      if (!file->buffer_pos)
+	return NULL;
 
-        /* ensure only available data is considered */
-        if(file->buffer_pos < want)
-            want = file->buffer_pos;
+      /* ensure only available data is considered */
+      if (file->buffer_pos < want)
+	want = file->buffer_pos;
 
-        /*buffer contains data */
-        /* look for newline or eof */
-        for(loop=0;loop < want;loop++)
-        {
-            if(file->buffer[loop] == '\n')
-            {
-                want=loop+1;/* include newline */
-                break;
-            }
-        }
+      /*buffer contains data */
+      /* look for newline or eof */
+      for (loop = 0; loop < want; loop++)
+	{
+	  if (file->buffer[loop] == '\n')
+	    {
+	      want = loop + 1;	/* include newline */
+	      break;
+	    }
+	}
 
-        /* xfer data to caller */
-        memcpy(ptr, file->buffer, want);
-        ptr[want]=0;/* allways null terminate */
+      /* xfer data to caller */
+      memcpy (ptr, file->buffer, want);
+      ptr[want] = 0;		/* allways null terminate */
 
-        use_buffer(file,want);
+      use_buffer (file, want);
 
-        /*printf("(fgets) return %d bytes %d left\n", want,file->buffer_pos);*/
-        break;
+      /*printf("(fgets) return %d bytes %d left\n", want,file->buffer_pos); */
+      break;
 
-    default: /* unknown or supported type - oh dear */
-        ptr=NULL;
-        errno=EBADF;
-        break;
+    default:			/* unknown or supported type - oh dear */
+      ptr = NULL;
+      errno = EBADF;
+      break;
     }
 
-    return ptr;/*success */
+  return ptr;			/*success */
 }
 
 void
-url_rewind(URL_FILE *file)
+url_rewind (URL_FILE * file)
 {
-    A4GL_init_curl();
-    switch(file->type)
+  A4GL_init_curl ();
+  switch (file->type)
     {
     case CFTYPE_FILE:
-        gzrewind(file->handle.file); /* passthrough */
-        break;
+      gzrewind (file->handle.file);	/* passthrough */
+      break;
 
     case CFTYPE_CURL:
-        /* halt transaction */
-        curl_multi_remove_handle(multi_handle, file->handle.curl);
+      /* halt transaction */
+      curl_multi_remove_handle (multi_handle, file->handle.curl);
 
-        /* restart */
-        curl_multi_add_handle(multi_handle, file->handle.curl);
+      /* restart */
+      curl_multi_add_handle (multi_handle, file->handle.curl);
 
-        /* ditch buffer - write will recreate - resets stream pos*/
-        if(file->buffer)
-            free(file->buffer);
+      /* ditch buffer - write will recreate - resets stream pos */
+      if (file->buffer)
+	free (file->buffer);
 
-        file->buffer=NULL;
-        file->buffer_pos=0;
-        file->buffer_len=0;
+      file->buffer = NULL;
+      file->buffer_pos = 0;
+      file->buffer_len = 0;
 
-        break;
+      break;
 
-    default: /* unknown or supported type - oh dear */
-        break;
+    default:			/* unknown or supported type - oh dear */
+      break;
 
     }
 
@@ -514,108 +521,112 @@ url_rewind(URL_FILE *file)
  * output to two test files (note the fgets method will corrupt binary files if
  * they contain 0 chars */
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
-    URL_FILE *handle;
-    FILE *outf;
+  URL_FILE *handle;
+  FILE *outf;
 
-    int nread;
-    char buffer[256];
-    char *url;
+  int nread;
+  char buffer[256];
+  char *url;
 
-    if(argc < 2)
+  if (argc < 2)
     {
-        url="http://192.168.7.3/testfile";/* default to testurl */
+      url = "http://192.168.7.3/testfile";	/* default to testurl */
     }
-    else
+  else
     {
-        url=argv[1];/* use passed url */
+      url = argv[1];		/* use passed url */
     }
 
-    /* copy from url line by line with fgets */
-    outf=fopen("fgets.test","w+");
-    if(!outf)
+  /* copy from url line by line with fgets */
+  outf = fopen ("fgets.test", "w+");
+  if (!outf)
     {
-        perror("couldnt open fgets output file\n");
-        return 1;
+      perror ("couldnt open fgets output file\n");
+      return 1;
     }
 
-    handle = url_fopen(url, "r");
-    if(!handle)
+  handle = url_fopen (url, "r");
+  if (!handle)
     {
-        printf("couldn't url_fopen()\n");
-        fclose(outf);
-        return 2;
+      printf ("couldn't url_fopen()\n");
+      fclose (outf);
+      return 2;
     }
 
-    while(!url_feof(handle))
+  while (!url_feof (handle))
     {
-        url_fgets(buffer,sizeof(buffer),handle);
-        fwrite(buffer,1,strlen(buffer),outf);
+      url_fgets (buffer, sizeof (buffer), handle);
+      fwrite (buffer, 1, strlen (buffer), outf);
     }
 
-    url_fclose(handle);
+  url_fclose (handle);
 
-    fclose(outf);
+  fclose (outf);
 
 
-    /* Copy from url with fread */
-    outf=fopen("fread.test","w+");
-    if(!outf)
+  /* Copy from url with fread */
+  outf = fopen ("fread.test", "w+");
+  if (!outf)
     {
-        perror("couldnt open fread output file\n");
-        return 1;
+      perror ("couldnt open fread output file\n");
+      return 1;
     }
 
-    handle = url_fopen("testfile", "r");
-    if(!handle) {
-        printf("couldn't url_fopen()\n");
-        fclose(outf);
-        return 2;
-    }
-
-    do {
-        nread = url_fread(buffer, 1,sizeof(buffer), handle);
-        fwrite(buffer,1,nread,outf);
-    } while(nread);
-
-    url_fclose(handle);
-
-    fclose(outf);
-
-
-    /* Test rewind */
-    outf=fopen("rewind.test","w+");
-    if(!outf)
+  handle = url_fopen ("testfile", "r");
+  if (!handle)
     {
-        perror("couldnt open fread output file\n");
-        return 1;
+      printf ("couldn't url_fopen()\n");
+      fclose (outf);
+      return 2;
     }
 
-    handle = url_fopen("testfile", "r");
-    if(!handle) {
-        printf("couldn't url_fopen()\n");
-        fclose(outf);
-        return 2;
+  do
+    {
+      nread = url_fread (buffer, 1, sizeof (buffer), handle);
+      fwrite (buffer, 1, nread, outf);
+    }
+  while (nread);
+
+  url_fclose (handle);
+
+  fclose (outf);
+
+
+  /* Test rewind */
+  outf = fopen ("rewind.test", "w+");
+  if (!outf)
+    {
+      perror ("couldnt open fread output file\n");
+      return 1;
     }
 
-        nread = url_fread(buffer, 1,sizeof(buffer), handle);
-        fwrite(buffer,1,nread,outf);
-        url_rewind(handle);
+  handle = url_fopen ("testfile", "r");
+  if (!handle)
+    {
+      printf ("couldn't url_fopen()\n");
+      fclose (outf);
+      return 2;
+    }
 
-        buffer[0]='\n';
-        fwrite(buffer,1,1,outf);
+  nread = url_fread (buffer, 1, sizeof (buffer), handle);
+  fwrite (buffer, 1, nread, outf);
+  url_rewind (handle);
 
-        nread = url_fread(buffer, 1,sizeof(buffer), handle);
-        fwrite(buffer,1,nread,outf);
+  buffer[0] = '\n';
+  fwrite (buffer, 1, 1, outf);
+
+  nread = url_fread (buffer, 1, sizeof (buffer), handle);
+  fwrite (buffer, 1, nread, outf);
 
 
-    url_fclose(handle);
+  url_fclose (handle);
 
-    fclose(outf);
+  fclose (outf);
 
 
-    return 0;/* all done */
+  return 0;			/* all done */
 }
 #endif
 
@@ -623,11 +634,15 @@ main(int argc, char *argv[])
 
 
 // No libcurl....
-int A4GL_init_curl(void) { // does nothing..
-	return 0;
+int
+A4GL_init_curl (void)
+{				// does nothing..
+  return 0;
 }
 
-int A4GL_has_curl(void) {
-	return 0;
+int
+A4GL_has_curl (void)
+{
+  return 0;
 }
 #endif

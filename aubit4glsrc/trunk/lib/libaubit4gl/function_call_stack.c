@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.32 2008-07-06 11:34:31 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.33 2008-10-02 17:40:50 mikeaubury Exp $
 #*/
 
 /**
@@ -120,8 +120,7 @@ A4GLSTK_initFunctionCallStack (void)
   A4GL_debug ("Initializing Function Call Stack");
 #endif
 
-  functionCallStack = (FunctionCall *) calloc (sizeof (FunctionCall),
-					       MAX_FUNCTION_CALL_STACK);
+  functionCallStack = (FunctionCall *) calloc (sizeof (FunctionCall), MAX_FUNCTION_CALL_STACK);
   functionCallPointer = 0;
   stackInfoInitialized = 1;
 #ifdef DEBUG
@@ -143,15 +142,19 @@ A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber)
 }
 
 
-void A4GLSTK_getCurrentLine( char **moduleName, int *lineNumber) {
-	*moduleName=(char *)currentModuleName;
-  	*lineNumber=currentFglLineNumber;
+void
+A4GLSTK_getCurrentLine (char **moduleName, int *lineNumber)
+{
+  *moduleName = (char *) currentModuleName;
+  *lineNumber = currentFglLineNumber;
 }
 
-char *A4GLSTK_lastSeenLine(void) {
-static char buff[2000];
-	sprintf(buff, "Module : %s  Line : %d", currentModuleName,currentFglLineNumber);
-	return buff;
+char *
+A4GLSTK_lastSeenLine (void)
+{
+  static char buff[2000];
+  sprintf (buff, "Module : %s  Line : %d", currentModuleName, currentFglLineNumber);
+  return buff;
 }
 
 
@@ -164,32 +167,38 @@ void
 A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 {
   int a;
-	if (!A4GL_has_initialized()) {
-		A4GL_fgl_start(0,0);
-		A4GLSTK_initFunctionCallStack();
-	}
+  if (!A4GL_has_initialized ())
+    {
+      A4GL_fgl_start (0, 0);
+      A4GLSTK_initFunctionCallStack ();
+    }
 
-  A4GL_debug ("Call from Module : %s line %d", currentModuleName,
-	 currentFglLineNumber);
+  A4GL_debug ("Call from Module : %s line %d", currentModuleName, currentFglLineNumber);
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
   for (a = 0; a < n; a++)
     {
-	if (params[a]==0) {
-		A4GL_debug("Theres gonna be trouble - wasn't expecting this one..");
-	} else {
-      	A4GL_debug (" Param %d (%s)", a + 1, params[a]);
+      if (params[a] == 0)
+	{
+	  A4GL_debug ("Theres gonna be trouble - wasn't expecting this one..");
+	}
+      else
+	{
+	  A4GL_debug (" Param %d (%s)", a + 1, params[a]);
 	}
     }
-  A4GL_assertion(functionCallPointer>=MAX_FUNCTION_CALL_STACK,"Function calls too deep (perhaps a missing popFunction ?");
+  A4GL_assertion (functionCallPointer >= MAX_FUNCTION_CALL_STACK, "Function calls too deep (perhaps a missing popFunction ?");
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallStack[functionCallPointer].moduleName = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
-  if (n&&params[0]==0) {
-  	functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, 0);
-  } else {
-  	functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, n);
-  }
-	A4GL_debug("%s(%s)",functionName,A4GL_null_as_null((char *)functionCallStack[functionCallPointer].params));
+  if (n && params[0] == 0)
+    {
+      functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, 0);
+    }
+  else
+    {
+      functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, n);
+    }
+  A4GL_debug ("%s(%s)", functionName, A4GL_null_as_null ((char *) functionCallStack[functionCallPointer].params));
   functionCallPointer++;
 }
 
@@ -208,13 +217,17 @@ A4GLSTK_popFunction (void)
 }
 
 
-char * A4GLSTK_topFunction (void)
+char *
+A4GLSTK_topFunction (void)
 {
-	if (functionCallPointer) {
-		return (char *)functionCallStack[functionCallPointer-1].functionName;
-	} else {
-		return "MAIN";
-	}
+  if (functionCallPointer)
+    {
+      return (char *) functionCallStack[functionCallPointer - 1].functionName;
+    }
+  else
+    {
+      return "MAIN";
+    }
 }
 
 
@@ -235,20 +248,21 @@ A4GLSTK_getStackTrace (void)
     {
       strcat (stackTrace, "    ");
       if (functionCallStack[i].moduleName == '\0')
-	strcat (stackTrace, (char *)functionCallStack[i].functionName);
+	strcat (stackTrace, (char *) functionCallStack[i].functionName);
       else
 	{
 	  SPRINTF3 (tmpStackTrace,
-		   "%s (Line %d) calls %s",
-		   functionCallStack[i].moduleName,
-		   functionCallStack[i].lineNumber,
-		   functionCallStack[i].functionName);
+		    "%s (Line %d) calls %s",
+		    functionCallStack[i].moduleName, functionCallStack[i].lineNumber, functionCallStack[i].functionName);
 
-	if (strlen(stackTrace)+strlen(tmpStackTrace)<sizeof(stackTrace)+5) {
-	  	strcat (stackTrace, tmpStackTrace);
-	} else {
-	  	strcat(stackTrace,"\n...");
-	}
+	  if (strlen (stackTrace) + strlen (tmpStackTrace) < sizeof (stackTrace) + 5)
+	    {
+	      strcat (stackTrace, tmpStackTrace);
+	    }
+	  else
+	    {
+	      strcat (stackTrace, "\n...");
+	    }
 	}
 
       /* Don't put the brackets on for a MAIN */
@@ -256,17 +270,20 @@ A4GLSTK_getStackTrace (void)
 	{
 	  strcat (stackTrace, "(");
 
-	  if (functionCallStack[i].params) {
-		char buff[90];
-		strncpy(buff,functionCallStack[i].params,81);
-		buff[81]=0;
-		if (strlen(buff)>=80) {
-			strcat(buff,"...");
+	  if (functionCallStack[i].params)
+	    {
+	      char buff[90];
+	      strncpy (buff, functionCallStack[i].params, 81);
+	      buff[81] = 0;
+	      if (strlen (buff) >= 80)
+		{
+		  strcat (buff, "...");
 		}
-		if (strlen(stackTrace)+strlen(buff)<sizeof(stackTrace)+5) {
-	    		strcat (stackTrace, buff);
+	      if (strlen (stackTrace) + strlen (buff) < sizeof (stackTrace) + 5)
+		{
+		  strcat (stackTrace, buff);
 		}
-	  }
+	    }
 	  strcat (stackTrace, ")");
 	}
       strcat (stackTrace, "\n");

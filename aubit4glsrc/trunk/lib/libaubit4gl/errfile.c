@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.26 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: errfile.c,v 1.27 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -126,12 +126,13 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
   a = 2048;
   while (s > 0)
     {
-      if (a > s) {
-	a = s;
-      }
+      if (a > s)
+	{
+	  a = s;
+	}
 
-      b=fread (buff, 1,(size_t)a,  f);
-      fwrite (buff, (size_t)b, 1, fout);
+      b = fread (buff, 1, (size_t) a, f);
+      fwrite (buff, (size_t) b, 1, fout);
       s -= a;
     }
   le = as - s2;
@@ -153,8 +154,8 @@ A4GL_write_cont (FILE * f)
   while (s > 0)
     {
       /* if (feof(f)) break; */
-      s = fread (buff, (size_t)1, a, f);
-      fwrite (buff, (size_t)s, 1, fout);
+      s = fread (buff, (size_t) 1, a, f);
+      fwrite (buff, (size_t) s, 1, fout);
     }
   fclose (fout);
 }
@@ -178,7 +179,7 @@ A4GL_find_nl (FILE * f, long fp, long *s, long *e)
   while (fp > 0)
     {
       fseek (f, fp, SEEK_SET);
-      fread (buff, (size_t)1, 1, f);
+      fread (buff, (size_t) 1, 1, f);
       if (buff[0] == '\n')
 	break;
       fp--;
@@ -188,7 +189,7 @@ A4GL_find_nl (FILE * f, long fp, long *s, long *e)
   for (fp = *s + 1; buff[0] != '\n'; fp++)
     {
       fseek (f, fp, SEEK_SET);
-      fread (buff, (size_t)1, 1, f);
+      fread (buff, (size_t) 1, 1, f);
       if (feof (f))
 	break;
     }
@@ -238,36 +239,46 @@ A4GL_mja_fopen (char *name, char *mode)
 
 
 
-void A4GL_write_errfile_many_errors(char *errfile,FILE *fin,struct s_module_error *e,int cnt) {
-FILE *fout;
-int a;
-char lnbuff[20000];
-int ln;
-int maxed=0;
+void
+A4GL_write_errfile_many_errors (char *errfile, FILE * fin, struct s_module_error *e, int cnt)
+{
+  FILE *fout;
+  int a;
+  char lnbuff[20000];
+  int ln;
+  int maxed = 0;
   fout = A4GL_mja_fopen (errfile, "w");
   if (fout == 0)
     {
       PRINTF ("Unable to open %s\n", errfile);
       A4GL_fgl_die (2);
     }
-    rewind(fin);
-    ln=0;
-    if (cnt>21)  {cnt=21; maxed=1;}
+  rewind (fin);
+  ln = 0;
+  if (cnt > 21)
+    {
+      cnt = 21;
+      maxed = 1;
+    }
 
-    while (fgets(lnbuff,sizeof(lnbuff),fin)) {
-	ln++;
-	FPRINTF(fout,"%s",lnbuff);
-	for (a=0;a<cnt;a++) {
-		if (e[a].lineno==ln) {
-			FPRINTF(fout,"|\n");
-			FPRINTF(fout,"|%s\n",e[a].err_str);
-			if (a==20 && maxed) {
-				FPRINTF(fout,"| ****  Too many errors - further errors ignored ****\n");
-			}
+  while (fgets (lnbuff, sizeof (lnbuff), fin))
+    {
+      ln++;
+      FPRINTF (fout, "%s", lnbuff);
+      for (a = 0; a < cnt; a++)
+	{
+	  if (e[a].lineno == ln)
+	    {
+	      FPRINTF (fout, "|\n");
+	      FPRINTF (fout, "|%s\n", e[a].err_str);
+	      if (a == 20 && maxed)
+		{
+		  FPRINTF (fout, "| ****  Too many errors - further errors ignored ****\n");
 		}
+	    }
 	}
     }
-    fclose(fout);
+  fclose (fout);
 }
 
 /* ================================== EOF ============================= */

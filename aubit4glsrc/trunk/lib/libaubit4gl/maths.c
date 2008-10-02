@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.21 2008-07-06 11:34:32 mikeaubury Exp $
+# $Id: maths.c,v 1.22 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,8 @@ A4GL_init_arr_math (void)
  *
  * @todo Describe function
  */
-void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops))
+void
+A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function) (int ops))
 {
   struct s_math *ptr_orig;
   struct s_math *ptr_new;
@@ -199,7 +200,7 @@ A4GL_find_op_function (int dtype1, int dtype2, int op)
 
   dtype1 = dtype1 & DTYPE_MASK;
   dtype2 = dtype2 & DTYPE_MASK;
- 
+
   //A4GL_debug ("Looking for something that will %x %d %d", op, dtype1, dtype2);
 
   if (nparam_op (op) == 0)

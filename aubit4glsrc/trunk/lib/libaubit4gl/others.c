@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.67 2008-09-23 14:41:28 mikeaubury Exp $
+# $Id: others.c,v 1.68 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -63,13 +63,13 @@ Move it to a4gl_libaubit4gl.h
 */
 
 
-char *outputfilename=0;
+char *outputfilename = 0;
 int ccnt = 0;			/* was in lexer.c */
 
 
 
 struct struct_form the_form;
- struct struct_scr_field *fld;
+struct struct_scr_field *fld;
 int as_c = 1;
 int m_lastkey = 0;
 
@@ -94,12 +94,16 @@ int m_lastkey = 0;
 
 
 
-int A4GL_get_ccnt(void) {
-	return ccnt;
+int
+A4GL_get_ccnt (void)
+{
+  return ccnt;
 }
 
-void A4GL_set_ccnt(int a) {
-	ccnt=a;
+void
+A4GL_set_ccnt (int a)
+{
+  ccnt = a;
 }
 
 /**
@@ -129,35 +133,39 @@ aclfgl_fgl_lastkey (int _np)
 
 #ifdef MOVED
 
-int aclfgl_aclfgl_set_color (int _nargs){ 
-   long c ; 
-   long r ; 
-   long g ; 
-   long b ; 
-   struct BINDING fbind[4]={ /* 4 */
-   {0,2,0,0,0,0} ,
-   {0,2,0,0,0,0} ,
-   {0,2,0,0,0,0} ,
-   {0,2,0,0,0,0}
-   }; 
-   fbind[0].ptr=&c;
-   fbind[1].ptr=&r;
-   fbind[2].ptr=&g;
-   fbind[3].ptr=&b;
-   A4GL_pop_params(fbind,4);
+int
+aclfgl_aclfgl_set_color (int _nargs)
+{
+  long c;
+  long r;
+  long g;
+  long b;
+  struct BINDING fbind[4] = {	/* 4 */
+    {0, 2, 0, 0, 0, 0},
+    {0, 2, 0, 0, 0, 0},
+    {0, 2, 0, 0, 0, 0},
+    {0, 2, 0, 0, 0, 0}
+  };
+  fbind[0].ptr = &c;
+  fbind[1].ptr = &r;
+  fbind[2].ptr = &g;
+  fbind[3].ptr = &b;
+  A4GL_pop_params (fbind, 4);
 
-   A4GL_init_color(c,r,g,b);
+  A4GL_init_color (c, r, g, b);
 
-   return 0;
+  return 0;
 }
 
 #endif
 
 #ifdef MOVED
 
-int aclfgl_aclfgl_get_user(int n) {
-	A4GL_push_user ();
-	return 1;
+int
+aclfgl_aclfgl_get_user (int n)
+{
+  A4GL_push_user ();
+  return 1;
 }
 
 
@@ -181,8 +189,7 @@ A4GL_fgl_keyval (int _np)
   if (_np != 1)
     {
       A4GLSQL_set_status (-3000, 0);
-      A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1",
-	     _np);
+      A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1", _np);
 
       for (_r = 0; _r < _np; _r++)
 	{
@@ -336,11 +343,12 @@ A4GL_set_last_key (int a)
  * endless loop
  * @todo Describe function
  */
-char * A4GL_strip_quotes (char *s)
+char *
+A4GL_strip_quotes (char *s)
 {
-  static char *buff_sq=0;
+  static char *buff_sq = 0;
 
-  buff_sq=realloc(buff_sq,strlen(s)+10);
+  buff_sq = realloc (buff_sq, strlen (s) + 10);
 
   if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
     {
@@ -365,15 +373,15 @@ A4GL_replace_sql_var (char *s)
   static char buff[1024];
   char *ptr;
 
-  A4GL_debug("In replace_sql_var :%s\n",s);
+  A4GL_debug ("In replace_sql_var :%s\n", s);
 
   //if (s[0] != '\n')
-    //{
-      //return s;
-    //}
+  //{
+  //return s;
+  //}
   strcpy (buff, s);
 
-  A4GL_debug("Buff=%s\n",buff);
+  A4GL_debug ("Buff=%s\n", buff);
 
   if (A4GL_aubit_strcasecmp (buff, "today") == 0)
     {
@@ -381,9 +389,9 @@ A4GL_replace_sql_var (char *s)
       ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
-      A4GL_debug("Its today!");
-  A4GL_debug ("replace_sql_var :Returning %s", buff);
-	return buff;
+      A4GL_debug ("Its today!");
+      A4GL_debug ("replace_sql_var :Returning %s", buff);
+      return buff;
     }
 
   if (A4GL_aubit_strcasecmp (buff, "user") == 0)
@@ -392,8 +400,8 @@ A4GL_replace_sql_var (char *s)
       ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
-  A4GL_debug ("replace_sql_var :Returning %s", buff);
-	return buff;
+      A4GL_debug ("replace_sql_var :Returning %s", buff);
+      return buff;
     }
   return s;
   A4GL_debug ("replace_sql_var :Returning %s", buff);
@@ -414,18 +422,18 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
   char tabname[40];
   int aa;
   int ab;
-   char s[256];
+  char s[256];
 
-     A4GL_debug ("Field : %p \n", field);
-     
-strcpy(s,s_x);
-  A4GL_trim(s);
-     A4GL_debug ("attr_name_match : %s", s);
+  A4GL_debug ("Field : %p \n", field);
+
+  strcpy (s, s_x);
+  A4GL_trim (s);
+  A4GL_debug ("attr_name_match : %s", s);
   A4GL_bname (s, tabname, colname);
 
 
-     A4GL_debug ("Splits to %s & %s", tabname, colname);
-     A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
+  A4GL_debug ("Splits to %s & %s", tabname, colname);
+  A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
 
 
   aa = strcmp (field->tabname, tabname);
@@ -433,18 +441,17 @@ strcpy(s,s_x);
   /* A4GL_debug ("Matches = %d %d ", aa, ab); */
   if ((ab == 0) || (colname[0] == '*'))
     {
-      A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)",s,tabname,colname,field->tabname,field->colname);
+      A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)", s, tabname, colname, field->tabname, field->colname);
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
-      A4GL_debug ("Matched %s.%s = %s.%s ",tabname,colname,field->tabname,field->colname);
+      A4GL_debug ("Matched %s.%s = %s.%s ", tabname, colname, field->tabname, field->colname);
       return 1;
     }
-  
-     A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
-    field->colname, colname);
- 
+
+  A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname, field->colname, colname);
+
   return 0;
 }
 #endif
@@ -482,15 +489,16 @@ int
 A4GL_find_srec (struct_form * fd, char *name)
 {
   int a;
-A4GL_assertion(fd==0,"No struct_form passed to A4GL_find_rec");
+  A4GL_assertion (fd == 0, "No struct_form passed to A4GL_find_rec");
   A4GL_debug ("No of records : %d", fd->records.records_len);
 
   for (a = 0; a < fd->records.records_len; a++)
     {
-	A4GL_debug("MJA MJA %s - %s\n",fd->records.records_val[a].name,name);
-	if (A4GL_aubit_strcasecmp (name, fd->records.records_val[a].name) == 0) {
-		A4GL_debug("Found it...");
-	return a;
+      A4GL_debug ("MJA MJA %s - %s\n", fd->records.records_val[a].name, name);
+      if (A4GL_aubit_strcasecmp (name, fd->records.records_val[a].name) == 0)
+	{
+	  A4GL_debug ("Found it...");
+	  return a;
 	}
     }
   return -1;
@@ -531,7 +539,7 @@ A4GL_char_val (char *s)
   int l;
   strcpy (str, &s[1]);
   str[strlen (str) - 1] = 0;
-	l=strlen (str);
+  l = strlen (str);
   for (a = 0; a < l; a++)
     {
       if (str[a] == '\t')
@@ -541,17 +549,20 @@ A4GL_char_val (char *s)
 }
 
 #ifdef MOVED
-int aclfgl_aclfgl_random(int n) {
-int a;
-static int seeded=0;
-	if (!seeded) {
-		seeded=1;
-		srand(time(0));
-	}
-	a=A4GL_pop_int();
-	a=rand()%a;
-	A4GL_push_int(a);
-	return 1;
+int
+aclfgl_aclfgl_random (int n)
+{
+  int a;
+  static int seeded = 0;
+  if (!seeded)
+    {
+      seeded = 1;
+      srand (time (0));
+    }
+  a = A4GL_pop_int ();
+  a = rand () % a;
+  A4GL_push_int (a);
+  return 1;
 }
 #endif
 
@@ -577,14 +588,13 @@ A4GL_get_srec (char *name)
     }
 
   A4GL_debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
-  A4GL_debug("Database =%s",form->fileform->dbname);
+  A4GL_debug ("Database =%s", form->fileform->dbname);
   a = A4GL_find_srec (form->fileform, name);
   A4GL_debug ("Got %d", a);
   if (a == -1)
     return (struct struct_screen_record *) 0;
   else
-    return (struct struct_screen_record *) &form->fileform->
-      records.records_val[a];
+    return (struct struct_screen_record *) &form->fileform->records.records_val[a];
 }
 
 
@@ -695,41 +705,45 @@ char buff[2];
 
 #define MAX_STRING 512
 
-int aclfgl_aclfgl_read_pipe(int nargs)
+int
+aclfgl_aclfgl_read_pipe (int nargs)
 {
-    FILE *pp;                                /* pipe pointer          */
-    char *cmd_orig;                    /* command to be run     */
-    char *cmd;                    /* command to be run     */
-    char data[MAX_STRING];                   /* return from command   */
-    int  bytes = 0;                          /* number of bytes read  */
+  FILE *pp;			/* pipe pointer          */
+  char *cmd_orig;		/* command to be run     */
+  char *cmd;			/* command to be run     */
+  char data[MAX_STRING];	/* return from command   */
+  int bytes = 0;		/* number of bytes read  */
 
-    cmd_orig=A4GL_char_pop();               /* get the command       */
-    A4GL_trim(cmd_orig);                   /* strip trailing spaces */
-    cmd=acl_malloc2(strlen(cmd_orig)+20);
-    strcpy(cmd,cmd_orig);
-    free(cmd_orig);
-    strcat(cmd, " 2>/dev/null");             /* ignore error output   */
+  cmd_orig = A4GL_char_pop ();	/* get the command       */
+  A4GL_trim (cmd_orig);		/* strip trailing spaces */
+  cmd = acl_malloc2 (strlen (cmd_orig) + 20);
+  strcpy (cmd, cmd_orig);
+  free (cmd_orig);
+  strcat (cmd, " 2>/dev/null");	/* ignore error output   */
 
-    A4GL_set_a4gl_status(0);
+  A4GL_set_a4gl_status (0);
 
-    if ((pp = popen(cmd, "r")) == NULL) {
-        A4GL_set_a4gl_status(100);                   /* set error status      */
-	} else {
-        for (bytes = 0; bytes < MAX_STRING - 1; bytes++)
-            if ((data[bytes] = getc(pp)) == EOF || data[bytes] == '\n')
-                break;
+  if ((pp = popen (cmd, "r")) == NULL)
+    {
+      A4GL_set_a4gl_status (100);	/* set error status      */
+    }
+  else
+    {
+      for (bytes = 0; bytes < MAX_STRING - 1; bytes++)
+	if ((data[bytes] = getc (pp)) == EOF || data[bytes] == '\n')
+	  break;
 #ifdef MSVC
-        _pclose(pp);                          /* close the pipe        */
+      _pclose (pp);		/* close the pipe        */
 #else
-		pclose(pp);                          /* close the pipe        */
+      pclose (pp);		/* close the pipe        */
 #endif
     }
 
-    data[bytes] = 0;                      /* terminate string      */
+  data[bytes] = 0;		/* terminate string      */
 
-    free(cmd);
-    A4GL_push_char(data);                          /* return command output */
-    return(1);                               /* returning 1 parameter */
+  free (cmd);
+  A4GL_push_char (data);	/* return command output */
+  return (1);			/* returning 1 parameter */
 }
 
 /* End of inclusion */
@@ -737,10 +751,14 @@ int aclfgl_aclfgl_read_pipe(int nargs)
 
 
 
-int A4GL_isblank(int n) {
-	if (n==' ') return 1;
-	if (n=='\t') return 1;
-	return 0;
+int
+A4GL_isblank (int n)
+{
+  if (n == ' ')
+    return 1;
+  if (n == '\t')
+    return 1;
+  return 0;
 }
 
 

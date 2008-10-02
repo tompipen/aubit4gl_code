@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.23 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: dmy.c,v 1.24 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -162,7 +162,7 @@ A4GL_using_date (int dn, char *us)
     "DDDD", "DDD", "DD", "MMMM", "MMM", "MM", "YYYY", "YY", "TH", "D", "M", ""
   };
   char *rusing_strs[] = {
-    "\nA",  "\nB",  "\nC", "\nL","\nE", "\nF","\nG",  "\nH","\nI","\nJ","\nK", ""
+    "\nA", "\nB", "\nC", "\nL", "\nE", "\nF", "\nG", "\nH", "\nI", "\nJ", "\nK", ""
   };
 
   char rep_strs[20][20];
@@ -172,12 +172,15 @@ A4GL_using_date (int dn, char *us)
   /* if no format is given, use DBDATE */
   if ((us == 0) || (*us == '\0'))
     {
-	char *ptr;
-      ptr=A4GL_dbdate_to_using ("");
-	if (ptr) {
-      strcpy (buff_using_date, ptr);
-	} else {
-	return 0;
+      char *ptr;
+      ptr = A4GL_dbdate_to_using ("");
+      if (ptr)
+	{
+	  strcpy (buff_using_date, ptr);
+	}
+      else
+	{
+	  return 0;
 	}
     }
   else
@@ -186,13 +189,14 @@ A4GL_using_date (int dn, char *us)
     }
 
   A4GL_get_date (dn, &d, &m, &y);
-  if (d==0&&m==0&&y==0) {
-		// SOmethings gone wrong
-	return "";
-  }
-  A4GL_debug("Got date : %d %d %d",d,m,y);
+  if (d == 0 && m == 0 && y == 0)
+    {
+      // SOmethings gone wrong
+      return "";
+    }
+  A4GL_debug ("Got date : %d %d %d", d, m, y);
   dno = A4GL_day_in_week (d, m, y);
-  A4GL_assertion (dno<0 || dno>6,"Invalid day of week");
+  A4GL_assertion (dno < 0 || dno > 6, "Invalid day of week");
 
   /*
      g_dnamesfull[dno]);
@@ -210,18 +214,18 @@ A4GL_using_date (int dn, char *us)
   SPRINTF1 (rep_strs[6], "%04d", y);
   SPRINTF1 (rep_strs[7], "%02d", y % 100);
   A4GL_debug ("--DNO=%d", dno);
-  SPRINTF1 (rep_strs[8], "%s",(char *) A4GL_find_str_resource_int ("_DAYTH", d));
+  SPRINTF1 (rep_strs[8], "%s", (char *) A4GL_find_str_resource_int ("_DAYTH", d));
   SPRINTF1 (rep_strs[9], "%d", d);
   SPRINTF1 (rep_strs[10], "%d", m);
 
   /* replace the ddmmyy etc with something the user cant have used */
   for (a = 0; using_strs[a][0] != 0; a++)
     {
-        strcpy (buff2, A4GL_dategsub (buff_using_date, using_strs[a], rusing_strs[a]));
-        strcpy (buff_using_date, buff2);
-        strcpy (buff2, A4GL_dategsub (buff_using_date, UCusing_strs[a], rusing_strs[a]));
-        strcpy (buff_using_date, buff2);
-	
+      strcpy (buff2, A4GL_dategsub (buff_using_date, using_strs[a], rusing_strs[a]));
+      strcpy (buff_using_date, buff2);
+      strcpy (buff2, A4GL_dategsub (buff_using_date, UCusing_strs[a], rusing_strs[a]));
+      strcpy (buff_using_date, buff2);
+
     }
   /* now replace these with what the user wants - this gets around d
      being replaced in wed etc */
@@ -290,11 +294,14 @@ A4GL_dbdate_to_using (char *dbdate)
   if ((dbdate == 0) || (*dbdate == '\0'))
     {
       char *ptr;
-      ptr=A4GL_get_dbdate ();
-      if (ptr) {
-      		strncpy (buff, A4GL_get_dbdate (), 10);
-	} else {
-		return 0;
+      ptr = A4GL_get_dbdate ();
+      if (ptr)
+	{
+	  strncpy (buff, A4GL_get_dbdate (), 10);
+	}
+      else
+	{
+	  return 0;
 	}
     }
   else
@@ -341,7 +348,7 @@ A4GL_dbdate_to_using (char *dbdate)
 	  break;
 	case '/':
 	case '-':
-	case '.': //C
+	case '.':		//C
 	case ',':
 	  sep = *p;
 	  break;
@@ -400,7 +407,7 @@ A4GL_get_dbdate (void)
 
   /* try set the date format from (A4GL_)DBDATE */
   strncpy (dbdate, acl_getenv ("DBDATE"), 10);
-   dbdate[9]=0;
+  dbdate[9] = 0;
 
   /* if still no date format, use Informix default "mdy4/" */
   if (dbdate[0] == '\0')
@@ -438,8 +445,8 @@ A4GL_get_dbdate (void)
   /* we have an invalid dbdate format - die ... */
   A4GL_set_errm (dbdate);
   A4GL_exitwith ("dmy.c - Invalid DBDATE format: %s");
-      strcpy (dbdate, "MDY4/");
-      return dbdate;
+  strcpy (dbdate, "MDY4/");
+  return dbdate;
 }
 
 

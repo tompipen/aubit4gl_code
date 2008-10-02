@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.72 2008-09-11 15:12:31 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.73 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -49,7 +49,7 @@
 #endif
 
 
-int nonewline=0;
+int nonewline = 0;
 char *get_sli_type (enum e_sli type);
 char *make_sql_string_and_free (char *first, ...);
 char *kw_space = " ";
@@ -58,25 +58,20 @@ char *kw_ob = "(";
 char *kw_cb = ")";
 int place_holder_cnt = 0;
 int dont_set_for_single_table = 0;
-int set_sql_lineno=0;
-int has_columns_cnt=0;
+int set_sql_lineno = 0;
+int has_columns_cnt = 0;
 
-static char * convstrsql (char *s);
+static char *convstrsql (char *s);
 //char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
 //char *get_select_list_item(struct s_select *select, struct s_select_list_item *p) ;
-static char *get_select_list_item_i (struct s_select *select,
-				     struct s_select_list_item *p);
-static void make_list_item_list_from_select_list (struct s_select *select,
-						  struct
-						  s_select_list_item_list *p);
-static void make_list_item_list_from_select (struct s_select *select,
-					     struct s_select_list_item *p);
+static char *get_select_list_item_i (struct s_select *select, struct s_select_list_item *p);
+static void make_list_item_list_from_select_list (struct s_select *select, struct s_select_list_item_list *p);
+static void make_list_item_list_from_select (struct s_select *select, struct s_select_list_item *p);
 char *find_tabname_for_alias (struct s_select *select, char *alias);
 //void save_temp_table (char *tabname,int select_into);
 //void load_temp_table (void);
-void make_list_item_list_from_select_stmt(struct s_select *parent_stmt, struct s_select *select) ;
-void make_list_in_subselect_stmt (struct s_select *orig,
-				  struct s_select *next);
+void make_list_item_list_from_select_stmt (struct s_select *parent_stmt, struct s_select *select);
+void make_list_in_subselect_stmt (struct s_select *orig, struct s_select *next);
 //void preprocess_sql_statement (struct s_select *select);
 //struct s_table_list *A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a);
 
@@ -85,13 +80,15 @@ void make_list_in_subselect_stmt (struct s_select *orig,
 
 //void addmap (char *t, char *s, char *w, int l, char *m);
 
-void A4GL_set_sql_lineno(int n) {
-	set_sql_lineno=n;
+void
+A4GL_set_sql_lineno (int n)
+{
+  set_sql_lineno = n;
 }
 
 
 int A4GL_has_column (char *t, char *c);
-char * get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p);
+char *get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p);
 
 static struct s_select_list_item *
 empty_select_list_item (enum e_sli type)
@@ -118,20 +115,17 @@ new_select_list_item_list (struct s_select_list_item *i)
 }
 
 struct s_select_list_item_list *
-add_select_list_item_list (struct s_select_list_item_list *p,
-			   struct s_select_list_item *i)
+add_select_list_item_list (struct s_select_list_item_list *p, struct s_select_list_item *i)
 {
   p->list.list_len++;
-  p->list.list_val =
-    acl_realloc_With_Context (p->list.list_val, sizeof (struct s_select_list_item *) * p->list.list_len);
+  p->list.list_val = acl_realloc_With_Context (p->list.list_val, sizeof (struct s_select_list_item *) * p->list.list_len);
   p->list.list_val[p->list.list_len - 1] = i;
   return p;
 }
 
 
 static struct s_select_list_item_list *
-add_select_list_item_list_once (struct s_select_list_item_list *p,
-				struct s_select_list_item *i)
+add_select_list_item_list_once (struct s_select_list_item_list *p, struct s_select_list_item *i)
 {
   int a;
   if (p->list.list_len && p->list.list_val)
@@ -145,11 +139,13 @@ add_select_list_item_list_once (struct s_select_list_item_list *p,
   return add_select_list_item_list (p, i);
 }
 
-struct s_select_list_item *new_select_list_item_cast(struct s_select_list_item *expr, char *cast) {
+struct s_select_list_item *
+new_select_list_item_cast (struct s_select_list_item *expr, char *cast)
+{
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_CAST_EXPR);
   p->data.s_select_list_item_data_u.casting.expr = expr;
-  p->data.s_select_list_item_data_u.casting.datatype= acl_strdup_With_Context (cast);
+  p->data.s_select_list_item_data_u.casting.datatype = acl_strdup_With_Context (cast);
   return p;
 
 }
@@ -185,20 +181,20 @@ new_select_list_item_case (struct s_select_list_item *i)
 }
 
 struct s_select_list_item *
-append_select_list_item_case (struct s_select_list_item *l,
-			      struct s_select_list_item *w)
+append_select_list_item_case (struct s_select_list_item *l, struct s_select_list_item *w)
 {
   l->data.s_select_list_item_data_u.sqlcase.elements.elements_len++;
   l->data.s_select_list_item_data_u.sqlcase.elements.elements_val =
-    acl_realloc_With_Context (l->data.s_select_list_item_data_u.sqlcase.elements.elements_val, sizeof (struct s_sli_case_element *) *
-	     l->data.s_select_list_item_data_u.sqlcase.elements.elements_len);
-  l->data.s_select_list_item_data_u.sqlcase.elements.elements_val[l->data.s_select_list_item_data_u.sqlcase.elements.elements_len - 1] = w;
+    acl_realloc_With_Context (l->data.s_select_list_item_data_u.sqlcase.elements.elements_val,
+			      sizeof (struct s_sli_case_element *) *
+			      l->data.s_select_list_item_data_u.sqlcase.elements.elements_len);
+  l->data.s_select_list_item_data_u.sqlcase.elements.elements_val[l->data.s_select_list_item_data_u.sqlcase.elements.elements_len -
+								  1] = w;
   return l;
 }
 
 struct s_select_list_item *
-new_select_list_item_case_element (struct s_select_list_item *w,
-				   struct s_select_list_item *e)
+new_select_list_item_case_element (struct s_select_list_item *w, struct s_select_list_item *e)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_CASE_ELEMENT);
@@ -311,8 +307,7 @@ new_select_list_item_datetime (char *s)
 }
 
 struct s_select_list_item *
-new_select_list_item_extend (struct s_select_list_item *dt_expr, char *from,
-			     char *to)
+new_select_list_item_extend (struct s_select_list_item *dt_expr, char *from, char *to)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_EXTEND);
@@ -337,9 +332,10 @@ new_select_list_item_col (char *t, char *c, struct ilist *subscripts)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_COLUMN);
-	if (A4GL_aubit_strcasecmp(c,"ROWID")==0) {
-		c=A4GLSQLCV_get_sqlconst ("ROWID");
-	}
+  if (A4GL_aubit_strcasecmp (c, "ROWID") == 0)
+    {
+      c = A4GLSQLCV_get_sqlconst ("ROWID");
+    }
 
   p->data.s_select_list_item_data_u.column.tabname = 0;
   p->data.s_select_list_item_data_u.column.colname = 0;
@@ -353,7 +349,7 @@ new_select_list_item_col (char *t, char *c, struct ilist *subscripts)
       p->data.s_select_list_item_data_u.column.colname = acl_strdup_With_Context (c);
       A4GL_trim (c);
     }
- 
+
   p->data.s_select_list_item_data_u.column.subscript.i0 = -1;
   p->data.s_select_list_item_data_u.column.subscript.i1 = -1;
   p->data.s_select_list_item_data_u.column.subscript.i2 = -1;
@@ -375,8 +371,7 @@ new_select_list_item_col (char *t, char *c, struct ilist *subscripts)
 }
 
 struct s_select_list_item *
-new_select_list_item_sq (enum sq_expression_type type,
-			 struct s_select_list_item *s)
+new_select_list_item_sq (enum sq_expression_type type, struct s_select_list_item *s)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_SUBQUERY_EXPRESSION);
@@ -396,8 +391,7 @@ new_select_list_item_builtin_const (enum e_sli type)
 
 
 struct s_select_list_item *
-new_select_list_item_agg1 (enum e_sli type, char *aud,
-			   struct s_select_list_item *i)
+new_select_list_item_agg1 (enum e_sli type, char *aud, struct s_select_list_item *i)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (type);
@@ -408,8 +402,7 @@ new_select_list_item_agg1 (enum e_sli type, char *aud,
 
 
 struct s_select_list_item *
-new_select_list_item_op_sli (struct s_select_list_item *left,
-			     struct s_select_list_item *right, enum e_sli op)
+new_select_list_item_op_sli (struct s_select_list_item *left, struct s_select_list_item *right, enum e_sli op)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (op);
@@ -419,9 +412,7 @@ new_select_list_item_op_sli (struct s_select_list_item *left,
 }
 
 struct s_select_list_item *
-new_select_list_item_op_slil (struct s_select_list_item *left,
-			      struct s_select_list_item_list *right,
-			      enum e_sli op)
+new_select_list_item_op_slil (struct s_select_list_item *left, struct s_select_list_item_list *right, enum e_sli op)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (op);
@@ -431,8 +422,7 @@ new_select_list_item_op_slil (struct s_select_list_item *left,
 }
 
 struct s_select_list_item *
-new_select_list_item_op_expr (struct s_select_list_item *left,
-			      struct s_select_list_item *right, char *op)
+new_select_list_item_op_expr (struct s_select_list_item *left, struct s_select_list_item *right, char *op)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_OP);
@@ -444,9 +434,7 @@ new_select_list_item_op_expr (struct s_select_list_item *left,
 
 struct s_select_list_item *
 new_select_list_item_op_between (char *not, struct s_select_list_item *v,
-				 struct s_select_list_item *from,
-				 struct s_select_list_item *to,
-				 int not_between)
+				 struct s_select_list_item *from, struct s_select_list_item *to, int not_between)
 {
   struct s_select_list_item *p;
   if (not_between)
@@ -464,8 +452,7 @@ new_select_list_item_op_between (char *not, struct s_select_list_item *v,
 }
 
 struct s_select_list_item *
-new_select_list_item_fcall (char *fname,
-			    struct s_select_list_item_list *params)
+new_select_list_item_fcall (char *fname, struct s_select_list_item_list *params)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_FCALL);
@@ -477,8 +464,7 @@ new_select_list_item_fcall (char *fname,
 
 
 struct s_select_list_item *
-new_select_list_item_builtin_fcall (enum e_sli type,
-				    struct s_select_list_item_list *params)
+new_select_list_item_builtin_fcall (enum e_sli type, struct s_select_list_item_list *params)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (type);
@@ -488,8 +474,7 @@ new_select_list_item_builtin_fcall (enum e_sli type,
 
 
 struct s_select_list_item *
-new_select_list_item_simple_expr (enum e_sli type,
-				  struct s_select_list_item *expr)
+new_select_list_item_simple_expr (enum e_sli type, struct s_select_list_item *expr)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (type);
@@ -499,8 +484,7 @@ new_select_list_item_simple_expr (enum e_sli type,
 
 
 struct s_select_list_item *
-new_select_list_item_regex (enum e_sli type, struct s_select_list_item *val,
-			    struct s_select_list_item *regex, char *escape)
+new_select_list_item_regex (enum e_sli type, struct s_select_list_item *val, struct s_select_list_item *regex, char *escape)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (type);
@@ -521,7 +505,8 @@ new_select_list_subquery (struct s_select *s)
   return p;
 }
 
-struct s_select_list_item * new_select_list_query (struct s_select *s)
+struct s_select_list_item *
+new_select_list_query (struct s_select *s)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_QUERY);
@@ -562,22 +547,22 @@ new_empty_select (void)
 
 
 
-char * fix_delete_update_columns (char *table, struct s_select_list_item *i)
+char *
+fix_delete_update_columns (char *table, struct s_select_list_item *i)
 {
 // This is passed a where clause - so we need to go 
   struct s_select *select;
   char *s;
   //extern char current_upd_table[];
   select = new_empty_select ();
-  select->select_list =
-    new_select_list_item_list (new_select_list_item_literal ("1"));
+  select->select_list = new_select_list_item_list (new_select_list_item_literal ("1"));
   select->where_clause = i;
   select->first = A4GLSQLPARSE_new_tablename (table, 0);
-  s = make_select_stmt_v2 (table, select,"");
+  s = make_select_stmt_v2 (table, select, "");
 
-A4GL_free_select_stmt(select);
+  A4GL_free_select_stmt (select);
   s = strstr (s, "WHERE ") + 6;
-  return strdup(s);
+  return strdup (s);
 }
 
 
@@ -608,14 +593,13 @@ decode_month (char m1, char m2)
 }
 
 char *
-get_select_list_item_list_ob (struct s_select *select,
-			      struct s_select_list_item_list *i)
+get_select_list_item_list_ob (struct s_select *select, struct s_select_list_item_list *i)
 {
   char *buff = 0;
   char *buff2;
   int a;
   if (i == 0)
-    return strdup("");
+    return strdup ("");
   for (a = 0; a < i->list.list_len; a++)
     {
       if (a)
@@ -637,24 +621,28 @@ get_select_list_item_list_ob (struct s_select *select,
 
 
 
-static char *get_nl(void) {
-	if (nonewline) {
-		return acl_strdup("");
-	} else {
-		return acl_strdup("\n");
-	}
+static char *
+get_nl (void)
+{
+  if (nonewline)
+    {
+      return acl_strdup ("");
+    }
+  else
+    {
+      return acl_strdup ("\n");
+    }
 }
 
 
 char *
-get_select_list_item_list (struct s_select *select,
-			   struct s_select_list_item_list *i)
+get_select_list_item_list (struct s_select *select, struct s_select_list_item_list *i)
 {
   char *buff = 0;
   char *buff2;
   int a;
   if (i == 0)
-    return strdup("");
+    return strdup ("");
   for (a = 0; a < i->list.list_len; a++)
     {
       if (a)
@@ -674,7 +662,8 @@ get_select_list_item_list (struct s_select *select,
   return buff;
 }
 
-char * get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p)
+char *
+get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p)
 {
   char *s;
   //char *ptr;
@@ -692,13 +681,16 @@ char * get_select_list_item_ob (struct s_select *select, struct s_select_list_it
  * remove the trailing spaces from the value so it can be 'LIKE'd like informix
  * 
 */
-static char *like_trim(char *s) {
-if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAL")) {
-	static char buff[20000];
-	sprintf(buff,"TRIM(%s)",s);
-	return buff;
-}
-return s;
+static char *
+like_trim (char *s)
+{
+  if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAL"))
+    {
+      static char buff[20000];
+      sprintf (buff, "TRIM(%s)", s);
+      return buff;
+    }
+  return s;
 }
 
 
@@ -714,18 +706,18 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 
   if (p->sign == '-')
     {
-      rval = make_sql_string_and_free (acl_strdup_With_Context("-"), rval, NULL);
+      rval = make_sql_string_and_free (acl_strdup_With_Context ("-"), rval, NULL);
     }
 
   if (p->alias)
     {
       if (A4GLSQLCV_check_runtime_requirement ("COLUMN_ALIAS_AS"))
 	{
-	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context(" AS "), acl_strdup_With_Context(p->alias), NULL);
+	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context (" AS "), acl_strdup_With_Context (p->alias), NULL);
 	}
       else
 	{
-	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context(" "), acl_strdup_With_Context(p->alias), NULL);
+	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context (" "), acl_strdup_With_Context (p->alias), NULL);
 	}
     }
   return rval;
@@ -735,10 +727,11 @@ static char *
 get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 {
   // This is the guts of this code!
-  A4GL_assertion(p==0,"No item...");
-  if (p) {
-  	A4GL_debug ("%d (%s)\n", p->data.type, get_sli_type (p->data.type));
-  }
+  A4GL_assertion (p == 0, "No item...");
+  if (p)
+    {
+      A4GL_debug ("%d (%s)\n", p->data.type, get_sli_type (p->data.type));
+    }
 
   switch (p->data.type)
     {
@@ -748,25 +741,26 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
     case E_SLI_IBIND:
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
-    case E_SLI_VARIABLE: 
+    case E_SLI_VARIABLE:
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
-    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST: 
-    case E_SLI_VARIABLE_USAGE: 
-		A4GL_assertion(1,"These should all have been removed by now...");
-	return "";
+    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+    case E_SLI_VARIABLE_USAGE:
+      A4GL_assertion (1, "These should all have been removed by now...");
+      return "";
 
     case E_SLI_CAST_EXPR:
       return
-	make_sql_string_and_free (kw_ob, get_select_list_item (select, p->data.s_select_list_item_data_u.casting.expr), acl_strdup_With_Context("::"),p->data.s_select_list_item_data_u.casting.datatype,kw_cb, NULL);
-	
+	make_sql_string_and_free (kw_ob, get_select_list_item (select, p->data.s_select_list_item_data_u.casting.expr),
+				  acl_strdup_With_Context ("::"), p->data.s_select_list_item_data_u.casting.datatype, kw_cb, NULL);
+
     case E_SLI_DATETIME:
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
     case E_SLI_INTERVAL:
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
     case E_SLI_COLUMN_NOT_TRANSFORMED:
-      	A4GL_debug("Not transformed : %s",p->data.s_select_list_item_data_u.expression);
+      A4GL_debug ("Not transformed : %s", p->data.s_select_list_item_data_u.expression);
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
     case E_SLI_OP:
@@ -775,9 +769,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				  (select, p->data.s_select_list_item_data_u.complex_expr.left),
 				  acl_strdup_With_Context (p->data.s_select_list_item_data_u.complex_expr.op),
 				  get_select_list_item (select,
-							p->data.s_select_list_item_data_u.
-							complex_expr.right),get_nl(),
-				  NULL);
+							p->data.s_select_list_item_data_u.complex_expr.right), get_nl (), NULL);
 
       /*
          case E_SLI_JOIN:                             return make_sql_string_and_free(acl_strdup_With_Context("JOIN("),get_select_list_item(select,p->data.s_select_list_item_data_u.complex_expr.left), 
@@ -791,12 +783,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->data.s_select_list_item_data_u.complex_expr.left),
 				  acl_strdup_With_Context ("="), get_select_list_item (select,
-								      p->
-								      data.s_select_list_item_data_u.
-								      complex_expr.
-								      right),get_nl(),
-	
-				  NULL);
+										       p->
+										       data.s_select_list_item_data_u.
+										       complex_expr.right), get_nl (), NULL);
 
 
     case E_SLI_IN_VALUES:
@@ -806,9 +795,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				       acl_strdup_With_Context (" IN ("),
 				       get_select_list_item_list (select,
 								  p->data.s_select_list_item_data_u.
-								  slil_expr.
-								  right_list),
-				       acl_strdup_With_Context (")"), NULL);
+								  slil_expr.right_list), acl_strdup_With_Context (")"), NULL);
 
     case E_SLI_NOT_IN_VALUES:
       return make_sql_string_and_free (get_select_list_item (select,
@@ -817,9 +804,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 				       acl_strdup_With_Context (" NOT IN ("),
 				       get_select_list_item_list (select,
 								  p->data.s_select_list_item_data_u.
-								  slil_expr.
-								  right_list),
-				       acl_strdup_With_Context (")"), NULL);
+								  slil_expr.right_list), acl_strdup_With_Context (")"), NULL);
 
 
     case E_SLI_IN_SELECT:
@@ -827,130 +812,110 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->data.s_select_list_item_data_u.complex_expr.left),
 				  acl_strdup_With_Context (" IN ("),
-				  get_select_list_item (select,
-							p->data.s_select_list_item_data_u.
-							complex_expr.right),
-				  kw_cb, NULL);
+				  get_select_list_item (select, p->data.s_select_list_item_data_u.complex_expr.right), kw_cb, NULL);
 
     case E_SLI_NOT_IN_SELECT:
       return
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->data.s_select_list_item_data_u.complex_expr.left),
 				  acl_strdup_With_Context (" NOT IN ("),
-				  get_select_list_item (select,
-							p->data.s_select_list_item_data_u.
-							complex_expr.right), kw_cb, NULL);
+				  get_select_list_item (select, p->data.s_select_list_item_data_u.complex_expr.right), kw_cb, NULL);
 
     case E_SLI_LITERAL:
-	{
+      {
 	char *ptr;
-	ptr=p->data.s_select_list_item_data_u.expression;
-	if (ptr[0] == '\"') {
-		if (A4GLSQLCV_check_requirement ("DOUBLE_TO_SINGLE_QUOTES")) {
-			ptr=convstrsql(ptr);
-		}
-	}
+	ptr = p->data.s_select_list_item_data_u.expression;
+	if (ptr[0] == '\"')
+	  {
+	    if (A4GLSQLCV_check_requirement ("DOUBLE_TO_SINGLE_QUOTES"))
+	      {
+		ptr = convstrsql (ptr);
+	      }
+	  }
 
-      if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DATE"))
-	{
-	  if (ptr[0] == '\'')
-	    {
-	      char buff[256];
-	      if (isdigit (ptr[1]) &&
-		  isdigit (ptr[2]) &&
-		  ptr[3] == '/' &&
-		  isdigit (ptr[4]) &&
-		  isdigit (ptr[5]) &&
-		  ptr[6] == '/' &&
-		  isdigit (ptr[7]) &&
-		  isdigit (ptr[8]) &&
-		  isdigit (ptr[9]) &&
-		  isdigit (ptr[10]))
-		{		// Well - it looks like a date..
+	if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DATE"))
+	  {
+	    if (ptr[0] == '\'')
+	      {
+		char buff[256];
+		if (isdigit (ptr[1]) &&
+		    isdigit (ptr[2]) &&
+		    ptr[3] == '/' &&
+		    isdigit (ptr[4]) &&
+		    isdigit (ptr[5]) &&
+		    ptr[6] == '/' && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
+		  {		// Well - it looks like a date..
 
-			
-		  SPRINTF1 (buff, "Cast(%s as DateTime)",
-			   ptr);
-		  return acl_strdup_With_Context (buff);
 
-		}
-	    }
-	}
+		    SPRINTF1 (buff, "Cast(%s as DateTime)", ptr);
+		    return acl_strdup_With_Context (buff);
 
-      if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DMY"))
-	{
-	  if (ptr[0] == '\'')
-	    {
-	      char buff[256];
-	      if (isdigit (ptr[1]) &&
-		  isdigit (ptr[2]) &&
-		  ptr[3] == '/' &&
-		  isdigit (ptr[4]) &&
-		  isdigit (ptr[5]) &&
-		  ptr[6] == '/' &&
-		  isdigit (ptr[7]) &&
-		  isdigit (ptr[8]) &&
-		  isdigit (ptr[9]) &&
-		  isdigit (ptr[10]))
-		{		// Well - it looks like a date..
-			char *dbdate;
-		dbdate=A4GL_get_dbdate();
-		if (dbdate[0]=='D'||dbdate[0]=='d') {
-		  SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)", 
-								ptr[1], ptr[2],
-				  				decode_month(ptr[4], ptr[5]), 
-				  				ptr[7], ptr[8], ptr[9], ptr[10]
-								);
-		  return acl_strdup_With_Context (buff);
-		} else {
-		  SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)", 
-								ptr[4], ptr[5],
-				  				decode_month(ptr[1], ptr[2]), 
-				  				ptr[7], ptr[8], ptr[9], ptr[10] 
-								);
-		  return acl_strdup_With_Context (buff);
-		}
+		  }
+	      }
+	  }
 
-		}
-	    }
-	}
+	if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_CAST_DMY"))
+	  {
+	    if (ptr[0] == '\'')
+	      {
+		char buff[256];
+		if (isdigit (ptr[1]) &&
+		    isdigit (ptr[2]) &&
+		    ptr[3] == '/' &&
+		    isdigit (ptr[4]) &&
+		    isdigit (ptr[5]) &&
+		    ptr[6] == '/' && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
+		  {		// Well - it looks like a date..
+		    char *dbdate;
+		    dbdate = A4GL_get_dbdate ();
+		    if (dbdate[0] == 'D' || dbdate[0] == 'd')
+		      {
+			SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)",
+				  ptr[1], ptr[2], decode_month (ptr[4], ptr[5]), ptr[7], ptr[8], ptr[9], ptr[10]);
+			return acl_strdup_With_Context (buff);
+		      }
+		    else
+		      {
+			SPRINTF7 (buff, "Cast('%c%c %s %c%c%c%c' as DateTime)",
+				  ptr[4], ptr[5], decode_month (ptr[1], ptr[2]), ptr[7], ptr[8], ptr[9], ptr[10]);
+			return acl_strdup_With_Context (buff);
+		      }
 
-      if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_YMD"))
-	{
-	  if (ptr[0] == '\'')
-	    {
-	      char buff[256];
-	      if (isdigit (ptr[1]) &&
-		  isdigit (ptr[2]) &&
-		  ptr[3] == '/' &&
-		  isdigit (ptr[4]) &&
-		  isdigit (ptr[5]) &&
-		  ptr[6] == '/' &&
-		  isdigit (ptr[7]) &&
-		  isdigit (ptr[8]) &&
-		  isdigit (ptr[9]) &&
-		  isdigit (ptr[10]))
-		{		// Well - it looks like a date..
-			char *dbdate;
-		dbdate=A4GL_get_dbdate();
-		if (dbdate[0]=='D'||dbdate[0]=='d') {
-		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", ptr[7], ptr[8],
-				  	ptr[9], ptr[10], ptr[4],
-				  	ptr[5], ptr[1], ptr[2]);
-		  return acl_strdup_With_Context (buff);
-		} else {
-		  SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", ptr[7], ptr[8], ptr[9], ptr[10], 
-				  		ptr[1], ptr[2], 
-						ptr[4], ptr[5]);
-		  return acl_strdup_With_Context (buff);
-		}
+		  }
+	      }
+	  }
 
-		}
-	    }
-	}
+	if (A4GLSQLCV_check_runtime_requirement ("DATE_STRING_TO_YMD"))
+	  {
+	    if (ptr[0] == '\'')
+	      {
+		char buff[256];
+		if (isdigit (ptr[1]) &&
+		    isdigit (ptr[2]) &&
+		    ptr[3] == '/' &&
+		    isdigit (ptr[4]) &&
+		    isdigit (ptr[5]) &&
+		    ptr[6] == '/' && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
+		  {		// Well - it looks like a date..
+		    char *dbdate;
+		    dbdate = A4GL_get_dbdate ();
+		    if (dbdate[0] == 'D' || dbdate[0] == 'd')
+		      {
+			SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", ptr[7], ptr[8], ptr[9], ptr[10], ptr[4], ptr[5], ptr[1], ptr[2]);
+			return acl_strdup_With_Context (buff);
+		      }
+		    else
+		      {
+			SPRINTF8 (buff, "'%c%c%c%c-%c%c-%c%c'", ptr[7], ptr[8], ptr[9], ptr[10], ptr[1], ptr[2], ptr[4], ptr[5]);
+			return acl_strdup_With_Context (buff);
+		      }
 
-      return acl_strdup_With_Context (ptr);
-	}
+		  }
+	      }
+	  }
+
+	return acl_strdup_With_Context (ptr);
+      }
 
     case E_SLI_REGEX_MATCHES:
       {
@@ -958,12 +923,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char *p2;
 	p1 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val);
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
-	return make_sql_string_and_free (acl_strdup_With_Context(p1),
-					 acl_strdup_With_Context(A4GLSQLCV_matches_string ("", p2,
-								   p->data.s_select_list_item_data_u.
-								   regex.
-								   escape)),
-					 NULL);
+	return make_sql_string_and_free (acl_strdup_With_Context (p1),
+					 acl_strdup_With_Context (A4GLSQLCV_matches_string ("", p2,
+											    p->data.s_select_list_item_data_u.
+											    regex.escape)), NULL);
       }
 
     case E_SLI_REGEX_NOT_MATCHES:
@@ -972,13 +935,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char *p2;
 	p1 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val);
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
-	return make_sql_string_and_free (acl_strdup_With_Context(p1),
-					 acl_strdup_With_Context(A4GLSQLCV_matches_string (" NOT ",
-								   p2,
-								   p->data.s_select_list_item_data_u.
-								   regex.
-								   escape)),
-					 NULL);
+	return make_sql_string_and_free (acl_strdup_With_Context (p1),
+					 acl_strdup_With_Context (A4GLSQLCV_matches_string (" NOT ",
+											    p2,
+											    p->data.s_select_list_item_data_u.
+											    regex.escape)), NULL);
       }
     case E_SLI_REGEX_LIKE:
       {
@@ -988,118 +949,111 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context(like_trim(p1)), strdup(" LIKE "), strdup(p2),
-					     acl_strdup_With_Context(p->data.s_select_list_item_data_u.regex.escape), NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1)), strdup (" LIKE "), strdup (p2),
+					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context(like_trim(p1)), acl_strdup_With_Context(" LIKE "), acl_strdup_With_Context(p2), NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1)), acl_strdup_With_Context (" LIKE "),
+					     acl_strdup_With_Context (p2), NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_LIKE:
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context(like_trim(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
-	p2 = acl_strdup_With_Context(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
+	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
+	p2 = acl_strdup_With_Context (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context(p1), acl_strdup_With_Context(" NOT LIKE "), p2,
-					     acl_strdup_With_Context(p->data.s_select_list_item_data_u.regex.escape), NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context (p1), acl_strdup_With_Context (" NOT LIKE "), p2,
+					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT LIKE "), p2, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" NOT LIKE "), p2, NULL);
 	  }
       }
     case E_SLI_REGEX_ILIKE:
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context(like_trim(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
-	p2 = acl_strdup_With_Context(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
+	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
+	p2 = acl_strdup_With_Context (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" ILIKE "), p2,
-					     acl_strdup_With_Context(p->data.s_select_list_item_data_u.regex.escape), NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" ILIKE "), p2,
+					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" ILIKE "), p2, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" ILIKE "), p2, NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_ILIKE:
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context(like_trim(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
-	p2 = acl_strdup_With_Context(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
+	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
+	p2 = acl_strdup_With_Context (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
-	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT ILIKE "), p2,
-					     acl_strdup_With_Context(p->data.s_select_list_item_data_u.regex.escape), NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" NOT ILIKE "), p2,
+					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (p1, acl_strdup_With_Context(" NOT ILIKE "), p2, NULL);
+	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" NOT ILIKE "), p2, NULL);
 	  }
       }
 
     case E_SLI_ISNULL:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" IS NULL"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" IS NULL"), NULL);
     case E_SLI_ISNOTNULL:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" IS NOT NULL"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" IS NOT NULL"), NULL);
     case E_SLI_ASC:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" ASC"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" ASC"), NULL);
     case E_SLI_DESC:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" DESC"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" DESC"), NULL);
     case E_SLI_NOT:
       return make_sql_string_and_free (acl_strdup_With_Context ("NOT("),
 				       get_select_list_item (select,
 							     p->data.s_select_list_item_data_u.expr),
 				       acl_strdup_With_Context (")"), NULL);
     case E_SLI_BRACKET_EXPR:
-	{
-	 char *str;
-	 nonewline++;
-         str=make_sql_string_and_free (acl_strdup_With_Context ("("),
-				       get_select_list_item (select, p->data.s_select_list_item_data_u.expr),
-				       acl_strdup_With_Context (")"), NULL);
+      {
+	char *str;
+	nonewline++;
+	str = make_sql_string_and_free (acl_strdup_With_Context ("("),
+					get_select_list_item (select, p->data.s_select_list_item_data_u.expr),
+					acl_strdup_With_Context (")"), NULL);
 	nonewline--;
 	return str;
-	}
+      }
     case E_SLI_UNITS_YEAR:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" UNITS YEAR"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" UNITS YEAR"), NULL);
     case E_SLI_UNITS_MONTH:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" UNITS MONTH"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" UNITS MONTH"), NULL);
     case E_SLI_UNITS_DAY:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" UNITS DAY"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" UNITS DAY"), NULL);
     case E_SLI_UNITS_HOUR:
       return
 	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.expr),
-				  acl_strdup_With_Context (" UNITS HOUR"), NULL);
+				  (select, p->data.s_select_list_item_data_u.expr), acl_strdup_With_Context (" UNITS HOUR"), NULL);
     case E_SLI_UNITS_MINUTE:
       return
 	make_sql_string_and_free (get_select_list_item
@@ -1133,8 +1087,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("YEAR", params));
 	acl_free_With_Context (params);
 	return rval;
@@ -1143,8 +1096,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("MONTH", params));
 	acl_free_With_Context (params);
 	return rval;
@@ -1153,8 +1105,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("DAY", params));
 	acl_free_With_Context (params);
 	return rval;
@@ -1163,8 +1114,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("DOW", params));
 	acl_free_With_Context (params);
 	return rval;
@@ -1173,8 +1123,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("WEEKDAY", params));
 	acl_free_With_Context (params);
 	return rval;
@@ -1183,8 +1132,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("MDY", params));
 	acl_free_With_Context (params);
 	return rval;
@@ -1193,47 +1141,41 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *params;
 	char *rval;
-	params =
-	  get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
 	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func ("DATE", params));
 	acl_free_With_Context (params);
 	return rval;
       }
     case E_SLI_BUILTIN_AGG_AVG:
       return make_sql_string_and_free (acl_strdup_With_Context ("AVG("),
-				       acl_strdup_With_Context(p->data.s_select_list_item_data_u.agg_expr.aud),
+				       acl_strdup_With_Context (p->data.s_select_list_item_data_u.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->data.s_select_list_item_data_u.
-							     agg_expr.expr),
-				       acl_strdup_With_Context (")"), NULL);
+							     agg_expr.expr), acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_MAX:
       return make_sql_string_and_free (acl_strdup_With_Context ("MAX("),
-				       acl_strdup_With_Context(p->data.s_select_list_item_data_u.agg_expr.aud),
+				       acl_strdup_With_Context (p->data.s_select_list_item_data_u.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->data.s_select_list_item_data_u.
-							     agg_expr.expr),
-				       acl_strdup_With_Context (")"), NULL);
+							     agg_expr.expr), acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_MIN:
       return make_sql_string_and_free (acl_strdup_With_Context ("MIN("),
-				       acl_strdup_With_Context(p->data.s_select_list_item_data_u.agg_expr.aud),
+				       acl_strdup_With_Context (p->data.s_select_list_item_data_u.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->data.s_select_list_item_data_u.
-							     agg_expr.expr),
-				       acl_strdup_With_Context (")"), NULL);
+							     agg_expr.expr), acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_SUM:
       return make_sql_string_and_free (acl_strdup_With_Context ("SUM("),
-				       acl_strdup_With_Context(p->data.s_select_list_item_data_u.agg_expr.aud),
+				       acl_strdup_With_Context (p->data.s_select_list_item_data_u.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->data.s_select_list_item_data_u.
-							     agg_expr.expr),
-				       acl_strdup_With_Context (")"), NULL);
+							     agg_expr.expr), acl_strdup_With_Context (")"), NULL);
     case E_SLI_BUILTIN_AGG_COUNT:
       return make_sql_string_and_free (acl_strdup_With_Context ("COUNT("),
-				       acl_strdup_With_Context(p->data.s_select_list_item_data_u.agg_expr.aud),
+				       acl_strdup_With_Context (p->data.s_select_list_item_data_u.agg_expr.aud),
 				       get_select_list_item (select,
 							     p->data.s_select_list_item_data_u.
-							     agg_expr.expr),
-				       acl_strdup_With_Context (")"), NULL);
+							     agg_expr.expr), acl_strdup_With_Context (")"), NULL);
 
     case E_SLI_BETWEEN:
       return
@@ -1244,9 +1186,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 							p->data.s_select_list_item_data_u.
 							between_expr.from),
 				  acl_strdup_With_Context (" AND "),
-				  get_select_list_item (select,
-							p->data.s_select_list_item_data_u.
-							between_expr.to), NULL);
+				  get_select_list_item (select, p->data.s_select_list_item_data_u.between_expr.to), NULL);
     case E_SLI_NOT_BETWEEN:
       return
 	make_sql_string_and_free (get_select_list_item
@@ -1256,21 +1196,19 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 							p->data.s_select_list_item_data_u.
 							between_expr.from),
 				  acl_strdup_With_Context (" AND "),
-				  get_select_list_item (select,
-							p->data.s_select_list_item_data_u.
-							between_expr.to), NULL);
+				  get_select_list_item (select, p->data.s_select_list_item_data_u.between_expr.to), NULL);
 
 
     case E_SLI_FCALL:
-      	{
-             char *params;
-	     char *rval;
-	     params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.fcall.params);
+      {
+	char *params;
+	char *rval;
+	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.fcall.params);
 
-	     rval = acl_strdup_With_Context (A4GLSQLCV_sql_func (p->data.s_select_list_item_data_u.fcall.fname, params));
-             /* free (params); */
-	     return rval;
-	     	}
+	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func (p->data.s_select_list_item_data_u.fcall.fname, params));
+	/* free (params); */
+	return rval;
+      }
 /*
       return make_sql_string_and_free (acl_strdup_With_Context (A4GLSQLCV_sql_func(p->data.s_select_list_item_data_u.fcall.fname)),
 				       kw_ob,
@@ -1283,7 +1221,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
 
     case E_SLI_EXTEND:
-		return strdup( A4GLSQLCV_make_dtime_extend ( get_select_list_item (select, p->data.s_select_list_item_data_u.extend.  expr) , p->data.s_select_list_item_data_u.extend.from, p->data.s_select_list_item_data_u.extend.to, 1));
+      return
+	strdup (A4GLSQLCV_make_dtime_extend
+		(get_select_list_item (select, p->data.s_select_list_item_data_u.extend.expr),
+		 p->data.s_select_list_item_data_u.extend.from, p->data.s_select_list_item_data_u.extend.to, 1));
 /*
       return make_sql_string_and_free (acl_strdup_With_Context ("EXTEND ("),
 				       get_select_list_item (select, p->data.s_select_list_item_data_u.extend.  expr),
@@ -1307,21 +1248,24 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_COLUMN:
       {
-	      char *rval;
+	char *rval;
 	char buff[50] = "";
 	if (p->data.s_select_list_item_data_u.column.subscript.i0 >= 1)
 	  {
-	      rval=acl_strdup_With_Context (A4GLSQLCV_make_substr (A4GLSQLCV_check_colname_alias
-		       (p->data.s_select_list_item_data_u.column.tabname, find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname),
-			p->data.s_select_list_item_data_u.column.colname),
-		       p->data.s_select_list_item_data_u.column.subscript.i0,
-		       p->data.s_select_list_item_data_u.column.subscript.i1,
-		       p->data.s_select_list_item_data_u.column.subscript.i2));
-	      		A4GL_debug("returning %s\n",rval);
+	    rval = acl_strdup_With_Context (A4GLSQLCV_make_substr (A4GLSQLCV_check_colname_alias
+								   (p->data.s_select_list_item_data_u.column.tabname,
+								    find_tabname_for_alias (select,
+											    p->data.s_select_list_item_data_u.
+											    column.tabname),
+								    p->data.s_select_list_item_data_u.column.colname),
+								   p->data.s_select_list_item_data_u.column.subscript.i0,
+								   p->data.s_select_list_item_data_u.column.subscript.i1,
+								   p->data.s_select_list_item_data_u.column.subscript.i2));
+	    A4GL_debug ("returning %s\n", rval);
 
-		//ADDMAP("UseColumn",rval);
+	    //ADDMAP("UseColumn",rval);
 
-	      return rval;
+	    return rval;
 	  }
 	A4GL_assertion (p->data.s_select_list_item_data_u.column.colname == 0, "Column name was null pointer");
 
@@ -1330,68 +1274,80 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    char *orig;
 	    char *rval;
 	    orig = find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname);
-	    rval=acl_strdup_With_Context (A4GLSQLCV_check_colname_alias (p->data.s_select_list_item_data_u.column.tabname, orig, p->data.s_select_list_item_data_u.column.colname));
-	      A4GL_debug("returning %s\n",rval);
-		//ADDMAP("UseColumn",rval);
-	      return rval;
+	    rval =
+	      acl_strdup_With_Context (A4GLSQLCV_check_colname_alias
+				       (p->data.s_select_list_item_data_u.column.tabname, orig,
+					p->data.s_select_list_item_data_u.column.colname));
+	    A4GL_debug ("returning %s\n", rval);
+	    //ADDMAP("UseColumn",rval);
+	    return rval;
 	  }
 
-	
+
 	if (select)
 	  {
 	    if (select->table_elements.tables.tables_len == 1)
 	      {
 
-		if (A4GL_has_column (select->table_elements.tables.tables_val[0].tabname, p->data.s_select_list_item_data_u.column.colname))
+		if (A4GL_has_column
+		    (select->table_elements.tables.tables_val[0].tabname, p->data.s_select_list_item_data_u.column.colname))
 		  {
-			char *t;
-			if (select->table_elements.tables.tables_val[0].alias) {
-				t=select->table_elements.tables.tables_val[0].alias;
-			} else {
-				t=select->table_elements.tables.tables_val[0].tabname;
-			}
-			A4GL_debug("t=%s",t);
-			  rval= acl_strdup_With_Context (A4GLSQLCV_check_colname (t, p->data.s_select_list_item_data_u.column.colname));
-	      A4GL_debug("returning %s\n",rval);
-		//ADDMAP("UseColumn",rval);
-			  return rval;
+		    char *t;
+		    if (select->table_elements.tables.tables_val[0].alias)
+		      {
+			t = select->table_elements.tables.tables_val[0].alias;
+		      }
+		    else
+		      {
+			t = select->table_elements.tables.tables_val[0].tabname;
+		      }
+		    A4GL_debug ("t=%s", t);
+		    rval = acl_strdup_With_Context (A4GLSQLCV_check_colname (t, p->data.s_select_list_item_data_u.column.colname));
+		    A4GL_debug ("returning %s\n", rval);
+		    //ADDMAP("UseColumn",rval);
+		    return rval;
 		  }
 	      }
 	  }
 
 	//A4GL_pause_execution();
 
-	rval = make_sql_string_and_free (acl_strdup_With_Context (p->data.s_select_list_item_data_u.column.colname), acl_strdup_With_Context (buff), NULL);
-	      A4GL_debug("returning %s\n",rval);
-		//ADDMAP("UseColumn",rval);
-		return rval;
+	rval =
+	  make_sql_string_and_free (acl_strdup_With_Context (p->data.s_select_list_item_data_u.column.colname),
+				    acl_strdup_With_Context (buff), NULL);
+	A4GL_debug ("returning %s\n", rval);
+	//ADDMAP("UseColumn",rval);
+	return rval;
       }
 
 
-    case E_SLI_VAR_REPLACE: {
-			char buff[256];
-			SPRINTF1(buff,"@@VARIABLE[%s]@@",p->data.s_select_list_item_data_u.expression);
-			return strdup(buff);
-		}
+    case E_SLI_VAR_REPLACE:
+      {
+	char buff[256];
+	SPRINTF1 (buff, "@@VARIABLE[%s]@@", p->data.s_select_list_item_data_u.expression);
+	return strdup (buff);
+      }
 
 
 
- 
+
     case E_SLI_COLUMN_ORDERBY:
       {
 	//char buff[50] = "";
 	int a;
 	if (p->data.s_select_list_item_data_u.column.subscript.i0 >= 1)
 	  {
-	    A4GL_assertion (p->data.s_select_list_item_data_u.column.colname == 0,
-			    "Order by subscript not handled");
+	    A4GL_assertion (p->data.s_select_list_item_data_u.column.colname == 0, "Order by subscript not handled");
 	  }
 
 	if (p->data.s_select_list_item_data_u.column.tabname)
 	  {
 	    char *orig;
 	    orig = find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname);
-	    return acl_strdup_With_Context (A4GLSQLCV_check_colname_alias (p->data.s_select_list_item_data_u.column.tabname, orig, p->data.s_select_list_item_data_u.column.colname));
+	    return
+	      acl_strdup_With_Context (A4GLSQLCV_check_colname_alias
+				       (p->data.s_select_list_item_data_u.column.tabname, orig,
+					p->data.s_select_list_item_data_u.column.colname));
 	  }
 	if (select)
 	  {
@@ -1401,13 +1357,11 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		if (select->select_list->list.list_val[a]->alias)
 		  {
 		    if (strcmp
-			(select->select_list->list.list_val[a]->alias,
-			 p->data.s_select_list_item_data_u.column.colname) == 0)
+			(select->select_list->list.list_val[a]->alias, p->data.s_select_list_item_data_u.column.colname) == 0)
 		      {
 			return
 			  make_sql_string_and_free (acl_strdup_With_Context
-						    (p->data.s_select_list_item_data_u.column.
-						     colname), NULL);
+						    (p->data.s_select_list_item_data_u.column.colname), NULL);
 		      }
 		  }
 	      }
@@ -1415,18 +1369,24 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    if (select->table_elements.tables.tables_len == 1)
 	      {
 		if (A4GL_has_column
-		    (select->table_elements.tables.tables_val[0].tabname,
-		     p->data.s_select_list_item_data_u.column.colname))
+		    (select->table_elements.tables.tables_val[0].tabname, p->data.s_select_list_item_data_u.column.colname))
 		  {
 
-			if (select->table_elements.tables.tables_val[0].alias) {
-		    return acl_strdup_With_Context (A4GLSQLCV_check_colname_alias (
-		select->table_elements.tables.tables_val[0].alias,
-		select->table_elements.tables.tables_val[0].tabname
-		, p->data.s_select_list_item_data_u.column.colname));
-			} else {
-		    return acl_strdup_With_Context (A4GLSQLCV_check_colname (select->table_elements.tables.tables_val[0].tabname, p->data.s_select_list_item_data_u.column.colname));
-			}
+		    if (select->table_elements.tables.tables_val[0].alias)
+		      {
+			return
+			  acl_strdup_With_Context (A4GLSQLCV_check_colname_alias
+						   (select->table_elements.tables.tables_val[0].alias,
+						    select->table_elements.tables.tables_val[0].tabname,
+						    p->data.s_select_list_item_data_u.column.colname));
+		      }
+		    else
+		      {
+			return
+			  acl_strdup_With_Context (A4GLSQLCV_check_colname
+						   (select->table_elements.tables.tables_val[0].tabname,
+						    p->data.s_select_list_item_data_u.column.colname));
+		      }
 		  }
 	      }
 
@@ -1435,82 +1395,65 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
 	  }
 
-	return make_sql_string_and_free (acl_strdup_With_Context (p->data.s_select_list_item_data_u.column.colname),
-					 NULL);
+	return make_sql_string_and_free (acl_strdup_With_Context (p->data.s_select_list_item_data_u.column.colname), NULL);
       }
 
-	case E_SLI_BUILTIN_CONST_NULL:
-		return  acl_strdup("NULL");
-	break;
+    case E_SLI_BUILTIN_CONST_NULL:
+      return acl_strdup ("NULL");
+      break;
 
     case E_SLI_CASE:
       return
-	make_sql_string_and_free (acl_strdup_With_Context(A4GLSQLCV_make_case
-				  (select, &p->data.s_select_list_item_data_u.sqlcase)), NULL);
+	make_sql_string_and_free (acl_strdup_With_Context (A4GLSQLCV_make_case
+							   (select, &p->data.s_select_list_item_data_u.sqlcase)), NULL);
 
     case E_SLI_CASE_ELEMENT:
       A4GL_assertion (1, "Elements shouldn't be printed in isolation...");
       return "";
 
     case E_SLI_SUBQUERY:
-      return make_select_stmt_v2 (0, p->data.s_select_list_item_data_u.subquery,"");
+      return make_select_stmt_v2 (0, p->data.s_select_list_item_data_u.subquery, "");
 
-    
+
     case E_SLI_SUBQUERY_EXPRESSION:
       switch (p->data.s_select_list_item_data_u.sq_expression.type)
 	{
 	case E_SQE_DONT_CARE:
 	  return make_sql_string_and_free (kw_ob,
 					   get_select_list_item (select,
-								 p->data.s_select_list_item_data_u.
-								 sq_expression.
-								 sq), kw_cb,
-					   NULL);
+								 p->data.s_select_list_item_data_u.sq_expression.sq), kw_cb, NULL);
 	case E_SQE_EXISTS:
 	  return make_sql_string_and_free (acl_strdup_With_Context ("EXISTS ("),
 					   get_select_list_item (select,
-								 p->data.s_select_list_item_data_u.
-								 sq_expression.
-								 sq), kw_cb,
-					   NULL);
+								 p->data.s_select_list_item_data_u.sq_expression.sq), kw_cb, NULL);
 
 	case E_SQE_NOT_EXISTS:
 	  return make_sql_string_and_free (acl_strdup_With_Context ("NOT EXISTS ("),
 					   get_select_list_item (select,
-								 p->data.s_select_list_item_data_u.
-								 sq_expression.
-								 sq), kw_cb,
-					   NULL);
+								 p->data.s_select_list_item_data_u.sq_expression.sq), kw_cb, NULL);
 	case E_SQE_ALL:
 	  return make_sql_string_and_free (acl_strdup_With_Context ("ALL ("),
 					   get_select_list_item (select,
-								 p->data.s_select_list_item_data_u.
-								 sq_expression.
-								 sq), kw_cb,
-					   NULL);
+								 p->data.s_select_list_item_data_u.sq_expression.sq), kw_cb, NULL);
 	case E_SQE_ANY:
 	  return make_sql_string_and_free (acl_strdup_With_Context ("ANY ("),
 					   get_select_list_item (select,
-								 p->data.s_select_list_item_data_u.
-								 sq_expression.
-								 sq), kw_cb,
-					   NULL);
+								 p->data.s_select_list_item_data_u.sq_expression.sq), kw_cb, NULL);
 	case E_SQE_SOME:
 	  return make_sql_string_and_free (acl_strdup_With_Context ("SOME ("),
 					   get_select_list_item (select,
-								 p->data.s_select_list_item_data_u.
-								 sq_expression.
-								 sq), kw_cb,
-					   NULL);
+								 p->data.s_select_list_item_data_u.sq_expression.sq), kw_cb, NULL);
 
 
 	}
-	case E_SLI_QUERY:
-		A4GL_assertion(1,"Shouldnt use E_SLI_QUERY here"); break;
+    case E_SLI_QUERY:
+      A4GL_assertion (1, "Shouldnt use E_SLI_QUERY here");
+      break;
 
-	case E_SLI_VARIABLE_USAGE_LIST:
-		A4GL_assertion(1,"Should get E_SLI_VARIABLE_USAGE_LIST - use the 'rationalize_select_list_item_list' function to flatten the list first");
-		break;
+    case E_SLI_VARIABLE_USAGE_LIST:
+      A4GL_assertion (1,
+		      "Should get E_SLI_VARIABLE_USAGE_LIST - use the 'rationalize_select_list_item_list' function to flatten the list first");
+      break;
 
     }
   A4GL_assertion (1, "Shouldn't happen...");
@@ -1529,11 +1472,9 @@ make_table_expression (struct s_select *select)
   //int a;
   strcpy (buff, "");
 
-  A4GLSQLPARSE_from_clause_collect_tables (select, select->first,
-					   &select->table_elements);
+  A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
   preprocess_sql_statement (select);
-  A4GLSQLPARSE_from_clause (select, select->first, buff_from,
-			    &select->table_elements);
+  A4GLSQLPARSE_from_clause (select, select->first, buff_from, &select->table_elements);
 
 
   strcat (buff, buff_from);
@@ -1569,18 +1510,17 @@ make_list_in_subselect_stmt (struct s_select *orig, struct s_select *next)
     {
       A4GLSQLPARSE_add_table_to_table_list (&next->table_elements,
 					    orig->table_elements.tables.tables_val[a].
-					    tabname,
-					    orig->table_elements.tables.tables_val[a].
-					    alias);
+					    tabname, orig->table_elements.tables.tables_val[a].alias);
     }
-   make_list_item_list_from_select_stmt(orig, next) ;
+  make_list_item_list_from_select_stmt (orig, next);
 }
 
 
 
 
 
-char * find_table (struct s_select *select, struct s_select_list_item *i)
+char *
+find_table (struct s_select *select, struct s_select_list_item *i)
 {
   int a;
   //char *colname;
@@ -1600,41 +1540,42 @@ char * find_table (struct s_select *select, struct s_select_list_item *i)
 	{
 	  if (select->table_elements.tables.tables_val[a].alias)
 	    {
-	      A4GL_assertion (i->data.s_select_list_item_data_u.column.tabname == 0,
-			      "tabname shouldn't be null");
+	      A4GL_assertion (i->data.s_select_list_item_data_u.column.tabname == 0, "tabname shouldn't be null");
 
 	      if (A4GL_aubit_strcasecmp
-	 	  (select->table_elements.tables.tables_val[a].alias,
-		   i->data.s_select_list_item_data_u.column.tabname) == 0)
+		  (select->table_elements.tables.tables_val[a].alias, i->data.s_select_list_item_data_u.column.tabname) == 0)
 		{
 		  return select->table_elements.tables.tables_val[a].tabname;
 		}
 	    }
 	  if (A4GL_aubit_strcasecmp
-	      (select->table_elements.tables.tables_val[a].tabname,
-	       i->data.s_select_list_item_data_u.column.tabname) == 0)
+	      (select->table_elements.tables.tables_val[a].tabname, i->data.s_select_list_item_data_u.column.tabname) == 0)
 	    {
 	      return select->table_elements.tables.tables_val[a].tabname;
 	    }
 	  else
 	    {
-		char *tabptr;
-		tabptr = index(select->table_elements.tables.tables_val[a].tabname, '.');
-		if (tabptr &&
-			A4GL_aubit_strcasecmp(tabptr+1, i->data.s_select_list_item_data_u.column.tabname) == 0)
-		  {
-		    return select->table_elements.tables.tables_val[a].tabname;
-// ?		    return tabptr+1;
-		  }
+	      char *tabptr;
+	      tabptr = index (select->table_elements.tables.tables_val[a].tabname, '.');
+	      if (tabptr && A4GL_aubit_strcasecmp (tabptr + 1, i->data.s_select_list_item_data_u.column.tabname) == 0)
+		{
+		  return select->table_elements.tables.tables_val[a].tabname;
+// ?                return tabptr+1;
+		}
 	    }
 	}
 
-     if (A4GL_isyes (acl_getenv ("SHOW_WARNING"))) {
-	if (set_sql_lineno>0) {
-      		FPRINTF (stderr, "Can't find table %s in FROM clause @ line %d\n", i->data.s_select_list_item_data_u.column.tabname,set_sql_lineno);
-        } else {
-      		FPRINTF (stderr, "Can't find table %s in FROM clause\n", i->data.s_select_list_item_data_u.column.tabname);
-	}
+      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
+	{
+	  if (set_sql_lineno > 0)
+	    {
+	      FPRINTF (stderr, "Can't find table %s in FROM clause @ line %d\n", i->data.s_select_list_item_data_u.column.tabname,
+		       set_sql_lineno);
+	    }
+	  else
+	    {
+	      FPRINTF (stderr, "Can't find table %s in FROM clause\n", i->data.s_select_list_item_data_u.column.tabname);
+	    }
 	}
       return i->data.s_select_list_item_data_u.column.tabname;
     }
@@ -1643,11 +1584,15 @@ char * find_table (struct s_select *select, struct s_select_list_item *i)
 
 
 
-void make_list_item_list_from_select_stmt(struct s_select *parent_stmt, struct s_select *select) {
-int a;
+void
+make_list_item_list_from_select_stmt (struct s_select *parent_stmt, struct s_select *select)
+{
+  int a;
 
-if (select==NULL) return ;
-  if ( select->select_list==0) return;
+  if (select == NULL)
+    return;
+  if (select->select_list == 0)
+    return;
   for (a = 0; a < select->select_list->list.list_len; a++)
     {
       make_list_item_list_from_select (select, select->select_list->list.list_val[a]);
@@ -1655,38 +1600,47 @@ if (select==NULL) return ;
   make_list_item_list_from_select (select, select->where_clause);
   make_list_item_list_from_select_list (select, select->group_by);
   make_list_item_list_from_select (select, select->having);
-  if (select->next) {
-  	make_list_item_list_from_select_stmt (select, select->next);
-  }
+  if (select->next)
+    {
+      make_list_item_list_from_select_stmt (select, select->next);
+    }
 
-  if (select->list_of_items.list.list_len && parent_stmt) {
-  	for (a=0;a<select->list_of_items.list.list_len;a++) {
-  		add_select_list_item_list_once (&parent_stmt->list_of_items, select->list_of_items.list.list_val[a]);
-  	}
-  }
+  if (select->list_of_items.list.list_len && parent_stmt)
+    {
+      for (a = 0; a < select->list_of_items.list.list_len; a++)
+	{
+	  add_select_list_item_list_once (&parent_stmt->list_of_items, select->list_of_items.list.list_val[a]);
+	}
+    }
 }
 
 
 
 /* Flatten a select_list_item_list - if it contains any lists itself */
-s_select_list_item_list * rationalize_select_list_item_list ( s_select_list_item_list *old )
+s_select_list_item_list *
+rationalize_select_list_item_list (s_select_list_item_list * old)
 {
-struct s_select_list_item_list *n;
-int a;
-n=new_select_list_item_list (NULL);
-for (a=0;a<old->list.list_len;a++) {
-	if (old->list.list_val[a]->data.type!=E_SLI_VARIABLE_USAGE_LIST) {
-		add_select_list_item_list (n, old->list.list_val[a]);
-	} else {
-		int b;
-		struct s_select_list_item_list *newlist;
-		newlist=rationalize_select_list_item_list( old->list.list_val[a]->data.s_select_list_item_data_u.var_usage_list);
-		for (b=0;b<newlist->list.list_len;b++) {
-			add_select_list_item_list (n, newlist->list.list_val[b]);
-		}
+  struct s_select_list_item_list *n;
+  int a;
+  n = new_select_list_item_list (NULL);
+  for (a = 0; a < old->list.list_len; a++)
+    {
+      if (old->list.list_val[a]->data.type != E_SLI_VARIABLE_USAGE_LIST)
+	{
+	  add_select_list_item_list (n, old->list.list_val[a]);
 	}
-}
-return n;
+      else
+	{
+	  int b;
+	  struct s_select_list_item_list *newlist;
+	  newlist = rationalize_select_list_item_list (old->list.list_val[a]->data.s_select_list_item_data_u.var_usage_list);
+	  for (b = 0; b < newlist->list.list_len; b++)
+	    {
+	      add_select_list_item_list (n, newlist->list.list_val[b]);
+	    }
+	}
+    }
+  return n;
 }
 
 void
@@ -1701,11 +1655,11 @@ preprocess_sql_statement (struct s_select *select)
 // Lets collect all our expressions in one place....
 //
 //
-  if (select->table_elements.tables.tables_len==0 && select->table_elements.tables.tables_val==0) {
-		A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
-	}
-  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS")
-      || A4GL_isyes (acl_getenv ("MAP4GL")))
+  if (select->table_elements.tables.tables_len == 0 && select->table_elements.tables.tables_val == 0)
+    {
+      A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
+    }
+  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS") || A4GL_isyes (acl_getenv ("MAP4GL")))
     {
       expand_many = 0;
       for (a = 0; a < select->select_list->list.list_len; a++)
@@ -1717,9 +1671,7 @@ preprocess_sql_statement (struct s_select *select)
 	      if (select->table_elements.tables.tables_len == 1)
 		{
 		  tname = select->table_elements.tables.tables_val[0].tabname;
-		  select->select_list->list.list_val[a] =
-		    new_select_list_item_col (acl_strdup_With_Context (tname),
-					      "*", 0);
+		  select->select_list->list.list_val[a] = new_select_list_item_col (acl_strdup_With_Context (tname), "*", 0);
 		}
 	      else
 		{
@@ -1738,8 +1690,7 @@ preprocess_sql_statement (struct s_select *select)
 
 	      p = select->select_list->list.list_val[a];
 
-	      if (select->select_list->list.list_val[a]->data.type ==
-		  E_SLI_BUILTIN_CONST_STAR)
+	      if (select->select_list->list.list_val[a]->data.type == E_SLI_BUILTIN_CONST_STAR)
 		{
 		  char *tname;
 		  int b;
@@ -1796,13 +1747,11 @@ preprocess_sql_statement (struct s_select *select)
 		    {
 		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
 			{
-			  PRINTF ("No tabname - got %d tables...\n",
-				  select->table_elements.tables.tables_len);
+			  PRINTF ("No tabname - got %d tables...\n", select->table_elements.tables.tables_len);
 			}
 		      if (select->table_elements.tables.tables_len == 1 && !dont_set_for_single_table)	// A
 			{
-			  p->data.s_select_list_item_data_u.column.tabname =
-			    select->table_elements.tables.tables_val[0].tabname;
+			  p->data.s_select_list_item_data_u.column.tabname = select->table_elements.tables.tables_val[0].tabname;
 			}
 		    }
 
@@ -1810,26 +1759,21 @@ preprocess_sql_statement (struct s_select *select)
 		    {
 		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
 			{
-			  PRINTF
-			    ("WARNING: No table specified for expansion - column expansion not possible\n");
+			  PRINTF ("WARNING: No table specified for expansion - column expansion not possible\n");
 			}
 		      add_select_list_item_list (n, p);
 		      continue;
 		    }
 
-		  tname =
-		    find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname);
+		  tname = find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname);
 
-		  rval =
-		    A4GLSQL_get_columns (tname, colname, &idtype, &isize);
+		  rval = A4GLSQL_get_columns (tname, colname, &idtype, &isize);
 
 		  if (rval == 0)
 		    {		//
 		      if (A4GL_isyes (acl_getenv ("SHOW_WARNING")))
 			{
-			  FPRINTF (stderr,
-				   "WARNING: Unable to locate %s in the database - column expansion not possible\n",
-				   tname);
+			  FPRINTF (stderr, "WARNING: Unable to locate %s in the database - column expansion not possible\n", tname);
 			}
 //                      A4GLSQL_set_status(0,0);
 
@@ -1853,9 +1797,7 @@ preprocess_sql_statement (struct s_select *select)
 			  continue;
 			}
 
-		      pnew =
-			new_select_list_item_col (p->data.s_select_list_item_data_u.column.tabname,
-						  ccol, 0);
+		      pnew = new_select_list_item_col (p->data.s_select_list_item_data_u.column.tabname, ccol, 0);
 		      add_select_list_item_list (n, pnew);
 		    }
 		  if (need_end_columns)
@@ -1875,7 +1817,7 @@ preprocess_sql_statement (struct s_select *select)
       select->select_list = n;
     }
 
-    make_list_item_list_from_select_stmt(0, select) ;
+  make_list_item_list_from_select_stmt (0, select);
 
 /*
   for (a = 0; a < select->select_list->list.list_len; a++)
@@ -1903,8 +1845,7 @@ preprocess_sql_statement (struct s_select *select)
 	      int matches = 0;
 	      nelements = select->table_elements.tables.tables_len;
 	      A4GL_debug ("No tabname for column : %s %d\n",
-			  p->data.s_select_list_item_data_u.column.colname,
-			  select->table_elements.tables.tables_len);
+			  p->data.s_select_list_item_data_u.column.colname, select->table_elements.tables.tables_len);
 	      for (b = nelements - 1; b >= 0; b--)
 		{
 		  A4GL_debug ("Looking in %s\n", select->table_elements.tables.tables_val[b].tabname);
@@ -1914,22 +1855,27 @@ preprocess_sql_statement (struct s_select *select)
 		    }
 		  else
 		    {
-		      if (A4GL_has_column (select->table_elements.tables.tables_val[b].tabname, p->data.s_select_list_item_data_u.column.colname))
+		      if (A4GL_has_column
+			  (select->table_elements.tables.tables_val[b].tabname, p->data.s_select_list_item_data_u.column.colname))
 			{
-				A4GL_debug("select->table_elements.tables.tables_val[b].tabname=%s has columns %s", select->table_elements.tables.tables_val[b].tabname, p->data.s_select_list_item_data_u.column.colname);
+			  A4GL_debug ("select->table_elements.tables.tables_val[b].tabname=%s has columns %s",
+				      select->table_elements.tables.tables_val[b].tabname,
+				      p->data.s_select_list_item_data_u.column.colname);
 			  matches++;
 			  if (matches == 1)
 			    {
-			
+
 			      t = select->table_elements.tables.tables_val[b].alias;
 			      if (!t)
 				{
-					
+
 				  t = select->table_elements.tables.tables_val[b].tabname;
 				}
-				A4GL_debug("table set to %s", t);
-			    } else {
-				t=0;
+			      A4GL_debug ("table set to %s", t);
+			    }
+			  else
+			    {
+			      t = 0;
 			    }
 			}
 		      else
@@ -1937,7 +1883,7 @@ preprocess_sql_statement (struct s_select *select)
 			  if (has_columns_cnt == 0)
 			    {	// Table didn't exist - maybe its a temp table
 			      // if it is - it could have any columns - so we'll assume it can match..
-			      matches=99999; // Lots and lots...
+			      matches = 99999;	// Lots and lots...
 			    }
 
 			}
@@ -1950,7 +1896,9 @@ preprocess_sql_statement (struct s_select *select)
 		  A4GL_debug ("Setting to %s\n", t);
 		  p->data.s_select_list_item_data_u.column.tabname = acl_strdup_With_Context (t);
 		  break;
-		} else {
+		}
+	      else
+		{
 		  A4GL_debug ("No table for column %s\n", p->data.s_select_list_item_data_u.column.colname);
 		  p->data.s_select_list_item_data_u.column.tabname = 0;
 		}
@@ -1970,9 +1918,7 @@ preprocess_sql_statement (struct s_select *select)
 		    }
 
 		  p->data.s_select_list_item_data_u.column.tabname = acl_strdup_With_Context (t);
-		  A4GL_debug
-		    ("   But as we only have one table - guessing its %s\n",
-		     t);
+		  A4GL_debug ("   But as we only have one table - guessing its %s\n", t);
 		}
 
 
@@ -2035,7 +1981,8 @@ find_tabname_for_alias (struct s_select *select, char *alias)
 {
   int a;
 
-  if (alias==0) return 0;
+  if (alias == 0)
+    return 0;
 
   if (!select)
     return alias;
@@ -2074,11 +2021,13 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   int a;
 
   A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
-	if (c_upd_or_del) {
-		if (strlen(c_upd_or_del)) {
-			A4GLSQLPARSE_add_table_to_table_list(&select->table_elements, c_upd_or_del,0);
-		}
+  if (c_upd_or_del)
+    {
+      if (strlen (c_upd_or_del))
+	{
+	  A4GLSQLPARSE_add_table_to_table_list (&select->table_elements, c_upd_or_del, 0);
 	}
+    }
   preprocess_sql_statement (select);
   A4GLSQLPARSE_from_clause (select, select->first, buff_from, &select->table_elements);
 
@@ -2096,32 +2045,39 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
     }
   A4GL_debug ("\n");
 
-  strcpy(buff,"");
-  if (select->sf) {
-  	if (select->sf->insert_into) {
-  		if (!A4GLSQLCV_check_runtime_requirement("INSERT_INTO_AS_SELECT_INTO")) {
-			sprintf(buff,"INSERT INTO %s SELECT ", select->sf->insert_into);
-		}
+  strcpy (buff, "");
+  if (select->sf)
+    {
+      if (select->sf->insert_into)
+	{
+	  if (!A4GLSQLCV_check_runtime_requirement ("INSERT_INTO_AS_SELECT_INTO"))
+	    {
+	      sprintf (buff, "INSERT INTO %s SELECT ", select->sf->insert_into);
+	    }
 	}
-  }
+    }
 
 
-  if (strlen(buff)==0) {
-  	strcpy (buff, "SELECT ");
-  }
+  if (strlen (buff) == 0)
+    {
+      strcpy (buff, "SELECT ");
+    }
   A4GL_debug ("buff=%s", buff);
 
 
-  if (select->limit.start!=-1) {
-		char smbuff[2000];
-		if (select->limit.start!=1) {
-			A4GL_assertion(1,"START offset must be 1 - nothing else implemented yet");
-		}
-  		if (!A4GLSQLCV_check_runtime_requirement("FIRSTASLIMIT")) {
-			sprintf(smbuff,"FIRST %d ",select->limit.end);
-			strcat(buff,smbuff);
-		}
-  }
+  if (select->limit.start != -1)
+    {
+      char smbuff[2000];
+      if (select->limit.start != 1)
+	{
+	  A4GL_assertion (1, "START offset must be 1 - nothing else implemented yet");
+	}
+      if (!A4GLSQLCV_check_runtime_requirement ("FIRSTASLIMIT"))
+	{
+	  sprintf (smbuff, "FIRST %d ", select->limit.end);
+	  strcat (buff, smbuff);
+	}
+    }
 
 
   if (select->modifier)
@@ -2150,9 +2106,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
       strcat (buff, ptr);
       A4GL_debug ("buff=%s", buff);
       acl_free_With_Context (ptr);
-  
 
-  }
+
+    }
 
   strcat (buff, " ");
 
@@ -2176,25 +2132,27 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
   if (select->sf)
     {
-	if (select->sf->insert_into) {
-	   if (A4GLSQLCV_check_runtime_requirement("INSERT_INTO_AS_SELECT_INTO")) {
-		sprintf (into_temp, "\n INTO %s ", select->sf->insert_into);
-		strcat (buff, into_temp);
-	   }
+      if (select->sf->insert_into)
+	{
+	  if (A4GLSQLCV_check_runtime_requirement ("INSERT_INTO_AS_SELECT_INTO"))
+	    {
+	      sprintf (into_temp, "\n INTO %s ", select->sf->insert_into);
+	      strcat (buff, into_temp);
+	    }
 	}
       if (select->sf->into_temp)
 	{
 	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH"))
 	    {
-	      save_temp_table (select->sf->into_temp,1);
+	      save_temp_table (select->sf->into_temp, 1);
 	      strcpy (into_temp, " INTO TEMP #");
 	      strcat (into_temp, select->sf->into_temp);
 	      strcat (buff, into_temp);
 	      strcat (buff, " ");
 	    }
 	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_HASH"))
-	    {   
-	      save_temp_table (select->sf->into_temp,1);
+	    {
+	      save_temp_table (select->sf->into_temp, 1);
 	      strcpy (into_temp, " INTO #");
 	      strcat (into_temp, select->sf->into_temp);
 	      strcat (buff, into_temp);
@@ -2205,56 +2163,60 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
 
 
-  if (select->table_elements.tables.tables_len) {
-  	strcat (buff, "\n FROM ");
-  	A4GL_debug ("buff=%s", buff);
-  	strcat (buff, buff_from);
+  if (select->table_elements.tables.tables_len)
+    {
+      strcat (buff, "\n FROM ");
+      A4GL_debug ("buff=%s", buff);
+      strcat (buff, buff_from);
 
-  	A4GL_debug ("buff=%s", buff);
-  	if (select->where_clause)
-    	{
-      		char *ptr;
-      		ptr = get_select_list_item (select, select->where_clause);
-      		strcat (buff, "\n WHERE ");
-      		strcat (buff, ptr);
-      		acl_free_With_Context (ptr);
-    	}
-	
-  	A4GL_debug ("buff=%s", buff);
-  	if (select->group_by)
-    	{
-      		char *ptr;
-      		strcat (buff, "\n GROUP BY ");
-      		ptr = get_select_list_item_list (select, select->group_by);
-      		strcat (buff, ptr);
-    	}
-  	A4GL_debug ("buff=%s", buff);
-	
-  	if (select->having)
-    	{
-      		char *ptr;
-      		strcat (buff, "\n HAVING ");
-      		ptr = get_select_list_item (select, select->having);
-      		strcat (buff, ptr);
-    	}
+      A4GL_debug ("buff=%s", buff);
+      if (select->where_clause)
+	{
+	  char *ptr;
+	  ptr = get_select_list_item (select, select->where_clause);
+	  strcat (buff, "\n WHERE ");
+	  strcat (buff, ptr);
+	  acl_free_With_Context (ptr);
+	}
 
-  } else {
-      	if (A4GLSQLCV_check_runtime_requirement ("FAKETABLELESS")) {
-		strcat(buff," FROM systables WHERE tabid=1");
-      	}
-  }
+      A4GL_debug ("buff=%s", buff);
+      if (select->group_by)
+	{
+	  char *ptr;
+	  strcat (buff, "\n GROUP BY ");
+	  ptr = get_select_list_item_list (select, select->group_by);
+	  strcat (buff, ptr);
+	}
+      A4GL_debug ("buff=%s", buff);
+
+      if (select->having)
+	{
+	  char *ptr;
+	  strcat (buff, "\n HAVING ");
+	  ptr = get_select_list_item (select, select->having);
+	  strcat (buff, ptr);
+	}
+
+    }
+  else
+    {
+      if (A4GLSQLCV_check_runtime_requirement ("FAKETABLELESS"))
+	{
+	  strcat (buff, " FROM systables WHERE tabid=1");
+	}
+    }
 
   A4GL_debug ("buff=%s", buff);
 
   if (select->next)
     {
       char *ptr;
-      ptr = make_select_stmt_v2 (0, select->next,"");
+      ptr = make_select_stmt_v2 (0, select->next, "");
       A4GL_debug ("ptr=%s", ptr);
       A4GL_debug ("buff=%s", buff);
       strcat (buff, "\n UNION\n");
       A4GL_debug ("buff=%s", buff);
-      if (select->next->union_op && strlen(select->next->union_op))
+      if (select->next->union_op && strlen (select->next->union_op))
 	{
 	  strcat (buff, select->next->union_op);
 	  A4GL_debug ("buff=%s", buff);
@@ -2280,10 +2242,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	      if (!A4GLSQLCV_check_runtime_requirement ("STRIP_ORDER_BY_INTO_TEMP"))
 		{
 		  strcat (into_temp, "\n ORDER BY ");
-		  strcat (into_temp,
-			  get_select_list_item_list_ob (select,
-							select->sf->
-							order_by));
+		  strcat (into_temp, get_select_list_item_list_ob (select, select->sf->order_by));
 		}
 	    }
 
@@ -2293,7 +2252,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
 
 
-	      save_temp_table (select->sf->into_temp,1);
+	      save_temp_table (select->sf->into_temp, 1);
 
 
 
@@ -2302,7 +2261,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
 
 
-		//printf("INTO TEMP : %s %s\n", into_temp,select->sf->into_temp);
+	      //printf("INTO TEMP : %s %s\n", into_temp,select->sf->into_temp);
 
 	      strcat (into_temp, select->sf->into_temp);
 	    }
@@ -2314,17 +2273,14 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 		  strcat (into_temp, " WITH NO LOG");
 		}
 	    }
-	  ptr =
-	    A4GLSQLCV_select_into_temp (buff, into_temp,
-					select->sf->into_temp);
+	  ptr = A4GLSQLCV_select_into_temp (buff, into_temp, select->sf->into_temp);
 
 	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_AS_DECLARE_INSERT"))
 	    {
-		select->extra_statement = acl_malloc2_With_Context(strlen (buff) + 200);
-		SPRINTF2 (select->extra_statement,
-			  "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS ( %s ) "
-			  "DEFINITION ONLY ON COMMIT PRESERVE ROWS",
-			  select->sf->into_temp, buff);
+	      select->extra_statement = acl_malloc2_With_Context (strlen (buff) + 200);
+	      SPRINTF2 (select->extra_statement,
+			"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS ( %s ) "
+			"DEFINITION ONLY ON COMMIT PRESERVE ROWS", select->sf->into_temp, buff);
 	    }
 
 	  strcpy (buff, ptr);
@@ -2344,16 +2300,19 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
     }
 
-  if (select->limit.start!=-1) {
-		char smbuff[2000];
-		if (select->limit.start!=1) {
-			A4GL_assertion(1,"START offset must be 1 - nothing else implemented yet");
-		}
-  		if (A4GLSQLCV_check_runtime_requirement("FIRSTASLIMIT")) {
-			sprintf(smbuff," LIMIT %d",select->limit.end);
-			strcat(buff,smbuff);
-		}
-  }
+  if (select->limit.start != -1)
+    {
+      char smbuff[2000];
+      if (select->limit.start != 1)
+	{
+	  A4GL_assertion (1, "START offset must be 1 - nothing else implemented yet");
+	}
+      if (A4GLSQLCV_check_runtime_requirement ("FIRSTASLIMIT"))
+	{
+	  sprintf (smbuff, " LIMIT %d", select->limit.end);
+	  strcat (buff, smbuff);
+	}
+    }
 
   A4GL_debug ("buff=%s", buff);
 
@@ -2564,20 +2523,20 @@ get_sli_type (enum e_sli type)
       return "E_SLI_COLUMN_ORDERBY";
     case E_SLI_VAR_REPLACE:
       return "E_SLI_VAR_REPLACE";
- 	case E_SLI_VARIABLE_USAGE:
-	return "E_SLI_VARIABLE_USAGE";
- 	case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
-	return "E_SLI_VARIABLE_USAGE_IN_SELECT_LIST";
+    case E_SLI_VARIABLE_USAGE:
+      return "E_SLI_VARIABLE_USAGE";
+    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+      return "E_SLI_VARIABLE_USAGE_IN_SELECT_LIST";
 
 
-case E_SLI_BUILTIN_CONST_NULL:
-	return "E_SLI_BUILTIN_CONST_NULL";
-	case E_SLI_QUERY:
-		return "E_SLI_QUERY";
-	case E_SLI_VARIABLE_USAGE_LIST:
-	return "E_SLI_VARIABLE_USAGE_LIST";
-	case E_SLI_CAST_EXPR:
-	return "E_SLI_CAST_EXPR";
+    case E_SLI_BUILTIN_CONST_NULL:
+      return "E_SLI_BUILTIN_CONST_NULL";
+    case E_SLI_QUERY:
+      return "E_SLI_QUERY";
+    case E_SLI_VARIABLE_USAGE_LIST:
+      return "E_SLI_VARIABLE_USAGE_LIST";
+    case E_SLI_CAST_EXPR:
+      return "E_SLI_CAST_EXPR";
     }
   return "Unknown";
 }
@@ -2598,7 +2557,7 @@ make_sql_string_and_free (char *first, ...)
   va_start (ap, first);
   ptr = acl_strdup_With_Context (first);
 
-A4GL_debug("First=%s",first);
+  A4GL_debug ("First=%s", first);
 
   if (first != kw_comma && first != kw_space && first != kw_ob && first != kw_cb)
     {
@@ -2615,20 +2574,19 @@ A4GL_debug("First=%s",first);
     {
       n++;
       next = va_arg (ap, char *);
-      A4GL_debug("Next=%p comma=%p space=%p ob=%p cb=%p\n",next,kw_comma,kw_space,kw_ob,kw_cb);
+      A4GL_debug ("Next=%p comma=%p space=%p ob=%p cb=%p\n", next, kw_comma, kw_space, kw_ob, kw_cb);
       if (next == 0)
 	break;
       l += strlen (next);
       l++;			/* Extra space... */
       ptr = acl_realloc_With_Context (ptr, l);
       strcat (ptr, next);
-      if (next != kw_comma && next != kw_space && next != kw_ob
-	  && next != kw_cb)
+      if (next != kw_comma && next != kw_space && next != kw_ob && next != kw_cb)
 	{
 	  A4GL_debug ("FREE %p (%s)\n", next, next);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
-		    //PRINTF("Freeing : %s",next);
+	      //PRINTF("Freeing : %s",next);
 	      acl_free_With_Context (next);
 	    }
 	}
@@ -2638,8 +2596,7 @@ A4GL_debug("First=%s",first);
 }
 
 static void
-make_list_item_list_from_select_list (struct s_select *select,
-				      struct s_select_list_item_list *p)
+make_list_item_list_from_select_list (struct s_select *select, struct s_select_list_item_list *p)
 {
   int a;
   if (p == 0)
@@ -2656,8 +2613,7 @@ make_list_item_list_from_select_list (struct s_select *select,
 // and construct a single list of all of these so we can go through the list for easy processing...
 // 
 static void
-make_list_item_list_from_select (struct s_select *select,
-				 struct s_select_list_item *p)
+make_list_item_list_from_select (struct s_select *select, struct s_select_list_item *p)
 {
   if (p == 0)
     return;
@@ -2670,18 +2626,16 @@ make_list_item_list_from_select (struct s_select *select,
     case E_SLI_NOT_IN_SELECT:
     case E_SLI_IN_SELECT:
       make_list_item_list_from_select (select, p->data.s_select_list_item_data_u.complex_expr.left);
-	
+
     case E_SLI_OP:
       make_list_item_list_from_select (select, p->data.s_select_list_item_data_u.complex_expr.left),
-	make_list_item_list_from_select (select,
-					 p->data.s_select_list_item_data_u.complex_expr.right);
+	make_list_item_list_from_select (select, p->data.s_select_list_item_data_u.complex_expr.right);
       break;
 
     case E_SLI_NOT_IN_VALUES:
     case E_SLI_IN_VALUES:
       make_list_item_list_from_select (select, p->data.s_select_list_item_data_u.slil_expr.left);
-      make_list_item_list_from_select_list (select,
-					    p->data.s_select_list_item_data_u.slil_expr.right_list);
+      make_list_item_list_from_select_list (select, p->data.s_select_list_item_data_u.slil_expr.right_list);
       break;
 
 
@@ -2721,8 +2675,7 @@ make_list_item_list_from_select (struct s_select *select,
     case E_SLI_BUILTIN_FUNC_WEEKDAY:
     case E_SLI_BUILTIN_FUNC_MDY:
     case E_SLI_BUILTIN_FUNC_DATE:
-      make_list_item_list_from_select_list (select,
-					    p->data.s_select_list_item_data_u.builtin_fcall.params);
+      make_list_item_list_from_select_list (select, p->data.s_select_list_item_data_u.builtin_fcall.params);
       break;
 
 
@@ -2753,7 +2706,7 @@ make_list_item_list_from_select (struct s_select *select,
       break;
 
     case E_SLI_SUBQUERY:
-	preprocess_sql_statement(p->data.s_select_list_item_data_u.subquery);
+      preprocess_sql_statement (p->data.s_select_list_item_data_u.subquery);
       make_list_in_subselect_stmt (select, p->data.s_select_list_item_data_u.subquery);
       break;
 
@@ -2767,7 +2720,7 @@ make_list_item_list_from_select (struct s_select *select,
 
 void
 //save_temp_table (char *tabname,int select_into)
-save_temp_table (char *tabname,long select_into)
+save_temp_table (char *tabname, long select_into)
 {
   char *ptr;
   char buff[256];
@@ -2785,13 +2738,18 @@ save_temp_table (char *tabname,long select_into)
 	{
 	  while (fgets (buff, sizeof (buff), f))
 	    {
-	      	char *ptr;
-		//int s_into=1;
-		long s_into=1;
-		ptr=strchr(buff,' '); 
-		if (ptr) {*ptr=0; ptr++; s_into=atoi(ptr)+2; }
-	        A4GL_trim_nl (buff);
-	        A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) s_into);
+	      char *ptr;
+	      //int s_into=1;
+	      long s_into = 1;
+	      ptr = strchr (buff, ' ');
+	      if (ptr)
+		{
+		  *ptr = 0;
+		  ptr++;
+		  s_into = atoi (ptr) + 2;
+		}
+	      A4GL_trim_nl (buff);
+	      A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) s_into);
 	    }
 	}
     }
@@ -2800,10 +2758,10 @@ save_temp_table (char *tabname,long select_into)
   if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
     {
       f = fopen (ptr, "a");
-      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) (select_into+2));
+      A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) (select_into + 2));
       if (f)
 	{
-	  FPRINTF (f, "%s %d\n", tabname,(int)select_into);
+	  FPRINTF (f, "%s %d\n", tabname, (int) select_into);
 	  fclose (f);
 	}
     }
@@ -2829,13 +2787,18 @@ load_temp_table (void)
 	{
 	  while (fgets (buff, sizeof (buff), f))
 	    {
-	      	char *ptr;
-		//int select_into=0;
-		long select_into=0;
-		ptr=strchr(buff,' ');
-		if (ptr) {*ptr=0; ptr++; select_into=atoi(ptr)+2; }
-	        A4GL_trim_nl (buff);
-	        A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) select_into);
+	      char *ptr;
+	      //int select_into=0;
+	      long select_into = 0;
+	      ptr = strchr (buff, ' ');
+	      if (ptr)
+		{
+		  *ptr = 0;
+		  ptr++;
+		  select_into = atoi (ptr) + 2;
+		}
+	      A4GL_trim_nl (buff);
+	      A4GL_add_pointer (buff, LOG_TEMP_TABLE, (void *) select_into);
 	    }
 	}
     }
@@ -2844,7 +2807,8 @@ load_temp_table (void)
 }
 
 
-int A4GL_has_column (char *t, char *c)
+int
+A4GL_has_column (char *t, char *c)
 {
   //char colname[256];
   int rc;
@@ -2855,23 +2819,29 @@ int A4GL_has_column (char *t, char *c)
   int found = 0;
   int sold;
 
-  has_columns_cnt=0;
+  has_columns_cnt = 0;
 
-  if (strcmp(acl_getenv("SQLTYPE"),"nosql")==0) {
-	  return 0;
-  }
+  if (strcmp (acl_getenv ("SQLTYPE"), "nosql") == 0)
+    {
+      return 0;
+    }
 
-  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT")) {
-	  return 0;
-  }
+  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
+    {
+      return 0;
+    }
 
-  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT_COLUMN")) {
-	  return 0;
-  }
+  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT_COLUMN"))
+    {
+      return 0;
+    }
 
-  sold=A4GL_get_a4gl_sqlca_sqlcode();
+  sold = A4GL_get_a4gl_sqlca_sqlcode ();
   rc = A4GLSQL_get_columns (t, "", &dtype, &size);
-  if (A4GL_get_a4gl_sqlca_sqlcode()!=sold) { A4GL_set_a4gl_sqlca_sqlcode(sold); }
+  if (A4GL_get_a4gl_sqlca_sqlcode () != sold)
+    {
+      A4GL_set_a4gl_sqlca_sqlcode (sold);
+    }
   while (rc)
     {
       char *s = 0;
@@ -2880,7 +2850,7 @@ int A4GL_has_column (char *t, char *c)
       if (!rc)
 	break;
 
-	has_columns_cnt=1;
+      has_columns_cnt = 1;
       s = acl_strdup_With_Context (cptr);
       A4GL_trim (s);
       if (A4GL_aubit_strcasecmp (s, c) == 0)
@@ -2894,7 +2864,7 @@ int A4GL_has_column (char *t, char *c)
 
   if (opened)
     A4GLSQL_end_get_columns ();
-//			A4GLSQL_set_status(0,0);
+//                      A4GLSQL_set_status(0,0);
   return found;
 }
 
@@ -2906,7 +2876,8 @@ int A4GL_has_column (char *t, char *c)
  *   *   *
  *    *    * @param
  *     *     */
-char * convstrsql (char *s)
+char *
+convstrsql (char *s)
 {
   static char buff[64000];
   int a;
@@ -2915,32 +2886,33 @@ char * convstrsql (char *s)
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
-        {
-          if (a == 0 || (s[0]=='"' && a==strlen(s)-1)) {
-            buff[b++] = '\'';
-          }
-          else
-            {
-              if (s[a - 1] != '\\')
-                {
-                  buff[b++] = '\'';
-                } else {
-                  buff[b++] = '"';
-                }
-            }
-          continue;
-        }
+	{
+	  if (a == 0 || (s[0] == '"' && a == strlen (s) - 1))
+	    {
+	      buff[b++] = '\'';
+	    }
+	  else
+	    {
+	      if (s[a - 1] != '\\')
+		{
+		  buff[b++] = '\'';
+		}
+	      else
+		{
+		  buff[b++] = '"';
+		}
+	    }
+	  continue;
+	}
       if (s[a] == '\'')
-        {
-          buff[b++] = '\'';
-          buff[b++] = '\'';
-          continue;
-        }
+	{
+	  buff[b++] = '\'';
+	  buff[b++] = '\'';
+	  continue;
+	}
       buff[b++] = s[a];
 
     }
   A4GL_debug ("Convstrsql ... %s => %s", s, buff);
   return buff;
 }
-
-

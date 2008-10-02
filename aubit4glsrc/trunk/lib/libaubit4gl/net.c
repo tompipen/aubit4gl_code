@@ -72,7 +72,3 @@ A4GL_net_keyval (char *v)
   A4GL_debug ("Not found in here");
   return 0;
 }
-
-
-
-

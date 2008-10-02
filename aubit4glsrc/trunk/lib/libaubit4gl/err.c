@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.20 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: err.c,v 1.21 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -77,7 +77,7 @@ A4GL_err_print (int a, char *s)
 {
   char *k;
   static char static_err[1024];
-  A4GL_debug ("In err print %d %s",a,s);
+  A4GL_debug ("In err print %d %s", a, s);
   SPRINTF2 (static_err, "Unknown error %d (%s)", a, s);
   k = static_err;
   if (a == -3001)
@@ -89,9 +89,9 @@ A4GL_err_print (int a, char *s)
   if (a == -400)
     {
       A4GL_debug ("Ignore wrong number of variables..");
-      SPRINTF1 (static_err, "Database error (%s)",s);
-	
-  	return static_err;
+      SPRINTF1 (static_err, "Database error (%s)", s);
+
+      return static_err;
       return k;
     }
 
@@ -112,10 +112,12 @@ A4GL_err_print (int a, char *s)
 
 }
 
-void Never_called_but_I_wanted_a_dummy_function(void);
+void Never_called_but_I_wanted_a_dummy_function (void);
 
-void Never_called_but_I_wanted_a_dummy_function(void) {
-A4GL_exitwith("Unknown error");
+void
+Never_called_but_I_wanted_a_dummy_function (void)
+{
+  A4GL_exitwith ("Unknown error");
 }
 
 /* =============================== EOF ============================== */

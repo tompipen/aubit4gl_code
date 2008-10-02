@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.95 2008-09-11 15:12:31 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.96 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -78,7 +78,7 @@ struct s_funcs
   int nout;		/**< NUmber of values returned */
 };
 
-int last_was_empty=0;
+int last_was_empty = 0;
 
 struct s_funcs builtin_funcs[] = {
 /*
@@ -106,7 +106,7 @@ struct s_funcs builtin_funcs[] = {
 	{"concat",func_concat,2,1},
 	{"",(void *)0,0,0}
 */
-  {"", (void *)0, 0, 0}
+  {"", (void *) 0, 0, 0}
 };
 
 
@@ -123,13 +123,13 @@ void A4GL_func_round (void);
 void A4GL_func_exp (void);
 void A4GL_func_logn (void);
 void A4GL_func_log10 (void);
-int aclfgl_ord(int n) ;
-int aclfgl_time(int n);
+int aclfgl_ord (int n);
+int aclfgl_time (int n);
 
 static void push_byte (void *ptr);
 static void push_text (void *ptr);
 
-void A4GL_push_double_str(char *p);
+void A4GL_push_double_str (char *p);
 //void A4GL_push_empty_char(void);
 
 /*
@@ -198,7 +198,7 @@ push_byte (void *ptr)
      p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
      memcpy(p2,ptr,sizeof(struct fgl_int_loc));
    */
-  A4GL_push_param (ptr, (int)(DTYPE_BYTE + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
+  A4GL_push_param (ptr, (int) (DTYPE_BYTE + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
 }
 
 /**
@@ -215,8 +215,9 @@ push_text (void *ptr)
      p2=acl_malloc(sizeof(struct fgl_int_loc),"push_byte");
      memcpy(p2,ptr,sizeof(struct fgl_int_loc));
    */
-  A4GL_push_param (ptr, (int)(DTYPE_TEXT + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
+  A4GL_push_param (ptr, (int) (DTYPE_TEXT + ENCODE_SIZE (sizeof (struct fgl_int_loc))));
 }
+
 /**
  * Called at run-time by the generated C code.
  * Its used to push a float to the parameters stack.
@@ -239,16 +240,21 @@ A4GL_push_float (float p)
 #define NUM_BYTES(x)     (NUM_DIG(x)+OFFSET_DEC(x))
 
 void
-A4GL_push_dec_dec (fgldecimal *p, int ismoney,int size) {
-int size_n;
-int ndig;
-int ndec;
-	ndig=NUM_DIG (p->dec_data);
-        ndec=NUM_DEC(p->dec_data);
-	if (ndig<ndec) { A4GL_assertion(1,"Insufficent digits"); }
-	size_n=(ndig<<8)+ndec;
-	A4GL_push_dec ((char *)p,  ismoney,size_n);
+A4GL_push_dec_dec (fgldecimal * p, int ismoney, int size)
+{
+  int size_n;
+  int ndig;
+  int ndec;
+  ndig = NUM_DIG (p->dec_data);
+  ndec = NUM_DEC (p->dec_data);
+  if (ndig < ndec)
+    {
+      A4GL_assertion (1, "Insufficent digits");
+    }
+  size_n = (ndig << 8) + ndec;
+  A4GL_push_dec ((char *) p, ismoney, size_n);
 }
+
 /**
  * Called at run-time by the generated C code.
  * Its used to push a decimal value to the parameters stack.
@@ -259,131 +265,155 @@ int ndec;
  *   - Otherwise : Its money
  */
 void
-A4GL_push_dec (char *p, int ismoney,int size)
+A4GL_push_dec (char *p, int ismoney, int size)
 {
   char *ptr;
   int l;
   int d;
-  int plen ;
+  int plen;
 #ifdef DEBUG
-  A4GL_debug("push_dec with size=%x\n",size);
+  A4GL_debug ("push_dec with size=%x\n", size);
 #endif
 
-  if (p==0) {
-	if (ismoney) A4GL_push_param(0,DTYPE_MONEY+  DTYPE_MALLOCED+ENCODE_SIZE(size));
-	else         A4GL_push_param(0,DTYPE_DECIMAL+DTYPE_MALLOCED+ENCODE_SIZE(size));
-	return;
-	
-  }
-  l=size>>8;
-  d=size&255;
+  if (p == 0)
+    {
+      if (ismoney)
+	A4GL_push_param (0, DTYPE_MONEY + DTYPE_MALLOCED + ENCODE_SIZE (size));
+      else
+	A4GL_push_param (0, DTYPE_DECIMAL + DTYPE_MALLOCED + ENCODE_SIZE (size));
+      return;
+
+    }
+  l = size >> 8;
+  d = size & 255;
 
 
 
-  if (p) {
-  if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
-  	(void)A4GL_init_dec((fgldecimal *)p,l,d);
-	A4GL_push_null(DTYPE_DECIMAL,size);
-	A4GL_setnull(DTYPE_DECIMAL,p,size);
-	return;
-  }
+  if (p)
+    {
+      if (NUM_DIG (p) != l && NUM_DEC (p) != d)
+	{
+	  (void) A4GL_init_dec ((fgldecimal *) p, l, d);
+	  A4GL_push_null (DTYPE_DECIMAL, size);
+	  A4GL_setnull (DTYPE_DECIMAL, p, size);
+	  return;
+	}
 
-  if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
-	A4GL_debug("Failed to set to null");
-  }
-  }
+      if (NUM_DIG (p) != l && NUM_DEC (p) != d)
+	{
+	  A4GL_debug ("Failed to set to null");
+	}
+    }
 
   //plen= (p[0] & 127) + 2;
-  plen=(int)sizeof(fgldecimal);
-  
+  plen = (int) sizeof (fgldecimal);
+
   ptr = (char *) acl_malloc (plen, "push dec");
-  memcpy (ptr, p, (size_t)plen);
+  memcpy (ptr, p, (size_t) plen);
   if (ismoney)
     {
-      A4GL_push_param (ptr, DTYPE_MONEY + DTYPE_MALLOCED+ENCODE_SIZE(size));
+      A4GL_push_param (ptr, DTYPE_MONEY + DTYPE_MALLOCED + ENCODE_SIZE (size));
     }
   else
     {
-      A4GL_push_param (ptr, DTYPE_DECIMAL + DTYPE_MALLOCED+ENCODE_SIZE(size));
+      A4GL_push_param (ptr, DTYPE_DECIMAL + DTYPE_MALLOCED + ENCODE_SIZE (size));
     }
 }
 
-void A4GL_push_decimal_str(char *p) {
-	fgldecimal d;
-	int size;
-	int ndig;
-	int ndec;
-	int decpos;
-        char buff[2000];
-	int l;
-	strcpy(buff,p);
+void
+A4GL_push_decimal_str (char *p)
+{
+  fgldecimal d;
+  int size;
+  int ndig;
+  int ndec;
+  int decpos;
+  char buff[2000];
+  int l;
+  strcpy (buff, p);
 
-	ndig=64;
-	ndec=32;
-	A4GL_remove_trailing_zeros_and_leading_spaces(buff);
-	l=strlen(buff);
-	if (l) {
-		int a;
-		decpos=-1;
-		for (a=0;a<l;a++) {
-			if (buff[a]=='.' || buff[a]==',') {
-				// we wont break here - we'll just keep looking
-				// because the ',' or '.' might be a thousands separator character
-				decpos=a;
-			}
-		}
-		if (decpos==-1) {
-			// Nothing found - strange given that it was a decimal...
-			ndig=l;
-			ndec=0;
-		} else {
-			ndec=l-decpos-1;
-			ndig=l;
-		}
-		A4GL_assertion(ndec>ndig,"More decimal places than digits");
-		if (ndec>64) ndec=64;
-		if (ndig>32) ndig=32;
+  ndig = 64;
+  ndec = 32;
+  A4GL_remove_trailing_zeros_and_leading_spaces (buff);
+  l = strlen (buff);
+  if (l)
+    {
+      int a;
+      decpos = -1;
+      for (a = 0; a < l; a++)
+	{
+	  if (buff[a] == '.' || buff[a] == ',')
+	    {
+	      // we wont break here - we'll just keep looking
+	      // because the ',' or '.' might be a thousands separator character
+	      decpos = a;
+	    }
 	}
-	
-	A4GL_init_dec(&d,ndig,ndec);
-	A4GL_str_to_dec(buff,&d);
-	
-	ndig=NUM_DIG (d.dec_data);
-        ndec=NUM_DEC(d.dec_data);
-	if (ndig<ndec) { A4GL_assertion(1,"Insufficent digits"); }
-	size=(ndig<<8)+ndec;
-  	A4GL_push_dec_dec(&d,0,size);
+      if (decpos == -1)
+	{
+	  // Nothing found - strange given that it was a decimal...
+	  ndig = l;
+	  ndec = 0;
+	}
+      else
+	{
+	  ndec = l - decpos - 1;
+	  ndig = l;
+	}
+      A4GL_assertion (ndec > ndig, "More decimal places than digits");
+      if (ndec > 64)
+	ndec = 64;
+      if (ndig > 32)
+	ndig = 32;
+    }
+
+  A4GL_init_dec (&d, ndig, ndec);
+  A4GL_str_to_dec (buff, &d);
+
+  ndig = NUM_DIG (d.dec_data);
+  ndec = NUM_DEC (d.dec_data);
+  if (ndig < ndec)
+    {
+      A4GL_assertion (1, "Insufficent digits");
+    }
+  size = (ndig << 8) + ndec;
+  A4GL_push_dec_dec (&d, 0, size);
 
 }
 
-void A4GL_push_double_str(char *p) {
+void
+A4GL_push_double_str (char *p)
+{
   double *ptr;
   char *cp;
   char *pdot;
-		A4GL_push_decimal_str(p); // push a decimal instead..
+  A4GL_push_decimal_str (p);	// push a decimal instead..
   return;
-  pdot=strchr(p,'.');
-  if (pdot==0) {
-  	pdot=strchr(p,',');
-  }
-  if (pdot) {
-	 int s;
-		s=strlen(p)-(pdot-p);
-	if (s>5) {
-		A4GL_push_decimal_str(p); // push a decimal instead..
-		return;
+  pdot = strchr (p, '.');
+  if (pdot == 0)
+    {
+      pdot = strchr (p, ',');
+    }
+  if (pdot)
+    {
+      int s;
+      s = strlen (p) - (pdot - p);
+      if (s > 5)
+	{
+	  A4GL_push_decimal_str (p);	// push a decimal instead..
+	  return;
 	}
-		
-  }
+
+    }
   ptr = (double *) acl_malloc (sizeof (double), "push_double");
-  cp = A4GL_decstr_convert(p, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
-  *ptr = atof(cp);
-  if (sscanf(cp, "%lf", ptr) != 1)
-  {
-      A4GL_debug("Conversion to double failed for string <%s>", cp);
+  cp = A4GL_decstr_convert (p, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  *ptr = atof (cp);
+  if (sscanf (cp, "%lf", ptr) != 1)
+    {
+      A4GL_debug ("Conversion to double failed for string <%s>", cp);
       *ptr = 0;
-  }
-  free(cp);
+    }
+  free (cp);
   A4GL_push_param (ptr, DTYPE_FLOAT + DTYPE_MALLOCED);
 }
 
@@ -420,35 +450,40 @@ void
 A4GL_push_chars (char *p, int dtype, int size)
 {
   char *ptr;
-last_was_empty=0;
-  A4GL_debug ("In A4GL_push_chars - '%s'\n", A4GL_null_as_null(p));
-  ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
+  last_was_empty = 0;
+  A4GL_debug ("In A4GL_push_chars - '%s'\n", A4GL_null_as_null (p));
+  ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
   //push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
-  A4GL_debug ("Using dtype : %d",
-	 (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
+  A4GL_debug ("Using dtype : %d", (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
 }
 
 
-int A4GL_was_last_empty() {
-	return last_was_empty;
+int
+A4GL_was_last_empty ()
+{
+  return last_was_empty;
 }
 
-void A4GL_clr_last_was_empty() {
-	last_was_empty=0;
+void
+A4GL_clr_last_was_empty ()
+{
+  last_was_empty = 0;
 }
 
-void A4GL_push_empty_char(void) {
-char *ptr;
-char buff[2];
-char *p;
-buff[0]=0;
-buff[1]=0;
-p=buff;
-last_was_empty=1;
+void
+A4GL_push_empty_char (void)
+{
+  char *ptr;
+  char buff[2];
+  char *p;
+  buff[0] = 0;
+  buff[1] = 0;
+  p = buff;
+  last_was_empty = 1;
 //A4GL_push_char (buff);
-  ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
-  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));
+  ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
+  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 
 }
 
@@ -463,29 +498,29 @@ void
 A4GL_push_char (char *p)
 {
   char *ptr;
-  last_was_empty=0;
-  A4GL_assertion(p==0,"pointer was 0 in A4GL_push_char");
+  last_was_empty = 0;
+  A4GL_assertion (p == 0, "pointer was 0 in A4GL_push_char");
 #ifdef DEBUG
-  A4GL_debug("Push char...'%s' (%p)",p,p);
+  A4GL_debug ("Push char...'%s' (%p)", p, p);
 #endif
   if (p[0] == 0 && p[1] != 0)
     {
 #ifdef DEBUG
-      A4GL_debug("blank first not second ('%s')",p);
+      A4GL_debug ("blank first not second ('%s')", p);
 #endif
-      ptr = (char *) A4GL_new_string_set ((int)strlen (p) + 1, p);
+      ptr = (char *) A4GL_new_string_set ((int) strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
 #ifdef DEBUG
-      A4GL_debug("not (blank first not second) '%s'",p);
+      A4GL_debug ("not (blank first not second) '%s'", p);
 #endif
-      ptr = (char *) A4GL_new_string_set ((int)strlen (p), p);
+      ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
     }
-A4GL_debug("Created ptr=%p",ptr);
-  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int)strlen (p))));
+  A4GL_debug ("Created ptr=%p", ptr);
+  A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 }
 
 /**
@@ -502,10 +537,11 @@ aclfgl_mdy (int n)
   y = A4GL_pop_int ();
   d = A4GL_pop_int ();
   m = A4GL_pop_int ();
-  if (y<=0) {
-		A4GL_push_null(DTYPE_DATE,0);
-		return 1;
-	}
+  if (y <= 0)
+    {
+      A4GL_push_null (DTYPE_DATE, 0);
+      return 1;
+    }
   z = A4GL_gen_dateno (d, m, y);
   A4GL_push_date (z);
   return 1;
@@ -540,7 +576,7 @@ aclfgl_abs (int n)
   double p;
   p = A4GL_pop_double ();
   if (p < 0)
-    p = (double)0.0 - p;
+    p = (double) 0.0 - p;
   A4GL_push_double (p);
   return 1;
 }
@@ -567,12 +603,14 @@ A4GL_func_mod (void)
 }
 
 
-int aclfgl_ord(int n) {
-unsigned char *s;
-s=(unsigned char *)A4GL_char_pop();
-A4GL_push_long(s[0]);
-free(s);
-return 1;
+int
+aclfgl_ord (int n)
+{
+  unsigned char *s;
+  s = (unsigned char *) A4GL_char_pop ();
+  A4GL_push_long (s[0]);
+  free (s);
+  return 1;
 }
 
 /**
@@ -682,10 +720,12 @@ aclfgl_date (int n)
   return 1;
 }
 
-int aclfgl_time(int n) {
-   struct_dtime a ;
-   A4GL_pop_var2(&a,10,0x46);
-   A4GL_push_variable(&a,0x46000a);
+int
+aclfgl_time (int n)
+{
+  struct_dtime a;
+  A4GL_pop_var2 (&a, 10, 0x46);
+  A4GL_push_variable (&a, 0x46000a);
   return 1;
 }
 
@@ -695,13 +735,17 @@ int aclfgl_time(int n) {
  * @todo Describe function
  */
 int
-aclfgl_day (int n) 
+aclfgl_day (int n)
 /* FIXME: why does this function have a parameter, if it's not going to be used?  it should always be 1 - because the fglcall will always pass it one...*/
 {
   long d;
   int day, mn, yr;
   d = A4GL_pop_date ();
-  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d))
+    {
+      A4GL_push_null (DTYPE_INT, 0);
+      return 1;
+    }
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (day);
   return 1;
@@ -718,7 +762,11 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
   long d;
   int day, mn, yr;
   d = A4GL_pop_date ();
-  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d))
+    {
+      A4GL_push_null (DTYPE_INT, 0);
+      return 1;
+    }
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (mn);
   return 1;
@@ -730,13 +778,17 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
  * @todo Describe function
  */
 int
-aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used? it should always be 1*/
+aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it's not going to be used? it should always be 1 */
 {
   long d;
   int day, mn, yr;
   long d2;
   d = A4GL_pop_date ();
-  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d))
+    {
+      A4GL_push_null (DTYPE_INT, 0);
+      return 1;
+    }
   A4GL_get_date (d, &day, &mn, &yr);
   d2 = A4GL_day_in_week (day, mn, yr);
   A4GL_push_long (d2);
@@ -754,7 +806,11 @@ aclfgl_year (int n)
   long d;
   int day, mn, yr;
   d = A4GL_pop_date ();
-  if (A4GL_isnull (DTYPE_DATE, (void *) &d)) {A4GL_push_null(DTYPE_INT,0); return 1;}
+  if (A4GL_isnull (DTYPE_DATE, (void *) &d))
+    {
+      A4GL_push_null (DTYPE_INT, 0);
+      return 1;
+    }
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (yr);
   return 1;
@@ -769,53 +825,68 @@ int
 A4GL_func_clip (void)
 {
   char *z;
-	int d1;
-	int s1;
-	char *ptr1;
-int isnumeric=0;
+  int d1;
+  int s1;
+  char *ptr1;
+  int isnumeric = 0;
 
-A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
 
-d1=d1&DTYPE_MASK;
-switch (d1) {
-	case DTYPE_SMINT:
-	case DTYPE_INT:
-	case DTYPE_DECIMAL:
-	case DTYPE_FLOAT:
-	case DTYPE_SMFLOAT:
-	case DTYPE_MONEY: isnumeric=1; break;
-	default: isnumeric=0;
-}
+  d1 = d1 & DTYPE_MASK;
+  switch (d1)
+    {
+    case DTYPE_SMINT:
+    case DTYPE_INT:
+    case DTYPE_DECIMAL:
+    case DTYPE_FLOAT:
+    case DTYPE_SMFLOAT:
+    case DTYPE_MONEY:
+      isnumeric = 1;
+      break;
+    default:
+      isnumeric = 0;
+    }
 
-if (A4GL_isno(acl_getenv("NUMERICCLIPPED"))) {
-	isnumeric=0;
-}
+  if (A4GL_isno (acl_getenv ("NUMERICCLIPPED")))
+    {
+      isnumeric = 0;
+    }
 
-  if (isnumeric) {
-		return 1; // does nothing..
-  }
+  if (isnumeric)
+    {
+      return 1;			// does nothing..
+    }
   z = A4GL_char_pop ();
 
-  if (strlen(z)) {
-	if (isnumeric) {
-  		A4GL_lrtrim (z);
-	} else {
-		
-  		A4GL_trim_not_nl (z);
+  if (strlen (z))
+    {
+      if (isnumeric)
+	{
+	  A4GL_lrtrim (z);
 	}
-	if (strlen(z)) {
-  		A4GL_push_char (z);
-	} else {
-		char buff[2];
-		buff[0]=0;
-		buff[1]=1;
-		A4GL_debug("Pushing a zero length non null string");
-  		A4GL_push_char (buff);
-		A4GL_debug("Done that");
+      else
+	{
+
+	  A4GL_trim_not_nl (z);
 	}
-  } else {
-	A4GL_push_null(0,0);
-  }
+      if (strlen (z))
+	{
+	  A4GL_push_char (z);
+	}
+      else
+	{
+	  char buff[2];
+	  buff[0] = 0;
+	  buff[1] = 1;
+	  A4GL_debug ("Pushing a zero length non null string");
+	  A4GL_push_char (buff);
+	  A4GL_debug ("Done that");
+	}
+    }
+  else
+    {
+      A4GL_push_null (0, 0);
+    }
   free (z);
   return 1;
 }
@@ -843,7 +914,7 @@ A4GL_func_concat (void)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug (" CONCAT  '%s' & '%s'", A4GL_null_as_null(p1), A4GL_null_as_null(p2));
+    A4GL_debug (" CONCAT  '%s' & '%s'", A4GL_null_as_null (p1), A4GL_null_as_null (p2));
   }
 #endif
 #ifdef DEBUG
@@ -852,7 +923,7 @@ A4GL_func_concat (void)
     A4GL_debug ("   copy %d %d ", strlen (p1), strlen (p2));
   }
 #endif
-  a = (int)strlen (p1) + (int)strlen (p2) + 1;
+  a = (int) strlen (p1) + (int) strlen (p2) + 1;
   z1 = A4GL_new_string (a);
   strcpy (z1, p2);
   strcat (z1, p1);
@@ -868,10 +939,10 @@ A4GL_func_concat (void)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("concat returns -> %s", A4GL_null_as_null(z1));
+    A4GL_debug ("concat returns -> %s", A4GL_null_as_null (z1));
   }
 #endif
-  free(z1);
+  free (z1);
 }
 
 
@@ -893,138 +964,153 @@ A4GL_power (double a, double b)
  * @todo Describe function
  */
 void
-A4GL_func_using()
+A4GL_func_using ()
 {
-    int fmtlen;
-    char *fmt;
-    int dt;
-    int s1;
-    fgldecimal *ptr1;
+  int fmtlen;
+  char *fmt;
+  int dt;
+  int s1;
+  fgldecimal *ptr1;
 
-    fmt = A4GL_char_pop ();
-    A4GL_get_top_of_stack (1, &dt, NULL, NULL);
-    dt &= DTYPE_MASK;
+  fmt = A4GL_char_pop ();
+  A4GL_get_top_of_stack (1, &dt, NULL, NULL);
+  dt &= DTYPE_MASK;
 
-    if (A4GL_isyes(acl_getenv("A4GL_TRIMUSINGFMT")))
-	A4GL_trim (fmt);
-    fmtlen = (int)strlen (fmt);
+  if (A4GL_isyes (acl_getenv ("A4GL_TRIMUSINGFMT")))
+    A4GL_trim (fmt);
+  fmtlen = (int) strlen (fmt);
 
-    switch (dt)
+  switch (dt)
     {
-      case DTYPE_DECIMAL:
-      case DTYPE_MONEY:
-	{
+    case DTYPE_DECIMAL:
+    case DTYPE_MONEY:
+      {
+	char *z;
+	char *p;
+	char pold[2000];
+	int a;
+	int isneg = 0;
+	z = A4GL_new_string (fmtlen + 1);
+	A4GL_get_top_of_stack (1, &dt, &s1, (void **) &ptr1);
+	p = acl_strdup (A4GL_dec_to_str (ptr1, 0));
+	strcpy (pold, p);
+
+	A4GL_drop_param ();
+	// clean the string...
+	//printf("p=%s\n",p);
+	for (a = 0; a < strlen (p); a++)
+	  {
+	    if (p[a] >= '0' && p[a] <= '9')
+	      continue;
+	    if (p[a] == '.')
+	      {
+		p[a] = '.';
+		continue;
+	      }
+	    if (p[a] == '-')
+	      {
+		p[a] = ' ';
+		isneg++;
+		continue;
+	      }
+	    p[a] = ' ';
+	  }
+	//printf("p=%s\n",p);
+	a4gl_using_from_string (z, fmtlen, fmt, p, isneg);
+
+	//a4gl_using (z, fmtlen, fmt, dbl);
+	A4GL_debug ("z=%s\n", A4GL_null_as_null (z));
+	A4GL_push_char (z);
+	acl_free (p);
+	acl_free (z);
+      }
+      break;
+
+    case DTYPE_BYTE:
+    case DTYPE_SMINT:
+    case DTYPE_INT:
+    case DTYPE_SERIAL:
+    case DTYPE_SMFLOAT:
+    case DTYPE_FLOAT:
+      {
+	char *z;
+	double dbl;
+	A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
+	z = A4GL_new_string (fmtlen + 1);
+	A4GL_debug ("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
+
+	a4gl_using (z, fmtlen, fmt, dbl);
+	A4GL_debug ("z=%s\n", A4GL_null_as_null (z));
+	A4GL_push_char (z);
+	acl_free (z);
+      }
+      break;
+    case DTYPE_DATE:
+      {
+	long d;
+	char *ptr;
+	d = A4GL_pop_date ();
+	A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null (fmt));
+	ptr = A4GL_using_date (d, fmt);
+	// Did it convert nicely ? 
+	if (ptr)
+	  {
+	    A4GL_push_char (ptr);
+	  }
+	else
+	  {
+	    char buff[200];
 	    char *z;
-	    char *p;
-	    char pold[2000];
-		int a;
-	    int isneg=0;
-	    z = A4GL_new_string (fmtlen+1);
-            A4GL_get_top_of_stack (1, &dt, &s1, (void **) &ptr1);
-	    p=acl_strdup(A4GL_dec_to_str (ptr1, 0));
-		strcpy(pold,p);
-	
-		A4GL_drop_param();
-	    // clean the string...
-	    //printf("p=%s\n",p);
-	    for (a=0;a<strlen(p);a++) {
-		if (p[a]>='0' && p[a]<='9') continue;
-		if (p[a]=='.') {p[a]='.'; continue;}
-		if (p[a]=='-') {p[a]=' '; isneg++;continue;}
-		p[a]=' ';
-	    }
-		//printf("p=%s\n",p);
-	    a4gl_using_from_string(z,fmtlen,fmt,p,isneg);
+	    // No - it didnt convert nicely..
+	    z = A4GL_new_string (fmtlen + 1);
+	    strcpy (z, fmt);
 
-	    //a4gl_using (z, fmtlen, fmt, dbl);
-	    A4GL_debug("z=%s\n", A4GL_null_as_null(z));
+	    //@ENV FMTDATETONUMBER formats a date to number when using a numeric format
+	    if (A4GL_isyes (acl_getenv ("FMTDATETONUMBER")))
+	      {
+		sprintf (buff, "%ld", d);
+		a4gl_using_from_string (z, fmtlen, fmt, buff, 0);
+	      }
 	    A4GL_push_char (z);
-	    acl_free(p);
-	    acl_free(z);	
-	}
-	break;
+	    acl_free (z);
+	  }
+      }
+      break;
+    case DTYPE_CHAR:
+    case DTYPE_NULL:
+    case DTYPE_DTIME:
+    case DTYPE_TEXT:
+    case DTYPE_VCHAR:
+    case DTYPE_INTERVAL:
+    case DTYPE_NCHAR:
+    default:
+      {				// I hope this piece of code will be unneeded some day, so I copy-pasted it...
+	A4GL_debug ("WARNING: USING handled old way, data type will be determined by the format string");
 
-      case DTYPE_BYTE:
-      case DTYPE_SMINT:
-      case DTYPE_INT:
-      case DTYPE_SERIAL:
-      case DTYPE_SMFLOAT:
-      case DTYPE_FLOAT:
-	{
+	if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy") ||
+	    strstr (fmt, "DD") || strstr (fmt, "MM") || strstr (fmt, "YY"))
+	  {
+	    long d;
+	    d = A4GL_pop_date ();
+	    A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null (fmt));
+	    A4GL_push_char (A4GL_using_date (d, fmt));
+	  }
+	else
+	  {
 	    char *z;
 	    double dbl;
 	    A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
-	    z = A4GL_new_string (fmtlen+1);
-	    A4GL_debug("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
-	    
+	    z = A4GL_new_string (fmtlen + 1);
+	    A4GL_debug ("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
 	    a4gl_using (z, fmtlen, fmt, dbl);
-	    A4GL_debug("z=%s\n", A4GL_null_as_null(z));
+	    A4GL_debug ("z=%s\n", A4GL_null_as_null (z));
 	    A4GL_push_char (z);
-	    acl_free(z);	
-	}
-	break;
-      case DTYPE_DATE:
-	{
-	    long d;
-	    char *ptr;
-	    d = A4GL_pop_date();
-	    A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
-		ptr=A4GL_using_date(d, fmt);
-		// Did it convert nicely ? 
-	    if (ptr) {
-			A4GL_push_char(ptr);
-	    } else {
-		char buff[200];
-                char *z;
-		// No - it didnt convert nicely..
-                z = A4GL_new_string (fmtlen+1);
-		strcpy(z,fmt);
-	
-		//@ENV FMTDATETONUMBER formats a date to number when using a numeric format
-		if (A4GL_isyes(acl_getenv("FMTDATETONUMBER"))) {
-			sprintf(buff,"%ld",d);
-                	a4gl_using_from_string (z, fmtlen, fmt, buff,0);
-		}
-                A4GL_push_char (z);
-                acl_free(z);	
-		}
-	}
-	break;
-      case DTYPE_CHAR:
-      case DTYPE_NULL:
-      case DTYPE_DTIME:
-      case DTYPE_TEXT:
-      case DTYPE_VCHAR:
-      case DTYPE_INTERVAL:
-      case DTYPE_NCHAR:
-      default:
-	{ // I hope this piece of code will be unneeded some day, so I copy-pasted it...
-	    A4GL_debug("WARNING: USING handled old way, data type will be determined by the format string");
-
-	    if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy") ||
-	        strstr (fmt, "DD") || strstr (fmt, "MM") || strstr (fmt, "YY"))
-	    {
-                long d;
-		d = A4GL_pop_date ();
-                A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null(fmt));
-		A4GL_push_char (A4GL_using_date (d, fmt));
-	    }
-	    else
-            {
-                char *z;
-                double dbl;
-                A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
-                z = A4GL_new_string (fmtlen+1);
-                A4GL_debug("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
-                a4gl_using (z, fmtlen, fmt, dbl);
-                A4GL_debug("z=%s\n", A4GL_null_as_null(z));
-                A4GL_push_char (z);
-                acl_free(z);	
-            }
-	}
-	break;
+	    acl_free (z);
+	  }
+      }
+      break;
     }
-    acl_free (fmt);
+  acl_free (fmt);
 }
 
 
@@ -1082,19 +1168,19 @@ A4GL_push_dtime (struct A4GLSQL_dtime *p)
  * @todo Describe function
  */
 void
-A4GL_push_interval (struct ival *p,int size)
+A4GL_push_interval (struct ival *p, int size)
 {
   struct ival *ptr;
   struct ival *ival;
   ptr = (struct ival *) acl_malloc (sizeof (struct ival), "push_ival");
-  memset(ptr,0,sizeof(struct ival));
+  memset (ptr, 0, sizeof (struct ival));
   memcpy (ptr, p, sizeof (struct ival));
 
   A4GL_debug ("Copied - %x %x", ptr->stime, ptr->ltime);
 
-  A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED+ENCODE_SIZE(size));
+  A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED + ENCODE_SIZE (size));
 
-ival=ptr;
+  ival = ptr;
 }
 
 /**
@@ -1107,18 +1193,19 @@ A4GL_push_variable (void *ptr, int dtype)
 {
 
 
-  if (A4GL_isnull(dtype&DTYPE_MASK,ptr)) {
-		A4GL_debug("Variable was null dtype=%d %x ptr=%p",dtype&DTYPE_MASK,dtype,ptr);
-		A4GL_push_null(dtype&DTYPE_MASK,DECODE_SIZE(dtype));
-		return;
-  }
+  if (A4GL_isnull (dtype & DTYPE_MASK, ptr))
+    {
+      A4GL_debug ("Variable was null dtype=%d %x ptr=%p", dtype & DTYPE_MASK, dtype, ptr);
+      A4GL_push_null (dtype & DTYPE_MASK, DECODE_SIZE (dtype));
+      return;
+    }
 
 #ifdef DEBUG
   A4GL_debug ("In push variable dtype = %d (%x)", dtype, dtype);
 
   if ((dtype & DTYPE_MASK) == DTYPE_CHAR)
     {
-      A4GL_debug ("Value = '%s'\n", A4GL_null_as_null(ptr));
+      A4GL_debug ("Value = '%s'\n", A4GL_null_as_null (ptr));
     }
 
   if (A4GL_isnull (dtype, ptr))
@@ -1191,15 +1278,15 @@ A4GL_push_variable (void *ptr, int dtype)
       return;
     case 5:
 #ifdef DEBUG
-      	A4GL_debug ("DECIMAL");
+      A4GL_debug ("DECIMAL");
 #endif
-      	A4GL_push_dec (ptr, 0,dtype>>16);
+      A4GL_push_dec (ptr, 0, dtype >> 16);
       return;
     case 8:
 #ifdef DEBUG
       A4GL_debug ("MONEY");
 #endif
-      A4GL_push_dec (ptr, 1,dtype>>16);
+      A4GL_push_dec (ptr, 1, dtype >> 16);
       return;
     case 4:
 #ifdef DEBUG
@@ -1223,10 +1310,10 @@ A4GL_push_variable (void *ptr, int dtype)
       return;
     case DTYPE_INTERVAL:
 #ifdef DEBUG
-		A4GL_debug("Interval - %d %d",dtype,DTYPE_INTERVAL);
+      A4GL_debug ("Interval - %d %d", dtype, DTYPE_INTERVAL);
 #endif
-	//printf("%x\n", dtype);
-      A4GL_push_interval (ptr,dtype>>16);
+      //printf("%x\n", dtype);
+      A4GL_push_interval (ptr, dtype >> 16);
       return;
     }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.51 2008-08-04 14:48:39 mikeaubury Exp $
+# $Id: rexp2.c,v 1.52 2008-10-02 17:40:50 mikeaubury Exp $
 #
 */
 
@@ -284,14 +284,15 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
     }
 
 
-  if (strncmp(val,"..",2)==0) { // We allow ..X and X.. to be <=X and >=X
-		// X.. is handled later
-		// we'll handle ..X now
-		//
-		// This also works for ':' - but thats handles separately
-	val[0]='<';
-	val[1]='=';
-  }
+  if (strncmp (val, "..", 2) == 0)
+    {				// We allow ..X and X.. to be <=X and >=X
+      // X.. is handled later
+      // we'll handle ..X now
+      //
+      // This also works for ':' - but thats handles separately
+      val[0] = '<';
+      val[1] = '=';
+    }
 
   for (a = 0; a < 100; a++)
     {
@@ -365,7 +366,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 
 
 
-      if ((z > 0 && lastchar == 0) || (z==RANGE_DOT_DOT&& lastchar==-1))
+      if ((z > 0 && lastchar == 0) || (z == RANGE_DOT_DOT && lastchar == -1))
 	{			/* last character was not a control */
 	  A4GL_debug ("R1");
 	  if (z == RANGE_DOT_DOT)
@@ -484,7 +485,8 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
       A4GL_debug ("constr_size = %d\n", constr_size);
       for (zz = 0; zz < constr_size; zz++)
 	{
-	  if (A4GL_is_construct_op (constr_bits[zz], 0, NULL) == 0 || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0, NULL) != OR))
+	  if (A4GL_is_construct_op (constr_bits[zz], 0, NULL) == 0
+	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0, NULL) != OR))
 	    {
 	      int n;
 	      if (A4GL_stod (constr_bits[zz], &n, 0) && !A4GL_isnull (DTYPE_DATE, (void *) &n))
@@ -589,7 +591,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
       return 0;
     }
 
-  A4GL_debug("z=%d z2=%d",z,z2);
+  A4GL_debug ("z=%d z2=%d", z, z2);
   if (z == 0 && z2 == 0)
     {
       if (ismatch)
@@ -749,20 +751,21 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	  A4GL_debug ("..");
 	  if (constr_size >= 2)
 	    {
-	  int done=0;
-	      if (strlen (constr_bits[0]) == 0 && strlen (constr_bits[1])) {
-		  	SPRINTF4 (buff3, "%s<=%s%s%s", colname, quote, constr_bits[2], quote);
-			done++;
-		}
-
-	      if (constr_size == 2 && !done) 
+	      int done = 0;
+	      if (strlen (constr_bits[0]) == 0 && strlen (constr_bits[1]))
 		{
-		  	SPRINTF4 (buff3, "%s>=%s%s%s", colname, quote, constr_bits[0], quote);
-			done++;
+		  SPRINTF4 (buff3, "%s<=%s%s%s", colname, quote, constr_bits[2], quote);
+		  done++;
+		}
+
+	      if (constr_size == 2 && !done)
+		{
+		  SPRINTF4 (buff3, "%s>=%s%s%s", colname, quote, constr_bits[0], quote);
+		  done++;
 		}
 
 
-		if (!done)
+	      if (!done)
 		{
 
 		  A4GL_debug (".2 %d ", constr_size);
@@ -825,23 +828,24 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	}
       else
 	{
-	  int done=0;
+	  int done = 0;
 	  SPRINTF4 (buff3, "%s between %s%s%s and ", colname, quote, constr_bits[0], quote);
 	  if (constr_size >= 2)
 	    {
 
-	      if (strlen (constr_bits[0]) == 0 && strlen (constr_bits[1])) {
-		  	SPRINTF4 (buff3, "%s<=%s%s%s", colname, quote, constr_bits[2], quote);
-			done++;
-		}
-
-	      if (constr_size == 2 && !done) 
+	      if (strlen (constr_bits[0]) == 0 && strlen (constr_bits[1]))
 		{
-		  	SPRINTF4 (buff3, "%s>=%s%s%s", colname, quote, constr_bits[0], quote);
-			done++;
+		  SPRINTF4 (buff3, "%s<=%s%s%s", colname, quote, constr_bits[2], quote);
+		  done++;
 		}
 
-	      if (!done) 
+	      if (constr_size == 2 && !done)
+		{
+		  SPRINTF4 (buff3, "%s>=%s%s%s", colname, quote, constr_bits[0], quote);
+		  done++;
+		}
+
+	      if (!done)
 		{
 		  strcat (buff3, quote);
 		  for (zz = 2; zz < constr_size; zz++)
