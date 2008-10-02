@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.50 2008-10-02 13:34:54 mikeaubury Exp $
+# $Id: load.c,v 1.51 2008-10-02 17:28:25 mikeaubury Exp $
 #
 */
 
@@ -89,6 +89,9 @@ extern sqlca_struct a4gl_sqlca;
                     Functions definitions
 =====================================================================
 */
+
+
+
 
 #define LOAD_ORIG
 /**
@@ -975,5 +978,52 @@ aclfgl_aclfgl_parse_csv (int n)
 
 }
 
+int aclfgl_aclfgl_split_on_delimiter (int n) 
+{
+  int cnt = 1;
+  int a;
+  int ml;
+  char *delim="|";
+  char *cptr[MAXLOADCOLS];
+  char *lbuff;
+
+  if (n==1) {
+	lbuff=A4GL_char_pop();
+  }
+  if (n==2) {
+	lbuff=A4GL_char_pop();
+	delim=A4GL_char_pop();
+  }
+
+  ml=strlen(lbuff);
+	/* Convert to unix format - if its msdos */
+  if (lbuff[ml-2]=='\r' && lbuff[ml-1]=='\n') {
+		ml--;
+		lbuff[ml-2]='\n';
+		lbuff[ml-1]=0;
+	}
+  cptr[0] = &lbuff[0];
+  for (a = 0; a <= ml; a++)
+    {
+      if (lbuff[a] == delim[0] || lbuff[a] == 0)
+	{
+	  cptr[cnt++] = &lbuff[a + 1];
+	}
+    }
+
+  cnt--;
+
+  for (a = 1; a <= cnt; a++)
+    *(cptr[a] - 1) = 0;
+
+  for (a = 0; a < cnt; a++)
+    {
+	A4GL_push_char(cptr[a]);
+    }
+
+
+  free(lbuff);
+  return cnt;
+}
 
 /* ============================== EOF ================================ */
