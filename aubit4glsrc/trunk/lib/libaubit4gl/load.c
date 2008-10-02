@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.48 2008-09-17 16:20:09 mikeaubury Exp $
+# $Id: load.c,v 1.49 2008-10-02 10:57:09 mikeaubury Exp $
 #
 */
 
@@ -190,7 +190,6 @@ static void
 stripnlload (char *s, char delim)
 {
   int a;
-  a = strlen (s);
   if (strchr(s,'\r')) {
 	int a;
 	char *p;
@@ -205,6 +204,10 @@ stripnlload (char *s, char delim)
 	strcpy(s,p);
 	free(p);
   }
+
+  a = strlen (s);
+
+//printf("strlen=%d actual=%d s[a-1]=%d\n",a,strlen(s), s[a-1]);
   if (s[a - 1] == '\n')
     {
       if (s[a - 2] != delim)
@@ -212,6 +215,7 @@ stripnlload (char *s, char delim)
       else
 	s[a - 1] = 0;
     }
+//printf("s='%s'\n",s);
 }
 
 
@@ -295,7 +299,10 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
   if (cnt == 0)
     {
-      A4GL_exitwith ("Error in getting number of columns for load");
+	aclfgli_clr_err_flg();
+	a4gl_sqlca.sqlcode=0; a4gl_status=0;
+	A4GL_set_errm(tabname);
+      	A4GL_exitwith ("Error in getting number of columns for load (does the table '%s' exist?)");
       return 0;
     }
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
@@ -330,7 +337,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 
       if (nfields != cnt)
 	{
-	  SPRINTF1 (buff, "%d", cnt);
+	  SPRINTF2 (buff, "%d!=%d", nfields, cnt);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Number of fields in load file does not equal the number of columns %s");
 	  return 0;

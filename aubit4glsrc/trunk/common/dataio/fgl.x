@@ -2493,7 +2493,8 @@ enum e_outer_type {
 	E_OUTER_NONE,
 	E_OUTER_NORMAL,
 	E_OUTER_LEFT_OUTER,
-	E_OUTER_RIGHT_OUTER
+	E_OUTER_RIGHT_OUTER,
+	E_INNER
 };
 
 struct s_table {

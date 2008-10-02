@@ -120,3 +120,4 @@ NO_DECLARE_INTO Restrict compilation of DECLARE SELECT .. INTO because its not s
 FOR_UPDATE_DROP_COLLIST Drop the column list from a FOR UPDATE cursor
 FOR_UPDATE_NOWAIT Add NOWAIT to a FOR UPDATE 
 ODBC_LONGVARCHAR_AS_CHAR Force what would be a TEXT to be a CHAR because of a misleading reply from ODBC
+OUTER_JOINS_NB remove brackets around the table names when doing a ANSI outer join

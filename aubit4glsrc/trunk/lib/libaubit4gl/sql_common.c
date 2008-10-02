@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.62 2008-09-19 13:15:49 mikeaubury Exp $
+# $Id: sql_common.c,v 1.63 2008-10-02 10:57:09 mikeaubury Exp $
 #
 */
 
@@ -1214,6 +1214,15 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
   char buff[2000];
   char lastt[2000];
   int a = 0;
+  char ob[2]="("; // Open bracket
+  char cb[2]=")"; // close bracket
+
+  // Some SQLS dont like the brackets following the outers - so allow then to be removed...
+  if (A4GLSQLCV_check_requirement ("OUTER_JOINS_NB")) { 	
+		ob[0]=' ';
+		cb[0]=' ';
+  }
+
 
   if (A4GLSQLCV_check_requirement ("FIX_OUTER_JOINS"))
     {
@@ -1280,15 +1289,49 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
 		a++;
 		strcpy (outer, "");
 		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
-		strcat (buff, " LEFT OUTER JOIN (");
+		strcat (buff, " LEFT OUTER JOIN "); strcat(buff,ob);
 		strcat (buff, outer);
 		ptr = get_select_list_item (select, t->outer_join_condition);
 		if (t->outer_join_condition->data.type==E_SLI_BRACKET_EXPR) {
-			strcat (buff, ") ON ");
+			strcat(buff,cb);
+			strcat (buff, " ON ");
 			strcat (buff, ptr);
 	
 		} else {
-			strcat (buff, ") ON (");
+			strcat(buff,cb);
+			strcat (buff, " ON (");
+			strcat (buff, ptr);
+			strcat (buff, ")");
+		}
+			acl_free (ptr);
+		break;
+	      }
+
+
+	    case E_INNER:
+	      {
+		char outer[2000];
+		char *ptr;
+/*
+	      if (a)
+		strcat (buff, ",");
+*/
+
+		a++;
+		strcpy (outer, "");
+		A4GLSQLPARSE_from_clause (select, t->outer_next, outer, tl);
+		strcat (buff, " INNER JOIN ");
+		strcat(buff,ob);
+		strcat (buff, outer);
+		ptr = get_select_list_item (select, t->outer_join_condition);
+		if (t->outer_join_condition->data.type==E_SLI_BRACKET_EXPR) {
+			strcat(buff,cb);
+			strcat (buff, " ON ");
+			strcat (buff, ptr);
+	
+		} else {
+			strcat(buff,cb);
+			strcat (buff, " ON (");
 			strcat (buff, ptr);
 			strcat (buff, ")");
 		}

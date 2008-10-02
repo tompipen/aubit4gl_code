@@ -1,3 +1,4 @@
+1|Undefined Error
 2|Shouldn't get to here...
 3|
 4|Variable is already defined
@@ -340,3 +341,4 @@
 344|Incompatible storage size
 346|Invalid barcode type
 347|Unable to generate QR code
+348|Error in getting number of columns for load (does the table '%s' exist?)

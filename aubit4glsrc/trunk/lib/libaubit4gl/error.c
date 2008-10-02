@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.45 2008-07-06 11:34:30 mikeaubury Exp $
+# $Id: error.c,v 1.46 2008-10-02 10:57:09 mikeaubury Exp $
 #
 */
 
@@ -101,6 +101,8 @@ char *A4GL_get_errmsg (int z);
 */
 
 
+#define ERR_UNDEF  -30001
+
 /**
  *
  * @todo Describe function
@@ -108,7 +110,7 @@ char *A4GL_get_errmsg (int z);
 static 
 struct s_err * A4GL_get_err_for_errstr (char *s)
 {
-    static struct s_err err_default = {"Unknown error", -1};
+    static struct s_err err_default = {"Unknown error", ERR_UNDEF};
     int a;
     A4GL_debug ("Looking for error desc for errmsg=\"%s\"", s);
     for (a = 0; errors[a].a4gl_errno; a++)
@@ -129,10 +131,10 @@ struct s_err * A4GL_get_err_for_errstr (char *s)
  */
 int A4GL_get_errcode_for_errstr (char *s)
 {
-    int retval = -1;
+    int retval = ERR_UNDEF;
     retval = A4GL_get_err_for_errstr(s)->a4gl_errno;
-    if (retval == -1)
-	return -1;
+    if (retval == ERR_UNDEF)
+	return ERR_UNDEF;
     return A4GL_ERR_BASE + retval;
 }
 
@@ -149,10 +151,10 @@ A4GL_exitwith (char *s)
 
     A4GL_debug ("Setting status, cache_status, cache_errmsg");
     cache_errmsg =      errdesc->errmsg; // static, read-only - safe
-    if (errdesc->a4gl_errno == -1) //not found
+    if (errdesc->a4gl_errno == ERR_UNDEF) //not found
     {
-	A4GLSQL_set_status (-1, 0);
-	cache_status       = -1;
+	A4GLSQL_set_status (ERR_UNDEF, 0);
+	cache_status       = ERR_UNDEF;
     }
     else
     {
@@ -176,10 +178,10 @@ A4GL_exitwith_sql (char *s)
 
     A4GL_debug ("Setting status, cache_status, cache_errmsg");
     cache_errmsg = errdesc->errmsg; // static, read-only - safe
-    if (errdesc->a4gl_errno == -1) //not found
+    if (errdesc->a4gl_errno == ERR_UNDEF) //not found
     {
-	A4GLSQL_set_status (-1, 0);
-	cache_status       = -1;
+	A4GLSQL_set_status (ERR_UNDEF, 0);
+	cache_status       = ERR_UNDEF;
     }
     else
     {

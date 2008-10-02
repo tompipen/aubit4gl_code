@@ -554,6 +554,10 @@ table_reference_list:
 		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,E_OUTER_LEFT_OUTER, $<s_select_list_item>5);
 		add_feature("SELECT_OUTER");
 	}
+	| table_reference_list INNER_JOIN op_bracket_table_reference_list KW_ON search_condition_sli   {
+		$<u_table>$=A4GLSQLPARSE_append_tablename($<u_table>1,$<u_table>3,E_INNER, $<s_select_list_item>5);
+		add_feature("SELECT_INNER");
+	}
 
 ;
 
