@@ -2,7 +2,7 @@
 
 static void *last_orig = 0;
 static struct mem_extra *last_ptr = 0;
-void *A4GL_set_associated_mem (void *orig, void *newbytes);
+//void *A4GL_set_associated_mem (void *orig, void *newbytes);
 void A4GL_rm_associated_mem (void *orig, void *newbytes);
 void A4GL_mark_as_freed_associated_mem (void *orig, void *newbytes);
 
@@ -387,6 +387,7 @@ A4GL_free_associated_mem (void *orig)
 	  if (ptr->ptr[a])
 	    {
 	      free (ptr->ptr[a]);	// free the allocated memory..
+		ptr->ptr[a]=0;
 	    }
 	}
     }
@@ -402,4 +403,44 @@ A4GL_free_associated_mem (void *orig)
   // Finally - get rid of the A4GL_..._pointer...
   A4GL_del_pointer (buff, MEMEXTRA);
 
+}
+
+
+int
+A4GL_has_associated_mem (void *orig,void *assoc)
+{
+  char buff[256];
+  struct mem_extra *ptr;
+  int a;
+
+  if (orig == 0)
+    return 0;
+
+
+  if (last_orig == orig)
+    {
+      last_orig = 0;
+      last_ptr = 0;
+    }
+
+  SPRINTF1 (buff, "%p", orig);
+
+  if (A4GL_has_pointer (buff, MEMEXTRA))
+    {
+      ptr = A4GL_find_pointer (buff, MEMEXTRA);
+    }
+  else
+    {
+      // Nothing allocated...
+      return 0;
+    }
+
+  for (a = 0; a < ptr->nmemalloc; a++)
+    {
+      if (ptr->ptr[a] && ptr->ptr[a]==assoc)
+	{
+	return 1;
+	}
+    }
+  return 0;
 }

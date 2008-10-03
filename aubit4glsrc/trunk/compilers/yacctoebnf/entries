@@ -57,3 +57,7 @@ column_name	<column_name>
 value_expression_sli	<value_expression_sli>
 value_expression_pls_sli	<value_expression_pls_sli>
 sort_spec_sli	<sort_spec_sli>
+table_name_not_for_column_prefix	<tablename>
+table_name	<tablename>
+conn_id_p	<ConnectionID>
+callback_function	<Callback function name>

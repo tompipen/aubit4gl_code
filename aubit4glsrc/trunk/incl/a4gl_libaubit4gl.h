@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.331 2008-10-02 17:28:25 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.332 2008-10-03 09:21:10 mikeaubury Exp $
 #
 */
 
@@ -2797,6 +2797,7 @@ size_t A4GL_base64_encode(const char *inp, size_t insize, char **outptr);
 void A4GL_set_stderr(FILE *errfile);
 int aclfgl_aclfgl_parse_csv(int nparam);
 int aclfgl_aclfgl_split_on_delimiter (int n);
+int A4GL_has_associated_mem (void *orig,void *assoc);
 
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */

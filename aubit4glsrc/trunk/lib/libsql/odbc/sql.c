@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.222 2008-09-25 13:40:10 mikeaubury Exp $
+# $Id: sql.c,v 1.223 2008-10-03 09:21:10 mikeaubury Exp $
 #
 */
 
@@ -425,7 +425,7 @@ static int do_fake_transactions (void);
 =====================================================================
 */
 void *A4GL_bind_decimal (struct BINDING *bind, void *ptr_to_decimal);
-int A4GL_dttoc (void *a, void *b, int size);
+//int A4GL_dttoc (void *a, void *b, int size);
 int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (struct BINDING *bind, void *ptr_to_dtime_var);
 void *A4GL_bind_interval (struct BINDING *bind, void *ptr_to_ival);
@@ -2652,7 +2652,7 @@ Bool ODBC_exec_stmt (SQLHSTMT *ptr_hstmt,struct s_sid *sid)
 	
         	if (A4GL_new_hstmt ((SQLHSTMT *) & hstmt)) {
 			A4GL_debug("FIXUP FOR http://support.microsoft.com/kb/198428");
-    			rc1 = SQLExecDirect (hstmt, sid->select, SQL_NTS);	// Reformatted in caller
+    			rc1 = SQLExecDirect (hstmt, (unsigned char *)sid->select, SQL_NTS);	// Reformatted in caller
 			A4GL_free_hstmt(&hstmt);
 		} else {
 			// Fall back...
@@ -2713,7 +2713,7 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   ptr_to_use = bind->ptr;
 
   set_conv_4gl_to_c ();
-  if (bind->libptr ) { acl_free(bind->libptr);
+  if (bind->libptr && A4GL_has_associated_mem(bind,bind->libptr))  { acl_free(bind->libptr);
 		bind->libptr=0;
 		 }
 
@@ -2789,7 +2789,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     A4GL_debug ("In A4GL_ibind_column, pos=%i, bind=%p hstmt=%p)", pos, bind, hstmt);
     A4GL_trc   ("dtype=%d size=%d ptr=%p isnull=%i", bind->dtype, bind->size, bind->ptr, isnull);
 
-    if (bind->libptr ) { 
+    if (bind->libptr&& A4GL_has_associated_mem(bind,bind->libptr) ) { 
 		acl_free(bind->libptr);  
 		bind->libptr=0;
 	}

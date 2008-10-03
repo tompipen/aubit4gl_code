@@ -416,10 +416,15 @@ opt_into_sel :  {
 ;
 
 
+callback_function: identifier {
+                	$<ptr>$=A4GL_new_expr_funcdef($<str>1,get_namespace($<str>1));
+        	}
+;
+
 opt_delim_load :     { $<ptr>$=0; }
                 | DELIMITER char_or_var_vl { $<ptr>$=$<ptr>2; }
-		| KW_USING_FILTER identifier {
-                	$<ptr>$=A4GL_new_expr_funcdef($<str>2,get_namespace($<str>2));
+		| KW_USING_FILTER callback_function  {
+                	$<ptr>$=$<ptr>2;
         	}
 ;
 
