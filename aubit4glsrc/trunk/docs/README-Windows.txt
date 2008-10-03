@@ -16,6 +16,8 @@ gcc -v
 which should then output the version details.
 
 
+
+
 2
 Download the current AUBIT win32 build and unzip to a convenient directory (eg c:\aubit).  
 
@@ -65,7 +67,10 @@ where MAINPROGRAM.exe is the 4gl program that calls all the rest - a central men
 Shortcuts are created to this batch file, on all the users' desktops;  and that's it.  There's probably a lot more in the AUBIT directories than the run-time users need, but its not worth the hassle of minimising them (the AUBIT programs, not the users).
 In the above example, the drive letter "y:" could be replaced by the server name, eg "\\DATABASE_SERVER_NAME".
 
-
+You will also need to make sure PATH contains entries for any required libraries (eg Postgres or Mysql dlls).
+For example - in my environment I need to add :
+/cygdrive/c/program files/postgresql/8.1/lib:/cygdrive/c/program files/postgresql/8.1/bin
+to the $PATH
 
 Bernard Moreton
 December 2007
