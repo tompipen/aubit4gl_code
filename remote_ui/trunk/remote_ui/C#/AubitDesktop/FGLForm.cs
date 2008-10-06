@@ -1095,6 +1095,12 @@ namespace AubitDesktop
             foreach (FGLWidget i in fields)
             {
                 i.ContextType = contextType;
+                if (contextType == FGLContextType.ContextNone)
+                {
+                    i.onUIEvent = null;
+                    i.onGotFocus = null;
+                    i.fieldValidationFailed = null;
+                }
             }
             this.thisFormsPanel.ResumeLayout();
             
