@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.223 2008-10-03 09:21:10 mikeaubury Exp $
+# $Id: sql.c,v 1.224 2008-10-07 09:21:31 mikeaubury Exp $
 #
 */
 
@@ -2314,10 +2314,15 @@ int
 A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 {
     RETCODE rc;
-    char uid[256] = "";
-    char pwd[256] = "";
+    char uid_s[256] = "";
+    char pwd_s[256] = "";
+    char *uid;
+    char *pwd;
+
     //RETCODE xrc;
 
+	uid=uid_s;
+	pwd=pwd_s;
 #ifdef DEBUG
     A4GL_dbg ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s",
             server, uid_p, pwd_p);
@@ -2346,9 +2351,10 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
     A4GL_trim (uid);
 
     A4GL_set_connection_username(uid);
-
     A4GL_trim (pwd);
     A4GL_trim (server);
+    if (strcmp(uid,"NULL")==0) {uid=NULL;}
+    if (strcmp(pwd,"NULL")==0) {pwd=NULL;}
     /*
 FIXME: we really need more then trim() here - I once had a TAB after
 uid by mistake...
@@ -4198,7 +4204,8 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
     if (p == 0)
         p = empty;
 
-    A4GL_dbg ("Try to make connection: dsn='%s' u=/%s' p='%s'", dsn, u, p);
+
+    A4GL_dbg ("Try to make connection: dsn='%s' u='%s' p='%s'", dsn, u, p);
 
     if (A4GLSQL_make_connection (dsn, u, p))
     {
