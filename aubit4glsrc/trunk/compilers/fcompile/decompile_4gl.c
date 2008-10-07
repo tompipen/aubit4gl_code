@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile_4gl.c,v 1.4 2008-07-06 11:34:26 mikeaubury Exp $
+# $Id: decompile_4gl.c,v 1.5 2008-10-07 09:27:39 mikeaubury Exp $
 #
 */
 
@@ -85,11 +85,14 @@ int main (int argc, char *argv[])
 	show_usage(argv[0]);
         exit (0);
   }
+  if (strcmp(argv[1],"--generate-record")==0) { offset=2; }
 
   if (strcmp(argv[1],"--generate-global")==0) {
 			dump_global_4gl();
 			exit(0);
   }
+
+  
 
   if (strcmp(argv[1],"--generate-common")==0) {
 			dump_common_4gl();
@@ -134,6 +137,7 @@ int main (int argc, char *argv[])
   } else {
 	module = argv[offset];
   }
+  if (strcmp(argv[1],"--generate-record")==0) { dump_record_4gl(&the_form); exit(0); }
   printf ("Dumping form %s\n",module);
   dump_form_desc (&the_form,module);
 return 0;

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.18 2008-09-29 15:50:16 mikeaubury Exp $
+# $Id: dump_form.c,v 1.19 2008-10-07 09:27:39 mikeaubury Exp $
 #*/
 
 /**
@@ -2410,6 +2410,39 @@ void dump_global_4gl(void) {
 void dump_common_4gl(void) {
     	printf("GLOBALS \"global.4gl\"\n");
 	printf("%s", file_common);
+}
+
+
+void dump_record_4gl( struct struct_form *f) {
+int a;
+int t;
+//printf("Here %d\n", f->tables.tables_len);
+    for (t=0;t<f->tables.tables_len;t++) {
+	int printit=0;
+    	for (a = 0; a < f->attributes.attributes_len; a++) {
+			//printf("%s %s\n", f->attributes.attributes_val[a].tabname,f->tables.tables_val[t].alias);
+			if (strcmp(f->attributes.attributes_val[a].tabname,f->tables.tables_val[t].alias)==0) {
+				printit=1;
+			}
+			if (strcmp(f->attributes.attributes_val[a].tabname,f->tables.tables_val[t].tabname)==0) {
+				printit=1;
+			}
+	}
+	
+	if (printit) {
+		if (strlen(f->tables.tables_val[t].alias)) {
+			printf("DEFINE mv_%s RECORD\n", f->tables.tables_val[t].alias);
+		} else {
+			printf("DEFINE mv_%s RECORD\n", f->tables.tables_val[t].tabname);
+		}
+
+    		for (a = 0; a < f->attributes.attributes_len; a++) {
+			printf("    %s LIKE %s.%s\n", f->attributes.attributes_val[a].colname, f->tables.tables_val[t].tabname, f->attributes.attributes_val[a].colname);
+		}
+		printf("END RECORD\n");
+
+	}
+    }
 }
 
 void set_single_file_mode(void) {

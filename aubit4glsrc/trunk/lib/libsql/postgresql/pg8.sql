@@ -348,7 +348,7 @@ declare
                                 lv_rval:=lv_rval||'.*';
                         else
                                 if lv_c='.' then
-                                        lv_rval:=lv_rval||'\\.';
+                                        lv_rval:=lv_rval||'.';
                                 else
                                         lv_rval:=lv_rval||lv_c;
                                 end if;

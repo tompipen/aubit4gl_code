@@ -1140,8 +1140,7 @@ A4GL_convlower(buff_info);
       char cn[256];
       strcpy (cn, field->name);
       A4GL_convlower (cn);
-      conv_sqldtype (field->type, field->length, field->decimals, &dtype,
-		     &prc);
+      conv_sqldtype (field->type, field->length, field->decimals, &dtype, &prc);
       if (arr1 != 0)
 	{
 	  strncpy (&arr1[cnt * (szarr1 + 1)], cn, szarr1);
@@ -1158,7 +1157,27 @@ A4GL_convlower(buff_info);
 	      break;
 
 	    case 2:
-	      SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%d(%d)", dtype, prc);
+		{
+	
+		 
+  		MYSQL_RES *r2;
+		char buff[200];
+		sprintf(buff,"SHOW COLUMNS FROM %s LIKE '%s';", buff_info, cn);
+		mysql_query(conn,buff);
+	      		//SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s", mysql_);
+  		r2=mysql_store_result(conn);
+		if (r2) {
+			MYSQL_FIELD *f;
+			MYSQL_ROW r;
+			r=mysql_fetch_row(r2);
+			A4GL_pause_execution();
+	      		SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%s", r[1]);
+  			mysql_free_result (r2);
+		} else {
+	      		SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%d(%d)", dtype, prc);
+		}
+
+		}
 	      break;
 
 	    default:
@@ -2434,8 +2453,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	      int isset = 0;
 	      MYSQL_FIELD *field;
 	      field = mysql_fetch_field_direct (prepare_meta_result, a);
-	      conv_sqldtype (field->type, field->length, field->decimals,
-			     &dtype, &prc);
+	      conv_sqldtype (field->type, field->length, field->decimals, &dtype, &prc);
 
 
 	      dtypes[a] = dtype;

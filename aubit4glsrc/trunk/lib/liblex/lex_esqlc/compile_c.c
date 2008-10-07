@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.435 2008-09-11 15:12:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.436 2008-10-07 09:27:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.435 2008-09-11 15:12:32 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.436 2008-10-07 09:27:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6457,6 +6457,13 @@ print_ident (struct expr_str *ptr)
       return;
     }
 
+  if (ptr->expr_type == ET_EXPR_SELECT_LIST_ITEM) {
+			if (ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.tabname==0) {
+				printc("\"%s\"", ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.colname);
+				return;
+			} 
+		
+  }
 
   A4GL_assertion (1, "print_ident not implemented yet");
   return;

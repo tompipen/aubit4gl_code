@@ -1,4 +1,25 @@
 ---------------------------
+Tue Oct  7 10:21:57 BST 2008
+---------------------------
+1.10RC_35 Released
+---------------------------
+	
+	Indentation...
+	
+	Add aclfgl_split_on_delimiter
+	
+	LOAD enhancement - add Filter function Eg.  load from "somefile"
+	using filter somefunc insert into sometable The filter function
+	needs to return the data to insert (one value per column) and can
+	return 0 values - in which case the line is ignored an no insert
+	performed There is a builtin CSV parser filter function available
+	(aclfgl_parse_csv) so you should be able to load a CSV file using :
+	load from "myfile.csv" using filter aclfgl_parse_csv insert into
+	blah1
+	
+	couple of minor LOAD fixups Add INNER JOIN to ANSI join syntax
+	
+---------------------------
 Wed Oct  1 10:31:45 BST 2008
 ---------------------------
 1.10RC_34 Released
