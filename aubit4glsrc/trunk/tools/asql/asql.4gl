@@ -324,9 +324,9 @@ let lv_err2=get_db_err_msg(sqlca.sqlcode)
 
 if get_exec_mode()=0 then
 	if lv_isam_err<0 then
-	error sqlca.sqlcode using "######",lv_isam_err using "######",": ",lv_err2 clipped
+		error sqlca.sqlcode using "######",lv_isam_err using "######",": ",lv_err2 clipped
 	else
-	error sqlca.sqlcode using "######",": ",lv_err2 clipped
+		error sqlca.sqlcode using "######",": ",lv_err2 clipped
 	end if
 	sleep 1 # After an error (check and report)
 end if

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.158 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.159 2008-10-07 17:44:06 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,7 @@ static void A4GL_cv_fnlist (char *source, char *target, char *name);
 //int A4GL_cv_str_to_func (char *p, int len,int warnifnotfound);
 int A4GL_strwscmp (char *a, char *b);
 //int A4GL_strcasestr (char *h, char *n);
-static void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
+//void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
 
 void A4GL_cvsql_double_single (char *sql, char *args);
 /* void A4GL_cvsql_rowid (char *sql, char *oid); */
@@ -4227,4 +4227,28 @@ A4GLSQLCV_get_forupdate (char *collist)
       strcat (buff, " NOWAIT");
     }
   return buff;
+}
+
+
+int aclfgl_aclfgl_get_sql_requirement(int n) {
+char *p;
+int b;
+	p=A4GL_char_pop();
+
+  for (b = 0; b < current_conversion_rules_cnt; b++)
+    {
+      if (current_conversion_rules[b].type == CVSQL_BUILTINSQL)
+	{
+	  if (A4GL_aubit_strcasecmp (p, current_conversion_rules[b].data.from) == 0)
+	    {
+		A4GL_push_char(current_conversion_rules[b].data.to);
+		free(p);
+		return 1;
+	    }
+	}
+    }
+A4GL_push_char(acl_getenv(p));
+
+free(p);
+return 1;
 }

@@ -72,6 +72,39 @@ char **colnames;
 int colnamesize=-1;
 extern char *LoadUnload_delim;
 
+#define CHAR_BACKSLASH '\\'
+#define CHAR_SINGLE_QUOTE '\''
+
+static char *safe_quotes(char *s) {
+static char *p=0;
+char *p2=0;
+static int plen=0;
+int a;
+int c=0;
+if(strlen(s)>plen) {
+        plen=strlen(s);
+        p=realloc(p,plen+1000);
+}
+c=0;
+for (a=0;a<strlen(s);a++) {
+        if (s[a]!=CHAR_BACKSLASH)   {p[c++]=s[a];continue;}
+        continue;
+}
+p[c]=0;
+p2=strdup(p);
+c=0;
+// First - escape any quotes
+for(a=0;a<strlen(p2);a++) {
+                if (p2[a]!=CHAR_SINGLE_QUOTE) {p[c++]=p2[a];continue;}
+                p[c++]=CHAR_BACKSLASH;
+                p[c++]=CHAR_SINGLE_QUOTE;
+}
+p[c]=0;
+free(p2);
+return p;
+}
+
+
 endcode
 
 
@@ -258,7 +291,7 @@ end function
 function load_info_indexes(qname)
   define s char(255)
   define qname char(37)   # schema + '.' + tabname
-  define tabname char(18)
+  define tabname char(128)
   define schname char(8)
   define query char(4096)
 
@@ -266,37 +299,50 @@ function load_info_indexes(qname)
   define idxcols    char(254)
   define idxtype    char(8)
 
+define lv_s char(512)
+
 
     initialize query to null
-    let query = fgl_getenv("A4GL_ASQL_SELECT_INDEXES");
+    let query = aclfgl_get_sql_requirement("ASQL_SELECT_INDEXES");
 
-    let s = "Index Name"
-    let s[20,28] = "Type"
-    let s[30,80] = "Columns"
 
-    CALL add_to_display_file(s)
+	if query is null or query= " " then
+		
+		let sqlca.sqlcode=-1
+		let sqlca.sqlerrm="Unable to get index query"
+		return 0
+	end if
+
 
     call before_dot(qname) returning schname;
     call after_dot (qname) returning tabname;
-
+code
+{
+	char buff[2000];
+	A4GL_trim(tabname);
+	sprintf(buff, "%s",tabname);
+	A4GL_cvsql_replace_str(query,"%table",buff);
+	sprintf(buff, "%s", schname);
+	A4GL_cvsql_replace_str(query,"%schema",buff);
+}
+endcode
+#display query
     prepare iidx from query
+	if sqlca.sqlcode<0 then
+		let sqlca.sqlcode=-1
+		let sqlca.sqlerrm="Unable to prepare get index query"
+		#error "Unable to prepare get index query"
+		return 0
+	end if
     declare cidx cursor for iidx
-    foreach cidx using schname, tabname into idxname, idxcols, idxtype 
-        let s = ""
-        let s = idxname
-        let s[20,28] = idxtype
-        let s[30,79] = idxcols[1,50]
-        CALL add_to_display_file(s)
-        if (length(idxcols) > 50) then
-            let s = ""
-            let s[30,79] = idxcols[51, 100]
-            CALL add_to_display_file(s)
-        end if
-        if (length(idxcols) > 100) then
-            let s = ""
-            let s[30,79] = idxcols[101, 150]
-            CALL add_to_display_file(s)
-        end if
+	if sqlca.sqlcode<0 then
+		let sqlca.sqlcode=-1
+		let sqlca.sqlerrm="Unable to declare get index query"
+		return 0
+	end if
+
+    foreach cidx into lv_s 
+            CALL add_to_display_file(lv_s clipped)
     end foreach
 
     return 1
@@ -545,12 +591,12 @@ p=s;
 *err_at_col=1;
 free_bind();
   if (type >= '1' && type <= '9')
-    return 255;
+    return 258;
 
 A4GL_assertion(s==0,"No query");
 //if (s==0) return -1;
    if (strncasecmp(s,"database",8)==0) { return 1; }
-   if (type>='1'&&type<='9') return 255;
+   if (type>='1'&&type<='9') return 258;
    qry_type=0;
    if (type!='S'&&type!='s') qry_type=257;
 

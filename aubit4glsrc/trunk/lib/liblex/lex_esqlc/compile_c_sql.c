@@ -1243,7 +1243,7 @@ int ni;
   //int block_id;
   struct struct_open_cursor_cmd open_cursor;
 
-	open_cursor.connid=NULL;
+	open_cursor.connid=cmd_data->connid;
 	open_cursor.cursorname=cmd_data->cursorname;
 	open_cursor.using_bind=cmd_data->inputvals;
 
@@ -1252,7 +1252,6 @@ tmp_ccnt++;
   printc("int _cursoropen=0;");
   printc("int _fetcherr=0;");
   printc("int _fetchstatus=0;");
-
 
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
   print_open_cursor_cmd(&open_cursor);
@@ -1263,8 +1262,10 @@ tmp_ccnt++;
 
   printc("_cursoropen=1;");
   printc ("while (1) {\n");
+  printc("int _dobreak=0;\n");
   tmp_ccnt++;
 
+	print_use_session(cmd_data->connid);
 	if (cmd_data->outputvals && cmd_data->outputvals->list.list_len) {
   		ni = print_bind_definition_g (cmd_data->outputvals,'o');
   		print_bind_set_value_g(cmd_data->outputvals,'o');
@@ -1273,7 +1274,12 @@ tmp_ccnt++;
   		printc ("A4GLSQL_fetch_cursor(%s,%d,1,0,NULL); /* Foreach next */\n", get_ident_as_string(cmd_data->cursorname) , FETCH_RELATIVE, ni);
 	}
 
-  printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
+  printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) {_dobreak++;}");
+	print_undo_use(cmd_data->connid);
+	printc("if (_dobreak) {");
+	printc("break;\n");
+  	printc("}");
+
 
   dump_commands(cmd_data->foreach_commands);
 	printc("CONTINUE_BLOCK_%d:;",cmd_data->block_id );
@@ -1283,9 +1289,11 @@ tmp_ccnt--;
   printc("END_BLOCK_%d:;",cmd_data->block_id );
   printc("if (_cursoropen) {");
   tmp_ccnt++;
+	print_use_session(cmd_data->connid);
   printc ("A4GLSQL_close_cursor(%s);\n",  get_ident_as_string(cmd_data->cursorname)); 
   printc("if (a4gl_status == 0) { if (_fetcherr) {A4GLSQL_set_status(_fetcherr,1);}}");
   printc("if (a4gl_status == 100) { if (_fetcherr) {a4gl_sqlca.sqlcode = a4gl_status=_fetcherr;} else {a4gl_sqlca.sqlcode = a4gl_status = 0; }}");
+	print_undo_use(cmd_data->connid);
 tmp_ccnt--;
   printc("}");
 
@@ -1294,7 +1302,6 @@ tmp_ccnt--;
   printcomment ("/* end of foreach while loop */\n");
 
   print_copy_status_with_sql (0);
-  print_undo_use(cmd_data->connid);
   return 1;
 }
 

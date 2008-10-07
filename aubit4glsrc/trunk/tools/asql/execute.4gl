@@ -457,11 +457,12 @@ end_query: ;
 		int ln;
 		ln=list[a].lineno;
 		c=err_at_col;
-		
-		for (aa=0;aa<strlen(list[a].stmt) && aa<err_at_col;aa++) {
+		if (list[a].stmt) {
+			for (aa=0;aa<strlen(list[a].stmt) && aa<err_at_col;aa++) {
 			if (list[a].stmt[aa]=='\n')  {
 				ln++;
 				c=err_at_col-(aa+1);
+			}
 			}
 		}
 		rewrite_query_input(ln,c, get_qry_msg(qry_type,raffected));
@@ -704,7 +705,7 @@ return a;
 #define MAX_QRY  80
 
 
-char *qry_strings[258]={
+char *qry_strings[259]={
 	"%d Rows found", // 0
 	"Database selected",
 	"%d Rows found",
@@ -820,6 +821,7 @@ if (set_unl_msg) {
 	qry_strings[255]="%d row(s) unloaded";
 	qry_strings[256]="%d row(s) loaded";
 	qry_strings[257]="Operation Succeeded (%d) rows affected";
+	qry_strings[258]="Info";
 	set_unl_msg=0;
 }
 
@@ -828,7 +830,7 @@ if (get_sqlcode()>=0) {
 	if ((qry_type<=MAX_QRY || qry_type>=255)  && qry_strings[qry_type]!=0) {
 		sprintf(buff,qry_strings[qry_type],n);
 	} else {
-		sprintf(buff,"Operation Succeeded (%d) rows affected",n);
+		sprintf(buff,"Operation Succeeded (%d) rows affected %d %d %s",n, MAX_QRY, qry_type, qry_strings[qry_type]);
 	}
 } else {
 	char *ptr;

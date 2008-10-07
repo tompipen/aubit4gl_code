@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.332 2008-10-03 09:21:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.333 2008-10-07 17:44:06 mikeaubury Exp $
 #
 */
 
@@ -1302,6 +1302,7 @@ int aclfgl_fgl_dialog_setcursor(int n) ;
 int aclfgl_fgl_dialog_getcursor(int n) ;
 int aclfgl_fgl_username(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
+int aclfgl_aclfgl_get_sql_requirement(int n);
 int aclfgl_fgl_round(int nargs);
 	int A4GL_set_a4gl_sqlca_errd(int n,int v);
 	int A4GL_set_a4gl_sqlca_sqlstate(char *s);
@@ -2798,7 +2799,7 @@ void A4GL_set_stderr(FILE *errfile);
 int aclfgl_aclfgl_parse_csv(int nparam);
 int aclfgl_aclfgl_split_on_delimiter (int n);
 int A4GL_has_associated_mem (void *orig,void *assoc);
-
+void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 
