@@ -204,7 +204,7 @@ niy_dtype (int dtype)
 
 /*****************************************************************************/
 static void
-conv_sqldtype (int dt, int len, int prec, int *fgldtype, int *fglprc)
+conv_sqldtype (int dt, int len, int prec, int flags, int *fgldtype, int *fglprc)
 {
 int nd;
 int np;
@@ -263,7 +263,11 @@ int np;
       *fglprc = 0;
       break;
     case MYSQL_TYPE_LONGLONG:
-      *fgldtype = DTYPE_FLOAT;
+	if (IS_PRI_KEY(flags)) {
+      		*fgldtype = DTYPE_SERIAL;
+	} else {
+      		*fgldtype = DTYPE_INT;
+	}
       *fglprc = 0;
       break;
     case MYSQL_TYPE_DATE:
@@ -643,6 +647,10 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   has_connect = 1;
   isconnected = 1;
   strcpy (curr_dbname, dbname);
+
+  A4GLSQLCV_load_convert ("INFORMIX", A4GLSQLLIB_A4GLSQL_dbms_dialect());
+
+
   return 0;
 
 }
@@ -785,7 +793,7 @@ A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
   // Now - which part of 'field' do we want...
   //
   //
-  conv_sqldtype (field->type, field->length, field->decimals, &dtype, &prc);
+  conv_sqldtype (field->type, field->length, field->decimals, field->flags, &dtype, &prc);
   switch (type)
     {
     case 0:
@@ -922,6 +930,9 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
   MYSQL_FIELD *field;
   int cnt;
   char buff[256];
+
+
+A4GL_debug("get_column");
   if (strlen (curr_dbname) == 0)
     {
       return 0;
@@ -954,8 +965,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       strcpy (cn, field->name);
       A4GL_convlower (cn);
       cnt++;
-      conv_sqldtype (field->type, field->length, field->decimals, &dtype,
-		     &prc);
+      conv_sqldtype (field->type, field->length, field->decimals, field->flags, &dtype, &prc);
       A4GL_AddColumn (GetColTab, cnt, cn, dtype, prc);
 
     }
@@ -975,6 +985,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
   char buff[200];
   GetColNo++;
+A4GL_debug("next_column");
 
   SPRINTF2 (buff, "%s_%d", GetColTab, GetColNo);
   if (A4GL_has_pointer (buff, CACHE_COLUMN))
@@ -1124,11 +1135,16 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
   char buff_info[2000];
 
   strcpy(buff_info,info);
-A4GL_convlower(buff_info);
+A4GL_debug("Get columns for %s", buff_info);
+
 
   result = mysql_list_fields (conn, buff_info, NULL);
   if (result==0) {
-	return 0;
+  	A4GL_convlower(buff_info);
+  	result = mysql_list_fields (conn, buff_info, NULL);
+  	if (result==0) {
+		return 0;
+	}
   }
 
   while ((field = mysql_fetch_field (result)))
@@ -1140,7 +1156,7 @@ A4GL_convlower(buff_info);
       char cn[256];
       strcpy (cn, field->name);
       A4GL_convlower (cn);
-      conv_sqldtype (field->type, field->length, field->decimals, &dtype, &prc);
+      conv_sqldtype (field->type, field->length, field->decimals, field->flags, &dtype, &prc);
       if (arr1 != 0)
 	{
 	  strncpy (&arr1[cnt * (szarr1 + 1)], cn, szarr1);
@@ -1170,7 +1186,6 @@ A4GL_convlower(buff_info);
 			MYSQL_FIELD *f;
 			MYSQL_ROW r;
 			r=mysql_fetch_row(r2);
-			A4GL_pause_execution();
 	      		SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%s", r[1]);
   			mysql_free_result (r2);
 		} else {
@@ -2453,7 +2468,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	      int isset = 0;
 	      MYSQL_FIELD *field;
 	      field = mysql_fetch_field_direct (prepare_meta_result, a);
-	      conv_sqldtype (field->type, field->length, field->decimals, &dtype, &prc);
+	      conv_sqldtype (field->type, field->length, field->decimals, field->flags, &dtype, &prc);
 
 
 	      dtypes[a] = dtype;
