@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.137 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.138 2008-10-09 17:06:25 mikeaubury Exp $
 #
 */
 
@@ -1060,6 +1060,7 @@ A4GL_core_dump (void)
       PRINTF ("And enclose the last 100 lines from the resultant debug.out file\n");
       PRINTF ("with your bug log.\n");
       PRINTF ("\n");
+      PRINTF ("%s\n", A4GLSTK_lastSeenLine());
       PRINTF ("%s\n", A4GLSTK_getStackTrace ());
 
 

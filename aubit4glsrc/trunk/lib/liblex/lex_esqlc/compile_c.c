@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.436 2008-10-07 09:27:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.437 2008-10-09 17:06:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.436 2008-10-07 09:27:39 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.437 2008-10-09 17:06:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -75,6 +75,7 @@
 =====================================================================
 */
 
+int do_subscript_range_check=-1;
 #define FGL_PLUS_PLUS
 #define set_nonewlines() set_nonewlines_full(__LINE__)
 //int get_ccnt(void);
@@ -5929,18 +5930,73 @@ struct variable_usage *u=0;
 }
 
 
-static char *get_subscript_as_string(expr_str *u) {
+
+//struct variable_usage *sgs_top=NULL;
+
+static struct variable *set_get_subscript_as_string_top(struct variable_usage *u) {
+	struct variable_usage t;
+	struct variable *sgs_topvar=NULL;
+	//sgs_top=u;
+	memcpy(&t,u,sizeof(t));
+	t.next=0;
+	if (u->scope!=0) {
+		sgs_topvar=local_find_variable_from_usage(&t);
+	}
+	return sgs_topvar;
+}
+
+
+
+static int subscript_range_check() {
+if (do_subscript_range_check>=0) return do_subscript_range_check;
+
+if (A4GL_isno(acl_getenv("FGLCRANGECHK"))) {
+	do_subscript_range_check=0;
+} else {
+	do_subscript_range_check=1;
+}
+return do_subscript_range_check;
+}
+
+static struct variable * set_get_subscript_as_string_next(struct variable *sgs_topvar, struct variable_usage *u) {
+	if (subscript_range_check()==0) return NULL;
+	if (sgs_topvar==NULL) return NULL;
+
+	if ( sgs_topvar->var_data.variable_type == VARIABLE_TYPE_RECORD) {
+		sgs_topvar=sgs_topvar->var_data.variable_data_u.v_record.variables.variables_val[u->variable_id];
+	} else {
+		sgs_topvar=NULL;
+	}
+	return sgs_topvar;
+}
+
+static char *get_subscript_as_string_with_check(struct variable *sgs_topvar, int a, expr_str *u) {
 static char buff[256];
 char smbuff[256];
+	if (subscript_range_check()==0) sgs_topvar=NULL;
 
-	if (u->expr_type==ET_EXPR_LITERAL_LONG) {
+
+	if (sgs_topvar)  {
+		int upperbound;
+		upperbound=sgs_topvar->arr_subscripts.arr_subscripts_val[a];
+		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
+			// We can make the 'long's look a little neater as we can subtract the 1..
+			sprintf(smbuff, "A4GL_bounds_check(%ld,%ld)", u->expr_str_u.expr_long-1,upperbound);
+		} else {
+			sprintf(smbuff, "(A4GL_bounds_check(%s-1,%ld))", local_expr_as_string(u),upperbound);
+		}
+	} else {
+		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
 			// We can make the 'long's look a little neater as we can subtract the 1..
 			sprintf(smbuff, "%ld", u->expr_str_u.expr_long-1);
-	} else {
-			sprintf(smbuff, "(%s)-1", local_expr_as_string(u));
+		} else {
+			sprintf(smbuff, "(%s-1", local_expr_as_string(u));
+		}
 	}
-strcpy(buff,smbuff);
-return buff;
+
+
+	strcpy(buff,smbuff);
+	return buff;
 }
 
 
@@ -5953,6 +6009,7 @@ print_pop_usage (expr_str * v)
   struct variable_usage *u;
   expr_str *substring_start;
   expr_str *substring_end;
+struct variable *sgs_topvar;
 
   u = v->expr_str_u.expr_variable_usage;
   A4GL_assertion (get_binding_dtype (v) == -1, "Usage not ensured...");
@@ -5969,10 +6026,10 @@ print_pop_usage (expr_str * v)
     }
 
 
+	sgs_topvar=set_get_subscript_as_string_top(u);
 
       while (u)
 	{
-
 
   if (u->subscripts.subscripts_len && u->subscripts.subscripts_val[0]->expr_type == ET_EXPR_ASSOC)
     {
@@ -5990,7 +6047,7 @@ print_pop_usage (expr_str * v)
 		{
 		  if (a)
 		    printc ("][");
-		  printc ("%s", get_subscript_as_string (u->subscripts.subscripts_val[a]));
+		  printc ("%s", get_subscript_as_string_with_check (sgs_topvar, a, u->subscripts.subscripts_val[a]));
 		  /*
 		     if (u->subscripts.subscripts_val[a]->expr_type==ET_EXPR_LITERAL_LONG) {      
 		     // We can make the 'long's look a little neater as we can subtract the 1..
@@ -6007,6 +6064,7 @@ print_pop_usage (expr_str * v)
 	    break;
 	  printc (".");
 	  u = u->next;
+		sgs_topvar=set_get_subscript_as_string_next(sgs_topvar, u);
 	}
 
       if (substring)
@@ -6064,6 +6122,7 @@ struct variable_usage *u=0;
 int substring=0;
 expr_str *substring_start;
 expr_str *substring_end;
+struct variable *sgs_topvar;
 	set_nonewlines();
 
 	if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
@@ -6084,6 +6143,7 @@ expr_str *substring_end;
 		
 	}
 
+	sgs_topvar=set_get_subscript_as_string_top(u);
 	while (u)  {
   		if (u->subscripts.subscripts_len && u->subscripts.subscripts_val[0]->expr_type == ET_EXPR_ASSOC)
     		{
@@ -6097,7 +6157,7 @@ expr_str *substring_end;
 			printc("[");
 			for (a=0;a<u->subscripts.subscripts_len;a++) { 
 				if (a) printc("][");
-				printc("%s", get_subscript_as_string(u->subscripts.subscripts_val[a]));
+				printc("%s", get_subscript_as_string_with_check(sgs_topvar, a,u->subscripts.subscripts_val[a]));
 				/*
 				if (u->subscripts.subscripts_val[a]->expr_type==ET_EXPR_LITERAL_LONG) {
 					// We can make the 'long's look a little neater as we can subtract the 1..
@@ -6113,6 +6173,7 @@ expr_str *substring_end;
 		if(u->next==0) break;
 		printc(".");
 		u=u->next;
+		sgs_topvar=set_get_subscript_as_string_next(sgs_topvar, u);
 	}
 
 	if (substring && 0) {
@@ -6229,7 +6290,8 @@ expr_str *substring_end;
 	  			 printc (",0x%x);",get_binding_dtype(ptr) );
 		}
 	} else {
-	
+		struct variable *sgs_topvar;
+		sgs_topvar=set_get_subscript_as_string_top(u);
 		printc("A4GL_push_substr(");
 		while (u)  {
 			printc("%s",u->variable_name);
@@ -6238,7 +6300,7 @@ expr_str *substring_end;
 				printc("[");
 				for (a=0;a<u->subscripts.subscripts_len;a++) { 
 					if (a) printc("][");
-					printc("%s", get_subscript_as_string(u->subscripts.subscripts_val[a]));
+					printc("%s", get_subscript_as_string_with_check(sgs_topvar, a, u->subscripts.subscripts_val[a]));
 					//printc("(%s)-1", local_expr_as_string(u->subscripts.subscripts_val[a]));
 				}
 				printc("]");
@@ -6246,6 +6308,7 @@ expr_str *substring_end;
 			if(u->next==0) break;
 			printc(".");
 			u=u->next;
+		sgs_topvar=set_get_subscript_as_string_next(sgs_topvar, u);
 		}
 
 		if (substring_end==0) {
@@ -6268,6 +6331,7 @@ int substring=0;
 char buff[2000];
 expr_str *substring_start;
 expr_str *substring_end;
+struct variable *sgs_topvar;
 		substring=is_substring_variable_usage(u,&substring_start, &substring_end);
 
 		if (substring) {
@@ -6276,6 +6340,7 @@ expr_str *substring_end;
 		}
 
 		strcpy(buff,"");
+		sgs_topvar=set_get_subscript_as_string_top(u);
 		while (u)  {
 			strcat(buff,u->variable_name);
 			if (u->subscripts.subscripts_len) {
@@ -6283,7 +6348,7 @@ expr_str *substring_end;
 				strcat(buff, "[");
 				for (a=0;a<u->subscripts.subscripts_len;a++) { 
 					if (a) strcat(buff, "][");
-					strcat(buff,  get_subscript_as_string(u->subscripts.subscripts_val[a]));
+					strcat(buff,  get_subscript_as_string_with_check(sgs_topvar, a, u->subscripts.subscripts_val[a]));
 					//strcat(buff, local_expr_as_string(u->subscripts.subscripts_val[a]));
 					//strcat(buff, "-1");
 				}
@@ -6292,6 +6357,7 @@ expr_str *substring_end;
 			if(u->next==0) break;
 			strcat(buff,".");
 			u=u->next;
+		sgs_topvar=set_get_subscript_as_string_next(sgs_topvar, u);
 		}
 		strcpy(rbuff,buff);
 	return rbuff;

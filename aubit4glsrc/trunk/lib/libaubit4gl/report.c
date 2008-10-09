@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.166 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: report.c,v 1.167 2008-10-09 17:06:25 mikeaubury Exp $
 #
 */
 
@@ -2953,5 +2953,16 @@ A4GL_get_pdf_encoding (void)
 {
   return pdf_encoding;
 }
+
+
+/*
+DO NOT REMOVE THESE COMMENTS -  this sets up the error codes for some reporting functions
+There is a script which looks for a4gl_exitwith's in the code - and adds them to our error numbers
+
+A4GL_exitwith("A report cannot accept data as it has not been started");
+A4GL_exitwith("You cannot FINISH REPORT - becasue the report has not been started");
+*/
+
+
 
 /* ============================= EOF ================================ */

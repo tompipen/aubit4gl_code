@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.47 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: error.c,v 1.48 2008-10-09 17:06:25 mikeaubury Exp $
 #
 */
 
@@ -165,6 +165,8 @@ A4GL_exitwith (char *s)
 //    A4GL_fgl_die (1);
 #endif
 }
+
+
 
 /**
  *
@@ -310,5 +312,6 @@ aclfgli_get_err_flg (void)
 {
   return int_err_flg;
 }
+
 
 /* ======================== EOF ======================= */

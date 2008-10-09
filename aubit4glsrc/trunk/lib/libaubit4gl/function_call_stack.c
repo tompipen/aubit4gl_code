@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.33 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.34 2008-10-09 17:06:25 mikeaubury Exp $
 #*/
 
 /**
@@ -137,6 +137,7 @@ A4GLSTK_initFunctionCallStack (void)
 void
 A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber)
 {
+	A4GL_debug("A4GLSTK_setCurrentLine : %s %d\n", moduleName,lineNumber);
   currentModuleName = moduleName;
   currentFglLineNumber = lineNumber;
 }

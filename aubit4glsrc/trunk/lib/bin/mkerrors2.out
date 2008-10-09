@@ -343,3 +343,5 @@
 347|Unable to generate QR code
 348|Error in getting number of columns for load (does the table '%s' exist?)
 350|Cant do a load within a load...
+352|You cannot FINISH REPORT - becasue the report has not been started
+353|A report cannot accept data as it has not been started

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.209 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: stack.c,v 1.210 2008-10-09 17:06:25 mikeaubury Exp $
 #
 */
 
@@ -4099,13 +4099,29 @@ A4GL_get_single_int_returned_from_call (int n)
 }
 
 
-void
+long
 A4GL_get_length (char *s)
 {
   int n;
   A4GL_push_char (s);
   aclfgl_length (1);
   n = A4GL_pop_long ();
+
+  return n;
+}
+
+
+long A4GL_bounds_check( long n,long maxbound) {
+if (maxbound==-1) {
+		// Its a dynamic array - ignore it for now...
+		 	return n;
+		 }
+if (n<0 || n>=maxbound) {
+
+	A4GL_assertion(1,"Your program has accessed an array outside of its bounds and must be stopped");
+	return 0;
+}
+return n;
 }
 
 // ================================ EOF ================================

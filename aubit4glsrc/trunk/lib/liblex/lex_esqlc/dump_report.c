@@ -380,7 +380,7 @@ print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_ty
 
 
   printc ("if (acl_ctrl==REPORT_FINISH && _started==0) {");
-  printc ("    A4GLSQL_set_status(-5555,0);\n");
+  printc ("    A4GL_exitwith(\"You cannot FINISH REPORT - becasue the report has not been started\");");
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (acl_ctrl==REPORT_FINISH && _started) {%s(0,REPORT_LASTDATA);return;}\n", curr_rep_name);
@@ -924,7 +924,7 @@ report_cnt++;
 
 
   printc ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
-  printc ("    A4GLSQL_set_status(-5555,0);\n");
+  printc ("    A4GL_exitwith(\"A report cannot accept data as it has not been started\");");
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (_nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);

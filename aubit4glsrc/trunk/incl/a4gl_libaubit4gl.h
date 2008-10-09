@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.333 2008-10-07 17:44:06 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.334 2008-10-09 17:06:25 mikeaubury Exp $
 #
 */
 
@@ -2800,6 +2800,10 @@ int aclfgl_aclfgl_parse_csv(int nparam);
 int aclfgl_aclfgl_split_on_delimiter (int n);
 int A4GL_has_associated_mem (void *orig,void *assoc);
 void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
+long A4GL_bounds_check(long a,long maxbound); /* Check array bounds in a 4gl call */
+
+long A4GL_get_length (char *s);
+
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.154 2008-07-23 13:00:00 mikeaubury Exp $
+# $Id: resource.c,v 1.155 2008-10-09 17:06:25 mikeaubury Exp $
 #
 */
 
@@ -356,6 +356,7 @@ struct str_resource builtin_resource[] = {
 #endif
   {"A4GL_C_COMP", "gcc"},
   {"A4GL_RDYNAMIC", "-rdynamic"},
+  {"FGLCRANGECHK","Y"},
   
 
   /* 
