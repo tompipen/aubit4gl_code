@@ -1,0 +1,8 @@
+if 4glc prog.4gl
+then
+	exit 1
+else
+	echo "Program failed to compile - as we wanted"
+	exit 0
+fi
+
