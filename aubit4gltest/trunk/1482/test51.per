@@ -1,0 +1,24 @@
+database formonly
+screen
+{
+============================================================================
+                        Created:[a         ]
+                           Name:[c                             ]
+
+
+
+}
+
+attributes
+
+a = formonly.created type date, reverse, autonext, format = "mm/dd/yyyy",
+    comments = "Enter the date contraints.";
+c = formonly.name type char, reverse, autonext, upshift,
+    comments = "Enter the desired DB(s).";
+
+instructions
+
+delimiters "  "
+
+end
+

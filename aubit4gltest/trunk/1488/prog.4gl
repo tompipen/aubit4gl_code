@@ -7,6 +7,9 @@ define c integer
 define d1 integer
 define d2 integer
 
+let c=1
+let d1=1
+let d2=1
 let rec1[c].*=rec2[d1,d2].*
 
 end main

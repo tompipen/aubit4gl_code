@@ -1,4 +1,4 @@
-database cassens
+database test1
 
 globals 
  define 
