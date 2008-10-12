@@ -2904,7 +2904,6 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
 		  printc ("\"\"");
 		}
 	      printc (",");
-
 	      if (evt->evt_data.event_data_u.mnoption->keys)
 		{
 		  if (evt->evt_data.event_data_u.mnoption->keys->str_list_entry.str_list_entry_len)

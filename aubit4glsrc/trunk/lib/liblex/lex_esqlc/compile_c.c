@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.437 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.438 2008-10-12 12:01:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.437 2008-10-09 17:06:25 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.438 2008-10-12 12:01:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -187,7 +187,7 @@ int LEX_initlib(void) ;
 char *get_dbg_variable_name(expr_str *v) ;
 //expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
 //static void order_by_report_stack (int report_stack_cnt);
-static void A4GL_internal_lex_printc (char *fmt, va_list * ap);
+static void A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap);
 //void A4GL_internal_lex_printh (char *fmt, va_list * ap);
 //void A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
 //void print_rep_ret (int report_cnt,int addit);
@@ -948,7 +948,11 @@ printc (char *fmt, ...)
   va_list ap;
   /*A4GL_debug("via printc (a) in lib\n");*/
   va_start (ap, fmt);
-  A4GL_internal_lex_printc (fmt, &ap);
+  if (strcmp(fmt,"#")==0) {
+  	A4GL_internal_lex_printc (fmt, 1, &ap);
+  } else {
+  	A4GL_internal_lex_printc (fmt, 0, &ap);
+  }
 }
 
 
@@ -956,7 +960,7 @@ printc (char *fmt, ...)
 
 
 static void
-A4GL_internal_lex_printc (char *fmt, va_list * ap)
+A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap)
 {
   static char buff[40960] = "ERROR-empty init";
   //static char buff2[40960];
@@ -981,7 +985,7 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
     }
 
 
-  if (strcmp (buff, "#") == 0)
+  if (isjustblankline)
     {
       FPRINTF (outfile, "\n");
   if (A4GL_isyes (acl_getenv ("INCLINES"))) {
