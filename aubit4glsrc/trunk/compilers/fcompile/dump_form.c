@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.19 2008-10-07 09:27:39 mikeaubury Exp $
+# $Id: dump_form.c,v 1.20 2008-10-13 12:12:52 mikeaubury Exp $
 #*/
 
 /**
@@ -55,6 +55,8 @@ int single_file_mode=0;
 =====================================================================
 */
 
+char *columns_codes[1000]; // for generate-records
+int columns_codes_cnt=0; // for generate-records
 
 char *desc_str[] = {
   "INCLUDE",
@@ -133,7 +135,6 @@ int max_y[MAXSCREENS];
 
 void dump_commands(struct_form *f, FILE *fout, int lvl, struct s_at_block *cmds) ;
 char *get_field_name(struct_form *f, u_expression *field_tag_u, int col_only) ;
-static void dump_attributes (FILE *fout, struct_form * f);
 static void dump_metrics (struct_form * f);
 static void dump_fields_desc (struct_form * f);
 static void dump_records (struct_form * f);
@@ -530,7 +531,6 @@ struct s_bef_aft *ba;
 			break;
 	}
 }
-
 
 
 /**
@@ -1614,6 +1614,23 @@ sprintf(buff," TYPE(%d,%d)",type,n);
 return buff;
 }
 
+char *decode_dtype_formonly_for_4gl(int type, int n) {
+static char buff[2000];
+if ((type & DTYPE_MASK)==DTYPE_CHAR) { if (n==0) n=80;}
+
+if ((type & DTYPE_MASK)==DTYPE_CHAR) {sprintf(buff,"CHAR(%d)",n); return buff;} 
+if ((type & DTYPE_MASK)==DTYPE_SMINT) return " SMALLINT";
+if ((type & DTYPE_MASK)==DTYPE_INT) return " INTEGER";
+if ((type & DTYPE_MASK)==DTYPE_SERIAL) return " INTEGER";
+if ((type & DTYPE_MASK)==DTYPE_DATE) return " DATE";
+if ((type & DTYPE_MASK)==DTYPE_FLOAT) return " FLOAT";
+if ((type & DTYPE_MASK)==DTYPE_SMFLOAT) return " SMALLFLOAT";
+if ((type & DTYPE_MASK)==DTYPE_MONEY) return " MONEY";
+if ((type & DTYPE_MASK)==DTYPE_DECIMAL) return " DECIMAL";
+
+sprintf(buff," TYPE(%d,%d)",type,n);
+return buff;
+}
 /**
  * Make a text A4GL_dump of the form attributes
  *
@@ -2413,37 +2430,299 @@ void dump_common_4gl(void) {
 }
 
 
-void dump_record_4gl( struct struct_form *f) {
+
+// Get the column name from something that has tab.col
+// or just the column name when something like col
+char *cname(char *s) {
+char *ptr;
+ptr=strchr(s,'.');
+if (ptr) return ptr+1;
+return s;
+}
+
+int has_column_code(char *s, char code) {
+char buff[200];
 int a;
-int t;
-//printf("Here %d\n", f->tables.tables_len);
-    for (t=0;t<f->tables.tables_len;t++) {
-	int printit=0;
-    	for (a = 0; a < f->attributes.attributes_len; a++) {
-			//printf("%s %s\n", f->attributes.attributes_val[a].tabname,f->tables.tables_val[t].alias);
-			if (strcmp(f->attributes.attributes_val[a].tabname,f->tables.tables_val[t].alias)==0) {
-				printit=1;
-			}
-			if (strcmp(f->attributes.attributes_val[a].tabname,f->tables.tables_val[t].tabname)==0) {
-				printit=1;
-			}
+
+sprintf(buff,"%s",s);
+A4GL_trim(buff);
+strcat(buff,"\t");
+for (a=0;a<columns_codes_cnt;a++) {
+	if (strncmp(columns_codes[a],buff,strlen(buff))==0) {
+		char *ptr;
+		// found the column...
+		ptr=columns_codes[a];
+		// now - increment past the column name - so we're left with the flags
+		ptr+=strlen(buff);
+		if (strchr(ptr,code)) return 1;
+
+		// code doesn't exist...
+		return 0;
 	}
 	
-	if (printit) {
-		if (strlen(f->tables.tables_val[t].alias)) {
-			printf("DEFINE mv_%s RECORD\n", f->tables.tables_val[t].alias);
-		} else {
-			printf("DEFINE mv_%s RECORD\n", f->tables.tables_val[t].tabname);
-		}
+}
+return 0;
+}
 
-    		for (a = 0; a < f->attributes.attributes_len; a++) {
-			printf("    %s LIKE %s.%s\n", f->attributes.attributes_val[a].colname, f->tables.tables_val[t].tabname, f->attributes.attributes_val[a].colname);
+
+
+void
+dump_record_4gl (struct struct_form *f,char *module_in)
+{
+int a;
+FILE *formdata;
+int t;
+char *ptr;
+t = -1;
+char module[2000];
+char *columns[1000];
+char buff[1024];
+int columns_cnt=0;
+strcpy(module,module_in);
+ ptr=strchr(module,'.');
+
+formdata=fopen("formgendata","r");
+if (formdata==NULL) {
+	printf("Unable to open formgendata\n");
+	printf("This should contain a list of table.column<tab>[VZ]\n");
+	printf("if the line contains 'V' then a validation          will be emitted\n");
+	printf("if the line contains 'Z' then a zoom lookup         will be emitted\n");
+	printf("if the line contains 'F' then a foreign key lokup   will be emitted\n");
+	printf("eg.\n");
+	printf("customer.cust_flag	ZV\n");
+	printf("customer.cust_zip	V\n");
+	exit(2);
+}
+
+while (1) {
+	fgets(buff,sizeof(buff),formdata);
+	if (feof(formdata)) break;
+	A4GL_trim_nl(buff);
+	columns_codes[columns_codes_cnt++]=strdup(buff);
+}
+
+printf("GLOBALS \"globals.4gl\"\n");
+if (ptr) {
+		*ptr=0;
+	}
+  while (1)
+    {
+      char *tname = "";
+      int printit = 0;
+      for (a = 0; a < f->attributes.attributes_len; a++)
+	{
+
+	  if (t > -1)
+	    {
+	      if (strcmp (f->attributes.attributes_val[a].tabname, f->tables.tables_val[t].alias) == 0)
+		{
+		  printit = 1;
+		  tname = f->tables.tables_val[t].alias;
 		}
-		printf("END RECORD\n");
+	      if (strcmp (f->attributes.attributes_val[a].tabname, f->tables.tables_val[t].tabname) == 0)
+		{
+		  printit = 1;
+		  tname = f->tables.tables_val[t].tabname;
+		}
+	    }
+	  else
+	    {
+	      if (strcmp (f->attributes.attributes_val[a].tabname, "formonly") == 0)
+		{
+		  printit = 1;
+		  tname = "formonly";
+		}
+	    }
+	}
+
+      if (printit)
+	{
+	  int printed=0;
+	  printf ("define mv_%s record\n", tname);
+	  for (a = 0; a < f->attributes.attributes_len; a++)
+	    {
+		if (strcmp(tname, f->attributes.attributes_val[a].tabname)==0) {
+	      if (strcmp (tname, "formonly") == 0)
+		{
+			char buff[200];
+		if (printed) printf(",\n"); else printed++;
+		  printf ("    %s %s", f->attributes.attributes_val[a].colname,
+			  decode_dtype_formonly_for_4gl (f->attributes.attributes_val[a].datatype & DTYPE_MASK, f->attributes.attributes_val[a].dtype_size));
+			sprintf(buff,"formonly.%s", f->attributes.attributes_val[a].colname);
+			columns[columns_cnt++]=strdup(buff);
+		}
+	      else
+		{
+			char buff[200];
+		if (printed) printf(",\n"); else printed++;
+		  printf ("    %s like %s.%s", f->attributes.attributes_val[a].colname, tname,
+			  f->attributes.attributes_val[a].colname);
+			sprintf(buff,"%s.%s", tname, f->attributes.attributes_val[a].colname);
+			columns[columns_cnt++]=strdup(buff);
+		}
 
 	}
+	    }
+		printf("\n");
+	  printf ("end record\n");
+	}
+      t++;
+      if (t >= f->tables.tables_len)
+	break;
     }
+printf("\n\n\n");
+
+printf("function copy_in_%s()\n",module);
+	for (a=0;a<columns_cnt;a++) {
+		if (strstr(columns[a],"formonly")) continue;
+	      printf ("    let mv_%s=gv_%s\n", columns[a], columns[a]);
+	    }
+printf("end function\n");
+
+
+printf("\n\n\n");
+printf("function copy_out_%s()\n",module);
+	for (a=0;a<columns_cnt;a++) {
+		if (strstr(columns[a],"formonly")) continue;
+	      printf ("    let gv_%s=mv_%s\n", columns[a], columns[a]);
+	    }
+printf("end function\n");
+printf("\n\n\n");
+
+
+
+
+printf("function display_%s()\n",module);
+printf("   call copy_in_%s()\n",module);
+for (a=0;a<columns_cnt;a++) {
+		printf("   display by name mv_%s\n", columns[a]);
 }
+printf("   call display_fk_%s()\n",module);
+printf("end function\n");
+printf("\n\n\n");
+
+
+
+printf("function input_%s(p_upd)\n",module);
+printf("define p_upd smallint\n");
+printf("call ensure_window(\"%s\")\n",module);
+printf("# the caller should have set up the global (gv_) record - so we need to copy that\n");
+printf("call copy_in_%s()\n",module);
+/*
+printf("if not p_upd then\n");
+
+printf("# set to default value for an add\n");
+for (a=0;a<columns_cnt;a++) {
+	printf("   initialize mv_%s to null\n", columns[a]);
+}
+printf("else\n");
+printf("   # Its an update - so copy in the existing values\n");
+printf("   call copy_in_%s()\n",module);
+printf("end if\n\n");
+*/
+printf("let int_flag=false\n");
+printf("input by name");
+
+int p=0;
+int att;
+  for (a = 0; a < f->tables.tables_len; a++)
+    {
+	int printed=0;
+	char *tname;
+	if (strlen(f->tables.tables_val[a].alias)) {
+		tname = f->tables.tables_val[a].alias;
+	} else {
+		tname = f->tables.tables_val[a].tabname;
+	}
+	  for (att = 0; att < f->attributes.attributes_len; att++)
+	    {
+		
+		if (strcmp(tname, f->attributes.attributes_val[att].tabname)==0 ) {
+			printed++;
+		} 
+		}
+	if (!printed) continue;
+	if (p) printf(",");
+	p++;
+	if (strlen(f->tables.tables_val[a].alias)) {
+      		printf (" mv_%s.*", f->tables.tables_val[a].alias);
+	} else {
+      		printf (" mv_%s.*", f->tables.tables_val[a].tabname);
+	}
+    }
+printf(" without defaults\n");
+
+
+
+printf("   on key (f1, control-f)\n");
+
+for (a=0;a<columns_cnt;a++) {
+	if (has_column_code(columns[a],'Z')) {
+		printf("      if infield(%s) then\n",cname(columns[a]));
+		printf("         call zoom(\"%s\", get_fldbuf(%s)) returning mv_%s\n",columns[a], cname(columns[a]), columns[a]);
+		printf("         display by name mv_%s\n",columns[a]);
+		if (has_column_code(columns[a],'F')) {
+			printf("         call display_fk(\"%s\", mv_%s)\n", cname(columns[a]),columns[a]);
+		}
+		printf("      end if\n");
+	}
+}
+
+for (a=0;a<columns_cnt;a++) {
+	if (has_column_code(columns[a],'V') || has_column_code(columns[a],'F')) {
+		printf("  after field %s\n", cname(columns[a]));
+		if (has_column_code(columns[a],'V')) {
+			printf("    if not validate_column(\"%s\",mv_%s,p_upd) then\n", cname(columns[a]),columns[a]);
+			printf("       next field %s\n", cname(columns[a]));
+			if (has_column_code(columns[a],'F')) {
+				printf("    else\n");
+				printf("       call display_fk(\"%s\", mv_%s)\n", cname(columns[a]),columns[a]);
+			}
+			printf("    end if\n");
+			printf("\n");
+		} else {
+			printf("    call display_fk(\"%s\",mv_%s)\n", cname(columns[a]),columns[a]);
+			printf("\n");
+		}
+	}
+}
+
+printf("end input\n\n");
+
+printf("if int_flag=true then\n");
+printf("    let int_flag=false\n");
+printf("    if p_upd then\n");
+printf("        # we need to restore the screen to how it looked before\n");
+printf("        call copy_in_%s()\n",module);
+printf("	call display_fk_%s()\n",module);
+printf("    end if\n");
+printf("    return false\n");
+printf("else\n");
+printf("    call copy_out_%s()\n", module);
+printf("    return true\n");
+printf("end if\n");
+printf("end function\n");
+printf("\n\n\n");
+
+printf("function display_fk_%s()\n",module);
+for (a=0;a<columns_cnt;a++) {
+	if (has_column_code(columns[a],'F')) {
+		printf("       call display_fk(\"%s\",mv_%s)\n", cname(columns[a]), columns[a]);
+	}
+}
+printf("end function\n");
+printf("\n\n\n");
+
+printf("function construct_%s(p_upd)\n",module);
+printf("define p_upd smallint\n");
+printf("call ensure_window(\"%s\")\n",module);
+printf("end function\n");
+
+}
+
+
+
+
 
 void set_single_file_mode(void) {
 	single_file_mode=1;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.334 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.335 2008-10-13 12:12:52 mikeaubury Exp $
 #
 */
 
@@ -1304,6 +1304,26 @@ int aclfgl_fgl_username(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
 int aclfgl_aclfgl_get_sql_requirement(int n);
 int aclfgl_fgl_round(int nargs);
+int aclfgl_aclfgl_flushinp (int n);
+int aclfgl_aclfgl_embed_barcode (int _nargs);
+int aclfgl_aclfgl_send_to_ui(int _nargs);
+int aclfgl_aclfgl_client_set(int _nargs);
+int aclfgl_aclfgl_client_execute(int _nargs);
+int aclfgl_aclfgl_sendfile_to_ui(int _nargs);
+int aclfgl_aclfgl_getclientfile(int _nargs);
+
+
+void A4GL_convert_to_pdf_x (void);
+void A4GL_convert_to_pdf_y (void);
+size_t A4GL_base64_decode (const char *src, unsigned char **outptr);
+
+int aclfgl_aclfgl_get_construct_element(int n) ; /* Gets a construct style string for a table/column for the specified value of the specified type/length, called in 4gl as : 
+							call aclfgl_get_construct_element(tabname,colname,value,dtype,dtype_length) returning lv_str
+						 */
+		
+
+
+
 	int A4GL_set_a4gl_sqlca_errd(int n,int v);
 	int A4GL_set_a4gl_sqlca_sqlstate(char *s);
   int A4GL_pushint_fgl_infield (void *inp,char itype,...);

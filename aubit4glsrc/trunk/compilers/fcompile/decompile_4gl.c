@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile_4gl.c,v 1.5 2008-10-07 09:27:39 mikeaubury Exp $
+# $Id: decompile_4gl.c,v 1.6 2008-10-13 12:12:52 mikeaubury Exp $
 #
 */
 
@@ -111,6 +111,7 @@ int main (int argc, char *argv[])
   memset (&the_form, 0, sizeof (struct_form));
 
   strcpy(form,argv[offset]);
+
   a = A4GL_read_data_from_file ("struct_form", &the_form, form);
   if (!a) {
   	strcat(form,".afr");
@@ -137,7 +138,7 @@ int main (int argc, char *argv[])
   } else {
 	module = argv[offset];
   }
-  if (strcmp(argv[1],"--generate-record")==0) { dump_record_4gl(&the_form); exit(0); }
+  if (strcmp(argv[1],"--generate-record")==0) { dump_record_4gl(&the_form,module); exit(0); }
   printf ("Dumping form %s\n",module);
   dump_form_desc (&the_form,module);
 return 0;
