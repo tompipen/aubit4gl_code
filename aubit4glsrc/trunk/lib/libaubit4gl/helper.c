@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.74 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: helper.c,v 1.75 2008-10-13 10:49:22 mikeaubury Exp $
 #
 */
 
@@ -1230,7 +1230,7 @@ aclfgl_aclfgl_sendfile_to_ui (int n)
 int
 aclfgl_aclfgl_getclientfile (int n)
 {
-  char *s;
+  //char *s;
   A4GL_direct_to_ui ("GETFILE", "");
   return 1;
 }
@@ -1238,7 +1238,7 @@ aclfgl_aclfgl_getclientfile (int n)
 int
 aclfgl_aclfgl_flushinp (int n)
 {
-  char *s;
+  //char *s;
   A4GL_direct_to_ui ("FLUSHINP", "");
   return 0;
 }
@@ -1246,7 +1246,7 @@ aclfgl_aclfgl_flushinp (int n)
 int
 aclfgl_aclfgl_embed_barcode (int _nargs)
 {
-  static char *_functionName = "embed_barcode";
+  //static char *_functionName = "embed_barcode";
   double x;
   double y;
   double w;
@@ -1399,7 +1399,7 @@ A4GL_tea_string_encipher (char *s)
   for (a = 0; a < strlen (buff); a += 8)
     {
       x = (long *) rbuff;
-      tea_8c_encipher ((long *) &buff[a], x, key);
+      tea_8c_encipher (( long *) &buff[a], x, key);
       smbuff[8] = 0;
       smbuff[7] = hex_digit (x[0] & 0xf);
       x[0] = x[0] >> 4;		// 0x???????X
@@ -1793,8 +1793,8 @@ A4GL_remove_trailing_zeros_and_leading_spaces (char *s)
 {
   int dp = -1;
   int len;
-  char buff[2000];
-  int newlen;
+  //char buff[2000];
+  //int newlen;
   int a;
   A4GL_lrtrim (s);
   len = strlen (s);
@@ -1840,5 +1840,64 @@ A4GL_convert_to_pdf_x (void)
 
   A4GL_push_double (d);
 }
+
+
+
+static int
+get_inc_quotes (int a)
+{
+  if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR)
+    return 1;
+  if ((a & DTYPE_MASK) == DTYPE_DATE)
+    return 2;
+  if ((a & DTYPE_MASK) == DTYPE_DTIME)
+    return 3;
+  if ((a & DTYPE_MASK) == DTYPE_INTERVAL)
+    return 4;
+  return 0;
+}
+
+
+
+
+/// Gets a "construct" style query string for a table/column for the specified value of the specified type/length, called in 4gl as :
+//         call aclfgl_get_construct_element(tabname,colname,value,dtype,dtype_length) returning lv_str
+//
+// Heres a test program : 
+// main
+// define lv_s chaR(40)
+//         call aclfgl_get_construct_element("systables","tabid",">1", 0,4) returning lv_s
+//         display lv_s
+//         call aclfgl_get_construct_element("systables","tabid","1|2|3", 0,4) returning lv_s
+//         display lv_s
+//  end main
+//
+// This generates : 
+//
+// systables.tabid>'1'
+// systables.tabid in ('1','2','3')
+//
+//
+// Eventually - this will be used in callbacks to 4gl CONSTRUCTs
+int aclfgl_aclfgl_get_construct_element(int n) {
+char *tabname;
+char *colname;
+char *value;
+int dtype;
+int dtype_length;
+
+if (n!=5) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(n);A4GL_push_char("");return 1;}
+
+
+dtype_length=A4GL_pop_long();
+dtype=A4GL_pop_long();
+value=A4GL_char_pop();
+colname=A4GL_char_pop();
+tabname=A4GL_char_pop();
+A4GL_push_char(A4GL_construct (tabname, colname, value, get_inc_quotes (dtype), dtype & DTYPE_MASK, dtype_length));
+return 1;
+
+}
+
 
 /* =================================== EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.64 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: sql_common.c,v 1.65 2008-10-13 10:49:22 mikeaubury Exp $
 #
 */
 
@@ -337,6 +337,20 @@ A4GLSQL_close_session (char *sessname)
 
 
 
+static char * unbadchar(char *s) {
+static char buff[2000];
+int a;
+int b=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]>='a'&&s[a]<='z') {buff[b++]=s[a]; continue;}
+	if (s[a]>='0'&&s[a]<='9') {buff[b++]=s[a]; continue;}
+	if (s[a]>='A'&&s[a]<='Z') {buff[b++]=s[a]; continue;}
+	buff[b++]='_';
+}
+buff[b]=0;
+return buff;
+}
+
 
 /**
  * Prepare a select statement.
@@ -359,9 +373,10 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
   char *ptr;
   char *sold;
 
+
   A4GL_debug ("must_convert=%d\n", must_convert);
 
-  SPRINTF1 (buff, "%s", mod);
+  SPRINTF1 (buff, "%s", unbadchar(mod));
 
   ptr = strchr (buff, '.');
 
