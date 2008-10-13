@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.20 2008-10-13 12:12:52 mikeaubury Exp $
+# $Id: dump_form.c,v 1.21 2008-10-13 12:48:46 mikeaubury Exp $
 #*/
 
 /**
@@ -2691,11 +2691,11 @@ printf("end input\n\n");
 
 printf("if int_flag=true then\n");
 printf("    let int_flag=false\n");
-printf("    if p_upd then\n");
-printf("        # we need to restore the screen to how it looked before\n");
-printf("        call copy_in_%s()\n",module);
-printf("	call display_fk_%s()\n",module);
-printf("    end if\n");
+//printf("    if p_upd then\n");
+//printf("        # we need to restore the screen to how it looked before\n");
+//printf("        call copy_in_%s()\n",module);
+//printf("	call display_fk_%s()\n",module);
+//printf("    end if\n");
 printf("    return false\n");
 printf("else\n");
 printf("    call copy_out_%s()\n", module);
