@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.21 2008-10-13 12:48:46 mikeaubury Exp $
+# $Id: dump_form.c,v 1.22 2008-10-14 10:56:49 mikeaubury Exp $
 #*/
 
 /**
@@ -2477,6 +2477,7 @@ t = -1;
 char module[2000];
 char *columns[1000];
 char buff[1024];
+int need_validate=0;
 int columns_cnt=0;
 strcpy(module,module_in);
  ptr=strchr(module,'.');
@@ -2606,7 +2607,7 @@ printf("\n\n\n");
 printf("function input_%s(p_upd)\n",module);
 printf("define p_upd smallint\n");
 printf("call ensure_window(\"%s\")\n",module);
-printf("# the caller should have set up the global (gv_) record - so we need to copy that\n");
+printf("# the caller should have set up the global (gv_...) record - so we need to copy that\n");
 printf("call copy_in_%s()\n",module);
 /*
 printf("if not p_upd then\n");
@@ -2659,7 +2660,7 @@ printf("   on key (f1, control-f)\n");
 for (a=0;a<columns_cnt;a++) {
 	if (has_column_code(columns[a],'Z')) {
 		printf("      if infield(%s) then\n",cname(columns[a]));
-		printf("         call zoom(\"%s\", get_fldbuf(%s)) returning mv_%s\n",columns[a], cname(columns[a]), columns[a]);
+		printf("         call zoom(\"%s\", get_fldbuf(%s)) returning mv_%s\n",cname(columns[a]), cname(columns[a]), columns[a]);
 		printf("         display by name mv_%s\n",columns[a]);
 		if (has_column_code(columns[a],'F')) {
 			printf("         call display_fk(\"%s\", mv_%s)\n", cname(columns[a]),columns[a]);
@@ -2672,6 +2673,7 @@ for (a=0;a<columns_cnt;a++) {
 	if (has_column_code(columns[a],'V') || has_column_code(columns[a],'F')) {
 		printf("  after field %s\n", cname(columns[a]));
 		if (has_column_code(columns[a],'V')) {
+			need_validate++;
 			printf("    if not validate_column(\"%s\",mv_%s,p_upd) then\n", cname(columns[a]),columns[a]);
 			printf("       next field %s\n", cname(columns[a]));
 			if (has_column_code(columns[a],'F')) {
@@ -2685,6 +2687,22 @@ for (a=0;a<columns_cnt;a++) {
 			printf("\n");
 		}
 	}
+}
+
+if (need_validate) {
+		printf("  after input\n");
+                printf("     if int_flag=false then\n");
+for (a=0;a<columns_cnt;a++) {
+	if (has_column_code(columns[a],'V') ) {
+		if (has_column_code(columns[a],'V')) {
+			printf("       if not validate_column(\"%s\",mv_%s,p_upd) then\n", cname(columns[a]),columns[a]);
+			printf("          next field %s\n", cname(columns[a]));
+			printf("       end if\n");
+			printf("\n");
+		}
+	}
+}
+                printf("     end if\n");
 }
 
 printf("end input\n\n");

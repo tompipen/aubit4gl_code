@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.51 2008-03-13 13:35:42 mikeaubury Exp $
+# $Id: Makefile,v 1.52 2008-10-14 10:56:49 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -517,6 +517,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 #	$(MAKE) -C lib/libui/ui_gtk clean
 	$(MAKE) -C lib/extra_libs/file clean
 	$(MAKE) -C lib/extra_libs/string clean
+	$(MAKE) -C lib/extra_libs/roman clean
 	$(MAKE) -C lib/libexdata clean
 	$(MAKE) -C lib/libpacker/packed clean
 	$(MAKE) -C lib/libpacker/perl clean
