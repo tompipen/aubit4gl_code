@@ -28,6 +28,8 @@ namespace AubitDesktop
     class UIInputContext : UIContext
     {
         private event UIEventHandler EventTriggered;
+
+    
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
         private FGLFoundField CurrentField;
@@ -204,8 +206,14 @@ namespace AubitDesktop
             {
                 TriggeredText = getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
             }
-
-            this.EventTriggered(source, ID, TriggeredText);
+            if (this.EventTriggered != null)
+            {
+                this.EventTriggered(source, ID, TriggeredText);
+            }
+            else
+            {
+                MessageBox.Show("Warning - might have missed a before field/after field");
+            }
         }
 
 
@@ -358,7 +366,7 @@ namespace AubitDesktop
             mainWin.SetContext(FGLContextType.ContextNone);
             _contextIsActive = false;
             EventTriggered = null;
-           
+            mainWin.CommentText = "";
         }
 
         public void FreeContext()

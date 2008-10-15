@@ -733,6 +733,7 @@ namespace AubitDesktop
         {
             switch (s)
             {
+                case "CLEAR": clrErrorTextFromFieldValidation();return; /* We want to clear the error - not generate a new one */
                 case "ARR_DIR_MSG": s = " There are no more rows in the direction you are going "; break;
                 case "FIELD_ERROR_MSG": s = " Error in field "; break;
                 case "FIELD_INCL_MSG": s = " This value is not among the valid possibilities "; break;

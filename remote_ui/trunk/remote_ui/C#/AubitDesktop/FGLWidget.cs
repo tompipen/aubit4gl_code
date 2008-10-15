@@ -630,7 +630,19 @@ namespace AubitDesktop
                 {
 
                     this.includeValues = new List<string>();
-                    this.includeValues.AddRange(incl.Split('\n'));
+                    string[] incvals;
+                    incvals = incl.Split('\n');
+                    for (int a = 0; a < incvals.Length; a++)
+                    {
+                        if (incvals[a].Contains("|"))
+                        {
+                            this.includeValues.AddRange(incvals[a].Split('|'));
+                        }
+                        else
+                        {
+                            this.includeValues.Add(incvals[a]);
+                        }
+                    }
                 }
 
             }
@@ -675,6 +687,9 @@ namespace AubitDesktop
         {
             bool ign = false;
 
+            
+            
+
             if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
             {
                 #region REQUIRED CHECK
@@ -713,11 +728,11 @@ namespace AubitDesktop
                     bool ok = false;
                     foreach (string s in this.includeValues)
                     {
-                        if (s.Contains("\t"))
+                        if (s.Contains(":"))
                         {
                             string l, r;
                             string[] arr;
-                            arr = s.Split('\t');
+                            arr = s.Split(':');
                             l = arr[0];
                             r = arr[1];
 
@@ -731,10 +746,12 @@ namespace AubitDesktop
                             if (s == "NULL" && this.Text == "")
                             {
                                 ok = true;
+                                break;
                             }
                             if (s == this.Text)
                             {
                                 ok = true;
+                                break;
                             }
                         }
                     }
@@ -743,11 +760,12 @@ namespace AubitDesktop
                     if (!ok)
                     {
                         this.fieldValidationFailed(this, "FIELD_INCL_MSG", out ign);
-                    }
 
-                    if (!ign)
-                    {
-                        return false;
+
+                        if (!ign)
+                        {
+                            return false;
+                        }
                     }
 
 
@@ -756,13 +774,23 @@ namespace AubitDesktop
             }
 
 
-
+            
             return true;
+        }
+
+        private void clrErrorTextBeforeFieldValidation()
+        {
+            bool ign = false;
+            if (this.fieldValidationFailed != null)
+            {
+                this.fieldValidationFailed(this, "CLEAR", out ign);
+            }
         }
 
 
         internal void t_Click(object sender, EventArgs e)
         {
+            this.clrErrorTextBeforeFieldValidation();
             if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.onActionID, "");
@@ -786,6 +814,9 @@ namespace AubitDesktop
 
         internal void t_GotFocus(object sender, EventArgs e)
         {
+            
+            
+
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.beforeFieldID, "");

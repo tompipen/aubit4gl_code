@@ -168,7 +168,15 @@ namespace AubitDesktop
                 TriggeredText = getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
             }
 
-            this.EventTriggered(source, ID, TriggeredText);
+
+            if (this.EventTriggered != null)
+            {
+                this.EventTriggered(source, ID, TriggeredText);
+            }
+            else
+            {
+                MessageBox.Show("Warning - might have missed a before field/after field");
+            }
 
             foreach (FGLFoundField f in activeFields)
             {
@@ -194,7 +202,17 @@ namespace AubitDesktop
         }
 
 
+        void inputGotFocus(object source, string comment)
+        {
+            mainWin.CommentText = comment;
+        }
 
+
+        void inputFieldValidationHandler(object source, string failedText, out bool ignore)
+        {
+            ignore = false;
+            mainWin.setErrorTextFromFieldValidation(failedText);
+        }
 
         public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
@@ -205,20 +223,15 @@ namespace AubitDesktop
             mainWin.SetContext(FGLContextType.ContextConstruct, activeFields, this);
             mainWin.setActiveToolBarKeys(KeyList,true);
 
+
+            foreach (FGLFoundField f in activeFields)
+            {
+                f.fglField.fieldValidationFailed = inputFieldValidationHandler;
+                f.fglField.onGotFocus = inputGotFocus;
+            }
+            
             EventTriggered = UIInputContext_EventTriggered;
 
-            if (setCurrentField != null) // Next field has been registered..
-            {
-                CurrentField = setCurrentField;
-                CurrentField.fglField.setFocus();
-                setCurrentField = null;
-            }
-
-            if (CurrentField == null)
-            {
-                CurrentField = activeFields[0];
-                CurrentField.fglField.setFocus();
-            }
 
             #region setup after field event IDs
             // We might want to cache these results....
@@ -307,6 +320,20 @@ namespace AubitDesktop
             {
                 _contextIsActive = true;
             }
+
+            if (setCurrentField != null) // Next field has been registered..
+            {
+                CurrentField = setCurrentField;
+                CurrentField.fglField.setFocus();
+                setCurrentField = null;
+            }
+
+            if (CurrentField == null)
+            {
+                CurrentField = activeFields[0];
+                CurrentField.fglField.setFocus();
+            }
+
         }
 
 
@@ -330,6 +357,7 @@ namespace AubitDesktop
 
             _contextIsActive = false;
             EventTriggered = null;
+            mainWin.CommentText = "";
            
         }
 
