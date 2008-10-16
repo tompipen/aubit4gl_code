@@ -9378,9 +9378,25 @@ if (last_parent!=parent) {
 	printc ("UPDATE %s ", u->table);
 	set_nonewlines ();
 	printc ("SET ");
-	A4GL_assertion (u->column_list == 0, "No column list");
 	A4GL_assertion (u->value_list == 0, "No value list");
 
+
+	if (u->column_list==0) {
+		printc(" * = (");
+		clr_nonewlines();
+	    for (a = 0; a < u->value_list->list.list_len; a++) {
+		char comma[2]=",";
+		rval = get_select_list_item (0, u->value_list->list.list_val[a]);
+		if (a==u->value_list->list.list_len-1) {
+			strcpy(comma,"");
+		}
+		printc("    %s%s",rval,comma);
+		}
+		printc(")");
+		
+		
+	} else {
+	
 	if (u->value_list->list.list_len == u->column_list->str_list_entry.str_list_entry_len)
 	  {
 	    // Same length..
@@ -9425,6 +9441,7 @@ if (last_parent!=parent) {
 
 	  }
 	clr_nonewlines ();
+	}
 
 	if (r->cmd_data.command_data_u.update_cmd.where_clause)
 	  {
