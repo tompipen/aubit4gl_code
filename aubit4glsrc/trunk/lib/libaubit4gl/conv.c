@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.162 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: conv.c,v 1.163 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -546,7 +546,7 @@ A4GL_inttoc (void *a1, void *b, int size)
 	}
       else
 	{
-	  sprintf (buffcp, "-%s", buff);
+	  SPRINTF1 (buffcp, "-%s", buff);
 	  strcpy (buff, buffcp);
 	}
     }
@@ -1492,7 +1492,7 @@ A4GL_mdectos (void *z, void *w, int size)
   A4GL_ltrim (buff2);
   if (strlen (buff2) < size)
     {
-      sprintf (buff3, "$%s", buff2);
+      SPRINTF1 (buff3, "$%s", buff2);
       strcpy (buff2, buff3);
     }
 
@@ -2689,7 +2689,7 @@ A4GL_ftoi (void *aa, void *zz, int c)
   short *z;
   z = (short *) zz;
   a = (double *) aa;
-  sprintf (buff, "%lf", *a);
+  SPRINTF1 (buff, "%lf", *a);
   A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   if (A4GL_apm_str_detect_overflow (buff, 0, 0, DTYPE_SMINT))
     {
@@ -2720,7 +2720,7 @@ A4GL_ftol (void *aa, void *zz, int c)
   z = (long *) zz;
   A4GL_debug ("ftol");
 
-  sprintf (buff, "%lf", *a);
+  SPRINTF1 (buff, "%lf", *a);
   A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
 
   if (A4GL_apm_str_detect_overflow (buff, 0, 0, DTYPE_INT))
@@ -2853,7 +2853,7 @@ A4GL_sftoi (void *aa, void *zz, int c)
   char buff[256];
   z = (short *) zz;
   a = (float *) aa;
-  sprintf (buff, "%f", *a);
+  SPRINTF1 (buff, "%f", *a);
   A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   if (A4GL_apm_str_detect_overflow (buff, 0, 0, DTYPE_SMINT))
     {
@@ -2882,7 +2882,7 @@ A4GL_sftol (void *aa, void *zz, int c)
   char buff[200];
   z = (long *) zz;
   a = (float *) aa;
-  sprintf (buff, "%f", *a);
+  SPRINTF1 (buff, "%f", *a);
   A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, -1);
   if (A4GL_apm_str_detect_overflow (buff, 0, 0, DTYPE_INT))
     {
@@ -3304,7 +3304,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   }
 #endif
   A4GL_conversion_ok (1);
-  sprintf (buff, "CONVTO_%d", dtype2 & DTYPE_MASK);
+  SPRINTF1 (buff, "CONVTO_%d", dtype2 & DTYPE_MASK);
   if (A4GL_has_datatype_function_i (dtype1 & DTYPE_MASK, buff))
     {
       int (*function) (int, void *, int, void *, int);

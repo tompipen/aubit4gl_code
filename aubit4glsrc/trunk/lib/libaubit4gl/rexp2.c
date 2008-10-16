@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.52 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: rexp2.c,v 1.53 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -606,7 +606,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 		  static char ptr3[2000];
 		  ptr = A4GL_escape_single (constr_bits[0]);
 		  SPRINTF3 (ptr2, "%s%s%s", quote, ptr, quote);
-		  sprintf (ptr3, "%s %s", colname, A4GLSQLCV_matches_string ("", ptr2, "\"\\\""));
+		  SPRINTF2 (ptr3, "%s %s", colname, A4GLSQLCV_matches_string ("", ptr2, "\"\\\""));
 		  A4GL_debug ("Returning %s", ptr3);
 		  return ptr3;
 		}
@@ -802,7 +802,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	{
 	  if (strlen (quote) == 0)
 	    {
-	      sprintf (buff3, "%s <= %s", colname, quote);
+	      SPRINTF2 (buff3, "%s <= %s", colname, quote);
 	      for (zz = 1; zz < constr_size; zz++)
 		{
 		  ptr = A4GL_escape_single (constr_bits[zz]);

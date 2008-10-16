@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.56 2008-09-23 12:38:48 mikeaubury Exp $
+# $Id: array.c,v 1.57 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.56 2008-09-23 12:38:48 mikeaubury Exp $";
+		"$Id: array.c,v 1.57 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 
 
@@ -625,7 +625,7 @@ static int disp_loop(struct s_disp_arr *arr,struct aclfgl_event_list *evt) {
 int rval;
 rval=disp_loop_internal(arr,evt);
 if (rval<-1) {
-        printf("Returned <0 : %d\n",rval);
+        FPRINTF(stderr, "Returned <0 : %d\n",rval);
         exit(0);
 }
 return rval;

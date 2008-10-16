@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.159 2008-09-23 12:38:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.160 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.159 2008-09-23 12:38:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.160 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -613,7 +613,7 @@ char buff[256];
   A4GL_del_pointer (win_name, WINCODE);
 
 	if (f) {
-  		sprintf(buff,"%p",f);
+  		SPRINTF1(buff,"%p",f);
   		A4GL_del_pointer (buff, ATTRIBUTE);
 		if (f->fileform) {
 			free(f->fileform);
@@ -791,7 +791,7 @@ void
 A4GL_tui_print ( char *fmt, ...)
 {
   va_list args;
-  char buff[256];
+  char buff[2560];
 #ifdef DEBUG
   {
     A4GL_debug ("In tui_print");
@@ -811,7 +811,7 @@ void
 A4GL_tui_printr (int refreshwin, char *fmt, ...)
 {
   va_list args;
-  char buff[256];
+  char buff[2560];
   int *n = 0;
   int l;
 #ifdef DEBUG
@@ -912,7 +912,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   A4GL_debug ("In display_form");
   w = currwin;
 
-  sprintf(buff,"%p",f);
+  SPRINTF1(buff,"%p",f);
   A4GL_add_pointer (buff, ATTRIBUTE, (void *) ((long)attrib));
 
   if (w == 0)
@@ -1031,7 +1031,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   A4GL_debug ("setup windows");
   keypad (w, TRUE);
-  sprintf (buff, "Currwinno=%d", currwinno);
+  SPRINTF1 (buff, "Currwinno=%d", currwinno);
   /*error_box(buff); */
   windows[currwinno].form = f;
 
@@ -1114,7 +1114,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
 	 y);
 
   A4GL_debug ("display_form_new_win - border=%d", f->form_details.border);
-  sprintf (buff, "%d %d", cols, rows);
+  SPRINTF2 (buff, "%d %d", cols, rows);
 #ifdef DEBUG
   {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */
   }
@@ -1186,7 +1186,7 @@ void *
   char buff[80];
   A4GL_chkwin();
 
-  sprintf (buff, "currwinno=%d", currwinno);
+  SPRINTF1 (buff, "currwinno=%d", currwinno);
 
 #ifdef DEBUG
   {
@@ -1780,7 +1780,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	{
 	  A4GL_mja_endwin ();
 	}
-      printf ("%s\n", s);
+      PRINTF ("%s\n", s);
       fflush (stdout);
 	free(ptr);
     }
@@ -1912,7 +1912,7 @@ A4GL_mja_endwin (void)
   if (A4GL_isscrmode ())
     {
       A4GL_set_scrmode ('L');
-      printf ("\n");
+      PRINTF ("\n");
       fflush (stdout);
       endwin ();
     }
@@ -2221,7 +2221,7 @@ int
     }
 
   windows[currwinno].form = f;
-  sprintf (buff, "currwinno=%d f=%p", currwinno, f);
+  SPRINTF2 (buff, "currwinno=%d f=%p", currwinno, f);
   /*error_box(buff); */
   A4GL_mja_wrefresh (currwin);
   A4GL_debug ("Diplay form");
@@ -2417,7 +2417,7 @@ A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 	
   if (strlen(buff)>256) {
 	char *ptr=0;
-	printf("OOps...\n");fflush(stdout);
+	FPRINTF(stderr, "OOps...\n");fflush(stdout);
 	*ptr=0;
   }
   A4GL_debug ("mja_vwprintw..> '%s' attribute %x", buff, A4GL_xwattr_get (win));
@@ -3251,7 +3251,7 @@ WINDOW *w;
 w=curscr;
 sw= A4GL_screen_width ();
 sh=A4GL_screen_height ();
-  sprintf(buff,"SCR %d %d\n", sh, sw);
+  SPRINTF2(buff,"SCR %d %d\n", sh, sw);
   A4GL_monitor_puts_int(buff);
 
   for (y = 0; y < sh; y++)
@@ -3289,7 +3289,7 @@ sh=A4GL_screen_height ();
         }
 	buff[x]=0;
 	if (strlen(buff)>500) {A4GL_assertion(1,"Screen too wide");}
-	sprintf(buff2,"LIN %3d %s\n",y,buff);
+	SPRINTF2(buff2,"LIN %3d %s\n",y,buff);
         A4GL_monitor_puts_int(buff2);
     }
         A4GL_monitor_puts_int("EOS\n");
@@ -3300,7 +3300,7 @@ sh=A4GL_screen_height ();
 void A4GL_monitor_key_pressed(int a) {
 char buff[255];
 if (a!=-1) {
-	sprintf(buff,"KYP %d\n",a);
+	SPRINTF1(buff,"KYP %d\n",a);
 	A4GL_monitor_puts_int(buff);
 }
 }

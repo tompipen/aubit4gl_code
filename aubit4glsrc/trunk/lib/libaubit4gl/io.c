@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.38 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: io.c,v 1.39 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -293,7 +293,7 @@ char *
 A4GL_fullpath_dbpath_plus_path (char *fname, char *plus)
 {
   char buff[20000];
-  sprintf (buff, "%s:%s", acl_getenv ("DBPATH"), plus);
+  SPRINTF2 (buff, "%s:%s", acl_getenv ("DBPATH"), plus);
   return A4GL_fullpath_xpath (fname, buff);
 }
 

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.144 2008-09-15 12:28:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.145 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.144 2008-09-15 12:28:40 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.145 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -753,10 +753,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 			}
 
 			if (this_place==last_place) {
-				//printf("construct_not_moved!!!\n");
 				construct_not_moved=1;
 			} 
-				//printf("%d %d\n", this_place, last_place);
 			A4GL_debug("Now : %s construct_not_added=%d\n", field_buffer(sio->currentfield,0), construct_not_added);
 		}
 
@@ -974,7 +972,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	A4GL_debug_print_field_opts (sio->currentfield);
 	  rval=set_current_field (sio->currform->form, sio->currentfield);
 		if (rval!=E_OK) {
-			printf("RVAL=%d\n",rval);
+			PRINTF("RVAL=%d\n",rval);
 			A4GL_assertion(1,"Unable to set current tield...");
 			}
 	  sio->currform->currentfield = sio->currentfield;
@@ -1208,6 +1206,15 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 					}
                         }
                 }
+
+
+		
+		if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && A4GL_is_numeric_datatype(fprop->datatype)) {
+			// its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+			A4GL_convert_char_on_stack_decimal_sep(A4GL_get_convfmts()->ui_decfmt.decsep);
+		}
+		
+
 
 	        A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
 
@@ -1854,9 +1861,9 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	  if (program == 0)
 	    program = "vi";
 	  if (strstr(program,"%s")) {
-	  	sprintf (buff, program, filename);
+	  	SPRINTF1 (buff, program, filename);
 	  } else {
-	  	sprintf (buff, "%s %s", program, filename);
+	  	SPRINTF2 (buff, "%s %s", program, filename);
 	  }
 	  UILIB_A4GL_gotolinemode ();
           system(buff);
@@ -2583,4 +2590,6 @@ int A4GL_get_curr_field_col(FORM *mform) {
 	form_driver (mform, REQ_VALIDATION);
 	return mform->curcol;
 }
+
+
 

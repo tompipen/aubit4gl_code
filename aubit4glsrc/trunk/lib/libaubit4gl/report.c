@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.167 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: report.c,v 1.168 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -1607,7 +1607,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   void *x;
   char b2[200];
 
-  sprintf (b2, "a4glrp_%lx%d", (long) (b), n);
+  SPRINTF2 (b2, "a4glrp_%lx%d", (long) (b), n);
   x = A4GLSQL_find_prepare (b2);
   if (x == NULL)
     {
@@ -1764,7 +1764,7 @@ A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
   A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
 				0);
   A4GL_free_duplicate_binding (reread, n);
-  sprintf (b2, "a4glrp_%lx%d", (long) (b), n);
+  SPRINTF2 (b2, "a4glrp_%lx%d", (long) (b), n);
   A4GLSQL_free_cursor (b2);	// Actually a free prepare - but its the same function ;-)
 
 }

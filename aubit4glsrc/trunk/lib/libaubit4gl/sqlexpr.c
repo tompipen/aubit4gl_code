@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.73 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.74 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -687,7 +687,7 @@ like_trim (char *s)
   if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAL"))
     {
       static char buff[20000];
-      sprintf (buff, "TRIM(%s)", s);
+      SPRINTF1 (buff, "TRIM(%s)", s);
       return buff;
     }
   return s;
@@ -2052,7 +2052,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	{
 	  if (!A4GLSQLCV_check_runtime_requirement ("INSERT_INTO_AS_SELECT_INTO"))
 	    {
-	      sprintf (buff, "INSERT INTO %s SELECT ", select->sf->insert_into);
+	      SPRINTF1 (buff, "INSERT INTO %s SELECT ", select->sf->insert_into);
 	    }
 	}
     }
@@ -2074,7 +2074,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	}
       if (!A4GLSQLCV_check_runtime_requirement ("FIRSTASLIMIT"))
 	{
-	  sprintf (smbuff, "FIRST %d ", select->limit.end);
+	  SPRINTF1 (smbuff, "FIRST %d ", select->limit.end);
 	  strcat (buff, smbuff);
 	}
     }
@@ -2136,7 +2136,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	{
 	  if (A4GLSQLCV_check_runtime_requirement ("INSERT_INTO_AS_SELECT_INTO"))
 	    {
-	      sprintf (into_temp, "\n INTO %s ", select->sf->insert_into);
+	      SPRINTF1 (into_temp, "\n INTO %s ", select->sf->insert_into);
 	      strcat (buff, into_temp);
 	    }
 	}
@@ -2309,7 +2309,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	}
       if (A4GLSQLCV_check_runtime_requirement ("FIRSTASLIMIT"))
 	{
-	  sprintf (smbuff, " LIMIT %d", select->limit.end);
+	  SPRINTF1 (smbuff, " LIMIT %d", select->limit.end);
 	  strcat (buff, smbuff);
 	}
     }

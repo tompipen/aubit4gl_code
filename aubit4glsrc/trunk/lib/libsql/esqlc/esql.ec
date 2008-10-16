@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.211 2008-08-28 10:38:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.212 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -194,7 +194,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.211 2008-08-28 10:38:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.212 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 
 
@@ -607,7 +607,7 @@ exec sql end declare section;
 tabname=p_tabname;
 
 exec sql select created into $n from systables where tabname=$tabname;
-sprintf(buff,"%d",n);
+SPRINTF1(buff,"%d",n);
 return buff;
 }
 
@@ -5104,7 +5104,7 @@ static int charcpy (unsigned char *target, unsigned char *source, long len)
 	  /*
 	   * Non-printable, convert to hex. 
 	   */
-	  target += sprintf ((char *) target, "\\%2.2x", *source);
+	  target += SPRINTF1 ((char *) target, "\\%2.2x", *source);
 	}
       else
 	{

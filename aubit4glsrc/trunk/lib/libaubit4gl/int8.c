@@ -185,8 +185,8 @@ A4GL_int8_smint_ops (int op)
     case OP_POWER:
     case OP_MOD:
       // Overflow detection...-  Do the same thing with decimals..
-      sprintf (s1, "%d", a);
-      sprintf (s2, "%lld", b);
+      SPRINTF1 (s1, "%d", a);
+      SPRINTF1 (s2, "%lld", b);
       if (A4GL_apm_str_detect_overflow (s1, s2, op, DTYPE_INT8))
 	{
 	  double d;
@@ -288,8 +288,8 @@ A4GL_smint_int8_ops (int op)
     case OP_POWER:
     case OP_MOD:
       // Overflow detection...-  Do the same thing with decimals..
-      sprintf (s1, "%lld", a);
-      sprintf (s2, "%d", b);
+      SPRINTF1 (s1, "%lld", a);
+      SPRINTF1 (s2, "%d", b);
       if (A4GL_apm_str_detect_overflow (s1, s2, op, DTYPE_INT8))
 	{
 	  double d;
@@ -393,8 +393,8 @@ A4GL_int8_int8_ops (int op)
     case OP_POWER:
     case OP_MOD:
       // Overflow detection...-  Do the same thing with decimals..
-      sprintf (s1, "%lld", a);
-      sprintf (s2, "%lld", b);
+      SPRINTF1 (s1, "%lld", a);
+      SPRINTF1 (s2, "%lld", b);
       if (A4GL_apm_str_detect_overflow (s1, s2, op, DTYPE_INT8))
 	{
 	  double d;
@@ -503,8 +503,8 @@ A4GL_int_int8_ops (int op)
     case OP_POWER:
     case OP_MOD:
       // Overflow detection...-  Do the same thing with decimals..
-      sprintf (s1, "%lld", a);
-      sprintf (s2, "%d", b);
+      SPRINTF1 (s1, "%lld", a);
+      SPRINTF1 (s2, "%d", b);
       if (A4GL_apm_str_detect_overflow (s1, s2, op, DTYPE_INT8))
 	{
 	  double d;
@@ -618,8 +618,8 @@ A4GL_int8_int_ops (int op)
     case OP_POWER:
     case OP_MOD:
       // Overflow detection...-  Do the same thing with decimals..
-      sprintf (s2, "%ld", a);
-      sprintf (s1, "%lld", b);
+      SPRINTF1 (s2, "%ld", a);
+      SPRINTF1 (s1, "%lld", b);
       if (A4GL_apm_str_detect_overflow (s1, s2, op, DTYPE_INT8))
 	{
 	  double d;
@@ -1141,7 +1141,7 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
   A4GL_debug ("A4GL_conv_int8 %d %d p1=%p p2=%p\n", d1, d2, p1, p2);
   if (d1 == DTYPE_INT8)
     {
-      sprintf (buff, "%lld", *(int8 *) p1);
+      SPRINTF1 (buff, "%lld", *(int8 *) p1);
       // Convert FROM int8..
       switch (d2)
 	{
@@ -1178,7 +1178,7 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 	case DTYPE_DECIMAL:
 	  {
 	    char buff[2000];
-	    sprintf (buff, "%lld", *(int8 *) p1);
+	    SPRINTF1 (buff, "%lld", *(int8 *) p1);
 	    A4GL_stodec (buff, p2, size);
 	    //A4GL_push_char (buff);
 	    //A4GL_pop_param (p2, d2, size);
@@ -1187,7 +1187,7 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 	case DTYPE_CHAR:
 	  {
 	    char buff[2000];
-	    sprintf (buff, "%lld", *(int8 *) p1);
+	    SPRINTF1 (buff, "%lld", *(int8 *) p1);
 	    A4GL_push_char (buff);
 	    A4GL_pop_param (p2, d2, size);
 	    return 1;
@@ -1201,7 +1201,7 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
       switch (d1)
 	{
 	case DTYPE_FLOAT:
-	  sprintf (buff, "%lf", *(double *) p1);
+	  SPRINTF1 (buff, "%lf", *(double *) p1);
 	  if (A4GL_apm_str_detect_overflow (buff, 0, 0, DTYPE_INT8))
 	    {			// OVERFLOW DETECTION
 	      A4GL_setnull (DTYPE_INT8, p2, 0);

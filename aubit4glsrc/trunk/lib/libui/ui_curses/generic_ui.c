@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.46 2008-04-14 09:26:37 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.47 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -11,15 +11,15 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
 char *
 A4GL_string_width (char *s)
 {
-  char buff[10];
+  char buff[20];
   int a;
   static char buff2[10024];
 
   a = UILIB_A4GL_get_curr_width () - 2;
   A4GL_debug("String width=%d",a);
-  sprintf (buff, "%%-%d.%ds", a, a);
+  SPRINTF2 (buff, "%%-%d.%ds", a, a);
   A4GL_debug("Buff=%s - s=%s",buff,s);
-  sprintf (buff2, buff, s);
+  SPRINTF1 (buff2, buff, s);
   A4GL_debug("Buff2=%s",buff2);
   return buff2;
 }
@@ -142,7 +142,7 @@ buff[1]=0;
 		A4GL_mja_gotoxy (1, 2 + menu->menu_line);
 		A4GL_tui_printr (0,"%s", disp);
 		
-		sprintf(disp,"Select: %s",buff);
+		SPRINTF1(disp,"Select: %s",buff);
 		l=strlen(disp);
 		cw-=l;
 		A4GL_mja_gotoxy (3+l, 2 + menu->menu_line);
@@ -381,7 +381,7 @@ A4GL_seldir (char *filespec, char *filename)
     return 0;
   strcpy (c, &filename[strlen (filename) - strlen (filespec)]);
   a = (strcmp (filespec, c));
-  sprintf (b, "S=%s F=%s a=%d c=%s", filespec, filename, a, c);
+  SPRINTF4 (b, "S=%s F=%s a=%d c=%s", filespec, filename, a, c);
   if (a == 0)
     {
       filename[strlen (filename) - strlen (filespec)] = 0;
@@ -693,11 +693,11 @@ A4GL_size_menu (ACL_Menu * menu)
     {
       if (menu->menu_type == ACL_MN_HORIZ_NOTBOXED)
         {
-          sprintf (disp_str, "%s : ", menu->menu_title);
+          SPRINTF1 (disp_str, "%s : ", menu->menu_title);
           disp_cnt = strlen (disp_str) + 1;
         }
       else
-        sprintf (disp_str, " %s ", menu->menu_title);
+        SPRINTF1 (disp_str, " %s ", menu->menu_title);
     }
 
   opt1 = (ACL_Menu_Opts *) menu->first;

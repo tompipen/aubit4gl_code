@@ -106,7 +106,7 @@ A4GL_get_errmsg_from_helpfiles (int n)
   strcat (buff, "/helpsql_");
   strcat (buff, A4GLSQL_dbms_dialect ());
 
-  sprintf (buff2, "%s%s", buff, acl_getenv ("A4GL_HLP_EXT"));
+  SPRINTF2 (buff2, "%s%s", buff, acl_getenv ("A4GL_HLP_EXT"));
   A4GL_debug ("Looking in file '%s'\n", buff2);
   if (A4GL_file_exists (buff2))
     {
@@ -118,7 +118,7 @@ A4GL_get_errmsg_from_helpfiles (int n)
     {
       A4GL_debug ("Skipping - no file");
     }
-  sprintf (buff2, "%s.iem", buff);
+  SPRINTF1 (buff2, "%s.iem", buff);
   A4GL_debug ("Looking in file '%s'\n", buff2);
   if (A4GL_file_exists (buff2))
     {
@@ -130,7 +130,7 @@ A4GL_get_errmsg_from_helpfiles (int n)
     {
       A4GL_debug ("Skipping - no file");
     }
-  sprintf (buff2, "%s.hlp", buff);
+  SPRINTF1 (buff2, "%s.hlp", buff);
   A4GL_debug ("Looking in file '%s'\n", buff2);
   if (A4GL_file_exists (buff2))
     {
@@ -165,7 +165,7 @@ A4GL_get_errmsg_from_helpfiles (int n)
       // Nothing found - lets take a peak in $INFORMIXDIR if its set...
       if (acl_getenv_not_set_as_0 ("INFORMIXDIR") != 0)
 	{
-	  sprintf (buff, "%s/msg/en_us/0333", acl_getenv ("INFORMIXDIR"));
+	  SPRINTF1 (buff, "%s/msg/en_us/0333", acl_getenv ("INFORMIXDIR"));
 	  A4GL_debug ("Looking in directory %s\n", buff);
 	  ptr = internal_get_errmsg_from_helpfile (buff, n);
 	  if (ptr)

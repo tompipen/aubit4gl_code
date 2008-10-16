@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.210 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: stack.c,v 1.211 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -4122,6 +4122,36 @@ if (n<0 || n>=maxbound) {
 	return 0;
 }
 return n;
+}
+
+
+/* Convert a string on the stack to a decimal... */
+void A4GL_convert_char_on_stack_decimal_sep(char from , char to) {
+char *ptr;
+char *p2;
+char *p;
+int a;
+fgldecimal dec;
+
+ptr=A4GL_char_pop();
+/*
+for (a=0;a<strlen(ptr);a++) {
+	if (ptr[a]==to) {
+		ptr[a]=from;
+	} else {
+		if (ptr[a]==from) ptr[a]=to;
+	}
+}
+*/
+A4GL_init_dec (&dec, 32, 16);
+A4GL_stodec (ptr, &dec,32 * 256 + 16 );
+A4GL_push_dec_dec(&dec,0,16);
+acl_free(ptr);
+ptr=A4GL_char_pop();
+
+
+
+A4GL_push_dec_dec(&dec,0,16);
 }
 
 // ================================ EOF ================================

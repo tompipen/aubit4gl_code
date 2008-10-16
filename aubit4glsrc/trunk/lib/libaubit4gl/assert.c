@@ -79,7 +79,7 @@ A4GL_assertion_full (int a, char *s, char *mod, int ln)
   if (a)
     {
       char buff[2000];
-      sprintf (buff, "%s (File:%s Line:%d)", s, mod, ln);
+      SPRINTF3 (buff, "%s (File:%s Line:%d)", s, mod, ln);
       A4GL_assertion_failed (buff);
     }
 }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.159 2008-10-07 17:44:06 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.160 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -470,7 +470,7 @@ cnfopen (char *path, char *buff_sm)
 {
   FILE *f;
   char buff[512];
-  sprintf (buff, "%s%s", path, buff_sm);
+  SPRINTF2 (buff, "%s%s", path, buff_sm);
   A4GL_debug ("Trying to cnfopen %s", buff);
   f = fopen (buff, "r");
   A4GL_debug ("Trying to cnfopen %s - f=%p", buff, f);
@@ -501,7 +501,7 @@ read_conversion_file (FILE * fh, char *name)
       if (*t == '#')
 	continue;
 
-      sprintf (thisline, "File %s Line : %d ", name, line);
+      SPRINTF2 (thisline, "File %s Line : %d ", name, line);
 //printf("t=%s len=%d\n",t,len);
       if (strncmp (t, "IF", len) == 0)
 	{
@@ -951,7 +951,7 @@ A4GLSQLCV_check_sql (char *s, int *converted)
 	      if (ptr && strstr (ptr, "%s"))
 		{
 		  A4GL_make_downshift (lastFieldData);
-		  sprintf (buff, ptr, lastFieldData);
+		  SPRINTF1 (buff, ptr, lastFieldData);
 		  return buff;
 		}
 	      else
@@ -1909,12 +1909,12 @@ CV_matches (char *type, char *string, char *esc)
 	{
 	  if (strcmp (esc, "?") != 0)
 	    {
-	      sprintf (buff, "%s(?,'%s')", current_conversion_rules[hr - 1].data.from, esc);
+	      SPRINTF2 (buff, "%s(?,'%s')", current_conversion_rules[hr - 1].data.from, esc);
 	    }
 	  else
 	    {
 	      //@ FIXME
-	      sprintf (buff, "%s(?,'?')", current_conversion_rules[hr - 1].data.from);
+	      SPRINTF1 (buff, "%s(?,'?')", current_conversion_rules[hr - 1].data.from);
 	    }
 	  return buff;
 	}
@@ -2719,7 +2719,7 @@ sql_convert_func (char *srcfmt, char *srcparam, char *dstbuf, int dstbuf_size)
 
   if (strstr (srcfmt, "%s"))	// simple conversion
     {
-      sprintf (dstbuf, srcfmt, srcparam ? srcparam : "");
+      SPRINTF1 (dstbuf, srcfmt, srcparam ? srcparam : "");
       return 0;
     }
 
@@ -3464,7 +3464,7 @@ get_dollared_sql_var (char *s)
     }				// ,11 aint working yet..
 
 
-  sprintf (buff2, &s[1]);
+  SPRINTF0 (buff2, &s[1]);
   if (acl_getenv_not_set_as_0 (buff2))
     {
       strcpy (buff, acl_getenv_not_set_as_0 (buff2));
@@ -4066,17 +4066,17 @@ A4GLSQLCV_db_tablename (char *dbname, char *instance, char *ownerized_tablename)
     {
       if (instance == NULL)
 	{
-	  sprintf (buff, "%s:%s", dbname, ownerized_tablename);
+	  SPRINTF2 (buff, "%s:%s", dbname, ownerized_tablename);
 	}
       else
 	{
 	  if (dbname == NULL)
 	    {
-	      sprintf (buff, "%s@%s", instance, ownerized_tablename);
+	      SPRINTF2 (buff, "%s@%s", instance, ownerized_tablename);
 	    }
 	  else
 	    {
-	      sprintf (buff, "%s@%s:%s", dbname, instance, ownerized_tablename);
+	      SPRINTF3 (buff, "%s@%s:%s", dbname, instance, ownerized_tablename);
 	    }
 	}
     }
@@ -4213,11 +4213,11 @@ A4GLSQLCV_get_forupdate (char *collist)
       if (collist)
 	{
 
-	  sprintf (buff, " FOR UPDATE OF %s", collist);
+	  SPRINTF1 (buff, " FOR UPDATE OF %s", collist);
 	}
       else
 	{
-	  sprintf (buff, " FOR UPDATE");
+	  SPRINTF0 (buff, " FOR UPDATE");
 	}
     }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.153 2008-10-13 12:12:52 mikeaubury Exp $
+# $Id: curslib.c,v 1.154 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.153 2008-10-13 12:12:52 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.154 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -445,7 +445,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 	      A4GL_tui_printr (0, "%s > %s ", str, st);
 	    }
 	  else if (a_isprint (a) && strlen (st) <= (w - strlen (str) - 5))
-	    sprintf (st, "%s%c", st, a);
+	    SPRINTF2 (st, "%s%c", st, a);
 	}
       if (last_opt != curr_opt)
 	{
@@ -675,7 +675,7 @@ A4GL_disp_opt (row, x, y, l, type)
   else
     A4GL_mja_setcolor (NORMAL_MENU);
   A4GL_mja_gotoxy (x, y);
-  sprintf (disopt, "%%-%d.%ds", l, l);
+  SPRINTF2 (disopt, "%%-%d.%ds", l, l);
   /* print (disopt, opts[row]); */
   A4GL_tui_printr (0, disopt, opts[row]);
   A4GL_mja_setcolor (NORMAL_MENU);
@@ -814,7 +814,7 @@ A4GL_do_pause (void)
   char buff[80];
 
   w = A4GL_screen_width ();
-  sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
+  SPRINTF1 (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
   x = A4GL_create_blank_window ("pause", ((w - emw) / 2), 20, emw, 3, 1);
   A4GL_mja_gotoxy (1, 2);
@@ -1421,11 +1421,11 @@ A4GL_disp_horiz_menu (char *title, int y, int mn_type)
     {
       if (mn_type == 0)
 	{
-	  sprintf (disp_str, "%s:  ", title);
+	  SPRINTF1 (disp_str, "%s:  ", title);
 	  disp_cnt = strlen (disp_str) + 2;
 	}
       else
-	sprintf (disp_str, " %s ", title);
+	SPRINTF1 (disp_str, " %s ", title);
     }
   abort_pressed = 0;
   A4GL_mja_setcolor (NORMAL_TEXT);
@@ -1588,11 +1588,11 @@ UILIB_A4GL_disp_h_menu (void *menuv)
     {
       if (menu->menu_type == ACL_MN_HORIZ_NOTBOXED)
 	{
-	  sprintf (disp_str, "%s:  ", menu->menu_title);
+	  SPRINTF1 (disp_str, "%s:  ", menu->menu_title);
 	  disp_cnt = strlen (disp_str) + 1;
 	}
       else
-	sprintf (disp_str, " %s ", menu->menu_title);
+	SPRINTF1 (disp_str, " %s ", menu->menu_title);
     }
   menu->menu_offset = disp_cnt;
 
@@ -1766,16 +1766,15 @@ A4GL_display_menu (ACL_Menu * menu)
     {
       if (menu->menu_type == ACL_MN_HORIZ_NOTBOXED)
 	{
-	  sprintf (disp_str, "%s: ", menu->menu_title);
+	  SPRINTF1 (disp_str, "%s: ", menu->menu_title);
 	  disp_cnt = strlen (disp_str) + 1;
 	}
       else
-	sprintf (disp_str, " %s ", menu->menu_title);
+	SPRINTF1 (disp_str, " %s ", menu->menu_title);
     }
 
 
   A4GL_debug ("Printing titles....");
-  //sprintf (buff, "Print : %s %p @%d, %d", disp_str, menu->menu_win, menu->mn_offset * 2, menu->menu_line);
   A4GL_h_disp_title (menu, disp_str);
 
 
@@ -2100,7 +2099,7 @@ A4GL_load_form (char *fname2, int fno1, int fno)
   currno = 0;
   if (formfile == 0)
     {
-      printf ("Form couldn't be opened\n");
+      PRINTF ("Form couldn't be opened\n");
       exit (0);
     }
 
@@ -2241,7 +2240,7 @@ A4GL_chktag (char *buff, int fno)
       *ptr = 0;
       if (namescnt == MAXFIELDS)
 	{
-	  printf ("Too Many field on single form - Max. of %d\n", MAXFIELDS);
+	  A4GL_assertion(1, "Too Many field on single form\n") 
 	  exit (0);
 	}
       strcpy (names[fno][namescnt++], ptr + 1);
@@ -2389,7 +2388,7 @@ A4GL_getkey (void)
 		  system (cmd);
 
 
-		  printf ("\n\nPress return to continue\n");
+		  PRINTF ("\n\nPress return to continue\n");
 		  fflush (stdout);
 		  while (getc (stdin) != '\n');
 
@@ -2431,7 +2430,7 @@ A4GL_chklistbox (char **arr, int elem, int mult, int x, int y, int w, int h)
   A4GL_newbox (&area, x, y, x + w + 1, y + h + 1, BORDER_BOX);
 
   A4GL_mja_gotoxy (x + 1, y + 1);
-  sprintf (pbuff, "%%-%d.%ds %%c", w - 2, w - 2);
+  SPRINTF2 (pbuff, "%%-%d.%ds %%c", w - 2, w - 2);
   for (a = 0; a < 1024; a++)
     selected[a] = ' ';
 
@@ -2521,7 +2520,7 @@ A4GL_chklistbox (char **arr, int elem, int mult, int x, int y, int w, int h)
   A4GL_clearbox (&area);
   if (mult)
     {
-      sprintf (pbuff, "%d rows selected", sel);
+      SPRINTF1 (pbuff, "%d rows selected", sel);
       A4GL_error_box (pbuff, 0);
     }
 }
@@ -2618,7 +2617,7 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
   A4GL_debug (" NW PTR");
-  sprintf (buff, "MS%p", cw);
+  SPRINTF1 (buff, "MS%p", cw);
 
   if (A4GL_has_pointer (buff, MESSAGEWIN))
     {
@@ -2843,7 +2842,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 		  system (cmd);
 
 
-		  printf ("\n\nPress return to continue\n");
+		  PRINTF ("\n\nPress return to continue\n");
 		  fflush (stdout);
 		  while (getc (stdin) != '\n');
 

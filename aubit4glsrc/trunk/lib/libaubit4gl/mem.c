@@ -253,7 +253,7 @@ A4GL_set_associated_mem (void *orig, void *newbytes)
 
   if (last_orig != orig)
     {
-      sprintf (buff, "%p", orig);
+      SPRINTF1 (buff, "%p", orig);
 
       if (A4GL_has_pointer (buff, MEMEXTRA))
 	{

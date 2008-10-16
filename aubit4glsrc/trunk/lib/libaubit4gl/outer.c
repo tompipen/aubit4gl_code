@@ -153,7 +153,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 	      outer_table = t2->tabname;
 	      if (A4GLSQLPARSE_from_clause_join (select, t2, outer, tl) == 0)
 		return 0;
-	      sprintf (alias_buff, " (%s)", outer);
+	      SPRINTF1 (alias_buff, " (%s)", outer);
 	      //printf("Got %s\n",outer);
 	    }
 
@@ -250,7 +250,7 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 	      else
 		{
 		  char buff2[256];
-		  sprintf (buff2, ", OUTER %s", alias_buff);
+		  SPRINTF1 (buff2, ", OUTER %s", alias_buff);
 		  strcat (buff, buff2);
 		}
 	    }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.224 2008-10-07 09:21:31 mikeaubury Exp $
+# $Id: sql.c,v 1.225 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -3813,7 +3813,7 @@ static Bool sql_columns(SQLHDBC hdbc, char *tabname, char *colname,
         if (!A4GL_new_hstmt (& ci->hstmt))
             return False;
 
-        sprintf(s, "select * from %s", ci->tabname);
+        SPRINTF1(s, "select * from %s", ci->tabname);
         rc = SQLPrepare(ci->hstmt, (SQLCHAR*)s, SQL_NTS);
         if ( ! chk_rc(rc, ci->hstmt, "sql_columns: SQLPrepare()"))
 	{
@@ -4060,7 +4060,7 @@ static char *type_id_to_name_fallback(int type_id)
     {
         static char buf[16];
         A4GL_wrn ("WARNING Unknown type %i", type_id);
-        sprintf(buf, "%d", type_id);
+        SPRINTF1(buf, "%d", type_id);
         return buf;
     }
 }
@@ -5637,7 +5637,7 @@ A4GL_decode_rc (int a)
       case SQL_NO_DATA_FOUND:
         return "SQL_NO_DATA_FOUND";
     }
-    sprintf(buf, "Not decoded SQL retval (%i(?))", a);
+    SPRINTF1(buf, "Not decoded SQL retval (%i(?))", a);
     return buf;
 }
 

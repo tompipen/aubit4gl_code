@@ -146,7 +146,7 @@ A4GL_convto_reference (int d1, void *p1, int d2, void *p2, int size)
   struct s_pass_reference *ppr1;
   if (d1 == DTYPE_REFERENCE && d2 == DTYPE_CHAR)
     {
-      sprintf (p2, "(REF)");
+      SPRINTF0 (p2, "(REF)");
       return 1;
     }
 

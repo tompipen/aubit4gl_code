@@ -834,7 +834,7 @@ int
 a4gl_deccvdbl (double d, fgldecimal * d1)
 {
   char buff[200];
-  sprintf (buff, "%32.16lf", d);
+  SPRINTF1 (buff, "%32.16lf", d);
   A4GL_str_dot_to_dec (buff, d1);
   return 0;
 }
@@ -843,7 +843,7 @@ int
 a4gl_deccvflt (float d, fgldecimal * d1)
 {
   char buff[200];
-  sprintf (buff, "%32.16f", d);
+  SPRINTF1 (buff, "%32.16f", d);
   A4GL_str_dot_to_dec (buff, d1);
   return 0;
 }
@@ -852,7 +852,7 @@ int
 a4gl_deccvint (int i, fgldecimal * d)
 {
   char buff[200];
-  sprintf (buff, "%d", i);
+  SPRINTF1 (buff, "%d", i);
   A4GL_str_dot_to_dec (buff, d);
   return 0;
 }
@@ -861,7 +861,7 @@ int
 a4gl_deccvlong (long l, fgldecimal * d)
 {
   char buff[200];
-  sprintf (buff, "%ld", l);
+  SPRINTF1 (buff, "%ld", l);
   A4GL_str_dot_to_dec (buff, d);
 
   return 0;

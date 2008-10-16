@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.96 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.97 2008-10-16 07:13:36 mikeaubury Exp $
 #
 */
 
@@ -1068,7 +1068,7 @@ A4GL_func_using ()
 	    //@ENV FMTDATETONUMBER formats a date to number when using a numeric format
 	    if (A4GL_isyes (acl_getenv ("FMTDATETONUMBER")))
 	      {
-		sprintf (buff, "%ld", d);
+		SPRINTF1 (buff, "%ld", d);
 		a4gl_using_from_string (z, fmtlen, fmt, buff, 0);
 	      }
 	    A4GL_push_char (z);

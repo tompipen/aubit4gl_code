@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.34 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.35 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 
 /**
@@ -154,7 +154,7 @@ char *
 A4GLSTK_lastSeenLine (void)
 {
   static char buff[2000];
-  sprintf (buff, "Module : %s  Line : %d", currentModuleName, currentFglLineNumber);
+  SPRINTF2 (buff, "Module : %s  Line : %d", currentModuleName, currentFglLineNumber);
   return buff;
 }
 

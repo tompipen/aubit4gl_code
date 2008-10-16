@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.148 2008-09-15 12:28:40 mikeaubury Exp $
+# $Id: iarray.c,v 1.149 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.148 2008-09-15 12:28:40 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.149 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -1519,8 +1519,6 @@ A4GL_mja_pos_form_cursor (FORM * form)
 
   if ( current_field (form)==0) return;
 
-//mvwprintw(currwin, 1, 1, "%p", form);
-//printf("!"); fflush(stdout);
   a = pos_form_cursor (form);
   if (a != E_OK)
     {

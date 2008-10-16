@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.201 2008-09-15 12:28:40 mikeaubury Exp $
+# $Id: ioform.c,v 1.202 2008-10-16 07:13:36 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.201 2008-09-15 12:28:40 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.202 2008-10-16 07:13:36 mikeaubury Exp $";
 #endif
 
 /**
@@ -4209,7 +4209,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 				}
 			}
 				A4GL_debug("changed=%d\n", chged);
-				//printf("changed=%d\n", chged);fflush(stdout);
 			
 			if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && chged && !  A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) && A4GL_input_required_handling()==REQUIRED_TYPE_FIELD)
 			  {
@@ -4535,11 +4534,20 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	{
 	  if (!A4GL_is_meaningful_in_decfmt (A4GL_get_convfmts ()->ui_decfmt, fld_data[a]))
 	    continue;
+
+	/*
 	  if (fld_data[a] == A4GL_get_convfmts ()->ui_decfmt.decsep)
 	    {
 	      buff_new[c++] = A4GL_get_convfmts ()->posix_decfmt.decsep;
 	      continue;
 	    }
+	  if (fld_data[a] == A4GL_get_convfmts ()->ui_decfmt.thsep)
+	    {
+	      buff_new[c++] = A4GL_get_convfmts ()->posix_decfmt.thsep;
+	      continue;
+	    }
+	*/
+
 	  buff_new[c++] = fld_data[a];
 	}
       fld_data = buff_new;
@@ -4655,10 +4663,13 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 		return 0;
 	}
   A4GL_debug ("Got fld_data as : %s", fld_data);
-  if (A4GL_is_numeric_datatype(fprop->datatype))
+
+
+  if (A4GL_is_numeric_datatype(fprop->datatype) && 0 )
   {
       char *tmpptr;
       tmpptr = strdup(fld_data);
+	
       A4GL_decstr_convert(tmpptr,
 	      A4GL_get_convfmts()->posix_decfmt,
 	      A4GL_get_convfmts()->posix_decfmt, 0, 1, -1); // validate
@@ -4666,7 +4677,15 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 	  strcpy(fld_data, tmpptr);
       free (tmpptr);
   }
+
+
   A4GL_push_param (fld_data, DTYPE_CHAR);
+
+
+                if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && A4GL_is_numeric_datatype(fprop->datatype)) {
+                        // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+                                                 A4GL_convert_char_on_stack_decimal_sep(A4GL_get_convfmts()->ui_decfmt.decsep);
+                                      }
 
   if ((fprop->datatype & 0xf) == DTYPE_CHAR
       || (fprop->datatype & 0xf) == DTYPE_VCHAR)
