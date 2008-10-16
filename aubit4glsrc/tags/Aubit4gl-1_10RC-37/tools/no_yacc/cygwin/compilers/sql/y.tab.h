@@ -1,0 +1,653 @@
+/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* Skeleton interface for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     INT_VALUE = 2192,
+     NAMED = 2193,
+     NAMED_GEN = 2194,
+     CHAR_VALUE = 2195,
+     NOT_USED_1 = 2196,
+     NOT_USED_2 = 2197,
+     NOT_USED_3 = 2198,
+     NOT_USED_4 = 2199,
+     NOT_USED_5 = 2200,
+     NOT_USED_6 = 2201,
+     NOT_USED_7 = 2202,
+     NOT_USED_8 = 2203,
+     NUMBER_VALUE = 2204,
+     SEMICOLON = 2205,
+     QUESTION_MARK = 2206,
+     CLINE = 2207,
+     CH = 2208,
+     MARK_VAR = 2209,
+     END_MARK_VAR = 2210,
+     LEFT_JOIN = 1001,
+     INNER_JOIN = 1002,
+     WITH_CONVERSIONS = 1008,
+     WITHOUT_CONVERSIONS = 1009,
+     BARCODE = 1010,
+     BARCODE_NO_TEXT = 1011,
+     BARCODETYPE = 1012,
+     BLUEBAR_COLOR_EQUAL = 1013,
+     BLUEBAR_STYLE_EQUAL_RECTANGLE_COLOR_EQUAL = 1014,
+     BLUEBAR_STYLE_EQUAL_RECTANGLE = 1015,
+     BLUEBAR_STYLE_EQUAL_LINE_COLOR_EQUAL = 1016,
+     BLUEBAR_STYLE_EQUAL_LINE = 1017,
+     BLUEBAR = 1018,
+     USING_BTREE = 1025,
+     USING_RTREE = 1026,
+     ASCOPY = 1043,
+     SET_BUFFERED_LOG = 1051,
+     SET_LOG = 1052,
+     MDY = 1054,
+     WEEKDAY = 1055,
+     MODE_ANSI = 1058,
+     START_DATABASE = 1059,
+     WITH_LOG_IN = 1060,
+     SET_CONSTRAINTS_ALL_IMMEDIATE = 1061,
+     DATETIME_VALUE = 1074,
+     INTERVAL_VALUE = 1075,
+     RECOVER_TABLE = 1076,
+     ROLLFORWARD_DATABASE = 1077,
+     DROP_TRIGGER = 1093,
+     DROP_AUDIT_FOR = 1094,
+     CREATE_AUDIT_FOR = 1095,
+     EXECUTE_PROCEDURE = 1099,
+     ALTER_TABLE = 1106,
+     ALTER_INDEX = 1107,
+     NEXT_SIZE = 1108,
+     XSET_MULTIPLY_EQUAL_OPEN_BRACKET = 1145,
+     XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET = 1146,
+     XSET_ident_DOT_MULTIPLY_EQUAL = 1147,
+     XSET_MULTIPLY_EQUAL = 1148,
+     XSET_OPEN_BRACKET = 1149,
+     CREATE_DATABASE = 1152,
+     DROP_DATABASE = 1153,
+     ADD_CONSTRAINT = 1155,
+     DROP_CONSTRAINT = 1156,
+     DROP_SYNONYM = 1157,
+     CONSTRAINT = 1158,
+     LOCAL_REPORT = 1162,
+     LOCAL_PDF_REPORT = 1163,
+     DOUBLE_PRECISION = 1167,
+     COUNT_MULTIPLY = 1168,
+     MODIFY_NEXT_SIZE = 1188,
+     LOCK_MODE_PAGE = 1189,
+     LOCK_MODE_ROW = 1190,
+     UNITS_YEAR = 1197,
+     UNITS_MONTH = 1198,
+     UNITS_DAY = 1199,
+     UNITS_HOUR = 1200,
+     UNITS_MINUTE = 1201,
+     UNITS_SECOND = 1202,
+     TO_CLUSTER = 1207,
+     TO_NOT_CLUSTER = 1208,
+     CREATE_UC_IDX = 1210,
+     CREATE_U_IDX = 1211,
+     CREATE_C_IDX = 1212,
+     CREATE_IDX = 1213,
+     CM = 1220,
+     DOUBLE_COLON = 1223,
+     SQLSICS = 1229,
+     CREATE_SCHEMA = 1230,
+     SQLSIRR = 1231,
+     UPDATESTATS_T = 1232,
+     SQLSICR = 1233,
+     SQLSIDR = 1244,
+     CREATE_TEMP_TABLE = 1245,
+     WITH_CHECK_OPTION = 1253,
+     WITH_GRANT_OPTION = 1254,
+     SQLSLMNW = 1255,
+     WHERE_CURRENT_OF = 1261,
+     NOT_NULL_UNIQUE = 1269,
+     SQLSLMW = 1276,
+     ALL_PRIVILEGES = 1278,
+     CREATE_SYNONYM = 1282,
+     DROP_TABLE = 1283,
+     INEXCLUSIVE = 1285,
+     UPDATESTATS = 1290,
+     CREATE_TABLE = 1316,
+     DEFAULT_NULL = 1317,
+     DEFAULT_TODAY = 1318,
+     DEFAULT_USER = 1319,
+     UNLOCK_TABLE = 1332,
+     ROLLBACK_W = 1340,
+     SQLSEON = 1342,
+     SQLSEOFF = 1343,
+     CREATE_VIEW = 1347,
+     DELETE_FROM = 1348,
+     EXTENT_SIZE = 1355,
+     FOREIGN_KEY = 1356,
+     INSERT_INTO = 1359,
+     IS_NOT_NULL = 1361,
+     NOT_MATCHES = 1364,
+     PRIMARY_KEY = 1370,
+     USE_SESSION = 1377,
+     WITH_NO_LOG = 1378,
+     INSHARE = 1381,
+     BEGIN_WORK = 1387,
+     DROP_INDEX = 1392,
+     FOR_UPDATE_OF = 1398,
+     FOR_UPDATE = 1399,
+     REFERENCE = 1401,
+     LOCK_TABLE = 1404,
+     NOT_EXISTS = 1406,
+     REFERENCES = 1408,
+     RENCOL = 1409,
+     SMALLFLOAT = 1411,
+     COMMIT_W = 1422,
+     RENTAB = 1429,
+     KW_CHAR = 1432,
+     NCHAR = 1433,
+     NVARCHAR = 1434,
+     DELIMITER = 1436,
+     DROP_VIEW = 1438,
+     EXCLUSIVE = 1441,
+     GREATER_THAN_EQ = 1445,
+     INTO_TEMP = 1447,
+     LOAD_FROM = 1451,
+     UNLOAD_TO = 1462,
+     DATABASE = 1471,
+     DATETIME = 1472,
+     DISTINCT = 1474,
+     FRACTION = 1481,
+     GROUP_BY = 1483,
+     INTERVAL = 1484,
+     NOT_LIKE = 1486,
+     NOT_ILIKE = 1487,
+     NOT_NULL = 1488,
+     RESOURCE = 1494,
+     SMALLINT = 1495,
+     IS_NULL = 1501,
+     LESS_THAN_EQ = 1502,
+     BETWEEN = 1504,
+     CLOSE_BRACKET = 1507,
+     CONNECT = 1510,
+     KW_CURRENT = 1511,
+     KW_DECIMAL = 1513,
+     DEFAULT = 1515,
+     INTEGER = 1523,
+     SERIAL8 = 1525,
+     MATCHES = 1528,
+     VARCHAR = 1541,
+     CLOSE_SQUARE = 1544,
+     GREATER_THAN = 1545,
+     KW_FALSE = 1546,
+     NOT_IN = 1547,
+     OPEN_BRACKET = 1549,
+     KW_DELETE = 1557,
+     KW_ESCAPE = 1560,
+     EXISTS = 1561,
+     EXTEND = 1562,
+     HAVING = 1566,
+     KW_INSERT = 1568,
+     MINUTE = 1572,
+     MODIFY = 1573,
+     EQUAL = 1575,
+     NOT_EQUAL = 1576,
+     OPEN_SQUARE = 1578,
+     PUBLIC = 1582,
+     REVOKE = 1585,
+     SECOND = 1589,
+     KW_SELECT = 1593,
+     SERIAL = 1594,
+     UNIQUE = 1597,
+     KW_UPDATE = 1599,
+     VALUES = 1600,
+     KW_NULL = 1604,
+     KW_TRUE = 1605,
+     ALTER = 1607,
+     CHECK = 1613,
+     COUNT = 1617,
+     KW_FIRST = 1622,
+     KW_FLOAT = 1623,
+     GRANT = 1626,
+     INDEX = 1629,
+     LESS_THAN = 1632,
+     MONEY = 1634,
+     MONTH = 1635,
+     KW_MULTIPLY = 1637,
+     ORDER = 1638,
+     OUTER = 1639,
+     UNION = 1648,
+     KW_USING_FILTER = 1649,
+     WHERE = 1651,
+     KW_BYTE = 1658,
+     CASE = 1660,
+     KW_DATE = 1662,
+     DESC = 1663,
+     KW_DIVIDE = 1664,
+     DROP = 1667,
+     ELSE = 1668,
+     FROM = 1672,
+     HOUR = 1678,
+     INTO = 1679,
+     LIKE = 1682,
+     REAL = 1691,
+     SOME = 1696,
+     KW_TEXT = 1700,
+     KW_THEN = 1701,
+     USER = 1702,
+     WHEN = 1704,
+     YEAR = 1707,
+     KW_DOW = 1708,
+     XSET = 1710,
+     ADD = 1711,
+     ALL = 1712,
+     KW_AND = 1713,
+     ANY = 1714,
+     ASC = 1715,
+     AVG = 1716,
+     COLON = 1717,
+     KW_COMMA = 1718,
+     DAY = 1719,
+     DBA = 1720,
+     KW_FOR = 1724,
+     XMAX = 1729,
+     XMIN = 1730,
+     KW_MINUS = 1731,
+     KW_MOD = 1732,
+     KW_NOT = 1733,
+     KW_ROW = 1737,
+     KW_SUM = 1740,
+     ATSIGN = 1743,
+     KW_PLUS = 1744,
+     KW_AS_USER = 1749,
+     KW_AS = 1750,
+     KW_BY = 1752,
+     KW_DOT = 1753,
+     KW_IN = 1756,
+     KW_ON = 1758,
+     KW_OR = 1759,
+     KW_TO = 1760,
+     BEFORE = 1798,
+     END = 1802,
+     TILDE = 1809,
+     ILIKE = 1810,
+     FILLFACTOR = 1813,
+     KW_EXTENDS = 1816,
+     TIME = 1818,
+     KW_TODAY = 1825,
+     KW_ROWID = 1826,
+     CURSOR_NAME_FUNCTION = 2173,
+     TIMESTAMP = 2174,
+     MOVE_TO_TOP = 2175,
+     LINETO_TOP = 2176,
+     KW_HEIGHT = 2177,
+     SET_STROKE_COLOR = 2178,
+     SET_FONT_SIZE = 2179,
+     SET_COLOR = 2180,
+     MOVE_TO = 2181,
+     FILL_STROKE = 2182,
+     STROKE = 2183,
+     LINE_TO = 2184,
+     SET_FONT_NAME = 2185,
+     BOOKMARK = 2186,
+     KW_FILL = 2187,
+     KW_WIDTH = 2188,
+     SET_FILL_COLOR = 2189,
+     SET_PARAMETER = 2190
+   };
+#endif
+/* Tokens.  */
+#define INT_VALUE 2192
+#define NAMED 2193
+#define NAMED_GEN 2194
+#define CHAR_VALUE 2195
+#define NOT_USED_1 2196
+#define NOT_USED_2 2197
+#define NOT_USED_3 2198
+#define NOT_USED_4 2199
+#define NOT_USED_5 2200
+#define NOT_USED_6 2201
+#define NOT_USED_7 2202
+#define NOT_USED_8 2203
+#define NUMBER_VALUE 2204
+#define SEMICOLON 2205
+#define QUESTION_MARK 2206
+#define CLINE 2207
+#define CH 2208
+#define MARK_VAR 2209
+#define END_MARK_VAR 2210
+#define LEFT_JOIN 1001
+#define INNER_JOIN 1002
+#define WITH_CONVERSIONS 1008
+#define WITHOUT_CONVERSIONS 1009
+#define BARCODE 1010
+#define BARCODE_NO_TEXT 1011
+#define BARCODETYPE 1012
+#define BLUEBAR_COLOR_EQUAL 1013
+#define BLUEBAR_STYLE_EQUAL_RECTANGLE_COLOR_EQUAL 1014
+#define BLUEBAR_STYLE_EQUAL_RECTANGLE 1015
+#define BLUEBAR_STYLE_EQUAL_LINE_COLOR_EQUAL 1016
+#define BLUEBAR_STYLE_EQUAL_LINE 1017
+#define BLUEBAR 1018
+#define USING_BTREE 1025
+#define USING_RTREE 1026
+#define ASCOPY 1043
+#define SET_BUFFERED_LOG 1051
+#define SET_LOG 1052
+#define MDY 1054
+#define WEEKDAY 1055
+#define MODE_ANSI 1058
+#define START_DATABASE 1059
+#define WITH_LOG_IN 1060
+#define SET_CONSTRAINTS_ALL_IMMEDIATE 1061
+#define DATETIME_VALUE 1074
+#define INTERVAL_VALUE 1075
+#define RECOVER_TABLE 1076
+#define ROLLFORWARD_DATABASE 1077
+#define DROP_TRIGGER 1093
+#define DROP_AUDIT_FOR 1094
+#define CREATE_AUDIT_FOR 1095
+#define EXECUTE_PROCEDURE 1099
+#define ALTER_TABLE 1106
+#define ALTER_INDEX 1107
+#define NEXT_SIZE 1108
+#define XSET_MULTIPLY_EQUAL_OPEN_BRACKET 1145
+#define XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET 1146
+#define XSET_ident_DOT_MULTIPLY_EQUAL 1147
+#define XSET_MULTIPLY_EQUAL 1148
+#define XSET_OPEN_BRACKET 1149
+#define CREATE_DATABASE 1152
+#define DROP_DATABASE 1153
+#define ADD_CONSTRAINT 1155
+#define DROP_CONSTRAINT 1156
+#define DROP_SYNONYM 1157
+#define CONSTRAINT 1158
+#define LOCAL_REPORT 1162
+#define LOCAL_PDF_REPORT 1163
+#define DOUBLE_PRECISION 1167
+#define COUNT_MULTIPLY 1168
+#define MODIFY_NEXT_SIZE 1188
+#define LOCK_MODE_PAGE 1189
+#define LOCK_MODE_ROW 1190
+#define UNITS_YEAR 1197
+#define UNITS_MONTH 1198
+#define UNITS_DAY 1199
+#define UNITS_HOUR 1200
+#define UNITS_MINUTE 1201
+#define UNITS_SECOND 1202
+#define TO_CLUSTER 1207
+#define TO_NOT_CLUSTER 1208
+#define CREATE_UC_IDX 1210
+#define CREATE_U_IDX 1211
+#define CREATE_C_IDX 1212
+#define CREATE_IDX 1213
+#define CM 1220
+#define DOUBLE_COLON 1223
+#define SQLSICS 1229
+#define CREATE_SCHEMA 1230
+#define SQLSIRR 1231
+#define UPDATESTATS_T 1232
+#define SQLSICR 1233
+#define SQLSIDR 1244
+#define CREATE_TEMP_TABLE 1245
+#define WITH_CHECK_OPTION 1253
+#define WITH_GRANT_OPTION 1254
+#define SQLSLMNW 1255
+#define WHERE_CURRENT_OF 1261
+#define NOT_NULL_UNIQUE 1269
+#define SQLSLMW 1276
+#define ALL_PRIVILEGES 1278
+#define CREATE_SYNONYM 1282
+#define DROP_TABLE 1283
+#define INEXCLUSIVE 1285
+#define UPDATESTATS 1290
+#define CREATE_TABLE 1316
+#define DEFAULT_NULL 1317
+#define DEFAULT_TODAY 1318
+#define DEFAULT_USER 1319
+#define UNLOCK_TABLE 1332
+#define ROLLBACK_W 1340
+#define SQLSEON 1342
+#define SQLSEOFF 1343
+#define CREATE_VIEW 1347
+#define DELETE_FROM 1348
+#define EXTENT_SIZE 1355
+#define FOREIGN_KEY 1356
+#define INSERT_INTO 1359
+#define IS_NOT_NULL 1361
+#define NOT_MATCHES 1364
+#define PRIMARY_KEY 1370
+#define USE_SESSION 1377
+#define WITH_NO_LOG 1378
+#define INSHARE 1381
+#define BEGIN_WORK 1387
+#define DROP_INDEX 1392
+#define FOR_UPDATE_OF 1398
+#define FOR_UPDATE 1399
+#define REFERENCE 1401
+#define LOCK_TABLE 1404
+#define NOT_EXISTS 1406
+#define REFERENCES 1408
+#define RENCOL 1409
+#define SMALLFLOAT 1411
+#define COMMIT_W 1422
+#define RENTAB 1429
+#define KW_CHAR 1432
+#define NCHAR 1433
+#define NVARCHAR 1434
+#define DELIMITER 1436
+#define DROP_VIEW 1438
+#define EXCLUSIVE 1441
+#define GREATER_THAN_EQ 1445
+#define INTO_TEMP 1447
+#define LOAD_FROM 1451
+#define UNLOAD_TO 1462
+#define DATABASE 1471
+#define DATETIME 1472
+#define DISTINCT 1474
+#define FRACTION 1481
+#define GROUP_BY 1483
+#define INTERVAL 1484
+#define NOT_LIKE 1486
+#define NOT_ILIKE 1487
+#define NOT_NULL 1488
+#define RESOURCE 1494
+#define SMALLINT 1495
+#define IS_NULL 1501
+#define LESS_THAN_EQ 1502
+#define BETWEEN 1504
+#define CLOSE_BRACKET 1507
+#define CONNECT 1510
+#define KW_CURRENT 1511
+#define KW_DECIMAL 1513
+#define DEFAULT 1515
+#define INTEGER 1523
+#define SERIAL8 1525
+#define MATCHES 1528
+#define VARCHAR 1541
+#define CLOSE_SQUARE 1544
+#define GREATER_THAN 1545
+#define KW_FALSE 1546
+#define NOT_IN 1547
+#define OPEN_BRACKET 1549
+#define KW_DELETE 1557
+#define KW_ESCAPE 1560
+#define EXISTS 1561
+#define EXTEND 1562
+#define HAVING 1566
+#define KW_INSERT 1568
+#define MINUTE 1572
+#define MODIFY 1573
+#define EQUAL 1575
+#define NOT_EQUAL 1576
+#define OPEN_SQUARE 1578
+#define PUBLIC 1582
+#define REVOKE 1585
+#define SECOND 1589
+#define KW_SELECT 1593
+#define SERIAL 1594
+#define UNIQUE 1597
+#define KW_UPDATE 1599
+#define VALUES 1600
+#define KW_NULL 1604
+#define KW_TRUE 1605
+#define ALTER 1607
+#define CHECK 1613
+#define COUNT 1617
+#define KW_FIRST 1622
+#define KW_FLOAT 1623
+#define GRANT 1626
+#define INDEX 1629
+#define LESS_THAN 1632
+#define MONEY 1634
+#define MONTH 1635
+#define KW_MULTIPLY 1637
+#define ORDER 1638
+#define OUTER 1639
+#define UNION 1648
+#define KW_USING_FILTER 1649
+#define WHERE 1651
+#define KW_BYTE 1658
+#define CASE 1660
+#define KW_DATE 1662
+#define DESC 1663
+#define KW_DIVIDE 1664
+#define DROP 1667
+#define ELSE 1668
+#define FROM 1672
+#define HOUR 1678
+#define INTO 1679
+#define LIKE 1682
+#define REAL 1691
+#define SOME 1696
+#define KW_TEXT 1700
+#define KW_THEN 1701
+#define USER 1702
+#define WHEN 1704
+#define YEAR 1707
+#define KW_DOW 1708
+#define XSET 1710
+#define ADD 1711
+#define ALL 1712
+#define KW_AND 1713
+#define ANY 1714
+#define ASC 1715
+#define AVG 1716
+#define COLON 1717
+#define KW_COMMA 1718
+#define DAY 1719
+#define DBA 1720
+#define KW_FOR 1724
+#define XMAX 1729
+#define XMIN 1730
+#define KW_MINUS 1731
+#define KW_MOD 1732
+#define KW_NOT 1733
+#define KW_ROW 1737
+#define KW_SUM 1740
+#define ATSIGN 1743
+#define KW_PLUS 1744
+#define KW_AS_USER 1749
+#define KW_AS 1750
+#define KW_BY 1752
+#define KW_DOT 1753
+#define KW_IN 1756
+#define KW_ON 1758
+#define KW_OR 1759
+#define KW_TO 1760
+#define BEFORE 1798
+#define END 1802
+#define TILDE 1809
+#define ILIKE 1810
+#define FILLFACTOR 1813
+#define KW_EXTENDS 1816
+#define TIME 1818
+#define KW_TODAY 1825
+#define KW_ROWID 1826
+#define CURSOR_NAME_FUNCTION 2173
+#define TIMESTAMP 2174
+#define MOVE_TO_TOP 2175
+#define LINETO_TOP 2176
+#define KW_HEIGHT 2177
+#define SET_STROKE_COLOR 2178
+#define SET_FONT_SIZE 2179
+#define SET_COLOR 2180
+#define MOVE_TO 2181
+#define FILL_STROKE 2182
+#define STROKE 2183
+#define LINE_TO 2184
+#define SET_FONT_NAME 2185
+#define BOOKMARK 2186
+#define KW_FILL 2187
+#define KW_WIDTH 2188
+#define SET_FILL_COLOR 2189
+#define SET_PARAMETER 2190
+
+
+
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
+#line 186 "sql.yacc"
+{
+        char    str[8192];
+   char *sql_string;
+	struct  ilist int_list;
+	struct s_table *u_table;
+	struct s_select_finish *s_select_finish;
+        struct s_select_list_item_list *s_select_list_item_list;
+        struct s_select_list_item *s_select_list_item;
+        struct s_select *s_select;
+        int     integer_val;
+        float   float_val;
+	enum e_boolean e_boolean;
+	 struct expr_str_list *ptr_list;
+	        struct struct_update_cmd *update_cmd;
+        struct struct_insert_cmd *insert_cmd;
+        struct struct_delete_cmd *delete_cmd;
+        struct s_update_pair *upd_pair;
+        struct expr_str *ptr;
+        struct str_list *str_list;
+
+
+}
+/* Line 1489 of yacc.c.  */
+#line 646 "y.tab.h"
+	YYSTYPE;
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
+#endif
+
+extern YYSTYPE sqlparse_yylval;
+

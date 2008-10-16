@@ -1,0 +1,41 @@
+This program source file was posted to comp.databases.informix.
+
+Apparently, the news posting program that was used wrapped some of the longer
+source lines.  I rejoined those that appeared to have this problem until I got
+a clean compile.  I also tried to clean up the indentation a little.  I then
+made a shell archive of the source file and appended it to the contributor's
+posted comments.
+
+I have not run this program since some of the code is specific to a particular
+Unix system.  If you don't know enough about C and Unix to tailor this program
+for your own environment, then I recommend that you have someone who does look
+at this code before you use it.  WH 08/21/1996.
+
+------------------------------------------------------------------------------
+
+Newsgroups: comp.databases.informix
+Date: 11 Aug 1996 05:04:16 GMT
+From: "Carlos Costa e Silva" <minimal@mail.telepac.pt>
+Subject: Re: Looking for a code beautifier for Informix -4gl
+
+Here goes a c program that indents 4gl code.  I haven't looked into it but the
+author said that the code is pretty ugly.  No one now has the time to change
+it, so for the time being it stays as it is.
+
+It does not recognize all 4gl keywords but it's working in my company.  It's
+been used for about a year now and there hasn't been any lost code due to to
+the program.
+
+The program indents file.4gl and makes a backup copy in file.iid.
+
+I AND MY COMPANY MAKE NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF
+THE SOFTWARE, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE.  WE SHALL NOT BE LIABLE
+FOR ANY DAMAGES SUFFERED BY ANY PERSON OR COMPANY AS A RESULT OF USING,
+MODIFYING OR DISTRIBUTING THE SOFTWARE.
+
+Sorry about the legalese, but it's cut and pasted from post by a heavy company.
+
+Anyway here goes.  I hope it's useful and that any useful change return's to
+the sender.
+

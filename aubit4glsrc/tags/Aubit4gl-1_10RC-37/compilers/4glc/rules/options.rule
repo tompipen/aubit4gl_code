@@ -1,0 +1,81 @@
+/*
+=====================================================================
+                        Source: options.rule
+=====================================================================
+*/
+
+
+options_cmd : OPTIONS atline opt_options {
+			set_cmdlineno($<integer_val>2);
+			$<cmd>$=new_options_cmd($<manyoptions>3);
+		}
+	;
+
+opt_options : opt_allopts {
+		$<manyoptions>$=malloc(sizeof(manyoptions));
+		$<manyoptions>$->options.options_len=1;
+		$<manyoptions>$->options.options_val=malloc(sizeof($<manyoptions>$->options.options_val[0]) * $<manyoptions>$->options.options_len);
+		$<manyoptions>$->options.options_val[$<manyoptions>$->options.options_len-1]=$<single_option>1;
+		}
+	| opt_options KW_COMMA opt_allopts {
+		$<manyoptions>$=$<manyoptions>1;
+		$<manyoptions>$->options.options_len=$<manyoptions>1->options.options_len+1;
+		$<manyoptions>$->options.options_val=realloc($<manyoptions>1->options.options_val, sizeof($<manyoptions>$->options.options_val[0]) * $<manyoptions>$->options.options_len);
+		$<manyoptions>$->options.options_val[$<manyoptions>$->options.options_len-1]=$<single_option>3;
+
+		}
+;
+
+opt_allopts 	: COMMENT_LINE line_no 		{ $<single_option>$=new_option_expr('C',$<ptr>2,0); map_ui("OPTIONS_COMMENT_LINE");}
+		| ERROR_LINE line_no 		{ $<single_option>$=new_option_expr('E',$<ptr>2,0); map_ui("OPTIONS_ERROR_LINE");}
+		| FORM_LINE line_no 		{ $<single_option>$=new_option_expr('F',$<ptr>2,0); map_ui("OPTIONS_FORM_LINE");}
+		| MENU_LINE line_no 		{ $<single_option>$=new_option_expr('M',$<ptr>2,0); map_ui("OPTIONS_MENU_LINE");}
+		| MSG_LINE line_no 		{ $<single_option>$=new_option_expr('m',$<ptr>2,0); map_ui("OPTIONS_MESSAGE_LINE");}
+		| PROMPT_LINE line_no 		{ $<single_option>$=new_option_expr('P',$<ptr>2,0); map_ui("OPTIONS_PROMPT_LINE");}
+		| KW_ACCEPT single_key_val	{ $<single_option>$=new_option('A',$<str>2,1); iskey=0; map_ui("OPTIONS_ACCEPTKEY");}
+		| KW_DELETE single_key_val 	{ $<single_option>$=new_option('D',$<str>2,1); iskey=0; map_ui("OPTIONS_DELETEKEY");}
+		| KW_INSERT single_key_val 	{ $<single_option>$=new_option('I',$<str>2,1); iskey=0; map_ui("OPTIONS_INSERTKEY");}
+		| KW_NEXT single_key_val 	{ $<single_option>$=new_option('N',$<str>2,1); map_ui("OPTIONS_NEXTKEY");}
+		| KW_PREVIOUS single_key_val 	{ $<single_option>$=new_option('p',$<str>2,1); iskey=0; map_ui("OPTIONS_PREVIOUSKEY");}
+		| KW_HELP single_key_val     	{ $<single_option>$=new_option('H',$<str>2,1); map_ui("OPTIONS_HELPKEY");}
+
+		| HELP_FILE file_name    	{ $<single_option>$=new_option_expr('h',$<ptr>2,0);  map_ui("OPTIONS_HELP_FILE");}
+		| LANG_FILE file_name    	{ $<single_option>$=new_option_expr('L',$<ptr>2,0);  map_ui("OPTIONS_LANG_FILE");}
+
+		| DISPLAY_ATTR_FORM        	{ $<single_option>$=new_option('Z',"1",0); map_ui("OPTIONS_DISPLAY_ATTR_FORM");}
+		| DISPLAY_ATTR_WINDOW      	{ $<single_option>$=new_option('Z',"2",0); map_ui("OPTIONS_DISPLAY_ATTR_WINDOW");}
+		| INPUT_ATTR_FORM        	{ $<single_option>$=new_option('Y',"1",0); map_ui("OPTIONS_INPUT_ATTR_FORM");}
+		| INPUT_ATTR_WINDOW      	{ $<single_option>$=new_option('Y',"2",0); map_ui("OPTIONS_INPUT_ATTR_WINDOW");}
+		| KW_DISPLAY attributes_def 	{ 
+						char buff[200];
+						SPRINTF1(buff,"%d", attributes_as_int($<attrib>2));
+						$<single_option>$=new_option('d', buff,0);  map_ui("OPTIONS_DISPLAY_ATTR");}
+		| KW_INPUT attributes_def   	{ 
+						char buff[200];
+						SPRINTF1(buff,"%d", attributes_as_int($<attrib>2));
+						$<single_option>$=new_option('i',buff,0);  map_ui("OPTIONS_INPUT_ATTR");}
+		| INPUT_WRAP 			{ $<single_option>$=new_option('W',"1",0); map_ui("OPTIONS_INPUT_WRAP");}
+		| INPUT_NO_WRAP 		{ $<single_option>$=new_option('W',"0",0); map_ui("OPTIONS_INPUT_NOWRAP");}
+		| FOCONSTR 			{ $<single_option>$=new_option('f',"1",0); map_ui("OPTIONS_FIELD_ORDER_CONSTRAINED");}
+		| FOUNCONSTR 			{ $<single_option>$=new_option('f',"0",0); map_ui("OPTIONS_FIELD_ORDER_UNCONSTRAINED");}
+		| SQL_INTERRUPT_OFF 		{ $<single_option>$=new_option('S',"0",0); map_ui("OPTIONS_SQL_INTERRUPT");}
+		| SQL_INTERRUPT_ON  		{ $<single_option>$=new_option('S',"1",0); map_ui("OPTIONS_SQL_INTERRUPT");}
+		| KW_RUN option_run_mode 	{ $<single_option>$=new_option('r',$<str>2,0); map_ui("OPTIONS_RUN");}
+		| KW_PIPE option_pipe_mode 	{ $<single_option>$=new_option('|',$<str>2,0); map_ui("OPTIONS_PIPE");}
+		| ON_CLOSE_APPLICATION_STOP     { $<single_option>$=new_option('~',"1",0);map_ui("OPTIONS_ON_CLOSE_APPLICATION_STOP");}
+;
+
+option_run_mode :
+	IN_LINE_MODE {strcpy($<str>$,"1");}
+	| IN_FORM_MODE {strcpy($<str>$,"2");}
+;
+
+option_pipe_mode :
+	IN_LINE_MODE {strcpy($<str>$,"1");}
+	| IN_FORM_MODE {strcpy($<str>$,"2");}
+;
+
+
+/* =========================== options.rule =========================== */
+
+

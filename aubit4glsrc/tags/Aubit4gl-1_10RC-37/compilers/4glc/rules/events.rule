@@ -1,0 +1,189 @@
+
+event_onkey : ONKEY  key_do_sl  atline  commands_as_list {$<on_event>$=new_event(EVENT_KEY_PRESS, $<str_list>2,$<commands>4,$<integer_val>3); }
+		| ON_ANY_KEY  atline  commands_as_list {$<on_event>$=new_event(EVENT_ANYKEY_PRESS, NULL,$<commands>3,$<integer_val>2); }
+;
+
+
+event_action :
+        KW_ON KW_ACTION identifier    atline commands_as_list 		{$<on_event>$=new_event(EVENT_ON_ACTION, (void *)strdup($<str>3),$<commands>5,$<integer_val>4); }
+;
+
+event_timer :
+        KW_ON KW_IDLE idle_time atline commands_as_list 		{$<on_event>$=new_event(EVENT_ON_IDLE, (void *)$<integer_val>3,$<commands>5, $<integer_val>4); }
+        | KW_ON INTERVAL idle_time atline commands_as_list 		{$<on_event>$=new_event(EVENT_ON_INTERVAL, (void *)$<integer_val>3,$<commands>5,$<integer_val>4); }
+;
+
+
+event_field: 
+	BEFFIELD bef_field_list_as_struct atline commands_as_list 	{$<on_event>$=new_event(EVENT_BEFORE_FIELD, (void *)$<field_list>2,$<commands>4,$<integer_val>3); }
+	| AFTFIELD aft_field_list_as_struct atline commands_as_list  	{$<on_event>$=new_event(EVENT_AFTER_FIELD, (void *)$<field_list>2,$<commands>4,$<integer_val>3); }
+;
+
+
+event_input:
+	AFTINP atline commands_as_list 				{$<on_event>$=new_event(EVENT_AFTER_INPUT, NULL,$<commands>3,$<integer_val>2); }
+	| BEFINP atline commands_as_list 			{$<on_event>$=new_event(EVENT_BEFORE_INPUT, NULL,$<commands>3,$<integer_val>2); }
+	| event_field 						{$<on_event>$=$<on_event>1;}
+	| event_timer 						{$<on_event>$=$<on_event>1;}
+	| event_action 						{$<on_event>$=$<on_event>1;}
+	| event_onkey 						{$<on_event>$=$<on_event>1;}
+;
+
+event_prompt: 
+	event_onkey	{$<on_event>$=$<on_event>1;}
+	| event_timer                                           {$<on_event>$=$<on_event>1;}
+	| event_action 						{$<on_event>$=$<on_event>1;}
+;
+
+
+event_any_array:
+	AFTROW atline commands_as_list 				{$<on_event>$=new_event(EVENT_AFT_ROW, NULL,$<commands>3,$<integer_val>2); }
+	| BEFROW atline commands_as_list  				{$<on_event>$=new_event(EVENT_BEF_ROW, NULL,$<commands>3,$<integer_val>2); }
+;
+
+event_iarray: 
+	BEFORE_DELETE atline commands_as_list 				{$<on_event>$=new_event(EVENT_BEFORE_DELETE, NULL,$<commands>3,$<integer_val>2); }
+	| BEFORE_INSERT atline commands_as_list			{$<on_event>$=new_event(EVENT_BEFORE_INSERT, NULL,$<commands>3,$<integer_val>2); }
+	| BEFORE_INSERT_DELETE atline commands_as_list			{$<on_event>$=new_event(EVENT_BEFORE_INSERT_DELETE, NULL,$<commands>3,$<integer_val>2); }
+	| AFTER_INSERT_DELETE atline commands_as_list			{$<on_event>$=new_event(EVENT_AFTER_INSERT_DELETE, NULL,$<commands>3,$<integer_val>2); }
+	| AFTER_DELETE atline commands_as_list				{$<on_event>$=new_event(EVENT_AFTER_DELETE, NULL,$<commands>3,$<integer_val>2); }
+	| AFTER_INSERT atline commands_as_list				{$<on_event>$=new_event(EVENT_AFTER_INSERT, NULL,$<commands>3,$<integer_val>2); }
+	| AFTINP atline commands_as_list 				{$<on_event>$=new_event(EVENT_AFTER_INPUT, NULL,$<commands>3,$<integer_val>2); }
+	| BEFINP atline commands_as_list 			{$<on_event>$=new_event(EVENT_BEFORE_INPUT, NULL,$<commands>3,$<integer_val>2); }
+	| event_any_array					{$<on_event>$=$<on_event>1;}
+	| event_field						{$<on_event>$=$<on_event>1;}
+	| event_timer						{$<on_event>$=$<on_event>1;}
+	| event_action						{$<on_event>$=$<on_event>1;}
+	| event_onkey						{$<on_event>$=$<on_event>1;}
+	
+;
+
+event_darray:
+	AFTER_DISPLAY atline commands_as_list 				{$<on_event>$=new_event(EVENT_AFTER_DISPLAY, NULL,$<commands>3,$<integer_val>2); }
+	| BEFORE_DISPLAY atline commands_as_list 			{$<on_event>$=new_event(EVENT_BEFORE_DISPLAY, NULL,$<commands>3,$<integer_val>2); }
+	| event_any_array					{$<on_event>$=$<on_event>1;}
+	| event_timer						{$<on_event>$=$<on_event>1;}
+	| event_action						{$<on_event>$=$<on_event>1;}
+	| event_onkey						{$<on_event>$=$<on_event>1;}
+;
+
+
+event_menu:
+	BEFORE_MENU atline commands_as_list 				{$<on_event>$=new_event(EVENT_BEFORE_MENU, NULL,$<commands>3,$<integer_val>2); }
+	| COMMAND opt_key menu_opt_name menu_optional_desc opt_help_no_i atline commands_as_list {
+					$<on_event>$=new_event(EVENT_MENU_COMMAND, (void *)new_menu_option($<str_list>2,$<ptr>3,$<ptr>4,$<integer_val>5),$<commands>7,$<integer_val>6);
+	}
+	| COMMAND opt_key opt_help_no_i atline commands_as_list {
+					$<on_event>$=new_event(EVENT_MENU_COMMAND, (void *)new_menu_option($<str_list>2,0,0,$<integer_val>3),$<commands>5,$<integer_val>4);
+							}
+	| event_timer						{$<on_event>$=$<on_event>1;}
+	| event_action						{$<on_event>$=$<on_event>1;}
+;
+
+
+event_construct:
+	BEFCONSTRUCT atline commands_as_list				{$<on_event>$=new_event(EVENT_BEFORE_CONSTRUCT, NULL,$<commands>3,$<integer_val>2); }
+	| AFTCONSTRUCT atline commands_as_list				{$<on_event>$=new_event(EVENT_AFTER_CONSTRUCT, NULL,$<commands>3,$<integer_val>2); }
+	| event_field						{$<on_event>$=$<on_event>1;}
+	| event_timer						{$<on_event>$=$<on_event>1;}
+	| event_action						{$<on_event>$=$<on_event>1;}
+	| event_onkey						{$<on_event>$=$<on_event>1;}
+;
+
+
+events_prompt: event_prompt  {
+		$<on_events>$=malloc(sizeof(on_events));
+		$<on_events>$->event.event_len=1;
+		$<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+
+	}
+	| events_prompt event_prompt {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+
+	}
+;
+
+
+events_menu: event_menu  {
+		$<on_events>$=malloc(sizeof(on_events));
+		$<on_events>$->event.event_len=1;
+		$<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+
+	}
+	| events_menu event_menu {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+
+	}
+;
+
+events_iarray: event_iarray {
+		$<on_events>$=malloc(sizeof(on_events));
+		$<on_events>$->event.event_len=1;
+		$<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+
+	}
+	| events_iarray event_iarray {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+
+	}
+;
+
+events_darray: event_darray {
+		$<on_events>$=malloc(sizeof(on_events));
+		$<on_events>$->event.event_len=1;
+		$<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+
+	}
+	| events_darray event_darray {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+
+	}
+;
+
+
+events_input: event_input  {
+		$<on_events>$=malloc(sizeof(on_events));
+		$<on_events>$->event.event_len=1;
+		$<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+
+	}
+	| events_input event_input {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+	}
+;
+
+
+events_construct: event_construct  {
+		$<on_events>$=malloc(sizeof(on_events));
+		$<on_events>$->event.event_len=1;
+		$<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+
+	}
+	| events_construct event_construct {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+	}
+;
