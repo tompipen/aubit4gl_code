@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.53 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: Makefile,v 1.54 2008-10-16 12:13:27 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2267,6 +2267,7 @@ build:
 	@echo " store version numbers at the compile time"
 	@echo "==================================================================="
 	@echo " "
+	make cvstag
 
 cvstag:
 	 ${SH} lib/bin/maketag $(SOURCE)
