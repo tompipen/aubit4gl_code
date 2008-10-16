@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.146 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.147 2008-10-16 11:34:47 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.146 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.147 2008-10-16 11:34:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1103,7 +1103,6 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
       struct struct_scr_field *fprop;
       int attr;
 
-//A4GL_pause_execution();
 	A4GL_debug("AFTER FIELD - mode=%d (construct=%d)",sio->mode,MODE_CONSTRUCT);
 
       if (sio->mode != MODE_CONSTRUCT)
@@ -1231,7 +1230,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 
 		if (!A4GL_conversion_ok(-1)) {
-			A4GL_pause_execution();
+			//A4GL_pause_execution();
 			A4GL_debug("CONVERSION ERROR");
 			really_ok=0;
 		}
