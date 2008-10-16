@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.154 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: curslib.c,v 1.155 2008-10-16 10:55:11 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.154 2008-10-16 07:13:36 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.155 2008-10-16 10:55:11 mikeaubury Exp $";
 #endif
 /*
 =====================================================================

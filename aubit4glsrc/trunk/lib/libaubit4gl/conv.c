@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.163 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: conv.c,v 1.164 2008-10-16 10:55:11 mikeaubury Exp $
 #
 */
 
@@ -1399,7 +1399,6 @@ A4GL_stodec (void *a, void *z, int size)
 	      return 1;
 	    }
 	}
-
       A4GL_debug ("Didn't work... '%c' '%c'\n", a4gl_convfmts.printf_decfmt.decsep, a4gl_convfmts.posix_decfmt.decsep);
       if (a4gl_convfmts.printf_decfmt.decsep != a4gl_convfmts.posix_decfmt.decsep)
 	{

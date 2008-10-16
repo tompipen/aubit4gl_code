@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.149 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: iarray.c,v 1.150 2008-10-16 10:55:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.149 2008-10-16 07:13:36 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.150 2008-10-16 10:55:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -505,6 +505,7 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem,
   int really_ok = 0;
   char *ptr;
   struct struct_scr_field *fprop;
+int var_dtype;
 
   A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x_col, y_row, form->currentfield);
   if (form->currentfield == 0)
@@ -513,7 +514,7 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem,
   y_row--;
 
 
-  if (!A4GL_copy_field_data (form))
+  if (!A4GL_copy_field_data (form, b[x_col].dtype))
     return 0;
 
   strcpy (fbuff, field_buffer (form->currentfield, 0)); A4GL_debug("fbuff=%s\n",fbuff);
@@ -574,6 +575,12 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem,
 	  ptr = strdup (ptr2);
 	}
       A4GL_push_char (ptr);
+	var_dtype=b[x_col].dtype;
+  if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && (A4GL_is_numeric_datatype(fprop->datatype)  ||  A4GL_is_numeric_datatype(var_dtype))) {
+             // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+                           A4GL_convert_ui_char_on_stack_decimal_sep();
+                             }
+
     }
   else
     {
@@ -2916,6 +2923,12 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 	    {
 	      A4GL_debug ("Field is not null");
 	      A4GL_push_char (buff);
+
+                if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && A4GL_is_numeric_datatype(fprop->datatype)) {
+                        // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+                        A4GL_convert_ui_char_on_stack_decimal_sep();
+                }
+                        
 	    }
 	  else
 	    {

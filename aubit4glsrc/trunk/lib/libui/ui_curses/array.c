@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.57 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: array.c,v 1.58 2008-10-16 10:55:11 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.57 2008-10-16 07:13:36 mikeaubury Exp $";
+		"$Id: array.c,v 1.58 2008-10-16 10:55:11 mikeaubury Exp $";
 #endif
 
 

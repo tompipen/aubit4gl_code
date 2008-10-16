@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.53 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: rexp2.c,v 1.54 2008-10-16 10:55:11 mikeaubury Exp $
 #
 */
 
@@ -223,7 +223,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
   static char buffer[512];
   static char buff2[512];
   static char buff3[512];
-  char using_dates[100][20];
+  char using_dates[100][40];
   int z;
   int z2;
   int zz;
@@ -453,12 +453,28 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	    {
 
 	      char *eptr = 0;
+	      char buff_200[200];
+	      A4GL_debug ("1");
 	      k = 1;
-	      strtod (constr_bits[zz], &eptr);
+
+
+		/* Lets convert what they've typed into the internal format so strtod will work */
+	      strcpy (buff_200, constr_bits[zz]);
+	      A4GL_decstr_convert (buff_200, a4gl_convfmts.ui_decfmt, a4gl_convfmts.printf_decfmt, 0, 0, 200);
+	      A4GL_remove_printfthsep_in_decimal (buff_200);
+
+	
+
+	      //printf("buff_200=%s\n",buff_200);
+	      strtod (buff_200, &eptr);
+
+
+
 	      //strtol(constr_bits[zz], &eptr,10);
 	      A4GL_debug ("eptr=%p *eptr=%p constr_bits[zz]='%s'\n", eptr, *eptr, constr_bits[zz]);
 	      if (eptr == 0)
 		k = 0;
+
 	      if (eptr)
 		{
 		  if (*eptr != 0)
@@ -474,6 +490,29 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 		  A4GL_debug ("error in numeric k=%d k2=%d", k, k2);
 		  return 0;
 		}
+
+		/* the decimal looks good - transform to DB format */
+	      strcpy (buff_200, constr_bits[zz]);
+	      A4GL_decstr_convert (buff_200, a4gl_convfmts.ui_decfmt, a4gl_convfmts.db_decfmt, 0, 0, 200);
+	      if (strcmp (buff_200, constr_bits[zz]) != 0)
+		{
+		  int b;
+		  // we've changed the string from a UI format into an internal format
+		  // now we need to use our new format with our database...
+		  // so we need to 'change' out constr_bits to point to our new string
+		  // without causing any memory leaks..
+		  for (b = 0; b < 100; b++)
+		    {
+		      if (strlen (using_dates[b]) == 0)
+			break;
+		    }
+		  strcpy (using_dates[b], buff_200);
+		  constr_bits[zz] = using_dates[b];
+		}
+
+
+
+
 	    }
 	}
     }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.136 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: ops.c,v 1.137 2008-10-16 10:55:11 mikeaubury Exp $
 #
 */
 
@@ -259,7 +259,7 @@ A4GL_dec_dec_ops (int op)
       ndec2 = 0;
       for (cnt = 0; cnt < len; cnt++)
 	{
-	  if (buff_a[cnt] == '.')
+	  if (buff_a[cnt] == '.' || buff_a[cnt]==',')
 	    {
 	      ndec2 = len - cnt;
 	      break;
@@ -278,7 +278,7 @@ A4GL_dec_dec_ops (int op)
       ndec1 = 0;
       for (cnt = 0; cnt < len; cnt++)
 	{
-	  if (buff_b[cnt] == '.')
+	  if (buff_b[cnt] == '.' || buff_b[cnt]==',')
 	    {
 	      ndec1 = len - cnt;
 	      break;

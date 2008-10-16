@@ -97,7 +97,7 @@ void A4GL_set_arr_fields (int n, int attr, ...);
 void A4GL_disp_arr_fields (int n, int fonly, int attr, ...);
 int A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, va_list * ap,int replace_0);
 void A4GL_int_form_driver (FORM * form, int a);
-int A4GL_copy_field_data (struct s_form_dets *form);
+int A4GL_copy_field_data (struct s_form_dets *form,int var_dtype);
 void A4GL_iarr_arr_fields (struct s_inp_arr *arr,int attr,int arr_line,int scr_line,int blank);
 int A4GL_get_curr_field_col (FORM * mform);
 int A4GL_get_field_width (FIELD * f);

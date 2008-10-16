@@ -1,4 +1,15 @@
 ---------------------------
+Thu Oct 16 11:48:37 BST 2008
+---------------------------
+1.10RC_37 Released
+---------------------------
+	
+	SPRINTF fixups Small fixups for internationalization - (commas for
+	decimal point in numeric input)
+	
+	Small fixup for MENU (set current window first)
+	
+---------------------------
 Mon Oct 13 13:48:16 BST 2008
 ---------------------------
 1.10RC_36 Released

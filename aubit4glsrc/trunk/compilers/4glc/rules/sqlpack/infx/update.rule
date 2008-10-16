@@ -18,7 +18,14 @@ update_statement_c:
 		$<update_cmd>$->value_list=expand_slil($<update_cmd>$->value_list);
 
 		if ($<update_cmd>$->column_list==0) {
-			$<update_cmd>$->column_list=generate_update_column_list_for($<str>2,  $<update_cmd>$->value_list);
+			char colname[200];
+			int idtype;
+			int isize;
+			int rval;
+			rval = A4GLSQL_get_columns ($<str>2, colname, &idtype, &isize);
+			if (rval) {
+				$<update_cmd>$->column_list=generate_update_column_list_for($<str>2,  $<update_cmd>$->value_list);
+			}
 		}
 		//debug_update_cmd($<update_cmd>$);
 	}

@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.438 2008-10-12 12:01:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.439 2008-10-16 10:55:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.438 2008-10-12 12:01:17 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.439 2008-10-16 10:55:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7116,9 +7116,30 @@ strcpy(buff,"");
 	search_sql_variables (&fake_select.list_of_items,'i');
 
 	sprintf(buff,"UPDATE %s SET ",updateCmd->table);
-
-	A4GL_assertion (updateCmd->column_list == 0, "No column list");
 	A4GL_assertion (updateCmd->value_list == 0, "No value list");
+
+	if (updateCmd->column_list==0) {
+		A4GL_warn("UPDATE * is not portable when the table does not exist in the database at compile time");
+		strcat(buff,"*=(");
+
+	    // Same length..
+	    for (a = 0; a < updateCmd->value_list->list.list_len; a++)
+	      {
+		char commabuff[2]=",";
+
+		if (a==updateCmd->value_list->list.list_len-1)
+		  {
+			strcpy(commabuff,"");
+		  }
+		rval = get_select_list_item (0, updateCmd->value_list->list.list_val[a]);
+		sprintf (smbuff, "%s%s\n", rval, commabuff);
+		strcat(buff,smbuff);
+		free (rval);
+	      }
+		strcat(buff,")");
+	} else {
+
+
 
 	if (updateCmd->value_list->list.list_len == updateCmd->column_list->str_list_entry.str_list_entry_len)
 	  {
@@ -7158,6 +7179,7 @@ strcpy(buff,"");
 		strcat(buff,")");
 
 	  }
+        }
 
 	if (updateCmd->where_clause)
 	  {

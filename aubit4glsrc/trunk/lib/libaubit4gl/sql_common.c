@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.65 2008-10-13 10:49:22 mikeaubury Exp $
+# $Id: sql_common.c,v 1.66 2008-10-16 10:55:11 mikeaubury Exp $
 #
 */
 
@@ -1217,29 +1217,29 @@ A4GL_print_from_clause (struct s_table *t, int lvl)
   int a;
   for (a = 0; a < lvl; a++)
     {
-      printf ("   ");
+      PRINTF ("   ");
     }
-  printf ("%s\n", t->tabname);
+  PRINTF ("%s\n", t->tabname);
   if (t->outer_next)
     {
       for (a = 0; a < lvl; a++)
 	{
-	  printf ("   ");
+	  PRINTF ("   ");
 	}
 
-      printf ("=>");
+      PRINTF ("=>");
       A4GL_print_from_clause (t->outer_next, lvl + 1);
     }
   if (t->next)
     {
       for (a = 0; a < lvl; a++)
 	{
-	  printf ("   ");
+	  PRINTF ("   ");
 	}
-      printf ("->");
+      PRINTF ("->");
       A4GL_print_from_clause (t->next, lvl + 1);
     }
-  printf ("\n");
+  PRINTF ("\n");
 }
 
 
@@ -1266,7 +1266,7 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
       a = A4GLSQLPARSE_from_clause_join (select, t, fill, tl);
       if (a == 0)
 	{
-	  printf ("Cant do :\n");
+	  FPRINTF (stderr, "Cant do :\n");
 	  A4GL_print_from_clause (t, 0);
 	}
     }
@@ -1893,7 +1893,6 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
 	    {
 	      SPRINTF1 (tmpvar, "%d", tmpvar_i);
 	    }
-	  //printf("%s-->%s\n",attr, tmpvar);
 	  return tmpvar;
 	}
       cnt++;
@@ -1922,7 +1921,6 @@ A4GL_findPreparedStatement (char *name)
   int a;
   if (npreparedStatements)
     {
-      //printf("npreparedStatements=%d for %s\n", npreparedStatements, name);
       for (a = 0; a < npreparedStatements; a++)
 	{
 	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.211 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: stack.c,v 1.212 2008-10-16 10:55:11 mikeaubury Exp $
 #
 */
 
@@ -2117,7 +2117,6 @@ A4GL_push_reference (void *x, int l)
   ptr = malloc (sizeof (struct s_pass_reference));
   ptr->bytes = x;
   ptr->nbytes = l;
-//printf("Pushing reference to %p with %d bytes\n",x,l);
   A4GL_push_param (ptr, DTYPE_REFERENCE + DTYPE_MALLOCED);
 }
 
@@ -3074,10 +3073,6 @@ A4GL_isnull (int type, char *buff)
     case DTYPE_BYTE:
     case DTYPE_TEXT:
       ptr = (struct fgl_int_loc *) buff;
-      //printf("%c %c %p %d\n",ptr->where,ptr->isnull, ptr->ptr,ptr->memsize);
-      //if (ptr->isnull=='N') return 1;
-      //if (ptr->where=='M' && ptr->ptr==0) return 1;
-      //if (ptr->where=='M' && ptr->memsize<0) return 1;
       if (ptr->where == 'M')
 	{
 	  int isnull;
@@ -4125,15 +4120,62 @@ return n;
 }
 
 
-/* Convert a string on the stack to a decimal... */
-void A4GL_convert_char_on_stack_decimal_sep(char from , char to) {
+static void size_decimal_string(char *s,int *dig, int *dec) {
+      int cnt;
+      int len;
+      char buff_b[2000];
+	int ndig1=64;
+	int ndec1=32;
+      strcpy(buff_b,s);
+
+      A4GL_remove_trailing_zeros_and_leading_spaces (buff_b);
+      len = strlen (buff_b);
+      ndig1 = len;
+      ndec1 = 0;
+
+      for (cnt = 0; cnt < len; cnt++)
+        {
+          if (buff_b[cnt] == '.' || buff_b[cnt]==',')
+            {
+              ndec1 = len - cnt;
+              break;
+            }
+	}
+*dig=ndig1;
+*dec=ndec1;
+}
+     
+
+
+/* Convert a string on the stack to a decimal
+ * This converts from the current UI decimal 
+ * separator to an internal decimal value...
+ * ... */
+void A4GL_convert_ui_char_on_stack_decimal_sep(void ) {
 char *ptr;
+char *orig_ptr;
 char *p2;
 char *p;
 int a;
+int b;
 fgldecimal dec;
+int ndig,ndec;
+orig_ptr=A4GL_char_pop();
+ptr=strdup(orig_ptr);
 
-ptr=A4GL_char_pop();
+// Remove any stray thousands separators in there...
+b=0;
+for (a=0;a<strlen(orig_ptr);a++) {
+	if (orig_ptr[a]==a4gl_convfmts.ui_decfmt.thsep) {
+		continue;
+	}
+	ptr[b++]=orig_ptr[a];
+}
+ptr[b]=0;
+
+strcpy(orig_ptr,ptr);
+free(ptr);
+
 /*
 for (a=0;a<strlen(ptr);a++) {
 	if (ptr[a]==to) {
@@ -4143,15 +4185,37 @@ for (a=0;a<strlen(ptr);a++) {
 	}
 }
 */
-A4GL_init_dec (&dec, 32, 16);
-A4GL_stodec (ptr, &dec,32 * 256 + 16 );
-A4GL_push_dec_dec(&dec,0,16);
-acl_free(ptr);
+
+
+size_decimal_string(orig_ptr,&ndig,&ndec);
+
+A4GL_init_dec (&dec, ndig, ndec);
+A4GL_decstr_convert (orig_ptr, a4gl_convfmts.ui_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, 32);
+
+A4GL_str_to_dec (orig_ptr, &dec);
+A4GL_push_dec_dec(&dec,0,ndig);
+acl_free(orig_ptr);
+#ifdef EXTRA_DEBUG
 ptr=A4GL_char_pop();
-
-
-
+printf("Ptr=%s\n",ptr);
 A4GL_push_dec_dec(&dec,0,16);
+#endif
 }
 
+
+
+void A4GL_remove_printfthsep_in_decimal(char *s) {
+char buff[200];
+int b=0;
+int a;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]==a4gl_convfmts.printf_decfmt.thsep) continue;
+	buff[b++]=s[a];
+}
+buff[b]=0;
+strcpy(s,buff);
+
+
+
+}
 // ================================ EOF ================================

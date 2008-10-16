@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.202 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: ioform.c,v 1.203 2008-10-16 10:55:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.202 2008-10-16 07:13:36 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.203 2008-10-16 10:55:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -105,7 +105,7 @@ void A4GL_set_field_attr_with_attr_already_determined (FIELD * field,
 						       int cmd_type);
 int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 					    struct struct_scr_field *fprop,
-					    char *fld_data, char *data_area);
+					    char *fld_data, char *data_area,int var_dtype);
 //int A4GL_get_field_width_w (void *f,int need_height);
 void A4GL_set_infield_from_parameter (long a);
 void A4GL_set_curr_infield (void *a);
@@ -148,7 +148,7 @@ int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
 //int A4GL_wcswidth(char *mbs);		/* utf8 */
 
-static int local_chk_field(struct s_form_dets *form,FIELD *f,int allfields) ;
+static int local_chk_field(struct s_form_dets *form,FIELD *f,int allfields,int var_dtype) ;
 
 /*
 =====================================================================
@@ -905,7 +905,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
       if (form->currentfield != 0)
 	{
 		int rval;
-		rval=local_chk_field(form, form->currentfield,0);
+		rval=local_chk_field(form, form->currentfield,0, sio->vars[sio->curr_attrib].dtype);
 		if (rval==-4) {
 				  set_current_field (mform, form->currentfield);
 		}
@@ -924,7 +924,7 @@ int a;
 if  (sio->mode != MODE_CONSTRUCT) { 
 	// Might need to do something similar for construct ? 
           for (a=0;a<=sio->nfields;a++)  {
-                if (local_chk_field(sio->currform, sio->field_list[a],1)==-4) {
+                if (local_chk_field(sio->currform, sio->field_list[a],1,sio->vars[a].dtype)==-4) {
 				return a;
                 }
           }
@@ -934,7 +934,7 @@ return -1;
 }
 
 
-int local_chk_field(struct s_form_dets *form, FIELD *f,int allfields) {
+int local_chk_field(struct s_form_dets *form, FIELD *f,int allfields, int var_dtype) {
   char buff[8000] = "";
   char buff2[8000] = "";
   char buff3[8000] = "";
@@ -1027,8 +1027,7 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 				{
 				  if (A4GL_check_field_for_include
 				      ("",
-				       A4GL_get_str_attribute (fprop,
-							       FA_S_INCLUDE),
+				       A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
 				       fprop->datatype))
 				    {
 				      allow_it_anyway = 1;
@@ -1085,7 +1084,7 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 
 
 
-		      pprval = A4GL_check_and_copy_field_to_data_area (form, fprop, buff2, buff);
+		      pprval = A4GL_check_and_copy_field_to_data_area (form, fprop, buff2, buff,var_dtype);
 
 
 		      A4GL_debug ("pprval = %d\n", pprval);
@@ -3519,7 +3518,7 @@ A4GL_page_for_pfield (struct s_screenio *s)
  * @todo Describe function
  */
 int
-A4GL_copy_field_data (struct s_form_dets *form)
+A4GL_copy_field_data (struct s_form_dets *form,int var_dtype)
 {
   char buff[8000] = "";
   char buff2[8000] = "";
@@ -3571,7 +3570,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 
 		    ppr =
 		      A4GL_check_and_copy_field_to_data_area (form, fprop,
-							      buff2, buff);
+							      buff2, buff,var_dtype);
 
 
 		    if (ppr)
@@ -4127,6 +4126,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   int pprval;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
+int var_dtype=0;
 
   A4GL_debug ("form_field_chk_iarr....");
   mform = sio->currform->form;
@@ -4269,10 +4269,10 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		      }
 
 
-
+			var_dtype=sio->binding[   sio->curr_attrib].dtype;
 		    pprval =
 		      A4GL_check_and_copy_field_to_data_area (form, fprop,
-							      buff2, buff);
+							      buff2, buff,var_dtype);
 
 
 
@@ -4653,7 +4653,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 int
 A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 					struct struct_scr_field *fprop,
-					char *fld_data, char *data_area)
+					char *fld_data, char *data_area,int var_dtype)
 {
   int pprval;
   int dsize;
@@ -4682,10 +4682,10 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
   A4GL_push_param (fld_data, DTYPE_CHAR);
 
 
-                if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && A4GL_is_numeric_datatype(fprop->datatype)) {
-                        // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
-                                                 A4GL_convert_char_on_stack_decimal_sep(A4GL_get_convfmts()->ui_decfmt.decsep);
-                                      }
+  if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && (A4GL_is_numeric_datatype(fprop->datatype)  ||  A4GL_is_numeric_datatype(var_dtype))) {
+             // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+             A4GL_convert_ui_char_on_stack_decimal_sep();
+  }
 
   if ((fprop->datatype & 0xf) == DTYPE_CHAR
       || (fprop->datatype & 0xf) == DTYPE_VCHAR)

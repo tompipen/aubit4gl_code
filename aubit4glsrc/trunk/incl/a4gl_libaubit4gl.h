@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.335 2008-10-13 12:12:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.336 2008-10-16 10:55:11 mikeaubury Exp $
 #
 */
 
@@ -2823,7 +2823,7 @@ void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
 long A4GL_bounds_check(long a,long maxbound); /* Check array bounds in a 4gl call */
 
 long A4GL_get_length (char *s);
-
+void A4GL_convert_ui_char_on_stack_decimal_sep(void );
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

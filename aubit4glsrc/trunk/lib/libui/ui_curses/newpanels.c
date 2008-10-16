@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.160 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: newpanels.c,v 1.161 2008-10-16 10:55:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.160 2008-10-16 07:13:36 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.161 2008-10-16 10:55:11 mikeaubury Exp $";
 #endif
 
 /**

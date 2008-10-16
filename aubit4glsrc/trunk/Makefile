@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.52 2008-10-14 10:56:49 mikeaubury Exp $
+# $Id: Makefile,v 1.53 2008-10-16 10:55:11 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2267,6 +2267,9 @@ build:
 	@echo " store version numbers at the compile time"
 	@echo "==================================================================="
 	@echo " "
+
+cvstag:
+	 ${SH} lib/bin/maketag $(SOURCE)
 	
 commit.build: build commit.build.step2
 commit.build.step2: BUILDNO=$(shell cat $(SOURCE)/tools/project/build)
