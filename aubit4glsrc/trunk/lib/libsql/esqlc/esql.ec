@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.213 2008-10-17 12:07:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.214 2008-10-17 13:03:50 mikeaubury Exp $
 #
 */
 
@@ -114,6 +114,7 @@ char unloadBuffer[BUFSIZ];
 dll_export sqlca_struct a4gl_sqlca;
 
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode) ;
+static void internal_free_cursor (char *s,int reset_Sqlca);
 
 #if defined (WIN32) || defined (__CYGWIN__)
 #define _NO_FORM_H_
@@ -194,7 +195,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.213 2008-10-17 12:07:43 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.214 2008-10-17 13:03:50 mikeaubury Exp $";
 #endif
 
 
@@ -2492,7 +2493,7 @@ sid=vsid;
 
   SPRINTF1(buff,"%p",sid);
   if (singleton) {
-	A4GLSQL_free_cursor(statementName);
+	internal_free_cursor(statementName,0);
   	//EXEC SQL FREE :statementName;
   }
   return 0;
@@ -2641,7 +2642,7 @@ A4GL_debug("ALl ok - copy 1");
 
   if (singleton) {
 	A4GL_debug("Free : %s",statementName);
-	A4GLSQL_free_cursor(statementName);
+	internal_free_cursor(statementName,0);
 	//sid->statementName="FREED";
 	//sid->select="FREED";
   }
@@ -2751,7 +2752,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 	}
 
   if (A4GL_has_pointer (cursname, CURCODE)) {
-		A4GLSQL_free_cursor(cursname);
+		internal_free_cursor(cursname,0);
    }
 
   		//cursorIdentification = A4GL_find_pointer(cursname,CURCODE);
@@ -2807,6 +2808,13 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 void
 A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
+ {
+internal_free_cursor(s,1);
+}
+
+
+void
+internal_free_cursor (char *s,int reset_Sqlca)
 {
 
   EXEC SQL BEGIN DECLARE SECTION;
@@ -2814,7 +2822,8 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
   EXEC SQL END DECLARE SECTION;
 void *sid;
 
-a4gl_sqlca.sqlcode=0;
+if (reset_Sqlca) {a4gl_sqlca.sqlcode=0;
+}
 
  if (A4GL_has_pointer (s, CURCODE))
     {
