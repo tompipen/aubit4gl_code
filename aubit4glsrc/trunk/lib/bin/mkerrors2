@@ -14,14 +14,16 @@
 
 if test "$COMSPEC" != ""; then 
 	SOURCES_X=`/bin/find ../.. -name "*.c"`
+	SOURCES_EC=`/bin/find ../.. -name "*.ec"`
 	SORT=/usr/bin/sort
 else
 	SOURCES_X=`find ../.. -name "*.c"`
+	SOURCES_EC=`find ../.. -name "*.ec"`
 	SORT=sort 
 fi
 
 SOURCES=""
-for a in $SOURCES_X
+for a in $SOURCES_X $SOURCES_EC
 do
 	if [ -r $a ]
 	then
@@ -60,6 +62,7 @@ close(inerrs)
 /exitwith/ {
 gsub("exitwith\\(","exitwith (")
 gsub("exitwith_sql\\(","exitwith_sql (")
+gsub("exitwith_sql_odbc_errm\\(","exitwith_sql_odbc_errm (")
 if (NF==1) {
 	old=$0
 	getline
