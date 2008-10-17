@@ -57,6 +57,7 @@ A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
 #endif
 }
 
+void set_aubit4gl_error(void) ;
 
 /*****************************************************************************/
 char *
@@ -905,7 +906,8 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
       A4GL_debug ("Err : %s (%p)\n", mysql_stmt_error (stmt), stmt);	
 	A4GL_set_errm( (char *)mysql_stmt_error (stmt));
 
-      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+	set_aubit4gl_error();
       if (mysql_errno (conn) == 1295)
 	{			// Can't prepare it...
 	  sid->hstmt = (void *) STMT_CANT_PREPARE;
@@ -1761,7 +1763,8 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
 
   if (x == 1)
     {
-      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+	set_aubit4gl_error();
       return 0;
     }
 
@@ -1815,7 +1818,8 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	  A4GL_debug ("Error : %s\n", mysql_error (conn));
 	  A4GL_set_errm ((char *) mysql_error (conn));
 	  strcpy (sqlerrm, (char *) mysql_error (conn));
-	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+	set_aubit4gl_error();
+	  //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
 	  return 0;		// Failed
 	}
     }
@@ -1859,7 +1863,8 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	  warnings[0] = 'W';
 	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 	}
-      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+	set_aubit4gl_error();
       return 0;
     }
 
@@ -1918,7 +1923,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 #endif
 
 
-  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+  //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
 
   nibind = sid->ni;
@@ -2074,11 +2079,17 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   struct s_sid *sid;
   sid = vsid;
 
-  if (sid == 0)
+  if (sid == NULL)
     {
       A4GL_exitwith ("Can't declare cursor for non-prepared statement");
       return 0;
     }
+
+  if (sid->hstmt==NULL )  {
+      A4GL_exitwith ("Can't declare cursor for non-prepared statement");
+      return 0;
+  }
+
 
   cid = acl_malloc2 (sizeof (struct s_cid));
 
@@ -2204,9 +2215,16 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
   cid = A4GLSQL_find_cursor (cursor_name);
   if (cid == 0)
     {
-      A4GL_exitwith_sql ("Cursor not found");
+	A4GL_set_errm(cursor_name);
+      A4GL_exitwith_sql ("Cursor not found (%s)");
       return 0;
     }
+
+  if (cid->statement->hstmt==0) {
+	A4GL_set_errm(cursor_name);
+      	A4GL_exitwith_sql ("Cursor not found (%s)");
+	return 0;
+  }
   nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
   copy_out_n = nresultcols;
 
@@ -2324,7 +2342,9 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
 
   	if (ptr == 0)
     	{
-      	A4GL_exitwith ("Can't free cursor that hasn't been defined");
+		// Informix doesn't flag this as an error..
+		// so why should we ? 
+      		A4GL_debug ("Can't free cursor that hasn't been defined");
 	}
 
       return;
@@ -2413,7 +2433,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 
   if (mysql_stmt_prepare (stmt, sql1, strlen (sql1)))
     {
-      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+	set_aubit4gl_error();
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
       return;
     }
 
@@ -2665,3 +2686,11 @@ void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 /* does nothing in this driver */
  }
 
+
+
+void set_aubit4gl_error(void) {
+	int n;
+	n=mysql_errno (conn);
+	n=A4GL_remap_nativeerror(n,NULL);
+	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (n);
+}

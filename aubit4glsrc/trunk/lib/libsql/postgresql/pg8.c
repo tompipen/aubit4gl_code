@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.54 2008-09-18 17:40:51 mikeaubury Exp $
+# $Id: pg8.c,v 1.55 2008-10-17 12:07:43 mikeaubury Exp $
 #*/
 
 
@@ -3076,6 +3076,7 @@ SetErrno (PGresult * res)
 {
   char *thisstate;
   int a;
+int isset=0;
   char *s;
   struct known_states
   {
@@ -3493,15 +3494,23 @@ SetErrno (PGresult * res)
     }
 
 
+
   for (a = 0; states[a].code; a++)
     {
       if (strcmp (thisstate, states[a].code) == 0)
 	{
-	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (states[a].compat_err);
-	  last_msg_no = states[a].compat_err;
+	  last_msg_no = A4GL_remap_nativeerror(states[a].compat_err, thisstate);
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (last_msg_no);
+		isset++;
 	  break;
 	}
-    }
+    } 
+
+  if (!isset) {
+  	last_msg_no = A4GL_remap_nativeerror(-1, thisstate);
+  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (last_msg_no);
+  }
+
 }
 
 

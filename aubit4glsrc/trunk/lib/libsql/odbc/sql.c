@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.225 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: sql.c,v 1.226 2008-10-17 12:07:43 mikeaubury Exp $
 #
 */
 
@@ -1231,7 +1231,8 @@ int allocated_nsid=0;
              cursname, sid, upd_hold, scroll);
     if (sid == 0)
     {
-	exitwith_sql_odbc_errm ( "declare_cursor (%s): Statement could not be found (sid == 0)", cursname);
+	strcpy(a4gl_sqlca.sqlerrm,cursname);
+	exitwith_sql_odbc_errm ( "Invalid statement name or statement was not prepared. (%s)", cursname);
 	return NULL;
     }
 
@@ -1560,7 +1561,7 @@ int A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 
     if (cid == 0)
     {
-        exitwith_sql_odbc_errm("Cursor (%s) not found", s);
+        exitwith_sql_odbc_errm("Cursor not found (%s)", s);
 	return 0;
     }
 
@@ -2147,7 +2148,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *cname)
             //A4GL_del_pointer (cname, PRECODE);
             return;
         }
-	exitwith_sql_odbc_errm ("Can't free cursor (%s) that hasn't been defined", cname);
+	A4GL_debug ("Can't free cursor (%s) that hasn't been defined", cname);
     }
     else
     {
@@ -3274,6 +3275,7 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
 	}
 */
 
+    if ((*sid)->hstmt==0) return 1;
     ignore_next_sql_error = 1;
     rc = A4GL_free_hstmt(&((*sid)->hstmt));
 
@@ -5848,6 +5850,11 @@ A4GL_set_sqlca (SQLHSTMT hstmt, char *s)
     // Some conversions
     if (nativeerr > 0 && nativeerr != 100)
         nativeerr = 0 - nativeerr;
+
+
+
+
+
 #ifdef DEBUG
     if (strcmp (odbc_sqlstate, "S1010") == 0) // Function sequence error
     {
@@ -5884,6 +5891,10 @@ A4GL_set_sqlca (SQLHSTMT hstmt, char *s)
         ignore_next_sql_error = 0;
 	return False;
     }
+
+    nativeerr=A4GL_remap_nativeerror(nativeerr, odbc_sqlstate);
+
+
     if (A4GLSQL_set_status (nativeerr, 0))
     {
         set_global_status(nativeerr, odbc_sqlstate, errmsg);

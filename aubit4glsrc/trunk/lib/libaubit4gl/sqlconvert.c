@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.160 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.161 2008-10-17 12:07:43 mikeaubury Exp $
 #
 */
 
@@ -4251,4 +4251,35 @@ A4GL_push_char(acl_getenv(p));
 
 free(p);
 return 1;
+}
+
+
+int A4GL_remap_nativeerror(int n, char *sqlstate) {
+int b;
+  for (b = 0; b < current_conversion_rules_cnt; b++)
+    {
+      if (current_conversion_rules[b].type == CVSQL_REMAP_ERROR)
+        {
+	long l;
+
+	if (sqlstate!=NULL) {
+          if (A4GL_aubit_strcasecmp (sqlstate, current_conversion_rules[b].data.from) == 0)
+            {
+		return atol(current_conversion_rules[b].data.to);
+            }
+	}
+
+	  l=atol(current_conversion_rules[b].data.from);
+	  if (l==0) continue;
+          if (l==n || l==n*-1) 
+            {
+		return atol(current_conversion_rules[b].data.to);
+            }
+	
+        }
+
+    }
+
+return n;
+
 }

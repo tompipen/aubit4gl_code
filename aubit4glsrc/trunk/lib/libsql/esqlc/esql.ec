@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.212 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: esql.ec,v 1.213 2008-10-17 12:07:43 mikeaubury Exp $
 #
 */
 
@@ -194,7 +194,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.212 2008-10-16 07:13:36 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.213 2008-10-17 12:07:43 mikeaubury Exp $";
 #endif
 
 
@@ -2744,8 +2744,11 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   struct s_sid *sid;
 	sid=vsid;
 
-  if (sid == (struct s_sid *) 0)
-    return (struct s_cid *) 0;
+  if (sid == (struct s_sid *) 0) {
+		strcpy(a4gl_sqlca.sqlerrm,cursname);
+		A4GL_exitwith ("Invalid statement name or statement was not prepared. (%s)");
+    		return (struct s_cid *) 0;
+	}
 
   if (A4GL_has_pointer (cursname, CURCODE)) {
 		A4GLSQL_free_cursor(cursname);
@@ -2811,6 +2814,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
   EXEC SQL END DECLARE SECTION;
 void *sid;
 
+a4gl_sqlca.sqlcode=0;
 
  if (A4GL_has_pointer (s, CURCODE))
     {
@@ -2882,7 +2886,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *vibind)
   cursorIdentification = A4GL_find_pointer (s, CURCODE);
 
   if (cursorIdentification==0) {
-		A4GL_sql_exitwith("Cursor not found");
+		strcpy(a4gl_sqlca.sqlerrm,s);
+		A4GL_sql_exitwith("Cursor not found (%s)");
 		return 1;
 	}
   A4GL_debug ("Got cursorIdentification as : %p", cursorIdentification);
