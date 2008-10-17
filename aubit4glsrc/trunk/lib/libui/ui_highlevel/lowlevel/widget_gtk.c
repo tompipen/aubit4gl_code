@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.36 2008-02-11 17:13:13 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.37 2008-10-17 16:56:17 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1036,6 +1036,15 @@ A4GL_cr_radio (void)
 
 
 
+int
+A4GL_kp (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
+{
+printf("Hello World\n");
+return 0;
+}
+
+
+
 /**
  * Create a text box widget and show it.
  *
@@ -1056,7 +1065,11 @@ A4GL_cr_textbox (void)
 	entry=gtk_text_view_new();
       	gtk_object_set_data (GTK_OBJECT (entry), "ISTEXTVIEW", (void *)1);
   	gtk_widget_show (entry);
-	
+
+	//gtk_signal_connect (GTK_OBJECT (entry), "key-press-event", GTK_SIGNAL_FUNC (A4GL_kp), entry);
+
+
+
     }
   else
     {
@@ -1731,11 +1744,11 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 	A4GL_debug("Entry..");
       	if (gtk_object_get_data (GTK_OBJECT (k), "ISTEXTVIEW")) {
 	  	GtkTextBuffer *buffer;
-	A4GL_debug("getting buffer..");
 	  	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (k));
-	A4GL_debug("setting text..");
+		A4GL_trim(s);
+  		utf = a4gl_locale_to_utf8 (s);
+			
 	  	gtk_text_buffer_set_text (buffer,utf, -1);
-	A4GL_debug("set..");
 	 } else {
 		A4GL_debug("Entry...2 : '%s'",utf);
       		gtk_entry_set_text (GTK_ENTRY (k), utf);

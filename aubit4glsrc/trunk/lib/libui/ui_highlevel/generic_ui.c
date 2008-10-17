@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.136 2008-09-19 11:24:39 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.137 2008-10-17 16:56:17 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2250,29 +2250,6 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		      A4GL_check_and_copy_field_to_data_area (form, fprop,
 							      buff2, buff);
 
-/*
-                    A4GL_push_param (buff2, DTYPE_CHAR);
-                    pprval=A4GL_pop_param (buff, fprop->datatype, A4GL_get_field_width (form->currentfield));
-                    if (pprval) {
-                                A4GL_debug("Looks like pprval is ok ... ");
-
-
-                                if (A4GL_isnull(fprop->datatype,buff)) {
-                                        A4GL_debug("But I got a null back - strlen = %d fprop->datatype=%x %d",strlen(buff2),fprop->datatype,DTYPE_DTIME);
-                                        if (strlen(buff2)) {
-                                                pprval=0;
-                                        }
-                                }
-                                if (!A4GL_conversion_ok(-1)) { pprval=0; }
-
-
-                                if ( (fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_SERIAL) && strchr(buff2,'.') ) {
-                                                A4GL_debug("Looks like a decimal in a numeric field");
-                                                pprval=0;
-                                }
-                        }
-
-*/
 
 
 

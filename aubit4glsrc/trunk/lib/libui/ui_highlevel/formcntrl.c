@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.69 2008-09-15 12:28:41 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.70 2008-10-17 16:56:17 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.69 2008-09-15 12:28:41 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.70 2008-10-17 16:56:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1092,8 +1092,11 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
       int ffc_rval;
       struct struct_scr_field *fprop;
       int attr;
-      if (sio->mode != MODE_CONSTRUCT)
+
+
+      if (sio->mode != MODE_CONSTRUCT) {
 	ffc_rval = A4GL_form_field_chk (sio, -1);
+	}
       else
 	{
 	  int daf;
@@ -1184,7 +1187,6 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 
 
 		  A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-
 
 
 		  really_ok = 1;
@@ -1948,6 +1950,10 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
       break;
 
     case A4GLKEY_SHTAB:
+      A4GL_debug ("MJA Try to move to previous field : %d\n", s->curr_attrib - 1);
+      A4GL_newMovement (s, s->curr_attrib - 1);
+      break;
+
     case A4GLKEY_UP:
 
       if (isWordWrap)

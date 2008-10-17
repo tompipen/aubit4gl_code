@@ -17,11 +17,12 @@
 #include "formdriver.h"
 #include "low_gtk.h"
 #include <ctype.h>
+#define FLAG_FIELD_TOUCHED   2
 
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.133 2008-05-12 16:48:45 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.134 2008-10-17 16:56:17 mikeaubury Exp $";
 #endif
 
 
@@ -386,11 +387,31 @@ setup_ok_cancel (GtkWidget * ok_cancel)
 int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
+  GtkWidget *w;
+
+/* If we're using a TEXTVIEW - then we'll let GTK handle all the difficult stuff... */
+  if (GTK_IS_WINDOW (widget))
+    {
+      int letTextViewHandleIt = 1;
+      w = gtk_window_get_focus (GTK_WINDOW(widget));
+      if (w)
+	{
+	  if (gtk_object_get_data (GTK_OBJECT (w), "ISTEXTVIEW"))
+	    {
+	      if (event->keyval == GDK_ISO_Left_Tab)
+		letTextViewHandleIt = 0;
+	      if (letTextViewHandleIt)
+		{
+			A4GL_fprop_flag_set(w, FLAG_FIELD_TOUCHED);
+		  return 0;
+		}
+	    }
+	}
+    }
 
   if (event->state & 4)
     {				/*  Control key held down... */
-      if (a4gl_tolower (event->keyval) >= 'a'
-	  && a4gl_tolower (event->keyval) <= 'z')
+      if (a4gl_tolower (event->keyval) >= 'a' && a4gl_tolower (event->keyval) <= 'z')
 	keypressed = a4gl_tolower (event->keyval) - 'a' + 1;
       else
 	keypressed = -1;
@@ -1192,8 +1213,15 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	}
     }
   gtk_widget_show (win);
-  gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
-		      GTK_SIGNAL_FUNC (A4GL_keypress), win);
+
+
+
+  gtk_signal_connect (GTK_OBJECT (win), "key-press-event", GTK_SIGNAL_FUNC (A4GL_keypress), win);
+ 
+  
+  
+  
+  
   A4GL_debug ("Created window %p for h=%d w=%d y=%d x=%d b=%d", win, h, w, y,
 	      x, border);
   A4GL_LL_gui_run_til_no_more ();
@@ -3168,6 +3196,10 @@ A4GL_LL_int_form_driver (void *vform, int mode)
   struct s_a4gl_gtk_form *form;
   GtkWidget *cwidget;
   int a = 0;
+  int widgetIsTextView=0;
+  
+
+
   form = vform;
 
   A4GL_assertion (form->currentfield < 0
@@ -3175,6 +3207,9 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 		  "Invalid current field");
 
   cwidget = form->widgets[form->currentfield];
+  if (gtk_object_get_data (GTK_OBJECT (cwidget), "ISTEXTVIEW")) {
+		widgetIsTextView=1;
+  }
 
   if (mode <= 255 && a_isprint (mode) && mode >= ' ')
     {
@@ -3202,10 +3237,9 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 	}
 
 
-      if (gtk_object_get_data (GTK_OBJECT (cwidget), "ISTEXTVIEW"))
+      if (widgetIsTextView) 
 	{
-
-	  // Needs implementing...
+		///
 	}
       else
 	{
@@ -3261,28 +3295,40 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 
 
 	case AUBIT_REQ_CLR_EOF:
+      if (widgetIsTextView)  ; 
+	else {
 	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol, -1);
+	}
 	  break;
 
 
 	case AUBIT_REQ_CLR_FIELD:
+      if (widgetIsTextView)  ; 
+	else {
 	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), 0, -1);
+	}
 	  break;
 
 
 	case AUBIT_REQ_DEL_CHAR:
+      if (widgetIsTextView)  ; 
+	else {
 	  gtk_editable_delete_text (GTK_EDITABLE (cwidget), form->curcol,
 				    form->curcol + 1);
+	}
 	  break;
 
 
 	case AUBIT_REQ_DEL_PREV:
+      if (widgetIsTextView)  ; 
+	else {
 	  if (form->curcol > 0)
 	    {
 	      gtk_editable_delete_text (GTK_EDITABLE (cwidget),
 					form->curcol - 1, form->curcol);
 	      form->curcol--;
 	    }
+	}
 	  break;
 
 	case AUBIT_REQ_FIRST_FIELD:
