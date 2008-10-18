@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.54 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: rexp2.c,v 1.55 2008-10-18 11:59:15 mikeaubury Exp $
 #
 */
 
@@ -83,6 +83,7 @@
 =====================================================================
 */
 
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 
 /*
