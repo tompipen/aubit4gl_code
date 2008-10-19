@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.18 2008-02-12 12:46:58 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.19 2008-10-19 18:46:32 mikeaubury Exp $
 }
 
 {**
@@ -266,6 +266,7 @@ code
 	int ispipe=0;
 		if (A4GL_has_pointer(handle,CHANNEL_PIPE)) {
 			ispipe=(int)A4GL_find_pointer(handle,CHANNEL_PIPE);
+			A4GL_del_pointer(handle,CHANNEL_PIPE);
 		}
 		
 		if (A4GL_has_pointer(handle,CHANNEL_IN)) {
