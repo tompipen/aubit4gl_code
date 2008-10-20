@@ -1,4 +1,23 @@
 ---------------------------
+Mon Oct 20 21:11:58 BST 2008
+---------------------------
+1.10RC_38 Released
+---------------------------
+	
+	Try to remove reserved words from fcompile
+	
+	Win32 fixup
+	
+	textview (multiline text edit) fixups
+	
+	Minor error number handling changes
+	
+	Add REMAP_ERROR to convertsql file
+	
+	SPRINTF fixups Small fixups for internationalization - (commas for
+	decimal point in numeric input)
+	
+---------------------------
 Thu Oct 16 11:48:37 BST 2008
 ---------------------------
 1.10RC_37 Released
