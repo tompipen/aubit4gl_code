@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.38 2008-08-26 14:41:00 mikeaubury Exp $
+# $Id: Makefile,v 1.39 2008-10-20 09:57:28 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -115,7 +115,7 @@ ALL				+=${ROOT}/bin/4glc fgllint
 
 core: ${ROOT}/bin/4glc 
 
-C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
+C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I.  -Irules -I${GENRULES}
 #-I${ROOT}/lib -I${ROOT}/lib/libincl
 CFLAGS			+=${C_LOCAL_IFLAGS} ${RPCLIB_INCLUDE} ${CURSES_INC_PATH}
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}

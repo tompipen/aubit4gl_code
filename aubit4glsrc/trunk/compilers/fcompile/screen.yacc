@@ -1,5 +1,13 @@
 %{
 #define YYDEBUG 1
+#ifdef YYPURE
+#undef YYPURE
+#endif
+#define YYPURE 1
+#define YYLEX_PARAM yystate
+#define YY_DECL int yylex(int yystate)
+
+int ign_kw(int yystate,int kw);
 /*
 	y.tab.c was generated from screen.yacc using yacc
 */
@@ -163,12 +171,12 @@ if (A4GLF_open_db(the_form.dbname)) {
 
 named_or_kw_st :
 	NAMED   
-	| st_kword 
+	| SQLONLY
 ;
 
 named_or_kw_any :
 	NAMED   
-	| any_kword 
+	| SQLONLY
 ;
 
 dbname : 
@@ -832,7 +840,7 @@ op_field_desc
 			A4GL_trim(att_condition);
 			if (strlen(att_condition)) {
 				//printf("%s\n", att_condition);
-				fprintf(stderr, "Conditions in upscol are not handled yet (%s)",att_condition);
+				fprintf(stderr, "Conditions in upscol are not handled yet (%s)\n",att_condition);
 			}
 		}
 		if (!used) {
@@ -2030,319 +2038,6 @@ evalue_list : evalue {
 
 
 
-
-st_kword : 
-      KW_COMPOSITES 
-
-     | ATTRIBUTES 
-     | DATABASE 
-     | BY 
-     | KW_SIZE 
-	|INSTRUCTIONS
-
-     | KW_END 
-     | TITLE 
-     | COMMENT 
-     | DYNAMIC 
-     | KW_NULL 
-     | INPUT 
-     | TABLES 
-     | LOOKUP 
-     | JOINING 
-     | RECORD 
-     | THROUGH 
-     | TYPE 
-     | DELIMITERS 
-     | KW_CHAR 
-     | KW_INT 
-     | KW_DATE 
-     | KW_FLOAT 
-     | SMALLFLOAT 
-     | SMALLINT 
-     | KW_DECIMAL 
-     | MONEY 
-     | DATETIME 
-     | INTERVAL 
-     | LIKE 
-     | BLACK 
-     | BLUE 
-     | GREEN 
-     | CYAN 
-     | RED 
-     | MAGENTA 
-     | WHITE 
-     | YELLOW 
-     | NORMAL 
-     | REVERSE 
-     | LEFT 
-     | BOLD 
-     | BLINK 
-     | UNDERLINE 
-     | DIM 
-     | AUTONEXT 
-     | COLOR 
-     | COMMENTS 
-     | DEFAULT 
-     | VALIDATE 
-     | DISPLAY 
-     | DOWNSHIFT 
-     | UPSHIFT 
-     | FORMAT 
-     | INCLUDE 
-     | INVISIBLE 
-     | NOUPDATE 
-     | NOENTRY 
-     | PICTURE 
-     | PROGRAM 
-     | REQUIRED 
-     | QUERYCLEAR 
-     | VERIFY 
-     | WORDWRAP 
-     | COMPRESS 
-     | NONCOMPRESS 
-     | TO 
-     | AS 
-     | SERIAL 
-     | KW_BYTE 
-     | KW_TEXT 
-     | VARCHAR 
-     | SQL_VAR 
-     | KW_NONSPACE 
-     | SQLONLY 
-     | WIDGET 
-     | OPTIONS 
-     | CONFIG 
-     | COMPARISON 
-     | LESSTHAN 
-     | GREATERTHAN 
-     | KWOR 
-     | KWAND 
-     | KWWHERE 
-     | KWNOT 
-     | KWBETWEEN 
-     | KWIN 
-     | XVAL 
-     | KWNULLCHK 
-     | KWNOTNULLCHK 
-     | YEAR 
-     | MONTH 
-     | DAY 
-     | HOUR 
-     | MINUTE 
-     | SECOND 
-     | FRACTION 
-     | LISTBOX 
-     | BUTTON 
-     | KW_PANEL 
-     | DISPLAYONLY 
-     | ALLOWING 
-     | KW_MASTER_OF 
-     | KW_BEFORE 
-     | KW_AFTER 
-     | KW_EDITADD 
-     | KW_EDITUPDATE 
-     | KW_REMOVE 
-     | KW_OF 
-     | KW_ADD 
-     | KW_UPDATE 
-     | KW_QUERY 
-     | KW_ON_ENDING 
-     | KW_ON_BEGINNING 
-     | KW_CALL 
-     | KW_BELL 
-     | KW_ABORT 
-     | KW_LET 
-     | KW_EXITNOW 
-     | KW_NEXTFIELD 
-     | KW_IF 
-     | KW_THEN 
-     | KW_ELSE 
-     | KW_BEGIN 
-     | KW_TOTAL 
-     | KW_RIGHT 
-     | KW_ZEROFILL 
-     | KW_USES_EXTENDED 
-     | KW_ACTION 
-	| KW_ITEMS
-/*
-     | KW_PAGE 
-     | KW_HBOX 
-     | KW_VBOX 
-     | KW_GRID 
-     | KW_GROUP 
-     | KW_TABLE 
-     | KW_FOLDER 
-     | KW_STYLE 
-     | KW_LAYOUT 
-     | KW_HIDDEN
-     | KW_TEXTEDIT 
-     | KW_BUTTONEDIT 
-     | KW_LABEL 
-     | KW_EDIT 
-     | KW_DATEEDIT 
-     | KW_SCROLL  
-     | KW_IMAGE
-     | KW_FONTPITCH 
-     | KW_FIXED 
-     | KW_VARIABLE 
-     | KW_WANTNORETURNS 
-     | KW_WANTTABS
-*/
-
-;
-
-any_kword : 
-      KW_COMPOSITES 
-     | DATABASE 
-     | BY 
-     | KW_SCREEN_TITLE 
-     | KW_SCREEN 
-     | KW_SIZE 
-     | TITLE 
-     | FORMONLY 
-     | COMMENT 
-     | DYNAMIC 
-     | WITHOUT 
-     | INPUT 
-     | TABLES 
-     | LOOKUP 
-     | JOINING 
-     | RECORD 
-     | THROUGH 
-     | TYPE 
-     | DELIMITERS  
-     | KW_CHAR 
-     | KW_INT 
-     | KW_DATE 
-     | KW_FLOAT 
-     | SMALLFLOAT 
-     | SMALLINT 
-     | KW_DECIMAL 
-     | MONEY 
-     | DATETIME 
-     | INTERVAL 
-     | LIKE 
-     | BLACK 
-     | BLUE 
-     | GREEN 
-     | CYAN 
-     | RED 
-     | MAGENTA 
-     | WHITE 
-     | YELLOW 
-     | NORMAL 
-     | REVERSE 
-     | LEFT 
-     | BOLD 
-     | BLINK 
-     | UNDERLINE 
-     | DIM 
-     | AUTONEXT 
-     | COLOR  
-     | COMMENTS 
-     | DEFAULT 
-     | VALIDATE 
-     | DISPLAY 
-     | DOWNSHIFT 
-     | UPSHIFT 
-     | FORMAT 
-     | INCLUDE 
-     | INVISIBLE 
-     | NOUPDATE 
-     | NOENTRY 
-     | PICTURE 
-     | PROGRAM 
-     | REQUIRED 
-     | QUERYCLEAR 
-     | VERIFY 
-     | WORDWRAP 
-     | COMPRESS 
-     | NONCOMPRESS 
-     | TO 
-     | AS 
-     | SERIAL 
-     | KW_BYTE 
-     | KW_TEXT 
-     | VARCHAR 
-     | SQL_VAR 
-     | SQLONLY 
-     | WIDGET 
-     | OPTIONS 
-     | CONFIG 
-     | COMPARISON 
-     | LESSTHAN 
-     | GREATERTHAN 
-     | KWOR 
-     | KWAND 
-     | KWWHERE 
-     | KWNOT 
-     | KWBETWEEN 
-     | KWIN 
-     | KWNULLCHK 
-     | KWNOTNULLCHK 
-     | YEAR 
-     | MONTH 
-     | DAY 
-     | HOUR 
-     | MINUTE 
-     | SECOND 
-     | FRACTION 
-     | LISTBOX 
-     | BUTTON 
-     | KW_PANEL 
-     | ALLOWING 
-     | KW_MASTER_OF 
-     | KW_BEFORE 
-     | KW_AFTER 
-     | KW_EDITADD 
-     | KW_EDITUPDATE 
-     | KW_REMOVE 
-     | KW_OF 
-     | KW_ADD 
-     | KW_UPDATE 
-     | KW_QUERY 
-     | KW_ON_ENDING 
-     | KW_ON_BEGINNING 
-     | KW_CALL 
-     | KW_BELL 
-     | KW_ABORT 
-     | KW_LET 
-     | KW_NEXTFIELD 
-     | KW_IF 
-     | KW_THEN 
-     | KW_ELSE 
-     | KW_BEGIN 
-     | KW_TOTAL 
-     | KW_RIGHT 
-     | KW_ZEROFILL 
-     | KW_USES_EXTENDED 
-     | KW_ACTION 
-	| KW_ITEMS
-/*
-     | KW_PAGE 
-     | KW_HBOX 
-     | KW_VBOX 
-     | KW_GRID 
-     | KW_GROUP 
-     | KW_TABLE 
-     | KW_FOLDER 
-     | KW_STYLE 
-     | KW_LAYOUT 
-     | KW_HIDDEN
-     | KW_TEXTEDIT 
-     | KW_BUTTONEDIT 
-     | KW_LABEL 
-     | KW_EDIT 
-     | KW_DATEEDIT 
-     | KW_SCROLL  
-     | KW_IMAGE
-     | KW_FONTPITCH 
-     | KW_FIXED 
-     | KW_VARIABLE 
-     | KW_WANTNORETURNS 
-     | KW_WANTTABS
-*/
-;
 
 
 

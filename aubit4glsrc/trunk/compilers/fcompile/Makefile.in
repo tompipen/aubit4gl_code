@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.71 2008-05-14 06:27:13 mikeaubury Exp $
+# $Id: Makefile.in,v 1.72 2008-10-20 09:57:28 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 
 4GLPC			=${FGLPCEXEC}
 C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl -I.
-CFLAGS 			+=${C_LOCAL_IFLAGS} @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
+CFLAGS 			+=${C_LOCAL_IFLAGS}  @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 EXE_CFLAGS      +=-I${ROOT}/lib/libincl -I. ${C_IFLAGS}
 
@@ -92,7 +92,7 @@ endif
 
 ifeq "${YACC}" "no"
 	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
-
+	STATESFILES	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/mk_fstates.c ${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/mk_fstates_1.h
 else
 	Y_TAB_C_DEP	=$(SOURCES.yacc) ${LEX_YY_C}
 endif
@@ -145,15 +145,16 @@ fshow.gdb:
 y.tab.c: ${Y_TAB_C_DEP}
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C_DEP} .
+	${CP} ${STATESFILES} . 
 else
-	${YACC} -v  $(SOURCES.yacc)
+	${YACC} -y  -r all -d -v    $(SOURCES.yacc)
 endif
 
 lex.yy.c: $(SOURCES.lex)
-ifeq "@LEX@" "no"
+ifeq "flex" "no"
 	${CP} ${LEX_YY_C} .
 else
-	${LEX} $(SOURCES.lex)
+	${LEX}  $(SOURCES.lex)
 endif
 
 rpc: form_x_xdr.c
@@ -172,7 +173,7 @@ form_x_xdr.o: form_x_xdr.c
 ##                          Dependencies
 ## ==================================================================
 
-y.tab.o: 		lex.yy.c
+y.tab.o: 		lex.yy.c mk_fstates.c
 formwrite2.o :  form_x.h
 fcompile.o :  	form_x.h
 where.o : 		form_x.h
@@ -203,7 +204,7 @@ global.h: global.4gl ${ROOT}/bin/make_binfiles
 
 clean: clean.fshow
 	$(RM) fcompile $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
-	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
+	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c mk_fstates_1.h mk_fstates.c \
 	*.err fdecompile-j fdecompile *.out \
     *.o *.glb
 
@@ -222,5 +223,8 @@ lclint: $(CMODS)
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
+mk_fstates.c: mkstates y.output
+	${SH} mkstates
+y.output: y.tab.c
 
 #-----------------------------------------------------------------------
