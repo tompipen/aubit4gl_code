@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.62 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: debug.c,v 1.63 2008-10-20 11:31:16 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,9 @@
 #include <sys/time.h>
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+#ifdef __DARWIN__
+#include <sys/time.h>
+#endif
 extern sqlca_struct a4gl_sqlca;
 
 /*
