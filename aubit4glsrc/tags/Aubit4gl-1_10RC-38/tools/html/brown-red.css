@@ -1,0 +1,15 @@
+BODY {
+  font-family : Verdana, Arial, sans-serif;
+  background-color : #CCCC33;}
+INPUT {
+  background-color : #FF6600;
+  font-family : Tahoma;
+  margin-right : 5px;
+  border : none;}
+TABLE, TD, TR {
+  background: #CC6600;}
+.fjs-red {
+  color : Red;}
+.fjs-blue {
+  color : Blue;}
+.fjs-none {}
