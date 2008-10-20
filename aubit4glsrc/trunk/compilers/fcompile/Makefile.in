@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.72 2008-10-20 09:57:28 mikeaubury Exp $
+# $Id: Makefile.in,v 1.73 2008-10-20 11:22:10 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -93,8 +93,10 @@ endif
 ifeq "${YACC}" "no"
 	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
 	STATESFILES	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/mk_fstates.c ${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/mk_fstates_1.h
+	STATESDEP=
 else
 	Y_TAB_C_DEP	=$(SOURCES.yacc) ${LEX_YY_C}
+	STATESDEP= mkstates y.output
 endif
 
 ## ==================================================================
@@ -223,8 +225,9 @@ lclint: $(CMODS)
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
-mk_fstates.c: mkstates y.output
+mk_fstates.c: $(STATESDEP) 
 	${SH} mkstates
+
 y.output: y.tab.c
 
 #-----------------------------------------------------------------------
