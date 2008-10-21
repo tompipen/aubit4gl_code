@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.137 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: ops.c,v 1.138 2008-10-21 12:58:32 mikeaubury Exp $
 #
 */
 
@@ -243,7 +243,6 @@ A4GL_dec_dec_ops (int op)
   ndig2 = s2 >> 8;
   ndec2 = s2 & 0xff;
 
-
   //char *a1;
   //char *a2;
   A4GL_pop_var2 (&b, DTYPE_DECIMAL, s1);
@@ -309,7 +308,6 @@ A4GL_dec_dec_ops (int op)
 
   res_dig += res_dec;
 //printf("%d , %d\n", res_dig, res_dec);
-  A4GL_debug ("dec_dec_ops");
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
       if (isCompare (op))
@@ -324,7 +322,6 @@ A4GL_dec_dec_ops (int op)
     {
       A4GL_debug ("OK - neither is null");
     }
-
 
   switch (op)
     {
@@ -352,17 +349,32 @@ A4GL_dec_dec_ops (int op)
     case OP_MULT:
       res_dig = ndig1 + ndig2;
       res_dec = ndec1 + ndec2;
-      if (res_dig > 31)
-	res_dig = 31;
+
+      if (res_dig > 31) {
+		// If we overflow - try to work out the size later...
+		res_dig=0;
+		res_dec=0;
+      }
 
       if (res_dec > res_dig)
 	{
 	  res_dig = 32;
 	  res_dec = 16;
 	}
-      A4GL_init_dec (&dc, res_dig, res_dec);
+
+
+	if (res_dig) {
+      		A4GL_init_dec (&dc, res_dig + 1, res_dec);
+	} else {
+      		A4GL_init_dec(&dc,0,0);
+	}
+      
       a4gl_decmul (&a, &b, &dc);
+
+      
       A4GL_push_dec_dec (&dc, 0, 32);
+
+
       return;
 
     case OP_DIV:

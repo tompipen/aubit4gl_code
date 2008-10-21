@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.66 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: sql_common.c,v 1.67 2008-10-21 12:58:32 mikeaubury Exp $
 #
 */
 
@@ -1500,6 +1500,8 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
     {
       strcpy (fname, ptr);
     }
+
+
   f = fopen (fname, "r");
   if (f == 0)
     return 0;

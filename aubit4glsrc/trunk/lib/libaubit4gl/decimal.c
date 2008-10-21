@@ -38,6 +38,12 @@ A4GL_str_dot_to_dec (char *s, fgldecimal * d)
       ptr = strchr (ptr, ',');
 
     }
+  if (d->dec_data[0]==0 && d->dec_data[1]==0) { // Auto size..
+		int ndec;
+		int ndig;
+		A4GL_size_decimal_string(buff, &ndig,&ndec);
+		A4GL_init_dec(d,ndig,ndec);
+  }
   A4GL_str_to_dec (buff, d);
 
 }
@@ -466,6 +472,7 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
   char tmpbuf[2];
 
   A4GL_strncpyz (str, str_orig, sizeof (str));
+//A4GL_remove_trailing_zeros_and_leading_spaces(str);
   A4GL_trim (str);
 #ifdef DEBUG
   A4GL_debug ("XYXY str to dec : '%s'", str);
@@ -918,13 +925,14 @@ a4gl_decmul (fgldecimal * d1, fgldecimal * d2, fgldecimal * res)
   m2 = m_apm_init ();
   mres = m_apm_init ();
 
+
   acl_apm_set_string (m1, A4GL_dec_to_str (d1, 0), 1);
   acl_apm_set_string (m2, A4GL_dec_to_str (d2, 0), 1);
 
   m_apm_multiply (mres, m1, m2);
-
   m_apm_to_fixpt_string (buff, res->dec_data[1], mres);
   A4GL_str_dot_to_dec (buff, res);
+
   m_apm_free (m1);
   m_apm_free (m2);
   m_apm_free (mres);
@@ -1119,7 +1127,6 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
   M_APM mres;
   int o;
   fgldecimal *sum;
-
   if (s2)
     {
       mres = m_apm_init ();

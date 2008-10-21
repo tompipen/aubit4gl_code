@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.212 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: stack.c,v 1.213 2008-10-21 12:58:32 mikeaubury Exp $
 #
 */
 
@@ -4120,7 +4120,7 @@ return n;
 }
 
 
-static void size_decimal_string(char *s,int *dig, int *dec) {
+void A4GL_size_decimal_string(char *s,int *dig, int *dec) {
       int cnt;
       int len;
       char buff_b[2000];
@@ -4187,7 +4187,7 @@ for (a=0;a<strlen(ptr);a++) {
 */
 
 
-size_decimal_string(orig_ptr,&ndig,&ndec);
+A4GL_size_decimal_string(orig_ptr,&ndig,&ndec);
 
 A4GL_init_dec (&dec, ndig, ndec);
 A4GL_decstr_convert (orig_ptr, a4gl_convfmts.ui_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, 32);

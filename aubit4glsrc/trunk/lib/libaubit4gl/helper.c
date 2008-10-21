@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.75 2008-10-13 10:49:22 mikeaubury Exp $
+# $Id: helper.c,v 1.76 2008-10-21 12:58:32 mikeaubury Exp $
 #
 */
 
@@ -1899,5 +1899,15 @@ return 1;
 
 }
 
+
+int aclfgl_aclfgl_trim_nl(int n) {
+char *p;
+p=A4GL_char_pop();
+
+A4GL_trim_nl(p);
+A4GL_push_char(p);
+free(p);
+return 1;
+}
 
 /* =================================== EOF ============================= */
