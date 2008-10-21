@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.214 2008-10-17 13:03:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.215 2008-10-21 09:17:32 mikeaubury Exp $
 #
 */
 
@@ -195,7 +195,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.214 2008-10-17 13:03:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.215 2008-10-21 09:17:32 mikeaubury Exp $";
 #endif
 
 
@@ -232,6 +232,9 @@ static int getColumnsOrder = 0;
 
 /** The number of columns when getting datatypes */
 static int getColumnsMax = 0;
+char uname_acl[256]="";
+char passwd_acl[256]="";
+
 
 /*
 =====================================================================
@@ -240,6 +243,8 @@ static int getColumnsMax = 0;
 */
 
 
+static char * initUser (const char *dbName, const char *userName);
+static char * initPassword (const char *dbName,const char *passwd);
 
 
 /**
@@ -537,6 +542,8 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char buff[1000];
   EXEC SQL BEGIN DECLARE SECTION;
   char *db;
+  char *userName;
+  char *password;
   EXEC SQL END DECLARE SECTION;
 
 
@@ -554,7 +561,19 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
       // Not any more we havent...
     }
 
-  EXEC SQL connect to:db as 'default';
+
+  /* Check to see if we've got an ACLFILE for this database.. */
+  userName = initUser (db, NULL);
+  password = initPassword (db, NULL);
+
+  if (userName && password) {
+  	EXEC SQL connect to:db as 'default' user:userName using:password;
+	free(password);
+  	free(userName);
+  } else {
+  	EXEC SQL connect to:db as 'default';
+  }
+
   A4GL_debug ("Sqlca=%d", sqlca.sqlcode);
 
   if (isSqlError ()) {
@@ -612,58 +631,7 @@ SPRINTF1(buff,"%d",n);
 return buff;
 }
 
-/**
- * Close the default connection.
- *
- * @param sessname The session/connection name.
- * @return
- *  - 0 : Connection closed.
- *  - 1 : Connection does not exist or error ocurred.
- */
-int
-xxx_obsolete_A4GLSQL_close_connection (void)
-{
-  return A4GLSQL_close_session ("default");
-}
 
-/**
- * Connects to a database.
- *
- * @todo: programs that do not use DATBASE or CONNECT or SESSION,
- * should not call this function, but they DO!
- *
- * @param server The database name. In odbc this could be the datasource.
- *  In informix its always the database name.
- * @param uid_p The user identification.
- * @param pwd_p The password.
- * @return 
- *   - 1 : Connection estabilished.
- *   - 0 : there was an error connecting to database.
- */
-int xxx_obsolete_A4GLSQL_make_connection
-  (char * server, char * uid_p, char * pwd_p)
-{
-  EXEC SQL begin declare section;
-  char *dbName;
-  char *userName;
-  char *passwd;
-  EXEC SQL end declare section;
-  int retval = 0;
-
-  dbName = strdup (server);
-  userName = strdup (uid_p);
-  passwd = strdup (pwd_p);	//Querix esql/c compiler chokes here....
-  EXEC SQL connect to:dbName as 'default' user:userName using:passwd;
-
-  if (isSqlError ())
-    retval = 1;
-  else
-    addESQLConnection ("default", dbName, userName, passwd);
-  free (dbName);
-  free (userName);
-  free (passwd);
-  return retval;
-}
 
 /**
  * Initialize the user name used to access the password.
@@ -676,16 +644,39 @@ int xxx_obsolete_A4GLSQL_make_connection
  * @return The user name to use.
  */
 static char *
-initUser (const char *userName)
+initUser (const char *dbName, const char *userName)
 {
   char *retUser;
+  char *retPass;
+
+   strcpy(uname_acl,"");
+   strcpy(passwd_acl,"");
+
+
   if (userName != NULL)
     return strdup (userName);
-  /** @todo : Confirm if this should be the env var name to be used */
-  retUser = (char *) acl_getenv ("SQLUID");
+
+
+  retUser = (char *) acl_getenv_not_set_as_0 ("SQLUID");
+  retPass = (char *) acl_getenv_not_set_as_0 ("SQLPWD");
+  if (retUser && retPass) {
+  	if (strcmp(retUser,"informix")==0 && strcmp(retPass,"ifmx")==0) {
+		// These are the defaults - so mean nothings has been set..
+		retUser=NULL;
+		retPass=NULL;
+	}
+   }
+
+
   if (retUser != NULL)
     return strdup (retUser);
-  return retUser;
+
+
+    if (A4GL_sqlid_from_aclfile ((char *)dbName, uname_acl, passwd_acl))
+    {
+	return strdup(uname_acl);
+    }
+  return NULL;
 }
 
 /**
@@ -695,16 +686,23 @@ initUser (const char *userName)
  * @return The password choosed.
  */
 static char *
-initPassword (const char *passwd)
+initPassword (const char *dbName,const char *passwd)
 {
   char *retPasswd;
+
+  if (strlen(passwd_acl)) {
+	return strdup(passwd_acl);
+  }
+
   if (passwd != NULL)
     return strdup (passwd);
   /** @todo : Confirm if this should be the env var name to be used */
   retPasswd = (char *) acl_getenv ("SQLPWD");
   if (retPasswd != NULL)
     return strdup (retPasswd);
-  return retPasswd;
+
+
+  return NULL;
 }
 
 /**
@@ -747,9 +745,10 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
       return 1;
     }
 
+
   /* Treat the user and password precedence. */
-  userName = initUser (usr);
-  password = initPassword (pwd);
+  userName = initUser (dbName, usr);
+  password = initPassword (dbName, pwd);
 
   if (connectionName == NULL)
     {
@@ -761,8 +760,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
 	EXEC SQL connect to:dbName as:connectionName;
       else
 	{
-	  EXEC SQL connect to:dbName as:connectionName
-	    user:userName using:password;
+	  EXEC SQL connect to:dbName as:connectionName user:userName using:password;
 	  free (userName);
 	  free (password);
 	}
@@ -917,40 +915,6 @@ A4GLSQLLIB_A4GLSQL_get_currdbname (void)
   if (currConnection == (DbConnection *) 0)
     return NULL;
   return currConnection->connectionName;
-}
-
-/**
- * Get the connection name for a database.
- * 
- * The connections are stored in the connection manager.
- *
- * This connection manager is for now local to ESQL but should be expanded
- * for all connectors at some time.
- *
- * @todo : Implement the connection mechanism.
- *
- * @param databaseName The name of the database.
- * @return 
- *   - The connection name
- *   - NULL : If no connection for that specific database opened
- */
-static char *
-getConnectionForDatabase (char *databaseName)
-{
-  /*register int i; */
-
-  /*
-     This is not working.
-     For doing this i need an iterator trough the tree.
-     hh = A4GL_find_pointer_val ("default", SESSCODE);
-     for (i = 0 ; i < connectionIdx ; i++)
-     {
-     if (strcmp(databaseName,connections[i].databaseName) == 0 )
-     return connections[i].connectionName;
-     }
-     return NULL;
-   */
-    return "";
 }
 
 
@@ -2083,20 +2047,6 @@ executeStatement (struct s_sid *sid)
 
 
 
-
-/**
- * Not used.
- *
- * @param prepared statement name.
- * @param ni Number of binded input parameters.
- * @param The input bind array.
- * @return Allways 0
- */
-int
-xxx_obsolete_A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
-{
-  return 0;
-}
 
 
 
@@ -3982,168 +3932,7 @@ A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 }
 
 
-/**
- * Gets information about columns from a table in the database engine.
- *
- * @todo : Put this working with .*
- * @todo : Remove if not used.
- *
- * @param tabname The table that we wish to get information about it.
- * @param colname The column name to get information about it.
- * @param dtype A pointer to the variable where to put the data type.
- * @param size A pointer to the variable where to put the size of the column
- *  returned by the database.
- * @return 
- *   - 0 : Information readed.
- *   - 1 : Error ocurred.
- */
-static int
-getSQLDataType (char *connName, char *tabname, char *colname,
-		int *dtype, int *size)
-{
-  EXEC SQL BEGIN DECLARE SECTION;
-  char strSelect[640];
-  int dataType;
-  int length;
-  EXEC SQL END DECLARE SECTION;
 
-  SPRINTF2 (strSelect, "select %s from %s", colname, tabname);
-  A4GL_debug ("SQL = %s", strSelect);
-  EXEC SQL PREPARE stReadColumns FROM:strSelect;
-  if (isSqlError ())
-    {
-      return 1;
-    }
-
-  EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
-  if (isSqlError ())
-    {
-      return 1;
-    }
-
-  EXEC SQL DESCRIBE stReadColumns USING SQL DESCRIPTOR 'descReadColumns';
-  if (isSqlError ())
-    {
-      EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
-      return 1;
-    }
-
-  EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 0:dataType = TYPE,:length =
-    LENGTH;
-  if (isSqlError ())
-    {
-      EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
-      return 1;
-    }
-  EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
-  if (isSqlError ())
-    {
-      return 1;
-    }
-  *dtype = dataType;
-  *size = fixlength (dataType, length);
-  return 0;
-}
-
-/**
- * Gets information about columns from a table in the database engine.
- *
- * Aparently the compiler is waiting for an iteration in the columns of a
- * table.
- *
- * @todo : Put this working with .*
- * @todo : Use the getSQLDataType()
- *
- * @param tabname The table that we wish to get information about it.
- * @param colname The column name to get information about it.
- * @param dtype A pointer to the variable where to put the data type.
- * @param size A pointer to the variable where to put the size of the column
- *  returned by the database.
- * @return
- *   - 1 : Information readed.
- *   - 0 : Error ocurred.
- */
-int
-xxx_obsolete_A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
-{
-  EXEC SQL BEGIN DECLARE SECTION;
-  char strSelect[640];
-  int dataType;
-  int length;
-  EXEC SQL END DECLARE SECTION;
-
-  SPRINTF3 (strSelect, "select %s.%s from %s", tabname, colname, tabname);
-  EXEC SQL PREPARE stXReadColumns FROM:strSelect;
-  if (isSqlError ())
-    {
-    	A4GL_debug("Error with prepare");
-      return 0;
-    }
-
-  EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
-  if (isSqlError ())
-    {
-    	A4GL_debug("Error with allocate");
-      return 0;
-    }
-
-  EXEC SQL DESCRIBE stXReadColumns USING SQL DESCRIPTOR 'descReadColumns';
-  if (isSqlError ())
-    {
-    	A4GL_debug("Error with describe");
-      EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
-      return 0;
-    }
-
-  EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 1:dataType = TYPE,:length =
-    LENGTH;
-  if (isSqlError ())
-    {
-    	A4GL_debug("Error with get");
-      EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
-      return 0;
-    }
-  EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
-  if (isSqlError ())
-    {
-      return 0;
-    }
-  if (dataType==15) { // NCHAR 
-	dataType=0;
-  }
-
-  *dtype = dataType;
-  *size = fixlength (dataType, length);
-  return 1;
-}
-
-/**
- * Get the datatype of a column in the database engine.
- *
- * @todo : Understand if this function is used somewhere.
- *
- * @param db The database name.
- * @param tab The table name.
- * @param col The column name.
- * @return
- *   - -1 : An error ocurred.
- *   - Otherwise : The datatype code.
- */
-int
-xxx_obsolete_A4GLSQL_get_datatype (char *db, char *tab, char *col)
-{
-  int dataType;
-  int length;
-  char *connectionName;
-
-  connectionName = getConnectionForDatabase (db);
-  if (connectionName == NULL)
-    return -1;
-
-  if (getSQLDataType (connectionName, tab, col, &dataType, &length) == 1)
-    return -1;
-  return dataType;
-}
 
 char *
 A4GLSQLLIB_A4GLSQL_dbms_name (void)
