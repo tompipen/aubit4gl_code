@@ -1,4 +1,13 @@
-gawk '
+# $1 should be the awk interpretter to use
+if [ "$1" = "" ]
+then
+	echo "Error - expecting to be given the awk interpretter to use"
+	exit 2
+fi
+
+awkfname=$1
+
+$awkfname '
 BEGIN  {
 	cnt=0
 	print "const int *token_groups[]={" > "mk_fstates_1.h";
