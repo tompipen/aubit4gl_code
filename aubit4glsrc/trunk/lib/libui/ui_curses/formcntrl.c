@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.147 2008-10-16 11:34:47 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.148 2008-10-22 09:45:07 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.147 2008-10-16 11:34:47 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.148 2008-10-22 09:45:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1867,7 +1867,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	  }
 	  UILIB_A4GL_gotolinemode ();
           system(buff);
-		A4GL_chkwin();
+	A4GL_chkwin();
 	  if (reloadblob) {
                 int fl;
 	        FILE *fre;
@@ -1880,8 +1880,11 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 		blob->ptr=malloc(fl+1);
 		blob->memsize=fl;
 		fread(blob->ptr,1,fl,fre);
+		unlink(filename);
 		//blob->ptr[fl]=0;
+		//ptr->isnull='N';
           }
+	blob->isnull='N';
 	  return 0;
 	}
       else
