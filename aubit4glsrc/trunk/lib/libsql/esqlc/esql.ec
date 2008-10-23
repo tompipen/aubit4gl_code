@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.215 2008-10-21 09:17:32 mikeaubury Exp $
+# $Id: esql.ec,v 1.216 2008-10-23 14:54:46 mikeaubury Exp $
 #
 */
 
@@ -195,7 +195,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.215 2008-10-21 09:17:32 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.216 2008-10-23 14:54:46 mikeaubury Exp $";
 #endif
 
 
@@ -666,6 +666,12 @@ initUser (const char *dbName, const char *userName)
 		retPass=NULL;
 	}
    }
+  if (retUser) {
+	A4GL_trim(retUser);
+	if (strlen(retUser)==0) {
+		retUser=NULL;
+	}
+  }
 
 
   if (retUser != NULL)
