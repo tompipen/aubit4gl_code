@@ -20,9 +20,17 @@ construct_cmd	:	CONSTRUCT {
 		}
 ;
 
+op_construct_callback : 
+	{ $<ptr>$=NULL; }
+	| VIA callback_function
+	{
+		$<ptr>$=$<ptr>2;
+	}
+;
+
 
 constr_rest:
-BY_NAME ensured_variable_usage_expression KW_ON constr_col_list opt_defs opt_help_no_i input_attributes
+BY_NAME ensured_variable_usage_expression KW_ON constr_col_list opt_defs opt_help_no_i op_construct_callback input_attributes
 {
 	int a;
 	/*
@@ -35,13 +43,13 @@ BY_NAME ensured_variable_usage_expression KW_ON constr_col_list opt_defs opt_hel
                 append_field_to_list (f, new_field_entry (colname, NULL, 1));
 	}
 	*/
-	$<cmd>$=new_construct_cmd(EB_TRUE, $<ptr>2, $<cons_list>4, NULL, NULL, $<attrib>7, $<e_boolean>5, $<integer_val>6, get_sio_id("CONSTRUCT")); 
+	$<cmd>$=new_construct_cmd(EB_TRUE, $<ptr>2, $<cons_list>4, NULL, NULL, $<attrib>8, $<e_boolean>5, $<integer_val>6, get_sio_id("CONSTRUCT"), $<ptr>7); 
 	reset_constr();
 }
-| ensured_variable_usage_expression KW_ON constr_col_list opt_defs FROM field_name_list_as_struct opt_help_no_i input_attributes
+| ensured_variable_usage_expression KW_ON constr_col_list opt_defs FROM field_name_list_as_struct opt_help_no_i op_construct_callback input_attributes
 {
 	reset_constr();
-	$<cmd>$=new_construct_cmd(EB_FALSE, $<ptr>1, $<cons_list>3, $<field_list>6, NULL, $<attrib>8, $<e_boolean>4, $<integer_val>7, get_sio_id("CONSTRUCT")); 
+	$<cmd>$=new_construct_cmd(EB_FALSE, $<ptr>1, $<cons_list>3, $<field_list>6, NULL, $<attrib>9, $<e_boolean>4, $<integer_val>7, get_sio_id("CONSTRUCT"),  $<ptr>8); 
 }
 ;
 

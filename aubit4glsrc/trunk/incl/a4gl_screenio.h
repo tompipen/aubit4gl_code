@@ -19,6 +19,7 @@
     int fcntrl_cnt;
     int attrib;
     int processed_onkey;
+    void *callback_function;
   };
 
 #endif

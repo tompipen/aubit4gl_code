@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.76 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: calldll.c,v 1.77 2008-10-23 14:57:22 mikeaubury Exp $
 #
 */
 
@@ -398,7 +398,6 @@ A4GL_dl_openlibrary (char *type, char *p)
   if (dllhandle == 0)
     {
 
-//A4GL_pause_execution();
       /* Sometimes dlerror() returns empty string? */
       /* dllerror is nulled after first call - can't call it twice, so we
          have to store it to be able to use it twice */

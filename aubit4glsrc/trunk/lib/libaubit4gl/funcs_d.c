@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.104 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.105 2008-10-23 14:57:22 mikeaubury Exp $
 #
 */
 
@@ -501,13 +501,10 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	      if (buff2[v_a] == ')')
 		buff2[v_a] = '#';
 	    }
-	  //printf("buff2=%s %lf \n",buff2, never_neg);
 	  a4gl_using_from_string (fmt2, sizeof (fmt2), buff2, numeric, 0);
-	  //printf("fmt2=%s\n",fmt2);
 	  strncpy (strchr (fmt, '(') + 1, fmt2, strlen (buff2));
 	  if (!isneg)
 	    {
-	      //printf("fmt=%s fmt2=%s\n",fmt,fmt2);
 	      if (strchr (fmt, '(') && strchr (fmt, ')'))
 		{
 		  ptr = strchr (fmt, '(');
@@ -544,7 +541,6 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 		buff2[v_a] = '#';
 	    }
 
-	  //printf("%s %s\n",fmt,fmt2);
 	  //a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
 	  a4gl_using_from_string (fmt2, sizeof (fmt2), buff2, numeric, 0);
 	  strncpy (strchr (fmt, '(') + 1, fmt2, strlen (buff2));
@@ -602,7 +598,6 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 		buff2[v_a] = '#';
 	    }
 
-	  //printf("%s %s\n",fmt,fmt2);
 	  //a4gl_using(fmt2, sizeof(fmt2),buff2,never_neg);
 	  a4gl_using_from_string (fmt2, sizeof (fmt2), buff2, numeric, 0);
 	  strncpy (strchr (fmt, '(') + 1, fmt2, strlen (buff2));
@@ -747,7 +742,6 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
     }
   ptr_decimal = &buff_decimal[2];
   A4GL_lpad (buff_integer, 31);
-  //printf("%s ... %s\n", buff_integer, ptr_decimal);
 
   if (num_places > 64 || strlen (ptr_decimal) >= 64)
     {
@@ -762,7 +756,6 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
   strcpy (str, fmt);
   variable_called_b = 30;
   isprnt = 1;
-//printf("--->%s\n",buff_decimal);
   // first, ensure the format string is wide enough to hold the number
   // if not, try drop trailing decimals, otherwise flag overflow with *'s
   {
@@ -965,7 +958,6 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
     }
   variable_called_b = 0;
 
-  A4GL_debug ("s=%s\n", str);
 
   for (v_a = 0; v_a < (int) strlen (fm2); v_a++)
     {
@@ -994,6 +986,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	  str[v_a + (int) strlen (fm1) + 1] = fm2[v_a];
 	}
     }
+
 
 #ifdef HAVE_RINDEX
   ptr = (char *) rindex (str, '<');

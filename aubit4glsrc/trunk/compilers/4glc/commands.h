@@ -131,7 +131,7 @@ struct command *new_convert_cmd(char * p_repname,struct convert* p_c) ;
 struct report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, commands* cmds,int orderby_var_no,int lineno);
 struct report_orderby_section *new_report_orderby_section(e_report_orderby p_type,expr_str_list* p_variables);
 struct command *new_input_cmd(expr_str_list* p_variables,fh_field_list* p_field_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio);
-struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio);
+struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio, expr_str *p_callback_function);
 struct command *new_input_array_cmd(struct expr_str* p_srec,struct expr_str * p_arrayname,struct attrib *p_attrib,struct on_events* p_events,e_boolean p_without_defaults,int p_helpno,int p_sio,int p_blk,char *slice) ;
 
 struct command *new_display_array_cmd(struct expr_str * p_srec,struct expr_str *p_arrayname,struct attrib *p_attrib,struct on_events* p_events,fh_field_entry* p_scroll_using,int p_sio, char *slice) ;

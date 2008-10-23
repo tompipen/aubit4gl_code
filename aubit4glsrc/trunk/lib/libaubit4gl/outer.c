@@ -55,7 +55,6 @@ can_outer (struct s_select *select, struct s_table *t, char *fill, struct s_tabl
 	  //char alias_buff[255];
 	  //int b;
 	  has_outer++;
-	  A4GL_pause_execution ();
 
 	  t2 = t->outer_next;
 	  if (t2->next == 0 && t2->outer_next == 0);

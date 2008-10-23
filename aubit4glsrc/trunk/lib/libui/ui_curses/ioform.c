@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.203 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: ioform.c,v 1.204 2008-10-23 14:58:37 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.203 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.204 2008-10-23 14:58:37 mikeaubury Exp $";
 #endif
 
 /**
@@ -2376,7 +2376,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 
 	        A4GL_debug ("Calling constr with : '%s' '%s' datatype=%d", sio->constr[a].tabname, sio->constr[a].colname,fprop->datatype); 
 
-	        ptr = (char *) A4GL_construct (sio->constr[a].tabname, sio->constr[a].colname, fbuf,get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size);
+	        ptr = (char *) A4GL_construct (sio->constr[a].tabname, sio->constr[a].colname, fbuf,get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size, sio->callback_function);
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
 		{
@@ -2997,10 +2997,9 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
 		A4GL_debug("field_buffer (%p) =%s", f, field_buffer (f, 0));
 
 		if (s->constr[a].value) {
-		
-	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value,get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size);
+	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value,get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size, s->callback_function);
 		} else {
-	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname,  field_buffer (f, 0),get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size);
+	  		ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname,  field_buffer (f, 0),get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size, s->callback_function);
 		}
 
 	if (ptr==0) { // some error in the field...

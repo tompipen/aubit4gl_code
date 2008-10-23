@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.137 2008-10-17 16:56:17 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.138 2008-10-23 14:58:37 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3045,7 +3045,7 @@ A4GL_do_after_field (void *f, struct s_screenio *sio)
 					 sio->constr[a].colname,
 					 fbuf,
 					 A4GL_UI_int_get_inc_quotes (fprop->
-								     datatype), fprop->datatype, fprop->dtype_size);
+								     datatype), fprop->datatype, fprop->dtype_size, sio->callback_function);
 	      A4GL_debug ("ptr=%s", ptr);
 	      if (ptr == 0)
 		{

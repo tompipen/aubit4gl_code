@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.65 2008-09-15 12:28:42 mikeaubury Exp $";
+  "$Id: misc.c,v 1.66 2008-10-23 14:58:37 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -617,9 +617,9 @@ UILIB_A4GL_push_constr (void *vs)
 	  //A4GL_debug ("Calling constr with : '%s' '%s'", s->constr[a].tabname, s->constr[a].colname);
 
 	if (s->constr[a].value) {
-	  ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value, A4GL_UI_int_get_inc_quotes (fprop-> datatype), fprop->datatype, fprop->dtype_size);
+	  ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, s->constr[a].value, A4GL_UI_int_get_inc_quotes (fprop-> datatype), fprop->datatype, fprop->dtype_size, s->callback_function);
 	} else {
-	  ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, A4GL_LL_field_buffer (f, 0), A4GL_UI_int_get_inc_quotes (fprop-> datatype), fprop->datatype, fprop->dtype_size);
+	  ptr = (char *) A4GL_construct (s->constr[a].tabname, s->constr[a].colname, A4GL_LL_field_buffer (f, 0), A4GL_UI_int_get_inc_quotes (fprop-> datatype), fprop->datatype, fprop->dtype_size, s->callback_function);
 	}
 
 

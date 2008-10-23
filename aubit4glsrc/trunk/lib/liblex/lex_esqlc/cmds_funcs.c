@@ -2212,8 +2212,9 @@ struct expr_str_list *li;
   printc("int _attr=%d;", attributes_as_int(cmd_data->attributes)); 
   printc ("int _fld_dr= -100;int _exec_block= 0;char *_fldname;int _sf;");
   printc("char _sio_%d[%d]; char *_curr_win=0; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", sio_id,sizeof (struct s_screenio) + 10,sio_id);
+  printc("void *_filterfunc=NULL;");
   printc ("int _forminit=1;\n");
-print_event_list(cmd_data->events);
+  print_event_list(cmd_data->events);
    local_print_bind_set_value_g (li,1,0,'i');
   
   printc ("while(_fld_dr!=0){\n");
@@ -2241,12 +2242,16 @@ print_event_list(cmd_data->events);
   printc ("SET(\"s_screenio\",_sio_%d,\"processed_onkey\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"field_list\",0);\n",sio_id);
 
-      printc
-        ("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),%s,NULL));\n",sio_id,sio_id,sio_id,
-         local_field_name_list_as_char(cmd_data->list ));
+  if (cmd_data->callback_function!=NULL) {
+              add_function_to_header(cmd_data->callback_function->expr_str_u.expr_func.funcname,cmd_data->callback_function->expr_str_u.expr_func.namespace,1,0);
+              printc("_filterfunc=%s%s;",cmd_data->callback_function->expr_str_u.expr_func.namespace,cmd_data->callback_function->expr_str_u.expr_func.funcname);
+  }
 
-  printc
-    ("_sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n",sio_id);
+  printc ("SET(\"s_screenio\",_sio_%d,\"callback_function\", _filterfunc);\n",sio_id);
+
+  printc ("SET(\"s_screenio\",_sio_%d,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio_%d,\"field_list\"),(void *)GET(\"s_screenio\",_sio_%d,\"currform\"),%s,NULL));\n",sio_id,sio_id,sio_id, local_field_name_list_as_char(cmd_data->list ));
+
+  printc ("_sf=A4GL_set_fields(&_sio_%d); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) {_fld_dr=0;break;}\n",sio_id);
   printc ("_fld_dr= -1;\n");
   tmp_ccnt--;
   printc ("} /* end of initialization */\n");

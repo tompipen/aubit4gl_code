@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.55 2008-10-18 11:59:15 mikeaubury Exp $
+# $Id: rexp2.c,v 1.56 2008-10-23 14:57:22 mikeaubury Exp $
 #
 */
 
@@ -216,7 +216,7 @@ A4GL_escape_single (char *s)
  * @return
  */
 char *
-A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int dtype, int dtype_size)
+A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int dtype, int dtype_size,void *callback_function)
 {
   char *ptr2;
   int a;
@@ -235,6 +235,32 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
   char colname[256];
   char *ptr;
   int inc;
+
+  if (callback_function) {
+        int (*func) (int);
+	int a;
+        func = callback_function;
+	A4GL_push_char(tabname);
+	A4GL_push_char(colname_s);
+	A4GL_push_char(val);
+	A4GL_push_long(dtype);
+	A4GL_push_long(dtype_size);
+ 	a=func(5);
+	if (a==0) {
+		return NULL;
+	}
+	ptr=A4GL_char_pop();
+	A4GL_trim(ptr);
+	if (strlen(ptr)<512) {
+		strcpy(buff3,ptr);
+	}  else {
+		A4GL_exitwith("Construct callback function returns a variable that is too long");
+		return NULL;
+	}
+	
+	free(ptr);
+	return buff3;
+  }
 
   if (inc_quotes == 3 || inc_quotes == 4)
     {
@@ -489,7 +515,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 		{
 		  /* error in numeric */
 		  A4GL_debug ("error in numeric k=%d k2=%d", k, k2);
-		  return 0;
+		  return NULL;
 		}
 
 		/* the decimal looks good - transform to DB format */
@@ -550,7 +576,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	      else
 		{
 		  A4GL_debug ("CDATE Returns false for %s or its null", constr_bits[zz]);
-		  return 0;
+		  return NULL;
 		}
 
 	    }
@@ -574,18 +600,18 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 		{
 
 		  A4GL_debug ("CDATETIME Returns false for %s or its null", constr_bits[zz]);
-		  return 0;
+		  return NULL;
 		}
 	      n = A4GL_ctodt (constr_bits[zz], &d, dtype_size);
 	      if (n == 0)
 		{
-		  return 0;
+		  return NULL;
 		}
 	      A4GL_dttoc (&d, buff, 40);
 	      if (strlen (buff) != strlen (constr_bits[zz]))
 		{
 		  // Too long or too short
-		  return 0;
+		  return NULL;
 		}
 
 	    }
@@ -606,7 +632,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	      if (!A4GL_valid_int (constr_bits[zz], parts, 0))
 		{
 		  A4GL_debug ("CINTERVAL Returns false for %s or its null", constr_bits[zz]);
-		  return 0;
+		  return NULL;
 		}
 
 	    }
@@ -628,7 +654,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
       }
 #endif
       A4GL_debug ("error in expression");
-      return 0;
+      return NULL;
     }
 
   A4GL_debug ("z=%d z2=%d", z, z2);

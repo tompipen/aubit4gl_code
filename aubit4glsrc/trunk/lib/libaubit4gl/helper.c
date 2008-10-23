@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.76 2008-10-21 12:58:32 mikeaubury Exp $
+# $Id: helper.c,v 1.77 2008-10-23 14:57:22 mikeaubury Exp $
 #
 */
 
@@ -1894,7 +1894,10 @@ dtype=A4GL_pop_long();
 value=A4GL_char_pop();
 colname=A4GL_char_pop();
 tabname=A4GL_char_pop();
-A4GL_push_char(A4GL_construct (tabname, colname, value, get_inc_quotes (dtype), dtype & DTYPE_MASK, dtype_length));
+A4GL_trim(colname);
+A4GL_trim(tabname);
+A4GL_trim(value);
+A4GL_push_char(A4GL_construct (tabname, colname, value, get_inc_quotes (dtype), dtype & DTYPE_MASK, dtype_length,NULL));
 return 1;
 
 }

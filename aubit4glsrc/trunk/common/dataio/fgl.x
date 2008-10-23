@@ -1249,6 +1249,7 @@ struct struct_construct_cmd {
 	int helpno;
 	int sio;
 	int blockid;
+	struct expr_str* callback_function;
 };
 
 /* *********************************** */

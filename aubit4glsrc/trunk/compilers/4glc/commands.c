@@ -1320,7 +1320,7 @@ struct command *c;
 
 
 
-struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio) {
+struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio, expr_str *p_callback_function) {
 
 struct command *c;
    c=new_command(E_CMD_CONSTRUCT_CMD);
@@ -1349,6 +1349,8 @@ struct command *c;
    c->cmd_data.command_data_u.construct_cmd.helpno=p_helpno;
    c->cmd_data.command_data_u.construct_cmd.sio=p_sio;
    c->cmd_data.command_data_u.construct_cmd.blockid=get_sio_ids("CONSTRUCT");
+   c->cmd_data.command_data_u.construct_cmd.callback_function=p_callback_function;
+
    return c;
 }
 

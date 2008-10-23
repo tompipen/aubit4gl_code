@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.338 2008-10-21 12:58:32 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.339 2008-10-23 14:58:37 mikeaubury Exp $
 #
 */
 
@@ -1703,7 +1703,8 @@ short a4gl_ntohs(long x);
   /* ============================ rexp2.c ================================= */
   void A4GL_stripnl (char *buff);
   int A4GL_mja_match (char *str1, char *str2, int likeormatch);
-  char *A4GL_construct (char *tabname,char *colname, char *val, int inc_quotes,int dtype,int dtype_size);
+  char *A4GL_construct (char *tabname,char *colname, char *val, int inc_quotes,int dtype,int dtype_size,void *callback_function);
+
 
   /* =========================== stack.c ================================ */
 
@@ -2826,8 +2827,12 @@ long A4GL_get_length (char *s);
 void A4GL_convert_ui_char_on_stack_decimal_sep(void );
 int A4GL_remap_nativeerror(int n, char *sqlstate);
 void A4GL_size_decimal_string(char *s,int *dig, int *dec);
-
+void A4GL_pop_sized_decimal(fgldecimal *b);
 void A4GL_remove_printfthsep_in_decimal(char *s);
+
+
+void
+A4GL_str_dot_to_dec (char *s, fgldecimal * d);
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 
 
