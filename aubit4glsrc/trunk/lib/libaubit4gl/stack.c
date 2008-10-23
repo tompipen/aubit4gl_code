@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.213 2008-10-21 12:58:32 mikeaubury Exp $
+# $Id: stack.c,v 1.214 2008-10-23 14:56:29 mikeaubury Exp $
 #
 */
 
@@ -636,7 +636,24 @@ A4GL_char_pop_size (int *sz)
 	}
       else
 	{
-	  s2 = A4GL_new_string (dtype_alloc_char_size[f]);
+	  int dtype_alloc_size;
+		dtype_alloc_size=dtype_alloc_char_size[f];
+
+
+	  if (f==DTYPE_DECIMAL || f==DTYPE_MONEY) {
+		int sz;
+		sz=params[params_cnt - 1].size;
+		dtype_alloc_size=sz>>8; // set size to the number of total digits;
+		dtype_alloc_size++;     // add 1 for the +/-
+		if (params[params_cnt - 1].size & 0xff) {
+			dtype_alloc_size++; // add one for the '.'
+		}
+		if (f==DTYPE_MONEY) {
+			dtype_alloc_size++; // Add one for the currency...
+		}
+	  }
+
+	  s2 = A4GL_new_string (dtype_alloc_size);
 	  if (f == DTYPE_DATE)
 	    {
 	      static int len = 0;
@@ -656,7 +673,7 @@ A4GL_char_pop_size (int *sz)
 	  else
 	    {
 	      int d;
-	      d = dtype_alloc_char_size[f];
+	      d = dtype_alloc_size;
 
 	      if (f == DTYPE_VCHAR)
 		{
@@ -2497,6 +2514,8 @@ A4GL_debug_print_stack (void)
 	    case DTYPE_SERIAL:
 	    case DTYPE_FLOAT:
 	    case DTYPE_SMFLOAT:
+	    case DTYPE_DECIMAL:
+	    case DTYPE_MONEY:
 	    case DTYPE_DATE:
 	      A4GL_conv (params[a].dtype, params[a].ptr, DTYPE_CHAR, buff, 40);
 	      break;
@@ -4218,4 +4237,27 @@ strcpy(s,buff);
 
 
 }
+
+
+
+
+void A4GL_pop_sized_decimal(fgldecimal *b) {
+char *s;
+//A4GL_pop_var2 (&b, 5, 0x2010);
+//return;
+  if ((params[params_cnt - 1].dtype & DTYPE_MASK) == DTYPE_MONEY) {
+        A4GL_pop_var2(b,5,0x2010);
+        A4GL_push_dec_dec(b,0,16);
+  }
+
+
+
+  s=A4GL_char_pop();
+//if (!strchr(s,'.')) A4GL_pause_execution();
+  A4GL_init_dec(b,0,0);
+  A4GL_str_dot_to_dec(s, b);
+
+  acl_free(s);
+}
+
 // ================================ EOF ================================
