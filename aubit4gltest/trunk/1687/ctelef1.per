@@ -1,0 +1,21 @@
+database formonly
+screen size 24 by 80
+{
+---------------------
+[t|f000      |f001  ]
+[t|f000      |f001  ]
+[t|f000      |f001  ]
+[t|f000      |f001  ]
+---------------------
+}
+end
+
+attributes
+t    = formonly.trap,UPSHIFT,INVISIBLE,AUTONEXT;
+f000 = formonly.telefech type date,AUTONEXT,FORMAT="dd/mm/yyyy",NOENTRY;
+f001 = formonly.telehora type decimal(4,2),AUTONEXT,NOENTRY;
+
+instructions
+delimiters ".."
+screen record sa_tele[4] (trap, telefech, telehora)
+end
