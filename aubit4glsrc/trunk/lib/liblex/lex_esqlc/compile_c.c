@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.439 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: compile_c.c,v 1.440 2008-10-27 14:06:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.439 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.440 2008-10-27 14:06:52 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2286,6 +2286,12 @@ struct  variable_usage *u;
 
 
 switch (e->expr_type) {
+	case ET_EXPR_LINENO:
+	case ET_EXPR_PAGENO:
+			return DTYPE_INT;
+	case ET_EXPR_TODAY:
+			return DTYPE_DATE;
+
 	case ET_EXPR_PARAMETER:
 		A4GL_assertion(1,"Should have been expanded away...");
 		break;
@@ -5923,6 +5929,10 @@ return 0;
 
 static int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) {
 struct variable_usage *u=0;
+        if (v->expr_type==ET_EXPR_LINENO) return 0;
+        if (v->expr_type==ET_EXPR_PAGENO) return 0;
+        if (v->expr_type==ET_EXPR_TODAY) return 0;
+
 	if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
 		u=v->expr_str_u.expr_variable_usage;
 	}
@@ -6005,6 +6015,19 @@ char smbuff[256];
 
 
 
+void
+print_pop_usage_prompt (expr_str * v)
+{
+int d;
+  d=get_binding_dtype (v);
+
+  if (A4GL_is_numeric_datatype(d)) { 
+  		printc("A4GL_ensure_numeric_prompt_var(%d);",d);
+  		print_pop_usage(v);
+  } else {
+  		print_pop_usage(v);
+  }
+}
 
 void
 print_pop_usage (expr_str * v)
@@ -6017,7 +6040,18 @@ struct variable *sgs_topvar;
 
   u = v->expr_str_u.expr_variable_usage;
   A4GL_assertion (get_binding_dtype (v) == -1, "Usage not ensured...");
-
+  if (v->expr_type==ET_EXPR_LINENO) {
+  	printc("a4gl_pop_var2(&lineno,2,0);");
+  	return;
+  }
+  if (v->expr_type==ET_EXPR_PAGENO) {
+  	printc("a4gl_pop_var2(&lineno,2,0);");
+  	return;
+  }
+  if (v->expr_type==ET_EXPR_TODAY) {
+  	a4gl_yyerror("TODAY is a read only variable");
+  	return;
+  }
   set_nonewlines ();
   substring = is_substring_variable_usage_in_expr (v, &substring_start, &substring_end);
   if (substring)
@@ -6380,6 +6414,10 @@ struct variable_usage *u;
 //expr_str *substring_end;
 
 switch (s->expr_type) {
+	case ET_EXPR_LINENO:
+		return "lineno";
+	case ET_EXPR_PAGENO:
+		return "pageno";
 	case ET_EXPR_LITERAL_LONG: 
 			sprintf(rbuff,"%ld", s->expr_str_u.expr_long); 
 			return rbuff;

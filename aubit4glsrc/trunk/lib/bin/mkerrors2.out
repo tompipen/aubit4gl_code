@@ -1,6 +1,6 @@
 -481|Invalid statement name or statement was not prepared. (%s)
--404|Cursor (%s) not found
 -404|Cursor not found (%s)
+-404|Cursor (%s) not found
 1|Undefined Error
 2|Shouldn't get to here...
 3|

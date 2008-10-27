@@ -127,6 +127,12 @@ FILE *f;
       }
       break;
 
+	case ET_EXPR_LINENO:
+		return "lineno";
+
+		case ET_EXPR_PAGENO:
+			return "pageno";
+
     case ET_EXPR_LITERAL_LONG:
       {
         static char smbuff[200];

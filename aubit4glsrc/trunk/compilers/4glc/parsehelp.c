@@ -1625,6 +1625,10 @@ if (ptr==0)  {
 	return -1;
 }
 
+if (ptr->expr_type==ET_EXPR_LINENO) { return DTYPE_INT; }
+if (ptr->expr_type==ET_EXPR_PAGENO) { return DTYPE_INT; }
+if (ptr->expr_type==ET_EXPR_TODAY) { return DTYPE_DATE; }
+
 if (ptr->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 	strcpy(errbuff, "Not a variable expression");
 	return -1;

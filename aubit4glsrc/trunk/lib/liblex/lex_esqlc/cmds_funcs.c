@@ -2742,7 +2742,9 @@ if (cmd_data->prompt_fld_attrib) {
   printc ("_exec_block=A4GL_prompt_loop_v2(&_sio_%d,_acl_prompt_timeout,_sio_evt);\n", cmd_data->sio);
   tmp_ccnt--;
   printc ("}");
-  print_pop_usage (cmd_data->promptvar);
+
+
+  print_pop_usage_prompt (cmd_data->promptvar);
   tmp_ccnt--;
   printc ("}\n");
   tmp_ccnt--;

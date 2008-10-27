@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.79 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: ui.c,v 1.80 2008-10-27 14:06:52 mikeaubury Exp $
 #
 */
 
@@ -1997,5 +1997,13 @@ A4GL_is_event_close (void *event)
 }
 
 
+
+void A4GL_ensure_numeric_prompt_var(int dtype)
+{
+  if (A4GL_get_convfmts()->ui_decfmt.decsep!='.' && A4GL_is_numeric_datatype(dtype)) {
+         // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+         A4GL_convert_ui_char_on_stack_decimal_sep();
+  }
+}
 
 /* ============================= EOF ================================ */
