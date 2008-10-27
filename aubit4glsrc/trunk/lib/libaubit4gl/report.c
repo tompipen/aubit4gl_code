@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.168 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: report.c,v 1.169 2008-10-27 20:41:20 mikeaubury Exp $
 #
 */
 
@@ -2960,7 +2960,7 @@ DO NOT REMOVE THESE COMMENTS -  this sets up the error codes for some reporting 
 There is a script which looks for a4gl_exitwith's in the code - and adds them to our error numbers
 
 A4GL_exitwith("A report cannot accept data as it has not been started");
-A4GL_exitwith("You cannot FINISH REPORT - becasue the report has not been started");
+A4GL_exitwith("You cannot FINISH REPORT - because the report has not been started");
 */
 
 
