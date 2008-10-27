@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.440 2008-10-27 14:06:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.441 2008-10-27 14:11:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.440 2008-10-27 14:06:52 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.441 2008-10-27 14:11:01 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1417,11 +1417,19 @@ real_print_expr (struct expr_str *ptr)
 	  break;
 
 	case ET_EXPR_PAGENO:
-	  printc ("A4GL_push_long(_rep.page_no + (_rep.line_no > _rep.page_length ? 1 : 0));");
+		if (is_in_report()) {
+	  		printc ("A4GL_push_long(_rep.page_no + (_rep.line_no > _rep.page_length ? 1 : 0));");
+	    	} else {
+			printc("A4GL_push_long(lineno);");
+		}
 	  break;
+
 	case ET_EXPR_LINENO:
-	  printc
-	    ("{static long _ln; _ln=A4GL_report_lineno(&_rep);A4GL_push_long(_ln);}");
+		if (is_in_report()) {
+	  		printc ("{static long _ln; _ln=A4GL_report_lineno(&_rep);A4GL_push_long(_ln);}");
+	    	} else {
+			printc("A4GL_push_long(lineno);");
+		}
 	  break;
 
 	case ET_EXPR_FCALL:
