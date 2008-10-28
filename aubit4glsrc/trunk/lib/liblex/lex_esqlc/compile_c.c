@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.442 2008-10-27 20:37:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.443 2008-10-28 16:28:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.442 2008-10-27 20:37:58 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.443 2008-10-28 16:28:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1014,6 +1014,8 @@ A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap)
 	else {
 		if (new_lines==0) {
 		strcat(buff,"\n");
+			         if (new_lines == 0)
+				            print_space ();
 		}
 	}
       for (a = 0; a < strlen (buff); a++)
@@ -1051,11 +1053,11 @@ A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap)
 	    }
 	}
 
-	//if (new_lines==0) {
-		//if (!lcr) {
-	      		//FPRINTF (outfile, "\n");
-		//}
-	//}
+	if (new_lines==0 && suppress_lines==0) {
+		if (!lcr) {
+	      		FPRINTF (outfile, "\n");
+		}
+	}
 	
     }
   else
