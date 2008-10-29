@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.443 2008-10-28 16:28:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.444 2008-10-29 16:18:50 jimtran Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.443 2008-10-28 16:28:03 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.444 2008-10-29 16:18:50 jimtran Exp $";
 #endif
 /**
  * @file
@@ -349,6 +349,7 @@ set_nonewlines_full (long l)
 {
   if (new_lines == 0)
     {
+      printc ("#"); //This is primarily for when INLCINES is set; force the printing of a blank line along with '#line ...' the first time that set_nonewlines is called.
       print_space ();
     }
 
@@ -965,8 +966,6 @@ A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap)
   static char buff[40960] = "ERROR-empty init";
   //static char buff2[40960];
   char *ptr;
-  int a;
-      static int last_line = -1;
   int os;
 
   if (outfile == 0)
@@ -988,93 +987,57 @@ A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap)
   if (isjustblankline)
     {
       FPRINTF (outfile, "\n");
-  if (A4GL_isyes (acl_getenv ("INCLINES"))) {
-		if (suppress_lines ==0 && new_lines==0) {
-		  last_line = line_for_cmd;
-		if (line_for_cmd>0) {
+
+      if (A4GL_isyes (acl_getenv ("INCLINES")))
+        {
+	  if (suppress_lines ==0 && new_lines==0)
+            {
+	      if (line_for_cmd>0)
+                {
 		  if (current_module && current_module->module_name != 0)
 		    {
-		      FPRINTF (outfile, "\n#line %d \"%s.4gl\"\n", line_for_cmd, current_module->module_name);
+		      FPRINTF (outfile, "#line %d \"%s.4gl\"\n", line_for_cmd, current_module->module_name);
 		    }
 		  else
 		    {
-		      FPRINTF (outfile, "\n#line %d \"null\"\n", line_for_cmd);	/* curr_infilename); */
+		      FPRINTF (outfile, "#line %d \"null\"\n", line_for_cmd);	/* curr_infilename); */
 		    }
 		}
-		}
+	    }
 	}
       return;
     }
 
-  if (A4GL_isyes (acl_getenv ("INCLINES")))
+  ptr = strtok (buff, "\n");
+  while (ptr)
     {
-	int lcr;
-		lcr=buff[strlen(buff)-1];
-	if (lcr=='\n' || lcr=='\r') ;
-	else {
-		if (new_lines==0) {
-		strcat(buff,"\n");
-			         if (new_lines == 0)
-				            print_space ();
-		}
-	}
-      for (a = 0; a < strlen (buff); a++)
-	{
-		
-	  if (buff[a] == '\n' )
-	    {
+      if (new_lines == 0)
+        {
+          if (A4GL_isyes (acl_getenv ("INCLINES")))
+            {
 	      if (suppress_lines == 0 && strstr (buff, "EXEC SQL") == 0)
-		{
-		  last_line = line_for_cmd;
-		if (line_for_cmd>0) {
-		  if (current_module && current_module->module_name != 0)
-		    {
-		      FPRINTF (outfile, "\n#line %d \"%s.4gl\"\n", line_for_cmd, current_module->module_name);
-		    }
-		  else
-		    {
-		      FPRINTF (outfile, "\n#line %d \"null\"\n", line_for_cmd);	/* curr_infilename); */
-		    }
-		}
-		}
-	      else
-		{
-		  if (new_lines == 0)
-		    {	
-			lcr=1;
-		      FPRINTF (outfile, "\n");
-		    }
-		}
-	    }
-	  else
-	    {
-			if (buff[a]=='\n' || buff[a]=='\r') lcr=1; else lcr=0;
-	      FPRINTF (outfile, "%c", buff[a]);
-	    }
-	}
+	        {
+	          if (line_for_cmd>0)
+                    {
+	              if (current_module && current_module->module_name != 0)
+	                {
+	                  FPRINTF (outfile, "#line %d \"%s.4gl\"\n", line_for_cmd, current_module->module_name);
+	                }
+	              else
+	                {
+	                  FPRINTF (outfile, "#line %d \"null\"\n", line_for_cmd);	/* curr_infilename); */
+	                }
+	            }
+                }
+            }
 
-	if (new_lines==0 && suppress_lines==0) {
-		if (!lcr) {
-	      		FPRINTF (outfile, "\n");
-		}
-	}
-	
-    }
-  else
-    {
-      ptr = strtok (buff, "\n");
-      while (ptr)
-	{
-	  if (new_lines == 0)
-	    print_space ();
-	  if (new_lines == 0)
-	    {
-	      FPRINTF (outfile, "%s\n", ptr);
-	    }
-	  else
-	    FPRINTF (outfile, "%s", ptr);
-	  ptr = strtok (0, "\n");
-	}
+          print_space ();
+          FPRINTF (outfile, "%s\n", ptr);
+        }
+        else
+	  FPRINTF (outfile, "%s", ptr);
+
+	ptr = strtok (0, "\n");
     }
 
   /* Having this will really slow it down - only enable it if we are debugging... */
