@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.77 2008-10-23 14:57:22 mikeaubury Exp $
+# $Id: helper.c,v 1.78 2008-10-29 12:57:34 mikeaubury Exp $
 #
 */
 
@@ -1224,7 +1224,7 @@ aclfgl_aclfgl_sendfile_to_ui (int n)
     {
       A4GL_direct_to_ui ("NAMEDFILE", "");
     }
-  return 1;
+  return 0;
 }
 
 int
