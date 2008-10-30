@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.444 2008-10-29 16:18:50 jimtran Exp $
+# $Id: compile_c.c,v 1.445 2008-10-30 20:29:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.444 2008-10-29 16:18:50 jimtran Exp $";
+		"$Id: compile_c.c,v 1.445 2008-10-30 20:29:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6134,6 +6134,14 @@ int substring=0;
 expr_str *substring_start;
 expr_str *substring_end;
 struct variable *sgs_topvar;
+	if (v->expr_type==ET_EXPR_LINENO) {
+		printc("lineno");
+		return;
+	}
+	if (v->expr_type==ET_EXPR_PAGENO) {
+		printc("pageno");
+		return;
+	}
 	set_nonewlines();
 
 	if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
