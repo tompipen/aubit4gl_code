@@ -2192,6 +2192,13 @@ n=A4GL_new_ptr_list(0);
 for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 	switch (parameters->list.list_val[param_to_add]->expr_type) {
 
+		case ET_EXPR_LINENO:
+		case ET_EXPR_PAGENO:
+				A4GL_new_append_ptr_list(n,parameters->list.list_val[param_to_add]);
+				break;
+
+
+
 		case ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC:
 		case ET_EXPR_VARIABLE_USAGE:
 			{
