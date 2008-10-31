@@ -176,7 +176,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 		  u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 		  u->datatype = DTYPE_DYNAMIC_ARRAY;
 		  u->scope = 'L';
-		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u));
+		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u,current_is_report()));
 		  continue;
 		}
 
@@ -186,7 +186,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 		  u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 		  u->datatype = DTYPE_REFERENCE;
 		  u->scope = 'L';	/* must be local - its a parameter... */
-		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u));
+		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u,current_is_report()));
 		  found++;
 		  break;
 		}
@@ -198,7 +198,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 
 		    case VARIABLE_TYPE_SIMPLE:
 		      u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
-		      A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u));
+		      A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u,current_is_report()));
 		      // Cant pass in an array...
 		      //find_variable_vu_in (errbuff, u, var_list->variables.variables_val, var_list->variables.variables_len,1);
 		      break;
@@ -339,7 +339,7 @@ int c3;
 				}
 
 				switch  (rec_var->variables.variables_val[c]->var_data.variable_type) {
-					case VARIABLE_TYPE_SIMPLE: A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(unew)); break;
+					case VARIABLE_TYPE_SIMPLE: A4GL_new_append_ptr_list(rval, A4GL_new_expr_push_variable(unew,current_is_report())); break;
 					case VARIABLE_TYPE_RECORD: append_record_entries(&rec_var->variables.variables_val[c]->var_data.variable_data_u.v_record,unew,rval); break;
 					default: A4GL_assertion(1,"Not handled");
 				}

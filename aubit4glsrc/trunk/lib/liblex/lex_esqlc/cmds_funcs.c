@@ -2054,7 +2054,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;
                         vu_next->next->scope=cmd_data->arrayname->expr_str_u.expr_variable_usage->scope;
                         vu_next->next->variable_id=a;
-			vu_as_expr=A4GL_new_expr_push_variable(vu_top);
+			vu_as_expr=A4GL_new_expr_push_variable(vu_top, is_in_report());
 			set_nonewlines();
 			printc("obind[%d].ptr= &",a);
 			print_variable_usage(vu_as_expr);
@@ -2498,7 +2498,7 @@ int inp_flags=0;
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;
                         vu_next->next->scope=cmd_data->arrayname->expr_str_u.expr_variable_usage->scope;
                         vu_next->next->variable_id=a;
-			vu_as_expr=A4GL_new_expr_push_variable(vu_top);
+			vu_as_expr=A4GL_new_expr_push_variable(vu_top, is_in_report());
 			set_nonewlines();
 			printc("obind[%d].ptr= &",a);
 			print_variable_usage(vu_as_expr);

@@ -354,3 +354,4 @@
 362|Unexpected ingres return code (F2)\n
 363|get_Validation not implemented yet for Ingres
 365|Construct callback function returns a variable that is too long
+367|You cannot FINISH REPORT - because the report has not been started

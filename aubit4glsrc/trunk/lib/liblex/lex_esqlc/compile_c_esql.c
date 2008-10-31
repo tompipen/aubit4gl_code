@@ -446,7 +446,7 @@ char * get_sql_variable_usage_internal (variable_usage * u, char dir)
   struct expr_str *e;
   int a;
   static char smbuff[2000];
-  e = A4GL_new_expr_push_variable (u);
+  e = A4GL_new_expr_push_variable (u, is_in_report());
 
 
   switch (dir)

@@ -132,7 +132,7 @@ if (c_orderby->rord_type == REPORT_ORDERBY_IMPLICIT) {
 	struct expr_str *e;
 	struct expr_str *e2;
 	//struct variable_usage *u2;
-	e2=A4GL_new_expr_push_variable(u);
+	e2=A4GL_new_expr_push_variable(u,current_is_report());
 	e=A4GL_new_variable_usage_with_asc_desc(e2,"A");
 	A4GL_new_append_ptr_list(c_orderby->variables,e);
 	
@@ -1473,7 +1473,7 @@ struct s_select_list_item_list *make_select_list_item_list_from_variable_record(
 		vu_top=A4GL_memdup(vu, sizeof(struct variable_usage));
 		vu_item=new_variable_usage(0,v2->names.names.names_val[0].name,0);
 		append_variable_usage(vu_top,vu_item);
-		e=A4GL_new_expr_push_variable(vu_top);
+		e=A4GL_new_expr_push_variable(vu_top,current_is_report());
 		ensure_variable(errbuff, e,1);
 		free(e);
 
@@ -1931,7 +1931,7 @@ int a;
 							vu_new2->subscripts.subscripts_val=malloc(sizeof(expr_str *)*dim);
 							vu_new2->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(l1+1);
 							vu_new2->subscripts.subscripts_len=dim;
-							vu_as_expr=A4GL_new_expr_push_variable(vu_new);
+							vu_as_expr=A4GL_new_expr_push_variable(vu_new,current_is_report());
 							A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
 							ensure_variable(errbuff, vu_as_expr,err_if_whole_array);
 							A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
@@ -1947,7 +1947,7 @@ int a;
 							vu_new2->subscripts.subscripts_len=dim;
 							vu_new2->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(l1+1);
 							vu_new2->subscripts.subscripts_val[1]=A4GL_new_literal_long_long(l2+1);
-							vu_as_expr=A4GL_new_expr_push_variable(vu_new);
+							vu_as_expr=A4GL_new_expr_push_variable(vu_new,current_is_report());
 							A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
 							ensure_variable(errbuff, vu_as_expr,err_if_whole_array);
 							A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
@@ -1968,7 +1968,7 @@ int a;
 							vu_new2->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(l1+1);
 							vu_new2->subscripts.subscripts_val[1]=A4GL_new_literal_long_long(l2+1);
 							vu_new2->subscripts.subscripts_val[2]=A4GL_new_literal_long_long(l3+1);
-							vu_as_expr=A4GL_new_expr_push_variable(vu_new);
+							vu_as_expr=A4GL_new_expr_push_variable(vu_new,current_is_report());
 							A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
 							ensure_variable(errbuff, vu_as_expr,err_if_whole_array);
 							A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
@@ -1979,7 +1979,7 @@ int a;
 						break; // 3 dimension..
 				}
 			} else {
-				vu_as_expr=A4GL_new_expr_push_variable(vu_top);
+				vu_as_expr=A4GL_new_expr_push_variable(vu_top,current_is_report());
 				A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
 				ensure_variable(errbuff, vu_as_expr,err_if_whole_array);
 				A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
@@ -2068,7 +2068,7 @@ char scope;
 					vu_next->subscripts.subscripts_len=1;
 					vu_next->subscripts.subscripts_val=malloc(sizeof(expr_str *)*1);
 					vu_next->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(c1+1);
-					e2=A4GL_new_expr_push_variable(vu_new);
+					e2=A4GL_new_expr_push_variable(vu_new,current_is_report());
 					A4GL_new_append_ptr_list_with_expand(l, e2);
 				}
 				// We're all done - any adding would have been done in the calls...
@@ -2084,7 +2084,7 @@ char scope;
 								vu_next->subscripts.subscripts_val=malloc(sizeof(expr_str *)*2);
 								vu_next->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(c1+1);
 								vu_next->subscripts.subscripts_val[1]=A4GL_new_literal_long_long(c2+1);
-								e2=A4GL_new_expr_push_variable(vu_new);
+								e2=A4GL_new_expr_push_variable(vu_new,current_is_report());
 								A4GL_new_append_ptr_list_with_expand(l, e2);
 
 					}
@@ -2105,7 +2105,7 @@ char scope;
 								vu_next->subscripts.subscripts_val[0]=A4GL_new_literal_long_long(c1+1);
 								vu_next->subscripts.subscripts_val[1]=A4GL_new_literal_long_long(c2+1);
 								vu_next->subscripts.subscripts_val[2]=A4GL_new_literal_long_long(c3+1);
-								e2=A4GL_new_expr_push_variable(vu_new);
+								e2=A4GL_new_expr_push_variable(vu_new,current_is_report());
 								A4GL_new_append_ptr_list_with_expand(l, e2);
 						}
 					}
@@ -2146,7 +2146,7 @@ char scope;
 			vu_new=clone_variable_usage(vu_top);
 			vu_add=new_variable_usage(0,v_top->var_data.variable_data_u.v_record.variables.variables_val[a]->names.names.names_val[0].name ,0);
 			append_variable_usage(vu_new, vu_add);
-			e2=A4GL_new_expr_push_variable(vu_new);
+			e2=A4GL_new_expr_push_variable(vu_new,current_is_report());
 			A4GL_new_append_ptr_list_with_expand(l, e2);
 		}
 		return ;
@@ -2294,11 +2294,11 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 						vu_next=new_variable_usage(0,v->var_data.variable_data_u.v_record.variables.variables_val[a]->names.names.names_val[0].name ,0);
 						append_variable_usage(vu_top,vu_next);
 
-						e=A4GL_new_expr_push_variable(vu_top);
+						e=A4GL_new_expr_push_variable(vu_top,current_is_report());
 						A4GL_new_append_ptr_list(n,e);
 					}
 				} else {
-					e=A4GL_new_expr_push_variable(vu1);
+					e=A4GL_new_expr_push_variable(vu1,current_is_report());
 					A4GL_new_append_ptr_list(n,e);
 				}
 			}

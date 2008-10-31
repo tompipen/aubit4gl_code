@@ -759,6 +759,8 @@ char * compile_ispdf (void);
 char *decode_cursorname(struct expr_str *s_i);
 int A4GL_has_serial_column_marker(char *tabname,char *colname) ;
 
+int current_is_report(void) ;
+
 int has_variable_name (struct vname_name_list *namelist, char *name);
 #ifndef DEFINED_SET_CLOBBER
 #define DEFINED_SET_CLOBBER

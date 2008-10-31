@@ -56,7 +56,7 @@ void print_generation_copy_status() {
 char *get_sql_variable_usage (variable_usage *u ,char dir) {
 	struct expr_str *e;
 	static char buff[256];
-	e=A4GL_new_expr_push_variable(u);
+	e=A4GL_new_expr_push_variable(u,is_in_report());
 
 	switch (dir) {
 		case 'i': A4GL_new_append_ptr_list(input_bind, e); break;

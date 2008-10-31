@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.323 2008-09-19 13:15:46 mikeaubury Exp $
+# $Id: mod.c,v 1.324 2008-10-31 14:41:12 mikeaubury Exp $
 #
 */
 
@@ -4201,7 +4201,7 @@ strcpy(orig,s);
 
       if (flg == 0)
 	{
-	  p1 = A4GL_new_expr_push_variable (s, (int) scan_variable (s), find_variable_scope(s)); inc_var_usage(s);
+	  p1 = A4GL_new_expr_push_variable (s, (int) scan_variable (s), find_variable_scope(s),current_is_report()); inc_var_usage(s);
 	}
 
 
@@ -5106,5 +5106,9 @@ struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l) {
 }
 
 
+int current_is_report(void) {
+	  if (isin_command ("REPORT")) return 1;
+	  return 0;
+}
 
 /* ================================= EOF ============================= */

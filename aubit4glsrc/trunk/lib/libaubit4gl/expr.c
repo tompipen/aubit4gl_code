@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.30 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: expr.c,v 1.31 2008-10-31 14:41:12 mikeaubury Exp $
 #
 */
 
@@ -713,7 +713,7 @@ A4GL_new_expr_simple (enum e_expr_type type)
 
 
 struct expr_str *
-A4GL_new_expr_push_variable (struct variable_usage *v)
+A4GL_new_expr_push_variable (struct variable_usage *v,int isinreport)
 {
 //struct s_expr_push_variable *p;
   struct expr_str *p2 = 0;
@@ -731,16 +731,17 @@ A4GL_new_expr_push_variable (struct variable_usage *v)
 	  p2 = A4GL_new_expr_simple (ET_EXPR_TIME);
 	}
 
-      if (A4GL_aubit_strcasecmp (s, "pageno") == 0)
-	{
-	  p2 = A4GL_new_expr_simple (ET_EXPR_PAGENO);
+      if (isinreport) {
+      	if (A4GL_aubit_strcasecmp (s, "pageno") == 0)
+		{
+	  	p2 = A4GL_new_expr_simple (ET_EXPR_PAGENO);
+		}
+	
+      	if (A4GL_aubit_strcasecmp (s, "lineno") == 0)
+		{
+	  	p2 = A4GL_new_expr_simple (ET_EXPR_LINENO);
+		}
 	}
-
-      if (A4GL_aubit_strcasecmp (s, "lineno") == 0)
-	{
-	  p2 = A4GL_new_expr_simple (ET_EXPR_LINENO);
-	}
-
     }
 
   if (p2 == 0)
