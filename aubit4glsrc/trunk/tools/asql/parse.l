@@ -17,7 +17,7 @@ E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
 DNM			([A-Za-z0-9.]*)
-FNM			{DNM}\/{DNM}
+FNM			({DNM}\/)+{DNM}
 %{
 #include <stdio.h>
 #include "simple.h"
@@ -59,8 +59,8 @@ info[ \t\v\f]*tables 		   { count(); return(KW_INFO_TABLES); }
 
 "SET{"		{ count(); return(KW_IDENTIFIER); } 
 "SET[ 	]+{"		{ count(); return(KW_IDENTIFIER); } 
-{L}({L}|{D}) 	{ count();  printf("X1\n"); return(KW_IDENTIFIER); }
-{FNM}		{ if (!isneed_fname(-1)) REJECT; count();  printf("FILENAME\n"); return(KW_FILENAME); }
+{L}({L}|{D}) 	{ count();  return(KW_IDENTIFIER); }
+{FNM}		{ if (!isneed_fname(-1)) REJECT; count();   return(KW_FILENAME); }
 {DNM}		{ if (!isneed_fname(-1)) REJECT; count();  printf("FILENAME\n"); return(KW_FILENAME); }
 
 0[xX]{H}+{IS}?		{ count(); A4GL_debug("1"); return(KW_CONSTANT); }

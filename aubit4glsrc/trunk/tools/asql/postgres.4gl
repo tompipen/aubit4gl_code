@@ -1736,7 +1736,6 @@ int ok;
 char smbuff[2048];
 int nfields;
 int lineno=0;
-printf("'%s'\n",e->fname);
         LoadUnload_delim=&delims[0];
         strcpy(LoadUnload_delim,"|");
 	*err_at_col=1;
