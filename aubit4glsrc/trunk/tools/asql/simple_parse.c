@@ -68,6 +68,14 @@ make_sql_string (char *first, ...)
 }
 
 
+int isneed_fname(int a) {
+static int need_fname=0;
+if (a==-1) return   need_fname;
+need_fname=a;
+return a;
+
+
+}
 int my_pretend_yyparse(void) {
 int line=1;
 //int in_stmt=0;
@@ -82,15 +90,15 @@ int need_tabname=0;
 int in_create_procedure;
 
 	while (1) {
+		isneed_fname(need_fname);
 		a=asql_yylex();
-
 		if (a==0) break;
 		/* Eat up comments */
 
 		if (need_fname) {
 			if (a==KW_SPACE||a==KW_NL) continue;
 
-			if (a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT) {
+			if (a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT || a==KW_FILENAME) {
 				char buff[512];
 				strcpy(buff,yylval.str);
 				strcpy(buff,A4GL_strip_quotes(buff));

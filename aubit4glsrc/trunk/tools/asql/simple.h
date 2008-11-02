@@ -31,6 +31,7 @@
 #define KW_OUTPUT_TO_PIPE 286
 #define KW_OUTPUT_TO 287
 #define KW_WITHOUT_HEADINGS 288
+#define KW_FILENAME 289
 
 struct element {
 	int lineno;
