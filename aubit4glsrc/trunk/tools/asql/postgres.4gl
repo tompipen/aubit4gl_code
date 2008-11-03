@@ -1192,6 +1192,7 @@ endcode
                 call set_curr_db(lv_newname)
                 call display_banner()
                 message "Database Opened (",lv_newname clipped,")"
+		
         else
 		message "Database not opened..." attribute(reverse)
 		sleep 1
@@ -1570,6 +1571,7 @@ database lv_dbname
 code
 	need_cursor_free=0;
 endcode
+
 end function
 
 
@@ -1797,6 +1799,13 @@ endcode
 
 function set_current_db(lv_name)
 define lv_name char(200)
+   if fgl_getenv("DBDATE") matches "[Dd][Mm]*" then
+             execute immediate "set datestyle = European"
+   end if
+   if fgl_getenv("DBDATE") matches "[Mm][dD]*" then
+             execute immediate "set datestyle = US"
+   end if
+
 return lv_name
 end function
 

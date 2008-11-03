@@ -99,6 +99,7 @@ stripnlload (char *s, char delim)
 {
   int a;
   a = strlen (s);
+  if (s[a-2]=='\r') {s[a-2]='\n'; a--;}
   if (s[a - 1] == '\n')
     {
       if (s[a - 2] != delim)
