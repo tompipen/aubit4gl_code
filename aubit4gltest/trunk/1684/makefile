@@ -23,9 +23,9 @@ run: compile ; ${DEFAULT_DUMP_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Check adbschema generated for datetime schema"
+desc: ; @echo "FR: Truncate datetime in form fields"
 
-db_test: 				; @echo "1"
+db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_LIKE DDL_DATETIME CREATE_TEMP_TABLE USES_FORM UI_OPEN_WINDOW UI_DISPLAY_TO DISPLAY CLOSE_WINDOW"
+sql_features_used:		; @echo "DEFINE_DATETIME USES_FORM UI_OPEN_WINDOW UI_DISPLAY_TO DISPLAY CLOSE_WINDOW"
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
