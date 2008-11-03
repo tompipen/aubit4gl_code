@@ -151,6 +151,7 @@ FORMONLY COMMENT
 form_def : 
 database_section screen_or_layout_section op_table_section attribute_section op_instruction_section {
 A4GL_check_compiled_form();
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 A4GL_write_form();}
 ;
 database_section :
@@ -1276,15 +1277,25 @@ op_comma :
 
 field_list_item :
 named_or_kw_any	
-{A4GL_add_srec_attribute("",$<str>1,""); }
+{A4GL_add_srec_attribute("",$<str>1,"");
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
+ }
 | named_or_kw_any DOT named_or_kw_any
-{A4GL_add_srec_attribute($<str>1,$<str>3,""); }
+{A4GL_add_srec_attribute($<str>1,$<str>3,""); 
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
+}
 | FORMONLY DOT named_or_kw_any
-{A4GL_add_srec_attribute("formonly",$<str>3,""); }
+{A4GL_add_srec_attribute("formonly",$<str>3,""); 
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
+}
 | named_or_kw_any DOT STAR 
-{A4GL_add_srec_attribute($<str>1,"*",""); }
+{A4GL_add_srec_attribute($<str>1,"*",""); 
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
+}
 | FORMONLY DOT STAR 
-{A4GL_add_srec_attribute("formonly","*",""); }
+{A4GL_add_srec_attribute("formonly","*",""); 
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
+}
 ;
 
 field_list_element :

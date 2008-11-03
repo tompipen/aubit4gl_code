@@ -2582,7 +2582,7 @@ static int yy_get_next_buffer (void)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), (size_t) num_to_read );
+			(yy_n_chars), num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -2897,9 +2897,19 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef __cplusplus
+#ifndef _UNISTD_H /* assume unistd.h has isatty() for us */
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __THROW /* this is a gnuism */
+extern int isatty (int ) __THROW;
+#else
 extern int isatty (int );
-#endif /* __cplusplus */
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
     
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
@@ -3087,7 +3097,7 @@ YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size )
 
 /** Setup the input buffer state to scan a string. The next call to yylex() will
  * scan from a @e copy of @a str.
- * @param yystr a NUL-terminated string to scan
+ * @param str a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use

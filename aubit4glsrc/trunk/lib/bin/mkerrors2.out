@@ -1,6 +1,6 @@
 -481|Invalid statement name or statement was not prepared. (%s)
--404|Cursor not found (%s)
 -404|Cursor (%s) not found
+-404|Cursor not found (%s)
 1|Undefined Error
 2|Shouldn't get to here...
 3|
@@ -355,3 +355,4 @@
 363|get_Validation not implemented yet for Ingres
 365|Construct callback function returns a variable that is too long
 367|You cannot FINISH REPORT - because the report has not been started
+369|PDF Error

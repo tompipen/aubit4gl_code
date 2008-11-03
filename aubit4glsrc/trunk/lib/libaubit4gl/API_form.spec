@@ -39,6 +39,8 @@ A4GL_dump_srec void* fd -> void
 /* void set_default_form (struct s_form_attr *form) */
 A4GL_set_default_form void* form -> void
 
+A4GL_getFormErr -> int
+
 /* struct s_form_dets * read_form (char *fname, char *formname) */
 A4GL_read_form_internal char* fname,char* formname -> void*
 

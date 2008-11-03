@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.52 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: load.c,v 1.53 2008-11-03 11:48:50 mikeaubury Exp $
 #
 */
 
@@ -404,6 +404,7 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 	    {
 	      loadbuff[ml - 1] = 0;
 	    }
+	//printf("loadbuff=%s\n", loadbuff);
 
 	  // Push the current line 
 	  A4GL_push_char (loadbuff);

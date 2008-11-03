@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.340 2008-10-27 14:06:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.341 2008-11-03 11:48:50 mikeaubury Exp $
 #
 */
 
@@ -356,6 +356,7 @@
 #define MEMEXTRA            	'y'
 #define HASREQUIREMENT        	'%'
 #define PREPAREPG        	'|'
+#define HARU_IMAGE        	'h'
 
 #define BLOCK_USED		'R'
 #define ESQL_CURSOR_OPEN		'Y'

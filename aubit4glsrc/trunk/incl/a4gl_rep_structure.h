@@ -84,6 +84,7 @@ struct rb_blocks {
 	double bluebar_g;
 	double bluebar_b;
 	int bluebar_style;
+    	void* fontptr;
   };
 
 #endif
