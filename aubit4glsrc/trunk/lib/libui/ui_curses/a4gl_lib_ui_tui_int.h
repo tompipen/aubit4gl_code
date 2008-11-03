@@ -88,7 +88,9 @@ int A4GL_colour_code (int a);
 //void A4GL_error_nobox (char *str);
 void A4GL_set_bkg (WINDOW * win, int attr);
 void A4GL_clear_prompt (struct s_prompt *prmt);
-void A4GL_set_init_value (FIELD * f, void *ptr, int dtype);
+
+void A4GL_set_init_value (FIELD * f, void *ptr, int dtype_passed_value,int dtype_field);
+
 
 
 	/*  ======================= in ioform.c ======================= */
@@ -242,7 +244,7 @@ void A4GL_comments (struct struct_scr_field *fprop);
 
 //int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 void A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type);
-void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1);
+void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1,int dtype_field);
 
 int A4GL_get_curr_border (void);
 //int A4GL_fgl_fieldtouched_input_array_ap (struct s_inp_arr *s, va_list * ap);

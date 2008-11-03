@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.204 2008-10-23 14:58:37 mikeaubury Exp $
+# $Id: ioform.c,v 1.205 2008-11-03 11:16:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.204 2008-10-23 14:58:37 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.205 2008-11-03 11:16:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -746,17 +746,16 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
  * @todo Describe function
  */
 void
-A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
+A4GL_set_init_value (FIELD * f, void *ptr, int dtype_passed_value,int dtype_field)
 {
   char *ff;
 
-  A4GL_debug ("A4GL_set_init_value %p %x", ptr, dtype);
+  A4GL_debug ("A4GL_set_init_value %p %x", ptr, dtype_passed_value);
   if (ptr)
     {
-      A4GL_push_param (ptr, dtype);
+      A4GL_push_param (ptr, dtype_passed_value);
       A4GL_debug ("Calling display_field_contents");
-      A4GL_display_field_contents (f, dtype & DTYPE_MASK, DECODE_SIZE (dtype),
-				   ptr);
+      A4GL_display_field_contents (f, dtype_passed_value & DTYPE_MASK, DECODE_SIZE (dtype_passed_value), ptr, dtype_field);
       return;
     }
 
@@ -766,7 +765,7 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
   A4GL_debug ("field width=%d", A4GL_get_field_width (f));
   if (ptr != 0)
     {
-      A4GL_push_param (ptr, dtype);
+      A4GL_push_param (ptr, dtype_passed_value);
       ff = acl_malloc2 (A4GL_get_field_width (f) + 1);
       A4GL_pop_char (ff, A4GL_get_field_width (f));
     }
@@ -1670,9 +1669,7 @@ static int pad_char;
       if (wid)
 	{
 	  A4GL_debug ("99 wid set_init_value as in variable");
-	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr,
-			       sio->vars[a].dtype +
-			       ENCODE_SIZE (sio->vars[a].size));
+	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr, sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size), sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size));
 
 	changed=0;
 
@@ -1683,11 +1680,17 @@ static int pad_char;
 	  if (A4GL_has_str_attribute (prop, FA_S_DEFAULT)
 	      && sio->mode != MODE_CONSTRUCT)
 	    {
+		int dtype;
+		char *defval;
 	      A4GL_debug ("99  set_init_value from form");
 	      A4GL_debug ("default from form to '%s'",
 			  A4GL_get_str_attribute (prop, FA_S_DEFAULT));
+		dtype=sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size); 
+		defval=A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT)));
+		// We're passing in the default value as a character string - even if its not really
+		// supposed to be a character string...
+	        A4GL_set_init_value (field_list[a], defval, DTYPE_CHAR, sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size));
 
-	      A4GL_set_init_value (field_list[a], A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT))), 0);
 		changed++;
       		//set_field_status (field_list[a], 1);
 		
@@ -1697,7 +1700,7 @@ static int pad_char;
 	    {
 	      A4GL_debug ("99  set_init_value as nothing...");
 		changed=1;
-	      A4GL_set_init_value (field_list[a], 0, 0);
+	      A4GL_set_init_value (field_list[a], 0, 0,0);
 	    }
 	}
 
@@ -1960,7 +1963,6 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 		// we can change our delimiters
 		for (dl=0;dl<formdets->fileform->metrics.metrics_len;dl++) {
 			if ((FIELD *)formdets->fileform->metrics.metrics_val[dl].field==(FIELD *)field_list[a]) {
-		//A4GL_pause_execution();
 					char buff[2];
 					buff[1]=0;
 					buff[0]=set_current_display_delims[0];
@@ -2501,7 +2503,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 
 
 
-  A4GL_display_field_contents (field, d1, s1, ptr1);
+  A4GL_display_field_contents (field, d1, s1, ptr1, d1+ENCODE_SIZE(s1));
 
 
 
@@ -2541,7 +2543,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
  * @todo Describe function
  */
 void
-A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
+A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1,int dtype_field)
 {
   int field_width;
   int has_format;
@@ -2566,12 +2568,12 @@ int has_wordwrap;
 // If we are passing **IN** a character string
 // for example - we'll omit the formatting...
 
-  if ((d1 & DTYPE_MASK)==DTYPE_TEXT || (d1 & DTYPE_MASK)==DTYPE_BYTE) {
+  if ((d1_ptr & DTYPE_MASK)==DTYPE_TEXT || (d1_ptr & DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_TEXT) {
 	// Can't display a blob :-)
 	return;
   }
 
-  switch (d1 & DTYPE_MASK)
+  switch (dtype_field & DTYPE_MASK)
     {
     case DTYPE_CHAR:
     case DTYPE_BYTE:
@@ -2582,7 +2584,7 @@ int has_wordwrap;
 
   if (has_format && ignore_formatting)
     {
-      A4GL_debug ("Which I'm going to ignore - %x", d1);
+      A4GL_debug ("Which I'm going to ignore - %x %x", d1_ptr, dtype_field);
     }
 
   if (has_format && !ignore_formatting)
@@ -2601,21 +2603,19 @@ int has_wordwrap;
 
   if (!has_format && !ignore_formatting)
     {
-      A4GL_debug ("Has no format.. d1=%d", d1 & DTYPE_MASK);
-      if (A4GL_has_datatype_function_i (d1 & DTYPE_MASK, "DISPLAY"))
+      A4GL_debug ("Has no format.. dtype_field=%d", dtype_field & DTYPE_MASK);
+      if (A4GL_has_datatype_function_i (dtype_field & DTYPE_MASK, "DISPLAY"))
 	{
 	  char *ptr;
 	  char *(*function) (void *, int, int, struct struct_scr_field *,
 			     int);
 	  A4GL_debug ("check for specific display routine");
 	  function =
-	    A4GL_get_datatype_function_i (d1 & DTYPE_MASK, "DISPLAY");
+	    A4GL_get_datatype_function_i (dtype_field & DTYPE_MASK, "DISPLAY");
 	  if (function)
 	    {
-	      A4GL_debug
-		("Has a function - calling XXXX - size=%d decode_size=%d", s1,
-		 DECODE_SIZE (d1));
-	      ptr = function (ptr1, s1, field_width, f, DISPLAY_TYPE_DISPLAY_TO);
+	      A4GL_debug ("Has a function - calling XXXX - size=%d decode_size=%d", s1, DECODE_SIZE (dtype_field));
+	      ptr = function (ptr1, DECODE_SIZE(dtype_field), field_width, f, DISPLAY_TYPE_DISPLAY_TO);
 	      A4GL_debug ("Returns %p\n", ptr);
 	    }
 	  else

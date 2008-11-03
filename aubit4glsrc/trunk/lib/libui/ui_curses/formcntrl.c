@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.148 2008-10-22 09:45:07 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.149 2008-11-03 11:16:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.148 2008-10-22 09:45:07 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.149 2008-11-03 11:16:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1003,10 +1003,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 		  A4GL_set_init_value (sio->currentfield,
 				       sio->vars[sio->curr_attrib].ptr,
-				       sio->vars[sio->curr_attrib].dtype +
-				       ENCODE_SIZE (sio->
-						    vars[sio->curr_attrib].
-						    size));
+				       sio->vars[sio->curr_attrib].dtype + ENCODE_SIZE (sio-> vars[sio->curr_attrib].  size),
+				       sio->vars[sio->curr_attrib].dtype + ENCODE_SIZE (sio-> vars[sio->curr_attrib].  size)
+				 );
 
 		  A4GL_debug ("Set value to '%s'",
 			      field_buffer (sio->currentfield, 0));
@@ -1046,7 +1045,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		      ptr[a] = picture[a];
 		    }
 
-		  A4GL_set_init_value (sio->currentfield, ptr, 0);
+		  A4GL_set_init_value (sio->currentfield, ptr, 0, 0);
 		  if (picture[0]!='9'&&picture[0]!='#' && picture[0]!='X') {
 			if (strchr(&picture[1],'9')
 			||strchr(&picture[1],'#')
@@ -1064,10 +1063,9 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		{
 		  A4GL_set_init_value (sio->currentfield, 
 				       sio->vars[sio->curr_attrib].ptr,
-				       sio->vars[sio->curr_attrib].dtype +
-				       ENCODE_SIZE (sio->
-						    vars[sio->curr_attrib].
-						    size));
+				       sio->vars[sio->curr_attrib].dtype + ENCODE_SIZE (sio-> vars[sio->curr_attrib].  size),
+				       sio->vars[sio->curr_attrib].dtype + ENCODE_SIZE (sio-> vars[sio->curr_attrib].  size)
+			);
 		}
 
 	      if (has_picture)
@@ -1271,7 +1269,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	      A4GL_push_char (buff);
 
 	      A4GL_debug ("Calling display_field_contents before : %s",field_buffer(sio->currform->currentfield,0));
-	      A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr);	// MJA 2306
+	      A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size));	// MJA 2306
 	      A4GL_debug ("Calling display_field_contents after  : %s",field_buffer(sio->currform->currentfield,0));
 
 

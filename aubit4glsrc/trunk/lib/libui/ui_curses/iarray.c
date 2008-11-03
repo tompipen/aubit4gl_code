@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.150 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: iarray.c,v 1.151 2008-11-03 11:16:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.150 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.151 2008-11-03 11:16:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -2773,7 +2773,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 		  A4GL_push_param (ptr,
 				   arr->binding[attrib].dtype +
 				   ENCODE_SIZE (arr-> binding[attrib].  size));
-		  A4GL_display_field_contents (arr->currentfield, arr->binding[attrib].  dtype, arr->binding[attrib].  size, ptr);
+		  A4GL_display_field_contents (arr->currentfield, arr->binding[attrib].  dtype, arr->binding[attrib].  size, ptr, arr->binding[attrib].dtype + ENCODE_SIZE (arr-> binding[attrib].  size));
 		  A4GL_debug ("MJAMJA - PTR=%s", ptr);
 		}
 	    }
@@ -2789,7 +2789,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 					    size));
 	      A4GL_display_field_contents (arr->currentfield,
 					   arr->binding[attrib].dtype,
-					   arr->binding[attrib].size, cptr);
+					   arr->binding[attrib].size, cptr, arr->binding[attrib].dtype+ENCODE_SIZE( arr->binding[attrib].size));
 	    }
 
 
@@ -2985,7 +2985,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 
 
 	  A4GL_push_param (cptr, arr->binding[attrib].dtype + ENCODE_SIZE (arr->binding[attrib].size));
-	  A4GL_display_field_contents (arr->currentfield, arr->binding[attrib].dtype, arr->binding[attrib].size, cptr);
+	  A4GL_display_field_contents (arr->currentfield, arr->binding[attrib].dtype, arr->binding[attrib].size, cptr, arr->binding[attrib].dtype+ENCODE_SIZE( arr->binding[attrib].size));
 
 }
 	  new_state = 0;
@@ -3230,7 +3230,8 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 
       A4GL_display_field_contents (arr->field_list[scr_line - 1][a],
 				   arr->binding[bno].dtype,
-				   arr->binding[bno].size, cptr);
+				   arr->binding[bno].size, cptr, arr->binding[bno].dtype+ENCODE_SIZE(
+                                   arr->binding[bno].size));
 
     }
 

@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.58 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: array.c,v 1.59 2008-11-03 11:16:19 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.58 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: array.c,v 1.59 2008-11-03 11:16:19 mikeaubury Exp $";
 #endif
 
 
@@ -912,7 +912,7 @@ int orig_set=0;
         }
 
 
-  	A4GL_display_field_contents(field_list[a],disp->binding[bno].dtype,disp->binding[bno].size,cptr);
+  	A4GL_display_field_contents(field_list[a],disp->binding[bno].dtype,disp->binding[bno].size,cptr, disp->binding[bno].dtype+ENCODE_SIZE(disp->binding[bno].size));
 
   	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, disp->attribute, f,field_buffer(field_list[a],0));
 	A4GL_debug("XXXX3 nattr=%d",nattr);
