@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.47 2008-07-06 11:34:36 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.48 2008-11-03 11:44:07 mikeaubury Exp $
 #*/
 
 /**
@@ -57,6 +57,7 @@ int cmaxcol = 0;
 int cmaxline = 0;
 int maxcol;
 int maxline;
+static int isFormErr=0;
 
 struct struct_screen_record *curr_rec;
 char buff_xdr[30000];
@@ -224,6 +225,13 @@ A4GLFORM_A4GL_find_field (char *s)
   return -1;
 }
 
+
+int A4GLFORM_A4GL_getFormErr(void)  {
+        return isFormErr;
+}
+
+
+
 /**
  * Display a compilation error and exists
  *
@@ -244,6 +252,7 @@ char buff[256];
   sprintf (buff, s, a, b);
   A4GL_set_fcompile_err(buff);
   
+isFormErr=1;
   A4GL_debug ("\n");
   A4GL_exitwith("Form compilation error");
 }

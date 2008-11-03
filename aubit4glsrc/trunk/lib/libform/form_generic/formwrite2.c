@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.40 2008-07-06 11:34:36 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.41 2008-11-03 11:44:07 mikeaubury Exp $
 #*/
 
 /**
@@ -68,6 +68,7 @@ dll_import struct struct_form the_form;
 extern struct struct_form the_form;
 #endif
 extern struct struct_scr_field *fld;
+static int isFormErr=0;
 
 
 struct translate_string
@@ -225,6 +226,12 @@ A4GLFORM_A4GL_find_field (char *s)
   return -1;
 }
 
+
+int A4GLFORM_A4GL_getFormErr(void)  {
+	return isFormErr;
+}
+
+
 /**
  * Display a compilation error and exists
  *
@@ -242,6 +249,7 @@ char buff[256];
     a = z;
   if (b == 0)
     b = z;
+  isFormErr=1;
   sprintf (buff, s, a, b);
   A4GL_set_fcompile_err(buff);
 
