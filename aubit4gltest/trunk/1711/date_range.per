@@ -1,0 +1,14 @@
+database formonly
+screen
+{
+        Start Date: [f1        ]       End Date: [f2        ]
+}
+
+attributes
+f1  = formonly.start_date type date, format = "mm/dd/yy  ",
+DEFAULT = TODAY;
+f2  = formonly.end_date type date, format = "mm/dd/yy  ",
+DEFAULT = TODAY;
+
+instructions
+screen record s (formonly.start_date, formonly.end_date)

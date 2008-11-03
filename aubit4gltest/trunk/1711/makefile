@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_DUMP_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "FORMAT issue - reported by Ron MacNeil (03 Nov 2008)"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
