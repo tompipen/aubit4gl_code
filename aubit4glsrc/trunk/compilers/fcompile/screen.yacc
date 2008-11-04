@@ -732,6 +732,7 @@ op_field_desc
 
 		if (dtype!=DTYPE_INT  &&
 		    dtype!=DTYPE_SMINT  &&
+		    dtype!=DTYPE_SERIAL  &&
 		    dtype!=DTYPE_FLOAT  &&
 		    dtype!=DTYPE_SMFLOAT  &&
 		    dtype!=DTYPE_DATE  &&
