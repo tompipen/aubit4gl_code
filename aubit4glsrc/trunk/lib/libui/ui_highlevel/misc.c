@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.66 2008-10-23 14:58:37 mikeaubury Exp $";
+  "$Id: misc.c,v 1.67 2008-11-04 17:58:59 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -669,7 +669,7 @@ A4GL_set_fields_sio (struct s_screenio *sio)
   void **field_list;
   //void *firstfield = 0;
   int nofields;
-  int attr;
+  //int attr;
   //void *was_current;
   int b;
         //void *f;

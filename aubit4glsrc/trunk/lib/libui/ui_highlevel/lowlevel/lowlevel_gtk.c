@@ -12,6 +12,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
 #include "../hl_forms.h"
+#include "formcntrl.h"
 
 #include "lowlevel.h"
 #include "formdriver.h"
@@ -22,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.134 2008-10-17 16:56:17 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.135 2008-11-04 17:58:59 mikeaubury Exp $";
 #endif
 
 

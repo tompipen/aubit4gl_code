@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.37 2008-10-17 16:56:17 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.38 2008-11-04 17:58:59 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1035,14 +1035,14 @@ A4GL_cr_radio (void)
 }
 
 
-
+/*
 int
 A4GL_kp (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
 printf("Hello World\n");
 return 0;
 }
-
+*/
 
 
 /**

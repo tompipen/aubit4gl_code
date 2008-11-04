@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.48 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.49 2008-11-04 17:58:59 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -913,6 +913,72 @@ void
   menu->num_opts = nopts;
   A4GL_debug ("MJA opt1->help_no = %d", opt1->help_no);
 }
+
+
+
+void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *keys, char *desc, int helpno, int attr) {
+  ACL_Menu_Opts *opt1;
+  //ACL_Menu_Opts *opt2;
+  ACL_Menu *menu;
+  char opt_title[200];
+  menu=menuv;
+  opt1=menu->first;
+  A4GL_assertion (menu->num_opts<optno,"Invalid option number");
+  while (optno) {
+		opt1=opt1->next_option;
+		optno--;
+  }
+
+  if (opt1->help_no!=helpno) {
+		A4GL_debug("Changed helpno");
+		opt1->help_no=helpno;
+  }
+
+  if (opt1->attributes!=attr) {
+                A4GL_debug("Changed attributes");
+  		opt1->attributes=attr;
+  }
+
+  memset(opt_title,0,sizeof(opt_title));
+  if (strlen (txt))
+    {
+  	char op1[256];
+  memset(op1,0,256);
+      strcpy (opt_title, " ");
+      strcpy (op1, txt);
+      A4GL_trim (op1);
+        if (strlen(op1)>77) op1[77]=0;
+      strcat (opt_title, op1);
+      strcat (opt_title, " ");
+    }
+  else
+    {
+      strcpy (opt_title, "");
+    }
+
+   if (strcmp(opt_title, opt1->opt_title)!=0) {
+		A4GL_debug("Title changed");
+		strcpy(opt1->opt_title,opt_title);	
+		opt1->optlength = strlen (opt1->opt_title);
+   }
+  if (strcmp(opt1->shorthelp,desc)!=0) {
+	A4GL_debug("shorthelp changed");
+  	strncpy (opt1->shorthelp, desc,80);
+  	opt1->shorthelp[79]=0;
+  }
+  if (strcmp(opt1->optkey,keys)!=0) {
+  	strcpy (opt1->optkey, keys);
+  }
+
+
+}
+
+
+
+
+
+
+
 
 void
  UILIB_A4GL_finish_create_menu (void* menuv)

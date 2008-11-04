@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.214 2008-10-23 14:56:29 mikeaubury Exp $
+# $Id: stack.c,v 1.215 2008-11-04 17:58:59 mikeaubury Exp $
 #
 */
 
@@ -2575,7 +2575,7 @@ print_stack (void)
   for (a = 0; a < params_cnt; a++)
     {
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 8);
-      PRINTF (" %d Dtype (%d) %s\n", a, params[a].dtype & DTYPE_MASK, buff);
+      PRINTF (" %d Dtype (%x) %s\n", a, params[a].dtype , buff);
     }
 }
 

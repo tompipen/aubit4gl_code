@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.206 2008-11-04 13:20:06 mikeaubury Exp $
+# $Id: ioform.c,v 1.207 2008-11-04 17:58:59 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.206 2008-11-04 13:20:06 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.207 2008-11-04 17:58:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -4564,12 +4564,12 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	      char tmpbuff[200];
 		char format[256];
 	      static char buff_new[256];
-	      int mm;
+	      //int mm;
 	      int rval;
 	      char *mmm_s;
 	      int mmm;
 	      int dd;
-	      int yyyy;
+	      //int yyyy;
 	      int yy;
 	      char *d;
 	      memset (buff_new, 0, 255);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.42 2008-09-19 11:24:39 mikeaubury Exp $
+# $Id: console.c,v 1.43 2008-11-04 17:58:59 mikeaubury Exp $
 #*/
 
 /**
@@ -269,6 +269,64 @@ void
     opt1->attributes |= ACL_MN_HIDE;
   menu->last = (ACL_Menu_Opts *) opt1;
   menu->num_opts = nopts;
+}
+
+
+void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *keys, char *desc, int helpno, int attr) {
+  ACL_Menu_Opts *opt1;
+  //ACL_Menu_Opts *opt2;
+  ACL_Menu *menu;
+  char opt_title[200];
+  menu=menuv;
+  opt1=menu->first;
+  A4GL_assertion (menu->num_opts<optno,"Invalid option number");
+  while (optno) {
+		opt1=opt1->next_option;
+		optno--;
+  }
+
+  if (opt1->help_no!=helpno) {
+		A4GL_debug("Changed helpno");
+		opt1->help_no=helpno;
+  }
+
+  if (opt1->attributes!=attr) {
+                A4GL_debug("Changed attributes");
+  		opt1->attributes=attr;
+  }
+
+  memset(opt_title,0,sizeof(opt_title));
+  if (strlen (txt))
+    {
+  	char op1[256];
+  memset(op1,0,256);
+      strcpy (opt_title, " ");
+      strcpy (op1, txt);
+      A4GL_trim (op1);
+        if (strlen(op1)>77) op1[77]=0;
+      strcat (opt_title, op1);
+      strcat (opt_title, " ");
+    }
+  else
+    {
+      strcpy (opt_title, "");
+    }
+
+   if (strcmp(opt_title, opt1->opt_title)!=0) {
+		A4GL_debug("Title changed");
+		strcpy(opt1->opt_title,opt_title);	
+		opt1->optlength = strlen (opt1->opt_title);
+   }
+  if (strcmp(opt1->shorthelp,desc)!=0) {
+	A4GL_debug("shorthelp changed");
+  	strncpy (opt1->shorthelp, desc,80);
+  	opt1->shorthelp[79]=0;
+  }
+  if (strcmp(opt1->optkey,keys)!=0) {
+  	strcpy (opt1->optkey, keys);
+  }
+
+
 }
 
 /**
@@ -703,6 +761,7 @@ void UILIB_A4GL_direct_to_ui(char *t, char *s) {
 
 
 int UILIB_aclfgl_aclfgl_add_acs_mapping(int n) {
+return 0;
 }
 
 

@@ -2884,6 +2884,12 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
       printc ("free(_mntitle);");
     }
 
+
+
+
+
+
+
   if (cmd_data->events)
     {
       int a;
@@ -2992,6 +2998,83 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
 
   printc ("}\n");
 	printc("CONTINUE_BLOCK_%d:    ;", cmd_data->blockid);
+
+
+// --------------------------------------------
+// Reset any menu items
+// they may have changed titles :-(
+// see build test 1688
+// --------------------------------------------
+
+  if (cmd_data->events)
+    {
+      int a;
+	int optno=0;
+      for (a = 0; a < cmd_data->events->event.event_len; a++)
+	{
+	
+	  struct on_event *evt;
+	  evt = cmd_data->events->event.event_val[a];
+
+	  switch (evt->evt_data.event_type)
+	    {
+
+	    case EVENT_MENU_COMMAND:
+	      set_nonewlines ();
+	      printc ("A4GL_ensure_menu_option(%d, m_%d, ", optno++, menu_no);
+
+	      if (evt->evt_data.event_data_u.mnoption->shortname)
+		{
+		  printc ("%s", local_expr_as_string (evt->evt_data.event_data_u.mnoption->shortname));
+		}
+	      else
+		{
+		  printc ("\"\"");
+		}
+	      printc (",");
+	      if (evt->evt_data.event_data_u.mnoption->keys)
+		{
+		  if (evt->evt_data.event_data_u.mnoption->keys->str_list_entry.str_list_entry_len)
+		    {
+		      int b;
+		      printc ("\"");
+		      for (b = 0; b < evt->evt_data.event_data_u.mnoption->keys->str_list_entry.str_list_entry_len; b++)
+			{
+			  if (b)
+			    printc ("||");
+			  printc ("%s", evt->evt_data.event_data_u.mnoption->keys->str_list_entry.str_list_entry_val[b]);
+			}
+		      printc ("\"");
+		    }
+		  else
+		    {
+		      printc ("\"EMPTY\"");
+		    }
+		}
+	      else
+		{
+		  printc ("\"EMPTY\"");
+
+		}
+	      printc (",");
+	      if (evt->evt_data.event_data_u.mnoption->longname)
+		{
+		  printc ("%s", local_expr_as_string (evt->evt_data.event_data_u.mnoption->longname));
+		}
+	      else
+		{
+		  printc ("\"\"");
+		}
+	      printc (",%d,0);", evt->evt_data.event_data_u.mnoption->helpno);
+	      clr_nonewlines ();
+	      break;
+
+	default: break;
+	    }
+	}
+    }
+
+
   printc ("cmd_no_%d=A4GL_menu_loop_v2(m_%d,0);\n", menu_no, menu_no);
   tmp_ccnt--;
   printc ("}\n");
