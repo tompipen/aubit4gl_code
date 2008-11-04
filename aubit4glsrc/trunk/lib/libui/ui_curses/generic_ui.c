@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.49 2008-11-04 17:58:59 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.50 2008-11-04 23:19:02 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -934,16 +934,12 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 		opt1->help_no=helpno;
   }
 
-  if (opt1->attributes!=attr) {
-                A4GL_debug("Changed attributes");
-  		opt1->attributes=attr;
-  }
 
   memset(opt_title,0,sizeof(opt_title));
   if (strlen (txt))
     {
   	char op1[256];
-  memset(op1,0,256);
+  	memset(op1,0,256);
       strcpy (opt_title, " ");
       strcpy (op1, txt);
       A4GL_trim (op1);
@@ -961,6 +957,16 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 		strcpy(opt1->opt_title,opt_title);	
 		opt1->optlength = strlen (opt1->opt_title);
    }
+  if (opt1->optlength == 0) {
+		attr |= ACL_MN_HIDE;
+  }
+
+  if (opt1->attributes!=attr) {
+
+                A4GL_debug("Changed attributes");
+		// Dont change the attributes - it will mess up the option hiding
+  		//opt1->attributes=attr;
+  }
   if (strcmp(opt1->shorthelp,desc)!=0) {
 	A4GL_debug("shorthelp changed");
   	strncpy (opt1->shorthelp, desc,80);

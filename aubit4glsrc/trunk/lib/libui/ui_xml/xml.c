@@ -608,7 +608,7 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig, char *desc, 
 
 void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *keys, char *desc, int helpno, int attr) {
   ACL_Menu_Opts *opt1;
-  ACL_Menu_Opts *opt2;
+  //ACL_Menu_Opts *opt2;
   ACL_Menu *menu;
   char opt_title[200];
   menu=menuv;
@@ -624,10 +624,6 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 		opt1->help_no=helpno;
   }
 
-  if (opt1->attributes!=attr) {
-                A4GL_debug("Changed attributes");
-  		opt1->attributes=attr;
-  }
 
   memset(opt_title,0,sizeof(opt_title));
   if (strlen (txt))
@@ -651,6 +647,17 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 		strcpy(opt1->opt_title,opt_title);	
 		opt1->optlength = strlen (opt1->opt_title);
    }
+
+  if (opt1->optlength == 0) {
+                attr |= ACL_MN_HIDE;
+  }
+
+  if (opt1->attributes!=attr) {
+                A4GL_debug("Changed attributes");
+		// Dont change the attributes - it will mess up the option hiding
+                //opt1->attributes=attr;
+  }
+
   if (strcmp(opt1->shorthelp,desc)!=0) {
 	A4GL_debug("shorthelp changed");
   	strncpy (opt1->shorthelp, desc,80);

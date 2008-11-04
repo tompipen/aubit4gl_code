@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.43 2008-11-04 17:58:59 mikeaubury Exp $
+# $Id: console.c,v 1.44 2008-11-04 23:19:02 mikeaubury Exp $
 #*/
 
 /**
@@ -290,10 +290,6 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 		opt1->help_no=helpno;
   }
 
-  if (opt1->attributes!=attr) {
-                A4GL_debug("Changed attributes");
-  		opt1->attributes=attr;
-  }
 
   memset(opt_title,0,sizeof(opt_title));
   if (strlen (txt))
@@ -317,11 +313,23 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 		strcpy(opt1->opt_title,opt_title);	
 		opt1->optlength = strlen (opt1->opt_title);
    }
+
+  if (opt1->optlength == 0) {
+                attr |= ACL_MN_HIDE;
+  }
+
+  if (opt1->attributes!=attr) {
+                A4GL_debug("Changed attributes");
+		// Dont change the attribute - it will hide/unhide options
+                //opt1->attributes=attr;
+  }
+
   if (strcmp(opt1->shorthelp,desc)!=0) {
 	A4GL_debug("shorthelp changed");
   	strncpy (opt1->shorthelp, desc,80);
   	opt1->shorthelp[79]=0;
   }
+
   if (strcmp(opt1->optkey,keys)!=0) {
   	strcpy (opt1->optkey, keys);
   }
