@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.22 2008-09-17 21:02:16 fortiz Exp $
+# $Id: Makefile.in,v 1.23 2008-11-04 13:20:06 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -56,7 +56,8 @@ endif
 
 OBJECTS_NOPDF	=nopdf.o
 OBJECTS_PDF		=has_pdf.o ../liblogical/pdf/process/pdf_barcode.o
-
+OBJECTS_HARU          =haru.o ../liblogical/pdf/process/pdf_barcode.o
+HARU_L_FLAGS=-L/usr/local/lib -lhpdf
 
 ## ==================================================================
 ##                              Targets
@@ -75,8 +76,16 @@ ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 ##                              Clean
 ## ==================================================================
 
+
+haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}
+
+${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_L_FLAGS}  ${QRLIB}
+
+
 clean:
-	${RM} *.o ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT} ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+	${RM} *.o ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT} ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}
+
 
 
 # ----------------------------- EOF ---------------------------------

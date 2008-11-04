@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.155 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: curslib.c,v 1.156 2008-11-04 13:20:06 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.155 2008-10-16 10:55:11 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.156 2008-11-04 13:20:06 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -350,28 +350,31 @@ void
 A4GL_error_box (char *str, int attr)
 {
   int a, pos;
-  WINDOW *x;
+  //WINDOW *x;
 
-  A4GL_chkwin ();
+   A4GL_chkwin ();
   /*YELLOW ON RED */
-  A4GL_mja_setcolor (ERROR_COL);
-  a = 4;
-  pos = (A4GL_screen_width () - (strlen (str))) / 2;
+  //A4GL_mja_setcolor (ERROR_COL);
+   a = 4;
+   pos = (A4GL_screen_width () - (strlen (str))) / 2;
+   A4GL_push_long(4);A4GL_push_long(pos);A4GL_push_long(3);A4GL_push_long(strlen(str));
+   A4GL_cr_window("a4gl_error",1,255,255,255,255,1,255,255,attr,0 /* STYLE */,0 /* TEXT */);
+   A4GL_push_char(str);
+   A4GL_push_long(2);
+   A4GL_push_long(1);
+   A4GL_display_at(1,0xffffffff);
+   str=acl_getenv ("ERROR_MSG");
+   pos = (A4GL_screen_width () - (strlen (str))) / 2;
+   A4GL_push_long(17);A4GL_push_long(pos);A4GL_push_long(3);A4GL_push_long(strlen(str));
+   A4GL_cr_window("a4gl_prompt",1,255,255,255,255,1,255,255,4352,0 ,0 /* TEXT */);
+   A4GL_push_char(str);
+   A4GL_push_long(2);
+   A4GL_push_long(1);
+   A4GL_display_at(1,0xffffffff);
+   while (A4GL_getch_win ()<=0) ;
+   A4GL_remove_window("a4gl_prompt");
+   A4GL_remove_window("a4gl_error");
 
-  A4GL_debug ("error_box - screen_width=%d pos=%d", A4GL_screen_width (),
-	      pos);
-
-  x = A4GL_create_blank_window ("error", pos, a, strlen (str), 3, 1);
-  /*wmove(x,2,2); */
-  A4GL_mja_gotoxy (1, 1);
-  /* print ("%s", str); */
-  A4GL_tui_printr (1, "%s", str);
-  UILIB_A4GL_zrefresh ();
-  A4GL_do_pause ();
-  UILIB_A4GL_remove_window ("error");
-  UILIB_A4GL_zrefresh ();
-  A4GL_debug ("All done in error box");
-  A4GL_mja_setcolor (NORMAL_TEXT);
 }
 
 
@@ -816,7 +819,7 @@ A4GL_do_pause (void)
   w = A4GL_screen_width ();
   SPRINTF1 (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
-  x = A4GL_create_blank_window ("pause", ((w - emw) / 2), 20, emw, 3, 1);
+  x = A4GL_create_blank_window ("a4gl_pause", ((w - emw) / 2), 20, emw, 3, 1);
   A4GL_mja_gotoxy (1, 2);
   A4GL_mja_setcolor (ERROR_COL);
   /* print ("%s",buff); */
@@ -825,9 +828,9 @@ A4GL_do_pause (void)
   abort_pressed = FALSE;
   doupdate ();
   A4GL_debug ("getch_win...");
-  A4GL_getch_win ();
+  while (A4GL_getch_win ()<=0) ;
   A4GL_debug ("Done getch_win");
-  UILIB_A4GL_remove_window ("pause");
+  UILIB_A4GL_remove_window ("a4gl_pause");
   A4GL_mja_setcolor (NORMAL_TEXT);
 }
 
@@ -2613,6 +2616,7 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
       A4GL_push_int (ml);
       A4GL_push_int (1);
       A4GL_display_at (1, attr);
+		while (A4GL_getch_win()<=0) ;
     }
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 

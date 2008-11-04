@@ -47,7 +47,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.113 2008-05-02 18:38:01 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.114 2008-11-04 13:20:06 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -90,7 +90,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.113 2008-05-02 18:38:01 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.114 2008-11-04 13:20:06 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -3314,28 +3314,41 @@ A4GL_do_pause (int curr_width, int curr_height, int iscurrborder,
 }
 
 /**
- * PLEASE DESCRIBE THE BL*** FUNCTION!
- *
- * @param 
- * @return 
+ * Display an error message along with a 'Press any key to continue' message
+ * then wait for that key press and then return...
+ * @param str   string to display
+ * @param attr  attribute to use
  */
 void
 A4GL_LL_error_box (char *str, int attr)
 {
   int a, pos;
-  //int nattr;
-  PANEL *x;
-  a = 4;
-  pos = (A4GL_LL_screen_width () - (strlen (str))) / 2;
-  x = (PANEL *) A4GL_LL_create_window (3, strlen (str), a, pos, 1);
-  wattrset ((WINDOW *) x, attr & 0xffffff00);
-  mvwaddstr (panel_window (x), 2, 1, str);
-  A4GL_LL_screen_update ();
-  A4GL_do_pause (80, 4, 1, 999);
-  A4GL_LL_remove_window (x);
-  A4GL_LL_screen_update ();
-}
+  //WINDOW *x;
 
+   A4GL_chkwin ();
+  /*YELLOW ON RED */
+  //A4GL_mja_setcolor (ERROR_COL);
+   a = 4;
+   pos = (A4GL_LL_screen_width () - (strlen (str))) / 2;
+   A4GL_push_long(4);A4GL_push_long(pos);A4GL_push_long(3);A4GL_push_long(strlen(str));
+   A4GL_cr_window("a4gl_error",1,255,255,255,255,1,255,255,0,0 /* STYLE */,0 /* TEXT */);
+   A4GL_push_char(str);
+   A4GL_push_long(2);
+   A4GL_push_long(1);
+   A4GL_display_at(1,0x0);
+   str=acl_getenv ("ERROR_MSG");
+   pos = (A4GL_LL_screen_width () - (strlen (str))) / 2;
+   A4GL_push_long(17);A4GL_push_long(pos);A4GL_push_long(3);A4GL_push_long(strlen(str));
+   A4GL_cr_window("a4gl_prompt",1,255,255,255,255,1,255,255,4352,0 ,0 /* TEXT */);
+   A4GL_push_char(str);
+   A4GL_push_long(2);
+   A4GL_push_long(1);
+   A4GL_display_at(1,0x0);
+   while (A4GL_LL_getch_swin (NULL,"error_box")<=0) ;
+   A4GL_remove_window("a4gl_prompt");
+   A4GL_remove_window("a4gl_error");
+
+}
 
 
 void *

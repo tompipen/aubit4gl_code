@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.205 2008-11-03 11:16:19 mikeaubury Exp $
+# $Id: ioform.c,v 1.206 2008-11-04 13:20:06 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.205 2008-11-03 11:16:19 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.206 2008-11-04 13:20:06 mikeaubury Exp $";
 #endif
 
 /**
@@ -4557,19 +4557,8 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
   if (fprop->datatype == DTYPE_DATE)
     {
       int adate;
-      if (A4GL_stod (fld_data, &adate, 0) == 1)
-	{
-	  char *d;
-	  static char buff_new[256];
-	  A4GL_push_date (adate);
-	  d = A4GL_char_pop ();
-	  strcpy (buff_new, d);
-	  free (d);
-	  fld_data = buff_new;
-
-	}
-      else
-	{
+      int done=0;
+      
 	  if (ptr)
 	    {
 	      char tmpbuff[200];
@@ -4639,10 +4628,23 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	      A4GL_push_date (rval);
 	      d = A4GL_char_pop ();
 	      strcpy (buff_new, d);
+		done++;
 	      free (d);
 	      fld_data = buff_new;
 	    }
+      if (!done) {
+      if (A4GL_stod (fld_data, &adate, 0) == 1 )
+	{
+	  char *d;
+	  static char buff_new[256];
+	  A4GL_push_date (adate);
+	  d = A4GL_char_pop ();
+	  strcpy (buff_new, d);
+	  free (d);
+	  fld_data = buff_new;
+
 	}
+     }
     }
   A4GL_debug ("Returning : %s", fld_data);
   return fld_data;

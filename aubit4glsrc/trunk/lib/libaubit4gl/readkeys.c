@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.16 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: readkeys.c,v 1.17 2008-11-04 13:20:05 mikeaubury Exp $
 #*/
 
 /**
@@ -90,14 +90,16 @@ A4GL_readkey (void)
 {
   int a;
   char buff[256];
+  static int ignore_keyfile=0;
 
   if (have_keyfile == -1)
     {
       open_keyfile ();
     }
 
-  if (!have_keyfile)
-    return 0;
+  if (!have_keyfile || ignore_keyfile) {
+    	return 0;
+  }
 
   a = 0;
   while (a == 0)
@@ -140,6 +142,20 @@ A4GL_readkey (void)
 	  buff[cnt] = 0;
 	}
       A4GL_debug ("Getting keyval - %s", buff);
+      if (strcmp(buff,"PAUSE")==0) {
+		char str[2000];
+		// We need to prompt the user to wait or do something
+		// this always requires that we read direct from the keyboard 
+		// and not from the keylog file!
+		fgets(str,sizeof(str),keyfile);
+		A4GL_trim_nl(str);
+		A4GL_push_char(str);
+		ignore_keyfile++;
+   		A4GL_display_error(-1,1);
+		ignore_keyfile--;
+		return A4GL_readkey();
+      }
+
       a = A4GL_key_val (buff);
       if (a == -1)
 	{

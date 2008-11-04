@@ -1,60 +1,44 @@
-/*
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-2005 Aubit Development Team (See Credits file)    |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact licensing@aubit.com                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: has_pdf.c,v 1.56 2008-11-04 13:20:06 mikeaubury Exp $
-#*/
-
-/**
- * @file
- * PDF Report Implementation functions.
- *
- * @todo Add Doxygen comments to file
- * @todo Take the prototypes here declared. See if the functions are static
- * or to be externally seen
- * @todo Doxygen comments to add to functions
- */
-
-/*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
-
-
-#define USE_PDFLIB_H
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <setjmp.h>
+#include "hpdf.h"
 #include "a4gl_lib_exreport_pdf_int.h"
-void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text);
-void set_barcode_type(char *s);
+
+
+char *A4GL_get_pdf_haru_encoding(void) ;
+struct Haru_doc {
+	HPDF_Doc  doc;
+	HPDF_Page current_page;
+};
+
+typedef struct Haru_doc Haru_doc;
+
+
+#ifdef HPDF_DLL
+void  __stdcall
+#else
+void
+#endif
+error_handler (HPDF_STATUS   error_no,
+               HPDF_STATUS   detail_no,
+               void         *user_data)
+{
+    char buff[2000];
+    sprintf (buff, "ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT)error_no, (HPDF_UINT)detail_no);
+    A4GL_set_errm(buff);
+    A4GL_exitwith("PDF Error");
+}
+
+#define DOC(x) ((Haru_doc *)(x->pdf_ptr))
+#define CURRENT_PAGE(x) DOC(x)->current_page
+
 
 
 #define SECTION_NORMAL 0
 #define SECTION_HEADER 1
 #define SECTION_TRAILER 2
 static char * A4GL_report_char_pop (void);
-
 int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
 void A4GL_pdf_add_spaces (void);
 int A4GL_pdf_new_page (struct pdf_rep_structure *p);
@@ -75,8 +59,12 @@ double fill_color_b=0.0;
 double stroke_color_r=0.0;
 double stroke_color_g=0.0;
 double stroke_color_b=0.0;
+void generate_barcode(Haru_doc * p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text);
+void set_barcode_type(char *s);
 
-static void A4GL_setcolor(PDF *p, const char *fstype, const char *colorspace, double c1, double c2, double c3, double c4) {
+
+static void A4GL_setcolor(Haru_doc * p, const char *fstype, const char *colorspace, double c1, double c2, double c3, double c4) {
+
 if (strcmp(colorspace,"rgb")!=0) {
 	A4GL_assertion(1,"A4GL_setcolor must be rgb");
 }
@@ -85,7 +73,7 @@ if (strcmp(fstype,"fill")==0) {
 	fill_color_r=c1;
 	fill_color_g=c2;
 	fill_color_b=c3;
-	PDF_setcolor(p,fstype,colorspace,c1,c2,c3,c4);
+	HPDF_Page_SetRGBFill(p->current_page,c1,c2,c3);
 	return;
 }
 
@@ -93,7 +81,7 @@ if (strcmp(fstype,"stroke")==0) {
 	stroke_color_r=c1;
 	stroke_color_g=c2;
 	stroke_color_b=c3;
-	PDF_setcolor(p,fstype,colorspace,c1,c2,c3,c4);
+	HPDF_Page_SetRGBStroke(p->current_page,c1,c2,c3);
 	return;
 }
 if (strcmp(fstype,"both")==0) {
@@ -103,7 +91,9 @@ if (strcmp(fstype,"both")==0) {
 	stroke_color_r=c1;
 	stroke_color_g=c2;
 	stroke_color_b=c3;
-	PDF_setcolor(p,fstype,colorspace,c1,c2,c3,c4);
+	HPDF_Page_SetRGBStroke(p->current_page,c1,c2,c3);
+	HPDF_Page_SetRGBFill(p->current_page,c1,c2,c3);
+
 	return;
 }
 
@@ -111,12 +101,56 @@ A4GL_assertion(1,"unexpected fstype");
 }
 
 
-static void A4GL_resetcolor(PDF *p) {
-	PDF_setcolor(p,"fill","rgb",fill_color_r, fill_color_g,fill_color_b,0);
-	PDF_setcolor(p,"stroke","rgb",stroke_color_r, stroke_color_g,stroke_color_b,0);
+static void ClearOldMode(Haru_doc *doc, HPDF_UINT16 unew) {
+	HPDF_UINT16 u;
+	u=HPDF_Page_GetGMode  (doc->current_page);
+	if (u==unew) return ;
+
+	switch (u) {
+		case HPDF_GMODE_PAGE_DESCRIPTION: break;
+		case HPDF_GMODE_TEXT_OBJECT: 
+                		HPDF_Page_EndText(doc->current_page);
+				break;
+		case HPDF_GMODE_PATH_OBJECT:
+				HPDF_Page_Stroke(doc->current_page);
+				break;
+	}
+
+}
+
+static void A4GL_resetcolor(Haru_doc *p) {
+	HPDF_Page_SetRGBStroke(p->current_page,stroke_color_r,stroke_color_g,stroke_color_b);
+	HPDF_Page_SetRGBFill(p->current_page, fill_color_r,fill_color_g,fill_color_b);
 }
 
 
+
+void setfont(struct pdf_rep_structure *rep) {
+  if (rep->pdf_ptr==NULL) {
+                  rep->pdf_ptr = malloc(sizeof(Haru_doc));
+
+                  ((Haru_doc *)rep->pdf_ptr)->doc = HPDF_New (error_handler, NULL);
+                  A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
+                  A4GL_debug ("Set info");
+                  A4GLPDFREP_A4GL_pdf_set_info (rep->pdf_ptr, "A4GL");
+
+  }
+  //rep->fontptr = HPDF_GetFont (DOC(rep)->doc, rep->font_name, A4GL_get_pdf_encoding());
+  rep->fontptr = HPDF_GetFont (DOC(rep)->doc, rep->font_name, A4GL_get_pdf_haru_encoding());
+
+  if (rep->fontptr==NULL)
+    {
+      A4GL_exitwith ("Unable to locate font");
+      return ;
+    }
+  else
+    {
+      A4GL_debug ("findfont ok");
+    }
+
+  A4GL_debug ("set font\n");
+  HPDF_Page_SetFontAndSize (CURRENT_PAGE(rep) , rep->fontptr, rep->font_size);
+}
 
 /**
  *
@@ -129,10 +163,9 @@ void
 A4GLPDFREP_A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin, int why)
 {
   int b;
-int entry=0;
+  int entry=0;
   char *str;
   struct pdf_rep_structure *rep;
-  static int resetting=0;
 
   rep = vrep;
 
@@ -169,14 +202,10 @@ int entry=0;
 		}
 	      else
 		{
-		  rep->pdf_ptr = PDF_new ();
-		  PDF_set_parameter(rep->pdf_ptr,"compatibility","1.4");
+		  rep->pdf_ptr = malloc(sizeof(Haru_doc));
+
+		  ((Haru_doc *)rep->pdf_ptr)->doc = HPDF_New (error_handler, NULL);
 		  A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
-		  if (PDF_open_file (rep->pdf_ptr, rep->output_loc_str) == -1)
-		    {
-		      A4GL_exitwith ("Error opening output\n");
-		      return;
-		    }
 		  A4GL_debug ("Set info");
 		  A4GLPDFREP_A4GL_pdf_set_info (rep->pdf_ptr, "A4GL");
 		}
@@ -262,8 +291,19 @@ int entry=0;
 
 	  A4GL_debug ("A\n");
 	  str =  A4GL_report_char_pop ();
+
+	  if (HPDF_Page_GetGMode  (CURRENT_PAGE(rep)) !=  HPDF_GMODE_TEXT_OBJECT) {
+	    	HPDF_Page_BeginText(CURRENT_PAGE(rep));
+		setfont(rep);
+	  }
+
 	  A4GL_pdf_move (rep); 
-	  PDF_show (rep->pdf_ptr, str);
+	  HPDF_Page_ShowText (CURRENT_PAGE(rep) , str);
+	  HPDF_Page_EndText(CURRENT_PAGE(rep));
+
+	  printf("Putting %s\n",str);
+
+
 	  A4GL_debug ("Adding %f to col_no\n", A4GL_pdf_metric (strlen (str), 'c', rep));
 	  rep->col_no += A4GL_pdf_metric (strlen (str), 'c', rep);
 	  acl_free (str);
@@ -513,31 +553,32 @@ A4GL_pdf_add_spaces (void)
 int
 A4GL_pdf_new_page (struct pdf_rep_structure *p)
 {
+ struct Haru_doc *doc;
   A4GL_debug ("NEW PAGE : %d\n", p->page_no);
   /* PDF_begin_page(p->pdf_ptr, width, height); */
+
+  doc=p->pdf_ptr;
+
   if (p->page_no)
     {
-      PDF_end_page (p->pdf_ptr);
+     // clear any pending stokes or text placements...
+     printf("Clear mode\n");
+      ClearOldMode(DOC(p), HPDF_GMODE_PAGE_DESCRIPTION);
+      //PDF_end_page (CURRENT_PAGE(p));
     }
 
   A4GL_debug ("Begin page %lf %lf\n", p->page_width, p->page_length);
-  PDF_begin_page (p->pdf_ptr, p->page_width, p->page_length);
+  
+  doc->current_page = HPDF_AddPage (DOC(p)->doc);
+  HPDF_Page_SetWidth(doc->current_page, p->page_width);
+  HPDF_Page_SetHeight(doc->current_page, p->page_length);
+
+  //PDF_begin_page (p->pdf_ptr, p->page_width, p->page_length);
   A4GL_debug ("Done\n");
   A4GL_debug ("find font %s\n", p->font_name);
-  p->font = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
 
-  if (p->font < 0)
-    {
-      A4GL_exitwith ("Unable to locate font");
-      return 0;
-    }
-  else
-    {
-      A4GL_debug ("findfont ok");
-    }
 
-  A4GL_debug ("set font\n");
-  PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+
 
 // do we need bluebars ? 
   if (p->bluebar_style!=E_BLUEBAR_NONE) {
@@ -548,8 +589,11 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
 	//printable = p->page_height - (p->top_margin);
   	//eachline = printable / h;
   	eachline = A4GLPDFREP_A4GL_pdf_size (1, 'l', p);
-  	PDF_setcolor (p->pdf_ptr, "both", "rgb", p->bluebar_r, p->bluebar_g, p->bluebar_b, 0);
-  	PDF_setlinewidth (p->pdf_ptr, eachline / 20);
+  	A4GL_setcolor (doc, "both", "rgb", p->bluebar_r, p->bluebar_g, p->bluebar_b,0);
+
+ 	ClearOldMode(DOC(p) , HPDF_GMODE_PAGE_DESCRIPTION);
+
+  	HPDF_Page_SetLineWidth (doc->current_page, eachline / 20);
 
     if (p->bluebar_style == E_BLUEBAR_5LINE)
         {
@@ -566,13 +610,14 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
               for (bb = 0; bb < 5; bb++)
                 {
                   spacing -= 2.0 * (float) eachline / 10;
-                  PDF_moveto (p->pdf_ptr, (0), ypos + spacing);
-                  PDF_lineto (p->pdf_ptr, (p->page_width),ypos+spacing);
+
+                  HPDF_Page_MoveTo (doc->current_page, (0), ypos + spacing);
+                  HPDF_Page_LineTo (doc->current_page, (p->page_width),ypos+spacing);
                 }
 		ypos=ypos-(eachline*2);
 		if (ypos+eachline<p->bottom_margin) break;
             }
-      PDF_stroke (p->pdf_ptr);
+      		HPDF_Page_Stroke (doc->current_page);
         }
 
       if (p->bluebar_style == E_BLUEBAR_RECTANGLE)
@@ -589,7 +634,8 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
               //spacing -= (float) eachline / 10;
               offset = 2.0 * (float) eachline / 10;
 		if (ypos+eachline>(p->page_length)) break;
-                PDF_rect (p->pdf_ptr, (0), ypos -offset , p->page_width, eachline*0.9); PDF_fill_stroke (p->pdf_ptr);
+                HPDF_Page_Rectangle (doc->current_page, (0), ypos -offset , p->page_width, eachline*0.9); 
+		HPDF_Page_FillStroke (doc->current_page);
 		ypos=ypos-(eachline*2);
 		if (ypos+eachline<p->bottom_margin) break;
             }
@@ -611,11 +657,20 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
 void
 A4GLPDFREP_A4GL_pdf_set_info (void *p, char *creator)
 {
-  PDF_set_info (p, "Creator", creator);
-  PDF_set_info (p, "Author", "Auto");
-  PDF_set_info (p, "Title", "Auto");
+Haru_doc  *pp;
+pp=(Haru_doc *)p;
+HPDF_SetInfoAttr (pp->doc,HPDF_INFO_AUTHOR, "Auto");
+HPDF_SetInfoAttr (pp->doc,HPDF_INFO_CREATOR, creator);
+HPDF_SetInfoAttr (pp->doc,HPDF_INFO_TITLE, "Auto");
 }
 
+
+static void ensure_text_mode(struct pdf_rep_structure *rep) {
+	if (HPDF_Page_GetGMode  (CURRENT_PAGE(rep)) !=HPDF_GMODE_TEXT_OBJECT)  {
+  		ClearOldMode(DOC(rep) , HPDF_GMODE_TEXT_OBJECT);
+		HPDF_Page_BeginText(CURRENT_PAGE(rep));
+	}
+}
 
 /**
  *
@@ -625,8 +680,10 @@ void
 A4GL_pdf_move (struct pdf_rep_structure *p)
 {
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
-  printf ("Move to %f %f\n", p->col_no, p->page_length -p->line_no);
-  PDF_set_text_pos (p->pdf_ptr, p->col_no, p->page_length - p->line_no);
+  //printf ("Move to %f %f\n", p->col_no, p->line_no);
+  ensure_text_mode(p);
+printf("Move to %lf %lf\n", p->col_no, p->page_length - p->line_no);
+  HPDF_Page_MoveTextPos (CURRENT_PAGE(p) , p->col_no, p->page_length - p->line_no);
 }
 
 
@@ -640,15 +697,28 @@ A4GLPDFREP_A4GL_pdf_rep_close (void *vp)
   struct pdf_rep_structure *p;
   p = vp;
 
+
   A4GL_debug ("Closing report %f\n", p->line_no);
   if (p->line_no != 0.0)
     {
+printf("CLose\n");
+	ClearOldMode(DOC(p), HPDF_GMODE_PAGE_DESCRIPTION);
       A4GL_debug ("A");
-      PDF_end_page (p->pdf_ptr);
+      //PDF_end_page (p->pdf_ptr);
       A4GL_debug ("A");
-      PDF_close (p->pdf_ptr);
+      //PDF_close (p->pdf_ptr);
     }
-      p->pdf_ptr=0;
+
+  if (HPDF_SaveToFile (DOC(p)->doc, p->output_loc_str)!=HPDF_OK) 
+    {
+      A4GL_exitwith ("Error opening output\n");
+      return;
+    }
+
+
+  HPDF_Free (DOC(p)->doc);
+
+  p->pdf_ptr=0;
   A4GL_debug ("All done...");
 }
 
@@ -686,12 +756,14 @@ double
 A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *p)
 {
   A4GL_debug ("pdf_metric a=%d c=%c p=%p", a, c, p);
+  
+setfont(p);
 
   if (c == 'c')
     {
       A4GL_debug ("metric C %d %c", a, c);
-      if (p->pdf_ptr) {
-      	return (double) ((double) a * PDF_stringwidth (p->pdf_ptr, "W", p->font, p->font_size));
+      if (p->pdf_ptr && CURRENT_PAGE(p)) {
+      	return (double) ((double) a * HPDF_Page_TextWidth(CURRENT_PAGE(p), "W"));
       } else {
       	return (double) ((double) a * 8);
       }
@@ -721,11 +793,15 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
       char *ptr2;
       ptr2 = A4GL_char_pop ();
       ptr1 = A4GL_char_pop ();
-      PDF_set_parameter (p->pdf_ptr, ptr1, ptr2);
+
+      //PDF_set_parameter (p->pdf_ptr, ptr1, ptr2);
+      A4GL_assertion(1,"set_parameter not available in HARU");
+
       acl_free (ptr1);
       acl_free (ptr2);
       return 0;
     }
+
   if (strcmp (fname, "set_value") == 0)
     {
       char *ptr1;
@@ -733,7 +809,8 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
       a = A4GL_pop_int ();
       ptr1 = A4GL_char_pop ();
       A4GL_debug ("Setting pdf value %s to %d\n", ptr1, a);
-      PDF_set_value (p->pdf_ptr, ptr1, a);
+      A4GL_assertion(1,"set_value not available in HARU");
+      //PDF_set_value (p->pdf_ptr, ptr1, a);
       acl_free (ptr1);
       return 0;
     }
@@ -743,17 +820,18 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
     {
       d = A4GL_pop_double ();
       p->font_size = d;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+      HPDF_Page_SetFontAndSize (CURRENT_PAGE(p), p->fontptr, p->font_size);
       return 0;
     }
 
   if (strcmp (fname, "set_font_name") == 0)
     {
+	HPDF_Font a;
       ptr = A4GL_char_pop ();
       strcpy (p->font_name, ptr);
       acl_free (ptr);
-      a = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
-      if (a < 0)
+      a = HPDF_GetFont (p->pdf_ptr, p->font_name, A4GL_get_pdf_haru_encoding());
+      if (a ==NULL)
 	{
 	  A4GL_exitwith ("Unable to locate font");
 	  return 0;
@@ -762,8 +840,8 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
 	{
 	  A4GL_debug ("Findfont ok");
 	}
-      p->font = a;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+      p->fontptr = a;
+      HPDF_Page_SetFontAndSize (CURRENT_PAGE(p), p->fontptr, p->font_size);
       return 0;
     }
   return 0;
@@ -780,7 +858,7 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
 void
 A4GLPDFREP_A4GL_pdf_blob_print (void *vp, void *vblob, char *type, int cr)
 {
-  int n;
+  //int n;
   double sx;
   double sy;
   int x, y;
@@ -788,6 +866,9 @@ double ox;
 double oy;
   struct pdf_rep_structure *p;
   struct fgl_int_loc *blob;
+  HPDF_Image i;
+
+
   p = vp;
   blob = vblob;
 
@@ -808,10 +889,30 @@ double oy;
     }
 
   A4GL_debug ("Opening blob\n");
-  n = PDF_open_image_file (p->pdf_ptr, type, blob->filename, "", 0);
-  A4GL_debug ("Image handle=%d\n", n);
 
-  if (n < 0)
+  i=NULL;
+
+  if (A4GL_has_pointer(blob->filename,HARU_IMAGE)) {
+	i=A4GL_find_pointer(blob->filename,HARU_IMAGE);
+
+  }  
+
+  if (i==NULL) {
+  	if (A4GL_aubit_strcasecmp(type,"PNG")==0) {
+		i=HPDF_LoadPngImageFromFile(DOC(p)->doc,blob->filename);
+  	}
+
+  	if (A4GL_aubit_strcasecmp(type,"JPG")==0 || A4GL_aubit_strcasecmp(type,"JPEG")==0) {
+		i=HPDF_LoadJpegImageFromFile(DOC(p)->doc,blob->filename);
+  	}
+  }
+  if (i) {
+		A4GL_add_pointer(blob->filename,HARU_IMAGE,i);
+  }
+  //n = PDF_open_image_file (p->pdf_ptr, type, blob->filename, "", 0);
+  A4GL_debug ("Image handle=%p\n", i);
+
+  if (i==NULL)
     {
       /* exitwith("Unable to open file %s %s",type,blob->filename); */
       /* An empty blob or invalid type (bmp) is also error,
@@ -819,9 +920,13 @@ double oy;
       /* A4GL_exitwith ("Unable to open file."); */
       return;
     }
+  
+   x=HPDF_Image_GetWidth(i);
+   y=HPDF_Image_GetHeight(i);
 
-  y = PDF_get_value (p->pdf_ptr, "imageheight", n);
-  x = PDF_get_value (p->pdf_ptr, "imagewidth", n);
+
+  //y = PDF_get_value (p->pdf_ptr, "imageheight", n);
+  //x = PDF_get_value (p->pdf_ptr, "imagewidth", n);
 
   ox=(double)x;
   oy=(double)y;
@@ -855,10 +960,12 @@ double oy;
     }
   A4GL_debug ("x=%lf y=%lf", p->col_no, p->page_length - p->line_no - y);
 
-  PDF_place_image (p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y, sx);
+  ClearOldMode(DOC(p), HPDF_GMODE_PATH_OBJECT);
+
+  HPDF_Page_DrawImage (CURRENT_PAGE(p), i, p->col_no, p->page_length - p->line_no - y, HPDF_Image_GetWidth(i)*sx, HPDF_Image_GetHeight(i)*sy);
 
   A4GL_debug ("Closing");
-  PDF_close_image (p->pdf_ptr, n);
+  //PDF_close_image (p->pdf_ptr, n);
 
 A4GL_debug("lineno (%lf) +=  %lf", p->line_no,(double)y);
 A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
@@ -888,7 +995,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       char *ptr2;
       ptr2 = A4GL_char_pop ();
       ptr1 = A4GL_char_pop ();
-      PDF_set_parameter (p->pdf_ptr, ptr1, ptr2);
+      //PDF_set_parameter (p->pdf_ptr, ptr1, ptr2);
+      A4GL_assertion(1,"set_parameter not available in HARU");
       acl_free (ptr1);
       acl_free (ptr2);
       return 0;
@@ -905,7 +1013,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		}
 
 
-      PDF_moveto (p->pdf_ptr, f1, f2);
+ 	ClearOldMode(DOC(p) , HPDF_GMODE_PAGE_DESCRIPTION);
+      HPDF_Page_MoveTo (CURRENT_PAGE(p), f1, f2);
       return 0;
     }
 
@@ -935,8 +1044,9 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
    if (strcmp(fname,"bookmark")==0) {
 	char *buf;
 	buf=A4GL_char_pop();
-	PDF_create_bookmark(p->pdf_ptr, buf, 0, "");
+	//PDF_create_bookmark(p->pdf_ptr, buf, 0, "");
 	free(buf);
+	A4GL_assertion(1,"Bookmarks not available in HARU");
    }
 
    if (strcmp(fname,"add_bookmark")==0) {
@@ -944,7 +1054,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	int a;
 	a=A4GL_pop_int();
 	buf=A4GL_char_pop();
-	a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	//a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	A4GL_assertion(1,"Bookmarks not available in HARU");
 	A4GL_push_int(a);
 	free(buf);
 	return 1;
@@ -954,9 +1065,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	int a;
 	a=A4GL_pop_int();
 	buf=A4GL_char_pop();
-	a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
-	//A4GL_push_int(a);
-	//free(buf);
+	//a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	A4GL_assertion(1,"Bookmarks not available in HARU");
 	return 0;
 	}
 
@@ -974,7 +1084,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 
   if (strcmp (fname, "stroke") == 0)
     {
-      PDF_stroke (p->pdf_ptr);
+      HPDF_Page_Stroke (CURRENT_PAGE(p));
       return 0;
     }
 
@@ -1030,13 +1140,13 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 
   if (strcmp (fname, "fill_stroke") == 0)
     {
-      PDF_fill_stroke (p->pdf_ptr);
+      HPDF_Page_FillStroke (CURRENT_PAGE(p));
       return 0;
     }
 
   if (strcmp (fname, "fill") == 0)
     {
-      PDF_fill (p->pdf_ptr);
+      HPDF_Page_Fill (CURRENT_PAGE(p));
       return 0;
     }
 
@@ -1049,7 +1159,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		if (strcmp (fname, "lineto_top") == 0) {
 			f2=p->page_length-f2;
 		}
-      PDF_lineto (p->pdf_ptr, f1, f2);
+      HPDF_Page_LineTo (CURRENT_PAGE(p), f1, f2);
       return 0;
     }
 
@@ -1067,7 +1177,10 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		row=A4GL_pop_long();
 		column=A4GL_pop_long();
 		table=A4GL_pop_long();
-		table=PDF_add_table_cell(p->pdf_ptr, table,column,row,text,strlen(text),optlist);
+
+		//table=PDF_add_table_cell(p->pdf_ptr, table,column,row,text,strlen(text),optlist);
+
+		A4GL_assertion(1,"add_table_cell not implemented for HARU");
 		A4GL_push_int(table);
 		return 1;
   }
@@ -1090,9 +1203,11 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		llx=A4GL_pop_double();
 		table=A4GL_pop_long();
 
-		rval=PDF_fit_table(p->pdf_ptr, table, llx,lly,urx,ury,optlist);
-		A4GL_push_char(rval);
-		return 1;
+		A4GL_assertion(1,"Fit Table not implemented for HARU");
+		//rval=PDF_fit_table(p->pdf_ptr, table, llx,lly,urx,ury,optlist);
+		//A4GL_push_char(rval);
+		//return 1;
+		return 0;
   }
 
 
@@ -1138,7 +1253,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       a = A4GL_pop_int ();
       ptr1 = A4GL_char_pop ();
       A4GL_debug ("Setting pdf value %s to %d\n", ptr1, a);
-      PDF_set_value (p->pdf_ptr, ptr1, a);
+      A4GL_assertion(1,"set_value not available in HARU");
+      //PDF_set_value (p->pdf_ptr, ptr1, a);
       acl_free (ptr1);
       return 0;
     }
@@ -1148,23 +1264,24 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
     {
       d = A4GL_pop_double ();
       p->font_size = d;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+      HPDF_Page_SetFontAndSize (CURRENT_PAGE(p), p->fontptr, p->font_size);
       return 0;
     }
 
   if (strcmp (fname, "set_font_name") == 0)
     {
+	HPDF_Font a;
       ptr = A4GL_char_pop ();
       strcpy (p->font_name, ptr);
       acl_free (ptr);
-      a = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
-      if (a < 0)
+      a = HPDF_GetFont (DOC(p)->doc, p->font_name, A4GL_get_pdf_haru_encoding());
+      if (a == NULL)
 	{
 	  A4GL_exitwith ("Unable to locate font");
 	  return 0;
 	}
-      p->font = a;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+      p->fontptr = a;
+      HPDF_Page_SetFontAndSize (CURRENT_PAGE(p), p->fontptr, p->font_size);
       return 0;
     }
 
@@ -1195,8 +1312,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		fy=p->page_length-fy;
 	}
       fx = A4GL_pop_double ();
-      PDF_rect (p->pdf_ptr, fx, fy, fw, fh);
-      PDF_stroke (p->pdf_ptr);
+      HPDF_Page_Rectangle (CURRENT_PAGE(p), fx, fy, fw, fh);
+      HPDF_Page_Stroke (CURRENT_PAGE(p));
       return 0;
     }
 
@@ -1210,12 +1327,11 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		fy=p->page_length-fy;
 	}
       fx = A4GL_pop_double ();
-       PDF_set_text_pos (p->pdf_ptr, fx, fy - p->font_size);
-        PDF_show (p->pdf_ptr, ptr);
+        HPDF_Page_MoveTextPos (CURRENT_PAGE(p), fx, fy - p->font_size);
+        HPDF_Page_ShowText (CURRENT_PAGE(p), ptr);
 	free(ptr);
       return 0;
     }
-
 
 
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
@@ -1249,11 +1365,10 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 
       if (strcmp (feature, "blind") != 0) feature = "";
 
-      c = PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, feature);
+	A4GL_assertion(1," show_boxed not implemented for HARU");
       A4GL_push_double ((double) c);
       return 1;
     }
-
 
 
   return 0;
@@ -1300,8 +1415,33 @@ A4GL_report_char_pop (void)
 int  A4GLPDFREP_EXREPORT_initlib(void)
 {
   A4GL_debug ("Calling PDF_boot");
-  PDF_boot ();
   return 1;
 }
+
+char *A4GL_get_pdf_haru_encoding(void) {
+char *s;
+	s=A4GL_get_pdf_encoding();
+if (strcmp(s,"winansi")==0) {
+	return "WinAnsiEncoding";
+}
+return s;
+printf("s= %s\n",s);
+}
+
+
+
+
+void PDF_fill_stroke(void *p) {
+}
+void PDF_rect(void *p, double x, double y, double width, double height) {
+}
+void PDF_set_text_pos(void *p,double x, double y) {
+}
+void PDF_setlinewidth(void *p, double width) {
+}
+void PDF_show(void *p,char *text) {
+}
+
+
 
 /* ================================ EOF ============================== */

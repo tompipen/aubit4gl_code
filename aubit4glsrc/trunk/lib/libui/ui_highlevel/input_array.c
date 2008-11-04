@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.63 2008-09-15 12:28:42 mikeaubury Exp $
+# $Id: input_array.c,v 1.64 2008-11-04 13:20:06 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.63 2008-09-15 12:28:42 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.64 2008-11-04 13:20:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -73,7 +73,7 @@ int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, 
 
 static int A4GL_double_chk_line(struct s_inp_arr *arr,int ln, char why) ;
 static char *get_field_with_no_picture(void *f) ;
-
+int last_field_pos=-1;
 #define CONTROL_STACK_LENGTH 10
 
 /*
@@ -141,8 +141,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
     {
       at_first = 1;
     }
-  if (A4GL_LL_get_carat (mform) ==
-      A4GL_get_field_width (A4GL_LL_current_field (mform)) - 1)
+  if (A4GL_LL_get_carat (mform) == A4GL_get_field_width (A4GL_LL_current_field (mform)) - 1)
     {
       at_last = 1;
     }
@@ -2310,7 +2309,7 @@ int nv;
 	  char *picture = 0;
 	  new_state = 10;
 
-
+	last_field_pos=-1;
 
 	  fprop =
 	    (struct struct_scr_field
@@ -2408,10 +2407,9 @@ int nv;
 	      if (ok == 1)
 		{
 			  if (arr->curr_line_is_new==1) { arr->curr_line_is_new=2; }
-		  A4GL_LL_int_form_driver (arr->currform->form,
-					   arr->fcntrl[a].extent);
-		  A4GL_LL_int_form_driver (arr->currform->form,
-					   AUBIT_REQ_VALIDATION);
+		last_field_pos=A4GL_LL_get_carat ( arr->currform->form);
+		  A4GL_LL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
+		  A4GL_LL_int_form_driver (arr->currform->form, AUBIT_REQ_VALIDATION);
 		}
 
 
@@ -2448,18 +2446,15 @@ if (a_isprint(arr->fcntrl[a].extent) && arr->fcntrl[a].extent!='\n'&&arr->fcntrl
 	      if (A4GL_has_bool_attribute (fprop, FA_B_AUTONEXT))	// Don't bother - it aint working...
 		{
 		  void *curses_form;
-		  //int width;
-		  //char buff[256];
+		int new_field_pos;
 		  curses_form = arr->currform->form;
-		  //width = A4GL_get_field_width (arr->currentfield);
-		  if (A4GL_LL_current_field (curses_form) != arr->currentfield ||  A4GL_LL_get_carat (curses_form)==0)
-		    {
+			new_field_pos=A4GL_LL_get_carat (curses_form);
+  		  if (new_field_pos == A4GL_get_field_width (A4GL_LL_current_field (curses_form)) - 1 && new_field_pos==last_field_pos) {
 		      A4GL_LL_set_current_field (curses_form,
 						 arr->currentfield);
 		      A4GL_newMovement_single (arr, arr->scr_line, arr->arr_line,
 					arr->curr_attrib + 1, 'R');
 		    }
-
 		}
 	    }
 
