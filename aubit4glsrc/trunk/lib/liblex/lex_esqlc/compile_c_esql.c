@@ -531,9 +531,15 @@ int a;
 	strcpy(buff," INTO ");
 	for (a=0;a<into->list.list_len;a++) {
 		if (a) strcat(buff,",\n");
+		if (into->list.list_val[a]->expr_type==ET_EXPR_LINENO) {
+			a4gl_yyerror("You can't use LINENO in this context");
+			return "";
+		}
+		if (into->list.list_val[a]->expr_type==ET_EXPR_PAGENO) {
+			a4gl_yyerror("You can't use PAGENO in this context");
+			return "";
+		}
 		A4GL_assertion(into->list.list_val[a]->expr_type!=ET_EXPR_VARIABLE_USAGE,"Expecting a variable usage");
-
-
 		strcat(buff,get_sql_variable_usage (into->list.list_val[a]->expr_str_u.expr_variable_usage,'o'));
 	}
 	return buff;
@@ -994,10 +1000,16 @@ print_sql_transact_cmd (struct_sql_transact_cmd * cmd_data)
 
 static int check_cursor_defined(expr_str *s) {
 char *cname;
+
+  if (s->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) return 1;
+
   cname=get_esql_ident_as_string(s);
+  
   if (!A4GL_find_pointer(cname,CURCODE)) {
                 set_yytext(cname);
-                a4gl_yyerror("Cursor has not been previously defined");
+		if (!A4GL_isyes(acl_getenv("A4GL_IGNCURSORDEFERR")) ) {
+                	a4gl_yyerror("Cursor has not been previously defined");
+		}
                 return 0;
   }
 
@@ -1325,7 +1337,7 @@ static char buff[2000];
 
   if (ptr->expr_type == ET_EXPR_VARIABLE_IDENTIFIER) // a _VARIABLE
     {
-	sprintf(buff,"%s",local_expr_as_string (ptr->expr_str_u.expr_expr));
+	sprintf(buff,"%s",A4GL_strip_quotes(local_expr_as_string (ptr->expr_str_u.expr_expr)));
 	return buff;
     }
 
