@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.140 2008-11-04 17:55:27 mikeaubury Exp $
+# $Id: ops.c,v 1.141 2008-11-04 21:59:20 mikeaubury Exp $
 #
 */
 
@@ -6566,6 +6566,7 @@ struct_dtime dm;
 struct_dtime *dm2;
 dm2=ptr;
   if (display_type==DISPLAY_TYPE_DISPLAY_TO)  {
+	if (dm2) {
 	if (dm2->stime==1 && dm2->ltime>=6) { // Year to second..
 		switch (string_sz) {
 			case 10: // Convert to Year to day
@@ -6590,6 +6591,7 @@ dm2=ptr;
 				return p;
 		}
         }
+	}
   }
   return 0;
 }
