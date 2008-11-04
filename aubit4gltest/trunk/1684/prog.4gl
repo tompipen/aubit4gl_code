@@ -15,6 +15,8 @@ DISPLAY w_a TO f4
 DISPLAY w_a TO f5
 DISPLAY w_a TO f6
 DISPLAY w_a TO f7
+LET w_a = NULL
+DISPLAY w_a TO f8
 call aclfgl_dump_screen("out")
 CLOSE WINDOW v_tele
 END MAIN

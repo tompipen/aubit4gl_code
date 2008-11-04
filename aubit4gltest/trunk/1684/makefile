@@ -5,7 +5,6 @@ include ${MAKEFILE_COMMON}
 FORMS=	${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
 HELP=	${MSG:.msg=${HLP_EXT}}
-EXTRA_4GLC=--sqltype=FILESCHEMA
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
