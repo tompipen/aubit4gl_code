@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.69 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: others.c,v 1.70 2008-11-05 19:30:37 mikeaubury Exp $
 #
 */
 
@@ -85,7 +85,7 @@ int A4GL_get_as_c(void) {
 
 int m_lastkey = 0;
 
-void A4GL_set_fld(struct struct_scr_field *f) {
+void A4GL_set_fld(void *f) {
 	fld=f;
 }
 

@@ -309,6 +309,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-V5"			let mv_verbose=5 continue for
 		WHEN "-versioned"		let mv_versioned=1 continue for
 		WHEN "-notversioned"		let mv_versioned=0 continue for
+		WHEN "-globcurs"		call aclfgl_setenv("A4GL_GLOBALCURS","Y") continue for
 
 		WHEN "-t"			let a=a+1 let mv_lextype=arg_val(a) 
   							call aclfgl_setenv("A4GL_LEXTYPE",mv_lextype clipped)

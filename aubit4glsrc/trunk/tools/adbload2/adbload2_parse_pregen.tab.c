@@ -188,7 +188,7 @@ typedef union YYSTYPE
 	struct s_pos_list *pos_list;
 	struct s_field_pos_list *field_pos_list;
 }
-/* Line 193 of yacc.c.  */
+/* Line 187 of yacc.c.  */
 #line 193 "adbload2_parse.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
