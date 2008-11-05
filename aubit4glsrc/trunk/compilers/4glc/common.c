@@ -16,12 +16,13 @@
 #include "a4gl_API_parse_lib.h"
 #include "parsehelp.h"
 #include "var_handling.h"
-#include "trim_spaces.h"
+//#include "trim_spaces.h"
 
 char namespace[256] = "aclfgl_";
 
 static void append_record_entries(struct record_variable *rec_var, struct variable_usage *parent, struct expr_str_list *rval) ;
 static int encode_size(int dtype, int dim1,int dim2) ;
+int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr); // used in lib/liblex/lex_esqlc/compile_c.c
 
 static int compare_var (struct variable **vv1, struct variable **vv2) {
 struct variable *v1;
@@ -278,7 +279,7 @@ int c;
 struct variable_usage *u;
 struct variable_usage *unew;
 struct variable_usage *p;
-struct record_variable *next_rec;
+//struct record_variable *next_rec;
 int dim=0;
 int dim1;
 int dim2;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.22 2008-07-22 09:09:37 mikeaubury Exp $
+# $Id: dump.c,v 1.23 2008-11-05 14:23:35 mikeaubury Exp $
 #*/
 
 /**
@@ -43,6 +43,7 @@
 */
 
 #include "a4gl_fcompile_int.h"
+#include "dump_form.h"
 
 /*
 =====================================================================
@@ -107,8 +108,8 @@ static void dump_fields_desc (struct_form * f);
 static void dump_records (struct_form * f);
 static void dump_tables (struct_form * f);
 //andrej void dump_form_desc (struct_form * f);
-void dump_expr (t_expression * expr, int lvl);
-void print_lvl (int lvl);
+void dump_expr_1 (t_expression * expr, int lvl);
+void print_lvl_1 (int lvl);
 
 
 
@@ -189,7 +190,7 @@ int b;
 			for (b = 0; b < f->attributes.attributes_val[a].colours.colours_len;b++){
 				printf ("        colour=%d WHERE ",
 					(int)f->attributes.attributes_val[a].colours.colours_val[b].colour);
-				dump_expr (f->attributes.attributes_val[a].colours.colours_val[b].whereexpr, 0);
+				dump_expr_1 (f->attributes.attributes_val[a].colours.colours_val[b].whereexpr, 0);
 			}
 		}
     }
@@ -285,7 +286,7 @@ dump_tables (struct_form * f)
  * @param
  */
 void
-dump_expr (t_expression * expr, int lvl)
+dump_expr_1 (t_expression * expr, int lvl)
 {
   t_complex_expr *ptr2;
   int a;
@@ -293,56 +294,56 @@ dump_expr (t_expression * expr, int lvl)
 
   if (expr->itemtype == ITEMTYPE_INT)
     {
-      print_lvl (lvl);
+      print_lvl_1 (lvl);
       printf ("%%%d", expr->u_expression_u.intval);
     }
 
   if (expr->itemtype == ITEMTYPE_SPECIAL)
     {
-      print_lvl (lvl);
+      print_lvl_1 (lvl);
       printf ("*%s", expr->u_expression_u.special);
     }
 
   if (expr->itemtype == ITEMTYPE_LIST)
     {
-      print_lvl (lvl);
+      print_lvl_1 (lvl);
       printf ("[");
       for (a = 0; a < expr->u_expression_u.listy.listy_len; a++)
 	{
-	  dump_expr (expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
+	  dump_expr_1 (expr->u_expression_u.listy.listy_val[a].listx, lvl + 1);
 	}
       printf ("]");
     }
 
   if (expr->itemtype == ITEMTYPE_FIELD)
     {
-      print_lvl (lvl);
+      print_lvl_1 (lvl);
       printf ("$%s", expr->u_expression_u.field);
     }
 
   if (expr->itemtype == ITEMTYPE_CHAR)
     {
-      print_lvl (lvl);
+      print_lvl_1 (lvl);
       printf ("'%s'", expr->u_expression_u.charval);
     }
 
   if (expr->itemtype == ITEMTYPE_NOT)
     {
       printf ("!(");
-      dump_expr (expr->u_expression_u.notexpr, lvl + 1);
+      dump_expr_1 (expr->u_expression_u.notexpr, lvl + 1);
       printf (")");
 
     }
 
   if (expr->itemtype == ITEMTYPE_COMPLEX)
     {
-      print_lvl (lvl);
+      print_lvl_1 (lvl);
       printf ("(");
       ptr2 = expr->u_expression_u.complex_expr;
-      dump_expr (ptr2->item1, lvl + 1);
-      print_lvl (lvl);
+      dump_expr_1 (ptr2->item1, lvl + 1);
+      print_lvl_1 (lvl);
       printf (" %s ", ptr2->comparitor);
-      dump_expr (ptr2->item2, lvl + 1);
+      dump_expr_1 (ptr2->item2, lvl + 1);
       printf (")");
 
     }
@@ -358,7 +359,7 @@ dump_expr (t_expression * expr, int lvl)
  * @param
  */
 void
-print_lvl (int lvl)
+print_lvl_1 (int lvl)
 {
   int a;
   return;

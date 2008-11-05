@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.22 2008-10-14 10:56:49 mikeaubury Exp $
+# $Id: dump_form.c,v 1.23 2008-11-05 14:23:35 mikeaubury Exp $
 #*/
 
 /**
@@ -48,6 +48,7 @@
 int single_file_mode=0;
 #include "global.h"
 #include "common.h"
+#include "dump_form.h"
 
 /*
 =====================================================================
@@ -129,30 +130,30 @@ typedef struct s_join_tables s_join_tables;
 =====================================================================
 */
 
-#define MAXSCREENS 20
-char mscreen[MAXSCREENS][100][100];
-int max_y[MAXSCREENS];
+#define MAXSCREENS_F 20
+char mscreen[MAXSCREENS_F][100][100];
+int max_y[MAXSCREENS_F];
 
-void dump_commands(struct_form *f, FILE *fout, int lvl, struct s_at_block *cmds) ;
-char *get_field_name(struct_form *f, u_expression *field_tag_u, int col_only) ;
-static void dump_metrics (struct_form * f);
-static void dump_fields_desc (struct_form * f);
-static void dump_records (struct_form * f);
+//void dump_commands(struct_form *f, FILE *fout, int lvl, struct s_at_block *cmds) ;
+//char *get_field_name(struct_form *f, u_expression *field_tag_u, int col_only) ;
+//static void dump_metrics (struct_form * f);
+//static void dump_fields_desc (struct_form * f);
+//static void dump_records (struct_form * f);
 static void dump_tables (FILE *fout,struct_form * f);
 //andrej void dump_form_desc (struct_form * f);
-void dump_expr (FILE *fout, t_expression * expr, int lvl);
-void dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl);
-void print_lvl (int lvl);
+//void dump_expr (FILE *fout, t_expression * expr, int lvl);
+//void dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl);
+//void print_lvl (int lvl);
 
 
-char *find_tag_for(struct_form * f, int n) ;
+//char *find_tag_for(struct_form * f, int n) ;
 static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
 
-void print_display_only(struct_form *f, FILE *fout, int s, int lvl);
-void print_validation(struct_form *f, FILE *fout, int t, int s, int ba, int lvl) ;
-void print_control_block(struct_form *f, FILE *fout);
-void dump_attr_lookup (struct_form * f, FILE *fout);
-int split_table_field(char *fullname, char *tablename, char *fieldname);
+//void print_display_only(struct_form *f, FILE *fout, int s, int lvl);
+//void print_validation(struct_form *f, FILE *fout, int t, int s, int ba, int lvl) ;
+//void print_control_block(struct_form *f, FILE *fout);
+//void dump_attr_lookup (struct_form * f, FILE *fout);
+//int split_table_field(char *fullname, char *tablename, char *fieldname);
 
 /*
 =====================================================================
@@ -215,23 +216,23 @@ void
 make_screen (struct_form * f)
 {
   int x, y;
-  int spc;
+  //int spc;
   int screens;
   int a;
-  int fno;
-  int b;
+  //int fno;
+  //int b;
   int fields[1000];
-  int nfields;
+  //int nfields;
 
 for (a=0;a<1000;a++) fields[a]=-1;
-for (a=0;a<MAXSCREENS;a++) max_y[a]=0;
+for (a=0;a<MAXSCREENS_F;a++) max_y[a]=0;
 
   if (f->maxcol > 100 || f->maxline > 100)
     {
       printf ("Too wide or too long\n");
       exit (1);
     }
-  for (screens=0;screens<MAXSCREENS;screens++) {
+  for (screens=0;screens<MAXSCREENS_F;screens++) {
   for (y = 0; y < f->maxline; y++)
     {
       memset (mscreen[screens][y], ' ', f->maxcol);
@@ -398,6 +399,7 @@ char *field_tag=0;
 		}
 	}
     }
+return 0;
 }
 
 char *get_field_name(struct_form *f, u_expression *field_tag_u, int col_only) {
@@ -636,7 +638,7 @@ dump_form_desc (struct_form * f,char *fname)
 
     struct struct_join_tables j;
 
-    int s,t,m,d,c,i,b;
+    int s,t,m,d,i,b;
     int max_table=0;
     i=0;
     j.join_tables_len = 0;
@@ -1062,8 +1064,7 @@ printf("now in query_by_example\n");
     fprintf(fout,"  CASE gv_table_no\n");
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
-	fprintf(fout,"    WHEN %d\t# query table %s\n",
-		t+1, f->tables.tables_val[t]);
+	fprintf(fout,"    WHEN %d\t# query table %s\n", t+1, f->tables.tables_val[t].tabname);
 	int mt = 0;
 	for (d=0; d<f->master_of.master_of_len; d++) {
 	    if (strcmp(f->master_of.master_of_val[d].tab_detail,
@@ -1504,6 +1505,7 @@ printf("now in input_record\n");
 		f->tables.tables_val[t].tabname, s+1);
 	    attr_found = 0; printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
+		int cnt;
 		if (strcmp(f->attributes.attributes_val[a].tabname,
 			       f->tables.tables_val[t].tabname)!=0) continue;
 		int reject_field=0;
@@ -1525,8 +1527,7 @@ printf("now in input_record\n");
 		fprintf(fout,"            gr_%s.%s",
 			f->attributes.attributes_val[a].tabname,
 			f->attributes.attributes_val[a].colname);
-		int cnt;
-		int lookup_printed=0;
+		//int lookup_printed=0;
 		for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
 		    struct s_lookups *p;
 		    int cnt1;
@@ -1631,6 +1632,8 @@ if ((type & DTYPE_MASK)==DTYPE_DECIMAL) return " DECIMAL";
 sprintf(buff," TYPE(%d,%d)",type,n);
 return buff;
 }
+
+#ifdef NOTUSED
 /**
  * Make a text A4GL_dump of the form attributes
  *
@@ -1640,13 +1643,13 @@ static void
 dump_attributes (FILE *fout, struct_form * f)
 {
 int a;
-int b;
 	printf ("\nAttributes %d\n", f->attributes.attributes_len);
 	for (a = 0; a < f->attributes.attributes_len; a++) {
 		printf ("Attribute %d\n", a);
 		dump_attribute(fout, &f->attributes.attributes_val[a],"");
 	}
 }
+#endif
 
 int need_quote(int dtype) {
 if ((dtype&DTYPE_MASK)==DTYPE_CHAR) return 1;
@@ -1655,7 +1658,7 @@ return 0;
 
 char *decode_include(char *s,int dtype) {
 static char buff[200000];
-char smbuff[200];
+//char smbuff[200];
 char sm[2];
 int a;
 bool to_used;
@@ -1778,6 +1781,8 @@ int b;
 		}
 }
 
+
+#ifdef NOTUSED
 /**
  * Make a text A4GL_dump of all text elements from the screen image
  *
@@ -1800,7 +1805,10 @@ dump_metrics (struct_form * f)
 	      f->metrics.metrics_val[a].label);
     }
 }
+#endif
 
+
+#ifdef NOTUSED
 /**
  * Text dumps screen record field information
  *
@@ -1820,7 +1828,10 @@ dump_fields_desc (struct_form * f)
 	}
     }
 }
+#endif
 
+
+#ifdef NOTUSED
 /**
  * Make a text A4GL_dump of the screen record information
  *
@@ -1842,14 +1853,14 @@ dump_records (struct_form * f)
 	}
     }
 }
+#endif
 
 /**
  * Dumps a text representation of tables loaded from the parser
  *
  * @param f A pointer to a form description record
  */
-static void
-dump_tables (FILE *fout,struct_form * f)
+static void dump_tables (FILE *fout,struct_form * f)
 {
   int a;
   fprintf (fout,"tables\n");
@@ -2055,7 +2066,7 @@ print_lvl (int lvl)
 
 /* print display only fields for screen s */
 void print_display_only(struct_form *f, FILE *fout, int s, int lvl) {
-    int a,b,c,d,t;
+    int a,b,c,t;
 printf("now in print_display_only s=%d\n",s);
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
 //printf("\n#c=%d of %d\n",c, f->control_blocks.control_blocks_len);
@@ -2114,6 +2125,10 @@ printf("now in print_display_only s=%d\n",s);
 			a= get_attr_from_field(f, act->u_action_u.cmd_let->field_tag);
 			if (!a) continue;
 			break;
+			default:
+				// Ignore
+				//
+				break;
 		}
 	        if (!screen_has_attribute(f,s, a)) continue;
 //	    dump_expr_instructions (f, fout, act->u_action_u.cmd_let->value,0);
@@ -2127,7 +2142,7 @@ printf("now in print_display_only s=%d\n",s);
 }
 
 void print_control_block(struct_form *f, FILE *fout) {
-  int a,b,c,d,e,m;
+  int a,b,c,d,e;
   for (c=0; c<f->control_blocks.control_blocks_len; c++) {
     fprintf(fout,"c=%d ",c);
     switch (f->control_blocks.control_blocks_val[c].cbtype) {
@@ -2195,7 +2210,7 @@ void print_control_block(struct_form *f, FILE *fout) {
 /* ba = 1 before field, =2 after field =3 after input*/
 void print_validation(struct_form *f, FILE *fout, int t, int s, int beaf, int lvl) {
 if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
-    int a,b,c,d,e,g,h,l;
+    int a,b,c,d,g,l;
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
 	    switch (f->control_blocks.control_blocks_val[c].cbtype) {
 		case E_CB_BEFORE:
@@ -2314,11 +2329,11 @@ fprintf(fout,"#  cb[%d] ba[%d] column[%d] action[%d]\n",c,b,d,g);
 	}
     if (beaf!=2) return;	// only after field validation
     for (a=0; a<f->attributes.attributes_len; a++) {
+	int cnt;
 	if (strcmp(f->attributes.attributes_val[a].tabname,
 		f->tables.tables_val[t].tabname)!=0) continue;
 	if (!screen_has_attribute(f,s, a)) continue;
-	int cnt;
-	int lookup_printed=0;
+	//int lookup_printed=0;
 	for (cnt=0;cnt<f->attributes.attributes_val[a].lookup.lookups.lookups_len;cnt++) {
 	    struct s_lookups *p;
 	    int cnt1;
@@ -2371,7 +2386,7 @@ fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
 }
 
 void dump_attr_lookup(struct_form * f, FILE *fout) {
-  int a, b, c, l, ls;
+  int a, b, c;
   int has_lookups;
     fprintf (fout, "\n");
     fprintf (fout, "# Total Attributes %d\n", f->attributes.attributes_len);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.55 2008-10-17 12:07:43 mikeaubury Exp $
+# $Id: pg8.c,v 1.56 2008-11-05 14:23:35 mikeaubury Exp $
 #*/
 
 
@@ -135,7 +135,7 @@ static struct expr_str_list *A4GL_add_validation_elements_to_expr (struct
 								   char *val);
 
 
-static Oid *Oids (int nbind, struct BINDING *b);	// reserved for future enhancement :-)
+//static Oid *Oids (int nbind, struct BINDING *b);	// reserved for future enhancement :-)
 PGresult *Execute (char *s, int freeit);
 static char *replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type);
 static int inTransaction (void);
@@ -184,7 +184,7 @@ static int loaded=0;
 char versionBuff[200];
 char *ptr;
 
-  int i;
+  //int i;
 
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
@@ -341,7 +341,7 @@ char *ptr;
 	}
 #else
 	{
-	char *ptr;
+	//char *ptr;
       // work it out by trying it..
       res2 = PQexec (current_con, "BEGIN WORK");
       PQclear (res2);
@@ -376,7 +376,7 @@ char *ptr;
 			char buff2[200];
 			int maj,min,rev;
 			int a;
-			int b=0;
+			//int b=0;
   			sprintf(buff2,"%s",ptr+1);
 			ptr=strchr(buff2,' ');
 			if (ptr) {*ptr=0; }
@@ -1130,6 +1130,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
   return;			/* return 0; */
 }
 
+
+#ifdef NDEF
 static Oid *
 Oids (int nbind, struct BINDING *b)
 {
@@ -1182,6 +1184,7 @@ Oids (int nbind, struct BINDING *b)
   return ptr;
 
 }
+#endif
 
 
 
@@ -2021,7 +2024,7 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
 }
 
 
-int
+static int
 conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
 {
   switch (pgtype)
@@ -2758,7 +2761,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 }
 
 
-char *
+static char *
 pgescape_str (char *s,int sl)
 {
   int err;
@@ -2794,8 +2797,8 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
   long bloblen;
 	char *blobptr;
   char buff3[200];
-int a;
-  int nret;
+//int a;
+  //int nret;
 
   if (ni)
     {
@@ -3515,8 +3518,7 @@ int isset=0;
 
 
 
-long
-A4GL_describecolumn (PGresult * res, int colno, int type)
+static long A4GL_describecolumn (PGresult * res, int colno, int type)
 {
   int dtype;
   int prc;

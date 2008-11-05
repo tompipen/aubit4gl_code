@@ -1991,13 +1991,17 @@ expression :
 
 ;
 
+
+/*
 op_expression_list : 
 	| expression_list
 ;
 
+
 expression_list : expression
 	| expression_list COMMA expression
 ;
+*/
 
 single_expression: 
 	MINUS expression { void *x; x=create_int_expr(0); $<expr>$=create_expr_comp_expr(x,$<expr>2,"-"); }

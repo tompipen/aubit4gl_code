@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile_4gl.c,v 1.6 2008-10-13 12:12:52 mikeaubury Exp $
+# $Id: decompile_4gl.c,v 1.7 2008-11-05 14:23:35 mikeaubury Exp $
 #
 */
 
@@ -40,6 +40,7 @@
   */
 
 #include "a4gl_fcompile_int.h"
+#include "dump_form.h"
 
 /*
 =====================================================================

@@ -55,10 +55,10 @@ t_expression *
 create_fcall(char *name, struct local_expr_list *el) ;
 
 int doing_4gl(void );
-void dump_form_desc (struct_form * f,char *fname);
-void dump_global_4gl(void);
-void dump_common_4gl(void);
-void set_single_file_mode(void);
+//void dump_form_desc (struct_form * f,char *fname);
+//void dump_global_4gl(void);
+//void dump_common_4gl(void);
+//void set_single_file_mode(void);
 void new_layout_attribs(void);
 void add_child(struct s_layout *parent, struct s_layout *child);
 void add_bool_layout_attrib(enum FIELD_ATTRIBUTES_BOOL attrib);
