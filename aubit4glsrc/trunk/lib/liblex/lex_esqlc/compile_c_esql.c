@@ -9,6 +9,7 @@
 extern int line_for_cmd;
 extern int tmp_ccnt;
 extern int set_dont_use_indicators;
+int globalcurs=0;
 
 //@ FIXMES : 
 // make sure to check usages of A4GL_find_pointer, because we might not be 
@@ -28,6 +29,7 @@ char * get_ibind_usage_nl (int a, char *context,struct expr_str *var) ; // Just 
 static char * get_obind_usage (int a, char *context);
 static char *get_esql_ident_as_string_for_function_calls(expr_str *ptr,int quote_string);
 int match_variable_usage(variable_usage *u1, variable_usage *u2);
+static char *StaticKWForRecopy(void) ;
 
 #define GET_SQL_VARIABLE_USAGE_STYLE_NORMAL 0
 #define GET_SQL_VARIABLE_USAGE_STYLE_QUERY_PLACEHOLDER 1
@@ -1007,10 +1009,10 @@ char *cname;
   
   if (!A4GL_find_pointer(cname,CURCODE)) {
                 set_yytext(cname);
-		if (!A4GL_isyes(acl_getenv("A4GL_IGNCURSORDEFERR")) ) {
+		if (!globalcurs) {
                 	a4gl_yyerror("Cursor has not been previously defined");
+                	return 0; 
 		}
-                return 0;
   }
 
   return 1;
@@ -1982,7 +1984,7 @@ var_prepname=0;
   printh ("static struct BINDING *acli_nbii_%s=0;\n", cname3);
   printh ("static struct BINDING *acli_nboi_%s=0;\n", cname3);
 
-  printh ("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n", cname3);
+  printh ("\n\n%s void internal_recopy_%s_i_Dir(void) {\n", StaticKWForRecopy(), cname3);
   if (input_bind->list.list_len && has_conversions_g(input_bind,'I')) {
   	printh ("struct BINDING *ibind;\n");
   	printh ("struct BINDING *native_binding_i;\n");
@@ -1996,7 +1998,7 @@ var_prepname=0;
   }
   printh ("}\n");
 
-  printh ("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n", cname3);
+  printh ("\n\n%s void internal_recopy_%s_o_Dir(void) {\n", StaticKWForRecopy(), cname3);
   if (output_bind->list.list_len && has_conversions_g (output_bind,'O')) {
   	printh ("struct BINDING *obind;\n");
   	printh ("struct BINDING *native_binding_o;\n");
@@ -2138,7 +2140,7 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
 
   cname =get_esql_ident_as_string(cmd_data->cursorname);
 
-  if (!check_cursor_defined(cmd_data->cursorname)) {
+  if (!check_cursor_defined(cmd_data->cursorname) ) {
 	return 0;
   }
 
@@ -3422,4 +3424,18 @@ printc("/*******************************************************************/");
 /* This function does nothing for esql/c generation bit is needed for non-esqlc generation  */
 char *lowlevel_chk_sql(char *s) {
 	return s;
+}
+
+
+static char *StaticKWForRecopy(void) {
+
+	if (globalcurs) {
+		return "";
+	}
+
+	return "static ";
+}
+
+void set_global_curs(void) {
+	globalcurs=1;
 }

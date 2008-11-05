@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.74 2008-07-06 11:34:23 mikeaubury Exp $
+# $Id: 4glc.c,v 1.75 2008-11-05 08:07:07 mikeaubury Exp $
 #
 */
 
@@ -119,6 +119,11 @@ main (int argc, char *argv[])
   ptr=acl_getenv_not_set_as_0("NAMESPACE");
   if (ptr!=0) {
 		set_namespace(ptr);
+  }
+
+  if (A4GL_isyes(acl_getenv("GLOBALCURS"))) {
+	// Global cursors need globbing turned off..
+	A4GL_setenv("A4GL_NOSQLCLOBBER","Y",1);
   }
 
   dialect=acl_getenv("A4GL_LEXDIALECT");

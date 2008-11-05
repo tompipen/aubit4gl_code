@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.445 2008-10-30 20:29:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.446 2008-11-05 08:07:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.445 2008-10-30 20:29:41 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.446 2008-11-05 08:07:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -926,6 +926,9 @@ time(&ttime);
      	FPRINTF (hfile, "static char *_module_name=\"%s.4gl\";\n", buff);
     }
   SPRINTF1(cmodname,"%s.4gl",this_module_name);
+  if (A4GL_isyes(acl_getenv("GLOBALCURS"))) {
+		set_global_curs();
+  }
 
 }
 

@@ -1511,3 +1511,7 @@ int sbuffsz;
         return buff;
 }
    
+
+void set_global_curs(void) {
+}
+
