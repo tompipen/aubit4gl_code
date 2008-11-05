@@ -1,5 +1,6 @@
 //#include "a4gl_4glc_int.h"
 #include "a4gl_libaubit4gl.h"
+int A4GL_has_serial_column_marker(char *tabname,char *colname) ;
 
 
 char *fix_insert_expr (int mode);
@@ -19,7 +20,7 @@ extern char current_ins_table[256];
 
 
 
-int A4GL_has_serial_column_marker(char *tabname,char *colname) {
+ int A4GL_has_serial_column_marker(char *tabname,char *colname) {
 	char buff[256];
 	SPRINTF2(buff,"%s.%s",tabname,colname);
 	if (A4GL_has_pointer(buff,TAB_COL_IS_SERIAL)) {
