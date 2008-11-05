@@ -143,7 +143,10 @@
         #define HAVE_TRUNC 0
         #define HAVE_VSNPRINTF 0	
 	#define HAVE_FEATURES_H 0
+
+#ifndef HAVE_IFX_IUS
 	#define HAVE_IFX_IUS 0
+#endif
 	#define HAVE_LIBCURL 0
 	#define HAVE_ECPGGET_PGCONN 0
 	#define HAVE_ECPG_GET_CONNECTION 0
