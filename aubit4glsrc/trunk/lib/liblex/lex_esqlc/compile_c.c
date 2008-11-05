@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.446 2008-11-05 08:07:08 mikeaubury Exp $
+# $Id: compile_c.c,v 1.447 2008-11-05 15:00:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.446 2008-11-05 08:07:08 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.447 2008-11-05 15:00:24 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2746,8 +2746,8 @@ real_print_func_call (t_expr_str * fcall)
 
   if (fcall->expr_type==ET_EXPR_MEMBER_FCALL)  {
       struct s_expr_member_function_call *p;
-      struct expr_str_list *expr;
-      int nargs;
+      //struct expr_str_list *expr;
+      //int nargs;
 	      int a;
 		struct expr_str *vu_e;
 			int nparam=0;
@@ -5937,7 +5937,7 @@ static struct variable *set_get_subscript_as_string_top(struct variable_usage *u
 
 
 
-static int subscript_range_check() {
+static int subscript_range_check(void) {
 if (do_subscript_range_check>=0) return do_subscript_range_check;
 
 if (A4GL_isno(acl_getenv("FGLCRANGECHK"))) {
@@ -5971,9 +5971,9 @@ char smbuff[256];
 		upperbound=sgs_topvar->arr_subscripts.arr_subscripts_val[a];
 		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
 			// We can make the 'long's look a little neater as we can subtract the 1..
-			sprintf(smbuff, "A4GL_bounds_check(%ld,%ld)", u->expr_str_u.expr_long-1,upperbound);
+			sprintf(smbuff, "A4GL_bounds_check(%ld,%ld)", (long)u->expr_str_u.expr_long-1,(long)upperbound);
 		} else {
-			sprintf(smbuff, "(A4GL_bounds_check(%s-1,%ld))", local_expr_as_string(u),upperbound);
+			sprintf(smbuff, "(A4GL_bounds_check(%s-1,%ld))", local_expr_as_string(u),(long)upperbound);
 		}
 	} else {
 		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
@@ -6266,9 +6266,9 @@ return -1;
 void print_push_variable_usage (expr_str *ptr) {
 struct variable_usage *u;
 int substring=0;
-struct variable *v_var;
-char errbuff[255];
-char scope;
+//struct variable *v_var;
+//char errbuff[255];
+//char scope;
 expr_str *substring_start;
 expr_str *substring_end;
 

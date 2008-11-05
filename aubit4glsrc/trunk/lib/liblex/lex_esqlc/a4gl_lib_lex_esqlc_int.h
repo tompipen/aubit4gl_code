@@ -35,3 +35,6 @@ void remove_field_subscripts_from_field_list(struct fh_field_list *flist);
 char * get_sql_variable_usage_internal (variable_usage * u, char dir) ;
 char *lowlevel_chk_sql(char *sorig) ;
 void set_global_curs(void);
+
+void
+print_pop_usage_prompt (expr_str * v);
