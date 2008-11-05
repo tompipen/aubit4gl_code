@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.105 2008-10-23 14:57:22 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.106 2008-11-05 14:44:49 mikeaubury Exp $
 #
 */
 
@@ -42,11 +42,13 @@
 =====================================================================
 */
 
-#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
-#include <ctype.h>
-
+#define _XOPEN_SOURCE
 #include <wchar.h>		/* utf8 */
+
+#define EXTERN_CONVFMTS
+
+#include <ctype.h>
 
 #if HAVE_STRINGS_H
 #include <strings.h>
@@ -63,7 +65,7 @@
 M_APM *m_increment = 0;
 int nincrement = 0;
 static void add_increment (void);
-void acl_apm_set_string (M_APM m1, char *s, int convert);
+//void acl_apm_set_string (M_APM m1, char *s, int convert);
 /*
 =====================================================================
                     Variables definitions

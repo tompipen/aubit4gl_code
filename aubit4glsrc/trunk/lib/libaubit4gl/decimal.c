@@ -658,11 +658,11 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
 #endif
 
 
-  strcpy (&dec->dec_data[2], buff);
+  strcpy ((char *)&dec->dec_data[2], buff);
   tmpbuf[0] = a4gl_convfmts.posix_decfmt.decsep;
   tmpbuf[1] = 0;
-  strcat (&dec->dec_data[2], tmpbuf);
-  strcat (&dec->dec_data[2], tail);
+  strcat ((char *)&dec->dec_data[2], tmpbuf);
+  strcat ((char *)&dec->dec_data[2], tail);
 
   //while  (strlen(&dec->dec_data[2])!=digits+1) { strcat(&dec->dec_data[2],"0"); }
 
@@ -704,7 +704,7 @@ A4GL_dec_to_str (fgldecimal * dec, int size)
 #ifdef DEBUG
   A4GL_debug ("XYXY dec to str : %s", &dec->dec_data[2]);
 #endif
-  ptr = &dec->dec_data[2];
+  ptr = (char *)&dec->dec_data[2];
   strcat (buff, ptr);
   l = strlen (buff);
   for (a = has_neg; a < l; a++)
@@ -770,8 +770,7 @@ A4GL_dec_to_str (fgldecimal * dec, int size)
 
 void A4GL_push_dec_from_apm (M_APM tmp);
 
-void
-acl_apm_set_string (M_APM m1, char *s, int convert)
+void acl_apm_set_string (M_APM m1, char *s, int convert)
 {
   char buff[2000];
   strcpy (buff, s);

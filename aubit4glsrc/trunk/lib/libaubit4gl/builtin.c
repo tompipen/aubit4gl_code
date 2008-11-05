@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.131 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: builtin.c,v 1.132 2008-11-05 14:44:48 mikeaubury Exp $
 #
 */
 
@@ -743,7 +743,7 @@ int
 aclfgl_err_get (int n)
 {
   int a;
-  static char buff[200];
+  //static char buff[200];
   char *ptr;
   a = A4GL_pop_int ();
   /* A4GLSQL_set_status(-3001,0); */

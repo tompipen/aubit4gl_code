@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.215 2008-11-04 17:58:59 mikeaubury Exp $
+# $Id: stack.c,v 1.216 2008-11-05 14:44:49 mikeaubury Exp $
 #
 */
 
@@ -4173,8 +4173,9 @@ void A4GL_size_decimal_string(char *s,int *dig, int *dec) {
 void A4GL_convert_ui_char_on_stack_decimal_sep(void ) {
 char *ptr;
 char *orig_ptr;
-char *p2;
-char *p;
+
+//char *p2;
+//char *p;
 int a;
 int b;
 fgldecimal dec;

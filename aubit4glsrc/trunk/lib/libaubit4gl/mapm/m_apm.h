@@ -21,6 +21,13 @@
  *      This is the header file that the user will include.
  *
  *      $Log: not supported by cvs2svn $
+ *      Revision 1.1  2007/07/26 12:04:27  mikeaubury
+ *      fix some issues with decimals
+ *      fix issue with freeing sql memory
+ *      fix REQUIRED on input and input array (set INPUTREQUIREDTYPE=INPUT)
+ *      fix character erase in fields
+ *      Add ALWAYSOUTPUTREPORT to force a blank page from a report
+ *
  *      Revision 1.40  2004/05/31 22:06:02  mike
  *      add % operator to C++ wrapper
  *
@@ -145,7 +152,7 @@
  *      Revision 1.1  1999/05/12 20:48:25  mike
  *      Initial revision
  *
- *      $Id: m_apm.h,v 1.1 2007-07-26 12:04:27 mikeaubury Exp $
+ *      $Id: m_apm.h,v 1.2 2008-11-05 14:44:49 mikeaubury Exp $
  */
 
 #ifndef M__APM__INCLUDED
@@ -174,6 +181,7 @@ typedef struct  {
 
 typedef M_APM_struct *M_APM;
 
+void acl_apm_set_string (M_APM m1, char *s, int convert);
 
 #define MAPM_LIB_VERSION \
     "MAPM Library Version 4.9.2  Copyright (C) 1999-2004, Michael C. Ring"
@@ -649,6 +657,7 @@ inline MAPM gcd(const MAPM &u,const MAPM &v)
 		{return u.gcd(v);}
 inline MAPM lcm(const MAPM &u,const MAPM &v)
 		{return u.lcm(v);}
+
 #endif
 #endif
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.141 2008-11-04 21:59:20 mikeaubury Exp $
+# $Id: ops.c,v 1.142 2008-11-05 14:44:49 mikeaubury Exp $
 #
 */
 
@@ -6562,7 +6562,7 @@ char *
 A4GL_display_dtime (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type)
 {
 static char p[100];
-struct_dtime dm;
+//struct_dtime dm;
 struct_dtime *dm2;
 dm2=ptr;
   if (display_type==DISPLAY_TYPE_DISPLAY_TO)  {

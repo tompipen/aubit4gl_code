@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.52 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: pointers.c,v 1.53 2008-11-05 14:44:49 mikeaubury Exp $
 #
 */
 
@@ -187,10 +187,10 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
 {
   void *a;
   struct s_node *buff;
-  struct s_node *buff_add;
-  struct s_node buff2;
+  //struct s_node *buff_add;
+  //struct s_node buff2;
   struct s_node *anode;
-  char ptrchar[800];
+  //char ptrchar[800];
   A4GL_trim (orig_name);
   //A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
   buff = (struct s_node *) malloc (sizeof (struct s_node));
@@ -303,11 +303,11 @@ void
 A4GL_del_pointer (char *pname, char t)
 {
   void *a1;
-  void *a;
+  //void *a;
   struct s_node *buff;
-  struct s_node buff2;
+  //struct s_node buff2;
   struct s_node *anode;
-  char ptrchar[800];
+  //char ptrchar[800];
   buff = (struct s_node *) acl_malloc2 (sizeof (struct s_node));
   buff->name[0] = t;
   buff->name[1] = 0;

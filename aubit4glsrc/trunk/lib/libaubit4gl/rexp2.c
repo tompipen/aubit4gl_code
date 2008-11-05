@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.56 2008-10-23 14:57:22 mikeaubury Exp $
+# $Id: rexp2.c,v 1.57 2008-11-05 14:44:49 mikeaubury Exp $
 #
 */
 
@@ -626,9 +626,9 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	  if (A4GL_is_construct_op (constr_bits[zz], 0, NULL) == 0
 	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0, NULL) != OR))
 	    {
-	      int n;
+	      //int n;
 	      int parts[10];
-	      char buff[2000];
+	      //char buff[2000];
 	      if (!A4GL_valid_int (constr_bits[zz], parts, 0))
 		{
 		  A4GL_debug ("CINTERVAL Returns false for %s or its null", constr_bits[zz]);

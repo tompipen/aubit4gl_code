@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.31 2008-10-31 14:41:12 mikeaubury Exp $
+# $Id: expr.c,v 1.32 2008-11-05 14:44:49 mikeaubury Exp $
 #
 */
 
@@ -1053,7 +1053,7 @@ A4GL_new_expr_list ()
 struct expr_str *
 A4GL_expr_exists_sq (int invert, struct s_select *s)
 {
-  int l;
+  //int l;
   struct expr_str *ptr;
   if (invert)
     {
@@ -1102,7 +1102,7 @@ struct expr_str *
 A4GL_expr_in_sq (struct expr_str *expr, int invert, struct s_select *s)
 {
   struct expr_str *ptr;
-  long l;
+  //long l;
   if (invert)
     {
       ptr = A4GL_new_expr_simple (ET_EXPR_OP_IN_SUBQUERY);
