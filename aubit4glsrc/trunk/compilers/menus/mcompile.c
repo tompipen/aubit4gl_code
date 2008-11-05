@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.29 2008-07-06 11:34:27 mikeaubury Exp $
+# $Id: mcompile.c,v 1.30 2008-11-05 18:44:23 mikeaubury Exp $
 #*/
 
 /**
@@ -77,7 +77,7 @@ menu_option_item *new_option (menu * m);
 =====================================================================
 */
 
-extern int as_c;
+//extern int as_c;
 
 #ifdef YYDEBUG
 extern int yydebug;
@@ -136,12 +136,12 @@ main (int argc, char *argv[])
 
       if (strcmp (argv[1], "-c") == 0)
 	{
-	  as_c = 1;		/* compile menu to C code - not a standalone resource */
+	  A4GL_set_as_c ( 1);		/* compile menu to C code - not a standalone resource */
 	  strcpy (c, argv[2]);
 	}
       else
 	{
-	  as_c = 0;
+	  A4GL_set_as_c ( 0);
 	  strcpy (c, argv[1]);
 	}
 

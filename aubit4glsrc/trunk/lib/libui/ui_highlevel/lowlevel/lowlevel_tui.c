@@ -25,6 +25,8 @@ int scr_mode=0;
 //void A4GL_LL_enable_menu (void);
 //void A4GL_LL_disable_menu (void);
 
+
+
 static void A4GL_dobeep(void) ;
 /*
 
@@ -47,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.115 2008-11-04 17:58:59 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.116 2008-11-05 18:44:23 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -90,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.115 2008-11-04 17:58:59 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.116 2008-11-05 18:44:23 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -108,6 +110,7 @@ void *last_prompt_win = 0;
 long last_prompt_mode = 0;
 
 
+FORM *construct_form; // Just for testing....
 
 
 
@@ -1236,7 +1239,7 @@ A4GL_LL_make_label (int frow, int fcol, char *label)
   if (f == 0)
     {
       A4GL_exitwith ("Unable to create field");
-      return 0;
+      return NULL;
     }
 
   if (l == 2 && label[0] == '\n')
@@ -1650,9 +1653,6 @@ void
 A4GL_LL_set_field_fore (void *field, int attr)
 {
 	A4GL_debug("A4GL_LL_set_field_fore : %p %x (%s)\n",field,attr,A4GL_LL_field_buffer(field,0));
-	//if (strcmp(A4GL_LL_field_buffer(field,0),"       0")==0 && attr==0x800) {
-		//A4GL_pause_execution();
-	//}
   A4GL_form_set_field_fore (field, attr);
 }
 
@@ -1852,7 +1852,6 @@ A4GL_LL_int_form_driver (void *mform, int mode)
     {
       A4GL_debug ("FX1 Should be called with AUBIT_REQ not REQ %x\n", mode);
     }
-
   nmode = -1;
 
   switch (mode)
@@ -1901,6 +1900,11 @@ A4GL_LL_int_form_driver (void *mform, int mode)
     }
   if (mode == -1)
     return 0;
+
+
+  A4GL_debug("form driver %p %d %p %d", mform,mode,A4GL_form_current_field(mform), A4GL_LL_get_carat(mform));
+
+
   a = A4GL_form_form_driver (mform, nmode);
   A4GL_debug ("int_form_Driver %p %x = %d", mform, nmode, a);
   return a;

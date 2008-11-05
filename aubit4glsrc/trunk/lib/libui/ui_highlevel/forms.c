@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.46 2008-06-21 09:51:44 mikeaubury Exp $";
+  "$Id: forms.c,v 1.47 2008-11-05 18:44:23 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -273,7 +273,7 @@ UILIB_A4GL_disp_form (char *name, int attr)
   A4GL_LL_screen_update ();
 
   SPRINTF1 (buff, "%p", f);
-  A4GL_add_pointer (buff, ATTRIBUTE, (void *) attr);
+  A4GL_add_pointer (buff, ATTRIBUTE, (void *) ((long)attr));
   f->form_details.border = UILIB_A4GL_iscurrborder ();
   f->form_details.insmode = 0;
 
@@ -1021,7 +1021,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
       f->form_details.border = UILIB_A4GL_iscurrborder ();
       f->form_details.insmode = 0;
       SPRINTF1 (buff, "%p", f);
-      A4GL_add_pointer (buff, ATTRIBUTE, (void *) attr);
+      A4GL_add_pointer (buff, ATTRIBUTE, (void *) ((long)attr));
       A4GL_clr_form (0);
       A4GL_LL_screen_update ();
       return w;
@@ -1364,7 +1364,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
   A4GL_LL_set_bkg (win, attrib);
 
 
-  A4GL_add_pointer (name, ATTRIBUTE, (void *) attrib);
+  A4GL_add_pointer (name, ATTRIBUTE, (void *) ((long)attrib));
 
 
   for (a = 0; a < MAXWIN; a++)

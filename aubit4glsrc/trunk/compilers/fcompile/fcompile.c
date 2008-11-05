@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.65 2008-09-29 15:37:25 mikeaubury Exp $
+# $Id: fcompile.c,v 1.66 2008-11-05 18:44:23 mikeaubury Exp $
 #*/
 
 /**
@@ -50,7 +50,7 @@
 =====================================================================
 */
 
-extern int as_c;		/* defined in libaubit4gl */
+//extern int as_c;		/* defined in libaubit4gl */
 //int as_c=1;
 
 //#ifdef YYDEBUG
@@ -144,7 +144,7 @@ main (int argc, char *argv[])
   //A4GL_build_user_resources ();
   strcpy (d, "");
 
-  as_c = 0;
+  A4GL_set_as_c (0);
   if (A4GL_isyes(acl_getenv("FCOMPILE_SILENT"))) {
 	  silent=1;
   }
@@ -186,7 +186,7 @@ main (int argc, char *argv[])
       if (strcmp (argv[cnt], "-c") == 0)
       // compile to C, not to compiled form format
 	{
-	  as_c = 1;
+	  A4GL_set_as_c ( 1);
 	  continue;
 	}
 

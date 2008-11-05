@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.40 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.41 2008-11-05 18:44:23 mikeaubury Exp $
 #*/
 
 /**
@@ -662,5 +662,17 @@ A4GLPacker_A4GL_can_pack_all (char *name)
   return 0;
 }
 
+int A4GLPacker_A4GL_unpack_all(char* name,void* ptr,char* fname) {
+return 0;
+}
+
+int A4GLPacker_A4GL_pack_all(char* name,void* ptr,char* fname) {
+	return 0;
+}
+
+
+int A4GLPacker_PACKER_initlib() {
+	return 1;
+}
 
 /* ====================================== EOF ============================ */

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.38 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: memfile.c,v 1.39 2008-11-05 18:44:23 mikeaubury Exp $
 #
 */
 
@@ -129,7 +129,8 @@ A4GL_memdup (void *ptr, int size)
   A4GL_assertion (ptr == 0, "No pointer to copy");
   A4GL_assertion (size <= 0, "Invalid side for memdup");
 
-  A4GL_debug ("A4GL_memdup - ptr=%p size=%p", ptr, size);
+  A4GL_debug ("A4GL_memdup - ptr=%p ", ptr);
+  A4GL_debug ("A4GL_memdup - size=%p",  size);
   p2 = acl_malloc2 (size);
   memcpy (p2, ptr, size);
   A4GL_debug ("Done");

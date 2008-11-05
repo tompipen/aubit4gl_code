@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.140 2008-11-04 23:19:02 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.141 2008-11-05 18:44:23 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1286,7 +1286,7 @@ A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 
 
 	  formdets->fileform->metrics.metrics_val[metric_no].dlm1 =
-	    (int) A4GL_LL_make_label (formdets->fileform->metrics.
+	    (long) A4GL_LL_make_label (formdets->fileform->metrics.
 				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
 				      metrics_val[metric_no].x - 1,
@@ -1300,7 +1300,7 @@ A4GL_assertion(cnt>=MAX_FORM_FIELDS,"Ran out of form_fields...");
 
 
 	  formdets->fileform->metrics.metrics_val[metric_no].dlm2 =
-	    (int) A4GL_LL_make_label (formdets->fileform->metrics.
+	    (long) A4GL_LL_make_label (formdets->fileform->metrics.
 				      metrics_val[metric_no].y,
 				      formdets->fileform->metrics.
 				      metrics_val[metric_no].x +
@@ -4104,7 +4104,7 @@ A4GL_ll_set_field_opts (void *f, int l)
   // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
   if ((int)A4GL_has_pointer (buff, FIELDOPTS))
     {
-      last = (int) A4GL_find_pointer (buff, FIELDOPTS);
+      last = (long) A4GL_find_pointer (buff, FIELDOPTS);
       // has pointer won't work with 0 - so we'll use -9997 to mean 0... 
       if (last == -9997)
 	{
@@ -4151,12 +4151,12 @@ A4GL_ll_set_field_opts (void *f, int l)
       if (l != 0)
 	{
 	  A4GL_debug ("Adding pointer to %d", l);
-	  A4GL_add_pointer (buff, FIELDOPTS, (void *) l);
+	  A4GL_add_pointer (buff, FIELDOPTS, (void *) ((long)l));
 	}
       else
 	{
 	  A4GL_debug ("Adding pointer to -9997 because we cant store 0");
-	  A4GL_add_pointer (buff, FIELDOPTS, (void *) -9997);
+	  A4GL_add_pointer (buff, FIELDOPTS, (void *) ((long)-9997));
 	}
 
       // We'll mark this as OK - so if we grep for A4GL_LL_set_field_opts - we'll know this is ok...
@@ -4223,7 +4223,7 @@ int A4GL_ll_field_opts_i (void *f)
 
   if (A4GL_has_pointer (buff, FIELDOPTS))
     {
-      last = (int) A4GL_find_pointer (buff, FIELDOPTS);
+      last = (long) A4GL_find_pointer (buff, FIELDOPTS);
       if (last == -9997)
 	{
 	  last = 0;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.63 2008-10-20 11:31:16 mikeaubury Exp $
+# $Id: debug.c,v 1.64 2008-11-05 18:44:23 mikeaubury Exp $
 #
 */
 
@@ -137,6 +137,7 @@ open_debugfile (void)
 void
 A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func, char *fmt, ...)
 {
+	
   if (nodebug == DEBUG_NOTREQUIRED)
     {
       return;

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2007-06-19 07:54:06 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2008-11-05 18:44:23 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -203,8 +203,9 @@ all: a4gl_API_lowlevel.h ${ALL}
 #Standard Curses based plug-in
 #${PLUGINDIR}/libUI_HL_TUI${SO_EXT}: ${PLUGINDIR}/libUI_HL_TUI${SO_EXT}
 ${PLUGINDIR}/libUI_HL_TUI${SO_EXT}:  $(OBJS) ${OBJS2} 
-	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $(OBJS) ${OBJS2} \
-		${LINKLIBS} ${CURSES_LIB_NAME} 
+	${LD} ${SO_LDFLAGS}  -L/tmp/ncurses-5.7/lib -o $@ $(OBJS) ${OBJS2} \
+		${LINKLIBS}  -lform_g -lpanel_g -lncurses_g
+
 
 TUIw: ${PLUGINDIR}/libUI_HL_TUIw${SO_EXT}
 

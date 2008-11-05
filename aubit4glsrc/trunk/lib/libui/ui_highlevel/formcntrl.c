@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.70 2008-10-17 16:56:17 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.71 2008-11-05 18:44:23 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.70 2008-10-17 16:56:17 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.71 2008-11-05 18:44:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -220,7 +220,7 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
 static void
 A4GL_newMovement (struct s_screenio *sio, int attrib)
 {
-  struct s_movement *ptr;
+  struct s_movement *ptr=0;
   void *last_field = 0;
   void *next_field = 0;
   struct struct_scr_field *f;
@@ -266,6 +266,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   ptr = acl_malloc2 (sizeof (struct s_movement));
   ptr->scr_line = -1;		// Not used for a normal input/construct
   ptr->arr_line = -1;		// Not used for a normal input/construct
+A4GL_debug("Setting attrib to %d\n",attrib);
   ptr->attrib_no = attrib;
 
   last_field = sio->currform->currentfield;
@@ -2320,7 +2321,7 @@ A4GL_set_curr_infield (long a)
 }
 
 
-int
+long
 A4GL_get_curr_infield (void)
 {
   return inp_current_field;
@@ -2485,7 +2486,12 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt, struct struct
     case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
-      A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_PREV);
+	if (A4GL_LL_get_carat(f)) {
+			// This seems to cause problems with 64Bit 
+			// systems if the cursor is at the beginning of the
+			// field...
+      			A4GL_LL_int_form_driver (f, AUBIT_REQ_DEL_PREV);
+	}
       break;
 
     case 24:
@@ -2519,7 +2525,9 @@ A4GL_local_get_curr_window_attr (void)
   if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
     {
       int a;
-      a = (int) A4GL_find_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE);
+	long z;
+      z = (long) A4GL_find_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE); 
+	a=z;
       A4GL_debug ("30 Current window has an attribute %d", a);
       return a;
     }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.343 2008-11-05 14:56:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.344 2008-11-05 18:44:23 mikeaubury Exp $
 #
 */
 
@@ -2837,6 +2837,12 @@ int A4GL_is_event_close (void *event);
 void A4GL_push_reference (void *x, int l);
 int aclfgl_aclfgl_walk_pointers (int n);
 int aclfgl_aclfgl_trim_nl(int n);
+struct struct_form *A4GL_get_the_form_ptr(void) ;
+void A4GL_set_fld(void *f) ;
+struct struct_scr_field *A4GL_get_fld(void) ;
+void A4GL_set_as_c(int n) ;
+int A4GL_get_as_c(void) ;
+
 
 
 

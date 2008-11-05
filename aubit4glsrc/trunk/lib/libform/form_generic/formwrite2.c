@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.41 2008-11-03 11:44:07 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.42 2008-11-05 18:44:23 mikeaubury Exp $
 #*/
 
 /**
@@ -51,7 +51,7 @@
 =====================================================================
 */
 
-extern int as_c;
+//extern int as_c;
 int cmaxcol = 0;
 int cmaxline = 0;
 int maxcol;
@@ -61,13 +61,15 @@ struct struct_screen_record *curr_rec;
 char buff_xdr[30000];
 extern char *outputfilename;
 
-
+/*
 #ifndef SIMPLIFIED
 dll_import struct struct_form the_form;
 #else
 extern struct struct_form the_form;
 #endif
-extern struct struct_scr_field *fld;
+*/
+
+//extern struct struct_scr_field *fld;
 static int isFormErr=0;
 
 
@@ -115,25 +117,31 @@ static void real_add_bool_attr (struct struct_scr_field *f, int type);
 static void
 new_attribute (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
+
+
   A4GL_debug ("new_attribute\n");
-  the_form.attributes.attributes_len++;
-  the_form.attributes.attributes_val =
-    realloc (the_form.attributes.attributes_val,
-	     the_form.attributes.attributes_len *
+
+
+  the_form_ptr->attributes.attributes_len++;
+  the_form_ptr->attributes.attributes_val =
+    realloc (the_form_ptr->attributes.attributes_val,
+	     the_form_ptr->attributes.attributes_len *
 	     sizeof (struct struct_scr_field));
 
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len -
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len -
 				     1].str_attribs.str_attribs_len = 0;
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len -
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len -
 				     1].str_attribs.str_attribs_val = 0;
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len -
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len -
 				     1].bool_attribs.bool_attribs_len = 0;
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len -
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len -
 				     1].bool_attribs.bool_attribs_val = 0;
 
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].general_ptr=0;
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].do_reverse=0;
-  the_form.attributes.attributes_val[the_form.attributes.attributes_len - 1].flags=0;
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len - 1].general_ptr=0;
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len - 1].do_reverse=0;
+  the_form_ptr->attributes.attributes_val[the_form_ptr->attributes.attributes_len - 1].flags=0;
 }
 
 
@@ -148,16 +156,18 @@ void
 A4GLFORM_A4GL_init_fld (void)
 {
   int cnt;
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("init_fld\n");
   new_attribute ();
 
-  cnt = the_form.attributes.attributes_len - 1;
+  cnt = the_form_ptr->attributes.attributes_len - 1;
 
-#define xxfield the_form.attributes.attributes_val[cnt]
+#define xxfield the_form_ptr->attributes.attributes_val[cnt]
 
   /*
-     the_form.fields.fields_len=0;
-     the_form.fields.fields_val=0;
+     the_form_ptr->fields.fields_len=0;
+     the_form_ptr->fields.fields_val=0;
    */
 
   xxfield.bool_attribs.bool_attribs_len = 0;
@@ -177,7 +187,7 @@ A4GLFORM_A4GL_init_fld (void)
   xxfield.dtype_size = 0;
   xxfield.lookup.lookups.lookups_len = 0;
   xxfield.lookup.lookups.lookups_val = 0;
-  fld = &xxfield;
+  A4GL_set_fld (&xxfield);
   A4GL_debug ("done init_fld\n");
 }
 
@@ -191,11 +201,13 @@ static char *
 chk_alias (char *s)
 {
   int a;
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("chk_alias\n");
-  for (a = 0; a < the_form.tables.tables_len; a++)
+  for (a = 0; a < the_form_ptr->tables.tables_len; a++)
     {
-      if (strcasecmp (the_form.tables.tables_val[a].alias, s) == 0)
-	return the_form.tables.tables_val[a].tabname;
+      if (strcasecmp (the_form_ptr->tables.tables_val[a].alias, s) == 0)
+	return the_form_ptr->tables.tables_val[a].tabname;
     }
   return s;
 }
@@ -210,14 +222,16 @@ chk_alias (char *s)
 int
 A4GLFORM_A4GL_find_field (char *s)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int a;
   A4GL_debug ("Looking for tag '%s' in %d fields\n", s,
-	 the_form.fields.fields_len);
+	 the_form_ptr->fields.fields_len);
 
-  for (a = 0; a < the_form.fields.fields_len; a++)
+  for (a = 0; a < the_form_ptr->fields.fields_len; a++)
     {
-      A4GL_debug ("%s %s", the_form.fields.fields_val[a].tag, s);
-      if (strcasecmp (the_form.fields.fields_val[a].tag, s) == 0)
+      A4GL_debug ("%s %s", the_form_ptr->fields.fields_val[a].tag, s);
+      if (strcasecmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
 	{
 	  A4GL_debug ("Found it @ %d\n", a);
 	  return a;
@@ -264,19 +278,21 @@ char buff[256];
 static int
 new_records (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int cnt;
   A4GL_debug ("new_records\n");
-  the_form.records.records_len++;
-  cnt = the_form.records.records_len;
+  the_form_ptr->records.records_len++;
+  cnt = the_form_ptr->records.records_len;
 
-  the_form.records.records_val = realloc (the_form.records.records_val,
-					  the_form.records.records_len *
+  the_form_ptr->records.records_val = realloc (the_form_ptr->records.records_val,
+					  the_form_ptr->records.records_len *
 					  sizeof (struct
 						  struct_screen_record));
-  the_form.records.records_val[cnt - 1].attribs.attribs_val =
+  the_form_ptr->records.records_val[cnt - 1].attribs.attribs_val =
     acl_malloc2 (sizeof (int) * 10);
-  the_form.records.records_val[cnt - 1].attribs.attribs_len = 0;
-  return the_form.records.records_len - 1;
+  the_form_ptr->records.records_val[cnt - 1].attribs.attribs_len = 0;
+  return the_form_ptr->records.records_len - 1;
 }
 
 /**
@@ -285,9 +301,11 @@ new_records (void)
 void
 A4GLFORM_A4GL_add_srec (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("add_srec\n");
   new_records ();
-  curr_rec = &the_form.records.records_val[the_form.records.records_len - 1];
+  curr_rec = &the_form_ptr->records.records_val[the_form_ptr->records.records_len - 1];
   curr_rec->dim = 0;
   curr_rec->attribs.attribs_val = acl_malloc2 (sizeof (int) * 1000);
   curr_rec->attribs.attribs_len = 0;
@@ -315,14 +333,16 @@ A4GLFORM_A4GL_set_dim_srec (char *s, int a)
 static void
 add_srec_direct (char *tab, int a)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int z;
   A4GL_make_downshift (tab);
   A4GL_debug ("add_srec_direct\n");
-  for (z = 0; z < the_form.records.records_len; z++)
+  for (z = 0; z < the_form_ptr->records.records_len; z++)
     {
-      if (strcasecmp (the_form.records.records_val[z].name, tab) == 0)
+      if (strcasecmp (the_form_ptr->records.records_val[z].name, tab) == 0)
 	{
-	  curr_rec = &the_form.records.records_val[z];
+	  curr_rec = &the_form_ptr->records.records_val[z];
 	  curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = a;
 	  return;
 	}
@@ -359,8 +379,10 @@ A4GLFORM_A4GL_set_field (char *s, void *f)
 static void
 real_set_field (char *s, struct struct_scr_field *f)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int a;
-  int mno;
+  //int mno;
   char *ptr;
 
   A4GL_debug ("set_field\n");
@@ -375,16 +397,16 @@ real_set_field (char *s, struct struct_scr_field *f)
     }
 
 
-  for (a = 0; a < the_form.attributes.attributes_len - 1; a++)
+  for (a = 0; a < the_form_ptr->attributes.attributes_len - 1; a++)
     {
       if (strcasecmp
-	  (f->tabname, the_form.attributes.attributes_val[a].tabname) == 0
+	  (f->tabname, the_form_ptr->attributes.attributes_val[a].tabname) == 0
 	  && strcasecmp (f->colname,
-			 the_form.attributes.attributes_val[a].colname) == 0
+			 the_form_ptr->attributes.attributes_val[a].colname) == 0
 	  && f->subscripts[0] ==
-	  the_form.attributes.attributes_val[a].subscripts[0]
+	  the_form_ptr->attributes.attributes_val[a].subscripts[0]
 	  && f->subscripts[0] ==
-	  the_form.attributes.attributes_val[a].subscripts[1])
+	  the_form_ptr->attributes.attributes_val[a].subscripts[1])
 	{
 	  A4GL_error_with ("Column %s %s has already been defined\n", f->tabname, f->colname);
 	}
@@ -409,11 +431,11 @@ real_set_field (char *s, struct struct_scr_field *f)
   if (A4GL_has_str_attribute (f, FA_S_FORMAT)) {
 		char *fmt;
 		fmt=A4GL_get_str_attribute(f, FA_S_FORMAT);
-  	for(a=0;a<the_form.fields.fields_val[f->field_no].metric.metric_len;a++) {
+  	for(a=0;a<the_form_ptr->fields.fields_val[f->field_no].metric.metric_len;a++) {
 		int w;
 		int mno;
-  		mno=the_form.fields.fields_val[f->field_no].metric.metric_val[0];
-		w=the_form.metrics.metrics_val[mno].w;
+  		mno=the_form_ptr->fields.fields_val[f->field_no].metric.metric_val[0];
+		w=the_form_ptr->metrics.metrics_val[mno].w;
 		if (strlen(fmt)!=w) {
 			if (A4GL_isyes(acl_getenv("IGNOREFMTERR"))) ;
                         else {
@@ -423,7 +445,7 @@ real_set_field (char *s, struct struct_scr_field *f)
   }
   }
 
-  add_srec_direct (f->tabname, the_form.attributes.attributes_len - 1);
+  add_srec_direct (f->tabname, the_form_ptr->attributes.attributes_len - 1);
 }
 
 /**
@@ -443,27 +465,29 @@ real_set_field (char *s, struct struct_scr_field *f)
 static int
 new_metric (int x, int y, int wid, int scr, int delim, char *label)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("new_metric\n");
-  the_form.metrics.metrics_len++;
-  the_form.metrics.metrics_val = realloc (the_form.metrics.metrics_val,
-					  the_form.metrics.metrics_len *
+  the_form_ptr->metrics.metrics_len++;
+  the_form_ptr->metrics.metrics_val = realloc (the_form_ptr->metrics.metrics_val,
+					  the_form_ptr->metrics.metrics_len *
 					  sizeof (struct struct_metrics));
 
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].dlm1 = 0;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].dlm2 = 0;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].field = 0;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].pos_code = 0;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].dlm1 = 0;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].dlm2 = 0;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].field = 0;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].pos_code = 0;
 
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].x = x - 1;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].y = y - 1;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].w = wid;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].h =1;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].scr = scr;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].delim_code =
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].x = x - 1;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].y = y - 1;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].w = wid;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].h =1;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].scr = scr;
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].delim_code =
     delim;
-  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].label =
+  the_form_ptr->metrics.metrics_val[the_form_ptr->metrics.metrics_len - 1].label =
     strdup (label);
-  return the_form.metrics.metrics_len - 1;
+  return the_form_ptr->metrics.metrics_len - 1;
 }
 
 
@@ -476,16 +500,18 @@ new_metric (int x, int y, int wid, int scr, int delim, char *label)
 static int
 add_new_field (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("add_new_field\n");
-  the_form.fields.fields_len++;
-  the_form.fields.fields_val = realloc (the_form.fields.fields_val,
-					the_form.fields.fields_len *
+  the_form_ptr->fields.fields_len++;
+  the_form_ptr->fields.fields_val = realloc (the_form_ptr->fields.fields_val,
+					the_form_ptr->fields.fields_len *
 					sizeof (struct struct_form_field));
-  the_form.fields.fields_val[the_form.fields.fields_len -
+  the_form_ptr->fields.fields_val[the_form_ptr->fields.fields_len -
 			     1].metric.metric_val = 0;
-  the_form.fields.fields_val[the_form.fields.fields_len -
+  the_form_ptr->fields.fields_val[the_form_ptr->fields.fields_len -
 			     1].metric.metric_len = 0;
-  return the_form.fields.fields_len - 1;
+  return the_form_ptr->fields.fields_len - 1;
 }
 
 /**
@@ -499,16 +525,18 @@ add_new_field (void)
 static int
 new_form_metric (int cnt)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("new form metric\n");
   if (cnt == -1)
-    cnt = the_form.fields.fields_len - 1;
+    cnt = the_form_ptr->fields.fields_len - 1;
 
-  the_form.fields.fields_val[cnt].metric.metric_len++;
-  the_form.fields.fields_val[cnt].metric.metric_val =
-    realloc (the_form.fields.fields_val[cnt].metric.metric_val,
-	     the_form.fields.fields_val[cnt].metric.metric_len *
+  the_form_ptr->fields.fields_val[cnt].metric.metric_len++;
+  the_form_ptr->fields.fields_val[cnt].metric.metric_val =
+    realloc (the_form_ptr->fields.fields_val[cnt].metric.metric_val,
+	     the_form_ptr->fields.fields_val[cnt].metric.metric_len *
 	     sizeof (int));
-  return the_form.fields.fields_val[cnt].metric.metric_len - 1;
+  return the_form_ptr->fields.fields_val[cnt].metric.metric_len - 1;
 }
 
 
@@ -530,49 +558,51 @@ new_form_metric (int cnt)
 int
 A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, char *label)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int a;
   int f;
   int xx, yy;
   char *ptr;
-  a = the_form.metrics.metrics_len - 1;
+  a = the_form_ptr->metrics.metrics_len - 1;
   if (a >= 0)
     {
-      if (the_form.metrics.metrics_val[a].y == y - 1
-	  && strcmp (s, the_form.metrics.metrics_val[a].label) == 0
+      if (the_form_ptr->metrics.metrics_val[a].y == y - 1
+	  && strcmp (s, the_form_ptr->metrics.metrics_val[a].label) == 0
 	  && strcmp (s, "_label") == 0)
 	{
-	  if (the_form.metrics.metrics_val[a].x +
-	      the_form.metrics.metrics_val[a].w == x - 1)
+	  if (the_form_ptr->metrics.metrics_val[a].x +
+	      the_form_ptr->metrics.metrics_val[a].w == x - 1)
 	    {
-	      ptr = acl_malloc2 (the_form.metrics.metrics_val[a].w + wid + 1);
-	      sprintf (ptr, "%s%s", the_form.metrics.metrics_val[a].label,
+	      ptr = acl_malloc2 (the_form_ptr->metrics.metrics_val[a].w + wid + 1);
+	      sprintf (ptr, "%s%s", the_form_ptr->metrics.metrics_val[a].label,
 		       label);
-	      free (the_form.metrics.metrics_val[a].label);
-	      the_form.metrics.metrics_val[a].label = ptr;
-	      the_form.metrics.metrics_val[a].w += wid;
+	      free (the_form_ptr->metrics.metrics_val[a].label);
+	      the_form_ptr->metrics.metrics_val[a].label = ptr;
+	      the_form_ptr->metrics.metrics_val[a].w += wid;
 
 	      A4GL_debug ("Straight Continuation: '%s' and '%s' = '%s'\n",
-		     the_form.metrics.metrics_val[a].label, label, ptr);
+		     the_form_ptr->metrics.metrics_val[a].label, label, ptr);
 	      return 0;
 	    }
 
-	  if (the_form.metrics.metrics_val[a].x +
-	      the_form.metrics.metrics_val[a].w == x - 2)
+	  if (the_form_ptr->metrics.metrics_val[a].x +
+	      the_form_ptr->metrics.metrics_val[a].w == x - 2)
 	    {
 	      A4GL_debug ("Alloc %d bytes",
-		     the_form.metrics.metrics_val[a].w + wid + 1);
-	      ptr = acl_malloc2 (the_form.metrics.metrics_val[a].w + wid + 2);
-	      sprintf (ptr, "%s %s", the_form.metrics.metrics_val[a].label,
+		     the_form_ptr->metrics.metrics_val[a].w + wid + 1);
+	      ptr = acl_malloc2 (the_form_ptr->metrics.metrics_val[a].w + wid + 2);
+	      sprintf (ptr, "%s %s", the_form_ptr->metrics.metrics_val[a].label,
 		       label);
 	      A4GL_debug ("Got : %s\n", ptr);
 
-	      free (the_form.metrics.metrics_val[a].label);
+	      free (the_form_ptr->metrics.metrics_val[a].label);
 	      A4GL_debug ("Freed");
-	      the_form.metrics.metrics_val[a].label = ptr;
-	      the_form.metrics.metrics_val[a].w += wid + 1;
+	      the_form_ptr->metrics.metrics_val[a].label = ptr;
+	      the_form_ptr->metrics.metrics_val[a].w += wid + 1;
 
 	      A4GL_debug ("Single Spaced Continuation: '%s' and '%s' = '%s'\n",
-		     the_form.metrics.metrics_val[a].label, label, ptr);
+		     the_form_ptr->metrics.metrics_val[a].label, label, ptr);
 	      return 0;
 	    }
 	}
@@ -581,14 +611,14 @@ A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, cha
   A4GL_debug ("add_field %s %d %d %d %d %d\n", s, x, y, wid, scr, label);
   f = new_metric (x, y, wid, scr, delim, label);
 
-  for (a = 0; a < the_form.fields.fields_len; a++)
+  for (a = 0; a < the_form_ptr->fields.fields_len; a++)
     {
       /* does field tag already exist */
-      if (strcasecmp (the_form.fields.fields_val[a].tag, s) == 0)
+      if (strcasecmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
 	{
 	  xx = new_form_metric (a);
 
-	  the_form.fields.fields_val[a].metric.metric_val[xx] = f;
+	  the_form_ptr->fields.fields_val[a].metric.metric_val[xx] = f;
 	  A4GL_debug ("b\n");
 	  return 1;
 	}
@@ -597,8 +627,8 @@ A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, cha
   yy = add_new_field ();
   xx = new_form_metric (-1);
 
-  the_form.fields.fields_val[yy].tag = strdup (s);
-  the_form.fields.fields_val[yy].metric.metric_val[xx] = f;
+  the_form_ptr->fields.fields_val[yy].tag = strdup (s);
+  the_form_ptr->fields.fields_val[yy].metric.metric_val[xx] = f;
   return yy;
 }
 
@@ -612,6 +642,8 @@ A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, cha
 void
 A4GLFORM_A4GL_add_table (char *s, char *a)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   char z[3];
   z[0] = 0;
 
@@ -622,15 +654,15 @@ A4GLFORM_A4GL_add_table (char *s, char *a)
       a = z;
     }
 
-  the_form.tables.tables_val = realloc (the_form.tables.tables_val,
-					(the_form.tables.tables_len +
+  the_form_ptr->tables.tables_val = realloc (the_form_ptr->tables.tables_val,
+					(the_form_ptr->tables.tables_len +
 					 1) * sizeof (struct struct_tables));
 
-  the_form.tables.tables_val[the_form.tables.tables_len].tabname = strdup (s);
-  the_form.tables.tables_val[the_form.tables.tables_len].alias = strdup (a);
+  the_form_ptr->tables.tables_val[the_form_ptr->tables.tables_len].tabname = strdup (s);
+  the_form_ptr->tables.tables_val[the_form_ptr->tables.tables_len].alias = strdup (a);
   A4GLFORM_A4GL_add_srec ();
   A4GLFORM_A4GL_set_dim_srec (s, 1);
-  the_form.tables.tables_len++;
+  the_form_ptr->tables.tables_len++;
 }
 
 /**
@@ -644,6 +676,8 @@ A4GLFORM_A4GL_add_table (char *s, char *a)
 static int
 find_attribs (int **ptr, char *tab, char *colname)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   static int attrib_list[256];
   int a;
   int cnt = 0;
@@ -651,23 +685,23 @@ find_attribs (int **ptr, char *tab, char *colname)
   A4GL_debug ("find_attribs\n");
   *ptr = (int *) &attrib_list;
 
-  for (a = 0; a < the_form.attributes.attributes_len; a++)
+  for (a = 0; a < the_form_ptr->attributes.attributes_len; a++)
     {
-      if (strcasecmp (tab, the_form.attributes.attributes_val[a].tabname) == 0
+      if (strcasecmp (tab, the_form_ptr->attributes.attributes_val[a].tabname) == 0
 	  && strcasecmp (colname,
-			 the_form.attributes.attributes_val[a].colname) == 0)
+			 the_form_ptr->attributes.attributes_val[a].colname) == 0)
 	{
 	  attrib_list[cnt++] = a;
 	}
 
       if (strcasecmp (tab, "") == 0 &&
 	  strcasecmp (colname,
-		      the_form.attributes.attributes_val[a].colname) == 0)
+		      the_form_ptr->attributes.attributes_val[a].colname) == 0)
 	{
 	  attrib_list[cnt++] = a;
 	}
 
-      if (strcasecmp (tab, the_form.attributes.attributes_val[a].tabname) == 0
+      if (strcasecmp (tab, the_form_ptr->attributes.attributes_val[a].tabname) == 0
 	  && strcasecmp (colname, "*") == 0)
 	{
 	  attrib_list[cnt++] = a;
@@ -709,6 +743,8 @@ proc_thru (void)
 void
 A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int *ptr;
   int a;
   int z;
@@ -747,7 +783,7 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = ptr[z];
       if (curr_rec->dim == 1) {
 		//printf(" Fix Dim %d",curr_rec->dim);
-		//curr_rec->dim = the_form.fields.fields_val[the_form.attributes.  attributes_val[ptr[z]].field_no].metric.  metric_len;
+		//curr_rec->dim = the_form_ptr->fields.fields_val[the_form_ptr->attributes.  attributes_val[ptr[z]].field_no].metric.  metric_len;
 
 
 		// @ todo - I'm not sure why this was here - so I've probably broken something by removing it...
@@ -755,19 +791,19 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 
 	}
 
-	//printf("A : %p %s %s\n", &the_form.attributes.attributes_val[ptr[z]], the_form.attributes.attributes_val[ptr[z]].tabname, the_form.attributes.attributes_val[ptr[z]].colname);
+	//printf("A : %p %s %s\n", &the_form_ptr->attributes.attributes_val[ptr[z]], the_form_ptr->attributes.attributes_val[ptr[z]].tabname, the_form_ptr->attributes.attributes_val[ptr[z]].colname);
 
 
-      if (the_form.fields.  fields_val[the_form.attributes.attributes_val[ptr[z]].field_no].
+      if (the_form_ptr->fields.  fields_val[the_form_ptr->attributes.attributes_val[ptr[z]].field_no].
 	  metric.metric_len != curr_rec->dim)
 	{
 	  A4GL_debug ("cnt=%d dim=%d",
-		 the_form.fields.fields_val[the_form.attributes.  attributes_val[ptr[z]].field_no].metric.metric_len, curr_rec->dim);
+		 the_form_ptr->fields.fields_val[the_form_ptr->attributes.  attributes_val[ptr[z]].field_no].metric.metric_len, curr_rec->dim);
 
-	//printf("ABC : %p %s %s\n", &the_form.attributes.attributes_val[ptr[z]], the_form.attributes.attributes_val[ptr[z]].tabname, the_form.attributes.attributes_val[ptr[z]].colname);
-    	if (!A4GLFORM_A4GL_has_bool_attribute( &the_form.attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
+	//printf("ABC : %p %s %s\n", &the_form_ptr->attributes.attributes_val[ptr[z]], the_form_ptr->attributes.attributes_val[ptr[z]].tabname, the_form_ptr->attributes.attributes_val[ptr[z]].colname);
+    	if (!A4GLFORM_A4GL_has_bool_attribute( &the_form_ptr->attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
 		if (curr_rec->dim==1) {
-      			curr_rec->dim=the_form.fields.  fields_val[the_form.attributes.attributes_val[ptr[z]].field_no].metric.metric_len;
+      			curr_rec->dim=the_form_ptr->fields.  fields_val[the_form_ptr->attributes.attributes_val[ptr[z]].field_no].metric.metric_len;
 			printf("Warning : Mismatch in screen record\n");
 		} else {
 	  		A4GL_error_with ("Mismatch in screen record\n", 0, 0);
@@ -788,11 +824,13 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
 static int
 find_field_attr(int fno)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int a;
   A4GL_debug("find_field_attr\n");
-  for (a=0;a<the_form.attributes.attributes_len;a++)
+  for (a=0;a<the_form_ptr->attributes.attributes_len;a++)
   {
-    if (the_form.attributes.attributes_val[a].field_no==fno)
+    if (the_form_ptr->attributes.attributes_val[a].field_no==fno)
     {
       return a;
       A4GL_debug("Field %d found at %d",fno,a);
@@ -813,43 +851,45 @@ find_field_attr(int fno)
 static void
 chk_for_wordwrap(void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int a,b;
   int w,w1;
   int x,x1;
   int y,y1;
   int fno;
   A4GL_debug("chk_for_wordwrap\n");
-  for (a = 0; a < the_form.fields.fields_len; a++) 
+  for (a = 0; a < the_form_ptr->fields.fields_len; a++) 
   {
     fno=a; 
     fno=find_field_attr(a);
     if (fno==-1) continue;
 
     A4GL_debug("%s=%s.%s",
-    the_form.fields.fields_val[a].tag,
-    the_form.attributes.attributes_val[fno].tabname,
-    the_form.attributes.attributes_val[fno].colname);
+    the_form_ptr->fields.fields_val[a].tag,
+    the_form_ptr->attributes.attributes_val[fno].tabname,
+    the_form_ptr->attributes.attributes_val[fno].colname);
 
-    if (!A4GLFORM_A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
+    if (!A4GLFORM_A4GL_has_bool_attribute( &the_form_ptr->attributes.attributes_val[fno] ,
         FA_B_WORDWRAP)) 
       continue;
 
     b=0;
-    w=the_form.metrics.metrics_val[
-      the_form.fields.fields_val[a].metric.metric_val[b]].w;
-    x=the_form.metrics.metrics_val[
-      the_form.fields.fields_val[a].metric.metric_val[b]].x;
-    y=the_form.metrics.metrics_val[
-      the_form.fields.fields_val[a].metric.metric_val[b]].y;
+    w=the_form_ptr->metrics.metrics_val[
+      the_form_ptr->fields.fields_val[a].metric.metric_val[b]].w;
+    x=the_form_ptr->metrics.metrics_val[
+      the_form_ptr->fields.fields_val[a].metric.metric_val[b]].x;
+    y=the_form_ptr->metrics.metrics_val[
+      the_form_ptr->fields.fields_val[a].metric.metric_val[b]].y;
  
-    for (b=1;b<the_form.fields.fields_val[a].metric.metric_len;b++) 
+    for (b=1;b<the_form_ptr->fields.fields_val[a].metric.metric_len;b++) 
     {
-        w1=the_form.metrics.metrics_val[
-	  the_form.fields.fields_val[a].metric.metric_val[b]].w;
-        x1=the_form.metrics.metrics_val[
-	  the_form.fields.fields_val[a].metric.metric_val[b]].x;
-        y1=the_form.metrics.metrics_val[
-	  the_form.fields.fields_val[a].metric.metric_val[b]].y;
+        w1=the_form_ptr->metrics.metrics_val[
+	  the_form_ptr->fields.fields_val[a].metric.metric_val[b]].w;
+        x1=the_form_ptr->metrics.metrics_val[
+	  the_form_ptr->fields.fields_val[a].metric.metric_val[b]].x;
+        y1=the_form_ptr->metrics.metrics_val[
+	  the_form_ptr->fields.fields_val[a].metric.metric_val[b]].y;
  
 
       if (w1!=w||x1!=x||y1-b!=y) 
@@ -861,8 +901,8 @@ chk_for_wordwrap(void)
       }
     }
     // Now get rid of the extra metrics and make this a multiline field
-    the_form.metrics.metrics_val[the_form.fields.fields_val[a].metric.metric_val[0]].h=the_form.fields.fields_val[a].metric.metric_len;
-    the_form.fields.fields_val[a].metric.metric_len=1;
+    the_form_ptr->metrics.metrics_val[the_form_ptr->fields.fields_val[a].metric.metric_val[0]].h=the_form_ptr->fields.fields_val[a].metric.metric_len;
+    the_form_ptr->fields.fields_val[a].metric.metric_len=1;
   }
 }
 
@@ -870,8 +910,10 @@ chk_for_wordwrap(void)
 void A4GLFORM_A4GL_delete_compiled_form_file(void) {
 char fname[132];
 int a;
-	struct_form *ptr;
-	ptr = &the_form;
+	//struct_form *ptr;
+
+	//ptr = &the_form;
+
 	strcpy (fname, outputfilename);
 
   	strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
@@ -890,7 +932,7 @@ char fname2[132];
 int a;
 
 	struct_form *ptr;
-	ptr = &the_form;
+	ptr = A4GL_get_the_form_ptr();
 	strcpy (fname, outputfilename);
 
 #ifdef NDEF
@@ -919,7 +961,7 @@ int a;
 
 
 
-  if (as_c)
+  if (A4GL_get_as_c())
     {
       int cnt = 0;
       int a;
@@ -987,20 +1029,22 @@ int a;
 int
 A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   char *tabs[256];
   char buff[256];
   int a;
   int c=0;
   A4GL_debug ("getdatatype\n");
 
-  for (a = 0; a < the_form.tables.tables_len; a++)
+  for (a = 0; a < the_form_ptr->tables.tables_len; a++)
     {
-         if (strcasecmp(the_form.tables.tables_val[a].alias,tab)==0&&strlen(the_form.tables.tables_val[a].alias)) {
-                tab=the_form.tables.tables_val[a].tabname;
-      		tabs[c++] = strdup (the_form.tables.tables_val[a].alias);
+         if (strcasecmp(the_form_ptr->tables.tables_val[a].alias,tab)==0&&strlen(the_form_ptr->tables.tables_val[a].alias)) {
+                tab=the_form_ptr->tables.tables_val[a].tabname;
+      		tabs[c++] = strdup (the_form_ptr->tables.tables_val[a].alias);
         }
       else {
-		tabs[c++] = strdup (the_form.tables.tables_val[a].tabname);
+		tabs[c++] = strdup (the_form_ptr->tables.tables_val[a].tabname);
 	}
     }
 
@@ -1008,11 +1052,11 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 
   tabs[c] = 0;
 
-  A4GL_debug ("Calling A4GL_get_dtype with %s %s %s", the_form.dbname, tab, col);
+  A4GL_debug ("Calling A4GL_get_dtype with %s %s %s", the_form_ptr->dbname, tab, col);
   /* int        A4GL_get_dtype                       (char *tabname, char *colname,char *dbname,char *tablist[]); */
-  //a=get_dtype(tab,col,the_form.dbname,the_form.tables.tables_val);
+  //a=get_dtype(tab,col,the_form_ptr->dbname,the_form_ptr->tables.tables_val);
 
-  a = A4GL_get_dtype (tab, col, the_form.dbname, tabs);
+  a = A4GL_get_dtype (tab, col, the_form_ptr->dbname, tabs);
 
 
   /*
@@ -1041,42 +1085,44 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 void
 A4GLFORM_A4GL_init_form (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("init_form\n");
-  the_form.dbname = strdup ("");
-  the_form.delim = strdup ("[]|");
-  the_form.maxcol = 0;
+  the_form_ptr->dbname = strdup ("");
+  the_form_ptr->delim = strdup ("[]|");
+  the_form_ptr->maxcol = 0;
 
-  the_form.magic = FCOMILE_XDR_MAGIC;	/* Just any number */
+  the_form_ptr->magic = FCOMILE_XDR_MAGIC;	/* Just any number */
 
-  the_form.magic1 = strdup ("A4GL_FORMSTART");
-  the_form.fcompile_version = FCOMILE_XDR_VERSION;
-  the_form.compiled_time = time (0);
+  the_form_ptr->magic1 = strdup ("A4GL_FORMSTART");
+  the_form_ptr->fcompile_version = FCOMILE_XDR_VERSION;
+  the_form_ptr->compiled_time = time (0);
 
-  the_form.magic2 = strdup ("FORMEND");
-  the_form.maxline = 0;
+  the_form_ptr->magic2 = strdup ("FORMEND");
+  the_form_ptr->maxline = 0;
 
-  the_form.snames.snames_len = 0;
-  the_form.snames.snames_val = 0;
+  the_form_ptr->snames.snames_len = 0;
+  the_form_ptr->snames.snames_val = 0;
 
-  the_form.attributes.attributes_len = 0;
-  the_form.attributes.attributes_val = 0;
+  the_form_ptr->attributes.attributes_len = 0;
+  the_form_ptr->attributes.attributes_val = 0;
 
-  the_form.metrics.metrics_len = 0;
-  the_form.metrics.metrics_val = 0;
+  the_form_ptr->metrics.metrics_len = 0;
+  the_form_ptr->metrics.metrics_val = 0;
 
-  the_form.fields.fields_len = 0;
-  the_form.fields.fields_val = 0;
+  the_form_ptr->fields.fields_len = 0;
+  the_form_ptr->fields.fields_val = 0;
 
-  the_form.records.records_len = 0;
-  the_form.records.records_val = 0;
-  the_form.control_blocks.control_blocks_len=0;
-  the_form.control_blocks.control_blocks_val=0;
+  the_form_ptr->records.records_len = 0;
+  the_form_ptr->records.records_val = 0;
+  the_form_ptr->control_blocks.control_blocks_len=0;
+  the_form_ptr->control_blocks.control_blocks_val=0;
 
-  the_form.master_of.master_of_len=0;
-  the_form.master_of.master_of_val=0;
+  the_form_ptr->master_of.master_of_len=0;
+  the_form_ptr->master_of.master_of_val=0;
 
-  the_form.composites.composites_len=0;
-  the_form.composites.composites_val=0;
+  the_form_ptr->composites.composites_len=0;
+  the_form_ptr->composites.composites_val=0;
 
 }
 
@@ -1245,32 +1291,34 @@ char buff[1024];
 static void
 translate_form (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   int a;
   int b;
   char *ptr;
 
-  for (a = 0; a < the_form.metrics.metrics_len; a++)
+  for (a = 0; a < the_form_ptr->metrics.metrics_len; a++)
     {
-      A4GL_dumpstring (the_form.metrics.metrics_val[a].label, 0, "");
-      ptr = A4GL_translate (the_form.metrics.metrics_val[a].label);
+      A4GL_dumpstring (the_form_ptr->metrics.metrics_val[a].label, 0, "");
+      ptr = A4GL_translate (the_form_ptr->metrics.metrics_val[a].label);
       if (ptr)
-	the_form.metrics.metrics_val[a].label = strdup (ptr);
+	the_form_ptr->metrics.metrics_val[a].label = strdup (ptr);
     }
 
-  for (b = 0; b < the_form.attributes.attributes_len; b++)
+  for (b = 0; b < the_form_ptr->attributes.attributes_len; b++)
     {
-      for (a = 0; a < the_form.attributes.attributes_val[b].str_attribs.str_attribs_len; a++)
+      for (a = 0; a < the_form_ptr->attributes.attributes_val[b].str_attribs.str_attribs_len; a++)
 	{
-	  if (the_form.attributes.attributes_val[b].str_attribs.
+	  if (the_form_ptr->attributes.attributes_val[b].str_attribs.
 	      str_attribs_val[a].type == FA_S_COMMENTS)
 	    {
-	      A4GL_dumpstring (the_form.attributes.attributes_val[b].str_attribs.
+	      A4GL_dumpstring (the_form_ptr->attributes.attributes_val[b].str_attribs.
 			  str_attribs_val[a].value, 0, "");
 	      ptr =
-	 A4GL_translate (the_form.attributes.attributes_val[b].str_attribs.
+	 A4GL_translate (the_form_ptr->attributes.attributes_val[b].str_attribs.
 			   str_attribs_val[a].value);
 	      if (ptr)
-		the_form.attributes.attributes_val[b].str_attribs.
+		the_form_ptr->attributes.attributes_val[b].str_attribs.
 		  str_attribs_val[a].value = strdup (ptr);
 	    }
 	}

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.68 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: others.c,v 1.69 2008-11-05 18:44:23 mikeaubury Exp $
 #
 */
 
@@ -69,9 +69,29 @@ int ccnt = 0;			/* was in lexer.c */
 
 
 struct struct_form the_form;
-struct struct_scr_field *fld;
-int as_c = 1;
+static struct struct_scr_field *fld=0;
+
+static int as_c = 1;
+
+
+void A4GL_set_as_c(int n) {
+	as_c=n;
+}
+
+int A4GL_get_as_c(void) {
+	return as_c;
+}
+
+
 int m_lastkey = 0;
+
+void A4GL_set_fld(struct struct_scr_field *f) {
+	fld=f;
+}
+
+struct struct_scr_field *A4GL_get_fld(void) {
+	return fld;
+}
 
 
 /*
@@ -761,6 +781,10 @@ A4GL_isblank (int n)
   return 0;
 }
 
+
+struct struct_form *A4GL_get_the_form_ptr(void) {
+return &the_form;
+}
 
 
 /* ============================== EOF ========================== */

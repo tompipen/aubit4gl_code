@@ -20,7 +20,8 @@ int A4GL_form_field_chk_iarr(struct s_inp_arr *sio, int m);
 int A4GL_form_field_constr(struct s_screenio *sio, int m);
 int A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,int a, va_list * ap,int replace_0);
 int A4GL_get_curr_border(void);
-int A4GL_get_curr_infield(void);
+long A4GL_get_curr_infield(void);
+
 int A4GL_get_curr_left(void);
 int A4GL_get_curr_metric(struct s_form_dets *form);
 int A4GL_get_curr_print_top(void);
