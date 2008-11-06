@@ -1,0 +1,14 @@
+database formonly
+
+screen
+{
+[f1      ]   Enter "10/01/08".  The FORMAT is dd/mm/yy.
+}
+
+attributes
+f1  = formonly.start_date type date, format = "dd/mm/yy",
+DEFAULT = TODAY;
+
+instructions
+screen record s (formonly.start_date)
+

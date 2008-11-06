@@ -5,6 +5,8 @@ include ${MAKEFILE_COMMON}
 FORMS=	${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
 HELP=	${MSG:.msg=${HLP_EXT}}
+DBDATE=mdy4/
+export DBDATE
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
@@ -23,7 +25,7 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "FORMAT issue - reported by Ron MacNeil (03 Nov 2008)"
+desc: ; @echo "Tests a DMY/MDY issue when format is set differently in a form"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
