@@ -48,6 +48,10 @@ A4GL_str_dot_to_dec (char *s, fgldecimal * d)
 
 }
 
+
+
+
+
 #ifdef MOVED
 void A4GL_pop_sized_decimal(fgldecimal *b) {
 char *s;
@@ -464,6 +468,13 @@ A4GL_init_dec (fgldecimal * dec, int length, int digits)
 }
 
 
+// Initialize a decimal type variable - based on the encoded size...
+void A4GL_init_dec_size(fgldecimal *dec, int size) {
+
+dec->dec_data[0]=size>>8;
+dec->dec_data[1]=size&0xff;
+}
+
 /**
  * Convert a string to a decimal value.
  *
@@ -491,7 +502,9 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
   int carry;
   int l2;
   char tmpbuf[2];
-
+  if (strlen(str_orig)>80) {
+		A4GL_pause_execution();
+	}
   A4GL_strncpyz (str, str_orig, sizeof (str));
 //A4GL_remove_trailing_zeros_and_leading_spaces(str);
   A4GL_trim (str);
@@ -700,12 +713,13 @@ A4GL_dec_to_str (fgldecimal * dec, int size)
     {
       has_neg = 1;
     }
-
+  A4GL_debug("Decimal %d %d\n", dec->dec_data[0] &127, dec->dec_data[1]);
 #ifdef DEBUG
   A4GL_debug ("XYXY dec to str : %s", &dec->dec_data[2]);
 #endif
   ptr = (char *)&dec->dec_data[2];
   strcat (buff, ptr);
+A4GL_debug("ptr=%s\n",ptr);
   l = strlen (buff);
   for (a = has_neg; a < l; a++)
     {
@@ -770,6 +784,54 @@ A4GL_dec_to_str (fgldecimal * dec, int size)
 
 void A4GL_push_dec_from_apm (M_APM tmp);
 
+
+
+
+// Work out the correct precision for a fgldecimal 
+// based on the mpam 'm1' value (by converting it to a string)
+static void set_fgl_decimal_precision_from_apm_decimal(fgldecimal *d, M_APM m1) {
+char s1[200];
+
+// Check to see if we actually need to do anything...
+  if (d->dec_data[0]==0 && d->dec_data[1]==0) { // Auto size..
+	int ndig;
+	int ndec;
+	int len;
+	int len2;
+	char *ptr;
+		len=m_apm_significant_digits(m1);
+		len2=m_apm_exponent(m1);
+		m_apm_to_fixpt_string(s1,len-len2,m1);
+		ptr=strchr(s1,'.');
+		if (ptr) {
+			int a;
+			for (a=strlen(ptr)-1;a>0;a--) {
+				if (ptr[a]!='0') {
+					break;
+				}
+				ptr[a]=0;
+			}
+		}
+		A4GL_size_decimal_string(s1,&ndig,&ndec);
+
+		// If we're too large - try trimming off any trailing decimal places..
+		while (ndig>64 && ndec>0) {
+			ndig--;
+			ndec--;
+		}
+		if (ndig>64) {
+			// Its still too big..
+			ndig=64;
+			ndec=0;
+		}
+
+
+		A4GL_init_dec(d,ndig,ndec);
+  }
+
+
+}
+
 void acl_apm_set_string (M_APM m1, char *s, int convert)
 {
   char buff[2000];
@@ -798,6 +860,9 @@ a4gl_decadd (fgldecimal * d1, fgldecimal * d2, fgldecimal * sum)
   acl_apm_set_string (m2, A4GL_dec_to_str (d2, 0), 1);
 
   m_apm_add (mres, m1, m2);
+
+  set_fgl_decimal_precision_from_apm_decimal(sum,mres);
+
 
   m_apm_to_fixpt_string (buff, sum->dec_data[1], mres);
   A4GL_str_dot_to_dec (buff, sum);
@@ -848,6 +913,7 @@ a4gl_deccvasc (char *s, int n, fgldecimal * d)
   m1 = m_apm_init ();
   m2 = m_apm_init ();
   acl_apm_set_string (m1, s, 1);
+  set_fgl_decimal_precision_from_apm_decimal(d,m2);
   m_apm_to_fixpt_string (buff, d->dec_data[1], m2);
   A4GL_str_dot_to_dec (buff, d);
   m_apm_free (m1);
@@ -922,6 +988,7 @@ a4gl_decdiv (fgldecimal * d1, fgldecimal * d2, fgldecimal * res)
 
   m_apm_divide (mres, res->dec_data[1] + 1, m1, m2);
 
+  set_fgl_decimal_precision_from_apm_decimal(res,mres);
   m_apm_to_fixpt_string (buff, res->dec_data[1], mres);
 
   A4GL_str_dot_to_dec (buff, res);
@@ -941,15 +1008,21 @@ a4gl_decmul (fgldecimal * d1, fgldecimal * d2, fgldecimal * res)
   M_APM m2;
   M_APM mres;
   char buff[2000];
+  char s1[2000];
+  char s2[2000];
   m1 = m_apm_init ();
   m2 = m_apm_init ();
   mres = m_apm_init ();
 
-
-  acl_apm_set_string (m1, A4GL_dec_to_str (d1, 0), 1);
-  acl_apm_set_string (m2, A4GL_dec_to_str (d2, 0), 1);
+  strcpy(s1,A4GL_dec_to_str (d1, 0));
+  strcpy(s2,A4GL_dec_to_str (d2, 0));
+  acl_apm_set_string (m1, s1, 1);
+  acl_apm_set_string (m2, s2, 1);
 
   m_apm_multiply (mres, m1, m2);
+
+  set_fgl_decimal_precision_from_apm_decimal(res,mres);
+
   m_apm_to_fixpt_string (buff, res->dec_data[1], mres);
   A4GL_str_dot_to_dec (buff, res);
 
@@ -967,6 +1040,8 @@ a4gl_decround (fgldecimal * d1, int n)
   char buff[200];
   m1 = m_apm_init ();
   acl_apm_set_string (m1, A4GL_dec_to_str (d1, 0), 1);
+
+  set_fgl_decimal_precision_from_apm_decimal(d1,m1);
   m_apm_to_fixpt_string (buff, n, m1);
   A4GL_str_dot_to_dec (buff, d1);
   m_apm_free (m1);
@@ -989,6 +1064,7 @@ a4gl_decsub (fgldecimal * d1, fgldecimal * d2, fgldecimal * res)
 
   m_apm_subtract (mres, m1, m2);
 
+  set_fgl_decimal_precision_from_apm_decimal(res,mres);
   m_apm_to_fixpt_string (buff, res->dec_data[1], mres);
   A4GL_str_dot_to_dec (buff, res);
 
@@ -1092,6 +1168,7 @@ a4gl_dectrunc (fgldecimal * d1, int n)
 
   m_apm_divide (m1, norig, mres, m_mult);
 
+  set_fgl_decimal_precision_from_apm_decimal(d1,m1);
 // m1 should now be truncated to n decimal places..
   m_apm_to_fixpt_string (buff, d1->dec_data[1] + 1, m1);
   A4GL_str_dot_to_dec (buff, d1);
@@ -1103,7 +1180,8 @@ A4GL_push_dec_from_apm (M_APM tmp)
 {
   fgldecimal d;
   char buff[300];
-  A4GL_init_dec (&d, 32, 16);
+  A4GL_init_dec (&d, 0, 0);
+  set_fgl_decimal_precision_from_apm_decimal(&d,tmp);
   m_apm_to_fixpt_string (buff, d.dec_data[1], tmp);
   A4GL_str_dot_to_dec (buff, &d);
   A4GL_push_dec_dec (&d, 0, 16);
@@ -1198,7 +1276,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	    {
 	      sum = malloc (sizeof (*sum));
 	      A4GL_init_dec (sum, 64, 0);
-	      m_apm_to_fixpt_string (buff, 0, mres);
+	      m_apm_to_fixpt_string (buff, 0, mres); // dont need set_fgl_decimal_precision_from_apm_decimal
 	      A4GL_str_dot_to_dec (buff, sum);
 	      A4GL_push_dec_dec (sum, 0, 0);
 	    }
@@ -1214,7 +1292,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	  if (s2)
 	    {
 	      sum = malloc (sizeof (*sum));
-	      A4GL_init_dec (sum, 64, 0);
+	      A4GL_init_dec (sum, 64, 0); // dont need set_fgl_decimal_precision_from_apm_decimal
 	      m_apm_to_fixpt_string (buff, 0, mres);
 	      A4GL_str_dot_to_dec (buff, sum);
 	      A4GL_push_dec_dec (sum, 0, 0);
@@ -1233,7 +1311,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	  if (s2)
 	    {
 	      sum = malloc (sizeof (*sum));
-	      A4GL_init_dec (sum, 64, 0);
+	      A4GL_init_dec (sum, 64, 0); // dont need set_fgl_decimal_precision_from_apm_decimal
 	      m_apm_to_fixpt_string (buff, 0, mres);
 	      A4GL_str_dot_to_dec (buff, sum);
 	      A4GL_push_dec_dec (sum, 0, 0);
@@ -1251,7 +1329,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	    {
 	      sum = malloc (sizeof (*sum));
 	      A4GL_init_dec (sum, 64, 0);
-	      m_apm_to_fixpt_string (buff, 0, mres);
+	      m_apm_to_fixpt_string (buff, 0, mres); // dont need set_fgl_decimal_precision_from_apm_decimal
 	      A4GL_str_dot_to_dec (buff, sum);
 	      A4GL_push_dec_dec (sum, 0, 0);
 	    }
@@ -1269,7 +1347,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	    {
 	      sum = malloc (sizeof (*sum));
 	      A4GL_init_dec (sum, 64, 0);
-	      m_apm_to_fixpt_string (buff, 0, mres);
+	      m_apm_to_fixpt_string (buff, 0, mres); // dont need set_fgl_decimal_precision_from_apm_decimal
 	      A4GL_str_dot_to_dec (buff, sum);
 	      A4GL_push_dec_dec (sum, 0, 0);
 	    }
@@ -1286,7 +1364,7 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
 	    {
 	      sum = malloc (sizeof (*sum));
 	      A4GL_init_dec (sum, 64, 0);
-	      m_apm_to_fixpt_string (buff, 0, mres);
+	      m_apm_to_fixpt_string (buff, 0, mres); // dont need set_fgl_decimal_precision_from_apm_decimal
 	      A4GL_str_dot_to_dec (buff, sum);
 	      A4GL_push_dec_dec (sum, 0, 0);
 	    }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.344 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.345 2008-11-06 10:14:01 mikeaubury Exp $
 #
 */
 
@@ -2842,7 +2842,7 @@ void A4GL_set_fld(void *f) ;
 struct struct_scr_field *A4GL_get_fld(void) ;
 void A4GL_set_as_c(int n) ;
 int A4GL_get_as_c(void) ;
-
+void A4GL_init_dec_size(fgldecimal *dec, int size);
 
 
 

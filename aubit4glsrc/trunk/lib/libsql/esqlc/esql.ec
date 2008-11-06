@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.216 2008-10-23 14:54:46 mikeaubury Exp $
+# $Id: esql.ec,v 1.217 2008-11-06 10:14:02 mikeaubury Exp $
 #
 */
 
@@ -168,6 +168,7 @@ static void free_blobs(struct s_extra_info *e) ;
 
 EXEC SQL END DECLARE SECTION;
 
+char dectoasc_decsep=0;
 
 /*
 =====================================================================
@@ -195,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.216 2008-10-23 14:54:46 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.217 2008-11-06 10:14:02 mikeaubury Exp $";
 #endif
 
 
@@ -366,6 +367,22 @@ A4GLSQL_get_status (void)
 #endif
 
 
+
+static void ensure_dot_format_for_decimal_string(char *s) {
+if (dectoasc_decsep==',') {
+	char buff[200];
+	int a;
+	strcpy(buff,s);
+	for (a=0;a<strlen(s);a++) {
+		if (s[a]==',') buff[a]='.';
+		if (s[a]=='.') buff[a]=',';
+	}
+	printf("->%s\n",buff);
+	strcpy(s,buff);
+	return;
+}
+
+}
 
 /**
  * Get the current SQL error message.
@@ -546,6 +563,13 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char *password;
   EXEC SQL END DECLARE SECTION;
 
+  if (dectoasc_decsep==0) {
+	    char *str1="1230,10";
+	    char *str2="1230.10";
+	    dec_t num1;
+    	    if (deccvasc(str1, strlen(str1), &num1)) { dectoasc_decsep='.';}
+    	    if (deccvasc(str2, strlen(str2), &num1)) { dectoasc_decsep=',';}
+  }
 
   strcpy (buff, dbName);
   A4GL_trim (buff);
@@ -1726,7 +1750,8 @@ int dstype;
 	  return 1;
 	}
       A4GL_debug ("tmpbuff=%s\n", tmpbuff);
-      A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
+      ensure_dot_format_for_decimal_string(tmpbuff);
+      A4GL_str_dot_to_dec (tmpbuff, (void *)bind[idx].ptr);
 
       break;
 
@@ -1750,7 +1775,9 @@ int dstype;
 	  return 1;
 	}
       A4GL_debug ("tmpbuff=%s\n", tmpbuff);
-      A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
+	ensure_dot_format_for_decimal_string(tmpbuff);
+      A4GL_str_dot_to_dec (tmpbuff, (void *)bind[idx].ptr);
+      //A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
 
 
       break;
@@ -3304,7 +3331,7 @@ dataType=p_datatype;
 
       fgl_decimal = &actual_fgl_decimal;
       char_varx=(char *)&fgl_decimal->dec_data[2];
-
+      
       if (dectoasc (&decimal_var, char_varx, 64, -1))
 	{
 	/** @todo : Store the error somewhere */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.74 2008-07-30 10:22:04 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.75 2008-11-06 10:14:02 mikeaubury Exp $
 #
 */
 
@@ -208,6 +208,27 @@ return ptr;
 
 
 
+// Make sure we're dealing with a '.' as the decimal separator...
+//
+static void ensure_dot_format_for_decimal_string(char *s) {
+
+        char buff[200];
+        int a;
+
+
+       if (strchr(s,',')==0) return;
+
+        strcpy(buff,s);
+        for (a=0;a<strlen(s);a++) {
+                if (s[a]==',') buff[a]='.';
+                if (s[a]=='.') buff[a]=',';
+        }
+        printf("->%s\n",buff);
+        strcpy(s,buff);
+        return;
+}
+
+
 
 /**
  *
@@ -261,9 +282,12 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 		memset(b,0,255);
 		dectoasc(infx,b,64,16);
+		ensure_dot_format_for_decimal_string(b);
 		A4GL_debug("calling dectoasc returns %s",b);
-		A4GL_push_char(b);
-		A4GL_pop_var2(a4gl,5,size);
+		A4GL_init_dec_size(a4gl,size);
+		A4GL_str_dot_to_dec (b, a4gl);
+		//A4GL_push_char(b);
+		//A4GL_pop_var2(a4gl,5,size);
 
 		//A4GL_push_variable(a4gl,(size<<16)+5);
 	   	//A4GL_pop_var2(&b,0,0x28);
