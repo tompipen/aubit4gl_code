@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.47 2007-06-12 19:02:45 mikeaubury Exp $";
+  "$Id: menu.c,v 1.48 2008-11-06 16:00:35 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -476,6 +476,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 		}
 	}
       	a = A4GL_menu_getkey (menu);
+	if (abort_pressed) a=A4GLKEY_INTERRUPT;
 	if (a) break;
       }
       if (menu->evt) {
@@ -514,9 +515,14 @@ A4GL_highlevel_menu_loop (void *menuv)
 
       if (abort_pressed)
 	{
-	  A4GL_debug ("setting menu->abort_pressed");
-	  menu->abort_pressed = 1;
-	  break;
+		if (!key_pressed) {
+	  		A4GL_debug ("setting menu->abort_pressed");
+	  		menu->abort_pressed = 1;
+			int_flag=1;
+	  		break;
+		} else {
+			abort_pressed=0;
+		}
 	}
       if (key_pressed)
 	break;

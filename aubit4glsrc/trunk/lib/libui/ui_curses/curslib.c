@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.156 2008-11-04 13:20:06 mikeaubury Exp $
+# $Id: curslib.c,v 1.157 2008-11-06 16:00:35 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.156 2008-11-04 13:20:06 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.157 2008-11-06 16:00:35 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1661,7 +1661,13 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	    }
 
 	  a = A4GL_menu_getkey (menu);
-	  if (a)
+		if (a==3006) abort_pressed++;
+		//printf("%d\n",a);
+	  if (abort_pressed) {
+		int_flag=1;
+		a=A4GLKEY_INTERRUPT;
+		}
+	  if (a )
 	    break;
 	}
 
@@ -1696,18 +1702,22 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	      continue;
 	    }
 	}
+	A4GL_debug("a=%d abort_pressed=%d",a,abort_pressed);
+
 
       key_pressed = A4GL_new_do_keys (menu, a);
-      A4GL_h_disp_opt (menu, old_option, menu->menu_offset, menu->mn_offset,
-		       NORM);
-      A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset,
-		       menu->mn_offset, INVERT);
+      A4GL_h_disp_opt (menu, old_option, menu->menu_offset, menu->mn_offset, NORM);
+      A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset, INVERT);
 
-      if (abort_pressed)
-	{
-	  A4GL_debug ("setting menu->abort_pressed");
-	  menu->abort_pressed = 1;
-	  break;
+	
+      if (abort_pressed) {
+		if (!key_pressed) {
+	  		A4GL_debug ("setting menu->abort_pressed");
+	  		menu->abort_pressed = 1;
+	  		break;
+		} else {
+			abort_pressed=0;
+		}
 	}
       if (key_pressed)
 	break;
@@ -2775,8 +2785,12 @@ A4GL_menu_getkey (ACL_Menu * menu)
       else
         A4GL_tui_printr (1, "%s", menu->menu_title);
       a = A4GL_getch_win ();
-      if (a == -1)
+
+      if (a == -1) {
+	A4GL_debug("Return 0");
 	return 0;
+	}
+
       if (a)
 	{
 	  A4GL_clr_error_nobox ("Menu");
@@ -2794,6 +2808,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	      a = A4GLKEY_INTERRUPT;
 	      wrapper_wgetch (menu->menu_win);
 	      A4GL_set_abort (0);
+	A4GL_debug("Return a=%d",a);
 	      return a;
 	    }
 #endif
@@ -2858,7 +2873,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	    }
 	}
 
-      A4GL_debug ("Returning A=%d\n", a);
+      A4GL_debug ("Returning A=%d abort_pressed=%d\n", a,abort_pressed);
       return a;
     }
 }
