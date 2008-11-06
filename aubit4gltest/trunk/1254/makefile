@@ -1,6 +1,8 @@
 # For help on using / editing this makefile, please see the fully documented
 # version of it in template/makefile-described
 
+export ALLOWDYNAMIC=Y
+
 include ${MAKEFILE_COMMON}
 FORMS=	${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
@@ -29,7 +31,7 @@ db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
-form_test:				; @echo "0"
+form_test:				; @echo "1"
 report_test:			; @echo "0"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
@@ -43,7 +45,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR DEFINE_SMALLINT DEFINE_INTEGER USES_FORM UI_DISPLAY_FORM CREATE_TEMP_TABLE ANSI_INSERT INITIALIZE_NULL UI_CONSTRUCT MESSAGE EXIT_CONSTRUCT EXIT_PROGRAM_EXPR CASE_EXPR IF UI_DISPLAY_LINE_MODE DISPLAY CLOSE_FORM   DISPLAY_FORM CONSTRUCT"
+sql_features_used:		; @echo "DEFINE_CHAR USES_FORM UI_OPEN_WINDOW UI_INPUT UI_DISPLAY_LINE_MODE DISPLAY EXIT_PROGRAM_EXPR IF"
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
