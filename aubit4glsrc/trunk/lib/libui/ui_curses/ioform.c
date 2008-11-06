@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.207 2008-11-04 17:58:59 mikeaubury Exp $
+# $Id: ioform.c,v 1.208 2008-11-06 07:51:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.207 2008-11-04 17:58:59 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.208 2008-11-06 07:51:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -1035,7 +1035,6 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 
 			      if (!allow_it_anyway)
 				{
-				//A4GL_pause_execution();
 				A4GL_debug("FIELD_REQD_MSG");
 				  // Well there wasn't - so it is required....
 				  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
@@ -4507,6 +4506,29 @@ return buff;
 }
 
 
+// CHeck if out date looks like our formatted data
+// 
+static int matched_date_format(char *fmt,char *data) {
+int a;
+	for (a=0;a<strlen(data);a++) {
+		if (fmt[a]==0) return 0; // Reached the end unexpectedly
+	
+	
+		if (data[a]>='0'&&data[a]<='9')  {
+			// Have we got a digit where we'd expect one ? 
+			if (tolower(fmt[a])=='d'|| tolower(fmt[a])=='m' || tolower(fmt[a])=='y') ;
+			else {
+				return 0;
+			}
+		} else {
+			// Have we got a non-digit where we'd expect a digit ? 
+			if (tolower(fmt[a])=='d'|| tolower(fmt[a])=='m' || tolower(fmt[a])=='y') return 0;
+		}
+	}
+	A4GL_debug("Got what looks like a valid date for the format");
+	// Excellent
+	return 1;
+}
 
 char *
 A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
@@ -4572,6 +4594,22 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	      //int yyyy;
 	      int yy;
 	      char *d;
+
+		if (!matched_date_format(format,fld_data)) {
+      				if (A4GL_stod (fld_data, &adate, 0) == 1 )
+					{
+	  				char *d;
+	  				static char buff_new[256];
+	  				A4GL_push_date (adate);
+	  				d = A4GL_char_pop ();
+	  				strcpy (buff_new, d);
+	  				free (d);
+	  				fld_data = buff_new;
+				
+				}
+				return fld_data;
+		}
+
 	      memset (buff_new, 0, 255);
 		strcpy(format,ptr); // 'format' will get changed by the calls to get_data_from_formatted_field
 		A4GL_debug("fld_data=%s\n",fld_data);
@@ -4624,6 +4662,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 			return "";
 		}
 		A4GL_debug("Got dd=%d mmm=%d yy=%d",dd,mmm,yy);
+
 	      rval = A4GL_gen_dateno (dd, mmm, yy);
 	      A4GL_push_date (rval);
 	      d = A4GL_char_pop ();
@@ -4697,7 +4736,6 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
     {
       dsize = fprop->dtype_size;
     }
-
   pprval = A4GL_pop_param (data_area, fprop->datatype, dsize);
 
   if (pprval)

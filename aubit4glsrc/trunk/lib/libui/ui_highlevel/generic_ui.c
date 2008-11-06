@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.141 2008-11-05 18:44:23 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.142 2008-11-06 07:51:54 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2823,6 +2823,54 @@ A4GL_get_metric_no (struct s_form_dets *form, void *f)
 
 
 
+/// This fuction extracts the portion of 'fmt' in 'str' for the search term 'srch'
+/// eg get_data_from_formatted_field("dd","01/01/2002","dd/mm/yyyy")
+/// this has a sideeffect in that the format will have any matching terms replaced by spaces.
+/// so - after this call - fmt will be "  /01/2002"
+/// this is done so you can search for longer terms first - like mmm or ddd and not have them confused a
+/// later search for mm or dd...
+static char *get_data_from_formatted_field(char *srch,char *str, char *fmt) {
+char *ptr;
+int offset;
+static char buff[200];
+A4GL_debug("get_data_from_formatted_field called with '%s' '%s' '%s'", srch,str,fmt);
+ptr=strstr(fmt,srch);
+if (ptr==0) {
+                A4GL_debug("Searching for %s failed in %s", srch,fmt);
+                return 0;
+}
+offset=ptr-fmt;
+A4GL_debug("Offset=%d\n",offset);
+strncpy(buff,&str[offset],strlen(srch));
+buff[strlen(srch)]=0;
+A4GL_debug("Searching for %s in %s got %s", srch,fmt, buff);
+memset(fmt+offset,' ',strlen(srch));
+return buff;
+}
+
+static int matched_date_format(char *fmt,char *data) {
+int a;
+        for (a=0;a<strlen(data);a++) {
+                if (fmt[a]==0) return 0; // Reached the end unexpectedly
+
+
+                if (data[a]>='0'&&data[a]<='9')  {
+                        // Have we got a digit where we'd expect one ?
+                        if (tolower(fmt[a])=='d'|| tolower(fmt[a])=='m' || tolower(fmt[a])=='y') ;
+                        else {
+                                return 0;
+                        }
+                } else {
+                        // Have we got a non-digit where we'd expect a digit ?
+                        if (tolower(fmt[a])=='d'|| tolower(fmt[a])=='m' || tolower(fmt[a])=='y') return 0;
+                }
+        }
+        A4GL_debug("Got what looks like a valid date for the format");
+        // Excellent
+        return 1;
+}
+
+
 
 
 
@@ -2863,7 +2911,118 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	  A4GL_debug ("COPY -> %s instead", fld_data);
 	}
 
-//    }
+
+  if (fprop->datatype == DTYPE_DATE)
+    {
+      int adate;
+      int done=0;
+      
+	  if (ptr)
+	    {
+	      char tmpbuff[200];
+		char format[256];
+	      static char buff_new[256];
+	      //int mm;
+	      int rval;
+	      char *mmm_s;
+	      int mmm;
+	      int dd;
+	      //int yyyy;
+	      int yy;
+	      char *d;
+
+		if (!matched_date_format(format,fld_data)) {
+      				if (A4GL_stod (fld_data, &adate, 0) == 1 )
+					{
+	  				char *d;
+	  				static char buff_new[256];
+	  				A4GL_push_date (adate);
+	  				d = A4GL_char_pop ();
+	  				strcpy (buff_new, d);
+	  				free (d);
+	  				fld_data = buff_new;
+				
+				}
+				return fld_data;
+		}
+
+	      memset (buff_new, 0, 255);
+		strcpy(format,ptr); // 'format' will get changed by the calls to get_data_from_formatted_field
+		A4GL_debug("fld_data=%s\n",fld_data);
+	      strcpy (tmpbuff, fld_data);
+	      mmm_s = get_data_from_formatted_field ("mmm", tmpbuff, format);
+	      if (mmm_s)
+		{
+		  int a;
+		  for (a = 1; a <= 12; a++)
+		    {
+		      if (strcmp (A4GL_find_str_resource_int ("_MON", a), mmm_s) == 0)
+			{
+			  mmm = a;
+			  break;
+			}
+		    }
+		}
+	      else
+		{
+	      d = get_data_from_formatted_field ("mm", tmpbuff, format);
+
+	      if (d)
+		mmm = atol (d);
+	      else
+		mmm = -1;
+		}
+
+	      // Just removed any 'ddd' - they are ignored...
+	      d = get_data_from_formatted_field ("ddd", tmpbuff, format);
+
+	      d = get_data_from_formatted_field ("dd", tmpbuff, format);
+	      if (d)
+		dd = atol (d);
+	      else
+		dd = -1;
+	      d = get_data_from_formatted_field ("yyyy", tmpbuff, format);
+	      if (d)
+		yy = atol (d);
+	      else{
+	      d = get_data_from_formatted_field ("yy", tmpbuff, format);
+	      if (d)
+		yy = A4GL_modify_year (atol (d));
+	      else
+		yy = -1;
+		}
+
+		if (dd==-1 || mmm==-1 || yy==-1) {
+			// Couldn't figure  out one of them...
+			A4GL_exitwith("Unable to determine date from format");
+			return "";
+		}
+		A4GL_debug("Got dd=%d mmm=%d yy=%d",dd,mmm,yy);
+
+	      rval = A4GL_gen_dateno (dd, mmm, yy);
+	      A4GL_push_date (rval);
+	      d = A4GL_char_pop ();
+	      strcpy (buff_new, d);
+		done++;
+	      free (d);
+	      fld_data = buff_new;
+	    }
+      if (!done) {
+      if (A4GL_stod (fld_data, &adate, 0) == 1 )
+	{
+	  char *d;
+	  static char buff_new[256];
+	  A4GL_push_date (adate);
+	  d = A4GL_char_pop ();
+	  strcpy (buff_new, d);
+	  free (d);
+	  fld_data = buff_new;
+
+	}
+     }
+    }
+
+
   A4GL_debug ("Returning : %s", fld_data);
   return fld_data;
 }
