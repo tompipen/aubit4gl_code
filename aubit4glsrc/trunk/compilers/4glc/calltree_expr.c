@@ -7,6 +7,7 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
 char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) ;
+static char *local_field_name_list_as_char(struct fh_field_list *fl) ;
 
 char *
 upshift (char *a)
@@ -198,7 +199,11 @@ FILE *f;
                 }
                 break;
         case ET_EXPR_INFIELD: {
-			return "INFIELD(..)";
+			char buff[2000];
+			strcpy(buff,"INFIELD(");
+				strcat(buff,local_field_name_list_as_char(e->expr_str_u.expr_infield->field_list));
+			strcat(buff,")");
+			return buff; //"INFIELD(..)";
 		}
 
         case ET_EXPR_OP_GREATER_THAN_EQ:
@@ -403,4 +408,56 @@ char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) {
         return strdup(buff);
 }
 
+static char *local_ident_as_string(expr_str *f,int quote) {
+static char buff[2000];
+        switch (f->expr_type) {
+                case ET_EXPR_IDENTIFIER:
+                        if (quote) {
+                                sprintf(buff,"\"%s\"", f->expr_str_u.expr_string);
+                        } else {
+                                sprintf(buff,"%s", f->expr_str_u.expr_string);
+                        }
+                        return buff;
+                case ET_E_V_OR_LIT_STRING:
+                        sprintf(buff,"%s", f->expr_str_u.expr_string);
+                        return buff;
 
+                default:
+                        A4GL_assertion(1,"Not handled");
+        }
+        return "";
+}
+
+
+
+static char *local_field_name_as_char(char*fname,char *sub) {
+static char buff[256];
+SPRINTF2(buff,"%s[%s]",fname,sub);
+return buff;
+}
+
+
+static char *local_field_name_list_as_char(struct fh_field_list *fl) {
+int a;
+char *ptr=0;
+char *ptr_field;
+
+A4GL_assertion(fl==0,"No field list...");
+
+ptr=acl_malloc2(10); /* Set it up initially...*/
+strcpy(ptr,"");
+for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
+        if (fl->field_list_entries.field_list_entries_val[a].fieldsub) {
+                ptr_field=local_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), expr_as_string_when_possible(fl->field_list_entries.field_list_entries_val[a].fieldsub));
+        } else {
+                ptr_field=local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1);
+
+        }
+        ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+2);
+        if (strlen(ptr)) strcat(ptr,",");
+	ptr_field=A4GL_strip_quotes(ptr_field);
+        strcat(ptr,ptr_field);
+}
+
+return ptr;
+}

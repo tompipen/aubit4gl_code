@@ -11,6 +11,8 @@
 #define MODE_BUY 1
 
 static int indent = 0;
+char currfunc[2000];
+char currmod[2000];
 static int cache_expression (char *s, expr_str ** ptr, int mode);
 //expr_str *get_expr_datatype (int n);
 extern int yylineno;
@@ -405,8 +407,14 @@ system_function_dtype (char *funcname)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "startlog") == 0)
     return -1;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_send_to_ui") == 0)
+    return -1;
+  if (A4GL_aubit_strcasecmp (funcname, "fgl_settitle") == 0)
+    return -1;
 
 // INTs
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_sendfile_to_ui") == 0)
+    return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "length") == 0)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "weekday") == 0)
@@ -571,6 +579,7 @@ struct function *functions = 0;
 int functions_cnt = 0;
 
 FILE *output = 0;
+FILE *dot_output=0;
 
 
 
@@ -722,6 +731,9 @@ cache_expression (char *s, expr_str ** ptr, int mode)
       // Got a function call - add it to the stack..
       if (mode == MODE_BUY) {
 	  			print_indent ();
+				if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
+	  			fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+				}
 	  			fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname,
 						expr->expr_str_u.expr_function_call->line
 					);
@@ -1755,23 +1767,36 @@ check_program (module_definition * mods, int nmodules)
     }
 
   output = fopen ("calltree.xml", "w");
+
   if (output == 0)
     {
-      printf ("Unable to open output file\n");
+      printf ("Unable to open output file (calltree.xml)\n");
+      exit (2);
+    }
+  dot_output = fopen ("calltree.dot", "w");
+  if (dot_output == 0)
+    {
+      printf ("Unable to open output file (calltree.dot)\n");
       exit (2);
     }
 
 
   fprintf (output, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
   fprintf (output, "<PROGRAM>\n");
+  fprintf(dot_output,"digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
+  fprintf(dot_output,"rankdir=LR;\nratio=fill;\n");
 
   for (a = 0; a < functions_cnt; a++)
     {
       if (functions[a].f_or_r == 'F')
 	{
 	  struct s_function_definition *f;
-	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module,
-		   functions[a].line);
+		strcpy(currfunc,functions[a].function);
+		strcpy(currmod,functions[a].module);
+
+  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"0\"><tr><td colspan=\"2\" bgcolor=\"#c0c0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+
+	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].line);
 	  f = functions[a].ptr;
 	  indent++;
 	  print_indent(); fprintf (output, "<COMMANDS>\n");
@@ -1785,6 +1810,8 @@ check_program (module_definition * mods, int nmodules)
 	{
 	  int b;
 	  struct s_report_definition *r;
+	  strcpy(currfunc,functions[a].function);
+		strcpy(currmod,functions[a].module);
 	  fprintf (output, "<REPORT NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module,
 		   functions[a].line);
 	  r = functions[a].ptr;
@@ -1823,7 +1850,9 @@ check_program (module_definition * mods, int nmodules)
 
     }
   fprintf (output, "</PROGRAM>\n");
+  fprintf(dot_output,"}\n");
   fclose (output);
+  fclose (dot_output);
   return 1;
 }
 
@@ -2017,6 +2046,8 @@ main (int argc, char *argv[])
       printf ("Usage : %s infile infile...\n", argv[0]);
       exit (2);
     }
+A4GL_build_user_resources ();
+
 
   m = malloc (sizeof (struct module_definition) * (argc - 1));
 

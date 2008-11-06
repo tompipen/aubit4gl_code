@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.135 2008-11-04 17:58:59 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.136 2008-11-06 20:49:38 mikeaubury Exp $";
 #endif
 
 
@@ -3583,7 +3583,7 @@ A4GL_LL_clr_form_fields (int to_defaults, char *defs)
 void *
 A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
 			 char *l, char *r, int curr_width, int curr_height,
-			 int fl, void *currwin, int isborder)
+			 int fl, void *currwin, int isborder,int construct_not_added,int dtype)
 {
   static char rbuff[1024];
   //static char rbuff2[1024];

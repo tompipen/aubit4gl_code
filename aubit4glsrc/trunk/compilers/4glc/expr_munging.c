@@ -537,6 +537,7 @@ char buff[256];
   switch (p->expr_type)
     {
 
+
     case ET_EXPR_CACHED:
 		return expr_datatype(get_expr_datatype(p->expr_str_u.expr_long));
 
@@ -1013,10 +1014,20 @@ case ET_EXPR_VARIABLE_USAGE :
           ensure_float (p->expr_str_u.expr_op->right, 0);
           return DTYPE_FLOAT;
         }
+      if (l == DTYPE_FLOAT && r == DTYPE_MONEY)
+        {
+          ensure_float (p->expr_str_u.expr_op->left, 0);
+          ensure_decimal (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_MONEY;
+        }
+      if (l == DTYPE_INT && r == DTYPE_MONEY)
+        {
+          return DTYPE_MONEY;
+        }
 		sprintf(buff, "%s!=%s",dtype_as_string(l), dtype_as_string(r));
 		//A4GL_pause_execution();
 		A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (*)", buff);
-      fprintf (stderr, "UNHANDLED MULT %d(%s) %d(%s) (%x %x)\n",
+      	fprintf (stderr, "UNHANDLED MULT %d(%s) %d(%s) (%x %x)\n",
                p->expr_str_u.expr_op->left->expr_type,
                expr_name (p->expr_str_u.expr_op->left->expr_type),
                p->expr_str_u.expr_op->right->expr_type,

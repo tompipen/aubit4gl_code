@@ -9,7 +9,7 @@
 //void A4GL_warn (char *s);
 
 
-
+static int dbopen=0;
 //char *lint_get_variable_usage_as_string (struct variable_usage *var_usage);
 
 //int read_module_definition(module_definition *s,char *filename);
@@ -289,3 +289,39 @@ return "X";
 void set_yytext(char *s) {
 }
 
+
+
+int current_is_report() { // just used for lineno/pageno ..
+return 0;
+}
+
+
+
+void
+open_db (char *s)
+{
+  char db[2048];
+  char buff[256];
+
+  A4GL_debug ("open_db %s", A4GL_null_as_null (s));
+  strcpy (db, s);
+
+
+  A4GLSQL_set_status (0, 1);
+  A4GLSQL_init_connection (db);
+  if (A4GLSQL_get_status () != 0)
+    {
+      SPRINTF2 (buff, "Could not connect to database %s (%s)",
+               A4GL_null_as_null (db),
+               A4GL_null_as_null (A4GLSQL_get_sqlerrm ()));
+       fprintf(stderr,buff);
+	//exit(2);
+	dbopen=0;
+    }
+dbopen=1;
+}
+
+
+//int isdbopeb() {
+	//return dbopen;
+//}

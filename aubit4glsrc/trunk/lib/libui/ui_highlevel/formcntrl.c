@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.71 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.72 2008-11-06 20:49:38 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.71 2008-11-05 18:44:23 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.72 2008-11-06 20:49:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -348,6 +348,14 @@ A4GL_debug("Setting attrib to %d\n",attrib);
     }
   //A4GL_debug("Done newMovement - last_field was %p new_field is %p",last_field,new_field);
 }
+static int check_for_construct_large_for_key(int a) {
+        if (a=='\t' || a=='\n' || a=='\r') return 0;
+        if (a==A4GLKEY_DOWN) return 0;
+        if (a==A4GLKEY_UP) return 0;
+        if (a==A4GLKEY_RIGHT) return 1;
+        if (a==A4GLKEY_LEFT) return 0;
+        return 1;
+}
 
 
 
@@ -618,7 +626,6 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 	  A4GL_assertion (sio->currentfield == 0, "No current field");
 	  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
 	  A4GL_assertion (fprop == 0, "No fprop");
-
 	  A4GL_debug ("Checking key state.. %d", fcntrl.extent);
 	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 	    {
@@ -654,8 +661,11 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 		    case DTYPE_DECIMAL:
 		    case DTYPE_MONEY:
 
-
 		      A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_CLR_EOF);
+			if (sio->constr[sio->curr_attrib].value) {
+				free(sio->constr[sio->curr_attrib].value);
+				sio->constr[sio->curr_attrib].value=0;
+			}
 		      A4GL_debug ("Clear to end of field because of datatype");
 		    }
 		}
@@ -837,6 +847,7 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 	    {
 	      struct s_form_dets *form;
 	      char rbuff[1024];
+		int metric;
 	      int w;
 	      memset (rbuff, 0, sizeof (rbuff));
 	      if (sio->constr[sio->curr_attrib].value)
@@ -850,13 +861,14 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 
 	      A4GL_trim (rbuff);
 	      form = sio->currform;
-
-	      w = form->fileform->metrics.metrics_val[A4GL_get_metric_for (form, form->currentfield)].w;
+		metric=A4GL_get_metric_for (form, sio->currentfield);
+	      w = form->fileform->metrics.metrics_val[metric].w;
 	      A4GL_debug
 		("CONSTRUCT - do we need a large window : '%s' gfw=%d strlen=%d w=%d",
 		 rbuff, A4GL_get_field_width (sio->currentfield), strlen (rbuff), w);
 	      if (strlen (rbuff) >= w)
 		{
+		if (check_for_construct_large_for_key(sio->fcntrl[a].extent)) { 
 		  struct struct_scr_field *fprop;
 		  int k;
 		  void *f;
@@ -884,12 +896,15 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 					     "]",
 					     UILIB_A4GL_get_curr_width (),
 					     UILIB_A4GL_get_curr_height (),
-					     A4GL_getcomment_line (), A4GL_get_currwin (), UILIB_A4GL_iscurrborder ());
+					     A4GL_getcomment_line (), A4GL_get_currwin (), UILIB_A4GL_iscurrborder (),construct_not_added,fprop->datatype);
 		  while (A4GL_construct_large_loop (f, evt, fprop));
 		  strcpy (rbuff, A4GL_LL_construct_large_finished (f));
 		  strcpy (rval, A4GL_LL_construct_large_finished (f));
 		  A4GL_comments (0);
 		  k = construct_last_key;
+                                A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_BEG_FIELD);
+                                A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_VALIDATION);
+
 		  if (k == A4GLKEY_CANCEL)
 		    {
 		      A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, k);
@@ -929,6 +944,7 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 
 		    }
 		  sio->currentfield = cf;
+		}
 		}
 	      else
 		{

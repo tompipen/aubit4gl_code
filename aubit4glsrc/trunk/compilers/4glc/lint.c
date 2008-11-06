@@ -630,9 +630,13 @@ check_function (struct module_definition *d, struct s_function_definition *f)
 		int ncols;
 		int nvars;
 		s=r->cmd_data.command_data_u.select_cmd.sql;
+		A4GL_setenv("EXPAND_COLUMNS","Y",1);
+		preprocess_sql_statement(s);
 		nvars=s->into->list.list_len;
 		ncols=s->select_list->list.list_len;
+		
 		if (nvars!=ncols) {
+			printf("nvars=%d ncols=%d\n", nvars, ncols);
 		      A4GL_lint (f->module, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
 		}
       }
@@ -2083,9 +2087,15 @@ system_function_dtype (char *funcname)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "startlog") == 0)
     return -1;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_send_to_ui") == 0)
+    return -1;
+  if (A4GL_aubit_strcasecmp (funcname, "fgl_settitle") == 0)
+    return -1;
 
 // INTs
   if (A4GL_aubit_strcasecmp (funcname, "length") == 0)
+    return DTYPE_INT;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_sendfile_to_ui") == 0)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "weekday") == 0)
     return DTYPE_INT;
@@ -2348,6 +2358,7 @@ find_function_single_rtype (char *funcname)
 
 
 /********************************************************************************/
+
 
 static void
 scan_module_entry (int *calltree, int a)
@@ -3021,7 +3032,10 @@ check_program (module_definition * mods, int nmodules)
     }
 
   printf ("Program\n");
-
+  if (dbname) {
+	open_db(dbname);
+	
+  }
 
   lint_module = "PROGRAM";
 

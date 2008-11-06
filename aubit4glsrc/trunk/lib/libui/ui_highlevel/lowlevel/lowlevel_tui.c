@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.116 2008-11-05 18:44:23 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.117 2008-11-06 20:49:38 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.116 2008-11-05 18:44:23 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.117 2008-11-06 20:49:38 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -2895,11 +2895,12 @@ void *
 A4GL_LL_construct_large (char *orig,
 			 void *vevt, int init_key, int initpos, char *left,
 			 char *right, int curr_width, int curr_height, int fl,
-			 void *currwin, int isborder)
+			 void *currwin, int isborder,int construct_not_added,int dtype)
 {
   static char rbuff[1024];
   FIELD *buff[4];
   PANEL *cwin;
+  //struct struct_scr_field *fprop;
   WINDOW *drwin;
   FORM *f;
   //int ins_ovl='o';
@@ -2909,7 +2910,6 @@ A4GL_LL_construct_large (char *orig,
   struct aclfgl_event_list *evt;
   evt = vevt;
   A4GL_debug ("In construct_large");
-
   strcpy (rbuff, orig);
   A4GL_trim (rbuff);
   fwidth = curr_width;
@@ -2939,6 +2939,51 @@ A4GL_LL_construct_large (char *orig,
 
   a = A4GL_form_post_form (f);
   A4GL_debug ("construct - post_form = %d", a);
+
+       if (isprint(init_key) && init_key>=0 && init_key<=255) {
+                if (construct_not_added) {
+                        char smbuff[2];
+                        smbuff[0]=init_key;
+                        smbuff[1]=0;
+                        strcat(rbuff, smbuff);
+                        A4GL_debug("rbuff=%s\n",rbuff);
+                } else {
+                        char smbuff[2000];
+                        if (initpos<=1) {
+                                int use_dtype;
+                                use_dtype=dtype & DTYPE_MASK;
+                                switch (use_dtype)
+                                        {
+                                        case DTYPE_SMINT:
+                                        case DTYPE_INT:
+                                        case DTYPE_SERIAL:
+                                        case DTYPE_FLOAT:
+                                        case DTYPE_DATE:
+                                        case DTYPE_SMFLOAT:
+                                        case DTYPE_DECIMAL:
+                                        case DTYPE_MONEY:
+                                                smbuff[0]=init_key;
+                                                smbuff[1]=0;
+                                                break;
+                                        default :
+                                                strcpy(smbuff,orig);
+                                                smbuff[0]=init_key;
+                                                break;
+                                        }
+
+                                //smbuff[0]=init_key;
+                                //smbuff[1]=0;
+                                strcpy(rbuff, smbuff);
+                        A4GL_debug("rbuff=%s\n",rbuff);
+                        }
+
+
+                }
+        }
+
+
+
+
   A4GL_LL_set_field_buffer (buff[1], 0, rbuff,0);
 
   A4GL_debug ("su");
