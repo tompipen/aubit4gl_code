@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.56 2008-11-05 14:23:35 mikeaubury Exp $
+# $Id: pg8.c,v 1.57 2008-11-06 11:33:42 mikeaubury Exp $
 #*/
 
 
@@ -61,6 +61,7 @@ static void fixtype (char *ptr, int *d, int *s,char *defaultval);
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 static void defaultNoticeProcessor (void *arg, const char *message);
 static void SetErrno (PGresult * res);
+
 
 
 #define BPCHAROID             1042
@@ -603,6 +604,21 @@ A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
   return "POSTGRES8";
 }
 
+static void ensure_dot_format_for_decimal_string(char *s) {
+if (strchr(s,',') && !strchr(s,'.')) {
+        char buff[200];
+        int a;
+        strcpy(buff,s);
+        for (a=0;a<strlen(s);a++) {
+                if (s[a]==',') buff[a]='.';
+                if (s[a]=='.') buff[a]=',';
+        }
+        printf("->%s\n",buff);
+        strcpy(s,buff);
+        return;
+}
+
+}
 
 
 static void
@@ -1701,6 +1717,18 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 			}
 		break;
 		}
+
+	case DTYPE_DECIMAL:
+	case DTYPE_MONEY:
+		{
+	    char buff[2000];
+	    strcpy (buff, ptr);
+		ensure_dot_format_for_decimal_string(buff);
+	  	A4GL_push_char (buff);
+      		A4GL_str_dot_to_dec (buff, (void *)obind[b].ptr);
+		}
+	break;
+
 
 	default:
 	  A4GL_push_char (ptr);
@@ -3707,5 +3735,8 @@ return s;
 void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 // does nothing in this driver
 }
+
+
+
 
 /* =============================== EOF ============================== */

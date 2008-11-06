@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.217 2008-11-06 10:14:02 mikeaubury Exp $
+# $Id: esql.ec,v 1.218 2008-11-06 11:33:42 mikeaubury Exp $
 #
 */
 
@@ -168,7 +168,7 @@ static void free_blobs(struct s_extra_info *e) ;
 
 EXEC SQL END DECLARE SECTION;
 
-char dectoasc_decsep=0;
+static char dectoasc_decsep=0;
 
 /*
 =====================================================================
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.217 2008-11-06 10:14:02 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.218 2008-11-06 11:33:42 mikeaubury Exp $";
 #endif
 
 
