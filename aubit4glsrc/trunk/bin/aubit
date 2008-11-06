@@ -1470,7 +1470,7 @@ OUTFILE="/tmp/dialog.tmp"
 	if test "$PID_AFTER" = ""; then
 		#This happens for unknown reason when running from RPM postinstall
 		verbose "pidof $DIALOG_EXE returned NULL"
-		ps -ef | grep $DIALOG_EXE
+		ps $PSFLAGS | grep $DIALOG_EXE
 	else
 		for an_pid_after in $PID_AFTER; do
 			GOTIT=0
@@ -1506,7 +1506,7 @@ OUTFILE="/tmp/dialog.tmp"
 	done
 	if test "$PID" != ""; then
 		kill $PID >/dev/null 2>&1
-		PID_NOW=`ps -ef | grep $PID | grep -v "grep $PID"`
+		PID_NOW=`ps $PSFLAGS | grep $PID | grep -v "grep $PID"`
 		if test "$PID_NOW" != ""; then
 			echo "ERROR: failed to kill PID=$PID"
 		fi
@@ -1758,7 +1758,7 @@ function main_setup_menu_set () {
 #
 function dcopserver_who () {
 	
-	DCOPSERVERS=`ps -ef | grep dcopserver | grep -v "grep dcopserver"`
+	DCOPSERVERS=`ps $PSFLAGS | grep dcopserver | grep -v "grep dcopserver"`
 	DCOPSERVER_CNT=`echo $DCOPSERVERS | wc -l`
 	
 	if test "$DCOPSERVER_CNT" = "1"; then
@@ -2947,7 +2947,7 @@ function which_programs () {
 	UPDATE_MIME_DATABASE="`which update-mime-database 2>/dev/null`"
 	
 	HAVE_GUI=0
-	HAS_X_RUNNING=`ps -ef | grep X11 | grep -v "grep X11"`
+	HAS_X_RUNNING=`ps $PSFLAGS | grep X11 | grep -v "grep X11"`
 	if test "$HAS_X_RUNNING" != ""; then
 		#Note that if user is not on console (eg. has a ssh session to machine
 		#that is running X) this is wrong; usier will have to use --force-tui
@@ -5530,6 +5530,14 @@ FLAGS=$@
 NUM_ARGS=$#
 NO_NEWLINE=0
 
+if ps ax > /dev/null 2> /dev/null
+then
+	PSFLAGS="ax"
+	export PSFLAGS
+else
+	PSFLAGS="-ef"
+	export PSFLAGS
+fi
 	which_programs
 	SO_EXT=".so"
 
