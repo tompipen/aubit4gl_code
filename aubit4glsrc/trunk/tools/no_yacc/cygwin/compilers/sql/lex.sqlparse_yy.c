@@ -389,216 +389,216 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_accept[1916] =
     {   0,
         0,    0,    0,    0,  362,  360,  342,  342,  360,  360,
-      360,  222,  206,  257,  302,  290,  296,  307,  267,  358,
-      289,  344,  254,  233,  219,  345,  301,  236,  218,  347,
+      360,  225,  209,  260,  305,  293,  299,  310,  270,  358,
+      292,  344,  257,  236,  222,  345,  304,  239,  221,  347,
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-      347,  347,    4,  314,    2,    3,    1,  342,    0,  348,
+      347,  347,    4,  317,    2,    3,    1,  342,    0,  348,
         0,  352,    0,  354,    0,    0,  359,    0,  358,   37,
         0,  350,  349,    0,    0,  351,    0,    0,    0,  347,
-      347,  347,  347,  347,  305,  347,  347,  347,  347,  306,
-      347,  347,  125,  347,  347,  347,  347,  347,  347,  347,
+      347,  347,  347,  347,  308,  347,  347,  347,  347,  309,
+      347,  347,  128,  347,  347,  347,  347,  347,  347,  347,
 
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-      347,  347,  347,  347,  347,  347,  308,  347,  347,  347,
-      347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-      347,  309,  310,  347,  347,  347,  347,  347,  347,  347,
       347,  347,  347,  347,  347,  347,  311,  347,  347,  347,
-      347,  347,  347,  347,  347,  347,  234,  352,  354,  303,
-        0,    5,  204,  235,  232,  188,    0,    0,  357,  283,
-      284,  347,  285,  286,    0,  287,  288,  347,  347,  347,
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-      347,  347,  347,  291,  292,  210,  347,  347,  347,  347,
+      347,  312,  313,  347,  347,  347,  347,  347,  347,  347,
+      347,  347,  347,  347,  347,  347,  314,  347,  347,  347,
+      347,  347,  347,  347,  347,  347,  237,  352,  354,  306,
+        0,    5,  207,  238,  235,  191,    0,    0,  357,  286,
+      287,  347,  288,  289,    0,  290,  291,  347,  347,  347,
+      347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
+      347,  347,  347,  294,  295,  213,  347,  347,  347,  347,
 
-      347,  347,  347,  313,  225,  347,  347,  347,  347,  347,
-      347,  347,  347,  293,  347,  347,  347,  347,  347,  347,
-      347,  347,    0,  347,  347,  347,  214,    0,  347,  347,
-      347,  347,  347,  347,  347,  294,   57,  295,  297,  347,
-      347,  347,  347,  298,  347,  347,  347,  347,  347,  347,
-      347,  347,  347,  347,  347,  347,  347,  347,  299,  347,
-      347,  347,  282,  347,  347,  347,  347,  300,  347,  347,
+      347,  347,  347,  316,  228,  347,  347,  347,  347,  347,
+      347,  347,  347,  296,  347,  347,  347,  347,  347,  347,
+      347,  347,    0,  347,  347,  347,  217,    0,  347,  347,
+      347,  347,  347,  347,  347,  297,   60,  298,  300,  347,
+      347,  347,  347,  301,  347,  347,  347,  347,  347,  347,
+      347,  347,  347,  347,  347,  347,  347,  347,  302,  347,
+      347,  347,  285,  347,  347,  347,  347,  303,  347,  347,
       347,    0,  347,  347,  347,  347,  347,  347,  347,  347,
       347,  347,  347,  347,  347,  347,    0,    0,    0,    0,
-      347,    0,  347,  347,  347,  347,  347,  263,  264,  182,
+      347,    0,  347,  347,  347,  347,  347,  266,  267,  185,
 
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-      265,  347,  347,  347,  347,  266,  347,  347,  268,  269,
-      347,  347,  347,  347,  347,  347,  337,  347,  347,    0,
-      347,  347,  270,  347,  347,  347,  347,  271,  347,    0,
-        0,  347,  347,  347,  347,  272,    0,  347,  347,  273,
+      268,  347,  347,  347,  347,  269,  347,  347,  271,  272,
+      347,  347,  347,  347,  347,  347,  340,  347,  347,    0,
+      347,  347,  273,  347,  347,  347,  347,  274,  347,    0,
+        0,  347,  347,  347,  347,  275,    0,  347,  347,  276,
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-      347,  347,  347,    0,  245,  347,  347,  347,  347,  347,
-      347,  347,  274,  347,  347,  347,  347,  347,  347,  347,
-      347,  347,  347,    0,  347,  275,  347,  347,  276,  277,
-      318,    0,    0,  347,  246,  347,  347,  347,  347,  347,
+      347,  347,  347,    0,  248,  347,  347,  347,  347,  347,
+      347,  347,  277,  347,  347,  347,  347,  347,  347,  347,
+      347,  347,  347,    0,  347,  278,  347,  347,  279,  280,
+      321,    0,    0,  347,  249,  347,  347,  347,  347,  347,
 
-        0,  278,  347,  347,  347,  347,  279,  347,  347,  347,
-      280,    0,    0,    0,    0,  247,    0,  347,  347,  347,
-      347,  347,  347,  248,  347,  347,  347,  347,  249,  347,
+        0,  281,  347,  347,  347,  347,  282,  347,  347,  347,
+      283,    0,    0,    0,    0,  250,    0,  347,  347,  347,
+      347,  347,  347,  251,  347,  347,  347,  347,  252,  347,
       347,  347,  347,  347,  347,  347,  347,  347,  347,  347,
-        0,  347,  347,  347,  347,  347,  220,    0,  347,  250,
-      251,    0,  347,  347,  252,  347,  347,  347,  315,    0,
-        0,  253,  347,  347,  347,  347,    0,    0,    0,  347,
-        0,    0,    0,  347,    0,  347,  347,    0,  347,  255,
-      256,    0,  183,    0,    0,    0,    0,    0,    0,  347,
-      347,  258,  259,  347,  347,  347,  347,  347,  347,  347,
+        0,  347,  347,  347,  347,  347,  223,    0,  347,  253,
+      254,    0,  347,  347,  255,  347,  347,  347,  318,    0,
+        0,  256,  347,  347,  347,  347,    0,    0,    0,  347,
+        0,    0,    0,  347,    0,  347,  347,    0,  347,  258,
+      259,    0,  186,    0,    0,    0,    0,    0,    0,  347,
+      347,  261,  262,  347,  347,  347,  347,  347,  347,  347,
 
-      347,  347,  347,  320,  347,  347,  347,   77,    0,    0,
+      347,  347,  347,  323,  347,  347,  347,   80,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,  347,  347,
-      347,  347,    0,    0,  319,  260,  347,    0,  347,  347,
-      347,  347,    0,  347,  347,  347,  347,  262,  338,    0,
-      347,    0,    0,    0,    0,    0,    0,  312,    0,  347,
+      347,  347,    0,    0,  322,  263,  347,    0,  347,  347,
+      347,  347,    0,  347,  347,  347,  347,  265,  341,    0,
+      347,    0,    0,    0,    0,    0,    0,  315,    0,  347,
       347,  347,  347,  347,  347,  347,   55,    0,  347,  347,
-      347,  347,  347,  347,  347,  223,  347,  347,  347,    0,
-        0,    0,    0,    0,    0,    0,  224,  347,  347,  226,
-      227,  347,    0,  347,    0,  347,  347,    0,  228,  325,
-        0,    0,    0,  229,  347,  347,    0,    0,    0,  281,
+      347,  347,  347,  347,  347,  226,  347,  347,  347,    0,
+        0,    0,    0,    0,    0,    0,  227,  347,  347,  229,
+      230,  347,    0,  347,    0,  347,  347,    0,  231,  328,
+        0,    0,    0,  232,  347,  347,    0,    0,    0,  284,
 
-        0,    0,    0,    0,    0,    0,    0,  347,  230,    0,
-      231,    0,    0,    0,    0,  221,    0,    0,    0,  347,
-      347,  347,    0,  237,  347,  347,  347,  347,  238,  347,
-      347,  239,  240,  241,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,  347,  233,    0,
+      234,    0,    0,    0,    0,  224,    0,    0,    0,  347,
+      347,  347,    0,  240,  347,  347,  347,  347,  241,  347,
+      347,  242,  243,  244,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,  347,
-      347,    0,  333,  347,    0,    0,  242,    0,    0,    0,
-        0,    0,    0,  347,  347,  243,    0,    0,  244,  347,
+      347,    0,  336,  347,    0,    0,  245,    0,    0,    0,
+        0,    0,    0,  347,  347,  246,    0,    0,  247,  347,
       347,    0,    0,    0,    0,    0,  347,    0,    0,    0,
-        0,    0,    0,  304,    0,  205,   52,  347,  347,    0,
-      207,  347,    0,    0,  208,  347,  347,  347,  209,  212,
+        0,    0,    0,  307,    0,  208,   52,  347,  347,    0,
+      210,  347,    0,    0,  211,  347,  347,  347,  212,  215,
 
         0,  347,  347,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,  347,  347,  317,    0,    0,  347,    0,  347,
-      347,    0,    0,    0,    0,    0,  213,  347,    0,    0,
-      203,    0,    0,  334,    0,    0,    0,    0,    0,  216,
-        0,    0,  331,    0,    0,    0,    0,    0,    0,  211,
-      347,  347,    0,  347,  347,    0,  347,  347,  347,  215,
-       76,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,  347,  347,  320,    0,    0,  347,    0,  347,
+      347,    0,    0,    0,    0,    0,  216,  347,    0,    0,
+      206,    0,    0,  337,    0,    0,    0,    0,    0,  219,
+        0,    0,  334,    0,    0,    0,    0,    0,    0,  214,
+      347,  347,    0,  347,  347,    0,  347,  347,  347,  218,
+       79,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,  347,  347,    0,  347,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,    0,  217,   58,
+        0,    0,    0,    0,    0,    0,    0,    0,  220,   61,
 
         0,    0,    0,    0,    0,    0,  347,    0,    0,    0,
-        0,    0,    0,    0,    0,  336,  347,    0,  347,    0,
+        0,    0,    0,    0,    0,  339,  347,    0,  347,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,  347,
-      192,  193,    0,    0,  347,  194,    0,    0,    0,    0,
+      195,  196,    0,    0,  347,  197,    0,    0,    0,    0,
         0,    0,    0,    0,    0,  347,    0,    0,    0,  347,
-        0,    0,  195,  196,    0,    0,    0,    0,  197,    0,
+        0,    0,  198,  199,    0,    0,    0,    0,  200,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,  198,    0,  200,  184,    0,
-        0,    0,  347,    0,    0,  201,  347,  347,    0,    0,
+        0,    0,    0,    0,    0,  201,    0,  203,  187,    0,
+        0,    0,  347,    0,    0,  204,  347,  347,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-        0,  347,  202,    0,  347,    0,    0,  102,    0,    0,
+        0,  347,  205,    0,  347,    0,    0,  105,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,  181,    0,  347,    0,    0,    0,    0,    0,
+        0,    0,  184,    0,  347,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,  347,
-        0,    0,    0,    0,    0,  185,    0,    0,    0,    0,
-        0,    0,    0,    0,  186,  187,    0,    0,    0,    0,
-      347,    0,    0,    0,    0,    0,    0,    0,  189,    0,
-       38,    0,    0,  190,    0,    0,    0,    0,   59,    0,
+        0,    0,    0,    0,    0,  188,    0,    0,    0,    0,
+        0,    0,    0,    0,  189,  190,    0,    0,    0,    0,
+      347,    0,    0,    0,    0,    0,    0,    0,  192,    0,
+       38,    0,    0,  193,    0,    0,    0,    0,   62,    0,
 
-        0,   72,    0,  199,    0,    0,    0,    0,    0,  347,
-        0,    0,    0,  347,   73,   75,    0,    0,  329,    0,
+        0,   75,    0,  202,    0,    0,    0,    0,    0,  347,
+        0,    0,    0,  347,   76,   78,    0,    0,  332,    0,
         0,    0,    0,    0,    0,    0,    0,    0,  347,    0,
-      322,    0,    0,  104,  106,    0,    0,    0,   94,  101,
-        0,    0,    0,    0,    0,  191,    0,    0,    0,    0,
+      325,    0,    0,  107,  109,    0,    0,    0,   97,  104,
+        0,    0,    0,    0,    0,  194,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,  169,    0,    0,    0,   83,
+        0,    0,    0,    0,    0,  172,    0,    0,    0,   86,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,  347,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,  170,    0,  147,    0,
+        0,    0,    0,    0,    0,    0,  173,    0,  150,    0,
 
-        0,    0,    0,    0,  316,  172,    0,    0,    0,   40,
+        0,    0,    0,    0,  319,  175,    0,    0,    0,   40,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,  174,    0,    0,  175,    0,    0,    0,    0,    0,
-      176,    0,    0,    0,  347,    0,    0,    0,  330,    0,
-        0,    0,    0,    0,    0,    0,    0,    0,  178,    0,
-      117,    0,  108,    0,   98,    0,    0,  103,  105,    0,
-        0,    0,   93,    0,    0,    0,    0,    0,    0,    0,
+        0,  177,    0,    0,  178,    0,    0,    0,    0,    0,
+      179,    0,    0,    0,  347,    0,    0,    0,  333,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,  181,    0,
+      120,    0,  111,    0,  101,    0,    0,  106,  108,    0,
+        0,    0,   96,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,  346,  356,    0,    0,
-       71,   70,    0,    0,  179,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,    0,  158,  321,
+       74,   73,    0,    0,  182,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,    0,  161,  324,
 
-        0,    0,    0,    7,    0,    0,    0,    0,  159,    0,
-        0,    0,    0,    0,    0,    0,    0,  160,  332,    0,
-      161,    0,    0,  162,    0,    0,    0,    0,    0,   29,
-        0,    0,    0,  163,    0,  324,    0,    0,    0,    0,
-        0,    0,  323,  164,    0,  165,    0,    0,    0,    0,
-        0,  347,   74,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,  110,  100,  114,   96,
-      107,    0,   97,    0,   95,    0,    0,  166,   53,    0,
-       54,    0,    0,    0,    0,   61,  167,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,  124,    0,    0,
+        0,    0,    0,    7,    0,    0,    0,    0,  162,    0,
+        0,    0,    0,    0,    0,    0,    0,  163,  335,    0,
+      164,    0,    0,  165,    0,    0,    0,    0,    0,   29,
+        0,    0,    0,  166,    0,  327,    0,    0,    0,    0,
+        0,    0,  326,  167,    0,  168,    0,    0,    0,    0,
+        0,  347,   77,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,  113,  103,  117,   99,
+      110,    0,  100,    0,   98,    0,    0,  169,   53,    0,
+       54,    0,    0,    0,    0,   64,  170,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,  127,    0,    0,
 
-        0,    0,  150,    0,    0,    6,    0,    0,    0,    0,
-        0,  151,    0,  153,    0,    0,    0,    0,   82,   65,
+        0,    0,  153,    0,    0,    6,    0,    0,    0,    0,
+        0,  154,    0,  156,    0,    0,    0,    0,   85,   68,
         0,    0,    0,    0,    0,   28,    0,    0,    0,    0,
-        0,    0,   84,    0,    0,    0,    0,    0,    0,    0,
-        0,  180,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,  112,  116,  109,
-       99,  113,  154,    0,  261,    0,    0,    0,    0,    0,
+        0,    0,   87,    0,    0,    0,    0,    0,    0,    0,
+        0,  183,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,  115,  119,  112,
+      102,  116,  157,    0,  264,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-      152,    0,    0,    0,   79,    0,    0,  171,    0,  168,
+      155,    0,    0,    0,   82,    0,    0,  174,    0,  171,
 
        31,   30,    0,   34,    0,    0,    0,    0,    0,    0,
-        0,   92,    0,    0,   43,   63,  177,  155,    0,    0,
-        0,    0,    0,    0,  335,  328,    0,    0,  341,    0,
-        0,    0,  111,  115,    0,    0,    0,    0,    0,    0,
-       80,  143,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,  144,    0,    0,    0,    0,   27,    0,    0,
-        0,    0,   66,    0,    0,    0,    0,   32,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,   90,    0,    0,
-        0,    0,    0,    0,    0,    0,  156,  339,    0,    0,
-        0,    0,   60,  118,    0,    0,    0,    0,    0,    0,
+        0,   95,    0,    0,   43,   66,  180,  158,    0,    0,
+        0,    0,    0,    0,  338,  331,    0,    0,   59,    0,
+        0,    0,  114,  118,    0,    0,    0,    0,    0,    0,
+       83,  146,    0,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,  147,    0,    0,    0,    0,   27,    0,    0,
+        0,    0,   69,    0,    0,    0,    0,   32,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,   93,    0,    0,
+        0,    0,    0,    0,    0,    0,  159,   57,    0,    0,
+        0,    0,   63,  121,    0,    0,    0,    0,    0,    0,
 
-       47,    0,    0,    0,    0,   78,    0,    0,    0,    0,
+       47,    0,    0,    0,    0,   81,    0,    0,    0,    0,
         0,    0,    0,   19,    0,    0,   14,    0,   23,    0,
-        0,    0,   81,    0,    0,    0,    0,    0,    0,    0,
-       39,   85,    0,    0,    0,  141,    0,    0,    0,    0,
-        0,  157,  340,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,   67,    0,    0,
+        0,    0,   84,    0,    0,    0,    0,    0,    0,    0,
+       39,   88,    0,    0,    0,  144,    0,    0,    0,    0,
+        0,  160,   58,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,   70,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,   86,   69,    0,    0,   33,    0,   36,    0,    0,
-        0,   88,    0,    0,   46,   56,    0,    0,    0,    0,
-        0,    0,    0,  326,    0,    0,  140,    0,   41,    0,
+        0,   89,   72,    0,    0,   33,    0,   36,    0,    0,
+        0,   91,    0,    0,   46,   56,    0,    0,    0,    0,
+        0,    0,    0,  329,    0,    0,  143,    0,   41,    0,
 
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-      136,    0,    0,    0,    0,    8,    0,   26,    0,   68,
-      148,    0,    0,    0,   91,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,  327,  149,  137,  138,    0,    0,
-        0,   87,    0,    0,    0,    0,    0,    0,    0,    0,
-       20,    0,   15,    0,    0,   24,    0,   35,   89,    0,
+      139,    0,    0,    0,    0,    8,    0,   26,    0,   71,
+      151,    0,    0,    0,   94,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,  330,  152,  140,  141,    0,    0,
+        0,   90,    0,    0,    0,    0,    0,    0,    0,    0,
+       20,    0,   15,    0,    0,   24,    0,   35,   92,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,  122,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,  125,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-        0,    0,   42,   51,    0,  123,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    9,   25,    0,    0,   64,
+        0,    0,   42,   51,    0,  126,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    9,   25,    0,    0,   67,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,  121,    0,  146,    0,    0,
+        0,    0,    0,    0,    0,  124,    0,  149,    0,    0,
        21,    0,   16,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,  142,    0,    0,
-        0,    0,  145,    0,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,    0,  145,    0,    0,
+        0,    0,  148,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,   22,    0,   10,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
         0,    0,    0,    0,    0,    0,    0,    0,   17,    0,
-        0,    0,    0,    0,    0,    0,  135,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,  138,    0,    0,    0,
         0,    0,    0,    0,    0,   49,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,  139,    0,    0,    0,    0,    0,    0,   18,   11,
+        0,  142,    0,    0,    0,    0,    0,    0,   18,   11,
         0,   44,   45,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,  128,  120,    0,    0,    0,
-        0,    0,    0,    0,  134,    0,  131,   50,    0,    0,
-        0,    0,  133,    0,    0,    0,    0,    0,    0,  119,
-       12,    0,   62,    0,  130,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,    0,  131,  123,    0,    0,    0,
+        0,    0,    0,    0,  137,    0,  134,   50,    0,    0,
+        0,    0,  136,    0,    0,    0,    0,    0,    0,  122,
+       12,    0,   65,    0,  133,    0,    0,    0,    0,    0,
 
-      127,    0,    0,    0,    0,   13,  132,    0,    0,    0,
-        0,  129,   48,  126,    0
+      130,    0,    0,    0,    0,   13,  135,    0,    0,    0,
+        0,  132,   48,  129,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -2040,22 +2040,22 @@ static yyconst flex_int32_t yy_rule_can_match_eol[362] =
     {   0,
 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 
+    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+    1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+    1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 
-    1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 
-    1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 
+    1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 
+    0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 
-    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 
+    0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 
     0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
@@ -2641,1578 +2641,1578 @@ YY_RULE_SETUP
 { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_BUFFERED_LOG;} /* 1 */
 	YY_BREAK
 case 57:
+/* rule 57 can match eol */
 YY_RULE_SETUP
-#line 113 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MDY;} /* 1 */
+#line 112 "m2.lex"
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FILL_COLOR;} /* 1 */
 	YY_BREAK
 case 58:
+/* rule 58 can match eol */
 YY_RULE_SETUP
-#line 115 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WEEKDAY;} /* 1 */
+#line 114 "m2.lex"
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FILL_COLOR;} /* 2 */
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 117 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODE_ANSI;} /* 1 */
+#line 116 "m2.lex"
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_PARAMETER;} /* 1 */
 	YY_BREAK
 case 60:
-/* rule 60 can match eol */
 YY_RULE_SETUP
 #line 119 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return START_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MDY;} /* 1 */
 	YY_BREAK
 case 61:
-/* rule 61 can match eol */
 YY_RULE_SETUP
 #line 121 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_LOG_IN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WEEKDAY;} /* 1 */
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
 #line 123 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_CONSTRAINTS_ALL_IMMEDIATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODE_ANSI;} /* 1 */
 	YY_BREAK
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
 #line 125 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RECOVER_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return START_DATABASE;} /* 1 */
 	YY_BREAK
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
 #line 127 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ROLLFORWARD_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_LOG_IN;} /* 1 */
 	YY_BREAK
 case 65:
 /* rule 65 can match eol */
 YY_RULE_SETUP
 #line 129 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_TRIGGER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_CONSTRAINTS_ALL_IMMEDIATE;} /* 1 */
 	YY_BREAK
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
 #line 131 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_AUDIT_FOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RECOVER_TABLE;} /* 1 */
 	YY_BREAK
 case 67:
 /* rule 67 can match eol */
 YY_RULE_SETUP
 #line 133 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_AUDIT_FOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ROLLFORWARD_DATABASE;} /* 1 */
 	YY_BREAK
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
 #line 135 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXECUTE_PROCEDURE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_TRIGGER;} /* 1 */
 	YY_BREAK
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
 #line 137 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXECUTE_PROCEDURE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_AUDIT_FOR;} /* 1 */
 	YY_BREAK
 case 70:
 /* rule 70 can match eol */
 YY_RULE_SETUP
 #line 139 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_AUDIT_FOR;} /* 1 */
 	YY_BREAK
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
 #line 141 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER_INDEX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXECUTE_PROCEDURE;} /* 1 */
 	YY_BREAK
 case 72:
 /* rule 72 can match eol */
 YY_RULE_SETUP
 #line 143 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NEXT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXECUTE_PROCEDURE;} /* 2 */
 	YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
 #line 145 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER_TABLE;} /* 1 */
 	YY_BREAK
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
 #line 147 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER_INDEX;} /* 1 */
 	YY_BREAK
 case 75:
 /* rule 75 can match eol */
 YY_RULE_SETUP
 #line 149 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NEXT_SIZE;} /* 1 */
 	YY_BREAK
 case 76:
 /* rule 76 can match eol */
 YY_RULE_SETUP
 #line 151 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_MULTIPLY_EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
 #line 153 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 78:
 /* rule 78 can match eol */
 YY_RULE_SETUP
 #line 155 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_ident_DOT_MULTIPLY_EQUAL;} /* 1 */
 	YY_BREAK
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
 #line 157 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_MULTIPLY_EQUAL;} /* 1 */
 	YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
 #line 159 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ADD_CONSTRAINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET_OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 81:
 /* rule 81 can match eol */
 YY_RULE_SETUP
 #line 161 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_CONSTRAINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_DATABASE;} /* 1 */
 	YY_BREAK
 case 82:
 /* rule 82 can match eol */
 YY_RULE_SETUP
 #line 163 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_SYNONYM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_DATABASE;} /* 1 */
 	YY_BREAK
 case 83:
+/* rule 83 can match eol */
 YY_RULE_SETUP
 #line 165 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONSTRAINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ADD_CONSTRAINT;} /* 1 */
 	YY_BREAK
 case 84:
 /* rule 84 can match eol */
 YY_RULE_SETUP
 #line 167 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCAL_REPORT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_CONSTRAINT;} /* 1 */
 	YY_BREAK
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
 #line 169 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCAL_PDF_REPORT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_SYNONYM;} /* 1 */
 	YY_BREAK
 case 86:
-/* rule 86 can match eol */
 YY_RULE_SETUP
 #line 171 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DOUBLE_PRECISION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONSTRAINT;} /* 1 */
 	YY_BREAK
 case 87:
 /* rule 87 can match eol */
 YY_RULE_SETUP
 #line 173 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COUNT_MULTIPLY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCAL_REPORT;} /* 1 */
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
 #line 175 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODIFY_NEXT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCAL_PDF_REPORT;} /* 1 */
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
 #line 177 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_PAGE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DOUBLE_PRECISION;} /* 1 */
 	YY_BREAK
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
 #line 179 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_PAGE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COUNT_MULTIPLY;} /* 1 */
 	YY_BREAK
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
 #line 181 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_ROW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODIFY_NEXT_SIZE;} /* 1 */
 	YY_BREAK
 case 92:
 /* rule 92 can match eol */
 YY_RULE_SETUP
 #line 183 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_ROW;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_PAGE;} /* 1 */
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
 #line 185 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_PAGE;} /* 2 */
 	YY_BREAK
 case 94:
 /* rule 94 can match eol */
 YY_RULE_SETUP
 #line 187 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_ROW;} /* 1 */
 	YY_BREAK
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
 #line 189 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_MODE_ROW;} /* 2 */
 	YY_BREAK
 case 96:
 /* rule 96 can match eol */
 YY_RULE_SETUP
 #line 191 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 1 */
 	YY_BREAK
 case 97:
 /* rule 97 can match eol */
 YY_RULE_SETUP
 #line 193 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 2 */
 	YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
 #line 195 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 3 */
 	YY_BREAK
 case 99:
 /* rule 99 can match eol */
 YY_RULE_SETUP
 #line 197 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_YEAR;} /* 4 */
 	YY_BREAK
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
 #line 199 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 1 */
 	YY_BREAK
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
 #line 201 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 2 */
 	YY_BREAK
 case 102:
 /* rule 102 can match eol */
 YY_RULE_SETUP
 #line 203 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 3 */
 	YY_BREAK
 case 103:
 /* rule 103 can match eol */
 YY_RULE_SETUP
 #line 205 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MONTH;} /* 4 */
 	YY_BREAK
 case 104:
 /* rule 104 can match eol */
 YY_RULE_SETUP
 #line 207 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 1 */
 	YY_BREAK
 case 105:
 /* rule 105 can match eol */
 YY_RULE_SETUP
 #line 209 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 2 */
 	YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
 #line 211 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 3 */
 	YY_BREAK
 case 107:
 /* rule 107 can match eol */
 YY_RULE_SETUP
 #line 213 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_DAY;} /* 4 */
 	YY_BREAK
 case 108:
 /* rule 108 can match eol */
 YY_RULE_SETUP
 #line 215 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 1 */
 	YY_BREAK
 case 109:
 /* rule 109 can match eol */
 YY_RULE_SETUP
 #line 217 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 2 */
 	YY_BREAK
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
 #line 219 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 3 */
 	YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
 #line 221 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_HOUR;} /* 4 */
 	YY_BREAK
 case 112:
 /* rule 112 can match eol */
 YY_RULE_SETUP
 #line 223 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 1 */
 	YY_BREAK
 case 113:
 /* rule 113 can match eol */
 YY_RULE_SETUP
 #line 225 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 2 */
 	YY_BREAK
 case 114:
 /* rule 114 can match eol */
 YY_RULE_SETUP
 #line 227 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 3 */
 	YY_BREAK
 case 115:
 /* rule 115 can match eol */
 YY_RULE_SETUP
 #line 229 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_MINUTE;} /* 4 */
 	YY_BREAK
 case 116:
 /* rule 116 can match eol */
 YY_RULE_SETUP
 #line 231 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 4 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 1 */
 	YY_BREAK
 case 117:
 /* rule 117 can match eol */
 YY_RULE_SETUP
 #line 233 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TO_CLUSTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 2 */
 	YY_BREAK
 case 118:
 /* rule 118 can match eol */
 YY_RULE_SETUP
 #line 235 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TO_NOT_CLUSTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 3 */
 	YY_BREAK
 case 119:
 /* rule 119 can match eol */
 YY_RULE_SETUP
 #line 237 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_UC_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNITS_SECOND;} /* 4 */
 	YY_BREAK
 case 120:
 /* rule 120 can match eol */
 YY_RULE_SETUP
 #line 239 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_UC_IDX;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TO_CLUSTER;} /* 1 */
 	YY_BREAK
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
 #line 241 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_U_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TO_NOT_CLUSTER;} /* 1 */
 	YY_BREAK
 case 122:
 /* rule 122 can match eol */
 YY_RULE_SETUP
 #line 243 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_U_IDX;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_UC_IDX;} /* 1 */
 	YY_BREAK
 case 123:
 /* rule 123 can match eol */
 YY_RULE_SETUP
 #line 245 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_C_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_UC_IDX;} /* 2 */
 	YY_BREAK
 case 124:
 /* rule 124 can match eol */
 YY_RULE_SETUP
 #line 247 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_IDX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_U_IDX;} /* 1 */
 	YY_BREAK
 case 125:
+/* rule 125 can match eol */
 YY_RULE_SETUP
 #line 249 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_U_IDX;} /* 2 */
 	YY_BREAK
 case 126:
 /* rule 126 can match eol */
 YY_RULE_SETUP
 #line 251 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_C_IDX;} /* 1 */
 	YY_BREAK
 case 127:
 /* rule 127 can match eol */
 YY_RULE_SETUP
 #line 253 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICS;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_IDX;} /* 1 */
 	YY_BREAK
 case 128:
-/* rule 128 can match eol */
 YY_RULE_SETUP
 #line 255 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SCHEMA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CM;} /* 1 */
 	YY_BREAK
 case 129:
 /* rule 129 can match eol */
 YY_RULE_SETUP
 #line 257 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIRR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICS;} /* 1 */
 	YY_BREAK
 case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
 #line 259 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIRR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICS;} /* 2 */
 	YY_BREAK
 case 131:
 /* rule 131 can match eol */
 YY_RULE_SETUP
 #line 261 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UPDATESTATS_T;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SCHEMA;} /* 1 */
 	YY_BREAK
 case 132:
 /* rule 132 can match eol */
 YY_RULE_SETUP
 #line 263 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIRR;} /* 1 */
 	YY_BREAK
 case 133:
 /* rule 133 can match eol */
 YY_RULE_SETUP
 #line 265 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIRR;} /* 2 */
 	YY_BREAK
 case 134:
 /* rule 134 can match eol */
 YY_RULE_SETUP
 #line 267 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIDR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UPDATESTATS_T;} /* 1 */
 	YY_BREAK
 case 135:
 /* rule 135 can match eol */
 YY_RULE_SETUP
 #line 269 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIDR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICR;} /* 1 */
 	YY_BREAK
 case 136:
 /* rule 136 can match eol */
 YY_RULE_SETUP
 #line 271 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_TEMP_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSICR;} /* 2 */
 	YY_BREAK
 case 137:
 /* rule 137 can match eol */
 YY_RULE_SETUP
 #line 273 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_CHECK_OPTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIDR;} /* 1 */
 	YY_BREAK
 case 138:
 /* rule 138 can match eol */
 YY_RULE_SETUP
 #line 275 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_GRANT_OPTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSIDR;} /* 2 */
 	YY_BREAK
 case 139:
 /* rule 139 can match eol */
 YY_RULE_SETUP
 #line 277 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSLMNW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_TEMP_TABLE;} /* 1 */
 	YY_BREAK
 case 140:
 /* rule 140 can match eol */
 YY_RULE_SETUP
 #line 279 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHERE_CURRENT_OF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_CHECK_OPTION;} /* 1 */
 	YY_BREAK
 case 141:
 /* rule 141 can match eol */
 YY_RULE_SETUP
 #line 281 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_NULL_UNIQUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_GRANT_OPTION;} /* 1 */
 	YY_BREAK
 case 142:
 /* rule 142 can match eol */
 YY_RULE_SETUP
 #line 283 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSLMW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSLMNW;} /* 1 */
 	YY_BREAK
 case 143:
 /* rule 143 can match eol */
 YY_RULE_SETUP
 #line 285 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALL_PRIVILEGES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHERE_CURRENT_OF;} /* 1 */
 	YY_BREAK
 case 144:
 /* rule 144 can match eol */
 YY_RULE_SETUP
 #line 287 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_NULL_UNIQUE;} /* 1 */
 	YY_BREAK
 case 145:
 /* rule 145 can match eol */
 YY_RULE_SETUP
 #line 289 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSLMW;} /* 1 */
 	YY_BREAK
 case 146:
 /* rule 146 can match eol */
 YY_RULE_SETUP
 #line 291 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALL_PRIVILEGES;} /* 1 */
 	YY_BREAK
 case 147:
 /* rule 147 can match eol */
 YY_RULE_SETUP
 #line 293 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 1 */
 	YY_BREAK
 case 148:
 /* rule 148 can match eol */
 YY_RULE_SETUP
 #line 295 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INEXCLUSIVE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 2 */
 	YY_BREAK
 case 149:
 /* rule 149 can match eol */
 YY_RULE_SETUP
 #line 297 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UPDATESTATS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_SYNONYM;} /* 3 */
 	YY_BREAK
 case 150:
 /* rule 150 can match eol */
 YY_RULE_SETUP
 #line 299 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_TABLE;} /* 1 */
 	YY_BREAK
 case 151:
 /* rule 151 can match eol */
 YY_RULE_SETUP
 #line 301 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INEXCLUSIVE;} /* 1 */
 	YY_BREAK
 case 152:
 /* rule 152 can match eol */
 YY_RULE_SETUP
 #line 303 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_TODAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UPDATESTATS;} /* 1 */
 	YY_BREAK
 case 153:
 /* rule 153 can match eol */
 YY_RULE_SETUP
 #line 305 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_USER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_TABLE;} /* 1 */
 	YY_BREAK
 case 154:
 /* rule 154 can match eol */
 YY_RULE_SETUP
 #line 307 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNLOCK_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_NULL;} /* 1 */
 	YY_BREAK
 case 155:
 /* rule 155 can match eol */
 YY_RULE_SETUP
 #line 309 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ROLLBACK_W;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_TODAY;} /* 1 */
 	YY_BREAK
 case 156:
 /* rule 156 can match eol */
 YY_RULE_SETUP
 #line 311 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSEON;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT_USER;} /* 1 */
 	YY_BREAK
 case 157:
 /* rule 157 can match eol */
 YY_RULE_SETUP
 #line 313 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSEOFF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNLOCK_TABLE;} /* 1 */
 	YY_BREAK
 case 158:
 /* rule 158 can match eol */
 YY_RULE_SETUP
 #line 315 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_VIEW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ROLLBACK_W;} /* 1 */
 	YY_BREAK
 case 159:
 /* rule 159 can match eol */
 YY_RULE_SETUP
 #line 317 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DELETE_FROM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSEON;} /* 1 */
 	YY_BREAK
 case 160:
 /* rule 160 can match eol */
 YY_RULE_SETUP
 #line 319 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXTENT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SQLSEOFF;} /* 1 */
 	YY_BREAK
 case 161:
 /* rule 161 can match eol */
 YY_RULE_SETUP
 #line 321 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOREIGN_KEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CREATE_VIEW;} /* 1 */
 	YY_BREAK
 case 162:
 /* rule 162 can match eol */
 YY_RULE_SETUP
 #line 323 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INSERT_INTO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DELETE_FROM;} /* 1 */
 	YY_BREAK
 case 163:
 /* rule 163 can match eol */
 YY_RULE_SETUP
 #line 325 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IS_NOT_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXTENT_SIZE;} /* 1 */
 	YY_BREAK
 case 164:
 /* rule 164 can match eol */
 YY_RULE_SETUP
 #line 327 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_MATCHES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOREIGN_KEY;} /* 1 */
 	YY_BREAK
 case 165:
 /* rule 165 can match eol */
 YY_RULE_SETUP
 #line 329 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return PRIMARY_KEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INSERT_INTO;} /* 1 */
 	YY_BREAK
 case 166:
 /* rule 166 can match eol */
 YY_RULE_SETUP
 #line 331 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USE_SESSION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IS_NOT_NULL;} /* 1 */
 	YY_BREAK
 case 167:
 /* rule 167 can match eol */
 YY_RULE_SETUP
 #line 333 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_NO_LOG;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_MATCHES;} /* 1 */
 	YY_BREAK
 case 168:
 /* rule 168 can match eol */
 YY_RULE_SETUP
 #line 335 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INSHARE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return PRIMARY_KEY;} /* 1 */
 	YY_BREAK
 case 169:
 /* rule 169 can match eol */
 YY_RULE_SETUP
 #line 337 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BEGIN_WORK;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USE_SESSION;} /* 1 */
 	YY_BREAK
 case 170:
 /* rule 170 can match eol */
 YY_RULE_SETUP
 #line 339 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_INDEX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WITH_NO_LOG;} /* 1 */
 	YY_BREAK
 case 171:
 /* rule 171 can match eol */
 YY_RULE_SETUP
 #line 341 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOR_UPDATE_OF;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INSHARE;} /* 1 */
 	YY_BREAK
 case 172:
 /* rule 172 can match eol */
 YY_RULE_SETUP
 #line 343 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOR_UPDATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BEGIN_WORK;} /* 1 */
 	YY_BREAK
 case 173:
+/* rule 173 can match eol */
 YY_RULE_SETUP
 #line 345 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REFERENCE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_INDEX;} /* 1 */
 	YY_BREAK
 case 174:
 /* rule 174 can match eol */
 YY_RULE_SETUP
 #line 347 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_TABLE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOR_UPDATE_OF;} /* 1 */
 	YY_BREAK
 case 175:
 /* rule 175 can match eol */
 YY_RULE_SETUP
 #line 349 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EXISTS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FOR_UPDATE;} /* 1 */
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
 #line 351 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REFERENCES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REFERENCE;} /* 1 */
 	YY_BREAK
 case 177:
 /* rule 177 can match eol */
 YY_RULE_SETUP
 #line 353 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RENCOL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOCK_TABLE;} /* 1 */
 	YY_BREAK
 case 178:
+/* rule 178 can match eol */
 YY_RULE_SETUP
 #line 355 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SMALLFLOAT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EXISTS;} /* 1 */
 	YY_BREAK
 case 179:
-/* rule 179 can match eol */
 YY_RULE_SETUP
 #line 357 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COMMIT_W;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REFERENCES;} /* 1 */
 	YY_BREAK
 case 180:
 /* rule 180 can match eol */
 YY_RULE_SETUP
 #line 359 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RENTAB;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RENCOL;} /* 1 */
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
 #line 361 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SMALLFLOAT;} /* 1 */
 	YY_BREAK
 case 182:
+/* rule 182 can match eol */
 YY_RULE_SETUP
 #line 363 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CHAR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COMMIT_W;} /* 1 */
 	YY_BREAK
 case 183:
+/* rule 183 can match eol */
 YY_RULE_SETUP
 #line 365 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NCHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RENTAB;} /* 1 */
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
 #line 367 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NVARCHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CHAR;} /* 1 */
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
 #line 369 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DELIMITER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CHAR;} /* 2 */
 	YY_BREAK
 case 186:
-/* rule 186 can match eol */
 YY_RULE_SETUP
 #line 371 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_VIEW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NCHAR;} /* 1 */
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
 #line 373 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXCLUSIVE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NVARCHAR;} /* 1 */
 	YY_BREAK
 case 188:
-/* rule 188 can match eol */
 YY_RULE_SETUP
 #line 375 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GREATER_THAN_EQ;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DELIMITER;} /* 1 */
 	YY_BREAK
 case 189:
 /* rule 189 can match eol */
 YY_RULE_SETUP
 #line 377 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTO_TEMP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP_VIEW;} /* 1 */
 	YY_BREAK
 case 190:
-/* rule 190 can match eol */
 YY_RULE_SETUP
 #line 379 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOAD_FROM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXCLUSIVE;} /* 1 */
 	YY_BREAK
 case 191:
 /* rule 191 can match eol */
 YY_RULE_SETUP
 #line 381 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNLOAD_TO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GREATER_THAN_EQ;} /* 1 */
 	YY_BREAK
 case 192:
+/* rule 192 can match eol */
 YY_RULE_SETUP
 #line 383 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATABASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTO_TEMP;} /* 1 */
 	YY_BREAK
 case 193:
+/* rule 193 can match eol */
 YY_RULE_SETUP
 #line 385 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LOAD_FROM;} /* 1 */
 	YY_BREAK
 case 194:
+/* rule 194 can match eol */
 YY_RULE_SETUP
 #line 387 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DISTINCT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNLOAD_TO;} /* 1 */
 	YY_BREAK
 case 195:
 YY_RULE_SETUP
 #line 389 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FRACTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATABASE;} /* 1 */
 	YY_BREAK
 case 196:
-/* rule 196 can match eol */
 YY_RULE_SETUP
 #line 391 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GROUP_BY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DATETIME;} /* 1 */
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
 #line 393 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DISTINCT;} /* 1 */
 	YY_BREAK
 case 198:
-/* rule 198 can match eol */
 YY_RULE_SETUP
 #line 395 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_LIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FRACTION;} /* 1 */
 	YY_BREAK
 case 199:
 /* rule 199 can match eol */
 YY_RULE_SETUP
 #line 397 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_ILIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GROUP_BY;} /* 1 */
 	YY_BREAK
 case 200:
-/* rule 200 can match eol */
 YY_RULE_SETUP
 #line 399 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL;} /* 1 */
 	YY_BREAK
 case 201:
+/* rule 201 can match eol */
 YY_RULE_SETUP
 #line 401 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RESOURCE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_LIKE;} /* 1 */
 	YY_BREAK
 case 202:
+/* rule 202 can match eol */
 YY_RULE_SETUP
 #line 403 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SMALLINT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_ILIKE;} /* 1 */
 	YY_BREAK
 case 203:
 /* rule 203 can match eol */
 YY_RULE_SETUP
 #line 405 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IS_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_NULL;} /* 1 */
 	YY_BREAK
 case 204:
-/* rule 204 can match eol */
 YY_RULE_SETUP
 #line 407 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LESS_THAN_EQ;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return RESOURCE;} /* 1 */
 	YY_BREAK
 case 205:
 YY_RULE_SETUP
 #line 409 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BETWEEN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SMALLINT;} /* 1 */
 	YY_BREAK
 case 206:
+/* rule 206 can match eol */
 YY_RULE_SETUP
 #line 411 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CLOSE_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return IS_NULL;} /* 1 */
 	YY_BREAK
 case 207:
+/* rule 207 can match eol */
 YY_RULE_SETUP
 #line 413 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONNECT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LESS_THAN_EQ;} /* 1 */
 	YY_BREAK
 case 208:
 YY_RULE_SETUP
 #line 415 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CURRENT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BETWEEN;} /* 1 */
 	YY_BREAK
 case 209:
 YY_RULE_SETUP
 #line 417 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CLOSE_BRACKET;} /* 1 */
 	YY_BREAK
 case 210:
 YY_RULE_SETUP
 #line 419 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CONNECT;} /* 1 */
 	YY_BREAK
 case 211:
 YY_RULE_SETUP
 #line 421 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 3 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_CURRENT;} /* 1 */
 	YY_BREAK
 case 212:
 YY_RULE_SETUP
 #line 423 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 1 */
 	YY_BREAK
 case 213:
 YY_RULE_SETUP
 #line 425 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 2 */
 	YY_BREAK
 case 214:
 YY_RULE_SETUP
 #line 427 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DECIMAL;} /* 3 */
 	YY_BREAK
 case 215:
 YY_RULE_SETUP
 #line 429 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SERIAL8;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DEFAULT;} /* 1 */
 	YY_BREAK
 case 216:
 YY_RULE_SETUP
 #line 431 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MATCHES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER;} /* 1 */
 	YY_BREAK
 case 217:
 YY_RULE_SETUP
 #line 433 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARCHAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTEGER;} /* 2 */
 	YY_BREAK
 case 218:
 YY_RULE_SETUP
 #line 435 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CLOSE_SQUARE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SERIAL8;} /* 1 */
 	YY_BREAK
 case 219:
 YY_RULE_SETUP
 #line 437 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GREATER_THAN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MATCHES;} /* 1 */
 	YY_BREAK
 case 220:
 YY_RULE_SETUP
 #line 439 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FALSE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VARCHAR;} /* 1 */
 	YY_BREAK
 case 221:
-/* rule 221 can match eol */
 YY_RULE_SETUP
 #line 441 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_IN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CLOSE_SQUARE;} /* 1 */
 	YY_BREAK
 case 222:
 YY_RULE_SETUP
 #line 443 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OPEN_BRACKET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GREATER_THAN;} /* 1 */
 	YY_BREAK
 case 223:
 YY_RULE_SETUP
 #line 445 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DELETE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FALSE;} /* 1 */
 	YY_BREAK
 case 224:
+/* rule 224 can match eol */
 YY_RULE_SETUP
 #line 447 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ESCAPE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_IN;} /* 1 */
 	YY_BREAK
 case 225:
 YY_RULE_SETUP
 #line 449 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ESCAPE;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OPEN_BRACKET;} /* 1 */
 	YY_BREAK
 case 226:
 YY_RULE_SETUP
 #line 451 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXISTS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DELETE;} /* 1 */
 	YY_BREAK
 case 227:
 YY_RULE_SETUP
 #line 453 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXTEND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ESCAPE;} /* 1 */
 	YY_BREAK
 case 228:
 YY_RULE_SETUP
 #line 455 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return HAVING;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ESCAPE;} /* 2 */
 	YY_BREAK
 case 229:
 YY_RULE_SETUP
 #line 457 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_INSERT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXISTS;} /* 1 */
 	YY_BREAK
 case 230:
 YY_RULE_SETUP
 #line 459 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MINUTE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EXTEND;} /* 1 */
 	YY_BREAK
 case 231:
 YY_RULE_SETUP
 #line 461 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODIFY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return HAVING;} /* 1 */
 	YY_BREAK
 case 232:
-/* rule 232 can match eol */
 YY_RULE_SETUP
 #line 463 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_INSERT;} /* 1 */
 	YY_BREAK
 case 233:
 YY_RULE_SETUP
 #line 465 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EQUAL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MINUTE;} /* 1 */
 	YY_BREAK
 case 234:
-/* rule 234 can match eol */
 YY_RULE_SETUP
 #line 467 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EQUAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MODIFY;} /* 1 */
 	YY_BREAK
 case 235:
 /* rule 235 can match eol */
 YY_RULE_SETUP
 #line 469 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EQUAL;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EQUAL;} /* 1 */
 	YY_BREAK
 case 236:
 YY_RULE_SETUP
 #line 471 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OPEN_SQUARE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return EQUAL;} /* 2 */
 	YY_BREAK
 case 237:
+/* rule 237 can match eol */
 YY_RULE_SETUP
 #line 473 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return PUBLIC;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EQUAL;} /* 1 */
 	YY_BREAK
 case 238:
+/* rule 238 can match eol */
 YY_RULE_SETUP
 #line 475 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REVOKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return NOT_EQUAL;} /* 2 */
 	YY_BREAK
 case 239:
 YY_RULE_SETUP
 #line 477 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SECOND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OPEN_SQUARE;} /* 1 */
 	YY_BREAK
 case 240:
 YY_RULE_SETUP
 #line 479 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SELECT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return PUBLIC;} /* 1 */
 	YY_BREAK
 case 241:
 YY_RULE_SETUP
 #line 481 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SERIAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REVOKE;} /* 1 */
 	YY_BREAK
 case 242:
 YY_RULE_SETUP
 #line 483 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNIQUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SECOND;} /* 1 */
 	YY_BREAK
 case 243:
 YY_RULE_SETUP
 #line 485 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_UPDATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SELECT;} /* 1 */
 	YY_BREAK
 case 244:
 YY_RULE_SETUP
 #line 487 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VALUES;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SERIAL;} /* 1 */
 	YY_BREAK
 case 245:
 YY_RULE_SETUP
 #line 489 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_NULL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNIQUE;} /* 1 */
 	YY_BREAK
 case 246:
 YY_RULE_SETUP
 #line 491 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TRUE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_UPDATE;} /* 1 */
 	YY_BREAK
 case 247:
 YY_RULE_SETUP
 #line 493 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return VALUES;} /* 1 */
 	YY_BREAK
 case 248:
 YY_RULE_SETUP
 #line 495 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CHECK;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_NULL;} /* 1 */
 	YY_BREAK
 case 249:
 YY_RULE_SETUP
 #line 497 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COUNT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TRUE;} /* 1 */
 	YY_BREAK
 case 250:
 YY_RULE_SETUP
 #line 499 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FIRST;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALTER;} /* 1 */
 	YY_BREAK
 case 251:
 YY_RULE_SETUP
 #line 501 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FLOAT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CHECK;} /* 1 */
 	YY_BREAK
 case 252:
 YY_RULE_SETUP
 #line 503 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GRANT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COUNT;} /* 1 */
 	YY_BREAK
 case 253:
 YY_RULE_SETUP
 #line 505 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INDEX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FIRST;} /* 1 */
 	YY_BREAK
 case 254:
 YY_RULE_SETUP
 #line 507 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LESS_THAN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FLOAT;} /* 1 */
 	YY_BREAK
 case 255:
 YY_RULE_SETUP
 #line 509 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MONEY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return GRANT;} /* 1 */
 	YY_BREAK
 case 256:
 YY_RULE_SETUP
 #line 511 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MONTH;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INDEX;} /* 1 */
 	YY_BREAK
 case 257:
 YY_RULE_SETUP
 #line 513 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MULTIPLY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LESS_THAN;} /* 1 */
 	YY_BREAK
 case 258:
 YY_RULE_SETUP
 #line 515 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ORDER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MONEY;} /* 1 */
 	YY_BREAK
 case 259:
 YY_RULE_SETUP
 #line 517 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OUTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MONTH;} /* 1 */
 	YY_BREAK
 case 260:
 YY_RULE_SETUP
 #line 519 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MULTIPLY;} /* 1 */
 	YY_BREAK
 case 261:
-/* rule 261 can match eol */
 YY_RULE_SETUP
 #line 521 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_USING_FILTER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ORDER;} /* 1 */
 	YY_BREAK
 case 262:
 YY_RULE_SETUP
 #line 523 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHERE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return OUTER;} /* 1 */
 	YY_BREAK
 case 263:
 YY_RULE_SETUP
 #line 525 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_BYTE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return UNION;} /* 1 */
 	YY_BREAK
 case 264:
+/* rule 264 can match eol */
 YY_RULE_SETUP
 #line 527 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CASE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_USING_FILTER;} /* 1 */
 	YY_BREAK
 case 265:
 YY_RULE_SETUP
 #line 529 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DATE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHERE;} /* 1 */
 	YY_BREAK
 case 266:
 YY_RULE_SETUP
 #line 531 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DESC;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_BYTE;} /* 1 */
 	YY_BREAK
 case 267:
 YY_RULE_SETUP
 #line 533 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DIVIDE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CASE;} /* 1 */
 	YY_BREAK
 case 268:
 YY_RULE_SETUP
 #line 535 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DATE;} /* 1 */
 	YY_BREAK
 case 269:
 YY_RULE_SETUP
 #line 537 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ELSE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DESC;} /* 1 */
 	YY_BREAK
 case 270:
 YY_RULE_SETUP
 #line 539 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FROM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DIVIDE;} /* 1 */
 	YY_BREAK
 case 271:
 YY_RULE_SETUP
 #line 541 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return HOUR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DROP;} /* 1 */
 	YY_BREAK
 case 272:
 YY_RULE_SETUP
 #line 543 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ELSE;} /* 1 */
 	YY_BREAK
 case 273:
 YY_RULE_SETUP
 #line 545 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FROM;} /* 1 */
 	YY_BREAK
 case 274:
 YY_RULE_SETUP
 #line 547 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REAL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return HOUR;} /* 1 */
 	YY_BREAK
 case 275:
 YY_RULE_SETUP
 #line 549 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SOME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTO;} /* 1 */
 	YY_BREAK
 case 276:
 YY_RULE_SETUP
 #line 551 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TEXT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LIKE;} /* 1 */
 	YY_BREAK
 case 277:
 YY_RULE_SETUP
 #line 553 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_THEN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return REAL;} /* 1 */
 	YY_BREAK
 case 278:
 YY_RULE_SETUP
 #line 555 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SOME;} /* 1 */
 	YY_BREAK
 case 279:
 YY_RULE_SETUP
 #line 557 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHEN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TEXT;} /* 1 */
 	YY_BREAK
 case 280:
 YY_RULE_SETUP
 #line 559 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return YEAR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_THEN;} /* 1 */
 	YY_BREAK
 case 281:
 YY_RULE_SETUP
 #line 561 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DOW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return USER;} /* 1 */
 	YY_BREAK
 case 282:
 YY_RULE_SETUP
 #line 563 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return WHEN;} /* 1 */
 	YY_BREAK
 case 283:
 YY_RULE_SETUP
 #line 565 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ADD;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return YEAR;} /* 1 */
 	YY_BREAK
 case 284:
 YY_RULE_SETUP
 #line 567 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DOW;} /* 1 */
 	YY_BREAK
 case 285:
 YY_RULE_SETUP
 #line 569 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AND;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XSET;} /* 1 */
 	YY_BREAK
 case 286:
 YY_RULE_SETUP
 #line 571 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ANY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ADD;} /* 1 */
 	YY_BREAK
 case 287:
 YY_RULE_SETUP
 #line 573 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ASC;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ALL;} /* 1 */
 	YY_BREAK
 case 288:
 YY_RULE_SETUP
 #line 575 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return AVG;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AND;} /* 1 */
 	YY_BREAK
 case 289:
 YY_RULE_SETUP
 #line 577 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COLON;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ANY;} /* 1 */
 	YY_BREAK
 case 290:
 YY_RULE_SETUP
 #line 579 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_COMMA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ASC;} /* 1 */
 	YY_BREAK
 case 291:
 YY_RULE_SETUP
 #line 581 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return AVG;} /* 1 */
 	YY_BREAK
 case 292:
 YY_RULE_SETUP
 #line 583 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DBA;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return COLON;} /* 1 */
 	YY_BREAK
 case 293:
 YY_RULE_SETUP
 #line 585 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_COMMA;} /* 1 */
 	YY_BREAK
 case 294:
 YY_RULE_SETUP
 #line 587 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XMAX;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DAY;} /* 1 */
 	YY_BREAK
 case 295:
 YY_RULE_SETUP
 #line 589 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XMIN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return DBA;} /* 1 */
 	YY_BREAK
 case 296:
 YY_RULE_SETUP
 #line 591 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MINUS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FOR;} /* 1 */
 	YY_BREAK
 case 297:
 YY_RULE_SETUP
 #line 593 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MOD;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XMAX;} /* 1 */
 	YY_BREAK
 case 298:
 YY_RULE_SETUP
 #line 595 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_NOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return XMIN;} /* 1 */
 	YY_BREAK
 case 299:
 YY_RULE_SETUP
 #line 597 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ROW;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MINUS;} /* 1 */
 	YY_BREAK
 case 300:
 YY_RULE_SETUP
 #line 599 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SUM;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_MOD;} /* 1 */
 	YY_BREAK
 case 301:
 YY_RULE_SETUP
 #line 601 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ATSIGN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_NOT;} /* 1 */
 	YY_BREAK
 case 302:
 YY_RULE_SETUP
 #line 603 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PLUS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ROW;} /* 1 */
 	YY_BREAK
 case 303:
-/* rule 303 can match eol */
 YY_RULE_SETUP
 #line 605 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PLUS;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_SUM;} /* 1 */
 	YY_BREAK
 case 304:
-/* rule 304 can match eol */
 YY_RULE_SETUP
 #line 607 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AS_USER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ATSIGN;} /* 1 */
 	YY_BREAK
 case 305:
 YY_RULE_SETUP
 #line 609 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PLUS;} /* 1 */
 	YY_BREAK
 case 306:
+/* rule 306 can match eol */
 YY_RULE_SETUP
 #line 611 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_BY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_PLUS;} /* 2 */
 	YY_BREAK
 case 307:
+/* rule 307 can match eol */
 YY_RULE_SETUP
 #line 613 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DOT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AS_USER;} /* 1 */
 	YY_BREAK
 case 308:
 YY_RULE_SETUP
 #line 615 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_IN;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_AS;} /* 1 */
 	YY_BREAK
 case 309:
 YY_RULE_SETUP
 #line 617 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ON;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_BY;} /* 1 */
 	YY_BREAK
 case 310:
 YY_RULE_SETUP
 #line 619 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_OR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_DOT;} /* 1 */
 	YY_BREAK
 case 311:
 YY_RULE_SETUP
 #line 621 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_IN;} /* 1 */
 	YY_BREAK
 case 312:
 YY_RULE_SETUP
 #line 623 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BEFORE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ON;} /* 1 */
 	YY_BREAK
 case 313:
 YY_RULE_SETUP
 #line 625 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return END;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_OR;} /* 1 */
 	YY_BREAK
 case 314:
 YY_RULE_SETUP
 #line 627 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TILDE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TO;} /* 1 */
 	YY_BREAK
 case 315:
 YY_RULE_SETUP
 #line 629 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ILIKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BEFORE;} /* 1 */
 	YY_BREAK
 case 316:
 YY_RULE_SETUP
 #line 631 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FILLFACTOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return END;} /* 1 */
 	YY_BREAK
 case 317:
 YY_RULE_SETUP
 #line 633 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_EXTENDS;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TILDE;} /* 1 */
 	YY_BREAK
 case 318:
 YY_RULE_SETUP
 #line 635 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TIME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return ILIKE;} /* 1 */
 	YY_BREAK
 case 319:
 YY_RULE_SETUP
 #line 637 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TODAY;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FILLFACTOR;} /* 1 */
 	YY_BREAK
 case 320:
 YY_RULE_SETUP
 #line 639 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ROWID;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_EXTENDS;} /* 1 */
 	YY_BREAK
 case 321:
 YY_RULE_SETUP
 #line 641 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CURSOR_NAME_FUNCTION;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TIME;} /* 1 */
 	YY_BREAK
 case 322:
 YY_RULE_SETUP
 #line 643 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TIMESTAMP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_TODAY;} /* 1 */
 	YY_BREAK
 case 323:
-/* rule 323 can match eol */
 YY_RULE_SETUP
 #line 645 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MOVE_TO_TOP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_ROWID;} /* 1 */
 	YY_BREAK
 case 324:
-/* rule 324 can match eol */
 YY_RULE_SETUP
 #line 647 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LINETO_TOP;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return CURSOR_NAME_FUNCTION;} /* 1 */
 	YY_BREAK
 case 325:
 YY_RULE_SETUP
 #line 649 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_HEIGHT;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return TIMESTAMP;} /* 1 */
 	YY_BREAK
 case 326:
 /* rule 326 can match eol */
 YY_RULE_SETUP
 #line 651 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_STROKE_COLOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MOVE_TO_TOP;} /* 1 */
 	YY_BREAK
 case 327:
 /* rule 327 can match eol */
 YY_RULE_SETUP
 #line 653 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_STROKE_COLOR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LINETO_TOP;} /* 1 */
 	YY_BREAK
 case 328:
-/* rule 328 can match eol */
 YY_RULE_SETUP
 #line 655 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FONT_SIZE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_HEIGHT;} /* 1 */
 	YY_BREAK
 case 329:
 /* rule 329 can match eol */
 YY_RULE_SETUP
 #line 657 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_COLOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_STROKE_COLOR;} /* 1 */
 	YY_BREAK
 case 330:
 /* rule 330 can match eol */
 YY_RULE_SETUP
 #line 659 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_COLOR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_STROKE_COLOR;} /* 2 */
 	YY_BREAK
 case 331:
 /* rule 331 can match eol */
 YY_RULE_SETUP
 #line 661 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MOVE_TO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FONT_SIZE;} /* 1 */
 	YY_BREAK
 case 332:
 /* rule 332 can match eol */
 YY_RULE_SETUP
 #line 663 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FILL_STROKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_COLOR;} /* 1 */
 	YY_BREAK
 case 333:
+/* rule 333 can match eol */
 YY_RULE_SETUP
 #line 665 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return STROKE;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_COLOR;} /* 2 */
 	YY_BREAK
 case 334:
 /* rule 334 can match eol */
 YY_RULE_SETUP
 #line 667 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LINE_TO;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return MOVE_TO;} /* 1 */
 	YY_BREAK
 case 335:
 /* rule 335 can match eol */
 YY_RULE_SETUP
 #line 669 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FONT_NAME;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return FILL_STROKE;} /* 1 */
 	YY_BREAK
 case 336:
 YY_RULE_SETUP
 #line 671 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BOOKMARK;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return STROKE;} /* 1 */
 	YY_BREAK
 case 337:
+/* rule 337 can match eol */
 YY_RULE_SETUP
 #line 673 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FILL;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return LINE_TO;} /* 1 */
 	YY_BREAK
 case 338:
+/* rule 338 can match eol */
 YY_RULE_SETUP
 #line 675 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_WIDTH;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FONT_NAME;} /* 1 */
 	YY_BREAK
 case 339:
-/* rule 339 can match eol */
 YY_RULE_SETUP
 #line 677 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FILL_COLOR;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return BOOKMARK;} /* 1 */
 	YY_BREAK
 case 340:
-/* rule 340 can match eol */
 YY_RULE_SETUP
 #line 679 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_FILL_COLOR;} /* 2 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_FILL;} /* 1 */
 	YY_BREAK
 case 341:
-/* rule 341 can match eol */
 YY_RULE_SETUP
 #line 681 "m2.lex"
-{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return SET_PARAMETER;} /* 1 */
+{ a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return KW_WIDTH;} /* 1 */
 	YY_BREAK
 case 342:
 /* rule 342 can match eol */
