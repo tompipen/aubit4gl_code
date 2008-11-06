@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.106 2008-11-05 14:44:49 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.107 2008-11-06 18:26:18 mikeaubury Exp $
 #
 */
 
@@ -42,11 +42,11 @@
 =====================================================================
 */
 
+#define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 #define _XOPEN_SOURCE
 #include <wchar.h>		/* utf8 */
 
-#define EXTERN_CONVFMTS
 
 #include <ctype.h>
 
