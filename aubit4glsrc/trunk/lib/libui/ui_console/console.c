@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.45 2008-11-07 16:49:34 mikeaubury Exp $
+# $Id: console.c,v 1.46 2008-11-07 20:49:18 mikeaubury Exp $
 #*/
 
 /**
@@ -773,7 +773,7 @@ return 0;
 }
 
 int UILIB_aclfgl_aclfgl_set_application_xml (int nargs) {
-        A4GL_pop_char();
+        A4GL_drop_param();
         return 0;
 }
 
