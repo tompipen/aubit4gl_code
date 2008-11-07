@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.136 2008-11-06 20:49:38 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.137 2008-11-07 16:49:34 mikeaubury Exp $";
 #endif
 
 
@@ -4620,6 +4620,11 @@ void A4GL_LL_direct_to_ui(char *t, char *s) {
 			gtk_window_deiconify(appWin);
 		}
 	}
+
+	if (strcmp(t,"FILE")==0) 	{ A4GL_push_int(0); }
+	if (strcmp(t,"NAMEDFILE")==0) 	{ A4GL_push_int(0); }
+	if (strcmp(t,"GETFILE")==0) 	{ A4GL_push_int(0); }
+
 }
 
 

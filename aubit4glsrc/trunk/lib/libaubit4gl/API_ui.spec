@@ -107,3 +107,4 @@ A4GL_direct_to_ui char* what char* string -> void
 aclfgl_aclfgl_add_to_toolbar int nparam -> int 
 aclfgl_aclfgl_set_display_field_delimiters int nparam -> int
 aclfgl_aclfgl_add_acs_mapping int nparam -> int
+aclfgl_aclfgl_set_application_xml int nparam -> int

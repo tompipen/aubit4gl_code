@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.209 2008-11-06 10:14:02 mikeaubury Exp $
+# $Id: ioform.c,v 1.210 2008-11-07 16:49:34 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.209 2008-11-06 10:14:02 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.210 2008-11-07 16:49:34 mikeaubury Exp $";
 #endif
 
 /**
@@ -4782,6 +4782,9 @@ void UILIB_A4GL_direct_to_ui(char *t, char *s) {
 if (strcmp(t,"FLUSHINP")==0) {
 	flushinp();
 }
+if (strcmp(t,"FILE")==0) { A4GL_push_int(0); }
+if (strcmp(t,"NAMEDFILE")==0) { A4GL_push_int(0); }
+if (strcmp(t,"GETFILE")==0) { A4GL_push_int(0); }
 // Does nothing - require by the API...
 }
 

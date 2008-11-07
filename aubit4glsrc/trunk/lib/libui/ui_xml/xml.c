@@ -611,63 +611,8 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
   //ACL_Menu_Opts *opt2;
   ACL_Menu *menu;
   char opt_title[200];
-  menu=menuv;
-  opt1=menu->first;
-  A4GL_assertion (menu->num_opts<optno,"Invalid option number");
-  while (optno) {
-		opt1=opt1->next_option;
-		optno--;
-  }
 
-  if (opt1->help_no!=helpno) {
-		A4GL_debug("Changed helpno");
-		opt1->help_no=helpno;
-  }
-
-
-  memset(opt_title,0,sizeof(opt_title));
-  if (strlen (txt))
-    {
-  	char op1[256];
-  	memset(op1,0,256);
-      strcpy (opt_title, " ");
-      strcpy (op1, txt);
-      A4GL_trim (op1);
-        if (strlen(op1)>77) op1[77]=0;
-      strcat (opt_title, op1);
-      strcat (opt_title, " ");
-    }
-  else
-    {
-      strcpy (opt_title, "");
-    }
-
-   if (strcmp(opt_title, opt1->opt_title)!=0) {
-		A4GL_debug("Title changed");
-		strcpy(opt1->opt_title,opt_title);	
-		opt1->optlength = strlen (opt1->opt_title);
-   }
-
-  if (opt1->optlength == 0) {
-                attr |= ACL_MN_HIDE;
-  }
-
-  if (opt1->attributes!=attr) {
-                A4GL_debug("Changed attributes");
-		// Dont change the attributes - it will mess up the option hiding
-                //opt1->attributes=attr;
-  }
-
-  if (strcmp(opt1->shorthelp,desc)!=0) {
-	A4GL_debug("shorthelp changed");
-  	strncpy (opt1->shorthelp, desc,80);
-  	opt1->shorthelp[79]=0;
-  }
-  if (strcmp(opt1->optkey,keys)!=0) {
-  	strcpy (opt1->optkey, keys);
-  }
-
-
+// Does nothing yet...
 }
 
 
@@ -1957,6 +1902,18 @@ UILIB_aclfgl_set_window_title (int nargs)
   free (s);
   return 0;
 }
+
+
+int
+UILIB_aclfgl_aclfgl_set_application_xml (int nargs)
+{
+  char *s;
+  s = A4GL_char_pop ();
+  send_to_ui ("<SETAPPLICATIONLAUNCHERXML FILE=\"%s\"/>", uilib_xml_escape (ignull (s)));
+  free (s);
+  return 0;
+}
+
 
 void
 UILIB_A4GL_finish_screenio (void *sio, char *siotype)

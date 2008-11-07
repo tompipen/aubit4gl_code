@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.72 2008-11-06 20:49:38 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.73 2008-11-07 16:49:34 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.72 2008-11-06 20:49:38 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.73 2008-11-07 16:49:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2637,3 +2637,10 @@ A4GL_debug_print_field_opts (void *a)
     strcat (str, " O_PASSOK");
   A4GL_debug ("UUU Field %p attribs= %s: (%s)", a, str, A4GL_LL_field_buffer (a, 0));
 }
+
+
+int UILIB_aclfgl_aclfgl_set_application_xml (int nargs) {
+        A4GL_drop_param();
+        return 0;
+}
+

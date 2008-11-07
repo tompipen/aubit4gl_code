@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.149 2008-11-03 11:16:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.150 2008-11-07 16:49:34 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.149 2008-11-03 11:16:19 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.150 2008-11-07 16:49:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2593,4 +2593,7 @@ int A4GL_get_curr_field_col(FORM *mform) {
 }
 
 
-
+int UILIB_aclfgl_aclfgl_set_application_xml (int nargs) {
+	A4GL_drop_param();
+	return 0;
+}
