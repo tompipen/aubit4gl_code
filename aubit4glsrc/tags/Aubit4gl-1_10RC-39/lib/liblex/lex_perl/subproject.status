@@ -1,0 +1,14 @@
+Name: libLEX_PERL
+Parent: aubit4glsrc
+Description: Used by compiler to create Perl code representation of x4GL program
+Functionality: Perl language generation plug-in
+Build:
+Example: A4GL_LEXTYPE
+Depends: None to compile, Perl interpreter to use
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 2
+Todo:
+Notes: Currently broken - SWIG support out of date
+

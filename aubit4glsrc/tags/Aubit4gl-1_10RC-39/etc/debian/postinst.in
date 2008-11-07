@@ -1,0 +1,61 @@
+#!/bin/sh
+###########################################################################
+#post-install script for dpkg
+###########################################################################
+
+#----------------------- Source common (globals) file
+export FLAGS="$@"
+if test -f ./global; then
+	. ./global
+else
+	echo "ERROR: cannot locate ./global file"
+	exit 1
+fi
+
+#---------------------- Task specific settings 
+A4GL_TASK_MSG="Post-install"
+A4GL_TASK_LOG="$RPM_A4GL_RPMINSTALL_LOG"
+A4GL_AUBIT_FLAG="--post-install-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+
+#Note that AutoConf warnings are printed to stderr
+if test "$A4GL_USER_INTERACTION" = "1"; then
+	A4GL_INTERACT_OPTION=">> $A4GL_TASK_LOG 2>&1 &"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction >> $A4GL_TASK_LOG 2>&1"
+	A4GL_INTERACT_MSG="non-interactive program"
+	A4GL_PLEASE_WAIT="echo 'Please wait ...'"
+fi
+
+#---------------------- Perform task actions
+
+	if ! test -d ${CURR_A4GL_PREFIX}; then
+		$RPM_A4GL_ERROR "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		$RPM_A4GL_ERROR_EXIT $RPM_A4GL_ERROR_EXIT_CODE
+	fi
+	
+	#---------------------------------
+	# Make sure we know where we are
+	cd ${CURR_A4GL_PREFIX}
+
+	#---------------------------------
+	# Run task
+	$RPM_A4GL_VERBOSE "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	${A4GL_PLEASE_WAIT}
+	eval ${CURR_A4GL_PREFIX}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	$RPM_A4GL_VERBOSE "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Close log file
+	$RPM_A4GL_VERBOSE "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG
+	date >> $A4GL_TASK_LOG
+	
+	#---------------------------------
+	# Show to user task summary
+	$RPM_A4GL_EXIT "$A4GL_TASK_MSG tasks exited, see $A4GL_TASK_LOG for details."
+	if test "$A4GL_USER_INTERACTION" = "1"; then
+		${RPM_A4GL_EXIT} "NOTE: configuration tasks are running in the background - please WAIT for them to finish before trying to use Aubit compiler. (~2 minutes)"
+	fi
+
+
+################################## EOF ####################################

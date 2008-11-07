@@ -1,0 +1,1 @@
+A4GL_DLL_OPTS=-flat_namespace -bundle -undefined suppress
