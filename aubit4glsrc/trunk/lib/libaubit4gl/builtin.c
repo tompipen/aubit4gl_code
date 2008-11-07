@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.132 2008-11-05 14:44:48 mikeaubury Exp $
+# $Id: builtin.c,v 1.133 2008-11-07 08:01:53 mikeaubury Exp $
 #
 */
 
@@ -516,6 +516,7 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
     }
 
   strncpy (&ca[a - 1], np, (size_t) size);
+  acl_free(np);
 #ifdef DEBUG
   {
     A4GL_debug ("Set to %s", A4GL_null_as_null (ca));
