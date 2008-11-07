@@ -1,4 +1,70 @@
 ---------------------------
+Fri Nov  7 08:05:38 GMT 2008
+---------------------------
+1.10RC_39 Released
+---------------------------
+	
+	Small memory leak fixup
+	
+	fix interrupt on a menu
+	
+	Small internationalization fixup (',' as decimal separator)
+	
+	1183: INPUT field with FOMAT=DMY4/ fails if DBDATE=DMY2/
+	
+	warning fixups
+	
+	warning fixups
+	
+	warnings fixups
+	
+	Initial GLOBALCURS support (allows globals cursors if GLOBALCURS=Y)
+	
+	Fix FORMAT on a serial column in fcompile (' A FORMAT cannot be
+	applied to this fields because of the datatype')
+	
+	Fix for build test 1688 (recognise changing menu options) + some
+	minor cleanups
+	
+	0001147: display datetime/timestamps variable to a form field
+	
+	Fix form errors not being reported
+	
+	Add OUTER_JOINS_NB for Postgres
+	
+	Fix Postgresql load / Automatically set datestyle for Postgres
+	
+	Fix formats in default values
+	
+	Fixup for filenames in LOAD/UNLOAD
+	
+	lineno fixup
+	
+	lineno fixup
+	
+	Fix layout of .ec code when INCLINES is set
+	
+	Small INCLINES fixup
+	
+	Small typo fixup
+	
+	Fix comma in prompt fix lineno/pageno variables
+	
+	Add construct callback functionality (eg construct lv_str on a,b
+	from a,b via c_callback)
+	
+	Decimal fixups
+	
+	BLOB fixup for A4GL_UI=TUI
+	
+	Decimal fixup
+	
+	Allow use of the SQLACL file for usernames/password in the Informix
+	database connector
+	
+	Try to remove reserved words from fcompile
+	
+---------------------------
 Mon Oct 20 21:11:58 BST 2008
 ---------------------------
 1.10RC_38 Released
