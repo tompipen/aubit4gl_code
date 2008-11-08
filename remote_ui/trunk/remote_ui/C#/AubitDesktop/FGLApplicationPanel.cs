@@ -907,6 +907,14 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+                #region SETAPPLICATIONLAUNCHERXML
+                if (a is SETAPPLICATIONLAUNCHERXML)
+                {
+                    this.TopWindow.loadApplicationLauncherTree(((SETAPPLICATIONLAUNCHERXML)a).FILE);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
                 #region SETKEYLABEL
                 if (a is SETKEYLABEL)
                 {
@@ -1431,6 +1439,15 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+                #region SETINTR
+                if (a is SETINTR)
+                {
+                    MessageBox.Show("Backend Interrupted");
+                    commands.Remove(a);
+                    continue;
+                }
+
+                #endregion
                 #region PROGRAMSTOP
                 if (a is PROGRAMSTOP)
                 {
@@ -1440,9 +1457,12 @@ namespace AubitDesktop
                     {
                         string txt = "";
                         int idx;
-                        for (idx = 0; idx < p.line.Length; idx++)
+                        if (p.line != null)
                         {
-                            txt += p.line[idx].Text + "\n";
+                            for (idx = 0; idx < p.line.Length; idx++)
+                            {
+                                txt += p.line[idx].Text + "\n";
+                            }
                         }
                         MessageBox.Show("Program Exited with non-zero exit status\n" + txt);
                     }

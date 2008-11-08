@@ -147,6 +147,8 @@ namespace AubitDesktop
     }
 
 
+
+
     public class REQUESTFILE
     {
 
@@ -248,6 +250,15 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string TEXT;
+    }
+
+    /// <remarks/>
+    public class SETAPPLICATIONLAUNCHERXML
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string FILE;
     }
 
     /// <remarks/>
@@ -536,6 +547,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("CLOSEFORM", Type = typeof(CLOSEFORM))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYTO", Type = typeof(DISPLAYTO))]
         [System.Xml.Serialization.XmlElementAttribute("DUMPSCREEN", Type = typeof(DUMPSCREEN))]
+        [System.Xml.Serialization.XmlElementAttribute("SETINTR", Type = typeof(SETINTR))]
         [System.Xml.Serialization.XmlElementAttribute("INPUT", Type = typeof(INPUT))]
         [System.Xml.Serialization.XmlElementAttribute("INPUTARRAY", Type = typeof(INPUTARRAY))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYARRAY", Type = typeof(DISPLAYARRAY))]
@@ -717,6 +729,13 @@ namespace AubitDesktop
     public class DUMPSCREEN
     {
     }
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class SETINTR
+    {
+    }
+
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -1086,6 +1105,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CLOSEFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYTO), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DUMPSCREEN), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETINTR), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(INPUT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(INPUTARRAY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYARRAY), IsNullable = false)]
@@ -1104,6 +1124,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETKEYLABEL), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETWINDOWTITLE), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETAPPLICATIONLAUNCHERXML), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(REQUESTFILE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SHOWOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIDIRECT), IsNullable = false)]
