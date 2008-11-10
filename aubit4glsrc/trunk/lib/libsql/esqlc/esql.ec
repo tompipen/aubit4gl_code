@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.218 2008-11-06 11:33:42 mikeaubury Exp $
+# $Id: esql.ec,v 1.219 2008-11-10 15:51:25 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.218 2008-11-06 11:33:42 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.219 2008-11-10 15:51:25 mikeaubury Exp $";
 #endif
 
 
@@ -395,7 +395,7 @@ A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
   EXEC SQL BEGIN DECLARE SECTION;
   char *msg = (char *) acl_malloc2 (8191);
   EXEC SQL END DECLARE SECTION;
-
+  memset(msg,0,8191);
   EXEC SQL get diagnostics exception 1:msg = MESSAGE_TEXT;
   return msg;
 }
