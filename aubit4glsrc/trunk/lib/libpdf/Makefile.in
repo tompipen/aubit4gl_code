@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2008-11-04 13:20:06 mikeaubury Exp $
+# $Id: Makefile.in,v 1.24 2008-11-10 14:09:17 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -77,14 +77,17 @@ ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 ## ==================================================================
 
 
-haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}
+haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
 
 ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}
-	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_L_FLAGS}  ${QRLIB}
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_L_FLAGS}  ${QRLIB} -lpdf
+
+${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}: ${OBJECTS_HARU}
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng12
 
 
 clean:
-	${RM} *.o ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT} ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}
+	${RM} *.o ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT} ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
 
 
 

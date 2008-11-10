@@ -45,6 +45,7 @@ int A4GL_pdf_new_page (struct pdf_rep_structure *p);
 double A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *rep);
 void A4GL_pdf_move (struct pdf_rep_structure *p);
 void A4GLREPORT_initlib (void);
+HPDF_Doc newdoc(void) ;
 
 /*
 =====================================================================
@@ -128,11 +129,9 @@ static void A4GL_resetcolor(Haru_doc *p) {
 void setfont(struct pdf_rep_structure *rep) {
   if (rep->pdf_ptr==NULL) {
                   rep->pdf_ptr = malloc(sizeof(Haru_doc));
-
-                  ((Haru_doc *)rep->pdf_ptr)->doc = HPDF_New (error_handler, NULL);
+                  ((Haru_doc *)rep->pdf_ptr)->doc = newdoc();
                   A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
                   A4GL_debug ("Set info");
-                  A4GLPDFREP_A4GL_pdf_set_info (rep->pdf_ptr, "A4GL");
 
   }
   //rep->fontptr = HPDF_GetFont (DOC(rep)->doc, rep->font_name, A4GL_get_pdf_encoding());
@@ -152,6 +151,19 @@ void setfont(struct pdf_rep_structure *rep) {
   HPDF_Page_SetFontAndSize (CURRENT_PAGE(rep) , rep->fontptr, rep->font_size);
 }
 
+
+
+HPDF_Doc newdoc(void) {
+HPDF_Doc doc;
+	doc = HPDF_New (error_handler, NULL);
+	if (doc) {
+		HPDF_SetInfoAttr (doc,HPDF_INFO_AUTHOR, "Auto");
+		HPDF_SetInfoAttr (doc,HPDF_INFO_CREATOR, "A4GL");
+		HPDF_SetInfoAttr (doc,HPDF_INFO_TITLE, "Auto");
+		HPDF_SetCompressionMode (doc, HPDF_COMP_ALL);
+	}
+	return doc;
+}
 /**
  *
  * a = number to pop
@@ -204,10 +216,11 @@ A4GLPDFREP_A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin, int w
 		{
 		  rep->pdf_ptr = malloc(sizeof(Haru_doc));
 
-		  ((Haru_doc *)rep->pdf_ptr)->doc = HPDF_New (error_handler, NULL);
-		  A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
-		  A4GL_debug ("Set info");
-		  A4GLPDFREP_A4GL_pdf_set_info (rep->pdf_ptr, "A4GL");
+		  ((Haru_doc *)rep->pdf_ptr)->doc = newdoc(); 
+				/* HPDF_New (error_handler, NULL);
+		  		A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
+		  		A4GL_debug ("Set info");
+		  		A4GLPDFREP_A4GL_pdf_set_info (rep->pdf_ptr, "A4GL"); */
 		}
 	    }
 	  else
@@ -301,14 +314,14 @@ A4GLPDFREP_A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin, int w
 	  HPDF_Page_ShowText (CURRENT_PAGE(rep) , str);
 	  HPDF_Page_EndText(CURRENT_PAGE(rep));
 
-	  printf("Putting %s\n",str);
+	  //printf("Putting %s\n",str);
 
 
 	  A4GL_debug ("Adding %f to col_no\n", A4GL_pdf_metric (strlen (str), 'c', rep));
 	  rep->col_no += A4GL_pdf_metric (strlen (str), 'c', rep);
 	  acl_free (str);
 	}
-      A4GL_pdf_move (rep);
+      //A4GL_pdf_move (rep);
     }
 
   A4GL_debug ("Newline : %d", s);
@@ -316,7 +329,7 @@ A4GLPDFREP_A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin, int w
   if (s == 0)
     {
       A4GL_debug ("B\n");
-      A4GL_pdf_move (rep);
+      //A4GL_pdf_move (rep);
       rep->col_no = 0;
       A4GL_debug ("CR lineno was %lf\n",rep->line_no);
       rep->line_no += A4GL_pdf_metric (1, 'l', rep);
@@ -402,7 +415,7 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
 #endif
     }
   A4GL_push_char ("");
-  A4GL_pdf_move (rep); 
+  //A4GL_pdf_move (rep); 
 
 }
 
@@ -672,6 +685,8 @@ static void ensure_text_mode(struct pdf_rep_structure *rep) {
 	}
 }
 
+
+
 /**
  *
  * @todo Describe function
@@ -682,7 +697,7 @@ A4GL_pdf_move (struct pdf_rep_structure *p)
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
   //printf ("Move to %f %f\n", p->col_no, p->line_no);
   ensure_text_mode(p);
-printf("Move to %lf %lf\n", p->col_no, p->page_length - p->line_no);
+//printf("Move to %lf %lf\n", p->col_no, p->page_length - p->line_no);
   HPDF_Page_MoveTextPos (CURRENT_PAGE(p) , p->col_no, p->page_length - p->line_no);
 }
 
@@ -1431,15 +1446,55 @@ printf("s= %s\n",s);
 
 
 
-void PDF_fill_stroke(void *p) {
+void PDF_fill_stroke(void *pv) {
+	 struct Haru_doc *p;
+	 p=(Haru_doc *)pv;
+	 if (HPDF_Page_GetGMode  (p->current_page) ==HPDF_GMODE_TEXT_OBJECT)  {
+  		ClearOldMode(p , HPDF_GMODE_PAGE_DESCRIPTION);
+	 }
+      	 HPDF_Page_FillStroke (p->current_page);
 }
-void PDF_rect(void *p, double x, double y, double width, double height) {
+
+void PDF_rect(void *pv, double x, double y, double width, double height) {
+	 struct Haru_doc *p;
+	 p=(Haru_doc *)pv;
+
+	 if (HPDF_Page_GetGMode  (p->current_page) ==HPDF_GMODE_TEXT_OBJECT)  {
+  		ClearOldMode(p , HPDF_GMODE_PAGE_DESCRIPTION);
+	 }
+		
+	HPDF_Page_Rectangle(p->current_page,x,y,width,height);
 }
-void PDF_set_text_pos(void *p,double x, double y) {
+
+void PDF_set_text_pos(void *pv,double x, double y) {
+	struct Haru_doc *p;
+	p=(Haru_doc *)pv;
+	if (HPDF_Page_GetGMode  (p->current_page) !=HPDF_GMODE_TEXT_OBJECT)  {
+  		ClearOldMode(p , HPDF_GMODE_TEXT_OBJECT);
+		HPDF_Page_BeginText(p->current_page);
+	}
+  	HPDF_Page_MoveTextPos (p->current_page , x, y);
 }
-void PDF_setlinewidth(void *p, double width) {
+
+
+void PDF_setlinewidth(void *pv, double width) {
+	 struct Haru_doc *p;
+	 p=(Haru_doc *)pv;
+	 if (HPDF_Page_GetGMode  (p->current_page) ==HPDF_GMODE_TEXT_OBJECT)  {
+  		ClearOldMode(p , HPDF_GMODE_PAGE_DESCRIPTION);
+	 }
+
+	HPDF_Page_SetLineWidth (p->current_page, width);
 }
-void PDF_show(void *p,char *text) {
+void PDF_show(void *pv,char *text) {
+	struct Haru_doc *p;
+	p=(Haru_doc *)pv;
+	if (HPDF_Page_GetGMode  (p->current_page) !=HPDF_GMODE_TEXT_OBJECT)  {
+  		ClearOldMode(p , HPDF_GMODE_TEXT_OBJECT);
+		HPDF_Page_BeginText(p->current_page);
+	}
+        HPDF_Page_ShowText (p->current_page, text);
+	HPDF_Page_EndText(p->current_page);
 }
 
 
