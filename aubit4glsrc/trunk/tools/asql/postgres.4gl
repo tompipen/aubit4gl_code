@@ -1033,6 +1033,14 @@ define lv_connstr char(256)
 let lv_uname	=get_username()
 let lv_pass	=get_password()
 
+IF lv_uname IS NULL OR lv_uname MATCHES " " THEN
+code
+	A4GL_sqlid_from_aclfile("template1", lv_uname, lv_pass);
+endcode
+end if
+
+
+
 if lv_uname is not null and length(lv_uname)>0 then
 code
 	EXEC SQL BEGIN DECLARE SECTION;
