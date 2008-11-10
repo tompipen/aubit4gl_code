@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.48 2008-09-25 13:40:05 mikeaubury Exp $
+# $Id: globals.c,v 1.49 2008-11-10 14:40:16 mikeaubury Exp $
 #
 */
 
@@ -234,7 +234,7 @@ generate_globals_for (char *s)
 #else
   A4GL_setenv ("A4GL_NOCFILE", "Yes", 1);
 #endif
-  ptr = strchr (fname, '.');
+  ptr = rindex (fname, '.');
   *ptr = 0;
 #ifdef DEBUG
   A4GL_debug ("Trying to compile globals file %s in %s\n", fname, dirname);
