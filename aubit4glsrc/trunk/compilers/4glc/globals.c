@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.49 2008-11-10 14:40:16 mikeaubury Exp $
+# $Id: globals.c,v 1.50 2008-11-10 14:51:18 mikeaubury Exp $
 #
 */
 
@@ -178,6 +178,7 @@ generate_globals_for (char *s)
   char *ptr;
   char nocfile[256];
 
+  char nfilename[1024];
 
 #ifdef DEBUG
   A4GL_debug ("In generate_globals_for\n");
@@ -234,10 +235,34 @@ generate_globals_for (char *s)
 #else
   A4GL_setenv ("A4GL_NOCFILE", "Yes", 1);
 #endif
-  ptr = rindex (fname, '.');
-  *ptr = 0;
+
+
+#ifdef __WIN32__
+ 	SPRINTF2 (nfilename, "%s\\%s",dirname, fname); 
+#else
+ 	SPRINTF2 (nfilename, "%s/%s",dirname, fname); 
+#endif
+
+
+  if (!A4GL_file_exists(nfilename)) { // It doesn't exist as specified
+					// Try with a .4gl on the end instead of any current extension
+  	ptr = rindex (fname, '.');
+	if (ptr) {
+  		*ptr = 0;
+	}
+#ifdef __WIN32__
+ 	SPRINTF2 (nfilename, "%s\\%s.4gl",dirname, fname); 
+#else
+ 	SPRINTF2 (nfilename, "%s/%s.4gl",dirname, fname); 
+#endif
+  }
+ 
+
+
+
+
 #ifdef DEBUG
-  A4GL_debug ("Trying to compile globals file %s in %s\n", fname, dirname);
+  A4GL_debug ("Trying to compile globals file %s in %s\n", nfilename);
 
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
@@ -258,11 +283,11 @@ generate_globals_for (char *s)
  	strcpy (db, get_default_database ()); 
  	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
  	A4GL_trim (db); 
- 	SPRINTF3 (buff, "4glc -d %s --globals \"%s\\%s.4gl\"", db, dirname, fname); 
+ 	SPRINTF3 (buff, "4glc -d %s --globals \"%s\\%s\"", db, dirname, nfilename); 
  } 
  else 
  { 
- 	SPRINTF2 (buff, "4glc --globals \"%s\\%s.4gl\"", dirname, fname); 
+ 	SPRINTF2 (buff, "4glc --globals \"%s\\%s\"", dirname, nfilename); 
  } 
 #else
 // cc 2004.11.24 need to check for -d flag from parent process 
@@ -272,11 +297,11 @@ generate_globals_for (char *s)
  	strcpy (db, get_default_database ()); 
  	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
  	A4GL_trim (db); 
- 	SPRINTF3 (buff, "4glc -d %s --globals '%s/%s.4gl'", db, dirname, fname); 
+ 	SPRINTF3 (buff, "4glc -d %s --globals '%s/%s'", db, dirname, nfilename); 
  } 
  else 
  { 
- 	SPRINTF2 (buff, "4glc --globals '%s/%s.4gl'", dirname, fname); 
+ 	SPRINTF2 (buff, "4glc --globals '%s/%s'", dirname, nfilename); 
  } 
 #endif
  // cc end change 
