@@ -676,6 +676,7 @@ end if
 		continue for
 	end if
 
+
 	# If we get to here its either a compile option thats not recognised or
 	# its a filename...
 
@@ -807,6 +808,11 @@ end if
 	display "WARNING : ",lv_arg clipped," not recognised - passing to C-compiler/Linker"
 	#call usg()
    end for
+
+
+if mv_lextype="WRITE" then
+	let mv_stage="C"
+end if
 
    if mv_verbose>=3 then
    	display ""
