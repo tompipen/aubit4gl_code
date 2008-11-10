@@ -290,6 +290,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   IF mv_lextype IS NULL OR mv_lextype MATCHES " " THEN
   	LET mv_lextype="C"
   END IF
+				if mv_lextype="WRITE" then
+					let mv_stage="C"
+				end if
 
   LET mv_lexdialect=fgl_getenv("A4GL_LEXDIALECT")
   initialize mv_output to null
@@ -560,8 +563,14 @@ end if
 		WHEN "-t"			
 							let a=a+1 
 							let mv_lextype=arg_val(a) 
+				if mv_lextype="WRITE" then
+					let mv_stage="C"
+				end if
 							continue for
 		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a)
+				if mv_lextype="WRITE" then
+					let mv_stage="C"
+				end if
 					continue for
 
 		WHEN "-td"			let a=a+1 let mv_lexdialect=arg_val(a) continue for
