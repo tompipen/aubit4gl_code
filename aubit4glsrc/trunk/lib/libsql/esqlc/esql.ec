@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.219 2008-11-10 15:51:25 mikeaubury Exp $
+# $Id: esql.ec,v 1.220 2008-11-11 17:36:36 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.219 2008-11-10 15:51:25 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.220 2008-11-11 17:36:36 mikeaubury Exp $";
 #endif
 
 
@@ -377,7 +377,7 @@ if (dectoasc_decsep==',') {
 		if (s[a]==',') buff[a]='.';
 		if (s[a]=='.') buff[a]=',';
 	}
-	printf("->%s\n",buff);
+	//printf("->%s\n",buff);
 	strcpy(s,buff);
 	return;
 }

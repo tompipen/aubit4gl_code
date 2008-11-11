@@ -1580,6 +1580,15 @@ print_options_cmd (struct_options_cmd * cmd_data)
 		printc("A4GL_set_option_value('Y',0);");
 
 		break;
+	case 'e':
+		printc("{char *_errhook=NULL;");
+		print_expr (o->expr);
+		printc("A4GL_pushop(OP_CLIP);");
+		printc("_errhook=A4GL_char_pop();");
+		printc("A4GL_setenv(\"A4GL_CALLERRHOOK\",_errhook,1);");
+		printc("free(_errhook);");
+		printc("}");
+		break;
 
 	case 'C':		//COMMENT_LINE
 	case 'E':		//ERROR_LINE

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.345 2008-11-06 10:14:01 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.346 2008-11-11 17:36:36 mikeaubury Exp $
 #
 */
 
@@ -1291,7 +1291,11 @@ void A4GL_set_last_cursor(int n);
   int A4GL_opboolean (void);
   void A4GL_debug_print_stack (void);
   void print_stack (void);
+#ifndef LOCATE_VAR_DEFINED
+#define LOCATE_VAR_DEFINED
   void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
+#endif
+
   void A4GL_whats_in_a_string(char *s,int *d,int *sz);
 
 

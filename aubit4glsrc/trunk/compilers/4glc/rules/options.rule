@@ -31,6 +31,7 @@ opt_allopts 	: COMMENT_LINE line_no 		{ $<single_option>$=new_option_expr('C',$<
 		| FORM_LINE line_no 		{ $<single_option>$=new_option_expr('F',$<ptr>2,0); map_ui("OPTIONS_FORM_LINE");}
 		| MENU_LINE line_no 		{ $<single_option>$=new_option_expr('M',$<ptr>2,0); map_ui("OPTIONS_MENU_LINE");}
 		| MSG_LINE line_no 		{ $<single_option>$=new_option_expr('m',$<ptr>2,0); map_ui("OPTIONS_MESSAGE_LINE");}
+		| ERRORHOOK fgl_expr_c 		{ $<single_option>$=new_option_expr('e',$<ptr>2,0); map_ui("OPTIONS_ERRHOOK");}
 		| PROMPT_LINE line_no 		{ $<single_option>$=new_option_expr('P',$<ptr>2,0); map_ui("OPTIONS_PROMPT_LINE");}
 		| KW_ACCEPT single_key_val	{ $<single_option>$=new_option('A',$<str>2,1); iskey=0; map_ui("OPTIONS_ACCEPTKEY");}
 		| KW_DELETE single_key_val 	{ $<single_option>$=new_option('D',$<str>2,1); iskey=0; map_ui("OPTIONS_DELETEKEY");}

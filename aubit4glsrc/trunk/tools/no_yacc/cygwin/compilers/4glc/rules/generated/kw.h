@@ -1195,3 +1195,4 @@ struct s_kw {
 #define KW_FILL 2188
 #define KW_WIDTH 2189
 #define KWLINE 2190
+#define ERRORHOOK 2191

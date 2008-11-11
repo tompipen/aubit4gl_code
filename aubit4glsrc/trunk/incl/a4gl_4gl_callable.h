@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.38 2008-10-02 13:34:54 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.39 2008-11-11 17:36:36 mikeaubury Exp $
 */
 
 /**
@@ -173,7 +173,10 @@ char *A4GL_get_esql_connection(void);
 void *A4GL_get_curr_report(void);
 void A4GL_set_curr_report(void *);
 void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
-
+#ifndef LOCATE_VAR_DEFINED
+#define LOCATE_VAR_DEFINED
+void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
+#endif
 
 //void A4GLSQL_map_tname(char *db, char *code);
 //void A4GLSQL_unmap_tname(char *db);

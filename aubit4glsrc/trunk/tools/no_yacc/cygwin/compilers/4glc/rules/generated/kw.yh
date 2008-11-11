@@ -1189,3 +1189,4 @@
 %token KW_FILL 2188
 %token KW_WIDTH 2189
 %token KWLINE 2190
+%token ERRORHOOK 2191
