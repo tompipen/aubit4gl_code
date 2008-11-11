@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.216 2008-11-05 14:44:49 mikeaubury Exp $
+# $Id: stack.c,v 1.217 2008-11-11 22:49:26 mikeaubury Exp $
 #
 */
 
@@ -1796,6 +1796,7 @@ A4GL_push_param (void *p, int d)
 	      acl_free (s1);
 	      acl_free (s2);
 	      A4GL_push_char (z1);
+		acl_free(z1);
 	      call_list--;
 	      return;
 	    }
