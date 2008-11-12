@@ -26,40 +26,41 @@ function pind(rtype,rname) {
 
 BEGIN {
 FS="[ 	,]+"
-print "/*"
-print " * lib=" xlib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
-print " * @file"
-print " * File definition"
-print " *"
-print " * This file was created from .spec file of same name, using dlmagic script"
-print " * - if you need to edit it, edit .spec file instad, and use [make filename.c]"
-print " * to re-create it."
-print " *"
-print " * @todo Add Doxygen comments to file"
-print " * @todo Take the prototypes here declared. See if the functions are static"
-print " * or to be externally seen"
-print " * @todo Doxygen comments to add to functions"
-print " */"
-print ""
-print "/*******************************************************************"
-print "* (c) 1997-2005 Aubit Computing Ltd."
-print "*"
-print "*"
-print "********************************************************************/"
-print ""
-print ""
-if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\""
-else print "#include " HEADER_FILE 
-print ""
-print "#ifdef DEBUG"
-print "#ifndef DEBUG_SPEC"
-print "#define DEBUG_SPEC"
-print "#endif"
-print "#endif"
-print "static void *libptr=0;"
-print "void A4GL" xlib "_clrlibptr (void);"
-print "int dlclose (void *__handle);"
-print ""
+print "/*" > "header.dlmagic"
+print " * lib=" xlib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix > "header.dlmagic"
+print " * @file" > "header.dlmagic"
+print " * File definition" > "header.dlmagic"
+print " *" > "header.dlmagic"
+print " * This file was created from .spec file of same name, using dlmagic script" > "header.dlmagic"
+print " * - if you need to edit it, edit .spec file instad, and use [make filename.c]" > "header.dlmagic"
+print " * to re-create it." > "header.dlmagic"
+print " *" > "header.dlmagic"
+print " * @todo Add Doxygen comments to file" > "header.dlmagic"
+print " * @todo Take the prototypes here declared. See if the functions are static" > "header.dlmagic"
+print " * or to be externally seen" > "header.dlmagic"
+print " * @todo Doxygen comments to add to functions" > "header.dlmagic"
+print " */" > "header.dlmagic"
+print "" > "header.dlmagic"
+print "/*******************************************************************" > "header.dlmagic"
+print "* (c) 1997-2005 Aubit Computing Ltd." > "header.dlmagic"
+print "*" > "header.dlmagic"
+print "*" > "header.dlmagic"
+print "********************************************************************/" > "header.dlmagic"
+print "" > "header.dlmagic"
+print "" > "header.dlmagic"
+if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\"" > "header.dlmagic"
+else print "#include " HEADER_FILE  > "header.dlmagic"
+print "" > "header.dlmagic"
+print "#ifdef DEBUG" > "header.dlmagic"
+print "#ifndef DEBUG_SPEC" > "header.dlmagic"
+print "#define DEBUG_SPEC" > "header.dlmagic"
+print "#endif" > "header.dlmagic"
+print "#endif" > "header.dlmagic"
+print "static void *libptr=0;" > "header.dlmagic"
+print "static void clrcachedptrs(void);" > "header.dlmagic"
+print "void A4GL" xlib "_clrlibptr (void);" > "header.dlmagic"
+print "int dlclose (void *__handle);" > "header.dlmagic"
+print "" > "header.dlmagic"
 print "/**"
 print " * Library init function."
 print " *"
@@ -67,12 +68,14 @@ print " * @todo : explain ussage and parameters."
 print " * @return ."
 print " */"
 print ""
+print "static char currentLib[512]=\"\";"
 print "void A4GL" xlib "_clrlibptr (void) {"
 if (selfonly) {
 	print "libptr=(void *)0;"
 } else {
 	print "    if (libptr) {dlclose(libptr);}"
 	print "    libptr=0;"
+	print "    clrcachedptrs();"
 }
 print "}"
 print ""
@@ -83,11 +86,15 @@ if (selfonly) {
 } else {
 	print "typedef int (*x_func)(void);"
 	print "static x_func func=0;";
-	print "   libptr=(void *)A4GL_dl_openlibrary(\"" xlib "\",acl_getenv(\"" env "\"));"
+        print "   char *newlib;"
+	print "   newlib=acl_getenv(\"" env "\");"
+        print "   if (strcmp(newlib,currentLib)!=0) {A4GL" xlib "_clrlibptr ();}"
+	print "   libptr=(void *)A4GL_dl_openlibrary(\"" xlib "\",newlib);"
 	print "   if (libptr==0) {"
 	print "      A4GL_exitwith(\"Unable to open " xlib " library...\");"
 	print "      return 0;"
 	print "   }"
+	print "   strcpy(currentLib, newlib);"
 	print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix xlib "_initlib\");"
 	print ""
 	print "   if (func)"
@@ -191,24 +198,25 @@ if (rtype!="void") {
 
 funccnt++;
 if (!selfonly) {
-	printf("typedef %s(*x_func_%d)(",rtype,funccnt)
-
+	str=sprintf("typedef %s(*x_func_%d)(",rtype,funccnt)
 
 for (b=0;b<c;b++) {
 	xxtype=param_type[b]
 	gsub("[*]"," * ",xxtype)
 	gsub("  "," ",xxtype)
-	if (b) printf(",")
-	printf("%s ",xxtype) 
+	if (b) str=str ","
+	str=str xxtype " "
 }
 
 
 if (c==0) {
-	printf("void");
+	str=str "void"
 }
-print ");"
+str=str ");"
+print str > "header.dlmagic"
 
-printf("static x_func_%s func_%s=0;\n",funccnt,funccnt)
+printf("static x_func_%s func_%s=0;\n",funccnt,funccnt) > "header.dlmagic"
+printf("   func_%s=NULL;\n", funccnt) > "clrptr.dlmagic"
 }
 
 print "#ifdef DEBUG_SPEC"

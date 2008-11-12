@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.77 2008-10-23 14:57:22 mikeaubury Exp $
+# $Id: calldll.c,v 1.78 2008-11-12 13:48:30 mikeaubury Exp $
 #
 */
 
@@ -811,7 +811,8 @@ A4GL_call_4gl_dll_bound (char *filename, char *function, int ni, struct BINDING 
 int
 A4GL_never_dlmagic_cache (char *s)
 {
-//
+// 
+  if (strcmp(s,"A4GLPacker_A4GL_open_packer")==0) return 1;
   return 0;
 }
 

@@ -183,8 +183,19 @@ fi # "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2"
 		env="not-set"
 	fi
 
-	$AWK -v xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile
+	$AWK -v xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile > dlm.1
 
+	if [ "$selfonly" = 1 ]
+	then
+		cat header.dlmagic dlm.1
+		rm dlm.1 header.dlmagic
+	else
+		cat header.dlmagic  dlm.1
+		echo "static void clrcachedptrs(void) {"
+		cat clrptr.dlmagic
+		echo "}"
+		rm header.dlmagic  dlm.1  clrptr.dlmagic
+	fi
 
 exit
 
