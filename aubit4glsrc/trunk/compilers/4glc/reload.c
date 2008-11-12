@@ -91,3 +91,7 @@ int output_str(char *n, char *r,int isptr,int arr) {
 void set_yytext(char *s) {
 //
 }
+
+int current_is_report() {
+return 0;
+}
