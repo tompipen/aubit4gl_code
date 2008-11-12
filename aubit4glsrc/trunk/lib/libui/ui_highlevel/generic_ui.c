@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.144 2008-11-12 09:24:51 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.145 2008-11-12 19:31:07 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1865,32 +1865,45 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list,
   return cnt - 1;
 }
 
+
 static void A4GL_replace_tab_with_spaces_on_stack(void) {
 char *s;
 char buff[20480];
 int b=0;
 int a;
-s=A4GL_char_pop();
-if (strchr(s,'\t')==NULL) {
-        A4GL_push_char(s);
+int d1;
+int s1;
+void *ptr1;
+
+  A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+if (ptr1==NULL) return;
+if ((d1&DTYPE_MASK)==DTYPE_CHAR || (d1&DTYPE_MASK)==DTYPE_VCHAR) {
+
+        if (strchr(ptr1,'\t')==NULL) {
+                return;
+        }
+        s=A4GL_char_pop();
+
+        for (a=0;a<strlen(s);a++) {
+                if (s[a]=='\t') {
+                        buff[b++]=' ';
+                        buff[b++]=' ';
+                        buff[b++]=' ';
+                } else {
+                        buff[b++]=s[a];
+                }
+        }
+        A4GL_assertion(b>sizeof(buff),"Buffer too small in replace_tab_with_spaces_on_stack");
+        buff[b]=0;
+        A4GL_push_char(buff);
         acl_free(s);
-        return;
-}
-for (a=0;a<strlen(s);a++) {
-        if (s[a]=='\t') {
-                buff[b++]=' ';
-                buff[b++]=' ';
-                buff[b++]=' ';
-        } else {
-                buff[b++]=s[a];
         }
 }
-A4GL_assertion(b>sizeof(buff),"Buffer too small in replace_tab_with_spaces_on_stack");
-buff[b]=0;
-A4GL_push_char(buff);
-acl_free(s);
 
-}
+
+
+
+
 char *
 A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 {

@@ -1,5 +1,5 @@
 {
-	@(#)$Id: d4glmain.4gl,v 1.2 2003-09-22 20:57:20 mikeaubury Exp $
+	@(#)$Id: d4glmain.4gl,v 1.3 2008-11-12 19:31:07 mikeaubury Exp $
 	@(#)Alternative D4GL compiling front-end
 	@(#)Control Program and support routines
 	@(#)Author: JL
@@ -31,8 +31,8 @@ MAIN
 	OPTIONS PROMPT LINE 24
 	CALL set_defaults()
 
-	LET prog_vers = rcs_munge("D4GL $Revision: 1.2 $ $Date: 2003-09-22 20:57:20 $")
-	LET rcs       = "@(#)$Id: d4glmain.4gl,v 1.2 2003-09-22 20:57:20 mikeaubury Exp $"
+	LET prog_vers = rcs_munge("D4GL $Revision: 1.3 $ $Date: 2008-11-12 19:31:07 $")
+	LET rcs       = "@(#)$Id: d4glmain.4gl,v 1.3 2008-11-12 19:31:07 mikeaubury Exp $"
 	LET optstr    = "c:f:im:b:p:t:"
 	LET nfiles    = 0
 	LET iflag     = 'N'
@@ -303,7 +303,7 @@ FUNCTION get_input(pstring, istring)
 	LET INT_FLAG = FALSE
 	LET nstring = istring
 
-	DISPLAY pstring CLIPPED AT 1, 2
+	DISPLAY pstring[1,36] CLIPPED AT 1, 1
 
 	INPUT nstring WITHOUT DEFAULTS FROM FORMONLY.input_field HELP 10
 
