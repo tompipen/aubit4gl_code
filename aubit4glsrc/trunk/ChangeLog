@@ -1,4 +1,36 @@
 ---------------------------
+Wed Nov 12 20:36:25 GMT 2008
+---------------------------
+1.10RC_40 Released
+---------------------------
+	
+	A4GL_INCLINES fixup
+	
+	Move the help number to the correct place in the INPUT command
+	
+	Allow clearing of pointers in DLmagic'd routines
+	
+	Tab in field fixup (reported by  john <john@og.co.nz> on 12 Nov
+	2008)
+	
+	memory leak fixup
+	
+	Small SQL Clobber fixup for a filenames starting with a number
+	
+	Small LEXTYPE=WRITE fixup for 4glpc
+	
+	Fix missing error message
+	
+	Look for the last '.' not the first one when looking at GLOBAL file
+	names
+	
+	libharu fixups
+	
+	UI_XML fixups
+	
+	Small memory leak fixup
+	
+---------------------------
 Fri Nov  7 08:05:38 GMT 2008
 ---------------------------
 1.10RC_39 Released
