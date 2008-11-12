@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.143 2008-11-06 10:14:02 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.144 2008-11-12 09:24:51 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1865,7 +1865,32 @@ A4GL_gen_field_list_from_slist_internal (void ***field_list,
   return cnt - 1;
 }
 
+static void A4GL_replace_tab_with_spaces_on_stack(void) {
+char *s;
+char buff[20480];
+int b=0;
+int a;
+s=A4GL_char_pop();
+if (strchr(s,'\t')==NULL) {
+        A4GL_push_char(s);
+        acl_free(s);
+        return;
+}
+for (a=0;a<strlen(s);a++) {
+        if (s[a]=='\t') {
+                buff[b++]=' ';
+                buff[b++]=' ';
+                buff[b++]=' ';
+        } else {
+                buff[b++]=s[a];
+        }
+}
+A4GL_assertion(b>sizeof(buff),"Buffer too small in replace_tab_with_spaces_on_stack");
+buff[b]=0;
+A4GL_push_char(buff);
+acl_free(s);
 
+}
 char *
 A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 {
@@ -1968,8 +1993,18 @@ int width;
 	}
 
     }
-  
-  A4GL_pop_char (ff, field_width);
+
+
+  if (f->dynamic==0) {
+        A4GL_replace_tab_with_spaces_on_stack();
+        A4GL_pop_char (ff, field_width);
+  }  else {
+          A4GL_debug("Its a dynamic field.... %d",f->dynamic);
+          acl_free(ff);
+          ff=A4GL_char_pop();
+          A4GL_debug("Got : %s instead..\n",ff);
+  }
+
   A4GL_debug ("set_field_contents : '%s'", ff);
   A4GL_add_recall_value (f->colname, ff);
   A4GL_mja_set_field_buffer (field, 0, ff,orig);
