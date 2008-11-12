@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: clobber.c,v 1.4 2008-11-11 17:56:35 mikeaubury Exp $
+# $Id: clobber.c,v 1.5 2008-11-12 10:31:00 mikeaubury Exp $
 #
 */
 
@@ -215,7 +215,7 @@ int l;
     }
 
   if (strlen(f)) {
-	if (f[0]>='a'&&f[a]<='z' || f[0]>='A'&&f[a]<='Z') {
+	if ((f[0]>='a'&&f[0]<='z') || (f[0]>='A'&&f[0]<='Z')) {
   		SPRINTF2 (buff, "%s_%s", f, s);
 	} else {
   		SPRINTF2 (buff, "a%s_%s", f, s);
