@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.56 2008-11-04 13:20:06 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.57 2008-11-12 09:59:21 mikeaubury Exp $
 #*/
 
 /**
@@ -625,7 +625,7 @@ void
 A4GL_pdf_move (struct pdf_rep_structure *p)
 {
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
-  printf ("Move to %f %f\n", p->col_no, p->page_length -p->line_no);
+  //printf ("Move to %f %f\n", p->col_no, p->page_length -p->line_no);
   PDF_set_text_pos (p->pdf_ptr, p->col_no, p->page_length - p->line_no);
 }
 

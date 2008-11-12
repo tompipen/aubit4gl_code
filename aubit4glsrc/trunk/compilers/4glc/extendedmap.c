@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.8 2008-07-06 11:34:24 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.9 2008-11-12 10:01:21 mikeaubury Exp $
 #*/
 
 
@@ -285,6 +285,7 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
     case E_SLI_BUILTIN_CONST_FALSE:
     case E_SLI_QUERY_PLACEHOLDER:
     case E_SLI_VAR_REPLACE:
+	case E_SLI_VARIABLE_USAGE:
     case E_SLI_COLUMN_ORDERBY:	// Dont care about order bys..
 
       return;
@@ -1283,6 +1284,7 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
     case E_SLI_BUILTIN_CONST_COUNT_STAR:
 
     case E_SLI_IBIND:
+	case E_SLI_VARIABLE_USAGE:
     case E_SLI_VARIABLE:
     case E_SLI_DATETIME:
     case E_SLI_INTERVAL:
