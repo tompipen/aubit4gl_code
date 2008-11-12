@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.448 2008-11-12 16:07:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.449 2008-11-12 16:39:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.448 2008-11-12 16:07:56 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.449 2008-11-12 16:39:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -340,6 +340,7 @@ void set_suppress_lines(void) {
 
 void clr_suppress_lines(void) {
 	suppress_lines--;
+	A4GL_assertion(suppress_lines<0,"suppress_lines<0");
 }
 
 

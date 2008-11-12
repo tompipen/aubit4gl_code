@@ -2893,6 +2893,7 @@ clr_bindings();
   printc ("while (1) {\n");
   tmp_ccnt++;
 
+  set_suppress_lines ();
 	if (cmd_data->outputvals && cmd_data->outputvals->list.list_len) {
   		ni = print_bind_definition_g (cmd_data->outputvals,'o');
   		print_bind_set_value_g(cmd_data->outputvals,'o');
