@@ -85,6 +85,10 @@ make
 
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_cs
 make
+
+cd /home/aubit4gl/aubit4glsrc/lib/libpacker/xml_best
+make
+
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_4gl
 make
 

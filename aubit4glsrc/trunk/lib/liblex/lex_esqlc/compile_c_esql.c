@@ -235,9 +235,11 @@ empty.list.list_val=0;
         static char buff[200];
         started_with_aclfgli=1;
         printc ("{");
+set_suppress_lines();
         printc("EXEC SQL BEGIN DECLARE SECTION;");
         printc("char *_sid;\n");
         printc("EXEC SQL END DECLARE SECTION;");
+clr_suppress_lines();
 	print_expr(stmtname->expr_str_u.expr_expr);
         printc ("_sid=A4GL_char_pop;\n", stmt);
         sprintf(buff,":_sid");
@@ -715,9 +717,11 @@ static void print_set_conn_from_str(char *conn) {
 static void print_use_session(expr_str *con) {
   if (con==NULL) return ;
   printc ("{");
+set_suppress_lines();
   printc("EXEC SQL BEGIN DECLARE SECTION;");
   printc("char _sav_cur_conn[32];\n");
   printc("EXEC SQL END DECLARE SECTION;");
+clr_suppress_lines();
   printc ("strcpy(_sav_cur_conn,A4GL_get_esql_connection());\n");
   print_set_conn_from_str(local_expr_as_string(con));
 }
@@ -749,12 +753,14 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
   	SPRINTF1 (cname, "aclfgl_cE_%d", ncnt++);
 
   	printc ("{");
+set_suppress_lines();
   	printc ("EXEC SQL BEGIN DECLARE SECTION;");
   	printc("char *_sql;");
   	printc ("int _npc;");
   	printc ("short _npi;");
   	printc ("char _np[256];");
   	printc ("EXEC SQL END DECLARE SECTION;");
+clr_suppress_lines();
 
 
 	s=e->subquery;
@@ -832,11 +838,13 @@ void print_in_subquery(int i, struct s_expr_in_sq *e) {
 
         clr_bindings();
         printc("{ /* SUBQUERY - IN */");
+set_suppress_lines();
   printc ("EXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _npc;");
   printc ("short _npi;");
   printc ("char _np[256];");
   printc ("EXEC SQL END DECLARE SECTION;");
+clr_suppress_lines();
 
 		tmp_ccnt++;
         	print_expr(e->expr);
@@ -1444,6 +1452,7 @@ print_free_cmd (struct_free_cmd * cmd_data)
   //static char *cname = 0;
   //struct expr_str *cursorname;
   print_cmd_start ();
+set_suppress_lines();
   print_use_session(cmd_data->connid);
  
   if (cmd_data->cursorname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
@@ -1458,6 +1467,7 @@ print_free_cmd (struct_free_cmd * cmd_data)
   }
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
+clr_suppress_lines();
   return 1;
 }
 
@@ -1505,6 +1515,7 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	  printc ("_s=A4GL_char_pop();A4GL_trim(_s);\n");
   	  printc("if (A4GL_sqlid_from_aclfile (_s, _uAcl, _pAcl)) {");
 
+   		set_nonewlines();
 	  switch (esql_type ())
 	    {
 	    case E_DIALECT_NONE:
@@ -1513,14 +1524,15 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	    case E_DIALECT_INFORMIX:
 	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default'\n");
-	          printc ("USER :_uAcl USING :_pAcl; "); 
+	          printc (" USER :_uAcl USING :_pAcl; "); 
 
 	      break;
 	    case E_DIALECT_POSTGRES:
 	      A4GL_save_sql ("CONNECT TO $s", 0);		// ecpg 8.1.5
 	      printc ("\nEXEC SQL CONNECT TO :_s\n");		// ecpg 8.1.5
-	           printc ("USER :_uAcl USING :_pAcl; "); 
+	           printc (" USER :_uAcl USING :_pAcl; "); 
 	      break;
+	      	
 
 	    case E_DIALECT_SAPDB:
 	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);
@@ -1537,7 +1549,9 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	      break;
 	    }
 
+   		clr_nonewlines();
   	  printc("} else {");
+   		set_nonewlines();
 
 	  switch (esql_type ())
 	    {
@@ -1565,6 +1579,7 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
 	      break;
 	    }
+   		clr_nonewlines();
   	  printc("}");
 
 
@@ -2362,11 +2377,13 @@ int doing_esql_unload = 0;
       
   printc("{");
   tmp_ccnt++;
+set_suppress_lines();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
   printc("char *_sql=0;\n");
   printc("char _filename[512];");
   printc("char *_delimiter=\"|\";");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
+clr_suppress_lines();
   clr_bindings();
 
 
@@ -2940,6 +2957,7 @@ int uses_filter=0;
 
   printc ("{");
   printc ("void *_filterfunc=NULL;");
+set_suppress_lines();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION; ");
 
   printc ("char _filename[512];");
@@ -2956,6 +2974,7 @@ int uses_filter=0;
       printc ("char *_sql=0;");
     }
   printc ("\nEXEC SQL END DECLARE SECTION;");
+clr_suppress_lines();
 
   print_expr (cmd_data->filename);
   printc ("A4GL_pop_char(_filename,511); A4GL_trim(_filename); ");

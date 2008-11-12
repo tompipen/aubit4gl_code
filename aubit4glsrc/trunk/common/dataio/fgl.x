@@ -34,8 +34,8 @@ struct s_full_col {
 
 struct s_exchange_clobber
 {
-  str orig;
-  str new;
+  str origval;
+  str newval;
   str important;
 };
 

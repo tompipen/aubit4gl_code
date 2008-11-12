@@ -1793,7 +1793,7 @@ local_get_expr_as_string (struct expr_str *ptr)
     case ET_EXPR_LITERAL_STRING:
 	{
 		char buff[60000];
-		sprintf(buff,"\"%s\"", ptr->expr_str_u.expr_string);
+		sprintf(buff,"\"%s\"", A4GL_strip_quotes(ptr->expr_str_u.expr_string));
 		return acl_strdup(buff);
 	}
       break;
@@ -3720,7 +3720,7 @@ open_outfile (void)
 static char *get_orig_from_clobber(char *s) {
 int a;
 	for (a=0;a<curr_module->clobberings.clobberings_len;a++) {
-		if (strcmp(curr_module->clobberings.clobberings_val[a].new,s)==0) {
+		if (strcmp(curr_module->clobberings.clobberings_val[a].newval,s)==0) {
 			return curr_module->clobberings.clobberings_val[a].important;
 		}
 	}
@@ -4357,7 +4357,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 		printc (",");
 	      param = function_definition->parameters->list.list_val[a];
 	      A4GL_assertion (param->expr_type != ET_EXPR_PARAMETER, "Invalid parameter type");
-	      printc ("%s", function_definition->parameters->list.list_val[a]->expr_str_u.expr_string);
+	      printc ("%s", function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.expr_string);
 	    }
 	}
       printc (")");
@@ -6143,8 +6143,10 @@ print_options (char n, char *s, struct expr_str *expr)
 	  break;
 
 	case 'h':
-	  printc ("OPTIONS HELP FILE");
+	set_nonewlines();
+	  printc ("OPTIONS HELP FILE ");
 		real_print_expr(expr);
+	clr_nonewlines();
 	  break;
 
 	case 'L':

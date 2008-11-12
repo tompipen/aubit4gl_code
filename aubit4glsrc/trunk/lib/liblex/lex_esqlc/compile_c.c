@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.447 2008-11-05 15:00:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.448 2008-11-12 16:07:56 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.447 2008-11-05 15:00:24 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.448 2008-11-12 16:07:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5806,7 +5806,7 @@ printc("#");
 		printc("p=s;");
 		printc("A4GL_trim(s);");
 		for (a=0;a<m->clobberings.clobberings_len;a++) {
-			printc("if (strcmp(s,\"%s\")==0) p=\"%s\";",  m->clobberings.clobberings_val[a].important,  m->clobberings.clobberings_val[a].new);
+			printc("if (strcmp(s,\"%s\")==0) p=\"%s\";",  m->clobberings.clobberings_val[a].important,  m->clobberings.clobberings_val[a].newval);
 		}
 		printc("A4GL_push_char(p);");
 		printc("free(s);");

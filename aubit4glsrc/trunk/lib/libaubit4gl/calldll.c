@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.78 2008-11-12 13:48:30 mikeaubury Exp $
+# $Id: calldll.c,v 1.79 2008-11-12 16:07:56 mikeaubury Exp $
 #
 */
 
@@ -812,7 +812,6 @@ int
 A4GL_never_dlmagic_cache (char *s)
 {
 // 
-  if (strcmp(s,"A4GLPacker_A4GL_open_packer")==0) return 1;
   return 0;
 }
 
