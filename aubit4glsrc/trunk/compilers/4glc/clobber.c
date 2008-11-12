@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: clobber.c,v 1.5 2008-11-12 10:31:00 mikeaubury Exp $
+# $Id: clobber.c,v 1.6 2008-11-12 14:57:07 mikeaubury Exp $
 #
 */
 
@@ -51,7 +51,7 @@ has_clobber (module_definition *mod, char *s)
     return 0;
   for (a = 0; a < mod->clobberings.clobberings_len; a++)
     {
-      if (strcmp (mod->clobberings.clobberings_val[a].orig, s) == 0)
+      if (strcmp (mod->clobberings.clobberings_val[a].origval, s) == 0)
 	{
 	  return 1;
 	}
@@ -68,9 +68,9 @@ get_clobber (module_definition *mod, char *s)
     return s;
   for (a = 0; a < mod->clobberings.clobberings_len; a++)
     {
-      if (strcmp (mod->clobberings.clobberings_val[a].orig, s) == 0)
+      if (strcmp (mod->clobberings.clobberings_val[a].origval, s) == 0)
 	{
-	  return mod->clobberings.clobberings_val[a].new;
+	  return mod->clobberings.clobberings_val[a].newval;
 	}
     }
   return s;
@@ -84,7 +84,7 @@ A4GL_get_important_from_clobber (module_definition *mod, char *s)
     return s;
   for (a = 0; a < mod->clobberings.clobberings_len; a++)
     {
-      if (strcmp (mod->clobberings.clobberings_val[a].orig, s) == 0)
+      if (strcmp (mod->clobberings.clobberings_val[a].origval, s) == 0)
 	{
 	  return mod->clobberings.clobberings_val[a].important;
 	}
@@ -102,9 +102,9 @@ A4GL_get_clobber_from_orig (module_definition *mod, char *s)
     return s;
   for (a = 0; a < mod->clobberings.clobberings_len; a++)
     {
-      if (strcmp (mod->clobberings.clobberings_val[a].new, s) == 0)
+      if (strcmp (mod->clobberings.clobberings_val[a].newval, s) == 0)
 	{
-	  return mod->clobberings.clobberings_val[a].orig;
+	  return mod->clobberings.clobberings_val[a].origval;
 	}
     }
   return s;
@@ -136,8 +136,8 @@ add_clobber (module_definition *mod, char *buff_orig, char *important)
 
   if (strlen (buff_orig) <= 20)
     {				/* Extra 2 for the quotes... */
-      mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].orig = acl_strdup (buff_orig);
-      mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].new = acl_strdup (buff_new);
+      mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].origval = acl_strdup (buff_orig);
+      mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].newval = acl_strdup (buff_new);
       mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].important = acl_strdup (important);
       return buff_orig;
     }
@@ -145,8 +145,8 @@ add_clobber (module_definition *mod, char *buff_orig, char *important)
   strcpy (b1, important);
   b1[9] = 0;
   SPRINTF2 (buff_new, "a4gl_%03d_%s", p++, b1);
-  mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].orig = acl_strdup (buff_orig);
-  mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].new = acl_strdup (buff_new);
+  mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].origval = acl_strdup (buff_orig);
+  mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].newval = acl_strdup (buff_new);
   mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].important = acl_strdup (important);
   return buff_new;
 }

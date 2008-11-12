@@ -75,7 +75,7 @@ input_cmd	:	KW_INPUT inp_rest {
 			}
 		;
 
-input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FROM idm_input_array opt_help_no_i {
+input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FROM idm_input_array  {
 				if (!check_input_or_display_array_variable($<ptr>2)) {
 					a4gl_yyerror("Variable cannot be used for an INPUT ARRAY");
 				}
@@ -83,17 +83,15 @@ input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FR
 				add_feature("UI_INPUT_ARRAY");
 				map_ui_block("INPUT_ARRAY");
 				inp_flags=0;
-		} input_attributes {
-  			A4GL_new_events();
-			
-		} end_input_array { 
+  				A4GL_new_events();
+		} input_attributes opt_help_no_i end_input_array { 
 				int blk;
 				int sio;
 				blk=get_sio_ids("INPUT");
 				sio=get_sio_id("INPUT");
 
 				  pop_blockcommand ("INPUT");
-				$<cmd>$=new_input_array_cmd($<ptr>6, $<ptr>2, $<attrib>9,$<on_events>11, $<e_boolean>4, $<integer_val>7,sio,blk,$<str>3);
+				$<cmd>$=new_input_array_cmd($<ptr>6, $<ptr>2, $<attrib>8,$<on_events>10, $<e_boolean>4, $<integer_val>9,sio,blk,$<str>3);
 				map_ui_endblock("INPUT");
 				A4GL_drop_events();
 		}
@@ -103,7 +101,7 @@ input_attributes: opt_attributes  {$<attrib>$=$<attrib>1;}
 ;
 
 inp_rest:
-BY_NAME expanded_ibind_var_list opt_defs opt_help_no_i input_attributes 
+BY_NAME expanded_ibind_var_list opt_defs input_attributes  opt_help_no_i
 {
 	//struct fh_field_list *f;
   	char tabname[40];
@@ -112,13 +110,13 @@ BY_NAME expanded_ibind_var_list opt_defs opt_help_no_i input_attributes
 	map_ui_block("INPUT");
 	add_feature("UI_INPUT_BY_NAME");
 	
-	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>2,1,1), NULL,NULL, $<attrib>5,$<e_boolean>3, $<integer_val>4,0);
+	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>2,1,1), NULL,NULL, $<attrib>4,$<e_boolean>3, $<integer_val>5,0);
 }
-| expanded_ibind_var_list opt_defs FROM field_name_list_as_struct  opt_help_no_i input_attributes 
+| expanded_ibind_var_list opt_defs FROM field_name_list_as_struct  input_attributes opt_help_no_i
 {
 	map_ui_block("INPUT");
 	add_feature("UI_INPUT");
-	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>1,1,1), $<field_list>4,NULL, $<attrib>6,$<e_boolean>2, $<integer_val>5, 0);
+	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>1,1,1), $<field_list>4,NULL, $<attrib>5,$<e_boolean>2, $<integer_val>6, 0);
 }
 ;
 
