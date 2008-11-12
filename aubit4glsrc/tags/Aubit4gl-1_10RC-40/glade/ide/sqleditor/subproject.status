@@ -1,0 +1,15 @@
+Name: sqleditor
+Parent: aubit4glsrc
+Description: Simple SQL front-end  written in 4GL using GLADE UI
+Functionality: GUI SQL editor
+Build: "make glade" in root
+Example:
+Depends: libGLADE (GTK+), Informix ESQL/C
+Documentation:
+Regressed: none
+Maintainer: MA
+Status:
+Todo:
+Notes: Mostly a demonstration of Aubit "real" GUI (non-block mode/.per) using GLADE
+
+

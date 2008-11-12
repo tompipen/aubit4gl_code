@@ -1,0 +1,29 @@
+Name: libA4GL_glade
+Parent: aubit4glsrc
+Description: Support library for Glade plug-in
+Functionality: Glade UI support functions library
+Build:
+Example: Internal use
+Depends: GTK+ version 2, libGlade
+Documentation: none
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Written in 4GL
+
+
+Name: libUI_GLADE
+Parent: aubit4glsrc
+Description: Enables usage of GLADE GUI layouts/forms (.glade XML files)
+Functionality: UI
+Build: See ide1 and sqleditor examples in glade/ide
+Example: 
+Depends: GTK+ version 2, libGlade
+Documentation: none
+Regressed:
+Maintainer: MA
+Status: 3
+Todo: 
+Notes: Use GLADE to create real GUI user interface files
+

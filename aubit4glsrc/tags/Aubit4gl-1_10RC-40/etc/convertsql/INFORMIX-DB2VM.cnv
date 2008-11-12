@@ -1,0 +1,83 @@
+# rules for converting Informix SQL to DB2 for VM (SQLDS/VM)-compatible syntax
+#
+# WARNING: NOT COMPLETED YET
+# COPIED FROM INFORMIX-DB2.cnv and modified
+# Not everything was tested on DB2 for VM
+#
+# Process ODBC type 12 (LONGVARCHAR) as 0 (CHAR)
+# that effects in generating char C type instead of fgltext.
+# This is done because in DB2/VM max length of a VARCHAR is 255 and 
+# DB2 implicitly creates LONGVARCHAR (=clob/text) column instead.
+# Aubit does not handle substring [] operations on LONGVARCHAR
+# (probably correct behavior). This can be considered as only
+# a somewhat nasty workaround for a nasty DB, but it seems to work.
+ODBC_LONGVARCHAR_AS_CHAR
+
+DOUBLE_TO_SINGLE_QUOTES
+MATCHES_TO_LIKE
+SELECT_INTO_TEMP_AS_DECLARE_INSERT
+ADD_SESSION_TO_TEMP_TABLE
+EXPAND_COLUMNS
+NOT_EQUAL_AS_LESS_GREATER_THAN
+CREATE_TEMP_AS_CREATE_HASH
+STRIP_QUOTES_FROM_OWNER
+
+# - works, but not in all cases; DB2 does not recognize expressions
+#   in form of set substr(col,2,3)='foo' (informix style is: set col[2,4]='foo')
+SUBSTRING_FUNCTION = substr 
+MONEY_AS_DECIMAL
+STRIP_ORDER_BY_INTO_TEMP
+REPLACE_COMMAND SET EXPLAIN ON = SET CURRENT EXPLAIN MODE YES
+REPLACE_COMMAND SET EXPLAIN OFF = SET CURRENT EXPLAIN MODE NO
+
+# UPDATE STATISTICS does not exist in DB2 UDB, so we have to ignore it
+# first two forms should work, but not yet tested.
+# The third one cannot be easily ignored in similar way, because of
+# the table name at the end of the expression (wildcard support would
+# be useful...)
+#REPLACE UPDATE STATISTICS =
+#REPLACE UPDATE STATISTICS FOR TABLE =
+#REPLACE UPDATE STATISTICS FOR TABLE .... =
+
+REPLACE systables.tabname = system.syscatalog.tname
+REPLACE syscolumns.colname = system.syscolumns.cname
+REPLACE systables = system.syscatalog
+REPLACE TODAY = current date
+REPLACE_EXPR CURRENT YEAR TO SECOND = current timestamp
+
+REPLACE_COMMAND COMMIT WORK = commit
+
+# needs real implementation
+#REPLACE_COMMAND BEGIN WORK = select * from system.syscatalog where tname='no_any' 
+REPLACE_COMMAND BEGIN WORK = select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO DIRTY READ = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO DIRTY READ = select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ =  select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY =  select id from zmienne where id=1
+#REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET ISOLATION TO COMMITTED READ =  select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO NOT WAIT = select id from zmienne where id=1
+REPLACE SET LOCK MODE TO WAIT = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT = select * from system.syscatalog where tname='no_any'
+#REPLACE_COMMAND SET LOCK MODE TO WAIT %s = select * from system.syscatalog where tname='no_any'
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 1 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 1 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 2 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 2 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 3 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 3 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 4 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 4 = select id from zmienne where id=1
+#REPLACE_COMMAND SET LOCK MODE TO WAIT 5 = select * from system.syscatalog where tname='no_any'
+REPLACE_COMMAND SET LOCK MODE TO WAIT 5 = select id from zmienne where id=1
+
+REPLACE_SQLFUNC UPSHIFT = TRANSLATE(%s)
+REPLACE_SQLFUNC MDY = date(substr(digits(%3),7,4)||'-'||substr(digits(%1),9,2)||'-'||substr(digits(%2),9,2))
+#REPLACE_SQLFUNC MDY = date(substr(digits(year(%3)),7,4)||'-'||substr(digits(month(%1)),9,2)||'-'||substr(digits(day(%2)),9,2))
+
+#
+# WARNING: NOT COMPLETED YET
+#
