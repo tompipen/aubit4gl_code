@@ -589,7 +589,7 @@ dump_write_xml (char *name)
 	      else
 		{
 		  fprintf (hfile,
-			   "%sgzfprintf(ofile,\"%s='%%c' \", f->%s%s);%s\n",
+			   "%sgzfprintf(ofile,\"%s='%%s' \", xml_encode_char(f->%s%s));%s\n",
 			   union_match_before, e->vname.name, union_name,
 			   e->vname.name, union_match_after);
 		}
@@ -1504,7 +1504,7 @@ dump_write_dtd (char *name)
 		      (all_elements[a].union_or_struct_name))
 		    {
 		      fprintf (hfile_elements, "( ");
-		      fprintf (hfile_elements, "(%s*)", decode_type(e->datatype.type));
+		      fprintf (hfile_elements, "%s", decode_type(e->datatype.type));
 		    }
 		}
 	      else
@@ -1531,7 +1531,7 @@ dump_write_dtd (char *name)
 			  (all_elements[a].union_or_struct_name))
 			{
 			  fprintf (hfile_elements, ",  ", e->datatype.type);
-			  fprintf (hfile_elements, "(%s*) ",
+			  fprintf (hfile_elements, "%s ",
 				   decode_type(e->datatype.type));
 			}
 		    }
@@ -1548,7 +1548,7 @@ dump_write_dtd (char *name)
 			  (all_elements[a].union_or_struct_name))
 			{
 			  fprintf (hfile_elements, "( ");
-			  fprintf (hfile_elements, "(%s*) ",
+			  fprintf (hfile_elements, "%s ",
 				   decode_type(e->datatype.type));
 			}
 		    }
@@ -1575,10 +1575,14 @@ dump_write_dtd (char *name)
 			    {
 			      if (!already_printed_union (e->datatype.type))
 				{
-				  fprintf (hfile_elements, ",",
+				  fprintf (hfile_elements, "|",
 					   e->datatype.type);
-				  fprintf (hfile_elements, "(%s*) ",
-					   decode_type(e->datatype.type));
+				if (strcmp(decode_type(e->datatype.type),"int")==0 && 0 ) {
+				  fprintf (hfile_elements, "%s ", e->vname.name);
+				} else {
+				  fprintf (hfile_elements, "%s ", decode_type(e->datatype.type));
+				}
+					//decode_type(e->datatype.type), all_elements[a].union_or_struct_name,e->datatype.type
 				}
 			    }
 			}
@@ -1595,7 +1599,7 @@ dump_write_dtd (char *name)
 			  if (!already_printed_union (e->datatype.type))
 			    {
 			      fprintf (hfile_elements, "( ");
-			      fprintf (hfile_elements, "(%s*) ",
+			      fprintf (hfile_elements, "%s ",
 				       decode_type(e->datatype.type));
 			    }
 			}
@@ -1621,8 +1625,8 @@ dump_write_dtd (char *name)
 			    {
 			      if (!already_printed_union (e->datatype.type))
 				{
-				  fprintf (hfile_elements, ",  ", e->datatype.type);
-				  fprintf (hfile_elements, "(%s*) ", decode_type(e->datatype.type));
+				  fprintf (hfile_elements, "|  ", e->datatype.type);
+				  fprintf (hfile_elements, "%s ", decode_type(e->datatype.type));
 				}
 			    }
 			}
@@ -1653,7 +1657,7 @@ dump_write_dtd (char *name)
 	{
 	  if (!suppress_element (all_elements[a].union_or_struct_name))
 	    {
-	      fprintf (hfile_elements, " )");
+	      fprintf (hfile_elements, " )*");
 	    }
 	}
       else
