@@ -14,6 +14,7 @@ void ensure_dtime (struct expr_str *s, int notnull);
 void ensure_date (struct expr_str *s, int notnull);
 void ensure_int (struct expr_str *s, int notnull);
 void ensure_decimal (struct expr_str *s, int notnull);
+void ensure_money (struct expr_str *s, int notnull);
 void ensure_float (struct expr_str *s, int notnull);
 void ensure_smfloat (struct expr_str *s, int notnull);
 void ensure_interval (struct expr_str *s, int notnull);
@@ -60,6 +61,9 @@ ensure_dtype (struct expr_str *e, int dtype, int notnull)
       return;
     case DTYPE_DECIMAL:
       ensure_decimal (e, notnull);
+      return;
+    case DTYPE_MONEY:
+      ensure_money (e, notnull);
       return;
     case DTYPE_INTERVAL:
       ensure_interval (e, notnull);
@@ -224,6 +228,18 @@ ensure_decimal (struct expr_str *s, int notnull)
   make_cast (s, DTYPE_DECIMAL, notnull, 0);
 }
 
+void
+ensure_money (struct expr_str *s, int notnull)
+{
+  int d;
+  d = expr_datatype (s);
+  if (!notnull)
+    {
+      if ((d & DTYPE_MASK) == DTYPE_MONEY)
+        return;
+    }
+  make_cast (s, DTYPE_MONEY, notnull, 0);
+}
 
 void
 ensure_bool (struct expr_str *s, int notnull)
