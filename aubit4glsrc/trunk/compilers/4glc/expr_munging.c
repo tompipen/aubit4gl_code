@@ -43,6 +43,9 @@ ensure_dtype (struct expr_str *e, int dtype, int notnull)
     case DTYPE_INT:
       ensure_int (e, notnull);
       return;
+    case DTYPE_SERIAL:
+      ensure_int (e, notnull);
+      return;
     case DTYPE_DTIME:
       ensure_dtime (e, notnull);
       return;
