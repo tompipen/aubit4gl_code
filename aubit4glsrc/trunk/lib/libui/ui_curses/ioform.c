@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.212 2008-11-12 19:31:07 mikeaubury Exp $
+# $Id: ioform.c,v 1.213 2008-11-13 21:32:01 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.212 2008-11-12 19:31:07 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.213 2008-11-13 21:32:01 mikeaubury Exp $";
 #endif
 
 /**
@@ -2374,7 +2374,6 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 		if (sio->constr[a].value) {
 			fbuf=sio->constr[a].value;
 		}
-
 	        A4GL_debug ("Calling constr with : '%s' '%s' datatype=%d", sio->constr[a].tabname, sio->constr[a].colname,fprop->datatype); 
 
 	        ptr = (char *) A4GL_construct (sio->constr[a].tabname, sio->constr[a].colname, fbuf,get_inc_quotes(fprop->datatype), fprop->datatype, fprop->dtype_size, sio->callback_function);

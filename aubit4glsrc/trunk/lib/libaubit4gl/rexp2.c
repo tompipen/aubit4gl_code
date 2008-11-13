@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.57 2008-11-05 14:44:49 mikeaubury Exp $
+# $Id: rexp2.c,v 1.58 2008-11-13 21:28:04 mikeaubury Exp $
 #
 */
 
@@ -491,7 +491,10 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	      A4GL_remove_printfthsep_in_decimal (buff_200);
 
 	
-
+	if (strlen(buff_200)==0) { // Did A4GL_decstr_convert fail ? 
+	      strcpy (buff_200, constr_bits[zz]);
+		
+	}
 	      //printf("buff_200=%s\n",buff_200);
 	      strtod (buff_200, &eptr);
 
