@@ -2975,7 +2975,6 @@ set_suppress_lines();
       printc ("char *_sql=0;");
     }
   printc ("\nEXEC SQL END DECLARE SECTION;");
-clr_suppress_lines();
 
   print_expr (cmd_data->filename);
   printc ("A4GL_pop_char(_filename,511); A4GL_trim(_filename); ");
@@ -3057,6 +3056,7 @@ clr_suppress_lines();
       printc ("free(_delimiter);");
     }
   printc ("}");
+clr_suppress_lines();
 
 if (issql) {
   print_copy_status_with_sql (0);

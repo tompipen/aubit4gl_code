@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.155 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: resource.c,v 1.156 2008-11-13 21:32:24 mikeaubury Exp $
 #
 */
 
@@ -196,6 +196,7 @@ struct str_resource builtin_resource[] = {
   {"HELPTEXT", "Help"},
   {"USE_INDICATOR", "Y"},
   {"TRIMWORDWRAP", "Y"},
+  {"A4GL_STATUSASCOL","Y"},
   {"ERROR_MSG", "Press Any Key"},
   {"PAUSE_MSG", "Press Any Key"},
   {"FIELD_BLOB_PLING_MSG", " Use '!' to edit TEXT and BYTE fields "},
