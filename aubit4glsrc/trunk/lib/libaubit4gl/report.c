@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.169 2008-10-27 20:41:20 mikeaubury Exp $
+# $Id: report.c,v 1.170 2008-11-13 20:09:00 mikeaubury Exp $
 #
 */
 
@@ -1907,6 +1907,57 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname_x, int opt_semi)
   fclose (f);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
+pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_semi)
+{
+  FILE *f;
+  char buff[10000];
+  char *fname;
+  int has_cr;
+
+  fname = strdup (fname_x);
+  A4GL_trim (fname);
+  f = fopen (fname, "r");
+  free (fname);
+  fname = 0;
+
+  if (f == 0)
+    {
+      A4GL_exitwith ("Unable to open PRINT FILE file");
+      return;
+    }
+  while (!feof (f))
+    {
+      char *a;
+      memset (buff, 0, sizeof (buff));
+      a = fgets (buff, sizeof (buff) - 1, f);
+      if (!a)
+	break;
+      has_cr = 0;
+
+      if (strlen (buff))
+	{
+	  // Trim any trailing \n
+	  while (buff[strlen (buff) - 1] == '\n' || buff[strlen (buff) - 1] == '\r')
+	    {
+	      int c;
+	      has_cr++;
+	      c = strlen (buff);
+	      buff[c - 1] = 0;
+	    }
+	}
+      A4GL_push_char (buff);
+      if (has_cr)
+	A4GL_pdf_rep_print (rep, 1, 0, 0, -1);
+      else
+	A4GL_pdf_rep_print (rep, 1, 1, 0, -1);
+    }
+  fclose (f);
+}
 
 /**
  * Report pause function
