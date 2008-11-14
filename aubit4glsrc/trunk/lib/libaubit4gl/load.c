@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.53 2008-11-03 11:48:50 mikeaubury Exp $
+# $Id: load.c,v 1.54 2008-11-14 08:14:45 mikeaubury Exp $
 #
 */
 
@@ -131,6 +131,7 @@ find_delims (char delim)
 
   for (a = 0; a < cnt; a++)
     {
+      //printf ("Field %d = %s\n", a, colptr[a]);
       A4GL_debug ("Field %d = %s", a, colptr[a]);
     }
   return cnt;
@@ -280,6 +281,7 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
   FILE *p;
   struct BINDING *ibind = 0;
   char buff[255];
+char nullbuff[200];
   int a;
 //printf("%d %s\n",doing_load,fname);
 
@@ -362,6 +364,8 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
       clr_colptr (0);
     }
 
+
+  A4GL_setnull (DTYPE_CHAR, nullbuff, 1);
   while (1)
     {
       strcpy (loadbuff, "");
@@ -404,7 +408,6 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 	    {
 	      loadbuff[ml - 1] = 0;
 	    }
-	//printf("loadbuff=%s\n", loadbuff);
 
 	  // Push the current line 
 	  A4GL_push_char (loadbuff);
@@ -451,6 +454,8 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
       ibind = acl_malloc2 (sizeof (struct BINDING) * cnt);
       for (a = 0; a < cnt; a++)
 	{
+	int b;
+	
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
 
 
@@ -463,7 +468,8 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 	  if (strlen (colptr[a]) == 0)
 	    {
 	      ibind[a].size = 1;
-	      A4GL_setnull (ibind[a].dtype, ibind[a].ptr, 1);
+		ibind[a].ptr=nullbuff;
+	      //A4GL_setnull (ibind[a].dtype, ibind[a].ptr, 1);
 	    }
 	  else
 	    {
