@@ -244,6 +244,7 @@ define lv_makefile,lv_objfile char(512)
 			when lv_state="CompileObject"
 				let mv_generated_exe=false
 				call check_program_for_module(lv_mname) returning lv_makefile,lv_objfile
+
 				if lv_makefile = " " or lv_makefile is null then # Couldnt find a real makefile...
 					IF module_compile(lv_mname)  then
 						let lv_errfile=false
@@ -259,7 +260,10 @@ define lv_makefile,lv_objfile char(512)
 				else
 					display  "Compiling as part of program using  ", lv_makefile clipped at 10,1
 					# Use the real makefile
-					display " " 
+					#display " " 
+					#display "Makefile=", lv_makefile
+					#display "lv_objfile=",lv_objfile
+					#sleep 4
 					let lv_runstr="make -f ",lv_makefile clipped," ",lv_objfile
 					display "Running : ", lv_runstr clipped
 					call run_with_logging( lv_runstr) returning lv_ok
@@ -281,7 +285,7 @@ define lv_makefile,lv_objfile char(512)
 						call fgl_getkey() returning lv_ok
 						let lv_state="CorrectExit"
 					end if
-					display  "Compiling as part of program using  ", lv_makefile clipped at 10,1
+					display  " ",""  at 10,1 # clear the line
 				end if
 	
 			when lv_state="CompileRunable"
@@ -587,6 +591,8 @@ define lv_cnt integer
 define lv_prog char(16),lv_user char(8)
 define lv_last_used_prog char(16)
 define lv_have_last_used integer
+define lv_makefile char(512)
+define lv_objfile char(512)
 
 let lv_cnt=1
 
@@ -622,12 +628,16 @@ if lv_cnt=0 then
 end if
 
 if lv_cnt=1 then
-	return get_makefile_for(lv_prog), get_object_file_for(lv_last_used_prog,lv_mname)
+	let lv_makefile=get_makefile_for(lv_prog)
+	let lv_objfile=get_object_file_for(lv_prog,lv_mname)
+	return lv_makefile, lv_objfile
 end if
 
 if lv_cnt>1 then
 	if lv_have_last_used then
-		return get_makefile_for(lv_last_used_prog),get_object_file_for(lv_last_used_prog,lv_mname)
+		let lv_makefile=get_makefile_for(lv_last_used_prog)
+		let lv_objfile=get_object_file_for(lv_last_used_prog,lv_mname)
+		return lv_makefile, lv_objfile
 	end if
 end if
 
@@ -636,7 +646,9 @@ call set_pick_cnt(lv_cnt)
 let lv_prog=prompt_pick("Program >> ","") 
 if lv_prog is not null and lv_prog != " " then
 	call set_last_used_program(lv_prog)
-	return get_makefile_for(lv_prog),get_object_file_for(lv_prog,lv_mname)
+	let lv_makefile=get_makefile_for(lv_prog)
+	let lv_objfile=get_object_file_for(lv_prog,lv_mname)
+	return lv_makefile, lv_objfile
 end if
 
 # No program select - just compile at command line
@@ -661,14 +673,16 @@ if sqlca.sqlcode=100 then
 	# Its a .mk
 	return remove_ext(lv_mname),fgl_getenv("A4GL_OBJ_EXT")
 end if
+let lv_objext= get_setting(lv_prog,"A4GL_OBJ_EXT")
+if lv_objext is null or lv_objext matches " " then
+	let lv_objext=fgl_getenv("A4GL_OBJ_EXT")
+end if
 
 if lv_builddir is not null and lv_builddir != " " then
-	let lv_objext= get_setting(lv_prog,"A4GL_OBJ_EXT")
-	if lv_objext is null or lv_objext matches " " then
-		let lv_objext=fgl_getenv("A4GL_OBJ_EXT")
-	end if
-	return lv_builddir clipped, "/", remove_ext(lv_mname) clipped, lv_objext
+	return lv_builddir clipped|| "/"|| remove_ext(lv_mname) clipped|| lv_objext
 end if
+
+return remove_ext(lv_mname) clipped|| lv_objext
 
 end function
 
@@ -691,14 +705,13 @@ where progname=lv_prog
 and (justuser is null or justuser matches " " or justuser=user)
 
 if sqlca.sqlcode=100 then
+	#message "No program definition - assuming a makefile" sleep 1
 	return lv_prog clipped || ".mk"
 end if
 
-if lv_progoutdir is null or lv_progoutdir matches " " then
-	let lv_progoutdir="./"
-end if
 
 if lv_progmakefile is null or lv_progmakefile matches " " then
+	#message "No specific makefile - assuming program.mk" sleep 1
 	let lv_progmakefile=lv_prog clipped,".mk"
 end if
 
@@ -710,7 +723,14 @@ if lv_genmakefile is null then
 	let lv_genmakefile=0
 end if
 
-let lv_makefile=lv_progoutdir clipped,lv_progmakefile
+if lv_progoutdir is null or lv_progoutdir matches " " then
+	let lv_makefile="./",lv_progmakefile
+else
+	let lv_makefile=lv_progoutdir clipped,"/",lv_progmakefile
+end if
+
+#message "makefile is : ",lv_makefile sleep 1
+
 
 if file_exists(lv_makefile) then
 	#
@@ -764,13 +784,16 @@ else
 	# File doesn't exist at all - so generate it.
 	call generate_makefile(lv_prog,lv_makefile)
 end if
+
+#message "returning makefile is : ",lv_makefile sleep 1
+
 return lv_makefile
 end function
 
-function touch(lv_fname)
-define lv_fname char(512)
-	run "touch "||lv_fname clipped
-end function
+#function touch(lv_fname)
+#define lv_fname char(512)
+	#run "touch "||lv_fname clipped
+#end function
 
 
 

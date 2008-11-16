@@ -368,6 +368,7 @@ end function
 ################################################################################
 function program_run()
 define lv_prog char(256)
+define lv_ok integer
 
 call get_filename_to("run",fgl_getenv("A4GL_EXE_EXT"),mv_lastused) returning lv_prog
 
@@ -377,13 +378,17 @@ if lv_prog is not null and lv_prog not matches " " then
 		let lv_prog=lv_prog clipped,fgl_getenv("A4GL_EXE_EXT")
 	end if
 	#message "Running..." sleep 1
+	display " " # goto line mode
 	run lv_prog
+	display "Press return to continue"
+	call fgl_getkey() returning lv_ok
 end if
 
 end function
 
 ################################################################################
 function program_remove()
+	error "Not implemented yet"
 end function
 
 
