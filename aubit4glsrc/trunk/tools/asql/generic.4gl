@@ -108,11 +108,12 @@ return p;
 endcode
 
 
-
+{
 function check_db(dbname)
     define dbname char(255)
     return dbname
 end function
+}
 
 function connection_connect()
     error "Not Implemented connection_connect"
@@ -357,6 +358,7 @@ function load_info_status()
 end function
 
 
+{
 function get_table_name(lv_sch,lv_tab)
 define lv_sch char(256)
 define lv_tab char(256)
@@ -366,7 +368,7 @@ else
 	return (lv_sch clipped||"."||lv_tab clipped)
 end if
 end function
-
+}
 
 
 function load_info_tables()
@@ -463,6 +465,8 @@ function table_info()
 
 end function
 
+
+{
 function table_select(lv_prompt)
   define lv_prompt char(64)
   define lv_tabname char(255)
@@ -513,8 +517,9 @@ end while
 return lv_tabname
 
 end function
+}
 
-
+{
 function select_db()
   define lv_arr array[100] of char(100);
   define lv_num_dbs integer
@@ -558,6 +563,7 @@ endcode
         end if
     end if
 end function
+}
 
 
 
@@ -1173,11 +1179,12 @@ endcode
    PREPARE stExecP from p
 end function
 
-
+{
 function set_current_db(lv_name)
 define lv_name char(200)
 return lv_name
 end function
+}
 
 
 

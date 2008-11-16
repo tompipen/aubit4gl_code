@@ -740,6 +740,7 @@ end if
 # We'll create a 'list' of stuff that needs processing
 # this will help keep the file neat and tidy
 call channel::write("make","FORMS=")
+call channel::write("make","LIBS=")
 call channel::write("make","OBJS=")
 call channel::write("make","GLOBALS=")
 
@@ -829,6 +830,14 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 			call channel::write("make","FORMS+="||lv_name clipped||"$(A4GL_FULL_FORM_EXT)")
 		end if
 	end if
+
+	if lv_type="L" then # Libraries
+		if lv_flags is not null and lv_flags != " " then
+			call channel::write("make","LIBS+=-l"||lv_flags clipped||"/"||lv_name clipped)
+		else
+			call channel::write("make","LIBS+=-l"||lv_name clipped)
+		end if
+	end if
 end foreach
 
 call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${OBJS})")
@@ -884,8 +893,8 @@ else
 end if
 call channel::write("make"," ")
 
-call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(OBJS)")
-call channel::write("make","	4glpc $(LFLAGS) -o $@ $(OBJS)")
+call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(OBJS) ")
+call channel::write("make","	4glpc $(LFLAGS) -o $@ $(OBJS) $(LIBS)")
 
 call channel::write("make"," ")
 call channel::write("make","clean:")

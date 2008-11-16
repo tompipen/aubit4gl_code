@@ -290,9 +290,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   IF mv_lextype IS NULL OR mv_lextype MATCHES " " THEN
   	LET mv_lextype="C"
   END IF
-				if mv_lextype="WRITE" then
-					let mv_stage="C"
-				end if
+  if mv_lextype="WRITE" then
+	let mv_stage="MIF"
+  end if
 
   LET mv_lexdialect=fgl_getenv("A4GL_LEXDIALECT")
   initialize mv_output to null
@@ -564,12 +564,12 @@ end if
 							let a=a+1 
 							let mv_lextype=arg_val(a) 
 				if mv_lextype="WRITE" then
-					let mv_stage="C"
+					let mv_stage="MIF"
 				end if
 							continue for
 		WHEN "--lextype"		let a=a+1 let mv_lextype=arg_val(a)
 				if mv_lextype="WRITE" then
-					let mv_stage="C"
+					let mv_stage="MIF"
 				end if
 					continue for
 
@@ -820,7 +820,7 @@ end if
 
 
 if mv_lextype="WRITE" then
-	let mv_stage="C"
+	let mv_stage="MIF"
 end if
 
    if mv_verbose>=3 then
@@ -940,6 +940,12 @@ IF lv_from="4GL"  THEN
 					call remove_file_of_type(lv_base,"C")
 				end if
 			END IF
+
+		WHEN "MIF"
+			# 4GL -> Data file
+			call run_4glc_mif(lv_fname,lv_new,lv_base)
+			
+
 
 		OTHERWISE
 			display "Unhandled compilation : FROM=",lv_from," TO=",lv_to," for ",lv_fname
@@ -1198,6 +1204,82 @@ call check_exit_status(lv_status,lv_fname,lv_runstr)
 
 end function
 
+function run_4glc_mif(lv_fname,lv_new,lv_base)
+define lv_fname char(512)
+define lv_new char(512)
+define lv_base char(512)
+define lv_runstr char(10000)
+define lv_status integer
+
+
+if mv_makecompile then
+	if mv_verbose>=3 then
+		display "Make Compile - checking file times for ",lv_fname clipped, " and ",lv_new clipped
+	end if
+	if compare_file_times(lv_fname,lv_new) then
+		if mv_verbose>=2 then
+			display "Make Compile specified - file skipped as ",lv_new clipped, " is newer than ",lv_fname clipped
+		end if
+		return
+	end if
+end if
+
+#
+# Lets force the output filename to be what we're expecting it to
+# be - this gets around any issues with 'A4GL_LOCALOUTPUT' when
+# in a different directory
+#
+
+
+if mv_verbose>=2 then
+	display "Compiling ",lv_fname clipped
+	display "Hopefully generating : ", lv_base
+end if
+
+if mv_output!=" " then
+	let lv_runstr="OVERRIDE_PACKER_OUTPUT=",mv_output
+end if
+let lv_runstr=lv_runstr clipped," A4GL_PACKER=PACKED ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+
+if mv_stacktrace is not null then
+	let lv_runstr=lv_runstr clipped," -s",mv_stacktrace
+end if
+
+if mv_make_globals then
+	let lv_runstr=lv_runstr clipped," -G"
+end if
+
+if mv_verbose>1 then
+	let lv_runstr=lv_runstr clipped, " -V"
+end if
+
+if mv_db is not null and mv_db not matches " " then
+	let lv_runstr=lv_runstr clipped, " -d ",mv_db
+end if
+
+if mv_namespace is not null then
+	let lv_runstr=lv_runstr clipped ," -N '",mv_namespace clipped,"'"
+end if
+
+
+if mv_lextype is not null then
+	call aclfgl_setenv("A4GL_LEXTYPE",mv_lextype clipped)
+end if
+
+
+
+let lv_runstr=lv_runstr clipped," ",lv_fname clipped
+
+if mv_verbose>=2 then
+	display lv_runstr clipped
+end if
+
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr CLIPPED RETURNING lv_status
+
+call check_exit_status(lv_status,lv_fname,lv_runstr)
+
+end function
 ################################################################################
 function check_exit_status(p_status,p_filename,p_runstr)
 define p_status integer

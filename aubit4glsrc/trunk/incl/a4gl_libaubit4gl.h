@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.346 2008-11-11 17:36:36 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.347 2008-11-16 15:47:39 mikeaubury Exp $
 #
 */
 
@@ -2847,6 +2847,8 @@ struct struct_scr_field *A4GL_get_fld(void) ;
 void A4GL_set_as_c(int n) ;
 int A4GL_get_as_c(void) ;
 void A4GL_init_dec_size(fgldecimal *dec, int size);
+void
+pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_semi);
 
 
 

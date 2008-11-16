@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.41 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.42 2008-11-16 15:47:40 mikeaubury Exp $
 #*/
 
 /**
@@ -161,14 +161,20 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
   is_in_mem = 0;
 
   if (toupper (dir) == 'O')  {
+	char *override;
+	override=acl_getenv_not_set_as_0 ("OVERRIDE_PACKER_OUTPUT");
+	if (override==NULL) {
                 if (A4GL_isyes(acl_getenv("A4GL_LOCALOUTPUT"))) {
                         char *b;
                         b=strrchr(basename,'/');
                         if (b) basename=b+1;
                 }
 
-      sprintf (buff, "%s%s", basename,PACKED_EXT);
-      outfile = fopen (buff, "wb");
+      		sprintf (buff, "%s%s", basename,PACKED_EXT);
+	} else {		
+		strcpy(buff, override);
+	}
+      outfile = fopen (buff, "wb"); 
 
     if (outfile) {
 		  A4GL_set_last_outfile (buff);

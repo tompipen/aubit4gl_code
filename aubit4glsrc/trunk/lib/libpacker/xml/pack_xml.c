@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.33 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.34 2008-11-16 15:47:40 mikeaubury Exp $
 #*/
 
 /**
@@ -257,19 +257,26 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 {
   char buff[256];
 
-  sprintf (buff, "Basename=>%s< dir=%c\n", basename, dir);
-  A4GL_debug (buff);
+
+
+  if (toupper (dir) == 'O')
+    {        char *override;
+        override=acl_getenv_not_set_as_0 ("OVERRIDE_PACKER_OUTPUT");
+        if (override==NULL) {
+
+
                 if (A4GL_isyes(acl_getenv("A4GL_LOCALOUTPUT"))) {
                         char *b;
                         b=strrchr(basename,'/');
                         if (b) basename=b+1;
                 }
 
-  sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
-  A4GL_debug (buff);
+  	sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
+	} else {
+		strcpy(buff,override);
+	}
+  	A4GL_debug (buff);
 
-  if (toupper (dir) == 'O')
-    {
       /* write XML file */
       outfile = fopen (buff, "w");
       if (outfile)
@@ -288,6 +295,8 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 
   if (toupper (dir) == 'I')
     {
+  sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
+  A4GL_debug (buff);
       /* read XML file */
       infile = A4GL_open_file_dbpath (buff);
 	inlineno=0;

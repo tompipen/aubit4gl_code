@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.52 2008-09-17 12:21:48 mikeaubury Exp $
+# $Id: Makefile,v 1.53 2008-11-16 15:47:40 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -77,7 +77,7 @@ OBJS_C			=${LEX_YY_C} simple_parse.o dir.o
 #Version specific objects
 OBJS_PG_ONLY	=postgres${A4GL_OBJ_EXT}
 OBJS_IFX_ONLY	=infx${A4GL_OBJ_EXT}
-OBJS_GEN_ONLY	=generic${A4GL_OBJ_EXT}
+OBJS_GEN_ONLY	=generic${A4GL_OBJ_EXT} generic_db${A4GL_OBJ_EXT}
 OBJS_ING_ONLY	=ing${A4GL_OBJ_EXT}
 OBJS_INFOFLEX_ONLY	=infoflex${A4GL_OBJ_EXT}
 

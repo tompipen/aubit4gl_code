@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.156 2008-11-13 21:32:24 mikeaubury Exp $
+# $Id: resource.c,v 1.157 2008-11-16 15:47:40 mikeaubury Exp $
 #
 */
 
@@ -416,6 +416,37 @@ struct str_resource builtin_resource[] = {
 
   /* misc */
   {"GDB_ATTACH", "N"}, /* set to Y to attach debugger after crash */
+
+
+	// In the a4gl program - we can call an sql editor (Query-Language from the menu options)
+	// we want to make this as generic as possible - so you can change the default adbaccess
+	// program to something else by setting DBQUERYPROG.
+	// In DBQUERYPROG a %dbparam is replaced with the current database name - and any options as 
+	//
+	// set out in A4GLDBPARAM. In A4GLDBPARAM '%dbname' is replaced with the current
+	// database name.
+	//
+	// So - for example :
+	//
+	// DBQUERYPROG=adbaccess -q %dbparam -Q
+	// A4GLDBPARAM=-d %dbname
+	// 
+	// If a database is in use  : adbaccess -q -d somedb -Q
+	// if no database is in use : adbaccess -q -Q
+	//
+	// For postgres (assuming not using asql_p.4ae) - it might be : 
+	//
+	// DBQUERYPROG=psql %dbparam
+	// A4GLDBPARAM=-d %dbname
+	//
+	// For the unixodbc 'isql' program - it might be : 
+	// DBQUERYPROG=isql %dbparam
+	// A4GLDBPARAM=%dbname
+	// or more simply 
+	// DBQUERYPROG=isql %dbname
+	//
+  {"DBQUERYPROG","adbaccess -q %dbparam -Q"}, /* Quiet, Select DB, Query language */
+  {"A4GLDBREPLACE","-d %dbname"},
   {"GDB_EXE", "gdb"},  /* set it to the name of your prefered debugger */
   {"SWAP_SQLCA62", "N"}, /* to get OID after INSERT on unpatched PostgreSQL */
 #ifdef POSTGRESDIR

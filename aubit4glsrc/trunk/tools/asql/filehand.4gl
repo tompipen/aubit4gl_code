@@ -502,4 +502,159 @@ void add_temp_file (char *s)
 	}
     }
 }
+
+
+char *get_tmp_dir(void ) {
+        static char tmpdir[1024];
+        char *ptr;
+        static int have_made_dir=0;
+
+        ptr=acl_getenv_not_set_as_0("AUBITDIRTMP");
+
+        if (ptr) {
+                strcpy(tmpdir,ptr);
+        } else {
+
+#if defined(__MINGW32__)
+        sprintf(tmpdir,"c:\\temp\\aubit4gl");
+        if (have_made_dir==0) {
+                mkdir("c:\\temp",0777);
+                chmod (tmpdir,0777);
+        }
+#else
+        sprintf(tmpdir,"/tmp/aubit4gl");
+#endif
+        }
+
+        if (have_made_dir==0) {
+                mkdir(tmpdir,0777);
+                chmod (tmpdir,0777);
+                have_made_dir=1;
+        }
+
+        return tmpdir;
+}
+
+
 endcode
+
+
+
+function file_exists(lv_fname)
+define lv_fname char(512)
+define lv_rval integer
+let lv_rval=0
+code
+{
+FILE *f;
+A4GL_trim(lv_fname);
+f=fopen(lv_fname,"r");
+if (f!=0) {lv_rval=1; fclose(f);}
+}
+endcode
+return lv_rval
+end function
+
+function remove_file(lv_fname)
+define lv_fname char(512)
+code
+A4GL_trim(lv_fname);
+unlink(lv_fname);
+endcode
+end function
+
+function remove_ext(lv_fname)
+define lv_fname char(512)
+
+if lv_fname matches "*.???" then
+	return lv_fname[1,length(lv_fname)-4] 
+else
+	return lv_fname
+end if
+end function
+
+function copy_err_file_back_v2(lv_fname,lv_errmarker) 
+define lv_fname char(512)
+define lv_errmarker char(1)  
+define buff char(256)
+define lv_fname_err char(512)
+define lv_s char(512)
+
+
+if lv_fname[length(lv_fname)-3]!="." then
+	error "Internal error : Expecting an extension"
+	sleep 4
+	RETURN FALSE
+end if
+let lv_s=lv_fname[length(lv_fname)-3,512]
+if lv_s matches ".[Ee][Rr][Rr]" then
+	error "Internal error : Not expecting a .err extenstion"
+	sleep 4
+	RETURN FALSE
+end if
+let lv_fname_err=lv_fname[1,length(lv_fname)-3],"err"
+
+
+#display lv_fname_err clipped
+#display lv_fname clipped
+#sleep 999
+
+code
+{
+FILE *r_f;
+FILE *r_fo;
+int iscontinue=0;
+char xv_fname_err[1024];
+char xv_fname_orig[1024];
+
+strcpy(xv_fname_err,lv_fname_err);
+strcpy(xv_fname_orig,lv_fname);
+A4GL_trim(xv_fname_err);
+A4GL_trim(xv_fname_orig);
+
+
+r_f=fopen(xv_fname_err,"r");
+
+
+if (r_f==0) {
+	// Couldn't open one of the files...
+   	A4GLSTK_popFunction();
+	A4GL_push_int(0);
+	return 1;
+}
+r_fo=fopen(xv_fname_orig,"w");
+if (r_fo==0) {
+	// Couldn't open one of the files...
+   	A4GLSTK_popFunction();
+	A4GL_push_int(0);
+	return 1;
+}
+
+
+
+	rewind(r_f);
+	while (1) {
+		strcpy(buff,"");
+		fgets(buff,255,r_f);
+
+		if (strchr(buff,'\n')) {
+			iscontinue=0;
+		}  else {
+			iscontinue=1;
+		}
+
+
+		if (feof(r_f)) { break; }
+		buff[255]=0;
+
+		if (buff[0]==lv_errmarker[0] && !iscontinue) ; //  do nothing - its our error...
+		else {
+			fprintf(r_fo,"%s",buff);
+		}
+	}
+fclose(r_fo);
+fclose(r_f);
+}
+endcode
+return TRUE
+end function

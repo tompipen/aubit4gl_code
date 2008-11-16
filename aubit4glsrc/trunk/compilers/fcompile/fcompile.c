@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.66 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: fcompile.c,v 1.67 2008-11-16 15:47:39 mikeaubury Exp $
 #*/
 
 /**
@@ -182,6 +182,11 @@ main (int argc, char *argv[])
 	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
 	  continue;
 	}
+      if (strcmp (argv[cnt], "-o") == 0) {
+	cnt++;
+	A4GL_setenv("A4GL_OVERRIDE_PACKER_OUTPUT",argv[cnt],1);
+	continue;
+	}
 
       if (strcmp (argv[cnt], "-c") == 0)
       // compile to C, not to compiled form format
@@ -336,11 +341,13 @@ a4gl_form_yyerror (char *s)
   f = A4GL_write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
   A4GL_write_cont (yyin);
+if (!silent) {
   printf ("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
 	  outputfilename, outputfilename, lineno, yylineno);
 #ifdef DO_DEBUG
   printf ("%s\n", yylval.str);
 #endif
+  }
   exit (2);
 }
 

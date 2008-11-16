@@ -48,6 +48,25 @@ end record
 define mv_max_option_width integer
 define mv_npages integer
 
+
+
+code
+static int compare_str (const void *vs1, const void *vs2);
+char **m_names = 0;
+
+static int
+compare_str (const void *vs1, const void *vs2)
+{
+  char *s1;
+  char *s2;
+  s1 = (char *) vs1;
+  s2 = (char *) vs2;
+  return strcmp (s1, s2);
+}
+
+endcode
+
+
 ################################################################################
 function size_picklist() 
 define a,x,y integer
@@ -175,6 +194,25 @@ define lv_value char(255)
 let mv_arr[lv_sub]=lv_value
 end function
 
+################################################################################
+function set_pick_dup(lv_sub,lv_value)
+define lv_sub integer
+define lv_value char(255)
+define lv_i integer
+
+# check for a duplicate value before adding...
+if lv_sub>1 then
+	for lv_i=1 to lv_sub-1
+		if mv_arr[lv_i]=lv_value then
+			return false
+		end if
+	end for
+end if
+# Its not there
+let mv_arr[lv_sub]=lv_value
+return true
+end function
+
 
 ################################################################################
 function set_pick_cnt(lv_cnt)
@@ -184,6 +222,11 @@ let mv_cnt=lv_cnt
 let mv_curr_option=1
 end function
 
+function sort_pick()
+code
+qsort (&mv_arr[0], mv_cnt, sizeof (mv_arr[0]), compare_str);
+endcode
+end function
 
 ################################################################################
 function set_picked_option_cnt(lv_cnt)

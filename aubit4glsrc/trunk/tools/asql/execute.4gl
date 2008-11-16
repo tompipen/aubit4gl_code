@@ -586,6 +586,7 @@ int get_exec_mode_c() {
 }
 
 
+#ifdef MOVED
 char *get_tmp_dir(void ) {
 	static char tmpdir[1024];
 	char *ptr;
@@ -616,6 +617,7 @@ char *get_tmp_dir(void ) {
 
 	return tmpdir;
 }
+#endif
 
 	
 void set_outfname(void) {

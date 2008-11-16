@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.161 2008-10-17 12:07:43 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.162 2008-11-16 15:47:40 mikeaubury Exp $
 #
 */
 
@@ -2062,6 +2062,9 @@ A4GL_cvsql_replace (char *sql, char *args)
 
 /*
  * Replace a string inside another string
+ * @param p = string to replace into
+ * @param n = length of string to replace
+ * @param s = string to put in place of the 'n' characters in 'p'.
  */
 void
 A4GL_cv_replacestr (char *p, int n, char *s)
@@ -4282,4 +4285,30 @@ int b;
 
 return n;
 
+}
+
+// call with string, repl, with
+// eg aclfgl_replace_in_string("a4gl -d %d", "%d","dbname")
+int aclfgl_aclfgl_replace_in_string(int n)  {
+char *sub_in;
+char *old_string;
+char *new_string;
+char buff[10000];
+int cnt;
+new_string=A4GL_char_pop();
+old_string=A4GL_char_pop();
+sub_in=A4GL_char_pop();
+cnt=0;
+memset(buff,' ',1000);
+strncpy(buff,sub_in,strlen(sub_in));
+while (1) {
+	char *ptr;
+	ptr=strstr(buff,old_string);
+	if (ptr==0) break;
+	A4GL_cv_replacestr(ptr,strlen(old_string),new_string);
+ 	if (cnt>100) {A4GL_exitwith("Recurrsive replacement?");}
+}
+A4GL_trim(buff);
+A4GL_push_char(buff);
+return 1;
 }
