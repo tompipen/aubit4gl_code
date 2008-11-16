@@ -1,0 +1,22 @@
+database syspgma4gl@mike_10
+screen
+{
+[fldname           ]  Path
+[f003              ] [f004                                       ]
+[f003              ] [f004                                       ]
+[f003              ] [f004                                       ]
+[f003              ] [f004                                       ]
+[f003              ] [f004                                       ]
+[f003              ] [f004                                       ]
+}
+end
+tables
+entity
+attributes
+fldname=formonly.fldname,widget="label";
+f003 = entity.name;
+f004 = entity.flags;
+end
+instructions 
+screen record srec1[6] (name,flags)
+

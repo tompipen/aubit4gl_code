@@ -1,0 +1,24 @@
+database syspgma4gl@mike_10
+screen
+{
+Program    [f000            ] Limit to User [usr     ]
+
+Directory  [f001                                                 ]
+Makefile   [f002                                                 ]
+Link flags [f003                                                 ]
+4glc flags [f004                                                 ]
+
+Last Upd   [f005             ]
+}
+end
+tables
+program
+attributes
+f000 = program.progname,noentry;
+usr  = program.justuser,downshift,comments="Restrict to a single user?";
+f001 = program.progoutdir,comments="Optional: build directory";
+f002 = program.progmakefile,comments="Optional: Leave blank if and we'll use program.mk";
+f003 = program.linkflags,comments="Optional: link line flags";
+f004 = program.compflags,comments="Optional: custom CFLAGS ";
+f005 = program.lastupd, noentry;
+end
