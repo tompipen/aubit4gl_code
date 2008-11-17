@@ -556,6 +556,8 @@ char buff[256];
   switch (p->expr_type)
     {
 
+	case ET_EXPR_NULL:
+		return DTYPE_NULL;
 
     case ET_EXPR_CACHED:
 		return expr_datatype(get_expr_datatype(p->expr_str_u.expr_long));

@@ -5,11 +5,9 @@ main
 defer interrupt
 
 
-	#call generate_makefile("bibble","bibble.mk")
-	#exit program
-	call form_is_compiled(prog,"MEMPACKED","GENERIC")
-	call form_is_compiled(entities,"MEMPACKED","GENERIC")
-	call form_is_compiled(settings,"MEMPACKED","GENERIC")
+	#call form_is_compiled(prog,"MEMPACKED","GENERIC")
+	#call form_is_compiled(entities,"MEMPACKED","GENERIC")
+	#call form_is_compiled(settings,"MEMPACKED","GENERIC")
 
 	call copyright_banner()
 
@@ -126,7 +124,7 @@ end function
 function get_version()
 define lv_str char(80)
 
-let lv_str="ACL A4GL IDE  Version ",mc_version
+let lv_str="ACL A4GL IDE  Version ",mc_version using "##&.&&"
 return lv_str
 end function
 

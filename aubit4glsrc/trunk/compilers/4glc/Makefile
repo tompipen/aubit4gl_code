@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.41 2008-11-17 07:50:46 mikeaubury Exp $
+# $Id: Makefile,v 1.42 2008-11-17 11:02:42 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -317,6 +317,9 @@ reload_static: reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	#cp fgllint $(AUBITDIR)/bin
 
+
+
+fglcalltree:../../bin/fglcalltree
 ../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl

@@ -64,7 +64,7 @@ call_ext: function_call_expr opt_return {
 
 
 opt_return 	:  {$<ptr_list>$=0;}
-		| RETURNING expanded_ibind_var_list {$<ptr_list>$=$<ptr_list>2;}
+		| RETURNING expanded_ibind_var_list {$<ptr_list>$=$<ptr_list>2; inc_var_assigned_from_binding_list($<ptr_list>2);}
 ;
 
 

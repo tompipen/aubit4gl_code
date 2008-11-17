@@ -14,6 +14,7 @@ static int indent = 0;
 char currfunc[2000];
 char currmod[2000];
 static int cache_expression (char *s, expr_str ** ptr, int mode);
+static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode);
 //expr_str *get_expr_datatype (int n);
 extern int yylineno;
 char *lint_module = 0;
@@ -728,16 +729,19 @@ cache_expression (char *s, expr_str ** ptr, int mode)
   if (expr->expr_type == ET_EXPR_FCALL)
     {
       int a;
+		struct expr_str_list *params;
       // Got a function call - add it to the stack..
       if (mode == MODE_BUY) {
 	  			print_indent ();
 				if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
-	  			fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+	  				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+	  				//fprintf (dot_output, "%s -> %s\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
 				}
-	  			fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname,
-						expr->expr_str_u.expr_function_call->line
-					);
-				}
+	  			fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+	}
+	params=expr->expr_str_u.expr_function_call->parameters;
+	if (params) cache_expression_list("",params,mode);
+	
       return 1;
     }
 
@@ -745,8 +749,7 @@ cache_expression (char *s, expr_str ** ptr, int mode)
 }
 
 
-static int
-cache_expression_list (char *s, struct expr_str_list *srclist, int mode)
+static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode)
 {
   int a;
   int cnt = 0;

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.55 2008-10-20 09:57:28 mikeaubury Exp $
+# $Id: Makefile,v 1.56 2008-11-17 11:02:42 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -205,6 +205,7 @@ corecompile:
 	$(MAKE) -C tools/afinderr
 	$(MAKE) -C tools/configuration
 	$(MAKE) -C tools/asql
+	$(MAKE) -C tools/a4gl
 	$(MAKE) -C tools/adbschema
 ifneq "${IFMX_ESQLC}" "no"
 	#curently compiles only with ESQL/C
@@ -542,6 +543,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/afinderr clean
 	$(MAKE) -C tools/configuration clean
 	$(MAKE) -C tools/asql clean
+	$(MAKE) -C tools/a4gl clean
 	$(MAKE) -C tools/misql clean
 	$(MAKE) -C tools/aupscol clean
 	$(MAKE) -C tools/adbload2 clean
@@ -663,7 +665,7 @@ clean.bin:
     iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
 	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
-	checker${EXE} runner_fgl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
+	checker${EXE} runner_fgl${EXE} a4gl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
 	c2pcode_fgl${EXE} runner${EXE} *~ 4glpc${EXE} \
 	)
 
@@ -2764,7 +2766,7 @@ DIRS_COMPILERS=4glc ace fcompile helpcompile menus pcode sql xgen
 DIRS_LIB=extra_libs libaubit4gl libesql libexdata libform libhelp liblex \
 		liblogical libmsg libpacker libpdf librpc libsql libsqlparse \
 		libui 
-DIRS_TOOLS=4glpc afinderr asql aupscol configuration convertsql
+DIRS_TOOLS=4glpc afinderr asql a4gl aupscol configuration convertsql
 
 metrics: metrics.all metrics.top metrics.compilers metrics.lib metrics.tools metrics.indexpage
 
@@ -2821,6 +2823,7 @@ metrics.indexpage:
 	@echo "    <li><a href='tools/4glpc/cccc.html'>4glpc</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='tools/afinderr/cccc.html'>afinderr</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='tools/asql/cccc.html'>asql</a></li>" >> ${OUTFILE}
+	@echo "    <li><a href='tools/a4gl/cccc.html'>a4gl</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='tools/aupscol/cccc.html'>aupscol</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='tools/configuration/cccc.html'>configuration</a></li>" >> ${OUTFILE}
 	@echo "    <li><a href='tools/convertsql/cccc.html'>convertsql</a></li>" >> ${OUTFILE}

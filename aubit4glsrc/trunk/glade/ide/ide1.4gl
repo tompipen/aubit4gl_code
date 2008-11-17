@@ -1,4 +1,4 @@
-
+pragma FORCE UI "GLADE"
 
 import package a4gl_glade
 

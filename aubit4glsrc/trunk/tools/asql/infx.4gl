@@ -262,7 +262,7 @@ let lv_cnt=1
 #@ INFORMIX SPECIFIC
 declare c_gettables_drop cursor for
         select tabname from systables
-        where tabid>99 order by 1
+        where tabid>99 and tabname[1]!=" " order by 1
 
 foreach c_gettables_drop into lv_tabname
         call set_pick(lv_cnt,lv_tabname)

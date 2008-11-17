@@ -2091,6 +2091,8 @@ system_function_dtype (char *funcname)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_settitle") == 0)
     return -1;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_set_display_field_delimiters") == 0)
+    return -1;
 
 // INTs
   if (A4GL_aubit_strcasecmp (funcname, "length") == 0)
@@ -2126,6 +2128,10 @@ system_function_dtype (char *funcname)
   if (A4GL_aubit_strcasecmp (funcname, "a4gl_get_ui_mode") == 0)
     return DTYPE_CHAR;
   if (A4GL_aubit_strcasecmp (funcname, "arg_val") == 0)
+    return DTYPE_CHAR;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_replace_in_string") == 0)
+    return DTYPE_CHAR;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_getcwd") == 0)
     return DTYPE_CHAR;
 
 
@@ -2564,38 +2570,6 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
       fflush (stdout);
     }
 
-  /*
-     for (a=0;a<f->calls_by_call.calls_by_call_len;a++) {
-     struct command *c;
-     c=f->calls_by_call.calls_by_call_val[a];
-
-     if (c->cmd_data.type==E_CMD_CALL_CMD) {
-     expr_str *e;
-     e=c->cmd_data.command_data_u.call_cmd.fcall;
-     if (e->expr_type==ET_EXPR_FCALL) {
-     b=find_function(e->expr_str_u.expr_function_call->fname);
-     if (b==-1) {
-     char buff[256];
-     yylineno=e->expr_str_u.expr_function_call->line;
-     sprintf(buff, "Function %s was called but is not defined ", e->expr_str_u.expr_function_call->fname);
-     A4GL_lint(buff);
-     continue;
-     }
-     printf("Function found @ %d\n",b);
-     // Have we called this function before ? 
-     if (calltree[b]==0) {
-     // No - ok - spider down into this function to get all the functions that it calls...
-     calltree[b]++;
-     printf("Finding function calls in function\n");
-     scan_module_entry(calltree, b);
-     }
-     continue;
-     }
-     printf("Unexpected expression type : %d while checking for function calls\n", e->expr_type); exit(3);
-     }
-     printf("Unexpected call type : %d while checking for function calls\n", c->cmd_data.type); exit(3);
-     }
-   */
 
 
   // We only need to check the calls by expr for now - as these will include all the calls_by_call - 
@@ -2605,6 +2579,12 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
       expr_str *e;
       int nparam;
       e = f->calls_by_expr.calls_by_expr_val[a];
+
+	if (e->expr_type==ET_EXPR_SHARED_FCALL) {
+		// just continue..
+		continue;
+	}
+
       if (e->expr_type == ET_EXPR_FCALL)
 	{
 	  b = find_function (e->expr_str_u.expr_function_call->fname);
@@ -2702,7 +2682,9 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	    }
 	  continue;
 	}
+
       printf ("Unexpected expression type : %d while checking for function calls\n", e->expr_type);
+
       exit (3);
     }
 

@@ -22,6 +22,11 @@ menu "PROGRAM"
 		# *.4ae
 		call program_run()
 
+	command "Generate"  "Explicitly generate the makefile (should happen automatically)"
+		# *.4ae
+		call program_generate_makefile()
+
+
 	command "Undefine" "Remove the definition for this program from the database"
 		# List from db only
 		call program_remove()
@@ -64,6 +69,32 @@ define lv_user char(8)
 	call maintain_program(lv_name,lv_user)
 
 end function
+
+################################################################################
+function program_generate_makefile()
+define lv_name char(16)
+define lv_cnt integer
+define lv_makefile char(512)
+
+	call ensure_syspgma4gl()
+
+	call get_program("generate",mv_lastused) returning lv_name
+
+	select count(*) into lv_cnt from program 
+	where (justuser is null or justuser matches " " or justuser=user)
+	and progname=lv_name
+
+	if lv_cnt=0 then
+		error "Program not found"
+		return
+	end if
+
+
+	call get_makefile_for(lv_name) returning lv_makefile
+
+end function
+
+
 
 ################################################################################
 function program_new()
@@ -117,6 +148,12 @@ menu "Maintin Program"
 
 	command "Libraries" "Edit list of libraries for this program"
 		call program_edit_libraries(lv_name,lv_user)
+
+	command "C Modules" "Edit list of C modules for this program"
+		call edit_program_entity(lv_name, lv_user,"C")
+
+	command key(Q) "esQl/c Modules" "Edit list of EC for this program (Only for A4GL_LEXTYPE=EC)"
+		call edit_program_entity(lv_name, lv_user,"E")
 
 	command "Dependencies" "Edit dependencies in this program"
 		call program_edit_dependencies(lv_name,lv_user)
@@ -218,7 +255,8 @@ define lv_a record
     progmakefile char(256),
     linkflags char(70),
     compflags char(70),
-    lastupd integer
+    lastupd integer,
+    genmakefile integer
 end record
 define lv_name char(16)
 define lv_exists integer
@@ -356,9 +394,7 @@ define lv_ok integer
 	if lv_ok=0 then
 		message "Program compile succeeded"
 	else
-		sleep 1
 		display "Program failed to compile - press return"
-		sleep 1
 		call fgl_getkey() returning lv_ok # some key any key
 	end if
 	
@@ -377,7 +413,6 @@ if lv_prog is not null and lv_prog not matches " " then
 	if lv_prog not matches "*"||fgl_getenv("A4GL_EXE_EXT") then
 		let lv_prog=lv_prog clipped,fgl_getenv("A4GL_EXE_EXT")
 	end if
-	#message "Running..." sleep 1
 	display " " # goto line mode
 	run lv_prog
 	display "Press return to continue"
@@ -409,6 +444,13 @@ case lv_what
         when "modify"
 		let lv_prog_cnt=1
                 display "Choose a program to modify","" at 2,1
+		call add_programs_from_db()
+		let lv_prog_cnt=lv_prog_cnt-1
+		call set_pick_cnt(lv_prog_cnt);
+
+        when "generate"
+		let lv_prog_cnt=1
+                display "Choose a program to generate a makefile for","" at 2,1
 		call add_programs_from_db()
 		let lv_prog_cnt=lv_prog_cnt-1
 		call set_pick_cnt(lv_prog_cnt);
@@ -486,7 +528,6 @@ foreach c_load_entities into lv_r[lv_cnt].*
 end foreach
 
 let lv_cnt=lv_cnt-1
-#message "Calling set_count with ", lv_cnt sleep 1
 call set_count(lv_cnt)
 
 case lv_type
@@ -707,7 +748,7 @@ define lv_filetime integer
 
 call ensure_syspgma4gl()
 
-message "Generating makefile..." sleep 4
+message "Generating makefile..." 
 call channel::open_file("make",lv_makefile, "w")
 
 # Lets start off with some easy stuff- 
@@ -898,7 +939,7 @@ call channel::write("make","	4glpc $(LFLAGS) -o $@ $(OBJS) $(LIBS)")
 
 call channel::write("make"," ")
 call channel::write("make","clean:")
-call channel::write("make","	echo rm $(OBJS) $(FORMS) "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
+call channel::write("make","	echo rm $(OBJS) $(FORMS) ${MIFS}"||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
 
 
 call channel::write("make"," ")
@@ -908,6 +949,7 @@ call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fgllint ${M
 call channel::write("make"," ")
 call channel::write("make","calltree : ${MIFS}")
 call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fglcalltree ${MIFS}")
+call channel::write("make","	dot -T pdf -Lg calltree.dot -o"||lv_buildstr clipped||lv_prog clipped||".pdf")
 
 
 
@@ -918,6 +960,8 @@ let lv_filetime=get_file_time(lv_makefile)
 update program set genmakefile=lv_filetime
 where progname=lv_prog
 and (justuser is null or justuser matches " " or justuser=user)
+
+message "Generated makefile" 
 
 end function
 

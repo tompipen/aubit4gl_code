@@ -259,11 +259,6 @@ define lv_makefile,lv_objfile char(512)
 					END IF
 				else
 					display  "Compiling as part of program using  ", lv_makefile clipped at 10,1
-					# Use the real makefile
-					#display " " 
-					#display "Makefile=", lv_makefile
-					#display "lv_objfile=",lv_objfile
-					#sleep 4
 					let lv_runstr="make -f ",lv_makefile clipped," ",lv_objfile
 					display "Running : ", lv_runstr clipped
 					call run_with_logging( lv_runstr) returning lv_ok
@@ -705,13 +700,14 @@ where progname=lv_prog
 and (justuser is null or justuser matches " " or justuser=user)
 
 if sqlca.sqlcode=100 then
-	#message "No program definition - assuming a makefile" sleep 1
+	# Theres nothing in the database
+	# must be a local .mk file...
 	return lv_prog clipped || ".mk"
 end if
 
 
 if lv_progmakefile is null or lv_progmakefile matches " " then
-	#message "No specific makefile - assuming program.mk" sleep 1
+	# Theres no *specific* makefile - so we get to choose the name
 	let lv_progmakefile=lv_prog clipped,".mk"
 end if
 
@@ -729,7 +725,6 @@ else
 	let lv_makefile=lv_progoutdir clipped,"/",lv_progmakefile
 end if
 
-#message "makefile is : ",lv_makefile sleep 1
 
 
 if file_exists(lv_makefile) then
@@ -785,15 +780,7 @@ else
 	call generate_makefile(lv_prog,lv_makefile)
 end if
 
-#message "returning makefile is : ",lv_makefile sleep 1
 
 return lv_makefile
 end function
-
-#function touch(lv_fname)
-#define lv_fname char(512)
-	#run "touch "||lv_fname clipped
-#end function
-
-
 
