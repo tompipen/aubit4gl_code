@@ -11876,7 +11876,7 @@ yyreduce:
 
   case 74:
 #line 1871 "fgl.infx.yacc"
-    {(yyval.ptr_list)=(yyvsp[(2) - (2)].ptr_list);}
+    {(yyval.ptr_list)=(yyvsp[(2) - (2)].ptr_list); inc_var_assigned_from_binding_list((yyvsp[(2) - (2)].ptr_list));}
     break;
 
   case 75:

@@ -1,4 +1,30 @@
 ---------------------------
+Mon Nov 17 12:02:13 GMT 2008
+---------------------------
+1.10RC_41 Released
+---------------------------
+	
+	1195: INPUT ARRAY DON'T WORK WITH FIELD TYPE DATE Force the format
+	into lowercase when comparing
+	
+	Fixups required for new A4GL IDE
+	
+	LOAD fixup
+	
+	Small fixup for ESQL/C generation with INCLINES set
+	
+	Add PRINT FILE for pdf reports
+	
+	A4GL_INCLINES fixup
+	
+	Move the help number to the correct place in the INPUT command
+	
+	Allow clearing of pointers in DLmagic'd routines
+	
+	Tab in field fixup (reported by  john <john@og.co.nz> on 12 Nov
+	2008)
+	
+---------------------------
 Wed Nov 12 20:36:25 GMT 2008
 ---------------------------
 1.10RC_40 Released
