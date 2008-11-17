@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.213 2008-11-13 21:32:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.214 2008-11-17 10:03:21 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.213 2008-11-13 21:32:01 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.214 2008-11-17 10:03:21 mikeaubury Exp $";
 #endif
 
 /**
@@ -4518,10 +4518,15 @@ chk_for_picture (FIELD * f, char *buff)
 /// so - after this call - fmt will be "  /01/2002"
 /// this is done so you can search for longer terms first - like mmm or ddd and not have them confused a
 /// later search for mm or dd...
-static char *get_data_from_formatted_field(char *srch,char *str, char *fmt) {
+static char *get_data_from_formatted_field(char *srch,char *str, char *fmt_orig) {
 char *ptr;
 int offset;
 static char buff[200];
+static char fmt[200];
+strcpy(fmt,fmt_orig);
+for (offset=0;offset<=strlen(fmt);offset++) {
+	fmt[offset]=tolower(fmt[offset]);
+}
 A4GL_debug("get_data_from_formatted_field called with '%s' '%s' '%s'", srch,str,fmt);
 ptr=strstr(fmt,srch);
 if (ptr==0) {

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.145 2008-11-12 19:31:07 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.146 2008-11-17 10:03:21 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2877,10 +2877,17 @@ A4GL_get_metric_no (struct s_form_dets *form, void *f)
 /// so - after this call - fmt will be "  /01/2002"
 /// this is done so you can search for longer terms first - like mmm or ddd and not have them confused a
 /// later search for mm or dd...
-static char *get_data_from_formatted_field(char *srch,char *str, char *fmt) {
+static char *get_data_from_formatted_field(char *srch,char *str, char *fmt_orig) {
 char *ptr;
 int offset;
 static char buff[200];
+static char fmt[200];
+
+strcpy(fmt,fmt_orig);
+for (offset=0;offset<=strlen(fmt);offset++) {
+        fmt[offset]=tolower(fmt[offset]);
+}
+
 A4GL_debug("get_data_from_formatted_field called with '%s' '%s' '%s'", srch,str,fmt);
 ptr=strstr(fmt,srch);
 if (ptr==0) {
