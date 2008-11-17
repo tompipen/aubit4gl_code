@@ -305,7 +305,7 @@ open_db (char *s)
 
   A4GL_debug ("open_db %s", A4GL_null_as_null (s));
   strcpy (db, s);
-
+  if (strlen(db)==0) return;
 
   A4GLSQL_set_status (0, 1);
   A4GLSQL_init_connection (db);

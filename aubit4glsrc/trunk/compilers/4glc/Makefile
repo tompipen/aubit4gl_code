@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.40 2008-11-12 14:57:07 mikeaubury Exp $
+# $Id: Makefile,v 1.41 2008-11-17 07:50:46 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -298,6 +298,9 @@ clean.rules.generated:
 	
 clean.rules:
 	${MAKE} -C rules clean
+
+
+fgllint: ../../bin/fgllint
 
 
 extra: ../../bin/reload ../../bin/fgllint ../../bin/fglcalltree 

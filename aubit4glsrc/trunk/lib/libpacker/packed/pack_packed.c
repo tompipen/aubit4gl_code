@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.42 2008-11-16 15:47:40 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.43 2008-11-17 07:50:46 mikeaubury Exp $
 #*/
 
 /**
@@ -185,7 +185,12 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 
   if (toupper (dir) == 'I')
     {
-      sprintf (buff, "%s%s", basename, PACKED_EXT);
+        if (!A4GL_strendswith(basename,PACKED_EXT)) {
+                sprintf (buff, "%s%s", basename, PACKED_EXT);
+        } else {
+                sprintf (buff, "%s", basename);
+        }
+
       infile = A4GL_open_file_dbpath (buff);
       if (infile) {
 		A4GL_debug("Got infile : %p\n",infile);

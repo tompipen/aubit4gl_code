@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.133 2008-11-07 08:01:53 mikeaubury Exp $
+# $Id: builtin.c,v 1.134 2008-11-17 07:50:46 mikeaubury Exp $
 #
 */
 
@@ -1786,6 +1786,13 @@ int
 A4GL_strstartswith (char *s, char *w)
 {
   return (strncmp (s, w, strlen (w)) == 0);
+}
+
+
+int
+A4GL_strendswith (char *s, char *w)
+{
+  return (strcmp ((&s[strlen(s)-strlen(w)]), w) == 0);
 }
 
 int

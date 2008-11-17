@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.347 2008-11-16 15:47:39 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.348 2008-11-17 07:50:46 mikeaubury Exp $
 #
 */
 
@@ -2359,6 +2359,7 @@ int A4GL_setenv(char *name, char *value, int overwrite);
 char * acl_getenv_only (char *s);
 void A4GL_log_changed_envvar(char *name,char *value);
 int A4GL_strstartswith(char *s,char *w);
+int A4GL_strendswith (char *s, char *w);
 int A4GL_isnullfunc(void *ptr);
 char * A4GL_make_using_tostring (char *ptr, int d, int n);
 int fgl_callback (int nargs, char *argv[]);

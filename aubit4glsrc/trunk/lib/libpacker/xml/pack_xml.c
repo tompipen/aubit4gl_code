@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.34 2008-11-16 15:47:40 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.35 2008-11-17 07:50:47 mikeaubury Exp $
 #*/
 
 /**
@@ -295,7 +295,11 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
 
   if (toupper (dir) == 'I')
     {
-  sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
+	if (!A4GL_strendswith(basename,acl_getenv ("A4GL_XML_EXT"))) {
+  		sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
+	} else {
+  		sprintf (buff, "%s", basename);
+	}
   A4GL_debug (buff);
       /* read XML file */
       infile = A4GL_open_file_dbpath (buff);
