@@ -61,6 +61,7 @@ define lv_user char(8)
 		error "Program not found"
 		return
 	end if
+    call set_last_used_program(lv_name)
 
 	select justuser into lv_user from program 
 	where (justuser is null or justuser matches " " or justuser=user)
@@ -88,6 +89,8 @@ define lv_makefile char(512)
 		error "Program not found"
 		return
 	end if
+
+    call set_last_used_program(lv_name)
 
 
 	call get_makefile_for(lv_name) returning lv_makefile
@@ -118,6 +121,8 @@ define lv_user char(8)
 		select justuser into lv_user from program 
 		where (justuser is null or justuser matches " " or justuser=user)
 		and  progname=lv_name
+
+        call set_last_used_program(lv_name)
 
 		call maintain_program(lv_name,lv_user)
 	end if
@@ -196,7 +201,7 @@ define lv_prog char(16)
 call ensure_syspgma4gl()
 
 declare c_get_prog cursor for
-	select progname from program	
+	select  distinct progname from program	
 	where (justuser is null or justuser matches " " or justuser=user)
 	order by 1
 
@@ -294,7 +299,8 @@ define lv_exists integer
         			and  progname=lv_name
 		}
 
-			insert into program values(lv_a.*,0 {genmakefile timestamp} )
+            let lv_a.genmakefile = 0 {genmakefile timestamp} 
+			insert into program values(lv_a.*)
 			call add_default_settings(lv_a.progname,lv_a.justuser)
 		else
 			update program set (   
@@ -515,9 +521,10 @@ end record
 define lv_cnt integer
 
 declare c_load_entities cursor for
-	select * from entity
+	select  distinct * from entity
 	where progname=lv_name and entity_type=lv_type
 	and (justuser is null or justuser =" " or justuser=lv_user)
+    order by name
 
 let lv_cnt=1 
 
@@ -557,8 +564,7 @@ input array lv_arr without defaults from srec1.*
 if int_flag=true then
 	let int_flag=false
 else
-	# move aside all the current entries
-	update entity set entity_type="-" where entity_type=lv_type
+	delete from entity where entity_type=lv_type and progname=lv_name and (justuser is null or justuser =" " or justuser=lv_user)
 	and progname=lv_name and (justuser is null or justuser =" " or justuser=lv_user)
 
 	for a=1 to arr_count()
@@ -566,21 +572,9 @@ else
 			continue for
 		end if
 
-		select * from entity 
-		where entity_type="-" and progname=lv_name and (justuser is null or justuser =" " or justuser=lv_user)
-		and name=lv_arr[a].name
-
-		if sqlca.sqlcode=100 then
-			insert into entity values(0,lv_type, lv_name,lv_user, lv_arr[a].name, lv_arr[a].flags)
-		else
-			update entity set entity_type=lv_type,flags=lv_arr[a].flags where entity_type="-"
-				and progname=lv_name and (justuser is null or justuser =" " or justuser=lv_user)
-				and name=lv_arr[a].name
-		end if
+		insert into entity values(0,lv_type, lv_name,lv_user, lv_arr[a].name, lv_arr[a].flags)
 	end for
 
-	# Now get rid of anything left...
-	delete from entity where entity_type="-" and progname=lv_name and (justuser is null or justuser =" " or justuser=lv_user)
 	call updated_program(lv_name,lv_user)
 end if
 
@@ -803,9 +797,10 @@ call add_setting_if_missing(lv_prog,"A4GL_LEXTYPE")
 # and export them (this way a program is always compiled
 # with the correct environment variables set)
 declare c_getsettings cursor for
-	select name,value from afglsettings 
+	select  distinct name,value from afglsettings 
 	where (justuser is null or justuser matches " " or justuser=user)
 	and progname=lv_prog
+    order by 1
 
 foreach c_getsettings  into lv_name,lv_value
 	call channel::write("make",lv_name clipped||"="||lv_value clipped)
@@ -844,7 +839,7 @@ call channel::write("make"," ")
 
 call channel::write("make"," ")
 declare c_get_modules cursor for 
-	select entity_type, name,flags from entity where (justuser is null or justuser matches " " or justuser=user)
+	select distinct entity_type, name,flags from entity where (justuser is null or justuser matches " " or justuser=user)
         and progname=lv_prog
 	order by 1,2
 
@@ -902,7 +897,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_type="M"  then # Normal modules
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl $(GLOBALS)")
-		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $^")
+		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ "||lv_fullname clipped||".4gl")
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl $(GLOBALS)")
 		call channel::write("make","	A4GL_PACKER_EXT=.mif A4GL_PACKER=PACKED 4glpc -t WRITE -o $@ $^")
 	end if
@@ -971,6 +966,8 @@ function run_with_logging(lv_runstr)
 define lv_runstr char(512)
 define lv_logfile char(512)
 define lv_ok integer
+
+    display lv_runstr clipped
 
 	run lv_runstr clipped returning lv_ok
 
