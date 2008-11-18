@@ -1268,11 +1268,11 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 
   switch (scrmode) {
 	case SCRMODE_SCREEN:
-      		fprintf (ofile, "<Screen width=\"%d\" height=\"%d\">\n", mw, mh);
+      		fprintf (ofile, "<Screen width=\"%d\" height=\"%d\" %s>\n", mw, mh,extra);
 			break;
 
 	case SCRMODE_GRID:
-      		fprintf (ofile, "<Grid width=\"%d\" height=\"%d\">\n", mw, mh);
+      		fprintf (ofile, "<Grid width=\"%d\" height=\"%d\" %s>\n", mw, mh,extra);
 			break;
     }
   merge_labels(f, scr);
