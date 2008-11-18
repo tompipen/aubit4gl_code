@@ -280,7 +280,7 @@ define lv_exists integer
 	
 	open window w_program at 5,2 with form "prog"
 	let int_flag=false
-	input by name lv_a.* without defaults
+	input by name lv_a.progname thru lv_a.lastupd without defaults
 
 	if int_flag=false then
 		if lv_exists=false then
