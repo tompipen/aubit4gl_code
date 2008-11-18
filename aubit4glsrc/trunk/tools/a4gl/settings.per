@@ -1,4 +1,4 @@
-database syspgma4gl
+database formonly
 screen
 {
 [fldname           ]  Path
@@ -10,12 +10,10 @@ screen
 [f003              ] [f004                                       ]
 }
 end
-tables
-entity
 attributes
 fldname=formonly.fldname;
-f003 = entity.name;
-f004 = entity.flags;
+f003 = formonly.name;
+f004 = formonly.flags;
 end
 instructions 
 screen record srec1[6] (name,flags)

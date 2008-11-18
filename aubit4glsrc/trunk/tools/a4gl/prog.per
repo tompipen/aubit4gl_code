@@ -1,4 +1,4 @@
-database syspgma4gl
+database formonly
 screen
 {
 Program    [f000            ] Limit to User [usr     ]
@@ -11,14 +11,12 @@ Link flags [f003                                                 ]
 Last Upd   [f005             ]
 }
 end
-tables
-program
 attributes
-f000 = program.progname,noentry;
-usr  = program.justuser,downshift,comments="Restrict to a single user?";
-f001 = program.progoutdir,comments="Optional: build directory";
-f002 = program.progmakefile,comments="Optional: Leave blank if and we'll use program.mk";
-f003 = program.linkflags,comments="Optional: link line flags";
-f004 = program.compflags,comments="Optional: custom CFLAGS ";
-f005 = program.lastupd, noentry;
+f000 = formonly.progname,noentry;
+usr  = formonly.justuser,downshift,comments="Restrict to a single user?";
+f001 = formonly.progoutdir,comments="Optional: build directory";
+f002 = formonly.progmakefile,comments="Optional: Leave blank if and we'll use program.mk";
+f003 = formonly.linkflags,comments="Optional: link line flags";
+f004 = formonly.compflags,comments="Optional: custom CFLAGS ";
+f005 = formonly.lastupd, noentry;
 end
