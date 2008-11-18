@@ -1,0 +1,9 @@
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define if using ESQL/C. */
+#undef HAVE_ESQLC
+
+/* Define if there is a rgetlmsg() function in the 4GL library. */
+#undef HAVE_RGETLMSG

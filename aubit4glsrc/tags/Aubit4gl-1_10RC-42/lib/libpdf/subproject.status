@@ -1,0 +1,28 @@
+Name: libEXREPORT_NOPDF
+Parent: aubit4glsrc
+Description: Enables execution of PDF enabled reports when PDF plug-in is not available
+Functionality: Dummy EXtended Reports plug-in
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Primarily used for debugging
+
+Name: libEXREPORT_PDF
+Parent: aubit4glsrc
+Description: Enables creation of 4GL reports in PDF format
+Functionality: EXtended Reports plug-in for PDF
+Build:
+Example:
+Depends: libpdf
+Documentation:
+Regressed: 
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Primarily used for debugging
+
