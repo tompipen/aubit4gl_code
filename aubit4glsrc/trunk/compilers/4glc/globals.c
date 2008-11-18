@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.51 2008-11-12 12:25:59 mikeaubury Exp $
+# $Id: globals.c,v 1.52 2008-11-18 17:37:56 mikeaubury Exp $
 #
 */
 
@@ -197,7 +197,6 @@ generate_globals_for (char *s)
   /*why cd? just pass the path in file name... */
   
 
-#ifdef __WIN32__
 // cc 2004.11.24 need to check for -d flag from parent process 
  if (has_default_database ()) 
  { 
@@ -205,28 +204,12 @@ generate_globals_for (char *s)
  	strcpy (db, get_default_database ()); 
  	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
  	A4GL_trim (db); 
- 	SPRINTF3 (buff, "4glc -d %s --globals \"%s\\%s\"", db, dirname, nfilename); 
+ 	SPRINTF2 (buff, "4glc -d %s --globals '%s'", db, nfilename); 
  } 
  else 
  { 
- 	SPRINTF2 (buff, "4glc --globals \"%s\\%s\"", dirname, nfilename); 
+ 	SPRINTF1 (buff, "4glc --globals '%s'", nfilename); 
  } 
-#else
-// cc 2004.11.24 need to check for -d flag from parent process 
- if (has_default_database ()) 
- { 
- 	char db[64]; 
- 	strcpy (db, get_default_database ()); 
- 	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
- 	A4GL_trim (db); 
- 	SPRINTF3 (buff, "4glc -d %s --globals '%s/%s'", db, dirname, nfilename); 
- } 
- else 
- { 
- 	SPRINTF2 (buff, "4glc --globals '%s/%s'", dirname, nfilename); 
- } 
-#endif
- // cc end change 
 
 
 #ifdef DEBUG
@@ -330,7 +313,7 @@ int XMLBEST=0;
  }
 
  if (!a) {
- 	FPRINTF (stderr, "Error: Couldnt open globals file %s, in . and %s\n", ii, currinfile_dirname);
+ 	FPRINTF (stderr, "Error: Couldnt open globals file %s, in . and %s\n", ii, currinfile_dirname );
 	  exit (7);
 	}
 A4GLSQL_set_status(0,0);
@@ -427,32 +410,6 @@ dump_gvars (void)
 		exit(2);
 	}
 
-/*
-  f = A4GL_mja_fopen (ii, "w");
-  if (f == 0)
-    {
-      FPRINTF (stderr, "Critical error - couldnt open output file %s\n", ii);
-      exit (0);
-    }
-
-  if (get_module_dbname()) {
-  	write_global_string (f, "DATABASE", get_module_dbname ());
-  } else {
-  	write_global_string (f, "DATABASE","");
-  }
-  write_global_int (f, "SCHEMA_ONLY", get_module_isschema());
-  write_global_int (f, "NUMVARS", list_global_cnt);
-
-  for (a = 0; a < list_global_cnt; a++)
-    {
-      v = list_global[a];
-      A4GL_debug ("Output Global Entry %d - %p\n", a, v);
-      write_variable_header (f, v);
-    }
-
-
-  fclose (f);
-*/
 }
 
 
