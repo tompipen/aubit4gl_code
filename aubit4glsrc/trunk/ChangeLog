@@ -1,4 +1,23 @@
 ---------------------------
+Tue Nov 18 14:32:58 GMT 2008
+---------------------------
+1.10RC_42 Released
+---------------------------
+	
+	,
+	
+	,
+	
+	,
+	
+	Forms in a4gl should all be formonly
+	
+	,
+	
+	1195: INPUT ARRAY DON'T WORK WITH FIELD TYPE DATE Force the format
+	into lowercase when comparing
+	
+---------------------------
 Mon Nov 17 12:02:13 GMT 2008
 ---------------------------
 1.10RC_41 Released
