@@ -1,0 +1,107 @@
+###########################################################################
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+###########################################################################
+
+#	 $Id: footer2.mki,v 1.1 2005-03-11 08:50:37 afalout Exp $
+
+#############################################################################
+#   Aubit 4gl compiler - 'Amake' make system
+#
+# A second level make file when using two-step process for linking
+# Only Linking step is done here
+# Performing a separate step 2 make invocation was nececery because
+# make has no way to force target pre-requisites to be evaluate at any
+# other time but immediate - since we make objects that can potentially 
+# end up outside of current directory, it was nececery to re-evaluate
+# prerequisites using VPATH _AGAIN_ immediately before linking takes place
+# so we can re-scan VPATH and find objects that where created since make 
+# initialy evaluated location of pre-requisites
+#
+# If a way to force make to re-evaluate pre-requisites is found one day,
+# this file can be merged back into footer.mki and save us the second
+# make invocation
+#
+#
+# do not put ANY hard coded names here!!!!!
+#
+#############################################################################
+
+
+
+
+#We need VPATH and other settings from header:
+include ${HEADER}
+
+
+#This is an explicit rule - vpath will not be searched (??) - use implicit rule instead?
+#${PROG.4ae}:${AUBIT_DEPS}
+
+${PROG.4ae}: ${AUBIT_LINK_DEPS}
+ifeq "${VERBOSE}" "1"
+	@echo "=========================== Linking (step 2) ================================"
+endif
+#%.4ae:: ${AUBIT_LINK_DEPS}
+ifeq "$(PROGTYPE)" ".lib" 	#------------------- linking library -----------------------
+ifeq "${A4GL_USE_LD}" "yes" #using ld
+#-fPIC will apparently not work on AIX - we should autoconf this file
+#--rpath${LIBSTORE} # -L${LIBSTORE}
+#	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	echo "ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@"; \
+	ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@; \
+	exit $$?;
+else                        #using 4glc
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	EXEC="${A4GL_CC} -shared $$allf -o ${xxEXECSTORE}$@ ${FILES.aubit.link}"; \
+    echo $$EXEC; \
+	$$EXEC; \
+    exit $$?;
+endif
+else 						#------------------ linking executable ---------------------
+ifeq "${USE_4GLPC}" "1"     #using 4glpc
+	${FAIL_LINK}${A4GL_CC} $^ -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
+else                        #using 4glc
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	EXEC="${A4GL_CC} $$allf -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS} ${PATH.link} ${FILES.aubit.link}" ;\
+    echo $$EXEC; \
+	$$EXEC; \
+	exit $$?;
+endif
+endif
+#	@echo CHANGED: $?
+
+

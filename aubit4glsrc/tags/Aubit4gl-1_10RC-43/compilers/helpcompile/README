@@ -1,0 +1,51 @@
+Helpfiles:
+
+	amkmessage.c:	Drop in replacement for Informix mkmessage
+		To build: make amkmessage
+			No Makefile entry needed
+		To use: amkmessage foo.msg foo.iem
+		To install: Copy into a bin file
+
+	unmkmessage.c:	Decompiler for Informix .iem files
+		To build: make unmkmessage
+			No Makefile entry needed
+		To use: unmkmessage foo.iem foo.msg
+		    or: unmkmessage foo.iem > foo.msg
+		To install: Copy into a bin file
+
+	help.4gl:	Standalone program to demonstrate help system
+		To build: aubit 4glpc help.4gl -o help
+		To use: ./help 
+
+		help will prompt for filename then messageno
+		Try the supplied fred.iem (which has messages 1,2, and 3)
+		There is no enforcement of suffix .iem (you can use any
+		filenames).
+		Message 2 is long - scroll forward through it
+		Try bad filenames, wrong files (e.g. fred.msg instead of 
+		fred.iem), out of band message no (e.g. 4), etc
+		
+		To install:
+			Comment out the main .. end main block.
+			Rename myxxxx() functions to fit in to your 
+				nomenclature
+			Possibly change all 4GL functions to static
+			Link
+		
+	help.per:	Form for use with help.4gl
+		To compile: aubit fcompile help.per
+
+	fred.msg:	Source for a silly test file
+
+	fred.iem:	Binary of fred.msg created using command:
+			mkmessage fred.msg fred.iem
+
+Potential issues:
+
+1. Brinkmanship in the dimensions of help.per 
+2. End of line (CR+LF) problems on MS systems?
+3. Function name clashes (look at the ones with names myxxxxx()
+4. The 3 files: amkmessage.c, unmkmessage.c, help.4gl have to stay in sync
+5. Using MSByte in offset (multiplied by 16777216) may be de trop.
+6. No attempt to split long error messages over 1 or more lines (most Unix
+   error messages are very short and succinct)

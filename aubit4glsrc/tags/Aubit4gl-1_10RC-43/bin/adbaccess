@@ -1,0 +1,55 @@
+#!/bin/sh
+# Interface to asql_[ipg].4ae, autodetect program using A4GL_SQLTYPE or
+# chosen by program option
+#
+type=`aubit-config SQLTYPE`
+if [ "$1" != "" ]
+then
+    case $1 in
+        -help|-h|--help)
+            echo Usage 
+            echo   $0 -help      Show this instructions
+            echo
+            echo   $0 [ database [ script ]] detect SQLTYPE and run that version
+            echo
+            echo   $0 -pg   [ database [ script ]] Run postgres version
+            echo   $0 -ifx  [ database [ script ]] Run informix version
+            echo   $0 -odbc [ database [ script ]] Run generic/odbc version
+            echo
+            echo The SQL command in the file specified as 'script' are executed
+            echo in batch mode, if no file is given an interactive editor is
+            echo invocated.
+            exit 0
+        ;;
+        -pg8|-postgres|-pg)
+            type=pg8
+            shift
+        ;;
+        -esql|-ifx|-eci|-esqli)
+            type=esql
+            shift
+        ;;
+        -odbc|-generic)
+            type=odbc
+            shift
+        ;;
+    esac
+fi
+if [ "$type" = "" ]
+then
+	echo SQLTYPE not found, using generic/odbc
+    type=odbc
+fi
+case $type in
+    pg8|postgres)
+        prog=asql_p
+    ;;
+    esql)
+        prog=asql_i
+    ;;
+    *)
+        prog=asql_g
+    ;;
+esac
+run=$prog.4ae
+$run $@

@@ -1,0 +1,63 @@
+op_param_var_list	<PARAMETERS>
+obind_var_list_ord	<variable_list>
+define_section	<DEFINE SECTION>
+record_variable <RECORD VARIABLE>
+array_variable <ARRAY VARIABLE>
+dtype	<DATATYPE>
+pdf_report_def	<PDF REPORT>
+pdf_op_output_section	<PDF OUTPUT SECTION>
+op_output_section	<OUTPUT SECTION>
+nval	<PDF dimension>
+rep_order_by	<Report ORDER BY>
+report_def	<Report Definition>
+report_only_expr	<report specific expression>
+fgl_expr_c	<expression>
+variable_entry	<variable>
+in_select_statement	<in_select_statement>
+function_call_expr	<function call>
+module	<module>
+module_entry	<module_entry>
+pragma	<pragma>
+import_package	<import package>
+module_globals_section	<globals section>
+module_define_section	<define section>
+module_import	<module_import>
+module_code	<module_code>
+with_list	<with_list>
+arr_expr_e	<array_expression>
+field_name_as_struct	<field name>
+from_clause_ts	<From clause>
+where_clause_sli	<where clause>
+group_by_clause_slil	<group by>
+having_clause_sli	<having>
+sel_p2_select	<sel_p2_select>
+tname	<table name>
+table_reference_list	<table_reference_list>
+search_condition_sli	<search_condition_sli>
+op_not	<op_not>
+comparison_predicate_sli	<comparison_predicate_sli>
+value_expression_sli	<value_expression_sli>
+boolean_term_sli	<boolean_term_sli>
+predicate_sli	<predicate_sli>
+select_list_slil	<select_list_slil>
+misc_infx_stmt	<misc_infx_stmt>
+schema_ss	<schema_ss>
+schema_element_ss	<schema_element_ss>
+misc_sql	<misc_sql>
+drops_statement	<drops_statement>
+create_statement_ss	<create_statement_ss>
+alter_statement_ss	<alter_statement_ss>
+opt_cr_table_extra	<opt_cr_table_extra>
+table_element_list_ss	<table_element_list_ss>
+alter_clause_ss	<alter_clause_ss>
+alter_add_constraint_clause	<alter_add_constraint_clause>
+alter_modify_clause_ss	<alter_modify_clause_ss>
+modify_column_clause_ss	<modify_column_clause_ss>
+column_name	<column_name>
+value_expression_sli	<value_expression_sli>
+value_expression_pls_sli	<value_expression_pls_sli>
+sort_spec_sli	<sort_spec_sli>
+table_name_not_for_column_prefix	<tablename>
+table_name	<tablename>
+conn_id_p	<ConnectionID>
+callback_function	<Callback function name>

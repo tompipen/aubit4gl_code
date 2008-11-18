@@ -1,0 +1,12 @@
+AUBITDIR=../..
+CFLAGS=-g -I$(AUBITDIR)/incl -Wall
+
+#.PHONY: all
+
+ALL = all
+
+all: reportgen_4gl
+
+reportgen_4gl : dump_report.c
+	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+
