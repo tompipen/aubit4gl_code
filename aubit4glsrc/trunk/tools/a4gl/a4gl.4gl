@@ -5,9 +5,9 @@ main
 defer interrupt
 
 
-	#call form_is_compiled(prog,"MEMPACKED","GENERIC")
-	#call form_is_compiled(entities,"MEMPACKED","GENERIC")
-	#call form_is_compiled(settings,"MEMPACKED","GENERIC")
+	call form_is_compiled(prog,"MEMPACKED","GENERIC")
+	call form_is_compiled(entities,"MEMPACKED","GENERIC")
+	call form_is_compiled(settings,"MEMPACKED","GENERIC")
 
 	call copyright_banner()
 
