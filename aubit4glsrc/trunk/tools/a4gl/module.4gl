@@ -237,7 +237,8 @@ define lv_makefile,lv_objfile char(512)
 						exit menu
 
 					command "Exit" "Return to menu"
-						let lv_state="ExitFalse"
+						let lv_state="ModifyMenu"
+						let lv_next_suggested_state="Save-and-exit" 
 						exit menu
 				end menu
 
