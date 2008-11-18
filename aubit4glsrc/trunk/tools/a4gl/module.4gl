@@ -416,6 +416,7 @@ if a=0 then
 	return true
 else
 	message "The module did not compile successfully"
+	return false
 end if
 end function
 
