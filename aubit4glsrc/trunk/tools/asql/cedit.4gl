@@ -77,8 +77,8 @@ define key_pgdn		integer
 define key_cancel	integer
 
 
-
-define mv_tabrec array[200] of record # array to store 'intellisense' style table/column lookups
+define mc_max_tabrec constant 500
+define mv_tabrec array[mc_max_tabrec] of record # array to store 'intellisense' style table/column lookups
 	tabname chaR(18),
 	colname char(18)
 end record
@@ -545,9 +545,9 @@ define a integer
 		let tmp_line=" "
 	end if
 	for a=max_buff to tmp_y step  -1
-        if a > 1 then # To split first line
-		    let lines[a]=lines[a-1]
-        end if
+	         if a > 1 then # To split first line
+                   let lines[a]=lines[a-1]
+         	end if
 	end for
 	let lines[tmp_y]=tmp_line
 	let lines[tmp_y+1]=tmp_line2
@@ -730,8 +730,11 @@ end function
 function add_table_col(lv_t,lv_c)
 define lv_t,lv_c char(18)
 	let mv_tabrec_cnt=mv_tabrec_cnt+1
-	let mv_tabrec[mv_tabrec_cnt].tabname=lv_t
-	let mv_tabrec[mv_tabrec_cnt].colname=lv_c
+	if mv_tabrec_cnt>mc_max_tabrec then
+	else
+		let mv_tabrec[mv_tabrec_cnt].tabname=lv_t
+		let mv_tabrec[mv_tabrec_cnt].colname=lv_c
+	end if
 end function
 
 function finish_table_col()
@@ -747,7 +750,10 @@ end function
 function add_table_nocol(lv_t)
 define lv_t char(18)
 	let mv_tabrec_cnt=mv_tabrec_cnt+1
-	let mv_tabrec[mv_tabrec_cnt].tabname=lv_t
+	if mv_tabrec_cnt>mc_max_tabrec then
+	else
+		let mv_tabrec[mv_tabrec_cnt].tabname=lv_t
+	end if
 end function
 
 function finish_table_nocol()
@@ -795,6 +801,10 @@ while (y-nrows+2)>=edit_lines
 	let y=y-1
 end while
 
+if mv_tabrec_cnt>mc_max_tabrec then
+	error "Too many tables/columns"
+	let mv_tabrec_cnt=mc_max_tabrec
+end if
 
 
 let lv_cols=0
