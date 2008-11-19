@@ -33,6 +33,8 @@ FILE *get_curr_mvfin(char *s);
 
 endcode
 
+define mv_fname char(255)
+
 ################################################################################
 function query_menu()
 define lv_action integer
@@ -366,8 +368,11 @@ endcode
 
 call set_pick_cnt(a);
 
+call set_picked_option(mv_fname)
+
 call prompt_pick("CHOOSE >> ","") returning lv_fname
 if lv_fname is not null then
+    let mv_fname=lv_fname
 	let lv_fname=lv_fname clipped,".sql"
 	error "Filename : ",lv_fname
 	call copy_file(lv_fname,get_tmp_fname("SQL"),".sql",1)
