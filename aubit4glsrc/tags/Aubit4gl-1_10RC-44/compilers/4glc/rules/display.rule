@@ -1,0 +1,133 @@
+/*
+=====================================================================
+                        Source: display.rule
+=====================================================================
+*/
+
+opt_at : { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->dttype=DT_DISPLAY_TYPE_LINE;
+		add_feature("UI_DISPLAY_LINE_MODE");
+		$<display>$=d;
+		map_ui("DISPLAY_LINE_MODE");
+	} 
+	| KW_AT fgl_expr_c KW_COMMA fgl_expr_c 		{ 
+		struct dt_display *d;
+		map_display_at($<ptr>4,$<ptr>2);
+		d=malloc(sizeof(struct dt_display));
+		d->dttype=DT_DISPLAY_TYPE_AT;
+		d->dt_display_u.x_y.x=chk_expr($<ptr>4);
+		d->dt_display_u.x_y.y=chk_expr($<ptr>2);
+		$<display>$=d;
+		add_feature("UI_DISPLAY_AT");
+	}
+	| TO_MENUITEM identifier	{ 
+		A4GL_assertion(1,"Not implemented yet");
+		strcpy($<str>$,"#error not implemented yet"); 
+	}
+	| TO_MAIN_CAPTION { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->dttype=DT_DISPLAY_TYPE_MAIN_CAPTION;
+		$<display>$=d;
+
+	}
+	| KW_TO field_name_list_as_struct { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->dttype=DT_DISPLAY_TYPE_FIELD_LIST;
+		d->dt_display_u.field_list=$<field_list>2;
+		add_feature("UI_DISPLAY_TO");
+		$<display>$=d;
+		map_ui("DISPLAYTO");
+			}
+	| KW_TO KWFORM identifier KWFIELD field_name_list_as_struct { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->dttype=DT_DISPLAY_TYPE_FORM_FIELD;
+		d->dt_display_u.fldform_field.form=strdup($<str>3);
+		d->dt_display_u.fldform_field.field_list=$<field_list>5;
+		add_feature("UI_DISPLAY_FORM_FIELD");
+		$<display>$=d;
+	}
+	| KW_TO KWFORM identifier CAPTION { 
+		struct dt_display *d;
+		d=malloc(sizeof(struct dt_display));
+		d->dttype=DT_DISPLAY_TYPE_FORM_CAPTION;
+		d->dt_display_u.caption=strdup($<str>3);
+		$<display>$=d;
+	}
+	| TO_STATUSBOX identifier { 
+			strcpy($<str>$,"#error not implemented yet");
+ 	}
+;
+
+display_b_n_cmd : DISPLAY_BY_NAME expanded_ibind_var_list display_attr {
+		add_feature("DISPLAY_BY_NAME");
+		
+		$<cmd>$=cmd_display_by_name($<ptr_list>2, $<attrib>3);
+		
+		map_ui("DISPLAYBYNAME");
+                } 
+;
+
+
+display_cmd : KW_DISPLAY atline expanded_fgl_expr_list_ptr opt_at display_attr { 
+				add_feature("DISPLAY");
+				
+				set_cmdlineno($<integer_val>2);
+				$<cmd>$=new_display_cmd(make_fgl_expr_list($<ptr_list>3),$<display>4,$<attrib>5,EB_FALSE);
+		
+		} 
+;
+
+display_form_cmd : DISPLAY_FORM form_name_p display_attr {
+		add_feature("UI_DISPLAY_FORM");
+		$<cmd>$=new_display_form_cmd($<ptr>2,$<attrib>3);
+		map_ui("DISPLAYFORM");
+	}
+;
+
+display_array_cmd : DISPLAY_ARRAY {
+		add_feature("UI_DISPLAY_ARRAY");
+		map_ui_block("DISPLAYARRAY");
+		push_blockcommand("DISPLAY");
+		 $<integer_val>$=get_sio_id("DISPLAY");
+		} 
+	variable_usage_expression opt_slice KW_TO idm_input_array
+	opt_scroll display_attr
+		{
+                 if (!check_input_or_display_array_variable($<ptr>3)) {
+                                    a4gl_yyerror("Variable cannot be used for an DISPLAY ARRAY");
+                 }
+
+			/* $<binding_comp_list>$=copy_togenbind('o'); */
+	  	A4GL_new_events();
+		}
+	disp_rest {
+		//add_continue_blockcommand ("DISPLAY");  
+	  	A4GL_drop_events();
+		map_ui_endblock("DISPLAYARRAY");
+		$<cmd>$=new_display_array_cmd($<ptr>6,$<ptr>3, $<attrib>8, $<on_events>10, $<field_entry>7,$<integer_val>2,  $<str>4);
+		pop_blockcommand("DISPLAY");
+}
+;
+
+
+
+opt_scroll: { $<field_entry>$=0; } | SCROLL_USING field_name_as_struct { $<field_entry>$=$<field_entry>2; }
+;
+
+display_attr	:	opt_attributes ;
+
+disp_rest : 
+	{$<on_events>$=0;} 
+	| events_darray END_DISPLAY  {$<on_events>$=$<on_events>1;}
+	| END_DISPLAY  {$<on_events>$=0;}
+;
+
+
+
+
+/* ============================ display.rule ====================== */
