@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.56 2008-11-17 11:02:42 mikeaubury Exp $
+# $Id: Makefile,v 1.57 2008-11-19 17:08:54 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -665,7 +665,7 @@ clean.bin:
     iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
 	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
-	checker${EXE} runner_fgl${EXE} a4gl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
+	checker${EXE} runner_fgl${EXE}  asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
 	c2pcode_fgl${EXE} runner${EXE} *~ 4glpc${EXE} \
 	)
 
