@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.20 2008-11-19 16:57:38 fortiz Exp $
+	 $Id: channel.4gl,v 1.21 2008-11-19 17:39:49 mikeaubury Exp $
 }
 
 {**
@@ -244,6 +244,7 @@ function set_delimiter(handle,delim)
 define handle char(64)
 define delim char(1)
 code
+	A4GL_trim(handle);
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 		A4GL_del_pointer(handle,CHANNEL_DELIM);
 	}
@@ -264,6 +265,7 @@ code
 	{
 	FILE *x;
 	int ispipe=0;
+	A4GL_trim(handle);
 		if (A4GL_has_pointer(handle,CHANNEL_PIPE)) {
 			ispipe=(int)A4GL_find_pointer(handle,CHANNEL_PIPE);
 			A4GL_del_pointer(handle,CHANNEL_PIPE);
