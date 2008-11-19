@@ -545,7 +545,9 @@ define a integer
 		let tmp_line=" "
 	end if
 	for a=max_buff to tmp_y step  -1
-		let lines[a]=lines[a-1]
+        if a > 1 then # To split first line
+		    let lines[a]=lines[a-1]
+        end if
 	end for
 	let lines[tmp_y]=tmp_line
 	let lines[tmp_y+1]=tmp_line2
