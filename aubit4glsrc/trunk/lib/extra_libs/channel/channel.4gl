@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.19 2008-10-19 18:46:32 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.20 2008-11-19 16:57:38 fortiz Exp $
 }
 
 {**
@@ -271,6 +271,7 @@ code
 		
 		if (A4GL_has_pointer(handle,CHANNEL_IN)) {
 			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_IN);
+            fflush(x);
 			if (ispipe)  pclose(x);
 			else fclose(x);
 			A4GL_del_pointer(handle,CHANNEL_IN);
@@ -278,6 +279,7 @@ code
 		
 		if (A4GL_has_pointer(handle,CHANNEL_OUT)) {
 			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
+            fflush(x);
 			if (ispipe)  pclose(x);
 			else fclose(x);
 			A4GL_del_pointer(handle,CHANNEL_OUT);

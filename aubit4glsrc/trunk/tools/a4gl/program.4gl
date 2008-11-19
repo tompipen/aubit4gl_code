@@ -9,26 +9,32 @@ call display_banner()
 menu "PROGRAM"
 	command "Modify"  "Modify a program definition"
 		# List from db only
+        message ""
 		call program_modify()
 
 	command "New"   "Create a new program definition"
+        message ""
 		call program_new()
 
 	command "Compile" "Compile a program from a makefile"
 		# List from db + makefiles
+        message ""
 		call program_compile()
 
 	command "Run"  "Run a program"
 		# *.4ae
+        message ""
 		call program_run()
 
 	command "Generate"  "Explicitly generate the makefile (should happen automatically)"
 		# *.4ae
+        message ""
 		call program_generate_makefile()
 
 
 	command "Undefine" "Remove the definition for this program from the database"
 		# List from db only
+        message ""
 		call program_remove()
 
 	command "Exit" "Return to the main menu"
@@ -94,6 +100,8 @@ define lv_makefile char(512)
 
 
 	call get_makefile_for(lv_name) returning lv_makefile
+
+	call generate_makefile(lv_name, lv_makefile)
 
 end function
 
@@ -382,13 +390,16 @@ define lv_ok integer
 		return
 	end if
 
+    call set_last_used_program(lv_name)
+
 	{select justuser into lv_user from program 
 	where (justuser is null or justuser matches " " or justuser=user)
 	and  progname=lv_name}
 
+    message "Compiling ..."
+
 	call get_makefile_for(lv_name) returning lv_makefile
 
-	display " " # goto line mode
 	call run_with_logging("make -f "||lv_makefile clipped||" compile ") returning lv_ok
 
 	#run "make -f "||lv_makefile clipped||" compile " returning lv_ok
@@ -897,7 +908,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_type="M"  then # Normal modules
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl $(GLOBALS)")
-		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ "||lv_fullname clipped||".4gl")
+		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl $(GLOBALS)")
 		call channel::write("make","	A4GL_PACKER_EXT=.mif A4GL_PACKER=PACKED 4glpc -t WRITE -o $@ $^")
 	end if
@@ -966,6 +977,8 @@ function run_with_logging(lv_runstr)
 define lv_runstr char(512)
 define lv_logfile char(512)
 define lv_ok integer
+
+	display " " # goto line mode
 
     display lv_runstr clipped
 
