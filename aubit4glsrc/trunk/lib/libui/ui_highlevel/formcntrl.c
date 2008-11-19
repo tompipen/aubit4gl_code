@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.73 2008-11-07 16:49:34 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.74 2008-11-19 21:15:34 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.73 2008-11-07 16:49:34 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.74 2008-11-19 21:15:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -662,9 +662,11 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 		    case DTYPE_MONEY:
 
 		      A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_CLR_EOF);
-			if (sio->constr[sio->curr_attrib].value) {
-				free(sio->constr[sio->curr_attrib].value);
-				sio->constr[sio->curr_attrib].value=0;
+	      		if (sio->mode == MODE_CONSTRUCT) {
+				if (sio->constr[sio->curr_attrib].value) {
+					free(sio->constr[sio->curr_attrib].value);
+					sio->constr[sio->curr_attrib].value=0;
+				}
 			}
 		      A4GL_debug ("Clear to end of field because of datatype");
 		    }
