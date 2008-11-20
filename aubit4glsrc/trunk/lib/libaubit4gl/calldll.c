@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.79 2008-11-12 16:07:56 mikeaubury Exp $
+# $Id: calldll.c,v 1.80 2008-11-20 20:43:33 mikeaubury Exp $
 #
 */
 
@@ -669,6 +669,23 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 	A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ()));
     }
 
+  if (dllhandle == 0)
+    {
+	char *fname;
+        SPRINTF2 (buff, "%s.%s", nfile, SO_EXT);
+	fname=A4GL_fullpath_classpath(buff);
+	if (fname) {
+      		dllhandle = dlopen (fname, RTLD_LAZY);
+	} else {
+        	SPRINTF2 (buff, "lib%s.%s", nfile, SO_EXT);
+		fname=A4GL_fullpath_classpath(buff);
+		if (fname) {
+      			dllhandle = dlopen (fname, RTLD_LAZY);
+		}
+	}
+      if (dllhandle == 0)
+	A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ()));
+    }
 
 
   if (dllhandle == 0)
@@ -781,7 +798,24 @@ A4GL_call_4gl_dll_bound (char *filename, char *function, int ni, struct BINDING 
 	A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ()));
     }
 
+  if (dllhandle == 0)
+    {
+	char *fname;
+        SPRINTF2 (buff, "%s.%s", nfile, SO_EXT);
+	fname=A4GL_fullpath_classpath(buff);
+	if (fname) {
+      		dllhandle = dlopen (fname, RTLD_LAZY);
+	} else {
+        	SPRINTF2 (buff, "lib%s.%s", nfile, SO_EXT);
+		fname=A4GL_fullpath_classpath(buff);
+		if (fname) {
+      			dllhandle = dlopen (fname, RTLD_LAZY);
+		}
+	}
 
+      if (dllhandle == 0)
+	A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ()));
+    }
 
   if (dllhandle == 0)
     {
