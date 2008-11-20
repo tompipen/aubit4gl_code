@@ -27,7 +27,6 @@ defer interrupt
 			display "Unable to create the syspgma4gl database"
 			exit program 1
 		end if
-		execute immediate "create database syspgma4gl"
 		call createtables()
 	end if
 		
