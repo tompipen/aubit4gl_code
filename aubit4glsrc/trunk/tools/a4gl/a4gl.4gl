@@ -11,23 +11,36 @@ defer interrupt
 
 	call copyright_banner()
 
+	options message line last
+	options input wrap
 
 	whenever error continue
 	database syspgma4gl
 	whenever error stop
-	options message line last
-	options input wrap
 
 	if sqlca.sqlcode!=0 then
+		message "Creating syspgma4gl database"
 		whenever error continue
+
 		execute immediate "create database syspgma4gl"
 		database syspgma4gl
 		whenever error stop
+
 		if sqlca.sqlcode!=0 then
-			display "Unable to create the syspgma4gl database"
+			display "Error:"
+			display "   Unable to connect to or create the syspgma4gl database"
+			display "   ------------------------------------------------------"
+			display " "
+			display "Please manually create a database called 'syspgma4gl'"
+			display "and create the tables as in $AUBITDIR/tools/a4gl/create_tables.sql."
+			display " "
+			display "If the database exists then ensure you have permission to connect to it"
 			exit program 1
 		end if
+
 		call createtables()
+		message "syspgma4gl database created" sleep 1
+		message " "
 	end if
 		
 	call main_menu()
@@ -83,6 +96,8 @@ create table dependencies
     entity integer,
     depends_on integer
   );
+
+
 if sqlca.sqlcode<0 then
 	call err_createtables()
 end if
@@ -94,6 +109,7 @@ create table afglsettings
     name char(32),
     value char(70)
   );
+
 if sqlca.sqlcode<0 then
 	call err_createtables()
 end if
@@ -109,6 +125,7 @@ create table program
     lastupd integer,
     genmakefile integer
   );
+
 if sqlca.sqlcode<0 then
 	call err_createtables()
 end if
