@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.161 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: newpanels.c,v 1.162 2008-11-20 20:42:13 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.161 2008-10-16 10:55:11 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.162 2008-11-20 20:42:13 mikeaubury Exp $";
 #endif
 
 /**
@@ -117,6 +117,7 @@ struct s_windows
   char name[100];
   struct s_form_dets *form;
   struct s_form_attr winattr;
+  int form_created_with_window;
 };
 
 
@@ -132,7 +133,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
                int error_line,
                int prompt_line,
                int menu_line,
-               int border, int comment_line, int message_line, int attrib);
+               int border, int comment_line, int message_line, int attrib,int with_form);
 static WINDOW *A4GL_display_form (struct s_form_dets *f,int attr);
 static WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
                               int y,int attr);
@@ -219,7 +220,7 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
   A4GL_chkwin();
   return A4GL_create_window (name, x, y, w, h, 1, 
 		0xff, 0xff, 0xff, 0xff, border, 0xff, 0xff,
-			0xffff);
+			0xffff,0);
 }
 
 /**
@@ -233,7 +234,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	       int error_line,
 	       int prompt_line,
 	       int menu_line,
-	       int border, int comment_line, int message_line, int attrib)
+	       int border, int comment_line, int message_line, int attrib,int with_form)
 {
   WINDOW *win = 0;
   WINDOW *dswin;
@@ -303,8 +304,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
       if (border == 1)
 	{
 	  win = newwin (h + 2, w + 2, y - 2, x - 2);
-	  if (a4gl_toupper (name[0]) != name[0])
-	  A4GL_add_pointer (name, WINCODE, win);
+	  if (a4gl_toupper (name[0]) != name[0]) {
+	  	A4GL_add_pointer (name, WINCODE, win);
+	  }
 	}
 
       if (border == 2)
@@ -427,6 +429,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  windows[a].w = w;
 	  windows[a].h = h;
 	  windows[a].win = win;
+	  windows[a].form_created_with_window=with_form;
 	  /* A4GL_change_currwin (win); */
 	  break;
 	}
@@ -533,6 +536,7 @@ void
  UILIB_A4GL_remove_window (char *win_name)
 {
   int a;
+  int form_created_with_window;
   WINDOW *win = 0;
 char buff[256];
   PANEL *panel = 0;
@@ -591,7 +595,8 @@ char buff[256];
 	  }
 #endif
 	  windows[a].name[0] = 0;
-	  windows[a].pan = 0;
+	  windows[a].pan = 0;	
+	  form_created_with_window=windows[a].form_created_with_window;
 	  break;
 	}
     }
@@ -613,18 +618,50 @@ char buff[256];
   A4GL_del_pointer (win_name, WINCODE);
 
 	if (f) {
+		FORM *curses_form;
   		SPRINTF1(buff,"%p",f);
   		A4GL_del_pointer (buff, ATTRIBUTE);
-		if (f->fileform) {
-			free(f->fileform);
+
+		if (form_created_with_window) {
+			//
+			// This only gets called if its an open window with form...
+			// 
+			curses_form=(FORM *)f->form;
+			if (curses_form) {
+				unpost_form(curses_form);
+				if (free_form(curses_form)!=E_OK) {
+					A4GL_debug("Couldnt free form");
+				}
+			
+				for (a=0;a<f->fileform->metrics.metrics_len;a++) {
+					FIELD *fld;
+					fld=(FIELD *)f->fileform->metrics.metrics_val[a].field;
+					// Do I need to free the buffer ???
+					//free(fld->buf);
+					
+					if (free_field(fld)!=E_OK) {
+						A4GL_debug("Couldnt free field");
+					}
+	
+				}
+
+			}
+			
+		
 		}
-		free(f);
+		if (f->fileform) {
+			A4GL_free_associated_mem(f->fileform);
+			acl_free(f->fileform);
+		}
+		
+		A4GL_free_associated_mem(f);
+		acl_free(f);
 	}
 
   A4GL_del_pointer (win_name, ATTRIBUTE);
   A4GL_del_pointer (win_name, S_WINDOWSCODE);
   A4GL_del_pointer (win_name, S_FORMDETSCODE);
-
+  
   A4GL_debug("after remove window - currwinno=%d",currwinno);
 
 }
@@ -1128,6 +1165,8 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
     {
       nlines++;
     }
+
+
   w = A4GL_create_window (name, x, y, cols, nlines,
 		     1,
 		     f->form_details.form_line,
@@ -1136,7 +1175,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
 		     f->form_details.menu_line,
 		     f->form_details.border,
 		     f->form_details.comment_line,
-		     f->form_details.message_line, f->form_details.colour);
+		     f->form_details.message_line, f->form_details.colour,1);
 
   if (A4GL_display_form (f,attr))
     return w;
@@ -2004,7 +2043,7 @@ void *
 		       form_line,
 		       error_line,
 		       prompt_line,
-		       menu_line, border, comment_line, message_line, attrib);
+		       menu_line, border, comment_line, message_line, attrib,0);
 
   return win;
 }
