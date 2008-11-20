@@ -27,6 +27,7 @@ defer interrupt
 			display "Unable to create the syspgma4gl database"
 			exit program 1
 		end if
+		execute immediate "create database syspgma4gl"
 		call createtables()
 	end if
 		
@@ -34,19 +35,85 @@ defer interrupt
 end main
 
 
+function err_createtables()
+	display "There was an error creating the database tables"
+	display "Please manually create a syspgma4gl with the tables in"
+	display "$AUBITDIR/tools/a4gl/create_tables.sql"
+	exit program 2
+end function
+
 function createtables()
 define lv_ok integer
-	# try running our create script..
-	run "adbaccess syspgma4gl $AUBITDIR/tools/a4gl/create_tables.sql" returning lv_ok
-	if lv_ok>255 then
-		let lv_ok=lv_ok/256
-	end if
-	if lv_ok!=0 then	
-		display "Error creating tables"
-		display "Please try to create them manually using $AUBITDIR/tools/a4gl/create_tables.sql"
-		sleep 4
-		exit program 1
-	end if
+whenever error continue
+# We dont care i this one fails...
+grant connect to public
+
+
+
+
+create table entity
+  (
+    entity serial not null ,
+    entity_type char(1),
+    progname char(16),
+    justuser char(8),
+    name char(60),
+    flags char(60)
+  );
+
+if sqlca.sqlcode<0 then
+	# Maybe it didn't like the 'serial' ?
+	create table entity
+  	(
+    	entity integer not null ,
+    	entity_type char(1),
+    	progname char(16),
+    	justuser char(8),
+    	name char(60),
+    	flags char(60)
+  	);
+end if
+
+if sqlca.sqlcode<0 then
+	call err_createtables()
+end if
+
+
+create table dependencies
+  (
+    entity integer,
+    depends_on integer
+  );
+if sqlca.sqlcode<0 then
+	call err_createtables()
+end if
+
+create table afglsettings
+  (
+    progname char(16),
+    justuser char(8),
+    name char(32),
+    value char(70)
+  );
+if sqlca.sqlcode<0 then
+	call err_createtables()
+end if
+
+create table program
+  (
+    progname char(16),
+    justuser char(8),
+    progoutdir char(256),
+    progmakefile char(256),
+    linkflags char(70),
+    compflags char(70),
+    lastupd integer,
+    genmakefile integer
+  );
+if sqlca.sqlcode<0 then
+	call err_createtables()
+end if
+
 end function
 
 
