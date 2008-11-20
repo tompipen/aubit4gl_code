@@ -829,9 +829,10 @@ while (x+lv_cols+2)>=80
 	let x=x-1
 end while
 
+#display "y=", y, ",x=", x, ",nrows=", nrows, ",lv_cols=", lv_cols
+if x < 2 then let x = 2 end if
 
 open window w_show at y,x with nrows rows,lv_cols columns attribute(border)
-
 
 let lv_top=1
 let lv_line=1

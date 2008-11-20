@@ -3491,7 +3491,7 @@ define lv_tab,lv_t char(20)
 define lv_col,lv_c char(20)
 declare c_ftn cursor for 
 	select tabname from systables 
-	where tabname like lv_tab 
+	where tabname like lv_tab and tabname[1,1] <> " "
 	order by 1
 
 call start_table_nocol()
