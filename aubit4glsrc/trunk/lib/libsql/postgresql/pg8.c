@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.57 2008-11-06 11:33:42 mikeaubury Exp $
+# $Id: pg8.c,v 1.58 2008-11-21 16:46:24 mikeaubury Exp $
 #*/
 
 
@@ -1213,8 +1213,8 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
   int a;
   int ccnt = 1;
   struct s_sid *n;
-  
-
+  // we dont do much here - so lets clear the sqlca.sqlcode down...
+  A4GL_set_a4gl_sqlca_sqlcode (0); 
 
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
@@ -1369,6 +1369,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 
   if (strlen (n->select) == 0)
     return 0;
+
+
   pgextra=n->extra_info;
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
@@ -3464,12 +3466,15 @@ int isset=0;
 
   A4GL_debug ("In SetErrno - res=%p", res);
 
-  if (res == 0)
+  if (res == NULL)
     {
-      if (last_msg)
-	free (last_msg);
-      last_msg = strdup ("");
-      last_msg_no = 0;
+	char *s;
+		s=PQerrorMessage (current_con);
+		A4GL_debug("No resultset - s=%s\n", s);
+	  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
+      if (last_msg) free (last_msg);
+      last_msg = strdup (s);
+      last_msg_no = -349;
       return;
     }
 
