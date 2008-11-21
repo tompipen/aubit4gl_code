@@ -29,6 +29,9 @@ case lv_what
 		display "Choose a file to compile","" at 2,1
 	when "run" 
 		display "Choose a file to run","" at 2,1
+	otherwise
+		display "Internal error : Unexpected ", lv_what
+		exit program 4
 end case
 
 let a=0

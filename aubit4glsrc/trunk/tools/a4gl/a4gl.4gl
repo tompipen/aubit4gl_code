@@ -136,13 +136,14 @@ end function
 function clear_screen_portion()
 define lv_y integer
 define lv_maxy integer
-code
-lv_maxy=A4GL_get_curr_height();
-endcode
+let lv_maxy=aclfgl_get_curr_height()
+
 set pause mode on
+
 for lv_y=6 to lv_maxy
         display " ","" at lv_y,1
 end for
+
 set pause mode off
 end function
 
