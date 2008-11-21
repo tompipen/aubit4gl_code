@@ -55,7 +55,6 @@ function err_createtables()
 end function
 
 function createtables()
-define lv_ok integer
 whenever error continue
 # We dont care i this one fails...
 grant connect to public
@@ -192,10 +191,9 @@ end function
 
 
 function check_and_report_error()
-define lv_a integer
-define lv_err1 char(255)
-define lv_err2 char(255)
-define lv_isam_err integer
+#define lv_err1 char(255)
+#define lv_err2 char(255)
+#define lv_isam_err integer
 if sqlca.sqlcode>=0 then
         return 0
 end if
@@ -288,7 +286,8 @@ define lv_v char(70)
 	and name=lv_name
 
 	if sqlca.sqlcode=100 then
-		return NULL
+		initialize lv_v to null
+		return lv_v
 	else
 		return lv_v
 	end if

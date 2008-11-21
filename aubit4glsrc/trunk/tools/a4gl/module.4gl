@@ -1,6 +1,3 @@
-define mv_current_module char(256)
-define mv_db char(255)
-
 define mv_lastused char(255)
 define mv_generated_exe integer
 
@@ -66,7 +63,6 @@ end function
 ################################################################################
 function modify_module(lv_mname,lv_errfile,lv_initstate)
 define lv_mname char(255)
-define a integer
 define lv_runstr char(512)
 define lv_backup char(255)
 define lv_errfile integer
@@ -382,7 +378,6 @@ END FUNCTION
 ################################################################################
 function module_menu_compile()
 define lv_mname char(255)
-define lv_ok integer
 
 let lv_mname=get_filename_to("compile",".4gl",mv_lastused)
 if lv_mname is null or lv_mname matches " " then
@@ -399,7 +394,6 @@ function module_compile(lv_mname)
 define lv_mname char(255)
 define a integer
 define lv_runstr char(512)
-define lv_backup char(255)
 
 
 if lv_mname not matches "*.4[Gg][Ll]" then
@@ -585,7 +579,7 @@ function check_program_for_module(lv_mname)
 define lv_mname char(256)
 define lv_cwd char(256)
 define lv_cnt integer
-define lv_prog char(16),lv_user char(8)
+define lv_prog char(16)
 define lv_last_used_prog char(16)
 define lv_have_last_used integer
 define lv_makefile char(512)

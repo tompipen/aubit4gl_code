@@ -7,6 +7,7 @@ endcode
 function get_file_time(lv_name)
 define lv_name char(256)
 define lv_t1 integer
+let lv_t1=0
 code
 {
 struct stat buf;

@@ -1,7 +1,3 @@
-define mv_current_form char(256)
-#define mv_editor_master char(255)
-
-define mv_lastform char(255)
 define mv_db char(255)
 
 define mv_lastused char(255)
@@ -61,8 +57,6 @@ end function
 ################################################################################
 function modify_form(lv_fname,lv_errfile)
 define lv_fname char(255)
-define a integer
-define lv_runstr char(512)
 define lv_backup char(255)
 define lv_errfile integer
 define lv_need_backup integer
@@ -312,7 +306,6 @@ function form_compile(lv_fname)
 define lv_fname char(255)
 define a integer
 define lv_runstr char(512)
-define lv_backup char(255)
 
 
 if lv_fname not matches "*.[Pp][Ee][Rr]" then

@@ -1,5 +1,4 @@
 function main_menu()
-define lv_ok integer
 define lv_queryprog char(512)
 call display_banner()
 menu "Aubit4GL" 

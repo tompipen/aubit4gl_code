@@ -227,12 +227,10 @@ end function
 ################################################################################
 function add_programs_from_dir()
 define lv_fname char(255)
-define lv_what char (20)
-define lv_ext char(4)
-define a integer
 
 code
 {
+    int a;
     char **dir;
     dir=A4GL_read_directory(".",".mk");
     if (dir) {
@@ -279,7 +277,10 @@ define lv_exists integer
 
 	call ensure_syspgma4gl()
 
-	select * into lv_a.* from program 
+	select 	progname, justuser, progoutdir, progmakefile, linkflags, 
+		compflags , lastupd , genmakefile  
+	into lv_a.* 
+	from program 
 	where (justuser is null or justuser matches " " or justuser=user)
 	and  progname=lv_name
 
@@ -451,7 +452,6 @@ end function
 function get_program(lv_what,lv_lastused)
 define lv_fname char(255)
 define lv_what char (20)
-define lv_ext char(4)
 define lv_lastused char(255)
 
 let lv_lastused=remove_ext(lv_lastused)
@@ -492,6 +492,9 @@ case lv_what
 		let lv_prog_cnt=lv_prog_cnt-1
 		call set_pick_cnt(lv_prog_cnt);
 
+	otherwise
+		display "Internal error - not expecting ", lv_what clipped
+		exit program 3
 end case
 
 
@@ -712,6 +715,7 @@ function has_setting(lv_prog,lv_name)
 define lv_prog char(16)
 define lv_name char(32)
 define lv_val char(70)
+
         select value into lv_val 
 	from afglsettings
         where (justuser is null or justuser matches " " or justuser=user)
@@ -740,7 +744,6 @@ end function
 function generate_makefile(lv_prog,lv_makefile)
 define lv_prog char(16)
 define lv_makefile char(512)
-define lv_fout integer
 define lv_build char(256)
 define lv_linkflags char(256)
 define lv_compflags char(256)
@@ -975,7 +978,6 @@ end function
 
 function run_with_logging(lv_runstr)
 define lv_runstr char(512)
-define lv_logfile char(512)
 define lv_ok integer
 
 	display " " # goto line mode
