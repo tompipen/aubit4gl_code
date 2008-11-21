@@ -2,6 +2,7 @@ define mv_curr_db char(256)
 define mc_version constant 0.8
 
 main
+define lv_dialect char(20)
 defer interrupt
 
 
@@ -22,6 +23,10 @@ defer interrupt
 		message "Creating syspgma4gl database"
 		whenever error continue
 
+		let lv_dialect = dbms_dialect()
+		if lv_dialect[1,8] = "POSTGRES" then
+			database template1
+		end if
 		execute immediate "create database syspgma4gl"
 		database syspgma4gl
 		whenever error stop
@@ -128,6 +133,8 @@ create table program
 if sqlca.sqlcode<0 then
 	call err_createtables()
 end if
+
+whenever error stop
 
 end function
 
