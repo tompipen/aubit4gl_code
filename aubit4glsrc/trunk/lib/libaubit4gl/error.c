@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.49 2008-10-17 12:09:37 mikeaubury Exp $
+# $Id: error.c,v 1.50 2008-11-21 16:40:33 mikeaubury Exp $
 #
 */
 
@@ -304,6 +304,7 @@ aclfgli_clr_err_flg (void)
   int_err_flg = 0;
 
   A4GL_set_err_txt (0);
+//printf("clr errflag : %d\n", int_err_flg);
 
 }
 
@@ -314,6 +315,7 @@ aclfgli_clr_err_flg (void)
 void
 aclfgli_set_err_flg (void)
 {
+//printf("Set errflag\n");
   int_err_flg = 1;
 }
 
@@ -324,6 +326,7 @@ aclfgli_set_err_flg (void)
 int
 aclfgli_get_err_flg (void)
 {
+//printf("get errflag : %d\n", int_err_flg);
   return int_err_flg;
 }
 
