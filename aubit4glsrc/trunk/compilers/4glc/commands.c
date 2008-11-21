@@ -1636,6 +1636,7 @@ struct command *c;
    c=new_command(E_CMD_FOR_CMD);
 
    c->cmd_data.command_data_u.for_cmd.var=var;
+	//inc_var_assigned(var);
    c->cmd_data.command_data_u.for_cmd.start=p_start;
    c->cmd_data.command_data_u.for_cmd.end=p_end;
    c->cmd_data.command_data_u.for_cmd.step=p_step;
