@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.58 2008-11-21 16:46:24 mikeaubury Exp $
+# $Id: pg8.c,v 1.59 2008-11-22 13:22:26 mikeaubury Exp $
 #*/
 
 
@@ -1569,7 +1569,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
     {
       if (CanUseSavepoints)
 	{
-	  Execute ("ROLLBACK TO SAVEPOINT preExec", 1);
+	  	Execute ("ROLLBACK TO SAVEPOINT preExec", 1);
+	      	Execute ("RELEASE SAVEPOINT preExec", 1);
 	}
     }
  	if (res) { PQclear(res); res=0; }
@@ -1894,7 +1895,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
     {
       if (CanUseSavepoints)
 	{
-	  Execute ("ROLLBACK TO SAVEPOINT preExecSelect", 1);
+	  	Execute ("ROLLBACK TO SAVEPOINT preExecSelect", 1);
+	      	Execute ("RELEASE SAVEPOINT preExecSelect", 1);
 	}
     }
 	if (singleton) { free_prepare(n); }
