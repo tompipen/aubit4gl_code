@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.75 2008-11-06 10:14:02 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.76 2008-11-22 13:23:04 mikeaubury Exp $
 #
 */
 
@@ -223,7 +223,6 @@ static void ensure_dot_format_for_decimal_string(char *s) {
                 if (s[a]==',') buff[a]='.';
                 if (s[a]=='.') buff[a]=',';
         }
-        printf("->%s\n",buff);
         strcpy(s,buff);
         return;
 }
@@ -662,10 +661,58 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			A4GL_pad_string(a4gl,size);
 		}
 	}
-
-
 }
 
+
+
+
+void
+ESQLAPI_A4GL_copy_vchar(char *infx,char *a4gl,short *p_indicat,int size,char mode,int x,int y)
+{
+short indicat=0;
+char *ptr;
+struct svarchar {
+        int len;
+        char ptr[];
+}  *p_char;
+
+A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+
+        if (mode=='i') {
+                        A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
+                        if (p_indicat) *p_indicat=0;
+                        if (A4GL_isnull(0,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+                        if (A4GL_isnull(0,(void *)a4gl)) { rsetnull(CCHARTYPE,infx); return; }
+
+		// When we generate the ESQL/C code - we generate a 'char' for an inbind on Postgres ECPG
+		// but a 'varchar' for an outbind on ECPG
+		// that means we only need to do the special 'varchar' handling on the output side
+		// nothing special here at all..
+                strcpy((char *)(infx),(char *)(a4gl));
+                if (strlen(infx)==0) { infx[0]=' '; infx[1]=0; }
+
+        }
+        if (mode=='o') {
+                if (p_indicat) indicat=*p_indicat;
+                if (indicat==-2) return;
+                if (indicat==-1) { A4GL_setnull(0,(void *)a4gl,1); return;}
+#ifdef DIALECT_POSTGRES
+                {
+                        p_char=(struct svarchar *)infx;
+                        strcpy((char *)(a4gl),p_char->ptr);
+                        A4GL_debug("Copy : '%s' from rdbms to a4gl",infx);
+                        if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,1); return;}
+                        strcpy((char *)(a4gl),p_char->ptr);
+                }
+#else
+                A4GL_debug("Copy : '%s' from rdbms to a4gl",infx);
+                if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,1); return;}
+                strcpy((char *)(a4gl),(char *)(infx));
+#endif
+        }
+
+}
 
 
 
@@ -1146,7 +1193,7 @@ for (a=0;a<n;a++) {
 		case DTYPE_DTIME: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
 		case DTYPE_BYTE: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
 		case DTYPE_TEXT: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
-		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_char(native,a4gl,i,-1,dir,x,y); break;
+		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_vchar(native,a4gl,i,-1,dir,x,y); break;
 		case DTYPE_INTERVAL: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
 		case DTYPE_INT8: ESQLAPI_A4GL_copy_int8(native,a4gl,i,size,dir); break;
 		default: A4GL_assertion(1,"Unhandled datatype"); break;
