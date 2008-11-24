@@ -142,10 +142,34 @@ function maintain_program(lv_name,lv_user)
 define lv_name char(16)
 define lv_user char(8)
 define lv_ok integer
+define lv_expert_mode integer
+
+let lv_expert_mode=false
+
 
 menu "Maintin Program"
 	before menu
 		call display_banner()
+		if not lv_expert_mode then
+			# Cforms are compiled forms
+			# which dont need DBPATH to be found.
+			# You do need to call the special function 'form_is_compiled' though
+			# to let the compiler know its not to look for it in a real file...
+			#
+			# See a4gl.4gl for an example...
+			#
+			hide option "cfoRms"
+		end if
+
+
+	command key(f12)  # Expert mode - we may add more later...
+		if lv_expert_mode then
+			let lv_expert_mode=false
+			hide option "cfoRms"
+		else
+			let lv_expert_mode=true
+			show option "cfoRms"
+		end if
 
 	command "Program" "Edit program definition"
 		call program_edit_program(lv_name) returning lv_ok
@@ -158,6 +182,9 @@ menu "Maintin Program"
 
 	command "Forms"	"Edit list of forms for this program"
 		call program_edit_forms(lv_name,lv_user)
+
+	command "cfoRms" "Edit list of forms for this program"
+		call edit_program_entity(lv_name, lv_user,"f")
 
 	command "Libraries" "Edit list of libraries for this program"
 		call program_edit_libraries(lv_name,lv_user)
@@ -551,6 +578,9 @@ end foreach
 let lv_cnt=lv_cnt-1
 call set_count(lv_cnt)
 
+let lv_formname="entities"
+
+# Just in case we want a different form : 
 case lv_type
 	when "M" let lv_formname="entities"
 	when "G" let lv_formname="entities"
@@ -567,6 +597,7 @@ case lv_type
 	when "M" display "Module"   to fldname
 	when "G" display "Global"   to fldname
 	when "F" display "Form"     to fldname
+	when "f" display "Form"     to fldname # C Form
 	when "L" display "Library"  to fldname
 	when "E" display "ESQL/C"   to fldname
 	when "C" display "C-Module" to fldname
@@ -744,7 +775,7 @@ end function
 function generate_makefile(lv_prog,lv_makefile)
 define lv_prog char(16)
 define lv_makefile char(512)
-define lv_build char(256)
+define lv_build_in_db char(256)
 define lv_linkflags char(256)
 define lv_compflags char(256)
 define lv_name char(60),lv_value char(70)
@@ -761,21 +792,25 @@ call channel::open_file("make",lv_makefile, "w")
 
 # Lets start off with some easy stuff- 
 # we'll just dump the BUILDDIR LFLAGS CFLAGS straight from the databse
-select progoutdir, linkflags, compflags  into lv_build,lv_linkflags,lv_compflags
+select progoutdir, linkflags, compflags  into lv_build_in_db,lv_linkflags,lv_compflags
 from program
 where (justuser is null or justuser matches " " or justuser=user)
 and progname=lv_prog
 
-if lv_build is not null and lv_build != " " then
-	if lv_build[length(lv_build)]="/" then
-		let lv_build=lv_build[1,length(lv_build)-1]
+if sqlca.sqlcode=100 then
+	initialize  lv_build_in_db,lv_linkflags,lv_compflags to null
+end if
+if lv_build_in_db is not null and lv_build_in_db != " " then
+	if lv_build_in_db[length(lv_build_in_db)]="/" then
+		let lv_build_in_db=lv_build_in_db[1,length(lv_build_in_db)-1]
 	end if
-	call channel::write("make","BUILDDIR="||lv_build clipped)
+	call channel::write("make","BUILDDIR="||lv_build_in_db clipped)
 	let lv_buildstr="$(BUILDDIR)/"
 else
 	#call channel::write("make","BUILDDIR=.")
 	let lv_buildstr=" "
 end if
+
 
 
 if lv_linkflags is not null and lv_linkflags!= " " then
@@ -861,7 +896,13 @@ declare c_get_modules cursor for
 # and once to create the rules for the targets themselves.
 foreach c_get_modules into lv_type,lv_name,lv_flags
 
-		# Globals         Module       C-Code         ESQL/C code
+	if lv_flags is not null and lv_flags !=" " then
+		if lv_flags[length(lv_flags)]="/" then
+			let lv_flags=lv_flags[1,length(lv_flags)-1]
+		end if
+	end if
+
+	# Globals         Module       C-Code         ESQL/C code
 	if lv_type="G" or lv_type="M" or lv_type="C" or lv_type="E" then
 		if lv_type="G" then
 			if lv_flags is not null and lv_flags != " " then
@@ -871,6 +912,10 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 			end if
 		end if
 		call channel::write("make","OBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
+	end if
+
+	if lv_type="f" then
+		call channel::write("make","OBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT)$(A4GL_OBJ_EXT)")
 	end if
 
 	if lv_type="F" then # Form
@@ -896,6 +941,11 @@ call channel::write("make"," ")
 # And the second time through
 foreach c_get_modules into lv_type,lv_name,lv_flags
 
+	if lv_flags is not null and lv_flags !=" " then
+		if lv_flags[length(lv_flags)]="/" then
+			let lv_flags=lv_flags[1,length(lv_flags)-1]
+		end if
+	end if
 	if lv_flags is null or lv_flags=" " then
 		let lv_fullname=lv_name
 	else
@@ -921,6 +971,12 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 		call channel::write("make","	4glpc $(CFLAGS) -o $@ $^")
 	end if
 
+	if lv_type="f" then # C Form code
+		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT)$(A4GL_OBJ_EXT): "||lv_fullname clipped||".per")
+		call channel::write("make","	fcompile -o "||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT) -c $^")
+		call channel::write("make","	4glpc -o $@ -c "||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT).c")
+	end if
+
 	if lv_type="E" then # ESQL/C code
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||"$(A4GL_EC_EXT)")
 		call channel::write("make","	4glpc $(CFLAGS) -o $@ $^")
@@ -936,8 +992,8 @@ end foreach
 call channel::write("make","compile: "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
 call channel::write("make"," ")
 call channel::write("make","run: compile")
-if lv_build is not null and lv_build != " " then
-	call channel::write("make","	cd "||lv_build||" && ./"||lv_prog clipped||"$(A4GL_EXE_EXT)")
+if lv_buildstr is not null and lv_buildstr != " " then
+	call channel::write("make","	cd ",lv_buildstr," &&  ./"||lv_prog clipped||"$(A4GL_EXE_EXT)")
 else
 	call channel::write("make","	./"||lv_prog clipped||"$(A4GL_EXE_EXT)")
 end if
