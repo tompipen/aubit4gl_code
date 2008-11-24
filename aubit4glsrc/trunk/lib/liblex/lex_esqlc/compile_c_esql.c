@@ -1100,7 +1100,15 @@ if (bind && bind->list.list_len==0) {
       else
 	{
 	  // We should be ok...
+  	if (esql_type()==E_DIALECT_POSTGRES) {
+		// Postgres's ecpg doesn't like indicators on an EXECUTE
+ 		set_dont_use_indicators++;
+  	}
 	  print_execute_g (A4GL_new_expr_simple_string(ptr, ET_EXPR_IDENTIFIER), 1,bind,0);
+  	if (esql_type()==E_DIALECT_POSTGRES) {
+		// Postgres's ecpg doesn't like indicators on an EXECUTE
+ 		set_dont_use_indicators--;
+  	}
       return 1;
 	}
       printc ("/* END OF FAKE PUT - USING EXECUTE */");
