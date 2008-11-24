@@ -502,44 +502,32 @@ int a;
 
       if (has_variable (&d->imported_global_variables, localname))
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
-		     "Coding Standards: Local variable hides an imported Global variable",
-		     variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE", "Coding Standards: Local variable hides an imported Global variable", variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (has_variable (&d->exported_global_variables, localname))
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
-		     "Coding Standards: Local variable hides an exported Global variable",
-		     variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE", "Coding Standards: Local variable hides an exported Global variable", variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
       if (has_variable (&d->module_variables, localname))
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
-		     "Coding Standards: Local variable hides a Module variable",
-		     variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE", "Coding Standards: Local variable hides a Module variable", variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
 
       if (variables->variables.variables_val[a]->flags & 1)
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARUSED",
-		     "Local variable is used before its assigned a value",
-		     variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARUSED", "Local variable is used before its assigned a value", variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (variables->variables.variables_val[a]->usage == 0 && variables->variables.variables_val[a]->assigned == 0)
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARNOTUSED",
-		     "Local variable is defined but not used",
-		     variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARNOTUSED", "Local variable is defined but not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (variables->variables.variables_val[a]->usage == 0 && variables->variables.variables_val[a]->assigned)
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARASSNOTUSED",
-		     "Local variable is assigned a value but not used",
-		     variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARASSNOTUSED", "Local variable is assigned a value but not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
     }
 }
@@ -573,7 +561,6 @@ int a;
 
 	      A4GL_lint (module_name, r->lineno, "CS.MRET", "Coding Standards: Multiple RETURNs in function", 0);
 
-	      //A4GL_lint("Coding Standards: Multiple RETURNs in function");
 
 	      if (r->cmd_data.command_data_u.return_cmd.retvals)
 		{
@@ -586,7 +573,6 @@ int a;
 	      if (nvals != nretvals)
 		{
 		  // Already reported ? 
-		  /* A4GL_lint (module_name, r->lineno, "MRETVAL","Function RETURNs different numbers of values", 0); */
 		}
 	    }
 	  else
@@ -643,7 +629,6 @@ int a;
 		ncols=s->select_list->list.list_len;
 		
 		if (nvars!=ncols) {
-			printf("nvars=%d ncols=%d\n", nvars, ncols);
 		      A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
 		}
       }
@@ -668,8 +653,7 @@ int a;
 	    }
 	  if (!isused)
 	    {
-	      A4GL_lint (module_name, r->lineno, "LABELNOTUSED", "Label defined but not used",
-			 r->cmd_data.command_data_u.label_cmd.label);
+	      A4GL_lint (module_name, r->lineno, "LABELNOTUSED", "Label defined but not used", r->cmd_data.command_data_u.label_cmd.label);
 	    }
 	}
 
@@ -801,51 +785,23 @@ int a;
 		  expr_str *expr;
 		  //int is_string;
 		  expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
-		  /*
-		     switch (expr->expr_type) {
-		     // Does it look like a string ?
-		     case ET_EXPR_LITERAL_STRING:
-		     case ET_EXPR_LITERAL_EMPTY_STRING:
-		     case ET_EXPR_OP_CLIP:
-		     case ET_EXPR_OP_USING:
-		     case ET_EXPR_UPSHIFT:
-		     case ET_EXPR_DOWNSHIFT:
-		     case ET_EXPR_STRING:
-		     case ET_EXPR_OP_CONCAT:
-		     case ET_EXPR_OP_SPACES:
-		     case ET_EXPR_LITERAL_DOUBLE_STR:
-		     case ET_EXPR_GET_FLDBUF:
-		     case ET_EXPR_WORDWRAP:
-		     case ET_EXPR_SUBSTRING:
-		     case ET_EXPR_CONCAT_LIST:
-		     yylineno=r->lineno;
-		     A4GL_lint("Use of string for WHEN in a CASE with no expression"); break;
-		     default: break;
-		     }
-		   */
 
 		  yylineno = r->lineno;
 		  if (expr_datatype (expr) == DTYPE_CHAR || expr_datatype (expr) == DTYPE_VCHAR)
 		    {
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno,
-				 "CASESTR", "Use of String for WHEN in a CASE with no expression", 0);
-		      //A4GL_lint("Use of String for WHEN in a CASE with no expression"); break;
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASESTR", "Use of String for WHEN in a CASE with no expression", 0);
 		    }
 
 
 		  if (A4GL_is_just_int_literal (expr, 0))
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno,
-				 "CASEFALSE", "WHEN condition is always FALSE", 0);
-		      //A4GL_lint("WHEN condition is always FALSE");
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASEFALSE", "WHEN condition is always FALSE", 0);
 		    }
 		  if (A4GL_is_just_int_literal (expr, 1))
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno,
-				 "CASETRUE", "WHEN condition is always TRUE", 0);
-		      //A4GL_lint("WHEN condition is always TRUE");
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASETRUE", "WHEN condition is always TRUE", 0);
 		    }
 		}
 	    }
@@ -877,8 +833,7 @@ int a;
 						{
 		  		char buff[200];
 		  		sprintf (buff, "Function %s was called but is not defined", fcall->expr_str_u.expr_function_call->fname);
-		  		A4GL_lint (module_name, r->lineno, "FUNCNOTDEF", "Function was called but is not defined",
-			     		fcall->expr_str_u.expr_function_call->fname);
+		  		A4GL_lint (module_name, r->lineno, "FUNCNOTDEF", "Function was called but is not defined", fcall->expr_str_u.expr_function_call->fname);
 		  		log_proto (fcall, r->cmd_data.command_data_u.call_cmd.returning);
 				}
 		}
@@ -1010,7 +965,6 @@ int a;
 	    {
 	      yylineno = r->lineno;
 	      A4GL_lint (module_name, r->lineno, "LETCOUNT", "Mismatch in number of parameters", 0);
-	      //A4GL_lint("Mismatch in number of parameters");
 	    }
 
 
@@ -1020,7 +974,6 @@ int a;
 		{
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "CS.WRITESQLCA", "Direct assignment to SQLCA record entry", 0);
-		  //A4GL_lint("Coding Standards: Direct assignment to SQLCA record entry");
 		}
 
 	      if (A4GL_aubit_strcasecmp (expr_as_string_when_possible (varlist->list.list_val[b]), "int_flag") == 0)
@@ -1030,9 +983,7 @@ int a;
 		  else
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->lineno, "CS.WRITEINTFLAG", "'int_flag' set to value which is neither TRUE or FALSE",
-				 0);
-		      //A4GL_lint("Coding Standards: 'int_flag' set to value which is neither TRUE or FALSE");
+		      A4GL_lint (module_name, r->lineno, "CS.WRITEINTFLAG", "'int_flag' set to value which is neither TRUE or FALSE", 0);
 		    }
 		}
 
@@ -1043,9 +994,7 @@ int a;
 		  else
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG",
-				 "'quit_flag' set to value which is neither TRUE or FALSE", 0);
-		      //A4GL_lint("Coding Standards: 'quit_flag' set to value which is neither TRUE or FALSE");
+		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG", "'quit_flag' set to value which is neither TRUE or FALSE", 0);
 		    }
 		}
 
@@ -1057,9 +1006,7 @@ int a;
 		  else
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG",
-				 "'quit_flag' set to value which is neither TRUE or FALSE", 0);
-		      //A4GL_lint("Coding Standards: 'quit_flag' set to value which is neither TRUE or FALSE");
+		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG", "'quit_flag' set to value which is neither TRUE or FALSE", 0);
 		    }
 		}
 
@@ -1075,11 +1022,8 @@ int a;
 		{		// This should be a string concat
 		  if (!is_char_dtype (expr_datatype (varlist->list.list_val[0])))
 		    {
-		      A4GL_lint (module_name, r->lineno, "CONCATTONONSTR",
-				 "Assigning a string concentenation to a non-character variable",
+		      A4GL_lint (module_name, r->lineno, "CONCATTONONSTR", "Assigning a string concentenation to a non-character variable",
 				 expr_as_string_when_possible (varlist->list.list_val[0]));
-		      //sprintf(buff, "Assigning a string concentenation to a non-character variable '%s'", varlist->list.list_val[0].varname);
-		      //A4GL_lint(buff);
 		    }
 		  else
 		    {
@@ -1095,9 +1039,7 @@ int a;
 			  if (!is_char_dtype (etype))
 			    {
 			      sprintf (buff, "%d expression", ecnt + 1);
-			      A4GL_lint (module_name, r->lineno, "CONCATFROMNONSTR",
-					 "Expression in string concatenation assignment, is not a string", buff);
-			      //A4GL_lint(buff);
+			      A4GL_lint (module_name, r->lineno, "CONCATFROMNONSTR", "Expression in string concatenation assignment, is not a string", buff);
 			    }
 			}
 		    }
@@ -1123,8 +1065,6 @@ int a;
 			       expr_as_string_when_possible (varlist->list.list_val[0]), dtype_as_string (etype),
 			       dtype_as_string (expr_datatype (varlist->list.list_val[0])));
 		      A4GL_lint (r->module, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable", buff);
-		      //sprintf(buff, "Expression is not directly compatible with Variable '%s'", varlist->list.list_val[0].varname);
-		      //A4GL_lint(buff);
 		    }
 		}
 
@@ -1156,7 +1096,6 @@ int a;
 				   dtype_as_string (expr_datatype (varlist->list.list_val[ecnt])));
 			  A4GL_lint (module_name, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable", buff);
 
-			  //A4GL_lint(buff);
 			}
 
 		    }
@@ -1324,16 +1263,13 @@ check_whenever_abuse (module_definition * d)
 		case E_CMD_EXIT_PROG_CMD:
 		  if (A4GL_aubit_strcasecmp (curr_func, "exit_prog") != 0)
 		    {
-		      //A4GL_lint("Coding Standards: EXIT PROGRAM must not be used directly - use CALL exit_prog instead");
-		      A4GL_lint (d->module_name, r->lineno, "CS.EXITDIRECT",
-				 "EXIT PROGRAM must not be used directly - use CALL exit_prog instead", 0);
+		      A4GL_lint (d->module_name, r->lineno, "CS.EXITDIRECT", "EXIT PROGRAM must not be used directly - use CALL exit_prog instead", 0);
 		    }
 
 
 		  if (A4GL_aubit_strcasecmp (curr_func, "main") != 0)
 		    {
 		      A4GL_lint (d->module_name, r->lineno, "CS.EXITNOTMAIN", "EXIT PROGRAM must only be in main", 0);
-		      //A4GL_lint("Coding Standards: EXIT PROGRAM must only be in main");
 		    }
 		  break;
 
@@ -1347,9 +1283,7 @@ check_whenever_abuse (module_definition * d)
 		case E_CMD_SQL_TRANSACT_CMD:
 		  if (!when_set_to_call)
 		    {
-		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD",
-				 "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
-		      //A4GL_lint ("Coding Standards: Must use 'WHENEVER ERROR CALL get_error_record' before using SQL");
+		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD", "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
 		    }
 		  break;
 
@@ -1360,21 +1294,18 @@ check_whenever_abuse (module_definition * d)
 		      if (A4GL_aubit_strcasecmp (curr_func, "begin_work") != 0)
 			{
 			  A4GL_lint (d->module_name, r->lineno, "CS.DIRECTTRANS", "BEGIN WORK used directly", 0);
-			  //A4GL_lint ("Coding Standards: BEGIN WORK used directly");
 			}
 		      break;
 		    case 0:
 		      if (A4GL_aubit_strcasecmp (curr_func, "rollback_work") != 0)
 			{
 			  A4GL_lint (d->module_name, r->lineno, "CS.DIRECTTRANS", "ROLLBACK WORK used directly", 0);
-			  //A4GL_lint ("Coding Standards: ROLLBACK WORK used directly");
 			}
 		      break;
 		    case 1:
 		      if (A4GL_aubit_strcasecmp (curr_func, "commit_work") != 0)
 			{
 			  A4GL_lint (d->module_name, r->lineno, "CS.DIRECTTRANS", "COMMIT WORK used directly", 0);
-			  //A4GL_lint ("Coding Standards: COMMIT WORK used directly");
 			}
 		      break;
 		    }
@@ -1391,9 +1322,7 @@ check_whenever_abuse (module_definition * d)
 		case E_CMD_PREPARE_CMD:
 		  if (!when_set_to_call)
 		    {
-		      //A4GL_lint ("Coding Standards: Must use 'WHENEVER ERROR CALL get_error_record' before using SQL");
-		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD",
-				 "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
+		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD", "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
 		    }
 		  break;
 
@@ -1494,8 +1423,7 @@ check_functions_in_module (int *calltree, module_definition * d)
 	  int b;
 	  for (b = 0; b < gass[a].nfunction_list; b++)
 	    {
-	      A4GL_lint (gass[a].function_list[b].module, gass[a].function_list[b].line, "ASSGLOBALS",
-			 "Global variable has been assigned in multiple functions", gass[a].varname);
+	      A4GL_lint (gass[a].function_list[b].module, gass[a].function_list[b].line, "ASSGLOBALS", "Global variable has been assigned in multiple functions", gass[a].varname);
 	    }
 
 	}
@@ -1774,17 +1702,12 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       if (v->names.names.names_val[0].name[0] != 'g')
 	{
 
-	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Global variable does not begin with 'g'",
-		     v->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Global variable (%s) does not begin with 'g'", v->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Global variable does not begin with 'g'", v->names.names.names_val[0].name);
 	}
 
       if (!local_is_valid_vname (v, 'g'))
 	{
 	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Variable is not in the form sn_xxxx", v->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", v->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
 	}
 
       return;
@@ -1796,16 +1719,11 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       // Module level variable
       if (v->names.names.names_val[0].name[0] != 'm')
 	{
-	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Module variable does not begin with 'm'",
-		     v->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Module variable (%s) does not begin with 'm'", v->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Module variable does not begin with 'm'", v->names.names.names_val[0].name);
 	}
       if (!local_is_valid_vname (v, 'm'))
 	{
 	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Variable is not in the form sn_xxxx", v->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", v->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
 	}
       return;
     }
@@ -1815,16 +1733,11 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       // Module level variable
       if (v->names.names.names_val[0].name[0] != 'l')
 	{
-	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Local variable does not begin with 'l'",
-		     v->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Local variable (%s) does not begin with 'l'", v->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Local variable does not begin with 'l'", v->names.names.names_val[0].name);
 	}
       if (!local_is_valid_vname (v, 'l'))
 	{
 	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Variable is not in the form sn_xxxx", v->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Variable (%s) is not in the form sn_xxxx ", v->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
 	}
       return;
     }
@@ -1869,12 +1782,7 @@ check_module (struct module_definition *d)
       if (has_variable
 	  (&d->imported_global_variables, d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name))
 	{
-	  //char buff[256];
-	  A4GL_lint (0, d->exported_global_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
-		     "Global variable hides an imported Global variable",
-		     d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Global variable (%s) hides an imported Global variable", d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (0, d->exported_global_variables.variables.variables_val[a]->lineno, "CS.VARHIDE", "Global variable hides an imported Global variable", d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
     }
 
@@ -1887,51 +1795,30 @@ check_module (struct module_definition *d)
       if (has_variable
 	  (&d->imported_global_variables, d->module_variables.variables.variables_val[a]->names.names.names_val[0].name))
 	{
-	  //char buff[256];
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
-		     "Module variable hides an imported Global variable",
-		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Module variable (%s) hides an imported Global variable", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE", "Module variable hides an imported Global variable", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (has_variable
 	  (&d->exported_global_variables, d->module_variables.variables.variables_val[a]->names.names.names_val[0].name))
 	{
-	  //char buff[256];
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
-		     "Module variable hides an exported Global variable",
-		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //sprintf(buff, "Coding Standards: Module variable (%s) hides an exported Global variable", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE", "Module variable hides an exported Global variable", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (d->module_variables.variables.variables_val[a]->usage == 0
 	  && d->module_variables.variables.variables_val[a]->assigned == 0)
 	{
 	if (d->module_variables.variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_CONSTANT) continue;
-	  //char buff[256];
 	  yylineno = 1;
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARNOTUSED",
-		     "Module variable is defined but not used",
-		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //sprintf(buff, "Module variable (%s) is defined but not used", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARNOTUSED", "Module variable is defined but not used", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (d->module_variables.variables.variables_val[a]->usage == 0 && d->module_variables.variables.variables_val[a]->assigned)
 	{
-	  //char buff[256];
 	  yylineno = 1;
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARASSNOTUSED",
-		     "Module variable is assigned a value but not used",
-		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //sprintf(buff, "Module variable (%s) is assigned a value but not used", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
-	  //A4GL_lint(buff);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARASSNOTUSED", "Module variable is assigned a value but not used", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
 
-      //printf("%s - %d\n", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name, d->module_variables.variables.variables_val[a]->usage);
     }
 
 
@@ -1980,14 +1867,11 @@ check_module (struct module_definition *d)
 
 	  if (!used)
 	    {
-	      //char buff[256];
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
 	      A4GL_lint (0, all_cmds->cmds.cmds_val[a]->lineno, "PREPARENOTUSED", "Prepared statement is not used",
 			 A4GL_strip_quotes (lint_get_ident_as_string
 					    (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)));
 
-	      //sprintf(buff,"Prepared statement (%s) is not used", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid));
-	      //A4GL_lint(buff);
 	    }
 	}
     }
@@ -2028,13 +1912,10 @@ check_module (struct module_definition *d)
 
 	  if (!used)
 	    {
-	      //char buff[256];
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
 	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, "DECLARENOTUSED", "Cursor is DECLAREd but not OPENed",
 			 A4GL_strip_quotes (lint_get_ident_as_string
 					    (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)));
-	      //sprintf(buff,"Cursor (%s) is DECLAREd but not OPENed", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname));
-	      //A4GL_lint(buff);
 	    }
 	}
     }
@@ -2361,8 +2242,7 @@ find_function_single_rtype (char *funcname)
 
 	  if (fboltons[a].nreturns > 1)
 	    {
-	      A4GL_lint (0, 0, "FUNCRETMANY",
-			 "Function returns more than one value but is being used where it should return only one", funcname);
+	      A4GL_lint (0, 0, "FUNCRETMANY", "Function returns more than one value but is being used where it should return only one", funcname);
 	      return -1;
 	    }
 
@@ -2685,8 +2565,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		{
 		  //char buff[256];
 		  yylineno = e->expr_str_u.expr_function_call->line;
-		  A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCNOTDEF",
-			     "Function was called but is not defined", e->expr_str_u.expr_function_call->fname);
+		  A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCNOTDEF", "Function was called but is not defined", e->expr_str_u.expr_function_call->fname);
 		  log_proto (e, 0);
 		  //sprintf(buff, "Function %s was called but is not defined", e->expr_str_u.expr_function_call->fname);
 		  //A4GL_lint(buff);
@@ -2713,8 +2592,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	      yylineno = e->expr_str_u.expr_function_call->line;
 	      sprintf (buff, "Function %s expected %d passed %d", e->expr_str_u.expr_function_call->fname, fprototypes[b].nparams,
 		       nparam);
-	      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMCNT",
-			 "Function called with wrong number of parameters", buff);
+	      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMCNT", "Function called with wrong number of parameters", buff);
 	      //sprintf(buff, "Function %s expected %d parameters but is being passed %d", e->expr_str_u.expr_function_call->fname, fprototypes[b].nparams, nparam);
 	      //A4GL_lint(buff);
 	    }
@@ -2754,8 +2632,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 			       ecnt + 1);
 		      if (strlen (smbuff))
 			strcat (buff, smbuff);
-		      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMTYPE",
-				 "Incompatible parameter for function", buff);
+		      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMTYPE", "Incompatible parameter for function", buff);
 		      //A4GL_lint(buff);
 		    }
 		}
@@ -2797,8 +2674,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	  if (b < 0)
 	    {
 	      yylineno = r->lineno;
-	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",
-			 r->cmd_data.command_data_u.start_cmd.repname);
+	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined", r->cmd_data.command_data_u.start_cmd.repname);
 	      continue;
 	    }
 	  A4GL_assertion (b < 0, "Couldnt find report");
@@ -2820,8 +2696,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	  if (b < 0)
 	    {
 	      yylineno = r->lineno;
-	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",
-			 r->cmd_data.command_data_u.finish_cmd.repname);
+	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined", r->cmd_data.command_data_u.finish_cmd.repname);
 	      continue;
 	    }
 	  A4GL_assertion (b < 0, "Couldnt find report");
@@ -3396,8 +3271,7 @@ check_program (module_definition * mods, int nmodules)
 	    {
 	    case E_MET_FUNCTION_DEFINITION:
 	      yylineno = m->module_entry_u.function_definition.lineno;
-	      A4GL_lint (m->module_entry_u.function_definition.module, m->module_entry_u.function_definition.lineno,
-			 "FUNCNOTCALLED", "Function is defined but never called", m->module_entry_u.function_definition.funcname);
+	      A4GL_lint (m->module_entry_u.function_definition.module, m->module_entry_u.function_definition.lineno, "FUNCNOTCALLED", "Function is defined but never called", m->module_entry_u.function_definition.funcname);
 	      break;
 	    default:		// dont care
 	      break;
@@ -3626,13 +3500,11 @@ check_program (module_definition * mods, int nmodules)
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
 	      if (A4GL_aubit_strcasecmp (action, "has been made CURRENT") == 0)
 		{
-		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN",
-			     "CURRENT WINDOW for window which is never OPENed", cwindow);
+		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN", "CURRENT WINDOW for window which is never OPENed", cwindow);
 		}
 	      if (A4GL_aubit_strcasecmp (action, "has been CLOSEd") == 0)
 		{
-		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN",
-			     "CLOSE WINDOW for window which is never OPENed", cwindow);
+		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN", "CLOSE WINDOW for window which is never OPENed", cwindow);
 		}
 	    }
 	}
