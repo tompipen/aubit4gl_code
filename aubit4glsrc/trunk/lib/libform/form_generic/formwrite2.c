@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.42 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.43 2008-11-24 17:19:02 mikeaubury Exp $
 #*/
 
 /**
@@ -966,6 +966,7 @@ int a;
       int cnt = 0;
       int a;
       int len;
+	char *override;
       A4GL_debug ("Asc...\n");
       fxx = fopen ((char *)A4GL_get_last_outfile (), "r");
       if (fxx == 0)
@@ -977,8 +978,14 @@ int a;
 
       len = ftell (fxx);
       rewind (fxx);
+        override=acl_getenv_not_set_as_0 ("OVERRIDE_PACKER_OUTPUT");
 
-      sprintf (fname2, "%s.c", fname);
+        if (override==NULL) {
+      		sprintf (fname2, "%s.c", fname);
+	} else {
+      		sprintf (fname2, "%s.c", A4GL_get_last_outfile ());
+	}
+
 
       fyy = fopen (fname2, "w");
 
