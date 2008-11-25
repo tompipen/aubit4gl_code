@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.18 2007-06-20 15:44:42 mikeaubury Exp $
+# $Id: Makefile,v 1.19 2008-11-25 10:19:06 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -54,7 +54,7 @@ ifneq "${INFORMIXDIR}" ""
 	ESQL_INCLPATH	+=-I${INFORMIXDIR}
 endif
 
-LD_LFLAGS_INFX           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
+LD_LFLAGS_INFX           =-L$(INFORMIXDIR)/lib -L$(INFORMIXDIR)/lib/esql \
                     -L$(INFORMIXDIR)/lib/cli -g
 LD_LFLAGS_NOTINFX        = -g
 

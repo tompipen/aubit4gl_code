@@ -53,7 +53,7 @@ int hcreate_local(int n) ;
 
 #include <string.h>
 
-struct npfunction *current_function;
+static struct npfunction *current_function;
 
 
 extern module *this_module_ptr;

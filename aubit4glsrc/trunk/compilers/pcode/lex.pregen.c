@@ -2756,7 +2756,7 @@ static int yy_get_next_buffer (void)
 				case EOB_ACT_END_OF_FILE:
 					{
 					if ( yywrap( ) )
-						return EOF;
+						return 0;
 
 					if ( ! (yy_did_buffer_switch_on_eof) )
 						YY_NEW_FILE;
@@ -2897,19 +2897,9 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef _UNISTD_H /* assume unistd.h has isatty() for us */
-#ifdef __cplusplus
-extern "C" {
-#endif
-#ifdef __THROW /* this is a gnuism */
-extern int isatty (int ) __THROW;
-#else
+#ifndef __cplusplus
 extern int isatty (int );
-#endif
-#ifdef __cplusplus
-}
-#endif
-#endif
+#endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,

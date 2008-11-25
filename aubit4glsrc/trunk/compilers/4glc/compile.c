@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.125 2008-07-06 11:34:23 mikeaubury Exp $
+# $Id: compile.c,v 1.126 2008-11-25 10:19:06 mikeaubury Exp $
 #*/
 
 /**
@@ -73,12 +73,12 @@ extern FILE *yyin;
 extern int glob_only;
 extern long fpos;					/** current file position for direct fseek */
 extern int yylineno;
-
+char arch[200]="";
 
 /* -------- unknown --------- */
 int compiling_system_4gl = 0;
 
-char gcc_exec[128];
+char gcc_exec[12800];
 
 
 #define BIG_STRING 49000
@@ -630,7 +630,12 @@ initArguments (int argc, char *argv[])
 	strcpy (l_libs, acl_getenv ("A4GL_LINK_LIBS"));
 	
 	//what about -g and -O flags?
-	strcpy (gcc_exec, acl_getenv ("A4GL_C_COMP"));
+
+	strcpy(gcc_exec, acl_getenv ("A4GL_C_COMP"));
+	strcat(gcc_exec," ");
+        strcat(gcc_exec,acl_getenv("CFLAGS"));
+
+	A4GL_debug("--> %s\n",gcc_exec);
 
 	/* ============================================== */
 	for (index = optind; index < argc; index++) {

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2007-06-19 07:37:30 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2008-11-25 10:19:06 mikeaubury Exp $
 #
 ROOT		=../../..
 
@@ -67,7 +67,7 @@ endif
 
 all: ${ROOT}/bin/process_report ${ROOT}/bin/quick_check_logrep
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS} ${EXTRASYSTEMLIBS}
+	${LD_EXE} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS} ${EXTRASYSTEMLIBS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

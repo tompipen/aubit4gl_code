@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.35 2008-03-20 18:24:13 mikeaubury Exp $
+# $Id: Makefile,v 1.36 2008-11-25 10:19:06 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS			=${WALL}  -g -I../../incl
+#CFLAGS			=${WALL}  -g -I../../incl
 
 ifeq "${LEX}" "no"
 	LEX_YY_C=lex.pregen.c
@@ -181,31 +181,31 @@ all: ${ALL} ${BINROOT}/runner_fgl_wrapper
 	@echo "Default targets (${ALL}) compiled."
 
 ${BINROOT}/checker: $(OBJ_CHECKER_C) npcode.h
-	$(CC) -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS} -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
 
 #use "npcode.xs.h" instead of npcode.h
 #${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.h
 ${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.xs.h
-	$(CC) -g -DRPCGEN_HEADERS -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS}
+	$(CC) ${CFLAGS} -g -DRPCGEN_HEADERS -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
-	$(CC) -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
+	${CC} ${CFLAGS} -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.xs.h
-	$(CC) -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} 
+	$(CC) ${CFLAGS} -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} 
 #${RPCLINKLIBS}
 
 ${BINROOT}/link_fgl:  $(OBJ_LINKER) npcode.xs.h
-	$(CC) -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
+	$(CC) ${CFLAGS} -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS} --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)  npcode.xs.h
-	$(CC) --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS} --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/runner_fgl_wrapper:
@@ -216,7 +216,7 @@ ${BINROOT}/runner_fgl_wrapper:
 #What is this?
 libDATA_pcode${SO_EXT}: ${LIBROOT}/libDATA_pcode${SO_EXT}
 ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
-	$(CC) -g ${SO_LDFLAGS} $^ -o $@
+	$(CC) ${CFLAGS} -g ${SO_LDFLAGS} $^ -o $@
 
 #/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
 #/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);
@@ -228,7 +228,7 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 #What is this?
 #open.c is missing from CVS:
 ${BINROOT}/open_pcode:  ${OBJ_OPEN}
-	$(CC) $^ -o $@ ${LINKLIBS}
+	$(CC) ${CFLAGS} $^ -o $@ ${LINKLIBS}
 
 ## ==================================================================
 ##                              Sub-targets
@@ -244,16 +244,16 @@ runner_execute_c.o : runner_execute.c
 	$(CC) ${CFLAGS} -g -c $< -DSTDCALLS -o $@
 
 runner_execute_fgl.o : runner_execute.c 
-	$(CC) -DUSE_A4GL_DEBUG=1 ${CFLAGS} -g -c $< -DFGLCALLS -I$(ROOT)/incl -o $@
+	$(CC) ${CFLAGS} -DUSE_A4GL_DEBUG=1 ${CFLAGS} -g -c $< -DFGLCALLS -I$(ROOT)/incl -o $@
 
 npcode_xdr.o: npcode_xdr.c
-	$(CC) ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS} ${RPC_CFLAGS} -c -o $@ $<
 
 common_io_c.o: common_io.c
-	$(CC) -g -DRPCGEN_HEADERS -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS} -g -DRPCGEN_HEADERS -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
 
 common_io_fgl.o: common_io.c
-	$(CC) -g -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS} -g -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
 
 compiler_list.o: compiler_list.c
 	$(CC) ${CFLAGS} ${LIST_CFLAGS} -c -o $@ $<

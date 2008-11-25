@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.11 2008-04-19 14:44:23 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2008-11-25 10:19:06 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -49,7 +49,7 @@ all: ${ALL}
 #NB: why not link with/dlopen libSQLPARSE_xxx.so instead of statically linking
 #with y.tab.o ?
 ${ROOT}/bin/sql_parse: y.tab.o main.o
-	${CC} -I$(ROOT)/incl $^ -o $@ -L$(LIBROOT) -l${AUBITLIBFULL}
+	${CC} ${CFLAGS} -I$(ROOT)/incl $^ -o $@ -L$(LIBROOT) -l${AUBITLIBFULL}
 
 #Shared library that performs SQL parsing and conversion at run-time
 #NB: why is it linked with libaubt4gl, when that lib is what loads it

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.8 2007-06-20 07:04:59 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2008-11-25 10:19:06 mikeaubury Exp $
 #
 
 ROOT=../..
@@ -40,11 +40,10 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 A4GL_LEXTYPE=C
-DEBUG=ALL
 A4GL_SQLTYPE=nosql
 A4GL_UI=CONSOLE
 A4GL_RDYNAMIC=${RDYNAMIC}
-export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI A4GL_RDYNAMIC
+export A4GL_LEXTYPE A4GL_SQLTYPE A4GL_UI A4GL_RDYNAMIC
 
 ## ==================================================================
 ##                    Targets
@@ -53,7 +52,7 @@ export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI A4GL_RDYNAMIC
 ALL=${ROOT}/bin/afinderr${EXE}
 
 ${ALL}: afinderr.4gl
-	${FGLPCEXEC} $^ -o $@
+	${FGLPCEXEC}  $^ -o $@
 
 ## ==================================================================
 ##                    Clean

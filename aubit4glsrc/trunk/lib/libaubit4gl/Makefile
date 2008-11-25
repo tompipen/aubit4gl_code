@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.45 2008-08-26 11:31:09 mikeaubury Exp $
+# $Id: Makefile,v 1.46 2008-11-25 10:19:06 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -164,7 +164,7 @@ ifeq "${TARGET_OS}" "darwin"
 		#SO_LDFLAGS_NOBUNDLE=-r $(SO_LDFLAGS3:%suppress=%)
 		SO_LDFLAGS_NOBUNDLE=-dynamiclib \
 			-install_name ${INST_NAME} \
-			$(SO_LDFLAGS3:%suppress=%)
+			$(SO_LDFLAGS3:%suppress=%) ${CFLAGS}
         #FIXME: -install_name like this will not work after 'make install'!
         #since is in effect hard coded path to the lib file
 		#we will have to link two libraries, one for use in source tree,
@@ -231,6 +231,9 @@ endif
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
+
+test:
+	echo ${CFLAGS}
 
 ci: $(CMODS)
 	ci -l  $^

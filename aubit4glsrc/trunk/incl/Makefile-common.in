@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.229 2008-09-29 08:17:39 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.230 2008-11-25 10:19:06 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -509,16 +509,16 @@ endif
 #endif
 
 #LD Command to use for linking executables:
-LD_EXE              =${CC} ${RDYNAMIC}
+LD_EXE              =${CC} ${RDYNAMIC} ${CFLAGS}
 
 EXTRASYSTEMLIBS =
 ifeq "${TARGET_OS}" "solaris"
 	#LD_EXE         =ld
-	LD_EXE		= ${CC} ${RDYNAMIC}
+	LD_EXE		= ${CC} ${RDYNAMIC} ${CFLAGS}
         EXTRASYSTEMLIBS = -lnsl -lsocket -lz
 endif
 ifeq "${TARGET_OS}" "darwin"
-	LD_EXE          =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
+	LD_EXE          =${CC} ${LDFLAGS} -ldl ${RDYNAMIC} ${CFLAGS}
         EXTRASYSTEMLIBS+=${LIBCURL_LIBS}
 
 endif
@@ -725,7 +725,12 @@ endif
 
 ########################
 #flags to CC when making and linking executables:
+ifeq "${TARGET_OS}" "darwin"
+EXE_CFLAGS  =${RDYNAMIC} ${CFLAGS}
+else
 EXE_CFLAGS  =${RDYNAMIC}
+endif
+
 EXEEXT      =
 LN          =${LN_H}
 
@@ -795,7 +800,7 @@ ifeq "${TARGET_OS}" "darwin"
 		#This is to make ONLY dlopen() loadable library, not a standard
         #shared one, ("bundle") so we will need separate setting for
 		#libaubit4gl.dynlib
-		SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS}
+		SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS} ${CFLAGS}
 
         #Darwin
 		#-Wl,-force_flat_namespace is needed to get all the programs
@@ -1570,6 +1575,6 @@ INSTALL_MISSING_OPTIONAL =@INSTALL_MISSING_OPTIONAL@
 A4GL_LOCALOUTPUT=N
 export A4GL_LOCALOUTPUT
 
-
+export CFLAGS
 #=================================== EOF ================================
 

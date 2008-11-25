@@ -44,7 +44,7 @@ long pc = 0;
 
 void *label_tree = 0;
 
-struct npfunction *current_function;
+static struct npfunction *current_function;
 
 
 
