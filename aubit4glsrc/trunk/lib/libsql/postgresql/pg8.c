@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.59 2008-11-22 13:22:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.60 2008-11-25 23:36:08 mikeaubury Exp $
 #*/
 
 
@@ -1516,8 +1516,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	      if (strchr (s, ' ') == 0)
 		{
 		  char sql[2000];
+		long oid_long;
 		  A4GL_convlower (s);
-		  SPRINTF2 (sql, "SELECT * FROM %s WHERE OID=%ld", s, oid);
+			oid_long=oid;
+		
+		  SPRINTF2 (sql, "SELECT * FROM %s WHERE OID=%ld", s, oid_long);
 		  res2 = PQexec (current_con, sql);
 
 
