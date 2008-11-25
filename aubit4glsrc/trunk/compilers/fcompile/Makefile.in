@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.76 2008-11-06 13:26:16 mikeaubury Exp $
+# $Id: Makefile.in,v 1.77 2008-11-25 08:47:41 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -127,12 +127,12 @@ ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 
 #fshow : clean.fshow ${ROOT}/bin/fshow
 
-${ROOT}/bin/fshow : fshow.4gl ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/libLEX_C${SO_EXT}
-#clean.fshow
-#	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
-#	${FAIL_OK}../../bin/4glc -o$@ $<
-#	echo "export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<" | ${SH}
-	A4GL_LEXTYPE=C; DEBUG=ALL; A4GL_RDYNAMIC=${RDYNAMIC}; A4GL_SQLTYPE=nosql; A4GL_UI=CONSOLE; ${ROOT}/bin/4glc -o$@ $<
+${ROOT}/bin/fshow : fshow.o ${PLUGINDIR}/libUI_CONSOLE${SO_EXT} ${PLUGINDIR}/libLEX_C${SO_EXT}
+	${LD_EXE} -L${ROOT}/lib -o $@ $< ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
+
+
+fshow.c : fshow.4gl
+	A4GL_LEXTYPE=C; A4GL_RDYNAMIC=${RDYNAMIC}; A4GL_SQLTYPE=nosql; A4GL_UI=CONSOLE; ${ROOT}/bin/4glc fshow.4gl
 	
 fshow.gdb:
 	@echo "set args -ofshow fshow.4gl"
@@ -187,10 +187,10 @@ dump_form.o: dump_form.c common.h global.h
 	
 
 ${ROOT}/bin/formgen_4gl : dump_form.o decompile_4gl.o 
-	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+	${CC} ${CFLAGS} -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
 
 ${ROOT}/bin/make_binfiles: make_binfiles.c
-	gcc -o ${ROOT}/bin/make_binfiles make_binfiles.c
+	${CC} ${CFLAGS} -o ${ROOT}/bin/make_binfiles make_binfiles.c
 
 common.h: common.4gl ${ROOT}/bin/make_binfiles
 	${ROOT}/bin/make_binfiles common.4gl file_common > common.h
