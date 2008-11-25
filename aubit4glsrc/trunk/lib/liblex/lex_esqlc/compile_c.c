@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.449 2008-11-12 16:39:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.450 2008-11-25 16:08:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.449 2008-11-12 16:39:36 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.450 2008-11-25 16:08:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4503,7 +4503,7 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 				break;
 
 			case ET_EXPR_NULL:
-				printh("static char a4gl_putval_%d[2]=\" \";\n");
+				printh("static char a4gl_putval_%d[2]=\" \";\n",putvalcnt);
 				printc("A4GL_setnull(0,&a4gl_putval_%d,1);", putvalcnt);
           			printc ("ibind[%d].ptr= &a4gl_putval_%d;", a, putvalcnt);
 				putvalcnt++;
