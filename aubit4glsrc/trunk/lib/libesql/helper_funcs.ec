@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.76 2008-11-22 13:23:04 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.77 2008-11-25 21:45:27 mikeaubury Exp $
 #
 */
 
@@ -667,7 +667,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 
 void
-ESQLAPI_A4GL_copy_vchar(char *infx,char *a4gl,short *p_indicat,int size,char mode,int x,int y)
+ESQLAPI_A4GL_copy_vchar(char *infx,char *a4gl,short *p_indicat,int sizex,char mode,int x,int y)
 {
 short indicat=0;
 char *ptr;
@@ -676,8 +676,7 @@ struct svarchar {
         char ptr[];
 }  *p_char;
 
-A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
-
+	A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
         if (mode=='i') {
                         A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
@@ -1193,7 +1192,7 @@ for (a=0;a<n;a++) {
 		case DTYPE_DTIME: ESQLAPI_A4GL_copy_datetime(native,a4gl,i,size,dir); break;
 		case DTYPE_BYTE: ESQLAPI_A4GL_copy_blob_byte(native,a4gl,i,size,dir); break;
 		case DTYPE_TEXT: ESQLAPI_A4GL_copy_blob_text(native,a4gl,i,size,dir); break;
-		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_vchar(native,a4gl,i,-1,dir,x,y); break;
+		case DTYPE_VCHAR: ESQLAPI_A4GL_copy_vchar(native,a4gl,i,size,dir,x,y); break;
 		case DTYPE_INTERVAL: ESQLAPI_A4GL_copy_interval(native,a4gl,i,size,dir); break;
 		case DTYPE_INT8: ESQLAPI_A4GL_copy_int8(native,a4gl,i,size,dir); break;
 		default: A4GL_assertion(1,"Unhandled datatype"); break;
