@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2008-09-17 12:21:47 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2008-11-25 09:03:28 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -52,13 +52,17 @@ ${ROOT}/${HELP_DESTINATION}/4glpc.hlp: helpfile.msg ${ROOT}/bin/amkmessage
 	${ROOT}/bin/amkmessage $< $@
 
 ${ROOT}/bin/4glpc: 4glpc.o times.o readsettings.o 
-	${LD} $^ -g -o $@ -L${LIBROOT} -l${AUBITLIBFULL} 
+	${LD_EXE}  $^ -g -o $@ -L${LIBROOT} -l${AUBITLIBFULL} 
 
+test:
+	echo ${CFLAGS}
 ## ==================================================================
 ##                              Rules
 ## ==================================================================
 	
-CFLAGS=-g
+#CFLAGS=-g
+
+
 #%.ao: %.c
 	#${CC} ${CFLAGS} -c $*.c -o $@
 	
@@ -66,7 +70,7 @@ CFLAGS=-g
 	export A4GL_OBJ_EXT=.o; A4GL_LEXTYPE=C; ${ROOT}/bin/4glc $<
 
 %.o: %.c
-	$(CC) -c -g -I$(ROOT)/incl $< -L$(ROOT)/lib 
+	$(CC)  ${CFLAGS} -c -g -I$(ROOT)/incl $< -L$(ROOT)/lib 
 
 ## ==================================================================
 ##                              Dependencies
@@ -82,7 +86,7 @@ $(ROOT)/lib/libaubit4gl/libaubit4gl_static.a:
 	${MAKE} -C ${ROOT}/lib/libaubit4gl -f Makefile.static
 	
 4glpc.static: $(ROOT)/lib/libaubit4gl/libaubit4gl_static.a
-	"gcc" 4glpc.o times.o readsettings.o -g -o ../../bin/4glpc.static -L/home/aubit4gl/aubit4glsrc/lib/libaubit4gl -laubit4gl_static -L$(INFORMIXDIR)/lib -L$(INFORMIXDIR)/lib/esql `esql -libs` -lncurses -lform -lpanel -lz -lm -lncurses
+	${CC} ${CFLAGS} 4glpc.o times.o readsettings.o -g -o ../../bin/4glpc.static -L/home/aubit4gl/aubit4glsrc/lib/libaubit4gl -laubit4gl_static -L$(INFORMIXDIR)/lib -L$(INFORMIXDIR)/lib/esql `esql -libs` -lncurses -lform -lpanel -lz -lm -lncurses
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
