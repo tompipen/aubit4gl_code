@@ -1243,13 +1243,22 @@ int ni;
   //int block_id;
   struct struct_open_cursor_cmd open_cursor;
 struct command *last_cmd;
+int has_own_using;
   last_cmd=get_last_cmd();
+
 
 
 	open_cursor.connid=cmd_data->connid;
 	open_cursor.cursorname=cmd_data->cursorname;
 	open_cursor.using_bind=cmd_data->inputvals;
-  if (last_cmd!=NULL) {
+  has_own_using=0;
+  if (cmd_data->inputvals) {
+		if (cmd_data->inputvals->list.list_len) {
+			has_own_using=1;
+		}
+  }
+
+  if (last_cmd!=NULL && !has_own_using) {
         // Special Case !!!!
         //
         // If you using a OPEN immediately before a FOREACH
@@ -1258,7 +1267,13 @@ struct command *last_cmd;
         //
         // So - Lets try to fudge it ....
         if (last_cmd->cmd_data.type==E_CMD_OPEN_CURSOR_CMD) {
-                if (strcmp(open_cursor.cursorname, last_cmd->cmd_data.command_data_u.open_cursor_cmd.cursorname)==0) {
+		                char cname1[2000];
+                char cname2[2000];
+                strcpy(cname1, local_expr_as_string(cmd_data->cursorname));
+                strcpy(cname2, local_expr_as_string(last_cmd->cmd_data.command_data_u.open_cursor_cmd.cursorname));
+
+
+                if (strcmp(cname1,cname2)==0) {
                         printc("/* Using the USING from a prior OPEN command for FOREACH */");
                         open_cursor.using_bind=last_cmd->cmd_data.command_data_u.open_cursor_cmd.using_bind;
                 }
