@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.12 2006-12-03 08:58:36 afalout Exp $
+# $Id: makefile,v 1.13 2008-11-25 09:38:53 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -69,8 +69,7 @@ config.4gl helpfile.msg: descriptions mk_config
 	${SH} mk_config > config.4gl
 
 configurator${EXE}: ${OBJS}
-	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; \
-		export A4GL_UI=CONSOLE; ${FGLPCEXEC} $^ -o $@
+		${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 show:
 	@echo "A4GL_CURR_PACKER=${A4GL_CURR_PACKER}"
 		
