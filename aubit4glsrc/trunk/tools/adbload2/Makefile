@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.9 2007-01-15 19:52:58 mikeaubury Exp $
+# $Id: Makefile,v 1.10 2008-11-25 09:57:05 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -41,7 +41,7 @@ include ${ROOT}/incl/Makefile-common
 ##                    Settings
 ## ==================================================================
 
-CFLAGS			=-g
+#CFLAGS			=-g
 
 ALL				=${BINROOT}/adbload2
 #FGLPC_VERBOSE	=-V5

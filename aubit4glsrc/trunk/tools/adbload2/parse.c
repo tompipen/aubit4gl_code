@@ -1,16 +1,18 @@
 #include <stdio.h>
+#include <string.h>
 #include "a4gl_dbload_int.h"
 
 extern FILE *yyin;
 extern int yylineno;
 extern struct filedef *m_filedef;
+char *A4GL_char_pop(void);
 
 int aclfgl_process(int n) {
 char *a;
 int ok;
 A4GL_assertion (n!=1,"Process called with wrong number of parameters");
 
-a=(char *)A4GL_char_pop();
+a=A4GL_char_pop();
 A4GL_trim(a);
 ok=parse(a);
 free(a);
