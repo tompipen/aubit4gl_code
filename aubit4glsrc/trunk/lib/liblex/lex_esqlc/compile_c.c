@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.450 2008-11-25 16:08:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.451 2008-11-25 19:20:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.450 2008-11-25 16:08:10 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.451 2008-11-25 19:20:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -224,6 +224,7 @@ int chk_ibind_select_internal(struct s_select *s);
 =====================================================================
 */
 
+struct command *last_cmd=NULL;
 static FILE *outfile = 0;
 char mv_repname[256];
 int cs_ticker = 0;
@@ -5422,16 +5423,26 @@ clr_suppress_lines() ;
 
 
 
+void dump_command_list(struct command **clist, int nvals) { // another way to call dump_commands when we only have a list and a count
+struct commands c;
+c.cmds.cmds_val=clist;
+c.cmds.cmds_len=nvals;
+dump_commands(&c);
+}
 
 
 
 void dump_commands(commands *c) {
 int a;
-	if (c==0) return;
+      if (c==0) return;
+      last_cmd=NULL;
+
       for (a = 0; a < c->cmds.cmds_len; a++)
         {
           dump_cmd (c->cmds.cmds_val[a]);
+	  last_cmd=c->cmds.cmds_val[a];
         }
+
 }
 
 static int
@@ -5550,10 +5561,14 @@ expr_str_list *expanded_params;
 
   if (function_definition->func_commands)
     {
+	dump_command_list(function_definition->func_commands->cmds.cmds_val, function_definition->func_commands->cmds.cmds_len);
+
+	/*
       for (a = 0; a < function_definition->func_commands->cmds.cmds_len; a++)
         {
           dump_cmd (function_definition->func_commands->cmds.cmds_val[a]);
         }
+	*/
     }
 
   dump_comments (function_definition->lastlineno);
@@ -7365,6 +7380,8 @@ return buffer;
 
 
 
-
+struct command *get_last_cmd(void ) {
+	return last_cmd;
+}
 
 

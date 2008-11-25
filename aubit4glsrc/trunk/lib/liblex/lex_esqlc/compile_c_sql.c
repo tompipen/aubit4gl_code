@@ -1242,11 +1242,28 @@ int ni;
   //commands *foreach_commands;
   //int block_id;
   struct struct_open_cursor_cmd open_cursor;
+struct command *last_cmd;
+  last_cmd=get_last_cmd();
+
 
 	open_cursor.connid=cmd_data->connid;
 	open_cursor.cursorname=cmd_data->cursorname;
 	open_cursor.using_bind=cmd_data->inputvals;
-
+  if (last_cmd!=NULL) {
+        // Special Case !!!!
+        //
+        // If you using a OPEN immediately before a FOREACH
+        // informix had a 'feature' where it used the previous OPEN for its USING
+        // this was largely used because the FOREACH itself lacked the 'USING'
+        //
+        // So - Lets try to fudge it ....
+        if (last_cmd->cmd_data.type==E_CMD_OPEN_CURSOR_CMD) {
+                if (strcmp(open_cursor.cursorname, last_cmd->cmd_data.command_data_u.open_cursor_cmd.cursorname)==0) {
+                        printc("/* Using the USING from a prior OPEN command for FOREACH */");
+                        open_cursor.using_bind=last_cmd->cmd_data.command_data_u.open_cursor_cmd.using_bind;
+                }
+        }
+  }
   printc ("{");
 tmp_ccnt++;
   printc("int _cursoropen=0;");

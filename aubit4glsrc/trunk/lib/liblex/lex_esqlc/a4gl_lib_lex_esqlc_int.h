@@ -38,3 +38,5 @@ void set_global_curs(void);
 
 void
 print_pop_usage_prompt (expr_str * v);
+struct command *get_last_cmd(void );
+void dump_command_list(struct command **clist, int nvals);
