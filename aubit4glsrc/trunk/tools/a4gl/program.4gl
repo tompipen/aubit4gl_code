@@ -428,7 +428,7 @@ define lv_ok integer
 
 	call get_makefile_for(lv_name) returning lv_makefile
 
-	call run_with_logging("make -f "||lv_makefile clipped||" compile ") returning lv_ok
+	call run_with_logging(fgl_getenv("A4GL_MAKE")||" -f "||lv_makefile clipped||" compile ") returning lv_ok
 
 	#run "make -f "||lv_makefile clipped||" compile " returning lv_ok
 
