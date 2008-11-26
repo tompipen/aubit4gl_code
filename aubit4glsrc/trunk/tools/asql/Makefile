@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.53 2008-11-16 15:47:40 mikeaubury Exp $
+# $Id: Makefile,v 1.54 2008-11-26 08:18:43 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -35,7 +35,6 @@ include 		${ROOT}/incl/Makefile-common
 
 #Include rules for compiling 4GL source code using Aubit compiler
 include 		${ROOT}/incl/a4gl.mk
-
 ## ==================================================================
 ##                              Source files
 ## ==================================================================
@@ -146,8 +145,8 @@ ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
 VERBOSE_FLAG	=--verbose
 #4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
-4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}
-IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG}
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG} 
+IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG} 
 
 ################
 #4gl compiler flags

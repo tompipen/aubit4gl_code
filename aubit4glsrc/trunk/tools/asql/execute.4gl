@@ -28,8 +28,10 @@
 code
 #include <stdio.h>
 #include <stdlib.h>
-
-
+#ifndef MSVC
+#include <unistd.h>
+#endif
+#include "simple.h"
 extern int numberOfColumns;
 int heading_flag=-1;
 char *heading_delim;
@@ -68,7 +70,7 @@ char * acl_getenv_not_set_as_0 (char *s);
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2
 
-
+/*
 struct element {
         int lineno;
         char type;
@@ -77,6 +79,7 @@ struct element {
         char *fname;
 	int with_headings;
 };
+*/
 
 char *get_qry_msg(int qry_type,int n);
 
@@ -621,7 +624,11 @@ char *get_tmp_dir(void ) {
 
 	
 void set_outfname(void) {
-	sprintf(outfname,"%s/out%d.txt",get_tmp_dir(),getpid());
+	char *tdir;
+	long pid;
+	tdir=get_tmp_dir();
+	pid=getpid();
+	sprintf(outfname,"%s/out%ld.txt",tdir,pid);
 	add_temp_file(outfname);
 }
 
