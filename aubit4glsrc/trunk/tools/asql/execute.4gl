@@ -30,6 +30,7 @@ code
 #include <stdlib.h>
 #ifndef MSVC
 #include <unistd.h>
+#include <sys/stat.h>
 #endif
 #include "simple.h"
 extern int numberOfColumns;

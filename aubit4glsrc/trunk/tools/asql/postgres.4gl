@@ -1797,7 +1797,7 @@ int can_do_unload() {
 return 0;
 }
 
-int do_unload(struct element *e) {
+int do_unload(struct element *e, long *raffected) {
 return 0;
 }
 

@@ -11,9 +11,9 @@
 #include "a4gl_libaubit4gl.h"
 
 
-void clr_stmt(void) ;
-void add_stmt(struct element *e);
-char * make_sql_string (char *first, ...);
+//void clr_stmt(void) ;
+//void add_stmt(struct element *e);
+//char * make_sql_string (char *first, ...);
 int my_pretend_yyparse(void) ;
 int asql_yylex(void);
 

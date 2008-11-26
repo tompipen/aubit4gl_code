@@ -584,7 +584,7 @@ asql_explain(struct element *e) {
 
 
 int asql_load_data(struct element *e,int *err_at_col) {
-	A4GL_assertion("Load data not implemented");
+	A4GL_assertion(1,"Load data not implemented");
 }
 
 

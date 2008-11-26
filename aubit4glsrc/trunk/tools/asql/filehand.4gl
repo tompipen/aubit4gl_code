@@ -26,12 +26,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 code
+#ifndef MSVC
+#include <unistd.h>
+#include <sys/stat.h>
+#endif
+#include "simple.h"
 int do_init_filename=1;
 char *get_tmp_dir();
 
-void add_temp_file (char *s);
 
-long get_curr_mvfin (char *lv_type);
 endcode
 
 
@@ -376,7 +379,7 @@ define lv_a integer
 
 code
 A4GL_trim(lv_s);
-lv_a=get_curr_mvfin(lv_s);
+lv_a=(long)get_curr_mvfin(lv_s);
 
 endcode
 
@@ -443,7 +446,7 @@ code
 
 
 
-long get_curr_mvfin (char *lv_type)
+FILE *get_curr_mvfin (char *lv_type)
 {
   return mv_fin[get_type_id (lv_type)];
 }

@@ -1,5 +1,8 @@
 #include <unistd.h>
 
+static int tokencmp (const char *str, size_t len, const char *token, size_t toklen);
+static int blob_locate (Blob * blob, BlobLocn locn);
+static int getaline (FILE * fp, char *buffer, size_t buflen);
 /*
 
 99.9% of this code is taken from the excellent "sqlcmd" tool by Jonathon Leffler...
@@ -232,7 +235,7 @@ mem_char (Memory * m)
 int
 mem_pop (Memory * m)
 {
-  A4GL_assertion (m->mem_next <= m->mem_base);
+  A4GL_assertion (m->mem_next <= m->mem_base,"Bad pop");
   return *--m->mem_next;
 }
 
@@ -399,9 +402,7 @@ jtypmsize (int type, int len)
       break;
 
     default:
-      A4GL_assertion (1,
-		      "jtypsize: unknown type number %d (assume zero size)\n",
-		      type);
+      A4GL_assertion (1, "jtypsize: unknown type number (assume zero size)\n");
       size = 0;
       break;
     }
@@ -545,8 +546,7 @@ jtypalign (int offset, int type)
 
     default:
       A4GL_assertion (1,
-		      "jtypalign: unknown type number %d (assume 'double' alignment)\n",
-		      type);
+		      "jtypalign: unknown type number (assume 'double' alignment)\n");
       align = ((char *) &d.d2) - &d.dc;
       break;
     }
@@ -1157,8 +1157,7 @@ enum
     (JLSS_CSTYLE_COMMENT | JLSS_ISOSQL_COMMENT | JLSS_INFORMIX_COMMENT)
 };
 
-int
-tokencmp (const char *str, size_t len, const char *token, size_t toklen)
+static int tokencmp (const char *str, size_t len, const char *token, size_t toklen)
 {
   char cs;
   char ct;
@@ -1305,8 +1304,7 @@ sql_describe (Sqlda * desc)
 ** Initialise a Blob data structure ready for use.
 ** Returns: 0 => OK, non-zero => fail
 */
-int
-blob_locate (Blob * blob, BlobLocn locn)
+static int blob_locate (Blob * blob, BlobLocn locn)
 {
   int rc;
 
@@ -2176,8 +2174,7 @@ collection_name (const char *token, size_t len)
 
 
 
-int
-getaline (FILE * fp, char *buffer, size_t buflen)
+int getaline (FILE * fp, char *buffer, size_t buflen)
 {
   int c = 0;			/* Unnecessary, but keeps GCC quiet */
   size_t i;

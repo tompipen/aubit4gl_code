@@ -1,5 +1,7 @@
 %option yylineno
 %{
+void A4GL_assertion(int n,char *v);
+
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */
 	#define bool_t int
@@ -24,7 +26,7 @@ FNM			({DNM}\/)+{DNM}
 #include <string.h>                   /* strcpy() */
 void A4GL_debug(char *s);
 
-void count(void);
+//void count(void);
 %}
 
 %%

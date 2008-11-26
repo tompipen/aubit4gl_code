@@ -1,6 +1,9 @@
 define mv_lastform char(255)
 define mv_editor char(255)
 define mv_db char(255)
+code
+#include <unistd.h>
+endcode
 
 define mv_lastused char(255)
 
@@ -112,7 +115,7 @@ endcode
             call set_pick(a+1,lv_fname);
 code
         }
-        A4GL_free_directory(dir);
+        A4GL_free_directory();
    }
 }
 endcode
@@ -169,7 +172,7 @@ endcode
             call set_pick(a+1,lv_fname);
 code
         }
-        A4GL_free_directory(dir);
+        A4GL_free_directory();
     }
 }
 endcode
@@ -251,7 +254,7 @@ endcode
             call set_pick(a+1,lv_fname);
 code
         }
-        A4GL_free_directory(dir);
+        A4GL_free_directory();
     }
 }
 endcode
@@ -394,7 +397,7 @@ endcode
             call set_pick(a+1,lv_fname);
 code
         }
-    A4GL_free_directory(dir);
+    A4GL_free_directory();
     }
 }
 endcode

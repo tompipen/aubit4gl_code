@@ -27,6 +27,7 @@
 # +----------------------------------------------------------------------+
 code
 #include "simple.h"
+#include <unistd.h>
 char **A4GL_read_directory(char *dir,char *spec);
 
 FILE *get_curr_mvfin(char *s);

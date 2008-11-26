@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.54 2008-11-26 08:18:43 mikeaubury Exp $
+# $Id: Makefile,v 1.55 2008-11-26 10:13:31 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -145,8 +145,8 @@ ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
 VERBOSE_FLAG	=--verbose
 #4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
-4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG} 
-IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG} 
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}  -Wall
+IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG}  -Wall 
 
 ################
 #4gl compiler flags
@@ -158,7 +158,7 @@ ifeq "${VERBOSE}" "1"
 endif
 ################
 #Full make line to use when compiling 4gl objects
-COMP4GL			=${4GLPC} -o $@ ${4GLPCFLAGS} -c $^ 
+COMP4GL			=${4GLPC} -o $@ ${4GLPCFLAGS} -c $< 
 #COMP4GL=${4GLPC} -g -c $(subst pg_,,$(subst ifx_,,$*)).4gl -o $@
 
 
@@ -263,22 +263,22 @@ lex.asql_yy.c: parse.l
 
 ################
 #Rule to make objects from 4GL file - Informix version
-ifx_%${A4GL_OBJ_EXT}: %.4gl
-	${COMP4GL} --neverconvert -t EC -td INFORMIX -DSTATIC_LIBAUBIT4GL
+ifx_%${A4GL_OBJ_EXT}: %.4gl simple.h
+	${COMP4GL} --neverconvert -t EC -td INFORMIX -DSTATIC_LIBAUBIT4GL 
 
-gen_%${A4GL_OBJ_EXT}: %.4gl
-	${4GLPC} -t C -o $@ ${4GLPCFLAGS} -c $^ 
+gen_%${A4GL_OBJ_EXT}: %.4gl simple.h
+	${4GLPC} -t C -o $@ ${4GLPCFLAGS} -c $< 
 
-ing_%${A4GL_OBJ_EXT}: %.4gl
-	${4GLPC} -t EC -td INGRES -o $@ ${4GLPCFLAGS} -c $^ 
+ing_%${A4GL_OBJ_EXT}: %.4gl simple.h
+	${4GLPC} -t EC -td INGRES -o $@ ${4GLPCFLAGS} -c $< 
 
-infoflex_%${A4GL_OBJ_EXT}: %.4gl
-	${4GLPC} -t EC -td INFOFLEX -o $@ ${4GLPCFLAGS} -c $^ 
+infoflex_%${A4GL_OBJ_EXT}: %.4gl simple.h
+	${4GLPC} -t EC -td INFOFLEX -o $@ ${4GLPCFLAGS} -c $< 
 
 ################
 #Rule to make objects from 4GL file - Postgres version
-pg_%.ao: %.4gl
-	${4GLPC} -t EC -td POSTGRES -o $@ ${4GLPCFLAGS} -c $^ 
+pg_%.ao: %.4gl simple.h
+	${4GLPC} -t EC -td POSTGRES -o $@ ${4GLPCFLAGS} -c $< 
 
 ## ==================================================================
 ##                    Install/de-install

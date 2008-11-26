@@ -30,7 +30,8 @@ code
 
 
 #include <stdio.h>
-
+#include <unistd.h>
+#include "simple.h"
 
 extern FILE *file_out_result;
 extern int outlines;
