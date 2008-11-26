@@ -695,7 +695,7 @@ end if
 	end if
 	if lv_arg matches "-Wall" then
 		let mv_compile_c_opts=mv_compile_c_opts clipped," ",lv_arg
-		let mv_compile_pec_opts=mv_compile_c_opts clipped," ",lv_arg
+		let mv_compile_pec_opts=mv_compile_pec_opts clipped," ",lv_arg
 		continue for
 	end if
 
