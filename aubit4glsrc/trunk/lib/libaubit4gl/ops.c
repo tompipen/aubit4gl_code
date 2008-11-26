@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.142 2008-11-05 14:44:49 mikeaubury Exp $
+# $Id: ops.c,v 1.143 2008-11-26 16:48:17 mikeaubury Exp $
 #
 */
 
@@ -6589,6 +6589,26 @@ dm2=ptr;
 					strcpy(p,ptr); free(ptr);
 					A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>");
 				return p;
+			case 19: // Convert to Year to second
+				   A4GL_push_int(0x16); aclfgli_extend();
+					ptr=A4GL_char_pop();
+					strcpy(p,ptr); free(ptr);
+					A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>");
+				return p;
+			case 21: // Convert to Year to fraction(1)
+				   	A4GL_push_int(0x17); aclfgli_extend();
+					ptr=A4GL_char_pop();
+					strcpy(p,ptr); free(ptr);
+					A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>");
+				return p;
+			case 22: // Convert to Year to fraction(2)
+				   	A4GL_push_int(0x18); aclfgli_extend(); ptr=A4GL_char_pop(); strcpy(p,ptr); free(ptr); A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>"); return p;
+			case 23: // Convert to Year to fraction(3)
+				   	A4GL_push_int(0x19); aclfgli_extend(); ptr=A4GL_char_pop(); strcpy(p,ptr); free(ptr); A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>"); return p;
+			case 24: // Convert to Year to fraction(4)
+				   	A4GL_push_int(0x1a); aclfgli_extend(); ptr=A4GL_char_pop(); strcpy(p,ptr); free(ptr); A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>"); return p;
+			case 25: // Convert to Year to fraction(5)
+				   	A4GL_push_int(0x1b); aclfgli_extend(); ptr=A4GL_char_pop(); strcpy(p,ptr); free(ptr); A4GL_push_char("<SOMETHING TO DROP AS WE'VE ALREADY POPPED IT>"); return p;
 		}
         }
 	}
