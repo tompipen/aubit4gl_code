@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.47 2007-11-09 16:14:18 mikeaubury Exp $
+# $Id: Makefile,v 1.48 2008-11-26 10:01:08 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -150,7 +150,7 @@ ifneq "${COMSPEC}" ""
 		$^ ${IFX_WIN_LIBS} ${LIBAUBIT4GL} -o $@
 else
 #Unix:
-	 ${CC}  ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}   -L${INFORMIXDIR}/lib -L${INFORMIXDIR}/lib/esql `esql -libs`
+	 ${CC}  ${SO_LDFLAGS} ${CFLAGS} ${STATIC} -g ${SHARED} $^ -o $@ ${LIBAUBIT4GL}   -L${INFORMIXDIR}/lib -L${INFORMIXDIR}/lib/esql `esql -libs`
 #Solaris:
 #	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
 #		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
@@ -160,7 +160,7 @@ endif
 ###################
 libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
 ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
-	${CC} ${STATIC} -g ${SHARED} $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL} ${PGEXTRA}
+	${CC} ${CFLAGS} ${STATIC} -g ${SHARED} $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL} ${PGEXTRA}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
@@ -205,7 +205,7 @@ ifneq "${COMSPEC}" ""
 	-@rm $(basename $<).c $(basename $<).c_*
 else
 #UNIX:
-	export INFORMIXC=${INFORMIXC};  ${IFMX_ESQLC} ${PIC}  -nln -G -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
+	export INFORMIXC=${INFORMIXC};  ${IFMX_ESQLC} ${PIC} ${CFLAGS}  -nln -G -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
 		-I"${INFORMIXDIR}/incl" 
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
@@ -217,7 +217,7 @@ endif
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
 
 ###################
 #SAP ESQL/C compiler
