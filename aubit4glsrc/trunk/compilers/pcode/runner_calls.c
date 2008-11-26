@@ -145,8 +145,8 @@ struct call_funcs
 };
 
 
-#include "calls.h"
 
+#include "calls.h"
 
 long
 handle_44 (void *end_func, struct param *p)

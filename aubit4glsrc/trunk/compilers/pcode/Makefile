@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.36 2008-11-25 10:19:06 mikeaubury Exp $
+# $Id: Makefile,v 1.37 2008-11-26 11:49:13 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -132,6 +132,7 @@ endif
 #we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
 #give us bunch of warnings about unused varibles, that we cannot fix:
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
+#CFLAGS_NOWARN	=$(subst ${CWARN},,${CFLAGS})
 
 ifeq "${HAVE_RPCLIB}" "1"
 	ifeq "${USE_RPCGEN}" "0"
@@ -180,32 +181,35 @@ endif
 all: ${ALL} ${BINROOT}/runner_fgl_wrapper
 	@echo "Default targets (${ALL}) compiled."
 
+%.o:%.c
+	${CC} ${CFLAGS_NOWARN} -c $<
+
 ${BINROOT}/checker: $(OBJ_CHECKER_C) npcode.h
-	$(CC) ${CFLAGS} -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS_NOWARN} -g -o $@ $(OBJ_CHECKER_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
 
 #use "npcode.xs.h" instead of npcode.h
 #${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.h
 ${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.xs.h
-	$(CC) ${CFLAGS} -g -DRPCGEN_HEADERS -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS}
+	$(CC) ${CFLAGS_NOWARN} -g -DRPCGEN_HEADERS -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
-	${CC} ${CFLAGS} -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
+	${CC} ${CFLAGS_NOWARN} -g -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.xs.h
-	$(CC) ${CFLAGS} -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} 
+	$(CC) ${CFLAGS_NOWARN} -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} 
 #${RPCLINKLIBS}
 
 ${BINROOT}/link_fgl:  $(OBJ_LINKER) npcode.xs.h
-	$(CC) ${CFLAGS} -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
+	$(CC) ${CFLAGS_NOWARN} -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) ${CFLAGS} --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS_NOWARN} --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)  npcode.xs.h
-	$(CC) ${CFLAGS} --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS_NOWARN} --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/runner_fgl_wrapper:
@@ -216,7 +220,7 @@ ${BINROOT}/runner_fgl_wrapper:
 #What is this?
 libDATA_pcode${SO_EXT}: ${LIBROOT}/libDATA_pcode${SO_EXT}
 ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
-	$(CC) ${CFLAGS} -g ${SO_LDFLAGS} $^ -o $@
+	$(CC) ${CFLAGS_NOWARN} -g ${SO_LDFLAGS} $^ -o $@
 
 #/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
 #/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);
@@ -228,35 +232,35 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 #What is this?
 #open.c is missing from CVS:
 ${BINROOT}/open_pcode:  ${OBJ_OPEN}
-	$(CC) ${CFLAGS} $^ -o $@ ${LINKLIBS}
+	$(CC) ${CFLAGS_NOWARN} $^ -o $@ ${LINKLIBS}
 
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
 
 runner_calls_c.o : runner_calls.c calls.h std_calls.h 
-	$(CC) ${CFLAGS} -g -c $< -DSTDCALLS -o $@
+	$(CC) ${CFLAGS_NOWARN} -g -c $< -DSTDCALLS -o $@
 
 runner_calls_fgl.o : runner_calls.c calls.h fgl_calls.h
-	$(CC) ${CFLAGS} -DUSE_A4GL_DEBUG=1 -g -c $< -DFGLCALLS -I$(ROOT)/incl -o $@
+	$(CC) ${CFLAGS_NOWARN} -DUSE_A4GL_DEBUG=1 -g -c $< -DFGLCALLS -I$(ROOT)/incl -o $@
 
 runner_execute_c.o : runner_execute.c 
-	$(CC) ${CFLAGS} -g -c $< -DSTDCALLS -o $@
+	$(CC) ${CFLAGS_NOWARN} -g -c $< -DSTDCALLS -o $@
 
 runner_execute_fgl.o : runner_execute.c 
-	$(CC) ${CFLAGS} -DUSE_A4GL_DEBUG=1 ${CFLAGS} -g -c $< -DFGLCALLS -I$(ROOT)/incl -o $@
+	$(CC) ${CFLAGS_NOWARN} -DUSE_A4GL_DEBUG=1 -g -c $< -DFGLCALLS -I$(ROOT)/incl -o $@
 
 npcode_xdr.o: npcode_xdr.c
-	$(CC) ${CFLAGS} ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS_NOWARN} ${RPC_CFLAGS} -c -o $@ $<
 
 common_io_c.o: common_io.c
-	$(CC) ${CFLAGS} -g -DRPCGEN_HEADERS -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS_NOWARN} -g -DRPCGEN_HEADERS -DNO_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
 
 common_io_fgl.o: common_io.c
-	$(CC) ${CFLAGS} -g -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS_NOWARN} -g -DHAS_AUBITLIB ${RPC_CFLAGS} -c -o $@ $<
 
 compiler_list.o: compiler_list.c
-	$(CC) ${CFLAGS} ${LIST_CFLAGS} -c -o $@ $<
+	$(CC) ${CFLAGS_NOWARN} ${LIST_CFLAGS} -c -o $@ $<
 
 ifeq "${HAVE_RPCLIB}" "1"
 npcode_xdr.c npcode.h : npcode.x
@@ -284,7 +288,7 @@ else
 	@echo "AutoConf did not detect valid version of Bison on your system"
 	@exit 1
 endif
-	$(CC) ${CFLAGS} -g -c y.tab.c
+	$(CC) ${CFLAGS_NOWARN} -g -c y.tab.c
 
 lex.yy.c: simple.lex
 #	flex -i $^
@@ -355,5 +359,3 @@ clean:
 #set_var.c 
 
 # =============================== EOF ===============================
-
-
