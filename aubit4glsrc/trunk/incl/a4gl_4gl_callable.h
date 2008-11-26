@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.39 2008-11-11 17:36:36 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.40 2008-11-26 10:14:04 mikeaubury Exp $
 */
 
 /**
@@ -173,6 +173,17 @@ char *A4GL_get_esql_connection(void);
 void *A4GL_get_curr_report(void);
 void A4GL_set_curr_report(void *);
 void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
+long A4GL_bounds_check(long a,long maxbound);
+void A4GL_free_associated_mem(void *orig);
+void A4GL_exitwith (char *s);
+void A4GL_free_directory(void);
+long A4GL_get_length (char *s);
+void A4GL_trim_nl (char *p);
+char **A4GL_read_directory(char *dir,char *spec);
+int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd);
+char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
+void A4GL_assertion (int a, char *s);
+char * acl_getenv_not_set_as_0 (char *s);
 #ifndef LOCATE_VAR_DEFINED
 #define LOCATE_VAR_DEFINED
 void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
