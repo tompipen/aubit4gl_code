@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.61 2008-11-26 13:44:20 mikeaubury Exp $
+# $Id: pg8.c,v 1.62 2008-11-26 13:51:15 mikeaubury Exp $
 #*/
 
 
@@ -2841,13 +2841,21 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
       int buff2cnt = 0;
       int next_param = 0;
       int param;
+	int instr=0;
       for (a = 0; a < strlen (stmt); a++)
 	{
 	  int has_match;
 	  has_match = 0;
 
+	  if (stmt[a]=='\'' ) {
+		if (instr) {
+			instr=0;
+		} else {
+			instr=1;
+		}
+	  }
 
-	  if (stmt[a] == '$' && type == 1)
+	  if (stmt[a] == '$' && type == 1 && ! instr)
 	    {
 	      int c;
 	      char x[10];
@@ -2868,7 +2876,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 	      buff2[buff2cnt] = 0;
 	    }
 
-	  if (stmt[a] == '?' && type == 0)
+	  if (stmt[a] == '?' && type == 0 && ! instr)
 	    {
 	      param = next_param++;
 	      has_match = 1;
