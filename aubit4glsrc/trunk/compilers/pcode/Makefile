@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.37 2008-11-26 11:49:13 mikeaubury Exp $
+# $Id: Makefile,v 1.38 2008-11-26 12:21:35 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -132,7 +132,6 @@ endif
 #we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
 #give us bunch of warnings about unused varibles, that we cannot fix:
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
-#CFLAGS_NOWARN	=$(subst ${CWARN},,${CFLAGS})
 
 ifeq "${HAVE_RPCLIB}" "1"
 	ifeq "${USE_RPCGEN}" "0"
@@ -173,6 +172,7 @@ endif
 #The idea being that I can get people not involved in 4GL to help with 
 #development of c2pcode without needing the aubit4gl headers and libraries
 
+CFLAGS_NOWARN	=$(subst ${CWARN},,${CFLAGS})
 
 ## ==================================================================
 ##                              Targets
