@@ -398,7 +398,7 @@ indexrec[7]);
 	else if( msgnotfound )
 	{
 		charcount = 0;
-		snprintf(errmsg, HELPMAXLEN-1, "Error: Message %d not found in '%s'", n,filename);
+		snprintf(errmsg, HELPMAXLEN-1, "Error: Message %ld not found in '%s'", n,filename);
 		myseterr(errmsg);
 	}
 //	fprintf(stderr, "At end of aclfgl_openiem, msgline = \n %s;", msgline);

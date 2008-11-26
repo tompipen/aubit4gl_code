@@ -8,6 +8,8 @@ unset A4GL_LEXDIALECT
 export A4GL_DUMP_CORE=Y
 unset DEBUG
 
+export FGLLOGTXT="Aubit Computing Ltd Binary Build"
+
 rm /usr/lib/libaubit4gl.so
 
 if [ "$1" != "" ] 
