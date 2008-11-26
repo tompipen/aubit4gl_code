@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.60 2008-11-25 23:36:08 mikeaubury Exp $
+# $Id: pg8.c,v 1.61 2008-11-26 13:44:20 mikeaubury Exp $
 #*/
 
 
@@ -2826,11 +2826,11 @@ pgescape_str (char *s,int sl)
 
 
 char *
-replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
+replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 {
   static char buff2[64000];
   long bloblen;
-	char *blobptr;
+  char *blobptr;
   char buff3[200];
 //int a;
   //int nret;
@@ -2839,15 +2839,15 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
     {
       int a;
       int buff2cnt = 0;
-	int next_param=0;
+      int next_param = 0;
       int param;
       for (a = 0; a < strlen (stmt); a++)
 	{
-	int has_match;
-	has_match=0;
+	  int has_match;
+	  has_match = 0;
 
 
-	  if (stmt[a] == '$' && type==1)
+	  if (stmt[a] == '$' && type == 1)
 	    {
 	      int c;
 	      char x[10];
@@ -2863,37 +2863,40 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		}
 	      x[c] = 0;
 	      param = atoi (x) - 1;
-	      has_match=1;
+	      has_match = 1;
 	      a += c;
 	      buff2[buff2cnt] = 0;
-	}
+	    }
 
-	if  (stmt[a] == '?' && type==0) {
-		param=next_param++;
-		has_match=1;
-	      a ++;
+	  if (stmt[a] == '?' && type == 0)
+	    {
+	      param = next_param++;
+	      has_match = 1;
+	      a++;
 	      buff2[buff2cnt] = 0;
-		
-	}
 
-	if (has_match) {
+	    }
+
+	  if (has_match)
+	    {
 	      char *str;
+		A4GL_assertion(param<0 || param>ni,"param out of range");
 
 
-	      if (A4GL_isnull
-		  (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
+	      if (A4GL_isnull (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
 		{
-		
-		  switch (ibind[param].dtype) {
 
-	
-			case DTYPE_DATE:
-		  		strcat (buff2, "(NULL::date)");
-				break;
-			default:
-		  		strcat (buff2, "NULL");
-				break;
-		}
+		  switch (ibind[param].dtype)
+		    {
+
+
+		    case DTYPE_DATE:
+		      strcat (buff2, "(NULL::date)");
+		      break;
+		    default:
+		      strcat (buff2, "NULL");
+		      break;
+		    }
 		}
 	      else
 		{
@@ -2907,7 +2910,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      str = A4GL_char_pop ();
 		      strcat (buff2, "'");
 		      A4GL_trim (str);
-		      strcat (buff2, pgescape_str (str,strlen(str)));
+		      strcat (buff2, pgescape_str (str, strlen (str)));
 		      strcat (buff2, "'");
 		      free (str);
 		      break;
@@ -2916,17 +2919,17 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
 		      str = A4GL_char_pop ();
 		      strcat (buff2, "'");
-		      strcat (buff2, pgescape_str (str,strlen(str)));
+		      strcat (buff2, pgescape_str (str, strlen (str)));
 		      strcat (buff2, "'");
 		      free (str);
 		      break;
 
 		    case DTYPE_MONEY:
 		    case DTYPE_DECIMAL:
-		      A4GL_push_param (ibind[param].ptr, DTYPE_DECIMAL+ ENCODE_SIZE (ibind[param].size));
+		      A4GL_push_param (ibind[param].ptr, DTYPE_DECIMAL + ENCODE_SIZE (ibind[param].size));
 		      str = A4GL_char_pop ();
 		      A4GL_lrtrim (str);
-		      strcat (buff2, pgescape_str (str,strlen(str)));
+		      strcat (buff2, pgescape_str (str, strlen (str)));
 		      free (str);
 		      break;
 
@@ -2936,43 +2939,38 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind,int type)
 		      break;
 
 		    case DTYPE_FLOAT:
-		      SPRINTF1 (buff3, "%16.8lf",
-			       *(double *) ibind[param].ptr);
+		      SPRINTF1 (buff3, "%16.8lf", *(double *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 		      break;
 
 		    case DTYPE_DATE:
 		      strcat (buff2, "to_date('");
-		      strcat (buff2,
-			      A4GL_using_date (*((long *) ibind[param].ptr),
-					       "yyyy-mm-dd"));
+		      strcat (buff2, A4GL_using_date (*((long *) ibind[param].ptr), "yyyy-mm-dd"));
 		      strcat (buff2, "','YYYY-MM-DD')");
 		      break;
 
 		    case DTYPE_BYTE:
-			A4GL_get_blob_data(ibind[param].ptr, &blobptr,&bloblen);
-		      	strcat (buff2, "'");
-		      	strcat (buff2, pgescape_str (blobptr,bloblen));
-		      	strcat (buff2, "'");
-			free(blobptr);
-			break;
+		      A4GL_get_blob_data (ibind[param].ptr, &blobptr, &bloblen);
+		      strcat (buff2, "'");
+		      strcat (buff2, pgescape_str (blobptr, bloblen));
+		      strcat (buff2, "'");
+		      free (blobptr);
+		      break;
 
 		    case DTYPE_TEXT:
-			A4GL_get_blob_data(ibind[param].ptr, &blobptr,&bloblen);
-		      	strcat (buff2, "'");
-		      	strcat (buff2, pgescape_str (blobptr,bloblen));
-		      	strcat (buff2, "'");
-			free(blobptr);
-			break;
-			
+		      A4GL_get_blob_data (ibind[param].ptr, &blobptr, &bloblen);
+		      strcat (buff2, "'");
+		      strcat (buff2, pgescape_str (blobptr, bloblen));
+		      strcat (buff2, "'");
+		      free (blobptr);
+		      break;
+
 
 		    default:
-		      A4GL_push_param (ibind[param].ptr,
-				       ibind[param].dtype +
-				       ENCODE_SIZE (ibind[param].size));
+		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype + ENCODE_SIZE (ibind[param].size));
 		      str = A4GL_char_pop ();
 		      A4GL_trim (str);
-		      strcat (buff2, pgescape_str (str,strlen(str)));
+		      strcat (buff2, pgescape_str (str, strlen (str)));
 		      free (str);
 		      break;
 
