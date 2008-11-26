@@ -462,7 +462,7 @@ endcode
             call set_pick(a+1,lv_mname);
 code
         }
-    A4GL_free_directory(dir);
+    A4GL_free_directory();
     }
 }
 endcode

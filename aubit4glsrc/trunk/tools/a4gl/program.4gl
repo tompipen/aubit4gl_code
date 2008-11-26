@@ -272,7 +272,7 @@ endcode
 	    end if
 code
         }
-        A4GL_free_directory(dir);
+        A4GL_free_directory();
     }
 }
 endcode
