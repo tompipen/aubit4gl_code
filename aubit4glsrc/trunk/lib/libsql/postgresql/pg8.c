@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.64 2008-11-27 19:12:49 mikeaubury Exp $
+# $Id: pg8.c,v 1.65 2008-11-27 19:43:19 mikeaubury Exp $
 #*/
 
 
@@ -162,6 +162,7 @@ struct s_pgextra
   int reallyprepared;
   PGresult *last_result;
 };
+
 
 
 /**
@@ -346,6 +347,7 @@ char *ptr;
       // work it out by trying it..
       res2 = PQexec (current_con, "BEGIN WORK");
       PQclear (res2);
+
       res = PQexec (current_con, "SAVEPOINT pr1");
       res2 = PQexec (current_con, "COMMIT WORK");
       PQclear (res2);
@@ -378,12 +380,12 @@ char *ptr;
 			int maj,min,rev;
 			int a;
 			//int b=0;
-  			sprintf(buff2,"%s",ptr+1);
+  			SPRINTF1(buff2,"%s",ptr+1);
 			ptr=strchr(buff2,' ');
 			if (ptr) {*ptr=0; }
 			a=sscanf(buff2,"%d.%d.%d",&maj,&min,&rev);
 			if (a==3) {
-				sprintf(versionBuff,"%d%02d%02d",maj,min,rev);
+				SPRINTF3(versionBuff,"%d%02d%02d",maj,min,rev);
   				A4GL_setenv("A4GL_PGVERSION",versionBuff,1);
 			}
 		}
@@ -418,7 +420,6 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   PGconn *con=0;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-//printf("Closed connection\n"); fflush(stdout);
   con = (PGconn *) A4GL_find_pointer (sessname, SESSCODE);
 
   if (con)
@@ -613,7 +614,6 @@ if (strchr(s,',') && !strchr(s,'.')) {
                 if (s[a]==',') buff[a]='.';
                 if (s[a]=='.') buff[a]=',';
         }
-        printf("->%s\n",buff);
         strcpy(s,buff);
         return;
 }
@@ -637,7 +637,6 @@ FILE *errd;
   *d = -1;
   strcpy (buff, type);
 
-//printf("%s %s\n",buff, defaultval);
   if (strchr (buff, '('))
     {
       l1 = strchr (buff, '(');
@@ -792,10 +791,9 @@ FILE *errd;
 
 
       A4GL_debug ("Ooops - Unknown datatype : %s", type);
-      //printf ("Ooops - Unknown datatype : %s", type);
       errd=fopen("/tmp/errdtypes.out","a");
       if (errd) {
-		fprintf(errd,"%s\n", type);
+		FPRINTF(errd,"%s\n", type);
 		fclose(errd);
       }
      chmod("/tmp/errdtypes.out",0666);
@@ -2123,7 +2121,7 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
       break;
 #endif
     default:
-	fprintf(stderr,"WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
+	FPRINTF(stderr,"WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
 	// Char(20) should cover most things..
       *a4gl_dtype = DTYPE_VCHAR;
       *a4gl_len = 20;
@@ -2304,6 +2302,51 @@ array.c:451: warning: passing arg 4 of `fill_array_columns' from incompatible po
   return (0);
 }
 
+
+// This function is used to execute some
+// internal sql statements when we dont really care if they succeed for fail
+//
+static void
+execute_dont_care (PGconn * conn, char *sql)
+{
+  int setSavepoint = 0;
+  PGresult *res;
+  int ok;
+
+  if (inTransaction () && CanUseSavepoints)
+    {
+      setSavepoint++;
+	  Execute ("SAVEPOINT predcExec", 1);
+    }
+
+  res = PQexec (conn, sql);
+  ok = 0;
+  if (res)
+    {
+      switch (PQresultStatus (res))
+	{
+	case PGRES_COMMAND_OK:
+	case PGRES_TUPLES_OK:
+	case PGRES_EMPTY_QUERY:
+	  ok = 1;
+	break;
+	default: ok=0; break;
+	}
+      PQclear (res);
+    }
+
+  if (setSavepoint)
+    {
+	if (ok) {
+	  Execute ("RELEASE SAVEPOINT predcExec", 1);
+	} else {
+	  	Execute ("ROLLBACK TO SAVEPOINT predcExec", 1);
+	      	Execute ("RELEASE SAVEPOINT predcExec", 1);
+	}
+    }
+}
+
+
 void *
 A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 				   char *cursname)
@@ -2343,15 +2386,15 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       		char buff[256];
       		A4GL_debug ("DEALLOCATE %s", cursname);
       		SPRINTF1 (buff, "DEALLOCATE %s", cursname);
-      		PQexec (current_con, buff);
+      		execute_dont_care (current_con, buff);
       		cid->mode -= 0x1000;
     		}
-  	if (cid->mode & 0x7000)
+  	if (cid->mode & 0x4000)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", cursname);
-      PQexec (current_con, buff);
-      cid->mode -= 0x7000;
+      execute_dont_care (current_con, buff);
+      cid->mode -= 0x4000;
 	}
 	free(cid);
   }
@@ -2528,24 +2571,22 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s1, int ni, void *vibind)
       return 1;
     }
 
-  if (cid->mode & 0x7000)
+  if (cid->mode & 0x4000)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", s);
-      PQexec (current_con, buff);
-      cid->mode -= 0x7000;
+      execute_dont_care (current_con, buff);
+      cid->mode -= 0x4000;
     }
 
 
   if (cid->mode & 0x1000)
     {
       char buff[256];
-
       SPRINTF1 (buff, "DEALLOCATE %s", s);
-      PQexec (current_con, buff);
+      execute_dont_care (current_con, buff);
       cid->mode -= 0x1000;
     }
-
 
   n = (struct s_sid *) cid->statement;
 
@@ -2583,8 +2624,15 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s1, int ni, void *vibind)
       return 0;
     }
 
-  cid->mode |= 0x7000;
-  cid->mode |= 0x1000;
+  cid->mode |= 0x4000;
+
+  // We dont ALLOCATE - so we dont need to set
+  // the code to DEALLOCATE
+  //
+  // I'll leave the rest of the code in 'just in case'
+  // we need to add it back later..
+  //
+  //cid->mode |= 0x1000;
 
 
   return 1;
@@ -2785,15 +2833,22 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
       return -1;
     }
 
-  if (ptr->mode & 0x7000)
+  if (ptr->mode & 0x4000)
     {
       char buff[256];
       SPRINTF1 (buff, "CLOSE %s", currname);
-      PQexec (current_con, buff);
-      ptr->mode -= 0x7000;
+      execute_dont_care (current_con, buff);
+      ptr->mode -= 0x4000;
       //A4GL_free_associated_mem (ptr->DeclareSql);
     }
 
+    if (ptr->mode&0x1000) {
+      char buff[256];
+      		SPRINTF1 (buff, "DEALLOCATE %s", currname);
+      		execute_dont_care (current_con, buff);
+      		ptr->mode -= 0x1000;
+    }
+    ptr->mode=0;
 
   //ptr->DeclareSql = 0;
   return 1;
@@ -3094,7 +3149,6 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
   ptr = A4GL_find_pointer_val (currname, CURCODE);
-
   if (ptr == 0)
     {
 
@@ -3107,6 +3161,10 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
 
       return;
     }
+  if (ptr->mode & 0x4000) {
+		// Close any open cursor..
+		A4GLSQLLIB_A4GLSQL_close_cursor(currname);
+	}
 
   if (ptr->hstmt)
     {
@@ -3731,7 +3789,7 @@ char *ptr;
 PGresult *res;
 if (!current_con) return s;
 
-sprintf(sqlstmt,"SELECT oid FROM pg_class  WHERE pg_table_is_visible(oid) AND relname='%s'",s);
+SPRINTF1(sqlstmt,"SELECT oid FROM pg_class  WHERE pg_table_is_visible(oid) AND relname='%s'",s);
 res=PQexec(current_con,sqlstmt);
 if (!res) return s;
 
