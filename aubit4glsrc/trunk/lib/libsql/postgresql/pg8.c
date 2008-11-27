@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.63 2008-11-27 18:33:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.64 2008-11-27 19:12:49 mikeaubury Exp $
 #*/
 
 
@@ -2673,7 +2673,7 @@ A4GL_trim(cursor_name);
 		pgextra=n->extra_info;
 		pgextra->last_result=res;
   }
-	 A4GL_set_a4gl_sqlca_errd(2,0);
+ A4GL_set_a4gl_sqlca_errd(2,0);
 
   switch (PQresultStatus (res))
     {
@@ -2689,6 +2689,7 @@ A4GL_trim(cursor_name);
       SetErrno (res);
       //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
       A4GL_exitwith_sql ("Unexpected postgres return code1\n");
+	PQclear(res);
       return 0;
     }
 
@@ -2742,6 +2743,7 @@ A4GL_trim(cursor_name);
 		}
 	}
       }
+	if (res) PQclear(res);
       return 0;
     }
   else
@@ -2759,6 +2761,7 @@ A4GL_trim(cursor_name);
 	  p = cid->statement;
 	  copy_to_obind (res, p->no, p->obind, 0);
 	}
+	if (res) PQclear(res);
     }
   return 1;
 }
