@@ -329,6 +329,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 	for (a=0;a<list_cnt;a++) {
 		char *p;
+		int eac;
 		qry_type=0;
 
 		raffected=0;
@@ -346,7 +347,9 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 		display_mode_unload(0);
 		if (list[a].type!='L'&&list[a].type!='l') {
-			qry_type=prepare_query_1(p,list[a].type, &err_at_col);
+			
+			qry_type=prepare_query_1(p,list[a].type, &eac);
+			err_at_col=eac;
 			if (isdump(list[a].type)) qry_type=255;
 		} else {
 			qry_type=256;
@@ -385,7 +388,8 @@ code
 		if (list[a].type!='S'&&list[a].type!='s' && qry_type!=56) {
 			if (isdump(list[a].type)) {
 					if (tolower(list[a].type)=='c') { /* UNLOAD */
-						raffected=asql_unload_data(&list[a],&err_at_col);
+						raffected=asql_unload_data(&list[a],&eac);
+						err_at_col=eac;
 					} else { /* OUTPUT */
 						FILE *fout=0;
 						if (tolower(list[a].type)=='x') { /* output to */
@@ -398,12 +402,13 @@ code
 							FILE *last_fout;
 							last_fout=exec_out;
 							exec_out=fout;
-							//if (!execute_query_1(&raffected,&err_at_col)) goto end_query;
 								set_heading_flag(list[a].with_headings, list[a].delim);
-								if (run_q (&err_at_col,qry_type)==0) {
+								if (run_q (&eac,qry_type)==0) {
+										err_at_col=eac;
 										A4GL_push_long(0);
 									  	return 1;
 								}
+								err_at_col=eac;
 			
 							//
 							fclose(fout);
@@ -412,7 +417,7 @@ code
 				
 					}
 			} else {
-				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a],&err_at_col);}
+				if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a],&eac);err_at_col=eac; }
 				else {
 					if (list[a].type>='1'&&list[a].type<='9') {
 						if (!asql_info(&list[a])) goto end_query;
@@ -432,7 +437,15 @@ code
 										a4gl_sqlca.sqlcode=-13;
 										goto end_query;
 									} else {
-										if (!execute_query_1(&raffected,&err_at_col)) goto end_query;
+										int iraffected;
+										iraffected=raffected;
+										if (!execute_query_1(&iraffected,&eac)) {
+											raffected=iraffected;
+											err_at_col=eac;
+											goto end_query;
+										}
+										raffected=iraffected;
+										err_at_col=eac;
 									}
 								}
 							}
@@ -445,13 +458,15 @@ code
 				if (a==0) {
 					if (file_out_result) fprintf(file_out_result,"\n\n");
 				}
-								set_heading_flag(list[a].with_headings, list[a].delim);
-				if (run_q(&err_at_col,qry_type)==0) {
+				set_heading_flag(list[a].with_headings, list[a].delim);
+				if (run_q(&eac,qry_type)==0) {
+					err_at_col=eac;
 endcode
 					# 4GL RETURN...
 					return 0
 code
 				}
+				err_at_col=eac;
 			}
 
 end_query: ;
@@ -893,6 +908,7 @@ if (lv_fmode[0]=='f')  {
 	add_temp_file(lv_name);
 } else {
 	A4GL_push_char("DISPLAY");
+	// Go to line mode..
 	A4GL_push_int(-1);
 	A4GL_push_int(-1);
        	A4GL_display_at(1,0x0);
@@ -911,6 +927,7 @@ let lv_rval=execute_queries(lv_out)
 code
 	fclose((FILE *)lv_out);
 	if (lv_fmode[0]=='p') {
+		// Go to screen mode..
 		A4GL_push_char("DISPLAY");
 		A4GL_push_int(1);
 		A4GL_push_int(1);
@@ -962,7 +979,7 @@ int run_q (int *err_at_colptr,int qry_type)
 {
 int rpaginate;
 int hasrows;
-int need_free;
+int need_free=0;
 rpaginate=0;
 repeat_query:;
 
@@ -981,9 +998,12 @@ repeat_query:;
 	    {
 	      int b;
 	      int done_once = 0;
+		int iraffected=0;
 	      char buff[244];
 	      A4GL_debug ("Fetching..");
-	      b = execute_sql_fetch (&raffected, err_at_colptr);
+		iraffected=raffected;
+	      b = execute_sql_fetch (&iraffected, err_at_colptr);
+		raffected=iraffected;
 		if (b<0) {
 			a4gl_status=b;
 			aclfgl_check_and_report_error(0);
@@ -1062,9 +1082,16 @@ repeat_query:;
 	}
       else
 	{
+		int iraffected;
 	  // No rows - execute procedure ?
-	  if (!execute_query_1 (&raffected, err_at_colptr))
-	    goto end_query_X;
+	iraffected=raffected;
+	  if (!execute_query_1 (&iraffected, err_at_colptr)) {
+			raffected=iraffected;
+	    		goto end_query_X;
+		} else {
+			raffected=iraffected;
+		}
+
 	}
     }
   else

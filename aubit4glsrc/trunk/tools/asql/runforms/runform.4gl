@@ -1186,7 +1186,7 @@ code
 		if (A4GL_isnull(ibind[lv_cnt].dtype, ibind[lv_cnt].ptr)) { 
 			// We've got a null in our field..
 			// Does the field allow nulls ?
-			A4GL_push_long(ibind[lv_cnt].ptr);
+			//A4GL_push_long(ibind[lv_cnt].ptr);
 			if (mv_field_list_dtype[lv_cnt]&256) {
 				/* No - it doesnt! */
 				char *ptr;

@@ -124,7 +124,7 @@ if lv_log is not null and lv_log not matches " " then
 	let lv_str=lv_str clipped," ",lv_log
 end if
 
-display "--->",lv_str clipped at 10,1
+#display "--->",lv_str clipped at 10,1
 
 # @ todo - set current database...
 

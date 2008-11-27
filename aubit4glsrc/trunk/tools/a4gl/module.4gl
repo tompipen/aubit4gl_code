@@ -255,7 +255,7 @@ define lv_makefile,lv_objfile char(512)
 						let lv_state="CorrectExit"
 					END IF
 				else
-					display  "Compiling as part of program using  ", lv_makefile clipped at 10,1
+					display  "Compiling as part of program using  ", lv_makefile clipped 
 					let lv_runstr="make -f ",lv_makefile clipped," ",lv_objfile
 					display "Running : ", lv_runstr clipped
 					call run_with_logging( lv_runstr) returning lv_ok
@@ -277,7 +277,6 @@ define lv_makefile,lv_objfile char(512)
 						call fgl_getkey() returning lv_ok
 						let lv_state="CorrectExit"
 					end if
-					display  " ",""  at 10,1 # clear the line
 				end if
 	
 			when lv_state="CompileRunable"
@@ -450,7 +449,7 @@ define lv_mname_4gl char(255)
 define lv_mname_ec char(255)
 define lv_mname_c char(255)
 define a integer
-display "Choose a file to drop","" at 2,1
+#display "Choose a file to drop","" at 2,1
 code
 {
     char **dir;
@@ -470,7 +469,7 @@ endcode
 call set_pick_cnt(a);
 call set_picked_option(mv_lastused)
 
-call prompt_pick("DROP >> ","") returning lv_mname
+call prompt_pick_and_say("DROP >> ","","Choose a file to drop") returning lv_mname
 
 if lv_mname is not null then
      let lv_mname_4gl=lv_mname clipped,".4gl"
@@ -634,7 +633,7 @@ end if
 
 call set_pick_cnt(lv_cnt)
 
-let lv_prog=prompt_pick("Program >> ","") 
+let lv_prog=prompt_pick_and_say("Program >> ","","Pick program for context to compile this module") 
 if lv_prog is not null and lv_prog != " " then
 	call set_last_used_program(lv_prog)
 	let lv_makefile=get_makefile_for(lv_prog)
@@ -734,14 +733,13 @@ if file_exists(lv_makefile) then
 	
 	if lv_lastupd>lv_filetime then
 		if lv_genmakefile<lv_filetime then
-			open window w_warn at 10,5 with 6 rows, 70 columns attribute (border,menu line 2)
+			open window w_warn at 10,5 with form "warn"  attribute (border,menu line 2)
 	
 			 #       1234567890123456789012345678901234567890123456789012345678901234567890
-			display "   Makefile has been changed outside of a4gl IDE  (not overwriting)   " at 1,1 attribute (reverse,cyan)
-			#
-			display "lv_lastupd=",lv_lastupd," lv_filetime=",lv_filetime," lv_genmakefile=", lv_genmakefile at 4,1
-			display "The project has been updated since the makefile was last changed." at 5,1
-			display "You can 'touch' the makefile to remove this warning in future    " at 6,1
+			display "   Makefile has been changed outside of a4gl IDE  (not overwriting)   " to warn0 
+			display "lv_lastupd="||lv_lastupd||" lv_filetime="||lv_filetime||" lv_genmakefile="|| lv_genmakefile to warn1
+			display "The project has been updated since the makefile was last changed." to warn2
+			display "You can 'touch' the makefile to remove this warning in future    " to warn3
 
 			menu "Continue" 
 				command "Reset" "Ignore the error by using the Makefiles timestamp "

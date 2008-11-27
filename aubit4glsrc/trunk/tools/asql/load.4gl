@@ -47,7 +47,7 @@ extern FILE *f_unloadFile;
 
 
 int asql_unload_data(struct element *e, int *errat) {
-int raffected;
+long raffected;
 int b;
 int hasrows;
 	LoadUnload_delim=&delims[0];
@@ -80,7 +80,10 @@ int hasrows;
 	if (execute_select_prepare(errat,0,&hasrows)) {
 		while (get_sqlcode()==0) {
 			int errat;
-			b=execute_sql_fetch(&raffected,&errat);
+			int iraffected;
+			iraffected=raffected;
+			b=execute_sql_fetch(&iraffected,&errat);
+			raffected=iraffected;
 			if (b!=0) break;
 		}
 		if (get_sqlcode()!=100)  raffected=-1;

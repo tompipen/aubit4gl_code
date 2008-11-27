@@ -65,9 +65,22 @@ initialize mv_curr_db to null
 let lv_actions_cnt=0
 let lv_actions_used=0
 
+
+if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" then
+	call set_use_form()
+else
+	call clr_use_form()
+end if
+
 IF LENGTH(fgl_getenv("A4GL_ASQLERRLOG"))>0 THEN
 	CALL startlog(fgl_getenv("A4GL_ASQLERRLOG"))
 END IF
+
+call form_is_compiled(splash,"MEMPACKED","GENERIC")
+call form_is_compiled(pick10,"MEMPACKED","GENERIC")
+call form_is_compiled(pick20,"MEMPACKED","GENERIC")
+call form_is_compiled(pick38,"MEMPACKED","GENERIC")
+call form_is_compiled(pick78,"MEMPACKED","GENERIC")
 
 call edit_init()
 
@@ -282,6 +295,8 @@ let lv_args_cnt=lv_args_cnt-1
 end function
 
 
+
+
 ################################################################################
 function display_banner()
 define lv_disp_in_trans integer
@@ -294,15 +309,11 @@ end if
 
 
 if lv_disp_in_trans then
-	
-	display "************************************************ Press CTRL-W for Help ********" at 4,1
+	call display_to_separator("************************************************ Press CTRL-W for Help ********")
 else
-	display "------------------------------------------------ Press CTRL-W for Help --------" at 4,1
+	call display_to_separator("------------------------------------------------ Press CTRL-W for Help --------")
 end if
 
-if mv_curr_db is not null then
-	display " ",mv_curr_db clipped," " at 4,25
-end if
 end function
 
 
@@ -336,33 +347,27 @@ end function
 
 
 
-function clear_screen_portion()
-define lv_y integer
-define lv_maxy integer
-code
-lv_maxy=A4GL_get_curr_height();
-
-endcode
-set pause mode on
-for lv_y=6 to lv_maxy
-	display " ","" at lv_y,1
-end for
-set pause mode off
+function middle_in(s,w) 
+define s char(255)
+define s1 char(255)
+define i integer
+define w integer
+define a integer
+let a=w-length(s)
+let a=a/2
+let s1[a,255]=s
+return s1
 end function
 
 
 function middle(s) 
 define s char(255)
-define s1 char(255)
 define w integer
-define a integer
 code
 w=A4GL_get_curr_width();
 endcode
-let a=w-length(s)
-let a=a/2
-let s1[a,255]=s
-return s1
+return middle_in(s,w)
+
 end function
 
 
@@ -390,20 +395,6 @@ let lv_str="ACL ASQL Version ",mc_version," ", lv_dialect clipped
 return lv_str
 end function
 
-function copyright_banner()
-
-clear screen
-display middle(get_version()) at 7,1
-
-display middle("(c) 2003-7 Aubit Computing Ltd") at 9,1
-display middle("http://www.aubit.com") at 10,1
-display middle("Latest version available at:") at 13,1
-display middle("http://aubit4gl.sourceforge.net") at 14,1
-display middle("Development sponsored by Cassens Transport Company") at 16,1
-display middle("http://www.cassens.com") at 17,1
-sleep 2 # Splash Screen 
-clear screen
-end function
 
 function set_translations()
 define a char(255)
@@ -550,4 +541,83 @@ end function
 
 function niy()
 error "Not implemented yet"
+end function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+# Lets try to put things that 'display .. at' in one place...
+################################################################################
+function display_to_separator(lv_str)
+define lv_str char(80)
+define lv_db char(80)
+
+if mv_curr_db is not null then
+	let lv_db="_",mv_curr_db clipped,"_" # A string we can measure the length of
+	let lv_str[25,25+length(lv_db)]= " ",mv_curr_db clipped," "
+end if
+
+display lv_str at 4,1
+end function
+
+
+
+################################################################################
+function clear_screen_portion()
+define lv_y integer
+define lv_maxy integer
+code
+lv_maxy=A4GL_get_curr_height();
+
+endcode
+set pause mode on
+for lv_y=6 to lv_maxy
+	display " ","" at lv_y,1
+end for
+set pause mode off
+end function
+
+
+################################################################################
+
+function copyright_banner()
+if get_use_form() then
+	open window w_splash at 1,1 with form "splash"
+	display middle_in(get_version(),60) to version
+	sleep 2
+	close window w_splash
+else
+	clear screen
+	display middle(get_version()) at 7,1
+	
+	display middle("(c) 2003-8 Aubit Computing Ltd") at 9,1
+	display middle("http://www.aubit.com") at 10,1
+	display middle("Latest version available at:") at 13,1
+	display middle("http://aubit4gl.sourceforge.net") at 14,1
+	display middle("Development sponsored by Cassens Transport Company") at 16,1
+	display middle("http://www.cassens.com") at 17,1
+	sleep 2 # Splash Screen 
+	clear screen
+end if
+end function
+
+function display_to_line (lv_line,lv_str)
+define lv_line integer
+define lv_str char(512)
+display lv_str clipped,"" at lv_line,1
 end function

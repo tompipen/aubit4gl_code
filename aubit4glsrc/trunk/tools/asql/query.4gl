@@ -275,9 +275,9 @@ call set_pick_cnt(0)
 let lv_name="NONE"
 
 case lv_query_out
-	when 2 call prompt_pick("OUTPUT NEW-FILE >>","") returning lv_name
-	when 3 call prompt_pick("OUTPUT APPEND-FILE >>","") returning lv_name
-	when 4 call prompt_pick("OUTPUT PIPE >>","") returning lv_name
+	when 2 call prompt_pick_and_say("OUTPUT NEW-FILE >>","","") returning lv_name
+	when 3 call prompt_pick_and_say("OUTPUT APPEND-FILE >>","","") returning lv_name
+	when 4 call prompt_pick_and_say("OUTPUT PIPE >>","","") returning lv_name
 end case
 
 if lv_name is null or lv_name matches " " THEN
@@ -348,7 +348,7 @@ function qry_choose()
 define lv_fname char(255)
 define a integer
 
-display "Choose a file to load","" at 2,1
+#display "Choose a file to load","" at 2,1
 let a=0
 code
 {
@@ -371,7 +371,7 @@ call set_pick_cnt(a);
 
 call set_picked_option(mv_fname)
 
-call prompt_pick("CHOOSE >> ","") returning lv_fname
+call prompt_pick_and_say("CHOOSE >> ","", "Choose a file to load") returning lv_fname
 if lv_fname is not null then
     let mv_fname=lv_fname
 	let lv_fname=lv_fname clipped,".sql"
@@ -404,7 +404,7 @@ end function
 function qry_save()
 define lv_fname char(255)
 call set_pick_cnt(0)
-call prompt_pick("SAVE >> ","") returning lv_fname
+call prompt_pick_and_say("SAVE >> ","","") returning lv_fname
 if lv_fname not matches "*.sql" then
 	let lv_fname=lv_fname clipped,".sql"
 end if
@@ -424,7 +424,7 @@ function qry_drop()
 define lv_fname char(255)
 define a integer
 
-display "Choose a file to drop","" at 2,1
+#display "Choose a file to drop","" at 2,1
 
 code
 {
@@ -444,7 +444,7 @@ endcode
 
 call set_pick_cnt(a);
 
-call prompt_pick("DROP >> ","") returning lv_fname
+call prompt_pick_and_say("DROP >> ","","Choose a file to drop") returning lv_fname
 
 
 if lv_fname is not null then

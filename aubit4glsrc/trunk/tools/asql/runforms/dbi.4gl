@@ -4,6 +4,7 @@ define mv_serial integer
 
 
 code
+char *A4GLSQLCV_get_sqlconst(char *cval);
 /* Input binding for the fetch */
 extern struct BINDING *ibind;
 /* Output bindings for the Insert and Update */

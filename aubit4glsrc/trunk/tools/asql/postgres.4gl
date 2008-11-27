@@ -71,27 +71,40 @@ extern char *LoadUnload_delim;// delimiters for load/unload
 
 void cp_sqlca_full() ;
 int ec_check_and_report_error();
+char *A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sql,int converted);
 
 char mv_errmsg[256]="No Message";
 
 #define cp_sqlca() cp_sqlca_full(__FILE__,__LINE__)
+
+
+// We're doing these in functions to avoid an unknown descriptor warning
+// from ecpg..
+int f_alloc_desc() {
+	EXEC SQL allocate descriptor descExec ;
+	cp_sqlca();
+}
+int f_dealloc_desc() {
+	EXEC SQL deallocate descriptor descExec;
+}
 
 int execute_select_prepare(int *errat,int type, int *hasrows) {
 static int done_alloc=0;
 *errat=1;
 *hasrows=1;
 	open_display_file_c();
-
+	
 	EXEC SQL WHENEVER SQLERROR CONTINUE;
+
 if (done_alloc) {
-	EXEC SQL deallocate descriptor descExec;
+	f_dealloc_desc();
 	done_alloc=0;
 	if (sqlca.sqlcode<0) {A4GL_debug("Err1");return 0;}
 }
 	
 
 if (!done_alloc) {
-	EXEC SQL allocate descriptor descExec ;cp_sqlca();
+	f_alloc_desc();
 	if (sqlca.sqlcode<0) {A4GL_debug("Err2"); return 0;}
 	done_alloc=1;
 }
@@ -198,7 +211,7 @@ foreach c_gettables_drop into lv_tabname
 end foreach
 
 call set_pick_cnt(lv_cnt-1)
-call prompt_pick(lv_prompt,"") returning lv_tabname
+call prompt_pick_and_say(lv_prompt,"","") returning lv_tabname
 
 return lv_tabname
 end function
@@ -602,9 +615,15 @@ A4GL_debug("Getting details for index %d",index);
                 exec sql get descriptor descExec value :index
                         :DATETIME_INTERVAL_CODE=datetime_interval_code,
                         :STRINGVAR=data;cp_sqlca();
-		if (A4GLSQLCV_check_requirement("UNLDATEASDBDATE")) {
-			conv_date(STRINGVAR);
-		}
+
+			if (A4GLSQLCV_check_requirement("UNLDATEASDBDATE")) {
+				if (display_mode==DISPLAY_UNLOAD) {
+					if (strstr(STRINGVAR,"00:00:00")) {
+						conv_date(STRINGVAR);
+					}
+				}
+			}
+
                 sprintf(buffer,"%s",STRINGVAR);
                 break;
            case SQL3_INTERVAL:
@@ -1179,7 +1198,7 @@ end if
 
 call set_pick_cnt(ndbs)
 
-let lv_newname=prompt_pick("SELECT DATABASE >>","")
+let lv_newname=prompt_pick_and_say("SELECT DATABASE >>","","")
 
 if lv_newname is null then
         let lv_newname=lv_curr_db
@@ -1257,7 +1276,7 @@ endcode
 
 
 call set_pick_cnt(ndbs)
-let lv_newname=prompt_pick("DROP DATABASE >>","")
+let lv_newname=prompt_pick_and_say("DROP DATABASE >>","","")
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
@@ -1567,7 +1586,7 @@ endcode
 END FUNCTION
 
 FUNCTION load_info_tables()
-	display "Not implemented load_info_tables" at 24,1
+	error "Not implemented load_info_tables" 
 	sleep 1
 end function
 
@@ -1999,7 +2018,7 @@ FOR lv_a=1 TO lv_cnt
          call  set_pick(lv_a,lv_records[lv_a].lv_server)
 END FOR
 call set_pick_cnt(lv_cnt)
-call prompt_pick("SELECT SERVER >>","") returning lv_server
+call prompt_pick_and_say("SELECT SERVER >>","","") returning lv_server
 IF lv_server IS NULL OR lv_server MATCHES " " THEN
 	RETURN  NULL,NULL,NULL,NULL
 END IF

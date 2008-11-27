@@ -55,6 +55,9 @@ static void     outbyte(FILE *unlfile, char *buffer, long len);
 #define sqlva           sqlvar_struct
 #define NIL(x)         ((x)0)
 #include "a4gl_incl_config.h"
+#ifndef __WIN32__
+#include <monetary.h>
+#endif
 typedef loc_t               Blob;
 typedef struct decimal  Decimal;
 typedef struct dtime    Datetime;
@@ -273,7 +276,7 @@ end foreach
 call set_pick_cnt(lv_cnt-1)
 
 while true
-call prompt_pick(lv_prompt,"") returning lv_tabname
+call prompt_pick_and_say(lv_prompt,"","") returning lv_tabname
 if lv_tabname is not null then
 	select * from systables where tabname=lv_tabname
 	if sqlca.sqlcode=100 then
@@ -628,7 +631,7 @@ if lv_cnt=1 then
         error "Either the SQLHOSTS file cannot be read - or it is empty"
 end if
 
-let lv_server=prompt_pick("SELECT DATABASE SERVER >>","")
+let lv_server=prompt_pick_and_say("SELECT DATABASE SERVER >>","","")
 
 if lv_server is null or lv_server matches " " then
         return
@@ -1561,7 +1564,7 @@ code
 endcode
 
 call set_pick_cnt(ndbs)
-let lv_newname=prompt_pick("SELECT DATABASE >>","")
+let lv_newname=prompt_pick_and_say("SELECT DATABASE >>","","")
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
@@ -1635,7 +1638,7 @@ endcode
 
 
 call set_pick_cnt(ndbs)
-let lv_newname=prompt_pick("DROP DATABASE >>","")
+let lv_newname=prompt_pick_and_say("DROP DATABASE >>","","")
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
@@ -1879,7 +1882,7 @@ end if
 call set_pick_cnt(lv_cnt-1)
 let int_flag=false
 
-call prompt_pick("INFO FOR TRIGGER >>","") returning lv_trigname
+call prompt_pick_and_say("INFO FOR TRIGGER >>","","") returning lv_trigname
 
 
 if lv_trigname is null or lv_trigname = " " then
@@ -2981,7 +2984,7 @@ return 0;
 	{
 	  if (col->sqltype==CLOCATORTYPE) {
 			loc_t *blob;
-			blob=col->sqldata;
+			blob=(loc_t*)col->sqldata;
 			if (blob->loc_buffer) free(blob->loc_buffer);
 			free(col->sqldata);
 		}

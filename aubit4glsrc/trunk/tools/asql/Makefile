@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.55 2008-11-26 10:13:31 mikeaubury Exp $
+# $Id: Makefile,v 1.56 2008-11-27 20:41:56 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -46,9 +46,11 @@ OBJS_4GL		= \
 	pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
 	query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
 	execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
-	filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} \
-	tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT}
+	filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT}  \
+	form${A4GL_OBJ_EXT} \
+	tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT} 
 
+OBJS_FORM	= pick10.afr${A4GL_OBJ_EXT}  pick20.afr${A4GL_OBJ_EXT} pick38.afr${A4GL_OBJ_EXT} pick78.afr${A4GL_OBJ_EXT} splash.afr${A4GL_OBJ_EXT}
 
 ifeq "${LEX}" "no"
   LEX_YY_C      =lex_pregen.o
@@ -87,22 +89,22 @@ CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY} ${OBJ
 ################
 #All objects for Postgres version
 OBJS_PG			=$(addprefix pg_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix pg_,${OBJS_PG_ONLY})
+				$(addprefix pg_,${OBJS_PG_ONLY}) ${OBJS_FORM}
 
 ################
 #All objects for Informix version
 OBJS_IFX		=$(addprefix ifx_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix ifx_,${OBJS_IFX_ONLY})
+				$(addprefix ifx_,${OBJS_IFX_ONLY}) ${OBJS_FORM}
 
 
 OBJS_GEN		=$(addprefix gen_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix gen_,${OBJS_GEN_ONLY})
+				$(addprefix gen_,${OBJS_GEN_ONLY}) ${OBJS_FORM}
 
 OBJS_ING		=$(addprefix ing_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix ing_,${OBJS_ING_ONLY})
+				$(addprefix ing_,${OBJS_ING_ONLY}) ${OBJS_FORM}
 
 OBJS_INFOFLEX		=$(addprefix infoflex_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix infoflex_,${OBJS_INFOFLEX_ONLY})
+				$(addprefix infoflex_,${OBJS_INFOFLEX_ONLY}) ${OBJS_FORM}
 ## ==================================================================
 ##                              Options
 ## ==================================================================
@@ -145,8 +147,8 @@ ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
 VERBOSE_FLAG	=--verbose
 #4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
-4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}  -Wall
-IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG}  -Wall 
+4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}  
+IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG} 
 
 ################
 #4gl compiler flags
@@ -189,6 +191,14 @@ ALL				= ${ALL_PROGS}
 ifeq "${TARGET_OS}" "hpux"
 	4GLPCFLAGS+=-a1 -z -Wl,+s -Wl,-E
 endif
+
+%.afr${A4GL_OBJ_EXT}:%.per
+	fcompile -c $<	
+	4glpc -c -o $@ ${subst .per,.afr.c,$<}
+
+%.afr.dat:%.per
+	fcompile  $<
+
 
 ################
 #Default target
@@ -331,7 +341,7 @@ asql_i_static.4ae:
 ## ==================================================================
 
 clean:
-	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} ${OBJS_GEN} \
+	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} ${OBJS_GEN} ${CLEAN_OBJS:.ao=.warn} \
     ${CLEAN_OBJS:.ao=.h} ${CLEAN_OBJS:.ao=.glb} ${CLEAN_OBJS:.ao=.cpc} \
 	${CLEAN_OBJS:.ao=.ec} ${CLEAN_OBJS:.ao=.c} \
     *.bak *.err *.warn lex.asql_yy.c lex.asql_yy.c *.c_ *~ debug.out

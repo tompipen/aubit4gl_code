@@ -101,7 +101,7 @@ define lv_ext char(255)
 
 let lv_ext=work_out_ext()
 call display_banner()
-display "Choose a file to run","" at 2,1
+#display "Choose a file to run","" at 2,1
 
 code
 {
@@ -131,7 +131,7 @@ else
 end if
 sleep 1
 
-call prompt_pick("RUN >> ","") returning lv_fname
+call prompt_pick_and_say("RUN >> ","",  "Choose a file to run") returning lv_fname
 
 if lv_fname is not null then
 	let lv_runstr=fgl_getenv("RUNFORMS")
@@ -157,8 +157,7 @@ define lv_runstr char(512)
 define lv_backup char(255)
 
 if lv_fname is null or lv_fname matches "" then
-	display "Choose a file to modify","" at 2,1
-
+	#display "Choose a file to modify","" at 2,1
 	let a=0
 code
 {
@@ -178,7 +177,7 @@ code
 endcode
 
 	call set_pick_cnt(a);
-	call prompt_pick("CHOOSE >> ","") returning lv_fname
+	call prompt_pick_and_say("CHOOSE >> ","","Choose a file to modify") returning lv_fname
 end if
 
 if lv_fname is not null then
@@ -203,9 +202,9 @@ if lv_fname is not null then
 	let a=a/256
 
 	if a=0 then
-		display "OK " at 24,1
+		#message "OK " 
 	else
-		display "Bad" at 24,1
+		error "Bad" 
 	end if
 
 
@@ -239,7 +238,7 @@ define lv_runstr char(512)
 define lv_backup char(255)
 
 if lv_fname is null or lv_fname matches " " then
-	display "Choose a file to compile","" at 2,1
+	#display "Choose a file to compile","" at 2,1
 	let a=0
 
 code
@@ -260,7 +259,7 @@ code
 endcode
 
 	call set_pick_cnt(a);
-	call prompt_pick("CHOOSE >> ","") returning lv_fname
+	call prompt_pick_and_say("CHOOSE >> ","","Choose a file to compile") returning lv_fname
 end if
 
 if lv_fname is null or lv_fname matches " " then
@@ -283,7 +282,7 @@ if lv_fname is not null then
 	let a=a/256
 
 	if a=0 then
-		display "The screen form specification was successfully compiled." at 24,1 attribute(reverse)
+		message "The screen form specification was successfully compiled."
 		return 1
 	else
 		case correct_compile_form()
@@ -385,7 +384,7 @@ define lv_fname char(255)
 define lv_fname_frm char(255)
 define lv_fname_per char(255)
 define a integer
-display "Choose a file to drop","" at 2,1
+#display "Choose a file to drop","" at 2,1
 code
 {
     char **dir;
@@ -404,7 +403,7 @@ endcode
 
 call set_pick_cnt(a);
 
-call prompt_pick("DROP >> ","") returning lv_fname
+call prompt_pick_and_say("DROP >> ","","Choose a file to drop") returning lv_fname
 
 if lv_fname is not null then
     let lv_fname_per=lv_fname clipped,".per"

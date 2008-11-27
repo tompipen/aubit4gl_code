@@ -439,7 +439,7 @@ define lv_fname char(255)
 define lv_fname_frm char(255)
 define lv_fname_per char(255)
 define a integer
-display "Choose a file to drop","" at 2,1
+#display "Choose a file to drop","" at 2,1
 code
 {
     char **dir;
@@ -459,7 +459,7 @@ endcode
 call set_pick_cnt(a);
 call set_picked_option(mv_lastused)
 
-call prompt_pick("DROP >> ","") returning lv_fname
+call prompt_pick_and_say("DROP >> ","", "Choose a file to drop") returning lv_fname
 
 if lv_fname is not null then
     let lv_fname_per=lv_fname clipped,".per"

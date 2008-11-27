@@ -490,7 +490,15 @@ print_continue_cmd (struct_continue_cmd * cmd_data)
       printc ("_fld_dr= -1;_exec_block= -1;\n");
     }
 
-  printc ("goto CONTINUE_BLOCK_%d;", cmd_data->block_id);
+/*
+	@todo - fix CONTINUE PROMPT...
+
+    if (cmd_data->what == EBC_PROMPT) {
+		printc ("SET(\"s_prompt\",_sio_%d,\"mode\",1);\n",cmd_data->sio_id);
+    }
+*/
+
+  printc ("goto CONTINUE_BLOCK_%d; // CONTINUE_CMD", cmd_data->block_id);
   return 1;
 }
 

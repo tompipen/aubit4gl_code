@@ -569,6 +569,7 @@ int sio_id=0;
 		block_no=get_exit_loop("MENU");
 		break;
 	case EBC_PROMPT:        // Exit PROMPT
+		sio_id=get_sio_id("PROMPT");
 		block_no=get_exit_loop("PROMPT");
 		break;
 	case EBC_CASE:          // Exit CASE

@@ -20,15 +20,16 @@ define lv_what char (20)
 define lv_ext char(4)
 define a integer
 define lv_lastused char(255)
+define lv_say char(80)
 
 let lv_lastused=remove_ext(lv_lastused)
 case lv_what
 	when "modify" 
-		display "Choose a file to modify","" at 2,1
+		let lv_say="Choose a file to modify"
 	when "compile" 
-		display "Choose a file to compile","" at 2,1
+		let lv_say="Choose a file to compile"
 	when "run" 
-		display "Choose a file to run","" at 2,1
+		let lv_say="Choose a file to run"
 	otherwise
 		display "Internal error : Unexpected ", lv_what
 		exit program 4
@@ -54,7 +55,7 @@ endcode
 call set_pick_cnt(a);
 call set_picked_option(lv_lastused)
 #message "lv_lastused=", lv_lastused sleep 4
-call prompt_pick("CHOOSE >> ","") returning lv_fname
+call prompt_pick_and_say("CHOOSE >> ","",lv_say) returning lv_fname
 return lv_fname
 end function
 

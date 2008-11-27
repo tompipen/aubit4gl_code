@@ -5,6 +5,18 @@ main
 define lv_dialect char(20)
 defer interrupt
 
+if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" then
+        call set_use_form()
+else
+        call clr_use_form()
+end if
+
+	call form_is_compiled(pick10,"MEMPACKED","GENERIC")
+	call form_is_compiled(pick20,"MEMPACKED","GENERIC")
+	call form_is_compiled(pick38,"MEMPACKED","GENERIC")
+	call form_is_compiled(pick78,"MEMPACKED","GENERIC")
+
+	call form_is_compiled(splash,"MEMPACKED","GENERIC")
 
 	call form_is_compiled(prog,"MEMPACKED","GENERIC")
 	call form_is_compiled(entities,"MEMPACKED","GENERIC")
@@ -140,19 +152,6 @@ end function
 
 
 
-function clear_screen_portion()
-define lv_y integer
-define lv_maxy integer
-let lv_maxy=aclfgl_get_curr_height()
-
-set pause mode on
-
-for lv_y=6 to lv_maxy
-        display " ","" at lv_y,1
-end for
-
-set pause mode off
-end function
 
 
 
@@ -218,20 +217,6 @@ return lv_str
 end function
 
 
-function copyright_banner()
-
-clear screen
-display middle(get_version()) at 7,1
-
-display middle("(c) 2008 Aubit Computing Ltd") at 9,1
-display middle("http://www.aubit.com") at 10,1
-display middle("Latest version available at:") at 13,1
-display middle("http://aubit4gl.sourceforge.net") at 14,1
-display middle("Development sponsored by Fabrica de Jabon La Corona ") at 16,1
-display middle("http://www.lacorona.com.mx/") at 17,1
-sleep 2 # Splash Screen
-clear screen
-end function
 
 
 function middle(s)
@@ -300,3 +285,68 @@ define lv_v char(70)
 		return lv_v
 	end if
 end function
+
+
+
+
+
+
+# DISPLAY ATs.....
+
+function clear_screen_portion()
+define lv_y integer
+define lv_maxy integer
+let lv_maxy=aclfgl_get_curr_height()
+
+set pause mode on
+
+for lv_y=6 to lv_maxy
+        display " ","" at lv_y,1
+end for
+
+set pause mode off
+end function
+
+
+function copyright_banner()
+
+clear screen
+
+if get_use_form() then
+	open window w_splash at 1,1 with form "splash"
+	sleep 2
+	close window w_splash
+else
+	display middle(get_version()) at 7,1
+	call display_to_line(9,middle("(c) 2008 Aubit Computing Ltd"))
+	call display_to_line(10,middle("http://www.aubit.com"))
+	call display_to_line(13,middle("Latest version available at:"))
+	call display_to_line(14,middle("http://aubit4gl.sourceforge.net"))
+	call display_to_line(16,middle("Development sponsored by Fabrica de Jabon La Corona "))
+	call display_to_line(17,middle("http://www.lacorona.com.mx/"))
+	sleep 2 # Splash Screen
+	clear screen
+end if
+
+
+end function
+
+
+function display_banner()
+define lv_curr_db char(255)
+set pause mode on
+        display "------------------------------------------------ Press CTRL-W for Help --------" at 4,1
+        let lv_curr_db=get_db()
+        if lv_curr_db is not null then
+                display " ",lv_curr_db clipped," " at 4,25
+        end if
+set pause mode off
+
+end function
+
+function display_to_line (lv_line,lv_str)
+define lv_line integer
+define lv_str char(512)
+display lv_str clipped,"" at lv_line,1
+end function
+

@@ -48,15 +48,4 @@ end if
 end function
 
 
-function display_banner()
-define lv_curr_db char(255)
-set pause mode on
-	display "------------------------------------------------ Press CTRL-W for Help --------" at 4,1
-	let lv_curr_db=get_db()
-	if lv_curr_db is not null then
-        	display " ",lv_curr_db clipped," " at 4,25
-	end if
-set pause mode off
-
-end function
 

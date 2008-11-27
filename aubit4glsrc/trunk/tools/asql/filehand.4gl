@@ -180,7 +180,7 @@ define buff char(256)
 call open_tmpfile("SQL","w")
 let lv_out=fget_curr_mvfin("SQL");
 code
-	if (lv_out==stdin) lv_in=0;
+	if (lv_out==(long)stdin) lv_in=0;
 endcode
 
 call open_tmpfile("ERR","r")
@@ -239,7 +239,7 @@ let lv_in=fget_curr_mvfin("SQL");
 let cline=0
 
 code
-	if (lv_in==stdin) lv_in=0;
+	if (lv_in==(long)stdin) lv_in=0;
 endcode
 
 if lv_in=0 then
@@ -355,6 +355,8 @@ define buff char(256)
 call clear_screen_portion()
 let l=6
 call open_tmpfile("SQL","r")
+
+
 code
 while (1) {
 	strcpy(buff,"");
@@ -363,7 +365,8 @@ while (1) {
 	if (feof((FILE *)mv_fin[get_type_id("SQL")])) break;
 	buff[255]=0;
 endcode
-	display buff,"" at l,1
+	call display_to_line(l,buff)
+	#display buff,"" at l,1
 code
 	l++;
 	if (l>23) break;
@@ -372,6 +375,10 @@ endcode
 
 call close_tmpfile("SQL")
 end function
+
+
+
+
 
 function fget_curr_mvfin(lv_s)
 define lv_s char(3)
@@ -448,7 +455,7 @@ code
 
 FILE *get_curr_mvfin (char *lv_type)
 {
-  return mv_fin[get_type_id (lv_type)];
+  return (FILE *)mv_fin[get_type_id (lv_type)];
 }
 
 

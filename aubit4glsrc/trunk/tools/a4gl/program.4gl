@@ -59,6 +59,10 @@ define lv_user char(8)
 
 	call get_program("modify",mv_lastused) returning lv_name
 
+	if lv_name is null then
+		return
+	end if
+
 	select count(*) into lv_cnt from program 
 	where (justuser is null or justuser matches " " or justuser=user)
 	and progname=lv_name
@@ -86,6 +90,10 @@ define lv_makefile char(512)
 	call ensure_syspgma4gl()
 
 	call get_program("generate",mv_lastused) returning lv_name
+	if lv_name is null then
+		return
+	end if
+	
 
 	select count(*) into lv_cnt from program 
 	where (justuser is null or justuser matches " " or justuser=user)
@@ -408,6 +416,9 @@ define lv_ok integer
 	call ensure_syspgma4gl()
 
 	call get_program("compile",mv_lastused) returning lv_name
+	if lv_name is null then
+		return
+	end if
 
 	select count(*) into lv_cnt from program 
 	where (justuser is null or justuser matches " " or justuser=user)
@@ -480,6 +491,7 @@ function get_program(lv_what,lv_lastused)
 define lv_fname char(255)
 define lv_what char (20)
 define lv_lastused char(255)
+define lv_say char(80)
 
 let lv_lastused=remove_ext(lv_lastused)
 
@@ -487,21 +499,22 @@ case lv_what
 
         when "modify"
 		let lv_prog_cnt=1
-                display "Choose a program to modify","" at 2,1
+		
+                let lv_say="Choose a program to modify"
 		call add_programs_from_db()
 		let lv_prog_cnt=lv_prog_cnt-1
 		call set_pick_cnt(lv_prog_cnt);
 
         when "generate"
 		let lv_prog_cnt=1
-                display "Choose a program to generate a makefile for","" at 2,1
+                let lv_say="Choose a program to generate a makefile for"
 		call add_programs_from_db()
 		let lv_prog_cnt=lv_prog_cnt-1
 		call set_pick_cnt(lv_prog_cnt);
 
         when "compile"
 		let lv_prog_cnt=1
-                display "Choose a program to compile","" at 2,1
+                let lv_say="Choose a program to compile"
 		# we'll get programs from the database
 		# and from the cwd (ending in .mk)
 		call add_programs_from_db()
@@ -514,7 +527,7 @@ case lv_what
 
 	when "undefine"
 		let lv_prog_cnt=1
-                display "Choose a program to undefine","" at 2,1
+                let lv_say="Choose a program to undefine"
 		call add_programs_from_db()
 		let lv_prog_cnt=lv_prog_cnt-1
 		call set_pick_cnt(lv_prog_cnt);
@@ -529,7 +542,7 @@ end case
 
 
 call set_picked_option(lv_lastused)
-call prompt_pick("CHOOSE >> ","") returning lv_fname
+call prompt_pick_and_say("CHOOSE >> ","",lv_say) returning lv_fname
 return lv_fname
 end function
 

@@ -89,7 +89,8 @@ while (1) {
 	lv_cnt++;
 	outlines--;
 endcode
-	DISPLAY lines[lv_cnt] at lv_cnt+5,1
+	call display_to_line(lv_cnt+5, lines[lv_cnt])
+	#DISPLAY lines[lv_cnt] at lv_cnt+5,1
 code
 }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.43 2008-11-24 17:19:02 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.44 2008-11-27 20:47:21 mikeaubury Exp $
 #*/
 
 /**
@@ -921,6 +921,19 @@ int a;
 
 }
 
+static char *cleaned_fname(char *s) {
+#ifdef __WIN32__
+	if (strchr(s,'\\')) {
+		return rindex(s,'\\')+1;
+	}
+	return s;
+#endif
+	if (strchr(s,'/')) {
+		return rindex(s,'/')+1;
+	}
+	return s;
+}
+
 /**
  * Write the compiled form file with the information parsed from the .per to memory
  */
@@ -990,7 +1003,7 @@ int a;
       fyy = fopen (fname2, "w");
 
 
-      fprintf (fyy, "char compiled_form_%s[]={\n", outputfilename);
+      fprintf (fyy, "char compiled_form_%s[]={\n", cleaned_fname(outputfilename));
 
       fprintf (fyy, "0x%02x,\n", len & 255);
       len /= 256;

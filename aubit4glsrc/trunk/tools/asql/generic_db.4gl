@@ -22,7 +22,7 @@ endcode
     call set_pick_cnt(lv_cnt-1)
 
     while true
-        call prompt_pick(lv_prompt,"") returning lv_tabname
+        call prompt_pick_and_say(lv_prompt,""," ") returning lv_tabname
 
         if lv_tabname is not null then
             let lv_found=0
@@ -72,7 +72,7 @@ endcode
 
     call set_pick_cnt(lv_num_dbs)
 
-    let lv_newname=prompt_pick("SELECT DATABASE >>","")
+    let lv_newname=prompt_pick_and_say("SELECT DATABASE >>","","")
     if lv_newname is null then
         let lv_newname=lv_curr_db
     end if
