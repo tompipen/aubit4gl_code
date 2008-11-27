@@ -871,7 +871,7 @@ new_prepare_cmd (expr_str *connid, expr_str *p_stmtid, expr_str * p_sql)
   return c;
 }
 
-struct command *new_init_cmd(struct expr_str_list* p_varlist,str_list *p_tablist) { //!
+struct command *new_init_cmd(struct expr_str_list* p_varlist,str_list *p_tablist,int tonull) { //!
 struct command *c;
 //struct expr_str_list* p_varlist_expanded;
 extern int nullbindcnt;
@@ -886,6 +886,7 @@ int a;
 	}
    c->cmd_data.command_data_u.init_cmd.varlist=p_varlist;
    c->cmd_data.command_data_u.init_cmd.init_like_exprlist=0;
+   c->cmd_data.command_data_u.init_cmd.tonull=tonull;
 
    if (p_tablist && p_tablist->str_list_entry.str_list_entry_len)  {
    		c->cmd_data.command_data_u.init_cmd.init_like_exprlist=malloc(sizeof(struct expr_str_list));

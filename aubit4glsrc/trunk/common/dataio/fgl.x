@@ -511,6 +511,7 @@ struct struct_init_cmd {
 	/* struct expr_str_list* expanded_varlist; */
 	str_list* tablist;
 	struct expr_str_list *init_like_exprlist;
+	int tonull;
 };
 
 

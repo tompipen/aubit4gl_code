@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.451 2008-11-25 19:20:08 mikeaubury Exp $
+# $Id: compile_c.c,v 1.452 2008-11-27 10:06:45 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.451 2008-11-25 19:20:08 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.452 2008-11-27 10:06:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3005,89 +3005,139 @@ A4GL_assertion(1,"FIXME");
 }
 
 void
-print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int PrefixIncludesName,int expand_array)
+print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int PrefixIncludesName, int expand_array, int tonull)
 {
   char buff[1000];
   char prefix2[1000];
   strcpy (buff, prefix);
-	if (PrefixIncludesName) {
-  		sprintf (prefix2, "%s", prefix);
-	} else {
-  		sprintf (prefix2, "%s%s", prefix, v->names.names.names_val[0].name);
-	}
+  if (PrefixIncludesName)
+    {
+      sprintf (prefix2, "%s", prefix);
+    }
+  else
+    {
+      sprintf (prefix2, "%s%s", prefix, v->names.names.names_val[0].name);
+    }
 
   int d1;
   int size;
   int a;
   char buff_id[200];
-  
+
 
   if (v->arr_subscripts.arr_subscripts_len && expand_array)
     {
-	if (v->arr_subscripts.arr_subscripts_val[0]==-1) {
-			// dynamic array 
-			if (!explicit) return;
+      if (v->arr_subscripts.arr_subscripts_val[0] == -1)
+	{
+	  // dynamic array 
+	  if (!explicit)
+	    return;
 	}
 
       printc ("{");
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
 
-	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl , a);
+	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl, a);
 	  printc ("int %s;\n", buff_id);
 	}
 
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
-	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl,a);
-	
+	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl, a);
+
 	  printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, v->arr_subscripts.arr_subscripts_val[a], buff_id);
 	  strcat (prefix2, "[");
 	  strcat (prefix2, buff_id);
 	  strcat (prefix2, "]");
 	  tmp_ccnt++;
 	}
-	  alvl++;
+      alvl++;
     }
 
 
   switch (v->var_data.variable_type)
     {
     case VARIABLE_TYPE_CONSTANT:
-		// Can't initialize a constant ;-)
-	break;
+      // Can't initialize a constant ;-)
+      break;
 
     case VARIABLE_TYPE_SIMPLE:
       {
 	d1 = v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK;
 	size = DECODE_SIZE (v->var_data.variable_data_u.v_simple.datatype);
-	if (1 || size==0 ) {
-		A4GL_assertion(size,"Expecting size to be zero...");
-		// need to get it from the dimensions...?
-		size=v->var_data.variable_data_u.v_simple.dimensions[0];
-	}
-	if (explicit == 0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT)) //  || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
+
+	if (1 || size == 0)
 	  {
-	    if (d1 == DTYPE_INT || d1 == DTYPE_SMINT)
-	      {
-		printc ("%s=0;", prefix2);
-	      }
-	    else
-	      {
-		if (d1 == DTYPE_MONEY || d1 == DTYPE_DECIMAL)
-		  {
-		    printc ("A4GL_push_int(0);");
-		    printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
-		  }
-		else
-		  {
-		    printc ("%s=0.0;", prefix2);
-		  }
-	      }
+	    A4GL_assertion (size, "Expecting size to be zero...");
+	    // need to get it from the dimensions...?
+	    size = v->var_data.variable_data_u.v_simple.dimensions[0];
+	  }
+
+//printf("tonull=%d\n",tonull);
+	if (tonull == 0)
+	  {
+		switch (d1 & DTYPE_MASK) {
+		case DTYPE_INT:
+		case DTYPE_SMINT:
+			printc ("%s=0;", prefix2);
+			break;
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+			printc ("%s=0.0;", prefix2);
+			break;
+
+		case DTYPE_DATE:
+                        printc ("A4GL_push_today();");
+                        printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
+			break;
+
+		case DTYPE_DTIME:
+                        printc ("A4GL_push_current(1,6);");
+                        printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
+			break;
+	
+		case DTYPE_MONEY:
+		case DTYPE_DECIMAL:
+                        printc ("A4GL_push_int(0);");
+                        printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
+			break;
+		case DTYPE_CHAR:
+		case DTYPE_VCHAR:
+		case DTYPE_NCHAR:
+                        printc ("A4GL_push_char(\" \");");
+                        printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
+			break;
+
+		default : 
+			printc ("A4GL_setnull(%d,&%s,0x%x); /*1 */ \n", d1, prefix2, size);
+		}
 	  }
 	else
 	  {
-	    printc ("A4GL_setnull(%d,&%s,0x%x); /*1 */ \n", d1, prefix2, size);
+	    if (explicit == 0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT))	//  || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
+	      {
+		if (d1 == DTYPE_INT || d1 == DTYPE_SMINT)
+		  {
+		    printc ("%s=0;", prefix2);
+		  }
+		else
+		  {
+		    if (d1 == DTYPE_MONEY || d1 == DTYPE_DECIMAL)
+		      {
+			printc ("A4GL_push_int(0);");
+			printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
+		      }
+		    else
+		      {
+			printc ("%s=0.0;", prefix2);
+		      }
+		  }
+	      }
+	    else
+	      {
+		printc ("A4GL_setnull(%d,&%s,0x%x); /*1 */ \n", d1, prefix2, size);
+	      }
 	  }
       }
       break;
@@ -3095,26 +3145,32 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
     case VARIABLE_TYPE_RECORD:
       {
 	int a;
-		strcat(prefix2,".");
-	for (a=0;a<v->var_data.variable_data_u.v_record.variables.variables_len;a++) {
-		print_init_var (v->var_data.variable_data_u.v_record.variables.variables_val[a], prefix2,  alvl,  explicit,0,1);
-	}
+	strcat (prefix2, ".");
+	for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
+	  {
+	    print_init_var (v->var_data.variable_data_u.v_record.variables.variables_val[a], prefix2, alvl, explicit, 0, 1, tonull);
+	  }
       }
-	break;
+      break;
 
     case VARIABLE_TYPE_ASSOC:
-		{
-		int a;
-		if (v->var_data.variable_data_u.v_record.variables.variables_len) { // Its a record
-			strcat(prefix2,".");
-			for (a=0;a<v->var_data.variable_data_u.v_assoc.variables.variables_len;a++) {
-				print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[a], prefix2,  alvl,  explicit,0,1);
-			}
-		} else {
-			print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[0], prefix2,  alvl,  explicit,1,1);
-		}
-		}
-		break;
+      {
+	int a;
+	if (v->var_data.variable_data_u.v_record.variables.variables_len)
+	  {			// Its a record
+	    strcat (prefix2, ".");
+	    for (a = 0; a < v->var_data.variable_data_u.v_assoc.variables.variables_len; a++)
+	      {
+		print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[a], prefix2, alvl, explicit, 0, 1,
+				tonull);
+	      }
+	  }
+	else
+	  {
+	    print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[0], prefix2, alvl, explicit, 1, 1, tonull);
+	  }
+      }
+      break;
 
 
     default:
@@ -3136,7 +3192,6 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit,int Pre
 
 
 }
-
 
 
 #ifdef SHOULD_BE_MOVED_TO_COMPILER
@@ -4795,7 +4850,7 @@ void print_nullify (char type, variable_list * v)
 
       //if (v->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
         //{
-          print_init_var ( v->variables.variables_val[a], "", 0, 0,0,1);
+          print_init_var ( v->variables.variables_val[a], "", 0, 0,0,1,1);
           //continue;
         //}
 

@@ -37,7 +37,7 @@ struct command *new_run_cmd(expr_str* p_run_string, e_boolean p_wait, enum run_m
 struct command *new_scroll_cmd(fh_field_list *p_srec, expr_str* p_val);
 struct command *new_exit_prog_cmd(expr_str* p_exit_val);
 struct command *new_prepare_cmd (expr_str *connid, struct expr_str *p_stmtid, expr_str * p_sql);
-struct command *new_init_cmd(struct expr_str_list* p_varlist, str_list *p_tablist);
+struct command *new_init_cmd(struct expr_str_list* p_varlist, str_list *p_tablist,int tonull);
 struct command *new_next_field_cmd(int p_rel,fh_field_entry* p_fieldname) ;
 
 struct command *new_at_term_cmd(char *p_funcname);

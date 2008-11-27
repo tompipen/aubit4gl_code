@@ -5,15 +5,22 @@
 */
 
 
-init_cmd : INITIALIZE init_bind_var_list KW_TO KW_NULL {
-		$<cmd>$= new_init_cmd($<ptr_list>2, NULL);
+init_cmd : INITIALIZE init_bind_var_list KW_TO null_or_not_null  {
+		$<cmd>$= new_init_cmd($<ptr_list>2, NULL,$<integer_val>4);
 		add_feature("INITIALIZE_NULL");
  }
 | INITIALIZE init_bind_var_list LIKE init_tab_list  {
 	add_feature("INITIALIZE_LIKE");
-		$<cmd>$= new_init_cmd($<ptr_list>2, $<str_list>4);
+		$<cmd>$= new_init_cmd($<ptr_list>2, $<str_list>4,0);
 }
 ;
+
+
+null_or_not_null: 
+	KW_NULL {$<integer_val>$=1;}
+	| NOT_NULL {$<integer_val>$=0;}
+;
+
 
 
 init_tab_list : init_tab  {
