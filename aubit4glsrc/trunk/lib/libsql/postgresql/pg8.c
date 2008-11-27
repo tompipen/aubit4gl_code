@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.62 2008-11-26 13:51:15 mikeaubury Exp $
+# $Id: pg8.c,v 1.63 2008-11-27 18:33:26 mikeaubury Exp $
 #*/
 
 
@@ -1550,6 +1550,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		s=0;
 		}
 	      A4GL_set_a4gl_sqlca_errd (5, oid);
+		if (res2) { PQclear(res2); }
 	    }
 	}
     }
