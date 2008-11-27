@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.151 2008-11-19 21:15:34 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.152 2008-11-27 09:12:01 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.151 2008-11-19 21:15:34 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.152 2008-11-27 09:12:01 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2084,7 +2084,6 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
 
     case 13:
-    case 10:
       if (A4GL_get_dbscr_inputmode () == 0
 	  && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	{
@@ -2095,6 +2094,30 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	}
       A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
       A4GL_newMovement (s, s->curr_attrib + 1);
+      break;
+
+
+    case 10:
+	if (isWordWrap) {	
+              		A4GL_int_form_driver (mform, REQ_INS_MODE);
+			while (1) {
+				A4GL_int_form_driver(mform,' ');
+				A4GL_int_form_driver(mform,REQ_VALIDATION);
+				if (A4GL_get_curr_field_col (mform)<=1) break;
+			}
+
+	  		if (!form->insmode) {
+              			A4GL_int_form_driver (mform, REQ_OVL_MODE);
+			}
+	} else {
+      		if (A4GL_get_dbscr_inputmode () == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f)) {
+	  		A4GL_debug ("ACCEPT - EXIT_INPUT_OK\n");
+	  		A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a, __LINE__);
+	  		return 0;
+		}
+      		A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
+      		A4GL_newMovement (s, s->curr_attrib + 1);
+	}
       break;
 
     case A4GLKEY_DOWN:
