@@ -22,8 +22,8 @@ for a=1 to ndbs
 end for
 call set_pick_cnt(ndbs)
 
-display  "Choose a database with the arrow keys, or type one in" at 2,1
-let lv_newname=prompt_pick("SELECT DATABASE >>","")
+#display  "Choose a database with the arrow keys, or type one in" at 2,1
+let lv_newname=prompt_pick_and_say("SELECT DATABASE >>","","Choose a database with the arrow keys, or type one in")
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
@@ -65,8 +65,8 @@ for a=1 to ntab
 end for
 call set_pick_cnt(ntab)
 
-display  "Choose a table with the arrow keys, or type one in" at 2,1
-let lv_name=prompt_pick("SELECT TABLE >>","")
+#display  "Choose a table with the arrow keys, or type one in" at 2,1
+let lv_name=prompt_pick_and_say("SELECT TABLE >>","","Choose a table with the arrow keys, or type one in")
 if lv_name is null or lv_name matches " " then
 	return 0
 else
@@ -113,8 +113,8 @@ for a=1 to ncol
 end for
 call set_pick_cnt(ncol)
 
-display  "Choose a column with the arrow keys, or type one in" at 2,1
-let lv_name=prompt_pick("SELECT COLUMN >>","")
+#display  "Choose a column with the arrow keys, or type one in" at 2,1
+let lv_name=prompt_pick_and_say("SELECT COLUMN >>","","Choose a column with the arrow keys, or type one in")
 if lv_name is null or lv_name matches " " then
 	return 0
 else
