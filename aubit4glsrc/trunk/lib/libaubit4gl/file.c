@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.5 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: file.c,v 1.6 2008-11-27 08:00:30 mikeaubury Exp $
 #
 */
 
@@ -91,13 +91,16 @@ A4GL_file_length (char *fname)
 int
 A4GL_move_file (char *from, char *to)
 {
+
 #if USE_RENAME
-  if (unlink (to) != 0)
-    return 0;
+  if (A4GL_file_exists(to)) {
+  	if (unlink (to) != 0) return 0;
+	}
   rename (from, to);
 #else
-  if (unlink (to) != 0)
-    return 0;
+  if (A4GL_file_exists(to)) {
+  	if (unlink (to) != 0) return 0;
+	}
   if (!A4GL_copy_file (from, to))
     return 0;
   if (unlink (from) != 0)
@@ -121,9 +124,9 @@ A4GL_file_exists (char *fname)
 {
 #ifdef HAVE_SYS_STAT_H
   struct stat buf;
-
-  if (stat (fname, &buf) == 0)
+  if (stat (fname, &buf) == 0) {
     return 1;
+  }
   return 0;
 #else
   {
