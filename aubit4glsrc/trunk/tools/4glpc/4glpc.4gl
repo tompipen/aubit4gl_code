@@ -1322,9 +1322,17 @@ if lv_errsize>0 then
 		if mv_verbose>4 then
 			call head_file(mv_errfile,55)
 		end if
-		call rename_file(mv_errfile,mv_warnfile)
+		#display "mv_errfile=",mv_errfile
+		#display "mv_warnfile=",mv_warnfile
+		if  not rename_file(mv_errfile,mv_warnfile) then
+			display "Error : unable to copy ",mv_errfile clipped, " to ", mv_warnfile
+			let p_status=1 # fake an exit status so the .err is not removed
+		else
+			display "Check ", mv_warnfile clipped, " for details"
+		end if
 	end if
 end if
+
 
 if p_status=0 then 
 	call remove_file(mv_errfile)
@@ -1698,10 +1706,15 @@ define m2 char(255)
 define lv_str char(1000)
 define a integer
 code
+{
 A4GL_trim(m1);
 A4GL_trim(m2);
-A4GL_move_file(m1,m2);
+a=A4GL_move_file(m1,m2);
+}
 endcode
+
+
+return a
 
 end function
 
@@ -1780,10 +1793,12 @@ end function
 function file_exists(s)
 define s char(512)
 define a integer
+code
 {
 A4GL_trim(s);
 a=A4GL_file_exists(s);
 }
+endcode
 return a
 end function
 
