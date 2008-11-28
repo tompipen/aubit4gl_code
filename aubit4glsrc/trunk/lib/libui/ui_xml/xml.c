@@ -1786,7 +1786,7 @@ UILIB_A4GL_remove_window (char *win_name)
 }
 
 int
-UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, int scrollf, int scrollw, void *evt)
+UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char * scrollf, int scrollw, void *evt)
 {
   char buff[2000];
   int a, b;

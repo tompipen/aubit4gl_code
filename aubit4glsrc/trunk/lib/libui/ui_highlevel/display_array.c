@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.39 2008-09-15 12:28:41 mikeaubury Exp $
+# $Id: display_array.c,v 1.40 2008-11-28 22:06:42 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.39 2008-09-15 12:28:41 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.40 2008-11-28 22:06:42 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -683,7 +683,7 @@ disp_loop (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
  */
 int
 UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,
-			int scrollf, int scrollw, void *vevt)
+			char * scrollf, int scrollw, void *vevt)
 {
   int a;
   struct s_disp_arr *disp;

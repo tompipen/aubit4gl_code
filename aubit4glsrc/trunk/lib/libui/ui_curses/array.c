@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.59 2008-11-03 11:16:19 mikeaubury Exp $
+# $Id: array.c,v 1.60 2008-11-28 22:06:41 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.59 2008-11-03 11:16:19 mikeaubury Exp $";
+		"$Id: array.c,v 1.60 2008-11-28 22:06:41 mikeaubury Exp $";
 #endif
 
 
@@ -643,7 +643,7 @@ return rval;
  */
 int
  UILIB_A4GL_disp_arr_v2 (
-void *dispv, void *ptr, char *srecname, int attrib, int scrollf,int scrollw,void *vevt)
+void *dispv, void *ptr, char *srecname, int attrib, char  *scrollf,int scrollw,void *vevt)
 {
   int a;
 struct s_disp_arr *disp;

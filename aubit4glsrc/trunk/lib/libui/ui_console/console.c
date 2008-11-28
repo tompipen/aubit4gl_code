@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.46 2008-11-07 20:49:18 mikeaubury Exp $
+# $Id: console.c,v 1.47 2008-11-28 22:06:41 mikeaubury Exp $
 #*/
 
 /**
@@ -691,7 +691,7 @@ return 0;
 char* UILIB_A4GL_get_currwin_name(void )  NOPE0
 int UILIB_A4GL_cr_window_form(char* name,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib, char *style, char *text)  NOPE0
 int UILIB_A4GL_current_window(char* win_name)  NOPE0
-int UILIB_A4GL_disp_arr_v2(void* disp,void* ptr,char* srecname,int attrib,int scrollf,int scrollw,void* evt)  NOPE0
+int UILIB_A4GL_disp_arr_v2(void* disp,void* ptr,char* srecname,int attrib,char * scrollf,int scrollw,void* evt)  NOPE0
 int UILIB_A4GL_disp_fields_ap(int n,int attr,va_list* ap)  NOPE0
 int UILIB_A4GL_disp_form(char* name,int attr)  NOPE0
 int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap)  NOPE0

@@ -59,7 +59,7 @@ A4GL_fgl_infield_ia_ap void* inp,va_list* ap -> int
 A4GL_clr_window char* winname -> void
 A4GL_sleep_i -> void
 A4GL_remove_window char* win_name -> void
-A4GL_disp_arr_v2 void* disp void* ptr char* srecname int attrib int scrollf int scrollw void* evt  -> int
+A4GL_disp_arr_v2 void* disp void* ptr char* srecname int attrib char* scrollf int scrollw void* evt  -> int
 A4GL_inp_arr_v2 void* disp int defs char* srecname int attrib int init void* evt -> int
 A4GL_prompt_loop_v2 void* prompt,int timeout void* evt_list -> int
 A4GL_start_prompt void* prompt int ap int c int h int af char* text, char* style -> int
