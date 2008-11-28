@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.217 2008-11-11 22:49:26 mikeaubury Exp $
+# $Id: stack.c,v 1.218 2008-11-28 15:41:21 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ int nset[MAX_DTYPE][9] = {
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN},	// DTIME
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// BYTE
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// TEXT
-  {0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// VCHAR
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// VCHAR
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}	// INTERVAL
 };
 #else
@@ -158,7 +158,7 @@ int nset[MAX_DTYPE][9] = {
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN},	// DTIME
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// BYTE
   {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// TEXT
-  {0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// VCHAR
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// VCHAR
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}	// INTERVAL
 };
 
