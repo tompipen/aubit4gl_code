@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.9 2008-04-09 16:04:44 mikeaubury Exp $
+# $Id: makefile,v 1.10 2008-11-28 09:43:45 mikeaubury Exp $
 #
 
 # Currently Informix only
@@ -85,6 +85,7 @@ ifdef COMSPEC
 endif
 
 
+A4GL_OBJ_EXT=.ao
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -92,8 +93,12 @@ endif
 all: ${ALL}
 	@echo "Default target (${ALL}) succesfuly compiled."
 	
-${ROOT}/bin/aupscol: main.ao upscol.ao generic.ao pick.ao val.ao att.ao
+${ROOT}/bin/aupscol: main.ao upscol.ao generic.ao pick.ao val.ao att.ao ../asql/pick10.afr${A4GL_OBJ_EXT} ../asql/pick20.afr${A4GL_OBJ_EXT} ../asql/pick38.afr${A4GL_OBJ_EXT} ../asql/pick78.afr${A4GL_OBJ_EXT} splash.afr${A4GL_OBJ_EXT}
 	${4GLC} ${VERBOSE_FLAG} $^ -o $@
+
+%.afr${A4GL_OBJ_EXT}:%.per
+	fcompile -c $<
+	4glpc -c -o $@ ${subst .per,.afr.c,$<}
 
 
 ## ==================================================================

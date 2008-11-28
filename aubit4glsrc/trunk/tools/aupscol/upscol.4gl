@@ -35,13 +35,25 @@ initialize mv_curr_tab to null
 initialize mv_curr_col to null
 # if you don't want to see the banner
 # ever then set this to 1
-let lv_quiet=1
+let lv_quiet=0
 defer interrupt
 code
 A4GL_setenv("A4GL_AUTOBANG","Y",1);
 endcode
+        call form_is_compiled(pick10,"MEMPACKED","GENERIC")
+        call form_is_compiled(pick20,"MEMPACKED","GENERIC")
+        call form_is_compiled(pick38,"MEMPACKED","GENERIC")
+        call form_is_compiled(pick78,"MEMPACKED","GENERIC")
+
+        call form_is_compiled(splash,"MEMPACKED","GENERIC")
 
 options message line last
+
+if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
+        call set_use_form()
+else
+        call clr_use_form()
+end if
 
 
 if not lv_quiet then
@@ -177,15 +189,20 @@ return lv_str
 end function
 
 function copyright_banner()
-
-clear screen
-display middle(get_version()) at 7,1
-display middle("(c) 2004 Aubit Computing Ltd") at 9,1
-display middle("http://www.aubit.com") at 10,1
-display middle("Latest version available at:") at 13,1
-display middle("http://aubit4gl.sourceforge.net") at 14,1
-sleep 4
-clear screen
+if get_use_form() then
+        open window w_splash at 1,1 with form "splash"
+        sleep 2
+        close window w_splash
+else
+	clear screen
+	display middle(get_version()) at 7,1
+	display middle("(c) 2004-2008 Aubit Computing Ltd") at 9,1
+	display middle("http://www.aubit.com") at 10,1
+	display middle("Latest version available at:") at 13,1
+	display middle("http://aubit4gl.sourceforge.net") at 14,1
+	sleep 4
+	clear screen
+end if
 end function
 
 function set_translations()

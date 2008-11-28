@@ -429,49 +429,96 @@ if mv_cnt >=1 then
 	while true
 		let lv_counter=lv_counter+1
 		call show_pick()
+		let int_flag=false
+
+
+
 		if mv_use_form then
 			display lv_description to desc
+			display lv_txt2 to prompt_str
+			input lv_value from value attribute(underline)
+	
+				on key(down)
+					if mv_curr_option+1<=mv_cnt then
+						let mv_curr_option=mv_curr_option+1
+					else
+						let mv_curr_option=1
+					end if
+					call show_pick()
+				
+				on key(right)
+					let lv_doneit=0
+					if mv_curr_option+mv_rows<=mv_cnt then
+						if mv_cpage=mv_printat[mv_curr_option+mv_rows].page_no then
+							let mv_curr_option=mv_curr_option+mv_rows
+							let lv_doneit=1
+						end if
+					end if
+					call show_pick()
+		
+				
+				
+				on key(up)
+					if mv_curr_option-1>=1 then
+						let mv_curr_option=mv_curr_option-1
+					else
+						let mv_curr_option=mv_cnt
+					end if
+					call show_pick()
+				
+				on key(left)
+					let lv_doneit=0
+					if mv_curr_option-mv_rows>=1 then
+						if mv_cpage=mv_printat[mv_curr_option-mv_rows].page_no then
+							let mv_curr_option=mv_curr_option-mv_rows
+							let lv_doneit=1
+						end if
+					end if
+					call show_pick()
+				
+			end input
 		else
 			display lv_description clipped, "" at 2,1
+			prompt lv_txt2 clipped for lv_value #attribute(normal)
+	
+				on key(down)
+					if mv_curr_option+1<=mv_cnt then
+						let mv_curr_option=mv_curr_option+1
+					else
+						let mv_curr_option=1
+					end if
+				
+				on key(right)
+					let lv_doneit=0
+					if mv_curr_option+mv_rows<=mv_cnt then
+						if mv_cpage=mv_printat[mv_curr_option+mv_rows].page_no then
+							let mv_curr_option=mv_curr_option+mv_rows
+							let lv_doneit=1
+						end if
+					end if
+		
+				
+				
+				on key(up)
+					if mv_curr_option-1>=1 then
+						let mv_curr_option=mv_curr_option-1
+					else
+						let mv_curr_option=mv_cnt
+					end if
+				
+				on key(left)
+					let lv_doneit=0
+					if mv_curr_option-mv_rows>=1 then
+						if mv_cpage=mv_printat[mv_curr_option-mv_rows].page_no then
+							let mv_curr_option=mv_curr_option-mv_rows
+							let lv_doneit=1
+						end if
+					end if
+				
+			end prompt
 		end if
-		let int_flag=false
-		prompt lv_txt2 clipped for lv_value #attribute(normal)
-	
-			on key(down)
-				if mv_curr_option+1<=mv_cnt then
-					let mv_curr_option=mv_curr_option+1
-				else
-					let mv_curr_option=1
-				end if
-			
-			on key(right)
-				let lv_doneit=0
-				if mv_curr_option+mv_rows<=mv_cnt then
-					if mv_cpage=mv_printat[mv_curr_option+mv_rows].page_no then
-						let mv_curr_option=mv_curr_option+mv_rows
-						let lv_doneit=1
-					end if
-				end if
-	
-			
-			
-			on key(up)
-				if mv_curr_option-1>=1 then
-					let mv_curr_option=mv_curr_option-1
-				else
-					let mv_curr_option=mv_cnt
-				end if
-			
-			on key(left)
-				let lv_doneit=0
-				if mv_curr_option-mv_rows>=1 then
-					if mv_cpage=mv_printat[mv_curr_option-mv_rows].page_no then
-						let mv_curr_option=mv_curr_option-mv_rows
-						let lv_doneit=1
-					end if
-				end if
-			
-		end prompt
+
+
 
 
 		if fgl_lastkey()!=fgl_keyval("ENTER") and fgl_lastkey()!=fgl_keyval(".") and fgl_lastkey()!=fgl_keyval(",") and int_flag=false then

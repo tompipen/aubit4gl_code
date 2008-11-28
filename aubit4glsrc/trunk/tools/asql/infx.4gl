@@ -631,7 +631,7 @@ if lv_cnt=1 then
         error "Either the SQLHOSTS file cannot be read - or it is empty"
 end if
 
-let lv_server=prompt_pick_and_say("SELECT DATABASE SERVER >>","","")
+let lv_server=prompt_pick_and_say("SELECT DATABASE SERVER >>","","Select the database server you wish to use")
 
 if lv_server is null or lv_server matches " " then
         return
@@ -1564,7 +1564,7 @@ code
 endcode
 
 call set_pick_cnt(ndbs)
-let lv_newname=prompt_pick_and_say("SELECT DATABASE >>","","")
+let lv_newname=prompt_pick_and_say("SELECT DATABASE >>","","Select the database you wish to use")
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
