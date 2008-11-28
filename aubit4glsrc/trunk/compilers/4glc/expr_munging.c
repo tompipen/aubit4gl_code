@@ -20,7 +20,7 @@ void ensure_smfloat (struct expr_str *s, int notnull);
 void ensure_interval (struct expr_str *s, int notnull);
 void ensure_byte (struct expr_str *s, int notnull);
 int expr_datatype (struct expr_str *p);
-void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
+static void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
 void fix_compare (char *op, struct expr_str *s);
 void force_float (struct expr_str *s);
 //struct expr_str *get_expr_datatype(int n) ;
@@ -305,7 +305,7 @@ ensure_bool (struct expr_str *s, int notnull)
 
 
 
-      if (l != r)
+      if (l != r) // 1
         {
           int fixed = 0;
           // Comparing differing types...
@@ -319,14 +319,104 @@ ensure_bool (struct expr_str *s, int notnull)
               ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
               fixed++;
             }
+
           if (l == DTYPE_DECIMAL && r == DTYPE_SMINT)
             {
               ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
               fixed++;
             }
+
           if (l == DTYPE_DECIMAL && r == DTYPE_FLOAT)
             {
               ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+              fixed++;
+            }
+
+          if (l == DTYPE_DECIMAL && r == DTYPE_SMFLOAT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+              fixed++;
+            }
+
+          if (l == DTYPE_DECIMAL && r == DTYPE_MONEY)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+              fixed++;
+		}
+
+
+          if (l == DTYPE_MONEY && r == DTYPE_DECIMAL)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+              fixed++;
+		}
+
+          if (l == DTYPE_MONEY && r == DTYPE_INT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+          if (l == DTYPE_MONEY && r == DTYPE_SMINT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+          if (l == DTYPE_MONEY && r == DTYPE_FLOAT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+          if (l == DTYPE_MONEY && r == DTYPE_SMFLOAT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_MONEY && l == DTYPE_INT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_MONEY && l == DTYPE_SMINT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_MONEY && l == DTYPE_FLOAT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+              fixed++;
+            }
+
+
+
+
+          if (r == DTYPE_DECIMAL && l == DTYPE_INT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_DECIMAL && l == DTYPE_SMINT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_DECIMAL && l == DTYPE_FLOAT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_DECIMAL && l == DTYPE_SMFLOAT)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
               fixed++;
             }
 
@@ -336,13 +426,13 @@ ensure_bool (struct expr_str *s, int notnull)
               fixed++;
             }
 
-
-
           if (l == FAKE_DTYPE_BOOL && (r == DTYPE_INT || r == DTYPE_SMINT))
             {
               ensure_int (s->expr_str_u.expr_op->left, 0);
               fixed++;
             }
+
+
           if (r == FAKE_DTYPE_BOOL && (l == DTYPE_INT || l == DTYPE_SMINT))
             {
               ensure_int (s->expr_str_u.expr_op->right, 0);
