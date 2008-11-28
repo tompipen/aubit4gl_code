@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.220 2008-11-11 17:36:36 mikeaubury Exp $
+# $Id: esql.ec,v 1.221 2008-11-28 17:13:54 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.220 2008-11-11 17:36:36 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.221 2008-11-28 17:13:54 mikeaubury Exp $";
 #endif
 
 
@@ -949,7 +949,7 @@ A4GLSQLLIB_A4GLSQL_get_currdbname (void)
 
 
 static void freeStatement(struct s_sid *sid) {
-/*
+	/*
 	if (sid->statementName) {
 		
 		if (A4GL_has_pointer(sid->statementName, PRECODEEC))  {
@@ -960,14 +960,14 @@ static void freeStatement(struct s_sid *sid) {
 			A4GL_del_pointer(sid->statementName, PRECODE);
 		}
 	}
-*/
+	*/
 
         	if (sid->select) {
                        	free(sid->select);
         	}
-        	sid->statementName=0;
-        	memset(sid,0, sizeof(sid));
-        	free(sid);
+        	strcpy(sid->statementName,"");
+        	//memset(sid,0, sizeof(sid));
+        	//free(sid);
 		A4GL_removePreparedStatementBySid(sid);
 
 	//}
@@ -1000,7 +1000,7 @@ static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDIN
   if (strlen(uniqid)==0) {
 		uniqid=getGlobalStatementName();
   }
-  sid->statementName = strdup (uniqid);
+  strcpy(sid->statementName ,uniqid);
   sid->inputDescriptorName = 0;
   sid->outputDescriptorName = 0;
   sid->extra_info = 0;
@@ -1047,13 +1047,16 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
   }
   free (s_internal);
 
-
+  //printf("Looking for %s\n",uniqId);
   sid=A4GLSQL_find_prepare (uniqId);
+
   if (sid) {
+	printf("Free\n");
 	statementName=uniqId;
         A4GLSQL_free_prepare(sid);
         A4GL_removePreparedStatementBySid(sid);
 	EXEC SQL FREE :statementName;
+	free(sid);
   }
 
   sid = newStatement (ibind, ni, obind, no, s,uniqId);
@@ -2830,14 +2833,15 @@ if (reset_Sqlca) {a4gl_sqlca.sqlcode=0;
     {
 
 
+        EXEC SQL FREE:cursorName;
          sid=A4GLSQL_find_prepare (cursorName);
          if (sid) {
               A4GLSQL_free_prepare(sid);
               A4GL_removePreparedStatementBySid(sid);
+		free(sid);
         }
 
 
-        EXEC SQL FREE:cursorName;
 
 
 	  return;
@@ -4238,7 +4242,7 @@ struct s_sid *sid;
 
   sql_stmt=sid->statementName;
   
-  A4GL_debug("Looking for statement : %s\n",stmt);
+  //A4GL_debug("Looking for statement : %s\n",stmt);
   EXEC SQL DESCRIBE $sql_stmt INTO udesc;
   if (sqlca.sqlcode==0) {
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.226 2008-10-17 12:07:43 mikeaubury Exp $
+# $Id: sql.c,v 1.227 2008-11-28 17:13:54 mikeaubury Exp $
 #
 */
 
@@ -1150,8 +1150,8 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni,
     sid->ni = ni;
     sid->no = no;
     sid->hstmt = NULL;
-    sid->statementName=acl_strdup(uniqid);
-    A4GL_set_associated_mem(sid, sid->statementName);  // Free the statement name when it frees the sid..
+    strcpy(sid->statementName,uniqid);
+    //A4GL_set_associated_mem(sid, sid->statementName);  // Free the statement name when it frees the sid..
 
     A4GL_trc("Before prepare_statement_internal");
     if (prepare_statement_internal(sid, s))
@@ -3269,11 +3269,6 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
     
     A4GL_trc("In sql_free_sid sid=%p &sid=%p", *sid, sid);
 
-/*
-    if ((*sid)->statementName!=0) { 
-		A4GL_del_pointer ((*sid)->statementName, PRECODE); 
-	}
-*/
 
     if ((*sid)->hstmt==0) return 1;
     ignore_next_sql_error = 1;

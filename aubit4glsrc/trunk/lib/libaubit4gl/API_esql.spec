@@ -32,6 +32,10 @@ LIB_PREFIX ESQLAPI_
 *
 
 A4GL_copy_char char* infx,char* a4gl,short*  indicat,int size,char mode,int x,int y -> void
+A4GL_copy_vchar char* infx,char* a4gl,short*  indicat,int size,char mode,int x,int y -> void
+A4GL_copy_blob void* infx,void* a4gl,short*  indicat,int size,char mode -> void
+A4GL_copy_blob_byte void* infx,void* a4gl,short*  indicat,int size,char mode -> void
+A4GL_copy_blob_text void* infx,void* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_date long* infx,long* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_datetime void* infx, void* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_interval void* infx, void* a4gl,short*  indicat,int size,char mode -> void

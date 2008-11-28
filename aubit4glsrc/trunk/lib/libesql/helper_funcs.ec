@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.77 2008-11-25 21:45:27 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.78 2008-11-28 17:13:54 mikeaubury Exp $
 #
 */
 
@@ -706,7 +706,9 @@ struct svarchar {
                 }
 #else
                 A4GL_debug("Copy : '%s' from rdbms to a4gl",infx);
-                if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,1); return;}
+                if (risnull(CCHARTYPE,(void*)infx)) { 
+			A4GL_setnull(0,(void *)a4gl,1); return;
+		}
                 strcpy((char *)(a4gl),(char *)(infx));
 #endif
         }
@@ -893,10 +895,10 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 
 #ifndef DIALECT_INFORMIX
-void ESQLAPI_A4GL_copy_blob_byte(void *infx,struct fgl_int_loc  *a4gl,short *p_indicat,int size,char mode)  {
+void ESQLAPI_A4GL_copy_blob_byte(void *infx,void  *a4gl,short *p_indicat,int size,char mode)  {
 	A4GL_assertion(1,"copy_blob_byte not implemented");
 }
-void ESQLAPI_A4GL_copy_blob_text(void *infx,struct fgl_int_loc  *a4gl,short *p_indicat,int size,char mode)  {
+void ESQLAPI_A4GL_copy_blob_text(void *infx,void  *a4gl,short *p_indicat,int size,char mode)  {
 	A4GL_assertion(1,"copy_blob_text not implemented");
 }
 
@@ -960,9 +962,13 @@ a4gl=v_a4gl;
 
 
 void 
-ESQLAPI_A4GL_copy_blob(loc_t *infx,struct fgl_int_loc *a4gl,short *p_indicat,int size,char mode)  {
+ESQLAPI_A4GL_copy_blob(void *infxv,void *a4glv,short *p_indicat,int size,char mode)  {
 short indicat=0;
 int isnull;
+	loc_t *infx;
+	struct fgl_int_loc *a4gl;
+	infx=infxv;
+	a4gl=a4glv;
 
 	if (mode=='i') {
 		isnull=A4GL_isnull(DTYPE_TEXT,(void *)a4gl);

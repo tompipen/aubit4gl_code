@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.67 2008-10-21 12:58:32 mikeaubury Exp $
+# $Id: sql_common.c,v 1.68 2008-11-28 17:13:54 mikeaubury Exp $
 #
 */
 
@@ -1992,6 +1992,9 @@ A4GL_removePreparedStatement (char *name)
   int a;
   a = A4GL_findPreparedStatement (name);
   strcpy (preparedStatements[a].preparedStatementName, "");
+  strcpy (preparedStatements[a].anonymousName, "");
+  preparedStatements[a].sid=NULL;
+  preparedStatements[a].extra_data=NULL;
 }
 
 void
@@ -2005,6 +2008,9 @@ A4GL_removePreparedStatementBySid (void *sid)
 	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
 	    {
 	      strcpy (preparedStatements[a].preparedStatementName, "");
+  		strcpy (preparedStatements[a].anonymousName, "");
+  		preparedStatements[a].sid=NULL;
+  		preparedStatements[a].extra_data=NULL;
 	    }
 	}
     }
@@ -2016,6 +2022,9 @@ A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_da
 {
   int a;
   int found = -1;
+
+A4GL_debug("npreparedStatements=%d\n",npreparedStatements);
+//printf("npreparedStatements=%d\n", npreparedStatements);
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)
@@ -2045,7 +2054,7 @@ A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_da
       found = npreparedStatements - 1;
     }
   strcpy (preparedStatements[found].preparedStatementName, name);
-  strcpy (preparedStatements[found].anonymousName, name);
+  strcpy (preparedStatements[found].anonymousName, anonname);
   preparedStatements[found].sid = sid;
   preparedStatements[found].extra_data = extra_data;
 }

@@ -14,6 +14,7 @@ static int dbg = 0;
 char *lint_module = 0;
 static void load_boltons (char *fname);
 static int find_function (char *s);
+static void linearise_expressions (struct expr_str_list *list);
 //void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
 
 //void dump_prototypes(void) ;
@@ -554,6 +555,22 @@ int a;
       yylineno = r->lineno;
       if (r->cmd_data.type == E_CMD_RETURN_CMD)
 	{
+		if (r->cmd_data.command_data_u.return_cmd.retvals) {
+			int a;
+			struct expr_str_list list;
+			list.list.list_len=0;
+			list.list.list_val=0;
+			cache_expression_list (&list, r->cmd_data.command_data_u.return_cmd.retvals);
+			linearise_expressions (&list);
+			for  (a=0;a<list.list.list_len;a++) {
+				if (list.list.list_val[a]->expr_type==ET_EXPR_FCALL) {
+	      				A4GL_lint (module_name, r->lineno, "CS.FRET", "Coding Standards: Function RETURNs  with a the result from another function call", 0);
+					break; // no point repeating the test..
+				}
+			}
+		}
+
+
 	  if (nreturns)
 	    {
 	      int nvals;
@@ -586,9 +603,13 @@ int a;
 		  nretvals = 0;
 		}
 	      nreturns++;
-
 	    }
+
+
 	}
+
+
+
       if (r->cmd_data.type == E_CMD_WHENEVER_CMD)
 	{
 	  int p_whencode;
@@ -4053,8 +4074,7 @@ struct s_function_prototype {
 // we should end up with a list of expressions at the top - which only reference cached expressions or literals
 
 
-static void
-linearise_expressions (struct expr_str_list *list)
+static void linearise_expressions (struct expr_str_list *list)
 {
   int b;
   if (list == 0)

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.162 2008-11-16 15:47:40 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.163 2008-11-28 17:13:54 mikeaubury Exp $
 #
 */
 
@@ -452,7 +452,6 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
       if (!A4GL_compile_time_convert ())
 	return;
     }
-
   if (!A4GL_has_pointer (buff, SQL_CONVERSION))
     {
       A4GL_cv_fnlist (source_dialect, target_dialect, buff);
@@ -486,6 +485,7 @@ read_conversion_file (FILE * fh, char *name)
   int len;
   int line = 0;
   char thisline[2000];
+int sz;
   static struct cvsql_data *conversion_rules = 0;
   static int conversion_rules_cnt = 0;
 
@@ -802,9 +802,11 @@ read_conversion_file (FILE * fh, char *name)
 
 
 
-
       conversion_rules_cnt++;
-      conversion_rules = acl_realloc (conversion_rules, sizeof (*conversion_rules) * conversion_rules_cnt);
+	//printf("Malloc : %d\n",sz);
+	sz=sizeof (conversion_rules[0]) * conversion_rules_cnt;
+      conversion_rules = acl_realloc (conversion_rules, sz);
+
 
 
       conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len, 1);

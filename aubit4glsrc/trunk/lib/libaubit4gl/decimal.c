@@ -65,7 +65,6 @@ char *s;
 
 
   s=A4GL_char_pop();
-//if (!strchr(s,'.')) A4GL_pause_execution();
   A4GL_init_dec(b,0,0);
   A4GL_str_dot_to_dec(s, b);
  
@@ -502,9 +501,6 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
   int carry;
   int l2;
   char tmpbuf[2];
-  if (strlen(str_orig)>80) {
-		A4GL_pause_execution();
-	}
   A4GL_strncpyz (str, str_orig, sizeof (str));
 //A4GL_remove_trailing_zeros_and_leading_spaces(str);
   A4GL_trim (str);

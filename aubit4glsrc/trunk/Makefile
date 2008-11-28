@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.57 2008-11-19 17:08:54 mikeaubury Exp $
+# $Id: Makefile,v 1.58 2008-11-28 17:13:53 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -104,19 +104,42 @@ default: ${ALL} test default.msg.tmp
 
 default.msg.tmp:
 	@echo " "
-	@echo "+--------------------------------------------------------------------+"
-	@echo "|      Successfully compiled Aubit compiler default targets          |"
-	@echo "| You MUST install it before you can use it - execute 'make install' |"
-	@echo "| Current default install settings :                                 |"
+	@echo "+----------------------------------------------------------------------+"
+	@echo "|      Successfully compiled Aubit compiler default targets            |"
+	@echo "| You should install it before you can use it - execute 'make install' |"
+	@echo "|                                                                      |"
+	@echo "| Current default install settings :                                   |"
 	@echo "| PREFIX           =${PREFIX} "
 	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
 	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
-	@echo "| Override any variable above using 'make install <var>=<value>'     |"
-	@echo "| Execute 'make extra' to compile additional components:             |"
-	@echo "| ${ALL_EXTRA}"
-	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
-	@echo "| Use 'make doxy' to create API documentation.                       |"
-	@echo "+--------------------------------------------------------------------+"
+	@echo "| Override any variable above using 'make install <var>=<value>'       |"
+	@echo "| Execute 'make extra' to compile additional components:               |"
+	@echo "| ${ALL_EXTRA}  "
+	@echo "| Use Aubit regression tests available from CVS to test the build.     |"
+	@echo "| Use 'make doxy' to create API documentation.                         |"
+	@echo "|                                                                      |"
+	@echo "| If you prefer to run Aubit4GL 'inplace' - then please set the        |"
+	@echo "| environment as required. Eg.                                         |"
+	@echo "|                                                                      |"
+	@echo "|   For Linux & most Unix :                                            |"
+	@echo "|     export AUBITDIR=${AUBIT_SRC_ROOT}                                 "
+	@echo '|     export PATH=$$PATH:$$AUBITDIR/bin                                   '
+	@echo '|     export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$$AUBITDIR/lib             '
+	@echo "|                                                                      |"
+	@echo "|   For Windows           :                                            |"
+	@echo "|     export AUBITDIR=${AUBIT_SRC_ROOT}                                 "
+	@echo '|     export PATH=$$PATH:$$AUBITDIR/bin:$$AUBITDIR/lib              '
+	@echo "|                                                                      |"
+	@echo "|   For MacOSX            :                                            |"
+	@echo "|     export AUBITDIR=${AUBIT_SRC_ROOT}                                 "
+	@echo '|     export PATH=$$PATH:$$AUBITDIR/bin                                   '
+	@echo '|     export DYLD_LIBRARY_PATH=$$DYLD_LIBRARY_PATH:$$AUBITDIR/lib         '
+	@echo "|                                                                      |"
+	@echo "| You may need to add any directories for any used libraries to the    |"
+	@echo "| DYLD_LIBRARY_PATH or LD_LIBRARY_PATH etc (eg. for Informix, MYSQL,   |"
+	@echo "| postgresql etc)                                                      |"
+	@echo "+----------------------------------------------------------------------+"
+
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
 

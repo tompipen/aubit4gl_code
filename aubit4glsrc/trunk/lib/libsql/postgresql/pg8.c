@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.65 2008-11-27 19:43:19 mikeaubury Exp $
+# $Id: pg8.c,v 1.66 2008-11-28 17:13:54 mikeaubury Exp $
 #*/
 
 
@@ -121,6 +121,7 @@ int curr_colno = 0;
 
 */
 
+static void internal_free_cursor (char *s);
 
 PGconn *current_con=0;
 PGresult *resGC = 0;
@@ -1268,7 +1269,7 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
     }
   buff[b] = 0;
   n->select = strdup (buff);
-  n->statementName = strdup (uniqid);
+  strcpy(n->statementName ,uniqid);
   pg_extra->reallyprepared = 0;
 
   pg_extra->data_area_in = 0;
@@ -1290,7 +1291,7 @@ A4GL_debug("uniqid=%s", uniqid);
 	A4GL_debug("Exists");
         a=A4GL_find_pointer_val(uniqid, PREPAREPG);
 	if (a && a->select) free(a->select);
-	if (a && a->statementName) free(a->statementName);
+	//if (a && a->statementName) free(a->statementName);
 
 	if (a) {
 		A4GL_debug("Freeing...");
@@ -1318,6 +1319,42 @@ A4GL_debug("uniqid=%s", uniqid);
 
 
 
+void internal_free_cursor (char *s)
+{
+char *cursorName = s;
+void *sid;
+
+ if (A4GL_has_pointer (s, CURCODE))
+    {
+      struct s_cid *cursorIdentification;
+      cursorIdentification = A4GL_find_pointer (s, CURCODE);
+
+        if (cursorIdentification->statement)  {
+                free (cursorIdentification->statement);
+        }
+
+      free (cursorIdentification);
+      A4GL_del_pointer (s, CURCODE);
+
+
+      sid=A4GLSQL_find_prepare (s);
+      if (sid) { A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid); }
+
+
+    }
+  else
+    {
+         sid=A4GLSQL_find_prepare (cursorName);
+         if (sid) {
+              A4GLSQL_free_prepare(sid);
+              A4GL_removePreparedStatementBySid(sid);
+        }
+        return;
+    }
+}
+
+
+
 int
 A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 					 void *binding)
@@ -1332,6 +1369,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   char *isInsert;
   int use_insert_return = 0;
   PGresult *res=0;
+  char *statementName;
   if (res) PQclear(res);
   A4GL_debug ("Execute\n");
 
@@ -1363,7 +1401,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       n->ni = ni;
       n->ibind = binding;
     }
-
+  statementName =n->statementName;
 
   if (strlen (n->select) == 0)
     return 0;
@@ -1564,8 +1602,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	    }
 	}
  	if (res) { PQclear(res); res=0; }
+  	if (singleton) { internal_free_cursor(statementName); }
       return 0;
     }
+
+
 
   if (setSavepoint)
     {
@@ -1575,7 +1616,13 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	      	Execute ("RELEASE SAVEPOINT preExec", 1);
 	}
     }
- 	if (res) { PQclear(res); res=0; }
+
+
+   if (res) { PQclear(res); res=0; }
+
+
+  	if (singleton) { internal_free_cursor(statementName); }
+
   return 1;
 }
 
@@ -1747,9 +1794,9 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 
 static void free_prepare(struct s_sid *n) {
 	   A4GL_del_pointer(n->statementName, PREPAREPG);
-	   if (n->statementName)  {free (n->statementName);}
+	   //if (n->statementName)  {free (n->statementName);}
 	   if (n->select) {free (n->select);}
-	   n->statementName=0;
+	   strcpy(n->statementName,"");
 	   n->select=0;
 	   A4GL_free_associated_mem (n);
 	   free(n);
@@ -2357,7 +2404,6 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   char buff[20560];
   char *ptr;
   sid = vsid;
-
   if (sid == 0)
     {
       A4GL_exitwith_sql ("Can't declare cursor for non-prepared statement");
@@ -3151,16 +3197,21 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
   ptr = A4GL_find_pointer_val (currname, CURCODE);
   if (ptr == 0)
     {
-
       ptr = A4GLSQL_find_prepare (currname);
 
       if (ptr == 0)
 	{
-	  A4GL_exitwith_sql ("Can't free cursor that hasn't been defined");
+
+		if (A4GLSQL_find_prepare(currname)) {
+			// Free prepare ?
+		} else {
+	  		A4GL_exitwith_sql ("Can't free cursor that hasn't been defined");
+		}
 	}
 
       return;
     }
+
   if (ptr->mode & 0x4000) {
 		// Close any open cursor..
 		A4GLSQLLIB_A4GLSQL_close_cursor(currname);

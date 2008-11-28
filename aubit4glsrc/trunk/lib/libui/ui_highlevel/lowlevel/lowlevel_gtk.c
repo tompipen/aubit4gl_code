@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.137 2008-11-07 16:49:34 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.138 2008-11-28 17:13:54 mikeaubury Exp $";
 #endif
 
 
@@ -2535,24 +2535,32 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   A4GL_LL_set_new_page (widgets[field_cnt - 1], 1);
 
   if (charmode) {
-		width=1;
-  }
-  widgets[field_cnt++] =
-    (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,0,
-				      0, 0,"","");
+		width=1; 
+  } 
 
 
+  widgets[field_cnt++] = (GtkWidget *) A4GL_LL_make_field (0, strlen (promptstr), 1, width - 1, 0,0, 0, 0,"","");
   gtk_fixed_put (GTK_FIXED (p), widgets[field_cnt - 1], (strlen (promptstr) + 1) * gui_xwidth, 0);
   last_prompt_field = widgets[field_cnt - 1];
+	
 
   for (a = 0; a < field_cnt; a++)
     {
       if (widgets[a]) {
-	gtk_widget_show (GTK_WIDGET (widgets[a]));
-	
+		gtk_widget_show (GTK_WIDGET (widgets[a]));
 	}
     }
 
+
+
+  /// Bernard Moreton wants to hide the field of a prompt
+  ///  if its a prompt "..." for char
+  /// - so - lets hide it...
+  if (A4GL_isyes(acl_getenv("GTKHIDECHARPROMPT"))) {
+  	if (charmode) {
+		gtk_widget_hide(GTK_WIDGET(last_prompt_field));
+  	}
+  }
 
   A4GL_default_attributes_in_ll (last_prompt_field, 0, 0);
   A4GL_fld_opts_off (last_prompt_field, AUBIT_O_STATIC);

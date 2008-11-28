@@ -21,7 +21,7 @@ extern "C"
     char *outputDescriptorName;             /**< Name of output descriptor (ESQL) */
     char *select;                           /**< The SQL statement content */
     void *hstmt;                            /**< A pointer to the statement handle */
-    char *statementName;                    /**< The name of the SQL statement */
+    char statementName[256];                    /**< The name of the SQL statement */
     void *extra_info;                       /**< A space for sql driver specific info */
   };
 
