@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.56 2008-11-27 20:41:56 mikeaubury Exp $
+# $Id: Makefile,v 1.57 2008-11-28 13:54:23 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -194,7 +194,7 @@ endif
 
 %.afr${A4GL_OBJ_EXT}:%.per
 	fcompile -c $<	
-	4glpc -c -o $@ ${subst .per,.afr.c,$<}
+	4glpc -t C -c -o $@ ${subst .per,.afr.c,$<}
 
 %.afr.dat:%.per
 	fcompile  $<

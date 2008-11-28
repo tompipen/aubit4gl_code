@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.10 2008-11-28 09:43:45 mikeaubury Exp $
+# $Id: makefile,v 1.11 2008-11-28 13:55:48 mikeaubury Exp $
 #
 
 # Currently Informix only
@@ -98,7 +98,7 @@ ${ROOT}/bin/aupscol: main.ao upscol.ao generic.ao pick.ao val.ao att.ao ../asql/
 
 %.afr${A4GL_OBJ_EXT}:%.per
 	fcompile -c $<
-	4glpc -c -o $@ ${subst .per,.afr.c,$<}
+	4glpc -t C -c -o $@ ${subst .per,.afr.c,$<}
 
 
 ## ==================================================================
