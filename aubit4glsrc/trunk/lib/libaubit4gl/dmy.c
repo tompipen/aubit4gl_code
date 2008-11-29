@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.24 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: dmy.c,v 1.25 2008-11-29 17:21:02 mikeaubury Exp $
 #
 */
 
@@ -221,6 +221,14 @@ A4GL_using_date (int dn, char *us)
   /* replace the ddmmyy etc with something the user cant have used */
   for (a = 0; using_strs[a][0] != 0; a++)
     {
+	if (a==0 || a==3 || a==8 || a==9 || a==10) {
+		//@env - ALLOWUSINGEXT - allows Aubit date extensions 'd','m','th','dddd','mmmm'
+		// defaults to Y
+		if (A4GL_isyes(acl_getenv("ALLOWUSINGEXT"))) ;
+		else {
+			continue;
+		}
+	}
       strcpy (buff2, A4GL_dategsub (buff_using_date, using_strs[a], rusing_strs[a]));
       strcpy (buff_using_date, buff2);
       strcpy (buff2, A4GL_dategsub (buff_using_date, UCusing_strs[a], rusing_strs[a]));
