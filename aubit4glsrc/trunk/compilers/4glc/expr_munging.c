@@ -789,7 +789,35 @@ case ET_EXPR_VARIABLE_USAGE :
 	struct variable_usage *u;
 		u=p->expr_str_u.expr_variable_usage;
 		while (u->next) u=u->next;
-	return u->datatype;
+	
+		// If its a substring - can we find out the extent so we can 'adjust' our 
+		// size we report back as the datatype...
+		if (u->substrings_start) {
+			// substring..
+			if (u->substrings_end==NULL || u->substrings_end==u->substrings_start) {
+				// end is the same as start - so its a single character..
+				if (u->datatype==DTYPE_CHAR || u->datatype==DTYPE_VCHAR) {
+					return (u->datatype&DTYPE_MASK)+ENCODE_SIZE(1);
+				}
+			} else {
+				// Ok - theres a fair chance we can't work out what it is
+				// but - we can if its just a couple of literals...
+				if (u->substrings_start->expr_type==ET_EXPR_LITERAL_LONG && u->substrings_end->expr_type==ET_EXPR_LITERAL_LONG) {
+					int s;
+					int e;
+					s=u->substrings_start->expr_str_u.expr_long;
+					e=u->substrings_end->expr_str_u.expr_long;
+					if (e<s) e=s;
+					return (u->datatype&DTYPE_MASK)+ENCODE_SIZE((e-s+1));
+				}
+			}
+
+			// Just return 1 - its could be right, and we'd be wrong
+			// to say otherwise...
+			return (u->datatype&DTYPE_MASK)+ENCODE_SIZE(1);
+			
+		}
+		return u->datatype;
 	}
 
 	A4GL_assertion(1,"Fixme");

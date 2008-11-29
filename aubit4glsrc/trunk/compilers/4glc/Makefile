@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.42 2008-11-17 11:02:42 mikeaubury Exp $
+# $Id: Makefile,v 1.43 2008-11-29 12:59:44 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -313,8 +313,8 @@ extra: ../../bin/reload ../../bin/fgllint ../../bin/fglcalltree
 reload_static: reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
-../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c
-	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c 
+	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 	#cp fgllint $(AUBITDIR)/bin
 
 
