@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.452 2008-11-27 10:06:45 mikeaubury Exp $
+# $Id: compile_c.c,v 1.453 2008-11-29 15:04:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.452 2008-11-27 10:06:45 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.453 2008-11-29 15:04:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6485,6 +6485,7 @@ switch (s->expr_type) {
 			strcpy(buff_l, local_expr_as_string(s->expr_str_u.expr_op->left));
 			strcpy(buff_r, local_expr_as_string(s->expr_str_u.expr_op->right));
 			sprintf(rbuff,"%s/%s", buff_l,buff_r);
+			return rbuff;
 	case ET_EXPR_OP_ADD: 
 			strcpy(buff_l, local_expr_as_string(s->expr_str_u.expr_op->left));
 			strcpy(buff_r, local_expr_as_string(s->expr_str_u.expr_op->right));
@@ -6550,6 +6551,7 @@ switch (s->expr_type) {
 		a4gl_yyerror("You can't use a function requiring parameters in this context");
 		return 0;
 		}
+		return 0;
 		
 	default :
 	
