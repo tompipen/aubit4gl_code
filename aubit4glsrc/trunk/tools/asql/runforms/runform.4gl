@@ -1044,7 +1044,7 @@ end function
 
 ################################################################################
 function generate_and_execute_update_stmt() 
-define sql char(75000)
+define sql char(32000)
 define lv_head char(80)
 define a integer
 let lv_head="UPDATE ",mv_table clipped," SET "
@@ -1074,7 +1074,7 @@ end function
 
 ################################################################################
 function generate_and_execute_insert_stmt() 
-define sql char(75000)
+define sql char(32000)
 define lv_head char(80)
 define a integer
 define lv_last_serial integer
@@ -1149,7 +1149,7 @@ end function
 
 ################################################################################
 function generate_and_execute_delete_stmt() 
-define lv_sql char(75000)
+define lv_sql char(32000)
 define lv_head char(80)
 define a integer
 
