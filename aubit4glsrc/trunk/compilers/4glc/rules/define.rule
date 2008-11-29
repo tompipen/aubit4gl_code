@@ -305,6 +305,9 @@ dtype :
 		   
 		} 
 	|	KW_CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+			if (atoi($<str>3)>32767) {
+				a4gl_yyerror("Character column size is too big");
+			}	
 		    push_type("char",$<str>3,0);
 			add_feature("DEFINE_CHAR");
 		    

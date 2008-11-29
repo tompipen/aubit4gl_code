@@ -2,6 +2,7 @@ A4GL_file fclose
 A4GL_file feof
 A4GL_file ferror
 A4GL_file fgets
+A4GL_file fgetc
 A4GL_file fputs
 A4GL_file fopen
 A4GL_file fseek

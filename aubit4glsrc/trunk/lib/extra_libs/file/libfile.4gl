@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: libfile.4gl,v 1.18 2006-11-22 14:11:42 mikeaubury Exp $
+	 $Id: libfile.4gl,v 1.19 2008-11-29 09:25:16 mikeaubury Exp $
 }
 
 {**
@@ -258,6 +258,37 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
+####################################
+FUNCTION fgetc(handle)
+####################################
+DEFINE handle INTEGER
+DEFINE buff CHAR(256)
+DEFINE r INTEGER
+
+	IF handle=0 THEN
+		LET status=-101
+		RETURN ""
+	END IF
+	LET buff=""
+
+code
+{
+	unsigned char  v;
+	v=fgetc((FILE *)handle);
+	buff[0]=v;
+	buff[1]=0;
+	A4GL_push_char(buff);
+	A4GLSTK_popFunction();
+	return 1;
+}
+endcode
+
+END FUNCTION
 
 ####################################
 FUNCTION fputs(buff, handle)
