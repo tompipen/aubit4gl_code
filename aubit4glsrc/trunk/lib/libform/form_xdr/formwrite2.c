@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.48 2008-11-03 11:44:07 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.49 2008-11-30 09:36:30 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,6 @@ struct struct_screen_record *curr_rec;
 char buff_xdr[30000];
 extern char *outputfilename;
 
-extern struct struct_scr_field *fld;
 
 
 struct translate_string
@@ -148,6 +147,7 @@ A4GLFORM_A4GL_init_fld (void)
   int cnt;
   A4GL_debug ("init_fld\n");
   new_attribute ();
+//extern struct struct_scr_field *fld;
 
   cnt = the_form.attributes.attributes_len - 1;
 
@@ -175,7 +175,8 @@ A4GLFORM_A4GL_init_fld (void)
   xxfield.dtype_size = 0;
   xxfield.lookup.lookups.lookups_len = 0;
   xxfield.lookup.lookups.lookups_val = 0;
-  fld = &xxfield;
+	 A4GL_set_fld (&xxfield);
+
   A4GL_debug ("done init_fld\n");
 }
 
@@ -923,7 +924,7 @@ A4GLFORM_A4GL_write_form (void)
   xdr_destroy (&xdrp);
   fclose (fxx);
 
-  if (as_c)
+  if (A4GL_get_as_c())
     {
       int cnt = 0;
       int a;
