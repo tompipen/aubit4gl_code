@@ -16,10 +16,12 @@ select_statement_ss_select :
 			$<s_select>$->limit.end=$<integer_val>2;
 		}
 		$<s_select>$->modifier=acl_strdup($<str>3);
+		A4GL_set_associated_mem($<s_select>$, $<s_select>$->modifier);
 		$<s_select>$->into=$<ptr_list>7;
 		$<s_select>$->select_list=$<s_select_list_item_list>5;
 		$<s_select>$->next=$<s_select>9;
 		$<s_select>$->sf=$<s_select_finish>10;
+		A4GL_set_associated_mem($<s_select>$, $<s_select>$->sf);
 }
 ;
 
@@ -29,6 +31,7 @@ union_select_statement2_ss:
 	table_expression_2_select sel_p2_select  {
 	        $<s_select>$=$<s_select>5;
                 $<s_select>$->modifier=acl_strdup($<str>3);
+		A4GL_set_associated_mem($<s_select>$, $<s_select>$->modifier);
 		if ($<integer_val>2!=-1) {
 			$<s_select>$->limit.start=1;
 			$<s_select>$->limit.end=$<integer_val>2;
@@ -46,6 +49,7 @@ uu_select_statement21_select:
                struct s_select *s1;
                s1=$<s_select>5;
                s1->modifier=acl_strdup($<str>3);
+		A4GL_set_associated_mem(s1, s1->modifier);
                s1->into=0; 
                s1->select_list=$<s_select_list_item_list>4;
                s1->next=$<s_select>6;
@@ -59,6 +63,7 @@ uu_select_statement21_select:
 		sf->insert_into=0;
 		sf->order_by=$<s_select_list_item_list>7;
 		s1->sf=sf;
+		A4GL_set_associated_mem(s1,s1->sf);
 		A4GL_set_sql_lineno(yylineno);
 		map_select_stmt("SELECT",$<s_select>$);
 		$<ptr>$=A4GL_new_select_list_item_expr(new_select_list_query(s1));
@@ -70,6 +75,7 @@ sel_p2_select : { $<s_select>$=0;}
 	| UNION op_u_all union_select_statement2_ss { 
 		$<s_select>$=$<s_select>3;
 		$<s_select>$->union_op=acl_strdup($<str>2);
+		A4GL_set_associated_mem($<s_select>$, $<s_select>$->union_op);
 		add_feature("SELECT_UNION"); 
 	}
 ;
@@ -96,6 +102,7 @@ sel_finish_sf: {
 		$<s_select_finish>$->order_by=$<s_select_list_item_list>1;
 		$<s_select_finish>$->insert_into=0;
 		$<s_select_finish>$->into_temp=strdup($<str>3);
+		A4GL_set_associated_mem($<s_select_finish>$, $<s_select_finish>$->into_temp);
 		$<s_select_finish>$->nolog=$<integer_val>4;
 
 	}
@@ -104,6 +111,7 @@ sel_finish_sf: {
 		add_feature("SELECT_INTO_TEMP");
 		$<s_select_finish>$->order_by=0;
 		$<s_select_finish>$->into_temp=strdup($<str>2);
+		A4GL_set_associated_mem($<s_select_finish>$, $<s_select_finish>$->into_temp);
 		$<s_select_finish>$->insert_into=0;
 		$<s_select_finish>$->nolog=$<integer_val>3;
 } 
@@ -123,6 +131,7 @@ query_specification_select:
 			$<s_select>$->limit.end=$<integer_val>2;
 		}
 		$<s_select>$->modifier=acl_strdup($<str>3);
+		A4GL_set_associated_mem($<s_select>$, $<s_select>$->modifier);
 		$<s_select>$->select_list=$<s_select_list_item_list>4;
 	}
 ;
@@ -135,6 +144,7 @@ subquery_sli:
 			$<s_select>$->limit.end=$<integer_val>3;
 		}
 		$<s_select>$->modifier=acl_strdup($<str>4);
+		A4GL_set_associated_mem($<s_select>$, $<s_select>$->modifier);
 		$<s_select>$->select_list=$<s_select_list_item_list>5;
 		$<s_select_list_item>$=new_select_list_subquery($<s_select>$);
 	}
@@ -178,10 +188,12 @@ value_expression_pls_sli :
 	| value_expression_sli  identifier {
 		$<s_select_list_item>$=$<s_select_list_item>1;
 		$<s_select_list_item>$->alias=acl_strdup($<str>2);
+		A4GL_set_associated_mem($<s_select_list_item>$, $<s_select_list_item>$->alias);
 	}
 	| value_expression_sli KW_AS identifier {
 		$<s_select_list_item>$=$<s_select_list_item>1;
 		$<s_select_list_item>$->alias=acl_strdup($<str>3);
+		A4GL_set_associated_mem($<s_select_list_item>$, $<s_select_list_item>$->alias);
 	}
 ;
 

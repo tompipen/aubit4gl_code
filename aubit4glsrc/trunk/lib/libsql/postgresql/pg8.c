@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.67 2008-11-30 10:00:33 mikeaubury Exp $
+# $Id: pg8.c,v 1.68 2008-11-30 19:33:45 mikeaubury Exp $
 #*/
 
 
@@ -1289,26 +1289,32 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
     }
 
 A4GL_debug("uniqid=%s", uniqid);
+
+
   if (A4GL_has_pointer (uniqid, PREPAREPG))
     {
         struct s_sid *a;
 	A4GL_debug("Exists");
         a=A4GL_find_pointer_val(uniqid, PREPAREPG);
-	if (a && a->select) free(a->select);
+	if (a && a->select) {
+		//free(a->select);
+	}
 	//if (a && a->statementName) free(a->statementName);
+	//A4GL_free_associated_mem (a);
 
 	if (a) {
 		A4GL_debug("Freeing...");
-		free(a);
+		//free(a);
 	}
 
 	A4GL_del_pointer(uniqid, PREPAREPG);
-	A4GL_free_associated_mem (a);
     } else {
 	A4GL_debug("Not there");
     }
 
-  A4GL_add_pointer (uniqid, PREPAREPG, n);
+  if (!singleton) {
+  		A4GL_add_pointer (uniqid, PREPAREPG, n);
+  }
   A4GL_debug("Added\n");
 
 
@@ -1370,7 +1376,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   int ok = 0;
   char *sql;
   int setSavepoint = 0;
-  char *isInsert;
+  char *isInsert=NULL;
   int use_insert_return = 0;
   PGresult *res=0;
   char *statementName;
@@ -1433,6 +1439,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	{
 	  sql = replace_ibind (n->select, n->ni, n->ibind,1);
 	}
+	free(isInsert);
 
 
     }
@@ -1804,7 +1811,7 @@ static void free_prepare(struct s_sid *n) {
 	   strcpy(n->statementName,"");
 	   n->select=0;
 	   A4GL_free_associated_mem (n);
-	   free(n);
+	   //free(n);
 }
 
 int
@@ -2447,7 +2454,19 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       execute_dont_care (current_con, buff);
       cid->mode -= 0x4000;
 	}
-	free(cid);
+
+
+
+	A4GL_free_associated_mem(cid);
+
+
+	/*
+	if ( cid->DeclareSql) {
+		acl_free( cid->DeclareSql);
+		cid->DeclareSql=NULL;
+	}
+	*/
+	acl_free(cid);
   }
 
   cid = acl_malloc2 (sizeof (struct s_cid));
@@ -2530,7 +2549,11 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
     }
   else
     {
-      cid->DeclareSql = strdup (buff);
+
+        cid->DeclareSql = strdup (buff);
+	A4GL_set_associated_mem(cid, cid->DeclareSql);
+
+
       if ((cid->mode & 0x100))
 	{
 	  cid->mode = cid->mode - 0x100;

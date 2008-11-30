@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.74 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.75 2008-11-30 19:33:45 mikeaubury Exp $
 #
 */
 
@@ -2316,6 +2316,11 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
   A4GL_debug ("buff=%s", buff);
 
+  if (select->table_elements.tables.tables_val) {
+  		free(select->table_elements.tables.tables_val) ;
+		select->table_elements.tables.tables_val=NULL;
+		select->table_elements.tables.tables_len=0;
+  }
 
   A4GL_debug ("--->%s\n", buff);
   return acl_strdup_With_Context (buff);

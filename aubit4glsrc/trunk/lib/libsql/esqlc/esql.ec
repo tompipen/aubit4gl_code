@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.221 2008-11-28 17:13:54 mikeaubury Exp $
+# $Id: esql.ec,v 1.222 2008-11-30 19:33:45 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.221 2008-11-28 17:13:54 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.222 2008-11-30 19:33:45 mikeaubury Exp $";
 #endif
 
 
@@ -377,7 +377,6 @@ if (dectoasc_decsep==',') {
 		if (s[a]==',') buff[a]='.';
 		if (s[a]=='.') buff[a]=',';
 	}
-	//printf("->%s\n",buff);
 	strcpy(s,buff);
 	return;
 }
@@ -1010,6 +1009,7 @@ static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDIN
 
   if (sidold) {
 	A4GLSQL_free_prepare(sidold);
+	acl_free(sidold);
   }
 
 
@@ -1047,11 +1047,9 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
   }
   free (s_internal);
 
-  //printf("Looking for %s\n",uniqId);
   sid=A4GLSQL_find_prepare (uniqId);
 
   if (sid) {
-	printf("Free\n");
 	statementName=uniqId;
         A4GLSQL_free_prepare(sid);
         A4GL_removePreparedStatementBySid(sid);
@@ -1345,8 +1343,6 @@ int d_prec=0;
 				/** @todo : We need to store this error */
 	    return 1;
 	  }
-
-	  /* d_prec=decimal_var.dec_ndgts*2; d_scale=d_prec-(decimal_var.dec_exp*2); printf("d_prec=%d d_scale=%d %s\n", d_prec,d_scale, b); */
       }
 
 
@@ -2186,7 +2182,8 @@ processPreStatementBinds (struct s_sid *sid)
 
 
   if (!sid->extra_info) {
-  	ei=acl_malloc2(sizeof(struct s_extra_info));
+  	ei=A4GL_alloc_associated_mem(sid, sizeof(struct s_extra_info));
+	
   	sid->extra_info=ei;
   	ei->raw_blobs=0;
   	ei->nblobs=0;
@@ -2480,6 +2477,7 @@ sid=vsid;
   SPRINTF1(buff,"%p",sid);
   if (singleton) {
 	internal_free_cursor(statementName,0);
+	//acl_free(sid);
   	//EXEC SQL FREE :statementName;
   }
   return 0;
@@ -2825,7 +2823,7 @@ if (reset_Sqlca) {a4gl_sqlca.sqlcode=0;
 
 
       sid=A4GLSQL_find_prepare (s);
-      if (sid) { A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid); }
+      if (sid) { A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid);free(sid); }
 
 
     }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.68 2008-11-28 17:13:54 mikeaubury Exp $
+# $Id: sql_common.c,v 1.69 2008-11-30 19:33:45 mikeaubury Exp $
 #
 */
 
@@ -390,6 +390,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
     {
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
       s = strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
+	
     }
 
 
@@ -401,10 +402,10 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
     {
       A4GLSQL_free_prepare (sid);
       A4GL_removePreparedStatementBySid (sid);
+	free(sid);
     }
 
   sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
-
   if (s != sold)
     {
       if (sid)
@@ -791,33 +792,6 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
       return 0;
     }
 
-
-#ifdef OLD
-
-  if (A4GL_has_pointer (pname, PRECODE))
-    {
-      void *p;
-      //p=A4GL_find_pointer(pname,PRECODE);
-      //A4GLSQL_free_prepare(p);
-      A4GL_del_pointer (pname, PRECODE);
-    }
-
-
-  if (sid)
-    {
-      char rname[256];
-      A4GL_debug ("Adding prepare - %s - %p", pname, vsid);
-      SPRINTF1 (rname, "%p", sid);
-      A4GL_add_pointer (pname, PRECODE, sid);
-      A4GL_add_pointer (rname, PRECODE_R, pname);
-      return 1;
-    }
-  else
-    {
-      return 0;
-    }
-
-#endif
 }
 
 
@@ -1031,9 +1005,11 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 
   ptr = acl_malloc2 (sizeof (struct s_table));
   ptr->tabname = acl_strdup (tname);
+	//A4GL_set_associated_mem(ptr, tname);
   if (alias)
     {
       ptr->alias = acl_strdup (alias);
+	//A4GL_set_associated_mem(ptr, ptr->alias);
     }
   else
     {
@@ -2024,7 +2000,6 @@ A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_da
   int found = -1;
 
 A4GL_debug("npreparedStatements=%d\n",npreparedStatements);
-//printf("npreparedStatements=%d\n", npreparedStatements);
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)

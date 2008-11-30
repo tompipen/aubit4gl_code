@@ -15,6 +15,7 @@ insert_statement_c:
 		$<insert_cmd>$=$<insert_cmd>5;
 		$<insert_cmd>$->connid=0;
 		$<insert_cmd>$->table=acl_strdup($<str>3);
+		A4GL_set_associated_mem($<insert_cmd>$, $<insert_cmd>$->table);
 		$<insert_cmd>$->column_list=$<str_list>4;
 	}
 ;
@@ -35,8 +36,10 @@ ins_2_ic : VALUES {insql=1;} OPEN_BRACKET insert_value_list_slil CLOSE_BRACKET {
 					$<s_select>1->sf->into_temp=0;
 					$<s_select>1->sf->nolog=0;
 					$<s_select>1->sf->insert_into=0;
+					A4GL_set_associated_mem($<s_select>1, $<s_select>1->sf);
 				}
 				$<s_select>1->sf->insert_into=0;
+		
         			map_select_stmt("SELECT",$<s_select>1);
 				add_feature("INSERT_INTO_SELECT_FROM");
 	        $<insert_cmd>$=malloc(sizeof(struct_insert_cmd));
@@ -110,7 +113,8 @@ delete_statement_c:
 			$<delete_cmd>$=malloc(sizeof(struct struct_delete_cmd));
 			$<delete_cmd>$->connid=NULL;
 			$<delete_cmd>$->table=acl_strdup($<str>2);
-			$<delete_cmd>$->where_clause=$<ptr>3;
+			$<delete_cmd>$->where_clause=$<ptr>3;	
+			A4GL_set_associated_mem($<delete_cmd>$, $<delete_cmd>$->table);
 			
 		}
 ;

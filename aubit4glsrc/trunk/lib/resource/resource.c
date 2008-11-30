@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.157 2008-11-16 15:47:40 mikeaubury Exp $
+# $Id: resource.c,v 1.158 2008-11-30 19:33:45 mikeaubury Exp $
 #
 */
 
@@ -857,6 +857,7 @@ if (ptr)  {
 
 
 #ifdef USE_OPTIMISATION
+		//printf("s...=%s\n",s);
 		A4GL_add_pointer(s,STR_RESOURCE_VAL,value_not_set);
 #endif
 		return an_empty_string;
