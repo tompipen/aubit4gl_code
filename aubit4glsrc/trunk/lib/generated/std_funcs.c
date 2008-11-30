@@ -94,7 +94,6 @@ char *builtin_aclfgl_functions[]={
 "fgl_winbutton",
 "fgl_winmessage",
 "fgl_winquestion",
-"get_info",
 "get_user",
 "hex",
 "i_rowid_s",
