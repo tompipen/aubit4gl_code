@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.66 2008-11-28 17:13:54 mikeaubury Exp $
+# $Id: pg8.c,v 1.67 2008-11-30 10:00:33 mikeaubury Exp $
 #*/
 
 
@@ -324,7 +324,7 @@ char *ptr;
   PQsetNoticeProcessor (current_con, defaultNoticeProcessor, 0);
 
 
-
+  currServerVersion=0;
 
   CanUseSavepoints = 0;
   if (current_con)
@@ -388,6 +388,10 @@ char *ptr;
 			if (a==3) {
 				SPRINTF3(versionBuff,"%d%02d%02d",maj,min,rev);
   				A4GL_setenv("A4GL_PGVERSION",versionBuff,1);
+				if (currServerVersion==0) {
+					currServerVersion=atol(versionBuff);
+					//printf("...%s\n", versionBuff);
+				}
 			}
 		}
         	PQclear (res);
@@ -1414,9 +1418,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   strcpy (warnings, "       ");
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
-
   if (currServerVersion >= 80200)
     {
+
       use_insert_return = 1;
       isInsert = strdup (n->select);
       A4GL_convlower (isInsert);
@@ -1444,6 +1448,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       if (CanUseSavepoints) { Execute ("SAVEPOINT preExec", 1); }
     }
   A4GL_debug ("%s ni=%d\n", sql, n->ni);
+  
 
   res = PQexec (current_con, sql);
    pgextra->last_result=res;
