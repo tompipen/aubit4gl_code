@@ -22,7 +22,7 @@ define a integer
 define lv_lastused char(255)
 define lv_say char(80)
 
-let lv_lastused=remove_ext(lv_lastused)
+let lv_lastused=remove_ext(lv_lastused) clipped
 case lv_what
 	when "modify" 
 		let lv_say="Choose a file to modify"

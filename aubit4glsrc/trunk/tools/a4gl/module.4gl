@@ -1,4 +1,4 @@
-define mv_lastused char(255)
+define mv_lastused char(512)
 define mv_generated_exe integer
 
 
@@ -62,9 +62,9 @@ end function
 
 ################################################################################
 function modify_module(lv_mname,lv_errfile,lv_initstate)
-define lv_mname char(255)
+define lv_mname char(512)
 define lv_runstr char(512)
-define lv_backup char(255)
+define lv_backup char(512)
 define lv_errfile integer
 define lv_initstate char(30)
 define lv_need_backup integer
@@ -256,7 +256,7 @@ define lv_makefile,lv_objfile char(512)
 					END IF
 				else
 					display  "Compiling as part of program using  ", lv_makefile clipped 
-					let lv_runstr="make -f ",lv_makefile clipped," ",lv_objfile
+					let lv_runstr="make -f ",lv_makefile clipped," ",lv_objfile clipped
 					display "Running : ", lv_runstr clipped
 					call run_with_logging( lv_runstr) returning lv_ok
 
@@ -376,21 +376,21 @@ END FUNCTION
 
 ################################################################################
 function module_menu_compile()
-define lv_mname char(255)
+define lv_mname char(512)
 
 let lv_mname=get_filename_to("compile",".4gl",mv_lastused)
 if lv_mname is null or lv_mname matches " " then
 	return false
 end if
 
-let mv_lastused=remove_ext(lv_mname)
+let mv_lastused=remove_ext(lv_mname) clipped
 return  modify_module(lv_mname,FALSE, "Compile")
 
 end function
 
 
 function module_compile(lv_mname)
-define lv_mname char(255)
+define lv_mname char(512)
 define a integer
 define lv_runstr char(512)
 
@@ -416,7 +416,7 @@ end function
 
 ################################################################################
 function new_module()
-define lv_mname char(255)
+define lv_mname char(512)
 define lv_ok integer
 
 
@@ -431,7 +431,7 @@ define lv_ok integer
 			let lv_mname=lv_mname clipped,".4gl"
 			if file_exists(lv_mname) then
 				error "A module already exists with that name"
-				return
+				return false
 			end if
 		end if
 		call modify_module(lv_mname,FALSE,"") returning lv_ok
@@ -443,11 +443,11 @@ end function
 
 ################################################################################
 function drop_module()
-define lv_mname char(255)
-define lv_mname_obj char(255)
-define lv_mname_4gl char(255)
-define lv_mname_ec char(255)
-define lv_mname_c char(255)
+define lv_mname char(512)
+define lv_mname_obj char(512)
+define lv_mname_4gl char(512)
+define lv_mname_ec char(512)
+define lv_mname_c char(512)
 define a integer
 #display "Choose a file to drop","" at 2,1
 code
@@ -512,7 +512,7 @@ end function
 # eg - if we dont have an errfile - or its missing
 # 
 function module_editfile(lv_mname,lv_errfile)
-define lv_mname char(256)
+define lv_mname char(512)
 define lv_errfile integer
 define lv_runstr char(512)
 define a integer
@@ -547,13 +547,13 @@ define lv_copyerrfile integer
 		call ensure_editor() returning lv_editor
 		if lv_errfile then
 			if lv_editor="vi" or lv_editor="vim" or lv_editor="elvis" then
-                		let lv_runstr=lv_editor clipped, " +'/^|/' ",lv_mname
+                		let lv_runstr=lv_editor clipped, " +'/^|/' ",lv_mname clipped
 			end if
 		end if
 
 
 		if lv_runstr is null or lv_runstr="NOTSET" then
-              		let lv_runstr=lv_editor clipped, " ",lv_mname
+              		let lv_runstr=lv_editor clipped, " ",lv_mname clipped
 		end if
 
                 run lv_runstr returning a
@@ -587,9 +587,9 @@ define lv_objfile char(512)
 let lv_cnt=1
 
 # Make sure we dont have any extensions
-let lv_mname=remove_ext(lv_mname) 
+let lv_mname=remove_ext(lv_mname)  clipped
 let lv_cwd=aclfgl_getcwd()
-let lv_last_used_prog=get_last_used_program()
+let lv_last_used_prog=get_last_used_program() clipped
 
 call ensure_syspgma4gl()
 
@@ -661,18 +661,19 @@ and (justuser is null or justuser matches " " or justuser=user)
 
 if sqlca.sqlcode=100 then
 	# Its a .mk
-	return remove_ext(lv_mname),fgl_getenv("A4GL_OBJ_EXT")
+	return (remove_ext(lv_mname) clipped)||fgl_getenv("A4GL_OBJ_EXT")
 end if
-let lv_objext= get_setting(lv_prog,"A4GL_OBJ_EXT")
+let lv_objext= get_setting(lv_prog,"A4GL_OBJ_EXT") clipped
 if lv_objext is null or lv_objext matches " " then
-	let lv_objext=fgl_getenv("A4GL_OBJ_EXT")
+	let lv_objext=fgl_getenv("A4GL_OBJ_EXT") clipped
 end if
 
 if lv_builddir is not null and lv_builddir != " " then
 	return lv_builddir clipped|| "/"|| remove_ext(lv_mname) clipped|| lv_objext
 end if
 
-return remove_ext(lv_mname) clipped|| lv_objext
+let lv_mname= remove_ext(lv_mname) clipped|| lv_objext
+return lv_mname
 
 end function
 

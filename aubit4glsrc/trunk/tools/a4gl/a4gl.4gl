@@ -239,7 +239,7 @@ define lv_name char(16)
 define lv_user char(8)
 define lv_s char(32)
 define lv_v char(70)
-let lv_v=fgl_getenv(lv_s)
+let lv_v=fgl_getenv(lv_s) 
 
 delete from afglsettings where name=lv_s
 insert into afglsettings values(lv_name,lv_user,lv_s,lv_v)

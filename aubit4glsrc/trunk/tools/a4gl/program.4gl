@@ -493,7 +493,7 @@ define lv_what char (20)
 define lv_lastused char(255)
 define lv_say char(80)
 
-let lv_lastused=remove_ext(lv_lastused)
+let lv_lastused=remove_ext(lv_lastused) clipped
 
 case lv_what
 
@@ -839,6 +839,7 @@ end if
 call channel::write("make","FORMS=")
 call channel::write("make","LIBS=")
 call channel::write("make","OBJS=")
+call channel::write("make","OBJS_CFORMS=")
 call channel::write("make","GLOBALS=")
 
 
@@ -928,7 +929,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	if lv_type="f" then
-		call channel::write("make","OBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT)$(A4GL_OBJ_EXT)")
+		call channel::write("make","OBJS_CFORMS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT)$(A4GL_OBJ_EXT)")
 	end if
 
 	if lv_type="F" then # Form
@@ -956,7 +957,9 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_flags is not null and lv_flags !=" " then
 		if lv_flags[length(lv_flags)]="/" then
-			let lv_flags=lv_flags[1,length(lv_flags)-1]
+
+			let lv_flags=lv_flags[1,length(lv_flags)-1] 
+
 		end if
 	end if
 	if lv_flags is null or lv_flags=" " then
@@ -1012,12 +1015,12 @@ else
 end if
 call channel::write("make"," ")
 
-call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(OBJS) ")
-call channel::write("make","	4glpc $(LFLAGS) -o $@ $(OBJS) $(LIBS)")
+call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(OBJS) $(OBJS_CFORMS) ")
+call channel::write("make","	4glpc $(LFLAGS) -o $@ $(OBJS) $(OBJS_CFORMS) $(LIBS)")
 
 call channel::write("make"," ")
 call channel::write("make","clean:")
-call channel::write("make","	echo rm $(OBJS) $(FORMS) ${MIFS}"||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
+call channel::write("make","	echo rm $(OBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS}"||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
 
 
 call channel::write("make"," ")

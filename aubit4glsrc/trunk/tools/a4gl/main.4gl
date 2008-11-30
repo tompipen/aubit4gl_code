@@ -37,7 +37,7 @@ end function
 
 function get_dbrpl()
 define lv_dbrpl char(200)
-let lv_dbrpl=fgl_getenv("A4GLDBPARAM")
+let lv_dbrpl=fgl_getenv("A4GLDBPARAM") clipped
 if lv_dbrpl is null or lv_dbrpl matches " " then
 	return "-d "||get_db()
 else

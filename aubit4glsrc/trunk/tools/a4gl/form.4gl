@@ -291,7 +291,7 @@ if lv_fname is null or lv_fname matches " " then
 	return
 end if
 
-let mv_lastused=remove_ext(lv_fname)
+let mv_lastused=remove_ext(lv_fname) clipped
 
 if form_compile(lv_fname) then
 	return 
@@ -522,7 +522,7 @@ define a integer
 define lv_editor char(255)
                 if lv_errfile then
                         if lv_fname matches "*.[Pp][Ee][Rr]" then
-                                let lv_fname=lv_fname[1,length(lv_fname)-3],"err"
+                                let lv_fname=lv_fname[1,length(lv_fname)-3],"err" 
                         else
                                 error "Expecting filename to end with .per at this point"
                                 exit program 99
