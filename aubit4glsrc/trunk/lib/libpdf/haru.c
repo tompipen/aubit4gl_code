@@ -1348,6 +1348,12 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       return 0;
     }
 
+  if (strcmp(fname,"currpos")) {
+                A4GL_push_double( p->page_length - p->line_no);
+                A4GL_push_double( p->col_no);
+                return 2;
+  }
+
 
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
 // mode=(left, right, center, justify, fulljustify);

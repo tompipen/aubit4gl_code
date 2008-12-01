@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.57 2008-11-12 09:59:21 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.58 2008-12-01 09:46:31 mikeaubury Exp $
 #*/
 
 /**
@@ -132,7 +132,7 @@ A4GLPDFREP_A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin, int w
 int entry=0;
   char *str;
   struct pdf_rep_structure *rep;
-  static int resetting=0;
+  //static int resetting=0;
 
   rep = vrep;
 
@@ -1216,7 +1216,11 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       return 0;
     }
 
-
+  if (strcmp(fname,"currpos")) {
+		A4GL_push_double( p->page_length - p->line_no);
+		A4GL_push_double( p->col_no);
+		return 2;
+  }
 
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
 // mode=(left, right, center, justify, fulljustify);
