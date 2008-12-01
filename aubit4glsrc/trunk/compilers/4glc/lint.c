@@ -492,7 +492,8 @@ FILE *f;
 	d=expr_datatype(ptr);
 
 	if (!is_char_dtype(d)) {
-		return -1;
+		return 0; // its not a character string - assume at least '0'
+			  // (ie - ignore it - theres not much else we can do)
 	}
 
 	
@@ -535,7 +536,7 @@ FILE *f;
 	}
 
 
-	return -1;
+	return 0; // Ignore its length
 }
 
 static void check_variables(char *module_name, struct module_definition *d, variable_list *variables) {
@@ -708,7 +709,11 @@ int cnt;
 		s=r->cmd_data.command_data_u.select_cmd.sql;
 		A4GL_setenv("EXPAND_COLUMNS","Y",1);
 		preprocess_sql_statement(s);
-		nvars=s->into->list.list_len;
+		if (s->into) {
+			nvars=s->into->list.list_len;
+		} else {
+			nvars=0;
+		}
 		ncols=s->select_list->list.list_len;
 		
 		if (nvars!=ncols) {
@@ -1144,7 +1149,7 @@ int cnt;
 			    }
 			}
 			if (lmax>0 && lmax>var_length) {
-				printf("%d %d\n", lmax,var_length);
+				//printf("%d %d\n", lmax,var_length);
 			      A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
 			}
 		    }
@@ -1170,7 +1175,7 @@ int cnt;
 			var_length=expr_datatype (varlist->list.list_val[0]) >> 16;
 			if (lmax>0) {
 				if (lmax>var_length) {
-				printf("%d %d\n", lmax,var_length);
+				//printf("%d %d\n", lmax,var_length);
 			      		A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
 				}
 			}	
@@ -3639,17 +3644,79 @@ set_lint_module (char *s)
 }
 
 
+
+static int get_severity(char *code) {
+	int a;
+	struct s_severities {
+		char *code;
+		int severity;
+	} severities[]={
+		{"DEAD",5},
+		{"CS.VNAME",1},
+		{"CS.EXITDIRECT",1},
+		{"CS.EXITNOTMAIN",1},
+		{"CS.GETERRORRECORD",1},
+		{"CS.MRET",1},
+		{"CS.FRET",2},
+		{"CS.NOOTHERWISE",1},
+		{"CS.WRITESQLCA",2},
+
+		{"VARNOTUSED",1},
+		{"VARASSNOTUSED",1},
+		{"TOOCOMPLEX",2},
+		{"FUNCNOTCALLED",4},
+		{"VARUSED",6},
+		{"STRINGLONG",3},
+		{"MRETNUM",8},
+		{"CONCATFROMNONSTR",2},
+		{"FUNCRETCNT",8},
+		{"MISMATCHSELECT",4},
+		{NULL,0}
+	};
+
+
+	for (a=0;severities[a].code;a++) {
+		if (strcmp(code,severities[a].code)==0) {
+			printf("Found severity : %s %d\n", code,severities[a].severity);
+			return severities[a].severity;
+		}
+	}
+	return 5;
+}
+
+
 void
 A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 {
   char buff[256];
   char module[255];
+  int severity;
+  static int minseverity=-1;
+	if (minseverity==-1) {
+		char *s;
+		// @env LINTSEVERITY - minumum severity for a LINT warning to be issued...
+		s=acl_getenv("LINTSEVERITY");
+		minseverity=0;
+		if (s) {
+			if (strlen(s)) {
+				minseverity=atoi(s);
+			}
+		}
+		
+	}
 
+  severity=get_severity(code);
+
+  if (severity<minseverity) {
+	return ;
+  }
+	
   if (module_in == 0)
     {
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
     }
+
   if (module_in == 0)
     {
       module_in = "unknown";
@@ -3681,9 +3748,8 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
       switch (get_lint_style ())
 	{
-
 	case 0:
-	  sprintf (buff, "%s.4gl Line %d", module, lintline);
+	  sprintf (buff, "%s.4gl Line %d ((Severity:%d)", module, lintline, severity);
 	  if (extra)
 	    {
 	      fprintf (stderr, "  LINT : %-30s %-20s %s (%s)\n", buff, code, type, extra);
@@ -3693,8 +3759,9 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	      fprintf (stderr, "  LINT : %-30s %-20s %s \n", buff, code, type);
 	    }
 	  break;
+
 	case 1:
-	  sprintf (buff, "%s.4gl:%d", module, lintline);
+	  sprintf (buff, "%s.4gl:%d (Severity:%d)", module, lintline,severity);
 	  if (extra)
 	    {
 	      fprintf (lintfile, "%-20s, %-20s %s (%s)\n", buff, code, type, extra);
@@ -3712,8 +3779,8 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	  if (lintfile)
 	    {
 	      fprintf (lintfile,
-		       "<LINT MODULE='%s.4gl' LINE='%d' CODE='%s'><DESCRIPTION>%s</DESCRIPTION><DETAILS>%s</DETAILS></LINT>\n",
-		       module, lintline, code, local_xml_escape (type), local_xml_escape (extra));
+		       "<LINT MODULE='%s.4gl' LINE='%d' CODE='%s' SEVERITY='%d'><DESCRIPTION>%s</DESCRIPTION><DETAILS>%s</DETAILS></LINT>\n",
+		       module, lintline, code, severity, local_xml_escape (type), local_xml_escape (extra));
 	    }
 	  break;
 
@@ -3723,7 +3790,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	    extra = " ";
 	  if (lintfile)
 	    {
-	      fprintf (lintfile, "%s.4gl|%d|%s|%s|%s|\n", module, lintline, code, type, extra);
+	      fprintf (lintfile, "%s.4gl|%d|%s|%d|%s|%s|\n", module, lintline, code, severity,type, extra);
 	    }
 	  break;
 
