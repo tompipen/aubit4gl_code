@@ -1349,11 +1349,22 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
     }
 
   if (strcmp(fname,"currpos")) {
-                A4GL_push_double( p->page_length - p->line_no);
-                A4GL_push_double( p->col_no);
-                return 2;
+                int n;
+                n=A4GL_pop_int();
+                if (n==1) {
+                        A4GL_push_double( p->col_no);
+                        return 1;
+                }
+                if (n==2) {
+                        A4GL_push_double( p->page_length - p->line_no);
+                        return 1;
+                }
+                if (n==3) {
+                        A4GL_push_double( p->page_length - p->line_no);
+                        A4GL_push_double( p->col_no);
+                        return 2;
+                }
   }
-
 
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
 // mode=(left, right, center, justify, fulljustify);

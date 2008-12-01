@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.58 2008-12-01 09:46:31 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.59 2008-12-01 09:59:21 mikeaubury Exp $
 #*/
 
 /**
@@ -1216,10 +1216,23 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       return 0;
     }
 
-  if (strcmp(fname,"currpos")) {
-		A4GL_push_double( p->page_length - p->line_no);
-		A4GL_push_double( p->col_no);
-		return 2;
+  if (strcmp(fname,"currpos")==0) {
+		int n;
+		n=A4GL_pop_int();
+		if (n==1) {
+			A4GL_push_double( p->col_no);
+			return 1;
+		}
+		if (n==2) {
+			A4GL_push_double( p->page_length - p->line_no);
+			return 1;
+		}
+		if (n==3) {
+			A4GL_push_double( p->page_length - p->line_no);
+			A4GL_push_double( p->col_no);
+			return 2;
+		}
+		return 0;
   }
 
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
