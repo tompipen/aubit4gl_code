@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.92 2008-05-20 12:54:32 mikeaubury Exp $
+# $Id: 1.reqd,v 1.93 2008-12-01 14:26:59 mikeaubury Exp $
 #
 */
 
@@ -102,6 +102,10 @@
 
 #define YYDEBUG 1
 
+
+#ifndef ENCODE_SIZE
+#define ENCODE_SIZE(x) (x<<16)S
+#endif
 
 /* prevent warning for redundant declaration of yyparse: */
 #define _BISON_SIMPLE_INCL_

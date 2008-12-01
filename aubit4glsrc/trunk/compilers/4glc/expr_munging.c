@@ -20,7 +20,7 @@ void ensure_smfloat (struct expr_str *s, int notnull);
 void ensure_interval (struct expr_str *s, int notnull);
 void ensure_byte (struct expr_str *s, int notnull);
 int expr_datatype (struct expr_str *p);
-static void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
+//void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
 void fix_compare (char *op, struct expr_str *s);
 void force_float (struct expr_str *s);
 //struct expr_str *get_expr_datatype(int n) ;

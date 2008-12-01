@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.453 2008-11-29 15:04:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.454 2008-12-01 14:27:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.453 2008-11-29 15:04:33 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.454 2008-12-01 14:27:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1876,7 +1876,9 @@ real_print_expr (struct expr_str *ptr)
 	  	A4GL_assertion(1,"CONCAT_LIST NOT IMPLEMENTED YET"); break;
 
 	case ET_EXPR_CAST:
-	  	A4GL_assertion(1,"CASE NOT IMPLEMENTED YET"); break;
+		real_print_expr(ptr->expr_str_u.expr_cast->expr);
+		printc("A4GL_cast_top_of_stack_to_dtype(%d);",ptr->expr_str_u.expr_cast->target_dtype);
+		break;
 
 
 	case ET_EXPR_DTVAL:

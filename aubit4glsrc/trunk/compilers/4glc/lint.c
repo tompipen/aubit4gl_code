@@ -701,13 +701,45 @@ int cnt;
 	}
 
 
+	if (r->cmd_data.type==E_CMD_INSERT_CMD) {
+
+		if (r->cmd_data.command_data_u.insert_cmd.column_list==NULL) {
+			A4GL_lint (module_name, r->lineno, "INSERTNOCOLS", "Insert with no column list used", 0);
+		} else {
+			int ok=0;
+			if (r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len==1) {
+				if (strcmp(r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_val[0],"*")==0) ok=1;
+			}
+
+	
+			if (ok==0 && r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len!=r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len) {
+			char buff[200];
+			sprintf(buff,"%d!=%d",r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len,r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len);
+			A4GL_lint (module_name, r->lineno, "INSERTCOLS", "Number of columns in INSERT does not match number of values",  buff);
+		}
+		}
+        }
+
       if (r->cmd_data.type == E_CMD_SELECT_CMD)
       {
 		struct s_select *s;
 		int ncols;
 		int nvars;
+		int a;
 		s=r->cmd_data.command_data_u.select_cmd.sql;
 		A4GL_setenv("EXPAND_COLUMNS","Y",1);
+
+		// Lets look before we preprocess
+		// 
+		if (s->select_list) {
+			for (a=0;a<s->select_list->list.list_len;a++) {
+				if (s->select_list->list.list_val[a]->data.type==E_SLI_BUILTIN_CONST_STAR) {
+		      			A4GL_lint (module_name, r->lineno, "SELECTSTAR", "SELECT * used", 0);
+					break;
+				}
+			}
+		}
+
 		preprocess_sql_statement(s);
 		if (s->into) {
 			nvars=s->into->list.list_len;
@@ -743,6 +775,32 @@ int cnt;
 	    {
 	      A4GL_lint (module_name, r->lineno, "LABELNOTUSED", "Label defined but not used", r->cmd_data.command_data_u.label_cmd.label);
 	    }
+	}
+
+
+      if (r->cmd_data.type== E_CMD_DISPLAY_ARRAY_CMD || r->cmd_data.type== E_CMD_INPUT_ARRAY_CMD) {
+		int bcnt;
+  		struct command *r2;
+		int found_setcount=0;
+		//int c=0;
+		for (bcnt=cnt;bcnt>=0;bcnt--) {
+      			r2 = func_cmds->cmds.cmds_val[bcnt];
+			if (r2->cmd_data.type==E_CMD_CALL_CMD) {
+				struct expr_str *ptr;
+				ptr=r2->cmd_data.command_data_u.call_cmd.fcall;
+				if (ptr->expr_type==ET_EXPR_FCALL) {
+					if (strcmp(ptr->expr_str_u.expr_function_call->fname,"setcount")==0) {
+						found_setcount=1;
+						break;
+					}
+				}
+			}
+		}
+
+		if (!found_setcount) {
+			A4GL_lint (module_name, r->lineno, "NSETCOUNT", 
+				"Cannot see a 'setcount' immediately before an Input/Display array", r->cmd_data.command_data_u.label_cmd.label);
+		}
 	}
 
       if (r->cmd_data.type == E_CMD_IF_CMD)
@@ -1229,6 +1287,81 @@ int cnt;
 
 
 
+static void check_report (struct module_definition *d, struct s_report_definition *r) {
+int a;
+char *module_name;
+module_name=r->module;
+        check_variables(r->module, d,&r->variables);
+
+	if (r->report_format_section) {
+		for (a=0;a<r->report_format_section->entries.entries_len;a++) {
+			if (r->report_format_section->entries.entries_val[a]->rep_sec_commands!=NULL) {
+				struct commands *func_cmds = 0;
+  				check_cmds_for_dead_code (r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+
+  				func_cmds = linearise_commands (0, 0);
+  				linearise_commands (func_cmds, r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+  				check_linearised_commands(r->module, func_cmds);
+  				cache_expressions (&r->expression_list, func_cmds);
+  				set_expr_cache (&r->expression_list);
+  				set_expr_cache (0);
+
+				
+			}
+		}
+	}
+
+	if (r->report_orderby_section) {
+		/*
+		if (r->report_orderby_section->rord_type==REPORT_ORDERBY_IMPLICIT) {
+			A4GL_lint (module_name, r->lineno, "REPORDIMPLICIT", "Implicit ORDER by on report",NULL);
+		}
+		*/
+
+		if (r->report_orderby_section->rord_type==REPORT_ORDERBY) {
+			A4GL_lint (module_name, r->lineno, "REPORD", "ORDER BY on report (use ORDER EXTERNAL BY if possible)",NULL);
+		}
+
+	}
+}
+
+static void check_pdf_report (struct module_definition *d, struct s_pdf_report_definition *r) {
+int a;
+char *module_name;
+module_name=r->module;
+        check_variables(r->module, d,&r->variables);
+
+	if (r->report_format_section) {
+		for (a=0;a<r->report_format_section->entries.entries_len;a++) {
+			if (r->report_format_section->entries.entries_val[a]->rep_sec_commands!=NULL) {
+				struct commands *func_cmds = 0;
+  				check_cmds_for_dead_code (r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+
+  				func_cmds = linearise_commands (0, 0);
+  				linearise_commands (func_cmds, r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+  				check_linearised_commands(r->module, func_cmds);
+  				cache_expressions (&r->expression_list, func_cmds);
+  				set_expr_cache (&r->expression_list);
+  				set_expr_cache (0);
+
+				
+			}
+		}
+	}
+
+	if (r->report_orderby_section) {
+		/*
+		if (r->report_orderby_section->rord_type==REPORT_ORDERBY_IMPLICIT) {
+			A4GL_lint (module_name, r->lineno, "REPORDIMPLICIT", "Implicit ORDER by on report",NULL);
+		}
+		*/
+		if (r->report_orderby_section->rord_type==REPORT_ORDERBY) {
+			A4GL_lint (module_name, r->lineno, "REPORD", "ORDER BY on report (use ORDER EXTERNAL BY if possible)",NULL);
+		}
+
+	}
+}
+
 
 static void
 check_function (struct module_definition *d, struct s_function_definition *f)
@@ -1500,7 +1633,8 @@ check_functions_in_module (int *calltree, module_definition * d)
 			 extra_warnings_len,
 			 d->module_entries.module_entries_val[a]->module_entry_u.function_definition.extra_warnings.
 			 extra_warnings_val);
-	  //printf("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+
+
 	  if (calltree[a] != 0 || nomain)
 	    {
 	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
@@ -1509,10 +1643,18 @@ check_functions_in_module (int *calltree, module_definition * d)
 	  break;
 
 	case E_MET_REPORT_DEFINITION:
+
+
 	  lint_warnings (d->module_entries.module_entries_val[a]->module_entry_u.report_definition.extra_warnings.
 			 extra_warnings_len,
 			 d->module_entries.module_entries_val[a]->module_entry_u.report_definition.extra_warnings.
 			 extra_warnings_val);
+
+	  if (calltree[a] != 0 || nomain)
+	    {
+	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      check_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.report_definition);
+	    }
 	  break;
 
 	case E_MET_PDF_REPORT_DEFINITION:
@@ -1520,7 +1662,11 @@ check_functions_in_module (int *calltree, module_definition * d)
 			 extra_warnings_len,
 			 d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.extra_warnings.
 			 extra_warnings_val);
+	  	if (calltree[a] != 0 || nomain) {
+	      		check_pdf_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition);
+		}
 	  break;
+
 	case E_MET_FORMHANDLER_DEFINITION:
 	  printf ("Not implemented yet (E_MET_FORMHANDLER_DEFINITION.3)\n");
 	  exit (4);
@@ -3749,7 +3895,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
       switch (get_lint_style ())
 	{
 	case 0:
-	  sprintf (buff, "%s.4gl Line %d ((Severity:%d)", module, lintline, severity);
+	  sprintf (buff, "%s.4gl Line %d (Severity:%d)", module, lintline, severity);
 	  if (extra)
 	    {
 	      fprintf (stderr, "  LINT : %-30s %-20s %s (%s)\n", buff, code, type, extra);

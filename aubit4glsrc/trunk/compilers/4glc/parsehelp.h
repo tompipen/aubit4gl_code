@@ -65,3 +65,10 @@ void set_report_orderby(struct variable_list *v, struct expr_str_list*params, st
 int set_bind_var_dtype(char *type, char *errbuff,struct expr_str_list *bindlist);
 struct expr_str *ensure_variable(char *errbuff, struct expr_str *ptr, int err_if_whole_array);
 int check_parameters(char *errbuff,struct variable_list *var_list, expr_str_list *parameters);
+
+#ifndef ENCODE_SIZE
+#define ENCODE_SIZE(x) (x<<16)S
+#endif
+
+
+void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
