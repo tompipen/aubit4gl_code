@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.69 2008-12-01 09:03:29 mikeaubury Exp $
+# $Id: pg8.c,v 1.70 2008-12-01 17:08:02 mikeaubury Exp $
 #*/
 
 
@@ -1343,12 +1343,17 @@ void *sid;
                 free (cursorIdentification->statement);
         }
 
+	A4GL_free_associated_mem(cursorIdentification);
       free (cursorIdentification);
       A4GL_del_pointer (s, CURCODE);
 
 
       sid=A4GLSQL_find_prepare (s);
-      if (sid) { A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid); }
+      if (sid) { 
+		A4GL_free_associated_mem(sid);
+		A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid); 
+		
+		}
 
 
     }
@@ -1358,6 +1363,7 @@ void *sid;
          if (sid) {
               A4GLSQL_free_prepare(sid);
               A4GL_removePreparedStatementBySid(sid);
+		A4GL_free_associated_mem(sid);
         }
         return;
     }
@@ -1495,6 +1501,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       int a;
       if (use_insert_return)
 	{
+	  oid = PQoidValue (res);
+  		A4GL_set_a4gl_sqlca_errd (5,oid);
+
 	  if (PQresultStatus (res) == PGRES_TUPLES_OK)
 	    {
 	      int nfields;
@@ -1520,6 +1529,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       else
 	{
 	  oid = PQoidValue (res);
+  		A4GL_set_a4gl_sqlca_errd (5,oid);
+
 	  if (oid != InvalidOid)
 	    {
 	      PGresult *res2;
@@ -1568,6 +1579,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		  A4GL_convlower (s);
 			oid_long=oid;
 		
+
 		  SPRINTF2 (sql, "SELECT * FROM %s WHERE OID=%ld", s, oid_long);
 		  res2 = PQexec (current_con, sql);
 
@@ -1614,7 +1626,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	    }
 	}
  	if (res) { PQclear(res); res=0; }
-  	if (singleton) { internal_free_cursor(statementName); free(n);}
+  	if (singleton) { internal_free_cursor(statementName); A4GL_free_associated_mem(n); free(n);}
       return 0;
     }
 
@@ -1633,7 +1645,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
    if (res) { PQclear(res); res=0; }
 
 
-  if (singleton) { internal_free_cursor(statementName); free(n);}
+  if (singleton) { internal_free_cursor(statementName); A4GL_free_associated_mem(n); free(n);}
 
   return 1;
 }
@@ -1928,7 +1940,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       if (nrows > 1)
 	{
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-284);	// A subquery has returned not exactly one row.
-		if (singleton) { free_prepare(n); }
+		if (singleton) { A4GL_free_associated_mem(n); free_prepare(n); }
 
 	  return 1;
 	}
@@ -1947,7 +1959,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	      Execute ("RELEASE SAVEPOINT preExecSelect", 1);
 	    }
 	}
-	if (singleton) { free_prepare(n); }
+	if (singleton) { A4GL_free_associated_mem(n); free_prepare(n); }
 
       return 0;
     }
@@ -1960,7 +1972,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	      	Execute ("RELEASE SAVEPOINT preExecSelect", 1);
 	}
     }
-	if (singleton) { free_prepare(n); }
+	if (singleton) { A4GL_free_associated_mem(n); free_prepare(n); }
   return 1;
 }
 
@@ -3890,6 +3902,7 @@ return s;
 
 
 void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
+	A4GL_free_associated_mem(sid);
 // does nothing in this driver
 }
 
