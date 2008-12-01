@@ -118,6 +118,7 @@ get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted)
         char *p2;
         p=get_select_list_item_list_with_separator (NULL, insertCmd->value_list, ",");
         A4GL_assertion(p==0,"No values list!");
+	A4GL_set_associated_mem(insertCmd, p);
         strcat(buff,"VALUES (");
         strcat(buff,p);
         strcat(buff,")");

@@ -66,15 +66,21 @@ sql_statement :
 sql_bound_commands : insert_statement_c  {
 			int converted;
 			$<sql_string>$=get_insert_cmd($<insert_cmd>1,&converted);
+			A4GL_free_associated_mem($<insert_cmd>1);
+			acl_free($<insert_cmd>1);
 
 		}
                 | update_statement_c {
 			int converted;
 			$<sql_string>$=get_update_cmd($<update_cmd>1,&converted);
+			A4GL_free_associated_mem($<update_cmd>1);
+			acl_free($<update_cmd>1);
 		}
                 | delete_statement_c {
 			int converted;
 			$<sql_string>$=get_delete_cmd($<delete_cmd>1,&converted);
+			A4GL_free_associated_mem($<delete_cmd>1);
+			acl_free($<delete_cmd>1);
 		}
 ;
 
