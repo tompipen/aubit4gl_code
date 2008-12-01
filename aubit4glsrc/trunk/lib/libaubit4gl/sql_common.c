@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.69 2008-11-30 19:33:45 mikeaubury Exp $
+# $Id: sql_common.c,v 1.70 2008-12-01 17:27:04 mikeaubury Exp $
 #
 */
 
@@ -764,6 +764,7 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
       void *p;
       p = preparedStatements[a].sid;
       A4GLSQL_free_prepare (p);
+	
       preparedStatements[a].sid = 0;
       strcpy (preparedStatements[a].preparedStatementName, "");
     }
