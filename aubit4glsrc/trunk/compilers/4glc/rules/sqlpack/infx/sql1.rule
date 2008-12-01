@@ -593,6 +593,7 @@ table_expression_2_select:
 		| from_clause_ts  op_where_clause_2_select {
 		$<s_select>$=$<s_select>2;
 		$<s_select>$->first=$<u_table>1;
+			A4GL_set_associated_mem( $<s_select>$, $<s_select>$->first);
 }
 ;
 

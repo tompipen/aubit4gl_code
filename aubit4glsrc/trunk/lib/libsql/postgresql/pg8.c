@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.68 2008-11-30 19:33:45 mikeaubury Exp $
+# $Id: pg8.c,v 1.69 2008-12-01 09:03:29 mikeaubury Exp $
 #*/
 
 
@@ -390,7 +390,6 @@ char *ptr;
   				A4GL_setenv("A4GL_PGVERSION",versionBuff,1);
 				if (currServerVersion==0) {
 					currServerVersion=atol(versionBuff);
-					//printf("...%s\n", versionBuff);
 				}
 			}
 		}
@@ -1273,6 +1272,7 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
     }
   buff[b] = 0;
   n->select = strdup (buff);
+	A4GL_set_associated_mem(n,n->select);
   strcpy(n->statementName ,uniqid);
   pg_extra->reallyprepared = 0;
 
@@ -1614,7 +1614,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	    }
 	}
  	if (res) { PQclear(res); res=0; }
-  	if (singleton) { internal_free_cursor(statementName); }
+  	if (singleton) { internal_free_cursor(statementName); free(n);}
       return 0;
     }
 
@@ -1633,7 +1633,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
    if (res) { PQclear(res); res=0; }
 
 
-  	if (singleton) { internal_free_cursor(statementName); }
+  if (singleton) { internal_free_cursor(statementName); free(n);}
 
   return 1;
 }
@@ -1807,7 +1807,7 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 static void free_prepare(struct s_sid *n) {
 	   A4GL_del_pointer(n->statementName, PREPAREPG);
 	   //if (n->statementName)  {free (n->statementName);}
-	   if (n->select) {free (n->select);}
+	   //if (n->select) {free (n->select); n->select=0;}
 	   strcpy(n->statementName,"");
 	   n->select=0;
 	   A4GL_free_associated_mem (n);
