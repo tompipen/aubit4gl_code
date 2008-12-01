@@ -3677,7 +3677,7 @@ static int get_severity(char *code) {
 
 	for (a=0;severities[a].code;a++) {
 		if (strcmp(code,severities[a].code)==0) {
-			printf("Found severity : %s %d\n", code,severities[a].severity);
+			//printf("Found severity : %s %d\n", code,severities[a].severity);
 			return severities[a].severity;
 		}
 	}
