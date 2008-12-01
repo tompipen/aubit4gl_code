@@ -838,7 +838,8 @@ end if
 # this will help keep the file neat and tidy
 call channel::write("make","FORMS=")
 call channel::write("make","LIBS=")
-call channel::write("make","OBJS=")
+call channel::write("make","FGLOBJS=")
+call channel::write("make","OTHOBJS=")
 call channel::write("make","OBJS_CFORMS=")
 call channel::write("make","GLOBALS=")
 
@@ -917,7 +918,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	# Globals         Module       C-Code         ESQL/C code
-	if lv_type="G" or lv_type="M" or lv_type="C" or lv_type="E" then
+	if lv_type="G" or lv_type="M" then 
 		if lv_type="G" then
 			if lv_flags is not null and lv_flags != " " then
 				call channel::write("make","GLOBALS+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
@@ -925,7 +926,11 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 				call channel::write("make","GLOBALS+="||lv_name clipped||".4gl")
 			end if
 		end if
-		call channel::write("make","OBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
+		call channel::write("make","FGLOBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
+	end if
+
+	if lv_type="C" or lv_type="E" then
+		call channel::write("make","OTHOBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
 	end if
 
 	if lv_type="f" then
@@ -949,7 +954,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 end foreach
 
-call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${OBJS})")
+call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${FGLOBJS})")
 call channel::write("make"," ")
 
 # And the second time through
@@ -1015,12 +1020,12 @@ else
 end if
 call channel::write("make"," ")
 
-call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(OBJS) $(OBJS_CFORMS) ")
-call channel::write("make","	4glpc $(LFLAGS) -o $@ $(OBJS) $(OBJS_CFORMS) $(LIBS)")
+call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) ")
+call channel::write("make","	4glpc $(LFLAGS) -o $@ $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(LIBS)")
 
 call channel::write("make"," ")
 call channel::write("make","clean:")
-call channel::write("make","	echo rm $(OBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS}"||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
+call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS} "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
 
 
 call channel::write("make"," ")
