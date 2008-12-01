@@ -1348,6 +1348,16 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       return 0;
     }
 
+
+  if (strcmp(fname,"textwidth")==0) {
+                char *s;
+                double d;
+                s=A4GL_char_pop();
+      		d=HPDF_Page_TextWidth(CURRENT_PAGE(p), s);
+                A4GL_push_double(d);
+                return 1;
+  }
+
   if (strcmp(fname,"currpos")) {
                 int n;
                 n=A4GL_pop_int();

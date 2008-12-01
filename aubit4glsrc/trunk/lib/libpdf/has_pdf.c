@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.59 2008-12-01 09:59:21 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.60 2008-12-01 10:29:07 mikeaubury Exp $
 #*/
 
 /**
@@ -1235,6 +1235,16 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		return 0;
   }
 
+  if (strcmp(fname,"textwidth")==0) {
+		char *s;
+		double d;
+		s=A4GL_char_pop();
+		d=PDF_stringwidth (p->pdf_ptr, s, p->font, p->font_size);
+		A4GL_push_double(d);
+		return 1;
+		
+  }
+
 // show_boxed(text, x, y, w, h, mode, feature) returning rc;
 // mode=(left, right, center, justify, fulljustify);
 // if w=h=0, x,y is anchor point for left,right,center single line formatting
@@ -1265,7 +1275,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	&& strcmp (mode, "fulljustify") !=0) mode = "justify";
 
       if (strcmp (feature, "blind") != 0) feature = "";
-
+	//printf("fx=%f, fy=%f, fw=%f, fh=%f\n",fx, fy, fw, fh);
       c = PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, feature);
       A4GL_push_double ((double) c);
       return 1;
