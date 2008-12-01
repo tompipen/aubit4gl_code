@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.162 2008-11-20 20:42:13 mikeaubury Exp $
+# $Id: newpanels.c,v 1.163 2008-12-01 17:24:50 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.162 2008-11-20 20:42:13 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.163 2008-12-01 17:24:50 mikeaubury Exp $";
 #endif
 
 /**
@@ -639,9 +639,12 @@ char buff[256];
 					// Do I need to free the buffer ???
 					//free(fld->buf);
 					
-					if (free_field(fld)!=E_OK) {
-						A4GL_debug("Couldnt free field");
-					}
+					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
+
+					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm1;
+					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
+					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm2;
+					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
 	
 				}
 

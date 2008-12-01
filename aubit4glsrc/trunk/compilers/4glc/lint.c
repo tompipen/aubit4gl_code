@@ -789,7 +789,7 @@ int cnt;
 				struct expr_str *ptr;
 				ptr=r2->cmd_data.command_data_u.call_cmd.fcall;
 				if (ptr->expr_type==ET_EXPR_FCALL) {
-					if (strcmp(ptr->expr_str_u.expr_function_call->fname,"setcount")==0) {
+					if (strcmp(ptr->expr_str_u.expr_function_call->fname,"set_count")==0) {
 						found_setcount=1;
 						break;
 					}
