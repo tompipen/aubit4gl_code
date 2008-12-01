@@ -295,7 +295,7 @@ end if
 
 case lv_query_out
         when 1 # Printer
-                error "Shouldn't happen"  return
+                error "Shouldn't happen"  return 1
 
         when 2 # New file
                 let lv_fmode="f"

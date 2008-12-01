@@ -775,7 +775,7 @@ let x=20
 let y=6
 if mv_tabrec_cnt=0 then
 	error ""
-	return
+	return ""
 end if
 
 let nrows=mv_tabrec_cnt
