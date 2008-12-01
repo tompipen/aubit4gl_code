@@ -57,13 +57,13 @@ first page header
 	print column 2.5 inches;
 	print image mv_logo AS JPEG SCALED BY 0.25
 	skip to 3 inches;
-	call pdf_function("set_font_size",16)
+	set font size 16
 	print column 2 inches,"Table Dump First Page"
 
 page header
-	call pdf_function("set_font_size",14);
+	set font size 14
 	print column 2 inches,"Table Dump", column 6 inches,"Page : ",pageno using "<<<"
-	call pdf_function("set_font_size",10);
+	set font size 10
 
 
 on every row
@@ -73,11 +73,11 @@ on every row
 before group of t
 	skip to top of page
 	print "";
-	call pdf_function("set_font_size",20);
+	set font size 20
 	call pdf_function("set_parameter","underline","true");
 	print t clipped
 	call pdf_function("set_parameter","underline","false");
-	call pdf_function("set_font_size",10);
+	set font size 10
 
 after group of t
 	print column 5 inches, group count(*) using "<<<<"," Columns"
