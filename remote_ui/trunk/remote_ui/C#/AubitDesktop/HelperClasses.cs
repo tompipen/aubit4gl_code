@@ -83,6 +83,31 @@ namespace AubitDesktop
             return (x * Program.AppSettings.xscale);
         }
 
+        public static System.Drawing.Point getPoint(int column,int row) {
+            return new System.Drawing.Point(GuiLayout.get_gui_x(column - 1), GuiLayout.get_gui_y(row));
+        }
+
+        internal static System.Drawing.Point getPoint(AubitDesktop.Xml.XMLForm.Matrix ma, int index, int column, int row)
+        {
+            if (ma != null)
+            {
+                if (ma.stepX > 0)
+                {
+                    column = column + ((index % ma.columnCount) * ma.stepX);
+                    row = row + ((index - (index % ma.columnCount)) / ma.columnCount);
+                }
+                else
+                {
+                    row = row + index;
+                }
+            }
+            else
+            {
+                row = row + index;
+            }
+            return new System.Drawing.Point(GuiLayout.get_gui_x(column - 1), GuiLayout.get_gui_y(row));
+            //throw new Exception("The method or operation is not implemented.");
+        }
     }
 
     class FGLKeyEvent
@@ -594,6 +619,16 @@ namespace AubitDesktop
         {
             windows[0].saveForm();
         }
+
+        internal void clearForm()
+        {
+            if (!windows[0].hasForm) // Top level window...
+            {
+                MessageBox.Show("No form has been display in the window"); return;
+            }
+            windows[0].clearForm();
+            
+        }
     }
 
 
@@ -924,6 +959,12 @@ namespace AubitDesktop
         {
             return CurrentForm.FindFieldArray(fieldlist);
         }
+
+        internal void clearForm()
+        {
+            this.CurrentForm.clearForm();
+            
+        }
     }
 
 
@@ -1046,7 +1087,7 @@ namespace AubitDesktop
                 }
                 if (i != null) return i;
 
-                return (System.Drawing.Image)resourceInterface.getObject("attention");
+                return null; // (System.Drawing.Image)resourceInterface.getObject("attention");
             }
         }
 

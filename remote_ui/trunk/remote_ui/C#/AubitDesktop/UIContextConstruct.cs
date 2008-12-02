@@ -132,7 +132,7 @@ namespace AubitDesktop
 
         public string getAcceptString()
         {
-            return "<TRIGGERED ID=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
+            return "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
         }
 
 

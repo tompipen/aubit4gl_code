@@ -335,9 +335,10 @@ namespace AubitDesktop.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;Settings AllowEdit=&quot;true&quot; StartMinimized=&quot;false&quot; ListenMode=&quot;true&quot;&gt;&lt;Protocols&gt;
+        ///&lt;Settings xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Port=&quot;1350&quot; AllowEdit=&quot;true&quot; StartMinimized=&quot;false&quot; ListenMode=&quot;true&quot;&gt;
+        ///&lt;Protocols&gt;
         ///    &lt;Protocol Code=&quot;SSHT&quot; Command=&quot;Internal&quot; Name=&quot;SSH (Tunnel)&quot; Description=&quot;SSH(Tunnel) : Uses SSH to create a tunnel to the server which can then be used by the client&quot; ListenMode=&quot;false&quot; DefaultPort=&quot;22&quot; /&gt;
-        ///    &lt;Protocol Code=&quot;SSH&quot; Command=&quot;Internal&quot; Name=&quot;SSH (Exec)&quot; Description=&quot;SSH(Exec) : Uses SSH to start a command on the server, which then calls back to the client via Listenmod [rest of string was truncated]&quot;;.
+        ///    &lt;Protocol Code=&quot;SSH&quot; Command=&quot;Internal&quot; Name=&quot;SSH (Exec)&quot; Desc [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string DefaultSettings {
             get {

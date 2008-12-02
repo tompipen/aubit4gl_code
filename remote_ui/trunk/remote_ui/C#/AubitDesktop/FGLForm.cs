@@ -265,7 +265,7 @@ namespace AubitDesktop
                     {
                         AubitDesktop.Xml.XMLForm.FormField ff;
                         ff = (AubitDesktop.Xml.XMLForm.FormField)child;
-                        FGLWidget fld = makeXMLFieldWidget(ff, 0 /* not in a matrix - so subscript is 0 */);
+                        FGLWidget fld = makeXMLFieldWidget(ff, 0,null /* not in a matrix - so subscript is 0 */);
                         if (fld != null)
                         {
                             parent.Controls.Add(fld.WindowsWidget);
@@ -340,7 +340,7 @@ namespace AubitDesktop
                             // text edit field...
                             AubitDesktop.Xml.XMLForm.FormField ff = createFormFieldFromMatrix(ma, 0);
 
-                            fld = makeXMLFieldWidget(ff, 0);
+                            fld = makeXMLFieldWidget(ff, 0,null);
                             if (fld != null)
                             {
                                 parent.Controls.Add(fld.WindowsWidget);
@@ -359,7 +359,7 @@ namespace AubitDesktop
                                     
                                     AubitDesktop.Xml.XMLForm.FormField ff=createFormFieldFromMatrix(ma, itm);
 
-                                    fld = makeXMLFieldWidget(ff, i);
+                                    fld = makeXMLFieldWidget(ff, i,ma);
                                     if (fld != null)
                                     {
                                         parent.Controls.Add(fld.WindowsWidget);
@@ -406,12 +406,14 @@ namespace AubitDesktop
         /// </summary>
         /// <param name="ffx"></param>
         /// <param name="widget"></param>
-        public FGLWidget makegenericFGLWidgetForXmlForm(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Widget widget,int index)
+        public FGLWidget makegenericFGLWidgetForXmlForm(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Widget widget,int index,AubitDesktop.Xml.XMLForm.Matrix ma)
         {
  
 
             switch (widget.Type.ToUpper())
             {
+                case "PIXBUF":
+                case "IMAGE":
                 case "PIXMAP":
 
                     {
@@ -423,7 +425,7 @@ namespace AubitDesktop
                         b.posY = widget.posY;
                         //b.text = "";
                         b.width = widget.width;
-                        return new FGLPixmapFieldWidget(ffx, b, widget.config,index);
+                        return new FGLPixmapFieldWidget(ffx, b, widget.config,index,ma);
                     }
                     
 
@@ -437,7 +439,7 @@ namespace AubitDesktop
                         b.posY = widget.posY;
                         //b.text = "";
                         b.width = widget.width;
-                        return new FGLButtonFieldWidget(ffx, b,widget.config,index);
+                        return new FGLButtonFieldWidget(ffx, b,widget.config,index,ma);
                     }
 
 
@@ -451,7 +453,7 @@ namespace AubitDesktop
                         b.posY = widget.posY;
                         //b.text = "";
                         b.width = widget.width;
-                        return new FGLLabelFieldWidget(ffx, b, widget.config,index);
+                        return new FGLLabelFieldWidget(ffx, b, widget.config,index,ma);
                     }
 
                 case "BROWSER":
@@ -464,7 +466,7 @@ namespace AubitDesktop
                         b.posY = widget.posY;
                         b.text = "";
                         b.width = widget.width;
-                        return new FGLBrowserFieldWidget(ffx, b,widget.config,index);
+                        return new FGLBrowserFieldWidget(ffx, b,widget.config,index,ma);
                     }
                     
 
@@ -484,7 +486,7 @@ namespace AubitDesktop
         /// <param name="ff">the formfield to use as the template</param>
         /// <param name="index">subscript if called from a matrix (zero based)</param>
         /// <returns></returns>
-        private FGLWidget makeXMLFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff,int index)
+        private FGLWidget makeXMLFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff,int index,AubitDesktop.Xml.XMLForm.Matrix ma)
         {
 
             FGLWidget fld;
@@ -499,23 +501,23 @@ namespace AubitDesktop
 
                 
                 case "AubitDesktop.Xml.XMLForm.Widget":
-                    fld = makegenericFGLWidgetForXmlForm(ff, (AubitDesktop.Xml.XMLForm.Widget)ff.Items[0],index);
+                    fld = makegenericFGLWidgetForXmlForm(ff, (AubitDesktop.Xml.XMLForm.Widget)ff.Items[0],index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.DateEdit":
-                    fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.DateEdit)ff.Items[0],"",index);
+                    fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.DateEdit)ff.Items[0],"",index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.TextEdit":
                     {
-                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0],"",index);
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0],"",index,ma);
                     }
 
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.ButtonEdit":
                     {
-                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0], "", index);
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0], "", index,ma);
                     }
 
                     break;
@@ -525,46 +527,46 @@ namespace AubitDesktop
                     if (ff.sqlType != null && ff.sqlType == "DATE")  //&& thisAttrib.ATTRIB_FORMAT == null)
                     {
                         // Its a date
-                        fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],"",index);
+                        fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],"",index,ma);
                     }
                     else
                     {
-                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],index);
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],index,ma);
                     }
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Image":
-                    fld = new FGLPixmapFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Image)ff.Items[0],"",index);
+                    fld = new FGLPixmapFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Image)ff.Items[0],"",index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Browser":
-                    fld = new FGLBrowserFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Browser)ff.Items[0],"",index);
+                    fld = new FGLBrowserFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Browser)ff.Items[0],"",index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Button":
-                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0],"",index);
+                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0],"",index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.CheckBox":
-                    fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], "", index);
+                    fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], "", index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.ComboBox":
-                    fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], "", index);
+                    fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], "", index,ma);
                     break;
 
                
                 case "AubitDesktop.Xml.XMLForm.Label":
-                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Label)ff.Items[0], "",index);
+                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Label)ff.Items[0], "",index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.RipLABEL":
-                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.RipLABEL)ff.Items[0], "",index);
+                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.RipLABEL)ff.Items[0], "",index,ma);
                     break;
 
 
                 case "AubitDesktop.Xml.XMLForm.ProgressBar":
-                    fld = new FGLProgressBarFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ProgressBar)ff.Items[0], "", index);
+                    fld = new FGLProgressBarFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ProgressBar)ff.Items[0], "", index,ma);
                     break;
 
 
@@ -920,11 +922,11 @@ namespace AubitDesktop
 
                 //dim = Convert.ToInt32(colName.Substring(colName.IndexOf("[") + 1, colName.Length - 2));
                 idx = colName.IndexOf("[");
-                string s = colName.Substring(idx);
+                string s = colName.Substring(idx+1);
                 s=s.Replace("]", "");
                 
                 dim = Convert.ToInt32(s);
-                colName = colName.Substring(0, idx - 1);
+                colName = colName.Substring(0, idx );
             }
 
             if (tabName != "")
@@ -1072,10 +1074,12 @@ namespace AubitDesktop
                         {
                             // Does nothing..
                         }
+                        fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
                         fldlist[a].fglField.Text = s;
                     }
                     else
                     {
+                        fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
                         fldlist[a].fglField.Text = d.VALUES[a].Text;
                     }
                 }
@@ -1231,6 +1235,15 @@ namespace AubitDesktop
             MessageBox.Show(XmlizedString);
              * */
             
+        }
+
+        public void clearForm()
+        {
+            foreach (FGLWidget fld in fields)
+            {
+                fld.Text = "";
+                fld.Attribute = -1;
+            }
         }
     }
 }

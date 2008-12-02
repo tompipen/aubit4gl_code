@@ -234,9 +234,20 @@ namespace AubitDesktop
             this.lblLineDisplay.Text = "";
             this.lblMessage.Text = "";
             this.hasApplicationTree = false;
+            bringtoTop();
+            
         }
 
-
+        private void bringtoTop()
+        {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                if (!this.Focused)
+                {
+                    this.Activate();
+                }
+            }
+        }
 
         public void SetMenuBarButtons(Control a)
         {
@@ -411,6 +422,7 @@ namespace AubitDesktop
         public void addNewTabPage(int ID, string appName, FGLApplicationPanel appPanel)
         {
             TabPage tp;
+            bringtoTop();
             // If we get to here - we've not found any valid running application - so we need to start one...
             tabControl1.TabPages.Add(appName);
             tp = tabControl1.TabPages[tabControl1.TabPages.Count-1];

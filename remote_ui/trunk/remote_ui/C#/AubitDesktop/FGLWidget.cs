@@ -42,6 +42,7 @@ namespace AubitDesktop
         int _column;
         int _rows;
         int _columns;
+        int _attribute;
         int _id;
         bool _FieldTextChanged;
         internal Hashtable configSettings;
@@ -332,6 +333,33 @@ namespace AubitDesktop
 
         public List<string> includeValues;
 
+       
+
+       
+        /// <summary>
+        /// current display attribute...
+        /// </summary>
+        public int Attribute
+        {
+            get
+            {
+                return _attribute;
+            }
+            set
+            {
+                if (_attribute != value)
+                {
+                    _attribute = value;
+                    AttributeChanged();
+                }
+            }
+        }
+
+        public virtual void AttributeChanged()
+        {
+
+        }
+
         public bool NoEntry
         {
             get
@@ -576,7 +604,7 @@ namespace AubitDesktop
         }
 
 
-        internal void SetWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        internal void SetWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma,  int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
             //string[] configArr;
 
@@ -767,8 +795,6 @@ namespace AubitDesktop
                             return false;
                         }
                     }
-
-
                 }
                 #endregion
             }
@@ -899,8 +925,10 @@ namespace AubitDesktop
 
 
 
-        public void SizeControl(Control c)
+        public void SizeControl(AubitDesktop.Xml.XMLForm.Matrix ma, int index, Control c)
         {
+            int x;
+            int y;
             c.Height = GuiLayout.get_gui_h(_rows);
             if (_columns > 2)
             {
@@ -922,7 +950,8 @@ namespace AubitDesktop
 
 
             c.Visible = true;
-            c.Location = new System.Drawing.Point(GuiLayout.get_gui_x(_column - 1), GuiLayout.get_gui_y(_row));
+
+            c.Location = GuiLayout.getPoint(ma, index, _column - 1, _row);
         }
 
 

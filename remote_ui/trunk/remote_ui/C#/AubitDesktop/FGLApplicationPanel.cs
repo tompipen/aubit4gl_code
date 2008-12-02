@@ -838,12 +838,14 @@ namespace AubitDesktop
                     if (Program.AppSettings.allowReceiveFile)
                     {
                         FILE f;
+                        string oname="";
                         FileStream fs = null;
                         BinaryWriter sw;
                         byte[] data;
                         f = (FILE)a;
                         if (f.CLIENTNAME != null && f.CLIENTNAME.Length > 0)
                         {
+                            oname = f.CLIENTNAME;
                             fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
                         }
                         else
@@ -851,6 +853,7 @@ namespace AubitDesktop
                             try
                             {
                                 fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
+                                oname = f.NAME;
                             }
                             catch (Exception Ex)
                             {
@@ -865,6 +868,10 @@ namespace AubitDesktop
                             sw.Flush();
                             sw.Close();
                             fs.Close();
+                            if (oname.EndsWith(".4sm"))
+                            {
+                                this.TopWindow.loadApplicationLauncherTree(oname);
+                            }
                         }
                     }
                     else
@@ -928,6 +935,7 @@ namespace AubitDesktop
                 #region CLEARFORM
                 if (a is CLEARFORM)
                 {
+                    ApplicationWindows.clearForm();
                     commands.Remove(a);
                     continue;
                 } 

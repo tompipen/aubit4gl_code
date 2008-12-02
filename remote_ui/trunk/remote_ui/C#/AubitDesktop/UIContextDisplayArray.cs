@@ -327,7 +327,7 @@ namespace AubitDesktop
 
         public string getAcceptString()
         {
-            return "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>";
+            return "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
         }
 
         public UIDisplayArrayContext(FGLApplicationPanel f, DISPLAYARRAY p)

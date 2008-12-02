@@ -122,7 +122,7 @@ namespace AubitDesktop
 
                 if (EventTriggered != null)
                 {
-                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape( getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>");
+                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>");
                 }
             }
         }

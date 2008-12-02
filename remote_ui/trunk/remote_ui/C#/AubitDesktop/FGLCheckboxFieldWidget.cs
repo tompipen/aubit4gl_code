@@ -206,7 +206,7 @@ namespace AubitDesktop
 
 
 
-        public FGLCheckboxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.CheckBox cbox, string config, int index)
+        public FGLCheckboxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.CheckBox cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
             a = createAttribForWidget(ffx);
@@ -222,8 +222,8 @@ namespace AubitDesktop
             }
 
 
-            createCheckBoxWidget(a,
-                Convert.ToInt32(cbox.posY) + index, Convert.ToInt32(cbox.posX), Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.text);
+            createCheckBoxWidget(a,ma,
+                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.text);
 
             this.strTrue = cbox.valueChecked;
             this.strFalse = cbox.valueUnchecked;
@@ -231,17 +231,17 @@ namespace AubitDesktop
 
         }
 
-        
 
-        private void createCheckBoxWidget(ATTRIB thisAttribute, int row, int column,  int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl,string cbText)
+
+        private void createCheckBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, string cbText)
         {
 
            
 
-            this.SetWidget(thisAttribute, row, column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            this.SetWidget(thisAttribute,ma, row, index,column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             cb = new CheckBox();
-            SizeControl(cb);
+            SizeControl(ma,index,cb);
             if (cbText != null)
             {
                 cb.Text = cbText;

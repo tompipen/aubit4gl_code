@@ -96,7 +96,7 @@ namespace AubitDesktop
             }
         }
 
-        public FGLProgressBarFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ProgressBar pb, string config, int index)
+        public FGLProgressBarFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ProgressBar pb, string config, int index,AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
@@ -125,9 +125,9 @@ namespace AubitDesktop
 
         private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
-            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            this.SetWidget(thisAttribute, null,row, 0,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             pb = new ProgressBar();
-            SizeControl(pb);
+            SizeControl(null,0,pb);
             pb.Click += new EventHandler(b_Click);
         }
     }

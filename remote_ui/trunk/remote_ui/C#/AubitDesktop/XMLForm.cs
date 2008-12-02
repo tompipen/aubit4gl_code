@@ -782,6 +782,12 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string include;
 
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public int stepX;
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public int columnCount;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
             [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]

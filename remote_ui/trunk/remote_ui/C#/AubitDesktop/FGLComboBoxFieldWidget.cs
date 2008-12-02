@@ -271,7 +271,7 @@ namespace AubitDesktop
 
 
 
-        public FGLComboBoxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ComboBox cbox, string config, int index)
+        public FGLComboBoxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ComboBox cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
             a = createAttribForWidget(ffx);
@@ -307,19 +307,19 @@ namespace AubitDesktop
             }
 
 
-            createComboBoxWidget(a,
-                Convert.ToInt32(cbox.posY) + index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Item);
+            createComboBoxWidget(a,ma,
+                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Item);
 
         }
 
-        
 
-        private void createComboBoxWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl,AubitDesktop.Xml.XMLForm.Item[] items)
+
+        private void createComboBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, AubitDesktop.Xml.XMLForm.Item[] items)
         {
 
             int bcol = 0;
 
-            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            this.SetWidget(thisAttribute,ma, row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             p = new Panel();
             l = new Label();
@@ -336,7 +336,7 @@ namespace AubitDesktop
 
             t.Visible = true;
             t.Enabled = true;
-            SizeControl(p);
+            SizeControl(ma,index,p);
             
             t.Size = p.Size;
 

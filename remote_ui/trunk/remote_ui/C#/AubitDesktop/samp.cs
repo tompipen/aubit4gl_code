@@ -206,7 +206,8 @@ namespace AubitDesktop
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class TEXT
     {
-
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TYPE;
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string Text;
@@ -354,6 +355,11 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string CONTEXT;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public int WRAP;
+
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
@@ -759,6 +765,10 @@ namespace AubitDesktop
         public FIELD[] FIELDLIST;
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public int WRAP;
+
+        /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_FIELD_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INSERT_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_ROW_EVENT), IsNullable = false)]
@@ -809,6 +819,10 @@ namespace AubitDesktop
         public string NONEWLINES;
 
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public int WRAP;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
         public FIELD[] FIELDLIST;

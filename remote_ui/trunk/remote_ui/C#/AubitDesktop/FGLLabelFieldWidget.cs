@@ -85,7 +85,26 @@ namespace AubitDesktop
             }
         }
 
-        public new string Text // The current fields value
+
+        public override void AttributeChanged()
+        {
+            int attr;
+            attr=this.Attribute;
+            if (attr==-1) attr=0;
+            
+            if ((attr & 4096) != 0) // Reverse...
+            {
+                this.BackColor = System.Drawing.Color.Bisque;
+
+            }
+            else
+            {
+                this.BackColor = System.Drawing.SystemColors.Control;
+            }
+            //MessageBox.Show("Attrib changed");
+        }
+
+        public override string Text // The current fields value
         {
             get
             {
@@ -95,6 +114,10 @@ namespace AubitDesktop
             set
             {
                 l.Text = value;
+                //if (this.Attribute!=0 && this.Attribute!=-1)
+                //{
+                //    MessageBox.Show("ATTRIB");
+                //}
             }
         }
 
@@ -106,34 +129,36 @@ namespace AubitDesktop
             }
         }
 
-        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Label label, string config,int index)
+        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Label label, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
+            
             a = createAttribForWidget(ff);
-            createWidget(a, Convert.ToInt32(label.posY)+index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(label.posY), index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
-        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config,int index)
+        public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
-            createWidget(a, Convert.ToInt32(label.posY)+index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(label.posY),index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
 
         public FGLLabelFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
 
-            createWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
         }
 
-        private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
-            this.SetWidget(thisAttribute, row, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            this.SetWidget(thisAttribute, ma,row,index, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             l = new Label();
-            SizeControl(l);
+            l.TextAlign = ContentAlignment.MiddleLeft;
+            SizeControl(ma,index,l);
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
-            if (this.Text == "") this.Text = tabcol;
+            //if (this.Text == "") this.Text = tabcol;
             l.Click += new EventHandler(b_Click);
         }
     }
