@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.146 2008-11-17 10:03:21 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.147 2008-12-02 17:44:15 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1546,6 +1546,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   int s1;
   void *ptr1;
   char *currbuff;
+int isBlob=0;
 
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
@@ -1560,7 +1561,15 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 
   A4GL_debug ("f->do_reverse=%d attr=%x", a, attr);
 
-  currbuff = A4GL_display_field_contents (field, d1, s1, ptr1);
+  if ((d1 & DTYPE_MASK)==DTYPE_BYTE) { isBlob=1; } 
+  if ((d1 & DTYPE_MASK)==DTYPE_TEXT) { isBlob=1; } 
+
+
+  if (!isBlob) {
+  	currbuff = A4GL_display_field_contents (field, d1, s1, ptr1);
+  } 
+
+  
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
 
@@ -1568,10 +1577,15 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   oopt = oopt_orig;
 
   A4GL_set_field_attr_for_ll (0,field);
-  if (currbuff == 0)
+  if (currbuff == 0 && !isBlob)
     {
       currbuff = A4GL_LL_field_buffer (field, 0);
     }
+
+  if (isBlob) {
+	currbuff="";
+  }	
+
   A4GL_debug ("Determining attribute - field_buffer=%s", currbuff);
   attr = A4GL_determine_attribute (cmd_type, attr, f, currbuff);
 
@@ -1597,7 +1611,9 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   A4GL_debug ("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");
 
-
+  if (isBlob) {
+		A4GL_ll_display_blob(field);
+  }
 
 
 }
@@ -1916,7 +1932,6 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
   char *orig=0;
 int height;
 int width;
-
 
 
 

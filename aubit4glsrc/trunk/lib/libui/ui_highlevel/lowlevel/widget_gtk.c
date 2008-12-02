@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.38 2008-11-04 17:58:59 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.39 2008-12-02 17:44:15 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -105,6 +105,7 @@ struct s_widgets widgets[] = {
 
 #if GTK_CHECK_VERSION(2,0,0)
   {"PIXBUF", A4GL_cr_pixbuf, {"FILENAME", 0}},
+  {"IMAGE", A4GL_cr_pixbuf, {"FILENAME", 0}},
   {"FIELD_BMP", A4GL_cr_pixbuf, {"FILENAME", 0}},
 #endif
 
@@ -415,6 +416,10 @@ A4GL_fld_val_generic (GtkWidget * k)
       return txt_buf;
     }
 
+  if (A4GL_aubit_strcasecmp (ptr, "pixbuf") == 0)
+    {
+      return "-";
+    }
 
 
   if (A4GL_aubit_strcasecmp (ptr, "BUTTON") == 0)
@@ -626,7 +631,7 @@ A4GL_size_widget (GtkWidget * w, int width,int height)
   int x, y;
 
 
-
+A4GL_assertion(w==NULL,"No widget");
   /* If we have a specified width - use it */
   x = (int) A4GL_find_param ("*WIDTH");
   if (x)
@@ -671,9 +676,17 @@ UILIB_A4GL_make_pixmap_gw (char *filename)
   A4GL_debug ("Making pixmap from file:%s (2)\n", filename);
   if (filename == 0)
     filename = "";
-  p = gdk_pixmap_colormap_create_from_xpm (0,
+
+    if (strlen(filename)) {
+  		p = gdk_pixmap_colormap_create_from_xpm (0,
 					   gdk_colormap_get_system (), NULL,
 					   NULL, filename);
+	} else {
+		p=0;
+  		pixmap = gtk_pixmap_new (p, 0);
+  return pixmap;
+	}
+
   if (p == 0)
     {
       FPRINTF (stderr, "Bad pixmap...");
@@ -709,8 +722,9 @@ A4GL_make_pixbuf_gw (char *filename)
 	}
 
 
-  widget = gtk_image_new ();
-  A4GL_size_widget (widget, widget_next_size, widget_next_height);
+  	widget = gtk_image_new ();
+  	A4GL_size_widget (widget, widget_next_size, widget_next_height);
+
 	if (pixbuf) {
   		resized = gdk_pixbuf_scale_simple (pixbuf, lastWidth - 20, lastHeight - 20,
 			     GDK_INTERP_BILINEAR);
@@ -1851,7 +1865,52 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 }
 
 
+void A4GL_ll_display_blob(void *f) {
+  fglbyte b;
+  static char *buff = 0;
+  char *ptr;
+  char *filename=0;
+  int rmfile=0;
+  A4GL_pop_var2(&b,11,0);
 
+  ptr = gtk_object_get_data (GTK_OBJECT (f), "WIDGETSNAME");
+
+  if (b.where == 'F')
+    {
+      long l;
+      FILE *f;
+      f = fopen (b.filename, "r");
+      if (f == 0)
+        {
+          A4GL_exitwith ("Unable to load blob file");
+          return ;
+        }
+      fclose(f);
+	filename=b.filename;
+     }
+
+    if (b.where == 'M') {
+	static char fname[2000];
+          FILE *fwr;
+          strcpy (fname, tmpnam (NULL));
+          fwr = fopen (filename, "w");
+          fwrite (b.ptr, b.memsize, 1, fwr);
+          fclose (fwr);
+	  filename=fname;
+	  rmfile=1;
+	 
+    }
+
+    if (filename) {
+      if (A4GL_aubit_strcasecmp (ptr, "PIXBUF") == 0) {
+      		A4GL_set_pixbuf_gw(f,filename);
+      }
+
+	if (rmfile) {
+		unlink(filename);
+ 	}
+    }
+}
 
 
 

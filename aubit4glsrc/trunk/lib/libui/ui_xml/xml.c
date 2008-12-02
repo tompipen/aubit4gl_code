@@ -397,14 +397,29 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   char *field_list = "field_list";
   char **args;
   char *argp;
+  int *arg_types;
   int a;
 
   args = malloc (sizeof (char *) * n);
+  arg_types = malloc (sizeof (int) * n);
 
   for (a = 0; a < n; a++)
     {
-      args[a] = A4GL_char_pop ();
+		char *s;
+		int d1;
+  		int s1;
+  		void *ptr1;
+
+	  	A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
+		arg_types[a]=d1;
+		if ((d1&DTYPE_MASK)==DTYPE_BYTE || (d1&DTYPE_MASK)==DTYPE_TEXT) {
+			args[a] =malloc(sizeof(fglbyte));
+			A4GL_pop_var2(args[a],11,0);
+		} else {
+      			args[a] = A4GL_char_pop ();
+		}
     }
+
   send_to_ui ("<DISPLAYTO ATTRIBUTE=\"%d\">", attr);
   send_to_ui ("<FIELDLIST>");
 
@@ -425,13 +440,38 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   send_to_ui ("</FIELDLIST>");
 
   send_to_ui ("<VALUES>", attr, field_list);
-
   for (a = n - 1; a >= 0; a--)
     {
-      send_to_ui ("<TEXT>%s</TEXT>", uilib_xml_escape (args[a]));
+		if (arg_types[a]==DTYPE_BYTE || arg_types[a]==DTYPE_TEXT) {
+			fglbyte *b;
+			char *ptr;
+			b=(fglbyte *)args[a];
+			ptr=A4GL_byte_as_base64(b);
+			if (ptr) {
+				int l;
+				int cnt=0;
+				char buff2[300];
+      				send_to_ui_no_nl ("<TEXT TYPE=\"BLOB\">");
+				l=strlen(ptr);
+  				while (cnt<l) {
+					strncpy(buff2,ptr,256);
+					buff2[256]=0;
+  					send_to_ui_no_nl ("%s", buff2);
+					cnt+=256;
+					ptr+=256;
+  				}
+				send_to_ui("</TEXT>", ptr);
+			} else {
+      				send_to_ui ("<TEXT TYPE=\"BLOB\"/>"); // Empty blob - maybe it couldn't be loaded etc..
+			}
+		} else {
+      			send_to_ui ("<TEXT>%s</TEXT>", uilib_xml_escape (args[a]));
+		}
       free (args[a]);
     }
   free (args);
+  free (arg_types);
+
   send_to_ui ("</VALUES></DISPLAYTO>");
   return rval;
 }
