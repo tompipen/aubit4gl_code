@@ -1538,7 +1538,9 @@ uilib_input_start (int nargs)
   char *mod;
   int nfields=0;
   int a;
+  int wrap;
 
+  wrap=POPint();
   nfields = POPint ();
   attr = charpop ();
   todefs = POPint ();
@@ -1570,7 +1572,7 @@ uilib_input_start (int nargs)
       contexts[cinput].ui.input.variable_data[a] = 0;
     }
   suspend_flush (1);
-  send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\">\n%s", cinput, attr, todefs, last_field_list);
+  send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\" WRAP=\"%d\">\n%s", cinput, attr, todefs, wrap, last_field_list);
   //pushint (cinput);
   return 0;
 }
@@ -1670,6 +1672,11 @@ uilib_construct_start (int nargs)
   int nfields;
   int ln;
   char *mod;
+  int wrap;
+
+
+  wrap=POPint(); nargs--;
+
   attr = charpop ();
   nargs--;
   args = malloc (sizeof (char *) * nargs);
@@ -1691,7 +1698,7 @@ uilib_construct_start (int nargs)
   UIdebug (5, "Construct - state=%d", contexts[cconstruct].state);
   suspend_flush (1);
   UIdebug (5, "Construct start - state=%d", contexts[cconstruct].state);
-  send_to_ui ("<CONSTRUCT CONTEXT=\"%d\" ATTRIBUTE=\"%s\">%s", cconstruct, attr, last_field_list);
+  send_to_ui ("<CONSTRUCT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WRAP=\"%d\">%s", cconstruct, attr, wrap,last_field_list);
   send_to_ui ("<COLUMNS>");
   for (a = 2; a < nargs; a++)
     {
@@ -2092,8 +2099,8 @@ uilib_input_array_start (int nargs)
 int allow_insert;
 int allow_delete;
 int inp_flags;
-
-
+int wrap;
+wrap=POPint();
 inp_flags=POPint();
 allow_delete=POPint();
 allow_insert=POPint();
@@ -2137,9 +2144,9 @@ allow_insert=POPint();
     }
 
   suspend_flush (1);
-  send_to_ui ("<INPUTARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" MAXARRSIZE=\"%d\" WITHOUT_DEFAULTS=\"%d\" ARRVARIABLES=\"%d\" ALLOWINSERT=\"%d\" ALLOWDELETE=\"%d\" NONEWLINES=\"%d\">\n%s", ci,
+  send_to_ui ("<INPUTARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" MAXARRSIZE=\"%d\" WITHOUT_DEFAULTS=\"%d\" ARRVARIABLES=\"%d\" ALLOWINSERT=\"%d\" ALLOWDELETE=\"%d\" NONEWLINES=\"%d\" WRAP=\"%d\">\n%s", ci,
 	      attr, m_arr_count, arrsize, todefs, nvals,
-		allow_insert,allow_delete,inp_flags,
+		allow_insert,allow_delete,inp_flags, wrap,
 last_field_list);
   return 0;
 }
@@ -2424,6 +2431,13 @@ uilib_save_file (char *id, char *s)
   return 1;
 }
 
+
+char *getlastkey(void) {
+	if (last_attr) {
+	return last_attr->lastkey;
+	}
+	return NULL;
+}
 
 int
 uilib_last_received_key (void )

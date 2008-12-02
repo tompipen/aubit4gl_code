@@ -105,6 +105,14 @@ int exiting_context[100];
 int exiting_context_state[100];
 int exiting_context_cnt = 0;
 
+char *getlastkey(void);
+
+static void set_xml_lastkey() {
+	char *ptr=getlastkey();
+	if (ptr) {
+		A4GL_set_last_key(A4GL_key_val(ptr));
+	}
+}
 
 static void
 clr_exiting_context (int n)
@@ -637,6 +645,7 @@ UILIB_A4GL_menu_loop_v2 (void *menu, void *evt)
       A4GL_push_int ((long) menu);
       uilib_get_context (2);
       uilib_menu_loop (1);
+		set_xml_lastkey();
       a = A4GL_pop_int ();
 
       if (a == -1)
@@ -1177,7 +1186,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	{
 	  int a;
 	  int cno;
-	  cno = 3;		// number of things pushed..
+	  cno = 4;		// number of things pushed..
 	  A4GL_push_char ("XML");
 	  A4GL_push_int (((long) s) & 0xffffffff);
 	  for (a = 0; a < sreal->novars; a++)
@@ -1190,6 +1199,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	    }
 
 	  A4GL_push_int (sreal->attrib);
+	  A4GL_push_int (A4GL_get_dbscr_inputmode());
 	  uilib_construct_start (cno);
 	  dump_events (evt);
 	  uilib_construct_initialised (0);
@@ -1220,7 +1230,8 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	    }
 	  A4GL_push_int (sreal->attrib);
 	  A4GL_push_int (sreal->novars);
-	  uilib_input_start (5);
+	  A4GL_push_int (A4GL_get_dbscr_inputmode());
+	  uilib_input_start (6);
 	  dump_events (evt);
 	  uilib_input_initialised (0);
 	  A4GL_push_char ("XML");
@@ -1258,6 +1269,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	{
 	  A4GL_push_int (Context);
 	  uilib_construct_loop (1);
+		set_xml_lastkey();
 	}
       else
 	{
@@ -1268,6 +1280,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  if (init && (sreal->mode & 1))
 	    {
 	      uilib_input_loop (1);
+		set_xml_lastkey();
 	    }
 	  else
 	    {
@@ -1277,10 +1290,12 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 		}
 
 	      uilib_input_loop (sreal->novars + 1);
+		set_xml_lastkey();
 	    }
 	}
       a = A4GL_pop_int ();
 
+	
       if (a == 0)
 	{
 	  if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
@@ -1851,6 +1866,7 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
 
 
   uilib_display_array_loop (1);
+		set_xml_lastkey();
   rval = A4GL_pop_int ();
 
   if (rval == 0)
@@ -2022,7 +2038,8 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	A4GL_push_int(inp->allow_insert);
 	A4GL_push_int(inp->allow_delete);
 	A4GL_push_int(inp->inp_flags);
-      uilib_input_array_start (9);
+	  A4GL_push_int (A4GL_get_dbscr_inputmode());
+      uilib_input_array_start (10);
 
       A4GL_push_char ("XML");
       A4GL_push_int ((long) vinp & (0xffffffff));
@@ -2087,6 +2104,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 
   A4GL_push_int (context);
   uilib_input_array_loop (1);
+		set_xml_lastkey();
 
   rval = A4GL_pop_int ();
 
@@ -2200,6 +2218,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
     {
       A4GL_push_long (context);
       uilib_prompt_loop (1);
+		set_xml_lastkey();
       rval = A4GL_pop_long ();
       if (rval > 0)
 	{

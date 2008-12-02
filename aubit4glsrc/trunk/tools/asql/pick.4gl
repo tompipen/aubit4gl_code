@@ -431,11 +431,10 @@ if mv_cnt >=1 then
 		call show_pick()
 		let int_flag=false
 
-
-
 		if mv_use_form then
 			display lv_description to desc
 			display lv_txt2 to prompt_str
+			options input no wrap
 			input lv_value from value attribute(underline)
 	
 				on key(down)
@@ -445,6 +444,8 @@ if mv_cnt >=1 then
 						let mv_curr_option=1
 					end if
 					call show_pick()
+					display lv_description to desc
+					display lv_txt2 to prompt_str
 				
 				on key(right)
 					let lv_doneit=0
@@ -455,6 +456,8 @@ if mv_cnt >=1 then
 						end if
 					end if
 					call show_pick()
+					display lv_description to desc
+					display lv_txt2 to prompt_str
 		
 				
 				
@@ -465,6 +468,8 @@ if mv_cnt >=1 then
 						let mv_curr_option=mv_cnt
 					end if
 					call show_pick()
+					display lv_description to desc
+					display lv_txt2 to prompt_str
 				
 				on key(left)
 					let lv_doneit=0
@@ -475,6 +480,8 @@ if mv_cnt >=1 then
 						end if
 					end if
 					call show_pick()
+					display lv_description to desc
+					display lv_txt2 to prompt_str
 				
 			end input
 		else
@@ -520,8 +527,7 @@ if mv_cnt >=1 then
 
 
 
-
-		if fgl_lastkey()!=fgl_keyval("ENTER") and fgl_lastkey()!=fgl_keyval(".") and fgl_lastkey()!=fgl_keyval(",") and int_flag=false then
+		if fgl_lastkey()!=fgl_keyval("ENTER") and  fgl_lastkey()!=fgl_keyval("ACCEPT") and fgl_lastkey()!=fgl_keyval(".") and fgl_lastkey()!=fgl_keyval(",") and int_flag=false then
 			continue while
 		end if
 	

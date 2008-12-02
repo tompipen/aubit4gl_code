@@ -659,9 +659,53 @@ int fieldOccursHowManyTimes(struct_form *f, int attr_no,int *dim) {
 int field_no;
 field_no= f->attributes.attributes_val[attr_no].field_no;
 *dim=f->fields.fields_val[field_no].metric.metric_len;
+//A4GL_pause_execution();
 return f->fields.fields_val[field_no].metric.metric_len;
 }
 
+
+
+static void size_matrix(struct_form *f,int attr_no,int *offset_x, int *fields_across) {
+int field_no;
+int metric;
+int startx=-1;
+int starty=-1;
+//int maxx=-1;
+//int maxy=-1;
+int a;
+//int fields_across;
+int fields_down;
+
+
+*offset_x=-1;
+field_no=f->attributes.attributes_val[attr_no].field_no;
+//metric=f->fields.fields_val[field_no].metric.metric_val[metric];
+*fields_across=0;
+fields_down=0;
+
+	for (a=0;a<f->fields.fields_val[field_no].metric.metric_len;a++) {
+		metric=f->fields.fields_val[field_no].metric.metric_val[a];	
+		if (a==0) {
+			fields_down=1;
+			*fields_across=1;
+			startx= f->metrics.metrics_val[metric].x;
+			starty= f->metrics.metrics_val[metric].y;
+			continue;
+		}
+
+		if (f->metrics.metrics_val[metric].y==starty) {
+			// Its on the same line as the first field...
+			*fields_across=(*fields_across)+1;
+			if (*offset_x==-1) *offset_x=f->metrics.metrics_val[metric].x-startx;
+		}
+		if (f->metrics.metrics_val[metric].x==startx) {
+			// Its on the same line as the first field...
+			fields_down++;
+		}
+	}
+	//printf("offset_x=%d ", offset_x);
+	//printf("fields_across=%d fields_down=%d\n", fields_across, fields_down);
+}
 
 void
 print_field_attribute (struct_form * f, int metric_no, int attr_no)
@@ -680,6 +724,7 @@ fieldNo=attr_no;
 		dim=dim1;
   } else {
 	if (fieldOccursMultipleTimes(f, attr_no,&dim1)) {
+	//A4GL_pause_execution();
 		ismatrix=1;
 		dim=dim1;
 		if (dim==0) {
@@ -691,19 +736,28 @@ fieldNo=attr_no;
  }
  if (ismatrix) 
     {
-
+	int stepx;
+	int column_count;
 	if (hasPrintedAttribute(attr_no)) return;
 	addPrintedAttribute(attr_no);
-  tabIndex++;
+  	tabIndex++;
+	size_matrix(f,attr_no,&stepx,&column_count);
 
-//printf("field no = %d  attr_no=%d\n",fieldNo,attr_no);
-  //if (!isLabel (f, attr_no)) { fieldNo++; }
-	//attributeFieldIDRef[attr_no]=fieldNo;
-      fprintf (ofile,
-	       "<Matrix pageSize=\"%d\" name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" >\n", dim,
-	       f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
-	       f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff,
-	       tabIndex);
+	if (stepx==-1) {
+      		fprintf (ofile,
+	       		"<Matrix pageSize=\"%d\" name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" >\n", dim,
+	       		f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
+	       		f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff,
+	       		tabIndex);
+	} else {
+      		fprintf (ofile,
+	       		"<Matrix pageSize=\"%d\" name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" stepX=\"%d\" columnCount=\"%d\" >\n", dim,
+	       		f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
+	       		f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff,
+	       		tabIndex, stepx, column_count);
+
+	}
+	//  stepX="11" columnCount="7"
 
       print_widget (f, metric_no, attr_no,"Matrix");
 
