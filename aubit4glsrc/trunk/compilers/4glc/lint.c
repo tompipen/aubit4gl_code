@@ -746,10 +746,25 @@ int cnt;
 		} else {
 			nvars=0;
 		}
+
 		ncols=s->select_list->list.list_len;
 		
 		if (nvars!=ncols) {
-		      A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
+			int warn=1;
+			// Check for SELECT ... INTO TEMP
+			if (nvars==0 ) {
+				if (s->sf) {
+					if (s->sf->into_temp && strlen( s->sf->into_temp)) {
+						warn=0;
+					}
+					if (s->sf->insert_into && strlen( s->sf->insert_into)) {
+						warn=0;
+					}
+				}
+			} 
+			if (warn) {
+		      		A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
+			}
 		}
       }
  
