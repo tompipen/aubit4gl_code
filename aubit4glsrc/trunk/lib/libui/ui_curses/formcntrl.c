@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.152 2008-11-27 09:12:01 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.153 2008-12-02 07:50:35 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.152 2008-11-27 09:12:01 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.153 2008-12-02 07:50:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -970,6 +970,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
  	  A4GL_set_infield_from_parameter ((long) sio->field_list[sio->curr_attrib]);
 	  A4GL_debug ("Setting rval to A4GL_EVENT_BEFORE_FIELD_1");
 	  rval = A4GL_EVENT_BEFORE_FIELD_1;
+	  acl_free((struct s_movement *) sio->fcntrl[a].parameter);
+	  sio->fcntrl[a].parameter=0;
 	}
 
       if (sio->fcntrl[a].state == 50)
@@ -2500,7 +2502,17 @@ void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
 	}
 
 	if (strcmp(siotype, "s_screenio")==0) {
+		struct s_screenio *s;
+		int cnt;
+		s=(struct s_screenio *)sio;
+
 		A4GL_comments(0);
+	  	if (s->mode == MODE_CONSTRUCT) {
+
+  		for (cnt = 0; cnt <= s->nfields; cnt++) {
+              		acl_free(s->constr[cnt].fldbuf);
+            		}
+        	}
 	}
 
 }
