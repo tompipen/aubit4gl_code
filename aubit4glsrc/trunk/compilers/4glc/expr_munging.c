@@ -1,6 +1,7 @@
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_expr.h"
 #include "lint.h"
+#include "parsehelp.h"
 
 #define FAKE_DTYPE_BOOL 90
 extern int yylineno;
