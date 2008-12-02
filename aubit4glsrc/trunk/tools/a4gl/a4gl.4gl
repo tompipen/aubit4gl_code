@@ -18,6 +18,7 @@ end if
 	call form_is_compiled(pick78,"MEMPACKED","GENERIC")
 
 	call form_is_compiled(splash,"MEMPACKED","GENERIC")
+	call form_is_compiled(warn,"MEMPACKED","GENERIC")
 
 	call form_is_compiled(prog,"MEMPACKED","GENERIC")
 	call form_is_compiled(entities,"MEMPACKED","GENERIC")
