@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.126 2008-11-25 10:19:06 mikeaubury Exp $
+# $Id: compile.c,v 1.127 2008-12-03 14:16:51 mikeaubury Exp $
 #*/
 
 /**
@@ -1124,6 +1124,7 @@ char buff[1028];
 char single_output_object[128] = "";
 char fgl_file[128];			/*The 4gl file*/
 char a_part[128], b_part[128];	//for bname()
+//char fullpath_filename[2000];
 char *ptr;
 int cnt;
         int ncomm;
@@ -1174,24 +1175,40 @@ compiled_4gl++;
 
 	A4GL_debug ("Compiling: %s to %s\n", fgl_file,output_object);
 	if (verbose) {PRINTF ("Compiling: %s to %s\n", fgl_file,output_object);}
-	
-	if (strchr (buff, '/')) {
-		ptr = strrchr (buff, '/');
-		strcpy (ptr, "");		/* this does NOT leave a slash at the end*/
-		strcpy (currinfile_dirname, buff);
-	} else {
-		strcpy (currinfile_dirname, ".");
-	}
 
-	#ifdef DEBUG
-		A4GL_debug ("Set currinfile_dirname to: %s\n", currinfile_dirname);
-		A4GL_debug ("Opening in memory: %s\n", fgl_file);
-	#endif
+
+#ifdef __WIN32__
+        if (strchr (buff, '\\') || strchr (buff, '/')) {
+		char *ptr2;
+		ptr2=strrchr (buff, '/')
+                ptr = strrchr (buff, '\\');
+		if (ptr2>ptr) ptr=ptr2;
+                strcpy (ptr, "");               /* this does NOT leave a slash at the end*/
+                strcpy (currinfile_dirname, buff);
+        } else {
+                strcpy (currinfile_dirname, ".");
+        }
+#else
+        if (strchr (buff, '/')) {
+                ptr = strrchr (buff, '/');
+                strcpy (ptr, "");               /* this does NOT leave a slash at the end*/
+                strcpy (currinfile_dirname, buff);
+        } else {
+                strcpy (currinfile_dirname, ".");
+        }
+#endif
+
+
+	//#ifdef DEBUG
+		//printf ("Set currinfile_dirname to: %s\n", currinfile_dirname);
+		//printf ("Opening in memory: %s\n", fgl_file);
+	//#endif
 
 	/*
     File MUST be opened in binary mode on Windows, to be able to process
     source file in DOS format - otherwise fpos/ftell gets completely dissoriented:
 	*/
+
 	yyin = A4GL_memfile_fopen (fgl_file, "rb");
 
 
@@ -1258,6 +1275,9 @@ compiled_4gl++;
     }
 
   this_module.module_name = strdup (outputfilename);
+  this_module.full_path_filename=strdup(A4GL_get_full_filename(fgl_file));
+	//printf("%s\n",this_module.full_path_filename);
+
   this_module.namespace = strdup (get_namespace(""));
   this_module.compiled_time = time (0);
   this_module.genStackInfo=genStackInfo;
@@ -1286,6 +1306,8 @@ compiled_4gl++;
 
   this_module.clobberings.clobberings_val=0;
   this_module.clobberings.clobberings_len=0;
+
+
 
 	yyparse_ret = doparse ();		/* we core A4GL_dump here on Darwin */
 	#ifdef DEBUG

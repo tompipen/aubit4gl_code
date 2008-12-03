@@ -1659,7 +1659,7 @@ struct module_definition {
 	variable_list exported_global_variables;
 	variable_list imported_global_variables;
 	module_entry_ptr module_entries<>;
-	
+	str full_path_filename;
 };
 
 

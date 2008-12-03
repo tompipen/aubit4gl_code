@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.6 2008-11-27 08:00:30 mikeaubury Exp $
+# $Id: file.c,v 1.7 2008-12-03 14:16:51 mikeaubury Exp $
 #
 */
 
@@ -172,3 +172,38 @@ A4GL_file_exists (char *fname)
 
     return 0;
   }
+
+
+char *A4GL_get_full_filename(char *s) {
+static char buff[2000];
+char cwd[2000];
+#ifdef __WIN32__
+	/* Windows */
+	if (strchr(s,':')) { // Absolute path
+		strcpy(buff,s);
+		return buff;
+	}
+	#ifdef MSVC
+	_getcwd(cwd,sizeof(cwd));
+	#else
+	// Must be relative
+	getcwd(cwd,sizeof(cwd));
+	#endif
+	strcpy(buff,cwd);
+	strcat(buff,"\\");
+	strcat(buff,s);
+#else 
+	/* UNIX */
+
+	if (s[0]=='/') { // Absolute path
+		strcpy(buff,s);
+		return buff;
+	}
+	// Must be relative
+	getcwd(cwd,sizeof(cwd));
+	strcpy(buff,cwd);
+	strcat(buff,"/");
+	strcat(buff,s);
+#endif
+return buff;
+}

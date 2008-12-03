@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.349 2008-12-02 17:44:15 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.350 2008-12-03 14:16:51 mikeaubury Exp $
 #
 */
 
@@ -2855,7 +2855,7 @@ pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_s
 char *
 A4GL_byte_as_base64 (fglbyte *b);
 
-
+char *A4GL_get_full_filename(char *s);
 void
 A4GL_str_dot_to_dec (char *s, fgldecimal * d);
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
