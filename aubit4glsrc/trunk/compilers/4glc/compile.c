@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.127 2008-12-03 14:16:51 mikeaubury Exp $
+# $Id: compile.c,v 1.128 2008-12-03 16:15:54 mikeaubury Exp $
 #*/
 
 /**
@@ -1180,7 +1180,8 @@ compiled_4gl++;
 #ifdef __WIN32__
         if (strchr (buff, '\\') || strchr (buff, '/')) {
 		char *ptr2;
-		ptr2=strrchr (buff, '/')
+		char *ptr;
+		ptr2=strrchr (buff, '/');
                 ptr = strrchr (buff, '\\');
 		if (ptr2>ptr) ptr=ptr2;
                 strcpy (ptr, "");               /* this does NOT leave a slash at the end*/
