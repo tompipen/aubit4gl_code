@@ -1190,3 +1190,4 @@
 %token KW_WIDTH 2189
 %token KWLINE 2190
 %token ERRORHOOK 2191
+%token KW_CAST 2192
