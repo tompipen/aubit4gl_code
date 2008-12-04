@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.41 2008-12-04 19:26:48 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.42 2008-12-04 20:01:18 fortiz Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1911,7 +1911,7 @@ void A4GL_ll_display_blob(void *f) {
 	static char fname[2000];
           FILE *fwr;
           strcpy (fname, tmpnam (NULL));
-          fwr = fopen (filename, "w");
+          fwr = fopen (fname, "w");
 	  if (fwr) {
           	fwrite (b.ptr, b.memsize, 1, fwr);
           	fclose (fwr);
