@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.40 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.41 2008-12-04 19:26:48 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1912,8 +1912,13 @@ void A4GL_ll_display_blob(void *f) {
           FILE *fwr;
           strcpy (fname, tmpnam (NULL));
           fwr = fopen (filename, "w");
-          fwrite (b.ptr, b.memsize, 1, fwr);
-          fclose (fwr);
+	  if (fwr) {
+          	fwrite (b.ptr, b.memsize, 1, fwr);
+          	fclose (fwr);
+	  } else {
+		A4GL_set_errm(filename);
+		A4GL_exitwith("Unable to open temporay file");
+		}
 	  filename=fname;
 	  rmfile=1;
 	 
