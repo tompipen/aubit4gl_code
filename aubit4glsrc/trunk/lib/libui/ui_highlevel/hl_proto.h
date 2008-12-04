@@ -31,7 +31,6 @@ int A4GL_get_field_width(void *field);
 int A4GL_get_field_height(void *field);
 int A4GL_get_metric_for(struct s_form_dets *form, void *f);
 int A4GL_get_metric_no(struct s_form_dets *form, void *f);
-int A4GL_getch_win(int allow_acc_intr,char* why);
 int A4GL_getcomment_line(void);
 int A4GL_geterror_line(void);
 int A4GL_getform_line(void);
@@ -95,7 +94,8 @@ void chk_for_picture(void *f, char *buff);
 void debug_print_flags(void *sv, char *txt);
 void* A4GL_add_window(int x, int y, int w, int h, char *name, void *fd, void *win);
 void A4GL_wprintw_window (void *win, int attr, int x, int y, int curr_width,int curr_height,int iscurrborder,int currwinno, char *fmt, ...);
-int A4GL_getch_internal(void *win,char *why);
+int A4GL_getch_internal(void *win,char *why, struct aclfgl_event_list *evt);
+int A4GL_getch_win(int allow_acc_intr,char* why,  struct aclfgl_event_list *evt);
 
 
 

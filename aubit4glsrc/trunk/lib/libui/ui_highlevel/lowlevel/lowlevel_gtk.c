@@ -23,14 +23,16 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.138 2008-11-28 17:13:54 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.139 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
+int lastTriggeredEvent=0;
 int gui_yheight = 20;		// 25
 static int has_stock_item (char *s);
 static int stock_item (char *name, char*txt, char*img,GtkWidget **w);
+static void set_triggered_event(int n) ;
 int gui_xwidth = 9;
 void textField_focus(GtkWidget * w, char *mode) ;
 static int menu_response = -1;
@@ -139,9 +141,26 @@ void A4GL_LL_wadd_gunichar_xy_col (void *win, int x, int y, gunichar ch,
 				   int curr_width, int curr_height,
 				   int iscurrborder, int currwinno);
 
-#define KEY_BUFFER_SIZE 256
-int keybuffer[KEY_BUFFER_SIZE];
-int keybuffer_cnt = 0;
+#define EVT_BUFFER_SIZE 256
+
+enum evt_type {
+	EVT_KEY,
+	EVT_ACTION
+};
+
+struct evt_buffer {
+	enum evt_type type; 
+	// EVT_KEY
+	int keycode; 
+
+	// EVT_ACTION
+	char action[32];
+	int evt;
+};
+
+
+struct evt_buffer evtbuffer[EVT_BUFFER_SIZE];
+int evtbuffer_cnt = 0;
 
 
 void *last_prompt_field = 0;
@@ -267,18 +286,33 @@ A4GL_getxy_coords (int *x, int *y)
  * @todo : Please describe this function.
  */
 static int
-get_keypress_from_buffer ()
+get_keypress_from_buffer (struct aclfgl_event_list  *evt)
 {
-  int cp[KEY_BUFFER_SIZE - 1];
+  struct evt_buffer cp[EVT_BUFFER_SIZE - 1];
   int k;
-  if (keybuffer_cnt == 0)
+  if (evtbuffer_cnt == 0)
     {
       return -1;
     }
-  memcpy (&cp[0], &keybuffer[1], sizeof (cp));
-  k = keybuffer[0];
-  memcpy (&keybuffer[0], &cp[0], sizeof (cp));
-  keybuffer_cnt--;
+  memcpy (&cp[0], &evtbuffer[1], sizeof (cp));
+  k = evtbuffer[0].keycode;
+  lastTriggeredEvent=-1;
+  if (k==A4GLKEY_EVENT) {
+	int found;
+	int a;
+	for (a=0;evt[a].event_type ;a++) {
+		if (evt[a].event_type==A4GL_EVENT_ON_ACTION) {
+			if (strcmp(evt[a].field,evtbuffer[0].action)==0) { 
+				// We've found our action!
+				set_triggered_event(evt[a].block);
+			}
+		}
+	}
+	if (!found) return -1;
+  }
+
+  memcpy (&evtbuffer[0], &cp[0], sizeof (cp));
+  evtbuffer_cnt--;
   return k;
 }
 
@@ -292,12 +326,35 @@ get_keypress_from_buffer ()
 static void
 add_keypress (int a)
 {
-  if (keybuffer_cnt >= KEY_BUFFER_SIZE)
+  if (evtbuffer_cnt >= EVT_BUFFER_SIZE)
     {
       A4GL_LL_beep ();
       return;
     }
-  keybuffer[keybuffer_cnt++] = a;
+  evtbuffer[evtbuffer_cnt].type=EVT_KEY; 
+  evtbuffer[evtbuffer_cnt].keycode= a;
+
+  evtbuffer_cnt++;
+}
+
+/**
+ * 
+ * 
+ * @todo : Please describe this function.
+ */
+void
+add_action (char *a)
+{
+  if (evtbuffer_cnt >= EVT_BUFFER_SIZE)
+    {
+      A4GL_LL_beep ();
+      return;
+    }
+  evtbuffer[evtbuffer_cnt].type=EVT_ACTION; 
+  evtbuffer[evtbuffer_cnt].keycode= A4GLKEY_EVENT;
+  strcpy(evtbuffer[evtbuffer_cnt].action,a);
+  
+  evtbuffer_cnt++;
 }
 
 
@@ -1246,11 +1303,13 @@ A4GL_LL_field_buffer (void *field, int n)
 
 
 int
-A4GL_LL_getch_swin (void *window_ptr,char *why)
+A4GL_LL_getch_swin (void *window_ptr,char *why,void *vevt)
 {
   int a;
+  struct event_list *evt;
   //GtkWidget *f;
-
+  
+  evt=vevt;
   A4GL_set_abort (0);
 
   //a = A4GL_readkey ();
@@ -1271,7 +1330,7 @@ A4GL_LL_getch_swin (void *window_ptr,char *why)
 	  A4GL_debug ( "Returning : %d\n", a);
 	  return a;
 	}
-      a = get_keypress_from_buffer ();
+      a = get_keypress_from_buffer ((struct aclfgl_event_list *)evt);
       if (a != -1)
 	break;
       gtk_main_iteration ();
@@ -1984,7 +2043,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
   if (!lab)
     {
       char *lab_utf ;
-	lab_utf= a4gl_locale_to_utf8 (cbuff);
+      lab_utf= a4gl_locale_to_utf8 (cbuff);
       lab = (GtkLabel *) gtk_label_new (lab_utf);
       g_free (lab_utf);
       e = (GtkEventBox *) gtk_event_box_new ();
@@ -1992,8 +2051,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch, int curr_width,
       gtk_container_add (GTK_CONTAINER (e), GTK_WIDGET (lab));
 
       gtk_object_set_data (GTK_OBJECT (cwin), buff_label, lab);
-      gtk_object_set_data (GTK_OBJECT (cwin), buff_char,
-			   (void *) (ch & 0xff));
+      gtk_object_set_data (GTK_OBJECT (cwin), buff_char, (void *) (ch & 0xff));
 
       gtk_object_set_data (GTK_OBJECT (cwin), buff_evt, e);
 
@@ -2211,7 +2269,8 @@ A4GL_LL_set_field_status (void *f, int stat)
 void
 A4GL_LL_out_linemode (char *s)
 {
-  if (ran_gtk_init) {
+  if (ran_gtk_init && !A4GL_isyes (acl_getenv ("LOCALLINEOUTPUT"))) {
+	//printf("Add to console\n");
   	A4GL_add_to_console (s);
   } else {
 	printf("%s\n",s);
@@ -2826,7 +2885,7 @@ A4GL_LL_display_form (void *fd, int attrib, int curr_width, int curr_height,
 	{
 		if (form->notebook) {
 	  		if (gtk_object_get_data(GTK_OBJECT(form->widgets[a]), "NEWPAGE")||page==-1 ) {
-					printf("NEW PAGE %d from %d\n", page,a); fflush(stdout);
+					//printf("NEW PAGE %d from %d\n", page,a); fflush(stdout);
 					if (page==-1) page=1;
 	  				else page++;
 					sprintf(buff,"PAGE_%d",page);
@@ -3033,6 +3092,7 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget_str,
 
   gtk_object_set_data (GTK_OBJECT (widget), "Attribute", (void *) id);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_FROW", (void *) frow);
+  gtk_object_set_data (GTK_OBJECT (widget), "ACTION", (void *) strdup(action));
   gtk_object_set_data (GTK_OBJECT (widget), "MF_FCOL", (void *) fcol);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_ROWS", (void *) rows);
   gtk_object_set_data (GTK_OBJECT (widget), "MF_COLS", (void *) cols);
@@ -3708,7 +3768,7 @@ menu_callback (gpointer data)
 
   // A4GL_clr_error_nobox ("menu_callback");
 
-  keybuffer_cnt = 0;		/* throw away buffered keys when menuoption is selected */
+  evtbuffer_cnt = 0;		/* throw away buffered keys when menuoption is selected */
   return TRUE;
 }
 
@@ -4583,8 +4643,21 @@ A4GL_LL_finished_with_events (void *s)
   // Does nothing in GTK mode..
 }
 
+
+static void set_triggered_event(int n) {
+	lastTriggeredEvent=n;
+}
+
 int A4GL_LL_get_triggered_event() {
-	return -1; /* Does nothing in GTK mode */
+	int a;
+
+	// Save it so we can return it..
+	a=lastTriggeredEvent;
+
+
+	// Clear it down..
+	lastTriggeredEvent=-1;
+	return a;
 }
 
 
@@ -4673,7 +4746,7 @@ buff[1]=0;
 		a=0;
   		A4GL_LL_screen_update ();
 		while (a==0)  {
-			a=A4GL_LL_getch_swin(0,0);
+			a=A4GL_LL_getch_swin(0,0,NULL);
 		}
 
 		if (a_isprint(a)) {
@@ -4924,6 +4997,7 @@ if (strcmp(currentCmd,"Input")==0) {
 		if (!A4GL_isyes(acl_getenv("NOGTKFIELDCLICK")))  {
 			A4GL_req_field(currentSio,'I','!',tandc,1,NULL,0); // Need this actioned - so fake a key press
 			A4GL_fake_a_keypress(w,A4GLKEY_FIELD_CLICKED);
+		//printf("Fake key\n");
 		}
 	}
 }

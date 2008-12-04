@@ -17,6 +17,7 @@ int isLabel(struct_form *f, int attr_no);
 void print_widget(struct_form *f, int metric_no, int attr_no, char *why);
 void print_entry(struct_form *f, int metric_no, int attr_no, char *why);
 void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no, int oldstyle, char *why);
+void print_button_attr(struct_form *f, int metric_no, int attr_no, int oldstyle, char *why);
 void print_combobox_attr(struct_form *f, int metric_no, int attr_no, int oldstyle, char *why);
 void print_progressbar_attr(struct_form *f, int metric_no, int attr_no, int oldstyle, char *why);
 void print_image_attr(struct_form *f, int metric_no, int attr_no, int oldstyle, char *why);

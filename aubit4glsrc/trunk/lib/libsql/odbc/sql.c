@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.227 2008-11-28 17:13:54 mikeaubury Exp $
+# $Id: sql.c,v 1.228 2008-12-04 15:02:51 mikeaubury Exp $
 #
 */
 
@@ -658,7 +658,7 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 
         SPRINTF1 (sbuff, "'?%d'", ibind[c].dtype);
 
-        if (ibind[c].dtype == DTYPE_CHAR)
+        if (ibind[c].dtype == DTYPE_CHAR || ibind[c].dtype == DTYPE_VCHAR)
         {
             static char *buff = 0;
             char *ptr;

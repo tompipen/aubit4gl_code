@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.454 2008-12-01 14:27:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.455 2008-12-04 15:02:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.454 2008-12-01 14:27:29 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.455 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6193,6 +6193,10 @@ static char buff[2000];
 			return buff;
 		case ET_E_V_OR_LIT_STRING:
 			sprintf(buff,"%s", f->expr_str_u.expr_string);
+			return buff;
+
+		case ET_EXPR_VARIABLE_USAGE:
+			sprintf(buff,"%s", generation_get_variable_usage_as_string(f->expr_str_u.expr_variable_usage));
 			return buff;
 		
 		default:

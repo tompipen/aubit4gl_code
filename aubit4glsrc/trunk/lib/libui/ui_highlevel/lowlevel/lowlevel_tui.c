@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.119 2008-12-02 17:44:15 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.120 2008-12-04 15:02:51 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.119 2008-12-02 17:44:15 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.120 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1728,7 +1728,7 @@ f=form;
  * @return 
  */
 int
-A4GL_LL_getch_swin (void *window_ptr,char *why)
+A4GL_LL_getch_swin (void *window_ptr,char *why,void *vevt)
 {
   int a;
   static int no_delay=-1;
@@ -3394,7 +3394,7 @@ A4GL_LL_error_box (char *str, int attr)
    A4GL_push_long(2);
    A4GL_push_long(1);
    A4GL_display_at(1,0x0);
-   while (A4GL_LL_getch_swin (NULL,"error_box")<=0) ;
+   while (A4GL_LL_getch_swin (NULL,"error_box",NULL)<=0) ;
    A4GL_remove_window("a4gl_prompt");
    A4GL_remove_window("a4gl_error");
 
@@ -3607,7 +3607,7 @@ buff[1]=0;
 		a=0;
   		A4GL_LL_screen_update ();
 		while (a==0)  {
-			a=A4GL_LL_getch_swin(0,0);
+			a=A4GL_LL_getch_swin(0,0,NULL);
 		}
 
 		if (a_isprint(a)) {

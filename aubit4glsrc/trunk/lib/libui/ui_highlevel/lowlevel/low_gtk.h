@@ -25,7 +25,7 @@ char *a4gl_locale_to_utf8(char *s);
 	extern int gui_xwidth;
 	extern int gui_yheight;
 #else
-	int gui_xwidth = 10;
+	int gui_xwidth = 11;
 	int gui_yheight = 25;
 #endif
 
@@ -38,6 +38,7 @@ char *a4gl_locale_to_utf8(char *s);
         #define g_locale_to_utf8(a,b,c,d,e) g_strdup(a)
         #define g_locale_from_utf8(a,b,c,d,e) g_strdup(a)
 #endif
+void add_action (char *a);
 
 //GTK2 only:
 //#include <gtk/gtklabel.h>   /* gtk_label_set_use_markup() */

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.74 2008-11-19 21:15:34 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.75 2008-12-04 15:02:51 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.74 2008-11-19 21:15:34 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.75 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1578,7 +1578,7 @@ internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
       A4GL_LL_activate_events (s);
       A4GL_LL_set_carat (mform);
 
-      a = A4GL_getch_win (1, "Input");
+      a = A4GL_getch_win (1, "Input",evt);
       if (a == A4GLKEY_EVENT)
 	{
 	  A4GL_debug ("input fired event...");
@@ -1861,11 +1861,11 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
 	    program = "vi";
 	  if (strstr (program, "%s"))
 	    {
-	      sprintf (buff, program, filename);
+	      SPRINTF1 (buff, program, filename);
 	    }
 	  else
 	    {
-	      sprintf (buff, "%s %s", program, filename);
+	      SPRINTF2 (buff, "%s %s", program, filename);
 	    }
 	  UILIB_A4GL_gotolinemode ();
 	  system (buff);
@@ -2433,7 +2433,7 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt, struct struct
   //blk=A4GL_has_evt_timeout(evt);
   //if (blk) { return blk; }
   //
-  a = A4GL_getch_internal (0, "construct");
+  a = A4GL_getch_internal (0, "construct",evt);
   construct_last_key = a;
 
 

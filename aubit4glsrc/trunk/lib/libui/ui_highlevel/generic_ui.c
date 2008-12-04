@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.147 2008-12-02 17:44:15 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.148 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3403,7 +3403,7 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 
       A4GL_LL_activate_events (vprompt);
 
-      a = A4GL_getch_internal (p, "prompt");
+      a = A4GL_getch_internal (p, "prompt",evt);
 
       if (a == A4GLKEY_EVENT)
 	{
@@ -3595,7 +3595,7 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,
 int
 UILIB_A4GL_get_key (int timeout)
 {
-  return A4GL_getch_internal ((void *) A4GL_window_on_top (), "A4GL_get_key");
+  return A4GL_getch_internal ((void *) A4GL_window_on_top (), "A4GL_get_key",NULL);
 }
 
 
@@ -4165,7 +4165,7 @@ A4GL_field_opts_off (void *v, int n)
 
 
 int
-A4GL_getch_internal (void *win, char *why)
+A4GL_getch_internal (void *win, char *why, struct aclfgl_event_list *evt)
 {
   int a;
   A4GL_set_abort (0);
@@ -4175,7 +4175,7 @@ A4GL_getch_internal (void *win, char *why)
       A4GL_debug ("Read %d from keyfile", a);
       return a;
     }
-  a = A4GL_LL_getch_swin (win, why);
+  a = A4GL_LL_getch_swin (win, why, evt);
   a = A4GL_key_map (a);
   A4GL_chk_for_screen_print (a);
   A4GL_logkey (a);

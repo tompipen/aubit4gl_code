@@ -49,7 +49,7 @@ define mv_max_option_width integer
 define mv_npages integer
 define mv_use_form integer
 define mv_fields_per_screen integer
-
+define mv_form_values array[200] of integer
 define mv_current_form char(32)
 code
 static int compare_str (const void *vs1, const void *vs2);
@@ -85,11 +85,12 @@ endcode
 end if
 
 for a=1 to mv_cnt
-if a>2000 then
+	if a>2000 then
 code
 	A4GL_assertion(1,"Internal error - out of bounds");
 endcode
-end if
+	end if
+
 	if length(mv_arr[a])>mv_max_option_width then
 		let mv_max_option_width=length(mv_arr[a])
 	end if
@@ -186,81 +187,44 @@ define a integer
 define this_page integer
 define lv_form char(20)
 define lv_fieldno integer
-define lv_fields_across integer
-define lv_fields_down integer
-define lv_x integer
-define lv_y integer
-
-define lv_field_matrix array[7,15] of integer
-
-let lv_fields_down=15
+define lv_num_fields integer
 
 
 # mv_max_option_width should already be set up - so first - pick the best matching size
 case 
-	when mv_max_option_width<=10 					let lv_form="pick10"  let lv_fields_across=7
-	when mv_max_option_width>10 and mv_max_option_width<=20 	let lv_form="pick20"  let lv_fields_across=3
-	when mv_max_option_width>20 and mv_max_option_width<=38 	let lv_form="pick38"  let lv_fields_across=2
-	when mv_max_option_width>38 					let lv_form="pick78"  let lv_fields_across=1
+	when mv_max_option_width<=10 					let lv_form="pick10"  let lv_num_fields=36
+	when mv_max_option_width>10 and mv_max_option_width<=20 	let lv_form="pick20"  let lv_num_fields=18
+	when mv_max_option_width>20 and mv_max_option_width<=38 	let lv_form="pick38"  let lv_num_fields=12
+	when mv_max_option_width>38 					let lv_form="pick78"  let lv_num_fields=6
 end case
 
 call open_formwin(lv_form)
-let mv_fields_per_screen=lv_fields_across*lv_fields_down
-let mv_rows=lv_fields_down
-let lv_fieldno=1
-
-
-# Aubit4gl counts fields going across - and then down..
-let lv_x=1
-let lv_y=1
-
-# Fill an array with our field numbers...
-for a=1 to mv_fields_per_screen
-	let lv_field_matrix[lv_x,lv_y]=a
-
-	#display a to val[a]
-
-	let lv_x=lv_x+1
-	if lv_x>lv_fields_across then
-		let lv_x=1
-		let lv_y=lv_y+1
-		if lv_y>lv_fields_down then
-			exit for
-		end if
-	end if
-end for
+clear form
+let mv_fields_per_screen=lv_num_fields
+let mv_rows=6
 
 let this_page=1
 let lv_fieldno=1
 
-let lv_x=1
-let lv_y=1
 for a=1 to mv_cnt
-	let mv_printat[a].x=lv_field_matrix[lv_x,lv_y]
-	let mv_printat[a].y=lv_field_matrix[lv_x,lv_y]
+	let mv_printat[a].x=lv_fieldno
 	let mv_printat[a].page_no=this_page
-	let lv_y=lv_y+1
 
-	if lv_y>lv_fields_down then
-		let lv_y=1
-		let lv_x=lv_x+1
-		if lv_x>lv_fields_across then # next page
-			if a=mv_cnt then
-			else
-				let this_page=this_page+1
+	let lv_fieldno=lv_fieldno+1
 
-				let lv_y=2 # Skip first field - its for '...'
-				let lv_x=1 
-				let mv_printat[a].x=lv_field_matrix[lv_x,lv_y]
-				let mv_printat[a].y=lv_field_matrix[lv_x,lv_y]
-				let mv_printat[a].page_no=this_page
-				let lv_y=lv_y+1
-			end if
+	if lv_fieldno>lv_num_fields then
+		let lv_fieldno=1
+		if a=mv_cnt then
+		else
+			let this_page=this_page+1
+			let lv_fieldno=2 # Skip first field - its for '...'
+			#display "Putting option ", a, " on page ",this_page
+			let mv_printat[a].page_no=this_page
+			let mv_printat[a].x=lv_fieldno
+			let lv_fieldno=lv_fieldno+1
 		end if
 	end if
-
 end for
-
 
 let mv_npages=this_page
 end function
@@ -268,6 +232,9 @@ end function
 
 
 function set_use_form()
+	if fgl_getenv("DBEDIT")="vi" then
+		call aclfgl_setenv("DBEDIT","kwrite")
+	end if
 	let mv_use_form=1
 end function
 
@@ -283,7 +250,8 @@ end function
 ################################################################################
 function show_pick() 
 define a,x,y integer
-
+define lv_cnt integer
+define lv_fldname char(60)
 #message "USING FORM..."
 
 if mv_cpage<=0 then
@@ -293,18 +261,23 @@ end if
 if mv_cpage!=mv_printat[mv_curr_option].page_no then
 	let mv_cpage=mv_printat[mv_curr_option].page_no
 	if mv_use_form then
+		#display "Clearing form"
 		clear form
 	else
+		
 		call clear_screen_portion()
 	end if
 end if
 
+#display "mv_cpage=",mv_cpage," mv_curr_option=", mv_curr_option, " mv_printat[mv_curr_option].page_no=",mv_printat[mv_curr_option].page_no
 set pause mode on
 call display_banner()
 
 if mv_cpage>1 then
+	#display "Need starting ..."
 	if mv_use_form then
-		display "..." to val[1]
+		let mv_form_values[1]=-1
+		display "..." to val01
 	else
 		display "..." at 6,1
 	end if
@@ -312,22 +285,36 @@ end if
 
 if mv_cpage<mv_npages then
 	if mv_use_form then
-		display "..." to val[mv_fields_per_screen]
+		let lv_fldname="val"||mv_fields_per_screen using "&&"
+		let mv_form_values[mv_fields_per_screen]=-2
+
+		display "..." to _variable(lv_fldname)
 	else
 		display "..." at mv_nexty,mv_nextx
 	end if
 end if
 
+
+if mv_cpage>1 then
+	let lv_cnt=1 # Allow space for the ... at the beginning
+else
+	let lv_cnt=0
+end if
+
 for a=1 to mv_cnt
 	if mv_printat[a].page_no=mv_cpage then
+		let lv_cnt=lv_cnt+1
 		let x=mv_printat[a].x
 		let y=mv_printat[a].y
 
 		if mv_use_form then
+			let lv_fldname="val"|| lv_cnt using "&&"
+			let mv_form_values[lv_cnt]=a
+
 			if a=mv_curr_option then
-         			display mv_arr[a][1,mv_max_option_width]  to val[y] attribute(reverse)
+         			display mv_arr[a][1,mv_max_option_width]  to _variable(lv_fldname)  attribute(bold)
 			else
-                		display mv_arr[a][1,mv_max_option_width]  to val[y]
+                		display mv_arr[a][1,mv_max_option_width]  to  _variable(lv_fldname)
         		end if
 		else
 			if a=mv_curr_option then
@@ -412,8 +399,12 @@ define lv_found integer
 define lv_description char(80)
 define lv_doneit integer
 define lv_counter integer
+define lv_curr_option_next integer
+
 
 if mv_use_form then
+	#clear form
+else
 	call clear_screen_portion()
 end if
 
@@ -435,8 +426,48 @@ if mv_cnt >=1 then
 			display lv_description to desc
 			display lv_txt2 to prompt_str
 			options input no wrap
+
+			let lv_curr_option_next=0
 			input lv_value from value attribute(underline)
-	
+
+				on action fld1 let lv_curr_option_next=mv_form_values[1] exit input
+				on action fld2 let lv_curr_option_next=mv_form_values[2] exit input
+				on action fld3 let lv_curr_option_next=mv_form_values[3] exit input
+				on action fld4 let lv_curr_option_next=mv_form_values[4] exit input
+				on action fld5 let lv_curr_option_next=mv_form_values[5] exit input
+				on action fld6 let lv_curr_option_next=mv_form_values[6] exit input
+				on action fld7 let lv_curr_option_next=mv_form_values[7] exit input
+				on action fld8 let lv_curr_option_next=mv_form_values[8] exit input
+				on action fld9 let lv_curr_option_next=mv_form_values[9] exit input
+				on action fld10 let lv_curr_option_next=mv_form_values[10] exit input
+				on action fld11 let lv_curr_option_next=mv_form_values[11] exit input
+				on action fld12 let lv_curr_option_next=mv_form_values[12] exit input
+				on action fld13 let lv_curr_option_next=mv_form_values[13] exit input
+				on action fld14 let lv_curr_option_next=mv_form_values[14] exit input
+				on action fld15 let lv_curr_option_next=mv_form_values[15] exit input
+				on action fld16 let lv_curr_option_next=mv_form_values[16] exit input
+				on action fld17 let lv_curr_option_next=mv_form_values[17] exit input
+				on action fld18 let lv_curr_option_next=mv_form_values[18] exit input
+				on action fld19 let lv_curr_option_next=mv_form_values[19] exit input
+				on action fld20 let lv_curr_option_next=mv_form_values[20] exit input
+				on action fld21 let lv_curr_option_next=mv_form_values[21] exit input
+				on action fld22 let lv_curr_option_next=mv_form_values[22] exit input
+				on action fld23 let lv_curr_option_next=mv_form_values[23] exit input
+				on action fld24 let lv_curr_option_next=mv_form_values[24] exit input
+				on action fld25 let lv_curr_option_next=mv_form_values[25] exit input
+				on action fld26 let lv_curr_option_next=mv_form_values[26] exit input
+				on action fld27 let lv_curr_option_next=mv_form_values[27] exit input
+				on action fld28 let lv_curr_option_next=mv_form_values[28] exit input
+				on action fld29 let lv_curr_option_next=mv_form_values[29] exit input
+				on action fld30 let lv_curr_option_next=mv_form_values[30] exit input
+				on action fld31 let lv_curr_option_next=mv_form_values[31] exit input
+				on action fld32 let lv_curr_option_next=mv_form_values[32] exit input
+				on action fld33 let lv_curr_option_next=mv_form_values[33] exit input
+				on action fld34 let lv_curr_option_next=mv_form_values[34] exit input
+				on action fld35 let lv_curr_option_next=mv_form_values[35] exit input
+				on action fld36 let lv_curr_option_next=mv_form_values[36] exit input
+				
+
 				on key(down)
 					if mv_curr_option+1<=mv_cnt then
 						let mv_curr_option=mv_curr_option+1
@@ -484,6 +515,42 @@ if mv_cnt >=1 then
 					display lv_txt2 to prompt_str
 				
 			end input
+
+			if lv_curr_option_next!=0 then # Action was used
+			
+				if lv_curr_option_next<0 then # ACTION was used and it was a '...'
+
+					# Previous page...
+					if lv_curr_option_next=-1 and mv_cpage>1 then
+						let mv_cpage=mv_printat[mv_curr_option].page_no
+						while mv_cpage=mv_printat[mv_curr_option].page_no
+							let mv_curr_option=mv_curr_option-1
+							if mv_curr_option<1 then
+								let mv_curr_option=mv_cnt
+								exit while
+							end if
+						end while
+						continue while
+					end if
+	
+					if lv_curr_option_next=-2 then
+						let mv_cpage=mv_printat[mv_curr_option].page_no
+						while mv_cpage=mv_printat[mv_curr_option].page_no
+							let mv_curr_option=mv_curr_option+1
+							if mv_curr_option>mv_cnt then
+								let mv_curr_option=1
+								exit while
+							end if
+		
+						end while
+						continue while
+					end if
+				else 
+					let mv_curr_option=lv_curr_option_next
+					exit while
+					# Option is > 0
+				end if
+			end if
 		else
 			display lv_description clipped, "" at 2,1
 			prompt lv_txt2 clipped for lv_value #attribute(normal)

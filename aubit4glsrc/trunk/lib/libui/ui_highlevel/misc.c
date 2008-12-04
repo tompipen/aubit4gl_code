@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.67 2008-11-04 17:58:59 mikeaubury Exp $";
+  "$Id: misc.c,v 1.68 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -88,7 +88,6 @@ UILIB_A4GL_clr_form (int to_default)
   void *f;
   int fno;
   int rn;
-
   A4GLSQL_set_status (0, 0);
 
   formdets = UILIB_A4GL_get_curr_form (1);
@@ -114,9 +113,7 @@ UILIB_A4GL_clr_form (int to_default)
 
 	  A4GL_debug ("Calling set_field_attr_with_attr for clearing..");
 
-	  A4GL_set_field_attr_with_attr ((void *) formdets->fileform->
-					 metrics.metrics_val[metric_no].field,
-					 0, FGL_CMD_CLEAR);
+	  A4GL_set_field_attr_with_attr ((void *) formdets->fileform-> metrics.metrics_val[metric_no].field, 0, FGL_CMD_CLEAR);
 
 	  A4GL_debug ("clr : field = %p", f);
 	  if (!to_default)
@@ -1278,14 +1275,14 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 
 
 int
-A4GL_getch_win (int allow_acc_intr,char *why)
+A4GL_getch_win (int allow_acc_intr,char *why, struct aclfgl_event_list *evt)
 {
   int a;
   A4GL_debug ("getch_win called...");
 
   if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys (1); }
 
-  a = A4GL_getch_internal (A4GL_get_currwin (),why);
+  a = A4GL_getch_internal (A4GL_get_currwin (),why, evt);
   if (a) A4GL_clr_error_nobox ("A4GL_getch_win");
 
   if (allow_acc_intr) { A4GL_LL_set_acc_intr_keys (0); }

@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.39 2008-12-02 17:44:15 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.40 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1125,6 +1125,9 @@ A4GL_cr_label (void)
   g_free (utf);
   gtk_widget_show (label);
   A4GL_add_signal_grab_focus (label, 0);
+  //gtk_label_set_justify( label,GTK_JUSTIFY_LEFT);
+
+
   /* A4GL_add_signal_clicked (label, 0); */ // GLib-GObject-CRITICAL **: g_signal_connect_closure_by_id: assertion `signal_id > 0' failed
   return label;
 }
@@ -1550,8 +1553,7 @@ A4GL_func (GtkWidget * w, char *mode)
     }
 
   A4GL_debug ("in func");
-  A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype,
-	      gtfield);
+  A4GL_debug ("**** A4GL_func ---%p '%s' (%s:%s)\n", w, mode, widgettype, gtfield);
 
   if (A4GL_aubit_strcasecmp (mode, "grab_focus") == 0)
     {
@@ -1567,52 +1569,63 @@ A4GL_func (GtkWidget * w, char *mode)
       char *key;
       int m;
       unsigned int keyn;
+      char *action;
       keyn = 0;
       A4GL_debug ("setting A4GL_action field=%p", w);
       actionfield = w;
 
-      key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
 
-      A4GL_debug ( "Key=%p (%s)\n", key, key);
+      action = gtk_object_get_data (GTK_OBJECT (w), "ACTION");
 
-      if (key)
+      if (action)
 	{
-	  A4GL_debug ("Substituting specified key: %s\n", key);
+	  add_action (action);
+	}
+      else
+	{
 
-	  if (A4GL_aubit_strcasecmp (key, "ACCEPT") == 0)
+	  key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
+
+	  A4GL_debug ("Key=%p (%s)\n", key, key);
+
+	  if (key)
 	    {
-	      keyn = 27;	/* FIXME */
-	    }
-	  else
-	    {
-	      if (A4GL_aubit_strcasecmp (key, "INTERRUPT") == 0)
+	      A4GL_debug ("Substituting specified key: %s\n", key);
+
+	      if (A4GL_aubit_strcasecmp (key, "ACCEPT") == 0)
 		{
-		  keyn = 3;	/* FIXME */
+		  keyn = 27;	/* FIXME */
 		}
 	      else
 		{
-		  void *ptr;
-		  ptr = &m;
-
-		  gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
-		  if (keyn == 0 && m == 0)
+		  if (A4GL_aubit_strcasecmp (key, "INTERRUPT") == 0)
 		    {
-		      FPRINTF (stderr, "Don't understand that key : %s\n",key);
-		      a4gl_upshift (key);
-		      gtk_accelerator_parse (key, &keyn,
-					     (GdkModifierType *) ptr);
+		      keyn = 3;	/* FIXME */
+		    }
+		  else
+		    {
+		      void *ptr;
+		      ptr = &m;
+
+		      gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
 		      if (keyn == 0 && m == 0)
 			{
-			  keyn = A4GL_key_val (key);
-			  FPRINTF (stderr, "Still dont understand that key - hope the aubit one just passed through...");
+			  FPRINTF (stderr, "Don't understand that key : %s\n", key);
+			  a4gl_upshift (key);
+			  gtk_accelerator_parse (key, &keyn, (GdkModifierType *) ptr);
+			  if (keyn == 0 && m == 0)
+			    {
+			      keyn = A4GL_key_val (key);
+			      FPRINTF (stderr, "Still dont understand that key - hope the aubit one just passed through...");
+			    }
 			}
-		    }
-		  if (m & 4 && tolower (keyn) >= 'a' && tolower (keyn) <= 'z')
-		    keyn = tolower (keyn) - 'a' + 1;
+		      if (m & 4 && tolower (keyn) >= 'a' && tolower (keyn) <= 'z')
+			keyn = tolower (keyn) - 'a' + 1;
 
-		  A4GL_fake_a_keypress (w, keyn);
-		  A4GL_debug ( "keyn=%x m=%x\n", keyn, m);
-		  //fflush (stderr);
+		      A4GL_fake_a_keypress (w, keyn);
+		      A4GL_debug ("keyn=%x m=%x\n", keyn, m);
+		      //fflush (stderr);
+		    }
 		}
 	    }
 	}
@@ -1623,7 +1636,6 @@ A4GL_func (GtkWidget * w, char *mode)
   A4GL_debug ("All done");
   return;
 }
-
 
 
 
@@ -1672,6 +1684,7 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
   A4GL_debug("Here..");
 
+
   if (A4GL_aubit_strcasecmp (ptr, "BUTTON") == 0)
     {
       GtkWidget *w;
@@ -1681,16 +1694,21 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
       w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
       w2=gtk_object_get_data (GTK_OBJECT (k), "PERMLABEL");
+
+//printf("A4GL_display_generic... Button : w=%p w2=%p\n", w,w2);
+
       if (w2) {
+#ifdef BROKEN
+ 		// We cant clear a field if this code is used...
 	      	char *buff;
 	      	buff=strdup(s);
 		A4GL_trim(buff);
 	      	if (strlen(buff)==0) {
-				free(buff);
-					return 0;
+	  		gtk_label_set_text (GTK_LABEL (w), "");
+			free(buff);
 		}
-				free(buff);
-
+		free(buff);
+#endif
       }
       if (w)
 	{

@@ -75,7 +75,7 @@ A4GL_LL_get_field_height void* f -> int
 
 
 /* int A4GL_LL_getch_swin void* window_ptr */
-A4GL_LL_getch_swin void* window_ptr char* why -> int 
+A4GL_LL_getch_swin void* window_ptr char* why void* evt -> int 
 
 /* void A4GL_LL_gui_run_til_no_more */
 A4GL_LL_gui_run_til_no_more -> void 

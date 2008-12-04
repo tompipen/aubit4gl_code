@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.40 2008-11-28 22:06:42 mikeaubury Exp $
+# $Id: display_array.c,v 1.41 2008-12-04 15:02:51 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.40 2008-11-28 22:06:42 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.41 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -373,7 +373,7 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
 		int blk;
   		blk=A4GL_has_evt_timeout(evt);
   		if (blk) { return blk; }
-      		a = A4GL_getch_win (1,"display array");
+      		a = A4GL_getch_win (1,"display array",evt);
 		      if (a==A4GLKEY_EVENT) {
 		                      A4GL_debug("display array fired event...");
 				      A4GL_evt_not_idle(evt); 

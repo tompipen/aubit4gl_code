@@ -96,6 +96,7 @@ defer interrupt
 defer quit
 code
 A4GL_setenv("A4GL_AUTOBANG","Y",1);
+A4GL_setenv("HIDEEMPTYBUTTONS","Y",1);
 atexit(bye);
 endcode
 

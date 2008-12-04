@@ -277,10 +277,17 @@ if (new_style_widget) {
 		print_label_attr(f,metric_no,attr_no,0,why);
 		return;
 	}
+
 	if (A4GL_aubit_strcasecmp(new_style_widget,"ButtonEdit")==0) {
 		print_buttonedit_attr(f,metric_no,attr_no,0,why);
 		return;
 	}
+
+	if (A4GL_aubit_strcasecmp(new_style_widget,"Button")==0) {
+		print_button_attr(f,metric_no,attr_no,0,why);
+		return;
+	}
+
 	if (A4GL_aubit_strcasecmp(new_style_widget,"DateEdit")==0) {
 		print_dateedit_attr(f,metric_no,attr_no,0,why);
 		return;
@@ -320,6 +327,10 @@ if (old_style_widget) {
 	}
 	if (A4GL_aubit_strcasecmp(old_style_widget,"ButtonEdit")==0) {
 		print_buttonedit_attr(f,metric_no,attr_no,1,why);
+		return;
+	}
+	if (A4GL_aubit_strcasecmp(old_style_widget,"Button")==0) {
+		print_button_attr(f,metric_no,attr_no,1,why);
 		return;
 	}
 	if (A4GL_aubit_strcasecmp(old_style_widget,"DateEdit")==0) {
@@ -375,7 +386,7 @@ char posbuf[200];
 
 }
 
-// Prints a field thats defined as a label widgettype
+// Prints a field thats defined as a buttonedit widgettype
 void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
 //char *s;
 char buff[2000];
@@ -396,6 +407,26 @@ char posbuf[200];
 	return ;
 }
 
+// Prints a field thats defined as a buttonedit widgettype
+void print_button_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
+//char *s;
+char buff[2000];
+char posbuf[200];
+ get_attribs(f, attr_no, buff,1);
+	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	if (strcmp(why,"Table")==0) {
+		strcpy(posbuf,""); // posX and posY are not used for tables...
+	}
+
+
+	if (oldstyle) {
+			fprintf(ofile, "  <Button %s width=\"%d\" %s />\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+
+        } else {
+			fprintf(ofile, "  <Button %s width=\"%d\" %s/>\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+        }
+	return ;
+}
 
 void print_checkbox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,char *why) {
 //char *s;

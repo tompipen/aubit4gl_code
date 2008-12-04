@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.64 2008-11-04 13:20:06 mikeaubury Exp $
+# $Id: input_array.c,v 1.65 2008-12-04 15:02:51 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.64 2008-11-04 13:20:06 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.65 2008-12-04 15:02:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -647,7 +647,7 @@ iarr_loop (struct s_inp_arr *arr, struct aclfgl_event_list *evt)
 	    {
 	      return blk;
 	    }
-	  a = A4GL_getch_win (1,"input array");
+	  a = A4GL_getch_win (1,"input array",evt);
 
               if (a==A4GLKEY_EVENT) {
 		                      A4GL_debug("input array fired event...");
