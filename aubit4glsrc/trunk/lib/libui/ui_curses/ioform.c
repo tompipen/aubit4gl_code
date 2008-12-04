@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.214 2008-11-17 10:03:21 mikeaubury Exp $
+# $Id: ioform.c,v 1.215 2008-12-04 15:58:25 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.214 2008-11-17 10:03:21 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.215 2008-12-04 15:58:25 mikeaubury Exp $";
 #endif
 
 /**
@@ -1972,9 +1972,14 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 		}
 	}
 
-	A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
-      fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
-	A4GL_fprop_flag_set(field_list[a],FLAG_FIELD_TOUCHED); 
+	if (field_list[a]) {
+		A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
+        	fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
+		A4GL_fprop_flag_set(field_list[a],FLAG_FIELD_TOUCHED); 
+	} else {
+		A4GL_exitwith("Field or field subscript was not found");
+		return 0;
+	}
 
 
 
