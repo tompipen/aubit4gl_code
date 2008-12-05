@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.44 2008-12-05 07:39:42 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.45 2008-12-05 09:11:35 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -922,6 +922,7 @@ A4GL_cr_button (void)
   GtkVBox *v;
   GtkWidget *pixmap = 0;
   char *key;
+  char *btn_text;
 
   label = A4GL_find_param ("*LABEL");
   image = A4GL_find_param ("*IMAGE");
@@ -987,7 +988,11 @@ A4GL_cr_button (void)
 
   A4GL_add_signal_clicked ((GtkWidget *) b, 0);
   A4GL_add_signal_grab_focus ((GtkWidget *) b, 0);
-  if (strcmp (label, " ") == 0 && A4GL_isyes(acl_getenv("HIDEEMPTYBUTTONS")))
+  btn_text=strdup(label);
+  A4GL_trim(btn_text);
+
+  
+  if (strlen (btn_text) == 0 && A4GL_isyes(acl_getenv("HIDEEMPTYBUTTONS")))
     {
       gtk_widget_hide (GTK_WIDGET (b));
     } else {
@@ -1660,9 +1665,12 @@ A4GL_func (GtkWidget * w, char *mode)
  *
  * @param k A pointer to the widget where to display the information
  * @param s A pointer to the information to be displayed.
+ * @param orig original string before any formatting or clipping is applied
+ *
  * @return The result of the display:
  *   - 1 : Information displayed.
  *   - 0 :idget type not found.
+ *
  */
 int
 A4GL_display_generic (GtkWidget * k, char *s,char *orig)
@@ -1672,7 +1680,7 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
   char *btn;
   A4GL_debug ("in A4GL_display_generic k=%p s='%s'\n", k, s);
 
-
+//printf("A4GL_display_generic s=%s orig=%s\n",s,orig);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WIDGETSNAME");
 
@@ -1724,10 +1732,12 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
       if (strlen (btn) == 0 && A4GL_isyes(acl_getenv("HIDEEMPTYBUTTONS")))
 	{
+	//printf("Here : btn='%s' hide !!!\n",btn);
 	  gtk_widget_hide (GTK_WIDGET (k));
 	}
       else
 	{
+	//printf("Here : btn='%s' show !!! %d\n",btn,strlen(btn));
 	  gtk_widget_show (GTK_WIDGET (k));
 	}
       free (btn);

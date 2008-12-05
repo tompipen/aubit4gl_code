@@ -6,6 +6,7 @@ define lv_dialect char(20)
 defer interrupt
 
 if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
+	call aclfgl_setenv("HIDEEMPTYBUTTONS","Y");
         call set_use_form()
 else
         call clr_use_form()

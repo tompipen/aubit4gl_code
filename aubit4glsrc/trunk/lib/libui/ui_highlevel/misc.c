@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.68 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: misc.c,v 1.69 2008-12-05 09:11:35 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -110,7 +110,6 @@ UILIB_A4GL_clr_form (int to_default)
 	    formdets->fileform->fields.fields_val[fno].metric.metric_val[rn];
 	  k = &formdets->fileform->metrics.metrics_val[metric_no];
 	  f = (void *) k->field;
-
 	  A4GL_debug ("Calling set_field_attr_with_attr for clearing..");
 
 	  A4GL_set_field_attr_with_attr ((void *) formdets->fileform-> metrics.metrics_val[metric_no].field, 0, FGL_CMD_CLEAR);
@@ -119,6 +118,7 @@ UILIB_A4GL_clr_form (int to_default)
 	  if (!to_default)
 	    {
 	      A4GL_debug ("Blanking field %p MJAMJAMJA", f);
+		
 	      A4GL_mja_set_field_buffer (f, 0, "",0);
 	    }
 	  else
