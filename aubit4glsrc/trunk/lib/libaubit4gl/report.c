@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.171 2008-11-28 17:13:53 mikeaubury Exp $
+# $Id: report.c,v 1.172 2008-12-05 11:39:50 mikeaubury Exp $
 #
 */
 
@@ -1744,10 +1744,12 @@ A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
   A4GLSQL_set_sqlca_sqlcode (0);
 
   A4GLSQL_fetch_cursor (cursor_for_rep_tab (b), 2, 1, n, reread);
-  A4GL_push_params (reread, n);
 
-  if (a4gl_sqlca.sqlcode == 0)
-    return 1;
+  if (a4gl_sqlca.sqlcode == 0) {
+  	A4GL_push_params (reread, n);
+    	return 1;
+  }
+
   A4GLSQL_set_sqlca_sqlcode (0);
   return 0;
 }
