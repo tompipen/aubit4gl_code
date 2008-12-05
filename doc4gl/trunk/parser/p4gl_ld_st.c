@@ -14,9 +14,9 @@
  *
  * Moredata - Lisboa, PORTUGAL
  *                                                       
- * $Author: saferreira $
- * $Revision: 1.11 $
- * $Date: 2004-01-16 20:45:28 $
+ * $Author: mikeaubury $
+ * $Revision: 1.12 $
+ * $Date: 2008-12-05 08:19:57 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 /* Inseridos para funcionar com gcc */
 #include <unistd.h>

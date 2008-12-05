@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "p4gl_symtab.h"
 #include "p4gl.h"
 

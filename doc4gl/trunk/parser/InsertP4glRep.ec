@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #ifndef WIN32
 	#include <string.h>
@@ -24,6 +24,7 @@
 
 /** The statement description */
 extern char *StatDesc;
+static void insertGlobalsFiles(char *package,char *module);
 
 exec sql whenever sqlerror call SqlErrors;
 
@@ -1129,10 +1130,7 @@ int a;
  * Insert information about GLOBALS files referenced in this module to the
  * the repository.
  */
-static void
-insertGlobalsFiles(package,module)
-    char *package;
-    char *module;
+static void insertGlobalsFiles(char *package,char *module)
 {
 int i;
   exec sql begin declare section;

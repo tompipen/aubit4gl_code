@@ -24,7 +24,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "p4gl_symtab.h"
 
 static FILE *f_dump;

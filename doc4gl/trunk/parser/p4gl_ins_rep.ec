@@ -40,7 +40,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include <string.h>
 #include "p4gl_symtab.h"
 #include "p4gl.h"
@@ -1338,6 +1338,7 @@ MostraTempo()
 }
 
 
+#ifdef X
 /* =========================================================================
  # Insertion of error at the log table of inslib
  # =========================================================================*/
@@ -1365,7 +1366,7 @@ va_dcl
 		   values (:Progname, CURRENT,   :ErrTxt);
 }
 
-
+#endif
 
 
 //#endif  // _NO_LONGER_USED_
