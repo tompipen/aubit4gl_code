@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.45 2008-12-05 09:11:35 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.46 2008-12-05 16:30:00 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1705,6 +1705,8 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
       GtkWidget *w2;
       btn = strdup (s);
       A4GL_trim (btn);
+      g_free (utf);
+  	utf = a4gl_locale_to_utf8 (btn);
 
       w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
       w2=gtk_object_get_data (GTK_OBJECT (k), "PERMLABEL");
@@ -1726,6 +1728,7 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
       }
       if (w)
 	{
+		//printf("'%s'\n",utf);
 	  gtk_label_set_text (GTK_LABEL (w), utf);
 	  g_free (utf);
 	}
