@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.69 2008-12-05 09:11:35 mikeaubury Exp $";
+  "$Id: misc.c,v 1.70 2008-12-05 09:49:23 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -988,10 +988,10 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
     }
   else
     {
-      /* Need to pad this out later... */
       A4GL_push_int (ml);
       A4GL_push_int (1);
       A4GL_display_at (1, attr);
+	while (A4GL_getch_win(0,"wait",NULL)<=0) ;
     }
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 

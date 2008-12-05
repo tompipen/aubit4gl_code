@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.139 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.140 2008-12-05 09:49:23 mikeaubury Exp $";
 #endif
 
 
@@ -4088,7 +4088,19 @@ int A4GL_LL_can_show_comments(char *s) {
 }
 
 int A4GL_LL_can_show_message(int ml,char *s,int wait) {
-	return 0;
+if (!wait) return 0; 	// Do the default for a non-wait
+			// we're just handling the 'wait'...
+			
+  GtkWidget *dialog;
+  dialog = gtk_message_dialog_new(appWin,
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_INFO,
+            GTK_BUTTONS_OK,
+            s, "title");
+  gtk_window_set_title(GTK_WINDOW(dialog), "Information");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+  return 1;
 }
 
 

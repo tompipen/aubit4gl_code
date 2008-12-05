@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.120 2008-12-04 15:02:51 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.121 2008-12-05 09:49:23 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.120 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.121 2008-12-05 09:49:23 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -3673,6 +3673,7 @@ void A4GL_LL_init_form(void *f) {
 void A4GL_ll_display_blob(void *f) {
 	// does nothing - required by API
 }
+
 
 // --------------------------------------------------------------------------------------
 // FIXMEs...

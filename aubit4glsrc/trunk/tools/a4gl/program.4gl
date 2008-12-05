@@ -450,8 +450,12 @@ define lv_ok integer
 	if lv_ok=0 then
 		message "Program compile succeeded"
 	else
-		display "Program failed to compile - press return"
-		call fgl_getkey() returning lv_ok # some key any key
+		if get_use_form() then
+			message "Program failed to compile" Wait for key
+		else
+			display "Program failed to compile - press return"
+			call fgl_getkey() returning lv_ok # some key any key
+		end if
 	end if
 	
 
@@ -471,8 +475,14 @@ if lv_prog is not null and lv_prog not matches " " then
 	end if
 	display " " # goto line mode
 	run lv_prog
-	display "Press return to continue"
-	call fgl_getkey() returning lv_ok
+
+	if get_use_form() then
+		message "Program has finished execution" wait for key
+	else
+		display "Press return to continue"
+		call fgl_getkey() returning lv_ok
+	end if
+
 end if
 
 end function

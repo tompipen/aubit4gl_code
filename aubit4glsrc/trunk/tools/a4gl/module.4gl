@@ -273,8 +273,12 @@ define lv_makefile,lv_objfile char(512)
 							let lv_state="ExitTrue"
 						end if
 					else
-						display "Press any key to continue"
-						call fgl_getkey() returning lv_ok
+						if get_use_form() then
+							message "Module did not compile correctly" wait for key
+						else
+							display "Press any key to continue"
+							call fgl_getkey() returning lv_ok
+						end if
 						let lv_state="CorrectExit"
 					end if
 				end if
