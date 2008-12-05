@@ -1,4 +1,4 @@
-database sysmaster
+database test1
 
 main
 
