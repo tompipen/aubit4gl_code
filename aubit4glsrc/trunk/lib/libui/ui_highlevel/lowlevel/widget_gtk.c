@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.43 2008-12-04 20:13:30 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.44 2008-12-05 07:39:42 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -766,6 +766,11 @@ void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
 
   if (filename == 0)
     filename = "";
+
+  if (strlen(filename)==0) {
+	  gtk_image_set_from_file (GTK_IMAGE (widget), NULL);
+		return;
+	 }
   A4GL_debug ( "Making pixmap from file:%s (1)\n", filename);
 
   A4GL_trim (filename);
@@ -775,6 +780,7 @@ void A4GL_set_pixbuf_gw (GtkWidget * widget, char *filename)
   if (!pixbuf)
     {
       A4GL_debug ( "Make pixmap failed...");
+	  gtk_image_set_from_file (GTK_IMAGE (widget), NULL);
       return;
     }
   else
@@ -1892,6 +1898,12 @@ void A4GL_ll_display_blob(void *f) {
   A4GL_pop_var2(&b,11,0);
 
   ptr = gtk_object_get_data (GTK_OBJECT (f), "WIDGETSNAME");
+
+  if (b.where==0)  {
+      		A4GL_set_pixbuf_gw(f,NULL);
+		return;
+  }
+
 
   if (b.where == 'F')
     {

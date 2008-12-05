@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.219 2008-12-02 17:44:15 mikeaubury Exp $
+# $Id: stack.c,v 1.220 2008-12-05 07:39:42 mikeaubury Exp $
 #
 */
 
@@ -2945,6 +2945,7 @@ A4GL_setnull (int type, void *vbuff, int size)
       A4GL_free_associated_mem (ptr);
       ptr->ptr = 0;
       ptr->isnull = 'Y';
+      //ptr->where=0;
       return;
     }
 
@@ -3109,11 +3110,12 @@ A4GL_isnull (int type, char *buff)
       if (ptr->where == 'F')
 	{
 	  int isnull;
-
+		
 	  if (ptr->filename && A4GL_file_exists (ptr->filename))
 	    {
 	      return 0;
 	    }
+
 	  if (ptr->isnull == 'Y')
 	    {
 	      isnull = 1;

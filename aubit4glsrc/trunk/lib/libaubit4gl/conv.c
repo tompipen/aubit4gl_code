@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.164 2008-10-16 10:55:11 mikeaubury Exp $
+# $Id: conv.c,v 1.165 2008-12-05 07:39:42 mikeaubury Exp $
 #
 */
 
@@ -976,6 +976,7 @@ A4GL_btob (void *a, void *b, int size)
   struct fgl_int_loc *lb;
   la = (struct fgl_int_loc *) a;
   lb = (struct fgl_int_loc *) b;
+  lb->isnull=la->isnull;
   lb->where = la->where;
   lb->f = la->f;
   lb->memsize = la->memsize;

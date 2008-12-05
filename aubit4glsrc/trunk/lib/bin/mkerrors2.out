@@ -355,3 +355,5 @@
 355|Unexpected ingres return code (F2)\n
 356|get_Validation not implemented yet for Ingres
 358|Recurrsive replacement?
+360|Field or field subscript was not found
+362|Unable to open temporay file

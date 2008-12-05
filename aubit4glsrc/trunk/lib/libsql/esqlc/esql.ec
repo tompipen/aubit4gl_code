@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.222 2008-11-30 19:33:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.223 2008-12-05 07:39:42 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.222 2008-11-30 19:33:45 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.223 2008-12-05 07:39:42 mikeaubury Exp $";
 #endif
 
 
@@ -1113,11 +1113,11 @@ short indicat=0;
 
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
-                if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl) && p_indicat) {
+                if ((A4GL_isnull(DTYPE_BYTE,(void *)a4gl) || a4gl->where==0) && p_indicat ) {
 			if (p_indicat) *p_indicat=-1; 
                         infx->loc_indicator = -1;   /* a null blob */
 return;}
-                if (A4GL_isnull(DTYPE_BYTE,(void *)a4gl)) {
+                if ((A4GL_isnull(DTYPE_BYTE,(void *)a4gl) || a4gl->where==0) ) {
 			rsetnull(CLOCATORTYPE,(void *)infx);
                         infx->loc_indicator = -1;   /* a null blob */
 return;}
@@ -1147,9 +1147,12 @@ return;}
         if (mode=='o') {
                 if (p_indicat) indicat=*p_indicat;
                 if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { 
+			//a4gl->where=0;
 			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
+
 		}
 		if (infx->loc_indicator==-1) {
+			//a4gl->where=0;
 			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
 		}
 
