@@ -1475,7 +1475,7 @@ items_entry :
 	}
 ;
 
-incl_entry : 
+incl_entry_old : 
 CHAR_VALUE   { 
 	if (strlen($<str>1)==2) {/* "" */
 		sprintf($<str>$,"NULL");
@@ -1502,6 +1502,34 @@ CHAR_VALUE   {
 	sprintf($<str>$,"NULL");
 }
 ;
+
+
+incl_entry:
+	incl_item
+	| incl_item TO incl_item {
+			sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); 
+	}
+	| incl_item COLON incl_item {
+			sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); 
+	}
+;
+
+incl_item:
+	CHAR_VALUE {
+		if (strlen($<str>1)==2) {/* "" */
+			sprintf($<str>$,"NULL");
+		} else {
+			strcpy($<str>$,A4GL_char_val($<str>1));
+		}
+	}
+	| NAMED {strcpy($<str>$,$<str>1);}
+	| CH {strcpy($<str>$,$<str>1);}
+	| number_value {strcpy($<str>$,$<str>1);}
+	| KW_NULL {strcpy($<str>$,"NULL");}
+
+;
+
+
 
 opt_dec_ext : {
 			sprintf($<str>$,"0");
