@@ -1,5 +1,8 @@
 define lv_r array[1000] of char(128)
 DEFINE mv_rowid CHAR(30)
+code
+char *A4GLSQLCV_get_sqlconst(char *s);
+endcode
 
 function select_db()
 define lv_cnt integer
@@ -14,7 +17,7 @@ call display_banner()
 
 display "Please wait..." at 2,1
 code
-ndbs=A4GLSQL_fill_array(1000,lv_r,sizeof(lv_r[0])-1,0,0,"DATABASES",0,0);
+ndbs=A4GLSQL_fill_array(1000,(char *)lv_r,sizeof(lv_r[0])-1,0,0,"DATABASES",0,0);
 endcode
 
 for a=1 to ndbs
@@ -53,7 +56,7 @@ define lv_name char(40)
 define a integer
 define ntab integer
 code
-	ntab=A4GLSQL_fill_array(1000,lv_r,sizeof(lv_r[0])-1,0,0,"TABLES",1,0);
+	ntab=A4GLSQL_fill_array(1000,(char *)lv_r,sizeof(lv_r[0])-1,0,0,"TABLES",1,0);
 endcode
 
 clear screen
@@ -95,7 +98,7 @@ let a=1
 
 code
 A4GL_trim(lv_tabname);
-ncol=A4GLSQL_fill_array(1000,lv_r,sizeof(lv_r[0])-1,0,0,"COLUMNS",1,lv_tabname);
+ncol=A4GLSQL_fill_array(1000,(char *)lv_r,sizeof(lv_r[0])-1,0,0,"COLUMNS",1,lv_tabname);
 endcode
 
 clear screen

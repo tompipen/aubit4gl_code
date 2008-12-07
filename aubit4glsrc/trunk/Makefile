@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.58 2008-11-28 17:13:53 mikeaubury Exp $
+# $Id: Makefile,v 1.59 2008-12-07 14:02:00 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -624,7 +624,6 @@ clean.makefiles:
 	incl/Makefile-common \
     lib/libui/ui_console/Makefile lib/libpdf/Makefile \
     lib/libsql/nosql/Makefile \
-    lib/extra_libs/file/Makefile \
     lib/extra_libs/string/Makefile lib/libui/ui_curses/Makefile \
     tools/test/db/Makefile tools/test/lang/Makefile \
 	tools/test/regression/Makefile tools/test/db/Makefile \

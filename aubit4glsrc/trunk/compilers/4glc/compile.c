@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.128 2008-12-03 16:15:54 mikeaubury Exp $
+# $Id: compile.c,v 1.129 2008-12-07 14:02:02 mikeaubury Exp $
 #*/
 
 /**
@@ -1155,6 +1155,7 @@ if (compiled_4gl) {
 }
 compiled_4gl++;
 	remove_file(fgl_basename,".err");
+	remove_file(fgl_basename,".warn");
 	/*
 	filep = fopen (buff, "r");
 	if (filep) {

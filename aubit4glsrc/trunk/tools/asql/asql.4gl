@@ -66,21 +66,21 @@ let lv_actions_cnt=0
 let lv_actions_used=0
 
 
-if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
-	call set_use_form()
-else
-	call clr_use_form()
-end if
+#if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
+#	call set_use_form()
+#else
+#	call clr_use_form()
+#end if
 
 IF LENGTH(fgl_getenv("A4GL_ASQLERRLOG"))>0 THEN
 	CALL startlog(fgl_getenv("A4GL_ASQLERRLOG"))
 END IF
 
 call form_is_compiled(splash,"MEMPACKED","GENERIC")
-call form_is_compiled(pick10,"MEMPACKED","GENERIC")
-call form_is_compiled(pick20,"MEMPACKED","GENERIC")
-call form_is_compiled(pick38,"MEMPACKED","GENERIC")
-call form_is_compiled(pick78,"MEMPACKED","GENERIC")
+#call form_is_compiled(pick10,"MEMPACKED","GENERIC")
+#call form_is_compiled(pick20,"MEMPACKED","GENERIC")
+#call form_is_compiled(pick38,"MEMPACKED","GENERIC")
+#call form_is_compiled(pick78,"MEMPACKED","GENERIC")
 
 call edit_init()
 

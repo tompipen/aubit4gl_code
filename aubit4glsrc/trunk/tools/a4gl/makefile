@@ -3,6 +3,9 @@ ROOT                    =../..
 #All stuff common to more then one Aubit compiler make file is there:
 include                 ${ROOT}/incl/Makefile-common
 
+PICKDIR         = ${ROOT}/lib/extra_libs/pick
+OBJS_PICK       = ${PICKDIR}/pick10.afr${A4GL_OBJ_EXT}  ${PICKDIR}/pick20.afr${A4GL_OBJ_EXT} ${PICKDIR}/pick38.afr${A4GL_OBJ_EXT} ${PICKDIR}/pick78.afr${A4GL_OBJ_EXT}  ${PICKDIR}/pick${A4GL_OBJ_EXT}
+
 
 
 #FORMS=prog.afr.dat
@@ -11,7 +14,7 @@ A4GL_OBJ_EXT=.ao
 
 all: $(ROOT)/bin/a4gl.4ae 
 
-$(ROOT)/bin/a4gl.4ae: a4gl${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} main${A4GL_OBJ_EXT} module${A4GL_OBJ_EXT} program${A4GL_OBJ_EXT} ../asql/pick${A4GL_OBJ_EXT}  ../asql/filehand${A4GL_OBJ_EXT} ../asql/generic_db${A4GL_OBJ_EXT} subrouts${A4GL_OBJ_EXT} times${A4GL_OBJ_EXT} prog.afr${A4GL_OBJ_EXT} settings.afr${A4GL_OBJ_EXT} entities.afr${A4GL_OBJ_EXT} warn.afr${A4GL_OBJ_EXT} ../asql/pick10.afr${A4GL_OBJ_EXT} ../asql/pick20.afr${A4GL_OBJ_EXT} ../asql/pick38.afr${A4GL_OBJ_EXT} ../asql/pick78.afr${A4GL_OBJ_EXT} splash.afr${A4GL_OBJ_EXT}
+$(ROOT)/bin/a4gl.4ae: a4gl${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} main${A4GL_OBJ_EXT} module${A4GL_OBJ_EXT} program${A4GL_OBJ_EXT}  ../asql/filehand${A4GL_OBJ_EXT} ../asql/generic_db${A4GL_OBJ_EXT} subrouts${A4GL_OBJ_EXT} times${A4GL_OBJ_EXT} prog.afr${A4GL_OBJ_EXT} settings.afr${A4GL_OBJ_EXT} entities.afr${A4GL_OBJ_EXT} warn.afr${A4GL_OBJ_EXT} ${OBJS_PICK}  splash.afr${A4GL_OBJ_EXT}
 	4glpc -g -o $@ $^
 
 

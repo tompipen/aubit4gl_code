@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.57 2008-11-28 13:54:23 mikeaubury Exp $
+# $Id: Makefile,v 1.58 2008-12-07 14:02:02 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -43,14 +43,22 @@ include 		${ROOT}/incl/a4gl.mk
 #Objects that originate in 4GL code
 OBJS_4GL		= \
 	asql${A4GL_OBJ_EXT} connection_menu${A4GL_OBJ_EXT}  menus${A4GL_OBJ_EXT}\
-	pick${A4GL_OBJ_EXT} database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
+	database${A4GL_OBJ_EXT} main_menu${A4GL_OBJ_EXT} \
 	query${A4GL_OBJ_EXT} session${A4GL_OBJ_EXT} table${A4GL_OBJ_EXT} \
 	execute${A4GL_OBJ_EXT} paginate${A4GL_OBJ_EXT} cedit${A4GL_OBJ_EXT} \
 	filehand${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT}  \
 	form${A4GL_OBJ_EXT} \
 	tools${A4GL_OBJ_EXT} user_menu${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT} 
 
-OBJS_FORM	= pick10.afr${A4GL_OBJ_EXT}  pick20.afr${A4GL_OBJ_EXT} pick38.afr${A4GL_OBJ_EXT} pick78.afr${A4GL_OBJ_EXT} splash.afr${A4GL_OBJ_EXT}
+OBJS_FORM	= splash.afr${A4GL_OBJ_EXT}
+
+
+# We *could* use the A4GL_pick library - but that adds some extra overhead on
+# what should be a faily 'clean' program. We dont want to add any more dependancies
+# than is really required
+# so - we'll just pick up the object files we need instead...
+PICKDIR		= ${ROOT}/lib/extra_libs/pick
+OBJS_PICK	= ${PICKDIR}/pick10.afr${A4GL_OBJ_EXT}  ${PICKDIR}/pick20.afr${A4GL_OBJ_EXT} ${PICKDIR}/pick38.afr${A4GL_OBJ_EXT} ${PICKDIR}/pick78.afr${A4GL_OBJ_EXT}  ${PICKDIR}/pick${A4GL_OBJ_EXT}
 
 ifeq "${LEX}" "no"
   LEX_YY_C      =lex_pregen.o
@@ -89,22 +97,22 @@ CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY} ${OBJ
 ################
 #All objects for Postgres version
 OBJS_PG			=$(addprefix pg_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix pg_,${OBJS_PG_ONLY}) ${OBJS_FORM}
+				$(addprefix pg_,${OBJS_PG_ONLY}) ${OBJS_FORM} ${OBJS_PICK}
 
 ################
 #All objects for Informix version
 OBJS_IFX		=$(addprefix ifx_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix ifx_,${OBJS_IFX_ONLY}) ${OBJS_FORM}
+				$(addprefix ifx_,${OBJS_IFX_ONLY}) ${OBJS_FORM} ${OBJS_PICK}
 
 
 OBJS_GEN		=$(addprefix gen_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix gen_,${OBJS_GEN_ONLY}) ${OBJS_FORM}
+				$(addprefix gen_,${OBJS_GEN_ONLY}) ${OBJS_FORM} ${OBJS_PICK}
 
 OBJS_ING		=$(addprefix ing_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix ing_,${OBJS_ING_ONLY}) ${OBJS_FORM}
+				$(addprefix ing_,${OBJS_ING_ONLY}) ${OBJS_FORM} ${OBJS_PICK}
 
 OBJS_INFOFLEX		=$(addprefix infoflex_,${OBJS_4GL}) ${OBJS_C} \
-				$(addprefix infoflex_,${OBJS_INFOFLEX_ONLY}) ${OBJS_FORM}
+				$(addprefix infoflex_,${OBJS_INFOFLEX_ONLY}) ${OBJS_FORM} ${OBJS_PICK}
 ## ==================================================================
 ##                              Options
 ## ==================================================================

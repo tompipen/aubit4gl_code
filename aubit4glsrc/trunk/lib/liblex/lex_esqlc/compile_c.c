@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.455 2008-12-04 15:02:51 mikeaubury Exp $
+# $Id: compile_c.c,v 1.456 2008-12-07 14:02:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.455 2008-12-04 15:02:51 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.456 2008-12-07 14:02:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1473,8 +1473,7 @@ real_print_expr (struct expr_str *ptr)
 		    if (strcmp(ptr->expr_str_u.expr_function_call->fname,"set_count")!=0) { printc ("%s", get_reset_state_after_call (0)); }
 		    printc ("} // FCALL 2");
 		  }
-		add_function_to_header (ptr->expr_str_u.expr_function_call->fname, ptr->expr_str_u.expr_function_call->namespace,
-					1, 0);
+		add_function_to_header (ptr->expr_str_u.expr_function_call->fname, ptr->expr_str_u.expr_function_call->namespace, 1, 0);
 	      }
 
   		if (is_in_report()) { clr_doing_a_report_call(1); }
@@ -3661,8 +3660,7 @@ print_import_legacy (char *s)
 {
   printc ("\n");
   printc ("\n");
-  printc ("\n\nA4GL_FUNCTION int %s%s(int n) {\nreturn %s(n);\n}\n",
-	  get_namespace (s), s, s);
+  printc ("\n\nA4GL_FUNCTION int %s%s(int n) {\nreturn %s(n);\n}\n", get_namespace (s), s, s);
   printc ("\n");
   printc ("\n");
 }
@@ -5732,6 +5730,68 @@ return 1;
 
 
 
+static void dump_function_prototypes(module_definition *m) {
+  int a;
+  for (a = 0; a < m->module_entries.module_entries_len; a++) {
+      switch (m->module_entries.module_entries_val[a]->met_type)
+        {
+
+           case E_MET_IMPORT_FUNCTION_DEFINITION:  
+		add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.import_function_definition.funcname, 
+					get_namespace(m->module_entries.module_entries_val[a]->module_entry_u.import_function_definition.funcname),
+					1,0);
+		break;
+
+          case E_MET_IMPORT_LEGACY_DEFINITION:    
+		 add_function_to_header(m->module_entries.module_entries_val[a]->module_entry_u.import_legacy_definition.funcname,
+			 		get_namespace(m->module_entries.module_entries_val[a]->module_entry_u.import_legacy_definition.funcname),1,0);
+		break;
+
+        case E_MET_REPORT_DEFINITION:
+		add_function_to_header(
+				m->module_entries.module_entries_val[a]->module_entry_u.report_definition.funcname,
+				m->module_entries.module_entries_val[a]->module_entry_u.report_definition.namespace,
+				2,
+				m->module_entries.module_entries_val[a]->module_entry_u.report_definition.isstatic==EB_TRUE	
+				);
+
+          	break;
+
+        case E_MET_PDF_REPORT_DEFINITION:
+		add_function_to_header(
+				m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.funcname,
+				m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.namespace,
+				2,
+				m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.isstatic==EB_TRUE	
+				);
+          	break;
+
+
+        case E_MET_MAIN_DEFINITION:
+              printh ("\n\nA4GL_MAIN int main(int argc,char *argv[]);\n");
+          	break;
+
+        case E_MET_FUNCTION_DEFINITION:
+		add_function_to_header(
+				m->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname,
+				m->module_entries.module_entries_val[a]->module_entry_u.function_definition.namespace,
+				1,
+				m->module_entries.module_entries_val[a]->module_entry_u.function_definition.isstatic==EB_TRUE	
+				);
+          break;
+
+
+		// We can ignore all of these...
+        case E_MET_CMD:
+	case E_MET_FORMHANDLER_DEFINITION:
+	case E_MET_CLASS_DEFINITION:
+	case E_MET_IMPORT_DATATYPE:
+	case E_MET_IMPORT_PACKAGE:
+          	break;
+
+	}
+  }
+}
 
 int
 LEXLIB_A4GL_write_generated_code (struct module_definition *m)
@@ -5747,6 +5807,11 @@ strcpy(this_module_name,m->module_name);
       open_outfile () ; // this_module_name);
       if (outfile == 0)
 	return 0;
+      dump_function_prototypes(m);
+
+
+
+
 printc("static const char *_CompileTimeSQLType=\"%s\";\n", m->compile_time_sqltype);
 printc("static const struct sDependantTable _dependantTables[]= {");
 for (a=0;a<m->dependant_tables.dependant_tables_len;a++) {
@@ -5757,6 +5822,7 @@ for (a=0;a<m->dependant_tables.dependant_tables_len;a++) {
 printc("  {0,0}");
 printc("};");
 printc("#");
+
 
   if (m->imported_global_variables.variables.variables_len)
     {

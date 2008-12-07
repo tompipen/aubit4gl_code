@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.11 2008-11-28 13:55:48 mikeaubury Exp $
+# $Id: makefile,v 1.12 2008-12-07 14:02:02 mikeaubury Exp $
 #
 
 # Currently Informix only
@@ -83,6 +83,10 @@ ifdef COMSPEC
 	#4glc CVS ace fcompile helpcompile menus pcode xgen\eqaa3468'.	
 	
 endif
+PICKDIR         = ${ROOT}/lib/extra_libs/pick
+OBJS_PICK       = ${PICKDIR}/pick10.afr${A4GL_OBJ_EXT}  ${PICKDIR}/pick20.afr${A4GL_OBJ_EXT} ${PICKDIR}/pick38.afr${A4GL_OBJ_EXT} ${PICKDIR}/pick78.afr${A4GL_OBJ_EXT}  ${PICKDIR}/pick${A4GL_OBJ_EXT}
+
+
 
 
 A4GL_OBJ_EXT=.ao
@@ -92,8 +96,9 @@ A4GL_OBJ_EXT=.ao
 
 all: ${ALL}
 	@echo "Default target (${ALL}) succesfuly compiled."
+
 	
-${ROOT}/bin/aupscol: main.ao upscol.ao generic.ao pick.ao val.ao att.ao ../asql/pick10.afr${A4GL_OBJ_EXT} ../asql/pick20.afr${A4GL_OBJ_EXT} ../asql/pick38.afr${A4GL_OBJ_EXT} ../asql/pick78.afr${A4GL_OBJ_EXT} splash.afr${A4GL_OBJ_EXT}
+${ROOT}/bin/aupscol: main.ao upscol.ao generic.ao val.ao att.ao  splash.afr${A4GL_OBJ_EXT} ${OBJS_PICK}
 	${4GLC} ${VERBOSE_FLAG} $^ -o $@
 
 %.afr${A4GL_OBJ_EXT}:%.per
