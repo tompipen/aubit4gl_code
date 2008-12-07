@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.59 2008-12-07 14:02:00 mikeaubury Exp $
+# $Id: Makefile,v 1.60 2008-12-07 17:33:50 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -50,7 +50,7 @@ include incl/Makefile-common
 
 ###############################
 #Things we compile by default
-ALL					=settings api.headers corecompile libfile libstring
+ALL					=settings api.headers corecompile libfile libstring picklib
 
 ifneq "${enable_minimal}" "yes" 
 	ALL 			+=	liblogical glade aace pcode
@@ -352,6 +352,9 @@ ide:
 libfile:
 	$(MAKE) -C lib/extra_libs/file
 
+picklib:
+	$(MAKE) -C lib/extra_libs/pick
+
 libstring:
 	$(MAKE) -C lib/extra_libs/string
 
@@ -540,6 +543,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib/libui/ui_curses clean
 #	$(MAKE) -C lib/libui/ui_gtk clean
 	$(MAKE) -C lib/extra_libs/file clean
+	$(MAKE) -C lib/extra_libs/pick clean
 	$(MAKE) -C lib/extra_libs/string clean
 	$(MAKE) -C lib/extra_libs/roman clean
 	$(MAKE) -C lib/libexdata clean

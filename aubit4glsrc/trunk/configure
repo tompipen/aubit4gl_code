@@ -23543,7 +23543,7 @@ COMP_LIBS="LEX_EC LEX_C LEX_CS"
 
 #Libraries that need 4glc (and in some cases fcompile) to build, and are
 #buit in all cases:
-NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file A4GL_roman errhook_sample barcode"
+NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file A4GL_pick A4GL_roman errhook_sample barcode"
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	#A4GL_memcache needs (plus many others) which do not exists in MinGW
@@ -62244,7 +62244,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.415 2008-12-07 14:02:00 mikeaubury Exp $
+| $Id: configure,v 1.416 2008-12-07 17:33:50 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.24 2008-09-16 17:25:48 mikeaubury Exp $
+# $Id: Makefile,v 1.25 2008-12-07 17:33:51 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -69,6 +69,7 @@ LIBLEXEC_PATH  		=liblex/lex_esqlc
 
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
+LIBPICK_PATH		=extra_libs/pick
 LIBROMAN_PATH		=extra_libs/roman
 LIBERRHOOK_PATH		=extra_libs/errhook
 LIBBARCODE_PATH		=extra_libs/barcode
@@ -172,6 +173,13 @@ LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXRE
 					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile) ${ALL_H}
 LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
 					$(wildcard ${LIBFILE_PATH}/Makefile) ${ALL_H}
+
+LIBROMAN_DEPS=$(wildcard ${LIBROMAN_PATH}/*.c) $(wildcard ${LIBROMAN_PATH}/*.h) $(wildcard ${LIBROMAN_PATH}/Makefile) ${ALL_H}
+LIBERRHOOK_DEPS=$(wildcard ${LIBERRHOOK_PATH}/*.c) $(wildcard ${LIBERRHOOK_PATH}/*.h) $(wildcard ${LIBERRHOOK_PATH}/Makefile) ${ALL_H}
+LIBBARCODE_DEPS=$(wildcard ${LIBBARCODE_PATH}/*.c) $(wildcard ${LIBBARCODE_PATH}/*.h) $(wildcard ${LIBBARCODE_PATH}/Makefile) ${ALL_H}
+
+LIBPICK_DEPS		=$(wildcard ${LIBPICK_PATH}/*.c) $(wildcard ${LIBPICK_PATH}/*.h) \
+					$(wildcard ${LIBPICK_PATH}/Makefile) ${ALL_H}
 LIBESQLCHELPER_DEPS	=$(wildcard ${LIBESQLCHELPER_PATH}/*.ec) $(wildcard ${LIBESQLCHELPER_PATH}/Makefile) ${ALL_H}
 LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/*.h) \
 					$(wildcard ${LIBSTRING_PATH}/Makefile) ${ALL_H}
@@ -566,25 +574,27 @@ ${PLUGINDIR}/libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE} \
 		${PLUGINDIR}/libFORM_GENERIC${SO_EXT}
 	${MAKE} -C ${LIBHELP_STD_PATH}
 
-${PLUGINDIR}/libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+${PLUGINDIR}/libA4GL_file${SO_EXT}: ${4GLPC} ${LIBFILE_DEPS}
 	$(MAKE) -C ${LIBFILE_PATH}
 
+${PLUGINDIR}/libA4GL_pick${SO_EXT}: ${4GLPC} ${LIBPICK_DEPS} 
+	$(MAKE) -C ${LIBPICK_PATH}
 
-${PLUGINDIR}/libA4GL_roman${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+${PLUGINDIR}/libA4GL_roman${SO_EXT}: ${4GLPC} ${LIBROMAN_DEPS} 
 	$(MAKE) -C ${LIBROMAN_PATH}
 
 
-${PLUGINDIR}/liberrhook_sample${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+${PLUGINDIR}/liberrhook_sample${SO_EXT}: ${4GLPC} ${LIBERRHOOK_DEPS} 
 	$(MAKE) -C ${LIBERRHOOK_PATH}
 
-${PLUGINDIR}/libbarcode${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
+${PLUGINDIR}/libbarcode${SO_EXT}: ${4GLPC} ${LIBBARCODE_DEPS} 
 	$(MAKE) -C ${LIBBARCODE_PATH}
 
 
-${PLUGINDIR}/libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
+${PLUGINDIR}/libA4GL_string${SO_EXT}: ${4GLPC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
 
-${PLUGINDIR}/libchannel${SO_EXT}: ${4GLC} ${LIBCHANNEL_DEPS}
+${PLUGINDIR}/libchannel${SO_EXT}: ${4GLPC} ${LIBCHANNEL_DEPS} 
 	$(MAKE) -C ${LIBCHANNEL_PATH}
 	
 ${PLUGINDIR}/libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
