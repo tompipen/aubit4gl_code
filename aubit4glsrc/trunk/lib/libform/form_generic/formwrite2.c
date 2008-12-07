@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.44 2008-11-27 20:47:21 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.45 2008-12-07 15:46:31 mikeaubury Exp $
 #*/
 
 /**
@@ -926,7 +926,7 @@ static char *cleaned_fname(char *s) {
 	if (strchr(s,'\\')) {
 		return rindex(s,'\\')+1;
 	}
-	return s;
+	/* Drop through in case its a Cygwin style path... */
 #endif
 	if (strchr(s,'/')) {
 		return rindex(s,'/')+1;
