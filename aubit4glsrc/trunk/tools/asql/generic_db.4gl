@@ -86,7 +86,7 @@ endcode
 
         if sqlca.sqlcode=0 then
             call set_curr_db(lv_newname)
-            call display_banner()
+            call set_and_display_banner()
             message "Database Opened"
         else
             if check_and_report_error() then

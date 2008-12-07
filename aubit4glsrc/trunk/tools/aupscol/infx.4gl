@@ -7,7 +7,7 @@ define ndbs integer
 define a integer
 let lv_curr_db=get_db();
 clear screen
-call display_banner()
+call upscol_display_banner()
 #database aubit4gl
 #call set_curr_db("aubit4gl")
 #return
@@ -59,7 +59,7 @@ if lv_newname is not null and lv_newname not matches " " then
 
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
-                call display_banner()
+                call upscol_display_banner()
                 message "Database Opened"
         else
                 call check_and_report_error()
@@ -79,7 +79,7 @@ declare c_choose_tab cursor for
 	order by tabname
 let a=1
 clear screen
-call display_banner()
+call upscol_display_banner()
 foreach c_choose_tab into lv_name
         call set_pick(a,lv_name)
 	let a=a+1
@@ -104,7 +104,7 @@ define a integer
 define lv_str char(255)
 define lv_tabname char(30)
 clear screen
-call display_banner()
+call upscol_display_banner()
 let lv_tabname=get_curr_tab()
 
 if lv_tabname is null or lv_tabname matches " " then
@@ -132,7 +132,7 @@ if lv_name is null or lv_name matches " " then
 	return 0
 else
 	call set_colname(lv_name)
-	call display_banner()
+	call upscol_display_banner()
 	return 1
 end if
 end function

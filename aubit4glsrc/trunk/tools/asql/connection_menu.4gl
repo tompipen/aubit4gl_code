@@ -30,7 +30,7 @@
 function connection_menu()
 menu "CONNECTION" 
         BEFORE menu
-                call display_banner()
+                call set_and_display_banner()
 
 	command "Connect" 	"Connect to a database environment."
 		call connection_connect()
@@ -62,7 +62,7 @@ function do_disconnect()
 	close database
 	if check_and_report_error() then
 	call set_curr_db("")
-	call display_banner()
+	call set_and_display_banner()
 	end if
 end function	
 

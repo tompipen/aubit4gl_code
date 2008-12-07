@@ -29,14 +29,14 @@ WHILE lv_run
       WHEN "u" LET lv_option=5
       WHEN "e" LET lv_option=6
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "ADBACCESS"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Query-language"
           WHEN 1 NEXT OPTION "Connection"
@@ -115,14 +115,14 @@ WHILE lv_run
       WHEN "d" LET lv_option=1
       WHEN "e" LET lv_option=2
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "CONNECTION"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Connect"
           WHEN 1 NEXT OPTION "Disconnect"
@@ -176,14 +176,14 @@ WHILE lv_run
       WHEN "y" LET lv_option=0
       WHEN "n" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "DISCONNECT"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Yes"
           WHEN 1 NEXT OPTION "No"
@@ -234,14 +234,14 @@ WHILE lv_run
       WHEN "d" LET lv_option=3
       WHEN "e" LET lv_option=4
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "TABLE"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Create"
           WHEN 1 NEXT OPTION "Alter"
@@ -311,14 +311,14 @@ WHILE lv_run
       WHEN "l" LET lv_option=4
       WHEN "e" LET lv_option=5
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "DATABASE"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Select"
           WHEN 1 NEXT OPTION "Create"
@@ -390,14 +390,14 @@ WHILE lv_run
       WHEN "n" LET lv_option=0
       WHEN "y" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "CONFIRM"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "No"
           WHEN 1 NEXT OPTION "Yes"
@@ -446,14 +446,14 @@ WHILE lv_run
       WHEN "u" LET lv_option=2
       WHEN "e" LET lv_option=3
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "Utilities"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Form"
           WHEN 1 NEXT OPTION "Report"
@@ -514,14 +514,14 @@ WHILE lv_run
       WHEN "m" LET lv_option=1
       WHEN "e" LET lv_option=2
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "User Menu"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Run"
           WHEN 1 NEXT OPTION "Modify"
@@ -575,14 +575,14 @@ WHILE lv_run
       WHEN "c" LET lv_option=0
       WHEN "d" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "EXIT"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Create-new-database"
           WHEN 1 NEXT OPTION "Discard-new-database"
@@ -630,14 +630,14 @@ WHILE lv_run
       WHEN "l" LET lv_option=1
       WHEN "e" LET lv_option=2
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "EXIT"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Dbspace"
           WHEN 1 NEXT OPTION "Log"
@@ -691,14 +691,14 @@ WHILE lv_run
       WHEN "b" LET lv_option=2
       WHEN "m" LET lv_option=3
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "LOG"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "None"
           WHEN 1 NEXT OPTION "Log"
@@ -755,14 +755,14 @@ WHILE lv_run
       WHEN "c" LET lv_option=0
       WHEN "r" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "COMMIT ?"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Commit"
           WHEN 1 NEXT OPTION "Rollback"
@@ -809,14 +809,14 @@ WHILE lv_run
       WHEN "y" LET lv_option=0
       WHEN "n" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "Confirm"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Yes"
           WHEN 1 NEXT OPTION "No"
@@ -863,14 +863,14 @@ WHILE lv_run
       WHEN "y" LET lv_option=0
       WHEN "n" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "CONFIRM >>"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "YES"
           WHEN 1 NEXT OPTION "NO"
@@ -924,14 +924,14 @@ WHILE lv_run
       WHEN "f" LET lv_option=8
       WHEN "e" LET lv_option=9
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU mv_info_name
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Columns"
           WHEN 1 NEXT OPTION "Indexes"
@@ -1022,14 +1022,14 @@ WHILE lv_run
       WHEN "d" LET lv_option=5
       WHEN "e" LET lv_option=6
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "FORM"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Run"
           WHEN 1 NEXT OPTION "Modify"
@@ -1102,14 +1102,14 @@ WHILE lv_run
       WHEN "s" LET lv_option=1
       WHEN "d" LET lv_option=2
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "Modify Form"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Compile"
           WHEN 1 NEXT OPTION "Save-and-exit"
@@ -1161,14 +1161,14 @@ WHILE lv_run
       WHEN "c" LET lv_option=0
       WHEN "e" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "COMPILE FORM"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Correct"
           WHEN 1 NEXT OPTION "Exit"
@@ -1215,14 +1215,14 @@ WHILE lv_run
       WHEN "n" LET lv_option=0
       WHEN "y" LET lv_option=1
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "CONFIRM"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "No"
           WHEN 1 NEXT OPTION "Yes"
@@ -1270,14 +1270,14 @@ WHILE lv_run
       WHEN "s" LET lv_option=1
       WHEN "e" LET lv_option=2
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "Generate"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "Table selection complete"
           WHEN 1 NEXT OPTION "Select more"
@@ -1337,14 +1337,14 @@ WHILE lv_run
       WHEN "t" LET lv_option=9
       WHEN "e" LET lv_option=10
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "SQL"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "New"
           WHEN 1 NEXT OPTION "Run"
@@ -1443,14 +1443,14 @@ WHILE lv_run
       WHEN "d" LET lv_option=8
       WHEN "e" LET lv_option=9
     END CASE
-    CALL display_banner()
+    CALL set_and_display_banner()
 
   ELSE
     LET lv_menukey="-"
     MENU "SQL"
       BEFORE MENU
         SET PAUSE MODE ON
-        CALL display_banner()
+        CALL set_and_display_banner()
         CASE lv_lastoption
           WHEN 0 NEXT OPTION "New"
           WHEN 1 NEXT OPTION "Run"
@@ -1514,7 +1514,6 @@ WHILE lv_run
   END CASE
 END WHILE
 END FUNCTION
- 
  
  
  

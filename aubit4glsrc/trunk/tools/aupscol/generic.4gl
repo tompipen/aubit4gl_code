@@ -13,7 +13,7 @@ define ndbs integer
 define a integer
 let lv_curr_db=get_db();
 clear screen
-call display_banner()
+call upscol_display_banner()
 
 display "Please wait..." at 2,1
 code
@@ -40,7 +40,7 @@ if lv_newname is not null and lv_newname not matches " " then
 
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
-                call display_banner()
+                call upscol_display_banner()
                 message "Database Opened"
         else
                 call check_and_report_error()
@@ -61,7 +61,7 @@ endcode
 
 clear screen
 
-call display_banner()
+call upscol_display_banner()
 
 for a=1 to ntab
         call set_pick(a,lv_r[a])
@@ -87,7 +87,7 @@ define lv_str char(255)
 define lv_tabname char(30)
 define ncol integer
 clear screen
-call display_banner()
+call upscol_display_banner()
 let lv_tabname=get_curr_tab()
 
 if lv_tabname is null or lv_tabname matches " " then
@@ -103,7 +103,7 @@ endcode
 
 clear screen
 
-call display_banner()
+call upscol_display_banner()
 
 
 if ncol<=0 then
@@ -122,7 +122,7 @@ if lv_name is null or lv_name matches " " then
 	return 0
 else
 	call set_colname(lv_name)
-	call display_banner()
+	call upscol_display_banner()
 	return 1
 end if
 end function

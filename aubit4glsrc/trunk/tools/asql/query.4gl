@@ -482,7 +482,7 @@ define p_modify char(6)
 	else
 		error "Internal Error..."
 	end if
-	call display_banner()
+	call set_and_display_banner()
 	call display_tmp_file()
 
 	

@@ -524,12 +524,12 @@ endcode
 
 	if qry_type=1 and get_exec_mode()!=1 then
 		call set_curr_db(l_db)
-		call display_banner()
+		call set_and_display_banner()
 	end if
 
 	if qry_type=31 then
 		call set_curr_db("")
-		call display_banner()
+		call set_and_display_banner()
 	end if
 
 	if qry_type=34 then let beganWork=1 end if
@@ -932,7 +932,7 @@ code
 		A4GL_push_int(1);
 		A4GL_push_int(1);
         	A4GL_display_at(1,0x0);
-		aclfgl_display_banner(0);
+		aclfgl_set_and_display_banner(0);
 	}
 endcode
 

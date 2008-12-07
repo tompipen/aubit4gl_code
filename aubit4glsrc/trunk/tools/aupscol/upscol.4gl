@@ -135,25 +135,29 @@ end function
 
 
 ################################################################################
-function display_banner()
-display "------------------------------------------------ Press CTRL-W for Help --------" at 4,1
+function upscol_display_banner()
+define lv_s char(80)
+let lv_s=" "
 if mv_curr_db is not null then
 	if mv_curr_tab is not null then
 		if mv_curr_col is not null then
-			display " ",mv_curr_db clipped,":",mv_curr_tab clipped,":",mv_curr_col clipped at 4,10
+			let lv_s= mv_curr_db clipped,":",mv_curr_tab clipped,":",mv_curr_col
 		else
-			display " ",mv_curr_db clipped,":",mv_curr_tab clipped at 4,10
+			let lv_s=mv_curr_db clipped,":",mv_curr_tab clipped 
 		end if
 	else
-		display " ",mv_curr_db clipped," " at 4,10
+		let lv_s=mv_curr_db clipped
 	end if
 end if
+call set_pick_db(lv_s)
+call display_banner()
 end function
 
 
 
 
 
+{
 function clear_screen_portion()
 define lv_y integer
 define lv_maxy integer
@@ -166,6 +170,7 @@ for lv_y=6 to lv_maxy
 end for
 set pause mode off
 end function
+}
 
 
 function middle(s) 

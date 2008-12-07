@@ -525,7 +525,7 @@ define buff char(255)
 let lv_informixdir=fgl_getenv("INFORMIXDIR")
 let lv_cnt=1
 clear screen
-call display_banner()
+call set_and_display_banner()
 #
 # In order to find out what connections are available
 # Have a look in the sqlhosts file on unix
@@ -828,7 +828,7 @@ if lv_newname is not null and lv_newname not matches " " then
 
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
-                call display_banner()
+                call set_and_display_banner()
                 message "Database Opened" 
         else
                 if check_and_report_error() then
@@ -905,7 +905,7 @@ if lv_newname is not null and lv_newname not matches " " then
 
                         if sqlca.sqlcode=0 then
                                 call set_curr_db("")
-                                call display_banner()
+                                call set_and_display_banner()
                                 message "Database dropped..."
                         else
                                 if check_and_report_error() then

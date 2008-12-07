@@ -33,6 +33,7 @@
 ##
 ## #######################################################################
 define mv_arr array[2000] of char(128)
+define mv_usesep char(1) 	# use the 'display_separator' to display  the ---- Ctrl-W for help ---  line
 define mv_curr_db char(80)
 define mv_cnt integer
 define mv_curr_option integer
@@ -774,8 +775,9 @@ end function
 
 ################################################################################
 function display_banner()
-define lv_disp_in_trans integer
-call display_to_separator("------------------------------------------------ Press CTRL-W for Help --------")
+
+	call display_to_separator("------------------------------------------------ Press CTRL-W for Help --------")
+
 end function
 
 
@@ -813,6 +815,11 @@ return ""
 end function
 
 
+
+
+### These 'action' functions are used by asql etc to handle command
+### line menu options
+### there are just here so the linking works (Win32 complains if we call back to the executables)...
 local function init_actions()
 let lv_actions_cnt=0
 let lv_actions_used=0
@@ -917,20 +924,39 @@ function clr_all_actions()
 end function
 
 
-################################################################################
-# Lets try to put things that 'display .. at' in one place...
-################################################################################
+
+# Set the separator flag explicitly...
+function pick_set_separator(lv_yesno)
+define lv_yesno char(1)
+if lv_yesno="N" or lv_yesno="0" or lv_yesno="n" then
+	let mv_usesep="N"
+else
+	let mv_usesep="Y"
+end if
+end function
+
+
 function display_to_separator(lv_str)
 define lv_str char(80)
 define lv_db char(80)
 
-if mv_curr_db is not null then
-        let lv_db="_",mv_curr_db clipped,"_" # A string we can measure the length of
-        let lv_str[25,25+length(lv_db)]= " ",mv_curr_db clipped," "
+if mv_usesep is null or mv_usesep = " " then
+	let mv_usesep="Y"
 end if
 
-display lv_str at 4,1
+
+if mv_usesep="Y" then
+
+	if mv_curr_db is not null then
+        	let lv_db="_",mv_curr_db clipped,"_" # A string we can measure the length of
+        	let lv_str[25,25+length(lv_db)]= " ",mv_curr_db clipped," "
+	end if
+	
+	display lv_str at 4,1
+end if
 end function
+
+
 
 
 function set_pick_db(lv_db)

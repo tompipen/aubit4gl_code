@@ -1,5 +1,5 @@
 function main_menu()
-         call display_banner()
+         call upscol_display_banner()
 	call select_db()
 	if not has_db() THEN
 		exit program
@@ -7,7 +7,7 @@ function main_menu()
 
 	menu "AUPSCOL"
 	        BEFORE MENU
-                	call display_banner()
+                	call upscol_display_banner()
 		command "Validate" "Modify validation settings"
 			call handle_validate()
 		command "Attributes" "Modify attribute settings"
@@ -354,6 +354,7 @@ end function
 function check_and_report_error()
 end function
 
+{
 function has_prompt_action()
 return 0
 end function
@@ -361,3 +362,4 @@ end function
 function get_prompt_action()
 return ""
 end function
+}

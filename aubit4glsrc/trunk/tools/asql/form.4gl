@@ -100,7 +100,7 @@ define a integer
 define lv_ext char(255)
 
 let lv_ext=work_out_ext()
-call display_banner()
+call set_and_display_banner()
 #display "Choose a file to run","" at 2,1
 
 code

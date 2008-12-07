@@ -34,12 +34,14 @@ define lv_args_cnt integer
 define lv_input char(255)
 define lv_quiet integer
 define lv_echo integer
+{
 define lv_actions  array[100] of record
 		type char(1),
 		details char(80)
 end record
 define lv_actions_cnt integer
 define lv_actions_used integer
+}
 define first_init integer
 
 function is_echo()
@@ -62,8 +64,8 @@ define lv_cnt integer
 define lv_dummy char(255)
 initialize mv_curr_db to null
 
-let lv_actions_cnt=0
-let lv_actions_used=0
+#let lv_actions_cnt=0
+#let lv_actions_used=0
 
 
 #if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
@@ -299,6 +301,7 @@ end function
 
 
 ################################################################################
+{
 function display_banner()
 define lv_disp_in_trans integer
 
@@ -316,6 +319,7 @@ else
 end if
 
 end function
+}
 
 
 ################################################################################
@@ -417,7 +421,7 @@ end if
 end function
 
 
-
+{
 function add_menu_actions(lv_s)
 define lv_s char(80)
 define a integer
@@ -452,6 +456,7 @@ let lv_actions_cnt=lv_actions_cnt+1
 let lv_actions[lv_actions_cnt].type="P"
 let lv_actions[lv_actions_cnt].details=lv_s
 end function
+
 
 
 
@@ -523,6 +528,7 @@ end if
 end function
 
 
+
 function get_prompt_action()
 if has_prompt_action() then
 	let lv_actions_used=lv_actions_used+1
@@ -538,6 +544,7 @@ else
 end if
 return ""
 end function
+}
 
 
 function niy()
@@ -564,6 +571,7 @@ end function
 ################################################################################
 # Lets try to put things that 'display .. at' in one place...
 ################################################################################
+{
 function display_to_separator(lv_str)
 define lv_str char(80)
 define lv_db char(80)
@@ -576,9 +584,10 @@ end if
 display lv_str at 4,1
 end function
 
-
+}
 
 ################################################################################
+{
 function clear_screen_portion()
 define lv_y integer
 define lv_maxy integer
@@ -592,7 +601,14 @@ for lv_y=6 to lv_maxy
 end for
 set pause mode off
 end function
+}
 
+
+
+function set_and_display_banner()
+call set_pick_db(mv_curr_db)
+call display_banner()
+end function
 
 ################################################################################
 
@@ -622,3 +638,6 @@ define lv_line integer
 define lv_str char(512)
 display lv_str clipped,"" at lv_line,1
 end function
+
+
+

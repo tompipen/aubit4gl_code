@@ -30,6 +30,7 @@ defer interrupt
 
 	whenever error continue
 	database syspgma4gl
+	call set_pick_db("syspgma4gl")
 	whenever error stop
 
 	if sqlca.sqlcode!=0 then
@@ -42,6 +43,7 @@ defer interrupt
 		end if
 		execute immediate "create database syspgma4gl"
 		database syspgma4gl
+		call set_pick_db("syspgma4gl")
 		whenever error stop
 
 		if sqlca.sqlcode!=0 then
@@ -157,6 +159,7 @@ end function
 
 
 
+{
 function has_prompt_action()
 return false
 end function
@@ -164,6 +167,7 @@ end function
 function get_prompt_action()
 return  ""
 end function
+}
 
 ################################################################################
 function set_curr_db(p_dbname)
@@ -177,6 +181,7 @@ else
         let p_dbname=check_db(p_dbname)
         let mv_curr_db=p_dbname
 end if
+call set_pick_db(mv_curr_db)
 end function
 
 function has_db()
@@ -294,6 +299,7 @@ end function
 
 # DISPLAY ATs.....
 
+{
 function clear_screen_portion()
 define lv_y integer
 define lv_maxy integer
@@ -307,6 +313,7 @@ end for
 
 set pause mode off
 end function
+}
 
 
 function copyright_banner()
@@ -333,6 +340,7 @@ end if
 end function
 
 
+{
 function display_banner()
 define lv_curr_db char(255)
 set pause mode on
@@ -344,6 +352,7 @@ set pause mode on
 set pause mode off
 
 end function
+}
 
 function display_to_line (lv_line,lv_str)
 define lv_line integer
@@ -351,3 +360,6 @@ define lv_str char(512)
 display lv_str clipped,"" at lv_line,1
 end function
 
+function set_and_display_banner() 
+	call display_banner()
+end function

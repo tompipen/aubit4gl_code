@@ -365,7 +365,7 @@ define buff char(255)
 define lv_ok integer
 let lv_cnt=1
 clear screen
-call display_banner()
+call set_and_display_banner()
 
 CALL use_pghosts() RETURNING lv_server, lv_port, lv_username, lv_passwd
 
@@ -1217,7 +1217,7 @@ endcode
 
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
-                call display_banner()
+                call set_and_display_banner()
                 message "Database Opened (",lv_newname clipped,")"
 		
         else
@@ -1294,7 +1294,7 @@ if lv_newname is not null and lv_newname not matches " " then
 
                         if sqlca.sqlcode=0 then
                                 call set_curr_db("")
-                                call display_banner()
+                                call set_and_display_banner()
                                 message "Database dropped..."
                         else
                                 if check_and_report_error() then
