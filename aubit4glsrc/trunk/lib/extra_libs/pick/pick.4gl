@@ -933,7 +933,7 @@ display lv_str at 4,1
 end function
 
 
-function set_curr_db(lv_db)
+function set_pick_db(lv_db)
 define lv_db char(80)
 	let mv_curr_db=lv_db
 end function
