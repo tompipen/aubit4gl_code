@@ -33,6 +33,7 @@
 ##
 ## #######################################################################
 define mv_arr array[2000] of char(128)
+define mv_curr_db char(80)
 define mv_cnt integer
 define mv_curr_option integer
 define mv_rows integer
@@ -774,9 +775,7 @@ end function
 ################################################################################
 function display_banner()
 define lv_disp_in_trans integer
-
 call display_to_separator("------------------------------------------------ Press CTRL-W for Help --------")
-
 end function
 
 
@@ -917,3 +916,24 @@ function clr_all_actions()
         sleep 1
 end function
 
+
+################################################################################
+# Lets try to put things that 'display .. at' in one place...
+################################################################################
+function display_to_separator(lv_str)
+define lv_str char(80)
+define lv_db char(80)
+
+if mv_curr_db is not null then
+        let lv_db="_",mv_curr_db clipped,"_" # A string we can measure the length of
+        let lv_str[25,25+length(lv_db)]= " ",mv_curr_db clipped," "
+end if
+
+display lv_str at 4,1
+end function
+
+
+function set_curr_db(lv_db)
+define lv_db char(80)
+	let mv_curr_db=lv_db
+end function
