@@ -963,3 +963,31 @@ function set_pick_db(lv_db)
 define lv_db char(80)
 	let mv_curr_db=lv_db
 end function
+
+
+
+function read_dir(lv_dir,lv_ext)
+define lv_dir char(512)
+define lv_ext char(4)
+define lv_fname char(256)
+define a integer
+code
+{
+        char **dir;
+	A4GL_trim(lv_dir);
+	A4GL_trim(lv_ext);
+        dir=A4GL_read_directory(lv_dir,lv_ext);
+        if (dir) {
+                for (a=0;dir[a];a++) {
+                        strcpy(lv_fname,dir[a]);
+endcode
+                        call set_pick(a+1,lv_fname);
+code
+                }
+                A4GL_free_directory();
+        }
+}
+endcode
+
+call set_pick_cnt(a);
+end function
