@@ -807,13 +807,7 @@ UILIB_A4GL_req_field_input_array (void *sv, char type, va_list * ap)
 
   A4GL_make_field_slist_from_ap (&list, ap, arr->scr_line);
 
-    printf("NEXT FIELD %s %d %d \n", list.field_name_list[0].fname, list.field_name_list[0].fpos, arr->scr_line);
-  //if (list.field_name_list[0].fpos != 0 && list.field_name_list[0].fpos != 1)
-    //{
   	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname, list.field_name_list[0].fpos);
-    //} else {
-  	//send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, list.field_name_list[0].fname);
-    //}
 
 
   return rval;
@@ -872,7 +866,6 @@ UILIB_A4GL_display_error (int attr, int wait)
 void *
 UILIB_A4GL_get_curr_form (int warn_if_no_form)
 {
-//fprintf(stderr,"Got a call to UILIB_A4GL_get_curr_form\n");
   return (void *) 1;
 }
 
@@ -2207,7 +2200,6 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	}
 
 
-	printf("last_attr-> scrline : %d *************************\n", last_attr->scrline);
     }
 
   if (rval == -100)
@@ -3331,7 +3323,6 @@ UILIB_aclfgl_aclfgl_set_display_field_delimiters (int n)
 
 
 void cleanup(void) {
-//printf("CLEANUP\n");
       	pipe_clear();
       	send_to_ui ("<PROGRAMSTOP ID=\"%d\"/>",  get_ui_id ('r'));
 	 flush_ui ();
@@ -3398,7 +3389,6 @@ has_label (int x, int y, int w, int set, int fy)
 // Find any labels matching on this line over this field
   for (a = 0; a < nfields; a++)
     {
-      //printf("%d %d %d (%d %d)\n",x,y,w,fields[a].x,fields[a].y);
       if (screen_convert_fields[a].label == 0)
 	continue;
 
