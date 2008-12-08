@@ -2273,6 +2273,7 @@ uilib_input_array_loop (int n)
       UIdebug (5, "before menu\n");
       // return whatever the before menu was...
       contexts[context].state = UI_INITIALIZED;
+      contexts[context].ui.inputarray.infield = 0;
       pushint (0);
       return 1;
     }
@@ -2302,6 +2303,14 @@ uilib_input_array_loop (int n)
     {
       contexts[context].ui.inputarray.count = last_attr->arrcount;
     }
+
+  if (last_attr->infield)
+    {
+      if (contexts[context].ui.inputarray.infield)
+        free (contexts[context].ui.inputarray.infield);
+      contexts[context].ui.inputarray.infield = strdup (last_attr->infield);
+    }
+
   m_arr_count = last_attr->arrcount;
   m_arr_curr = last_attr->arrline;
   m_scr_line = last_attr->scrline;
@@ -2608,7 +2617,14 @@ uilib_infield (int n)
       if (contexts[context].type == UIINPUT)
 	{
 	  f = contexts[context].ui.input.infield;
+	
 	}
+
+      if (contexts[context].type == UIINPUTARRAY)
+	{
+	  f = contexts[context].ui.inputarray.infield;
+	}
+
       if (contexts[context].type == UICONSTRUCT)
 	{
 	  f = contexts[context].ui.construct.infield;

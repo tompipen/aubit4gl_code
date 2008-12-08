@@ -3291,7 +3291,7 @@ UILIB_aclfgl_fgl_set_arrline (int nparam)
 {
   int b;
   b = A4GL_pop_int ();
-  send_to_ui ("<SETARRLINE=\"%d\"/>", b);
+  send_to_ui ("<SETARRLINE LINE=\"%d\"/>", b);
   return 0;
 }
 
@@ -3300,7 +3300,7 @@ UILIB_aclfgl_fgl_set_scrline (int nparam)
 {
   int b;
   b = A4GL_pop_int ();
-  send_to_ui ("<SETSCRLINE=\"%d\"/>", b);
+  send_to_ui ("<SETSCRLINE LINE=\"%d\"/>", b);
   return 0;
 }
 
