@@ -1925,12 +1925,17 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
 
   if (last_attr)
     {
-      if (last_attr->arrline)
+      if (last_attr->arrline) {
 	A4GL_set_arr_curr (last_attr->arrline);
+	d->arr_line=last_attr->arrline;
+	}
       if (last_attr->arrcount)
 	A4GL_set_arr_count (last_attr->arrcount);
-      if (last_attr->scrline)
+      if (last_attr->scrline) {
 	A4GL_set_scr_line (last_attr->scrline);
+	d->scr_line=last_attr->scrline;
+	}
+
     }
 
   if (rval == -100)
@@ -2188,12 +2193,20 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 
   if (last_attr)
     {
-      if (last_attr->arrline)
+      if (last_attr->arrline) {
 	A4GL_set_arr_curr (last_attr->arrline);
-      if (last_attr->arrcount)
+	inp->arr_line=last_attr->arrline;
+      }
+      if (last_attr->arrcount) {
 	A4GL_set_arr_count (last_attr->arrcount);
-      if (last_attr->scrline)
+ 	inp->no_arr=last_attr->arrcount;
+	}
+      if (last_attr->scrline) {
 	A4GL_set_scr_line (last_attr->scrline);
+	inp->scr_line=last_attr->scrline;
+	}
+
+
 	printf("last_attr-> scrline : %d *************************\n", last_attr->scrline);
     }
 
