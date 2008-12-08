@@ -2194,7 +2194,9 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
 	A4GL_set_arr_count (last_attr->arrcount);
       if (last_attr->scrline)
 	A4GL_set_scr_line (last_attr->scrline);
+	printf("last_attr-> scrline : %d *************************\n", last_attr->scrline);
     }
+
   if (rval == -100)
     {
       A4GL_debug ("ACCEPT....\n");
