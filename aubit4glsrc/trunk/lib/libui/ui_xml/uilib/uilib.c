@@ -2612,7 +2612,7 @@ uilib_infield (int n)
   char *f = 0;
   fld = charpop ();
   context = POPint ();
-printf "uilib_infield: %d\n", context);
+printf("uilib_infield: %d\n", context);
   if (context)
     {
       f = 0;

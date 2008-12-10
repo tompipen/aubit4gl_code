@@ -2988,6 +2988,7 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
   A4GL_push_int (((long) inp) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
+printf("Got context as : %d\n",context);
 
   while ((argp = va_arg (*ap, char *)))
     {
