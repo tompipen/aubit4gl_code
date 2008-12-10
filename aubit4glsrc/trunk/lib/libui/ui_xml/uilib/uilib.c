@@ -1484,13 +1484,11 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	    }
 	}
     }
-printf("Did last_attr->infield ??\n");
   if (last_attr->infield)
     {
       if (contexts[context].ui.input.infield)
 	free (contexts[context].ui.input.infield);
       contexts[context].ui.input.infield = strdup (last_attr->infield);
-		printf("Setting infield to %s\n", contexts[context].ui.input.infield);
     }
   pushint (i);
   return 1;
@@ -2615,23 +2613,19 @@ uilib_infield (int n)
   if (context>=0)
     {
       f = 0;
-	printf("Looking at context : %d\n",context);
       if (contexts[context].type == UIINPUT)
 	{
-		printf("TYPE=INPUT\n");
 	  f = contexts[context].ui.input.infield;
 	
 	}
 
       if (contexts[context].type == UIINPUTARRAY)
 	{
-		printf("TYPE=INPUTARRAY\n");
 	  f = contexts[context].ui.inputarray.infield;
 	}
 
       if (contexts[context].type == UICONSTRUCT)
 	{
-		printf("TYPE=CONSTRUCT\n");
 	  f = contexts[context].ui.construct.infield;
 	}
 
@@ -2639,7 +2633,6 @@ uilib_infield (int n)
 
   if (f)
     {
-	printf("Got an 'f' fld=%s f=%s\n",fld,f);
       if (field_match (fld, f) )
 	{
 	  pushint (1);
@@ -2651,7 +2644,6 @@ uilib_infield (int n)
     }
   else
     {
-	printf("No 'f'\n");
       pushint (0);
     }
   return 1;

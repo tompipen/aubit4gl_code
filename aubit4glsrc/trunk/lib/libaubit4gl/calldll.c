@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.80 2008-11-20 20:43:33 mikeaubury Exp $
+# $Id: calldll.c,v 1.81 2008-12-10 17:12:10 mikeaubury Exp $
 #
 */
 
@@ -637,6 +637,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   A4GL_debug ("Calling %s in file %s with %d args", A4GL_null_as_null (nfunc), A4GL_null_as_null (nfile), args);
 
   A4GL_debug ("Trying %s", A4GL_null_as_null (filename));
+
   dllhandle = dlopen (filename, RTLD_LAZY);
   if (dllhandle == 0)
     A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ()));

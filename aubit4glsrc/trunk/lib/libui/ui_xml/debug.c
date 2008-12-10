@@ -59,7 +59,6 @@ if (lvl>99) return;
   		fprintf(dbgfile, "[%s %d] %s",get_timestamp(),getpid(),buff); fflush(stdout);
 		fclose(dbgfile);
 	}
-  /* printf( "[%s %d] %s",get_timestamp(),getpid(),buff); fflush(stdout); */
 }
 
 
