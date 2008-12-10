@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.456 2008-12-07 14:02:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.457 2008-12-10 14:27:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.456 2008-12-07 14:02:02 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.457 2008-12-10 14:27:22 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1908,13 +1908,13 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_INFIELD:
 		if (A4GL_doing_pcode()) {
 		if (ptr->expr_str_u.expr_infield->sio_id!=-1) {
-			printc("A4GL_pushint_fgl_infield(_sio_%d,_inp_io_type,%s,NULL,0);",ptr->expr_str_u.expr_infield->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_infield->field_list));
+			printc("A4GL_pushint_fgl_infield(&_sio_%d,_inp_io_type,%s,NULL,0);",ptr->expr_str_u.expr_infield->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_infield->field_list));
 		} else {
 			printc("A4GL_pushint_fgl_infield(NULL,0,%s,NULL,0);",local_field_name_list_as_char(ptr->expr_str_u.expr_infield->field_list));
 		}
 		} else {
 		if (ptr->expr_str_u.expr_infield->sio_id!=-1) {
-			printc("A4GL_push_int(A4GL_fgl_infield(_sio_%d,_inp_io_type,%s,NULL,0));",ptr->expr_str_u.expr_infield->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_infield->field_list));
+			printc("A4GL_push_int(A4GL_fgl_infield(&_sio_%d,_inp_io_type,%s,NULL,0));",ptr->expr_str_u.expr_infield->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_infield->field_list));
 		} else {
 			printc("A4GL_push_int(A4GL_fgl_infield(NULL,0,%s,NULL,0));",local_field_name_list_as_char(ptr->expr_str_u.expr_infield->field_list));
 		}
@@ -1927,11 +1927,11 @@ real_print_expr (struct expr_str *ptr)
 			break;
 
 	case ET_EXPR_FIELD_TOUCHED:
-		printc("A4GL_push_int(A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,NULL,0));",ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
+		printc("A4GL_push_int(A4GL_fgl_fieldtouched(&_sio_%d,_inp_io_type,%s,NULL,0));",ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
 		break;
 
 	case ET_EXPR_NOT_FIELD_TOUCHED:
-		printc("A4GL_push_int(!A4GL_fgl_fieldtouched(_sio_%d,_inp_io_type,%s,NULL,0));",ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
+		printc("A4GL_push_int(!A4GL_fgl_fieldtouched(&_sio_%d,_inp_io_type,%s,NULL,0));",ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
 		break;
 
 	case ET_EXPR_IVAL_VAL:
@@ -1984,7 +1984,7 @@ real_print_expr (struct expr_str *ptr)
 	  printc ("{");
 	  printc ("int _retvars;");
 
-	  printc ("_retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);",
+	  printc ("_retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,%s,NULL,0);",
 		  ptr->expr_str_u.expr_get_fldbuf->sio_id,
 	  	local_field_name_list_as_char (ptr->expr_str_u.expr_get_fldbuf->field_list)
 		  );
@@ -2839,7 +2839,7 @@ real_print_func_call (t_expr_str * fcall)
 	p=fcall->expr_str_u.expr_get_fldbuf;
 	printc("{");
 	printc("   int _retvars;");
-	printc("   _retvars=A4GL_fgl_getfldbuf(_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id, local_field_name_list_as_char(p->field_list));
+	printc("   _retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id, local_field_name_list_as_char(p->field_list));
 	/* 
 	printc("   if (_retvars != 1 ) {");
 	printc("      A4GLSQL_set_status(-3001,0);");

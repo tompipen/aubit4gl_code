@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.121 2008-08-28 10:38:49 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.122 2008-12-10 14:27:22 mikeaubury Exp $
 */
 
 /**
@@ -424,6 +424,7 @@ void A4GL_set_err_txt(char *s);
   char *A4GL_add_dot_star(char *s);
 
   int A4GL_fgl_getfldbuf (void *inp,char itype, ...);
+int A4GL_fgl_infield (void *inp,char itype,...);
   void A4GL_set_init (struct BINDING *b, int n);
   int A4GL_req_field (void *s, char itype,char type,...);
   void aclfgli_pr_message (int attr, int wait,int nexpr);

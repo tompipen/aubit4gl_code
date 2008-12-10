@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.40 2008-11-26 10:14:04 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.41 2008-12-10 14:27:22 mikeaubury Exp $
 */
 
 /**
@@ -184,6 +184,7 @@ int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd);
 char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
 void A4GL_assertion (int a, char *s);
 char * acl_getenv_not_set_as_0 (char *s);
+//int A4GL_fgl_infield (void *inp,char itype,...);
 #ifndef LOCATE_VAR_DEFINED
 #define LOCATE_VAR_DEFINED
 void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
