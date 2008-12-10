@@ -2634,6 +2634,7 @@ uilib_infield (int n)
 
   if (f)
     {
+	printf("Got an 'f' fld=%s f=%s\n",fld,f);
       if (field_match (fld, f) )
 	{
 	  pushint (1);
@@ -2645,6 +2646,7 @@ uilib_infield (int n)
     }
   else
     {
+	printf("No 'f'\n");
       pushint (0);
     }
   return 1;
