@@ -1199,7 +1199,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
   A4GL_debug ("FORM LOOP\n");
 
-
+printf("s=%p\n",s);
   if (init)
     {
       int context;
@@ -2985,6 +2985,7 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
   char *argp;
   int infield;
   A4GL_push_char ("XML");
+printf("inp=%p\n",inp);
   A4GL_push_int (((long) inp) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();

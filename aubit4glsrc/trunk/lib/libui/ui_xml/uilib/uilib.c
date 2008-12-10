@@ -2501,7 +2501,7 @@ uilib_getfldbuf (int nargs)
     }
   context = POPint ();
 
-  if (context)
+  if (context>=0)
     {
       if (contexts[context].type == UIINPUT)
 	{
@@ -2612,8 +2612,7 @@ uilib_infield (int n)
   char *f = 0;
   fld = charpop ();
   context = POPint ();
-printf("uilib_infield: %d\n", context);
-  if (context)
+  if (context>=0)
     {
       f = 0;
 	printf("Looking at context : %d\n",context);
