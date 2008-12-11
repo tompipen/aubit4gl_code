@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.70 2008-12-01 17:08:02 mikeaubury Exp $
+# $Id: pg8.c,v 1.71 2008-12-11 18:33:37 mikeaubury Exp $
 #*/
 
 
@@ -1800,7 +1800,7 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 	    char buff[2000];
 	    strcpy (buff, ptr);
 		ensure_dot_format_for_decimal_string(buff);
-	  	A4GL_push_char (buff);
+	  	//A4GL_push_char (buff);
       		A4GL_str_dot_to_dec (buff, (void *)obind[b].ptr);
 		}
 	break;
