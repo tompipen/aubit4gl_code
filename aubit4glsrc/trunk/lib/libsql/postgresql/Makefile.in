@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2008-03-28 16:17:04 mikeaubury Exp $
+# $Id: Makefile.in,v 1.18 2008-12-11 12:30:54 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -108,5 +108,8 @@ show:
 
 clean:
 	${RM} *.o ${PLUGINDIR}/libSQL_pgDEVEL${SO_EXT} ${PLUGINDIR}/libSQL_pg${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${ALL}
+
+fix_pgserial: fix_serial.4gl
+	4glpc -t C -o fix_pgserial  fix_serial.4gl 
 
 #-------------------------------- EOF -------------------------------
