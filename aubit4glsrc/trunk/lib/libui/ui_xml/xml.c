@@ -6,6 +6,7 @@
 #include "uilib/xml/attr.h"
 #include "a4gl_API_ui_lib.h"
 extern struct s_attr *last_attr;
+static char *get_field_with_subscript_as_string(char *field, int i);
 FILE *def_stderr = NULL;
 char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
@@ -107,7 +108,7 @@ int exiting_context_cnt = 0;
 
 char *getlastkey(void);
 
-static void set_xml_lastkey() {
+static void set_xml_lastkey(void) {
 	char *ptr=getlastkey();
 	if (ptr) {
 		A4GL_set_last_key(A4GL_key_val(ptr));
@@ -405,7 +406,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
   for (a = 0; a < n; a++)
     {
-		char *s;
+		//char *s;
 		int d1;
   		int s1;
   		void *ptr1;
@@ -434,7 +435,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 	}
       else
 	{
-	  send_to_ui ("<FIELD NAME=\"%s[%d]\"/>", argp, i);
+	  send_to_ui ("<FIELD NAME=\"%s\"/>", get_field_with_subscript_as_string(argp, i));
 	}
     }
   send_to_ui ("</FIELDLIST>");
@@ -655,10 +656,10 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig, char *desc, 
 
 
 void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *keys, char *desc, int helpno, int attr) {
-  ACL_Menu_Opts *opt1;
+  //ACL_Menu_Opts *opt1;
   //ACL_Menu_Opts *opt2;
-  ACL_Menu *menu;
-  char opt_title[200];
+  //ACL_Menu *menu;
+  //char opt_title[200];
 
 // Does nothing yet...
 }
@@ -764,8 +765,7 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
   A4GL_make_field_slist_from_ap (&list, ap,0);
   if (list.field_name_list[0].fpos != 0 && list.field_name_list[0].fpos != 1)
     {
-      send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname,
-		  list.field_name_list[0].fpos);
+      send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, get_field_with_subscript_as_string(list.field_name_list[0].fname, list.field_name_list[0].fpos));
     }
   else
     {
@@ -807,7 +807,7 @@ UILIB_A4GL_req_field_input_array (void *sv, char type, va_list * ap)
 
   A4GL_make_field_slist_from_ap (&list, ap, arr->scr_line);
 
-  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s[%d]\"/>", context, list.field_name_list[0].fname, list.field_name_list[0].fpos);
+  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, get_field_with_subscript_as_string(list.field_name_list[0].fname, list.field_name_list[0].fpos));
 
 
   return rval;
@@ -897,7 +897,7 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap,in
       else
 	{
 	if (i==0) i=replace_0;
-	  SPRINTF (smbuff, "<FIELD NAME=\"%s[%d]\"/>", argp, i);
+	  SPRINTF (smbuff, "<FIELD NAME=\"%s\"/>", get_field_with_subscript_as_string(argp, i));
 	}
       strcat (buff, smbuff);
     }
@@ -3615,3 +3615,24 @@ void make_screen (struct_form * f)
 }
 
 #endif
+
+static char *get_field_with_subscript_as_string(char *field, int i) {
+static char buff[200];
+char fld2[200];
+char *ptr;
+if (i!=0 && i!=1) {
+	strcpy(fld2,field);
+	// Does the field contain a '.'
+	ptr=strchr(fld2,'.');
+	if (ptr) {
+		*ptr=0;
+		ptr++;
+		sprintf(buff,"%s[%d].%s",fld2,i,ptr);
+	} else {
+		sprintf(buff,"%s[%d]",field,i);
+	}
+	return buff;
+}
+sprintf(buff,"%s",field);
+return buff;
+}
