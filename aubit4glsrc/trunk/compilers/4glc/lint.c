@@ -785,10 +785,24 @@ int cnt;
 						warn=0;
 					}
 				}
+				if (ncols==1) {
+					if (s->select_list->list.list_val[0]->data.type==E_SLI_LITERAL) {
+						// We can ignore it - its a SELECT 1 ..
+						// they are probably going to check the status...
+						warn=0;
+					}
+				}
 			} 
+
 			if (warn) {
-		      		A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
+				if (nvars==0) {
+		      			A4GL_lint (module_name, r->lineno, "SELECTNOTINTO", "SELECT WITH NO INTO", 0);
+				} else {
+		      			A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
+				}
 			}
+
+			
 		}
       }
  
@@ -859,12 +873,15 @@ int cnt;
 		}
 
 	      e = if_c->conditions.conditions_val[b].test_expr;
+
+
 	      if (e->expr_type == ET_EXPR_OP_EQUAL)
 		{
 		  expr_str *l_e;
 		  expr_str *r_e;
 		  l_e = e->expr_str_u.expr_op->left;
 		  r_e = e->expr_str_u.expr_op->right;
+
 		  if (A4GL_is_just_int_literal (r_e, 100))
 		    {
 		      if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE)
@@ -880,6 +897,42 @@ int cnt;
 			}
 
 		    }
+
+
+		if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE) {
+			char *p;
+			p=lint_get_variable_usage_as_string(l_e->expr_str_u.expr_variable_usage);
+			if (strcmp(p,"sqlca.sqlcode")==0 || strcmp(p,"a4gl_sqlca.sqlcode")==0) {
+  				struct command *r2;
+				if (cnt) {
+      					r2 = func_cmds->cmds.cmds_val[cnt-1];
+					switch (r2->cmd_data.type) {
+						case E_CMD_SELECT_CMD:
+						case E_CMD_SQL_CMD:
+						case E_CMD_SQL_TRANSACT_CMD:
+						case E_CMD_FETCH_CMD:
+						case E_CMD_INSERT_CMD:
+						case E_CMD_DELETE_CMD:
+						case E_CMD_UPDATE_CMD:
+						case E_CMD_FREE_CMD:
+						case E_CMD_EXECUTE_CMD:
+						case E_CMD_PREPARE_CMD:
+						case E_CMD_DECLARE_CMD:
+						case E_CMD_FOREACH_CMD:
+						case E_CMD_UNLOAD_CMD:
+						case E_CMD_LOAD_CMD:
+						case E_CMD_OPEN_CURSOR_CMD:
+						case E_CMD_PUT_CMD:
+						case E_CMD_EXECUTE_IMMEDIATE_CMD:
+							break;
+						default:
+		  					A4GL_lint (module_name, r->lineno, "IFSQLCA", "IF test on sqlca.sqlcode not following SQL statement",0);	
+							break;
+					}
+				}
+			}
+		}
+
 		}
 	    }
 
@@ -2376,6 +2429,12 @@ system_function_dtype (char *funcname)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "length") == 0)
     return DTYPE_INT;
+  if (A4GL_aubit_strcasecmp (funcname, "arr_curr") == 0)
+    return DTYPE_INT;
+  if (A4GL_aubit_strcasecmp (funcname, "arr_count") == 0)
+    return DTYPE_INT;
+  if (A4GL_aubit_strcasecmp (funcname, "scr_line") == 0)
+    return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "aclfgl_sendfile_to_ui") == 0)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "weekday") == 0)
@@ -3860,6 +3919,7 @@ static int get_severity(char *code) {
 		{"FUNCRETCNT",8},
 		{"MISMATCHSELECT",4},
 		{"SELECTSTAR",2},
+		{"IFSQLCA",2},
 		{"PARAMNOTUSED",2},
 		{NULL,0}
 	};

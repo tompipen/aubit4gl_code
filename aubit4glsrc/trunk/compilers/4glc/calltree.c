@@ -781,7 +781,6 @@ cache_expression (char *s, expr_str ** ptr, int mode)
 		struct expr_str_list *params;
       // Got a function call - add it to the stack..
       if (mode == MODE_BUY) {
-	  			print_indent ();
 				if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
 					if (!simpleGraph) {
 	  					fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
@@ -790,13 +789,18 @@ cache_expression (char *s, expr_str ** ptr, int mode)
 					}
 	
 	  				//fprintf (dot_output, "%s -> %s\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+	  				print_indent ();
+	  				fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
 				}
-	  			fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
 	}
 	params=expr->expr_str_u.expr_function_call->parameters;
 	if (params) cache_expression_list("",params,mode);
 	
-      return 1;
+	if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
+      		return 1;
+	} else {
+		return 0;
+	}
     }
 
   return 0;
@@ -1425,6 +1429,8 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 
 
 	case E_CMD_START_CMD:
+
+	if (mode==MODE_BUY) {
 	  print_indent ();
 	  fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
 			if (!simpleGraph) {
@@ -1432,10 +1438,12 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
 			}
 			addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname );
+	}
 	  call_cnt++;
 	  break;
 
 	case E_CMD_FINISH_CMD:
+	if (mode==MODE_BUY) {
 	  print_indent ();
 	  fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
 		addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname);
@@ -1443,11 +1451,13 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
  				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
 					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
 			}
+		}
 	  call_cnt++;
 	  break;
 
 	case E_CMD_OUTPUT_CMD:
 	  cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.expressions, mode);
+	if (mode==MODE_BUY) {
 	  print_indent ();
 	  fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,func_commands->cmds.cmds_val[a]->lineno);
 		addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname);
@@ -1455,6 +1465,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
  				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
 					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
 			}
+		}
 	  call_cnt++;
 	  break;
 
@@ -1863,8 +1874,11 @@ check_program (module_definition * mods, int nmodules)
 		strcpy(currfunc,functions[a].function);
 		strcpy(currmod,functions[a].module);
 		addFunction(currfunc);
-
+	   if (strcmp( functions[a].function,"MAIN")==0) {
+  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+	   } else {
   	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+	}
 
 	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].line);
 	  f = functions[a].ptr;
