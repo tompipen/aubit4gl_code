@@ -109,8 +109,19 @@ FILE *f;
     case ET_EXPR_FCALL:
 	{
 		
-               char buff[2000];
-               sprintf(buff,"%s(..)", e->expr_str_u. expr_function_call  -> fname) ;
+		int a;
+               char buff[5000];
+		char buff2[5000];
+		char buff3[5000];
+		strcpy(buff3,"");
+		if (e->expr_str_u. expr_function_call->parameters) {
+			for (a=0;a<e->expr_str_u. expr_function_call->parameters->list.list_len;a++) {
+				if (a) strcat(buff3,",");
+				strcpy(buff2,expr_as_string_when_possible(e->expr_str_u. expr_function_call->parameters->list.list_val[a]));
+				strcat(buff3,buff2);
+			}
+		}
+               sprintf(buff,"%s(%s)", e->expr_str_u. expr_function_call  -> fname,buff3) ;
       		return strdup(buff);
 	}
 

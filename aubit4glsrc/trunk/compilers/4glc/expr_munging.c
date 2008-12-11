@@ -677,7 +677,8 @@ char buff[256];
       ensure_dtime (p->expr_str_u.expr_extend->expr, 0);
       return DTYPE_DTIME;
 
-
+	case ET_EXPR_FIELD_TOUCHED:
+		return FAKE_DTYPE_BOOL;
     case ET_EXPR_DATE_FUNC:
       //ensure_char (ptr->expr_str_u.expr_expr,0);
       return DTYPE_DATE;
@@ -939,6 +940,36 @@ case ET_EXPR_VARIABLE_USAGE :
           ensure_int (p->expr_str_u.expr_op->right, 0);
           return DTYPE_INT;
         }
+
+
+      if (l == DTYPE_SMINT && r == FAKE_DTYPE_BOOL)
+        {
+          ensure_smint (p->expr_str_u.expr_op->left, 0);
+          ensure_smint (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_SMINT;
+        }
+
+      if (l == DTYPE_INT && r == FAKE_DTYPE_BOOL)
+        {
+          ensure_int (p->expr_str_u.expr_op->left, 0);
+          ensure_int (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_INT;
+        }
+
+      if (r == DTYPE_SMINT && l == FAKE_DTYPE_BOOL)
+        {
+          ensure_smint (p->expr_str_u.expr_op->left, 0);
+          ensure_smint (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_SMINT;
+        }
+
+      if (r == DTYPE_INT && l == FAKE_DTYPE_BOOL)
+        {
+          ensure_int (p->expr_str_u.expr_op->left, 0);
+          ensure_int (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_INT;
+        }
+
 
 
       if (l == DTYPE_SMINT && r == FAKE_DTYPE_BOOL)

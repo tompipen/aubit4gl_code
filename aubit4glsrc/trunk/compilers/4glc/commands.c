@@ -1186,8 +1186,9 @@ struct command *c;
 int a;
    	c=new_command(E_CMD_LET_CMD);
    	c->cmd_data.command_data_u.let_cmd.vars=p_vars;
+	p_vals=make_fgl_expr_list(p_vals);
+
 	if (c->cmd_data.command_data_u.let_cmd.vars->list.list_len>1) {
-		p_vals=make_fgl_expr_list(p_vals);
 		if (p_vars->list.list_len!=p_vals->list.list_len) {
 			yylineno=c->lineno;
 			a4gl_yyerror("Number of variables does not match number of values");
@@ -1292,7 +1293,10 @@ struct command *new_input_cmd(expr_str_list* p_variables,fh_field_list* p_field_
 struct command *c;
    c=new_command(E_CMD_INPUT_CMD);
 	p_variables=expand_variables_in_expr_str_list(p_variables,1,1);
+	
    c->cmd_data.command_data_u.input_cmd.variables=p_variables;
+
+	inc_var_assigned_from_binding_list(p_variables);
    c->cmd_data.command_data_u.input_cmd.events=p_events;
    c->cmd_data.command_data_u.input_cmd.attributes=p_attrib;
    c->cmd_data.command_data_u.input_cmd.without_defaults=p_without_defaults;
@@ -1915,6 +1919,7 @@ char errbuff[256];
 		a4gl_yyerror(errbuff);
 		return 0;
 	}
+	inc_var_assigned(p_promptvar);
    c->cmd_data.command_data_u.prompt_cmd.prompt_str=p_prompt_str;
    c->cmd_data.command_data_u.prompt_cmd.prompt_str_attrib=p_prompt_str_attrib;
    c->cmd_data.command_data_u.prompt_cmd.prompt_fld_attrib=p_prompt_fld_attrib;

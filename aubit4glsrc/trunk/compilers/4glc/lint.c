@@ -539,11 +539,31 @@ FILE *f;
 	return 0; // Ignore its length
 }
 
-static void check_variables(char *module_name, struct module_definition *d, variable_list *variables) {
+static int isParameter(struct variable *var, expr_str_list *parameters) {
+char *str;
+//variable_list vlist;
+int a;
+
+for (a=0;a<parameters->list.list_len;a++) {
+		if (parameters->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			str=lint_get_variable_usage_as_string(parameters->list.list_val[a]->expr_str_u.expr_variable_usage);
+			if (strcmp(var->names.names.names_val[0].name, str)==0) {
+				return 1;
+			}
+		}
+}
+
+
+return 0;
+}
+
+static void check_variables(char *module_name, struct module_definition *d, variable_list *variables, expr_str_list *parameters)  {
 int a;
 //char *module_name;
 
   //module_name=d->module_name;
+  //parameters=expand_parameters(variables, parameters);
+
 
   for (a = 0; a < variables->variables.variables_len; a++)
     {
@@ -583,7 +603,11 @@ int a;
 
       if (variables->variables.variables_val[a]->usage == 0 && variables->variables.variables_val[a]->assigned)
 	{
+	if (isParameter(variables->variables.variables_val[a], parameters)) {
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "PARAMNOTUSED", "Function/Report parameter not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	} else {
 	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARASSNOTUSED", "Local variable is assigned a value but not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	}
 	}
     }
 }
@@ -980,10 +1004,13 @@ int cnt;
 
 	  struct expr_str *fcall;
 	  char *funcname;
-		int b;
+	  int b=-1;
 	  fcall = r->cmd_data.command_data_u.call_cmd.fcall;
 	  funcname = fcall->expr_str_u.expr_function_call->fname;
+
+	if (fcall->expr_type==ET_EXPR_FCALL)  {
 	  b = find_function (fcall->expr_str_u.expr_function_call->fname);
+	}
 
 	  if (b == -1)
 	    {
@@ -1306,7 +1333,7 @@ static void check_report (struct module_definition *d, struct s_report_definitio
 int a;
 char *module_name;
 module_name=r->module;
-        check_variables(r->module, d,&r->variables);
+        check_variables(r->module, d,&r->variables, r->parameters);
 
 	if (r->report_format_section) {
 		for (a=0;a<r->report_format_section->entries.entries_len;a++) {
@@ -1344,7 +1371,7 @@ static void check_pdf_report (struct module_definition *d, struct s_pdf_report_d
 int a;
 char *module_name;
 module_name=r->module;
-        check_variables(r->module, d,&r->variables);
+        check_variables(r->module, d,&r->variables,r->parameters);
 
 	if (r->report_format_section) {
 		for (a=0;a<r->report_format_section->entries.entries_len;a++) {
@@ -1392,7 +1419,7 @@ check_function (struct module_definition *d, struct s_function_definition *f)
 
 
 
-  check_variables(f->module, d,&f->variables);
+  check_variables(f->module, d,&f->variables,f->parameters);
 
   func_cmds = linearise_commands (0, 0);
   linearise_commands (func_cmds, f->func_commands);
@@ -3832,6 +3859,8 @@ static int get_severity(char *code) {
 		{"CONCATFROMNONSTR",2},
 		{"FUNCRETCNT",8},
 		{"MISMATCHSELECT",4},
+		{"SELECTSTAR",2},
+		{"PARAMNOTUSED",2},
 		{NULL,0}
 	};
 

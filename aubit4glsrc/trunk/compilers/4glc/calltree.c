@@ -60,14 +60,90 @@ struct s_function_prototype
   int *return_dtypes;
 };
 
+struct s_nodes {
+	char *function;
+	char *calls;
+};
+
+struct s_nodes *nodes=0;
+int nodescnt;
+
+struct function_calls
+{
+  char *conditional;
+  int nchildren;
+  struct function_calls *children;
+
+};
+
+
+struct function
+{
+  char *module;
+  int line;
+  char *function;
+  char f_or_r;
+  struct function_calls *calls;
+  void *ptr;
+  int called;
+};
+
+struct function *functions = 0;
+int functions_cnt = 0;
+
+FILE *output = 0;
+FILE *dot_output=0;
+
+
+
 struct s_function_prototype *fprototypes = 0;
 
 struct s_function_prototype *fprototypes_boltons = 0;
 int nboltons = 0;
 static int is_bolton_function (char *s);
 
-
 expr_str_list *expr_cache = 0;
+
+int simpleGraph=1;
+int printAllFuncs=0;
+
+static int hasNode(char *fname, char *calls) {
+	int a;
+	for (a=0;a<nodescnt;a++) {
+		if (strcmp(nodes[a].function,fname)==0 && strcmp(nodes[a].calls, calls)==0) return 1;
+	}
+	return 0;
+}
+
+
+
+static void addNode(char *fname, char *calls) {
+ if (!hasNode(fname,calls)) {
+	nodescnt++;
+	nodes=realloc(nodes,sizeof(struct s_nodes)*nodescnt);
+	nodes[nodescnt-1].function=strdup(fname);
+	nodes[nodescnt-1].calls=strdup(calls);
+ }
+}
+
+#define NODE_FUNC_DEFINED "**DEFINED**"
+
+static void addFunction(char *fname) {
+	addNode(fname,NODE_FUNC_DEFINED);
+}
+
+static void printNodes() {
+	if (simpleGraph) {
+		int a;
+		for (a=0;a<nodescnt;a++) {
+			if (strcmp(nodes[a].calls,NODE_FUNC_DEFINED)==0) continue; // ignore this one - its just a placeholder...
+			if (hasNode(nodes[a].calls,NODE_FUNC_DEFINED) || printAllFuncs) {
+	  			fprintf (dot_output, "%s -> %s\n", nodes[a].function,nodes[a].calls);
+			}
+		}
+	}
+}
+
 
 //static int promoteable(int a, int b) ;
 
@@ -556,33 +632,6 @@ find_function_in_me (module_definition * me, char *s)
 }
 
 
-struct function_calls
-{
-  char *conditional;
-  int nchildren;
-  struct function_calls *children;
-
-};
-
-
-struct function
-{
-  char *module;
-  int line;
-  char *function;
-  char f_or_r;
-  struct function_calls *calls;
-  void *ptr;
-  int called;
-};
-
-struct function *functions = 0;
-int functions_cnt = 0;
-
-FILE *output = 0;
-FILE *dot_output=0;
-
-
 
 static void
 add_function (char *module, int line, char *fname, char forr, void *ptr)
@@ -734,7 +783,12 @@ cache_expression (char *s, expr_str ** ptr, int mode)
       if (mode == MODE_BUY) {
 	  			print_indent ();
 				if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
-	  				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+					if (!simpleGraph) {
+	  					fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+					} else {
+						addNode(currfunc, expr->expr_str_u.expr_function_call->fname);
+					}
+	
 	  				//fprintf (dot_output, "%s -> %s\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
 				}
 	  			fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
@@ -1094,7 +1148,6 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.start, mode);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.end, mode);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.step, mode);
-
 	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands))
 	    {
 	      call_cnt++;
@@ -1374,21 +1427,34 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	case E_CMD_START_CMD:
 	  print_indent ();
 	  fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
+			if (!simpleGraph) {
+ 				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
+					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
+			}
+			addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname );
 	  call_cnt++;
 	  break;
 
 	case E_CMD_FINISH_CMD:
 	  print_indent ();
-	  fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n",
-		   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
+	  fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
+		addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname);
+			if (!simpleGraph) {
+ 				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
+					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
+			}
 	  call_cnt++;
 	  break;
 
 	case E_CMD_OUTPUT_CMD:
 	  cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.expressions, mode);
 	  print_indent ();
-	  fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n",
-		   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,func_commands->cmds.cmds_val[a]->lineno);
+	  fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,func_commands->cmds.cmds_val[a]->lineno);
+		addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname);
+			if (!simpleGraph) {
+ 				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
+					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
+			}
 	  call_cnt++;
 	  break;
 
@@ -1796,8 +1862,9 @@ check_program (module_definition * mods, int nmodules)
 	  struct s_function_definition *f;
 		strcpy(currfunc,functions[a].function);
 		strcpy(currmod,functions[a].module);
+		addFunction(currfunc);
 
-  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"0\"><tr><td colspan=\"2\" bgcolor=\"#c0c0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
 
 	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].line);
 	  f = functions[a].ptr;
@@ -1814,7 +1881,9 @@ check_program (module_definition * mods, int nmodules)
 	  int b;
 	  struct s_report_definition *r;
 	  strcpy(currfunc,functions[a].function);
+		addFunction(currfunc);
 		strcpy(currmod,functions[a].module);
+  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
 	  fprintf (output, "<REPORT NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module,
 		   functions[a].line);
 	  r = functions[a].ptr;
@@ -1853,6 +1922,7 @@ check_program (module_definition * mods, int nmodules)
 
     }
   fprintf (output, "</PROGRAM>\n");
+  printNodes();
   fprintf(dot_output,"}\n");
   fclose (output);
   fclose (dot_output);
@@ -2043,21 +2113,48 @@ main (int argc, char *argv[])
 {
   module_definition *m;
   int a;
+  int b;
 
   if (argc < 2)
     {
-      printf ("Usage : %s infile infile...\n", argv[0]);
+      printf ("Usage : %s [-s|-S|-p|-P] infile infile...\n", argv[0]);
+      printf(" -s = Fully detailed graph output (includes line numbers)\n");
+      printf(" -S = Simple graph output (excludes line numbers) [default]\n");
+      printf(" -p = Print only links to internal functions [default]\n");
+      printf(" -P = Also print links to external functions\n");
       exit (2);
     }
-A4GL_build_user_resources ();
+
+  A4GL_build_user_resources ();
 
 
   m = malloc (sizeof (struct module_definition) * (argc - 1));
 
-  for (a = 1; a < argc; a++)
+
+  a=0;
+  for (b = 1; b < argc; b++)
     {
       char buff[256];
-      sprintf (buff, argv[a]);
+	if (strcmp(argv[b],"-S")==0) {
+		simpleGraph=1;
+		continue;
+	}
+	if (strcmp(argv[b],"-s")==0) {
+		simpleGraph=0;
+		continue;
+	}
+
+	if (strcmp(argv[b],"-P")==0) {
+		printAllFuncs=1;
+		continue;
+	}
+	if (strcmp(argv[b],"-p")==0) {
+		printAllFuncs=0;
+		continue;
+	}
+	
+      a++;
+      sprintf (buff, argv[b]);
       if (strstr (buff, ".dat") != 0)
 	{
 	  char *p;
@@ -2068,16 +2165,16 @@ A4GL_build_user_resources ();
       fflush (stdout);
       if (read_module_definition (&m[a - 1], buff))
 	{
-	  printf ("OK...%s\n", argv[a]);
+	  printf ("OK...%s\n", argv[b]);
 	}
       else
 	{
-	  printf ("- Failed to load %s\n", argv[a]);
+	  printf ("- Failed to load %s\n", argv[b]);
 	  exit (1);
 	}
     }
 
-  check_program (m, argc - 1);
+  check_program (m, a);
   return 0;
 }
 
@@ -2108,3 +2205,7 @@ decode_rb (enum report_blocks a)
 
   return "Blah3";
 }
+
+
+
+
