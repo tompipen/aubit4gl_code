@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.73 2008-12-12 13:50:00 mikeaubury Exp $
+# $Id: pg8.c,v 1.74 2008-12-12 17:25:11 mikeaubury Exp $
 #*/
 
 
@@ -63,7 +63,7 @@ static void defaultNoticeProcessor (void *arg, const char *message);
 static void SetErrno (PGresult * res);
 
 
-
+/*
 #define BPCHAROID             1042
 #define VARCHAROID            1043
 #define INT4OID                       23
@@ -74,6 +74,33 @@ static void SetErrno (PGresult * res);
 #define DATEOID                       1082
 #define NUMERICOID                       1700
 #define TEXTOID                       25
+*/
+
+
+int dtype_bpcharoid=-1;
+int dtype_varcharoid=-1;
+int dtype_int4oid=-1;
+int dtype_int2oid=-1;
+int dtype_float8oid=-1;
+int dtype_float4oid=-1;
+int dtype_timestampoid=-1;
+int dtype_dateoid=-1;
+int dtype_numericoid=-1;
+int dtype_textoid=-1;
+
+
+
+#define BPCHAROID       dtype_bpcharoid
+#define VARCHAROID      dtype_varcharoid
+#define INT4OID         dtype_int4oid
+#define INT2OID         dtype_int2oid
+#define FLOAT8OID 	dtype_float8oid
+#define FLOAT4OID 	dtype_float4oid
+#define TIMESTAMPOID  	dtype_timestampoid
+#define DATEOID         dtype_dateoid
+#define NUMERICOID      dtype_numericoid
+#define TEXTOID         dtype_textoid
+
 
 
 #define INPUT_OUTPUT_BIND               0
@@ -101,6 +128,14 @@ int CanUseSavepoints = 0;
 */
 
 int curr_colno = 0;
+
+struct s_typelist {
+	int type;
+	char typename[65];
+};
+
+struct s_typelist *types=0;
+
 /*
 =====================================================================
                     Functions prototypes
@@ -123,6 +158,8 @@ int curr_colno = 0;
 
 static void internal_free_cursor (char *s);
 
+static void ensure_types(void) ;
+static void clr_types(void) ;
 PGconn *current_con=0;
 PGresult *resGC = 0;
 char *pghost = "";
@@ -189,7 +226,7 @@ char *ptr;
 
   //int i;
 
-
+  clr_types();
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
   envname = acl_getenv ("PG_DBPATH");
@@ -1088,7 +1125,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 
 	        ptr = PQgetvalue (res2, a, b);
 
-		if (PQftype(res2, b) == DATEOID && A4GLSQLCV_check_requirement("UNLDATEASDBDATE")) {
+		if (PQftype(res2, b) == dtype_dateoid && A4GLSQLCV_check_requirement("UNLDATEASDBDATE")) {
 	    			static char buff[2000];
 				int m, d, y;
 				int dt;
@@ -1389,6 +1426,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   if (res) PQclear(res);
   A4GL_debug ("Execute\n");
 
+  ensure_types(); // Make sure we've got the datatypes loaded...
+
   if (vsid == 0)
     {				// nothing doing..
       return 0;
@@ -1519,7 +1558,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		int type;
 		type=PQftype (res, a);
 		A4GL_debug("Scan return for serials - field=%d type=%d",a,type);
-		  if (type == 23)
+		  if (type == dtype_int4oid)
 		    {
 			A4GL_debug("Found out serial column @%d : %s",a,PQgetvalue (res, 0, a));
 		      // any serial column must be the first integer...
@@ -1606,7 +1645,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		      for (a = 0; a < nfields; a++)
 			{
 			A4GL_debug("Found a row : field %d type=%d",a, PQftype (res2, a));
-			  if (PQftype (res2, a) == 23)
+			  if (PQftype (res2, a) == dtype_int4oid)
 			    {
 			      // any serial column must be the first integer...
 			      A4GL_set_a4gl_sqlca_errd (1,
@@ -2148,75 +2187,96 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
 static int
 conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
 {
-  switch (pgtype)
+
+  if (pgtype == dtype_bpcharoid)
     {
-    case BPCHAROID:
       *a4gl_dtype = DTYPE_CHAR;
       *a4gl_len = pglen;
-      break;
-    case VARCHAROID:
+      return 1;
+    }
+  if (pgtype == dtype_varcharoid)
+    {
       *a4gl_dtype = DTYPE_VCHAR;
       *a4gl_len = pglen;
-      break;
-    case INT4OID:
+      return 1;
+    }
+  if (pgtype == dtype_int4oid)
+    {
       *a4gl_dtype = DTYPE_INT;
       *a4gl_len = pglen;
-      break;
-    case INT2OID:
+      return 1;
+    }
+  if (pgtype == dtype_int2oid)
+    {
       *a4gl_dtype = DTYPE_SMINT;
       *a4gl_len = pglen;
-      break;
-    case FLOAT8OID:
+      return 1;
+    }
+  if (pgtype == dtype_float8oid)
+    {
       *a4gl_dtype = DTYPE_FLOAT;
       *a4gl_len = pglen;
-      break;
-    case FLOAT4OID:
+      return 1;
+    }
+  if (pgtype == dtype_float4oid)
+    {
       *a4gl_dtype = DTYPE_SMFLOAT;
       *a4gl_len = pglen;
-      break;
-    case TIMESTAMPOID:
+      return 1;
+    }
+  if (pgtype == dtype_timestampoid)
+    {
       *a4gl_dtype = DTYPE_DTIME;
       *a4gl_len = pglen;
-      break;
-    case DATEOID:
+      return 1;
+    }
+  if (pgtype == dtype_dateoid)
+    {
       *a4gl_dtype = DTYPE_DATE;
       *a4gl_len = pglen;
-      break;
-
-#ifdef NUMERICOID
-    case NUMERICOID:
-	if (pglen==-1)  {
-      		*a4gl_dtype = DTYPE_FLOAT;
-      		*a4gl_len = pglen;
-	} else { 
-		// Length,scale ? 
-      		*a4gl_dtype = DTYPE_FLOAT;
-      		*a4gl_len = pglen;
-	}
-      break;
-#endif
-#ifdef TEXTOID
-    case TEXTOID:
-	if (pglen==-1)  {
-      		*a4gl_dtype = DTYPE_TEXT;
-      		*a4gl_len = pglen;
-	} else { 
-		// Length,scale ? 
-      		*a4gl_dtype = DTYPE_TEXT;
-      		*a4gl_len = pglen;
-	}
-      break;
-#endif
-    default:
-	FPRINTF(stderr,"WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
-	// Char(20) should cover most things..
-      *a4gl_dtype = DTYPE_VCHAR;
-      *a4gl_len = 20;
-      break;
+      return 1;
     }
+
+  if (pgtype == dtype_numericoid)
+    {
+      if (pglen == -1)
+	{
+	  *a4gl_dtype = DTYPE_FLOAT;
+	  *a4gl_len = pglen;
+	}
+      else
+	{
+	  // Length,scale ? 
+	  *a4gl_dtype = DTYPE_FLOAT;
+	  *a4gl_len = pglen;
+	}
+      return 1;
+    }
+
+  if (pgtype == dtype_textoid)
+    {
+      if (pglen == -1)
+	{
+	  *a4gl_dtype = DTYPE_TEXT;
+	  *a4gl_len = pglen;
+	}
+      else
+	{
+	  // Length,scale ? 
+	  *a4gl_dtype = DTYPE_TEXT;
+	  *a4gl_len = pglen;
+	}
+      return 1;
+    }
+
+
+  FPRINTF (stderr, "WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
+  // Char(20) should cover most things..
+  *a4gl_dtype = DTYPE_VCHAR;
+  *a4gl_len = 20;
+
   return 1;
 }
-
 
 /**
  * Fill column array
@@ -3922,7 +3982,69 @@ void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 // does nothing in this driver
 }
 
+static void clr_types(void) {
+	if (types) {free(types);}
+	types=NULL;
+}
 
 
+
+static void ensure_types(void) {
+   PGresult *res;
+   int a;
+   int nrows;
+
+	if (types) return; // Already loaded...
+	if (current_con==NULL) return; // Nothing to load against..
+
+
+// Clear these down..
+	dtype_bpcharoid=-1;
+	dtype_varcharoid=-1;
+	dtype_int4oid=-1;
+	dtype_int2oid=-1;
+	dtype_float8oid=-1;
+	dtype_float4oid=-1;
+	dtype_timestampoid=-1;
+	dtype_dateoid=-1;
+	dtype_numericoid=-1;
+	dtype_textoid=-1;
+
+	res=PQexec(current_con,"select oid, typname from pg_type");
+	if (res==NULL) {
+		return;
+	}
+
+	switch (PQresultStatus (res)) {
+		case PGRES_TUPLES_OK:
+		case PGRES_COMMAND_OK:
+			// We're ok !
+			break;
+		default:
+			// We're not ok !
+			PQclear(res);
+			return ;
+	}
+	
+  nrows = PQntuples (res);
+  types=realloc(types, sizeof(struct s_typelist)*nrows);
+
+  for (a = 0; a < nrows; a++)
+    {
+	types[a].type=atol(PQgetvalue (res, a, 0));
+	strcpy(types[a].typename,PQgetvalue (res, a, 1));
+
+	if (strcmp("int4",types[a].typename)==0) 	{ dtype_int4oid=types[a].type; }
+	if (strcmp("int2",types[a].typename)==0) 	{ dtype_int2oid=types[a].type; }
+	if (strcmp("float4",types[a].typename)==0) 	{ dtype_float4oid=types[a].type; }
+	if (strcmp("float8",types[a].typename)==0) 	{ dtype_float8oid=types[a].type; }
+	if (strcmp("text",types[a].typename)==0) 	{ dtype_textoid=types[a].type; }
+	if (strcmp("bpchar",types[a].typename)==0) 	{ dtype_bpcharoid=types[a].type; }
+	if (strcmp("varchar",types[a].typename)==0) 	{ dtype_varcharoid=types[a].type; }
+	if (strcmp("timestamp",types[a].typename)==0) 	{ dtype_timestampoid=types[a].type; }
+	if (strcmp("date",types[a].typename)==0) 	{ dtype_dateoid=types[a].type; }
+	if (strcmp("numeric",types[a].typename)==0) 	{ dtype_numericoid=types[a].type; }
+    }
+}
 
 /* =============================== EOF ============================== */
