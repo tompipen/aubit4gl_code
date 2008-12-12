@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.71 2008-12-11 18:33:37 mikeaubury Exp $
+# $Id: pg8.c,v 1.72 2008-12-12 13:48:03 mikeaubury Exp $
 #*/
 
 
@@ -1438,11 +1438,13 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       A4GL_convlower (isInsert);
       if (A4GL_strstartswith (isInsert, "insert ") && use_insert_return == 1)
 	{
+	A4GL_debug("Using insert return");
 	  sql = replace_ibind (n->select, n->ni, n->ibind,1);
 	  strcat (sql, " returning *");
 	}
       else
 	{
+	A4GL_debug("Doesn't look like an insert or use_insert_return=0");
 	  sql = replace_ibind (n->select, n->ni, n->ibind,1);
 	}
 	free(isInsert);
@@ -1453,6 +1455,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
     {
       use_insert_return = 0;
       sql = replace_ibind (n->select, n->ni, n->ibind,1);
+	A4GL_debug("Not using insert return");
     }
 
   if (inTransaction ())
@@ -1501,8 +1504,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       int a;
       if (use_insert_return)
 	{
+	A4GL_debug("Scan return for serials - got OID=%d",oid);
 	  oid = PQoidValue (res);
   		A4GL_set_a4gl_sqlca_errd (5,oid);
+	      A4GL_set_a4gl_sqlca_errd (1, 0);
 
 	  if (PQresultStatus (res) == PGRES_TUPLES_OK)
 	    {
@@ -1511,8 +1516,12 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	      // Found out row !
 	      for (a = 0; a < nfields; a++)
 		{
-		  if (PQftype (res, a) == 23)
+		int type;
+		type=PQftype (res, a);
+		A4GL_debug("Scan return for serials - field=%d type=%d",a,type);
+		  if (type == 23)
 		    {
+			A4GL_debug("Found out serial column @%d : %s",a,PQgetvalue (res, 0, a));
 		      // any serial column must be the first integer...
 		      A4GL_set_a4gl_sqlca_errd (1, atoi (PQgetvalue (res, 0, a)));
 		      break;
@@ -1521,6 +1530,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	    }
 	  else
 	    {
+		A4GL_debug("Not found");
 	      // not found...
 	      A4GL_set_a4gl_sqlca_errd (1, 0);
 	    }
@@ -1528,8 +1538,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	}
       else
 	{
+		A4GL_debug("Not using use_insert_return - need to check via OID");
 	  oid = PQoidValue (res);
   		A4GL_set_a4gl_sqlca_errd (5,oid);
+		A4GL_debug("OID=%d",oid);
 
 	  if (oid != InvalidOid)
 	    {
@@ -1581,6 +1593,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		
 
 		  SPRINTF2 (sql, "SELECT * FROM %s WHERE OID=%ld", s, oid_long);
+		A4GL_debug("Executing %s",sql);
 		  res2 = PQexec (current_con, sql);
 
 
@@ -1588,9 +1601,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		    {
 		      int nfields;
 		      nfields = PQnfields (res2);
+			A4GL_debug("Found a row : %d",nfields);
 		      // Found out row !
 		      for (a = 0; a < nfields; a++)
 			{
+			A4GL_debug("Found a row : field %d type=%d",a, PQftype (res2, a));
 			  if (PQftype (res2, a) == 23)
 			    {
 			      // any serial column must be the first integer...
@@ -1603,6 +1618,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		    }
 		  else
 		    {
+
 		      // not found...
 		      A4GL_set_a4gl_sqlca_errd (1, 0);
 		    }
