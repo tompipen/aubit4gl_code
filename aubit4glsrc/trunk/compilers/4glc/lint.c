@@ -16,6 +16,7 @@ char *lint_module = 0;
 static void load_boltons (char *fname);
 static int find_function (char *s);
 static void linearise_expressions (struct expr_str_list *list);
+static void check_boolean (char *module_name, int lineno, expr_str * s,int last_was_sql);
 //void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
 
 //void dump_prototypes(void) ;
@@ -522,6 +523,9 @@ FILE *f;
 		case ET_EXPR_OP_CLIP:
 			return 0; // Anything clipped can probably be 0 length...
 			
+		case ET_EXPR_CACHED:
+			A4GL_assertion(1,"Cached expression not handled");
+		
 		default:
 			break;
 	}
@@ -862,88 +866,60 @@ int cnt;
 	  struct if_conds *if_c;
 	  if_c = &r->cmd_data.command_data_u.if_cmd.truths;
 
+
+		
 	  for (b = 0; b < if_c->conditions.conditions_len; b++)
 	    {
-	      expr_str *e;
+	      //expr_str *e;
+ 		struct command *r2;
+		int last_was_sql=0;
 	      ensure_bool (if_c->conditions.conditions_val[b].test_expr, 0);
+
+
+
 	      if (A4GL_is_just_int_literal (if_c->conditions.conditions_val[b].test_expr, 0))
 		{
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "IFFALSE", "IF condition is always FALSE", 0);
 		}
 
-	      e = if_c->conditions.conditions_val[b].test_expr;
-
-
-	      if (e->expr_type == ET_EXPR_OP_EQUAL)
-		{
-		  expr_str *l_e;
-		  expr_str *r_e;
-		  l_e = e->expr_str_u.expr_op->left;
-		  r_e = e->expr_str_u.expr_op->right;
-
-		  if (A4GL_is_just_int_literal (r_e, 100))
-		    {
-		      if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE)
-			{
-			  if (A4GL_aubit_strcasecmp (l_e->expr_str_u.expr_variable_usage->variable_name, "status") == 0)
-			    {
-			      A4GL_lint (module_name, r->lineno, "CHKSTATUS", "Checking 'status' for NOTFOUND", 0);
-			    }
-			  if (A4GL_aubit_strcasecmp (l_e->expr_str_u.expr_variable_usage->variable_name, "a4gl_status") == 0)
-			    {
-			      A4GL_lint (module_name, r->lineno, "CHKSTATUS", "Checking 'status' for NOTFOUND", 0);
-			    }
-			}
-
-		    }
-
-
-		if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE) {
-			char *p;
-			p=lint_get_variable_usage_as_string(l_e->expr_str_u.expr_variable_usage);
-			if (strcmp(p,"sqlca.sqlcode")==0 || strcmp(p,"a4gl_sqlca.sqlcode")==0) {
-  				struct command *r2;
-				if (cnt) {
-      					r2 = func_cmds->cmds.cmds_val[cnt-1];
-					switch (r2->cmd_data.type) {
-						case E_CMD_SELECT_CMD:
-						case E_CMD_SQL_CMD:
-						case E_CMD_SQL_TRANSACT_CMD:
-						case E_CMD_FETCH_CMD:
-						case E_CMD_INSERT_CMD:
-						case E_CMD_DELETE_CMD:
-						case E_CMD_UPDATE_CMD:
-						case E_CMD_FREE_CMD:
-						case E_CMD_EXECUTE_CMD:
-						case E_CMD_PREPARE_CMD:
-						case E_CMD_DECLARE_CMD:
-						case E_CMD_FOREACH_CMD:
-						case E_CMD_UNLOAD_CMD:
-						case E_CMD_LOAD_CMD:
-						case E_CMD_OPEN_CURSOR_CMD:
-						case E_CMD_PUT_CMD:
-						case E_CMD_EXECUTE_IMMEDIATE_CMD:
-							break;
-						default:
-		  					A4GL_lint (module_name, r->lineno, "IFSQLCA", "IF test on sqlca.sqlcode not following SQL statement",0);	
-							break;
-					}
-				}
-			}
-		}
-
-		}
-	    }
-
-	  for (b = 0; b < if_c->conditions.conditions_len; b++)
-	    {
 	      if (A4GL_is_just_int_literal (if_c->conditions.conditions_val[b].test_expr, 1))
 		{
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "IFTRUE", "IF condition is always TRUE", 0);
 		  //A4GL_lint("IF condition is always TRUE");
 		}
+
+
+		if (cnt) {
+      			r2 = func_cmds->cmds.cmds_val[cnt-1];
+			switch (r2->cmd_data.type) {
+				case E_CMD_SELECT_CMD:
+				case E_CMD_SQL_CMD:
+				case E_CMD_SQL_TRANSACT_CMD:
+				case E_CMD_FETCH_CMD:
+				case E_CMD_INSERT_CMD:
+				case E_CMD_DELETE_CMD:
+				case E_CMD_UPDATE_CMD:
+				case E_CMD_FREE_CMD:
+				case E_CMD_EXECUTE_CMD:
+				case E_CMD_PREPARE_CMD:
+				case E_CMD_DECLARE_CMD:
+				case E_CMD_FOREACH_CMD:
+				case E_CMD_UNLOAD_CMD:
+				case E_CMD_LOAD_CMD:
+				case E_CMD_OPEN_CURSOR_CMD:
+				case E_CMD_PUT_CMD:
+				case E_CMD_EXECUTE_IMMEDIATE_CMD:
+					last_was_sql=1;
+					break;
+				default:
+					break;
+			}
+		}
+		// Further checks - like STATUS and SQLCA usage...
+		check_boolean(module_name, r->lineno, if_c->conditions.conditions_val[b].test_expr,last_was_sql);
+
 	    }
 	}
 
@@ -3899,12 +3875,12 @@ static int get_severity(char *code) {
 		int severity;
 	} severities[]={
 		{"DEAD",5},
-		{"CS.VNAME",1},
-		{"CS.EXITDIRECT",1},
-		{"CS.EXITNOTMAIN",1},
-		{"CS.GETERRORRECORD",1},
+		{"CS.VNAME",0},
+		{"CS.EXITDIRECT",0},
+		{"CS.EXITNOTMAIN",0},
+		{"CS.GETERRORRECORD",0},
 		{"CS.MRET",1},
-		{"CS.FRET",2},
+		{"CS.FRET",1},
 		{"CS.NOOTHERWISE",1},
 		{"CS.WRITESQLCA",2},
 
@@ -3920,6 +3896,13 @@ static int get_severity(char *code) {
 		{"MISMATCHSELECT",4},
 		{"SELECTSTAR",2},
 		{"IFSQLCA",2},
+		{"SELECTNOTINTO",2},
+		{"INSERTNOCOLS",2},
+		{"CHKSTATUS",4},
+		{"REPORD",3},
+		{"DIFFMATH",4},
+		{"LETEXPR",3},
+
 		{"PARAMNOTUSED",2},
 		{NULL,0}
 	};
@@ -4011,7 +3994,12 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	  break;
 
 	case 1:
-	  sprintf (buff, "%s.4gl:%d (Severity:%d)", module, lintline,severity);
+	{
+		char fname[200];
+		strcpy(fname,module);
+		strcat(fname,".4gl");
+	  sprintf (buff, "%-20s:%-6d (Severity:%2d)", fname, lintline,severity);
+	}
 	  if (extra)
 	    {
 	      fprintf (lintfile, "%-20s, %-20s %s (%s)\n", buff, code, type, extra);
@@ -5164,4 +5152,80 @@ char *decode_cmd_type(enum cmd_type value) {
  case E_CMD_LAST          : return "E_CMD_LAST";
  default: return "Unhandled";
  } /* end of switch */
+}
+
+
+
+void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql)
+{
+  struct expr_str_list list;
+  struct expr_str s2;
+  struct expr_str *s3;
+  int a;
+  list.list.list_len = 0;
+  list.list.list_val = 0;
+
+  s3 = &s2;
+  memcpy (&s2, s, sizeof (s2));
+  cache_expression (&list, &s3);
+  linearise_expressions (&list);
+
+  for (a = 0; a < list.list.list_len; a++)
+    {
+      struct expr_str *e;
+      e = list.list.list_val[a];
+      //printf ("check boolean : %d . %s (%d)\n", a, expr_name (list.list.list_val[a]->expr_type), list.list.list_val[a]->expr_type);
+      if (e->expr_type == ET_EXPR_OP_EQUAL)
+	{
+	  expr_str *l_e;
+	  expr_str *r_e;
+	  char *ptr_l = NULL;
+	  char *ptr_r = NULL;
+	  l_e = e->expr_str_u.expr_op->left;
+	  r_e = e->expr_str_u.expr_op->right;
+
+          if (l_e->expr_type==ET_EXPR_CACHED) {
+			l_e=list.list.list_val[l_e->expr_str_u.expr_long];
+	  }
+          if (r_e->expr_type==ET_EXPR_CACHED) {
+			r_e=list.list.list_val[r_e->expr_str_u.expr_long];
+	  }
+
+	  if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE)
+	    {
+	      ptr_l = lint_get_variable_usage_as_string (l_e->expr_str_u.expr_variable_usage);
+	    }
+
+	  if (r_e->expr_type == ET_EXPR_VARIABLE_USAGE)
+	    {
+	      ptr_r = lint_get_variable_usage_as_string (r_e->expr_str_u.expr_variable_usage);
+	    }
+
+	  if (ptr_l)
+	    {
+	      if (A4GL_is_just_int_literal (r_e, 100))
+		{
+		  if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE)
+		    {
+		      if (A4GL_aubit_strcasecmp (ptr_l, "a4gl_status") == 0)
+			{
+			  A4GL_lint (module_name, lineno, "CHKSTATUS", "Checking 'status' for NOTFOUND", 0);
+			}
+		      if (A4GL_aubit_strcasecmp (ptr_l, "status") == 0)
+			{
+			  A4GL_lint (module_name, lineno, "CHKSTATUS", "Checking 'status' for NOTFOUND", 0);
+			}
+		    }
+
+		}
+	      if (strcmp (ptr_l, "sqlca.sqlcode") == 0 || strcmp (ptr_l, "a4gl_sqlca.sqlcode") == 0)
+		{
+		  if (!last_was_sql)
+		    {
+		      A4GL_lint (module_name, lineno, "IFSQLCA", "IF test on sqlca.sqlcode not following SQL statement", 0);
+		    }
+		}
+	    }
+	}
+    }
 }

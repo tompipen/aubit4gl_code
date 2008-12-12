@@ -16,8 +16,13 @@ if fgl_getenv("A4GL_SQLTYPE")!="pg8" then
 end if
 
 
+
 let lv_dbname=arg_val(1)
+
+run "createlang -d "|| lv_dbname clipped||" plpgsql"
+
 database lv_dbname
+
 
 whenever error continue
 execute immediate "CREATE LANGUAGE plpgsql;"
