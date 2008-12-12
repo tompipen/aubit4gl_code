@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.72 2008-12-12 13:48:03 mikeaubury Exp $
+# $Id: pg8.c,v 1.73 2008-12-12 13:50:00 mikeaubury Exp $
 #*/
 
 
@@ -1504,8 +1504,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       int a;
       if (use_insert_return)
 	{
-	A4GL_debug("Scan return for serials - got OID=%d",oid);
 	  oid = PQoidValue (res);
+	A4GL_debug("Scan return for serials - got OID=%d",oid);
   		A4GL_set_a4gl_sqlca_errd (5,oid);
 	      A4GL_set_a4gl_sqlca_errd (1, 0);
 
