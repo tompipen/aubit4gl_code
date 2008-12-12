@@ -25,6 +25,7 @@ Try installing the following postgresql function :
                 	$rv=spi_exec_query('SELECT setval(\''.$seq.'\','.($newval).') ', 1);
         	}
     	}
+	END;
     	return;
 	$$ LANGUAGE plperl;
 
@@ -91,7 +92,64 @@ Assuming a table 'blah_tab' with a serial column 'blahser' :
 
 This is because we can't write a generalised (parameterised) function in plpgsql....
 
+If you want to call use the column from ecpg with aubit4gl (eg A4GL_LEXTYPE=EC, A4GL_LEXDIALECT=POSTGRES) you need to call set_last_serial_val to set the
+'last_serial' value : 
+eg : 
 
+
+        create or replace function get_next_blah() returns trigger as $$
+        BEGIN
+
+        IF NEW.blah_ser = 0 then
+                SELECT nextval('blah_tab_blah_ser_seq') into NEW.blah_ser;
+                ELSE
+                IF NEW.blah_ser > 0 THEN
+                        PERFORM setval('blah_tab_blah_ser_seq',NEW.blah_ser);
+                END IF;
+        END IF;
+	begin
+  		perform set_last_serial_val(NEW.blah_ser);
+  		exception
+    		when others then NULL;
+	END;
+        RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+You'll also need to ensure you have the set_last_serial_val & last_serial functions : 
+
+
+	CREATE OR REPLACE FUNCTION last_serial() RETURNS integer AS $$
+	declare
+		lv_oid integer;
+	BEGIN
+		BEGIN
+			select lastval into lv_oid from last_ser_table;
+
+			EXCEPTION 
+				when others then
+					lv_oid:=0;
+	
+		END;
+		return lv_oid;
+	
+	END;
+	$$ LANGUAGE plpgsql;
+
+
+
+	create or replace function  set_last_serial_val(i integer) returns void as $$
+	BEGIN
+		BEGIN
+			DELETE FROM last_ser_table;
+			INSERT INTO last_ser_table VALUES(i);
+	
+			EXCEPTION  
+				when others then NULL;
+	
+		END ;
+	END;
+	$$ LANGUAGE plpgsql;
 
 
 
