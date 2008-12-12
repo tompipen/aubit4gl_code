@@ -4,6 +4,7 @@ define lv_query char(512)
 define lv_tabname char(64)
 define lv_colsrch char(512)
 define lv_colname,lv_coltype, lv_default char(256)
+define lv_sql char(1024)
 
 if num_args() != 1 then
 	display "Error Usage : ",arg_val(0) clipped," dbname"
@@ -30,6 +31,44 @@ whenever error stop
 
 
 
+
+# These two functions last_serial & set_last_serial_val are required for A4GL_LEXTYPE=EC handling
+
+let lv_sql=
+	"CREATE OR REPLACE FUNCTION last_serial() RETURNS integer AS $$\n",
+	"declare\n",
+	"lv_oid integer;\n",
+	"   BEGIN\n",
+	"      BEGIN\n",
+	"         select lastval into lv_oid from last_ser_table;\n",
+	"         \n",
+	"         EXCEPTION \n",
+	"               when others then\n",
+	"                  lv_oid:=0;\n",
+	"      END;\n",
+	"     return lv_oid;\n",
+	"   END;\n",
+	"$$ LANGUAGE plpgsql;"
+
+execute immediate lv_sql
+
+
+
+let lv_sql="create or replace function  set_last_serial_val(i integer) returns void as $$",
+		"BEGIN\n",
+		"	BEGIN\n",
+		"		DELETE FROM last_ser_table;\n",
+		"		INSERT INTO last_ser_table VALUES(i);\n",
+		"\n",
+		"		EXCEPTION  \n",
+		"			when others then NULL;\n",
+		"\n",
+		"	END ;\n",
+		"END;\n",
+		"$$ LANGUAGE plpgsql;"
+
+
+execute immediate lv_sql
 let lv_colsrch= "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128) FROM pg_catalog.pg_attrdef d WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)   FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname=? and pg_table_is_visible(b.oid) ORDER BY a.attnum"
 
 prepare p_srch from lv_colsrch
@@ -109,11 +148,17 @@ let lv_str=
         "         PERFORM setval('", lv_seq clipped,"',NEW.",lv_colname clipped,");\n",
         "   END IF;\n",
         "END IF;\n",
+
+
+# If you're *never* going to use A4GL_LEXTYPE=EC,A4GL_LEXDIALECT=POSTGRES to connect to this database then
+# you can comment out the following begin/end block
 	"begin\n",
 	"  perform set_last_serial_val(NEW.",lv_colname clipped,");\n",
 	"  exception\n",
 	"    when others then NULL;\n",
 	"END;\n",
+
+
         "RETURN NEW;\n",
         "END;\n",
         "$$ LANGUAGE plpgsql\n"
