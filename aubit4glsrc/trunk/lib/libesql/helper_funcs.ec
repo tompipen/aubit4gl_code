@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.78 2008-11-28 17:13:54 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.79 2008-12-12 17:24:23 mikeaubury Exp $
 #
 */
 
@@ -201,6 +201,7 @@ FILE *logfile;
 				ECPGdebug(1,logfile);
 			}
 		}
+		EXEC SQL create temp table last_ser_table (lastval integer);
 	}
 #endif
 return ptr;
