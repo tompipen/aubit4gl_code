@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.74 2008-12-12 17:25:11 mikeaubury Exp $
+# $Id: pg8.c,v 1.75 2008-12-13 16:10:04 mikeaubury Exp $
 #*/
 
 
@@ -4045,6 +4045,7 @@ static void ensure_types(void) {
 	if (strcmp("date",types[a].typename)==0) 	{ dtype_dateoid=types[a].type; }
 	if (strcmp("numeric",types[a].typename)==0) 	{ dtype_numericoid=types[a].type; }
     }
+	PQclear(res);
 }
 
 /* =============================== EOF ============================== */
