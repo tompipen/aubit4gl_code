@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.79 2008-12-12 17:24:23 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.80 2008-12-14 14:02:04 mikeaubury Exp $
 #
 */
 
@@ -47,30 +47,30 @@ WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commne
 #include "a4gl_esql.h"
 #include "a4gl_API_esql_lib.h"
 
-//void ESQLAPI_A4GL_connect_db(char *dbname) ;
+/*void ESQLAPI_A4GL_connect_db(char *dbname) ; */
 #ifdef DIALECT_QUERIX
-	//avoid redeclaration of int_flag, quit_flag, UCHAR
+	/*avoid redeclaration of int_flag, quit_flag, UCHAR */
 	#define _NO_INT_QUIT_FLAG_
     #if (defined(__MINGW32__) || defined (__CYGWIN__))
-		//Avoid conflict of DATE in qxdefs.h with MinGW wtypes.h:
+		/* Avoid conflict of DATE in qxdefs.h with MinGW wtypes.h:*/
 		#define _NO_WINDOWS_H_
     #endif
 #endif
 
-//void ESQLAPI_popdec_native(void *vx);
-//void ESQLAPI_retdec_native(void* vx);
-//void ESQLAPI_popdtime_native(void* vx);
-//void ESQLAPI_retdtime_native(void* vx);
+/* void ESQLAPI_popdec_native(void *vx); */
+/* void ESQLAPI_retdec_native(void* vx); */
+/* void ESQLAPI_popdtime_native(void* vx); */
+/* void ESQLAPI_retdtime_native(void* vx); */
 
 
-// Get rid of a duplicate bool definition
+/* Get rid of a duplicate bool definition */
 #define XS_form_x_XS_H
 #define X_form_x_X_H
 #define XS_form_x_X_H
 
-//struct struct_form  { void *n; };
+/* struct struct_form  { void *n; }; */
 
-//struct struct_scr_field { void *a; };
+/* struct struct_scr_field { void *a; }; */
 
 
 #ifdef DIALECT_INFORMIX
@@ -209,8 +209,7 @@ return ptr;
 
 
 
-// Make sure we're dealing with a '.' as the decimal separator...
-//
+/* Make sure we're dealing with a '.' as the decimal separator... */
 static void ensure_dot_format_for_decimal_string(char *s) {
 
         char buff[200];
@@ -255,7 +254,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 	if (mode=='i') {
-		//char *ptr;
+		/* char *ptr; */
 		if (p_indicat) *p_indicat=0;
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
@@ -276,7 +275,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 
 	if (mode=='o') {
-		//char *ptr;
+		/* char *ptr; */
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
@@ -286,11 +285,6 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		A4GL_debug("calling dectoasc returns %s",b);
 		A4GL_init_dec_size(a4gl,size);
 		A4GL_str_dot_to_dec (b, a4gl);
-		//A4GL_push_char(b);
-		//A4GL_pop_var2(a4gl,5,size);
-
-		//A4GL_push_variable(a4gl,(size<<16)+5);
-	   	//A4GL_pop_var2(&b,0,0x28);
 	}
 
 	A4GL_debug("All done..");
@@ -324,7 +318,6 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 	if (mode=='i') {
-		//char *ptr;
 		if (p_indicat) *p_indicat=0;
 		if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {
@@ -344,7 +337,6 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 
 	if (mode=='o') {
-	        //char *ptr;
 		int xisnull;
 		if (p_indicat) indicat=*p_indicat;
 
@@ -371,10 +363,11 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 
 
-
-// A4GL datetimes scales range from 0->107
-// some of these are not valid - but an array is a quick way to
-// look up the corresponding Informix Dtype qualifiers...
+/*
+ A4GL datetimes scales range from 0->107
+ some of these are not valid - but an array is a quick way to
+ look up the corresponding Informix Dtype qualifiers...
+*/
 int arr_dtime[]={
    	0,0,0, 	0, 	0, 	0, 	0, 	0, 	0, 	0, 	0, 
   0, 	0, 	0, 	0, 	0, 	0, 	1024, 	1538, 	2052, 	2566, 
@@ -409,7 +402,6 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 		if (mode=='i') {
 			char *ptr;
-			char buff[255];
 		if (p_indicat) *p_indicat=0;
 
 			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl) && p_indicat) {
@@ -437,19 +429,20 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	#endif
 			dtcvasc(ptr,infx);
 
-	// Debugging stuff only
+#ifdef EXTRA_DEBUGGING
+	/* Debugging stuff only */
 		A4GL_debug("Copy datetime in - aubit=%s\n",ptr);
 			dttoasc(infx,buff);
 		A4GL_debug("                Informix=%s\n",buff);
-	// End of Debugging stuff only
+	/* End of Debugging stuff only */
+#endif
 
 			free(ptr);
 		}
 
 		if (mode=='o') {
 			char buff[255];
-			char *ptr;
-			//int a;
+			/*int a;*/
 if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
 	#ifdef HAVE_INT64_TIMESTAMP
@@ -465,14 +458,15 @@ if (p_indicat) indicat=*p_indicat;
 			A4GL_push_char(buff);
 			A4GL_pop_param(a4gl,DTYPE_DTIME,size);
 
-
-	// Debugging stuff only
+#ifdef EXTRA_DEBUGGING
+	/* Debugging stuff only */
 			A4GL_push_dtime(a4gl);
 			ptr=A4GL_char_pop();
 		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
 		A4GL_debug("                Informix=%s\n",buff);
 			free(ptr);
-	// End of Debugging stuff only
+	/* End of Debugging stuff only */
+#endif
 		}
 
 
@@ -521,11 +515,13 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	incvasc(ptr,infx);
 
-	// Debugging stuff only
+#ifdef EXTRA_DEBUGGING
+	/* Debugging stuff only */
 		A4GL_debug("Copy interval in - aubit=%s\n",ptr);
 			intoasc(infx,buff);
 		A4GL_debug("                Informix=%s\n",buff);
-	// End of Debugging stuff only
+	/* End of Debugging stuff only */
+#endif
 
 			free(ptr);
 		}
@@ -539,7 +535,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	#ifdef HAVE_INT64_TIMESTAMP
 	#error INT64 timestamp not implemented
 	#endif
-	//if (*infx==0) indicat=-1;
+	/*if (*infx==0) indicat=-1; */
 #endif
 		if (indicat==-2) return;
 			if (indicat==-1||risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
@@ -549,13 +545,15 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
 
 
-	// Debugging stuff only
+#ifdef EXTRA_DEBUGGING
+	/* Debugging stuff only */
 			A4GL_push_interval(a4gl, size);
 			ptr=A4GL_char_pop();
-		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
-		A4GL_debug("                Informix=%s\n",buff);
+			A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
+			A4GL_debug("                Informix=%s\n",buff);
 			free(ptr);
-	// End of Debugging stuff only
+	/* End of Debugging stuff only */
+#endif
 		}
 
 }
@@ -615,7 +613,6 @@ short indicat=0;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 
-//if (p_indicat && dir='o') { A4GL_debug("Copy char : *p_indicat=%p",*p_indicat); }
 
 	if (mode=='i') {
 		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
@@ -631,12 +628,12 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		}
 
 		
-		// If we get to here - we can't be null...
+		/* If we get to here - we can't be null... */
 		if (size!=-1) {
 			memset(infx,0,size);
 			strncpy((char *)(infx),(char *)(a4gl),size);
 			infx[size]=0;
-			A4GL_trim(infx); // @todo -  what about varchars ... ?
+			A4GL_trim(infx); /* @todo -  what about varchars ... ? */
 		} else {
 			strcpy((char *)(infx),(char *)(a4gl));
 		}
@@ -671,7 +668,6 @@ void
 ESQLAPI_A4GL_copy_vchar(char *infx,char *a4gl,short *p_indicat,int sizex,char mode,int x,int y)
 {
 short indicat=0;
-char *ptr;
 struct svarchar {
         int len;
         char ptr[];
@@ -685,10 +681,12 @@ struct svarchar {
                         if (A4GL_isnull(0,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
                         if (A4GL_isnull(0,(void *)a4gl)) { rsetnull(CCHARTYPE,infx); return; }
 
-		// When we generate the ESQL/C code - we generate a 'char' for an inbind on Postgres ECPG
-		// but a 'varchar' for an outbind on ECPG
-		// that means we only need to do the special 'varchar' handling on the output side
-		// nothing special here at all..
+		/*
+		 When we generate the ESQL/C code - we generate a 'char' for an inbind on Postgres ECPG
+		 but a 'varchar' for an outbind on ECPG
+		 that means we only need to do the special 'varchar' handling on the output side
+		 nothing special here at all..
+		*/
                 strcpy((char *)(infx),(char *)(a4gl));
                 if (strlen(infx)==0) { infx[0]=' '; infx[1]=0; }
 
@@ -746,32 +744,33 @@ long orig_date;
 			return;
 		}
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
-		mdy[0]=mdy_i[0]; // In aubit - these are integers
-		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
-		mdy[2]=mdy_i[2]; // That informix is expecting
+		mdy[0]=mdy_i[0]; /* In aubit - these are integers */
+		mdy[1]=mdy_i[1]; /* so we need to copy them into the shorts */
+		mdy[2]=mdy_i[2]; /* That informix is expecting */
 		A4GL_debug("copy_date : mode=i - %d %d %d",mdy[0],mdy[1],mdy[2]);
 
-		rmdyjul(mdy,&infx_i); // Set the informix one
+		rmdyjul(mdy,&infx_i); /* Set the informix one */
 		*infx=infx_i;
 	}
 
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 
+/*
+  I don't understand what this is trying to do...
+ but it looks wrong....
 
-// I don't understand what this is trying to do...
-// but it looks wrong....
-//
-//#ifdef DIALECT_POSTGRES
-	//if (*infx==0) indicat=-1;
-//#endif
+#ifdef DIALECT_POSTGRES
+	if (*infx==0) indicat=-1;
+#endif
+*/
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
 		orig_date=*infx;
-		rjulmdy(orig_date,mdy); 				// Get the MDY from informix
+		rjulmdy(orig_date,mdy); 				/* Get the MDY from informix */
 		A4GL_debug("copy_date : mode=o - %d %d %d",mdy[0],mdy[1],mdy[2]);
-		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	// And use it to generate an aubit.
+		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	/* And use it to generate an aubit. */
 	}
 }
 
@@ -825,7 +824,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 				rsetnull(CLONGTYPE,(void *)infx);
 				if (p_indicat) *p_indicat=-1; return;}
 				if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;} 
-		*infx=*a4gl; // & 0xffffffff;
+		*infx=*a4gl;
 	}
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
@@ -834,7 +833,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (((*infx) & 0xffffffff) != (*infx) ) {
 			A4GL_debug("BIG INT ? %ld\n",(*infx));
 		}
-		*a4gl=(*infx) ;  // & 0xffffffff;
+		*a4gl=(*infx) ;  
 	}
 }
 
@@ -859,13 +858,13 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 				rsetnull(CINT8TYPE,(void *)infx);
 				if (p_indicat) *p_indicat=-1; return;}
 				if (A4GL_isnull(DTYPE_INT8,(void *)a4gl)) {rsetnull(CINT8TYPE,(void *)infx);return;} 
-		*infx=*a4gl; // & 0xffffffff;
+		*infx=*a4gl; 
 	}
 	if (mode=='o') {
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-2) return;
 		if (indicat==-1||risnull(CINT8TYPE,(void*)infx)) { A4GL_setnull(DTYPE_INT8,(void *)a4gl,size); return;}
-		*a4gl=(*infx) ;  // & 0xffffffff;
+		*a4gl=(*infx) ;  
 	}
 }
 
@@ -907,7 +906,7 @@ void ESQLAPI_A4GL_copy_blob_text(void *infx,void  *a4gl,short *p_indicat,int siz
 
 #include "locator.h"
 
-// There are the same for now - so only write one...
+/* There are the same for now - so only write one... */
 #define ESQLAPI_A4GL_copy_blob_byte ESQLAPI_A4GL_copy_blob
 #define ESQLAPI_A4GL_copy_blob_text ESQLAPI_A4GL_copy_blob
 
@@ -1016,7 +1015,7 @@ int isnull;
 
 	        if (infx->loc_loctype==LOCMEMORY) {
                         a4gl->where = 'M';
-                        a4gl->isnull = 'N'; // Initialized - not null
+                        a4gl->isnull = 'N'; /* Initialized - not null */
                         a4gl->memsize=  infx->loc_bufsize ;
                         a4gl->ptr= infx->loc_buffer;
                 }
@@ -1024,11 +1023,11 @@ int isnull;
                 if (a4gl->where=='F') {
 			char *p;
                         a4gl->where = 'F';
-                        a4gl->isnull = 'N'; // Initialized - not null
+                        a4gl->isnull = 'N'; /* Initialized - not null */
                         a4gl->memsize=0;
                         a4gl->ptr= 0;
 
-			// make sure we're not overwriting the same bit of memory...
+			/* make sure we're not overwriting the same bit of memory... */
 			p=strdup(infx->loc_fname);
                         strcpy(a4gl->filename, p);
 			free(p);
@@ -1133,7 +1132,6 @@ ESQLAPI_retdtime_native(void *vx)
 {
         char s[123];
 	dtime_t *x;
-        //struct A4GLSQL_dtime d;
 	x=vx;
         dttoasc(x,s);
 }
@@ -1220,6 +1218,18 @@ return 0;
 }
 
 
+
+/* ***********  Serial number emulation ************* */
+#ifdef DIALECT_POSTGRES
+#define EXTERNAL_AFTEREXEC
+#endif
+
+#ifndef EXTERNAL_AFTEREXEC
+/* We dont need to do anything.... */
+void ESQLAPI_A4GL_afterexec_possible_serial(void) {
+}
+
+#endif
 
 /* ============================================ EOF ========================================= */
 

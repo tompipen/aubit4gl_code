@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.390 2008-12-07 17:33:51 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.391 2008-12-14 14:02:04 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.390 2008-12-07 17:33:51 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.391 2008-12-14 14:02:04 mikeaubury Exp $)
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
 if test -f "tools/project/version" ; then
@@ -6174,11 +6174,12 @@ AC_ARG_WITH(pgsql,
 		withval=/usr
 		for a in /usr /usr/local  /usr/local/pgsql /usr/local/postgres
 		do
-			for b in $a/include/pgsql $a/pgsql/include $a/include/postgresql
+			for b in $a/include/pgsql $a/pgsql/include $a/include/postgresql 
 			do
-				if test -d "$b"
+				if test -f "$b/libpq-fe.h"
 				then
 					withval=$a
+					pgsql_incldir=$b
 					break
 				fi
 			done
@@ -6199,16 +6200,19 @@ AC_ARG_WITH(pgsql,
 
 	#Store witval for use in ecpg section
 	PGSQL_WITHVAL=$withval
-
-	#Find PG include dir under $withval
-	test -d $withval/include && PGSQL_INCDIR=$withval/include
-	if test "$PGSQL_INCDIR" = "" ; then
-		AC_MSG_WARN(Non-standard include location)	
-		test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
-		test -d $withval/pgsql/include && PGSQL_INCDIR=$withval/pgsql/include
-		test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
-		#RH 7.2: /usr/include/pgsql/libpq-fe.h
-		#test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+	if test "$pgsql_incldir" = ""; then
+		#Find PG include dir under $withval
+		test -d $withval/include && PGSQL_INCDIR=$withval/include
+		if test "$PGSQL_INCDIR" = "" ; then
+			AC_MSG_WARN(Non-standard include location)	
+			test -f $withval/include/pgsql/libpq-fe.h && PGSQL_INCDIR=$withval/include/pgsql
+			test -f $withval/pgsql/include/libpq-fe.h && PGSQL_INCDIR=$withval/pgsql/include
+			test -f $withval/include/postgresql/libpq-fe.h && PGSQL_INCDIR=$withval/include/postgresql
+				#RH 7.2: /usr/include/pgsql/libpq-fe.h
+			#test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+		fi
+	else
+		PGSQL_INCDIR=$pgsql_incldir
 	fi
 	if test "$PGSQL_INCDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine include path)
@@ -11145,7 +11149,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.390 2008-12-07 17:33:51 mikeaubury Exp $
+| $Id: configure.in,v 1.391 2008-12-14 14:02:04 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

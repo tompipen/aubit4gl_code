@@ -54,6 +54,9 @@ int doing_esql() {
 }
 
 
+static void print_get_sqlca_sqlerrd2_for_serial(void) {
+	printc("A4GL_afterexec_possible_serial();");
+}
 
 // INSERT CURSOR EMULATION
 // we need to store the prepare statement associated with an insert cursor so we
@@ -1199,18 +1202,10 @@ if (bind && bind->list.list_len) {
   clr_suppress_lines ();
 
 
-
-
-
-
-
-
-
-
-
-
-
   print_copy_status_with_sql (0);
+  if (esql_type()==E_DIALECT_POSTGRES) {
+  		print_get_sqlca_sqlerrd2_for_serial();
+	}
   print_undo_use(cmd_data->connid);
   return 1;
 }
@@ -1447,6 +1442,9 @@ char buff[256];
 	print_execute_cmd(&e,1);
 	printc("}");
   	print_copy_status_with_sql (0);
+  	if (esql_type()==E_DIALECT_POSTGRES) {
+  		print_get_sqlca_sqlerrd2_for_serial();
+	}
   	print_undo_use(cmd_data->connid);
   return 1;
 }
@@ -2142,6 +2140,9 @@ int using;
 
   if (!already_doing_command) {
   	print_copy_status_with_sql (0);
+  	if (esql_type()==E_DIALECT_POSTGRES) {
+  		print_get_sqlca_sqlerrd2_for_serial();
+	}
   	print_undo_use(cmd_data->connid);
   }
   return 1;
@@ -2324,6 +2325,9 @@ int no;
   clr_suppress_lines ();
 
   print_copy_status_with_sql (0);
+  	if (esql_type()==E_DIALECT_POSTGRES) {
+  		print_get_sqlca_sqlerrd2_for_serial();
+	}
   print_undo_use(cmd_data->connid);
   return 1;
 }
@@ -2601,12 +2605,18 @@ int converted;
   	printc ("\nEXEC SQL %s;\n", ptr);
   	printc ("}\n");
   } else {
+	
 	// No variables used...
   	printc ("\nEXEC SQL %s;\n", ptr);
   }
   clr_suppress_lines ();
 
+
+
   print_copy_status_with_sql (0);
+  if (esql_type()==E_DIALECT_POSTGRES) {
+		print_get_sqlca_sqlerrd2_for_serial();
+  }
   print_undo_use(cmd_data->connid);
   return 1;
 }

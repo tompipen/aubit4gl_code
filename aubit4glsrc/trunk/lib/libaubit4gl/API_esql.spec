@@ -57,6 +57,6 @@ retdec_native void* vx -> void
 popdtime_native void* vx -> void
 retdtime_native void* vx -> void
 
-
+A4GL_afterexec_possible_serial -> void 
 
 

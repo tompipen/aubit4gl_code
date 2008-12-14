@@ -34,38 +34,6 @@ whenever error stop
 
 # These two functions last_serial & set_last_serial_val are required for A4GL_LEXTYPE=EC handling
 
-let lv_sql=
-	"CREATE OR REPLACE FUNCTION last_serial() RETURNS integer AS $$\n",
-	"declare\n",
-	"lv_oid integer;\n",
-	"   BEGIN\n",
-	"      BEGIN\n",
-	"         select lastval into lv_oid from last_ser_table;\n",
-	"         \n",
-	"         EXCEPTION \n",
-	"               when others then\n",
-	"                  lv_oid:=0;\n",
-	"      END;\n",
-	"     return lv_oid;\n",
-	"   END;\n",
-	"$$ LANGUAGE plpgsql;"
-
-execute immediate lv_sql
-
-
-
-let lv_sql="create or replace function  set_last_serial_val(i integer) returns void as $$",
-		"BEGIN\n",
-		"	BEGIN\n",
-		"		DELETE FROM last_ser_table;\n",
-		"		INSERT INTO last_ser_table VALUES(i);\n",
-		"\n",
-		"		EXCEPTION  \n",
-		"			when others then NULL;\n",
-		"\n",
-		"	END ;\n",
-		"END;\n",
-		"$$ LANGUAGE plpgsql;"
 
 
 execute immediate lv_sql
@@ -148,17 +116,6 @@ let lv_str=
         "         PERFORM setval('", lv_seq clipped,"',NEW.",lv_colname clipped,");\n",
         "   END IF;\n",
         "END IF;\n",
-
-
-# If you're *never* going to use A4GL_LEXTYPE=EC,A4GL_LEXDIALECT=POSTGRES to connect to this database then
-# you can comment out the following begin/end block
-	"begin\n",
-	"  perform set_last_serial_val(NEW.",lv_colname clipped,");\n",
-	"  exception\n",
-	"    when others then NULL;\n",
-	"END;\n",
-
-
         "RETURN NEW;\n",
         "END;\n",
         "$$ LANGUAGE plpgsql\n"

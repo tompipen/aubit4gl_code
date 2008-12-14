@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.48 2008-11-26 10:01:08 mikeaubury Exp $
+# $Id: Makefile,v 1.49 2008-12-14 14:02:04 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -159,7 +159,7 @@ endif
 
 ###################
 libESQL_POSTGRES${SO_EXT}: ${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}
-${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
+${PLUGINDIR}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o postgres.o
 	${CC} ${CFLAGS} ${STATIC} -g ${SHARED} $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL} ${PGEXTRA}
 # -Bstatic
 #gcc: file path prefix "static" never used
@@ -218,6 +218,10 @@ endif
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
 	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
+
+postgres.o: postgres.ec
+	${PG_ESQLC} -C INFORMIX -t $^
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -g -c -o $@ postgres.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
 
 ###################
 #SAP ESQL/C compiler

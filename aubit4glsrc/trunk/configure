@@ -34824,9 +34824,10 @@ if test "${with_pgsql+set}" = set; then
 		do
 			for b in $a/include/pgsql $a/pgsql/include $a/include/postgresql
 			do
-				if test -d "$b"
+				if test -f "$b/libpq-fe.h"
 				then
 					withval=$a
+					pgsql_incldir=$b
 					break
 				fi
 			done
@@ -34848,17 +34849,20 @@ echo "$as_me: WARNING: Using custom path $withval" >&2;}
 
 	#Store witval for use in ecpg section
 	PGSQL_WITHVAL=$withval
-
-	#Find PG include dir under $withval
-	test -d $withval/include && PGSQL_INCDIR=$withval/include
-	if test "$PGSQL_INCDIR" = "" ; then
-		{ echo "$as_me:$LINENO: WARNING: Non-standard include location" >&5
+	if test "$pgsql_incldir" = ""; then
+		#Find PG include dir under $withval
+		test -d $withval/include && PGSQL_INCDIR=$withval/include
+		if test "$PGSQL_INCDIR" = "" ; then
+			{ echo "$as_me:$LINENO: WARNING: Non-standard include location" >&5
 echo "$as_me: WARNING: Non-standard include location" >&2;}
-		test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
-		test -d $withval/pgsql/include && PGSQL_INCDIR=$withval/pgsql/include
-		test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
-		#RH 7.2: /usr/include/pgsql/libpq-fe.h
-		#test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+			test -f $withval/include/pgsql/libpq-fe.h && PGSQL_INCDIR=$withval/include/pgsql
+			test -f $withval/pgsql/include/libpq-fe.h && PGSQL_INCDIR=$withval/pgsql/include
+			test -f $withval/include/postgresql/libpq-fe.h && PGSQL_INCDIR=$withval/include/postgresql
+				#RH 7.2: /usr/include/pgsql/libpq-fe.h
+			#test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+		fi
+	else
+		PGSQL_INCDIR=$pgsql_incldir
 	fi
 	if test "$PGSQL_INCDIR" = "" ; then
 		{ echo "$as_me:$LINENO: WARNING: cannot determine include path" >&5
@@ -50498,11 +50502,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:50501: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:50505: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:50505: \$? = $ac_status" >&5
+   echo "$as_me:50509: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -50602,11 +50606,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:50605: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:50609: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:50609: \$? = $ac_status" >&5
+   echo "$as_me:50613: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -54519,7 +54523,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 54522 "configure"' > conftest.$ac_ext
+  echo '#line 54526 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -55567,7 +55571,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 55570 "configure"
+#line 55574 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -55667,7 +55671,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 55670 "configure"
+#line 55674 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -62244,7 +62248,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.416 2008-12-07 17:33:50 mikeaubury Exp $
+| $Id: configure,v 1.417 2008-12-14 14:02:04 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

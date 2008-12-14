@@ -427,35 +427,3 @@ CREATE CAST (timestamp without time zone AS text) WITH FUNCTION pg_catalog.text(
  
 
 
-CREATE OR REPLACE FUNCTION last_serial() RETURNS integer AS $$
-declare
-	lv_oid integer;
-BEGIN
-	BEGIN
-		select lastval into lv_oid from last_ser_table;
-
-		EXCEPTION 
-			when others then
-				lv_oid:=0;
-
-	END;
-	return lv_oid;
-	
-END;
-$$ LANGUAGE plpgsql;
-
-
-
-create or replace function  set_last_serial_val(i integer) returns void as $$
-BEGIN
-	BEGIN
-		DELETE FROM last_ser_table;
-		INSERT INTO last_ser_table VALUES(i);
-
-		EXCEPTION  
-			when others then NULL;
-
-	END ;
-END;
-$$ LANGUAGE plpgsql;
-
