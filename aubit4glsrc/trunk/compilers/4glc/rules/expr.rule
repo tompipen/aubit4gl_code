@@ -203,6 +203,15 @@ ensured_variable_usage_expression: variable_usage_expression  {
 		}
 ;
 
+ensured_variable_possibly_array_usage_expression: variable_usage_expression  {
+	                char errbuff[256];
+                        $<ptr>$=ensure_variable(errbuff,$<ptr>1,0);
+                        if ($<ptr>$==0) {
+                                a4gl_yyerror(errbuff);
+                                YYERROR;
+                        }
+		}
+;
 
 variable_entry : 
 	variable_usage_expression {
@@ -411,10 +420,10 @@ function_call_expr:
 		SPRINTF5(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
-	| FGL_SIZEOF OPEN_BRACKET ensured_variable_usage_expression CLOSE_BRACKET {
+	| FGL_SIZEOF OPEN_BRACKET ensured_variable_possibly_array_usage_expression CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_FGL_SIZEOF);
 	}
-	| FGL_ADDRESSOF OPEN_BRACKET ensured_variable_usage_expression CLOSE_BRACKET {
+	| FGL_ADDRESSOF OPEN_BRACKET ensured_variable_possibly_array_usage_expression CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_FGL_ADDRESSOF);
 	}
 	| FGL_ISDYNARR_ALLOCATED OPEN_BRACKET variable_usage_expression CLOSE_BRACKET {

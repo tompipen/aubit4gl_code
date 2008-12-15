@@ -23,7 +23,7 @@ define lv_rcode integer
 code
 A4GL_trim(lv_host);
 A4GL_trim(lv_port);
-lv_rcode=mc_server_add(lv_mc,lv_host,lv_port);
+lv_rcode=mc_server_add((struct memcache *)lv_mc,lv_host,lv_port);
 endcode
 display "lv_rcode=",lv_rcode
 return lv_rcode
@@ -39,7 +39,7 @@ define lv_host char(40)
 define lv_rcode integer
 code
 A4GL_trim(lv_host);
-lv_rcode=mc_server_add4(lv_mc,lv_host);
+lv_rcode=mc_server_add4((struct memcache *)lv_mc,lv_host);
 endcode
 return lv_rcode
 end function
@@ -54,7 +54,7 @@ define lv_bytes integer
 code
 A4GL_trim(lv_key);
 printf("KEY=%s lv_val=%p bytes=%d\n",lv_key,lv_val,lv_bytes);
-mc_add(lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0);
+mc_add((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0);
 endcode
 end function
 
@@ -66,7 +66,7 @@ define lv_val char(255)
 code
 A4GL_trim(lv_key);
 A4GL_trim(lv_val);
-  mc_add(lv_mc,  lv_key, strlen(lv_key), lv_val,strlen(lv_val),0,0);
+  mc_add((struct memcache *)lv_mc,  lv_key, strlen(lv_key), lv_val,strlen(lv_val),0,0);
   //mc_add(lv_mc,lv_key  , strlen(lv_key) , "test",strlen("test"),0,0);
 endcode
 end function
@@ -81,7 +81,7 @@ define lv_ok integer
 define lv_val,lv_bytes integer
 code
 A4GL_trim(lv_key);
-if (mc_replace(lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0)) {
+if (mc_replace((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0)) {
 	lv_ok=1;
 } else {
 	lv_ok=0;
@@ -101,7 +101,7 @@ code
 A4GL_trim(lv_key);
 A4GL_trim(lv_val);
 
-if (mc_replace(lv_mc,lv_key,strlen(lv_key),lv_val,strlen(lv_val)+1,0,0)) {
+if (mc_replace((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,strlen(lv_val)+1,0,0)) {
 	lv_ok=1;
 } else {
 	lv_ok=0;
@@ -142,7 +142,7 @@ function mc_get(lv_mc, lv_req)
 define lv_mc integer
 define lv_req integer
 code
-	mc_get(lv_mc,lv_req);
+	mc_get((struct memcache *)lv_mc,lv_req);
 endcode
 end function
 
@@ -155,7 +155,7 @@ define lv_ptr integer
 define lv_val char(255)
 code
 A4GL_trim(lv_key);
-lv_ptr=mc_aget(lv_mc,lv_key,strlen(lv_key));
+lv_ptr=mc_aget((struct memcache *)lv_mc,lv_key,strlen(lv_key));
 if (lv_ptr) strcpy(lv_val,lv_ptr);
 endcode
 return lv_val
@@ -171,7 +171,7 @@ define lv_optr,lv_size integer
 
 code
 A4GL_trim(lv_key);
-lv_ptr=mc_aget(lv_mc,lv_key,strlen(lv_key));
+lv_ptr=mc_aget((struct memcache *)lv_mc,lv_key,strlen(lv_key));
 if (lv_ptr) {
 	memcpy(lv_optr,lv_ptr,lv_size);
 }
@@ -187,7 +187,7 @@ define lv_val,lv_bytes integer
 define lv_mc integer
 code
 A4GL_trim(lv_key);
-mc_set(lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0);
+mc_set((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0);
 endcode
 end function
 
@@ -199,7 +199,7 @@ define lv_mc integer
 code
 A4GL_trim(lv_key);
 A4GL_trim(lv_val);
-mc_set(lv_mc,lv_key,strlen(lv_key),lv_val,strlen(lv_val)+1,0,0);
+mc_set((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,strlen(lv_val)+1,0,0);
 endcode
 end function
 
@@ -253,7 +253,7 @@ end record
 code
 {
 struct memcache_server_stats *s;
-s=mc_stats(lv_mc);
+s=mc_stats((struct memcache *)lv_mc);
 if (s) {
 	int d;
 	d=s->pid;
@@ -289,7 +289,7 @@ define lv_mc integer
 define lv_key char(255)
 code
 A4GL_trim(lv_key);
-mc_delete(lv_mc,lv_key,strlen(lv_key),0);
+mc_delete((struct memcache *)lv_mc,lv_key,strlen(lv_key),0);
 endcode
 end function
 
@@ -300,7 +300,7 @@ define lv_mc integer
 define lv_ival integer
 code
 A4GL_trim(lv_key);
-mc_incr(lv_mc,lv_key,strlen(lv_key),lv_ival);
+mc_incr((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_ival);
 endcode
 end function
 
@@ -312,7 +312,7 @@ define lv_mc integer
 define lv_ival integer
 code
 A4GL_trim(lv_key);
-mc_decr(lv_mc,lv_key,strlen(lv_key),lv_ival);
+mc_decr((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_ival);
 endcode
 end function
 
@@ -320,13 +320,13 @@ end function
 function mc_free(lv_mc)
 define lv_mc integer
 code
-mc_free(lv_mc);
+mc_free((struct memcache *)lv_mc);
 endcode
 end function
 
 function test1(lv_mc) 
 define lv_mc integer
 code
-  mc_add(lv_mc, "foo", strlen("foo"), "test", strlen("test"), 0, 0);
+  mc_add((struct memcache *)lv_mc, "foo", strlen("foo"), "test", strlen("test"), 0, 0);
 endcode
 end function

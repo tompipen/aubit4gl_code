@@ -62248,7 +62248,11 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.417 2008-12-14 14:02:04 mikeaubury Exp $
+<<<<<<< configure
+| $Id: configure,v 1.418 2008-12-15 10:46:23 mikeaubury Exp $
+=======
+| $Id: configure,v 1.418 2008-12-15 10:46:23 mikeaubury Exp $
+>>>>>>> 1.417
 |                                                                    |
 +--------------------------------------------------------------------+
 X

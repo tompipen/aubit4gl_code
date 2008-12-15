@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2007-03-28 09:18:43 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2008-12-15 10:46:24 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -47,14 +47,14 @@ all: ${ALL}
 
 libA4GL_memcache${SO_EXT}: ${PLUGINDIR}/libA4GL_memcache${SO_EXT}
 ${PLUGINDIR}/libA4GL_memcache${SO_EXT}: memcache.c mem.4gl
-	${ROOT}/bin/4glpc -g --as-dll -I. $^ -o $@
+	${ROOT}/bin/4glpc -t C -g --as-dll -I. $^ -o $@
 
 ## ==================================================================
 ##                              Test
 ## ==================================================================
 	
 test1.4ae: test1.4gl
-	-${ROOT}/bin/4glpc -g $^ -o $@
+	-${ROOT}/bin/4glpc -t C -g $^ -o $@
 	-./$@
 	
 ## ==================================================================
