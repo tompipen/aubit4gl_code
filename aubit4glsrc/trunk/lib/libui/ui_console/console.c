@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.47 2008-11-28 22:06:41 mikeaubury Exp $
+# $Id: console.c,v 1.48 2008-12-15 19:19:38 mikeaubury Exp $
 #*/
 
 /**
@@ -690,7 +690,16 @@ return 0;
 
 char* UILIB_A4GL_get_currwin_name(void )  NOPE0
 int UILIB_A4GL_cr_window_form(char* name,int iswindow,int form_line,int error_line,int prompt_line,int menu_line,int border,int comment_line,int message_line,int attrib, char *style, char *text)  NOPE0
-int UILIB_A4GL_current_window(char* win_name)  NOPE0
+
+int UILIB_A4GL_current_window(char* win_name)  {
+	if (strcmp(win_name,"screen")==0) {
+		/* we'll allow this one */
+		return 1;
+	}
+	A4GL_exitwith("Not available in console driver"); 
+	return 0;
+}
+
 int UILIB_A4GL_disp_arr_v2(void* disp,void* ptr,char* srecname,int attrib,char * scrollf,int scrollw,void* evt)  NOPE0
 int UILIB_A4GL_disp_fields_ap(int n,int attr,va_list* ap)  NOPE0
 int UILIB_A4GL_disp_form(char* name,int attr)  NOPE0
@@ -740,7 +749,15 @@ void UILIB_A4GL_close_form(char* name) NOPE
 void UILIB_A4GL_clr_fields_ap(int to_defaults,va_list* ap) NOPE
 void UILIB_A4GL_clr_form(int to_defaults) NOPE
 void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) NOPE
-void UILIB_A4GL_clr_window(char* winname) NOPE
+
+void UILIB_A4GL_clr_window(char* winname) {
+	if (strcmp(winname,"screen")==0) {
+		// We'll allow this one - but not do anything ;-)
+		return;
+	}
+	A4GL_exitwith("Not available in console driver"); 
+}
+
 void UILIB_A4GL_finish_screenio(void* sio,char* siotype) NOPE
 void UILIB_A4GL_gui_run_til_no_more(void ) NOPE
 void UILIB_A4GL_hide_window(char* winname) NOPE
