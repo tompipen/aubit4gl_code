@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.76 2008-12-15 16:13:50 mikeaubury Exp $
+# $Id: pg8.c,v 1.77 2008-12-15 17:32:26 mikeaubury Exp $
 #*/
 
 
@@ -366,7 +366,7 @@ char *ptr;
   CanUseSavepoints = 0;
   if (current_con)
     {
-      PGresult *res2 = 0;
+      /* PGresult *res2 = 0; */
 
 #if  ( PG_VERSION_NUM > 80100 )
         currServerVersion = PQserverVersion (current_con);
@@ -1584,8 +1584,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 
 	  if (oid != InvalidOid)
 	    {
-	      PGresult *res2;
-	      static char *s=0;
+	      PGresult *res2=NULL;
+	      static char *s=NULL;
 	      char *p;
 	      int l;
 		if(s) free(s);
