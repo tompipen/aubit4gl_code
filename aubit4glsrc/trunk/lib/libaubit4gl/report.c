@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.173 2008-12-15 16:47:18 mikeaubury Exp $
+# $Id: report.c,v 1.174 2008-12-15 17:13:17 mikeaubury Exp $
 #
 */
 
@@ -2568,8 +2568,13 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
   int ca, cb;
   static char mptr[100000];
 
-A4GL_assertion(b==NULL, "No binding passed in");
-A4GL_assertion(o==NULL, "No binding passed in");
+
+if (no) {
+	A4GL_assertion(o==NULL, "No binding passed in");
+}
+if (nb) {
+	A4GL_assertion(b==NULL, "No binding passed in");
+}
 
 
   for (ca = 0; ca < no; ca++)
