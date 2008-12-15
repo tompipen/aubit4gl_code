@@ -78,4 +78,8 @@ ORDER BY r.agen, r.zove, r.pobl, r.nucl
 FORMAT
     ON EVERY ROW
         display "impo=", r.impo
+        if r.impo is null then
+            display "bad"
+            exit program 1
+        end if
 END REPORT
