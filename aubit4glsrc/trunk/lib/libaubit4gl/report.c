@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.172 2008-12-05 11:39:50 mikeaubury Exp $
+# $Id: report.c,v 1.173 2008-12-15 16:47:18 mikeaubury Exp $
 #
 */
 
@@ -1817,8 +1817,9 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	case 12:
 	  sz = sizeof (fgltext);
 	  break;
-	case 13:
-	  sz = 256;
+	case DTYPE_VCHAR:
+	  	sz = b[a].size + 1;
+		if (sz<256) sz = 256;
 	  break;
 	case 3:
 	  sz = 8;
@@ -2565,7 +2566,10 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 {
   int i;
   int ca, cb;
-  char mptr[2048];
+  static char mptr[100000];
+
+A4GL_assertion(b==NULL, "No binding passed in");
+A4GL_assertion(o==NULL, "No binding passed in");
 
 
   for (ca = 0; ca < no; ca++)
@@ -2582,7 +2586,6 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 	    {
 	      int isnull1;
 	      int isnull2;
-
 	      /* check value in o.ptr against that on the stack */
 
 	      A4GL_read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
