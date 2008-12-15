@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.107 2008-11-06 18:26:18 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.108 2008-12-15 22:15:38 mikeaubury Exp $
 #
 */
 
@@ -1163,6 +1163,7 @@ A4GL_esql_db_open (int a, char *src, char *dest, char *dbname)
   if (a == 1)
     {
       dbopen = 1;
+	A4GL_setenv("USING_ESQLC","Y",1);
       A4GLSQLCV_load_convert (src, dest);
       last_esql_db_connection = A4GL_db_connected (dbname);
       return 1;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.70 2008-12-01 17:27:04 mikeaubury Exp $
+# $Id: sql_common.c,v 1.71 2008-12-15 22:15:38 mikeaubury Exp $
 #
 */
 
@@ -252,6 +252,7 @@ A4GLSQL_init_connection (char *dbName)
 {
   int rc;
   rc = A4GLSQL_init_connection_internal (dbName);
+	A4GL_setenv("USING_ESQLC","N",1);
   if (rc == 0)
     A4GL_apisql_add_sess ("default");
   return rc;
