@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2008-12-07 13:59:46 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2008-12-15 12:10:21 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -70,7 +70,7 @@ ${ALL}: pick.c ${OBJS_FORM}
 ## #######################################################################
 
 pick.c: pick.4gl
-	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC}  ${VERBOSE_FLAG} $^
+	A4GL_OBJ_EXT=.o A4GL_SQLTYPE=nosql A4GL_LEXTYPE=C ${4GLC}  ${VERBOSE_FLAG} $^
 
 
 %.afr${A4GL_OBJ_EXT}:%.per
