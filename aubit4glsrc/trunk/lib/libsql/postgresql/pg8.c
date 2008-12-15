@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.75 2008-12-13 16:10:04 mikeaubury Exp $
+# $Id: pg8.c,v 1.76 2008-12-15 16:13:50 mikeaubury Exp $
 #*/
 
 
@@ -1852,10 +1852,10 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 	case DTYPE_DECIMAL:
 	case DTYPE_MONEY:
 		{
-	    char buff[2000];
-	    strcpy (buff, ptr);
+	    	char buff[2000];
+	    	strcpy (buff, ptr);
 		ensure_dot_format_for_decimal_string(buff);
-	  	//A4GL_push_char (buff);
+		A4GL_setnull(obind[b].dtype,obind[b].ptr,obind[b].size);
       		A4GL_str_dot_to_dec (buff, (void *)obind[b].ptr);
 		}
 	break;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.220 2008-12-05 07:39:42 mikeaubury Exp $
+# $Id: stack.c,v 1.221 2008-12-15 16:13:50 mikeaubury Exp $
 #
 */
 
@@ -907,8 +907,9 @@ A4GL_push_params (struct BINDING *b, int n)
   int a;
   for (a = 0; a < n; a++)
     {
-      A4GL_push_param (b[a].ptr, b[a].dtype);
+      A4GL_push_param (b[a].ptr, b[a].dtype+ENCODE_SIZE(b[a].size));
     }
+
 }
 
 
@@ -2570,12 +2571,12 @@ print_stack (void)
 {
   int a;
   char *buff;
-  buff = A4GL_new_string (20);
+  buff = A4GL_new_string (80);
   PRINTF ("\n\n\n\n\n\n\n\n\n");
   PRINTF ("Call stack has %d entries:\n", params_cnt);
   for (a = 0; a < params_cnt; a++)
     {
-      A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 8);
+      A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 79);
       PRINTF (" %d Dtype (%x) %s\n", a, params[a].dtype , buff);
     }
 }
