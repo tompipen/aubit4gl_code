@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.225 2008-12-16 09:00:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.226 2008-12-16 19:11:33 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.225 2008-12-16 09:00:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.226 2008-12-16 19:11:33 mikeaubury Exp $";
 #endif
 
 
@@ -3198,10 +3198,9 @@ if (sid) {
 
 
 
-
 #ifndef KAGEL_UNLOAD
 static int
-printField (FILE * unloadFile, int idx, char *descName,int p_datatype,int p_len)
+printField (FILE * unloadFile, int idx, char *descName,int p_datatype,int p_len,char delim)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   static int dataType;
@@ -3602,7 +3601,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 	{	
 	int pf;
 	A4GL_debug("printing field : %d %d %d",colcnt, column_types[colcnt-1],column_sizes[colcnt-1]);
-	  pf=printField (unloadFile, colcnt, "descUnload",column_types[colcnt-1],column_sizes[colcnt-1]);
+	  pf=printField (unloadFile, colcnt, "descUnload",column_types[colcnt-1],column_sizes[colcnt-1], delims[0]);
 	A4GL_debug("pf=%d\n",pf);
 
 	 if (pf== 1 || a4gl_status<0 || sqlca.sqlcode<0 || a4gl_sqlca.sqlcode<0)
@@ -4931,30 +4930,49 @@ static int stripl (char *str, int len)
 }
 
 
-static int charcpy (unsigned char *target, unsigned char *source, long len)
+static int
+charcpy (unsigned char *target, unsigned char *source, long len)
 {
   int rlen = 0;
 
+
   while (len)
     {
-      if (*source == *delim)
+      int processed = 0;
+
+      if (*source == '\\')
 	{
 	  *target++ = '\\';
 	  *target = *source;
 	  target++;
+	  processed++;
 	}
-      else if (*source < ' ' || *source > '~')
+
+
+      if (!processed && *source == *delim)
+	{
+	  *target++ = '\\';
+	  *target = *source;
+	  target++;
+	  processed++;
+	}
+
+      if (!processed && (*source < ' ' || *source > '~'))
 	{
 	  /*
 	   * Non-printable, convert to hex. 
 	   */
 	  target += SPRINTF1 ((char *) target, "\\%2.2x", *source);
+	  processed++;
 	}
-      else
+
+      if (!processed)
 	{
 	  *target = *source;
 	  target++;
 	}
+
+
       source++;
       len--;
       rlen++;

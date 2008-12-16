@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.78 2008-12-16 10:10:51 mikeaubury Exp $
+# $Id: pg8.c,v 1.79 2008-12-16 19:11:33 mikeaubury Exp $
 #*/
 
 
@@ -158,6 +158,7 @@ struct s_typelist *types=0;
 
 static void internal_free_cursor (char *s);
 
+static int charcpy (unsigned char *target, unsigned char *source, long len,char delim);
 static void ensure_types(void) ;
 static void clr_types(void) ;
 PGconn *current_con=0;
@@ -1158,10 +1159,11 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 	      if (nsl >= sl)
 		{
 		  sl = nsl;
-		  s = realloc (s, sl + 2);
+		  s = realloc (s, sl*2 + 2);
 		}
-	      strcpy (s, ptr);
+	      charcpy ((unsigned char *)s, (unsigned char *)ptr,nsl,delims[0]);
 	      A4GL_trim (s);
+		
 	      if (strlen (s))
 		{
 		  FPRINTF (unloadFile, "%s%s", s, delims);
@@ -4048,4 +4050,53 @@ static void ensure_types(void) {
 	PQclear(res);
 }
 
+static int charcpy (unsigned char *target, unsigned char *source, long len,char delim)
+{
+  int rlen = 0;
+
+
+  while (len)
+    {
+      int processed = 0;
+
+      if (*source == '\\')
+        {
+          *target++ = '\\';
+          *target = *source;
+          target++;
+          processed++;
+        }
+
+
+      if (!processed && *source == delim)
+        {
+          *target++ = '\\';
+          *target = *source;
+          target++;
+          processed++;
+        }
+
+      if (!processed && (*source < ' ' || *source > '~'))
+        {
+          /*
+ *            * Non-printable, convert to hex.
+ *                       */
+          target += SPRINTF1 ((char *) target, "\\%2.2x", *source);
+          processed++;
+        }
+
+      if (!processed)
+        {
+          *target = *source;
+          target++;
+        }
+      source++;
+      len--;
+      rlen++;
+    }
+  *target = (char) 0;
+  rlen++;
+
+  return rlen;
+}
 /* =============================== EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.55 2008-12-15 22:15:38 mikeaubury Exp $
+# $Id: load.c,v 1.56 2008-12-16 19:11:33 mikeaubury Exp $
 #
 */
 
@@ -118,9 +118,16 @@ find_delims (char delim)
   colptr[0] = &loadbuff[0];
   for (a = 0; a < ml; a++)
     {
+	
 	char last_char=0;
 	if (a) {
 		last_char=loadbuff[a-1];
+		if (a>1) {
+			if (last_char=='\\' && loadbuff[a-2]=='\\') {
+				// Escape the escape..
+				last_char=0;
+			}
+		}
 	}
       if ((loadbuff[a] == delim && last_char!='\\') || loadbuff[a] == 0)
 	{
