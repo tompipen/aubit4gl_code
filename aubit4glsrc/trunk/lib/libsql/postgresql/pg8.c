@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.77 2008-12-15 17:32:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.78 2008-12-16 10:10:51 mikeaubury Exp $
 #*/
 
 
@@ -366,7 +366,6 @@ char *ptr;
   CanUseSavepoints = 0;
   if (current_con)
     {
-      /* PGresult *res2 = 0; */
 
 #if  ( PG_VERSION_NUM > 80100 )
         currServerVersion = PQserverVersion (current_con);
@@ -381,6 +380,7 @@ char *ptr;
 	}
 #else
 	{
+      PGresult *res2 = 0;
 	//char *ptr;
       // work it out by trying it..
       res2 = PQexec (current_con, "BEGIN WORK");
