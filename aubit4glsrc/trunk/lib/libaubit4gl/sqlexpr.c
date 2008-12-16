@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.75 2008-11-30 19:33:45 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.76 2008-12-16 20:57:52 mikeaubury Exp $
 #
 */
 
@@ -706,7 +706,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 
   if (p->sign == '-')
     {
-      rval = make_sql_string_and_free (acl_strdup_With_Context ("-"), rval, NULL);
+      rval = make_sql_string_and_free (acl_strdup_With_Context (" -"), rval, NULL);
     }
 
   if (p->alias)
