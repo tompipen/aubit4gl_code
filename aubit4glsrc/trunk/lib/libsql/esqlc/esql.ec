@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.224 2008-12-09 12:18:25 gyver309 Exp $
+# $Id: esql.ec,v 1.225 2008-12-16 09:00:57 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.224 2008-12-09 12:18:25 gyver309 Exp $";
+  "@(#)$Id: esql.ec,v 1.225 2008-12-16 09:00:57 mikeaubury Exp $";
 #endif
 
 
@@ -1341,10 +1341,8 @@ int d_prec=0;
 	fgl_decimal = (fgldecimal *) vptr;
 	b = A4GL_dec_to_str (fgl_decimal, 0);
 	get_scale(b, &d_prec, &d_scale);
-
 	if (deccvasc (b, strlen (b), &decimal_var))
 	  {
-				/** @todo : We need to store this error */
 	    return 1;
 	  }
       }
@@ -1754,6 +1752,7 @@ int dstype;
 	  return 1;
 	}
       A4GL_debug ("tmpbuff=%s\n", tmpbuff);
+	A4GL_setnull(DTYPE_DECIMAL,bind[idx].ptr,bind[idx].size);
       ensure_dot_format_for_decimal_string(tmpbuff);
       A4GL_str_dot_to_dec (tmpbuff, (void *)bind[idx].ptr);
 
@@ -1779,6 +1778,7 @@ int dstype;
 	  return 1;
 	}
       A4GL_debug ("tmpbuff=%s\n", tmpbuff);
+	A4GL_setnull(DTYPE_MONEY,bind[idx].ptr,bind[idx].size);
 	ensure_dot_format_for_decimal_string(tmpbuff);
       A4GL_str_dot_to_dec (tmpbuff, (void *)bind[idx].ptr);
       //A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
