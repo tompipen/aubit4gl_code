@@ -123,3 +123,4 @@ FOR_UPDATE_NOWAIT Add NOWAIT to a FOR UPDATE
 ODBC_LONGVARCHAR_AS_CHAR Force what would be a TEXT to be a CHAR because of a misleading reply from ODBC
 OUTER_JOINS_NB remove brackets around the table names when doing a ANSI outer join
 BUILTINSQL Select statements for various builtin queries
+ESQL_DATATYPE Datatype to use for a 4gl datatype when generating ESQL/C code

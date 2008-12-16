@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.7 2008-12-03 14:16:51 mikeaubury Exp $
+# $Id: file.c,v 1.8 2008-12-16 14:25:53 mikeaubury Exp $
 #
 */
 
@@ -177,9 +177,9 @@ A4GL_file_exists (char *fname)
 char *A4GL_get_full_filename(char *s) {
 static char buff[2000];
 char cwd[2000];
-#ifdef __WIN32__
+#ifdef WIN32_DIR_SEPARATOR
 	/* Windows */
-	if (strchr(s,':')) { // Absolute path
+	if (strchr(s,':')) { // Absolute path - the ':' coming from c:\.... etc
 		strcpy(buff,s);
 		return buff;
 	}

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.351 2008-12-10 17:12:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.352 2008-12-16 14:25:52 mikeaubury Exp $
 #
 */
 
@@ -2715,7 +2715,9 @@ void A4GL_remove_trailing_zeros_and_leading_spaces(char *s) ;
 
 
 void A4GL_set_intr (void);
-
+#if ((defined __WIN32__ ) && (! defined __CYGWIN__))
+#define WIN32_DIR_SEPARATOR
+#endif
 
 
 #ifdef WORK_IN_PROGRESS
@@ -2801,6 +2803,7 @@ int A4GL_bad_identifiers(char *S);
 void A4GL_get_blob_data(fglbyte *b,char **buffer, long *buffer_len);
 char *
 A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r);
+char *A4GLSQLCV_get_esql_datatype(int dtype,char dir);
 char *A4GL_get_syscolatt(char *tabname,char *colname,int seq, char *attr);
 int A4GL_get_single_int_returned_from_call(int n);
 int A4GL_islocated(struct fgl_int_loc *p);

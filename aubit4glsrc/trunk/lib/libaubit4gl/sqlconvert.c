@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.163 2008-11-28 17:13:54 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.164 2008-12-16 14:25:53 mikeaubury Exp $
 #
 */
 
@@ -925,6 +925,46 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 }
 
 
+
+char *A4GLSQLCV_get_esql_datatype(int dtype,char dir) {
+char sbuff[200];
+int b;
+
+ // Do we have a specific one for our direction ? 
+  
+if (dir=='o') { sprintf(sbuff,"OUT_%x",dtype); } 
+if (dir=='i') { sprintf(sbuff,"IN_%x",dtype); } 
+
+  for (b = 0; b < current_conversion_rules_cnt; b++)
+    {
+      if (current_conversion_rules[b].type == CVSQL_ESQL_DATATYPE)
+	{
+	  if (A4GL_strwscmp (sbuff, current_conversion_rules[b].data.from) == 0)
+	    {
+		return current_conversion_rules[b].data.to;
+	    }
+	}
+    }
+
+
+// Nope - what about a non-specific one ? 
+  sprintf(sbuff,"%x",dtype);
+
+  for (b = 0; b < current_conversion_rules_cnt; b++)
+    {
+      if (current_conversion_rules[b].type == CVSQL_ESQL_DATATYPE)
+	{
+	  if (A4GL_strwscmp (sbuff, current_conversion_rules[b].data.from) == 0)
+	    {
+		return current_conversion_rules[b].data.to;
+	    }
+	}
+    }
+
+
+
+return NULL;
+}
 
 
 //

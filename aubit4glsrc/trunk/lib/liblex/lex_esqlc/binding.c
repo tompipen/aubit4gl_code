@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.78 2008-07-06 11:34:37 mikeaubury Exp $
+# $Id: binding.c,v 1.79 2008-12-16 14:25:53 mikeaubury Exp $
 */
 
 /**
@@ -39,7 +39,7 @@
 #include "compile_c.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.78 2008-07-06 11:34:37 mikeaubury Exp $";
+		"$Id: binding.c,v 1.79 2008-12-16 14:25:53 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -74,6 +74,7 @@ static char *get_sql_type_postgres (int a, expr_str_list *bind,char bind_type);
 static char *get_sql_type_sap (int a, expr_str_list *bind,char bind_type);
 static char *get_sql_type_ingres (int a, expr_str_list *bind,char bind_type);
 static char* get_sql_type_infoflex (int a, expr_str_list *bind,char bind_type);
+static void find_non_char(char *s,char *head, char *tail) ;
 //char * A4GL_dtype_sz (int d, int s);
 //struct binding_comp *ensure_bind(long *a_bindp,long need, struct binding_comp *b) ;
 
@@ -291,6 +292,33 @@ return p;
 char *
 get_sql_type (int a, expr_str_list *bind,char type)
 {
+
+  char *ptr;
+
+  ptr=A4GLSQLCV_get_esql_datatype(get_binding_dtype(bind->list.list_val[a]),type);
+  if (ptr) {
+	static char buff[200];
+	char head[200];
+	char tail[200];
+	char buff_ind[200];
+	find_non_char(ptr,head,tail);
+
+  	if (type == 'i')
+    	{
+      		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind," static short _vii_%d;",a); } else { strcpy(buff_ind,""); }
+	  	SPRINTF3 (buff,"%s _vi_%d%s;",head,a,tail);
+		strcat(buff,buff_ind);
+		return buff;
+    	}
+
+	if (type=='o') {
+ 		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { SPRINTF1(buff_ind,"  static short _voi_%d;",a); } else { strcpy(buff_ind,""); }
+	  	SPRINTF3 (buff,"%s _vo_%d%s;",head,a,tail);
+		strcat(buff,buff_ind);
+		return buff;
+	}
+  }
+
   /* Need to do some check to determine which ESQL/C to use...*/
   switch (esql_type()) {
 	  case E_DIALECT_NONE:
@@ -316,10 +344,37 @@ return 0;
 }
 
 
+
+static void find_non_char(char *s,char *head, char *tail) {
+char buff1[200];
+char buff2[200];
+char buff3[200];
+int a;
+strcpy(buff1,s);
+strcpy(buff2,s);
+strcpy(buff3,"");
+for (a=0;a<strlen(buff1);a++) {
+	
+	if (buff1[a]>='a'&& buff1[a]<='z') continue;
+	if (buff1[a]==' ') continue;
+	if (buff1[a]=='_') continue;
+	if (buff1[a]>='A'&& buff1[a]<='Z') continue;
+	if (buff1[a]>='0'&& buff1[a]<='9') continue;
+	buff2[a]=0;
+	strcpy(buff3,&buff1[a]);
+	break;
+}
+strcpy(head,buff2);
+strcpy(tail,buff3);
+}
+
 static char *get_sql_type_infx (int a, expr_str_list *bind, char bind_type)
 {
 static char buff[255];
 char buff_ind[255];
+
+
+
 
   if (bind_type == 'i')
     {

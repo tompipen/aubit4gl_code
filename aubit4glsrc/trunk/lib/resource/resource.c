@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.158 2008-11-30 19:33:45 mikeaubury Exp $
+# $Id: resource.c,v 1.159 2008-12-16 14:25:53 mikeaubury Exp $
 #
 */
 
@@ -449,6 +449,7 @@ struct str_resource builtin_resource[] = {
   {"A4GLDBREPLACE","-d %dbname"},
   {"GDB_EXE", "gdb"},  /* set it to the name of your prefered debugger */
   {"SWAP_SQLCA62", "N"}, /* to get OID after INSERT on unpatched PostgreSQL */
+  {"PGSQL_INCLUDE",PGSQL_INCLUDE},
 #ifdef POSTGRESDIR
   {"POSTGRESDIR",POSTGRESDIR},
 #endif

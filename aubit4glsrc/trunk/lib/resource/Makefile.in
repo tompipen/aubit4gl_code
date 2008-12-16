@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2008-05-24 16:06:01 mikeaubury Exp $
+# $Id: Makefile.in,v 1.22 2008-12-16 14:25:53 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -53,6 +53,7 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 		-D"_AUBITETC_=\"${WINDOWS_DRIVE}${CYGWIN_PATH}@AUBITETC@\"" \
 		-D"POSTGRESDIR=\"@POSTGRESDIR@\""  \
 		-D"PG_ESQLC=\"@PG_ESQLC@\""   \
+		-D"PGSQL_INCLUDE=\"-I${PGSQL_INCDIR} -I${PGSQL_INCDIR}/informix\"" \
 		-D"AUBITLIBFULL=\"${AUBITLIBFULL}\""   \
 		-D"LINKAUBITLIBFULL=\"-l${AUBITLIBFULL}\""  \
 		-D"PLUGINDIR=\"${PLUGINDIR}\""   \

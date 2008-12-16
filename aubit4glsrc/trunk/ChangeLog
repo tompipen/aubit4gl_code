@@ -1,3 +1,151 @@
+---------------------------
+Tue Dec 16 14:24:47 GMT 2008
+---------------------------
+1.10RC_45 Released
+---------------------------
+	
+	Add CLEAR SCREEN as a NOP for CONSOLE driver
+	
+	fixup for build test 1697
+	
+	Postgresql serial fixups
+	
+	Serial support for Postgresql when in ESQL/C mode
+	
+	Serial support for unpatched Postgres in ESQL mode
+	
+	Add some debugging info
+	
+	Lint fixups
+	
+	Bugfix/support for DTYPE_NCHAR
+	
+	Add casting rules
+	
+	Add 'pick' library
+	
+	MESSAGE ... WAIT FOR KEY fixup for HL_GTK (& add usage in a4gl IDE)
+	
+	temporary file for blobs located in memory
+	
+	1232: segfault: display out of bound to screen record array
+	
+	UI fixups for HL_GTK and getting asql/a4gl to work nicely with GUIs
+	(XML and HL_GTK)
+	
+	win32 fixups
+	
+	DISPLAY blobvar TO field updates
+	
+	warn form linked
+	
+	UI=XML fixups
+	
+	memory leak fixup
+	
+	use new pdf report syntax
+	
+	Memory leak fixups
+	
+	memory leak fixups
+	
+	Memory leak fixups
+	
+	A4GL IDE fixups
+	
+	Warning fixups
+	
+	Add explicit 'Casting' operator
+	
+	Add 'currpos' pdf function call
+	
+	memory leak fixups
+	
+	Ensure we're using the postgres engine version, rather than
+	compilation version in pg8.c
+	
+	1230: Using don't show fine information
+	
+	Fix nasty arr_subscript issue
+	
+	lint fixups
+	
+	Memory leak fixups Also MID 1227: pg8: FINISH report without OUTPUT
+	TO REPORT fails.
+	
+	1207: pg8: same cursor executed multiple times in transaction
+	
+	Memory leak fixup
+	
+	1205: initialize RECORD_NAME.* to NOT NULL would be useful
+	
+	Wordwrap fixup to allow ^J to split a line
+	
+	Add warnings fixup for 4glp
+	
+	Add warnings fixup for 4glpc
+	
+	Small datetime fixup
+	
+	replace_ibind fixup
+	
+	Fix prototypes for asql
+	
+	64 bit fixups
+	
+	Add special case where you use a USING on an OPEN immediately
+	before a FOREACH
+	
+	Use A4GL_MAKE for make program in a4gl IDE
+	
+	Darwin fixups
+	
+	Darwin fixups
+	
+	Darwin fixup
+	
+	Darwin fixup
+	
+	Darwin fixups
+	
+	"fcompile -c" fixup
+	
+	small enhancement to A4GL (allow "fcompile -c" forms)
+	
+	Lint fixups
+	
+	Fix 'EXECUTE' (set noindicators) on a fake insert cursor for
+	postgres
+	
+	Postgresql Varchar fixup
+	
+	Add RELEASE SAVEPOINTs
+	
+	a4gl : fix for pg8
+	
+	More code cleanups in a4gl IDE tool
+	
+	MID 1202: pg8: whenever error stop , if error doesn't stop
+	
+	Code cleanup (remove unused variables etc)
+	
+	Lint code cleanups
+	
+	Add A4GL_CLASSPATH searchpath for shared library calls
+	
+	Small memory leak fixup
+	
+	asql: Control-B : Remove tables starting with space GL_COLLATE
+	GL_CTYPE VERSION
+	
+	asql: query choose: keep last selected file
+	
+	UI Fixup (segfault on test 1612 for  hl_tui)
+	
+	asql: BUG: Can't split first line with editor
+	
+	,
+	
 	
 	
 ---------------------------

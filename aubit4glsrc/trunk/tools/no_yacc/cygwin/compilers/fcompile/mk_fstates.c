@@ -33,8 +33,6 @@ const int token_group_127[]={KW_VARIABLE,KW_FIXED,-1};
  
 const int token_group_117[]={NAMED,NUMBER_VALUE,XVAL,CHAR_VALUE,KW_NULL,SQLONLY,-1};
  
-const int token_group_137[]={NUMBER_VALUE,PLUS,MINUS,-1};
- 
 const int token_group_129[]={NAMED,JOINING,SQLONLY,-1};
  
 const int token_group_21[]={OPEN_BRACKET,KW_PAGE,-1};
@@ -63,7 +61,7 @@ const int token_group_107[]={KWNOT,KW_BEFORE,EQUAL,KW_ON_ENDING,STAR,KW_ELSE,DEL
  
 const int token_group_91[]={REVERSE,CHAR_VALUE,-1};
  
-const int token_group_138[]={NAMED,NUMBER_VALUE,XVAL,CHAR_VALUE,-1};
+const int token_group_137[]={NAMED,NUMBER_VALUE,XVAL,CHAR_VALUE,-1};
  
 const int token_group_58[]={NAMED,KW_IF,KW_LET,COMMA,KW_BEGIN,GREATERTHAN,DOT,KW_NEXTFIELD,KW_ABORT,KW_CALL,SQLONLY,COMMENTS,-1};
  
@@ -141,7 +139,7 @@ const int token_group_67[]={NAMED,KW_IF,KW_LET,COMMA,KW_BEGIN,KW_CALL,KW_NEXTFIE
  
 const int token_group_17[]={INPUT,-1};
  
-const int token_group_139[]={KWAND,-1};
+const int token_group_138[]={KWAND,-1};
  
 const int token_group_55[]={NAMED,-1};
  
