@@ -35504,7 +35504,7 @@ if test "${with_pgsql+set}" = set; then
 		withval=/usr
 		for a in /usr /usr/local  /usr/local/pgsql /usr/local/postgres
 		do
-			for b in $a/include/pgsql $a/pgsql/include $a/include/postgresql
+			for b in $a/include $a/include/pgsql $a/pgsql/include $a/include/postgresql
 			do
 				if test -f "$b/libpq-fe.h"
 				then
@@ -61873,7 +61873,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.419 2008-12-17 16:07:49 mikeaubury Exp $
+| $Id: configure,v 1.420 2008-12-17 16:10:58 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
