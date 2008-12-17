@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.215 2008-12-04 15:58:25 mikeaubury Exp $
+# $Id: ioform.c,v 1.216 2008-12-17 13:52:09 gyver309 Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.215 2008-12-04 15:58:25 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.216 2008-12-17 13:52:09 gyver309 Exp $";
 #endif
 
 /**
@@ -1076,49 +1076,56 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 			}
 
 
-		      A4GL_debug ("Pushing to validate : %s\n", buff2);
-
-
-
-
-
-		      pprval = A4GL_check_and_copy_field_to_data_area (form, fprop, buff2, buff,var_dtype);
-
-
-		      A4GL_debug ("pprval = %d\n", pprval);
-		      if (!pprval)
+		      if (A4GL_has_bool_attribute (fprop, FA_B_NOENTRY))
 			{
-			  A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"),
-					    0);
-			  if (fprop != 0)
-			    A4GL_comments (fprop);
-
-			  if (A4GL_isyes
-			      (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
-			    {
-				                                        A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
-                                        A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
-
-			      A4GL_clr_field (f);
-			    }
-			  else
-			    {
-			      if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
-				{
-	                          A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
-                                  A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
-				  A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
-				}
-
-			    }
-
-
-			  //set_current_field (mform, form->currentfield);
-			  return -4;
+			  A4GL_debug ("Field %s set NOENTRY, skipping validation\n", fprop->colname);
 			}
 		      else
 			{
-			  A4GL_debug ("pop_param returns ok...");
+			  A4GL_debug ("Pushing to validate : %s\n", buff2);
+
+
+
+
+
+			  pprval = A4GL_check_and_copy_field_to_data_area (form, fprop, buff2, buff,var_dtype);
+
+
+			  A4GL_debug ("pprval = %d\n", pprval);
+			  if (!pprval)
+			    {
+			      A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"),
+						0);
+			      if (fprop != 0)
+				A4GL_comments (fprop);
+
+			      if (A4GL_isyes
+				  (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
+				{
+									    A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+					    A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+
+				  A4GL_clr_field (f);
+				}
+			      else
+				{
+				  if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
+				    {
+				      A4GL_fprop_flag_clear(f, FLAG_MOVED_IN_FIELD);
+				      A4GL_fprop_flag_set(f, FLAG_MOVING_TO_FIELD);
+				      A4GL_int_form_driver (form->form, REQ_BEG_FIELD);
+				    }
+
+				}
+
+
+			      //set_current_field (mform, form->currentfield);
+			      return -4;
+			    }
+			  else
+			    {
+			      A4GL_debug ("pop_param returns ok...");
+			    }
 			}
 		    }
 
