@@ -113,7 +113,6 @@ void clr_stmt(void);
 void count(void);
 void cp_sqlca(void);
 void display_mode_unload(int a);
-void open_display_file_c(void);
 void set_heading_flag(int n, char *delim);
 void set_outfname(void);
 void set_sqlcode(int n);

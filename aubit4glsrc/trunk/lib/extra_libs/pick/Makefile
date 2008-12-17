@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2008-12-15 12:10:21 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2008-12-17 09:42:57 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -58,7 +58,7 @@ export A4GL_FORMTYPE
 ##                              Targets
 ## ==================================================================
 
-${ALL}: pick.c ${OBJS_FORM}
+${ALL}: pick.o ${OBJS_FORM}
 	${LD} ${SO_LDFLAGS} ${CFLAGS_NOWARN} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "File library sucesfully compiled."
 
@@ -69,8 +69,8 @@ ${ALL}: pick.c ${OBJS_FORM}
 ##
 ## #######################################################################
 
-pick.c: pick.4gl
-	A4GL_OBJ_EXT=.o A4GL_SQLTYPE=nosql A4GL_LEXTYPE=C ${4GLC}  ${VERBOSE_FLAG} $^
+pick.o: pick.4gl
+	A4GL_OBJ_EXT=.o A4GL_SQLTYPE=nosql A4GL_LEXTYPE=C ${4GLC} -o $@ ${VERBOSE_FLAG} $^
 
 
 %.afr${A4GL_OBJ_EXT}:%.per
