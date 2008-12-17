@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.163 2008-12-01 17:24:50 mikeaubury Exp $
+# $Id: newpanels.c,v 1.164 2008-12-17 16:35:02 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.163 2008-12-01 17:24:50 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.164 2008-12-17 16:35:02 mikeaubury Exp $";
 #endif
 
 /**
@@ -651,14 +651,15 @@ char buff[256];
 			}
 			
 		
-		}
-		if (f->fileform) {
-			A4GL_free_associated_mem(f->fileform);
-			acl_free(f->fileform);
-		}
 		
-		A4GL_free_associated_mem(f);
-		acl_free(f);
+			if (f->fileform) {
+				A4GL_free_associated_mem(f->fileform);
+				acl_free(f->fileform);
+				f->fileform=NULL;
+			}
+			A4GL_free_associated_mem(f);
+			acl_free(f);
+		}
 	}
 
   A4GL_del_pointer (win_name, ATTRIBUTE);
