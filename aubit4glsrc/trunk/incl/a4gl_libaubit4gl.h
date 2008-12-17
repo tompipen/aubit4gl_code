@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.352 2008-12-16 14:25:52 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.353 2008-12-17 10:37:10 mikeaubury Exp $
 #
 */
 
@@ -255,8 +255,8 @@
 #define A4GLKEY_UP 		2000
 #define A4GLKEY_LEFT 		2002	
 #define A4GLKEY_RIGHT 		2003
-#define A4GLKEY_PGUP 		0xff06
-#define A4GLKEY_PGDN 		0xff07
+#define A4GLKEY_PGUP 		2006
+#define A4GLKEY_PGDN 		2005
 #define A4GLKEY_INS 		0xff08
 #define A4GLKEY_DEL 		0xff09
 #define A4GLKEY_HOME 		0xff0a
