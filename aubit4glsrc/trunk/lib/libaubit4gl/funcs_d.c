@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.108 2008-12-15 22:15:38 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.109 2008-12-17 14:03:43 gyver309 Exp $
 #
 */
 
@@ -1376,6 +1376,13 @@ A4GL_wcswidth (char *mbs)
   wstr = acl_malloc2 ((mlen + 1) * sizeof (wchar_t));
 
   retc = mbstowcs (wstr, mbs, mlen + 1);
+  if (retc == mlen+1)
+      wstr[mlen] = 0;
+  if (retc == -1)
+  {
+      A4GL_debug ("WARNING: Invalid multibyte sequence in: %s", mbs);
+      return 1;
+  }
   if (!retc)
     {
       free (wstr);
