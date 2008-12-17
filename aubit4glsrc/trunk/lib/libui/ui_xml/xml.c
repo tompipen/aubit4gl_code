@@ -1936,15 +1936,20 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
       // ACCEPT...
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
+          A4GL_push_long (context);
+          uilib_free_display (1);
 	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	}
     }
+
   if (rval == -101)
     {
       // INTERRUPT
       int_flag = 1;
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
+      	A4GL_push_long (context);
+          uilib_free_display (1);
 	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	}
     }

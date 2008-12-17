@@ -955,6 +955,16 @@ uilib_free_prompt (int nargs)
 }
 
 
+int
+uilib_free_display (int nargs)
+{
+  int context;
+  context = POPint ();
+  contexts[context].state = UI_FREE;
+  send_to_ui ("<FREE TYPE=\"DISPLAY\" CONTEXT=\"%d\"/>", context);
+  return 0;
+}
+
 
 /*
  *******************************************************************************
