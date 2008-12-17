@@ -773,6 +773,12 @@ char buff[256];
       fix_compare ("=", p);
       return FAKE_DTYPE_BOOL;   // Actually a Boolean...
 
+    case ET_EXPR_OP_NOT_IN:
+    case ET_EXPR_OP_NOTIN_SUBQUERY:
+    case ET_EXPR_OP_IN_SUBQUERY:
+    case ET_EXPR_OP_IN:
+      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+
 
     case ET_EXPR_OP_USING:
       ensure_char (p->expr_str_u.expr_op->right, 0);

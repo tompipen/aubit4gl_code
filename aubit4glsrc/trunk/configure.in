@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.391 2008-12-14 14:02:04 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.392 2008-12-17 16:07:50 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,9 +48,17 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.391 2008-12-14 14:02:04 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.392 2008-12-17 16:07:50 mikeaubury Exp $)
+
+#FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
+#$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
+#alltogether, use Autoconf instead?
+dnl source directory sanity check using an arbitrary source file
+AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
+
 #Need to be here too, to be used in AC_INIT call:
 #>>>>>>>>>>>>>>>>FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!<<<<<<<<<<<<<<<<<<<<<<<<
+
 if test -f "tools/project/version" ; then
 
 	TMPaaa=`grep -c '=' tools/project/version`
@@ -84,11 +92,6 @@ else
 	echo "Configuring binary installation"
 fi
 
-#FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
-#$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
-#alltogether, use Autoconf instead?
-dnl source directory sanity check using an arbitrary source file
-AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
 
 ############################################################
 # WARNING - any code you add to this file (including 'echo') 
@@ -11149,7 +11152,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.391 2008-12-14 14:02:04 mikeaubury Exp $
+| $Id: configure.in,v 1.392 2008-12-17 16:07:50 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
