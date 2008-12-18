@@ -904,7 +904,7 @@ print_label_cmd (struct_label_cmd * cmd_data)
 /******************************************************************************/
 int
 print_let_cmd (struct_let_cmd * cmd_data)
-{				// 50% !
+{	
   //struct expr_str_list* vars;
 
   print_cmd_start ();
@@ -917,18 +917,35 @@ print_let_cmd (struct_let_cmd * cmd_data)
       ptr = A4GL_rationalize_list (cmd_data->vals);
       from_exprs = A4GL_new_list_get_count (ptr);
       real_print_expr_list (ptr);
-      printc ("{");
-      to_vars = print_bind_dir_definition_g (cmd_data->vars, 1, 'o');
-      local_print_bind_set_value_g (cmd_data->vars, 1, 0, 'o');
 
-      if (to_vars != from_exprs)
-	{
-	  A4GL_assertion (1, "Should be right by here...");
-	  A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
-	  return 0;
+	if (from_exprs==0) {
+		int a;
+		struct_init_cmd init_cmd;
+		init_cmd.varlist=cmd_data->vars;
+		init_cmd.tonull=1;
+		init_cmd.tablist=0;
+		init_cmd.init_like_exprlist=0;
+		print_init_cmd(&init_cmd);
+		/*
+		for (a=0;a<cmd_data->vars->list.list_len;a++) {
+			printc ("A4GL_push_null(2,0);");
+      			print_pop_usage (cmd_data->vars->list.list_val[a]);
+		}
+		*/
+	} else {
+      		printc ("{");
+      		to_vars = print_bind_dir_definition_g (cmd_data->vars, 1, 'o');
+      		local_print_bind_set_value_g (cmd_data->vars, 1, 0, 'o');
+		
+      		if (to_vars != from_exprs)
+			{
+	  		A4GL_assertion (1, "Should be right by here...");
+	  		A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
+	  		return 0;
+			}
+      		printc ("A4GL_pop_params(obind,%d);", from_exprs);
+      		printc ("}");
 	}
-      printc ("A4GL_pop_params(obind,%d);", from_exprs);
-      printc ("}");
     }
   else
     {

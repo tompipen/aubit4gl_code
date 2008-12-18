@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.129 2008-12-07 14:02:02 mikeaubury Exp $
+# $Id: compile.c,v 1.130 2008-12-18 20:51:47 mikeaubury Exp $
 #*/
 
 /**
@@ -1212,8 +1212,6 @@ compiled_4gl++;
 	*/
 
 	yyin = A4GL_memfile_fopen (fgl_file, "rb");
-
-
 	if (yyin == 0) {
 		#ifdef DEBUG
 			A4GL_debug ("Error opening file : %s\n", fgl_file);
@@ -1222,6 +1220,7 @@ compiled_4gl++;
 		exit (1);
 	}
 
+	copy_sourcecode_in_memfile(yyin, &this_module.source_code.source_code_len,&this_module.source_code.source_code_val);
 	A4GL_memfile_fseek (yyin, 0, SEEK_END);
 	A4GL_remove_comments_in_memfile(yyin);
 
@@ -1289,6 +1288,10 @@ compiled_4gl++;
   this_module.global_files->str_list_entry.str_list_entry_val = 0;
   this_module.module_entries.module_entries_len = 0;
   this_module.module_entries.module_entries_val = 0;
+
+
+
+
 
   this_module.module_variables.variables.variables_len = 0;
   this_module.module_variables.variables.variables_val = 0;

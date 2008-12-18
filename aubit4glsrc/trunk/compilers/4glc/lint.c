@@ -338,6 +338,7 @@ check_cmds_for_dead_code (struct commands *cmds)
 
 	case E_CMD_FOR_CMD:
 	  check_cmds_for_dead_code (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands);
+	  
 	  break;
 
 	case E_CMD_IF_CMD:
@@ -530,7 +531,6 @@ FILE *f;
 			break;
 	}
 
-	//A4GL_pause_execution();
 	if (strlen(acl_getenv("DEBUG"))) {
 		f=fopen("/tmp/expr_char_length.out","a");
 		if (f) {
@@ -815,7 +815,8 @@ int cnt;
 	{
 	  struct command *r2;
 	  int isused = 0;
-	int b;
+		int b;
+
 	  for (b = 0; b < func_cmds->cmds.cmds_len; b++)
 	    {
 	      r2 = func_cmds->cmds.cmds_val[b];
@@ -933,10 +934,35 @@ int cnt;
       if (r->cmd_data.type == E_CMD_FOR_CMD)
 	{
 	  	int dtype;
+		struct expr_str s2;
+		struct expr_str *s3;
+  		struct expr_str_list list;
+		int a;
+
+  		list.list.list_len = 0;
+  		list.list.list_val = 0;
 		dtype=expr_datatype(r->cmd_data.command_data_u.for_cmd.var);
 		if (!is_numeric(dtype))  {
 			A4GL_lint (module_name, r->lineno, "FORVARNUM", "Variable used in FOR is not numeric", 0);
 		}
+
+
+		// Lets check our 'ending' expression....
+		s3=&s2;
+  		memcpy (&s2, r->cmd_data.command_data_u.for_cmd.end, sizeof (struct expr_str));
+  		cache_expression (&list, &s3);
+  		linearise_expressions (&list);
+		for (a=0;a<list.list.list_len;a++) {
+			if (list.list.list_val[a]) {
+				if (list.list.list_val[a]->expr_type==ET_EXPR_FCALL) {
+					// Function call in the 'end' expression will be called multiple times
+					A4GL_lint (module_name, r->lineno, "FORENDEXPR", "Conditional for FOR calls a function (and so might be called many times)", 0);
+				}
+			}
+		}
+
+		
+		
 	  //set_assigned_binding_var(r->cmd_data.command_data_u.for_cmd.var,currfunc, r->module,r->lineno);
 	}
 
@@ -3244,6 +3270,8 @@ check_program (module_definition * mods, int nmodules)
   this_module.module_name = "COMPOSITE";
   this_module.module_entries.module_entries_len = 0;
   this_module.module_entries.module_entries_val = 0;
+  this_module.source_code.source_code_len=0;
+  this_module.source_code.source_code_val=0;
   yylineno = 0;
 
   for (a = 0; a < nmodules; a++)
@@ -3902,6 +3930,8 @@ static int get_severity(char *code) {
 		{"REPORD",3},
 		{"DIFFMATH",4},
 		{"LETEXPR",3},
+		{"FORVARNUM",6},
+		{"FORENDEXPR",4},
 
 		{"PARAMNOTUSED",2},
 		{NULL,0}
@@ -4737,7 +4767,12 @@ cache_expression (struct expr_str_list *list, struct expr_str **eptr)
     return;
   enew = malloc (sizeof (struct expr_str));
   enew->expr_type = ET_EXPR_CACHED;
-  enew->expr_str_u.expr_long = add_cache_expression (list, e);
+  enew->expr_str_u.expr_cached.cache_num = add_cache_expression (list, e);
+  if (enew->expr_str_u.expr_cached.cache_num==list->list.list_len - 1) { // Its new 
+		enew->expr_str_u.expr_cached.ref_cnt=0; 
+  }  else {
+		enew->expr_str_u.expr_cached.ref_cnt++; 
+  }
   *eptr = enew;
 }
 
@@ -5158,10 +5193,10 @@ char *decode_cmd_type(enum cmd_type value) {
 
 void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql)
 {
-  struct expr_str_list list;
   struct expr_str s2;
   struct expr_str *s3;
   int a;
+  struct expr_str_list list;
   list.list.list_len = 0;
   list.list.list_val = 0;
 
@@ -5174,6 +5209,7 @@ void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sq
     {
       struct expr_str *e;
       e = list.list.list_val[a];
+
       //printf ("check boolean : %d . %s (%d)\n", a, expr_name (list.list.list_val[a]->expr_type), list.list.list_val[a]->expr_type);
       if (e->expr_type == ET_EXPR_OP_EQUAL)
 	{
@@ -5185,10 +5221,10 @@ void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sq
 	  r_e = e->expr_str_u.expr_op->right;
 
           if (l_e->expr_type==ET_EXPR_CACHED) {
-			l_e=list.list.list_val[l_e->expr_str_u.expr_long];
+			l_e=list.list.list_val[l_e->expr_str_u.expr_cached.cache_num];
 	  }
           if (r_e->expr_type==ET_EXPR_CACHED) {
-			r_e=list.list.list_val[r_e->expr_str_u.expr_long];
+			r_e=list.list.list_val[r_e->expr_str_u.expr_cached.cache_num];
 	  }
 
 	  if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE)

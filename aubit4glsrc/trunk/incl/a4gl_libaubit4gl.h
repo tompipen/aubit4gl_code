@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.353 2008-12-17 10:37:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.354 2008-12-18 20:51:47 mikeaubury Exp $
 #
 */
 
@@ -2853,7 +2853,7 @@ int A4GL_get_as_c(void) ;
 void A4GL_init_dec_size(fgldecimal *dec, int size);
 void
 pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_semi);
-
+void copy_sourcecode_in_memfile(FILE *f, unsigned int *len, char ***strs);
 
 char *
 A4GL_byte_as_base64 (fglbyte *b);

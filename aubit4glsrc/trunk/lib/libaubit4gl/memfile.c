@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.39 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: memfile.c,v 1.40 2008-12-18 20:51:47 mikeaubury Exp $
 #
 */
 
@@ -392,6 +392,48 @@ struct s_comments *load_comments = 0;
 int ncomments = 0;
 
 
+void copy_sourcecode_in_memfile(FILE *f, unsigned int *len, char ***strs) {
+char lbuff[20000]; 
+int lineno=1;
+int colno=0;
+char *lptr=NULL;
+int a;
+char **strings;
+int nstrings;
+  if (f != in)
+    {
+      A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
+      //a4gl_yyerror ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+      //      return;
+     }
+      
+	*len=0;
+	*strs=0;
+	lptr=&buff[0];
+	nstrings=0;
+	strings=NULL;
+
+	for (a=0;a<buff_len;a++) {
+	      if (buff[a] == '\n' || a==buff_len-1) {
+			strncpy(lbuff,lptr,colno);
+			lbuff[colno]=0;
+			A4GL_trim_nl(lbuff);
+			nstrings++;
+			strings=realloc(strings,sizeof(char *)*nstrings);
+			strings[nstrings-1]=strdup(lbuff);
+			//printf(">%s<\n",lbuff);
+          		lineno++;
+			lptr=&buff[a+1];
+          		colno = 0;
+        	}
+		if (buff[a]=='\r') {
+			continue;
+		}
+      		colno++;
+	}
+	*strs=strings;
+	*len=nstrings;
+}
 
 void
 A4GL_remove_comments_in_memfile (FILE * f)

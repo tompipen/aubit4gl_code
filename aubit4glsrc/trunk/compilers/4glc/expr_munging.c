@@ -651,7 +651,7 @@ char buff[256];
 		return DTYPE_NULL;
 
     case ET_EXPR_CACHED:
-		return expr_datatype(get_expr_datatype(p->expr_str_u.expr_long));
+		return expr_datatype(get_expr_datatype(p->expr_str_u.expr_cached.cache_num));
 
     case ET_EXPR_OP_SPACES:
 		 ensure_int (p->expr_str_u.expr_expr, 0);

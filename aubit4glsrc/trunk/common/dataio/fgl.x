@@ -1660,6 +1660,7 @@ struct module_definition {
 	variable_list imported_global_variables;
 	module_entry_ptr module_entries<>;
 	str full_path_filename;
+	str source_code<>;
 };
 
 
@@ -2027,6 +2028,11 @@ enum e_expr_type {
 };
 
 
+struct s_expr_cached {
+	int cache_num;
+	int ref_cnt;
+};
+
 struct s_expr_parameter {
 	  enum e_boolean isReference;
           str  expr_string;
@@ -2082,10 +2088,10 @@ ET_EXPR_PROMPT_RESULT  */
 	case ET_EXPR_SQLBLOCK_TEXT: 	
                str                                    expr_string; 
 
-	case ET_EXPR_CACHED:
-                /*! long                                    expr_long; !*/
 	case ET_EXPR_LITERAL_LONG:
                 long                                    expr_long;
+	case ET_EXPR_CACHED:
+                struct s_expr_cached                    expr_cached; 
 
 	case ET_EXPR_EXTEND:
                 struct s_expr_extend                      *expr_extend;

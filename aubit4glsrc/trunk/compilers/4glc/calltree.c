@@ -21,6 +21,11 @@ char *lint_module = 0;
 static void load_boltons (char *fname);
 static int add_calltree_calls (char *s, commands * func_commands, int mode);
 char *decode_rb (enum report_blocks a);
+
+
+int inc4GL=1; /* Include 4gl in the output */
+int incProg=1;
+
 //char *expr_as_string_when_possible (expr_str * p);
 
 //void dump_prototypes (void);
@@ -80,6 +85,7 @@ struct function_calls
 struct function
 {
   char *module;
+  int module_no;
   int line;
   char *function;
   char f_or_r;
@@ -100,7 +106,7 @@ struct s_function_prototype *fprototypes = 0;
 
 struct s_function_prototype *fprototypes_boltons = 0;
 int nboltons = 0;
-static int is_bolton_function (char *s);
+//static int is_bolton_function (char *s);
 
 expr_str_list *expr_cache = 0;
 
@@ -132,7 +138,7 @@ static void addFunction(char *fname) {
 	addNode(fname,NODE_FUNC_DEFINED);
 }
 
-static void printNodes() {
+static void printNodes(void) {
 	if (simpleGraph) {
 		int a;
 		for (a=0;a<nodescnt;a++) {
@@ -210,7 +216,7 @@ dtype_as_string (int dtype)
 
 
 
-
+/*
 static int
 is_char_dtype (int dtype)
 {
@@ -223,9 +229,10 @@ is_char_dtype (int dtype)
     return 1;
   return 0;
 }
+*/
 
 
-
+/*
 static int
 local_is_system_variable (char *s)
 {
@@ -272,6 +279,7 @@ local_is_system_variable (char *s)
     return 1;
   return 0;
 }
+*/
 
 
 
@@ -360,9 +368,6 @@ void
 check_module (struct module_definition *d)
 {
   struct commands *all_cmds = 0;
-  int a;
-  int b;
-
 
   all_cmds = linearise_commands (0, 0);
 
@@ -598,6 +603,7 @@ system_function (char *funcname)
 
 
 
+#ifdef NOPE
 /********************************************************************************/
 static int
 find_function_in_me (module_definition * me, char *s)
@@ -630,15 +636,17 @@ find_function_in_me (module_definition * me, char *s)
     }
   return -1;
 }
+#endif
 
 
 
 static void
-add_function (char *module, int line, char *fname, char forr, void *ptr)
+add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr)
 {
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
   functions[functions_cnt - 1].module = module;
+  functions[functions_cnt - 1].module_no = module_no;
   functions[functions_cnt - 1].line = line;
   functions[functions_cnt - 1].function = fname;
   functions[functions_cnt - 1].f_or_r = forr;
@@ -651,6 +659,8 @@ add_function (char *module, int line, char *fname, char forr, void *ptr)
 int callstack_cnt = 0;
 char **callstack = 0;
 
+
+/*
 static void
 add_to_callstack (char *s)
 {
@@ -662,9 +672,10 @@ add_to_callstack (char *s)
       printf ("Callstack too deep\n");
     }
 }
+*/
 
 
-
+/*
 static int
 isoncallstack (char *s)
 {
@@ -682,6 +693,7 @@ pop_callstack (void)
 {
   callstack_cnt--;
 }
+*/
 
 static int
 find_function (char *s)
@@ -695,7 +707,8 @@ find_function (char *s)
   return -1;
 }
 
-int
+/*
+static int
 print_spaces (int n)
 {
   int a;
@@ -706,9 +719,10 @@ print_spaces (int n)
 
   return 0;
 }
+*/
 
-void
-print_indent ()
+static void
+print_indent (void)
 {
   int a;
   for (a = 0; a < indent; a++)
@@ -777,7 +791,7 @@ cache_expression (char *s, expr_str ** ptr, int mode)
 
   if (expr->expr_type == ET_EXPR_FCALL)
     {
-      int a;
+      //int a;
 		struct expr_str_list *params;
       // Got a function call - add it to the stack..
       if (mode == MODE_BUY) {
@@ -1045,6 +1059,15 @@ get_event (event_data * a)
     case EVENT_BEFORE_EVENT:
       return "EVENT_TYPE=\"BEFORE EVENT\"";
 
+    case EVENT_ON_ACTION:
+      sprintf(buff,"EVENT_TYPE=\"ON ACTION\" ACTION=\"%s\"", xml_encode (a->event_data_u.on_action));
+
+    case EVENT_BEFORE:
+      sprintf(buff,"EVENT_TYPE=\"BEFORE\" ACTION=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+    case EVENT_AFTER:
+      sprintf(buff,"EVENT_TYPE=\"AFTER\" ACTION=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+    case EVENT_ON:
+      sprintf(buff,"EVENT_TYPE=\"ON\" ACTION=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
 
     case EVENT_ON_IDLE:
       return "EVENT_ON_IDLE";
@@ -1100,7 +1123,7 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
 
 	if (mode==MODE_BUY) {
 	  print_indent ();
-	  fprintf (output, "<COMMANDS>\n");
+	  fprintf (output, "<COMMANDS Blah=\"1\">\n");
 	  indent++;
 	}
 	  add_calltree_calls (s, evt_list->event.event_val[a]->on_event_commands, mode);
@@ -1171,12 +1194,12 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	
 		);
 		  indent++;
-	  print_indent ();
-		  fprintf (output, "<COMMANDS>\n");
+	  	print_indent ();
+		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands, mode);
 		  indent--;
-	  print_indent ();
+	  	print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
 		  indent--;
 		print_indent();
@@ -1224,7 +1247,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			fprintf (output, "<ONTRUE>\n");
 			indent++;
 	  print_indent ();
-			fprintf (output, "<COMMANDS>\n");
+			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("",
 					    func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.
@@ -1260,7 +1283,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			fprintf (output, "<ONFALSE>\n");
 			indent++;
 	  print_indent ();
-			fprintf (output, "<COMMANDS>\n");
+			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse, mode);
 			indent--;
@@ -1292,7 +1315,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  print_indent(); fprintf (output, "<FOREACH LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
 		  indent++;
 	  	print_indent ();
-		  fprintf (output, "<COMMANDS>\n");
+		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands,
 				      mode);
@@ -1318,7 +1341,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_expr)), func_commands->cmds.cmds_val[a]->lineno);
 		  indent++;
 	  print_indent ();
-		  fprintf (output, "<COMMANDS>\n");
+		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_commands, mode);
 		  indent--;
@@ -1373,7 +1396,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			fprintf (output, "<WHEN CONDITION=\"%s\" LINE=\"%d\">\n",
 				 xml_encode (expr_as_string_when_possible (casecmd->whens->whens.whens_val[cnt]->when_expr)), casecmd->whens->whens.whens_val[cnt]->lineno);
 			indent++;
-			print_indent(); fprintf (output, "<COMMANDS>\n");
+			print_indent(); fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("",
 					    func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.
@@ -1405,7 +1428,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			indent++;
 			print_indent ();
 			fprintf (output, "<OTHERWISE>\n");
-			print_indent(); fprintf (output, "<COMMANDS>\n");
+			print_indent(); fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise, mode);
 			indent--;
@@ -1781,12 +1804,12 @@ run_calltree (int n)
 int
 check_program (module_definition * mods, int nmodules)
 {
-  char *dbname = 0;
+  //char *dbname = 0;
   int a;
   int b;
-  int *calltree;
-  int bad_load = 0;
-  struct commands *all_cmds = 0;
+  //int *calltree;
+  //int bad_load = 0;
+  //struct commands *all_cmds = 0;
   char *fname;
   int mid;
 
@@ -1809,20 +1832,20 @@ check_program (module_definition * mods, int nmodules)
 	    {
 
 	    case E_MET_MAIN_DEFINITION:
-	      add_function (mods[a].module_name,
+	      add_function (a,mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition);
 	      break;
 
 	    case E_MET_FUNCTION_DEFINITION:
-	      add_function (mods[a].module_name,
+	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.funcname,
 			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition);
 	      break;
 
 	    case E_MET_REPORT_DEFINITION:
-	      add_function (mods[a].module_name,
+	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.funcname,
 			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition);
@@ -1861,8 +1884,27 @@ check_program (module_definition * mods, int nmodules)
     }
 
 
-  fprintf (output, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-  fprintf (output, "<PROGRAM>\n");
+  if (incProg) {
+	fprintf (output, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+  	fprintf (output, "<PROGRAM>\n");
+  }
+
+
+  if (inc4GL) {
+	// Dump the sourcecode of the 4gls
+	fprintf(output,"<MODULES>\n");
+	for (a=0;a<nmodules;a++) {
+		int line;
+		fprintf(output,"<MODULE NAME=\"%s\" MODULENO=\"%d\">\n",mods[a].module_name,a);
+		for (line=0;line<mods[a].source_code.source_code_len;line++) {
+			fprintf(output,"<LINE>%s</LINE>\n",xml_encode(mods[a].source_code.source_code_val[line]));
+		}
+		fprintf(output,"</MODULE>\n");
+	}
+	fprintf(output,"</MODULES>\n");
+  }
+
+
   fprintf(dot_output,"digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
   fprintf(dot_output,"rankdir=LR;\nratio=fill;\n");
 
@@ -1880,10 +1922,10 @@ check_program (module_definition * mods, int nmodules)
   	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
 	}
 
-	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].line);
+	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
 	  f = functions[a].ptr;
 	  indent++;
-	  print_indent(); fprintf (output, "<COMMANDS>\n");
+	  print_indent(); fprintf (output, "<COMMANDS >\n");
 	  indent++;
 	  add_calltree_calls ("", f->func_commands, MODE_BUY);
 	  indent--;
@@ -1911,7 +1953,7 @@ check_program (module_definition * mods, int nmodules)
 		  fprintf (output, "<SECTION ID=\"%d\" TYPE=\"%s\">\n", b,
 			   decode_rb (r->report_format_section->entries.entries_val[b]->rb_block.rb));
 		  indent++;
-		  print_indent(); fprintf (output, "<COMMANDS>\n");
+		  print_indent(); fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", r->report_format_section->entries.entries_val[b]->rep_sec_commands, MODE_BUY);
 		  indent--;
@@ -1935,7 +1977,12 @@ check_program (module_definition * mods, int nmodules)
 	}
 
     }
-  fprintf (output, "</PROGRAM>\n");
+
+  if (incProg) {
+  	fprintf (output, "</PROGRAM>\n");
+  }
+
+
   printNodes();
   fprintf(dot_output,"}\n");
   fclose (output);
@@ -2044,6 +2091,7 @@ add_bolton (char *fname, char *params, char *rets)
 */
 }
 
+/*
 int
 is_bolton_function (char *s)
 {
@@ -2057,6 +2105,7 @@ is_bolton_function (char *s)
     }
   return -1;
 }
+*/
 
 
 
@@ -2136,6 +2185,10 @@ main (int argc, char *argv[])
       printf(" -S = Simple graph output (excludes line numbers) [default]\n");
       printf(" -p = Print only links to internal functions [default]\n");
       printf(" -P = Also print links to external functions\n");
+      printf(" -no4gl = Exclude 4gl sourcecode (required for calltreeviewer)\n");
+      printf(" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
+      printf(" -noProg = Exclude the XML and program tags\n");
+      printf(" -Prog = Include the XML and program tags\n");
       exit (2);
     }
 
@@ -2153,8 +2206,18 @@ main (int argc, char *argv[])
 		simpleGraph=1;
 		continue;
 	}
+
 	if (strcmp(argv[b],"-s")==0) {
 		simpleGraph=0;
+		continue;
+	}
+	if (strcmp(argv[b],"-no4gl")==0) {
+		inc4GL=0;
+		continue;
+	}
+
+	if (strcmp(argv[b],"-4gl")==0) {
+		inc4GL=1;
 		continue;
 	}
 
@@ -2164,6 +2227,14 @@ main (int argc, char *argv[])
 	}
 	if (strcmp(argv[b],"-p")==0) {
 		printAllFuncs=0;
+		continue;
+	}
+	if (strcmp(argv[b],"-Prog")==0) {
+		incProg=1;
+		continue;
+	}
+	if (strcmp(argv[b],"-NoProg")==0) {
+		incProg=0;
 		continue;
 	}
 	

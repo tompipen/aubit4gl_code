@@ -1188,7 +1188,7 @@ int a;
    	c->cmd_data.command_data_u.let_cmd.vars=p_vars;
 	p_vals=make_fgl_expr_list(p_vals);
 
-	if (c->cmd_data.command_data_u.let_cmd.vars->list.list_len>1) {
+	if (c->cmd_data.command_data_u.let_cmd.vars->list.list_len>1 && p_vals) {
 		if (p_vars->list.list_len!=p_vals->list.list_len) {
 			yylineno=c->lineno;
 			a4gl_yyerror("Number of variables does not match number of values");
