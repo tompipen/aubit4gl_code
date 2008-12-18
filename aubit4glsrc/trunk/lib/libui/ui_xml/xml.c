@@ -787,7 +787,7 @@ UILIB_A4GL_req_field_input_array (void *sv, char type, va_list * ap)
   A4GL_push_int (((long) arr) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
-
+clr_exiting_context(context);
   if (type == '+')
     {
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"NEXT\"/>", context);
@@ -2149,6 +2149,15 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
     }
 
 
+      if (isset_exiting_context (context, 0))
+	{
+	  clr_exiting_context (context);
+	  // We had an AFTER INPUT - now we need to exit the input cleanly...
+	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
+	    {
+	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
+	    }
+	}
 
 
   A4GL_push_int (context);
