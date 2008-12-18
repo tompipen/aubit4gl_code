@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.79 2008-12-16 19:11:33 mikeaubury Exp $
+# $Id: pg8.c,v 1.80 2008-12-18 16:40:17 mikeaubury Exp $
 #*/
 
 
@@ -1560,11 +1560,19 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		int type;
 		type=PQftype (res, a);
 		A4GL_debug("Scan return for serials - field=%d type=%d",a,type);
+
 		  if (type == dtype_int4oid)
 		    {
+			int i;
+			char *ptr;
+			ptr=PQgetvalue (res, 0, a);
+			if (ptr) {
+			i=atoi(ptr);
+
 			A4GL_debug("Found out serial column @%d : %s",a,PQgetvalue (res, 0, a));
 		      // any serial column must be the first integer...
-		      A4GL_set_a4gl_sqlca_errd (1, atoi (PQgetvalue (res, 0, a)));
+		      A4GL_set_a4gl_sqlca_errd (1, i);
+			}
 		      break;
 		    }
 		}
