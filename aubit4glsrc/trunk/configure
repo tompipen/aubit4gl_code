@@ -35501,13 +35501,17 @@ if test "${with_pgsql+set}" = set; then
 
   if test "$withval" != "no"; then
     if test "$withval" = "yes"; then
+		#/usr/include/postgresql
 		withval=/usr
-		for a in /usr /usr/local  /usr/local/pgsql /usr/local/postgres
+		for a in /usr/pgsql /usr/postgres /usr/postgresql /usr/local/pgsql /usr/local/postgres /usr/local/postgresql  /usr /usr/local
 		do
-			for b in $a/include $a/include/pgsql $a/pgsql/include $a/include/postgresql
+			for b in $a/include/pgsql $a/pgsql/include $a/include/postgresql $a/include/postgres $a/include
 			do
+				#echo "Looking $b/libpq-fe.h"
+
 				if test -f "$b/libpq-fe.h"
 				then
+					#echo "Found $a ... $b"
 					withval=$a
 					pgsql_incldir=$b
 					break
@@ -35550,6 +35554,11 @@ $as_echo "$as_me: WARNING: Non-standard include location" >&2;}
 		{ $as_echo "$as_me:$LINENO: WARNING: cannot determine include path" >&5
 $as_echo "$as_me: WARNING: cannot determine include path" >&2;}
 	fi
+
+
+	echo "pgsql_incldir=$pgsql_incldir"
+
+
 	{ $as_echo "$as_me:$LINENO: result: INCLUDE : $PGSQL_INCDIR" >&5
 $as_echo "INCLUDE : $PGSQL_INCDIR" >&6; }
 	#Find PG lib dir under $withval
@@ -51578,11 +51587,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:51581: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:51590: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:51585: \$? = $ac_status" >&5
+   echo "$as_me:51594: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -51682,11 +51691,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:51685: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:51694: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:51689: \$? = $ac_status" >&5
+   echo "$as_me:51698: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -55744,7 +55753,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 55747 "configure"' > conftest.$ac_ext
+  echo '#line 55756 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -56812,7 +56821,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 56815 "configure"
+#line 56824 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -56912,7 +56921,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 56915 "configure"
+#line 56924 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -61873,7 +61882,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.420 2008-12-17 16:10:58 mikeaubury Exp $
+| $Id: configure,v 1.421 2008-12-19 15:55:16 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

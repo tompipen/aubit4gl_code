@@ -1060,14 +1060,14 @@ get_event (event_data * a)
       return "EVENT_TYPE=\"BEFORE EVENT\"";
 
     case EVENT_ON_ACTION:
-      sprintf(buff,"EVENT_TYPE=\"ON ACTION\" ACTION=\"%s\"", xml_encode (a->event_data_u.on_action));
+      sprintf(buff,"EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action));
 
     case EVENT_BEFORE:
-      sprintf(buff,"EVENT_TYPE=\"BEFORE\" ACTION=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf(buff,"EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
     case EVENT_AFTER:
-      sprintf(buff,"EVENT_TYPE=\"AFTER\" ACTION=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf(buff,"EVENT_TYPE=\"AFTER\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
     case EVENT_ON:
-      sprintf(buff,"EVENT_TYPE=\"ON\" ACTION=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf(buff,"EVENT_TYPE=\"ON\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
 
     case EVENT_ON_IDLE:
       return "EVENT_ON_IDLE";
@@ -1077,16 +1077,16 @@ get_event (event_data * a)
       return "EVENT_ON_TIME";
 
     case EVENT_KEY_PRESS:
-      sprintf (buff, "EVENT_TYPE=\"KEY_PRESS\" KEYS=\"%s\"", xml_encode (get_str_list (a->event_data_u.key)));
+      sprintf (buff, "EVENT_TYPE=\"KEY_PRESS\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.key)));
       return buff;
       //case EVENT_ON_ACTION: get_str_list(on_action);
       //case EVENT_ON:                *on;
 
     case EVENT_BEFORE_FIELD:
-      sprintf (buff, "EVENT_TYPE=\"BEFORE_FIELD\" FIELDLIST=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_field)));
+      sprintf (buff, "EVENT_TYPE=\"BEFORE_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_field)));
       return buff;
     case EVENT_AFTER_FIELD:
-      sprintf (buff, "EVENT_TYPE=\"AFTER_FIELD\" FIELDLIST=\"%s\"", xml_encode (get_field_list (a->event_data_u.after_field)));
+      sprintf (buff, "EVENT_TYPE=\"AFTER_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.after_field)));
       return buff;
     case EVENT_MENU_COMMAND:
       sprintf (buff, "EVENT_TYPE=\"MENU_COMMAND\" %s", get_menu_option (a->event_data_u.mnoption));
@@ -1117,13 +1117,13 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
 	  if (mode == MODE_BUY)
 	    {
 	      print_indent ();
-	      fprintf (output, "<EVENT %s>\n", get_event (&evt_list->event.event_val[a]->evt_data));
+	      fprintf (output, "<EVENT LINE=\"%d\" %s>\n", evt_list->event.event_val[a]->lineno, get_event (&evt_list->event.event_val[a]->evt_data));
 	      indent++;
 	    }
 
 	if (mode==MODE_BUY) {
 	  print_indent ();
-	  fprintf (output, "<COMMANDS Blah=\"1\">\n");
+	  fprintf (output, "<COMMANDS>\n");
 	  indent++;
 	}
 	  add_calltree_calls (s, evt_list->event.event_val[a]->on_event_commands, mode);
@@ -1280,7 +1280,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			  }
 			indent++;
 			print_indent ();
-			fprintf (output, "<ONFALSE>\n");
+			fprintf (output, "<ONFALSE LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.else_lineno);
 			indent++;
 	  print_indent ();
 			fprintf (output, "<COMMANDS >\n");
@@ -1895,7 +1895,7 @@ check_program (module_definition * mods, int nmodules)
 	fprintf(output,"<MODULES>\n");
 	for (a=0;a<nmodules;a++) {
 		int line;
-		fprintf(output,"<MODULE NAME=\"%s\" MODULENO=\"%d\">\n",mods[a].module_name,a);
+		fprintf(output,"<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\">\n",mods[a].module_name,a,xml_encode(mods[a].full_path_filename));
 		for (line=0;line<mods[a].source_code.source_code_len;line++) {
 			fprintf(output,"<LINE>%s</LINE>\n",xml_encode(mods[a].source_code.source_code_val[line]));
 		}
