@@ -1,0 +1,2 @@
+A4GL_DLL_OPTS=-fPIC --shared
+A4GL_C_OPTS=-fPIC

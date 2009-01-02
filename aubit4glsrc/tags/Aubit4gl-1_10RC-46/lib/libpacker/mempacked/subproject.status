@@ -1,0 +1,14 @@
+Name: libPACKER_MEMPACKED
+Parent: aubit4glsrc
+Description: Allows reading of forms etc from memory rather than a disk file.
+Functionality: PACKER
+Build:
+Example:  A4GL_PACKER
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 5
+Todo:
+Notes:  This is used when you use form_is_compiled etc.
+
