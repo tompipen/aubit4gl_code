@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.354 2008-12-18 20:51:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.355 2009-01-02 12:39:04 mikeaubury Exp $
 #
 */
 
@@ -1306,25 +1306,26 @@ int aclfgl_fgl_setcurrline(int n);
 int aclfgl_fgl_dialog_setcursor(int n) ;
 int aclfgl_fgl_dialog_getcursor(int n) ;
 int aclfgl_fgl_username(int n);
-int aclfgl_aclfgl_get_stack_trace(int n);
-int aclfgl_aclfgl_get_sql_requirement(int n);
+//int aclfgl_aclfgl_get_stack_trace(int n);
+//int aclfgl_aclfgl_get_sql_requirement(int n);
 int aclfgl_fgl_round(int nargs);
-int aclfgl_aclfgl_flushinp (int n);
-int aclfgl_aclfgl_embed_barcode (int _nargs);
-int aclfgl_aclfgl_send_to_ui(int _nargs);
-int aclfgl_aclfgl_client_set(int _nargs);
-int aclfgl_aclfgl_client_execute(int _nargs);
-int aclfgl_aclfgl_sendfile_to_ui(int _nargs);
-int aclfgl_aclfgl_getclientfile(int _nargs);
+//int aclfgl_aclfgl_flushinp (int n);
+//int aclfgl_aclfgl_embed_barcode (int _nargs);
+//int aclfgl_aclfgl_send_to_ui(int _nargs);
+//int aclfgl_aclfgl_client_set(int _nargs);
+//int aclfgl_aclfgl_client_execute(int _nargs);
+//int aclfgl_aclfgl_sendfile_to_ui(int _nargs);
+//int aclfgl_aclfgl_getclientfile(int _nargs);
 
 
 void A4GL_convert_to_pdf_x (void);
 void A4GL_convert_to_pdf_y (void);
 size_t A4GL_base64_decode (const char *src, unsigned char **outptr);
 
-int aclfgl_aclfgl_get_construct_element(int n) ; /* Gets a construct style string for a table/column for the specified value of the specified type/length, called in 4gl as : 
+/* Gets a construct style string for a table/column for the specified value of the specified type/length, called in 4gl as : 
 							call aclfgl_get_construct_element(tabname,colname,value,dtype,dtype_length) returning lv_str
-						 */
+ */
+//int aclfgl_aclfgl_get_construct_element(int n) ; 
 		
 
 
@@ -2339,9 +2340,9 @@ int aclfgl_fgl_getppid(int n);
 int aclfgl_fgl_winquestion(int n);
 int aclfgl_fgl_winbutton(int n);
 
-int aclfgl_aclfgl_get_user(int n);
-int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
-int aclfgl_aclfgl_read_pipe(int nargs);
+//int aclfgl_aclfgl_get_user(int n);
+//int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
+//int aclfgl_aclfgl_read_pipe(int nargs);
 void A4GL_pause_execution(void);
 void A4GL_pause_execution_msg(char *s);
 void A4GL_start_monitor (void);
@@ -2354,7 +2355,7 @@ void A4GL_clr_last_was_empty(void);
 void A4GL_push_date_expr(void);
 void A4GL_push_time_expr(void);
 void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap,int replace_0);
-int aclfgl_aclfgl_setenv(int n);
+//int aclfgl_aclfgl_setenv(int n);
 int A4GL_setenv(char *name, char *value, int overwrite);
 char * acl_getenv_only (char *s);
 void A4GL_log_changed_envvar(char *name,char *value);
@@ -2378,7 +2379,7 @@ void A4GL_log_sql_prepared(char *s);
 char *A4GLSQLCV_convert_sql (  char* target_dialect ,char* sql );
 int A4GL_strattr_to_num (char *s);
 void A4GL_stop_ui(int exitcode);
-int aclfgl_aclfgl_set_color (int _nargs);
+//int aclfgl_aclfgl_set_color (int _nargs);
 FILE *A4GL_get_stderr(void) ;
 
 char *A4GL_not_set_empty_string(void);
@@ -2668,8 +2669,8 @@ int A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, c
 
 int A4GL_fgl_keyval (int _np);
 int A4GL_aubit_strcasestr(char *h,char *n);
-int aclfgl_aclfgl_random(int n) ;
-int aclfgl_aclfgl_get_connection_username(int a) ;
+//int aclfgl_aclfgl_random(int n) ;
+//int aclfgl_aclfgl_get_connection_username(int a) ;
 int A4GL_valid_dt (char *s, int *data,int size);
 
 int A4GL_include_range_check (char *ss, char *ptr, int dtype);
@@ -2701,11 +2702,11 @@ int A4GL_delete_file(char *fname);
 void A4GL_status_ok(int sql_too);
 //void A4GL_set_sql_lineno(int n);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
-int aclfgl_aclfgl_getcwd (int a);
-int aclfgl_aclfgl_replace_start(int nargs);
-int aclfgl_aclfgl_call_in_shared(int a) ;
-int aclfgl_aclfgl_set_pdf_encoding(int n);
-int aclfgl_aclfgl_get_pdf_encoding(int n);
+//int aclfgl_aclfgl_getcwd (int a);
+//int aclfgl_aclfgl_replace_start(int nargs);
+//int aclfgl_aclfgl_call_in_shared(int a) ;
+//int aclfgl_aclfgl_set_pdf_encoding(int n);
+//int aclfgl_aclfgl_get_pdf_encoding(int n);
 void add_int8_support(void);
 void add_reference_support(void);
 int A4GL_dttoc (void *a, void *b, int size);
@@ -2826,8 +2827,8 @@ char *A4GL_get_clobbered_from(char *s) ;
 int A4GL_file_is_newer(char*lv_f1, char *lv_f2);
 size_t A4GL_base64_encode(const char *inp, size_t insize, char **outptr);
 void A4GL_set_stderr(FILE *errfile);
-int aclfgl_aclfgl_parse_csv(int nparam);
-int aclfgl_aclfgl_split_on_delimiter (int n);
+//int aclfgl_aclfgl_parse_csv(int nparam);
+//int aclfgl_aclfgl_split_on_delimiter (int n);
 int A4GL_has_associated_mem (void *orig,void *assoc);
 void A4GL_cvsql_replace_str (char *buff, char *from, char *to);
 long A4GL_bounds_check(long a,long maxbound); /* Check array bounds in a 4gl call */
@@ -2843,8 +2844,8 @@ void A4GL_strip_bracket (char *s);
 
 int A4GL_is_event_close (void *event);
 void A4GL_push_reference (void *x, int l);
-int aclfgl_aclfgl_walk_pointers (int n);
-int aclfgl_aclfgl_trim_nl(int n);
+//int aclfgl_aclfgl_walk_pointers (int n);
+//int aclfgl_aclfgl_trim_nl(int n);
 struct struct_form *A4GL_get_the_form_ptr(void) ;
 void A4GL_set_fld(void *f) ;
 struct struct_scr_field *A4GL_get_fld(void) ;
@@ -2861,6 +2862,9 @@ A4GL_byte_as_base64 (fglbyte *b);
 char *A4GL_get_full_filename(char *s);
 void
 A4GL_str_dot_to_dec (char *s, fgldecimal * d);
+
+#include "a4gl_builtin_funcs.h"
+
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 
 

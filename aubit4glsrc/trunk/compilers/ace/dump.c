@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.15 2008-07-06 11:34:25 mikeaubury Exp $
+# $Id: dump.c,v 1.16 2009-01-02 12:39:04 mikeaubury Exp $
 #*/
 
 /**
@@ -76,7 +76,7 @@ void decode_printfile (struct cmd_printfile *cmd);
 void decode_block (struct acerep_commands *cmd);
 void decode_call (struct cmd_call *cmd);
 void dump_commands (struct acerep_commands *cmd);
-char *decode_column (struct format *f);
+void print_column (struct format *f);
 void dump_format (void);
 void print_lvl (void);
 char *decode_op (int op);
@@ -758,12 +758,13 @@ dump_commands (struct acerep_commands *cmd)
  *
  * @todo Describe function
  */
-char *
-decode_column (struct format *f)
+void 
+print_column (struct format *f)
 {
-  static char buff[256];
-  sprintf (buff, "%s", f->column);
-  return buff;
+  //static char buff[256];
+	decode_expr(f->column);
+  //sprintf (buff, "%s", f->column);
+  //return buff;
 }
 
 /**
@@ -798,12 +799,12 @@ dump_format (void)
 	  printf ("ON EVERY ROW\n");
 	  break;
 	case FORMAT_BEFORE_GROUP:
-	  printf ("BEFORE GROUP OF %s\n",
-		  decode_column (&this_report.fmt.fmt_val[a]));
+	  printf ("BEFORE GROUP OF ");
+		  print_column (&this_report.fmt.fmt_val[a]);
 	  break;
 	case FORMAT_AFTER_GROUP:
-	  printf ("AFTER GROUP OF %s\n",
-		  decode_column (&this_report.fmt.fmt_val[a]));
+	  printf ("AFTER GROUP OF ");
+		  print_column (&this_report.fmt.fmt_val[a]);
 	  break;
 	case FORMAT_ON_LAST_ROW:
 	  printf ("ON LAST ROW\n");

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.42 2009-01-02 11:52:54 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.43 2009-01-02 12:39:04 mikeaubury Exp $
 */
 
 /**
@@ -71,7 +71,7 @@ extern "C"
 #include "a4gl_API_sql.h"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
-
+#include "a4gl_builtin_funcs.h"
 int A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int rep_end);
@@ -163,9 +163,10 @@ int A4GLSQL_set_status (int a, int sql);
 int A4GL_key_val(char *s);
 int A4GL_internal_build (void);
 char *A4GL_internal_version (void);
-int aclfgl_aclfgl_setenv(int n);
-int aclfgl_aclfgl_get_stack_trace(int n);
-int aclfgl_aclfgl_replace_start(int n);
+//int aclfgl_aclfgl_setenv(int n);
+//int aclfgl_aclfgl_get_stack_trace(int n);
+//int aclfgl_aclfgl_replace_start(int n);
+//int aclfgl_aclfgl_replace_in_string(int n);
 int A4GL_setenv(char *name, char *value, int overwrite);
 int A4GL_isyes(char *s);
 int A4GL_isno(char *s);
