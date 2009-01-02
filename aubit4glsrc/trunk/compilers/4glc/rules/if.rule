@@ -32,7 +32,7 @@ if_cmd	:
 		}
 		
 		set_cmdlineno($<integer_val>3);
-		$<cmd>$=new_if_cmd(&$<struct_if_cmd>$->truths, $<struct_if_cmd>$->whenfalse, $<integer_val>7,$<integer_val>9);
+		$<cmd>$=new_if_cmd(&$<struct_if_cmd>$->truths, $<struct_if_cmd>$->whenfalse, $<integer_val>9,$<integer_val>3);
 	}
 ;
 

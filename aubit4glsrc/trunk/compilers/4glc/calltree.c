@@ -1189,7 +1189,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.end)));
 		  fprintf (output, " STEP=\"%s\" LINE=\"%d\">\n",
 			   xml_encode (expr_as_string_when_possible
-				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.end)),
+				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.step)),
 				func_commands->cmds.cmds_val[a]->lineno
 	
 		);
@@ -1274,9 +1274,9 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			  {
 			    printed_if++;
 			    print_indent ();
-			    fprintf (output, "<IF CONDITION=\"%s\">\n",
+			    fprintf (output, "<IF CONDITION=\"%s\" LINE=\"%d\">\n",
 				     xml_encode (expr_as_string_when_possible
-						 (ifcmd->truths.conditions.conditions_val[0].test_expr)));
+						 (ifcmd->truths.conditions.conditions_val[0].test_expr)), func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.lineno );
 			  }
 			indent++;
 			print_indent ();
@@ -1851,6 +1851,13 @@ check_program (module_definition * mods, int nmodules)
 			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition);
 	      break;
 
+	    case E_MET_PDF_REPORT_DEFINITION:
+	      add_function (a, mods[a].module_name,
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno,
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname,
+			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition);
+	      break;
+
 
 	    default:
 	      // Ignore...
@@ -1922,7 +1929,7 @@ check_program (module_definition * mods, int nmodules)
   	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
 	}
 
-	  fprintf (output, "<FUNCTION NAME=\"%s\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
 	  f = functions[a].ptr;
 	  indent++;
 	  print_indent(); fprintf (output, "<COMMANDS >\n");
@@ -1940,18 +1947,27 @@ check_program (module_definition * mods, int nmodules)
 		addFunction(currfunc);
 		strcpy(currmod,functions[a].module);
   	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
-	  fprintf (output, "<REPORT NAME=\"%s\" MODULE=\"%s\"  LINE=\"%d\">\n", functions[a].function, functions[a].module,
+	if (functions[a].f_or_r == 'P') {
+	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"PDFREPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no,
 		   functions[a].line);
+	} else {
+	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"REPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no,
+		   functions[a].line);
+	}
 	  r = functions[a].ptr;
 	  indent++;
 
+	  print_indent ();
+	fprintf(output,"<COMMANDS>\n");
 	  for (b = 0; b < r->report_format_section->entries.entries_len; b++)
 	    {
 	      if (calls_something (r->report_format_section->entries.entries_val[b]->rep_sec_commands))
 		{
 		  print_indent ();
-		  fprintf (output, "<SECTION ID=\"%d\" TYPE=\"%s\">\n", b,
-			   decode_rb (r->report_format_section->entries.entries_val[b]->rb_block.rb));
+		  fprintf (output, "<SECTION ID=\"%d\" TYPE=\"%s\" LINE=\"%d\">\n", b,
+			   decode_rb (r->report_format_section->entries.entries_val[b]->rb_block.rb),
+			r->report_format_section->entries.entries_val[b]->lineno
+				);
 		  indent++;
 		  print_indent(); fprintf (output, "<COMMANDS >\n");
 		  indent++;
@@ -1963,6 +1979,8 @@ check_program (module_definition * mods, int nmodules)
 		  fprintf (output, "</SECTION>\n");
 		}
 	    }
+	  print_indent ();
+	fprintf(output,"</COMMANDS>\n");
 	  indent--;
 	}
 

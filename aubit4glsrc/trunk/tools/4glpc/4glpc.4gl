@@ -299,7 +299,11 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
+	if lv_arg matches "-o*" and lv_arg!="-o" then
+		let mv_output=lv_arg[3,200]
 
+		continue for
+	end if
 	CASE lv_arg
 		WHEN "-?" 			call show_help(2)  continue for
 		WHEN "--verbose"		let mv_verbose=mv_verbose+1 continue for
@@ -411,6 +415,10 @@ endcode
 			LET lv_arg=arg_val(a+1)
 			exit for
 		END IF
+		if lv_arg matches "-o*" then
+			let lv_arg=lv_arg[3,200]
+			exit for
+		end if
   	END FOR
 
 	# Guess that its probably an executable..
@@ -509,6 +517,10 @@ end if
 
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
+	if lv_arg!="-o" and lv_arg matches "-o*" then
+		let mv_output=lv_arg[3,200]
+		continue for
+	end if
 	CASE lv_arg
 		WHEN "-?" 			call show_help(2)  continue for
 		WHEN "-help" 			call show_help(2)  continue for

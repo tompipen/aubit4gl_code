@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.138 2008-10-09 17:06:25 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.139 2009-01-02 08:52:21 mikeaubury Exp $
 #
 */
 
@@ -112,13 +112,14 @@ static char running_program[256];
  *
  * If in curses mode exit curses.
  */
-
+/*
 int
 fgl_callback (int nargs, char *argv[])
 {
   // Does nothing - but required...
   return 0;
 }
+*/
 
 
 void
@@ -278,7 +279,7 @@ A4GL_fgl_start (int nargs, char *argv[])
 #endif
 
 
-  fgl_callback (nargs, argv);
+  //fgl_callback (nargs, argv);
 
 
   /* Initialize the UI library (ie load the dll) */

@@ -16,7 +16,7 @@ char *lint_module = 0;
 static void load_boltons (char *fname);
 static int find_function (char *s);
 static void linearise_expressions (struct expr_str_list *list);
-static void check_boolean (char *module_name, int lineno, expr_str * s,int last_was_sql);
+static void check_boolean (char *module_name, int lineno, expr_str * s,int last_was_sql,int done_true_false);
 //void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
 
 //void dump_prototypes(void) ;
@@ -27,6 +27,7 @@ static char *local_xml_escape (char *s);
 static void cache_expressions (struct expr_str_list *list, struct commands *cmds);
 static void cache_expression (struct expr_str_list *list, struct expr_str **eptr);
 static void cache_expression_list (struct expr_str_list *list, struct expr_str_list *srclist);
+static int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr,int already_done_true_and_false);
 extern module_definition this_module;
 int expr_datatype (struct expr_str *p);
 static struct module_definition *find_module(module_definition * mods, int nmodules, char *name) ;
@@ -547,7 +548,7 @@ static int isParameter(struct variable *var, expr_str_list *parameters) {
 char *str;
 //variable_list vlist;
 int a;
-
+if (parameters==0) return 0;
 for (a=0;a<parameters->list.list_len;a++) {
 		if (parameters->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
 			str=lint_get_variable_usage_as_string(parameters->list.list_val[a]->expr_str_u.expr_variable_usage);
@@ -802,6 +803,7 @@ int cnt;
 				if (nvars==0) {
 		      			A4GL_lint (module_name, r->lineno, "SELECTNOTINTO", "SELECT WITH NO INTO", 0);
 				} else {
+				printf("nvars=%d ncols=%d\n",nvars,ncols);
 		      			A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
 				}
 			}
@@ -874,6 +876,7 @@ int cnt;
 	      //expr_str *e;
  		struct command *r2;
 		int last_was_sql=0;
+			int done=0;
 	      ensure_bool (if_c->conditions.conditions_val[b].test_expr, 0);
 
 
@@ -882,6 +885,7 @@ int cnt;
 		{
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "IFFALSE", "IF condition is always FALSE", 0);
+		done++;
 		}
 
 	      if (A4GL_is_just_int_literal (if_c->conditions.conditions_val[b].test_expr, 1))
@@ -889,6 +893,7 @@ int cnt;
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "IFTRUE", "IF condition is always TRUE", 0);
 		  //A4GL_lint("IF condition is always TRUE");
+		done++;
 		}
 
 
@@ -919,8 +924,7 @@ int cnt;
 			}
 		}
 		// Further checks - like STATUS and SQLCA usage...
-		check_boolean(module_name, r->lineno, if_c->conditions.conditions_val[b].test_expr,last_was_sql);
-
+		check_boolean(module_name, r->lineno, if_c->conditions.conditions_val[b].test_expr,last_was_sql,done);
 	    }
 	}
 
@@ -1032,17 +1036,22 @@ int cnt;
 		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASESTR", "Use of String for WHEN in a CASE with no expression", 0);
 		    }
 
-
 		  if (A4GL_is_just_int_literal (expr, 0))
 		    {
 		      yylineno = r->lineno;
 		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASEFALSE", "WHEN condition is always FALSE", 0);
+			continue;
 		    }
 		  if (A4GL_is_just_int_literal (expr, 1))
 		    {
 		      yylineno = r->lineno;
 		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASETRUE", "WHEN condition is always TRUE", 0);
+			continue;
 		    }
+		  if (A4GL_is_just_literal (NULL,expr,1)) {
+		      yylineno = r->lineno;
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASECONST", "WHEN condition is constant", 0);
+		}
 		}
 	    }
 
@@ -4622,6 +4631,13 @@ static void linearise_expressions (struct expr_str_list *list)
 	  }
 	  break;
 
+
+	case ET_EXPR_BRACKET:
+	  {
+	    cache_expression (list, &list->list.list_val[b]->expr_str_u.expr_expr);
+	  }
+	  break;
+
 	case ET_EXPR_OP_IN:
 	case ET_EXPR_OP_NOT_IN:
 	  {
@@ -4750,7 +4766,9 @@ add_cache_expression (struct expr_str_list *list, expr_str * e)
 
   list->list.list_len++;
   list->list.list_val = realloc (list->list.list_val, sizeof (expr_str *) * list->list.list_len);
-  list->list.list_val[list->list.list_len - 1] = e;
+  list->list.list_val[list->list.list_len - 1] = e; //malloc(sizeof(expr_str));
+
+  //memcpy(list->list.list_val[list->list.list_len - 1], e,sizeof(expr_str));
 
   return list->list.list_len - 1;
 }
@@ -5191,7 +5209,7 @@ char *decode_cmd_type(enum cmd_type value) {
 
 
 
-void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql)
+void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql,int done_true_false)
 {
   struct expr_str s2;
   struct expr_str *s3;
@@ -5264,4 +5282,96 @@ void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sq
 	    }
 	}
     }
+	if (A4GL_is_just_literal(&list,NULL,done_true_false)) {
+		      A4GL_lint (module_name, lineno, "IFCONST", "IF condition is constant", 0);
+	}
+}
+
+
+
+int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr,int already_done_true_and_false)
+{
+  int a;
+  expr_str str;
+
+  struct expr_str_list listv;
+if (list==0) {
+  if (ptr == NULL)
+    return 0;
+  list=&listv;
+  listv.list.list_len = 0;
+  listv.list.list_val = 0;
+  memcpy (&str, ptr, sizeof (str));
+  ptr = &str;
+  cache_expression (&listv, &ptr);
+  linearise_expressions (&listv);
+}
+
+
+if (list==NULL) return 0;
+if (list->list.list_len==1 && already_done_true_and_false) {
+	if (list->list.list_val[0]->expr_type==ET_EXPR_TRUE) return 0;
+	if (list->list.list_val[0]->expr_type==ET_EXPR_FALSE) return 0;
+}
+  for (a = 0; a < list->list.list_len; a++)
+    {
+	int isliteral=0;
+		switch (list->list.list_val[a]->expr_type) {
+			case ET_EXPR_OP_OR:
+			case ET_EXPR_OP_AND:
+			case ET_EXPR_BRACKET:
+			case ET_EXPR_LITERAL_DOUBLE_STR:
+                	case ET_EXPR_LITERAL_LONG:
+                	case ET_EXPR_LITERAL_STRING:
+                	case ET_EXPR_LITERAL_EMPTY_STRING:
+                	case ET_EXPR_TRANSLATED_STRING:
+                	case ET_EXPR_QUOTED_STRING:
+                	case ET_EXPR_NEG:
+                	case ET_EXPR_NOT:
+                	case ET_EXPR_NULL:
+    	case ET_EXPR_OP_ADD:
+    	case ET_EXPR_CAST:
+        case ET_EXPR_OP_CONCAT:
+        case ET_EXPR_OP_DIV:
+        case ET_EXPR_OP_EQUAL:
+        case ET_EXPR_OP_GREATER_THAN:
+        case ET_EXPR_OP_GREATER_THAN_EQ:
+        case ET_EXPR_OP_LESS_THAN:
+        case ET_EXPR_OP_LESS_THAN_EQ:
+        case ET_EXPR_OP_LIKE:
+        case ET_EXPR_OP_MATCHES:
+        case ET_EXPR_OP_MOD:
+        case ET_EXPR_OP_MULT:
+        case ET_EXPR_OP_NOT_EQUAL:
+        case ET_EXPR_OP_NOT_LIKE:
+        case ET_EXPR_OP_NOT_MATCHES:
+        case ET_EXPR_OP_POWER:
+        case ET_EXPR_OP_SUB:
+        case ET_EXPR_OP_USING:
+        case ET_EXPR_OP_IN:
+        case ET_EXPR_OP_NOT_IN:
+        case ET_EXPR_OP_IN_SUBQUERY:
+        case ET_EXPR_OP_NOTIN_SUBQUERY:
+        case ET_EXPR_OP_SPACES:
+        case ET_EXPR_OP_ISNULL:
+        case ET_EXPR_OP_ISNOTNULL:
+        case ET_EXPR_OP_CLIP:
+        case ET_EXPR_OP_YEAR:
+        case ET_EXPR_OP_MONTH:
+        case ET_EXPR_OP_DAY:
+        case ET_EXPR_OP_HOUR:
+        case ET_EXPR_OP_MINUTE:
+        case ET_EXPR_OP_SECOND:
+        case ET_EXPR_CACHED:
+
+				isliteral=1;
+			 	break;
+		default: 
+				break;
+		}
+		if (isliteral==0) return 0;
+    }
+
+
+  return 1;
 }
