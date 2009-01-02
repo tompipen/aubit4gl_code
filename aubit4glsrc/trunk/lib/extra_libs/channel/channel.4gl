@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.21 2008-11-19 17:39:49 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.22 2009-01-02 11:52:54 mikeaubury Exp $
 }
 
 {**
@@ -45,12 +45,19 @@ code
 	#define CHANNEL_OUT		'M'
 	#define CHANNEL_DELIM		'N'
 	#define CHANNEL_PIPE		'P'
- void A4GL_exitwith (char *s);
+ //void A4GL_exitwith (char *s);
 void *A4GL_find_pointer (const char *pname, char t);
 //int A4GL_has_pointer (const char *pname, char t);
 long A4GL_has_pointer (const char *pname, char t);
 void A4GL_del_pointer (char *pname, char t);
 void A4GL_add_pointer (char *orig_name, char type, void *ptr);
+int aclfgl_read(int ni,void *i,int no,void *o) ;
+#ifdef USING_BINDING
+int aclfgl_write(int ni,void *i,int no,void *o) ;
+#else
+int aclfgl_write (int n) ;
+#endif
+
 endcode
 
 
@@ -307,8 +314,7 @@ end function
 
 
 code
-int
-aclfgl_read(int ni,void *i,int no,void *o) {
+int aclfgl_read(int ni,void *i,int no,void *o) {
 char *handle;
 char buff[20000];
 struct BINDING *ibind;
@@ -329,7 +335,7 @@ obind=o;
 
 
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
-		delim_c=(char )A4GL_find_pointer(handle,CHANNEL_DELIM);
+		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
 	} else {
 		delim_c=' ';
 	}
@@ -418,7 +424,7 @@ obind=o;
 
 
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
-		delim_c=(char )A4GL_find_pointer(handle,CHANNEL_DELIM);
+		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
 	} else {
 		delim_c=' ';
 	}
@@ -471,7 +477,7 @@ A4GL_trim(handle);
 
 
 if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
-	delim_c=(char )A4GL_find_pointer(handle,CHANNEL_DELIM);
+		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
 } else {
 	delim_c=' ';
 }

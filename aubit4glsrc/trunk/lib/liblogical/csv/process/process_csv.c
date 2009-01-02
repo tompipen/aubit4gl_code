@@ -14,7 +14,7 @@ struct csv_report_layout *layout;
 FILE *rep_fout=0;
 
 
-int A4GLLOGREP_PROC_initlib() {
+int A4GLLOGREPPROC_initlib(void) {
 	return 1;
 }
 
@@ -35,7 +35,7 @@ int RP_load_file(void *report, FILE* fin) {
 }
 
 
-void start_block(int rb) {
+static void start_block(int rb) {
 int x;
 int y;
 int a;
@@ -63,7 +63,7 @@ for (a=0;a<layout->nblocks;a++) {
 
 }
 
-void end_block(int rb,struct s_rbx *rbx) {
+static void end_block(int rb,struct s_rbx *rbx) {
 int a;
 int x;
 int y;
@@ -128,7 +128,7 @@ for (a=0;a<layout->nblocks;a++) {
 }
 
 
-void process_block(int block_id,int entry_id,char *s) {
+static void process_block(int block_id,int entry_id,char *s) {
 int a;
 int x;
 int y;

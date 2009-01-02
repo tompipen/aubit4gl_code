@@ -1,4 +1,4 @@
-char *A4GL_strip_quotes(char *s);
+//char *A4GL_strip_quotes(char *s);
 
 struct s_pos_list {
 	int start;
@@ -46,4 +46,9 @@ struct s_dbloadline {
 #ifndef A4GL_debug
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #endif
-
+int is_column_name(char *s);
+char *conv_dbl(char *s);
+int process_entry (struct s_dbloadline *dbload);
+void a4gl_dbload_yyerror(char *s);
+int a4gl_dbload_yylex (void);
+int parse(char *lv_cmd_file);

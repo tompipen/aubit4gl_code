@@ -1,4 +1,4 @@
-char *get_str_list_as_string(str_list *list,char *sep) {
+static char *get_str_list_as_string(str_list *list,char *sep) {
 char *rbuff=0;
 int a;
         for (a=0;a<list->str_list_entry.str_list_entry_len;a++) {
@@ -15,7 +15,7 @@ static char *get_select_list_item_list_with_separator (struct s_select *select, 
   int a;
   char *rval;
   if (slist == 0)
-    return;
+    return NULL;
 
   for (a = 0; a < slist->list.list_len; a++)
     {
@@ -28,7 +28,7 @@ static char *get_select_list_item_list_with_separator (struct s_select *select, 
     return rval;
 }
 
-void
+static void
 search_sql_variables (struct s_select_list_item_list *l,char dir)
 {
   int a;
@@ -45,7 +45,7 @@ search_sql_variables (struct s_select_list_item_list *l,char dir)
     }
 }
 
-char *
+static char *
 get_select (struct s_select *s, char *forUpdate)
 {
   char *str;
@@ -115,7 +115,7 @@ get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted)
   if (insertCmd->value_list)
     {
         char *p;
-        char *p2;
+        //char *p2;
         p=get_select_list_item_list_with_separator (NULL, insertCmd->value_list, ",");
         A4GL_assertion(p==0,"No values list!");
 	A4GL_set_associated_mem(insertCmd, p);
@@ -144,7 +144,7 @@ char *get_update_cmd(struct struct_update_cmd *updateCmd, int *converted) {
         char *rval;
         //struct struct_update_cmd *u;
         struct s_select fake_select;
-        struct s_select_list_item_list l;
+        //struct s_select_list_item_list l;
         struct s_table t;
         char *ptr;
 static char buff[64000];
@@ -210,7 +210,7 @@ strcpy(buff,"");
             // Same length..
             for (a = 0; a < updateCmd->value_list->list.list_len; a++)
               {
-	char *rval2=0;
+	//char *rval2=0;
                 if (a)
                   {
                         strcat(buff,",");
@@ -292,7 +292,7 @@ char *ptr;
 
           if (deleteCmd->where_clause->expr_type == ET_EXPR_WHERE_CURRENT_OF)
             {
-                char buff[2000];
+                //char buff[2000];
                 if (deleteCmd->where_clause->expr_str_u.expr_expr->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
                         //yylineno=line_for_cmd;
                         //a4gl_yyerror("You cant use a variable id in this position...");

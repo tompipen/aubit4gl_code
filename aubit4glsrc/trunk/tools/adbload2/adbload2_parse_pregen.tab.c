@@ -88,15 +88,16 @@
 #define YYDEBUG 1
 #define _NO_YYPARSE_PROTO_
 /* #define _NO_YYLEX_PROTO_ */
+#include "a4gl_libaubit4gl.h"
 #include "a4gl_dbload_int.h"
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-int is_column_name(char *s);
-int process_entry (struct s_dbloadline *dbload);
-char *conv_dbl(char *s);
-void a4gl_dbload_yyerror(char *s);
-int a4gl_dbload_yylex (void);
+//int is_column_name(char *s);
+//int process_entry (struct s_dbloadline *dbload);
+//char *conv_dbl(char *s);
+//void a4gl_dbload_yyerror(char *s);
+//int a4gl_dbload_yylex (void);
 
 /*
 =====================================================================
@@ -115,7 +116,7 @@ struct filedef *m_filedef=0;
 
 
 /* Line 189 of yacc.c  */
-#line 119 "adbload2_parse.tab.c"
+#line 120 "adbload2_parse.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -170,7 +171,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 42 "adbload2_parse.y"
+#line 43 "adbload2_parse.y"
 
 	char	str[30000];
 	char *ptr;
@@ -185,7 +186,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 189 "adbload2_parse.tab.c"
+#line 190 "adbload2_parse.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -197,7 +198,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 201 "adbload2_parse.tab.c"
+#line 202 "adbload2_parse.tab.c"
 
 #ifdef short
 # undef short
@@ -494,10 +495,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    63,    63,    64,    68,    68,    72,    78,    88,    96,
-     107,   113,   123,   131,   132,   138,   145,   152,   162,   168,
-     180,   183,   186,   192,   199,   200,   203,   209,   212,   217,
-     229,   233,   236,   242,   245,   246,   247
+       0,    64,    64,    65,    69,    69,    73,    79,    89,    97,
+     108,   114,   124,   132,   133,   139,   146,   153,   163,   169,
+     181,   184,   187,   193,   200,   201,   204,   210,   213,   218,
+     230,   234,   237,   243,   246,   247,   248
 };
 #endif
 
@@ -1438,14 +1439,14 @@ yyreduce:
         case 4:
 
 /* Line 1455 of yacc.c  */
-#line 68 "adbload2_parse.y"
+#line 69 "adbload2_parse.y"
     { m_filedef=(yyvsp[(1) - (1)].fileelem); ;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 72 "adbload2_parse.y"
+#line 73 "adbload2_parse.y"
     {
 		(yyval.dbload)=malloc(sizeof(struct s_dbloadline));
 		(yyval.dbload)->f=m_filedef;
@@ -1457,7 +1458,7 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 78 "adbload2_parse.y"
+#line 79 "adbload2_parse.y"
     {
 	                (yyval.dbload)=malloc(sizeof(struct s_dbloadline));
 	                (yyval.dbload)->f=m_filedef;
@@ -1469,7 +1470,7 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 88 "adbload2_parse.y"
+#line 89 "adbload2_parse.y"
     {
 		(yyval.fileelem)=malloc(sizeof(struct filedef));
 		(yyval.fileelem)->type=0;
@@ -1483,7 +1484,7 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 96 "adbload2_parse.y"
+#line 97 "adbload2_parse.y"
     {
 		(yyval.fileelem)=malloc(sizeof(struct filedef));
 		(yyval.fileelem)->type=1;
@@ -1497,7 +1498,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 107 "adbload2_parse.y"
+#line 108 "adbload2_parse.y"
     {
 		(yyval.field_pos_list)=malloc(sizeof(struct s_field_pos_list));
 		(yyval.field_pos_list)->npos=1;
@@ -1509,7 +1510,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 113 "adbload2_parse.y"
+#line 114 "adbload2_parse.y"
     {
 		(yyval.field_pos_list)=(yyvsp[(1) - (3)].field_pos_list);
 		(yyval.field_pos_list)->npos++;
@@ -1521,7 +1522,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 123 "adbload2_parse.y"
+#line 124 "adbload2_parse.y"
     {
 		(yyval.field_pos)=malloc(sizeof(struct s_field_pos));
 		(yyval.field_pos)->name=strdup((yyvsp[(1) - (3)].str));
@@ -1533,14 +1534,14 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 131 "adbload2_parse.y"
+#line 132 "adbload2_parse.y"
     { (yyval.ptr)=0; ;}
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 132 "adbload2_parse.y"
+#line 133 "adbload2_parse.y"
     {
 			(yyval.ptr)=strdup(A4GL_strip_quotes((yyvsp[(3) - (3)].str)));
 	;}
@@ -1549,7 +1550,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 138 "adbload2_parse.y"
+#line 139 "adbload2_parse.y"
     {
 	strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 	;}
@@ -1558,7 +1559,7 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 145 "adbload2_parse.y"
+#line 146 "adbload2_parse.y"
     {
 		(yyval.nposlist)=malloc(sizeof(struct s_nposlist));
 		(yyval.nposlist)->npos=1;
@@ -1571,7 +1572,7 @@ yyreduce:
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 152 "adbload2_parse.y"
+#line 153 "adbload2_parse.y"
     {
 		(yyvsp[(1) - (3)].nposlist)->npos++;
 		(yyvsp[(1) - (3)].nposlist)->list_of_character_positions=realloc((yyvsp[(1) - (3)].nposlist)->list_of_character_positions,sizeof(struct s_pos_list *)*(yyvsp[(1) - (3)].nposlist)->npos);
@@ -1584,7 +1585,7 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 162 "adbload2_parse.y"
+#line 163 "adbload2_parse.y"
     {
 		(yyval.pos_list)=malloc(sizeof(struct s_pos_list));
 		(yyval.pos_list)->start=atoi((yyvsp[(1) - (1)].str));
@@ -1596,7 +1597,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 168 "adbload2_parse.y"
+#line 169 "adbload2_parse.y"
     {
 		(yyval.pos_list)=malloc(sizeof(struct s_pos_list));
 		(yyval.pos_list)->start=atoi((yyvsp[(1) - (3)].str));
@@ -1608,7 +1609,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 180 "adbload2_parse.y"
+#line 181 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 		;}
@@ -1617,7 +1618,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 183 "adbload2_parse.y"
+#line 184 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 		;}
@@ -1626,7 +1627,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 186 "adbload2_parse.y"
+#line 187 "adbload2_parse.y"
     {
 			strcpy((yyval.str),A4GL_strip_quotes((yyvsp[(1) - (1)].str)));
 	;}
@@ -1635,7 +1636,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 192 "adbload2_parse.y"
+#line 193 "adbload2_parse.y"
     {
 			(yyval.insertexpr)=malloc(sizeof(struct insert));
 			(yyval.insertexpr)->tabname=strdup((yyvsp[(3) - (5)].str));
@@ -1646,14 +1647,14 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 199 "adbload2_parse.y"
+#line 200 "adbload2_parse.y"
     { strcpy((yyval.str),""); ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 200 "adbload2_parse.y"
+#line 201 "adbload2_parse.y"
     {
 			sprintf((yyval.str),"(%s) VALUES (%s)",(yyvsp[(2) - (7)].str),(yyvsp[(6) - (7)].str));
 	;}
@@ -1662,7 +1663,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 203 "adbload2_parse.y"
+#line 204 "adbload2_parse.y"
     {
 			sprintf((yyval.str),"VALUES (%s)",(yyvsp[(3) - (4)].str));
 	;}
@@ -1671,7 +1672,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 209 "adbload2_parse.y"
+#line 210 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 	;}
@@ -1680,7 +1681,7 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 212 "adbload2_parse.y"
+#line 213 "adbload2_parse.y"
     {
 		sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 	;}
@@ -1689,7 +1690,7 @@ yyreduce:
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 217 "adbload2_parse.y"
+#line 218 "adbload2_parse.y"
     {
 	if (is_column_name((yyvsp[(1) - (1)].str))) {
 		char *ptr;
@@ -1705,7 +1706,7 @@ yyreduce:
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 233 "adbload2_parse.y"
+#line 234 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 		;}
@@ -1714,7 +1715,7 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 236 "adbload2_parse.y"
+#line 237 "adbload2_parse.y"
     {
 		sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 		;}
@@ -1723,7 +1724,7 @@ yyreduce:
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 242 "adbload2_parse.y"
+#line 243 "adbload2_parse.y"
     {
 			sprintf((yyval.str),"\"%s\"",(yyvsp[(1) - (1)].str));
 		;}
@@ -1732,7 +1733,7 @@ yyreduce:
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 247 "adbload2_parse.y"
+#line 248 "adbload2_parse.y"
     {
 	        if (is_column_name((yyvsp[(1) - (1)].str))) {
 			char *ptr;
@@ -1748,7 +1749,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1752 "adbload2_parse.tab.c"
+#line 1753 "adbload2_parse.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1960,7 +1961,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 259 "adbload2_parse.y"
+#line 260 "adbload2_parse.y"
 
 
 

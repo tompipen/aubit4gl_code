@@ -919,7 +919,7 @@ print_let_cmd (struct_let_cmd * cmd_data)
       real_print_expr_list (ptr);
 
 	if (from_exprs==0) {
-		int a;
+		//int a;
 		struct_init_cmd init_cmd;
 		init_cmd.varlist=cmd_data->vars;
 		init_cmd.tonull=1;

@@ -87,7 +87,7 @@ char *sw_elem_unions[1000]={"expr_type",0};
 
 int unions_cnt=1;
 
-void add_as_union(char *s) {
+static void add_as_union(char *s) {
         //sw_elem_unions[unions_cnt]=strdup(sw_elem_dtd);
         unions[unions_cnt++]=strdup(s);
 

@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.18 2008-07-06 11:34:38 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.19 2009-01-02 11:52:54 mikeaubury Exp $
 #
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c_gtk.c,v 1.18 2008-07-06 11:34:38 mikeaubury Exp $";
+		"$Id: compile_c_gtk.c,v 1.19 2009-01-02 11:52:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -84,7 +84,7 @@
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
-
+#include "compile_c_gtk.h"
 /*
 =====================================================================
                     Variables definitions

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.148 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.149 2009-01-02 11:52:54 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -2900,7 +2900,7 @@ static char fmt[200];
 
 strcpy(fmt,fmt_orig);
 for (offset=0;offset<=strlen(fmt);offset++) {
-        fmt[offset]=tolower(fmt[offset]);
+        fmt[offset]=a4gl_tolower(fmt[offset]);
 }
 
 A4GL_debug("get_data_from_formatted_field called with '%s' '%s' '%s'", srch,str,fmt);
@@ -2926,13 +2926,13 @@ int a;
 
                 if (data[a]>='0'&&data[a]<='9')  {
                         // Have we got a digit where we'd expect one ?
-                        if (tolower(fmt[a])=='d'|| tolower(fmt[a])=='m' || tolower(fmt[a])=='y') ;
+                        if (a4gl_tolower(fmt[a])=='d'|| a4gl_tolower(fmt[a])=='m' || a4gl_tolower(fmt[a])=='y') ;
                         else {
                                 return 0;
                         }
                 } else {
                         // Have we got a non-digit where we'd expect a digit ?
-                        if (tolower(fmt[a])=='d'|| tolower(fmt[a])=='m' || tolower(fmt[a])=='y') return 0;
+                        if (a4gl_tolower(fmt[a])=='d'|| a4gl_tolower(fmt[a])=='m' || a4gl_tolower(fmt[a])=='y') return 0;
                 }
         }
         A4GL_debug("Got what looks like a valid date for the format");

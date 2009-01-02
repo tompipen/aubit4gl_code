@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.15 2008-07-06 11:34:27 mikeaubury Exp $
+# $Id: main.c,v 1.16 2009-01-02 11:52:54 mikeaubury Exp $
 #
 */
 
@@ -54,7 +54,7 @@
 	extern int was_ok=0;
 #endif
 #include "a4gl_libaubit4gl.h"
-
+#include "sql_compiler_util.h"
 extern int db_used;
 
 extern int sqlparse_yydebug;

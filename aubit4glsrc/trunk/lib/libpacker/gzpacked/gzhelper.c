@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gzhelper.c,v 1.2 2008-07-06 11:34:39 mikeaubury Exp $
+# $Id: gzhelper.c,v 1.3 2009-01-02 11:52:54 mikeaubury Exp $
 #*/
 
 /**
@@ -73,7 +73,7 @@
 -------------------------------------------------------------
 */
 
-FILE *
+static FILE *
 A4GL_gz_try_to_open (char *path, char *name, int keepopen)
 {
 char buff[2048];

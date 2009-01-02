@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.324 2008-10-31 14:41:12 mikeaubury Exp $
+# $Id: mod.c,v 1.325 2009-01-02 11:52:54 mikeaubury Exp $
 #
 */
 
@@ -4815,9 +4815,11 @@ return fully_expand_variables_in_expr_str_list(p);
 //expand_variables_in_expr_str_list(p,0,1);
 }
 
+#ifdef NDEF
 int dump_x(void *p) {
 return 0;
 }
+#endif
 
 
 #ifdef OLD

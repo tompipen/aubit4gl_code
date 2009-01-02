@@ -71,6 +71,7 @@ code
 int A4GL_file_length(char *fname);
 int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
 int A4GL_move_file(char *from,char *to);
+int isverbose_c(int n) ;
 endcode
 
 function init()

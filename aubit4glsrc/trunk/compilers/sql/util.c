@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.71 2008-09-19 09:02:27 mikeaubury Exp $
+# $Id: util.c,v 1.72 2009-01-02 11:52:54 mikeaubury Exp $
 #
 */
 
@@ -41,6 +41,7 @@
 
 #include "a4gl_API_sqlparse_lib.h"
 #include "a4gl_libaubit4gl.h"
+#include "sql_compiler_util.h"
 
 //#ifdef SIMPLIFIED
 //#include "../4glc/lib4glc/fix_insert.c"
@@ -102,7 +103,7 @@ void dummy_prevent_sqlparse_warnings_dummy (void);
 void
 dummy_prevent_sqlparse_warnings_dummy (void)
 {
-  void *dummy;
+  //void *dummy;
 
   //dummy=yy_flex_realloc( 0,0 );
   yyunput (0, 0);
@@ -363,7 +364,6 @@ fix_update_expr (int mode)
   return big_buff;
 }
 
-#endif
 
 
 
@@ -395,6 +395,7 @@ static void
 A4GL_lex_printcomment (char *fmt, ...)
 {
 }
+#endif
 
 /**
  *
@@ -409,6 +410,7 @@ addmap_runtime (char *s, char *f)
   A4GL_log_sql_prepared_map (buff);
 }
 
+#ifdef REDUNDANT
 /**
  *
  * @todo Describe function
@@ -440,8 +442,6 @@ start_bind (char c, int n)
   return 0;
 }
 
-
-
 /**
  *
  * @todo Describe function
@@ -464,6 +464,7 @@ rm_quotes (char *s)
   strcpy (s, buff);
 }
 
+#endif
 
 /**
  *
@@ -635,6 +636,7 @@ sqlparse_yyerror (char *s)
 }
 
 
+#ifdef REDUNDANT
 /**
  *
  * @todo Describe function
@@ -646,8 +648,10 @@ convstrsql (char *s)
     return s;
   return convstr_dbl_to_single (s);
 }
+#endif
 
 
+#ifdef REDUNDANT
 /**
  *
  * @todo Describe function
@@ -693,7 +697,7 @@ convstr_dbl_to_single (char *s)
     }
   return buff;
 }
-
+#endif
 
 
 /**
@@ -715,6 +719,7 @@ static void a4gl_char_cpy(char *dest,char *src,int dbl) {
 */
 
 
+#ifdef REDUNDANT
 
 /**
  *
@@ -750,6 +755,7 @@ if (A4GL_get_malloc_context()==NULL ) {
 	acl_free(s); 
 }
 }
+#endif
 
 /* andrej 
 static void print_exec_sql_bound (char *s) {
@@ -779,6 +785,7 @@ char s[256];
 */
 
 
+#ifdef REDUNDANT
 /**
  *
  * @todo Describe function
@@ -798,6 +805,7 @@ print_load_str (char *fname, char *delim, char *sql)
 {
   printf ("Invalid syntax for a prepare statement");
 }
+#endif
 
 /**
  *
@@ -866,6 +874,7 @@ print_exec_select (char *s)
 
 
 
+#ifdef REDUNDAN
 /**
  *
  * @todo Describe function
@@ -875,6 +884,7 @@ print_undo_use (char *s)
 {
   printf ("Invalid in prepare");
 }
+
 
 /**
  *
@@ -894,6 +904,7 @@ print_use_session (char *s)
 {
 }
 
+#endif
 
 /**
  *
@@ -931,14 +942,14 @@ print_unable_to_parse ()
 
 
 
-char *remove_duplicate_nl(char *orig) {
+static char *remove_duplicate_nl(char *orig) {
 char *s;
 int a;
 int b;
 int l;
 l=strlen(orig);
 
-if (l==0) return;
+if (l==0) return orig;
 s=strdup(orig);
 b=0;
 
@@ -1383,9 +1394,11 @@ map_delete_update (char *main_statement_type, char *table, struct s_select_list_
 }
 
 
+#ifdef REDUNDANT
 void *copy_togenbind(char c) {
 	return 0;
 }
+#endif
 
 void fail_on_select_ibind(void) {
 }
@@ -1425,8 +1438,8 @@ struct s_select_list_item_list * prval;
  * and some checks/debugs/breakpoints etc
  * */
 struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i) {
- struct s_select_list_item_list * prval;
- struct variable_usage *u;
+ //struct s_select_list_item_list * prval;
+ //struct variable_usage *u;
         return new_select_list_item_list(i);
 }
 

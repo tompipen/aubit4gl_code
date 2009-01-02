@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.7 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.8 2009-01-02 11:52:54 mikeaubury Exp $
 #*/
 
 /**
@@ -71,6 +71,7 @@
 =====================================================================
 */
 
+FILE *A4GL_gz_open_file_dbpath (char *fname); 
 
 #define A4GL_open_file_dbpath A4GL_gz_open_file_dbpath
 #include "../packed/pack_packed.c"

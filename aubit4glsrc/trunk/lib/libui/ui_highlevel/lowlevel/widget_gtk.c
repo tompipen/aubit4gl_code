@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.46 2008-12-05 16:30:00 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.47 2009-01-02 11:52:54 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1904,7 +1904,7 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 
 void A4GL_ll_display_blob(void *f) {
   fglbyte b;
-  static char *buff = 0;
+  //static char *buff = 0;
   char *ptr;
   char *filename=0;
   int rmfile=0;
@@ -1920,7 +1920,7 @@ void A4GL_ll_display_blob(void *f) {
 
   if (b.where == 'F')
     {
-      long l;
+      //long l;
       FILE *f;
       f = fopen (b.filename, "r");
       if (f == 0)

@@ -51,7 +51,8 @@ static int gtk_object_get_data_as_int(void *obj,char *name) ;
 static void gtk_object_set_data_from_int (void *obj, char *name,int data) ;
 GtkWidget * create_text_block (int rbs) ;
 static void dbclick_drop(GtkWidget *clicked) ;
-
+static
+gboolean btnpress (GtkWidget * widget, GdkEventButton * event, gpointer user_data);
 
 struct r_report *rep;
 

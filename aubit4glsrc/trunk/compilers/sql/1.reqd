@@ -64,7 +64,7 @@ int doing_declare=0;
 //#define TCOL 6
 #define YY_NEVER_INTERACTIVE 1
 
-static char *convstrsql(char *s) ;
+//static char *convstrsql(char *s) ;
 char current_upd_table[256];
 char current_del_table[256];
 #define DEFINED_INS_TABLE
@@ -95,27 +95,27 @@ int A4GLSQLCV_check_requirement(char *s) ;
 //static void push_gen (int a, char *s);
 //static void copy_gen (int a, int b);
 //static void pop_all_gen (int a, char *s);
-static char * convstr_dbl_to_single (char *s);
-static int get_bind_cnt (char i);
-static void rm_quotes (char *s);
-static void A4GL_CV_print_exec_sql(char *s);
+//static char * convstr_dbl_to_single (char *s);
+//static int get_bind_cnt (char i);
+//static void rm_quotes (char *s);
+//static void A4GL_CV_print_exec_sql(char *s);
 
 //andrej static void print_set_conn(char *conn) ;
-static void print_load (char *fname,char *delim,char *tab,char *col) ;
-static void print_load_str (char *fname,char *delim,char *query) ;
+//static void print_load (char *fname,char *delim,char *tab,char *col) ;
+//static void print_load_str (char *fname,char *delim,char *query) ;
 static void print_sql_commit (int n) ;
 //andrej static void print_select_all (char *s) ;
 static void print_exec_sql (char *s) ;
 //andrej static void print_exec_sql_bound (char *s) ;
 static void print_exec_select (char *s)    ;
-static void print_undo_use (char *use_stuff) ;
-static void print_unload_g (char *fname,char *delim,char *sql,void*binding) ;
-static void *copy_togenbind(char c);
-static void print_use_session (char *conn_id) ;
+//static void print_undo_use (char *use_stuff) ;
+//static void print_unload_g (char *fname,char *delim,char *sql,void*binding) ;
+//static void *copy_togenbind(char c);
+//static void print_use_session (char *conn_id) ;
 static void conn_db (char *s) ;
 static void print_unable_to_parse(void) ;
 //andrej static int yywrap(void) ;
-static int start_bind (char c,int n);
+//static int start_bind (char c,int n);
 static int A4GLSQLCV_process(void);
 //andrej static int meminput(char *buf,int maxsize);
 static int sqlparse_yyerror(char *s) ;
@@ -123,22 +123,22 @@ int A4GL_4glc_push_gen_expand(int n,char *v);
 
 
 
-static void A4GL_CV_print_exec_sql_bound(char *s);
+//static void A4GL_CV_print_exec_sql_bound(char *s);
 
 
 //char * A4GLSQLCV_ownerize_tablename (char *owner, char *table);
 
 //#include "ilist.h"
 
-static char* A4GL_get_into_part(int d,int n);
-static char *  fix_update_expr (int mode);
-static char *A4GL_get_undo_use(void);
+//static char* A4GL_get_into_part(int d,int n);
+//static char *  fix_update_expr (int mode);
+//static char *A4GL_get_undo_use(void);
 //static char *A4GL_strip_quotes (char *s);
 //static int gen_cnt (int a);
 static void ansi_violation(char *s,int n);
-static void A4GL_lex_printcomment (char *fmt,...);
+//static void A4GL_lex_printcomment (char *fmt,...);
 static void addmap_runtime (char *s,char *f);
-static int scan_variable (char *s);
+//static int scan_variable (char *s);
 
 #include <stdio.h>
 #include <string.h>

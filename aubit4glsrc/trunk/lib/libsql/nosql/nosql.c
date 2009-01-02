@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.47 2008-09-17 12:21:47 mikeaubury Exp $
+# $Id: nosql.c,v 1.48 2009-01-02 11:52:54 mikeaubury Exp $
 #*/
 
 /**
@@ -101,7 +101,7 @@ int A4GLSQLLIB_A4GLSQL_init_connection_internal(char* dbName) NOPE0
 int A4GLSQLLIB_A4GLSQL_init_session_internal(char* sessname,char* dsn,char* usr,char* pwd) NOPE0
 int A4GLSQLLIB_A4GLSQL_next_column(char** colname,int* dtype,int* size) NOPE0
 int A4GLSQLLIB_A4GLSQL_open_cursor(char* s,int no,void* vibind) NOPE0
-int A4GLSQLLIB_A4GLSQL_read_columns(char* tabname,char* colname,int* dtype,int* size) NOPE0
+//int A4GLSQLLIB_A4GLSQL_read_columns(char* tabname,char* colname,int* dtype,int* size) NOPE0
 int A4GLSQLLIB_A4GLSQL_set_conn_internal(char* sessname) NOPE0
 long A4GLSQLLIB_A4GLSQL_describe_stmt(char* stmt,int colno,int type) NOPE0
 

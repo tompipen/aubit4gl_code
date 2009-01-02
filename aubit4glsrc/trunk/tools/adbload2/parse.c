@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include "a4gl_libaubit4gl.h"
 #include "a4gl_dbload_int.h"
 
 extern FILE *yyin;
 extern int yylineno;
 extern struct filedef *m_filedef;
-char *A4GL_char_pop(void);
-
+//char *A4GL_char_pop(void);
+int aclfgl_process (int n);
 int aclfgl_process(int n) {
 char *a;
 int ok;

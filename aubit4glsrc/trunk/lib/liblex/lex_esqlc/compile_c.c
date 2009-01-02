@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.457 2008-12-10 14:27:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.458 2009-01-02 11:52:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.457 2008-12-10 14:27:22 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.458 2009-01-02 11:52:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2653,7 +2653,7 @@ void real_print_expr_list (struct expr_str_list *l)
 
 }
 
-
+#ifdef NOTYET
 static void
 real_print_class_func_call (char *var, char *identifier,
                             struct expr_str *args, int args_cnt)
@@ -2672,7 +2672,7 @@ real_print_class_func_call (char *var, char *identifier,
 print_reset_state_after_call(0);
 
 }
-
+#endif
 
 
 /**

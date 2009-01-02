@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.39 2008-07-06 11:34:43 mikeaubury Exp $
+# $Id: simple.c,v 1.40 2009-01-02 11:52:54 mikeaubury Exp $
 #*/
 
 
@@ -35,6 +35,7 @@
 */
 
 #include "a4gl_lib_sql_int.h"
+#include "a4gl_expr.h"
 #include "libpq-fe.h"
 #include "sql3types.h"
 #define DTYPE_CHAR      0
@@ -232,6 +233,8 @@ A4GLSQLLIB_A4GLSQL_get_sqlerrm (void)
   return (char *) A4GL_global_A4GLSQL_get_sqlerrm ();
 }
 
+
+#ifdef REDUNDANT
 /**
  *
  * @todo Describe function
@@ -255,6 +258,7 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
     }
   return 0;
 }
+#endif
 
 /**
  *
@@ -531,7 +535,7 @@ A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
 {
   char *ptr2;
   char *ptrn;
-  char buff[256];
+  //char buff[256];
   A4GL_trim (val);
   ptr2 = val;
   while (1)
@@ -1004,7 +1008,7 @@ void *A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,
 	n->no=no;
 	n->ibind=ibind;
 	n->ni=ni;
-	n->obind=no;
+	n->obind=obind;
 	n->sql=strdup(s);
 	n->name=strdup(uniqid);
 	A4GL_add_pointer(uniqid,PREPAREPG,n);

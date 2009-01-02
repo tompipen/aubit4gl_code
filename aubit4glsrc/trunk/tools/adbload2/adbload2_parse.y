@@ -9,15 +9,16 @@
 #define YYDEBUG 1
 #define _NO_YYPARSE_PROTO_
 /* #define _NO_YYLEX_PROTO_ */
+#include "a4gl_libaubit4gl.h"
 #include "a4gl_dbload_int.h"
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-int is_column_name(char *s);
-int process_entry (struct s_dbloadline *dbload);
-char *conv_dbl(char *s);
-void a4gl_dbload_yyerror(char *s);
-int a4gl_dbload_yylex (void);
+//int is_column_name(char *s);
+//int process_entry (struct s_dbloadline *dbload);
+//char *conv_dbl(char *s);
+//void a4gl_dbload_yyerror(char *s);
+//int a4gl_dbload_yylex (void);
 
 /*
 =====================================================================
