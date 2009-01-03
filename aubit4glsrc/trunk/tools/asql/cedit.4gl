@@ -79,8 +79,8 @@ define key_cancel	integer
 
 define mc_max_tabrec constant 500
 define mv_tabrec array[mc_max_tabrec] of record # array to store 'intellisense' style table/column lookups
-	tabname chaR(18),
-	colname char(18)
+	tabname chaR(50),
+	colname char(50)
 end record
 define mv_txt array[1000] of char(80)
 
@@ -728,7 +728,7 @@ function start_table_col()
 end function
 
 function add_table_col(lv_t,lv_c)
-define lv_t,lv_c char(18)
+define lv_t,lv_c char(50)
 	let mv_tabrec_cnt=mv_tabrec_cnt+1
 	if mv_tabrec_cnt>mc_max_tabrec then
 	else
@@ -748,7 +748,7 @@ function start_table_nocol()
 end function
 
 function add_table_nocol(lv_t)
-define lv_t char(18)
+define lv_t char(50)
 	let mv_tabrec_cnt=mv_tabrec_cnt+1
 	if mv_tabrec_cnt>mc_max_tabrec then
 	else
@@ -830,7 +830,13 @@ while (x+lv_cols+2)>=80
 end while
 
 #display "y=", y, ",x=", x, ",nrows=", nrows, ",lv_cols=", lv_cols
-if x < 2 then let x = 2 end if
+if x < 2 then 
+	let x = 2 
+end if
+
+while (x+lv_cols+2)>=80
+	let lv_cols=lv_cols-1
+end while
 
 open window w_show at y,x with nrows rows,lv_cols columns attribute(border)
 

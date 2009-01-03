@@ -204,10 +204,10 @@ end function
 
 function load_info_columns(lv_tabname)
   define lv_tabname char(37)   # schema + '.' + tabname
-  define lv_arr array[1000] of char(18)
+  define lv_arr array[1000] of char(50)
   define lv_a integer
   define lv_cnt integer
-  define col_list array [1024] of char (18);
+  define col_list array [1024] of char (50);
   define col_desc array [1024] of char (48);
   define lv_t integer 
   define lv_l char(20)
@@ -215,7 +215,7 @@ function load_info_columns(lv_tabname)
 define lv_length integer
 
 code
-    lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 18, (char *)col_desc, 48, "COLUMNS", 2, lv_tabname);
+    lv_cnt = A4GLSQL_fill_array (1024, (char *) col_list, 50, (char *)col_desc, 48, "COLUMNS", 2, lv_tabname);
 endcode
 
     for lv_a=1 to lv_cnt
@@ -296,7 +296,7 @@ function load_info_indexes(qname)
   define schname char(8)
   define query char(4096)
 
-  define idxname    char(18)
+  define idxname    char(50)
   define idxcols    char(254)
   define idxtype    char(8)
 
@@ -372,14 +372,14 @@ end function
 
 
 function load_info_tables()
-  define lv_tabname char(18)
-  define lv_arr array[4000] of char(18)
-  define lv_sch array[4000] of char(18)
+  define lv_tabname char(50)
+  define lv_arr array[4000] of char(36)
+  define lv_sch array[4000] of char(36)
   define lv_num_tables integer
   define lv_cnt integer
   
 code
-    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,(char *)lv_sch,18,"TABLES",0,0);
+    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,36,(char *)lv_sch,36,"TABLES",0,0);
 endcode
 
 
@@ -1263,22 +1263,22 @@ end function
 function find_table_col(lv_tab, lv_col)
 define lv_tab,lv_t char(20)
 define lv_col,lv_c char(20)
-define lv_tabname char(18)
-define lv_arr array[4000] of char(18)
-define lv_sch array[4000] of char(18)
+define lv_tabname char(50)
+define lv_arr array[4000] of char(50)
+define lv_sch array[4000] of char(50)
 define lv_num_tables integer
 define lv_cnt integer
 define lv_match char(200)
 define lv_num_columns integer
 define lv_cnt_cols integer
 define lv_srch_tab char(64)
-define col_list array [1024] of char (18)
+define col_list array [1024] of char (50)
 define col_desc array [1024] of char (48)
-#define lv_arr_col array[1000] of char(18)
+#define lv_arr_col array[1000] of char(50)
 call start_table_col()
 
 code
-    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,(char *)lv_sch,18,"TABLES",0,0);
+    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,50,(char *)lv_sch,50,"TABLES",0,0);
 endcode
 
 let lv_match=lv_tab 
@@ -1288,7 +1288,7 @@ for lv_cnt=1 to lv_num_tables
 		## Table matches - what about the column ? 
 	let lv_srch_tab=lv_arr[lv_cnt]
 code
-    		lv_num_columns = A4GLSQL_fill_array (1024, (char *) col_list, 18, (char *)col_desc, 48, "COLUMNS", 2,lv_srch_tab);
+    		lv_num_columns = A4GLSQL_fill_array (1024, (char *) col_list, 50, (char *)col_desc, 48, "COLUMNS", 2,lv_srch_tab);
 endcode
 		for lv_cnt_cols=1 to lv_num_columns
 			#message "Check ", lv_arr[lv_cnt] clipped ,".", col_list[lv_cnt_cols] clipped, " against ", lv_col clipped sleep 10
@@ -1309,16 +1309,16 @@ end function
 function find_table_nocol(lv_tab)
 define lv_tab,lv_t char(20)
 define lv_col,lv_c char(20)
-  define lv_tabname char(18)
-  define lv_arr array[4000] of char(18)
-  define lv_sch array[4000] of char(18)
+  define lv_tabname char(50)
+  define lv_arr array[4000] of char(50)
+  define lv_sch array[4000] of char(50)
   define lv_num_tables integer
   define lv_cnt integer
 define lv_match char(200)
 call start_table_nocol()
 
 code
-    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,18,(char *)lv_sch,18,"TABLES",0,0);
+    lv_num_tables=A4GLSQL_fill_array(1000,(char *)lv_arr,50,(char *)lv_sch,50,"TABLES",0,0);
 endcode
 let lv_match=lv_tab 
 for lv_cnt=1 to lv_num_tables

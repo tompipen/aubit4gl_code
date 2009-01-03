@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.76 2008-12-16 20:57:52 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.77 2009-01-03 16:25:13 mikeaubury Exp $
 #
 */
 
@@ -1659,7 +1659,9 @@ preprocess_sql_statement (struct s_select *select)
     {
       A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
     }
-  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS") || A4GL_isyes (acl_getenv ("MAP4GL")))
+
+
+  if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS") || A4GL_isyes(acl_getenv("EXPAND_COLUMNS")) || A4GL_isyes (acl_getenv ("MAP4GL")))
     {
       expand_many = 0;
       for (a = 0; a < select->select_list->list.list_len; a++)

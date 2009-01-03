@@ -4,15 +4,15 @@ function table_select(lv_prompt)
   define lv_prompt char(64)
   define lv_tabname char(255)
   define lv_cnt integer
-  define lv_arr array[4000] of char(18)
-  define lv_sch array[4000] of char(18)
+  define lv_arr array[4000] of char(36)
+  define lv_sch array[4000] of char(36)
   define lv_num_tables integer
   define lv_found integer
 
 code
     lv_num_tables=A4GLSQL_fill_array(1000,
-                                     (char *)lv_arr,18,
-                                     (char *)lv_sch,18,"TABLES",0,0);
+                                     (char *)lv_arr,36,
+                                     (char *)lv_sch,36,"TABLES",0,0);
 endcode
 
 
