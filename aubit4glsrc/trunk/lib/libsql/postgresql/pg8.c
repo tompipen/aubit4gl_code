@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.81 2009-01-05 15:23:39 mikeaubury Exp $
+# $Id: pg8.c,v 1.82 2009-01-05 17:35:36 mikeaubury Exp $
 #*/
 
 
@@ -61,7 +61,7 @@ static void fixtype (char *ptr, int *d, int *s,char *defaultval);
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 static void defaultNoticeProcessor (void *arg, const char *message);
 static void SetErrno (PGresult * res);
-
+char *A4GL_getTimecode (void);
 
 /*
 #define BPCHAROID             1042
@@ -201,6 +201,97 @@ struct s_pgextra
   int reallyprepared;
   PGresult *last_result;
 };
+
+#define SQFILENAME "sqexplain.out"
+
+#define SET_EXPLAIN_FINISHED set_explain("**FINISHED**")
+
+static char *set_explain(char *s) {
+static int set_explain_mode=0;
+static int executing=0;
+int setSavepoint=0;
+
+
+if (strcmp(s,"SET EXPLAIN ON")==0) { set_explain_mode=1; return "select 1";}
+if (strcmp(s,"SET EXPLAIN OFF")==0) { set_explain_mode=0; return "select 1";}
+
+if (strcmp(s,"**FINISHED**")==0) {
+	if (executing) {
+		executing=0;
+                FILE *f;
+                f=fopen(SQFILENAME,"a");
+                if (f) {
+			fprintf(f,"\n\nQUERY COMPLETE\n");
+			fprintf(f,"Timecode: %s\n\n\n",A4GL_getTimecode());
+			fclose(f);
+		}
+	}
+	return NULL;
+}
+
+if (set_explain_mode) {
+	char buff[65000];
+	PGresult *res;
+	ExecStatusType rstat;
+	sprintf(buff,"EXPLAIN %s",s);
+	res=PQexec(current_con,buff);
+	rstat=PQresultStatus(res);
+	
+  	if (inTransaction ())
+    	{
+      		setSavepoint++;
+      		if (CanUseSavepoints) { Execute ("SAVEPOINT preExplain", 1); }
+    	}
+
+
+	if (rstat==PGRES_TUPLES_OK) {
+		int ntuples;
+		int nfields;
+		int field;
+		int tuple;
+		ntuples=PQntuples (res);
+		nfields=PQnfields (res);
+		if (ntuples && nfields) {
+			FILE *f;
+			f=fopen(SQFILENAME,"a");
+
+			if (f) {
+				executing=1;
+
+				fprintf(f,"\n\n--------------------------------------------------------------------------------\n");
+				fprintf(f,"Timecode: %s\n",A4GL_getTimecode());
+				fprintf(f,"QUERY:\n");
+				fprintf(f,"------\n");
+				fprintf(f,"%s\n",s);
+
+				for (tuple=0;tuple<ntuples;tuple++) {
+					for (field=0;field<nfields;field++) {
+						if (field) fprintf(f," ");
+						fprintf(f,"%s",PQgetvalue (res, tuple, field));
+					}
+					fprintf(f,"\n");
+				}
+				fclose(f);
+			} else {
+				A4GL_exitwith("Unable to open sqexplain.out file");
+			}
+		}
+	} else {
+		// Not explainable ....
+		// In my tests - this happened with an 'ANALYZE' command..
+	}
+
+
+      if (setSavepoint)
+	{
+	  if (CanUseSavepoints)
+	    {
+	      Execute ("ROLLBACK TO SAVEPOINT preExplain", 1);
+	    }
+	}
+}
+return s;
+}
 
 
 
@@ -1066,7 +1157,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 
 
 
-  res2 = PQexec (current_con, sqlStr);
+  res2 = PQexec (current_con, set_explain(sqlStr));
+	SET_EXPLAIN_FINISHED;
 
   switch (PQresultStatus (res2))
     {
@@ -1507,7 +1599,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   A4GL_debug ("%s ni=%d\n", sql, n->ni);
   
 
-  res = PQexec (current_con, sql);
+  res = PQexec (current_con, set_explain(sql));
+	SET_EXPLAIN_FINISHED;
    pgextra->last_result=res;
 
   A4GL_debug ("::: %s - %d\n", n->select, PQresultStatus (res));
@@ -1950,7 +2043,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
 
   A4GL_debug("replaced = %s",sql);
-  res = PQexec (current_con, sql);
+  res = PQexec (current_con, set_explain(sql));
+	SET_EXPLAIN_FINISHED;
   pgextra->last_result=res;
   A4GL_debug ("res=%p\n", res);
   A4GL_set_a4gl_sqlca_errd (0, PQntuples (res));
@@ -2782,7 +2876,8 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s1, int ni, void *vibind)
 
   buff2 = replace_ibind (cid->DeclareSql, ni, ibind,1);
   A4GL_debug ("cid->DeclareSql=%s buff2=%s\n", cid->DeclareSql, buff2);
-  cid->hstmt = PQexec (current_con, buff2);
+  cid->hstmt = PQexec (current_con, set_explain(buff2));
+	SET_EXPLAIN_FINISHED;
 
   A4GL_set_a4gl_sqlca_errd(2,0);
   cid->nrows=0;
@@ -2886,8 +2981,10 @@ A4GL_trim(cursor_name);
     }
 
   A4GL_debug ("Executing :%s\n", buff);
+  
 
-  res = PQexec (current_con, buff);
+  res = PQexec (current_con, set_explain(buff));
+	SET_EXPLAIN_FINISHED;
   A4GL_debug ("%s - %d \n", buff, PQresultStatus (res));
 
   if (cid->statement) {
@@ -3264,7 +3361,8 @@ Execute (char *s, int freeit)
 {
   PGresult *res;
   A4GL_debug ("EXECUTE %s", s);
-  res = PQexec (current_con, s);
+  res = PQexec (current_con, set_explain(s));
+	SET_EXPLAIN_FINISHED;
   chk_res (res);
 
   if (freeit)

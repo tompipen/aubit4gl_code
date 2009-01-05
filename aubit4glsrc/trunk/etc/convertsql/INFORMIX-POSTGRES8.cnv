@@ -216,8 +216,8 @@ REPLACE_EXPR current second to fraction(5) = to_char(now(),  'SS.MS')
 REPLACE_EXPR current second to fraction = to_char(now(),  'SS.MS')
 
 # No obvious replacement for these - so effectively remove them
-REPLACE_COMMAND SET EXPLAIN ON = 
-REPLACE_COMMAND SET EXPLAIN OFF = 
+#REPLACE_COMMAND SET EXPLAIN ON = 
+#REPLACE_COMMAND SET EXPLAIN OFF = 
 
 # This is about as close as postgres gets to an update statistics...
 # use VACUUM ANALYZE for space recovery as well, or let cron handle that
