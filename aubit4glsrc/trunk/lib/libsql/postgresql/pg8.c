@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.80 2008-12-18 16:40:17 mikeaubury Exp $
+# $Id: pg8.c,v 1.81 2009-01-05 15:23:39 mikeaubury Exp $
 #*/
 
 
@@ -2280,7 +2280,11 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
     }
 
 
+#ifndef __WIN32__
   FPRINTF (stderr, "WARNING : Unrecognised postgres datatype : %d - please add to pg8.c\n", pgtype);
+#endif
+
+
   // Char(20) should cover most things..
   *a4gl_dtype = DTYPE_VCHAR;
   *a4gl_len = 20;
