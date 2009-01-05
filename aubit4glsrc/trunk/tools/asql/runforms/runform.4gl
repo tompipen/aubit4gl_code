@@ -591,6 +591,7 @@ code
           SET ("s_screenio", _sio_2, "currentfield", 0);
           SET ("s_screenio", _sio_2, "currentmetrics", 0);
           SET ("s_screenio", _sio_2, "constr", constr_flds);
+	  SET("s_screenio",_sio_2,"callback_function", NULL);
           SET ("s_screenio", _sio_2, "mode", 3);
           SET ("s_screenio", _sio_2, "nfields", A4GL_gen_field_list_from_slist ((void ***) GETPTR ("s_screenio", _sio_2, "field_list"), (void *) GET ("s_screenio", _sio_2, "currform"), &list ));
           {
