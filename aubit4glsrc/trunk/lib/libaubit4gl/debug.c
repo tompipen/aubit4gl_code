@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.64 2008-11-05 18:44:23 mikeaubury Exp $
+# $Id: debug.c,v 1.65 2009-01-05 21:01:36 mikeaubury Exp $
 #
 */
 
@@ -59,7 +59,7 @@ extern sqlca_struct a4gl_sqlca;
 #define DEBUG_NOTREQUIRED 	2
 #define DEBUG_REQUIRED 		1
 #define DEBUG_DONTKNOW 		0
-static char *getTimecode (void);
+char *A4GL_getTimecode (void);
 
 
 /*
@@ -245,7 +245,7 @@ A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const 
       isNow = time (0);
       if (lastnow != isNow)
 	{
-	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", getTimecode ());
+	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", A4GL_getTimecode ());
 	  lastnow = isNow;
 	}
 
@@ -373,7 +373,7 @@ A4GL_debug_full_extended (char *fmt, ...)
       isNow = time (0);
       if (lastnow != isNow)
 	{
-	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", getTimecode ());
+	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", A4GL_getTimecode ());
 	  lastnow = isNow;
 	}
 
@@ -498,7 +498,7 @@ A4GL_debug_full (char *fmt, ...)
       isNow = time (0);
       if (lastnow != isNow)
 	{
-	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", getTimecode ());
+	  FPRINTF (debugfile, "\n*** TIMECODE %s\n\n", A4GL_getTimecode ());
 	  lastnow = isNow;
 	}
 
@@ -669,8 +669,8 @@ a4gl_basename (char **ppsz)
 
 
 
-static char *
-getTimecode (void)
+char *
+A4GL_getTimecode (void)
 {
   static char buff[30] = "";
   int mja_day;

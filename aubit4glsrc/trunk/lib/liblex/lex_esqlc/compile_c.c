@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.458 2009-01-02 11:52:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.459 2009-01-05 21:01:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.458 2009-01-02 11:52:54 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.459 2009-01-05 21:01:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2984,13 +2984,17 @@ print_when (int has_expr,t_expr_str *expr)
 	}
   }
 
-  real_print_expr(expr);
   if (has_expr)
     {
-	
+
+      real_print_expr(expr);
       printc ("A4GL_push_char(_s);");
       printc ("A4GL_pushop(OP_EQUAL);\n");
+
+    } else {
+  	real_print_expr(expr);
     }
+
   printc ("if (A4GL_pop_bool()) {\n");
   tmp_ccnt++;
 }
