@@ -43,9 +43,9 @@ for (a=1;a<argc;a++) {
 	}
 	printf("Loading %s : ", buff); fflush(stdout);
 	if ( A4GL_read_data_from_file("module_definition",&m[a-1],buff)) {
-		printf("OK...\n");
+		printf("OK...\n"); fflush(stdout);
 	} else {
-		printf("- Failed to load %s\n", argv[a]);
+		printf("- Failed to load %s\n", argv[a]); fflush(stdout);
 		exit(1);
 	}
 }

@@ -250,6 +250,7 @@ var_ident_qchar_e :
 				YYERROR;
 			}
 		} else {
+			inc_var_usage($<ptr>1);
                 	$<ptr>$=$<ptr>1;
 		}
 	}

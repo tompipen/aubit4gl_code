@@ -8,6 +8,7 @@
 //expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
 int nomain = 0;
 char *decode_cmd_type(enum cmd_type value) ;
+int A4GL_is_valid_4gl_type (char *s);
 
 //expr_str* get_expr_datatype(int n);
 extern int yylineno;
@@ -454,8 +455,6 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 	ncomments++;
     }
 
-//printf("%d comments in function\n",ncomments);
-//printf("%d lines in function\n",f->lastlineno-  f->lineno);
 
   func_cmds = linearise_commands (0, 0);
   linearise_commands (func_cmds, f->func_commands);
@@ -483,7 +482,6 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
       A4GL_lint (f->module, f->lineno, "TOOCOMPLEX", "Function is too complex", f->funcname);
     }
 
-//printf("V(G)=%d, %d commands, Complexity : %lf\n",flow+1, func_cmds->cmds.cmds_len,(double)(flow)/(double)func_cmds->cmds.cmds_len );
 
 }
 
@@ -637,7 +635,6 @@ int cnt;
     {
       r = func_cmds->cmds.cmds_val[cnt];
 
-	//printf("%s (%d %d)\n", decode_cmd_type(r->cmd_data.type), cnt,func_cmds->cmds.cmds_len);
 
       yylineno = r->lineno;
       if (r->cmd_data.type == E_CMD_RETURN_CMD)
@@ -803,7 +800,6 @@ int cnt;
 				if (nvars==0) {
 		      			A4GL_lint (module_name, r->lineno, "SELECTNOTINTO", "SELECT WITH NO INTO", 0);
 				} else {
-				printf("nvars=%d ncols=%d\n",nvars,ncols);
 		      			A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
 				}
 			}
@@ -1313,7 +1309,6 @@ int cnt;
 			    }
 			}
 			if (lmax>0 && lmax>var_length) {
-				//printf("%d %d\n", lmax,var_length);
 			      A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
 			}
 		    }
@@ -1339,7 +1334,6 @@ int cnt;
 			var_length=expr_datatype (varlist->list.list_val[0]) >> 16;
 			if (lmax>0) {
 				if (lmax>var_length) {
-				//printf("%d %d\n", lmax,var_length);
 			      		A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
 				}
 			}	
@@ -1743,7 +1737,7 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname); fflush(stdout);
 	      check_function (d, &d->module_entries.module_entries_val[a]->module_entry_u.function_definition);
 	    }
 	  break;
@@ -1758,7 +1752,7 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname); fflush(stdout);
 	      check_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.report_definition);
 	    }
 	  break;
@@ -2046,7 +2040,6 @@ check_variable_name (char *modname, char *scope, struct variable *v)
 
   issystem = local_is_system_variable (v->names.names.names_val[0].name);
 
-  //printf("%s - %d\n", v->names.names.names_val[0].name, v->lineno);
   if (A4GL_aubit_strcasecmp (v->names.names.names_val[0].name, "int_flag") == 0)
     issystem = 1;
   if (A4GL_aubit_strcasecmp (v->names.names.names_val[0].name, "quit_flag") == 0)
@@ -2063,6 +2056,11 @@ check_variable_name (char *modname, char *scope, struct variable *v)
 
   if (issystem)
     return;
+
+  if (A4GL_is_valid_4gl_type(v->names.names.names_val[0].name)) {
+	
+	  A4GL_lint (v->src_module, v->lineno, "VNAMEDTYPE", "Variable name is the same as a Datatype (got an extra ',' ?)", v->names.names.names_val[0].name);
+	}
 
   if (A4GL_aubit_strcasecmp (scope, "ImportedGlobal") == 0)
     {
@@ -2116,7 +2114,7 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       return;
     }
 
-
+  //if (strcmp(v->names.names.names_val[0].name[0],"int
 
   printf ("Unexpected scope : %s -->%s\n", scope, v->names.names.names_val[0].name);
   exit (1);
@@ -2142,9 +2140,9 @@ check_module (struct module_definition *d)
   int a;
   int b;
 
-
   all_cmds = linearise_commands (0, 0);
 
+  printf ("Check Module %s\n", d->module_name); fflush(stdout);
   for (a = 0; a < d->imported_global_variables.variables.variables_len; a++)
     {
       check_variable_name (d->module_name, "ImportedGlobal", d->imported_global_variables.variables.variables_val[a]);
@@ -2397,6 +2395,8 @@ system_function_dtype (char *funcname)
   if (A4GL_aubit_strcasecmp (funcname, "err_quit") == 0)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "errorlog") == 0)
+    return -1;
+  if (A4GL_aubit_strcasecmp (funcname, "aclfgl_add_acs_mapping") == 0)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_setbuffer") == 0)
     return -1;
@@ -2985,7 +2985,6 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		  int etype;
 		  yylineno = e->expr_str_u.expr_function_call->line;
 		  etype = expr_datatype (e->expr_str_u.expr_function_call->parameters->list.list_val[ecnt]) & DTYPE_MASK;
-
 		  if (promoteable (etype, fprototypes[b].param_dtypes[ecnt]) == -1)
 		    {
 		      char buff[256];
@@ -3004,7 +3003,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 			}
 		      strcat (smbuff, ")");
 #endif
-		      sprintf (buff, "Function %s expects %s got %s @ %d parameter", e->expr_str_u.expr_function_call->fname,
+		      sprintf (buff, "Function %s expects '%s' got '%s' @ %d parameter", e->expr_str_u.expr_function_call->fname,
 			       dtype_as_string (fprototypes[b].param_dtypes[ecnt]),
 			       //fprototypes[b].param_dtypes[ecnt], 
 			       dtype_as_string (etype),
@@ -3941,6 +3940,7 @@ static int get_severity(char *code) {
 		{"LETEXPR",3},
 		{"FORVARNUM",6},
 		{"FORENDEXPR",4},
+		{"VNAMEDTYPE",6},
 
 		{"PARAMNOTUSED",2},
 		{NULL,0}
@@ -5375,3 +5375,128 @@ if (list->list.list_len==1 && already_done_true_and_false) {
 
   return 1;
 }
+
+
+static char *rettype_lint (char *s) {
+  static char rs[20] = "long";
+  int a;
+  A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
+
+  a = atoi (s);
+
+  A4GL_debug ("In rettype");
+  if (A4GL_has_datatype_function_i (a, "OUTPUT"))
+    {
+      /* char *(*function) (); */
+      char *(*function) (void);
+      A4GL_debug ("In datatype");
+      function = A4GL_get_datatype_function_i (a, "OUTPUT");
+      A4GL_debug ("Copy");
+      strcpy (rs, function ());
+      A4GL_debug ("Returning %s\n", A4GL_null_as_null (rs));
+      return rs;
+    }
+  if (strcmp (s, "0") == 0)
+    strcpy (rs, "CHAR");
+  if (strcmp (s, "1") == 0)
+    strcpy (rs, "SMALLINT");
+  if (strcmp (s, "2") == 0)
+    strcpy (rs, "INTEGER");
+  if (strcmp (s, "3") == 0)
+    strcpy (rs, "FLOAT");
+  if (strcmp (s, "4") == 0)
+    strcpy (rs, "SMALLFLOAT");
+  if (strcmp (s, "5") == 0)
+    strcpy (rs, "DECIMAL");
+  if (strcmp (s, "6") == 0)
+    strcpy (rs, "INTEGER");
+  if (strcmp (s, "7") == 0)
+    strcpy (rs, "DATE");
+  if (strcmp (s, "8") == 0)
+    strcpy (rs, "MONEY");
+  if (strcmp (s, "10") == 0)
+    strcpy (rs, "DATETIME");
+  if (strcmp (s, "11") == 0)
+    strcpy (rs, "BYTE");
+  if (strcmp (s, "12") == 0)
+    strcpy (rs, "TEXT");
+  if (strcmp (s, "13") == 0)
+    strcpy (rs, "VARCHAR");
+  if (strcmp (s, "14") == 0)
+    strcpy (rs, "INTERVAL");
+  return strdup (rs);
+}
+
+/**
+ *  *  * Gets the C data type corresponding to 4gl data type
+ *   *   *
+ *    *    * @param s A string with the numeric 4gl data type (@see find_type())
+ *     *     * @return The string (static) with the C declaration
+ *      *      */
+static char * rettype_integer (int n)
+{
+          char s[200];
+
+            /*static char rs[20] = "long";*/
+            /*int a;*/
+
+            A4GL_debug ("rettype_integer : %d\n", n);
+
+              SPRINTF1 (s, "%d", n);
+                return rettype_lint (s);
+}
+
+
+int A4GL_is_valid_4gl_type (char *s)
+{
+  //char errbuff[80];
+  static char types[20][80];
+  //char buff[20];
+  int a;
+  //int b;
+  static int set_types=0;
+  if (set_types==0) {
+          for (a=0;a<15;a++) { strcpy(types[a],rettype_integer(a)); }
+          set_types=1;
+  }
+
+  for (a=0;a<15;a++) {
+          if (A4GL_aubit_strcasecmp(types[a],s)==0) { return 1; }
+  }
+
+  A4GL_debug ("Looking for type '%s'", s);
+
+  if (A4GL_find_datatype_out (s) != -1)
+    {
+		return 1;
+    }
+
+  A4GL_debug ("Not found - keep looking");
+  A4GL_debug ("find_type %s\n", s);
+  if (A4GL_aubit_strcasecmp ("char", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("long", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("int8", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("serial8", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("integer", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("int", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("short", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("double", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("float", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("fgldecimal", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("serial", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("fgldate", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("fglmoney", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("struct_dtime", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("fglbyte", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("fgltext", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("varchar", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("struct_ival", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("form", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("uiwindow", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("omdomnode", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("omnodelist", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("basechannel", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("string", s) == 0) return 1;
+  return 0;
+}
+
