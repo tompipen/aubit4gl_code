@@ -1,0 +1,222 @@
+/*
+=====================================================================
+                        Source: input.rule
+=====================================================================
+*/
+
+end_input :  { $<on_events>$=0;}
+	| events_input END_INPUT  { $<on_events>$= $<on_events>1;}
+	| END_INPUT { $<on_events>$=0;}
+;
+
+end_input_array : { $<on_events>$=0;}
+	| events_iarray END_INPUT  { $<on_events>$= $<on_events>1;}
+	| END_INPUT { $<on_events>$=0;}
+;
+
+
+
+opt_defs : {
+		$<e_boolean>$=EB_FALSE;
+	} | WITHOUT_DEFAULTS {
+		$<e_boolean>$=EB_TRUE;
+}
+;
+
+
+bef_field_list_as_struct :
+        field_name_as_struct {
+                        $<field_list>$=new_field_list();
+                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+        }
+        | bef_field_list_as_struct KW_COMMA field_name_as_struct {
+                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+        }
+;
+
+aft_field_list_as_struct :
+        field_name_as_struct {
+                        $<field_list>$=new_field_list();
+                        $<field_list>$=append_field_to_list($<field_list>$,$<field_entry>1);
+        }
+        |aft_field_list_as_struct KW_COMMA field_name_as_struct {
+                        $<field_list>$=append_field_to_list($<field_list>1,$<field_entry>3);
+        }
+;
+
+next_field_cmd : 
+		NEXTFIELD atline KW_NEXT { set_cmdlineno($<integer_val>2); $<cmd>$=new_next_field_cmd(1, NULL); map_ui("NEXTFIELD"); }
+		| NEXTFIELD atline KW_PREVIOUS { set_cmdlineno($<integer_val>2); $<cmd>$=new_next_field_cmd(-1, NULL); map_ui("NEXTFIELD"); }
+		| NEXTFIELD atline field_name_as_struct {set_cmdlineno($<integer_val>2); $<cmd>$=new_next_field_cmd(0, $<field_entry>3); map_ui("NEXTFIELD"); }
+;
+
+
+
+
+
+
+input_cmd	:	KW_INPUT inp_rest {
+  					A4GL_new_events();
+					push_blockcommand ("INPUT");
+			
+			} end_input { 
+				int sio;
+				int blk;
+					blk=get_sio_ids("INPUT");
+					$<cmd>$=$<cmd>2;
+					sio=get_sio_id("INPUT");
+					$<cmd>$->cmd_data.command_data_u.input_cmd.sio=sio;
+					$<cmd>$->cmd_data.command_data_u.input_cmd.blockid=blk;
+					pop_blockcommand ("INPUT");
+					map_ui_endblock("INPUT");
+					A4GL_drop_events();
+					$<cmd>$->cmd_data.command_data_u.input_cmd.events=$<on_events>4;
+
+			}
+		;
+
+input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FROM idm_input_array  {
+				if (!check_input_or_display_array_variable($<ptr>2)) {
+					a4gl_yyerror("Variable cannot be used for an INPUT ARRAY");
+				}
+				push_blockcommand ("INPUT");
+				add_feature("UI_INPUT_ARRAY");
+				map_ui_block("INPUT_ARRAY");
+				inp_flags=0;
+  				A4GL_new_events();
+		} input_attributes opt_help_no_i end_input_array { 
+				int blk;
+				int sio;
+				blk=get_sio_ids("INPUT");
+				sio=get_sio_id("INPUT");
+
+				  pop_blockcommand ("INPUT");
+				$<cmd>$=new_input_array_cmd($<ptr>6, $<ptr>2, $<attrib>8,$<on_events>10, $<e_boolean>4, $<integer_val>9,sio,blk,$<str>3);
+				map_ui_endblock("INPUT");
+				A4GL_drop_events();
+		}
+;
+
+input_attributes: opt_attributes  {$<attrib>$=$<attrib>1;}
+;
+
+inp_rest:
+BY_NAME expanded_ibind_var_list opt_defs input_attributes  opt_help_no_i
+{
+	//struct fh_field_list *f;
+  	char tabname[40];
+	int a;
+  	char colname[40];
+	map_ui_block("INPUT");
+	add_feature("UI_INPUT_BY_NAME");
+	
+	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>2,1,1), NULL,NULL, $<attrib>4,$<e_boolean>3, $<integer_val>5,0);
+}
+| expanded_ibind_var_list opt_defs FROM field_name_list_as_struct  input_attributes opt_help_no_i
+{
+	map_ui_block("INPUT");
+	add_feature("UI_INPUT");
+	$<cmd>$=new_input_cmd(expand_variables_in_expr_str_list($<ptr_list>1,1,1), $<field_list>4,NULL, $<attrib>5,$<e_boolean>2, $<integer_val>6, 0);
+}
+;
+
+idm_input_array :identifier KW_DOT KW_MULTIPLY {
+				$<ptr>$=A4GL_new_expr_simple_string($<str>1,ET_EXPR_IDENTIFIER);
+		}
+	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+				$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3, ET_EXPR_VARIABLE_IDENTIFIER);
+	}
+;
+
+
+scroll_cmd : 
+	SCROLL field_name_list_as_struct up_or_down {
+		map_ui("SCROLL");
+		add_feature("UI_SCROLL");
+		$<cmd>$=new_scroll_cmd($<field_list>2,chk_expr($<ptr>3));
+		
+	}
+;
+
+up_or_down :
+	 KWUP_BY INT_VALUE {
+			SPRINTF1($<str>$,"%s",$<str>2);
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+	}
+	| KWDOWN_BY INT_VALUE {
+			SPRINTF1($<str>$,"-%s",$<str>2);
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+	}
+	| KWUP {
+			strcpy($<str>$,"1");
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+		} 
+	| KWDOWN {
+				strcpy($<str>$,"-1");
+			$<ptr>$=A4GL_new_literal_long_str($<str>$);
+		}
+	| KWUP_BY variable_usage_expression {
+  		int a;
+		char errbuff[256];
+  		a=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>2);
+		if (a==-1) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		} else {
+				a=a&DTYPE_MASK; 
+  		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
+    			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    			YYERROR;
+    		/* error processing */;
+  		}
+		}
+		$<ptr>$=$<ptr>2;
+	}
+	| KWDOWN_BY variable_usage_expression {
+  		int a;
+		char errbuff[256];
+  		a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>2);
+		if (a==-1) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		} else {
+				a=a&DTYPE_MASK; 
+  		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
+    			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    			YYERROR;
+    		/* error processing */;
+  		}
+		}
+		 $<ptr>$=A4GL_new_op_expr(A4GL_new_literal_long_str("0"),$<ptr>2,ET_EXPR_OP_SUB,0);
+	}
+
+
+;
+
+
+input_array_attributes: input_array_attributes_int 
+;
+
+
+input_array_attributes_int : 
+	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 			{ curr_attrib.currentrowdisplay=acl_strdup($<str>2); }
+	| COUNT EQUAL INT_VALUE 				{ curr_attrib.count=new_variable_or_literal( ET_E_V_OR_LIT_INT, $<str>3); }
+	| COUNT EQUAL ensured_variable_usage_expression 		{ curr_attrib.count=$<ptr>3; }
+	| MAXCOUNT EQUAL INT_VALUE 				{ curr_attrib.maxcount=new_variable_or_literal( ET_E_V_OR_LIT_INT, $<str>3); }
+	| MAXCOUNT EQUAL ensured_variable_usage_expression 		{ curr_attrib.maxcount=$<ptr>3; }
+	| INSERT_ROW_EQUAL_TRUE 		{ curr_attrib.allow_insert=EB_TRUE; }
+	| INSERT_ROW_EQUAL_FALSE 		{ curr_attrib.allow_insert=EB_FALSE; }
+	| DELETE_ROW_EQUAL_TRUE 		{ curr_attrib.allow_delete=EB_TRUE; }
+	| DELETE_ROW_EQUAL_FALSE 		{ curr_attrib.allow_delete=EB_FALSE; }
+;
+
+
+
+opt_slice : {strcpy($<str>$,"");}
+        | SLICE OPEN_BRACKET identifier THRU identifier CLOSE_BRACKET {
+                        SPRINTF2($<str>$,"%s:%s",$<str>3,$<str>5);
+        }
+;
+
+
+/* ========================= input.rule ============================= */

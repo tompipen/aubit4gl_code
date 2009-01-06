@@ -1,0 +1,31 @@
+class_definition:
+	KW_CLASS identifier op_extends define_section  {
+			new_class($<str>2,$<str>3);
+		} class_entries END_CLASS   {
+			add_class_module_entry();
+		}
+
+;
+
+
+op_extends:
+	{
+		strcpy($<str>$,"");
+	} | KW_EXTENDS identifier {
+		/* Should probably read the parent definition here... */
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+
+class_entries :
+	class_entry 
+	| class_entries class_entry
+;
+
+
+class_entry: func_def {add_class_entry($<module_entry>1);}
+| module_code {add_class_entry($<module_entry>1);}
+| whenever_cmd {add_class_entry($<module_entry>1);}
+;
+
