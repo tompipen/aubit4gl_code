@@ -10,6 +10,7 @@ int nomain = 0;
 char *decode_cmd_type(enum cmd_type value) ;
 int A4GL_is_valid_4gl_type (char *s);
 
+#define LINTMODULE_FOR_PROGRAM "[PROGRAM]"
 //expr_str* get_expr_datatype(int n);
 extern int yylineno;
 static int dbg = 0;
@@ -3374,7 +3375,7 @@ check_program (module_definition * mods, int nmodules)
 	
   }
 
-  lint_module = "PROGRAM";
+  lint_module = LINTMODULE_FOR_PROGRAM;
 
 
   // Create and clear down some cache informaton for 
@@ -3628,7 +3629,7 @@ check_program (module_definition * mods, int nmodules)
   // Did we find any main ? 
   if (main_cnt == 0)
     {
-      A4GL_lint ("PROGRAM", 0, "NOMAIN", "Program has no MAIN", 0);
+      A4GL_lint (LINTMODULE_FOR_PROGRAM, 0, "NOMAIN", "Program has no MAIN", 0);
       nomain++;
     }
 
@@ -3636,7 +3637,7 @@ check_program (module_definition * mods, int nmodules)
   // Did we find more than one!
   if (main_cnt > 1)
     {
-      A4GL_lint ("PROGRAM", 0, "MAINDUP", "Program has more than one MAIN", 0);
+      A4GL_lint (LINTMODULE_FOR_PROGRAM, 0, "MAINDUP", "Program has more than one MAIN", 0);
     }
 
   // Right - we should have searched all our functions
@@ -3682,10 +3683,53 @@ check_program (module_definition * mods, int nmodules)
 	      mod_used++;
 	    }
 	}
+
+
+	// We're not calling anything - but was there anything to actually call ? 
+	//
+	// The normal situation here is when we have a GLOBALS module...
+	//
       if (mod_used == 0)
 	{
-	  A4GL_lint (mods[a].module_name, 0, "MODNOTCALLED", "No Functions are called", 0);
+		int b=0;
+		int has_something=0;
+		for (b=0;b<mods[a].module_entries.module_entries_len;b++) {
+      switch (mods[a].module_entries.module_entries_val[b]->met_type)
+	{
+			case E_MET_MAIN_DEFINITION:
+			case E_MET_FUNCTION_DEFINITION:
+			case E_MET_REPORT_DEFINITION:
+			case E_MET_PDF_REPORT_DEFINITION:
+			case E_MET_FORMHANDLER_DEFINITION:
+			case E_MET_IMPORT_FUNCTION_DEFINITION:
+			case E_MET_IMPORT_LEGACY_DEFINITION:
+			case E_MET_CLASS_DEFINITION:
+			case E_MET_IMPORT_DATATYPE:
+			case E_MET_IMPORT_PACKAGE:
+				has_something++;
+	  			break;
+
+			case E_MET_CMD:
+	  			break;
+
 	}
+		}
+
+
+		if (has_something) {
+	  		A4GL_lint (mods[a].module_name, 0, "MODNOTCALLED", "No Functions are called", 0);
+		} else {
+			// Nothing defined in there..
+			//
+			if (mods[a].exported_global_variables.variables.variables_len) {
+				// Its a global variable..
+			} else {
+	  			A4GL_lint (mods[a].module_name, 0, "MODNOFUNCS", "Module has no substantial contents", 0);
+			}
+		}
+	
+	}
+
     }
 
 
@@ -4007,12 +4051,16 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
   strcpy (module, module_in);
 
-  if (strstr (module, ".4gl"))
-    {
-      char *ptr;
-      ptr = strstr (module, ".4gl");
-      *ptr = 0;
-    }
+  if (strcmp(module,LINTMODULE_FOR_PROGRAM)==0) { // This is our pseudo 'program' module which represents the program as whole
+  } else {
+  	if (strstr (module, ".4gl"))
+    	{
+      		char *ptr;
+      		ptr = strstr (module, ".4gl");
+      		*ptr = 0;
+    	}
+	strcat(module,".4gl");
+  }
 
 
   if (!A4GL_isyes (acl_getenv ("SUPPRESSLINT")))
@@ -4021,7 +4069,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
       switch (get_lint_style ())
 	{
 	case 0:
-	  sprintf (buff, "%s.4gl Line %d (Severity:%d)", module, lintline, severity);
+	  sprintf (buff, "%s Line %d (Severity:%d)", module, lintline, severity);
 	  if (extra)
 	    {
 	      fprintf (stderr, "  LINT : %-30s %-20s %s (%s)\n", buff, code, type, extra);
@@ -4056,7 +4104,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	  if (lintfile)
 	    {
 	      fprintf (lintfile,
-		       "<LINT MODULE='%s.4gl' LINE='%d' CODE='%s' SEVERITY='%d'><DESCRIPTION>%s</DESCRIPTION><DETAILS>%s</DETAILS></LINT>\n",
+		       "<LINT MODULE='%s' LINE='%d' CODE='%s' SEVERITY='%d'><DESCRIPTION>%s</DESCRIPTION><DETAILS>%s</DETAILS></LINT>\n",
 		       module, lintline, code, severity, local_xml_escape (type), local_xml_escape (extra));
 	    }
 	  break;
@@ -4067,7 +4115,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	    extra = " ";
 	  if (lintfile)
 	    {
-	      fprintf (lintfile, "%s.4gl|%d|%s|%d|%s|%s|\n", module, lintline, code, severity,type, extra);
+	      fprintf (lintfile, "%s|%d|%s|%d|%s|%s|\n", module, lintline, code, severity,type, extra);
 	    }
 	  break;
 
