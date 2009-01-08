@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.65 2009-01-05 21:01:36 mikeaubury Exp $
+# $Id: debug.c,v 1.66 2009-01-08 17:36:17 mikeaubury Exp $
 #
 */
 
@@ -59,7 +59,6 @@ extern sqlca_struct a4gl_sqlca;
 #define DEBUG_NOTREQUIRED 	2
 #define DEBUG_REQUIRED 		1
 #define DEBUG_DONTKNOW 		0
-char *A4GL_getTimecode (void);
 
 
 /*
@@ -667,8 +666,6 @@ a4gl_basename (char **ppsz)
 
 
 
-
-
 char *
 A4GL_getTimecode (void)
 {
@@ -692,6 +689,7 @@ A4GL_getTimecode (void)
 
   return buff;
 }
+
 
 
 /* =============================== EOF ============================= */

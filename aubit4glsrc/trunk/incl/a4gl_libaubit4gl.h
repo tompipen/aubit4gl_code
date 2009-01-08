@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.355 2009-01-02 12:39:04 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.356 2009-01-08 17:36:17 mikeaubury Exp $
 #
 */
 
@@ -2851,6 +2851,9 @@ void A4GL_set_fld(void *f) ;
 struct struct_scr_field *A4GL_get_fld(void) ;
 void A4GL_set_as_c(int n) ;
 int A4GL_get_as_c(void) ;
+
+char * A4GL_getTimecode (void); /* Get the current timecode as a string */
+
 void A4GL_init_dec_size(fgldecimal *dec, int size);
 void
 pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_semi);

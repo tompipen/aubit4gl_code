@@ -1,4 +1,18 @@
 ---------------------------
+Thu Jan  8 17:34:51 GMT 2009
+---------------------------
+1.10RC_47 Released
+---------------------------
+	
+	add SET EXPLAIN ON/OFF for pg8
+	
+	replace @font_name which seems to be causing some users an issue...
+	
+	win32 fixup
+	
+	Warnings fixups
+	
+---------------------------
 Fri Jan  2 13:14:53 GMT 2009
 ---------------------------
 1.10RC_46 Released

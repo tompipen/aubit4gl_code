@@ -63,7 +63,8 @@ module_header	:	module_entry  {
 module_entry : 
 	module_import  			{$<module_entry>$=$<module_entry>1;}
 	| module_code  			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
-	| whenever_cmd 			{$<module_entry>$=$<module_entry>1;}
+	| whenever_cmd 			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
+	| lint_cmd 			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
 	| import_package 		{$<module_entry>$=0;}
 	| module_globals_section  	{$<module_entry>$=0;}
 	| module_define_section   	{$<module_entry>$=0;}
@@ -101,6 +102,7 @@ func_or_main	:	func_def {$<module_entry>$=$<module_entry>1;}
 		| 	import_m {$<module_entry>$=$<module_entry>1;}
 		| 	pragma {$<module_entry>$=0;}
 		|       whenever_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
+		| 	lint_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
 		| 	error 
 		;
 

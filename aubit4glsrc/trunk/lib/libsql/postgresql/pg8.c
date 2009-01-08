@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.82 2009-01-05 17:35:36 mikeaubury Exp $
+# $Id: pg8.c,v 1.83 2009-01-08 17:36:17 mikeaubury Exp $
 #*/
 
 
@@ -61,7 +61,7 @@ static void fixtype (char *ptr, int *d, int *s,char *defaultval);
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 static void defaultNoticeProcessor (void *arg, const char *message);
 static void SetErrno (PGresult * res);
-char *A4GL_getTimecode (void);
+//char *A4GL_getTimecode (void);
 
 /*
 #define BPCHAROID             1042
@@ -209,6 +209,7 @@ struct s_pgextra
 static char *set_explain(char *s) {
 static int set_explain_mode=0;
 static int executing=0;
+static int then=0;
 int setSavepoint=0;
 
 
@@ -222,10 +223,16 @@ if (strcmp(s,"**FINISHED**")==0) {
                 f=fopen(SQFILENAME,"a");
                 if (f) {
 			fprintf(f,"\n\nQUERY COMPLETE\n");
-			fprintf(f,"Timecode: %s\n\n\n",A4GL_getTimecode());
+			if (then) {
+				then=time(NULL)-then;
+				fprintf(f,"Timecode: %s (~%ds)\n\n\n",A4GL_getTimecode(),then);
+			} else {
+				fprintf(f,"Timecode: %s\n\n\n",A4GL_getTimecode());
+			}
 			fclose(f);
 		}
 	}
+	then=0;
 	return NULL;
 }
 
@@ -233,9 +240,11 @@ if (set_explain_mode) {
 	char buff[65000];
 	PGresult *res;
 	ExecStatusType rstat;
+	then=time(NULL);
 	sprintf(buff,"EXPLAIN %s",s);
 	res=PQexec(current_con,buff);
 	rstat=PQresultStatus(res);
+	
 	
   	if (inTransaction ())
     	{

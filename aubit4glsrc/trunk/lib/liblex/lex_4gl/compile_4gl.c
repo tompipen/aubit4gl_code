@@ -6596,6 +6596,34 @@ if (last_parent!=parent) {
       break;
 
 
+    case E_CMD_LINT_IGNORE_CMD:
+	{
+	int b;
+	set_nonewlines ();
+	printc("LINT IGNORE ");
+	for (b=0;b<r->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_len;b++) {
+		if (b) printc(",");
+
+		printc("%s",r->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_val[b]);
+	}
+	clr_nonewlines ();
+	}
+	break;
+
+    case E_CMD_LINT_EXPECT_CMD:
+	{
+	int b;
+	set_nonewlines ();
+	printc("LINT EXPECT ");
+	for (b=0;b<r->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_len;b++) {
+		if (b) printc(",");
+
+		printc("%s",r->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_val[b]);
+	}
+	clr_nonewlines ();
+	}
+	break;
+
 
 
     case E_CMD_CALL_CMD:

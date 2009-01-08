@@ -19,8 +19,19 @@ static void load_boltons (char *fname);
 static int find_function (char *s);
 static void linearise_expressions (struct expr_str_list *list);
 static void check_boolean (char *module_name, int lineno, expr_str * s,int last_was_sql,int done_true_false);
-//void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
+static void init_lint(void) ;
+static void add_lint_expect (char *s);
+static void add_lint_ignore (char *s);
+static void set_lint_ignore(struct command *c) ;
+static void set_lint_expect(struct command *c) ;
 
+static int has_lint_ignore(char *c) ;
+static int has_lint_expect(char *c) ;
+
+static void clr_lint_expect(void) ;
+
+
+//void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
 //void dump_prototypes(void) ;
 //static struct commands * linearise_commands(struct commands *master_list, struct commands *cmds) ;
 //static void linearise_commands_from_events(struct commands *master_list, struct on_events* evt_list) ;
@@ -326,6 +337,9 @@ check_cmds_for_dead_code (struct commands *cmds)
 
   for (a = 0; a < cmds->cmds.cmds_len; a++)
     {
+
+      if (cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(cmds->cmds.cmds_val[a]); continue; }
+      if (cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(cmds->cmds.cmds_val[a]); continue; }
 
       if (ignore && cmds->cmds.cmds_val[a]->cmd_data.type != E_CMD_WHENEVER_CMD
 	  && cmds->cmds.cmds_val[a]->cmd_data.type != E_CMD_LABEL_CMD)
@@ -636,6 +650,8 @@ int cnt;
     {
       r = func_cmds->cmds.cmds_val[cnt];
 
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
 
       yylineno = r->lineno;
       if (r->cmd_data.type == E_CMD_RETURN_CMD)
@@ -1383,6 +1399,7 @@ int cnt;
 		}
 	    }
 	}
+	clr_lint_expect();
     }
 }
 
@@ -1613,6 +1630,8 @@ check_whenever_abuse (module_definition * d)
 	  for (cmd = 0; cmd < all_cmds->cmds.cmds_len; cmd++)
 	    {
 	      r = all_cmds->cmds.cmds_val[cmd];
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
 
 	      switch (r->cmd_data.type)
 		{
@@ -1687,6 +1706,7 @@ check_whenever_abuse (module_definition * d)
 		  // Don't care -they are not SQL commands...
 
 		}
+	clr_lint_expect();
 	    }
 	}
 
@@ -2206,6 +2226,9 @@ check_module (struct module_definition *d)
   // Look for Prepared but not used...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_PREPARE_CMD)
 	{
 	  int used = 0;
@@ -2247,12 +2270,16 @@ check_module (struct module_definition *d)
 
 	    }
 	}
+
+	clr_lint_expect();
     }
 
 
   // Look for DECLAREd but not used...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_DECLARE_CMD)
 	{
 	  int used = 0;
@@ -2291,6 +2318,7 @@ check_module (struct module_definition *d)
 					    (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)));
 	    }
 	}
+	clr_lint_expect();
     }
 
 
@@ -3047,6 +3075,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
     {
       r = func_cmds->cmds.cmds_val[a];
 
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
       if (r->cmd_data.type == E_CMD_START_CMD)
 	{			// 
 	  int b;
@@ -3127,6 +3157,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	    }
 	}
 
+	clr_lint_expect();
 
     }
 
@@ -3149,6 +3180,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 
 
 
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
 	  //printf("Cmd %d - type = %d\n", a, r->cmd_data.type);
 	  // Its a return
 	  if (r->cmd_data.type == E_CMD_RETURN_CMD)
@@ -3238,6 +3271,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		    }
 		}
 	    }
+
+	clr_lint_expect();
 	}
     }
 
@@ -3266,6 +3301,7 @@ check_program (module_definition * mods, int nmodules)
   char *fname;
   int mcnt;
 
+  init_lint();
 
   fname = acl_getenv_not_set_as_0 ("CFUNCSFILE");
   if (fname)
@@ -3530,6 +3566,18 @@ check_program (module_definition * mods, int nmodules)
 	  printf ("Not implemented yet (E_MET_FORMHANDLER_DEFINITION.1)\n");
 	  exit (4);
 	  break;
+
+	case E_MET_CMD:
+		{
+		  struct command *c;
+	          c = m->module_entry_u.cmd;
+          	  if (c->cmd_data.type == E_CMD_LINT_IGNORE_CMD) {
+			set_lint_ignore(c);
+		  }
+
+		}
+
+		break;
 	default:
 	  break;		// Cant have a function prototype
 	}
@@ -3751,6 +3799,8 @@ check_program (module_definition * mods, int nmodules)
   // Look for OPEN FORM but not DISPLAYed...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type  == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_OPEN_FORM_CMD)
 	{
 	  int used = 0;
@@ -3778,6 +3828,7 @@ check_program (module_definition * mods, int nmodules)
 	      //sprintf(buff,"FORM (%s) is OPENed but not DISPLAYed", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
 	    }
 	}
+	clr_lint_expect();
     }
 
 
@@ -3824,6 +3875,8 @@ check_program (module_definition * mods, int nmodules)
       // Look for OUTPUT 
       for (a = 0; a < all_cmds->cmds.cmds_len; a++)
 	{
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type  == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type  == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
 	  switch (all_cmds->cmds.cmds_val[a]->cmd_data.type)
 	    {
 	    case E_CMD_OUTPUT_CMD:
@@ -3848,6 +3901,7 @@ check_program (module_definition * mods, int nmodules)
 	      break;
 	    }
 
+	clr_lint_expect();
 	}
       yylineno = lineno;
       if (!r_started && !r_outputed && !r_finished)
@@ -3880,6 +3934,9 @@ check_program (module_definition * mods, int nmodules)
       int found_something = 0;
       char *cwindow = "undefined";
       char *action = "undefined";
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_CURRENT_WIN_CMD)
 	{
 	  if (A4GL_aubit_strcasecmp
@@ -3933,6 +3990,7 @@ check_program (module_definition * mods, int nmodules)
 		}
 	    }
 	}
+	clr_lint_expect();
     }
 
 
@@ -4027,6 +4085,11 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	return ;
   }
 	
+  if (has_lint_ignore(code) || has_lint_expect(code)) {
+	return;
+  }
+
+
   if (module_in == 0)
     {
       printf ("WARNING : %s does not pass in a module!\n", code);
@@ -4082,10 +4145,10 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
 	case 1:
 	{
-		char fname[200];
-		strcpy(fname,module);
-		strcat(fname,".4gl");
-	  sprintf (buff, "%-20s:%-6d (Severity:%2d)", fname, lintline,severity);
+		//char fname[200];
+		//strcpy(fname,module);
+		//strcat(fname,".4gl");
+	  sprintf (buff, "%-20s:%-6d (Severity:%2d)", module, lintline,severity);
 	}
 	  if (extra)
 	    {
@@ -5049,6 +5112,9 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
     {
       r = func_cmds->cmds.cmds_val[a];
 
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
+
       if (r->cmd_data.type == E_CMD_RETURN_CMD)
 	{
 
@@ -5082,6 +5148,7 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
 
 	  break;
 	}
+	clr_lint_expect();
     }
   if (fprototypes[e].nreturns == -1)
     {
@@ -5548,3 +5615,189 @@ int A4GL_is_valid_4gl_type (char *s)
   return 0;
 }
 
+
+// Lint expect/ignore handling
+//
+#define MAX_NUM_LINT_ERRORS 1000
+char *lint_expect_list[MAX_NUM_LINT_ERRORS];
+char *lint_ignore_list[MAX_NUM_LINT_ERRORS];
+
+static void init_lint(void) {
+int a;
+for (a=0;a<MAX_NUM_LINT_ERRORS;a++) {
+	lint_expect_list[a]=NULL;
+	lint_ignore_list[a]=NULL;
+}
+}
+
+
+static void
+add_lint_ignore (char *s)
+{
+  int firstnull = -1;
+int a;
+
+
+//printf("add_lint_ignore: %s\n",s);
+
+  if (s[0] == '-')
+    {
+      // We need to remove it from our list...
+      //
+      // Skip the '-'
+      s++;
+      for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+	{
+	  if (lint_ignore_list[a])
+	    {
+	      if (strcmp (s, lint_ignore_list[a]) == 0)
+		{
+		  // We've found it in our list..
+		  free (lint_ignore_list[a]);
+		  lint_ignore_list[a] = NULL;
+		}
+	    }
+	}
+      return;
+    }
+
+
+
+  if (s[0] == '+')
+    s++;
+
+
+  for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+    {
+      if (lint_ignore_list[a])
+	{
+	  if (strcmp (s, lint_ignore_list[a]) == 0)
+	    {
+	      // We've found it in our list - its already active..
+	      return;
+	    }
+	}
+      else
+	{
+	  // The space is empty - do we need to use it ? 
+	  if (firstnull == -1)
+	    {
+		// if its not found by the time we reach the end of the array - we can use it...
+	      firstnull = a;
+	    }
+	}
+    }
+
+  if (firstnull == -1)
+    {
+      printf ("Unable to find empty place to put lint warning..(ignore)\n");
+      exit (2);
+    }
+
+lint_ignore_list[firstnull]=strdup(s);
+}
+
+
+static void
+add_lint_expect (char *s)
+{
+  int firstnull = -1;
+int a;
+
+  if (s[0] == '-')
+    {
+      // We need to remove it from our list...
+      //
+      // Skip the '-'
+      s++;
+      for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+	{
+	  if (lint_expect_list[a])
+	    {
+		// We remove *all* of the entries...
+		  free (lint_expect_list[a]);
+		  lint_expect_list[a] = NULL;
+	    }
+	}
+      return;
+    }
+
+
+
+  if (s[0] == '+')
+    s++;
+
+
+  for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+    {
+      if (lint_expect_list[a])
+	{
+	  if (strcmp (s, lint_expect_list[a]) == 0)
+	    {
+	      // We've found it in our list - its already active..
+	      return;
+	    }
+	}
+      else
+	{
+	  // The space is empty - do we need to use it ? 
+	  if (firstnull == -1)
+	    {
+		// if its not found by the time we reach the end of the array - we can use it...
+	      firstnull = a;
+	    }
+	}
+    }
+
+  if (firstnull == -1)
+    {
+      printf ("Unable to find empty place to put lint warning (expect)..\n");
+      exit (2);
+    }
+
+lint_expect_list[firstnull]=strdup(s);
+
+}
+
+
+static void set_lint_ignore(struct command *c) {
+	int a;
+	A4GL_assertion(c->cmd_data.type!=E_CMD_LINT_IGNORE_CMD,"Expecting 'E_CMD_LINT_IGNORE_CMD'");
+	if (c->cmd_data.command_data_u.lint_ignore_cmd.values==NULL) return;
+	for (a=0;a<c->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_len;a++) {
+		add_lint_ignore(c->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_val[a]);
+	}
+}
+
+static void set_lint_expect(struct command *c) {
+	int a;
+	A4GL_assertion(c->cmd_data.type!=E_CMD_LINT_EXPECT_CMD,"Expecting 'E_CMD_LINT_EXPECT_CMD'");
+	if (c->cmd_data.command_data_u.lint_expect_cmd.values==NULL) return;
+	for (a=0;a<c->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_len;a++) {
+		add_lint_expect(c->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_val[a]);
+	}
+}
+static void clr_lint_expect() {
+	add_lint_expect("-");
+}
+
+static int has_lint_ignore(char *c)  {
+	int a;
+	for (a=0;a<MAX_NUM_LINT_ERRORS;a++) {
+		if (lint_ignore_list[a]) {
+			//printf("%s %s\n", lint_ignore_list[a],c);
+			if (strcmp(lint_ignore_list[a],c)==0) return 1;
+		}
+	}
+	return 0;
+}
+
+static int has_lint_expect(char *c)  {
+	int a;
+	for (a=0;a<MAX_NUM_LINT_ERRORS;a++) {
+		if (lint_expect_list[a]) {
+			if (strcmp(lint_expect_list[a],c)==0) return 1;
+		}
+	}
+	return 0;
+}

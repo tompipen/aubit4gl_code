@@ -164,6 +164,8 @@ enum cmd_type {
         E_CMD_UPDATE_CMD,
         E_CMD_INSERT_CMD,
         E_CMD_DELETE_CMD,
+	E_CMD_LINT_IGNORE_CMD,
+	E_CMD_LINT_EXPECT_CMD,
 E_CMD_LAST
 };
 
@@ -258,6 +260,15 @@ struct funcname_list {
 struct struct_start_rpc_cmd  {
 	struct expr_str *valid_port;
 	funcname_list remote_func_list;
+};
+
+
+struct struct_lint_ignore_cmd {
+	struct str_list *values;
+};
+
+struct struct_lint_expect_cmd {
+	struct str_list *values;
 };
 	
 /* ***************************************************** */
@@ -1466,6 +1477,9 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_PDF_CALL_CMD: struct_pdf_call_cmd pdf_call_cmd;
 	/*case E_CMD_CALL_SHARED_CMD: struct_call_shared_cmd call_shared_cmd; */
 	case E_CMD_SET_SESSION_CMD: struct_set_session_cmd set_session_cmd;
+
+	case E_CMD_LINT_IGNORE_CMD: struct_lint_ignore_cmd lint_ignore_cmd;
+	case E_CMD_LINT_EXPECT_CMD: struct_lint_expect_cmd lint_expect_cmd;
 	
 };
 
@@ -1477,6 +1491,7 @@ struct fgl_comment {
 	str comment;
 	char type;
 };
+
 
 struct command {
 	command_data cmd_data; /* defined later */

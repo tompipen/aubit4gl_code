@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.459 2009-01-05 21:01:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.460 2009-01-08 17:36:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.459 2009-01-05 21:01:36 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.460 2009-01-08 17:36:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -446,6 +446,11 @@ dump_cmd (struct command *r)
   //printf ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
   A4GL_debug ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
 
+
+  if (r->cmd_data.type==E_CMD_LINT_IGNORE_CMD || r->cmd_data.type==E_CMD_LINT_EXPECT_CMD) {
+		// This is just internal - no need to worry about it...
+		return 1;
+	}
 
   line_for_cmd = r->lineno;
   yylineno=line_for_cmd;

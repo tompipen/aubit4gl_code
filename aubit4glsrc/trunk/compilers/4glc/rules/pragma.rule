@@ -14,7 +14,6 @@ pragma_entry: SYSTEM_4GL 				{ compiling_system_4gl=1; }
         | NOCLOBBER 					{ A4GL_setenv("A4GL_NOCLOBBER","Y",1); }
         | ALWAYSSQLCLOBBER 				{ A4GL_setenv("A4GL_NOSQLCLOBBER","N",1); }
         | ALWAYSCLOBBER 				{ A4GL_setenv("A4GL_NOCLOBBER","N",1); }
-
 ;
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.93 2008-12-01 14:26:59 mikeaubury Exp $
+# $Id: 1.reqd,v 1.94 2009-01-08 17:36:17 mikeaubury Exp $
 #
 */
 
@@ -103,9 +103,6 @@
 #define YYDEBUG 1
 
 
-#ifndef ENCODE_SIZE
-#define ENCODE_SIZE(x) (x<<16)S
-#endif
 
 /* prevent warning for redundant declaration of yyparse: */
 #define _BISON_SIMPLE_INCL_
@@ -127,6 +124,9 @@
 #include "a4gl_API_parse_lib.h"
 #include "parsehelp.h"
 
+#ifndef ENCODE_SIZE
+#define ENCODE_SIZE(x) (x<<16)S
+#endif
 /*
 =====================================================================
 		                    Variables definitions

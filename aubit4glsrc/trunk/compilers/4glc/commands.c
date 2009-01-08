@@ -48,6 +48,9 @@ struct command *new_command (enum cmd_type ct) {
 	}
 	c->module=A4GL_compiling_module_basename();
 	c->comment=A4GL_get_current_comments(c->lineno, c->colno);
+
+	//c->lint_ignores=NULL;
+
 	return c;
 }
 
@@ -275,7 +278,7 @@ FILE *f;
         case ET_EXPR_TODAY: return "TODAY";
 	case ET_EXPR_ASSOC:
       {
-        char *p;
+        //char *p;
         char buff[256];
         sprintf (buff, "<<%s>>", expr_as_string_when_possible (e->expr_str_u.expr_assoc_subscript->subscript_value));
         return strdup (buff);
@@ -287,7 +290,7 @@ FILE *f;
 
         case ET_EXPR_DAY_FUNC:
       {
-        char *p;
+        //char *p;
         char buff[256];
         sprintf (buff, "DAY(%s)", expr_as_string_when_possible (e->expr_str_u.expr_expr));
         return strdup (buff);
@@ -297,7 +300,7 @@ FILE *f;
     case ET_EXPR_YEAR_FUNC:
 
       {
-        char *p;
+        //char *p;
         char buff[256];
         sprintf (buff, "YEAR(%s)", expr_as_string_when_possible (e->expr_str_u.expr_expr));
         return strdup (buff);
@@ -537,6 +540,22 @@ struct command *c;
    return c;
 }
  
+
+struct command *new_lint_ignore_cmd(str_list *list) {
+	struct command *c;
+	c=new_command(E_CMD_LINT_IGNORE_CMD);
+	c->cmd_data.command_data_u.lint_ignore_cmd.values=list;
+	return c;
+}
+
+
+struct command *new_lint_expect_cmd(str_list *list) {
+	struct command *c;
+	c=new_command(E_CMD_LINT_EXPECT_CMD);
+	c->cmd_data.command_data_u.lint_expect_cmd.values=list;
+	return c;
+}
+
 struct command *new_continue_cmd(enum e_block_cmd p_what) { //!
 struct command *c;
 int block_no=0;
@@ -875,7 +894,7 @@ new_prepare_cmd (expr_str *connid, expr_str *p_stmtid, expr_str * p_sql)
 struct command *new_init_cmd(struct expr_str_list* p_varlist,str_list *p_tablist,int tonull) { //!
 struct command *c;
 //struct expr_str_list* p_varlist_expanded;
-extern int nullbindcnt;
+//extern int nullbindcnt;
 char errbuff[256];
 int a;
    c=new_command(E_CMD_INIT_CMD);
@@ -1183,7 +1202,6 @@ struct command *c;
 
 struct command *new_let_cmd(expr_str_list* p_vars,expr_str_list *p_vals) {
 struct command *c;
-int a;
    	c=new_command(E_CMD_LET_CMD);
    	c->cmd_data.command_data_u.let_cmd.vars=p_vars;
 	p_vals=make_fgl_expr_list(p_vals);
@@ -1310,7 +1328,7 @@ struct command *c;
 		fl=new_field_list();
 		for (a=0;a<p_variables->list.list_len;a++) {
 			char *colname;
-			struct expr_str *f;
+			//struct expr_str *f;
 			A4GL_assertion(p_variables->list.list_val[a]->expr_type!=ET_EXPR_VARIABLE_USAGE,"Expecting a variable");
 			vu=p_variables->list.list_val[a]->expr_str_u.expr_variable_usage;
 			while (vu->next) vu=vu->next;
@@ -1344,7 +1362,7 @@ struct command *c;
                 int a;
                 struct fh_field_list *fl;
                 struct fh_field_entry *fe=0;
-                struct variable_usage *vu;
+                //struct variable_usage *vu;
                 c->cmd_data.command_data_u.input_cmd.by_name=EB_TRUE;
                 // we need to generate our field list...
                 fl=new_field_list();
@@ -1369,9 +1387,9 @@ struct command *c;
 
 static int find_slice(expr_str *arr, char *s, int w) {
 struct variable *v;
-int dtype=0;
-int size=0;
-int is_array=0;
+//int dtype=0;
+//int size=0;
+//int is_array=0;
 char buff[256];
 char *ptr;
 int a;
@@ -2110,7 +2128,7 @@ struct module_entry *c;
 
 struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,commands* p_commands,int lineno) {
 struct module_entry *c;
-int a;
+//int a;
    c=new_module_entry(E_MET_FUNCTION_DEFINITION);
    c->module_entry_u.function_definition.funcname=strdup(p_funcname);
    c->module_entry_u.function_definition.namespace=strdup(get_namespace(p_funcname));
@@ -2434,7 +2452,7 @@ static struct ilist *generate_ilist_from_variable_usage(struct variable_usage *u
 
 struct expr_str *generate_sql_expr(struct expr_str *p) {
 char *ident;
-char buff[2000];
+//char buff[2000];
 struct variable_usage *u;
 struct expr_str *rval=0;
 if (!is_valid_identifier(p))  return 0;

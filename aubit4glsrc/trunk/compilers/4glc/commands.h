@@ -62,6 +62,8 @@ struct command *new_declare_cmd(expr_str *p_connid,expr_str *p_cursorname, struc
 struct command *new_current_win_cmd(struct expr_str *p_windowname);
 struct command *new_term_rep_cmd(char *p_reportname);
 struct command *new_sql_cmd(expr_str *p_connid, char * p_sql) ;
+struct command *new_lint_ignore_cmd(str_list *list);
+struct command *new_lint_expect_cmd(str_list *list);
 
 int get_variable_dtype_from_variable_usage_expression(char *errbuff, expr_str *vu) ;
 
