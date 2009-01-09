@@ -1991,7 +1991,7 @@ check_program (module_definition * mods, int nmodules)
 	}
       else
 	{
-	  fprintf (output, "</REPORT>\n");
+	  fprintf (output, "</FUNCTION>\n");
 	}
 
     }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.71 2008-12-15 22:15:38 mikeaubury Exp $
+# $Id: sql_common.c,v 1.72 2009-01-09 19:28:57 mikeaubury Exp $
 #
 */
 
@@ -402,8 +402,9 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
   if (sid)
     {
       A4GLSQL_free_prepare (sid);
-      A4GL_removePreparedStatementBySid (sid);
-	free(sid);
+      if (A4GL_removePreparedStatementBySid (sid)) {
+		free(sid);
+	}
     }
 
   sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
@@ -1975,10 +1976,11 @@ A4GL_removePreparedStatement (char *name)
   preparedStatements[a].extra_data=NULL;
 }
 
-void
+int
 A4GL_removePreparedStatementBySid (void *sid)
 {
   int a;
+int ok=0;
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)
@@ -1989,9 +1991,11 @@ A4GL_removePreparedStatementBySid (void *sid)
   		strcpy (preparedStatements[a].anonymousName, "");
   		preparedStatements[a].sid=NULL;
   		preparedStatements[a].extra_data=NULL;
+		ok=1;
 	    }
 	}
     }
+   return ok;
 }
 
 

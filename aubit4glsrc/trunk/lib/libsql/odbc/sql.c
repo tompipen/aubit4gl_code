@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.228 2008-12-04 15:02:51 mikeaubury Exp $
+# $Id: sql.c,v 1.229 2009-01-09 19:28:57 mikeaubury Exp $
 #
 */
 
@@ -3287,8 +3287,10 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
 	    acl_free ((*sid)->obind);
 	(*sid)->ibind=0; (*sid)->obind=0;
     }
-    acl_free (*sid);
-    A4GL_removePreparedStatementBySid(*sid);
+
+    if (A4GL_removePreparedStatementBySid(*sid)) {
+    		acl_free (*sid);
+    }
     return rc;
 }
 /**
