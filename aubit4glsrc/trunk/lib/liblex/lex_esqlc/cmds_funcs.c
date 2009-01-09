@@ -985,6 +985,11 @@ print_return_cmd (struct_return_cmd * cmd_data)
   int n;
   int z;
 
+ if (cmd_data->with_resume) {
+	a4gl_yyerror("WITH RESUME can only be used with the SPL target");
+	return 0;
+ }
+
   print_cmd_start ();
 
 	printPopFunction();
