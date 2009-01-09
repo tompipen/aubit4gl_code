@@ -422,8 +422,13 @@ endcode
 		end if
   	END FOR
 
-	# Guess that its probably an executable..
-	LET mv_output_type="EXE"
+
+	if fgl_getenv("A4GL_LEXTYPE")="SPL" then
+		LET mv_output_type="SPL"
+	else
+		# Guess that its probably an executable..
+		LET mv_output_type="EXE"
+	end if
 
 	# Does it look like a static library ?
 	let lv_type=generate_ext("LIB")
@@ -917,7 +922,11 @@ IF lv_from="4GL"  THEN
 
 
 	if lv_to is null or lv_to=" " then
-		let lv_to="OBJ"
+		if mv_compile_c="no" and mv_compile_pec="no" then
+			let lv_to=fgl_getenv("A4GL_LEXTYPE")
+		else
+			let lv_to="OBJ"
+		end if
 	end if
 
 	CASE lv_to
@@ -960,6 +969,9 @@ IF lv_from="4GL"  THEN
 			call run_4glc_mif(lv_fname,lv_new,lv_base)
 			
 
+		WHEN "SPL"
+			# 4GL -> Stored procedure SQL file
+			call run_4glc(lv_fname,lv_new,lv_base)
 
 		OTHERWISE
 			display "Unhandled compilation : FROM=",lv_from," TO=",lv_to," for ",lv_fname
