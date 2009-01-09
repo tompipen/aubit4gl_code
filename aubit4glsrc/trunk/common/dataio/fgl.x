@@ -484,6 +484,7 @@ struct commands {
 
 struct struct_return_cmd {
 	struct expr_str_list* retvals;
+	int with_resume;
 };
 
 

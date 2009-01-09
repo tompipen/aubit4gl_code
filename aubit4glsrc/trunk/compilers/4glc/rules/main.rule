@@ -209,7 +209,12 @@ main_def:
 } 
 ;
 
-return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 { 
+op_with_resume: /* Only used for SPL target */
+	{$<integer_val>$=0;} 
+	| WITH_RESUME {$<integer_val>$=1;}
+;
+
+return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 op_with_resume { 
     int nreturn;
     struct expr_str_list *pl;
 
@@ -236,7 +241,7 @@ return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 {
     }
     nreturn_values=nreturn;
 	set_cmdlineno($<integer_val>2);
-    $<cmd>$=new_return_cmd(make_fgl_expr_list(pl));
+    $<cmd>$=new_return_cmd(make_fgl_expr_list(pl),$<integer_val>4);
   }
 ;
 

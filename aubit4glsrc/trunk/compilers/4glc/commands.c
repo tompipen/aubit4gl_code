@@ -1754,10 +1754,12 @@ struct command *c;
    return c;
 }
 
-struct command *new_return_cmd(expr_str_list *p_retvals) {
+struct command *new_return_cmd(expr_str_list *p_retvals,int p_with_resume) {
 struct command *c;
    c=new_command(E_CMD_RETURN_CMD);
    c->cmd_data.command_data_u.return_cmd.retvals=p_retvals;
+	/* With resume is only used with the SPL target language - as an extension to normal 4gl... */
+   c->cmd_data.command_data_u.return_cmd.with_resume=p_with_resume;
    return c;
 }
 
