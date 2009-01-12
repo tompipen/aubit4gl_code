@@ -2401,7 +2401,15 @@ uilib_input_get_array_values (int n)
   for (b = 0; b < contexts[context].ui.inputarray.nvals; b++)
     {
       UIdebug (6, "Pushing : %s", p[b]);
-      PUSHquote (p[b]);
+
+      if (strlen (p[b]) == 0)
+        {
+          A4GL_push_null (0, 0);
+        }
+      else
+        {
+      	PUSHquote (p[b]);
+        }
     }
   contexts[context].ui.inputarray.changed_rows[arrline] = 0;
   return contexts[context].ui.inputarray.nvals;
