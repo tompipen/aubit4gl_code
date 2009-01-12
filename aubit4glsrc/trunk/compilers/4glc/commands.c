@@ -139,7 +139,7 @@ FILE *f;
     case ET_EXPR_LITERAL_LONG:
       {
         static char smbuff[200];
-        sprintf (smbuff, "%d", e->expr_str_u.expr_long);
+        sprintf (smbuff, "%ld", (long)e->expr_str_u.expr_long);
         return smbuff;
       }
       break;
@@ -2128,7 +2128,7 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,commands* p_commands,int lineno) {
+struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,commands* p_commands,int lineno,char *doc4glcomment) {
 struct module_entry *c;
 //int a;
    c=new_module_entry(E_MET_FUNCTION_DEFINITION);
@@ -2141,6 +2141,7 @@ struct module_entry *c;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
    c->module_entry_u.function_definition.extra_warnings.extra_warnings_len=0;
    c->module_entry_u.function_definition.extra_warnings.extra_warnings_val=0;
+   c->module_entry_u.function_definition.comment=doc4glcomment;
 
    A4GL_ensure_dtype_variables(p_parameters);
    if (p_parameters==0) {
@@ -2166,7 +2167,7 @@ struct module_entry *c;
 
 
 
-struct module_entry *new_main_definition(commands* p_commands,int lineno) {
+struct module_entry *new_main_definition(commands* p_commands,int lineno,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_MAIN_DEFINITION);
    c->module_entry_u.function_definition.funcname=strdup("MAIN");
@@ -2180,6 +2181,7 @@ struct module_entry *c;
    c->module_entry_u.function_definition.lineno=lineno;
    c->module_entry_u.function_definition.expression_list.list.list_len=0;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
+   c->module_entry_u.function_definition.comment=doc4glcomment;
    //c->module_entry_u.function_definition.colno=0;
    c->module_entry_u.function_definition.lastlineno=yylineno;
 	c->module_entry_u.function_definition.extra_warnings.extra_warnings_len=0;
@@ -2325,12 +2327,14 @@ struct command *c;
 }
 
 
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ) {
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_PDF_REPORT_DEFINITION);
    c->module_entry_u.pdf_report_definition.funcname=strdup(p_funcname);
    c->module_entry_u.pdf_report_definition.namespace=strdup(get_namespace(p_funcname));
    c->module_entry_u.pdf_report_definition.isstatic=p_isstatic;
+   c->module_entry_u.pdf_report_definition.comment=doc4glcomment;
+
    A4GL_ensure_dtype_variables(p_parameters);
    if (p_parameters==0) {
 		p_parameters=malloc(sizeof(struct expr_str_list));
@@ -2369,12 +2373,14 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno) {
+struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_REPORT_DEFINITION);
    c->module_entry_u.report_definition.funcname=strdup(p_funcname);
    c->module_entry_u.report_definition.namespace=strdup(get_namespace(p_funcname));
    c->module_entry_u.report_definition.isstatic=p_isstatic;
+   c->module_entry_u.report_definition.comment=doc4glcomment;
+
    A4GL_ensure_dtype_variables(p_parameters);
    if (p_parameters==0) {
 		p_parameters=malloc(sizeof(struct expr_str_list));
@@ -2494,4 +2500,13 @@ return rval;
 
 
 
+struct command *set_cmd_comment(struct command *cmd,char *s) {
+	if (s) {
+		cmd->comment=s;
+	}
+	return cmd;
+}
 
+void set_module_comment(char *s) {
+	// does nothing yet
+}

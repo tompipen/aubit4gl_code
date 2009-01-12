@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.40 2008-12-18 20:51:47 mikeaubury Exp $
+# $Id: memfile.c,v 1.41 2009-01-12 10:21:38 mikeaubury Exp $
 #
 */
 
@@ -435,12 +435,17 @@ int nstrings;
 	*len=nstrings;
 }
 
+#define TYPE_IN_NOTHING 0
+#define TYPE_IN_CODE 1
+#define TYPE_IN_DBL_STRING 2
+#define TYPE_IN_SINGLE_STRING 4
+
 void
 A4GL_remove_comments_in_memfile (FILE * f)
 {
   int a;
   int b;
-  int type = 0;
+  int type = TYPE_IN_NOTHING;
   FILE *last;
 //FILE *save_comment=0;
 //char *save=0;
@@ -482,50 +487,51 @@ A4GL_remove_comments_in_memfile (FILE * f)
 	}
       colno++;
 
-      if (buff[a] == '\n' && type != 1)
-	type = 0;		// newlines always reset everything.
+      if (buff[a] == '\n' && type != TYPE_IN_CODE)
+	type = TYPE_IN_NOTHING;		// newlines always reset everything.
+
       // That way - if we get confused - it won't propagate too far..
       //
       if (strncmp (&buff[a], "code\n", 5) == 0 && a == 0)
 	{
-	  type += 1;
+	  type += TYPE_IN_CODE;
 	}
 
       if (strncmp (&buff[a], "\ncode\n", 6) == 0)
 	{
-	  type += 1;
+	  type += TYPE_IN_CODE;
 	}
       if (strncmp (&buff[a], "\r\ncode\r\n", 8) == 0)
 	{
-	  type += 1;
+	  type += TYPE_IN_CODE;
 	}
       if (strncmp (&buff[a], "\nendcode\n", 9) == 0)
 	{
-	  type -= 1;
+	  type -= TYPE_IN_CODE;
 	}
       if (strncmp (&buff[a], "\r\nendcode\r\n", 11) == 0)
 	{
-	  type -= 1;
+	  type -= TYPE_IN_CODE;
 	}
 
-      if (buff[a] == '"' && buff[a - 1] != '\\' && (type == 0 || type == 2))
+      if (buff[a] == '"' && buff[a - 1] != '\\' && (type == TYPE_IN_NOTHING || type == TYPE_IN_DBL_STRING))
 	{
-	  if (type & 2)
-	    type -= 2;
+	  if (type & TYPE_IN_DBL_STRING)
+	    type -= TYPE_IN_DBL_STRING;
 	  else
-	    type += 2;
+	    type += TYPE_IN_DBL_STRING;
 	}
 
-      if (buff[a] == '\'' && buff[a - 1] != '\\' && (type == 0 || type == 4))
+      if (buff[a] == '\'' && buff[a - 1] != '\\' && (type == TYPE_IN_NOTHING || type == TYPE_IN_SINGLE_STRING))
 	{
-	  if (type & 4)
-	    type -= 4;
+	  if (type & TYPE_IN_SINGLE_STRING)
+	    type -= TYPE_IN_SINGLE_STRING;
 	  else
-	    type += 4;
+	    type += TYPE_IN_SINGLE_STRING;
 	}
 
 
-      if (buff[a] == '-' && buff[a + 1] == '-' && type == 0)
+      if (buff[a] == '-' && buff[a + 1] == '-' && type == TYPE_IN_NOTHING)
 	{
 	  int no_comment_char = 0;
 
@@ -568,7 +574,7 @@ A4GL_remove_comments_in_memfile (FILE * f)
 	    }
 	}
 
-      if (buff[a] == '#' && type == 0)
+      if (buff[a] == '#' && type == TYPE_IN_NOTHING)
 	{
 	  cmcnt = 0;
 	  for (b = a; buff[b] != '\n' && b < buff_len; b++)
@@ -588,10 +594,18 @@ A4GL_remove_comments_in_memfile (FILE * f)
 	  continue;
 	}
 
-      if (buff[a] == '{' && type == 0 && buff[a + 1] != '!')
+      if (buff[a] == '{' && type == TYPE_IN_NOTHING && buff[a + 1] != '!')
 	{
 	  char pr = '{';
 	  cmcnt = 0;
+
+
+	  if (buff[a+1]=='*' && buff[a+2]=='*') { 
+		if (A4GL_isyes(acl_getenv("DOC4GLCOMMENTS"))) {
+			continue;
+		}
+	  }
+
 	  for (b = a; buff[b] != '}' && b < buff_len; b++)
 	    {
 	      colno++;
@@ -624,7 +638,7 @@ A4GL_remove_comments_in_memfile (FILE * f)
 	}
 
 
-      if (buff[a] == '{' && type == 0 && buff[a + 1] == '!')
+      if (buff[a] == '{' && type == TYPE_IN_NOTHING && buff[a + 1] == '!')
 	{
 	  buff[a] = ' ';
 	  buff[a + 1] = ' ';

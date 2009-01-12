@@ -209,7 +209,7 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 
 /* Flexible length array */
 	if (m.type==1) {
-		fprintf(cfo,"   if (!output_start_array(\"%s\",1,r.%s.%s_len)) return 0;\n",m.name,buff,m.name);
+		fprintf(cfo,"   if (!output_start_array(\"%s\",1,(int)r.%s.%s_len)) return 0;\n",m.name,buff,m.name);
 		fprintf(cfo,"   {\n");
 		fprintf(cfo,"      int cnt;\n");
 	        fprintf(cfo,"      for (cnt=0;cnt<r.%s.%s_len;cnt++) {\n",buff,m.name);
@@ -233,7 +233,7 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 
 /* Fixed length array */
 	if (m.type==2) { 
-		fprintf(cfo,"   if (!output_start_array(\"%s\",2,%d)) return 0;\n",m.name,m.size);
+		fprintf(cfo,"   if (!output_start_array(\"%s\",2,(int)%d)) return 0;\n",m.name,m.size);
 		fprintf(cfo,"   {\n");
 		fprintf(cfo,"      int cnt;\n");
 	        fprintf(cfo,"      for (cnt=0;cnt<%d;cnt++) {\n",m.size);
@@ -295,7 +295,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 
 /* Flexible length array */
 	if (m.type==1) { 
-		fprintf(cfi,"   if (!input_start_array(\"%s\",1,&r->%s.%s_len)) return 0;\n",m.name,buff,m.name);
+		fprintf(cfi,"   if (!input_start_array(\"%s\",1,(int *)&r->%s.%s_len)) return 0;\n",m.name,buff,m.name);
 		fprintf(cfi,"   {\n");
 		fprintf(cfi,"      int cnt; if (r->%s.%s_len) {\n",buff,m.name);
 	        fprintf(cfi,"      r->%s.%s_val=acl_malloc2_With_Context(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
@@ -318,7 +318,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 	if (m.type==2) { 
 		fprintf(cfi,"   {\n");
 		fprintf(cfi,"      int cnt,mcnt;\n");
-		fprintf(cfi,"   if (!input_start_array(\"%s\",2,&mcnt)) return 0;\n",m.name);
+		fprintf(cfi,"   if (!input_start_array(\"%s\",2,(int *)&mcnt)) return 0;\n",m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<mcnt;cnt++) {\n");
 		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,-1)) return 0;/*MJALI3*/\n",s,m.name,buff);
 		if (m.pointer==1) {

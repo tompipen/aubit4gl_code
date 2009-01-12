@@ -89,21 +89,78 @@ cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 
 
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_write
-make
+if make
+then
+	:
+else
+	echo "Failed to make in /home/aubit4gl/aubit4glsrc/lib/liblex/lex_write"
+	exit
+fi
 
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_cs
-make
+if make
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
 
 cd /home/aubit4gl/aubit4glsrc/lib/libpacker/xml_best
-make
+if make
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
 
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_4gl
-make
+if make
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
+
+
+cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_spl
+if make
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
+
 
 cd /home/aubit4gl/aubit4glsrc/lib/libui/ui_xml
-make
+if make
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
 cd /home/aubit4gl/aubit4glsrc/lib/libpdf
-make haru.dummy
+if make haru.dummy
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
+
+cd /home/aubit4gl/aubit4glsrc/compilers/4glc
+if make fgllint fglcalltree
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
+
 
 cd /home/aubit4gl/aubit4glsrc/tools/test_rep
 4glpc report.4gl -o report

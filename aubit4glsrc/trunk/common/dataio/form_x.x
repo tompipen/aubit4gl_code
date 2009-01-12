@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.24 2008-09-29 15:37:24 mikeaubury Exp $
+# $Id: form_x.x,v 1.25 2009-01-12 10:21:38 mikeaubury Exp $
 #*/
 
 /**
@@ -382,6 +382,8 @@ struct listitemlist  {
 
 
 union u_expression switch (enum ITEMTYPES  itemtype) {
+	case ITEMTYPE_NULL: void;
+	case ITEMTYPE_EXITNOW: void;
 	case ITEMTYPE_INT     : int intval;
 	case ITEMTYPE_CHAR    : string charval<>;
 	case ITEMTYPE_FIELD   : string field<>;

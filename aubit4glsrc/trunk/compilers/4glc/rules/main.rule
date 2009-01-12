@@ -70,7 +70,7 @@ module_entry :
 	| module_define_section   	{$<module_entry>$=0;}
 	| db_section 			{$<module_entry>$=0;}
 	| pragma 			{$<module_entry>$=0;}
-
+	| KW_DOC4GLCOMMENT		{set_module_comment($<str>1); $<module_entry>$=0;}
 	;
 
 
@@ -117,10 +117,16 @@ module_define_section : define_set ;
 ldeffunction :  FUNCTION {$<e_boolean>$=EB_FALSE;} | LOCAL_FUNCTION { $<e_boolean>$=EB_TRUE; } 
 ;
 
+
+op_doc4gl_comment: 
+	{$<sql_string>$=NULL; }
+	| KW_DOC4GLCOMMENT  {$<sql_string>$=strdup($<str>1); }
+;
+
 /*
  * Function definition 
  */
-func_def	: ldeffunction {
+func_def	: op_doc4gl_comment ldeffunction {
   				if (class_cnt>1) { 
 					a4gl_yyerror("You've already defined a class - you can't do any more now"); 
 				}
@@ -130,17 +136,17 @@ func_def	: ldeffunction {
   				clr_function_constants (); 
 				clr_call_list();
 		} identifier  OPEN_BRACKET  op_param_var_list CLOSE_BRACKET  { 
-			if (is_builtin_func($<str>3)&&!compiling_system_4gl) {
+			if (is_builtin_func($<str>4)&&!compiling_system_4gl) {
 				a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
 			}
 
-			if (strcmp($<str>1,"static ")!=0) {
+			if (strcmp($<str>2,"static ")!=0) {
 				// We don't export static functions
 
 
-				 variable_action(-1,$<str>3,"","","add_function"); 
+				 variable_action(-1,$<str>4,"","","add_function"); 
 			}
-  			SPRINTF1(curr_func,"%s",$<str>3);
+  			SPRINTF1(curr_func,"%s",$<str>4);
 			map_function_start(curr_func);
   			ADDMAP_MODULE("Declare Function",curr_func);
   			cnt=0;
@@ -151,19 +157,19 @@ func_def	: ldeffunction {
 			struct variable_list v;
 			char errbuff[256];
                         set_variables(&v,'L');
-                        if (!check_parameters(errbuff,&v, $<ptr_list>5)) {
+                        if (!check_parameters(errbuff,&v, $<ptr_list>6)) {
                                 a4gl_yyerror(errbuff);
                                 YYERROR;
                         }
 
 
-			inc_var_assigned_from_binding_list(expand_parameters(&v,$<ptr_list>5));
+			inc_var_assigned_from_binding_list(expand_parameters(&v,$<ptr_list>6));
 
 
 			lastlineno=yylineno;
 			} 
 			commands_as_list END_FUNCTION {
-				$<module_entry>$=new_function_definition($<str>3,$<e_boolean>1,$<ptr_list>5, $<commands>11,$<integer_val>8);
+				$<module_entry>$=new_function_definition($<str>4,$<e_boolean>2,$<ptr_list>6, $<commands>12,$<integer_val>9,$<sql_string>1);
 				set_variables(&$<module_entry>$->module_entry_u.function_definition.variables,'L');
     				pop_blockcommand("FUNC");
     				clr_function_constants ();
@@ -175,17 +181,13 @@ func_def	: ldeffunction {
 
 
 main_def:	
-  MAIN  atline
+  op_doc4gl_comment MAIN  atline
   { 
 				A4GL_clr_extra_warnings();
     		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 	
-		/* if (token_read_on_line<$<integer_val>2) {
-			$<integer_val>$=token_read_on_line; 
-		} */
     		lastlineno=token_read_on_line;
-		/* $<integer_val>$=token_read_on_line; */
-    		variable_action(-1,$<str>1,"","","add_function"); 
+    		variable_action(-1,$<str>2,"","","add_function"); 
     		strcpy(curr_func,"MAIN");
     		clr_variable(); 
   				clr_function_constants (); 
@@ -204,7 +206,7 @@ main_def:
     	A4GL_chk_and_clr_labels();
 	map_function_end();
 	A4GL_lex_printcomment("/*end main */\n");
-	$<module_entry>$=new_main_definition($<commands>6,$<integer_val>2);
+	$<module_entry>$=new_main_definition($<commands>7,$<integer_val>3,$<sql_string>1);
 	set_variables(&$<module_entry>$->module_entry_u.function_definition.variables,'L');
 } 
 ;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.133 2008-07-06 11:34:24 mikeaubury Exp $
+# $Id: lexer.c,v 1.134 2009-01-12 10:21:38 mikeaubury Exp $
 #*/
 
 /**
@@ -596,6 +596,47 @@ read_word2 (FILE * f, int *t)
 	    continue;
 	}
 
+      if (a=='{' && A4GL_isyes(acl_getenv("DOC4GLCOMMENTS"))) {
+	int z1;
+	int z2;
+	static char buff[64000];
+	  z1 = mja_fgetc (f);
+	  if (z1!='*') {
+	  	mja_ungetc (z1, f);
+	  } else {
+	  	z2 = mja_fgetc (f);
+	  	if (z2!='*') {
+	  		mja_ungetc (z2, f);
+	  		mja_ungetc (z1, f);
+		} else {
+			int cnt=0;
+			strcpy(buff,"{**");
+			cnt=strlen(buff);
+			while (1) {
+	  			z1 = mja_fgetc (f);
+				if (A4GL_memfile_feof (f)) {
+			              FPRINTF (stderr,"Unterminated Doc4gl comment\n");
+              				*t = TYPE_USTRING;	
+					return buff;
+
+				}
+				if ( z1=='}') {
+					buff[cnt++]=z1;
+					buff[cnt]=0;
+					*t = KW_DOC4GLCOMMENT;
+					break;
+				} else {
+					buff[cnt++]=z1;
+				}
+			}
+		}
+		return buff;
+	  }
+
+	
+		
+      }
+
       if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
 	{
 		//char *ptr;
@@ -1033,7 +1074,6 @@ chk_word (FILE * f, char *str)
 
   strcpy(trimmed,p);
   A4GL_trim(trimmed);
-
 
   A4GL_debug ("chk_word: read_word returns %s\n", p);
 

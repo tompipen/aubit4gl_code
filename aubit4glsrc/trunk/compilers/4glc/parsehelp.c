@@ -1403,7 +1403,7 @@ extra_warnings[nextra_warnings-1].warning=strdup(msg);
 }
 
 
-void A4GL_set_extra_warnings(int *n, struct lint_warning **l) {
+void A4GL_set_extra_warnings(unsigned int *n, struct lint_warning **l) {
 	*n=nextra_warnings;
 	*l=extra_warnings;
 }

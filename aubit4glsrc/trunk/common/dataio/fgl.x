@@ -2860,6 +2860,7 @@ struct s_function_definition {
 	variable_list variables;
 	commands* func_commands;
 	lint_warning extra_warnings<>;
+	str comment;
 };
 
 
@@ -2882,6 +2883,7 @@ struct s_report_definition {
 	call_list call_list;
 
 	lint_warning extra_warnings<>;
+	str comment;
 };
 
 
@@ -2902,6 +2904,7 @@ struct s_pdf_report_definition {
 	int lastlineno;
 	call_list call_list;
 	lint_warning extra_warnings<>;
+	str comment;
 };
 
 enum module_entry_type {

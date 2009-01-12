@@ -965,7 +965,7 @@ report_def : rep_or_localrep
 		pop_blockcommand("REPORT");
  			A4GL_chk_and_clr_labels();
 			map_report_end();
-                	$<module_entry>$=new_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<startrep>11, $<report_orderby_section>12, $<report_format_section>14 ,$<integer_val>4) ;
+                	$<module_entry>$=new_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<startrep>11, $<report_orderby_section>12, $<report_format_section>14 ,$<integer_val>4,$<sql_string>1) ;
 			set_variables(&$<module_entry>$->module_entry_u.report_definition.variables,'L');
 			clr_function_constants();
 			 A4GL_chk_and_clr_labels();
@@ -1104,7 +1104,7 @@ pause_msg : {$<ptr>$=0;}
 pdf_rep_or_localrep:  PDF_REPORT {$<e_boolean>$=EB_FALSE;} | LOCAL_PDF_REPORT {$<e_boolean>$=EB_TRUE;}
 ;
 
-pdf_report_def : pdf_rep_or_localrep {
+pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 				A4GL_clr_extra_warnings();
     	if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 		rep_type=REP_TYPE_PDF;
@@ -1117,10 +1117,10 @@ pdf_report_def : pdf_rep_or_localrep {
 	identifier atline OPEN_BRACKET
 		{
 		inc_report_cnt();
-		variable_action(-1,$<str>3,"","","add_function");
-		SPRINTF1(curr_func,"%s",$<str>3);
+		variable_action(-1,$<str>4,"","","add_function");
+		SPRINTF1(curr_func,"%s",$<str>4);
 		ADDMAP_MODULE("Define PDF Report",curr_func);
-		set_curr_rep_name($<str>3);
+		set_curr_rep_name($<str>4);
 		push_blockcommand("REPORT");
 		}
 	op_param_var_list CLOSE_BRACKET define_section  {
@@ -1131,18 +1131,18 @@ pdf_report_def : pdf_rep_or_localrep {
 			char errbuff[256];
 			struct variable_list v;
                 	set_variables(&v,'L');
-			if (!check_parameters(errbuff,&v, $<ptr_list>7)) {
+			if (!check_parameters(errbuff,&v, $<ptr_list>8)) {
 				a4gl_yyerror(errbuff);
 				YYERROR;
 			}
-			set_report_orderby(&v, $<ptr_list>7, $<report_orderby_section>12);
+			set_report_orderby(&v, $<ptr_list>8, $<report_orderby_section>13);
 			resize_paper(&pdf_rep_struct);
 			//start_bind('o',0);
 			//start_bind('i',0);
 		}
 	format_section END_REPORT { 
 		pop_blockcommand("REPORT"); 
-                $<module_entry>$=new_pdf_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<pdf_startrep>11, $<report_orderby_section>12, $<report_format_section>14,$<integer_val>4 ) ;
+                $<module_entry>$=new_pdf_report_definition($<str>4, $<e_boolean>2,$<ptr_list>8, $<pdf_startrep>12, $<report_orderby_section>13, $<report_format_section>15,$<integer_val>5 ,$<sql_string>1) ;
 			set_variables(&$<module_entry>$->module_entry_u.pdf_report_definition.variables,'L');
 
 			clr_function_constants();

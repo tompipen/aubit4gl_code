@@ -23,7 +23,7 @@ void A4GL_clr_extra_warnings(void);
 void A4GL_set_clobber (char *c);
 #endif
 
-void A4GL_set_extra_warnings(int *n, struct lint_warning **l);
+void A4GL_set_extra_warnings(unsigned int *n, struct lint_warning **l);
 /* These are defined in the API_lex */
 //int FGLPARSE_A4GL_lexer_find_type(char *s);
 //void FGLPARSE_A4GL_lexer_import_package(char *s);
