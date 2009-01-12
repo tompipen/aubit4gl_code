@@ -3312,15 +3312,28 @@ int print_print_img_cmd(struct_print_img_cmd *cmd_data) {
 
 /******************************************************************************/
 int print_pause_cmd(struct_pause_cmd *cmd_data) {
-  print_cmd_start ();
-  printc("{");
-  printc("char *_r;");
-  print_expr(cmd_data->pause_msg);
-  printc("_r=A4GL_char_pop();");
-  printc ("A4GL_pause(_r);\n");
-  printc("free(_r);");
-  printc("}");
-  print_copy_status_not_sql (0);
+int rep_type;
+
+
+  rep_type=is_in_report();
+
+  if (rep_type==1) { /* Normal report - not a pdf report or function */
+  	print_cmd_start ();
+  	printc("if (A4GL_rep_is_stdout(&_rep)) {");
+  	if (cmd_data->pause_msg) {
+  		printc("{");
+  		printc("char *_r;");
+  		print_expr(cmd_data->pause_msg);
+  		printc("_r=A4GL_char_pop();");
+  		printc ("A4GL_pause(_r);\n");
+  		printc("free(_r);");
+  		printc("}");
+  	} else {
+  		printc ("A4GL_pause(\"\");\n");
+  	}
+  	printc("}");
+  	print_copy_status_not_sql (0);
+  }
   return 1;
 }
 

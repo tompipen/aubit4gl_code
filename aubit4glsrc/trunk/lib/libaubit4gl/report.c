@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.174 2008-12-15 17:13:17 mikeaubury Exp $
+# $Id: report.c,v 1.175 2009-01-12 15:04:17 mikeaubury Exp $
 #
 */
 
@@ -3015,6 +3015,17 @@ char *
 A4GL_get_pdf_encoding (void)
 {
   return pdf_encoding;
+}
+
+
+int A4GL_rep_is_stdout ( struct rep_structure *rep) {
+
+if (rep->output_mode=='F') {
+	if (strcmp(rep->output_loc_str,"stdout")==0) {
+		return 1;
+	}
+}
+return 0;
 }
 
 

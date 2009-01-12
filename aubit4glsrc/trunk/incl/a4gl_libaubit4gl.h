@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.357 2009-01-09 19:28:57 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.358 2009-01-12 15:04:17 mikeaubury Exp $
 #
 */
 
@@ -2863,6 +2863,7 @@ char *
 A4GL_byte_as_base64 (fglbyte *b);
 
 char *A4GL_get_full_filename(char *s);
+int A4GL_rep_is_stdout ( struct rep_structure *rep);
 void
 A4GL_str_dot_to_dec (char *s, fgldecimal * d);
 

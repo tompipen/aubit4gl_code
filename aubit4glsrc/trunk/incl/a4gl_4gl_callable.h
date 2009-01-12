@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.43 2009-01-02 12:39:04 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.44 2009-01-12 15:04:17 mikeaubury Exp $
 */
 
 /**
@@ -176,6 +176,7 @@ void *A4GL_get_curr_report(void);
 void A4GL_set_curr_report(void *);
 void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
 long A4GL_bounds_check(long a,long maxbound);
+int A4GL_rep_is_stdout ( struct rep_structure *rep);
 void A4GL_free_associated_mem(void *orig);
 void A4GL_exitwith (char *s);
 void A4GL_free_directory(void);
