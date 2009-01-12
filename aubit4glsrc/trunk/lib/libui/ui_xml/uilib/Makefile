@@ -25,6 +25,9 @@ clean:
 libuilib${SO_EXT}: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
 	 ${LD} ${SO_LDFLAGS} -o libuilib${SO_EXT} $^
 
+deps: 
+	echo comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
+
 libuilib.a: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
 	ar rc $@ $^
 	ranlib $@

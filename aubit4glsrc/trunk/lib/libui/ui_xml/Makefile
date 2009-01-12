@@ -18,7 +18,7 @@ proxy: proxy.o pipe.o debug.o
 noproxy: noproxy.o pipe.o debug.o
 	${CC} ${CFLAGS_NO_PEDANTIC} -g -o noproxy noproxy.o pipe.o debug.o
 
-uilib/libuilib.a: 
+uilib/libuilib.a: uilib/comms.c uilib/uilib.c uilib/xml/attr.c uilib/xml/triggers.c uilib/xml/triggers_act.c pipe.c debug.c  uilib/xml/triggers_act.act uilib/xml/triggers.dtd
 	cd uilib && make -f Makefile libuilib.a
 
 

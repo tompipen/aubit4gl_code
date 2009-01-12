@@ -2400,7 +2400,7 @@ uilib_input_get_array_values (int n)
   p = contexts[context].ui.inputarray.variable_data[arrline];
   for (b = 0; b < contexts[context].ui.inputarray.nvals; b++)
     {
-      UIdebug (6, "Pushing : %s", p[b]);
+      UIdebug (6, "Pushing : '%s'", p[b]);
 
       if (strlen (p[b]) == 0)
         {
