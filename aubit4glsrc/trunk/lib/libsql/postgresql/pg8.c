@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.83 2009-01-08 17:36:17 mikeaubury Exp $
+# $Id: pg8.c,v 1.84 2009-01-12 15:21:02 mikeaubury Exp $
 #*/
 
 
@@ -1921,8 +1921,12 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 	      {
 		FILE *f;
 		f = fopen (a4gl->filename, "w");
-		fwrite (ptr, 1, strlen (ptr), f);
-		fclose (f);
+		if (f) {
+			fwrite (ptr, 1, strlen (ptr), f);
+			fclose (f);
+		} else {
+			A4GL_exitwith_sql("Unable to open blobfile");
+		}
 	      }
 	    else
 	      {
