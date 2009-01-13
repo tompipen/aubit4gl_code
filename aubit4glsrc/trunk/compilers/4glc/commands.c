@@ -21,7 +21,7 @@ static int get_exit_loop (char *cmd_type);
 //struct expr_str *A4GL_new_expr_list_with_list(expr_str_list *l);
 extern struct expr_str_list list_of_aggregates;
 extern struct call_list *this_functions_call_list;
-
+extern int lastlineno;
 int llineno=0;
 
 int set_cmdlineno(int n) {
@@ -29,8 +29,13 @@ int set_cmdlineno(int n) {
 		n=yylineno;
 	} 
 	llineno=n;
+	if (n>lastlineno) {
+		lastlineno=n;
+	}
 	return llineno;
 }
+
+
 
 struct command *new_command (enum cmd_type ct) {
 	struct command *c;

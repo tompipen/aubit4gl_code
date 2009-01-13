@@ -5,7 +5,7 @@
 */
 
 
-call_cmd	: FCALL atline {set_cmdlineno($<integer_val>2);} call_ext {$<cmd>$=$<cmd>4;}
+call_cmd	: FCALL atline {set_cmdlineno($<integer_val>2);} call_ext { set_cmdlineno($<integer_val>2); $<cmd>$=$<cmd>4;}
 ;
 
 

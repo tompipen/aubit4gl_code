@@ -23,37 +23,16 @@ static int add_calltree_calls (char *s, commands * func_commands, int mode);
 char *decode_rb (enum report_blocks a);
 
 
-int inc4GL=1; /* Include 4gl in the output */
-int incProg=1;
+int inc4GL = 1;			/* Include 4gl in the output */
+int incProg = 1;
 
-//char *expr_as_string_when_possible (expr_str * p);
-
-//void dump_prototypes (void);
-//static struct commands * linearise_commands(struct commands *master_list, struct commands *cmds) ;
-//static void linearise_commands_from_events(struct commands *master_list, struct on_events* evt_list) ;
-//static char *get_lint_filename(char *s) ;
-//static char *local_xml_escape(char *s) ;
-//static void cache_expressions(struct expr_str_list *list, struct commands *cmds) ;
-//static void cache_expression(struct expr_str_list *list, struct expr_str **eptr) ;
-//static void cache_expression_list(struct expr_str_list *list, struct expr_str_list *srclist) ;
 extern module_definition this_module;
 int expr_datatype (struct expr_str *p);
-
-//static void scan_functions(char *infuncname, int calltree_entry,int *calltree, struct call_list *f,struct commands *calling_funcs_commands) ;
-//static void set_lint_module (char *s) ;
-
-//static void check_variable_name(char *modname, char *scope, struct variable *v) ;
-//static void check_cmds_for_dead_code( struct commands *cmds) ;
-//int has_variable (struct variable_list *v, char *name);
-//int get_lint_style (void);
 
 
 #define PROTO_FUNCTION 		1
 #define PROTO_REPORT 		2
 #define PROTO_PDF_REPORT 	3
-
-//void A4GL_lint (char *module, int line, char *code, char *type, char *extra);
-//static char * A4GL_transform_basename (char *s);
 
 struct s_function_prototype
 {
@@ -65,12 +44,13 @@ struct s_function_prototype
   int *return_dtypes;
 };
 
-struct s_nodes {
-	char *function;
-	char *calls;
+struct s_nodes
+{
+  char *function;
+  char *calls;
 };
 
-struct s_nodes *nodes=0;
+struct s_nodes *nodes = 0;
 int nodescnt;
 
 struct function_calls
@@ -92,13 +72,22 @@ struct function
   struct function_calls *calls;
   void *ptr;
   int called;
+
+  char *whenever_error_func;
+  char *whenever_any_error_func;
+  char *whenever_sql_error_func;
+  int whenever_error_func_line;
+  int whenever_any_error_func_line;
+  int whenever_sql_error_func_line;
 };
+
+
 
 struct function *functions = 0;
 int functions_cnt = 0;
 
 FILE *output = 0;
-FILE *dot_output=0;
+FILE *dot_output = 0;
 
 
 
@@ -110,45 +99,136 @@ int nboltons = 0;
 
 expr_str_list *expr_cache = 0;
 
-int simpleGraph=1;
-int printAllFuncs=0;
+int simpleGraph = 1;
+int printAllFuncs = 0;
 
-static int hasNode(char *fname, char *calls) {
-	int a;
-	for (a=0;a<nodescnt;a++) {
-		if (strcmp(nodes[a].function,fname)==0 && strcmp(nodes[a].calls, calls)==0) return 1;
-	}
-	return 0;
+static int
+hasNode (char *fname, char *calls)
+{
+  int a;
+  for (a = 0; a < nodescnt; a++)
+    {
+      if (strcmp (nodes[a].function, fname) == 0 && strcmp (nodes[a].calls, calls) == 0)
+	return 1;
+    }
+  return 0;
 }
 
 
 
-static void addNode(char *fname, char *calls) {
- if (!hasNode(fname,calls)) {
-	nodescnt++;
-	nodes=realloc(nodes,sizeof(struct s_nodes)*nodescnt);
-	nodes[nodescnt-1].function=strdup(fname);
-	nodes[nodescnt-1].calls=strdup(calls);
- }
+static void
+addNode (char *fname, char *calls)
+{
+  if (!hasNode (fname, calls))
+    {
+      nodescnt++;
+      nodes = realloc (nodes, sizeof (struct s_nodes) * nodescnt);
+      nodes[nodescnt - 1].function = strdup (fname);
+      nodes[nodescnt - 1].calls = strdup (calls);
+    }
 }
 
 #define NODE_FUNC_DEFINED "**DEFINED**"
 
-static void addFunction(char *fname) {
-	addNode(fname,NODE_FUNC_DEFINED);
+static void
+addFunction (char *fname)
+{
+  addNode (fname, NODE_FUNC_DEFINED);
 }
 
-static void printNodes(void) {
-	if (simpleGraph) {
-		int a;
-		for (a=0;a<nodescnt;a++) {
-			if (strcmp(nodes[a].calls,NODE_FUNC_DEFINED)==0) continue; // ignore this one - its just a placeholder...
-			if (hasNode(nodes[a].calls,NODE_FUNC_DEFINED) || printAllFuncs) {
-	  			fprintf (dot_output, "%s -> %s\n", nodes[a].function,nodes[a].calls);
-			}
-		}
+static void
+printNodes (void)
+{
+  if (simpleGraph)
+    {
+      int a;
+      for (a = 0; a < nodescnt; a++)
+	{
+	  if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
+	    continue;		// ignore this one - its just a placeholder...
+	  if (hasNode (nodes[a].calls, NODE_FUNC_DEFINED) || printAllFuncs)
+	    {
+	      fprintf (dot_output, "%s -> %s\n", nodes[a].function, nodes[a].calls);
+	    }
 	}
+    }
 }
+
+
+char *whenever_error_func = NULL;
+char *whenever_any_error_func = NULL;
+char *whenever_sql_error_func = NULL;
+
+int whenever_error_func_line = 0;
+int whenever_any_error_func_line = 0;
+int whenever_sql_error_func_line = 0;
+
+
+static void init_whenever (void)
+{
+  whenever_error_func = NULL;
+  whenever_any_error_func = NULL;
+  whenever_sql_error_func = NULL;
+
+  whenever_error_func_line = 0;
+  whenever_any_error_func_line = 0;
+  whenever_sql_error_func_line = 0;
+}
+
+
+
+static void set_whenever_for_function(struct function *f) {
+
+  if (f->whenever_error_func_line>whenever_error_func_line) { // The WHENEVER must have been done in between the functions..
+ 	whenever_error_func = f->whenever_error_func;
+  }
+
+  if (f->whenever_any_error_func_line> whenever_any_error_func_line) {
+  	whenever_any_error_func = f->whenever_any_error_func;
+  }
+
+  if (f->whenever_sql_error_func_line> whenever_sql_error_func_line) {
+  	whenever_sql_error_func = f->whenever_sql_error_func;
+  }
+
+}
+
+
+static void
+set_whenever (struct command *c)
+{
+  int whencode;
+  char *whento;
+  A4GL_assertion (c->cmd_data.type != E_CMD_WHENEVER_CMD, "Expecting a WHENEVER command");
+
+  whencode = c->cmd_data.command_data_u.whenever_cmd.whencode;
+  whento = c->cmd_data.command_data_u.whenever_cmd.whento;
+
+  if (whencode & WHEN_ERROR)    { whenever_error_func = NULL; whenever_error_func_line = c->lineno; }
+  if (whencode & WHEN_SQLERROR) { whenever_sql_error_func = NULL; whenever_sql_error_func_line = c->lineno; }
+  if (whencode & WHEN_ANYERROR) { whenever_any_error_func = NULL; whenever_any_error_func_line = c->lineno; }
+
+
+  if (whencode == WHEN_ERROR + WHEN_CALL)
+    {
+      whenever_error_func = whento;
+      whenever_error_func_line = c->lineno;
+    }
+
+  if (whencode == WHEN_SQLERROR + WHEN_CALL)
+    {
+      whenever_sql_error_func = whento;
+      whenever_sql_error_func_line = c->lineno;
+    }
+
+  if (whencode == WHEN_ANYERROR + WHEN_CALL)
+    {
+      whenever_any_error_func = whento;
+      whenever_any_error_func_line = c->lineno;
+    }
+
+}
+
 
 
 //static int promoteable(int a, int b) ;
@@ -215,71 +295,6 @@ dtype_as_string (int dtype)
 }
 
 
-
-/*
-static int
-is_char_dtype (int dtype)
-{
-  dtype = dtype & DTYPE_MASK;
-  if (dtype == DTYPE_CHAR)
-    return 1;
-  if (dtype == DTYPE_NCHAR)
-    return 1;
-  if (dtype == DTYPE_VCHAR)
-    return 1;
-  return 0;
-}
-*/
-
-
-/*
-static int
-local_is_system_variable (char *s)
-{
-  //if (strcmp (s, "int_flag") == 0) return 1;
-  //if (strcmp (s, "quit_flag") == 0) return 1;
-
-  if (A4GL_aubit_strcasecmp (s, "a4gl_status") == 0)
-    return 1;
-  if (strncmp (s, "a4gl_sqlca", 10) == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "notfound") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "false") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "true") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "today") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "user") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "pageno") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "lineno") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "time") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "usrtime") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "curr_hwnd") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "curr_form") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "err_file_name") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "err_file_no") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "curr_file_name") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "curr_line_no") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "err_status") == 0)
-    return 1;
-  if (A4GL_aubit_strcasecmp (s, "aiplib_status") == 0)
-    return 1;
-  return 0;
-}
-*/
 
 
 
@@ -603,40 +618,6 @@ system_function (char *funcname)
 
 
 
-#ifdef NOPE
-/********************************************************************************/
-static int
-find_function_in_me (module_definition * me, char *s)
-{
-  int a;
-
-  for (a = 0; a < me->module_entries.module_entries_len; a++)
-    {
-      struct module_entry *m;
-      m = me->module_entries.module_entries_val[a];
-      switch (m->met_type)
-	{
-	case E_MET_MAIN_DEFINITION:
-
-	case E_MET_FUNCTION_DEFINITION:
-	  if (A4GL_aubit_strcasecmp (m->module_entry_u.function_definition.funcname, s) == 0)
-	    return a;
-	case E_MET_REPORT_DEFINITION:
-	  if (A4GL_aubit_strcasecmp (m->module_entry_u.report_definition.funcname, s) == 0)
-	    return a;
-	case E_MET_PDF_REPORT_DEFINITION:
-	  if (A4GL_aubit_strcasecmp (m->module_entry_u.pdf_report_definition.funcname, s) == 0)
-	    return a;
-
-	default:
-
-	  // Dont care - cant be a function or report anyway...
-	  break;
-	}
-    }
-  return -1;
-}
-#endif
 
 
 
@@ -653,6 +634,15 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
   functions[functions_cnt - 1].calls = 0;
   functions[functions_cnt - 1].ptr = ptr;
   functions[functions_cnt - 1].called = 0;
+
+
+  functions[functions_cnt - 1].whenever_error_func = whenever_error_func;
+  functions[functions_cnt - 1].whenever_any_error_func = whenever_any_error_func;
+  functions[functions_cnt - 1].whenever_sql_error_func = whenever_sql_error_func;
+  functions[functions_cnt - 1].whenever_error_func_line = whenever_error_func_line;
+  functions[functions_cnt - 1].whenever_any_error_func_line = whenever_any_error_func_line;
+  functions[functions_cnt - 1].whenever_sql_error_func_line = whenever_sql_error_func_line;
+
   printf ("Added %s in %s.%d\n", fname, module, line);
 }
 
@@ -735,11 +725,13 @@ static int
 cache_expression (char *s, expr_str ** ptr, int mode)
 {
   expr_str *expr;
-  if (ptr == 0) return 0;
+  if (ptr == 0)
+    return 0;
   expr = *ptr;
 
 
-  if (expr == 0) return 0;
+  if (expr == 0)
+    return 0;
 
 
   switch (expr->expr_type)
@@ -762,7 +754,7 @@ cache_expression (char *s, expr_str ** ptr, int mode)
     case ET_EXPR_OP_HOUR:
     case ET_EXPR_OP_MINUTE:
     case ET_EXPR_OP_SECOND:
-      return cache_expression ("",&expr->expr_str_u.expr_expr,mode);
+      return cache_expression ("", &expr->expr_str_u.expr_expr, mode);
 
     case ET_EXPR_OP_MATCHES:
     case ET_EXPR_OP_LIKE:
@@ -784,36 +776,49 @@ cache_expression (char *s, expr_str ** ptr, int mode)
     case ET_EXPR_OP_MOD:
     case ET_EXPR_OP_POWER:
     case ET_EXPR_OP_CONCAT:
-      return cache_expression ("",&expr->expr_str_u.expr_op->left,mode)+ cache_expression ("",&expr->expr_str_u.expr_op->right,mode);
-	default: break;
+      return cache_expression ("", &expr->expr_str_u.expr_op->left, mode) + cache_expression ("", &expr->expr_str_u.expr_op->right,
+											      mode);
+    default:
+      break;
 
-}
+    }
 
   if (expr->expr_type == ET_EXPR_FCALL)
     {
       //int a;
-		struct expr_str_list *params;
+      struct expr_str_list *params;
       // Got a function call - add it to the stack..
-      if (mode == MODE_BUY) {
-				if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
-					if (!simpleGraph) {
-	  					fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
-					} else {
-						addNode(currfunc, expr->expr_str_u.expr_function_call->fname);
-					}
-	
-	  				//fprintf (dot_output, "%s -> %s\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
-	  				print_indent ();
-	  				fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
-				}
+      if (mode == MODE_BUY)
+	{
+	  if (!system_function (expr->expr_str_u.expr_function_call->fname))
+	    {
+	      if (!simpleGraph)
+		{
+		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname,
+			   expr->expr_str_u.expr_function_call->line);
+		}
+	      else
+		{
+		  addNode (currfunc, expr->expr_str_u.expr_function_call->fname);
+		}
+
+	      //fprintf (dot_output, "%s -> %s\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+	      print_indent ();
+	      fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname,
+		       expr->expr_str_u.expr_function_call->line);
+	    }
 	}
-	params=expr->expr_str_u.expr_function_call->parameters;
-	if (params) cache_expression_list("",params,mode);
-	
-	if (!system_function(expr->expr_str_u.expr_function_call->fname)) {
-      		return 1;
-	} else {
-		return 0;
+      params = expr->expr_str_u.expr_function_call->parameters;
+      if (params)
+	cache_expression_list ("", params, mode);
+
+      if (!system_function (expr->expr_str_u.expr_function_call->fname))
+	{
+	  return 1;
+	}
+      else
+	{
+	  return 0;
 	}
     }
 
@@ -821,7 +826,8 @@ cache_expression (char *s, expr_str ** ptr, int mode)
 }
 
 
-static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode)
+static int
+cache_expression_list (char *s, struct expr_str_list *srclist, int mode)
 {
   int a;
   int cnt = 0;
@@ -864,7 +870,7 @@ get_field_list (fh_field_list * list)
     {
       if (a)
 	strcat (buff, ",");
-      strcat (buff, expr_as_string_when_possible(list->field_list_entries.field_list_entries_val[a].field));
+      strcat (buff, expr_as_string_when_possible (list->field_list_entries.field_list_entries_val[a].field));
     }
   return buff;
 }
@@ -880,7 +886,7 @@ get_var_lit (expr_str * x)
 
     case ET_E_V_OR_LIT_NOVALUE:
       return "";
-    //case ET_E_V_OR_LIT_VAR: return x->expr_str_u.var->varname;
+      //case ET_E_V_OR_LIT_VAR: return x->expr_str_u.var->varname;
     case ET_E_V_OR_LIT_INT:
       sprintf (buff, "%d", x->expr_str_u.i);
       return buff;
@@ -891,8 +897,8 @@ get_var_lit (expr_str * x)
     case ET_E_V_OR_LIT_IDENT:
       return x->expr_str_u.si;
 // case ET_E_V_OR_LIT_NULL: return "";
-	default:
-		A4GL_assertion(1,"Unexpected expression type");
+    default:
+      A4GL_assertion (1, "Unexpected expression type");
 
     }
   sprintf (buff, "Bad VAR=%d", x->expr_type);
@@ -1060,14 +1066,14 @@ get_event (event_data * a)
       return "EVENT_TYPE=\"BEFORE EVENT\"";
 
     case EVENT_ON_ACTION:
-      sprintf(buff,"EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action));
+      sprintf (buff, "EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action));
 
     case EVENT_BEFORE:
-      sprintf(buff,"EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf (buff, "EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
     case EVENT_AFTER:
-      sprintf(buff,"EVENT_TYPE=\"AFTER\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf (buff, "EVENT_TYPE=\"AFTER\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
     case EVENT_ON:
-      sprintf(buff,"EVENT_TYPE=\"ON\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf (buff, "EVENT_TYPE=\"ON\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
 
     case EVENT_ON_IDLE:
       return "EVENT_ON_IDLE";
@@ -1117,22 +1123,25 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
 	  if (mode == MODE_BUY)
 	    {
 	      print_indent ();
-	      fprintf (output, "<EVENT LINE=\"%d\" %s>\n", evt_list->event.event_val[a]->lineno, get_event (&evt_list->event.event_val[a]->evt_data));
+	      fprintf (output, "<EVENT LINE=\"%d\" %s>\n", evt_list->event.event_val[a]->lineno,
+		       get_event (&evt_list->event.event_val[a]->evt_data));
 	      indent++;
 	    }
 
-	if (mode==MODE_BUY) {
-	  print_indent ();
-	  fprintf (output, "<COMMANDS>\n");
-	  indent++;
-	}
+	  if (mode == MODE_BUY)
+	    {
+	      print_indent ();
+	      fprintf (output, "<COMMANDS>\n");
+	      indent++;
+	    }
 	  add_calltree_calls (s, evt_list->event.event_val[a]->on_event_commands, mode);
-	if (mode==MODE_BUY) {
+	  if (mode == MODE_BUY)
+	    {
 
-	  indent--;
-	  print_indent ();
-	  fprintf (output, "</COMMANDS>\n");
-	}
+	      indent--;
+	      print_indent ();
+	      fprintf (output, "</COMMANDS>\n");
+	    }
 
 	  if (mode == MODE_BUY)
 	    {
@@ -1148,6 +1157,57 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
 
 
 static int
+print_whenever (int mode)
+{
+  int cnt = 0;
+  if (whenever_error_func)
+    {
+      if (mode == MODE_BUY)
+	{
+	  print_indent ();
+	  fprintf (output, "<WHENEVER TYPE=\"ERROR\">");
+	  fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>", whenever_error_func, whenever_error_func_line);
+	  fprintf (output, "</WHENEVER>\n");
+	  if (!simpleGraph)
+	    {
+	      fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, whenever_error_func, whenever_error_func_line);
+	    }
+	  else
+	    {
+	      addNode (currfunc, whenever_error_func);
+	    }
+	}
+      cnt++;
+    }
+  if (whenever_any_error_func)
+    {
+      if (mode == MODE_BUY)
+	{
+	  print_indent ();
+	  fprintf (output, "<WHENEVER TYPE=\"ANYERROR\">");
+	  fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>", whenever_any_error_func, whenever_any_error_func_line);
+	  fprintf (output, "</WHENEVER>\n");
+	}
+      cnt++;
+    }
+  if (whenever_sql_error_func)
+    {
+      if (mode == MODE_BUY)
+	{
+	  print_indent ();
+	  fprintf (output, "<WHENEVER TYPE=\"SQLERROR\">");
+	  fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>", whenever_sql_error_func, whenever_sql_error_func_line);
+	  fprintf (output, "</WHENEVER>\n");
+	}
+      cnt++;
+    }
+  return cnt;
+}
+
+
+
+
+static int
 calls_something (commands * func_commands)
 {
   return add_calltree_calls ("", func_commands, MODE_TRY);
@@ -1157,7 +1217,6 @@ static int
 add_calltree_calls (char *s, commands * func_commands, int mode)
 {
   int a;
-  int cnt;
   struct on_events *evt_list;
   struct struct_display_cmd *disp;
   int call_cnt = 0;
@@ -1165,22 +1224,33 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
   if (func_commands == 0)
     return 0;
 
+  call_cnt += print_whenever (MODE_TRY);
+
+
+
   for (a = 0; a < func_commands->cmds.cmds_len; a++)
     {
+
       switch (func_commands->cmds.cmds_val[a]->cmd_data.type)
 	{
+
+	case E_CMD_WHENEVER_CMD:
+	  set_whenever (func_commands->cmds.cmds_val[a]);
+	  call_cnt += print_whenever (mode);
+	  break;
 
 	case E_CMD_FOR_CMD:
 
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.start, mode);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.end, mode);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.step, mode);
+
 	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands))
 	    {
 	      call_cnt++;
 	      if (mode == MODE_BUY)
 		{
-		print_indent();
+		  print_indent ();
 		  fprintf (output, "<FOR START=\"%s\"",
 			   xml_encode (expr_as_string_when_possible
 				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.start)));
@@ -1190,19 +1260,17 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  fprintf (output, " STEP=\"%s\" LINE=\"%d\">\n",
 			   xml_encode (expr_as_string_when_possible
 				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.step)),
-				func_commands->cmds.cmds_val[a]->lineno
-	
-		);
+			   func_commands->cmds.cmds_val[a]->lineno);
 		  indent++;
-	  	print_indent ();
+		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands, mode);
 		  indent--;
-	  	print_indent ();
+		  print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
 		  indent--;
-		print_indent();
+		  print_indent ();
 		  fprintf (output, "</FOR>\n");
 		}
 	    }
@@ -1211,22 +1279,24 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	case E_CMD_IF_CMD:
 	  {
 	    struct struct_if_cmd *ifcmd;
+	    int xcnt;
 	    int printed_if = 0;
-	
+
 	    ifcmd = &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd;
 
-	    for (cnt = 0; cnt < ifcmd->truths.conditions.conditions_len; cnt++)
+	    for (xcnt = 0; xcnt < ifcmd->truths.conditions.conditions_len; xcnt++)
 	      {
-				cnt += cache_expression ("", &ifcmd->truths.conditions.conditions_val[cnt].test_expr, mode);
+		call_cnt += cache_expression ("", &ifcmd->truths.conditions.conditions_val[xcnt].test_expr, mode);
+
 	      }
 
 
 
-	    for (cnt = 0; cnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
-		 cnt++)
+	    for (xcnt = 0; xcnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
+		 xcnt++)
 	      {
 		if (calls_something
-		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_val[cnt].
+		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_val[xcnt].
 		     whentrue))
 		  {
 		    call_cnt++;
@@ -1238,22 +1308,21 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			    print_indent ();
 			    fprintf (output, "<IF CONDITION=\"%s\" LINE=\"%d\">\n",
 				     xml_encode (expr_as_string_when_possible
-						 (ifcmd->truths.conditions.conditions_val[cnt].test_expr)),
-						func_commands->cmds.cmds_val[a]->lineno
-					);
+						 (ifcmd->truths.conditions.conditions_val[xcnt].test_expr)),
+				     func_commands->cmds.cmds_val[a]->lineno);
 			  }
 			indent++;
 			print_indent ();
 			fprintf (output, "<ONTRUE>\n");
 			indent++;
-	  print_indent ();
+			print_indent ();
 			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("",
 					    func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.
-					    conditions_val[cnt].whentrue, mode);
+					    conditions_val[xcnt].whentrue, mode);
 			indent--;
-	  print_indent ();
+			print_indent ();
 			fprintf (output, "</COMMANDS>\n");
 			indent--;
 			print_indent ();
@@ -1276,18 +1345,20 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			    print_indent ();
 			    fprintf (output, "<IF CONDITION=\"%s\" LINE=\"%d\">\n",
 				     xml_encode (expr_as_string_when_possible
-						 (ifcmd->truths.conditions.conditions_val[0].test_expr)), func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.lineno );
+						 (ifcmd->truths.conditions.conditions_val[0].test_expr)),
+				     func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.lineno);
 			  }
 			indent++;
 			print_indent ();
-			fprintf (output, "<ONFALSE LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.else_lineno);
+			fprintf (output, "<ONFALSE LINE=\"%d\">\n",
+				 func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.else_lineno);
 			indent++;
-	  print_indent ();
+			print_indent ();
 			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse, mode);
 			indent--;
-	  print_indent ();
+			print_indent ();
 			fprintf (output, "</COMMANDS>\n");
 			indent--;
 			print_indent ();
@@ -1307,23 +1378,25 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_FOREACH_CMD:
-	  if (calls_something(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands))
+	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands))
 	    {
 	      call_cnt++;
 	      if (mode == MODE_BUY)
 		{
-		  print_indent(); fprintf (output, "<FOREACH LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		  print_indent ();
+		  fprintf (output, "<FOREACH LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
 		  indent++;
-	  	print_indent ();
+		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands,
 				      mode);
 		  indent--;
-	  	print_indent ();
+		  print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
 		  indent--;
-		  print_indent(); fprintf (output, "</FOREACH>\n");
+		  print_indent ();
+		  fprintf (output, "</FOREACH>\n");
 		}
 	    }
 	  break;
@@ -1336,19 +1409,22 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 
 	      if (mode == MODE_BUY)
 		{
-		  print_indent(); fprintf (output, "<WHILE CONDITION=\"%s\" LINE=\"%d\">\n",
+		  print_indent ();
+		  fprintf (output, "<WHILE CONDITION=\"%s\" LINE=\"%d\">\n",
 			   xml_encode (expr_as_string_when_possible
-				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_expr)), func_commands->cmds.cmds_val[a]->lineno);
+				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_expr)),
+			   func_commands->cmds.cmds_val[a]->lineno);
 		  indent++;
-	  print_indent ();
+		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_commands, mode);
 		  indent--;
-	  print_indent ();
+		  print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
 		  indent--;
-		  print_indent(); fprintf (output, "</WHILE>\n");
+		  print_indent ();
+		  fprintf (output, "</WHILE>\n");
 		}
 	    }
 	  break;
@@ -1358,18 +1434,19 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	  {
 	    struct struct_case_cmd *casecmd;
 	    int printed_case = 0;
+	    int xcnt;
 
 	    casecmd = &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd;
 
 	    cache_expression ("", &casecmd->case_expr, mode);
 
-	    for (cnt = 0; cnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; cnt++)
+	    for (xcnt = 0; xcnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; xcnt++)
 	      {
 
-		call_cnt += cache_expression ("", &casecmd->whens->whens.whens_val[cnt]->when_expr, mode);
+		call_cnt += cache_expression ("", &casecmd->whens->whens.whens_val[xcnt]->when_expr, mode);
 
 		if (calls_something
-		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[cnt]->when_commands))
+		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[xcnt]->when_commands))
 		  {
 		    call_cnt++;
 		    if (mode == MODE_BUY)
@@ -1380,7 +1457,8 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			      {
 				print_indent ();
 				fprintf (output, "<CASE TESTAGAINST=\"%s\" LINE=\"%d\">\n",
-					 xml_encode (expr_as_string_when_possible (casecmd->case_expr)), func_commands->cmds.cmds_val[a]->lineno);
+					 xml_encode (expr_as_string_when_possible (casecmd->case_expr)),
+					 func_commands->cmds.cmds_val[a]->lineno);
 				printed_case = 1;
 				indent++;
 			      }
@@ -1394,15 +1472,18 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			  }
 			print_indent ();
 			fprintf (output, "<WHEN CONDITION=\"%s\" LINE=\"%d\">\n",
-				 xml_encode (expr_as_string_when_possible (casecmd->whens->whens.whens_val[cnt]->when_expr)), casecmd->whens->whens.whens_val[cnt]->lineno);
+				 xml_encode (expr_as_string_when_possible (casecmd->whens->whens.whens_val[xcnt]->when_expr)),
+				 casecmd->whens->whens.whens_val[xcnt]->lineno);
 			indent++;
-			print_indent(); fprintf (output, "<COMMANDS >\n");
+			print_indent ();
+			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("",
 					    func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.
-					    whens_val[cnt]->when_commands, mode);
+					    whens_val[xcnt]->when_commands, mode);
 			indent--;
-			print_indent(); fprintf (output, "</COMMANDS>\n");
+			print_indent ();
+			fprintf (output, "</COMMANDS>\n");
 			indent--;
 			print_indent ();
 			fprintf (output, "</WHEN>\n");
@@ -1428,11 +1509,13 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			indent++;
 			print_indent ();
 			fprintf (output, "<OTHERWISE>\n");
-			print_indent(); fprintf (output, "<COMMANDS >\n");
+			print_indent ();
+			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise, mode);
 			indent--;
-			print_indent(); fprintf (output, "</COMMANDS>\n");
+			print_indent ();
+			fprintf (output, "</COMMANDS>\n");
 			print_indent ();
 			fprintf (output, "</OTHERWISE>\n");
 			indent--;
@@ -1453,42 +1536,57 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 
 	case E_CMD_START_CMD:
 
-	if (mode==MODE_BUY) {
-	  print_indent ();
-	  fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
-			if (!simpleGraph) {
- 				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
-					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
-			}
-			addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname );
-	}
+	  if (mode == MODE_BUY)
+	    {
+	      print_indent ();
+	      fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n",
+		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,
+		       func_commands->cmds.cmds_val[a]->lineno);
+	      if (!simpleGraph)
+		{
+		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc,
+			   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,
+			   func_commands->cmds.cmds_val[a]->lineno);
+		}
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname);
+	    }
 	  call_cnt++;
 	  break;
 
 	case E_CMD_FINISH_CMD:
-	if (mode==MODE_BUY) {
-	  print_indent ();
-	  fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
-		addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname);
-			if (!simpleGraph) {
- 				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
-					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
-			}
+	  if (mode == MODE_BUY)
+	    {
+	      print_indent ();
+	      fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n",
+		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,
+		       func_commands->cmds.cmds_val[a]->lineno);
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname);
+	      if (!simpleGraph)
+		{
+		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc,
+			   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,
+			   func_commands->cmds.cmds_val[a]->lineno);
 		}
+	    }
 	  call_cnt++;
 	  break;
 
 	case E_CMD_OUTPUT_CMD:
 	  cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.expressions, mode);
-	if (mode==MODE_BUY) {
-	  print_indent ();
-	  fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,func_commands->cmds.cmds_val[a]->lineno);
-		addNode(currfunc,func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname);
-			if (!simpleGraph) {
- 				fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, 
-					func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, func_commands->cmds.cmds_val[a]->lineno);
-			}
+	  if (mode == MODE_BUY)
+	    {
+	      print_indent ();
+	      fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n",
+		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,
+		       func_commands->cmds.cmds_val[a]->lineno);
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname);
+	      if (!simpleGraph)
+		{
+		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc,
+			   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,
+			   func_commands->cmds.cmds_val[a]->lineno);
 		}
+	    }
 	  call_cnt++;
 	  break;
 
@@ -1505,10 +1603,14 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  {
 		    print_indent ();
 		    fprintf (output, "<MENU LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
-		    indent++; print_indent(); fprintf (output, "<EVENTS>\n");
+		    indent++;
+		    print_indent ();
+		    fprintf (output, "<EVENTS>\n");
 		    indent++;
 		    add_calltree_calls_from_events ("", evt_list, mode);
-		    indent--; print_indent(); fprintf (output, "</EVENTS>\n");
+		    indent--;
+		    print_indent ();
+		    fprintf (output, "</EVENTS>\n");
 		    indent--;
 		    print_indent ();
 		    fprintf (output, "</MENU>\n");
@@ -1529,10 +1631,14 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  {
 		    print_indent ();
 		    fprintf (output, "<PROMPT LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
-		    indent++; print_indent(); fprintf (output, "<EVENTS>\n");
+		    indent++;
+		    print_indent ();
+		    fprintf (output, "<EVENTS>\n");
 		    indent++;
 		    add_calltree_calls_from_events ("", evt_list, mode);
-		    indent--; print_indent(); fprintf (output, "</EVENTS>\n");
+		    indent--;
+		    print_indent ();
+		    fprintf (output, "</EVENTS>\n");
 		    indent--;
 		    print_indent ();
 		    fprintf (output, "</PROMPT>\n");
@@ -1553,10 +1659,14 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  {
 		    print_indent ();
 		    fprintf (output, "<DISPLAYARRAY LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
-		    indent++; print_indent(); fprintf (output, "<EVENTS>\n");
+		    indent++;
+		    print_indent ();
+		    fprintf (output, "<EVENTS>\n");
 		    indent++;
 		    add_calltree_calls_from_events ("", evt_list, mode);
-		    indent--; print_indent(); fprintf (output, "</EVENTS>\n");
+		    indent--;
+		    print_indent ();
+		    fprintf (output, "</EVENTS>\n");
 		    indent--;
 		    print_indent ();
 		    fprintf (output, "</DISPLAYARRAY>\n");
@@ -1577,10 +1687,14 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  {
 		    print_indent ();
 		    fprintf (output, "<INPUT LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
-		    indent++; print_indent(); fprintf (output, "<EVENTS>\n");
+		    indent++;
+		    print_indent ();
+		    fprintf (output, "<EVENTS>\n");
 		    indent++;
 		    add_calltree_calls_from_events ("", evt_list, mode);
-		    indent--; print_indent(); fprintf (output, "</EVENTS>\n");
+		    indent--;
+		    print_indent ();
+		    fprintf (output, "</EVENTS>\n");
 		    indent--;
 		    print_indent ();
 		    fprintf (output, "</INPUT>\n");
@@ -1601,10 +1715,14 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  {
 		    print_indent ();
 		    fprintf (output, "<INPUTARRAY LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
-		    indent++; print_indent(); fprintf (output, "<EVENTS>\n");
+		    indent++;
+		    print_indent ();
+		    fprintf (output, "<EVENTS>\n");
 		    indent++;
 		    add_calltree_calls_from_events ("", evt_list, mode);
-		    indent--; print_indent(); fprintf (output, "</EVENTS>\n");
+		    indent--;
+		    print_indent ();
+		    fprintf (output, "</EVENTS>\n");
 		    indent--;
 		    print_indent ();
 		    fprintf (output, "</INPUTARRAY>\n");
@@ -1625,10 +1743,14 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 		  {
 		    print_indent ();
 		    fprintf (output, "<CONSTRUCT LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
-		    indent++; print_indent(); fprintf (output, "<EVENTS>\n");
+		    indent++;
+		    print_indent ();
+		    fprintf (output, "<EVENTS>\n");
 		    indent++;
 		    add_calltree_calls_from_events ("", evt_list, mode);
-		    indent--; print_indent(); fprintf (output, "</EVENTS>\n");
+		    indent--;
+		    print_indent ();
+		    fprintf (output, "</EVENTS>\n");
 		    indent--;
 		    print_indent ();
 		    fprintf (output, "</CONSTRUCT>\n");
@@ -1765,41 +1887,6 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 
 
 
-/*
-int
-run_calltree (int n)
-{
-  int a;
-  if (isoncallstack (functions[n].function))
-    {
-      // Recursion somewhere....
-      return 0;
-    }
-
-  if (functions[n].called)
-    {
-      if (functions[n].called != callstack_cnt)
-	{
-  		print_spaces (callstack_cnt); printf ("%s^\n", functions[n].function);
-	}
-      return;
-    }
-
-  print_spaces (callstack_cnt); 
-	printf ("%s\n", functions[n].function);
-  functions[n].called = callstack_cnt;
-
-  add_to_callstack (functions[n].function);
-  if (functions[n].f_or_r == 'F')
-    {
-      struct s_function_definition *f;
-      f = functions[n].ptr;
-      add_calltree_calls ("", f->func_commands);
-    }
-  pop_callstack ();
-  return 1;
-}
-*/
 
 int
 check_program (module_definition * mods, int nmodules)
@@ -1825,6 +1912,9 @@ check_program (module_definition * mods, int nmodules)
 
   for (a = 0; a < nmodules; a++)
     {
+
+      init_whenever ();
+
       printf ("Module : %s.4gl\n", mods[a].module_name);
       for (b = 0; b < mods[a].module_entries.module_entries_len; b++)
 	{
@@ -1832,7 +1922,7 @@ check_program (module_definition * mods, int nmodules)
 	    {
 
 	    case E_MET_MAIN_DEFINITION:
-	      add_function (a,mods[a].module_name,
+	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition);
 	      break;
@@ -1858,6 +1948,16 @@ check_program (module_definition * mods, int nmodules)
 			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition);
 	      break;
 
+	    case E_MET_CMD:
+	      {
+		struct command *c;
+		c = mods[a].module_entries.module_entries_val[b]->module_entry_u.cmd;
+		if (c->cmd_data.type == E_CMD_WHENEVER_CMD)
+		  {
+		    set_whenever (c);
+		  }
+	      }
+	      break;
 
 	    default:
 	      // Ignore...
@@ -1891,74 +1991,100 @@ check_program (module_definition * mods, int nmodules)
     }
 
 
-  if (incProg) {
-	fprintf (output, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-  	fprintf (output, "<PROGRAM>\n");
-  }
+  if (incProg)
+    {
+      fprintf (output, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+      fprintf (output, "<PROGRAM>\n");
+    }
 
 
-  if (inc4GL) {
-	// Dump the sourcecode of the 4gls
-	fprintf(output,"<MODULES>\n");
-	for (a=0;a<nmodules;a++) {
-		int line;
-		fprintf(output,"<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\">\n",mods[a].module_name,a,xml_encode(mods[a].full_path_filename));
-		for (line=0;line<mods[a].source_code.source_code_len;line++) {
-			fprintf(output,"<LINE>%s</LINE>\n",xml_encode(mods[a].source_code.source_code_val[line]));
-		}
-		fprintf(output,"</MODULE>\n");
+  if (inc4GL)
+    {
+      // Dump the sourcecode of the 4gls
+      fprintf (output, "<MODULES>\n");
+      for (a = 0; a < nmodules; a++)
+	{
+	  int line;
+	  fprintf (output, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\">\n", mods[a].module_name, a,
+		   xml_encode (mods[a].full_path_filename));
+	  for (line = 0; line < mods[a].source_code.source_code_len; line++)
+	    {
+	      fprintf (output, "<LINE>%s</LINE>\n", xml_encode (mods[a].source_code.source_code_val[line]));
+	    }
+	  fprintf (output, "</MODULE>\n");
 	}
-	fprintf(output,"</MODULES>\n");
-  }
+      fprintf (output, "</MODULES>\n");
+    }
 
 
-  fprintf(dot_output,"digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
-  fprintf(dot_output,"rankdir=LR;\nratio=fill;\n");
+  fprintf (dot_output, "digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
+  fprintf (dot_output, "rankdir=LR;\nratio=fill;\n");
 
   for (a = 0; a < functions_cnt; a++)
     {
+	set_whenever_for_function(&functions[a]);
+
       if (functions[a].f_or_r == 'F')
 	{
 	  struct s_function_definition *f;
-		strcpy(currfunc,functions[a].function);
-		strcpy(currmod,functions[a].module);
-		addFunction(currfunc);
-	   if (strcmp( functions[a].function,"MAIN")==0) {
-  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
-	   } else {
-  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
-	}
+	  strcpy (currfunc, functions[a].function);
+	  strcpy (currmod, functions[a].module);
+	  addFunction (currfunc);
 
-	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	  if (strcmp (functions[a].function, "MAIN") == 0)
+	    {
+	      fprintf (dot_output,
+		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		       functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+	    }
+	  else
+	    {
+	      fprintf (dot_output,
+		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		       functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+	    }
+
+	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n",
+		   functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
 	  f = functions[a].ptr;
 	  indent++;
-	  print_indent(); fprintf (output, "<COMMANDS >\n");
+	  print_indent ();
+	  fprintf (output, "<COMMANDS >\n");
 	  indent++;
+  	  print_whenever (MODE_BUY);
 	  add_calltree_calls ("", f->func_commands, MODE_BUY);
 	  indent--;
-	  print_indent(); fprintf (output, "</COMMANDS>\n");
+	  print_indent ();
+	  fprintf (output, "</COMMANDS>\n");
 	  indent--;
 	}
       else
 	{
 	  int b;
 	  struct s_report_definition *r;
-	  strcpy(currfunc,functions[a].function);
-		addFunction(currfunc);
-		strcpy(currmod,functions[a].module);
-  	  fprintf(dot_output,"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", functions[a].function, functions[a].function, functions[a].module, functions[a].line);
-	if (functions[a].f_or_r == 'P') {
-	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"PDFREPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no,
-		   functions[a].line);
-	} else {
-	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"REPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no,
-		   functions[a].line);
-	}
+	  strcpy (currfunc, functions[a].function);
+	  addFunction (currfunc);
+	  strcpy (currmod, functions[a].module);
+	  fprintf (dot_output,
+		   "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		   functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+	  if (functions[a].f_or_r == 'P')
+	    {
+	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"PDFREPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n",
+		       functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	    }
+	  else
+	    {
+	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"REPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n",
+		       functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	    }
 	  r = functions[a].ptr;
 	  indent++;
 
 	  print_indent ();
-	fprintf(output,"<COMMANDS>\n");
+	  fprintf (output, "<COMMANDS>\n");
+  	  print_whenever (MODE_BUY);
+
 	  for (b = 0; b < r->report_format_section->entries.entries_len; b++)
 	    {
 	      if (calls_something (r->report_format_section->entries.entries_val[b]->rep_sec_commands))
@@ -1966,21 +2092,22 @@ check_program (module_definition * mods, int nmodules)
 		  print_indent ();
 		  fprintf (output, "<SECTION ID=\"%d\" TYPE=\"%s\" LINE=\"%d\">\n", b,
 			   decode_rb (r->report_format_section->entries.entries_val[b]->rb_block.rb),
-			r->report_format_section->entries.entries_val[b]->lineno
-				);
+			   r->report_format_section->entries.entries_val[b]->lineno);
 		  indent++;
-		  print_indent(); fprintf (output, "<COMMANDS >\n");
+		  print_indent ();
+		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
 		  add_calltree_calls ("", r->report_format_section->entries.entries_val[b]->rep_sec_commands, MODE_BUY);
 		  indent--;
-		  print_indent(); fprintf (output, "</COMMANDS>\n");
+		  print_indent ();
+		  fprintf (output, "</COMMANDS>\n");
 		  indent--;
 		  print_indent ();
 		  fprintf (output, "</SECTION>\n");
 		}
 	    }
 	  print_indent ();
-	fprintf(output,"</COMMANDS>\n");
+	  fprintf (output, "</COMMANDS>\n");
 	  indent--;
 	}
 
@@ -1996,13 +2123,14 @@ check_program (module_definition * mods, int nmodules)
 
     }
 
-  if (incProg) {
-  	fprintf (output, "</PROGRAM>\n");
-  }
+  if (incProg)
+    {
+      fprintf (output, "</PROGRAM>\n");
+    }
 
 
-  printNodes();
-  fprintf(dot_output,"}\n");
+  printNodes ();
+  fprintf (dot_output, "}\n");
   fclose (output);
   fclose (dot_output);
   return 1;
@@ -2100,31 +2228,7 @@ add_bolton (char *fname, char *params, char *rets)
       fprototypes_boltons[nboltons - 1].return_dtypes = 0;
     }
 
-/*
-	int nparams;
-	int *param_dtypes;
-	int nreturns;
-	int *return_dtypes;
-};
-*/
 }
-
-/*
-int
-is_bolton_function (char *s)
-{
-  int a;
-  for (a = 0; a < nboltons; a++)
-    {
-      if (A4GL_aubit_strcasecmp (s, fprototypes_boltons[a].pname) == 0)
-	{
-	  return a;
-	}
-    }
-  return -1;
-}
-*/
-
 
 
 static void
@@ -2132,11 +2236,6 @@ load_boltons (char *fname)
 {
   FILE *f;
   int lineno = 0;
-//char *funcname;
-//int nparam;
-//int nret;
-//char *params;
-//char *rets;
   int printed;
   char buff[256];
   if (fname == 0)
@@ -2199,14 +2298,14 @@ main (int argc, char *argv[])
   if (argc < 2)
     {
       printf ("Usage : %s [-s|-S|-p|-P] infile infile...\n", argv[0]);
-      printf(" -s = Fully detailed graph output (includes line numbers)\n");
-      printf(" -S = Simple graph output (excludes line numbers) [default]\n");
-      printf(" -p = Print only links to internal functions [default]\n");
-      printf(" -P = Also print links to external functions\n");
-      printf(" -no4gl = Exclude 4gl sourcecode (required for calltreeviewer)\n");
-      printf(" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
-      printf(" -noProg = Exclude the XML and program tags\n");
-      printf(" -Prog = Include the XML and program tags\n");
+      printf (" -s = Fully detailed graph output (includes line numbers)\n");
+      printf (" -S = Simple graph output (excludes line numbers) [default]\n");
+      printf (" -p = Print only links to internal functions [default]\n");
+      printf (" -P = Also print links to external functions\n");
+      printf (" -no4gl = Exclude 4gl sourcecode (required for calltreeviewer)\n");
+      printf (" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
+      printf (" -noProg = Exclude the XML and program tags\n");
+      printf (" -Prog = Include the XML and program tags\n");
       exit (2);
     }
 
@@ -2216,46 +2315,54 @@ main (int argc, char *argv[])
   m = malloc (sizeof (struct module_definition) * (argc - 1));
 
 
-  a=0;
+  a = 0;
   for (b = 1; b < argc; b++)
     {
       char buff[256];
-	if (strcmp(argv[b],"-S")==0) {
-		simpleGraph=1;
-		continue;
+      if (strcmp (argv[b], "-S") == 0)
+	{
+	  simpleGraph = 1;
+	  continue;
 	}
 
-	if (strcmp(argv[b],"-s")==0) {
-		simpleGraph=0;
-		continue;
+      if (strcmp (argv[b], "-s") == 0)
+	{
+	  simpleGraph = 0;
+	  continue;
 	}
-	if (strcmp(argv[b],"-no4gl")==0) {
-		inc4GL=0;
-		continue;
-	}
-
-	if (strcmp(argv[b],"-4gl")==0) {
-		inc4GL=1;
-		continue;
+      if (strcmp (argv[b], "-no4gl") == 0)
+	{
+	  inc4GL = 0;
+	  continue;
 	}
 
-	if (strcmp(argv[b],"-P")==0) {
-		printAllFuncs=1;
-		continue;
+      if (strcmp (argv[b], "-4gl") == 0)
+	{
+	  inc4GL = 1;
+	  continue;
 	}
-	if (strcmp(argv[b],"-p")==0) {
-		printAllFuncs=0;
-		continue;
+
+      if (strcmp (argv[b], "-P") == 0)
+	{
+	  printAllFuncs = 1;
+	  continue;
 	}
-	if (strcmp(argv[b],"-Prog")==0) {
-		incProg=1;
-		continue;
+      if (strcmp (argv[b], "-p") == 0)
+	{
+	  printAllFuncs = 0;
+	  continue;
 	}
-	if (strcmp(argv[b],"-NoProg")==0) {
-		incProg=0;
-		continue;
+      if (strcmp (argv[b], "-Prog") == 0)
+	{
+	  incProg = 1;
+	  continue;
 	}
-	
+      if (strcmp (argv[b], "-NoProg") == 0)
+	{
+	  incProg = 0;
+	  continue;
+	}
+
       a++;
       sprintf (buff, argv[b]);
       if (strstr (buff, ".dat") != 0)
@@ -2308,7 +2415,3 @@ decode_rb (enum report_blocks a)
 
   return "Blah3";
 }
-
-
-
-
