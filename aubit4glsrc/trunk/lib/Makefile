@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.25 2008-12-07 17:33:51 mikeaubury Exp $
+# $Id: Makefile,v 1.26 2009-01-14 18:07:29 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -557,7 +557,7 @@ ${PLUGINDIR}/libMSG_NATIVE${SO_EXT}: ${LIBMSGNATIVE_DEPS}
 	${MAKE} -C ${LIBMSGNATIVE_PATH}
 
 ${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
-	$(MAKE) -C ${LIBIMJABBER_PATH} $@
+	$(MAKE) -C ${LIBIMJABBER_PATH} $@ 
 
 ${PLUGINDIR}/libIM_JABBERs${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 	$(MAKE) -C ${LIBIMJABBER_PATH} $@

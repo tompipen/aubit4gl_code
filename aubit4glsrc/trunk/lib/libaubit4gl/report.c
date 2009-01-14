@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.175 2009-01-12 15:04:17 mikeaubury Exp $
+# $Id: report.c,v 1.176 2009-01-14 18:07:29 mikeaubury Exp $
 #
 */
 
@@ -3026,6 +3026,32 @@ if (rep->output_mode=='F') {
 	}
 }
 return 0;
+}
+
+
+void A4GL_ensure_let_column(void) {
+int len;
+char *p;
+char *buff;
+int spaces;
+// something is on the stack - and we need to make sure its long
+// enough..
+len=A4GL_pop_int();
+p=A4GL_char_pop();
+if (strlen(p)>=len) {
+	A4GL_push_char(p);
+	A4GL_push_empty_char();
+	free(p);
+	return;
+}
+spaces=len-strlen(p);
+buff=malloc(spaces+1);
+memset(buff,' ',spaces);
+buff[spaces]=0;
+A4GL_push_char(p);
+A4GL_push_char(buff);
+free(buff);
+free(p);
 }
 
 

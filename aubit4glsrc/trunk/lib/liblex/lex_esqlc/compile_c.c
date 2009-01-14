@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.460 2009-01-08 17:36:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.461 2009-01-14 18:07:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.460 2009-01-08 17:36:17 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.461 2009-01-14 18:07:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1317,7 +1317,11 @@ real_print_expr (struct expr_str *ptr)
 	    }
 	  else
 	    {
-	      printc ("A4GL_ensure_column();");
+		if (current_cmd->cmd_data.type==E_CMD_LET_CMD) {
+	      		printc ("A4GL_ensure_let_column();");
+		} else {
+	      		printc ("A4GL_ensure_column();");
+		}
 	    }
 	  break;
 	case ET_EXPR_TIME_EXPR:
