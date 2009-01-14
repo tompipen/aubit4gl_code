@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2006-10-13 11:29:03 afalout Exp $
+# $Id: Makefile,v 1.5 2009-01-14 20:46:50 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -41,8 +41,7 @@ AMAKE_FLAGS	=${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOS
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
 ifneq "${JABBERBUILD}" "no"
-    ALL 	=${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE} \
-			${PLUGINDIR}/libIM_JABBERs${SO_EXT} test_im.4ae
+    ALL 	=${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE} test_im.4ae
 else
     ALL 	=no_libs
 endif
@@ -86,9 +85,11 @@ test_im.afr.dat: test_im.per
 #Note that on Windows the dll will misteriously be liniked with 
 #file libiksemel-3.dll and NOT libiksemel.dll as you would expect
 libIM_JABBER${SO_EXT_LINKABLE}: ${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}
-#${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
-${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}: lib4glim.o
-	${LD} ${SO_LDFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@ ${LINKLIBS} -liksemel
+
+
+${PLUGINDIR}/libIM_JABBER${SO_EXT_LINKABLE}: lib4glim.c
+	${LD} ${SO_LDFLAGS} ${CFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@ ${LINKLIBS} -liksemel
+
 ifeq "${SO_EXT_LINKABLE}" ".dll"
 #We will still need the dll.a untill we dlopen() it instead of linking 
 	${MV} TMP${SOEXP_EXT} $@.a
@@ -96,10 +97,11 @@ endif
 
 ###########################
 #Statically linked:
+
 libIM_JABBERs${SO_EXT}: ${PLUGINDIR}/libIM_JABBERs${SO_EXT}
-${PLUGINDIR}/libIM_JABBERs${SO_EXT}: lib4glim.o
+${PLUGINDIR}/libIM_JABBERs${SO_EXT}: lib4glim.c
 #WARNING: order is EXTREMELY important for static linking on Windows!
-	${LD} ${SO_LDFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@  \
+	${LD} ${SO_LDFLAGS}  ${CFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@  \
 		-static -liksemel ${LINKLIBS} 
 ifeq "${SO_EXT}" ".dll"
 #We will still need the dll.a untill we dlopen() it instead of linking 
