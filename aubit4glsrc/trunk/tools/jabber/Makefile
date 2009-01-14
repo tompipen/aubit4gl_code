@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2009-01-14 20:46:50 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2009-01-14 22:02:03 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -101,8 +101,7 @@ endif
 libIM_JABBERs${SO_EXT}: ${PLUGINDIR}/libIM_JABBERs${SO_EXT}
 ${PLUGINDIR}/libIM_JABBERs${SO_EXT}: lib4glim.c
 #WARNING: order is EXTREMELY important for static linking on Windows!
-	${LD} ${SO_LDFLAGS}  ${CFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@  \
-		-static -liksemel ${LINKLIBS} 
+	${LD} ${SO_LDFLAGS}  ${CFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@  -liksemel ${LINKLIBS} 
 ifeq "${SO_EXT}" ".dll"
 #We will still need the dll.a untill we dlopen() it instead of linking 
 	${MV} TMP${SOEXP_EXT} $@.a
