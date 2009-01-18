@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.17 2008-08-05 17:14:30 mikeaubury Exp $
+# $Id: Makefile,v 1.18 2009-01-18 16:33:18 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -54,7 +54,10 @@ CFLAGS_SQLITE	= -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 #SQLITE_ODBC_LIBNAME_SHARED
 #SQLITE_ODBC_LIBNAME_STATIC
 				
-				
+ifeq "${PGODBC_LIBNAME}" "" 
+    PGODBC_LIBNAME=odbcpsql
+endif
+
 ifneq "${COMSPEC}" ""
 #Windows only
 	LINKLIBS		=-L${LIBROOT} -l${AUBITLIBFULL}

@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.461 2009-01-14 18:07:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.462 2009-01-18 16:33:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.461 2009-01-14 18:07:29 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.462 2009-01-18 16:33:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5541,6 +5541,7 @@ expr_str_list *expanded_params;
           if (A4GL_doing_pcode ())
             {
               printc ("\n\nA4GL_MAIN int main(int _nargs) {\n");
+		printc("void *_blobdata=0;");
               printc ("char *_paramnames[1]={\"\"};");
             }
           else
@@ -5549,6 +5550,7 @@ expr_str_list *expanded_params;
 
               printc ("\n\nA4GL_MAIN int main(int argc,char *argv[]) {\n");
               printc ("char *_paramnames[1]={\"\"};");
+		printc("void *_blobdata=0;");
               printc ("int _nargs=0;");
             }
         }
@@ -5573,6 +5575,7 @@ expr_str_list *expanded_params;
              //set_nonewlines ();
       printc ("\nA4GL_FUNCTION %sint %s%s (int _nargs){ \n",
               function_definition->isstatic==EB_TRUE ? "static " : "", function_definition->namespace, function_definition->funcname);
+	printc("void *_blobdata=0;");
 
       //printc ("\nstatic char *_functionName = \"%s\";\n", function_definition->funcname);
 
@@ -5619,7 +5622,7 @@ expr_str_list *expanded_params;
       tmp_ccnt++;
       print_function_variable_init (&function_definition->variables);
       printc("{int _lstatus=a4gl_status;");
-      printc ("A4GL_pop_params(_fbind,%d);\n", expanded_params->list.list_len);
+      printc ("A4GL_pop_params_and_save_blobs(_fbind,%d,&_blobdata);\n", expanded_params->list.list_len);
       printc("if (_lstatus!=a4gl_status) { A4GL_chk_err(%d,_module_name);  }",function_definition->lineno );
       printc("}");
 
@@ -5664,7 +5667,7 @@ expr_str_list *expanded_params;
   else
     {
 	printPopFunction();
-
+      printc("A4GL_copy_back_blobs(_blobdata);");
       printc ("return 0;\n");
       tmp_ccnt--;
       printc ("}");
@@ -6081,7 +6084,7 @@ static struct variable *set_get_subscript_as_string_top(struct variable_usage *u
 	//sgs_top=u;
 	memcpy(&t,u,sizeof(t));
 	t.next=0;
-	if (u->scope!=0) {
+	if (u->scope!=0 && u->variable_id!=-1) {
 		sgs_topvar=local_find_variable_from_usage(&t);
 	}
 	return sgs_topvar;

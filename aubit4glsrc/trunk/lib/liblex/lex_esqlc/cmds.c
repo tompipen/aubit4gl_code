@@ -9,6 +9,8 @@ int ok;
 
 int dump_command(struct command_data *cd) {
 switch(cd->type) {
+	case E_CMD_LINT_IGNORE_CMD: ok=1; break;
+	case E_CMD_LINT_EXPECT_CMD: ok=1; break;
    case E_CMD_STOP_RPC_CMD         : ok=print_stop_rpc_cmd(); break;
    case E_CMD_PAUSE_SCREEN_ON_CMD  : ok=print_pause_screen_on_cmd(); break;
    case E_CMD_PAUSE_SCREEN_OFF_CMD : ok=print_pause_screen_off_cmd(); break;

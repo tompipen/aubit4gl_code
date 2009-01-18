@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.60 2008-12-07 17:33:50 mikeaubury Exp $
+# $Id: Makefile,v 1.61 2009-01-18 16:33:18 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -91,6 +91,19 @@ endif
 
 ifneq "${PDFBUILD}" "no"
 	LIBLOGICAL_BUILD+=${LIBLOGICAL_PDF_DEPEND}
+endif
+
+ifeq "$(HAVE_CURSES)" "1"
+ifeq "$(A4GL_UI)" "CONSOLE"
+           CORE_ALL=core.ui.console 
+           REST_ALL=compile_rest_console
+else
+           CORE_ALL=core.ui.console.and.curses
+           REST_ALL=compile_rest_tui
+endif
+else
+        CORE_ALL= core.ui.console 
+        REST_ALL=compile_rest_console
 endif
 
 
@@ -206,6 +219,47 @@ log:
 	@echo "make finished successfuly, see make.log for details."
 	@echo "Total compiler warnings: `grep -c 'warning:' make.log`"
 
+
+
+
+
+rest: bootstrap $(REST_ALL)
+
+
+
+bootstrap: bootstrap.core.progs bootstrap.core.ui
+
+
+compile_rest_tui:
+	$(MAKE) -C tools/extras_compile
+	A4GL_UI=TUI tools/extras_compile/extras_compile
+
+compile_rest_console:
+	$(MAKE) -C tools/extras_compile
+	A4GL_UI=CONSOLE tools/extras_compile/extras_compile
+
+bootstrap.core.progs:
+	$(MAKE) -C lib/libaubit4gl  api.headers
+	$(MAKE) -C compilers/xgen
+	$(MAKE) -C common/dataio
+	$(MAKE) -C lib/libaubit4gl
+	$(MAKE) -C compilers/4glc
+	$(MAKE) -C lib/liblex/lex_esqlc 
+	$(MAKE) -C tools/4glpc
+
+bootstrap.core.ui: $(CORE_ALL)
+
+
+core.ui.console.and.curses: core.ui.console core.ui.curses
+
+
+core.ui.console:
+	$(MAKE) -C lib/libui/ui_console
+
+core.ui.curses:
+	$(MAKE) -C lib/libui/ui_curses
+	
+	
 #main target of default build
 corecompile:
 	@echo "Making XGEN"
@@ -2574,6 +2628,9 @@ ifdef COMSPEC
 else
 	find . -name "*.c" -exec basename {} \; | sort | uniq -c | grep -v " 1"
 endif
+
+
+
 #compile examples and run them
 test.install:
 	(cd $(INSTALL_DIR)/tools/test; ${MAKE}; ./hello; cd gui; ${MAKE}; ./hello_gui)

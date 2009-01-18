@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.359 2009-01-15 13:55:37 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.360 2009-01-18 16:33:18 mikeaubury Exp $
 #
 */
 
@@ -1259,6 +1259,7 @@ enum cmd_types {
   int A4GL_pop_char (char *z, int size);
   int A4GL_pop_param (void *p, int d, int size);
   void A4GL_pop_params (struct BINDING *b, int n);
+void A4GL_pop_params_and_save_blobs(struct BINDING *b, int n,void **blobdata);
   void A4GL_push_param (void *p, int d);
   void A4GL_push_params (struct BINDING *b, int n);
   void A4GL_push_user (void);

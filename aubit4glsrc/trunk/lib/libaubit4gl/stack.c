@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.221 2008-12-15 16:13:50 mikeaubury Exp $
+# $Id: stack.c,v 1.222 2009-01-18 16:33:18 mikeaubury Exp $
 #
 */
 
@@ -966,7 +966,6 @@ A4GL_push_param (void *p, int d)
   int ob;
 
   static int call_list = 0;
-
 
   call_list++;
   last_push_was_ascii_null = 0;
@@ -4303,6 +4302,74 @@ char *s;
   A4GL_str_dot_to_dec(s, b);
 
   acl_free(s);
+}
+
+
+
+//
+// Blobs in informix are passed by reference..
+// I cant think of a neat way to work this into
+// the way Aubit4GL works other than saving the pointers
+// and then recopying when the function returns
+//
+// This function is therefore called to pop the bindings into the
+// parameters for a function. 
+//
+struct s_blobbind {
+	int nblobs;
+	void **blobptrs_orig;
+	void **blobptrs_new;
+} ;
+void A4GL_pop_params_and_save_blobs(struct BINDING *b, int n,void **blobdata) {
+int a;
+struct s_blobbind *blobs=NULL;
+
+if (b) {
+	if (n) {
+		// Scan the bin
+		for (a=0;a<n;a++) {
+			
+			if ((b[a].dtype&DTYPE_MASK)==DTYPE_TEXT || (b[a].dtype&DTYPE_MASK)==DTYPE_BYTE) {
+				int d1;
+				int s1;
+				void *ptr1;
+
+				A4GL_get_top_of_stack ((n-a), &d1, &s1, (void **) &ptr1);
+				// We've found one!
+				if (!blobs) {
+					blobs=malloc(sizeof(struct s_blobbind));
+					blobs->nblobs=0;
+					blobs->blobptrs_new=NULL;
+					blobs->blobptrs_orig=NULL;
+				}
+				//printf("%d - %x\n",a,d1);
+				blobs->nblobs++;
+				blobs->blobptrs_new=realloc(blobs->blobptrs_new, sizeof(void *)*blobs->nblobs);
+				blobs->blobptrs_new[blobs->nblobs-1]=b[a].ptr;
+				blobs->blobptrs_orig=realloc(blobs->blobptrs_orig, sizeof(void *)*blobs->nblobs);
+				blobs->blobptrs_orig[blobs->nblobs-1]=ptr1;
+			}
+		}
+	}
+}
+
+*blobdata=(void *)blobs;
+
+return A4GL_pop_params(b,n);
+}
+
+void A4GL_copy_back_blobs(void *_blobdata) {
+int a;
+struct s_blobbind *blobdata;
+if (_blobdata==NULL) return;
+
+blobdata=(struct s_blobbind *) _blobdata;
+for (a=0;a<blobdata->nblobs;a++) {
+	if (blobdata->blobptrs_orig[a]) {
+		memcpy(blobdata->blobptrs_orig[a],blobdata->blobptrs_new[a],sizeof(struct fgl_int_loc));
+	}
+}
+	
 }
 
 // ================================ EOF ================================

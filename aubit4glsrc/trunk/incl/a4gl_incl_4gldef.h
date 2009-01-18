@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.122 2008-12-10 14:27:22 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.123 2009-01-18 16:33:18 mikeaubury Exp $
 */
 
 /**
@@ -139,7 +139,11 @@ extern "C"
     long memsize;	/**< Memory size */
     char filename[256];
     void *ptr;
-    char *loc_user_env;
+
+    char *loc_user_env; 
+/* For user use - not used internally */
+    long loc_user_bufsize;   
+/* For user use - not used internally */
   };
 
 

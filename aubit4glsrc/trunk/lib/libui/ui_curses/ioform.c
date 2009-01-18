@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.216 2008-12-17 13:52:09 gyver309 Exp $
+# $Id: ioform.c,v 1.217 2009-01-18 16:33:18 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.216 2008-12-17 13:52:09 gyver309 Exp $";
+		"$Id: ioform.c,v 1.217 2009-01-18 16:33:18 mikeaubury Exp $";
 #endif
 
 /**
@@ -2141,18 +2141,13 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 		      return -1;	// Was 0
 		    }
 
-		  if (fmetric < 0
-		      || fmetric >
-		      formdets->fileform->fields.fields_val[fno].metric.
-		      metric_len)
+		  if (fmetric < 0 || fmetric >= formdets->fileform->fields.fields_val[fno].metric.  metric_len)
 		    {
 		      A4GL_exitwith ("Field subscript out of bounds");
 		      return -1;
 
 		    }
-		  metric_no =
-		    formdets->fileform->fields.fields_val[fno].metric.
-		    metric_val[fmetric];
+		  metric_no = formdets->fileform->fields.fields_val[fno].metric.  metric_val[fmetric];
 		  A4GL_debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno,
 			      fmetric, mno, metric_no);
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];

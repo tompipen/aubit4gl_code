@@ -908,6 +908,7 @@ report_cnt++;
   printc ("static char _rout2[256];\n");
   printc ("static int _useddata=0;\n");
   printc ("static int _started=0;\n");
+  printc ("static void *_blobdata=0;\n");
   printc ("static int _assigned_ordbind=0;\n");
 
   cnt=print_param_g ('r',"report",parameters);
@@ -942,7 +943,7 @@ report_cnt++;
 	    ("A4GL_setnull(_rbind[%d].dtype,_rbind[%d].ptr,_rbind[%d].size);", a,
 	     a, a);
 	}
-        printc ("A4GL_pop_params(_rbind,%d);", cnt);
+        printc ("A4GL_pop_params_and_save_blobs(_rbind,%d,&_blobdata);", cnt);
 	asc_desc=malloc(report_orderby_section->variables->list.list_len+1);
 	for (a=0;a<report_orderby_section->variables->list.list_len;a++) {
 		asc_desc[a]=report_orderby_section->variables->list.list_val[a]->expr_str_u.expr_variable_usage_with_asc_desc->asc_desc;
@@ -950,6 +951,7 @@ report_cnt++;
 	asc_desc[a]=0;
 
       print_report_table (funcname , 'R', cnt,asc_desc,parameters,report_orderby_section->variables);
+	printc("A4GL_copy_back_blobs(_blobdata);");
       printc ("return;");
       printc("}");
     }
@@ -961,7 +963,7 @@ report_cnt++;
   }
   printc
     ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n", namespaced_report_name);
-  printc ("   A4GL_pop_params(_rbind,%d);\n", cnt);
+  printc ("   A4GL_pop_params_and_save_blobs(_rbind,%d,&_blobdata);\n", cnt);
   printc ("               %s(0,REPORT_AFTERDATA);", namespaced_report_name);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
@@ -995,6 +997,7 @@ report_cnt++;
       printc (" }");
       printc ("        %s(0,REPORT_FINISH);\n", namespaced_report_name);
 	      print_report_table (funcname , 'E', cnt,asc_desc,parameters,report_orderby_section->variables);
+	printc("A4GL_copy_back_blobs(_blobdata);");
 	      printc ("        return;");
 	      printc ("    }\n");
 
@@ -1011,6 +1014,7 @@ report_cnt++;
   printc("if (acl_ctrl==REPORT_CONVERT) {");
   printc("char *_f; char *_o; char *_l; int _to_pipe; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); _to_pipe=A4GL_pop_int();\n");
   printc("A4GL_convert_report(&_rep,_f,_o,_l,_to_pipe);");
+	printc("A4GL_copy_back_blobs(_blobdata);");
   printc("return ;");
   printc("}");
   }
@@ -1019,6 +1023,7 @@ report_cnt++;
   if (rep_type == REP_TYPE_NORMAL) {
   printc("if (acl_ctrl==REPORT_FREE) {");
   printc("A4GL_free_report(&_rep);");
+	printc("A4GL_copy_back_blobs(_blobdata);");
   printc("return ;");
   printc("}");
   }
@@ -1032,6 +1037,7 @@ report_cnt++;
       printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
       printc ("   if (fgl_rep_orderby==1) {");
       print_report_table (funcname , 'M', cnt,asc_desc,parameters,report_orderby_section->variables);
+	printc("A4GL_copy_back_blobs(_blobdata);");
       printc ("       return;");
       printc ("   }\n");
     }
@@ -1069,6 +1075,7 @@ int z;
   print_report_ctrl (report_cnt, report_orderby_section->rord_type, namespaced_report_name,rep_type, report_format_section, report_orderby_section, aggregates);
 
   tmp_ccnt--;
+	printc("A4GL_copy_back_blobs(_blobdata);");
   printc ("\n} /* end of report */\n");
   return 1;
 }
