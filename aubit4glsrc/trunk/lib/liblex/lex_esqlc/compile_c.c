@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.462 2009-01-18 16:33:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.463 2009-01-19 08:43:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.462 2009-01-18 16:33:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.463 2009-01-19 08:43:23 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5667,7 +5667,7 @@ expr_str_list *expanded_params;
   else
     {
 	printPopFunction();
-      printc("A4GL_copy_back_blobs(_blobdata);");
+      printc("A4GL_copy_back_blobs(_blobdata,0);");
       printc ("return 0;\n");
       tmp_ccnt--;
       printc ("}");

@@ -1037,12 +1037,15 @@ print_return_cmd (struct_return_cmd * cmd_data)
 	}
     }
 
-  printc("A4GL_copy_back_blobs(_blobdata);");
 
-  if (!is_in_report ())
+  if (!is_in_report ()) {
+    printc("A4GL_copy_back_blobs(_blobdata,%d);",n);
     printc ("return %d;", n);
-  else
+  }
+  else {
+    printc("A4GL_copy_back_blobs(_blobdata,0);");
     printc ("return ;");
+  }
 
 
   return 1;

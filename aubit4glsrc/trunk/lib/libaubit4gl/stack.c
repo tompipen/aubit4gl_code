@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.222 2009-01-18 16:33:18 mikeaubury Exp $
+# $Id: stack.c,v 1.223 2009-01-19 08:43:23 mikeaubury Exp $
 #
 */
 
@@ -4358,7 +4358,12 @@ if (b) {
 return A4GL_pop_params(b,n);
 }
 
-void A4GL_copy_back_blobs(void *_blobdata) {
+
+// Copy back the blobs into the original variables - so it looks like we've passed in references..
+// We'll also scan the current set of return values and ensure that any blobs are allocated rather
+// than just pushed - that way we wont lose any local variables from the stack frame...
+//
+void A4GL_copy_back_blobs(void *_blobdata,int nrets) {
 int a;
 struct s_blobbind *blobdata;
 if (_blobdata==NULL) return;
@@ -4367,6 +4372,27 @@ blobdata=(struct s_blobbind *) _blobdata;
 for (a=0;a<blobdata->nblobs;a++) {
 	if (blobdata->blobptrs_orig[a]) {
 		memcpy(blobdata->blobptrs_orig[a],blobdata->blobptrs_new[a],sizeof(struct fgl_int_loc));
+	}
+}
+// Ok - now check the parameters on the stack being returned to ensure that any blobs are reallocated
+if (nrets) {
+	for (a=0;a<nrets;a++) {
+		int d1;
+		int s1;
+		void *ptr1;
+		int param_offset;
+		param_offset=a-1;
+		A4GL_get_top_of_stack (param_offset, &d1, &s1, (void **) &ptr1);
+		if ((d1&DTYPE_MASK)==DTYPE_BYTE || (d1&DTYPE_MASK)==DTYPE_TEXT) {
+				if (!d1&DTYPE_MALLOCED) {
+					fglbyte *ptr2;
+					ptr2=malloc(sizeof(fglbyte));
+					memcpy(ptr2,ptr1,sizeof(fglbyte));
+					params[params_cnt - param_offset].dtype+=DTYPE_MALLOCED;
+					params[params_cnt - param_offset].ptr=ptr2;
+				}
+		}
+		
 	}
 }
 	
