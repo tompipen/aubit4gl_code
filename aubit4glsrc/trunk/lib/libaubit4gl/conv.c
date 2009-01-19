@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.165 2008-12-05 07:39:42 mikeaubury Exp $
+# $Id: conv.c,v 1.166 2009-01-19 07:29:20 mikeaubury Exp $
 #
 */
 
@@ -980,6 +980,8 @@ A4GL_btob (void *a, void *b, int size)
   lb->where = la->where;
   lb->f = la->f;
   lb->memsize = la->memsize;
+  lb->loc_user_env=la->loc_user_env;
+  lb->loc_user_bufsize=la->loc_user_bufsize;
   strcpy (lb->filename, la->filename);
   lb->ptr = la->ptr;
   return 1;
