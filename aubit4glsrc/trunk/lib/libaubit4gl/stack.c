@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.223 2009-01-19 08:43:23 mikeaubury Exp $
+# $Id: stack.c,v 1.224 2009-01-19 11:47:08 mikeaubury Exp $
 #
 */
 
@@ -4384,7 +4384,7 @@ if (nrets) {
 		param_offset=a-1;
 		A4GL_get_top_of_stack (param_offset, &d1, &s1, (void **) &ptr1);
 		if ((d1&DTYPE_MASK)==DTYPE_BYTE || (d1&DTYPE_MASK)==DTYPE_TEXT) {
-				if (!d1&DTYPE_MALLOCED) {
+				if (!(d1&DTYPE_MALLOCED)) {
 					fglbyte *ptr2;
 					ptr2=malloc(sizeof(fglbyte));
 					memcpy(ptr2,ptr1,sizeof(fglbyte));
