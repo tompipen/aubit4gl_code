@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.109 2008-12-17 14:03:43 gyver309 Exp $
+# $Id: funcs_d.c,v 1.110 2009-01-21 12:49:33 gyver309 Exp $
 #
 */
 
@@ -1381,7 +1381,7 @@ A4GL_wcswidth (char *mbs)
   if (retc == -1)
   {
       A4GL_debug ("WARNING: Invalid multibyte sequence in: %s", mbs);
-      return 1;
+      return mlen; // fallback to strlen - should work fine for 8 bit encodings
   }
   if (!retc)
     {
