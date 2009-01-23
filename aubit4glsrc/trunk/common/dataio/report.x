@@ -1,5 +1,8 @@
+
 /* 
 Data definitions for a report 
+ $Id: report.x,v 1.10 2009-01-23 14:05:40 mikeaubury Exp $ 
+
 */
 
 const AACE_XDR_VERSION = 100;
