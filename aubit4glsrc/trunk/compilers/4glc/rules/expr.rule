@@ -285,8 +285,7 @@ inexpr_list : fgl_expr_c  {
 
 
 
-op_extend_di: {$<integer_val>$=-1;} | dtime_val KW_TO dtime_val
-	{$<integer_val>$=atoi($<str>1)*16+atoi($<str>3);}
+op_extend_di: {$<integer_val>$=-1;} | dtime_val KW_TO dtime_val {$<integer_val>$=$1*16+$3;}
 ;
 
 
@@ -781,9 +780,9 @@ cast_dtype:
 	|	KW_TEXT 
 		{ $<integer_val>$=DTYPE_TEXT; }
 	|	DATETIME datetime_qual 
-		{ $<integer_val>$=DTYPE_DTIME+ENCODE_SIZE(atol($<str>2)); }
+		{ $<integer_val>$=DTYPE_DTIME+ENCODE_SIZE($2); }
 	|	INTERVAL interval_qual 
-		{ $<integer_val>$=DTYPE_INTERVAL+ENCODE_SIZE(atol($<str>2)); }
+		{ $<integer_val>$=DTYPE_INTERVAL+ENCODE_SIZE($2); }
  	| 	TIME  
 		{ $<integer_val>$=DTYPE_DTIME+ENCODE_SIZE(72); }
  	| 	TIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET   

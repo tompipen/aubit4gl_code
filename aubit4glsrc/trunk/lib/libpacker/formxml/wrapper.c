@@ -28,7 +28,7 @@ A4GLPacker_A4GL_can_pack_all (char *name)
  *       as we're doing the whole thing in one go using xdr
  *       */
 int
-A4GLPacker_A4GL_open_packer (char *fname, char dir,char *packname)
+A4GLPacker_A4GL_open_packer (char *fname, char dir,char *packname,char *version)
 {
   return 1;
 }
@@ -47,6 +47,11 @@ int A4GLPacker_A4GL_pack_remove_file(char *fname) {
         return A4GL_delete_file(buff);
 }
 
+
+
+char *A4GLPacker_A4GL_get_packer_ext(void) {
+        return ".xml";
+}
 
 
 /**

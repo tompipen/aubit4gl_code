@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.43 2008-11-29 12:59:44 mikeaubury Exp $
+# $Id: Makefile,v 1.44 2009-01-23 18:24:14 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -78,7 +78,7 @@ CMODS_LIB       =\
 				list.c lexer.c lex.c  expr_munging.c lint.c \
                                 mod.c commands.c  map.c extendedmap.c parsehelp.c common.c \
                                 ../../lib/generated/std_funcs.c  \
-                                var_handling.c variables.c \
+                                var_handling.c variables.c variables_new.c \
                 		${Y_TAB_C} \
                 		${WANTKW_C}
 
@@ -308,10 +308,12 @@ extra: ../../bin/reload ../../bin/fgllint ../../bin/fglcalltree
 ../../bin/reload: reload.c API_lex.c common.c ../../lib/generated/std_funcs.c
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex.c common.c ../../lib/generated/std_funcs.c -o $@ -L$(AUBITDIR)/lib -laubit4gl  
 
+reload: ../../bin/reload
 
+reload_static:  ../../bin/reload_static
 
-reload_static: reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c
-	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
+../../bin/reload_static : reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c mod.c
+	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
 ../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c 
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 

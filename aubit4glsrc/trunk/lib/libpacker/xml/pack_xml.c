@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.35 2008-11-17 07:50:47 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.36 2009-01-23 18:24:15 mikeaubury Exp $
 #*/
 
 /**
@@ -253,7 +253,7 @@ int A4GLPacker_A4GL_pack_remove_file(char *fname) {
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *version)
 {
   char buff[256];
 
@@ -905,5 +905,40 @@ A4GLPacker_A4GL_can_pack_all (char *name)
 {
   return 0;
 }
+
+char *A4GLPacker_A4GL_get_packer_ext(void) {
+  	return acl_getenv ("A4GL_XML_EXT");
+}
+
+void A4GLPacker_A4GL_output_common_header(char* module,char* version) {
+	fprintf (outfile,"<!-- Aubit4GL data file Type %s Version %s -->\n",module,version);
+}
+
+int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
+	char m[200]="";
+	char v[200]="";
+	char buff[200]="Wrong header";
+	int i;
+	int ok=1;
+	if (!getaline()) {
+		return 0;
+	}
+	i=sscanf(ibuff,"<!-- Aubit4GL data file Type %s Version %s -->",m,v);
+	if (i!=2) { 
+		ok=0;
+	} else {
+		if (strcmp(module,m)!=0) {ok=0;strcpy(buff,"Wrong filetype");}
+		if (strcmp(version,v)!=0) {ok=0; strcpy(buff,"Wrong version");}
+	}
+	if (!ok) {
+		A4GL_set_errm(buff);
+		A4GL_exitwith("Invalid file (%s)");
+		return 0;
+	} else {
+        	return 1;
+	}
+	
+}
+
 
 /* ============================== EOF ================================ */

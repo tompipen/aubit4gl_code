@@ -75,7 +75,7 @@ char *make_sql_string_and_free (char *first, ...);
 
 /* STATIC FUNCTIONS PROTOTYPES */
 static void open_outfile (void);
-static void print_variable_new (struct variable *v, char scope, int level);
+static void print_variable_new (struct variable *v, enum e_scope scope, int level);
 static char *decode_dt (int a, int b);
 static char *decode_ival_define1 (int n);
 static char *decode_ival_define2 (int n);
@@ -86,7 +86,7 @@ static int dump_cmds (struct commands *c, struct command *parent);
 static int dump_pdf_report (struct s_pdf_report_definition *pdf_report_definition);
 static int dump_cmd (struct command *r, struct command *parent);
 static int dump_function (struct s_function_definition *function_definition, int ismain);
-static char get_var_expr_scope (struct expr_str *p);
+static enum e_scope get_var_expr_scope (struct expr_str *p);
 static int get_var_expr_dtype (struct expr_str *p);
 static int print_whenever_style (int code, char *whento);
 static void printc_safe_to_split_at_comma (char *fmt, ...);
@@ -1369,10 +1369,12 @@ static char * A4GL_get_expr_list_sep (struct expr_str_list *l, char *sep)
 }
 
 
+/*
 static char * A4GL_get_expr_list_concat (struct expr_str_list *l) {
   	l = A4GL_rationalize_list_concat (l);
 	A4GL_get_expr_list_sep(l,",");
 }
+*/
 
 
 
@@ -2470,6 +2472,7 @@ local_get_expr_as_string_list_with_separator (struct expr_str_list *l, char *sep
 }
 
 
+#ifdef OLD
 static struct expr_str_list *
 A4GL_rationalize_list_concat (struct expr_str_list *l)
 {
@@ -2525,6 +2528,7 @@ A4GL_rationalize_list_concat (struct expr_str_list *l)
 
   return l;
 }
+#endif
 
 /******************************************************************/
 /* FIELD HANDLING */
@@ -2675,8 +2679,7 @@ real_print_field_list (struct fh_field_list *fl)
 /******************************************************************/
 
 
-static char
-get_var_expr_scope (struct expr_str *p)
+static enum e_scope get_var_expr_scope (struct expr_str *p)
 {
   struct variable_usage *u;
   if (p->expr_type != ET_EXPR_VARIABLE_USAGE)
@@ -2684,7 +2687,7 @@ get_var_expr_scope (struct expr_str *p)
       A4GL_assertion (1, "Should be ET_EXPR_VARIABLE_USAGE");
     }
   u = p->expr_str_u.expr_variable_usage;
-  return u->scope;
+  return u->escope;
 
 }
 
@@ -3340,7 +3343,7 @@ print_Constant_1 (char *name, struct constant_data *c)
 
 
 static void
-print_variable_new_internal (struct variable *v, char scope, int level, int vno)
+print_variable_new_internal (struct variable *v, enum e_scope scope, int level, int vno)
 {
   int static_extern_flg;
   char name[256];
@@ -3420,11 +3423,11 @@ print_variable_new_internal (struct variable *v, char scope, int level, int vno)
       if (local_is_system_variable (name));
       else
 	{
-	  if (v->scope == 'G' || v->scope == 'g')
+	  if (v->escope == E_SCOPE_IMPORTED_GLOBAL || v->escope == E_SCOPE_EXPORTED_GLOBAL)
 	    {
 	      SPRINTF1 (name, "G_%s", v->names.names.names_val[0].name);
 	    }
-	  if (v->scope == 'M' || v->scope == 'm')
+	  if (v->escope == E_SCOPE_MODULE)
 	    {
 	      if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")))
 		{
@@ -3435,16 +3438,10 @@ print_variable_new_internal (struct variable *v, char scope, int level, int vno)
 		  SPRINTF1 (name, "M_%s", v->names.names.names_val[0].name);
 		}
 	    }
-	  if (v->scope == 'L' || v->scope == 'l')
+	  if (v->escope == E_SCOPE_LOCAL)
 	    {
 	      SPRINTF1 (name, "L_%s", v->names.names.names_val[0].name);
 	    }
-/*
-          if (v->scope == 'C' || v->scope == 'c')
-            {
-              SPRINTF (name, "_this->%s", v->names.name);
-            }
-*/
 	}
     }
 
@@ -3578,7 +3575,7 @@ print_variable_new_internal (struct variable *v, char scope, int level, int vno)
 
       /*print_declare_associate_2 (v->names.name,buff1,buff2); */
 
-      memcpy (&v2, v->var_data.variable_data_u.v_assoc.variables.variables_val[0], sizeof (struct variable));
+      memcpy (&v2, v->var_data.variable_data_u.v_assoc.variable, sizeof (struct variable));
 
       /* v2.names.next = 0; */
       v2.names.names.names_val[0].name = v->names.names.names_val[0].name;
@@ -3604,7 +3601,7 @@ print_variable_new_internal (struct variable *v, char scope, int level, int vno)
 
 /******************************************************************************/
 static void
-print_variable_new (struct variable *v, char scope, int level)
+print_variable_new (struct variable *v, enum e_scope scope, int level)
 {
   dump_comments (v->lineno);
   //printf("Dump comments up to %d\n", v->lineno);
@@ -5886,7 +5883,7 @@ print_let_manyvars_g (expr_str_list * expr_list, expr_str_list * varlist)
 
   if (to_vars == 1 && from_exprs > 1)
     {				// concatenation...
-      char scope;
+      enum e_scope scope;
       set_nonewlines ();
 
       scope = get_var_expr_scope (varlist->list.list_val[0]);
@@ -5913,7 +5910,7 @@ print_let_manyvars_g (expr_str_list * expr_list, expr_str_list * varlist)
 
   for (a = 0; a < to_vars; a++)
     {
-      char scope;
+      enum e_scope scope;
 
       //scope = get_var_expr_scope (varlist->list.list_val[a]);
       //printc("{ SCOPE =%c REMOVEMODVARS=%s varname=%s bindscope=%c}", scope, acl_getenv ("REMOVEMODVARS"),varlist->bindings.bindings_val[a].varname , varlist->bindings.bindings_val[a].scope);
@@ -6704,7 +6701,7 @@ if (last_parent!=parent) {
 	  {
 	    if (r->cmd_data.command_data_u.call_cmd.returning->list.list_len)
 	      {
-		char scope;
+		enum e_scope scope;
 		int used_tmp;
 		struct expr_str_list *l;
 		l = r->cmd_data.command_data_u.call_cmd.returning;
@@ -7255,7 +7252,7 @@ if (last_parent!=parent) {
       {
 	int need_step = 1;
 	int for_var_is_module = 0;
-	char scope;
+	enum e_scope scope;
 	need_daylight ();
 	//printc ("#");
 	set_nonewlines ();

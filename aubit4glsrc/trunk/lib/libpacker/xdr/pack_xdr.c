@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.15 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.16 2009-01-23 18:24:15 mikeaubury Exp $
 #*/
 
 /**
@@ -100,7 +100,7 @@ A4GLPacker_A4GL_can_pack_all (char *name)
    as we're doing the whole thing in one go using xdr
 */
 int
-A4GLPacker_A4GL_open_packer (char *fname, char dir, char *struct_name)
+A4GLPacker_A4GL_open_packer (char *fname, char dir, char *struct_name,char *version)
 {
   return 1;
 }
@@ -203,6 +203,13 @@ int result;
   return result;
 }
 
+void A4GLPacker_A4GL_output_common_header(char* module,char* version) {
+
+}
+
+int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
+        return 1;
+}
 
 
 /* =================================== EOF =========================== */

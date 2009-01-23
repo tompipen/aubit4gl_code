@@ -69,9 +69,11 @@ define
 
 code 
 int A4GL_file_length(char *fname);
-int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
+//int aclfgl_aclfgl_expand_env_vars_in_cmdline(int n);
+int A4GL_file_exists(char *fname);
 int A4GL_move_file(char *from,char *to);
 int isverbose_c(int n) ;
+int A4GL_delete_file(char *fname);
 endcode
 
 function init()
@@ -305,11 +307,12 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
+
 	if lv_arg matches "-o*" and lv_arg!="-o" then
 		let mv_output=lv_arg[3,200]
-
 		continue for
 	end if
+
 	CASE lv_arg
 		WHEN "-?" 			call show_help(2)  continue for
 		WHEN "--verbose"		let mv_verbose=mv_verbose+1 continue for
@@ -379,7 +382,7 @@ endcode
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
 	
-	IF lv_arg="-o" THEN
+	IF lv_arg matches "-o*" THEN
 		LET lv_cnt=lv_cnt+1
 	END IF
 	IF lv_arg="-e" THEN
@@ -1951,7 +1954,7 @@ define s char(512)
 code
 {
 A4GL_trim(s);
-unlink(s);
+A4GL_delete_file(s);
 }
 endcode
 end function

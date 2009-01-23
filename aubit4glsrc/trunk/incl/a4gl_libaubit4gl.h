@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.361 2009-01-19 08:43:23 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.362 2009-01-23 18:24:15 mikeaubury Exp $
 #
 */
 
@@ -517,6 +517,7 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) ;
 #define DTYPE_OBJECT    99
 #define DTYPE_DYNAMIC_ARRAY      98
 #define DTYPE_REFERENCE    97
+#define DTYPE_STRING    96
 
 #define DTYPE_MASK 		255	/* bit pattern for data type */
 #define DTYPE_MALLOCED 	256

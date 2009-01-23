@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.134 2009-01-12 10:21:38 mikeaubury Exp $
+# $Id: lexer.c,v 1.135 2009-01-23 18:24:14 mikeaubury Exp $
 #*/
 
 /**
@@ -1541,9 +1541,10 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	  strcpy (buff, buffval);
 	  a = NAMED_GEN;
 	  break;		/* 'C' */
+
 	default:
 	  a4gl_yyerror ("Unexpected Error");
-
+	return -1;
 	}
     }
 

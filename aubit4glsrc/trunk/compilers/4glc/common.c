@@ -34,7 +34,10 @@ return strcmp(v1->names.names.names_val[0].name,v2->names.names.names_val[0].nam
 }
 
 void sort_variables(void *ptr, int n) {
-        qsort(ptr,  n, sizeof( void*), (void *)compare_var);
+	if (n==0) return;
+	if (ptr) {
+        	qsort(ptr,  n, sizeof( void*), (void *)compare_var);
+	}
 }
 
 
@@ -154,6 +157,8 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
       A4GL_assertion (1, "Invalid parameter list");
       return 0;
     }
+
+
   if (parameters == 0)
     return parameters;
 
@@ -176,7 +181,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 		  // Dynamic array..
 		  u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 		  u->datatype = DTYPE_DYNAMIC_ARRAY;
-		  u->scope = 'L';
+		  u->escope = E_SCOPE_LOCAL;
 		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u,current_is_report()));
 		  continue;
 		}
@@ -186,7 +191,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 		  // We've found it - but its a byte copt so we dont care too much.
 		  u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 		  u->datatype = DTYPE_REFERENCE;
-		  u->scope = 'L';	/* must be local - its a parameter... */
+		  u->escope = E_SCOPE_LOCAL;	/* must be local - its a parameter... */
 		  A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u,current_is_report()));
 		  found++;
 		  break;
@@ -210,7 +215,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 			rec_var = &var_list->variables.variables_val[b]->var_data.variable_data_u.v_record;
 			u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 			u->datatype = -2;
-			u->scope = 'L';	/* must be local - its a parameter... */
+			u->escope = E_SCOPE_LOCAL;	/* must be local - its a parameter... */
 			append_record_entries (rec_var, u, rval);
 		      }
 
@@ -378,7 +383,7 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 
   newv->variable_id = -1;
   newv->datatype = -1;
-  newv->scope = 0;
+  newv->escope = E_SCOPE_NOTSET;
   newv->next = 0;
 
 
@@ -532,8 +537,49 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	    }
 	}
 
+      if (v->var_data.variable_type == VARIABLE_TYPE_OBJECT)  {
+	//  Its an object ..
+		struct assoc_array_variable *avar;
+	  	struct variable_usage *next;
+		struct variable *vrec;
+		int vtype;
+		next = vu->next;
+		avar=&v->var_data.variable_data_u.v_object.definition;
+	  	vu->variable_id = a;
+		vtype=avar->variable->var_data.variable_type;
+		A4GL_assertion(vtype!=VARIABLE_TYPE_SIMPLE  && vtype!=VARIABLE_TYPE_RECORD, "Expecting a simple variable or a record");
 
-      if (v->var_data.variable_type == VARIABLE_TYPE_RECORD || v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
+		if (vtype==VARIABLE_TYPE_SIMPLE) {
+	      			vu->datatype = encode_size(
+					avar->variable->var_data.variable_data_u.v_simple.datatype, 
+					avar->variable->var_data.variable_data_u.v_simple.dimensions[0],
+					avar->variable->var_data.variable_data_u.v_simple.dimensions[1])
+				;
+				return v;
+		}
+		if (vtype==VARIABLE_TYPE_RECORD) {
+			// Must be a record...
+	  		vu->datatype = -2;	
+			vrec=avar->variable;
+		}
+
+          if (next == 0)
+            {
+              return v;
+            }
+
+          if (strcmp (next->variable_name, "*") == 0)
+            {
+              return v;
+            }
+
+          return find_variable_vu_in (errbuff, next,
+                                      vrec->var_data.variable_data_u.v_record.variables.variables_val,
+                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array,level+1);
+
+		}
+
+      if (v->var_data.variable_type == VARIABLE_TYPE_RECORD)
 	{
 
 	  struct variable_usage *next;
@@ -576,9 +622,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	      return v;
 	    }
 
-	  return find_variable_vu_in (errbuff, next,
-				      v->var_data.variable_data_u.v_record.variables.variables_val,
-				      v->var_data.variable_data_u.v_record.variables.variables_len, 0,level+1);
+	  return find_variable_vu_in (errbuff, next, v->var_data.variable_data_u.v_record.variables.variables_val, v->var_data.variable_data_u.v_record.variables.variables_len, 0,level+1);
 	}
 
 
@@ -590,28 +634,26 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		struct assoc_array_variable *avar;
 	  	struct variable_usage *next;
 		struct variable *vrec;
+		int vtype;
 		next = vu->next;
 		avar=&v->var_data.variable_data_u.v_assoc;
 	  	vu->variable_id = a;
+		vtype=avar->variable->var_data.variable_type;
+		A4GL_assertion(vtype!=VARIABLE_TYPE_SIMPLE  && vtype!=VARIABLE_TYPE_RECORD, "Expecting a simple variable or a record");
 
-		if (avar->variables.variables_len==0) {
-			// Its a simple variable..
-			struct variable *v2;
-			v2= avar->variables.variables_val[0];
-			//A4GL_assertion(v2->var_data.variable_type!=VARIABLE_TYPE_SIMPLE,"Expecting a simple type");
-			if (v2->var_data.variable_type==VARIABLE_TYPE_SIMPLE) {
+		if (vtype==VARIABLE_TYPE_SIMPLE) {
 	      			vu->datatype = encode_size(
-					v2->var_data.variable_data_u.v_simple.datatype, 
-					v2->var_data.variable_data_u.v_simple.dimensions[0],
-					v2->var_data.variable_data_u.v_simple.dimensions[1])
+					avar->variable->var_data.variable_data_u.v_simple.datatype, 
+					avar->variable->var_data.variable_data_u.v_simple.dimensions[0],
+					avar->variable->var_data.variable_data_u.v_simple.dimensions[1])
 				;
 				return v;
-			}
 		}
-
-		// Must be a record...
-	  	vu->datatype = -2;	
-		vrec=v->var_data.variable_data_u.v_assoc.variables.variables_val[0];
+		if (vtype==VARIABLE_TYPE_RECORD) {
+			// Must be a record...
+	  		vu->datatype = -2;	
+			vrec=avar->variable;
+		}
 
           if (next == 0)
             {

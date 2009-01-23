@@ -14,14 +14,16 @@ formhandler_def :
                                 clr_call_list();
 			 	push_blockcommand("FORMHANDLER");
 		} define_section {
-	                struct variable_list v;
                         char errbuff[256];
-                        set_variables(&v,'L');
+
+			set_local_variables($4);
 
 		} op_code op_bef_ev_list op_input_section op_aft_ev_list 
 	END_FORMHANDLER  {
 		$<module_entry>$=new_formhandler_definition($<str>2, $<formhandler_dets>8.str_list, $<formhandler_dets>8.on_events, $<on_events>7, $<on_events>9);
-		set_variables(&$<module_entry>$->module_entry_u.formhandler_definition.variables,'L');
+
+                merge_variable_list(&$<module_entry>$->module_entry_u.formhandler_definition.variables, $4);
+                sort_variables($<module_entry>$->module_entry_u.formhandler_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.function_definition.variables.variables.variables_len);
                 A4GL_chk_and_clr_labels();
 		isin_formhandler=0;
 	 	pop_blockcommand("FORMHANDLER"); 

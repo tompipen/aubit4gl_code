@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.130 2008-12-18 20:51:47 mikeaubury Exp $
+# $Id: compile.c,v 1.131 2009-01-23 18:24:14 mikeaubury Exp $
 #*/
 
 /**
@@ -1220,7 +1220,7 @@ compiled_4gl++;
 		exit (1);
 	}
 
-	copy_sourcecode_in_memfile(yyin, &this_module.source_code.source_code_len,&this_module.source_code.source_code_val);
+	copy_sourcecode_in_memfile(yyin, &this_module.source_code.lines.lines_len,&this_module.source_code.lines.lines_val );
 	A4GL_memfile_fseek (yyin, 0, SEEK_END);
 	A4GL_remove_comments_in_memfile(yyin);
 

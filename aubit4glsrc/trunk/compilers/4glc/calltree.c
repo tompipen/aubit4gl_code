@@ -366,7 +366,6 @@ local_is_valid_vname (struct variable *v, char scope)
     case VARIABLE_TYPE_CONSTANT:
     case VARIABLE_TYPE_FUNCTION_DECLARE:
     case VARIABLE_TYPE_OBJECT:
-    case VARIABLE_TYPE_LINKED:
       return 1;
 
 
@@ -2007,9 +2006,9 @@ check_program (module_definition * mods, int nmodules)
 	  int line;
 	  fprintf (output, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\">\n", mods[a].module_name, a,
 		   xml_encode (mods[a].full_path_filename));
-	  for (line = 0; line < mods[a].source_code.source_code_len; line++)
+	  for (line = 0; line < mods[a].source_code.lines.lines_len; line++)
 	    {
-	      fprintf (output, "<LINE>%s</LINE>\n", xml_encode (mods[a].source_code.source_code_val[line]));
+	      fprintf (output, "<LINE>%s</LINE>\n", xml_encode (mods[a].source_code.lines.lines_val[line]));
 	    }
 	  fprintf (output, "</MODULE>\n");
 	}

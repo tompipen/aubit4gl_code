@@ -377,7 +377,7 @@ FILE *f;
       break;
 
     default:
-		A4GL_pause_execution();
+		A4GL_pause_execution(); // ---  Place holder for error handling  --- SAFE TO LEAVE IN...
         printf ("Unhandled expression in dynamic sql(%s)\n", expr_name (e->expr_type));
         return  expr_name (e->expr_type);
       //exit (2);

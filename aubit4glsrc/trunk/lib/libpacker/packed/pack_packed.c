@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.43 2008-11-17 07:50:46 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.44 2009-01-23 18:24:15 mikeaubury Exp $
 #*/
 
 /**
@@ -144,6 +144,10 @@ chk (void *x)
 */
 
 
+char *A4GLPacker_A4GL_get_packer_ext(void) {
+	return PACKED_EXT;
+}
+
 int A4GLPacker_A4GL_pack_remove_file(char *fname) {
 	char buff[512];
       	sprintf (buff, "%s%s",fname,PACKED_EXT);
@@ -155,7 +159,7 @@ int A4GLPacker_A4GL_pack_remove_file(char *fname) {
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *version)
 {
   char buff[256];
   is_in_mem = 0;
@@ -685,5 +689,27 @@ int A4GLPacker_A4GL_pack_all(char* name,void* ptr,char* fname) {
 int A4GLPacker_PACKER_initlib() {
 	return 1;
 }
+
+
+
+
+void A4GLPacker_A4GL_output_common_header(char* module,char* version) {
+char buff[200];
+sprintf(buff,"A4GL FILE : %s %s\n",module,version);
+fwrite (buff, 1, strlen(buff), outfile);
+}
+
+int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
+	char buff[200];
+	char buff_r[200];
+
+	sprintf(buff,"A4GL FILE : %s %s\n",module,version);
+	fread (buff_r, 1, strlen(buff), infile);
+	if (memcmp(buff,buff_r,sizeof(strlen(buff)))==0) {
+		return 1;
+	}
+	return 0;
+}
+
 
 /* ====================================== EOF ============================ */

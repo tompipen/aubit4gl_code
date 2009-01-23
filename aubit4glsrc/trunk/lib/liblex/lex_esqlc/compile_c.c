@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.463 2009-01-19 08:43:23 mikeaubury Exp $
+# $Id: compile_c.c,v 1.464 2009-01-23 18:24:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.463 2009-01-19 08:43:23 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.464 2009-01-23 18:24:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1167,9 +1167,9 @@ char *field_name_as_char(fh_field_entry *fh) {
 	//char a[200];
 	//char b[200];
 	if (fh->fieldsub) {
-	return A4GL_field_name_as_char(local_ident_as_string(fh->field,1), local_expr_as_string(fh->fieldsub));
+		return A4GL_field_name_as_char(local_ident_as_string(fh->field,1), local_expr_as_string(fh->fieldsub));
 	} else {
-	return A4GL_field_name_as_char(local_ident_as_string(fh->field,1), "1");
+		return A4GL_field_name_as_char(local_ident_as_string(fh->field,1), "1");
 	}
 
 }
@@ -1601,13 +1601,16 @@ real_print_expr (struct expr_str *ptr)
 	struct variable_usage *vu;
 	struct variable_usage *vu_top;
 	struct variable *v;
-	char errbuff[256];
-	char scope;
+	//char errbuff[256];
+	//enum e_scope scope;
 	struct variable_usage *vu_n;
 	      struct s_expr_member_function_call *p;
 	char *func;
 	char *s;
 	int datatype;
+        char errbuff[256];
+        enum e_scope scope;
+
 	struct variable_usage *vu_bottom;
 		  p = ptr->expr_str_u.expr_member_function_call;
 		  l = p->parameters;
@@ -1645,6 +1648,7 @@ real_print_expr (struct expr_str *ptr)
 		vu_n->next=0;
 		func=vu->variable_name;
 		s=generation_get_variable_usage_as_string(vu_top);
+		//v=local_find_variable_from_usage(vu_top);
 		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
@@ -1992,7 +1996,6 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_GET_FLDBUF: 
 	  printc ("{");
 	  printc ("int _retvars;");
-
 	  printc ("_retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,%s,NULL,0);",
 		  ptr->expr_str_u.expr_get_fldbuf->sio_id,
 	  	local_field_name_list_as_char (ptr->expr_str_u.expr_get_fldbuf->field_list)
@@ -2768,7 +2771,7 @@ real_print_func_call (t_expr_str * fcall)
 	struct variable_usage *vu_top;
 	struct variable *v;
 	char errbuff[256];
-	char scope;
+	enum e_scope scope;
 	struct variable_usage *vu_n;
 	char *func;
 	char *s;
@@ -2848,6 +2851,7 @@ real_print_func_call (t_expr_str * fcall)
 	p=fcall->expr_str_u.expr_get_fldbuf;
 	printc("{");
 	printc("   int _retvars;");
+	A4GL_pause_execution();
 	printc("   _retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id, local_field_name_list_as_char(p->field_list));
 	/* 
 	printc("   if (_retvars != 1 ) {");
@@ -3075,6 +3079,9 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
     case VARIABLE_TYPE_CONSTANT:
       // Can't initialize a constant ;-)
       break;
+    case VARIABLE_TYPE_TYPE_DECLARATION:
+	// Or a type declaration ;-)
+		break;
 
     case VARIABLE_TYPE_SIMPLE:
       {
@@ -3166,26 +3173,24 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 	  }
       }
       break;
+	
 
     case VARIABLE_TYPE_ASSOC:
       {
-	int a;
-	if (v->var_data.variable_data_u.v_record.variables.variables_len)
-	  {			// Its a record
-	    strcat (prefix2, ".");
-	    for (a = 0; a < v->var_data.variable_data_u.v_assoc.variables.variables_len; a++)
-	      {
-		print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[a], prefix2, alvl, explicit, 0, 1,
-				tonull);
-	      }
-	  }
-	else
-	  {
-	    print_init_var (v->var_data.variable_data_u.v_assoc.variables.variables_val[0], prefix2, alvl, explicit, 1, 1, tonull);
-	  }
+		struct variable *nextvar;
+		nextvar=v->var_data.variable_data_u.v_assoc.variable;
+	    print_init_var (nextvar, prefix2, alvl, explicit, 1, 1, tonull);
       }
       break;
 
+    case VARIABLE_TYPE_OBJECT:
+      {
+		struct variable *nextvar;
+		strcat(prefix2,".");
+		nextvar=v->var_data.variable_data_u.v_object.definition;
+	    	print_init_var (nextvar, prefix2, alvl, explicit, 0, 1, tonull);
+      }
+      break;
 
     default:
       A4GL_assertion (1, "Not handled");
@@ -4928,7 +4933,7 @@ local_rettype_integer (int n)
 
 /******************************************************************************/
 void
-print_variable_new (struct variable *v, char scope, int level)
+print_variable_new (struct variable *v, enum e_scope scope, int level)
 {
   int static_extern_flg;
   char arrbuff[256];
@@ -4956,7 +4961,7 @@ clr_suppress_lines();
 	}
     }
 
-  if (scope == 'G' && strcasecmp (v->names.names.names_val[0].name, "time") == 0 && level == 0)
+  if (scope == E_SCOPE_IMPORTED_GLOBAL && strcasecmp (v->names.names.names_val[0].name, "time") == 0 && level == 0)
     {
 #ifdef DEBUG
       A4GL_debug ("Ignore time....\n");
@@ -4980,12 +4985,12 @@ clr_suppress_lines();
 
   if (level == 0)		/* We only print 'static' or 'extern' at the start of a record/variable - not a nested record*/
     {
-      if (scope == 'G')
+      if (scope == E_SCOPE_IMPORTED_GLOBAL )
 	{
 	  static_extern_flg += 2;
 	}
 
-      if (scope == 'M')
+      if (scope == E_SCOPE_MODULE)
 	{
 	  static_extern_flg += 1;
 	}
@@ -5006,11 +5011,12 @@ clr_suppress_lines();
       if (local_is_system_variable (v));
       else
 	{
-	  if (v->scope == 'G' || v->scope == 'g')
+	  if (v->escope == E_SCOPE_IMPORTED_GLOBAL || v->escope == E_SCOPE_EXPORTED_GLOBAL)
 	    {
 	      SPRINTF1 (name, "G_%s", v->names.names.names_val[0].name);
 	    }
-	  if (v->scope == 'M' || v->scope == 'm')
+
+	  if (v->escope == E_SCOPE_MODULE)
 	    {
 		if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))) {	
 	      		SPRINTF2 (name, "M_%s_%s", get_current_module_name_clean(),v->names.names.names_val[0].name);
@@ -5018,40 +5024,40 @@ clr_suppress_lines();
 	      		SPRINTF1 (name, "M_%s", v->names.names.names_val[0].name);
 		}
 	    }
-	  if (v->scope == 'L' || v->scope == 'l')
+	  if (v->escope == E_SCOPE_LOCAL)
 	    {
 	      SPRINTF1 (name, "L_%s", v->names.names.names_val[0].name);
 	    }
-/*
-	  if (v->scope == 'C' || v->scope == 'c')
-	    {
-	      SPRINTF (name, "_this->%s", v->names.name);
-	    }
-*/
 	}
     }
 
 
   if (v->arr_subscripts.arr_subscripts_len ) {
 		if (v->arr_subscripts.arr_subscripts_val[0]==-1) { // Dynamic array
-		switch (v->var_data.variable_type) {
+			struct variable *nv;
+			nv=v;
+			if (nv->var_data.variable_type==VARIABLE_TYPE_OBJECT) {
+				nv=nv->var_data.variable_data_u.v_object.definition;
+			}
+
+		switch (nv->var_data.variable_type) {
 			case VARIABLE_TYPE_SIMPLE:
-      				if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR ) {
-					printc("struct _dynelem_%s { char dummyname[%d];};", name,v->var_data.variable_data_u.v_simple.dimensions[0]+1);
+      				if (nv->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR ) {
+					printc("struct _dynelem_%s { char dummyname[%d];};", name,nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
 					printc("char **%s=0;",name,name);
 				} else {
-					printc("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype), name);
-					printc("%s *%s=0;",local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype),name);
+					printc("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+					printc("%s *%s=0;",local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype),name);
 				}
 				break;
 				
 			case VARIABLE_TYPE_RECORD:
-			case  VARIABLE_TYPE_OBJECT: {
+			{
 			int a;
 			printc("struct _dynelem_%s {",name);
-      			for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++) {
+      			for (a = 0; a < nv->var_data.variable_data_u.v_record.variables.variables_len; a++) {
 	  		struct variable *next_v;
-	  			next_v = v->var_data.variable_data_u.v_record.variables.variables_val[a];
+	  			next_v = nv->var_data.variable_data_u.v_record.variables.variables_val[a];
 	  					tmp_ccnt++;
 	        		print_variable_new (next_v, scope, level + 1);
 				tmp_ccnt--;
@@ -5060,6 +5066,10 @@ clr_suppress_lines();
 			printc("struct _dynelem_%s *%s=0;",name,name);
 			}
 			break;
+
+
+
+
 			default:
 				A4GL_assertion(1,"Not expecting this type of variable");
 			break;
@@ -5093,10 +5103,14 @@ clr_suppress_lines();
 	{			/* Its a 'char' (may need varchar & friends too...*/
 
 
-		if (v->var_data.variable_data_u.v_simple.datatype == 0) {
-	  		print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);
+		if ( v->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR) {
+	  		print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0]*4, static_extern_flg);
 		} else {
-	  		print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg); // Allow extra space to store the size...
+			if (v->var_data.variable_data_u.v_simple.datatype == 0) {
+	  			print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);
+			} else {
+	  			print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg); // Allow extra space to store the size...
+			}
 		}
 	}
       else
@@ -5109,7 +5123,14 @@ clr_suppress_lines();
       return;
     }
 
-  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD ||v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
+   if ( v->var_data.variable_type == VARIABLE_TYPE_OBJECT) {
+      print_start_record (static_extern_flg, name, arrbuff, level);
+	        print_variable_new (v->var_data.variable_data_u.v_object.definition, scope, level+1);
+      		print_end_record (name, v, level);
+		return;
+   }
+
+  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD) 
     {
       int a;
       print_start_record (static_extern_flg, name, arrbuff, level);
@@ -5138,7 +5159,8 @@ clr_suppress_lines();
       print_declare_associate_1 (v->names.names.names_val[0].name,buff2,buff1);
       //print_declare_associate_2 (v->names.names.names_val[0].name,buff1,buff2);
 
-      memcpy (&v2, v->var_data.variable_data_u.v_assoc.variables.variables_val[0], sizeof (struct variable));
+
+      memcpy (&v2, v->var_data.variable_data_u.v_assoc.variable, sizeof (struct variable));
 
       //v2.names.next = 0;
       v2.names.names.names_len = v->names.names.names_len;
@@ -5187,7 +5209,7 @@ char * local_rettype (char *s)
 	"fgltext",     // 12 
 	"fglvarchar",        // 13 
 	"struct_ival",  // 14 
-	"nchar", //15
+	"char", //15
 	"nvarchar",
 	"int8", // 17
 	"serial8", // 18
@@ -5367,9 +5389,9 @@ int get_whenever_style(int code, char*whento) {
 }
 
 
-static char local_find_variable_scope(expr_str *e) {
+static enum e_scope local_find_variable_scope(expr_str *e) {
 	A4GL_assertion(e->expr_type!=ET_EXPR_VARIABLE_USAGE,"Not a variable usage...");
-	return e->expr_str_u.expr_variable_usage->scope;
+	return e->expr_str_u.expr_variable_usage->escope;
 }
 
 
@@ -5379,12 +5401,12 @@ int a;
 if (l==0) return 0;
 for (a=0;a<l->list.list_len;a++) {
         c=local_find_variable_scope(l->list.list_val[a]);
-        if (c=='M'||c=='G') {
+        if (c==E_SCOPE_MODULE||c==E_SCOPE_EXPORTED_GLOBAL|| c==E_SCOPE_IMPORTED_GLOBAL) {
                 if (A4GL_isyes(acl_getenv("WARNGLOBMODBINDING"))) {
-                        if (c=='M') {
+                        if (c==E_SCOPE_MODULE) {
                                 fprintf(stderr, "Use of module variable (%s) @%d (%s)\n",get_dbg_variable_name(l->list.list_val[a]),yylineno,fromwhere);
                         }
-                        if (c=='G') {
+                        if (c==E_SCOPE_EXPORTED_GLOBAL || c==E_SCOPE_IMPORTED_GLOBAL) {
                                 fprintf(stderr, "Use of global variable (%s) @%d (%s)\n",get_dbg_variable_name(l->list.list_val[a]),yylineno,fromwhere);
                         }
                 }
@@ -5481,7 +5503,7 @@ if (!A4GL_doing_pcode()) {
   printc("A4GL_check_version(_module_name,\"%s\",%d);",A4GL_internal_version(),A4GL_internal_build()); 
   printc("A4GL_check_dependant_tables(_module_name, _CompileTimeSQLType, _dependantTables);"); 
 
-  print_nullify ('M', mvars);
+  print_nullify (E_SCOPE_MODULE, mvars);
   tmp_ccnt--;
   printc ("}");
   printc("#");
@@ -5561,7 +5583,7 @@ expr_str_list *expanded_params;
         {
           for (a = 0; a < function_definition->variables.variables.variables_len; a++)
             {
-              print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+              print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
             }
         }
       print_fgllib_start (current_module->mod_dbname, current_module->schema_only==EB_TRUE,  current_module->force_ui ,current_module->debug_filename);
@@ -5589,7 +5611,7 @@ expr_str_list *expanded_params;
         {
           for (a = 0; a < function_definition->variables.variables.variables_len; a++)
             {
-              print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+              print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
             }
         }
       printc ("#");
@@ -5718,7 +5740,7 @@ if (!printed_gtk) {
         {
           for (a = 0; a < function_definition->variables.variables.variables_len; a++)
             {
-              print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+              print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
             }
         }
   printc ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,A4GL_get_currwin_name());\n", name);
@@ -5844,7 +5866,7 @@ printc("#");
     {
       for (a = 0; a < m->imported_global_variables.variables.variables_len; a++)
         {
-          print_variable_new (m->imported_global_variables.variables.variables_val[a], 'G', 0);
+          print_variable_new (m->imported_global_variables.variables.variables_val[a], E_SCOPE_IMPORTED_GLOBAL, 0);
         }
     }
 
@@ -5852,7 +5874,7 @@ printc("#");
     {
       for (a = 0; a < m->exported_global_variables.variables.variables_len; a++)
         {
-          print_variable_new (m->exported_global_variables.variables.variables_val[a], 'g', 0);
+          print_variable_new (m->exported_global_variables.variables.variables_val[a], E_SCOPE_EXPORTED_GLOBAL, 0);
         }
     }
 
@@ -5860,7 +5882,7 @@ printc("#");
     {
       for (a = 0; a < m->module_variables.variables.variables_len; a++)
         {
-          print_variable_new (m->module_variables.variables.variables_val[a], 'M', 0);
+          print_variable_new (m->module_variables.variables.variables_val[a], E_SCOPE_MODULE, 0);
         }
     }
 
@@ -6084,7 +6106,7 @@ static struct variable *set_get_subscript_as_string_top(struct variable_usage *u
 	//sgs_top=u;
 	memcpy(&t,u,sizeof(t));
 	t.next=0;
-	if (u->scope!=0 && u->variable_id!=-1) {
+	if (u->escope!=E_SCOPE_NOTSET && u->variable_id!=-1) {
 		sgs_topvar=local_find_variable_from_usage(&t);
 	}
 	return sgs_topvar;
@@ -6436,7 +6458,6 @@ expr_str *substring_end;
 	u=ptr->expr_str_u.expr_variable_usage;
 
        	substring=is_substring_variable_usage_in_expr(ptr,&substring_start, &substring_end);
-	//v_var=find_variable_vu_ptr(errbuff, u, &scope,0);
 
 
 	if (!substring) {
@@ -6771,20 +6792,20 @@ struct variable *v=0;
 A4GL_assertion(u->variable_id<0,"Variable has not been previously found..");
 
 
-switch (u->scope) {
-	case 'L':  // list_local_cnt
+switch (u->escope) {
+	case E_SCOPE_LOCAL:  // list_local_cnt
 		A4GL_assertion(u->variable_id>=current_entry_variables->variables.variables_len,"Invalid VARIABLE ID");
 		v=current_entry_variables->variables.variables_val[u->variable_id];
 		break;
-	case 'M':  // list_module
+	case E_SCOPE_MODULE:  // list_module
 		A4GL_assertion(u->variable_id>=current_module->module_variables.variables.variables_len,"Invalid VARIABLE ID");
 		v=current_module->module_variables.variables.variables_val[u->variable_id];
 		break;
-	case 'G':  // list_globals
+	case E_SCOPE_EXPORTED_GLOBAL:  // list_globals
 		A4GL_assertion(u->variable_id>=current_module->exported_global_variables.variables.variables_len,"Invalid VARIABLE ID");
 		v=current_module->exported_global_variables.variables.variables_val[u->variable_id];
 		break;
-	case 'g':  // list_imported_global
+	case E_SCOPE_IMPORTED_GLOBAL:  // list_imported_global
 		A4GL_assertion(u->variable_id>=current_module->imported_global_variables.variables.variables_len,"Invalid VARIABLE ID");
 		v=current_module->imported_global_variables.variables.variables_val[u->variable_id];
 		break;

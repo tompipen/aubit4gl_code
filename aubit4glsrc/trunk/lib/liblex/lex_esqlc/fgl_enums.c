@@ -300,7 +300,6 @@ char *decode_e_variable_type(enum e_variable_type value) {
  case VARIABLE_TYPE_CONSTANT: return "VARIABLE_TYPE_CONSTANT";
  case VARIABLE_TYPE_FUNCTION_DECLARE: return "VARIABLE_TYPE_FUNCTION_DECLARE";
  case VARIABLE_TYPE_OBJECT: return "VARIABLE_TYPE_OBJECT";
- case VARIABLE_TYPE_LINKED: return "VARIABLE_TYPE_LINKED";
  default: return "Unhandled";
  } /* end of switch */
 }

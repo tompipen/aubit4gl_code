@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.14 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.15 2009-01-23 18:24:15 mikeaubury Exp $
 #*/
 
 /**
@@ -333,7 +333,7 @@ A4GLPacker_input_enum (char *name, char *en,  int *d)
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *version)
 {
   //char buff[256];
   char *ptr = 0;
@@ -389,3 +389,33 @@ A4GLPacker_A4GL_can_pack_all (char *name)
 {
   return 0;
 }
+
+char *A4GLPacker_A4GL_get_packer_ext(void) {
+        return ".c"; 
+}
+
+
+
+
+void A4GLPacker_A4GL_output_common_header(char* module,char* version) {
+	// mempacker can only read pregenerated output - this should never happen
+	A4GL_assertion(1,"MEMPACKER is readonly..");
+}
+
+int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
+        char buff[200];
+        char buff_r[200];
+
+	// THIS MUST MATCH THE DEFINITION IN 
+	// lib/libpacker/packed/pack_packed.c
+        sprintf(buff,"A4GL FILE : %s %s\n",module,version);
+	// otherwise - we'll be checking against the wrong header!!
+
+
+        A4GL_memfile_fread (buff_r, 1, strlen(buff), (void *) infile);
+        if (memcmp(buff,buff_r,sizeof(strlen(buff)))==0) {
+                return 1;
+        }
+        return 0;
+}
+

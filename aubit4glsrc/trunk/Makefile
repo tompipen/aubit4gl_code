@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.61 2009-01-18 16:33:18 mikeaubury Exp $
+# $Id: Makefile,v 1.62 2009-01-23 18:24:14 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -248,6 +248,12 @@ bootstrap.core.progs:
 	$(MAKE) -C tools/4glpc
 
 bootstrap.core.ui: $(CORE_ALL)
+
+core.test: 
+	echo $(CORE_ALL) 
+	echo "$(HAVE_CURSES)" 
+	echo "$(A4GL_UI)" 
+ 
 
 
 core.ui.console.and.curses: core.ui.console core.ui.curses

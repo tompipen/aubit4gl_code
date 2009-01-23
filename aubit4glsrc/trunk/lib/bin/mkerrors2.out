@@ -359,3 +359,5 @@
 362|Unable to open temporay file
 364|Unable to open sqexplain.out file
 366|Unable to open blobfile
+368|Invalid file
+370|Invalid file (%s)

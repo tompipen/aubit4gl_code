@@ -167,15 +167,19 @@ long isrecvariable (char *s);
 int split_record (char *s, struct variable **v_record, struct variable **v1, struct variable **v2, char bindtype);
 struct variable *get_next_variable (struct variable *record,
 				    struct variable *v1, struct variable *v2);
-void set_current_variable_scope (char n);
+void set_current_variable_scope ( enum e_scope n);
 struct record_list *split_record_list (char *s, char *prefix, struct record_list *list,char bindtype);
 //void print_nullify (char type);
 
 typedef struct variable s_variable;
 struct binding_comp_list *copy_togenbind(int i) ;
 int inc_var_usage_from_binding_list(struct expr_str_list *l);
-struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, char *scope, int err_if_whole_array) ;
+struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, enum e_scope *scope, int err_if_whole_array) ;
 struct variable_usage *check_var_usage (struct variable_usage *v);
 struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array,int lvl);
-
+void set_local_variables(struct variable_list *vlist);
+struct variable * find_variable_vu_in_list(char *errbuff, struct variable_usage *v, struct variable_list *vlist, int err_if_while_array,int level);
+void set_uses_constants(struct variable_list *v);
+void make_constant_available(struct variable *v) ;
+enum e_scope A4GL_get_current_variable_scope (void);
 #endif

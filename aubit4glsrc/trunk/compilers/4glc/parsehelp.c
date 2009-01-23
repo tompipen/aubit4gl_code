@@ -34,6 +34,7 @@ extern char *whenever_store_p;
 //extern int nullbindcnt;
 //extern struct binding_comp *nullbind;
 
+#ifdef NOPE
 extern struct variable **list_local;
 extern int list_local_cnt;
 extern int list_local_alloc;
@@ -47,7 +48,6 @@ extern int list_global_alloc ;      /* Space allocated for our list*/
 extern struct variable **list_imported_global ;     /* Our List*/
 extern int list_imported_global_cnt ;       /* Number used in our list*/
 extern int list_imported_global_alloc ;     /* Space allocated for our list*/
-extern char                clobber[64];
 
 
 extern struct variable **list_class ;
@@ -58,6 +58,11 @@ extern int list_class_alloc ;
 extern struct variable **list_module;
 extern int list_module_cnt ;
 extern int list_module_alloc ;
+#endif
+extern char                clobber[64];
+
+extern struct variable_list *local_variables;
+
 extern char *allbuff;
 extern int allbuffsize ;
 
@@ -184,7 +189,7 @@ return strlen(srch)+1;
 
 
 
-
+#ifdef OLD
 
 
 /**
@@ -366,7 +371,6 @@ pushLikeAllTableColumns (char *tableName)
 
 
 
-
 /**
  * The parser found a variable declared like table.column
  * It needs to go to the database to find the data type in order to do the
@@ -429,6 +433,7 @@ push_like (char *t)
   A4GL_debug ("<<<<<<\n");
 }
 
+#endif
 
 
 
@@ -600,6 +605,7 @@ continue_loop (char *cmd_type)
 
 
 
+#ifdef OLD
 /**
  * The parse found a new record like table.*
  *
@@ -611,6 +617,7 @@ push_rectab (char *t)
   push_like (t);
 }
 
+#endif
 
 
 /*
@@ -687,6 +694,8 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n
   return x;
 }
 
+
+#ifdef OLD
 
 int print_agg_defines(char t,int a) {
 char buff[127];
@@ -766,7 +775,7 @@ return 0;
 }
 
 
-
+#endif
 
 
 struct command *set_whenever_from_store_cmd(void) {
@@ -889,47 +898,51 @@ return ptr;
 }
 
 
-
-
 void set_variables (variable_list *v,char why) {
 	if (why=='L') {
-	
-		        v->variables.variables_len=list_local_cnt;
-                        v->variables.variables_val=malloc(list_local_cnt*sizeof(struct variable *));
-
-			sort_variables(list_local, list_local_cnt);
-			
-                        memcpy(v->variables.variables_val,list_local, list_local_cnt*sizeof(struct variable *));
-			sort_variables(v->variables.variables_val, v->variables.variables_len);
+			if (local_variables==NULL) {
+				v->variables.variables_val=NULL;
+				v->variables.variables_len=0;
+			} else {
+		        	v->variables.variables_len=local_variables->variables.variables_len;
+                        	v->variables.variables_val=malloc(local_variables->variables.variables_len*sizeof(struct variable *));
+				sort_variables(local_variables->variables.variables_val, local_variables->variables.variables_len);
+                        	memcpy(v->variables.variables_val,local_variables->variables.variables_val, local_variables->variables.variables_len*sizeof(struct variable *));
+				sort_variables(v->variables.variables_val, v->variables.variables_len);
+			}
 			return ;
  	}
 
 	if (why=='g') {
-		        v->variables.variables_len=list_global_cnt;
-                        v->variables.variables_val=malloc(list_global_cnt*sizeof(struct variable *));
-			sort_variables(list_global, list_global_cnt);
+		        v->variables.variables_len=this_module.exported_global_variables.variables.variables_len;
 
-                        memcpy(v->variables.variables_val,list_global, list_global_cnt*sizeof(struct variable *));
-			sort_variables(v->variables.variables_val, v->variables.variables_len);
+			if ( v->variables.variables_len) {
+                        	v->variables.variables_val=malloc(this_module.exported_global_variables.variables.variables_len*sizeof(struct variable *));
+				sort_variables(this_module.exported_global_variables.variables.variables_val, this_module.exported_global_variables.variables.variables_len);
+                        	memcpy(v->variables.variables_val,this_module.exported_global_variables.variables.variables_val, this_module.exported_global_variables.variables.variables_len*sizeof(struct variable *));
+				sort_variables(v->variables.variables_val, v->variables.variables_len);
+			} else {
+			 	v->variables.variables_val=NULL;
+			}
 		return ;
  	}
 
 
 	if (why=='G') {
-			sort_variables(list_imported_global, list_imported_global_cnt);
-		       v->variables.variables_len=list_imported_global_cnt;
-                       v->variables.variables_val=malloc(list_imported_global_cnt*sizeof(struct variable *));
-                       memcpy(v->variables.variables_val,list_imported_global, list_imported_global_cnt*sizeof(struct variable *));
+			sort_variables(this_module.imported_global_variables.variables.variables_val, this_module.imported_global_variables.variables.variables_len);
+		       v->variables.variables_len=this_module.imported_global_variables.variables.variables_len;
+                       v->variables.variables_val=malloc(this_module.imported_global_variables.variables.variables_len*sizeof(struct variable *));
+                       memcpy(v->variables.variables_val,this_module.imported_global_variables.variables.variables_val, this_module.imported_global_variables.variables.variables_len*sizeof(struct variable *));
 			sort_variables(v->variables.variables_val, v->variables.variables_len);
 		return ;
  	}
 
 	if (why=='m') {
 	//printf("Set variables %d %p\n",list_module_cnt, list_module);
-			sort_variables(list_module, list_module_cnt);
-		       v->variables.variables_len=list_module_cnt;
-                       v->variables.variables_val=malloc(list_module_cnt*sizeof(struct variable *));
-                       memcpy(v->variables.variables_val,list_module, list_module_cnt*sizeof(struct variable *));
+			sort_variables(this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len);
+		       v->variables.variables_len=this_module.module_variables.variables.variables_len;
+                       v->variables.variables_val=malloc(this_module.module_variables.variables.variables_len*sizeof(struct variable *));
+                       memcpy(v->variables.variables_val,this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len*sizeof(struct variable *));
 			sort_variables(v->variables.variables_val, v->variables.variables_len);
 		return ;
  	}
@@ -948,11 +961,11 @@ int A4GL_open_class_dll(char *s) {
 	f=A4GL_open_file_classpath(buff);
 
 	if (f) { // We've found our dll...
-		        fclose(f);
-			        //
-			        read_class(s,0);
+	        fclose(f);
+	        //
+	        read_class(s,0);
 	} else {
-		        return 0;
+	        return 0;
 	}
 
 
@@ -982,24 +995,29 @@ char * rettype_integer (int n)
 
 
 
-void FGLPARSE_A4GL_lexer_import_package(char *s) {
-	FILE *f;
-	f=A4GL_open_file_classpath(s);
-	if (f==0 ) {
-		        int ok=0;
-			        if (strcmp(s,"default") == 0 ) {
-					                // We don't care if this one isn't there...
-					                return;
-							        }
-
-				        ok=A4GL_open_class_dll(s) ;
-
-					        if (!ok) {
-							                a4gl_yyerror("Unable to open package description");
-									        }
-						        return;
+void
+FGLPARSE_A4GL_lexer_import_package (char *s)
+{
+  FILE *f;
+  f = A4GL_open_file_classpath (s);
+  if (f == 0)
+    {
+      int ok = 0;
+      if (strcmp (s, "default") == 0)
+	{
+	  // We don't care if this one isn't there...
+	  return;
 	}
-	read_package_contents(f);
+
+      ok = A4GL_open_class_dll (s);
+
+      if (!ok)
+	{
+	  a4gl_yyerror ("Unable to open package description");
+	}
+      return;
+    }
+  read_package_contents (f);
 
 }
 
@@ -1007,6 +1025,9 @@ void FGLPARSE_A4GL_lexer_import_package(char *s) {
 char *rettype (char *s) {
   static char rs[20] = "long";
   int a;
+
+  strcpy(rs,"unknown");
+
   A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
 
   a = atoi (s);
@@ -1259,8 +1280,8 @@ struct command *print_linked_cmd (int type, expr_str *var)
 
 
 void debug_func(struct module_entry *e) {
-	A4GL_pause_execution();
-
+	A4GL_pause_execution(); // SAFE TO LEAVE IN 
+ 
 }
 
 
@@ -1436,7 +1457,7 @@ struct s_select_list_item_list *make_select_list_item_list_from_variable_record(
 	char buff[256];
 	char errbuff[256];
 	struct s_select_list_item_list *l;
-	char scope;
+	enum e_scope scope;
 	char *ptr;
 	struct variable *v;
 	int a;
@@ -1558,7 +1579,7 @@ struct s_select_list_item *rval=NULL;
 
 		if (is_record) { // Its a possible record..
 				struct s_select_list_item_list *slist;
-				char scope;
+				enum e_scope scope;
 				//int doit;
 				struct variable *v;
 				expr_str_list  *elist;
@@ -1617,7 +1638,7 @@ int get_variable_dtype_from_variable_usage_expression(char *errbuff, expr_str *p
 int type=0;
 struct variable_usage *p;
 struct variable *v;
-char scope;
+enum e_scope scope;
 
 strcpy(errbuff,"");
 if (ptr==0)  {
@@ -1635,7 +1656,7 @@ if (ptr->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 }
 
 p=ptr->expr_str_u.expr_variable_usage;
-scope='-';
+scope=E_SCOPE_NOTSET;
 v=find_variable_vu_ptr(errbuff, p,&scope,1);
 
 if (v==0) {
@@ -1669,7 +1690,7 @@ struct  variable_usage *vu;
 char errbuff[256];
 struct variable *v;
 struct variable_usage *vu2;
-char scope;
+enum e_scope scope;
 // Need to check its really an array
 
 if (e->expr_type!=ET_EXPR_VARIABLE_USAGE) {
@@ -1793,7 +1814,7 @@ return 1;
 static int set_var_dtype(char *errbuff, struct expr_str *ptr, int err_if_whole_array) {
 struct variable_usage *p;
 struct variable *v;
-char scope;
+enum e_scope scope;
 strcpy(errbuff,"");
 if (ptr==0)  {
 	strcpy(errbuff, "No expression");
@@ -1821,7 +1842,7 @@ if (ptr->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 }
 
 p=ptr->expr_str_u.expr_variable_usage;
-scope='-';
+scope=E_SCOPE_NOTSET;
 v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 if (v==0) {
 	if (strlen(errbuff)==0) { 
@@ -1860,7 +1881,7 @@ struct expr_str_list *get_variable_usage_for_record(struct variable_usage *vu,in
 struct variable *v;
 expr_str_list *n;
 char errbuff[256];
-char scope;
+enum e_scope scope;
 //struct variable_usage *vu1;
 struct variable_usage *vu_top;
 struct variable_usage *vu_next;
@@ -1893,7 +1914,7 @@ int a;
 			vu_next->next->substrings_end=0;
 			vu_next->next->next=0;
 			vu_next->next->datatype=-1;
-			vu_next->next->scope=0;
+			vu_next->next->escope=E_SCOPE_NOTSET;
 			vu_next->next->variable_id=-1;
 
 			if (v->var_data.variable_data_u.v_record.variables.variables_val[a]->arr_subscripts.arr_subscripts_len) {
@@ -2009,7 +2030,7 @@ struct variable *v_top;
 int nsubscripts_expected,nsubscripts_got;
 char errbuff[256];
 int c1,c2,c3;
-char scope;
+enum e_scope scope;
 
 //printf("Here length=%d\n",l->list.list_len);
 //printf("-->%s\n",expr_as_string_when_possible(e));
@@ -2181,7 +2202,7 @@ return n;
 expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameters,int err_if_not_var,int err_if_whole_array) {
 expr_str_list *n;
 char errbuff[256];
-char scope;
+enum e_scope scope;
 int param_to_add;
 if (parameters==NULL) return parameters;
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.75 2008-11-05 08:07:07 mikeaubury Exp $
+# $Id: 4glc.c,v 1.76 2009-01-23 18:24:14 mikeaubury Exp $
 #
 */
 
@@ -46,7 +46,6 @@
 =====================================================================
 */
 
-//extern int a4gl_yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
 extern FILE *ferr;
 extern int yyleng;
 extern int chk4var;

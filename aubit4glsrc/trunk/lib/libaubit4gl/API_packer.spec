@@ -37,9 +37,12 @@ input_end_union char* s,char* en,int e char* n -> int
 input_enum char* rn char* name,int* d -> int
 input_start_array char* s,int type,int* len -> int
 input_end_array char* s,int type -> int
-A4GL_open_packer char* basename,char dir char* struct_to_pack -> int
+A4GL_open_packer char* basename,char dir char* struct_to_pack char* version -> int
 A4GL_close_packer char dir -> void
 A4GL_can_pack_all char* name -> int
 A4GL_pack_all char* name,void* ptr,char* fname -> int
 A4GL_unpack_all char* name,void* ptr,char* fname -> int
 A4GL_pack_remove_file char* fname -> int
+A4GL_get_packer_ext -> char* 
+A4GL_output_common_header  char* module char* version -> void
+A4GL_valid_common_header   char* module char* version -> int

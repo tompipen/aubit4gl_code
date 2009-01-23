@@ -190,7 +190,7 @@ void print_free_convertible(char *repname);
 void print_import(char *func, int nargs, int yylineno);
 char *pdtype(int n);
 void print_Constant_1(char *name, struct constant_data *c);
-void print_variable_new(struct variable *v, char scope, int level);
+void print_variable_new(struct variable *v, enum e_scope scope, int level);
 //char *rettype(char *s);
 char *get_keyval_str(char *s);
 int print_agg_defines(char t, int a);

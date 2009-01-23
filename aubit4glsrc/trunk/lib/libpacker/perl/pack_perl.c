@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.18 2008-07-06 11:34:40 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.19 2009-01-23 18:24:15 mikeaubury Exp $
 #*/
 
 /**
@@ -133,7 +133,7 @@ int A4GLPacker_A4GL_pack_remove_file(char *fname) {
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname)
+A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *version)
 {
   char buff[256];
   sprintf (buff, "%s.pl", basename);
@@ -663,6 +663,15 @@ int
 A4GLPacker_A4GL_can_pack_all (char *name)
 {
   return 0;
+}
+
+
+void A4GLPacker_A4GL_output_common_header(char* module,char* version) {
+
+}
+
+int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
+        return 1;
 }
 
 /* =================================== EOF ============================== */

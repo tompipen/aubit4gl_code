@@ -17,8 +17,8 @@ dfgdfg comment
 
 -- comment asdfasd
 
-#options help file "helpfile.hlp"
-#options help key F1
+options help file "helpfile.hlp"
+options help key F1
 
 let axxx=1
 

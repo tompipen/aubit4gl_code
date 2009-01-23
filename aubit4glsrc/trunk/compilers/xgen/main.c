@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.23 2008-07-06 11:34:27 mikeaubury Exp $
+# $Id: main.c,v 1.24 2009-01-23 18:24:15 mikeaubury Exp $
 #*/
 
 /**
@@ -326,32 +326,47 @@ yywrap (void)
  */
 
 
+#ifdef getenv
+#undef getenv
+#endif
 void write_generate_export(char *export_name) {
 
-
-
+char *version;
+  version=getenv("EXPECT_VERSION");
+  if (version==0) version="";
   fprintf (hf, "\n\nint write_%s(%s *s,char *filename);\n", export_name, export_name);
   fprintf (hf, "int read_%s(%s *s,char *filename);\n", export_name, export_name);
 
   fprintf (cfio, "\n\nint write_%s(%s *s,char *filename) {\nint a;\n", export_name, export_name);
   fprintf (cfio, "%s s_s;\n", export_name);
   fprintf (cfio, "memcpy(&s_s,s,sizeof(s_s));\n");
-  fprintf (cfio, "if (!A4GL_open_packer(filename,'O', \"%s\")) return 0;\n", export_name);
-  fprintf (cfio, "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_pack_all(\"%s\",s,filename);\n else\n   a=output_%s(\"%s\",s_s,0,-1);\n", export_name, export_name, export_name, export_name);
+  fprintf (cfio, "if (!A4GL_open_packer(filename,'O', \"%s\",\"%s\")) return 0;\n", export_name,version);
+  fprintf (cfio, "if (A4GL_can_pack_all(\"%s\")) {\n",export_name);
+  fprintf (cfio, "    a=A4GL_pack_all(\"%s\",s,filename);\n ",export_name);
+  fprintf (cfio, "} else {\n");
+  fprintf (cfio,"     A4GL_output_common_header(\"%s\",\"%s\");", export_name,version);
+  fprintf (cfio, "    a=output_%s(\"%s\",s_s,0,-1);\n", export_name, export_name);
+  fprintf (cfio, "}\n");
   fprintf (cfio, "A4GL_close_packer('O');\n");
   fprintf (cfio, "return a;\n");
   fprintf (cfio, "}\n");
   fprintf (cfio, " \n");
 
   fprintf (cfio, "\n\nint read_%s(%s *s,char *filename) {\nint a;\n", export_name, export_name);
-  fprintf (cfio, "if (!A4GL_open_packer(filename,'I', \"%s\")) return 0;\n", export_name);
-  fprintf (cfio, "if (A4GL_can_pack_all(\"%s\"))\n   a=A4GL_unpack_all(\"%s\",s,filename);\n else\n   a=input_%s(\"%s\",s,0,-1);\n", export_name, export_name, export_name, export_name);
+  fprintf (cfio, "if (!A4GL_open_packer(filename,'I', \"%s\",\"%s\")) return 0;\n", export_name,version);
+  fprintf (cfio, "if (A4GL_can_pack_all(\"%s\")) {\n",export_name);
+  fprintf (cfio, "    a=A4GL_unpack_all(\"%s\",s,filename);\n",export_name);
+  fprintf (cfio, "} else { \n");
+  fprintf (cfio, "    if (!A4GL_valid_common_header(\"%s\",\"%s\")) {",export_name,version);
+  fprintf (cfio,"        a=0;\n");
+  fprintf (cfio, "     } else { \n");
+  fprintf (cfio, "       a=input_%s(\"%s\",s,0,-1);\n", export_name, export_name);
+  fprintf (cfio, "     }\n");
+  fprintf (cfio, "}\n");
   fprintf (cfio, "A4GL_close_packer('I');\n");
   fprintf (cfio, "return a;\n");
   fprintf (cfio, "}\n");
   fprintf (cfio, " \n");
-
-
 
 }
 

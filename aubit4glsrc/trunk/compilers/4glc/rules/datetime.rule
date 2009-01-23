@@ -12,6 +12,6 @@ op_datetime_qual_i:  {
 
 }
 | KW_COMMA dtime_start KW_TO dtime_end { 
-	$<integer_val>$=(atoi($<str>2)*16) +atoi($<str>4);
+	$<integer_val>$=($2*16) +$4;
 }
 ;

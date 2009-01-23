@@ -922,7 +922,7 @@ ORDER KW_BY obind_var_list_ord
 rep_or_localrep:  REPORT {$<e_boolean>$=EB_FALSE;} | LOCAL_REPORT {$<e_boolean>$=EB_TRUE;}
 ;
 
-report_def : rep_or_localrep
+report_def : op_doc4gl_comment   rep_or_localrep
 	{ 
 		add_feature("USE_REPORT");
 		A4GL_clr_extra_warnings();
@@ -938,38 +938,44 @@ report_def : rep_or_localrep
 	OPEN_BRACKET
 	{
 		inc_report_cnt();
-		SPRINTF1(curr_func,"%s",$<str>3);
+		SPRINTF1(curr_func,"%s",$<str>4);
 		ADDMAP_MODULE("Define Report",curr_func);
 		map_report_start(curr_func);
-		variable_action(-1,$<str>3,"","","add_function");
-		set_curr_rep_name($<str>3);
+		//variable_action(-1,$<str>4,"","","add_function");
+		set_curr_rep_name($<str>4);
 		push_blockcommand("REPORT");
 		}
 	op_param_var_list CLOSE_BRACKET define_section  {
-			struct variable_list v;
-                        set_variables(&v,'L');
+			//struct variable_list v;
+			//set_local_variables($10);
+                        //set_variables($10,'L');
 	} op_output_section op_rep_order_by  {
-		char errbuff[256];
-			struct variable_list v;
-			add_report_definition($<str>3,$<ptr_list>7);
-                        set_variables(&v,'L');
-			if (!check_parameters(errbuff,&v, $<ptr_list>7)) {
+			char errbuff[256];
+			expr_str_list *expanded_parameters;
+			add_report_definition($<str>4,$<ptr_list>8);
+			if (!check_parameters(errbuff,$10, $<ptr_list>8)) {
 				a4gl_yyerror(errbuff);
 				YYERROR;
 			}
-			 inc_var_assigned_from_binding_list(expand_parameters(&v,$<ptr_list>7));
-			set_report_orderby(&v, $<ptr_list>7, $<report_orderby_section>12);
+			expanded_parameters=expand_parameters($10,$<ptr_list>8);
+			inc_var_assigned_from_binding_list(expanded_parameters);
+			set_report_orderby($10, $<ptr_list>8, $<report_orderby_section>13);
 		}
 	format_section END_REPORT 
 		{
 		pop_blockcommand("REPORT");
  			A4GL_chk_and_clr_labels();
 			map_report_end();
-                	$<module_entry>$=new_report_definition($<str>3, $<e_boolean>1,$<ptr_list>7, $<startrep>11, $<report_orderby_section>12, $<report_format_section>14 ,$<integer_val>4,$<sql_string>1) ;
-			set_variables(&$<module_entry>$->module_entry_u.report_definition.variables,'L');
+                	$<module_entry>$=new_report_definition($<str>4, $<e_boolean>2,$<ptr_list>8, $<startrep>12, $<report_orderby_section>13, $<report_format_section>15 ,$<integer_val>5,$<sql_string>1) ;
+			//set_variables(&$<module_entry>$->module_entry_u.report_definition.variables,'L');
+
+                        merge_variable_list(&$<module_entry>$->module_entry_u.report_definition.variables, $10);
+                        sort_variables($<module_entry>$->module_entry_u.report_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.report_definition.variables.variables.variables_len);
+
 			clr_function_constants();
 			 A4GL_chk_and_clr_labels();
 			rep_type=REP_TYPE_NOTSET; 
+			//variable_add_function($<module_entry>$);
 		}
 ;
 
@@ -1117,38 +1123,35 @@ pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 	identifier atline OPEN_BRACKET
 		{
 		inc_report_cnt();
-		variable_action(-1,$<str>4,"","","add_function");
 		SPRINTF1(curr_func,"%s",$<str>4);
 		ADDMAP_MODULE("Define PDF Report",curr_func);
 		set_curr_rep_name($<str>4);
 		push_blockcommand("REPORT");
 		}
 	op_param_var_list CLOSE_BRACKET define_section  {
-			struct variable_list v;
-                	set_variables(&v,'L');
+			//set_local_variables($10);
 		} pdf_op_output_section op_rep_order_by  
 		{
 			char errbuff[256];
-			struct variable_list v;
-                	set_variables(&v,'L');
-			if (!check_parameters(errbuff,&v, $<ptr_list>8)) {
+			if (!check_parameters(errbuff,$10, $<ptr_list>8)) {
 				a4gl_yyerror(errbuff);
 				YYERROR;
 			}
-			set_report_orderby(&v, $<ptr_list>8, $<report_orderby_section>13);
+			set_report_orderby($10, $<ptr_list>8, $<report_orderby_section>13);
 			resize_paper(&pdf_rep_struct);
-			//start_bind('o',0);
-			//start_bind('i',0);
 		}
 	format_section END_REPORT { 
 		pop_blockcommand("REPORT"); 
-                $<module_entry>$=new_pdf_report_definition($<str>4, $<e_boolean>2,$<ptr_list>8, $<pdf_startrep>12, $<report_orderby_section>13, $<report_format_section>15,$<integer_val>5 ,$<sql_string>1) ;
-			set_variables(&$<module_entry>$->module_entry_u.pdf_report_definition.variables,'L');
+                	$<module_entry>$=new_pdf_report_definition($<str>4, $<e_boolean>2,$<ptr_list>8, $<pdf_startrep>12, $<report_orderby_section>13, $<report_format_section>15,$<integer_val>5 ,$<sql_string>1) ;
+			//set_variables(&$<module_entry>$->module_entry_u.pdf_report_definition.variables,'L');
+
+                         merge_variable_list(&$<module_entry>$->module_entry_u.pdf_report_definition.variables, $10);
+                         sort_variables($<module_entry>$->module_entry_u.pdf_report_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.pdf_report_definition.variables.variables.variables_len);
 
 			clr_function_constants();
 			 A4GL_chk_and_clr_labels();
 			rep_type=REP_TYPE_NOTSET; 
-
+			//variable_add_function($<module_entry>$);
 		
 	}
 ;

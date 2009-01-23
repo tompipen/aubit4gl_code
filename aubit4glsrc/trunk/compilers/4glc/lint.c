@@ -1994,7 +1994,7 @@ local_is_valid_vname (struct variable *v, char scope)
     case VARIABLE_TYPE_CONSTANT:
     case VARIABLE_TYPE_FUNCTION_DECLARE:
     case VARIABLE_TYPE_OBJECT:
-    case VARIABLE_TYPE_LINKED:
+    //case VARIABLE_TYPE_LINKED:
       return 1;
 
 
@@ -2162,7 +2162,6 @@ check_module (struct module_definition *d)
   int b;
 
   all_cmds = linearise_commands (0, 0);
-
   printf ("Check Module %s\n", d->module_name); fflush(stdout);
   for (a = 0; a < d->imported_global_variables.variables.variables_len; a++)
     {
@@ -2219,7 +2218,14 @@ check_module (struct module_definition *d)
 
 
   check_functions_in_module_for_complexity (d);
-
+  if (d->source_code.lines.lines_len>10000) {
+			// from tools/sqlfmt/i4glxref.1j
+			// JL suggests : 
+			// If there are more than 10,000 lines in a file, the output becomes imperfectly columnar and the author of the I4GL code containing 10,000 lines in a single file should be shot!
+			//
+	      		A4GL_lint (d->module_name, 10000, "AUTHSHOOT", "Module is too long",NULL);
+	
+	}
 
   linearise_module (all_cmds, d);
 
@@ -3315,8 +3321,8 @@ check_program (module_definition * mods, int nmodules)
   this_module.module_name = "COMPOSITE";
   this_module.module_entries.module_entries_len = 0;
   this_module.module_entries.module_entries_val = 0;
-  this_module.source_code.source_code_len=0;
-  this_module.source_code.source_code_val=0;
+  this_module.source_code.lines.lines_len =0;
+  this_module.source_code.lines.lines_val=0;
   yylineno = 0;
 
   for (a = 0; a < nmodules; a++)

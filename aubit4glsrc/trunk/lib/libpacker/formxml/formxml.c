@@ -1860,3 +1860,13 @@ int get_label(int n, char **label, int *x,int *y) {
   *y=screen_convert_fields[n].y ;
 	return 1;
 }
+
+
+void A4GLPacker_A4GL_output_common_header(char* module,char* version) {
+
+}
+
+int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
+        return 1;
+}
+

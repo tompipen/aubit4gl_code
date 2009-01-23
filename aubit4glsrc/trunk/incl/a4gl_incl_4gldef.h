@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.123 2009-01-18 16:33:18 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.124 2009-01-23 18:24:15 mikeaubury Exp $
 */
 
 /**
@@ -108,6 +108,13 @@ extern "C"
 
 #define fglvarchar char
 
+
+  typedef struct {
+	char objectName[32];
+	void *objectData;
+  } fglobject;
+
+
 	/**
 	 * Decimal 4gl data type variable definition
 	 */
@@ -116,6 +123,9 @@ extern "C"
     unsigned char dec_data[128];	       /**< The value stored in decimal variable */
   }
   fgldecimal;
+
+
+
 
 	/** This type name is just to have some pattern in type names */
   typedef fgldecimal FglDecimal;

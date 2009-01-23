@@ -1202,7 +1202,6 @@ case ET_EXPR_VARIABLE_USAGE :
           return DTYPE_MONEY;
         }
 		sprintf(buff, "%s!=%s",dtype_as_string(l), dtype_as_string(r));
-		//A4GL_pause_execution();
 		A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (*)", buff);
       	fprintf (stderr, "UNHANDLED MULT %d(%s) %d(%s) (%x %x)\n",
                p->expr_str_u.expr_op->left->expr_type,
@@ -1382,7 +1381,7 @@ case ET_EXPR_BRACKET:
       fprintf (stderr, "UNKNOWN Expression Datatype %s (%d)\n",
                expr_name (p->expr_type),
                yylineno);
-	A4GL_pause_execution();
+	A4GL_pause_execution(); // SAFE TO COMMIT
       return -1;
     }
 

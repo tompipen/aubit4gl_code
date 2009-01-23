@@ -24,8 +24,9 @@ class_entries :
 ;
 
 
-class_entry: func_def {add_class_entry($<module_entry>1);}
-| module_code {add_class_entry($<module_entry>1);}
-| whenever_cmd {add_class_entry($<module_entry>1);}
+class_entry: 
+	func_def {add_class_entry($<module_entry>1);}
+	| module_code {add_class_entry($<module_entry>1);}
+	| whenever_cmd {add_class_entry($<module_entry>1);}
 ;
 

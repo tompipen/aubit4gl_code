@@ -1,4 +1,4 @@
-typedef string funcname<>;
+/* $Id: fgl.x,v 1.28 2009-01-23 18:24:14 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -40,6 +40,18 @@ struct s_exchange_clobber
 };
 
 
+enum e_scope {
+	E_SCOPE_NOTSET,
+	E_SCOPE_LOCAL,
+	E_SCOPE_REPORT_LOCAL,
+	E_SCOPE_MODULE,
+	E_SCOPE_IMPORTED_GLOBAL,
+	E_SCOPE_EXPORTED_GLOBAL,
+	E_SCOPE_SYSTEM,
+	E_SCOPE_TYPE,
+	E_SCOPE_CLASS,
+	E_SCOPE_CLASS_PARENT
+};
 
 union dt_display switch ( enum dt_display_type dttype) {
 		case DT_DISPLAY_TYPE_LINE: void;
@@ -139,7 +151,6 @@ enum cmd_type {
 	E_CMD_SLEEP_CMD,
 	E_CMD_SELECT_CMD,
 	E_CMD_SQL_BLOCK_CMD,
-	/* E_CMD_SQL_BOUND_CMD, */
 	E_CMD_SQL_CMD,
 	E_CMD_SQL_TRANSACT_CMD,
 	E_CMD_START_CMD,
@@ -159,7 +170,6 @@ enum cmd_type {
 	E_CMD_DISABLE_FORM_CMD,
 	E_CMD_FETCH_CMD, 
 	E_CMD_PDF_CALL_CMD,
-	/* E_CMD_CALL_SHARED_CMD, */
 	E_CMD_SET_SESSION_CMD,
         E_CMD_UPDATE_CMD,
         E_CMD_INSERT_CMD,
@@ -176,27 +186,6 @@ struct str_list {
 	str str_list_entry<>;
 };
 
-/*
-enum e_variable_literal {
-		E_V_OR_LIT_NOVALUE,
-		E_V_OR_LIT_VAR,
-		E_V_OR_LIT_INT,
-		E_V_OR_LIT_STRING,
-		E_V_OR_LIT_VAR_AS_STRING,
-		E_V_OR_LIT_IDENT,
-		E_V_OR_LIT_NULL
-};
-
-union variable_or_literal switch (enum e_variable_literal vttype) {
-		case E_V_OR_LIT_NOVALUE:		void;
-		case E_V_OR_LIT_VAR: 			struct expr_str *var;
-		case E_V_OR_LIT_INT: 			int i;
-		case E_V_OR_LIT_STRING: 		str s;
-		case E_V_OR_LIT_VAR_AS_STRING: 		str sv;
-		case E_V_OR_LIT_IDENT: 			str si;
-	
-};
-*/
 
 enum e_boolean {
 	EB_FALSE,
@@ -251,7 +240,7 @@ struct attrib {
 
 
 struct funcname_list {
-	funcname name<>;
+	str name<>;
 	str namespaces<>;
 };
 
@@ -876,8 +865,6 @@ struct struct_put_cmd {
 
 
 struct s_cur_def {
-        /* struct expr_str_list *inbind; */
-        /* struct expr_str_list *outbind; */
         str forUpdate;
         struct struct_insert_cmd *insert_cmd;
         struct expr_str *ident;
@@ -988,13 +975,6 @@ struct struct_sql_cmd {
 	str sql;
 };
 
-/*
-struct struct_sql_bound_cmd {
-	struct expr_str * connid;
-	str sql;
-	struct expr_str_list* inbind;
-};
-*/
 
 struct struct_select_cmd {
 	struct expr_str * connid;
@@ -1278,14 +1258,6 @@ struct struct_free_rep_cmd {
 	str namespace;
 };
 
-/*
-struct struct_open_session_cmd {
-	struct expr_str * connid;
-	struct expr_str* db;
-	user_details* userdets;
-};
-*/
-
 
 
 struct struct_alloc_arr_cmd {
@@ -1458,7 +1430,6 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_UNLOAD_CMD: struct_unload_cmd unload_cmd;
 	case E_CMD_LOAD_CMD: struct_load_cmd load_cmd;
 	case E_CMD_SQL_CMD: struct_sql_cmd sql_cmd;
-	/* case E_CMD_SQL_BOUND_CMD: struct_sql_bound_cmd sql_bound_cmd; */
 	case E_CMD_SQL_TRANSACT_CMD: struct_sql_transact_cmd sql_transact_cmd;
 	case E_CMD_SELECT_CMD: struct_select_cmd select_cmd;
 	case E_CMD_FLUSH_CMD: struct_flush_cmd flush_cmd;
@@ -1476,7 +1447,6 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_DISABLE_CMD: struct_disable_cmd disable_cmd;
 	case E_CMD_DISABLE_FORM_CMD: struct_disable_form_cmd disable_form_cmd;
 	case E_CMD_PDF_CALL_CMD: struct_pdf_call_cmd pdf_call_cmd;
-	/*case E_CMD_CALL_SHARED_CMD: struct_call_shared_cmd call_shared_cmd; */
 	case E_CMD_SET_SESSION_CMD: struct_set_session_cmd set_session_cmd;
 
 	case E_CMD_LINT_IGNORE_CMD: struct_lint_ignore_cmd lint_ignore_cmd;
@@ -1537,7 +1507,7 @@ typedef struct variable* variable_ptr;
 
 struct assoc_array_variable
 {
-  variable_ptr variables<>;
+  variable_ptr variable;
   int size;
   int char_size;
 };
@@ -1556,10 +1526,14 @@ struct record_variable
   variable_ptr variables<>;  		/* List of pointers to the variables */
   int record_alloc;             		/* Number of slots allocated */
   struct linked_variable *linked;       	/* Link to any table + pk or 0 */
-  str object_type; 				/* Used for OBJECTS and RECORDs - for a record this will be 0 */
   str user_ptr;
 };
 
+
+struct object_variable {
+	str class_name;
+	variable_ptr definition;
+};
 
 
 
@@ -1576,18 +1550,18 @@ enum e_variable_type {
         VARIABLE_TYPE_CONSTANT  ,
         VARIABLE_TYPE_FUNCTION_DECLARE  ,
         VARIABLE_TYPE_OBJECT    ,
-        VARIABLE_TYPE_LINKED    
+	VARIABLE_TYPE_TYPE_DECLARATION
 };
 
 union variable_data switch ( enum e_variable_type variable_type) {
         case VARIABLE_TYPE_SIMPLE   		: struct simple_variable v_simple;
 	/* The following is a fake comment so xgen_new can process it - DO NOT REMOVE THAT COMMENT! */
-        case VARIABLE_TYPE_OBJECT 		: /*! struct record_variable v_record; !*/
         case VARIABLE_TYPE_RECORD    		: struct record_variable v_record;
         case VARIABLE_TYPE_ASSOC     		: struct assoc_array_variable v_assoc;
         case VARIABLE_TYPE_CONSTANT  		: constant_data v_const;
-        case VARIABLE_TYPE_LINKED 		: struct linked_variable v_linked;
         case VARIABLE_TYPE_FUNCTION_DECLARE  	: void;
+        case VARIABLE_TYPE_OBJECT 		: struct object_variable v_object;
+	case VARIABLE_TYPE_TYPE_DECLARATION	: struct variable *type_declaration;
 
 };
 
@@ -1596,7 +1570,7 @@ struct variable
   struct vname_name_list names;
   str defsrc;
   char user_system;
-  char scope;
+  enum e_scope escope;
   int is_static;
   int is_extern;
   int arr_subscripts<>;
@@ -1655,6 +1629,10 @@ struct s_dependant_tables {
 	str checksuminfo;
 };
 
+struct s_source_code {
+	str lines<>;
+};
+
 struct module_definition {
 	str mod_dbname;
 	str namespace;
@@ -1676,46 +1654,16 @@ struct module_definition {
 	variable_list imported_global_variables;
 	module_entry_ptr module_entries<>;
 	str full_path_filename;
-	str source_code<>;
+	struct s_source_code source_code;
 };
 
 
 
-	/*
-struct expr_str {
-  struct variable_usage *decoded_variable_usage;
-  		//str varname_as_string;
-  		//int dtype;
-  		//str start_char_subscript_s;
-  		//str end_char_subscript_s;
-  		//char scope;
-};
-
-
-
-struct expr_str_list {
-        struct expr_str bindings<>;
-        long abind;
-        int type;
-        str data;
-};
-
-
-*/
 
 struct expr_str_list {
           expr_str_ptr list<>;
 };
 
-
-/*
-struct s_expr_push_variable {
-        str variable_as_string; 
-  	struct variable_usage *variable_usage;
-        /long var_dtype;
-	//char scope;
-};
-*/
 
 struct s_expr_op {
         struct expr_str *left;
@@ -1811,21 +1759,9 @@ struct s_expr_external_call {
         int line;
 };
 
-/*
-struct s_expr_substring {
-         str str_as_string; 
-  	struct variable_usage *var;
-        long len;
-        struct expr_str *substring_start;
-        struct expr_str *substring_end;
-        int type;
-};
-*/
-
-
 struct s_expr_current {
-        short from;
-        short to;
+        int from;
+        int to;
 };
 
 
@@ -1851,17 +1787,11 @@ struct s_expr_interval {
 };
 
 struct s_expr_exists_sq {
-        /* str subquery; */
-        /* int nibind; */
-        /* struct expr_str_list *ibind; */
 	struct s_select *subquery;
 };
 
 struct s_expr_in_sq {
         struct expr_str *expr;
-        /* str subquery; */
-        /* int nibind; */
-        /* struct expr_str_list *ibind; */
 	struct s_select *subquery;
 };
 
@@ -1906,7 +1836,6 @@ struct s_func {
 enum e_expr_type {
                 ET_EXPR_EXPR_LIST,
                 ET_EXPR_STRING,
-                /* ET_EXPR_PUSH_VARIABLE, */
                 ET_EXPR_TODAY,
                 ET_EXPR_TIME,
                 ET_EXPR_LINENO,
@@ -1977,7 +1906,6 @@ enum e_expr_type {
                 ET_EXPR_GET_FLDBUF,
                 ET_EXPR_FORM_IS_COMPILED,
                 ET_EXPR_WORDWRAP,
-                /* ET_EXPR_SUBSTRING, */
                 ET_EXPR_NOT_EXISTS_SUBQUERY,
                 ET_EXPR_EXISTS_SUBQUERY,
                 ET_EXPR_OP_IN_SUBQUERY,
@@ -1995,7 +1923,6 @@ enum e_expr_type {
                 ET_EXPR_FIELD_TOUCHED,
                 ET_EXPR_NOT_FIELD_TOUCHED,
                 ET_EXPR_IVAL_VAL,
-                /* ET_EXPR_FCALL_SINGLE, */
                 ET_EXPR_TEMP,
                 ET_EXPR_BOUND_FCALL,
                 ET_EXPR_AGGREGATE,
@@ -2006,7 +1933,6 @@ enum e_expr_type {
                 ET_EXPR_FIELDTOWIDGET,
                 ET_EXPR_ID_TO_INT,
 		ET_EXPR_FIELDNAME, 
-                /*ET_EXPR_PROMPT_RESULT, */
                 ET_EXPR_MODULE_FUNC,
 		ET_EXPR_IDENTIFIER,
 		ET_EXPR_PARAMETER,
@@ -2057,8 +1983,6 @@ struct s_expr_parameter {
 
 
 union expr_str switch ( enum e_expr_type expr_type) {
-/* ET_EXPR_FCALL_SINGLE
-ET_EXPR_PROMPT_RESULT  */
 
 	case ET_EXPR_TODAY: /*! void; !*/
 	case ET_EXPR_TIME: /*! void; !*/
@@ -2188,10 +2112,6 @@ ET_EXPR_PROMPT_RESULT  */
                 struct s_expr_infield                     *expr_infield;
 	case ET_EXPR_WORDWRAP:
                 struct s_expr_wordwrap                    *expr_wordwrap;
-/*
-	case ET_EXPR_SUBSTRING:
-                struct s_expr_substring                   *expr_substring;
-*/
 
 	case ET_EXPR_OP_IN:
                 /*! struct s_expr_in                          *expr_in; !*/
@@ -2356,7 +2276,7 @@ struct variable_usage {
         int variable_id;
 	int datatype;
 	int datatype_length;
-        int scope;
+        enum e_scope escope;
         struct variable_usage *next;
 };
 
@@ -2366,30 +2286,6 @@ enum subtype {
         ST_EXPR,
         ST_VAR
 };
-
-
-
-/*
-struct vardets {
-        str name;
-        struct subscript *subscript<>;
-        struct vardets *sub_element;
-};
-
-
-
-union subscript switch (enum subtype subtype)  {
-        case ST_INT:    int intval;
-        case ST_VAR:    struct vardets *top_level_variable_name;
-        case ST_EXPR:   struct sub_expr *substr;
-};
-
-struct sub_expr {
-        subscript *sub_expr_left;
-        subscript *sub_expr_right;
-        str optype;
-};
-*/
 
 
 
@@ -2552,7 +2448,6 @@ struct s_select_finish {
 struct sq_subquery {
         char aud[20];
         struct s_select_list_item_list *list;
-        /* struct tab_expression *te; */
 };
 
 struct s_limit {

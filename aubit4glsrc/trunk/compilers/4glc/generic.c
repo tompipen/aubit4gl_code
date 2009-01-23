@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: generic.c,v 1.10 2008-07-06 11:34:24 mikeaubury Exp $
+# $Id: generic.c,v 1.11 2009-01-23 18:24:14 mikeaubury Exp $
 #*/
 
 /**
@@ -46,6 +46,7 @@
 
 #include "generic.h"
 
+#ifdef REQUIRED
 struct generic_entry_ident *
 new_ident (char *identifier)
 {
@@ -265,3 +266,4 @@ return "";
 char *field_name_list_as_or_char(struct field_list *fl) {
 return "";
 }
+#endif

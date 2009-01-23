@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.52 2008-11-18 17:37:56 mikeaubury Exp $
+# $Id: globals.c,v 1.53 2009-01-23 18:24:14 mikeaubury Exp $
 #
 */
 
@@ -62,12 +62,12 @@ char *get_default_database (void);
 
 /* These are all located in variables.c */
 
-extern struct variable **list_global;	/* Our List*/
-extern int list_global_cnt;	/* Number used in our list*/
-extern int list_global_alloc;	/* Space allocated for our list*/
-extern struct variable **list_imported_global;	/* Our List*/
-extern int list_imported_global_cnt;	/* Number used in our list*/
-extern int list_imported_global_alloc;	/* Space allocated for our list*/
+//extern struct variable **list_global;	/* Our List*/
+//extern int list_global_cnt;	/* Number used in our list*/
+//extern int list_global_alloc;	/* Space allocated for our list*/
+//extern struct variable **list_imported_global;	/* Our List*/
+//extern int list_imported_global_cnt;	/* Number used in our list*/
+//extern int list_imported_global_alloc;	/* Space allocated for our list*/
 
 /* This is from 4glc.c */
 
@@ -135,7 +135,7 @@ generate_globals_for (char *s)
 			
     		}  else {
 
-      			if (currinfile_dirname && strlen(currinfile_dirname))
+      			if (strlen(currinfile_dirname))
 				{
 	  			/*use path that was passed to 4glc with 4gl file name of main 4gl*/
 	  			/*source file we are compiling, if any*/
@@ -258,9 +258,9 @@ read_glob (char *s)
   int gvars;
   int start = 0;
   int a=0;
-int b;
+  int b;
   struct globals_definition g;
-int XMLBEST=0;
+  int XMLBEST=0;
 
   /* MJA - NEWVARIABLE*/
   strcpy (ii, s);
@@ -278,11 +278,13 @@ int XMLBEST=0;
   strcat (ii4gl, ".4gl");
 
   strcpy(iiglb,ii);
+
   if (strcmp(acl_getenv("A4GL_PACKER"),"XMLBEST")==0) {
 	A4GLPACKER_clrlibptr();
 	A4GL_setenv("A4GL_PACKER","PACKED",1);
 	XMLBEST=1;
   }
+
   if (strcmp(acl_getenv("A4GL_PACKER"),"PACKED")==0) {
   	strcat(iiglb,acl_getenv("A4GL_PACKED_EXT"));
   }
@@ -296,6 +298,8 @@ int XMLBEST=0;
   if (A4GL_file_exists(iiglb) && A4GL_file_is_newer(iiglb,ii4gl)) {
   	a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
   }
+
+
   aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
   if (!a) {
      		generate_globals_for (ii);
@@ -316,7 +320,7 @@ int XMLBEST=0;
  	FPRINTF (stderr, "Error: Couldnt open globals file %s, in . and %s\n", ii, currinfile_dirname );
 	  exit (7);
 	}
-A4GLSQL_set_status(0,0);
+  A4GLSQL_set_status(0,0);
   dbname=g.mod_dbname;
   schemaonly=g.schema_only;
 
@@ -326,30 +330,18 @@ A4GLSQL_set_status(0,0);
       	open_db (dbname);
     }
 
-  gvars=g.exported_global_variables.variables.variables_len;
-  start = list_imported_global_cnt;
-  list_imported_global_cnt += gvars;
 
-  if (list_imported_global_cnt > list_imported_global_alloc)
-    {
-      list_imported_global_alloc = list_imported_global_cnt;
-    }
-
-  list_imported_global =
-    acl_realloc (list_imported_global,
-	     sizeof (struct variable *) * list_imported_global_alloc);
-
-  b=0;
-  for (a = start; a < list_imported_global_cnt; a++)
-    {
-	list_imported_global[a]=g.exported_global_variables.variables.variables_val[b++];
-    }
+  // We need to change the scope on these imported globals - as they'll
+  // be marked as 'external globals' in the file that exports them ;-)
+  set_variable_scope_for_variable_list(&g.exported_global_variables,E_SCOPE_IMPORTED_GLOBAL);
+  merge_variable_list(&this_module.imported_global_variables, &g.exported_global_variables);
 
   if (XMLBEST) {
 	//printf("Reset\n");
 	A4GL_setenv("A4GL_PACKER","XMLBEST",1);
 	A4GLPACKER_clrlibptr();
   }
+
 }
 
 

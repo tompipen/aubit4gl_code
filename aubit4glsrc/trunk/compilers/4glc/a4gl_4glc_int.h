@@ -717,7 +717,7 @@ char *vorl_as_string(struct expr_str *v);
 //void A4GL_lint (char *module, int line, char *code, char *type, char *extra);
 void ensure_bool (struct expr_str *s, int notnull);
 void map_prepare(char *p_stmt, char *sql);
-char find_variable_scope (char *s_in);
+enum e_scope find_variable_scope (char *s_in);
 char *rettype (char *s);
 str_list *generate_update_column_list_for(char *tabname, struct s_select_list_item_list *value_list);
 struct expr_str_list * A4GL_get_validate_expr (int n);

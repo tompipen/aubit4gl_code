@@ -1,0 +1,8 @@
+ident *.x | awk '/Id:/ {
+	v=$2
+	# Extra the filename by removing the trailing ,v
+	gsub(".x,v","",v)
+	if (v!="$") {
+		print "VERSION_" v "=" $3
+	}
+}' > x_versions

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.325 2009-01-02 11:52:54 mikeaubury Exp $
+# $Id: mod.c,v 1.326 2009-01-23 18:24:14 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,7 @@
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
+#include "variables_new.h"
 #include <ctype.h>
 #include "field_handling.h"
 #include "parsehelp.h"
@@ -57,7 +58,7 @@
 //#include "fgl.xs.h"
 #include <errno.h>
 #define GEN_STACK_HERE
-
+extern struct module_definition this_module;
 struct s_func_def {
         char *fname;
         char type;
@@ -217,20 +218,6 @@ int rep_type = REP_TYPE_NOTSET;	      /** The report type */
 //int isin_command (char *cmd_type);
 
 
-#ifdef OLD
-/**
- * Array where all the WHENEVER conditions are stored.
- */
-int when_code[8] = { WHEN_STOP,
-  WHEN_NOTSET,
-  WHEN_STOP,
-  WHEN_CONTINUE,
-  WHEN_CONTINUE,
-  WHEN_CONTINUE,
-  WHEN_NOTSET,
-  WHEN_NOTSET
-};
-#endif
 
 int lines_printed = 0;
 
@@ -382,7 +369,7 @@ struct cmds command_stack[CMD_STACK_SIZE];
 
 
 
-int in_record = 0;
+//int in_record = 0;
 struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];	       /** The menu stack array */
 
 int has_default_database (void);
@@ -439,22 +426,7 @@ with_strip_bracket (const char *buff)
 }
 */
 
-/**
- * Adds a new variable found by the parser to the variable array
- * Note: Function with same name in ace renamed
- *
- * @param name The variable name
- * @param type The data type of the variable
- * @paran n
- */
-/*?static*/
-void
-a4gl_add_variable (char *name, char *type, char *n)
-{
-/* MJA - NEWVARIABLE*/
-  A4GL_debug ("a4gl_add_variable");
-  variable_action (-1, name, type, n, "a4gl_add_variable");
-}
+
 
 /**
  * Clear the variable stack by setting the counter to zero.
@@ -611,138 +583,6 @@ setinc (int a)
 
 
 /**
- * The parser found a new variable name and inserts it in the variable array.
- *
- * @todo Document what is the parameter n
- *
- * @param a The variable name
- * @param n
- */
-void
-push_name (char *a, char *n)
-{
-  A4GL_debug ("push_name  a = %s n = %d \n", A4GL_null_as_null (a), n);
-  a4gl_add_variable (a, 0, n);
-}
-
-
-/**
- * Add a new type into the variables array.
- *
- * Executed directly by the parser.
- *
- * The variables names are allready filled in the array.
- * All of them that have no typr yet associated are defined with this
- * data type.
- *
- * @param a The data type name hardcoded inside the program
- * @param n  The size of elements if the variable is char, decimal, associate
- * @param as If it is recognizing an array or associate is the number of 
- *           elements
- */
-void
-push_type (char *a, char *n, char *as)
-{
-  A4GL_debug ("push_type : %s %s %s", A4GL_null_as_null (a),
-	      A4GL_null_as_null (n), A4GL_null_as_null (as));
-
-  variable_action (-1, a, n, as, "push_type");
-
-  /* MJA - NEWVARIABLE */
-
-
-/* DELETE THIS WHEN DONE .........FIXME FIXME FIXME...........
-      if (a != 0)
-	{
-	  if (strcmp (a, "_ASSOCIATE") == 0)
-	    {
-	      print_declare_associate_1 (vars[z].var_name, as, n);
-	      continue;
-	    }
-	}
-*/
-
-
-}
-
-/**
- * The parser found the starting of a new record.
- */
-void
-push_record (void)
-{
-  /* in_record++; */
-  push_type ("_RECORD", 0, 0);
-}
-
-/**
- * The parser found the starting of a new object instance
- */
-void
-push_object (char *objtype)
-{
-  /* in_record++; */
-  push_type ("_OBJECT", objtype, 0);
-}
-
-/**
- * The parser found a new associative array.
- *
- * @param a The size of the string used in the key.
- * @param b Number of elements of the hash (array).
- */
-void
-push_associate (char *a, char *b)
-{
-  push_type ("_ASSOCIATE", a, b);
-}
-
-/**
- * pop the associate array description...
- */
-void
-pop_associate (char *a)
-{
-  a4gl_add_variable (0, "_ENDASSOC", 0);
-}
-
-/**
- *
- * @param tab
- * @param pkey
- */
-void
-add_link_to (char *tab, char *pkey)
-{
-
-  /*char *pt; */
-  /*char *pk; */
-  /*int z; */
-  A4GL_debug ("Adding link to %s %s\n", A4GL_null_as_null (tab),
-	      A4GL_null_as_null (pkey));
-
-  variable_action (-1, tab, pkey, "", "add_link_to");
-
-
-  /* MJA - NEWVARIABLE */
-
-}
-
-/**
- *
- */
-void
-pop_record (void)
-{
-
-  /* in_record--; */
-  A4GL_debug ("In mod.c : pop_record\n");
-
-  a4gl_add_variable (0, "_ENDREC", 0);
-
-}
-
-/**
  *
  * @param mn
  * @param mnopt
@@ -847,247 +687,7 @@ A4GL_findex (char *str, char c)
 }
 
 
-/**
- * Scan a string to find what kind of variable is declared or used inside 
- * it.
- *
- * @todo Complete the folowing comment
- *
- * Transform the sting making the folowing actions:
- *   - Strip eventual square brackets []
- *   - 
- *
- * @param s The string containing the variable declaration
- * @param mode Not used
- * @return A code with one the folowing meanings:
- *   - -1 No variable detected
- *   - -2 Is a variable thru variable
- *   - A numeric code number identifiing the data type (@see find_type())
- */
-static long
-scan_variables (char *s_n, int mode)
-{
-  /*int a; */
 
-  /*long z; */
-  long z_new;
-  char s[1024];
-  char buff[1024];
-  char buff2[1024];
-  /*char *ptr; */
-  /*int dir; */
-
-  /*int flg; */
-  /*int lvl = 0; */
-  int dtype;
-  int size;
-  int vval;
-
-
-  if (strlen (s_n) > 1023)
-    {
-      A4GL_assertion (1, "scan_variables buffers too small");
-    }
-  memset (s, 0, 1024);
-  strcpy (s, s_n);
-
-
-  A4GL_debug ("s=%s", A4GL_null_as_null (s));
-
-  /*last_var_found = -1; */
-
-  /* MJA - NEWVARIABLE */
-  if (s[0] == '.' && s[1] == '\0')
-    return -1;
-
-  if (s[0] == 0)
-    return -1;
-
-  if (strchr (s, '\n'))
-    return -2;			/* This is a variable thru variable.. */
-
-  if (strlen (s) >= sizeof (buff))
-    {
-      A4GL_assertion (1, "scan_variables buffer is too small..");
-    }
-  strcpy (buff, s);
-
-
-
-
-  if (s[0] == ' ')
-    {
-      if (strncmp (buff, " ASSOCIATE_", 11) == 0)
-	{
-	  strcpy (buff, &s[11]);
-	  strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
-	  buff[A4GL_findex (buff, '(')] = 0;
-	  strcat (buff, buff2);
-	  A4GL_convlower (buff);
-	}
-      else
-	return -1;
-    }
-
-/*
- {
-	char xxx[1024];
-	strcpy(xxx,rm_class_copy(s));
-	strcpy(s,xxx);
- }
-*/
-
-
-  if (strncmp (s, "CLASS_COPY->", 12) == 0)
-    {
-      strcpy (buff, &s[12]);
-      strcpy (s, buff);
-    }
-
-
-  A4GL_debug ("find_variable : %s", A4GL_null_as_null (buff));
-
-  if (strcmp (buff, "a4gl_status") == 0)
-    add_feature ("STATUS");
-  if (strcmp (buff, "a4gl_sqlca.sqlawarn") == 0)
-    add_feature ("SQLCA_SQLAWARN");
-  if (strcmp (buff, "a4gl_sqlca.sqlcode") == 0)
-    add_feature ("SQLCA_SQLCODE");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrm") == 0)
-    add_feature ("SQLCA_SQLERRM");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrd[(1)-1]") == 0)
-    add_feature ("SQLCA_SQLERRD1");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrd[(2)-1]") == 0)
-    add_feature ("SQLCA_SQLERRD2");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrd[(3)-1]") == 0)
-    add_feature ("SQLCA_SQLERRD3");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrd[(4)-1]") == 0)
-    add_feature ("SQLCA_SQLERRD4");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrd[(5)-1]") == 0)
-    add_feature ("SQLCA_SQLERRD5");
-  if (strcmp (buff, "a4gl_sqlca.sqlerrd[(6)-1]") == 0)
-    add_feature ("SQLCA_SQLERRD6");
-
-
-  vval = find_variable (buff, &dtype, &size, 0, 0);
-
-  if (vval == 1)
-    {
-      z_new = dtype + (size << 16);
-      return z_new;
-    }
-
-  if (vval == 0)
-    {
-      return -1;
-    }
-
-
-  return vval;
-
-
-
-
-
-}
-
-/**
- * Scan a string to see if its a variable declaration, and if so
- * gets the data type.
- *
- * @param s The string eventualy containing the variable
- * @return The data type in numeric code
- */
-long
-scan_variable (char *s)
-{
-  char buff[256];
-  int a;
-  a = scan_variables (s, 1);
-
-  if (a == -1)
-    {
-      strcpy (buff, s);
-      strcat (buff, ".*");
-      a = scan_variables (buff, 1);
-    }
-  return a;
-}
-
-
-
-
-/**
- * This function is not used.
- *
- * @todo : Undertstand if this function is old code and if so remove-it
- */
-/*
-static int
-scan_arr_variable (char *s)
-{
-
-  int a;
-  char buff[256];
-  char *ptr;
-  int lvl = 0;
-	// MJA - NEWVARIABLE
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-  strcpy (buff, s);
-  strip_bracket (buff);
-  A4GL_debug ("striped3");
-  strcat (buff, ".");
-  ptr = strtok (buff, ".");
-  for (a = 0; a < varcnt; a++)
-  {
-    A4GL_debug ("chk: %d %s %s %d %d\n", a, A4GL_null_as_null(vars[a].var_name), A4GL_null_as_null(ptr), vars[a].level, lvl);
-
-    if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
-	  {
-	    ptr = strtok (0, ".");
-
-	    if (ptr == 0)
-	    {
-	      if (atoi (vars[a].var_arrsize) > 0)
-		    {
-		      print_range_check (s, vars[a].var_arrsize);
-		    }
-	      return find_type (vars[a].var_type);
-	    }
-	    lvl++;
-	  }
-  }
-
-  A4GL_debug ("// Warning    Couldnt find %s \n", A4GL_null_as_null(s));
-
-  return -1;
-
-}
-*/
-
-
-
-/**
- * 
- * @param t
- * @param ptr
- * @param name
- */
-void
-add_constant (char t, char *ptr, char *name)
-{
-  /*char scope = 'm'; */
-  int x;
-  char buff[256];
-  x = 0;
-  buff[1] = 0;
-  buff[0] = t;
-  variable_action (-1, name, ptr, buff, "add_constant");
-
-}
 
 /**
  * Set the internal 4gl variables in the array.
@@ -1095,71 +695,73 @@ add_constant (char t, char *ptr, char *name)
 void
 set_4gl_vars (void)
 {
-  set_current_variable_scope ('G');
-set_variable_user_system('S');
+struct variable_list *vlist=NULL;
 
-  variable_action (-1, "int_flag", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "quit_flag", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "a4gl_status", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "time", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "8", "", "push_type");
-  variable_action (-1, "a4gl_sqlca", "", "", "a4gl_add_variable");
-  variable_action (-1, "_RECORD", "", "", "push_type");
-  variable_action (-1, "sqlcode", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "sqlerrm", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "72", "", "push_type");
-  variable_action (-1, "sqlerrp", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "8", "", "push_type");
-  variable_action (-1, "sqlerrd", "", "", "a4gl_add_variable");
-  variable_action (-1, "", "", "6", "push_type");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "sqlawarn", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "8", "", "push_type");
-  variable_action (-1, "sqlstate", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "9", "", "push_type");
-  variable_action (-1, "", "_ENDREC", "", "a4gl_add_variable");
+struct variable_list *vl_sqlca=NULL;
+struct variable *v_sqlerrd;
+struct variable *v_sqlca;
 
-  variable_action (-1, "notfound", "100", "i", "add_constant");
+  set_current_variable_scope (E_SCOPE_IMPORTED_GLOBAL);
+  set_variable_user_system('S');
 
-/* @todo - QUICK HACK*/
-/*variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");*/
-/*variable_action(-1,"status","a4gl_status","C","add_constant");*/
+  vlist=new_variable_list(NULL);
 
-  variable_action (-1, "false", "0", "i", "add_constant");
-  variable_action (-1, "true", "1", "i", "add_constant");
-  variable_action (-1, "today", "", "", "a4gl_add_variable");
-  variable_action (-1, "fgldate", "", "", "push_type");
-  variable_action (-1, "fgl_user", "", "", "a4gl_add_variable");	/* Did someone change this  to 'usr' */
-  variable_action (-1, "char", "8", "", "push_type");
-  variable_action (-1, "pageno", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "lineno", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "usrtime", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "curr_hwnd", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "curr_form", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "err_file_name", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "32", "", "push_type");
-  variable_action (-1, "err_line_no", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "curr_file_name", "", "", "a4gl_add_variable");
-  variable_action (-1, "char", "32", "", "push_type");
-  variable_action (-1, "curr_line_no", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "err_status", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-  variable_action (-1, "aiplib_status", "", "", "a4gl_add_variable");
-  variable_action (-1, "long", "", "", "push_type");
-set_variable_user_system('-');
+  append_variable_list(vlist, new_simple_variable("int_flag",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("quit_flag",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("a4gl_status",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("time",DTYPE_CHAR,8,0));
 
-  set_current_variable_scope ('m');
+// We first need to create a variable list - this will be the contents of the SQLCA record...
+  vl_sqlca=new_variable_list(NULL);
+  append_variable_list(vl_sqlca, new_simple_variable("sqlcode",DTYPE_INT,0,0));
+  append_variable_list(vl_sqlca, new_simple_variable("sqlerrm",DTYPE_CHAR,72,0));
+  append_variable_list(vl_sqlca, new_simple_variable("sqlerrp",DTYPE_CHAR,8,0));
+
+
+  // Slightly more complicated for an array - we need to set it up manually..
+  v_sqlerrd=new_simple_variable("sqlerrd",DTYPE_INT,0,0);
+  v_sqlerrd->arr_subscripts.arr_subscripts_len=1; /* Its a 1 dimensional array */
+  v_sqlerrd->arr_subscripts.arr_subscripts_val=malloc(sizeof(int)*1);
+  v_sqlerrd->arr_subscripts.arr_subscripts_val[0]=6; /* And its got 6 elements */
+  append_variable_list(vl_sqlca, v_sqlerrd);
+
+  // Now back to the simple stuff..
+  append_variable_list(vl_sqlca, new_simple_variable("sqlawarn",DTYPE_CHAR,8,0));
+  append_variable_list(vl_sqlca, new_simple_variable("sqlstate",DTYPE_CHAR,9,0));
+  v_sqlca=new_variable_record("a4gl_sqlca", vl_sqlca);
+  append_variable_list(vlist,v_sqlca);
+
+
+
+  append_variable_list(vlist, new_constant('i', "100","notfound" ));
+  append_variable_list(vlist, new_constant('i', "1","true" ));
+  append_variable_list(vlist, new_constant('i', "0","false" ));
+
+  append_variable_list(vlist, new_simple_variable("today",DTYPE_DATE,0,0));
+  append_variable_list(vlist, new_simple_variable("fgl_user",DTYPE_CHAR,8,0));
+  append_variable_list(vlist, new_simple_variable("pageno",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("lineno",DTYPE_INT,0,0));
+
+  append_variable_list(vlist, new_simple_variable("usrtime",DTYPE_INT,0,0));
+
+  append_variable_list(vlist, new_simple_variable("curr_hwnd",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("curr_form",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("err_file_name",DTYPE_CHAR,32,0));
+  append_variable_list(vlist, new_simple_variable("err_line_no",DTYPE_INT,0,0));
+
+  append_variable_list(vlist, new_simple_variable("curr_file_name",DTYPE_CHAR,32,0));
+  append_variable_list(vlist, new_simple_variable("curr_line_no",DTYPE_INT,0,0));
+
+  append_variable_list(vlist, new_simple_variable("err_status",DTYPE_INT,0,0));
+  append_variable_list(vlist, new_simple_variable("aiplib_status",DTYPE_INT,0,0));
+
+  // When we've got to here - 'vlist' contains all our system variables...
+  merge_variable_list(&this_module.imported_global_variables,vlist);
+  set_variable_user_system('-');
+
+  set_current_variable_scope (E_SCOPE_MODULE);
+  
+ 
 }
 
 /**
@@ -1421,476 +1023,6 @@ trim(char *s)
 
 */
 
-#ifdef OLD
-int
-add_bind (char i, char *var_i) {
-	return add_bind_subs(i,var_i,0,0);
-}
-
-/**
- * Add a new bind to the specific aray (acording to the type).
- *
- * @param i The bind type.
- *   - i : Input bind.
- *   - O :
- *   - N : Null bind.
- *   - o : Output bind.
- *   - F :
- * @param var The variable name to be binded.
- */
-int add_bind_subs (char i, char *var_i, char *sub_start, char *sub_end)
-{
-  long dtype;
-/*char c;*/
-  char var[2048] = "";
-  strcpy (var, var_i);
-
-  if (var_i[0] == '"')
-    {
-      dtype = (strlen (var) - 2) << 16;
-      strcpy (var, var_i);
-    }
-  else
-    {
-      A4GL_debug ("Scanning...");
-      dtype = scan_variable (var_i);
-
-
-      switch (i)
-	{
-	case 'f':
-	  strcpy (var, fgl_add_scope (var_i, 'L'));
-	  break;		/* Function parameters */
-	case 'O':
-	  strcpy (var, fgl_add_scope (var_i, 'L'));
-	  break;		/* Report order by */
-	default:
-	  strcpy (var, fgl_add_scope (var_i, 0));
-	}
-
-    }
-
-
-  A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, A4GL_null_as_null (var), i);
-
-
-
-  if (i == 'i')
-    {
-	
-      if (dtype == -2 || strstr (var, ".*"))
-	{
-	  char buff[2000];
-	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0)
-	    {
-	      strcpy (buff, var);
-	      strcat (buff, ".*");
-	    }
-	  A4GL_debug ("push_bind_rec...");
-	  push_bind_rec (var, i);
-	}
-      else
-	{
-	  ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
-	  ibind[ibindcnt].start_char_subscript_s = sub_start;
-	  ibind[ibindcnt].end_char_subscript_s = sub_end;
-
-	  if (strncmp (var, " a4gl_substr(", 8) != 0)
-	    {
-	      strcpy (ibind[ibindcnt].varname, var);
-	      ibind[ibindcnt].dtype = dtype;
-	    }
-	  else
-	    {
-	      char buff[256];
-	      char buff2[256];
-	      int s_dtype=-1;
-	      int s_sstart=-1;
-	      int s_send=-1;
-	      //int a;
-	      char *ptrs[5] = { 0, 0, 0, 0, 0 };
-	      strcpy (buff2, &var[strlen ("a4gl_substr ") + 1]);
-	      ptrs[0] = buff2;
-	      ptrs[1] = strstr (ptrs[0], ",");
-	      if (ptrs[1])
-		{
-		  *ptrs[1] = 0; ptrs[1] += 1;
-		  strcpy (buff, ptrs[0]);
-		  ptrs[2] = strstr (ptrs[1] + 3, ",");
-		  if (ptrs[2])
-		    {
-		      *ptrs[2] = 0; ptrs[2] += 1;
-		      s_dtype = atol (ptrs[1]);
-		      ptrs[3] = strstr (ptrs[2], ",");
-		      if (ptrs[3])
-			{
-		          *ptrs[3] = 0; ptrs[3] += 1;
-			  s_sstart = atol (ptrs[2]);
-			  s_send = atol (ptrs[3]);
-		//printf("%s :: %s\n",ptrs[2],ptrs[3]);
-			}
-		    }
-		}
-
-
-
-	      //a = sscanf (buff2, "%s , %d , %d , %d) /*1*/", buff, &s_dtype, &s_sstart, &s_send);
-	      if (ptrs[3] == 0 || s_sstart<0 || s_send<0 || s_dtype<0)
-		{
-		  A4GL_debug ("Error processing : %s\n", A4GL_null_as_null (buff2));
-		  set_yytext (buff2);
-		  a4gl_yyerror ("Internal error - (split substr)");
-		}
-	      if (s_send == 0)
-		s_send = s_sstart;
-	      strcpy (ibind[ibindcnt].varname, buff);
-
-	      //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
-	      ibind[ibindcnt].dtype = s_dtype;
-              ibind[ibindcnt].dtype = s_dtype;
-                sprintf(buff,"%d",s_sstart);
-              ibind[ibindcnt].start_char_subscript_s = strdup(buff); //s_sstart;
-                sprintf(buff,"%d",s_send);
-              ibind[ibindcnt].end_char_subscript_s = strdup(buff);
-
-	    }
-	  ibindcnt++;
-	}
-      return ibindcnt;
-    }
-  if (i == 'N')
-    {
-	
-      if ((dtype == -2 || strstr (var, ".*") ) && strcmp(acl_getenv("A4GL_LEXTYPE"),"FGL")!=0)
-	{
-	  char buff[2000];
-	  A4GL_debug ("push_bind_rec...");
-	  strcpy (buff, var);
-	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0)
-	    {
-	      strcpy (buff, var);
-	      strcat (buff, ".*");
-	    }
-	  push_bind_rec (buff, i);
-	}
-      else
-	{ // not a record - or its FGL
-	  nullbind = ensure_bind (&a_nullbind, nullbindcnt+1, nullbind);
-	  nullbind[nullbindcnt].varname=strdup( var);
-	  nullbind[nullbindcnt].dtype = dtype;
-	  nullbind[nullbindcnt].start_char_subscript_s = sub_start;
-	  nullbind[nullbindcnt].end_char_subscript_s = sub_end;
-	  nullbindcnt++;
-
-	}
-      return nullbindcnt;
-    }
-
-  if (i == 'n')
-    {
-	
-      if ((dtype == -2 || strstr (var, ".*") ))
-	{
-	  char buff[2000];
-	  A4GL_debug ("push_bind_rec...");
-	  strcpy (buff, var);
-	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0)
-	    {
-	      strcpy (buff, var);
-	      strcat (buff, ".*");
-	    }
-	  push_bind_rec (buff, i);
-	}
-      else
-	{ // not a record - or its FGL
-	  nullbind = ensure_bind (&a_nullbind, nullbindcnt+1, nullbind);
-	  nullbind[nullbindcnt].varname=strdup( var);
-	  nullbind[nullbindcnt].dtype = dtype;
-	  nullbind[nullbindcnt].start_char_subscript_s = sub_start;
-	  nullbind[nullbindcnt].end_char_subscript_s = sub_end;
-	  nullbindcnt++;
-
-	}
-      return nullbindcnt;
-    }
-
-
-
-
-  if (i == 'o')
-    {
-      if (dtype == -2 || strstr (var, ".*"))
-	{
-	  push_bind_rec (var, i);
-      return obindcnt;
-	}
-      else
-	{
-	    obind = ensure_bind (&a_obind, obindcnt+1, obind);
-
-	    if (strncmp (var, " a4gl_let_substr(", 12) != 0)
-            {
-	  		obind[obindcnt].start_char_subscript_s = sub_start;
-	  		obind[obindcnt].end_char_subscript_s = sub_end;
-	  		obind[obindcnt].varname=strdup( var);
-	  		obind[obindcnt].dtype = dtype;
-            }
-          else
-            {
-              char buff[256];
-              char buff2[256];
-              int sc_dtype=0;
-              char *sc_sstart=0;
-              char *sc_send=0;
-              //int a;
-              char *ptrs[5] = { 0, 0, 0, 0, 0 };
-              strcpy (buff2, &var[strlen (" a4gl_let_substr") + 1]);
-		//printf("%s '%s'\n",var,buff2);
-              ptrs[0] = buff2;
-              ptrs[1] = strstr (ptrs[0] + 1, " , ");
-		
-              if (ptrs[1])
-                {
-                        ptrs[1]++;
-                  *ptrs[1] = 0; ptrs[1]++;
-			//printf("X1: %s\n", ptrs[0]);
-                  strcpy (buff, ptrs[0]);
-                  ptrs[2] = strstr (ptrs[1] + 2, " , ");
-                  if (ptrs[2])
-                    {
-                        ptrs[2]++;
-                      *ptrs[2] = 0; ptrs[2]++;
-			//printf("X2: %s\n", ptrs[1]);
-                      sc_dtype = atol(ptrs[1]);
-                      ptrs[3] = strstr (ptrs[2] + 2, " , ");
-                      if (ptrs[3])
-                        {
-                          *ptrs[3] = 0; ptrs[3]+=2;
-			//printf("X3: %s\n", ptrs[2]);
-                          sc_sstart = (ptrs[2]);
-                          sc_send = (ptrs[3]+1);
-
-			ptrs[4]=strchr(ptrs[3],',');
-			if (ptrs[4]) {
-				*ptrs[4]=0;
-			}
-
-			ptrs[4]=strrchr(sc_send,')');
-			if (ptrs[4]) {
-				*ptrs[4]=0;
-			}
-                ////printf("%s :: %s\n",ptrs[2],ptrs[3]);
-                        }
-                    }
-                }
-
-              obind[obindcnt].varname=strdup( buff);
-
-              //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
-              //printf("sc_dtype=%x\n", sc_dtype);
-              //printf("sc_sstart=%s\n", sc_sstart);
-              //printf("sc_send=%s\n", sc_send);
-
-              obind[obindcnt].dtype = sc_dtype;
-		if (sc_sstart==0) sc_sstart="";
-		if (sc_send==0) sc_send="";
-              obind[obindcnt].start_char_subscript_s = strdup(sc_sstart);
-              obind[obindcnt].end_char_subscript_s = strdup(sc_send);
-            }
-
-
-
-	}
-	  obindcnt++;
-      return obindcnt;
-    }
-
-  if (i == 'e')
-    {
-      if (dtype == -2 || strstr (var, ".*"))
-	{
-	  push_bind_rec (var, i);
-	}
-      else
-	{
-	  ebind = ensure_bind (&a_ebind, ebindcnt+1, ebind);
-	  ebind[ebindcnt].start_char_subscript_s = 0;
-	  ebind[ebindcnt].end_char_subscript_s = 0;
-	  ebind[ebindcnt].varname=strdup( var);
-	  ebind[ebindcnt].dtype = dtype;
-	  ebindcnt++;
-	}
-      return ebindcnt;
-    }
-
-  if (i == 'O')
-    {
-      if (dtype == -2 || strstr (var, ".*")) {
-		push_bind_rec (var, i);
-	}
-      else
-	{
-	  ordbind = ensure_bind (&a_ordbind, ordbindcnt+1, ordbind);
-	  memset (&ordbind[ordbindcnt], 0, sizeof (ordbind[ordbindcnt]));
-	  ordbind[ordbindcnt].varname=strdup( var);
-	  ordbind[ordbindcnt].dtype = dtype;
-	  order_asc_desc=realloc(order_asc_desc,ordbindcnt+2); // 0 based, and an extra one for the null...
-
-	  if (last_orderby_ascdesc!='-') {
-	  	//printf("%d =%c\n",ordbindcnt,last_orderby_ascdesc);
-	  	order_asc_desc[ordbindcnt]=last_orderby_ascdesc;
-	  	order_asc_desc[ordbindcnt+1]=0;
-	  }
-	  
-	  ordbindcnt++;
-	}
-      return ordbindcnt;
-    }
-
-
-
-
-  if (i == 'f' || i == 'F')
-    {
-      if (i == 'f')
-	dtype = -1;
-
-      if (dtype == -2 || strstr (var, ".*"))
-	push_bind_rec (var, i);
-      else
-	{
-	  fbind = ensure_bind (&a_fbind, fbindcnt+1, fbind);
-	  fbind[fbindcnt].start_char_subscript_s = 0;
-	  fbind[fbindcnt].end_char_subscript_s = 0;
-	  fbind[fbindcnt].varname=strdup( var);
-	  fbind[fbindcnt].dtype = 0;
-	  fbindcnt++;
-	  return fbindcnt;
-	}
-    }
-
-  return 0;
-}
-
-/**
- * Initilize the bind arrays and add a variable to it.
- *
- * @param i The bind type:
- *   - i : Input bind.
- *   - N : Null bind.
- *   - o : Output bind.
- *   - O 
- *   - f or F :
- * @param var The variable name to be binded.
- * @return
- */
-int
-start_bind (char i, char *var)
-{
-  A4GL_debug ("start_bind %c -  %s", i, A4GL_null_as_null (var));
-
-  if (i == 'i')
-    {
-      ibindcnt = 0;
-    }
-  if (i == 'N')
-    {
-      nullbindcnt = 0;
-    }
-
-  if (i == 'o')
-    {
-      obindcnt = 0;
-    }
-
-  if (i == 'O')
-    {
-      ordbindcnt = 0;
-    }
-
-  if (i == 'f' || i == 'F')
-    {
-      fbindcnt = 0;
-    }
-  if (i == 'e')
-    {
-      ebindcnt = 0;
-    }
-
-  if (var != 0)
-    return add_bind (i, var);
-
-  return 0;
-}
-
-/**
- * Gets the bind array index of a specific type of bind.
- *
- * @param i The bind array type:
- *   - i : Input bind.
- *   - N : Null bind
- *   - o : Output bind
- *   - f or F
- * @return The counter in the bind array, 0 if invalid type.
- */
-int
-get_bind_cnt (char i)
-{
-  if (i == 'i')
-    return ibindcnt;
-  if (i == 'N')
-    return nullbindcnt;
-  if (i == 'o')
-    return obindcnt;
-  if (i == 'e')
-    return ebindcnt;
-  if (i == 'O')
-    return ordbindcnt;
-  if (i == 'f' || i == 'F')
-    return fbindcnt;
-  return 0;
-}
-
-
-char *
-get_bind_varname (char i, int n)
-{
-  if (i == 'o')
-    {
-      return obind[n].varname;
-    }
-  if (i == 'i')
-    {
-      return ibind[n].varname;
-    }
-  return "";
-}
-
-/**
- * Gets the number of elements filled in a bind array.
- *
- * @param i The bind array type:
- *   - i : The bind type.
- *   - N : Null bind.
- *   - o : Output bind.
- *   - f or F
- * @return The number of elements in the bind array, 0 if invalid type.
- */
-int
-how_many_in_bind (char i)
-{
-  if (i == 'i')
-    return ibindcnt - 1;
-  if (i == 'N')
-    return nullbindcnt - 1;
-  if (i == 'o')
-    return obindcnt - 1;
-  if (i == 'O')
-    return ordbindcnt - 1;
-
-  return 0;
-}
-#endif
 
 
 int
@@ -2049,54 +1181,6 @@ resize_paper (struct pdf_rep_structure *pdf_rep_struct)
 
 
 
-#ifdef OLD
-/**
- *
- *
- * @param
- */
-int scan_orderby (char *varname)
-{
-  int a;
-  char b1[256];
-  char b2[256];
-int cnt;
-struct binding_comp *ordbind2;
-int ordbindcnt2;
-int rval=-1;
-
-  ordbind2=malloc(sizeof(struct binding_comp)* ordbindcnt);
-  ordbindcnt2=ordbindcnt;
-
-  memcpy(ordbind2 , ordbind, sizeof(struct binding_comp)* ordbindcnt);
-
-  expand_bind (&ordbind[0], 'O', ordbindcnt,1);
-
-
-  cnt=ordbindcnt;
-
-  A4GL_debug ("Scanning order by for %s %d", varname, ordbindcnt);
-  for (a = 0; a <= cnt; a++)
-    {
-      strcpy (b1, A4GL_unscope (varname));
-      //if (b1[0]>='A'&&b1[0]<='Z'&&b1[1]=='_') { strcpy(b1,&varname[2]); }
-      strcpy (b2, A4GL_unscope (ordbind[a].varname));
-      //if (b2[0]>='A'&&b2[0]<='Z'&&b2[1]=='_') { strcpy(b2,&ordbind[a].varname[2]); }
-      A4GL_debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
-
-
-      if (A4GL_aubit_strcasecmp (b1, b2) == 0) {
-		rval=a;
-		break;
-	}
-
-    }
-  ordbindcnt=ordbindcnt2;
-  memcpy(ordbind , ordbind2, sizeof(struct binding_comp)* ordbindcnt);
-
-  return rval;
-}
-#endif
 
 /**
  *
@@ -2304,140 +1388,6 @@ dec_counter_by (int a)
 }
 */
 
-#ifdef OLD
-/**
- *
- *
- * @param
- */
-static int
-add_arr_bind (char i, char *nvar)
-{
-  long dtype;
-  char var[256];
-
-
-  if (isrecvariable (nvar))
-    {
-      strcat (nvar, "[0].*");
-    }
-  else
-    {
-      strcat (nvar, "[0]");
-    }
-
-  if (i == 'f')
-    strcpy (var, fgl_add_scope (nvar, 'L'));
-  else
-    strcpy (var, fgl_add_scope (nvar, 0));
-  dtype = scan_variable (var);
-
-  A4GL_debug ("/* add_arr_bind %c %s %x */\n", i, var, dtype);
-
-  if (i == 'i')
-    {
-      if (dtype == -2)
-	push_bind_rec (var, i);
-      else
-	{
-	  ibind = ensure_bind (&a_ibind, ibindcnt, ibind);
-	  ibind[ibindcnt].varname=strdup( var);
-	  ibind[ibindcnt].dtype = dtype;
-	  ibindcnt++;
-	}
-      return ibindcnt;
-    }
-
-  if (i == 'N')
-    {
-      if (dtype == -2)
-	push_bind_rec (var, i);
-      else
-	{
-	  nullbind = ensure_bind (&a_nullbind, nullbindcnt, nullbind);
-	  nullbind[nullbindcnt].varname=strdup( var);
-	  nullbind[nullbindcnt].dtype = dtype;
-	  nullbindcnt++;
-	}
-      return nullbindcnt;
-    }
-
-  if (i == 'o')
-    {
-      if (dtype == -2)
-	push_bind_rec (var, i);
-      else
-	{
-	  obind = ensure_bind (&a_obind, obindcnt, obind);
-	  obind[obindcnt].varname=strdup(var);
-	  obind[obindcnt].dtype = dtype;
-	  obindcnt++;
-	}
-      return obindcnt;
-    }
-  if (i == 'e')
-    {
-      if (dtype == -2)
-	push_bind_rec (var, i);
-      else
-	{
-	  ebind = ensure_bind (&a_ebind, ebindcnt, ebind);
-	  ebind[ebindcnt].varname=strdup( var);
-	  ebind[ebindcnt].dtype = dtype;
-	  ebindcnt++;
-	}
-      return ebindcnt;
-    }
-
-
-  if (i == 'f' || i == 'F')
-    {
-      fbind = ensure_bind (&a_fbind, fbindcnt, fbind);
-      fbind[fbindcnt].start_char_subscript_s = 0;
-      fbind[fbindcnt].end_char_subscript_s = 0;
-      fbind[fbindcnt].varname=strdup( var);
-      fbind[fbindcnt].dtype = dtype;
-      fbindcnt++;
-      return fbindcnt;
-    }
-
-  return 0;
-}
-
-
-/**
- *
- *
- * @param
- */
-void
-start_arr_bind (char i, char *var)
-{
-  if (i == 'i')
-    {
-      ibindcnt = 0;
-    }
-  if (i == 'N')
-    {
-      nullbindcnt = 0;
-    }
-  if (i == 'o')
-    {
-      obindcnt = 0;
-    }
-  if (i == 'e')
-    {
-      ebindcnt = 0;
-    }
-  if (i == 'f' || i == 'F')
-    {
-      fbindcnt = 0;
-    }
-  if (var != 0)
-    add_arr_bind (i, var);
-}
-
-#endif
 
 
 
@@ -2633,46 +1583,6 @@ convstrsql (char *s)
   return buff;
 }
 
-#ifdef MOVED
-/**
- * Upshift a string.
- *
- * @param a The string to be upshifted.
- * @return A static buffer with a copy of the string upshifted.
- */
-char *
-upshift (char *a)
-{
-  int i;
-  static char buff[256];
-  strcpy (buff, a);
-  for (i = 0; i < strlen (buff); i++)
-    {
-      buff[i] = toupper (buff[i]);
-    }
-  return buff;
-}
-
-/**
- * Downshift a string.
- *
- * @param a The string to be downshifted.
- * @return A pointer to a staic buffer where the string downshifted is putted.
- */
-char *
-downshift (char *a)
-{
-  int i;
-  static char buff[256];
-  strcpy (buff, a);
-  for (i = 0; i < strlen (buff); i++)
-    {
-      buff[i] = tolower (buff[i]);
-    }
-  return buff;
-}
-
-#endif
 
 /**
  * Obtain the current report block.
@@ -3077,278 +1987,8 @@ compile_ispdf (void)
     return "pdf_";
 }
 
-#ifdef OLD
-void expand_bind_g (t_binding_comp_list *l) {
-t_binding_comp_list *l2;
-// This will add it back to the original binding list...
-// so we need to copy that back our our list
-	expand_bind(l->bindings.bindings_val,l->type,l->bindings.bindings_len,0);
-
-	l2=copy_togenbind(l->type);
-
-	free(l->bindings.bindings_val);
-	l->bindings.bindings_val=l2->bindings.bindings_val;
-	l->bindings.bindings_len=l2->bindings.bindings_len;
-
-	l->abind=l2->abind;
-	l->data=l2->data;
-}
-#endif
-
-#ifdef OLD
-/**
- *
- *
- * When you've got a function definition which includes a record
- * You don't know when adding to the binding the structures involved
- * This copies the original binding and reapplies them.
- * This should be called after the structure is known - ie. just before you
- * want to print it !
- *
- * @param bind A pointer to the bind structure.
- * @param btype The type of the bind:
- *   - i : Input bind.
- *   - N : Null bind.
- *   - o : Output bind.
- *   - O
- *   - f or F :
- * @param cnt The number of elements in the bind array.
- */
-void expand_bind (struct binding_comp *bind, int btype, int cnt, int must_be_local)
-{
-  char buff[256];
-  /*int b1; */
-  int dim;
-  int xxxa;
-  static struct binding_comp *save_bind = 0;
-  char variable_scope;
-
-  xxxa = 0;
-
-  if (cnt == 0)
-    return;			/* theres nothing there to expand */
 
 
-/*
-  for (xxxa = 0; xxxa <cnt ; xxxa++)
-    {
-	printf("BEFORE %s %s %s\n", bind[xxxa].varname, bind[xxxa].start_char_subscript_s, bind[xxxa].end_char_subscript_s);
-   }
-*/
-  save_bind = acl_realloc (save_bind, sizeof (struct binding_comp) * cnt);
-  for (xxxa = 0; xxxa < cnt; xxxa++)
-    {
-      save_bind[xxxa].varname= bind[xxxa].varname;
-      save_bind[xxxa].start_char_subscript_s= bind[xxxa].start_char_subscript_s;
-      save_bind[xxxa].end_char_subscript_s= bind[xxxa].end_char_subscript_s;
-
-      save_bind[xxxa].dtype = bind[xxxa].dtype;
-    }
-
-  start_bind (btype, 0);
-
-  for (xxxa = 0; xxxa < cnt; xxxa++)
-    {
-      strcpy (buff, save_bind[xxxa].varname);
-      if (must_be_local)
-	{
-	  variable_scope = find_variable_scope (buff);
-	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE"))) {
-		  if (variable_scope=='R') variable_scope='L';
-	  }
-	  if (variable_scope != 'L' && variable_scope!='R')
-	    {
-		   A4GL_debug("scope = %c - variable not defined locally",variable_scope);
-	      set_yytext (buff);
-	      a4gl_yyerror ("Variable has not been defined locally");
-	      return;
-	    }
-	}
-
-
-
-
-      dim = 1;
-      if (A4GL_isyes (acl_getenv ("NO_ARRAY_EXPAND"))||btype=='N' || btype=='n')
-	dim = 0;
-      if (strncmp (buff, " a4gl_let_substr", 16) == 0)
-	dim = 0;
-      if (strncmp (buff, " ASSOCIATE", 10) == 0)
-	dim = 0;
-
-
-      if (dim)
-	{
-	  if (isarrvariable (buff) && buff[strlen (buff) - 1] != ']'
-	      && buff[strlen (buff) - 2] != ']' && dim == 1)
-	    {
-	      int type, arrsize1, arrsize2, arrsize3, size, level;
-	      int c1;
-	      int c2;
-	      int c3;
-	      char buff2[256];
-	      //char arrbuff[256];
-
-
-	      get_variable_dets_arr3 (buff, &type, &arrsize1, &arrsize2,
-				      &arrsize3, &size, &level, 0);
-
-	      if (arrsize3)
-		{
-		  for (c1 = 0; c1 < arrsize1; c1++)
-		    {
-		      for (c2 = 0; c2 < arrsize2; c2++)
-			{
-			  for (c3 = 0; c3 < arrsize3; c3++)
-			    {
-			      SPRINTF4 (buff2, "%s[%d][%d][%d]", buff, c1, c2,
-				       c3);
-			      if (scan_variable (buff2) == -2)
-				{
-				  strcat (buff2, ".*");
-				}
-			      add_bind (btype, buff2);
-			    }
-			}
-		    }
-		}
-	      else
-		{
-
-		  if (arrsize2)
-		    {
-		      for (c1 = 0; c1 < arrsize1; c1++)
-			{
-			  for (c2 = 0; c2 < arrsize2; c2++)
-			    {
-			      SPRINTF3 (buff2, "%s[%d][%d]", buff, c1, c2);
-			      if (scan_variable (buff2) == -2)
-				{
-				  strcat (buff2, ".*");
-				}
-			      add_bind (btype, buff2);
-			    }
-			}
-		    }
-		  else
-		    {
-		      for (c1 = 0; c1 < arrsize1; c1++)
-			{
-			  SPRINTF2 (buff2, "%s[%d]", buff, c1);
-			  if (scan_variable (buff2) == -2)
-			    {
-			      strcat (buff2, ".*");
-			    }
-			  add_bind (btype, buff2);
-			}
-
-		    }
-		}
-
-
-
-
-
-
-
-
-
-	      continue;
-	    }
-	}
-
-      if (scan_variable (buff) == -2)
-	{
-		if (strstr(buff,".*")==0) {
-	  		strcat (buff, ".*");
-		}
-	}
-
-  	if (btype=='O') {
-		last_orderby_ascdesc='-';
-  	}
-		/* printf("Add bind :%s %s ", save_bind[xxxa].start_char_subscript_s, save_bind[xxxa].end_char_subscript_s); */
-      add_bind_subs (btype, buff, save_bind[xxxa].start_char_subscript_s, save_bind[xxxa].end_char_subscript_s);
-
-    }
-/*
-  for (xxxa = 0; xxxa <cnt ; xxxa++)
-    {
-	printf("AFTER %s %s %s\n", bind[xxxa].varname, bind[xxxa].start_char_subscript_s, bind[xxxa].end_char_subscript_s);
-	}
-*/
-}
-
-/**
- * Expandthe output bind
- */
-void
-expand_obind (void)
-{
-  expand_bind (obind, 'o', obindcnt, 0);
-}
-#endif
-
-
-/**
- *
- * @param s
- */
-void
-chk_init_var (char *s)
-{
-  char buff[1024];
-  char *ptr;
-
-  if (strcmp (s, "") == 0)
-    return;
-
-  strcpy (buff, s);
-  ptr = strchr (buff, '.');
-  if (strchr (buff, '['))
-    {				/* This need fixing */
-/* This should check for arrays within arrays...
- but this doesn't
-*/
-      return;
-    }
-
-  if (ptr == 0)
-    {
-      if (isarrvariable (s))
-	{
-	  FPRINTF (stderr,
-		   "Warning: Only initializing first element in array %s\n",
-		   s);
-	  strcat (s, "[0]");
-	  return;
-	}
-      else
-	{
-	  return;
-	}
-    }
-
-
-  *ptr = 0;
-  if (isarrvariable (buff))
-    {
-      char buff[1024];
-      char *ptr;
-      FPRINTF (stderr,
-	       "Warning: Only initializing first element in array %s\n", s);
-      strcpy (buff, s);
-      ptr = strchr (s, '.');
-      *ptr = 0;
-      strcat (s, "[0].");
-
-      ptr = strchr (buff, '.');
-      A4GL_debug ("ptr=%s\n", ptr);
-      ptr++;
-      strcat (s, ptr);
-    }
-
-}
 
 /**
  * Dump an expression if in A4GL_debug mode.
@@ -3681,107 +2321,6 @@ get_blk_no_1 (void)
 }
 
 
-char *
-fgl_add_scope (char *s, int n)
-{
-  char c;
-  static char buffer[2560];
-  char buffer2[1024];
-  //static char if1[2000]="";
-  //static char if2[2000]="";
-
-  if (strncmp (s, "CLASS_COPY->", 12) == 0)
-    return s;
-
-  strcpy (buffer2, s);
-  c = find_variable_scope (buffer2);
-
-  if (c == 'C' || c == 'P');
-  else
-    {
-      if (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")));
-      else
-	{
-		/*
-	  	if (c=='L' && buffer2[0]!='l') { A4GL_warn("Local variable not prefixed with 'l'"); }
-	  	if (c=='M' && buffer2[0]!='m') { A4GL_warn("Module variable not prefixed with 'm'"); }
-	  	if (c=='G' && buffer2[0]!='g') { A4GL_warn("Global variable not prefixed with 'g'"); }
-	  	if (c=='g' && buffer2[0]!='g') { A4GL_warn("Global variable not prefixed with 'g'"); }
-		*/
-	  return s;
-	}
-    }
-
-
-  if (buffer2[0] >= 'A' && buffer2[0] <= 'Z' && buffer2[1] == '_')
-    {
-      strcpy (buffer2, A4GL_unscope (buffer2));
-    }
-
-
-
-  if (n == 0)
-    {
-      if (buffer2[0] == ' ')
-	{
-	  c = 'S';
-	}
-      else
-	{
-	  c = find_variable_scope (buffer2);
-	  if (c == 0)
-	    {
-	      c = 'S';
-	    }
-	}
-    }
-  else
-    {
-      c = n;
-    }
-
-
-  if (c != 'S')
-    {
-      if (c == 'C' || c == 'P')
-	{
-	  if (c == 'C')
-	    {
-	      SPRINTF1 (buffer, "CLASS_COPY->%s", buffer2);
-	    }
-	  else
-	    {
-	      find_variable_ptr (buffer2);
-	      SPRINTF1 (buffer, "CLASS_COPY->%s", get_last_class_var ());
-	    }
-	}
-      else
-	{
-	  if (A4GL_isyes (acl_getenv ("REPORT_VARS_AT_MODULE")) && c=='L') { if (isin_command ("REPORT")) { c='R'; } }
-	  if (A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE")) && (c == 'M' || c=='R'))
-	    {
-		    if (c=='R') {
-	      			SPRINTF4 (buffer, "%c_%s_%s_%s", c, A4GL_compiling_module_basename (), curr_func,buffer2);
-		    } else {
-	      		SPRINTF3 (buffer, "%c_%s_%s", c, A4GL_compiling_module_basename (), buffer2);
-		    }
-	      buffer[0] = toupper (buffer[0]);
-	    }
-	  else
-	    {
-		
-	      SPRINTF2 (buffer, "%c_%s", c, buffer2);
-	      buffer[0] = toupper (buffer[0]);
-	    }
-	}
-    }
-  else
-    {
-      SPRINTF1 (buffer, "%s", buffer2);
-    }
-
-  return buffer;
-}
 
 int rep_no_orderby = 0;
 
@@ -3954,16 +2493,6 @@ A4GL_get_event (int n, int *i, char **s)
 }
 
 
-#ifdef OLD
-void
-A4GL_copy_fbind_to_Obind (void)
-{
-  ordbind = ensure_bind (&a_ordbind, ordbindcnt, ordbind);
-  memcpy (ordbind, fbind, sizeof (struct binding_comp) * fbindcnt);
-  ordbindcnt = fbindcnt;
-  //expand_ordbind2();
-}
-#endif
 
 
 /* 
@@ -4061,25 +2590,6 @@ A4GL_add_feature (char *feature)
 }
 
 
-#ifdef MOVED
-int
-A4GL_escape_quote_owner (void)
-{
-  if (A4GLSQLCV_check_requirement ("QUOTE_OWNER"))
-    {
-      return 1;
-    }
-  if (A4GLSQLCV_check_requirement ("NO_OWNER_QUOTE"))
-    {
-      return 0;
-    }
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
-    {
-      return 0;
-    }
-  return 1;
-}
-#endif
 
 
 char *
@@ -4154,135 +2664,6 @@ do_yyerror (char *s)
 
 
 
-#ifdef NDEF
-struct expr_str *
-A4GL_generate_variable_expr (char *s)
-{
-  int a;
-  int flg = 0;
-  void *p1 = 0;
-char orig[1024];
-strcpy(orig,s);
-
-  if (strchr (s, '\n') == 0)
-    {
-      a = scan_variable (s);
-    }
-  else
-    {
-      a = -2;
-    }
-
-  if (a >= 0)
-    {
-      if (A4GL_aubit_strcasecmp (s, "today") == 0)
-	{
-	  flg = 1;
-	  p1 = A4GL_new_expr_simple (ET_EXPR_TODAY);
-	}
-
-      if (A4GL_aubit_strcasecmp (s, "time") == 0)
-	{
-	  flg = 1;
-	  p1 = A4GL_new_expr_simple (ET_EXPR_TIME);
-	}
-
-      if (A4GL_aubit_strcasecmp (s, "pageno") == 0)
-	{
-	  flg = 1;
-	  p1 = A4GL_new_expr_simple (ET_EXPR_PAGENO);
-	}
-
-      if (A4GL_aubit_strcasecmp (s, "lineno") == 0)
-	{
-	  flg = 1;
-	  p1 = A4GL_new_expr_simple (ET_EXPR_LINENO);
-	}
-
-      if (flg == 0)
-	{
-	  p1 = A4GL_new_expr_push_variable (s, (int) scan_variable (s), find_variable_scope(s),current_is_report()); inc_var_usage(s);
-	}
-
-
-      if (p1 == 0)
-	{
-	  PRINTF ("Thought I'd got all of these :%s\n", s);
-	  A4GL_assertion (1, "Thought I'd got all of these");
-	  //p1 = A4GL_new_expr (s);
-	}
-    }
-
-
-
-  if (a == -1)
-    {
-      char buff[25600];		// Typically a substr-check for that first...
-      if (strstr (s, "a4gl_substr"))
-	{
-	  char *ptr_str;
-	  char *ptr_len;
-	  char *ptr_s;
-	  char *ptr_e;
-	  char *ptr;
-	  int type = -1;
-
-	  ptr_str = &s[13];
-	  ptr_len = strchr (ptr_str, ',');
-	  *ptr_len = 0;
-	  ptr_len++;
-	  ptr_s = strchr (ptr_len, ',');
-	  *ptr_s = 0;
-	  ptr_s++;
-	  ptr_e = strchr (ptr_s, ',');
-	  *ptr_e = 0;
-	  ptr_e++;
-
-	  ptr = strchr (ptr_e, ',');
-
-	  if (ptr)
-	    {
-	      *ptr = 0;
-	      type = 0;
-	      ptr++;
-	      if (ptr[0] == ' ' && ptr[1] == '0' && ptr[2] == ' ')
-		{
-		  *ptr = 0;
-		  type = 1;
-		}
-	    }
-	  else
-	    {
-	      if (ptr_e[0] == ' ' && ptr_e[1] == '0' && ptr_e[2] == ' ')
-		{
-		  *ptr_e = 0;
-		  ptr_e = "0";
-		  type = 0;
-		}
-	    }
-	
-//printf("Calling A4GL_new_substring_expr %s with %s %d %s %s\n", orig, ptr_str,atol (ptr_len),ptr_s,ptr_e);
-	  p1 = A4GL_new_substring_expr (ptr_str, atol (ptr_len), ptr_s, ptr_e, type);
-	  return p1;
-	}
-      else
-	{
-	  A4GL_assertion (1, "Is this used for anything else ?");
-	}
-
-	  A4GL_assertion (1, "Is this used for anything else too ?");
-     SPRINTF1 (buff, "A4GL_push_char(%s); /* NOT SUBSTR EXPR */", s);;
-      /* p1 = A4GL_new_expr_obsol (buff); */
-    }
-
-  if (a == -2)
-    {
-      p1 = print_push_rec (s, 0, 0);
-    }
-  return p1;
-
-}
-#endif
 
 /*
 int A4GL_am_doing_a_print(void) {
@@ -4291,137 +2672,8 @@ int A4GL_am_doing_a_print(void) {
 */
 
 
-#ifdef MOVED
-struct binding_comp *
-ensure_bind (long *a_bindp, long need, struct binding_comp *b)
-{
-  long a_bind;
-  a_bind = *a_bindp;
-  A4GL_debug ("ensure bind %d %d\n", a_bind, need);
-
-  if (a_bind > need)
-    return b;
-
-  while (a_bind <= need)
-    {
-      if (a_bind == 0)
-	a_bind = 2000;		// Start off small :-)
-      else
-	{
-	  a_bind = a_bind * 2;	// just double it ?
-	}
-    }
-  b = realloc (b, sizeof (struct binding_comp) * a_bind);
-  A4GL_debug ("ensure bind Allocted %d\n", a_bind);
-  A4GL_assertion (b == 0, "Unable to allocation memory for binding");
-  *a_bindp = a_bind;
-  return b;
-}
-#endif
 
 
-#ifdef OLD
-void ensure_bind_g (t_binding_comp_list *binding,int need) 
-{
-  long a_bind;
-  
-  a_bind = binding->abind;
-
-  if (a_bind > need)
-    return ;
-
-  while (a_bind <= need)
-    {
-      if (a_bind == 0)
-	a_bind = 10;		// Start off small :-)
-      else
-	{
-	  a_bind = a_bind * 2;	// just double it ?
-	}
-    }
-  binding->bindings.bindings_val = realloc (binding->bindings.bindings_val, sizeof (struct binding_comp) * a_bind);
-  A4GL_assertion (binding->bindings.bindings_val == 0, "Unable to allocation memory for binding");
-  binding->abind = a_bind;
-}
-
-struct binding_list *
-new_bind_list (char *s)
-{
-  struct binding_list *l;
-  l = malloc (sizeof (struct binding_list));
-  l->bindings = 0;
-  l->nbindings = 0;
-  if (s)
-    {
-      append_bind_list (l, s);
-    }
-  return l;
-}
-
-struct binding_list *
-append_bind_list (struct binding_list *l, char *s)
-{
-  l->nbindings++;
-  l->bindings = realloc (l->bindings, l->nbindings * sizeof (char *));
-  l->bindings[l->nbindings - 1] = strdup (s);
-  return l;
-}
-
-int
-A4GL_4glc_push_gen_expand (int n, char *v)
-{
-  int a;
-  struct record_list *list;
-
-  if (strncmp (v, "?,", 2) == 0 || strncmp (v, "?@@PARAM@@?,", 2) == 0)
-    {
-      int x;
-      if (strncmp (v, "?,", 2) == 0)
-	{
-	  x = ((strlen (v) + 1) / 2);
-	}
-      else
-	{
-	  x = ((strlen (v) + 1) / 12);
-	}
-      for (a = 0; a < x; a++)
-	{
-	  if (A4GL_isyes (acl_getenv ("DOING_CM")))
-	    {
-	      A4GL_4glc_push_gen (n, "?@@PARAM@@?");
-	    }
-	  else
-	    {
-	      A4GL_4glc_push_gen (n, "?");
-	    }
-	}
-      return 1;
-    }
-
-  if (strstr (v, ".*") == 0)
-    {
-      A4GL_4glc_push_gen (n, v);
-      return 1;
-    }
-
-  list = split_record_list (v, "", 0,' ');
-  A4GL_debug ("Got list : %p", list);
-
-  if (list == 0)
-    {
-      a4gl_yyerror ("OOps\n");
-      return -1;
-    }
-
-
-  for (a = 0; a < list->records_cnt; a++)
-    {
-      A4GL_4glc_push_gen (n, list->list[a]->name);
-    }
-
-  return 1;
-}
-#endif
 
 
 
@@ -4545,141 +2797,15 @@ int A4GL_is_internal_class_function(char *class,char *name) {
 }
 
 
-#ifdef OLD
-void expand_fbind(void ) {
- expand_bind (&fbind[0], 'F', fbindcnt,1);
-}
-
-void expand_ordbind(void ) {
-	return;
- 	expand_bind (&ordbind[0], 'O', ordbindcnt,1);
-}
-
-void expand_ordbind2(void ) {
-	return ;
- 	expand_bind (&ordbind[0], 'O', ordbindcnt,1);
-}
-#endif
-
-
-#ifdef OLD
-char *
-get_hdrdbname(void)
-{
-	        return hdr_dbname;
-}
-
-void set_hdrdbname(char *s)
-{
-	        strcpy(hdr_dbname,s);
-}
-#endif
 
 
 
-#ifdef OLD
-struct  binding_comp_list *ensure_binding_comp_list (struct  binding_comp_list *l) {
-	struct binding_comp_list *local;
-	if (l==0) {
-		local=malloc(sizeof(struct binding_comp_list));
-		local->bindings.bindings_len=0;
-		local->bindings.bindings_val=0;
-		local->abind=0;
-		local->data=0;
-		return local;
-	}
-	return l;
-}
-
-struct  binding_comp_list *ensure_binding_comp_list_type (struct  binding_comp_list *l,char type) {
-	struct binding_comp_list *local;
-	if (l==0) {
-		local=ensure_binding_comp_list(l);
-		local->type=type;
-		return local;
-	}
-	return l;
-}
-#endif
 
 
-#ifdef OLD
-struct  binding_comp_list *empty_genbind(int i) {
-struct binding_comp_list *l=0;
-	l=malloc(sizeof(struct binding_comp_list));
-	l->bindings.bindings_val=0;
-	l->bindings.bindings_len=0;
-	l->abind=0;
-	l->data=0;
-	l->type=i;
-	return l;
-}
-
-struct binding_comp_list *copy_togenbind(int i) {
-struct binding_comp_list *l=0;
-struct binding_comp *from=0;
-int a;
-
-int nlist=0;
-
-switch (i) {
-	case 'i': nlist=ibindcnt; from=ibind; break;
-	case 'o': nlist=obindcnt; from=obind; break;
-	case 'f': expand_bind(&fbind[0], 'f', fbindcnt,1);nlist=fbindcnt; from=fbind; break;
-	case 'F': expand_bind(&fbind[0], 'F', fbindcnt,1);nlist=fbindcnt; from=fbind; break;
-	case 'O': nlist=ordbindcnt; from=ordbind;  break;	
-	case 'n': 
-		 nlist=nullbindcnt; from=nullbind;  break;	
-	case 'N': 
-		 if (strcmp(acl_getenv("A4GL_LEXTYPE"),"FGL")!=0 ) {
-			expand_bind(&nullbind[0], 'N', nullbindcnt,0); 
-		} nlist=nullbindcnt; from=nullbind;  break;	
-
-default:
-	printf("BINDING : %c\n",i);
-	A4GL_assertion(1,"Unknown binding");
-}
 
 
-l=malloc(sizeof(struct binding_comp_list));
-l->bindings.bindings_val=malloc(sizeof(struct binding_comp)*nlist);
-memcpy(l->bindings.bindings_val,from,sizeof(struct binding_comp)*nlist);
-l->bindings.bindings_len=nlist;
-l->abind=nlist;
-l->type=i;
-l->data=0;
-
-for (a=0;a<l->bindings.bindings_len;a++) {
-	l->bindings.bindings_val[a].scope=find_variable_scope(l->bindings.bindings_val[a].varname);
-}
-
-return l;
-}
 
 
-void llex_add_ibind(int dtype,char *var) {
-        ibind=ensure_bind(&a_ibind,ibindcnt+1,ibind);
-        ibind[ibindcnt].varname=strdup(var);
-        ibind[ibindcnt].start_char_subscript_s=0;
-        ibind[ibindcnt].end_char_subscript_s=0;
-        ibind[ibindcnt].dtype=dtype;
-        ibindcnt++;
-}
-#endif
-
-
-#ifdef OLD
-void fail_on_select_ibind() {
-if (ibindcnt) {
-	if (!A4GL_isno(acl_getenv("NOSELECTVARWARNING"))) {
-		a4gl_yyerror("You can't SELECT a variable (perhaps you could rename the variable, or prefix the column in the SELECT list ?)");
-	} else {
-		A4GL_warn("Selecting a variable in a select list is not portable");
-	}
-	return;
-}
-}
-#endif
 
 
 char *A4GL_lextype(void) {
@@ -4687,120 +2813,6 @@ char *A4GL_lextype(void) {
 }
 
 
-#ifdef OLD
-struct binding_comp_list * add_genbind (struct binding_comp_list *l, char *var_i,char *type)
-{
-char var[2048] = "";
-int dtype;
-strcpy (var, var_i);
-
-if (l==0) {
-           l=malloc(sizeof(struct binding_comp_list));
-           l->bindings.bindings_val=0;
-           l->bindings.bindings_len=0;
-           l->abind=0;
-           l->data=0;
-	   l->type=' ';
-
-	   if (strcmp(type,"null")) {
-		l->type='N';
-	   }
-}
-
-
-
-  A4GL_debug ("Scanning...");
-  dtype = scan_variable (var_i);
-
-
-  if (dtype == -2 || strstr (var, ".*"))
-    {
-		A4GL_assertion(1, "Not implemented");
-    }
-  else
-    {
-      l->bindings.bindings_val = ensure_bind (&l->abind, l->bindings.bindings_len, l->bindings.bindings_val);
-      l->bindings.bindings_val[l->bindings.bindings_len].start_char_subscript_s = 0;
-      l->bindings.bindings_val[l->bindings.bindings_len].end_char_subscript_s = 0;
-      l->bindings.bindings_val[l->bindings.bindings_len].varname=strdup( var);
-      l->bindings.bindings_val[l->bindings.bindings_len].dtype = dtype;
-      l->bindings.bindings_val[l->bindings.bindings_len].scope = find_variable_scope(var);
-      l->bindings.bindings_len++;
-    }
-
-  return l;
-}
-
-struct binding_comp * make_bind (char *var_i)
-{
-	struct binding_comp *p=0;
-  long dtype;
-  char var[2048] = "";
-  strcpy (var, var_i);
-  
-  if (var_i[0] == '"') { dtype = (strlen (var) - 2) << 16; strcpy (var, var_i); }
-  else { A4GL_debug ("Scanning..."); dtype = scan_variable (var_i); strcpy (var, fgl_add_scope (var_i, 0)); }
-
-
-
-      if (dtype == -2 || strstr (var, ".*"))
-	{
-	  char buff[2000];
-	  if (strstr (var, ".*") == 0 && strchr(var,'\n')==0) { strcpy (buff, var); strcat (buff, ".*"); }
-	  A4GL_debug ("push_bind_rec...");
-	A4GL_assertion(1, "Cant put more than one variable here...");
-	}
-      else
-	{
-	p=malloc(sizeof(struct binding_comp));
-	  p->start_char_subscript_s = 0;
-	  p->end_char_subscript_s = 0;
-	  p->scope=find_variable_scope(var_i);
-
-	  if (strncmp (var, " a4gl_let_substr(", 17) == 0) { 
-			printf("---> %s\n",var);
-			A4GL_assertion(1,"let_substr not implemented for make_bind");
-	}
-
-	  if (strncmp (var, " a4gl_substr(", 13) != 0) { p->varname= strdup(var); p->dtype = dtype; }
-	  else
-	    {
-	      char buff[256];
-	      char buff2[256];
-	      int s_dtype=-1;
-	      int s_sstart=-1;
-	      int s_send=-1;
-	      //int a;
-	      char *ptrs[5] = { 0, 0, 0, 0, 0 };
-	      strcpy (buff2, &var[strlen ("a4gl_substr ") + 1]);
-	      ptrs[0] = buff2;
-	      ptrs[1] = strstr (ptrs[0] + 3, " , ");
-	      if (ptrs[1]) { ptrs[1]++; *ptrs[1] = 0; ptrs[1]++; strcpy (buff, ptrs[0]); ptrs[2] = strstr (ptrs[1] + 3, " , "); if (ptrs[2])
-		    { ptrs[2]++; *ptrs[2] = 0; ptrs[2]++; s_dtype = atol (ptrs[1]); ptrs[3] = strstr (ptrs[2] + 2, ","); if (ptrs[3]) { *ptrs[3] = 0; ptrs[3]++; s_sstart = atol (ptrs[2]); s_send = atol (ptrs[3]);
-			}
-		    }
-		}
-	      if (ptrs[3] == 0 || s_sstart<0 || s_send<0 || s_dtype<0)
-		{
-		  A4GL_debug ("Error processing : %s\n", A4GL_null_as_null (buff2));
-		  set_yytext (buff2);
-		  a4gl_yyerror ("Internal error - (split substr)");
-		}
-	      if (s_send == 0)
-		s_send = s_sstart;
-	      p->varname=strdup(buff);
-
-	      //printf("s_sstart=%d s_send=%d\n", s_sstart,s_send);
-	      p->dtype = s_dtype;
-		sprintf(buff,"%d",s_sstart);
-	      p->start_char_subscript_s = strdup(buff);
-		sprintf(buff,"%d",s_send);
-	      p->end_char_subscript_s = strdup(buff);;
-	    }
-	}
-	return p;
-    }
-#endif
 
 
 
@@ -4815,25 +2827,8 @@ return fully_expand_variables_in_expr_str_list(p);
 //expand_variables_in_expr_str_list(p,0,1);
 }
 
-#ifdef NDEF
-int dump_x(void *p) {
-return 0;
-}
-#endif
 
 
-#ifdef OLD
-char *vorl_as_string(struct variable_or_literal *v) {
-	if (v->vttype==E_V_OR_LIT_STRING) {
-		return v->variable_or_literal_u.s;
-	}
-	if (v->vttype==E_V_OR_LIT_VAR) {
-		return v->variable_or_literal_u.var->varname;
-	}
-A4GL_assertion(1,"Bad vorl...");
-return 0;
-}
-#endif
 
 static int get_function_definition(char *s) {
 int a;
@@ -5061,7 +3056,6 @@ l=NULL;
 struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i)
 {
 struct s_select_list_item_list * prval;
- //A4GL_pause_execution();
 
 
 

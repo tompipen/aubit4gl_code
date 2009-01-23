@@ -1,3 +1,5 @@
+
+#ifdef REQD
 struct generic_entry_ident
 {
   char identifier[256];
@@ -107,4 +109,4 @@ struct generic_entry_list *new_list (struct generic_entry *entry);
 void append_list (struct generic_entry_list *orig, struct generic_entry *entry);
 
 
-
+#endif

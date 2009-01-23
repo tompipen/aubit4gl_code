@@ -47,7 +47,7 @@ for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
 	if (fl->field_list_entries.field_list_entries_val[a].fieldsub) {
         	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), local_expr_as_string(fl->field_list_entries.field_list_entries_val[a].fieldsub));
 	} else {
-        	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), "1");
+        	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), "0");
 
 	}
         ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+2);
@@ -2098,7 +2098,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
                         vu_next->next->substrings_end=0;
                         vu_next->next->next=0;
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;
-                        vu_next->next->scope=cmd_data->arrayname->expr_str_u.expr_variable_usage->scope;
+                        vu_next->next->escope=cmd_data->arrayname->expr_str_u.expr_variable_usage->escope;
                         vu_next->next->variable_id=a;
 			vu_as_expr=A4GL_new_expr_push_variable(vu_top, is_in_report());
 			set_nonewlines();
@@ -2542,7 +2542,7 @@ int inp_flags=0;
                         vu_next->next->substrings_end=0;
                         vu_next->next->next=0;
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;
-                        vu_next->next->scope=cmd_data->arrayname->expr_str_u.expr_variable_usage->scope;
+                        vu_next->next->escope=cmd_data->arrayname->expr_str_u.expr_variable_usage->escope;
                         vu_next->next->variable_id=a;
 			vu_as_expr=A4GL_new_expr_push_variable(vu_top, is_in_report());
 			set_nonewlines();

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.97 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.98 2009-01-23 18:24:15 mikeaubury Exp $
 #
 */
 
@@ -1191,9 +1191,18 @@ A4GL_push_interval (struct ival *p, int size)
 void
 A4GL_push_variable (void *ptr, int dtype)
 {
+int dont_push_null=0;
+int dtype_masked;
 
+  dtype_masked=dtype & DTYPE_MASK;
 
-  if (A4GL_isnull (dtype & DTYPE_MASK, ptr))
+  if (dtype_masked==DTYPE_TEXT || dtype_masked==DTYPE_BYTE) {
+	// We'll push the actual values onto the stack for blobs
+	// even if they are null
+	dont_push_null++;
+  }
+
+  if (A4GL_isnull (dtype_masked, ptr) && ! dont_push_null) // We'll normally just push a null of the required datatype...
     {
       A4GL_debug ("Variable was null dtype=%d %x ptr=%p", dtype & DTYPE_MASK, dtype, ptr);
       A4GL_push_null (dtype & DTYPE_MASK, DECODE_SIZE (dtype));
