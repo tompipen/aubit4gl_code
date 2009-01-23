@@ -1285,10 +1285,12 @@ uilib_input_get_values (int nargs)
       UIdebug (5, "Pushing input data : %d %s\n", a, contexts[context].ui.input.variable_data[a]);
       if (strlen (contexts[context].ui.input.variable_data[a]) == 0)
 	{
+		printf("Pushing NULL\n");
 	  A4GL_push_null (0, 0);
 	}
       else
 	{
+		printf("Pushing %s\n", contexts[context].ui.input.variable_data[a]);
 	  PUSHquote (contexts[context].ui.input.variable_data[a]);
 	}
     }

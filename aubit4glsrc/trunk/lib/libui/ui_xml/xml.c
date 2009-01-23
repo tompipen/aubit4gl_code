@@ -1357,6 +1357,7 @@ printf("s=%p\n",s);
 	  //
 	  A4GL_push_int (Context);
 	  uilib_input_get_values (1);
+	printf("Popping values\n");
 	  for (b = sreal->novars - 1; b >= 0; b--)
 	    {
 	      A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype, sreal->vars[b].size);
