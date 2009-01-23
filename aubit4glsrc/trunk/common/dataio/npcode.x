@@ -1,3 +1,5 @@
+/* $Id: npcode.x,v 1.12 2009-01-23 14:16:00 mikeaubury Exp $ */
+
 const FGLC_XDR_VERSION = 100;
 const FGLC_XDR_MAGIC = 0xa4fc2345;
 

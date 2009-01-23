@@ -1,10 +1,10 @@
 
 /* 
 Data definitions for a report 
- $Id: report.x,v 1.10 2009-01-23 14:05:40 mikeaubury Exp $ 
+ $Id: report.x,v 1.11 2009-01-23 14:18:34 mikeaubury Exp $ 
 
 */
-
+ 
 const AACE_XDR_VERSION = 100;
 const AACE_XDR_MAGIC = 0xa4ac1234;
 

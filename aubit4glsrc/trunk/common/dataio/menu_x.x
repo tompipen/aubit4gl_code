@@ -1,3 +1,4 @@
+/* $Id: menu_x.x,v 1.2 2009-01-23 14:16:00 mikeaubury Exp $ */
 
 struct menu_option_item {
 	string id<>;
