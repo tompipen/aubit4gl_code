@@ -1,4 +1,27 @@
 ---------------------------
+Sat Jan 24 17:38:27 GMT 2009
+---------------------------
+1.10RC_48 Released
+---------------------------
+	
+	Change parser to use a different mechanism for setting variables
+	(parser change).  Add version protection to generated files when
+	using PACKED packer
+	
+	In function A4GL_wcswidth(): fallback to strlen() in case of
+	"invalid multibyte sequence" error.
+	
+	Fake pass by reference for BLOBs
+	
+	Add blob open error
+	
+	Fix required for build test 1698
+	
+	Fixup for compiling SPL
+	
+	Add 'WITH RESUME" to RETURN to be used solely with SPL generation
+	
+---------------------------
 Thu Jan  8 17:34:51 GMT 2009
 ---------------------------
 1.10RC_47 Released
