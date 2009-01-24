@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.15 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.16 2009-01-24 13:17:07 mikeaubury Exp $
 #*/
 
 /**
@@ -413,7 +413,7 @@ int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
 
 
         A4GL_memfile_fread (buff_r, 1, strlen(buff), (void *) infile);
-        if (memcmp(buff,buff_r,sizeof(strlen(buff)))==0) {
+        if (memcmp(buff,buff_r,strlen(buff))==0) { // Everything is ok...
                 return 1;
         }
         return 0;
