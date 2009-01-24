@@ -59,6 +59,40 @@ return ptr;
 }
 
 
+#ifdef NOTUSED
+static void
+print_field_name_list_as_struct (char *name, struct fh_field_list *fl, int declare_or_set)
+{
+  int a;
+  char *ptr_field;
+
+  A4GL_assertion (fl == 0, "No field list...");
+  if (declare_or_set == 0)
+    {
+      printc ("struct s_field_name %s[]={\n", name);
+      for (a = 0; a < fl->field_list_entries.field_list_entries_len; a++)
+	{
+	  ptr_field =
+	    A4GL_field_name_as_char (local_ident_as_string (fl->field_list_entries.field_list_entries_val[a].field, 1), "1");
+	  printc ("   {%s},", ptr_field);
+	}
+      printc ("   {NULL,0}");
+      printc ("};\n");
+    }
+  else
+    {
+      for (a = 0; a < fl->field_list_entries.field_list_entries_len; a++)
+	{
+	  if (fl->field_list_entries.field_list_entries_val[a].fieldsub)
+	    {
+	      printc ("%s[%d].pos=%s;\n", name, a,
+		      local_expr_as_string (fl->field_list_entries.field_list_entries_val[a].fieldsub));
+	    }
+	}
+    }
+}
+#endif
+
 
 void
 print_cmd_start (void)
@@ -2261,8 +2295,10 @@ struct expr_str_list *li;
   printc("void *_filterfunc=NULL;");
   printc ("int _forminit=1;\n");
   print_event_list(cmd_data->events);
+  //print_field_name_list_as_struct("_fldlist",cmd_data->list,0);
    local_print_bind_set_value_g (li,1,0,'i');
   
+  //print_field_name_list_as_struct("_fldlist",cmd_data->list,1);
   printc ("while(_fld_dr!=0){\n");
   tmp_ccnt++;
   printc ("if (_exec_block == 0) {\n");
@@ -2358,8 +2394,10 @@ int ccc;
   printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
   printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
+  //print_field_name_list_as_struct("_fldlist",cmd_data->field_list,0);
   printc ("int _forminit=1;\n");
   print_event_list(cmd_data->events);
+  //print_field_name_list_as_struct("_fldlist",cmd_data->field_list,1);
   printc ("while(_fld_dr!=0){\n");
   tmp_ccnt++;
   printc ("if (_fld_dr== -100) {\n");

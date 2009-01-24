@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.80 2008-10-27 14:06:52 mikeaubury Exp $
+# $Id: ui.c,v 1.81 2009-01-24 17:20:02 mikeaubury Exp $
 #
 */
 
@@ -1074,6 +1074,45 @@ A4GL_make_field_slist_from_ap (struct s_field_name_list *list, va_list * ap, int
       list->field_name_list[list->nfields - 1].fpos = f;
     }
 }
+
+
+
+/// replace_0 is used for Input Array to replace a non-specified 
+/// subscript with the current row in the input array...
+void
+A4GL_make_field_slist_from_ap_with_field_list (struct s_field_name_list *list, va_list * ap, int replace_0)
+{
+  int f;			// F is field number - should be int ? 
+  //long f;
+  char *s;
+  list->nfields = 0;
+  list->field_name_list = 0;
+
+  while (1)
+    {
+      s = va_arg (*ap, char *);
+      if (s == 0)
+	break;
+      //f = (int) va_arg (*ap, int *);
+      f = (int) va_arg (*ap, int);
+      if (f > 0)
+	f--;
+      list->nfields++;
+      list->field_name_list = realloc (list->field_name_list, sizeof (list->field_name_list[0]) * list->nfields);
+      list->field_name_list[list->nfields - 1].fname = s;
+      if (f == 0)
+	{
+	  if (replace_0 > 0)
+	    {
+	      f = replace_0 - 1;	//0 based - not 1 based like the s->scr_line
+	    }
+	}
+      list->field_name_list[list->nfields - 1].fpos = f;
+    }
+}
+
+
+
 
 int
 aclfgl_aclfgl_get_curr_width (int n)
