@@ -2127,6 +2127,10 @@ struct module_entry *c;
 	c->module_entry_u.formhandler_definition.field_op_events=fld_events;
 	c->module_entry_u.formhandler_definition.extra_warnings.extra_warnings_len=0;
 	c->module_entry_u.formhandler_definition.extra_warnings.extra_warnings_val=0;
+
+        c->module_entry_u.formhandler_definition.variables.variables.variables_len=0;
+        c->module_entry_u.formhandler_definition.variables.variables.variables_val=NULL;
+	
 	
 
 	return  c;
