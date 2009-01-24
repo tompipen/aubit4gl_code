@@ -1,5 +1,5 @@
 
-/* A Bison parser, made by GNU Bison 2.4.  */
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
@@ -2477,7 +2477,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 282 "fgl.infx.yacc"
+#line 281 "fgl.infx.yacc"
 
 
 
@@ -2490,11 +2490,11 @@ typedef union YYSTYPE
 	char *sql_string;
 	struct fh_field_entry *field_entry;
 	struct fh_field_list *field_list;
-	struct generic_entry_list *list;
-	struct generic_entry *entry;
-	struct generic_entry_ident *ident;
-	struct generic_entry_variable *variable;
-	struct generic_entry_literal *literal;
+	/* struct generic_entry_list *list; */
+	/* struct generic_entry *entry; */
+	/* struct generic_entry_ident *ident; */
+	/* struct generic_entry_variable *variable; */
+	/* struct generic_entry_literal *literal; */
 	struct variable_usage *var_usg;
 	struct num_list *num_list;
 	struct array_list *array_list;
@@ -2564,11 +2564,18 @@ typedef union YYSTYPE
 	struct struct_insert_cmd *insert_cmd;
 	struct struct_delete_cmd *delete_cmd;
 	struct s_update_pair *upd_pair;
+
+	struct variable 		*variable_ptr;
+	struct record_variable 		*record_variable_ptr;
+        struct assoc_array_variable 	*v_assoc_ptr;
+        struct constant_data 		*v_const_ptr;
+        struct linked_variable 		*v_linked_ptr;
+	struct variable_list 		*variable_list_ptr;
 	
 
 
 /* Line 1676 of yacc.c  */
-#line 2572 "y.tab.h"
+#line 2579 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
