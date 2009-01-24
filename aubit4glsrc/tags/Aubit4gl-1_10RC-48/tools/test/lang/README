@@ -1,0 +1,76 @@
+Translations
+------------
+
+
+Translations work by converting all the strings in a 4GL into IDs.
+These IDs are then looked up in standard help files at runtime depending on the
+value of 
+
+	options language file "..."
+
+The language file can be a variable (which can be set from a database or environment variable) or a string constant.
+
+
+In order to use language files - you must :
+
+
+
+1) Create the original string -> numeric encodings
+
+2) create the numeric->string for the target language.
+
+
+Create the string to numeric encodings
+--------------------------------------
+
+This involves creating a source language file, the easiest way is to use the builtin string exporter function:
+
+ 	export DUMPSTRINGS=ident
+
+Once this is done - run 4glc on your target 4gl :
+
+	4glc myfile.4gl
+
+This will create a file called 'strings.lang' - edit this file to remove any strings you dont want translating (eg SQL!)
+and rename it (so it isn't overwritten inadvertantly).
+
+	mv strings.lang source.lang
+
+
+You can specify the new name of the file by setting the TRANSLATEFILE environment variable, eg
+
+	export TRANSLATEFILE=source.lang
+
+
+Now - when you run 4glc with the TRANSLATEFILE set, it will look in the specified file for each string it comes across.
+If it discovers an entry - it is replaced with an ID number.
+
+
+
+
+Create the numeric to string for target language.
+------------------------------------------------
+For each of the strings in the source.lang file - you'll need to create a help file entry with the same ID.
+Eg for 
+
+Hello:>0
+World:>1
+
+
+For english you would have english.msg :
+.0
+Hello
+.1
+World
+
+For french.msg it may be :
+.0
+Bonjour
+.1
+Monde
+
+
+Compile up the help messages (using amkmessage) and then you good to go - just use the options language file to specify which of the help files to use...
+
+
+

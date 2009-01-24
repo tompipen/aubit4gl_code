@@ -1,0 +1,15 @@
+AUBITDIR=../..
+CFLAGS=-g -I$(AUBITDIR)/incl -Wall
+
+#.PHONY: all
+
+ALL = all
+
+all: fdecompile_4gl formgen_4gl
+
+fdecompile_4gl : dump_4gl.c decompile.o 
+	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+
+formgen_4gl : dump_form.c decompile.o 
+	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+
