@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.44 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.45 2009-01-24 11:44:05 mikeaubury Exp $
 #*/
 
 /**
@@ -705,10 +705,13 @@ int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
 
 	sprintf(buff,"A4GL FILE : %s %s\n",module,version);
 	fread (buff_r, 1, strlen(buff), infile);
-	if (memcmp(buff,buff_r,sizeof(strlen(buff)))==0) {
-		return 1;
+
+	if (memcmp(buff,buff_r,sizeof(strlen(buff)))!=0) {
+		A4GL_set_errm("bad file header");
+                A4GL_exitwith("Invalid file (%s)");
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
 
