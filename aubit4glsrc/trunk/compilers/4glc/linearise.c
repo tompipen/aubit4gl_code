@@ -172,6 +172,10 @@ linearise_module (struct commands *all_cmds, module_definition * d)
 	case E_MET_IMPORT_FUNCTION_DEFINITION:
 	case E_MET_CLASS_DEFINITION:
 	case E_MET_IMPORT_LEGACY_DEFINITION:
+	case E_MET_FORMHANDLER_DEFINITION:
+	case E_MET_IMPORT_DATATYPE:
+	case E_MET_IMPORT_PACKAGE:
+
 	  break;
 
 	}

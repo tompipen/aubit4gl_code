@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.53 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: globals.c,v 1.54 2009-01-24 09:48:02 mikeaubury Exp $
 #
 */
 
@@ -47,12 +47,15 @@
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
+#include "variables_new.h"
 
 //andrej int A4GL_setenv(char *name, char *value, int overwrite);
 int has_default_database (void);
 extern module_definition this_module;
 
 char *get_default_database (void);
+void A4GLPACKER_clrlibptr (void);
+
 /*
 =====================================================================
                     Variables definitions

@@ -1398,7 +1398,7 @@ struct variable *v;
 char buff[256];
 char *ptr;
 int a;
-char scope;
+enum e_scope scope;
 char errbuff[256];
 if (s==0) return -1;
 if (strlen(s)==0) return -1;

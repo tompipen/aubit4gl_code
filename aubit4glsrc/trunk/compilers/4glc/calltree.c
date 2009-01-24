@@ -299,7 +299,7 @@ dtype_as_string (int dtype)
 
 
 int
-local_is_valid_vname (struct variable *v, char scope)
+local_is_valid_vname (struct variable *v, enum e_scope scope)
 {
   char *nm;
   nm = v->names.names.names_val[0].name;

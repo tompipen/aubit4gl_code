@@ -1927,7 +1927,7 @@ local_is_system_variable (char *s)
 
 
 int
-local_is_valid_vname (struct variable *v, char scope)
+local_is_valid_vname (struct variable *v, enum e_scope scope)
 {
   char *nm;
   nm = v->names.names.names_val[0].name;
@@ -1994,6 +1994,7 @@ local_is_valid_vname (struct variable *v, char scope)
     case VARIABLE_TYPE_CONSTANT:
     case VARIABLE_TYPE_FUNCTION_DECLARE:
     case VARIABLE_TYPE_OBJECT:
+    case VARIABLE_TYPE_TYPE_DECLARATION:
     //case VARIABLE_TYPE_LINKED:
       return 1;
 

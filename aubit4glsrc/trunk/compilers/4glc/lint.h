@@ -9,7 +9,7 @@ int add_global_variable_assignement(char *s, char *currfunc, char *module, int l
 expr_str *get_expr_datatype(int n);
 char *dtype_as_string(int dtype);
 void lint_warnings(int n, struct lint_warning *v);
-int local_is_valid_vname(struct variable *v, char scope);
+int local_is_valid_vname(struct variable *v, enum e_scope scope);
 //void check_variable_name(char *modname, char *scope, struct variable *v);
 int has_variable(struct variable_list *v, char *name);
 void check_module(struct module_definition *d);
