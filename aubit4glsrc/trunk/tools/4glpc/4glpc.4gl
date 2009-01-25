@@ -382,7 +382,7 @@ endcode
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
 	
-	IF lv_arg matches "-o*" THEN
+	IF lv_arg = "-o" THEN
 		LET lv_cnt=lv_cnt+1
 	END IF
 	IF lv_arg="-e" THEN

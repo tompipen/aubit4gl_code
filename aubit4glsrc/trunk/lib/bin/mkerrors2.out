@@ -1,6 +1,5 @@
 1|Undefined Error
 2|Shouldn't get to here...
-3|
 4|Variable is already defined
 5|Unable to open LEX library...
 6|Unable to open PARSER library...
@@ -361,3 +360,4 @@
 366|Unable to open blobfile
 368|Invalid file
 370|Invalid file (%s)
+372|

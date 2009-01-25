@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.49 2008-12-14 14:02:04 mikeaubury Exp $
+# $Id: Makefile,v 1.50 2009-01-25 10:56:37 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -217,11 +217,11 @@ endif
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS` -g -c -o $@ helper_funcs.c 
 
 postgres.o: postgres.ec
 	${PG_ESQLC} -C INFORMIX -t $^
-	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -g -c -o $@ postgres.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS`
+	${CC} ${CFLAGS} -DPG_ESQLC_V3=$(PG_ESQLC_V3) -DDIALECT_POSTGRES ${CFLAGS} -I$(ECPG_INCDIR) ${ECPG_IFLAGS} ${LIBPQ_FE_H_IFLAGS} -I${ROOT}/incl `${ROOT}/bin/aubit-config PG_COPTS` -g -c -o $@ postgres.c 
 
 ###################
 #SAP ESQL/C compiler

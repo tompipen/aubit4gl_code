@@ -1,8 +1,9 @@
-ident *.x | awk '/Id:/ {
-	v=$2
+grep -h "\$Id:" *.x | awk '/Id:/ {
+	gsub("^.*Id:","");
+	v=$1
 	# Extra the filename by removing the trailing ,v
 	gsub(".x,v","",v)
 	if (v!="$") {
-		print "VERSION_" v "=" $3
+		print "VERSION_" v "=" $2
 	}
 }' > x_versions

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.54 2009-01-24 09:48:02 mikeaubury Exp $
+# $Id: globals.c,v 1.55 2009-01-25 10:56:36 mikeaubury Exp $
 #
 */
 
@@ -197,7 +197,6 @@ generate_globals_for (char *s)
       system (buff);
     }
 #endif
-  /*why cd? just pass the path in file name... */
   
 
 // cc 2004.11.24 need to check for -d flag from parent process 
@@ -207,11 +206,19 @@ generate_globals_for (char *s)
  	strcpy (db, get_default_database ()); 
  	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
  	A4GL_trim (db); 
+#ifdef __WIN32__
+ 	SPRINTF2 (buff, "4glc -d %s --globals %s", db, nfilename); 
+#else
  	SPRINTF2 (buff, "4glc -d %s --globals '%s'", db, nfilename); 
+#endif
  } 
  else 
  { 
+#ifdef __WIN32__
+ 	SPRINTF1 (buff, "4glc --globals %s", nfilename); 
+#else
  	SPRINTF1 (buff, "4glc --globals '%s'", nfilename); 
+#endif
  } 
 
 
@@ -305,7 +312,7 @@ read_glob (char *s)
 
   aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
   if (!a) {
-     		generate_globals_for (ii);
+     		generate_globals_for (ii4gl);
   }
 
 
@@ -313,7 +320,7 @@ read_glob (char *s)
 	if (!a) {
   		strcpy (iii, currinfile_dirname);
   		strcat (iii, "/");
-   		strcat (iii, ii);
+   		strcat (iii, ii4gl);
       		generate_globals_for (iii);
   		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,iii);
 		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
