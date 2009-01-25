@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.44 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: Makefile,v 1.45 2009-01-25 10:29:26 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -114,6 +114,7 @@ ALL				+=${ROOT}/bin/4glc fgllint
 
 
 core: ${ROOT}/bin/4glc 
+4glc: ${ROOT}/lib/lib4glc${SO_EXT}
 
 C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I.  -Irules -I${GENRULES}
 #-I${ROOT}/lib -I${ROOT}/lib/libincl
