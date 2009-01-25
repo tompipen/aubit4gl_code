@@ -57,7 +57,7 @@ end if
 
 # Make sure its set in the environment
 # we might have picked it up from an aubitrc file...
-call aclfgl_setenv("A4GL_MAKE", lv_make)
+call aclfgl_setenv("A4GL_MAKE", lv_make clipped)
 
 let lv_fileline=0
 
@@ -217,7 +217,9 @@ else
 end if
 
 let lv_str=aclfgl_expand_env_vars_in_cmdline(lv_str) clipped," 2>&1"
-
+if console_mode() then
+	display lv_str
+end if
 code
 {
   A4GL_trim (lv_str);

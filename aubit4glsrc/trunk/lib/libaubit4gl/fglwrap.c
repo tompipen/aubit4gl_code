@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.139 2009-01-02 08:52:21 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.140 2009-01-25 12:04:53 mikeaubury Exp $
 #
 */
 
@@ -1548,9 +1548,12 @@ expand_env_vars_in_cmdline (char *s, int showerrs)
       while (1)
 	{
 	  a++;
+	
 	  if (s[a] >= 'A' && s[a] <= 'Z')
 	    continue;
 	  if (s[a] >= 'a' && s[a] <= 'z')
+	    continue;
+	  if (s[a] >= '0' && s[a] <= '9')
 	    continue;
 	  if (s[a] == '_')
 	    continue;
