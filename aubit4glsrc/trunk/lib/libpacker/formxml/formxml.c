@@ -1,5 +1,6 @@
 
 #include "a4gl_libaubit4gl.h"
+#include "a4gl_API_packer_lib.h"
 
 
 static char *get_sql_dtype ( int dtype);
@@ -1133,7 +1134,6 @@ has_label (int x, int y, int w, int set, int fy)
 void make_screen (struct_form * f,int scr)
 {
   int x, y;
-  int spc;
   int a;
   int fno;
   int b;
@@ -1327,12 +1327,12 @@ for (a=0;a<nfields;a++) {
 	
 	  if (isline (screen_convert_fields[a].label))
 	    {
-	      fprintf (ofile, "<HLine posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n", screen_convert_fields[a].y,
+	      fprintf (ofile, "<HLine posY=\"%d\" posX=\"%d\" gridWidth=\"%ld\"/>\n", screen_convert_fields[a].y,
 		       screen_convert_fields[a].x, strlen (screen_convert_fields[a].label));
 	    }
 	  else
 	    {
-	      fprintf (ofile, "<Label text=\"%s\" posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n",
+	      fprintf (ofile, "<Label text=\"%s\" posY=\"%d\" posX=\"%d\" gridWidth=\"%ld\"/>\n",
 		       xml_escape (screen_convert_fields[a].label), screen_convert_fields[a].y, screen_convert_fields[a].x,
 		       strlen (screen_convert_fields[a].label));
 	    }
