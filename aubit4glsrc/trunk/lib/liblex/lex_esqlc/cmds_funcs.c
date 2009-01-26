@@ -581,9 +581,9 @@ print_for_cmd (struct_for_cmd * cmd_data)
   int have_from = 0;
   int have_to = 0;
   int have_step = 0;
-  int from_l = 0;
-  int to_l = 0;
-  int step_l = 0;
+  long from_l = 0;
+  long to_l = 0;
+  long step_l = 0;
 
   print_cmd_start ();
   from = cmd_data->start;
@@ -628,7 +628,7 @@ print_for_cmd (struct_for_cmd * cmd_data)
   if (!have_step)
     printc ("int _step;");
   else
-    printc ("int _step=%ld;", step_l);
+    printc ("int _step=%ld; /* ... */", step_l);
 
   if (!have_from)
     {
