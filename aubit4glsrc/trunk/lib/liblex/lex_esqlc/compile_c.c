@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.465 2009-01-26 10:12:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.466 2009-01-26 15:14:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.465 2009-01-26 10:12:18 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.466 2009-01-26 15:14:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1251,7 +1251,7 @@ real_print_expr (struct expr_str *ptr)
 	  			real_print_expr (ptr->expr_str_u.expr_in->elist->list.list_val[a]);
 		}
 	  	printc ("A4GL_push_int(%d);",ptr->expr_str_u.expr_in->elist->list.list_len);
-	  	printc ("A4GL_pushop(OP_IN);",ptr->expr_str_u.expr_in->elist->list.list_len);
+	  	printc ("A4GL_pushop(OP_IN);");
 	  break;
 	case ET_EXPR_OP_NOT_IN:
 	  	real_print_expr (ptr->expr_str_u.expr_in->expr);
@@ -1259,7 +1259,7 @@ real_print_expr (struct expr_str *ptr)
 	  			real_print_expr (ptr->expr_str_u.expr_in->elist->list.list_val[a]);
 		}
 	  	printc ("A4GL_push_int(%d);",ptr->expr_str_u.expr_in->elist->list.list_len);
-	  	printc ("A4GL_pushop(OP_NOTIN);",ptr->expr_str_u.expr_in->elist->list.list_len);
+	  	printc ("A4GL_pushop(OP_NOTIN);");
 	  break;
 
 
@@ -1440,7 +1440,7 @@ real_print_expr (struct expr_str *ptr)
   		if (is_in_report()) { set_doing_a_report_call(); }
 	    if (A4GL_doing_pcode ())
 	      {
-		printc ("ECALL(\"%s%s\",%d,%ld);",
+		printc ("ECALL(\"%s%s\",%d,%d);",
 			get_namespace (ptr->expr_str_u.expr_function_call->fname),
 			ptr->expr_str_u.expr_function_call->fname,
 			ptr->expr_str_u.expr_function_call->line, params);
@@ -1453,7 +1453,7 @@ real_print_expr (struct expr_str *ptr)
 		    printc ("{");
 		    printc ("int _retvars;");
 		    printc ("A4GLSQL_set_status(0,0);");
-		    printc ("_retvars=A4GL_call_4gl_dll(%s,\"%s\",%ld); ",
+		    printc ("_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); ",
 			    lib, ptr->expr_str_u.expr_function_call->fname,
 			    params);
 		    printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
@@ -1469,9 +1469,7 @@ real_print_expr (struct expr_str *ptr)
 		  {
 		    printc ("{ // FCALL 1");
 		    printc ("int _retvars;");
-		    printc ("_retvars=%s%s(%ld); ",
-			    get_namespace (ptr->expr_str_u.expr_function_call->
-					   fname),
+		    printc ("_retvars=%s%s(%d); ", get_namespace (ptr->expr_str_u.expr_function_call-> fname),
 			    ptr->expr_str_u.expr_function_call->fname, params);
 		    printc ("{");
 		    printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
@@ -1538,8 +1536,7 @@ real_print_expr (struct expr_str *ptr)
 	      printc ("  _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);",
 		      p->lib, p->fname,
 		      A4GL_new_list_get_count (p->parameters));
-	      printc ("  if (_retvars!=1) {", p->lib, p->fname,
-		      A4GL_new_list_get_count (p->parameters));
+	      printc ("  if (_retvars!=1) {");
 	      printc ("      A4GLSQL_set_status(-3001,0);");
 	      printc ("      A4GL_chk_err(%d,\"%s\");", p->line, p->module);
 	      printc ("      A4GL_pop_args(_retvars);");
@@ -1675,7 +1672,7 @@ real_print_expr (struct expr_str *ptr)
 
 
 	case ET_EXPR_LITERAL_LONG:
-	  printc ("A4GL_push_long(%d);", ptr->expr_str_u.expr_long);
+	  printc ("A4GL_push_long(%ld);", ptr->expr_str_u.expr_long);
 	  break;
 
 	case ET_EXPR_LITERAL_STRING:
@@ -3202,10 +3199,10 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
 	  tmp_ccnt--;
-	  printc ("}\n", buff_id);
+	  printc ("}\n");
 	  alvl--;
 	}
-      printc ("}\n", buff_id);
+      printc ("}\n");
     }
 
 
@@ -3444,7 +3441,7 @@ void print_define_char (char *var, int size, int isstatic_extern)
 
   if (doing_cs ())
     {
-      printc ("%sA4GL_cs_%s;\n", buff, var, size);
+      printc ("%sA4GL_cs_%s;\n", buff, var);
     }
   else
     {
@@ -4670,7 +4667,7 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
       for (a = 0; a < bind->list.list_len; a++)
         {
 	set_nonewlines();
-          printc ("nullbind[%d].ptr=&%s;", a);
+          printc ("nullbind[%d].ptr=&", a);
 		print_variable_usage_for_bind(bind->list.list_val[a]);
 		printc(";");
 	clr_nonewlines();
@@ -4793,9 +4790,7 @@ print_import (char *func, int nargs,int yylineno)
 	  func);
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
-  printc
-    ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n",
-     nargs, yylineno);
+  printc ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n", nargs);
   for (a = 1; a <= nargs; a++)
     {
       printc ("   _argc[%d]=A4GL_pop_long();\n", nargs - a);
@@ -5044,9 +5039,9 @@ clr_suppress_lines();
 			case VARIABLE_TYPE_SIMPLE:
       				if (nv->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR ) {
 					printc("struct _dynelem_%s { char dummyname[%d];};", name,nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
-					printc("char **%s=0;",name,name);
+					printc("char **%s=0;",name);
 				} else {
-					printc("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+					printc("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
 					printc("%s *%s=0;",local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype),name);
 				}
 				break;
@@ -5633,13 +5628,13 @@ expr_str_list *expanded_params;
         {
           printc
             ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n",
-             expanded_params->list.list_len, function_definition->lineno);
+             expanded_params->list.list_len);
         }
       else
         {
           printc
             ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction();return -1;}\n",
-             expanded_params->list.list_len, function_definition->lineno);
+             expanded_params->list.list_len);
         }
       tmp_ccnt++;
       print_function_variable_init (&function_definition->variables);
@@ -5743,7 +5738,7 @@ if (!printed_gtk) {
               print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
             }
         }
-  printc ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,A4GL_get_currwin_name());\n", name);
+  printc ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,A4GL_get_currwin_name());\n");
   printc ("if (strlen(this_win)==0) strcpy(this_win,A4GL_get_currwin_name());\n");
   printc ("if (strcmp(this_win,cwin)!=0) A4GL_current_window(this_win);");
 

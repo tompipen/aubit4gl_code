@@ -210,10 +210,10 @@ static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when
 
   if ((when_code & 15) == WHEN_CONTINUE) {
 		if (strstr(when_str,"ERR_CHK_ERROR")) {
-      			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l, when_code);
+      			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l);
 		}
 		if (strstr(when_str,"ERR_CHK_SQLERROR")) {
-      			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l, when_code);
+      			printc ("%s { A4GL_err_continue_log(%d,_module_name); }\n", when_str, l);
 		}
     		return 0;
   }
@@ -226,9 +226,9 @@ static int pr_when_do (char *when_str, int when_code, int l, char *f, char *when
     {
 	    
 	  if (A4GL_doing_pcode()) {
-      		printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
+      		printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l);
 	  } else {
-      		printc ("%s { A4GL_chk_err(%d,_module_name); }\n", when_str, l, f);
+      		printc ("%s { A4GL_chk_err(%d,_module_name); }\n", when_str, l);
       }
       printcomment ("/* WHENSTOP */");
     }

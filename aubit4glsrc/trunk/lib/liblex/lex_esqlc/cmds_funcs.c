@@ -2064,7 +2064,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
   printc ("{");
 	tmp_ccnt++;
   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
-  printc ("int _fld_dr; int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%d];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id, sizeof (struct s_disp_arr) + 10,sio_id);
+  printc ("int _fld_dr; int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%ld];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id, sizeof (struct s_disp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);
 
 
@@ -2289,7 +2289,7 @@ struct expr_str_list *li;
   sio_id=cmd_data->sio;
   printc("int _attr=%d;", attributes_as_int(cmd_data->attributes)); 
   printc ("int _fld_dr= -100;int _exec_block= 0;char *_fldname;int _sf;");
-  printc("char _sio_%d[%d]; char *_curr_win=0; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", sio_id,sizeof (struct s_screenio) + 10,sio_id);
+  printc("char _sio_%d[%ld]; char *_curr_win=0; char _inp_io_type='C'; char *_sio_kw_%d=\"s_screenio\";\n", sio_id,sizeof (struct s_screenio) + 10,sio_id);
   printc("void *_filterfunc=NULL;");
   printc ("int _forminit=1;\n");
   print_event_list(cmd_data->events);
@@ -2389,7 +2389,7 @@ int ccc;
    printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
   ccc=cmd_data->variables->list.list_len;
   print_bind_dir_definition_g (cmd_data->variables,1,'i');
-  printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
+  printc("char _sio_%d[%ld];", sio_id,sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
   printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
 
@@ -2516,7 +2516,7 @@ int inp_flags=0;
   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes));
   printc("void *_fldlist=NULL; /* We dont use this for Input Array - but it may be required for get_fldbuf */");
   printc("int _fld_dr= -100;int _exec_block= 0;\nchar *_fldname;char *_curr_win; \nint _forminit=1;int _tmp_int=0;");
-  printc ("char _sio_%d[%d];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id, sizeof (struct s_inp_arr) + 10,sio_id);
+  printc ("char _sio_%d[%ld];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id, sizeof (struct s_inp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);
 
 
@@ -2783,7 +2783,7 @@ char *text;
   tmp_ccnt++;
 	printc("int _attr_prompt=%d;", attributes_as_int (cmd_data->prompt_str_attrib));
 	printc("int _attr_field=%d;", attributes_as_int (cmd_data->prompt_fld_attrib));
-  printc("char _sio_%d[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n", cmd_data->sio, sizeof (struct s_prompt), cmd_data->sio, timeout);
+  printc("char _sio_%d[%ld];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n", cmd_data->sio, sizeof (struct s_prompt), cmd_data->sio, timeout);
   print_event_list (cmd_data->events);
   A4GL_print_expr_list_concat (cmd_data->prompt_str);
 

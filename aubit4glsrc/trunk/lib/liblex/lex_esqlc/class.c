@@ -79,7 +79,7 @@ int a;
 int b;
 char **parents;
 int nparents;
-printc("");
+printc(" ");
 printcomment("/* Parent Members */");
 if (strlen(parent_name)) {
 	char **buff;

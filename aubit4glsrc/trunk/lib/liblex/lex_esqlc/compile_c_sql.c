@@ -156,7 +156,7 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
     			}
 			printc("_sql=\"%s\";", escape_quotes_and_remove_nl(ptr));
 
-        printc("A4GL_push_char(_sql);",e->subquery);
+        printc("A4GL_push_char(_sql);");
         printc("A4GL_push_binding(%s);",ibindstr);
 
         if (i) printc("A4GL_pushop(OP_EXISTS);");
@@ -203,7 +203,7 @@ void print_in_subquery(int i, struct s_expr_in_sq *e) {
     			}
 			printc("_sql=\"%s\";", escape_quotes_and_remove_nl(ptr));
 
-        printc("A4GL_push_char(_sql);",e->subquery);
+        printc("A4GL_push_char(_sql);");
         printc("A4GL_push_binding(%s);",ibindstr);
 
         if (i) printc("A4GL_pushop(OP_IN_SELECT);");
@@ -233,7 +233,7 @@ int n;
   	printc ("A4GLSQL_put_insert(ibind,%d);\n", n);
   	printc ("}\n");
   } else {
-  	printc ("A4GLSQL_put_insert(NULL,0);\n", n);
+  	printc ("A4GLSQL_put_insert(NULL,0);\n");
   }
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
@@ -549,9 +549,9 @@ print_use_session(cmd_data->connid);
   }
 
   if (cmd_data->outbind==0) {
-                printc ("A4GLSQL_fetch_cursor(%s,%d,%s,0,NULL); /* No bind */", get_ident_as_string(cmd_data->fetch->cname),cmd_data->fetch->fp->ab_rel, buff);
+                printc ("A4GLSQL_fetch_cursor(%s,%ld,%s,0,NULL); /* No bind */", get_ident_as_string(cmd_data->fetch->cname),cmd_data->fetch->fp->ab_rel, buff);
   } else {
-                printc ("A4GLSQL_fetch_cursor(%s,%d,%s,%d,obind);", get_ident_as_string(cmd_data->fetch->cname),cmd_data->fetch->fp->ab_rel, buff,cmd_data->outbind->list.list_len);
+                printc ("A4GLSQL_fetch_cursor(%s,%ld,%s,%d,obind);", get_ident_as_string(cmd_data->fetch->cname),cmd_data->fetch->fp->ab_rel, buff,cmd_data->outbind->list.list_len);
   }
 
   if (cmd_data->outbind ) {
@@ -1303,7 +1303,7 @@ tmp_ccnt++;
   		print_bind_set_value_g(cmd_data->outputvals,'o');
   		printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind); /* Foreach next */\n", get_ident_as_string(cmd_data->cursorname) , FETCH_RELATIVE, ni);
 	} else {
-  		printc ("A4GLSQL_fetch_cursor(%s,%d,1,0,NULL); /* Foreach next */\n", get_ident_as_string(cmd_data->cursorname) , FETCH_RELATIVE, ni);
+  		printc ("A4GLSQL_fetch_cursor(%s,%d,1,0,NULL); /* Foreach next */\n", get_ident_as_string(cmd_data->cursorname) , FETCH_RELATIVE);
 	}
 
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) {_dobreak++;}");

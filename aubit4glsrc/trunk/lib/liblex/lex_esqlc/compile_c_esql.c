@@ -244,7 +244,7 @@ set_suppress_lines();
         printc("EXEC SQL END DECLARE SECTION;");
 clr_suppress_lines();
 	print_expr(stmtname->expr_str_u.expr_expr);
-        printc ("_sid=A4GL_char_pop;\n", stmt);
+        printc ("_sid=A4GL_char_pop;\n");
         sprintf(buff,":_sid");
         stmt=buff;
     } 

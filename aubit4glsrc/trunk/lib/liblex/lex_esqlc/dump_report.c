@@ -227,7 +227,7 @@ pr_report_agg_clr (struct expr_str_list *aggregates)
             {
               if (t == 'C')
                 {
-                  printc ("_g%d=0;\n", a, a);
+                  printc ("_g%d=0;\n", a);
                 } else {
                   printc ("A4GL_init_agg(&_g%d,_gt_%d);\n", a, a);
                 }
@@ -414,14 +414,12 @@ print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_ty
   if (rep_type == REP_TYPE_NORMAL)
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (_rep.output) {A4GL_close_report_file(&_rep);}return;}\n",
-	 curr_rep_name );
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (_rep.output) {A4GL_close_report_file(&_rep);}return;}\n");
     }
   else
     {
       printc
-	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;A4GL_pdf_rep_close(&_rep);return;}\n",
-	 curr_rep_name );
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;A4GL_pdf_rep_close(&_rep);return;}\n" );
 
     }
 

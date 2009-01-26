@@ -93,13 +93,12 @@ static void printc_safe_to_split_at_comma (char *fmt, ...);
 static void print_attributes (attrib * x);
 static char *attributes_as_string (attrib * x);
 static char *get_attributes_as_string (attrib * x);
-static struct expr_str_list *A4GL_rationalize_list_concat (struct expr_str_list *l);
+//static struct expr_str_list *A4GL_rationalize_list_concat (struct expr_str_list *l);
 static void real_print_field_list_with_separator (struct fh_field_list *fl, char *sep);
 static void A4GL_warn (char *s);
 static void print_events (on_events * es, struct command *parent);
 static int has_before_menu (on_events * es);
 static void real_print_expr (struct expr_str *ptr);
-static void local_a4gl_yyerror (char *s);
 static void print_connid (struct expr_str *e);
 static void print_options (char n, char *s, struct expr_str *expr);
 static void real_print_binding_with_separator (expr_str_list * s, char read_or_write, char *sep);
@@ -111,7 +110,6 @@ static char *get_variable_usage (struct variable_usage *var_usage);
 static char *local_get_expr_as_string_list_with_separator (struct expr_str_list *l, char *sep);
 static void search_variables (struct s_select_list_item_list *l);
 static char *xfield_name_as_char (struct fh_field_entry *f);
-static char *local_field_name_as_char (char *fname, expr_str * sub);
 static void print_input_array (struct expr_str *arrvar, int helpno, int defs, struct expr_str *srec, attrib * attrib, char *slice);
 static char *xfield_name_list_as_char (struct fh_field_list *fl);
 
@@ -128,8 +126,7 @@ static char *get_orig_from_clobber(char *s) ;
 /******************************************************************/
 /*                            FUNCTIONS                           */
 /******************************************************************/
-char *
-map_fname (char *s)
+static char * map_fname (char *s)
 {
   if (ui_as_calls ())
     {
@@ -1553,7 +1550,7 @@ for (a=0;a<strlen(str);a++) {
 
 
 
-  printc ("%s", str, ptr->expr_type);
+  printc ("%s", str);
   printing_expr=0;
 
   free (str);
@@ -2070,7 +2067,7 @@ local_get_expr_as_string (struct expr_str *ptr)
 	{
 	  if (ptr->expr_str_u.expr_infield->sio_id != -1)
 	    {
-	      sprintf (buff, "UILIB_INFIELD(UILIB_GET_CONTEXT(%s), %s) { %ld } ",
+	      sprintf (buff, "UILIB_INFIELD(UILIB_GET_CONTEXT(%s), %s) { %d } ",
 		       last_context[CONTEXT_INPUT],
 		       xfield_name_list_as_char (ptr->expr_str_u.expr_infield->field_list), ptr->expr_str_u.expr_infield->sio_id);
 	    }
@@ -2384,6 +2381,9 @@ local_get_expr_as_string (struct expr_str *ptr)
       A4GL_assertion (1, "Not implemented");
       break;
 
+	default: 
+      A4GL_assertion (1, "Not implemented");
+      break;
     }
   A4GL_assertion (1, "Bad..");
   return "..";
@@ -2528,7 +2528,6 @@ A4GL_rationalize_list_concat (struct expr_str_list *l)
 
   return l;
 }
-#endif
 
 /******************************************************************/
 /* FIELD HANDLING */
@@ -2593,6 +2592,7 @@ local_field_name_as_char (char *fname, expr_str * sub)
     }
   return buff;
 }
+#endif
 
 static char *
 xfield_name_list_as_char (struct fh_field_list *fl)
@@ -4557,7 +4557,7 @@ static void  print_menu_option (expr_str *s) {
                         printc("%s", s->expr_str_u.expr_string);
                         break;
                 default:
-                        printc("%s", local_expr_as_string(s));
+                        printc("%s", local_get_expr_as_string(s));
                         break;
         }
         //A4GL_assertion(1,"Not implemented");
@@ -5089,8 +5089,6 @@ find_top_var (struct expr_str *se)
   int a;
   char buff1[2000];
   char *ptr;
-  char buff2[2000];
-  char *s;
   strcpy (buff1, local_get_expr_as_string (se));
 
   ptr = strchr (buff1, '[');
@@ -5121,6 +5119,9 @@ find_top_var (struct expr_str *se)
 	case E_MET_FUNCTION_DEFINITION:
 	  vl = &current_entry->module_entry_u.function_definition.variables;
 	  break;
+	default: 
+		A4GL_assertion(1,"Not expecting this MET type");
+		exit(3);
 
 	}
       for (a = 0; a < vl->variables.variables_len; a++)
@@ -5212,13 +5213,13 @@ print_input_array (struct expr_str *arrvar, int helpno, int defs, struct expr_st
 	  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD)
 	    {
 	      printc ("   CALL UILIB_INPUT_ARRAY_SYNC(UILIB_GET_CONTEXT(%s), gc_arr_cnt, %s[gc_arr_cnt].*)",
-		      last_context[CONTEXT_INPUT], arrvar);
+		      last_context[CONTEXT_INPUT], local_get_expr_as_string(arrvar));
 	      use_input_array_star = 1;
 	    }
 	  else
 	    {
 	      printc ("   CALL UILIB_INPUT_ARRAY_SYNC(UILIB_GET_CONTEXT(%s), gc_arr_cnt, %s[gc_arr_cnt])",
-		      last_context[CONTEXT_INPUT], arrvar);
+		      last_context[CONTEXT_INPUT], local_get_expr_as_string(arrvar));
 	      use_input_array_star = 0;
 	    }
 	  printc ("END FOR");
@@ -5625,7 +5626,7 @@ print_construct_2 (on_events * events)
     {
       if (events)
 	{
-	  printc ("END CONSTRUCT", events);
+	  printc ("END CONSTRUCT");
 	}
       tmp_ccnt--;
     }
@@ -5678,11 +5679,11 @@ print_display_array_p1 (expr_str * arrvar, expr_str * srec, char *scroll, attrib
       printc ("FOR gc_arr_cnt=1 TO UILIB_arr_count()");
       if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
 	{
-	  printc ("   CALL UILIB_DISPLAY_ARRAY_LINE(gc_arr_cnt, %s[gc_arr_cnt])", arrvar);
+	  printc ("   CALL UILIB_DISPLAY_ARRAY_LINE(gc_arr_cnt, %s[gc_arr_cnt])", local_get_expr_as_string(arrvar));
 	}
       else
 	{
-	  printc ("   CALL UILIB_DISPLAY_ARRAY_LINE(gc_arr_cnt, %s[gc_arr_cnt].*)", arrvar);
+	  printc ("   CALL UILIB_DISPLAY_ARRAY_LINE(gc_arr_cnt, %s[gc_arr_cnt].*)", local_get_expr_as_string(arrvar));
 	}
       printc ("END FOR");
       printc ("CALL UILIB_ARRAY_LINES_END()");
@@ -5977,9 +5978,6 @@ print_let_manyvars_g (expr_str_list * expr_list, expr_str_list * varlist)
 static int
 chk_for_inner_while (int n)
 {
-  int z;
-  char *s;
-  int ccnt;
 
   return 0;
 
@@ -6003,9 +6001,6 @@ chk_for_inner_while (int n)
 static int
 chk_for_inner_input (int n)
 {
-  int z;
-  char *s;
-  int ccnt;
 
 #ifdef FIXME
   if (ui_as_calls ())
@@ -6103,11 +6098,11 @@ print_options (char n, char *s, struct expr_str *expr)
 	case 'S':
 	  if (atoi (s))
 	    {
-	      printc ("OPTIONS SQL INTERRUPT ON", s);
+	      printc ("OPTIONS SQL INTERRUPT ON");
 	    }
 	  else
 	    {
-	      printc ("OPTIONS SQL INTERRUPT OFF", s);
+	      printc ("OPTIONS SQL INTERRUPT OFF");
 	    }
 	  break;
 
@@ -6169,11 +6164,11 @@ print_options (char n, char *s, struct expr_str *expr)
 	case 'S':
 	  if (atoi (s))
 	    {
-	      printc ("OPTIONS SQL INTERRUPT ON", s);
+	      printc ("OPTIONS SQL INTERRUPT ON");
 	    }
 	  else
 	    {
-	      printc ("OPTIONS SQL INTERRUPT OFF", s);
+	      printc ("OPTIONS SQL INTERRUPT OFF");
 	    }
 	  break;
 
@@ -6627,7 +6622,6 @@ if (last_parent!=parent) {
       {
 	struct expr_str *ptr;
 	int b;
-	int params;
 	struct expr_str_list *l = 0;
 	int nret = 0;
 
@@ -8372,7 +8366,7 @@ if (last_parent!=parent) {
 
 	  if (r->cmd_data.command_data_u.prompt_cmd.prompt_str_attrib)
 	    {
-	      printc (",\"%s\"", r->cmd_data.command_data_u.prompt_cmd.prompt_str_attrib);
+	      printc (",%s", get_attributes_as_string(r->cmd_data.command_data_u.prompt_cmd.prompt_str_attrib));
 	    }
 	  else
 	    {
@@ -8381,7 +8375,7 @@ if (last_parent!=parent) {
 	    }
 	  if (r->cmd_data.command_data_u.prompt_cmd.prompt_fld_attrib)
 	    {
-	      printc (",\"%s\")", r->cmd_data.command_data_u.prompt_cmd.prompt_fld_attrib);
+	      printc (",%s)", get_attributes_as_string(r->cmd_data.command_data_u.prompt_cmd.prompt_fld_attrib));
 	    }
 	  else
 	    {
@@ -8728,7 +8722,7 @@ if (last_parent!=parent) {
 	{
 	  if (ui_as_calls ())
 	    {
-	      printc ("CALL UILIB_CURRENT_WINDOW(\"SCREEN\")\n", r->cmd_data.command_data_u.current_win_cmd.windowname);
+	      printc ("CALL UILIB_CURRENT_WINDOW(\"SCREEN\")\n");
 	    }
 	  else
 	    {
@@ -8881,7 +8875,7 @@ if (last_parent!=parent) {
 	}
       else
 	{
-	  printc ("%s", r->cmd_data.command_data_u.load_cmd.sqlvar);
+	  printc ("%s", local_get_expr_as_string(r->cmd_data.command_data_u.load_cmd.sqlvar));
 	}
       clr_nonewlines ();
       break;
@@ -9348,7 +9342,6 @@ if (last_parent!=parent) {
 	char *rval;
 	struct struct_update_cmd *u;
 	struct s_select fake_select;
-	struct s_select_list_item_list l;
 	struct s_table t;
 	u = &r->cmd_data.command_data_u.update_cmd;
 
@@ -9745,6 +9738,9 @@ if (last_parent!=parent) {
       //r->cmd_data.command_data_u.move_cmd 
       break;
 
+case E_CMD_LAST:
+	A4GL_assertion(1,"Should never happen");
+	break;
       //default:      printc("UNHANDLED CMD: %d\n",r->cmd_data.type);
     }
   return 1;
@@ -9902,11 +9898,5 @@ LEXLIB_A4GL_initlex (void)
 }
 
 
-static void
-local_a4gl_yyerror (char *s)
-{
-  fprintf (stderr, "%s", s);
-  exit (2);
-}
 
 

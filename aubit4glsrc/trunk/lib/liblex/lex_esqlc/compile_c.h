@@ -1,8 +1,14 @@
 int local_is_system_variable(struct variable *v);
 //void set_suppress_lines(void);
 //void clr_suppress_lines(void);
+#ifdef __GNUC__
+void __attribute__ ((format(printf, 1, 2) )) printc(char *fmt, ...);
+void __attribute__ ((format(printf, 1, 2) )) printh(char *fmt, ...);
+#else
 void printc(char *fmt, ...);
 void printh(char *fmt, ...);
+#endif
+
 void A4GL_internal_lex_printh(char *fmt, va_list *ap);
 void printcomment(char *fmt, ...);
 void A4GL_internal_lex_printcomment(char *fmt, va_list *ap);
