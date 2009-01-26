@@ -39,26 +39,12 @@ struct BINDING *obind_u=0;
 int obind_i_cnt=0; /* Count -noentry/noeditadd fields are excluded from insert list too */
 int obind_u_cnt=0; /* Count -serial/noentry   fields are excluded from update list too */
 
-#ifndef HAS_S_FIELD_NAME_LIST
-#define HAS_S_FIELD_NAME_LIST
 
-struct s_field_name {
-        char *fname;
-        int fpos;
-};
-
-struct s_field_name_list {
-        int nfields;
-        struct s_field_name *field_name_list;
-};
-
-
-/* Should really read in libaubit4gl.h for these - but we can't easily - this is a 4gl program.... */
 
 #define DTYPE_SERIAL 6
 #define FA_B_NOENTRY 3
 
-#endif
+
 
 endcode
 
