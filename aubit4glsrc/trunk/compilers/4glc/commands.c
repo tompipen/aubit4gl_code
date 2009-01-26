@@ -2372,6 +2372,8 @@ struct module_entry *c;
    c->module_entry_u.report_definition.aggregates.list.list_val=list_of_aggregates.list.list_val;
 	list_of_aggregates.list.list_len=0;
 	list_of_aggregates.list.list_val=0;
+   c->module_entry_u.report_definition.variables.variables.variables_len=0;
+   c->module_entry_u.report_definition.variables.variables.variables_val=NULL;
 
    c->module_entry_u.pdf_report_definition.call_list.calls_by_call.calls_by_call_len=this_functions_call_list->calls_by_call.calls_by_call_len;
    c->module_entry_u.pdf_report_definition.call_list.calls_by_call.calls_by_call_val=this_functions_call_list->calls_by_call.calls_by_call_val;
@@ -2421,6 +2423,8 @@ struct module_entry *c;
    c->module_entry_u.report_definition.expression_list.list.list_val=0;
 	c->module_entry_u.report_definition.extra_warnings.extra_warnings_len=0;
 	c->module_entry_u.report_definition.extra_warnings.extra_warnings_val=0;
+   c->module_entry_u.report_definition.variables.variables.variables_len=0;
+   c->module_entry_u.report_definition.variables.variables.variables_val=NULL;
 
    c->module_entry_u.report_definition.call_list.calls_by_call.calls_by_call_len=this_functions_call_list->calls_by_call.calls_by_call_len;
    c->module_entry_u.report_definition.call_list.calls_by_call.calls_by_call_val=this_functions_call_list->calls_by_call.calls_by_call_val;
