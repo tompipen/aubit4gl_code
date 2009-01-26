@@ -59,7 +59,6 @@ return ptr;
 }
 
 
-#ifdef NOTUSED
 static void
 print_field_name_list_as_struct (char *name, struct fh_field_list *fl, int declare_or_set)
 {
@@ -85,13 +84,12 @@ print_field_name_list_as_struct (char *name, struct fh_field_list *fl, int decla
 	{
 	  if (fl->field_list_entries.field_list_entries_val[a].fieldsub)
 	    {
-	      printc ("%s[%d].pos=%s;\n", name, a,
+	      printc ("%s[%d].fpos=%s;\n", name, a,
 		      local_expr_as_string (fl->field_list_entries.field_list_entries_val[a].fieldsub));
 	    }
 	}
     }
 }
-#endif
 
 
 void
@@ -2295,10 +2293,10 @@ struct expr_str_list *li;
   printc("void *_filterfunc=NULL;");
   printc ("int _forminit=1;\n");
   print_event_list(cmd_data->events);
-  //print_field_name_list_as_struct("_fldlist",cmd_data->list,0);
+  print_field_name_list_as_struct("_fldlist",cmd_data->list,0);
    local_print_bind_set_value_g (li,1,0,'i');
   
-  //print_field_name_list_as_struct("_fldlist",cmd_data->list,1);
+  print_field_name_list_as_struct("_fldlist",cmd_data->list,1);
   printc ("while(_fld_dr!=0){\n");
   tmp_ccnt++;
   printc ("if (_exec_block == 0) {\n");
@@ -2394,10 +2392,11 @@ int ccc;
   printc("char _sio_%d[%d];", sio_id,sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
   printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
-  //print_field_name_list_as_struct("_fldlist",cmd_data->field_list,0);
+
+  print_field_name_list_as_struct("_fldlist",cmd_data->field_list,0); // Set up structure
   printc ("int _forminit=1;\n");
   print_event_list(cmd_data->events);
-  //print_field_name_list_as_struct("_fldlist",cmd_data->field_list,1);
+  print_field_name_list_as_struct("_fldlist",cmd_data->field_list,1); // Set values
   printc ("while(_fld_dr!=0){\n");
   tmp_ccnt++;
   printc ("if (_fld_dr== -100) {\n");
@@ -2515,6 +2514,7 @@ int inp_flags=0;
   printc ("{");
   tmp_ccnt++;
   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes));
+  printc("void *_fldlist=NULL; /* We dont use this for Input Array - but it may be required for get_fldbuf */");
   printc("int _fld_dr= -100;int _exec_block= 0;\nchar *_fldname;char *_curr_win; \nint _forminit=1;int _tmp_int=0;");
   printc ("char _sio_%d[%d];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id, sizeof (struct s_inp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);

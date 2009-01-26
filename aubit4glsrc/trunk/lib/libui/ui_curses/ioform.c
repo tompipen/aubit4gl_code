@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.217 2009-01-18 16:33:18 mikeaubury Exp $
+# $Id: ioform.c,v 1.218 2009-01-26 10:12:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.217 2009-01-18 16:33:18 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.218 2009-01-26 10:12:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -57,6 +57,8 @@ int A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 					     struct s_field_name_list *list);
 static int get_inc_quotes(int a) ;
 static char *set_current_display_delims=0;
+int A4GL_gen_field_list_with_orig_fldlist (FIELD *** field_list, struct s_field_name *orig_field_list, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0);
+int A4GL_gen_field_chars_ap_with_orig_fldlist (void *field_listv, void *formdetsv, struct s_field_name *fldlist, va_list * ap,int replace_0);
 /*
 =====================================================================
                     Constants definitions
@@ -2021,6 +2023,22 @@ UILIB_A4GL_gen_field_chars_ap (void *field_listv, void *formdetsv, va_list * ap,
   return a;
 }
 
+
+int A4GL_gen_field_chars_ap_with_orig_fldlist (void *field_listv, void *formdetsv, struct s_field_name *fldlist, va_list * ap,int replace_0)
+{
+  int a;
+  FIELD ***field_list;
+  struct s_form_dets *formdets;
+
+  field_list = field_listv;
+  formdets = formdetsv;
+
+  a = A4GL_gen_field_list_with_orig_fldlist (field_list, fldlist,formdets,  9999, ap,replace_0);
+  return a;
+}
+
+
+
 int
 UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv,
 				      void *listv)
@@ -2278,17 +2296,22 @@ for (a=0;a<list->nfields;a++) {
 }
 
 }
+
+
+
+
+
 /**
  *
  * @todo Describe function
  */
 int
-A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0)
+A4GL_gen_field_list_with_orig_fldlist (FIELD *** field_list, struct s_field_name *fldlist, struct s_form_dets *formdets,  int max_number, va_list * ap,int replace_0)
 {
   struct s_field_name_list list;
   int n;
   list.field_name_list = 0;
-  A4GL_make_field_slist_from_ap (&list, ap,replace_0);
+  A4GL_make_field_slist_from_ap_with_field_list (&list, ap,replace_0,fldlist);
 
   n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
 
@@ -2302,6 +2325,15 @@ A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max
 	free(list.field_name_list);
   return n;
 
+}
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GL_gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0)
+{
+	return A4GL_gen_field_list_with_orig_fldlist(field_list,NULL,formdets,max_number,ap,replace_0);
 }
 
 
@@ -3231,7 +3263,7 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
  * @todo Describe function
  */
 int
-UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
+UILIB_A4GL_fgl_getfldbuf_ap (void *inp, ts_field_name *orig_field_list, va_list * ap)
 {
 
   FIELD **field_list;
@@ -3244,7 +3276,10 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   s = inp;
   
 
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
+  //c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
+
+  c=A4GL_gen_field_chars_ap_with_orig_fldlist (&field_list, s->currform, orig_field_list, ap,0);
+
   nr = 0;
   for (a = 0; a <= c; a++)
     {
@@ -3283,7 +3318,7 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
  * @todo Describe function
  */
 int
-UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
+UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, ts_field_name *orig_field_list, va_list * ap)
 {
 
   FIELD **field_list;

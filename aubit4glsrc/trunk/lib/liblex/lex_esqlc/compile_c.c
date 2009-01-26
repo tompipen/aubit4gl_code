@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.464 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.465 2009-01-26 10:12:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.464 2009-01-23 18:24:15 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.465 2009-01-26 10:12:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1996,7 +1996,7 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_GET_FLDBUF: 
 	  printc ("{");
 	  printc ("int _retvars;");
-	  printc ("_retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,%s,NULL,0);",
+	  printc ("_retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,_fldlist, %s,NULL,0);",
 		  ptr->expr_str_u.expr_get_fldbuf->sio_id,
 	  	local_field_name_list_as_char (ptr->expr_str_u.expr_get_fldbuf->field_list)
 		  );
@@ -2852,7 +2852,7 @@ real_print_func_call (t_expr_str * fcall)
 	printc("{");
 	printc("   int _retvars;");
 	A4GL_pause_execution();
-	printc("   _retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,%s,NULL,0);",p->sio_id, local_field_name_list_as_char(p->field_list));
+	printc("   _retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,_fldlist, %s,NULL,0);",p->sio_id, local_field_name_list_as_char(p->field_list));
 	/* 
 	printc("   if (_retvars != 1 ) {");
 	printc("      A4GLSQL_set_status(-3001,0);");

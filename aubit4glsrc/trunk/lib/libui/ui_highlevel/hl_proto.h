@@ -147,3 +147,6 @@ void A4GL_LL_disable_menu(void);
 void ActivateToolbar(char *cmd, struct aclfgl_event_list *list,void *sio) ;
 void LL_AddButtonToolbar(char*tag, char *buttonText,char *img, char *toolTip, int keyval,int alwayShow);
 void A4GL_LL_init_form(void *f);
+int A4GL_gen_field_list_with_orig_fldlist (void ***field_list,  ts_field_name *fldlist, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0);
+int A4GL_gen_field_chars_ap_with_orig_fldlist (void *field_listv, void *formdetsv,  struct s_field_name *fldlist, va_list * ap,int replace_0);
+

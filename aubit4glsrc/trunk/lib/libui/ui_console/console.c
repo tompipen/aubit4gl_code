@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.48 2008-12-15 19:19:38 mikeaubury Exp $
+# $Id: console.c,v 1.49 2009-01-26 10:12:19 mikeaubury Exp $
 #*/
 
 /**
@@ -708,8 +708,8 @@ int UILIB_A4GL_endis_fields_ap(int en_dis,va_list* ap)  NOPE0
 int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n)  NOPE0
 int UILIB_A4GL_fgl_fieldtouched_input_ap(void* input,va_list* ap)  NOPE0
 int UILIB_A4GL_fgl_fieldtouched_input_array_ap(void* input,va_list* ap)  NOPE0
-int UILIB_A4GL_fgl_getfldbuf_ap(void* inp,va_list* ap)  NOPE0
-int UILIB_A4GL_fgl_getfldbuf_ia_ap(void* inp,va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_getfldbuf_ap(void* inp,ts_field_name *orig_list, va_list* ap)  NOPE0
+int UILIB_A4GL_fgl_getfldbuf_ia_ap(void* inp,ts_field_name *orig_list, va_list* ap)  NOPE0
 int UILIB_A4GL_fgl_infield_ap(void* inp,va_list* ap)  NOPE0
 int UILIB_A4GL_fgl_infield_ia_ap(void* inp,va_list* ap)  NOPE0
 int UILIB_A4GL_form_loop_v2(void* s,int init,void* evt)  NOPE0

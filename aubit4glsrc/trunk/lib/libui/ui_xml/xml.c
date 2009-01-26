@@ -3065,7 +3065,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 }
 
 int
-UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
+UILIB_A4GL_fgl_getfldbuf_ap (void *inp, ts_field_name *orig_list,va_list * ap)
 {
   int context;
   char *argp;
@@ -3090,7 +3090,7 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
 }
 
 int
-UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
+UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, ts_field_name *orig_list,va_list * ap)
 {
   int context;
   char *argp;

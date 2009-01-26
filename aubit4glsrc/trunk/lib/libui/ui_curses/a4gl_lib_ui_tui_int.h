@@ -1,6 +1,6 @@
 
-#include "a4gl_API_ui_lib.h" //generated from API_ui by dlmagic??
 #include "a4gl_lib_ui_int.h" //general header included in all UI plug-ins
+#include "a4gl_API_ui_lib.h" //generated from API_ui by dlmagic??
 
 #define WANTCURSES
 

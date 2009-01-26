@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.70 2008-12-05 09:49:23 mikeaubury Exp $";
+  "$Id: misc.c,v 1.71 2009-01-26 10:12:19 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -346,7 +346,7 @@ field_status_strip_tabname=0;
 
 
 int
-UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
+UILIB_A4GL_fgl_getfldbuf_ap (void *inp, ts_field_name *orig_field_list,va_list * ap)
 {
 
   void **field_list;
@@ -358,7 +358,9 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
 
   s = inp;
 
-  c = UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
+  c = A4GL_gen_field_chars_ap_with_orig_fldlist (&field_list, s->currform, orig_field_list, ap,0);
+
+//UILIB_A4GL_gen_field_chars_ap (&field_list, s->currform, ap,0);
   nr = 0;
   for (a = 0; a <= c; a++)
     {
@@ -374,7 +376,7 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
 
 
 int
-UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
+UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, ts_field_name *orig_list,va_list * ap)
 {
 
   void **field_list;
@@ -557,6 +559,35 @@ UILIB_A4GL_gen_field_chars_ap (void *field_listv, void *formdetsv,
 }
 
 
+
+int
+A4GL_gen_field_chars_ap_with_orig_fldlist (void *field_listv, void *formdetsv,  struct s_field_name *fldlist, va_list * ap,int replace_0)
+{
+  int a;
+  void ***field_list;
+  struct s_form_dets *formdets;
+
+  field_list = field_listv;
+  formdets = formdetsv;
+#ifdef DEBUG
+  {
+    A4GL_debug ("Starting A4GL_gen_field_chars %p %p", field_list, formdets);
+  }
+  {
+    A4GL_debug ("Genfldlist 3");
+  }
+#endif
+  A4GL_debug ("gen_field_chars");
+	a= A4GL_gen_field_list_with_orig_fldlist (field_list, fldlist,formdets,  9999, ap,replace_0);
+
+#ifdef DEBUG
+  {
+    A4GL_debug ("--------------------------------------END gen_field_chars");
+  }
+#endif
+  A4GL_debug ("Gen_field_list returned %d", a);
+  return a;
+}
 
 
 

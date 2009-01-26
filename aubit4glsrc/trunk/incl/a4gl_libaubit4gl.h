@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.362 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.363 2009-01-26 10:12:18 mikeaubury Exp $
 #
 */
 
@@ -2221,15 +2221,20 @@ void A4GL_chk_for_screen_print(int a);
 void A4GL_logkey(long a);
 void A4GL_trim_nl (char *p);
 
+/*
 struct s_field_name {
 	char *fname;
 	int fpos;
 };
+typedef struct s_field_name ts_field_name;
+
 
 struct s_field_name_list {
 	int nfields;
 	struct s_field_name *field_name_list;
 };
+*/
+
 void A4GL_gen_field_slist( struct s_field_name_list *list, va_list *ap);
 
 int A4GL_menu_opts_compare(char *a,char *b,int why);

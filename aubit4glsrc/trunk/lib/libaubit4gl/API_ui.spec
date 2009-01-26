@@ -67,8 +67,8 @@ A4GL_endis_fields_ap int en_dis va_list* ap -> int
 A4GL_clr_form int to_defaults -> void
 A4GL_clr_form_fields int to_defaults char* defs -> void
 A4GL_clr_fields_ap int to_defaults va_list* ap -> void
-A4GL_fgl_getfldbuf_ap void* inp va_list* ap -> int
-A4GL_fgl_getfldbuf_ia_ap void* inp va_list* ap -> int
+A4GL_fgl_getfldbuf_ap void* inp ts_field_name* fldlist va_list* ap -> int
+A4GL_fgl_getfldbuf_ia_ap void* inp ts_field_name* fldlist va_list* ap -> int
 A4GL_zrefresh -> void
 A4GL_gotolinemode -> void
 A4GL_get_currwin_name -> char*

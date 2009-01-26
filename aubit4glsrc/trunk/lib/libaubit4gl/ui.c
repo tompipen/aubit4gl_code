@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.81 2009-01-24 17:20:02 mikeaubury Exp $
+# $Id: ui.c,v 1.82 2009-01-26 10:12:18 mikeaubury Exp $
 #
 */
 
@@ -448,21 +448,21 @@ A4GL_clr_fields (int to_defaults, ...)
  * @todo Describe function
  */
 int
-A4GL_fgl_getfldbuf (void *inp, char itype, ...)
+A4GL_fgl_getfldbuf (void *inp, char itype, struct s_field_name *orig_fldlist, ...)
 {
   int a = -1;
   va_list ap;
 
-  va_start (ap, itype);
+  va_start (ap, orig_fldlist);
 
   A4GL_debug ("itype=%c", itype);
   if (itype == 'I' || itype == 'C')
     {
-      a = A4GL_fgl_getfldbuf_ap (inp, &ap);
+      a = A4GL_fgl_getfldbuf_ap (inp, orig_fldlist, &ap);
     }
   else
     {
-      a = A4GL_fgl_getfldbuf_ia_ap (inp, &ap);
+      a = A4GL_fgl_getfldbuf_ia_ap (inp, orig_fldlist, &ap);
     }
 
   va_end (ap);
@@ -1046,41 +1046,53 @@ A4GL_linemode_goto_column (int a)
 void
 A4GL_make_field_slist_from_ap (struct s_field_name_list *list, va_list * ap, int replace_0)
 {
-  int f;			// F is field number - should be int ? 
-  //long f;
-  char *s;
-  list->nfields = 0;
-  list->field_name_list = 0;
-
-  while (1)
-    {
-      s = va_arg (*ap, char *);
-      if (s == 0)
-	break;
-      //f = (int) va_arg (*ap, int *);
-      f = (int) va_arg (*ap, int);
-      if (f > 0)
-	f--;
-      list->nfields++;
-      list->field_name_list = realloc (list->field_name_list, sizeof (list->field_name_list[0]) * list->nfields);
-      list->field_name_list[list->nfields - 1].fname = s;
-      if (f == 0)
-	{
-	  if (replace_0 > 0)
-	    {
-	      f = replace_0 - 1;	//0 based - not 1 based like the s->scr_line
-	    }
-	}
-      list->field_name_list[list->nfields - 1].fpos = f;
-    }
+	A4GL_make_field_slist_from_ap_with_field_list(list,ap,replace_0,NULL);
 }
 
 
+// Try to guess the field subscript given the field name we've got
+// and the list of fields from our input statement.
+// We cant look directly at the form to fix this - because some UIs
+// dont provide us access to the contents of the form...
+//
+static int guess_field_subscript(char *fieldname, struct s_field_name *fldlist) {
+int a;
+int n=-1;
+int allsame=1;
+
+// Do we even have a field list to look at ? 
+if (fldlist==NULL) return 0;
+
+a=0;
+// First - lets check if all are fldlist subscripts are the same..
+while (fldlist[a].fname) {
+	// Can we just match it by name ? 
+	if (strcmp(fieldname,fldlist[a].fname)==0) {
+
+			return fldlist[a].fpos-1;
+	}
+	if (n==-1) {
+		n=fldlist[a].fpos;
+	} else {
+		if (n!=fldlist[a].fpos) {allsame=0; break;}
+	}
+	a++;
+}
+
+// If we get to here - either allsame will be 1 (is fpos is the same for all fields in the field list - and n is set to that value
+// or allsame will be something else and we'll need to look again...
+if (allsame) {
+	return n;
+}
+
+return 0;
+
+}
 
 /// replace_0 is used for Input Array to replace a non-specified 
 /// subscript with the current row in the input array...
 void
-A4GL_make_field_slist_from_ap_with_field_list (struct s_field_name_list *list, va_list * ap, int replace_0)
+A4GL_make_field_slist_from_ap_with_field_list (struct s_field_name_list *list, va_list * ap, int replace_0, struct s_field_name *fldlist)
 {
   int f;			// F is field number - should be int ? 
   //long f;
@@ -1105,7 +1117,11 @@ A4GL_make_field_slist_from_ap_with_field_list (struct s_field_name_list *list, v
 	  if (replace_0 > 0)
 	    {
 	      f = replace_0 - 1;	//0 based - not 1 based like the s->scr_line
+	    } else {
+		// We need to try to guess which row we are on based on our original field list...
+		f=guess_field_subscript(s,fldlist);
 	    }
+	
 	}
       list->field_name_list[list->nfields - 1].fpos = f;
     }

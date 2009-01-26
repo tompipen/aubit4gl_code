@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.124 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.125 2009-01-26 10:12:18 mikeaubury Exp $
 */
 
 /**
@@ -277,45 +277,21 @@ struct sDependantTable {
 	char *checksuminfo;
 };
 
-/* This prototypes should be created by 4glc, in assist.h, but they are not.
-in any case , since the need to exist when compiling 4gl code, they need to be
-here.
-
-FIXME: declare this prototypes here:
 
 
-assist.c:70: warning: no previous declaration for `aclfgl_set_window_title'
-assist.c:92: warning: no previous declaration for `aclfgl_get_window_title'
-assist.c:114: warning: no previous declaration for `aclfgl_set_window_icon'
-assist.c:160: warning: no previous declaration for `aclfgl_set_frame_style'
-assist.c:181: warning: no previous declaration for `aclfgl_yeild'
-assist.c:199: warning: no previous declaration for `aclfgl_set_window_type'
-assist.c:220: warning: no previous declaration for `aclfgl_set_prompt_style'
-assist.c:247: warning: no previous declaration for `aclfgl_get_filename'
-assist.c:321: warning: no previous declaration for `aclfgl_app_top_get'
-assist.c:350: warning: no previous declaration for `aclfgl_app_hide'
-assist.c:368: warning: no previous declaration for `aclfgl_app_show'
-assist.c:386: warning: no previous declaration for `aclfgl_app_maximize'
-assist.c:404: warning: no previous declaration for `aclfgl_app_minimize'
-assist.c:422: warning: no previous declaration for `aclfgl_app_restore'
-assist.c:440: warning: no previous declaration for `aclfgl_entry_max_chars_set'
-assist.c:466: warning: no previous declaration for `aclfgl_entry_selected_cut'
-assist.c:489: warning: no previous declaration for `aclfgl_entry_selected_copy'
-assist.c:512: warning: no previous declaration for `aclfgl_entry_selected_paste'
-assist.c:535: warning: no previous declaration for `aclfgl_entry_selection_set'
-assist.c:568: warning: no previous declaration for `aclfgl_entry_text_get'
-Assist.c:596: warning: no previous declaration for `aclfgl_field_hide'
-assist.c:619: warning: no previous declaration for `aclfgl_field_show'
-assist.c:640: warning: no previous declaration for `aclfgl_form_caption_get'
-assist.c:658: warning: no previous declaration for `aclfgl_form_hide'
-assist.c:676: warning: no previous declaration for `aclfgl_form_show'
-assist.c:694: warning: no previous declaration for `aclfgl_form_is_open'
-assist.c:724: warning: no previous declaration for `aclfgl_list_count_get'
-assist.c:747: warning: no previous declaration for `aclfgl_list_current_get'
-assist.c:774: warning: no previous declaration for `aclfgl_list_delete'
-assist.c:801: warning: no previous declaration for `aclfgl_list_insert'
-assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
-*/
+
+
+struct s_field_name {
+        char *fname;
+        int fpos;
+};
+typedef struct s_field_name ts_field_name;
+
+struct s_field_name_list {
+        int nfields;
+        struct s_field_name *field_name_list;
+};
+
 
 
 
@@ -437,8 +413,10 @@ void A4GL_set_err_txt(char *s);
   char *A4GL_var_for_inp_array(char *s);
   char *A4GL_add_dot_star(char *s);
 
-  int A4GL_fgl_getfldbuf (void *inp,char itype, ...);
-int A4GL_fgl_infield (void *inp,char itype,...);
+  int A4GL_fgl_getfldbuf (void *inp,char itype, struct s_field_name *orig_fldlist, ...);
+  void A4GL_make_field_slist_from_ap_with_field_list (struct s_field_name_list *list, va_list * ap, int replace_0, struct s_field_name *fldlist);
+
+  int A4GL_fgl_infield (void *inp,char itype,...);
   void A4GL_set_init (struct BINDING *b, int n);
   int A4GL_req_field (void *s, char itype,char type,...);
   void aclfgli_pr_message (int attr, int wait,int nexpr);
@@ -482,15 +460,6 @@ int A4GL_check_version(char *module, char *version, int build );
 
   /* ======================= helper.c ======================= */
 
-/*
-  //this function is inside ifdef INCLUDE_USR_FUNCS
-  //and not invoked from anywhere: (most other the same)
-  //int aclfgl_i_rowid_s (int arg);
-  //int aclfgl_m_rowid_s (int arg);
-  //int aclfgl_r_rowid_s (int arg);
-  //int aclfgl_s_rowid_s (int arg);
-  //int aclfgl_w_rowid_s (int arg);
-*/
   int aclfgl_fgl_prtscr (int n);
   int aclfgl_get_info (int np);
 
@@ -556,6 +525,7 @@ int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char
 #define int8 long long
 #define serial8 long long
 #endif
+
 
 /*
 to fix the _nm_status error (if status is an int) change

@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.149 2009-01-02 11:52:54 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.150 2009-01-26 10:12:19 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -22,6 +22,9 @@ int A4GL_gen_field_list_from_slist_internal (void ***field_list,
 					     struct s_form_dets *formdets,
 					     int a,
 					     struct s_field_name_list *list);
+
+
+
 void A4GL_debug_print_field_opts (void *a);
 //int A4GL_has_event_for_keypress (int a, struct aclfgl_event_list *evt);
 //int UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv);
@@ -1651,15 +1654,16 @@ for (a=0;a<list->nfields;a++) {                                       // MID 101
 } 
 
 
+
 int
-A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
+A4GL_gen_field_list_with_orig_fldlist (void ***field_list,  ts_field_name *fldlist, struct s_form_dets *formdets, 
 		     int max_number, va_list * ap,int replace_0)
 {
   struct s_field_name_list list;
   int n;
   list.field_name_list = 0;
 
-  A4GL_make_field_slist_from_ap (&list, ap, replace_0);
+  A4GL_make_field_slist_from_ap_with_field_list (&list, ap, replace_0,fldlist);
   n=A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
 
   if (field_status_strip_tabname && n==-1 && !A4GL_isno(acl_getenv("FIELDTOUCHEDTABLEFIXUP"))) { // MID 1014
@@ -1673,6 +1677,13 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
 
   return n;
 
+}
+
+
+int
+A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0)
+{
+	return A4GL_gen_field_list_with_orig_fldlist(field_list,NULL,formdets, max_number,ap,replace_0);
 }
 
 
