@@ -2181,7 +2181,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
   
 
   set_nonewlines();
-  printc ("SET(\"s_disp_arr\",_sio_%d,\"arr_elemsize\",a4gl_sizeof(",sio_id);
+  printc ("SET(\"s_disp_arr\",_sio_%d,\"arr_elemsize\",sizeof(",sio_id);
 	print_variable_usage(cmd_data->arrayname);
 	printc("[0]));\n");
   clr_nonewlines();

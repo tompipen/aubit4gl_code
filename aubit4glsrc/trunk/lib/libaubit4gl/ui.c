@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.82 2009-01-26 10:12:18 mikeaubury Exp $
+# $Id: ui.c,v 1.83 2009-01-26 17:53:35 mikeaubury Exp $
 #
 */
 
@@ -1071,6 +1071,7 @@ while (fldlist[a].fname) {
 
 			return fldlist[a].fpos-1;
 	}
+
 	if (n==-1) {
 		n=fldlist[a].fpos;
 	} else {
@@ -1082,7 +1083,11 @@ while (fldlist[a].fname) {
 // If we get to here - either allsame will be 1 (is fpos is the same for all fields in the field list - and n is set to that value
 // or allsame will be something else and we'll need to look again...
 if (allsame) {
-	return n;
+	if (n>0) {
+		return n-1;
+	} else {
+		return n;
+	}
 }
 
 return 0;

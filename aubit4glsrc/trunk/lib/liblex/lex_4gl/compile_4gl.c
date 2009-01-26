@@ -2069,7 +2069,7 @@ local_get_expr_as_string (struct expr_str *ptr)
 	    {
 	      sprintf (buff, "UILIB_INFIELD(UILIB_GET_CONTEXT(%s), %s) { %d } ",
 		       last_context[CONTEXT_INPUT],
-		       xfield_name_list_as_char (ptr->expr_str_u.expr_infield->field_list), ptr->expr_str_u.expr_infield->sio_id);
+		       xfield_name_list_as_char (ptr->expr_str_u.expr_infield->field_list), (int)ptr->expr_str_u.expr_infield->sio_id);
 	    }
 	  else
 	    {
