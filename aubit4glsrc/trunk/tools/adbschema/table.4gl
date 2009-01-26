@@ -595,6 +595,7 @@ define lv_tid integer
 define lv_colno integer
 define lv_asc char(1)
 if lv_colno<0 then
+	let lv_colno=0-lv_colno 
 	return "   "||lv_colnames[lv_colno]|| " DESC"
 else
 	return "   "||lv_colnames[lv_colno]
