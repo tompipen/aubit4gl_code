@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.232 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.233 2009-01-27 18:41:16 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -87,7 +87,7 @@ ifeq "${AC_TARGET_OS}" "mingw"
 	#AC_TARGET_OS            =mingw	
 	TARGET			=i686-pc-mingw
 else
-     ifneq "{CC}" "gcc"
+     ifneq "${CC}" "gcc"
 		TARGET			=${AC_TARGET}-cc
 	else
 		TARGET			=${AC_TARGET}
@@ -219,6 +219,11 @@ ifeq "$(NOINCL)" "0"
 		endif
 	endif
 
+endif
+
+# remove any quotes...
+ifeq ($(CC),"gcc")
+        CC=gcc
 endif
 
 #in all cases, override AUBITDIR set in any other way then by "configure"
@@ -593,7 +598,7 @@ LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 #Make sure we have access to Ifx libs - in case user did not configure
 #his env correctly. We can deal with PATH, -I and -L in 4glpc config files,
 #but Aubit plug-ins (needed by compiler) will fail to load unless this is allready set
-LD_LIBRARY_PATH		:=${LD_LIBRARY_PATH}:${INFORMIXDIR}/lib;${INFORMIXDIR}/lib/esql;
+LD_LIBRARY_PATH		:=${LD_LIBRARY_PATH}:${INFORMIXDIR}/lib:${INFORMIXDIR}/lib/esql
 
 ################
 #Make sure we can find Ifx executables - this is needed only for 4glc when

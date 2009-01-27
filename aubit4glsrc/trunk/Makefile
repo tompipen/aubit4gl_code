@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.62 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: Makefile,v 1.63 2009-01-27 18:41:09 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2928,4 +2928,6 @@ metrics.indexpage:
 #and note the difference when running on clean tree, or after aubit is compiled
 	
 ## ---------------------------- EOF ----------------------------------
-
+test_cc:
+	echo cc=$(CC)
+	echo pic=$(PIC)
