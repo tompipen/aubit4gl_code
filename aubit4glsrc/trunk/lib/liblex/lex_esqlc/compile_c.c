@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.467 2009-01-26 15:25:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.468 2009-01-27 10:35:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.467 2009-01-26 15:25:22 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.468 2009-01-27 10:35:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4922,7 +4922,7 @@ local_rettype_integer (int n)
   char s[200];
 
 
-  SPRINTF1 (s, "%d", n);
+  SPRINTF1 (s, "%d", n );
   return local_rettype (s);
 }
 
@@ -5235,11 +5235,15 @@ char * local_rettype (char *s)
 	yylineno=line_for_cmd;a4gl_yyerror("Internal error - type conversion error\n");
 	}
 
-    if (i < sizeof(vals)/sizeof(char*)) {
+    if ((i&DTYPE_MASK) < sizeof(vals)/sizeof(char*)) {
 	return vals[i];
      }
-	yylineno=line_for_cmd;
-    a4gl_yyerror("Unsupported type id\n");
+
+
+    yylineno=line_for_cmd;
+
+
+    a4gl_yyerror("Unsupported type id");
     return NULL;
 }
 
