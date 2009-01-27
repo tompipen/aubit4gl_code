@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.29 2009-01-27 09:12:58 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.30 2009-01-27 09:42:01 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1697,7 +1697,7 @@ struct s_expr_shared_function_call {
 
 
 struct s_expr_infield {
-                long sio_id;
+                int sio_id;
                 struct fh_field_list *field_list;
                 str module;
                 int line;
@@ -1705,7 +1705,7 @@ struct s_expr_infield {
 
 
 struct s_expr_get_fldbuf {
-        long sio_id;
+        int sio_id;
         struct fh_field_list *field_list;
         str module;
         int line;
@@ -1719,7 +1719,7 @@ struct s_expr_form_is_compiled {
 };
 
 struct s_expr_field_touched {
-        long sio_id;
+        int sio_id;
         struct fh_field_list *field_list;
         str module;
         int line;
