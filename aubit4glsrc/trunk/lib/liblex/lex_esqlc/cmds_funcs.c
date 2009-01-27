@@ -985,7 +985,26 @@ print_let_cmd (struct_let_cmd * cmd_data)
 		printc ("A4GL_push_null(2,0);\n");
       		print_pop_usage (cmd_data->vars->list.list_val[0]);
       } else {
-      		A4GL_print_expr_list_concat (cmd_data->vals);
+		struct expr_str_list *l;
+		l=cmd_data->vals;
+		
+
+		// We have an issue if the first thing in our list is a COLUMN
+		// because we need to check the stack to see how long the string
+		// already is...
+		// If the COLUMN is the first thing on the list then we *dont* have anything
+		// on the stack to check again...
+		//
+		// So - the quick hack is to fake it so theres always something there
+		// if we have a COLUMN as the first value...
+		if (cmd_data->vals) {
+			if (cmd_data->vals->list.list_len) {
+				if (cmd_data->vals->list.list_val[0]->expr_type==ET_EXPR_COLUMN) {
+					l=A4GL_new_prepend_ptr_list(l,A4GL_new_literal_string(""));
+				}
+			}
+		}
+      		A4GL_print_expr_list_concat (l);
       		print_pop_usage (cmd_data->vars->list.list_val[0]);
       }
     }
