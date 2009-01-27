@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.140 2008-12-05 09:49:23 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.141 2009-01-27 17:50:39 mikeaubury Exp $";
 #endif
 
 
@@ -298,13 +298,14 @@ get_keypress_from_buffer (struct aclfgl_event_list  *evt)
   k = evtbuffer[0].keycode;
   lastTriggeredEvent=-1;
   if (k==A4GLKEY_EVENT) {
-	int found;
+	int found=0;
 	int a;
 	for (a=0;evt[a].event_type ;a++) {
 		if (evt[a].event_type==A4GL_EVENT_ON_ACTION) {
 			if (strcmp(evt[a].field,evtbuffer[0].action)==0) { 
 				// We've found our action!
 				set_triggered_event(evt[a].block);
+				found++;
 			}
 		}
 	}
