@@ -596,7 +596,7 @@ define lv_colno integer
 define lv_asc char(1)
 if lv_colno<0 then
 	let lv_colno=0-lv_colno 
-	return "   "||lv_colnames[lv_colno]|| " DESC"
+	return "   "||lv_colnames[lv_colno] clipped || " DESC"
 else
 	return "   "||lv_colnames[lv_colno]
 end if
