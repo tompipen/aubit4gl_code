@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.140 2009-01-25 12:04:53 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.141 2009-01-27 09:13:04 mikeaubury Exp $
 #
 */
 
@@ -144,6 +144,9 @@ A4GL_fgl_end ()
 
   A4GL_debug ("Close db");
   A4GL_close_database ();
+
+  A4GLSTK_program_end();
+
   A4GL_debug ("Close errlog");
   A4GL_close_errorlog_file ();
   A4GL_cleanup_undeleted_files ();

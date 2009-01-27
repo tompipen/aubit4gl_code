@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.363 2009-01-26 10:12:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.364 2009-01-27 09:13:02 mikeaubury Exp $
 #
 */
 
@@ -1224,6 +1224,7 @@ enum cmd_types {
   void A4GL_debug_full_extended (char *fmt, ...);
   void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
   int A4GLSTK_isStackInfo (void);
+  void A4GLSTK_program_end(void);
   char *acl_getenv (char *);
   char * acl_getenv_not_set_as_0 (char *s);
   char *A4GLSTK_getStackTrace (void);

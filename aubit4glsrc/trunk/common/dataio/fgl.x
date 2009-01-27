@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.28 2009-01-23 18:24:14 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.29 2009-01-27 09:12:58 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1555,7 +1555,6 @@ enum e_variable_type {
 
 union variable_data switch ( enum e_variable_type variable_type) {
         case VARIABLE_TYPE_SIMPLE   		: struct simple_variable v_simple;
-	/* The following is a fake comment so xgen_new can process it - DO NOT REMOVE THAT COMMENT! */
         case VARIABLE_TYPE_RECORD    		: struct record_variable v_record;
         case VARIABLE_TYPE_ASSOC     		: struct assoc_array_variable v_assoc;
         case VARIABLE_TYPE_CONSTANT  		: constant_data v_const;

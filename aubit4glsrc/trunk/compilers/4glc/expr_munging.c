@@ -845,6 +845,25 @@ case ET_EXPR_VARIABLE_USAGE :
     case ET_EXPR_TRUE:
       return FAKE_DTYPE_BOOL;
 
+
+
+        case ET_EXPR_IVAL_VAL:
+                return DTYPE_INTERVAL+ENCODE_SIZE(p->expr_str_u.expr_interval->extend);
+
+        case ET_EXPR_DTVAL:
+                return DTYPE_DTIME+ENCODE_SIZE(p->expr_str_u.expr_datetime->extend);
+
+        case ET_EXPR_TIME_FUNC:
+                return DTYPE_DTIME+ENCODE_SIZE(72);
+
+        case ET_EXPR_TIME:
+                return DTYPE_DTIME+ENCODE_SIZE(72);
+
+        case ET_EXPR_DATE_EXPR:
+                return DTYPE_DATE;
+
+
+
     case ET_EXPR_LITERAL_LONG:
       if (p->expr_str_u.expr_long <= SHRT_MAX && p->expr_str_u.expr_long >= SHRT_MIN)
         {
@@ -1375,6 +1394,8 @@ case ET_EXPR_BRACKET:
                p->expr_str_u.expr_op->right->expr_type,
                expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
       return DTYPE_INT;
+
+
 
     default:
 	

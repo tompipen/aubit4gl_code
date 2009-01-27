@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.36 2009-01-15 20:04:38 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.37 2009-01-27 09:13:05 mikeaubury Exp $
 #*/
 
 /**
@@ -81,8 +81,17 @@ typedef struct FunctionCall
   int lineNumber;	    /**< Line in the 4gl where function was called */
   const char *functionName; /**< The name of the function called */
   const char *params;	    /**< a list of parameters passed to the function */
+  int functionCallCnt;
 }
 FunctionCall;
+
+
+/** 
+ * This is just a running count of all of the calls made so far 
+ * we use it to keep track of which calls come from which function calls when the same function 
+ * is called multiple (recursive) times in the stack 
+ * */
+static int currFunctionCallCnt=0; 
 
 /** The current function call stack */
 static FunctionCall *functionCallStack;
@@ -95,6 +104,14 @@ static const char *currentModuleName = "";
 
 /** The current 4gl line number in the source where the program is working */
 static int currentFglLineNumber = 0;
+
+/** The current module where the program is flowing */
+static const char *lastModuleName = "";
+
+/** The current 4gl line number in the source where the program is working */
+static int lastFglLineNumber = 0;
+
+
 
 /** Flag that indicate that the stack info is used */
 static int stackInfoInitialized = 0;
@@ -140,7 +157,9 @@ A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber)
 if (moduleName!=NULL) {
 	A4GL_debug("A4GLSTK_setCurrentLine : %s %d\n", moduleName,lineNumber);
 } 
+  lastModuleName=currentModuleName;
   currentModuleName = moduleName;
+  lastFglLineNumber=currentFglLineNumber;
   currentFglLineNumber = lineNumber;
 }
 
@@ -161,6 +180,178 @@ A4GLSTK_lastSeenLine (void)
 }
 
 
+void A4GLSTK_program_end(void) {
+  if (acl_getenv_not_set_as_0("TRACE4GLEXEC")) {
+	char *fname;
+	fname=acl_getenv_not_set_as_0("TRACE4GLEXEC");
+		
+	if (functionCallPointer>=1) {
+		FILE *execprog;
+		execprog=fopen(fname,"a");
+		if (execprog) {
+			fprintf(execprog,"node_%d->END [ label=\"Line %d\" ]\n", functionCallStack[functionCallPointer-1].functionCallCnt,currentFglLineNumber);
+			fprintf(execprog,"}\n");
+			fclose(execprog);
+		}
+	}
+  }
+}
+
+
+
+static const char *
+html_escape_int (const char *s)
+{
+  static char *buff = 0;
+  static int last_len = 0;
+  int c;
+  int a;
+  int l;
+  int b;
+  int allocated;
+
+
+  c = 0;
+  //if (s==0) return "";
+
+  if (strchr (s, '&'))
+    c++;
+  if (strchr (s, '<'))
+    c++;
+  if (strchr (s, '>'))
+    c++;
+  if (strchr (s, '"'))
+    c++;
+  if (strchr (s, '\''))
+    c++;
+  if (strchr (s, '\n'))
+    c++;
+  if (strchr (s, '\r'))
+    c++;
+
+
+  if (c == 0)
+    {
+      return s;
+    }
+
+  l = strlen (s);
+  allocated = (l * 6) + 1;
+
+  if (l > last_len)
+    {
+      buff = realloc (buff, allocated);
+      last_len = l;
+    }
+
+  b = 0;
+  for (a = 0; a < l; a++)
+    {
+      if (s[a] == '>')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'g';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '<')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'l';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '&')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'a';
+	  buff[b++] = 'm';
+	  buff[b++] = 'p';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '"')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'q';
+	  buff[b++] = 'u';
+	  buff[b++] = 'o';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '\'')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'a';
+	  buff[b++] = 'p';
+	  buff[b++] = 'o';
+	  buff[b++] = 's';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] < 31 || s[a] > 126)
+	{
+	  int z1;
+	  char buff2[20];
+	  z1 = ((unsigned char) s[a]);
+	  sprintf (buff2, "&#x%02X;", z1);
+	  for (z1 = 0; z1 < strlen (buff2); z1++)
+	    {
+	      buff[b++] = buff2[z1];
+	    }
+	  continue;
+	}
+      buff[b++] = s[a];
+    }
+if (b>=allocated) {
+
+fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
+}
+  A4GL_assertion (b >= allocated, "XML escape buffer too small");
+  buff[b] = 0;
+  return buff;
+}
+
+
+
+static char *
+html_escape (const char *s) {
+char *rval;
+static int n=0;
+static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
+
+if (buff[n]) {
+	free(buff[n]); 
+	buff[n]=0;
+}
+
+buff[n]=strdup(html_escape_int(s));
+
+
+rval=buff[n];
+n++;
+if (n>=5)  n=0;
+return rval;
+
+}
+//* print a node (a function call) into the trace file (only if TRACE4GLEXEC is set) */
+static void print_node(FILE *execprog, int cnt ) {
+	
+	if (execprog) {
+		fprintf(execprog,"node_%d [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s(%s)</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+				functionCallStack[cnt].functionCallCnt,
+				functionCallStack[cnt].functionName,
+				html_escape(functionCallStack[cnt].params?functionCallStack[cnt].params:""),
+				functionCallStack[cnt].moduleName,
+				functionCallStack[cnt].lineNumber);
+	}
+				
+
+}
+
 /**
  * Push a function called to the function stack.
  *
@@ -178,6 +369,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 
   A4GL_debug ("Call from Module : %s line %d", currentModuleName, currentFglLineNumber);
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
+
   for (a = 0; a < n; a++)
     {
       if (params[a] == 0)
@@ -190,9 +382,15 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 	}
     }
   A4GL_assertion (functionCallPointer >= MAX_FUNCTION_CALL_STACK, "Function calls too deep (perhaps a missing popFunction ?");
+
+  currFunctionCallCnt++;
   functionCallStack[functionCallPointer].functionName = functionName;
   functionCallStack[functionCallPointer].moduleName = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
+  functionCallStack[functionCallPointer].functionCallCnt = currFunctionCallCnt;
+
+
+
   if (n && params[0] == 0)
     {
       functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, 0);
@@ -201,6 +399,33 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
     {
       functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, n);
     }
+
+  if (acl_getenv_not_set_as_0("TRACE4GLEXEC")) {
+	char *fname;
+	fname=acl_getenv_not_set_as_0("TRACE4GLEXEC");
+		
+	if (functionCallPointer>=1) {
+		FILE *execprog;
+		execprog=fopen(fname,"a");
+		if (execprog) {
+			print_node(execprog, functionCallPointer);
+			fprintf(execprog,"node_%d->node_%d [ label=\"Line:%d\" ]\n", functionCallStack[functionCallPointer-1].functionCallCnt, functionCallStack[functionCallPointer].functionCallCnt, lastFglLineNumber);
+			fclose(execprog);
+		}
+	} else {
+		FILE *execprog;
+		execprog=fopen(fname,"w");
+		if (execprog) {
+			fprintf(execprog,"digraph { // process with 'dot' - eg :   dot -o callgraph.gif -Tgif callgraph.dot\n");
+			fprintf(execprog,"rankdir=LR;\n");
+			fprintf(execprog,"ratio=fill;\n");
+			print_node(execprog, 0);
+			fclose(execprog);
+		}
+	}
+  }
+
+
   A4GL_debug ("%s(%s)", functionName, A4GL_null_as_null ((char *) functionCallStack[functionCallPointer].params));
   functionCallPointer++;
 }
@@ -211,8 +436,10 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 void
 A4GLSTK_popFunction (void)
 {
-  if (functionCallStack[functionCallPointer - 1].params)
+  if (functionCallStack[functionCallPointer - 1].params) {
     free ((void *) functionCallStack[functionCallPointer - 1].params);
+	functionCallStack[functionCallPointer - 1].params=0;
+  }
 
   functionCallPointer--;
   if (functionCallPointer < 0)

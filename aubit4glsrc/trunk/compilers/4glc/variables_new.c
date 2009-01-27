@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.1 2009-01-23 20:28:13 mikeaubury Exp $
+# $Id: variables_new.c,v 1.2 2009-01-27 09:13:02 mikeaubury Exp $
 #
 */
 
@@ -184,11 +184,14 @@ struct variable *v;
 struct variable * new_constant (char int_or_char, char *value, char *name)
 {
   struct variable *local_v;
-  local_v = (struct variable *) acl_malloc2 (sizeof (struct variable));
-  local_v->names.names.names_val = malloc (sizeof (vname));
-  local_v->names.names.names_len = 1;
-  local_v->names.names.names_val[0].name = acl_strdup (name);
-  local_v->names.names.names_val[0].alias = 0;
+
+  local_v=new_base_variable(name);
+
+  //local_v = (struct variable *) acl_malloc2 (sizeof (struct variable));
+  //local_v->names.names.names_val = malloc (sizeof (vname));
+  //local_v->names.names.names_len = 1;
+  //local_v->names.names.names_val[0].name = acl_strdup (name);
+  //local_v->names.names.names_val[0].alias = 0;
 
 
   local_v->var_data.variable_type = VARIABLE_TYPE_CONSTANT;
@@ -329,6 +332,7 @@ struct variable *new_variable_record(char *name, struct variable_list *vlist) {
 	v->var_data.variable_data_u.v_record.record_alloc=0;
 	v->var_data.variable_data_u.v_record.linked=NULL;
 	v->var_data.variable_data_u.v_record.user_ptr=NULL;
+	
 	if (vlist) {
 		v->var_data.variable_data_u.v_record.variables.variables_len=vlist->variables.variables_len;
 		v->var_data.variable_data_u.v_record.variables.variables_val=vlist->variables.variables_val;

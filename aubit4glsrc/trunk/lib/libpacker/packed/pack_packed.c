@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.46 2009-01-24 13:16:21 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.47 2009-01-27 09:13:05 mikeaubury Exp $
 #*/
 
 /**
@@ -340,7 +340,12 @@ A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
 {
   int a;
   if (val==0) val="";
-  A4GL_debug ("Output string - length first (%d) pos=%d", strlen (val), ftell (outfile));
+
+  //printf ("Output string - %s length first (%d) pos=%ld\n", val,strlen (val), ftell (outfile));
+	//fflush(stdout);
+	
+  A4GL_debug ("Output string - length first (%d)", strlen (val));
+  A4GL_debug ("Output string -  pos=%ld", ftell (outfile));
   A4GLPacker_output_long (name, strlen (val), ptr, isarr);
   A4GL_debug ("outputing string itself (%s)", val);
   a = fwrite (val, 1, strlen (val), outfile);
@@ -348,6 +353,9 @@ A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
   if (strlen (val) == 0)
     a = 1;
   A4GL_debug ("pos now = %d", ftell (outfile));
+
+  //printf("Written\n");fflush(stdout);
+
   return a;
 }
 

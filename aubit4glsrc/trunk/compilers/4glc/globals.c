@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.55 2009-01-25 10:56:36 mikeaubury Exp $
+# $Id: globals.c,v 1.56 2009-01-27 09:13:01 mikeaubury Exp $
 #
 */
 
@@ -318,11 +318,16 @@ read_glob (char *s)
 
   a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
 	if (!a) {
+		char iii4gl[2000];
+		char iiiglb[2000];
   		strcpy (iii, currinfile_dirname);
   		strcat (iii, "/");
-   		strcat (iii, ii4gl);
-      		generate_globals_for (iii);
-  		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,iii);
+		strcpy(iii4gl, iii);
+		strcpy(iiiglb, iii);
+   		strcat (iii4gl, ii4gl);
+   		strcat (iiiglb, iiglb);
+      		generate_globals_for (iii4gl);
+  		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,iiiglb);
 		aclfgli_clr_err_flg(); A4GLSQL_set_status(0,1);
  }
 
