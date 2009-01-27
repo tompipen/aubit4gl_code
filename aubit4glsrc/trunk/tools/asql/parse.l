@@ -61,7 +61,7 @@ info[ \t\v\f]*tables 		   { count(); return(KW_INFO_TABLES); }
 
 "SET{"		{ count(); return(KW_IDENTIFIER); } 
 "SET[ 	]+{"		{ count(); return(KW_IDENTIFIER); } 
-{L}({L}|{D}) 	{ count();  return(KW_IDENTIFIER); }
+{L}({L}|{D})* 	{ count();  return(KW_IDENTIFIER); }
 {FNM}		{ if (!isneed_fname(-1)) REJECT; count();   return(KW_FILENAME); }
 {DNM}		{ if (!isneed_fname(-1)) REJECT; count();  printf("FILENAME\n"); return(KW_FILENAME); }
 

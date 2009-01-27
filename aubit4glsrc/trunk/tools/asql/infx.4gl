@@ -329,7 +329,16 @@ define rpaginate integer
 
    IF sqlca.sqlcode !=0 THEN
 	IF sqlca.sqlcode=100 THEN
-		ERROR "Table ", l_tabname clipped," was not found.."
+                if get_exec_interactive() then
+                        ERROR "Table ", l_tabname clipped," was not found.."
+                else
+code
+                A4GL_trim(l_tabname);
+                fprintf( stderr, "Table %s was not found..\n", l_tabname);
+endcode
+		end if
+		RETURN 0
+
 	END IF
         IF  check_and_report_error() THEN
       	   RETURN  0
@@ -3524,3 +3533,4 @@ end function
 function info_db() 
 	call niy()
 end function
+

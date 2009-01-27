@@ -286,7 +286,14 @@ define lv_ok integer
 
    IF lv_ok!=0 THEN
 	IF lv_ok=100 THEN
-		ERROR "Table ", l_tabname clipped," was not found.."
+		if get_exec_interactive() then
+			ERROR "Table ", l_tabname clipped," was not found.."
+		else
+code
+		A4GL_trim(l_tabname);
+		fprintf( stderr, "Table %s was not found..\n", l_tabname);
+endcode
+		end if
 		RETURN 0
 	END IF
 
@@ -299,7 +306,15 @@ define lv_ok integer
 
 
 IF l_tabid IS NULL THEN
-	ERROR "Table ", l_tabname clipped," was not found.."
+		if get_exec_interactive() then
+			ERROR "Table ", l_tabname clipped," was not found.."
+		else
+code
+			A4GL_trim(l_tabname);
+			fprintf( stderr, "Table %s was not found..\n", l_tabname);
+endcode
+		end if
+	
 	RETURN 0
 END IF
 

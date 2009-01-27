@@ -156,6 +156,17 @@ return exec_mode
 end function
 
 
+
+function get_exec_interactive() 
+if exec_mode=0 or exec_mode=2 then
+	return 1
+else
+	return 0
+end if
+end function
+
+
+
 function get_display_mode()
 define lv_a integer
 code
