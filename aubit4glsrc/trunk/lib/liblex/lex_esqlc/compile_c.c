@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.468 2009-01-27 10:35:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.469 2009-01-27 10:39:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.468 2009-01-27 10:35:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.469 2009-01-27 10:39:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5235,7 +5235,7 @@ char * local_rettype (char *s)
 	yylineno=line_for_cmd;a4gl_yyerror("Internal error - type conversion error\n");
 	}
 
-    if ((i&DTYPE_MASK) < sizeof(vals)/sizeof(char*)) {
+    if (i < sizeof(vals)/sizeof(char*)) {
 	return vals[i];
      }
 

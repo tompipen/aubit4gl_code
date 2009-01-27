@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.29 2008-08-28 10:38:51 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.30 2009-01-27 10:39:44 mikeaubury Exp $
 #*/
 
 /**
@@ -274,49 +274,16 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   a = sscanf (buff, "%s %d %d", cname, dtype, size);
   if (a != 3)
     return 0;
+
+  *dtype=((*dtype) & DTYPE_MASK);
   *colname = cname;
+
   A4GL_debug ("Got cname as %s dtype=%d\n", cname,*dtype);
   return 1;
 
 }
 
 
-#ifdef OBSOLETE
-static struct expr_str_list *
-A4GL_add_validation_elements_to_expr (struct expr_str_list *ptr, char *val)
-{
-  char *ptr2;
-  char *ptrn;
-  char buff[256];
-  A4GL_trim (val);
-  ptr2 = val;
-  while (1)
-    {
-      ptrn = strtok (ptr2, ",");
-      if (ptrn == 0)
-	break;
-      if (ptr2)
-	{
-	  ptr2 = 0;
-	}
-
-
-      if (ptr == 0)
-	              {
-			                ptr=A4GL_new_ptr_list(A4GL_new_literal_string(ptrn));
-					          //ptr = A4GL_new_expr (buff);
-					        }
-            else
-		            {
-				              ptr=A4GL_new_append_ptr_list(ptr,A4GL_new_literal_string(ptrn));
-					              }
-
-
-
-    }
-  return ptr;
-}
-#endif
 
 t_expr_str_list *
 A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
