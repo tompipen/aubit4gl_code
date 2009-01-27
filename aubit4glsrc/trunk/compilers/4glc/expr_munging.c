@@ -664,6 +664,12 @@ char buff[256];
     case ET_EXPR_INFIELD:
       return FAKE_DTYPE_BOOL;
 
+
+    case ET_EXPR_PAGENO:
+      return DTYPE_INT;
+    case ET_EXPR_LINENO:
+      return DTYPE_INT;
+
     case ET_EXPR_ASCII:
       ensure_int (p->expr_str_u.expr_expr, 0);
       return DTYPE_CHAR;
