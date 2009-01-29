@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.226 2008-12-16 19:11:33 mikeaubury Exp $
+# $Id: esql.ec,v 1.227 2009-01-29 17:09:25 gyver309 Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.226 2008-12-16 19:11:33 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.227 2009-01-29 17:09:25 gyver309 Exp $";
 #endif
 
 
@@ -4893,6 +4893,10 @@ if (nbind)
 
 }
 
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return sqlbreak();
+}
 
 /*
  * ----------------------------------------------------------------------- 

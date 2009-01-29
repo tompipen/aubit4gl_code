@@ -83,6 +83,7 @@ A4GLSQL_get_table_checksum char* tabname -> char*
 A4GLSQL_map_tname char* code char* db -> void
 A4GLSQL_unmap_tname char* code -> void
 A4GLSQL_is_tname_mapped char* code -> int
+A4GLSQL_cancel -> int
 
 
 * These duplicate functionality already available via the above calls - so

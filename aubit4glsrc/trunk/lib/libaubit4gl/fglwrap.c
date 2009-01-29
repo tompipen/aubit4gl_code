@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.141 2009-01-27 09:13:04 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.142 2009-01-29 17:09:25 gyver309 Exp $
 #
 */
 
@@ -916,6 +916,7 @@ A4GL_set_intr (void)
      ungetch(A4GLKEY_CANCEL);
    */
   A4GL_set_abort (1);
+  A4GLSQL_cancel();
   /* Reset signal */
   A4GL_def_int ();
   A4GLUI_set_intr ();
