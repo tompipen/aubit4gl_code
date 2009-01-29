@@ -16,3 +16,4 @@ struct variable *new_variable_object(char *name);
 void set_variable_name(struct variable *ptr, char *name);
 struct variable_list *create_variable_list(str_list *name_list,struct variable *var);
 void set_variable_scope_for_variable_list(variable_list *list,enum e_scope escope);
+int check_for_bad_report_variables(struct variable_list *report_vars);

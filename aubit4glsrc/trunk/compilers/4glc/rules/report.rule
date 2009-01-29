@@ -946,6 +946,10 @@ report_def : op_doc4gl_comment   rep_or_localrep
 		push_blockcommand("REPORT");
 		}
 	op_param_var_list CLOSE_BRACKET define_section  {
+			if (check_for_bad_report_variables($10)) {
+				a4gl_yyerror("Invalid variable name - you can't use PAGENO or LINENO for your own variables in a repor");
+				YYERROR;
+			}
 			//struct variable_list v;
 			//set_local_variables($10);
                         //set_variables($10,'L');
@@ -1130,6 +1134,11 @@ pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 		}
 	op_param_var_list CLOSE_BRACKET define_section  {
 			//set_local_variables($10);
+                        if (check_for_bad_report_variables($10)) {
+                                a4gl_yyerror("Invalid variable name - you can't use PAGENO or LINENO for your own variables in a report");
+                                YYERROR;
+                        }
+
 		} pdf_op_output_section op_rep_order_by  
 		{
 			char errbuff[256];

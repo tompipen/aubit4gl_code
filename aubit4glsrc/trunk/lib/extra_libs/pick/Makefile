@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2008-12-17 14:18:19 mikeaubury Exp $
+# $Id: Makefile,v 1.5 2009-01-29 17:21:15 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -75,7 +75,7 @@ pick_local.o: pick.4gl
 
 %.afr${A4GL_OBJ_EXT}:%.per
 	fcompile -c $<
-	4glpc -t C -c -o $@ ${subst .per,.afr.c,$<}
+	4glpc -V5 -t C -c -o $@ ${subst .per,.afr.c,$<}
 
 %.afr.dat:%.per
 	fcompile  $<

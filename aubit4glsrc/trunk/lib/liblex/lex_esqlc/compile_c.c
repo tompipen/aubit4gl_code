@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.469 2009-01-27 10:39:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.470 2009-01-29 17:21:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.469 2009-01-27 10:39:44 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.470 2009-01-29 17:21:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4957,13 +4957,21 @@ clr_suppress_lines();
 	}
     }
 
-  if (scope == E_SCOPE_IMPORTED_GLOBAL && strcasecmp (v->names.names.names_val[0].name, "time") == 0 && level == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Ignore time....\n");
-#endif
-clr_suppress_lines();
-      return;
+  if (scope == E_SCOPE_IMPORTED_GLOBAL && level == 0) {
+	int skip=0;
+	if (strcasecmp (v->names.names.names_val[0].name, "time") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "pageno") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "lineno") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "today") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "usrtime") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "fgl_user") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "curr_file_name") == 0 ) skip++; 
+	if (strcasecmp (v->names.names.names_val[0].name, "curr_line_no") == 0 ) skip++; 
+
+	if (skip) {
+		clr_suppress_lines();
+      		return;
+	}
     }
 
 
@@ -6194,11 +6202,11 @@ struct variable *sgs_topvar;
   u = v->expr_str_u.expr_variable_usage;
   A4GL_assertion (get_binding_dtype (v) == -1, "Usage not ensured...");
   if (v->expr_type==ET_EXPR_LINENO) {
-  	printc("A4GL_pop_var2(&lineno,2,0);");
+  	printc("A4GL_pop_var2(&_rep.line_no,2,0);");
   	return;
   }
   if (v->expr_type==ET_EXPR_PAGENO) {
-  	printc("A4GL_pop_var2(&lineno,2,0);");
+  	printc("A4GL_pop_var2(&_rep.page_no,2,0);");
   	return;
   }
   if (v->expr_type==ET_EXPR_TODAY) {

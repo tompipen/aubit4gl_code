@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.2 2009-01-27 09:13:02 mikeaubury Exp $
+# $Id: variables_new.c,v 1.3 2009-01-29 17:23:05 mikeaubury Exp $
 #
 */
 
@@ -744,3 +744,24 @@ struct variable *v;
 
 }
 
+
+int check_for_bad_report_variables(struct variable_list *report_vars) {
+int a;
+if (report_vars==NULL) return 0;
+if (report_vars->variables.variables_len==0) return 0;
+for (a=0;a<report_vars->variables.variables_len;a++) {
+	struct variable *v;
+	v=report_vars->variables.variables_val[a];
+	if (A4GL_aubit_strcasecmp(v->names.names.names_val[0].name,"pageno")==0) {
+		set_yytext(v->names.names.names_val[0].name);
+		return 1;
+	}
+	if (A4GL_aubit_strcasecmp(v->names.names.names_val[0].name,"lineno")==0) {
+		set_yytext(v->names.names.names_val[0].name);
+		return 1;
+	}
+}
+
+
+return 0;
+}
