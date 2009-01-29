@@ -338,6 +338,11 @@ FILE *f;
       }
       break;
 
+        case ET_EXPR_FIELD_TOUCHED:
+                return "FIELD_TOUCHED(...)";
+        case ET_EXPR_NOT_FIELD_TOUCHED:
+                return "NOT_FIELD_TOUCHED(...)";
+
 	
 
     default:

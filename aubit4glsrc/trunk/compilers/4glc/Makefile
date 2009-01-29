@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.45 2009-01-25 10:29:26 mikeaubury Exp $
+# $Id: Makefile,v 1.46 2009-01-29 16:33:29 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -332,8 +332,8 @@ fglcalltree:../../bin/fglcalltree
 	#$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	#cp $@ $(AUBITDIR)/bin
 
-fgllink: write_4gl.o API_lex.o
-	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+fgllink: fgllink.o API_lex.o expr_munging.o linearise.o common.o ../../lib/generated/std_funcs.c
+	$(CC) -I$(ROOT)/incl -rdynamic -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	cp fgllink $(AUBITDIR)/bin
 
 

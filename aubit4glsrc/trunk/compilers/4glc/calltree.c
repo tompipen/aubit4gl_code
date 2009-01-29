@@ -605,6 +605,38 @@ system_function_dtype (char *funcname)
 }
 
 
+
+static int ignore_user_function(char *name) {
+static char *names[2000];
+static int n=0;
+if (name==NULL) { // load it up..
+	FILE *f;
+	f=fopen("calltree.ignore","r");
+	if (f) {
+		char buff[256];
+		while (1) {
+			fgets(buff,255,f);
+			A4GL_trim_nl(buff);
+			names[n++]=strdup(buff);
+			if (feof(f)) break;
+		}
+	}
+	return 1;
+}
+
+if (n) {
+	int a;
+	for (a=0;a<n;a++) {
+		if (A4GL_aubit_strcasecmp(names[a],name)==0) {
+			return 1;
+		}
+	}
+}
+
+return 0;
+
+}
+
 static int
 system_function (char *funcname)
 {
@@ -612,6 +644,8 @@ system_function (char *funcname)
     {
       return 1;
     }
+  if (ignore_user_function(funcname)) return 1;
+ 
   return 0;
 }
 
@@ -2023,6 +2057,10 @@ check_program (module_definition * mods, int nmodules)
     {
 	set_whenever_for_function(&functions[a]);
 
+	if (ignore_user_function(functions[a].function)) {	
+		continue;
+	}
+
       if (functions[a].f_or_r == 'F')
 	{
 	  struct s_function_definition *f;
@@ -2310,7 +2348,7 @@ main (int argc, char *argv[])
 
   A4GL_build_user_resources ();
 
-
+  ignore_user_function(NULL);
   m = malloc (sizeof (struct module_definition) * (argc - 1));
 
 

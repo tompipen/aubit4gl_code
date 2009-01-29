@@ -106,6 +106,12 @@ FILE *f;
       return "<GET_FLDBUF>";
     case ET_EXPR_ASCII:
       return "<ASCII>";
+
+	case ET_EXPR_FIELD_TOUCHED:
+		return "FIELD_TOUCHED(...)";
+	case ET_EXPR_NOT_FIELD_TOUCHED:
+		return "NOT_FIELD_TOUCHED(...)";
+
     case ET_EXPR_FCALL:
 	{
 		

@@ -315,9 +315,24 @@ ensure_bool (struct expr_str *s, int notnull)
               ensure_int (s->expr_str_u.expr_op->right, 0);
               fixed++;
             }
+
           if (l == DTYPE_DECIMAL && r == DTYPE_INT)
             {
               ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+              fixed++;
+            }
+
+          if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
               fixed++;
             }
 
@@ -440,6 +455,20 @@ ensure_bool (struct expr_str *s, int notnull)
               fixed++;
             }
 
+
+          if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+              fixed++;
+            }
+
+          if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
+            {
+              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+              fixed++;
+            }
           if (!fixed)
             {
 		char buff[256];
@@ -921,6 +950,8 @@ case ET_EXPR_VARIABLE_USAGE :
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
 
+ 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
+
       if (l == DTYPE_DATE && r == DTYPE_INTERVAL)
         {
           struct expr_str *right;
@@ -1087,6 +1118,13 @@ case ET_EXPR_VARIABLE_USAGE :
           return DTYPE_DECIMAL;
         }
 
+      if (l == DTYPE_MONEY || r == DTYPE_MONEY)
+        {
+          ensure_money (p->expr_str_u.expr_op->left, 0);
+          ensure_money (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_MONEY;
+        }
+
       if (l == DTYPE_FLOAT || r == DTYPE_FLOAT)
         {
           ensure_float (p->expr_str_u.expr_op->left, 0);
@@ -1110,6 +1148,7 @@ case ET_EXPR_VARIABLE_USAGE :
     case ET_EXPR_OP_DIV:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+ 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
 
       if ((l == DTYPE_INT || l == DTYPE_SMINT) && (r == DTYPE_INT || r == DTYPE_SMINT))
         {
@@ -1141,6 +1180,13 @@ case ET_EXPR_VARIABLE_USAGE :
           r = DTYPE_FLOAT;
         }
 
+      if (l == DTYPE_MONEY || r == DTYPE_MONEY)
+        {
+          ensure_money (p->expr_str_u.expr_op->left, 0);
+          ensure_money (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_MONEY;
+        }
+
       if (l == DTYPE_FLOAT && r == DTYPE_FLOAT)
         return DTYPE_FLOAT;
 
@@ -1162,6 +1208,7 @@ case ET_EXPR_VARIABLE_USAGE :
 
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+ 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
         {
@@ -1203,6 +1250,13 @@ case ET_EXPR_VARIABLE_USAGE :
           return DTYPE_DECIMAL;
         }
 
+      if (l == DTYPE_MONEY || r == DTYPE_MONEY)
+        {
+          ensure_money (p->expr_str_u.expr_op->left, 0);
+          ensure_money (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_MONEY;
+        }
+
       if (l == DTYPE_INT && r == DTYPE_FLOAT)
         {
           ensure_float (p->expr_str_u.expr_op->left, 0);
@@ -1242,6 +1296,7 @@ case ET_EXPR_BRACKET:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
+ 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
         {
@@ -1360,6 +1415,13 @@ case ET_EXPR_BRACKET:
           return DTYPE_DECIMAL;
         }
 
+      if (l == DTYPE_MONEY || r == DTYPE_MONEY)
+        {
+          ensure_money (p->expr_str_u.expr_op->left, 0);
+          ensure_money (p->expr_str_u.expr_op->right, 0);
+          return DTYPE_MONEY;
+        }
+
       if (l == DTYPE_SMINT && r == DTYPE_SMFLOAT)
         {
           ensure_smfloat (p->expr_str_u.expr_op->left, 0);
@@ -1401,6 +1463,10 @@ case ET_EXPR_BRACKET:
                expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
       return DTYPE_INT;
 
+
+
+	case ET_EXPR_NOT_FIELD_TOUCHED:
+	return FAKE_DTYPE_BOOL;
 
 
     default:

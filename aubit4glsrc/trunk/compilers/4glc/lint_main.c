@@ -242,6 +242,11 @@ char *expr_as_string_when_possible(expr_str *e) {
         case ET_EXPR_TIME_EXPR: return "TIME";
         case ET_EXPR_TODAY: return "TODAY";
 
+        case ET_EXPR_FIELD_TOUCHED:
+                return "FIELD_TOUCHED(...)";
+        case ET_EXPR_NOT_FIELD_TOUCHED:
+                return "NOT_FIELD_TOUCHED(...)";
+
 
     case ET_EXPR_NULL:
       return "NULL";
