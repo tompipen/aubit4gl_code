@@ -18,6 +18,7 @@ Ranges reserved for use for test scripts
 1500-1599  Rafal Bosak     (gyver309@users.sourceforge.net)
 1600-1699  Fernando Ortiz  (fortiz@users.sourceforge.net)
 1700-1799  Mike Aubury     (mike@aubit.com)
+1800-1899  Fernando Ortiz  (fortiz@users.sourceforge.net)
 
 ** I've copied some existing tests away from their current locations and
 modified the originals.
