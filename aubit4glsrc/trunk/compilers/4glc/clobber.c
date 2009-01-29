@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: clobber.c,v 1.7 2009-01-29 12:36:17 mikeaubury Exp $
+# $Id: clobber.c,v 1.8 2009-01-29 12:38:23 mikeaubury Exp $
 #
 */
 
@@ -134,7 +134,7 @@ add_clobber (module_definition *mod, char *buff_orig, char *important)
 
 
 
-  if (strlen (buff_orig) <= 18)
+  if (strlen (A4GL_strip_quotes(buff_orig)) <= 18)
     {			
       mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].origval = acl_strdup (buff_orig);
       mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].newval = acl_strdup (buff_new);
