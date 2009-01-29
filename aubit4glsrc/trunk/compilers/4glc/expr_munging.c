@@ -93,7 +93,7 @@ ensure_char (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_CHAR || (d & DTYPE_MASK) == DTYPE_VCHAR)
-        return;
+	return;
     }
   make_cast (s, DTYPE_CHAR, notnull, 0);
 }
@@ -107,7 +107,7 @@ ensure_dtime (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_DTIME)
-        return;
+	return;
     }
   make_cast (s, DTYPE_DTIME, notnull, 0);
 }
@@ -120,7 +120,7 @@ ensure_byte (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_BYTE || (d & DTYPE_MASK) == DTYPE_TEXT)
-        return;
+	return;
     }
   if ((d & DTYPE_MASK) == DTYPE_TEXT)
     return;
@@ -137,7 +137,7 @@ ensure_interval (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_INTERVAL)
-        return;
+	return;
     }
   make_cast (s, DTYPE_INTERVAL, notnull, 0);
 }
@@ -157,7 +157,7 @@ ensure_float (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_FLOAT)
-        return;
+	return;
     }
   make_cast (s, DTYPE_FLOAT, notnull, 0);
 }
@@ -170,10 +170,11 @@ ensure_smfloat (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_SMFLOAT)
-        return;
+	return;
     }
   make_cast (s, DTYPE_SMFLOAT, notnull, 0);
 }
+
 void
 ensure_date (struct expr_str *s, int notnull)
 {
@@ -182,7 +183,7 @@ ensure_date (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_DATE)
-        return;
+	return;
     }
   make_cast (s, DTYPE_DATE, notnull, 0);
 }
@@ -195,9 +196,10 @@ ensure_int (struct expr_str *s, int notnull)
     {
       d = expr_datatype (s);
       if (((d & DTYPE_MASK) == DTYPE_INT) && notnull == 0)
-        return;
-      if (s->expr_type==ET_EXPR_LITERAL_LONG) {
-		return;
+	return;
+      if (s->expr_type == ET_EXPR_LITERAL_LONG)
+	{
+	  return;
 	}
     }
   make_cast (s, DTYPE_INT, notnull, 0);
@@ -211,7 +213,7 @@ ensure_smint (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_SMINT)
-        return;
+	return;
     }
   make_cast (s, DTYPE_INT, notnull, 0);
 }
@@ -224,7 +226,7 @@ ensure_decimal (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_DECIMAL)
-        return;
+	return;
     }
   make_cast (s, DTYPE_DECIMAL, notnull, 0);
 }
@@ -237,7 +239,7 @@ ensure_money (struct expr_str *s, int notnull)
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_MONEY)
-        return;
+	return;
     }
   make_cast (s, DTYPE_MONEY, notnull, 0);
 }
@@ -262,11 +264,11 @@ ensure_bool (struct expr_str *s, int notnull)
 
   switch (s->expr_type)
     {
-    case ET_EXPR_TRUE : 
-		return;
+    case ET_EXPR_TRUE:
+      return;
 
-    case ET_EXPR_FALSE : 
-		return;
+    case ET_EXPR_FALSE:
+      return;
     case ET_EXPR_OP_OR:
       ensure_bool (s->expr_str_u.expr_op->left, notnull);
       ensure_bool (s->expr_str_u.expr_op->right, notnull);
@@ -306,188 +308,188 @@ ensure_bool (struct expr_str *s, int notnull)
 
 
 
-      if (l != r) // 1
-        {
-          int fixed = 0;
-          // Comparing differing types...
-          if (l == DTYPE_INT && r == DTYPE_SMINT)
-            {
-              ensure_int (s->expr_str_u.expr_op->right, 0);
-              fixed++;
-            }
+      if (l != r)		// 1
+	{
+	  int fixed = 0;
+	  // Comparing differing types...
+	  if (l == DTYPE_INT && r == DTYPE_SMINT)
+	    {
+	      ensure_int (s->expr_str_u.expr_op->right, 0);
+	      fixed++;
+	    }
 
-          if (l == DTYPE_DECIMAL && r == DTYPE_INT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
+	  if (l == DTYPE_DECIMAL && r == DTYPE_INT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
 
-          if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
-              fixed++;
-            }
+	  if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      fixed++;
+	    }
 
-          if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
-              fixed++;
-            }
+	  if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      fixed++;
+	    }
 
-          if (l == DTYPE_DECIMAL && r == DTYPE_SMINT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
+	  if (l == DTYPE_DECIMAL && r == DTYPE_SMINT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
 
-          if (l == DTYPE_DECIMAL && r == DTYPE_FLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
+	  if (l == DTYPE_DECIMAL && r == DTYPE_FLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
 
-          if (l == DTYPE_DECIMAL && r == DTYPE_SMFLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
+	  if (l == DTYPE_DECIMAL && r == DTYPE_SMFLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
 
-          if (l == DTYPE_DECIMAL && r == DTYPE_MONEY)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
-              fixed++;
-		}
-
-
-          if (l == DTYPE_MONEY && r == DTYPE_DECIMAL)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
-              fixed++;
-		}
-
-          if (l == DTYPE_MONEY && r == DTYPE_INT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
-              fixed++;
-            }
-
-          if (l == DTYPE_MONEY && r == DTYPE_SMINT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
-              fixed++;
-            }
-
-          if (l == DTYPE_MONEY && r == DTYPE_FLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
-              fixed++;
-            }
-
-          if (l == DTYPE_MONEY && r == DTYPE_SMFLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
-              fixed++;
-            }
-
-          if (r == DTYPE_MONEY && l == DTYPE_INT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
-              fixed++;
-            }
-
-          if (r == DTYPE_MONEY && l == DTYPE_SMINT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
-              fixed++;
-            }
-
-          if (r == DTYPE_MONEY && l == DTYPE_FLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
-              fixed++;
-            }
+	  if (l == DTYPE_DECIMAL && r == DTYPE_MONEY)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
 
 
+	  if (l == DTYPE_MONEY && r == DTYPE_DECIMAL)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (l == DTYPE_MONEY && r == DTYPE_INT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (l == DTYPE_MONEY && r == DTYPE_SMINT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (l == DTYPE_MONEY && r == DTYPE_FLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (l == DTYPE_MONEY && r == DTYPE_SMFLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_MONEY && l == DTYPE_INT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_MONEY && l == DTYPE_SMINT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_MONEY && l == DTYPE_FLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      fixed++;
+	    }
 
 
-          if (r == DTYPE_DECIMAL && l == DTYPE_INT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
-
-          if (r == DTYPE_DECIMAL && l == DTYPE_SMINT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
-
-          if (r == DTYPE_DECIMAL && l == DTYPE_FLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
-
-          if (r == DTYPE_DECIMAL && l == DTYPE_SMFLOAT)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
-              fixed++;
-            }
-
-          if (l == DTYPE_SMINT && r == DTYPE_INT)
-            {
-              ensure_int (s->expr_str_u.expr_op->left, 0);
-              fixed++;
-            }
-
-          if (l == FAKE_DTYPE_BOOL && (r == DTYPE_INT || r == DTYPE_SMINT))
-            {
-              ensure_int (s->expr_str_u.expr_op->left, 0);
-              fixed++;
-            }
 
 
-          if (r == FAKE_DTYPE_BOOL && (l == DTYPE_INT || l == DTYPE_SMINT))
-            {
-              ensure_int (s->expr_str_u.expr_op->right, 0);
-              fixed++;
-            }
+	  if (r == DTYPE_DECIMAL && l == DTYPE_INT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_DECIMAL && l == DTYPE_SMINT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_DECIMAL && l == DTYPE_FLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_DECIMAL && l == DTYPE_SMFLOAT)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      fixed++;
+	    }
+
+	  if (l == DTYPE_SMINT && r == DTYPE_INT)
+	    {
+	      ensure_int (s->expr_str_u.expr_op->left, 0);
+	      fixed++;
+	    }
+
+	  if (l == FAKE_DTYPE_BOOL && (r == DTYPE_INT || r == DTYPE_SMINT))
+	    {
+	      ensure_int (s->expr_str_u.expr_op->left, 0);
+	      fixed++;
+	    }
 
 
-          if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
-              fixed++;
-            }
+	  if (r == FAKE_DTYPE_BOOL && (l == DTYPE_INT || l == DTYPE_SMINT))
+	    {
+	      ensure_int (s->expr_str_u.expr_op->right, 0);
+	      fixed++;
+	    }
 
-          if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
-            {
-              ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-              ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
-              fixed++;
-            }
-          if (!fixed)
-            {
-		char buff[256];
-              	sprintf(buff,"'%s'!='%s' @ %d", dtype_as_string(l), dtype_as_string(r), yylineno);
-		A4GL_lint (0, 0, "DIFFCOMP", "Different types in comparison", buff);
-		//A4GL_lint(buff );
-            }
 
-        }
+	  if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      fixed++;
+	    }
+
+	  if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
+	    {
+	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      fixed++;
+	    }
+	  if (!fixed)
+	    {
+	      char buff[256];
+	      sprintf (buff, "'%s'!='%s' @ %d", dtype_as_string (l), dtype_as_string (r), yylineno);
+	      A4GL_lint (0, 0, "DIFFCOMP", "Different types in comparison", buff);
+	      //A4GL_lint(buff );
+	    }
+
+	}
       return;
 
     case ET_EXPR_CAST:
       if (s->expr_str_u.expr_cast->target_dtype == FAKE_DTYPE_BOOL)
-        {
-          return;
-        }
+	{
+	  return;
+	}
       // No break so this will drop through...
     default:
-	
+
       A4GL_debug ("Implicit cast to boolean @ %d\n", yylineno);
     }
 
@@ -503,7 +505,7 @@ make_cast (struct expr_str *s, int target_dtype, int notnull, int force)
   d = expr_datatype (s);
 
   if (d == target_dtype && notnull == 0)
-    return;                     // Happy Days!
+    return;			// Happy Days!
 
   p = malloc (sizeof (struct expr_str));
   A4GL_assertion (p == 0, "Failed to allocate");
@@ -530,36 +532,47 @@ fix_compare (char *op, struct expr_str *s)
   l = expr_datatype (s->expr_str_u.expr_op->left) & DTYPE_MASK;
   r = expr_datatype (s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
-  if (strcmp(op,"=")==0) {
-		struct expr_str *le;
-		struct expr_str *re;
-		char *len=0;
-		char *ren=0;
-		le=s->expr_str_u.expr_op->left;
-		re=s->expr_str_u.expr_op->right;	
+  if (strcmp (op, "=") == 0)
+    {
+      struct expr_str *le;
+      struct expr_str *re;
+      char *len = 0;
+      char *ren = 0;
+      le = s->expr_str_u.expr_op->left;
+      re = s->expr_str_u.expr_op->right;
 
-		if (le->expr_type==ET_EXPR_FCALL)  {
-			len=le->expr_str_u.expr_function_call->fname;
+      if (le->expr_type == ET_EXPR_FCALL)
+	{
+	  len = le->expr_str_u.expr_function_call->fname;
+	}
+      if (re->expr_type == ET_EXPR_FCALL)
+	{
+	  ren = re->expr_str_u.expr_function_call->fname;
+	}
+      if (len)
+	{
+	  if (re->expr_type == ET_EXPR_LITERAL_LONG)
+	    {
+	      if (strcmp (len, "fgl_lastkey") == 0)
+		{
+		  A4GL_lint (le->expr_str_u.expr_function_call->module, le->expr_str_u.expr_function_call->line, "LASTKEYLIT",
+			     "Comparing fgl_lastkey against a literal integer", 0);
 		}
-		if (re->expr_type==ET_EXPR_FCALL)  {
-			ren=re->expr_str_u.expr_function_call->fname;
+	    }
+	}
+      if (ren)
+	{
+	  if (le->expr_type == ET_EXPR_LITERAL_LONG)
+	    {
+	      if (strcmp (ren, "fgl_lastkey") == 0)
+		{
+		  A4GL_lint (re->expr_str_u.expr_function_call->module, re->expr_str_u.expr_function_call->line, "LASTKEYLIT",
+			     "Comparing fgl_lastkey against a literal integer", 0);
 		}
-		if (len ) {
-			if (re->expr_type==ET_EXPR_LITERAL_LONG) {
-				if (strcmp(len,"fgl_lastkey")==0) {
-					A4GL_lint(le->expr_str_u.expr_function_call->module,le->expr_str_u.expr_function_call->line, "LASTKEYLIT", "Comparing fgl_lastkey against a literal integer",0);
-				}
-			}
-		}
-		if (ren ) {
-			if (le->expr_type==ET_EXPR_LITERAL_LONG) {
-				if (strcmp(ren,"fgl_lastkey")==0) {
-					A4GL_lint(re->expr_str_u.expr_function_call->module,re->expr_str_u.expr_function_call->line, "LASTKEYLIT", "Comparing fgl_lastkey against a literal integer",0);
-				}
-			}
-		}
-	
-  }
+	    }
+	}
+
+    }
 
 
 
@@ -612,34 +625,39 @@ fix_compare (char *op, struct expr_str *s)
       fixed++;
     }
 
-  if ((l==DTYPE_INT || l==DTYPE_SMINT) && r==DTYPE_CHAR) {
-        if (s->expr_str_u.expr_op->right->expr_type==ET_EXPR_LITERAL_STRING) {
-                char *a;
-                a=strdup(s->expr_str_u.expr_op->right->expr_str_u.expr_string);
-                A4GL_trim(a);
+  if ((l == DTYPE_INT || l == DTYPE_SMINT) && r == DTYPE_CHAR)
+    {
+      if (s->expr_str_u.expr_op->right->expr_type == ET_EXPR_LITERAL_STRING)
+	{
+	  char *a;
+	  a = strdup (s->expr_str_u.expr_op->right->expr_str_u.expr_string);
+	  A4GL_trim (a);
 
-                if (strlen(a)==0 && (strcmp(op,"<>")==0 || strcmp(op,"=")==0 ) ) {
-                        // Its a blank string...
-                        // they mean is null or is not null
-                        struct expr_str *l;
-                        l=s->expr_str_u.expr_op->left;
-                        if (strcmp(op,"<>")==0) {
-                                s->expr_type=ET_EXPR_OP_ISNOTNULL;
-                                s->expr_str_u.expr_expr=l;
-                                free(a);
-                                return ;
-                        }
-                        if (strcmp(op,"=")==0) {
-                                s->expr_type=ET_EXPR_OP_ISNULL;
-                                s->expr_str_u.expr_expr=l;
-                                free(a);
-                                return ;
-                        }
-                }
-                free(a);
+	  if (strlen (a) == 0 && (strcmp (op, "<>") == 0 || strcmp (op, "=") == 0))
+	    {
+	      // Its a blank string...
+	      // they mean is null or is not null
+	      struct expr_str *l;
+	      l = s->expr_str_u.expr_op->left;
+	      if (strcmp (op, "<>") == 0)
+		{
+		  s->expr_type = ET_EXPR_OP_ISNOTNULL;
+		  s->expr_str_u.expr_expr = l;
+		  free (a);
+		  return;
+		}
+	      if (strcmp (op, "=") == 0)
+		{
+		  s->expr_type = ET_EXPR_OP_ISNULL;
+		  s->expr_str_u.expr_expr = l;
+		  free (a);
+		  return;
+		}
+	    }
+	  free (a);
 
-        }
-  }
+	}
+    }
   l = expr_datatype (s->expr_str_u.expr_op->left) & DTYPE_MASK;
   r = expr_datatype (s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
@@ -672,23 +690,23 @@ expr_datatype (struct expr_str *p)
   int l;
   int r;
   //int a;
-char buff[256];
+  char buff[256];
   switch (p->expr_type)
     {
 
-	case ET_EXPR_NULL:
-		return DTYPE_NULL;
+    case ET_EXPR_NULL:
+      return DTYPE_NULL;
 
     case ET_EXPR_CACHED:
-		return expr_datatype(get_expr_datatype(p->expr_str_u.expr_cached.cache_num));
+      return expr_datatype (get_expr_datatype (p->expr_str_u.expr_cached.cache_num));
 
     case ET_EXPR_OP_SPACES:
-		 ensure_int (p->expr_str_u.expr_expr, 0);
-	return DTYPE_CHAR;
+      ensure_int (p->expr_str_u.expr_expr, 0);
+      return DTYPE_CHAR;
 
     case ET_EXPR_COLUMN:
-		 ensure_int (p->expr_str_u.expr_expr, 0);
-	return DTYPE_CHAR;
+      ensure_int (p->expr_str_u.expr_expr, 0);
+      return DTYPE_CHAR;
 
     case ET_EXPR_INFIELD:
       return FAKE_DTYPE_BOOL;
@@ -712,19 +730,20 @@ char buff[256];
       ensure_dtime (p->expr_str_u.expr_extend->expr, 0);
       return DTYPE_DTIME;
 
-	case ET_EXPR_FIELD_TOUCHED:
-		return FAKE_DTYPE_BOOL;
+    case ET_EXPR_FIELD_TOUCHED:
+      return FAKE_DTYPE_BOOL;
+
     case ET_EXPR_DATE_FUNC:
       //ensure_char (ptr->expr_str_u.expr_expr,0);
       return DTYPE_DATE;
 
     case ET_EXPR_NEG:
       if (is_numeric (expr_datatype (p->expr_str_u.expr_expr)))
-        {
-          return expr_datatype (p->expr_str_u.expr_expr);
-        }
+	{
+	  return expr_datatype (p->expr_str_u.expr_expr);
+	}
       if (p->expr_str_u.expr_expr == DTYPE_CHAR)
-        return DTYPE_FLOAT;
+	return DTYPE_FLOAT;
     case ET_EXPR_CONCAT_LIST:
       return DTYPE_CHAR;
     case ET_EXPR_GET_FLDBUF:
@@ -756,11 +775,11 @@ char buff[256];
 
 
 
-    /* 
- * 	case ET_EXPR_SUBSTRING:
-      return DTYPE_CHAR;
-      break;
-*/
+      /* 
+       *  case ET_EXPR_SUBSTRING:
+       return DTYPE_CHAR;
+       break;
+       */
 
     case ET_EXPR_CURRENT:
       return DTYPE_DTIME;
@@ -768,7 +787,7 @@ char buff[256];
     case ET_EXPR_OP_AND:
       ensure_bool (p->expr_str_u.expr_op->left, 0);
       ensure_bool (p->expr_str_u.expr_op->right, 0);
-      return DTYPE_INT;         // Actually boolean
+      return DTYPE_INT;		// Actually boolean
     case ET_EXPR_CAST:
       return p->expr_str_u.expr_cast->target_dtype;
     case ET_EXPR_DAY_FUNC:
@@ -778,7 +797,7 @@ char buff[256];
 
     case ET_EXPR_OP_ISNULL:
     case ET_EXPR_OP_ISNOTNULL:
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_LIKE:
     case ET_EXPR_OP_NOT_LIKE:
@@ -786,33 +805,38 @@ char buff[256];
     case ET_EXPR_OP_NOT_MATCHES:
       ensure_char (p->expr_str_u.expr_op->left, 0);
       ensure_char (p->expr_str_u.expr_op->right, 0);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_NOT_EQUAL:
       fix_compare ("<>", p);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
+
+
     case ET_EXPR_OP_GREATER_THAN:
       fix_compare (">", p);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
+
     case ET_EXPR_OP_GREATER_THAN_EQ:
       fix_compare (">=", p);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
+
     case ET_EXPR_OP_LESS_THAN:
       fix_compare ("<", p);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
+
     case ET_EXPR_OP_LESS_THAN_EQ:
       fix_compare ("<=", p);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_EQUAL:
       fix_compare ("=", p);
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_NOT_IN:
     case ET_EXPR_OP_NOTIN_SUBQUERY:
     case ET_EXPR_OP_IN_SUBQUERY:
     case ET_EXPR_OP_IN:
-      return FAKE_DTYPE_BOOL;   // Actually a Boolean...
+      return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
 
     case ET_EXPR_OP_USING:
@@ -827,44 +851,52 @@ char buff[256];
       return DTYPE_CHAR;
       break;
 
-case ET_EXPR_VARIABLE_USAGE :
-	{
+    case ET_EXPR_VARIABLE_USAGE:
+      {
 	struct variable_usage *u;
-		u=p->expr_str_u.expr_variable_usage;
-		while (u->next) u=u->next;
-	
-		// If its a substring - can we find out the extent so we can 'adjust' our 
-		// size we report back as the datatype...
-		if (u->substrings_start) {
-			// substring..
-			if (u->substrings_end==NULL || u->substrings_end==u->substrings_start) {
-				// end is the same as start - so its a single character..
-				if (u->datatype==DTYPE_CHAR || u->datatype==DTYPE_VCHAR) {
-					return (u->datatype&DTYPE_MASK)+ENCODE_SIZE(1);
-				}
-			} else {
-				// Ok - theres a fair chance we can't work out what it is
-				// but - we can if its just a couple of literals...
-				if (u->substrings_start->expr_type==ET_EXPR_LITERAL_LONG && u->substrings_end->expr_type==ET_EXPR_LITERAL_LONG) {
-					int s;
-					int e;
-					s=u->substrings_start->expr_str_u.expr_long;
-					e=u->substrings_end->expr_str_u.expr_long;
-					if (e<s) e=s;
-					return (u->datatype&DTYPE_MASK)+ENCODE_SIZE((e-s+1));
-				}
-			}
+	u = p->expr_str_u.expr_variable_usage;
+	while (u->next)
+	  u = u->next;
 
-			// Just return 1 - its could be right, and we'd be wrong
-			// to say otherwise...
-			return (u->datatype&DTYPE_MASK)+ENCODE_SIZE(1);
-			
-		}
-		return u->datatype;
-	}
+	// If its a substring - can we find out the extent so we can 'adjust' our 
+	// size we report back as the datatype...
+	if (u->substrings_start)
+	  {
+	    // substring..
+	    if (u->substrings_end == NULL || u->substrings_end == u->substrings_start)
+	      {
+		// end is the same as start - so its a single character..
+		if (u->datatype == DTYPE_CHAR || u->datatype == DTYPE_VCHAR)
+		  {
+		    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE (1);
+		  }
+	      }
+	    else
+	      {
+		// Ok - theres a fair chance we can't work out what it is
+		// but - we can if its just a couple of literals...
+		if (u->substrings_start->expr_type == ET_EXPR_LITERAL_LONG && u->substrings_end->expr_type == ET_EXPR_LITERAL_LONG)
+		  {
+		    int s;
+		    int e;
+		    s = u->substrings_start->expr_str_u.expr_long;
+		    e = u->substrings_end->expr_str_u.expr_long;
+		    if (e < s)
+		      e = s;
+		    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE ((e - s + 1));
+		  }
+	      }
 
-	A4GL_assertion(1,"Fixme");
-	break;
+	    // Just return 1 - its could be right, and we'd be wrong
+	    // to say otherwise...
+	    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE (1);
+
+	  }
+	return u->datatype;
+      }
+
+      A4GL_assertion (1, "Fixme");
+      break;
 
     case ET_EXPR_LITERAL_DOUBLE_STR:
       return DTYPE_FLOAT;
@@ -882,67 +914,37 @@ case ET_EXPR_VARIABLE_USAGE :
 
 
 
-        case ET_EXPR_IVAL_VAL:
-                return DTYPE_INTERVAL+ENCODE_SIZE(p->expr_str_u.expr_interval->extend);
+    case ET_EXPR_IVAL_VAL:
+      return DTYPE_INTERVAL + ENCODE_SIZE (p->expr_str_u.expr_interval->extend);
 
-        case ET_EXPR_DTVAL:
-                return DTYPE_DTIME+ENCODE_SIZE(p->expr_str_u.expr_datetime->extend);
+    case ET_EXPR_DTVAL:
+      return DTYPE_DTIME + ENCODE_SIZE (p->expr_str_u.expr_datetime->extend);
 
-        case ET_EXPR_TIME_FUNC:
-                return DTYPE_DTIME+ENCODE_SIZE(72);
+    case ET_EXPR_TIME_FUNC:
+      return DTYPE_DTIME + ENCODE_SIZE (72);
 
-        case ET_EXPR_TIME:
-                return DTYPE_DTIME+ENCODE_SIZE(72);
+    case ET_EXPR_TIME:
+      return DTYPE_DTIME + ENCODE_SIZE (72);
 
-        case ET_EXPR_DATE_EXPR:
-                return DTYPE_DATE;
+    case ET_EXPR_DATE_EXPR:
+      return DTYPE_DATE;
 
 
 
     case ET_EXPR_LITERAL_LONG:
       if (p->expr_str_u.expr_long <= SHRT_MAX && p->expr_str_u.expr_long >= SHRT_MIN)
-        {
-          return DTYPE_SMINT;
-        }
+	{
+	  return DTYPE_SMINT;
+	}
       return DTYPE_INT;
 
     case ET_EXPR_FCALL:
-		yylineno=p->expr_str_u.expr_function_call->line;
-		
-		return find_function_single_rtype(p->expr_str_u.expr_function_call->fname);
-		printf("Cant do calls yet\n");
-		exit(1);
-	/*
-      a = find_function (p->expr_str_u.expr_function_call->fname);
-      if (a == -1)
-        {
-          if (!write_meta ())
-            {
-              FPRINTF (stderr,
-                       "No return type for function %s - assuming integer (%d %s)\n",
-                       p->expr_str_u.expr_function_call->fname,
-                       p->expr_str_u.expr_function_call->line,
-                       p->expr_str_u.expr_function_call->module);
-              PRINTF ("Not found : %s\n",
-                      p->expr_str_u.expr_function_call->fname);
-            }
-          return DTYPE_INT;
-        }
-      if (functions[a].nreturn != 1)
-        {
-          FPRINTF (stderr, "Returns : %d\n", functions[a].nreturn);
-          set_yytext (p->expr_str_u.expr_function_call->fname);
-          a4gl_yyerror ("Returns not exactly one value");
-          return 0;
-        }
-	
-      return functions[a].return_dtype[0];
-	*/
-	return DTYPE_CHAR;
+      yylineno = p->expr_str_u.expr_function_call->line;
+
+      return find_function_single_rtype (p->expr_str_u.expr_function_call->fname);
 
     case ET_EXPR_OP_MOD:
       return DTYPE_INT;
-
 
 
     case ET_EXPR_OP_ADD:
@@ -950,257 +952,254 @@ case ET_EXPR_VARIABLE_USAGE :
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
 
- 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
+      if (l == DTYPE_SERIAL)
+	l = DTYPE_INT;
+      if (r == DTYPE_SERIAL)
+	r = DTYPE_INT;
 
       if (l == DTYPE_DATE && r == DTYPE_INTERVAL)
-        {
-          struct expr_str *right;
-          right = p->expr_str_u.expr_op->right;
+	{
+	  struct expr_str *right;
+	  right = p->expr_str_u.expr_op->right;
 
-          if (right->expr_type == ET_EXPR_OP_DAY)
-            {                   // Fools I tell you !!!
-              p->expr_str_u.expr_op->right = right->expr_str_u.expr_expr;
-              ensure_int (p->expr_str_u.expr_op->right, 1);
-              ensure_int (p->expr_str_u.expr_op->left, 1);
-              ensure_date (p, 0);
-            }
-          else
-            {
+	  if (right->expr_type == ET_EXPR_OP_DAY)
+	    {			// Fools I tell you !!!
+	      p->expr_str_u.expr_op->right = right->expr_str_u.expr_expr;
+	      ensure_int (p->expr_str_u.expr_op->right, 1);
+	      ensure_int (p->expr_str_u.expr_op->left, 1);
+	      ensure_date (p, 0);
+	    }
+	  else
+	    {
 
-              if (right->expr_type == ET_EXPR_OP_MONTH || right->expr_type == ET_EXPR_OP_YEAR)
-                {
-                  return DTYPE_DATE;
-                }
-              PRINTF ("Not fixed date+interval %s\n", expr_name (right->expr_type));
-              PRINTF ("dtype right = %d\n", expr_datatype (p->expr_str_u.expr_op->right));
+	      if (right->expr_type == ET_EXPR_OP_MONTH || right->expr_type == ET_EXPR_OP_YEAR)
+		{
+		  return DTYPE_DATE;
+		}
+	      PRINTF ("Not fixed date+interval %s\n", expr_name (right->expr_type));
+	      PRINTF ("dtype right = %d\n", expr_datatype (p->expr_str_u.expr_op->right));
 
 
-              return DTYPE_DTIME;
-            }
-          return DTYPE_DATE;
-        }
-      if (r == DTYPE_INT
-          && p->expr_str_u.expr_op->right->expr_type == ET_EXPR_LITERAL_LONG)
-        {
-          r = l;
-        }
+	      return DTYPE_DTIME;
+	    }
+	  return DTYPE_DATE;
+	}
+      if (r == DTYPE_INT && p->expr_str_u.expr_op->right->expr_type == ET_EXPR_LITERAL_LONG)
+	{
+	  r = l;
+	}
 
-      if (l == DTYPE_INT
-          && p->expr_str_u.expr_op->left->expr_type == ET_EXPR_LITERAL_LONG)
-        {
-          l = r;
-        }
+      if (l == DTYPE_INT && p->expr_str_u.expr_op->left->expr_type == ET_EXPR_LITERAL_LONG)
+	{
+	  l = r;
+	}
 
       if (l == r)
-        {
-          return l;
-        }
+	{
+	  return l;
+	}
 
       if (l == DTYPE_SMINT && r == DTYPE_INT)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_INT;
+	}
 
 
       if (l == DTYPE_SMINT && r == FAKE_DTYPE_BOOL)
-        {
-          ensure_smint (p->expr_str_u.expr_op->left, 0);
-          ensure_smint (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_SMINT;
-        }
+	{
+	  ensure_smint (p->expr_str_u.expr_op->left, 0);
+	  ensure_smint (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_SMINT;
+	}
 
       if (l == DTYPE_INT && r == FAKE_DTYPE_BOOL)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_INT;
+	}
 
       if (r == DTYPE_SMINT && l == FAKE_DTYPE_BOOL)
-        {
-          ensure_smint (p->expr_str_u.expr_op->left, 0);
-          ensure_smint (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_SMINT;
-        }
+	{
+	  ensure_smint (p->expr_str_u.expr_op->left, 0);
+	  ensure_smint (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_SMINT;
+	}
 
       if (r == DTYPE_INT && l == FAKE_DTYPE_BOOL)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_INT;
+	}
 
 
 
       if (l == DTYPE_SMINT && r == FAKE_DTYPE_BOOL)
-        {
-          ensure_smint (p->expr_str_u.expr_op->left, 0);
-          ensure_smint (p->expr_str_u.expr_op->right, 0);
-		A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation",0);
-          return DTYPE_SMINT;
-        }
+	{
+	  ensure_smint (p->expr_str_u.expr_op->left, 0);
+	  ensure_smint (p->expr_str_u.expr_op->right, 0);
+	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  return DTYPE_SMINT;
+	}
 
       if (l == FAKE_DTYPE_BOOL && r == DTYPE_SMINT)
-        {
-          ensure_smint (p->expr_str_u.expr_op->left, 0);
-          ensure_smint (p->expr_str_u.expr_op->right, 0);
-		A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation",0);
-          return DTYPE_SMINT;
-        }
+	{
+	  ensure_smint (p->expr_str_u.expr_op->left, 0);
+	  ensure_smint (p->expr_str_u.expr_op->right, 0);
+	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  return DTYPE_SMINT;
+	}
 
 
       if (l == DTYPE_INT && r == FAKE_DTYPE_BOOL)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-		A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation",0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  return DTYPE_INT;
+	}
 
       if (l == FAKE_DTYPE_BOOL && r == DTYPE_INT)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-		A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation",0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  return DTYPE_INT;
+	}
 
 
       if (r == DTYPE_SMINT && l == DTYPE_INT)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_INT;
+	}
 
       if (r == DTYPE_DATE && l == DTYPE_INT)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          ensure_date (p, 0);
-          return DTYPE_DATE;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  ensure_date (p, 0);
+	  return DTYPE_DATE;
+	}
       if (l == DTYPE_DTIME && r == DTYPE_INTERVAL)
-        {
-          return DTYPE_DTIME;
-        }
+	{
+	  return DTYPE_DTIME;
+	}
       if (r == DTYPE_DATE && l == DTYPE_SMINT)
-        {
+	{
 
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          ensure_date (p, 0);
-          return DTYPE_DATE;
-        }
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  ensure_date (p, 0);
+	  return DTYPE_DATE;
+	}
 
       if (l == DTYPE_DATE && r == DTYPE_INT)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 1);
-          ensure_int (p->expr_str_u.expr_op->right, 1);
-          ensure_date (p, 0);
-          return DTYPE_DATE;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 1);
+	  ensure_int (p->expr_str_u.expr_op->right, 1);
+	  ensure_date (p, 0);
+	  return DTYPE_DATE;
+	}
 
       if (l == DTYPE_DATE && r == DTYPE_SMINT)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 1);
-          ensure_int (p->expr_str_u.expr_op->right, 1);
-          ensure_date (p, 0);
-          return DTYPE_DATE;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 1);
+	  ensure_int (p->expr_str_u.expr_op->right, 1);
+	  ensure_date (p, 0);
+	  return DTYPE_DATE;
+	}
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
-        {
-          ensure_decimal (p->expr_str_u.expr_op->left, 0);
-          ensure_decimal (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_DECIMAL;
-        }
+	{
+	  ensure_decimal (p->expr_str_u.expr_op->left, 0);
+	  ensure_decimal (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_DECIMAL;
+	}
 
       if (l == DTYPE_MONEY || r == DTYPE_MONEY)
-        {
-          ensure_money (p->expr_str_u.expr_op->left, 0);
-          ensure_money (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_MONEY;
-        }
+	{
+	  ensure_money (p->expr_str_u.expr_op->left, 0);
+	  ensure_money (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_MONEY;
+	}
 
       if (l == DTYPE_FLOAT || r == DTYPE_FLOAT)
-        {
-          ensure_float (p->expr_str_u.expr_op->left, 0);
-          ensure_float (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_FLOAT;
-        }
+	{
+	  ensure_float (p->expr_str_u.expr_op->left, 0);
+	  ensure_float (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_FLOAT;
+	}
 
-	
-		sprintf(buff, "%s!=%s",dtype_as_string(l), dtype_as_string(r));
-		A4GL_lint (0, 0, "DIFFMATH", "Different types in operation", buff);
-      		fprintf (stderr, "UNHANDLED ADD %d(%s) %d(%s) (%x %x)\n",
-               		p->expr_str_u.expr_op->left->expr_type,
-               		expr_name (p->expr_str_u.expr_op->left->expr_type),
-               		p->expr_str_u.expr_op->right->expr_type,
-               		expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
+
+      sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
+      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation", buff);
+      fprintf (stderr, "UNHANDLED ADD %d(%s) %d(%s) (%x %x)\n",
+	       p->expr_str_u.expr_op->left->expr_type,
+	       expr_name (p->expr_str_u.expr_op->left->expr_type),
+	       p->expr_str_u.expr_op->right->expr_type, expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
       return DTYPE_INT;
 
-    case ET_EXPR_AGGREGATE:
-        return DTYPE_FLOAT;
 
     case ET_EXPR_OP_DIV:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
- 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
+      if (l == DTYPE_SERIAL)
+	l = DTYPE_INT;
+      if (r == DTYPE_SERIAL)
+	r = DTYPE_INT;
 
       if ((l == DTYPE_INT || l == DTYPE_SMINT) && (r == DTYPE_INT || r == DTYPE_SMINT))
-        {
-          force_float (p->expr_str_u.expr_op->left);
-          force_float (p->expr_str_u.expr_op->right);
-          ensure_dtype (p, DTYPE_FLOAT, 0);
-          return DTYPE_FLOAT;
-        }
+	{
+	  force_float (p->expr_str_u.expr_op->left);
+	  force_float (p->expr_str_u.expr_op->right);
+	  ensure_dtype (p, DTYPE_FLOAT, 0);
+	  return DTYPE_FLOAT;
+	}
 
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
-          ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
-          return DTYPE_DECIMAL;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	  return DTYPE_DECIMAL;
+	}
 
       if (l == DTYPE_INT || l == DTYPE_SMINT || l == DTYPE_FLOAT || l == DTYPE_SMFLOAT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
-          ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
-          l = DTYPE_FLOAT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  l = DTYPE_FLOAT;
+	}
 
       if (r == DTYPE_INT || r == DTYPE_SMINT || r == DTYPE_FLOAT || r == DTYPE_SMFLOAT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
-          ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
-          r = DTYPE_FLOAT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  r = DTYPE_FLOAT;
+	}
 
       if (l == DTYPE_MONEY || r == DTYPE_MONEY)
-        {
-          ensure_money (p->expr_str_u.expr_op->left, 0);
-          ensure_money (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_MONEY;
-        }
+	{
+	  ensure_money (p->expr_str_u.expr_op->left, 0);
+	  ensure_money (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_MONEY;
+	}
 
       if (l == DTYPE_FLOAT && r == DTYPE_FLOAT)
-        return DTYPE_FLOAT;
+	return DTYPE_FLOAT;
 
-		sprintf(buff, "%s!=%s",dtype_as_string(l), dtype_as_string(r));
-		A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (/)", buff);
+      sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
+      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (/)", buff);
 
       fprintf (stderr, "UNHANDLED DIV %d(%s) %d(%s) (%x %x)\n",
-               p->expr_str_u.expr_op->left->expr_type,
-               expr_name (p->expr_str_u.expr_op->left->expr_type),
-               p->expr_str_u.expr_op->right->expr_type,
-               expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
-
-    case ET_EXPR_OP_POWER:
-      return DTYPE_FLOAT;
+	       p->expr_str_u.expr_op->left->expr_type,
+	       expr_name (p->expr_str_u.expr_op->left->expr_type),
+	       p->expr_str_u.expr_op->right->expr_type, expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
 
 
 
@@ -1208,172 +1207,175 @@ case ET_EXPR_VARIABLE_USAGE :
 
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
- 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
+      if (l == DTYPE_SERIAL)
+	l = DTYPE_INT;
+      if (r == DTYPE_SERIAL)
+	r = DTYPE_INT;
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
-        {
-          if (p->expr_str_u.expr_op->left->expr_type == ET_EXPR_LITERAL_LONG)
-            {
-              struct expr_str *tmp;
-              tmp = p->expr_str_u.expr_op->left;
-              p->expr_str_u.expr_op->left = p->expr_str_u.expr_op->right;
-              p->expr_str_u.expr_op->right = tmp;
-            }
-          ensure_decimal (p->expr_str_u.expr_op->left, 0);
-          ensure_decimal (p->expr_str_u.expr_op->right, 0);
+	{
+	  if (p->expr_str_u.expr_op->left->expr_type == ET_EXPR_LITERAL_LONG)
+	    {
+	      struct expr_str *tmp;
+	      tmp = p->expr_str_u.expr_op->left;
+	      p->expr_str_u.expr_op->left = p->expr_str_u.expr_op->right;
+	      p->expr_str_u.expr_op->right = tmp;
+	    }
+	  ensure_decimal (p->expr_str_u.expr_op->left, 0);
+	  ensure_decimal (p->expr_str_u.expr_op->right, 0);
 
-          return DTYPE_DECIMAL;
-        }
+	  return DTYPE_DECIMAL;
+	}
       if (l == DTYPE_SMINT)
-        l = DTYPE_INT;
+	l = DTYPE_INT;
       if (r == DTYPE_SMINT)
-        r = DTYPE_INT;
+	r = DTYPE_INT;
       if (l == DTYPE_SMFLOAT)
-        l = DTYPE_FLOAT;
+	l = DTYPE_FLOAT;
       if (r == DTYPE_SMFLOAT)
-        r = DTYPE_FLOAT;
+	r = DTYPE_FLOAT;
       if (l == r)
-        return l;
+	return l;
 
       if (l == DTYPE_FLOAT && r == DTYPE_FLOAT)
-        {
-          ensure_float (p->expr_str_u.expr_op->left, 0);
-          ensure_float (p->expr_str_u.expr_op->right, 0);
+	{
+	  ensure_float (p->expr_str_u.expr_op->left, 0);
+	  ensure_float (p->expr_str_u.expr_op->right, 0);
 
-          return DTYPE_FLOAT;
-        }
+	  return DTYPE_FLOAT;
+	}
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
-        {
-          ensure_decimal (p->expr_str_u.expr_op->left, 0);
-          ensure_decimal (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_DECIMAL;
-        }
+	{
+	  ensure_decimal (p->expr_str_u.expr_op->left, 0);
+	  ensure_decimal (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_DECIMAL;
+	}
 
       if (l == DTYPE_MONEY || r == DTYPE_MONEY)
-        {
-          ensure_money (p->expr_str_u.expr_op->left, 0);
-          ensure_money (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_MONEY;
-        }
+	{
+	  ensure_money (p->expr_str_u.expr_op->left, 0);
+	  ensure_money (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_MONEY;
+	}
 
       if (l == DTYPE_INT && r == DTYPE_FLOAT)
-        {
-          ensure_float (p->expr_str_u.expr_op->left, 0);
-          ensure_float (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_FLOAT;
-        }
+	{
+	  ensure_float (p->expr_str_u.expr_op->left, 0);
+	  ensure_float (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_FLOAT;
+	}
 
       if (l == DTYPE_FLOAT && r == DTYPE_INT)
-        {
-          ensure_float (p->expr_str_u.expr_op->left, 0);
-          ensure_float (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_FLOAT;
-        }
+	{
+	  ensure_float (p->expr_str_u.expr_op->left, 0);
+	  ensure_float (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_FLOAT;
+	}
       if (l == DTYPE_FLOAT && r == DTYPE_MONEY)
-        {
-          ensure_float (p->expr_str_u.expr_op->left, 0);
-          ensure_decimal (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_MONEY;
-        }
+	{
+	  ensure_float (p->expr_str_u.expr_op->left, 0);
+	  ensure_decimal (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_MONEY;
+	}
       if (l == DTYPE_INT && r == DTYPE_MONEY)
-        {
-          return DTYPE_MONEY;
-        }
-		sprintf(buff, "%s!=%s",dtype_as_string(l), dtype_as_string(r));
-		A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (*)", buff);
-      	fprintf (stderr, "UNHANDLED MULT %d(%s) %d(%s) (%x %x)\n",
-               p->expr_str_u.expr_op->left->expr_type,
-               expr_name (p->expr_str_u.expr_op->left->expr_type),
-               p->expr_str_u.expr_op->right->expr_type,
-               expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
+	{
+	  return DTYPE_MONEY;
+	}
+      sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
+      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (*)", buff);
+      fprintf (stderr, "UNHANDLED MULT %d(%s) %d(%s) (%x %x)\n",
+	       p->expr_str_u.expr_op->left->expr_type,
+	       expr_name (p->expr_str_u.expr_op->left->expr_type),
+	       p->expr_str_u.expr_op->right->expr_type, expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
 
 
-case ET_EXPR_BRACKET:
-	return expr_datatype(p->expr_str_u.expr_expr);
 
     case ET_EXPR_OP_SUB:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
- 	if (l==DTYPE_SERIAL) l=DTYPE_INT; if (r==DTYPE_SERIAL) r=DTYPE_INT;
+      if (l == DTYPE_SERIAL)
+	l = DTYPE_INT;
+      if (r == DTYPE_SERIAL)
+	r = DTYPE_INT;
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
-        {
-          ensure_decimal (p->expr_str_u.expr_op->left, 0);
-          ensure_decimal (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_DECIMAL;
-        }
+	{
+	  ensure_decimal (p->expr_str_u.expr_op->left, 0);
+	  ensure_decimal (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_DECIMAL;
+	}
 
       if (l == DTYPE_DTIME && r == DTYPE_DTIME)
-        {
-          return DTYPE_INTERVAL;
-        }
+	{
+	  return DTYPE_INTERVAL;
+	}
 
       if (l == DTYPE_DATE && r == DTYPE_DATE)
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_INT;
-        }
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_INT;
+	}
 
       if (l == DTYPE_DATE && r == DTYPE_INTERVAL)
-        {
-          struct expr_str *right;
-          right = p->expr_str_u.expr_op->right;
-          if (right->expr_type == ET_EXPR_OP_DAY)
-            {                   // Fools I tell you !!!
-              p->expr_str_u.expr_op->right = right->expr_str_u.expr_expr;
-              ensure_int (p->expr_str_u.expr_op->left, 0);
-              ensure_int (p->expr_str_u.expr_op->right, 0);
-              ensure_date (p, 0);
-            }
-          else
-            {
+	{
+	  struct expr_str *right;
+	  right = p->expr_str_u.expr_op->right;
+	  if (right->expr_type == ET_EXPR_OP_DAY)
+	    {			// Fools I tell you !!!
+	      p->expr_str_u.expr_op->right = right->expr_str_u.expr_expr;
+	      ensure_int (p->expr_str_u.expr_op->left, 0);
+	      ensure_int (p->expr_str_u.expr_op->right, 0);
+	      ensure_date (p, 0);
+	    }
+	  else
+	    {
 
-              if (right->expr_type == ET_EXPR_OP_MONTH || right->expr_type == ET_EXPR_OP_YEAR)
-                {
-                  return DTYPE_DATE;
-                }
-              fprintf (stderr, "Not fixed : %s (DATE-INTERVAL)\n", expr_name (right->expr_type));
-              fprintf (stderr, "dtype right = %d\n", expr_datatype (p->expr_str_u.expr_op->right));
+	      if (right->expr_type == ET_EXPR_OP_MONTH || right->expr_type == ET_EXPR_OP_YEAR)
+		{
+		  return DTYPE_DATE;
+		}
+	      fprintf (stderr, "Not fixed : %s (DATE-INTERVAL)\n", expr_name (right->expr_type));
+	      fprintf (stderr, "dtype right = %d\n", expr_datatype (p->expr_str_u.expr_op->right));
 
-              return DTYPE_DTIME;
-            }
-          return DTYPE_DATE;
-        }
+	      return DTYPE_DTIME;
+	    }
+	  return DTYPE_DATE;
+	}
       if (l == DTYPE_INT && r == DTYPE_FLOAT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
-          l = DTYPE_FLOAT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  l = DTYPE_FLOAT;
+	}
       if (r == DTYPE_INT && l == DTYPE_FLOAT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
-          r = DTYPE_FLOAT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  r = DTYPE_FLOAT;
+	}
       if (l == DTYPE_SMINT && r == DTYPE_FLOAT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
-          l = DTYPE_FLOAT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  l = DTYPE_FLOAT;
+	}
       if (r == DTYPE_SMINT && l == DTYPE_FLOAT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
-          r = DTYPE_FLOAT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  r = DTYPE_FLOAT;
+	}
 
       if (l == DTYPE_SMINT && r == DTYPE_INT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_INT, 0);
-          l = DTYPE_INT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_INT, 0);
+	  l = DTYPE_INT;
+	}
 
       if (r == DTYPE_SMINT && l == DTYPE_INT)
-        {
-          ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_INT, 0);
-          r = DTYPE_INT;
-        }
+	{
+	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_INT, 0);
+	  r = DTYPE_INT;
+	}
 
 
 
@@ -1381,104 +1383,111 @@ case ET_EXPR_BRACKET:
 
 
       if (l == r)
-        {
-          return l;
-        }
+	{
+	  return l;
+	}
 
-      if (r == DTYPE_DATE
-          && (l == DTYPE_INT || l == DTYPE_SMINT || r == FAKE_DTYPE_BOOL))
-        {
-          struct expr_str *tmp;
-          tmp = p->expr_str_u.expr_op->right;
-          p->expr_str_u.expr_op->right = p->expr_str_u.expr_op->left;
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          p->expr_str_u.expr_op->left = tmp;        // Lets make sure the date is on the left...
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_date (p, 0);
-          return DTYPE_DATE;
-        }
+      if (r == DTYPE_DATE && (l == DTYPE_INT || l == DTYPE_SMINT || r == FAKE_DTYPE_BOOL))
+	{
+	  struct expr_str *tmp;
+	  tmp = p->expr_str_u.expr_op->right;
+	  p->expr_str_u.expr_op->right = p->expr_str_u.expr_op->left;
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  p->expr_str_u.expr_op->left = tmp;	// Lets make sure the date is on the left...
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_date (p, 0);
+	  return DTYPE_DATE;
+	}
 
 
-      if (l == DTYPE_DATE
-          && (r == DTYPE_INT || r == DTYPE_SMINT || r == FAKE_DTYPE_BOOL))
-        {
-          ensure_int (p->expr_str_u.expr_op->left, 0);
-          ensure_int (p->expr_str_u.expr_op->right, 0);
-          ensure_date (p, 0);
-          return DTYPE_DATE;
-        }
+      if (l == DTYPE_DATE && (r == DTYPE_INT || r == DTYPE_SMINT || r == FAKE_DTYPE_BOOL))
+	{
+	  ensure_int (p->expr_str_u.expr_op->left, 0);
+	  ensure_int (p->expr_str_u.expr_op->right, 0);
+	  ensure_date (p, 0);
+	  return DTYPE_DATE;
+	}
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
-        {
-          ensure_decimal (p->expr_str_u.expr_op->left, 0);
-          ensure_decimal (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_DECIMAL;
-        }
+	{
+	  ensure_decimal (p->expr_str_u.expr_op->left, 0);
+	  ensure_decimal (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_DECIMAL;
+	}
 
       if (l == DTYPE_MONEY || r == DTYPE_MONEY)
-        {
-          ensure_money (p->expr_str_u.expr_op->left, 0);
-          ensure_money (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_MONEY;
-        }
-
-      if (l == DTYPE_SMINT && r == DTYPE_SMFLOAT)
-        {
-          ensure_smfloat (p->expr_str_u.expr_op->left, 0);
-          //ensure_smfloat (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_SMFLOAT;
+	{
+	  ensure_money (p->expr_str_u.expr_op->left, 0);
+	  ensure_money (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_MONEY;
 	}
 
       if (l == DTYPE_SMINT && r == DTYPE_SMFLOAT)
-        {
-          //ensure_smfloat (p->expr_str_u.expr_op->left, 0);
-          ensure_smfloat (p->expr_str_u.expr_op->right, 0);
-          return DTYPE_SMFLOAT;
+	{
+	  ensure_smfloat (p->expr_str_u.expr_op->left, 0);
+	  //ensure_smfloat (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_SMFLOAT;
+	}
+
+      if (l == DTYPE_SMINT && r == DTYPE_SMFLOAT)
+	{
+	  //ensure_smfloat (p->expr_str_u.expr_op->left, 0);
+	  ensure_smfloat (p->expr_str_u.expr_op->right, 0);
+	  return DTYPE_SMFLOAT;
 	}
 
       if (l == DTYPE_DTIME && r == DTYPE_INTERVAL)
-        {
-          //ensure_smfloat (p->expr_str_u.expr_op->left, 0);
-          return DTYPE_DTIME;
+	{
+	  //ensure_smfloat (p->expr_str_u.expr_op->left, 0);
+	  return DTYPE_DTIME;
 	}
 
 
       if (l == DTYPE_DTIME && r == DTYPE_DATE)
-        {
-          return DTYPE_INTERVAL;
+	{
+	  return DTYPE_INTERVAL;
 	}
 
       if (l == DTYPE_DATE && r == DTYPE_DTIME)
-        {
-          return DTYPE_INTERVAL;
+	{
+	  return DTYPE_INTERVAL;
 	}
 
-	sprintf(buff, "%s!=%s",dtype_as_string(l), dtype_as_string(r));
-	A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (-)", buff);
+      sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
+      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (-)", buff);
 
       fprintf (stderr, "UNHANDLED SUB %d(%s) %d(%s) (%x %x)\n",
-               p->expr_str_u.expr_op->left->expr_type,
-               expr_name (p->expr_str_u.expr_op->left->expr_type),
-               p->expr_str_u.expr_op->right->expr_type,
-               expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
+	       p->expr_str_u.expr_op->left->expr_type,
+	       expr_name (p->expr_str_u.expr_op->left->expr_type),
+	       p->expr_str_u.expr_op->right->expr_type, expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
       return DTYPE_INT;
 
 
+    case ET_EXPR_BRACKET:
+      return expr_datatype (p->expr_str_u.expr_expr);
+    case ET_EXPR_OP_POWER:
+      return DTYPE_FLOAT;
+    case ET_EXPR_AGGREGATE:
+      return DTYPE_FLOAT;
 
-	case ET_EXPR_NOT_FIELD_TOUCHED:
-	return FAKE_DTYPE_BOOL;
+    case ET_EXPR_NOT_FIELD_TOUCHED:
+      return FAKE_DTYPE_BOOL;
+
+    case ET_EXPR_NOT_EXISTS_SUBQUERY:
+      return FAKE_DTYPE_BOOL;
+    case ET_EXPR_EXISTS_SUBQUERY:
+      return FAKE_DTYPE_BOOL;
+
 
 
     default:
-	
-      fprintf (stderr, "UNKNOWN Expression Datatype %s (%d)\n",
-               expr_name (p->expr_type),
-               yylineno);
-	A4GL_pause_execution(); // SAFE TO COMMIT
+
+      fprintf (stderr, "UNKNOWN Expression Datatype %s (%d)\n", expr_name (p->expr_type), yylineno);
+      A4GL_pause_execution ();	// SAFE TO COMMIT
       return -1;
+
     }
 
 
   // Shouldn't happen
 }
-
