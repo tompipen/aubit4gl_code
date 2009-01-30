@@ -285,6 +285,18 @@ code
 }
 endcode
 
+if file_exists("Makefile") then
+            if set_pick_dup(lv_prog_cnt,"Makefile") then
+		let lv_prog_cnt=lv_prog_cnt+1
+	    end if
+else
+	if file_exists("makefile") then
+            if set_pick_dup(lv_prog_cnt,"makefile") then
+		let lv_prog_cnt=lv_prog_cnt+1
+	    end if
+	end if
+end if
+
 end function
 
 
@@ -424,9 +436,17 @@ define lv_ok integer
 	where (justuser is null or justuser matches " " or justuser=user)
 	and progname=lv_name
 
+	initialize lv_makefile to null
+
+
 	if lv_cnt=0 then
-		error "Program not found"
-		return
+		## Is it an explicit Makefile ? 
+		if file_exists(lv_name) then
+			let lv_makefile=lv_name	
+		else
+			error "Program not found"
+			return
+		end if
 	end if
 
     call set_last_used_program(lv_name)
@@ -437,9 +457,15 @@ define lv_ok integer
 
     message "Compiling ..."
 
-	call get_makefile_for(lv_name) returning lv_makefile
+	if lv_makefile is null then
+		# If its one of ours - call the 'compile' target...
+		call get_makefile_for(lv_name) returning lv_makefile
+		call run_with_logging(fgl_getenv("A4GL_MAKE")||" -f "||lv_makefile clipped||" compile ") returning lv_ok
+	else
+		# Just run the makefile then...
+		call run_with_logging(fgl_getenv("A4GL_MAKE")||" -f "||lv_makefile clipped) returning lv_ok
+	end if
 
-	call run_with_logging(fgl_getenv("A4GL_MAKE")||" -f "||lv_makefile clipped||" compile ") returning lv_ok
 
 	#run "make -f "||lv_makefile clipped||" compile " returning lv_ok
 
