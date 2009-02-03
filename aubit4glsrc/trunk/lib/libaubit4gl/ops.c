@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.143 2008-11-26 16:48:17 mikeaubury Exp $
+# $Id: ops.c,v 1.144 2009-02-03 20:21:41 mikeaubury Exp $
 #
 */
 
@@ -6640,6 +6640,8 @@ A4GL_display_text (void *ptr, int size, int string_sz, struct struct_scr_field *
       return "";
     }
 
+	
+
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
     {
       if (p->where == 'F')
@@ -6680,6 +6682,58 @@ A4GL_display_text (void *ptr, int size, int string_sz, struct struct_scr_field *
 	    }
 	}
     }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+	int mlen;
+	static char *mptr=0;
+	if (mptr) free(mptr);
+
+      if (p->where == 'F')
+	{
+	  long l;
+	  FILE *f;
+	  f = fopen (p->filename, "r");
+	  if (f == 0)
+	    {
+	      A4GL_exitwith ("Unable to load blob file");
+	      return "";
+	    }
+	  fseek (f, 0, SEEK_END);
+	  l = ftell (f);
+	  mptr = malloc ( l + 1);
+	  memset (mptr, 0, l + 1);
+	  rewind (f);
+	  fread (mptr, 1, l, f);
+	  mlen=l;
+	}
+      else
+	{
+	  mptr = malloc (p->memsize + 1);
+	  if (ptr)
+	    {
+	      memcpy (mptr, p->ptr, p->memsize);
+	      mptr[p->memsize] = 0;
+		mlen=p->memsize;
+	    }
+	  else
+	    {
+	      A4GL_exitwith ("Unread blob");
+	      return 0;
+	    }
+	   
+	}
+
+	if (mptr && mlen) {
+		int a;
+		for (a=0;a<mlen;a++) {
+			if (!a_isprint(mptr[a])) {mptr[a]='?'; continue;}
+			if (mptr[a]<' ') {mptr[a]='?'; continue;}
+		}
+	}
+	return mptr;
+    }
+
 
   if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT)
     {

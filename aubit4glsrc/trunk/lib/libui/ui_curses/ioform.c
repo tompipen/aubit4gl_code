@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.218 2009-01-26 10:12:19 mikeaubury Exp $
+# $Id: ioform.c,v 1.219 2009-02-03 20:21:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.218 2009-01-26 10:12:19 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.219 2009-02-03 20:21:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -2638,7 +2638,8 @@ int has_wordwrap;
 // If we are passing **IN** a character string
 // for example - we'll omit the formatting...
 
-  if ((d1_ptr & DTYPE_MASK)==DTYPE_TEXT || (d1_ptr & DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_TEXT) {
+  //if ((d1_ptr & DTYPE_MASK)==DTYPE_TEXT || (d1_ptr & DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_TEXT) {
+  if ( (d1_ptr & DTYPE_MASK)==DTYPE_BYTE || (dtype_field&DTYPE_MASK)==DTYPE_BYTE) {
 	// Can't display a blob :-)
 	return;
   }
@@ -2647,7 +2648,7 @@ int has_wordwrap;
     {
     case DTYPE_CHAR:
     case DTYPE_BYTE:
-    case DTYPE_TEXT:
+    //case DTYPE_TEXT:
     case DTYPE_VCHAR:
       ignore_formatting = 1;
     }
@@ -2670,6 +2671,7 @@ int has_wordwrap;
       A4GL_push_char (A4GL_get_str_attribute (f, FA_S_FORMAT));
       A4GL_pushop (OP_USING);
     }
+
 
   if (!has_format && !ignore_formatting)
     {
