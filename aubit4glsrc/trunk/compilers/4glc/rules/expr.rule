@@ -189,6 +189,12 @@ literal_expr:
                 }
 #endif
 	} 
+	| CURR_LINE_NO {
+		$<ptr>$=A4GL_new_literal_long_long(token_read_on_line);
+	}
+	| CURR_FILE_NAME  {
+		$<ptr>$=A4GL_new_literal_string(infilename);
+	}
 ;
 
 
