@@ -7,7 +7,7 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
 char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) ;
-static char *local_field_name_list_as_char(struct fh_field_list *fl) ;
+//static char *local_field_name_list_as_char(struct fh_field_list *fl) ;
 
 char *
 upshift (char *a)
@@ -43,6 +43,8 @@ downshift (char *a)
 
 
 
+
+#ifdef OLD
 char *expr_as_string_when_possible(expr_str *e) {
 
 FILE *f;
@@ -402,6 +404,15 @@ FILE *f;
 return "X";
 }
 
+
+
+#endif
+
+#define ET_EXPR_VARIABLE_USAGE_call expr_get_variable_usage_as_string
+
+
+#include "expr_as_string_when_possible.c"
+
 char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) {
         char buff[2000];
 
@@ -435,6 +446,7 @@ char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) {
         return strdup(buff);
 }
 
+#ifdef OLD
 static char *local_ident_as_string(expr_str *f,int quote) {
 static char buff[2000];
         switch (f->expr_type) {
@@ -456,12 +468,12 @@ static char buff[2000];
 }
 
 
-
 static char *local_field_name_as_char(char*fname,char *sub) {
 static char buff[256];
 SPRINTF2(buff,"%s[%s]",fname,sub);
 return buff;
 }
+
 
 
 static char *local_field_name_list_as_char(struct fh_field_list *fl) {
@@ -488,3 +500,4 @@ for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
 
 return ptr;
 }
+#endif

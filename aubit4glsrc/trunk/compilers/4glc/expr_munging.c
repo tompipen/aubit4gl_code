@@ -3,6 +3,9 @@
 #include "lint.h"
 #include "parsehelp.h"
 
+
+static int madmath(expr_str *p) ;
+
 #define FAKE_DTYPE_BOOL 90
 extern int yylineno;
 
@@ -947,10 +950,23 @@ expr_datatype (struct expr_str *p)
       return DTYPE_INT;
 
 
+
+
+
+
+/* -------------------------------------------------------------------------------- */
+
+
+
+
     case ET_EXPR_OP_ADD:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
+	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (+)", buff);
+		return DTYPE_DATE;
+	}
 
       if (l == DTYPE_SERIAL)
 	l = DTYPE_INT;
@@ -1144,7 +1160,7 @@ expr_datatype (struct expr_str *p)
 	       p->expr_str_u.expr_op->right->expr_type, expr_name (p->expr_str_u.expr_op->right->expr_type), l, r);
       return DTYPE_INT;
 
-
+/* -------------------------------------------------------------------------------- */
     case ET_EXPR_OP_DIV:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
@@ -1152,6 +1168,12 @@ expr_datatype (struct expr_str *p)
 	l = DTYPE_INT;
       if (r == DTYPE_SERIAL)
 	r = DTYPE_INT;
+
+
+	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
+		return DTYPE_DATE;
+	}
 
       if ((l == DTYPE_INT || l == DTYPE_SMINT) && (r == DTYPE_INT || r == DTYPE_SMINT))
 	{
@@ -1203,6 +1225,7 @@ expr_datatype (struct expr_str *p)
 
 
 
+/* -------------------------------------------------------------------------------- */
     case ET_EXPR_OP_MULT:
 
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
@@ -1212,6 +1235,10 @@ expr_datatype (struct expr_str *p)
       if (r == DTYPE_SERIAL)
 	r = DTYPE_INT;
 
+	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
+		return DTYPE_DATE;
+	}
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
 	{
 	  if (p->expr_str_u.expr_op->left->expr_type == ET_EXPR_LITERAL_LONG)
@@ -1291,6 +1318,7 @@ expr_datatype (struct expr_str *p)
 
 
 
+/* -------------------------------------------------------------------------------- */
     case ET_EXPR_OP_SUB:
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
@@ -1463,6 +1491,7 @@ expr_datatype (struct expr_str *p)
       return DTYPE_INT;
 
 
+/* -------------------------------------------------------------------------------- */
     case ET_EXPR_BRACKET:
       return expr_datatype (p->expr_str_u.expr_expr);
     case ET_EXPR_OP_POWER:
@@ -1491,3 +1520,110 @@ expr_datatype (struct expr_str *p)
 
   // Shouldn't happen
 }
+
+
+
+
+
+int madmath(expr_str *p) {
+struct s_operation {
+        int left_dtype;
+        int right_dtype;
+	enum e_expr_type op;
+        int ok;
+        int cast_left;
+        int cast_right;
+	int expr_dtype;
+} operations[]={
+
+	{DTYPE_INT,   DTYPE_INT,   ET_EXPR_OP_SUB, 1, DTYPE_INT, DTYPE_INT, DTYPE_INT},
+	{DTYPE_SMINT, DTYPE_SMINT, ET_EXPR_OP_SUB, 1, DTYPE_SMINT, DTYPE_SMINT, DTYPE_INT},
+	{DTYPE_SMINT, DTYPE_SMINT, ET_EXPR_OP_ADD, 1, DTYPE_SMINT, DTYPE_SMINT, DTYPE_INT},
+
+        {-1,-1,-1,-1,-1,-1,-1}
+        };
+int a;
+int dtype_left;
+int dtype_right; 
+int check=0;
+a=0;
+
+switch (p->expr_type) {
+		/* This should be a complete list of everything that has a type of expr_op in the union 'switch' in fgl.x */
+        case ET_EXPR_OP_ADD:
+        case ET_EXPR_OP_AND:
+        case ET_EXPR_OP_CONCAT:
+        case ET_EXPR_OP_DIV:
+        case ET_EXPR_OP_EQUAL:
+        case ET_EXPR_OP_GREATER_THAN:
+        case ET_EXPR_OP_GREATER_THAN_EQ:
+        case ET_EXPR_OP_LESS_THAN:
+        case ET_EXPR_OP_LESS_THAN_EQ:
+        case ET_EXPR_OP_LIKE:
+        case ET_EXPR_OP_MATCHES:
+        case ET_EXPR_OP_MOD:
+        case ET_EXPR_OP_MULT:
+        case ET_EXPR_OP_NOT_EQUAL:
+        case ET_EXPR_OP_NOT_LIKE:
+        case ET_EXPR_OP_NOT_MATCHES:
+        case ET_EXPR_OP_OR:
+        case ET_EXPR_OP_POWER:
+        case ET_EXPR_OP_SUB:
+        case ET_EXPR_OP_USING:
+		check=1;
+	default:
+		return 0;
+}
+
+if (!check) return 0;
+
+dtype_left=-1;
+dtype_right=-1;
+
+if (p->expr_str_u.expr_op->left) {
+	dtype_left = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
+}
+
+
+if (p->expr_str_u.expr_op->right) {
+	dtype_right = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+}
+
+
+
+if (dtype_left==DTYPE_TEXT || dtype_left==DTYPE_BYTE || dtype_right==DTYPE_TEXT || dtype_right==DTYPE_BYTE) {
+	// Cant do anything useful with a TEXT or a BYTE
+	return 1; // Its bad...
+}
+
+
+
+if (dtype_left==DTYPE_SERIAL) dtype_left=DTYPE_INT;
+if (dtype_right==DTYPE_SERIAL) dtype_right=DTYPE_INT;
+
+while (1) {
+	if (operations[a].op==-1) { break; }
+
+	if (p->expr_type==operations[a].op && dtype_left==operations[a].left_dtype && dtype_right==operations[a].right_dtype) {
+                        if (!operations[a].ok) {
+                                return 1; // Its bad...
+                        }
+			if (p->expr_str_u.expr_op->left) {
+				if (dtype_left!=operations[a].cast_left) {
+					ensure_dtype (p->expr_str_u.expr_op->left, operations[a].cast_left, 0);
+				}
+			}
+			if (p->expr_str_u.expr_op->right) {
+                                if (dtype_right!=operations[a].cast_right) {
+                                        ensure_dtype (p->expr_str_u.expr_op->right, operations[a].cast_right, 0);
+                                }
+			}
+			
+                }
+
+        }
+return 0;
+
+
+}
+

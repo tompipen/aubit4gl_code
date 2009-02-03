@@ -78,8 +78,9 @@ A4GL_lint (char *s)
 */
 
 
+#define ET_EXPR_VARIABLE_USAGE_call lint_get_variable_usage_as_string
 
-
+#ifdef OLD
 
 char *expr_as_string_when_possible(expr_str *e) {
 
@@ -295,7 +296,8 @@ char *expr_as_string_when_possible(expr_str *e) {
       }
 return "X";
 }
-
+#endif
+#include "expr_as_string_when_possible.c"
 
 
 void set_yytext(char *s) {

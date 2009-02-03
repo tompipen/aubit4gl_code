@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.470 2009-01-29 17:21:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.471 2009-02-03 14:28:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.470 2009-01-29 17:21:15 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.471 2009-02-03 14:28:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4806,7 +4806,7 @@ print_import (char *func, int nargs,int yylineno)
     }
   strcat (buff, ");\n   A4GL_push_int(_retval);\n   return 1;\n");
   strcat (buff, "}\n\n\n");
-  printc (buff);
+  printc ("%s",buff);
 }
 
 char *pdtype(int n) {

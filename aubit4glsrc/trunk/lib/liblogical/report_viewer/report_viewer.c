@@ -375,7 +375,7 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
       gtk_fixed_set_has_window (GTK_FIXED (fixed), 1);
       gtk_widget_set_usize (GTK_WIDGET (fixed),
 			    (report->max_col + 1+report->left_margin) * XWIDTH,
-			    report->page_length * YHEIGHT);
+			    (report->page_length+1) * YHEIGHT);
       gtk_widget_set_name (fixed, "fixed");
       gtk_object_set_data (GTK_OBJECT (notebook), buff, fixed);
 

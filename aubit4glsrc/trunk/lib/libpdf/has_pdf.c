@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.60 2008-12-01 10:29:07 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.61 2009-02-03 14:28:38 mikeaubury Exp $
 #*/
 
 /**
@@ -520,7 +520,7 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
       PDF_end_page (p->pdf_ptr);
     }
 
-  A4GL_debug ("Begin page %lf %lf\n", p->page_width, p->page_length);
+  A4GL_debug ("Begin page width = %lf length=%lf\n", p->page_width, p->page_length);
   PDF_begin_page (p->pdf_ptr, p->page_width, p->page_length);
   A4GL_debug ("Done\n");
   A4GL_debug ("find font %s\n", p->font_name);

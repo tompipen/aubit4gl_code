@@ -40,6 +40,10 @@ struct rb_blocks {
 	struct rb_blocks *blocks;
 	int nblocks;
 	int curr_rb;
+
+	/* The rb stack is used to track the push/pop_sections */
+	int rb_stack[8];
+	int rb_stack_level;
   };
 
 
@@ -85,6 +89,10 @@ struct rb_blocks {
 	double bluebar_b;
 	int bluebar_style;
     	void* fontptr;
+
+	/* The rb stack is used to track the push/pop_sections */
+	int rb_stack[8];
+	int rb_stack_level;
   };
 
 #endif

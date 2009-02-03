@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.176 2009-01-14 18:07:29 mikeaubury Exp $
+# $Id: report.c,v 1.177 2009-02-03 14:28:37 mikeaubury Exp $
 #
 */
 
@@ -386,7 +386,6 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr, char *bu
 	  hdr->save[hdr->save_cnt - 1].rb = rep->curr_rb;
 
 	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, entry, buff);
-	  //if (rep->col_no==0&&entry==0) A4GL_pause_execution();
 	}
       free (n);
     }
@@ -401,9 +400,10 @@ print_header_entries (struct rep_structure *rep)
   int c;
   int a;
   struct s_save_header *hdr;
-  int last_rb = 0;
+  int last_rb = -1;
+ int changed_report_section=0;
+ 
 
-  last_rb = rep->curr_rb;
 // Save these away - we'll need to change them...
 
   p = rep->page_no;
@@ -412,27 +412,28 @@ print_header_entries (struct rep_structure *rep)
   if (rep->header)
     {
       hdr = (struct s_save_header *) rep->header;
-
-
-
       for (a = 0; a < hdr->save_cnt; a++)
 	{
 
-	  if (rep->curr_rb != hdr->save[a].rb)
+	  if (rep->curr_rb != hdr->save[a].rb )
 	    {
 	      int rb;
-	      A4GL_pop_report_section (rep, rep->curr_rb);
+		if (rep->rb_stack_level) {
+			last_rb=rep->rb_stack[rep->rb_stack_level-1];
+	      		A4GL_pop_report_section (rep, last_rb);
+			changed_report_section=1;
+		}
 	      rb = hdr->save[a].rb;
-	      A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno, rep->blocks[rb].where,
-					rep->blocks[rb].why, rb);
+	      A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno, rep->blocks[rb].where, rep->blocks[rb].why, rb);
+
+
 	    }
 
 	  rep->page_no = hdr->save[a].page_no;
 	  rep->line_no = hdr->save[a].line_no;
 	  rep->col_no = hdr->save[a].col_no;
 	  print_data (rep, hdr->save[a].s, hdr->save[a].entry);
-	  A4GL_debug ("PRINING         : %d %d %d %d %s\n", rep->page_no,
-		      rep->line_no, rep->col_no, hdr->save[a].entry, hdr->save[a].s);
+	  A4GL_debug ("PRINING         : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, hdr->save[a].entry, hdr->save[a].s);
 	  free (hdr->save[a].s);
 	}
 
@@ -444,25 +445,22 @@ print_header_entries (struct rep_structure *rep)
       free (hdr);
     }
 
-  if (rep->curr_rb != last_rb)
-    {
-      int rb;
-      A4GL_pop_report_section (rep, rep->curr_rb);
-      rb = last_rb;
+	if (changed_report_section) {
+		int rb;
+      		A4GL_pop_report_section (rep, rep->curr_rb);
+      		rb = last_rb;
 
-      A4GL_debug ("rep=%p", rep);
-      A4GL_debug ("rep->modName=%s", rep->modName);
-      A4GL_debug ("rep->repName=%s", rep->repName);
-      A4GL_debug ("rb=%d", rb);
-      A4GL_debug ("lineno=%d", rep->blocks[rb].lineno);
-      A4GL_debug ("where=%c", rep->blocks[rb].where);
-      A4GL_debug ("why=%s", rep->blocks[rb].why);
-      A4GL_assertion (rb > rep->nblocks, "Corrupt block (rb > rep->nblocks)");
-
-      A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno, rep->blocks[rb].where, rep->blocks[rb].why,
-				rb);
-
-    }
+      		A4GL_debug ("rep=%p", rep);
+      		A4GL_debug ("rep->modName=%s", rep->modName);
+      		A4GL_debug ("rep->repName=%s", rep->repName);
+      		A4GL_debug ("rb=%d", rb);
+      		A4GL_debug ("lineno=%d", rep->blocks[rb].lineno);
+      		A4GL_debug ("where=%c", rep->blocks[rb].where);
+      		A4GL_debug ("why=%s", rep->blocks[rb].why);
+      		A4GL_assertion (rb > rep->nblocks, "Corrupt block (rb > rep->nblocks)");
+		
+      		A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno, rep->blocks[rb].where, rep->blocks[rb].why, rb);
+	}
 
 
 }
@@ -1625,10 +1623,8 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
       A4GL_debug ("Attempting to execute %s\n", buff);
       x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff, "__internal_report", 1, 0, 0);
       A4GL_debug ("x=%p\n", x);
-      //printf("Adding %p as %s\n",x,b2);
       A4GLSQL_add_prepare (b2, x);
     }
-//printf("Executing %p\n",x);
   A4GLSQL_execute_implicit_sql (x, 0, 0, 0);
   //A4GLSQL_free_prepare(x);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
@@ -2061,6 +2057,7 @@ print_report_block_start (struct rep_structure *rep, char *mod, char *repname, i
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
       print_gzlvl (rep, lvl);
+      A4GL_assertion(rb<0,"rb<0");
       gzfprintf (rep->output, "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n", lineno, where, why, rb);
     }
   else
@@ -2094,12 +2091,35 @@ print_report_block_end (struct rep_structure *rep, int rb)
 void
 A4GL_pdf_pop_report_section (struct pdf_rep_structure *rep, int rb)
 {
-  rep->curr_rb = -1;
+	rep->curr_rb =-1;
+
+
+#ifdef DOWENEEDTHIS
+  if (rep->rb_stack_level>0) {
+  	rep->curr_rb = rep->rb_stack[rep->rb_stack_level-1];
+  	rep->rb_stack_level--;
+  } else {
+	/* Lost track - set it to something .. */
+	rep->curr_rb =-1;
+  }
+#endif
+
+
 }
 
 int
 A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
 {
+
+#ifdef DOWENEEDTHIS
+  // Maintain the report block (rb) stack - normally this is just needed for when the PAGE HEADER
+  // or PAGE TRAILER triggers in the middle of print in an ON EVERY ROW or BEFORE/AFTER GROUP etc
+  // Although - this is only used for CONVERTIBLE reports anyway...
+  rep->rb_stack_level++;
+  rep->rb_stack[rep->rb_stack_level-1]=rb;
+#endif
+
+
   if (rb >= rep->nblocks)
     {
       rep->nblocks = rb + 1;
@@ -2117,6 +2137,11 @@ int
 A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
 {
 
+  // Maintain the report block (rb) stack - normally this is just needed for when the PAGE HEADER
+  // or PAGE TRAILER triggers in the middle of print in an ON EVERY ROW or BEFORE/AFTER GROUP etc
+  // Although - this is only used for CONVERTIBLE reports anyway...
+  rep->rb_stack_level++;
+  rep->rb_stack[rep->rb_stack_level-1]=rb;
 
   if (rb >= rep->nblocks)
     {
@@ -2143,14 +2168,21 @@ A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, i
 void
 A4GL_pop_report_section (struct rep_structure *rep, int rb)
 {
-
   if (rep->output_mode == 'C')
     {
       lvl--;
       print_report_block_end (rep, rb);
     }
 
-  rep->curr_rb = -1;
+  if (rep->rb_stack_level>0) {
+  	rep->rb_stack_level--;
+  } else {
+	/* Lost track - set it to something .. */
+	rep->curr_rb =-1;
+  }
+
+
+  rep->curr_rb =-1;
 
 }
 
@@ -2710,7 +2742,6 @@ A4GL_push_agg (char type, long agg_type, void *agg, long aggcnt)
 	  A4GL_cast_top_of_stack_to_dtype (DTYPE_DECIMAL + ENCODE_SIZE (((30 << 8) + 2)));
 	  break;
 	case DTYPE_INTERVAL:
-	  //printf("%lx\n", agg_type);
 	  A4GL_cast_top_of_stack_to_dtype (DTYPE_INTERVAL + ENCODE_SIZE (agg_type >> 16));
 	  break;
 	}

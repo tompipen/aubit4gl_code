@@ -113,6 +113,9 @@ char *A4GL_get_current_comments(int lineno,int colno) {
 
 
 
+#define ET_EXPR_VARIABLE_USAGE_call cmds_get_variable_usage_as_string
+
+#ifdef OLD
 char *expr_as_string_when_possible(expr_str *e) {
 
 FILE *f;
@@ -356,6 +359,10 @@ FILE *f;
       }
 return "X";
 }
+#endif
+#include "expr_as_string_when_possible.c"
+
+
 struct module_entry *new_module_entry(enum module_entry_type met_type) {
 struct module_entry *c;
    c=malloc(sizeof(module_entry));

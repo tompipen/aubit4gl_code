@@ -4,27 +4,10 @@
 #include "compile_c.h"
 #define set_nonewlines() set_nonewlines_full(__LINE__)
 extern int tmp_ccnt;
-//expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
 static int report_cnt=0;
 static int *ordbyfields = 0;
 static int ordbyfieldscnt = 0;
 
-/*
-static void
-add_to_ordbyfields (int n)
-{
-  int a;
-  for (a = 0; a < ordbyfieldscnt; a++)
-    {
-      if (ordbyfields[a] == n)
-        return;
-    }
-  ordbyfieldscnt++;
-  ordbyfields = realloc (ordbyfields, sizeof (int) * ordbyfieldscnt);
-  ordbyfields[ordbyfieldscnt - 1] = n;
-
-}
-*/
 
 
 static int
@@ -277,29 +260,9 @@ static void order_by_report_stack (int report_cnt, int rord_type, report_format_
   //int a;
   static int fiddle = 0;
 
-#ifdef CRAP
-  if (ordbyfields)
-    free (ordbyfields);		/* From a previous report..*/
-  ordbyfields = 0;		/* clear it all down...*/
-  ordbyfieldscnt = 0;
-#endif
-
 
  if (rord_type!=REPORT_ORDERBY_IMPLICIT) return;
 
-
-#ifdef CRAP
-/* Find our group order */
-  for (a = 0; a < rf->entries.entries_len; a++)
-    {
-      if (rf->entries.entries_val  [a]->rb_block.rb == RB_BEFORE_GROUP_OF
-	  || rf->entries.entries_val  [a]->rb_block.rb == RB_AFTER_GROUP_OF)
-	{
-	  add_to_ordbyfields (rf->entries.entries_val  [a]->orderby_var_no) ;
-   //atoi (get_report_stack_why (a)));
-	}
-    }
-#endif
 
 
 /* At this point we'll know if they used before/after groups */
@@ -321,24 +284,6 @@ static void order_by_report_stack (int report_cnt, int rord_type, report_format_
       printc ("acl_rep_ordcnt=%d; /* 1 */", report_orderby_section->variables->list.list_len);
       /* And assign the values*/
       fiddle++;
-#ifdef CRAP
-      printc ("acl_exchange_rep_ordby%d(_ordbind,%d);", fiddle, report_orderby_section->variables->list.list_len);
-
-/* H file... */
-      printh ("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n", fiddle);
-      printh ("struct BINDING *copy;\n");
-      printh ("copy=(struct BINDING *)acl_malloc2(sizeof(struct BINDING)*cnt);\n");
-      printh ("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
-
-      /* We've got our copy - now we can splat the original! */
-      for (a = 0; a < report_orderby_section->variables->list.list_len; a++)
-	{
-	  printh ("memcpy(&ord[%d],&copy[%d],sizeof(struct BINDING));\n", a, ordbyfields[a] - 1);	/* fields are numbered from 1 for before/after group variables */
-	}
-      printh ("free(copy);\n");
-      printh ("}\n");
-
-#endif
     }
   printc ("}");
 
@@ -518,9 +463,6 @@ struct pdf_startrep rep_default;
 	rep_default.bluebar.g=0;
 	rep_default.bluebar.b=0;
 
-  	//rep_default.lines_in_header = 0;
-  	//rep_default.lines_in_first_header = 0;
-  	//rep_default.lines_in_trailer = 0;
   	rep_default.fontname= "\"Helvetica\"";
 
         rep_default.towhat='F';
@@ -544,6 +486,8 @@ struct pdf_startrep rep_default;
   printc ("_rep.finishing=0;\n");
   printc ("_rep.nblocks=0;\n");
   printc ("_rep.blocks=0;\n");
+  printc ("_rep.rb_stack[0]=0;\n");
+  printc ("_rep.rb_stack_level=0;\n");
 
   printc ("_rep.bluebar_r=%lf;\n",rep->bluebar.r);
   printc ("_rep.bluebar_g=%lf;\n",rep->bluebar.g);
@@ -622,6 +566,8 @@ struct startrep rep_default;
   printc ("_rep.lines_in_trailer=-1;\n");
   printc ("_rep.lines_in_first_header=-1;\n");
   printc ("_rep.print_section=0;\n");
+  printc ("_rep.rb_stack[0]=0;\n");
+  printc ("_rep.rb_stack_level=0;\n");
 
   if (rep==0) {  
 
@@ -829,23 +775,6 @@ char namespaced_report_name[256];
 
 
 report_cnt++;
-
-
-        //str funcname;
-        //str namespace;
-        //enum e_boolean isstatic;
-        //struct expr_str_list expression_list;
-        //variable_list variables;
-        //struct expr_str_list* parameters;
-        //startrep *report_output_section;
-        //report_orderby_section *report_orderby_section;
-        //report_format_section *report_format_section;
-        //str module;
-        //int lineno;
-        //int colno;
-        //int lastlineno;
-        //call_list call_list;
-        //lint_warning extra_warnings<>;
 
   clr_rep_print_entry();
   sprintf(namespaced_report_name,"%s%s", namespace, funcname);
@@ -1108,19 +1037,13 @@ report_definition->report_orderby_section, report_definition->report_output_sect
 
 
 int dump_pdf_report (struct s_pdf_report_definition *report_definition) {
-//int a;
-//int cnt;
-//int order_by_type;
-//char *asc_desc;
 expr_str_list *parameters;
-//char namespaced_report_name[256];
-
 parameters=expand_parameters(&report_definition->variables, report_definition->parameters);
-
-return dump_report_generic (report_definition->namespace,report_definition->funcname, report_definition->isstatic==EB_TRUE, REP_TYPE_PDF,
-parameters,
- &report_definition->variables,
-report_definition->report_orderby_section, report_definition->report_output_section , report_definition->report_format_section, &report_definition->aggregates
+return dump_report_generic (
+			report_definition->namespace,report_definition->funcname, report_definition->isstatic==EB_TRUE, REP_TYPE_PDF,
+			parameters, &report_definition->variables,
+			report_definition->report_orderby_section, 
+			report_definition->report_output_section , report_definition->report_format_section, &report_definition->aggregates
 
 );
 
