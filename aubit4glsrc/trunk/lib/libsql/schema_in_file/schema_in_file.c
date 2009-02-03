@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.30 2009-01-27 10:39:44 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.31 2009-02-03 19:57:25 mikeaubury Exp $
 #*/
 
 /**
@@ -322,5 +322,10 @@ char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 /* does nothing in this driver */
  }
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return 1;
+}
+
 
 /* =============================== EOF ============================== */

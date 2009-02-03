@@ -2694,3 +2694,9 @@ void set_aubit4gl_error(void) {
 	n=A4GL_remap_nativeerror(n,NULL);
 	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (n);
 }
+
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return 1;
+}
+

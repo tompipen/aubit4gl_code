@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ingres.ec,v 1.3 2008-05-22 11:55:51 mikeaubury Exp $
+# $Id: ingres.ec,v 1.4 2009-02-03 19:57:24 mikeaubury Exp $
 #*/
 
 
@@ -775,6 +775,10 @@ char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
         return s; // dont worry - we'll try later to implement something 'proper'
 }
 
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return 1;
+}
 
 
 

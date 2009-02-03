@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.32 2008-11-05 14:44:49 mikeaubury Exp $
+# $Id: expr.c,v 1.33 2009-02-03 19:57:24 mikeaubury Exp $
 #
 */
 
@@ -730,6 +730,7 @@ A4GL_new_expr_push_variable (struct variable_usage *v,int isinreport)
 	{
 	  p2 = A4GL_new_expr_simple (ET_EXPR_TIME);
 	}
+
 
       if (isinreport) {
       	if (A4GL_aubit_strcasecmp (s, "pageno") == 0)

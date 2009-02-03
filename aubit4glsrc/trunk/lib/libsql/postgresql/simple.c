@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.40 2009-01-02 11:52:54 mikeaubury Exp $
+# $Id: simple.c,v 1.41 2009-02-03 19:57:25 mikeaubury Exp $
 #*/
 
 
@@ -1047,6 +1047,11 @@ char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
 /* does nothing in this driver */
  }
+
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return 1;
+}
 
 
 /* =============================== EOF ============================== */

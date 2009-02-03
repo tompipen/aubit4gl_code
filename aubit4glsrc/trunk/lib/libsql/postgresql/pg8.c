@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.84 2009-01-12 15:21:02 mikeaubury Exp $
+# $Id: pg8.c,v 1.85 2009-02-03 19:57:25 mikeaubury Exp $
 #*/
 
 
@@ -4222,4 +4222,10 @@ static int charcpy (unsigned char *target, unsigned char *source, long len,char 
 
   return rlen;
 }
+
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return 1;
+}
+
 /* =============================== EOF ============================== */

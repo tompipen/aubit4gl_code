@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.229 2009-01-09 19:28:57 mikeaubury Exp $
+# $Id: sql.c,v 1.230 2009-02-03 19:57:24 mikeaubury Exp $
 #
 */
 
@@ -5977,6 +5977,12 @@ A4GL_chk_rc_full (SQLRETURN rc, void *hstmt, char *c, int line, char *file)
 
 char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 	return s; // dont worry - we'll try later to implement something 'proper'
+}
+
+
+int A4GLSQLLIB_A4GLSQL_cancel ()
+{
+    return 1;
 }
 
 /* ================================ EOF ================================ */
