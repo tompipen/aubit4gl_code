@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.150 2009-01-26 10:12:19 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.151 2009-02-03 20:27:48 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1565,7 +1565,7 @@ int isBlob=0;
   A4GL_debug ("f->do_reverse=%d attr=%x", a, attr);
 
   if ((d1 & DTYPE_MASK)==DTYPE_BYTE) { isBlob=1; } 
-  if ((d1 & DTYPE_MASK)==DTYPE_TEXT) { isBlob=1; } 
+  //if ((d1 & DTYPE_MASK)==DTYPE_TEXT) { isBlob=1; } 
 
 
   if (!isBlob) {
@@ -1971,7 +1971,7 @@ int width;
     {
     case DTYPE_CHAR:
     case DTYPE_BYTE:
-    case DTYPE_TEXT:
+    //case DTYPE_TEXT:
     case DTYPE_VCHAR:
       ignore_formatting = 1;
     }
