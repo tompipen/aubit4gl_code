@@ -816,6 +816,7 @@ nval_number: real_number | INT_VALUE
 
 pdf_op_output_section : {$<pdf_startrep>$=0;} | OUTPUT pdf_output_commands 
 	{
+		resize_paper(&pdf_rep_struct);
 		$<pdf_startrep>$=malloc(sizeof(pdf_startrep));
 	        $<pdf_startrep>$->towhat=pdf_rep_struct.output_mode;
          	$<pdf_startrep>$->s1=pdf_rep_struct.output_loc;
@@ -1147,7 +1148,6 @@ pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 				YYERROR;
 			}
 			set_report_orderby($10, $<ptr_list>8, $<report_orderby_section>13);
-			resize_paper(&pdf_rep_struct);
 		}
 	format_section END_REPORT { 
 		pop_blockcommand("REPORT"); 
