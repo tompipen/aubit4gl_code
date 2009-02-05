@@ -1645,6 +1645,29 @@ GetFile (char *id, char *filename)
     }
 }
 
+
+int UILIB_aclfgl_aclfgl_client_ui_call(int n) {
+char buff[2000];
+char smbuff[2000];
+char *params[2000];
+int a;
+	sprintf(buff,"<CALL NPARAMS=\"%d\">",n);
+	for (a=0;a<n;a++) {
+		params[n-a-1]=A4GL_char_pop();
+		A4GL_trim(params[n-a-1]);
+	}
+	for (a=0;a<n;a++) {
+		sprintf(smbuff,"<PARAM NO=\"%d\">%s</PARAM>",a+1,uilib_xml_escape(params[a]));
+		strcat(buff,smbuff);
+		free(params[a]);
+	}
+	strcat(buff,"</CALL>");
+	send_to_ui(buff);
+  	flush_ui ();
+	return uilib_get_call_result();
+}
+
+
 void
 UILIB_A4GL_direct_to_ui (char *what, char *string)
 {

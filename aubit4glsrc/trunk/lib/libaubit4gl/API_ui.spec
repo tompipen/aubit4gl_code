@@ -104,6 +104,7 @@ A4GL_screen_mode int sm -> int
 A4GL_ui_exit int exitstatus  -> void
 A4GL_ui_fgl_winquestion char* title char* text char* def char* pos char* icon int danger int winbutton -> char*
 A4GL_direct_to_ui char* what char* string -> void 
+aclfgl_aclfgl_client_ui_call int n -> int
 aclfgl_aclfgl_add_to_toolbar int nparam -> int 
 aclfgl_aclfgl_set_display_field_delimiters int nparam -> int
 aclfgl_aclfgl_add_acs_mapping int nparam -> int

@@ -917,6 +917,20 @@ uilib_prompt_loop (int n)
 
 
 
+int uilib_get_call_result(void) {
+int i;
+int a;
+        i = get_event_from_ui ();
+        if (i != -110) { // Not a RETURN... :-(
+                return 0;
+        }
+
+	for (a=0;a<last_attr->sync.nvalues;a++) {
+		PUSHquote(last_attr->sync.vals[a].value);
+	}
+	return last_attr->sync.nvalues;
+}
+
 int
 uilib_get_prompt_result (int nargs)
 {

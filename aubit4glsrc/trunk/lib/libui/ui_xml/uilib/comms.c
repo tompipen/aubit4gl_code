@@ -435,18 +435,28 @@ get_event_from_ui ()
 	{
 	  n = -100;
 	}
+
       if (strcmp (attr->id, "YES") == 0)
 	{
 	  n = -101;
 	}
+
       if (strcmp (attr->id, "NO") == 0)
 	{
 	  n = -102;
 	}
+
       if (strcmp (attr->id, "FILEREQUEST") == 0)
 	{
 	  n = -103;
 	}
+
+      if (strcmp (attr->id, "RETURN") == 0)
+	{
+		A4GL_pause_execution();
+	  n = -110;
+	}
+
       if (strcmp (attr->id, "EXEC") == 0)
 	{
             printf("----> EXEC %s\n", attr->programname);

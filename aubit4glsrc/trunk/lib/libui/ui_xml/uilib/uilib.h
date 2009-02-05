@@ -89,4 +89,6 @@ void set_construct_clause(int context, char *ptr);
 int uilib_get_context_dont_care_if_doesnt_exist(int n) ;
 int
 uilib_last_received_key (void );
+int uilib_free_display (int nargs);
 
+int uilib_get_call_result(void);

@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2009/01/23 11:27:15.
+ * Generated 2009/02/05 15:11:08.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -190,17 +190,9 @@ void ETag_SYNCVALUE(void)
 
 	 
 	{
+		A4GL_pause_execution();
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
-                //if (lexed_attr.fileid && lexed_attr.filelen)  {
-                        //char *ptr;
-                        //sync.vals[sync.nvalues-1].value=malloc(lexed_attr.filelen);
-                        //ptr=pcdata;
-//
-                        //memcpy(sync.vals[sync.nvalues-1].value,ptr, lexed_attr.filelen);
-                //} else {
-                        sync.vals[sync.nvalues-1].value=strdup(pcdata);
-                //}
 
                 if (A_SYNCVALUE_FIELDTYPE) {
                         sync.vals[sync.nvalues-1].fieldtype=atoi(A_SYNCVALUE_FIELDTYPE);
@@ -209,6 +201,7 @@ void ETag_SYNCVALUE(void)
                 }
 
 		sync.vals[sync.nvalues-1].fieldname=strdup(A_SYNCVALUE_FIELDNAME);
+		sync.vals[sync.nvalues-1].value=strdup(pcdata);
 
 	}
 	
@@ -217,7 +210,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 148 "triggers_act.act"
+#line 141 "triggers_act.act"
 
 	 
 	{
@@ -233,7 +226,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 159 "triggers_act.act"
+#line 152 "triggers_act.act"
 
 	 
 	{
@@ -249,7 +242,7 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 171 "triggers_act.act"
+#line 164 "triggers_act.act"
 
 	 
 	{
@@ -267,7 +260,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 185 "triggers_act.act"
+#line 178 "triggers_act.act"
 
 
 /* XML application entry points. */
