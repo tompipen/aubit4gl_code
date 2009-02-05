@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.121 2008-12-05 09:49:23 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.122 2009-02-05 09:03:56 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.121 2008-12-05 09:49:23 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.122 2009-02-05 09:03:56 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -2885,6 +2885,9 @@ A4GL_LL_clr_form_fields (int to_defaults, char *defs)
 }
 
 
+
+
+
 /* 
 ** orig     = original string
 ** evt      = original event list from contruct..
@@ -2999,7 +3002,15 @@ A4GL_LL_construct_large (char *orig,
 
   if (initpos)
     {
-      A4GL_LL_int_form_driver (f, AUBIT_REQ_END_FIELD);
+
+        if (initpos>=1 && (init_key<=255 || init_key==A4GLKEY_RIGHT)) {
+                while (A4GL_LL_get_carat(f)<=initpos) {
+                        A4GL_LL_int_form_driver(f,REQ_NEXT_CHAR);
+                        A4GL_LL_int_form_driver(f,REQ_VALIDATION);
+                }
+        }
+
+      //A4GL_LL_int_form_driver (f, AUBIT_REQ_END_FIELD);
     }
   return f;
 

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.75 2008-12-04 15:02:51 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.76 2009-02-05 09:03:56 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.75 2008-12-04 15:02:51 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.76 2009-02-05 09:03:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -901,11 +901,17 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 					     A4GL_getcomment_line (), A4GL_get_currwin (), UILIB_A4GL_iscurrborder (),construct_not_added,fprop->datatype);
 		  while (A4GL_construct_large_loop (f, evt, fprop));
 		  strcpy (rbuff, A4GL_LL_construct_large_finished (f));
-		  strcpy (rval, A4GL_LL_construct_large_finished (f));
+		  strcpy (rval, rbuff);
 		  A4GL_comments (0);
 		  k = construct_last_key;
+  if (A4GL_is_special_key (k, A4GLKEY_ACCEPT))
+    {
+      k = A4GLKEY_ACCEPT;
+      A4GL_set_last_key (A4GLKEY_ACCEPT);
+	}
                                 A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_BEG_FIELD);
                                 A4GL_LL_int_form_driver (sio->currform->form, AUBIT_REQ_VALIDATION);
+
 
 		  if (k == A4GLKEY_CANCEL)
 		    {
@@ -2436,7 +2442,6 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt, struct struct
   a = A4GL_getch_internal (0, "construct",evt);
   construct_last_key = a;
 
-
   A4GL_debug ("construct_large a=%d abort_pressed=%d", a, abort_pressed);
   if (a == A4GLKEY_EVENT)
     {
@@ -2445,14 +2450,20 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt, struct struct
       return A4GL_LL_get_triggered_event ();
     }
 
+    if (A4GL_is_special_key (a, A4GLKEY_ACCEPT)) {
+                        a=A4GLKEY_ACCEPT;
+    }
+
 
   if (abort_pressed || a == A4GLKEY_INTERRUPT || a == A4GLKEY_CANCEL)
     {
       ins_ovl = 'o';
       return 0;
     }
+
   if (A4GL_has_event_for_keypress (a, evt))
     {
+
       ins_ovl = 'o';
       return 0;
     }
@@ -2479,6 +2490,9 @@ A4GL_construct_large_loop (void *f, struct aclfgl_event_list *evt, struct struct
 	  ins_ovl = 'o';
 	  A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
 	}
+
+    case A4GLKEY_FIELD_CLICKED: /* just ignore.. */
+	break;
 
     case 27:
     case A4GLKEY_ACCEPT:

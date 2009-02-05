@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.141 2009-01-27 17:50:39 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.142 2009-02-05 09:03:56 mikeaubury Exp $";
 #endif
 
 
@@ -3694,8 +3694,9 @@ A4GL_LL_construct_large (char *orig, void *vevt, int init_key, int initpos,
   A4GL_fld_opts_on (fd.form_fields[0], AUBIT_O_ACTIVE);
   A4GL_fld_opts_on (fd.form_fields[0], AUBIT_O_EDIT);
   A4GL_fld_opts_on (fd.form_fields[0], AUBIT_O_BLANK);
-  gtk_object_set_data (GTK_OBJECT (fd.form_fields[0]), "WIDGETSNAME",
-		       (void *) "ENTRY");
+  gtk_object_set_data (GTK_OBJECT (fd.form_fields[0]), "WIDGETSNAME", (void *) "ENTRY");
+
+
   gtk_widget_show (fd.form_fields[0]);
 
   //gtk_widget_show(fd.form_fields[1]);
@@ -5007,10 +5008,13 @@ if (strcmp(currentCmd,"Input")==0) {
 	if (w!=s->currentfield) { // we can ignore it if its the current field
 		char *tandc;
 		tandc=gtk_object_get_data(GTK_OBJECT(w),"TAB_AND_COL");
+		if (tandc==NULL) tandc="";
+		if (strlen(tandc)>0) {
 		if (!A4GL_isyes(acl_getenv("NOGTKFIELDCLICK")))  {
-			A4GL_req_field(currentSio,'I','!',tandc,1,NULL,0); // Need this actioned - so fake a key press
-			A4GL_fake_a_keypress(w,A4GLKEY_FIELD_CLICKED);
+				A4GL_req_field(currentSio,'I','!',tandc,1,NULL,0); // Need this actioned - so fake a key press
+				A4GL_fake_a_keypress(w,A4GLKEY_FIELD_CLICKED);
 		//printf("Fake key\n");
+			}
 		}
 	}
 }
