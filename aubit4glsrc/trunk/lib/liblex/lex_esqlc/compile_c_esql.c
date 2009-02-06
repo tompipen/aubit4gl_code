@@ -365,9 +365,12 @@ static char smbuff[300];
 char *ptr;
 int dtype;
 int ignore_cast=0;
+int sz;
 
 	ptr=get_ibind_usage_internal(a,context);
-	dtype=get_binding_dtype(var)  & DTYPE_MASK;
+	dtype=get_binding_dtype(var) ;
+	sz=DECODE_SIZE(dtype);
+	dtype=dtype & DTYPE_MASK;
 	if (strcmp(context,"OPEN")!=0) { ignore_cast++; }
 	if (strcmp(context,"EXECUTE")!=0) { ignore_cast++; }
 
@@ -376,6 +379,15 @@ int ignore_cast=0;
 		sprintf(smbuff,"((%s)::date)",ptr);
 		return smbuff;
 	} else {
+		if (A4GLSQLCV_check_requirement ("ALWAYS_CAST") && !ignore_cast) {
+			char dtype_char[200];
+			char dtype_char2[200];
+	  		strcpy (dtype_char, nm (dtype));
+	  		strcat (dtype_char, (char *) A4GL_dtype_sz (dtype, sz));
+	  		strcpy (dtype_char2, A4GLSQLCV_dtype_alias (dtype_char));
+			sprintf(smbuff,"((%s)::%s)",ptr,dtype_char2);
+			return smbuff;
+		}
 		return ptr;
 	}
 
@@ -512,10 +524,12 @@ char * get_sql_variable_usage_internal (variable_usage * u, char dir)
 
 
 char * get_sql_variable_usage (variable_usage * u, char dir) {
+	int sz;
 	int dtype;
 	variable_usage *u_bottom;
 	u_bottom=usage_bottom_level(u);
-	dtype=u_bottom->datatype;
+	sz=DECODE_SIZE(u_bottom->datatype);
+	dtype=u_bottom->datatype&DTYPE_MASK;
 
 	if (A4GLSQLCV_check_requirement ("FORCE_DATE_CAST") && (dtype==DTYPE_DATE) && dir=='i') {
 		char *ptr;
@@ -524,6 +538,18 @@ char * get_sql_variable_usage (variable_usage * u, char dir) {
 		sprintf(smbuff,"((%s)::date)",ptr);
 		return smbuff;
 	} else {
+		if (A4GLSQLCV_check_requirement ("ALWAYS_CAST")  && dir=='i') {
+		static char smbuff[300];
+			char dtype_char[200];
+			char dtype_char2[200];
+		char *ptr;
+		ptr=get_sql_variable_usage_internal(u,dir);
+	  		strcpy (dtype_char, nm (dtype));
+	  		strcat (dtype_char, (char *) A4GL_dtype_sz (dtype, sz));
+	  		strcpy (dtype_char2, A4GLSQLCV_dtype_alias (dtype_char));
+			sprintf(smbuff,"((%s)::%s)",ptr,dtype_char2);
+			return smbuff;
+		}
 		return get_sql_variable_usage_internal(u,dir);
 	}
 
