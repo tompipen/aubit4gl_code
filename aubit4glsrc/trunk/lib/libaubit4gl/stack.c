@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.225 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: stack.c,v 1.226 2009-02-07 21:40:47 mikeaubury Exp $
 #
 */
 
@@ -1894,7 +1894,7 @@ A4GL_push_param (void *p, int d)
 	  call_list--;
 	  return;
 	}
-      A4GL_push_double (pow (doublea, doubleb));
+      A4GL_push_double (pow (doubleb, doublea));
       break;
 
     case OP_MOD:

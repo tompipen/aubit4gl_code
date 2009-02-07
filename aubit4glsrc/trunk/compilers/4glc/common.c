@@ -544,20 +544,27 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		struct variable *vrec;
 		int vtype;
 		next = vu->next;
+
+		//A4GL_pause_execution();
+
 		avar=v->var_data.variable_data_u.v_object.definition;
 	  	vu->variable_id = a;
 		vtype=avar->var_data.variable_type;
 		A4GL_assertion(vtype!=VARIABLE_TYPE_SIMPLE  && vtype!=VARIABLE_TYPE_RECORD, "Expecting a simple variable or a record");
 
 		if (vtype==VARIABLE_TYPE_SIMPLE) {
+				vu->datatype=DTYPE_OBJECT;
+				/*
 	      			vu->datatype = encode_size(
 					avar->var_data.variable_data_u.v_simple.datatype, 
 					avar->var_data.variable_data_u.v_simple.dimensions[0],
 					avar->var_data.variable_data_u.v_simple.dimensions[1])
 				;
+				*/
 				return v;
 		}
 		if (vtype==VARIABLE_TYPE_RECORD) {
+			A4GL_assertion(1,"Current thinking is we should just store an Object ID - so this should never happen");
 			// Must be a record...
 	  		vu->datatype = -2;	
 			vrec=avar;
