@@ -39,25 +39,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2197,
-     NAMED = 2198,
-     NAMED_GEN = 2199,
-     CHAR_VALUE = 2200,
-     NOT_USED_1 = 2201,
-     NOT_USED_2 = 2202,
-     NOT_USED_3 = 2203,
-     NOT_USED_4 = 2204,
-     NOT_USED_5 = 2205,
-     NOT_USED_6 = 2206,
-     NOT_USED_7 = 2207,
-     NOT_USED_8 = 2208,
-     NUMBER_VALUE = 2209,
-     SEMICOLON = 2210,
-     QUESTION_MARK = 2211,
-     CLINE = 2212,
-     CH = 2213,
-     MARK_VAR = 2214,
-     END_MARK_VAR = 2215,
+     INT_VALUE = 2199,
+     NAMED = 2200,
+     NAMED_GEN = 2201,
+     CHAR_VALUE = 2202,
+     NOT_USED_1 = 2203,
+     NOT_USED_2 = 2204,
+     NOT_USED_3 = 2205,
+     NOT_USED_4 = 2206,
+     NOT_USED_5 = 2207,
+     NOT_USED_6 = 2208,
+     NOT_USED_7 = 2209,
+     NOT_USED_8 = 2210,
+     NUMBER_VALUE = 2211,
+     SEMICOLON = 2212,
+     QUESTION_MARK = 2213,
+     CLINE = 2214,
+     CH = 2215,
+     MARK_VAR = 2216,
+     END_MARK_VAR = 2217,
      KW_DOC4GLCOMMENT = 1000,
      LEFT_JOIN = 1002,
      LINT_IGNORE = 1003,
@@ -328,29 +328,31 @@
      KW_FILL = 2191,
      KW_WIDTH = 2192,
      ERRORHOOK = 2194,
-     KW_CAST = 2195
+     KW_CAST = 2195,
+     CURR_FILE_NAME = 2196,
+     CURR_LINE_NO = 2197
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2197
-#define NAMED 2198
-#define NAMED_GEN 2199
-#define CHAR_VALUE 2200
-#define NOT_USED_1 2201
-#define NOT_USED_2 2202
-#define NOT_USED_3 2203
-#define NOT_USED_4 2204
-#define NOT_USED_5 2205
-#define NOT_USED_6 2206
-#define NOT_USED_7 2207
-#define NOT_USED_8 2208
-#define NUMBER_VALUE 2209
-#define SEMICOLON 2210
-#define QUESTION_MARK 2211
-#define CLINE 2212
-#define CH 2213
-#define MARK_VAR 2214
-#define END_MARK_VAR 2215
+#define INT_VALUE 2199
+#define NAMED 2200
+#define NAMED_GEN 2201
+#define CHAR_VALUE 2202
+#define NOT_USED_1 2203
+#define NOT_USED_2 2204
+#define NOT_USED_3 2205
+#define NOT_USED_4 2206
+#define NOT_USED_5 2207
+#define NOT_USED_6 2208
+#define NOT_USED_7 2209
+#define NOT_USED_8 2210
+#define NUMBER_VALUE 2211
+#define SEMICOLON 2212
+#define QUESTION_MARK 2213
+#define CLINE 2214
+#define CH 2215
+#define MARK_VAR 2216
+#define END_MARK_VAR 2217
 #define KW_DOC4GLCOMMENT 1000
 #define LEFT_JOIN 1002
 #define LINT_IGNORE 1003
@@ -622,6 +624,8 @@
 #define KW_WIDTH 2192
 #define ERRORHOOK 2194
 #define KW_CAST 2195
+#define CURR_FILE_NAME 2196
+#define CURR_LINE_NO 2197
 
 
 
@@ -657,7 +661,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 661 "y.tab.h"
+#line 665 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

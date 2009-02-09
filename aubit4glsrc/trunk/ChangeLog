@@ -20,12 +20,10 @@ Mon Feb  9 17:57:31 GMT 2009
 	Fix A4GLSQLLIB_A4GLSQL_cancel in other SQL libraries
 	
 	Add curr_file_name & curr_line_no eg :
-	
 	MAIN
-	
-	display curr_file_name, "-",curr_line_no
-	
+		display curr_file_name, "-",curr_line_no
 	END MAIN
+
 	
 	Fix page size problem in PDF reports
 	
