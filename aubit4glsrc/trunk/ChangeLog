@@ -1,4 +1,48 @@
 ---------------------------
+Mon Feb  9 17:57:31 GMT 2009
+---------------------------
+1.10RC_49 Released
+---------------------------
+	
+	NCHAR fixups
+	
+	Add 'ALWAYS_CAST' setting which can be used for ecpg generation to
+	add Casts to variables used in SQL statements.
+	
+	UI_XML fixup - add aclfgl_client_ui_call
+	
+	Minor HL_GTK & HL_TUI fixups for CONSTRUCT
+	
+	Display 'TEXT' to field (HL_TUI/HL_GTK)
+	
+	Display 'TEXT' to field (TUI)
+	
+	Fix A4GLSQLLIB_A4GLSQL_cancel in other SQL libraries
+	
+	Add curr_file_name & curr_line_no eg :
+	
+	MAIN
+	
+	display curr_file_name, "-",curr_line_no
+	
+	END MAIN
+	
+	Fix page size problem in PDF reports
+	
+	Add compiling a makefile directly to 'PROGRAM COMPILE' in a4gl ide
+	
+	Added partial support for long query termination (in esql backend
+	atm)
+	
+	Indentation..
+	
+	Parameter fixups for 'printc'
+	
+	get_fldbuf fixup for non subscripted fields
+	
+	Win32 fixups
+	
+---------------------------
 Sat Jan 24 17:38:27 GMT 2009
 ---------------------------
 1.10RC_48 Released
