@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.166 2009-01-19 07:29:20 mikeaubury Exp $
+# $Id: conv.c,v 1.167 2009-02-09 15:16:07 mikeaubury Exp $
 #
 */
 
@@ -298,8 +298,7 @@ A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   {
-  A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO, NO,
-      A4GL_ctovc, A4GL_ctoint},
+  A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO, NO, A4GL_ctovc, A4GL_ctoint},
   {
   A4GL_itoc, A4GL_itoi, A4GL_itol, A4GL_itof, A4GL_itosf, A4GL_itodec, A4GL_itol, A4GL_itod, A4GL_itomdec, NO, NO, NO, NO,
       A4GL_itovc, A4GL_itoint},
@@ -336,7 +335,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   A4GL_vctoc, A4GL_vctoi, A4GL_vctol, A4GL_vctof, A4GL_vctosf, A4GL_vctodec, A4GL_vctol, A4GL_vctod, A4GL_vctomdec, NO,
       A4GL_vctodt, NO, NO, A4GL_vctovc, A4GL_vctoint},
   {
-  A4GL_inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_inttoint}
+  A4GL_inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_inttoint},
 };
 
 
@@ -3307,6 +3306,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 #endif
   A4GL_conversion_ok (1);
   SPRINTF1 (buff, "CONVTO_%d", dtype2 & DTYPE_MASK);
+//A4GL_pause_execution();
   if (A4GL_has_datatype_function_i (dtype1 & DTYPE_MASK, buff))
     {
       int (*function) (int, void *, int, void *, int);

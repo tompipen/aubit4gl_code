@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.226 2009-02-07 21:40:47 mikeaubury Exp $
+# $Id: stack.c,v 1.227 2009-02-09 15:16:07 mikeaubury Exp $
 #
 */
 
@@ -496,7 +496,7 @@ A4GL_pop_var2 (void *p, int d, int s)
   //A4GL_debug ("8 pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
 #endif
 
-  if (d == 0)
+  if (d == DTYPE_CHAR || d==DTYPE_NCHAR)
     {
       pl = A4GL_new_string (s);
       z = A4GL_pop_param (pl, d, s);

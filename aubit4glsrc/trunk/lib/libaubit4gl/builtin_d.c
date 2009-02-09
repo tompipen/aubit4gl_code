@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.98 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.99 2009-02-09 15:16:07 mikeaubury Exp $
 #
 */
 
@@ -1249,9 +1249,11 @@ int dtype_masked;
 #endif
   switch (dtype & DTYPE_MASK)
     {
-    case 0:
+    case DTYPE_NCHAR:
+    case DTYPE_CHAR:
       A4GL_push_char (ptr);
       return;
+
     case DTYPE_VCHAR:
       A4GL_push_char (ptr);
       return;

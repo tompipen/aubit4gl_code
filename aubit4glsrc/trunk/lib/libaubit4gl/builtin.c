@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.134 2008-11-17 07:50:46 mikeaubury Exp $
+# $Id: builtin.c,v 1.135 2009-02-09 15:16:07 mikeaubury Exp $
 #
 */
 
@@ -290,13 +290,19 @@ aclfgl_length (int nargs)
 {
   char *g;
   size_t p;
+  int d2;
+  int s2;
+  char *pi;
+  A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
   if (nargs != 1)
     {
       A4GL_pop_args (nargs);
       A4GLSQL_set_status (-3001, 0);
       return 0;
     }
+  
   g = A4GL_char_pop ();
+
   if (A4GL_isnull (DTYPE_CHAR, g))
     {
       A4GL_push_int (0);
@@ -304,7 +310,14 @@ aclfgl_length (int nargs)
       return 1;
     }
   A4GL_trim_not_nl (g);		// Trim just ' ' - not nl...
-  p = strlen (g);
+
+  if ((d2&DTYPE_MASK)==DTYPE_NCHAR) {
+	p=A4GL_wcswidth(g);
+	
+  } else {
+  	p = strlen (g);
+  }
+ 
   A4GL_push_long ((long) p);
   acl_free (g);
   return 1;
