@@ -1,0 +1,28 @@
+lint_cmd : 
+	LINT_IGNORE lint_ignore_list   { $<cmd>$=new_lint_ignore_cmd($<str_list>2);   }
+	| LINT_EXPECT lint_expect_list { $<cmd>$=new_lint_expect_cmd($<str_list>2); }
+;
+
+lint_expect_list:
+	NAMED {
+			$<str_list>$=new_str_list(upshift($<str>1));
+
+	}
+	| lint_expect_list op_comma NAMED {
+		$<str_list>$=add_str_list($<str_list>1,upshift($<str>3));
+	}
+;
+
+lint_ignore_list_item:
+	NAMED { sprintf($<str>$,"+%s",$<str>1); }
+	| KW_PLUS NAMED {sprintf($<str>$,"+%s",$<str>1); }
+	| KW_MINUS NAMED {sprintf($<str>$,"-%s",$<str>1); }
+;
+
+
+lint_ignore_list:
+	lint_ignore_list_item {$<str_list>$=new_str_list(upshift($<str>1));}
+	| lint_ignore_list op_comma lint_ignore_list_item {
+		$<str_list>$=add_str_list($<str_list>1,upshift($<str>3));
+	}
+;

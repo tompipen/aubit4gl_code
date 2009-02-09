@@ -1,0 +1,26 @@
+#######################################################################
+#
+#
+# states file
+#
+# Used by procstates shell script to create states.c
+#
+# default = called at beginning
+#
+#           * Only need to enable and disable single word definitions *
+#
+#######################################################################
+
+
+attribute:
+RED CYAN MAGENTA BLUE GREEN WHITE BLACK YELLOW BOLD DIM REVERSE BORDER
+
+
+formhandler:
+	FORMHANDLER_INPUT
+
+messagebox: 
+	BUTTONS
+
+menu:
+	COMMAND 

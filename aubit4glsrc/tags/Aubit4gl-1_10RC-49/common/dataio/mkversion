@@ -1,0 +1,15 @@
+if [ "$AWK" = "" ]
+then
+	AWK=awk
+fi
+
+
+grep -h "[$]Id:" *.x |   $AWK '/Id:/ {
+	gsub("^.*Id:","")
+	v=$1
+	# Extra the filename by removing the trailing ,v
+	gsub(".x,v","",v)
+	if (v!="$") {
+		print "VERSION_" v "=" $2
+	}
+}' > x_versions

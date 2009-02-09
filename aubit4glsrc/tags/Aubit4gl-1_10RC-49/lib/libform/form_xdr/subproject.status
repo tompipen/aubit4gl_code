@@ -1,0 +1,14 @@
+Name: libFORM_XDR
+Parent: aubit4glsrc
+Description: For use with forms compiled to XDR format. Equivalent to generic form handler when using XDR as packer setting
+Functionality: Forms run-time support library
+Build:
+Example:
+Depends: Sun RPC
+Documentation:
+Regressed: mostly
+Maintainer: MA
+Status: 5
+Todo: 
+Notes: This uses the XDR format - so should be the most portable
+
