@@ -892,32 +892,7 @@ a4gl_deccmp (fgldecimal * d1, fgldecimal * d2)
   return a;
 }
 
-void
-a4gl_deccopy (fgldecimal * src, fgldecimal * target)
-{
-  char buff[200];
-  a4gl_deccvasc (buff, 199, src);
-  A4GL_str_dot_to_dec (buff, target);
-}
 
-int
-a4gl_deccvasc (char *s, int n, fgldecimal * d)
-{
-  char buff[256];
-  M_APM m1;
-  M_APM m2;
-  m1 = m_apm_init ();
-  m2 = m_apm_init ();
-  acl_apm_set_string (m1, s, 1);
-  set_fgl_decimal_precision_from_apm_decimal(d,m2);
-  m_apm_to_fixpt_string (buff, d->dec_data[1], m2);
-  A4GL_str_dot_to_dec (buff, d);
-  m_apm_free (m1);
-  m_apm_free (m2);
-
-
-  return 0;
-}
 
 int
 a4gl_deccvdbl (double d, fgldecimal * d1)

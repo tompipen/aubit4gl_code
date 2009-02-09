@@ -180,12 +180,12 @@ up_or_down :
 			a4gl_yyerror(errbuff);
 			YYERROR;
 		} else {
-				a=a&DTYPE_MASK; 
-  		if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
-    			a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
-    			YYERROR;
-    		/* error processing */;
-  		}
+			a=a&DTYPE_MASK; 
+  			if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
+    				a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    				YYERROR;
+    				/* error processing */;
+  			}
 		}
 		 $<ptr>$=A4GL_new_op_expr(A4GL_new_literal_long_str("0"),$<ptr>2,ET_EXPR_OP_SUB,0);
 	}

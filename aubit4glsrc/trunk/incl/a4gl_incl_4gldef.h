@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.125 2009-01-26 10:12:18 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.126 2009-02-09 17:24:11 mikeaubury Exp $
 */
 
 /**
@@ -362,7 +362,7 @@ A4GLSQL_init_connection (char *dbName);
 
   int a4gl_decadd( fgldecimal *d1, fgldecimal *d2, fgldecimal *sum)  ;
   int a4gl_deccmp(fgldecimal *d1, fgldecimal *d2)  ;
-  void a4gl_deccopy(fgldecimal *src, fgldecimal *target)  ;
+  void a4gl_deccopy(fgldecimal *target, fgldecimal *src)  ;
   int a4gl_deccvasc(char *s, int n, fgldecimal *d)   ;
   int a4gl_deccvdbl(double d, fgldecimal *d1)   ;
   int a4gl_deccvflt(float d, fgldecimal *d1)   ;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.147 2009-02-09 15:16:07 mikeaubury Exp $
+# $Id: ops.c,v 1.148 2009-02-09 17:24:11 mikeaubury Exp $
 #
 */
 
@@ -410,10 +410,7 @@ A4GL_dec_dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 32);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -457,7 +454,6 @@ A4GL_mon_dec_ops (int op)
   //char *a1;
   //char *a2;
   
-//A4GL_pause_execution();
   A4GL_pop_sized_decimal(&b);
   A4GL_pop_sized_decimal(&a);
 //
@@ -521,10 +517,7 @@ A4GL_mon_dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -628,10 +621,7 @@ A4GL_dec_mon_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -735,10 +725,7 @@ A4GL_mon_mon_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -841,10 +828,7 @@ A4GL_dec_sm_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -947,10 +931,7 @@ A4GL_mon_sm_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);	// MONEY
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1053,10 +1034,8 @@ A4GL_dec_int_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1159,10 +1138,7 @@ A4GL_mon_int_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1266,10 +1242,7 @@ A4GL_dec_float_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1373,10 +1346,7 @@ A4GL_dec_smfloat_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1479,10 +1449,8 @@ A4GL_mon_float_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
+	
       return;
 
     case OP_LESS_THAN:
@@ -1586,10 +1554,7 @@ A4GL_mon_smfloat_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);	// MONEY
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1693,10 +1658,7 @@ A4GL_sm_dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1799,10 +1761,7 @@ A4GL_int_dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -1905,10 +1864,7 @@ A4GL_float_dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -2011,10 +1967,7 @@ A4GL_smfloat_dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -2118,10 +2071,7 @@ A4GL_sm_mon_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -2224,10 +2174,7 @@ A4GL_int_mon_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -2330,10 +2277,7 @@ A4GL_float_mon_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
@@ -2436,10 +2380,7 @@ A4GL_smfloat_mon_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 1, 16);
+      A4GL_push_dec_dec(&a,1,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,1,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:

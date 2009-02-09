@@ -1101,10 +1101,7 @@ A4GL_int8dec_ops (int op)
 	  return;
 	}
 
-      a4gl_deccopy (&dc, &a);
-      for (d = 1; d < l2; d++)
-	a4gl_decmul (&dc, &a, &dc);
-      A4GL_push_dec_dec (&dc, 0, 16);
+      A4GL_push_dec_dec(&a,0,16); for (d = 1; d < l2; d++) { A4GL_push_dec_dec(&a,0,16); A4GL_push_param(NULL,OP_MULT); }
       return;
 
     case OP_LESS_THAN:
