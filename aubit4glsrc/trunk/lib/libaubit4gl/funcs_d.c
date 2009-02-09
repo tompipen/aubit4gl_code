@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.110 2009-01-21 12:49:33 gyver309 Exp $
+# $Id: funcs_d.c,v 1.111 2009-02-09 15:13:31 mikeaubury Exp $
 #
 */
 
@@ -1393,8 +1393,11 @@ A4GL_wcswidth (char *mbs)
     wlen = mlen;
 
   width = wcswidth (wstr, wlen);
-  if (width == -1 || width < mlen)
-    width = mlen;		// not a wide character ? 
+  if (width == -1 || width < mlen) {
+		// mlen is the lenth in bytes - so this normally be longer than width..
+		// even for a wide char ????
+    		width = mlen;		// not a wide character ? 
+  }
   free (wstr);
   return width;
 #endif
