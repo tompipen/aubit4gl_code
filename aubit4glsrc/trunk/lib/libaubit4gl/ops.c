@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.145 2009-02-06 12:34:48 mikeaubury Exp $
+# $Id: ops.c,v 1.146 2009-02-09 08:31:30 mikeaubury Exp $
 #
 */
 
@@ -6727,9 +6727,10 @@ A4GL_display_text (void *ptr, int size, int string_sz, struct struct_scr_field *
 	if (mptr && mlen) {
 		int a;
 	               for (a=0;a<mlen;a++) {
-                        if (a_isprint(mptr[a])) continue;
-                        if (mptr[a]<' ') mptr[a]='?';
-
+		 		if (a_isprint(mptr[a])) continue;
+ 				if (mptr[a]=='\t') continue;
+ 				if (mptr[a]=='\n') continue;
+ 				if (mptr[a]<' ') mptr[a]='?';
                 }
 	}
 	return mptr;
