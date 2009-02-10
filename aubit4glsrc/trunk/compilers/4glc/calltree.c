@@ -366,6 +366,7 @@ local_is_valid_vname (struct variable *v, enum e_scope scope)
     case VARIABLE_TYPE_CONSTANT:
     case VARIABLE_TYPE_FUNCTION_DECLARE:
     case VARIABLE_TYPE_OBJECT:
+	case VARIABLE_TYPE_TYPE_DECLARATION:
       return 1;
 
 
@@ -1498,7 +1499,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 			    else
 			      {
 				print_indent ();
-				fprintf (output, "<CASE>\n");
+				fprintf (output, "<CASE  LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
 				printed_case = 1;
 				indent++;
 			      }
@@ -2401,7 +2402,7 @@ main (int argc, char *argv[])
 	}
 
       a++;
-      sprintf (buff, argv[b]);
+      sprintf (buff, "%s", argv[b]);
       if (strstr (buff, ".dat") != 0)
 	{
 	  char *p;

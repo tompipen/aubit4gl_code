@@ -124,3 +124,4 @@ ODBC_LONGVARCHAR_AS_CHAR Force what would be a TEXT to be a CHAR because of a mi
 OUTER_JOINS_NB remove brackets around the table names when doing a ANSI outer join
 BUILTINSQL Select statements for various builtin queries
 ESQL_DATATYPE Datatype to use for a 4gl datatype when generating ESQL/C code
+ALWAYS_CAST Force SQL casting when using a Variable in ESQL/C code

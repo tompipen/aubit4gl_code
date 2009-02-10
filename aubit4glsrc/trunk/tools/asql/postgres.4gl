@@ -1700,7 +1700,7 @@ static int plen=0;
 int a;
 int c=0;
 
-if(strlen(s)>plen) {
+if(strlen(s)>plen || plen==0) {
         plen=strlen(s);
         p=realloc(p,plen+1000);
 }
