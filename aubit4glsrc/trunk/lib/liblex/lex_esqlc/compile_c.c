@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.471 2009-02-03 14:28:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.472 2009-02-10 10:20:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.471 2009-02-03 14:28:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.472 2009-02-10 10:20:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -484,78 +484,7 @@ dump_cmd (struct command *r)
 }
 
 
-#ifdef NOT_REQUIRED
-static int is_just_expr_clipped(struct expr_str *v,struct expr_str_list *ptr) {
-	struct expr_str *p;
-	if (ptr->list.list_len!=1) {
-		return 0;
-	}
-	p=ptr->list.list_val[0];
 
-	if (p->expr_type==ET_EXPR_OP_CLIP) {
-		p=p->expr_str_u.expr_expr;
-		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) { //@FIXME
-			A4GL_assertion(1,"Fix checking if a variable usage is just clipped..");
-			//if (strcmp(p->expr_str_u.expr_push_variable->variable,v)==0) {
-				//return 1;
-			//}
-		}
-
-	}
-	return 0;
-
-}
-#endif
-
-#ifdef NOT_REQUIRED
-static char *starts_with_single_string(struct expr_str_list *ptr) {
-        struct expr_str *p;
-        int a;
-        char *buff=0;
-        // LAST_STRING <- USE TO SEARCH...!
-
-        if (ptr->list.list_len==1) {
-                p=ptr->list.list_val[0];
-                if (p->expr_type==ET_EXPR_VARIABLE_USAGE)        { return "Yes"; }
-                if (p->expr_type==ET_EXPR_LITERAL_STRING)       { return p->expr_str_u.expr_string; }
-                if (p->expr_type==ET_EXPR_LITERAL_EMPTY_STRING) { return ""; }
-        }
-
-        for (a=0;a<1;a++) {
-                p=ptr->list.list_val[a];
-
-                if (p->expr_type==ET_EXPR_OP_CLIP) {
-                        p=p->expr_str_u.expr_expr; // We'll ignore any clipping for the sake of determining if its a single string...
-                }
-
-                if (p->expr_type==ET_EXPR_OP_USING) {
-                        p=p->expr_str_u.expr_op->left; // We'll ignore any USING string and just use it as is..
-                }
-
-                if (p->expr_type==ET_EXPR_LITERAL_STRING) {
-                        if (buff) {
-                                        buff=realloc(buff,(strlen(buff)+strlen(p->expr_str_u.expr_string)+1));
-                                        strcat(buff,p->expr_str_u.expr_string);
-                        } else {
-                                buff=strdup(p->expr_str_u.expr_string);
-                        }
-                        continue;
-                }
-
-                if (p->expr_type==ET_EXPR_VARIABLE_USAGE) {
-                        // If we're using variables here - we really ought to store them somewhere
-                        // as we're replacing them with a '?'
-                        return 0;
-			
-                }
-
-                //printf("Nope - %d. %d %s\n",a,p->expr_type,expr_name(p->expr_type));
-                return 0;
-        }
-
-        return buff;
-}
-#endif
 
 static char *
 local_has_comment (int n, int c)
@@ -625,54 +554,6 @@ return ;
     }
 }
 
-#ifdef OBSOLETE
-static char *is_single_string(struct expr_str_list *ptr) {
-	struct expr_str *p;
-	int a;
-	char *buff=0;
-	// LAST_STRING <- USE TO SEARCH...!
-
-	if (ptr->list.list_len==1) { 
-		p=ptr->list.list_val[0];
-		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) 	{ return "Yes"; }
-		if (p->expr_type==ET_EXPR_LITERAL_STRING) 	{ return p->expr_str_u.expr_string; }
-		if (p->expr_type==ET_EXPR_LITERAL_EMPTY_STRING) { return ""; }
-	}
-
-	for (a=0;a<ptr->list.list_len;a++) {
-		p=ptr->list.list_val[a];
-
-		if (p->expr_type==ET_EXPR_OP_CLIP) {
-			p=p->expr_str_u.expr_expr; // We'll ignore any clipping for the sake of determining if its a single string...
-		}
-
-		if (p->expr_type==ET_EXPR_OP_USING) {
-			p=p->expr_str_u.expr_op->left; // We'll ignore any USING string and just use it as is..
-		}
-
-		if (p->expr_type==ET_EXPR_LITERAL_STRING) {
-			if (buff) {
-					buff=realloc(buff,(strlen(buff)+strlen(p->expr_str_u.expr_string)+1));
-					strcat(buff,p->expr_str_u.expr_string);
-			} else {
-				buff=strdup(p->expr_str_u.expr_string);
-			}
-			continue;
-		}
-
-		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) {
-			// If we're using variables here - we really ought to store them somewhere
-			// as we're replacing them with a '?'
-			return 0;
-		}
-		
-		//printf("Nope - %d. %d %s\n",a,p->expr_type,expr_name(p->expr_type));
-		return 0; 
-	}
-
-	return buff;
-}
-#endif
 
 
 
@@ -2663,26 +2544,6 @@ void real_print_expr_list (struct expr_str_list *l)
 
 }
 
-#ifdef NOTYET
-static void
-real_print_class_func_call (char *var, char *identifier,
-                            struct expr_str *args, int args_cnt)
-{
-  printcomment ("/* printing parameters */");
-  if (args) real_print_expr (args);
-  printcomment ("/* done printing parameters */");
-  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-          if (A4GL_doing_pcode()) {
-                printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname, yylineno);
-          } else {
-                printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-          }
-
-  printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", var, scan_variable (var), identifier, args_cnt);
-print_reset_state_after_call(0);
-
-}
-#endif
 
 
 /**
@@ -2924,25 +2785,6 @@ real_print_func_call (t_expr_str * fcall)
 
 
 
-#ifdef NOT_YET
-static void real_print_pdf_call (char *a1, struct expr_str_list *args, char *a3,int yylineno)
-{
-  real_print_expr_list (args);
-  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-	  if (A4GL_doing_pcode()) {
-  		printc ("A4GLSTK_setCurrentLine(\"%s\",%d);", cmodname,yylineno);
-	  } else {
-  		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-	  }
-
-  if (is_in_report()) {
-  		printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%s); /* %d */\n", a1, a3,is_in_report());
-  } else {
-  		printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%s);\n", a1, a3);
-  }
-
-}
-#endif
 
 
 
@@ -3211,92 +3053,6 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 }
 
 
-#ifdef SHOULD_BE_MOVED_TO_COMPILER
-/**
- * Print the C implementation of the INITIALIZE LIKE 4gl statement.
- *
- * @param s The column list. Not used now.
- */
-void
-print_init_table_g (struct expr_str_list *b, char *s)
-{
-  int cnt;
-  struct expr_str_list bnew;
-  bnew.nbind=0;
-  bnew.list.list_val=malloc(sizeof(bnew.bind[0])*b->list.list_len);
-  //bnew.type=b->type;
-  for (cnt=0;cnt<b->list.list_len;cnt++) {
-	char buff[200];
-	char *ptr;
-	char *tab;
-	char *col;
-	strcpy(buff, A4GL_4glc_get_gen(INITCOL,cnt));
-	tab=&buff[0];
-	col=strchr(tab,'.');
-	if (!col) {
-		yylineno=line_for_cmd; a4gl_yyerror("Unable to find table/column");
-		return;
-	}
-	*col=0;
-	col++;
-	ptr=A4GLSQL_syscolval_expr(tab,col,"DEFAULT");
-	if (ptr==0) {
-		bnew.nbind++;
-		bnew.bind[bnew.nbind-1]=b->list.list_val[cnt];
-	} else {
-		int n;
-		n=strlen(ptr);
-		A4GL_trim(ptr);
-		if (strlen(ptr)==0 && n) {
-			ptr=" ";
-		}
-		printc("A4GL_push_char(\"%s\");",c_generation_trans_quote(ptr));
-	      	printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", b->list.list_val[cnt].varname, (int) b->list.list_val[cnt].dtype & 0xffff, (int) b->list.list_val[cnt].dtype >> 16);
-	}
-  }
-  if (bnew.nbind) {
-  	printc ("{\n");
-  	cnt = print_bind_definition_g (&bnew);
-  	cnt = print_bind_set_value_g (&bnew);
-  	printc ("A4GL_set_init(nullbind,%d);\n", cnt);
-  	printc ("}\n");
-	}
-}
-
-void
-print_validate_g (struct expr_str_list *bind,char *tablist)
-{
-  int cnt;
-  int z;
-  int a;
-  int b;
-
-  z = bind->list.list_len;
-  cnt=get_validate_list_cnt();
-  if (z!=cnt) {
-	  set_yytext("");
-	
-	  A4GL_debug(" validate mismatch : %d %d\n",z,cnt);
-	  yylineno=line_for_cmd;a4gl_yyerror ("Mismatch in number of variables and number of columns");
-	  return;
-  }
-  printc("/* VALIDATE */");
-  printc ("    A4GLSQL_set_status(0,0);\n");
-  for (a=0;a<z;a++) {
-        //char buff[256];
-	struct expr_str_list *p;
-	p=(struct expr_str_list *)A4GL_get_validate_expr(a);
-	if (p==0) continue;
-	printc ("A4GL_push_variable(&%s,0x%x);\n", bind->list.list_val[a].varname, bind->list.list_val[a].dtype );
-	for (b=0;b<p->list.list_len;b++) {
-		print_expr(p->list.list_val[b]);
-	}
-        printc("A4GL_push_int(%d);",p->list.list_len);
-        printc("A4GL_pushop(OP_IN);");
-	printc("if (!A4GL_pop_bool()) {A4GLSQL_set_status(-1321,0);}");
-  }
-}
-#endif
 
 
 /**
@@ -3724,129 +3480,6 @@ doing_cs (void)
   return 0;
 }
 
-#ifdef OLD
-
-int *ordbyfields = 0;
-int ordbyfieldscnt = 0;
-
-static void
-add_to_ordbyfields (int n)
-{
-  int a;
-  for (a = 0; a < ordbyfieldscnt; a++)
-    {
-      if (ordbyfields[a] == n)
-	return;
-    }
-  ordbyfieldscnt++;
-  ordbyfields = realloc (ordbyfields, sizeof (int) * ordbyfieldscnt);
-  ordbyfields[ordbyfieldscnt - 1] = n;
-
-}
-
-
-/* 
-If the report doesn't specify an explicit order by, there
-may be an implicit one in the order that BEFORE GROUP/AFTER GROUPs were
-added in the format section
-
-We're going to use the fact that the _ordbind will contain all the variables,
-and we have the variable numbers from the before and after groups.
-
-If we copy the ordbind, then reassemble the ordbind using these - we should be ok again
-*/
-
-static void order_by_report_stack (int report_stack_cnt)
-{
-  int a;
-  static int fiddle = 0;
-  if (ordbyfields)
-    free (ordbyfields);		/* From a previous report..*/
-  ordbyfields = 0;		/* clear it all down...*/
-  ordbyfieldscnt = 0;
-
-
-
-/* This only applies if we're doing an order external (implicit for no order by at all */
-  if (last_orderby_type != 2)
-    return;
-
-  if (!get_rep_no_orderby ())
-    return;
-
-
-/* Find our group order */
-  for (a = 0; a < report_stack_cnt; a++)
-    {
-      if (get_report_stack_whytype (a) == 'B'
-	  || get_report_stack_whytype (a) == 'A')
-	{
-	  add_to_ordbyfields (atoi (get_report_stack_why (a)));
-	}
-    }
-
-
-/* At this point we'll know if they used before/after groups */
-
-/* We only want to do this if we haven't done it before... */
-  printc ("if (acl_rep_ordcnt==-1) {");
-
-  if (ordbyfieldscnt == 0)
-    {
-      printc ("acl_rep_ordcnt=0;");	/* Nothing to do - there isn't any...*/
-    }
-  else
-    {
-      /* Because of where this needs to go - we're going to shove a function
-         into the header file we can call 
-       */
-
-      /* C File */
-      printc ("acl_rep_ordcnt=%d; /* 1 */", ordbyfieldscnt);
-      /* And assign the values*/
-      fiddle++;
-      printc ("acl_exchange_rep_ordby%d(_ordbind,%d);", fiddle,
-	      current_ordbindcnt);
-/* H file... */
-      printh
-	("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n",
-	 fiddle);
-      printh ("struct BINDING *copy;\n");
-      printh ("copy=(struct BINDING *)acl_malloc2(sizeof(struct BINDING)*cnt);\n");
-      printh ("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
-      /* We've got our copy - now we can splat the original! */
-      for (a = 0; a < ordbyfieldscnt; a++)
-	{
-	  printh ("memcpy(&ord[%d],&copy[%d],sizeof(struct BINDING));\n", a, ordbyfields[a] - 1);	/* fields are numbered from 1 for before/after group variables */
-	}
-      printh ("free(copy);\n");
-      printh ("}\n");
-    }
-  printc ("}");
-
-}
-
-
-static int
-gen_ord (char *s)
-{
-  int a;
-  int n;
-  n = atoi (s);
-  if (last_orderby_type != 2)
-    return n;
-  if (!get_rep_no_orderby ())
-    return n;
-  for (a = 0; a < ordbyfieldscnt; a++)
-    {
-      if (n == ordbyfields[a])
-	return a + 1;
-    }
-
-  return n;			/* Fall back - shouldn't happen!!*/
-}
-
-#endif
 
 void
 print_realloc_arr (char *s, char *d)
@@ -3908,120 +3541,7 @@ print_realloc_arr (char *s, char *d)
 
 
 
-#ifdef NOTUSED_and_or_broken
-// FIXME - should return expr_str_list...
-struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) {
-char *ptr2;
-char *ptrn;
-//char buff[256];
-A4GL_trim(val);
-ptr2=val;
-while (1) {
-        ptrn=strtok(ptr2,",");
-        if (ptrn==0) break;
-        if (ptr2) {ptr2=0;}
 
-        //SPRINTF1(buff,"A4GL_push_char(\"%s\");",ptrn);
-
-        if (ptr==0) {
-		ptr=A4GL_new_literal_string(ptrn);
-                //ptr=A4GL_new_expr(buff);
-        } else {
-		struct expr_str *e;
-		e=A4GL_new_literal_string(ptrn);
-                ptr=A4GL_append_expr_expr(ptr,e);
-        }
-
-}
-return ptr;
-}
-
-#endif
-
-#ifdef OLD
-void
-print_event_list ()
-{
-  int a;
-  int n;
-  int b;
-  int event_id;
-  char *event_dets;
-  int *keys;
-//char comma=' ';
-  char **fields;
-
-  n = A4GL_get_nevents ();
-  if (n == 0)
-    {
-      if (A4GL_doing_pcode ())
-	{
-	  printc ("struct aclfgl_event_list _sio_evt[1]={");
-	}
-      else
-	{
-	  printc ("static struct aclfgl_event_list _sio_evt[]={");
-	}
-      printc (" {0}};");
-      return;
-    }
-
-  if (A4GL_doing_pcode ())
-    {
-      printc ("struct aclfgl_event_list _sio_evt[%d]={", n+1);
-    }
-  else
-    {
-      printc ("static struct aclfgl_event_list _sio_evt[]={");
-    }
-  for (a = 0; a < n; a++)
-    {
-      A4GL_get_event (a, &event_id, &event_dets);
-
-      if (event_id == A4GL_EVENT_KEY_PRESS)
-	{
-	  keys = get_key_codes (event_dets);
-	  for (b = 0; keys[b]; b++)
-	    {
-	      printc ("{%d,%d,%d,0},", event_id, a + 1, keys[b]);
-	    }
-	  continue;
-	}
-
-      if (event_id == A4GL_EVENT_ON_IDLE)
-	{
-	    printh("static long a4gl_idle%d=0;\n",idle_cnt);
-	    printc ("{%d,%d,%s,(void *)&a4gl_idle%d},", event_id, a + 1, event_dets,idle_cnt++);
-	    continue;
-	}
-
-      if (event_id == A4GL_EVENT_ON_INTERVAL)
-	{
-	    printh("static long a4gl_idle%d=0;\n",idle_cnt);
-	    printc ("{%d,%d,%s,(void *)&a4gl_idle%d},", event_id, a + 1, event_dets,idle_cnt++);
-	    continue;
-	}
-
-
-
-      fields = get_field_codes (event_dets);
-      for (b = 0; fields[b]; b++)
-	{
-	  if (strlen (fields[b]) != 0)
-	    {
-	      printc ("{%d,%d,0,%s},", event_id, a + 1, fields[b]);
-	    }
-	  else
-	    {
-	      printc ("{%d,%d,0,\"\"},", event_id, a + 1);
-	    }
-	}
-    }
-  printc ("{0}");
-  printc ("};");
-}
-
-#endif
 
 void print_event_actions (char *loopvar, struct on_events*events) {
   int a;
@@ -4127,6 +3647,10 @@ print_event_list (struct on_events*events)
 	  			keys = get_key_codes (evt->evt_data.event_data_u.key->str_list_entry.str_list_entry_val[c]);
 	  			for (b = 0; keys[b]; b++)
 	    			{
+					if (keys[b]==-1) { 	// Invalid key code...
+						set_yytext(evt->evt_data.event_data_u.key->str_list_entry.str_list_entry_val[c]);
+						a4gl_yyerror("Invalid Key");
+					}
 	      				printc ("{%d,%d,%d,NULL},", A4GL_EVENT_KEY_PRESS , a + 1, keys[b]);
 	    			}
 	   		}

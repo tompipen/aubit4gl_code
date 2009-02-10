@@ -305,6 +305,89 @@ dtype_as_string (int dtype)
 }
 
 
+static int check_cmds_for_bad_key(int keycode,enum cmd_type cmd_type) {
+	if (cmd_type==E_CMD_INPUT_CMD || cmd_type==E_CMD_PROMPT_CMD || cmd_type==E_CMD_DISPLAY_ARRAY_CMD || cmd_type==E_CMD_CONSTRUCT_CMD) {
+		if (keycode==A4GLKEY_NEXT || keycode==A4GLKEY_PREV ||  keycode==A4GLKEY_INSERT || keycode==A4GLKEY_DELETE || keycode==A4GLKEY_NEXTPAGE || keycode==A4GLKEY_PREVPAGE ) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
+
+static int *get_key_codes(char *keys) {
+char s[1024];
+char *k;
+char *k1;
+static int *x=0;
+int xcnt=0;
+
+if (x) {free(x);x=0;}
+
+  strcpy (s, keys);
+  A4GL_trim(s);
+  strcat (s, "||");
+  A4GL_debug ("Chk keys %s\n", s);
+
+  if (strcmp (keys, "->ANY") == 0) { x=acl_malloc2(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
+
+  k=s;
+
+  while (1) {
+        k1=k;
+        k = strstr (k1, "||");
+        if (k==0) break;
+        *k=0;
+        k+=2;
+        xcnt++;
+        x=realloc(x,sizeof(int)*xcnt);
+        x[xcnt-1]= A4GL_key_val (k1);
+  }
+
+
+        xcnt++;
+        x=realloc(x,sizeof(int)*xcnt);
+        x[xcnt-1]= 0;
+  return x;
+}
+
+
+
+
+static void check_cmds_for_bad_keys(struct on_events *evt_list, enum cmd_type cmd_type) {
+int a;
+  int *keys;
+
+  if (evt_list == 0)
+    return;
+
+  for (a = 0; a < evt_list->event.event_len; a++)
+    {
+	if (evt_list->event.event_val[a]->evt_data.event_type==EVENT_KEY_PRESS) {
+		int b;
+		int c;
+		str_list *sl;
+		sl=evt_list->event.event_val[a]->evt_data.event_data_u.key;
+		if (sl) {
+			for (c=0;c<sl->str_list_entry.str_list_entry_len;c++) {
+                               	keys = get_key_codes (sl->str_list_entry.str_list_entry_val[c]);
+                                for (b = 0; keys[b]; b++)
+                                {
+                                        if (keys[b]==-1) {      // Invalid key code...
+					 	A4GL_lint (NULL, evt_list->event.event_val[a]->lineno, "BADKEY", "Invalid key code", 0);
+                                        }
+
+      					if (check_cmds_for_bad_key (keys[b], cmd_type)) {
+					 	A4GL_lint (NULL, evt_list->event.event_val[a]->lineno, "BADKEYCONTEXT", "Invalid key code in this context", sl->str_list_entry.str_list_entry_val[c]);
+					}
+                                }
+			}
+		}
+	}
+    }
+
+}
 
 static void
 check_cmds_for_dead_code_from_events (struct on_events *evt_list)
@@ -394,16 +477,19 @@ check_cmds_for_dead_code (struct commands *cmds)
 	case E_CMD_PROMPT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prompt_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
+	  check_cmds_for_bad_keys(evt_list, E_CMD_PROMPT_CMD);
 	  break;
 
 	case E_CMD_DISPLAY_ARRAY_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.display_array_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
+	  check_cmds_for_bad_keys(evt_list, E_CMD_DISPLAY_ARRAY_CMD);
 	  break;
 
 	case E_CMD_INPUT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
+	  check_cmds_for_bad_keys(evt_list, E_CMD_INPUT_CMD);
 	  break;
 
 	case E_CMD_INPUT_ARRAY_CMD:
@@ -413,6 +499,7 @@ check_cmds_for_dead_code (struct commands *cmds)
 	case E_CMD_CONSTRUCT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
+	  check_cmds_for_bad_keys(evt_list, E_CMD_CONSTRUCT_CMD);
 	  break;
 
 
