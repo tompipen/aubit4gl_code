@@ -31,7 +31,7 @@ if test "$FGLC" = ""; then
 	#We can't make 4glpc default ATM as it messes up debug.out file by 
 	#writing to the same file 4glc is writing - which makes it very hard 
 	#to debug things
-	#export FGLC=$A4GL_FGLPC
+	export FGLC=$A4GL_FGLPC
 fi
 #Let Amake rules know:
 if test "$FGLC" = "$A4GL_FGLPC"; then
