@@ -355,9 +355,12 @@ if (x) {free(x);x=0;}
 
 
 
-static void check_cmds_for_bad_keys(struct on_events *evt_list, enum cmd_type cmd_type) {
+static void check_cmds_for_bad_keys(struct on_events *evt_list, struct command *cmd ) {
+enum cmd_type cmd_type;
 int a;
   int *keys;
+
+  cmd_type=cmd->cmd_data.type;
 
   if (evt_list == 0)
     return;
@@ -375,11 +378,11 @@ int a;
                                 for (b = 0; keys[b]; b++)
                                 {
                                         if (keys[b]==-1) {      // Invalid key code...
-					 	A4GL_lint (NULL, evt_list->event.event_val[a]->lineno, "BADKEY", "Invalid key code", 0);
+					 	A4GL_lint (cmd->module, evt_list->event.event_val[a]->lineno, "BADKEY", "Invalid key code", 0);
                                         }
 
       					if (check_cmds_for_bad_key (keys[b], cmd_type)) {
-					 	A4GL_lint (NULL, evt_list->event.event_val[a]->lineno, "BADKEYCONTEXT", "Invalid key code in this context", sl->str_list_entry.str_list_entry_val[c]);
+					 	A4GL_lint (cmd->module, evt_list->event.event_val[a]->lineno, "BADKEYCONTEXT", "Invalid key code in this context", sl->str_list_entry.str_list_entry_val[c]);
 					}
                                 }
 			}
@@ -477,19 +480,19 @@ check_cmds_for_dead_code (struct commands *cmds)
 	case E_CMD_PROMPT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prompt_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, E_CMD_PROMPT_CMD);
+	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 	case E_CMD_DISPLAY_ARRAY_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.display_array_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, E_CMD_DISPLAY_ARRAY_CMD);
+	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 	case E_CMD_INPUT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, E_CMD_INPUT_CMD);
+	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 	case E_CMD_INPUT_ARRAY_CMD:
@@ -499,7 +502,7 @@ check_cmds_for_dead_code (struct commands *cmds)
 	case E_CMD_CONSTRUCT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, E_CMD_CONSTRUCT_CMD);
+	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 
