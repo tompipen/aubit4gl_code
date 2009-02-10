@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.76 2009-02-05 09:03:56 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.77 2009-02-10 08:58:45 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.76 2009-02-05 09:03:56 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.77 2009-02-10 08:58:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -538,14 +538,18 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 
 	      A4GL_debug ("GOT KEY PRESS... %d %d\n", A4GL_has_event_for_keypress (fcntrl.extent, evt));
 	      last_key_code = sio->fcntrl[a].extent;
+
 	      rval = A4GL_has_event_for_keypress (fcntrl.extent, evt);
 	      if (rval)
 		{
 		  sio->processed_onkey = 0;
-		}
-	      else
-		{
-		  rval = -1;
+		} else {
+                      rval=A4GL_check_event_list_for_special_key(evt, last_key_code);
+                      if (rval!=0) {
+                              sio->processed_onkey=0;
+                      } else { 
+			      rval = -1; 
+		      }
 		}
 	      A4GL_debug ("Set rval=%d\n", rval);
 	    }

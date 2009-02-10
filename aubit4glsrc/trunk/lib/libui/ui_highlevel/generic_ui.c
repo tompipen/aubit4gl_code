@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.151 2009-02-03 20:27:48 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.152 2009-02-10 08:58:45 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3427,7 +3427,7 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 
       if (abort_pressed)
 	break;
-      if (a != -1)
+      if (a != -1 && a!=0)
 	break;
     }
 
@@ -3464,6 +3464,12 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 
   A4GL_debug ("No lastkey..");
   rblock = A4GL_has_event_for_keypress (promptx->lastkey, evt);
+
+
+
+  if (!rblock) {
+	rblock=A4GL_check_event_list_for_special_key(evt, promptx->lastkey);
+  }
 
 
   if (rblock)

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.75 2008-09-24 09:49:29 mikeaubury Exp $
+# $Id: prompt.c,v 1.76 2009-02-10 08:58:45 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.75 2008-09-24 09:49:29 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.76 2009-02-10 08:58:45 mikeaubury Exp $";
 #endif
 
 /**
@@ -363,6 +363,7 @@ int was_aborted=0;
   FORM *mform;
   int blk;
   struct s_prompt *prompt;
+  int rblock;
 
   prompt = vprompt;
   evt=vevt;
@@ -448,14 +449,19 @@ int was_aborted=0;
   	A4GL_set_last_key (a);
   	prompt->lastkey = A4GL_get_lastkey ();
 
+	rblock=A4GL_has_event_for_keypress(a,evt);
+  if (!rblock) {
+        rblock=A4GL_check_event_list_for_special_key(evt, a);
+  }
 
-	if (A4GL_has_event_for_keypress(a,evt)|| abort_pressed) {
+
+	if (rblock|| abort_pressed) {
       		A4GL_push_null (DTYPE_CHAR,1);
       		prompt->mode = 2;
       		unpost_form (prompt->f);
       		A4GL_debug("Calling clear_prmpt");
       		A4GL_clear_prompt (prompt);
-		return A4GL_has_event_for_keypress(a,evt);
+		return rblock;
 	}
 	A4GL_debug("No lastkey..");
 

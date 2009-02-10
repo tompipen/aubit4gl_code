@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.83 2009-01-26 17:53:35 mikeaubury Exp $
+# $Id: ui.c,v 1.84 2009-02-10 08:58:45 mikeaubury Exp $
 #
 */
 
@@ -2064,6 +2064,38 @@ void A4GL_ensure_numeric_prompt_var(int dtype)
          // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
          A4GL_convert_ui_char_on_stack_decimal_sep();
   }
+}
+
+
+
+int A4GL_check_event_list_for_special_key(struct aclfgl_event_list *evt, int last_key_code) {
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_INSERT) && A4GL_has_event_for_keypress(A4GLKEY_INSERT,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_INSERT,evt);
+                                }
+
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_DELETE) && A4GL_has_event_for_keypress(A4GLKEY_DELETE,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_DELETE,evt);
+                                }
+
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_NEXT) && A4GL_has_event_for_keypress(A4GLKEY_NEXT,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_NEXT,evt);
+                                }
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_NEXTPAGE) && A4GL_has_event_for_keypress(A4GLKEY_NEXTPAGE,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_NEXTPAGE,evt);
+                                }
+
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_PREV) && A4GL_has_event_for_keypress(A4GLKEY_PREV,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_PREV,evt);
+                                }
+
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_PREVPAGE) && A4GL_has_event_for_keypress(A4GLKEY_PREVPAGE,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_PREVPAGE,evt);
+                                }
+
+                                if (A4GL_is_special_key (last_key_code, A4GLKEY_HELP) && A4GL_has_event_for_keypress(A4GLKEY_HELP,evt)) {
+                                        return A4GL_has_event_for_keypress(A4GLKEY_HELP,evt);
+                                }
+	return 0;
 }
 
 /* ============================= EOF ================================ */

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.153 2008-12-02 07:50:35 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.154 2009-02-10 08:58:45 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.153 2008-12-02 07:50:35 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.154 2009-02-10 08:58:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1348,7 +1348,15 @@ A4GL_debug("Got rval as : %d",rval);
 switch (rval) {
 	case A4GL_EVENT_BEFORE_FIELD_1: if (A4GL_has_event_for_field(A4GL_EVENT_BEFORE_FIELD,last_field_name,evt)) { return A4GL_has_event_for_field(A4GL_EVENT_BEFORE_FIELD,last_field_name,evt); } rval=-1;break;
 	case A4GL_EVENT_AFTER_FIELD_1: if (A4GL_has_event_for_field(A4GL_EVENT_AFTER_FIELD,last_field_name,evt)) { return A4GL_has_event_for_field(A4GL_EVENT_AFTER_FIELD,last_field_name,evt); } rval=-1;break;
-	case A4GL_EVENT_KEY_PRESS :if (A4GL_has_event_for_keypress(last_key_code,evt)) { sio->processed_onkey=0; return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+	case A4GL_EVENT_KEY_PRESS : 
+				if (A4GL_has_event_for_keypress(last_key_code,evt)) { sio->processed_onkey=0; return A4GL_has_event_for_keypress(last_key_code,evt);} 
+				rval=A4GL_check_event_list_for_special_key(evt, last_key_code);
+				if (rval!=0) {
+				 	sio->processed_onkey=0; 
+					return rval;
+				}
+				rval=-1;
+				break;
  	case A4GL_EVENT_BEFORE_INP: if (A4GL_has_event(A4GL_EVENT_BEFORE_INP,evt)) return A4GL_has_event(A4GL_EVENT_BEFORE_INP,evt);rval=-1;break;
  	case A4GL_EVENT_AFTER_INP: if (A4GL_has_event(A4GL_EVENT_AFTER_INP,evt)) return A4GL_has_event(A4GL_EVENT_AFTER_INP,evt);rval=-1;break;
  	case A4GL_EVENT_AFTER_INP_CLEAN: if (A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt)) return A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt);rval=-1;break;
