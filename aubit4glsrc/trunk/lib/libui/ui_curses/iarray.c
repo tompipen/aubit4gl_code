@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.151 2008-11-03 11:16:19 mikeaubury Exp $
+# $Id: iarray.c,v 1.152 2009-02-11 13:17:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.151 2008-11-03 11:16:19 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.152 2009-02-11 13:17:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -1663,6 +1663,8 @@ A4GL_add_to_control_stack (struct s_inp_arr *sio, enum e_formcontrol op, FIELD *
 	extent = A4GLKEY_NEXT;
       if (A4GL_is_special_key (extent, A4GLKEY_PREV))
 	extent = A4GLKEY_PREV;
+      if (A4GL_is_special_key (extent, A4GLKEY_HELP))
+	extent = A4GLKEY_HELP;
 
       A4GL_debug ("ADDED KEY : %d\n", extent);
     }

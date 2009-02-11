@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.85 2009-02-03 19:57:25 mikeaubury Exp $
+# $Id: pg8.c,v 1.86 2009-02-11 13:17:19 mikeaubury Exp $
 #*/
 
 
@@ -2304,6 +2304,7 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
 static int
 conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
 {
+  ensure_types(); // Make sure we've got the datatypes loaded...
 
   if (pgtype == dtype_bpcharoid)
     {
@@ -2955,11 +2956,15 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name_s, int fetch_mode,
   //int copy_out_n;
   char buff[256];
 char cursor_name[2000];
-  PGresult *res;
+  static PGresult *res=NULL;
   strcpy(cursor_name, cursor_name_s);
 A4GL_trim(cursor_name);
 
   obind = vobind;
+  if (res) {
+		PQclear(res);
+		res=NULL;
+	}
 
   cid = A4GLSQL_find_cursor (cursor_name);
   if (cid == 0)
@@ -3023,7 +3028,7 @@ A4GL_trim(cursor_name);
       SetErrno (res);
       //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
       A4GL_exitwith_sql ("Unexpected postgres return code1\n");
-	PQclear(res);
+	//PQclear(res);
       return 0;
     }
 
@@ -3067,17 +3072,17 @@ A4GL_trim(cursor_name);
 	  		SPRINTF1 (buff, "FETCH LAST FROM %s", cursor_name);
   			res = PQexec (current_con, buff);
 			// We dont care if these work - we're just trying to emulate informix...
-      			if (res) {PQclear (res);}
+      			//if (res) {PQclear (res); res=NULL;}
 		} else {
   			PGresult *res;
 	  		SPRINTF1 (buff, "FETCH FIRST FROM %s", cursor_name);
 			// We dont care if these work - we're just trying to emulate informix...
   			res = PQexec (current_con, buff);
-      			if (res) {PQclear (res);}
+      			//if (res) {PQclear (res); res=NULL;}
 		}
 	}
       }
-	if (res) PQclear(res);
+	//if (res) PQclear(res);
       return 0;
     }
   else
@@ -3095,7 +3100,7 @@ A4GL_trim(cursor_name);
 	  p = cid->statement;
 	  copy_to_obind (res, p->no, p->obind, 0);
 	}
-	if (res) PQclear(res);
+	//if (res) PQclear(res);
     }
   return 1;
 }
@@ -3923,13 +3928,14 @@ static long A4GL_describecolumn (PGresult * res, int colno, int type)
   int column_count;
   int rval=0;
 
-
   if (type == 6)
     return atoi (PQcmdTuples (res));
 
   if (type == 5)
     return PQnfields (res);
 
+
+A4GL_assertion(colno<0,"colno<0");
 
   column_count = PQnfields (res);
 

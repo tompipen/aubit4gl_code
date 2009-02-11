@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.42 2008-07-06 11:34:25 mikeaubury Exp $
+# $Id: data.c,v 1.43 2009-02-11 13:17:18 mikeaubury Exp $
 #*/
 
 /**
@@ -347,6 +347,7 @@ add_select (char *sql, char *temptabname)
   int c;
   int whereposcnt = 0;
   char buffer[80];
+  int sl;
 
 /*printf(":-> %s\n",sql);*/
   /*
@@ -388,7 +389,8 @@ add_select (char *sql, char *temptabname)
   buff = acl_strdup (sql);
 
   c = 0;
-  for (a = 0; a < strlen (sql); a++)
+  sl=strlen (sql);
+  for (a = 0; a < sl; a++)
     {
       if (sql[a] == '\n')
 	{
@@ -759,10 +761,13 @@ execute_selects (void)
 				A4GLSQL_declare_cursor(0+0,A4GLSQL_find_prepare("p1_p1"),0,"p1_c1");
 				A4GLSQL_open_cursor("p1_c1",0,0);
 				if (need_to_open_cursor==2) {
-					A4GLSQL_fetch_cursor("p1_c1",2,1,0,0);
+					a=A4GLSQL_fetch_cursor("p1_c1",2,1,0,0);
+					if (a==0) {
+	  					printf ("Some error executing SQL (Error %d)\n", A4GLSQL_get_status ());
+	  					yyerror_sql ("SQL Error");
+					}
 				}
 			}
-
 			no_cols=A4GLSQL_describe_stmt ("p1_p1", 0, 5);
 
 			if (no_cols==0) {
@@ -770,6 +775,10 @@ execute_selects (void)
 				exit(3);
 				//printf("%s\n", A4GLSQL_describe_stmt ("p1_p1", 1, 0));
 			}
+			if (no_cols>10000) {
+				A4GL_assertion(1,"Dubious number of columns");
+			}
+			A4GL_debug("No_cols=%d", no_cols);
 
 			for (a=0;a<no_cols;a++) {
 				char buff[200];
@@ -785,6 +794,7 @@ execute_selects (void)
 				A4GL_debug("-->%s %d %d %d\n",cname, type,scale,len);
 				if (strlen(cname)==0) {
 					printf("Internal error - unable to get the name... %s %d %d %d\n",cname, type,scale,len);
+					A4GL_assertion(1,"Internal error - unable to get the name");
 				}
 				if (!has_sql_variable(cname)) {
 		  			ace_add_variable (cname, 0, CAT_SQL, 0, type, scale);

@@ -13,7 +13,7 @@ int A4GL_is_valid_4gl_type (char *s);
 #define LINTMODULE_FOR_PROGRAM "[PROGRAM]"
 //expr_str* get_expr_datatype(int n);
 extern int yylineno;
-static int dbg = 0;
+static int dbg = 1;
 char *lint_module = 0;
 static void load_boltons (char *fname);
 static int find_function (char *s);

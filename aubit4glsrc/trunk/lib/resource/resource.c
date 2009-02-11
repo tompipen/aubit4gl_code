@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.159 2008-12-16 14:25:53 mikeaubury Exp $
+# $Id: resource.c,v 1.160 2009-02-11 13:17:19 mikeaubury Exp $
 #
 */
 
@@ -1363,8 +1363,16 @@ char tried_to_read_from[20][2000];
 		
 		exit(2);
 		
-	}
+	} else {
+	int a;
+	
+  		for (a=0;a<tried_to_read_from_cnt;a++) {
+			char buff[200];
+			sprintf(buff,"AUBITRC_READ_%d",a);
+			A4GL_setenv (buff,tried_to_read_from[a], 1);
+  		}
 
+	}
   return build_resource;
 }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.8 2008-12-16 14:25:53 mikeaubury Exp $
+# $Id: file.c,v 1.9 2009-02-11 13:17:19 mikeaubury Exp $
 #
 */
 
@@ -131,6 +131,33 @@ A4GL_file_exists (char *fname)
 #else
   {
     FILE *f = 0;
+    f = fopen (fname, "r");
+    if (f)
+      {
+	fclose (f);
+	return 1;
+      }
+    else
+      {
+	return 0;
+      }
+#endif
+  }
+
+int
+A4GL_directory_exists (char *fname)
+{
+#ifdef HAVE_SYS_STAT_H
+  struct stat buf;
+  if (stat (fname, &buf) == 0) {
+	return S_ISDIR(buf.st_mode);
+  }
+  return 0;
+#else
+  {
+    FILE *f = 0;
+// We cant be too fussy here - if its a file thats readable - that'll have to
+// do for now...
     f = fopen (fname, "r");
     if (f)
       {

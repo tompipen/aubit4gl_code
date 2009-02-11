@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.365 2009-02-10 08:58:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.366 2009-02-11 13:17:18 mikeaubury Exp $
 #
 */
 
@@ -2705,6 +2705,8 @@ char *A4GL_get_esql_connection(void);
 void A4GL_set_esql_connection(char *s);
 int A4GL_copy_file(char *from,char *to);
 int A4GL_file_exists(char *fname);
+int A4GL_directory_exists (char *fname);
+
 int A4GL_move_file(char *from,char *to);
 int A4GL_file_length(char *fname);
 int A4GL_delete_file(char *fname);

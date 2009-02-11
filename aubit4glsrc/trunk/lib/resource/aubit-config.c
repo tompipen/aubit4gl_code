@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.28 2008-09-10 11:26:09 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.29 2009-02-11 13:17:19 mikeaubury Exp $
 #
 */
 
@@ -320,5 +320,10 @@ char xbuff[10000];
         return x;
 }
 
+
+int A4GL_setenv(char *n,char *v,int o) {
+	// normally part of libaubit4gl - but we dont need it here...
+	return 0;
+}
 
 /* -------------------------- EOF ------------------------ */
