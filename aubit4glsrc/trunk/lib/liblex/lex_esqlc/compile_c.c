@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.472 2009-02-10 10:20:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.473 2009-02-11 18:21:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.472 2009-02-10 10:20:07 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.473 2009-02-11 18:21:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -439,12 +439,9 @@ void print_copy_status_with_sql(int l) {
 static int
 dump_cmd (struct command *r)
 {
-  //int a;
-  //int cnt;
   int ok;
-  //int need_err_chk = 1;
+ int last_line=0;
   A4GL_assertion (r->module == 0, "No module");
-  //printf ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
   A4GL_debug ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
 
 
@@ -452,6 +449,8 @@ dump_cmd (struct command *r)
 		// This is just internal - no need to worry about it...
 		return 1;
 	}
+
+  last_line=line_for_cmd;
 
   line_for_cmd = r->lineno;
   yylineno=line_for_cmd;
@@ -480,6 +479,7 @@ dump_cmd (struct command *r)
 	}	
   ok=dump_command(&r->cmd_data);
   parent_stack_cnt--;
+  line_for_cmd=last_line;
   return ok;
 }
 

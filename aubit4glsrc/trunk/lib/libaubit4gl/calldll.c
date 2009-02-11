@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.81 2008-12-10 17:12:10 mikeaubury Exp $
+# $Id: calldll.c,v 1.82 2009-02-11 18:21:15 mikeaubury Exp $
 #
 */
 
@@ -419,6 +419,94 @@ A4GL_dl_openlibrary (char *type, char *p)
 
     }
   return dllhandle;
+}
+
+
+
+int
+A4GL_dl_has_library (char *type, char *p)
+{
+  void *dllhandle;
+  static char buff[1024];
+  char buff2[1024];
+  static char tmpbuff[1024];
+  char *soext;
+  char soext_2[256];
+  char *plugin_name;
+  char *aplugins;
+
+  memset (buff, 0, sizeof (buff));
+  SPRINTF1 (tmpbuff, "%s", p);
+  plugin_name = tmpbuff;
+
+
+  if ((!acl_getenv ("AUBITDIR")) || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
+    {
+		return 0;
+    }
+
+  A4GL_debug ("AUBITDIR=%s", acl_getenv ("AUBITDIR"));
+
+  aplugins = acl_getenv ("AUBITPLUGINDIR");
+
+  if (aplugins)
+    {
+      if (strlen (aplugins) == 0)
+	{
+	  aplugins = 0;
+	}
+    }
+
+#ifdef SIMPLIFIED
+  if (aplugins == 0)
+    {
+      aplugins = AUBITPLUGINDIR;
+      if (strlen (aplugins) == 0)
+	{
+	  aplugins = 0;
+	}
+    }
+#endif
+
+  soext = acl_getenv ("SO_EXT");
+  strcpy (soext_2, SO_EXT);
+
+  if (soext)
+    {
+      if (strlen (soext))
+	{
+	  strcpy (soext_2, soext);
+	}
+    }
+
+#ifndef SIMPLIFIED
+  if (aplugins)
+    {
+      SPRINTF4 (buff, "%s/lib%s_%s.%s", aplugins, type, plugin_name, soext_2);
+    }
+  else
+    {
+      SPRINTF6 (buff, "%s/plugins-%s_%d/lib%s_%s.%s", acl_getenv ("AUBITDIR"), A4GL_internal_version (), A4GL_internal_build (),
+		type, plugin_name, soext_2);
+    }
+#else
+  if (aplugins)
+    {
+      SPRINTF4 (buff, "%s/lib%s_%s.%s", aplugins, type, plugin_name, soext_2);
+    }
+  else
+    {
+      SPRINTF6 (buff, "%s/plugins-%s_%d/lib%s_%s.%s", acl_getenv ("AUBITDIR"), A4GL_internal_version (), A4GL_internal_build (),
+		type, plugin_name, soext_2);
+    }
+#endif
+
+  A4GL_debug ("Looking for library : %s", buff);
+
+  if (!A4GL_file_exists(buff)) {
+	return 0;
+  }
+  return 1;
 }
 
 /**

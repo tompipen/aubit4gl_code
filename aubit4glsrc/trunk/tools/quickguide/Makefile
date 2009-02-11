@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# | Copyright (c) 2000-9 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
 # | it under the terms of one of the following licenses:                 |
@@ -20,10 +20,10 @@
 # |                                                                      |
 # | You should have received a copy of both licenses referred to here.   |
 # | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
+# | contact licensing@aubit.com
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2009-02-11 18:11:31 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2009-02-11 18:21:15 mikeaubury Exp $
 #
 
 ROOT    =../..

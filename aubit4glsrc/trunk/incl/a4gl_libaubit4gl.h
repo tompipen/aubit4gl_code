@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.366 2009-02-11 13:17:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.367 2009-02-11 18:21:15 mikeaubury Exp $
 #
 */
 
@@ -1630,6 +1630,8 @@ void A4GL_push_decimal_str(char *p);
 
   /* ============================ calldll.c ============================== */
   void *A4GL_dl_openlibrary (char *type, char *name);
+  int A4GL_dl_has_library (char *type, char *p);
+
   void *A4GL_find_func_allow_missing (void *dllhandle, char *func);
   void *A4GL_find_func (void *dllhandle, char *func);
 
