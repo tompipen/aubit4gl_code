@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.152 2009-02-11 13:17:19 mikeaubury Exp $
+# $Id: iarray.c,v 1.153 2009-02-11 14:05:45 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.152 2009-02-11 13:17:19 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.153 2009-02-11 14:05:45 mikeaubury Exp $";
 #endif
 
 /**
@@ -1663,8 +1663,6 @@ A4GL_add_to_control_stack (struct s_inp_arr *sio, enum e_formcontrol op, FIELD *
 	extent = A4GLKEY_NEXT;
       if (A4GL_is_special_key (extent, A4GLKEY_PREV))
 	extent = A4GLKEY_PREV;
-      if (A4GL_is_special_key (extent, A4GLKEY_HELP))
-	extent = A4GLKEY_HELP;
 
       A4GL_debug ("ADDED KEY : %d\n", extent);
     }
@@ -3065,12 +3063,21 @@ process_control_stack (struct s_inp_arr *sio, struct aclfgl_event_list *evt)
 	}
       rval = -1;
       break;
+
     case A4GL_EVENT_KEY_PRESS:
       if (A4GL_has_event_for_keypress (last_key_code, evt))
 	{
 	  sio->processed_onkey = 0;
 	  return A4GL_has_event_for_keypress (last_key_code, evt);
 	}
+
+	
+	rval=A4GL_check_event_list_for_special_key(evt,last_key_code);
+	if (rval) {
+		return rval;
+	}
+	
+
       rval = -1;
       break;
     case A4GL_EVENT_BEFORE_INP:
