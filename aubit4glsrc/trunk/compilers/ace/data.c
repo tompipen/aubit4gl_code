@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.43 2009-02-11 13:17:18 mikeaubury Exp $
+# $Id: data.c,v 1.44 2009-02-11 14:13:33 mikeaubury Exp $
 #*/
 
 /**
@@ -740,9 +740,10 @@ execute_selects (void)
 
 	if ( columns_method == COLUMNS_METHOD_INTO_TEMP || a != mx) {
       		/* printf("Executing... %s",nstatement); */
-      		if (A4GLSQL_execute_implicit_select (psql, 1) != 0)
+      		A4GLSQL_execute_implicit_select (psql, 1);
+		if (A4GLSQL_get_status()  < 0)
 			{
-	  			printf ("Some error executing SQL (Error %d)\n", A4GLSQL_get_status ());
+	  			printf ("Some error executing SQL (Error: %d)\n", A4GLSQL_get_status ());
 	  			yyerror_sql ("SQL Error");
 			} else {
 				A4GL_debug("Statement executed");
@@ -762,7 +763,7 @@ execute_selects (void)
 				A4GLSQL_open_cursor("p1_c1",0,0);
 				if (need_to_open_cursor==2) {
 					a=A4GLSQL_fetch_cursor("p1_c1",2,1,0,0);
-					if (a==0) {
+					if (A4GLSQL_get_status ()<0) {
 	  					printf ("Some error executing SQL (Error %d)\n", A4GLSQL_get_status ());
 	  					yyerror_sql ("SQL Error");
 					}
