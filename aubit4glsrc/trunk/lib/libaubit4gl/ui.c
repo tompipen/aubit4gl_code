@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.84 2009-02-10 08:58:45 mikeaubury Exp $
+# $Id: ui.c,v 1.85 2009-02-11 14:23:06 mikeaubury Exp $
 #
 */
 
@@ -2098,4 +2098,9 @@ int A4GL_check_event_list_for_special_key(struct aclfgl_event_list *evt, int las
 	return 0;
 }
 
+
+int aclfg_fgl_exitfm() {
+	A4GL_gotolinemode();
+	return 0;
+}
 /* ============================= EOF ================================ */
