@@ -170,6 +170,9 @@ ows     [ \t\n]*
 "MONEY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONEY;}
 "DECIMAL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DECIMAL;}
 
+"LEFT OUTER JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT_JOIN;}
+"INNER JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INNER_JOIN;}
+
 "SOME" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SOME;}
 "STEP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STEP;}
 "SUM" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SUM;}

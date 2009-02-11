@@ -118,6 +118,8 @@ set_expr_int(struct expr *e,int a)
 %token CLOSE_SQUARE
 %token COLON
 %token COMMANDS
+%token INNER_JOIN 
+%token LEFT_JOIN
 %token COMPARISON
 %token COUNT
 %token TOTAL 
@@ -575,16 +577,28 @@ from_clause:
 	;
 
 table_reference_list:
-	  table_reference
-	| table_reference_list COMMA table_reference
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	;
+          tname {strcpy($<str>$,$<str>1);}
+        | table_reference_list COMMA tname {
+		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+        }
+        | table_reference_list COMMA OUTER tname {
+		sprintf($<str>$,"%s, OUTER %s",$<str>1,$<str>4);
+        }
+        | table_reference_list COMMA OUTER OPEN_BRACKET table_reference_list CLOSE_BRACKET {
+		sprintf($<str>$,"%s, OUTER (%s)",$<str>1,$<str>5);
+        }
+        | table_reference_list LEFT_JOIN op_bracket_table_reference_list ON search_condition   {
+		sprintf($<str>$,"%s LEFT OUTER JOIN %s ON %s",$<str>1,$<str>3,$<str>5);
+        }
+        | table_reference_list INNER_JOIN op_bracket_table_reference_list ON search_condition   {
+		sprintf($<str>$,"%s INNER JOIN %s ON %s",$<str>1,$<str>3,$<str>5);
+        }
+;
 
-table_reference:
-	  tname {sprintf($<str>$," %s ", $<str>1);}
-	| OUTER tname {sprintf($<str>$," %s %s ",$<str>1,$<str>2);}
-	| OUTER OPEN_BRACKET tname_list  CLOSE_BRACKET {sprintf($<str>$," %s (%s) ",$<str>1,$<str>3);}
-	;
+op_bracket_table_reference_list: table_reference_list {sprintf($<str>$,"%s",$<str>1);}
+        | OPEN_BRACKET table_reference_list CLOSE_BRACKET {sprintf($<str>$,"(%s)",$<str>2);}
+;
+
 
 tname: table_name
 	| table_name correlation_name {
@@ -595,8 +609,6 @@ tname: table_name
 
 
 
-tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
-;
 
 table_expression:
 	from_clause
