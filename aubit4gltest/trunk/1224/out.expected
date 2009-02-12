@@ -4,4 +4,4 @@ Error status number -3002.
 Wrong number of parameters passed to function.
 
 4gl function call stack :
-    prog.4gl (Line 1) calls MAIN
+    MAIN
