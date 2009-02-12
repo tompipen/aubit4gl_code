@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.227 2009-02-09 15:16:07 mikeaubury Exp $
+# $Id: stack.c,v 1.228 2009-02-12 16:24:19 mikeaubury Exp $
 #
 */
 
@@ -2638,12 +2638,15 @@ A4GL_params_on_stack (char *_paramnames[], int n)
       // If there are more than 20 parameters -
       // ignore the rest....
 
+	if (_paramnames) {
       if (a && _paramnames[a] == 0)
 	{
 	  A4GL_debug ("Ran out of parameters");
 	  z = add_to_z (z, " + MORE");
 	  return z;
 	}
+	}
+
       if (n > 20)
 	{
 	  z = add_to_z (z, "...");
@@ -2680,13 +2683,12 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 	}
 
       A4GL_debug ("1. z=%s", A4GL_null_as_null (z));
-      z = add_to_z (z, _paramnames[a]);
+	if (_paramnames) {
+      		z = add_to_z (z, _paramnames[a]);
+      		z = add_to_z (z, "=");
+	}
 
-      A4GL_debug ("2. z=%s", A4GL_null_as_null (z));
-      z = add_to_z (z, "=");
-      A4GL_debug ("3. z=%s", A4GL_null_as_null (z));
       z = add_to_z (z, buff2);
-      A4GL_debug ("4. z=%s", A4GL_null_as_null (z));
 
       free (buff);
     }

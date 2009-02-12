@@ -1043,12 +1043,12 @@ print_return_cmd (struct_return_cmd * cmd_data)
 
   print_cmd_start ();
 
-	printPopFunction();
   expr = A4GL_rationalize_list (cmd_data->retvals);
   n = A4GL_new_list_get_count (expr);
 
   real_print_expr_list (expr);
 
+  printPopFunction(n, line_for_cmd);
 
   for (z = 0; z < parent_stack_cnt; z++)
     {

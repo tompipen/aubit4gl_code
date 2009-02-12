@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.474 2009-02-12 12:36:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.475 2009-02-12 16:24:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.474 2009-02-12 12:36:15 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.475 2009-02-12 16:24:20 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3154,13 +3154,13 @@ if (A4GL_doing_pcode()) { return;}
  * It only does it if defined as compiler option.
  */
 void
-printPopFunction (void)
+printPopFunction (int nrets,int lineno)
 {
   if (!local_isGenStackInfo ())
     return;
 
 if (A4GL_doing_pcode()) { return;}
-  printc ("A4GLSTK_popFunction();\n");
+  printc ("A4GLSTK_popFunction_nl(%d,%d);\n",nrets,lineno);
 }
 
 
@@ -5170,8 +5170,8 @@ expr_str_list *expanded_params;
       else
         {
           printc
-            ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction();return -1;}\n",
-             expanded_params->list.list_len);
+            ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction_nl(0,%d);return -1;}\n",
+             expanded_params->list.list_len, function_definition->lineno);
         }
       tmp_ccnt++;
       print_function_variable_init (&function_definition->variables);
@@ -5220,7 +5220,7 @@ expr_str_list *expanded_params;
     }
   else
     {
-	printPopFunction();
+	printPopFunction(0,function_definition->lastlineno);
       printc("A4GL_copy_back_blobs(_blobdata,0);");
       printc ("return 0;\n");
       tmp_ccnt--;

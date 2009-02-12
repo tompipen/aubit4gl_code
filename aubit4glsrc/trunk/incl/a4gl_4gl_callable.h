@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.47 2009-02-12 12:36:15 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.48 2009-02-12 16:24:18 mikeaubury Exp $
 */
 
 /**
@@ -158,6 +158,7 @@ char *A4GLSTK_getStackTrace (void);
 void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
 
 void A4GLSTK_popFunction (void);
+void A4GLSTK_popFunction_nl (int nrets,int yylineno);
 void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
 void A4GL_display_at (int n, int a);

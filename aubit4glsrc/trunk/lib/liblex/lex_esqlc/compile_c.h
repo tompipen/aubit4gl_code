@@ -144,7 +144,7 @@ void print_at_termination(char *f);
 void printInitFunctionStack(void);
 void printDeclareFunctionStack(char *_functionName);
 void printPushFunction(int yylineno);
-void printPopFunction(void);
+void printPopFunction(int nrets,int yylineno);
 void print_func_start_1(char *isstatic, char *fname, int type);
 void print_func_start_2(char *isstatic, char *fname, int type);
 void print_func_args(int c, int yylineno);
