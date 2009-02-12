@@ -308,9 +308,9 @@ datatype :
 	FUNCTION 
 	| INTEGER  {strcpy($<str>$,"INTEGER");}
 	| CHAR  {strcpy($<str>$,"CHAR");}
-	| CHAR OPEN_BRACKET int_val CLOSE_BRACKET  {sprintf($<str>$,"CHAR (%s)",$<str>3);}
+	| CHAR OPEN_BRACKET int_val CLOSE_BRACKET  {SPRINTF1($<str>$,"CHAR (%s)",$<str>3);}
 	| VARCHAR {strcpy($<str>$,"VARCHAR");}
-	| VARCHAR OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"VARCHAR (%s)",$<str>3);}
+	| VARCHAR OPEN_BRACKET int_val CLOSE_BRACKET {SPRINTF1($<str>$,"VARCHAR (%s)",$<str>3);}
 	| DATE {strcpy($<str>$,"DATE");}
 	| FLOAT {strcpy($<str>$,"FLOAT");}
 	| SMALLFLOAT {strcpy($<str>$,"SMALLFLOAT");}
@@ -318,11 +318,11 @@ datatype :
 	| DATETIME {strcpy($<str>$,"DATETIME");}
 	| INTERVAL {strcpy($<str>$,"INTERVAL");}
 	| MONEY {strcpy($<str>$,"MONEY");}
-	| MONEY OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"MONEY (%s,0)",$<str>3);}
-	| MONEY OPEN_BRACKET int_val COMMA int_val CLOSE_BRACKET {sprintf($<str>$,"MONEY (%s,%s)",$<str>3,$<str>5);}
+	| MONEY OPEN_BRACKET int_val CLOSE_BRACKET {SPRINTF1($<str>$,"MONEY (%s,0)",$<str>3);}
+	| MONEY OPEN_BRACKET int_val COMMA int_val CLOSE_BRACKET {SPRINTF2($<str>$,"MONEY (%s,%s)",$<str>3,$<str>5);}
 	| DECIMAL  {strcpy($<str>$,"DECIMAL");}
-	| DECIMAL OPEN_BRACKET int_val CLOSE_BRACKET {sprintf($<str>$,"DECIMAL (%s,0)",$<str>3);}
-	| DECIMAL OPEN_BRACKET int_val COMMA int_val CLOSE_BRACKET {sprintf($<str>$,"DECIMAL (%s,%s)",$<str>3,$<str>5);}
+	| DECIMAL OPEN_BRACKET int_val CLOSE_BRACKET {SPRINTF1($<str>$,"DECIMAL (%s,0)",$<str>3);}
+	| DECIMAL OPEN_BRACKET int_val COMMA int_val CLOSE_BRACKET {SPRINTF2($<str>$,"DECIMAL (%s,%s)",$<str>3,$<str>5);}
 ;
 
 op_input_section:
@@ -492,9 +492,9 @@ op_order_by_clause_read: {strcpy($<str>$,"");} | order_by_clause_read;
 order_by_clause_read:
 	ORDER_BY { ordbycnt=0; } sort_specification_list {
 	printf("speclist : %s ",$<str>3);
-	sprintf($<str>$,"ORDER BY %s",$<str>3);}
+	SPRINTF1($<str>$,"ORDER BY %s",$<str>3);}
 	| ORDER_EXTERNAL_BY sort_specification_list
-	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	{SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);}
 	;
 
 
@@ -504,7 +504,7 @@ order_by_clause_read:
 
 
 literal: CHAR_VALUE {
-		sprintf($<str>$,"\"%s\"",$<str>1);
+		SPRINTF1($<str>$,"\"%s\"",$<str>1);
 	}
         | NUMERIC
         | real_number
@@ -513,30 +513,30 @@ literal: CHAR_VALUE {
 
 
 order_by_clause:
-	ORDER_BY { ordbycnt=0; } sort_specification_list { sprintf($<str>$,"ORDER BY %s",$<str>3); }
+	ORDER_BY { ordbycnt=0; } sort_specification_list { SPRINTF1($<str>$,"ORDER BY %s",$<str>3); }
 	;
 
 sort_specification_list:
 	sort_specification
 	| sort_specification_list COMMA sort_specification {
-sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
+SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
 }
 	;
 
 sort_specification: sort_spec op_asc_desc  {
 		if (strlen($<str>2)) {
-			sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+			SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);
 		}
 	};
 
 sort_spec: INTVAL  {
 		char buff[256];
-		sprintf(buff,"I%d",atoi($<str>1));
+		SPRINTF1(buff,"I%d",atoi($<str>1));
 		ordby[ordbycnt++]=acl_strdup(buff);
 	}
 	| column_name  {
 		char buff[256];
-		sprintf(buff,"C%s",$<str>1);
+		SPRINTF1(buff,"C%s",$<str>1);
 		ordby[ordbycnt++]=acl_strdup(buff);
 	}
 	;
@@ -551,58 +551,58 @@ op_asc_desc: {strcpy($<str>$,"");}
 
 having_clause:
 	HAVING search_condition
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
 
 group_by_clause:
 	GROUP_BY column_specification_list
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
 ;
 
 column_specification_list:
 	  column_specification
 	| column_specification_list COMMA column_specification
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 
 where_clause:
-	WHERE search_condition {sprintf($<str>$,"WHERE \n0 (%s)\n0",$<str>2);}
+	WHERE search_condition {SPRINTF1($<str>$,"WHERE \n0 (%s)\n0",$<str>2);}
 	;
 
 
 from_clause:
-	FROM table_reference_list {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	FROM table_reference_list {SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);}
 	;
 
 table_reference_list:
           tname {strcpy($<str>$,$<str>1);}
         | table_reference_list COMMA tname {
-		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+		SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);
         }
         | table_reference_list COMMA OUTER tname {
-		sprintf($<str>$,"%s, OUTER %s",$<str>1,$<str>4);
+		SPRINTF2($<str>$,"%s, OUTER %s",$<str>1,$<str>4);
         }
         | table_reference_list COMMA OUTER OPEN_BRACKET table_reference_list CLOSE_BRACKET {
-		sprintf($<str>$,"%s, OUTER (%s)",$<str>1,$<str>5);
+		SPRINTF2($<str>$,"%s, OUTER (%s)",$<str>1,$<str>5);
         }
         | table_reference_list LEFT_JOIN op_bracket_table_reference_list ON search_condition   {
-		sprintf($<str>$,"%s LEFT OUTER JOIN %s ON %s",$<str>1,$<str>3,$<str>5);
+		SPRINTF3($<str>$,"%s LEFT OUTER JOIN %s ON %s",$<str>1,$<str>3,$<str>5);
         }
         | table_reference_list INNER_JOIN op_bracket_table_reference_list ON search_condition   {
-		sprintf($<str>$,"%s INNER JOIN %s ON %s",$<str>1,$<str>3,$<str>5);
+		SPRINTF3($<str>$,"%s INNER JOIN %s ON %s",$<str>1,$<str>3,$<str>5);
         }
 ;
 
-op_bracket_table_reference_list: table_reference_list {sprintf($<str>$,"%s",$<str>1);}
-        | OPEN_BRACKET table_reference_list CLOSE_BRACKET {sprintf($<str>$,"(%s)",$<str>2);}
+op_bracket_table_reference_list: table_reference_list {SPRINTF1($<str>$,"%s",$<str>1); }
+        | OPEN_BRACKET table_reference_list CLOSE_BRACKET {SPRINTF1($<str>$,"(%s)",$<str>2); }
 ;
 
 
 tname: table_name
 	| table_name correlation_name {
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		SPRINTF2($<str>$,"%s %s",$<str>1,$<str>2);
 		ace_add_table($<str>1,$<str>2);
 		}
 ;
@@ -616,7 +616,7 @@ table_expression:
 	op_group_by_clause
 	op_having_clause 
 {
-sprintf($<str>$,"%s %s %s %s",
+SPRINTF4($<str>$,"%s %s %s %s",
 $<str>1,$<str>2,
 $<str>3,$<str>4);
 }
@@ -636,41 +636,42 @@ op_having_clause: {strcpy($<str>$,"");}
 
 
 search_condition:
-	boolean_term
-	| search_condition KW_OR boolean_term
-{sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);}
+	boolean_term 
+	| search_condition KW_OR boolean_term {
+			SPRINTF3($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+		}
 	;
 
 boolean_term:
 	boolean_factor
 	| boolean_term KW_AND boolean_factor
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 boolean_factor:
 	  boolean_primary
 	| NOT boolean_primary
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
 boolean_primary:
 	  predicate
 	| OPEN_BRACKET search_condition CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 
 exists_predicate:
-	EXISTS subquery {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| NOT_EXISTS subquery {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	EXISTS subquery {SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
+	| NOT_EXISTS subquery {SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
 
 quantified_predicate:
 	sql_value_expression comp_op_sql quantifier subquery
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+		{SPRINTF4($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| subquery comp_op_sql sql_value_expression 
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
 quantifier:
@@ -694,7 +695,7 @@ some:
 
 op_escape:
 	ESCAPE escape_character
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
 pattern:
@@ -708,20 +709,20 @@ escape_character:
 
 in_predicate:
 	sql_value_expression IN OPEN_BRACKET in_value_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+		{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| sql_value_expression IN subquery
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| sql_value_expression NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+		{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| sql_value_expression NOT_IN subquery
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 
 	;
 
 in_value_list:
 	  value_specification
 	| in_value_list COMMA value_specification
-{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
 	;
 
 op_not: {strcpy($<str>$,"");}
@@ -731,15 +732,15 @@ op_not: {strcpy($<str>$,"");}
 
 comparison_predicate:
 	sql_value_expression op_not IS_NULL
-		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| sql_value_expression op_not IS_NOT_NULL
-		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| sql_value_expression comp_op_sql sql_value_expression
-		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| sql_value_expression comp_op_sql subquery
-		{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+		{SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| sql_value_expression op_not BETWEEN sql_value_expression KW_AND sql_value_expression
-		{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+		{SPRINTF6($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 
 	;
 
@@ -753,8 +754,8 @@ comp_op_sql:
         | NOT_LIKE
 	| MATCHES
 	| LIKE
-	| LESS_THAN_EQ {sprintf($<str>$,"<=");}
-	| GREATER_THAN_EQ {sprintf($<str>$,">=");}
+	| LESS_THAN_EQ {SPRINTF0($<str>$,"<=");}
+	| GREATER_THAN_EQ {SPRINTF0($<str>$,">=");}
 	;
 
 
@@ -778,10 +779,10 @@ op_all: {strcpy($<str>$,"");}
 
 
 table_name:
-	CHAR_VALUE { sprintf($<str>$," %s",(char *)A4GL_strip_quotes($<str>1)); }
-	| table_identifier {sprintf($<str>$,$<str>1); }
-	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);  }
-	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes($<str>1),$<str>2,$<str>3);  }
+	CHAR_VALUE { SPRINTF1($<str>$," %s",(char *)A4GL_strip_quotes($<str>1)); }
+	| table_identifier {SPRINTF0($<str>$,$<str>1); }
+	| db_name COLON table_identifier { SPRINTF3($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);  }
+	| CHAR_VALUE DOT table_identifier { SPRINTF3($<str>$,"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes($<str>1),$<str>2,$<str>3);  }
 	
 
 	;
@@ -791,18 +792,18 @@ db_name : identifier;
 
 
 table_identifier:
-	identifier {sprintf($<str>$,$<str>1);}
+	identifier {SPRINTF0($<str>$,$<str>1);}
 	;
 
 
 col_arr : {strcpy($<str>$,"");} 
-	| OPEN_SQUARE INTVAL CLOSE_SQUARE {sprintf($<str>$,"[%s]",$<str>2);}
-	| OPEN_SQUARE INTVAL COMMA INTVAL CLOSE_SQUARE {sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);}
+	| OPEN_SQUARE INTVAL CLOSE_SQUARE {SPRINTF1($<str>$,"[%s]",$<str>2);}
+	| OPEN_SQUARE INTVAL COMMA INTVAL CLOSE_SQUARE {SPRINTF2($<str>$,"[%s,%s]",$<str>2,$<str>4);}
 ;
 
-column_name: identifier col_arr { sprintf($<str>$,"%s%s",$<str>1,$<str>2); }
-	| table_name  DOT identifier col_arr { sprintf($<str>$,"%s.%s%s",$<str>1,$<str>3,$<str>4); }
-	| table_name  DOT MULTIPLY { sprintf($<str>$,"%s.%s",$<str>1,$<str>3); }
+column_name: identifier col_arr { SPRINTF2($<str>$,"%s%s",$<str>1,$<str>2); }
+	| table_name  DOT identifier col_arr { SPRINTF3($<str>$,"%s.%s%s",$<str>1,$<str>3,$<str>4); }
+	| table_name  DOT MULTIPLY { SPRINTF2($<str>$,"%s.%s",$<str>1,$<str>3); }
 
 
 	;
@@ -813,17 +814,8 @@ correlation_name:
 
 
 real_number :
-	NUMBER_VALUE | DOT INTVAL {sprintf($<str>$,"0.%s",$<str>2);}
+	NUMBER_VALUE | DOT INTVAL {SPRINTF1($<str>$,"0.%s",$<str>2);}
 ;
-
-/*
-s_curr_v: YEAR {strcpy($<str>$,"0");} | MONTH  {strcpy($<str>$,"5");}| DAY  {strcpy($<str>$,"8");}| HOUR  {strcpy($<str>$,"11");}| MINUTE  {strcpy($<str>$,"14");}| SECOND  {strcpy($<str>$,"17");}| FRACTION {strcpy($<str>$,"23");};
-e_curr_v: YEAR {strcpy($<str>$,"4");} | MONTH  {strcpy($<str>$,"7");}| DAY  {strcpy($<str>$,"10");}| HOUR  {strcpy($<str>$,"13");}| MINUTE  {strcpy($<str>$,"16");}| SECOND  {strcpy($<str>$,"19");}| FRACTION {strcpy($<str>$,"25");};
-*/
-/*
-s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
-e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
-*/
 
 
 
@@ -831,19 +823,10 @@ select_statement:
 	SELECT {reset_sql_stuff();} op_ad sq_select_list 
 	table_expression
         sel_p2 
-	{sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6);
+	{SPRINTF5($<str>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6);
 }
 ;
 
-/*
-in_select_statement:
-	SELECT op_ad sq_select_list table_expression sel_p2 {
-             char buff[30000];
-             sprintf(buff,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5);
-             sprintf($<str>$,"push_char(\"%s\");",buff);
-}
-;
-*/
 
 select_statement2:
 	select_statement2_1  ;
@@ -852,21 +835,21 @@ select_statement2_1:
 	SELECT op_ad sq_select_list 
 	table_expression 
         sel_p2
-{sprintf($<str>$,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5 );}
+{SPRINTF5($<str>$,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5 );}
 ;
 
 
 sel_p2 : {strcpy($<str>$,"");}
 | UNION op_all select_statement2 {
-       sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+       SPRINTF3($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
        }
 | order_by_clause 
 | INTO TEMP tmp_tabname op_no_log {
-       sprintf($<str>$,"INTO TEMP %s%s ",$<str>3,$<str>4);
+       SPRINTF2($<str>$,"INTO TEMP %s%s ",$<str>3,$<str>4);
 	strcpy(temp_tab_name,$<str>3);
 }
 | order_by_clause INTO TEMP tmp_tabname op_no_log {
-       sprintf($<str>$,"%s INTO TEMP %s%s ",$<str>1, $<str>4,$<str>5);
+       SPRINTF3($<str>$,"%s INTO TEMP %s%s ",$<str>1, $<str>4,$<str>5);
 	strcpy(temp_tab_name,$<str>3);
 }
 
@@ -879,34 +862,23 @@ op_no_log: {strcpy($<str>$,"");} | WITH_NO_LOG {strcpy($<str>$," WITH NO LOG");}
 
 tmp_tabname: identifier
 ;
-/*
-op_into_temp :
-{
-strcpy($<str>$,"");} | INTO TEMP tmp_tabname op_no_log
-{
-sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);
-strcpy(temp_tab_name,$<str>3);
-}
-;
-
-*/
 
 
 
 subquery:
 	OPEN_BRACKET SELECT op_ad sq_select_list table_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+{SPRINTF6($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	;
 
 op_ad: {strcpy($<str>$,"");}
-	| ALL {sprintf($<str>$,"ALL");}
-	| DISTINCT {sprintf($<str>$,"DISTINCT");}
-	| UNIQUE {sprintf($<str>$,"DISTINCT");}
+	| ALL {SPRINTF0($<str>$,"ALL");}
+	| DISTINCT {SPRINTF0($<str>$,"DISTINCT");}
+	| UNIQUE {SPRINTF0($<str>$,"DISTINCT");}
 	;
 
 sq_select_list: 
 	value_expression_pls 
-	| sq_select_list COMMA value_expression_pls { sprintf($<str>$," %s,%s",$<str>1,$<str>3);}
+	| sq_select_list COMMA value_expression_pls { SPRINTF2($<str>$," %s,%s",$<str>1,$<str>3);}
 	;
 
 value_expression_pls : 
@@ -914,11 +886,11 @@ value_expression_pls :
 			add_select_column($<str>1,$<str>1);
 		}
 	| 	sql_value_expression  NAMED {
-			sprintf($<str>$," %s %s",$<str>1,$<str>2);
+			SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);
 			add_select_column($<str>1,$<str>2);
 		}
 	| 	sql_value_expression  KW_AS NAMED {
-			sprintf($<str>$," %s %s",$<str>1,$<str>3);
+			SPRINTF2($<str>$," %s %s",$<str>1,$<str>3);
 			add_select_column($<str>1,$<str>3);
 		}
 ;
@@ -928,64 +900,63 @@ column_specification : sql_value_expression
 ;
 
 units_qual:
-        UNITS_YEAR {sprintf($<str>$,"UNITS YEAR");}
-        | UNITS_MONTH {sprintf($<str>$,"UNITS MONTH"); }
-        | UNITS_DAY {sprintf($<str>$,"UNITS DAY);"); }
-        | UNITS_HOUR {sprintf($<str>$,"UNITS HOUR);"); }
-        | UNITS_MINUTE {sprintf($<str>$,"UNITS MINUTE);"); }
-        | UNITS_SECOND {sprintf($<str>$,"UNITS SECOND);"); }
+        UNITS_YEAR {SPRINTF0($<str>$,"UNITS YEAR");}
+        | UNITS_MONTH {SPRINTF0($<str>$,"UNITS MONTH"); }
+        | UNITS_DAY {SPRINTF0($<str>$,"UNITS DAY);"); }
+        | UNITS_HOUR {SPRINTF0($<str>$,"UNITS HOUR);"); }
+        | UNITS_MINUTE {SPRINTF0($<str>$,"UNITS MINUTE);"); }
+        | UNITS_SECOND {SPRINTF0($<str>$,"UNITS SECOND);"); }
 ;
 
 sql_value_expression:
-	sql_value_expression sql_val_expr_next  { sprintf($<str>$,"%s%s", $<str>1,$<str>2); }
+	sql_value_expression sql_val_expr_next  { SPRINTF2($<str>$,"%s%s", $<str>1,$<str>2); }
 	| literal
 	| identifier
-	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                			{sprintf($<str>$," %s[%s]",$<str>1,$<str>3);}
-	| identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  			{sprintf($<str>$," %s[%s,%s]",$<str>1,$<str>3,$<str>5);}
-	| identifier DOT identifier OPEN_SQUARE int_val CLOSE_SQUARE                	{sprintf($<str>$," %s.%s[%s]",$<str>1,$<str>3,$<str>5);}
-	| identifier DOT identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  	{sprintf($<str>$," %s.%s[%s,%s]",$<str>1,$<str>3,$<str>5,$<str>7);}
+	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                			{SPRINTF2($<str>$," %s[%s]",$<str>1,$<str>3);}
+	| identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  			{SPRINTF3($<str>$," %s[%s,%s]",$<str>1,$<str>3,$<str>5);}
+	| identifier DOT identifier OPEN_SQUARE int_val CLOSE_SQUARE                	{SPRINTF3($<str>$," %s.%s[%s]",$<str>1,$<str>3,$<str>5);}
+	| identifier DOT identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  	{SPRINTF4($<str>$," %s.%s[%s,%s]",$<str>1,$<str>3,$<str>5,$<str>7);}
 	| DOLLAR identifier {
 			if (find_variable($<str>2)==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
-			sprintf($<str>$,"\n2(%d)",find_variable($<str>2));
+			SPRINTF1($<str>$,"\n2(%d)",find_variable($<str>2));
 			}
 	| identifier DOT identifier
-			{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
+			{SPRINTF3($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
 	| identifier DOT MULTIPLY
-			{sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
+			{SPRINTF3($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3);}
 	| KW_TRUE
 	| KW_FALSE
 	| USER
-	| MULTIPLY {sprintf($<str>$," %s ",$<str>1);}
-	| OPEN_BRACKET sql_value_expression CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	| DATE  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| DAY  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| MONTH  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| YEAR  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$," %s(%s)",$<str>1,$<str>3);}
-	| identifier OPEN_BRACKET sql_value_expr_list CLOSE_BRACKET {sprintf($<str>$,"%s(%s)",$<str>1,$<str>3);}
- 	/* | COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}  */
+	| MULTIPLY {SPRINTF1($<str>$," %s ",$<str>1);}
+	| OPEN_BRACKET sql_value_expression CLOSE_BRACKET {SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| DATE  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| DAY  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| MONTH  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| YEAR  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
+	| identifier OPEN_BRACKET sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$,"%s(%s)",$<str>1,$<str>3);}
  	| AVG OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
-			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| XMAX OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
-			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| XMIN OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
-			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| SUM OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
-			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| COUNT OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
-			{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+			{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 ;
 
 sql_val_expr_next: 
-	DIVIDE sql_value_expression_s 	{sprintf($<str>$,"/%s",$<str>2);}
-	| MOD sql_value_expression_s 	{sprintf($<str>$," MOD %s",$<str>2);}
-	| POW sql_value_expression_s 	{sprintf($<str>$," POW %s",$<str>2);}
-	| units_qual  			{sprintf($<str>$,"%s",$<str>1);}
-	| MULTIPLY sql_value_expression_s 	{sprintf($<str>$,"*%s",$<str>2);}
-	| PLUS sql_value_expression_s     	{sprintf($<str>$,"+%s",$<str>2);}
-	| MINUS sql_value_expression_s   	{sprintf($<str>$,"-%s",$<str>2);}
+	DIVIDE sql_value_expression_s 	{SPRINTF1($<str>$,"/%s",$<str>2);}
+	| MOD sql_value_expression_s 	{SPRINTF1($<str>$," MOD %s",$<str>2);}
+	| POW sql_value_expression_s 	{SPRINTF1($<str>$," POW %s",$<str>2);}
+	| units_qual  			{SPRINTF1($<str>$,"%s",$<str>1);}
+	| MULTIPLY sql_value_expression_s 	{SPRINTF1($<str>$,"*%s",$<str>2);}
+	| PLUS sql_value_expression_s     	{SPRINTF1($<str>$,"+%s",$<str>2);}
+	| MINUS sql_value_expression_s   	{SPRINTF1($<str>$,"-%s",$<str>2);}
 ;
 
-sql_value_expression_s: op_prefix sql_value_expression { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+sql_value_expression_s: op_prefix sql_value_expression { SPRINTF2($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
 op_prefix: {strcpy($<str>$,"");}
@@ -996,7 +967,7 @@ op_prefix: {strcpy($<str>$,"");}
 sql_value_expr_list : 
 	sql_value_expression | sql_value_expr_list COMMA sql_value_expression
 {
-	sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+	SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);
 }
 ;
 
@@ -1047,34 +1018,7 @@ command:
 	}
 ;
 
-/*
-block_commands: command {
-	$<cmd>$.cmd_type=CMD_BLOCK;
 
-	$<cmd>$.acerep_command_u.commands.commands.commands_len=1;
-	printf("L1= %d\n",$<cmd>$.acerep_command_u.commands.commands.commands_len);
-	$<cmd>$.acerep_command_u.commands.commands.commands_val=acl_malloc2(sizeof(struct acerep_command));
-
-	COPY($<cmd>$.acerep_command_u.commands.commands.commands_val[0],$<cmd>1);
-
-	}
-	| block_commands command {
-	COPY($<cmd>$,$<cmd>1);
-	$<cmd>$.acerep_command_u.commands.commands.commands_len++;
-	printf("L2= %d\n",$<cmd>$.acerep_command_u.commands.commands.commands_len);
-
-	$<cmd>$.acerep_command_u.commands.commands.commands_val=realloc(
-		$<cmd>$.acerep_command_u.commands.commands.commands_val,
-		sizeof(struct acerep_command)* 
-		$<cmd>$.acerep_command_u.commands.commands.commands_len
-	);
-
-	COPY($<cmd>$.acerep_command_u.commands.commands.commands_val[
-		$<cmd>$.acerep_command_u.commands.commands.commands_len-1],$<cmd>2);
-
-}
-;
-*/
 
 
 call_command :  KW_CALL func_identifier OPEN_BRACKET op_fmt_val_expr_list CLOSE_BRACKET {
@@ -1295,7 +1239,7 @@ reserved_word:
 | MONEY
 | NEED
 | KW_OF 
-| ON
+/* | ON */
 | OUTPUT
 | PAGE
 | PARAM
@@ -1920,14 +1864,6 @@ val_next :
 ;
 
 
-/*
-	| units_qual {
-		printf("NIY\n");
-		A4GL_assertion(1,"NIY");
-		//sprintf($<str>$," %s %s",$<str>1,$<str>2);
-		}
-;
-*/
 
 op_fmt_val_expr_list : null_expr {
 		$<expr>$.type=EXPRTYPE_LIST;
@@ -1985,24 +1921,6 @@ literal_expr: CHAR_VALUE {
 		$<expr>$.type=EXPRTYPE_INT;
 		$<expr>$.expr_u.i=atoi($<str>1);
 	}
-/*
-	| PLUS real_number {
-		$<expr>$.type=EXPRTYPE_DOUBLE;
-		$<expr>$.expr_u.d=atof($<str>2);
-	}
-	| PLUS INTVAL {
-		$<expr>$.type=EXPRTYPE_INT;
-		$<expr>$.expr_u.i=atoi($<str>2);
-	}
-	| MINUS real_number {
-		$<expr>$.type=EXPRTYPE_DOUBLE;
-		$<expr>$.expr_u.d=0-atof($<str>2);
-	}
-	| MINUS INTVAL {
-		$<expr>$.type=EXPRTYPE_INT;
-		$<expr>$.expr_u.i=0-atoi($<str>2);
-	}
-*/
 
 ;
 

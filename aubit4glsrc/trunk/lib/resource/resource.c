@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.160 2009-02-11 13:17:19 mikeaubury Exp $
+# $Id: resource.c,v 1.161 2009-02-12 12:36:15 mikeaubury Exp $
 #
 */
 
@@ -330,6 +330,10 @@ struct str_resource builtin_resource[] = {
   {"COLOR_TUI_INVISIBLE_BG","0"},
   {"COLOR_TUI_INVISIBLE_FG","0"},
   {"INVISIBLEASCOLOR","N"},
+  {"A4GL_AUTONULL","Y"},
+  {"A4GL_ANSI_WARN","Y"},
+  {"A4GL_NO_ALT_SCR","Y"},
+  {"A4GL_SQLCONVERT","Y"},
 
 #ifdef A4GL_C_COMP
   {"A4GL_C_COMP", A4GL_C_COMP},

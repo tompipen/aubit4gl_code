@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.14 2008-07-06 11:34:25 mikeaubury Exp $
+# $Id: fileio.c,v 1.15 2009-02-12 12:36:15 mikeaubury Exp $
 #*/
 
 /**
@@ -64,8 +64,8 @@ int colno;
 int ignorekw = 0;
 int yywrap (void);
 int a4gl_ace_yyparse (void);
-//void a4gl_ace_yyerror (char *s);
 
+extern char*yytext;
 /*
 =====================================================================
                     Functions definitions
@@ -97,7 +97,7 @@ a4gl_ace_yyerror (char *s)
   ld = buffpos ();
   sprintf (errfile, "%s.err", outputfile);
   f = (FILE *) A4GL_write_errfile (yyin, errfile, ld - 1, lineno);
-  fprintf (f, "| %s", s);
+  fprintf (f, "| %s (%s)", s,yytext);
   A4GL_write_cont (yyin);
   printf ("Error compiling %s.ace - check %s.err (xline=%d yline=%d)\n",
 	  outputfile, outputfile, lineno, lineno);

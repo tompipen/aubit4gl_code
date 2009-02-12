@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.37 2009-01-27 09:13:05 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.38 2009-02-12 12:36:15 mikeaubury Exp $
 #*/
 
 /**
@@ -79,6 +79,8 @@ typedef struct FunctionCall
 {
   const char *moduleName;   /**< Module where function was called */
   int lineNumber;	    /**< Line in the 4gl where function was called */
+  const char *funcModuleName;   /**< Module where function was called */
+  int funcLineNumber;	    /**< Line in the 4gl where function was called */
   const char *functionName; /**< The name of the function called */
   const char *params;	    /**< a list of parameters passed to the function */
   int functionCallCnt;
@@ -358,7 +360,7 @@ static void print_node(FILE *execprog, int cnt ) {
  * @param functionName The name of the function called.
  */
 void
-A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
+A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module, int this_line_number)
 {
   int a;
   if (!A4GL_has_initialized ())
@@ -367,7 +369,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
       A4GLSTK_initFunctionCallStack ();
     }
 
-  A4GL_debug ("Call from Module : %s line %d", currentModuleName, currentFglLineNumber);
+  A4GL_debug ("Call from Module : %s line %d", currentModuleName, currentFglLineNumber, this_line_number);
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
 
   for (a = 0; a < n; a++)
@@ -385,6 +387,10 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 
   currFunctionCallCnt++;
   functionCallStack[functionCallPointer].functionName = functionName;
+
+  functionCallStack[functionCallPointer].funcModuleName = this_module;
+  functionCallStack[functionCallPointer].funcLineNumber = this_line_number;
+
   functionCallStack[functionCallPointer].moduleName = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
   functionCallStack[functionCallPointer].functionCallCnt = currFunctionCallCnt;
@@ -409,7 +415,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 		execprog=fopen(fname,"a");
 		if (execprog) {
 			print_node(execprog, functionCallPointer);
-			fprintf(execprog,"node_%d->node_%d [ label=\"Line:%d\" ]\n", functionCallStack[functionCallPointer-1].functionCallCnt, functionCallStack[functionCallPointer].functionCallCnt, lastFglLineNumber);
+			fprintf(execprog,"node_%d->node_%d [ label=\"Line:%d\" ]\n", functionCallStack[functionCallPointer-1].functionCallCnt, functionCallStack[functionCallPointer].functionCallCnt, this_line_number);
 			fclose(execprog);
 		}
 	} else {
@@ -428,6 +434,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 
   A4GL_debug ("%s(%s)", functionName, A4GL_null_as_null ((char *) functionCallStack[functionCallPointer].params));
   functionCallPointer++;
+  A4GLSTK_setCurrentLine(this_module,this_line_number);
 }
 
 /**
@@ -482,8 +489,11 @@ A4GLSTK_getStackTrace (void)
       else
 	{
 	  SPRINTF3 (tmpStackTrace,
-		    "%s (Line %d) calls %s",
-		    functionCallStack[i].moduleName, functionCallStack[i].lineNumber, functionCallStack[i].functionName);
+		    "%s (Line %d) calls  %s",
+		    functionCallStack[i].moduleName, functionCallStack[i].lineNumber,
+		    //functionCallStack[i].funcModuleName, functionCallStack[i].funcLineNumber,
+ 			functionCallStack[i].functionName
+			);
 
 	  if (strlen (stackTrace) + strlen (tmpStackTrace) < sizeof (stackTrace) + 5)
 	    {

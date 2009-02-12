@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.63 2009-01-27 18:41:09 mikeaubury Exp $
+# $Id: Makefile,v 1.64 2009-02-12 12:36:15 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -267,7 +267,7 @@ core.ui.curses:
 	
 	
 #main target of default build
-corecompile:
+corecompile: api.headers
 	@echo "Making XGEN"
 	$(MAKE) -C compilers/xgen
 	@echo "Making Dataio"
@@ -2931,3 +2931,9 @@ metrics.indexpage:
 test_cc:
 	echo cc=$(CC)
 	echo pic=$(PIC)
+
+bin/4glpc: corecompile
+	
+a4gl_setup:  bin/4glpc
+	make -C tools/quickguide
+	bin/quickguide.4ae

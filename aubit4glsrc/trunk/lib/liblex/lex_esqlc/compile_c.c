@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.473 2009-02-11 18:21:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.474 2009-02-12 12:36:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.473 2009-02-11 18:21:15 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.474 2009-02-12 12:36:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3144,8 +3144,8 @@ printPushFunction (int yylineno)
   if (!local_isGenStackInfo ())
     return;
 if (A4GL_doing_pcode()) { return;}
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs);\n");
+  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs,_module_name,%d);\n",yylineno);
+  //printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
 }
 
 /**
@@ -5155,8 +5155,8 @@ expr_str_list *expanded_params;
         {
           if (!A4GL_doing_pcode ())
             {
-              printc ("A4GLSTK_setCurrentLine(_module_name,%d);", function_definition->lineno);
-              printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs);\n");
+              //printc ("A4GLSTK_setCurrentLine(_module_name,%d);", function_definition->lineno);
+              printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs,_module_name,%d);\n",function_definition->lineno);
             }
         }
 

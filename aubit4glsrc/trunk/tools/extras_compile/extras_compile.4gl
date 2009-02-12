@@ -398,6 +398,7 @@ function compile_optionals()
 	call run("XML UI", "$A4GL_MAKE -C lib/libui/ui_xml",0)
 	call run("HARU PDF", "$A4GL_MAKE -C lib/libpdf haru.dummy",0)
 	call run("WRITE LEXTYPE", "$A4GL_MAKE -C lib/liblex/lex_write",0)
+	call run("Quick setup guide", "$A4GL_MAKE -C tools/quickguide",0)
 
 	call run("Postgresql static libs", "$A4GL_MAKE -C lib/libsql/postgresql libSQL_pg8l.so libSQL_pg8ls.so",0)
 	call run("ASQL_I", "$A4GL_MAKE -C tools/asql asql_i.4ae",0)

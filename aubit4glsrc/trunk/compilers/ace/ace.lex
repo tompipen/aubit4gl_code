@@ -68,6 +68,9 @@ ows     [ \t\n]*
 "CHAR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CHAR;}
 "CLIPPED" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CLIPPED;}
 "PRINT"{ws}"FILE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PRINT_FILE;}
+"LEFT OUTER JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT_JOIN;}
+"LEFT JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT_JOIN;}
+"INNER JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INNER_JOIN;}
 
 "COUNT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COUNT;}
 "DATABASE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DATABASE;}
@@ -170,8 +173,6 @@ ows     [ \t\n]*
 "MONEY" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONEY;}
 "DECIMAL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DECIMAL;}
 
-"LEFT OUTER JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT_JOIN;}
-"INNER JOIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return INNER_JOIN;}
 
 "SOME" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SOME;}
 "STEP" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STEP;}

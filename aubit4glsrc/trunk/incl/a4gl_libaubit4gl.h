@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.367 2009-02-11 18:21:15 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.368 2009-02-12 12:36:15 mikeaubury Exp $
 #
 */
 
@@ -1228,7 +1228,7 @@ enum cmd_types {
   char *acl_getenv (char *);
   char * acl_getenv_not_set_as_0 (char *s);
   char *A4GLSTK_getStackTrace (void);
-  void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
+  void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
   char *A4GLSTK_topFunction(void);
   void A4GLSTK_popFunction (void);
   void A4GL_pushop (int a);
