@@ -5,7 +5,7 @@ int A4GL_dl_haslibrary (char *type, char *p);
 endcode
 
 define lv_msglines array[30] of char(80)
-
+define mv_report_settings_count integer
 define mv_left integer
 define mv_top integer
 define mv_width integer
@@ -19,12 +19,13 @@ define mv_dbname char(50)
 define mv_username char(40)
 define mv_password char(40)
 define mv_server char(40)
+define mv_sqltype char(40)
 define mv_aclfile integer
 define mv_lextype char(40)
 define mv_lexdialect char(40)
 define mv_need_wide integer
 define mv_ui char(30)
-
+define mv_settings_type char(20)
 
 ################################################################################
 main
@@ -40,7 +41,12 @@ main
 # These program probably wont even work if these
 # are not set though!
 	options prompt line 2
-	options menu line 4
+	options menu line 3
+
+	# We'll keep a count of the number
+	# of settings we've printed in the report
+	# so we can print any headers/footers we want..
+	let mv_report_settings_count=0
 
 	let mv_need_wide=0
 	let lv_aubitdir=fgl_getenv("AUBITDIR")
@@ -105,20 +111,31 @@ main
 		display "Please ensure A4GL_UI is set to TUI, HL_TUI or HL_GTK before continuing"
 		
 	end if
-code
-{
-char buff[2000];
-printf("Completed pre-checks\nPress return to continue\n");
-fgets(buff,200,stdin);
-}
-endcode
 
 if not lv_run then
 	exit program
 end if
 
+let int_flag=false
+code
+{
+char buff[2000];
+printf("\n\n");
+printf("-----------------------------------------------------------------\n");
+printf("----------------------- Quick setup guide -----------------------\n");
+printf("-----------------------------------------------------------------\n");
+printf("\n");
+printf("Completed pre-checks\nPress return to continue to switch to screen mode\n");
+fgets(buff,200,stdin);
+}
+endcode
+if int_flag then
+	display "You interrupted - aborting..."
+	exit program 1
+end if
+	
 
-start report r_settings to "settings.env"
+
 
 let mv_screenwidth=aclfgl_get_curr_width()
 let mv_screenheight=aclfgl_get_curr_height()
@@ -130,107 +147,174 @@ call banner("Aubit4GL Initial Configuration","REVERSE,CYAN")
 
 
 call info(set_lines(
+        ######################################################################
 	"Hello - Welcome to the Aubit4GL quick setup program",
 	 " ",
 	"This program should ease you through the initial configuration",
-	"of Aubit4GL",
-	"If you have any questions please join the aubit4gl-discuss",
-	"mailing list on sourceforge : ",
-	"https://lists.sourceforge.net/lists/listinfo/aubit4gl-discuss"
-	))
-
-call info(set_lines(
-	"Aubit4GL is configured by settings in the environment",
-	"or in the aubitrc files",
+	"of Aubit4GL. If you have any questions please join the ",
+	"aubit4gl-discuss mailing list on sourceforge : ",
+	"https://lists.sourceforge.net/lists/listinfo/aubit4gl-discuss",
 	" ",
-	"You can specify the AUBITRC file explicitly by setting $AUBITRC",
-	"or Aubit4GL will try to find them",
-	" ",
-	"In these instructions we'll refer to the settings as ",
-	"using the Unix environment variable typography : '$NAME'",
-	"but as they can also be reade from the aubitrc files",
-	"these are not always environment variables!"
+	"Aubit4GL is configured by settings in the environment or in the ",
+	"aubitrc files. You can specify the AUBITRC file explicitly by ",
+	"setting $AUBITRC or Aubit4GL will try to find them. In these ",
+	"instructions we'll refer to the settings using the Unix environment",
+	"variable typography : '$NAME', but as they can also be read from ",
+	"the aubitrc files these are not always environment variables!"
 	))
 
 
 let lv_msglines[1]="These are the files Aubit4GL tried to read when running this program:"
 let lv_cnt=2
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_0")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_1")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_2")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_3")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_4")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_5")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_6")) returning lv_cnt
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_7")) returning lv_cnt
-call info( set_line_sizes(lv_cnt-1))
+
+if fgl_getenv("AUBITRC_READ_0")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_0")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_1")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_1")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_2")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_2")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_3")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_3")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_4")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_4")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_5")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_5")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_6")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_6")) returning lv_cnt
+end if
+if fgl_getenv("AUBITRC_READ_7")!=" " then
+	call add_line(lv_cnt, " Try  : "||fgl_getenv("AUBITRC_READ_7")) returning lv_cnt
+end if
+#call info( set_line_sizes(lv_cnt-1))
 	
-let lv_msglines[1]="These are the files Aubit4GL that actually exist :"
-let lv_cnt=2
+let lv_msglines[lv_cnt]="These are the files Aubit4GL that actually exist :"
+let lv_cnt=lv_cnt+1
 
 if file_exists(fgl_getenv("AUBITRC_READ_0")) then
-	call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_0")) returning lv_cnt
+	# The name passed in here must be different to the name
+	# above - or add_line will ignore it!
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_0")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_1")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_1")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_1")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_2")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_2")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_2")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_3")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_3")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_3")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_4")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_4")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_4")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_5")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_5")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_5")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_6")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_6")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_6")) returning lv_cnt
 end if
 
 if file_exists(fgl_getenv("AUBITRC_READ_7")) then
-call add_line(lv_cnt, fgl_getenv("AUBITRC_READ_7")) returning lv_cnt
+	call add_line(lv_cnt, " Read : "||fgl_getenv("AUBITRC_READ_7")) returning lv_cnt
 end if
 
-call info( set_line_sizes(lv_cnt-1))
-	
+call info(set_line_sizes(lv_cnt-1))
 
+menu "What type of settings do you want to create ?"
+	before menu
+		if not is_windows() then
+			hide option "Registry"
+		end if
+
+	command "Aubitrc"
+		let mv_settings_type="AUBITRC" exit menu
+
+	command "Bash/Sh script"
+		let mv_settings_type="SH" exit menu
+
+	command "csh script"
+		let mv_settings_type="CSH" exit menu
+
+	command "Registry"
+		let mv_settings_type="REGISTRY" exit menu
+
+end menu
+if mv_settings_type="AUBITRC" then
+	menu "What sort of Aubitrc file"
+		command "Main" "Create a main aubitrc file which all major settings"
+			let mv_settings_type="AUBITRC_MAIN" exit menu
+		command "Additional" "Create an aubitrc file to augment a main $AUBITDIR/etc/aubitrc"
+			let mv_settings_type="AUBITRC_APPEND" exit menu
+	end menu
+end if
+
+case mv_settings_type
+	when "REGISTRY"
+		start report r_settings to "settings.reg"
+
+	when "CSH"
+		start report r_settings to "settings.csh"
+
+	when "SH"
+		start report r_settings to "settings.sh"
+
+	when "AUBITRC_MAIN"
+		let mv_settings_type="AUBITRC"
+		start report r_settings to "aubitrc.sample"
+		call hint(set_lines(	
+				"If you add the contents of the aubitrc.sample to an",
+				"existing aubitrc - make sure you get rid of any old",
+				"entries with the same name!"
+			))
+			call set_auto("A4GL_CINT")
+			call set_auto("A4GL_DBPATH")
+			call set_auto("A4GL_SQLCNVPATH")
+			call set_auto("A4GL_SQLTYPE_DETECTED")
+			call set_auto("A4GL_SQLTYPE_COMPILE_ONLY_DETECTED")
+			call set_auto("A4GL_LEXTYPE_DETECTED")
+			call set_auto("A4GL_LEXDIALECT_DETECTED")
+			call set_auto("A4GL_SQLTYPE_EC_VALID_INFORMIX")
+			call set_auto("A4GL_SQLTYPE_EC_VALID_SAPDB")
+			call set_auto("A4GL_SQLTYPE_EC_VALID_INGRES")
+			call set_auto("A4GL_SQLTYPE_EC_VALID_POSTGRES")
+			call set_auto("A4GL_PDFTYPE_DETECTED")
+			call set_auto("A4GL_RPCTYPE_DETECTED")
+			call set_auto("A4GL_UI_DETECTED")
+			call set_auto("A4GL_FORMTYPE_DETECTED")
+			call set_auto("A4GL_MENUTYPE_DETECTED")
+			call set_auto("A4GL_MSGTYPE_DETECTED")
+			call set_auto("A4GL_PACKER_DETECTED")
+			call set_auto("A4GL_SAPDB_ESQLC")
+
+	when "AUBITRC_APPEND"
+		let mv_settings_type="AUBITRC"
+		start report r_settings to "aubitrc.sample"
+		call hint(set_lines(	
+				"Make sure these settings are not overridden",
+				"when Aubit4GL reads its other startup aubitrc files!",
+				"A file which is read later might reset one or more",
+				"of these values!"
+			))
+		
+end case
 
 call get_db_settings()
 call code_generation()
 call ui_detection()
 
-case mv_dbtype
-	when "Informix"
-		call set("A4GL_SQLTYPE","esql")
-	when "MYSQL"
-		call set("A4GL_SQLTYPE","mysql")
-	when "Postgresql"
-		call set("A4GL_SQLTYPE","pg8")
-	when "SQLite"
-		call set("A4GL_SQLTYPE","sqlite3")
-	when "Other"
-		if has_plugin("SQL","unixodbc") then
-			call set("A4GL_SQLTYPE","unixodbc")
-		else
-			if has_plugin("SQL","iodbc") then
-				call set("A4GL_SQLTYPE","unixodbc")
-			else
-				if has_plugin("SQL","odbc32") then
-					call set("A4GL_SQLTYPE","odbc32")
-				end if
-			end if
-		end if
-end case
-			
+call set("A4GL_SQLTYPE", mv_sqltype)
 call set("A4GL_LEXTYPE",mv_lextype)
 
 if mv_lexdialect!=" " then
@@ -278,6 +362,7 @@ call hint(set_lines(
 	"If you want to rerun this program",
 	"just run 'make config in the aubit4glsrc directory'",
 	"or invoke it directly $AUBITDIR/bin/quickguide.4ae"))
+
 end main
  
 ################################################################################
@@ -285,26 +370,112 @@ function get_db_settings()
 # Now - go to screen mode..
 menu "Which database do you want to connect to?"
 
-command "Informix"
-	let mv_dbtype="Informix"
-	exit menu
+command "Informix" "Use Informix native connection"
+	if not has_plugin("SQL","esql") then
+		call err(set_lines("You dont have the 'esql' SQL plugin",
+			"This is probably because Aubit4GL couldnt detect",
+			"your Informix ClientSDK when you ran the ./configure",
+			"Please install the Informix ClientSDK and rerun",
+			"the ./configure to use the Informix plugin"
+		))
+	else
+		let mv_dbtype="Informix"
+		let mv_sqltype="esql"
+		exit menu
+	end if
 
 
-command "Postgresql"
+command "Postgresql" "Use Postgresql native connection"
 	let mv_dbtype="Postgresql"
-	exit menu
+	let mv_sqltype="pg8"
+	if not has_plugin("SQL",mv_sqltype) then
+	                call err(set_lines("You dont have the 'pg8' SQL plugin",
+                        "This is probably because Aubit4GL couldnt detect",
+                        "your postgresql 'development' files",
+			"(typically postgresql-devel or postgresql-dev)",
+                        "Please install the Postgresql development packages",
+                        "the ./configure to use the pg8 plugin"
+                ))
+	else
+		exit menu
+	end if
 
-command "MYSQL"
+command "MYSQL" "Use Mysql native connection"
 	let mv_dbtype="MYSQL"
-	exit menu
+	let mv_sqltype="mysql"
+	if not has_plugin("SQL",mv_sqltype) then
+	                call err(set_lines("You dont have the 'mysql' SQL plugin",
+                        "This is probably because Aubit4GL couldnt detect",
+                        "your mysql 'development' files",
+			"(typically mysql-devel or mysql-dev)",
+                        "Please install the Mysql development packages",
+                        "the ./configure to use the mysql plugin"
+                ))
+	else
+		exit menu
+	end if
 
-command "SQLite"
+command "SQLite" "Use Sqlite native connection"
 	let mv_dbtype="SQLite"
+	let mv_sqltype="sqlite3"
+	if not has_plugin("SQL",mv_sqltype) then
+	                call err(set_lines("You dont have the 'sqlite3' SQL plugin",
+                        "This is probably because Aubit4GL couldnt detect",
+                        "your sqlite 'development' files",
+			"(typically sqlite-devel or sqlite-dev)",
+                        "Please install the Mysql development packages",
+                        "the ./configure to use the sqlite plugin"
+                ))
+	else
+		exit menu
+	end if
+
+command "Other" "Use ODBC for database communitcations"
+	let mv_dbtype="Other"
+	let mv_sqltype="-"
+	if has_plugin("SQL","unixodbc") and mv_sqltype="-" then
+		let mv_sqltype="unixodbc"
+	end if
+	if has_plugin("SQL","iodbc") and mv_sqltype="-" then
+		let mv_sqltype="iodbc"
+	end if
+	if has_plugin("SQL","odbc32") and mv_sqltype="-" then
+		let mv_sqltype="odbc32"
+	end if
+
+	if mv_sqltype="-" then
+		if is_windows() then
+                	call err(set_lines("The ODBC plugin couldnt be found",
+                        	"Aubit4GL couldn't find the plugin needed",
+				"for ODBC sql connections",
+				"On windows - please ensure you have all the",
+				"ODBC library/header files required",
+				"and rerun the ./configure & make"
+                	))
+		else
+                	call err(set_lines("The ODBC plugin couldnt be found",
+                        	"Aubit4GL couldn't find the plugin needed",
+				"for ODBC sql connections",
+				"Aubit4GL will look for both unixodbc and",
+				"iodbc driver manager libraries",
+				"but neither could be found.",
+				"Please install unixodbc development",
+				"package (preferably)",
+				"or iodbc development package",
+				"and rerun the ./configure & make"
+                	))
+			
+		end if
+	else
+		exit menu
+	end if
+command "No-SQL" "Use this if you do not want to use SQL at all"
+	let mv_sqltype="nosql"
 	exit menu
 
-command "Other"
-	let mv_dbtype="Other"
-	exit menu
+command "Abort" "Exit this program"
+	call err(set_lines("Cant continue without an SQL driver!"))
+	exit program
 end menu
 
 if mv_dbtype="Other" then
@@ -378,7 +549,7 @@ if mv_dbtype="Postgresql" then
 			"such as 'psql -U "||mv_username clipped||" db_name'",
 			" ",
 			"You may also wish to use PGDATABASE, PGHOST, PGPORT and/or PGUSER",
-			"environment variables which are used internall by libpq",
+			"environment variables which are used internally by libpq",
 			" ",
 			"The passwords may be stored in the Postgresql ~/.pgpass or ",
 			"in Aubit4GLs A4GL_SQLPWD, or ACL file",
@@ -565,6 +736,7 @@ define lv_nlines integer
 define a integer
 define lv_dummy integer
 display " ","" at 2,1
+display " ","" at 3,1
 display " ","" at 4,1
 open window w_warn at mv_top,mv_left with (mv_height+3) rows, (mv_width) columns attribute(border)
 
@@ -584,6 +756,7 @@ define lv_nlines integer
 define a integer
 define lv_dummy integer
 display " ","" at 2,1
+display " ","" at 3,1
 display " ","" at 4,1
 open window w_hint at mv_top,mv_left with (mv_height+3) rows, (mv_width) columns attribute(border)
 
@@ -603,6 +776,7 @@ define lv_nlines integer
 define a integer
 define lv_dummy integer
 display " ","" at 2,1
+display " ","" at 3,1
 display " ","" at 4,1
 open window w_err at mv_top,mv_left with (mv_height+3) rows, (mv_width) columns attribute(border)
 
@@ -626,6 +800,7 @@ define a integer
 define lv_dummy integer
 define lv_answer char(1)
 display " ","" at 2,1
+display " ","" at 3,1
 display " ","" at 4,1
 if length(lv_caption)>mv_width then
 	let mv_width=length(lv_caption)
@@ -651,6 +826,7 @@ define lv_nlines integer
 define a integer
 define lv_dummy integer
 display " ","" at 2,1
+display " ","" at 3,1
 display " ","" at 4,1
 open window w_info at mv_top,mv_left with (mv_height+3) rows, (mv_width) columns attribute(border)
 
@@ -731,8 +907,8 @@ int ntop;
 int a;
 int maxwidth=10;
 // +5 = 1 for title, +2 for border +2 for spacer line and 'continue button'..
-mv_top=(mv_screenheight-(nlines+5))/2;
-
+mv_top=(mv_screenheight-(nlines+3))/2;
+mv_top=5;
 
 for (a=0;a<30;a++) {
 	strcpy(lv_msglines[a],"    ");
@@ -791,11 +967,20 @@ end function
 
 function add_line(lv_startcnt,lv_str) 
 define lv_startcnt integer
-define lv_str char(80)
+define lv_str char(71)
 define a integer
 
 if lv_str is null or lv_str matches " " then
 	return lv_startcnt
+end if
+
+
+# Make sure its not too long for our routines
+# which trim the string to a maximum of 70 characters..
+if length(lv_str)>70 then
+	# Its too long - put a '+' at the end
+	# to tell the user its been trimmed..
+	let lv_str=lv_str[1,69],"+"
 end if
 
 # is that string already there ? 
@@ -804,6 +989,8 @@ for a=1 to lv_startcnt-1
 		return lv_startcnt
 	end if
 end for
+
+
 
 let lv_msglines[lv_startcnt]=lv_str
 return lv_startcnt+1
@@ -1113,13 +1300,13 @@ define lv_filename char(80)
 					"handling application errors.",
 					"this logs a screen dump, function backtrace, last key pressed etc",
 					" ",
-					"Automatic Mantis entry requires a valid support contract",
+					"Automatic Mantis entry requires a *valid support contract*",
 					"with Aubit Computing Ltd",
 					"You will also require a valid 'errhook_mantis' plugin", " "
 		))="Y" then
 		
 		
-				if yes_no("Do you have a valid support contract?","Y")="Y" then
+				if yes_no("Do you have a valid Aubit support contract?","Y")="Y" then
 					call set("CALLERRHOOK","errhook_mantis")
 					call prompt_for("Please enter your mantis Username",   "Username >>") returning lv_mantis_user
 					call prompt_for("Please enter your mantis Password",   "Password >>") returning lv_mantis_pass
@@ -1133,7 +1320,7 @@ define lv_filename char(80)
 
 		if ask("ERRORLOG", "Do you want the files restarted each run","N",set_lines(
 			######################################################################
-			"Informix4GL appens to the Error log each time an application",
+			"Informix4GL appends to the Error log each time an application",
 			"is run.",
 			"Aubit4GL can replicate this behaviour - but the error log files",
 			"can quickly become quite large. Aubit4GL can therefore 'restart'",
@@ -1210,6 +1397,10 @@ define lv_filename char(80)
 
 end function
 
+function set_auto(lv_n)
+define lv_n char(200)
+call set(lv_n, fgl_getenv(lv_n))
+end function
 
 function set(lv_n,lv_v)
 define lv_n,lv_v char(2000)
@@ -1226,7 +1417,28 @@ output
 	left margin 0
 format
 	on every row
-		print lv_n clipped,"=",lv_v clipped
-		print "export ",lv_n clipped
+		case mv_settings_type
+			WHEN "REGISTRY"
+			if mv_report_settings_count=0 then
+				print "Windows Registry Editor Version 5.00"
+				print "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Aubit project]"
+				print "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Aubit project\\Aubit 4GL compiler]"
+			end if
+			print "\"",lv_n clipped,"\"=\"",lv_v clipped,"\""
+
+			WHEN "SH"
+				print lv_n clipped,"=",lv_v clipped
+				print "export ",lv_n clipped
+			WHEN "CSH"
+				print "setenv ", lv_n clipped," ",lv_v clipped
+
+			WHEN "AUBITRC"
+				print lv_n clipped,"=",lv_v clipped
+
+			OTHERWISE 
+				call err(set_lines("Internal error - ",
+					"Unexpected settings type"))
+		END CASE
+		let mv_report_settings_count=mv_report_settings_count+1
 end report
 
