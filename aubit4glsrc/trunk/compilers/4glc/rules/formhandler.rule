@@ -16,7 +16,7 @@ formhandler_def :
 		} define_section {
                         char errbuff[256];
 
-			set_local_variables($4);
+			//set_local_variables($4);
 
 		} op_code op_bef_ev_list op_input_section op_aft_ev_list 
 	END_FORMHANDLER  {

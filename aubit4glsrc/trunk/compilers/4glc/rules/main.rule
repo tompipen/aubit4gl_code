@@ -142,10 +142,6 @@ func_def	: op_doc4gl_comment ldeffunction {
 				a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
 			}
 
-			//if (strcmp($<str>2,"static ")!=0) {
-				// We don't export static functions
-				 //variable_action(-1,$<str>4,"","","add_function"); 
-			//}
 
   			SPRINTF1(curr_func,"%s",$<str>4);
 			map_function_start(curr_func);
@@ -156,8 +152,6 @@ func_def	: op_doc4gl_comment ldeffunction {
 		} atline define_section {
   			int c;
 			char errbuff[256];
-			//set_local_variables($10);
-                        //set_variables(&v,'L');
                         if (!check_parameters(errbuff,$10, $<ptr_list>6)) {
                                 a4gl_yyerror(errbuff);
                                 YYERROR;

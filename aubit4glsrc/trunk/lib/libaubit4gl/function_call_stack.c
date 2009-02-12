@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.39 2009-02-12 16:24:19 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.40 2009-02-12 22:09:33 mikeaubury Exp $
 #*/
 
 /**
@@ -191,7 +191,7 @@ void A4GLSTK_program_end(void) {
 		FILE *execprog;
 		execprog=fopen(fname,"a");
 		if (execprog) {
-			fprintf(execprog,"node_%d->END [ label=\"Line %d\" ]\n", functionCallStack[functionCallPointer-1].functionCallCnt,currentFglLineNumber);
+			fprintf(execprog,"node_%d->END [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n", functionCallStack[functionCallPointer-1].functionCallCnt,currentFglLineNumber);
 			fprintf(execprog,"}\n");
 			fclose(execprog);
 		}
@@ -340,15 +340,36 @@ return rval;
 
 }
 //* print a node (a function call) into the trace file (only if TRACE4GLEXEC is set) */
-static void print_node(FILE *execprog, int cnt ) {
-	
+static void print_node(FILE *execprog, int cnt ,int lineno, char *rets) {
+char funcname[60000];
+
 	if (execprog) {
-			fprintf(execprog,"node_%d [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s(%s)</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+			char *color;
+			if (cnt==0) { // MAIN
+				color="#e0e0ff";
+				sprintf(funcname,"MAIN(%s)", A4GL_get_args_string());
+			} else {
+				color="#c0c0f0";
+				sprintf(funcname,"%s(%s)",functionCallStack[cnt].functionName, html_escape(functionCallStack[cnt].params?functionCallStack[cnt].params:""));
+			}
+
+			if (rets) {
+				fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\"  ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr><tr><td align=\"left\">Returns Line %d</td></tr><tr><td align=\"left\">%s</td></tr></table> > ]\n",
 				functionCallStack[cnt].functionCallCnt,
-				functionCallStack[cnt].functionName,
-				html_escape(functionCallStack[cnt].params?functionCallStack[cnt].params:""),
+				color,
+				funcname,
+				functionCallStack[cnt].funcModuleName,
+				functionCallStack[cnt].funcLineNumber,
+				lineno,rets
+				);
+			} else {
+			fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\" ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr></table> > ]\n",
+				functionCallStack[cnt].functionCallCnt,
+				color,
+				funcname,
 				functionCallStack[cnt].funcModuleName,
 				functionCallStack[cnt].funcLineNumber);
+			}
 	}
 				
 
@@ -409,23 +430,14 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
 
   fname=acl_getenv_not_set_as_0("TRACE4GLEXEC");
   if (fname) {
-		
-	if (functionCallPointer>=1) {
-		FILE *execprog;
-		execprog=fopen(fname,"a");
-		if (execprog) {
-			print_node(execprog, functionCallPointer);
-			fprintf(execprog,"node_%d->node_%d [ label=\"Line:%d\" ]\n", functionCallStack[functionCallPointer-1].functionCallCnt, functionCallStack[functionCallPointer].functionCallCnt, currentFglLineNumber);
-			fclose(execprog);
-		}
-	} else {
+	if (functionCallPointer==0) {
 		FILE *execprog;
 		execprog=fopen(fname,"w");
 		if (execprog) {
 			fprintf(execprog,"digraph { // process with 'dot' - eg :   dot -o callgraph.gif -Tgif callgraph.dot\n");
 			fprintf(execprog,"rankdir=LR;\n");
 			fprintf(execprog,"ratio=fill;\n");
-			print_node(execprog, 0);
+			print_node(execprog, 0,0, NULL);
 			fclose(execprog);
 		}
 	}
@@ -450,10 +462,8 @@ void
 A4GLSTK_popFunction_nl (int nrets,int lineno )
 {
 
-  if (nrets)
-    {
-  	char *fname;
-  	fname = acl_getenv_not_set_as_0 ("TRACE4GLEXEC");
+      char *fname;
+      fname = acl_getenv_not_set_as_0 ("TRACE4GLEXEC");
       if (fname)
 	{
 
@@ -463,18 +473,27 @@ A4GLSTK_popFunction_nl (int nrets,int lineno )
 	      execprog = fopen (fname, "a");
 	      if (execprog)
 		{
-		  fprintf (execprog, "node_%d->node_%d [ label=\"Line: %d Returns: %s\" ]\n",
-			   functionCallStack[functionCallPointer-1].functionCallCnt, 
-			   functionCallStack[functionCallPointer - 2].functionCallCnt,
-				lineno,
-				html_escape(A4GL_params_on_stack (NULL,nrets))
 
-		);
+		if (nrets) {
+			print_node(execprog, functionCallPointer-1, lineno, html_escape(A4GL_params_on_stack (NULL,nrets)));
+		  fprintf (execprog, "node_%d->node_%d [ fontsize=8 dir=both label= < Line:%d > ]\n",
+			   functionCallStack[functionCallPointer - 2].functionCallCnt,
+			   functionCallStack[functionCallPointer-1].functionCallCnt, 
+			   	functionCallStack[functionCallPointer-1].lineNumber
+			);
+		} else {
+			print_node(execprog, functionCallPointer-1, 0, NULL);
+		  fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
+			   functionCallStack[functionCallPointer - 2].functionCallCnt,
+			   functionCallStack[functionCallPointer-1].functionCallCnt, 
+			   	functionCallStack[functionCallPointer-1].lineNumber
+				);
+
+		}
 		  fclose (execprog);
 		}
 	    }
 	}
-    }
 
   if (functionCallStack[functionCallPointer - 1].params)
     {

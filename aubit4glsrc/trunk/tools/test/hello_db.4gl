@@ -70,7 +70,8 @@ function try_session()
 
 #     OPEN SESSION s_ifmx TO DATABASE maindb as user "informix" password "ifmx"
 
-    display "opening session..."
+    display "opening session - this will probably fail unless you've edited the file..."
+    display "to specify the username & password!"
     sleep 2
 
      open session session1 to database maxdev
@@ -112,34 +113,15 @@ define
 		menu "BD type"
 
             command "Informix"
-{
-				if
-                    #DSN_informix is null
-                    length (DSN_informix) < 1
-                then
-                    #message "prompt" sleep 5
-
-                    prompt "Name of ODBC DSN configured to access Informix db >>"
-						for DSN_informix
-					if
-    	                #DSN_informix is null
-                        length (DSN_informix) < 1
-        	        then
-                        let DSN_informix = "maindb"
-                    end if
-}
-#                    call ifx_DATABASE(DSN_informix)
 					 call ifx_SESSION("maindb")
 
-#                end if
 
             command "PostgreSQL"
 
-                    #call pg_DATABASE(DSN_postgres)
                     call pg_SESSION("ptest")
 
 
-            command "PostgreSQL scrool"
+            command "PostgreSQL scroll"
 
 					call pg_SESSION_scroll("ptest")
 
@@ -147,12 +129,8 @@ define
 
             command "IFX static SQL"
 
-				if
-					not ifx_sess
-		        then
+				if not ifx_sess then
 						OPEN SESSION s_ifmx TO DATABASE maindb as user "informix" password "ifmx"
-		                #cause "error compiling":
-						#OPEN SESSION s_ifmx TO DATABASE _variable(DSN_informix) as user "informix" password "ifmx"
 		                let ifx_sess = true
 		        end if
 

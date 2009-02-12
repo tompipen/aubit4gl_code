@@ -1826,7 +1826,7 @@ struct command *c;
 
 struct command *new_enable_cmd (struct fh_field_list *srec) {
 struct command *c;
-	 c=new_command(E_CMD_DISABLE_FORM_CMD);
+	 c=new_command(E_CMD_ENABLE_CMD);
 	c->cmd_data.command_data_u.enable_cmd.srec=srec;
    return c;
 }
@@ -1839,7 +1839,7 @@ struct command *c;
 }
 struct command *new_disable_cmd ( struct fh_field_list *srec ) {
 struct command *c;
-	 c=new_command(E_CMD_DISABLE_FORM_CMD);
+	 c=new_command(E_CMD_DISABLE_CMD);
 	c->cmd_data.command_data_u.disable_cmd.srec=srec;
    return c;
 }
@@ -1918,6 +1918,7 @@ struct on_event *new_event(e_event event_type, void *data, commands *cmds,int li
 	case EVENT_ANYKEY_PRESS:
 	case EVENT_AFTER_INP_CLEAN:
 	case EVENT_BEFORE_OPEN_FORM:
+	case EVENT_BEFORE_CLOSE_FORM:
         case EVENT_BEFORE_INPUT: break; // no extra data...
 
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.142 2009-01-29 17:09:25 gyver309 Exp $
+# $Id: fglwrap.c,v 1.143 2009-02-12 22:09:33 mikeaubury Exp $
 #
 */
 
@@ -725,6 +725,21 @@ aclfgl_arg_val (int n)
     }
   return 1;
 }
+
+
+char *A4GL_get_args_string(void ) {
+int a;
+	static char argbuff[30000];
+	strcpy(argbuff,"");
+
+	for (a=1;a<p_numargs;a++) {
+		if (strlen(argbuff)) strcat(argbuff,",");
+		strcat(argbuff,p_args[a]);
+	}
+	return argbuff;
+}
+
+
 
 /**
  * Dont do nothing

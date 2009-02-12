@@ -310,6 +310,9 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
 	if lv_arg matches "-o*" and lv_arg!="-o" then
 		let mv_output=lv_arg[3,200]
+		if mv_verbose>2 then
+			display "(1) mv_output=",mv_output clipped
+		end if
 		continue for
 	end if
 
@@ -351,7 +354,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   END FOR
 
 if mv_verbose>3 then
-	display "mv_output=", mv_output
+	display "(2) mv_output=", mv_output clipped
 end if
 
 
@@ -382,9 +385,10 @@ endcode
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
 	
-	IF lv_arg = "-o" THEN
+	IF lv_arg matches "-o*" THEN
 		LET lv_cnt=lv_cnt+1
 	END IF
+
 	IF lv_arg="-e" THEN
 		LET lv_minus_e=1
 	END IF
@@ -429,7 +433,6 @@ endcode
 			exit for
 		end if
   	END FOR
-
 
 	if fgl_getenv("A4GL_LEXTYPE")="SPL" then
 		LET mv_output_type="SPL"
@@ -523,7 +526,9 @@ endcode
   END IF
 
 if mv_verbose>3 then
-	display "mv_output=", mv_output
+	display "(3) mv_output=", mv_output clipped
+	display "mv_output_type=", mv_output_type clipped
+	
 end if
 
 
@@ -533,6 +538,9 @@ end if
 	LET lv_arg=arg_val(a)
 	if lv_arg!="-o" and lv_arg matches "-o*" then
 		let mv_output=lv_arg[3,200]
+		if mv_verbose>3 then
+			display "mv_output=",mv_output
+		end if
 		continue for
 	end if
 	CASE lv_arg

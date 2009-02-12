@@ -147,6 +147,7 @@ BEFORE CLOSE FORM
 end formhandler
 
 formhandler listhandler
+define lv_line char(12)
 BEFORE OPEN FORM
 	enable clearlist,entered
 

@@ -951,9 +951,6 @@ report_def : op_doc4gl_comment   rep_or_localrep
 				a4gl_yyerror("Invalid variable name - you can't use PAGENO or LINENO for your own variables in a repor");
 				YYERROR;
 			}
-			//struct variable_list v;
-			//set_local_variables($10);
-                        //set_variables($10,'L');
 	} op_output_section op_rep_order_by  {
 			char errbuff[256];
 			expr_str_list *expanded_parameters;
