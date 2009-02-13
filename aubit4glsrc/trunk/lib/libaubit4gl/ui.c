@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.85 2009-02-11 14:23:06 mikeaubury Exp $
+# $Id: ui.c,v 1.86 2009-02-13 07:26:19 mikeaubury Exp $
 #
 */
 
@@ -303,7 +303,7 @@ A4GL_display_at (int n, int a)
   y = A4GL_pop_int ();
 
   A4GLSQL_set_status (0, 0);
-  A4GL_debug_print_stack ();
+  //A4GL_debug_print_stack ();
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
   A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & 0xff, tos_size, tos_ptr);
   //A4GL_assertion(tos_ptr==0,"Invalid pointer passed to display_at");
@@ -2099,7 +2099,7 @@ int A4GL_check_event_list_for_special_key(struct aclfgl_event_list *evt, int las
 }
 
 
-int aclfg_fgl_exitfm() {
+int aclfgl_fgl_exitfm(int n) {
 	A4GL_gotolinemode();
 	return 0;
 }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.167 2009-02-09 15:16:07 mikeaubury Exp $
+# $Id: conv.c,v 1.168 2009-02-13 07:26:19 mikeaubury Exp $
 #
 */
 
@@ -2628,15 +2628,15 @@ A4GL_ftoc (void *aa, void *zz, int c)
   a = (double *) aa;
   z = (char *) zz;
 
-  buff = malloc (c + 20);
-  memset (buff, 0, c + 20);	// allow plenty of extra space...
+  buff = malloc (c + 200);
+  memset (buff, 0, c + 200);	// allow plenty of extra space...
 
 
-  memset (buff, '*', c + 19);
+  memset (buff, '*', c + 199);
   if (A4GL_digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
     {
       SPRINTF1 (buff, fmt, *a);
-      if (strlen (buff) > c + 20)
+      if (strlen (buff) > c + 200)
 	{
 	  A4GL_assertion (1, "Buffer overrun...");
 	}
