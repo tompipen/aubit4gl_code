@@ -831,6 +831,21 @@ struct command *c;
    return c;
 }
  
+
+struct command *new_run_waiting_for_cmd(expr_str *p_run_string, expr_str *p_sleep, expr_str *p_msg_repeat_every, int p_msg_type, expr_str *p_msgtext) {
+struct command *c;
+   c=new_command(E_CMD_RUN_WAITING_FOR_CMD);
+   c->cmd_data.command_data_u.run_waiting_for_cmd.run_string=p_run_string;
+   c->cmd_data.command_data_u.run_waiting_for_cmd.sleep=p_sleep;
+   c->cmd_data.command_data_u.run_waiting_for_cmd.msg_repeat_every=p_msg_repeat_every;
+   c->cmd_data.command_data_u.run_waiting_for_cmd.msg_type=p_msg_type;
+   c->cmd_data.command_data_u.run_waiting_for_cmd.msg_text=p_msgtext;
+ 
+   return c;
+}
+
+
+
 struct command *new_run_cmd(expr_str* p_run_string,e_boolean p_wait,enum run_mode p_run_mode,struct expr_str *p_returning) { //!
 struct command *c;
    c=new_command(E_CMD_RUN_CMD);

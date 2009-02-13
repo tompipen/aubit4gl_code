@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.370 2009-02-12 22:09:33 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.371 2009-02-13 17:42:20 mikeaubury Exp $
 #
 */
 
@@ -1659,6 +1659,7 @@ int A4GL_valid_int (char *s, int *data, int size);
   void A4GL_set_abort (int a);
   void A4GL_check_and_show_id (char *program, char *arg1);
 char *A4GL_get_running_program(void);
+int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec, int use_error);
 char *A4GL_get_args_string(void ) ;
 int A4GL_sock_write_int (char *buf, size_t count);
 

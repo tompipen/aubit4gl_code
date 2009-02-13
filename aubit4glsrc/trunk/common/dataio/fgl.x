@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.30 2009-01-27 09:42:01 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.31 2009-02-13 17:42:20 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -140,6 +140,7 @@ enum cmd_type {
 	E_CMD_RESIZE_ARR_CMD,
 	E_CMD_RETURN_CMD,
 	E_CMD_RUN_CMD,
+	E_CMD_RUN_WAITING_FOR_CMD,
 	E_CMD_SCROLL_CMD,
 	E_CMD_SET_DATABASE_CMD,
 	E_CMD_SHOW_CMD,
@@ -448,6 +449,15 @@ struct struct_run_cmd {
 	enum e_boolean wait;
 	enum run_mode run_mode;
 	struct expr_str *returning; /* Can only return a single variable */
+};
+
+
+struct struct_run_waiting_for_cmd {
+	struct expr_str* run_string;
+	struct expr_str* sleep;
+	struct expr_str* msg_repeat_every;
+	struct expr_str *msg_text;
+	int msg_type;
 };
 
 enum e_direction {
@@ -1416,6 +1426,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_PRINT_IMG_CMD: struct_print_img_cmd print_img_cmd;
 	case E_CMD_PAUSE_CMD: struct_pause_cmd pause_cmd;
 	case E_CMD_RUN_CMD: struct_run_cmd run_cmd;
+	case E_CMD_RUN_WAITING_FOR_CMD: struct_run_waiting_for_cmd run_waiting_for_cmd;
 	case E_CMD_SLEEP_CMD: struct_sleep_cmd sleep_cmd;
 	case E_CMD_SQL_BLOCK_CMD: struct_sql_block_cmd sql_block_cmd;
 	case E_CMD_VALIDATE_CMD: struct_validate_cmd validate_cmd;

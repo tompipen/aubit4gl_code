@@ -79,6 +79,7 @@ int print_put_cmd(struct_put_cmd *cmd_data);
 int print_resize_arr_cmd(struct_resize_arr_cmd *cmd_data);
 int print_return_cmd(struct_return_cmd *cmd_data);
 int print_run_cmd(struct_run_cmd *cmd_data);
+int print_run_waiting_for_cmd(struct_run_waiting_for_cmd *cmd_data);
 int print_scroll_cmd(struct_scroll_cmd *cmd_data);
 int print_select_cmd(struct_select_cmd *cmd_data);
 int print_set_database_cmd(struct_set_database_cmd *cmd_data);

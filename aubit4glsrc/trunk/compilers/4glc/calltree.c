@@ -1830,6 +1830,13 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_cmd.run_string, mode);
 	  break;
 
+	case E_CMD_RUN_WAITING_FOR_CMD:
+	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.run_string, mode);
+	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.sleep, mode);
+	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.msg_repeat_every, mode);
+	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.msg_text, mode);
+	  break;
+
 	case E_CMD_SCROLL_CMD:
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.scroll_cmd.val, mode);
 	  break;

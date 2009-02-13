@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.143 2009-02-12 22:09:33 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.144 2009-02-13 17:42:20 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,9 @@
 
 #define _PRELOAD_UI_		/* pre-load UI module */
 
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 /*
 =====================================================================
@@ -438,6 +441,70 @@ A4GL_system_run (int a)
     }
 }
 
+
+
+int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec, int use_error) {
+int exit_status=0;
+	pid_t cpid;
+	cpid = fork();
+
+	// CPID should be 0 (child) or >0 (parent)
+	A4GL_assertion(cpid<0,"Failed to start child process");
+	
+	if (cpid==0) {
+		// We are the child process...
+		// close all the open handles - we dont want to confuse anything
+		fclose(stdin);
+		fclose(stdout);
+		fclose(stderr);
+
+		// We are the child process - run the program...
+		exit(system(rstr));
+	} else {
+		// We are the parent process..
+		long starttime;
+		long timesince;
+		long lastmsg=0;
+		starttime=time(NULL);
+
+		while (1) {
+			pid_t wpid;
+			timesince=time(NULL);
+			if (timesince-starttime > sleep_sec) {
+				// We've waited too long..
+				break;
+			}
+
+			if (lastmsg==0 || (repeat_sec>0 && timesince>=lastmsg+repeat_sec) ) {
+			   	A4GL_push_char(msg);
+				if (repeat_sec>0) {
+					char buff[200];
+					// We want to update every few seconds on the progress..
+					sprintf(buff," (%ld/%ld)",(long) timesince-starttime,(long)sleep_sec);
+					A4GL_push_char(buff);
+					A4GL_pushop(OP_CONCAT);
+				}
+				// Need to do the message..
+				if (use_error) {
+					// Use an ERROR 
+   					A4GL_display_error(-1,0);
+				} else {
+					// Use a MESSAGE
+   					aclfgli_pr_message(-1,0,1);
+				}
+				lastmsg=timesince;
+			}
+
+			wpid=waitpid(cpid, &exit_status, WNOHANG);
+			if (wpid==cpid) {
+				// Yeah ! all don
+			}
+			usleep(100000);
+		}
+	}
+	
+	return exit_status;
+}
 
 /**
  * Checks if the string have some sort of no (n,N,0,)false.

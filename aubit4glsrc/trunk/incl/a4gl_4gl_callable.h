@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.48 2009-02-12 16:24:18 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.49 2009-02-13 17:42:20 mikeaubury Exp $
 */
 
 /**
@@ -189,6 +189,7 @@ void A4GL_trim_nl (char *p);
 char **A4GL_read_directory(char *dir,char *spec);
 int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd);
 char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
+int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec, int use_error);
 void A4GL_assertion (int a, char *s);
 char * acl_getenv_not_set_as_0 (char *s);
 //int A4GL_fgl_infield (void *inp,char itype,...);

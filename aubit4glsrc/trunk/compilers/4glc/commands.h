@@ -34,6 +34,7 @@ struct command *new_show_menu_cmd(char *p_menuname, char *p_menuhandler, expr_st
 struct command *new_show_cmd(expr_str *p_windowname);
 struct command *new_hide_cmd(expr_str *p_windowname);
 struct command *new_run_cmd(expr_str* p_run_string, e_boolean p_wait, enum run_mode p_run_mode, struct expr_str *p_returning);
+struct command *new_run_waiting_for_cmd(expr_str *p_run_string, expr_str *p_sleep, expr_str *p_msg_repeat_every, int p_msg_type, expr_str *p_msgtext) ;
 struct command *new_scroll_cmd(fh_field_list *p_srec, expr_str* p_val);
 struct command *new_exit_prog_cmd(expr_str* p_exit_val);
 struct command *new_prepare_cmd (expr_str *connid, struct expr_str *p_stmtid, expr_str * p_sql);

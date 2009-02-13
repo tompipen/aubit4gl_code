@@ -87,6 +87,7 @@ switch(cd->type) {
    case E_CMD_PRINT_IMG_CMD        : ok=print_print_img_cmd(&cd->command_data_u.print_img_cmd); break;
    case E_CMD_PAUSE_CMD            : ok=print_pause_cmd(&cd->command_data_u.pause_cmd); break;
    case E_CMD_RUN_CMD              : ok=print_run_cmd(&cd->command_data_u.run_cmd); break;
+   case E_CMD_RUN_WAITING_FOR_CMD              : ok=print_run_waiting_for_cmd(&cd->command_data_u.run_waiting_for_cmd); break;
    case E_CMD_SLEEP_CMD            : ok=print_sleep_cmd(&cd->command_data_u.sleep_cmd); break;
    case E_CMD_SQL_BLOCK_CMD        : ok=print_sql_block_cmd(&cd->command_data_u.sql_block_cmd); break;
    case E_CMD_VALIDATE_CMD         : ok=print_validate_cmd(&cd->command_data_u.validate_cmd); break;

@@ -1508,6 +1508,31 @@ print_free_rep_cmd (struct_free_rep_cmd * cmd_data)
 
 }
 
+
+int print_run_waiting_for_cmd(struct_run_waiting_for_cmd *cmd_data) {
+	printc("{");
+	printc("char *_rstr;");
+	printc("char *_msgstr;");
+	printc("int _sleep;");
+	printc("int _repeat;");
+  	print_expr (cmd_data->run_string);
+	printc("_rstr=A4GL_char_pop();");
+  	print_expr (cmd_data->msg_text);
+	printc("_msgstr=A4GL_char_pop();");
+	print_expr(cmd_data->sleep);
+	if (cmd_data->msg_repeat_every==NULL) {
+		printc("_repeat=0;");
+	} else {
+		print_expr(cmd_data->msg_repeat_every);
+		printc("_repeat=A4GL_pop_long();");
+	}
+	printc("_sleep=A4GL_pop_long();");
+  	printc ("A4GL_system_run_waiting(_rstr,_msgstr,_sleep,_repeat,%d);",cmd_data->msg_type);
+        printc("}");
+  	print_copy_status_not_sql (0);
+	return 1;
+}
+
 /******************************************************************************/
 int
 print_run_cmd (struct_run_cmd * cmd_data)

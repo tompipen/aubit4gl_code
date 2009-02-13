@@ -93,6 +93,7 @@ char *decode_cmd_type(enum cmd_type value) {
  case E_CMD_RESIZE_ARR_CMD: return "E_CMD_RESIZE_ARR_CMD";
  case E_CMD_RETURN_CMD    : return "E_CMD_RETURN_CMD";
  case E_CMD_RUN_CMD       : return "E_CMD_RUN_CMD";
+ case E_CMD_RUN_WAITING_FOR_CMD       : return "E_CMD_RUN_WAITING_FOR_CMD";
  case E_CMD_SCROLL_CMD    : return "E_CMD_SCROLL_CMD";
  case E_CMD_SET_DATABASE_CMD: return "E_CMD_SET_DATABASE_CMD";
  case E_CMD_SHOW_CMD      : return "E_CMD_SHOW_CMD";
