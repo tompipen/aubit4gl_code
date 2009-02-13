@@ -1656,7 +1656,7 @@ print_options_cmd (struct_options_cmd * cmd_data)
 		printc("A4GL_set_option_value('p',A4GL_key_val(\"%s\"));",o->value); break;
 	case 'H': // Help Key
 
-		printc("A4GL_set_option_value('D',A4GL_key_val(\"%s\"));",o->value); break;
+		printc("A4GL_set_option_value('H',A4GL_key_val(\"%s\"));",o->value); break;
 
 	case 'd':
 	  	printc ("A4GL_set_option_value('%s',%s);", o->option, o->value);
