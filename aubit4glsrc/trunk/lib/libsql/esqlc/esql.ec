@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.227 2009-01-29 17:09:25 gyver309 Exp $
+# $Id: esql.ec,v 1.228 2009-02-16 10:13:53 mikeaubury Exp $
 #
 */
 
@@ -113,7 +113,7 @@ char unloadBuffer[BUFSIZ];
 //extern sqlca_struct a4gl_sqlca;
 dll_export sqlca_struct a4gl_sqlca;
 
-void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode) ;
+void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) ;
 static void internal_free_cursor (char *s,int reset_Sqlca);
 
 #if defined (WIN32) || defined (__CYGWIN__)
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.227 2009-01-29 17:09:25 gyver309 Exp $";
+  "@(#)$Id: esql.ec,v 1.228 2009-02-16 10:13:53 mikeaubury Exp $";
 #endif
 
 
@@ -1107,9 +1107,18 @@ getIfmxDataType (int dataType)
 
 
 
-void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode) {
+void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) {
 //
 short indicat=0;
+
+
+if (dtype==DTYPE_BYTE) {
+	infx->loc_type=SQLBYTES;
+} else {
+	infx->loc_type=SQLTEXT;
+
+}
+
 
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
@@ -1447,12 +1456,12 @@ int d_prec=0;
       break;
 
     case DTYPE_TEXT:
-      A4GL_sql_copy_blob (&byte_var, bind[idx].ptr, 0, bind[idx].size, 'i');
+      A4GL_sql_copy_blob (&byte_var, bind[idx].ptr, 0, bind[idx].size, 'i',DTYPE_TEXT);
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:byte_var;
       break;
 
     case DTYPE_BYTE:
-      A4GL_sql_copy_blob (&byte_var, bind[idx].ptr, 0, bind[idx].size, 'i');
+      A4GL_sql_copy_blob (&byte_var, bind[idx].ptr, 0, bind[idx].size, 'i', DTYPE_BYTE);
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:byte_var;
       break;
     default:
