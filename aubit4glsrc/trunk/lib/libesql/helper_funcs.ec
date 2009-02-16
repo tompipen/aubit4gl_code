@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.80 2008-12-14 14:02:04 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.81 2009-02-16 13:10:20 mikeaubury Exp $
 #
 */
 
@@ -907,8 +907,8 @@ void ESQLAPI_A4GL_copy_blob_text(void *infx,void  *a4gl,short *p_indicat,int siz
 #include "locator.h"
 
 /* There are the same for now - so only write one... */
-#define ESQLAPI_A4GL_copy_blob_byte ESQLAPI_A4GL_copy_blob
-#define ESQLAPI_A4GL_copy_blob_text ESQLAPI_A4GL_copy_blob
+#define ESQLAPI_A4GL_copy_blob_byte(a,b,c,d,e)  ESQLAPI_A4GL_copy_blob(a,b,c,d,e,DTYPE_BYTE)
+#define ESQLAPI_A4GL_copy_blob_text(a,b,c,d,e)  ESQLAPI_A4GL_copy_blob(a,b,c,d,e,DTYPE_TEXT)
 
 void ESQLAPI_A4GL_init_out_text (void *v_a4gl,void * v_infx) {
 struct fgl_int_loc *a4gl;
@@ -962,7 +962,7 @@ a4gl=v_a4gl;
 
 
 void 
-ESQLAPI_A4GL_copy_blob(void *infxv,void *a4glv,short *p_indicat,int size,char mode)  {
+ESQLAPI_A4GL_copy_blob(void *infxv,void *a4glv,short *p_indicat,int size,char mode,int dtype)  {
 short indicat=0;
 int isnull;
 	loc_t *infx;
@@ -986,6 +986,7 @@ int isnull;
 			}
 		}
 
+		if (dtype==DTYPE_BYTE) { infx->loc_type=SQLBYTES; } else { infx->loc_type=SQLTEXT; } }
 
                 if (a4gl->where=='M') {
                         infx->loc_loctype = LOCMEMORY;
@@ -993,7 +994,6 @@ int isnull;
                         infx->loc_oflags = 0;
                         infx->loc_indicator = 0;   /* not a null blob */
                         infx->loc_buffer = (char *) a4gl->ptr;
-                }
 
                 if (a4gl->where=='F') {
                         infx->loc_loctype = LOCFNAME;   /* blob is named file */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.228 2009-02-16 10:13:53 mikeaubury Exp $
+# $Id: esql.ec,v 1.229 2009-02-16 13:10:20 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.228 2009-02-16 10:13:53 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.229 2009-02-16 13:10:20 mikeaubury Exp $";
 #endif
 
 
@@ -1110,16 +1110,6 @@ getIfmxDataType (int dataType)
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) {
 //
 short indicat=0;
-
-
-if (dtype==DTYPE_BYTE) {
-	infx->loc_type=SQLBYTES;
-} else {
-	infx->loc_type=SQLTEXT;
-
-}
-
-
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
                 if ((A4GL_isnull(DTYPE_BYTE,(void *)a4gl) || a4gl->where==0) && p_indicat ) {
@@ -1133,6 +1123,13 @@ return;}
 
 		memset(infx,0,sizeof(*infx));
                 infx->loc_loctype = -1;
+
+if (dtype==DTYPE_BYTE) {
+        infx->loc_type=SQLBYTES;
+} else {
+        infx->loc_type=SQLTEXT;
+
+}
                 if (a4gl->where=='M') {
                         infx->loc_loctype = LOCMEMORY;
                         infx->loc_bufsize = a4gl->memsize;
