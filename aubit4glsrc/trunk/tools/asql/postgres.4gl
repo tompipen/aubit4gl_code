@@ -321,7 +321,7 @@ END IF
 
 let lv_query=" SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod) ",
 	" FROM pg_catalog.pg_attribute a ",
-	" WHERE a.attrelid = '",l_tabid using "<<<<<<<<<","' AND a.attnum > 0 AND NOT a.attisdropped ",
+	" WHERE a.attrelid = '",l_tabid using "<<<<<<<<<<<<<<<","' AND a.attnum > 0 AND NOT a.attisdropped ",
 	" ORDER BY a.attnum "
 
 code
