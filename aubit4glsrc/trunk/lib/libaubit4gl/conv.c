@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.168 2009-02-13 07:26:19 mikeaubury Exp $
+# $Id: conv.c,v 1.169 2009-02-17 19:02:13 mikeaubury Exp $
 #
 */
 
@@ -3381,12 +3381,59 @@ A4GL_valid_dt (char *s, int *data, int size)
 #ifdef DEBUG
   A4GL_debug ("In valid_dt\n");
 #endif
-  if (strlen (s) > 25)
+  
+  if (strlen (s) >= 255)
     {
       A4GL_debug ("Too long\n");
       return 0;
     }
+
   strcpy (buff, s);
+  
+
+  // Check the string length...
+  if (strlen (buff) > 25) {
+	char *z;
+	// Its too long - this might be because the decimal on the fractions
+	// is too long - but we can just trim that..
+	//
+	// Get the position of a '.'
+	z=strchr(buff,'.');
+	if (z) {
+		int sl;
+		z++;
+		sl=strlen(z);
+		// Ok - is that too long ?
+		if (sl>5) {
+			int a;
+			int bad=0;
+			// yes - but are they all numbers ? 
+			for (a=0;a<sl;a++) {
+				if (z[a]>='0'&&z[a]<='9') continue;
+				bad=1;
+				break;
+			}
+			if (bad) {
+				printf("Too long 1\n");
+			 	return 0;
+			}
+			// Ok - so they are all numbers - but its too long..
+			// lets trim them to 5..
+			z[5]=0;
+
+
+			// Now recheck with our new trimmed size...
+			if (strlen(buff)>25) {
+				printf("Too long 2 : %s\n",buff);
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	} else {
+      		return 0;
+	}
+  }
 
 
   ptr[0] = &buff[0];
