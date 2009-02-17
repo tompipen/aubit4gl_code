@@ -20,6 +20,8 @@ define lv_ok integer
 				if lv_ok then
 					if mv_generated_exe then
 						next option "Run"
+					else
+						next option "Program-Compile"
 					end if
 				end if
 			
@@ -37,11 +39,14 @@ define lv_ok integer
 				if lv_ok then
 					if mv_generated_exe then
 						next option "Run"
+					else
+						next option "Program-Compile"
 					end if
 				end if
 
 			command "Program-Compile" "Compile a program"
 				call program_compile()
+				next option "Run"
 			
 			command "Run" "Run a program"
 				call program_run()
@@ -240,7 +245,11 @@ define lv_makefile,lv_objfile char(512)
 
 			when lv_state="CompileObject"
 				let mv_generated_exe=false
-				call check_program_for_module(lv_mname) returning lv_makefile,lv_objfile
+				if fgl_getenv("A4GL_COMPILE_ALONE")="Y" THEN
+					let lv_makefile = " "
+				else
+					call check_program_for_module(lv_mname) returning lv_makefile,lv_objfile
+				end if
 
 				if lv_makefile = " " or lv_makefile is null then # Couldnt find a real makefile...
 					IF module_compile(lv_mname)  then
