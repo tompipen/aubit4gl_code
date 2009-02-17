@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.154 2009-02-10 08:58:45 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.155 2009-02-17 10:10:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.154 2009-02-10 08:58:45 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.155 2009-02-17 10:10:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -462,13 +462,14 @@ static int check_for_construct_large_for_key(int a) {
 static int
 process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list *evt)
 {
-  int a;
+  int a=0;
   int rval;
   int new_state;
   struct s_movement *ptr_movement;
 
   rval = -1;
   new_state = 99;
+  A4GL_assertion (sio->fcntrl_cnt<=0,"Bad sio->fcntrl_cnt");
 
   a = sio->fcntrl_cnt - 1;
   A4GL_debug("process control stack - op=%d state=%d\n",sio->fcntrl[a].op,sio->fcntrl[a].state);
@@ -516,11 +517,14 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
   if (sio->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_OK)
     {
       A4GL_comments (0);
-      if (sio->fcntrl[a].state == 99)
+
+      if (sio->fcntrl[a].state == 99 ) 
 	{
 		A4GL_debug("ADD AFTER FIELD <------------------------------------");
-	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD,
+	if ( sio->currentfield) {
+	  		A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD,
 				     sio->currentfield, 0, 0,__LINE__);
+		}
 	  new_state = 60;
 	  rval = -1;
 	}
@@ -1237,7 +1241,6 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 		}
 
 		if (!A4GL_conversion_ok(-1)) {
-			//A4GL_pause_execution();
 			A4GL_debug("CONVERSION ERROR");
 			really_ok=0;
 		}
@@ -1320,8 +1323,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
     {
       if (sio->fcntrl[a].state == new_state)
 	{
-	  A4GL_debug ("internal error - state=%d op=%d (%s) @ %d", new_state,
-		      sio->fcntrl[a].op, ops[sio->fcntrl[a].op], a);
+	  A4GL_debug ("internal error - state=%d op=%d (%s) @ %d", new_state, sio->fcntrl[a].op, ops[sio->fcntrl[a].op], a);
 	  A4GL_exitwith ("Internal error - no change in state ");
 	  return -1;
 	}
@@ -1916,8 +1918,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
     {
       A4GL_set_last_key (A4GLKEY_ACCEPT);
       A4GL_debug ("ACCEPT - EXIT_INPUT_OK\n");
-      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a,
-				 __LINE__);
+      A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a, __LINE__);
       return -1;
     }
 

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.77 2009-02-10 08:58:45 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.78 2009-02-17 10:10:20 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.77 2009-02-10 08:58:45 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.78 2009-02-17 10:10:20 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -447,7 +447,9 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
       A4GL_comments (0);
       if (fcntrl.state == 99)
 	{
-	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, sio->currentfield, 0, 0);
+		if (sio->currentfield) {
+	  		A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, sio->currentfield, 0, 0);
+		}
 	  new_state = 60;
 	  rval = -1;
 	}
