@@ -40,3 +40,4 @@ void
 print_pop_usage_prompt (expr_str * v);
 struct command *get_last_cmd(void );
 void dump_command_list(struct command **clist, int nvals);
+int local_bad_identifiers(char *s);

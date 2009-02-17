@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.475 2009-02-12 16:24:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.476 2009-02-17 07:56:51 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.475 2009-02-12 16:24:20 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.476 2009-02-17 07:56:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4480,6 +4480,15 @@ clr_suppress_lines();
 	  return;
 	}
     }
+
+    if (local_bad_identifiers(v->names.names.names_val[0].name)) {
+		yylineno=v->lineno;
+
+		set_yytext(v->names.names.names_val[0].name);
+                a4gl_yyerror("You can't use this identifier as it is a reserved word in the target language");
+		return;
+    }
+
 
   if (scope == E_SCOPE_IMPORTED_GLOBAL && level == 0) {
 	int skip=0;
