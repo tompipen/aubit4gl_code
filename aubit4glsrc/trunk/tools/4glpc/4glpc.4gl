@@ -1053,6 +1053,11 @@ IF (lv_to="EXE" OR lv_to="DLL") and lv_from in ("EC","C") THEN
 	RETURN
 END IF
 
+IF lv_from="PER" and lv_to="FRM" then
+	call run_compile_form(lv_fname)
+	RETURN
+end if
+
 display "Unhandled Compile ",lv_fname clipped," From ",lv_from," to ",lv_to
 
 if mv_noerrcode=0 then
@@ -1062,7 +1067,6 @@ else
 end if
 
 end function
-
 
 
 ################################################################################
@@ -1664,7 +1668,26 @@ call check_exit_status(lv_status,lv_fname,lv_runstr)
 call add_obj(lv_new)
 end function
 
+function run_compile_form(lv_fname)
+define lv_runstr char(1045)
+define lv_status integer
+define lv_fname char(256)
+let lv_runstr="fcompile " 
+IF fgl_getenv("A4GL_LOCALOUTPUT")="Y" THEN
+	let lv_fname=get_basename(lv_fname)
+END IF
 
+let lv_runstr=lv_runstr clipped ," ",lv_fname clipped
+if mv_verbose>=2 then
+        display lv_runstr clipped
+end if
+
+let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
+RUN lv_runstr clipped RETURNING lv_status
+
+call check_exit_status(lv_status,lv_fname,lv_runstr)
+
+end function
 
 ################################################################################
 function run_link(lv_output)

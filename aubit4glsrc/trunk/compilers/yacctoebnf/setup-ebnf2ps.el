@@ -5,6 +5,7 @@
   (setq ebnf-terminal-shape 'bevel)
   (setq ebnf-non-terminal-shape 'miter)
   (setq ebnf-sort-production 'ascending)
+  (setq ebnf-optimize 1)
   (setq ebnf-non-terminal-border-color "Blue")
 
 

@@ -4,6 +4,7 @@ define_section	<DEFINE SECTION>
 record_variable <RECORD VARIABLE>
 array_variable <ARRAY VARIABLE>
 dtype	<DATATYPE>
+cast_dtype	<DATATYPE>
 pdf_report_def	<PDF REPORT>
 pdf_op_output_section	<PDF OUTPUT SECTION>
 op_output_section	<OUTPUT SECTION>

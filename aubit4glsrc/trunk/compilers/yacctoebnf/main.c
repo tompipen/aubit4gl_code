@@ -35,6 +35,11 @@ void add_terminal(char *terminal, char *text) {
 void load_file(FILE *f) {
 char buff[200];
 char buff2[200];
+if (f==NULL) {
+	fprintf(stderr,"Unable to read file!!\n");
+	exit(2);
+}
+
 while (1) {
 	char *ptr;
 	char *p2;

@@ -45,7 +45,11 @@ ebnf.tab.cacc: ebnf.yacc
 lex.yyx.c:  ebnf.lex
 	flex -Pyyx ebnf.lex
 
-diagrams: parser
+diagrams: parser commands entries
 	./parser > ebnf-eps-directory/fgl.ebnf
 	sh process_to_eps
 	#rm ebnf-eps-directory/*.eps
+
+commands: mkcommands ../4glc/rules/generated/fgl.infx.yacc
+	mkcommands
+	

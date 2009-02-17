@@ -317,7 +317,7 @@ dtype2 : dtype op_as_static {
 ;
 
 
-dtype : /* variable_ptr */
+dtype : 
 		array_variable {
 			$$=$1;
 		}
