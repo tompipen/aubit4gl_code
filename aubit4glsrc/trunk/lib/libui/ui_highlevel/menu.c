@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.49 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: menu.c,v 1.50 2009-02-18 12:10:35 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -505,7 +505,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 	      continue;
 	    }
 	}
-
+      A4GL_set_last_key(0);
       key_pressed = A4GL_new_do_keys (menu, a);
       A4GL_h_disp_opt (menu, old_option, menu->menu_offset, menu->mn_offset,
 		       NORM);

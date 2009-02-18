@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.157 2008-11-06 16:00:35 mikeaubury Exp $
+# $Id: curslib.c,v 1.158 2009-02-18 12:10:35 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.157 2008-11-06 16:00:35 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.158 2009-02-18 12:10:35 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1704,7 +1704,7 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	}
 	A4GL_debug("a=%d abort_pressed=%d",a,abort_pressed);
 
-
+      A4GL_set_last_key(0);
       key_pressed = A4GL_new_do_keys (menu, a);
       A4GL_h_disp_opt (menu, old_option, menu->menu_offset, menu->mn_offset, NORM);
       A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset, INVERT);
