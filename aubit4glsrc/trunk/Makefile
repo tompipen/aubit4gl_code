@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.64 2009-02-12 12:36:15 mikeaubury Exp $
+# $Id: Makefile,v 1.65 2009-02-18 19:00:12 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2934,6 +2934,8 @@ test_cc:
 
 bin/4glpc: corecompile
 	
+quickguide:a4gl_setup
+
 a4gl_setup:  bin/4glpc
 	make -C tools/quickguide
 	bin/quickguide.4ae
