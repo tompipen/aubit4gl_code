@@ -1,0 +1,66 @@
+
+
+
+     TEST GROUP SUM
+     Line: GROUP 1            100
+     Group Sum:   100
+     Group count:     1
+     Group min:   100
+     Group avg:   100.00
+     Group max:   100
+     Line: GROUP 2            123
+     Line: GROUP 2               
+     Group Sum:   123
+     Group count:     2
+     Group min:   123
+     Group avg:   123.00
+     Group max:   123
+     Grand total:   223
+     grand count:     3
+     grand min:   100
+     grand avg:   111.50
+     grand max:   123
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

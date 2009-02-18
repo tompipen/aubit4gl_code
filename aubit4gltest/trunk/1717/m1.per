@@ -1,0 +1,26 @@
+database formonly
+screen size 20 by 47
+{
+-----------------------------------------------
+| ID         |  Description                   |
+-----------------------------------------------
+|[a1        ]|[a2                            ]|
+|[a3        ]|[a4                            ]|
+-----------------------------------------------
+|[b1        ]|[b2                            ]|
+-----------------------------------------------
+}
+end
+attributes
+  a1 = formonly.a1 type char, noentry;
+  a2 = formonly.a2 type char, noentry;
+  a3 = formonly.a3 type char, noentry;
+  a4 = formonly.a4 type char, noentry;
+  
+  b1 = formonly.b1 type char;
+  b2 = formonly.b2 type char;
+end
+instructions
+  screen record a_section (formonly.a1, formonly.a2, formonly.a3, formonly.a4)
+  screen record b_section (formonly.b1, formonly.b2)
+end

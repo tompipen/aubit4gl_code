@@ -16,14 +16,14 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DIFF} 
-#	${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_RUN}
+#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests power (**) operator"
+desc: ; @echo "Tests 'run .. waiting for..'";
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_INTEGER DEFINE_CHAR DEFINE_DECIMAL USE_REPORT DDL_DECIMAL CREATE_TEMP_TABLE LOAD_FROM_INSERT_INTO CURSOR_SELECT FOREACH UI_DISPLAY_LINE_MODE DISPLAY FREE_CURSOR REPORT_ORDER_BY ON_EVERY_ROW EXIT_PROGRAM_EXPR IF "
+sql_features_used:		; @echo "DATABASE_USED DEFINE_INTEGER DEFINE_CHAR USE_REPORT ORDER_BY CURSOR_SELECT FOREACH REPORT_FIRST_PAGE_HEADER ON_EVERY_ROW ON_LAST_ROW REPORT_PAGE_TRAILER "
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
