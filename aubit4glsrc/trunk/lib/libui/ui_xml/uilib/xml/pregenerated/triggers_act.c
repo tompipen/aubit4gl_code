@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2009/02/05 15:11:08.
+ * Generated 2009/02/19 08:39:32.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -190,7 +190,6 @@ void ETag_SYNCVALUE(void)
 
 	 
 	{
-		A4GL_pause_execution();
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
 
@@ -210,7 +209,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 141 "triggers_act.act"
+#line 140 "triggers_act.act"
 
 	 
 	{
@@ -226,7 +225,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 152 "triggers_act.act"
+#line 151 "triggers_act.act"
 
 	 
 	{
@@ -242,7 +241,7 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 164 "triggers_act.act"
+#line 163 "triggers_act.act"
 
 	 
 	{
@@ -260,7 +259,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 178 "triggers_act.act"
+#line 177 "triggers_act.act"
 
 
 /* XML application entry points. */

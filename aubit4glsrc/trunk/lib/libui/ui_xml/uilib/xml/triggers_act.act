@@ -121,7 +121,6 @@ return n;
 <end tag='SYNCVALUE'>
 	<![CDATA[ 
 	{
-		A4GL_pause_execution();
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
 
