@@ -1,0 +1,14 @@
+Name: libUI_CONSOLE
+Parent: aubit4glsrc
+Description: Console user interface plug-in.  Enables basic interface to function without Curses - forms are not supported
+Functionality:  UI
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Especially usefull for CGI style applications, batch jobs etc
+
