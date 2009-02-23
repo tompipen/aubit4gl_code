@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.76 2009-02-10 08:58:45 mikeaubury Exp $
+# $Id: prompt.c,v 1.77 2009-02-23 17:31:51 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.76 2009-02-10 08:58:45 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.77 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 /**
@@ -205,7 +205,7 @@ A4GL_debug("derwin = %p",p);
   A4GL_debug ("Made fields");
   A4GL_debug ("Field attr : %d", local_field_opts (prompt->field));
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   f = new_form (sarr);
 
   A4GL_debug ("Form f = %p", f);
@@ -217,7 +217,7 @@ A4GL_debug("derwin = %p",p);
 
   prompt->f = f;
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   if (a4gl_status != 0)
     return (prompt->mode = 2);
   d = derwin (p, 0, 0, width + 1, 1);
@@ -236,7 +236,7 @@ A4GL_debug("derwin = %p",p);
   A4GL_int_form_driver (f, REQ_FIRST_FIELD);
   A4GL_int_form_driver (f, REQ_OVL_MODE);
   A4GL_debug ("Initialized form");
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
   A4GL_mja_refresh ();
   A4GL_zrefresh();

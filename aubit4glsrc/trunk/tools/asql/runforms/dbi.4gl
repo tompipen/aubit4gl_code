@@ -241,11 +241,11 @@ code
 
 
 static void do_actual_fetch(char *lv_c, int x,int y,int nf,struct BINDING *ibind) {
-	A4GLSQL_fetch_cursor(lv_c, 2,1,gv_fields,ibind);
+	A4GL_fetch_cursor(lv_c, 2,1,gv_fields,ibind);
 }
 
 static void do_execute_sql(struct BINDING *ibind, int nbind,char *sql) { 
-	A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,nbind,0,0,sql,"dbi",0,1,0),1,0,0); 
+	A4GLSQL_execute_implicit_sql(A4GL_prepare_select(ibind,nbind,0,0,sql,"dbi",0,1,0),1,0,0); 
 }
 
 
@@ -275,7 +275,7 @@ strcpy(lv_tab,lv_ct);
 strcpy(lv_col,ptr);
 A4GL_trim(lv_tab);
 A4GL_trim(lv_col);
-lv_found=A4GLSQL_read_columns(lv_tab, lv_col,&lv_dtype, &lv_size);
+lv_found=A4GL_read_columns(lv_tab, lv_col,&lv_dtype, &lv_size);
 }
 endcode
 

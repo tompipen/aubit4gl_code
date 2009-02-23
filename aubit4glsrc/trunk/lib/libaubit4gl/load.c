@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.56 2008-12-16 19:11:33 mikeaubury Exp $
+# $Id: load.c,v 1.57 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -278,7 +278,7 @@ clr_colptr (int freeit)
  *    - 1 : OK
  */
 int
-A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
+A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 {
   va_list ap;
   char *colname;
@@ -363,7 +363,7 @@ char nullbuff[200];
   A4GL_debug ("Adding prepare.. for %s", insertstr);
 
 
-  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 23, 0, 0)) != 1)
+  if (A4GL_add_prepare ("load", A4GL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 23, 0, 0)) != 1)
     {
       A4GL_exitwith ("Internal Error : Error generating insert string for load");
       doing_load = 0;
@@ -455,7 +455,7 @@ char nullbuff[200];
 	  return 0;
 	}
 
-      A4GLSQL_set_status (0, 1);
+      A4GL_set_status (0, 1);
 
       if (ibind)
 	{
@@ -489,7 +489,7 @@ char nullbuff[200];
 	}
 
 
-      A4GLSQL_execute_sql ("load", cnt, ibind);
+      A4GL_execute_sql ("load", cnt, ibind);
 
 
       if (a4gl_status != 0 || A4GL_get_a4gl_sqlca_sqlcode () != 0)
@@ -543,7 +543,7 @@ char nullbuff[200];
  *    - 1 : OK
  */
 int
-A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
+A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 {
   va_list ap;
   char *colname;
@@ -650,18 +650,18 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 	}
       A4GL_debug ("Declare..\n");
 
-      A4GLSQL_add_prepare ("a4gl_pload", (void *) A4GLSQL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 1, 0));
+      A4GL_add_prepare ("a4gl_pload", (void *) A4GL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 1, 0));
 
-      A4GLSQL_declare_cursor (0 + 0, A4GLSQL_find_prepare ("a4gl_pload"), 0, "a4gl_load");
+      A4GL_declare_cursor (0 + 0, A4GL_find_prepare ("a4gl_pload"), 0, "a4gl_load");
 
       A4GL_debug ("Open..\n");
 
-      A4GLSQL_open_cursor ("a4gl_load", 0, 0);
+      A4GL_open_cursor ("a4gl_load", 0, 0);
 
     }
   else
     {
-      if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 22, 0)) != 1)
+      if (A4GL_add_prepare ("load", A4GL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 22, 0)) != 1)
 	{
 	  A4GL_exitwith ("Internal Error : Error generating insert string for load");
 	  doing_load = 0;
@@ -699,7 +699,7 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 	  return 0;
 	}
 
-      A4GLSQL_set_status (0, 1);
+      A4GL_set_status (0, 1);
 
       //if (ibind) { free (ibind); }
 
@@ -743,11 +743,11 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 	{
 	  A4GL_debug ("Put");
 	  A4GL_push_char ("a4gl_load");
-	  A4GLSQL_put_insert (ibind, cnt);
+	  A4GL_put_insert (ibind, cnt);
 	}
       else
 	{
-	  A4GLSQL_execute_sql ("load", cnt, ibind);
+	  A4GL_execute_sql ("load", cnt, ibind);
 	}
 
 
@@ -765,7 +765,7 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
   if (use_insert_cursor)
     {
       A4GL_debug ("Close");
-      A4GLSQL_close_cursor ("a4gl_load");
+      A4GL_close_cursor ("a4gl_load");
     }
 
   if (ibind)
@@ -799,7 +799,7 @@ A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, .
 
 
 int
-A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_orig)
+A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_orig)
 {
   //va_list ap;
   //char *colname;
@@ -943,7 +943,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstm
 	      strcat (sqlstmt, ")");
 	    }
 
-	  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_select (0, 0, 0, 0, sqlstmt, "_internal_load", 24, 0, 0)) != 1)
+	  if (A4GL_add_prepare ("load", A4GL_prepare_select (0, 0, 0, 0, sqlstmt, "_internal_load", 24, 0, 0)) != 1)
 	    {
 	      if (filterfunc)
 		{
@@ -956,7 +956,7 @@ A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstm
 
 	}
 
-      A4GLSQL_set_status (0, 1);
+      A4GL_set_status (0, 1);
       if (ibind)
 	{
 	  free (ibind);
@@ -968,9 +968,12 @@ A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstm
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = DTYPE_CHAR;
 	  ibind[a].size = strlen (colptr[a]);
+	ibind[a].start_char_subscript=0;
+	ibind[a].end_char_subscript=0;
+	ibind[a].libptr=0;
 	}
       A4GL_debug ("EXECUTE SQL nfields=%d", nfields);
-      A4GLSQL_execute_sql ("load", nfields, ibind);
+      A4GL_execute_sql ("load", nfields, ibind);
 
       if (a4gl_status != 0)
 	{

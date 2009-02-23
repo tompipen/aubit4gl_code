@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.326 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: mod.c,v 1.327 2009-02-23 17:31:48 mikeaubury Exp $
 #
 */
 
@@ -788,9 +788,9 @@ open_db (char *s)
       A4GL_trim (db);
     }
 
-  A4GLSQL_set_status (0, 1);
-  A4GLSQL_init_connection (db);
-  if (A4GLSQL_get_status () != 0)
+  A4GL_set_status (0, 1);
+  A4GL_init_connection (db);
+  if (A4GL_get_status () != 0)
     {
       SPRINTF2 (buff, "Could not connect to database %s (%s)",
 	       A4GL_null_as_null (db),
@@ -821,7 +821,7 @@ pushValidateTableColumn (char *tableName, char *columnName)
   char buff[300];
 
   A4GL_debug ("pushValidateTableColumn()");
-  rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
+  rval = A4GL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
     {
       SPRINTF2 (buff, "%s.%s does not exist in the database", tableName,
@@ -2150,7 +2150,7 @@ int idtype, isize;
 	int rval;
 	idtype=-1;
 	ptr=A4GL_4glc_get_gen (UPDCOL, a);
-	rval = A4GLSQL_read_columns (current_upd_table, ptr, &idtype, &isize);
+	rval = A4GL_read_columns (current_upd_table, ptr, &idtype, &isize);
 	if (idtype==-1 || rval!=1) continue;
 //printf("Here %d %d rval=%d\n", idtype,isize,rval);
 	if ((idtype &  DTYPE_MASK )==DTYPE_SERIAL) {
@@ -2907,16 +2907,18 @@ void add_report_definition(char *s, struct  expr_str_list *params) {
         a4gl_yyerror("Report has already been called with a different number of parameters");
 }
 
+
+
 int check_cursor_name(expr_str *si) {
 char *s;
 if (si->expr_type==ET_EXPR_IDENTIFIER) {
 	s=si->expr_str_u.expr_string;
-        if (A4GL_has_pointer(s,CURSOR_USED)){
+        if (A4GL_has_pointer(s,CURSOR_DEFINED_MOD)){
                 set_yytext(s);
                 a4gl_yyerror("Cursor has already been used");
                 return 0;
         }
-        A4GL_add_pointer(s,CURSOR_USED,(void *)1);
+        A4GL_add_pointer(s,CURSOR_DEFINED_MOD,(void *)1);
 }
         return 1;
 }

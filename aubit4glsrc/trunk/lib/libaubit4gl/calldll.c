@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.82 2009-02-11 18:21:15 mikeaubury Exp $
+# $Id: calldll.c,v 1.83 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -697,7 +697,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
       A4GL_fgl_die_with_msg (43, "Error: Cannot determine AUBITDIR - STOP");
     }
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   strcpy (nfile, filename);
 
   if (strncmp (nfile, "a4gl_", 5) == 0)
@@ -828,7 +828,7 @@ A4GL_call_4gl_dll_bound (char *filename, char *function, int ni, struct BINDING 
       A4GL_fgl_die_with_msg (43, "Error: Cannot determine AUBITDIR - STOP");
     }
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   strcpy (nfile, filename);
 
   if (strncmp (nfile, "a4gl_", 5) == 0)

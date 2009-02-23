@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.72 2009-01-09 19:28:57 mikeaubury Exp $
+# $Id: sql_common.c,v 1.73 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -64,19 +64,50 @@ static int must_convert = 0;
 char save_esql_session[256];
 char lastDBUserName[256] = "";
 
+
+enum e_stmt_state
+{
+  E_STMT_DECLARED,
+  E_STMT_STMT_FREED,		/* when you do a 'FREE stmt' = might not be able to free it if its being used by a cursor 
+				   In this case - we need to delay FREEing the statement until the cursor is freed
+				   or the prepare is reused... 
+				 */
+  E_STMT_FREED
+};
+
+enum e_ref_cnt {
+	REF_CNT_PREPARE=1,
+	REF_CNT_DECLARE=2
+};
+
+
 struct s_prepared_statement
 {
   char preparedStatementName[256];
   char anonymousName[256];
-  void *sid;
+  struct s_sid *sid;
   void *extra_data;
 };
 
 struct s_prepared_statement *preparedStatements = 0;
 int npreparedStatements = 0;
 
+struct s_cursor
+{
+  char cursorname[255];
+  struct s_cid *cid;
+};
+
+
+
+struct s_cursor *declaredCursors = 0;
+int ndeclaredCursors = 0;
+
+
 static int A4GL_findPreparedStatementbySid (void *sid);
 static int A4GL_findPreparedStatementByUniq (char *name);
+
+
 //char *find_table (struct s_select *select, struct s_select_list_item *i);
 
 /*
@@ -103,14 +134,14 @@ void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void A4GLSQL_set_sqlerrm (char *m, char *p);
 
 
+static void removeCursorFromCache(char *cname) ;
+static void addCursorToCache(char *cname,struct s_cid *cid) ;
 struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
 
 static int A4GL_findPreparedStatement (char *name);
 
 
-//struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
-//struct BINDING *obind, int no, char *s, int singleton);
 /*
 =====================================================================
                     Functions definitions
@@ -129,7 +160,7 @@ static int A4GL_findPreparedStatement (char *name);
  *   - 0 : status was not altered
  */
 int
-A4GLSQL_set_status (int a, int sql)
+A4GL_set_status (int a, int sql)
 {
   if (aclfgli_get_err_flg ())
     {
@@ -137,7 +168,7 @@ A4GLSQL_set_status (int a, int sql)
       return 0;
     }
 
-  A4GL_debug ("A4GLSQL_set_status(%d,%d)", a, sql);
+  A4GL_debug ("A4GL_set_status(%d,%d)", a, sql);
 
   if ((!aclfgli_get_err_flg ()) || a >= 0)
     {
@@ -175,7 +206,7 @@ A4GL_status_ok (int sql_too)
 }
 
 void
-A4GLSQL_set_sqlerrm (char *m, char *p)
+A4GL_set_sqlerrm (char *m, char *p)
 {
   static FILE *flog = 0;
   if (A4GL_isyes (acl_getenv ("A4GL_LOGSQLERR")) && (strlen (m) || strlen (p)))
@@ -205,7 +236,7 @@ A4GLSQL_set_sqlerrm (char *m, char *p)
 
 
 void
-A4GLSQL_set_sqlerrd (int a0, int a1, int a2, int a3, int a4, int a5)
+A4GL_set_sqlerrd (int a0, int a1, int a2, int a3, int a4, int a5)
 {
 
   A4GL_debug ("A4GLSQL_set_sqlerrd(%d,%d,%d,%d,%d,%d)", a0, a1, a2, a3, a4, a5);
@@ -232,10 +263,10 @@ A4GLSQL_set_sqlerrd (int a0, int a1, int a2, int a3, int a4, int a5)
  * @return
  */
 void
-A4GLSQL_xset_status (int a)
+A4GL_xset_status (int a)
 {
   A4GL_debug ("A4GLSQL_xset_status(%d)", a);
-  A4GLSQL_set_status (a, 0);
+  A4GL_set_status (a, 0);
 }
 
 /**
@@ -248,11 +279,11 @@ A4GLSQL_xset_status (int a)
  * @return
  */
 int
-A4GLSQL_init_connection (char *dbName)
+A4GL_init_connection (char *dbName)
 {
   int rc;
   rc = A4GLSQL_init_connection_internal (dbName);
-	A4GL_setenv("USING_ESQLC","N",1);
+  A4GL_setenv ("USING_ESQLC", "N", 1);
   if (rc == 0)
     A4GL_apisql_add_sess ("default");
   return rc;
@@ -264,7 +295,7 @@ A4GLSQL_init_connection (char *dbName)
  * @return The status value.
  */
 int
-A4GLSQL_get_status (void)
+A4GL_get_status (void)
 {
   A4GL_debug ("Status=%d sqlca.sqlcode=%d", a4gl_status, a4gl_sqlca.sqlcode);
 
@@ -275,156 +306,6 @@ A4GLSQL_get_status (void)
 }
 
 
-
-
-
-
-
-/**
- * Init a new connection to the database and associate with an explicit 
- * session name.
- *
- * @param sessname The name to be tied to the session.
- * @param dsn The data source name.
- * @param usr The user name to establish the connection.
- * @param pwd The password of the user to set the connection.
- */
-int
-A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
-{
-  int rc;
-  rc = A4GLSQL_init_session_internal (sessname, dsn, usr, pwd);
-  if (rc == 0)
-    A4GL_apisql_add_sess (sessname);
-  return rc;
-}
-
-/**
- * Sets the connection to use in the execution of the next SQL statement.
- *
- * @param sessname The session name.
- */
-int
-A4GLSQL_set_conn (char *sessname)
-{
-  int rc;
-  rc = A4GLSQL_set_conn_internal (sessname);
-  if (rc)
-    A4GL_apisql_set_sess (sessname);
-  return rc;
-}
-
-
-
-
-/**
- * Close a named connection.
- *
- * @param sessname The session/connection name.
- * @return
- *  - 0 : Connection closed.
- *  - 1 : Connection does not exist or error ocurred.
- */
-int
-A4GLSQL_close_session (char *sessname)
-{
-  int rc;
-  rc = A4GLSQL_close_session_internal (sessname);
-  if (rc)
-    A4GL_apisql_drop_sess (sessname);
-  return rc;
-}
-
-
-
-
-static char * unbadchar(char *s) {
-static char buff[2000];
-int a;
-int b=0;
-for (a=0;a<strlen(s);a++) {
-	if (s[a]>='a'&&s[a]<='z') {buff[b++]=s[a]; continue;}
-	if (s[a]>='0'&&s[a]<='9') {buff[b++]=s[a]; continue;}
-	if (s[a]>='A'&&s[a]<='Z') {buff[b++]=s[a]; continue;}
-	buff[b++]='_';
-}
-buff[b]=0;
-return buff;
-}
-
-
-/**
- * Prepare a select statement.
- *
- * @param ibind The input bind array.
- * @param ni Number of elements in the input bind array.
- * @param obind The output bind array.
- * @param no The number of elements in the output bind array.
- * @param s A string containing the select statement.
- * @return A pointer to the statement identification structure.
- */
-/* int -- struct s_sid * in sql.c */
-struct s_sid *
-A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s, char *mod, int line, int converted,
-			int singleton)
-{
-  char buff[256];
-  char uniq_id[100];
-  void *sid;
-  char *ptr;
-  char *sold;
-
-
-  A4GL_debug ("must_convert=%d\n", must_convert);
-
-  SPRINTF1 (buff, "%s", unbadchar(mod));
-
-  ptr = strchr (buff, '.');
-
-  if (ptr)
-    {
-      *ptr = 0;
-    }
-
-  sold = s;
-  if (must_convert)
-    {
-      A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
-      s = strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
-	
-    }
-
-
-
-  SPRINTF2 (uniq_id, "a4gl_st_%s_%d", buff, line);
-
-  sid = A4GLSQL_find_prepare (uniq_id);
-  if (sid)
-    {
-      A4GLSQL_free_prepare (sid);
-      if (A4GL_removePreparedStatementBySid (sid)) {
-		free(sid);
-	}
-    }
-
-  sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
-  if (s != sold)
-    {
-      if (sid)
-	{
-	  //A4GL_pause_execution();
-	  A4GL_set_associated_mem (sid, s);
-	}
-    }
-
-  //A4GL_add_pointer (uniq_id,PRECODE, sid);
-  A4GL_addPreparedStatement ("ANON", uniq_id, sid, NULL);
-
-  return (struct s_sid *) sid;
-}
-
-
-
 /**
  *
  *
@@ -433,7 +314,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, in
  */
 /* int -- void in sql;.c */
 void
-A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDING *ibind, int converted)
+A4GL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDING *ibind, int converted)
 {
   if (must_convert)
     {
@@ -455,7 +336,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BI
  */
 /* int -- void in sql;.c */
 char *
-A4GLSQL_translate (char *sql1)
+A4GL_translate_sql (char *sql1)
 {
   char *s;
   s = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1, 0);
@@ -492,13 +373,106 @@ A4GL_global_A4GLSQL_set_sqlcode (int n)
 
 
 
+
+
+/**
+ * Init a new connection to the database and associate with an explicit 
+ * session name.
+ *
+ * @param sessname The name to be tied to the session.
+ * @param dsn The data source name.
+ * @param usr The user name to establish the connection.
+ * @param pwd The password of the user to set the connection.
+ */
+int
+A4GL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
+{
+  int rc;
+  rc = A4GLSQL_init_session_internal (sessname, dsn, usr, pwd);
+  if (rc == 0)
+    A4GL_apisql_add_sess (sessname);
+  return rc;
+}
+
+/**
+ * Sets the connection to use in the execution of the next SQL statement.
+ *
+ * @param sessname The session name.
+ */
+int
+A4GL_set_conn (char *sessname)
+{
+  int rc;
+  rc = A4GLSQL_set_conn_internal (sessname);
+  if (rc)
+    A4GL_apisql_set_sess (sessname);
+  return rc;
+}
+
+
+
+
+/**
+ * Close a named connection.
+ *
+ * @param sessname The session/connection name.
+ * @return
+ *  - 0 : Connection closed.
+ *  - 1 : Connection does not exist or error ocurred.
+ */
+int
+A4GL_close_session (char *sessname)
+{
+  int rc;
+  rc = A4GLSQL_close_session_internal (sessname);
+  if (rc)
+    A4GL_apisql_drop_sess (sessname);
+  return rc;
+}
+
+
+
+
+static char *
+unbadchar (char *s)
+{
+  static char buff[2000];
+  int a;
+  int b = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] >= 'a' && s[a] <= 'z')
+	{
+	  buff[b++] = s[a];
+	  continue;
+	}
+      if (s[a] >= '0' && s[a] <= '9')
+	{
+	  buff[b++] = s[a];
+	  continue;
+	}
+      if (s[a] >= 'A' && s[a] <= 'Z')
+	{
+	  buff[b++] = s[a];
+	  continue;
+	}
+      buff[b++] = '_';
+    }
+  buff[b] = 0;
+  return buff;
+}
+
+
+
+
+
 /**
  * Set the dialect of SQL being used in the 4GL program,
  *
  * @param	char string, eg. "INFORMIX", "ORACLE", "SAPDB"
  */
 void
-A4GLSQL_set_dialect (char *dialect)
+A4GL_set_dialect (char *dialect)
 {
   A4GL_debug ("set_dialect");
   if (dialect && (*dialect > 0))
@@ -512,249 +486,107 @@ A4GLSQL_set_dialect (char *dialect)
   A4GL_apisql_must_convert ();
 }
 
-/*======================= (private functions) ========================*/
+
+
+
+/* Prepare handling.... */
 
 /**
- * Make a copy of a SQL statement string, but with extra space
- * in case of any syntax conversions.  Somewhat like strdup().
- * The copy is malloc'ed and padded with spaces to its new length.
- * 
- * @param	pointer to original sql
- * @return	pointer to copy
+ * Prepare a select statement.
+ *
+ * @param ibind The input bind array.
+ * @param ni Number of elements in the input bind array.
+ * @param obind The output bind array.
+ * @param no The number of elements in the output bind array.
+ * @param s A string containing the select statement.
+ * @return A pointer to the statement identification structure.
  */
-char *
-A4GL_apisql_strdup (char *sql)
+/* int -- struct s_sid * in sql.c */
+struct s_sid *
+A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s, char *mod, int line, int converted,
+			int singleton)
 {
-  char *p = NULL;
-  int n1, n2;
+  char buff[256];
+  char uniq_id[100];
+  struct s_sid *sid;
+  char *ptr;
+  char *sold;
 
-  /* the copy is about 1.5 times the length of the original */
-  n1 = strlen (sql);
-  n2 = 20 + (n1 * 3 / 2);
 
-  /* malloc space for the new string, copy it and pad with spaces */
-  if ((p = acl_malloc2 (n2 + 1)))
+  A4GL_debug ("A4GL_prepare_select  must_convert=%d s=%s\n", must_convert, s);
+
+  SPRINTF1 (buff, "%s", unbadchar (mod));
+
+  ptr = strchr (buff, '.');
+
+  if (ptr)
     {
-      p = memcpy (memset (p, ' ', n2), sql, n1);
-      p[n2] = '\0';
+      *ptr = 0;
     }
-  return p;
-}
 
-/**
- * Add the named session to the sessions list and make it current
- * 
- * @param	session name
- */
-void
-A4GL_apisql_add_sess (char *sessname)
-{
-  struct sess *next;
-  next = curr_sess;
-  A4GL_debug ("Add session : %s\n", sessname);
-  curr_sess = (struct sess *) acl_malloc2 (sizeof (struct sess));
-  strcpy (curr_sess->sessname, sessname);
-  strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
-  curr_sess->next = next;
-  A4GL_apisql_must_convert ();
-}
-
-
-int
-A4GL_apisql_has_sess (char *sessname)
-{
-  struct sess *p;
-  struct sess *p2 = NULL;
-  p2 = NULL;
-  p = curr_sess;
-  while (p != NULL)
+  sold = s;
+  if (must_convert)
     {
+      A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
+      s = strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
 
-      if (strcmp (p->sessname, sessname) != 0)
-	{
-	  p2 = p;
-	  p = p->next;
-	  continue;
-	}
-      return 1;
     }
-  return 0;
-}
 
-/**
- * Moves the named session to the front of the sessions list
- * 
- * @param	session name
- */
-void
-A4GL_apisql_set_sess (char *sessname)
-{
-  struct sess *p;
-  struct sess *pprev = NULL;
-  struct sess *pprev_curr = NULL;
 
-  p = curr_sess;
-  while (p != NULL)
+
+  SPRINTF2 (uniq_id, "a4gl_st_%s_%d", buff, line);
+
+  sid = A4GL_find_prepare (uniq_id);
+  if (sid)
     {
-      if (strcmp (p->sessname, sessname) == 0)
-	{
-	  if (pprev)
-	    pprev->next = p->next;
-	  else
-	    break;		// already on top
-	  pprev_curr = curr_sess;
-	  curr_sess = p;
-	  curr_sess->next = pprev_curr;
-	  break;
-	}
-      pprev = p;
-      p = p->next;
+	sid->refcnt=0; // Force the free
+        A4GL_free_prepare (sid);
     }
-  A4GL_apisql_must_convert ();
-}
 
-/**
- * Drop the named session from the sessions list
- * 
- * @param	session name
- */
-void
-A4GL_apisql_drop_sess (char *sessname)
-{
-  struct sess *p;
-  struct sess *p2 = NULL;
-  p = curr_sess;
-  while (p != NULL)
-    {
-      if (strcmp (p->sessname, sessname) != 0)
-	{
-	  p2 = p;
-	  p = p->next;
-	  continue;
-	}
-      if (p2 == NULL)
-	{
-	  curr_sess = p->next;
-	}
-      else
-	{
-	  p2->next = p->next;
-	}
-      free (p);
-      break;
-    }
-}
+  sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
 
-/**
- * Returns the default SQL dialect expected from the program,
- * which is either set from $SQLDIALECT, or is "INFORMIX"
- * 
- * @param	session name
- */
-char *
-A4GL_apisql_dflt_dialect (void)
-{
-  char *p;
-  p = acl_getenv ("SQLDIALECT");
-  if (p && *p > 0)
-    return p;
-  return "INFORMIX";
-}
+  if (sid) {
+  	sid->refcnt=REF_CNT_PREPARE;
+  }
 
-/**
- * Checks source and DBMS SQL dialects and determines
- * if we must convert
- * 
- * @param	session name
- */
-void
-A4GL_apisql_must_convert (void)
-{
-
-  A4GL_debug ("Here");
-  /* if no source dialect is set, use the default */
-  if (*source_dialect == '\0')
+  if (s != sold)
     {
-      strcpy (source_dialect, A4GL_apisql_dflt_dialect ());
-    }
-  /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
-   */
-  must_convert = 0;
-  if (A4GL_compile_time_convert () == 0)
-    {
-      return;
-    }
-  A4GL_debug ("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",
-	      acl_getenv ("SQLCONVERT"), source_dialect, curr_sess->dbms_dialect);
-  if (A4GL_isyes (acl_getenv ("SQLCONVERT")) && (source_dialect[0] > '\0')
-      && (curr_sess->dbms_dialect[0] > '\0')
-      && ((strcmp (curr_sess->dbms_dialect, source_dialect) != 0) || A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
-    {
-      A4GL_debug ("Setting Must convert");
-      if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
+      if (sid)
 	{
-	  must_convert = 0;
-	}
-      else
-	{
-	  must_convert = 1;
+	  A4GL_set_associated_mem (sid, s);
 	}
     }
-  else
-    {
-      A4GL_debug ("Not setting must convert");
-    }
+
+  A4GL_addPreparedStatement ("ANON", uniq_id, sid, NULL);
+  return (struct s_sid *) sid;
 }
 
 
-int
-A4GLSQL_swap_bind_stmt (char *stmt, char t, char **sb, int *sc, void *bind, int cnt)
-{
-  struct s_sid *p;
-  p = A4GLSQL_find_prepare (stmt);
-  A4GL_debug ("p=%p", p);
-  if (p)
-    {
-      if (sb)
-	{
-	  if (t == 'i')
-	    {
-	      *sb = (char *) p->ibind;
-	    }
-	  if (t == 'o')
-	    {
-	      *sb = (char *) p->obind;
-	    }
+
+// Remove any links to prepared statements that have been removed/freed...
+static void blank_any_cursors_using(struct s_sid *sid) {
+int a;
+
+for (a=0;a<ndeclaredCursors;a++) {
+	if (declaredCursors[a].cursorname[0]==0) continue; // Its freed...
+
+	if (declaredCursors[a].cid) {
+		if (declaredCursors[a].cid->statement==sid) {
+				declaredCursors[a].cid->statement=NULL;
+		}
 	}
-      if (sc)
-	{
-	  if (t == 'i')
-	    {
-	      *sc = p->ni;
-	    }
-	  if (t == 'o')
-	    {
-	      *sc = p->no;
-	    }
-	}
-      if (t == 'i')
-	{
-	  p->ibind = bind;
-	  p->ni = cnt;
-	}
-      if (t == 'o')
-	{
-	  p->obind = bind;
-	  p->no = cnt;
-	}
-    }
-  return 1;
+
 }
+
+
+}
+
+
 
 
 
 int
-A4GLSQL_add_prepare (char *pname, void *vsid)
+A4GL_add_prepare (char *pname, void *vsid)
 {
   struct s_sid *sid;
   int a;
@@ -763,12 +595,11 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
   a = A4GL_findPreparedStatement (pname);
   if (a >= 0)
     {
-      void *p;
-      p = preparedStatements[a].sid;
-      A4GLSQL_free_prepare (p);
-	
-      preparedStatements[a].sid = 0;
-      strcpy (preparedStatements[a].preparedStatementName, "");
+        void *p;
+        p = preparedStatements[a].sid;
+        A4GL_free_prepare (p);
+        preparedStatements[a].sid = 0;
+        strcpy (preparedStatements[a].preparedStatementName, "");
     }
 
 
@@ -777,6 +608,8 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
       return 0;
     }
 
+
+A4GL_debug("Add prepare %s = %s\n", pname,sid->select);
 
   a = A4GL_findPreparedStatementbySid (sid);
   if (a >= 0)
@@ -787,45 +620,32 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
 	  return 0;
 	}
       strcpy (preparedStatements[a].preparedStatementName, pname);
+      
       return 1;
     }
   else
     {
-      //A4GL_assertion(1,"Couldn't find prepared statement");
       return 0;
     }
 
 }
 
 
-/*
-void*
-A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind)
-{
-  return A4GLSQL_prepare_select (ibind, ni, (struct BINDING *) 0, 0, s,0);
-}
-*/
-
-/*
-void * A4GLSQL_prepare_sql (char *s)
-{
-  return A4GLSQL_prepare_select ((void *) 0, 0, (void *) 0, 0, s,0);
-}
-*/
-
 int
-A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
+A4GL_execute_sql (char *pname, int ni, void *vibind)
 {
-  void *sid;
+  struct s_sid *sid;
   struct BINDING *ibind;
   ibind = vibind;
-  A4GL_debug ("ESQL : A4GLSQL_execute_sql");
-  sid = A4GLSQL_find_prepare (pname);	// ,0
+  A4GL_debug ("A4GL_execute_sql : %s ",pname);
+  sid = A4GL_find_prepare (pname);	// ,0
 
   if (sid != 0)
     {
       //sid->ibind = ibind;
       //sid->ni = ni;
+      A4GL_debug("A4GL_execute .. stmt=%s select=%s\n", pname, sid->select);
+     
       return A4GLSQL_execute_implicit_sql (sid, 0, ni, ibind);
     }
   else
@@ -838,7 +658,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
 
 
 void *
-A4GLSQL_find_prepare (char *pname)
+A4GL_find_prepare (char *pname)
 {
   int a;
 
@@ -859,77 +679,8 @@ A4GLSQL_find_prepare (char *pname)
 
 
 
-#ifdef NDEF
-
-/**
- *  * Find a prepared statement.
- *  *
- *  * There should be a global strucutre or array where to store all the
- *  * prepared statements.
- *  *
- *  * @todo : The mode should be used for something.
- *  *
- *  * @param pname The statement name.
- *  * @param mode
- *  * @return
- *  *   - A pointer to the structure found in the tree.
- *  *   - 0 : The structure was not found
- *  */
-void *
-A4GLSQL_find_prepare (char *pname)
-{
-  struct s_sid *ptr;
-  //if (strcmp(pname,"a4gl_st_prepare_29")==0) {
-  //A4GL_pause_execution();
-//}
-  A4GL_debug ("Find prepare : %s\n", pname);
-  A4GL_set_errm (pname);
-  ptr = (struct s_sid *) A4GL_find_pointer_val (pname, PRECODE);
-  if (ptr)
-    {
-      A4GL_debug ("Found it : %p", ptr);
-      return (void *) ptr;
-    }
-  A4GL_debug ("Not found");
-  return (void *) 0;
-//struct s_sid 
-}
-#endif
 
 
-#ifdef NDEF
-/* 
- * This function takes a piece of SQL (normally from a PREPARE statement
- * and logs it to a file
- */
-void
-A4GL_log_sql_prepared (char *s)
-{
-  char *fname;
-  FILE *fout;
-  char buff[256];
-  fname = acl_getenv ("LOGSQL");
-  if (fname == 0)
-    return;
-  if (strlen (fname) == 0)
-    return;
-
-  // Firstly - MAPSQL should be a directory...
-  SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (), getpid ());
-  fout = fopen (buff, "a");
-  if (fout == 0)
-    {				// Maybe - its just a file ?
-      SPRINTF1 (buff, "%s", fname);
-      fout = fopen (buff, "a");
-    }
-  if (fout == 0)
-    return;
-  // if we've got to here - we've got a file to write to...
-  //
-  FPRINTF (fout, "%s\n", s);
-  fclose (fout);
-}
-#endif
 
 void
 A4GL_log_sql_prepared_map (char *s)
@@ -993,6 +744,160 @@ A4GL_log_sql_prepared_map (char *s)
 
 
 
+
+
+
+// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
+static int
+A4GL_findPreparedStatement (char *name)
+{
+  int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
+	    {
+	      return a;
+	    }
+	}
+    }
+  return -1;
+}
+
+// Finds the index in the preparedStatements for the name passed as a parameter, or -1 if not found...
+static int
+A4GL_findPreparedStatementByUniq (char *name)
+{
+  int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (strcmp (name, preparedStatements[a].anonymousName) == 0)
+	    {
+	      return a;
+	    }
+	}
+    }
+  return -1;
+}
+
+// Finds the index in the preparedStatements for the name passed as a parameter, or -1 if not found...
+void *
+A4GL_getSIDByUniq (char *name)
+{
+  int a;
+  a = A4GL_findPreparedStatementByUniq (name);
+  if (a >= 0)
+    {
+      return preparedStatements[a].sid;
+    }
+  return NULL;
+}
+
+
+// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
+static int
+A4GL_findPreparedStatementbySid (void *sid)
+{
+  int a;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
+	    {
+	      return a;
+	    }
+	}
+    }
+  return -1;
+}
+
+
+
+void
+A4GL_removePreparedStatement (char *name)
+{
+  int a;
+  a = A4GL_findPreparedStatement (name);
+  strcpy (preparedStatements[a].preparedStatementName, "");
+  strcpy (preparedStatements[a].anonymousName, "");
+  preparedStatements[a].sid = NULL;
+  preparedStatements[a].extra_data = NULL;
+}
+
+int
+A4GL_removePreparedStatementBySid (void *sid)
+{
+  int a;
+  int ok = 0;
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
+	    {
+	      strcpy (preparedStatements[a].preparedStatementName, "");
+	      strcpy (preparedStatements[a].anonymousName, "");
+	      preparedStatements[a].sid = NULL;
+	      preparedStatements[a].extra_data = NULL;
+	      ok = 1;
+	    }
+	}
+    }
+  return ok;
+}
+
+
+void
+A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_data)
+{
+  int a;
+  int found = -1;
+
+  A4GL_debug ("npreparedStatements=%d\n", npreparedStatements);
+  if (npreparedStatements)
+    {
+      for (a = 0; a < npreparedStatements; a++)
+	{
+
+	  if (strcmp (preparedStatements[a].preparedStatementName, "ANON") == 0)
+	    continue;
+
+	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
+	    {
+	      A4GL_assertion (1, "Statement already exists");
+	    }
+
+	  if (strlen (preparedStatements[a].preparedStatementName) == 0)
+	    {
+	      found = a;
+	      break;
+	    }
+	}
+    }
+
+  if (found == -1)
+    {
+      // no free space...
+      npreparedStatements++;
+      preparedStatements = acl_realloc (preparedStatements, npreparedStatements * sizeof (preparedStatements[0]));
+      found = npreparedStatements - 1;
+    }
+  strcpy (preparedStatements[found].preparedStatementName, name);
+  strcpy (preparedStatements[found].anonymousName, anonname);
+  preparedStatements[found].sid = sid;
+  preparedStatements[found].extra_data = extra_data;
+}
+
+
+
+
+
+
+
 char *
 A4GLSQLCV_convert_sql (char *target_dialect, char *sql)
 {
@@ -1007,12 +912,10 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
   struct s_table *ptr;
 
   ptr = acl_malloc2 (sizeof (struct s_table));
-  ptr->tabname = acl_strdup (tname);
-	//A4GL_set_associated_mem(ptr, tname);
+  ptr->tabname = acl_strdup_With_Context (tname);
   if (alias)
     {
-      ptr->alias = acl_strdup (alias);
-	//A4GL_set_associated_mem(ptr, ptr->alias);
+      ptr->alias = acl_strdup_With_Context (alias);
     }
   else
     {
@@ -1022,6 +925,14 @@ A4GLSQLPARSE_new_tablename (char *tname, char *alias)
   ptr->outer_next = 0;
   ptr->outer_type = E_OUTER_NONE;
   ptr->outer_join_condition = NULL;
+
+/*
+  A4GL_set_associated_mem(ptr, tname);
+  if (alias) {
+      A4GL_set_associated_mem(ptr, ptr->alias);
+  }
+*/
+
   return ptr;
 }
 
@@ -1076,11 +987,11 @@ A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a)
   tl->tables.tables_val[tl->tables.tables_len - 1].alias = 0;
   if (t)
     {
-      tl->tables.tables_val[tl->tables.tables_len - 1].tabname = acl_strdup (t);
+      tl->tables.tables_val[tl->tables.tables_len - 1].tabname = acl_strdup_With_Context (t);
     }
   if (a)
     {
-      tl->tables.tables_val[tl->tables.tables_len - 1].alias = acl_strdup (a);
+      tl->tables.tables_val[tl->tables.tables_len - 1].alias = acl_strdup_With_Context (a);
     }
   return tl;
 }
@@ -1376,7 +1287,7 @@ A4GLSQLPARSE_from_clause (struct s_select *select, struct s_table *t, char *fill
 }
 
 int
-A4GLSQL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
+A4GL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
 {
   char *buff;
   int rval = 0;
@@ -1816,6 +1727,524 @@ A4GL_ESQL_set_cursor_is_closed (char *s)
 
 
 char *
+A4GL_get_clobbered_from (char *s)
+{
+  return s;
+}
+
+
+
+
+
+
+void A4GL_free_cursor(char* cursor_name) {
+	struct s_cid *ptr=NULL;
+	struct s_sid *sid=NULL;
+
+	a4gl_sqlca.sqlcode=0;
+	ptr=A4GL_find_cursor(cursor_name);
+
+        if (ptr) {
+		if (ptr) {	
+			if (ptr->statement) {
+				if (ptr->statement->refcnt & REF_CNT_DECLARE) {
+					ptr->statement->refcnt-=REF_CNT_DECLARE;
+					A4GL_free_prepare(ptr->statement);
+				}
+			}
+		}
+
+		if (ptr->cursorState==E_CURSOR_OPEN) {
+			A4GL_close_cursor(cursor_name);
+		}
+
+		ptr->cursorState=E_CURSOR_FREED; /* wont be around long - but just in case the memory gets reused by mistake */
+
+		A4GLSQL_free_cursor_internal(cursor_name);
+		A4GL_free_associated_mem (ptr);
+  		free (ptr);
+		removeCursorFromCache(cursor_name);
+	}
+
+
+        sid=A4GL_find_prepare (cursor_name);
+
+
+       	if (sid) { 
+		if (sid->refcnt & REF_CNT_PREPARE) {
+			sid->refcnt-=REF_CNT_PREPARE;
+		}
+		A4GL_free_prepare(sid); 
+		
+	}
+	// now ... remove it from our list of cursors...
+}
+
+/*
+ *
+ * static void A4GL_sql_exitwith(char *s) {
+                int s1;
+                s1=a4gl_status;
+                A4GL_exitwith(s);
+                if (s1==0  && a4gl_status!=0) { a4gl_sqlca.sqlcode=a4gl_status; }
+}
+*/
+
+
+int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) {
+	struct s_cid *cid;
+        cid = A4GL_find_cursor(cursor_name);
+
+        if (cid==NULL) {
+                strcpy(a4gl_sqlca.sqlerrm,cursor_name);
+                A4GL_exitwith_sql("Cursor not found (%s)");
+                return 1;
+        }
+
+	if (cid->cursorState!=E_CURSOR_OPEN) {
+                strcpy(a4gl_sqlca.sqlerrm,cursor_name);
+                A4GL_exitwith_sql("Fetch attempted on unopened cursor (%s)");
+                return 1;
+	}
+
+	return A4GLSQL_fetch_cursor_internal(cursor_name,fetch_mode,fetch_when,nibind,ibind);
+}
+
+int A4GL_open_cursor(char* s,int no,void* vibind) {
+	struct s_cid *cid;
+	int bad;
+        cid = A4GL_find_cursor(s);
+
+  	if (cid==NULL) {
+                strcpy(a4gl_sqlca.sqlerrm,s);
+                A4GL_exitwith_sql("Cursor not found (%s)");
+                return 1;
+        }
+
+	A4GL_assertion(cid->cursorState==E_CURSOR_FREED,"opening a freed cursor");
+
+	if (cid->cursorState==E_CURSOR_OPEN) {
+		A4GL_close_cursor(s);
+	}
+
+	bad=A4GLSQL_open_cursor_internal(s,no,vibind);
+
+        if (!bad) {
+		cid->cursorState=E_CURSOR_OPEN;
+	} else {
+		cid->cursorState=E_CURSOR_DECLARED;
+	}
+
+
+	return bad;
+}
+
+
+
+
+static void addCursorToCache(char *cname,struct s_cid *cid)  {
+int a;
+int nextfree=-1;
+  	for (a=0;a<ndeclaredCursors;a++) {
+		if (A4GL_aubit_strcasecmp(declaredCursors[a].cursorname,cname)==0) {
+			A4GL_assertion(1,"Cursor already in cache list...");
+		}
+		if (nextfree==-1 && declaredCursors[a].cursorname[0]==0) { // ie. strlen==0
+			nextfree=a;
+		}
+  	}
+	if (nextfree==-1) {
+		ndeclaredCursors++;
+		declaredCursors=realloc(declaredCursors,sizeof(declaredCursors[0])*ndeclaredCursors);
+		nextfree=ndeclaredCursors-1;
+	}
+
+
+	strcpy(declaredCursors[nextfree].cursorname,cname);
+	declaredCursors[nextfree].cid=cid;
+}
+
+/* 
+ * Remove the entry from the cache - this doesn't
+ * actually free anything - it just removes that link between the 
+ * name and the s_cid...
+ */
+static void removeCursorFromCache(char *cname) {
+int a;
+	// are there any cursors to even look through ?
+  	if (ndeclaredCursors==0) {
+			return ;
+  	}
+	
+
+  	for (a=0;a<ndeclaredCursors;a++) {
+		if (A4GL_aubit_strcasecmp(declaredCursors[a].cursorname,cname)==0) {
+			strcpy(declaredCursors[a].cursorname,"");
+			return;
+		}
+  	}
+	A4GL_assertion(1,"Could not remove cursor from cache - it wasnt there...");
+}
+
+
+void *A4GL_find_cursor (char *cname)
+{
+  struct s_cid *ptr;
+  int a;
+  ptr = NULL; /* .... */
+
+
+// are there any cursors to even look through ?
+  if (ndeclaredCursors==0) {
+		return NULL;
+  }
+
+
+  for (a=0;a<ndeclaredCursors;a++) {
+	if (A4GL_aubit_strcasecmp(declaredCursors[a].cursorname,cname)==0) {
+		ptr=declaredCursors[a].cid;
+		break;
+	}
+  }
+
+
+  if (ptr) return ptr;
+
+  //A4GL_exitwith_sql ("Cursor not found");
+  return NULL;
+}
+
+
+
+
+
+void A4GL_flush_cursor(char* cursor) {
+	struct s_cid *cid;
+        cid = A4GL_find_cursor(cursor);
+
+  	if (cid==NULL) {
+                strcpy(a4gl_sqlca.sqlerrm,cursor);
+                A4GL_exitwith_sql("Cursor not found (%s)");
+                return;
+        }
+	
+	A4GLSQL_flush_cursor_internal(cursor);
+}
+
+int A4GL_close_cursor(char* currname) {
+	int bad;
+	struct s_cid *cid;
+
+        cid = A4GL_find_cursor(currname);
+
+  	if (cid==NULL) {
+                strcpy(a4gl_sqlca.sqlerrm,currname);
+                A4GL_exitwith_sql("Cursor not found (%s)");
+                return 1;
+        }
+
+	bad=A4GLSQL_close_cursor_internal(currname);
+	cid->cursorState=E_CURSOR_CLOSED;
+	return bad;
+
+}
+
+
+void* A4GL_declare_cursor(int upd_hold,void* vsid,int scroll,char* cursname) {
+struct s_cid *cid;
+struct s_sid *sid;
+sid=vsid;
+
+	if (sid == 0) {
+		A4GL_exitwith_sql ("Can't declare cursor for non-prepared statement");
+		return 0;
+	}
+
+
+    	/* if it already exists - clear it.. */
+
+        cid = A4GL_find_cursor(cursname);
+
+	if (cid) {
+		A4GL_free_cursor(cursname);
+	}
+
+	cid=A4GLSQL_declare_cursor_internal(upd_hold,sid,scroll,cursname);
+
+	sid->refcnt|=REF_CNT_DECLARE;
+
+	A4GL_debug("A4GL_declare .. cursor =%s select=%s\n", cursname, sid->select);
+
+	if (cid) {
+		cid->cursorState=E_CURSOR_DECLARED;
+		addCursorToCache(cursname,cid);
+	}
+
+	return cid;
+}
+
+
+void A4GL_put_insert(void* ibind,int n) {
+	char *cursorName;
+	cursorName = A4GL_char_pop ();
+	A4GLSQL_put_insert_internal(cursorName, ibind, n);
+	free(cursorName);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*======================= (private functions) ========================*/
+
+/**
+ * Make a copy of a SQL statement string, but with extra space
+ * in case of any syntax conversions.  Somewhat like strdup().
+ * The copy is malloc'ed and padded with spaces to its new length.
+ * 
+ * @param	pointer to original sql
+ * @return	pointer to copy
+ */
+char *
+A4GL_apisql_strdup (char *sql)
+{
+  char *p = NULL;
+  int n1, n2;
+
+  /* the copy is about 1.5 times the length of the original */
+  n1 = strlen (sql);
+  n2 = 20 + (n1 * 3 / 2);
+
+  /* malloc space for the new string, copy it and pad with spaces */
+  if ((p = acl_malloc2 (n2 + 1)))
+    {
+      p = memcpy (memset (p, ' ', n2), sql, n1);
+      p[n2] = '\0';
+    }
+  return p;
+}
+
+/**
+ * Add the named session to the sessions list and make it current
+ * 
+ * @param	session name
+ */
+void
+A4GL_apisql_add_sess (char *sessname)
+{
+  struct sess *next;
+  next = curr_sess;
+  A4GL_debug ("Add session : %s\n", sessname);
+  curr_sess = (struct sess *) acl_malloc2 (sizeof (struct sess));
+  strcpy (curr_sess->sessname, sessname);
+  strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
+  curr_sess->next = next;
+  A4GL_apisql_must_convert ();
+}
+
+
+int
+A4GL_apisql_has_sess (char *sessname)
+{
+  struct sess *p;
+  struct sess *p2 = NULL;
+  p2 = NULL;
+  p = curr_sess;
+  while (p != NULL)
+    {
+
+      if (strcmp (p->sessname, sessname) != 0)
+	{
+	  p2 = p;
+	  p = p->next;
+	  continue;
+	}
+      return 1;
+    }
+  return 0;
+}
+
+/**
+ * Moves the named session to the front of the sessions list
+ * 
+ * @param	session name
+ */
+void
+A4GL_apisql_set_sess (char *sessname)
+{
+  struct sess *p;
+  struct sess *pprev = NULL;
+  struct sess *pprev_curr = NULL;
+
+  p = curr_sess;
+  while (p != NULL)
+    {
+      if (strcmp (p->sessname, sessname) == 0)
+	{
+	  if (pprev)
+	    pprev->next = p->next;
+	  else
+	    break;		// already on top
+	  pprev_curr = curr_sess;
+	  curr_sess = p;
+	  curr_sess->next = pprev_curr;
+	  break;
+	}
+      pprev = p;
+      p = p->next;
+    }
+  A4GL_apisql_must_convert ();
+}
+
+/**
+ * Drop the named session from the sessions list
+ * 
+ * @param	session name
+ */
+void
+A4GL_apisql_drop_sess (char *sessname)
+{
+  struct sess *p;
+  struct sess *p2 = NULL;
+  p = curr_sess;
+  while (p != NULL)
+    {
+      if (strcmp (p->sessname, sessname) != 0)
+	{
+	  p2 = p;
+	  p = p->next;
+	  continue;
+	}
+      if (p2 == NULL)
+	{
+	  curr_sess = p->next;
+	}
+      else
+	{
+	  p2->next = p->next;
+	}
+      free (p);
+      break;
+    }
+}
+
+/**
+ * Returns the default SQL dialect expected from the program,
+ * which is either set from $SQLDIALECT, or is "INFORMIX"
+ * 
+ * @param	session name
+ */
+char *
+A4GL_apisql_dflt_dialect (void)
+{
+  char *p;
+  p = acl_getenv ("SQLDIALECT");
+  if (p && *p > 0)
+    return p;
+  return "INFORMIX";
+}
+
+/**
+ * Checks source and DBMS SQL dialects and determines
+ * if we must convert
+ * 
+ * @param	session name
+ */
+void
+A4GL_apisql_must_convert (void)
+{
+
+  A4GL_debug ("Here");
+  /* if no source dialect is set, use the default */
+  if (*source_dialect == '\0')
+    {
+      strcpy (source_dialect, A4GL_apisql_dflt_dialect ());
+    }
+  /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
+   */
+  must_convert = 0;
+  if (A4GL_compile_time_convert () == 0)
+    {
+      return;
+    }
+  A4GL_debug ("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",
+	      acl_getenv ("SQLCONVERT"), source_dialect, curr_sess->dbms_dialect);
+  if (A4GL_isyes (acl_getenv ("SQLCONVERT")) && (source_dialect[0] > '\0')
+      && (curr_sess->dbms_dialect[0] > '\0')
+      && ((strcmp (curr_sess->dbms_dialect, source_dialect) != 0) || A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
+    {
+      A4GL_debug ("Setting Must convert");
+      if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
+	{
+	  must_convert = 0;
+	}
+      else
+	{
+	  must_convert = 1;
+	}
+    }
+  else
+    {
+      A4GL_debug ("Not setting must convert");
+    }
+}
+
+
+int
+A4GL_swap_bind_stmt (char *stmt, char t, char **sb, int *sc, void *bind, int cnt)
+{
+  struct s_sid *p;
+  p = A4GL_find_prepare (stmt);
+  A4GL_debug ("p=%p", p);
+  if (p)
+    {
+      if (sb)
+	{
+	  if (t == 'i')
+	    {
+	      *sb = (char *) p->ibind;
+	    }
+	  if (t == 'o')
+	    {
+	      *sb = (char *) p->obind;
+	    }
+	}
+      if (sc)
+	{
+	  if (t == 'i')
+	    {
+	      *sc = p->ni;
+	    }
+	  if (t == 'o')
+	    {
+	      *sc = p->no;
+	    }
+	}
+      if (t == 'i')
+	{
+	  p->ibind = bind;
+	  p->ni = cnt;
+	}
+      if (t == 'o')
+	{
+	  p->obind = bind;
+	  p->no = cnt;
+	}
+    }
+  return 1;
+}
+
+
+
+
+char *
 A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
 {
   static int cntsql_0 = 0;
@@ -1840,14 +2269,14 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
   SPRINTF5 (tmpSql, "select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno", syscolatt, attr, syscolatt, tabname,
 	    colname);
 
-  A4GLSQL_declare_cursor (0, (void *) A4GLSQL_prepare_select (NULL, 0, NULL, 0, tmpSql, "__internal_stack", 1, 0, 0), 0, cname);
+  A4GL_declare_cursor (0, (void *) A4GL_prepare_select (NULL, 0, NULL, 0, tmpSql, "__internal_stack", 1, 0, 0), 0, cname);
 
   if (a4gl_status != 0)
     {
       return 0;
     }
   A4GLSQL_set_sqlca_sqlcode (0);
-  A4GLSQL_open_cursor (cname, 0, 0);
+  A4GL_open_cursor (cname, 0, 0);
   if (a4gl_status != 0)
     {
       return 0;
@@ -1859,11 +2288,11 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
       strcpy (tmpvar, "");
       if (strcmp (attr, "color") == 0)
 	{
-	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_int);
+	  A4GL_fetch_cursor (cname, 2, 1, 1, ibind_int);
 	}
       else
 	{
-	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind_str);
+	  A4GL_fetch_cursor (cname, 2, 1, 1, ibind_str);
 	}
       if (a4gl_status != 0)
 	break;
@@ -1883,165 +2312,18 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
 }
 
 
-
-
-char *
-A4GL_get_clobbered_from (char *s)
-{
-  return s;
-}
-
-
-
-
-
-// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-static int
-A4GL_findPreparedStatement (char *name)
-{
-  int a;
-  if (npreparedStatements)
-    {
-      for (a = 0; a < npreparedStatements; a++)
-	{
-	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
-	    {
-	      return a;
-	    }
+void A4GL_free_prepare(struct s_sid *sid) {
+	A4GL_debug("free prepare : %s",sid->select);
+	if (sid->refcnt==0) {
+      		if (A4GL_removePreparedStatementBySid (sid))  {
+			A4GLSQL_free_prepare_internal(sid);
+			A4GL_free_associated_mem(sid); 
+	        	strcpy(sid->statementName,"");
+                	sid->select=0;
+			free(sid); 
+			blank_any_cursors_using(sid);
+		}
 	}
-    }
-  return -1;
 }
-
-// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-static int
-A4GL_findPreparedStatementByUniq (char *name)
-{
-  int a;
-  if (npreparedStatements)
-    {
-      for (a = 0; a < npreparedStatements; a++)
-	{
-	  if (strcmp (name, preparedStatements[a].anonymousName) == 0)
-	    {
-	      return a;
-	    }
-	}
-    }
-  return -1;
-}
-
-// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-void *
-A4GL_getSIDByUniq (char *name)
-{
-  int a;
-  a = A4GL_findPreparedStatementByUniq (name);
-  if (a >= 0)
-    {
-      return preparedStatements[a].sid;
-    }
-  return NULL;
-}
-
-
-// Finds the indes in the preparedStatements for the name passed as a parameter, or -1 if not found...
-static int
-A4GL_findPreparedStatementbySid (void *sid)
-{
-  int a;
-  if (npreparedStatements)
-    {
-      for (a = 0; a < npreparedStatements; a++)
-	{
-	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
-	    {
-	      return a;
-	    }
-	}
-    }
-  return -1;
-}
-
-
-
-void
-A4GL_removePreparedStatement (char *name)
-{
-  int a;
-  a = A4GL_findPreparedStatement (name);
-  strcpy (preparedStatements[a].preparedStatementName, "");
-  strcpy (preparedStatements[a].anonymousName, "");
-  preparedStatements[a].sid=NULL;
-  preparedStatements[a].extra_data=NULL;
-}
-
-int
-A4GL_removePreparedStatementBySid (void *sid)
-{
-  int a;
-int ok=0;
-  if (npreparedStatements)
-    {
-      for (a = 0; a < npreparedStatements; a++)
-	{
-	  if (sid == preparedStatements[a].sid && strlen (preparedStatements[a].preparedStatementName))
-	    {
-	      strcpy (preparedStatements[a].preparedStatementName, "");
-  		strcpy (preparedStatements[a].anonymousName, "");
-  		preparedStatements[a].sid=NULL;
-  		preparedStatements[a].extra_data=NULL;
-		ok=1;
-	    }
-	}
-    }
-   return ok;
-}
-
-
-void
-A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_data)
-{
-  int a;
-  int found = -1;
-
-A4GL_debug("npreparedStatements=%d\n",npreparedStatements);
-  if (npreparedStatements)
-    {
-      for (a = 0; a < npreparedStatements; a++)
-	{
-
-	  if (strcmp (preparedStatements[a].preparedStatementName, "ANON") == 0)
-	    continue;
-
-	  if (strcmp (name, preparedStatements[a].preparedStatementName) == 0)
-	    {
-	      A4GL_assertion (1, "Statement already exists");
-	    }
-
-	  if (strlen (preparedStatements[a].preparedStatementName) == 0)
-	    {
-	      found = a;
-	      break;
-	    }
-	}
-    }
-
-  if (found == -1)
-    {
-      // no free space...
-      npreparedStatements++;
-      preparedStatements = acl_realloc (preparedStatements, npreparedStatements * sizeof (preparedStatements[0]));
-      found = npreparedStatements - 1;
-    }
-  strcpy (preparedStatements[found].preparedStatementName, name);
-  strcpy (preparedStatements[found].anonymousName, anonname);
-  preparedStatements[found].sid = sid;
-  preparedStatements[found].extra_data = extra_data;
-}
-
-
-
-
 
 // ================================ EOF ================================

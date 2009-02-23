@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.20 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: read_dty.c,v 1.21 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -129,7 +129,7 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 
   if (strlen (tabname) != 0)
     {
-      rval = A4GLSQL_read_columns (tabname, colname, &idtype, &isize);
+      rval = A4GL_read_columns (tabname, colname, &idtype, &isize);
       if (rval != 0)
 	{
 	  last_tab = tabname;
@@ -148,7 +148,7 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 
   for (a = 0; tablist[a] != 0; a++)
     {
-      b = A4GLSQL_read_columns (tablist[a], colname, &idtype, &isize);
+      b = A4GL_read_columns (tablist[a], colname, &idtype, &isize);
       last_size = isize;
       if (b != 0)
 	{

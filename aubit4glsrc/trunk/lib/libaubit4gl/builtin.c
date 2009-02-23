@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.135 2009-02-09 15:16:07 mikeaubury Exp $
+# $Id: builtin.c,v 1.136 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -129,10 +129,10 @@ aclfgl_set_count (int nargs)
     {
       /* A4GL_pop_args(nargs);set_status(-3001); */
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   A4GL_pop_params (fbind, 1);
   mv_arr_count = a;
 /* a is now set to set_Count */
@@ -150,7 +150,7 @@ aclfgl_arr_count (int nargs)
   if (nargs != 0)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   A4GL_push_long (mv_arr_count);
@@ -169,7 +169,7 @@ aclfgl_scr_line (int nargs)
   if (nargs != 0)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   A4GL_push_long (mv_scr_line);
@@ -187,7 +187,7 @@ aclfgl_arr_curr (int nargs)
   if (nargs != 0)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   A4GL_push_long (mv_arr_curr);
@@ -210,7 +210,7 @@ aclfgl_fgl_getenv (int nargs)
   if (nargs != 1)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   g = A4GL_char_pop ();
@@ -297,7 +297,7 @@ aclfgl_length (int nargs)
   if (nargs != 1)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   
@@ -760,7 +760,7 @@ aclfgl_err_get (int n)
   //static char buff[200];
   char *ptr;
   a = A4GL_pop_int ();
-  /* A4GLSQL_set_status(-3001,0); */
+  /* A4GL_set_status(-3001,0); */
   ptr = A4GL_get_errmsg_from_helpfiles (a);
   if (ptr)
     {
@@ -799,7 +799,7 @@ int
 aclfgl_err_quit (int statusnumber)
 {
 
-  /*  A4GLSQL_set_status(-3001,0); */
+  /*  A4GL_set_status(-3001,0); */
   return 0;
 }
 
@@ -922,7 +922,8 @@ A4GL_errorlog (char *fname, int l, int nargs)
 	}
       FPRINTF (error_log_file, "%s\n", s);
       fflush (error_log_file);
-
+	free(date_str);
+	free(time_str);
     }
   else
     {
@@ -1003,7 +1004,7 @@ A4GL_close_database (void)
     {
       if (A4GL_has_pointer ("default", SESSCODE))
 	{
-	  A4GLSQL_close_session ("default");
+	  A4GL_close_session ("default");
 	  A4GL_del_pointer ("default", SESSCODE);
 	}
       return;
@@ -1529,7 +1530,7 @@ aclfgl_fgl_getkey (int n)
 {
   int a;
   A4GL_debug ("FGL1");
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   a = 0;
   while (a == 0)
     {
@@ -1551,7 +1552,7 @@ aclfgl_fgl_getkey_wait (int n)
   A4GL_debug ("FGL1");
   wait = A4GL_pop_long ();
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   while (1)
     {
       a = A4GL_get_key (wait);
@@ -1819,7 +1820,7 @@ aclfgl_fgl_round (int nargs)
     {
       /* A4GL_pop_args(nargs);set_status(-3001); */
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   places = A4GL_pop_int ();
@@ -1881,7 +1882,7 @@ aclfgl_fgl_winquestion (int nargs)
   if (nargs != 6)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
 
@@ -1919,7 +1920,7 @@ aclfgl_fgl_winbutton (int nargs)
   if (nargs != 6)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
 
@@ -1963,7 +1964,7 @@ aclfgl_aclfgl_replace_start (int nargs)
   if (nargs != 3)
     {
       A4GL_pop_args (nargs);
-      A4GLSQL_set_status (-3001, 0);
+      A4GL_set_status (-3001, 0);
       return 0;
     }
   rpl_with = A4GL_char_pop ();

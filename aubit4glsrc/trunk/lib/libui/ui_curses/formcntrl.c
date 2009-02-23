@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.155 2009-02-17 10:10:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.156 2009-02-23 17:31:50 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.155 2009-02-17 10:10:19 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.156 2009-02-23 17:31:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -45,7 +45,7 @@
 
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
-#define CONTROL_STACK_LENGTH 10
+//#define CONTROL_STACK_LENGTH 10
 //void A4GL_fgl_die_with_msg(int n,char *s);
 
 void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
@@ -189,7 +189,7 @@ A4GL_init_control_stack (struct s_screenio *sio, int malloc_data)
 // Do we need to allocate the storage area ?
   if (malloc_data)
     {
-      sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
+      //sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
       sio->fcntrl_cnt = 0;
     }
 
@@ -2517,11 +2517,12 @@ void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
 
 		A4GL_comments(0);
 	  	if (s->mode == MODE_CONSTRUCT) {
-
-  		for (cnt = 0; cnt <= s->nfields; cnt++) {
-              		acl_free(s->constr[cnt].fldbuf);
+  			for (cnt = 0; cnt <= s->nfields; cnt++) {
+              			acl_free(s->constr[cnt].fldbuf);
             		}
         	}
+
+		//if (s->fcntrl) { acl_free(s->fcntrl); }
 	}
 
 }

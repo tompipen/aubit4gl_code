@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.153 2009-02-11 14:05:45 mikeaubury Exp $
+# $Id: iarray.c,v 1.154 2009-02-23 17:31:51 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.153 2009-02-11 14:05:45 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.154 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 /**
@@ -1710,7 +1710,7 @@ A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data)
 // Do we need to allocate the storage area ?
   if (malloc_data)
     {
-      sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
+      //sio->fcntrl = acl_malloc2 (sizeof (struct s_formcontrol) * 10);
       sio->fcntrl_cnt = 0;
     }
 

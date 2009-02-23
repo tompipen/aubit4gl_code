@@ -1302,7 +1302,11 @@ end if
 if mv_output!=" " then
 	let lv_runstr="OVERRIDE_PACKER_OUTPUT=",mv_output
 end if
-let lv_runstr=lv_runstr clipped," A4GL_PACKER=XML ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+if fgl_getenv("A4GL_PACKER") matches "*XML*" then
+	let lv_runstr=lv_runstr clipped," ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+else
+	let lv_runstr=lv_runstr clipped," A4GL_PACKER=XML ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+end if
 
 if mv_stacktrace is not null then
 	let lv_runstr=lv_runstr clipped," -s",mv_stacktrace

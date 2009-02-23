@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.81 2009-02-16 13:10:20 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.82 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -971,7 +971,7 @@ int isnull;
 	a4gl=a4glv;
 
 	if (mode=='i') {
-		isnull=A4GL_isnull(DTYPE_TEXT,(void *)a4gl);
+		isnull=A4GL_isnull(dtype,(void *)a4gl);
 		if (a4gl->where=='M' && a4gl->ptr==0) isnull=1;
 		if (a4gl->where=='M' && a4gl->memsize<0) isnull=1;
 
@@ -986,7 +986,11 @@ int isnull;
 			}
 		}
 
-		if (dtype==DTYPE_BYTE) { infx->loc_type=SQLBYTES; } else { infx->loc_type=SQLTEXT; } }
+		if (dtype==DTYPE_BYTE) { 
+			infx->loc_type=SQLBYTES; 
+		} else { 
+			infx->loc_type=SQLTEXT; 
+		} 
 
                 if (a4gl->where=='M') {
                         infx->loc_loctype = LOCMEMORY;
@@ -994,6 +998,7 @@ int isnull;
                         infx->loc_oflags = 0;
                         infx->loc_indicator = 0;   /* not a null blob */
                         infx->loc_buffer = (char *) a4gl->ptr;
+		}
 
                 if (a4gl->where=='F') {
                         infx->loc_loctype = LOCFNAME;   /* blob is named file */

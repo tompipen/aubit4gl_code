@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.34 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.35 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -643,11 +643,6 @@ A4GL_set_line (char *fname, long lineno)
   return 0;
 }
 
-//sql.c:
-void
-A4GLSQL_set_status (int a, int sql)
-{
-}
 
 //API_sql.spec
 char *

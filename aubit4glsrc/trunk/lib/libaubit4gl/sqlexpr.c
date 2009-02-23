@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.77 2009-01-03 16:25:13 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.78 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -694,6 +694,30 @@ like_trim (char *s)
 }
 
 
+
+
+static char *convert_escape_str(char *ptr) {
+
+       if (ptr[8] == '\"')
+          {
+	static char buff[200];
+	char *escape_str;
+		strcpy(buff,ptr);
+		escape_str=&ptr[8];
+		buff[8]=0;
+            if (A4GLSQLCV_check_requirement ("DOUBLE_TO_SINGLE_QUOTES"))
+              {
+                escape_str = convstrsql (escape_str);
+              }
+		strcat(buff,escape_str);
+	ptr=buff;
+        }
+	return ptr;
+}
+
+
+
+
 char *
 get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 {
@@ -763,19 +787,26 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       A4GL_debug ("Not transformed : %s", p->data.s_select_list_item_data_u.expression);
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
-    case E_SLI_OP:
-      return
+    case E_SLI_OP: 
+		{
+			char *return_str;
+      return_str=
 	make_sql_string_and_free (get_select_list_item
 				  (select, p->data.s_select_list_item_data_u.complex_expr.left),
 				  acl_strdup_With_Context (p->data.s_select_list_item_data_u.complex_expr.op),
 				  get_select_list_item (select,
 							p->data.s_select_list_item_data_u.complex_expr.right), get_nl (), NULL);
 
-      /*
-         case E_SLI_JOIN:                             return make_sql_string_and_free(acl_strdup_With_Context("JOIN("),get_select_list_item(select,p->data.s_select_list_item_data_u.complex_expr.left), 
-         acl_strdup_With_Context("="),
-         get_select_list_item(select,p->data.s_select_list_item_data_u.complex_expr.right),acl_strdup_With_Context(")"),0); 
-       */
+			if (strcmp(return_str,"(1=1) AND (1=1)\n")==0) {
+					acl_free(return_str);
+					return acl_strdup_With_Context("(1=1)");
+			} else {
+				return return_str;
+			}
+
+
+		}
+
 
 
     case E_SLI_JOIN:
@@ -924,9 +955,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p1 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val);
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
 	return make_sql_string_and_free (acl_strdup_With_Context (p1),
-					 acl_strdup_With_Context (A4GLSQLCV_matches_string ("", p2,
+					 acl_strdup_With_Context (A4GLSQLCV_matches_string ("", p2,convert_escape_str(
 											    p->data.s_select_list_item_data_u.
-											    regex.escape)), NULL);
+											    regex.escape))), NULL);
       }
 
     case E_SLI_REGEX_NOT_MATCHES:
@@ -937,9 +968,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
 	return make_sql_string_and_free (acl_strdup_With_Context (p1),
 					 acl_strdup_With_Context (A4GLSQLCV_matches_string (" NOT ",
-											    p2,
+											    p2,convert_escape_str(
 											    p->data.s_select_list_item_data_u.
-											    regex.escape)), NULL);
+											    regex.escape))), NULL);
       }
     case E_SLI_REGEX_LIKE:
       {
@@ -950,7 +981,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1)), strdup (" LIKE "), strdup (p2),
-					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
+					     acl_strdup_With_Context (convert_escape_str(p->data.s_select_list_item_data_u.regex.escape)), NULL);
 	  }
 	else
 	  {
@@ -967,7 +998,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (acl_strdup_With_Context (p1), acl_strdup_With_Context (" NOT LIKE "), p2,
-					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
+					     acl_strdup_With_Context (convert_escape_str(p->data.s_select_list_item_data_u.regex.escape)), NULL);
 	  }
 	else
 	  {
@@ -983,7 +1014,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" ILIKE "), p2,
-					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
+					     acl_strdup_With_Context (convert_escape_str(p->data.s_select_list_item_data_u.regex.escape)), NULL);
 	  }
 	else
 	  {
@@ -999,7 +1030,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" NOT ILIKE "), p2,
-					     acl_strdup_With_Context (p->data.s_select_list_item_data_u.regex.escape), NULL);
+					     acl_strdup_With_Context (convert_escape_str(p->data.s_select_list_item_data_u.regex.escape)), NULL);
 	  }
 	else
 	  {
@@ -1310,7 +1341,6 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	      }
 	  }
 
-	//A4GL_pause_execution();
 
 	rval =
 	  make_sql_string_and_free (acl_strdup_With_Context (p->data.s_select_list_item_data_u.column.colname),
@@ -1777,7 +1807,7 @@ preprocess_sql_statement (struct s_select *select)
 			{
 			  FPRINTF (stderr, "WARNING: Unable to locate %s in the database - column expansion not possible\n", tname);
 			}
-//                      A4GLSQL_set_status(0,0);
+//                      A4GL_set_status(0,0);
 
 		      add_select_list_item_list (n, p);
 		      continue;
@@ -2871,7 +2901,7 @@ A4GL_has_column (char *t, char *c)
 
   if (opened)
     A4GLSQL_end_get_columns ();
-//                      A4GLSQL_set_status(0,0);
+//                      A4GL_set_status(0,0);
   return found;
 }
 

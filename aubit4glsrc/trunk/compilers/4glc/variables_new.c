@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.3 2009-01-29 17:23:05 mikeaubury Exp $
+# $Id: variables_new.c,v 1.4 2009-02-23 17:31:48 mikeaubury Exp $
 #
 */
 
@@ -401,6 +401,9 @@ struct variable *v;
       strcpy (colname, ccol);
       trim_spaces (colname);
 
+	if (idtype>DTYPE_MASK) {
+	A4GL_pause_execution();
+	}
        v=new_simple_variable(colname, idtype,isize,0);
 
        SPRINTF2(buff,"%s.%s", tableName, colname);
@@ -488,7 +491,7 @@ struct variable *new_variable_pushLikeTableColumn(char *tableName,char *columnNa
         }
   }
 
-  rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
+  rval = A4GL_read_columns (tableName, columnName, &idtype, &isize);
   cname = A4GL_confirm_colname (tableName, columnName);
 
   if (rval == 0)

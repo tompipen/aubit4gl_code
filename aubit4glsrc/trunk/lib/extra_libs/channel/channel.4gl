@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.22 2009-01-02 11:52:54 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.23 2009-02-23 17:31:49 mikeaubury Exp $
 }
 
 {**
@@ -208,7 +208,7 @@ endcode
 
 	if lv_file_o=0 and lv_file_i=0 then
 code
-A4GLSQL_set_status(-101,0);
+A4GL_set_status(-101,0);
 endcode
 		return
 	end if

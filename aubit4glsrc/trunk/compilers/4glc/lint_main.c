@@ -34,7 +34,7 @@ m=malloc(sizeof(struct module_definition)*(argc-1));
 
 for (a=1;a<argc;a++) {
 	char buff[256];
-	sprintf(buff, argv[a]);
+	strcpy(buff, argv[a]);
 	if (strstr(buff,".dat")!=0) {
 		char *p;
 		p=strstr(buff,".dat");
@@ -321,14 +321,14 @@ open_db (char *s)
   strcpy (db, s);
   if (strlen(db)==0) return;
 
-  A4GLSQL_set_status (0, 1);
-  A4GLSQL_init_connection (db);
-  if (A4GLSQL_get_status () != 0)
+  A4GL_set_status (0, 1);
+  A4GL_init_connection (db);
+  if (A4GL_get_status () != 0)
     {
       SPRINTF2 (buff, "Could not connect to database %s (%s)",
                A4GL_null_as_null (db),
                A4GL_null_as_null (A4GLSQL_get_sqlerrm ()));
-       fprintf(stderr,buff);
+       fprintf(stderr,"%s",buff);
 	//exit(2);
 	dbopen=0;
     }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.177 2009-02-03 14:28:37 mikeaubury Exp $
+# $Id: report.c,v 1.178 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -1566,16 +1566,14 @@ A4GL_make_report_table (struct BINDING *b, int n)
   int a;
   a = aclfgli_get_err_flg ();
 
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
-				0);
+  A4GLSQL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 1), 1, 0, 0);
   if (a == 0)
     {
       aclfgli_clr_err_flg ();	// we don't care if the drop fails...
       A4GLSQL_set_sqlca_sqlcode (0);
     }
 
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0, 0, 0, 0, A4GL_mk_temp_tab (b, n), "__internal_report", 99, 0, 0), 1, 0,
-				0);
+  A4GLSQL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_mk_temp_tab (b, n), "__internal_report", 99, 0, 1), 1, 0, 0);
 
 }
 
@@ -1589,7 +1587,7 @@ A4GL_unload_report_table (struct BINDING *b)
   if (A4GL_isyes (acl_getenv ("UNLOADREPDBG")))
     {
       SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b, 0));
-      A4GLSQL_unload_data ("zz9pa", "|", buff, 0, ibind, 0);
+      A4GL_unload_data ("zz9pa", "|", buff, 0, ibind, 0);
     }
 }
 
@@ -1606,7 +1604,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   char b2[200];
 
   SPRINTF2 (b2, "a4glrp_%lx%d", (long) (b), n);
-  x = A4GLSQL_find_prepare (b2);
+  x = A4GL_find_prepare (b2);
   if (x == NULL)
     {
       A4GL_debug ("Add row report table");
@@ -1621,9 +1619,9 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
       strcat (buff, ")");
 
       A4GL_debug ("Attempting to execute %s\n", buff);
-      x = (void *) A4GLSQL_prepare_select (b, n, 0, 0, buff, "__internal_report", 1, 0, 0);
+      x = (void *) A4GL_prepare_select (b, n, 0, 0, buff, "__internal_report", 1, 0, 0);
       A4GL_debug ("x=%p\n", x);
-      A4GLSQL_add_prepare (b2, x);
+      A4GL_add_prepare (b2, x);
     }
   A4GLSQL_execute_implicit_sql (x, 0, 0, 0);
   //A4GLSQL_free_prepare(x);
@@ -1702,7 +1700,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
 
 
   A4GL_debug ("prepare...");
-  pstmt = A4GLSQL_prepare_select (ibind, 0, obind, 0, buff, "__internal_report", 2, 0, 0);
+  pstmt = A4GL_prepare_select (ibind, 0, obind, 0, buff, "__internal_report", 2, 0, 0);
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
   if (a4gl_sqlca.sqlcode != 0)
     {
@@ -1711,7 +1709,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
       return 0;
     }
   A4GL_debug ("declare...");
-  A4GLSQL_declare_cursor (2, pstmt, 0, cursor_for_rep_tab (b));
+  A4GL_declare_cursor (2, pstmt, 0, cursor_for_rep_tab (b));
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
   if (a4gl_sqlca.sqlcode != 0)
     {
@@ -1721,7 +1719,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
     }
 
 
-  A4GLSQL_open_cursor (cursor_for_rep_tab (b), 0, 0);
+  A4GL_open_cursor (cursor_for_rep_tab (b), 0, 0);
   if (a4gl_sqlca.sqlcode != 0)
     return 0;
 
@@ -1739,7 +1737,7 @@ A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
 {
   A4GLSQL_set_sqlca_sqlcode (0);
 
-  A4GLSQL_fetch_cursor (cursor_for_rep_tab (b), 2, 1, n, reread);
+  A4GL_fetch_cursor (cursor_for_rep_tab (b), 2, 1, n, reread);
 
   if (a4gl_sqlca.sqlcode == 0) {
   	A4GL_push_params (reread, n);
@@ -1758,13 +1756,13 @@ void
 A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
 {
   char b2[200];
-  A4GLSQL_close_cursor (cursor_for_rep_tab (b));
-  A4GLSQL_execute_implicit_sql (A4GLSQL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
+  A4GL_close_cursor (cursor_for_rep_tab (b));
+  A4GLSQL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
 				0);
   A4GL_free_duplicate_binding (reread, n);
   SPRINTF2 (b2, "a4glrp_%lx%d", (long) (b), n);
-  if (A4GLSQL_find_prepare(b2)) {
-  	A4GLSQL_free_cursor (b2);	// Actually a free prepare - but its the same function ;-)
+  if (A4GL_find_prepare(b2)) {
+  	A4GL_free_cursor (b2);	// Actually a free prepare - but its the same function ;-)
   }
 
 }

@@ -506,11 +506,8 @@ A4GL_assertion(s==0,"No query");
    qry_type=0;
    if (type!='S'&&type!='s') qry_type=257;
 
-	//A4GL_push_char(s);
-	//aclfgl_prepareit(1);
-   //P0REPARE stExec from :p;
 	A4GL_trim(p);
-   A4GLSQL_add_prepare("generic_stexecp",(void *)A4GLSQL_prepare_select(0,0,0,0,s,"__internal_generic",__LINE__,0,0));
+   A4GL_add_prepare("generic_stexecp",(void *)A4GL_prepare_select(0,0,0,0,s,"__internal_generic",__LINE__,0,0));
    cp_sqlca();
 
 
@@ -538,7 +535,7 @@ A4GL_assertion(s==0,"No query");
 
 int execute_query_1(int *raffected,int *errat) {
                 *raffected=0;
-		A4GLSQL_execute_sql("generic_stexecp",0,0);
+		A4GL_execute_sql("generic_stexecp",0,0);
 		if (a4gl_sqlca.sqlcode!=0)  {	
 			*errat=1;
 			return 0;
@@ -573,15 +570,15 @@ static int done_alloc=0;
 
 open_display_file_c();
 
-      ptr=A4GLSQL_find_prepare("generic_stexecp");
+      ptr=A4GL_find_prepare("generic_stexecp");
       A4GL_assertion(ptr==0,"Unable to find statement to execute...");
 
-      A4GLSQL_declare_cursor(0+0,ptr,0,"generic_crexec");
+      A4GL_declare_cursor(0+0,ptr,0,"generic_crexec");
       cp_sqlca();
       if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); *err_at_col=1; return 0;}
 
         need_cursor_free=1;
-   	A4GLSQL_open_cursor("generic_crexec",0,0);
+   	A4GL_open_cursor("generic_crexec",0,0);
         if (a4gl_sqlca.sqlcode<0) {A4GL_debug("Err3"); *err_at_col=1; return 0;}
         need_cursor_free=3;
 
@@ -905,7 +902,7 @@ int execute_sql_fetch(int *raffected, int *err_at_col) {
 	}
 
 	A4GL_debug("describe returned numberOfColumns as %d %d\n",numberOfColumns);
-	A4GLSQL_fetch_cursor("generic_crexec", 2, 1,numberOfColumns,gen_obind);
+	A4GL_fetch_cursor("generic_crexec", 2, 1,numberOfColumns,gen_obind);
 
   if (a4gl_sqlca.sqlcode == 100)
     {
@@ -1059,9 +1056,9 @@ endcode
 
 function execute_select_free()
 code
-   A4GLSQL_close_cursor("generic_crexec");
-   A4GLSQL_free_cursor ("generic_stexecp");
-   A4GLSQL_free_cursor ("generic_crexec");
+   A4GL_close_cursor("generic_crexec");
+   A4GL_free_cursor ("generic_stexecp");
+   A4GL_free_cursor ("generic_crexec");
 endcode
 code
 free_bind();

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.70 2008-11-05 19:30:37 mikeaubury Exp $
+# $Id: others.c,v 1.71 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -208,7 +208,7 @@ A4GL_fgl_keyval (int _np)
 
   if (_np != 1)
     {
-      A4GLSQL_set_status (-3000, 0);
+      A4GL_set_status (-3000, 0);
       A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1", _np);
 
       for (_r = 0; _r < _np; _r++)

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.169 2009-02-17 19:02:13 mikeaubury Exp $
+# $Id: conv.c,v 1.170 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -1002,13 +1002,24 @@ A4GL_stoi (void *aa, void *zi, int sz_ignore)
   char *a;
   char *eptr;
   int zz;
+	long long_val;
   z = (short *) zi;
   a = (char *) aa;
   A4GL_trim (a);
   zz = strlen (a);
   errno = 0;
-  *z = (short) strtol (a, &eptr, 10);
 
+  long_val =  strtol (a, &eptr, 10);
+
+/*
+  if (long_val < SHRT_MIN || long_val > SHRT_MAX)
+    {
+      A4GL_exitwith ("Value exceeds limit of SMALLINT ");
+      return 0;
+    }
+*/
+
+  *z = (short) long_val;
 
   if (eptr - a < zz)
     {

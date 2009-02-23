@@ -8,7 +8,7 @@ endcode
 function mc_new()
 define lv_mc integer
 code
-lv_mc=mc_new();
+lv_mc=(long)mc_new();
 endcode
 return lv_mc
 end function
@@ -53,8 +53,8 @@ define lv_val integer
 define lv_bytes integer
 code
 A4GL_trim(lv_key);
-printf("KEY=%s lv_val=%p bytes=%d\n",lv_key,lv_val,lv_bytes);
-mc_add((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0);
+printf("KEY=%s lv_val=%p bytes=%ld\n",lv_key,(void *)lv_val,(long)lv_bytes);
+mc_add((struct memcache *)lv_mc,lv_key,strlen(lv_key),(void *)lv_val,lv_bytes,0,0);
 endcode
 end function
 
@@ -81,7 +81,7 @@ define lv_ok integer
 define lv_val,lv_bytes integer
 code
 A4GL_trim(lv_key);
-if (mc_replace((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0)) {
+if (mc_replace((struct memcache *)lv_mc,lv_key,strlen(lv_key),(void *)lv_val,lv_bytes,0,0)) {
 	lv_ok=1;
 } else {
 	lv_ok=0;
@@ -101,7 +101,7 @@ code
 A4GL_trim(lv_key);
 A4GL_trim(lv_val);
 
-if (mc_replace((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,strlen(lv_val)+1,0,0)) {
+if (mc_replace((struct memcache *)lv_mc,lv_key,strlen(lv_key),(void *)lv_val,strlen(lv_val)+1,0,0)) {
 	lv_ok=1;
 } else {
 	lv_ok=0;
@@ -117,7 +117,7 @@ end function
 function mc_req_new() 
 define lv_req integer
 code
-lv_req=mc_req_new();
+lv_req=(long)mc_req_new();
 endcode
 return lv_req
 end function
@@ -131,7 +131,7 @@ define lv_key char(255)
 define lv_res integer
 code
 	A4GL_trim(lv_key);
- 	lv_res=mc_req_add(lv_req, lv_key, strlen(lv_key));
+ 	lv_res=(long)mc_req_add((struct memcache_req *)lv_req, lv_key, strlen(lv_key));
 endcode
 return lv_res
 end function
@@ -142,7 +142,7 @@ function mc_get(lv_mc, lv_req)
 define lv_mc integer
 define lv_req integer
 code
-	mc_get((struct memcache *)lv_mc,lv_req);
+	mc_get((struct memcache *)lv_mc,(struct memcache_req *)lv_req);
 endcode
 end function
 
@@ -155,8 +155,8 @@ define lv_ptr integer
 define lv_val char(255)
 code
 A4GL_trim(lv_key);
-lv_ptr=mc_aget((struct memcache *)lv_mc,lv_key,strlen(lv_key));
-if (lv_ptr) strcpy(lv_val,lv_ptr);
+lv_ptr=(long)mc_aget((struct memcache *)lv_mc,lv_key,strlen(lv_key));
+if (lv_ptr) strcpy(lv_val,(char *)lv_ptr);
 endcode
 return lv_val
 end function
@@ -171,11 +171,11 @@ define lv_optr,lv_size integer
 
 code
 A4GL_trim(lv_key);
-lv_ptr=mc_aget((struct memcache *)lv_mc,lv_key,strlen(lv_key));
+lv_ptr=(long)mc_aget((struct memcache *)lv_mc,lv_key,strlen(lv_key));
 if (lv_ptr) {
-	memcpy(lv_optr,lv_ptr,lv_size);
+	memcpy((void *)lv_optr,(void *)lv_ptr,lv_size);
 }
-free(lv_ptr);
+free((void *)lv_ptr);
 endcode
 end function
 
@@ -187,7 +187,7 @@ define lv_val,lv_bytes integer
 define lv_mc integer
 code
 A4GL_trim(lv_key);
-mc_set((struct memcache *)lv_mc,lv_key,strlen(lv_key),lv_val,lv_bytes,0,0);
+mc_set((struct memcache *)lv_mc,lv_key,strlen(lv_key),(void *)lv_val,lv_bytes,0,0);
 endcode
 end function
 
@@ -209,7 +209,7 @@ function mc_res_free_on_delete(lv_res, lv_yesno)
 define lv_yesno integer
 define lv_res integer
 code
-mc_res_free_on_delete(lv_res,lv_yesno);
+mc_res_free_on_delete((struct memcache_res *)lv_res,lv_yesno);
 endcode
 
 end function
@@ -219,7 +219,7 @@ function mc_res_free(lv_req, lv_res)
 define lv_req integer
 define lv_res integer
 code
-mc_res_free(lv_req,lv_res);
+mc_res_free((struct memcache_req *)lv_req,(struct memcache_res *)lv_res);
 endcode
 
 end function

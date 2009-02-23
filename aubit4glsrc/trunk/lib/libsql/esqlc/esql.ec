@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.229 2009-02-16 13:10:20 mikeaubury Exp $
+# $Id: esql.ec,v 1.230 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -94,7 +94,7 @@ WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commne
 #include <limits.h>
 //#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 static void copy_sqlca_Stuff(int warnings) ;
-
+void A4GL_rm_associated_mem (void *orig, void *newbytes);
 
 #define isSqlError() internal_isSqlError(__FILE__,__LINE__)
 //#ifndef __QUERIX__
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.229 2009-02-16 13:10:20 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.230 2009-02-23 17:31:50 mikeaubury Exp $";
 #endif
 
 
@@ -255,7 +255,7 @@ static void
 esqlErrorHandler (void)
 {
   A4GL_debug ("In esqlErrorHandler..'%s' '%s'",sqlca.sqlerrm,sqlca.sqlerrp);
-  A4GLSQL_set_status (sqlca.sqlcode, 1);
+  A4GL_set_status (sqlca.sqlcode, 1);
 	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
 	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
 }
@@ -295,8 +295,13 @@ static void A4GL_sql_exitwith(char *s) {
 
 
 
-void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
-	freeStatement(sid);
+void A4GLSQLLIB_A4GLSQL_free_prepare_internal (void* vsid ) {
+struct s_sid *sid;
+sid=vsid;
+
+      	if (sid->select) {
+              	free(sid->select);
+      	}
 }
 
 
@@ -346,7 +351,7 @@ isNotFound (void)
 {
   if (strcmp (SQLSTATE, "02000") == 0)
     {
-      A4GLSQL_set_status (100, 1);
+      A4GL_set_status (100, 1);
       return 1;
     }
   return 0;
@@ -502,10 +507,16 @@ setCurrentESQLConnection (char *connectionName)
 static int
 removeESQLConnection (char *connectionName)
 {
+  DbConnection *p;
+
   if (!A4GL_has_pointer (connectionName, SESSCODE))
     return 1;
 
-  A4GL_del_pointer (connectionName, CURCODE);
+  p=A4GL_find_pointer(connectionName,SESSCODE);
+
+
+  free(p);
+  A4GL_del_pointer (connectionName, SESSCODE);
   return 0;
 }
 
@@ -529,6 +540,7 @@ addESQLConnection (char *connectionName, char *dbName,
   DbConnection *connection;
   if (A4GL_has_pointer (connectionName, SESSCODE))
     return 1;
+
   connection = NewDbConnection ();
   connection->connectionName = strdup (connectionName);
   connection->databaseName = strdup (dbName);
@@ -537,6 +549,7 @@ addESQLConnection (char *connectionName, char *dbName,
   connection->password = passwd;
   connection->connectionInfo = 0;
   A4GL_add_pointer (connectionName, SESSCODE, connection);
+
   return 0;
 }
 
@@ -948,28 +961,6 @@ A4GLSQLLIB_A4GLSQL_get_currdbname (void)
 
 
 static void freeStatement(struct s_sid *sid) {
-	/*
-	if (sid->statementName) {
-		
-		if (A4GL_has_pointer(sid->statementName, PRECODEEC))  {
-			A4GL_del_pointer(sid->statementName, PRECODEEC);
-		}
-
-		if (A4GL_has_pointer(sid->statementName, PRECODE))  {
-			A4GL_del_pointer(sid->statementName, PRECODE);
-		}
-	}
-	*/
-
-        	if (sid->select) {
-                       	free(sid->select);
-        	}
-        	strcpy(sid->statementName,"");
-        	//memset(sid,0, sizeof(sid));
-        	//free(sid);
-		A4GL_removePreparedStatementBySid(sid);
-
-	//}
 }
 
 /**
@@ -1008,8 +999,7 @@ static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDIN
   sidold=A4GL_getSIDByUniq(uniqid);
 
   if (sidold) {
-	A4GLSQL_free_prepare(sidold);
-	acl_free(sidold);
+	A4GL_free_prepare(sidold);
   }
 
 
@@ -1047,14 +1037,14 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
   }
   free (s_internal);
 
-  sid=A4GLSQL_find_prepare (uniqId);
+  sid=A4GL_find_prepare (uniqId);
 
   if (sid) {
 	statementName=uniqId;
-        A4GLSQL_free_prepare(sid);
-        A4GL_removePreparedStatementBySid(sid);
+        //A4GLSQL_free_prepare(sid);
+        //A4GL_removePreparedStatementBySid(sid);
 	EXEC SQL FREE :statementName;
-	free(sid);
+	//free(sid);
   }
 
   sid = newStatement (ibind, ni, obind, no, s,uniqId);
@@ -1074,13 +1064,12 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
   if (isSqlError ())
     {
-	A4GLSQLLIB_A4GLSQL_free_prepare(sid); 
 
 
       //A4GLSQL_del_prepare(sid->statementName);
-      A4GLSQL_set_status (sqlca.sqlcode, 1);
+      A4GL_set_status (sqlca.sqlcode, 1);
 
-
+	free(sid);
       return (struct s_sid *) 0;
     }
 
@@ -2402,6 +2391,7 @@ if (n) {
 	struct s_extra_info *p;
 	p=sid->extra_info;
 	
+	A4GL_rm_associated_mem(sid,p);
 	free_blobs(p);
 	free(p);
 
@@ -2483,7 +2473,7 @@ sid=vsid;
     }
   copy_sqlca_Stuff(1);
 
-  A4GLSQL_set_status (sqlca.sqlcode, 1);
+  A4GL_set_status (sqlca.sqlcode, 1);
 
   SPRINTF1(buff,"%p",sid);
   if (singleton) {
@@ -2507,7 +2497,7 @@ error_just_in_case ()
     }
   else
     {
-      A4GLSQL_set_status (sqlca.sqlcode, 1);
+      A4GL_set_status (sqlca.sqlcode, 1);
     }
 return 0;
 }
@@ -2727,7 +2717,7 @@ return -1;
  * @return A pointer to the cursor informationstrucutre.
  */
 void *
-A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
+A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll,
 			char *cursname)
 {
   EXEC SQL BEGIN DECLARE SECTION;
@@ -2746,13 +2736,9 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
     		return (struct s_cid *) 0;
 	}
 
-  if (A4GL_has_pointer (cursname, CURCODE)) {
-		internal_free_cursor(cursname,0);
-   }
-
-  		//cursorIdentification = A4GL_find_pointer(cursname,CURCODE);
-		//EXEC SQL WHENEVER ERROR CONTINUE;
-		//EXEC SQL FREE :cursorName;
+  //if (A4GL_has_pointer (cursname, CURCODE)) {
+		//internal_free_cursor(cursname,0);
+   //}
 
 
 
@@ -2782,10 +2768,10 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 	EXEC SQL DECLARE: cursorName CURSOR WITH HOLD FOR:statementName;
 	  break;
+
 	default:
 		A4GL_assertion(1,"Invalid cursor type");
-      /** @todo : Assign an error code  */
-
+      				/** @todo : Assign an error code  */
 	  return (struct s_cid *) 0;
 	}
 
@@ -2794,15 +2780,19 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       A4GL_debug ("Declare failed");
       return (struct s_cid *) 0;
     }
+
   A4GL_debug ("Declared '%s' OK",cursname);
-  A4GL_add_pointer (cursname, CURCODE, cursorIdentification);
+
+
+
   if (processPreStatementBinds (sid) == 1)
 	 return (struct s_cid *) 0;
+
   return cursorIdentification;
 }
 
 void
-A4GLSQLLIB_A4GLSQL_free_cursor (char *s)
+A4GLSQLLIB_A4GLSQL_free_cursor_internal (char *s)
  {
 internal_free_cursor(s,1);
 }
@@ -2815,49 +2805,24 @@ internal_free_cursor (char *s,int reset_Sqlca)
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
   EXEC SQL END DECLARE SECTION;
-void *sid;
+struct s_cid *cursorIdentification;
 
-if (reset_Sqlca) {a4gl_sqlca.sqlcode=0;
-}
+if (reset_Sqlca) {a4gl_sqlca.sqlcode=0; }
 
- if (A4GL_has_pointer (s, CURCODE))
-    {
-  	struct s_cid *cursorIdentification;
-      cursorIdentification = A4GL_find_pointer (s, CURCODE);
+ 
+  cursorIdentification = A4GL_find_cursor (s);
+
+  if (cursorIdentification) {
       EXEC SQL FREE:cursorName;
+
 	if (cursorIdentification->statement)  {	
       		free (cursorIdentification->statement);
 	}
-
-      free (cursorIdentification);
-      A4GL_del_pointer (s, CURCODE);
-
-
-      sid=A4GLSQL_find_prepare (s);
-      if (sid) { A4GLSQL_free_prepare(sid); A4GL_removePreparedStatementBySid(sid);free(sid); }
-
-
     }
-  else
-    {
-
-
-        EXEC SQL FREE:cursorName;
-         sid=A4GLSQL_find_prepare (cursorName);
-         if (sid) {
-              A4GLSQL_free_prepare(sid);
-              A4GL_removePreparedStatementBySid(sid);
-		free(sid);
-        }
-
-
-
-
-	  return;
-    }
-
-
 }
+
+
+
 /**
  * Open a cursor already declared.
  *
@@ -2870,11 +2835,9 @@ if (reset_Sqlca) {a4gl_sqlca.sqlcode=0;
  *   - 1 : Cursor declared.
  *   - 0 : An error as ocurred.
  *
- * 	@ FIXME - doesn't use the USING section...
- *
  */
 int
-A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *vibind)
+A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = s;
@@ -2888,9 +2851,9 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s,int ni,void *vibind)
   EXEC SQL END DECLARE SECTION;
 
 
-  cursorIdentification = A4GL_find_pointer (s, CURCODE);
+  cursorIdentification = A4GL_find_cursor (s);
 
-  if (cursorIdentification==0) {
+  if (cursorIdentification==NULL) {
 		strcpy(a4gl_sqlca.sqlerrm,s);
 		A4GL_sql_exitwith("Cursor not found (%s)");
 		return 1;
@@ -3036,7 +2999,7 @@ getFetchType (int fetch_mode, int fetch_when)
  *   - 0 : An error as ocurred.
  */
 int
-A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
+A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nobind,
 			void *vobind
 )
@@ -3055,12 +3018,13 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name,
 	      struct BINDING *obind;
 	obind=vobind;
 A4GL_debug("A4GLSQL_fetch_cursor\n");
-  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, CURCODE);
+  cid = (struct s_cid *) A4GL_find_cursor (cursorName);
+
   if (cid==0) {
 	if (sqlca.sqlcode==0) {// Fetch attempted on unknown cursor and no error..
 		sqlca.sqlcode=-1;
 	}
-	return 0;
+	return 1;
   }
   sid = (struct s_sid *) cid->statement;
   if (sid == (struct s_sid *) 0)
@@ -3160,7 +3124,7 @@ A4GL_debug("A4GLSQL_fetch_cursor\n");
 /* 	void A4GLSQL_put_insert(struct BINDING *ibind,int n); */
 /* int */
 void
-A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
+A4GLSQLLIB_A4GLSQL_put_insert_internal (char *cursor, void *vibind, int n)
 {
   exec sql begin declare section;
   char *cursorName;
@@ -3171,9 +3135,12 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
   struct BINDING *ibind;
   ibind=vibind;
 
-  cursorName = A4GL_char_pop ();
+  //cursorName = A4GL_char_pop ();
 
-  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, CURCODE);
+
+cursorName=cursor;
+
+  cid = (struct s_cid *) A4GL_find_cursor (cursor);
   sid = (struct s_sid *) cid->statement;
 
 if (sid) {
@@ -3192,7 +3159,7 @@ if (sid) {
 
   if (ibind != (struct BINDING *) 0 && n > 0)
     {
-      descriptorName = getDescriptorName (cursorName, 'I');
+      descriptorName = getDescriptorName (cursor, 'I');
 
       if (processInputBind (descriptorName, n, ibind) == 1)
 	A4GL_exitwith ("Error binding");
@@ -3705,7 +3672,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 /* 	void A4GLSQL_flush_cursor(char *cursor); */
 /* int */
 void
-A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
+A4GLSQLLIB_A4GLSQL_flush_cursor_internal (char *cursor)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = cursor;
@@ -3720,38 +3687,6 @@ A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
 }
 
 
-#ifdef libaubit4gl
-/**
- * Execute an allready preparted SQL statement.
- *
- * @param pname  The prepared statement name.
- * @param ni Number of elements in the input bind.
- * @param ibind The input binding array used.
- * @return
- *   - 0 : SQL statement executed.
- *   - 1 : There was an error.
- */
-int
-A4GLSQL_execute_sql (char *pname, int ni, void *vibind) 
-{
-  struct s_sid *sid;
-struct BINDING *ibind;
-ibind=vibind;
-
-  A4GL_debug ("ESQL : A4GLSQL_execute_sql");
-  /** @todo : Fix the mode that is not used now  - done remove comment */
-  sid = A4GLSQL_find_prepare (pname);	// ,0
-  sid->ibind = ibind;
-  sid->ni = ni;
-  if (processPreStatementBinds (sid) == 1)
-    return 1;
-  if (executeStatement (sid) == 1)
-    return 1;
-  if (processPosStatementBinds (sid) == 1)
-    return 1;
-  return 0;
-}
-#endif
 
 /**
  * Start getting information about all columns from a table in the database 
@@ -3996,7 +3931,7 @@ A4GLSQLLIB_A4GLSQL_dbms_name (void)
  * @return
  */
 int
-A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
+A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
 {
 int lstatus;
   EXEC SQL BEGIN DECLARE SECTION;
@@ -4006,11 +3941,11 @@ int lstatus;
   
   lstatus=a4gl_sqlca.sqlcode;
 
-  EXEC SQL CLOSE:cursorName;
+  EXEC SQL CLOSE   :cursorName;
   if (isSqlError ())
     return 1;
   if (lstatus<0 && sqlca.sqlcode==0) {
-		A4GLSQL_set_status(lstatus,1);
+		A4GL_set_status(lstatus,1);
 		//a4gl_status=lstatus;
 		//a4gl_sqlca.sqlcode=lstatus;
   }
@@ -4244,7 +4179,7 @@ $char *sql_stmt;
 struct s_sid *sid;
 //int i;
 
-  sid = A4GLSQL_find_prepare (stmt);	// ,0
+  sid = A4GL_find_prepare (stmt);	// ,0
   
   if(sid==0)     { A4GL_exitwith ("Statement could not be found"); return 0; }
 

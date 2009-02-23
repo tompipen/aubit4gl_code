@@ -660,7 +660,7 @@ code
 			}
 			memset(lines[lv_a],' ',ll);
 			lines[lv_a][ll+1]=0;
-			sprintf(lines[lv_a],"%-*s",ll,little_buff);
+			sprintf(lines[lv_a],"%-*s",(int)ll,little_buff);
 			lv_a++;
 			if (lv_a>=mb) break;
 		}

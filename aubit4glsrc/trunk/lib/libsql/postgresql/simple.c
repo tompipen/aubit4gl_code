@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.41 2009-02-03 19:57:25 mikeaubury Exp $
+# $Id: simple.c,v 1.42 2009-02-23 17:31:50 mikeaubury Exp $
 #*/
 
 
@@ -198,15 +198,6 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   return 0;
 }
 
-/**
- *
- * @todo Describe function
- */
-int
-A4GLSQL_get_status (void)
-{
-  return sqlcode;
-}
 
 int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
@@ -1011,7 +1002,7 @@ void *A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,
 	n->obind=obind;
 	n->sql=strdup(s);
 	n->name=strdup(uniqid);
-	A4GL_add_pointer(uniqid,PREPAREPG,n);
+	//A4GL_add_pointer(uniqid,PREPAREPG,n);
 	return n;
 }
 
@@ -1044,7 +1035,7 @@ char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 	return s;
 }
 
-void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
+void A4GLSQLLIB_A4GLSQL_free_prepare_internal (void* sid ) {
 /* does nothing in this driver */
  }
 

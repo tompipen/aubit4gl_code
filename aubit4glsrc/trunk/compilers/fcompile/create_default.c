@@ -285,7 +285,7 @@ if (strlen(outfile)) {
 
 A4GL_fgl_start(argc,argv);
 
-A4GLSQL_init_connection(dbname);
+A4GL_init_connection(dbname);
 if (a4gl_sqlca.sqlcode!=0) {
 	printf("Unable to open database(%s)\n",dbname);
 	exit(1);

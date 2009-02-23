@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.104 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: variables.c,v 1.105 2009-02-23 17:31:48 mikeaubury Exp $
 #
 */
 
@@ -73,13 +73,12 @@ int lv_uses_constants=0; /* No of constants local to this function/report */
 /* Prototypes of static functions in this module...*/
 //static int has_name (struct vname_name_list *namelist, char *name);
 char get_variable_user_system (void);
-static struct variable *make_constant (char *name, char *value,
-				       char *int_or_char);
-static void initialize_v (void);
-static void set_arr_subscripts (char *s, int record_cnt);
+//static struct variable *make_constant (char *name, char *value, char *int_or_char);
+//static void initialize_v (void);
+//static void set_arr_subscripts (char *s, int record_cnt);
 //static int add_to_scope (int record_cnt, int unroll);
 //static void dump_variable_records (struct variable **v, int cnt, int lvl);
-static struct variable *find_variable_in (char *s, struct variable **list, int cnt);
+//static struct variable *find_variable_in (char *s, struct variable **list, int cnt);
 //struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt);
 
 //struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array);
@@ -90,10 +89,7 @@ void make_arr_str (char *s, struct variable *v);
 //void A4GL_strip_bracket (char *s);
 char *rettype_integer (int n);
 static char * describe_record(struct record_variable *v_record) ;
-static struct record_list *add_to_record_list (struct record_list **list_ptr,
-					       char *prefix_buff,
-					       struct variable *v,
-					       char bindtype);
+//static struct record_list *add_to_record_list (struct record_list **list_ptr, char *prefix_buff, struct variable *v, char bindtype);
 int is_valid_vname(struct variable *v, enum e_scope scope);
 //char *remap_top_level_variables(char *invarname) ;
 void make_function (char *name, int record_cnt);
@@ -382,10 +378,8 @@ struct variable *find_dim_in_variable_list(struct variable_list *v,char *name) {
 }
 
 struct variable *find_dim (char *name) {
-  int a;
   struct variable_usage *vu;
   struct variable *v=NULL;
-enum e_scope scope;
 		char errbuff[256];
   vu=make_variable_usage_from_string(name);
 
@@ -580,58 +574,6 @@ clr_function_constants ()
 
 
 
-static char *
-make_pk_list (struct vname_name_list *nlist)
-{
-  static char buff[1024];
-  int a;
-
-  for (a = 0; a < nlist->names.names_len; a++)
-    {
-      if (a == 0)
-	{
-	  strcpy (buff, nlist->names.names_val[0].name);
-	}
-      else
-	{
-	  strcat (buff, ",");
-	  strcat (buff, nlist->names.names_val[a].name);
-	}
-
-    }
-  return buff;
-}
-
-
-
-
-
-
-
-/*
-int inc_var_usage_from_binding_list(binding_comp_list *l) {
-int a;
-	if (l==0) return 1;
-	for (a=0;a<l->bindings.bindings_len;a++) {
-		inc_var_usage(l->bindings.bindings_val[a].varname);
-	}
-return 1;
-}
-*/
-
-
-/*
-int inc_var_assigned_from_binding_list(binding_comp_list *l) {
-int a;
-	if (l==0) return 1;
-	for (a=0;a<l->bindings.bindings_len;a++) {
-		inc_var_assigned(l->bindings.bindings_val[a].varname);
-	}
-	return 1;
-
-}
-*/
-
 int inc_var_usage(expr_str *s) {
 struct variable *v;
 struct variable_usage *u;
@@ -694,8 +636,6 @@ return 1;
 int
 is_system_variable (char *s)
 {
-  //if (strcmp (s, "int_flag") == 0) return 1;
-  //if (strcmp (s, "quit_flag") == 0) return 1;
 
   if (strcmp (s, "a4gl_status") == 0)
     return 1;

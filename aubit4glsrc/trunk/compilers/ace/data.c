@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.44 2009-02-11 14:13:33 mikeaubury Exp $
+# $Id: data.c,v 1.45 2009-02-23 17:31:49 mikeaubury Exp $
 #*/
 
 /**
@@ -720,15 +720,15 @@ execute_selects (void)
       A4GL_debug ("1");
       A4GL_debug ("Executing select..");
       A4GL_debug ("%s", nstatement);
-	translated= A4GLSQL_translate (nstatement);
+	translated= A4GL_translate_sql (nstatement);
 	//printf("%s\n", translated);
       A4GL_debug ("%s", translated);
-      psql = (void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
+      psql = (void *) A4GL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
       a4gl_status = 0;
       if (psql == 0)
 	{
-	  printf ("Some error preparing SQL (Error %d)\n", A4GLSQL_get_status ());
-	  if (A4GLSQL_get_status () == -217)
+	  printf ("Some error preparing SQL (Error %d)\n", A4GL_get_status ());
+	  if (A4GL_get_status () == -217)
 	    {
 	      printf
 		("This can happen if you have not put a $ in front of a variable in a\nselect statement, or if a column does not exist in the listed tables\n");
@@ -741,9 +741,9 @@ execute_selects (void)
 	if ( columns_method == COLUMNS_METHOD_INTO_TEMP || a != mx) {
       		/* printf("Executing... %s",nstatement); */
       		A4GLSQL_execute_implicit_select (psql, 1);
-		if (A4GLSQL_get_status()  < 0)
+		if (A4GL_get_status()  < 0)
 			{
-	  			printf ("Some error executing SQL (Error: %d)\n", A4GLSQL_get_status ());
+	  			printf ("Some error executing SQL (Error: %d)\n", A4GL_get_status ());
 	  			yyerror_sql ("SQL Error");
 			} else {
 				A4GL_debug("Statement executed");
@@ -756,15 +756,15 @@ execute_selects (void)
 	  if (columns_method == COLUMNS_METHOD_DESCRIBE) {
 		int no_cols;
 		int a;
-			A4GLSQL_add_prepare("p1_p1",psql);
+			A4GL_add_prepare("p1_p1",psql);
 
 			if (need_to_open_cursor ) {
-				A4GLSQL_declare_cursor(0+0,A4GLSQL_find_prepare("p1_p1"),0,"p1_c1");
-				A4GLSQL_open_cursor("p1_c1",0,0);
+				A4GL_declare_cursor(0+0,A4GL_find_prepare("p1_p1"),0,"p1_c1");
+				A4GL_open_cursor("p1_c1",0,0);
 				if (need_to_open_cursor==2) {
-					a=A4GLSQL_fetch_cursor("p1_c1",2,1,0,0);
-					if (A4GLSQL_get_status ()<0) {
-	  					printf ("Some error executing SQL (Error %d)\n", A4GLSQL_get_status ());
+					a=A4GL_fetch_cursor("p1_c1",2,1,0,0);
+					if (A4GL_get_status ()<0) {
+	  					printf ("Some error executing SQL (Error %d)\n", A4GL_get_status ());
 	  					yyerror_sql ("SQL Error");
 					}
 				}

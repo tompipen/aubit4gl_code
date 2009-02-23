@@ -488,7 +488,7 @@ UILIB_A4GL_open_form (char *name)
   strncpy (buff, s, 256);
   buff[255] = 0;
   A4GL_trim (buff);
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
 
   suspend_flush (1);

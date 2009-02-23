@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.50 2008-11-21 16:40:33 mikeaubury Exp $
+# $Id: error.c,v 1.51 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -158,16 +158,16 @@ A4GL_exitwith (char *s)
   cache_errmsg = errdesc->errmsg;	// static, read-only - safe
   if (errdesc->a4gl_errno == ERR_UNDEF)	//not found
     {
-      A4GLSQL_set_status (ERR_UNDEF, 0);
+      A4GL_set_status (ERR_UNDEF, 0);
       cache_status = ERR_UNDEF;
     }
   else
     {
 	if (errdesc->a4gl_errno>0) {
-      		A4GLSQL_set_status (-1 * (A4GL_ERR_BASE + errdesc->a4gl_errno), 0);
+      		A4GL_set_status (-1 * (A4GL_ERR_BASE + errdesc->a4gl_errno), 0);
       		cache_status = A4GL_ERR_BASE + errdesc->a4gl_errno;
 	} else {
-      		A4GLSQL_set_status (errdesc->a4gl_errno, 0);
+      		A4GL_set_status (errdesc->a4gl_errno, 0);
       		cache_status = -1*errdesc->a4gl_errno;
 	}
     }
@@ -192,16 +192,16 @@ A4GL_exitwith_sql (char *s)
   cache_errmsg = errdesc->errmsg;	// static, read-only - safe
   if (errdesc->a4gl_errno == ERR_UNDEF)	//not found
     {
-      A4GLSQL_set_status (ERR_UNDEF, 0);
+      A4GL_set_status (ERR_UNDEF, 0);
       cache_status = ERR_UNDEF;
     }
   else
     {
 	if (errdesc->a4gl_errno>0) {
-      		A4GLSQL_set_status (-1 * (A4GL_ERR_BASE + errdesc->a4gl_errno), 1);
+      		A4GL_set_status (-1 * (A4GL_ERR_BASE + errdesc->a4gl_errno), 1);
       		cache_status = A4GL_ERR_BASE + errdesc->a4gl_errno;
 	} else {
-      		A4GLSQL_set_status ( errdesc->a4gl_errno, 1);
+      		A4GL_set_status ( errdesc->a4gl_errno, 1);
       		cache_status = -1*errdesc->a4gl_errno;
 	}
     }

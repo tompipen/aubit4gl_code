@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.86 2009-02-13 07:26:19 mikeaubury Exp $
+# $Id: ui.c,v 1.87 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -302,7 +302,7 @@ A4GL_display_at (int n, int a)
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   //A4GL_debug_print_stack ();
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
   A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & 0xff, tos_size, tos_ptr);
@@ -387,7 +387,7 @@ A4GL_display_at (int n, int a)
 
   if (!aclfgli_get_err_flg ())
     {
-      A4GLSQL_set_status (0, 0);
+      A4GL_set_status (0, 0);
     }
   //return 1;
 }
@@ -1681,7 +1681,7 @@ A4GL_fgl_keyval (int _np)
 
   if (_np != 1)
     {
-      A4GLSQL_set_status (-3000, 0);
+      A4GL_set_status (-3000, 0);
       A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1", _np);
 
       for (_r = 0; _r < _np; _r++)

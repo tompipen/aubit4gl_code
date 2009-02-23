@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.126 2009-02-09 17:24:11 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.127 2009-02-23 17:31:49 mikeaubury Exp $
 */
 
 /**
@@ -295,10 +295,10 @@ struct s_field_name_list {
 
 
 
-#define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else {/* A4GLSQL_set_status(0,0); */ aclfgli_clr_err_flg(); A4GL_pop_params(ibind,x);}
-#define CHECK_NO_RETURN if (_retvars!= 0) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else { aclfgli_clr_err_flg(); /* A4GLSQL_set_status(0,0); */ }
-#define CHECK_ONE_OR_NO_RETURN if (_retvars>0) { if (_retvars>1) { if (a4gl_status==0) { A4GLSQL_set_status(-3001,0); } A4GL_pop_args(_retvars); } else { A4GL_pop_args(1);  aclfgli_clr_err_flg(); } } else { aclfgli_clr_err_flg(); }
-#define CHECK_ONE_OR_NO_RETURN_POP if (_retvars>0) { if (_retvars>1) { if (a4gl_status==0) { A4GLSQL_set_status(-3001,0); } A4GL_pop_args(_retvars); } else { A4GL_pop_params(ibind,1);  aclfgli_clr_err_flg(); } } else { aclfgli_clr_err_flg(); }
+#define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else { aclfgli_clr_err_flg(); A4GL_pop_params(ibind,x);}
+#define CHECK_NO_RETURN if (_retvars!= 0) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else { aclfgli_clr_err_flg();  }
+#define CHECK_ONE_OR_NO_RETURN if (_retvars>0) { if (_retvars>1) { if (a4gl_status==0) { A4GL_set_status(-3001,0); } A4GL_pop_args(_retvars); } else { A4GL_pop_args(1);  aclfgli_clr_err_flg(); } } else { aclfgli_clr_err_flg(); }
+#define CHECK_ONE_OR_NO_RETURN_POP if (_retvars>0) { if (_retvars>1) { if (a4gl_status==0) { A4GL_set_status(-3001,0); } A4GL_pop_args(_retvars); } else { A4GL_pop_params(ibind,1);  aclfgli_clr_err_flg(); } } else { aclfgli_clr_err_flg(); }
 
 #define CHK_FOR_ERR (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0))
 #define ERR_CHK_WHEN_NOT_FOUND if ( CHK_FOR_ERR && (a4gl_sqlca.sqlcode==100))
@@ -345,8 +345,7 @@ int a_isprint(int a);
 int A4GL_fgl_error (int a, char *s, int err, int stat);
 
 
-int
-A4GLSQL_init_connection (char *dbName);
+int A4GL_init_connection (char *dbName);
 
 
 
@@ -427,7 +426,7 @@ void A4GL_set_err_txt(char *s);
   void A4GL_system_run (int a);
   void A4GL_push_time (void);
   int A4GL_esql_db_open(int a,char *src,char *target,char *dbname);
-void *A4GLSQL_find_prepare (char *pname);
+void *A4GL_find_prepare (char *pname);
 int A4GL_call_4gl_dll (char *filename, char *function, int args);
 
   /*double A4GL_pop_double(void); */

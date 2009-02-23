@@ -497,7 +497,7 @@ end_query: ;
 		}
 		rewrite_query_input(ln,c, get_qry_msg(qry_type,raffected));
 		if (exec_mode!=EXEC_MODE_FILE) {
-			sprintf(msg,"Q:%d %d - ( %s ) (%d)",qry_type, raffected, get_qry_msg(qry_type,raffected), exec_mode);
+			sprintf(msg,"Q:%ld %ld - ( %s ) (%ld)",(long)qry_type, (long)raffected, get_qry_msg(qry_type,raffected), (long)exec_mode);
 		} else {
 			if (get_isam_error()<0) {
 				char buff_isam[2000];
@@ -507,16 +507,16 @@ end_query: ;
         			aclfgl_get_db_err_msg(1);
         			ptr=A4GL_char_pop();
         			A4GL_trim(ptr);
-				sprintf(buff_isam,"                ( Error %d - %s )\n",get_isam_error(), ptr);
-				sprintf(msg,"Q:%4d %6d - ( %s )\n%sError in line %d\nNear character position %d\n",qry_type, raffected, get_qry_msg(qry_type,raffected), buff_isam, ln,c);
+				sprintf(buff_isam,"                ( Error %ld - %s )\n",(long)get_isam_error(), ptr);
+				sprintf(msg,"Q:%4ld %6ld - ( %s )\n%sError in line %ld\nNear character position %ld\n",(long)qry_type, (long)raffected, get_qry_msg(qry_type,raffected), buff_isam, (long)ln,(long)c);
 				free(ptr);
 			} else {
-			sprintf(msg,"Q:%d %d - ( %s )\nError in line %d\nNear character position %d\n",qry_type, raffected, get_qry_msg(qry_type,raffected), ln,c);
+			sprintf(msg,"Q:%ld %ld - ( %s )\nError in line %ld\nNear character position %ld\n",(long)qry_type, (long)raffected, get_qry_msg(qry_type,raffected), (long)ln,(long)c);
 			}
 			
 		}
 	} else {
-		sprintf(msg,"Q:%d %d - ( %s )",qry_type, raffected, get_qry_msg(qry_type,raffected));
+		sprintf(msg,"Q:%ld %ld - ( %s )",(long)qry_type, (long)raffected, get_qry_msg(qry_type,raffected));
 	}
 endcode
 

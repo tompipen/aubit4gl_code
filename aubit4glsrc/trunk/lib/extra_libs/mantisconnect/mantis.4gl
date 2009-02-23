@@ -103,7 +103,9 @@ endcode
 let lv_lastkey=fgl_lastkey()
 let lv_pwd=aclfgl_getcwd()
 let lv_summary=rprog clipped," ",err using "-<<<<<<"," ",mod clipped, " Line ",ln
-
+if length(fgl_getenv("MANTIS_LOGTEXT")) then
+	let lv_summary=lv_summary clipped, "(",fgl_getenv("MANTIS_LOGTEXT") clipped,")"
+end if
 code
 {
 char *scrdump;

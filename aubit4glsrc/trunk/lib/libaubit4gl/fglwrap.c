@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.144 2009-02-13 17:42:20 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.145 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -354,7 +354,7 @@ A4GL_system_run (int a)
   } ui_mode;
   ;
   ui_mode = MODE_NORMAL;
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
 /* did they specify a mode on the RUN .. line ? */
   if (a > 255)

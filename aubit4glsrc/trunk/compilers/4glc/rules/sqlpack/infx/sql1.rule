@@ -685,9 +685,9 @@ exists_predicate_sli:
 
 
 
-op_matches_escape: {strcpy($<str>$,"");} | KW_ESCAPE escape_character {SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
-op_ilike_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
-op_like_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
+op_matches_escape: {strcpy($<str>$,"");} | KW_ESCAPE escape_character {SPRINTF1($<str>$," ESCAPE %s",$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
+op_ilike_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {SPRINTF1($<str>$," ESCAPE %s",$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
+op_like_escape: {strcpy($<str>$,"");} 	 | KW_ESCAPE escape_character {SPRINTF1($<str>$," ESCAPE %s",$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
 
 pattern_sli:
 	value_expression_initial_sli {
@@ -1016,6 +1016,9 @@ column_name_sli_specific: identifier op_col_arr {
 	| table_name  KW_DOT KW_MULTIPLY {
 		$<s_select_list_item>$=new_select_list_item_col($<str>1,"*",0);
 	}
+	| KW_ROWID {
+		$<s_select_list_item>$=new_select_list_item_col(0,"rowid",0);
+	}
 ;
 
 
@@ -1241,6 +1244,7 @@ sort_spec_sli: INT_VALUE  {
 		$<s_select_list_item>$=$<s_select_list_item>1;
 		$<s_select_list_item>$->data.type=E_SLI_COLUMN_ORDERBY;
 	}
+	
 ;
 
 op_asc_desc: {strcpy($<str>$,"");}

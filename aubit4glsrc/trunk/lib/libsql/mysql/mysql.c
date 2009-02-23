@@ -102,25 +102,21 @@ A4GLSQLLIB_A4GLSQL_get_validation_expr (char *tabname, char *colname)
   SPRINTF3 (buff,
 	    "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
 	    cptr, tabname, colname);
-  A4GLSQL_add_prepare ("p_get_val",
-		       (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0,
-								 buff,
+  A4GL_add_prepare ("p_get_val", (void *) A4GLSQL_prepare_select_internal (0, 0, 0, 0, buff,
 								 "__internal_sql_1",0));
   if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
     return (void *) -1;
-  A4GLSQLLIB_A4GLSQL_declare_cursor (0 + 0,
-				     A4GLSQL_find_prepare ("p_get_val"), 0,
-				     "c_get_val");
+  A4GL_declare_cursor (0 + 0, A4GL_find_prepare ("p_get_val"), 0, "c_get_val");
   if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
     return (void *) -1;
-  A4GLSQLLIB_A4GLSQL_open_cursor ("c_get_val", 0, 0);
+  A4GL_open_cursor ("c_get_val", 0, 0);
   if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
     return (void *) -1;
 
 
   while (1)
     {
-      A4GLSQL_fetch_cursor ("c_get_val", 2, 1, 1, obind);
+      A4GL_fetch_cursor ("c_get_val", 2, 1, 1, obind);
       if (A4GL_get_a4gl_sqlca_sqlcode () != 0)
 	break;
       ptr = A4GL_add_validation_elements_to_expr (ptr, val);
@@ -334,20 +330,6 @@ int np;
 }
 
 
-
-/*****************************************************************************/
-
-static struct s_cid *
-A4GLSQL_find_cursor (char *cname)
-{
-  struct s_cid *ptr;
-
-  ptr = (struct s_cid *) A4GL_find_pointer_val (cname, CURCODE);
-  if (ptr)
-    return ptr;
-  A4GL_exitwith_sql ("Cursor not found");
-  return 0;
-}
 
 /*****************************************************************************/
 int
@@ -714,7 +696,7 @@ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (int a)
     a = 0 - a;
   A4GL_set_a4gl_status (a);	// a4gl_status = a;
   A4GL_set_a4gl_sqlca_sqlcode (a);
-  A4GLSQL_set_status (a, 1);
+  A4GL_set_status (a, 1);
 }
 
 
@@ -829,10 +811,10 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
   struct s_cid *cid;
   MYSQL_STMT *mstmt;
   int z;
-  sid = A4GLSQL_find_prepare (stmt);
+  sid = A4GL_find_prepare (stmt);
   if (sid == 0)
     {
-      cid = A4GLSQL_find_cursor (stmt);
+      cid = A4GL_find_cursor (stmt);
       if (cid == 0)
 	{
 	  A4GL_exitwith ("Could not find statement or cursor specified");
@@ -1185,7 +1167,6 @@ A4GL_debug("Get columns for %s", buff_info);
 	      		//SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s", mysql_);
   		r2=mysql_store_result(conn);
 		if (r2) {
-			MYSQL_FIELD *f;
 			MYSQL_ROW r;
 			r=mysql_fetch_row(r2);
 	      		SPRINTF1 (&arr2[cnt * (szarr2 + 1)], "%s", r[1]);
@@ -2071,7 +2052,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *
 
 /*****************************************************************************/
 void *
-A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
+A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll,
 				   char *cursname)
 {
   /* struct s_sid *nsid; */
@@ -2100,7 +2081,8 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   cid->o_obind = 0;
   cid->o_ni = 0;
   cid->o_no = 0;
-  A4GL_add_pointer (cursname, CURCODE, cid);
+
+  //A4GL_add_pointer (cursname, CURCODE, cid);
 
 
   return cid;
@@ -2108,13 +2090,11 @@ A4GLSQLLIB_A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
 
 /*****************************************************************************/
 int
-A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
+A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s, int ni, void *vibind)
 {
   struct s_cid *cid;
   struct BINDING *ibind;
   int nresultcols;
-  //int copy_out_n;
-  //int nrows;
   char *ptr;
   char *ptr2;
 
@@ -2122,17 +2102,12 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
   // and then execute the statement...
   ibind = vibind;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-  cid = A4GLSQL_find_cursor (s);
+  cid = A4GL_find_cursor (s);
 
   if (cid == 0)
     {
       A4GL_exitwith ("Can't open cursor that hasn't been defined");
-      return -1;
-    }
-
-  if (cid->hstmt)
-    {
-      A4GLSQLLIB_A4GLSQL_close_cursor (s);	// close it first...
+      return 1;
     }
 
   cid->currpos = 0;
@@ -2163,17 +2138,16 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
     {
       // Looks like an insert cursor...
       free (ptr2);
-      return 1;
+      return 0;
     }
   free (ptr2);
 
   truncated = 0;
-  if (!execute_sql
-      (cid->statement->hstmt, cid->statement->select, ibind, ni, 0, 0))
+  if (!execute_sql (cid->statement->hstmt, cid->statement->select, ibind, ni, 0, 0))
     {
-
-      return 0;
+      return 1;
     }
+
   if (truncated)
     {
       warnings[0] = 'W';
@@ -2201,7 +2175,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor (char *s, int ni, void *vibind)
 
 /*****************************************************************************/
 int
-A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
+A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
 				 int fetch_when, int nobind, void *vobind)
 {
   struct BINDING *obind;
@@ -2212,7 +2186,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 
   obind = vobind;
 
-  cid = A4GLSQL_find_cursor (cursor_name);
+  cid = A4GL_find_cursor (cursor_name);
   if (cid == 0)
     {
 	A4GL_set_errm(cursor_name);
@@ -2304,11 +2278,12 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode,
 /*****************************************************************************/
 
 int
-A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
+A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
 {
   struct s_cid *ptr;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-  ptr = A4GL_find_pointer_val (currname, CURCODE);
+  ptr=A4GL_find_cursor(currname);
+  //ptr = A4GL_find_pointer_val (currname, CURCODE);
 
   if (ptr == 0)
     {
@@ -2329,16 +2304,18 @@ A4GLSQLLIB_A4GLSQL_close_cursor (char *currname)
 
 /*****************************************************************************/
 void
-A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
+A4GLSQLLIB_A4GLSQL_free_cursor_internal (char *currname)
 {
   struct s_cid *ptr;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-  ptr = A4GL_find_pointer_val (currname, CURCODE);
+  //ptr = A4GL_find_pointer_val (currname, CURCODE);
+  
+  ptr=A4GL_find_cursor(currname);
 
   if (ptr == 0)
     {
 
-  	ptr = A4GLSQL_find_prepare (currname);
+  	ptr = A4GL_find_prepare (currname);
 
   	if (ptr == 0)
     	{
@@ -2358,28 +2335,24 @@ A4GLSQLLIB_A4GLSQL_free_cursor (char *currname)
 
 
   ptr->hstmt = 0;
-  A4GL_free_associated_mem (ptr);
-  free (ptr);
 
-
+  //A4GL_free_associated_mem (ptr);
+  //free (ptr);
 }
 
 
 /*****************************************************************************/
 
 void
-A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
+A4GLSQLLIB_A4GLSQL_put_insert_internal (char *cursorName, void *vibind, int n)
 {
-  char *cursorName;
   struct BINDING *ibind;
   struct s_cid *cid;
   int ni;
   struct s_sid *sid;
-  cursorName = A4GL_char_pop ();
 
-  cid = A4GLSQL_find_cursor (cursorName);
+  cid = A4GL_find_cursor (cursorName);
 
-  free (cursorName);
 
   if (cid == 0)
     return;
@@ -2408,7 +2381,7 @@ A4GLSQLLIB_A4GLSQL_put_insert (void *vibind, int n)
 
 
 void
-A4GLSQLLIB_A4GLSQL_flush_cursor (char *cursor)
+A4GLSQLLIB_A4GLSQL_flush_cursor_internal (char *cursor)
 {
   // Does nothing...
 }
@@ -2682,7 +2655,7 @@ A4GLSQLLIB_A4GLSQL_get_table_checksum (char *s)
 }
 
 
-void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
+void A4GLSQLLIB_A4GLSQL_free_prepare_internal (void* sid ) {
 /* does nothing in this driver */
  }
 

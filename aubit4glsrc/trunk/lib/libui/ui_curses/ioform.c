@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.219 2009-02-03 20:21:41 mikeaubury Exp $
+# $Id: ioform.c,v 1.220 2009-02-23 17:31:51 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.219 2009-02-03 20:21:41 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.220 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 /**
@@ -3101,8 +3101,8 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
   if (flg == 0)
     A4GL_push_char (" 1=1");
 
-if (s->fcntrl) free(s->fcntrl);
-if (s->field_list) free(s->field_list);
+  //if (s->fcntrl) { free(s->fcntrl); s->fcntrl=0; }
+  if (s->field_list) free(s->field_list);
   return 1;
 }
 
@@ -3833,7 +3833,7 @@ UILIB_A4GL_clr_form (int to_default)
   int fno;
   int rn;
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
   formdets = UILIB_A4GL_get_curr_form (1);
   if (formdets==0) return; /* No form to clear ? */
@@ -4080,7 +4080,7 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
   struct struct_scr_field *fprop;
   s = sv;
   A4GL_debug ("fgl_fieldtouched - input ");  
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
 
   field_status_strip_tabname=1;

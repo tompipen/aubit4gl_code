@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.371 2009-02-13 17:42:20 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.372 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -314,9 +314,6 @@
   /* pointer type defs from a4gl_pointers.h */
 #define PANCODE 		'1'
 #define WINCODE 		'2'
-#define CURCODE 		'3'
-//#define PRECODE 		'4'
-//#define PRECODE_R 		'5'
 #define FORMCODE 		'7'
 #define S_WINDOWSCODE 		'8'
 #define S_FORMDETSCODE 		'9'
@@ -340,11 +337,15 @@
 #define LAST_STRING		'T'
 #define LAST_STRING_START	'U'
 
-#define CURSOR_USED             'c'
+#define CURSOR_DEFINED 		'3'
+#define CURSOR_DEFINED_MOD             'c'
+
+
+//
 //unused? #define CURSOR_BIND_I           'i'
-#define CURSOR_BIND_O           'o'
-#define PREPARE_USED            'p'
-#define PREPARE_PRINTED         'r'
+//#define CURSOR_BIND_O           'o'
+//#define PREPARE_USED            'p'
+//#define PREPARE_PRINTED         'r'
 //unused? #define TMP_USED                't'
 #define FUNCTION_IGNORE         'f'
 #define EMULATE_CURRENT_OF      'u'
@@ -1054,8 +1055,6 @@ struct s_std_attr
   /* not strictly voids - but saves getting into the details */
   void *prepare_glob_sql (char *s, int ni, void *b);
 void A4GL_set_sql_lineno(int n);
-char *
-A4GLSQL_translate (char *sql1);
 
 
 
@@ -1902,7 +1901,7 @@ int A4GL_input_required_handling(void) ;
     void *field;
   };
 
-
+#define CONTROL_STACK_LENGTH 10
 
 #include "a4gl_screenio.h"
   typedef struct s_screenio  Tscreenio;
@@ -1960,7 +1959,7 @@ int A4GL_input_required_handling(void) ;
     int help_no;
     int curr_attrib;
     struct s_screenio *screen_io;
-    struct s_formcontrol *fcntrl;
+    struct s_formcontrol fcntrl[CONTROL_STACK_LENGTH];
     int fcntrl_cnt;
     int allow_insert;
     int allow_delete;
@@ -1996,7 +1995,7 @@ int A4GL_input_required_handling(void) ;
 	void *label;
   };
 
-  int A4GLSQL_load_data (char *fname, char *delims, void*filterfunc, char *tabname, ...);
+  int A4GL_load_data (char *fname, char *delims, void*filterfunc, char *tabname, ...);
   int set_scrline_ia (int np);
   int set_arrline_ia (int np);
   struct struct_screen_record *A4GL_get_srec (char *name);
@@ -2092,30 +2091,19 @@ aclfgl_a4gl_get_ui_mode (int n);
 int
 aclfgl_a4gl_get_info (int np);
 
-void
-A4GL_set_last_field_name (char *s);
-char *
-A4GL_get_last_field_name (char *s);
-void
-A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
-void *
-A4GL_read_form (char *s, char *p);
-int
-A4GLSQL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt);
-void
-A4GL_in_in_ops (int op);
-int
-A4GL_get_escape_chr (void);
+void A4GL_set_last_field_name (char *s);
+char * A4GL_get_last_field_name (char *s);
+void A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
+void * A4GL_read_form (char *s, char *p);
+int A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt);
+void A4GL_in_in_ops (int op);
+int A4GL_get_escape_chr (void);
 int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop,char *val_for_field);
-void
-a4gl_basename (char **ppsz);
-void
-A4GL_error_nobox (char *str,int attr);
-void
-A4GL_clr_error_nobox (char *dbg_fromwhere);
+void a4gl_basename (char **ppsz);
+void A4GL_error_nobox (char *str,int attr);
+void A4GL_clr_error_nobox (char *dbg_fromwhere);
 void A4GL_core_dump(void);
-void
-A4GL_set_core_dump (void);
+void A4GL_set_core_dump (void);
 char *A4GL_null_as_null(char *s);
 int A4GL_has_errorlog (void);
 #ifdef CSCC
@@ -2399,7 +2387,7 @@ FILE *A4GL_get_stderr(void) ;
 char *A4GL_not_set_empty_string(void);
 char *A4GL_tea_string_decipher(char *s);
 char *A4GL_tea_string_encipher(char *s);
-int A4GLSQL_read_columns (char *tabname, char *xcolname, int *dtype, int *size);
+int A4GL_read_columns (char *tabname, char *xcolname, int *dtype, int *size);
 
 int A4GL_monitor_puts_int (char *str);
 //A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);
@@ -2413,8 +2401,8 @@ void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c
 void A4GL_copy_sqlca_sqlawarn_string8( char *c);
 int
 A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind);
-int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
-int A4GLSQL_add_prepare (char *pname, void *vsid);
+int A4GL_execute_sql (char *pname, int ni, void *vibind);
+int A4GL_add_prepare (char *pname, void *vsid);
 
 void A4GL_write_errfile_many_errors(char *errfile,FILE *fin,struct s_module_error *e,int cnt);
 char *A4GL_compiling_module(void);

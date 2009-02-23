@@ -684,7 +684,7 @@ if lv_username is not null and lv_username not matches " " then
 		connect to lv_server user lv_username using lv_passwd
 	else
 		error "Password not specified"
-		connect to lv_server user lv_username using lv_passwd
+		connect to lv_server user lv_username using lv_passwd 
 	end if
 else
 	connect to lv_server 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.66 2009-01-08 17:36:17 mikeaubury Exp $
+# $Id: debug.c,v 1.67 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -250,7 +250,7 @@ A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const 
 
 
       if (buff[strlen (buff) - 1] != ':')
-	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %s%s",
+	FPRINTF (debugfile, "%-20s %-6d %-3s (%6ld,%6ld,%1d) %-25s%s",
 		 g_fname, g_lineno, g_level, a4gl_status, a4gl_sqlca.sqlcode, aclfgli_get_err_flg (),
 		 g_function, g_function[0] == 0 ? "" : "() ");
       else

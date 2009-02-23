@@ -274,7 +274,7 @@ A4GL_trim(msg);
 			lv_col--;
 			while(lv_col>0) {fprintf(r_fo," "); lv_col--;}
 			fprintf(r_fo,"^\n");
-			fprintf(r_fo,"# %s (%d %d)\n",msg, cline,lv_ln);
+			fprintf(r_fo,"# %s (%ld %ld)\n",msg, (long)cline,(long)lv_ln);
 			lv_ln=-1;
 		}
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.21 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: err.c,v 1.22 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -86,6 +86,8 @@ A4GL_err_print (int a, char *s)
       strcpy (static_err, "Wrong number of variables returned from function");
       return k;
     }
+
+/*
   if (a == -400)
     {
       A4GL_debug ("Ignore wrong number of variables..");
@@ -94,6 +96,7 @@ A4GL_err_print (int a, char *s)
       return static_err;
       return k;
     }
+*/
 
 
   if (a == -3002)

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.72 2009-01-02 11:52:54 mikeaubury Exp $
+# $Id: util.c,v 1.73 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -1183,7 +1183,7 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
 
   save_sql=strdup(sql);
 
-  cd=A4GLSQL_get_status();
+  cd=A4GL_get_status();
   st=a4gl_status;
   errflg=aclfgli_get_err_flg();
   sql = acl_strdup (sql);
@@ -1204,7 +1204,7 @@ A4GL_free_malloc_context(sql);
     acl_free (sql);
   strcpy (m_module, "unknown");
   m_ln = 0;
-  A4GLSQL_set_status(cd,1);
+  A4GL_set_status(cd,1);
   if (!errflg) aclfgli_clr_err_flg();
 
   if (cache)

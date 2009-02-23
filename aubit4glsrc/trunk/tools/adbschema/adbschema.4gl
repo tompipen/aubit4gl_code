@@ -145,7 +145,7 @@ if (strlen(lv_u) && strlen(lv_p) && strlen(lv_server)) {
 A4GL_trim(lv_server);
 A4GL_trim(lv_u);
 A4GL_trim(lv_p);
-A4GLSQL_init_session("default",lv_server,lv_u,lv_p);
+A4GL_init_session("default",lv_server,lv_u,lv_p);
 }
 }
 endcode

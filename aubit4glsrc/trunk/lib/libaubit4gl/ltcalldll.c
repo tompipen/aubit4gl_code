@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ltcalldll.c,v 1.4 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: ltcalldll.c,v 1.5 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -403,7 +403,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 
   A4GL_debug ("Call 4gl dll : %s %s %d", filename, function, args);
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   strcpy (nfile, filename);
 
   if (strncmp (nfile, "a4gl_", 5) == 0)
@@ -474,7 +474,7 @@ A4GL_call_4gl_dll_bound (char *filename, char *function, int ni, struct BINDING 
   int a;
   A4GL_debug ("Call 4gl dll bound : %s %s %d %d", filename, function, ni, no);
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   strcpy (nfile, filename);
 
   if (strncmp (nfile, "a4gl_", 5) == 0)

@@ -125,7 +125,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, int cw, int ch, int cb,
   A4GL_debug ("wprintw : y=%d", y);
   A4GL_debug ("wprintw : buff=%s", buff);
   A4GL_debug ("wprintw : attr=%x", attr);
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   A4GL_wprintw_internal (win, attr, x, y, (char *)buff, 0, cw, ch, cb, currwinno);
 }
 
@@ -144,7 +144,7 @@ A4GL_wprintw_window (void *win, int attr, int x, int y, int cw, int ch,
   va_start (args, fmt);
   vsprintf ((char *)buff, fmt, args);
   A4GL_debug ("wprintw : %d %d   '%s' attr=%x", x, y, buff, attr);
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   A4GL_wprintw_internal (win, attr, x, y, (char *)buff, 1, cw, ch, cb, currwinno);
 }
 

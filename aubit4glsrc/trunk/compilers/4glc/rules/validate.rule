@@ -14,7 +14,7 @@ validate_tab_list : validate_tab  {
                      $<str_list>$=malloc(sizeof(struct str_list));
                        $<str_list>$->str_list_entry.str_list_entry_len=1;
                        $<str_list>$->str_list_entry.str_list_entry_val=malloc(sizeof(char *)* $<str_list>$->str_list_entry.str_list_entry_len);
-                      $<str_list>$->str_list_entry.str_list_entry_val[0]=$<str>1;
+                      $<str_list>$->str_list_entry.str_list_entry_val[0]=strdup($<str>1);
 
 }
         | validate_tab_list KW_COMMA validate_tab {

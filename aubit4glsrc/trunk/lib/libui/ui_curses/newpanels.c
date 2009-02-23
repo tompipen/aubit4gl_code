@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.166 2009-02-09 15:17:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.167 2009-02-23 17:31:51 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.166 2009-02-09 15:17:24 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.167 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 /**
@@ -172,8 +172,8 @@ A4GL_pointer_code (int c)
       return "'panel'";
     case WINCODE:
       return "'window'";
-    case CURCODE:
-      return "'cursor'";
+    //case CURCODE:
+      //return "'cursor'";
     //case PRECODE:
       //return "'prepare statement'";
     case FORMCODE:
@@ -711,7 +711,7 @@ int
   WINDOW *w;
   A4GL_debug ("Current window....");
   A4GL_debug ("currwinno=%d currwin=%p", currwinno, currwin);
-  A4GLSQL_set_status(0,0);
+  A4GL_set_status(0,0);
   A4GL_chkwin ();
 #ifdef DEBUG
   {
@@ -1138,7 +1138,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
   int rows, cols;
   char buff[80];
   A4GL_chkwin ();
-  A4GLSQL_set_status(0,0);
+  A4GL_set_status(0,0);
   A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,f->form_details.error_line);
   A4GL_chkwin();
   scale_form (f->form, &rows, &cols);
@@ -2032,7 +2032,7 @@ void *
 {
   WINDOW *win;
   int x, y, w, h;
-  A4GLSQL_set_status(0,0);
+  A4GL_set_status(0,0);
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
   x = A4GL_pop_int ();
@@ -2078,7 +2078,7 @@ int
   char name[256];
   struct s_form_dets *form;
   WINDOW *win;
-  A4GLSQL_set_status(0,0);
+  A4GL_set_status(0,0);
   strcpy(name,namet);
   A4GL_trim(name);
   A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
@@ -2172,7 +2172,7 @@ int
   char buff[256];
   struct s_form_dets *form;
 
-  A4GLSQL_set_status(0,0);
+  A4GL_set_status(0,0);
 
   A4GL_chkwin();
   s = A4GL_char_pop ();
@@ -2180,7 +2180,7 @@ int
   buff[255] = 0;
   A4GL_trim (buff);
   A4GL_debug ("reading file %s ?", buff);
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
   form = A4GL_read_form (buff, name);
   A4GL_debug ("Read form returns %d status = %d\n", form,a4gl_status);
@@ -3271,7 +3271,7 @@ void
 {
   int a;
   a = A4GL_pop_int ();
-  A4GLSQL_set_status(0,0);
+  A4GL_set_status(0,0);
   sleep (a);
 }
 

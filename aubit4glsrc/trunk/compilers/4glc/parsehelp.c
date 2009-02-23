@@ -1516,6 +1516,23 @@ struct variable_usage *usage_bottom_level( variable_usage *u) {
 }
 
 
+static struct s_select_list_item *flatten_slist(struct s_select_list_item *s) {
+	/* There is a small change we might be passed in a variable
+ 	* 	thats not been expanded - so expand it - and if its just a single
+ 	*    	value - use that..
+ 	*/
+	if (s->data.type==E_SLI_VARIABLE_USAGE_LIST) {
+		struct s_select_list_item_list *slist;
+		slist=s->data.s_select_list_item_data_u.var_usage_list;
+		slist=rationalize_select_list_item_list(slist);
+		if (slist->list.list_len==1) {
+			return slist->list.list_val[0]; // its not really a list - if it just contains one thing..
+		}
+	}
+
+	return s;
+}
+
 struct s_select_list_item *convert_fgl_expr_to_sql_expr(expr_str *e) {
 struct s_select_list_item *rval=NULL;
 
@@ -1547,7 +1564,7 @@ struct s_select_list_item *rval=NULL;
 					local_add_select_list_item_list(slist, new_select_list_item_variable_usage(e->expr_str_u.expr_variable_usage));
 					inc_var_usage(e);
 		}
-		rval=new_select_list_item_variable_usage_list(slist);
+		rval=flatten_slist(new_select_list_item_variable_usage_list(slist));
 		return rval;
 	}
 
@@ -1599,7 +1616,7 @@ struct s_select_list_item *rval=NULL;
 					ensure_variable(errbuff, e,1);
 					local_add_select_list_item_list(slist, new_select_list_item_variable_usage(e->expr_str_u.expr_variable_usage));
 				}
-				rval=new_select_list_item_variable_usage_list(slist);
+				rval=flatten_slist(new_select_list_item_variable_usage_list(slist));
   
 		} else {
 			ensure_variable(errbuff, e,1);

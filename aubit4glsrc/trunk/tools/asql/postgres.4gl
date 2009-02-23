@@ -1797,7 +1797,7 @@ int lineno=0;
                 lineno++;
                 stripnlload (loadbuff, LoadUnload_delim[0]);
                 nfields = find_delims (LoadUnload_delim[0]);
-                sprintf(ins_str,e->stmt);
+                strcpy(ins_str,e->stmt);
                 strcat(ins_str," values (");
                 for (a=0;a<nfields;a++) {
                         if (a) strcat(ins_str,",");
@@ -1806,16 +1806,16 @@ int lineno=0;
                         strcat(ins_str,smbuff);
                 }
                 strcat(ins_str,")");
-		A4GLSQL_set_sqlerrm("",""); 
+		A4GL_set_sqlerrm("",""); 
                 EXEC SQL prepare p_loadit from :ins_str;
 
                 if (get_sqlcode()!=0) { 
-			A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp); 
+			A4GL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp); 
 			break; 
 		} else {
                 	EXEC SQL execute p_loadit;
                 	if (get_sqlcode()!=0) { 
-				A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp); 
+				A4GL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp); 
 				break; 
 			}
 		}

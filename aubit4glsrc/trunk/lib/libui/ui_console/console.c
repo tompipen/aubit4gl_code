@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.49 2009-01-26 10:12:19 mikeaubury Exp $
+# $Id: console.c,v 1.50 2009-02-23 17:31:50 mikeaubury Exp $
 #*/
 
 /**
@@ -625,7 +625,7 @@ int
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   printf ("%s", promptstr);
   fflush (stdout);
   return 1;

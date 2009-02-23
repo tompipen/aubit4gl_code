@@ -1,3 +1,4 @@
+-400|Fetch attempted on unopened cursor (%s)
 1|Undefined Error
 2|Shouldn't get to here...
 4|Variable is already defined
@@ -218,7 +219,6 @@
 219|Binding input failed; cursor (%s)
 220|Opening cursor (%s) failed
 221|Binding output failed; cursor (%s)
-222|Fetch attempted on unopened cursor (%s)
 223|Fetching cursor (%s) failed
 224|SQLite database file not found in DBPATH=%s
 225|Could not connect to database (%s)
@@ -361,3 +361,4 @@
 368|Invalid file
 370|Invalid file (%s)
 372|
+374|Database error

@@ -114,6 +114,7 @@ var_ident_vl : var_ident
 select_statement_ss_str_converted:
 		select_statement_ss_select {
 			$<sql_string>$=make_select_stmt_v2("", $<s_select>1,"");
+			A4GL_free_select_stmt($<s_select>1);
 		}
 ;
 

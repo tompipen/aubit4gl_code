@@ -64,7 +64,7 @@ int A4GL_pcode_ecall(char *x,int a,int params) {
   nset_param(0,param_id);
   //printf("cleared param_id %d\n",param_id);
   if (rval!=1) { 
-	  	A4GLSQL_set_status(-3001,0);
+	  	A4GL_set_status(-3001,0);
 		A4GL_chk_err(a,this_module_ptr->module_name);
   }
 return 1;
@@ -99,7 +99,7 @@ int aclfgl_startlog_pcode(int n) ;
 #endif
 
 struct call_funcs system_funcs[]={
-	{ &A4GLSQL_set_status,			"A4GLSQL_set_status",			"044"},
+	{ &A4GL_set_status,			"A4GL_set_status",			"044"},
 	{ &A4GLSTK_initFunctionCallStack,	"A4GLSTK_initFunctionCallStack",	"0"},
 	{ &A4GLSTK_pushFunction,		"A4GLSTK_pushFunction",			"0444"},
 	{ &A4GLSTK_popFunction,			"A4GLSTK_popFunction",			"0"},
@@ -233,7 +233,7 @@ int special_cmd(struct cmd *c) {
 	}
 
 	if (c->npcode_cmd_type==CMD_SET_STAT) {
-			A4GLSQL_set_status(c->cmd_u.c_setval,0);
+			A4GL_set_status(c->cmd_u.c_setval,0);
 			return 1;
 	}
 
@@ -270,7 +270,7 @@ int special_cmd(struct cmd *c) {
 
 
 
-	printf("Unknown command : %d\n",c->npcode_cmd_type);
+	printf("Unknown command : %ld\n",(long)c->npcode_cmd_type);
 	return 0;
 }
 

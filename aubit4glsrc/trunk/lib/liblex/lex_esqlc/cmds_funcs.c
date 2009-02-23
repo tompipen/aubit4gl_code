@@ -1617,7 +1617,7 @@ print_validate_cmd (struct_validate_cmd * cmd_data)
 	}
       printc ("A4GL_push_int(%d);", p->list.list_len);
       printc ("A4GL_pushop(OP_IN);");
-      printc ("if (!A4GL_pop_bool()) {A4GLSQL_set_status(-1321,0);}");
+      printc ("if (!A4GL_pop_bool()) {A4GL_set_status(-1321,0);}");
     }
   print_copy_status_not_sql (0);
   return 1;
@@ -1953,7 +1953,7 @@ print_pdf_call_cmd (struct_pdf_call_cmd * cmd_data)
   p = cmd_data->fcall->expr_str_u.expr_pdf_function_call;
 
   real_print_expr_list (p->parameters);
-  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
+  printc ("{int _retvars;A4GL_set_status(0,0);\n");
   if (is_in_report ())
     {
       printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname, p->parameters->list.list_len);

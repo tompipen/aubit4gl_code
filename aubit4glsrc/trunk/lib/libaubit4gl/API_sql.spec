@@ -38,13 +38,13 @@ A4GLSQL_execute_implicit_select void* sid int singleton -> int
 A4GLSQL_execute_implicit_sql    void* sid int singleton int no void* ibind -> int
 
 
-A4GLSQL_free_cursor char* cursor_name -> void
-A4GLSQL_free_prepare void* sid -> void
-A4GLSQL_fetch_cursor char* cursor_name int fetch_mode int fetch_when int nibind void* ibind -> int
-A4GLSQL_open_cursor char* s int no void* vibind -> int
-A4GLSQL_flush_cursor char* cursor -> void
-A4GLSQL_close_cursor char* currname -> int
-A4GLSQL_declare_cursor int upd_hold void* sid int scroll char* cursname -> void*
+A4GLSQL_free_cursor_internal char* cursor_name -> void
+A4GLSQL_free_prepare_internal void* sid -> void
+A4GLSQL_fetch_cursor_internal char* cursor_name int fetch_mode int fetch_when int nibind void* ibind -> int
+A4GLSQL_open_cursor_internal char* s int no void* vibind -> int
+A4GLSQL_flush_cursor_internal char* cursor -> void
+A4GLSQL_close_cursor_internal char* currname -> int
+A4GLSQL_declare_cursor_internal int upd_hold void* sid int scroll char* cursname -> void*
 A4GLSQL_prepare_select_internal void* ibind int ni void* obind int no char* s char* uniqid int singleton -> void*
 
 
@@ -62,7 +62,7 @@ A4GLSQL_get_currdbname -> char*
 
 
 
-A4GLSQL_put_insert void* ibind int n -> void
+A4GLSQL_put_insert_internal char* cursorname void* ibind int n -> void
 A4GLSQL_set_sqlca_sqlcode int a -> void
 A4GLSQL_unload_data_internal char* fname char* delims char* sql1 int nbind void* ibind -> void
 A4GLSQL_get_errmsg int a -> char* errmsg

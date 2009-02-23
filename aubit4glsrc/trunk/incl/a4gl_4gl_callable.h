@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.49 2009-02-13 17:42:20 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.50 2009-02-23 17:31:49 mikeaubury Exp $
 */
 
 /**
@@ -72,7 +72,7 @@ extern "C"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
 #include "a4gl_builtin_funcs.h"
-int A4GLSQL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...);
+int A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int rep_end);
 void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
@@ -85,7 +85,7 @@ void A4GL_def_quit (void);
 void A4GL_make_report_table (struct BINDING *b, int n);
 int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread,char *asc_desc);
 void *A4GLSQL_prepare_glob_sql (char *s, int ni, void  *ibind);
-struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *modname, int lineno,int converted, int singleton);
+struct s_sid * A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s,char *modname, int lineno,int converted, int singleton);
 
 
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
@@ -103,7 +103,7 @@ void A4GL_set_help_file (char *fname);
 int A4GL_get_a4gl_status (void);
 void A4GLSQL_set_sqlerrd(int a0,int a1,int a2,int a3,int a4,int a5);
 void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7);
-void A4GLSQL_set_sqlerrm (char *m, char *p);
+//void A4GL_set_sqlerrm (char *m, char *p);
 
 //**********
 
@@ -163,7 +163,7 @@ void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
 void A4GL_display_at (int n, int a);
 int A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
-int A4GLSQL_set_status (int a, int sql);
+int A4GL_set_status (int a, int sql);
 int A4GL_key_val(char *s);
 int A4GL_internal_build (void);
 char *A4GL_internal_version (void);

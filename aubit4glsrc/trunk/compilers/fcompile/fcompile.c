@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.67 2008-11-16 15:47:39 mikeaubury Exp $
+# $Id: fcompile.c,v 1.68 2009-02-23 17:31:49 mikeaubury Exp $
 #*/
 
 /**
@@ -459,11 +459,11 @@ A4GLF_open_db (char *s)
   opened_db=1;
   if (default_database == 0)
     {
-      return A4GLSQL_init_connection (s);
+      return A4GL_init_connection (s);
     }
   else
     {
-      return A4GLSQL_init_connection (default_database);
+      return A4GL_init_connection (default_database);
     }
 }
 

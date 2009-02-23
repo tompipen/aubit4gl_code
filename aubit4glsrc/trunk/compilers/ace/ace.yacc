@@ -250,7 +250,7 @@ db_section:
 	}
 	| DATABASE NAMED END {
 		this_report.dbname=acl_strdup($<str>2);
-		A4GLSQL_init_connection ($<str>2);
+		A4GL_init_connection ($<str>2);
 		if (a4gl_status!=0) {
 			a4gl_ace_yyerror("Unable to connect to database");
 		}

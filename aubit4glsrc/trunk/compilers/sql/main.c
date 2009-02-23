@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.16 2009-01-02 11:52:54 mikeaubury Exp $
+# $Id: main.c,v 1.17 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -108,9 +108,9 @@ int converted=0;
 		}
 
 		if (default_database) {
-	        	A4GLSQL_set_status (0, 1);
-  			A4GLSQL_init_connection (default_database);
-  			if (A4GLSQL_get_status () != 0) {
+	        	A4GL_set_status (0, 1);
+  			A4GL_init_connection (default_database);
+  			if (A4GL_get_status () != 0) {
 				printf("Couldn't connect to database\n");
 				exit(1);
     			}

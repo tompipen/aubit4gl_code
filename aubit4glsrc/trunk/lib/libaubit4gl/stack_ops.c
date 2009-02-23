@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.23 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.24 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -102,7 +102,7 @@ A4GL_process_stack_op_other (int d)
 	struct BINDING obind[] = { {0, 0, 0, 0, 0, 0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
 	A4GL_debug ("declare - binding : %d\n", n);
-	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s, "__internal_stackops", 1, 0, 0), 0, cname);
+	A4GL_declare_cursor (0, A4GL_prepare_select (ibind, n, obind, 0, s, "__internal_stackops", 1, 0, 0), 0, cname);
       }
       if (a4gl_status != 0)
 	{
@@ -111,7 +111,7 @@ A4GL_process_stack_op_other (int d)
 	}
       free (s);
       A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor (cname, 0, 0);
+      A4GL_open_cursor (cname, 0, 0);
       if (a4gl_status != 0)
 	{
 	  A4GL_drop_param ();
@@ -119,7 +119,7 @@ A4GL_process_stack_op_other (int d)
 	}
       while (1)
 	{
-	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
+	  A4GL_fetch_cursor (cname, 2, 1, 1, ibind);
 	  if (a4gl_status != 0)
 	    break;
 	  A4GL_debug ("tmpvar=%s\n", tmpvar);
@@ -164,10 +164,10 @@ A4GL_process_stack_op_other (int d)
       A4GL_debug ("s=%s\n", s);
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_debug ("Prepare seelct...");
-      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s, "__internal_stackops", 2, 0, 0);
+      prep = A4GL_prepare_select (dbind, n, obind, 0, s, "__internal_stackops", 2, 0, 0);
       A4GL_debug ("Declare");
       free (s);
-      A4GLSQL_declare_cursor (0, prep, 0, cname);
+      A4GL_declare_cursor (0, prep, 0, cname);
 
       if (a4gl_status != 0)
 	{
@@ -175,14 +175,14 @@ A4GL_process_stack_op_other (int d)
 	  return;
 	}
       A4GLSQL_set_sqlca_sqlcode (0);
-      A4GLSQL_open_cursor (cname, 0, 0);
+      A4GL_open_cursor (cname, 0, 0);
       A4GL_debug ("opened cursor");
       if (a4gl_status != 0)
 	{
 	  A4GL_push_int (0);
 	  return;
 	}
-      A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
+      A4GL_fetch_cursor (cname, 2, 1, 1, ibind);
       A4GL_debug ("fetched");
       if (a4gl_status == 0)
 	ok = 1;

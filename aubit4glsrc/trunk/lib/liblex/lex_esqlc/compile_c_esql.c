@@ -11,9 +11,6 @@ extern int tmp_ccnt;
 extern int set_dont_use_indicators;
 int globalcurs=0;
 
-//@ FIXMES : 
-// make sure to check usages of A4GL_find_pointer, because we might not be 
-// adding the CURCODE values in...
 
 
 /* 
@@ -585,8 +582,8 @@ int a;
 void
 print_generation_copy_status (void)
 {
-  printc ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
-  printc ("A4GLSQL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
+  printc ("A4GL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
+  printc ("A4GL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
 
   printc ("A4GLSQL_SET_SQLCA_SQLWARN;");
 
@@ -596,19 +593,19 @@ print_generation_copy_status (void)
       A4GL_assertion (1, "No ESQL/C Dialect");
       break;
     case E_DIALECT_INFORMIX:
-      printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);");
+      printc ("A4GL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);");
       break;
     case E_DIALECT_POSTGRES:
-      printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
+      printc ("A4GL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
       break;
     case E_DIALECT_SAPDB:
-      printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
+      printc ("A4GL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
       break;
     case E_DIALECT_INGRES:
-      printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
+      printc ("A4GL_set_sqlerrm(sqlca.sqlerrm.sqlerrmc,sqlca.sqlerrp);");
       break;
     case E_DIALECT_INFOFLEX:
-      printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);");
+      printc ("A4GL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);");
       break;
     }
 
@@ -642,7 +639,7 @@ int using_username=0;
 
   if (cmd_data->username) {
 	print_expr(cmd_data->username);
-	printc("A4GL_pop_char(_u, 254);A4GL_trim(_p);");
+	printc("A4GL_pop_char(_u, 254);A4GL_trim(_u);");
 	print_expr(cmd_data->password);
 	printc("A4GL_pop_char(_p, 254);A4GL_trim(_p);");	
 	using_username=1;
@@ -1044,7 +1041,8 @@ char *cname;
 
   cname=get_esql_ident_as_string(s);
   
-  if (!A4GL_find_pointer(cname,CURCODE)) {
+
+  if (!A4GL_find_pointer(cname,CURSOR_DEFINED)) {
                 set_yytext(cname);
 		if (!globalcurs) {
                 	a4gl_yyerror("Cursor has not been previously defined");
@@ -1836,7 +1834,7 @@ empty.list.list_len=0;
         //e_boolean isstmt;
 
   strcpy(cname,get_esql_ident_as_string(cmd_data->cursorname));
-  A4GL_add_pointer(cname,CURCODE,(void *) 1);
+  A4GL_add_pointer(cname,CURSOR_DEFINED,(void *) 1);
   cname3=get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0);
   print_cmd_start ();
   print_use_session(cmd_data->connid);
@@ -1846,7 +1844,7 @@ empty.list.list_len=0;
   declare_dets=cmd_data->declare_dets;
   set_suppress_lines ();
 
-  A4GL_add_pointer(cname,CURCODE,(void *) 1);
+  A4GL_add_pointer(cname,CURSOR_DEFINED,(void *) 1);
 
 
   // Are we trying to emulate an insert cursor ?
@@ -2572,11 +2570,11 @@ switch (cmd_data->sql->expr_type) {
 
       if (isvar == 0)
 	{
-	  printc ("A4GLSQL_unload_data(_filename,_delimiter, \"%s\",%s,0);\n", escape_quotes_and_remove_nl (sql), ibindstr);
+	  printc ("A4GL_unload_data(_filename,_delimiter, \"%s\",%s,0);\n", escape_quotes_and_remove_nl (sql), ibindstr);
 	}
       else
 	{
-	  printc ("A4GLSQL_unload_data(_filename,_delimiter, _sql,%s,0);\n",  ibindstr);
+	  printc ("A4GL_unload_data(_filename,_delimiter, _sql,%s,0);\n",  ibindstr);
 	  
 	}
   	tmp_ccnt--;
@@ -2998,7 +2996,7 @@ int has_own_using;
   printc("if (_cursoropen) {");
   tmp_ccnt++;
   printc ("EXEC SQL CLOSE %s;\n",  get_esql_ident_as_string(cmd_data->cursorname)); 
-  printc("if (a4gl_status == 0) { if (_fetcherr) {A4GLSQL_set_status(_fetcherr,1);}}");
+  printc("if (a4gl_status == 0) { if (_fetcherr) {A4GL_set_status(_fetcherr,1);}}");
   printc("if (a4gl_status == 100) { if (_fetcherr) {a4gl_sqlca.sqlcode = a4gl_status=_fetcherr;} else {a4gl_sqlca.sqlcode = a4gl_status = 0; }}");
   tmp_ccnt--;
   printc("}");
@@ -3105,7 +3103,7 @@ set_suppress_lines();
 	{
 	  print_expr (cmd_data->sqlvar);
 	  printc ("_sql=A4GL_char_pop();");
-	  printc ("A4GLSQL_load_data_str(_filename,_delimiter,_filterfunc, _sql);\n");
+	  printc ("A4GL_load_data_str(_filename,_delimiter,_filterfunc, _sql);\n");
 	  printc ("free(_sql);");
 		issql=0;
 	}
@@ -3113,7 +3111,7 @@ set_suppress_lines();
 	{
 	  int a;
 	  set_nonewlines ();
-	  printc ("A4GLSQL_load_data(_filename,_delimiter,_filterfunc, \"%s\"\n", cmd_data->tabname);
+	  printc ("A4GL_load_data(_filename,_delimiter,_filterfunc, \"%s\"\n", cmd_data->tabname);
 	  if (cmd_data->collist)
 	    {
 	      for (a = 0; a < cmd_data->collist->str_list_entry.str_list_entry_len; a++)

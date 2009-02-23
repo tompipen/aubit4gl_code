@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.80 2009-02-05 15:30:52 mikeaubury Exp $
+# $Id: helper.c,v 1.81 2009-02-23 17:31:50 mikeaubury Exp $
 #
 */
 
@@ -1888,7 +1888,7 @@ char *value;
 int dtype;
 int dtype_length;
 
-if (n!=5) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(n);A4GL_push_char("");return 1;}
+if (n!=5) {A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GL_push_char("");return 1;}
 
 
 dtype_length=A4GL_pop_long();

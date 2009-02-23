@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.71 2009-01-26 10:12:19 mikeaubury Exp $";
+  "$Id: misc.c,v 1.72 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -88,7 +88,7 @@ UILIB_A4GL_clr_form (int to_default)
   void *f;
   int fno;
   int rn;
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
   formdets = UILIB_A4GL_get_curr_form (1);
 

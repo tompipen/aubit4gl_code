@@ -1,6 +1,11 @@
 #ifndef DEF_S_SCREENIO
 #define DEF_S_SCREENIO
 
+
+/* 
+ * IF YOU CHANGE THIS - PLEASE REMEMBER  TO EDIT THE 'shadow' structure in  data_if.c 
+ *
+ */
   struct s_screenio
   {
     int mode;
@@ -15,11 +20,11 @@
     void **field_list;
     int field_changed;
     int help_no;
-    struct s_formcontrol *fcntrl;
     int fcntrl_cnt;
     int attrib;
     int processed_onkey;
     void *callback_function;
+    struct s_formcontrol fcntrl[CONTROL_STACK_LENGTH];
   };
 
 #endif

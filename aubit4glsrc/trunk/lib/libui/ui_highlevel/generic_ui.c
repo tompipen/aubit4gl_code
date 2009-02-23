@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.152 2009-02-10 08:58:45 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.153 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3587,7 +3587,7 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,
   ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
   af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
 
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
   x =
     A4GL_LL_start_prompt (vprompt, promptstr, ap, c, h, af,
 			  UILIB_A4GL_get_curr_width (),

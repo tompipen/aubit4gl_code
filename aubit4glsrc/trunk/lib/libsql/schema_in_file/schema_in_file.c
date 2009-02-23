@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.31 2009-02-03 19:57:25 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.32 2009-02-23 17:31:50 mikeaubury Exp $
 #*/
 
 /**
@@ -84,20 +84,6 @@ char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 
 
 
-#ifdef DONTTHINKWENEED
-/**
- *
- * @todo Describe function
- */
-void
-A4GLSQL_set_status (int a, int sql)
-{
-  status = a;
-  if (sql)
-    a4gl_sqlca.sqlcode = a;
-  A4GL_debug ("Status set to %d", a);
-}
-#endif
 
 /**
  *
@@ -319,7 +305,7 @@ char *A4GLSQLLIB_A4GLSQL_get_table_checksum(char *s) {
 }
 
 
-void A4GLSQLLIB_A4GLSQL_free_prepare (void* sid ) {
+void A4GLSQLLIB_A4GLSQL_free_prepare_internal (void* sid ) {
 /* does nothing in this driver */
  }
 int A4GLSQLLIB_A4GLSQL_cancel ()

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.46 2008-11-25 10:19:06 mikeaubury Exp $
+# $Id: Makefile,v 1.47 2009-02-23 17:31:49 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -234,6 +234,17 @@ endif
 
 test:
 	echo ${CFLAGS}
+	echo "All = $(ALL)"
+	echo  $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
+
+
+
+################
+#Rule to make API objects
+#Every API object needs coresponding .c file and ALL of the API headers:
+API_%.o: API_%.c $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
+	${CC} ${CFLAGS_API_C} -c -o $@ $< 
+
 
 ci: $(CMODS)
 	ci -l  $^
@@ -318,7 +329,7 @@ lclint: $(CMODS)
 ################
 #Target to create ALL API objects. Must include list of all API header files
 #as dependency since they are all included via a4gl_aubit4gl.h
-api: ${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
+api: $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h}) ${OBJS_API} 
 	@echo "Sucessfuly created API objects:"
 	@echo ${OBJS_API}
 
@@ -354,11 +365,6 @@ API_%_self.c: API_%.spec
 #The former is needed for the API_ui.c in lib/libaubit4gl the latter for the libui/* stuff
 #Andrej: former and latter ?what? 
 
-################
-#Rule to make API objects
-#Every API object needs coresponding .c file and ALL of the API headers:
-API_%.o: API_%.c $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=.h})
-	${CC} ${CFLAGS_API_C} -c -o $@ $<
 
 
 libaubit4gl.a: $(OBJS)

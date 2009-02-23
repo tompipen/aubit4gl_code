@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.39 2008-10-23 14:57:22 mikeaubury Exp $
+# $Id: data_if.c,v 1.40 2009-02-23 17:31:49 mikeaubury Exp $
 #
 */
 
@@ -93,11 +93,11 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
     void *field_list;
     int field_changed;
     int help_no;
-    void *fcntrl;
     int fcntrl_cnt;
     int attrib;
     int processed_onkey;
     void *callback_function;
+    struct s_formcontrol fcntrl[CONTROL_STACK_LENGTH];
   };
 
   struct s_s_screenio_1 *val;
@@ -370,7 +370,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     int help_no;
     int curr_attrib;
     void *screen_io;
-    void *fcntrl;
+    struct s_formcontrol fcntrl[CONTROL_STACK_LENGTH];
     int fcntrl_cnt;
     int allow_insert;
     int allow_delete;

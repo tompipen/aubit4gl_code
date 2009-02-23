@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.47 2008-11-05 18:44:23 mikeaubury Exp $";
+  "$Id: forms.c,v 1.48 2009-02-23 17:31:51 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -181,7 +181,7 @@ UILIB_A4GL_open_form (char *name)
   buff[255] = 0;
   A4GL_trim (buff);
   A4GL_debug ("reading file %s ?", buff);
-  A4GLSQL_set_status (0, 0);
+  A4GL_set_status (0, 0);
 
   A4GL_LL_opening_form(buff,name);
   form = A4GL_read_form (buff, name);

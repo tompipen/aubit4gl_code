@@ -194,13 +194,93 @@ A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char 
 
 	      for (b = 0; b < select->list_of_items.list.list_len; b++)
 		{
-		  struct s_select_list_item *p;
-		  struct s_select_list_item *l;
-		  struct s_select_list_item *r;
-		  char *lt;
-		  char *rt;
-		  char *lc;
-		  char *rc;
+		  struct s_select_list_item *p=NULL;
+		  struct s_select_list_item *l=NULL;
+		  struct s_select_list_item *r=NULL;
+		  char *lt=NULL;
+		  char *rt=NULL;
+		  char *lc=NULL;
+		  char *rc=NULL;
+
+
+		  if (select->list_of_items.list.list_val[b]->data.type==E_SLI_OP) {
+				int matches=0;
+				int can_replace=0;
+				p=select->list_of_items.list.list_val[b];
+				l=p->data.s_select_list_item_data_u.complex_expr.left;
+				r=p->data.s_select_list_item_data_u.complex_expr.right;
+				if (l->data.type==E_SLI_COLUMN) {
+					lt= l->data.s_select_list_item_data_u.column.tabname;
+				}
+				if (r->data.type==E_SLI_COLUMN) {
+					rt= r->data.s_select_list_item_data_u.column.tabname;
+				}
+				if (lt) {
+					if (strcmp(lt,outer_table)==0) { matches+=1; }
+				}
+
+				if (rt) {
+					if (strcmp(rt,outer_table)==0) { matches+=2; }
+				}
+				if (matches==3) {
+					can_replace=1;
+				}
+
+
+				if (matches==1 || matches==2) {
+					can_replace=0;
+					// lets check for any *simple* filter conditions...
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," < ")==0) {
+						can_replace=1;
+					}
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," > ")==0) {
+						can_replace=1;
+					}
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," = ")==0) {
+						can_replace=1;
+					}
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," != ")==0) {
+						can_replace=1;
+					}
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," <> ")==0) {
+						can_replace=1;
+					}
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," <= ")==0) {
+						can_replace=1;
+					}
+					if (strcmp(select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.op," >= ")==0) {
+						can_replace=1;
+					}
+
+					if (can_replace) {
+						if (matches==1) {	
+								if (select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.right) {
+									if (select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.right->data.type!=E_SLI_LITERAL) {			
+										can_replace=0;
+									}
+								}
+						}
+						if (matches==2) {	
+								if (select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.left) {
+									if (select->list_of_items.list.list_val[b]->data .s_select_list_item_data_u.complex_expr.left->data.type!=E_SLI_LITERAL) {			
+										can_replace=0;
+									}
+								}
+						}
+
+					}
+				}
+		
+				if (can_replace) {
+			  		char buff2[256];
+			      		SPRINTF1 (buff2, " AND %s", get_select_list_item (select, select->list_of_items.list.list_val[b]));
+			  		select->list_of_items.list.list_val[b]->data.type = E_SLI_LITERAL;
+			  		p->data.s_select_list_item_data_u.expression = acl_strdup ("(1=1)");
+			  		strcat (buff, buff2);
+				}
+
+		  }
+
 		  if (select->list_of_items.list.list_val[b]->data.type == E_SLI_JOIN)
 		    {
 		      //int tnl;
