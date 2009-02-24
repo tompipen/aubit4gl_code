@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.65 2009-02-18 19:00:12 mikeaubury Exp $
+# $Id: Makefile,v 1.66 2009-02-24 15:18:48 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -636,7 +636,9 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/adbload2 clean
 	$(MAKE) -C help clean
 	$(MAKE) -C glade/ide clean
+	$(MAKE) -C lib/extta_libs/errhook clean
 	@echo " "	
+	
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Aubit 4gl compiler source tree is now clean                        |"
 	@echo "| NOTE: tools tree not cleaned (use 'make clean.tools')              |"
