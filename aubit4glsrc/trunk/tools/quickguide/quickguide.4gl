@@ -105,10 +105,10 @@ main
 		let mv_need_wide=1
 	end if
 
-	if fgl_getenv("A4GL_UI")="TUI"  OR fgl_getenv("A4GL_UI")="HL_TUI"  OR fgl_getenv("A4GL_UI")="HL_GTK"  OR fgl_getenv("A4GL_UI")="TUI_wide" THEN
+	if fgl_getenv("A4GL_UI")="TUI"  OR fgl_getenv("A4GL_UI")="HL_TUI"  OR fgl_getenv("A4GL_UI")="HL_GTK"  OR fgl_getenv("A4GL_UI")="TUI_wide"  OR fgl_getenv("A4GL_UI")="HL_TUIw" THEN
 	ELSE
 		let lv_run=0
-		display "Please ensure A4GL_UI is set to TUI, HL_TUI or HL_GTK or TUI_wide before continuing"
+		display "Please ensure A4GL_UI is set to TUI, HL_TUI,HL_GTK,TUI_wide before continuing"
 		
 	end if
 
