@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.30 2009-02-24 15:17:06 mikeaubury Exp $
+# $Id: Makefile.in,v 1.31 2009-02-24 15:18:02 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -85,6 +85,8 @@ ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl \
 
 ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL} @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+	# Mingw seems to have a problem with aace.exe running out of stackspace..
+	# so we'll increase it...
 	LD_EXE+= -Wl,--stack,10000000
 endif
 
