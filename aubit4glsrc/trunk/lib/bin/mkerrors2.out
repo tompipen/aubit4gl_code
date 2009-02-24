@@ -362,3 +362,4 @@
 370|Invalid file (%s)
 372|
 374|Database error
+376|Not available in windows build

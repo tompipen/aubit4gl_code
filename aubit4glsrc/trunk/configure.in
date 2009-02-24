@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.396 2009-02-18 17:20:17 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.397 2009-02-24 15:05:04 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.396 2009-02-18 17:20:17 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.397 2009-02-24 15:05:04 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -5445,8 +5445,13 @@ AC_ARG_WITH(httpd,
 [
 	if test "$withval" != "no"; then
 		AC_PATH_PROG(APACHECTL, apachectl, no)
+		AC_PATH_PROG(APACHE2CTL, apache2ctl, no)
 		AC_PATH_PROG(HTTPD, httpd, no)
 
+		if test "$APACHE2CTL" != "no"
+		then
+			APACHECTL=$$APACHE2CTL
+		fi
 		AC_MSG_CHECKING(Web server support)
 		if test "$APACHECTL" != "no"; then
 			AC_MSG_RESULT(Apache)
@@ -11163,7 +11168,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.396 2009-02-18 17:20:17 mikeaubury Exp $
+| $Id: configure.in,v 1.397 2009-02-24 15:05:04 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

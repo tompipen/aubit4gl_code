@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.41 2009-01-12 10:21:38 mikeaubury Exp $
+# $Id: memfile.c,v 1.42 2009-02-24 15:05:06 mikeaubury Exp $
 #
 */
 
@@ -492,24 +492,24 @@ A4GL_remove_comments_in_memfile (FILE * f)
 
       // That way - if we get confused - it won't propagate too far..
       //
-      if (strncmp (&buff[a], "code\n", 5) == 0 && a == 0)
+      if ((strncmp (&buff[a], "code\n", 5) == 0 || strncmp (&buff[a], "CODE\n", 5) == 0)  && a == 0 )
 	{
 	  type += TYPE_IN_CODE;
 	}
 
-      if (strncmp (&buff[a], "\ncode\n", 6) == 0)
+      if (strncmp (&buff[a], "\ncode\n", 6) == 0 || strncmp (&buff[a], "\nCODE\n", 6) == 0)
 	{
 	  type += TYPE_IN_CODE;
 	}
-      if (strncmp (&buff[a], "\r\ncode\r\n", 8) == 0)
+      if (strncmp (&buff[a], "\r\ncode\r\n", 8) == 0 || strncmp (&buff[a], "\r\nCODE\r\n", 8) == 0)
 	{
 	  type += TYPE_IN_CODE;
 	}
-      if (strncmp (&buff[a], "\nendcode\n", 9) == 0)
+      if (strncmp (&buff[a], "\nendcode\n", 9) == 0 || strncmp (&buff[a], "\nENDCODE\n", 9) == 0)
 	{
 	  type -= TYPE_IN_CODE;
 	}
-      if (strncmp (&buff[a], "\r\nendcode\r\n", 11) == 0)
+      if (strncmp (&buff[a], "\r\nendcode\r\n", 11) == 0 || strncmp (&buff[a], "\r\nENDCODE\r\n", 11) == 0 )
 	{
 	  type -= TYPE_IN_CODE;
 	}
