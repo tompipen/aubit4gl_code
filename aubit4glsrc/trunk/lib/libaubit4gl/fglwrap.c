@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.145 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.146 2009-02-24 08:25:12 mikeaubury Exp $
 #
 */
 
@@ -52,8 +52,10 @@
 #define _PRELOAD_UI_		/* pre-load UI module */
 
 
+#ifndef __WIN32__
 #include <sys/types.h>
 #include <sys/wait.h>
+#endif
 
 /*
 =====================================================================
@@ -445,6 +447,9 @@ A4GL_system_run (int a)
 
 int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec, int use_error) {
 int exit_status=0;
+#ifdef __WIN32__
+		A4GL_exitwith("Not available in windows build");
+#else
 	pid_t cpid;
 	cpid = fork();
 
@@ -502,6 +507,7 @@ int exit_status=0;
 			usleep(100000);
 		}
 	}
+#endif
 	
 	return exit_status;
 }
