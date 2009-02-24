@@ -108,7 +108,7 @@ main
 	if fgl_getenv("A4GL_UI")="TUI"  OR fgl_getenv("A4GL_UI")="HL_TUI"  OR fgl_getenv("A4GL_UI")="HL_GTK"  OR fgl_getenv("A4GL_UI")="TUI_wide" THEN
 	ELSE
 		let lv_run=0
-		display "Please ensure A4GL_UI is set to TUI, HL_TUI or HL_GTK before continuing"
+		display "Please ensure A4GL_UI is set to TUI, HL_TUI or HL_GTK or TUI_wide before continuing"
 		
 	end if
 
@@ -394,7 +394,7 @@ command "Postgresql" "Use Postgresql native connection"
                         "your postgresql 'development' files",
 			"(typically postgresql-devel or postgresql-dev)",
                         "Please install the Postgresql development packages",
-                        "the ./configure to use the pg8 plugin"
+                        "then rerun ./configure to use the pg8 plugin"
                 ))
 	else
 		exit menu
@@ -409,7 +409,7 @@ command "MYSQL" "Use Mysql native connection"
                         "your mysql 'development' files",
 			"(typically mysql-devel or mysql-dev)",
                         "Please install the Mysql development packages",
-                        "the ./configure to use the mysql plugin"
+                        "then rerun ./configure to use the mysql plugin"
                 ))
 	else
 		exit menu
@@ -423,8 +423,8 @@ command "SQLite" "Use Sqlite native connection"
                         "This is probably because Aubit4GL couldnt detect",
                         "your sqlite 'development' files",
 			"(typically sqlite-devel or sqlite-dev)",
-                        "Please install the Mysql development packages",
-                        "the ./configure to use the sqlite plugin"
+                        "Please install the SQLite development packages",
+                        "the rerun ./configure to use the sqlite plugin"
                 ))
 	else
 		exit menu
@@ -575,7 +575,7 @@ if mv_username is not null then
 			"as soon as the file is read - the passwords will be",
 			"encrypted using a weak encryption (dont store important",
 			"password in the ACL file!)", " "
-		))="Y" then
+		or TUI_wide ))="Y" then
 
 			call prompt_for("Please enter the database you want to use","Database >>") returning mv_dbname
 			if not create_aclfile() then
