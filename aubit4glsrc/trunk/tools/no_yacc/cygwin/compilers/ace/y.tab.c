@@ -3146,7 +3146,7 @@ yyreduce:
 #line 251 "ace.yacc"
     {
 		this_report.dbname=acl_strdup((yyvsp[(2) - (3)].str));
-		A4GLSQL_init_connection ((yyvsp[(2) - (3)].str));
+		A4GL_init_connection ((yyvsp[(2) - (3)].str));
 		if (a4gl_status!=0) {
 			a4gl_ace_yyerror("Unable to connect to database");
 		}

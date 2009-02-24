@@ -1,4 +1,48 @@
 ---------------------------
+Tue Feb 24 08:19:24 GMT 2009
+---------------------------
+1.10RC_50 Released
+---------------------------
+	
+	Move some prepare/cursor checks back into libaubit4gl
+	
+	lastkey fixups for Pavel
+	
+	1238: datetime with fraction, can't be assigned if many decimals
+	
+	handle large oid     oid    |		   relname
+	-----------+-----------------------------------       2619 |
+	pg_statistic	  10978 | pg_prepared_statements  586347826 |
+	claexist
+	
+	compiling modules as object : next menu option like r4gl
+	
+	Fixup for when no fields are editable (all fields are noentry)
+	
+	Add reserved words checking back in for variable names
+	
+	national character fixup
+	
+	Add RUN ... WAITING FOR nsec [BY nsec] WITH [ERROR|MESSAGE] msg
+	
+	Fix setting OPTION HELP KEY
+	
+	TRACE4GLEXEC enhancements
+	
+	function tracing updates
+	
+	aace fixups
+	
+	Small patch to parse for OUTER joins
+	
+	Add keycode checking (lint and code generation)
+	
+	Add INSERT/DELETE/NEXT/PREV key detection to INPUT, CONSTRUCT and
+	PROMPT
+	
+	NCHAR fixups
+	
+---------------------------
 Mon Feb  9 17:57:31 GMT 2009
 ---------------------------
 1.10RC_49 Released
