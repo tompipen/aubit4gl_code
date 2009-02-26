@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.48 2009-02-26 19:03:22 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.49 2009-02-26 20:55:13 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -41,8 +41,8 @@ static GtkWidget *A4GL_cr_scrollbar (void);
 
 
 void A4GL_dump_mem (char *ptr);
-void A4GL_split_config (char *str);
-void *A4GL_find_param (char *name);
+//void A4GL_split_config (char *str);
+//void *A4GL_find_param (char *name);
 GtkWidget *A4GL_make_widget (char *widget, char *config, int w,int h);
 char *A4GL_fld_val_generic (GtkWidget * k);
 void A4GL_gui_set_active (GtkWidget * w, int en_dis);
@@ -842,6 +842,7 @@ A4GL_cr_button (void)
 	  gtk_widget_show (GTK_WIDGET (l));
 	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
 	  gtk_object_set_data (GTK_OBJECT (b), "PERMLABEL", l);
+	  gtk_object_set_data (GTK_OBJECT (b), "DEFAULTLABEL", label);
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
 	}
     }
@@ -1590,10 +1591,12 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
   if (A4GL_aubit_strcasecmp (ptr, "BUTTON") == 0)
     {
       GtkWidget *w;
+	int set=0;
       GtkWidget *w2;
       btn = strdup (s);
       A4GL_trim (btn);
-      g_free (utf);
+
+        g_free (utf);
   	utf = a4gl_locale_to_utf8 (btn);
 
       w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
@@ -1602,19 +1605,27 @@ A4GL_display_generic (GtkWidget * k, char *s,char *orig)
 //printf("A4GL_display_generic... Button : w=%p w2=%p\n", w,w2);
 
       if (w2) {
-#ifdef BROKEN
- 		// We cant clear a field if this code is used...
-	      	char *buff;
-	      	buff=strdup(s);
-		A4GL_trim(buff);
-	      	if (strlen(buff)==0) {
-	  		gtk_label_set_text (GTK_LABEL (w), "");
-			free(buff);
+		char *original_label_str;
+		original_label_str=gtk_object_get_data(GTK_OBJECT (k),"DEFAULTLABEL");
+		if (original_label_str) {
+			if (strlen(original_label_str)==0) {
+				original_label_str=NULL;
+			}
 		}
-		free(buff);
-#endif
-      }
-      if (w)
+		if (original_label_str) {
+	      		if (strlen(btn)==0) {
+				// We're clearing the field - lets restore the original text..
+				char *utf;
+				//g_free (utf);
+				utf=a4gl_locale_to_utf8 (original_label_str);
+	  			gtk_label_set_text (GTK_LABEL (w), utf);
+				btn=strdup(original_label_str);
+				set++;
+			}
+		}
+      } 
+
+      if (w && !set)
 	{
 		//printf("'%s'\n",utf);
 	  gtk_label_set_text (GTK_LABEL (w), utf);
