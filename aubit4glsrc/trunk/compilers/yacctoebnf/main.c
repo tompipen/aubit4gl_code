@@ -9,11 +9,18 @@ extern struct s_kw *hashed_list[];
 int mainblock=-1;
 int upto;
 
+struct s_kwords {
+	char *token;
+	char *text;
+};
+struct s_kwords kwords[2000];
+int nkwords=0;
 
 //char *startnodename="pdf_report_def";
 char *get_text(char *s) ;
 char *has_rule(struct s_parser_start *parser_start, char *s) ;
 void dumpit_one( struct s_parser_start *parser_start,  char *startnodename) ;
+static void trimnl(char *s) ;
 
 
 int nterminals=0;
@@ -59,44 +66,43 @@ while (1) {
 	add_terminal(buff,buff2);
 }
 }
+
+
 void load_terminals() {
 FILE *f;
-f=fopen("entries","r");
-load_file(f);
-f=fopen("commands","r");
-load_file(f);
+	f=fopen("entries","r");
+	load_file(f);
+	f=fopen("commands","r");
+	load_file(f);
+
+	upto=nterminals-1;
+
+	add_terminal("atline","");
+	add_terminal("KW_DOT","\".\"");
+	add_terminal("KW_COMMA","\",\"");
+	add_terminal("OPEN_BRACKET","\"(\"");
+	add_terminal("CLOSE_BRACKET","\")\"");
 
 
+	add_terminal("NAMED","\"identifier\"");
+	add_terminal("commands_as_list","\"[commands]\"");
 
-
-upto=nterminals-1;
-	//add_terminal("op_param_var_list","\'<PARAMETERS>\'");
-	//add_terminal("obind_var_list_ord","\'<variable_list>\'");
-	//add_terminal("define_section","\'<DEFINE SECTION>\'");
-
-
+/*
 	add_terminal("expanded_ibind_var_list","\"[variable_list]\"");
 	add_terminal("variable_usage","\"[variable]\"");
 	add_terminal("variable_usage_expression","\"[variable]\"");
 	add_terminal("pf_char_or_var","\"[character-expression]\"");
-	add_terminal("commands_as_list","\"[commands]\"");
-	//add_terminal("nval","'<nval>'");
-	add_terminal("atline","");
-	add_terminal("NAMED","\"identifier\"");
 	add_terminal("identifier","\"identifier\"");
-	add_terminal("OPEN_BRACKET","\"(\"");
-	add_terminal("CLOSE_BRACKET","\")\"");
 	add_terminal("INT_VALUE","\"<integer value>\"");
 	add_terminal("NUMBER_VALUE","\"<numeric value>\"");
 	add_terminal("USER_DTYPE_NEW","\"<userdefined datatype>\"");
 	add_terminal("USER_DTYPE_ORIG","\"<olduserdefinedtype>\"");
-	add_terminal("KW_DOT","\".\"");
-	add_terminal("KW_COMMA","\",\"");
 	add_terminal("KW_CSTART","\"code\"");
 	add_terminal("CLINE","\"<embedded c code>\"");
 	add_terminal("KW_CEND","\"endcode\"");
 	add_terminal("CHAR_VALUE","\"character-string\"");
 	add_terminal("nval_number","\"number_value\"");
+*/
 }
 
 int has_fake_terminal(char *s) {
@@ -279,7 +285,7 @@ for (a=0;a<parser_start->nitems;a++) {
 		if (mainblock>=0) {
 			printf("%s=%s\n", startnodename, parser_start->items[mainblock]->result);
 		} else {
-			printf("No main block ?!\n");
+			printf("No main block (%s)?!\n",startnodename);
 		}
 	
 		printf(".\n");
@@ -295,8 +301,37 @@ for (a=0;a<parser_start->nitems;a++) {
 
 int main(int argc,char *argv[]) {
         extern FILE *yyin;
+	int a;
+	for (a=0;a<2000;a++) {
+		kwords[a].token=NULL;
+		kwords[a].text=NULL;
+	}
         if (argc>1) {
+		FILE *kwords_file;
         	yyin=fopen(argv[1],"r");
+		kwords_file=fopen("keywords","r");
+		if (kwords_file) {
+		int a=0;
+			while (1) {
+				char buff[256];
+				char *ptr;
+				strcpy(buff,"");
+				fgets(buff,255,kwords_file);
+				if( feof(kwords_file)) break;
+				if( strlen(buff) ){
+					trimnl(buff);
+					ptr=strchr(buff,'	');
+					if (ptr) { *ptr=0;ptr++;
+						kwords[a].token=strdup(buff);
+						kwords[a].text=strdup(ptr);
+						a++;
+					}
+				}
+			}
+			nkwords=a;
+			fclose(kwords_file);
+		}
+		
         } else {
         	yyin=fopen("../4glc/rules/generated/fgl.infx.yacc","r");
         }
@@ -462,11 +497,20 @@ get_text (char *s)
   struct s_kw *local_kwords;
   int a;
   int c;
-
+if (nkwords) {
+	// Explicit keyword list - rather than the 4gl parser one..
+	for (a=0;a<nkwords;a++) {
+		if (strcmp(kwords[a].token,s)==0) {
+			return kwords[a].text;
+		}
+	}
+}
 
 strcpy(buff,"");
   for (c=0;;c++) {
-  local_kwords = A4GL_lexer_get_hashed_list (c);
+
+  	local_kwords = A4GL_lexer_get_hashed_list (c);
+
 	if (local_kwords==0) break;
 
   for (a = 0; local_kwords[a].id > 0; a++)
@@ -505,4 +549,14 @@ strcpy(buff,"");
 	}
 
   return s;
+}
+
+
+static void trimnl(char *s) {
+int a;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='\n' || s[a]=='\r') {
+		s[a]=0; break;
+	}
+}
 }

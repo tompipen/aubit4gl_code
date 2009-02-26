@@ -1,4 +1,12 @@
-all: parser  ebnftodot diagrams
+all: parser  ebnftodot diagrams ace_diagrams per_diagrams
+
+
+
+ace_diagrams:
+	make -C ace diagrams
+
+per_diagrams:
+	make -C per diagrams
 
 CFLAGS=-g -I. -I../4glc/rules/generated -I../4glc/rules -Wall
 
@@ -51,5 +59,5 @@ diagrams: parser commands entries
 	#rm ebnf-eps-directory/*.eps
 
 commands: mkcommands ../4glc/rules/generated/fgl.infx.yacc
-	mkcommands
+	sh mkcommands
 	

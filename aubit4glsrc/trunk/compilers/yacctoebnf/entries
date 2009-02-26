@@ -62,3 +62,18 @@ table_name_not_for_column_prefix	<tablename>
 table_name	<tablename>
 conn_id_p	<ConnectionID>
 callback_function	<Callback function name>
+expanded_ibind_var_list	[variable_list]
+variable_usage	[variable]
+variable_usage_expression	[variable]
+pf_char_or_var	[character-expression]
+NAMED	identifier
+identifier	identifier
+INT_VALUE	<integer value>
+NUMBER_VALUE	<numeric value>
+USER_DTYPE_NEW	<userdefined datatype>
+USER_DTYPE_ORIG	<olduserdefinedtype>
+KW_CSTART	code
+CLINE	<embedded c code>
+KW_CEND	endcode
+CHAR_VALUE	character-string
+val_number	number_value
