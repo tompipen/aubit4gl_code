@@ -2655,7 +2655,13 @@ A4GLSQLLIB_A4GLSQL_get_table_checksum (char *s)
 }
 
 
-void A4GLSQLLIB_A4GLSQL_free_prepare_internal (void* sid ) {
+void A4GLSQLLIB_A4GLSQL_free_prepare_internal (void* vsid ) {
+struct s_sid *sid;
+	sid=vsid;
+	acl_free(sid->select);
+	if (sid->ibind) {
+		acl_free(sid->ibind);
+	}
 /* does nothing in this driver */
  }
 
