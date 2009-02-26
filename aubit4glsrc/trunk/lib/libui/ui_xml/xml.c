@@ -3352,14 +3352,6 @@ UILIB_A4GL_reset_delims (void *vformdets, void *field, char *delims)
 
 
 
-int
-UILIB_aclfgl_aclfgl_set_display_field_delimiters (int n)
-{
-  if (set_current_display_delims)
-    free (set_current_display_delims);
-  set_current_display_delims = A4GL_char_pop ();
-  return 0;
-}
 
 
 void cleanup(void) {
@@ -3674,3 +3666,32 @@ if (i!=0 && i!=1) {
 sprintf(buff,"%s",field);
 return buff;
 }
+
+
+
+/*
+ This function sets a value which is used for the
+ beginning and end of field delimiters (normally [ and ] )
+ so that they can be easily changed from the 4gl code
+
+ This is normally done to emulate the isql perform action
+ where only the fields for the current form have their '[' and ']'
+ displayed.
+
+ In order to use this value - you have to DISPLAY something to the field
+
+        Example usage :
+
+
+        call aclfgl_set_display_field_delimiters("  ")
+        display "hh" to tabname
+        call aclfgl_set_display_field_delimiters("[]")
+        display "hh" to tabname
+*/
+int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
+	char *s;
+	s=A4GL_char_pop();
+	send_to_ui("<FIELDDELIMITERS DELIMS=\"%s\"/>",uilib_xml_escape(s));
+	return 0;
+}
+
