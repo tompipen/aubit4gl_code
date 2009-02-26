@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.47 2009-01-02 11:52:54 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.48 2009-02-26 19:03:22 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -128,8 +128,10 @@ int widget_next_size=0;
 int widget_next_height=0;
 
 
+#ifdef MOVED_TO_LIBAUBIT4GL
 #define TYPE_CHAR 1
 #define TYPE_INT 2
+
 
 /*
 =====================================================================
@@ -149,6 +151,7 @@ static char *args_val[256];
 
 /** The types of the parameters */
 static int args_type[256];
+#endif
 
 /*
 =====================================================================
@@ -177,125 +180,6 @@ A4GL_dump_mem (char *ptr)
 }
 
 
-
-/**
- * Get parameters from a string.
- *
- * The parameter separator is ;
- *
- * @param str The string with the parameters.
- */
-void
-A4GL_split_config (char *str)
-{
-  char *ptr;
-  char *s;
-  int a;
-  char *orig_ptr;
-  ptr = strdup (str);
-  orig_ptr = ptr;
-  args_cnt = 0;
-
-  while (1)
-    {
-      s = strtok (ptr, ";");
-
-      if (s)
-	{
-	  args[args_cnt++] = s;
-	}
-      else
-	{
-	  break;
-	}
-
-      ptr = 0;
-    }
-
-  for (a = 0; a < args_cnt; a++)
-    {
-      args_val[a] = "";
-      ptr = strchr (args[a], '=');
-
-      if (ptr)
-	{
-	  *ptr = 0;
-	  args_val[a] = ptr + 1;
-	}
-
-      if (args_val[a][0] == '\'')
-	{
-	  args_type[a] = TYPE_CHAR;
-	  args_val[a][strlen (args_val[a]) - 1] = 0;
-	  args_val[a]++;
-	}
-      else
-	{
-	  args_type[a] = TYPE_INT;
-	}
-
-      A4GL_debug ("'%s' = --%s-- type=%d\n", args[a], args_val[a],
-		  args_type[a]);
-    }
-
-  if (args_cnt == 1)
-    {
-      if (strlen (args_val[0]) == 0 && strlen (args[0]))
-	{
-	  A4GL_debug ( "Looking at :%s\n", args[0]);
-	  if (A4GL_key_val (args[0]) > 255)
-	    {
-	      // Looks like the config is just a key..
-	      A4GL_debug ( "Key ? %s\n", args[0]);
-	      args_type[0] = TYPE_CHAR;
-	      args_val[0] = strdup (args[0]);	//@FIXME - memory leak
-	      //if (args_val[0][0]=='f' && (args_arg[0][1]>='1' && args_val[0][1]<='9')) {a4gl_upshift(args_val[0]);}
-
-	      args[0] = "KEY";
-	    }
-	}
-    }
-  //free(orig_ptr);
-}
-
-/**
- * Find a values of a parameter by name.
- *
- * @param name The name of the parameter to be finded.
- * @return A pointer to the bytes that have the values stored.
- */
-void *
-A4GL_find_param (char *name)
-{
-  int a;
-  int reqd = 1;
-  if (name[0] == '*')
-    {
-      reqd = 0;
-      name++;
-    }
-  for (a = 0; a < args_cnt; a++)
-    {
-      if (A4GL_aubit_strcasecmp (args[a], name) == 0)
-	{
-	  if (args_type[a] == TYPE_CHAR)
-	    return args_val[a];
-	  else
-	    return (void *) atoi (args_val[a]);
-	}
-    }
-
-  if (reqd)
-    {
-      A4GL_debug ("Required Parameter not found %s\n", name);
-      return 0;
-    }
-  else
-    {
-      return 0;
-    }
-
-}
 
 
 /**
@@ -1587,7 +1471,11 @@ A4GL_func (GtkWidget * w, char *mode)
 
 
       action = gtk_object_get_data (GTK_OBJECT (w), "ACTION");
-
+	if (action) {
+		if (strlen(action)==0) {
+			action=NULL;
+		}
+	}
       if (action)
 	{
 	  add_action (action);

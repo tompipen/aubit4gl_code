@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.72 2009-02-23 17:31:51 mikeaubury Exp $";
+  "$Id: misc.c,v 1.73 2009-02-26 19:03:22 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1476,6 +1476,19 @@ A4GL_set_active_fields (void *vsio,struct aclfgl_event_list *evt)
          field = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (formdets->form_fields[a]));
          if (field == 0) continue;
 		
+	  if (A4GL_has_str_attribute (field, FA_S_CONFIG)) {
+		char *config;
+		char *ptr;
+		config= A4GL_get_str_attribute (field, FA_S_CONFIG);
+		A4GL_split_config(config);
+		ptr=A4GL_find_param("KEY");
+		if (ptr) {
+		if (A4GL_has_event_for_keypress (A4GL_key_val (ptr),evt)) {
+			enabled[a]=1;
+		}
+		}
+	  } 
+
 	  if (A4GL_has_str_attribute (field, FA_S_ACTION)) {
 		char *action;
       		action = A4GL_get_str_attribute (field, FA_S_ACTION);
