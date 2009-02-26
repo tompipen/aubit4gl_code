@@ -2662,6 +2662,9 @@ struct s_sid *sid;
 	if (sid->ibind) {
 		acl_free(sid->ibind);
 	}
+	if (sid->obind) {
+		acl_free(sid->obind);
+	}
 /* does nothing in this driver */
  }
 
