@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.31 2009-02-13 17:42:20 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.32 2009-02-26 12:31:59 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1976,7 +1976,14 @@ enum e_expr_type {
 		ET_EXPR_PDF_CURRENT_Y,
                 ET_EXPR_CM,
 		ET_EXPR_FUNC,
+		ET_EXPR_RIGHT_ALIGNED,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
+	
+};
+
+struct s_expr_aligned {
+	struct expr_str *print_text;
+	struct expr_str *print_to;
 };
 
 
@@ -2245,6 +2252,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_SELECT_LIST_ITEM: 
 		struct s_select_list_item *sl_item;
 
+	case ET_EXPR_RIGHT_ALIGNED:
+		struct s_expr_aligned	*expr_aligned;
 
 	case ET_E_V_OR_LIT_VAR: 		struct expr_str *var;
 	case ET_E_V_OR_LIT_INT: 		int i;

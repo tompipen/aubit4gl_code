@@ -171,12 +171,10 @@ if (A4GLF_open_db(the_form.dbname)) {
 
 named_or_kw_st :
 	NAMED   
-	| SQLONLY
 ;
 
 named_or_kw_any :
 	NAMED   
-	| SQLONLY
 ;
 
 dbname : 

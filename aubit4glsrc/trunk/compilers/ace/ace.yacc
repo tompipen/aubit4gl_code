@@ -1865,7 +1865,12 @@ val_next :
 
 
 
-op_fmt_val_expr_list : null_expr {
+op_fmt_val_expr_list :  {
+		struct expr nullexpr;
+
+		nullexpr.type=EXPRTYPE_NULL;
+
+
 		$<expr>$.type=EXPRTYPE_LIST;
 		$<expr>$.expr_u.lexpr=acl_malloc2(sizeof(struct expr_list));
 		$<expr>$.expr_u.lexpr->elem.elem_len=1;
@@ -1873,7 +1878,7 @@ op_fmt_val_expr_list : null_expr {
 		$<expr>$.expr_u.lexpr->elem.elem_val=realloc(
 			$<expr>$.expr_u.lexpr->elem.elem_val,
 			sizeof(struct expr)*$<expr>$.expr_u.lexpr->elem.elem_len);
-		COPY($<expr>$.expr_u.lexpr->elem.elem_val[0],$<expr>1);
+		COPY($<expr>$.expr_u.lexpr->elem.elem_val[0],nullexpr);
 		print_lexpr($<expr>$.expr_u.lexpr);
 	} 
 	| fmt_val_expr_list {

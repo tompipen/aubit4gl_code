@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.61 2009-02-03 14:28:38 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.62 2009-02-26 12:32:00 mikeaubury Exp $
 #*/
 
 /**
@@ -1116,7 +1116,6 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
   if (strcmp(fname,"line_height")==0) {
 	  double f1;
       	f1 = A4GL_pop_double ();
-	
   	a = A4GLPDFREP_A4GL_pdf_size (f1, 'l', p);
 	A4GL_push_double(a);
 	return 1;

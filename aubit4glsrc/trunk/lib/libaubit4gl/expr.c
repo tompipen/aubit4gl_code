@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.33 2009-02-03 19:57:24 mikeaubury Exp $
+# $Id: expr.c,v 1.34 2009-02-26 12:32:00 mikeaubury Exp $
 #
 */
 
@@ -344,6 +344,8 @@ expr_name (enum e_expr_type e)
       return "ET_EXPR_CM";
     case ET_EXPR_FUNC:
       return "ET_EXPR_FUNC";
+	case ET_EXPR_RIGHT_ALIGNED:
+	return "ET_EXPR_RIGHT_ALIGNED";
     }
   PRINTF ("Expression Type : %d\n", e);
   return "Oopps - dont know";
@@ -483,6 +485,17 @@ struct expr_str *A4GL_new_substring_expr (expt_str *str,long str_len,expr_str *p
   return ptr;
 }
 */
+
+
+struct expr_str *A4GL_new_expr_aligned(enum e_expr_type etype, struct expr_str *text, struct expr_str *to) {
+  struct expr_str *ptr;
+  ptr = A4GL_new_expr_simple (etype);
+  ptr->expr_str_u.expr_aligned = malloc (sizeof (struct s_expr_aligned));
+  ptr->expr_str_u.expr_aligned->print_text=text;
+  ptr->expr_str_u.expr_aligned->print_to=to;
+
+  return ptr;
+}
 
 
 struct expr_str *

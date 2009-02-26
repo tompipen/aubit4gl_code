@@ -584,16 +584,7 @@ opt_rep_expr_list : {$<ptr_list>$=0;}
 	| xrep_expr_list {$<ptr_list>$=$<ptr_list>1;}
 ;
 
-xrep_expr_list: xxrep_expr_list {
-		$<ptr_list>$=$<ptr_list>1;
-	}
-	/* | xrep_expr_list xxrep_expr_list {
-		....$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr_list>3);... would need fixing...
-		}
-		*/
-;
-
-xxrep_expr_list : rep_expr_list opt_print_at  {
+xrep_expr_list: rep_expr_list opt_print_at  {
 		$<ptr_list>$=$<ptr_list>1;
 	}
 ;

@@ -24,14 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.24 2008-11-10 14:09:17 mikeaubury Exp $
+# $Id: Makefile.in,v 1.25 2009-02-26 12:32:00 mikeaubury Exp $
 #
 
 ROOT        =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-
 ## ==================================================================
 ##                              Options
 ## ==================================================================
@@ -77,6 +76,8 @@ ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 ## ==================================================================
 
 
+haru.test:
+	ls -l  ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
 haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
 
 ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}

@@ -259,6 +259,9 @@ report_only_expr:
 	| COLUMNS fgl_expr_c {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_COLUMN);
 	}
+	| RIGHT_ALIGNED fgl_expr_c KW_TO fgl_expr_c {
+		$<ptr>$=A4GL_new_expr_aligned(ET_EXPR_RIGHT_ALIGNED, $<ptr>2,$<ptr>4);
+	}
 	| rep_agg  {
    		if (!isin_command("REPORT")) {
    			a4gl_yyerror("This can only be done in a report!");

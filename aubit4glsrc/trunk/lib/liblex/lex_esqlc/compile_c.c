@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.477 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.478 2009-02-26 12:32:00 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.477 2009-02-23 17:31:50 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.478 2009-02-26 12:32:00 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1191,6 +1191,7 @@ real_print_expr (struct expr_str *ptr)
 	case ET_EXPR_DATE_EXPR:
 	  printc ("A4GL_push_date_expr();");
 	  break;
+
 	case ET_EXPR_COLUMN:
 	  real_print_expr (ptr->expr_str_u.expr_expr);
 	  if (current_cmd->cmd_data.type==E_CMD_PRINT_CMD)
@@ -1206,6 +1207,42 @@ real_print_expr (struct expr_str *ptr)
 		}
 	    }
 	  break;
+
+	case ET_EXPR_RIGHT_ALIGNED:
+		if (strlen(generate_ispdf())) {
+			printc("{double _p;char *_str; /* ET_EXPR_RIGHT_ALIGNED */");
+			real_print_expr(ptr->expr_str_u.expr_aligned->print_text);
+			printc("_str=A4GL_char_pop();");
+			real_print_expr(ptr->expr_str_u.expr_aligned->print_to);
+			printc("_p=A4GL_pop_double();");
+			printc("A4GL_push_char(_str); A4GL_pdf_pdffunc(&_rep,\"textwidth\",1);");
+			printc("_p+=A4GL_pop_double();");
+			printc("A4GL_push_double(_p);");
+	      		printc ("A4GL_%sset_column(&_rep);", generate_ispdf ());
+			printc("A4GL_push_char(_str);");
+			printc("acl_free(_str);");
+			printc("}");
+		} else {
+			struct expr_str *e=NULL;
+			e=ptr->expr_str_u.expr_aligned->print_to;
+			if (e->expr_type==ET_EXPR_COLUMN) {
+				e=e->expr_str_u.expr_expr;
+			}
+
+			printc("{int _pos;char *_str; /* ET_EXPR_RIGHT_ALIGNED */");
+			real_print_expr(e);
+			printc("_pos=A4GL_pop_int();");
+			real_print_expr(ptr->expr_str_u.expr_aligned->print_text);
+			printc("_str=A4GL_char_pop();_pos-=A4GL_get_length(_str);");
+			printc("A4GL_push_long(_pos);");
+	      		printc ("A4GL_set_column(&_rep);");
+			printc("A4GL_push_char(_str);");
+			printc("acl_free(_str);");
+			printc("}");
+		}
+		break;
+
+
 	case ET_EXPR_TIME_EXPR:
 	  printc ("A4GL_push_time_expr();");
 	  break;

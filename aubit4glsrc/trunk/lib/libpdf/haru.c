@@ -1358,7 +1358,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
                 return 1;
   }
 
-  if (strcmp(fname,"currpos")) {
+  if (strcmp(fname,"currpos")==0) {
                 int n;
                 n=A4GL_pop_int();
                 if (n==1) {
