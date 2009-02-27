@@ -210,7 +210,7 @@ hbox_section:
 			$<layout>$=$<layout>4;
 			$<layout>$->id=strdup($<str>2);
 			$<layout>$->attrib=$<layout_attrib>3;
-			$<layout>$->layout_type=LAYOUT_VBOX;
+			$<layout>$->layout_type=LAYOUT_HBOX;
 	}
 ;
 
