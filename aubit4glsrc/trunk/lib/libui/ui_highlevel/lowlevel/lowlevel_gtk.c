@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.144 2009-02-28 12:58:26 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.145 2009-02-28 14:14:59 mikeaubury Exp $";
 #endif
 
 
@@ -1003,6 +1003,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
   GtkWidget *frame = 0;
   GtkWidget *wxx = 0;
   GtkWidget *MainFrame=0;
+GtkWidget *logoImg;
   int useToolbar=1;
 	int additional_y;
 
@@ -1146,7 +1147,31 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
 	  gtk_widget_set_name (GTK_WIDGET (f), "MenuButtons");
 	  gtk_widget_show (vbox);
 	  gtk_container_add (GTK_CONTAINER (vbox), fglmenu_bb);
-		gtk_box_pack_end (GTK_BOX(vbox), ok_cancel, FALSE, FALSE, 0);
+
+	  gtk_box_pack_end (GTK_BOX(vbox), ok_cancel, FALSE, FALSE, 0);
+
+
+	  if (!A4GL_isno(acl_getenv("NOHLGTKLOGO"))) {
+		char *img;
+		GdkPixbuf *pixbuf;
+		img=acl_getenv("A4GL_LOGOIMG");
+		if (strlen(img)==0) {
+			static char buff[2000];
+			sprintf(buff,"%s/etc/%s",acl_getenv("AUBITDIR"),"Aubit4GL.jpg");
+			img=buff;
+		}
+		
+	  	pixbuf=gdk_pixbuf_new_from_file (img, NULL);
+		if (pixbuf) {
+		 logoImg = gtk_image_new_from_pixbuf (pixbuf);
+		 if (logoImg) {
+			gtk_widget_show(logoImg);
+	  	 	gtk_box_pack_end (GTK_BOX(vbox), logoImg, FALSE, FALSE, 5);
+		 }
+		}
+		//}
+	  }
+
 	  //gtk_container_add (GTK_CONTAINER (vbox), ok_cancel);
 	  gtk_container_add (GTK_CONTAINER (f), vbox);
 

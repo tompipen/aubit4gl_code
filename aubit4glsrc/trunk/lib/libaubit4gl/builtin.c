@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.136 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: builtin.c,v 1.137 2009-02-28 14:14:59 mikeaubury Exp $
 #
 */
 
@@ -1893,7 +1893,7 @@ aclfgl_fgl_winquestion (int nargs)
   text = A4GL_char_pop ();
   title = A4GL_char_pop ();
   A4GL_push_char (A4GL_ui_fgl_winquestion (title, text, def, pos, icon, danger, 0));
-  return 0;
+  return 1;
 }
 
 /*
