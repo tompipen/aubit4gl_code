@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.50 2009-02-18 12:10:35 mikeaubury Exp $";
+  "$Id: menu.c,v 1.51 2009-02-28 16:50:17 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -634,8 +634,9 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
 {
   int key;
   int menu_response = -1;
-  ActivateToolbar(0,0,0);
-  A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null(menu->menu_title), use_empty_string_if_null(menu->mnstyle), use_empty_string_if_null(menu->mncomment),use_empty_string_if_null(menu->mnimage));
+  ActivateToolbar (0, 0, 0);
+  A4GL_LL_disp_h_menu (menu->num_opts, use_empty_string_if_null (menu->menu_title), use_empty_string_if_null (menu->mnstyle),
+		       use_empty_string_if_null (menu->mncomment), use_empty_string_if_null (menu->mnimage));
   if (A4GL_ll_menu_type () == 1)
     {
       ACL_Menu_Opts *mo;
@@ -644,7 +645,7 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
       mo = menu->first;
       for (a = 0; a < menu->num_opts; a++)
 	{
-	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title,mo->shorthelp, mo->attributes);
+	  A4GL_LL_disp_h_menu_opt (a, menu->num_opts, mo->opt_title, mo->shorthelp, mo->attributes);
 	  mo = mo->next_option;
 	}
     }
@@ -653,10 +654,10 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
   while (menu_response == -1)
     {
       A4GL_LL_screen_update ();
-      A4GL_set_active_fields(0,0);
-      A4GL_LL_enable_menu();
-      key = A4GL_getch_internal (0,"menu", menu->evt);
-      A4GL_LL_disable_menu();
+      A4GL_set_active_fields (0, 0);
+      A4GL_LL_enable_menu ();
+      key = A4GL_getch_internal (0, "menu", menu->evt);
+      A4GL_LL_disable_menu ();
 
       if (key == 0)
 	continue;
@@ -669,20 +670,41 @@ A4GL_menu_loop_type_1 (ACL_Menu * menu, int num_opts)
       else
 	{
 	  ACL_Menu_Opts *f = menu->first;
+	  int found;
 	  int res = 0;
 	  /* first check optkey */
 
 	  while (f)
 	    {
-	      if (f->optkey[0] == key && A4GL_is_unique_menu_key (menu, key)==1 )
+
+	      if (!f->attributes & ACL_MN_HIDE)	// Is it hidden ?
 		{
-		  menu_response = res;
-		  break;
+		  // No - its not hidden...
+		  if (strcmp (f->optkey, "EMPTY") != 0)
+		    {
+		      found = A4GL_check_keys (key, f->optkey);
+		      if (found) {
+				menu_response=res;
+			break;
+			}
+		    }
+		  else
+		    {
+		      if (A4GL_is_unique_menu_key (menu, key) == 1)
+			{
+			  found = A4GL_check_key (key, &f->opt_title[1], 1);
+				if (found) {
+					menu_response=res;
+					break;
+				}
+			}
+		    }
 		}
+
 	      res++;
 	      f = f->next_option;
 	    }
-	  if (menu_response >= 0)
+	  if (found)
 	    break;
 
 	  /* no matching KEY found, so check the first letter of each title */

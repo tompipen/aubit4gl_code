@@ -24584,7 +24584,7 @@ IMPORT_FILES="a4gl_file  a4gl_glade  a4gl_html  a4gl_pcre  a4gl_string  \
 	#allready listed as shell script: $RPM_SH_PREFIX/configure
 	#Warning: ROOT_FILES variable is used by make install target
 	ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
-	ETC_FILES="gtkrc_2 odbc.ini.example"
+	ETC_FILES="gtkrc_2 odbc.ini.example Aubit4GL.jpg"
 	ETC_FILES_CONF="etc/aubitrc-bin.in"
 	ETC_CONFIG_FILES_CONF="etc/config/config.guess etc/config/config.sub \
 		etc/config/install-sh etc/config/missing etc/config/mkinstalldirs \
@@ -61856,7 +61856,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.424 2009-02-24 15:04:45 mikeaubury Exp $
+| $Id: configure,v 1.425 2009-02-28 16:50:14 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
