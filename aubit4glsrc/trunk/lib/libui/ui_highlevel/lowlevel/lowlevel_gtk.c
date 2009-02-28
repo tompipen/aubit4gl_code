@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.143 2009-02-28 12:46:04 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.144 2009-02-28 12:58:26 mikeaubury Exp $";
 #endif
 
 
@@ -666,34 +666,51 @@ add_button (GtkWidget * win, int but_code,int defButt)
   char *txt;
   char *txt_utf=0;
   GtkButton *but;
+  char *stkButton=NULL;
 
   switch (but_code)
     {
     case BUTTON_OK:
       txt = acl_getenv ("A4GL_DIALOG_OK");
+	stkButton=GTK_STOCK_OK;
       break;
     case BUTTON_CANCEL:
       txt = acl_getenv ("A4GL_DIALOG_CANCEL");
+	stkButton=GTK_STOCK_CANCEL;
       break;
     case BUTTON_ABORT:
       txt = acl_getenv ("A4GL_DIALOG_ABORT");
+	// There is no stock 'GTK_STOCK_ABORT'
+	//stkButton=GTK_STOCK_ABORT;
       break;
     case BUTTON_RETRY:
       txt = acl_getenv ("A4GL_DIALOG_RETRY");
+
+	// There is no stock 'GTK_STOCK_RETRY'
+	//stkButton=GTK_STOCK_RETRY;
       break;
     case BUTTON_IGNORE:
       txt = acl_getenv ("A4GL_DIALOG_IGNORE");
+	// There is no stock 'GTK_STOCK_IGNORE'
+	//stkButton=GTK_STOCK_IGNORE;
       break;
     case BUTTON_YES:
       txt = acl_getenv ("A4GL_DIALOG_YES");
+	stkButton=GTK_STOCK_YES;
       break;
     case BUTTON_NO:
       txt = acl_getenv ("A4GL_DIALOG_NO");
+	stkButton=GTK_STOCK_NO;
       break;
     default:
       txt = "FIXME: unknown Button";
       A4GL_debug ("add_button: unknown button-code: %d\n", but_code);
     }
+
+ if ( stkButton!=NULL) {
+  	gtk_dialog_add_button(GTK_DIALOG(win),stkButton,but_code);
+	return;
+ }
 
   txt_utf = a4gl_locale_to_utf8 (txt); 
 
