@@ -1,4 +1,21 @@
 ---------------------------
+Sat Feb 28 17:29:37 GMT 2009
+---------------------------
+1.10RC_51 Released
+---------------------------
+	
+	Use stock buttons where available in winquestion
+	
+	A4GL_UI=HL_GTK fixups (enable buttons when KEY is used in an ON
+	KEY)
+	
+	Add RIGHT ALIGN for PDF reports
+	
+	Win32 fixup for aace
+	
+	Win32 Fixup
+	
+---------------------------
 Tue Feb 24 08:19:24 GMT 2009
 ---------------------------
 1.10RC_50 Released

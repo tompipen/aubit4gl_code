@@ -1202,3 +1202,4 @@ struct s_kw {
 #define KW_CAST 2195
 #define CURR_FILE_NAME 2196
 #define CURR_LINE_NO 2197
+#define RIGHT_ALIGNED 2198
