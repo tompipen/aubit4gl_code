@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.142 2009-02-05 09:03:56 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.143 2009-02-28 12:46:04 mikeaubury Exp $";
 #endif
 
 
@@ -92,8 +92,7 @@ void *currentSio=0;
 
 
 //void ActivateToolbar(char *cmd, struct aclfgl_event_list *list) ;
-int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt,
-		    int dis, char *msg);
+int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis, char *msg);
 int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
 		gpointer func_data);
 int A4GL_which_key_aubit (int gdk_key);
@@ -662,7 +661,7 @@ dialog_callback (GtkWidget * widget, gpointer data)
  * @param but_code The button type code.
  */
 static void
-add_button (GtkDialog * win, int but_code)
+add_button (GtkWidget * win, int but_code,int defButt)
 {
   char *txt;
   char *txt_utf=0;
@@ -698,17 +697,22 @@ add_button (GtkDialog * win, int but_code)
 
   txt_utf = a4gl_locale_to_utf8 (txt); 
 
-  gtk_object_set_data (GTK_OBJECT (win), "RETURNS", 0);
-  but = (GtkButton *) gtk_button_new_with_label (txt_utf);
-  g_free (txt_utf);
 
-  gtk_object_set_data (GTK_OBJECT (but), "BUTCODE", (gpointer) but_code);
-  gtk_object_set_data (GTK_OBJECT (but), "DIALOGWIN", win);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area),
-		     (GtkWidget *) but);
-  gtk_signal_connect_object (GTK_OBJECT (but), "clicked",
-			     GTK_SIGNAL_FUNC (dialog_callback),
-			     GTK_OBJECT (win));
+  gtk_dialog_add_button(GTK_DIALOG(win),txt,but_code);
+
+  //gtk_object_set_data (GTK_OBJECT (win), "RETURNS", 0);
+  //but = (GtkButton *) gtk_button_new_with_label (txt_utf);
+  //g_free (txt_utf);
+
+  //gtk_object_set_data (GTK_OBJECT (but), "BUTCODE", (gpointer) but_code);
+  //gtk_object_set_data (GTK_OBJECT (but), "DIALOGWIN", win);
+  //gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area), (GtkWidget *) but);
+  //gtk_signal_connect_object (GTK_OBJECT (but), "clicked", GTK_SIGNAL_FUNC (dialog_callback), GTK_OBJECT (win));
+
+  //if (but_code==defButt) {
+		//gtk_window_set_default (GTK_WINDOW(win), GTK_WIDGET(but));
+
+  //}
 }
 
 
@@ -722,26 +726,44 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 		char *msg)
 {
   int rval;
-  GtkDialog *win;
+  GtkWidget *win;
   GtkLabel *label;
   char *label_utf;
+  GtkMessageType iconType=GTK_MESSAGE_OTHER;
+
+  if (A4GL_aubit_strcasecmp(icon,"info")==0) {
+		iconType=GTK_MESSAGE_INFO;
+  }
+  if (A4GL_aubit_strcasecmp(icon,"Warning")==0) {
+		iconType=GTK_MESSAGE_WARNING;
+  }
+  if (A4GL_aubit_strcasecmp(icon,"question")==0) {
+		iconType=GTK_MESSAGE_QUESTION;
+  }
+  if (A4GL_aubit_strcasecmp(icon,"error")==0) {
+		iconType=GTK_MESSAGE_ERROR;
+  }
 
 /* Only do modal for now... */
   dis = DIALOG_DISABLE_ALL;
-  win = (GtkDialog *) gtk_dialog_new ();
+
+  win =  gtk_message_dialog_new      (NULL, GTK_DIALOG_MODAL,iconType,GTK_BUTTONS_NONE,  "%s",a4gl_locale_to_utf8(msg));
+  if (win==NULL ){
+	A4GL_assertion(1,"Could not create window");
+  }
   A4GL_debug ("In A4GL_gtkdialog msg=%s\n", msg);
 
-  gtk_window_set_modal ((GtkWindow *) win, 1);
-
-  gtk_signal_connect (GTK_OBJECT (win),
-		      "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
+  //gtk_window_set_modal ((GtkWindow *) win, 1);
+  //gtk_signal_connect (GTK_OBJECT (win), "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
+/*
   if (msg) {
     label_utf = a4gl_locale_to_utf8 (msg) ;
 	}
   else {
     label_utf = NULL;
 	}
-  label = (GtkLabel *) gtk_label_new (label_utf);
+
+
 #if GTK_CHECK_VERSION(2,0,0)
   if (A4GL_isyes (acl_getenv ("A4GL_USE_PANGO_ML")))
     {
@@ -750,8 +772,11 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
     }
 #endif
   g_free (label_utf);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
-		     GTK_WIDGET (label));
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox), GTK_WIDGET (label));
+*/
+
+
+
 
   if (strlen (caption))
     {
@@ -763,45 +788,47 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
   switch (buttons)
     {
     case BUTTONS_OK:
-      add_button (win, BUTTON_OK);
+      add_button (win, BUTTON_OK,defbutt);
       break;
+
     case BUTTONS_OK_CANCEL:
-      add_button (win, BUTTON_OK);
-      add_button (win, BUTTON_CANCEL);
+      add_button (win, BUTTON_OK,defbutt);
+      add_button (win, BUTTON_CANCEL,defbutt);
       break;
+
     case BUTTONS_RETRY_CANCEL:
-      add_button (win, BUTTON_RETRY);
-      add_button (win, BUTTON_CANCEL);
+      add_button (win, BUTTON_RETRY,defbutt);
+      add_button (win, BUTTON_CANCEL,defbutt);
       break;
     case BUTTONS_ABORT_RETRY_IGNORE:
-      add_button (win, BUTTON_ABORT);
-      add_button (win, BUTTON_RETRY);
-      add_button (win, BUTTON_IGNORE);
+      add_button (win, BUTTON_ABORT,defbutt);
+      add_button (win, BUTTON_RETRY,defbutt);
+      add_button (win, BUTTON_IGNORE,defbutt);
       break;
 
     case BUTTONS_YES_NO:
-      add_button (win, BUTTON_YES);
-      add_button (win, BUTTON_NO);
+      add_button (win, BUTTON_YES,defbutt);
+      add_button (win, BUTTON_NO,defbutt);
       break;
 
     case BUTTONS_YES_NO_CANCEL:
-      add_button (win, BUTTON_YES);
-      add_button (win, BUTTON_NO);
-      add_button (win, BUTTON_CANCEL);
+      add_button (win, BUTTON_YES,defbutt);
+      add_button (win, BUTTON_NO,defbutt);
+      add_button (win, BUTTON_CANCEL,defbutt);
       break;
     }
-  gtk_widget_show_all (GTK_WIDGET (win));
+  //gtk_widget_show_all (GTK_WIDGET (win));
+  
   rval = 0;
-  while (1)
-    {
-      a4gl_usleep (100);
-      rval = (int) gtk_object_get_data (GTK_OBJECT (win), "RETURNS");
-      if (rval)
-	break;
-      while (gtk_events_pending ())
-	gtk_main_iteration ();
-    }
 
+  if (defbutt>0) {
+  	gtk_dialog_set_default_response (GTK_DIALOG(win), defbutt);
+  }
+
+  rval=gtk_dialog_run(GTK_DIALOG(win));
+  if (rval==GTK_RESPONSE_NONE ) {
+	return -1;
+  }
   gtk_widget_destroy (GTK_WIDGET (win));
 
   return rval;
@@ -2495,6 +2522,7 @@ A4GL_LL_start_prompt (void *vprompt, char *promptstr, int ap, int charmode, int 
   char buff[300];
   int a;
   int field_cnt = 0;
+int use_attr=0;
   GtkWidget **widgets;
   list_of_fields lof;
   A4GL_debug ("In start prompt %d %d %d %d", ap, charmode, h, af);
@@ -2539,11 +2567,13 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   gtk_fixed_put (GTK_FIXED (cw), p, iscurrborder,
 		 (promptline - 1) * gui_yheight);
 
-   if (ap) {
+if (use_attr) { // for debugging ....
+   if (ap ) {
 	      A4GL_LL_set_field_back (p, A4GL_LL_decode_aubit_attr (ap, 'b'));
 	} else {
 		A4GL_LL_set_field_back (p, A4GL_LL_colour_code (0));
 	}
+}
 
   if (p == 0)
     {
@@ -2568,8 +2598,9 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
       gtk_fixed_put (GTK_FIXED (p), evt, 0, 0);
 
 
-	      A4GL_LL_set_field_back (widgets[0], A4GL_LL_colour_code (0));
-	      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_colour_code (7));
+      A4GL_LL_set_field_back (widgets[0], A4GL_LL_colour_code (0));
+      A4GL_LL_set_field_fore (widgets[0], A4GL_LL_colour_code (7));
+
       //ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
       if (ap)
 	{
@@ -2629,12 +2660,27 @@ A4GL_LL_gui_run_til_no_more(); // <---------------------------------------------
   if (af)
     {
       A4GL_debug ("AF...");
-      A4GL_LL_set_field_back (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));
-      A4GL_LL_set_field_fore (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'b'));	// maybe need 'B' for whole field..
+
+
+
       if (af & AUBIT_ATTR_INVISIBLE)
 	{
-	  A4GL_debug ("Invisible");
-	  A4GL_fld_opts_off (last_prompt_field, AUBIT_O_PUBLIC);
+		if (A4GL_isyes(acl_getenv("GTKINVISASINVIS"))) {
+	  		A4GL_fld_opts_off (last_prompt_field, AUBIT_O_PUBLIC);
+      			A4GL_LL_set_field_back (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));
+      			A4GL_LL_set_field_fore (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'b'));	// maybe need 'B' for whole field..
+		} else {
+			int af_noinvis;
+			af_noinvis=af-AUBIT_ATTR_INVISIBLE;
+      			A4GL_LL_set_field_back (last_prompt_field, A4GL_LL_decode_aubit_attr (af_noinvis, 'f'));
+      			A4GL_LL_set_field_fore (last_prompt_field, A4GL_LL_decode_aubit_attr (af_noinvis, 'b'));	// maybe need 'B' for whole field..
+	  		A4GL_fld_opts_on (last_prompt_field, AUBIT_O_PUBLIC);
+                	gtk_entry_set_visibility(GTK_ENTRY(last_prompt_field),FALSE);
+                	gtk_entry_set_invisible_char(GTK_ENTRY(last_prompt_field),'*');
+	  	}
+	} else {
+      		A4GL_LL_set_field_back (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'f'));
+      		A4GL_LL_set_field_fore (last_prompt_field, A4GL_LL_decode_aubit_attr (af, 'b'));	// maybe need 'B' for whole field..
 	}
 
     }
@@ -4047,13 +4093,9 @@ A4GL_LL_disp_h_menu_opt (int opt_num, int num_opts, char *opt_title,char*shorthe
     {
       		char *label_utf ;
 		label_utf= a4gl_locale_to_utf8 (opt_title);
-      		//l = gtk_object_get_data (GTK_OBJECT (b), "LABEL");
 		
 		SetMenuButton(b, label_utf,0);
 
-      		//gtk_label_set_text (GTK_LABEL (l), label_utf);
-		//gtk_button_set_image(GTK_BUTTON (b), 0);
-      		//gtk_button_set_label(GTK_BUTTON(b), label_utf);
       		g_free (label_utf);
     }
 
@@ -5191,6 +5233,80 @@ char *utf;
   A4GL_assertion(utf==0,"Unable to generate UTF8 string");
 A4GL_debug("returns %s\n",s);
   return utf;
+}
+
+char * LL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, char *icon, int danger, int winbutton)
+{
+int btn=0;
+int setBtn=0;
+int defButt=0;
+	if (A4GL_aubit_strcasecmp(pos,"OK")==0) {
+		setBtn=1; btn=BUTTONS_OK;
+		defButt=BUTTON_OK;
+
+	}
+
+	if (A4GL_aubit_strcasecmp(pos,"Ok|CANCEL")==0) {
+		setBtn=1; btn=BUTTONS_OK_CANCEL;
+		defButt=BUTTON_OK;
+                if (A4GL_aubit_strcasecmp(def,"Cancel")==0) {
+                        defButt=BUTTON_CANCEL;
+                }
+	}
+
+
+	if (A4GL_aubit_strcasecmp(pos,"Yes|No")==0) {
+		setBtn=1; btn=BUTTONS_YES_NO;
+		
+		defButt=BUTTON_YES;
+		if (A4GL_aubit_strcasecmp(def,"NO")==0) {
+			defButt=BUTTON_NO;
+		}
+	}
+
+	if (A4GL_aubit_strcasecmp(pos,"Retry|Cancel")==0) {
+		setBtn=1; btn=BUTTONS_RETRY_CANCEL;
+		
+		defButt=BUTTON_RETRY;
+		if (A4GL_aubit_strcasecmp(def,"Cancel")==0) {
+			defButt=BUTTON_CANCEL;
+		}
+	}
+
+	if (A4GL_aubit_strcasecmp(pos,"Abort|Retry|IGNORE")==0) {
+		setBtn=1; btn=BUTTONS_ABORT_RETRY_IGNORE;
+		defButt=BUTTON_ABORT;
+		if (A4GL_aubit_strcasecmp(def,"Retry")==0) {
+			defButt=BUTTON_RETRY;
+		} 
+
+		if (A4GL_aubit_strcasecmp(def,"Ignore")==0) {
+			defButt=BUTTON_IGNORE;
+		}
+	}
+
+	if (A4GL_aubit_strcasecmp(pos,"Yes|No|Cancel")==0) {
+		setBtn=1; btn=BUTTONS_YES_NO_CANCEL;
+		defButt=BUTTON_YES;
+		if (A4GL_aubit_strcasecmp(def,"No")==0) { defButt=BUTTON_NO; }
+		if (A4GL_aubit_strcasecmp(def,"Cancel")==0) { defButt=BUTTON_CANCEL; }
+	}
+
+  	if (!setBtn) {
+        	return "Invalid Keys";
+  	}
+
+	btn=A4GL_gtkdialog (title, icon, btn, defButt, 0, text);
+
+	switch (btn) {
+		case BUTTON_YES: 	return "Yes";
+		case BUTTON_NO: 	return "No";
+		case BUTTON_CANCEL: 	return "Cancel";
+		case BUTTON_OK: 	return "Ok";
+		case BUTTON_ABORT: 	return "Abort";
+		case BUTTON_RETRY: 	return "Retry";
+	}
+	return "Unknown Key";
 }
 
 

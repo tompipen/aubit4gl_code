@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: widget_gtk.c,v 1.49 2009-02-26 20:55:13 mikeaubury Exp $";
+  "$Id: widget_gtk.c,v 1.50 2009-02-28 12:46:04 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -301,6 +301,10 @@ A4GL_fld_val_generic (GtkWidget * k)
     }
 
   if (A4GL_aubit_strcasecmp (ptr, "pixbuf") == 0)
+    {
+      return "-";
+    }
+  if (A4GL_aubit_strcasecmp (ptr, "pixmap") == 0)
     {
       return "-";
     }
@@ -967,8 +971,16 @@ A4GL_cr_textbox (void)
 {
   GtkWidget *entry;
   int maxchars;
+  char *password_char;
   A4GL_debug ("Making textbox");
   maxchars = (int) A4GL_find_param ("*MAXCHARS");
+  password_char =  A4GL_find_param ("*PASSWORDCHAR");
+	if (password_char) {
+	if (strlen(password_char)==0) {
+		password_char=NULL;
+	}
+	}
+
   if (widget_next_height > 1)
     {
 	// Its a text box...
@@ -997,6 +1009,10 @@ A4GL_cr_textbox (void)
   	A4GL_add_signal_changed (entry, 0);
 	//A4GL_add_signal_clicked(entry,0);
   	A4GL_add_signal_grab_focus (entry, 0);
+	if (password_char) {
+		gtk_entry_set_visibility(GTK_ENTRY(entry),FALSE);
+		gtk_entry_set_invisible_char(GTK_ENTRY(entry),password_char[0]);
+	}
     }
   A4GL_debug ("Created textbox widget %p", entry);
 

@@ -1199,7 +1199,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
   A4GL_debug ("FORM LOOP\n");
 
-printf("s=%p\n",s);
+//printf("s=%p\n",s);
   if (init)
     {
       int context;
@@ -2430,6 +2430,14 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
   if (a == -101)
     {
       return "yes";
+    }
+  if (a == -120)
+    {
+      return "ignore";
+    }
+  if (a == -121)
+    {
+      return "retry";
     }
   if (a == -102)
     {

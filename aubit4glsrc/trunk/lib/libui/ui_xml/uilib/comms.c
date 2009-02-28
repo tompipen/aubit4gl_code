@@ -445,6 +445,16 @@ get_event_from_ui ()
 	{
 	  n = -102;
 	}
+      if (strcmp (attr->id, "IGNORE") == 0)
+	{
+	  n = -120;
+	}
+
+      if (strcmp (attr->id, "RETRY") == 0)
+	{
+	  n = -121;
+	}
+
 
       if (strcmp (attr->id, "FILEREQUEST") == 0)
 	{
