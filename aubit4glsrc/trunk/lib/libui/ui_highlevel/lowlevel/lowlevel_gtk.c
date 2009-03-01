@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.145 2009-02-28 14:14:59 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.146 2009-03-01 14:04:58 mikeaubury Exp $";
 #endif
 
 
@@ -746,7 +746,8 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
   GtkWidget *win;
   GtkLabel *label;
   char *label_utf;
-  GtkMessageType iconType=GTK_MESSAGE_OTHER;
+
+  GtkMessageType iconType=GTK_MESSAGE_INFO;
 
   if (A4GL_aubit_strcasecmp(icon,"info")==0) {
 		iconType=GTK_MESSAGE_INFO;
