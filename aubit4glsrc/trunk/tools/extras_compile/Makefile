@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2009-01-18 16:33:19 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2009-03-01 14:17:04 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -51,5 +51,5 @@ run:
 
 
 clean: 
-	rm extras_compile
+	${RM} extras_compile *.c *.ao *.exe
 
