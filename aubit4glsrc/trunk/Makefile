@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.66 2009-02-24 15:18:48 mikeaubury Exp $
+# $Id: Makefile,v 1.67 2009-03-01 11:44:14 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -615,6 +615,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C compilers/4glc clean
 	$(MAKE) -C compilers/sql clean
 	$(MAKE) -C compilers/pcode clean
+	$(MAKE) -C tools/extras_compile
 	$(MAKE) -C compilers/fcompile clean
 	$(MAKE) -C compilers/menus clean
 	$(MAKE) -C compilers/ace clean
@@ -636,7 +637,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/adbload2 clean
 	$(MAKE) -C help clean
 	$(MAKE) -C glade/ide clean
-	$(MAKE) -C lib/extta_libs/errhook clean
+	$(MAKE) -C lib/extra_libs/errhook clean
 	@echo " "	
 	
 	@echo "+--------------------------------------------------------------------+"

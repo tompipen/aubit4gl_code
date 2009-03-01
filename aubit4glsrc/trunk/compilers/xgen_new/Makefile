@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.1 2008-11-12 11:04:28 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2009-03-01 11:44:15 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -108,7 +108,7 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} lex.yy.c *.o xgen y.tab.c *.bak .*.bak
+	${RM} lex.yy.c *.o xgen y.tab.c *.bak .*.bak xgen_new ${ROOT}/bin/xgen_new
 
 ## ==================================================================
 ##                         Other Targets

@@ -574,8 +574,7 @@ if mv_username is not null then
 			"(one per line) which contain a database:username:password",
 			"as soon as the file is read - the passwords will be",
 			"encrypted using a weak encryption (dont store important",
-			"password in the ACL file!)", " "
-		or TUI_wide ))="Y" then
+			"password in the ACL file!)"))="Y" then
 
 			call prompt_for("Please enter the database you want to use","Database >>") returning mv_dbname
 			if not create_aclfile() then

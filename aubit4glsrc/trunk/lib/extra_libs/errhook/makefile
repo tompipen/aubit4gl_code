@@ -19,7 +19,7 @@ sample.c: sample.4gl
 	${4GLC_SET} ${4GLC} sample.4gl
 
 clean: 
-	rm *.o $(OUTPUT) sample.c
+	rm -f *.o $(OUTPUT) sample.c
 	
 
 
