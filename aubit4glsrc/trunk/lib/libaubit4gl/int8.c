@@ -715,7 +715,7 @@ A4GL_float_int8_ops (int op)
   double c;
   int d;
 
-  printf ("A4GL_float_int8_ops\n");
+  //printf ("A4GL_float_int8_ops\n");
   A4GL_debug ("here");
   b = A4GL_pop_double ();
   a = A4GL_pop_int8 ();
@@ -797,7 +797,7 @@ A4GL_int8_float_ops (int op)
   double c;
   int d;
 
-  printf ("A4GL_int8_float_ops\n");
+  //printf ("A4GL_int8_float_ops\n");
   A4GL_debug ("here");
   b = A4GL_pop_int8 ();
   a = A4GL_pop_double ();

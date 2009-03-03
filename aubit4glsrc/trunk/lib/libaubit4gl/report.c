@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.178 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: report.c,v 1.179 2009-03-03 14:49:44 mikeaubury Exp $
 #
 */
 
@@ -2788,7 +2788,7 @@ A4GL_push_agg (char type, long agg_type, void *agg, long aggcnt)
       break;
 
     default:
-      printf ("%c\n", type);
+      printf ("%c\n", type); // IGNORE WHEN GREPPING FOR PRINTFs
       A4GL_assertion (1, "Not implemented yet");
     }
   return 1;

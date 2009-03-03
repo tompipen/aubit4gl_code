@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.229 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: stack.c,v 1.230 2009-03-03 14:49:44 mikeaubury Exp $
 #
 */
 
@@ -4262,7 +4262,7 @@ A4GL_push_dec_dec(&dec,0,ndig);
 acl_free(orig_ptr);
 #ifdef EXTRA_DEBUG
 ptr=A4GL_char_pop();
-printf("Ptr=%s\n",ptr);
+printf("Ptr=%s\n",ptr); // IGNORE WHEN GREPPING FOR PRINTFs
 A4GL_push_dec_dec(&dec,0,16);
 #endif
 }

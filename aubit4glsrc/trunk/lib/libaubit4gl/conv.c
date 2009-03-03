@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.171 2009-03-03 08:15:09 mikeaubury Exp $
+# $Id: conv.c,v 1.172 2009-03-03 14:46:47 mikeaubury Exp $
 #
 */
 
@@ -3466,7 +3466,7 @@ A4GL_valid_dt (char *s, int *data, int size)
 				break;
 			}
 			if (bad) {
-				printf("Too long 1\n");
+				//printf("Too long 1\n");
 			 	return 0;
 			}
 			// Ok - so they are all numbers - but its too long..
@@ -3476,7 +3476,7 @@ A4GL_valid_dt (char *s, int *data, int size)
 
 			// Now recheck with our new trimmed size...
 			if (strlen(buff)>25) {
-				printf("Too long 2 : %s\n",buff);
+				//printf("Too long 2 : %s\n",buff);
 				return 0;
 			}
 		} else {
