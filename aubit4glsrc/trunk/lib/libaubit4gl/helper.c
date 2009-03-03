@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.81 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: helper.c,v 1.82 2009-03-03 08:20:40 mikeaubury Exp $
 #
 */
 
@@ -1242,6 +1242,15 @@ aclfgl_aclfgl_flushinp (int n)
 {
   //char *s;
   A4GL_direct_to_ui ("FLUSHINP", "");
+  return 0;
+}
+
+
+int
+aclfgl_aclfgl_flush_ui (int n)
+{
+  //char *s;
+  A4GL_direct_to_ui ("FLUSH", "");
   return 0;
 }
 
