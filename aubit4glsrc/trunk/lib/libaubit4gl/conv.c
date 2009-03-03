@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.170 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: conv.c,v 1.171 2009-03-03 08:15:09 mikeaubury Exp $
 #
 */
 
@@ -929,13 +929,54 @@ A4GL_dttoc (void *a, void *b, int size)
 
   if ((int) strlen (buff) > size)
     {
+	int allowtrim=1; /* Trim the precision of the datetime to fit into a smaller character string */
       // Its too small to fit into our string
       char *ptr;
       A4GL_debug ("does not fit '%s' %d", A4GL_null_as_null (buff), size);
-      memset (b, '*', size);
-      ptr = b;
-      ptr[size] = 0;
-      return 0;
+
+	if (allowtrim && d->stime!=1) {
+		// We only want to autotrim YEAR TO .... datetimes...
+		allowtrim=0;
+	}
+	
+	if (allowtrim && buff[size]>='0' && buff[size]<='9')  {
+			char buff2[2000];
+			// Still allowed if we're talking about a '.'
+			strcpy(buff2,buff);
+			buff2[size]=0;
+			if (strchr(buff2,'.')) {
+				// If we are after the decimal place - allow the trim
+				// otherwise its not allowed..
+				allowtrim=1;
+			} else {
+				allowtrim=0;
+			}
+	}
+
+	if ( allowtrim && size<=1) {
+		allowtrim=0;
+	}
+	if (allowtrim && A4GL_isno(acl_getenv("ALLOWDTIMETRIM"))) {
+		allowtrim=0;
+	}
+
+
+	if (allowtrim) {
+			// It would be safe to trim at this point - we'd just lose precision...
+			buff[size]=0;
+			
+			if (buff[strlen(buff)-1]=='.') {
+				// We're ending with a trailing '.' - 
+				// as theres nothing after it - we might as well 
+				// get rid of it...
+				buff[strlen(buff)-1]=' ';
+			}
+	}  else {
+      		memset (b, '*', size);
+      		ptr = b;
+      		ptr[size] = 0;
+      		return 0;
+	}
     }
 
   A4GL_debug ("dttoc sets to '%s'", A4GL_null_as_null (buff));
