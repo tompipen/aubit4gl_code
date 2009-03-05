@@ -25,8 +25,8 @@ END MAIN
 
 FUNCTIOn chk_user()
 DEFINE lv char (600)
-
-	IF dbms_dialect()='POSTGRESQL' THEN
+display dbms_dialect()
+	IF dbms_dialect()='POSTGRESQL' OR dbms_dialect()='POSTGRES8' THEN
 		{
 		see http://www.postgresql.org/docs/7.4/static/sql-createuser.html
 		}

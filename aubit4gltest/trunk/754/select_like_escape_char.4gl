@@ -45,7 +45,7 @@ MAIN
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn LIKE "the#" ESCAPE "#"
+      WHERE valueColumn LIKE "th#e%" ESCAPE "#"
 			ORDER BY 1
 
 	OPEN cr_
@@ -55,6 +55,7 @@ MAIN
   IF lv_keyColumn != 2 THEN
     DISPLAY "Diferent key value on first iteration <", 
 		  lv_keycolumn USING "<<", ">!=<2>"
+	display "Got : ",  lv_keyColumn, lv_valueColumn, lv_dateColumn
     LET exitStatus = 1
   END IF
   IF lv_valueColumn != "the second" THEN

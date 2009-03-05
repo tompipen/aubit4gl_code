@@ -12,7 +12,7 @@
 #using -eci will not work with any other Aubit configuration
 #NOTE: <*> = OK with -esqli
 #      <P> = OK with -ecp
-EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 1254 1410 1461 1462 1464 1608 1655 1705"
+EXPECT_TO_FAIL_TESTS="240 766 767 962 1254 1410 1462 1464 1608 1655 1705"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #766 (Key CONTROL-H was 49 and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
@@ -43,7 +43,7 @@ EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
 
 ######################
 #Tests that currently fail with -esqli (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703 1009 1705"
+EXPECT_TO_FAIL_TESTS_ESQLI="1705"
 #80 (Decimal or money value exceeds maximum precision) http://aubit.com/mantis/bug_view_page.php?bug_id=0000605 # Can you double check - 80 works on mine
 #685 same
 #694 same
@@ -58,9 +58,9 @@ EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703 1009 1705"
 
 ######################
 #Tests expected to fail with -ifxodbc (in addition to EXPECT_TO_FAIL_TESTS)
-EXPECT_TO_FAIL_TESTS_IFXODBC="1 68 108 212 234 270 582 583 584 585 587 706 904 \
-	905 906 907 908 909 910 911 912 913 914 915 91 95 100 586 739 1200 \
-	76 98 207 900 903"
+EXPECT_TO_FAIL_TESTS_IFXODBC="  108  582 583 584  587   \
+	905   908 909 910  912 913 914   \
+	98 900 903 1305 1423 1440 1610 1617 1637 1640 "
 #1 conv.c               2751   (     0,     0) Start Time invalid on datetime(dttoc)
 
 
@@ -151,6 +151,36 @@ EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 1009 286 287 551 552 553 5
 #TODO: find out why they are failing:
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 14 72 585 586 588 648 649 \
 	650 651 666 913 1210 1227 1239 1250 1251 1257 1262 1265 1266 1274 1285 1406 1413 1416 1417"
+
+
+# 98 - serial
+# 286 287 - unload format of decimal
+# 373 - initialize like "informix...."
+# 207 - datetime/time
+# 530 (TABLENAME_DB_USER_TABLE),535 (CREATE_TABLE_IN)
+# 554 primary key constraint
+#551 552 553 558 559 560 555 (ALL of them):
+#ecpg error simple_alter_table.cpc:89: ERROR: syntax error at or near "("
+#   line 89:       EXEC SQL ALTER TABLE xpto ADD (third_column SMALLINT  ); /* exec_sql */
+# 570 572 576 - Synonymns
+# 611 612 - WITH CHECK OPTION
+# 623 - bad integer ("")A
+# 642 644 - SET TRANSACTION ISOLATION LEVEL must not be called in a subtransaction.
+# 645  - GRANT ... TO PUBLIC : role "public" does not exist.
+# 646  - GRANT ... TO ... : role "connect" does not exist.
+# 668 - GRANT ...  AS GRANTOR
+# 675 700 713  721 724 725 - CREATE SYNONYM
+# 676 711 689- cant update view
+# 698 - cannot insert into a view
+# 683 - interval datatype
+# 701 702 704 - UNITS HOUR in SQL
+# 706 - UNITS YEAR in SQL
+# 686 687 - units
+# 739 - with no log ignored
+
+EXPECT_TO_FAIL_TESTS_PG8="98 207 286 287 530  551 552 553 558 559 560 554 570 572 576 611 612 623 642 644 645 646  913 698 1239  1251  1266 1274 1285  1413 373 555 556 561 562 571 641  652 653 655 656 667 668 675 676 701 702 704 706 711 700 683 682 686 687 689 721 724 725 739 902 904 905 908 909 911 912 914 1301 1303 1651 713"
+
+
 
 # --------------------------------------------------------------------------
 #							-mysql

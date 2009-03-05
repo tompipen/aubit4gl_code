@@ -21,7 +21,7 @@ MAIN
 		other_column CHAR(5)
 	)
 	LET exitStatus = 0
-	INSERT INTO xpto VALUES (1,1,"Hello world")
+	INSERT INTO xpto VALUES (1,1,"Hello")
 	SELECT keyColumn, a_column, other_column
 	  INTO lv_key, lv_value
 		FROM xpto

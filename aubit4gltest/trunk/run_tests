@@ -1541,6 +1541,17 @@ TEST_DIRS_CNT=`ls -d [0-9]* | wc -l`
 #deduct 30 as probable number of directories with invalid tests, missing files etc:
 let TEST_DIRS_CNT=TEST_DIRS_CNT-30
 
+
+MANTIS_LOGTEXT="SQLTYPE=$A4GL_SQLTYPE,LEXTYPE=$A4GL_LEXTYPE,LEXDIALECT=$A4GL_LEXDIALECT"
+export MANTIS_LOGTEXT
+if [ "$A4GL_SQLTYPE" = "pg8" -a "$A4GL_LEXTYPE" = "C" ]
+then
+	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_PG8"
+	export DB_TYPE=PG8
+	export A4GL_TARGETDIALECT=POSTGRES8
+fi
+
+
 if test "$LINES_IN_CATALOGUE_UNL" -lt "$TEST_DIRS_CNT" -o "$CATALOGUE_UNL" = "1"; then
 	#too few lines in the file, file obvieosly not complete, or user specified
 	#-catalogue on command line explicitly.

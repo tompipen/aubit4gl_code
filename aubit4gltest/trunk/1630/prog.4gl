@@ -23,6 +23,7 @@ END MAIN
 
 FUNCTION entmentr_pinta(p_p1, p_p2)
 DEFINE p_p1, p_p2, w_p1, w_p2 INT
+display "In entmentr_pinta"
 DECLARE c_entr CURSOR FOR ex_entr
 OPEN c_entr USING p_p1, p_p2
 FETCH c_entr INTO w_p1, w_p2

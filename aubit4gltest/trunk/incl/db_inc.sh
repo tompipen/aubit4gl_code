@@ -1562,6 +1562,9 @@ function check_mysql () {
 			$RC_MYSQL start
 			TMP_STAT=`$RC_MYSQL status | grep running`
 			if test "$TMP_STAT" = ""; then
+				TMP_STAT=`$RC_MYSQL status | grep started`
+			fi
+			if test "$TMP_STAT" = ""; then
 				warning "Cannot verify that MySQL is running using RC script $RC_MYSQL"
 				warning "please make sure MySQL instance is running"
 			fi
@@ -1579,7 +1582,7 @@ function check_mysql () {
 	MYSQL_VERSION=`$MYSQL_EXE --version  | awk '{ print $5 }' | sed 's/,//'g`
 	verbose "MySQL version $MYSQL_VERSION"
 
-	TMP_OUT=`mysql --user=root --password=aubit --database=$TEST_DB --execute="\q"`
+	TMP_OUT=`mysql --user=$A4GL_SQLUID --password=$A4GL_SQLPWD --database=$TEST_DB --execute="\q"`
 	TMP_STAT=$?
 	if test "$TMP_STAT" != "0"; then
 		#ERROR 1049 (42000): Unknown database 'test1'
@@ -1697,8 +1700,9 @@ if test "disabled" = "xxx"; then
 		echo "$TEST_DB:$USER:aubit" >> $A4GL_ACL
 	fi
 else
-	export SQLUID=$USER
-	export SQLPWD=aubit
+	:
+	#export SQLUID=$USER
+	#export SQLPWD=aubit
 fi
 	
 	if test "$NEW_MYSQL" = "1"; then
@@ -1706,7 +1710,6 @@ fi
     fi
 	
 	EXPECT_TO_FAIL="$EXPECT_TO_FAIL $EXPECT_TO_FAIL_MYSQL"
-	
 	A4GL_TARGETDIALECT="MYSQLDIRECT"
 
 }

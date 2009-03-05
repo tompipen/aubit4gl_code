@@ -45,7 +45,7 @@ MAIN
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn MATCHES "the#" ESCAPE "#"
+      WHERE valueColumn MATCHES "th#e*" ESCAPE "#"
 			ORDER BY 1
 
 	OPEN cr_
