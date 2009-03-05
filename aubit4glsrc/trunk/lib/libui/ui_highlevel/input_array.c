@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.66 2009-02-23 17:31:51 mikeaubury Exp $
+# $Id: input_array.c,v 1.67 2009-03-05 07:59:51 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.66 2009-02-23 17:31:51 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.67 2009-03-05 07:59:51 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -794,7 +794,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 
       if (A4GL_is_special_key (a, A4GLKEY_DELETE))
     {
-      if (arr->allow_insert)
+      if (arr->allow_delete)
 	{
 	  act_as = A4GLKEY_DEL;
 	  a = act_as;
@@ -925,9 +925,14 @@ process_key_press (struct s_inp_arr *arr, int a)
 	  if (arr->arr_line >= arr->no_arr) 
 	{
         A4GL_debug ("Key_down -> insert new line");
+	          if (arr->allow_insert) {
+
       	A4GL_newMovement_single (arr,
 			arr->scr_line + 1, arr->arr_line + 1,
 			0, 'D');
+		} else {
+                        A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+		}
 	}
       else
 	{

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.154 2009-02-23 17:31:51 mikeaubury Exp $
+# $Id: iarray.c,v 1.155 2009-03-05 07:59:51 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.154 2009-02-23 17:31:51 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.155 2009-03-05 07:59:51 mikeaubury Exp $";
 #endif
 
 /**
@@ -865,7 +865,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 
   if (A4GL_is_special_key (a, A4GLKEY_DELETE))
     {
-      if (arr->allow_insert)
+      if (arr->allow_delete)
 	{
 	  act_as = A4GLKEY_DEL;
 	  a = act_as;
@@ -988,9 +988,11 @@ process_key_press (struct s_inp_arr *arr, int a)
     case A4GLKEY_DOWN:
       if (arr->arr_line >= arr->no_arr) {
 	  A4GL_debug("Calling down newmovement -> insert at end");
-          A4GL_newMovement (arr,
-			    arr->scr_line + 1, arr->arr_line + 1,
-			    0, 'D');
+	 	if (arr->allow_insert) {
+          		A4GL_newMovement (arr, arr->scr_line + 1, arr->arr_line + 1, 0, 'D');
+		} else {
+	 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
+		}
       } else {
           	A4GL_newMovement (arr, arr->scr_line + 1, arr->arr_line + 1, arr->curr_attrib, 'D');
       } 

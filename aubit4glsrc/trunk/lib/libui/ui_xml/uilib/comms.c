@@ -445,6 +445,11 @@ get_event_from_ui ()
 	{
 	  n = -102;
 	}
+
+      if (strcmp (attr->id, "OK") == 0)
+	{
+	  n = -119;
+	}
       if (strcmp (attr->id, "IGNORE") == 0)
 	{
 	  n = -120;
@@ -463,7 +468,6 @@ get_event_from_ui ()
 
       if (strcmp (attr->id, "RETURN") == 0)
 	{
-		A4GL_pause_execution();
 	  n = -110;
 	}
 

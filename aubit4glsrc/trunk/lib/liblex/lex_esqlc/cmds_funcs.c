@@ -2735,7 +2735,13 @@ clr_nonewlines();
 	}
 
   if (cmd_data->attributes) {
-  	printc ("SET(\"s_inp_arr\",_sio_%d,\"allow_insert\",%d);\n",sio_id, cmd_data->attributes->allow_insert!=EB_FALSE);
+	int allow_insert=1;
+
+	if (cmd_data->attributes->allow_insert==EB_FALSE) allow_insert=0;
+	if (cmd_data->attributes->no_new_lines) allow_insert=0;
+
+  	printc ("SET(\"s_inp_arr\",_sio_%d,\"allow_insert\",%d);\n",sio_id, allow_insert);
+
   } else {
   	printc ("SET(\"s_inp_arr\",_sio_%d,\"allow_insert\",%d);\n",sio_id, 1);
   }

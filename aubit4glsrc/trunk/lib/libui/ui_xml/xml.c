@@ -1677,6 +1677,13 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
+
+  if (strcmp (what, "FLUSH") == 0)
+    {
+	flush_ui();
+      	return;
+    }
+
   if (strcmp (what, "SET") == 0)
     {
 	char *val;
@@ -2435,6 +2442,10 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
     {
       return "ignore";
     }
+  if (a == -119)
+    {
+      return "ok";
+    }
   if (a == -121)
     {
       return "retry";
@@ -2443,6 +2454,7 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
     {
       return "no";
     }
+	printf("Bad winquestion result: %d\n",a);
   return "InvalidReturnedValue";
 }
 

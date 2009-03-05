@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.146 2009-03-01 14:04:58 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.147 2009-03-05 07:59:51 mikeaubury Exp $";
 #endif
 
 
@@ -3693,10 +3693,18 @@ find_curr_window (void *currwin)
 int
 A4GL_LL_set_window_title (void *currwin, char *s)
 {
+GtkWidget *w;
   A4GL_trim (s);
-  gtk_window_set_title (GTK_WINDOW (find_curr_window (currwin)), s);
-  /* End of code */
-  return 0;
+  w=find_curr_window (currwin);
+  if (w) {
+  	if (GTK_IS_WINDOW(w)) {
+  		gtk_window_set_title (GTK_WINDOW (find_curr_window (currwin)), s);
+  		return 0;
+  	}
+  }
+/* If we get to here - we want to set the application window - not the current window... */
+gtk_window_set_title( appWin, s);
+return 0;
 }
 
 
@@ -5045,6 +5053,7 @@ void *AddButtonToolbar(GtkWidget *toolbar, char *tag, char *buttonText,char *sto
 		//printf("Loaded image : %s\n",buff);
   //}
   displayedText=buttonText;
+
   if (has_stock_item (buttonText)) {
 		char img[256]="";
 		stock_item(buttonText,txt,img,0);
@@ -5200,8 +5209,12 @@ int hasItem;
 hasItem=stock_item (Text, txt,img,0);
 
 if (!hasItem) {
-	strcpy(txt,Text);
-	strcpy(img,imgPassedIn);
+	hasItem=stock_item (imgPassedIn,txt,img,0);
+	if (!hasItem) {
+		strcpy(txt,Text);
+		strcpy(img,imgPassedIn);
+	}
+
 }
 
 	for (a=0;a<toolbarItemsCnt;a++) {

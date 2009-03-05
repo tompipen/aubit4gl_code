@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.137 2009-02-28 14:14:59 mikeaubury Exp $
+# $Id: builtin.c,v 1.138 2009-03-05 07:59:51 mikeaubury Exp $
 #
 */
 
@@ -80,7 +80,7 @@ char *aclfgl_ddegeterror (void);
 int aclfgl_ddeconnect (char *progname, char *ddemessage);
 void aclfgl_ddefinishall (void);
 char *aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand);
-void aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType);
+//void aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType);
 void aclfgl_fgl_keysetlabel (char *keyName, char *labelText);
 char *aclfgl_fgl_strtosend (char *str);
 int aclfgl_winexecwait (char *exec_string);
@@ -1500,10 +1500,21 @@ aclfgl_fgl_keysetlabel (char *keyName, char *labelText)
  * 4Js compatibility - opens message window
  *
 **/
-void
-aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType)
+int
+aclfgl_fgl_winmessage (int n) 
 {
-  A4GL_exitwith ("4Js winmessage function not implemented");
+char *windowTitle; 
+char *message; 
+char *iconType;
+iconType=A4GL_char_pop();
+message=A4GL_char_pop();
+windowTitle=A4GL_char_pop();
+
+  A4GL_ui_fgl_winquestion (windowTitle, message, "Ok", "Ok",iconType, 0,0);
+free(iconType);
+free(message);
+free(windowTitle);
+return 0;
 }
 
 
