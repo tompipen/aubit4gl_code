@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.41 2008-12-04 15:02:51 mikeaubury Exp $
+# $Id: display_array.c,v 1.42 2009-03-10 12:06:07 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.41 2008-12-04 15:02:51 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.42 2009-03-10 12:06:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -530,6 +530,37 @@ disp_loop_internal (struct s_disp_arr *arr, struct aclfgl_event_list *evt)
       break;
 
 
+     case 0-A4GLKEY_SEND:
+        arr->last_arr = arr->arr_line;
+        arr->arr_line=arr->no_arr;
+        arr->scr_line = arr->srec->dim;
+        while (arr->arr_line<arr->scr_line) arr->scr_line--;
+        redisplay_arr (arr, 2);
+        A4GL_set_arr_curr (arr->arr_line);
+        A4GL_set_scr_line (arr->scr_line);
+        if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
+        break;
+
+     case 0-A4GLKEY_SHOME:
+        arr->last_arr = arr->arr_line;
+        arr->arr_line=1;
+        arr->scr_line = 1;
+        redisplay_arr (arr, 2);
+        A4GL_set_arr_curr (arr->arr_line);
+        A4GL_set_scr_line (arr->scr_line);
+        if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
+        break;
+
+
+    case A4GLKEY_SEND : /* shift+end */
+          arr->cntrl=0-A4GLKEY_SEND;
+          if (A4GL_has_event(A4GL_EVENT_AFT_ROW,evt)) return A4GL_has_event(A4GL_EVENT_AFT_ROW,evt);
+        break;
+
+    case A4GLKEY_SHOME : /* shift+home */
+          arr->cntrl=0-A4GLKEY_SHOME;
+          if (A4GL_has_event(A4GL_EVENT_AFT_ROW,evt)) return A4GL_has_event(A4GL_EVENT_AFT_ROW,evt);
+        break;
 
     case A4GLKEY_PGDN:
       if ((arr->arr_line + arr->srec->dim - arr->scr_line - 1 <= arr->no_arr)
@@ -1010,8 +1041,8 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp,int iscurr,  int blank, int att
                  if (iscurr) {
                                 nattr = A4GL_get_attr_from_string (disp->curr_display);
                                 if (attr&AUBIT_ATTR_REVERSE) {
-                                if (nattr&AUBIT_ATTR_REVERSE)   nattr=nattr-AUBIT_ATTR_REVERSE;
-                                else                            nattr=nattr+AUBIT_ATTR_REVERSE;
+                                	if (nattr&AUBIT_ATTR_REVERSE)   nattr=nattr-AUBIT_ATTR_REVERSE;
+                                	else                            nattr=nattr+AUBIT_ATTR_REVERSE;
                                 }
                  } else {
                          // Not current..

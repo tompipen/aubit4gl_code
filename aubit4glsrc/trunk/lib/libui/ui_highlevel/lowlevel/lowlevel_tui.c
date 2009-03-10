@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.124 2009-03-10 10:17:46 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.125 2009-03-10 12:06:08 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.124 2009-03-10 10:17:46 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.125 2009-03-10 12:06:08 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -271,6 +271,8 @@ A4GL_curses_to_aubit_int (int a)
   static int env_cancel = -2;
   static int keycode_home = -1;
   static int keycode_end = -1;
+  static int keycode_shome=-1;
+  static int keycode_send=-1;
 
 
   if (env_cancel == -2)
@@ -300,6 +302,15 @@ A4GL_curses_to_aubit_int (int a)
       keycode_end = atoi (acl_getenv ("KEYCODE_END"));
     }
 
+   if (keycode_shome==-1) {
+                keycode_shome=atoi(acl_getenv("KEYCODE_SHOME"));
+   }
+
+   if (keycode_send==-1) {
+                keycode_send=atoi(acl_getenv("KEYCODE_SEND"));
+   }
+
+
   if (keycode_home == 0 || keycode_home == -1)
     {
       keycode_home = KEY_HOME;
@@ -309,11 +320,22 @@ A4GL_curses_to_aubit_int (int a)
       keycode_end = KEY_END;
     }
 
+   if (keycode_shome==0||keycode_shome==-1) {
+                keycode_shome=KEY_SHOME;
+   }
+
+   if (keycode_send==0||keycode_send==-1) {
+                keycode_send=KEY_SEND;
+   }
+
 
   if (a == keycode_home)
     return A4GLKEY_HOME;
   if (a == keycode_end)
     return A4GLKEY_END;
+
+  if (a == keycode_shome) return A4GLKEY_SHOME;
+  if (a == keycode_send) return A4GLKEY_SEND;
 
 
   for (b = 0; b < 64; b++)

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.67 2009-03-05 07:59:51 mikeaubury Exp $
+# $Id: input_array.c,v 1.68 2009-03-10 12:06:08 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.67 2009-03-05 07:59:51 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.68 2009-03-10 12:06:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -960,6 +960,13 @@ process_key_press (struct s_inp_arr *arr, int a)
       break;
 
 
+    case A4GLKEY_SHOME:
+                A4GL_newMovement_single (arr, 1,  1, arr->curr_attrib, 'U');
+                break;
+
+    case A4GLKEY_SEND:
+                A4GL_newMovement_single(arr, arr->scr_dim, arr->no_arr, arr->curr_attrib, 'D');
+                break;
 
     case A4GLKEY_HOME:
                 A4GL_LL_int_form_driver (mform, AUBIT_REQ_BEG_FIELD);

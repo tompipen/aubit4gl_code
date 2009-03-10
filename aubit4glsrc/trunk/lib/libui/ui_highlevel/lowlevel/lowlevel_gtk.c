@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.147 2009-03-05 07:59:51 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.148 2009-03-10 12:06:08 mikeaubury Exp $";
 #endif
 
 
@@ -95,7 +95,7 @@ void *currentSio=0;
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis, char *msg);
 int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
 		gpointer func_data);
-int A4GL_which_key_aubit (int gdk_key);
+int A4GL_which_key_aubit (int gdk_key,int shifted);
 char *A4GL_decode_str_fprop (struct_scr_field * fprop, int type);
 void MyStyleSetItemColor (GdkColor color,	/* The allocated color to be added to the style */
 			  char item,	/* the item to which the color is to be applied */
@@ -151,7 +151,7 @@ struct evt_buffer {
 	enum evt_type type; 
 	// EVT_KEY
 	int keycode; 
-
+	int shifted;
 	// EVT_ACTION
 	char action[32];
 	int evt;
@@ -285,7 +285,7 @@ A4GL_getxy_coords (int *x, int *y)
  * @todo : Please describe this function.
  */
 static int
-get_keypress_from_buffer (struct aclfgl_event_list  *evt)
+get_keypress_from_buffer (struct aclfgl_event_list  *evt,int *shifted)
 {
   struct evt_buffer cp[EVT_BUFFER_SIZE - 1];
   int k;
@@ -295,7 +295,11 @@ get_keypress_from_buffer (struct aclfgl_event_list  *evt)
     }
   memcpy (&cp[0], &evtbuffer[1], sizeof (cp));
   k = evtbuffer[0].keycode;
+	if (shifted) {
+		*shifted=evtbuffer[0].shifted;
+	}
   lastTriggeredEvent=-1;
+
   if (k==A4GLKEY_EVENT) {
 	int found=0;
 	int a;
@@ -324,7 +328,7 @@ get_keypress_from_buffer (struct aclfgl_event_list  *evt)
  * @todo : Please describe this function.
  */
 static void
-add_keypress (int a)
+add_keypress (int a,int shifted)
 {
   if (evtbuffer_cnt >= EVT_BUFFER_SIZE)
     {
@@ -333,6 +337,7 @@ add_keypress (int a)
     }
   evtbuffer[evtbuffer_cnt].type=EVT_KEY; 
   evtbuffer[evtbuffer_cnt].keycode= a;
+  evtbuffer[evtbuffer_cnt].shifted= shifted;
 
   evtbuffer_cnt++;
 }
@@ -352,6 +357,7 @@ add_action (char *a)
     }
   evtbuffer[evtbuffer_cnt].type=EVT_ACTION; 
   evtbuffer[evtbuffer_cnt].keycode= A4GLKEY_EVENT;
+  evtbuffer[evtbuffer_cnt].shifted=0;
   strcpy(evtbuffer[evtbuffer_cnt].action,a);
   
   evtbuffer_cnt++;
@@ -366,7 +372,7 @@ add_action (char *a)
 static int
 ok_callback (gpointer data)
 {
-  add_keypress (std_dbscr.acckey);
+  add_keypress (std_dbscr.acckey,0);
   return TRUE;
 }
 
@@ -383,7 +389,7 @@ cancel_callback (gpointer data)
 #else
   kill (0, SIGINT);
 #endif
-  add_keypress (3);
+  add_keypress (3,0);
   return TRUE;
 }
 
@@ -446,7 +452,7 @@ int
 A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
   GtkWidget *w;
-
+int shifted=0;
 /* If we're using a TEXTVIEW - then we'll let GTK handle all the difficult stuff... */
   if (GTK_IS_WINDOW (widget))
     {
@@ -477,9 +483,10 @@ A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
   else
     {
       keypressed = event->keyval;
+	shifted=event->state & GDK_SHIFT_MASK;
     }
 
-  add_keypress (keypressed);
+  add_keypress (keypressed,shifted);
   actionfield = widget;
   return keypressed;
 }
@@ -489,7 +496,7 @@ int
 A4GL_fake_a_keypress (GtkWidget * widget, int key)
 {
   keypressed = key;
-  add_keypress (keypressed);
+  add_keypress (keypressed,0);
   return keypressed;
 }
 
@@ -1377,7 +1384,8 @@ int
 A4GL_LL_getch_swin (void *window_ptr,char *why,void *vevt)
 {
   int a;
-  struct event_list *evt;
+  struct aclfgl_event_list *evt;
+int shifted=0;
   //GtkWidget *f;
   
   evt=vevt;
@@ -1401,7 +1409,7 @@ A4GL_LL_getch_swin (void *window_ptr,char *why,void *vevt)
 	  A4GL_debug ( "Returning : %d\n", a);
 	  return a;
 	}
-      a = get_keypress_from_buffer ((struct aclfgl_event_list *)evt);
+      a = get_keypress_from_buffer ((struct aclfgl_event_list *)evt,&shifted);
       if (a != -1)
 	break;
       gtk_main_iteration ();
@@ -1417,7 +1425,7 @@ A4GL_LL_getch_swin (void *window_ptr,char *why,void *vevt)
 
     }
 
-  a = A4GL_which_key_aubit (a);
+  a = A4GL_which_key_aubit (a,shifted);
 
   return a;
 }
@@ -1462,7 +1470,7 @@ int set_intr_win32 (int type)
 #endif
 
 int
-A4GL_which_key_aubit (int gdk_key)
+A4GL_which_key_aubit (int gdk_key,int shifted)
 {
   int a;
   a = gdk_key;
@@ -1621,10 +1629,16 @@ A4GL_which_key_aubit (int gdk_key)
     return A4GLKEY_PGUP;
   if (a == GDK_KP_Page_Down)
     return A4GLKEY_PGDN;
-  if (a == GDK_KP_Home)
-    return A4GLKEY_HOME;
-  if (a == GDK_KP_End)
+
+  if (a == GDK_KP_Home || a==GDK_Home) {
+		if (shifted) return A4GLKEY_SHOME;
+    		return A4GLKEY_HOME;
+	}
+
+  if (a == GDK_KP_End || a==GDK_End ) {
+		if (shifted) return A4GLKEY_SEND;
     return A4GLKEY_END;
+  }
 
 
 
@@ -4903,7 +4917,7 @@ static void FakeKeyToolbarEvent( GtkWidget *widget,
   if ((long)data==A4GLKEY_INTERRUPT) {
 	cancel_callback(0);
   } else {
-  	add_keypress ((long)data);
+  	add_keypress ((long)data,0);
   }
 }
 
