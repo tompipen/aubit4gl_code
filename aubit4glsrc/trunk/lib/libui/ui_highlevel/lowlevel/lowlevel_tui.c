@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.123 2009-02-28 12:46:04 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.124 2009-03-10 10:17:46 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.123 2009-02-28 12:46:04 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.124 2009-03-10 10:17:46 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -699,7 +699,40 @@ A4GL_LL_colour_code (int a)
   //A4GL_debug ("MJA Returning color code (%d+1)\n", a);
   if (a == 0)
     return 0;
-  a = COLOR_PAIR (a + 1);
+
+
+#ifdef __WIN32__
+// 7 = cyan
+// 6 = magenta
+// 5 = blue
+// 4 = yellow
+// 3 = green
+// 2 = red
+                switch (a) {
+                        case 0:
+                                a=COLOR_PAIR (8); break;
+                        case 1:
+                                a=COLOR_PAIR (5); break;
+                        case 2:
+                                a=COLOR_PAIR (3); break;
+                        case 3:
+                                a=COLOR_PAIR (7); break;
+                        case 4:
+                                a=COLOR_PAIR (2); break;
+                        case 5:
+                                a=COLOR_PAIR (6); break;
+                        case 6:
+                                a=COLOR_PAIR (4); break;
+                        case 7:
+                                a=COLOR_PAIR (8); break;
+                }
+#else
+                a=COLOR_PAIR (a + 1);
+#endif
+
+
+
+
   //A4GL_debug ("MJA Returning color code = %d\n", a);
   return a;
 }
