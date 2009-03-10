@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.167 2009-02-23 17:31:51 mikeaubury Exp $
+# $Id: newpanels.c,v 1.168 2009-03-10 10:12:16 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.167 2009-02-23 17:31:51 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.168 2009-03-10 10:12:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -629,9 +629,6 @@ char buff[256];
 			curses_form=(FORM *)f->form;
 			if (curses_form) {
 				unpost_form(curses_form);
-				if (free_form(curses_form)!=E_OK) {
-					A4GL_debug("Couldnt free form");
-				}
 			
 				for (a=0;a<f->fileform->metrics.metrics_len;a++) {
 					FIELD *fld;
@@ -646,6 +643,9 @@ char buff[256];
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm2;
 					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
 	
+				}
+				if (free_form(curses_form)!=E_OK) {
+					A4GL_debug("Couldnt free form");
 				}
 
 			}
