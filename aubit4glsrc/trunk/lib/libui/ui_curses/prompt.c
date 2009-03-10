@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.77 2009-02-23 17:31:51 mikeaubury Exp $
+# $Id: prompt.c,v 1.78 2009-03-10 11:14:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.77 2009-02-23 17:31:51 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.78 2009-03-10 11:14:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -551,6 +551,10 @@ A4GL_curses_to_aubit_int (int a)
   static int env_cancel=-2;
   static int keycode_home=-1;
   static int keycode_end=-1;
+  static int keycode_shome=-1;
+  static int keycode_send=-1;
+
+
   if (env_cancel==-2) {
 		char *ptr;
 		ptr=acl_getenv("TUICANCELKEY");
@@ -570,16 +574,34 @@ A4GL_curses_to_aubit_int (int a)
    if (keycode_end==-1) {
 	   	keycode_end=atoi(acl_getenv("KEYCODE_END"));
    }
+   if (keycode_shome==-1) {
+	   	keycode_shome=atoi(acl_getenv("KEYCODE_SHOME"));
+   }
+
+   if (keycode_send==-1) {
+	   	keycode_send=atoi(acl_getenv("KEYCODE_SEND"));
+   }
 
    if (keycode_home==0||keycode_home==-1) {
 	   	keycode_home=KEY_HOME;
    }
+
    if (keycode_end==0||keycode_end==-1) {
 	   	keycode_end=KEY_END;
+   }
+
+   if (keycode_shome==0||keycode_shome==-1) {
+	   	keycode_shome=KEY_SHOME;
+   }
+
+   if (keycode_send==0||keycode_send==-1) {
+	   	keycode_send=KEY_SEND;
    }
 	
   if (a == keycode_home) return A4GLKEY_HOME;
   if (a == keycode_end) return A4GLKEY_END;
+  if (a == keycode_shome) return A4GLKEY_SHOME;
+  if (a == keycode_send) return A4GLKEY_SEND;
 
 A4GL_debug("curses -> aubit a=%d %x\n",a,a);
   for (b = 0; b < 64; b++)

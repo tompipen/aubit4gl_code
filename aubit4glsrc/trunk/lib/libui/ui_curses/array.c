@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.60 2008-11-28 22:06:41 mikeaubury Exp $
+# $Id: array.c,v 1.61 2009-03-10 11:14:11 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.60 2008-11-28 22:06:41 mikeaubury Exp $";
+		"$Id: array.c,v 1.61 2009-03-10 11:14:11 mikeaubury Exp $";
 #endif
 
 
@@ -511,6 +511,26 @@ draw_arr (arr, -1, arr->arr_line);
 	if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
 	break;
 
+     case 0-A4GLKEY_SEND:
+        arr->last_arr = arr->arr_line;
+	arr->arr_line=arr->no_arr;
+	arr->scr_line = arr->srec->dim;
+        while (arr->arr_line<arr->scr_line) arr->scr_line--;
+ 	redisplay_arr (arr, 2);
+        A4GL_set_arr_curr (arr->arr_line);
+        A4GL_set_scr_line (arr->scr_line);
+	if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
+	break;
+
+     case 0-A4GLKEY_SHOME:
+        arr->last_arr = arr->arr_line;
+	arr->arr_line=1;
+	arr->scr_line = 1;
+ 	redisplay_arr (arr, 2);
+        A4GL_set_arr_curr (arr->arr_line);
+        A4GL_set_scr_line (arr->scr_line);
+	if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
+	break;
 
 
     case A4GLKEY_PGDN :
@@ -523,6 +543,16 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
 } else {
 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
         }
+	break;
+
+    case A4GLKEY_SEND : /* shift+end */
+	  arr->cntrl=0-A4GLKEY_SEND;
+	  if (A4GL_has_event(A4GL_EVENT_AFT_ROW,evt)) return A4GL_has_event(A4GL_EVENT_AFT_ROW,evt);
+	break;
+
+    case A4GLKEY_SHOME : /* shift+home */
+	  arr->cntrl=0-A4GLKEY_SHOME;
+	  if (A4GL_has_event(A4GL_EVENT_AFT_ROW,evt)) return A4GL_has_event(A4GL_EVENT_AFT_ROW,evt);
 	break;
 
 
