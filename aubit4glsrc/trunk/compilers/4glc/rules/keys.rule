@@ -58,6 +58,7 @@ key_value_1 : 	KW_FKEY
         |       KW_HELP {strcpy($<str>$,"help");}
         |       KWDOWN {strcpy($<str>$,"down");}
         |       KW_RETURN {strcpy($<str>$,"return");}
+        |       KW_ENTER {strcpy($<str>$,"return");}  /* Synonym for RETURN */
         |       KW_DELETE {strcpy($<str>$,"delete");}
         |       KW_INSERT {strcpy($<str>$,"insert");}
         |       KW_TAB {strcpy($<str>$,"tab");}
