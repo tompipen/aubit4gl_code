@@ -1,0 +1,54 @@
+//--------------------------------------------------------- (C) VENTAS AG 2009 -
+// Project      : VENTAS Desktop Client for A4gl
+// Filename     : dialog.h
+// Description  : contains class definition for the RingMenu
+//------------------------------------------------------------------------------
+//
+// This file may be used under the terms of the GNU General Public
+// License version 2.0 as published by the Free Software Foundation
+// (http://www.gnu.org/licenses/gpl-2.0.html)
+//
+// This file is provided AS IT IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+// WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+// If you need professional Support please contact us at www.ventas.de
+// Enjoy using it!
+//
+//------------------------------------------------------------------------------
+#ifndef DIALOG_H
+#define DIALOG_H
+
+#include <QDialog>
+#include <QLayout>
+#include <QButtonGroup>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+
+class Dialog : public QDialog
+{
+   Q_OBJECT
+
+public:
+   Dialog(QString, QString, QString, QString, QWidget* parent = 0, Qt::WindowFlags f=0);
+   Dialog(QWidget* parent = 0, Qt::WindowFlags f=0);
+   
+   void createButton(int id = 0, QString text = "", QString desc = "");
+   void createAction(int id = 0, QString text = "");
+   void hideButton(int);
+   void hideButton(QString);
+   void showButton(QString);
+
+private:
+   QLayout* layout;
+   QLayout* buttonLayout;
+   QButtonGroup *buttonGroup;
+
+protected:
+   void keyPressEvent(QKeyEvent *event);
+
+signals:
+   void dialogButtonPressed(QString);
+
+private slots:
+   void buttonClicked(int);
+};
+#endif
