@@ -62,7 +62,7 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 
    QLabel *p_label    = new QLabel(comment);
    QLabel *p_pixLabel = new QLabel();
-   QString filename   = "./pics/";
+   QString filename   = "pics:";
 
    filename.append(image);
    filename.append(".png");

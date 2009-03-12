@@ -442,7 +442,7 @@ Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
    QString shift  = labelElement.attribute("shift");
    QString action = labelElement.attribute("action");
    QString image  = labelElement.attribute("image");
-   image.prepend("pics/");
+   image.prepend("pics:");
 
    Label *label = new Label(parent);
    label->setAccessibleName(name);
@@ -558,7 +558,7 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
    QString shift  = lineEditElement.attribute("shift");
    QString action = lineEditElement.attribute("action");
    QString image  = lineEditElement.attribute("image");
-   image.prepend("pics/");
+   image.prepend("pics:");
 
    bool autoNext = lineEditElement.attribute("autoNext").toInt();
    bool noEntry  = formField.attribute("noEntry").toInt();

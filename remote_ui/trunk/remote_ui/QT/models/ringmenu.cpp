@@ -95,7 +95,7 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
    button->installEventFilter(this);
    button->setShortcut(shortcut);
    button->setToolTip(tooltip);
-   QIcon icon(QString("pics/%0").arg(pic));
+   QIcon icon(QString("pics:%0").arg(pic));
    button->setIcon(icon);
    button->setIconSize(QSize(15,15));
 
