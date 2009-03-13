@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.230 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.231 2009-03-13 15:40:01 mikeaubury Exp $
 #
 */
 
@@ -181,7 +181,7 @@ static char dectoasc_decsep=0;
 static int error_just_in_case (void);
 static int processPreStatementBinds (struct s_sid *sid);
 
-static void freeStatement(struct s_sid *sid) ;
+//static void freeStatement(struct s_sid *sid) ;
 
 EXEC SQL include sqlca;
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.230 2009-02-23 17:31:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.231 2009-03-13 15:40:01 mikeaubury Exp $";
 #endif
 
 
@@ -772,7 +772,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
 
   if (dsn == NULL)
     {
-      A4GL_exitwith ("Database name not seted");
+      A4GL_exitwith ("Database name not set");
       return 1;
     }
 
@@ -960,8 +960,8 @@ A4GLSQLLIB_A4GLSQL_get_currdbname (void)
 }
 
 
-static void freeStatement(struct s_sid *sid) {
-}
+//static void freeStatement(struct s_sid *sid) {
+//}
 
 /**
  * Create an sql statement structure.

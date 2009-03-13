@@ -6,6 +6,7 @@ REPLACE_SQLCONST Replace SQL Constant (USER, TRUE, FALSE,TODAY, ROWID, TIME)
 REPLACE_SQLFUNC Replace a call to an SQL function with a different function
 DOUBLE_TO_SINGLE_QUOTES  Change double quotes (") to single quotes (') around literal strings
 TRIMSQLLIKEVAL Trims the test operand on a LIKE (so that trailing spaces wont affect the result)
+RTRIMSQLLIKEVAL Trims the test operand on a LIKE (so that trailing spaces wont affect the result)
 MATCHES_VAR_FUNC Name a function which will do a runtime transform of a MATCHES string
 MATCHES_TO_LIKE     Change Informix_style 'matches' clause to one using 'like', and change * and ? to % and _ respectively.
 MATCHES_TO_REGEX Similar to 'matches-to-like' but uses the Postgres style regular expression syntax

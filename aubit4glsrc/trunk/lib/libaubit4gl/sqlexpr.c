@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.78 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.79 2009-03-13 15:40:01 mikeaubury Exp $
 #
 */
 
@@ -688,6 +688,13 @@ like_trim (char *s)
     {
       static char buff[20000];
       SPRINTF1 (buff, "TRIM(%s)", s);
+      return buff;
+    }
+
+  if (A4GLSQLCV_check_requirement ("RTRIMSQLLIKEVAL"))
+    {
+      static char buff[20000];
+      SPRINTF1 (buff, "RTRIM(%s)", s);
       return buff;
     }
   return s;

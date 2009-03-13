@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.87 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: pg8.c,v 1.88 2009-03-13 15:40:01 mikeaubury Exp $
 #*/
 
 
@@ -59,8 +59,15 @@ char unloadBuffer[BUFSIZ];
 int sqlcode;
 static void fixtype (char *ptr, int *d, int *s,char *defaultval);
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
+
+static char currentConName[200]="default";
+PGconn *current_con=NULL;
+
+
+
 static void defaultNoticeProcessor (void *arg, const char *message);
 static void SetErrno (PGresult * res);
+static int loaded=0;
 //char *A4GL_getTimecode (void);
 
 /*
@@ -160,7 +167,6 @@ struct s_typelist *types=0;
 static int charcpy (unsigned char *target, unsigned char *source, long len,char delim);
 static void ensure_types(void) ;
 static void clr_types(void) ;
-PGconn *current_con=0;
 PGresult *resGC = 0;
 char *pghost = "";
 char *pgport = NULL;
@@ -316,6 +322,53 @@ return s;
 
 
 
+
+static PGconn *local_PQsetdbLogin(const char *pghost, const char *pgport,
+                         const char *pgoptions, const char *pgtty,
+                         const char *inDbName,
+                         const char *login, const char *pwd) {
+
+char tmpDb[2000];
+const char *dbName;
+
+dbName=inDbName;
+
+if (pgport) { if (strlen(pgport)==0) { pgport=NULL; } }
+if (pghost) { if (strlen(pghost)==0) { pghost=NULL; } }
+
+      if (strlen (dbName) )
+	{
+	  strcpy (tmpDb, (char *)dbName);
+	  dbName = tmpDb;
+
+	  if (strchr (dbName, ':'))
+	    {
+	      char *ptr;
+	      ptr = strchr (dbName, ':');
+	      *ptr = 0;
+	      ptr++;
+	      pgport = ptr;
+	    }
+
+	  if (strchr (dbName, '@'))
+	    {
+	      char *ptr;
+	      ptr = strchr (dbName, '@');
+	      *ptr = 0;
+		ptr++;
+		pghost=ptr;
+	    }
+	}
+
+
+A4GL_debug("Connecting %s %s %s %s %s %s %s", pghost, pgport,pgoptions,pgtty, dbName,login,pwd);
+
+return PQsetdbLogin( pghost, pgport,pgoptions,pgtty, dbName,login,pwd);
+
+}
+
+
+
 /**
  *
  * @todo Describe function
@@ -332,7 +385,6 @@ char *u = NULL;
 char *p = NULL;
     char uname_acl[256];
     char passwd_acl[256];
-static int loaded=0;
       PGresult *res = 0;
 char versionBuff[200];
 char *ptr;
@@ -450,7 +502,7 @@ char *ptr;
 
   A4GL_set_connection_username(u);
 
-  current_con = PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, u,p);
+  current_con = local_PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dbName, u,p);
   if (current_con == NULL)
     {
 
@@ -551,19 +603,112 @@ char *ptr;
 	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
   }
 
+strcpy(currentConName, "default");
   A4GL_add_pointer ("default", SESSCODE, current_con);
   return 0;
 }
 
+/**
+ *  * Init a new connection to the database and associate with an explicit
+ *   * session name.
+ *    *
+ *     * If the user identification was not set gets the values fromthe environment.
+ *      *
+ *       * @param sessname The name to be tied to the session. This is the name of
+ *        *   the connection
+ *         * @param dsn The database name.
+ *          * @param usr The user name to establish the connection.
+ *           * @param pwd The password of the user to set the connection.
+ *            */
+int
+A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
+{
+char *u;
+char *p;
+    char uname_acl[256];
+    char passwd_acl[256];
+  A4GL_debug("sessname=%s dsn=%s usr=%s pwd=%s", sessname,dsn,usr,pwd);
+
+  clr_types();
+
+  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+
+    if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl))
+    {
+        A4GL_dbg ("Found in ACL File...");
+        u = 0;
+        p = 0;
+        u = acl_getenv_only ("A4GL_SQLUID");
+        p = acl_getenv_only ("A4GL_SQLPWD");
+        if (u && strlen (u) == 0) u = NULL;
+        if (p && strlen (p) == 0) p = NULL;
+        if (!u || !p)
+        {
+            u = uname_acl;
+            p = passwd_acl;
+        }
+    } else {
+        u = acl_getenv_only ("A4GL_SQLUID");
+        p = acl_getenv_only ("A4GL_SQLPWD");
+        if (u && strlen (u) == 0) u = NULL;
+        if (p && strlen (p) == 0) p = NULL;
+    }
+
+  if (usr && strlen(usr)) { u=usr; }
+  if (pwd && strlen(pwd)) { p=pwd; }
 
 
+  current_con = local_PQsetdbLogin (pghost, pgport, pgoptions, pgtty, dsn, u,p);
 
+  if (current_con == NULL)
+    {
+
+      A4GL_set_errm (dsn);
+      A4GL_exitwith_sql ("Could not connect to database");
+      return 1;
+    }
+  A4GL_set_connection_username(u);
+
+  strcpy(currentConName, sessname);
+  A4GL_add_pointer (sessname, SESSCODE, current_con);
+
+  if (!loaded) {
+	loaded++;
+	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
+  }
+
+return 0; /* OK */
+}
+
+
+char *
+A4GLSQLLIB_A4GLSQL_get_curr_conn (void)
+{
+A4GL_debug("currentConName=%s",currentConName);
+  return currentConName ;
+}
+
+int A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname) {
+  PGconn *con=0;
+A4GL_debug("Set conn %s", sessname);
+  con = (PGconn *) A4GL_find_pointer (sessname, SESSCODE);
+
+  if (con) {	
+	current_con=con;
+  	strcpy(currentConName, sessname);
+	A4GL_debug("Found it - used it..");
+	return 0;
+  }
+A4GL_debug("Not found");
+return 1;
+}
 
 
 int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   PGconn *con=0;
+A4GL_debug("Close session %s", sessname);
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
   con = (PGconn *) A4GL_find_pointer (sessname, SESSCODE);
 

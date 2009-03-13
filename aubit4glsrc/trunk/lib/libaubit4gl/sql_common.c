@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.73 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: sql_common.c,v 1.74 2009-03-13 15:40:01 mikeaubury Exp $
 #
 */
 
@@ -385,7 +385,7 @@ A4GL_global_A4GLSQL_set_sqlcode (int n)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
+A4GL_init_session (char *dsn, char *sessname,  char *usr, char *pwd)
 {
   int rc;
   rc = A4GLSQL_init_session_internal (sessname, dsn, usr, pwd);
