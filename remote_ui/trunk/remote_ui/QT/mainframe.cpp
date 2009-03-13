@@ -531,5 +531,6 @@ void MainFrame::closeEvent(QCloseEvent *event)
       if(quit == 0){
          cleanUp();
          event->accept();
+         close();
       }
 }

@@ -166,7 +166,6 @@ signals:
 private slots:
    void readClient();
    void makeOwnResponse(QString);
-
 };
 
 
@@ -187,6 +186,7 @@ class ClientTcp : public QTcpServer
       public slots:
          void newSocket();
       //   void makeNewConnection();
+        void socketDisconnected();
 
       void clientReturn(QString);
       void replyWith(QString);

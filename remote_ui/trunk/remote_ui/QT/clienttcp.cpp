@@ -54,6 +54,16 @@ ClientTcp::ClientTcp(QObject *parent)
 ClientTcp::~ClientTcp(){
 }
 
+//------------------------------------------------------------------------------
+// Method       : ~ClientTcp()
+// Filename     : tcpclient.cpp
+// Description  : destructor for the instances
+//------------------------------------------------------------------------------
+
+void ClientTcp::socketDisconnected(){
+   socket = NULL;
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : incomingConnection()
@@ -78,6 +88,8 @@ void ClientTcp::incomingConnection(int socketID)
    //
    connect(socket, SIGNAL(makeResponse(QString)), 
            this, SLOT(clientReturn(QString)));
+
+   connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
 // ---------------------------------------------------
 
