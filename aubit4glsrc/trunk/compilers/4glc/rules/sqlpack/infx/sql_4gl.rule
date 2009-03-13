@@ -318,6 +318,8 @@ select_cmd :
 
 dbase_name      :       identifier {strcpy($<str>$,$<str>1);}
                 |       identifier ATSIGN identifier {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
+                |       identifier ATSIGN identifier COLON identifier {SPRINTF3($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);}
+                |       identifier ATSIGN identifier COLON INT_VALUE {SPRINTF3($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);}
                 |       CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
 ;
 

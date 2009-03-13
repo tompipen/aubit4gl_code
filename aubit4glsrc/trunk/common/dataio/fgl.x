@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.32 2009-02-26 12:31:59 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.33 2009-03-13 17:13:51 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -211,11 +211,11 @@ struct attrib {
 	enum e_boolean invisible;
 	enum e_boolean underline;
 	enum e_boolean normal;
-	str style;
+	struct expr_str *style_expr;
 	struct expr_str *variable_str;
 
 /* INPUT/DISPLAY Array.... */
-	str currentrowdisplay;
+	struct expr_str *currentrowdisplayexpr;
 	struct expr_str *count;
 	struct expr_str *maxcount;
 	enum e_boolean allow_insert;

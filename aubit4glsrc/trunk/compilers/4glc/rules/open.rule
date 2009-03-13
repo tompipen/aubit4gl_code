@@ -74,7 +74,7 @@ op_absolute: {$<e_boolean>$=0;}
 	| KW_ABSOLUTE {$<e_boolean>$=1;}
 ;
 
-open_session_cmd : OPEN_SESSION conn_id_p TO_DATABASE var_ident_vl user_details {
+open_session_cmd : OPEN_SESSION conn_id_p TO_DATABASE var_ident_qchar_e user_details {
 				add_feature("OPEN_SESSION");
 				if ($<user_details>5) {
 					$<cmd>$=new_connect_cmd($<ptr>2,$<ptr>4,$<user_details>5->username, $<user_details>5->password);

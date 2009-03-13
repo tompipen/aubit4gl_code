@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.29 2009-02-11 13:17:19 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.30 2009-03-13 17:13:51 mikeaubury Exp $
 #
 */
 
@@ -72,7 +72,7 @@ extern void A4GL_build_user_resources (void);
 extern void A4GL_exitwith (void);
 extern void A4GL_dump_all_resource_vars (int export);
 extern char *acl_getenv (char *s);
-
+char *A4GL_acl_getenv_setfrom(void);
 void A4GL_trim_nl (char *p);
 void A4GL_debug_full (char *fmt, ...);
 void A4GL_debug_full_extended (char *fmt, ...);
@@ -93,12 +93,7 @@ void A4GL_pause_execution(void );
 =====================================================================
 */
 
-int
-main (int argc, char *argv[])
-{
-
-  if (argc != 2)
-    {
+static void usage(void) {
       PRINTF ("\n");
       PRINTF ("Usage:\n");
       PRINTF ("     aubit-config [VARIABLE_NAME | -a]\n");
@@ -106,25 +101,47 @@ main (int argc, char *argv[])
       PRINTF ("        -ae: show all set variables as 'export VARIABLE=\n");
       PRINTF ("\n");
       exit (1);
-    }
+}
+
+int
+main (int argc, char *argv[])
+{
+int debug=0;
+int c=1;
+
+
 
 //      DEBUG_CFG = acl_getenv ("DEBUG_CFG");
 
   /* load settings from config file(s): */
   A4GL_build_user_resources ();
+  if (strcmp(argv[1],"-verbose") ==0) {
+		c++;
+		debug=1;
+  }
 
-  if (strcmp (argv[1], "-a") == 0)
+
+  if (argc != c+1) {
+	usage();
+    }
+
+  if (strcmp (argv[c], "-a") == 0)
     {
       A4GL_dump_all_resource_vars (0);
       exit (0);
     }
-  if (strcmp (argv[1], "-ae") == 0)
+
+  if (strcmp (argv[c], "-ae") == 0)
     {
       A4GL_dump_all_resource_vars (1);
       exit (0);
     }
 
-  PRINTF ("%s\n", acl_getenv (argv[1]));
+  PRINTF ("%s\n", acl_getenv (argv[c]));
+  if (debug) {
+		printf("Set from : %s\n", A4GL_acl_getenv_setfrom());
+		
+  }
 
   exit (0);
 }

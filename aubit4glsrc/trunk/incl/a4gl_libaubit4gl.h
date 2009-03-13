@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.373 2009-02-26 19:03:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.374 2009-03-13 17:13:51 mikeaubury Exp $
 #
 */
 
@@ -265,6 +265,8 @@
 #define A4GLKEY_DL 		0xff0d
 #define A4GLKEY_BACKSPACE 	0xff0e
 #define A4GLKEY_SHTAB 		0xff0f
+#define A4GLKEY_SHOME 		0xff10
+#define A4GLKEY_SEND		0xff11
 
 #define A4GLKEY_EVENT  		2017
 #define A4GLKEY_SYNC  		2018
@@ -1491,6 +1493,7 @@ void A4GL_push_decimal_str(char *p);
   {
     char name[80];
     char value[1024];		/*must be long enough to hold GTK include paths */
+    char *source;
   };
 
   char *A4GL_find_str_resource_int (char *search, int a);
@@ -2873,8 +2876,9 @@ void
 A4GL_str_dot_to_dec (char *s, fgldecimal * d);
 int A4GL_check_event_list_for_special_key(struct aclfgl_event_list *evt, int last_key_code);
 void A4GL_split_config (char *str);
-void *
-A4GL_find_param (char *name);
+void * A4GL_find_param (char *name);
+char *A4GL_acl_getenv_setfrom(void);
+
 
 
 #include "a4gl_builtin_funcs.h"

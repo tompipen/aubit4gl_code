@@ -259,6 +259,16 @@ var_ident_qchar_e :
 		SPRINTF2(buff,"%s@%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3);
                 $<ptr>$=A4GL_new_literal_string(buff);
 	}
+        | variable_usage_expression ATSIGN identifier COLON identifier{
+                char buff[300];
+                sprintf(buff,"%s@%s:%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3,$<str>5);
+                $<ptr>$=A4GL_new_literal_string(buff);
+        }
+        | variable_usage_expression ATSIGN identifier COLON INT_VALUE {
+                char buff[300];
+                sprintf(buff,"%s@%s:%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3,$<str>5);
+                $<ptr>$=A4GL_new_literal_string(buff);
+        }
         | CHAR_VALUE  {
                 $<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
         }

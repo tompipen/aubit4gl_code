@@ -448,8 +448,8 @@ void clr_attrib(struct attrib *attr ) {
         attr->invisible=EB_NOTSET;
         attr->underline=EB_NOTSET;
         attr->normal=EB_NOTSET;
-        attr->style="";
-        attr->currentrowdisplay="";
+        attr->style_expr=NULL;
+        attr->currentrowdisplayexpr=NULL;
         attr->count=0;
         attr->maxcount=0;
         attr->allow_insert=EB_NOTSET;

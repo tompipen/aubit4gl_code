@@ -1245,13 +1245,20 @@ print_open_window_cmd (struct_open_window_cmd * cmd_data)
   print_cmd_start ();
   printc("{");
   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
-	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
+  printc("char *_style=NULL;");
+
+  if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
 		printc("char *_s;");
 		print_expr(cmd_data->attributes->var_attrib);
 		printc("_s=A4GL_char_pop();");
 		printc("_attr=A4GL_strattr_to_num(_s);");
 		printc("free(_s);");
-	}
+  }
+
+  if (cmd_data->attributes  && cmd_data->attributes->style_expr) {
+		print_expr(cmd_data->attributes->style_expr);
+		printc("_style=A4GL_char_pop();");
+  }
   set_nonewlines ();
 
   if (cmd_data->wt.wintype == EWT_ROWSCOLS)
@@ -1278,14 +1285,15 @@ print_open_window_cmd (struct_open_window_cmd * cmd_data)
 
   print_form_attrib_v2 (1, cmd_data->attributes);
 
-  if (cmd_data->attributes && cmd_data->attributes->style && strlen(cmd_data->attributes->style))
+  if (cmd_data->attributes && cmd_data->attributes->style_expr )
     {
-      printc (",%s /* STYLE */", cmd_data->attributes->style);
+      printc (",_style /* STYLE */");
     }
   else
     {
-      printc (",0 /* STYLE */");
+      printc (",NULL /* STYLE */");
     }
+
   if (cmd_data->attributes && cmd_data->attributes->text && strlen(cmd_data->attributes->text))
     {
       printc (",%s /* TEXT */", cmd_data->attributes->text);
@@ -1295,8 +1303,11 @@ print_open_window_cmd (struct_open_window_cmd * cmd_data)
       printc (",0 /* TEXT */");
     }
   printc (");\n");
-
   clr_nonewlines ();
+  if (cmd_data->attributes && cmd_data->attributes->style_expr ) {
+  printc("if (_style) {free(_style);}");
+	}
+
   printc("}");
   print_copy_status_not_sql (0);
   return 1;
@@ -2108,6 +2119,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
   printc ("{");
 	tmp_ccnt++;
   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes)); 
+  printc("char _currAttr[256];");
   printc ("int _fld_dr; int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%ld];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id, a4gl_sizeof (struct s_disp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);
 
@@ -2218,10 +2230,15 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
   printc ("SET(\"s_disp_arr\",_sio_%d,\"start_slice\",%d);\n",sio_id,cmd_data->slice_start);
   printc ("SET(\"s_disp_arr\",_sio_%d,\"end_slice\",%d);\n",sio_id,cmd_data->slice_end);
 
-   if (cmd_data->attributes && cmd_data->attributes->currentrowdisplay && strlen(cmd_data->attributes->currentrowdisplay))
-    printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",%s);\n",sio_id, cmd_data->attributes->currentrowdisplay);
-  else
+   if (cmd_data->attributes && cmd_data->attributes->currentrowdisplayexpr) {
+		print_expr( cmd_data->attributes->currentrowdisplayexpr);
+		printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
+    		printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",_currAttr);\n",sio_id);
+   }
+  else 
+   {
     printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id);
+   }
   
 
   set_nonewlines();
@@ -2558,6 +2575,7 @@ int inp_flags=0;
   printc ("{");
   tmp_ccnt++;
   printc("int _attr=%d;",  attributes_as_int(cmd_data->attributes));
+  printc("char _currAttr[256];");
   printc("void *_fldlist=NULL; /* We dont use this for Input Array - but it may be required for get_fldbuf */");
   printc("int _fld_dr= -100;int _exec_block= 0;\nchar *_fldname;char *_curr_win; \nint _forminit=1;int _tmp_int=0;");
   printc ("char _sio_%d[%ld];char _inp_io_type='A';char *_sio_kw_%d=\"s_inp_arr\";\n",sio_id, a4gl_sizeof (struct s_inp_arr) + 10,sio_id);
@@ -2705,10 +2723,14 @@ clr_nonewlines();
 		printc("}");
 	}
 
-   if (cmd_data->attributes && cmd_data->attributes->currentrowdisplay && strlen(cmd_data->attributes->currentrowdisplay))
-    printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",%s);\n",sio_id, cmd_data->attributes->currentrowdisplay);
-  else
+   if (cmd_data->attributes && cmd_data->attributes->currentrowdisplayexpr) {
+		print_expr( cmd_data->attributes->currentrowdisplayexpr);
+		printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
+    		printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",_currAttr);\n",sio_id);
+	}
+  else {
     printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id);
+   }
 
 
 
@@ -2812,7 +2834,6 @@ int
 print_prompt_cmd (struct_prompt_cmd * cmd_data)
 {
   int timeout = 0;
-char *style;
 char *text;
   //struct expr_str_list*prompt_str;
   //struct attrib *prompt_str_attrib;
@@ -2831,8 +2852,9 @@ char *text;
   print_cmd_start ();
   printc ("{");
   tmp_ccnt++;
-	printc("int _attr_prompt=%d;", attributes_as_int (cmd_data->prompt_str_attrib));
-	printc("int _attr_field=%d;", attributes_as_int (cmd_data->prompt_fld_attrib));
+  printc("int _attr_prompt=%d;", attributes_as_int (cmd_data->prompt_str_attrib));
+  printc("int _attr_field=%d;", attributes_as_int (cmd_data->prompt_fld_attrib));
+  printc("char _style[256]=\"\";");
   printc("char _sio_%d[%ld];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n", cmd_data->sio, a4gl_sizeof (struct s_prompt), cmd_data->sio, timeout);
   print_event_list (cmd_data->events);
   A4GL_print_expr_list_concat (cmd_data->prompt_str);
@@ -2855,18 +2877,21 @@ char *text;
 		printc("free(_s);");
 		printc("}");
 	}
+
+
 if (cmd_data->prompt_fld_attrib) {
 	text=cmd_data->prompt_fld_attrib->text;
 	if (strlen(text)==0) text="\"\"";
-
-	style=cmd_data->prompt_fld_attrib->style;
-	if (strlen(style)==0) style="\"\"";
 	
+	if (cmd_data->prompt_fld_attrib->style_expr) {
+			print_expr(cmd_data->prompt_fld_attrib->style_expr);
+			printc("A4GL_pop_var2(&_style,0,255);A4GL_trim(_style);");
+ 	}
 } else {
 	text="\"\"";
-	style="\"\"";
 }
-  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field,%s,%s)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno, text,style);
+
+  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field,%s,_style)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno, text);
   tmp_ccnt++;
   printc ("while (1) {");
   tmp_ccnt++;

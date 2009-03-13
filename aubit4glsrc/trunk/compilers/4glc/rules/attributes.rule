@@ -38,7 +38,7 @@ attribute	: BLACK     			{curr_attrib.color=attr_code("BLACK");}
 		| INVISIBLE  			{curr_attrib.invisible=EB_TRUE;}
 		| DIM        			{curr_attrib.dim=EB_TRUE;}
               	| NO_NEW_LINES 			{curr_attrib.no_new_lines=EB_TRUE;}
-		| KW_STYLE EQUAL CHAR_VALUE 	{curr_attrib.style=strdup($<str>3); }
+		| KW_STYLE EQUAL fgl_expr_c 	{curr_attrib.style_expr=$<ptr>3; }
 		| char_or_var_vl 		{curr_attrib.var_attrib=$<ptr>1; }
 		| input_array_attributes 
 	;
