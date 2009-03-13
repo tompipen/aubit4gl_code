@@ -1495,12 +1495,12 @@ void ScreenHandler::waitForEvent()
       }
    }
 
+   checkFields();
    p_fglform->raise();
 
    p_fglform->checkState();
    p_fglform->b_getch_swin = true;
    processResponse();
-
 }
 
 //------------------------------------------------------------------------------
@@ -2156,30 +2156,26 @@ void ScreenHandler::setSearchPaths()
    if(qh_env["DBPATH"].isEmpty()) return;
    QString fullDBPath = qh_env["DBPATH"];
 
-   // As we dont know what OS the Server is running
-   // we also dont know what separator is used - UNIX => ; WINDOWS => :
-   // so lets try to find out
+//set the separator depending on the OS
 
-   int s = fullDBPath.count(";");
-   int c = fullDBPath.count(":");
+QChar sep;
+bool windows = false;
+#ifdef __WIN32__
+sep = QChar(';');
+windows = true;
+#else
+sep = QChar(':');
+#endif
 
-   // we got semicolons
-   if(s > 0 && c <= 0){
-      dbPaths = qh_env["DBPATH"].split(";"); //UNIX
+   int s = fullDBPath.count(sep);
+
+   if(s > 0 ){
+      dbPaths = qh_env["DBPATH"].split(sep);
    }
-   // we got colons
-   else if(s <= 0 && c > 0){
-      dbPaths = qh_env["DBPATH"].split(":"); //WINDOWS
-   } 
-   // we got a clean search path
-   else if(s <= 0 && c <= 0){
-      dbPaths << fullDBPath;
-   }
-   //we got a problem! :(
    else{
-      return;
+      // we assume theres only one Path in there
+      dbPaths << qh_env["DBPATH"];
    }
-
 
    for(int i=0; i<dbPaths.size(); i++){
       //Add Search Path for Pics
@@ -2194,5 +2190,21 @@ void ScreenHandler::setSearchPaths()
       if(!searchPaths.contains(imgPath)){
          QDir::addSearchPath("pics", imgPath);
       }
+   }
+}
+
+void ScreenHandler::checkFields()
+{
+   if(p_fglform == NULL)
+      return;
+
+   bool enable = (p_fglform->state() != Fgl::CONSTRUCT);
+
+   QList<QWidget*> ql_fields = p_fglform->formElements();
+   for(int i=0; i<ql_fields.size(); i++){
+      QWidget *widget = ql_fields.at(i);
+
+      //switch(widget->sqlType()){
+      //}
    }
 }
