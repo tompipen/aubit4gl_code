@@ -1219,6 +1219,7 @@ const
    // the input has to be upshift in any case 
    // 
    input = input.toUpper(); 
+   return QValidator::Acceptable;
 } 
  
  
@@ -1228,4 +1229,5 @@ const
    // the input has to be downshift in any case 
    // 
    input = input.toLower(); 
+   return QValidator::Acceptable;
 } 
