@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.30 2009-03-13 17:13:51 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.31 2009-03-14 14:30:58 mikeaubury Exp $
 #
 */
 
@@ -115,14 +115,17 @@ int c=1;
 
   /* load settings from config file(s): */
   A4GL_build_user_resources ();
+  if (argc>1) {
   if (strcmp(argv[1],"-verbose") ==0) {
 		c++;
 		debug=1;
+  }
   }
 
 
   if (argc != c+1) {
 	usage();
+	exit(20);
     }
 
   if (strcmp (argv[c], "-a") == 0)
@@ -137,10 +140,24 @@ int c=1;
       exit (0);
     }
 
-  PRINTF ("%s\n", acl_getenv (argv[c]));
   if (debug) {
-		printf("Set from : %s\n", A4GL_acl_getenv_setfrom());
+	char *r;
+	r=acl_getenv(argv[c]);
+  		PRINTF ("'%s'\n", r);
+		PRINTF("Set from : %s\n", A4GL_acl_getenv_setfrom());
+		if (strchr(r,'\r')) {	
+			printf("WARNING : contains a carriage return\n");
+		}
+		if (strchr(r,'\n')) {	
+			printf("WARNING : contains a newline\n");
+		}
 		
+  } else {
+#ifdef WIN32
+  	PRINTF ("%s", acl_getenv (argv[c]));
+#else
+  	PRINTF ("%s\n", acl_getenv (argv[c]));
+#endif
   }
 
   exit (0);
