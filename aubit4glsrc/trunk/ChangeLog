@@ -1,4 +1,28 @@
 ---------------------------
+Sat Mar 14 09:24:15 GMT 2009
+---------------------------
+1.10RC_52 Released
+---------------------------
+	
+	Add expressions for current row attributes + styles.  Add a verbose
+	mode for aubit-config (aubit-config -verbose)  to indicate where
+	the setting was read from
+	
+	Add 'ENTER' as a synonym for the key 'RETURN'
+	
+	Shift-HOME, Shift-END for HL_...
+	
+	Add Shift+END and Shift+HOME to input array/display array
+	
+	INSERT ROW=, DELETE ROW= fixups
+	
+	1260: truncate datetime when assigned to char
+	
+	Replace GTK_MESSAGE_NONE - not always defined
+	
+	Use stock buttons where available in winquestion
+	
+---------------------------
 Sat Feb 28 17:29:37 GMT 2009
 ---------------------------
 1.10RC_51 Released
