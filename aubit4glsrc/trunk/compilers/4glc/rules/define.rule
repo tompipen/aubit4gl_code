@@ -52,8 +52,6 @@ define_ident :
 		   strcpy($<str>$,$<str>2);
                    set_yytext($<str>$);
 
-		   A4GL_check_and_conv_indent($<str>$);
-
                    if (A4GL_bad_identifiers($<str>$)) {
                             a4gl_yyerror("You can't use this identifier as it is a reserved word in the target language");
 				YYERROR;

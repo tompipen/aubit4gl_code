@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.4 2009-02-23 17:31:48 mikeaubury Exp $
+# $Id: variables_new.c,v 1.5 2009-03-16 12:34:52 mikeaubury Exp $
 #
 */
 
@@ -549,8 +549,15 @@ struct variable *new_variable_like(char *tabcol) {
 void set_variable_name(struct variable *v, char *name) {
 
 	if (v->names.names.names_len==0) {
+		char *mapped_name;
                	v->names.names.names_len=1;
                	v->names.names.names_val=malloc(sizeof(vname));
+
+		/* Do we need to remap a variable name (maybe its a common builtin name */
+		mapped_name=remap_top_level_variables(name);
+		if (mapped_name) {
+				name=mapped_name;
+		}
                	v->names.names.names_val[0].name=strdup(name);
                	v->names.names.names_val[0].alias="";
 	}  else {

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.106 2009-03-16 12:34:52 mikeaubury Exp $
+# $Id: variables.c,v 1.107 2009-03-16 12:38:08 mikeaubury Exp $
 #
 */
 
@@ -697,9 +697,6 @@ get_last_class_var (void)
 
 
 
-void A4GL_check_and_conv_indent(char *s) {
-///
-}
 
  char *remap_top_level_variables(char *invarname) {
 	if (strcmp(invarname,"index")==0) {

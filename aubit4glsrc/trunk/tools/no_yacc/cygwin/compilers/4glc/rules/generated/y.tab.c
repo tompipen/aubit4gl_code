@@ -12997,11 +12997,11 @@ yyreduce:
     { in_define=0;
 		   strcpy((yyval.str),(yyvsp[(2) - (2)].str));
                    set_yytext((yyval.str));
+
                    if (A4GL_bad_identifiers((yyval.str))) {
                             a4gl_yyerror("You can't use this identifier as it is a reserved word in the target language");
 				YYERROR;
                    }
-		   
 		}
     break;
 
