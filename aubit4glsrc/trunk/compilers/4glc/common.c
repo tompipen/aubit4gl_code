@@ -703,10 +703,7 @@ find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable *
       return 0;
     }
 
-
-
   var_section = vu->variable_name;
-
   if (!A4GL_isno (acl_getenv ("VARSRCHOPTIMISE")))
     {
       if (level == 0)
