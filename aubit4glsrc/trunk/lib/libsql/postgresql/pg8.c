@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.88 2009-03-13 15:40:01 mikeaubury Exp $
+# $Id: pg8.c,v 1.89 2009-03-16 15:11:07 mikeaubury Exp $
 #*/
 
 
@@ -468,6 +468,10 @@ char *ptr;
 
     if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl))
     {
+	/* 
+         * Here we only want to overwrite the Username and password
+ 	 * if its explicitly set in the environment 
+ 	 **/
         A4GL_dbg ("Found in ACL File...");
         u = 0;
         p = 0;
@@ -481,8 +485,11 @@ char *ptr;
             p = passwd_acl;
         }
     } else {
-        u = acl_getenv_only ("A4GL_SQLUID");
-        p = acl_getenv_only ("A4GL_SQLPWD");
+	/* Here - we've not found any ACLFILE - so we can look using the normal rules
+ 	 * in either the environment or aubitrc files
+ 	 */
+        u = acl_getenv ("A4GL_SQLUID");
+        p = acl_getenv ("A4GL_SQLPWD");
         if (u && strlen (u) == 0) u = NULL;
         if (p && strlen (p) == 0) p = NULL;
     }
