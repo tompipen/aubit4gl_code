@@ -28,7 +28,7 @@ arr_expr_e :
 				YYERROR;
 			} else {		
 				a=a&DTYPE_MASK;
-  					if (a!=DTYPE_INT&&a!=DTYPE_SMINT) {
+  					if (a!=DTYPE_INT&&a!=DTYPE_SMINT && a!=DTYPE_SERIAL) {
     					a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
     					YYERROR;
     					/* error processing */;
