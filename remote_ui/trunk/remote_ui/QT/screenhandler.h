@@ -76,6 +76,7 @@ private:
    void createDialog(QString, QString, QString, QString);
    void createDialogButton(int, QString, QString);
    void createDialogAction(int, QString);
+   void checkFields();
    bool b_newForm;
 
 
