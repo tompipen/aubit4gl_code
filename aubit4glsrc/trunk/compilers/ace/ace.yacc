@@ -235,6 +235,8 @@ set_expr_int(struct expr *e,int a)
 %token XMAX
 %token XMIN
 %token YEAR
+%token KW_CURRENT
+%token KW_EXTEND
 %%
 ace_report :
 	db_section 
@@ -693,19 +695,6 @@ some:
 
 
 
-op_escape:
-	ESCAPE escape_character
-{SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);}
-	;
-
-pattern:
-	  value_specification
-	;
-
-escape_character:
-	  value_specification
-	;
-
 
 in_predicate:
 	sql_value_expression IN OPEN_BRACKET in_value_list CLOSE_BRACKET
@@ -928,6 +917,7 @@ sql_value_expression:
 	| KW_FALSE
 	| USER
 	| MULTIPLY {SPRINTF1($<str>$," %s ",$<str>1);}
+	| KW_EXTEND  OPEN_BRACKET  extend_from_to CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
 	| OPEN_BRACKET sql_value_expression CLOSE_BRACKET {SPRINTF3($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| DATE  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
 	| DAY  OPEN_BRACKET  sql_value_expr_list CLOSE_BRACKET {SPRINTF2($<str>$," %s(%s)",$<str>1,$<str>3);}
@@ -945,6 +935,24 @@ sql_value_expression:
 	| COUNT OPEN_BRACKET op_all sql_value_expression CLOSE_BRACKET
 			{SPRINTF5($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 ;
+
+extend_from_to:
+        KW_CURRENT COMMA s_curr TO e_curr {
+			SPRINTF2($<str>$,"CURRENT, %s TO %s",$<str>3,$<str>5);
+        }
+        | sql_value_expression COMMA s_curr TO e_curr {
+			SPRINTF3($<str>$,"%s, %s TO %s",$<str>1,$<str>3,$<str>5);
+        }
+        | KW_CURRENT s_curr TO e_curr {
+			SPRINTF3($<str>$,"%s %s TO %s",$<str>1,$<str>2,$<str>4);
+        }
+;
+
+s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
+e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION | FRACTION OPEN_BRACKET INTVAL CLOSE_BRACKET {SPRINTF1($<str>$,"FRACTION(%s)",$<str>3);}
+;
+
+
 
 sql_val_expr_next: 
 	DIVIDE sql_value_expression_s 	{SPRINTF1($<str>$,"/%s",$<str>2);}
@@ -1903,10 +1911,6 @@ fmt_val_expr_list :
 
 	}
 
-;
-null_expr : {
-		$<expr>$.type=EXPRTYPE_NULL;
-	}
 ;
 
 

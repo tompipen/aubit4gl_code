@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.179 2009-03-03 14:49:44 mikeaubury Exp $
+# $Id: report.c,v 1.180 2009-03-17 07:53:53 mikeaubury Exp $
 #
 */
 
@@ -64,6 +64,9 @@ void A4GL_close_report_file (struct rep_structure *rep);
 #define ENTRY_DATA 4
 #define ENTRY_ENTRY_START 5
 #define ENTRY_ENTRY_END 6
+#define TU_END(qual) (qual & 0xf)
+#define TU_START(qual) ((qual>>4) & 0xf)
+#define TU_LEN(qual) ((qual>>8) & 0xff)
 
 
 static int email_report (char *fname, char *otype);
@@ -1495,6 +1498,94 @@ sz (int d, int s)
 }
 
 
+#define TU_YEAR 0
+#define TU_MONTH 2
+#define TU_DAY 4
+#define TU_HOUR 6
+#define TU_MINUTE 8
+#define TU_SECOND 10
+#define TU_FRAC 12
+#define TU_F1 11
+#define TU_F2 12
+#define TU_F3 13
+#define TU_F4 14
+#define TU_F5 15
+
+
+static int
+Infx_dt_to_A4gl_dt (int n)
+{
+  switch (n)
+    {
+    case TU_YEAR:
+      return 1;
+    case TU_MONTH:
+      return 2;
+    case TU_DAY:
+      return 3;
+    case TU_HOUR:
+      return 4;
+    case TU_MINUTE:
+      return 5;
+    case TU_SECOND:
+      return 6;
+    case TU_F1:
+      return 7;
+    case TU_F2:
+      return 8;
+    case TU_F3:
+      return 9;
+    case TU_F4:
+      return 10;
+    case TU_F5:
+      return 11;
+    }
+  // Shouldn't get to here
+     return 3;
+}
+
+static long
+fixlength (int dtype, int length)
+{
+  int n1, n2,n3;
+  if (dtype > 255)
+    dtype -= 256;
+  A4GL_debug ("Got datatype : %d length %d\n", dtype, length);
+  if (dtype==DTYPE_DECIMAL||dtype==DTYPE_MONEY) {
+        int a1,a2;
+        a1=length&0xff;
+        a2=length>>8;
+        if (a1==0xff) {
+                a1=2; a2+=5;
+                if (a2>32) a2=32;
+                length=(a2<<8)+a1;
+                return length;
+        }
+
+  }
+
+
+  if (dtype == DTYPE_DTIME)
+    {
+      n1 = Infx_dt_to_A4gl_dt (TU_START (length));
+      n2 = Infx_dt_to_A4gl_dt (TU_END (length));
+      return (n1 * 16) + n2;
+    }
+
+  if (dtype == DTYPE_INTERVAL)
+    {
+      n1 = Infx_dt_to_A4gl_dt (TU_START (length));
+      n2 = Infx_dt_to_A4gl_dt (TU_END (length));
+      n3 = length>>8;
+
+      return (n3<<8)+(n1 * 16) + n2;
+    }
+
+  return length;
+}
+
+
+
 /**
  * Used for AREP compiler 
  * @todo Describe function
@@ -1503,8 +1594,8 @@ char *
 A4GL_decode_datatype (int dtype, int dim)
 {
   static char buff_2[256];
+	dim=fixlength(dtype,dim);
   SPRINTF2 (buff_2, "%s %s", nm (dtype), sz (dtype, dim));
-  //s=A4GLSQLCV_dtype_alias(buff_2);
   return buff_2;
 }
 

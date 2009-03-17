@@ -159,7 +159,9 @@ ows     [ \t\n]*
 "PAUSE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PAUSE;}
 "PRINT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PRINT;}
 "PRINTER" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PRINTER;}
+"CURRENT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext);  return KW_CURRENT;}
 "PROMPT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PROMPT;}
+"EXTEND" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_EXTEND;}
 "READ" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return READ;}
 "REPORT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return REPORT;}
 "RIGHT" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return RIGHT;}
