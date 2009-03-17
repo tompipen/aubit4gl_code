@@ -317,11 +317,12 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
    }else{
       //Job 18105: Align Text Left and Int Right
       if(role == Qt::TextAlignmentRole){
-         bool ok;
+         bool ok = false;
          if(this->fields.count() > row){
             if(this->fields[row].count() > column){
-               if(this->fields[row][column].toInt(&ok,10) && ok){
-                  return Qt::AlignLeft;
+               this->fields[row][column].toInt(&ok,10);
+               if(ok){
+                  return Qt::AlignRight;
                }
                else{
                   return Qt::AlignLeft;
