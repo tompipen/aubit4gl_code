@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.479 2009-03-13 15:40:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.480 2009-03-23 15:04:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.479 2009-03-13 15:40:01 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.480 2009-03-23 15:04:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -261,7 +261,6 @@ static FILE *hfile = 0;
                     Functions prototypes
 =====================================================================
 */
-
 
 static void real_print_expr (struct expr_str *ptr);
 
@@ -1708,11 +1707,35 @@ real_print_expr (struct expr_str *ptr)
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
 	  printc ("A4GL_pushop(OP_GREATER_THAN);");
 	  break;
+
 	case ET_EXPR_OP_EQUAL:
-	  real_print_expr (ptr->expr_str_u.expr_op->left);
-	  real_print_expr (ptr->expr_str_u.expr_op->right);
-	  printc ("A4GL_pushop(OP_EQUAL);");
+		{
+			int l;
+			int printed=0;
+			int r;
+
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left);
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right);
+			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
+				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+					set_nonewlines();
+					printc("A4GL_pushIntEq(%s", local_expr_as_string(ptr->expr_str_u.expr_op->left));
+					printc(",%s);",local_expr_as_string(ptr->expr_str_u.expr_op->right));
+					clr_nonewlines();
+					printed++;
+				}
+			}
+		
+				if (!printed) {
+	  				real_print_expr (ptr->expr_str_u.expr_op->left);
+	  				real_print_expr (ptr->expr_str_u.expr_op->right);
+	  				printc ("A4GL_pushop(OP_EQUAL);");
+				}
+			}
 	  break;
+
+
+
 	case ET_EXPR_OP_NOT_EQUAL:
 	  real_print_expr (ptr->expr_str_u.expr_op->left);
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
@@ -2747,7 +2770,6 @@ real_print_func_call (t_expr_str * fcall)
 	p=fcall->expr_str_u.expr_get_fldbuf;
 	printc("{");
 	printc("   int _retvars;");
-	A4GL_pause_execution();
 	printc("   _retvars=A4GL_fgl_getfldbuf(&_sio_%d,_inp_io_type,_fldlist, %s,NULL,0);",(int)p->sio_id, local_field_name_list_as_char(p->field_list));
 	/* 
 	printc("   if (_retvars != 1 ) {");

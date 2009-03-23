@@ -642,8 +642,19 @@ print_for_cmd (struct_for_cmd * cmd_data)
 
   if (!have_to)
     {
-      print_expr (to);
-      printc ("_e=A4GL_pop_long();");
+		int r;
+		/* 
+ 			Simple optimization - if we can just use the expression
+ 			because its already a 'simple' integer - lets just use it..
+			(a 'simple' integer doesn't involve a stack operation...
+		*/
+		r=simple_expr_datatype(to);
+		if (r==DTYPE_INT || r==DTYPE_SMINT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+			printc("_e=%s;",local_expr_as_string(to));
+		} else {
+      			print_expr (to);
+      			printc ("_e=A4GL_pop_long();");
+		}
     }
   if (have_step)
     {
@@ -948,7 +959,6 @@ print_let_cmd (struct_let_cmd * cmd_data)
 
       ptr = A4GL_rationalize_list (cmd_data->vals);
       from_exprs = A4GL_new_list_get_count (ptr);
-      real_print_expr_list (ptr);
 
 	if (from_exprs==0) {
 		//int a;
@@ -965,18 +975,19 @@ print_let_cmd (struct_let_cmd * cmd_data)
 		}
 		*/
 	} else {
-      		printc ("{");
-      		to_vars = print_bind_dir_definition_g (cmd_data->vars, 1, 'o');
-      		local_print_bind_set_value_g (cmd_data->vars, 1, 0, 'o');
-		
-      		if (to_vars != from_exprs)
-			{
-	  		A4GL_assertion (1, "Should be right by here...");
-	  		A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
-	  		return 0;
-			}
-      		printc ("A4GL_pop_params(obind,%d);", from_exprs);
-      		printc ("}");
+      			real_print_expr_list (ptr);
+      			printc ("{");
+      			to_vars = print_bind_dir_definition_g (cmd_data->vars, 1, 'o');
+      			local_print_bind_set_value_g (cmd_data->vars, 1, 0, 'o');
+			
+      			if (to_vars != from_exprs)
+				{
+	  			A4GL_assertion (1, "Should be right by here...");
+	  			A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
+	  			return 0;
+				}
+      				printc ("A4GL_pop_params(obind,%d);", from_exprs);
+      			printc ("}");
 	}
     }
   else
@@ -986,8 +997,38 @@ print_let_cmd (struct_let_cmd * cmd_data)
       		print_pop_usage (cmd_data->vars->list.list_val[0]);
       } else {
 		struct expr_str_list *l;
+		int printed=0;
 		l=cmd_data->vals;
-		
+
+		/* 
+ 			Lets do a simple optimization - 
+ 			if the left and the right are both 'simple' integers
+			then lets do a direct assignment rather than mess with the stack
+		*/
+		if (cmd_data->vars->list.list_len==1 && A4GL_new_list_get_count(l)) {
+			int l;
+			int r;
+			l=simple_expr_datatype(cmd_data->vars->list.list_val[0]) & DTYPE_MASK;
+			r=simple_expr_datatype(cmd_data->vals->list.list_val[0]) & DTYPE_MASK;
+			if (l==DTYPE_INT || l==DTYPE_DATE || l==DTYPE_SERIAL ) {
+
+			// We can allow a Smallint on the rhs - because a smallint should
+			// always fit into an integer..
+			// We cant use a smallint on the lhs - because an integer might not
+			// fit into a smallint...
+			if (r==DTYPE_INT || r==DTYPE_DATE || r==DTYPE_SERIAL || (r==DTYPE_SMINT && A4GL_is_just_int_literal(cmd_data->vals->list.list_val[0],0))) { 
+					printed++;
+					set_nonewlines();
+					printc("%s=", local_expr_as_string(cmd_data->vars->list.list_val[0]));
+					printc("%s;",  local_expr_as_string(cmd_data->vals->list.list_val[0]));
+					clr_nonewlines();
+			}
+			}
+
+			
+		}
+			
+		if (!printed) {
 
 		// We have an issue if the first thing in our list is a COLUMN
 		// because we need to check the stack to see how long the string
@@ -1006,6 +1047,7 @@ print_let_cmd (struct_let_cmd * cmd_data)
 		}
       		A4GL_print_expr_list_concat (l);
       		print_pop_usage (cmd_data->vars->list.list_val[0]);
+		}
       }
     }
 
