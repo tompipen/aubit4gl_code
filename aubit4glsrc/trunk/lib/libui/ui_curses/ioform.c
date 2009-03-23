@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.220 2009-02-23 17:31:51 mikeaubury Exp $
+# $Id: ioform.c,v 1.221 2009-03-23 15:04:55 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.220 2009-02-23 17:31:51 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.221 2009-03-23 15:04:55 mikeaubury Exp $";
 #endif
 
 /**
@@ -677,6 +677,8 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   struct struct_scr_field *f;
   int fg;
   int bg;
+int a1,a2;
+char mm[20000];
   f = (struct struct_scr_field *) (field_userptr (field));
   A4GL_debug ("set_field_colour_attr - do_reverse=%d colour=%d - %d\n",
 	      do_reverse, colour, A4GL_decode_colour_attr_aubit (colour));
@@ -695,51 +697,16 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 
   fg = A4GL_decode_aubit_attr (colour, 'f');
   bg = A4GL_decode_aubit_attr (colour, 'B');
-  set_field_fore (field, fg);
-  set_field_back (field, bg);
+  a1=set_field_fore (field, fg);
+  a2=set_field_back (field, bg);
 
-  A4GL_debug ("FG=%x BG=%x", fg, bg);
+  A4GL_debug ("FG=%x BG=%x a1=%d a2=%d for field %p", fg, bg,a1,a2,field);
+
+// Redisplay the field to ensure the field attributes are use...
+strcpy(mm,field_buffer(field,0));
+set_field_buffer(field,0,mm);
 
   return;
-
-
-  colour = colour & 0xff00;
-
-
-  if (do_reverse && colour == AUBIT_COLOR_WHITE)
-    {
-      A4GL_debug ("XX1 REVERSE");
-      A4GL_debug ("DOINGREVERSE");
-      set_field_fore (field, A_REVERSE);
-      set_field_back (field, A_REVERSE);
-    }
-
-
-  if (do_reverse && colour != AUBIT_COLOR_WHITE)
-    {
-      A4GL_debug ("XX2 REVERSE");
-      A4GL_debug ("DOINGREVERSE");
-      set_field_back (field,
-		      A4GL_decode_colour_attr_aubit (colour) | A_REVERSE);
-      set_field_fore (field,
-		      A4GL_decode_colour_attr_aubit (colour) | A_REVERSE);
-    }
-
-  if (do_reverse == 0 && colour != AUBIT_COLOR_WHITE)
-    {
-      A4GL_debug ("XX3 NO REVERSE & COLOUR %d", colour);
-      set_field_fore (field, A4GL_decode_colour_attr_aubit (colour));
-      set_field_back (field, A4GL_decode_colour_attr_aubit (colour));
-    }
-
-  if (do_reverse == 0 && colour == AUBIT_COLOR_WHITE)
-    {
-      A4GL_debug ("XX3 NO REVERSE & NO COLOUR");
-      set_field_fore (field, A4GL_decode_colour_attr_aubit (colour));
-      set_field_back (field, A4GL_decode_colour_attr_aubit (colour));
-    }
-
-  A4GL_debug ("Returning");
 }
 
 
@@ -2000,6 +1967,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   free(field_list);
 
   A4GL_mja_wrefresh (currwin);
+//UILIB_A4GL_zrefresh();
   return 1;
 }
 

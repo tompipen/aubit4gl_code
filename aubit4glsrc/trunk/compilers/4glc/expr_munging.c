@@ -687,6 +687,117 @@ is_numeric (int n)
 
 
 
+/* 
+ * This is an abbreviated expr_datatype - it doesn't change the values and return -1 if it cant determine the
+ * datatype for any reason - or the datatype is too complex...
+ * This function is used to determine some internal optimizations - so it
+ * deliberatly ignores things like function calls
+ *
+ * Use expr_datatype in preference for most things!!
+ *
+ */
+int
+simple_expr_datatype (struct expr_str *p)
+{
+  int l;
+  int r;
+  //int a;
+  char buff[256];
+  switch (p->expr_type)
+    {
+    case ET_EXPR_LITERAL_DOUBLE_STR:
+      return DTYPE_FLOAT;
+
+    case ET_EXPR_LITERAL_EMPTY_STRING:
+      return DTYPE_CHAR;
+
+    case ET_EXPR_LITERAL_STRING:
+      return DTYPE_CHAR;
+      break;
+
+    case ET_EXPR_LITERAL_LONG:
+      if (p->expr_str_u.expr_long <= SHRT_MAX && p->expr_str_u.expr_long >= SHRT_MIN)
+	{
+	  return DTYPE_SMINT;
+	}
+      return DTYPE_INT;
+    case ET_EXPR_BRACKET:
+      return simple_expr_datatype (p->expr_str_u.expr_expr);
+    case ET_EXPR_VARIABLE_USAGE:
+      {
+	struct variable_usage *u;
+	u = p->expr_str_u.expr_variable_usage;
+	while (u->next)
+	  u = u->next;
+
+	// If its a substring - can we find out the extent so we can 'adjust' our 
+	// size we report back as the datatype...
+	if (u->substrings_start)
+	  {
+	    // substring..
+	    if (u->substrings_end == NULL || u->substrings_end == u->substrings_start)
+	      {
+		// end is the same as start - so its a single character..
+		if (u->datatype == DTYPE_CHAR || u->datatype == DTYPE_VCHAR)
+		  {
+		    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE (1);
+		  }
+	      }
+	    else
+	      {
+		// Ok - theres a fair chance we can't work out what it is
+		// but - we can if its just a couple of literals...
+		if (u->substrings_start->expr_type == ET_EXPR_LITERAL_LONG && u->substrings_end->expr_type == ET_EXPR_LITERAL_LONG)
+		  {
+		    int s;
+		    int e;
+		    s = u->substrings_start->expr_str_u.expr_long;
+		    e = u->substrings_end->expr_str_u.expr_long;
+		    if (e < s)
+		      e = s;
+		    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE ((e - s + 1));
+		  }
+	      }
+
+	    // Just return 1 - its could be right, and we'd be wrong
+	    // to say otherwise...
+	    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE (1);
+
+	  }
+	return u->datatype;
+      }
+
+      A4GL_assertion (1, "Fixme");
+      break;
+
+    default:
+      return -1;
+
+    }
+
+
+  // Shouldn't happen
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
+ * The real expr_datatype!!! 
+*/
+
 int
 expr_datatype (struct expr_str *p)
 {

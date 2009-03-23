@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.374 2009-03-13 17:13:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.375 2009-03-23 15:04:55 mikeaubury Exp $
 #
 */
 
@@ -2878,8 +2878,8 @@ int A4GL_check_event_list_for_special_key(struct aclfgl_event_list *evt, int las
 void A4GL_split_config (char *str);
 void * A4GL_find_param (char *name);
 char *A4GL_acl_getenv_setfrom(void);
-
-
+void A4GL_pushIntEq(int a,int b);
+int simple_expr_datatype(struct expr_str *p);
 
 #include "a4gl_builtin_funcs.h"
 

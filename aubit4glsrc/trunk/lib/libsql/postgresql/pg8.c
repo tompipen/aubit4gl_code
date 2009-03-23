@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.89 2009-03-16 15:11:07 mikeaubury Exp $
+# $Id: pg8.c,v 1.90 2009-03-23 15:04:55 mikeaubury Exp $
 #*/
 
 
@@ -697,7 +697,7 @@ A4GL_debug("currentConName=%s",currentConName);
 
 int A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname) {
   PGconn *con=0;
-A4GL_debug("Set conn %s", sessname);
+  A4GL_debug("Set conn %s", sessname);
   con = (PGconn *) A4GL_find_pointer (sessname, SESSCODE);
 
   if (con) {	

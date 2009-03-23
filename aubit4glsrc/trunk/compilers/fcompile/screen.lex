@@ -225,6 +225,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "varchar" 		{if (ign_kw(yystate, VARCHAR)) REJECT;strcpy(yylval.str,yytext); return VARCHAR;}
 "date" 		{if (ign_kw(yystate, KW_DATE)) REJECT;strcpy(yylval.str,yytext); return KW_DATE;}
 "datetime" 		{if (ign_kw(yystate,DATETIME)) REJECT;strcpy(yylval.str,yytext); return DATETIME;}
+"interval" 		{if (ign_kw(yystate,INTERVAL)) REJECT;strcpy(yylval.str,yytext); return INTERVAL;}
 "float" 		{if (ign_kw(yystate, KW_FLOAT)) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
 "double precision" 		{if (ign_kw(yystate, KW_FLOAT)) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
 "real" 		{if (ign_kw(yystate, SMALLFLOAT)) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}

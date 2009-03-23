@@ -122,6 +122,10 @@ main (int argc, char *argv[])
 			used[a]=1;
 			used[a+1]=1;
 			fout=fopen(argv[a+1],"w");
+			if (fout==0)  {
+				fprintf(stderr,"Unable to open output file\n");
+				exit(2);
+			}
 			a++;
 			continue;
 		}

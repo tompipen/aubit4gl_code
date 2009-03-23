@@ -4,14 +4,13 @@ set -x
 esql -DDIALECT_INFORMIX -static helper_funcs.ec -I.. -I$AUBITDIR/incl -L$AUBITDIR/lib -laubit4gl --shared -o libESQL_INFORMIX.so -I$INFORMIXDIR/incl
 cp libESQL_INFORMIX.so ..
 
-export POSTGRESDIR=/usr/local/pgsql
 export PATH=$PATH:/usr/local/pgsql/bin
 
 echo "ECPG COMPILE"
-/usr/local/pgsql/bin/ecpg -C INFORMIX -t helper_funcs.ec
+/usr/bin/ecpg -C INFORMIX -t helper_funcs.ec
 echo "GCC COMPILE"
 
-gcc -DDIALECT_POSTGRES -g -c -o helper_funcs_p.o helper_funcs.c -I$POSTGRESDIR/include -I$AUBITDIR/incl 
+gcc -DDIALECT_POSTGRES -g -c -o helper_funcs_p.o helper_funcs.c -I/usr/include/postgresql-8.3 -I /usr/include/postgresql-8.3/informix/esql -I$AUBITDIR/incl 
 
 rm libesqlhelper_funcs_p.so
 ld -L$AUBITDIR/lib -L$POSTGRESDIR/lib -laubit4gl --shared -o libESQL_POSTGRES.so -Bstatic helper_funcs_p.o 
