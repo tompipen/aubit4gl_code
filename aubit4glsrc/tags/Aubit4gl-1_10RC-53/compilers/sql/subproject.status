@@ -1,0 +1,29 @@
+Name: sql_parse
+Parent: aubit4glsrc
+Description: Command line utility that converts SQL statements or files to other SQL dialects using same methods that would be used by compiled Aubit 4GL programs
+Functionality: NEW command line SQL statement dialect converter
+Build: Always built by root makefile
+Location: compilers/sql and etc/convertsql
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Useful mostly for testing conversion or for external non-Aubit database tools
+
+
+Name: libSQLPARSE_INFORMIX
+Parent: aubit4glsrc
+Description: SQL dialect input parser.  Parses SQL statements in Informix dialect, to enable SQL dialect translation
+Functionality: SQLPARSE
+Build:
+Example: A4GL_SQLPARSE
+Depends: None
+Documentation:
+Regressed:
+Maintainer:
+Status:
+Todo:
+Notes: Currently the only input plug-in for SQL translation

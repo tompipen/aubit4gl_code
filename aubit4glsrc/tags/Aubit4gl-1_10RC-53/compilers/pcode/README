@@ -1,0 +1,194 @@
+This directory contains the PCODE compiler
+(Which is exceedingly experimental...)
+
+
+The pcode compiler contains 3 elements
+
+1) Compiler - c2pcode
+2) Checker  - checker
+3) Runner   - runner_fgl
+
+
+
+
+Compilation
+-----------
+
+The pcode is held in an xdr file format, which includes commands and 
+expressions, as well as a string and id table.
+
+TODO : Work is needed to allow linking and running of multi-module programs 
+which is not yet supported...
+
+The PCODE compiler is basically a greatly simplified C compiler which generates 
+simple instructions which can be
+executed by the runner.
+
+The PCODE compiler is designed to do most of the work, leaving the runner with 
+very little to do and so should be
+easily portable to other platforms and other languages.
+
+For this reason, the pcode command set does NOT include support for some of the 
+basic C constructs, such as 'for' and 'while',
+these are converted to if's and 'gotos'
+eg
+
+a=10;
+while (a>0) {
+	printf("Hello World");
+}
+
+would convert to something like
+
+a=10
+
+label_while_start: ;
+	if (a>0) ;
+	else goto label_while_end
+	printf("Hello World");
+	goto label_while_start;
+
+label_while_end: ;
+
+
+
+This 'flat' format greatly simplifies the runner...
+
+In additional, the PCODE complier 'flattens' all blocks within the code, moving 
+any variables to locally scopped function level variables.
+similar to the following :
+
+
+myfunc(int a) {
+
+.
+.
+.
+
+if (a>10) {
+	int b;
+	...
+}
+
+}
+
+
+whould become something similar to
+
+myfunc(int local_a) {
+int block_1_b;
+.
+.
+.
+if (a>10) ;
+else goto if_end;
+..
+if_end: ;
+
+}
+
+
+
+
+
+Again - this simplifies the runner as we don't need to be concerned about 
+adding blocks to a callstack, only functions.
+For variable scope we only need to check two entries in this stack - the last 
+called function
+and the module level variables...
+
+
+
+A small caveat is that in order to distinguish between Function declarations 
+and Variable declarations, all functions must be preceeding by
+A4GL_FUNCTION
+
+eg
+
+A4GL_FUNCTION void myfunc(...)
+
+
+This constraint may be removed at a later date...
+
+
+
+Due to a current limitation in Aubit, it is necessary to define the 4GL 'MAIN' 
+in a slightly different way :
+
+FUNCTION main()
+..
+END FUNCTION
+
+
+Rather than the normal 'MAIN ... END MAIN'
+
+This gets around any 4GL initialization that must normally be performed in the 
+MAIN, which is instead handled by the runner...
+
+Compilation can then take place with
+
+4glc -N ""  module.4gl
+
+The -N is required to stop the 'main' function being renamed 'aclfgl_main'...
+
+Again - this requirement will be removed when the PCODE lex module is 
+constructed...
+
+
+
+Includes, Defines, Typedefs and Structs
+---------------------------------------
+
+The compiler ignores **all** lines which begin with '#' this means :
+
+1) **NO** header files are currently read (this will be changed eventually so 
+that it will actually include the modules own .h file).
+2) No defines are used
+
+This means that we don't need to preprocess the file.
+A major benefit of this is that we don't currently need to implement typedefs 
+or named structs within the pcode compiler.
+Although - this may be implemented later...
+All typedefs & structs used by aubit are predefined (eg BINDING, fgldecimal) etc
+
+
+
+
+
+
+
+Modules Variables
+-----------------
+
+When a module is compiled, a special function is generated in the pcode called 
+__MODULE, this 'function' contains the definitions of all definitions for module
+level variables, as well as any code to initialize them.
+This is the first function called when a module is loaded.
+
+
+
+
+
+Running a module
+----------------
+
+This occurs in a few steps :
+
+1) A module is loaded.
+2) The __MODULE function is run - but kept on the callstack
+3) The 'main' function is identified and executed until completion
+
+
+Programs are run by using the 'runner_fgl' program.
+By default this runs a file called 'mine.4pe' unless otherwise specified (this 
+is just to help
+with the development of the runner as it saves typing!)
+
+
+When any function is called, the variable block is allocated its memory and a 
+'program counter' is used to step through the functions.
+All 'pcs' are started from 0 for each function, and gotos are relative within 
+the code, this should enable easier linking of modules later on.
+
+
+

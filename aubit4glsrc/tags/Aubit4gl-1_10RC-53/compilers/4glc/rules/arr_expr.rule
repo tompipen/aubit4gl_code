@@ -1,0 +1,50 @@
+/*
+=====================================================================
+                        Source: arr_expr.rule
+=====================================================================
+*/
+
+
+arr_expr_e :
+	OPEN_BRACKET arr_expr_e CLOSE_BRACKET  		{ $<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_BRACKET);}
+	| arr_expr_e KW_PLUS arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_ADD,0);  }
+	| arr_expr_e KW_MINUS arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_SUB,0);  }
+	| arr_expr_e KW_MULTIPLY arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MULT,0);  }
+	| arr_expr_e KW_DIVIDE arr_expr_e 		{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_DIV,0);  }
+	| arr_expr_e KW_MOD arr_expr_e 			{ $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_MOD,0);  }
+	| INT_VALUE 					{ $<ptr>$=A4GL_new_literal_long_str($<str>1);}
+	| arr_int_sign INT_VALUE {
+		if ($<integer_val>1==ET_EXPR_OP_SUB) {
+			SPRINTF1($<str>$,"-%s",$<str>2);
+		}
+		$<ptr>$=A4GL_new_literal_long_str($<str>$);
+	}
+	| variable_usage_expression {
+  			int a;
+			char errbuff[256];
+  			a=get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1);
+			if (a==-1) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			} else {		
+				a=a&DTYPE_MASK;
+  					if (a!=DTYPE_INT&&a!=DTYPE_SMINT && a!=DTYPE_SERIAL) {
+    					a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
+    					YYERROR;
+    					/* error processing */;
+  				}
+			}
+  			$<ptr>$=$<ptr>1;
+	}
+	| function_call_expr {
+			$<ptr>$=$<ptr>1;
+	}
+
+;
+
+
+arr_int_sign	: KW_PLUS {$<integer_val>$=ET_EXPR_OP_ADD;}
+		| KW_MINUS {$<integer_val>$=ET_EXPR_OP_SUB;}
+;
+
+
