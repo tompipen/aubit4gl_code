@@ -29,6 +29,10 @@
 
 <project name="j4glui" default="build" basedir=".">
 	
+	<path id="classpath">
+	  <fileset dir="lib" includes="*.jar"/>	
+	</path>
+	
 	<target name="rebuild" depends="clean,build"/>
 	
 	<!--
@@ -39,6 +43,7 @@
 	<target name="build">
        <mkdir dir="class_applet"/>
 	   <javac debug="yes" debuglevel="lines,vars,source"
+	   	      classpathref="classpath" fork="true"
 	   	      srcdir="src" destdir="build/classes"/>
 	   <jar destfile="build/j4glui.jar" basedir="build/classes">
 		<manifest>
@@ -60,8 +65,11 @@
      ! Deletes the entire build directory and any compiled jar
      !-->
     <target name="clean">
-        <delete file="build/classes/**/*.class"/> 
-    	<delete file="j4glui.jar"/>
+    	<echo message="Deleting..."/>
+    	<delete>
+    	  <fileset dir="build/classes"/>
+    	</delete> 
+    	<delete file="build/j4glui.jar"/>
     </target>
 
 </project>

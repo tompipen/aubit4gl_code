@@ -20,6 +20,8 @@
 
 package org.aubit4gl.remote_client.swing_ui.command;
 
+import org.aubit4gl.remote_client.connection.command.Construct;
+
 /**
  * The construct is used to that the user can make a Query by Example.
  * 
