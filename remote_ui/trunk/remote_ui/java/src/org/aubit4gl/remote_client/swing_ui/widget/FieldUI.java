@@ -27,6 +27,13 @@ import org.aubit4gl.remote_client.connection.command.Field;
 /**
  * A screen representation of a 4gl input field.
  * 
+ * TODO : The field(S) should have
+ *   - Attributes
+ *   - Events:
+ *     * BEFORE FIELD
+ *     * AFTER FIELD
+ *     * ON KEY
+ *   The events should be fired when in the context of an input or construct
  * @author Sérgio Ferreira
  */
 public class FieldUI extends JTextField {

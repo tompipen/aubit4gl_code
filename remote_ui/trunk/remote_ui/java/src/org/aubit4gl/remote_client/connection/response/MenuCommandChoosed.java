@@ -20,7 +20,6 @@
 
 package org.aubit4gl.remote_client.connection.response;
 
-import org.aubit4gl.remote_client.connection.Connection;
 import org.aubit4gl.remote_client.connection.UIResponse;
 import org.aubit4gl.remote_client.swing_ui.events.UIEvent;
 
@@ -30,32 +29,42 @@ import org.aubit4gl.remote_client.swing_ui.events.UIEvent;
  * @author Sérgio Ferreira
  */
 public abstract class MenuCommandChoosed extends UIResponse implements UIEvent {
-    private int commandChoosed;
-	
-    /**
-     * @param o The event object 
-     */
-    public abstract void actionPerformed(Object o);
-    
-    /**
-     * Default constructor
-     */
-    public MenuCommandChoosed() {
-    }
-    
-    /**
-     * Create a response to send to the 4gl because the user 
-     * choosed a menu option
-     * 
-     * @param commandChoosed The number of the menu command/option choosed by the user
-     */
+	private int commandChoosed;
+
+	/**
+	 * @param o The event object 
+	 */
+	public abstract void actionPerformed(Object o);
+
+	/**
+	 * Default constructor
+	 */
+	public MenuCommandChoosed() {
+	}
+
+	/**
+	 * Create a response to send to the 4gl because the user 
+	 * choosed a menu option
+	 * 
+	 * @param commandChoosed The number of the menu command/option choosed by the user
+	 */
 	public MenuCommandChoosed(int commandChoosed) {
 		super();
 		this.commandChoosed = commandChoosed;
 		buildCommand();
 	}
-	
-	
+
+	/**
+	 * Assign the command choosed.
+	 * Used for <ENTER> key choosing the current one.
+	 * 
+	 * @param _commandChoosed
+	 */
+	public void setCommandChoosed(int _commandChoosed) {
+		this.commandChoosed = _commandChoosed;
+		buildCommand();
+	}
+
 	/**
 	 * Getter for command choosed by the user.
 	 * 

@@ -39,6 +39,7 @@ import org.aubit4gl.remote_client.connection.UICommand;
 import org.aubit4gl.remote_client.connection.command.DisplayAt;
 import org.aubit4gl.remote_client.connection.command.Menu;
 import org.aubit4gl.remote_client.connection.command.OpenForm;
+import org.aubit4gl.remote_client.connection.command.OpenWindow;
 import org.aubit4gl.remote_client.connection.command.ProgramStartup;
 import org.aubit4gl.remote_client.connection.command.ProgramStop;
 import org.aubit4gl.remote_client.swing_ui.events.FglKeyListener;
@@ -85,6 +86,7 @@ public class UISession {
 		connection = _connection;
 		initUiPanel();
 		mainLoop();
+		// TODO : Need to create a window called SCREEN with the default size 
 	}
 
 	/**
@@ -109,22 +111,37 @@ public class UISession {
 	 * 
 	 * TODO : Take the frame code. The frame should be global and one
 	 * TODO : The size of each cell should be parametrized and decided based 
+	 * TODO : Most of this should be made on the WindowUI
+	 * TODO : What is todo is;
+	 *    Create a window called SCREEN with 80 by 24
+	 *    Open a frame for screen (decided as flag on WindowUI)
+	 *    Add screen to window list
+	 *    Assign current window to Screen
 	 * on the font size
 	 */
 	private void initUiPanel() {
+		
+		// Initialize SCREEN window
+		OpenWindow screen = new OpenWindow();
+		screen.setName("SCREEN");
+		screen.setHeigth(24);
+		screen.setWidth(80);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new FlowLayout());
 		
 		int lines = 24;
 		int columns = 80;
+		
+		double rowHeight = 25.0;
+		double columnWidth = 9.0;
 		double rowSize[] = new double[24];
 		double columnSize[] = new double[80];
 		for (int i = 0 ; i < lines ; i++ ) {
-			rowSize[i] = 17.0;
+			rowSize[i] = rowHeight;
 		}
 		
 		for (int i = 0 ; i < columns ; i++ ) {
-			columnSize[i] = 9.0;
+			columnSize[i] = columnWidth;
 		}
 		
 		layout = new TableLayout(columnSize,rowSize);
@@ -178,7 +195,7 @@ public class UISession {
 			method = this.getClass().getMethod(methodName,argType);
 		} catch (Exception e) {
 			// TODO : Handle the exception
-			System.out.println("Cannot get method " + e.getMessage());
+			System.out.println("Method  <" + methodName + "> for remote command does not exist : " + e.getMessage());
 			return;
 		}
 
@@ -210,10 +227,12 @@ public class UISession {
 	public void menu(UICommand uiCommand) {
 		Menu mnu = (Menu) uiCommand;
 		System.out.println("Menu invoked with argument <" + mnu.toString() + ">");
-		MenuUI mnuUI = new MenuUI(mnu,connection);
-		keyListener.setListeningKeys(mnuUI.getListeningKeys());
-		uiPanel.add(mnuUI,"1, 1, 79, 1");
+		MenuUI mnuUI = new MenuUI(mnu,connection,keyListener);
+		// TODO : Remove this
+		// keyListener.setListeningKeys(mnuUI.getListeningKeys());
+		uiPanel.add(mnuUI,"1, 1, 79, 2");
 		menus.add(mnuUI);
+		// TODO : The menu should only be active when the wait for event was received 
 	}
 	
 	/**
@@ -226,12 +245,13 @@ public class UISession {
 		DisplayAt dsp = (DisplayAt) uiCommand;
 		System.out.println("Display AT invoked with argument <" + dsp.toString() + ">");
 		DisplayAtUI dspUi = new DisplayAtUI(dsp);
-		int startLine = dsp.getX();
-		int startCol = dsp.getY();
-		int endLine = dsp.getX();
-		int endCol = dsp.getY() + dsp.getText().length();
+		int startLine = dsp.getLine();
+		int startCol = dsp.getColumn();
+		int endLine = dsp.getLine();
+		int endCol = dsp.getColumn() + dsp.getText().length();
 		String pos = startCol + ", " + startLine + ", " + endCol + ", " + endLine;
 		uiPanel.add(dspUi,pos);
+		uiPanel.repaint();
 	}
 	
 	/**

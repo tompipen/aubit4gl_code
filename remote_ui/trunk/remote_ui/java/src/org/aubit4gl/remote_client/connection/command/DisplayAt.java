@@ -36,8 +36,8 @@ import org.w3c.dom.Element;
  * @author Sérgio Ferreira
  */
 public class DisplayAt implements ClientUICommand {
-	private int x;
-	private int y;
+	private int line;
+	private int column;
 	private ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 	private String text;
 
@@ -65,31 +65,31 @@ public class DisplayAt implements ClientUICommand {
 	 */
 	public void initFromDom(Element dom) {
 		text = dom.getTextContent();
-		x = Integer.parseInt(dom.getAttribute("X"));
-		y = Integer.parseInt(dom.getAttribute("Y"));
+		column = Integer.parseInt(dom.getAttribute("X"));
+		line = Integer.parseInt(dom.getAttribute("Y"));
 		String strAttributes = dom.getAttribute("ATTRIBUTE");
 		
 		Attribute attribute = new Attribute();
 	}
 
 	public String toString() {
-		return "DisplayAt[text=" + text + ";x=" + x + ";y=" + y + "]";
+		return "DisplayAt[text=" + text + ";column=" + column + ";line=" + column + "]";
 	}
 
-	public int getX() {
-		return x;
+	public int getColumn() {
+		return column;
 	}
 
-	public void setX(int x) {
-		this.x = x;
+	public void setColumn(int _column) {
+		this.column = _column;
 	}
 
-	public int getY() {
-		return y;
+	public int getLine() {
+		return line;
 	}
 
-	public void setY(int y) {
-		this.y = y;
+	public void setLine(int _line) {
+		this.line = _line;
 	}
 
 	public ArrayList<Attribute> getAttributes() {

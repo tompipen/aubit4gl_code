@@ -18,21 +18,27 @@
  *  along with Aubit 4gl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.aubit4gl.remote_client.connection.command;
-
-import java.util.ArrayList;
+package org.aubit4gl.remote_client.swing_ui.command;
 
 /**
- * TODO : Implement it
+ * The construct is used to that the user can make a Query by Example.
+ * 
+ * When executed it should:
+ *   - Activate all fields in the field list received in the CONSTRUCT command
+ *   - Add events to all fields
+ *   - Activate is own events:
+ *     * ACCEPT KEY
+ *     * INTERRUPT
+ *     * BREAK
+ *   
+ *   TODO : Implement the construct command received by 4gl
+ *   TODO : Implement the behaviour of this User Interface command
+ *   
  * @author Sérgio
  *
  */
-public class Attribute {
-
-	public static ArrayList<Attribute> decodeAttributes(String strAttributes) {
-		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-		return attributes;
-	}
-
-
+public class ConstructUI {
+  public ConstructUI(Construct construct) {
+	  
+  }
 }

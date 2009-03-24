@@ -26,6 +26,7 @@ import org.aubit4gl.remote_client.connection.command.DisplayAt;
 
 /**
  * User interface representation of a display AT command.
+ * TODO : The Display at should have attributes
  * 
  * @author Sérgio Ferreira
  */

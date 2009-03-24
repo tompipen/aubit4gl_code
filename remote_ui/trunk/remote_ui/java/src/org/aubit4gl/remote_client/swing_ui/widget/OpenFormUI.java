@@ -30,6 +30,9 @@ import org.aubit4gl.remote_client.connection.command.OpenForm;
  * Open Form user interface.
  * 
  * Open and show a form in the current window.
+ * TODO : 
+ *   When the fields are opened they should be disabled and became enabled when
+ *   an INPUT or CONSTRUCT statement is executed.
  * 
  * @author Sérgio Ferreira
  */

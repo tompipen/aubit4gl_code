@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import org.aubit4gl.remote_client.connection.Connection;
+import org.aubit4gl.remote_client.connection.FGLUIException;
 import org.aubit4gl.remote_client.connection.command.Key;
 import org.aubit4gl.remote_client.connection.command.Menu;
 import org.aubit4gl.remote_client.connection.command.MenuCommand;
@@ -56,6 +57,7 @@ public class MenuUI extends JPanel {
 	private ArrayList<MenuCommandUI> commandList = new ArrayList<MenuCommandUI>();
 	HashMap<String,UIEvent> listeningKeys = new HashMap<String,UIEvent>();
 	private int currentOption;
+	Connection connection;
 
 	/* TODO : CHANGE TO enumerated */
 	public static final int PREVIOUS = -1;
@@ -72,9 +74,10 @@ public class MenuUI extends JPanel {
 	 * @param _menu
 	 * @param connection
 	 */
-	public MenuUI(Menu _menu,Connection connection,FglKeyListener _kl) {
+	public MenuUI(Menu _menu,Connection _connection,FglKeyListener _kl) {
 		menu = _menu;
 		kl = _kl;
+		connection = _connection;
 
 		// Adding sub components of menu
 		menuToolbar.setOrientation(JToolBar.HORIZONTAL);
@@ -101,7 +104,7 @@ public class MenuUI extends JPanel {
 			MenuCommandChoosed mcc = new MenuCommandChoosed(menuCommand.getId()) {
 				public void actionPerformed(Object o) {
 					nextOption(getCommandChoosed());
-					connection.send(getCommand());
+					sendToFgl(this);
 				}
 			};
 			Key key = menuCommand.getKey();
@@ -124,6 +127,14 @@ public class MenuUI extends JPanel {
 			}
 		};
 		listeningKeys.put("LEFT", mcc);
+		
+		mcc = new MenuCommandChoosed() {
+			public void actionPerformed(Object o) {
+				setCommandChoosed(currentOption);
+				sendToFgl(this);
+			}
+		};
+		listeningKeys.put("ENTER", mcc);
 
 		kl.setListeningKeys(listeningKeys);
 		// TODO : Add some kind of border
@@ -196,6 +207,24 @@ public class MenuUI extends JPanel {
 
 	public void setKeyListener(FglKeyListener _kl) {
 		kl = _kl;
+	}
+	
+	/**
+	 * Send the answer to the 4gl program. 
+	 * 
+	 * @param response The menu command that was choosed by the user.
+	 */
+	private void sendToFgl(MenuCommandChoosed response) {
+		if ( connection == null )
+			// TODO : Should throw an exception or log things
+			return;
+		try {
+		connection.send(response);
+		} catch (FGLUIException e) {
+			// TODO : Need to handle the exception
+			// TODO : Need to log things
+			System.out.println("Error " + e.getMessage());
+		}
 	}
 
 	// Main just for test

@@ -21,7 +21,6 @@
 package org.aubit4gl.remote_client.connection.command;
 
 import java.util.ArrayList;
-
 import org.w3c.dom.Element;
 
 /**
@@ -30,6 +29,7 @@ import org.w3c.dom.Element;
  * @author Sérgio Ferreira
  * 
  * TODO : No test for this command available
+ * TODO : I need defaults
  *
  */
 public class OpenWindow {
@@ -38,10 +38,10 @@ public class OpenWindow {
 	private int y;
 	private int width;
 	private int heigth;
-	private int formLine;
+	private int formLine = 3;
 	private int errorLine;
 	private int promptLine;
-	private int menuLine;
+	private int menuLine = 1;
 	private int commentLine;
 	private int messageLine;
 	private boolean border;
