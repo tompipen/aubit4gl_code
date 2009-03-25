@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.78 2009-03-10 11:14:11 mikeaubury Exp $
+# $Id: prompt.c,v 1.79 2009-03-25 17:28:03 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.78 2009-03-10 11:14:11 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.79 2009-03-25 17:28:03 mikeaubury Exp $";
 #endif
 
 /**
@@ -568,18 +568,18 @@ A4GL_curses_to_aubit_int (int a)
    }
 
    if (keycode_home==-1) {
-	   	keycode_home=atoi(acl_getenv("KEYCODE_HOME"));
+	   	keycode_home=atoi(acl_getenv("KEYCODE_FIELDSTART"));
    }
 
    if (keycode_end==-1) {
-	   	keycode_end=atoi(acl_getenv("KEYCODE_END"));
+	   	keycode_end=atoi(acl_getenv("KEYCODE_FIELDEND"));
    }
    if (keycode_shome==-1) {
-	   	keycode_shome=atoi(acl_getenv("KEYCODE_SHOME"));
+	   	keycode_shome=atoi(acl_getenv("KEYCODE_ARRSTART"));
    }
 
    if (keycode_send==-1) {
-	   	keycode_send=atoi(acl_getenv("KEYCODE_SEND"));
+	   	keycode_send=atoi(acl_getenv("KEYCODE_ARREND"));
    }
 
    if (keycode_home==0||keycode_home==-1) {

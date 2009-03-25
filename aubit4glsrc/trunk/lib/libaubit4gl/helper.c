@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.82 2009-03-03 08:20:40 mikeaubury Exp $
+# $Id: helper.c,v 1.83 2009-03-25 17:27:58 mikeaubury Exp $
 #
 */
 
@@ -131,6 +131,7 @@ LIBPRIVATE char *a_get_info_form[] = {
   "FieldBytes%",
   "FieldDets%",
   "Screens",
+  "ScreenRecordSize%",
   0
 };
 
@@ -313,6 +314,22 @@ int_get_info_form (char *ptr, char *info)
       break;
 
     case 4:			// SCREENRECORDNAME
+      if (used_value < p->fileform->records.records_len) {
+      		A4GL_push_char (p->fileform->records.records_val[used_value].name);
+	} else {
+      		A4GL_push_char ("");
+	}
+      break;
+
+    case 20:			// SCREENRECORDNAME
+      if (used_value < p->fileform->records.records_len) {
+      		A4GL_push_long (p->fileform->records.records_val[used_value].dim);
+	} else {
+      		A4GL_push_long (0);
+	}
+      break;
+
+
     case 12:
       if (used_value < p->fileform->snames.snames_len)
 	A4GL_push_char (p->fileform->snames.snames_val[used_value].name);

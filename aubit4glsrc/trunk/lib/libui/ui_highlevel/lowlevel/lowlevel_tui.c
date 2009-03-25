@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.125 2009-03-10 12:06:08 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.126 2009-03-25 17:28:06 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.125 2009-03-10 12:06:08 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.126 2009-03-25 17:28:06 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -294,20 +294,20 @@ A4GL_curses_to_aubit_int (int a)
 
   if (keycode_home == -1)
     {
-      keycode_home = atoi (acl_getenv ("KEYCODE_HOME"));
+      keycode_home = atoi (acl_getenv ("KEYCODE_FIELDSTART"));
     }
 
   if (keycode_end == -1)
     {
-      keycode_end = atoi (acl_getenv ("KEYCODE_END"));
+      keycode_end = atoi (acl_getenv ("KEYCODE_FIELDEND"));
     }
 
    if (keycode_shome==-1) {
-                keycode_shome=atoi(acl_getenv("KEYCODE_SHOME"));
+                keycode_shome=atoi(acl_getenv("KEYCODE_ARRSTART"));
    }
 
    if (keycode_send==-1) {
-                keycode_send=atoi(acl_getenv("KEYCODE_SEND"));
+                keycode_send=atoi(acl_getenv("KEYCODE_ARREND"));
    }
 
 

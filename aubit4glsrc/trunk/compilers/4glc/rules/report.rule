@@ -155,12 +155,18 @@ with_list:
 
 with_entry:
 	PAGE_LENGTH INT_VALUE {with_page_length=atoi($<str>2);}
-	/* | PAGE_WIDTH INT_VALUE {with_page_width=atoi($<str>2);} */
 	| TOP_MARGIN INT_VALUE {with_top_margin=atoi($<str>2);}
 	| BOTTOM_MARGIN INT_VALUE {with_bottom_margin=atoi($<str>2);}
 	| LEFT_MARGIN INT_VALUE {with_left_margin=atoi($<str>2);}
 	| RIGHT_MARGIN INT_VALUE {with_right_margin=atoi($<str>2);}
 	| TOP_OF_PAGE CHAR_VALUE {with_top_of_page=acl_strdup($<str>2);}
+
+	| PAGE_LENGTH OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_page_length=atoi($<str>2);}
+	| TOP_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_top_margin=atoi($<str>2);}
+	| BOTTOM_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_bottom_margin=atoi($<str>2);}
+	| LEFT_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_left_margin=atoi($<str>2);}
+	| RIGHT_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_right_margin=atoi($<str>2);}
+	| TOP_OF_PAGE OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET {with_top_of_page=acl_strdup($<str>2);}
 ;
 	
 
