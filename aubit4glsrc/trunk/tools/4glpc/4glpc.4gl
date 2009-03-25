@@ -672,8 +672,10 @@ end if
 		WHEN "--preprocess-ec"		let a=a+1 let mv_preprocess  =arg_val(a) continue for
 		WHEN "--link"			let a=a+1 let mv_link        =arg_val(a) continue for
 	
+		WHEN "-v"		call show_version(0) continue for
 		WHEN "--version"		call show_version(0) continue for
 		WHEN "--version-4glpc"		call show_version(2) continue for
+		WHEN "-f"		call show_version(1) continue for
 		WHEN "--version-full"		call show_version(1) continue for
 		WHEN "--version_full"		call show_version(1) continue for
 
@@ -1136,7 +1138,9 @@ end function
 ################################################################################
 function runit(lv_str)
 define lv_str char(10240)
-RUN lv_str
+
+RUN lv_str clipped
+
 end function
 
 ################################################################################
