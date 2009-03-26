@@ -2266,6 +2266,8 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
       break;
     }
 
+ A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+
   fetch_from_mysql_to_aubit (cid->statement->hstmt, &v_for_ptr, obind,
 			     copy_out_n);
   A4GL_set_a4gl_sqlca_errd (2, 1);
