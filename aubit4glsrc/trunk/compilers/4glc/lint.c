@@ -5265,6 +5265,7 @@ void
 create_protos_from_module (module_definition * this_module)
 {
   int a;
+	int process;
   printf ("CREATE\n");
   fprototypes = malloc (sizeof (struct s_function_prototype) * this_module->module_entries.module_entries_len);
   for (a = 0; a < this_module->module_entries.module_entries_len; a++)
@@ -5275,7 +5276,24 @@ create_protos_from_module (module_definition * this_module)
       fprototypes[a].nreturns = -1;
       fprototypes[a].param_dtypes = 0;
       fprototypes[a].return_dtypes = 0;
-      gen_function_prototypes (a, &this_module->module_entries.module_entries_val[a]->module_entry_u.function_definition);
+	process=0;
+	switch (this_module->module_entries.module_entries_val[a]->met_type)  {
+	        case E_MET_FUNCTION_DEFINITION:
+        	case E_MET_MAIN_DEFINITION:
+        	case E_MET_REPORT_DEFINITION:
+        	case E_MET_PDF_REPORT_DEFINITION:
+			process=1;
+			break;
+		default:
+			break;
+	
+	}
+			
+		
+
+	if (process) {
+      		gen_function_prototypes (a, &this_module->module_entries.module_entries_val[a]->module_entry_u.function_definition);
+	}
     }
 
 }

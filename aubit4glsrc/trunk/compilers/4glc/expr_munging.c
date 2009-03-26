@@ -509,6 +509,10 @@ make_cast (struct expr_str *s, int target_dtype, int notnull, int force)
 
   if (d == target_dtype && notnull == 0)
     return;			// Happy Days!
+  if (d==target_dtype && d==DTYPE_CHAR) {
+	// Happy days too..
+	return;
+  }
 
   p = malloc (sizeof (struct expr_str));
   A4GL_assertion (p == 0, "Failed to allocate");
@@ -521,6 +525,7 @@ make_cast (struct expr_str *s, int target_dtype, int notnull, int force)
   s->expr_str_u.expr_cast->src_dtype = d & DTYPE_MASK;
   s->expr_str_u.expr_cast->notnull = notnull;
   s->expr_str_u.expr_cast->force = force;
+//printf("Cast : %d %d\n",  s->expr_str_u.expr_cast->src_dtype, s->expr_str_u.expr_cast->target_dtype );
 }
 
 

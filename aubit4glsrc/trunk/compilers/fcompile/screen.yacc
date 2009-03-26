@@ -137,7 +137,7 @@ FORMONLY COMMENT
 %token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_TOTAL KW_RIGHT KW_ZEROFILL
 %token KW_USES_EXTENDED SPECIAL_DBNAME
 %token KW_ACTION
-%token KW_PAGE KW_HBOX KW_VBOX KW_GRID KW_GROUP  KW_TABLE KW_FOLDER KW_STYLE KW_LAYOUT KW_HIDDEN
+%token KW_PAGE KW_HBOX KW_VBOX KW_GRID KW_GROUP  KW_TABLE KW_FOLDER KW_STYLE KW_LAYOUT KW_HIDDEN KW_AUTOSIZE
 %token KW_TEXTEDIT KW_BUTTONEDIT KW_LABEL KW_EDIT KW_DATEEDIT  KW_SCROLL  KW_IMAGE
 %token KW_FONTPITCH KW_FIXED KW_VARIABLE KW_WANTNORETURNS KW_WANTTABS
 %token KW_AUTOSCALE KW_PIXELWIDTH KW_PIXELHEIGHT
@@ -178,8 +178,8 @@ named_or_kw_any :
 ;
 
 dbname : 
-	SPECIAL_DBNAME {sprintf($<str>$,acl_getenv("DBNAME"));} 
-	| SPECIAL_DBNAME ATSIGN named_or_kw_any  {sprintf($<str>$,acl_getenv("DBNAME"));} 
+	SPECIAL_DBNAME {strcpy($<str>$,acl_getenv("DBNAME"));} 
+	| SPECIAL_DBNAME ATSIGN named_or_kw_any  {strcpy($<str>$,acl_getenv("DBNAME"));} 
 	| named_or_kw_st
 	| named_or_kw_st ATSIGN named_or_kw_any {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
@@ -330,11 +330,14 @@ layout_attribute:
 	| KW_HIDDEN {
 		add_bool_layout_attrib(FA_B_HIDDEN);
 	}
+	| KW_AUTOSIZE {
+		add_bool_layout_attrib(FA_B_AUTOSIZE);
+	}
 	| KW_TEXT EQUAL CHAR_VALUE {
 		add_str_layout_attrib(FA_S_TEXT, $<str>3); 
 	}
 	| KW_ACTION EQUAL NAMED {
-		add_str_layout_attrib(FA_S_TEXT, $<str>3); 
+		add_str_layout_attrib(FA_S_ACTION, $<str>3); 
 	}
 ;
 

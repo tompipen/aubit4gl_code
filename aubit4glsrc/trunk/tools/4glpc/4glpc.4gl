@@ -163,12 +163,9 @@ define use_indicators integer
 #IF fgl_getenv("GTK_INC_PATH")!= "" THEN
 		#let mv_include=mv_include clipped, " -I\"",fgl_getenv("GTK_INC_PATH"),"\""
 	#END IF
-code
-if (A4GL_isyes(acl_getenv("VERSIONEDLIB"))) {
-	mv_versioned=1;
-}
-
-endcode
+	if isyes(fgl_getenv("VERSIONEDLIB")) THEN
+		let mv_versioned=1
+	end if
 
 	call aclfgl_setenv("A4GL_DEBUGFILE","debug.4glc.out")
 
@@ -195,13 +192,12 @@ endcode
 	LET mv_import_symbols	=fgl_getenv("A4GL_IMPORT_DYNAMIC")
 	LET mv_export_symbols	=fgl_getenv("A4GL_EXPORT_DYNAMIC")
 
-code
-	if (A4GL_isyes(acl_getenv("USE_INDICATOR"))) {
-		use_indicators=1;
-	} else {
-		use_indicators=0;
-	}
-endcode
+	if isyes(fgl_getenv("USE_INDICATOR")) then
+		let use_indicators=1
+	else
+		let use_indicators=0
+	end if
+
 	IF use_indicators=0 then
 		LET mv_preprocess_opts=mv_preprocess_opts clipped, fgl_getenv("A4GL_NOINDICATORS")	
 		LET mv_compile_pec_opts=mv_compile_pec_opts clipped, fgl_getenv("A4GL_NOINDICATORS")	
@@ -2087,4 +2083,13 @@ IF lv_type="EC" THEN
 END IF
 END FUNCTION
 
+
+function isyes(s) 
+define s char(20)
+if upshift(s[1]) = "Y" or s="1" or  upshift(s)="TRUE" then
+	return 1
+else
+	return 0
+end if
+end function
 

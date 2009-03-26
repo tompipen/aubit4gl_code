@@ -908,6 +908,7 @@ strcpy(buff,"");
 	fprop1.str_attribs.str_attribs_val=layout->attrib->str_attribs.str_attribs_val;
 
 
+	if (A4GL_has_bool_attribute(fprop, FA_B_AUTOSIZE)) { strcat(buff, " autoSize=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, " noEntry=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, " required=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN)) { strcat(buff, " hidden=\"1\""); }

@@ -251,6 +251,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "magenta" 	{if (ign_kw(yystate, MAGENTA)) REJECT;strcpy(yylval.str,yytext); return MAGENTA;}
 
 "autonext"	{if (ign_kw(yystate, AUTONEXT)) REJECT;strcpy(yylval.str,yytext); return AUTONEXT;}
+"autosize"	{if (ign_kw(yystate, KW_AUTOSIZE)) REJECT;strcpy(yylval.str,yytext); return KW_AUTOSIZE;}
 "color"		{if (ign_kw(yystate, COLOR)) REJECT;strcpy(yylval.str,yytext); return COLOR;}
 "composites"		{if (ign_kw(yystate, KW_COMPOSITES)) REJECT;strcpy(yylval.str,yytext); return KW_COMPOSITES;}
 "comments"	{if (ign_kw(yystate, COMMENTS)) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
