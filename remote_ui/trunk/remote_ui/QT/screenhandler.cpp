@@ -27,7 +27,6 @@
 #include "models/statusbar.h"
 #include "models/table.h"
 #include "xmlparsers/xml2menu.h"
-#include "include/utils.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
@@ -44,7 +43,7 @@ ScreenHandler::ScreenHandler(QTcpSocket *parent) : QObject(parent)
    cursorPos = false;
    p_prompt = NULL;
    QApplication::processEvents();
-   qh_env["DBDATE"] = "DMY4/";
+
 }
 
 //------------------------------------------------------------------------------
@@ -885,8 +884,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = ql_fields.at(i);
          //dbu: Labels dont have to be enabled or disabled
-         if(widget->inherits("QLabel"))
-            continue;
+         if(widget->inherits("QLabel")) continue;
 
          if(rx.exactMatch(widget->accessibleName())){ 
             widget->setEnabled(enable);
@@ -908,7 +906,6 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
                if(!context->options["WITHOUT_DEFAULTS"]){
                   lineEdit->setText("");
                }
-               /*
                if(enable){
                   if(p_fglform->construct()){
                      lineEdit->setMaxLength(32767);
@@ -919,7 +916,6 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
                      lineEdit->setValidator(lineEdit->getValidator());
                   }
                }
-               */
             }
          }
       }
@@ -929,14 +925,12 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = ql_fields.at(i);
          //dbu: Labels dont have to be enabled or disabled
-         if(widget->inherits("QLabel"))
-            continue;
+         if(widget->inherits("QLabel")) continue;
 
          if((widget->objectName() == fieldName || widget->accessibleName() == fieldName)){ //&& !widget->inherits("QLabel")){
             widget->setEnabled(enable);
-            if(enable){
+            if(enable)
                context->fieldList << widget->accessibleName();
-            }
 
             if(focus){
                widget->setFocus();
@@ -951,7 +945,6 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
                   if(!context->options["WITHOUT_DEFAULTS"]){
                      lineEdit->setText("");
                   }
-                  /*
                   if(p_fglform->construct()){
                      lineEdit->setMaxLength(32767);
                      lineEdit->setValidator(NULL);
@@ -960,7 +953,6 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
                      lineEdit->setMaxLength(lineEdit->w);
                      lineEdit->setValidator(lineEdit->getValidator());
                   }
-                  */
                }
                break;
             }
@@ -2215,199 +2207,9 @@ void ScreenHandler::checkFields()
    QList<QWidget*> ql_fields = p_fglform->formElements();
    for(int i=0; i<ql_fields.size(); i++){
       QWidget *widget = ql_fields.at(i);
-      if(!WidgetHelper::isFieldWidget(widget)) continue;
 
-      WidgetHelper::setInputLength(widget, enable);
-      QString format = WidgetHelper::getFormat(widget);
-
-      if(enable && !format.isEmpty()){
-         switch(WidgetHelper::getSqlType(widget)){
-            case(Fgl::DECIMAL):
-            case(Fgl::MONEY):
-               // Using $##,##.#
-               {
-                  int s = format.length();
-                  QList<QChar> rep_digit;
-                  rep_digit  << '*' << '&' << '#' << '<' << '-' << '+' << '(' << ')' << '$';
-                  bool isneg = false;
-                  QString text = WidgetHelper::fieldText(widget);
-                  int idx = text.indexOf("-");
-                  if(idx > -1){
-                     text.remove(idx,1);
-                     isneg = true;
-                  }
-
-                  bool ok;
-                  qreal value = text.toDouble(&ok);
-                  if(!ok) return;
-
-                  QString fm1;
-                  QString fm2;
-                  int num_places = 0;
-
-                  QString overflow = overflow.leftJustified(format.length(), QChar('*'));
-
-                  if(format.indexOf(".") >= -1){
-                     int pos_dot = format.indexOf(".");
-                     QString lbuff = format.mid(pos_dot+1);
-                     fm1 = format.mid(0, pos_dot);
-                     lbuff = lbuff.trimmed();
-                     num_places = lbuff.length();
-                     fm2 = lbuff;
-
-                  }
-                  else{
-                     fm1 = format;
-                     fm2 = "";
-                     num_places = 0;
-                  }
-
-                  qreal n = value;
-                  n = Round(n, num_places);
-                  int intPart = (int) n;
-                  qreal justDecPart = n - intPart;
-                  QString buff_decimal = QString::number(justDecPart);
-                  QString buff_integer = QString::number(intPart);
-
-                  if(buff_decimal == "0"){
-                     buff_decimal = "0.0";
-                  }
-
-                  buff_decimal = buff_decimal.mid(2);
-                  buff_integer = buff_integer.rightJustified(31);
-
-                  if(num_places > 64 || buff_decimal.length() >= 64){
-                     WidgetHelper::setFieldText(widget, overflow);
-                  }
-
-                  buff_decimal = buff_decimal + "000000000000000000000000000000000";
-                  buff_decimal = buff_decimal.mid(0,32);
-
-                  // first, ensure the format string is wide enough to hold the number
-                  // if not, try drop trailing decimals, otherwise flag overflow with *'s
-                  {
-                      int f_cnt = 0;              // number of digits to left of dec. point in format
-                      int d_cnt = 0;              // number of digits to right of dec. point
-                      int n_cnt;
-                      if (isneg)
-                      {
-                          n_cnt = 1;          // number of left-digits needed for number supplied
-                      }
-                      else
-                      {
-                          n_cnt = 0;
-                      }
-
-                      if (isneg)
-                      {
-                          if (format.contains("(") || format.contains(")") || format.contains("+") || format.contains("-"))
-                          {
-
-                          }
-                          else
-                          {
-                              // No negative bit to display :-)
-                              // so - we dont need to allow extra space for it...
-                              n_cnt = 0;
-                          }
-                      }
-                      else
-                      {
-                          if (format.contains("(") || format.contains(")") || format.contains("+") || format.contains("-"))
-                          {
-                              bool compatfmt = true;
-                              if (compatfmt)
-                              {
-                                  n_cnt = 1;
-                              }
-                          }
-                      }
-
-                      int a = 0;
-                      int variable_called_b = 30;
-                      bool isprnt = false;
-                      bool has_money = false;
-
-                      // count format string number place holders, up to decimal point
-                      for (a = 0; a < format.length(); a++)
-                      {
-                          if (format[a] == '.')
-                              break;
-                          if (rep_digit.contains(format[a]))
-                              f_cnt++;
-                      }
-                      // count format string number place holders, after the decimal point
-                      while (a < format.length())
-                      {
-                          if (rep_digit.contains(format[a]))
-                              d_cnt++;
-                          a++;
-                      }
-                      // count the digits in the integer part of the number
-                      for (a = variable_called_b; (a > 0 && buff_integer[a] != ' '); a--)
-                          n_cnt++;
-
-
-                      if (format.contains('$')) has_money = true;
-                      else has_money = false;
-      
-                      if (f_cnt < n_cnt + (has_money?1:0))
-                      {
-                          a = format.length();
-                          if (a > s)
-                              a = s;
-
-
-                          if (n_cnt > a)
-                          {
-                              // no way this number can fit, fill with stars ...
-
-                              return WidgetHelper::setFieldText(widget, overflow);
-                          }
-
-
-                          // default is to use the strict I4GL behaviour, stars
-
-                          return WidgetHelper::setFieldText(widget, overflow);
-                      }
-                  }
-               }
-            break;
-
-            case(Fgl::BYTE):
-            case(Fgl::SMINT):
-            case(Fgl::INT):
-            case(Fgl::SERIAL):
-            case(Fgl::SMFLOAT):
-            case(Fgl::FLOAT):
-               // USING 
-               {
-               }
-            break;
-
-            case(Fgl::DATE):
-               //USING dd.mm.yyyy
-               {
-                  QString f = FglUtils::dbDateToFormat(qh_env["DBDATE"]);
-                  QDate d = QDate::fromString(WidgetHelper::fieldText(widget), f);
-                  format = format.replace("mmmm", "MMMM");
-                  format = format.replace("mmm", "MMM");
-                  format = format.replace("mm", "MM");
-                  WidgetHelper::setFieldText(widget, d.toString(format));
-               }
-              
-            break;
-
-            case(Fgl::CHAR):
-            case(Fgl::NONE):
-            case(Fgl::DTIME):
-            case(Fgl::TEXT):
-            case(Fgl::VCHAR):
-            case(Fgl::INTERVAL):
-            case(Fgl::NCHAR):
-            default:
-            break;
-         }
-      }
+      //switch(widget->sqlType()){
+      //}
    }
 }
+
