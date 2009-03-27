@@ -1539,7 +1539,6 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
-         qDebug() << "FIELD3:" << field;
          setFieldEnabled(field, true, focus);
       }
       */
