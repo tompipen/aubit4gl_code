@@ -636,7 +636,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
-      createWindow("screen", "", 0, 0, 0, 0);
+      createWindow("screen", "", 0, 0, 100, 100);
       return;
    }
 
@@ -1526,11 +1526,29 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 
       nodeName = currentElement.nodeName();
 
+      /*
       if(nodeName == "FIELDLIST"){
          qsl_fieldList.clear();
       }
 
       if(nodeName == "FIELD"){
+         // Set focus for the first field in the list
+         bool focus = false;
+         if(i == 0)
+            focus = true;
+
+         QString field = currentElement.attribute("NAME");
+         qsl_fieldList << field;
+         qDebug() << "FIELD3:" << field;
+         setFieldEnabled(field, true, focus);
+      }
+      */
+
+      if(nodeName == "COLUMNS"){
+         qsl_fieldList.clear();
+      }
+
+      if(nodeName == "COLUMN"){
          // Set focus for the first field in the list
          bool focus = false;
          if(i == 0)
