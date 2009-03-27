@@ -245,7 +245,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
          QLabel *label = new QLabel(text);
 
-         label->setAccessibleName(text);
+         //label->setAccessibleName(text);
 
          addWidgets(label, false, posY, posX, gridWidth);
       }
