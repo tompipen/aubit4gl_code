@@ -1357,7 +1357,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  //
 	  A4GL_push_int (Context);
 	  uilib_input_get_values (1);
-	printf("Popping values\n");
+	//printf("Popping values\n");
 	  for (b = sreal->novars - 1; b >= 0; b--)
 	    {
 	      A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype, sreal->vars[b].size);
@@ -3043,11 +3043,11 @@ UILIB_A4GL_fgl_infield_ap (void *inp, va_list * ap)
   char *argp;
   int infield;
   A4GL_push_char ("XML");
-printf("inp=%p\n",inp);
+A4GL_debug("inp=%p\n",inp);
   A4GL_push_int (((long) inp) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
-printf("Got context as : %d\n",context);
+A4GL_debug("Got context as : %d\n",context);
 
   while ((argp = va_arg (*ap, char *)))
     {

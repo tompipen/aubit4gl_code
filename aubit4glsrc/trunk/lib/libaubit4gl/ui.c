@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.88 2009-02-26 19:03:47 mikeaubury Exp $
+# $Id: ui.c,v 1.89 2009-03-31 09:54:23 mikeaubury Exp $
 #
 */
 
@@ -659,9 +659,13 @@ A4GL_pull_off_data_for_display (int n, int display_type)
 	{
 	  A4GL_set_line_mode_column (strlen (ptr), 1);
 	}
-      s = realloc (s, ls);
+      //s = realloc (s, ls+1);
+      //memset(s,0xff,ls+1);
+
       SPRINTF2 (buff, "%s%s", s, ptr);
       free (ptr);
+      s=realloc(s,ls+1);
+      memset(s,0,ls+1);
       strcpy (s, buff);
       A4GL_debug ("s='%s' %p %d %d\n", s, s, strlen (s), ls);
     }

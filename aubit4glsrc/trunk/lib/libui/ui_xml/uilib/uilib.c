@@ -1299,12 +1299,12 @@ uilib_input_get_values (int nargs)
       UIdebug (5, "Pushing input data : %d %s\n", a, contexts[context].ui.input.variable_data[a]);
       if (strlen (contexts[context].ui.input.variable_data[a]) == 0)
 	{
-		printf("Pushing NULL\n");
+		//printf("Pushing NULL\n");
 	  A4GL_push_null (0, 0);
 	}
       else
 	{
-		printf("Pushing %s\n", contexts[context].ui.input.variable_data[a]);
+		//printf("Pushing %s\n", contexts[context].ui.input.variable_data[a]);
 	  PUSHquote (contexts[context].ui.input.variable_data[a]);
 	}
     }
@@ -1791,6 +1791,10 @@ uilib_construct_loop (int nargs)
       int a;
       /* Got a construct result... */
       contexts[context].ui.construct.constr_clause = last_attr->sync.vals[0].value;
+	if (last_attr->sync.nvalues> contexts[context].ui.construct.num_field_data) {
+		fprintf(stderr,"Critical internal error : Too many values returned\n");
+		exit(5);
+	} else {
       for (a = 0; a < last_attr->sync.nvalues; a++)
 	{
 	  if (contexts[context].ui.construct.field_content_data[a])
@@ -1805,6 +1809,7 @@ uilib_construct_loop (int nargs)
 	    }
 	  contexts[context].ui.construct.field_content_data[a] = last_attr->sync.vals[a].value;
 	  contexts[context].ui.construct.field_data[a] = last_attr->sync.vals[a].fieldname;
+	}
 	}
     }
 
