@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.170 2009-03-31 11:59:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.171 2009-03-31 12:46:44 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.170 2009-03-31 11:59:23 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.171 2009-03-31 12:46:44 mikeaubury Exp $";
 #endif
 
 /**
@@ -648,7 +648,11 @@ char buff[256];
     A4GL_debug ("have a curses form");
   }
 #endif
-				unpost_form(curses_form);
+#ifdef __WIN32__
+	A4GL_debug("Skipping unpost on windows - causes a fault for some reason..");
+#else
+	unpost_form(curses_form);
+#endif
     A4GL_debug ("unposted form");
 			
 				for (a=0;a<f->fileform->metrics.metrics_len;a++) {
