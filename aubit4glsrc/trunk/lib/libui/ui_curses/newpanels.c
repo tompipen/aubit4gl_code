@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.169 2009-03-31 10:57:20 mikeaubury Exp $
+# $Id: newpanels.c,v 1.170 2009-03-31 11:59:23 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.169 2009-03-31 10:57:20 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.170 2009-03-31 11:59:23 mikeaubury Exp $";
 #endif
 
 /**
@@ -622,6 +622,7 @@ char buff[256];
   }
 #endif
 
+  		A4GL_del_pointer (buff, ATTRIBUTE);
 	if (f) {
 		FORM *curses_form;
 #ifdef DEBUG
@@ -630,7 +631,6 @@ char buff[256];
   }
 #endif
   		SPRINTF1(buff,"%p",f);
-  		A4GL_del_pointer (buff, ATTRIBUTE);
 
 		if (form_created_with_window) {
 #ifdef DEBUG
@@ -700,7 +700,6 @@ char buff[256];
   }
 #endif
 
-  A4GL_del_pointer (win_name, ATTRIBUTE);
   A4GL_del_pointer (win_name, S_WINDOWSCODE);
   A4GL_del_pointer (win_name, S_FORMDETSCODE);
 #ifdef DEBUG
