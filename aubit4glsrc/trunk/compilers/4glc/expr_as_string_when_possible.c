@@ -428,6 +428,13 @@ expr_as_string_when_possible (expr_str * e)
       }
       break;
 
+    case ET_EXPR_PAGENO:
+		return strdup("pageno");
+    case ET_EXPR_LINENO:
+		return strdup("lineno");
+
+
+
     default:
       A4GL_pause_execution ();	// ---  Place holder for error handling  --- SAFE TO LEAVE IN...
       printf ("Unhandled expression in dynamic sql(%s)\n", expr_name (e->expr_type));

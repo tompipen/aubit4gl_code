@@ -2893,6 +2893,10 @@ scan_module_entry (int *calltree, int a)
 static int
 promoteable (int a, int b)
 {
+
+if (a==DTYPE_SERIAL) a=DTYPE_INT;
+if (b==DTYPE_SERIAL) b=DTYPE_INT;
+
   A4GL_assertion (a == DTYPE_SERIAL || b == DTYPE_SERIAL, "No serials in here..");
   if (a == b)
     return a;
