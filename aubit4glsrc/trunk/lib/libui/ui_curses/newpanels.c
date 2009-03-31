@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.168 2009-03-10 10:12:16 mikeaubury Exp $
+# $Id: newpanels.c,v 1.169 2009-03-31 10:57:20 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.168 2009-03-10 10:12:16 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.169 2009-03-31 10:57:20 mikeaubury Exp $";
 #endif
 
 /**
@@ -616,55 +616,98 @@ char buff[256];
   }
 #endif
   A4GL_del_pointer (win_name, WINCODE);
+#ifdef DEBUG
+  {
+    A4GL_debug ("Deleted pointer");
+  }
+#endif
 
 	if (f) {
 		FORM *curses_form;
+#ifdef DEBUG
+  {
+    A4GL_debug ("have a form");
+  }
+#endif
   		SPRINTF1(buff,"%p",f);
   		A4GL_del_pointer (buff, ATTRIBUTE);
 
 		if (form_created_with_window) {
+#ifdef DEBUG
+  {
+    A4GL_debug ("have a form");
+  }
+#endif
 			//
 			// This only gets called if its an open window with form...
 			// 
 			curses_form=(FORM *)f->form;
 			if (curses_form) {
+#ifdef DEBUG
+  {
+    A4GL_debug ("have a curses form");
+  }
+#endif
 				unpost_form(curses_form);
+    A4GL_debug ("unposted form");
 			
 				for (a=0;a<f->fileform->metrics.metrics_len;a++) {
 					FIELD *fld;
+    A4GL_debug ("loop a=%d",a);
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].field;
 					// Do I need to free the buffer ???
 					//free(fld->buf);
+    A4GL_debug ("Here1..");
 					
 					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
 
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm1;
+    A4GL_debug ("Here2..");
 					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm2;
 					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
+    A4GL_debug ("Here3..");
 	
 				}
 				if (free_form(curses_form)!=E_OK) {
 					A4GL_debug("Couldnt free form");
 				}
+				f->form=0;
 
 			}
 			
+#ifdef DEBUG
+  {
+    A4GL_debug ("Here..");
+  }
+#endif
 		
 		
 			if (f->fileform) {
+    A4GL_debug ("Here5..");
 //				A4GL_free_associated_mem(f->fileform);
 				acl_free(f->fileform);
 				f->fileform=NULL;
 			}
+    A4GL_debug ("Here4..");
 //			A4GL_free_associated_mem(f);
 			acl_free(f);
 		}
 	}
+#ifdef DEBUG
+  {
+    A4GL_debug ("more del_pointers");
+  }
+#endif
 
   A4GL_del_pointer (win_name, ATTRIBUTE);
   A4GL_del_pointer (win_name, S_WINDOWSCODE);
   A4GL_del_pointer (win_name, S_FORMDETSCODE);
+#ifdef DEBUG
+  {
+    A4GL_debug ("done del_pointers");
+  }
+#endif
   
   A4GL_debug("after remove window - currwinno=%d",currwinno);
 
