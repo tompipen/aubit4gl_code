@@ -3,3 +3,5 @@
 #include "lint.h"
 
 int expr_datatype (char *module, int lineno, struct expr_str *p);
+void ensure_bool (char *module, int lineno, struct expr_str *s, int notnull);
+

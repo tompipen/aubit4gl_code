@@ -981,7 +981,7 @@ int cnt;
  		struct command *r2;
 		int last_was_sql=0;
 			int done=0;
-	      ensure_bool (if_c->conditions.conditions_val[b].test_expr, 0);
+	      ensure_bool (r->module,  if_c->conditions.conditions_val[b].lineno, if_c->conditions.conditions_val[b].test_expr, 0);
 
 
 
@@ -2362,7 +2362,7 @@ check_module (struct module_definition *d)
 	  if (!used)
 	    {
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
-	      A4GL_lint (0, all_cmds->cmds.cmds_val[a]->lineno, "PREPARENOTUSED", "Prepared statement is not used",
+	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, "PREPARENOTUSED", "Prepared statement is not used",
 			 A4GL_strip_quotes (lint_get_ident_as_string
 					    (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)));
 
@@ -4192,8 +4192,9 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
   }
 
 
-  if (module_in == 0 && dbg)
+  if (module_in == 0 )
     {
+	A4GL_pause_execution();
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
     }
@@ -5121,7 +5122,7 @@ cache_expressions (struct expr_str_list *list, struct commands *cmds)
 	    ifcmd = &c->cmd_data.command_data_u.if_cmd;
 	    for (b = 0; b < ifcmd->truths.conditions.conditions_len; b++)
 	      {
-		ensure_bool (ifcmd->truths.conditions.conditions_val[b].test_expr, 0);
+		ensure_bool (c->module, ifcmd->truths.conditions.conditions_val[b].lineno, ifcmd->truths.conditions.conditions_val[b].test_expr, 0);
 		cache_expression (list, &ifcmd->truths.conditions.conditions_val[b].test_expr);
 	      }
 	  }

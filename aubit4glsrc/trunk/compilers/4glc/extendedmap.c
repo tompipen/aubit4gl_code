@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.9 2008-11-12 10:01:21 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.10 2009-04-01 11:55:08 mikeaubury Exp $
 #*/
 
 
@@ -408,6 +408,27 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
       A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"*\"/>\n");
       return;
 
+
+    case E_SLI_BUILTIN_CONST_ROWID:
+      A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"USER\" TYPE=\"ROWID\" />\n");
+      return;
+    case E_SLI_BUILTIN_CONST_NULL:
+	return;
+
+    case E_SLI_QUERY:
+     	map_select_stmt ("SUBSELECT", p->data.s_select_list_item_data_u.subquery); 
+	return;
+
+
+case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+case E_SLI_VARIABLE_USAGE_LIST:
+		return;
+
+
+	case E_SLI_CAST_EXPR:
+    		map_select_list_item_i (stmttype, select,    	p->data.s_select_list_item_data_u.casting.expr);
+	return;
+
     case E_SLI_BUILTIN_CONST_CURRENT:
       A4GL_add_xmlmap (get_currmapset(), "<COLUMN NAME=\"CURRENT\" TYPE=\"BUILTIN\" />\n");
       return;
@@ -568,6 +589,7 @@ map_select_list_item_i (char *stmttype, struct s_select *select,
     case E_SLI_SUBQUERY_EXPRESSION:
       	/* map_select_list_item (stmttype, select, p->data.s_select_list_item_data_u.sq_expression.sq); */
       return;
+
 
 
     }
@@ -1316,6 +1338,11 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
     case E_SLI_BUILTIN_CONST_TIME:
     case E_SLI_BUILTIN_AGG_SUM:
     case E_SLI_BUILTIN_AGG_COUNT:
+    case E_SLI_BUILTIN_CONST_ROWID:
+    case E_SLI_BUILTIN_CONST_NULL:
+    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+    case E_SLI_VARIABLE_USAGE_LIST:
+    case E_SLI_CAST_EXPR:
 
       return 0;
     case E_SLI_UNITS_YEAR: return 0 ;
@@ -1335,6 +1362,8 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
 
     case E_SLI_NOT_IN_VALUES:
       return 0;
+
+
 
 
     case E_SLI_IN_SELECT:
@@ -1416,10 +1445,10 @@ static int find_subqueries (char *stmttype, struct s_select *select, struct s_se
     case E_SLI_CASE_ELEMENT:
       return 0;
 
+    case E_SLI_QUERY:
     case E_SLI_SUBQUERY:
-	subq_stmts[stmts_cnt]=p->data.s_select_list_item_data_u.subquery;
+	subq_stmts[stmts_cnt++]=p->data.s_select_list_item_data_u.subquery;
 	//subq_selects[stmts_cnt++]=select;
-
      	 //map_select_stmt ("SUBSELECT", p->expr_str_u.subquery); */
       return 0;
 

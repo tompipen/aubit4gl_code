@@ -46,7 +46,11 @@ struct s_function_prototype
 struct s_nodes
 {
   char *function;
+  int lineno;
+  char *module;
   char *calls;
+  int checked;
+	char type;
 };
 
 struct s_nodes *nodes = 0;
@@ -86,7 +90,6 @@ struct function *functions = 0;
 int functions_cnt = 0;
 
 FILE *output = 0;
-FILE *dot_output = 0;
 
 
 
@@ -102,13 +105,18 @@ int simpleGraph = 1;
 int printAllFuncs = 0;
 
 static int
-hasNode (char *fname, char *calls)
+hasNode (char *fname, char *calls,int lineno)
 {
   int a;
-  for (a = 0; a < nodescnt; a++)
+  for (a = 0; a < nodescnt; a++) 
     {
-      if (strcmp (nodes[a].function, fname) == 0 && strcmp (nodes[a].calls, calls) == 0)
-	return 1;
+
+
+  	if (simpleGraph)  {
+      		if (strcmp (nodes[a].function, fname) == 0 && strcmp (nodes[a].calls, calls) == 0) return 1;
+	} else {
+      		if ((lineno==nodes[a].lineno || lineno==-1) && strcmp (nodes[a].function, fname) == 0 && strcmp (nodes[a].calls, calls) == 0) return 1;
+	}
     }
   return 0;
 }
@@ -116,41 +124,165 @@ hasNode (char *fname, char *calls)
 
 
 static void
-addNode (char *fname, char *calls)
+addNode (char *fname, char *calls,char *module, int line,char *type)
 {
-  if (!hasNode (fname, calls))
+  if (!hasNode (fname, calls,line))
     {
       nodescnt++;
       nodes = realloc (nodes, sizeof (struct s_nodes) * nodescnt);
       nodes[nodescnt - 1].function = strdup (fname);
       nodes[nodescnt - 1].calls = strdup (calls);
+      nodes[nodescnt - 1].lineno = line;
+      nodes[nodescnt - 1].module = module; /* This is only used when 'calls' = NODE_FUNC_DEFINED */
+      nodes[nodescnt - 1].type=type[0];
+      nodes[nodescnt - 1].checked=0;
     }
 }
 
 #define NODE_FUNC_DEFINED "**DEFINED**"
 
 static void
-addFunction (char *fname)
+addFunction (char *fname, char *module, int line,char *type)
+
 {
-  addNode (fname, NODE_FUNC_DEFINED);
+  addNode (fname, NODE_FUNC_DEFINED,module,line,type);
 }
 
+
+/* 
+Create a new function definition for any function which are *called* but not defined
+These are most likely to be C functions ...
+
+*/
+static void check_for_undefined_functions(void) {
+	int a;
+	for (a=0;a<nodescnt;a++) {
+      		if (!hasNode (nodes[a].calls, NODE_FUNC_DEFINED, -1) || printAllFuncs) {
+			addNode (nodes[a].calls, NODE_FUNC_DEFINED,"undefined",0,"U");
+		}
+	}
+}
+
+
+static void check_for_orphaned_functions(char *topfuncname) {
+	int a;
+	int topfuncno=-1;
+
+	
+	for (a=0;a<nodescnt;a++) {
+		if (strcmp(topfuncname,nodes[a].function)==0) {
+			if (strcmp(nodes[a].calls,NODE_FUNC_DEFINED)==0) {
+				if (nodes[a].checked) return; /* Its already been checked */
+				topfuncno=a;
+			}
+		}
+	}
+
+
+	if (topfuncno==-1) return; // Couldn't find it..
+
+	nodes[topfuncno].checked=1; /* We've checked it now... */
+
+	for (a=0;a<nodescnt;a++) {
+		if (strcmp(topfuncname,nodes[a].function)==0) {
+			if (strcmp(nodes[a].calls,NODE_FUNC_DEFINED)==0) {
+				continue;
+			}
+			nodes[a].checked=1;
+			check_for_orphaned_functions(nodes[a].calls);
+		}
+	}
+}
+
+
 static void
-printNodes (void)
+printDot (void)
 {
-  if (simpleGraph)
+  FILE *dot_output = 0;
+  int a;
+  dot_output = fopen ("calltree.dot", "w");
+
+  if (dot_output == 0)
     {
-      int a;
-      for (a = 0; a < nodescnt; a++)
+      printf ("Unable to open output file (calltree.dot)\n");
+      exit (2);
+    }
+
+  fprintf (dot_output, "digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
+  fprintf (dot_output, "rankdir=LR;\nratio=fill;\nsplines=polyline;\noverlap=vpsc;\n");
+
+  check_for_undefined_functions();
+  check_for_orphaned_functions("MAIN");
+
+
+  for (a = 0; a < nodescnt; a++)
+    {
+      if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
 	{
-	  if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
-	    continue;		// ignore this one - its just a placeholder...
-	  if (hasNode (nodes[a].calls, NODE_FUNC_DEFINED) || printAllFuncs)
+	  // Its our function definition placeholder...
+
+	if (nodes[a].checked==0) continue;
+
+	switch (nodes[a].type) {
+		case 'M': /* Main */
+	      fprintf (dot_output,
+		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		       nodes[a].function, nodes[a].function,
+		       nodes[a].module, nodes[a].lineno);
+			break;
+
+		case 'F': /* Function */
+	      		fprintf (dot_output,
+		       		"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		       		nodes[a].function, nodes[a].function,
+		       		nodes[a].module, nodes[a].lineno);
+			break;
+	
+		case 'R': /* Report */
+	  		fprintf (dot_output,
+		   		"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		   		nodes[a].function, nodes[a].function,
+		   		nodes[a].module, nodes[a].lineno);
+					break;
+		case 'U': /* Undefined */
+			if (printAllFuncs) {
+	  			fprintf (dot_output,
+		   			"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#f0f0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		   			nodes[a].function, nodes[a].function,
+		   			nodes[a].module, nodes[a].lineno);
+						break;
+			}
+	}
+    }
+	}
+
+
+
+  for (a = 0; a < nodescnt; a++)
+    {
+
+      if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
+	continue;		// ignore this one - its just a placeholder...
+
+      if (nodes[a].checked==0) continue;
+
+
+      if (hasNode (nodes[a].calls, NODE_FUNC_DEFINED, -1) || printAllFuncs)
+	{
+	  if (simpleGraph)
 	    {
-	      fprintf (dot_output, "%s -> %s\n", nodes[a].function, nodes[a].calls);
+	      fprintf (dot_output, "%s -> %s\n", nodes[a].function,
+		       nodes[a].calls);
+	    }
+	  else
+	    {
+	      fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n",
+		       nodes[a].function, nodes[a].calls, nodes[a].lineno);
 	    }
 	}
     }
+  fprintf (dot_output, "}\n");
+  fclose (dot_output);
 }
 
 
@@ -825,17 +957,9 @@ cache_expression (char *s, expr_str ** ptr, int mode)
 	{
 	  if (!system_function (expr->expr_str_u.expr_function_call->fname))
 	    {
-	      if (!simpleGraph)
-		{
-		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, expr->expr_str_u.expr_function_call->fname,
-			   expr->expr_str_u.expr_function_call->line);
-		}
-	      else
-		{
-		  addNode (currfunc, expr->expr_str_u.expr_function_call->fname);
-		}
+		  addNode (currfunc, expr->expr_str_u.expr_function_call->fname,"",expr->expr_str_u.expr_function_call->line,"C");
 
-	      //fprintf (dot_output, "%s -> %s\n", currfunc, expr->expr_str_u.expr_function_call->fname, expr->expr_str_u.expr_function_call->line);
+
 	      print_indent ();
 	      fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname,
 		       expr->expr_str_u.expr_function_call->line);
@@ -1201,14 +1325,7 @@ print_whenever (int mode)
 	  fprintf (output, "<WHENEVER TYPE=\"ERROR\">");
 	  fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>", whenever_error_func, whenever_error_func_line);
 	  fprintf (output, "</WHENEVER>\n");
-	  if (!simpleGraph)
-	    {
-	      fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc, whenever_error_func, whenever_error_func_line);
-	    }
-	  else
-	    {
-	      addNode (currfunc, whenever_error_func);
-	    }
+	      addNode (currfunc, whenever_error_func, "",whenever_error_func_line,"C");
 	}
       cnt++;
     }
@@ -1575,13 +1692,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	      fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n",
 		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,
 		       func_commands->cmds.cmds_val[a]->lineno);
-	      if (!simpleGraph)
-		{
-		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc,
-			   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,
-			   func_commands->cmds.cmds_val[a]->lineno);
-		}
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname);
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,"C");
 	    }
 	  call_cnt++;
 	  break;
@@ -1593,13 +1704,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	      fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n",
 		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,
 		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname);
-	      if (!simpleGraph)
-		{
-		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc,
-			   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,
-			   func_commands->cmds.cmds_val[a]->lineno);
-		}
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,"C");
 	    }
 	  call_cnt++;
 	  break;
@@ -1612,13 +1717,7 @@ add_calltree_calls (char *s, commands * func_commands, int mode)
 	      fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n",
 		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,
 		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname);
-	      if (!simpleGraph)
-		{
-		  fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n", currfunc,
-			   func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,
-			   func_commands->cmds.cmds_val[a]->lineno);
-		}
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,"C");
 	    }
 	  call_cnt++;
 	  break;
@@ -2023,12 +2122,6 @@ check_program (module_definition * mods, int nmodules)
       printf ("Unable to open output file (calltree.xml)\n");
       exit (2);
     }
-  dot_output = fopen ("calltree.dot", "w");
-  if (dot_output == 0)
-    {
-      printf ("Unable to open output file (calltree.dot)\n");
-      exit (2);
-    }
 
 
   if (incProg)
@@ -2057,8 +2150,6 @@ check_program (module_definition * mods, int nmodules)
     }
 
 
-  fprintf (dot_output, "digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
-  fprintf (dot_output, "rankdir=LR;\nratio=fill;\n");
 
   for (a = 0; a < functions_cnt; a++)
     {
@@ -2073,23 +2164,15 @@ check_program (module_definition * mods, int nmodules)
 	  struct s_function_definition *f;
 	  strcpy (currfunc, functions[a].function);
 	  strcpy (currmod, functions[a].module);
-	  addFunction (currfunc);
+	
+	  if (strcmp (functions[a].function, "MAIN") == 0) {
+	   	addFunction (currfunc, functions[a].module, functions[a].line,"M");
+	  } else {
+	        addFunction (currfunc, functions[a].module, functions[a].line,"F");
+	  }
 
-	  if (strcmp (functions[a].function, "MAIN") == 0)
-	    {
-	      fprintf (dot_output,
-		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		       functions[a].function, functions[a].function, functions[a].module, functions[a].line);
-	    }
-	  else
-	    {
-	      fprintf (dot_output,
-		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		       functions[a].function, functions[a].function, functions[a].module, functions[a].line);
-	    }
 
-	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n",
-		   functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
 	  f = functions[a].ptr;
 	  indent++;
 	  print_indent ();
@@ -2107,11 +2190,11 @@ check_program (module_definition * mods, int nmodules)
 	  int b;
 	  struct s_report_definition *r;
 	  strcpy (currfunc, functions[a].function);
-	  addFunction (currfunc);
+	  addFunction (currfunc,  functions[a].module, functions[a].line, "R");
 	  strcpy (currmod, functions[a].module);
-	  fprintf (dot_output,
-		   "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		   functions[a].function, functions[a].function, functions[a].module, functions[a].line);
+
+
+
 	  if (functions[a].f_or_r == 'P')
 	    {
 	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"PDFREPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n",
@@ -2173,10 +2256,8 @@ check_program (module_definition * mods, int nmodules)
     }
 
 
-  printNodes ();
-  fprintf (dot_output, "}\n");
+  printDot ();
   fclose (output);
-  fclose (dot_output);
   return 1;
 }
 

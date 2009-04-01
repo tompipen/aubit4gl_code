@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.47 2009-03-01 11:44:15 mikeaubury Exp $
+# $Id: Makefile,v 1.48 2009-04-01 11:55:08 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -195,6 +195,7 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 
 ../fcompile/form_x.h:
 	${MAKE} -C ../fcompile rpc
+commands.o: commands.c expr_as_string_when_possible.c
 
 API_lex.c: API_lex.spec ../../incl/a4gl_API_lex.h    ../../incl/a4gl_API_lex_lib.h
 	${SH} ../../lib/bin/dlmagic $< > $@
@@ -316,11 +317,11 @@ reload_static:  ../../bin/reload_static
 ../../bin/reload_static : reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c mod.c
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
-../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c 
+../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 	#cp fgllint $(AUBITDIR)/bin
 
-
+calltree_expr.o: expr_as_string_when_possible.c
 
 fglcalltree:../../bin/fglcalltree
 ../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o

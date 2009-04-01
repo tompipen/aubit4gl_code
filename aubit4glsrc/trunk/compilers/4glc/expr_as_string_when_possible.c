@@ -56,7 +56,6 @@ char *
 expr_as_string_when_possible (expr_str * e)
 {
 
-  FILE *f;
   switch (e->expr_type)
     {
     case ET_EXPR_LITERAL_EMPTY_STRING:
@@ -393,7 +392,6 @@ expr_as_string_when_possible (expr_str * e)
 
     case ET_EXPR_DAY_FUNC:
       {
-	char *p;
 	char buff[256];
 	sprintf (buff, "DAY(%s)", expr_as_string_when_possible (e->expr_str_u.expr_expr));
 	return strdup (buff);
@@ -403,7 +401,6 @@ expr_as_string_when_possible (expr_str * e)
     case ET_EXPR_YEAR_FUNC:
 
       {
-	char *p;
 	char buff[256];
 	sprintf (buff, "YEAR(%s)", expr_as_string_when_possible (e->expr_str_u.expr_expr));
 	return strdup (buff);

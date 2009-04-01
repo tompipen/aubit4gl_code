@@ -715,7 +715,7 @@ char *A4GL_get_current_comments(int lineno,int colno);
 void add_to_str_list_set_record(struct str_list *sl, struct s_full_col *sfc);
 char *vorl_as_string(struct expr_str *v);
 //void A4GL_lint (char *module, int line, char *code, char *type, char *extra);
-void ensure_bool (struct expr_str *s, int notnull);
+//void ensure_bool (char *module, int lineno, struct expr_str *s, int notnull);
 void map_prepare(char *p_stmt, char *sql);
 enum e_scope find_variable_scope (char *s_in);
 char *rettype (char *s);

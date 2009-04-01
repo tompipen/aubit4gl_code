@@ -7,25 +7,24 @@ static int madmath(char *module, int lineno, expr_str *p) ;
 extern int yylineno;
 
 
-void ensure_dtype (struct expr_str *e, int dtype, int nonull);
-void ensure_bool (struct expr_str *s, int notnull);
-void ensure_smint (struct expr_str *s, int notnull);
-void ensure_char (struct expr_str *s, int notnull);
-void ensure_dtime (struct expr_str *s, int notnull);
-void ensure_date (struct expr_str *s, int notnull);
-void ensure_int (struct expr_str *s, int notnull);
-void ensure_decimal (struct expr_str *s, int notnull);
-void ensure_money (struct expr_str *s, int notnull);
-void ensure_float (struct expr_str *s, int notnull);
-void ensure_smfloat (struct expr_str *s, int notnull);
-void ensure_interval (struct expr_str *s, int notnull);
-void ensure_byte (struct expr_str *s, int notnull);
+static void ensure_dtype (char *module,int lineno ,struct expr_str *e, int dtype, int nonull);
+static void ensure_smint (struct expr_str *s, int notnull);
+static void ensure_char (struct expr_str *s, int notnull);
+static void ensure_dtime (struct expr_str *s, int notnull);
+static void ensure_date (struct expr_str *s, int notnull);
+static void ensure_int (struct expr_str *s, int notnull);
+static void ensure_decimal (struct expr_str *s, int notnull);
+static void ensure_money (struct expr_str *s, int notnull);
+static void ensure_float (struct expr_str *s, int notnull);
+static void ensure_smfloat (struct expr_str *s, int notnull);
+static void ensure_interval (struct expr_str *s, int notnull);
+static void ensure_byte (struct expr_str *s, int notnull);
 //void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
 static void fix_compare (char *module,int lineno, char *op, struct expr_str *s);
-void force_float (struct expr_str *s);
+static void force_float (struct expr_str *s);
 
 void
-ensure_dtype (struct expr_str *e, int dtype, int notnull)
+ensure_dtype (char *module, int lineno, struct expr_str *e, int dtype, int notnull)
 {
 
   dtype = dtype & DTYPE_MASK;
@@ -74,7 +73,7 @@ ensure_dtype (struct expr_str *e, int dtype, int notnull)
       ensure_byte (e, notnull);
       return;
     case FAKE_DTYPE_BOOL:
-      ensure_bool (e, notnull);
+      ensure_bool (module,lineno, e, notnull);
       return;
     }
 
@@ -243,7 +242,7 @@ ensure_money (struct expr_str *s, int notnull)
 }
 
 void
-ensure_bool (struct expr_str *s, int notnull)
+ensure_bool (char *module, int lineno, struct expr_str *s, int notnull)
 {
   //struct expr_str *p;
   //int d;
@@ -252,11 +251,11 @@ ensure_bool (struct expr_str *s, int notnull)
 
   if (s->expr_type == ET_EXPR_OP_NOT_EQUAL)
     {
-      fix_compare (0,0, "<>", s);
+      fix_compare (module,lineno, "<>", s);
     }
   if (s->expr_type == ET_EXPR_OP_EQUAL)
     {
-      fix_compare (0,0, "=", s);
+      fix_compare (module,lineno, "=", s);
     }
 
 
@@ -268,13 +267,13 @@ ensure_bool (struct expr_str *s, int notnull)
     case ET_EXPR_FALSE:
       return;
     case ET_EXPR_OP_OR:
-      ensure_bool (s->expr_str_u.expr_op->left, notnull);
-      ensure_bool (s->expr_str_u.expr_op->right, notnull);
+      ensure_bool (module,lineno,s->expr_str_u.expr_op->left, notnull);
+      ensure_bool (module,lineno,s->expr_str_u.expr_op->right, notnull);
       return;
 
     case ET_EXPR_OP_AND:
-      ensure_bool (s->expr_str_u.expr_op->left, notnull);
-      ensure_bool (s->expr_str_u.expr_op->right, notnull);
+      ensure_bool (module,lineno,s->expr_str_u.expr_op->left, notnull);
+      ensure_bool (module,lineno,s->expr_str_u.expr_op->right, notnull);
       return;
 
     case ET_EXPR_OP_ISNULL:
@@ -287,7 +286,7 @@ ensure_bool (struct expr_str *s, int notnull)
       ensure_char (s->expr_str_u.expr_op->right, 1);
       return;
     case ET_EXPR_NOT:
-      ensure_bool (s->expr_str_u.expr_expr, notnull);
+      ensure_bool (module,lineno,s->expr_str_u.expr_expr, notnull);
       return;
 
     case ET_EXPR_OP_NOT_EQUAL:
@@ -301,8 +300,8 @@ ensure_bool (struct expr_str *s, int notnull)
 
 /* ANY CHANGES HERE SHOULD BE IN THIS IN THE expr_datatype bit too */
 
-      l = expr_datatype (0,0,s->expr_str_u.expr_op->left) & DTYPE_MASK;
-      r = expr_datatype (0,0,s->expr_str_u.expr_op->right) & DTYPE_MASK;
+      l = expr_datatype (module,lineno,s->expr_str_u.expr_op->left) & DTYPE_MASK;
+      r = expr_datatype (module,lineno,s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
 
 
@@ -318,94 +317,94 @@ ensure_bool (struct expr_str *s, int notnull)
 
 	  if (l == DTYPE_DECIMAL && r == DTYPE_INT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_DECIMAL && r == DTYPE_SMINT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_DECIMAL && r == DTYPE_FLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_DECIMAL && r == DTYPE_SMFLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_DECIMAL && r == DTYPE_MONEY)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 
 	  if (l == DTYPE_MONEY && r == DTYPE_DECIMAL)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_MONEY && r == DTYPE_INT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_MONEY && r == DTYPE_SMINT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_MONEY && r == DTYPE_FLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (l == DTYPE_MONEY && r == DTYPE_SMFLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_MONEY && l == DTYPE_INT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_MONEY && l == DTYPE_SMINT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_MONEY && l == DTYPE_FLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_MONEY, 0);
 	      fixed++;
 	    }
 
@@ -414,25 +413,25 @@ ensure_bool (struct expr_str *s, int notnull)
 
 	  if (r == DTYPE_DECIMAL && l == DTYPE_INT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_DECIMAL && l == DTYPE_SMINT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_DECIMAL && l == DTYPE_FLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_DECIMAL && l == DTYPE_SMFLOAT)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
 	      fixed++;
 	    }
 
@@ -458,22 +457,22 @@ ensure_bool (struct expr_str *s, int notnull)
 
 	  if (l == DTYPE_CHAR && r == DTYPE_VCHAR)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
 	      fixed++;
 	    }
 
 	  if (r == DTYPE_CHAR && l == DTYPE_VCHAR)
 	    {
-	      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
-	      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_CHAR, 0);
+	      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_CHAR, 0);
 	      fixed++;
 	    }
 	  if (!fixed)
 	    {
 	      char buff[256];
 	      sprintf (buff, "'%s'!='%s' @ %d", dtype_as_string (l), dtype_as_string (r), yylineno);
-	      A4GL_lint (0, 0, "DIFFCOMP", "Different types in comparison", buff);
+	      A4GL_lint (module, lineno, "DIFFCOMP", "Different types in comparison", buff);
 	      //A4GL_lint(buff );
 	    }
 
@@ -588,25 +587,25 @@ fix_compare (char *module, int lineno, char *op, struct expr_str *s)
 
   if (l == DTYPE_DECIMAL && r == DTYPE_INT)
     {
-      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
       fixed++;
     }
 
   if (l == DTYPE_DECIMAL && r == DTYPE_SMINT)
     {
-      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
       fixed++;
     }
 
   if (l == DTYPE_DECIMAL && r == DTYPE_FLOAT)
     {
-      ensure_dtype (s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+      ensure_dtype (module,lineno,s->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
       fixed++;
     }
 
   if (r == DTYPE_DECIMAL && l == DTYPE_FLOAT)
     {
-      ensure_dtype (s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+      ensure_dtype (module,lineno,s->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
       fixed++;
     }
 
@@ -874,7 +873,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
       return p->expr_str_u.expr_tmp->dtype;
 
     case ET_EXPR_NOT:
-      ensure_bool (p->expr_str_u.expr_expr, 0);
+      ensure_bool (module,lineno, p->expr_str_u.expr_expr, 0);
       return FAKE_DTYPE_BOOL;
 
     case ET_EXPR_TODAY:
@@ -900,8 +899,8 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
       return DTYPE_DTIME;
     case ET_EXPR_OP_OR:
     case ET_EXPR_OP_AND:
-      ensure_bool (p->expr_str_u.expr_op->left, 0);
-      ensure_bool (p->expr_str_u.expr_op->right, 0);
+      ensure_bool (module,lineno, p->expr_str_u.expr_op->left, 0);
+      ensure_bool (module,lineno, p->expr_str_u.expr_op->right, 0);
       return DTYPE_INT;		// Actually boolean
     case ET_EXPR_CAST:
       return p->expr_str_u.expr_cast->target_dtype;
@@ -1077,7 +1076,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 
 	if (l==DTYPE_DATE && r==DTYPE_DATE ) {
 		strcpy(buff,"+ on two DATEs");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (+)", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation (+)", buff);
 		return DTYPE_DATE;
 	}
 
@@ -1089,7 +1088,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 
 	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
 		strcpy(buff,"+ involving a CHARs");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation", buff);
 		return DTYPE_FLOAT;
 	}
 
@@ -1177,7 +1176,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	{
 	  ensure_smint (p->expr_str_u.expr_op->left, 0);
 	  ensure_smint (p->expr_str_u.expr_op->right, 0);
-	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  A4GL_lint (module, lineno, "BOOLMATH", "BOOLEAN used in maths operation", 0);
 	  return DTYPE_SMINT;
 	}
 
@@ -1185,7 +1184,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	{
 	  ensure_smint (p->expr_str_u.expr_op->left, 0);
 	  ensure_smint (p->expr_str_u.expr_op->right, 0);
-	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  A4GL_lint (module, lineno, "BOOLMATH", "BOOLEAN used in maths operation", 0);
 	  return DTYPE_SMINT;
 	}
 
@@ -1194,7 +1193,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	{
 	  ensure_int (p->expr_str_u.expr_op->left, 0);
 	  ensure_int (p->expr_str_u.expr_op->right, 0);
-	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  A4GL_lint (module, lineno, "BOOLMATH", "BOOLEAN used in maths operation", 0);
 	  return DTYPE_INT;
 	}
 
@@ -1202,7 +1201,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	{
 	  ensure_int (p->expr_str_u.expr_op->left, 0);
 	  ensure_int (p->expr_str_u.expr_op->right, 0);
-	  A4GL_lint (0, 0, "BOOLMATH", "BOOLEAN used in maths operation", 0);
+	  A4GL_lint (module, lineno, "BOOLMATH", "BOOLEAN used in maths operation", 0);
 	  return DTYPE_INT;
 	}
 
@@ -1284,7 +1283,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	}
 
       sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
-      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation", buff);
+      A4GL_lint (module, lineno, "DIFFMATH", "Different types in operation", buff);
       fprintf (stderr, "UNHANDLED ADD %d(%s) %d(%s) (%x %x)\n",
 	       p->expr_str_u.expr_op->left->expr_type,
 	       expr_name (p->expr_str_u.expr_op->left->expr_type),
@@ -1303,12 +1302,12 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 
 	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
 		strcpy(buff,"/ involving a DATEs");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
 		return DTYPE_DATE;
 	}
 	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
 		strcpy(buff,"/ involving a CHARs");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation", buff);
 		return DTYPE_FLOAT;
 	}
 
@@ -1316,29 +1315,29 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	{
 	  force_float (p->expr_str_u.expr_op->left);
 	  force_float (p->expr_str_u.expr_op->right);
-	  ensure_dtype (p, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p, DTYPE_FLOAT, 0);
 	  return DTYPE_FLOAT;
 	}
 
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
-	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, DTYPE_DECIMAL, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, DTYPE_DECIMAL, 0);
 	  return DTYPE_DECIMAL;
 	}
 
       if (l == DTYPE_INT || l == DTYPE_SMINT || l == DTYPE_FLOAT || l == DTYPE_SMFLOAT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
-	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
 	  l = DTYPE_FLOAT;
 	}
 
       if (r == DTYPE_INT || r == DTYPE_SMINT || r == DTYPE_FLOAT || r == DTYPE_SMFLOAT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
-	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
 	  r = DTYPE_FLOAT;
 	}
 
@@ -1353,7 +1352,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	return DTYPE_FLOAT;
 
       sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
-      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (/)", buff);
+      A4GL_lint (module, lineno, "DIFFMATH", "Different types in operation (/)", buff);
 
       fprintf (stderr, "UNHANDLED DIV %d(%s) %d(%s) (%x %x)\n",
 	       p->expr_str_u.expr_op->left->expr_type,
@@ -1374,12 +1373,12 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 
 	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
 		strcpy(buff,"* on DATE");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
 		return DTYPE_DATE;
 	}
 	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
 		strcpy(buff,"* involving a CHARs");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation", buff);
 		return DTYPE_FLOAT;
 	}
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
@@ -1453,7 +1452,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	  return DTYPE_MONEY;
 	}
       sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
-      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (*)", buff);
+      A4GL_lint (module, lineno, "DIFFMATH", "Different types in operation (*)", buff);
       fprintf (stderr, "UNHANDLED MULT %d(%s) %d(%s) (%x %x)\n",
 	       p->expr_str_u.expr_op->left->expr_type,
 	       expr_name (p->expr_str_u.expr_op->left->expr_type),
@@ -1474,7 +1473,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 
 	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
 		strcpy(buff,"- involving a CHARs");
-      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+      		A4GL_lint (module, lineno, "MADMATH", "Datatypes make no sense in this operation", buff);
 		return DTYPE_FLOAT;
 	}
 
@@ -1524,34 +1523,34 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	}
       if (l == DTYPE_INT && r == DTYPE_FLOAT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
 	  l = DTYPE_FLOAT;
 	}
       if (r == DTYPE_INT && l == DTYPE_FLOAT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
 	  r = DTYPE_FLOAT;
 	}
       if (l == DTYPE_SMINT && r == DTYPE_FLOAT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, DTYPE_FLOAT, 0);
 	  l = DTYPE_FLOAT;
 	}
       if (r == DTYPE_SMINT && l == DTYPE_FLOAT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, DTYPE_FLOAT, 0);
 	  r = DTYPE_FLOAT;
 	}
 
       if (l == DTYPE_SMINT && r == DTYPE_INT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->left, DTYPE_INT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, DTYPE_INT, 0);
 	  l = DTYPE_INT;
 	}
 
       if (r == DTYPE_SMINT && l == DTYPE_INT)
 	{
-	  ensure_dtype (p->expr_str_u.expr_op->right, DTYPE_INT, 0);
+	  ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, DTYPE_INT, 0);
 	  r = DTYPE_INT;
 	}
 
@@ -1656,7 +1655,7 @@ expr_datatype (char *module,int lineno, struct expr_str *p)
 	}
 
       sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
-      A4GL_lint (0, 0, "DIFFMATH", "Different types in operation (-)", buff);
+      A4GL_lint (module, lineno, "DIFFMATH", "Different types in operation (-)", buff);
 
       fprintf (stderr, "UNHANDLED SUB %d(%s) %d(%s) (%x %x)\n",
 	       p->expr_str_u.expr_op->left->expr_type,
@@ -1784,12 +1783,12 @@ while (1) {
                         }
 			if (p->expr_str_u.expr_op->left) {
 				if (dtype_left!=operations[a].cast_left) {
-					ensure_dtype (p->expr_str_u.expr_op->left, operations[a].cast_left, 0);
+					ensure_dtype (module,lineno,p->expr_str_u.expr_op->left, operations[a].cast_left, 0);
 				}
 			}
 			if (p->expr_str_u.expr_op->right) {
                                 if (dtype_right!=operations[a].cast_right) {
-                                        ensure_dtype (p->expr_str_u.expr_op->right, operations[a].cast_right, 0);
+                                        ensure_dtype (module,lineno,p->expr_str_u.expr_op->right, operations[a].cast_right, 0);
                                 }
 			}
 			
