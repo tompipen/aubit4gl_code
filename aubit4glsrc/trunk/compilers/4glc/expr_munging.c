@@ -1,10 +1,7 @@
-#include "a4gl_libaubit4gl.h"
-#include "a4gl_expr.h"
-#include "lint.h"
+#include "expr_munging.h"
 #include "parsehelp.h"
 
-
-static int madmath(expr_str *p) ;
+static int madmath(char *module, int lineno, expr_str *p) ;
 
 #define FAKE_DTYPE_BOOL 90
 extern int yylineno;
@@ -23,11 +20,9 @@ void ensure_float (struct expr_str *s, int notnull);
 void ensure_smfloat (struct expr_str *s, int notnull);
 void ensure_interval (struct expr_str *s, int notnull);
 void ensure_byte (struct expr_str *s, int notnull);
-int expr_datatype (struct expr_str *p);
 //void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
-void fix_compare (char *op, struct expr_str *s);
+static void fix_compare (char *module,int lineno, char *op, struct expr_str *s);
 void force_float (struct expr_str *s);
-//struct expr_str *get_expr_datatype(int n) ;
 
 void
 ensure_dtype (struct expr_str *e, int dtype, int notnull)
@@ -92,7 +87,7 @@ void
 ensure_char (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0, s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_CHAR || (d & DTYPE_MASK) == DTYPE_VCHAR)
@@ -106,7 +101,7 @@ void
 ensure_dtime (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_DTIME)
@@ -119,7 +114,7 @@ void
 ensure_byte (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_BYTE || (d & DTYPE_MASK) == DTYPE_TEXT)
@@ -136,7 +131,7 @@ void
 ensure_interval (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_INTERVAL)
@@ -156,7 +151,7 @@ void
 ensure_float (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_FLOAT)
@@ -169,7 +164,7 @@ void
 ensure_smfloat (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_SMFLOAT)
@@ -182,7 +177,7 @@ void
 ensure_date (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_DATE)
@@ -197,7 +192,7 @@ ensure_int (struct expr_str *s, int notnull)
   int d;
   if (!notnull)
     {
-      d = expr_datatype (s);
+      d = expr_datatype (0,0,s);
       if (((d & DTYPE_MASK) == DTYPE_INT) && notnull == 0)
 	return;
       if (s->expr_type == ET_EXPR_LITERAL_LONG)
@@ -212,7 +207,7 @@ void
 ensure_smint (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_SMINT)
@@ -225,7 +220,7 @@ void
 ensure_decimal (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_DECIMAL)
@@ -238,7 +233,7 @@ void
 ensure_money (struct expr_str *s, int notnull)
 {
   int d;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
   if (!notnull)
     {
       if ((d & DTYPE_MASK) == DTYPE_MONEY)
@@ -257,11 +252,11 @@ ensure_bool (struct expr_str *s, int notnull)
 
   if (s->expr_type == ET_EXPR_OP_NOT_EQUAL)
     {
-      fix_compare ("<>", s);
+      fix_compare (0,0, "<>", s);
     }
   if (s->expr_type == ET_EXPR_OP_EQUAL)
     {
-      fix_compare ("=", s);
+      fix_compare (0,0, "=", s);
     }
 
 
@@ -306,8 +301,8 @@ ensure_bool (struct expr_str *s, int notnull)
 
 /* ANY CHANGES HERE SHOULD BE IN THIS IN THE expr_datatype bit too */
 
-      l = expr_datatype (s->expr_str_u.expr_op->left) & DTYPE_MASK;
-      r = expr_datatype (s->expr_str_u.expr_op->right) & DTYPE_MASK;
+      l = expr_datatype (0,0,s->expr_str_u.expr_op->left) & DTYPE_MASK;
+      r = expr_datatype (0,0,s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
 
 
@@ -505,7 +500,7 @@ make_cast (struct expr_str *s, int target_dtype, int notnull, int force)
 {
   int d;
   struct expr_str *p;
-  d = expr_datatype (s);
+  d = expr_datatype (0,0,s);
 
   if (d == target_dtype && notnull == 0)
     return;			// Happy Days!
@@ -531,14 +526,14 @@ make_cast (struct expr_str *s, int target_dtype, int notnull, int force)
 
 
 void
-fix_compare (char *op, struct expr_str *s)
+fix_compare (char *module, int lineno, char *op, struct expr_str *s)
 {
   int l;
   int r;
   int fixed = 0;
 
-  l = expr_datatype (s->expr_str_u.expr_op->left) & DTYPE_MASK;
-  r = expr_datatype (s->expr_str_u.expr_op->right) & DTYPE_MASK;
+  l = expr_datatype (module, lineno, s->expr_str_u.expr_op->left) & DTYPE_MASK;
+  r = expr_datatype (module, lineno, s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
   if (strcmp (op, "=") == 0)
     {
@@ -666,10 +661,12 @@ fix_compare (char *op, struct expr_str *s)
 
 	}
     }
-  l = expr_datatype (s->expr_str_u.expr_op->left) & DTYPE_MASK;
-  r = expr_datatype (s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
-  //printf ("COMPARE %s %d %d\n", op, l, r);
+
+
+
+  l = expr_datatype (module,lineno, s->expr_str_u.expr_op->left) & DTYPE_MASK;
+  r = expr_datatype (module,lineno, s->expr_str_u.expr_op->right) & DTYPE_MASK;
 }
 
 
@@ -704,10 +701,9 @@ is_numeric (int n)
 int
 simple_expr_datatype (struct expr_str *p)
 {
-  int l;
-  int r;
-  //int a;
-  char buff[256];
+  //int l;
+  //int r;
+  //char buff[256];
   switch (p->expr_type)
     {
     case ET_EXPR_LITERAL_DOUBLE_STR:
@@ -804,7 +800,7 @@ simple_expr_datatype (struct expr_str *p)
 */
 
 int
-expr_datatype (struct expr_str *p)
+expr_datatype (char *module,int lineno, struct expr_str *p)
 {
   int l;
   int r;
@@ -817,7 +813,7 @@ expr_datatype (struct expr_str *p)
       return DTYPE_NULL;
 
     case ET_EXPR_CACHED:
-      return expr_datatype (get_expr_datatype (p->expr_str_u.expr_cached.cache_num));
+      return expr_datatype (module,lineno, get_cached_expr_datatype (p->expr_str_u.expr_cached.cache_num));
 
     case ET_EXPR_OP_SPACES:
       ensure_int (p->expr_str_u.expr_expr, 0);
@@ -857,9 +853,9 @@ expr_datatype (struct expr_str *p)
       return DTYPE_DATE;
 
     case ET_EXPR_NEG:
-      if (is_numeric (expr_datatype (p->expr_str_u.expr_expr)))
+      if (is_numeric (expr_datatype (module,lineno, p->expr_str_u.expr_expr)))
 	{
-	  return expr_datatype (p->expr_str_u.expr_expr);
+	  return expr_datatype (module,lineno, p->expr_str_u.expr_expr);
 	}
       if (p->expr_str_u.expr_expr == DTYPE_CHAR)
 	return DTYPE_FLOAT;
@@ -927,28 +923,28 @@ expr_datatype (struct expr_str *p)
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_NOT_EQUAL:
-      fix_compare ("<>", p);
+      fix_compare (module,lineno, "<>", p);
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
 
     case ET_EXPR_OP_GREATER_THAN:
-      fix_compare (">", p);
+      fix_compare (module,lineno, ">", p);
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_GREATER_THAN_EQ:
-      fix_compare (">=", p);
+      fix_compare (module,lineno, ">=", p);
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_LESS_THAN:
-      fix_compare ("<", p);
+      fix_compare (module,lineno, "<", p);
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_LESS_THAN_EQ:
-      fix_compare ("<=", p);
+      fix_compare (module,lineno, "<=", p);
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_EQUAL:
-      fix_compare ("=", p);
+      fix_compare (module,lineno, "=", p);
       return FAKE_DTYPE_BOOL;	// Actually a Boolean...
 
     case ET_EXPR_OP_NOT_IN:
@@ -1076,8 +1072,8 @@ expr_datatype (struct expr_str *p)
 
 
     case ET_EXPR_OP_ADD:
-      l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
-      r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+      l = expr_datatype (module,lineno, p->expr_str_u.expr_op->left) & DTYPE_MASK;
+      r = expr_datatype (module,lineno, p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
 	if (l==DTYPE_DATE && r==DTYPE_DATE ) {
 		strcpy(buff,"+ on two DATEs");
@@ -1117,7 +1113,7 @@ expr_datatype (struct expr_str *p)
 		  return DTYPE_DATE;
 		}
 	      PRINTF ("Not fixed date+interval %s\n", expr_name (right->expr_type));
-	      PRINTF ("dtype right = %d\n", expr_datatype (p->expr_str_u.expr_op->right));
+	      PRINTF ("dtype right = %d\n", expr_datatype (module,lineno, p->expr_str_u.expr_op->right));
 
 
 	      return DTYPE_DTIME;
@@ -1297,8 +1293,8 @@ expr_datatype (struct expr_str *p)
 
 /* -------------------------------------------------------------------------------- */
     case ET_EXPR_OP_DIV:
-      l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
-      r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+      l = expr_datatype (module,lineno, p->expr_str_u.expr_op->left) & DTYPE_MASK;
+      r = expr_datatype (module,lineno, p->expr_str_u.expr_op->right) & DTYPE_MASK;
       if (l == DTYPE_SERIAL)
 	l = DTYPE_INT;
       if (r == DTYPE_SERIAL)
@@ -1369,8 +1365,8 @@ expr_datatype (struct expr_str *p)
 /* -------------------------------------------------------------------------------- */
     case ET_EXPR_OP_MULT:
 
-      l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
-      r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+      l = expr_datatype (module,lineno, p->expr_str_u.expr_op->left) & DTYPE_MASK;
+      r = expr_datatype (module,lineno, p->expr_str_u.expr_op->right) & DTYPE_MASK;
       if (l == DTYPE_SERIAL)
 	l = DTYPE_INT;
       if (r == DTYPE_SERIAL)
@@ -1467,8 +1463,8 @@ expr_datatype (struct expr_str *p)
 
 /* -------------------------------------------------------------------------------- */
     case ET_EXPR_OP_SUB:
-      l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
-      r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+      l = expr_datatype (module,lineno, p->expr_str_u.expr_op->left) & DTYPE_MASK;
+      r = expr_datatype (module,lineno, p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
       if (l == DTYPE_SERIAL)
 	l = DTYPE_INT;
@@ -1520,7 +1516,7 @@ expr_datatype (struct expr_str *p)
 		  return DTYPE_DATE;
 		}
 	      fprintf (stderr, "Not fixed : %s (DATE-INTERVAL)\n", expr_name (right->expr_type));
-	      fprintf (stderr, "dtype right = %d\n", expr_datatype (p->expr_str_u.expr_op->right));
+	      fprintf (stderr, "dtype right = %d\n", expr_datatype (module,lineno, p->expr_str_u.expr_op->right));
 
 	      return DTYPE_DTIME;
 	    }
@@ -1671,7 +1667,7 @@ expr_datatype (struct expr_str *p)
 
 /* -------------------------------------------------------------------------------- */
     case ET_EXPR_BRACKET:
-      return expr_datatype (p->expr_str_u.expr_expr);
+      return expr_datatype (module,lineno, p->expr_str_u.expr_expr);
     case ET_EXPR_OP_POWER:
       return DTYPE_FLOAT;
     case ET_EXPR_AGGREGATE:
@@ -1703,7 +1699,7 @@ expr_datatype (struct expr_str *p)
 
 
 
-int madmath(expr_str *p) {
+int madmath(char *module, int lineno, expr_str *p) {
 struct s_operation {
         int left_dtype;
         int right_dtype;
@@ -1759,12 +1755,12 @@ dtype_left=-1;
 dtype_right=-1;
 
 if (p->expr_str_u.expr_op->left) {
-	dtype_left = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
+	dtype_left = expr_datatype (module,lineno, p->expr_str_u.expr_op->left) & DTYPE_MASK;
 }
 
 
 if (p->expr_str_u.expr_op->right) {
-	dtype_right = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
+	dtype_right = expr_datatype (module,lineno, p->expr_str_u.expr_op->right) & DTYPE_MASK;
 }
 
 

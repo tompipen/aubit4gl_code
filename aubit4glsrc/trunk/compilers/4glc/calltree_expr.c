@@ -17,7 +17,7 @@ upshift (char *a)
   strcpy (buff, a);
   for (i = 0; i < strlen (buff); i++)
     {
-      buff[i] = toupper (buff[i]);
+      buff[i] = a4gl_toupper (buff[i]);
     }
   return buff;
 }
@@ -36,7 +36,7 @@ downshift (char *a)
   strcpy (buff, a);
   for (i = 0; i < strlen (buff); i++)
     {
-      buff[i] = tolower (buff[i]);
+      buff[i] = a4gl_tolower (buff[i]);
     }
   return buff;
 }

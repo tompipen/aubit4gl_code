@@ -1,3 +1,6 @@
+#ifndef __A4GL_LINT_H__
+#define __A4GL_LINT_H__
+
 /*
 void check_module(struct module_definition *d);
 int check_program(module_definition *mods, int nmodules);
@@ -6,7 +9,7 @@ void A4GL_lint (char *module, int line, char *code, char *type, char *extra);
 */
 
 int add_global_variable_assignement(char *s, char *currfunc, char *module, int line);
-expr_str *get_expr_datatype(int n);
+expr_str *get_cached_expr_datatype(int n);
 char *dtype_as_string(int dtype);
 void lint_warnings(int n, struct lint_warning *v);
 int local_is_valid_vname(struct variable *v, enum e_scope scope);
@@ -29,3 +32,4 @@ char *lint_get_variable_usage_as_string (struct variable_usage *var_usage);
 char * lint_get_ident_as_string (struct module_definition *mod, struct expr_str *ptr);
 //char *expr_as_string_when_possible(expr_str *e);
 //void set_yytext(char *s);
+#endif

@@ -99,7 +99,7 @@ expr_as_string_when_possible (expr_str * e)
 
       {
 	static char smbuff[200];
-	sprintf (smbuff, " %d", e->expr_str_u.expr_long);
+	sprintf (smbuff, " %ld", e->expr_str_u.expr_long);
 	return smbuff;
       }
       break;

@@ -12,6 +12,7 @@
 
 int write_module_definition(struct module_definition *s,char *filename) {
 	A4GL_write_data_to_file("module_definition", s,filename);
+	return 1;
 }
 
 int read_module_definition(struct module_definition *s,char *filename) {

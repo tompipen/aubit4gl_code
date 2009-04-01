@@ -5,13 +5,14 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
 #include "linearise.h"
+#include "expr_munging.h"
+
 //expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
 int nomain = 0;
 char *decode_cmd_type(enum cmd_type value) ;
 int A4GL_is_valid_4gl_type (char *s);
 
 #define LINTMODULE_FOR_PROGRAM "[PROGRAM]"
-//expr_str* get_expr_datatype(int n);
 extern int yylineno;
 static int dbg = 0;
 char *lint_module = 0;
@@ -42,7 +43,7 @@ static void cache_expression (struct expr_str_list *list, struct expr_str **eptr
 static void cache_expression_list (struct expr_str_list *list, struct expr_str_list *srclist);
 static int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr,int already_done_true_and_false);
 extern module_definition this_module;
-int expr_datatype (struct expr_str *p);
+//int expr_datatype (struct expr_str *p);
 static struct module_definition *find_module(module_definition * mods, int nmodules, char *name) ;
 
 static void scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call_list *f,
@@ -205,7 +206,7 @@ switch(dtype) {
 return 0;
 }
 
-expr_str *get_expr_datatype (int n)
+expr_str *get_cached_expr_datatype (int n)
 {
   A4GL_assertion (expr_cache == 0, "No expression cache");
   if (n > expr_cache->list.list_len || n < 0)
@@ -591,11 +592,11 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 }
 
 
-static int expr_char_length(expr_str *ptr) {
+static int expr_char_length(char *module, int lineno, expr_str *ptr) {
 int d;
 int sz;
 FILE *f;
-	d=expr_datatype(ptr);
+	d=expr_datatype(module,lineno, ptr);
 
 	if (!is_char_dtype(d)) {
 		return 0; // its not a character string - assume at least '0'
@@ -617,13 +618,13 @@ FILE *f;
 			return strlen(ptr->expr_str_u.expr_string);
 
 		case ET_EXPR_OP_USING:
-			return expr_char_length(ptr->expr_str_u.expr_op->right);
+			return expr_char_length(module,lineno, ptr->expr_str_u.expr_op->right);
 
 		case ET_EXPR_UPSHIFT:
-			return expr_char_length(ptr->expr_str_u.expr_expr);
+			return expr_char_length(module,lineno, ptr->expr_str_u.expr_expr);
 
 		case ET_EXPR_DOWNSHIFT:
-			return expr_char_length(ptr->expr_str_u.expr_expr);
+			return expr_char_length(module,lineno, ptr->expr_str_u.expr_expr);
 
 		case ET_EXPR_OP_CLIP:
 			return 0; // Anything clipped can probably be 0 length...
@@ -1048,7 +1049,7 @@ int cnt;
 
   		list.list.list_len = 0;
   		list.list.list_val = 0;
-		dtype=expr_datatype(r->cmd_data.command_data_u.for_cmd.var);
+		dtype=expr_datatype(module_name, r->lineno,r->cmd_data.command_data_u.for_cmd.var);
 		if (!is_numeric(dtype))  {
 			A4GL_lint (module_name, r->lineno, "FORVARNUM", "Variable used in FOR is not numeric", 0);
 		}
@@ -1134,7 +1135,7 @@ int cnt;
 		  expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
 
 		  yylineno = r->lineno;
-		  if (expr_datatype (expr) == DTYPE_CHAR || expr_datatype (expr) == DTYPE_VCHAR)
+		  if (expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr) == DTYPE_CHAR || expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr) == DTYPE_VCHAR)
 		    {
 		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASESTR", "Use of String for WHEN in a CASE with no expression", 0);
 		    }
@@ -1276,7 +1277,7 @@ int cnt;
 
 
 		      etype = fprototypes[b].return_dtypes[a] & DTYPE_MASK;
-		      vlist_dtype = expr_datatype (varlist->list.list_val[a]);
+		      vlist_dtype = expr_datatype (r->module, r->lineno, varlist->list.list_val[a]);
 		      if (promoteable (etype, vlist_dtype) == -1)
 			{
 
@@ -1375,7 +1376,7 @@ int cnt;
 
 	      if (from_exprs > 1)
 		{		// This should be a string concat
-		  if (!is_char_dtype (expr_datatype (varlist->list.list_val[0])))
+		  if (!is_char_dtype (expr_datatype (module_name, r->lineno,varlist->list.list_val[0])))
 		    {
 		      A4GL_lint (module_name, r->lineno, "CONCATTONONSTR", "Assigning a string concentenation to a non-character variable",
 				 expr_as_string_when_possible (varlist->list.list_val[0]));
@@ -1387,7 +1388,7 @@ int cnt;
 			int lmax; // Whats the maximum size of the expression being passed in..
 			int var_length;
 			lmax=0;
-			var_length=expr_datatype (varlist->list.list_val[0]) >> 16;
+			var_length=expr_datatype (module_name, r->lineno,varlist->list.list_val[0]) >> 16;
 
 		      // It is a string - so all our expressions should really be strings
 		      // we know we can convert between integers and strings - but this is a lint
@@ -1397,9 +1398,9 @@ int cnt;
 			  int etype;
 			  int l;
 			  yylineno = r->lineno;
-			  etype = expr_datatype (expr_list->list.list_val[ecnt]);
+			  etype = expr_datatype (module_name, r->lineno,expr_list->list.list_val[ecnt]);
 				if (lmax>=0) {
-					l=expr_char_length(expr_list->list.list_val[ecnt]);
+					l=expr_char_length(module_name, r->lineno,expr_list->list.list_val[ecnt]);
 					// If this is -1 then we cant work out what the length is - so
 					// we can ignore any further checks on the size...
 					if (l<0) { lmax=-1; }
@@ -1426,31 +1427,31 @@ int cnt;
 		  int etype;
 		  if (expr_list->list.list_val[0]->expr_type == ET_EXPR_NULL)
 		    {
-		      etype = expr_datatype (varlist->list.list_val[0]);
+		      etype = expr_datatype (module_name, r->lineno,varlist->list.list_val[0]);
 		    }
 		  else
 		    {
 		      yylineno = r->lineno;
-		      etype = expr_datatype (expr_list->list.list_val[0]);
+		      etype = expr_datatype (module_name, r->lineno,expr_list->list.list_val[0]);
 		    }
 
-		if (is_char_dtype(etype) && is_char_dtype(expr_datatype(varlist->list.list_val[0]))) { // String to a string..
+		if (is_char_dtype(etype) && is_char_dtype(expr_datatype(module_name, r->lineno,varlist->list.list_val[0]))) { // String to a string..
 			int lmax;
 			int var_length;
-			lmax=expr_char_length(expr_list->list.list_val[0]);
-			var_length=expr_datatype (varlist->list.list_val[0]) >> 16;
+			lmax=expr_char_length(module_name, r->lineno,expr_list->list.list_val[0]);
+			var_length=expr_datatype (module_name, r->lineno, varlist->list.list_val[0]) >> 16;
 			if (lmax>0) {
 				if (lmax>var_length) {
 			      		A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
 				}
 			}	
 		}
-		  if (promoteable (etype, expr_datatype (varlist->list.list_val[0])) == -1)
+		  if (promoteable (etype, expr_datatype (module_name, r->lineno,varlist->list.list_val[0])) == -1)
 		    {
 		      char buff[256];
 		      sprintf (buff, "%s - types expression (%s) != variable (%s)",
 			       expr_as_string_when_possible (varlist->list.list_val[0]), dtype_as_string (etype),
-			       dtype_as_string (expr_datatype (varlist->list.list_val[0])));
+			       dtype_as_string (expr_datatype (module_name, r->lineno,varlist->list.list_val[0])));
 		      A4GL_lint (r->module, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable", buff);
 		    }
 		}
@@ -1468,19 +1469,19 @@ int cnt;
 		      int etype;
 		      if (expr_list->list.list_val[ecnt]->expr_type == ET_EXPR_NULL)
 			{
-			  etype = expr_datatype (varlist->list.list_val[ecnt]);
+			  etype = expr_datatype (module_name, r->lineno,varlist->list.list_val[ecnt]);
 			}
 		      else
 			{
 			  yylineno = r->lineno;
-			  etype = expr_datatype (expr_list->list.list_val[ecnt]);
+			  etype = expr_datatype (module_name, r->lineno,expr_list->list.list_val[ecnt]);
 			}
-		      if (promoteable (etype, expr_datatype (varlist->list.list_val[ecnt])) == -1)
+		      if (promoteable (etype, expr_datatype (module_name, r->lineno,varlist->list.list_val[ecnt])) == -1)
 			{
 			  char buff[256];
 			  sprintf (buff, "Assignement to '%s', record element %d (%s %s)",
 				   expr_as_string_when_possible (varlist->list.list_val[ecnt]), ecnt + 1, dtype_as_string (etype),
-				   dtype_as_string (expr_datatype (varlist->list.list_val[ecnt])));
+				   dtype_as_string (expr_datatype (module_name, r->lineno,varlist->list.list_val[ecnt])));
 			  A4GL_lint (module_name, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable", buff);
 
 			}
@@ -3114,7 +3115,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		{
 		  int etype;
 		  yylineno = e->expr_str_u.expr_function_call->line;
-		  etype = expr_datatype (e->expr_str_u.expr_function_call->parameters->list.list_val[ecnt]) & DTYPE_MASK;
+		  etype = expr_datatype (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, e->expr_str_u.expr_function_call->parameters->list.list_val[ecnt]) & DTYPE_MASK;
 		  if (promoteable (etype, fprototypes[b].param_dtypes[ecnt]) == -1)
 		    {
 		      char buff[256];
@@ -3315,7 +3316,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		      expr_str *e;
 		      e = r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b];
 		      yylineno = r->lineno;
-		      fprototypes[calltree_entry].return_dtypes[b] = expr_datatype (e);
+		      fprototypes[calltree_entry].return_dtypes[b] = expr_datatype (r->module, r->lineno, e);
 		    }
 		}
 	      else
@@ -3346,7 +3347,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 			  e = r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b];
 			  dtype1 = fprototypes[calltree_entry].return_dtypes[b];
 			  yylineno = r->lineno;
-			  dtype2 = expr_datatype (e);
+			  dtype2 = expr_datatype (r->module, r->lineno, e);
 
 			  if (dtype1 != dtype2)
 			    {
@@ -3566,7 +3567,7 @@ check_program (module_definition * mods, int nmodules)
 
 		for (b = 0; b < f->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (f->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] = expr_datatype (f->module, f->lineno, f->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 
 	      }
@@ -3598,7 +3599,7 @@ check_program (module_definition * mods, int nmodules)
 		fprototypes[a].param_dtypes = malloc (sizeof (long) * fprototypes[a].nparams);
 		for (b = 0; b < f->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (f->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] = expr_datatype (f->module, f->lineno, f->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 	      }
 	  }
@@ -3625,7 +3626,7 @@ check_program (module_definition * mods, int nmodules)
 		fprototypes[a].param_dtypes = malloc (sizeof (long) * fprototypes[a].nparams);
 		for (b = 0; b < fr->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (fr->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] = expr_datatype (fr->module, fr->lineno,fr->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 	      }
 		if (fr->parameters && fr->parameters->list.list_len>100) {
@@ -3655,7 +3656,7 @@ check_program (module_definition * mods, int nmodules)
 		fprototypes[a].param_dtypes = malloc (sizeof (long) * fprototypes[a].nparams);
 		for (b = 0; b < fr->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (fr->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] = expr_datatype (fr->module, fr->lineno,fr->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 	      }
 		if (fr->parameters && fr->parameters->list.list_len>100) {
@@ -5244,7 +5245,7 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
 
 	      for (b = 0; b < nreturns; b++)
 		{
-		  dtypes[b] = expr_datatype (r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b]);
+		  dtypes[b] = expr_datatype (r->module, r->lineno, r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b]);
 		  if (dtypes[b] == 90)
 		    {		// always return a int instead..
 		      dtypes[b] = DTYPE_INT;
@@ -5317,7 +5318,7 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
 	{
 	  if (a)
 	    fprintf (f, ",");
-	  fprintf (f, "%d", expr_datatype (l->list.list_val[a]) & DTYPE_MASK);
+	  fprintf (f, "%d", expr_datatype (0,0,l->list.list_val[a]) & DTYPE_MASK);
 	}
       fprintf (f, "|");
       if (ret != 0)
@@ -5326,7 +5327,7 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
 	    {
 	      if (a)
 		fprintf (f, ",");
-	      fprintf (f, "%d", expr_datatype (ret->list.list_val[a]) & DTYPE_MASK);
+	      fprintf (f, "%d", expr_datatype (0,0,ret->list.list_val[a]) & DTYPE_MASK);
 	    }
 	}
       fprintf (f, "\n");

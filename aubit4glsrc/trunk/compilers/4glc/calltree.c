@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "commands.h"
-//#include "fgl.x.h"
 #include "a4gl_4glc_int.h"
 #include "lint.h"
 #include "linearise.h"
+#include "expr_munging.h"
 
 #define MODE_TRY 0
 #define MODE_BUY 1
@@ -15,7 +15,6 @@ char currfunc[2000];
 char currmod[2000];
 static int cache_expression (char *s, expr_str ** ptr, int mode);
 static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode);
-//expr_str *get_expr_datatype (int n);
 extern int yylineno;
 char *lint_module = 0;
 static void load_boltons (char *fname);
@@ -27,7 +26,7 @@ int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
 
 extern module_definition this_module;
-int expr_datatype (struct expr_str *p);
+//int expr_datatype (struct expr_str *p);
 
 
 #define PROTO_FUNCTION 		1
@@ -236,7 +235,7 @@ set_whenever (struct command *c)
 //static void set_expr_cache(expr_str_list *n) { expr_cache=n; }
 
 expr_str *
-get_expr_datatype (int n)
+get_cached_expr_datatype (int n)
 {
   A4GL_assertion (expr_cache == 0, "No expression cache");
   if (n > expr_cache->list.list_len || n < 0)
