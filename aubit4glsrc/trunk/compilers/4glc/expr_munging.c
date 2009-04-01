@@ -1090,6 +1090,13 @@ expr_datatype (struct expr_str *p)
       if (r == DTYPE_SERIAL)
 	r = DTYPE_INT;
 
+
+	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
+		strcpy(buff,"+ involving a CHARs");
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+		return DTYPE_FLOAT;
+	}
+
       if (l == DTYPE_DATE && r == DTYPE_INTERVAL)
 	{
 	  struct expr_str *right;
@@ -1268,6 +1275,17 @@ expr_datatype (struct expr_str *p)
 	  return DTYPE_FLOAT;
 	}
 
+	if (l==DTYPE_SMFLOAT && r==DTYPE_FLOAT) {
+	  	ensure_float (p->expr_str_u.expr_op->left, 0);
+	  	ensure_float (p->expr_str_u.expr_op->right, 0);
+		return DTYPE_FLOAT;
+	}
+
+	if (l==DTYPE_FLOAT && r==DTYPE_SMFLOAT) {
+	  	ensure_float (p->expr_str_u.expr_op->left, 0);
+	  	ensure_float (p->expr_str_u.expr_op->right, 0);
+		return DTYPE_FLOAT;
+	}
 
       sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
       A4GL_lint (0, 0, "DIFFMATH", "Different types in operation", buff);
@@ -1291,6 +1309,11 @@ expr_datatype (struct expr_str *p)
 		strcpy(buff,"/ involving a DATEs");
       		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
 		return DTYPE_DATE;
+	}
+	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
+		strcpy(buff,"/ involving a CHARs");
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+		return DTYPE_FLOAT;
 	}
 
       if ((l == DTYPE_INT || l == DTYPE_SMINT) && (r == DTYPE_INT || r == DTYPE_SMINT))
@@ -1357,6 +1380,11 @@ expr_datatype (struct expr_str *p)
 		strcpy(buff,"* on DATE");
       		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
 		return DTYPE_DATE;
+	}
+	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
+		strcpy(buff,"* involving a CHARs");
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+		return DTYPE_FLOAT;
 	}
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
 	{
@@ -1446,6 +1474,13 @@ expr_datatype (struct expr_str *p)
 	l = DTYPE_INT;
       if (r == DTYPE_SERIAL)
 	r = DTYPE_INT;
+
+
+	if (l==DTYPE_CHAR || r==DTYPE_CHAR || l==DTYPE_VCHAR || r==DTYPE_VCHAR)  {
+		strcpy(buff,"- involving a CHARs");
+      		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation", buff);
+		return DTYPE_FLOAT;
+	}
 
       if (l == DTYPE_DECIMAL || r == DTYPE_DECIMAL)
 	{
@@ -1598,6 +1633,30 @@ expr_datatype (struct expr_str *p)
       if (l == DTYPE_DATE && r == DTYPE_DTIME)
 	{
 	  return DTYPE_INTERVAL;
+	}
+
+
+	if (l==DTYPE_SMFLOAT && (r==DTYPE_INT  || r==DTYPE_SMINT)) {
+	  	ensure_smfloat (p->expr_str_u.expr_op->left, 0);
+	  	ensure_smfloat (p->expr_str_u.expr_op->right, 0);
+		return DTYPE_SMFLOAT;
+	}
+	if (r==DTYPE_SMFLOAT && (l==DTYPE_INT  || l==DTYPE_SMINT)) {
+	  	ensure_smfloat (p->expr_str_u.expr_op->left, 0);
+	  	ensure_smfloat (p->expr_str_u.expr_op->right, 0);
+		return DTYPE_SMFLOAT;
+	}
+
+	if (l==DTYPE_SMFLOAT && r==DTYPE_FLOAT) {
+	  	ensure_float (p->expr_str_u.expr_op->left, 0);
+	  	ensure_float (p->expr_str_u.expr_op->right, 0);
+		return DTYPE_FLOAT;
+	}
+
+	if (l==DTYPE_FLOAT && r==DTYPE_SMFLOAT) {
+	  	ensure_float (p->expr_str_u.expr_op->left, 0);
+	  	ensure_float (p->expr_str_u.expr_op->right, 0);
+		return DTYPE_FLOAT;
 	}
 
       sprintf (buff, "%s!=%s", dtype_as_string (l), dtype_as_string (r));
