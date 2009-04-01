@@ -18,6 +18,7 @@ namespace Calltreeviewer
         TreeNode foundTreeNode = null;
         private int lastHighlightedLine = -1;
         private bool actioningUserInteraction = false;
+        private bool loading;
         private TreeNode lastSelectedNode=null;
         private int spinCnt = 0;
 
@@ -43,7 +44,7 @@ namespace Calltreeviewer
         private void loadXMLFile(TreeStyle style)
         {
             OpenFileDialog f = new OpenFileDialog();
-            
+            loading = true;
             // Set up the dialog box..
             f.DefaultExt = "xml";
             f.AddExtension = true;
@@ -97,6 +98,7 @@ namespace Calltreeviewer
                 }
             }
             lblLoaded.Text = "";
+            loading = false;
         }
 
         private void loadTree(AubitCalltreeViewer.PROGRAM p, TreeStyle style)
@@ -374,8 +376,11 @@ namespace Calltreeviewer
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            displayModuleForSelectedNode();
-            selectNode(treeView1.SelectedNode);
+            if (!loading)
+            {
+                displayModuleForSelectedNode();
+                selectNode(treeView1.SelectedNode);
+            }
         }
 
         private void treeView1_DoubleClick(object sender, EventArgs e)
@@ -1327,12 +1332,18 @@ namespace Calltreeviewer
 
         private void treeView1_Click(object sender, EventArgs e)
         {
-            selectNode(treeView1.SelectedNode);
+            if (!loading)
+            {
+                selectNode(treeView1.SelectedNode);
+            }
         }
 
         private void treeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
-            selectNode(null);
+            if (!loading)
+            {
+                selectNode(null);
+            }
         }
     }
 }
