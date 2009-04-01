@@ -967,6 +967,12 @@ int cnt;
 		}
 	}
 
+	if (r->cmd_data.type==E_CMD_WHILE_CMD) {
+		if (r->cmd_data.command_data_u.while_cmd.while_expr) {
+	      			ensure_bool (r->module,  r->lineno, r->cmd_data.command_data_u.while_cmd.while_expr, 0);
+		}
+	}
+
       if (r->cmd_data.type == E_CMD_IF_CMD)
 	{
 	  int b;

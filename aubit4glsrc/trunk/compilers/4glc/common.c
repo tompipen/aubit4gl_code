@@ -546,7 +546,6 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		int vtype;
 		next = vu->next;
 
-		//A4GL_pause_execution();
 
 		avar=v->var_data.variable_data_u.v_object.definition;
 	  	vu->variable_id = a;

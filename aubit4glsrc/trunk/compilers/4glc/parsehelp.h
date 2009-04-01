@@ -71,4 +71,4 @@ int check_parameters(char *errbuff,struct variable_list *var_list, expr_str_list
 #endif
 
 
-void make_cast (struct expr_str *s, int target_dtype, int notnull, int force);
+void make_cast (char *module,int lineno, struct expr_str *s, int target_dtype, int notnull, int force);

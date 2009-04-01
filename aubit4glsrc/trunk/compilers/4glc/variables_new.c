@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.7 2009-03-25 17:27:53 mikeaubury Exp $
+# $Id: variables_new.c,v 1.8 2009-04-01 19:50:26 mikeaubury Exp $
 #
 */
 
@@ -402,7 +402,7 @@ struct variable *v;
       trim_spaces (colname);
 
 	if (idtype>DTYPE_MASK) {
-		A4GL_pause_execution();
+		A4GL_pause_execution(); // Safe to commit
 	}
        v=new_simple_variable(colname, idtype,isize,0);
 

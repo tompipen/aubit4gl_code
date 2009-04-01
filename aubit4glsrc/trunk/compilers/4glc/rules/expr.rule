@@ -541,7 +541,7 @@ function_call_expr:
 		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
 	}
 	| KW_CAST OPEN_BRACKET fgl_expr_c KW_AS cast_dtype CLOSE_BRACKET {
-		make_cast($<ptr>3,$<integer_val>5,0,1);
+		make_cast(infilename,lastlineno, $<ptr>3,$<integer_val>5,0,1);
 		$<ptr>$=$<ptr>3;
 	}
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
