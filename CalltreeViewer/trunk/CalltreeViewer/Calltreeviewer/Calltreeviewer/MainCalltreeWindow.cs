@@ -431,7 +431,7 @@ namespace Calltreeviewer
             int functionNo = findFunctionNo(selectedNode.Name);
             Application.DoEvents();
             selectedNode.Nodes.Clear();
-
+            treeView1.SuspendLayout();
 
             spin();
             if (functionNo == -1) return;
@@ -447,6 +447,7 @@ namespace Calltreeviewer
                     Application.DoEvents();
                 }
             }
+            treeView1.ResumeLayout();
         }
 
         private void buildNodes(int moduleNo, TreeNode selectedNode, object o, bool recurse, bool callsOnly)
