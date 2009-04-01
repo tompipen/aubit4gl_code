@@ -382,7 +382,7 @@ namespace Calltreeviewer
         {
             TreeNode selectedNode;
             if (actioningUserInteraction) return; // Already busy...
-
+            treeView1.SuspendLayout();
             actioningUserInteraction = true;
 
 
@@ -397,6 +397,7 @@ namespace Calltreeviewer
             expandNode(selectedNode, false);
 
             actioningUserInteraction = false;
+            treeView1.ResumeLayout();
         }
 
 
