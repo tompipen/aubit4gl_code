@@ -3530,7 +3530,7 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 		}
 	      for (b = 0; b < nreturns; b++)
 		{
-		  dtypes_new[b] = expr_datatype (r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b]);
+		  dtypes_new[b] = expr_datatype (r->module,r->lineno, r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b]);
 		  if (dtypes_new[b] == FAKE_DTYPE_BOOL)
 		    {		// always return a int instead..
 		      dtypes_new[b] = DTYPE_INT;
