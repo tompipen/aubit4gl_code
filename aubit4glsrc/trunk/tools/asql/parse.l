@@ -1,5 +1,6 @@
 %option yylineno
 %{
+#include <strings.h>
 void A4GL_assertion(int n,char *v);
 
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)

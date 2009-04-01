@@ -1079,7 +1079,8 @@ expr_datatype (struct expr_str *p)
       l = expr_datatype (p->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (p->expr_str_u.expr_op->right) & DTYPE_MASK;
 
-	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
+	if (l==DTYPE_DATE && r==DTYPE_DATE ) {
+		strcpy(buff,"+ on two DATEs");
       		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (+)", buff);
 		return DTYPE_DATE;
 	}
@@ -1287,6 +1288,7 @@ expr_datatype (struct expr_str *p)
 
 
 	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
+		strcpy(buff,"/ involving a DATEs");
       		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
 		return DTYPE_DATE;
 	}
@@ -1352,6 +1354,7 @@ expr_datatype (struct expr_str *p)
 	r = DTYPE_INT;
 
 	if (l==DTYPE_DATE || r==DTYPE_DATE ) {
+		strcpy(buff,"* on DATE");
       		A4GL_lint (0, 0, "MADMATH", "Datatypes make no sense in this operation (/)", buff);
 		return DTYPE_DATE;
 	}

@@ -4191,7 +4191,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
   }
 
 
-  if (module_in == 0)
+  if (module_in == 0 && dbg)
     {
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
