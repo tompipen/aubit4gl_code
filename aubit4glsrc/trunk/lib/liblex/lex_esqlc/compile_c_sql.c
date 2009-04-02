@@ -693,11 +693,11 @@ int converted;
   	printc ("{\n");
   	c = print_bind_definition_g (input_bind,'i');
   	print_bind_set_value_g (input_bind,'i');
-  	printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,line_for_cmd,converted);
+  	printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,line_for_cmd,converted);
   	printc ("}\n");
   } else {
 	// No variables used...
-  	printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(NULL,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
+  	printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(NULL,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
   }
 
 
@@ -737,11 +737,11 @@ int converted=0;
   	printc ("{\n");
   	c = print_bind_definition_g (input_bind,'i');
   	print_bind_set_value_g (input_bind,'i');
-  	printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,line_for_cmd,converted);
+  	printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,line_for_cmd,converted);
   	printc ("}\n");
   } else {
 	// No variables used...
-  	printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(NULL,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
+  	printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(NULL,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
   }
 
 
@@ -859,7 +859,7 @@ print_sql_cmd (struct_sql_cmd * cmd_data)
 
   ptr=escape_quotes_and_remove_nl(ptr);
 
-  printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
+  printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
 
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
@@ -951,9 +951,9 @@ print_select_cmd (struct_select_cmd * cmd_data)
   os=snprintf (b2, sizeof(b2),"A4GL_prepare_select(%s,%s,\"%s\",_module_name,%d,%d,%d)", i, o, ptr,line_for_cmd,converted, 0);
 
   if (cmd_data->sql->sf && cmd_data->sql->sf->into_temp && strlen(cmd_data->sql->sf->into_temp)) {
-  	printc ("A4GLSQL_execute_implicit_sql(%s,1,0,0); /* 0 */\n\n", b2);
+  	printc ("A4GL_execute_implicit_sql(%s,1,0,0); /* 0 */\n\n", b2);
   } else {
-  	printc ("A4GLSQL_execute_implicit_select(%s,1); /* 0 */\n\n", b2);
+  	printc ("A4GL_execute_implicit_select(%s,1); /* 0 */\n\n", b2);
   }
 
   if (no||ni) {
@@ -1002,11 +1002,11 @@ int converted=0;
   	printc ("{\n");
   	c = print_bind_definition_g (input_bind,'i');
   	print_bind_set_value_g (input_bind,'i');
-  	printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,line_for_cmd,converted);
+  	printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,line_for_cmd,converted);
   	printc ("}\n");
   } else {
 	// No variables used...
-  	printc ("A4GLSQL_execute_implicit_sql(A4GL_prepare_select(NULL,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
+  	printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(NULL,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr,line_for_cmd,converted);
   }
 
 
@@ -1194,7 +1194,7 @@ int using;
       no = print_bind_definition_g (cmd_data->outbind,'o');
       print_bind_set_value_g (cmd_data->outbind,'o');
       printc ("A4GL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);",get_ident_as_string(cmd_data->sql_stmtid),no);
-      printc ("A4GLSQL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 2 */\n", get_ident_as_string(cmd_data->sql_stmtid));
+      printc ("A4GL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 2 */\n", get_ident_as_string(cmd_data->sql_stmtid));
       printc ("A4GL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);",get_ident_as_string(cmd_data->sql_stmtid));
       printc ("}\n");
     }
@@ -1211,7 +1211,7 @@ int using;
       print_bind_set_value_g (cmd_data->inbind,'i');
       printc ("A4GL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);",get_ident_as_string(cmd_data->sql_stmtid),no);
       printc ("A4GL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);",get_ident_as_string(cmd_data->sql_stmtid),ni);
-      printc ("A4GLSQL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 3 */\n", get_ident_as_string(cmd_data->sql_stmtid));
+      printc ("A4GL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 3 */\n", get_ident_as_string(cmd_data->sql_stmtid));
       printc ("A4GL_swap_bind_stmt(%s,'o',0,0,_osave_bind_ptr,_osave_bind_cnt);",get_ident_as_string(cmd_data->sql_stmtid));
       printc ("A4GL_swap_bind_stmt(%s,'i',0,0,_isave_bind_ptr,_isave_bind_cnt);",get_ident_as_string(cmd_data->sql_stmtid));
       printc ("}\n");

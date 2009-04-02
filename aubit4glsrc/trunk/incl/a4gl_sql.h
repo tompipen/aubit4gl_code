@@ -101,6 +101,11 @@ void A4GL_put_insert(void* ibind,int n) ;
 void *A4GL_find_cursor (char *cname);
 void A4GL_free_prepare(struct s_sid *sid);
 
+
+int A4GL_execute_implicit_sql(void* sid,int singleton,int no,void* ibind) ;
+int A4GL_execute_implicit_select(void* sid,int singleton) ;
+
+
 #ifdef __cplusplus
 }
 #endif

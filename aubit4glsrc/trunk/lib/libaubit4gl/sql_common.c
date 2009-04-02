@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.74 2009-03-13 15:40:01 mikeaubury Exp $
+# $Id: sql_common.c,v 1.75 2009-04-02 11:04:48 mikeaubury Exp $
 #
 */
 
@@ -147,6 +147,98 @@ static int A4GL_findPreparedStatement (char *name);
                     Functions definitions
 =====================================================================
 */
+
+
+static char *cleanup(char *sql) {
+static char buff[21000];
+int a;
+int b=0;
+for (a=0;a<strlen(sql);a++) {
+	if (sql[a]=='|') {buff[b++]='\\'; buff[b++]='|';continue;}
+	if (sql[a]<' ') {continue;}
+	if (sql[a]=='\n') {continue;}
+	if (sql[a]=='\r') {continue;}
+	
+
+	buff[b++]=sql[a];
+}
+buff[b]=0;
+A4GL_trim(buff);
+return buff;
+}
+
+static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int line) {
+  static char logfname[255];
+  static long logfnameset = 0;
+  char *fname;
+  FILE *fout = 0;
+  char buff[256];
+
+  if (mod && strcmp(mod,"__internal_report")==0) {
+		mod=0;
+  }
+
+  if (mod==0) {
+	A4GLSTK_getCurrentLine (&mod, &line);
+  }
+
+  if (sql == NULL)
+    return;
+
+  A4GL_debug ("SQL on line %d in %s:%s\n", line, mod, sql);
+  if (logfnameset == -1)
+    return;
+
+  if (logfnameset == 1)
+    {
+      fout = fopen (logfname, "a");
+      if (fout == 0)
+        return;                 // should have been able to ... very odd..
+    }
+
+
+  if (strcmp(mod,"INTERNAL")==0) return;
+
+  if (logfnameset == 0)
+    {
+      fname = acl_getenv ("SQLMETRICS");
+
+      if (fname == 0)
+        {
+          logfnameset = -1;
+          return;
+        }
+
+      if (strlen (fname) == 0)
+        {
+          logfnameset = -1;
+          return;
+        }
+
+      // Firstly - MAPSQL should be a directory...
+      SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (), getpid ());
+      fout = fopen (buff, "a");
+      if (fout == 0)
+        {                       // Maybe - its just a file ?
+          SPRINTF1 (buff, "%s", fname);
+          fout = fopen (buff, "a");
+        }
+      logfnameset = 1;
+      strcpy (logfname, buff);
+    }
+
+  if (fout == 0)
+    {
+      logfnameset = -1;
+      return;
+    }
+
+  // if we've got to here - we've got a file to write to...
+  //
+  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm);
+  fclose (fout);
+
+}
 
 /**
  * Assign a value to the status internal 4gl variable.
@@ -511,7 +603,8 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
   struct s_sid *sid;
   char *ptr;
   char *sold;
-
+  double t1;
+  double t2;
 
   A4GL_debug ("A4GL_prepare_select  must_convert=%d s=%s\n", must_convert, s);
 
@@ -543,7 +636,11 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
         A4GL_free_prepare (sid);
     }
 
+  t1=get_now_as_double();
   sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
+  t2=get_now_as_double()-t1;
+  log_sql("PREPARE"," ",s,t2,mod,line);
+
 
   if (sid) {
   	sid->refcnt=REF_CNT_PREPARE;
@@ -636,17 +733,24 @@ A4GL_execute_sql (char *pname, int ni, void *vibind)
 {
   struct s_sid *sid;
   struct BINDING *ibind;
+double t1;
+double t2;
   ibind = vibind;
   A4GL_debug ("A4GL_execute_sql : %s ",pname);
   sid = A4GL_find_prepare (pname);	// ,0
 
   if (sid != 0)
     {
+	int rval;
       //sid->ibind = ibind;
       //sid->ni = ni;
-      A4GL_debug("A4GL_execute .. stmt=%s select=%s\n", pname, sid->select);
+      	A4GL_debug("A4GL_execute .. stmt=%s select=%s\n", pname, sid->select);
      
-      return A4GLSQL_execute_implicit_sql (sid, 0, ni, ibind);
+  	t1=get_now_as_double();
+        rval=A4GLSQL_execute_implicit_sql (sid, 0, ni, ibind);
+  	t2=get_now_as_double()-t1;
+  	log_sql("EXECUTE",pname,sid->select,t2,NULL,0); 
+	return rval;
     }
   else
     {
@@ -656,6 +760,37 @@ A4GL_execute_sql (char *pname, int ni, void *vibind)
 
 }
 
+int A4GL_execute_implicit_sql(void* vsid,int singleton,int no,void* ibind) {
+	int rval;
+	double t1,t2;
+	struct s_sid *sid;
+	char buff[20000]="";
+        t1=get_now_as_double();
+	sid=(struct s_sid *)vsid;
+	if (sid && sid->select) {
+	strncpy(buff, sid->select,sizeof(buff)-1); buff[sizeof(buff)-1]=0;
+	}
+	rval=A4GLSQL_execute_implicit_sql(vsid,singleton,no,ibind);
+  	t2=get_now_as_double()-t1;
+  	log_sql("EXECUTE"," ",buff,t2,NULL,0); 
+	return rval;
+}
+
+int A4GL_execute_implicit_select(void* vsid,int singleton) {
+	int rval;
+	double t1,t2;
+	char buff[20000]="";
+	struct s_sid *sid;
+	sid=(struct s_sid *)vsid;
+	if (sid && sid->select) {
+		strncpy(buff, sid->select,sizeof(buff)-1); buff[sizeof(buff)-1]=0;
+	}
+        t1=get_now_as_double();
+	rval=A4GLSQL_execute_implicit_select(vsid,singleton) ;
+  	t2=get_now_as_double()-t1;
+  	log_sql("EXECUTE"," ",buff,t2,NULL,0); 
+	return rval;
+}
 
 void *
 A4GL_find_prepare (char *pname)
@@ -1793,6 +1928,8 @@ void A4GL_free_cursor(char* cursor_name) {
 
 int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) {
 	struct s_cid *cid;
+	int rval;
+	double t1,t2;
         cid = A4GL_find_cursor(cursor_name);
 
         if (cid==NULL) {
@@ -1807,12 +1944,17 @@ int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind
                 return 1;
 	}
 
-	return A4GLSQL_fetch_cursor_internal(cursor_name,fetch_mode,fetch_when,nibind,ibind);
+  	t1=get_now_as_double();
+	rval=A4GLSQL_fetch_cursor_internal(cursor_name,fetch_mode,fetch_when,nibind,ibind);
+  	t2=get_now_as_double()-t1;
+  	log_sql("FETCH",cursor_name,cid->statement->select,t2,NULL,0); 
+	return rval;
 }
 
 int A4GL_open_cursor(char* s,int no,void* vibind) {
 	struct s_cid *cid;
 	int bad;
+	double t1,t2;
         cid = A4GL_find_cursor(s);
 
   	if (cid==NULL) {
@@ -1827,7 +1969,10 @@ int A4GL_open_cursor(char* s,int no,void* vibind) {
 		A4GL_close_cursor(s);
 	}
 
+  	t1=get_now_as_double();
 	bad=A4GLSQL_open_cursor_internal(s,no,vibind);
+  	t2=get_now_as_double()-t1;
+  	log_sql("FETCH",s,cid->statement->select,t2,NULL,0); 
 
         if (!bad) {
 		cid->cursorState=E_CURSOR_OPEN;
@@ -1953,6 +2098,7 @@ int A4GL_close_cursor(char* currname) {
 void* A4GL_declare_cursor(int upd_hold,void* vsid,int scroll,char* cursname) {
 struct s_cid *cid;
 struct s_sid *sid;
+	double t1,t2;
 sid=vsid;
 
 	if (sid == 0) {
@@ -1969,7 +2115,10 @@ sid=vsid;
 		A4GL_free_cursor(cursname);
 	}
 
+  	t1=get_now_as_double();
 	cid=A4GLSQL_declare_cursor_internal(upd_hold,sid,scroll,cursname);
+  	t2=get_now_as_double()-t1;
+  	log_sql("DECLARE",cursname,sid->select,t2,NULL,0); 
 
 	sid->refcnt|=REF_CNT_DECLARE;
 
@@ -1986,8 +2135,15 @@ sid=vsid;
 
 void A4GL_put_insert(void* ibind,int n) {
 	char *cursorName;
+	double t1,t2;
+	struct s_cid *cid;
 	cursorName = A4GL_char_pop ();
+	t1=get_now_as_double();
+        cid = A4GL_find_cursor(cursorName);
 	A4GLSQL_put_insert_internal(cursorName, ibind, n);
+  	t2=get_now_as_double()-t1;
+  	log_sql("PUT",cursorName,cid->statement->select,t2,NULL,0); 
+
 	free(cursorName);
 }
 

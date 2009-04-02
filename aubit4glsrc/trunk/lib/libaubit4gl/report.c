@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.180 2009-03-17 07:53:53 mikeaubury Exp $
+# $Id: report.c,v 1.181 2009-04-02 11:04:46 mikeaubury Exp $
 #
 */
 
@@ -1657,14 +1657,14 @@ A4GL_make_report_table (struct BINDING *b, int n)
   int a;
   a = aclfgli_get_err_flg ();
 
-  A4GLSQL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 1), 1, 0, 0);
+  A4GL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 1), 1, 0, 0);
   if (a == 0)
     {
       aclfgli_clr_err_flg ();	// we don't care if the drop fails...
       A4GLSQL_set_sqlca_sqlcode (0);
     }
 
-  A4GLSQL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_mk_temp_tab (b, n), "__internal_report", 99, 0, 1), 1, 0, 0);
+  A4GL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_mk_temp_tab (b, n), "__internal_report", 99, 0, 1), 1, 0, 0);
 
 }
 
@@ -1714,7 +1714,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
       A4GL_debug ("x=%p\n", x);
       A4GL_add_prepare (b2, x);
     }
-  A4GLSQL_execute_implicit_sql (x, 0, 0, 0);
+  A4GL_execute_implicit_sql (x, 0, 0, 0);
   //A4GLSQL_free_prepare(x);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
 }
@@ -1848,7 +1848,7 @@ A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
 {
   char b2[200];
   A4GL_close_cursor (cursor_for_rep_tab (b));
-  A4GLSQL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
+  A4GL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
 				0);
   A4GL_free_duplicate_binding (reread, n);
   SPRINTF2 (b2, "a4glrp_%lx%d", (long) (b), n);
