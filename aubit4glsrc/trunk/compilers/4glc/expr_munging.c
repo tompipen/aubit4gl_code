@@ -1677,6 +1677,9 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
       return DTYPE_INT;
 
 
+    case ET_EXPR_BOUND_FCALL:
+	return DTYPE_INT;
+		
 /* -------------------------------------------------------------------------------- */
     case ET_EXPR_BRACKET:
       return expr_datatype (module, lineno, p->expr_str_u.expr_expr);

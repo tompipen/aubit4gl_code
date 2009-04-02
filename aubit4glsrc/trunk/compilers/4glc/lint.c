@@ -3071,6 +3071,9 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		// just continue..
 		continue;
 	}
+	if (e->expr_type==ET_EXPR_BOUND_FCALL) { 
+		continue;
+	}
 
       if (e->expr_type == ET_EXPR_FCALL)
 	{
