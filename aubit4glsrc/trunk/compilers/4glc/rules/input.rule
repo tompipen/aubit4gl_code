@@ -122,7 +122,7 @@ BY_NAME expanded_ibind_var_list opt_defs input_attributes  opt_help_no_i
 
 idm_input_array :identifier KW_DOT KW_MULTIPLY {
 				$<ptr>$=A4GL_new_expr_simple_string($<str>1,ET_EXPR_IDENTIFIER);
-		}
+	}
 	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
 				$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3, ET_EXPR_VARIABLE_IDENTIFIER);
 	}

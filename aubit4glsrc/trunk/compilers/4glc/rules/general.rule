@@ -205,7 +205,7 @@ char_or_var_vl : CHAR_VALUE {
 			$<ptr>$=new_variable_or_literal(ET_E_V_OR_LIT_STRING, $<str>1);
 		}
 		| variable_usage_expression {
-		char errbuff[256];
+			char errbuff[256];
 			int dtype;
 			dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1);
 			if (dtype==-1) {
@@ -218,6 +218,7 @@ char_or_var_vl : CHAR_VALUE {
 				}
 			}
 			$<ptr>$=$<ptr>1;
+			inc_var_usage($<ptr>$);
 		}
 ;
 

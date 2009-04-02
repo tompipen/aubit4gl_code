@@ -486,7 +486,7 @@ format_action :
    			a4gl_yyerror(buff);
 			YYERROR;
 		}
-		
+		inc_var_usage($<ptr>2);
 		add_feature("REPORT_BEFORE_GROUP");
 		SPRINTF1(buff,"%d",a+1);
 		push_report_block(buff,'B',$<str>2);
@@ -503,6 +503,7 @@ format_action :
 		char buff[80];
 		add_feature("REPORT_AFTER_GROUP");
 		
+		inc_var_usage($<ptr>2);
 		
 		a=scan_orderby(current_orderby, $<ptr>2);
 		if (a<0) {
@@ -910,6 +911,11 @@ ORDER KW_BY obind_var_list_ord
 {
 	add_feature("REPORT_ORDER_BY");
 	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY, $<ptr_list>3);
+	/* We are marking the variables as being used *just* for ORDER BY, not ORDER EXTERNAL BY
+		as the variables are not *really* used for the ORDER EXTERNAL - its just indicative of
+		the order
+	*/
+	inc_var_usage_from_binding_list($<ptr_list>3);
 }
 | ORDER_EXTERNAL_BY obind_var_list_ord {
 	$<report_orderby_section>$=new_report_orderby_section(REPORT_ORDERBY_EXTERNAL, $<ptr_list>2);

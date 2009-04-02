@@ -35,6 +35,7 @@ arr_expr_e :
   				}
 			}
   			$<ptr>$=$<ptr>1;
+			inc_var_usage($<ptr>$);
 	}
 	| function_call_expr {
 			$<ptr>$=$<ptr>1;
