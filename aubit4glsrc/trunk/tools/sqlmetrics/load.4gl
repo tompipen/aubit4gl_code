@@ -9,7 +9,7 @@ function load_menu()
 					next option "Exit"
 				end if
 			
-			command "Chose" "Chose files to load"
+			command "Choose" "Choose files to load"
 				if load_some() then
 					next option "Exit"
 				end if
