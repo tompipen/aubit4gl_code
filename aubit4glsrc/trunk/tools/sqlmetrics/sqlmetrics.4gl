@@ -33,7 +33,7 @@ defer interrupt
 		whenever error stop
 
 		if sqlca.sqlcode!=0 then
-			display "Error:"
+			display "Error:",sqlca.sqlcode
 			display "   Unable to connect to or create the sqlmetrics database"
 			display "   ------------------------------------------------------"
 			display " "
@@ -53,8 +53,9 @@ defer interrupt
 end main
 
 
-function err_createtables()
-	display "There was an error creating the database tables"
+function err_createtables(lv_errcode)
+	define lv_errcode integer
+	display "There was an error creating the database tables:",lv_errcode
 	display "Please manually create a sqlmetrics with the tables in"
 	display "$AUBITDIR/tools/sqlmetrics/create_tables.sql"
 	exit program 2
@@ -72,14 +73,31 @@ create table sql_log
    pid int,    --     is the process ID
    type varchar(10), -- is PREPARE/EXECUTE/OPEN/FETCH/DECLARE/PUT
    cursorname varchar(30), -- is the name of the cursor for a OPEN/FETCH/DECLARE/PUT
-   sql  varchar(2048), --  is the SQL being processed.
+   sql varchar(2048), --  is the SQL being processed.
    module varchar(30), --  is the modulename of the 4gl where this SQL is located
    lineno int, --  is the line number in the 4gl where this SQL is located
    elatime float --    is the execution of this statement in seconds
   );
 
 if sqlca.sqlcode<0 then
-	call err_createtables()
+
+	-- Some db's dont like a varchar > 255 in size...
+	-- so lets try again with a real char (rather than a varchar)
+	create table sql_log
+  	(
+   	application varchar(30), -- is the program name of the program generating the output
+   	pid int,    --     is the process ID
+   	type varchar(10), -- is PREPARE/EXECUTE/OPEN/FETCH/DECLARE/PUT
+   	cursorname varchar(30), -- is the name of the cursor for a OPEN/FETCH/DECLARE/PUT
+   	sql char(2048), --  is the SQL being processed.
+   	module varchar(30), --  is the modulename of the 4gl where this SQL is located
+   	lineno int, --  is the line number in the 4gl where this SQL is located
+   	elatime float --    is the execution of this statement in seconds
+  	);
+
+	if sqlca.sqlcode<0 then
+		call err_createtables(sqlca.sqlcode)
+	end if
 end if
 
 create index i_sql on sql_log (sql)
