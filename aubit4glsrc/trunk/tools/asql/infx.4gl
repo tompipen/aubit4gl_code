@@ -3316,6 +3316,10 @@ char *allocate_descriptor_memory(struct sqlda *udesc, short **pqualifiers, short
 	  col->sqltype = CLOCATORTYPE;
 	  fld_len = col->sqllen = sizeof (loc_t);
 	  break;
+case 15:
+	  col->sqltype = CFIXCHARTYPE;	/* get all bytes */
+	  fld_len = col->sqllen = rtypmsize (col->sqltype, col->sqllen);
+	  break;
 
 	default:
 	  A4GL_assertion (1, "Unsupported data type\n");
