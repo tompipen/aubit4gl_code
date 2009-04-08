@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.75 2009-04-02 11:04:48 mikeaubury Exp $
+# $Id: sql_common.c,v 1.76 2009-04-08 08:36:41 mikeaubury Exp $
 #
 */
 
@@ -621,7 +621,7 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
   if (must_convert)
     {
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
-      s = strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
+      s = acl_strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
 
     }
 

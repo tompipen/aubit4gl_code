@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.164 2008-12-16 14:25:53 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.165 2009-04-08 08:36:41 mikeaubury Exp $
 #
 */
 
@@ -219,8 +219,8 @@ add_query (char *fromsql, char *tosql)
     {
       if (saved_queries[a].fromsql == 0)
 	{
-	  saved_queries[a].fromsql = strdup (fromsql);
-	  saved_queries[a].tosql = strdup (tosql);
+	  saved_queries[a].fromsql = acl_strdup (fromsql);
+	  saved_queries[a].tosql = acl_strdup (tosql);
 	  saved_queries[a].last_cnt = last_cnt++;
 	  return;
 	}
@@ -235,8 +235,8 @@ add_query (char *fromsql, char *tosql)
 
   acl_free (saved_queries[low_cnt_a].fromsql);
   acl_free (saved_queries[low_cnt_a].tosql);
-  saved_queries[low_cnt_a].fromsql = strdup (fromsql);
-  saved_queries[low_cnt_a].tosql = strdup (tosql);
+  saved_queries[low_cnt_a].fromsql = acl_strdup (fromsql);
+  saved_queries[low_cnt_a].tosql = acl_strdup (tosql);
   saved_queries[low_cnt_a].last_cnt = last_cnt++;
 }
 
@@ -276,10 +276,12 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
   char *sql_new;
   char *sql;
   int cache;
+char *sql_duped;
   //int converted=0;
 
   //int a;
   sql = sqlx;
+sql_duped=acl_strdup(sqlx);
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
 
   cache = A4GL_isyes (acl_getenv ("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
@@ -331,12 +333,14 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
     {
       sql_new = "";
     }
-  acl_free (sql);
   //for (a=0;a<strlen(sql_new);a++) { if (sql_new[a]=='\n') sql_new[a]=' '; }
   A4GL_debug ("check_sql.. %s", sql_new);
 
-  if (cache)
-    add_query (sqlx, sql_new);
+  if (cache) {
+    add_query (sql_duped, sql_new);
+  }
+  acl_free (sql);
+acl_free(sql_duped);
   return sql_new;
 }
 
@@ -980,6 +984,10 @@ A4GLSQLCV_check_sql (char *s, int *converted)
   A4GL_assertion (s == 0, "No pointer");
   A4GL_debug ("check sql : %s\n", s);
   *converted = 1;
+	if (buff) {
+		acl_free(buff);
+		buff=0;
+	}
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
       if (current_conversion_rules[b].type == CVSQL_REPLACE_COMMAND)
@@ -1019,8 +1027,6 @@ A4GLSQLCV_check_sql (char *s, int *converted)
 	}
     }
   A4GL_debug ("returning\n");
-  if (buff)
-    acl_free (buff);
 
   if (A4GLSQLCV_check_requirement ("LIMIT_LINE"))
     {
