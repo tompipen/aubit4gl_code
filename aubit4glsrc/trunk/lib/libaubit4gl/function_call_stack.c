@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.41 2009-03-13 15:40:01 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.42 2009-04-12 13:50:47 mikeaubury Exp $
 #*/
 
 /**
@@ -396,7 +396,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
 	A4GLSTK_initFunctionCallStack();
 	}
 
-  A4GL_debug ("Call from Module : %s line %d", currentModuleName, currentFglLineNumber, this_line_number);
+  A4GL_debug ("Call from Module : %s line %d", A4GL_null_as_null(currentModuleName), currentFglLineNumber, this_line_number);
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
 
   for (a = 0; a < n; a++)
