@@ -39,47 +39,30 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2201,
-     NAMED = 2202,
-     NAMED_GEN = 2203,
-     CHAR_VALUE = 2204,
-     NOT_USED_1 = 2205,
-     NOT_USED_2 = 2206,
-     NOT_USED_3 = 2207,
-     NOT_USED_4 = 2208,
-     NOT_USED_5 = 2209,
-     NOT_USED_6 = 2210,
-     NOT_USED_7 = 2211,
-     NOT_USED_8 = 2212,
-     NUMBER_VALUE = 2213,
-     SEMICOLON = 2214,
-     QUESTION_MARK = 2215,
-     CLINE = 2216,
-     CH = 2217,
-     MARK_VAR = 2218,
-     END_MARK_VAR = 2219,
-     KW_DOC4GLCOMMENT = 1000,
+     INT_VALUE = 2181,
+     NAMED = 2182,
+     NAMED_GEN = 2183,
+     CHAR_VALUE = 2184,
+     NOT_USED_1 = 2185,
+     NOT_USED_2 = 2186,
+     NOT_USED_3 = 2187,
+     NOT_USED_4 = 2188,
+     NOT_USED_5 = 2189,
+     NOT_USED_6 = 2190,
+     NOT_USED_7 = 2191,
+     NOT_USED_8 = 2192,
+     NUMBER_VALUE = 2193,
+     SEMICOLON = 2194,
+     QUESTION_MARK = 2195,
+     CLINE = 2196,
+     CH = 2197,
+     MARK_VAR = 2198,
+     END_MARK_VAR = 2199,
      LEFT_JOIN = 1002,
-     LINT_IGNORE = 1003,
-     LINT_EXPECT = 1004,
      INNER_JOIN = 1005,
-     WITH_CONVERSIONS = 1011,
-     WITHOUT_CONVERSIONS = 1012,
-     BARCODE = 1013,
-     BARCODE_NO_TEXT = 1014,
-     BARCODETYPE = 1015,
-     BLUEBAR_COLOR_EQUAL = 1016,
-     BLUEBAR_STYLE_EQUAL_RECTANGLE_COLOR_EQUAL = 1017,
-     BLUEBAR_STYLE_EQUAL_RECTANGLE = 1018,
-     BLUEBAR_STYLE_EQUAL_LINE_COLOR_EQUAL = 1019,
-     BLUEBAR_STYLE_EQUAL_LINE = 1020,
-     BLUEBAR = 1021,
      USING_BTREE = 1028,
      USING_RTREE = 1029,
-     ASCOPY = 1046,
      SET_BUFFERED_LOG = 1054,
-     SET_FILL_COLOR = 1055,
-     SET_PARAMETER = 1056,
      SET_LOG = 1057,
      MDY = 1059,
      WEEKDAY = 1060,
@@ -109,8 +92,6 @@
      DROP_CONSTRAINT = 1161,
      DROP_SYNONYM = 1162,
      CONSTRAINT = 1163,
-     LOCAL_REPORT = 1167,
-     LOCAL_PDF_REPORT = 1168,
      DOUBLE_PRECISION = 1172,
      COUNT_MULTIPLY = 1173,
      MODIFY_NEXT_SIZE = 1193,
@@ -128,7 +109,6 @@
      CREATE_U_IDX = 1216,
      CREATE_C_IDX = 1217,
      CREATE_IDX = 1218,
-     CM = 1225,
      DOUBLE_COLON = 1228,
      SQLSICS = 1234,
      CREATE_SCHEMA = 1235,
@@ -171,7 +151,6 @@
      DROP_INDEX = 1397,
      FOR_UPDATE_OF = 1403,
      FOR_UPDATE = 1404,
-     REFERENCE = 1406,
      LOCK_TABLE = 1409,
      NOT_EXISTS = 1411,
      REFERENCES = 1413,
@@ -187,8 +166,6 @@
      EXCLUSIVE = 1446,
      GREATER_THAN_EQ = 1450,
      INTO_TEMP = 1452,
-     LOAD_FROM = 1456,
-     UNLOAD_TO = 1467,
      DATABASE = 1476,
      DATETIME = 1477,
      DISTINCT = 1479,
@@ -229,7 +206,6 @@
      NOT_EQUAL = 1581,
      OPEN_SQUARE = 1583,
      PUBLIC = 1587,
-     KW_ENTER = 1590,
      REVOKE = 1591,
      SECOND = 1595,
      KW_SELECT = 1599,
@@ -253,7 +229,6 @@
      ORDER = 1643,
      OUTER = 1644,
      UNION = 1653,
-     KW_USING_FILTER = 1654,
      WHERE = 1656,
      KW_BYTE = 1663,
      CASE = 1665,
@@ -291,11 +266,9 @@
      KW_MINUS = 1736,
      KW_MOD = 1737,
      KW_NOT = 1738,
-     KW_ROW = 1742,
      KW_SUM = 1745,
      ATSIGN = 1748,
      KW_PLUS = 1749,
-     KW_AS_USER = 1754,
      KW_AS = 1755,
      KW_BY = 1757,
      KW_DOT = 1758,
@@ -308,75 +281,37 @@
      TILDE = 1814,
      ILIKE = 1815,
      FILLFACTOR = 1818,
-     KW_EXTENDS = 1821,
      TIME = 1823,
      KW_TODAY = 1830,
      KW_ROWID = 1831,
-     CURSOR_NAME_FUNCTION = 2178,
-     TIMESTAMP = 2179,
-     MOVE_TO_TOP = 2180,
-     LINETO_TOP = 2181,
-     KW_HEIGHT = 2182,
-     SET_STROKE_COLOR = 2183,
-     SET_FONT_SIZE = 2184,
-     SET_COLOR = 2185,
-     MOVE_TO = 2186,
-     FILL_STROKE = 2187,
-     STROKE = 2188,
-     LINE_TO = 2189,
-     SET_FONT_NAME = 2190,
-     BOOKMARK = 2191,
-     KW_FILL = 2192,
-     KW_WIDTH = 2193,
-     ERRORHOOK = 2195,
-     KW_CAST = 2196,
-     CURR_FILE_NAME = 2197,
-     CURR_LINE_NO = 2198,
-     RIGHT_ALIGNED = 2199
+     TIMESTAMP = 2179
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2201
-#define NAMED 2202
-#define NAMED_GEN 2203
-#define CHAR_VALUE 2204
-#define NOT_USED_1 2205
-#define NOT_USED_2 2206
-#define NOT_USED_3 2207
-#define NOT_USED_4 2208
-#define NOT_USED_5 2209
-#define NOT_USED_6 2210
-#define NOT_USED_7 2211
-#define NOT_USED_8 2212
-#define NUMBER_VALUE 2213
-#define SEMICOLON 2214
-#define QUESTION_MARK 2215
-#define CLINE 2216
-#define CH 2217
-#define MARK_VAR 2218
-#define END_MARK_VAR 2219
-#define KW_DOC4GLCOMMENT 1000
+#define INT_VALUE 2181
+#define NAMED 2182
+#define NAMED_GEN 2183
+#define CHAR_VALUE 2184
+#define NOT_USED_1 2185
+#define NOT_USED_2 2186
+#define NOT_USED_3 2187
+#define NOT_USED_4 2188
+#define NOT_USED_5 2189
+#define NOT_USED_6 2190
+#define NOT_USED_7 2191
+#define NOT_USED_8 2192
+#define NUMBER_VALUE 2193
+#define SEMICOLON 2194
+#define QUESTION_MARK 2195
+#define CLINE 2196
+#define CH 2197
+#define MARK_VAR 2198
+#define END_MARK_VAR 2199
 #define LEFT_JOIN 1002
-#define LINT_IGNORE 1003
-#define LINT_EXPECT 1004
 #define INNER_JOIN 1005
-#define WITH_CONVERSIONS 1011
-#define WITHOUT_CONVERSIONS 1012
-#define BARCODE 1013
-#define BARCODE_NO_TEXT 1014
-#define BARCODETYPE 1015
-#define BLUEBAR_COLOR_EQUAL 1016
-#define BLUEBAR_STYLE_EQUAL_RECTANGLE_COLOR_EQUAL 1017
-#define BLUEBAR_STYLE_EQUAL_RECTANGLE 1018
-#define BLUEBAR_STYLE_EQUAL_LINE_COLOR_EQUAL 1019
-#define BLUEBAR_STYLE_EQUAL_LINE 1020
-#define BLUEBAR 1021
 #define USING_BTREE 1028
 #define USING_RTREE 1029
-#define ASCOPY 1046
 #define SET_BUFFERED_LOG 1054
-#define SET_FILL_COLOR 1055
-#define SET_PARAMETER 1056
 #define SET_LOG 1057
 #define MDY 1059
 #define WEEKDAY 1060
@@ -406,8 +341,6 @@
 #define DROP_CONSTRAINT 1161
 #define DROP_SYNONYM 1162
 #define CONSTRAINT 1163
-#define LOCAL_REPORT 1167
-#define LOCAL_PDF_REPORT 1168
 #define DOUBLE_PRECISION 1172
 #define COUNT_MULTIPLY 1173
 #define MODIFY_NEXT_SIZE 1193
@@ -425,7 +358,6 @@
 #define CREATE_U_IDX 1216
 #define CREATE_C_IDX 1217
 #define CREATE_IDX 1218
-#define CM 1225
 #define DOUBLE_COLON 1228
 #define SQLSICS 1234
 #define CREATE_SCHEMA 1235
@@ -468,7 +400,6 @@
 #define DROP_INDEX 1397
 #define FOR_UPDATE_OF 1403
 #define FOR_UPDATE 1404
-#define REFERENCE 1406
 #define LOCK_TABLE 1409
 #define NOT_EXISTS 1411
 #define REFERENCES 1413
@@ -484,8 +415,6 @@
 #define EXCLUSIVE 1446
 #define GREATER_THAN_EQ 1450
 #define INTO_TEMP 1452
-#define LOAD_FROM 1456
-#define UNLOAD_TO 1467
 #define DATABASE 1476
 #define DATETIME 1477
 #define DISTINCT 1479
@@ -526,7 +455,6 @@
 #define NOT_EQUAL 1581
 #define OPEN_SQUARE 1583
 #define PUBLIC 1587
-#define KW_ENTER 1590
 #define REVOKE 1591
 #define SECOND 1595
 #define KW_SELECT 1599
@@ -550,7 +478,6 @@
 #define ORDER 1643
 #define OUTER 1644
 #define UNION 1653
-#define KW_USING_FILTER 1654
 #define WHERE 1656
 #define KW_BYTE 1663
 #define CASE 1665
@@ -588,11 +515,9 @@
 #define KW_MINUS 1736
 #define KW_MOD 1737
 #define KW_NOT 1738
-#define KW_ROW 1742
 #define KW_SUM 1745
 #define ATSIGN 1748
 #define KW_PLUS 1749
-#define KW_AS_USER 1754
 #define KW_AS 1755
 #define KW_BY 1757
 #define KW_DOT 1758
@@ -605,31 +530,10 @@
 #define TILDE 1814
 #define ILIKE 1815
 #define FILLFACTOR 1818
-#define KW_EXTENDS 1821
 #define TIME 1823
 #define KW_TODAY 1830
 #define KW_ROWID 1831
-#define CURSOR_NAME_FUNCTION 2178
 #define TIMESTAMP 2179
-#define MOVE_TO_TOP 2180
-#define LINETO_TOP 2181
-#define KW_HEIGHT 2182
-#define SET_STROKE_COLOR 2183
-#define SET_FONT_SIZE 2184
-#define SET_COLOR 2185
-#define MOVE_TO 2186
-#define FILL_STROKE 2187
-#define STROKE 2188
-#define LINE_TO 2189
-#define SET_FONT_NAME 2190
-#define BOOKMARK 2191
-#define KW_FILL 2192
-#define KW_WIDTH 2193
-#define ERRORHOOK 2195
-#define KW_CAST 2196
-#define CURR_FILE_NAME 2197
-#define CURR_LINE_NO 2198
-#define RIGHT_ALIGNED 2199
 
 
 
@@ -639,7 +543,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 186 "sql.yacc"
+#line 119 "sql.yacc"
 
         char    str[8192];
    char *sql_string;
@@ -665,7 +569,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 669 "y.tab.h"
+#line 573 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

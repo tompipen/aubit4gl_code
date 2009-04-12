@@ -872,7 +872,12 @@ sq_select_list:
 
 value_expression_pls : 
 		sql_value_expression {
-			add_select_column($<str>1,$<str>1);
+			if (strcmp($<str>1,"rowid")==0) {
+				SPRINTF2($<str>$," %s %s",$<str>1,$<str>1);
+				add_select_column($<str>1,$<str>1);
+			} else {
+				add_select_column($<str>1,$<str>1);
+			}
 		}
 	| 	sql_value_expression  NAMED {
 			SPRINTF2($<str>$," %s %s",$<str>1,$<str>2);

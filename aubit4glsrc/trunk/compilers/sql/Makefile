@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.12 2008-11-25 10:19:06 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2009-04-12 13:01:13 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -26,9 +26,13 @@ ifeq "${YACC}" "no"
 	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/sql/y.tab.c
 	CFLAGS      +=-I${ROOT}/tools/no_yacc/cygwin/compilers/sql
 	KW_YH		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.yh
+	STATESDEP=
+	STATESFILE=${ROOT}/tools/no_yacc/cygwin/compilers/sql/mk_sstates.c ${ROOT}/tools/no_yacc/cygwin/compilers/sql/mk_sstates_1.h
 else
 	Y_TAB_C		=y.tab.c
 	KW_YH		=../4glc/rules/generated/kw.yh
+	STATESDEP= mkstates y.output
+	STATESFILES=mk_sstates.c
 endif
 
 ALL					=${ROOT}/bin/sql_parse $(PLUGINDIR)/libSQLPARSE_INFORMIX${SO_EXT}
@@ -86,7 +90,7 @@ sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	
 ${Y_TAB_C}: sql.yacc
 ifneq "${YACC}" "no"
-	${YACC} -p sqlparse -v -t -d $<
+	${YACC} -p sqlparse -r all -v -t -d $<
 else
 	@echo "No yacc (${YACC}) Using ${Y_TAB_C}"
 endif	
@@ -99,16 +103,23 @@ else
 	@echo "No lex (${LEX}) Using ${LEX_YY_C}"
 endif
 
-y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c cmds.c
+
+y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c cmds.c $(STATESFILES)
 	${CC} ${CFLAGS} -c $< -o $@
+
+mk_sstates.c: $(STATESDEP)
+	${SH} mkstates $(AWK)
+
+y.output: y.tab.c
+
 	
 ## ==================================================================
 ##                   Clean
 ## ==================================================================
 
 clean:
-	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc \
-	y.tab.h y.tab.c y.output m2.lex lex.yy.c lex.yy.c 
+	${RM} -f *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc \
+	y.tab.h y.tab.c y.output m2.lex lex.yy.c lex.yy.c mk_sstates_1.h mk_sstates.c lex.sqlparse_yy.c
 
 
 

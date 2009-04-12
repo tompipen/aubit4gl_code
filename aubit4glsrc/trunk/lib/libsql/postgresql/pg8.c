@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.90 2009-03-23 15:04:55 mikeaubury Exp $
+# $Id: pg8.c,v 1.91 2009-04-12 13:01:13 mikeaubury Exp $
 #*/
 
 
@@ -2445,7 +2445,7 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
       *a4gl_len = pglen;
       return 1;
     }
-  if (pgtype == dtype_int4oid)
+  if (pgtype == dtype_int4oid || pgtype==26)
     {
       *a4gl_dtype = DTYPE_INT;
       *a4gl_len = pglen;

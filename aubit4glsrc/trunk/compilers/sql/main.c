@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.17 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: main.c,v 1.18 2009-04-12 13:01:13 mikeaubury Exp $
 #
 */
 
@@ -43,16 +43,7 @@
 #include <stdlib.h>               /* exit() */
 #include <stdarg.h>
 #include <string.h>
-#ifdef NDEF
-	#include "ilist.h"
-	#include "y.tab.h"
-	extern char* yytext;
-	extern FILE *yyin;
-	int process(void) ;
-	char *sql_string;
-	int sql_type;
-	extern int was_ok=0;
-#endif
+
 #include "a4gl_libaubit4gl.h"
 #include "sql_compiler_util.h"
 extern int db_used;

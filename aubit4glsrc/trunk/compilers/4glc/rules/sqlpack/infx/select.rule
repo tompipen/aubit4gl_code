@@ -197,16 +197,6 @@ value_expression_pls_sli :
 	}
 ;
 
-/*
-column_specification_sli : value_expression_sli {
-	$<s_select_list_item>$=$<s_select_list_item>1;
-}
-
-;
-*/
-
-
-
 
 value_expression_sli:
 	value_expression_initial_sli {
