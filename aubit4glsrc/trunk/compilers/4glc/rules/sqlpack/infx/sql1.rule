@@ -793,6 +793,10 @@ predicate_sli:
 	| exists_predicate_sli {
 		$<s_select_list_item>$=$<s_select_list_item>1;
 	}
+	| value_expression_sli {
+                 $<s_select_list_item>$=$<s_select_list_item>1;
+        }
+
 ;
 
 
