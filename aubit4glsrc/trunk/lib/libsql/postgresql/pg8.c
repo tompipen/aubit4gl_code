@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.91 2009-04-12 13:01:13 mikeaubury Exp $
+# $Id: pg8.c,v 1.92 2009-04-14 07:54:16 mikeaubury Exp $
 #*/
 
 
@@ -88,6 +88,7 @@ int dtype_bpcharoid=-1;
 int dtype_varcharoid=-1;
 int dtype_int4oid=-1;
 int dtype_int2oid=-1;
+int dtype_int8oid=-1;
 int dtype_float8oid=-1;
 int dtype_float4oid=-1;
 int dtype_timestampoid=-1;
@@ -101,6 +102,7 @@ int dtype_textoid=-1;
 #define VARCHAROID      dtype_varcharoid
 #define INT4OID         dtype_int4oid
 #define INT2OID         dtype_int2oid
+#define INT8OID         dtype_int8oid
 #define FLOAT8OID 	dtype_float8oid
 #define FLOAT4OID 	dtype_float4oid
 #define TIMESTAMPOID  	dtype_timestampoid
@@ -2457,6 +2459,12 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
       *a4gl_len = pglen;
       return 1;
     }
+  if (pgtype == dtype_int8oid)
+    {
+      *a4gl_dtype = DTYPE_INT; // This should probably be a 'BIGINT' - but its used as a count(*) result - and INT8 isn't as well established yet..
+      *a4gl_len = pglen;
+      return 1;
+    }
   if (pgtype == dtype_float8oid)
     {
       *a4gl_dtype = DTYPE_FLOAT;
@@ -4144,6 +4152,7 @@ static void ensure_types(void) {
 	dtype_varcharoid=-1;
 	dtype_int4oid=-1;
 	dtype_int2oid=-1;
+	dtype_int8oid=-1;
 	dtype_float8oid=-1;
 	dtype_float4oid=-1;
 	dtype_timestampoid=-1;
@@ -4174,9 +4183,9 @@ static void ensure_types(void) {
     {
 	types[a].type=atol(PQgetvalue (res, a, 0));
 	strcpy(types[a].typename,PQgetvalue (res, a, 1));
-
 	if (strcmp("int4",types[a].typename)==0) 	{ dtype_int4oid=types[a].type; }
 	if (strcmp("int2",types[a].typename)==0) 	{ dtype_int2oid=types[a].type; }
+	if (strcmp("int8",types[a].typename)==0) 	{ dtype_int8oid=types[a].type; }
 	if (strcmp("float4",types[a].typename)==0) 	{ dtype_float4oid=types[a].type; }
 	if (strcmp("float8",types[a].typename)==0) 	{ dtype_float8oid=types[a].type; }
 	if (strcmp("text",types[a].typename)==0) 	{ dtype_textoid=types[a].type; }
