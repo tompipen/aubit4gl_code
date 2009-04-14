@@ -122,6 +122,7 @@ c=0;
 for (a=0;a<strlen(s);a++) {
 	if (s[a]==LoadUnload_delim[0]) c++;
 	if (s[a]=='\\') c++;
+	if (s[a]=='\n') c++;
 }
 if (c==0) return s;
 
@@ -131,7 +132,7 @@ ptr=malloc(strlen(s)+c+1000);
 
 c=0;
 for (a=0;a<strlen(s);a++) {
-if (s[a]==LoadUnload_delim[0]||s[a]=='\\') {
+if (s[a]==LoadUnload_delim[0]||s[a]=='\\'||s[a]=='\n') {
 	ptr[c++]='\\';
 }
 ptr[c++]=s[a];

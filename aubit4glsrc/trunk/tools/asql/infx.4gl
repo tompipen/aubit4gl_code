@@ -42,6 +42,7 @@ extern int display_mode;
 extern int fetchFirst;
 static int get_size(int dtype,int size) ;
 static void     outbyte(FILE *unlfile, char *buffer, long len);
+static void     outtext(FILE *unlfile, char *buffer, long len);
 #include <datetime.h>
 #include <decimal.h>
 #include <locator.h>
@@ -923,7 +924,14 @@ indicator=*col->sqlind ;
               
 
                 case CLOCATORTYPE:
-			strcpy(buffer,"<blob>");
+			{
+                          loc_t *blob;
+                          blob = (loc_t *) (col->sqldata);
+                          if (blob->loc_buffer != NIL(char *)) {
+				if (blob->loc_type == SQLTEXT)	strcpy(buffer,(char *) blob->loc_buffer);
+				else strcpy(buffer,"<blob BYTE>");
+			  }
+			}
 			break;
 
 
@@ -1291,7 +1299,6 @@ execute_sql_fetch (int *raffected,int *err_at_col)
   int a;
 
 A4GL_debug("Fetching");
-
 /* FETCH1.... */
       prepare_for_fetch_into_descriptor(master_desc,master_qualifiers);
       EXEC SQL FETCH crExec USING DESCRIPTOR master_desc;
@@ -2719,7 +2726,6 @@ int i;
 
   slctstmt = e->stmt;
 
-
 if (e->delim) {
   	delim = e->delim[0];
 } else {
@@ -2859,19 +2865,20 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 
 		case CFIXCHARTYPE:
 			{
-			int alen;
-			int flen;
-			if (string_len<col->sqllen*3+1) {
+			  int alen;
+			  int flen;
+			  if (string_len<col->sqllen*3+1) {
 				string=realloc(string, col->sqllen*3+1);
 				string_len=col->sqllen*3+1;
-			}
-                	alen = strip( (char *)col->sqldata, col->sqllen );
-                	flen = charcpy( (unsigned char *)string, (unsigned char *)col->sqldata, alen );
-			if (strlen(string)==0) {
+			  }
+                	  alen = strip( (char *)col->sqldata, col->sqllen );
+                	  flen = charcpy( (unsigned char *)string, (unsigned char *)col->sqldata, alen );
+			  if (strlen(string)==0) {
 		  		fprintf (unlfile," ");
-			} else {
+			  } else {
 		  		fprintf (unlfile,"%s", escape_delim(string));
-			}
+			  }
+			  
 			}
 		  break;
 
@@ -2906,7 +2913,7 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 		  break;
 
 		case CDTIMETYPE:
-		  {
+		  { 
 		    char buff[33];
 		    dtime_t *dtp = (dtime_t *) (col->sqldata);
 
@@ -2936,15 +2943,15 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 
 		case CLOCATORTYPE:
 			{
-			loc_t *blob;
-			blob=(loc_t *) (col->sqldata);
-                	if (blob->loc_buffer != NIL(char *))
-                	{
-                        if (blob->loc_type == SQLTEXT)
-                                outbyte(unlfile,blob->loc_buffer, blob->loc_size );
-                        else
+			  loc_t *blob;
+			  blob=(loc_t *) (col->sqldata);
+                	  if (blob->loc_buffer != NIL(char *))
+                	  {
+                          if (blob->loc_type == SQLTEXT)
+                                outtext(unlfile,blob->loc_buffer, blob->loc_size);
+                          else
                                 outbyte(unlfile,blob->loc_buffer, blob->loc_size);
-                	}
+                 	  }
 			}
 			break;
                 case CLVCHARPTRTYPE:
@@ -2978,7 +2985,6 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
     }				/* end fetch loop */
 A4GL_debug("All done");
   fclose (unlfile);
-
   if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
     {
 return 0;
@@ -2989,6 +2995,7 @@ return 0;
   free (buffer);
 */
 
+ /* 
   for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
 	{
 	  if (col->sqltype==CLOCATORTYPE) {
@@ -2998,7 +3005,7 @@ return 0;
 			free(col->sqldata);
 		}
 	}
-
+*/
   deallocate_descriptor_memory(udesc);
 
   if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
@@ -3097,7 +3104,8 @@ ldelim=get_delim();
         if (*source == ldelim) {
             *target++ = '\\';
             *target++ = ldelim;
-        } else if ((*source < ' ' || *source > '~') && *source!=0xa3 && *source!='\t') {
+        //} else if ((*source < ' ' || *source > '~') && *source!=0xa3 && *source!='\t') {
+        } else if (!a_isprint(*source) && *source != '\n' && *source != '\t') {
             /* Non-printable, convert to hex. */
             target += sprintf( (char *)target, "\\%2.2x", *source );
         } else {
@@ -3140,8 +3148,27 @@ int strip( char *str, int len )
     return alen;
 }
 
+static void  outtext(FILE *unlfile, char *buffer, long len)
+{
+       char *string=0;
+       int string_len=0;
+       int alen;
+       int flen;
+       if (string_len<len*3+1) {
+           string=realloc(string, len*3+1);
+           string_len=len*3+1;
+       }
+       alen = strip(buffer, len );
+       flen = charcpy( (unsigned char *)string, (unsigned char *)buffer, alen );
+       if (strlen(string)==0) {
+           fprintf (unlfile," ");
+       } else {
+           fprintf (unlfile,"%s", escape_delim(string));
+	   free(string);
+       }
+}
 
-static void     outbyte(FILE *unlfile, char *buffer, long len)
+static void  outbyte(FILE *unlfile, char *buffer, long len)
 {
         static char *spc_orig=0;
         char *spc=0;

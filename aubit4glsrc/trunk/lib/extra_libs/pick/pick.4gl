@@ -32,7 +32,7 @@
 ## WITHOUT UPDATING THE OBJS_PICK in tools/asql and tools/a4gl and tools/aupscol
 ##
 ## #######################################################################
-define mv_arr array[2000] of char(128)
+define mv_arr array[5000] of char(128)
 define mv_usesep char(1) 	# use the 'display_separator' to display  the ---- Ctrl-W for help ---  line
 define mv_curr_db char(80)
 define mv_cnt integer
@@ -48,7 +48,7 @@ define mv_nexty integer
 define mv_nextx_last integer
 define mv_nexty_last integer
 
-define mv_printat array[2003] of record
+define mv_printat array[5003] of record
 		page_no integer,
 		x integer,
 		y integer
@@ -96,14 +96,14 @@ mv_maxy=A4GL_get_curr_height();
 mv_maxx=A4GL_get_curr_width()+1;
 endcode
 let mv_max_option_width=0
-if mv_cnt>2000 then
+if mv_cnt>5000 then
 code
 	A4GL_assertion(1,"Internal error - out of bounds");
 endcode
 end if
 
 for a=1 to mv_cnt
-	if a>2000 then
+	if a>5000 then
 code
 	A4GL_assertion(1,"Internal error - out of bounds");
 endcode
@@ -136,7 +136,7 @@ if get_use_form() then
 end if
 
 for a=1 to mv_cnt+1
-	if a>1000 then
+	if a>5000 then
 		continue for
 	end if
 	let y=y+yinc
