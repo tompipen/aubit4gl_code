@@ -26,6 +26,7 @@
 #include "models/response.h"
 #include "models/statusbar.h"
 #include "models/table.h"
+#include "models/matrix.h"
 #include "xmlparsers/xml2menu.h"
 
 //------------------------------------------------------------------------------
@@ -776,6 +777,19 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
                QString fieldValue = fieldValues.at(col);
                QModelIndex modelIndex = table->index(row, col, QModelIndex());
                table->setData(modelIndex, fieldValue, Qt::EditRole);
+            }
+         }
+      }
+      else{
+         if(Matrix *matrix = qobject_cast<Matrix *> (widget)){
+            QList<Fgl::Link> ql_links = p_fglform->recordView[tabName];
+            for(int l=0; l<ql_links.count(); l++){
+               Fgl::Link link = ql_links.at(l);
+               if(link.fieldIdRef == matrix->property("fieldId").toInt()){
+                  for(int col=0; col<fieldValues.count(); col++){
+                     matrix->setText(row, fieldValues.at(col));
+                  }
+               }
             }
          }
       }
@@ -1859,15 +1873,16 @@ void ScreenHandler::setKeyLabel(int dialog, QString label, QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool input)
 {
+   QString tabName;
+   int index = fieldName.indexOf(".");
+   if(index >= 0){
+      tabName.append(fieldName.mid(0,index));
+   }
+
    QList<QWidget*> ql_fields = p_fglform->formElements();
    //QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int k=0; k<ql_fields.size(); k++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(k))){
-         QString tabName;
-         int index = fieldName.indexOf(".");
-         if(index >= 0){
-            tabName.append(fieldName.mid(0,index));
-         }
 
          if(tableView->tabName == tabName){
             tableView->setInputEnabled(input);
@@ -1885,6 +1900,18 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
                }
             }
             return;
+         }
+      }
+      else{
+         if(Matrix *matrix = qobject_cast<Matrix *> (ql_fields.at(k))){
+            QList<Fgl::Link> ql_links = p_fglform->recordView[tabName];
+            for(int l=0; l<ql_links.count(); l++){
+               Fgl::Link link = ql_links.at(l);
+               if(link.fieldIdRef == matrix->property("fieldId").toInt()){
+                     matrix->setInputEnabled(input);
+                     matrix->setEnabled(enable);
+               }
+            }
          }
       }
    }

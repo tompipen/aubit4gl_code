@@ -26,6 +26,8 @@
 
 #include "vwidgets.h"
 
+int defHeight = 21;
+
 //------------------------------------------------------------------------------
 // Method       : Button()
 // Filename     : xml2form.cpp
@@ -465,6 +467,7 @@ Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
    QPalette p = label->palette();
    p.setColor(QPalette::Foreground, Qt::blue);
    label->setPalette(p);
+   label->setFixedHeight(defHeight);
 
    return label;
 }
@@ -499,6 +502,8 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
    if(hidden){
       browser->setVisible(false);
    }
+
+   browser->setFixedHeight(defHeight);
 
    return browser;
 }
@@ -583,6 +588,7 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
+   lineEdit->setFixedHeight(defHeight);
 
    if(hidden)
       lineEdit->setVisible(false);
@@ -630,6 +636,7 @@ ButtonEdit* WidgetHelper::createButtonEdit(const QDomElement& formField,QWidget 
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
+   lineEdit->setFixedHeight(defHeight);
 
    if(hidden)
       lineEdit->setVisible(false);
@@ -675,6 +682,7 @@ DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *par
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
+   lineEdit->setFixedHeight(defHeight);
 
    if(hidden)
       lineEdit->setVisible(false);
@@ -685,8 +693,6 @@ DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *par
 TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *parent)
 {   
    QDomElement textEditElement = formField.firstChild().toElement();
-
-   int pageSize    = formField.attribute("pageSize").toInt();
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
@@ -733,12 +739,10 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
       textEdit->setToolTip(comments);
    }
 
-   if(pageSize > 0){
-      textEdit->setFixedHeight(20*pageSize);
-   }
-   else{
-      textEdit->setFixedHeight(20*textEditElement.attribute("height").toInt());
-   }
+   int height = textEditElement.attribute("height").toInt();
+   if(height < 1) height = 1;
+
+   textEdit->setFixedHeight(defHeight*height);
    
 
    QFontMetrics fm = textEdit->fontMetrics();
@@ -766,8 +770,6 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
 ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *parent)
 {   
    QDomElement comboBoxElement = formField.firstChild().toElement();
-
-   int pageSize    = formField.attribute("pageSize").toInt();
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
@@ -801,12 +803,10 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
    comboBox->setAccessibleName(name);
    comboBox->setObjectName(colName);
 
-   if(pageSize > 0){
-      comboBox->setFixedHeight(20*pageSize);
-   }
-   else{
-      //comboBox->setFixedHeight(20*comboBoxElement.attribute("height").toInt());
-   }
+   int height = comboBoxElement.attribute("height").toInt();
+   if(height < 1) height = 1;
+
+   comboBox->setFixedHeight(defHeight*height);
 
    QString comments = comboBoxElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -844,8 +844,6 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
 CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *parent)
 {   
    QDomElement checkBoxElement = formField.firstChild().toElement();
-
-   int pageSize    = formField.attribute("pageSize").toInt();
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
@@ -893,11 +891,10 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
       checkBox->setTristate(false);
    }
 
-   if(pageSize > 0){
-      checkBox->setFixedHeight(20*pageSize);
-   }
-   else{
-   }
+   int height = checkBoxElement.attribute("height").toInt();
+   if(height < 1) height = 1;
+
+   checkBox->setFixedHeight(defHeight*height);
 
    QString comments = checkBoxElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -925,8 +922,6 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
 ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidget *parent)
 {   
    QDomElement progressBarElement = formField.firstChild().toElement();
-
-   int pageSize    = formField.attribute("pageSize").toInt();
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
@@ -960,11 +955,10 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
    progressBar->setMinimum(valueMin);
    progressBar->setMaximum(valueMax);
 
-   if(pageSize > 0){
-      progressBar->setFixedHeight(20*pageSize);
-   }
-   else{
-   }
+   int height = progressBarElement.attribute("height").toInt();
+   if(height < 1) height = 1;
+
+   progressBar->setFixedHeight(defHeight*height);
 
    QString comments = progressBarElement.attribute("comments");
    if(!comments.isEmpty()){

@@ -18,6 +18,7 @@
 
 #include "parser.h"
 #include <models/vwidgets.h>
+#include <models/matrix.h>
 #include <models/table.h>
 #include <models/fglform.h>
 
@@ -197,7 +198,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
       }
 
-      if(nodeName == "FormField" || nodeName == "Matrix"){
+      if(nodeName == "FormField"){
          QWidget *widget = WidgetHelper::createFormWidget(currentElement);
 
          QDomElement fieldElement = currentElement.firstChildElement();
@@ -209,11 +210,29 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
          widget->setProperty("fieldId", currentElement.attribute("fieldId").toInt());
 
-         if(nodeName == "Matrix"){
-            addWidgets(widget, true, posY, posX, gridWidth, currentElement.attribute("pageSize").toInt());
-         }else{
-            addWidgets(widget, true, posY, posX, gridWidth);
+         addWidgets(widget, true, posY, posX, gridWidth);
+         continue;
+      }
+
+      if(nodeName == "Matrix"){
+         Matrix *widget = new Matrix;
+         int pageSize = currentElement.attribute("pageSize").toInt();
+
+         QDomElement fieldElement = currentElement.firstChildElement();
+
+         for(int ps=0; ps<pageSize; ps++){
+            QWidget *mwidget = WidgetHelper::createFormWidget(currentElement);
+            widget->addWidget(mwidget);
          }
+
+         int w = fieldElement.attribute("width").toInt();
+         int posX = fieldElement.attribute("posX").toInt();
+         int posY = fieldElement.attribute("posY").toInt();
+         int gridWidth = fieldElement.attribute("gridWidth").toInt();
+
+         widget->setProperty("fieldId", currentElement.attribute("fieldId").toInt());
+
+         addWidgets(widget, true, posY, posX, gridWidth, currentElement.attribute("pageSize").toInt());
          continue;
       }
 
@@ -371,6 +390,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
       p_screenRecord->setItemDelegateForColumn(i,de);
       header->resizeSection(i, w+1); 
+      qDebug() << "PAPA:" << de->parent();
    }
  
    p_screenRecord->setFixedSize(recordWidth, recordHeight);

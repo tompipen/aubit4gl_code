@@ -22,6 +22,7 @@
 #include <QDomElement>
 
 #include "fglform.h"
+#include "matrix.h"
 
 class Response : public QDomDocument
 {
@@ -36,6 +37,7 @@ private:
    QDomElement responseElement;
    void addSyncValues();
    void addScreenRecSyncValues(TableView*);
+   void addScreenRecSyncValues(Matrix*);
 
    bool checkOnActionEvents(QString*);
 };

@@ -40,7 +40,6 @@
 #include <QTextCursor>
 #include <include/fgl.h>
 
-
 class LineEdit : public QLineEdit
 {
    Q_OBJECT

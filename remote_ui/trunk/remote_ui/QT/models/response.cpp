@@ -61,6 +61,11 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
                   addScreenRecSyncValues(tableView);
                }
             }
+            if(Matrix *matrix = qobject_cast<Matrix *> (p_currForm->formElements().at(i))){
+               if(matrix->isEnabled()){
+                  addScreenRecSyncValues(matrix);
+               }
+            }
          }
       }
    }
@@ -140,6 +145,50 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
          }
             syncValuesElement.appendChild(syncValueElement);
       }
+   }
+}
+
+void Response::addScreenRecSyncValues(Matrix *p_matrix)
+{
+
+
+   int arrCount = p_matrix->arrCount();
+   if(arrCount <= 0) arrCount = 1;
+   
+
+   responseElement.setAttribute("ARRCOUNT", arrCount);
+
+   /*
+   int scrLine = p_matrix->scrLine();
+   if(scrLine <= 0) scrLine = 1;
+
+   int arrLine = p_matrix->scrLine();
+   if(arrLine <= 0) arrLine = 1;
+
+   responseElement.setAttribute("SCRLINE", scrLine);
+
+   responseElement.setAttribute("ARRLINE", arrLine);
+   */
+
+   if(!p_currForm->inputArray())
+      return;
+
+   QDomElement syncRowsElement = this->createElement("SYNCROWS");
+   responseElement.appendChild(syncRowsElement);
+
+   for(int i=0; i<arrCount; i++){
+      QDomElement syncRowElement = this->createElement("ROW");
+      syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
+      syncRowsElement.appendChild(syncRowElement);
+      QDomElement syncValuesElement = this->createElement("SYNCVALUES");
+      syncRowElement.appendChild(syncValuesElement);
+      QDomElement syncValueElement = this->createElement("SYNCVALUE");
+      QString text = p_matrix->text(i);
+      if(!text.isEmpty()){
+         QDomText syncValueText = this->createTextNode(text);
+         syncValueElement.appendChild(syncValueText);
+      }
+      syncValuesElement.appendChild(syncValueElement);
    }
 }
 

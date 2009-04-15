@@ -585,6 +585,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    const QStyleOptionViewItem &/* option */,
    const QModelIndex &/* index */) const
 {
+   qDebug() << "PARENT:" << this->parent();
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    editor->setAutoFillBackground(true);
    
