@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.149 2009-04-15 14:22:29 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.150 2009-04-15 14:57:09 mikeaubury Exp $";
 #endif
 
 
@@ -1024,6 +1024,7 @@ GtkWidget *logoImg;
       GtkWidget *fglmenu_bb;
       GtkWidget *ok_cancel;
       GtkWidget *frame;
+	GtkWidget *menu_title;
 
       additional = 0;
       additional_y = 0;
@@ -1078,6 +1079,10 @@ GtkWidget *logoImg;
 	  fglmenu_bb = gtk_vbutton_box_new ();
 	  ok_cancel = gtk_vbutton_box_new ();
 	}
+      menu_title=gtk_button_new_with_label("???");
+      gtk_widget_hide(menu_title);
+      gtk_object_set_data(GTK_OBJECT(appWin),"MENUTITLEBTN",menu_title);
+
       gtk_widget_set_name (GTK_WIDGET (fglmenu_bb), "MenuButtons");
       gtk_widget_set_name (GTK_WIDGET (ok_cancel), "OKCancel");
       setup_ok_cancel (ok_cancel);
@@ -1156,7 +1161,10 @@ GtkWidget *logoImg;
 	  gtk_widget_show (f);
 	  gtk_widget_set_name (GTK_WIDGET (f), "MenuButtons");
 	  gtk_widget_show (vbox);
+	  gtk_button_set_relief(GTK_BUTTON(menu_title),GTK_RELIEF_NONE);
+	  gtk_box_pack_start (GTK_BOX(vbox), menu_title, FALSE, FALSE, 0);
 	  gtk_container_add (GTK_CONTAINER (vbox), fglmenu_bb);
+
 
 	  gtk_box_pack_end (GTK_BOX(vbox), ok_cancel, FALSE, FALSE, 0);
 
@@ -3892,6 +3900,13 @@ int
 A4GL_LL_hide_h_menu (void)
 {
   GtkWidget *bb;
+  GtkWidget *menu_title;
+  menu_title=gtk_object_get_data(GTK_OBJECT(appWin),"MENUTITLEBTN");
+  if (menu_title) {
+        gtk_button_set_label(GTK_BUTTON(menu_title)," ");
+        gtk_widget_hide(GTK_WIDGET(menu_title));
+  }
+
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
     return 0;
@@ -3943,11 +3958,22 @@ A4GL_LL_disp_h_menu (int num_opts, char *title, char* style,char* comment,char* 
 {
   GtkWidget *bb;
   GtkWidget *b;
+  GtkWidget *menu_title;
   int nbuttons;
   int a;
   char buff[255];
   if (A4GL_isyes (acl_getenv ("TRADMENU")))
     return 0;
+
+  //f= gtk_object_get_data (GTK_OBJECT (win_screen), "MENUFRAME");
+  //if (f) { gtk_frame_set_label(GTK_FRAME(f),title); }
+  //
+  //
+  menu_title=gtk_object_get_data(GTK_OBJECT(appWin),"MENUTITLEBTN");
+  if (menu_title) {
+	gtk_button_set_label(GTK_BUTTON(menu_title),title);
+	gtk_widget_show(GTK_WIDGET(menu_title));
+  }
 
   bb = gtk_object_get_data (GTK_OBJECT (win_screen), "BB");
   if (bb == 0)
@@ -3956,6 +3982,7 @@ A4GL_LL_disp_h_menu (int num_opts, char *title, char* style,char* comment,char* 
 	//gtk_widget_set_sensitive(bb,1);
   //gtk_widget_show (bb);
   nbuttons = (int) gtk_object_get_data (GTK_OBJECT (bb), "NBUTTONS");
+
 
   while (nbuttons < num_opts)
     {
