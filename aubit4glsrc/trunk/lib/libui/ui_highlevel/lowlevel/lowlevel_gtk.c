@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.148 2009-03-10 12:06:08 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.149 2009-04-15 14:22:29 mikeaubury Exp $";
 #endif
 
 
@@ -772,7 +772,7 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 /* Only do modal for now... */
   dis = DIALOG_DISABLE_ALL;
 
-  win =  gtk_message_dialog_new      (NULL, GTK_DIALOG_MODAL,iconType,GTK_BUTTONS_NONE,  "%s",a4gl_locale_to_utf8(msg));
+  win =  gtk_message_dialog_new      (appWin, GTK_DIALOG_MODAL,iconType,GTK_BUTTONS_NONE,  "%s",a4gl_locale_to_utf8(msg));
   if (win==NULL ){
 	A4GL_assertion(1,"Could not create window");
   }
@@ -849,8 +849,10 @@ A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
   if (defbutt>0) {
   	gtk_dialog_set_default_response (GTK_DIALOG(win), defbutt);
   }
-
+  gtk_widget_show(win);
+  //win
   rval=gtk_dialog_run(GTK_DIALOG(win));
+
   if (rval==GTK_RESPONSE_NONE ) {
 	return -1;
   }
