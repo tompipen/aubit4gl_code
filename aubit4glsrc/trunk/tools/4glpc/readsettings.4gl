@@ -63,7 +63,7 @@ define lv_type char(1024)
 define lv_has_pack integer
 let lv_type=get_settings_dir() clipped,"/",lv_type clipped
 if isverbose(4) then
-	display "Read pack : ",lv_type clipped
+	display "Try to read pack : ",lv_type clipped
 end if
 let lv_has_pack=0;
 code
@@ -102,7 +102,9 @@ if (fin!=0) {
 endcode
 
 if isverbose(4) then
-	display "Has pack : ",lv_type clipped
+	if lv_has_pack then
+		display "Has pack : ",lv_type clipped
+	end if
 end if
 
 end function
