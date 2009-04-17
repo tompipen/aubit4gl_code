@@ -786,7 +786,7 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
 
   get_attribs (f, attr_no, buff, 0);
 
-fieldNo=attr_no;
+  fieldNo=attr_no;
   if (isInScreenArray (f, attr_no, &dim1,NULL)) {
 		ismatrix=1;
 		dim=dim1;
@@ -837,9 +837,6 @@ fieldNo=attr_no;
 	addPrintedAttribute(attr_no);
 
   tabIndex++;
-  //if (!isLabel (f, attr_no)) { fieldNo++; }
-
-	//attributeFieldIDRef[attr_no]=fieldNo;
       fprintf (ofile, "<FormField name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" >\n",
 	       f->attributes.attributes_val[attr_no].tabname,
 	       f->attributes.attributes_val[attr_no].colname,
@@ -850,7 +847,6 @@ fieldNo=attr_no;
 
       fprintf (ofile, "</FormField>\n");
     }
-  	//fieldNo++;
 }
 
 
@@ -1036,7 +1032,7 @@ char scrname[200];
 		addPrintedAttribute(attr_no);
   		tabIndex++;
 
-	
+	 fieldNo=attr_no;
 	
 		get_attribs(f, attr_no, buff_tabcol,0);
 
