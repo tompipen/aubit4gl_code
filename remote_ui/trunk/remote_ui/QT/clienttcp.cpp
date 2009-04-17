@@ -1360,6 +1360,7 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
 
+
    }
  
    QDomElement currentElement = domNode.firstChild().toElement();

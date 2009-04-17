@@ -152,6 +152,9 @@ public:
 
    void setForm(QWidget *form);// {p_fglform = form; };
 
+   void setColumn(int c) { i_column = c; };
+   int column() { return i_column; } ;
+
 
 protected:
    bool eventFilter(QObject *editor, QEvent *event);
@@ -165,6 +168,8 @@ public slots:
 private:
    QWidget *p_fglform;
    QDomElement formElement;
+
+   int i_column;
 };
 
 #endif

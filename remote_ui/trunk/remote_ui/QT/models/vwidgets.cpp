@@ -59,6 +59,7 @@ void Button::buttonClicked()
 LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
 {
+   this->setFixedHeight(defHeight);
    setContextMenuPolicy(Qt::CustomContextMenu);
 
    QFont textFont;

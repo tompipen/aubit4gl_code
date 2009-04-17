@@ -560,11 +560,13 @@ QDate dateFromString(const QString &s)
 LineEditDelegate::LineEditDelegate(QObject *parent)
    : QStyledItemDelegate(parent)
 {
+   i_column = -1;
 }
 
 LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
    : QStyledItemDelegate(parent)
 {
+   i_column = -1;
    this->p_fglform = NULL;
    this->formElement = formElement;
 }
@@ -655,3 +657,4 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 
    return QStyledItemDelegate::eventFilter(object, event);
 }
+

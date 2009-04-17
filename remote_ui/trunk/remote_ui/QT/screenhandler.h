@@ -87,6 +87,9 @@ private:
 
    bool clearFieldEvents;
 
+   QWidget* findFieldByName(QString);
+   QList<QWidget*> findFieldsByName(QString);
+
 
 public slots:
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0);

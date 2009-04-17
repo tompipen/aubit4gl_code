@@ -61,6 +61,29 @@ void Parser::parseForm(QDomDocument xmlForm)
 
    layout->addWidget(currentWidget);
    layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+   //order fields by fieldid
+   int cnt=0;
+   bool sorted = false;
+   while(!sorted){
+      for(int i=0; i<ql_formFields.count(); i++){
+         QWidget *w = ql_formFields.takeAt(i);
+
+         ql_formFields.insert(w->property("fieldId").toInt(), w);
+      }
+      sorted = true;
+      for(int i=0; i<ql_formFields.count(); i++){
+         if(ql_formFields.at(i)->property("fieldId").toInt() != i){
+            sorted = false;
+         }
+      }
+
+      if(cnt > ql_formFields.count()*ql_formFields.count()*10){
+         qFatal("SORTING FIELDS FAILED EXITING");
+         break;
+      }
+      cnt++;
+   }
 }
 
 void Parser::parseElement(const QDomNode& xmlNode)
@@ -214,6 +237,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
          continue;
       }
 
+      /*
       if(nodeName == "Matrix"){
          Matrix *widget = new Matrix;
          int pageSize = currentElement.attribute("pageSize").toInt();
@@ -235,6 +259,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
          addWidgets(widget, true, posY, posX, gridWidth, currentElement.attribute("pageSize").toInt());
          continue;
       }
+      */
 
       if(nodeName == "HLine"){
          int posX = currentElement.attribute("posX").toInt();
@@ -271,6 +296,10 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
       if(nodeName == "Table"){
          handleTableColumn(currentElement);
+      }
+
+      if(nodeName == "Matrix"){
+         handleMatrixColumn(currentElement);
       }
 
       if(nodeName == "RecordView"){
@@ -351,6 +380,8 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
       QString colText = currentElement.attribute("text");
       QString colName = currentElement.attribute("colName");
+      QString name = currentElement.attribute("name");
+      int fieldId = currentElement.attribute("fieldId").toInt();
       p_screenRecord->setColumnName(i,colName);
  
       QString nodeName = currentElement.nodeName();
@@ -358,6 +389,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       int formW = currentElement.firstChild().toElement().attribute("width").toInt();
       QWidget *wi = WidgetHelper::createFormWidget(currentElement);
       int w = wi->width();
+      int h = wi->height();
       delete wi;
  
       int fieldCount = ql_formFields.count();
@@ -385,12 +417,24 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       recordWidth += w + 8;
  
       LineEditDelegate *de = new LineEditDelegate(currentElement, p_screenRecord);
+      de->setObjectName(name);
+      de->setProperty("fieldId", fieldId);
       de->setForm(p_fglform);
+      de->setColumn(i);
 
 
       p_screenRecord->setItemDelegateForColumn(i,de);
       header->resizeSection(i, w+1); 
-      qDebug() << "PAPA:" << de->parent();
+
+      QHeaderView *vert = p_screenRecord->verticalHeader();
+      vert->setDefaultSectionSize(h+1); 
+      vert->resizeSections(QHeaderView::Fixed);
+
+      for(int i=0; i<vert->count(); i++){
+         vert->resizeSection(i, h+1);
+      }
+
+      ql_formFields << (QWidget*) de;
    }
  
    p_screenRecord->setFixedSize(recordWidth, recordHeight);
@@ -407,7 +451,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    QString name = matrixElement.attribute("name");
    int colCount = matrixElement.childNodes().count();
 
-   TableModel *model = new TableModel(pageSize, colCount);
+   TableModel *model = new TableModel(pageSize, 1);
 
    TableView *p_screenRecord = new TableView;
    p_screenRecord->tabName = name;
@@ -424,6 +468,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
 
 
    QHeaderView *header = p_screenRecord->horizontalHeader(); 
+   header->setStretchLastSection(true);
    header->setVisible(false);
 
    int recordHeight = header->height();
@@ -438,15 +483,28 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
 
    QWidget *wi = WidgetHelper::createFormWidget(matrixElement);
    int w = wi->width();
+   int h = wi->height();
    delete wi;
  
    recordWidth += w + 7;
+
+   p_screenRecord->setColumnName(0,matrixElement.attribute("colName"));
  
    LineEditDelegate *de = new LineEditDelegate(matrixElement, p_screenRecord);
+   de->setObjectName(matrixElement.attribute("name"));
+   de->setProperty("fieldId", matrixElement.attribute("fieldId").toInt());
    de->setForm(p_fglform);
+   ql_formFields << (QWidget*) de;
  
    p_screenRecord->setItemDelegate(de);
-   header->resizeSection(0, w+1); 
+
+   QHeaderView *vert = p_screenRecord->verticalHeader();
+   vert->setDefaultSectionSize(h+1); 
+   vert->resizeSections(QHeaderView::Fixed);
+
+   for(int i=0; i<vert->count(); i++){
+      vert->resizeSection(i, h+1);
+   }
 
    p_screenRecord->setFixedSize(recordWidth, recordHeight);
 

@@ -107,6 +107,7 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (p_screenRecord->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
+   qDebug() << "ARR:" << p_screenRecord->arrCount();
    int arrCount = p_screenRecord->arrCount();
    if(arrCount <= 0) arrCount = 1;
    

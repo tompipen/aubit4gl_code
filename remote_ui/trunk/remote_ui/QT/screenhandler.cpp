@@ -472,7 +472,78 @@ void ScreenHandler::createPrompt(QString text, int charMode, QString style)
    connect(p_prompt, SIGNAL(sendDirect(QString)), this, SLOT(sendDirect(QString)));
 }
 
+//------------------------------------------------------------------------------
+// Method       : setFieldBuffer(QStringList FieldNames, QStringList FieldValues)
+// Filename     : screenhandler.cpp
+// Description  : sets the Text for the Field
+//------------------------------------------------------------------------------
+void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValues)
+{
+   int value_cnt = 0;
 
+   for(int i=0; i<fieldNames.count(); i++){
+      QString fieldName = fieldNames.at(i);
+
+      int index = fieldName.indexOf(".*");
+
+      if(index < 0){
+         QWidget *widget = findFieldByName(fieldName);
+         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+            int index2 = fieldName.indexOf("[");
+            int index3 = fieldName.indexOf("]")+1;
+            int row;
+
+            if(index2 > 0){
+               row = fieldName.mid(index2+1, index3-index2-1-1).toInt()-1;
+               fieldName.remove(index2, index3-index2);
+            }
+            else{
+               row = 0;
+            }
+
+            QStringList values;
+            values << fieldValues.at(i);
+            setArrayBuffer(row, fieldName, values);
+         }
+         else{
+            WidgetHelper::setFieldText(widget, fieldValues.at(i));
+         }
+      }
+      else{
+         QList<QWidget*> ql_fields = findFieldsByName(fieldName);
+         for(int j=0; j<ql_fields.count(); j++){
+            QWidget *widget = ql_fields.at(j);
+            if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+               int index2 = fieldName.indexOf("[");
+               int index3 = fieldName.indexOf("]")+1;
+               int row;
+
+               if(index2 > 0){
+                  row = fieldName.mid(index2+1, index3-index2-1-1).toInt()-1;
+                  fieldName.remove(index2, index3-index2);
+               }
+               else{
+                  row = 0;
+               }
+
+               QStringList values;
+               for(int k=0; k<ql_fields.count(); k++){
+                  values << fieldValues.at(value_cnt+k);
+               }
+               setArrayBuffer(row, fieldName, values);
+               value_cnt = ql_fields.count();
+               break;
+            }
+            else{
+               WidgetHelper::setFieldText(widget, fieldValues.at(value_cnt));
+               value_cnt++;
+            }
+         }
+      }
+   }
+}
+
+/*
 //------------------------------------------------------------------------------
 // Method       : setFieldBuffer(QStringList FieldNames, QStringList FieldValues)
 // Filename     : screenhandler.cpp
@@ -495,7 +566,8 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
 
       if(index <= -1){
          // DISPLAY BY NAME
-         QList<QWidget*> ql_fields = p_fglform->formElements();
+//         QList<QWidget*> ql_fields = p_fglform->formElements();
+         QList<QWidget*> ql_fields = p_fglform->ql_formFields;
          for(int j=0; j<ql_fields.size(); j++){
 
             QWidget *widget = ql_fields.at(j);
@@ -545,7 +617,8 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
 
          for(int j=value_cnt; j<fieldValues.size(); j++){
 
-            QList<QWidget*> ql_fields = p_fglform->formElements();
+            //QList<QWidget*> ql_fields = p_fglform->formElements();
+            QList<QWidget*> ql_fields = p_fglform->ql_formFields;
             for(int k=widget_cnt; k<ql_fields.size(); k++){
 
                QWidget *widget = ql_fields.at(k);
@@ -611,7 +684,55 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
       }
    }
 }
+*/
 
+//------------------------------------------------------------------------------
+// Method       : setFieldBuffer(QString FieldName, QString FieldValue)
+// Filename     : screenhandler.cpp
+// Description  : sets the Text for the Field
+//------------------------------------------------------------------------------
+void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
+{
+   int i_Frm = getCurrForm();
+   if(i_Frm < 0)
+      return;
+
+   Fgl::Context *context = getCurrentContext();
+   if(context == NULL)
+      return;
+
+   QString fieldName;
+   if(context->fieldList.count()-1 >= fieldNo){
+      fieldName = context->fieldList.at(fieldNo);
+   }
+   else{
+      qFatal("Field not found in ScreenHandler::setFieldBuffer(int, QString)");
+   }
+
+   QWidget *widget = findFieldByName(fieldName);
+   if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+      int index2 = fieldName.indexOf("[");
+      int index3 = fieldName.indexOf("]")+1;
+      int row;
+
+      if(index2 > 0){
+         row = fieldName.mid(index2+1, index3-index2-1-1).toInt()-1;
+         fieldName.remove(index2, index3-index2);
+      }
+      else{
+         row = 0;
+      }
+
+      QStringList values;
+      values << fieldValue;
+      setArrayBuffer(row, fieldName, values);
+   }
+   else{
+      WidgetHelper::setFieldText(widget, fieldValue);
+   }
+}
+
+/*
 //------------------------------------------------------------------------------
 // Method       : setFieldBuffer(QString FieldName, QString FieldValue)
 // Filename     : screenhandler.cpp
@@ -636,15 +757,16 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
       return;
    }
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+   //QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
 
-     QWidget *widget = ql_fields.at(i);
+      QWidget *widget = ql_fields.at(i);
 
-     if(widget->accessibleName() == fieldName || widget->objectName() == fieldName){
-        WidgetHelper::setFieldText(widget, fieldValue);
-        return;
-     }
+      if(widget->accessibleName() == fieldName || widget->objectName() == fieldName){
+         WidgetHelper::setFieldText(widget, fieldValue);
+         return;
+      }
 
       if(TableView *tableView = qobject_cast<TableView *> (widget)){
          QString tabName;
@@ -660,7 +782,50 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
       }
    }
 }
+*/
+//------------------------------------------------------------------------------
+// Method       : setFieldBuffer(QString FieldName, QString FieldValue)
+// Filename     : screenhandler.cpp
+// Description  : sets the Text for the Field
+//------------------------------------------------------------------------------
+void ScreenHandler::clearFieldBuffer(QString fieldName)
+{
+   int index = fieldName.indexOf(".*");
 
+   if(index < 0){
+      QWidget *widget = findFieldByName(fieldName);
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            int index2 = fieldName.indexOf("[");
+            int index3 = fieldName.indexOf("]")+1;
+            int row;
+
+            if(index2 > 0){
+               row = fieldName.mid(index2+1, index3-index2-1-1).toInt()-1;
+               fieldName.remove(index2, index3-index2);
+            }
+            else{
+               row = 0;
+            }
+            QStringList values;
+            values << QString("");
+            setArrayBuffer(row, fieldName, values);
+         }
+      }
+      else{
+         WidgetHelper::setFieldText(widget, "");
+      }
+   }
+   else{
+      QList<QWidget*> ql_fields = findFieldsByName(fieldName);
+      for(int j=0; j<ql_fields.count(); j++){
+         QWidget *widget = ql_fields.at(j);
+         WidgetHelper::setFieldText(widget, "");
+      }
+   }
+}
+
+/*
 //------------------------------------------------------------------------------
 // Method       : setFieldBuffer(QString FieldName, QString FieldValue)
 // Filename     : screenhandler.cpp
@@ -673,7 +838,8 @@ void ScreenHandler::clearFieldBuffer(QString fieldName)
 
    if(index > -1){
       QRegExp rx(fieldName);
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+      //      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_fields.at(i))){
             if(rx.exactMatch(lineEdit->accessibleName())){
@@ -689,7 +855,8 @@ void ScreenHandler::clearFieldBuffer(QString fieldName)
       }
    }
    else{
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+      //      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
 
          if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_fields.at(i))){
@@ -708,6 +875,7 @@ void ScreenHandler::clearFieldBuffer(QString fieldName)
       }
    }
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : setArrayBuffer(QWidget* tableView, QString fieldName, QString fieldValue)
@@ -716,6 +884,7 @@ void ScreenHandler::clearFieldBuffer(QString fieldName)
 //------------------------------------------------------------------------------
 void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QString fieldValue)
 {
+   qDebug() << "SET ARRAY3";
    TableView *screenRecord = qobject_cast<TableView *> (tableView);
    if(screenRecord == NULL){
       return;
@@ -752,17 +921,69 @@ void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QStrin
       screenRecord->model()->setData(modelIndex, fieldValue);
    }
 }
+void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldValues)
+{
+   qDebug() << "SET ARRAY1";
+   int index = tabName.indexOf(".*");
+   if(index < 0){
+      for(int i=0; i<fieldValues.count(); i++){
+         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (findFieldByName(tabName))){
+            int col = de->column();
+            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
+               if(table->rowCount(QModelIndex()) < row+1){
+                  table->insertRow(row, QModelIndex());
+               }
+
+               QString fieldValue = fieldValues.at(i);
+               QModelIndex modelIndex = table->index(row, col, QModelIndex());
+               table->setData(modelIndex, fieldValue, Qt::EditRole);
+            }
+         }
+      }
+   }
+   else{
+      QList<QWidget*> ql_fields = findFieldsByName(tabName);
+      QWidget *widget = NULL;
+      if(ql_fields.count() > 0)
+         widget = ql_fields.first();
+
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+            TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+            if(table->rowCount(QModelIndex()) < row+1){
+               table->insertRow(row, QModelIndex());
+            }
+
+            for(int col=0; col<fieldValues.count(); col++){
+               QString fieldValue = fieldValues.at(col);
+               QModelIndex modelIndex = table->index(row, col, QModelIndex());
+               table->setData(modelIndex, fieldValue, Qt::EditRole);
+            }
+         }
+      }
+   }
+}
+
+/*
 void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldValues)
 {
    int index = tabName.indexOf(".*");
    if(index >= 0)
       tabName.remove(index, 2);
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
 
       QWidget *widget = ql_fields.at(i);
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         widget = (QWidget*) de->parent();
+      }
 
       if(widget->accessibleName() == tabName){
          if(TableView *tableView = qobject_cast<TableView *> (widget)){
@@ -795,19 +1016,25 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
       }
    }
 }
+*/
 
 void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
 {
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+   qDebug() << "SET ARRAY2";
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
 
       QWidget *widget = ql_fields.at(i);
 
-      if(widget->isEnabled()){
-         if(TableView *tableView = qobject_cast<TableView *> (widget)){
+      qDebug() << "FIELD:" << widget;
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            if(!tableView->isEnabled()) continue;
             QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
             TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
+               qDebug() << "INSERT ROW:" << row << table->rowCount(QModelIndex());
             if(table->rowCount(QModelIndex()) < row+1){
                table->insertRow(row, QModelIndex());
             }
@@ -832,7 +1059,8 @@ void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
    if(p_fglform == NULL)
       return;
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int k=0; k<ql_fields.size(); k++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(k))){
 
@@ -868,12 +1096,72 @@ void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
       }
    }
 }
+//------------------------------------------------------------------------------
+// Method       : setFieldEnabled(QString fieldName, bool enable, bool focus)
+// Filename     : screenhandler.cpp
+// Description  : enables or disables the Field
+//------------------------------------------------------------------------------
+void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
+{
+   fieldName = fieldName.trimmed();
+
+   int i_Frm = getCurrForm();
+   if(i_Frm < 0)
+      return;
+
+   Fgl::Context *context = getCurrentContext();
+   if(context == NULL)
+      return;
+   
+   // For fieldlist = table.*
+   int index = fieldName.indexOf(".*");
+
+   if(index < 0){
+      // No wildcard
+      QWidget *widget = findFieldByName(fieldName);
+      if(widget != NULL){
+         widget->setEnabled(enable);
+         if(enable) {
+            context->fieldList << widget->accessibleName();
+         }
+         else{
+            context->fieldList.removeOne(widget->accessibleName());
+         }
+         if(focus){
+            widget->setFocus();
+            widget->update();
+            focus = false;
+         }
+      }
+   }
+   else{
+      QList<QWidget*> ql_fields = findFieldsByName(fieldName);
+      for(int i=0; i<ql_fields.count(); i++){
+         QWidget *widget = ql_fields.at(i);
+         if(widget != NULL){
+            widget->setEnabled(enable);
+            if(enable) {
+               context->fieldList << widget->accessibleName();
+            }
+            else{
+               context->fieldList.removeOne(widget->accessibleName());
+            }
+            if(focus){
+               widget->setFocus();
+               widget->update();
+               focus = false;
+            }
+         }
+      }
+   }
+}
 
 //------------------------------------------------------------------------------
 // Method       : setFieldEnabled(QString fieldName, bool enable, bool focus)
 // Filename     : screenhandler.cpp
 // Description  : enables or disables the Field
 //------------------------------------------------------------------------------
+/*
 void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
 {
 
@@ -894,7 +1182,8 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
       // For fieldlist = table.*
       QRegExp rx(fieldName);
 
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = ql_fields.at(i);
          //dbu: Labels dont have to be enabled or disabled
@@ -935,7 +1224,8 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
       }
    }
    else{
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = ql_fields.at(i);
          //dbu: Labels dont have to be enabled or disabled
@@ -975,13 +1265,65 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
    }
 
 }
-
+*/
 
 //------------------------------------------------------------------------------
 // Method       : setFieldFocus(QString FieldName )
 // Filename     : screenhandler.cpp
 // Description  : sets the focus for the Field
 //------------------------------------------------------------------------------
+void ScreenHandler::setFieldFocus(QString fieldName)
+{
+   fieldName = fieldName.trimmed();
+
+   int i_Frm = getCurrForm();
+
+   if(i_Frm < 0)
+      return;
+
+   if(p_fglform->focusWidget() != NULL && !p_fglform->screenRecord()){
+      p_fglform->focusWidget()->clearFocus();
+      clearEvents();
+   }
+
+   if(fieldName == "NEXT"){
+      if(p_fglform->currentField() != NULL){
+         p_fglform->currentField()->setFocus();
+         clearEvents();
+         p_fglform->nextfield();
+      }else{
+         p_fglform->nextfield();
+      }
+      return;
+   }
+
+   QWidget *widget = findFieldByName(fieldName);
+
+   if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+      if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+         int index = fieldName.indexOf(".");
+         if(index > 0){
+            fieldName.remove(index+1, fieldName.length()-index-1);
+         }
+
+         int index2 = fieldName.indexOf("[");
+         if(index2 < 0){
+            fieldName = QString("%1[%2]").arg(fieldName).arg(tableView->currentIndex().row()+1);
+         }
+         setArrayFocus(tableView, fieldName);
+      }
+   }
+   else{
+      widget->setFocus();
+   }
+}
+
+//------------------------------------------------------------------------------
+// Method       : setFieldFocus(QString FieldName )
+// Filename     : screenhandler.cpp
+// Description  : sets the focus for the Field
+//------------------------------------------------------------------------------
+/*
 void ScreenHandler::setFieldFocus(QString fieldName)
 {
 
@@ -1013,7 +1355,8 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       return;
    }
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
       QWidget *widget = ql_fields.at(i);
 
@@ -1049,6 +1392,7 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       }
    }
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : setArrayFocus()
@@ -1335,6 +1679,147 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
          if(p_fglform->input()){
             p_fglform->revertState(Fgl::INPUT);
 
+            QStringList fields = context->fieldList;
+            for(int i=0; i<fields.count(); i++){
+               setFieldEnabled(fields.at(i), false, false);
+            }
+            freeContext(i_context);
+            p_fglform->ql_responseQueue.clear();
+            p_fglform->ql_formEvents.clear();
+            return;
+         }
+
+         if(p_fglform->inputArray()){
+//            QList<QWidget*> ql_fields = p_fglform->formElements();
+            for(int i=0; i<context->fieldList.count(); i++){
+               QWidget *widget = findFieldByName(context->fieldList.at(i));
+               if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+                  if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+                     tableView->setEnabled(false);
+                  }
+               }
+            }
+            p_fglform->revertState(Fgl::INPUTARRAY);
+            freeContext(i_context);
+            p_fglform->ql_responseQueue.clear();
+            p_fglform->ql_formEvents.clear();
+            return;
+         }
+      }
+
+      if(type == "CONSTRUCT"){
+         p_fglform->revertState(Fgl::CONSTRUCT);
+//         QList<QWidget*> ql_fields = p_fglform->formElements();
+         QList<QWidget*> ql_fields = p_fglform->ql_formFields;
+         for(int i=0; i<ql_fields.size(); i++){
+            QWidget *widget = (QWidget*) ql_fields.at(i);
+
+            if(widget->isEnabled()){
+               if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_fields.at(i))){
+                  lineEdit->setEnabled(false);
+               }
+
+            if(TextEdit *textEdit = qobject_cast<TextEdit *> (ql_fields.at(i))){
+               textEdit->setEnabled(false);
+            }
+         }
+         freeContext(i_context);
+      }
+   }
+
+   if(type == "DISPLAY"){
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      for(int i=0; i<context->fieldList.count(); i++){
+         QWidget *widget = findFieldByName(context->fieldList.at(i));
+         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+               tableView->setEnabled(false);
+               }
+         }
+      }
+      p_fglform->revertState(Fgl::DISPLAYARRAY);
+   }
+
+
+   p_fglform->ql_responseQueue.clear();
+   p_fglform->ql_formEvents.clear();
+   p_fglform->qsl_activeFields.clear();
+   freeContext(i_context);
+   }
+
+}
+
+/*
+//------------------------------------------------------------------------------
+// Method       : setFormOpts(QString type, bool value)
+// Filename     : screenhandler.cpp
+// Description  : activate input construct etc (or deactivate it)
+//------------------------------------------------------------------------------
+void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
+{
+
+   if(!value){
+      if(p_prompt != NULL && type == "PROMPT"){
+         p_prompt->setVisible(false);
+         p_prompt->close();
+         p_prompt->deleteLater();
+         p_prompt = NULL;
+      }
+   }
+
+   int i_Frm = getCurrForm();
+
+   if(i_Frm < 0)
+      return;
+
+   Fgl::Context *context = getContext(i_context);
+
+   if(value){
+      if(type == "MENU"){
+         p_fglform->setState(Fgl::MENU);
+         context->state = Fgl::MENU;
+      }
+
+      if(type == "INPUT"){
+         p_fglform->setState(Fgl::INPUT);
+         context->state = Fgl::INPUT;
+      }
+
+      if(type == "CONSTRUCT"){
+         p_fglform->setState(Fgl::CONSTRUCT);
+         context->state = Fgl::CONSTRUCT;
+      }
+
+      if(type == "DISPLAY"){
+         p_fglform->setState(Fgl::DISPLAYARRAY);
+         context->state = Fgl::DISPLAYARRAY;
+      }
+
+      if(type == "INPUTARRAY"){
+         p_fglform->setState(Fgl::INPUTARRAY);
+         context->state = Fgl::INPUTARRAY;
+      }
+   }
+   else{
+      if(type == "MENU"){
+         if(p_fglform->dialog() != NULL){
+            p_fglform->dialog()->close();
+            p_fglform->setDialog(NULL);
+            p_fglform->revertState(Fgl::MENU);
+            freeContext(i_context);
+            return;
+         }
+         else{
+            p_fglform->removeMenu();
+            p_fglform->revertState(Fgl::MENU);
+            freeContext(i_context);
+         }
+      }
+
+      if(type == "INPUT"){
+         if(p_fglform->input()){
+            p_fglform->revertState(Fgl::INPUT);
+
             for(int i=0; i<context->fieldList.count(); i++){
                setFieldEnabled(context->fieldList.at(i), false, false);
             }
@@ -1345,7 +1830,8 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
          }
 
          if(p_fglform->inputArray()){
-            QList<QWidget*> ql_fields = p_fglform->formElements();
+//            QList<QWidget*> ql_fields = p_fglform->formElements();
+            QList<QWidget*> ql_fields = p_fglform->ql_formFields;
             for(int i=0; i<ql_fields.size(); i++){
                QWidget *widget = (QWidget*) ql_fields.at(i);
 
@@ -1365,7 +1851,8 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
 
       if(type == "CONSTRUCT"){
          p_fglform->revertState(Fgl::CONSTRUCT);
-         QList<QWidget*> ql_fields = p_fglform->formElements();
+//         QList<QWidget*> ql_fields = p_fglform->formElements();
+         QList<QWidget*> ql_fields = p_fglform->ql_formFields;
          for(int i=0; i<ql_fields.size(); i++){
             QWidget *widget = (QWidget*) ql_fields.at(i);
 
@@ -1383,7 +1870,8 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
    }
 
    if(type == "DISPLAY"){
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = (QWidget*) ql_fields.at(i);
 
@@ -1404,6 +1892,7 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
    }
 
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : setFormOpts(QString type, QString attribute, bool int)
@@ -1432,17 +1921,20 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
    }
 
    if(type == "DISPLAYARRAY"){
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = (QWidget*) ql_fields.at(i);
 
-         if(widget->isEnabled()){
-            if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
-               if(attribute == "ARRCOUNT"){
-                  tableView->setArrCount(value);
-               }
+         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+               if(tableView->isEnabled()){
+                  if(attribute == "ARRCOUNT"){
+                     tableView->setArrCount(value);
+                  }
 
-               if(attribute == "ARRVARIABLES"){
+                  if(attribute == "ARRVARIABLES"){
+                  }
                }
             }
          }
@@ -1450,37 +1942,41 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
    }
 
    if(type == "INPUTARRAY"){
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = (QWidget*) ql_fields.at(i);
 
-         if(widget->isEnabled()){
-            if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
-               if(attribute == "ARRCOUNT"){
-                  tableView->setArrCount(value);
-               }
+         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
 
-               if(attribute == "ARRVARIABLES"){
-               }
+               if(tableView->isEnabled()){
+                  if(attribute == "ARRCOUNT"){
+                     tableView->setArrCount(value);
+                  }
 
-               if(attribute == "MAXARRSIZE"){
-                  tableView->setMaxArrSize(value);
-               }
+                  if(attribute == "ARRVARIABLES"){
+                  }
+   
+                  if(attribute == "MAXARRSIZE"){
+                     tableView->setMaxArrSize(value);
+                  }
 
-               if(attribute == "WITHOUT_DEFAULTS"){
-               }
-
-               if(attribute == "ALLOWINSERT"){
-
-               }
-
-               if(attribute == "ALLOWELETE"){
-               }
-
-               if(attribute == "NONEWLINES"){
-               }
-
-               if(attribute == "WRAP"){
+                  if(attribute == "WITHOUT_DEFAULTS"){
+                  }
+   
+                  if(attribute == "ALLOWINSERT"){
+   
+                  }
+   
+                  if(attribute == "ALLOWELETE"){
+                  }
+   
+                  if(attribute == "NONEWLINES"){
+                  }
+   
+                  if(attribute == "WRAP"){
+                  }
                }
             }
          }
@@ -1603,7 +2099,8 @@ void ScreenHandler::free(QString type)
          }
       }
       if(p_fglform->inputArray()){
-         QList<QWidget*> ql_fields = p_fglform->formElements();
+         //         QList<QWidget*> ql_fields = p_fglform->formElements();
+         QList<QWidget*> ql_fields = p_fglform->ql_formFields;
          for(int i=0; i<ql_fields.size(); i++){
             QWidget *widget = (QWidget*) ql_fields.at(i);
 
@@ -1619,7 +2116,8 @@ void ScreenHandler::free(QString type)
 
    if(type == "CONSTRUCT"){
       p_fglform->revertState(Fgl::CONSTRUCT);
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+      //      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = (QWidget*) ql_fields.at(i);
 
@@ -1636,7 +2134,8 @@ void ScreenHandler::free(QString type)
    }
 
    if(type == "DISPLAY"){
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+      //      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int i=0; i<ql_fields.size(); i++){
          QWidget *widget = (QWidget*) ql_fields.at(i);
 
@@ -1704,92 +2203,92 @@ void ScreenHandler::setWindowTitle(QString title)
 
 void ScreenHandler::MsgBox (QString title, QString text, QString logo, QString buttons, QString defButton,int reply)
 {
-  QString rstr = "NotSet";
-  QMessageBox::StandardButtons btns = 0;
-  QMessageBox::StandardButton defBtn = QMessageBox::NoButton;
+   QString rstr = "NotSet";
+   QMessageBox::StandardButtons btns = 0;
+   QMessageBox::StandardButton defBtn = QMessageBox::NoButton;
 
-  if (buttons.toUpper ().contains ("OK"))
-    btns |= QMessageBox::Ok;
-  if (buttons.toUpper ().contains ("YES"))
-    btns |= QMessageBox::Yes;
-  if (buttons.toUpper ().contains ("NO"))
-    btns |= QMessageBox::No;
-  if (buttons.toUpper ().contains ("CANCEL"))
-    btns |= QMessageBox::Cancel;
-  if (buttons.toUpper ().contains ("ABORT"))
-    btns |= QMessageBox::Abort;
-  if (buttons.toUpper ().contains ("RETRY"))
-    btns |= QMessageBox::Retry;
-
-
-  if (defButton.toUpper ().contains ("OK"))
-    defBtn = QMessageBox::Ok;
-  if (defButton.toUpper ().contains ("YES"))
-    defBtn = QMessageBox::Yes;
-  if (defButton.toUpper ().contains ("NO"))
-    defBtn = QMessageBox::No;
-  if (defButton.toUpper ().contains ("CANCEL"))
-    defBtn = QMessageBox::Cancel;
-  if (defButton.toUpper ().contains ("ABORT"))
-    defBtn = QMessageBox::Abort;
-  if (defButton.toUpper ().contains ("RETRY"))
-    defBtn = QMessageBox::Abort;
+   if (buttons.toUpper ().contains ("OK"))
+      btns |= QMessageBox::Ok;
+   if (buttons.toUpper ().contains ("YES"))
+      btns |= QMessageBox::Yes;
+   if (buttons.toUpper ().contains ("NO"))
+      btns |= QMessageBox::No;
+   if (buttons.toUpper ().contains ("CANCEL"))
+      btns |= QMessageBox::Cancel;
+   if (buttons.toUpper ().contains ("ABORT"))
+      btns |= QMessageBox::Abort;
+   if (buttons.toUpper ().contains ("RETRY"))
+      btns |= QMessageBox::Retry;
 
 
-  QMessageBox msgbox;
-  msgbox.setText (title);
-  if (logo.toUpper () == "WARNING")
-    {
+   if (defButton.toUpper ().contains ("OK"))
+      defBtn = QMessageBox::Ok;
+   if (defButton.toUpper ().contains ("YES"))
+      defBtn = QMessageBox::Yes;
+   if (defButton.toUpper ().contains ("NO"))
+      defBtn = QMessageBox::No;
+   if (defButton.toUpper ().contains ("CANCEL"))
+      defBtn = QMessageBox::Cancel;
+   if (defButton.toUpper ().contains ("ABORT"))
+      defBtn = QMessageBox::Abort;
+   if (defButton.toUpper ().contains ("RETRY"))
+      defBtn = QMessageBox::Abort;
+
+
+   QMessageBox msgbox;
+   msgbox.setText (title);
+   if (logo.toUpper () == "WARNING")
+   {
       msgbox.setIcon (QMessageBox::Warning);
-    }
-  if (logo.toUpper () == "QUESTION")
-    {
+   }
+   if (logo.toUpper () == "QUESTION")
+   {
       msgbox.setIcon (QMessageBox::Question);
-    }
-  if (logo.toUpper () == "INFO" || logo.toUpper () == "INFORMATION")
-    {
+   }
+   if (logo.toUpper () == "INFO" || logo.toUpper () == "INFORMATION")
+   {
       msgbox.setIcon (QMessageBox::Information);
-    }
-  if (logo.toUpper () == "CRITICAL" || logo.toUpper () == "ERROR")
-    {
+   }
+   if (logo.toUpper () == "CRITICAL" || logo.toUpper () == "ERROR")
+   {
       msgbox.setIcon (QMessageBox::Critical);
-    }
+   }
 
 
-  msgbox.setInformativeText (text);
-  msgbox.setStandardButtons (btns);
-  msgbox.setDefaultButton (defBtn);
-  int ret = msgbox.exec ();
+   msgbox.setInformativeText (text);
+   msgbox.setStandardButtons (btns);
+   msgbox.setDefaultButton (defBtn);
+   int ret = msgbox.exec ();
 
-  if (ret == QMessageBox::Ok)
-    {
+   if (ret == QMessageBox::Ok)
+   {
       rstr = "OK";
-    }
-  if (ret == QMessageBox::Cancel)
-    {
+   }
+   if (ret == QMessageBox::Cancel)
+   {
       rstr = "CANCEL";
-    }
-  if (ret == QMessageBox::Yes)
-    {
+   }
+   if (ret == QMessageBox::Yes)
+   {
       rstr = "YES";
-    }
-  if (ret == QMessageBox::No)
-    {
+   }
+   if (ret == QMessageBox::No)
+   {
       rstr = "NO";
-    }
-  if (ret == QMessageBox::Abort)
-    {
+   }
+   if (ret == QMessageBox::Abort)
+   {
       rstr = "ABORT";
-    }
-  if (ret == QMessageBox::Retry)
-    {
+   }
+   if (ret == QMessageBox::Retry)
+   {
       rstr = "RETRY";
-    }
+   }
 
-  if (reply) {
-  fglFormResponse("<TRIGGERED ID=\""+rstr+"\"/>");
-  }
-  //return rstr;
+   if (reply) {
+      fglFormResponse("<TRIGGERED ID=\""+rstr+"\"/>");
+   }
+   //return rstr;
 }
 
 //------------------------------------------------------------------------------
@@ -1873,14 +2372,55 @@ void ScreenHandler::setKeyLabel(int dialog, QString label, QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool input)
 {
+   Fgl::Context *context = getCurrentContext();
+
+   int index = fieldName.indexOf(".*");
+   if(index < 0){
+   }
+   else{
+      QList<QWidget*> ql_fields = findFieldsByName(fieldName);
+      QWidget *widget = NULL;
+      if(ql_fields.count() > 0)
+         widget = ql_fields.first();
+
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         context->fieldList << de->objectName();
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            tableView->setInputEnabled(input);
+            tableView->setEnabled(enable);
+            if(enable){
+               if(!input){
+                  tableView->selectRow(0);
+               }
+               else{
+                  QModelIndex index = tableView->model()->index(0, 0, QModelIndex());
+                  if(index.isValid()){
+                     tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+                     tableView->edit(index);
+                  }
+               }
+            }
+         }
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// Method       : setScreenRecordEnabled(QStringList qsl_tabNames, bool enable, bool input)
+// Filename     : screenhandler.cpp
+// Description  : activates table on screen forms
+//------------------------------------------------------------------------------
+/*
+void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool input)
+{
    QString tabName;
    int index = fieldName.indexOf(".");
    if(index >= 0){
       tabName.append(fieldName.mid(0,index));
    }
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
-   //QList<QWidget*> ql_fields = p_fglform->ql_formFields;
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int k=0; k<ql_fields.size(); k++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(k))){
 
@@ -1916,6 +2456,7 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
       }
    }
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : loadArrayValues(QStringList qsl_tabNames, QStringList qsl_arrayValues)
@@ -1927,7 +2468,8 @@ void ScreenHandler::loadArrayValues(QStringList qsl_tabNames, QStringList qsl_ar
    for(int i=0; i<qsl_tabNames.size(); i++){
       QString fieldName = qsl_tabNames.at(i);
 
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int k=0; k<ql_fields.size(); k++){
          if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(k))){
             QString tabName;
@@ -1984,7 +2526,8 @@ void ScreenHandler::setFieldOrder(QStringList qsl_fields)
 
 
    for(int i=0; i<qsl_fields.count(); i++){
-      QList<QWidget*> ql_fields = p_fglform->formElements();
+//      QList<QWidget*> ql_fields = p_fglform->formElements();
+      QList<QWidget*> ql_fields = p_fglform->ql_formFields;
       for(int j=0; j<ql_fields.size(); j++){
          if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_fields.at(j))){
             if(lineEdit->name == qsl_fields.at(i) || lineEdit->colName == qsl_fields.at(i)){
@@ -2026,7 +2569,8 @@ void ScreenHandler::setFieldOrder(QStringList qsl_fields)
 void ScreenHandler::setCursorPosition(int pos)
 {
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
 
       if(TextEdit *edit = qobject_cast<TextEdit *> (ql_fields.at(i))){
@@ -2063,7 +2607,8 @@ void ScreenHandler::setArrLine(int line)
    if(p_fglform == NULL)
       return;
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
          if(tableView->isEnabled()){
@@ -2083,7 +2628,8 @@ void ScreenHandler::setScrLine(int line)
    if(p_fglform == NULL)
       return;
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
          if(tableView->isEnabled()){
@@ -2230,7 +2776,8 @@ void ScreenHandler::checkFields()
 
    bool enable = (p_fglform->state() != Fgl::CONSTRUCT);
 
-   QList<QWidget*> ql_fields = p_fglform->formElements();
+//   QList<QWidget*> ql_fields = p_fglform->formElements();
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
       QWidget *widget = ql_fields.at(i);
 
@@ -2239,3 +2786,63 @@ void ScreenHandler::checkFields()
    }
 }
 
+
+QWidget* ScreenHandler::findFieldByName(QString fieldName)
+{
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
+
+   int index = fieldName.indexOf(".");
+   int index2 = fieldName.indexOf("[");
+
+   if(index2 > 0){
+      int index3 = fieldName.indexOf("]")+1;
+
+      fieldName.remove(index2, index3-index2);
+      index = fieldName.indexOf(".");
+   }
+
+   if(index < 0){
+      // DISPLAY BY NAME
+      QList<QString> keys = p_fglform->recordView.keys();
+      for(int i=0; i<keys.count(); i++){
+         QList<Fgl::Link> links = p_fglform->recordView[keys.at(i)];
+         for(int j=0; j<links.count(); j++){
+            Fgl::Link link = links.at(j);
+            if(link.colName == fieldName)
+               return ql_fields.at(link.fieldIdRef);
+         }
+      }
+   }
+   else{
+     QString tabName = fieldName.mid(0,index);
+     fieldName = fieldName.mid(index+1,fieldName.length()-index-1);
+      // DISPLAY TO
+     QList<Fgl::Link> links = p_fglform->recordView[tabName];
+     for(int i=0; i<links.count(); i++){
+        Fgl::Link link = links.at(i);
+        if(link.colName == fieldName){
+           return ql_fields.at(link.fieldIdRef);
+        }
+     }
+   }
+}
+
+QList<QWidget*> ScreenHandler::findFieldsByName(QString fieldName)
+{
+
+   QList<QWidget*> ql_foundFields;
+
+   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
+
+   int index = fieldName.indexOf(".*");
+
+   QString tabName = fieldName.left(index);
+
+   QList<Fgl::Link> links = p_fglform->recordView[tabName];
+   for(int i=0; i<links.count(); i++){
+      Fgl::Link link = links.at(i);
+      ql_foundFields << ql_fields.at(link.fieldIdRef);
+   }
+
+   return ql_foundFields;
+}

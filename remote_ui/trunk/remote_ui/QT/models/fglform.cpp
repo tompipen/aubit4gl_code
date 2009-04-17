@@ -424,11 +424,13 @@ void FglForm::setActionMenu(ActionMenu* menu)
 void FglForm::setActionMenuEnabled(bool enable)
 {
 
+
    if(p_actionMenu == NULL)
       return;
 
    p_actionMenu->setVisible(enable);
    p_actionMenu->setEnabled(enable);
+
 
    if(!enable){
       p_actionMenu->removeButtons();
