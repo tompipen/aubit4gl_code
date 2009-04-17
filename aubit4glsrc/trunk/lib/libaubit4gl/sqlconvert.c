@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.165 2009-04-08 08:36:41 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.166 2009-04-17 14:32:20 mikeaubury Exp $
 #
 */
 
@@ -276,12 +276,16 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
   char *sql_new;
   char *sql;
   int cache;
-char *sql_duped;
+  static char *sql_duped=NULL;
   //int converted=0;
 
   //int a;
   sql = sqlx;
-sql_duped=acl_strdup(sqlx);
+  if (sql_duped) {
+			acl_free(sql_duped);
+	}
+  sql_duped=acl_strdup(sqlx);
+
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
 
   cache = A4GL_isyes (acl_getenv ("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
@@ -340,7 +344,11 @@ sql_duped=acl_strdup(sqlx);
     add_query (sql_duped, sql_new);
   }
   acl_free (sql);
-acl_free(sql_duped);
+
+  acl_free(sql_duped);
+  sql_duped=0;
+
+
   return sql_new;
 }
 
