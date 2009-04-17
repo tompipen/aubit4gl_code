@@ -59,7 +59,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF a_float != 45.56 THEN
-    DISPLAY "Diferent float value"
+    DISPLAY "Diferent float value : ",45.56, " ",a_float using "##&.&&&&&&&&&&&&&&&&&&&"
     LET exitStatus = 1
   END IF
   IF a_float2 != 45.56 THEN

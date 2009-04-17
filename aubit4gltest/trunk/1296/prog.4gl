@@ -21,10 +21,12 @@ MAIN
                                                                                 
     CLOSE FORM testcase
 	if a!=1.234 then
+		display "a!=1.234"
 		exit program 1
 	end if
 
 	if b!=1.234 then
+		display "b!=1.234"
 		exit program 2
 	end if
     

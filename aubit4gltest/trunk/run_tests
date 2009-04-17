@@ -21,6 +21,7 @@ trap "on_abort" 2 9 15
 
 
 #create a file called 'sql_features' when compiling 4GL code
+export A4GL_CORDUMP_ON_PAUSE_EXECUTION=Y
 export A4GL_DUMP_FEATURES=yes
 export A4GL_RESTARTLOG=Y
 export FCOMPILE_SILENT=Y
