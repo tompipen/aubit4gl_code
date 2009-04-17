@@ -2210,16 +2210,20 @@ sep = QChar(':');
 
    for(int i=0; i<dbPaths.size(); i++){
       //Add Search Path for Pics
-      QString picPath = dbPaths.at(i) + "/pics";
-      QString imgPath = dbPaths.at(i) + "/images";
+      QDir picPath = QDir(dbPaths.at(i));
+      picPath.cd("pics");
+      QDir imgPath = QDir(dbPaths.at(i));
+      imgPath.cd("images");
+//      QString picPath = dbPaths.at(i) + QString("%1pics").arg(sep2);
+//      QString imgPath = dbPaths.at(i) + QString("%1images").arg(sep2);
 
       //Check if its Path is already search path
       QStringList searchPaths = QDir::searchPaths("pics");
-      if(!searchPaths.contains(picPath)){
-         QDir::addSearchPath("pics", picPath);
+      if(!searchPaths.contains(picPath.absolutePath())){
+         QDir::addSearchPath("pics", picPath.absolutePath());
       }
-      if(!searchPaths.contains(imgPath)){
-         QDir::addSearchPath("pics", imgPath);
+      if(!searchPaths.contains(imgPath.absolutePath())){
+         QDir::addSearchPath("pics", imgPath.absolutePath());
       }
    }
 }
