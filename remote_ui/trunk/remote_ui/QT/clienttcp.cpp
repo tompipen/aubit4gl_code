@@ -1228,13 +1228,17 @@ void ProtocolHandler::handleStartup(const QDomNode& domNode)
 
          p_currScreenHandler->qh_env[name] = value;
 
+         /*
          if(name == "DBPATH"){
             p_currScreenHandler->setSearchPaths();
          }
+         */
       }
 
       currentElement = currentElement.nextSiblingElement();
    }
+   // ALWAYS set search Paths
+   p_currScreenHandler->setSearchPaths();
 }
 
 //------------------------------------------------------------------------------

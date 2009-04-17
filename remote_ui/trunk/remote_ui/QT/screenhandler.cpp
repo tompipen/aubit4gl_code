@@ -2182,50 +2182,45 @@ void ScreenHandler::fileBrowser(QString function, QString defPath, QString fileN
 
 void ScreenHandler::setSearchPaths()
 {
-   QStringList dbPaths;
-
-   if(qh_env["DBPATH"].isEmpty()) return;
-   QString fullDBPath = qh_env["DBPATH"];
-
-//set the separator depending on the OS
-
-QChar sep;
-bool windows = false;
+   //set the separator depending on the OS
+   QChar sep;
 #ifdef __WIN32__
 sep = QChar(';');
-windows = true;
 #else
 sep = QChar(':');
 #endif
 
-   int s = fullDBPath.count(sep);
+   QStringList dbPaths;
 
-   if(s > 0 ){
-      dbPaths = qh_env["DBPATH"].split(sep);
-   }
-   else{
-      // we assume theres only one Path in there
-      dbPaths << qh_env["DBPATH"];
-   }
+   if(!qh_env["DBPATH"].isEmpty()){
+      QString fullDBPath = qh_env["DBPATH"];
 
-   for(int i=0; i<dbPaths.size(); i++){
-      //Add Search Path for Pics
-      QDir picPath = QDir(dbPaths.at(i));
-      picPath.cd("pics");
-      QDir imgPath = QDir(dbPaths.at(i));
-      imgPath.cd("images");
-//      QString picPath = dbPaths.at(i) + QString("%1pics").arg(sep2);
-//      QString imgPath = dbPaths.at(i) + QString("%1images").arg(sep2);
 
-      //Check if its Path is already search path
-      QStringList searchPaths = QDir::searchPaths("pics");
-      if(!searchPaths.contains(picPath.absolutePath())){
-         QDir::addSearchPath("pics", picPath.absolutePath());
+      int s = fullDBPath.count(sep);
+
+      if(s > 0 ){
+         dbPaths = qh_env["DBPATH"].split(sep);
       }
-      if(!searchPaths.contains(imgPath.absolutePath())){
-         QDir::addSearchPath("pics", imgPath.absolutePath());
+      else{
+         // we assume theres only one Path in there
+         dbPaths << qh_env["DBPATH"];
       }
    }
+
+   QDir current = QDir::current();
+   if(current.cd("pics")){
+      dbPaths << current.path();
+      current.cdUp();
+   }
+   if(current.cd("images")){
+      dbPaths << current.path();
+      current.cdUp();
+   }
+
+   dbPaths << QDir::searchPaths("pics");
+
+   // Clean search Paths
+   QDir::setSearchPaths("pics", dbPaths);
 }
 
 void ScreenHandler::checkFields()
