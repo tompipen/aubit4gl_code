@@ -1,4 +1,19 @@
 ---------------------------
+Sat Apr 18 10:57:02 BST 2009
+---------------------------
+1.10RC_56 Released
+---------------------------
+	
+	Decimal/Float/Smallfloat fixup for comparison checking	(add
+	significant digit check for Floats)
+	
+	Small memory leak fixup for MYSQL driver
+	
+	Update verbose messages in '4glpc'
+	
+	Add reserved words workaround for SQL conversion parser
+	
+---------------------------
 Mon Apr  6 09:37:20 BST 2009
 ---------------------------
 1.10RC_55 Released
