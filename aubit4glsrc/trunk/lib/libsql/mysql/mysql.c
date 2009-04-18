@@ -19,7 +19,7 @@ int truncated = 0;
 #define PHASE_POST_FETCH 1
 #define STMT_CANT_PREPARE -1
 #define STMT_DATABASE -2
-static MYSQL *conn = 0;
+static MYSQL *conn = NULL;
 int isconnected = 0;
 static char curr_dbname[256] = "";
 char last_err[512] = "";
@@ -849,7 +849,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
   sid = acl_malloc2 (sizeof (struct s_sid));
 
   sid->select = strdup (s);
-
+  sid->hstmt=NULL;
   sid->ibind = malloc (sizeof (struct BINDING) * ni);
   memcpy (sid->ibind, ibind, sizeof (struct BINDING) * ni);
 
@@ -1441,10 +1441,8 @@ copy_from_aubit_to_mysql (MYSQL_STMT * stmt, void *associated_to,
   my_bool *indicators;
 
 
-  mysql_ibind =
-    A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * ni);
-  indicators =
-    A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * ni);
+  mysql_ibind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * ni);
+  indicators = A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * ni);
 
   for (a = 0; a < ni; a++)
     {
@@ -1970,7 +1968,9 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
       if (singleton)
 	{
+	
 	  mysql_stmt_close (sid->hstmt);
+	  sid->hstmt=0;
 	}
 
 
@@ -2039,6 +2039,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *
 	  if (sid->hstmt != (void *) STMT_CANT_PREPARE)
 	    {
 	      mysql_stmt_close (sid->hstmt);
+	  	sid->hstmt=0;
 	    }
 	}
       if (truncated)
@@ -2297,6 +2298,7 @@ A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
     {
       mysql_stmt_close (ptr->hstmt);
       A4GL_free_associated_mem (ptr->hstmt);
+	  	ptr->hstmt=0;
     }
 
 
@@ -2333,6 +2335,7 @@ A4GLSQLLIB_A4GLSQL_free_cursor_internal (char *currname)
     {
       mysql_stmt_close (ptr->hstmt);
       A4GL_free_associated_mem (ptr->hstmt);
+	  	ptr->hstmt=0;
     }
 
 
@@ -2667,6 +2670,20 @@ struct s_sid *sid;
 	if (sid->obind) {
 		acl_free(sid->obind);
 	}
+
+
+	if (sid->hstmt) {
+		if (sid->hstmt==STMT_CANT_PREPARE || sid->hstmt== STMT_DATABASE) ;
+		else {	
+		 	mysql_stmt_close(sid->hstmt) ;
+			A4GL_free_associated_mem(sid->hstmt);
+			sid->hstmt=NULL;
+			
+		}
+	}
+
+
+
 /* does nothing in this driver */
  }
 
