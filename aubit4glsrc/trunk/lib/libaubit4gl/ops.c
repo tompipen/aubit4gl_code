@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.149 2009-04-18 07:54:51 mikeaubury Exp $
+# $Id: ops.c,v 1.150 2009-04-18 07:59:20 mikeaubury Exp $
 #
 */
 
@@ -455,8 +455,10 @@ A4GL_mon_dec_ops (int op)
   
   A4GL_pop_sized_decimal(&b);
   A4GL_pop_sized_decimal(&a);
-A4GL_debug("A->%s\n",A4GL_dec_to_str(&a,32));
-A4GL_debug("B->%s\n",A4GL_dec_to_str(&b,32));
+
+//A4GL_debug("A->%s\n",A4GL_dec_to_str(&a,32));
+//A4GL_debug("B->%s\n",A4GL_dec_to_str(&b,32));
+
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
       if (isCompare (op))

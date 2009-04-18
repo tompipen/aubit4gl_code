@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.375 2009-03-23 15:04:55 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.376 2009-04-18 07:56:31 mikeaubury Exp $
 #
 */
 
@@ -2847,6 +2847,7 @@ void A4GL_convert_ui_char_on_stack_decimal_sep(void );
 int A4GL_remap_nativeerror(int n, char *sqlstate);
 void A4GL_size_decimal_string(char *s,int *dig, int *dec);
 void A4GL_pop_sized_decimal(fgldecimal *b);
+void A4GL_pop_sized_decimal_from_float(fgldecimal *b,int use_sigdig);
 void A4GL_remove_printfthsep_in_decimal(char *s);
 void A4GL_strip_bracket (char *s);
 

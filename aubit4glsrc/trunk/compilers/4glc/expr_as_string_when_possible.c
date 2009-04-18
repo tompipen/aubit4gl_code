@@ -431,6 +431,9 @@ expr_as_string_when_possible (expr_str * e)
 		return strdup("lineno");
 
 
+    case ET_EXPR_ASSOC:
+	return strdup("ASSOC");
+
 
     default:
       A4GL_pause_execution ();	// ---  Place holder for error handling  --- SAFE TO LEAVE IN...

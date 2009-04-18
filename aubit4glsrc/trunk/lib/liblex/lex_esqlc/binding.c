@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.79 2008-12-16 14:25:53 mikeaubury Exp $
+# $Id: binding.c,v 1.80 2009-04-18 07:56:31 mikeaubury Exp $
 */
 
 /**
@@ -39,7 +39,7 @@
 #include "compile_c.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.79 2008-12-16 14:25:53 mikeaubury Exp $";
+		"$Id: binding.c,v 1.80 2009-04-18 07:56:31 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -88,7 +88,7 @@ int n3;
 
 
 n2=n>>16;
-if ((n2&0xff)==0xff) { printf("n=%d (%x)\n",n2,n2); n2=n2>>8; SPRINTF1(buff,"%d",n2); return buff; }
+if ((n2&0xff)==0xff) {  n2=n2>>8; SPRINTF1(buff,"%d",n2); return buff; }
 n3=n2>>8;
 if (n3>32) {
 	printf("n=%x n2=%x\n",n,n2);
@@ -294,6 +294,7 @@ get_sql_type (int a, expr_str_list *bind,char type)
 {
 
   char *ptr;
+char *p;
 
   ptr=A4GLSQLCV_get_esql_datatype(get_binding_dtype(bind->list.list_val[a]),type);
   if (ptr) {
@@ -325,7 +326,8 @@ get_sql_type (int a, expr_str_list *bind,char type)
 		  	A4GL_assertion(1,"No ESQL/C Dialect");
 
 	  case E_DIALECT_INFORMIX:
-  			return get_sql_type_infx (a, bind,type);
+		p= get_sql_type_infx (a, bind,type);
+		return p;
 
 	  case E_DIALECT_POSTGRES:
   			return get_sql_type_postgres (a, bind,type);
@@ -370,10 +372,10 @@ strcpy(tail,buff3);
 
 static char *get_sql_type_infx (int a, expr_str_list *bind, char bind_type)
 {
-static char buff[255];
-char buff_ind[255];
+static char buff[255]="<<notset>>";
+char buff_ind[255]="";
 
-
+sprintf(buff,"<<notset:%x:%c>>",get_binding_dtype(bind->list.list_val[a]), bind_type);
 
 
   if (bind_type == 'i')
@@ -386,6 +388,10 @@ char buff_ind[255];
 	case 0:
 	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, get_binding_dtype(bind->list.list_val[a]) >> 16);
 	  break;
+	case 15:
+	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, (get_binding_dtype(bind->list.list_val[a]) >> 16)*4);
+	  break;
+
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
 	  break;
@@ -458,6 +464,9 @@ char buff_ind[255];
 	{
 	case 0:
 	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, get_binding_dtype(bind->list.list_val[a]) >> 16);
+	  break;
+	case 15:
+	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, (get_binding_dtype(bind->list.list_val[a]) >> 16)*4);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d=0;", a);
@@ -1159,13 +1168,11 @@ static char *decode_datetime(int a) {
 	char ps2[200];
 	static char buff[200];
 
-	//printf("Decode : %x\n",a);
 	if (((a/16)%16)<=10)  {
 		pt1=(((a/16)%16)-1);
 	} else {
 		pt1=6;
 	}
-	//printf("pt1=%d\n",pt1);
 	strcpy(ps1,dtparts[pt1]);
 	
 	if ((a%16)<=6) {
@@ -1176,11 +1183,9 @@ static char *decode_datetime(int a) {
 
 		pt2=6;
 		fr=(a % 16)-6;
-		//printf("pt2=%d x2\n",pt2);
 		sprintf(ps2,"%s(%d)",dtparts[pt2],fr);
 	}
 	sprintf(buff," %s TO %s",ps1,ps2);
-	//printf("%d to %d\n",pt1,pt2);
 	return buff;
 }
 
@@ -1194,7 +1199,6 @@ static char *decode_datetime2(int a) {
 	char ps2[200];
 	static char buff[200];
 
-	//printf("Decode : %d\n",a);
 	if (((a/16)%16)<=10)  {
 		pt1=(((a/16)%16)/2);
 	} else {

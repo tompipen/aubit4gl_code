@@ -9,8 +9,9 @@
 
 //expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters) ;
 int nomain = 0;
-char *decode_cmd_type(enum cmd_type value) ;
+char *decode_cmd_type (enum cmd_type value);
 int A4GL_is_valid_4gl_type (char *s);
+int inc4GL = 1;
 
 #define LINTMODULE_FOR_PROGRAM "[PROGRAM]"
 extern int yylineno;
@@ -19,17 +20,17 @@ char *lint_module = 0;
 static void load_boltons (char *fname);
 static int find_function (char *s);
 static void linearise_expressions (struct expr_str_list *list);
-static void check_boolean (char *module_name, int lineno, expr_str * s,int last_was_sql,int done_true_false);
-static void init_lint(void) ;
+static void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, int done_true_false);
+static void init_lint (void);
 static void add_lint_expect (char *s);
 static void add_lint_ignore (char *s);
-static void set_lint_ignore(struct command *c) ;
-static void set_lint_expect(struct command *c) ;
+static void set_lint_ignore (struct command *c);
+static void set_lint_expect (struct command *c);
 
-static int has_lint_ignore(char *c) ;
-static int has_lint_expect(char *c) ;
+static int has_lint_ignore (char *c);
+static int has_lint_expect (char *c);
 
-static void clr_lint_expect(void) ;
+static void clr_lint_expect (void);
 
 
 //void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
@@ -41,10 +42,10 @@ static char *local_xml_escape (char *s);
 static void cache_expressions (struct expr_str_list *list, struct commands *cmds);
 static void cache_expression (struct expr_str_list *list, struct expr_str **eptr);
 static void cache_expression_list (struct expr_str_list *list, struct expr_str_list *srclist);
-static int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr,int already_done_true_and_false);
+static int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr, int already_done_true_and_false);
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
-static struct module_definition *find_module(module_definition * mods, int nmodules, char *name) ;
+static struct module_definition *find_module (module_definition * mods, int nmodules, char *name);
 
 static void scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call_list *f,
 			    struct commands *calling_funcs_commands);
@@ -191,22 +192,26 @@ set_expr_cache (expr_str_list * n)
 }
 
 
-static int is_numeric(int dtype) {
-dtype=dtype&DTYPE_MASK;
-switch(dtype) {
-	case DTYPE_INT:
-	case DTYPE_SMINT:
-	case DTYPE_FLOAT:
-	case DTYPE_SMFLOAT:
-	case DTYPE_DECIMAL:
-	case DTYPE_MONEY:
-	case DTYPE_SERIAL:
-		return 1;
-}
-return 0;
+static int
+is_numeric (int dtype)
+{
+  dtype = dtype & DTYPE_MASK;
+  switch (dtype)
+    {
+    case DTYPE_INT:
+    case DTYPE_SMINT:
+    case DTYPE_FLOAT:
+    case DTYPE_SMFLOAT:
+    case DTYPE_DECIMAL:
+    case DTYPE_MONEY:
+    case DTYPE_SERIAL:
+      return 1;
+    }
+  return 0;
 }
 
-expr_str *get_cached_expr_datatype (int n)
+expr_str *
+get_cached_expr_datatype (int n)
 {
   A4GL_assertion (expr_cache == 0, "No expression cache");
   if (n > expr_cache->list.list_len || n < 0)
@@ -306,88 +311,116 @@ dtype_as_string (int dtype)
 }
 
 
-static int check_cmds_for_bad_key(int keycode,enum cmd_type cmd_type) {
-	if (cmd_type==E_CMD_INPUT_CMD || cmd_type==E_CMD_PROMPT_CMD || cmd_type==E_CMD_DISPLAY_ARRAY_CMD || cmd_type==E_CMD_CONSTRUCT_CMD) {
-		if (keycode==A4GLKEY_NEXT || keycode==A4GLKEY_PREV ||  keycode==A4GLKEY_INSERT || keycode==A4GLKEY_DELETE || keycode==A4GLKEY_NEXTPAGE || keycode==A4GLKEY_PREVPAGE ) {
-			return 1;
-		}
+static int
+check_cmds_for_bad_key (int keycode, enum cmd_type cmd_type)
+{
+  if (cmd_type == E_CMD_INPUT_CMD || cmd_type == E_CMD_PROMPT_CMD || cmd_type == E_CMD_DISPLAY_ARRAY_CMD
+      || cmd_type == E_CMD_CONSTRUCT_CMD)
+    {
+      if (keycode == A4GLKEY_NEXT || keycode == A4GLKEY_PREV || keycode == A4GLKEY_INSERT || keycode == A4GLKEY_DELETE
+	  || keycode == A4GLKEY_NEXTPAGE || keycode == A4GLKEY_PREVPAGE)
+	{
+	  return 1;
 	}
-	return 0;
+    }
+  return 0;
 }
 
 
 
-static int *get_key_codes(char *keys) {
-char s[1024];
-char *k;
-char *k1;
-static int *x=0;
-int xcnt=0;
+static int *
+get_key_codes (char *keys)
+{
+  char s[1024];
+  char *k;
+  char *k1;
+  static int *x = 0;
+  int xcnt = 0;
 
-if (x) {free(x);x=0;}
+  if (x)
+    {
+      free (x);
+      x = 0;
+    }
 
   strcpy (s, keys);
-  A4GL_trim(s);
+  A4GL_trim (s);
   strcat (s, "||");
   A4GL_debug ("Chk keys %s\n", s);
 
-  if (strcmp (keys, "->ANY") == 0) { x=acl_malloc2(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
+  if (strcmp (keys, "->ANY") == 0)
+    {
+      x = acl_malloc2 (sizeof (int) * 2);
+      x[0] = 0xffff;
+      x[1] = 0;
+      return x;
+    }
 
-  k=s;
+  k = s;
 
-  while (1) {
-        k1=k;
-        k = strstr (k1, "||");
-        if (k==0) break;
-        *k=0;
-        k+=2;
-        xcnt++;
-        x=realloc(x,sizeof(int)*xcnt);
-        x[xcnt-1]= A4GL_key_val (k1);
-  }
+  while (1)
+    {
+      k1 = k;
+      k = strstr (k1, "||");
+      if (k == 0)
+	break;
+      *k = 0;
+      k += 2;
+      xcnt++;
+      x = realloc (x, sizeof (int) * xcnt);
+      x[xcnt - 1] = A4GL_key_val (k1);
+    }
 
 
-        xcnt++;
-        x=realloc(x,sizeof(int)*xcnt);
-        x[xcnt-1]= 0;
+  xcnt++;
+  x = realloc (x, sizeof (int) * xcnt);
+  x[xcnt - 1] = 0;
   return x;
 }
 
 
 
 
-static void check_cmds_for_bad_keys(struct on_events *evt_list, struct command *cmd ) {
-enum cmd_type cmd_type;
-int a;
+static void
+check_cmds_for_bad_keys (struct on_events *evt_list, struct command *cmd)
+{
+  enum cmd_type cmd_type;
+  int a;
   int *keys;
 
-  cmd_type=cmd->cmd_data.type;
+  cmd_type = cmd->cmd_data.type;
 
   if (evt_list == 0)
     return;
 
   for (a = 0; a < evt_list->event.event_len; a++)
     {
-	if (evt_list->event.event_val[a]->evt_data.event_type==EVENT_KEY_PRESS) {
-		int b;
-		int c;
-		str_list *sl;
-		sl=evt_list->event.event_val[a]->evt_data.event_data_u.key;
-		if (sl) {
-			for (c=0;c<sl->str_list_entry.str_list_entry_len;c++) {
-                               	keys = get_key_codes (sl->str_list_entry.str_list_entry_val[c]);
-                                for (b = 0; keys[b]; b++)
-                                {
-                                        if (keys[b]==-1) {      // Invalid key code...
-					 	A4GL_lint (cmd->module, evt_list->event.event_val[a]->lineno, "BADKEY", "Invalid key code", 0);
-                                        }
-
-      					if (check_cmds_for_bad_key (keys[b], cmd_type)) {
-					 	A4GL_lint (cmd->module, evt_list->event.event_val[a]->lineno, "BADKEYCONTEXT", "Invalid key code in this context", sl->str_list_entry.str_list_entry_val[c]);
-					}
-                                }
+      if (evt_list->event.event_val[a]->evt_data.event_type == EVENT_KEY_PRESS)
+	{
+	  int b;
+	  int c;
+	  str_list *sl;
+	  sl = evt_list->event.event_val[a]->evt_data.event_data_u.key;
+	  if (sl)
+	    {
+	      for (c = 0; c < sl->str_list_entry.str_list_entry_len; c++)
+		{
+		  keys = get_key_codes (sl->str_list_entry.str_list_entry_val[c]);
+		  for (b = 0; keys[b]; b++)
+		    {
+		      if (keys[b] == -1)
+			{	// Invalid key code...
+			  A4GL_lint (cmd->module, evt_list->event.event_val[a]->lineno, "BADKEY", "Invalid key code", 0);
 			}
+
+		      if (check_cmds_for_bad_key (keys[b], cmd_type))
+			{
+			  A4GL_lint (cmd->module, evt_list->event.event_val[a]->lineno, "BADKEYCONTEXT",
+				     "Invalid key code in this context", sl->str_list_entry.str_list_entry_val[c]);
+			}
+		    }
 		}
+	    }
 	}
     }
 
@@ -425,8 +458,16 @@ check_cmds_for_dead_code (struct commands *cmds)
   for (a = 0; a < cmds->cmds.cmds_len; a++)
     {
 
-      if (cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(cmds->cmds.cmds_val[a]); continue; }
-      if (cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(cmds->cmds.cmds_val[a]); continue; }
+      if (cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (cmds->cmds.cmds_val[a]);
+	  continue;
+	}
+      if (cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (cmds->cmds.cmds_val[a]);
+	  continue;
+	}
 
       if (ignore && cmds->cmds.cmds_val[a]->cmd_data.type != E_CMD_WHENEVER_CMD
 	  && cmds->cmds.cmds_val[a]->cmd_data.type != E_CMD_LABEL_CMD)
@@ -442,7 +483,7 @@ check_cmds_for_dead_code (struct commands *cmds)
 
 	case E_CMD_FOR_CMD:
 	  check_cmds_for_dead_code (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands);
-	  
+
 	  break;
 
 	case E_CMD_IF_CMD:
@@ -481,19 +522,19 @@ check_cmds_for_dead_code (struct commands *cmds)
 	case E_CMD_PROMPT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prompt_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
+	  check_cmds_for_bad_keys (evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 	case E_CMD_DISPLAY_ARRAY_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.display_array_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
+	  check_cmds_for_bad_keys (evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 	case E_CMD_INPUT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
+	  check_cmds_for_bad_keys (evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 	case E_CMD_INPUT_ARRAY_CMD:
@@ -503,7 +544,7 @@ check_cmds_for_dead_code (struct commands *cmds)
 	case E_CMD_CONSTRUCT_CMD:
 	  evt_list = cmds->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
 	  check_cmds_for_dead_code_from_events (evt_list);
-	  check_cmds_for_bad_keys(evt_list, cmds->cmds.cmds_val[a]);
+	  check_cmds_for_bad_keys (evt_list, cmds->cmds.cmds_val[a]);
 	  break;
 
 
@@ -592,82 +633,97 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 }
 
 
-static int expr_char_length(char *module, int lineno, expr_str *ptr) {
-int d;
-int sz;
-FILE *f;
-	d=expr_datatype(module,lineno, ptr);
+static int
+expr_char_length (char *module, int lineno, expr_str * ptr)
+{
+  int d;
+  int sz;
+  FILE *f;
+  d = expr_datatype (module, lineno, ptr);
 
-	if (!is_char_dtype(d)) {
-		return 0; // its not a character string - assume at least '0'
-			  // (ie - ignore it - theres not much else we can do)
+  if (!is_char_dtype (d))
+    {
+      return 0;			// its not a character string - assume at least '0'
+      // (ie - ignore it - theres not much else we can do)
+    }
+
+
+
+  sz = d >> 16;
+  if (sz)
+    {
+      return sz;		// We've got it already !!!
+    }
+
+
+
+  // Gonna need to work it out...
+  switch (ptr->expr_type)
+    {
+    case ET_EXPR_LITERAL_STRING:
+      return strlen (ptr->expr_str_u.expr_string);
+
+    case ET_EXPR_OP_USING:
+      return expr_char_length (module, lineno, ptr->expr_str_u.expr_op->right);
+
+    case ET_EXPR_UPSHIFT:
+      return expr_char_length (module, lineno, ptr->expr_str_u.expr_expr);
+
+    case ET_EXPR_DOWNSHIFT:
+      return expr_char_length (module, lineno, ptr->expr_str_u.expr_expr);
+
+    case ET_EXPR_OP_CLIP:
+      return 0;			// Anything clipped can probably be 0 length...
+
+    case ET_EXPR_CACHED:
+      A4GL_assertion (1, "Cached expression not handled");
+
+    default:
+      break;
+    }
+
+  if (strlen (acl_getenv ("DEBUG")))
+    {
+      f = fopen ("/tmp/expr_char_length.out", "a");
+      if (f)
+	{
+	  fprintf (f, "Expr %d Datatype %d\n", ptr->expr_type, d);
+	  fclose (f);
 	}
-
-	
-
-	sz=d>>16;
-	if (sz) {
-		return sz; // We've got it already !!!
-	}
-	
+    }
 
 
-	// Gonna need to work it out...
-	switch (ptr->expr_type) {
-		case ET_EXPR_LITERAL_STRING:
-			return strlen(ptr->expr_str_u.expr_string);
-
-		case ET_EXPR_OP_USING:
-			return expr_char_length(module,lineno, ptr->expr_str_u.expr_op->right);
-
-		case ET_EXPR_UPSHIFT:
-			return expr_char_length(module,lineno, ptr->expr_str_u.expr_expr);
-
-		case ET_EXPR_DOWNSHIFT:
-			return expr_char_length(module,lineno, ptr->expr_str_u.expr_expr);
-
-		case ET_EXPR_OP_CLIP:
-			return 0; // Anything clipped can probably be 0 length...
-			
-		case ET_EXPR_CACHED:
-			A4GL_assertion(1,"Cached expression not handled");
-		
-		default:
-			break;
-	}
-
-	if (strlen(acl_getenv("DEBUG"))) {
-		f=fopen("/tmp/expr_char_length.out","a");
-		if (f) {
-			fprintf(f,"Expr %d Datatype %d\n", ptr->expr_type, d);
-			fclose(f);
-		}
-	}
-
-
-	return 0; // Ignore its length
+  return 0;			// Ignore its length
 }
 
-static int isParameter(struct variable *var, expr_str_list *parameters) {
-char *str;
+static int
+isParameter (struct variable *var, expr_str_list * parameters)
+{
+  char *str;
 //variable_list vlist;
-int a;
-if (parameters==0) return 0;
-for (a=0;a<parameters->list.list_len;a++) {
-		if (parameters->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
-			str=lint_get_variable_usage_as_string(parameters->list.list_val[a]->expr_str_u.expr_variable_usage);
-			if (strcmp(var->names.names.names_val[0].name, str)==0) {
-				return 1;
-			}
-		}
+  int a;
+  if (parameters == 0)
+    return 0;
+  for (a = 0; a < parameters->list.list_len; a++)
+    {
+      if (parameters->list.list_val[a]->expr_type == ET_EXPR_VARIABLE_USAGE)
+	{
+	  str = lint_get_variable_usage_as_string (parameters->list.list_val[a]->expr_str_u.expr_variable_usage);
+	  if (strcmp (var->names.names.names_val[0].name, str) == 0)
+	    {
+	      return 1;
+	    }
+	}
+    }
+
+
+  return 0;
 }
 
-
-return 0;
-}
-
-static void check_variables(char *module_name, struct module_definition *d, variable_list *variables, expr_str_list *parameters)  {
-int a;
+static void
+check_variables (char *module_name, struct module_definition *d, variable_list * variables, expr_str_list * parameters)
+{
+  int a;
 //char *module_name;
 
   //module_name=d->module_name;
@@ -679,7 +735,8 @@ int a;
       char *localname;
       struct variable *v;
       v = variables->variables.variables_val[a];
-	if (v->var_data.variable_type == VARIABLE_TYPE_CONSTANT) continue;
+      if (v->var_data.variable_type == VARIABLE_TYPE_CONSTANT)
+	continue;
 
       localname = variables->variables.variables_val[a]->names.names.names_val[0].name;
 
@@ -687,43 +744,62 @@ int a;
 
       if (has_variable (&d->imported_global_variables, localname))
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE", "Coding Standards: Local variable hides an imported Global variable", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
+		     "Coding Standards: Local variable hides an imported Global variable",
+		     variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (has_variable (&d->exported_global_variables, localname))
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE", "Coding Standards: Local variable hides an exported Global variable", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
+		     "Coding Standards: Local variable hides an exported Global variable",
+		     variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
       if (has_variable (&d->module_variables, localname))
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE", "Coding Standards: Local variable hides a Module variable", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
+		     "Coding Standards: Local variable hides a Module variable",
+		     variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
 
       if (variables->variables.variables_val[a]->flags & 1)
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARUSED", "Local variable is used before its assigned a value", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARUSED",
+		     "Local variable is used before its assigned a value",
+		     variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (variables->variables.variables_val[a]->usage == 0 && variables->variables.variables_val[a]->assigned == 0)
 	{
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARNOTUSED", "Local variable is defined but not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARNOTUSED",
+		     "Local variable is defined but not used",
+		     variables->variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (variables->variables.variables_val[a]->usage == 0 && variables->variables.variables_val[a]->assigned)
 	{
-	if (isParameter(variables->variables.variables_val[a], parameters)) {
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "PARAMNOTUSED", "Function/Report parameter not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
-	} else {
-	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARASSNOTUSED", "Local variable is assigned a value but not used", variables->variables.variables_val[a]->names.names.names_val[0].name);
-	}
+	  if (isParameter (variables->variables.variables_val[a], parameters))
+	    {
+	      A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "PARAMNOTUSED",
+			 "Function/Report parameter not used",
+			 variables->variables.variables_val[a]->names.names.names_val[0].name);
+	    }
+	  else
+	    {
+	      A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "VARASSNOTUSED",
+			 "Local variable is assigned a value but not used",
+			 variables->variables.variables_val[a]->names.names.names_val[0].name);
+	    }
 	}
     }
 }
 
 
-static void check_linearised_commands(char *module_name, commands *func_cmds) {
-int cnt;
+static void
+check_linearised_commands (char *module_name, commands * func_cmds)
+{
+  int cnt;
   int nreturns = 0;
   int nretvals = 0;
 
@@ -737,12 +813,20 @@ int cnt;
       local_last_whento[cnt] = 0;
     }
 
-  for (cnt = 0; cnt< func_cmds->cmds.cmds_len; cnt++)
+  for (cnt = 0; cnt < func_cmds->cmds.cmds_len; cnt++)
     {
       r = func_cmds->cmds.cmds_val[cnt];
 
-      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
-      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (r);
+	  continue;
+	}
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (r);
+	  continue;
+	}
 
       yylineno = r->lineno;
       if (r->cmd_data.type == E_CMD_RETURN_CMD)
@@ -766,11 +850,13 @@ int cnt;
 
 	      if (nvals != nretvals)
 		{
-			char buff[200];
-			sprintf(buff,"%d!=%d",nvals,nretvals);
-	      		A4GL_lint (module_name, r->lineno, "MRETNUM", "RETURN with different number of values", buff);
-		} else {
-	      		A4GL_lint (module_name, r->lineno, "CS.MRET", "Coding Standards: Multiple RETURNs in function", 0);
+		  char buff[200];
+		  sprintf (buff, "%d!=%d", nvals, nretvals);
+		  A4GL_lint (module_name, r->lineno, "MRETNUM", "RETURN with different number of values", buff);
+		}
+	      else
+		{
+		  A4GL_lint (module_name, r->lineno, "CS.MRET", "Coding Standards: Multiple RETURNs in function", 0);
 		}
 
 	    }
@@ -787,21 +873,25 @@ int cnt;
 	      nreturns++;
 	    }
 
-		if (r->cmd_data.command_data_u.return_cmd.retvals) {
-			int a;
-			struct expr_str_list list;
-			list.list.list_len=0;
-			list.list.list_val=0;
-		
-			cache_expression_list (&list, r->cmd_data.command_data_u.return_cmd.retvals);
-			linearise_expressions (&list);
-			for  (a=0;a<list.list.list_len;a++) {
-				if (list.list.list_val[a]->expr_type==ET_EXPR_FCALL) {
-	      				A4GL_lint (module_name, r->lineno, "CS.FRET", "Coding Standards: Function RETURNs  with a the result from another function call", 0);
-					break; // no point repeating the test..
-				}
-			}
+	  if (r->cmd_data.command_data_u.return_cmd.retvals)
+	    {
+	      int a;
+	      struct expr_str_list list;
+	      list.list.list_len = 0;
+	      list.list.list_val = 0;
+
+	      cache_expression_list (&list, r->cmd_data.command_data_u.return_cmd.retvals);
+	      linearise_expressions (&list);
+	      for (a = 0; a < list.list.list_len; a++)
+		{
+		  if (list.list.list_val[a]->expr_type == ET_EXPR_FCALL)
+		    {
+		      A4GL_lint (module_name, r->lineno, "CS.FRET",
+				 "Coding Standards: Function RETURNs  with a the result from another function call", 0);
+		      break;	// no point repeating the test..
+		    }
 		}
+	    }
 
 	}
 
@@ -835,93 +925,122 @@ int cnt;
 	}
 
 
-	if (r->cmd_data.type==E_CMD_INSERT_CMD) {
+      if (r->cmd_data.type == E_CMD_INSERT_CMD)
+	{
 
-		if (r->cmd_data.command_data_u.insert_cmd.column_list==NULL) {
-			A4GL_lint (module_name, r->lineno, "INSERTNOCOLS", "Insert with no column list used", 0);
-		} else {
-			int ok=0;
-			if (r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len==1) {
-				if (strcmp(r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_val[0],"*")==0) ok=1;
-			}
+	  if (r->cmd_data.command_data_u.insert_cmd.column_list == NULL)
+	    {
+	      A4GL_lint (module_name, r->lineno, "INSERTNOCOLS", "Insert with no column list used", 0);
+	    }
+	  else
+	    {
+	      int ok = 0;
+	      if (r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len == 1)
+		{
+		  if (strcmp (r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_val[0], "*") == 0)
+		    ok = 1;
+		}
 
-	
-			if (ok==0 && r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len!=r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len) {
-			char buff[200];
-			sprintf(buff,"%d!=%d",r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len,r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len);
-			A4GL_lint (module_name, r->lineno, "INSERTCOLS", "Number of columns in INSERT does not match number of values",  buff);
+
+	      if (ok == 0
+		  && r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len !=
+		  r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len)
+		{
+		  char buff[200];
+		  sprintf (buff, "%d!=%d", r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len,
+			   r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len);
+		  A4GL_lint (module_name, r->lineno, "INSERTCOLS", "Number of columns in INSERT does not match number of values",
+			     buff);
 		}
-		}
-        }
+	    }
+	}
 
       if (r->cmd_data.type == E_CMD_SELECT_CMD)
-      {
-		struct s_select *s;
-		int ncols;
-		int nvars;
-		int a;
-		s=r->cmd_data.command_data_u.select_cmd.sql;
-		A4GL_setenv("EXPAND_COLUMNS","Y",1);
+	{
+	  struct s_select *s;
+	  int ncols;
+	  int nvars;
+	  int a;
+	  s = r->cmd_data.command_data_u.select_cmd.sql;
+	  A4GL_setenv ("EXPAND_COLUMNS", "Y", 1);
 
-		// Lets look before we preprocess
-		// 
-		if (s->select_list) {
-			for (a=0;a<s->select_list->list.list_len;a++) {
-				if (s->select_list->list.list_val[a]->data.type==E_SLI_BUILTIN_CONST_STAR) {
-		      			A4GL_lint (module_name, r->lineno, "SELECTSTAR", "SELECT * used", 0);
-					break;
-				}
+	  // Lets look before we preprocess
+	  // 
+	  if (s->select_list)
+	    {
+	      for (a = 0; a < s->select_list->list.list_len; a++)
+		{
+		  if (s->select_list->list.list_val[a]->data.type == E_SLI_BUILTIN_CONST_STAR)
+		    {
+		      A4GL_lint (module_name, r->lineno, "SELECTSTAR", "SELECT * used", 0);
+		      break;
+		    }
+		}
+	    }
+
+	  preprocess_sql_statement (s);
+	  if (s->into)
+	    {
+	      nvars = s->into->list.list_len;
+	    }
+	  else
+	    {
+	      nvars = 0;
+	    }
+
+	  ncols = s->select_list->list.list_len;
+
+	  if (nvars != ncols)
+	    {
+	      int warn = 1;
+	      // Check for SELECT ... INTO TEMP
+	      if (nvars == 0)
+		{
+		  if (s->sf)
+		    {
+		      if (s->sf->into_temp && strlen (s->sf->into_temp))
+			{
+			  warn = 0;
 			}
-		}
-
-		preprocess_sql_statement(s);
-		if (s->into) {
-			nvars=s->into->list.list_len;
-		} else {
-			nvars=0;
-		}
-
-		ncols=s->select_list->list.list_len;
-		
-		if (nvars!=ncols) {
-			int warn=1;
-			// Check for SELECT ... INTO TEMP
-			if (nvars==0 ) {
-				if (s->sf) {
-					if (s->sf->into_temp && strlen( s->sf->into_temp)) {
-						warn=0;
-					}
-					if (s->sf->insert_into && strlen( s->sf->insert_into)) {
-						warn=0;
-					}
-				}
-				if (ncols==1) {
-					if (s->select_list->list.list_val[0]->data.type==E_SLI_LITERAL) {
-						// We can ignore it - its a SELECT 1 ..
-						// they are probably going to check the status...
-						warn=0;
-					}
-				}
-			} 
-
-			if (warn) {
-				if (nvars==0) {
-		      			A4GL_lint (module_name, r->lineno, "SELECTNOTINTO", "SELECT WITH NO INTO", 0);
-				} else {
-		      			A4GL_lint (module_name, r->lineno, "MISMATCHSELECT", "number of values selected is not the same as the number of variables", 0);
-				}
+		      if (s->sf->insert_into && strlen (s->sf->insert_into))
+			{
+			  warn = 0;
 			}
-
-			
+		    }
+		  if (ncols == 1)
+		    {
+		      if (s->select_list->list.list_val[0]->data.type == E_SLI_LITERAL)
+			{
+			  // We can ignore it - its a SELECT 1 ..
+			  // they are probably going to check the status...
+			  warn = 0;
+			}
+		    }
 		}
-      }
- 
+
+	      if (warn)
+		{
+		  if (nvars == 0)
+		    {
+		      A4GL_lint (module_name, r->lineno, "SELECTNOTINTO", "SELECT WITH NO INTO", 0);
+		    }
+		  else
+		    {
+		      A4GL_lint (module_name, r->lineno, "MISMATCHSELECT",
+				 "number of values selected is not the same as the number of variables", 0);
+		    }
+		}
+
+
+	    }
+	}
+
 
       if (r->cmd_data.type == E_CMD_LABEL_CMD)
 	{
 	  struct command *r2;
 	  int isused = 0;
-		int b;
+	  int b;
 
 	  for (b = 0; b < func_cmds->cmds.cmds_len; b++)
 	    {
@@ -937,40 +1056,50 @@ int cnt;
 	    }
 	  if (!isused)
 	    {
-	      A4GL_lint (module_name, r->lineno, "LABELNOTUSED", "Label defined but not used", r->cmd_data.command_data_u.label_cmd.label);
+	      A4GL_lint (module_name, r->lineno, "LABELNOTUSED", "Label defined but not used",
+			 r->cmd_data.command_data_u.label_cmd.label);
 	    }
 	}
 
 
-      if (r->cmd_data.type== E_CMD_DISPLAY_ARRAY_CMD || r->cmd_data.type== E_CMD_INPUT_ARRAY_CMD) {
-		int bcnt;
-  		struct command *r2;
-		int found_setcount=0;
-		//int c=0;
-		for (bcnt=cnt;bcnt>=0;bcnt--) {
-      			r2 = func_cmds->cmds.cmds_val[bcnt];
-			if (r2->cmd_data.type==E_CMD_CALL_CMD) {
-				struct expr_str *ptr;
-				ptr=r2->cmd_data.command_data_u.call_cmd.fcall;
-				if (ptr->expr_type==ET_EXPR_FCALL) {
-					if (strcmp(ptr->expr_str_u.expr_function_call->fname,"set_count")==0) {
-						found_setcount=1;
-						break;
-					}
-				}
+      if (r->cmd_data.type == E_CMD_DISPLAY_ARRAY_CMD || r->cmd_data.type == E_CMD_INPUT_ARRAY_CMD)
+	{
+	  int bcnt;
+	  struct command *r2;
+	  int found_setcount = 0;
+	  //int c=0;
+	  for (bcnt = cnt; bcnt >= 0; bcnt--)
+	    {
+	      r2 = func_cmds->cmds.cmds_val[bcnt];
+	      if (r2->cmd_data.type == E_CMD_CALL_CMD)
+		{
+		  struct expr_str *ptr;
+		  ptr = r2->cmd_data.command_data_u.call_cmd.fcall;
+		  if (ptr->expr_type == ET_EXPR_FCALL)
+		    {
+		      if (strcmp (ptr->expr_str_u.expr_function_call->fname, "set_count") == 0)
+			{
+			  found_setcount = 1;
+			  break;
 			}
+		    }
 		}
+	    }
 
-		if (!found_setcount) {
-			A4GL_lint (module_name, r->lineno, "NSETCOUNT", 
-				"Cannot see a 'setcount' immediately before an Input/Display array", r->cmd_data.command_data_u.label_cmd.label);
-		}
+	  if (!found_setcount)
+	    {
+	      A4GL_lint (module_name, r->lineno, "NSETCOUNT",
+			 "Cannot see a 'setcount' immediately before an Input/Display array",
+			 r->cmd_data.command_data_u.label_cmd.label);
+	    }
 	}
 
-	if (r->cmd_data.type==E_CMD_WHILE_CMD) {
-		if (r->cmd_data.command_data_u.while_cmd.while_expr) {
-	      			ensure_bool (r->module,  r->lineno, r->cmd_data.command_data_u.while_cmd.while_expr, 0);
-		}
+      if (r->cmd_data.type == E_CMD_WHILE_CMD)
+	{
+	  if (r->cmd_data.command_data_u.while_cmd.while_expr)
+	    {
+	      ensure_bool (r->module, r->lineno, r->cmd_data.command_data_u.while_cmd.while_expr, 0);
+	    }
 	}
 
       if (r->cmd_data.type == E_CMD_IF_CMD)
@@ -980,14 +1109,14 @@ int cnt;
 	  if_c = &r->cmd_data.command_data_u.if_cmd.truths;
 
 
-		
+
 	  for (b = 0; b < if_c->conditions.conditions_len; b++)
 	    {
 	      //expr_str *e;
- 		struct command *r2;
-		int last_was_sql=0;
-			int done=0;
-	      ensure_bool (r->module,  if_c->conditions.conditions_val[b].lineno, if_c->conditions.conditions_val[b].test_expr, 0);
+	      struct command *r2;
+	      int last_was_sql = 0;
+	      int done = 0;
+	      ensure_bool (r->module, if_c->conditions.conditions_val[b].lineno, if_c->conditions.conditions_val[b].test_expr, 0);
 
 
 
@@ -995,7 +1124,7 @@ int cnt;
 		{
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "IFFALSE", "IF condition is always FALSE", 0);
-		done++;
+		  done++;
 		}
 
 	      if (A4GL_is_just_int_literal (if_c->conditions.conditions_val[b].test_expr, 1))
@@ -1003,38 +1132,40 @@ int cnt;
 		  yylineno = r->lineno;
 		  A4GL_lint (module_name, r->lineno, "IFTRUE", "IF condition is always TRUE", 0);
 		  //A4GL_lint("IF condition is always TRUE");
-		done++;
+		  done++;
 		}
 
 
-		if (cnt) {
-      			r2 = func_cmds->cmds.cmds_val[cnt-1];
-			switch (r2->cmd_data.type) {
-				case E_CMD_SELECT_CMD:
-				case E_CMD_SQL_CMD:
-				case E_CMD_SQL_TRANSACT_CMD:
-				case E_CMD_FETCH_CMD:
-				case E_CMD_INSERT_CMD:
-				case E_CMD_DELETE_CMD:
-				case E_CMD_UPDATE_CMD:
-				case E_CMD_FREE_CMD:
-				case E_CMD_EXECUTE_CMD:
-				case E_CMD_PREPARE_CMD:
-				case E_CMD_DECLARE_CMD:
-				case E_CMD_FOREACH_CMD:
-				case E_CMD_UNLOAD_CMD:
-				case E_CMD_LOAD_CMD:
-				case E_CMD_OPEN_CURSOR_CMD:
-				case E_CMD_PUT_CMD:
-				case E_CMD_EXECUTE_IMMEDIATE_CMD:
-					last_was_sql=1;
-					break;
-				default:
-					break;
-			}
+	      if (cnt)
+		{
+		  r2 = func_cmds->cmds.cmds_val[cnt - 1];
+		  switch (r2->cmd_data.type)
+		    {
+		    case E_CMD_SELECT_CMD:
+		    case E_CMD_SQL_CMD:
+		    case E_CMD_SQL_TRANSACT_CMD:
+		    case E_CMD_FETCH_CMD:
+		    case E_CMD_INSERT_CMD:
+		    case E_CMD_DELETE_CMD:
+		    case E_CMD_UPDATE_CMD:
+		    case E_CMD_FREE_CMD:
+		    case E_CMD_EXECUTE_CMD:
+		    case E_CMD_PREPARE_CMD:
+		    case E_CMD_DECLARE_CMD:
+		    case E_CMD_FOREACH_CMD:
+		    case E_CMD_UNLOAD_CMD:
+		    case E_CMD_LOAD_CMD:
+		    case E_CMD_OPEN_CURSOR_CMD:
+		    case E_CMD_PUT_CMD:
+		    case E_CMD_EXECUTE_IMMEDIATE_CMD:
+		      last_was_sql = 1;
+		      break;
+		    default:
+		      break;
+		    }
 		}
-		// Further checks - like STATUS and SQLCA usage...
-		check_boolean(module_name, r->lineno, if_c->conditions.conditions_val[b].test_expr,last_was_sql,done);
+	      // Further checks - like STATUS and SQLCA usage...
+	      check_boolean (module_name, r->lineno, if_c->conditions.conditions_val[b].test_expr, last_was_sql, done);
 	    }
 	}
 
@@ -1047,36 +1178,41 @@ int cnt;
 
       if (r->cmd_data.type == E_CMD_FOR_CMD)
 	{
-	  	int dtype;
-		struct expr_str s2;
-		struct expr_str *s3;
-  		struct expr_str_list list;
-		int a;
+	  int dtype;
+	  struct expr_str s2;
+	  struct expr_str *s3;
+	  struct expr_str_list list;
+	  int a;
 
-  		list.list.list_len = 0;
-  		list.list.list_val = 0;
-		dtype=expr_datatype(module_name, r->lineno,r->cmd_data.command_data_u.for_cmd.var);
-		if (!is_numeric(dtype))  {
-			A4GL_lint (module_name, r->lineno, "FORVARNUM", "Variable used in FOR is not numeric", 0);
+	  list.list.list_len = 0;
+	  list.list.list_val = 0;
+	  dtype = expr_datatype (module_name, r->lineno, r->cmd_data.command_data_u.for_cmd.var);
+	  if (!is_numeric (dtype))
+	    {
+	      A4GL_lint (module_name, r->lineno, "FORVARNUM", "Variable used in FOR is not numeric", 0);
+	    }
+
+
+	  // Lets check our 'ending' expression....
+	  s3 = &s2;
+	  memcpy (&s2, r->cmd_data.command_data_u.for_cmd.end, sizeof (struct expr_str));
+	  cache_expression (&list, &s3);
+	  linearise_expressions (&list);
+	  for (a = 0; a < list.list.list_len; a++)
+	    {
+	      if (list.list.list_val[a])
+		{
+		  if (list.list.list_val[a]->expr_type == ET_EXPR_FCALL)
+		    {
+		      // Function call in the 'end' expression will be called multiple times
+		      A4GL_lint (module_name, r->lineno, "FORENDEXPR",
+				 "Conditional for FOR calls a function (and so might be called many times)", 0);
+		    }
 		}
+	    }
 
 
-		// Lets check our 'ending' expression....
-		s3=&s2;
-  		memcpy (&s2, r->cmd_data.command_data_u.for_cmd.end, sizeof (struct expr_str));
-  		cache_expression (&list, &s3);
-  		linearise_expressions (&list);
-		for (a=0;a<list.list.list_len;a++) {
-			if (list.list.list_val[a]) {
-				if (list.list.list_val[a]->expr_type==ET_EXPR_FCALL) {
-					// Function call in the 'end' expression will be called multiple times
-					A4GL_lint (module_name, r->lineno, "FORENDEXPR", "Conditional for FOR calls a function (and so might be called many times)", 0);
-				}
-			}
-		}
 
-		
-		
 	  //set_assigned_binding_var(r->cmd_data.command_data_u.for_cmd.var,currfunc, r->module,r->lineno);
 	}
 
@@ -1133,7 +1269,7 @@ int cnt;
 	{
 	  if (r->cmd_data.command_data_u.case_cmd.case_expr == 0)
 	    {
-		int b;
+	      int b;
 	      for (b = 0; b < r->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; b++)
 		{
 		  expr_str *expr;
@@ -1141,27 +1277,35 @@ int cnt;
 		  expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
 
 		  yylineno = r->lineno;
-		  if (expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr) == DTYPE_CHAR || expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr) == DTYPE_VCHAR)
+		  if (expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr) ==
+		      DTYPE_CHAR
+		      || expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno,
+					expr) == DTYPE_VCHAR)
 		    {
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASESTR", "Use of String for WHEN in a CASE with no expression", 0);
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASESTR",
+				 "Use of String for WHEN in a CASE with no expression", 0);
 		    }
 
 		  if (A4GL_is_just_int_literal (expr, 0))
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASEFALSE", "WHEN condition is always FALSE", 0);
-			continue;
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASEFALSE",
+				 "WHEN condition is always FALSE", 0);
+		      continue;
 		    }
 		  if (A4GL_is_just_int_literal (expr, 1))
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASETRUE", "WHEN condition is always TRUE", 0);
-			continue;
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASETRUE",
+				 "WHEN condition is always TRUE", 0);
+		      continue;
 		    }
-		  if (A4GL_is_just_literal (NULL,expr,1)) {
+		  if (A4GL_is_just_literal (NULL, expr, 1))
+		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASECONST", "WHEN condition is constant", 0);
-		}
+		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASECONST",
+				 "WHEN condition is constant", 0);
+		    }
 		}
 	    }
 
@@ -1178,26 +1322,29 @@ int cnt;
 
 	  struct expr_str *fcall;
 	  char *funcname;
-	  int b=-1;
+	  int b = -1;
 	  fcall = r->cmd_data.command_data_u.call_cmd.fcall;
 	  funcname = fcall->expr_str_u.expr_function_call->fname;
 
-	if (fcall->expr_type==ET_EXPR_FCALL)  {
-	  b = find_function (fcall->expr_str_u.expr_function_call->fname);
-	}
+	  if (fcall->expr_type == ET_EXPR_FCALL)
+	    {
+	      b = find_function (fcall->expr_str_u.expr_function_call->fname);
+	    }
 
 	  if (b == -1)
 	    {
 
-		if (fcall->expr_type==ET_EXPR_FCALL) {
-	      		if (!system_function (fcall->expr_str_u.expr_function_call->fname)
-		  && is_bolton_function (fcall->expr_str_u.expr_function_call->fname) == -1)
-						{
-		  		char buff[200];
-		  		sprintf (buff, "Function %s was called but is not defined", fcall->expr_str_u.expr_function_call->fname);
-		  		A4GL_lint (module_name, r->lineno, "FUNCNOTDEF", "Function was called but is not defined", fcall->expr_str_u.expr_function_call->fname);
-		  		log_proto (fcall, r->cmd_data.command_data_u.call_cmd.returning);
-				}
+	      if (fcall->expr_type == ET_EXPR_FCALL)
+		{
+		  if (!system_function (fcall->expr_str_u.expr_function_call->fname)
+		      && is_bolton_function (fcall->expr_str_u.expr_function_call->fname) == -1)
+		    {
+		      char buff[200];
+		      sprintf (buff, "Function %s was called but is not defined", fcall->expr_str_u.expr_function_call->fname);
+		      A4GL_lint (module_name, r->lineno, "FUNCNOTDEF", "Function was called but is not defined",
+				 fcall->expr_str_u.expr_function_call->fname);
+		      log_proto (fcall, r->cmd_data.command_data_u.call_cmd.returning);
+		    }
 		}
 	    }
 	  else
@@ -1274,9 +1421,10 @@ int cnt;
 		  int etype;
 		  struct expr_str_list *varlist;
 		  varlist = r->cmd_data.command_data_u.call_cmd.returning;
-		  if (varlist->list.list_len>100) {
-			  A4GL_lint (r->module, r->lineno, "CALLRETNUM", "CALL returns a lot of values", "");
-		  }
+		  if (varlist->list.list_len > 100)
+		    {
+		      A4GL_lint (r->module, r->lineno, "CALLRETNUM", "CALL returns a lot of values", "");
+		    }
 		  for (a = 0; a < varlist->list.list_len; a++)
 		    {
 		      int vlist_dtype;
@@ -1293,7 +1441,8 @@ int cnt;
 			  sprintf (buff, "%s - types expression (%s) != variable (%s) @ %d",
 				   lint_get_variable_usage_as_string (varlist->list.list_val[a]->expr_str_u.expr_variable_usage),
 				   dtype_as_string (etype), dtype_as_string (vlist_dtype), a + 1);
-			  A4GL_lint (r->module, r->lineno, "CALLRETEXPR", "Expression is not directly compatible with Variable", buff);
+			  A4GL_lint (r->module, r->lineno, "CALLRETEXPR", "Expression is not directly compatible with Variable",
+				     buff);
 			}
 		    }
 		}
@@ -1309,7 +1458,7 @@ int cnt;
 	  expr_str_list *expr_list = 0;
 	  expr_str_list *varlist;
 	  int from_exprs;
-		int b;
+	  int b;
 
 	  expr_list = r->cmd_data.command_data_u.let_cmd.vals;
 	  if (expr_list == 0)
@@ -1345,7 +1494,8 @@ int cnt;
 		  else
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->lineno, "CS.WRITEINTFLAG", "'int_flag' set to value which is neither TRUE or FALSE", 0);
+		      A4GL_lint (module_name, r->lineno, "CS.WRITEINTFLAG",
+				 "'int_flag' set to value which is neither TRUE or FALSE", 0);
 		    }
 		}
 
@@ -1356,7 +1506,8 @@ int cnt;
 		  else
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG", "'quit_flag' set to value which is neither TRUE or FALSE", 0);
+		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG",
+				 "'quit_flag' set to value which is neither TRUE or FALSE", 0);
 		    }
 		}
 
@@ -1368,7 +1519,8 @@ int cnt;
 		  else
 		    {
 		      yylineno = r->lineno;
-		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG", "'quit_flag' set to value which is neither TRUE or FALSE", 0);
+		      A4GL_lint (module_name, r->lineno, "CS.WRITEQUITFLAG",
+				 "'quit_flag' set to value which is neither TRUE or FALSE", 0);
 		    }
 		}
 
@@ -1382,19 +1534,20 @@ int cnt;
 
 	      if (from_exprs > 1)
 		{		// This should be a string concat
-		  if (!is_char_dtype (expr_datatype (module_name, r->lineno,varlist->list.list_val[0])))
+		  if (!is_char_dtype (expr_datatype (module_name, r->lineno, varlist->list.list_val[0])))
 		    {
-		      A4GL_lint (module_name, r->lineno, "CONCATTONONSTR", "Assigning a string concentenation to a non-character variable",
+		      A4GL_lint (module_name, r->lineno, "CONCATTONONSTR",
+				 "Assigning a string concentenation to a non-character variable",
 				 expr_as_string_when_possible (varlist->list.list_val[0]));
 		    }
 		  else
 		    {
-			// Its a character string...
+		      // Its a character string...
 		      int ecnt;
-			int lmax; // Whats the maximum size of the expression being passed in..
-			int var_length;
-			lmax=0;
-			var_length=expr_datatype (module_name, r->lineno,varlist->list.list_val[0]) >> 16;
+		      int lmax;	// Whats the maximum size of the expression being passed in..
+		      int var_length;
+		      lmax = 0;
+		      var_length = expr_datatype (module_name, r->lineno, varlist->list.list_val[0]) >> 16;
 
 		      // It is a string - so all our expressions should really be strings
 		      // we know we can convert between integers and strings - but this is a lint
@@ -1404,26 +1557,34 @@ int cnt;
 			  int etype;
 			  int l;
 			  yylineno = r->lineno;
-			  etype = expr_datatype (module_name, r->lineno,expr_list->list.list_val[ecnt]);
-				if (lmax>=0) {
-					l=expr_char_length(module_name, r->lineno,expr_list->list.list_val[ecnt]);
-					// If this is -1 then we cant work out what the length is - so
-					// we can ignore any further checks on the size...
-					if (l<0) { lmax=-1; }
-	
-					if (l>=0) { 
-						lmax+=l;
-					}
+			  etype = expr_datatype (module_name, r->lineno, expr_list->list.list_val[ecnt]);
+			  if (lmax >= 0)
+			    {
+			      l = expr_char_length (module_name, r->lineno, expr_list->list.list_val[ecnt]);
+			      // If this is -1 then we cant work out what the length is - so
+			      // we can ignore any further checks on the size...
+			      if (l < 0)
+				{
+				  lmax = -1;
 				}
+
+			      if (l >= 0)
+				{
+				  lmax += l;
+				}
+			    }
 
 			  if (!is_char_dtype (etype))
 			    {
 			      sprintf (buff, "%d expression", ecnt + 1);
-			      A4GL_lint (module_name, r->lineno, "CONCATFROMNONSTR", "Expression in string concatenation assignment, is not a string", buff);
+			      A4GL_lint (module_name, r->lineno, "CONCATFROMNONSTR",
+					 "Expression in string concatenation assignment, is not a string", buff);
 			    }
 			}
-			if (lmax>0 && lmax>var_length) {
-			      A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
+		      if (lmax > 0 && lmax > var_length)
+			{
+			  A4GL_lint (module_name, r->lineno, "STRINGLONG",
+				     "Expression assigned to string may not fit into destination", NULL);
 			}
 		    }
 		}
@@ -1433,31 +1594,35 @@ int cnt;
 		  int etype;
 		  if (expr_list->list.list_val[0]->expr_type == ET_EXPR_NULL)
 		    {
-		      etype = expr_datatype (module_name, r->lineno,varlist->list.list_val[0]);
+		      etype = expr_datatype (module_name, r->lineno, varlist->list.list_val[0]);
 		    }
 		  else
 		    {
 		      yylineno = r->lineno;
-		      etype = expr_datatype (module_name, r->lineno,expr_list->list.list_val[0]);
+		      etype = expr_datatype (module_name, r->lineno, expr_list->list.list_val[0]);
 		    }
 
-		if (is_char_dtype(etype) && is_char_dtype(expr_datatype(module_name, r->lineno,varlist->list.list_val[0]))) { // String to a string..
-			int lmax;
-			int var_length;
-			lmax=expr_char_length(module_name, r->lineno,expr_list->list.list_val[0]);
-			var_length=expr_datatype (module_name, r->lineno, varlist->list.list_val[0]) >> 16;
-			if (lmax>0) {
-				if (lmax>var_length) {
-			      		A4GL_lint (module_name, r->lineno, "STRINGLONG", "Expression assigned to string may not fit into destination", NULL);
-				}
-			}	
-		}
-		  if (promoteable (etype, expr_datatype (module_name, r->lineno,varlist->list.list_val[0])) == -1)
+		  if (is_char_dtype (etype) && is_char_dtype (expr_datatype (module_name, r->lineno, varlist->list.list_val[0])))
+		    {		// String to a string..
+		      int lmax;
+		      int var_length;
+		      lmax = expr_char_length (module_name, r->lineno, expr_list->list.list_val[0]);
+		      var_length = expr_datatype (module_name, r->lineno, varlist->list.list_val[0]) >> 16;
+		      if (lmax > 0)
+			{
+			  if (lmax > var_length)
+			    {
+			      A4GL_lint (module_name, r->lineno, "STRINGLONG",
+					 "Expression assigned to string may not fit into destination", NULL);
+			    }
+			}
+		    }
+		  if (promoteable (etype, expr_datatype (module_name, r->lineno, varlist->list.list_val[0])) == -1)
 		    {
 		      char buff[256];
 		      sprintf (buff, "%s - types expression (%s) != variable (%s)",
 			       expr_as_string_when_possible (varlist->list.list_val[0]), dtype_as_string (etype),
-			       dtype_as_string (expr_datatype (module_name, r->lineno,varlist->list.list_val[0])));
+			       dtype_as_string (expr_datatype (module_name, r->lineno, varlist->list.list_val[0])));
 		      A4GL_lint (r->module, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable", buff);
 		    }
 		}
@@ -1475,20 +1640,21 @@ int cnt;
 		      int etype;
 		      if (expr_list->list.list_val[ecnt]->expr_type == ET_EXPR_NULL)
 			{
-			  etype = expr_datatype (module_name, r->lineno,varlist->list.list_val[ecnt]);
+			  etype = expr_datatype (module_name, r->lineno, varlist->list.list_val[ecnt]);
 			}
 		      else
 			{
 			  yylineno = r->lineno;
-			  etype = expr_datatype (module_name, r->lineno,expr_list->list.list_val[ecnt]);
+			  etype = expr_datatype (module_name, r->lineno, expr_list->list.list_val[ecnt]);
 			}
-		      if (promoteable (etype, expr_datatype (module_name, r->lineno,varlist->list.list_val[ecnt])) == -1)
+		      if (promoteable (etype, expr_datatype (module_name, r->lineno, varlist->list.list_val[ecnt])) == -1)
 			{
 			  char buff[256];
 			  sprintf (buff, "Assignement to '%s', record element %d (%s %s)",
 				   expr_as_string_when_possible (varlist->list.list_val[ecnt]), ecnt + 1, dtype_as_string (etype),
-				   dtype_as_string (expr_datatype (module_name, r->lineno,varlist->list.list_val[ecnt])));
-			  A4GL_lint (module_name, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable", buff);
+				   dtype_as_string (expr_datatype (module_name, r->lineno, varlist->list.list_val[ecnt])));
+			  A4GL_lint (module_name, r->lineno, "LETEXPR", "Expression is not directly compatible with Variable",
+				     buff);
 
 			}
 
@@ -1496,85 +1662,99 @@ int cnt;
 		}
 	    }
 	}
-	clr_lint_expect();
+      clr_lint_expect ();
     }
 }
 
 
 
-static void check_report (struct module_definition *d, struct s_report_definition *r) {
-int a;
-char *module_name;
-module_name=r->module;
-        check_variables(r->module, d,&r->variables, r->parameters);
+static void
+check_report (struct module_definition *d, struct s_report_definition *r)
+{
+  int a;
+  char *module_name;
+  module_name = r->module;
+  check_variables (r->module, d, &r->variables, r->parameters);
 
-	if (r->report_format_section) {
-		for (a=0;a<r->report_format_section->entries.entries_len;a++) {
-			if (r->report_format_section->entries.entries_val[a]->rep_sec_commands!=NULL) {
-				struct commands *func_cmds = 0;
-  				check_cmds_for_dead_code (r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+  if (r->report_format_section)
+    {
+      for (a = 0; a < r->report_format_section->entries.entries_len; a++)
+	{
+	  if (r->report_format_section->entries.entries_val[a]->rep_sec_commands != NULL)
+	    {
+	      struct commands *func_cmds = 0;
+	      check_cmds_for_dead_code (r->report_format_section->entries.entries_val[a]->rep_sec_commands);
 
-  				func_cmds = linearise_commands (0, 0);
-  				linearise_commands (func_cmds, r->report_format_section->entries.entries_val[a]->rep_sec_commands);
-  				check_linearised_commands(r->module, func_cmds);
-  				cache_expressions (&r->expression_list, func_cmds);
-  				set_expr_cache (&r->expression_list);
-  				set_expr_cache (0);
+	      func_cmds = linearise_commands (0, 0);
+	      linearise_commands (func_cmds, r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+	      check_linearised_commands (r->module, func_cmds);
+	      cache_expressions (&r->expression_list, func_cmds);
+	      set_expr_cache (&r->expression_list);
+	      set_expr_cache (0);
 
-				
-			}
-		}
+
+	    }
+	}
+    }
+
+  if (r->report_orderby_section)
+    {
+      /*
+         if (r->report_orderby_section->rord_type==REPORT_ORDERBY_IMPLICIT) {
+         A4GL_lint (module_name, r->lineno, "REPORDIMPLICIT", "Implicit ORDER by on report",NULL);
+         }
+       */
+
+      if (r->report_orderby_section->rord_type == REPORT_ORDERBY)
+	{
+	  A4GL_lint (module_name, r->lineno, "REPORD", "ORDER BY on report (use ORDER EXTERNAL BY if possible)", NULL);
 	}
 
-	if (r->report_orderby_section) {
-		/*
-		if (r->report_orderby_section->rord_type==REPORT_ORDERBY_IMPLICIT) {
-			A4GL_lint (module_name, r->lineno, "REPORDIMPLICIT", "Implicit ORDER by on report",NULL);
-		}
-		*/
-
-		if (r->report_orderby_section->rord_type==REPORT_ORDERBY) {
-			A4GL_lint (module_name, r->lineno, "REPORD", "ORDER BY on report (use ORDER EXTERNAL BY if possible)",NULL);
-		}
-
-	}
+    }
 }
 
-static void check_pdf_report (struct module_definition *d, struct s_pdf_report_definition *r) {
-int a;
-char *module_name;
-module_name=r->module;
-        check_variables(r->module, d,&r->variables,r->parameters);
+static void
+check_pdf_report (struct module_definition *d, struct s_pdf_report_definition *r)
+{
+  int a;
+  char *module_name;
+  module_name = r->module;
+  check_variables (r->module, d, &r->variables, r->parameters);
 
-	if (r->report_format_section) {
-		for (a=0;a<r->report_format_section->entries.entries_len;a++) {
-			if (r->report_format_section->entries.entries_val[a]->rep_sec_commands!=NULL) {
-				struct commands *func_cmds = 0;
-  				check_cmds_for_dead_code (r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+  if (r->report_format_section)
+    {
+      for (a = 0; a < r->report_format_section->entries.entries_len; a++)
+	{
+	  if (r->report_format_section->entries.entries_val[a]->rep_sec_commands != NULL)
+	    {
+	      struct commands *func_cmds = 0;
+	      check_cmds_for_dead_code (r->report_format_section->entries.entries_val[a]->rep_sec_commands);
 
-  				func_cmds = linearise_commands (0, 0);
-  				linearise_commands (func_cmds, r->report_format_section->entries.entries_val[a]->rep_sec_commands);
-  				check_linearised_commands(r->module, func_cmds);
-  				cache_expressions (&r->expression_list, func_cmds);
-  				set_expr_cache (&r->expression_list);
-  				set_expr_cache (0);
+	      func_cmds = linearise_commands (0, 0);
+	      linearise_commands (func_cmds, r->report_format_section->entries.entries_val[a]->rep_sec_commands);
+	      check_linearised_commands (r->module, func_cmds);
+	      cache_expressions (&r->expression_list, func_cmds);
+	      set_expr_cache (&r->expression_list);
+	      set_expr_cache (0);
 
-				
-			}
-		}
+
+	    }
+	}
+    }
+
+  if (r->report_orderby_section)
+    {
+      /*
+         if (r->report_orderby_section->rord_type==REPORT_ORDERBY_IMPLICIT) {
+         A4GL_lint (module_name, r->lineno, "REPORDIMPLICIT", "Implicit ORDER by on report",NULL);
+         }
+       */
+      if (r->report_orderby_section->rord_type == REPORT_ORDERBY)
+	{
+	  A4GL_lint (module_name, r->lineno, "REPORD", "ORDER BY on report (use ORDER EXTERNAL BY if possible)", NULL);
 	}
 
-	if (r->report_orderby_section) {
-		/*
-		if (r->report_orderby_section->rord_type==REPORT_ORDERBY_IMPLICIT) {
-			A4GL_lint (module_name, r->lineno, "REPORDIMPLICIT", "Implicit ORDER by on report",NULL);
-		}
-		*/
-		if (r->report_orderby_section->rord_type==REPORT_ORDERBY) {
-			A4GL_lint (module_name, r->lineno, "REPORD", "ORDER BY on report (use ORDER EXTERNAL BY if possible)",NULL);
-		}
-
-	}
+    }
 }
 
 
@@ -1592,11 +1772,11 @@ check_function (struct module_definition *d, struct s_function_definition *f)
 
 
 
-  check_variables(f->module, d,&f->variables,f->parameters);
+  check_variables (f->module, d, &f->variables, f->parameters);
 
   func_cmds = linearise_commands (0, 0);
   linearise_commands (func_cmds, f->func_commands);
-  check_linearised_commands(f->module, func_cmds);
+  check_linearised_commands (f->module, func_cmds);
   cache_expressions (&f->expression_list, func_cmds);
 
 
@@ -1727,15 +1907,24 @@ check_whenever_abuse (module_definition * d)
 	  for (cmd = 0; cmd < all_cmds->cmds.cmds_len; cmd++)
 	    {
 	      r = all_cmds->cmds.cmds_val[cmd];
-      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
-      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
+	      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+		{
+		  set_lint_expect (r);
+		  continue;
+		}
+	      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+		{
+		  set_lint_ignore (r);
+		  continue;
+		}
 
 	      switch (r->cmd_data.type)
 		{
 		case E_CMD_EXIT_PROG_CMD:
 		  if (A4GL_aubit_strcasecmp (curr_func, "exit_prog") != 0)
 		    {
-		      A4GL_lint (d->module_name, r->lineno, "CS.EXITDIRECT", "EXIT PROGRAM must not be used directly - use CALL exit_prog instead", 0);
+		      A4GL_lint (d->module_name, r->lineno, "CS.EXITDIRECT",
+				 "EXIT PROGRAM must not be used directly - use CALL exit_prog instead", 0);
 		    }
 
 
@@ -1755,7 +1944,8 @@ check_whenever_abuse (module_definition * d)
 		case E_CMD_SQL_TRANSACT_CMD:
 		  if (!when_set_to_call)
 		    {
-		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD", "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
+		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD",
+				 "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
 		    }
 		  break;
 
@@ -1794,7 +1984,8 @@ check_whenever_abuse (module_definition * d)
 		case E_CMD_PREPARE_CMD:
 		  if (!when_set_to_call)
 		    {
-		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD", "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
+		      A4GL_lint (d->module_name, r->lineno, "CS.GETERRORRECORD",
+				 "Must use 'WHENEVER ERROR CALL get_error_record' before using SQL", 0);
 		    }
 		  break;
 
@@ -1803,7 +1994,7 @@ check_whenever_abuse (module_definition * d)
 		  // Don't care -they are not SQL commands...
 
 		}
-	clr_lint_expect();
+	      clr_lint_expect ();
 	    }
 	}
 
@@ -1855,7 +2046,8 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname); fflush(stdout);
+	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      fflush (stdout);
 	      check_function (d, &d->module_entries.module_entries_val[a]->module_entry_u.function_definition);
 	    }
 	  break;
@@ -1870,7 +2062,8 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname); fflush(stdout);
+	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      fflush (stdout);
 	      check_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.report_definition);
 	    }
 	  break;
@@ -1880,9 +2073,10 @@ check_functions_in_module (int *calltree, module_definition * d)
 			 extra_warnings_len,
 			 d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.extra_warnings.
 			 extra_warnings_val);
-	  	if (calltree[a] != 0 || nomain) {
-	      		check_pdf_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition);
-		}
+	  if (calltree[a] != 0 || nomain)
+	    {
+	      check_pdf_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition);
+	    }
 	  break;
 
 	case E_MET_FORMHANDLER_DEFINITION:
@@ -1909,7 +2103,8 @@ check_functions_in_module (int *calltree, module_definition * d)
 	  int b;
 	  for (b = 0; b < gass[a].nfunction_list; b++)
 	    {
-	      A4GL_lint (gass[a].function_list[b].module, gass[a].function_list[b].line, "ASSGLOBALS", "Global variable has been assigned in multiple functions", gass[a].varname);
+	      A4GL_lint (gass[a].function_list[b].module, gass[a].function_list[b].line, "ASSGLOBALS",
+			 "Global variable has been assigned in multiple functions", gass[a].varname);
 	    }
 
 	}
@@ -2092,7 +2287,7 @@ local_is_valid_vname (struct variable *v, enum e_scope scope)
     case VARIABLE_TYPE_FUNCTION_DECLARE:
     case VARIABLE_TYPE_OBJECT:
     case VARIABLE_TYPE_TYPE_DECLARATION:
-    //case VARIABLE_TYPE_LINKED:
+      //case VARIABLE_TYPE_LINKED:
       return 1;
 
 
@@ -2103,17 +2298,22 @@ local_is_valid_vname (struct variable *v, enum e_scope scope)
   return 1;
 }
 
-static char *get_orig_from_clobber(struct module_definition *mod, char *s) {
-int a;
+static char *
+get_orig_from_clobber (struct module_definition *mod, char *s)
+{
+  int a;
 
-	if (mod==NULL) return s;
+  if (mod == NULL)
+    return s;
 
-        for (a=0;a<mod->clobberings.clobberings_len;a++) {
-                if (strcmp(mod->clobberings.clobberings_val[a].newval,s)==0) {
-                        return mod->clobberings.clobberings_val[a].important;
-                }
-        }
-        return s;
+  for (a = 0; a < mod->clobberings.clobberings_len; a++)
+    {
+      if (strcmp (mod->clobberings.clobberings_val[a].newval, s) == 0)
+	{
+	  return mod->clobberings.clobberings_val[a].important;
+	}
+    }
+  return s;
 }
 
 
@@ -2124,7 +2324,7 @@ lint_get_ident_as_string (struct module_definition *mod, struct expr_str *ptr)
   static char buff[2000];
   if (ptr->expr_type == ET_EXPR_IDENTIFIER)
     {
-      sprintf (buff, "\"%s\"", get_orig_from_clobber(mod, ptr->expr_str_u.expr_string));
+      sprintf (buff, "\"%s\"", get_orig_from_clobber (mod, ptr->expr_str_u.expr_string));
       return strdup (buff);
     }
 
@@ -2176,10 +2376,12 @@ check_variable_name (char *modname, char *scope, struct variable *v)
   if (issystem)
     return;
 
-  if (A4GL_is_valid_4gl_type(v->names.names.names_val[0].name)) {
-	
-	  A4GL_lint (v->src_module, v->lineno, "VNAMEDTYPE", "Variable name is the same as a Datatype (got an extra ',' ?)", v->names.names.names_val[0].name);
-	}
+  if (A4GL_is_valid_4gl_type (v->names.names.names_val[0].name))
+    {
+
+      A4GL_lint (v->src_module, v->lineno, "VNAMEDTYPE", "Variable name is the same as a Datatype (got an extra ',' ?)",
+		 v->names.names.names_val[0].name);
+    }
 
   if (A4GL_aubit_strcasecmp (scope, "ImportedGlobal") == 0)
     {
@@ -2193,7 +2395,8 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       if (v->names.names.names_val[0].name[0] != 'g')
 	{
 
-	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Global variable does not begin with 'g'", v->names.names.names_val[0].name);
+	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Global variable does not begin with 'g'",
+		     v->names.names.names_val[0].name);
 	}
 
       if (!local_is_valid_vname (v, 'g'))
@@ -2210,7 +2413,8 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       // Module level variable
       if (v->names.names.names_val[0].name[0] != 'm')
 	{
-	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Module variable does not begin with 'm'", v->names.names.names_val[0].name);
+	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Module variable does not begin with 'm'",
+		     v->names.names.names_val[0].name);
 	}
       if (!local_is_valid_vname (v, 'm'))
 	{
@@ -2224,7 +2428,8 @@ check_variable_name (char *modname, char *scope, struct variable *v)
       // Module level variable
       if (v->names.names.names_val[0].name[0] != 'l')
 	{
-	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Local variable does not begin with 'l'", v->names.names.names_val[0].name);
+	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Local variable does not begin with 'l'",
+		     v->names.names.names_val[0].name);
 	}
       if (!local_is_valid_vname (v, 'l'))
 	{
@@ -2260,7 +2465,8 @@ check_module (struct module_definition *d)
   int b;
 
   all_cmds = linearise_commands (0, 0);
-  printf ("Check Module %s\n", d->module_name); fflush(stdout);
+  printf ("Check Module %s\n", d->module_name);
+  fflush (stdout);
   for (a = 0; a < d->imported_global_variables.variables.variables_len; a++)
     {
       check_variable_name (d->module_name, "ImportedGlobal", d->imported_global_variables.variables.variables_val[a]);
@@ -2272,7 +2478,9 @@ check_module (struct module_definition *d)
       if (has_variable
 	  (&d->imported_global_variables, d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name))
 	{
-	  A4GL_lint (0, d->exported_global_variables.variables.variables_val[a]->lineno, "CS.VARHIDE", "Global variable hides an imported Global variable", d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (0, d->exported_global_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
+		     "Global variable hides an imported Global variable",
+		     d->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
     }
 
@@ -2285,27 +2493,36 @@ check_module (struct module_definition *d)
       if (has_variable
 	  (&d->imported_global_variables, d->module_variables.variables.variables_val[a]->names.names.names_val[0].name))
 	{
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE", "Module variable hides an imported Global variable", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
+		     "Module variable hides an imported Global variable",
+		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (has_variable
 	  (&d->exported_global_variables, d->module_variables.variables.variables_val[a]->names.names.names_val[0].name))
 	{
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE", "Module variable hides an exported Global variable", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
+		     "Module variable hides an exported Global variable",
+		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (d->module_variables.variables.variables_val[a]->usage == 0
 	  && d->module_variables.variables.variables_val[a]->assigned == 0)
 	{
-	if (d->module_variables.variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_CONSTANT) continue;
+	  if (d->module_variables.variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_CONSTANT)
+	    continue;
 	  yylineno = 1;
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARNOTUSED", "Module variable is defined but not used", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARNOTUSED",
+		     "Module variable is defined but not used",
+		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
       if (d->module_variables.variables.variables_val[a]->usage == 0 && d->module_variables.variables.variables_val[a]->assigned)
 	{
 	  yylineno = 1;
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARASSNOTUSED", "Module variable is assigned a value but not used", d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARASSNOTUSED",
+		     "Module variable is assigned a value but not used",
+		     d->module_variables.variables.variables_val[a]->names.names.names_val[0].name);
 	}
 
 
@@ -2316,22 +2533,31 @@ check_module (struct module_definition *d)
 
 
   check_functions_in_module_for_complexity (d);
-  if (d->source_code.lines.lines_len>10000) {
-			// from tools/sqlfmt/i4glxref.1j
-			// JL suggests : 
-			// If there are more than 10,000 lines in a file, the output becomes imperfectly columnar and the author of the I4GL code containing 10,000 lines in a single file should be shot!
-			//
-	      		A4GL_lint (d->module_name, 10000, "AUTHSHOOT", "Module is too long",NULL);
-	
-	}
+  if (d->source_code.lines.lines_len > 10000)
+    {
+      // from tools/sqlfmt/i4glxref.1j
+      // JL suggests : 
+      // If there are more than 10,000 lines in a file, the output becomes imperfectly columnar and the author of the I4GL code containing 10,000 lines in a single file should be shot!
+      //
+      A4GL_lint (d->module_name, 10000, "AUTHSHOOT", "Module is too long", NULL);
+
+    }
 
   linearise_module (all_cmds, d);
 
   // Look for Prepared but not used...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
 
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_PREPARE_CMD)
 	{
@@ -2344,7 +2570,8 @@ check_module (struct module_definition *d)
 		{
 		  if (A4GL_aubit_strcasecmp
 		      (lint_get_ident_as_string (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid),
-		       lint_get_ident_as_string (d, all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.execute_cmd.sql_stmtid)) == 0)
+		       lint_get_ident_as_string (d,
+						 all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.execute_cmd.sql_stmtid)) == 0)
 		    {
 		      used++;
 		    }
@@ -2368,22 +2595,31 @@ check_module (struct module_definition *d)
 	  if (!used)
 	    {
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
-	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, "PREPARENOTUSED", "Prepared statement is not used",
+	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, "PREPARENOTUSED",
+			 "Prepared statement is not used",
 			 A4GL_strip_quotes (lint_get_ident_as_string
 					    (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid)));
 
 	    }
 	}
 
-	clr_lint_expect();
+      clr_lint_expect ();
     }
 
 
   // Look for DECLAREd but not used...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_DECLARE_CMD)
 	{
 	  int used = 0;
@@ -2395,7 +2631,8 @@ check_module (struct module_definition *d)
 		{
 		  if (A4GL_aubit_strcasecmp
 		      (lint_get_ident_as_string (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname),
-		       lint_get_ident_as_string (d, all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_cursor_cmd.cursorname)) ==
+		       lint_get_ident_as_string (d,
+						 all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_cursor_cmd.cursorname)) ==
 		      0)
 		    {
 		      used++;
@@ -2407,7 +2644,8 @@ check_module (struct module_definition *d)
 		{
 		  if (A4GL_aubit_strcasecmp
 		      (lint_get_ident_as_string (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname),
-		       lint_get_ident_as_string (d, all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.foreach_cmd.cursorname)) == 0)
+		       lint_get_ident_as_string (d,
+						 all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.foreach_cmd.cursorname)) == 0)
 		    {
 		      used++;
 		    }
@@ -2417,12 +2655,13 @@ check_module (struct module_definition *d)
 	  if (!used)
 	    {
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
-	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, "DECLARENOTUSED", "Cursor is DECLAREd but not OPENed",
+	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, "DECLARENOTUSED",
+			 "Cursor is DECLAREd but not OPENed",
 			 A4GL_strip_quotes (lint_get_ident_as_string
 					    (d, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname)));
 	    }
 	}
-	clr_lint_expect();
+      clr_lint_expect ();
     }
 
 
@@ -2644,13 +2883,13 @@ system_function_dtype (char *funcname)
     return DTYPE_INT;
 
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_getbuffer") == 0)
-    return DTYPE_CHAR+ENCODE_SIZE(1);
+    return DTYPE_CHAR + ENCODE_SIZE (1);
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_getfieldname") == 0)
-    return DTYPE_CHAR+ENCODE_SIZE(1);
+    return DTYPE_CHAR + ENCODE_SIZE (1);
   if (A4GL_aubit_strcasecmp (funcname, "fgl_getenv") == 0)
-    return DTYPE_CHAR+ENCODE_SIZE(1);
+    return DTYPE_CHAR + ENCODE_SIZE (1);
   if (A4GL_aubit_strcasecmp (funcname, "fgl_getkey") == 0)
-    return DTYPE_CHAR+ENCODE_SIZE(1);
+    return DTYPE_CHAR + ENCODE_SIZE (1);
   if (A4GL_aubit_strcasecmp (funcname, "fgl_keyval") == 0)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_lastkey") == 0)
@@ -2755,7 +2994,8 @@ find_function_single_rtype (char *funcname)
 
 	  if (fboltons[a].nreturns > 1)
 	    {
-	      A4GL_lint (0, 0, "FUNCRETMANY", "Function returns more than one value but is being used where it should return only one", funcname);
+	      A4GL_lint (0, 0, "FUNCRETMANY",
+			 "Function returns more than one value but is being used where it should return only one", funcname);
 	      return -1;
 	    }
 
@@ -2901,8 +3141,10 @@ static int
 promoteable (int a, int b)
 {
 
-if (a==DTYPE_SERIAL) a=DTYPE_INT;
-if (b==DTYPE_SERIAL) b=DTYPE_INT;
+  if (a == DTYPE_SERIAL)
+    a = DTYPE_INT;
+  if (b == DTYPE_SERIAL)
+    b = DTYPE_INT;
 
   A4GL_assertion (a == DTYPE_SERIAL || b == DTYPE_SERIAL, "No serials in here..");
   if (a == b)
@@ -3067,12 +3309,14 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
       int nparam;
       e = f->calls_by_expr.calls_by_expr_val[a];
 
-	if (e->expr_type==ET_EXPR_SHARED_FCALL) {
-		// just continue..
-		continue;
+      if (e->expr_type == ET_EXPR_SHARED_FCALL)
+	{
+	  // just continue..
+	  continue;
 	}
-	if (e->expr_type==ET_EXPR_BOUND_FCALL) { 
-		continue;
+      if (e->expr_type == ET_EXPR_BOUND_FCALL)
+	{
+	  continue;
 	}
 
       if (e->expr_type == ET_EXPR_FCALL)
@@ -3085,7 +3329,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		{
 		  //char buff[256];
 		  yylineno = e->expr_str_u.expr_function_call->line;
-		  A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCNOTDEF", "Function was called but is not defined", e->expr_str_u.expr_function_call->fname);
+		  A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCNOTDEF",
+			     "Function was called but is not defined", e->expr_str_u.expr_function_call->fname);
 		  log_proto (e, 0);
 		  //sprintf(buff, "Function %s was called but is not defined", e->expr_str_u.expr_function_call->fname);
 		  //A4GL_lint(buff);
@@ -3112,7 +3357,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	      yylineno = e->expr_str_u.expr_function_call->line;
 	      sprintf (buff, "Function %s expected %d passed %d", e->expr_str_u.expr_function_call->fname, fprototypes[b].nparams,
 		       nparam);
-	      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMCNT", "Function called with wrong number of parameters", buff);
+	      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMCNT",
+			 "Function called with wrong number of parameters", buff);
 	      //sprintf(buff, "Function %s expected %d parameters but is being passed %d", e->expr_str_u.expr_function_call->fname, fprototypes[b].nparams, nparam);
 	      //A4GL_lint(buff);
 	    }
@@ -3124,7 +3370,9 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		{
 		  int etype;
 		  yylineno = e->expr_str_u.expr_function_call->line;
-		  etype = expr_datatype (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, e->expr_str_u.expr_function_call->parameters->list.list_val[ecnt]) & DTYPE_MASK;
+		  etype =
+		    expr_datatype (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line,
+				   e->expr_str_u.expr_function_call->parameters->list.list_val[ecnt]) & DTYPE_MASK;
 		  if (promoteable (etype, fprototypes[b].param_dtypes[ecnt]) == -1)
 		    {
 		      char buff[256];
@@ -3151,7 +3399,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 			       ecnt + 1);
 		      if (strlen (smbuff))
 			strcat (buff, smbuff);
-		      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMTYPE", "Incompatible parameter for function", buff);
+		      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMTYPE",
+				 "Incompatible parameter for function", buff);
 		      //A4GL_lint(buff);
 		    }
 		}
@@ -3186,8 +3435,16 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
     {
       r = func_cmds->cmds.cmds_val[a];
 
-      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
-      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (r);
+	  continue;
+	}
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (r);
+	  continue;
+	}
       if (r->cmd_data.type == E_CMD_START_CMD)
 	{			// 
 	  int b;
@@ -3195,7 +3452,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	  if (b < 0)
 	    {
 	      yylineno = r->lineno;
-	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined", r->cmd_data.command_data_u.start_cmd.repname);
+	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",
+			 r->cmd_data.command_data_u.start_cmd.repname);
 	      continue;
 	    }
 	  A4GL_assertion (b < 0, "Couldnt find report");
@@ -3217,7 +3475,8 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	  if (b < 0)
 	    {
 	      yylineno = r->lineno;
-	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined", r->cmd_data.command_data_u.finish_cmd.repname);
+	      A4GL_lint (r->module, yylineno, "REPNOTDEF", "Report was called but is not defined",
+			 r->cmd_data.command_data_u.finish_cmd.repname);
 	      continue;
 	    }
 	  A4GL_assertion (b < 0, "Couldnt find report");
@@ -3268,7 +3527,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 	    }
 	}
 
-	clr_lint_expect();
+      clr_lint_expect ();
 
     }
 
@@ -3291,8 +3550,16 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 
 
 
-      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
-      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
+	  if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	    {
+	      set_lint_expect (r);
+	      continue;
+	    }
+	  if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	    {
+	      set_lint_ignore (r);
+	      continue;
+	    }
 	  //printf("Cmd %d - type = %d\n", a, r->cmd_data.type);
 	  // Its a return
 	  if (r->cmd_data.type == E_CMD_RETURN_CMD)
@@ -3383,19 +3650,23 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		}
 	    }
 
-	clr_lint_expect();
+	  clr_lint_expect ();
 	}
     }
 
 }
 
 
-static struct module_definition *find_module(module_definition * mods, int nmodules, char *name) {
-int a;
-for (a=0;a<nmodules;a++) {
-	if (strcmp(mods[a].module_name,name)==0) return &mods[a];
-}
-return NULL;
+static struct module_definition *
+find_module (module_definition * mods, int nmodules, char *name)
+{
+  int a;
+  for (a = 0; a < nmodules; a++)
+    {
+      if (strcmp (mods[a].module_name, name) == 0)
+	return &mods[a];
+    }
+  return NULL;
 }
 
 
@@ -3412,7 +3683,32 @@ check_program (module_definition * mods, int nmodules)
   char *fname;
   int mcnt;
 
-  init_lint();
+  init_lint ();
+
+
+
+  if (get_lint_style () == 2)
+    {
+      if (inc4GL)
+	{
+	  // Dump the sourcecode of the 4gls
+	  fprintf (lintfile, "<MODULES>\n");
+	  for (a = 0; a < nmodules; a++)
+	    {
+	      int line;
+	      fprintf (lintfile, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\">\n", mods[a].module_name, a,
+		       local_xml_escape (mods[a].full_path_filename));
+	      for (line = 0; line < mods[a].source_code.lines.lines_len; line++)
+		{
+		  fprintf (lintfile, "<LINE>%s</LINE>\n", local_xml_escape (mods[a].source_code.lines.lines_val[line]));
+		}
+	      fprintf (lintfile, "</MODULE>\n");
+	    }
+	  fprintf (lintfile, "</MODULES>\n");
+	}
+
+      fprintf (lintfile, "<LINTS>\n");
+    }
 
   fname = acl_getenv_not_set_as_0 ("CFUNCSFILE");
   if (fname)
@@ -3426,8 +3722,8 @@ check_program (module_definition * mods, int nmodules)
   this_module.module_name = "COMPOSITE";
   this_module.module_entries.module_entries_len = 0;
   this_module.module_entries.module_entries_val = 0;
-  this_module.source_code.lines.lines_len =0;
-  this_module.source_code.lines.lines_val=0;
+  this_module.source_code.lines.lines_len = 0;
+  this_module.source_code.lines.lines_val = 0;
   yylineno = 0;
 
   for (a = 0; a < nmodules; a++)
@@ -3517,10 +3813,11 @@ check_program (module_definition * mods, int nmodules)
     }
 
   printf ("Program\n");
-  if (dbname) {
-	open_db(dbname);
-	
-  }
+  if (dbname)
+    {
+      open_db (dbname);
+
+    }
 
   lint_module = LINTMODULE_FOR_PROGRAM;
 
@@ -3576,15 +3873,17 @@ check_program (module_definition * mods, int nmodules)
 
 		for (b = 0; b < f->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (f->module, f->lineno, f->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] =
+		      expr_datatype (f->module, f->lineno, f->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 
 	      }
 	    gen_function_prototypes (a, f);
 
-		if (f->parameters && f->parameters->list.list_len>100) {
-  			A4GL_lint ( f->module, f->lineno, "FUNCPARAMNUM", "FUNCTION has a lot of parameters", f->funcname);
-		}
+	    if (f->parameters && f->parameters->list.list_len > 100)
+	      {
+		A4GL_lint (f->module, f->lineno, "FUNCPARAMNUM", "FUNCTION has a lot of parameters", f->funcname);
+	      }
 	  }
 	  break;
 
@@ -3608,7 +3907,8 @@ check_program (module_definition * mods, int nmodules)
 		fprototypes[a].param_dtypes = malloc (sizeof (long) * fprototypes[a].nparams);
 		for (b = 0; b < f->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (f->module, f->lineno, f->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] =
+		      expr_datatype (f->module, f->lineno, f->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 	      }
 	  }
@@ -3635,12 +3935,14 @@ check_program (module_definition * mods, int nmodules)
 		fprototypes[a].param_dtypes = malloc (sizeof (long) * fprototypes[a].nparams);
 		for (b = 0; b < fr->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (fr->module, fr->lineno,fr->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] =
+		      expr_datatype (fr->module, fr->lineno, fr->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 	      }
-		if (fr->parameters && fr->parameters->list.list_len>100) {
-  			A4GL_lint ( fr->module, fr->lineno, "FUNCPARAMNUM", "FUNCTION has a lot of parameters", fr->funcname);
-		}
+	    if (fr->parameters && fr->parameters->list.list_len > 100)
+	      {
+		A4GL_lint (fr->module, fr->lineno, "FUNCPARAMNUM", "FUNCTION has a lot of parameters", fr->funcname);
+	      }
 	  }
 	  break;
 
@@ -3665,12 +3967,14 @@ check_program (module_definition * mods, int nmodules)
 		fprototypes[a].param_dtypes = malloc (sizeof (long) * fprototypes[a].nparams);
 		for (b = 0; b < fr->parameters->list.list_len; b++)
 		  {
-		    fprototypes[a].param_dtypes[b] = expr_datatype (fr->module, fr->lineno,fr->parameters->list.list_val[b]) & DTYPE_MASK;
+		    fprototypes[a].param_dtypes[b] =
+		      expr_datatype (fr->module, fr->lineno, fr->parameters->list.list_val[b]) & DTYPE_MASK;
 		  }
 	      }
-		if (fr->parameters && fr->parameters->list.list_len>100) {
-  			A4GL_lint ( fr->module, fr->lineno, "FUNCPARAMNUM", "FUNCTION has a lot of parameters", fr->funcname);
-		}
+	    if (fr->parameters && fr->parameters->list.list_len > 100)
+	      {
+		A4GL_lint (fr->module, fr->lineno, "FUNCPARAMNUM", "FUNCTION has a lot of parameters", fr->funcname);
+	      }
 	  }
 	  break;
 	case E_MET_FORMHANDLER_DEFINITION:
@@ -3679,16 +3983,17 @@ check_program (module_definition * mods, int nmodules)
 	  break;
 
 	case E_MET_CMD:
-		{
-		  struct command *c;
-	          c = m->module_entry_u.cmd;
-          	  if (c->cmd_data.type == E_CMD_LINT_IGNORE_CMD) {
-			set_lint_ignore(c);
-		  }
+	  {
+	    struct command *c;
+	    c = m->module_entry_u.cmd;
+	    if (c->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	      {
+		set_lint_ignore (c);
+	      }
 
-		}
+	  }
 
-		break;
+	  break;
 	default:
 	  break;		// Cant have a function prototype
 	}
@@ -3812,7 +4117,8 @@ check_program (module_definition * mods, int nmodules)
 	    {
 	    case E_MET_FUNCTION_DEFINITION:
 	      yylineno = m->module_entry_u.function_definition.lineno;
-	      A4GL_lint (m->module_entry_u.function_definition.module, m->module_entry_u.function_definition.lineno, "FUNCNOTCALLED", "Function is defined but never called", m->module_entry_u.function_definition.funcname);
+	      A4GL_lint (m->module_entry_u.function_definition.module, m->module_entry_u.function_definition.lineno,
+			 "FUNCNOTCALLED", "Function is defined but never called", m->module_entry_u.function_definition.funcname);
 	      break;
 	    default:		// dont care
 	      break;
@@ -3844,49 +4150,56 @@ check_program (module_definition * mods, int nmodules)
 	}
 
 
-	// We're not calling anything - but was there anything to actually call ? 
-	//
-	// The normal situation here is when we have a GLOBALS module...
-	//
+      // We're not calling anything - but was there anything to actually call ? 
+      //
+      // The normal situation here is when we have a GLOBALS module...
+      //
       if (mod_used == 0)
 	{
-		int b=0;
-		int has_something=0;
-		for (b=0;b<mods[a].module_entries.module_entries_len;b++) {
-      switch (mods[a].module_entries.module_entries_val[b]->met_type)
-	{
-			case E_MET_MAIN_DEFINITION:
-			case E_MET_FUNCTION_DEFINITION:
-			case E_MET_REPORT_DEFINITION:
-			case E_MET_PDF_REPORT_DEFINITION:
-			case E_MET_FORMHANDLER_DEFINITION:
-			case E_MET_IMPORT_FUNCTION_DEFINITION:
-			case E_MET_IMPORT_LEGACY_DEFINITION:
-			case E_MET_CLASS_DEFINITION:
-			case E_MET_IMPORT_DATATYPE:
-			case E_MET_IMPORT_PACKAGE:
-				has_something++;
-	  			break;
+	  int b = 0;
+	  int has_something = 0;
+	  for (b = 0; b < mods[a].module_entries.module_entries_len; b++)
+	    {
+	      switch (mods[a].module_entries.module_entries_val[b]->met_type)
+		{
+		case E_MET_MAIN_DEFINITION:
+		case E_MET_FUNCTION_DEFINITION:
+		case E_MET_REPORT_DEFINITION:
+		case E_MET_PDF_REPORT_DEFINITION:
+		case E_MET_FORMHANDLER_DEFINITION:
+		case E_MET_IMPORT_FUNCTION_DEFINITION:
+		case E_MET_IMPORT_LEGACY_DEFINITION:
+		case E_MET_CLASS_DEFINITION:
+		case E_MET_IMPORT_DATATYPE:
+		case E_MET_IMPORT_PACKAGE:
+		  has_something++;
+		  break;
 
-			case E_MET_CMD:
-	  			break;
+		case E_MET_CMD:
+		  break;
 
-	}
 		}
+	    }
 
 
-		if (has_something) {
-	  		A4GL_lint (mods[a].module_name, 0, "MODNOTCALLED", "No Functions are called", 0);
-		} else {
-			// Nothing defined in there..
-			//
-			if (mods[a].exported_global_variables.variables.variables_len) {
-				// Its a global variable..
-			} else {
-	  			A4GL_lint (mods[a].module_name, 0, "MODNOFUNCS", "Module has no substantial contents", 0);
-			}
+	  if (has_something)
+	    {
+	      A4GL_lint (mods[a].module_name, 0, "MODNOTCALLED", "No Functions are called", 0);
+	    }
+	  else
+	    {
+	      // Nothing defined in there..
+	      //
+	      if (mods[a].exported_global_variables.variables.variables_len)
+		{
+		  // Its a global variable..
 		}
-	
+	      else
+		{
+		  A4GL_lint (mods[a].module_name, 0, "MODNOFUNCS", "Module has no substantial contents", 0);
+		}
+	    }
+
 	}
 
     }
@@ -3910,8 +4223,16 @@ check_program (module_definition * mods, int nmodules)
   // Look for OPEN FORM but not DISPLAYed...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type  == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_OPEN_FORM_CMD)
 	{
 	  int used = 0;
@@ -3922,8 +4243,11 @@ check_program (module_definition * mods, int nmodules)
 	      if (all_cmds->cmds.cmds_val[b]->cmd_data.type == E_CMD_DISPLAY_FORM_CMD)
 		{
 		  if (A4GL_aubit_strcasecmp
-		      (lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module), all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname),
-		       lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module), all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.display_form_cmd.formname)) ==
+		      (lint_get_ident_as_string
+		       (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+			all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname),
+		       lint_get_ident_as_string (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+						 all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.display_form_cmd.formname)) ==
 		      0)
 		    {
 		      used++;
@@ -3935,11 +4259,12 @@ check_program (module_definition * mods, int nmodules)
 	    {
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
 	      A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "FORMNOTDISP", "FORM is OPENed but not DISPLAYed",
-			 lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module), all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
+			 lint_get_ident_as_string (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+						   all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
 	      //sprintf(buff,"FORM (%s) is OPENed but not DISPLAYed", A4GL_strip_quotes(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname));
 	    }
 	}
-	clr_lint_expect();
+      clr_lint_expect ();
     }
 
 
@@ -3986,8 +4311,16 @@ check_program (module_definition * mods, int nmodules)
       // Look for OUTPUT 
       for (a = 0; a < all_cmds->cmds.cmds_len; a++)
 	{
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type  == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type  == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+	  if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	    {
+	      set_lint_expect (all_cmds->cmds.cmds_val[a]);
+	      continue;
+	    }
+	  if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	    {
+	      set_lint_ignore (all_cmds->cmds.cmds_val[a]);
+	      continue;
+	    }
 	  switch (all_cmds->cmds.cmds_val[a]->cmd_data.type)
 	    {
 	    case E_CMD_OUTPUT_CMD:
@@ -4012,7 +4345,7 @@ check_program (module_definition * mods, int nmodules)
 	      break;
 	    }
 
-	clr_lint_expect();
+	  clr_lint_expect ();
 	}
       yylineno = lineno;
       if (!r_started && !r_outputed && !r_finished)
@@ -4045,18 +4378,29 @@ check_program (module_definition * mods, int nmodules)
       int found_something = 0;
       char *cwindow = "undefined";
       char *action = "undefined";
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(all_cmds->cmds.cmds_val[a]); continue; }
-      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(all_cmds->cmds.cmds_val[a]); continue; }
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
+      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (all_cmds->cmds.cmds_val[a]);
+	  continue;
+	}
 
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_CURRENT_WIN_CMD)
 	{
 	  if (A4GL_aubit_strcasecmp
-	      (lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module),all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname),
-	       "screen") != 0)
+	      (lint_get_ident_as_string
+	       (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+		all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname), "screen") != 0)
 	    {
 	      // CURRENT WINDOW IS SCREEN should always be ok :-)
 	      found_something++;
-	      cwindow = lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module),all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname);
+	      cwindow =
+		lint_get_ident_as_string (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+					  all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname);
 	      action = "has been made CURRENT";
 	    }
 	}
@@ -4065,7 +4409,9 @@ check_program (module_definition * mods, int nmodules)
 	  if (all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.cl_type == E_CT_WINDOW)
 	    {
 	      found_something++;
-	      cwindow = lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module),all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident);
+	      cwindow =
+		lint_get_ident_as_string (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+					  all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident);
 	      action = "has been CLOSEd";
 	    }
 	}
@@ -4080,7 +4426,8 @@ check_program (module_definition * mods, int nmodules)
 		{
 		  if (A4GL_aubit_strcasecmp
 		      (cwindow,
-		       lint_get_ident_as_string (find_module(mods,nmodules,all_cmds->cmds.cmds_val[a]->module),all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_window_cmd.windowname)) ==
+		       lint_get_ident_as_string (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+						 all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.open_window_cmd.windowname)) ==
 		      0)
 		    {
 		      used++;
@@ -4093,15 +4440,17 @@ check_program (module_definition * mods, int nmodules)
 	      yylineno = all_cmds->cmds.cmds_val[a]->lineno;
 	      if (A4GL_aubit_strcasecmp (action, "has been made CURRENT") == 0)
 		{
-		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN", "CURRENT WINDOW for window which is never OPENed", cwindow);
+		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN",
+			     "CURRENT WINDOW for window which is never OPENed", cwindow);
 		}
 	      if (A4GL_aubit_strcasecmp (action, "has been CLOSEd") == 0)
 		{
-		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN", "CLOSE WINDOW for window which is never OPENed", cwindow);
+		  A4GL_lint (all_cmds->cmds.cmds_val[a]->module, yylineno, "WINDOWNOTOPEN",
+			     "CLOSE WINDOW for window which is never OPENed", cwindow);
 		}
 	    }
 	}
-	clr_lint_expect();
+      clr_lint_expect ();
     }
 
 
@@ -4117,56 +4466,92 @@ set_lint_module (char *s)
 
 
 
-static int get_severity(char *code) {
-	int a;
-	struct s_severities {
-		char *code;
-		int severity;
-	} severities[]={
-		{"DEAD",5},
-		{"CS.VNAME",0},
-		{"CS.EXITDIRECT",0},
-		{"CS.EXITNOTMAIN",0},
-		{"CS.GETERRORRECORD",0},
-		{"CS.MRET",1},
-		{"CS.FRET",1},
-		{"CS.NOOTHERWISE",1},
-		{"CS.WRITESQLCA",2},
+static int
+get_severity (char *code)
+{
+  int a;
+  struct s_severities
+  {
+    char *code;
+    int severity;
+  } severities[] =
+  {
+    {
+    "DEAD", 5},
+    {
+    "CS.VNAME", 0},
+    {
+    "CS.EXITDIRECT", 0},
+    {
+    "CS.EXITNOTMAIN", 0},
+    {
+    "CS.GETERRORRECORD", 0},
+    {
+    "CS.MRET", 1},
+    {
+    "CS.FRET", 1},
+    {
+    "CS.NOOTHERWISE", 1},
+    {
+    "CS.WRITESQLCA", 2},
+    {
+    "VARNOTUSED", 1},
+    {
+    "VARASSNOTUSED", 1},
+    {
+    "TOOCOMPLEX", 2},
+    {
+    "FUNCNOTCALLED", 4},
+    {
+    "VARUSED", 6},
+    {
+    "STRINGLONG", 3},
+    {
+    "MRETNUM", 8},
+    {
+    "CONCATFROMNONSTR", 2},
+    {
+    "FUNCRETCNT", 8},
+    {
+    "MISMATCHSELECT", 4},
+    {
+    "SELECTSTAR", 2},
+    {
+    "IFSQLCA", 2},
+    {
+    "SELECTNOTINTO", 2},
+    {
+    "INSERTNOCOLS", 2},
+    {
+    "CHKSTATUS", 4},
+    {
+    "REPORD", 3},
+    {
+    "DIFFMATH", 4},
+    {
+    "LETEXPR", 3},
+    {
+    "FORVARNUM", 6},
+    {
+    "FORENDEXPR", 4},
+    {
+    "VNAMEDTYPE", 6},
+    {
+    "PARAMNOTUSED", 2},
+    {
+    NULL, 0}
+  };
 
-		{"VARNOTUSED",1},
-		{"VARASSNOTUSED",1},
-		{"TOOCOMPLEX",2},
-		{"FUNCNOTCALLED",4},
-		{"VARUSED",6},
-		{"STRINGLONG",3},
-		{"MRETNUM",8},
-		{"CONCATFROMNONSTR",2},
-		{"FUNCRETCNT",8},
-		{"MISMATCHSELECT",4},
-		{"SELECTSTAR",2},
-		{"IFSQLCA",2},
-		{"SELECTNOTINTO",2},
-		{"INSERTNOCOLS",2},
-		{"CHKSTATUS",4},
-		{"REPORD",3},
-		{"DIFFMATH",4},
-		{"LETEXPR",3},
-		{"FORVARNUM",6},
-		{"FORENDEXPR",4},
-		{"VNAMEDTYPE",6},
 
-		{"PARAMNOTUSED",2},
-		{NULL,0}
-	};
-
-
-	for (a=0;severities[a].code;a++) {
-		if (strcmp(code,severities[a].code)==0) {
-			//printf("Found severity : %s %d\n", code,severities[a].severity);
-			return severities[a].severity;
-		}
+  for (a = 0; severities[a].code; a++)
+    {
+      if (strcmp (code, severities[a].code) == 0)
+	{
+	  //printf("Found severity : %s %d\n", code,severities[a].severity);
+	  return severities[a].severity;
 	}
-	return 5;
+    }
+  return 5;
 }
 
 
@@ -4176,34 +4561,39 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
   char buff[256];
   char module[255];
   int severity;
-  static int minseverity=-1;
-	if (minseverity==-1) {
-		char *s;
-		// @env LINTSEVERITY - minumum severity for a LINT warning to be issued...
-		s=acl_getenv("LINTSEVERITY");
-		minseverity=0;
-		if (s) {
-			if (strlen(s)) {
-				minseverity=atoi(s);
-			}
-		}
-		
+  static int minseverity = -1;
+  if (minseverity == -1)
+    {
+      char *s;
+      // @env LINTSEVERITY - minumum severity for a LINT warning to be issued...
+      s = acl_getenv ("LINTSEVERITY");
+      minseverity = 0;
+      if (s)
+	{
+	  if (strlen (s))
+	    {
+	      minseverity = atoi (s);
+	    }
 	}
 
-  severity=get_severity(code);
+    }
 
-  if (severity<minseverity) {
-	return ;
-  }
-	
-  if (has_lint_ignore(code) || has_lint_expect(code)) {
-	return;
-  }
+  severity = get_severity (code);
 
-
-  if (module_in == 0 )
+  if (severity < minseverity)
     {
-	A4GL_pause_execution();
+      return;
+    }
+
+  if (has_lint_ignore (code) || has_lint_expect (code))
+    {
+      return;
+    }
+
+
+  if (module_in == 0)
+    {
+      A4GL_pause_execution ();
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
     }
@@ -4226,16 +4616,19 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
   strcpy (module, module_in);
 
-  if (strcmp(module,LINTMODULE_FOR_PROGRAM)==0) { // This is our pseudo 'program' module which represents the program as whole
-  } else {
-  	if (strstr (module, ".4gl"))
-    	{
-      		char *ptr;
-      		ptr = strstr (module, ".4gl");
-      		*ptr = 0;
-    	}
-	strcat(module,".4gl");
-  }
+  if (strcmp (module, LINTMODULE_FOR_PROGRAM) == 0)
+    {				// This is our pseudo 'program' module which represents the program as whole
+    }
+  else
+    {
+      if (strstr (module, ".4gl"))
+	{
+	  char *ptr;
+	  ptr = strstr (module, ".4gl");
+	  *ptr = 0;
+	}
+      strcat (module, ".4gl");
+    }
 
 
   if (!A4GL_isyes (acl_getenv ("SUPPRESSLINT")))
@@ -4256,12 +4649,12 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	  break;
 
 	case 1:
-	{
-		//char fname[200];
-		//strcpy(fname,module);
-		//strcat(fname,".4gl");
-	  sprintf (buff, "%-20s:%-6d (Severity:%2d)", module, lintline,severity);
-	}
+	  {
+	    //char fname[200];
+	    //strcpy(fname,module);
+	    //strcat(fname,".4gl");
+	    sprintf (buff, "%-20s:%-6d (Severity:%2d)", module, lintline, severity);
+	  }
 	  if (extra)
 	    {
 	      fprintf (lintfile, "%-20s, %-20s %s (%s)\n", buff, code, type, extra);
@@ -4290,7 +4683,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	    extra = " ";
 	  if (lintfile)
 	    {
-	      fprintf (lintfile, "%s|%d|%s|%d|%s|%s|\n", module, lintline, code, severity,type, extra);
+	      fprintf (lintfile, "%s|%d|%s|%d|%s|%s|\n", module, lintline, code, severity, type, extra);
 	    }
 	  break;
 
@@ -4320,7 +4713,6 @@ open_lintfile (char *s)
   if (get_lint_style () == 2)
     {
       fprintf (lintfile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-      fprintf (lintfile, "<LINTS>\n");
     }
 
 }
@@ -4737,7 +5129,8 @@ struct s_function_prototype {
 // we should end up with a list of expressions at the top - which only reference cached expressions or literals
 
 
-static void linearise_expressions (struct expr_str_list *list)
+static void
+linearise_expressions (struct expr_str_list *list)
 {
   int b;
   if (list == 0)
@@ -4989,7 +5382,7 @@ add_cache_expression (struct expr_str_list *list, expr_str * e)
 
   list->list.list_len++;
   list->list.list_val = realloc (list->list.list_val, sizeof (expr_str *) * list->list.list_len);
-  list->list.list_val[list->list.list_len - 1] = e; //malloc(sizeof(expr_str));
+  list->list.list_val[list->list.list_len - 1] = e;	//malloc(sizeof(expr_str));
 
   //memcpy(list->list.list_val[list->list.list_len - 1], e,sizeof(expr_str));
 
@@ -5009,11 +5402,14 @@ cache_expression (struct expr_str_list *list, struct expr_str **eptr)
   enew = malloc (sizeof (struct expr_str));
   enew->expr_type = ET_EXPR_CACHED;
   enew->expr_str_u.expr_cached.cache_num = add_cache_expression (list, e);
-  if (enew->expr_str_u.expr_cached.cache_num==list->list.list_len - 1) { // Its new 
-		enew->expr_str_u.expr_cached.ref_cnt=0; 
-  }  else {
-		enew->expr_str_u.expr_cached.ref_cnt++; 
-  }
+  if (enew->expr_str_u.expr_cached.cache_num == list->list.list_len - 1)
+    {				// Its new 
+      enew->expr_str_u.expr_cached.ref_cnt = 0;
+    }
+  else
+    {
+      enew->expr_str_u.expr_cached.ref_cnt++;
+    }
   *eptr = enew;
 }
 
@@ -5131,7 +5527,8 @@ cache_expressions (struct expr_str_list *list, struct commands *cmds)
 	    ifcmd = &c->cmd_data.command_data_u.if_cmd;
 	    for (b = 0; b < ifcmd->truths.conditions.conditions_len; b++)
 	      {
-		ensure_bool (c->module, ifcmd->truths.conditions.conditions_val[b].lineno, ifcmd->truths.conditions.conditions_val[b].test_expr, 0);
+		ensure_bool (c->module, ifcmd->truths.conditions.conditions_val[b].lineno,
+			     ifcmd->truths.conditions.conditions_val[b].test_expr, 0);
 		cache_expression (list, &ifcmd->truths.conditions.conditions_val[b].test_expr);
 	      }
 	  }
@@ -5231,8 +5628,16 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
     {
       r = func_cmds->cmds.cmds_val[a];
 
-      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD) { set_lint_expect(r); continue; }
-      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD) { set_lint_ignore(r); continue; }
+      if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
+	{
+	  set_lint_expect (r);
+	  continue;
+	}
+      if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	{
+	  set_lint_ignore (r);
+	  continue;
+	}
 
       if (r->cmd_data.type == E_CMD_RETURN_CMD)
 	{
@@ -5267,7 +5672,7 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
 
 	  break;
 	}
-	clr_lint_expect();
+      clr_lint_expect ();
     }
   if (fprototypes[e].nreturns == -1)
     {
@@ -5280,7 +5685,7 @@ void
 create_protos_from_module (module_definition * this_module)
 {
   int a;
-	int process;
+  int process;
   printf ("CREATE\n");
   fprototypes = malloc (sizeof (struct s_function_prototype) * this_module->module_entries.module_entries_len);
   for (a = 0; a < this_module->module_entries.module_entries_len; a++)
@@ -5291,23 +5696,25 @@ create_protos_from_module (module_definition * this_module)
       fprototypes[a].nreturns = -1;
       fprototypes[a].param_dtypes = 0;
       fprototypes[a].return_dtypes = 0;
-	process=0;
-	switch (this_module->module_entries.module_entries_val[a]->met_type)  {
-	        case E_MET_FUNCTION_DEFINITION:
-        	case E_MET_MAIN_DEFINITION:
-        	case E_MET_REPORT_DEFINITION:
-        	case E_MET_PDF_REPORT_DEFINITION:
-			process=1;
-			break;
-		default:
-			break;
-	
-	}
-			
-		
+      process = 0;
+      switch (this_module->module_entries.module_entries_val[a]->met_type)
+	{
+	case E_MET_FUNCTION_DEFINITION:
+	case E_MET_MAIN_DEFINITION:
+	case E_MET_REPORT_DEFINITION:
+	case E_MET_PDF_REPORT_DEFINITION:
+	  process = 1;
+	  break;
+	default:
+	  break;
 
-	if (process) {
-      		gen_function_prototypes (a, &this_module->module_entries.module_entries_val[a]->module_entry_u.function_definition);
+	}
+
+
+
+      if (process)
+	{
+	  gen_function_prototypes (a, &this_module->module_entries.module_entries_val[a]->module_entry_u.function_definition);
 	}
     }
 
@@ -5328,7 +5735,7 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
 	{
 	  if (a)
 	    fprintf (f, ",");
-	  fprintf (f, "%d", expr_datatype (0,0,l->list.list_val[a]) & DTYPE_MASK);
+	  fprintf (f, "%d", expr_datatype (0, 0, l->list.list_val[a]) & DTYPE_MASK);
 	}
       fprintf (f, "|");
       if (ret != 0)
@@ -5337,7 +5744,7 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
 	    {
 	      if (a)
 		fprintf (f, ",");
-	      fprintf (f, "%d", expr_datatype (0,0,ret->list.list_val[a]) & DTYPE_MASK);
+	      fprintf (f, "%d", expr_datatype (0, 0, ret->list.list_val[a]) & DTYPE_MASK);
 	    }
 	}
       fprintf (f, "\n");
@@ -5346,123 +5753,236 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
 
 
 
-char *decode_cmd_type(enum cmd_type value) {
- switch (value) {
- case E_CMD_ALLOC_ARR_CMD : return "E_CMD_ALLOC_ARR_CMD";
- case E_CMD_AT_TERM_CMD   : return "E_CMD_AT_TERM_CMD";
- case E_CMD_CALL_CMD      : return "E_CMD_CALL_CMD";
- case E_CMD_CANCEL_CMD    : return "E_CMD_CANCEL_CMD";
- case E_CMD_CASE_CMD      : return "E_CMD_CASE_CMD";
- case E_CMD_CHECK_MENU_CMD: return "E_CMD_CHECK_MENU_CMD";
- case E_CMD_CLEAR_CMD     : return "E_CMD_CLEAR_CMD";
- case E_CMD_CLOSE_CMD     : return "E_CMD_CLOSE_CMD";
- case E_CMD_CLOSE_SQL_CMD : return "E_CMD_CLOSE_SQL_CMD";
- case E_CMD_CODE_CMD      : return "E_CMD_CODE_CMD";
- case E_CMD_CONNECT_CMD   : return "E_CMD_CONNECT_CMD";
- case E_CMD_CONSTRUCT_CMD : return "E_CMD_CONSTRUCT_CMD";
- case E_CMD_CONTINUE_CMD  : return "E_CMD_CONTINUE_CMD";
- case E_CMD_CONVERT_CMD   : return "E_CMD_CONVERT_CMD";
- case E_CMD_CURRENT_WIN_CMD: return "E_CMD_CURRENT_WIN_CMD";
- case E_CMD_DEALLOC_ARR_CMD: return "E_CMD_DEALLOC_ARR_CMD";
- case E_CMD_DECLARE_CMD   : return "E_CMD_DECLARE_CMD";
- case E_CMD_DEFER_CMD     : return "E_CMD_DEFER_CMD";
- case E_CMD_DISABLE_MENU_CMD: return "E_CMD_DISABLE_MENU_CMD";
- case E_CMD_DISPLAY_ARRAY_CMD: return "E_CMD_DISPLAY_ARRAY_CMD";
- case E_CMD_DISPLAY_B_N_CMD: return "E_CMD_DISPLAY_B_N_CMD";
- case E_CMD_DISPLAY_CMD   : return "E_CMD_DISPLAY_CMD";
- case E_CMD_DISPLAY_FORM_CMD: return "E_CMD_DISPLAY_FORM_CMD";
- case E_CMD_ENABLE_MENU_CMD: return "E_CMD_ENABLE_MENU_CMD";
- case E_CMD_ERROR_CMD     : return "E_CMD_ERROR_CMD";
- case E_CMD_EXECUTE_CMD   : return "E_CMD_EXECUTE_CMD";
- case E_CMD_EXECUTE_IMMEDIATE_CMD: return "E_CMD_EXECUTE_IMMEDIATE_CMD";
- case E_CMD_EXIT_PROG_CMD : return "E_CMD_EXIT_PROG_CMD";
- case E_CMD_EXT_CMD       : return "E_CMD_EXT_CMD";
- case E_CMD_FINISH_CMD    : return "E_CMD_FINISH_CMD";
- case E_CMD_FLUSH_CMD     : return "E_CMD_FLUSH_CMD";
- case E_CMD_FOREACH_CMD   : return "E_CMD_FOREACH_CMD";
- case E_CMD_FOR_CMD       : return "E_CMD_FOR_CMD";
- case E_CMD_FREE_CMD      : return "E_CMD_FREE_CMD";
- case E_CMD_FREE_REP_CMD  : return "E_CMD_FREE_REP_CMD";
- case E_CMD_GOTO_CMD      : return "E_CMD_GOTO_CMD";
- case E_CMD_HIDE_CMD      : return "E_CMD_HIDE_CMD";
- case E_CMD_HIDE_OPTION_CMD: return "E_CMD_HIDE_OPTION_CMD";
- case E_CMD_IF_CMD        : return "E_CMD_IF_CMD";
- case E_CMD_INIT_CMD      : return "E_CMD_INIT_CMD";
- case E_CMD_INPUT_ARRAY_CMD: return "E_CMD_INPUT_ARRAY_CMD";
- case E_CMD_INPUT_CMD     : return "E_CMD_INPUT_CMD";
- case E_CMD_LABEL_CMD     : return "E_CMD_LABEL_CMD";
- case E_CMD_LET_CMD       : return "E_CMD_LET_CMD";
- case E_CMD_LOAD_CMD      : return "E_CMD_LOAD_CMD";
- case E_CMD_LOCATE_CMD    : return "E_CMD_LOCATE_CMD";
- case E_CMD_MENU_CMD      : return "E_CMD_MENU_CMD";
- case E_CMD_MESSAGE_CMD   : return "E_CMD_MESSAGE_CMD";
- case E_CMD_MOVE_CMD      : return "E_CMD_MOVE_CMD";
- case E_CMD_MSG_BOX_CMD   : return "E_CMD_MSG_BOX_CMD";
- case E_CMD_NEED_CMD      : return "E_CMD_NEED_CMD";
- case E_CMD_NEXT_FIELD_CMD: return "E_CMD_NEXT_FIELD_CMD";
- case E_CMD_NEXT_FORM_CMD : return "E_CMD_NEXT_FORM_CMD";
- case E_CMD_NEXT_OPTION_CMD: return "E_CMD_NEXT_OPTION_CMD";
- case E_CMD_OPEN_CURSOR_CMD: return "E_CMD_OPEN_CURSOR_CMD";
- case E_CMD_OPEN_FORM_CMD : return "E_CMD_OPEN_FORM_CMD";
- case E_CMD_OPEN_FORM_GUI_CMD: return "E_CMD_OPEN_FORM_GUI_CMD";
- case E_CMD_OPEN_STATUSBOX_CMD: return "E_CMD_OPEN_STATUSBOX_CMD";
- case E_CMD_OPEN_WINDOW_CMD: return "E_CMD_OPEN_WINDOW_CMD";
- case E_CMD_OPTIONS_CMD   : return "E_CMD_OPTIONS_CMD";
- case E_CMD_OUTPUT_CMD    : return "E_CMD_OUTPUT_CMD";
- case E_CMD_PAUSE_CMD     : return "E_CMD_PAUSE_CMD";
- case E_CMD_PAUSE_SCREEN_OFF_CMD: return "E_CMD_PAUSE_SCREEN_OFF_CMD";
- case E_CMD_PAUSE_SCREEN_ON_CMD: return "E_CMD_PAUSE_SCREEN_ON_CMD";
- case E_CMD_PREPARE_CMD   : return "E_CMD_PREPARE_CMD";
- case E_CMD_PRINT_CMD     : return "E_CMD_PRINT_CMD";
- case E_CMD_PRINT_FILE_CMD: return "E_CMD_PRINT_FILE_CMD";
- case E_CMD_PRINT_IMG_CMD : return "E_CMD_PRINT_IMG_CMD";
- case E_CMD_PROMPT_CMD    : return "E_CMD_PROMPT_CMD";
- case E_CMD_PUT_CMD       : return "E_CMD_PUT_CMD";
- case E_CMD_RESIZE_ARR_CMD: return "E_CMD_RESIZE_ARR_CMD";
- case E_CMD_RETURN_CMD    : return "E_CMD_RETURN_CMD";
- case E_CMD_RUN_CMD       : return "E_CMD_RUN_CMD";
- case E_CMD_RUN_WAITING_FOR_CMD       : return "E_CMD_RUN_WAITING_FOR_CMD";
- case E_CMD_SCROLL_CMD    : return "E_CMD_SCROLL_CMD";
- case E_CMD_SET_DATABASE_CMD: return "E_CMD_SET_DATABASE_CMD";
- case E_CMD_SHOW_CMD      : return "E_CMD_SHOW_CMD";
- case E_CMD_SHOW_OPTION_CMD: return "E_CMD_SHOW_OPTION_CMD";
- case E_CMD_SKIP_BY_CMD   : return "E_CMD_SKIP_BY_CMD";
- case E_CMD_SKIP_CMD      : return "E_CMD_SKIP_CMD";
- case E_CMD_SKIP_TO_CMD   : return "E_CMD_SKIP_TO_CMD";
- case E_CMD_SKIP_TO_TOP_CMD: return "E_CMD_SKIP_TO_TOP_CMD";
- case E_CMD_SLEEP_CMD     : return "E_CMD_SLEEP_CMD";
- case E_CMD_SELECT_CMD    : return "E_CMD_SELECT_CMD";
- case E_CMD_SQL_BLOCK_CMD : return "E_CMD_SQL_BLOCK_CMD";
- case E_CMD_SQL_CMD       : return "E_CMD_SQL_CMD";
- case E_CMD_SQL_TRANSACT_CMD: return "E_CMD_SQL_TRANSACT_CMD";
- case E_CMD_START_CMD     : return "E_CMD_START_CMD";
- case E_CMD_START_RPC_CMD : return "E_CMD_START_RPC_CMD";
- case E_CMD_STOP_RPC_CMD  : return "E_CMD_STOP_RPC_CMD";
- case E_CMD_TERM_REP_CMD  : return "E_CMD_TERM_REP_CMD";
- case E_CMD_UNCHECK_MENU_CMD: return "E_CMD_UNCHECK_MENU_CMD";
- case E_CMD_UNLOAD_CMD    : return "E_CMD_UNLOAD_CMD";
- case E_CMD_VALIDATE_CMD  : return "E_CMD_VALIDATE_CMD";
- case E_CMD_WHENEVER_CMD  : return "E_CMD_WHENEVER_CMD";
- case E_CMD_SHOW_MENU_CMD : return "E_CMD_SHOW_MENU_CMD";
- case E_CMD_WHILE_CMD     : return "E_CMD_WHILE_CMD";
- case E_CMD_ENABLE_CMD    : return "E_CMD_ENABLE_CMD";
- case E_CMD_ENABLE_FORM_CMD: return "E_CMD_ENABLE_FORM_CMD";
- case E_CMD_DISABLE_CMD   : return "E_CMD_DISABLE_CMD";
- case E_CMD_DISABLE_FORM_CMD: return "E_CMD_DISABLE_FORM_CMD";
- case E_CMD_FETCH_CMD     : return "E_CMD_FETCH_CMD";
- case E_CMD_PDF_CALL_CMD  : return "E_CMD_PDF_CALL_CMD";
- case E_CMD_SET_SESSION_CMD: return "E_CMD_SET_SESSION_CMD";
- case E_CMD_UPDATE_CMD    : return "E_CMD_UPDATE_CMD";
- case E_CMD_INSERT_CMD    : return "E_CMD_INSERT_CMD";
- case E_CMD_DELETE_CMD    : return "E_CMD_DELETE_CMD";
- case E_CMD_LAST          : return "E_CMD_LAST";
- default: return "Unhandled";
- } /* end of switch */
+char *
+decode_cmd_type (enum cmd_type value)
+{
+  switch (value)
+    {
+    case E_CMD_ALLOC_ARR_CMD:
+      return "E_CMD_ALLOC_ARR_CMD";
+    case E_CMD_AT_TERM_CMD:
+      return "E_CMD_AT_TERM_CMD";
+    case E_CMD_CALL_CMD:
+      return "E_CMD_CALL_CMD";
+    case E_CMD_CANCEL_CMD:
+      return "E_CMD_CANCEL_CMD";
+    case E_CMD_CASE_CMD:
+      return "E_CMD_CASE_CMD";
+    case E_CMD_CHECK_MENU_CMD:
+      return "E_CMD_CHECK_MENU_CMD";
+    case E_CMD_CLEAR_CMD:
+      return "E_CMD_CLEAR_CMD";
+    case E_CMD_CLOSE_CMD:
+      return "E_CMD_CLOSE_CMD";
+    case E_CMD_CLOSE_SQL_CMD:
+      return "E_CMD_CLOSE_SQL_CMD";
+    case E_CMD_CODE_CMD:
+      return "E_CMD_CODE_CMD";
+    case E_CMD_CONNECT_CMD:
+      return "E_CMD_CONNECT_CMD";
+    case E_CMD_CONSTRUCT_CMD:
+      return "E_CMD_CONSTRUCT_CMD";
+    case E_CMD_CONTINUE_CMD:
+      return "E_CMD_CONTINUE_CMD";
+    case E_CMD_CONVERT_CMD:
+      return "E_CMD_CONVERT_CMD";
+    case E_CMD_CURRENT_WIN_CMD:
+      return "E_CMD_CURRENT_WIN_CMD";
+    case E_CMD_DEALLOC_ARR_CMD:
+      return "E_CMD_DEALLOC_ARR_CMD";
+    case E_CMD_DECLARE_CMD:
+      return "E_CMD_DECLARE_CMD";
+    case E_CMD_DEFER_CMD:
+      return "E_CMD_DEFER_CMD";
+    case E_CMD_DISABLE_MENU_CMD:
+      return "E_CMD_DISABLE_MENU_CMD";
+    case E_CMD_DISPLAY_ARRAY_CMD:
+      return "E_CMD_DISPLAY_ARRAY_CMD";
+    case E_CMD_DISPLAY_B_N_CMD:
+      return "E_CMD_DISPLAY_B_N_CMD";
+    case E_CMD_DISPLAY_CMD:
+      return "E_CMD_DISPLAY_CMD";
+    case E_CMD_DISPLAY_FORM_CMD:
+      return "E_CMD_DISPLAY_FORM_CMD";
+    case E_CMD_ENABLE_MENU_CMD:
+      return "E_CMD_ENABLE_MENU_CMD";
+    case E_CMD_ERROR_CMD:
+      return "E_CMD_ERROR_CMD";
+    case E_CMD_EXECUTE_CMD:
+      return "E_CMD_EXECUTE_CMD";
+    case E_CMD_EXECUTE_IMMEDIATE_CMD:
+      return "E_CMD_EXECUTE_IMMEDIATE_CMD";
+    case E_CMD_EXIT_PROG_CMD:
+      return "E_CMD_EXIT_PROG_CMD";
+    case E_CMD_EXT_CMD:
+      return "E_CMD_EXT_CMD";
+    case E_CMD_FINISH_CMD:
+      return "E_CMD_FINISH_CMD";
+    case E_CMD_FLUSH_CMD:
+      return "E_CMD_FLUSH_CMD";
+    case E_CMD_FOREACH_CMD:
+      return "E_CMD_FOREACH_CMD";
+    case E_CMD_FOR_CMD:
+      return "E_CMD_FOR_CMD";
+    case E_CMD_FREE_CMD:
+      return "E_CMD_FREE_CMD";
+    case E_CMD_FREE_REP_CMD:
+      return "E_CMD_FREE_REP_CMD";
+    case E_CMD_GOTO_CMD:
+      return "E_CMD_GOTO_CMD";
+    case E_CMD_HIDE_CMD:
+      return "E_CMD_HIDE_CMD";
+    case E_CMD_HIDE_OPTION_CMD:
+      return "E_CMD_HIDE_OPTION_CMD";
+    case E_CMD_IF_CMD:
+      return "E_CMD_IF_CMD";
+    case E_CMD_INIT_CMD:
+      return "E_CMD_INIT_CMD";
+    case E_CMD_INPUT_ARRAY_CMD:
+      return "E_CMD_INPUT_ARRAY_CMD";
+    case E_CMD_INPUT_CMD:
+      return "E_CMD_INPUT_CMD";
+    case E_CMD_LABEL_CMD:
+      return "E_CMD_LABEL_CMD";
+    case E_CMD_LET_CMD:
+      return "E_CMD_LET_CMD";
+    case E_CMD_LOAD_CMD:
+      return "E_CMD_LOAD_CMD";
+    case E_CMD_LOCATE_CMD:
+      return "E_CMD_LOCATE_CMD";
+    case E_CMD_MENU_CMD:
+      return "E_CMD_MENU_CMD";
+    case E_CMD_MESSAGE_CMD:
+      return "E_CMD_MESSAGE_CMD";
+    case E_CMD_MOVE_CMD:
+      return "E_CMD_MOVE_CMD";
+    case E_CMD_MSG_BOX_CMD:
+      return "E_CMD_MSG_BOX_CMD";
+    case E_CMD_NEED_CMD:
+      return "E_CMD_NEED_CMD";
+    case E_CMD_NEXT_FIELD_CMD:
+      return "E_CMD_NEXT_FIELD_CMD";
+    case E_CMD_NEXT_FORM_CMD:
+      return "E_CMD_NEXT_FORM_CMD";
+    case E_CMD_NEXT_OPTION_CMD:
+      return "E_CMD_NEXT_OPTION_CMD";
+    case E_CMD_OPEN_CURSOR_CMD:
+      return "E_CMD_OPEN_CURSOR_CMD";
+    case E_CMD_OPEN_FORM_CMD:
+      return "E_CMD_OPEN_FORM_CMD";
+    case E_CMD_OPEN_FORM_GUI_CMD:
+      return "E_CMD_OPEN_FORM_GUI_CMD";
+    case E_CMD_OPEN_STATUSBOX_CMD:
+      return "E_CMD_OPEN_STATUSBOX_CMD";
+    case E_CMD_OPEN_WINDOW_CMD:
+      return "E_CMD_OPEN_WINDOW_CMD";
+    case E_CMD_OPTIONS_CMD:
+      return "E_CMD_OPTIONS_CMD";
+    case E_CMD_OUTPUT_CMD:
+      return "E_CMD_OUTPUT_CMD";
+    case E_CMD_PAUSE_CMD:
+      return "E_CMD_PAUSE_CMD";
+    case E_CMD_PAUSE_SCREEN_OFF_CMD:
+      return "E_CMD_PAUSE_SCREEN_OFF_CMD";
+    case E_CMD_PAUSE_SCREEN_ON_CMD:
+      return "E_CMD_PAUSE_SCREEN_ON_CMD";
+    case E_CMD_PREPARE_CMD:
+      return "E_CMD_PREPARE_CMD";
+    case E_CMD_PRINT_CMD:
+      return "E_CMD_PRINT_CMD";
+    case E_CMD_PRINT_FILE_CMD:
+      return "E_CMD_PRINT_FILE_CMD";
+    case E_CMD_PRINT_IMG_CMD:
+      return "E_CMD_PRINT_IMG_CMD";
+    case E_CMD_PROMPT_CMD:
+      return "E_CMD_PROMPT_CMD";
+    case E_CMD_PUT_CMD:
+      return "E_CMD_PUT_CMD";
+    case E_CMD_RESIZE_ARR_CMD:
+      return "E_CMD_RESIZE_ARR_CMD";
+    case E_CMD_RETURN_CMD:
+      return "E_CMD_RETURN_CMD";
+    case E_CMD_RUN_CMD:
+      return "E_CMD_RUN_CMD";
+    case E_CMD_RUN_WAITING_FOR_CMD:
+      return "E_CMD_RUN_WAITING_FOR_CMD";
+    case E_CMD_SCROLL_CMD:
+      return "E_CMD_SCROLL_CMD";
+    case E_CMD_SET_DATABASE_CMD:
+      return "E_CMD_SET_DATABASE_CMD";
+    case E_CMD_SHOW_CMD:
+      return "E_CMD_SHOW_CMD";
+    case E_CMD_SHOW_OPTION_CMD:
+      return "E_CMD_SHOW_OPTION_CMD";
+    case E_CMD_SKIP_BY_CMD:
+      return "E_CMD_SKIP_BY_CMD";
+    case E_CMD_SKIP_CMD:
+      return "E_CMD_SKIP_CMD";
+    case E_CMD_SKIP_TO_CMD:
+      return "E_CMD_SKIP_TO_CMD";
+    case E_CMD_SKIP_TO_TOP_CMD:
+      return "E_CMD_SKIP_TO_TOP_CMD";
+    case E_CMD_SLEEP_CMD:
+      return "E_CMD_SLEEP_CMD";
+    case E_CMD_SELECT_CMD:
+      return "E_CMD_SELECT_CMD";
+    case E_CMD_SQL_BLOCK_CMD:
+      return "E_CMD_SQL_BLOCK_CMD";
+    case E_CMD_SQL_CMD:
+      return "E_CMD_SQL_CMD";
+    case E_CMD_SQL_TRANSACT_CMD:
+      return "E_CMD_SQL_TRANSACT_CMD";
+    case E_CMD_START_CMD:
+      return "E_CMD_START_CMD";
+    case E_CMD_START_RPC_CMD:
+      return "E_CMD_START_RPC_CMD";
+    case E_CMD_STOP_RPC_CMD:
+      return "E_CMD_STOP_RPC_CMD";
+    case E_CMD_TERM_REP_CMD:
+      return "E_CMD_TERM_REP_CMD";
+    case E_CMD_UNCHECK_MENU_CMD:
+      return "E_CMD_UNCHECK_MENU_CMD";
+    case E_CMD_UNLOAD_CMD:
+      return "E_CMD_UNLOAD_CMD";
+    case E_CMD_VALIDATE_CMD:
+      return "E_CMD_VALIDATE_CMD";
+    case E_CMD_WHENEVER_CMD:
+      return "E_CMD_WHENEVER_CMD";
+    case E_CMD_SHOW_MENU_CMD:
+      return "E_CMD_SHOW_MENU_CMD";
+    case E_CMD_WHILE_CMD:
+      return "E_CMD_WHILE_CMD";
+    case E_CMD_ENABLE_CMD:
+      return "E_CMD_ENABLE_CMD";
+    case E_CMD_ENABLE_FORM_CMD:
+      return "E_CMD_ENABLE_FORM_CMD";
+    case E_CMD_DISABLE_CMD:
+      return "E_CMD_DISABLE_CMD";
+    case E_CMD_DISABLE_FORM_CMD:
+      return "E_CMD_DISABLE_FORM_CMD";
+    case E_CMD_FETCH_CMD:
+      return "E_CMD_FETCH_CMD";
+    case E_CMD_PDF_CALL_CMD:
+      return "E_CMD_PDF_CALL_CMD";
+    case E_CMD_SET_SESSION_CMD:
+      return "E_CMD_SET_SESSION_CMD";
+    case E_CMD_UPDATE_CMD:
+      return "E_CMD_UPDATE_CMD";
+    case E_CMD_INSERT_CMD:
+      return "E_CMD_INSERT_CMD";
+    case E_CMD_DELETE_CMD:
+      return "E_CMD_DELETE_CMD";
+    case E_CMD_LAST:
+      return "E_CMD_LAST";
+    default:
+      return "Unhandled";
+    }				/* end of switch */
 }
 
 
 
-void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql,int done_true_false)
+void
+check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, int done_true_false)
 {
   struct expr_str s2;
   struct expr_str *s3;
@@ -5491,12 +6011,14 @@ void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sq
 	  l_e = e->expr_str_u.expr_op->left;
 	  r_e = e->expr_str_u.expr_op->right;
 
-          if (l_e->expr_type==ET_EXPR_CACHED) {
-			l_e=list.list.list_val[l_e->expr_str_u.expr_cached.cache_num];
-	  }
-          if (r_e->expr_type==ET_EXPR_CACHED) {
-			r_e=list.list.list_val[r_e->expr_str_u.expr_cached.cache_num];
-	  }
+	  if (l_e->expr_type == ET_EXPR_CACHED)
+	    {
+	      l_e = list.list.list_val[l_e->expr_str_u.expr_cached.cache_num];
+	    }
+	  if (r_e->expr_type == ET_EXPR_CACHED)
+	    {
+	      r_e = list.list.list_val[r_e->expr_str_u.expr_cached.cache_num];
+	    }
 
 	  if (l_e->expr_type == ET_EXPR_VARIABLE_USAGE)
 	    {
@@ -5535,94 +6057,103 @@ void check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sq
 	    }
 	}
     }
-	if (A4GL_is_just_literal(&list,NULL,done_true_false)) {
-		      A4GL_lint (module_name, lineno, "IFCONST", "IF condition is constant", 0);
-	}
+  if (A4GL_is_just_literal (&list, NULL, done_true_false))
+    {
+      A4GL_lint (module_name, lineno, "IFCONST", "IF condition is constant", 0);
+    }
 }
 
 
 
-int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr,int already_done_true_and_false)
+int
+A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr, int already_done_true_and_false)
 {
   int a;
   expr_str str;
 
   struct expr_str_list listv;
-if (list==0) {
-  if (ptr == NULL)
+  if (list == 0)
+    {
+      if (ptr == NULL)
+	return 0;
+      list = &listv;
+      listv.list.list_len = 0;
+      listv.list.list_val = 0;
+      memcpy (&str, ptr, sizeof (str));
+      ptr = &str;
+      cache_expression (&listv, &ptr);
+      linearise_expressions (&listv);
+    }
+
+
+  if (list == NULL)
     return 0;
-  list=&listv;
-  listv.list.list_len = 0;
-  listv.list.list_val = 0;
-  memcpy (&str, ptr, sizeof (str));
-  ptr = &str;
-  cache_expression (&listv, &ptr);
-  linearise_expressions (&listv);
-}
-
-
-if (list==NULL) return 0;
-if (list->list.list_len==1 && already_done_true_and_false) {
-	if (list->list.list_val[0]->expr_type==ET_EXPR_TRUE) return 0;
-	if (list->list.list_val[0]->expr_type==ET_EXPR_FALSE) return 0;
-}
+  if (list->list.list_len == 1 && already_done_true_and_false)
+    {
+      if (list->list.list_val[0]->expr_type == ET_EXPR_TRUE)
+	return 0;
+      if (list->list.list_val[0]->expr_type == ET_EXPR_FALSE)
+	return 0;
+    }
   for (a = 0; a < list->list.list_len; a++)
     {
-	int isliteral=0;
-		switch (list->list.list_val[a]->expr_type) {
-			case ET_EXPR_OP_OR:
-			case ET_EXPR_OP_AND:
-			case ET_EXPR_BRACKET:
-			case ET_EXPR_LITERAL_DOUBLE_STR:
-                	case ET_EXPR_LITERAL_LONG:
-                	case ET_EXPR_LITERAL_STRING:
-                	case ET_EXPR_LITERAL_EMPTY_STRING:
-                	case ET_EXPR_TRANSLATED_STRING:
-                	case ET_EXPR_QUOTED_STRING:
-                	case ET_EXPR_NEG:
-                	case ET_EXPR_NOT:
-                	case ET_EXPR_NULL:
-    	case ET_EXPR_OP_ADD:
-    	case ET_EXPR_CAST:
-        case ET_EXPR_OP_CONCAT:
-        case ET_EXPR_OP_DIV:
-        case ET_EXPR_OP_EQUAL:
-        case ET_EXPR_OP_GREATER_THAN:
-        case ET_EXPR_OP_GREATER_THAN_EQ:
-        case ET_EXPR_OP_LESS_THAN:
-        case ET_EXPR_OP_LESS_THAN_EQ:
-        case ET_EXPR_OP_LIKE:
-        case ET_EXPR_OP_MATCHES:
-        case ET_EXPR_OP_MOD:
-        case ET_EXPR_OP_MULT:
-        case ET_EXPR_OP_NOT_EQUAL:
-        case ET_EXPR_OP_NOT_LIKE:
-        case ET_EXPR_OP_NOT_MATCHES:
-        case ET_EXPR_OP_POWER:
-        case ET_EXPR_OP_SUB:
-        case ET_EXPR_OP_USING:
-        case ET_EXPR_OP_IN:
-        case ET_EXPR_OP_NOT_IN:
-        case ET_EXPR_OP_IN_SUBQUERY:
-        case ET_EXPR_OP_NOTIN_SUBQUERY:
-        case ET_EXPR_OP_SPACES:
-        case ET_EXPR_OP_ISNULL:
-        case ET_EXPR_OP_ISNOTNULL:
-        case ET_EXPR_OP_CLIP:
-        case ET_EXPR_OP_YEAR:
-        case ET_EXPR_OP_MONTH:
-        case ET_EXPR_OP_DAY:
-        case ET_EXPR_OP_HOUR:
-        case ET_EXPR_OP_MINUTE:
-        case ET_EXPR_OP_SECOND:
-        case ET_EXPR_CACHED:
+      int isliteral = 0;
+      switch (list->list.list_val[a]->expr_type)
+	{
+	case ET_EXPR_OP_OR:
+	case ET_EXPR_OP_AND:
+	case ET_EXPR_BRACKET:
+	case ET_EXPR_LITERAL_DOUBLE_STR:
+	case ET_EXPR_LITERAL_LONG:
+	case ET_EXPR_LITERAL_STRING:
+	case ET_EXPR_LITERAL_EMPTY_STRING:
+	case ET_EXPR_TRANSLATED_STRING:
+	case ET_EXPR_QUOTED_STRING:
+	case ET_EXPR_NEG:
+	case ET_EXPR_NOT:
+	case ET_EXPR_NULL:
+	case ET_EXPR_OP_ADD:
+	case ET_EXPR_CAST:
+	case ET_EXPR_OP_CONCAT:
+	case ET_EXPR_OP_DIV:
+	case ET_EXPR_OP_EQUAL:
+	case ET_EXPR_OP_GREATER_THAN:
+	case ET_EXPR_OP_GREATER_THAN_EQ:
+	case ET_EXPR_OP_LESS_THAN:
+	case ET_EXPR_OP_LESS_THAN_EQ:
+	case ET_EXPR_OP_LIKE:
+	case ET_EXPR_OP_MATCHES:
+	case ET_EXPR_OP_MOD:
+	case ET_EXPR_OP_MULT:
+	case ET_EXPR_OP_NOT_EQUAL:
+	case ET_EXPR_OP_NOT_LIKE:
+	case ET_EXPR_OP_NOT_MATCHES:
+	case ET_EXPR_OP_POWER:
+	case ET_EXPR_OP_SUB:
+	case ET_EXPR_OP_USING:
+	case ET_EXPR_OP_IN:
+	case ET_EXPR_OP_NOT_IN:
+	case ET_EXPR_OP_IN_SUBQUERY:
+	case ET_EXPR_OP_NOTIN_SUBQUERY:
+	case ET_EXPR_OP_SPACES:
+	case ET_EXPR_OP_ISNULL:
+	case ET_EXPR_OP_ISNOTNULL:
+	case ET_EXPR_OP_CLIP:
+	case ET_EXPR_OP_YEAR:
+	case ET_EXPR_OP_MONTH:
+	case ET_EXPR_OP_DAY:
+	case ET_EXPR_OP_HOUR:
+	case ET_EXPR_OP_MINUTE:
+	case ET_EXPR_OP_SECOND:
+	case ET_EXPR_CACHED:
 
-				isliteral=1;
-			 	break;
-		default: 
-				break;
-		}
-		if (isliteral==0) return 0;
+	  isliteral = 1;
+	  break;
+	default:
+	  break;
+	}
+      if (isliteral == 0)
+	return 0;
     }
 
 
@@ -5630,7 +6161,9 @@ if (list->list.list_len==1 && already_done_true_and_false) {
 }
 
 
-static char *rettype_lint (char *s) {
+static char *
+rettype_lint (char *s)
+{
   static char rs[20] = "long";
   int a;
   A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
@@ -5686,70 +6219,104 @@ static char *rettype_lint (char *s) {
  *    *    * @param s A string with the numeric 4gl data type (@see find_type())
  *     *     * @return The string (static) with the C declaration
  *      *      */
-static char * rettype_integer (int n)
+static char *
+rettype_integer (int n)
 {
-          char s[200];
+  char s[200];
 
-            /*static char rs[20] = "long";*/
-            /*int a;*/
+  /*static char rs[20] = "long"; */
+  /*int a; */
 
-            A4GL_debug ("rettype_integer : %d\n", n);
+  A4GL_debug ("rettype_integer : %d\n", n);
 
-              SPRINTF1 (s, "%d", n);
-                return rettype_lint (s);
+  SPRINTF1 (s, "%d", n);
+  return rettype_lint (s);
 }
 
 
-int A4GL_is_valid_4gl_type (char *s)
+int
+A4GL_is_valid_4gl_type (char *s)
 {
   //char errbuff[80];
   static char types[20][80];
   //char buff[20];
   int a;
   //int b;
-  static int set_types=0;
-  if (set_types==0) {
-          for (a=0;a<15;a++) { strcpy(types[a],rettype_integer(a)); }
-          set_types=1;
-  }
+  static int set_types = 0;
+  if (set_types == 0)
+    {
+      for (a = 0; a < 15; a++)
+	{
+	  strcpy (types[a], rettype_integer (a));
+	}
+      set_types = 1;
+    }
 
-  for (a=0;a<15;a++) {
-          if (A4GL_aubit_strcasecmp(types[a],s)==0) { return 1; }
-  }
+  for (a = 0; a < 15; a++)
+    {
+      if (A4GL_aubit_strcasecmp (types[a], s) == 0)
+	{
+	  return 1;
+	}
+    }
 
   A4GL_debug ("Looking for type '%s'", s);
 
   if (A4GL_find_datatype_out (s) != -1)
     {
-		return 1;
+      return 1;
     }
 
   A4GL_debug ("Not found - keep looking");
   A4GL_debug ("find_type %s\n", s);
-  if (A4GL_aubit_strcasecmp ("char", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("long", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("int8", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("serial8", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("integer", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("int", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("short", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("double", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("float", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("fgldecimal", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("serial", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("fgldate", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("fglmoney", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("struct_dtime", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("fglbyte", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("fgltext", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("varchar", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("struct_ival", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("form", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("uiwindow", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("omdomnode", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("omnodelist", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("basechannel", s) == 0) return 1;
-  if (A4GL_aubit_strcasecmp ("string", s) == 0) return 1;
+  if (A4GL_aubit_strcasecmp ("char", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("long", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("int8", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("serial8", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("integer", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("int", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("short", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("double", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("float", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("fgldecimal", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("serial", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("fgldate", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("fglmoney", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("struct_dtime", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("fglbyte", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("fgltext", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("varchar", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("struct_ival", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("form", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("uiwindow", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("omdomnode", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("omnodelist", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("basechannel", s) == 0)
+    return 1;
+  if (A4GL_aubit_strcasecmp ("string", s) == 0)
+    return 1;
   return 0;
 }
 
@@ -5760,12 +6327,15 @@ int A4GL_is_valid_4gl_type (char *s)
 char *lint_expect_list[MAX_NUM_LINT_ERRORS];
 char *lint_ignore_list[MAX_NUM_LINT_ERRORS];
 
-static void init_lint(void) {
-int a;
-for (a=0;a<MAX_NUM_LINT_ERRORS;a++) {
-	lint_expect_list[a]=NULL;
-	lint_ignore_list[a]=NULL;
-}
+static void
+init_lint (void)
+{
+  int a;
+  for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+    {
+      lint_expect_list[a] = NULL;
+      lint_ignore_list[a] = NULL;
+    }
 }
 
 
@@ -5773,7 +6343,7 @@ static void
 add_lint_ignore (char *s)
 {
   int firstnull = -1;
-int a;
+  int a;
 
 
 //printf("add_lint_ignore: %s\n",s);
@@ -5820,7 +6390,7 @@ int a;
 	  // The space is empty - do we need to use it ? 
 	  if (firstnull == -1)
 	    {
-		// if its not found by the time we reach the end of the array - we can use it...
+	      // if its not found by the time we reach the end of the array - we can use it...
 	      firstnull = a;
 	    }
 	}
@@ -5832,7 +6402,7 @@ int a;
       exit (2);
     }
 
-lint_ignore_list[firstnull]=strdup(s);
+  lint_ignore_list[firstnull] = strdup (s);
 }
 
 
@@ -5840,7 +6410,7 @@ static void
 add_lint_expect (char *s)
 {
   int firstnull = -1;
-int a;
+  int a;
 
   if (s[0] == '-')
     {
@@ -5852,9 +6422,9 @@ int a;
 	{
 	  if (lint_expect_list[a])
 	    {
-		// We remove *all* of the entries...
-		  free (lint_expect_list[a]);
-		  lint_expect_list[a] = NULL;
+	      // We remove *all* of the entries...
+	      free (lint_expect_list[a]);
+	      lint_expect_list[a] = NULL;
 	    }
 	}
       return;
@@ -5881,7 +6451,7 @@ int a;
 	  // The space is empty - do we need to use it ? 
 	  if (firstnull == -1)
 	    {
-		// if its not found by the time we reach the end of the array - we can use it...
+	      // if its not found by the time we reach the end of the array - we can use it...
 	      firstnull = a;
 	    }
 	}
@@ -5893,52 +6463,69 @@ int a;
       exit (2);
     }
 
-lint_expect_list[firstnull]=strdup(s);
+  lint_expect_list[firstnull] = strdup (s);
 
 }
 
 
-static void set_lint_ignore(struct command *c) {
-	int a;
-	A4GL_assertion(c->cmd_data.type!=E_CMD_LINT_IGNORE_CMD,"Expecting 'E_CMD_LINT_IGNORE_CMD'");
-	if (c->cmd_data.command_data_u.lint_ignore_cmd.values==NULL) return;
-	for (a=0;a<c->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_len;a++) {
-		add_lint_ignore(c->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_val[a]);
+static void
+set_lint_ignore (struct command *c)
+{
+  int a;
+  A4GL_assertion (c->cmd_data.type != E_CMD_LINT_IGNORE_CMD, "Expecting 'E_CMD_LINT_IGNORE_CMD'");
+  if (c->cmd_data.command_data_u.lint_ignore_cmd.values == NULL)
+    return;
+  for (a = 0; a < c->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_len; a++)
+    {
+      add_lint_ignore (c->cmd_data.command_data_u.lint_ignore_cmd.values->str_list_entry.str_list_entry_val[a]);
+    }
+}
+
+static void
+set_lint_expect (struct command *c)
+{
+  int a;
+  A4GL_assertion (c->cmd_data.type != E_CMD_LINT_EXPECT_CMD, "Expecting 'E_CMD_LINT_EXPECT_CMD'");
+  if (c->cmd_data.command_data_u.lint_expect_cmd.values == NULL)
+    return;
+  for (a = 0; a < c->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_len; a++)
+    {
+      add_lint_expect (c->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_val[a]);
+    }
+}
+static void
+clr_lint_expect ()
+{
+  add_lint_expect ("-");
+}
+
+static int
+has_lint_ignore (char *c)
+{
+  int a;
+  for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+    {
+      if (lint_ignore_list[a])
+	{
+	  //printf("%s %s\n", lint_ignore_list[a],c);
+	  if (strcmp (lint_ignore_list[a], c) == 0)
+	    return 1;
 	}
+    }
+  return 0;
 }
 
-static void set_lint_expect(struct command *c) {
-	int a;
-	A4GL_assertion(c->cmd_data.type!=E_CMD_LINT_EXPECT_CMD,"Expecting 'E_CMD_LINT_EXPECT_CMD'");
-	if (c->cmd_data.command_data_u.lint_expect_cmd.values==NULL) return;
-	for (a=0;a<c->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_len;a++) {
-		add_lint_expect(c->cmd_data.command_data_u.lint_expect_cmd.values->str_list_entry.str_list_entry_val[a]);
+static int
+has_lint_expect (char *c)
+{
+  int a;
+  for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
+    {
+      if (lint_expect_list[a])
+	{
+	  if (strcmp (lint_expect_list[a], c) == 0)
+	    return 1;
 	}
+    }
+  return 0;
 }
-static void clr_lint_expect() {
-	add_lint_expect("-");
-}
-
-static int has_lint_ignore(char *c)  {
-	int a;
-	for (a=0;a<MAX_NUM_LINT_ERRORS;a++) {
-		if (lint_ignore_list[a]) {
-			//printf("%s %s\n", lint_ignore_list[a],c);
-			if (strcmp(lint_ignore_list[a],c)==0) return 1;
-		}
-	}
-	return 0;
-}
-
-static int has_lint_expect(char *c)  {
-	int a;
-	for (a=0;a<MAX_NUM_LINT_ERRORS;a++) {
-		if (lint_expect_list[a]) {
-			if (strcmp(lint_expect_list[a],c)==0) return 1;
-		}
-	}
-	return 0;
-}
-
-
-

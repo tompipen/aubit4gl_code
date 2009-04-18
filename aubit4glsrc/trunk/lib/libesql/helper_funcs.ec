@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.82 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.83 2009-04-18 07:56:31 mikeaubury Exp $
 #
 */
 
@@ -662,6 +662,66 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 }
 
 
+/**
+ *
+ *
+ * @todo describe function
+ */
+void 
+ESQLAPI_A4GL_copy_nchar(char *infx,char *a4gl,short *p_indicat,int size,char mode,int x,int y) 
+{
+short indicat=0;
+
+A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+
+
+	if (mode=='i') {
+		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
+			if (size!=-1) {
+				memset(infx,0,size+1);
+			}
+			if (p_indicat) *p_indicat=0;
+			if (A4GL_isnull(0,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+			if (A4GL_isnull(0,(void *)a4gl)) {
+				rsetnull(CCHARTYPE,infx);
+			return;
+	
+		}
+
+		
+		/* If we get to here - we can't be null... */
+		if (size!=-1) {
+			memset(infx,0,size);
+			strncpy((char *)(infx),(char *)(a4gl),size);
+			infx[size]=0;
+			A4GL_trim(infx); /* @todo -  what about varchars ... ? */
+		} else {
+			strcpy((char *)(infx),(char *)(a4gl));
+		}
+		if (strlen(infx)==0) {
+			infx[0]=' ';
+			infx[1]=0;
+		}
+		A4GL_debug("copy_char - > %s",infx);
+	}
+
+
+	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
+		if (indicat==-2) return;
+		if (indicat==-1) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		A4GL_debug("Copy : '%s' from rdbms to a4gl",infx);
+		if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		if (size>=0) {
+			infx[size]=0;
+		} 
+		strcpy((char *)(a4gl),(char *)(infx));
+		if (size!=-1) {
+			A4GL_pad_string(a4gl,size);
+		}
+	}
+}
 
 
 void
@@ -1190,6 +1250,7 @@ for (a=0;a<n;a++) {
 
 	switch (a4gl_bind[a].dtype&DTYPE_MASK) {
 		case DTYPE_CHAR:  ESQLAPI_A4GL_copy_char(native,a4gl,i,size,dir,x,y); break;
+		case DTYPE_NCHAR:  ESQLAPI_A4GL_copy_nchar(native,a4gl,i,size,dir,x,y); break;
 		case DTYPE_SMINT:  ESQLAPI_A4GL_copy_smint(native,a4gl,i,size,dir); break;
 		case DTYPE_INT:  ESQLAPI_A4GL_copy_int(native,a4gl,i,size,dir); break;
 		case DTYPE_FLOAT:  ESQLAPI_A4GL_copy_double(native,a4gl,i,size,dir); break;
