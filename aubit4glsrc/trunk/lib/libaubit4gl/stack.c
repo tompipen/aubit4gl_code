@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.231 2009-03-23 15:04:55 mikeaubury Exp $
+# $Id: stack.c,v 1.232 2009-04-18 07:54:51 mikeaubury Exp $
 #
 */
 
@@ -2349,9 +2349,9 @@ A4GL_opboolean (void)
 	diff = 0.0 - diff;
 #ifdef DEBUG
       A4GL_debug ("check %.8lf %.8lf %.8lf ", a, b, diff);
+	A4GL_debug("Diff =%64.32lf\n",diff);
 #endif
-
-      if (diff < 0.00000001 && a != b)
+      if (diff < 0.00000000000000001 && a != b)
 	{
 	  A4GL_debug ("Near as dammit equal..");
 	  return 0;
@@ -4020,6 +4020,7 @@ A4GL_lrtrim (char *str)
   char *obuf;
   char *s = 0;
   A4GL_debug ("new lrtrim");
+
   if (str)
     {
       for (obuf = str; *obuf && isspace (*obuf); ++obuf)
@@ -4093,6 +4094,17 @@ A4GL_pause_execution_msg (char *s)
 {
   if (1)
     PRINTF ("--PAUSE EXECUTION->%s\n", s);
+
+
+if (A4GL_isyes(acl_getenv("A4GL_CORDUMP_ON_PAUSE_EXECUTION"))) {
+		// This is set if we're running the tests..
+		// by the time we get to run the regression tests
+		// we shouldn't have any pause_executions left running in 
+		// our code
+		// if we find any - its an issue and we need to know about it...
+	PRINTF("A4GL_CORDUMP_ON_PAUSE_EXECUTION is set - dumping core\n");
+	A4GL_core_dump();
+}
 }
 
 void
@@ -4288,24 +4300,91 @@ strcpy(s,buff);
 
 
 void A4GL_pop_sized_decimal(fgldecimal *b) {
-char *s;
+//char *s;
+char s[2000];
 //A4GL_pop_var2 (&b, 5, 0x2010);
 //return;
   if ((params[params_cnt - 1].dtype & DTYPE_MASK) == DTYPE_MONEY) {
-        A4GL_pop_var2(b,5,0x2010);
-        A4GL_push_dec_dec(b,0,16);
+  	params[params_cnt - 1].dtype=params[params_cnt - 1].dtype-DTYPE_MONEY+DTYPE_DECIMAL;
   }
 
-
-
-  s=A4GL_char_pop();
-//if (!strchr(s,'.')) A4GL_pause_execution();
+  A4GL_pop_char(s,200);
   A4GL_init_dec(b,0,0);
+A4GL_debug("s=%s\n",s);
   A4GL_str_dot_to_dec(s, b);
 
-  acl_free(s);
+  //acl_free(s);
 }
 
+void A4GL_pop_sized_decimal_from_float(fgldecimal *b,int use_sigdig) {
+	double d;
+	char *ptr;
+	char buff[100];
+	int n;
+	int digits;
+	int l;
+	int dec=0;
+	int dig=0;
+	int sigdig=0;
+	int a;
+	int past_dot=0;
+	int tos_dtype;
+	int tos_size;
+	double *tos_ptr;
+	int maxsigdig=9;
+	int usingsig=0;
+
+	if (use_sigdig>0) {
+		maxsigdig=use_sigdig;
+	}
+
+	A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+
+
+	d=A4GL_pop_double();
+	SPRINTF1(buff,"%64.32lf\n",d);	
+	A4GL_remove_trailing_zeros_and_leading_spaces(buff);
+	l=strlen(buff);
+	digits=0;
+	
+	// Always ensure its a '.'
+	for (a=0;a<l;a++) { if (buff[a]==',') buff[a]='.'; }
+
+	for (a=0;a<l;a++) {
+		if (buff[a]=='-') continue;
+		if (buff[a]=='+') continue;
+
+		if (buff[a]>'0' && !usingsig) {
+			usingsig++;
+		}
+		if (buff[a]=='.') { past_dot++; continue;}
+
+		if (buff[a]=='0' && digits==0) {
+			if (past_dot) { // If we're past the decimal place - start counting digits
+					// and decimals...
+				digits++;
+				//dec++;
+			}
+			continue;
+		}
+	
+		A4GL_debug("%c %d %d \n",buff[a],digits,dec);
+		if (usingsig) {sigdig++;}
+		
+		if (sigdig>maxsigdig && past_dot) {
+			break;
+		}
+		if (!past_dot) { dig++; }
+		digits++;
+		if (past_dot ) { dec++; }
+	}
+
+
+  	A4GL_init_dec(b,digits,dec);
+  	A4GL_str_dot_to_dec(buff, b);
+	return;
+
+}
 
 
 //

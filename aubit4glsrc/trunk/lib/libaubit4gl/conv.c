@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.172 2009-03-03 14:46:47 mikeaubury Exp $
+# $Id: conv.c,v 1.173 2009-04-18 07:54:51 mikeaubury Exp $
 #
 */
 
@@ -109,7 +109,6 @@ fgldecimal *A4GL_minus_dec (fgldecimal * a, fgldecimal * b);
 fgldecimal *A4GL_mult_dec (fgldecimal * s, fgldecimal * v);
 fgldecimal *A4GL_divide_dec (fgldecimal * s, fgldecimal * w);
 
-int A4GL_dec_roundoff (fgldecimal * s, int n);
 void A4GL_dec_to_dec (fgldecimal * f, fgldecimal * t);
 void A4GL_dump (char *s);
 
@@ -226,7 +225,6 @@ int A4GL_mdectod (void *zz, void *aa, int sz_ignore);
 
 //static fgldecimal *dec_math (fgldecimal *s, fgldecimal *w, fgldecimal *r, char op);
 //static void match_dec (fgldecimal *f, fgldecimal *t, int *a, int *b);
-void A4GL_trim_decimals (fgldecimal * s, int d);
 void A4GL_set_setdtype (int dtype, void *ptr);
 int A4GL_dectod (void *zz, void *aa, int sz_ignore);
 int A4GL_d_to_dt (void *a, void *b, int size);
@@ -1227,7 +1225,7 @@ A4GL_ftodec (void *a, void *z, int size)
   t = t - h * 256;
   errno = 0;
   da = *(double *) a;
-  A4GL_debug ("converting %lf to a decimal (%x) %d,%d", da, size, h, t);
+  A4GL_debug ("converting %18.18lf to a decimal (%x) %d,%d", da, size, h, t);
   (void) A4GL_init_dec (z, h, t);
   A4GL_debug ("ftodec... %lf", *(double *) a);
   if (t >= 0)
@@ -1748,7 +1746,7 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
 
   a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   ok = (sscanf (a, "%lf", (double *) zz) == 1);
-  A4GL_debug ("stof: %s->%lf; OK=%d", A4GL_null_as_null (a), *(double *) zz, ok);
+  A4GL_debug ("stof: %s->%16.16lf; OK=%d", A4GL_null_as_null (a), *(double *) zz, ok);
 
   if (!ok && !A4GL_isno (acl_getenv ("ALLOWDBLCRUD")))
     {

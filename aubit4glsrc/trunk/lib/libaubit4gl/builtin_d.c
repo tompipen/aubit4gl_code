@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.99 2009-02-09 15:16:07 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.100 2009-04-18 07:54:51 mikeaubury Exp $
 #
 */
 
@@ -335,6 +335,7 @@ A4GL_push_decimal_str (char *p)
   ndig = 64;
   ndec = 32;
   A4GL_remove_trailing_zeros_and_leading_spaces (buff);
+A4GL_debug("-->%s\n", p);
   l = strlen (buff);
   if (l)
     {
@@ -432,7 +433,7 @@ A4GL_push_double (double p)
 #ifdef DEBUG
   /* {DEBUG} */
   {
-    A4GL_debug ("Push_double %lf\n", p);
+    A4GL_debug ("Push_double %18.18lf\n", p);
   }
 #endif
   A4GL_push_param (ptr, DTYPE_FLOAT + DTYPE_MALLOCED);

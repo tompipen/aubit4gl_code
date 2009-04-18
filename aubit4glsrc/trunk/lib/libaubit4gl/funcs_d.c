@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.111 2009-02-09 15:13:31 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.112 2009-04-18 07:54:51 mikeaubury Exp $
 #
 */
 
@@ -399,7 +399,6 @@ A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size)
   A4GL_debug ("digittoc %d", *a);
 #endif
   SPRINTF1 (buff, fmt, *a);
-
 #ifdef DEBUG
   A4GL_debug ("digittoc: %s", buff);
 #endif
@@ -431,7 +430,7 @@ A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size)
  * @param num The (double-float) number to be formated.
  */
 void
-a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
+a4gl_using_from_string (char *str_to_set, int s, char *fmt, char *numeric, int isneg)
 {
   //int dig[MAXDIG];
   //int pnt[MAXPNT];
@@ -451,14 +450,16 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
   char buff_integer[2000];
   char *ptr_decimal;
 
-  M_APM M_main;
+  M_APM M_main=NULL;
   M_APM M_integer;
   M_APM M_tmp;
   M_APM M_decimal;
 
   int lb = 0;
   int cb = 0;
-//printf("DEBUG %s\n",numeric);
+
+		memset(buff_decimal,0,sizeof(buff_decimal));
+		memset(buff_integer,0,sizeof(buff_integer));
 
   for (v_a = 0; v_a < strlen (fmt); v_a++)
     {
@@ -468,7 +469,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	cb++;
     }
 
-  memset (str, 0, s);
+  memset (str_to_set, 0, s);
 
 //never_neg=num;
 //if (num<0) never_neg=0.0-num;
@@ -491,7 +492,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	  ptr = strchr (buff2, ')');
 	  if (ptr == 0)
 	    {			// its all gone pete tong...
-	      strcpy (str, "");
+	      strcpy (str_to_set, "");
 	      free (buff2);
 	      return;
 	    }
@@ -515,7 +516,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 		  *ptr = ' ';
 		}
 	    }
-	  strcpy (str, fmt);
+	  strcpy (str_to_set, fmt);
 	  free (buff2);
 
 	}
@@ -532,7 +533,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	  ptr = strchr (buff2, ')');
 	  if (ptr == 0)
 	    {			// its all gone pete tong...
-	      strcpy (str, "");
+	      strcpy (str_to_set, "");
 	      free (buff2);
 	      return;
 	    }
@@ -573,7 +574,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 		}
 	    }
 
-	  strcpy (str, fmt);
+	  strcpy (str_to_set, fmt);
 	  free (buff2);
 	}
 
@@ -589,7 +590,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	  ptr = strrchr (buff2, ')');
 	  if (ptr == 0)
 	    {			// its all gone pete tong...
-	      strcpy (str, "");
+	      strcpy (str_to_set, "");
 	      free (buff2);
 	      return;
 	    }
@@ -630,7 +631,7 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 		}
 	    }
 
-	  strcpy (str, fmt);
+	  strcpy (str_to_set, fmt);
 	  free (buff2);
 	}
 
@@ -726,8 +727,6 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 
   m_apm_floor (M_integer, M_main);
   m_apm_subtract (M_decimal, M_main, M_integer);
-
-
   m_apm_free (M_main);
 
 
@@ -743,20 +742,23 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
       strcpy (buff_decimal, "0.0");
     }
   ptr_decimal = &buff_decimal[2];
-  A4GL_lpad (buff_integer, 31);
+  A4GL_lpad (buff_integer, 33);
 
   if (num_places > 64 || strlen (ptr_decimal) >= 64)
     {
+	A4GL_debug("setting str to all '*'");
       // Its too big...
-      memset (str, '*', s);
-      str[s] = 0;
-
+      memset (str_to_set, '*', s);
+      str_to_set[s] = 0;
       return;
     }
   strcat (buff_decimal, "000000000000000000000000000000000");
   ptr_decimal[32] = 0;
-  strcpy (str, fmt);
-  variable_called_b = 30;
+
+  A4GL_debug("setting str to %s", fmt);
+
+  strcpy (str_to_set, fmt);
+  variable_called_b = 32;
   isprnt = 1;
   // first, ensure the format string is wide enough to hold the number
   // if not, try drop trailing decimals, otherwise flag overflow with *'s
@@ -821,8 +823,8 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	if (n_cnt > v_a)
 	  {
 	    // no way this number can fit, fill with stars ...
-	    memset (str, '*', s);
-	    str[s] = 0;
+	    memset (str_to_set, '*', s);
+	    str_to_set[s] = 0;
 	    return;
 	  }
 
@@ -845,13 +847,13 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	    if ((v_a - n_cnt > d_cnt) || (A4GL_aubit_strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
 	      {
 		A4GL_debug ("trying fmt=%s", fmt);
-		a4gl_using_from_string (str, s, fmt, numeric, isneg);
+		a4gl_using_from_string (str_to_set, s, fmt, numeric, isneg);
 		return;
 	      }
 	  }
 	// default is to use the strict I4GL behaviour, stars
-	memset (str, '*', s);
-	str[s] = 0;
+	memset (str_to_set, '*', s);
+	str_to_set[s] = 0;
 	return;
       }
   }
@@ -866,28 +868,37 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	      if (((buff_integer[variable_called_b] == '0' && buff_integer[variable_called_b - 1] == ' ')
 		   || buff_integer[variable_called_b] == ' ') && isprnt == 1)
 		isprnt = 0;
-	    }
-	  str[v_a] = buff_integer[variable_called_b--];
+	    } 
+	
+
+	  A4GL_debug ("setting str[%d]=%c", v_a, buff_integer[variable_called_b]); 
+
+	  str_to_set[v_a] = buff_integer[variable_called_b--];
+
 	  if (!isprnt)
 	    {
 	      if (fm1[v_a] == '#')
 		{
-		  str[v_a] = ' ';
+		  str_to_set[v_a] = ' ';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		  continue;
 		}
 	      if (fm1[v_a] == '*')
 		{
-		  str[v_a] = '*';
+		  str_to_set[v_a] = '*';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		  continue;
 		}
 	      if (fm1[v_a] == '&')
 		{
-		  str[v_a] = '0';
+		  str_to_set[v_a] = '0';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		  continue;
 		}
 	      if (fm1[v_a] == '<')
 		{
-		  str[v_a] = '<';
+		  str_to_set[v_a] = '<';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		  continue;
 		}
 	      p = CHAR_INDEX (canfloat_head, fm1[v_a]);
@@ -896,64 +907,76 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 		  p[0] = 1;
 		  if (fm1[v_a] == '+' && isneg)
 		    {
-		      str[v_a] = '-';
+		      str_to_set[v_a] = '-';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		      continue;
 		    }
 		  if (fm1[v_a] == '+' && !isneg)
 		    {
-		      str[v_a] = '+';
+		      str_to_set[v_a] = '+';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		      continue;
 		    }
 		  if (fm1[v_a] == '-' && isneg)
 		    {
-		      str[v_a] = '-';
+		      str_to_set[v_a] = '-';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		      continue;
 		    }
 		  if (fm1[v_a] == '-' && !isneg)
 		    {
-		      str[v_a] = ' ';
+		      str_to_set[v_a] = ' ';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		      continue;
 		    }
 		  if (fm1[v_a] == '(')
 		    {
 		      if (isneg)
 			{
-			  str[v_a] = '(';
+			  str_to_set[v_a] = '(';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 			  continue;
 			}
 		      else
 			{
-			  str[v_a] = ' ';
+			  str_to_set[v_a] = ' ';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 			  continue;
 			}
 		    }
 		  if (fm1[v_a] == ')' && isneg)
 		    {
-		      str[v_a] = ')';
+		      str_to_set[v_a] = ')';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		      continue;
 		    }
-		  str[v_a] = fm1[v_a];
+		  str_to_set[v_a] = fm1[v_a];
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		  continue;
 		}
 	      else
 		{
-		  str[v_a] = ' ';
+		  str_to_set[v_a] = ' ';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		  continue;
 		}
-	      str[v_a] = fm1[v_a];
+	      str_to_set[v_a] = fm1[v_a];
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 	    }
 	}
       else
 	{
-	  if (buff_integer[variable_called_b] == ' ' && str[v_a] == ',')
+	  if (buff_integer[variable_called_b] == ' ' && str_to_set[v_a] == ',')
 	    {
 	      if (fm1[v_a + 1] == '<')
 		{
-		  str[v_a] = '<';
+		  str_to_set[v_a] = '<';
+	  A4GL_debug ("setting str[%d]=%c", v_a,  str_to_set[v_a]);
 		}
 	      else
 		{
-		  str[v_a] = 0x01;
+		  str_to_set[v_a] = 0x01;
+	  A4GL_debug ("setting str[%d]=0x01", v_a);
 		}
 	    }
 	}
@@ -970,121 +993,138 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
 	    {
 	      if (isneg)
 		{
-		  str[v_a + (int) strlen (fm1) + 1] = ')';
+		  str_to_set[v_a + (int) strlen (fm1) + 1] = ')';
 		  continue;
 		}
 	      else
 		{
-		  str[v_a + (int) strlen (fm1) + 1] = ' ';
+		  str_to_set[v_a + (int) strlen (fm1) + 1] = ' ';
 		  continue;
 		}
 	    }
 	  A4GL_debug ("setting str[%d]=%c", v_a + (int) strlen (fm1) + 1, ptr_decimal[variable_called_b]);
-	  str[v_a + (int) strlen (fm1) + 1] = ptr_decimal[variable_called_b++];
+	  str_to_set[v_a + (int) strlen (fm1) + 1] = ptr_decimal[variable_called_b++];
 	}
       else
 	{
 	  A4GL_debug ("setting str[%d]=%c", v_a + (int) strlen (fm1) + 1, fm2[v_a]);
-	  str[v_a + (int) strlen (fm1) + 1] = fm2[v_a];
+	  str_to_set[v_a + (int) strlen (fm1) + 1] = fm2[v_a];
 	}
     }
 
 
 #ifdef HAVE_RINDEX
-  ptr = (char *) rindex (str, '<');
+  ptr =  rindex (str_to_set, '<');
 #else
 #ifdef HAVE_STRRCHR
-  ptr = (char *) strrchr (str, '<');
+  ptr = (char *) strrchr (str_to_set, '<');
 #else
 #error No rindex function
 #endif
 #endif
 
-  A4GL_debug ("str=%s", str);
+  A4GL_debug ("str=%s", str_to_set);
   // for any unused leading "<" or "-<" format chars,
   // shift the output to the left
   if (ptr)
     {
       variable_called_b = 0;
-      for (v_a = 0; v_a < (int) strlen (str); v_a++)
+      for (v_a = 0; v_a < (int) strlen (str_to_set); v_a++)
 	{
-	  if (str[v_a] == '<')
+	  if (str_to_set[v_a] == '<')
 	    {
-	      if (str[v_a + 1] == ',')
-		str[v_a + 1] = '<';
+	      if (str_to_set[v_a + 1] == ',')
+		str_to_set[v_a + 1] = '<';
 	      continue;
 	    }
-	  if (!isneg && str[v_a] == '-' && str[v_a + 1] == '<')
+	  if (!isneg && str_to_set[v_a] == '-' && str_to_set[v_a + 1] == '<')
 	    continue;
-	  buff[variable_called_b++] = str[v_a];
+	  buff[variable_called_b++] = str_to_set[v_a];
 	}
       buff[variable_called_b] = 0;
-      strcpy (str, buff);
+      strcpy (str_to_set, buff);
     }
 
-  A4GL_debug ("str=%s", str);
-  for (v_a = 0; v_a < (int) strlen (str); v_a++)
+  A4GL_debug ("str=%s", str_to_set);
+  for (v_a = 0; v_a < (int) strlen (str_to_set); v_a++)
     {
       A4GL_debug ("Here");
-      if (str[v_a] == 0x01)
+      if (str_to_set[v_a] == 0x01)
 	{
 	  A4GL_debug ("Here as well");
 
-	  if (v_a == 0)
-	    str[v_a] = ' ';
-	  else
-	    str[v_a] = str[v_a - 1];
+	  if (v_a == 0) {
+		
+	    str_to_set[v_a] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a , str_to_set[v_a]);
+	  }
+	  else {
+	    str_to_set[v_a] = str_to_set[v_a - 1];
+	   	A4GL_debug ("setting str[%d]=%c", v_a , str_to_set[v_a]);
+	  }
 
 
 	  if (v_a == 1)
 	    {
-	      if (str[v_a - 1] == '$')
+	      if (str_to_set[v_a - 1] == '$')
 		{
-		  str[v_a - 1] = ' ';
+		  str_to_set[v_a - 1] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a-1 , str_to_set[v_a-1]);
 		}
-	      if (str[v_a - 1] == '-')
+	      if (str_to_set[v_a - 1] == '-')
 		{
-		  str[v_a - 1] = ' ';
+		  str_to_set[v_a - 1] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a-1 , str_to_set[v_a-1]);
 		}
-	      if (str[v_a - 1] == '(')
+	      if (str_to_set[v_a - 1] == '(')
 		{
-		  str[v_a - 1] = ' ';
+		  str_to_set[v_a - 1] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a-1 , str_to_set[v_a-1]);
 		}
 	    }
 
 	  if (v_a >= 2)
 	    {
-	      if (str[v_a - 1] == '$' && str[v_a - 2] != '$')
+	      if (str_to_set[v_a - 1] == '$' && str_to_set[v_a - 2] != '$')
 		{
-		  str[v_a - 1] = ' ';
+		  str_to_set[v_a - 1] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a-1 , str_to_set[v_a-1]);
 		}
-	      if (str[v_a - 1] == '-' && str[v_a - 2] != '-')
+	      if (str_to_set[v_a - 1] == '-' && str_to_set[v_a - 2] != '-')
 		{
-		  str[v_a - 1] = ' ';
+		  str_to_set[v_a - 1] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a-1 , str_to_set[v_a-1]);
 		}
-	      if (str[v_a - 1] == '(' && str[v_a - 2] != '(')
+	      if (str_to_set[v_a - 1] == '(' && str_to_set[v_a - 2] != '(')
 		{
-		  str[v_a - 1] = ' ';
+		  str_to_set[v_a - 1] = ' ';
+	   	A4GL_debug ("setting str[%d]=%c", v_a-1 , str_to_set[v_a-1]);
 		}
 	    }
 	}
     }
-  for (v_a = strlen (str) - 1; v_a >= 0; --v_a)
+  for (v_a = strlen (str_to_set) - 1; v_a >= 0; --v_a)
     {
-      if (str[v_a] == '.')
-	str[v_a] = a4gl_convfmts.ui_decfmt.decsep;
-      else if (str[v_a] == a4gl_convfmts.ui_decfmt.decsep)
-	str[v_a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
+      if (str_to_set[v_a] == '.') {
+	str_to_set[v_a] = a4gl_convfmts.ui_decfmt.decsep;
+	   	A4GL_debug ("setting str[%d]=%c", v_a , str_to_set[v_a]);
+	}
+      else {
+		if (str_to_set[v_a] == a4gl_convfmts.ui_decfmt.decsep) {
+			str_to_set[v_a] = a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : '.';
+	   			A4GL_debug ("setting str[%d]=%c", v_a , str_to_set[v_a]);
+		}
+	}
     }
 
-  if (has_money && !strchr (str, '$'))
+  if (has_money && !strchr (str_to_set, '$'))
     {
       int first_non_space = -1;
       A4GL_debug ("Lacking money");
       // Lacking money!
-      for (v_a = 0; v_a < strlen (str); v_a++)
+      for (v_a = 0; v_a < strlen (str_to_set); v_a++)
 	{
-	  if (str[v_a] != ' ')
+	  if (str_to_set[v_a] != ' ')
 	    {
 	      first_non_space = v_a;
 	      break;
@@ -1093,18 +1133,21 @@ a4gl_using_from_string (char *str, int s, char *fmt, char *numeric, int isneg)
       if (first_non_space > 0)
 	{
 	  A4GL_debug ("first_non_space=%d\n", first_non_space);
-	  if (str[first_non_space] == '-' || str[first_non_space] == '(' || str[first_non_space] == '+')
+	  if (str_to_set[first_non_space] == '-' || str_to_set[first_non_space] == '(' || str_to_set[first_non_space] == '+')
 	    {
-	      str[first_non_space - 1] = str[first_non_space];
-	      str[first_non_space] = '$';
+		A4GL_debug ("setting str[%d]=%c",  first_non_space - 1, str_to_set[first_non_space]);
+		A4GL_debug ("setting str[%d]=%c",  first_non_space , '$');
+	      str_to_set[first_non_space - 1] = str_to_set[first_non_space];
+	      str_to_set[first_non_space] = '$';
 	    }
 	  else
 	    {
-	      str[first_non_space - 1] = '$';
+	      str_to_set[first_non_space - 1] = '$';
+		A4GL_debug ("setting str[%d]=%c",  first_non_space-1 , '$');
 	    }
 	}
     }
-  A4GL_debug ("using: result str=%s", str);
+  A4GL_debug ("using: result str=%s", str_to_set);
 
 }
 
