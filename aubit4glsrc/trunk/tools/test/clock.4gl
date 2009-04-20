@@ -1,3 +1,9 @@
+code
+#ifdef __WIN32__
+#include <windows.h>
+#endif
+endcode
+
 main
 define lv_time, lv_oldtime char(8)
 define a integer
@@ -24,7 +30,11 @@ while true
 		set pause mode off
 	end if
 code
+#ifdef __WIN32__
+	Sleep(50);
+#else
 	usleep(50000);
+#endif
 endcode
 end while
 end main
