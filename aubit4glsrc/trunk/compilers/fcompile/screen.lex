@@ -333,7 +333,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "browser"		{if (ign_kw(yystate, KW_BROWSER)) REJECT;strcpy(yylval.str,yytext); return KW_BROWSER;}
 
 "zerofill"		{if (ign_kw(yystate, KW_ZEROFILL)) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_ZEROFILL;}
-"right"			{if (ign_kw(yystate, KW_RIGHT)) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_RIGHT;}
+"right"			{if (ign_kw(yystate, KW_RIGHT)) REJECT;strcpy(yylval.str,yytext);  return KW_RIGHT;}
 "listbox"		{if (ign_kw(yystate, LISTBOX)) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 "button"		{if (ign_kw(yystate, BUTTON)) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 "panel"		{if (ign_kw(yystate, KW_PANEL)) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}

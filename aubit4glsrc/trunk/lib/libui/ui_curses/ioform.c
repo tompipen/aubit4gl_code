@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.221 2009-03-23 15:04:55 mikeaubury Exp $
+# $Id: ioform.c,v 1.222 2009-04-20 18:37:45 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.221 2009-03-23 15:04:55 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.222 2009-04-20 18:37:45 mikeaubury Exp $";
 #endif
 
 /**
@@ -495,6 +495,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
 	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
 	  done = 1;
 	}
+
     }
 
 
@@ -764,6 +765,9 @@ UILIB_A4GL_read_fields (void *formdetsv)
   int n1, a1;
   int metric_no;
   char *ptr;
+struct struct_scr_field *fprop;
+
+
   formdets = formdetsv;
   A4GL_chkwin ();
   n = formdets->fileform->fields.fields_len;
@@ -792,6 +796,9 @@ UILIB_A4GL_read_fields (void *formdetsv)
 				     metrics_val[metric_no].field, ptr);
 		  A4GL_set_field_attr ((FIELD *) formdets->fileform->metrics.
 				       metrics_val[metric_no].field);
+		fprop=(struct struct_scr_field *) ptr;
+    		if (A4GL_has_bool_attribute (fprop, FA_B_RIGHT)) { set_field_just ((FIELD *)formdets->fileform->metrics.  metrics_val[metric_no].field, JUSTIFY_RIGHT); }
+
 		  A4GL_debug ("Done\n");
 		}
 	    }
