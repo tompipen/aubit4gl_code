@@ -1001,7 +1001,12 @@ decode_print (struct cmd_print *cmd)
 void
 decode_printfile (struct cmd_printfile *cmd)
 {
-  fprintf (fout,"PRINT FILE \"%s\"\n", cmd->filename);
+  if (cmd->filename_expr.type==EXPRTYPE_STRING) {
+  	fprintf (fout,"PRINT FILE \"%s\"\n", cmd->filename_expr.expr_u.s);
+  } else {
+  	fprintf (fout,"PRINT FILE ");
+	print_variable (cmd->filename_expr.expr_u.var_usage->varid, 0, 0);
+  }
 }
 
 void

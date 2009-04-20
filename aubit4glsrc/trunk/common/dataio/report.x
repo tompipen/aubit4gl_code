@@ -1,7 +1,7 @@
 
 /* 
 Data definitions for a report 
- $Id: report.x,v 1.11 2009-01-23 14:18:34 mikeaubury Exp $ 
+ $Id: report.x,v 1.12 2009-04-20 10:54:30 mikeaubury Exp $ 
 
 */
  
@@ -252,7 +252,7 @@ struct cmd_print {
 
 
 struct cmd_printfile {
-	string filename<>;
+	struct expr filename_expr;
 };
 
 

@@ -1163,8 +1163,15 @@ op_semi: {strcpy($<str>$,"1");} | SEMICOLON {strcpy($<str>$,"0");}
 
 print_file_command: PRINT_FILE string {
 	$<cmd>$.cmd_type=CMD_PRINTFILE;
-	$<cmd>$.acerep_command_u.cmd_printfile.filename=acl_strdup($<str>2);
-}
+	$<cmd>$.acerep_command_u.cmd_printfile.filename_expr.type=EXPRTYPE_STRING;
+	$<cmd>$.acerep_command_u.cmd_printfile.filename_expr.expr_u.s=acl_strdup($<str>2);
+	}
+	| PRINT_FILE variable_sub {
+	$<cmd>$.cmd_type=CMD_PRINTFILE;
+	$<cmd>$.acerep_command_u.cmd_printfile.filename_expr.type=EXPRTYPE_VARIABLE_SUB;
+	$<cmd>$.acerep_command_u.cmd_printfile.filename_expr.expr_u.var_usage=$<var_usage>2;
+	}
+;
 ;
 
 skip_command : SKIP int_val LINES {
