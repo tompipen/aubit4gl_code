@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.156 2009-03-10 11:14:11 mikeaubury Exp $
+# $Id: iarray.c,v 1.157 2009-04-21 11:15:04 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.156 2009-03-10 11:14:11 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.157 2009-04-21 11:15:04 mikeaubury Exp $";
 #endif
 
 /**
@@ -62,6 +62,7 @@ void A4GL_make_window_with_this_form_current (void *form);
 int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt);
 
 int A4GL_double_chk_arr_line (struct s_inp_arr *s, int ln, char why);
+static int A4GL_something_in_entire_row_has_changed (struct s_inp_arr *s,int ln);
 
 // Nicked from form.priv.h : 
 #define Field_Is_Not_Selectable(f) (((unsigned)((f)->opts) & O_SELECTABLE)!=O_SELECTABLE)
@@ -2471,6 +2472,15 @@ if (arr->fcntrl[a].state==99) {
 
       if (arr->fcntrl[a].state == 50)
 	{
+
+	   if (arr->curr_line_is_new && A4GL_something_in_entire_row_has_changed(arr,arr->scr_line-1)) {
+		arr->curr_line_is_new=0;
+		//A4GL_pause_execution();
+	  }
+	
+
+       	//A4GL_set_arr_count (arr->no_arr);
+
 	  new_state = 25;
 	  if (arr->processed_onkey != 0)
 	    {
@@ -3447,6 +3457,26 @@ return "Unknown FORMCONTROL";
 }
 
 
+int A4GL_something_in_entire_row_has_changed (struct s_inp_arr *s,int ln)
+{
+  //struct struct_scr_field *fprop;
+  //int a;
+  int b;
+  int nv;
+
+    nv=s->nbind;
+      if (s->start_slice!=-1 && s->end_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+
+      for (b = 0; b < nv; b++)
+	{
+	  	FIELD *f;
+	  	f = s->field_list[ln][b];
+		if ((A4GL_fprop_flag_get(f, FLAG_FIELD_TOUCHED)))  {
+			return 1;
+		}
+    }
+	return 0;
+}
 
 
 int

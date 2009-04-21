@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.68 2009-03-10 12:06:08 mikeaubury Exp $
+# $Id: input_array.c,v 1.69 2009-04-21 11:15:05 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.68 2009-03-10 12:06:08 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.69 2009-04-21 11:15:05 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -70,8 +70,9 @@ int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, 
 //void A4GL_set_curr_infield (long a);
 //void debug_print_flags (void *sv, char *txt);
 //int A4GL_get_attr_from_string (char *s);
-
+static int A4GL_something_in_entire_row_has_changed (struct s_inp_arr *s,int ln);
 static int A4GL_double_chk_line(struct s_inp_arr *arr,int ln, char why) ;
+
 static char *get_field_with_no_picture(void *f) ;
 int last_field_pos=-1;
 #define CONTROL_STACK_LENGTH 10
@@ -2297,6 +2298,11 @@ int nv;
 
       if (arr->fcntrl[a].state == 50)
 	{
+
+	           if (arr->curr_line_is_new && A4GL_something_in_entire_row_has_changed(arr,arr->scr_line-1)) {
+                arr->curr_line_is_new=0;
+                          }
+                
 	  //struct struct_scr_field *fprop;
 	  new_state = 25;
 	  if (arr->processed_onkey != 0)
@@ -3888,5 +3894,27 @@ if (ln<0) return 1;
         }
     }
   return 1;
+}
+
+
+int A4GL_something_in_entire_row_has_changed (struct s_inp_arr *s,int ln)
+{
+  //struct struct_scr_field *fprop;
+  //int a;
+  int b;
+  int nv;
+
+    nv=s->nbind;
+      if (s->start_slice!=-1 && s->end_slice!=-1) { nv=s->end_slice-s->start_slice+1; }
+
+      for (b = 0; b < nv; b++)
+        {
+                void *f;
+                f = s->field_list[ln][b];
+                if ((A4GL_fprop_flag_get(f, FLAG_FIELD_TOUCHED)))  {
+                        return 1;
+                }
+    }
+        return 0;
 }
 
