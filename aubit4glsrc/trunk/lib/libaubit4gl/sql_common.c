@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.77 2009-04-22 05:43:47 mikeaubury Exp $
+# $Id: sql_common.c,v 1.78 2009-04-22 20:03:52 mikeaubury Exp $
 #
 */
 
@@ -107,7 +107,7 @@ int ndeclaredCursors = 0;
 static int A4GL_findPreparedStatementbySid (void *sid);
 static int A4GL_findPreparedStatementByUniq (char *name);
 
-
+double esql_cmd_start=0;
 //char *find_table (struct s_select *select, struct s_select_list_item *i);
 
 /*
@@ -185,9 +185,10 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
   if (sql == NULL)
     return;
 
-  A4GL_debug ("SQL on line %d in %s:%s\n", line, mod, sql);
   if (logfnameset == -1)
     return;
+
+  A4GL_debug ("SQL on line %d in %s:%s\n", line, mod, sql);
 
   if (logfnameset == 1)
     {
@@ -214,6 +215,12 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
           logfnameset = -1;
           return;
         }
+
+
+      if (A4GL_isyes(acl_getenv("IGNORE_SQLMETRICS"))) { /* Used by the SQLMetrics program itself to  stop it logging the analysis */
+          logfnameset = -1;
+          return;
+	}
 
       // Firstly - MAPSQL should be a directory...
       SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (), getpid ());
@@ -1978,7 +1985,13 @@ int A4GL_open_cursor(char* s,int no,void* vibind) {
   	t1=get_now_as_double();
 	bad=A4GLSQL_open_cursor_internal(s,no,vibind);
   	t2=get_now_as_double()-t1;
-  	log_sql("FETCH",s,cid->statement->select,t2,NULL,0); 
+	if (cid) {
+		if (cid->statement) {
+			if (cid->statement->select) {
+  			log_sql("FETCH",s,cid->statement->select,t2,NULL,0); 
+			}
+		}
+	}
 
         if (!bad) {
 		cid->cursorState=E_CURSOR_OPEN;
@@ -2148,7 +2161,13 @@ void A4GL_put_insert(void* ibind,int n) {
         cid = A4GL_find_cursor(cursorName);
 	A4GLSQL_put_insert_internal(cursorName, ibind, n);
   	t2=get_now_as_double()-t1;
-  	log_sql("PUT",cursorName,cid->statement->select,t2,NULL,0); 
+	if (cid) {
+		if (cid->statement) {
+			if (cid->statement->select) {
+  				log_sql("PUT",cursorName,cid->statement->select,t2,NULL,0); 
+			}
+		}
+	}
 
 	free(cursorName);
 }
@@ -2486,6 +2505,19 @@ void A4GL_free_prepare(struct s_sid *sid) {
 			blank_any_cursors_using(sid);
 		}
 	}
+}
+
+
+void A4GL_set_logsqlstart(void ) {
+	esql_cmd_start=get_now_as_double();
+}
+
+void A4GL_logsql(int lineno,char *module, char *s,char *type,char *cursor) {
+
+	if(esql_cmd_start==0) {
+		esql_cmd_start=get_now_as_double();
+	}
+  	log_sql(type,cursor,cleanup(s),get_now_as_double()-esql_cmd_start,module,lineno);
 }
 
 // ================================ EOF ================================

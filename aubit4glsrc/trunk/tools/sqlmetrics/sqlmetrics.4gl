@@ -9,6 +9,11 @@ defer interrupt
 	call form_is_compiled(sqls,"MEMPACKED","GENERIC")
 	call form_is_compiled(sqldeta,"MEMPACKED","GENERIC")
 
+	# Let the library know to ignore the SQLMETRICS setting
+	# we dont want to log the SQLs we're using to analyse
+	# the SQLs we want to analyse :-)
+	call aclfgl_setenv("IGNORE_SQLMETRICS","Y") 
+
 	call copyright_banner()
 
 	options message line last

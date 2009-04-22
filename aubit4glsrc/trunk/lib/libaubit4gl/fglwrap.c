@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.146 2009-02-24 08:25:12 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.147 2009-04-22 20:03:52 mikeaubury Exp $
 #
 */
 
@@ -1467,7 +1467,7 @@ initsig_child ()
   return 1;
 }
 
-
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -1532,6 +1532,7 @@ A4GL_logsql (int lineno, char *module, char *s)
   fclose (fout);
 
 }
+#endif
 
 
 

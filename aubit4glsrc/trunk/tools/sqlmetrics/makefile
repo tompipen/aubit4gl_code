@@ -16,6 +16,7 @@ all: sqlmetrics.4ae
 
 sqlmetrics.4ae: sqlmetrics${A4GL_OBJ_EXT} load${A4GL_OBJ_EXT} main${A4GL_OBJ_EXT} analyze${A4GL_OBJ_EXT} report${A4GL_OBJ_EXT}  ../asql/filehand${A4GL_OBJ_EXT} ../asql/generic_db${A4GL_OBJ_EXT} sqls.afr${A4GL_OBJ_EXT} sqldeta.afr${A4GL_OBJ_EXT} ${OBJS_PICK}  splash.afr${A4GL_OBJ_EXT}
 	4glpc -g -o $@ $^
+	cp sqlmetrics.4ae ${ROOT}/bin
 
 
 
