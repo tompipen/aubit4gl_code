@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.76 2009-04-08 08:36:41 mikeaubury Exp $
+# $Id: sql_common.c,v 1.77 2009-04-22 05:43:47 mikeaubury Exp $
 #
 */
 
@@ -1947,7 +1947,13 @@ int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind
   	t1=get_now_as_double();
 	rval=A4GLSQL_fetch_cursor_internal(cursor_name,fetch_mode,fetch_when,nibind,ibind);
   	t2=get_now_as_double()-t1;
-  	log_sql("FETCH",cursor_name,cid->statement->select,t2,NULL,0); 
+	if (cid) {
+		if (cid->statement) {
+			if (cid->statement->select) {
+  				log_sql("FETCH",cursor_name,cid->statement->select,t2,NULL,0); 
+			}
+		}
+	}
 	return rval;
 }
 

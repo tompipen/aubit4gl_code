@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.232 2009-04-18 07:54:51 mikeaubury Exp $
+# $Id: stack.c,v 1.233 2009-04-22 05:41:06 mikeaubury Exp $
 #
 */
 
@@ -4490,6 +4490,7 @@ if (!setnvalint) {
 	if (a==nvalint || b==nvalint) {
 			// if either is null - the result is false..
 			A4GL_push_int(0);
+			return;
 	}
 	if (a==b) {
 		A4GL_push_int(1);

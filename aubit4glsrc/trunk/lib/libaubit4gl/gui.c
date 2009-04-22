@@ -123,7 +123,6 @@ A4GL_monitor_close (void)
 
 /**
  * Gets a port from where to act as a server using TCP.
- *  OBSOLETE
  * Tries to check by name in /etc/services and then return it as a number
  * (if valid).
  *
@@ -157,7 +156,6 @@ atoport (char *service, char *proto)
 
 /**
  * Converts ascii text to in_addr struct.
- *                      OBSOLETE
  * @param address
  * @return
  *   - NULL : The address can not be found.
