@@ -174,24 +174,25 @@ static void clr_bindings(void) {
 
 
 static void
-A4GL_save_sql_from_var (void)
+A4GL_save_sql_from_var (char *type,char *cursorname)
 {
   //static int sqlcnt = 0;
   //int a;
-  if (A4GL_isyes (acl_getenv ("A4GL_EC_LOGSQL")))
-    {
-      printc ("A4GL_logsql(%d,_module_name,_sql);", line_for_cmd);
-    }
+  //if (A4GL_isyes (acl_getenv ("A4GL_EC_LOGSQL")))
+    //{
+	if (cursorname==NULL) cursorname="";
+      printc ("A4GL_logsql(%d,_module_name,_sql,\"%s\",\"%s\");", line_for_cmd,type,cursorname);
+    //}
 }
 
 
 static void
-A4GL_save_sql (char *s, char *s2)
+A4GL_save_sql (char *s, char *s2,char *type, char *cursorname)
 {
   static int sqlcnt = 0;
   char *buff;
   int a;
-  if (A4GL_isyes (acl_getenv ("A4GL_EC_LOGSQL")))
+  if (A4GL_isyes (acl_getenv ("A4GL_EC_LOGSQL"))||1)
     {
       if (s2 == 0)
         {
@@ -202,7 +203,7 @@ A4GL_save_sql (char *s, char *s2)
           buff = acl_malloc2 (strlen (s) + strlen (s2));
           SPRINTF1 (buff, s, s2);
         }
-      printh ("char _sql_stmt_%d[]={\n", sqlcnt);
+      printh ("static char _sql_stmt_%d[]={\n", sqlcnt);
       for (a = 0; a < strlen (buff); a++)
         {
           if (a4gl_isalpha (buff[a]) || isdigit (buff[a]))
@@ -217,8 +218,8 @@ A4GL_save_sql (char *s, char *s2)
             printh ("\n");
         }
       printh ("0};\n");
-      printc ("A4GL_logsql(%d,_module_name,_sql_stmt_%d);", line_for_cmd,
-              sqlcnt++);
+	if (cursorname==NULL) cursorname="\"\"";
+      printc ("A4GL_logsql(%d,_module_name,_sql_stmt_%d,\"%s\",\"%s\");", line_for_cmd, sqlcnt++,type,cursorname);
       free (buff);
     }
 }
@@ -255,13 +256,15 @@ clr_suppress_lines();
 
   if (using_type == 0)
     {
-      A4GL_save_sql ("EXECUTE %s", stmt);
-      printc ("\nEXEC SQL EXECUTE %s;\n", stmt);
+  	printc("A4GL_set_logsqlstart();");
+      	printc ("\nEXEC SQL EXECUTE %s;\n", stmt);
+      	A4GL_save_sql ("%s",stmt, "EXECUTE","");
     }
 
   if (using_type == 1)
     {
       int a;
+  printc("A4GL_set_logsqlstart();");
       printc ("{ /* EXECUTE 1 */\n");
 
 	if (using_bind==0) using_bind=&empty;
@@ -269,7 +272,6 @@ clr_suppress_lines();
       print_bind_set_value_g (using_bind,'i');
       print_conversions_g (using_bind,'i');
 
-      A4GL_save_sql ("EXECUTE %s USING ...", stmt);
       set_suppress_lines ();
       printc ("\nEXEC SQL EXECUTE %s USING \n", stmt);
       for (a = 0; a < using_bind->list.list_len; a++)
@@ -279,6 +281,7 @@ clr_suppress_lines();
         }
       printc (";");
       clr_suppress_lines ();
+      A4GL_save_sql ("EXECUTE %s USING ...", stmt,"EXECUTE","");
       printc ("}\n");
     }
 
@@ -286,11 +289,11 @@ clr_suppress_lines();
     {
       int a;
 	if (into_bind==0) into_bind=&empty;
+  printc("A4GL_set_logsqlstart();");
       printc ("{ /* EXECUTE 2 */\n");
       print_bind_definition_g (into_bind,'o');
       print_bind_set_value_g (into_bind,'o');
       set_suppress_lines ();
-      A4GL_save_sql ("EXECUTE %s INTO ...", stmt);
       printc ("\nEXEC SQL EXECUTE %s INTO \n", stmt);
       for (a = 0; a < into_bind->list.list_len; a++)
         {
@@ -302,12 +305,14 @@ clr_suppress_lines();
       print_conversions_g (into_bind,'o');
       printc ("}\n");
       clr_suppress_lines ();
+      A4GL_save_sql ("EXECUTE %s INTO ...", stmt,"EXECUTE","");
     }
 
   if (using_type == 3)
     {
       int a;
-      set_suppress_lines ();
+  	printc("A4GL_set_logsqlstart();");
+      	set_suppress_lines ();
 	if (into_bind==0) into_bind=&empty;
 	if (using_bind==0) using_bind=&empty;
       printc ("{ /* EXECUTE 3 */\n");
@@ -318,7 +323,7 @@ clr_suppress_lines();
       print_bind_set_value_g (using_bind,'i');
 
       print_conversions_g (using_bind,'i');
-      A4GL_save_sql ("EXECUTE %s INTO ... USING ...", stmt);
+      A4GL_save_sql ("EXECUTE %s INTO ... USING ...", stmt,"EXECUTE","");
       printc ("\nEXEC SQL EXECUTE %s ", stmt);
 
       printc (" INTO ");
@@ -622,6 +627,7 @@ char connname[2000];
 int using_username=0;
   print_cmd_start ();
 
+  printc("A4GL_set_logsqlstart();");
 
 
   printc ("{");
@@ -663,7 +669,6 @@ int using_username=0;
 		sprintf(db,":_d");
   }
 
-  A4GL_save_sql ("CONNECT TO %s",db);
 
    if (using_username==0) {
    	printc("if (A4GL_sqlid_from_aclfile (_d, _uAcl, _pAcl)) {");
@@ -721,6 +726,8 @@ int using_username=0;
    printc("}");
   clr_suppress_lines ();
 
+  A4GL_save_sql ("CONNECT TO %s",db,"CONNECT","");
+
   print_copy_status_with_sql (0);
   return 1;
 }
@@ -729,7 +736,7 @@ int using_username=0;
 
 
 static void print_set_conn_from_str(char *conn) { 
-  A4GL_save_sql ("SET CONNECTION %s", conn);
+  printc("A4GL_set_logsqlstart();");
   if (esql_type () == E_DIALECT_POSTGRES) {   // Postgres...
                         printc ("\nEXEC SQL SET CONNECTION %s;\n", A4GL_strip_quotes (conn));
   } else {
@@ -737,6 +744,7 @@ static void print_set_conn_from_str(char *conn) {
   }
 
   printc("if (sqlca.sqlcode>=0) {A4GL_set_esql_connection(%s);}",conn);
+  A4GL_save_sql ("SET CONNECTION %s", conn,"SET CONNECTION","");
 }
 
 /******************************************************************************/
@@ -966,23 +974,26 @@ if (!already_in_command)
    switch (cmd_data->cl_type) {
 		case E_CT_DATABASE:     
 			      if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT") || esql_type () == E_DIALECT_INFOFLEX || esql_type () == E_DIALECT_INFORMIX) {
-          				A4GL_save_sql ("CLOSE DATABASE", 0);
-          							printc ("\nEXEC SQL CLOSE DATABASE;\n");
+  				printc("A4GL_set_logsqlstart();");
+          				printc ("\nEXEC SQL CLOSE DATABASE;\n");
+          				A4GL_save_sql ("CLOSE DATABASE", 0,"SQL","");
         			} else {
-          				A4GL_save_sql ("DISCONNECT default", 0);
+  					printc("A4GL_set_logsqlstart();");
           				/* printc ("\nEXEC SQL DISCONNECT default;\n"); */
           				printc ("\nEXEC SQL DISCONNECT;\n");
+          				A4GL_save_sql ("DISCONNECT default", 0,"SQL","");
         				}
       				printc ("if (sqlca.sqlcode==0) A4GL_esql_db_open(0,0,0,\"\");");
 				break;
 
 		case E_CT_SESSION:      
-      					A4GL_save_sql ("DISCONNECT %s", get_esql_ident_as_string(cmd_data->ident));
+  					printc("A4GL_set_logsqlstart();");
       					printc ("\nEXEC SQL DISCONNECT %s;\n",get_esql_ident_as_string(cmd_data->ident));
+      					A4GL_save_sql ("DISCONNECT %s", get_esql_ident_as_string(cmd_data->ident),"SQL","");
 					break;
 
 		case E_CT_CURS_OR_PREP: 
-      					A4GL_save_sql ("CLOSE  %s", get_esql_ident_as_string(cmd_data->ident));
+  					printc("A4GL_set_logsqlstart();");
       					printc ("\nEXEC SQL CLOSE %s;\n", get_esql_ident_as_string(cmd_data->ident));
       					if (A4GLSQLCV_check_requirement ("IGNORE_CLOSE_ERROR")) {
           					printc ("sqlca.sqlcode=0;");
@@ -992,11 +1003,15 @@ if (!already_in_command)
     					{
         					printc("A4GL_ESQL_set_cursor_is_closed(%s);",get_esql_ident_as_string_for_function_calls(cmd_data->ident,1));
     					}
+      					A4GL_save_sql ("CLOSE  %s", get_esql_ident_as_string(cmd_data->ident),"CLOSE","");
+					break;
 
   }
 
 if (!already_in_command)
   print_copy_status_with_sql (0);
+
+
   return 1;
 }
 
@@ -1011,18 +1026,21 @@ print_sql_transact_cmd (struct_sql_transact_cmd * cmd_data)
 
   if (cmd_data->trans == -1)
     {
-      A4GL_save_sql ("BEGIN WORK", 0);
+  	printc("A4GL_set_logsqlstart();");
       printc ("\nEXEC SQL BEGIN WORK;\n");
+      A4GL_save_sql ("BEGIN WORK", 0,"TRANS","");
     }
   if (cmd_data->trans == 0)
     {
-      A4GL_save_sql ("ROLLBACK WORK", 0);
+  printc("A4GL_set_logsqlstart();");
       printc ("\nEXEC SQL ROLLBACK WORK;\n");
+      A4GL_save_sql ("ROLLBACK WORK", 0,"TRANS","");
     }
   if (cmd_data->trans == 1)
     {
-      A4GL_save_sql ("COMMIT WORK", 0);
+  printc("A4GL_set_logsqlstart();");
       printc ("\nEXEC SQL COMMIT WORK;\n");
+      A4GL_save_sql ("COMMIT WORK", 0,"TRANS","");
     }
 
 
@@ -1150,7 +1168,7 @@ if (bind && bind->list.list_len==0) {
   print_conversions_g (bind,'i');
   }
   printc ("internal_recopy_%s_i_Dir();", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
-  A4GL_save_sql ("PUT %s", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0)  );
+  printc("A4GL_set_logsqlstart();");
 
 
   set_suppress_lines ();
@@ -1224,6 +1242,7 @@ if (bind && bind->list.list_len) {
 }
 
   clr_suppress_lines ();
+  A4GL_save_sql ("PUT %s", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0) ,"PUT", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0) );
 
 
   print_copy_status_with_sql (0);
@@ -1326,8 +1345,9 @@ print_flush_cmd (struct_flush_cmd * cmd_data)
     }
   else
     {
-      A4GL_save_sql ("FLUSH %s", get_esql_ident_as_string (cmd_data->cursorname));
+      printc("A4GL_set_logsqlstart();");
       printc ("\nEXEC SQL FLUSH %s;\n", get_esql_ident_as_string (cmd_data->cursorname));
+      A4GL_save_sql ("FLUSH %s", get_esql_ident_as_string (cmd_data->cursorname),"FLUSH",get_esql_ident_as_string (cmd_data->cursorname));
     }
 
   print_copy_status_with_sql (0);
@@ -1394,6 +1414,7 @@ print_prepare_cmd (struct_prepare_cmd * cmd_data,int already_doing_cmd)
         //struct expr_str *stmtid;
         //struct expr_str *sql;
 
+  printc("A4GL_set_logsqlstart();");
   if (!already_doing_cmd) {
   		print_cmd_start ();
 		print_use_session(cmd_data->connid);
@@ -1405,6 +1426,9 @@ print_prepare_cmd (struct_prepare_cmd * cmd_data,int already_doing_cmd)
   printc ("char *_s;\n");
   printc ("char *_p;\n");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
+
+  printc("A4GL_set_logsqlstart();");
+
   clr_suppress_lines ();
   print_expr(cmd_data->sql);
   printc("_sql=A4GL_char_pop();");
@@ -1417,7 +1441,7 @@ print_prepare_cmd (struct_prepare_cmd * cmd_data,int already_doing_cmd)
   } else {
   	printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", get_esql_ident_as_string(cmd_data->stmtid));
   }
-  A4GL_save_sql_from_var ();
+  A4GL_save_sql_from_var ("PREPARE","");
   printc ("free(_s);\n");
   printc ("free(_sql);\n");
   printc ("}\n");
@@ -1552,30 +1576,35 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	      A4GL_assertion (1, "No ESQL/C Dialect");
 	      break;
 	    case E_DIALECT_INFORMIX:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	
-	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default'\n");
+  		printc("A4GL_set_logsqlstart();");
+	      	printc ("\nEXEC SQL CONNECT TO $_s AS 'default'\n");
 	          printc (" USER :_uAcl USING :_pAcl; "); 
+	      	A4GL_save_sql ("CONNECT TO $s AS 'default'", 0,"SQL","");	
 
 	      break;
 	    case E_DIALECT_POSTGRES:
-	      A4GL_save_sql ("CONNECT TO $s", 0);		// ecpg 8.1.5
+  printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO :_s\n");		// ecpg 8.1.5
 	           printc (" USER :_uAcl USING :_pAcl; "); 
+	      A4GL_save_sql ("CONNECT TO $s", 0,"SQL","");		// ecpg 8.1.5
 	      break;
 	      	
 
 	    case E_DIALECT_SAPDB:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);
+  printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0,"SQL","");
 	      break;
 
 	    case E_DIALECT_INGRES:
-	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+  printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT :s ;\n");
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0,"SQL","");	
 	      break;
 	    case E_DIALECT_INFOFLEX:
-	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+  		printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0,"SQL","");	
 	      break;
 	    }
 
@@ -1589,24 +1618,29 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	      A4GL_assertion (1, "No ESQL/C Dialect");
 	      break;
 	    case E_DIALECT_INFORMIX:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);	
+  		printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0,"SQL","");	
 	      break;
 	    case E_DIALECT_POSTGRES:
-	      A4GL_save_sql ("CONNECT TO $s", 0);		// ecpg 8.1.5
+  		printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO :_s;\n");		// ecpg 8.1.5
+	      A4GL_save_sql ("CONNECT TO $s", 0,"SQL","");		// ecpg 8.1.5
 	      break;
 	    case E_DIALECT_SAPDB:
-	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0);
+  		printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $s AS 'default'", 0,"SQL","");
 	      break;
 	    case E_DIALECT_INGRES:
-	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+  		printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT :s ;\n");
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0,"SQL","");	
 	      break;
 	    case E_DIALECT_INFOFLEX:
-	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0);	
+  		printc("A4GL_set_logsqlstart();");
 	      printc ("\nEXEC SQL CONNECT TO $_s AS 'default';\n");
+	      A4GL_save_sql ("CONNECT TO $_s AS 'default'", 0,"SQL","");	
 	      break;
 	    }
    		clr_nonewlines();
@@ -1674,6 +1708,7 @@ int ll;
 	return 0;
   }
 
+  printc("A4GL_set_logsqlstart();");
   print_cmd_start ();
   print_use_session(cmd_data->connid);
 
@@ -1776,7 +1811,6 @@ int ll;
         clr_bindings();
   printc ("%s %s ;", buff, get_sql_into_buff(cmd_data->outbind));
 
-  A4GL_save_sql (buff, 0);
   if (cmd_data->outbind && cmd_data->outbind->list.list_len)
     {
 	if (using_obind_dup_not_obind) {
@@ -1791,6 +1825,7 @@ int ll;
 
 
   clr_suppress_lines ();
+  A4GL_save_sql (buff, 0,"FETCH",get_esql_ident_as_string_for_function_calls(cmd_data->fetch->cname,0));
 
 
   print_copy_status_with_sql (0);
@@ -1833,6 +1868,7 @@ empty.list.list_len=0;
         //e_boolean scroll;
         //e_boolean isstmt;
 
+  printc("A4GL_set_logsqlstart();");
   strcpy(cname,get_esql_ident_as_string(cmd_data->cursorname));
   A4GL_add_pointer(cname,CURSOR_DEFINED,(void *) 1);
   cname3=get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0);
@@ -2006,7 +2042,6 @@ var_prepname=0;
   } else {
   	printc ("%s FOR %s;", buff,stmt);
   }
-  A4GL_save_sql ("DECLARE CURSOR FOR %s", vcname);
 
 
 
@@ -2126,6 +2161,7 @@ var_prepname=0;
   clr_suppress_lines ();
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
+  A4GL_save_sql (stmt, vcname,"DECLARE",vcname);
   return 1;
 }
 
@@ -2211,6 +2247,8 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
       printc ("\nif (A4GL_ESQL_cursor_is_open(%s)) {\nEXEC SQL CLOSE  %s; /* AUTOCLOSE */\n}\n", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,1), cname);
     }
 
+
+  printc("A4GL_set_logsqlstart();");
   using_bind=cmd_data->using_bind;
   if (using_bind && using_bind->list.list_len )
     {
@@ -2222,7 +2260,6 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
       print_bind_set_value_g (using_bind,'i');
       print_conversions_g (using_bind,'i');
 
-      A4GL_save_sql ("OPEN %s USING ...", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
       printc ("\nEXEC SQL OPEN %s USING \n", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
 
       for (a = 0; a < ni; a++)
@@ -2233,12 +2270,13 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
 
       printc ("   ;");
       printc ("}\n");
+      A4GL_save_sql ("OPEN %s USING ...", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0),"OPEN",get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
     }
   else
     {
       printc ("internal_recopy_%s_i_Dir();", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
-      A4GL_save_sql ("OPEN '%s'", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
       printc ("\nEXEC SQL OPEN  %s;\n", get_esql_ident_as_string(cmd_data->cursorname));
+      A4GL_save_sql ("OPEN '%s'", get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0),"OPEN",get_esql_ident_as_string_for_function_calls(cmd_data->cursorname,0));
     }
 
 
@@ -2333,13 +2371,13 @@ int no;
   }
 
 
+  printc("A4GL_set_logsqlstart();");
   printc ("{ /* sql_block_cmd */");
   ni = print_bind_definition_g (input_bind,'i');
   no = print_bind_definition_g (into_list,'o');
   print_bind_set_value_g (input_bind,'i');
   print_bind_set_value_g (into_list,'o');
   print_conversions_g (input_bind,'i');
-  A4GL_save_sql (buff, 0);
   A4GL_trim(buff);
 
   printc ("\nEXEC SQL %s;", buff);
@@ -2353,6 +2391,7 @@ int no;
   		print_get_sqlca_sqlerrd2_for_serial();
 	}
   print_undo_use(cmd_data->connid);
+  A4GL_save_sql (buff, 0,"SQLBLOCK","");
   return 1;
 }
 
@@ -2365,7 +2404,7 @@ static void print_exec_sql_bound_g (char *s, int converted,expr_str_list *bind)
   int c;
   set_suppress_lines ();
 char *buff;
-  A4GL_save_sql (s, 0);
+  printc("A4GL_set_logsqlstart();");
 
 if (bind && bind->list.list_len) {
   printc ("{/* Start exec_sql_bound */\n");
@@ -2386,6 +2425,7 @@ if (bind && bind->list.list_len) {
 }
 
   clr_suppress_lines ();
+  A4GL_save_sql (s, 0,"SQL","");
 }
 
 
@@ -2532,6 +2572,7 @@ switch (cmd_data->sql->expr_type) {
   if (doing_esql_unload)
     {
       int ni;
+  	printc("A4GL_set_logsqlstart();");
       printc ("{ /* un1 */");
   	tmp_ccnt++;
       ni = print_bind_definition_g (input_bind,'i');
@@ -2543,12 +2584,12 @@ switch (cmd_data->sql->expr_type) {
 	  printc ("A4GLSQLCV_check_fullpath(_filename);");
 	}
 
-      A4GL_save_sql ("UNLOAD : %s", sql);
       printc ("\nEXEC SQL UNLOAD TO %s DELIMITER :_delimiter %s ;", filename,sql);
   	tmp_ccnt--;
       printc ("}");
   	tmp_ccnt--;
       printc ("}");
+      A4GL_save_sql ("UNLOAD : %s", sql,"UNLOAD","");
 
     }
   else
@@ -2557,6 +2598,7 @@ switch (cmd_data->sql->expr_type) {
       //int a;
       //char *ptr;
 	char ibindstr[128];
+  printc("A4GL_set_logsqlstart();");
       printc ("{ /* un3 */");
   	tmp_ccnt++;
       if (input_bind && input_bind->list.list_len) {
@@ -2581,6 +2623,7 @@ switch (cmd_data->sql->expr_type) {
       printc ("}");
   	tmp_ccnt--;
       printc ("}");
+      A4GL_save_sql ("UNLOAD : %s", sql,"UNLOAD","");
     }
 
 
@@ -2617,7 +2660,7 @@ int converted;
   // into the prepare later...
   ptr=(get_insert_cmd(cmd_data,&converted));
 
-  A4GL_save_sql (ptr, 0);
+  printc("A4GL_set_logsqlstart();");
 
   set_suppress_lines ();
   if (input_bind && input_bind->list.list_len) {
@@ -2642,6 +2685,7 @@ int converted;
 		print_get_sqlca_sqlerrd2_for_serial();
   }
   print_undo_use(cmd_data->connid);
+  A4GL_save_sql (ptr, 0,"INSERT","");
   return 1;
 }
 
@@ -2662,6 +2706,7 @@ int converted=0;
   
   clr_bindings();
 
+  printc("A4GL_set_logsqlstart();");
   //
   // generate the insert command - and then make sure its properly
   // escaped so we can use it in a string...
@@ -2690,6 +2735,7 @@ int converted=0;
 
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
+  A4GL_save_sql (ptr, 0,"DELETE","");
   return 1;
 }
 
@@ -2722,6 +2768,7 @@ int converted=0;
   // into the prepare later...
   ptr=(get_update_cmd(cmd_data,&converted));
 
+  printc("A4GL_set_logsqlstart();");
   set_suppress_lines ();
   if (input_bind && input_bind->list.list_len) {
 	int c;
@@ -2741,6 +2788,7 @@ int converted=0;
 
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
+  A4GL_save_sql (ptr, 0,"UPDATE","");
   return 1;
 }
 
@@ -2756,6 +2804,7 @@ char *p;
 // ---- 
   print_cmd_start ();
   print_use_session(cmd_data->connid);
+  printc("A4GL_set_logsqlstart();");
 
   if (A4GL_compile_time_convert ())
     {
@@ -2779,6 +2828,7 @@ A4GL_trim(p);
 
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
+  A4GL_save_sql (p, 0,"SQL","");
   return 1;
 }
 
@@ -2821,6 +2871,7 @@ print_select_cmd (struct_select_cmd * cmd_data)
   //char i[200];
   //char o[200];
 // ---- 
+  printc("A4GL_set_logsqlstart();");
   print_cmd_start ();
   print_use_session(cmd_data->connid);
         //struct expr_str * connid;
@@ -2885,6 +2936,8 @@ print_select_cmd (struct_select_cmd * cmd_data)
   if (no||ni) {
   	printc ("}\n");
   }
+
+  A4GL_save_sql (ptr, 0,"SQL","");
 
   print_copy_status_with_sql (0);
   print_undo_use(cmd_data->connid);
@@ -2969,7 +3022,8 @@ int has_own_using;
   printc ("while (1) {\n");
   tmp_ccnt++;
 
-  set_suppress_lines ();
+  printc("A4GL_set_logsqlstart();");
+  	set_suppress_lines ();
 	if (cmd_data->outputvals && cmd_data->outputvals->list.list_len) {
   		ni = print_bind_definition_g (cmd_data->outputvals,'o');
   		print_bind_set_value_g(cmd_data->outputvals,'o');
@@ -2977,6 +3031,8 @@ int has_own_using;
 	} else {
 		  printc ("\nEXEC SQL FETCH %s;\n", get_esql_ident_as_string(cmd_data->cursorname));
 	}
+  clr_suppress_lines ();
+  	A4GL_save_sql ("Foreach fetch %s", get_esql_ident_as_string(cmd_data->cursorname),"FETCH", get_esql_ident_as_string(cmd_data->cursorname));
   printc("if (sqlca.sqlcode<0) _fetcherr=sqlca.sqlcode;");
   print_copy_status_with_sql(0);
   printc("_fetchstatus=sqlca.sqlcode;");
@@ -2985,7 +3041,6 @@ int has_own_using;
   if (cmd_data->outputvals && cmd_data->outputvals->list.list_len) {
   	print_conversions_g (cmd_data->outputvals,'o');
 	}
-  clr_suppress_lines ();
   printc ("if (_fetchstatus==100 ) break;\n");
 
   dump_commands(cmd_data->foreach_commands);
@@ -3029,6 +3084,7 @@ int uses_filter=0;
   //str tabname;
   //str_list*  collist;
 
+  printc("A4GL_set_logsqlstart();");
   print_cmd_start ();
   print_use_session (cmd_data->connid);
 
@@ -3140,6 +3196,7 @@ if (issql) {
   print_copy_status_not_sql (0);
 }
   print_undo_use (cmd_data->connid);
+  A4GL_save_sql ("LOAD", 0,"LOAD","");
   return 1;
 }
 

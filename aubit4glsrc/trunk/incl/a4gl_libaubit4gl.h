@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.376 2009-04-18 07:56:31 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.377 2009-04-22 20:04:33 mikeaubury Exp $
 #
 */
 
@@ -1544,7 +1544,7 @@ void A4GL_push_decimal_str(char *p);
   void a4gl_using (char *str, int s, char *fmt, double num);
   int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);
   void A4GL_strmaxcpy(char *dest,char *src,int max);
-  void A4GL_logsql(int lineno,char *module, char *s);
+  void A4GL_logsql(int lineno,char *module, char *s,char *type,char *cursor);
 
 
   /* ========================== attributes.c ============================= */
@@ -2881,7 +2881,7 @@ void * A4GL_find_param (char *name);
 char *A4GL_acl_getenv_setfrom(void);
 void A4GL_pushIntEq(int a,int b);
 int simple_expr_datatype(struct expr_str *p);
-
+void A4GL_set_logsqlstart(void );
 #include "a4gl_builtin_funcs.h"
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */

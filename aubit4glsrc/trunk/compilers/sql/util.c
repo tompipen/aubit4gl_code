@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.73 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: util.c,v 1.74 2009-04-22 20:04:33 mikeaubury Exp $
 #
 */
 
@@ -1189,7 +1189,7 @@ A4GLPARSE_A4GLSQLCV_convert_sql_ml (char *target_dialect, char *sql,
   sql = acl_strdup (sql);
   strcpy (m_module, module);
   m_ln = ln;
-  A4GL_logsql (ln, module, sql);
+  //A4GL_logsql (ln, module, sql);
   
 A4GL_set_malloc_context(sql);
   ptr = A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql, 0);

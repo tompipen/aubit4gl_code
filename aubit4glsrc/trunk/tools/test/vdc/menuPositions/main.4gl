@@ -24,6 +24,10 @@ FUNCTION open_window_left()
 OPEN WINDOW w1 AT 2,2 WITH FORM "form" ATTRIBUTES(STYLE = "left")
 
 MENU "EXIT"
+	COMMAND "Command 1"
+	EXIT MENU
+	COMMAND "Command 2"
+	EXIT MENU
    COMMAND "EXIT"
       EXIT MENU
 END MENU
@@ -37,6 +41,10 @@ FUNCTION open_window_right()
 OPEN WINDOW w1 AT 2,2 WITH FORM "form" ATTRIBUTES(STYLE = "right")
 
 MENU "EXIT"
+	COMMAND "Command 1"
+	EXIT MENU
+	COMMAND "Command 2"
+	EXIT MENU
    COMMAND "EXIT"
       EXIT MENU
 END MENU
@@ -50,6 +58,10 @@ FUNCTION open_window_top()
 OPEN WINDOW w1 AT 2,2 WITH FORM "form" ATTRIBUTES(STYLE = "top")
 
 MENU "EXIT"
+	COMMAND "Command 1"
+	EXIT MENU
+	COMMAND "Command 2"
+	EXIT MENU
    COMMAND "EXIT"
       EXIT MENU
 END MENU
@@ -63,6 +75,10 @@ FUNCTION open_window_bottom()
 OPEN WINDOW w1 AT 2,2 WITH FORM "form" ATTRIBUTES(STYLE = "bottom")
 
 MENU "EXIT"
+	COMMAND "Command 1"
+	EXIT MENU
+	COMMAND "Command 2"
+	EXIT MENU
    COMMAND "EXIT"
       EXIT MENU
 END MENU

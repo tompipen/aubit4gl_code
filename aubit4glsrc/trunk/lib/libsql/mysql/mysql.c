@@ -859,6 +859,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
   sid->ni = ni;
   sid->no = no;
 
+//printf("Alloc\n");
   stmt = mysql_stmt_init (conn);
 
   if (strncmp(s,"DATABASE ",9)==0 || strncmp(s,"database ",9)==0)  {
@@ -2675,7 +2676,8 @@ struct s_sid *sid;
 	if (sid->hstmt) {
 		if (sid->hstmt==STMT_CANT_PREPARE || sid->hstmt== STMT_DATABASE) ;
 		else {	
-		 	mysql_stmt_close(sid->hstmt) ;
+		int a;
+		 	a=mysql_stmt_close(sid->hstmt) ;
 			A4GL_free_associated_mem(sid->hstmt);
 			sid->hstmt=NULL;
 			

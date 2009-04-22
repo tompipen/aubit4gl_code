@@ -831,13 +831,13 @@ get_attributes_as_string (attrib * x)
       printed++;
     }
 
-  if (x->style && strlen (x->style))
+  if (x->style_expr)
     {
 
       if (printed)
 	strcat (buff, ",");
       strcat (buff, "STYLE=");
-      strcat (buff, x->style);
+      strcat (buff, local_get_expr_as_string(x->style_expr));
       printed++;
     }
 
@@ -7873,6 +7873,30 @@ if (last_parent!=parent) {
       real_print_variable_or_literal (r->cmd_data.command_data_u.pause_cmd.pause_msg, "\"\"");
       clr_nonewlines ();
       break;
+
+	case E_CMD_RUN_WAITING_FOR_CMD:
+      set_nonewlines ();
+
+	printc("RUN ");
+        real_print_expr (r->cmd_data.command_data_u.run_waiting_for_cmd.run_string);
+	printc(" WAITING FOR ");
+        real_print_expr (r->cmd_data.command_data_u.run_waiting_for_cmd.sleep);
+	if (r->cmd_data.command_data_u.run_waiting_for_cmd.msg_repeat_every) {
+		printc(" BY ");
+        	real_print_expr (r->cmd_data.command_data_u.run_waiting_for_cmd.msg_repeat_every);
+	}
+	printc(" WITH");
+	if (r->cmd_data.command_data_u.run_waiting_for_cmd.msg_type==0) {
+		printc(" MESSAGE ");
+	}
+	if (r->cmd_data.command_data_u.run_waiting_for_cmd.msg_type==1) {
+		printc(" ERROR ");
+	}
+        real_print_expr (r->cmd_data.command_data_u.run_waiting_for_cmd.msg_text);
+
+      clr_nonewlines ();
+
+	break;
 
     case E_CMD_RUN_CMD:
       if (A4GL_isyes (acl_getenv ("TRACE4GL")))
