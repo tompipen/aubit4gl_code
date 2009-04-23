@@ -15,7 +15,6 @@ static int dbopen=0;
 //int read_module_definition(module_definition *s,char *filename);
 int yylineno;
 
-FILE *lintfile;
 
 module_definition this_module;
 
