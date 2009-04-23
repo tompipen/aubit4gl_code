@@ -15,8 +15,10 @@ lint_expect_list:
 
 lint_ignore_list_item:
 	NAMED { sprintf($<str>$,"+%s",$<str>1); }
-	| KW_PLUS NAMED {sprintf($<str>$,"+%s",$<str>1); }
-	| KW_MINUS NAMED {sprintf($<str>$,"-%s",$<str>1); }
+	| KW_PLUS NAMED {sprintf($<str>$,"+%s",$<str>2); }
+	| KW_PLUS NAMED KW_DOT NAMED {sprintf($<str>$,"+%s.%s",$<str>2,$<str>4); }
+	| KW_MINUS NAMED {sprintf($<str>$,"-%s",$<str>2); }
+	| KW_MINUS NAMED KW_DOT NAMED {sprintf($<str>$,"-%s.%s",$<str>2,$<str>4); }
 ;
 
 

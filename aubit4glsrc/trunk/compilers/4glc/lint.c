@@ -4739,6 +4739,12 @@ static char *
 get_lint_filename (char *s)
 {
   static char buff[3000];
+   char *fname;
+   fname=acl_getenv_not_set_as_0("A4GL_LINTFILE");
+   if (fname) {
+		return fname;
+   }
+
   if (s == 0)
     {				// no program name...
       switch (get_lint_style ())
@@ -4783,19 +4789,19 @@ get_lint_style (void)
     {
       lintoutputstyle = 0;
 
-      if (A4GL_isyes (acl_getenv ("LINTASTXT")))
+      if (strcmp(acl_getenv ("A4GL_LINTSTYLE"),"TXT")==0)
 	{
 	  lintoutputstyle = 1;
 	  return lintoutputstyle;
 	}
 
-      if (A4GL_isyes (acl_getenv ("LINTASXML")))
+      if (strcmp(acl_getenv ("A4GL_LINTSTYLE"),"XML")==0)
 	{
 	  lintoutputstyle = 2;
 	  return lintoutputstyle;
 	}
 
-      if (A4GL_isyes (acl_getenv ("LINTASUNL")))
+      if (strcmp(acl_getenv ("A4GL_LINTSTYLE"),"UNL")==0)
 	{
 	  lintoutputstyle = 3;
 	  return lintoutputstyle;
@@ -6401,7 +6407,6 @@ add_lint_ignore (char *s)
       printf ("Unable to find empty place to put lint warning..(ignore)\n");
       exit (2);
     }
-
   lint_ignore_list[firstnull] = strdup (s);
 }
 
@@ -6508,8 +6513,9 @@ has_lint_ignore (char *c)
       if (lint_ignore_list[a])
 	{
 	  //printf("%s %s\n", lint_ignore_list[a],c);
-	  if (strcmp (lint_ignore_list[a], c) == 0)
+	  if (strcmp (lint_ignore_list[a], c) == 0) {
 	    return 1;
+	  }
 	}
     }
   return 0;
@@ -6523,6 +6529,7 @@ has_lint_expect (char *c)
     {
       if (lint_expect_list[a])
 	{
+	  //printf("%s %s\n", lint_expect_list[a],c);
 	  if (strcmp (lint_expect_list[a], c) == 0)
 	    return 1;
 	}
