@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.147 2009-04-22 20:03:52 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.148 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -147,15 +147,21 @@ A4GL_fgl_end ()
 {
   A4GL_stop_ui (0);
 
+#ifdef DEBUG
   A4GL_debug ("Close db");
+#endif
   A4GL_close_database ();
 
   A4GLSTK_program_end();
 
+#ifdef DEBUG
   A4GL_debug ("Close errlog");
+#endif
   A4GL_close_errorlog_file ();
   A4GL_cleanup_undeleted_files ();
+#ifdef DEBUG
   A4GL_debug ("End of program - exit(0).");
+#endif
 }
 
 
@@ -238,10 +244,9 @@ A4GL_fgl_start (int nargs, char *argv[])
 
 // Can we not : 
 
+#ifdef DEBUG
   A4GL_debug ("isprint(pound)=%d\n", isprint (0xa3));
   A4GL_debug ("isprint(umlaut)=%d\n", isprint (220));
-
-#ifdef DEBUG
   A4GL_debug ("Starting 4gl program - %d arguments argv=%p", nargs, argv);
 #endif
 
@@ -291,7 +296,9 @@ A4GL_fgl_start (int nargs, char *argv[])
 
 
   /* Initialize the UI library (ie load the dll) */
+#ifdef DEBUG
   A4GL_debug ("PRELOADING UI - %s\n", acl_getenv ("A4GL_UI"));
+#endif
   if (!A4GLUI_initlib ())
     {
       PRINTF ("4gllib: Error opening UI library (A4GL_UI=%s)\n", acl_getenv ("A4GL_UI"));
@@ -675,7 +682,9 @@ A4GL_chk_err (int lineno, char *fname)
       A4GL_errorlog (fname, lineno, 1);
     }
 
+#ifdef DEBUG
   A4GL_debug ("%s", s);
+#endif
   FPRINTF (A4GL_get_stderr (), "Err:%s", s);
 
   if (atoi (acl_getenv ("RUNNING_TEST")))
@@ -1445,9 +1454,13 @@ initsig_child ()
          fglwrap.c:1144: `SA_NOCLDWAIT' undeclared (first use in this function)
          fglwrap.c:1146: `SIGCLD' undeclared (first use in this function)
        */
+#ifdef DEBUG
       A4GL_debug ("SA_NOCLDWAIT on Windows? FIXME!");
+#endif
 #else
+#ifdef DEBUG
       A4GL_debug ("Adding SIGPIPE handler to stop defunct processes with informix..");
+#endif
 #ifndef DOING_CM
       memset (&ServerSig, 0, sizeof (struct sigaction));
       ServerSig.sa_handler = SIG_IGN;

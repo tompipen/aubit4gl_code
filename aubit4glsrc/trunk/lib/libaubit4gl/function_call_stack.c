@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.42 2009-04-12 13:50:47 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.43 2009-04-23 10:12:30 mikeaubury Exp $
 #*/
 
 /**
@@ -157,7 +157,9 @@ void
 A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber)
 {
 if (moduleName!=NULL) {
+#ifdef DEBUG
 	A4GL_debug("A4GLSTK_setCurrentLine : %s %d\n", moduleName,lineNumber);
+#endif
 } 
   lastModuleName=currentModuleName;
   currentModuleName = moduleName;
@@ -383,7 +385,6 @@ char funcname[60000];
 void
 A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module, int this_line_number)
 {
-  int a;
 	char *fname;
 
   if (!A4GL_has_initialized ())
@@ -396,6 +397,9 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
 	A4GLSTK_initFunctionCallStack();
 	}
 
+#ifdef DEBUG 
+{
+  int a=0;
   A4GL_debug ("Call from Module : %s line %d", A4GL_null_as_null(currentModuleName), currentFglLineNumber, this_line_number);
   A4GL_debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
 
@@ -410,6 +414,8 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
 	  A4GL_debug (" Param %d (%s)", a + 1, params[a]);
 	}
     }
+}
+#endif
   A4GL_assertion (functionCallPointer >= MAX_FUNCTION_CALL_STACK, "Function calls too deep (perhaps a missing popFunction ?");
 
   currFunctionCallCnt++;
@@ -449,7 +455,9 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
   }
 
 
+#ifdef DEBUG
   A4GL_debug ("%s(%s)", functionName, A4GL_null_as_null ((char *) functionCallStack[functionCallPointer].params));
+#endif
   functionCallPointer++;
   A4GLSTK_setCurrentLine(this_module,this_line_number);
 }

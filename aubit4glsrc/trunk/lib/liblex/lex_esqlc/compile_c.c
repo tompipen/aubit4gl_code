@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.480 2009-03-23 15:04:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.481 2009-04-23 10:12:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.480 2009-03-23 15:04:02 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.481 2009-04-23 10:12:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -92,7 +92,7 @@ int tmp_ccnt=0;
 int set_dont_use_indicators=0;
 
 extern int yylineno;
-
+int useIntOptimization=1;
 
 #define rettype_integer ERROR
 //char *rettype_integer (int n);
@@ -1697,15 +1697,57 @@ real_print_expr (struct expr_str *ptr)
 
 
 	case ET_EXPR_OP_LESS_THAN:
+		{
+			int l;
+			int printed=0;
+			int r;
+
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left)&DTYPE_MASK;
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right)&DTYPE_MASK;
+
+			if (useIntOptimization) {
+			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
+				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+					set_nonewlines();
+					printc("A4GL_pushIntLt(%s", local_expr_as_string(ptr->expr_str_u.expr_op->left));
+					printc(",%s);",local_expr_as_string(ptr->expr_str_u.expr_op->right));
+					clr_nonewlines();
+					printed++;
+				}
+			}
+			}
+		if (!printed) {
 	  real_print_expr (ptr->expr_str_u.expr_op->left);
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
 	  printc ("A4GL_pushop(OP_LESS_THAN);");
+		}
+		}
 	  break;
 
 	case ET_EXPR_OP_GREATER_THAN:
+		{
+			int l;
+			int printed=0;
+			int r;
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left)&DTYPE_MASK;
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right)&DTYPE_MASK;
+			if (useIntOptimization) {
+			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
+				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+					set_nonewlines();
+					printc("A4GL_pushIntGt(%s", local_expr_as_string(ptr->expr_str_u.expr_op->left));
+					printc(",%s);",local_expr_as_string(ptr->expr_str_u.expr_op->right));
+					clr_nonewlines();
+					printed++;
+				}
+			}
+			}
+		if (!printed) {
 	  real_print_expr (ptr->expr_str_u.expr_op->left);
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
 	  printc ("A4GL_pushop(OP_GREATER_THAN);");
+		}
+		}
 	  break;
 
 	case ET_EXPR_OP_EQUAL:
@@ -1714,8 +1756,9 @@ real_print_expr (struct expr_str *ptr)
 			int printed=0;
 			int r;
 
-			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left);
-			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right);
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left)&DTYPE_MASK;
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right)&DTYPE_MASK;
+			if (useIntOptimization) {
 			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
 				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
 					set_nonewlines();
@@ -1725,32 +1768,93 @@ real_print_expr (struct expr_str *ptr)
 					printed++;
 				}
 			}
+			}
 		
 				if (!printed) {
 	  				real_print_expr (ptr->expr_str_u.expr_op->left);
 	  				real_print_expr (ptr->expr_str_u.expr_op->right);
 	  				printc ("A4GL_pushop(OP_EQUAL);");
 				}
-			}
+		}
 	  break;
 
 
 
 	case ET_EXPR_OP_NOT_EQUAL:
+		{
+			int l;
+			int printed=0;
+			int r;
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left)&DTYPE_MASK;
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right)&DTYPE_MASK;
+			if (useIntOptimization) {
+			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
+				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+					set_nonewlines();
+					printc("A4GL_pushIntNE(%s", local_expr_as_string(ptr->expr_str_u.expr_op->left));
+					printc(",%s);",local_expr_as_string(ptr->expr_str_u.expr_op->right));
+					clr_nonewlines();
+					printed++;
+				}
+			}
+			}
+		if (!printed) {
 	  real_print_expr (ptr->expr_str_u.expr_op->left);
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
 	  printc ("A4GL_pushop(OP_NOT_EQUAL);");
+		}
+		}
 	  break;
 	case ET_EXPR_OP_LESS_THAN_EQ:
+		{
+			int l;
+			int printed=0;
+			int r;
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left)&DTYPE_MASK;
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right)&DTYPE_MASK;
+			if (useIntOptimization) {
+			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
+				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+					set_nonewlines();
+					printc("A4GL_pushIntLE(%s", local_expr_as_string(ptr->expr_str_u.expr_op->left));
+					printc(",%s);",local_expr_as_string(ptr->expr_str_u.expr_op->right));
+					clr_nonewlines();
+					printed++;
+				}
+			}
+			}
+		if (!printed) {
 	  real_print_expr (ptr->expr_str_u.expr_op->left);
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
 	  printc ("A4GL_pushop(OP_LESS_THAN_EQ);");
+		}
+		}
 	  break;
 
 	case ET_EXPR_OP_GREATER_THAN_EQ:
+		{
+			int l;
+			int printed=0;
+			int r;
+			l=simple_expr_datatype(ptr->expr_str_u.expr_op->left)&DTYPE_MASK;
+			r=simple_expr_datatype(ptr->expr_str_u.expr_op->right)&DTYPE_MASK;
+			if (useIntOptimization) {
+			if (l==DTYPE_INT || l==DTYPE_SERIAL || l==DTYPE_DATE) {
+				if (r==DTYPE_INT || r==DTYPE_SERIAL || r==DTYPE_DATE) {
+					set_nonewlines();
+					printc("A4GL_pushIntGE(%s", local_expr_as_string(ptr->expr_str_u.expr_op->left));
+					printc(",%s);",local_expr_as_string(ptr->expr_str_u.expr_op->right));
+					clr_nonewlines();
+					printed++;
+				}
+			}
+			}
+		if (!printed) {
 	  real_print_expr (ptr->expr_str_u.expr_op->left);
 	  real_print_expr (ptr->expr_str_u.expr_op->right);
 	  printc ("A4GL_pushop(OP_GREATER_THAN_EQ);");
+		}
+		}
 	  break;
 
 	case ET_EXPR_OP_OR:

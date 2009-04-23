@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.51 2009-03-23 15:04:55 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.52 2009-04-23 10:12:30 mikeaubury Exp $
 */
 
 /**
@@ -151,6 +151,14 @@ void A4GL_push_null (int dtype,int size);
 void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
 void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
 void A4GL_chk_err (int lineno, char *fname);
+
+void A4GL_pushIntEq(int a,int b);
+void A4GL_pushIntNE(int a,int b);
+void A4GL_pushIntGt(int a,int b);
+void A4GL_pushIntLt(int a,int b);
+void A4GL_pushIntLE(int a,int b);
+void A4GL_pushIntGE(int a,int b);
+
 void A4GL_err_continue_log (int lineno, char *fname);
 
 int A4GLSTK_isStackInfo (void);

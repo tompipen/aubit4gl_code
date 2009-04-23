@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.22 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: maths.c,v 1.23 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -149,7 +149,9 @@ A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function) (int ops)
   struct s_math *ptr_orig;
   struct s_math *ptr_new;
 
+#ifdef DEBUG
   A4GL_debug ("Adding %x function for %d,%d (%p)", op, dtype1, dtype2, function);
+#endif
 
   if (inited == 0)
     A4GL_init_arr_math ();

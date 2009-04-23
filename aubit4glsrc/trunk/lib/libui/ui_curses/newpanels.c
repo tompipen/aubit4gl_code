@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.171 2009-03-31 12:46:44 mikeaubury Exp $
+# $Id: newpanels.c,v 1.172 2009-04-23 10:12:30 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.171 2009-03-31 12:46:44 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.172 2009-04-23 10:12:30 mikeaubury Exp $";
 #endif
 
 /**
@@ -1866,12 +1866,16 @@ int nattr;
 int lastpos;
 WINDOW *wot;
 char *ptr=0;
+#ifdef DEBUG
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,attr,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",attr);
+#endif
   ptr=strdup(s);
   if (x == -1 && y == -1)
     {
+#ifdef DEBUG
       A4GL_debug ("Line mode display");
+#endif
       if (A4GL_isscrmode ())
 	{
 	  A4GL_mja_endwin ();
@@ -1887,15 +1891,21 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	int h;
 	w=UILIB_A4GL_get_curr_width();
 	h=UILIB_A4GL_get_curr_height();
+#ifdef DEBUG
 		A4GL_debug("h=%d\n",h);
+#endif
 	if (currwinno==0) {
 		w=A4GL_screen_width();
 		h=A4GL_screen_height();
+#ifdef DEBUG
 		A4GL_debug("h=%d\n",h);
+#endif
 	}
 
       /* WINDOW *win; */
+#ifdef DEBUG
         A4GL_debug("DISPLAY @ %d %d %d %d - '%s' %d",x,y,w,h,s,currwinno);
+#endif
 
 	if (y<1|| y>h) {
 		A4GL_exitwith("The row or column number in DISPLAY AT exceeds the limits of your terminal");
@@ -1915,9 +1925,13 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	}
 */
 
+#ifdef DEBUG
 	A4GL_debug("Check we have CURSES env");
+#endif
       A4GL_chkwin ();
+#ifdef DEBUG
 	A4GL_debug("Done");
+#endif
 	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, 0,0);
 	attr=nattr;
       b = A4GL_xwattr_get (currwin);
@@ -1932,7 +1946,9 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	if (w-x+1<strlen(ptr)) {
 		ptr[w-x+1]=0;
 	}
+#ifdef DEBUG
       A4GL_debug("X=%d Y=%d",x,y);
+#endif
       A4GL_tui_printr (0,"%s", ptr);
 	free(ptr);
 
@@ -1945,18 +1961,24 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	sl=w-sl-x+1;
 	if (sl>=0) buff[sl]=0;
 	buff[1023]=0;
+#ifdef DEBUG
 	A4GL_debug("currwin=%p",currwin);
 	A4GL_debug("Spacer..");
 	A4GL_debug("Buff='%s'",buff);
+#endif
   	waddstr (currwin, buff);
+#ifdef DEBUG
 	  A4GL_debug ("Clearing line...");
+#endif
 		lastpos=x+strlen(s)-1;
 		if (x>=0) {
 			A4GL_mja_gotoxy(lastpos,y);
 		}
 	}
 
+#ifdef DEBUG
       A4GL_debug (">> printed %s", s);
+#endif
 
       /* b was got via curses - so we can use the curses version */
       wattrset (wot, b);
@@ -1974,10 +1996,14 @@ void
 {
   char *s;
   char *beepchr;
+#ifdef DEBUG
   A4GL_debug ("Cr string");
+#endif
   s = A4GL_char_pop ();
   A4GL_chkwin();
+#ifdef DEBUG
   A4GL_debug ("ZZ2 going to print an error : %s", s);
+#endif
   A4GL_trim (s);
 
   while (1)  {
@@ -1987,12 +2013,17 @@ void
 			          A4GL_dobeep();
 				    }
 
+#ifdef DEBUG
   A4GL_debug ("trimmed -> %s", s);
-      if (wait)
+#endif
+      if (wait) {
  		A4GL_error_box (s,a);
-      else
+	} else {
  		A4GL_error_nobox (s,a);
+	}
+#ifdef DEBUG
   A4GL_debug ("error_box done");
+#endif
   acl_free (s);
   a4gl_status = 0;
 }
@@ -2021,7 +2052,9 @@ A4GL_mja_endwin (void)
 int
 A4GL_chkwin (void)
 {
+#ifdef DEBUG
  A4GL_debug("chkwin");
+#endif
   if (A4GL_env_option_set ("NOCURSES"))
     {				/* FIXME: this is now A4GL_UI=CONSOLE */
       A4GL_exitwith ("NOCURSES Mode has been specified - operation not permitted");
@@ -2032,16 +2065,22 @@ A4GL_chkwin (void)
   if (A4GL_islinemode ())
     {
 
+#ifdef DEBUG
 	A4GL_debug(" API_ui Was linemode..");
+#endif
       	A4GL_init_curses_stuff ();
 
 
       	A4GL_set_scrmode ('S');
 
 	if (A4GL_isyes(acl_getenv("INIT_COL_REFRESH"))) {
+#ifdef DEBUG
 		A4GL_debug("INIT_COL_REFRESH2_0 TRIGGERED...");
+#endif
 		if (has_colors()) {
+#ifdef DEBUG
 			A4GL_debug("init_col_refresh2_0 - init_colour_pairs");
+#endif
 			A4GL_init_colour_pairs ();
 			UILIB_A4GL_zrefresh();
 			if (!A4GL_isyes(acl_getenv("NO_INIT_COL_CLR"))) {
@@ -2057,7 +2096,9 @@ A4GL_chkwin (void)
 
 
     } else {
+#ifdef DEBUG
 	A4GL_debug("API_ui Was screen mode..");
+#endif
 	}
   return 1;
 }
@@ -2127,9 +2168,11 @@ int
   A4GL_set_status(0,0);
   strcpy(name,namet);
   A4GL_trim(name);
+#ifdef DEBUG
   A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
 	 name, iswindow, form_line, error_line, prompt_line, menu_line,
 	 border, comment_line, message_line, attrib);
+#endif
   A4GL_chkwin();
 
   s = A4GL_char_pop ();
@@ -2149,7 +2192,9 @@ int
       return 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("reading file %s - name=%s", buff, name);
+#endif
   a4gl_status = 0;
   form = A4GL_read_form (buff, name);
   if (a4gl_status != 0)
@@ -2162,25 +2207,33 @@ int
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Created form %p", form);
+#endif
     }
 
   scale_form (form->form, &w, &h);
 
   w = form->fileform->maxcol;
   h = form->fileform->maxline;
+#ifdef DEBUG
   A4GL_debug ("Scaling on %s gives %d %d border = %d", buff, w, h, border);
+#endif
 
   /* ignore error line for now */
 
   form->form_details.comment_line = comment_line;
   form->form_details.menu_line = menu_line;
+#ifdef DEBUG
   A4GL_debug ("Setting prompt line to ", prompt_line);
+#endif
   form->form_details.prompt_line = prompt_line;
   form->form_details.form_line = form_line;
   form->form_details.error_line = error_line;
   form->form_details.message_line = message_line;
+#ifdef DEBUG
   A4GL_debug ("border=%d\n", border);
+#endif
   form->form_details.border = border;
   form->form_details.colour = attrib;
 
@@ -2225,14 +2278,20 @@ int
   strncpy (buff, s, 256);
   buff[255] = 0;
   A4GL_trim (buff);
+#ifdef DEBUG
   A4GL_debug ("reading file %s ?", buff);
+#endif
   A4GL_set_status (0, 0);
 
   form = A4GL_read_form (buff, name);
+#ifdef DEBUG
   A4GL_debug ("Read form returns %d status = %d\n", form,a4gl_status);
+#endif
   if (a4gl_status != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Some problem opening form...");
+#endif
       acl_free (s);
       return -1;
     }
@@ -2242,11 +2301,17 @@ int
      form->w=w; // MJA 2707
      form->h=h; // MJA 2707
    */
+#ifdef DEBUG
   A4GL_debug ("adding pointer F to %s", name);
+#endif
   A4GL_add_pointer (name, S_FORMDETSCODE, form);
+#ifdef DEBUG
   A4GL_debug ("Freeing s");
+#endif
   acl_free (s);
+#ifdef DEBUG
   A4GL_debug ("Freed - form has been opened");
+#endif
   return 0;
 }
 
@@ -2292,13 +2357,21 @@ int
   WINDOW *w;
   char buff[80];
   A4GL_chkwin();
+#ifdef DEBUG
   A4GL_debug ("attr=%d\n", attr);
+#endif
 
+#ifdef DEBUG
   A4GL_debug ("attr=%x\n", attr);
+#endif
 
+#ifdef DEBUG
   A4GL_debug ("Disp_form_tui");
+#endif
   f = (struct s_form_dets *) A4GL_find_pointer_val (name, S_FORMDETSCODE);
+#ifdef DEBUG
   A4GL_debug ("Got pointer to form as %p", f);
+#endif
   if (f == 0)
     {
       A4GL_exitwith ("The form has not been opened");
@@ -2310,7 +2383,9 @@ int
 #ifdef DEBUG
 /* {DEBUG} */
       {
+#ifdef DEBUG
  A4GL_debug ("Error display window");
+#endif
       }
 #endif
       return 0;
@@ -2320,7 +2395,9 @@ int
   SPRINTF2 (buff, "currwinno=%d f=%p", currwinno, f);
   /*error_box(buff); */
   A4GL_mja_wrefresh (currwin);
+#ifdef DEBUG
   A4GL_debug ("Diplay form");
+#endif
   A4GL_mja_refresh ();
   return 0;
 }
@@ -2350,13 +2427,17 @@ int
 A4GL_subwin_gotoxy (WINDOW * win, int x, int y,int has_border)
 {
   int a;
+#ifdef DEBUG
 	A4GL_debug("subwin_gotoxy - %d %d win=%p",y-1,x-1,win);
+#endif
  if (y<1) y=1;
  if (x<1) x=1;
   a = wmove (win, y - 1, x - 1);
   if (a == ERR)
     {
+#ifdef DEBUG
       A4GL_debug ("Failed to move cursor!");
+#endif
     }
   return 0;
 }
@@ -2371,7 +2452,9 @@ A4GL_subwin_print (WINDOW * win, char *fmt, ...)
   va_list args;
   A4GL_chkwin ();
   va_start (args, fmt);
+#ifdef DEBUG
   A4GL_debug ("subwin_print '%s' on window %p", fmt, win);
+#endif
   A4GL_mja_vwprintw (win, fmt, &args);	/*  MJAMJAMJA */
   A4GL_mja_wrefresh (win);
   return 0;
@@ -2389,7 +2472,9 @@ A4GL_subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...)
   A4GL_chkwin ();
   va_start (args, fmt);
   wmove (win, y - 1, x - 1);
+#ifdef DEBUG
 A4GL_debug("subwin_printxy %d %d %s",x,y,fmt);
+#endif
   A4GL_mja_vwprintw (win, fmt, &args);
   A4GL_mja_wrefresh (win);
   return 0;
@@ -2408,17 +2493,23 @@ A4GL_subwin_setcolor (WINDOW * win, int typ)
   long attr;
   currwin = win;
   attr = getbkgd (currwin);
+#ifdef DEBUG
   A4GL_debug ("Window background = %x", attr);
+#endif
   if (attr == 0 )
     {
       attr = A_NORMAL & ' ';
     }
+#ifdef DEBUG
   A4GL_debug ("Subwin - setcolor");
+#endif
   if (has_colors ())
     {
+#ifdef DEBUG
       A4GL_debug ("XX4 REVERSE");
       A4GL_debug ("Color display - %d current attrib is reverse %d", typ,
 	     attr & A_REVERSE);
+#endif
       switch (typ)
 	{
 	case NORMAL_TEXT:
@@ -2427,28 +2518,38 @@ A4GL_subwin_setcolor (WINDOW * win, int typ)
 
 	  break;
 	case INVERT_MENU:
+#ifdef DEBUG
 	  A4GL_debug ("Invert...");
+#endif
 	  if (attr & A_REVERSE)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("XX4 REVERSE");
+#endif
 	      if (((attr) & (A4GL_colour_code (COLOR_WHITE))) ==
 		  A4GL_colour_code (COLOR_WHITE))
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Use red %x", A4GL_colour_code (COLOR_RED));
 		  A4GL_debug ("XX4 REVERSE");
+#endif
 		  wattrset (currwin, A_REVERSE | A4GL_colour_code (COLOR_RED));
 		}
 	      else
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Ops - try green instead of red...\n");
 		  A4GL_debug ("XX4 REVERSE");
+#endif
 		  wattrset (currwin, A_REVERSE + A4GL_colour_code (COLOR_WHITE));
 		}
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Off for invert");
 	      A4GL_debug ("XX4 REVERSE");
+#endif
 	      wattron (currwin, A_REVERSE);
 	    }
 
@@ -2467,23 +2568,33 @@ A4GL_subwin_setcolor (WINDOW * win, int typ)
       switch (typ)
 	{
 	case ERROR_COL:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case MESSAGE:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  wattroff (currwin, A_REVERSE);
 	  break;
 	case NORMAL_MENU:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  wattroff (currwin, A_REVERSE);
 	  break;
 	case INVERT_MENU:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case TITLE_COL:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case EDIT_FIELD:
@@ -2516,7 +2627,9 @@ A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 	FPRINTF(stderr, "OOps...\n");fflush(stdout);
 	*ptr=0;
   }
+#ifdef DEBUG
   A4GL_debug ("mja_vwprintw..> '%s' attribute %x", buff, A4GL_xwattr_get (win));
+#endif
   if (A4GL_xwattr_get (win) == 0x20)
     {
       wattrset (win, 0);
@@ -2528,7 +2641,9 @@ A4GL_mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
       a = a - (a & 0xff);
       wattrset (win, a);
     }
+#ifdef DEBUG
   A4GL_debug ("Attribute : %x on win %p - buff=%s\n", A4GL_xwattr_get (win), win,buff);
+#endif
   wprintw (win, "%s", buff);
   return 0;
 }
@@ -2562,6 +2677,7 @@ bkg=atoi(acl_getenv("COLOR_TUI_BKG"));
 fg_def=atoi(acl_getenv("COLOR_TUI_FG_DEF"));
 fg=atoi(acl_getenv("COLOR_TUI_FG"));
 
+#ifdef DEBUG
 for (a=0;a<=7;a++) {
 	A4GL_debug("Colours : %d %d",a,colors[a]);
 }
@@ -2571,6 +2687,7 @@ A4GL_debug("BLACK : %d %d",colors[0],COLOR_BLACK);
 A4GL_debug("YELLOW : %d %d",colors[3],COLOR_YELLOW);
 A4GL_debug("WHITE : %d %d",colors[7],COLOR_WHITE);
 
+#endif
 
 if (have_default_colors) {
 	bkgcolor=bkg_def;
@@ -2579,7 +2696,9 @@ if (have_default_colors) {
 	bkgcolor=bkg;
 }
 
+#ifdef DEBUG
 A4GL_debug("Colours - BKG=%d\n",bkgcolor);
+#endif
   init_pair (1, colors[0], bkgcolor);
   init_pair (2, colors[1], bkgcolor);
   init_pair (3, colors[2], bkgcolor);
@@ -2598,7 +2717,9 @@ if (use_invisible_as_color_9()) {
   	init_pair (9, fg,bg);
 }
 
+#ifdef DEBUG
 A4GL_debug("Assume default colors : %d %d",bkgcolor,fg);
+#endif
 #ifndef PDCURSES
 #ifdef NCURSES_VERSION
   assume_default_colors(fg,bkgcolor);
@@ -2702,7 +2823,9 @@ A4GL_find_win (PANEL * p)
 {
   int a;
   if (p == 0) {
+#ifdef DEBUG
 	A4GL_debug("find_win for panel_below(0)");
+#endif
 	p=get_below_panel(0);
         return A4GL_find_win (p);
   }

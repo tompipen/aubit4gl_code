@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.39 2008-10-16 07:13:36 mikeaubury Exp $
+# $Id: io.c,v 1.40 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -85,7 +85,9 @@ A4GL_read_int (FILE * ofile)
     ofile = oufile;
   fread (&a, 1, sizeof (int), ofile);
   /* a=(int)sa; */
+#ifdef DEBUG
   A4GL_debug ("read_int returns %d", a);
+#endif
   return a;
 
 }
@@ -122,8 +124,10 @@ A4GL_write_int (FILE * ofile, int la)
 
   if (ofile == 0)
     ofile = oufile;
+#ifdef DEBUG
   A4GL_debug ("File=%p", ofile);
   A4GL_debug ("&locala=%p", &locala);
+#endif
   sizeo = sizeof (locala);
   locala = la;
 
@@ -205,7 +209,6 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
 {
   char buff[2048];
   FILE *f;
-  //A4GL_debug("A4GL_try_to_open() path=%s name=%s",path,name);
   if (strlen (name) == 0)
     return 0;
 
@@ -220,7 +223,6 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
 
   strcpy (lastOpenedFile, buff);
 
-  //A4GL_debug ("Opening path '%s'", buff);
 
   //FIXME: apparently does not wok with relative paths?
 
@@ -235,14 +237,20 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
   f = fopen (buff, "rb");
   if (f == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Cant open '%s'", buff);
+#endif
       return (FILE *) 0;
     }
+#ifdef DEBUG
   A4GL_debug ("Opened '%s'", buff);
+#endif
   if (!keepopen)
     {				/* We just wanted to check.. */
       fclose (f);
+#ifdef DEBUG
       A4GL_debug ("...and closed it");
+#endif
       return (FILE *) 1;
     }
   return f;			/* We want it opened.. */
@@ -350,7 +358,12 @@ A4GL_fullpath_classpath (char *fname)
       SPRINTF2 (buff, "%s/etc/import:%s/import", acl_getenv ("AUBITDIR"), acl_getenv ("AUBITETC"));
     }
 #endif
+
+
+#ifdef DEBUG
   A4GL_debug ("A4GL_fullpath_classpath:%s %s", fname, buff);
+#endif
+
   return A4GL_fullpath_xpath (fname, buff);
 }
 
@@ -404,7 +417,9 @@ A4GL_fullpath_xpath (char *fname, char *path)
   str_len = strlen (str_path);
   ptr = str_path;
 
+#ifdef DEBUG
   A4GL_debug ("ptr path='%s'", ptr);
+#endif
 
   for (cnt = 0; cnt < str_len; cnt++)
     {
@@ -415,7 +430,11 @@ A4GL_fullpath_xpath (char *fname, char *path)
       if (str_path[cnt] == ':')
 	{
 #endif
+
+
+#ifdef DEBUG
 	  A4GL_debug ("Found separator at %d", cnt);
+#endif
 	  str_path[cnt] = 0;
 	  if (strlen (ptr))
 	    {
@@ -433,7 +452,9 @@ A4GL_fullpath_xpath (char *fname, char *path)
 		  if (str_path2[cnt2] == ':')
 		    {
 #endif
+#ifdef DEBUG
 		      A4GL_debug ("Skipping one more separator");
+#endif
 		      ptr = &str_path2[cnt2 + 1];
 		    }
 		  else
@@ -467,7 +488,9 @@ A4GL_fullpath_xpath (char *fname, char *path)
   //catch cases when DBPATH contained only one path and no separator:
   if (strlen (ptr))
     {
+#ifdef DEBUG
       A4GL_debug ("One last time...");
+#endif
       if (A4GL_try_to_open (ptr, fname, 0))
 	{
 	  SPRINTF2 (str_path, "%s/%s", ptr, fname);

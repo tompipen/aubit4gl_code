@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.100 2009-04-18 07:54:51 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.101 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -301,7 +301,9 @@ A4GL_push_dec (char *p, int ismoney, int size)
 
       if (NUM_DIG (p) != l && NUM_DEC (p) != d)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Failed to set to null");
+#endif
 	}
     }
 
@@ -335,7 +337,9 @@ A4GL_push_decimal_str (char *p)
   ndig = 64;
   ndec = 32;
   A4GL_remove_trailing_zeros_and_leading_spaces (buff);
+#ifdef DEBUG
 A4GL_debug("-->%s\n", p);
+#endif
   l = strlen (buff);
   if (l)
     {
@@ -411,7 +415,9 @@ A4GL_push_double_str (char *p)
   *ptr = atof (cp);
   if (sscanf (cp, "%lf", ptr) != 1)
     {
+#ifdef DEBUG
       A4GL_debug ("Conversion to double failed for string <%s>", cp);
+#endif
       *ptr = 0;
     }
   free (cp);
@@ -452,10 +458,14 @@ A4GL_push_chars (char *p, int dtype, int size)
 {
   char *ptr;
   last_was_empty = 0;
+#ifdef DEBUG
   A4GL_debug ("In A4GL_push_chars - '%s'\n", A4GL_null_as_null (p));
+#endif
   ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
   //push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
+#ifdef DEBUG
   A4GL_debug ("Using dtype : %d", (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
+#endif
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
 }
 
@@ -520,7 +530,9 @@ A4GL_push_char (char *p)
 #endif
       ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
     }
+#ifdef DEBUG
   A4GL_debug ("Created ptr=%p", ptr);
+#endif
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 }
 
@@ -640,13 +652,19 @@ int
 aclfgl_sqrt (int n)
 {
   double p, p2, res;
+#ifdef DEBUG
   A4GL_debug ("SQRT\n");
+#endif
   p2 = A4GL_pop_double ();
+#ifdef DEBUG
   A4GL_debug ("p2=%f\n", p2);
+#endif
   p = (double) 1.0 / (double) 2.0;
   res = pow (p2, p);
   A4GL_push_double (res);
+#ifdef DEBUG
   A4GL_debug ("--->%f\n", res);
+#endif
   return 1;
 }
 
@@ -879,9 +897,13 @@ A4GL_func_clip (void)
 	  char buff[2];
 	  buff[0] = 0;
 	  buff[1] = 1;
+#ifdef DEBUG
 	  A4GL_debug ("Pushing a zero length non null string");
+#endif
 	  A4GL_push_char (buff);
+#ifdef DEBUG
 	  A4GL_debug ("Done that");
+#endif
 	}
     }
   else
@@ -1020,7 +1042,9 @@ A4GL_func_using ()
 	a4gl_using_from_string (z, fmtlen, fmt, p, isneg);
 
 	//a4gl_using (z, fmtlen, fmt, dbl);
+#ifdef DEBUG
 	A4GL_debug ("z=%s\n", A4GL_null_as_null (z));
+#endif
 	A4GL_push_char (z);
 	acl_free (p);
 	acl_free (z);
@@ -1038,10 +1062,14 @@ A4GL_func_using ()
 	double dbl;
 	A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
 	z = A4GL_new_string (fmtlen + 1);
+#ifdef DEBUG
 	A4GL_debug ("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
+#endif
 
 	a4gl_using (z, fmtlen, fmt, dbl);
+#ifdef DEBUG
 	A4GL_debug ("z=%s\n", A4GL_null_as_null (z));
+#endif
 	A4GL_push_char (z);
 	acl_free (z);
       }
@@ -1051,7 +1079,9 @@ A4GL_func_using ()
 	long d;
 	char *ptr;
 	d = A4GL_pop_date ();
+#ifdef DEBUG
 	A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null (fmt));
+#endif
 	ptr = A4GL_using_date (d, fmt);
 	// Did it convert nicely ? 
 	if (ptr)
@@ -1086,14 +1116,18 @@ A4GL_func_using ()
     case DTYPE_NCHAR:
     default:
       {				// I hope this piece of code will be unneeded some day, so I copy-pasted it...
+#ifdef DEBUG
 	A4GL_debug ("WARNING: USING handled old way, data type will be determined by the format string");
+#endif
 
 	if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy") ||
 	    strstr (fmt, "DD") || strstr (fmt, "MM") || strstr (fmt, "YY"))
 	  {
 	    long d;
 	    d = A4GL_pop_date ();
+#ifdef DEBUG
 	    A4GL_debug ("Date using...%ld (%s)", d, A4GL_null_as_null (fmt));
+#endif
 	    A4GL_push_char (A4GL_using_date (d, fmt));
 	  }
 	else
@@ -1102,9 +1136,13 @@ A4GL_func_using ()
 	    double dbl;
 	    A4GL_pop_param (&dbl, DTYPE_FLOAT, 0);
 	    z = A4GL_new_string (fmtlen + 1);
+#ifdef DEBUG
 	    A4GL_debug ("Calling a4gl_using a=%lf fmt=%s ", dbl, fmt);
+#endif
 	    a4gl_using (z, fmtlen, fmt, dbl);
+#ifdef DEBUG
 	    A4GL_debug ("z=%s\n", A4GL_null_as_null (z));
+#endif
 	    A4GL_push_char (z);
 	    acl_free (z);
 	  }
@@ -1177,7 +1215,9 @@ A4GL_push_interval (struct ival *p, int size)
   memset (ptr, 0, sizeof (struct ival));
   memcpy (ptr, p, sizeof (struct ival));
 
+#ifdef DEBUG
   A4GL_debug ("Copied - %x %x", ptr->stime, ptr->ltime);
+#endif
 
   A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED + ENCODE_SIZE (size));
 
@@ -1205,7 +1245,9 @@ int dtype_masked;
 
   if (A4GL_isnull (dtype_masked, ptr) && ! dont_push_null) // We'll normally just push a null of the required datatype...
     {
+#ifdef DEBUG
       A4GL_debug ("Variable was null dtype=%d %x ptr=%p", dtype & DTYPE_MASK, dtype, ptr);
+#endif
       A4GL_push_null (dtype & DTYPE_MASK, DECODE_SIZE (dtype));
       return;
     }
@@ -1215,16 +1257,22 @@ int dtype_masked;
 
   if ((dtype & DTYPE_MASK) == DTYPE_CHAR)
     {
+#ifdef DEBUG
       A4GL_debug ("Value = '%s'\n", A4GL_null_as_null (ptr));
+#endif
     }
 
   if (A4GL_isnull (dtype, ptr))
     {
+#ifdef DEBUG
       A4GL_debug ("In push variable... ptr is null");
+#endif
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("In push variable... ptr is not null");
+#endif
     }
 #endif
 
@@ -1238,7 +1286,9 @@ int dtype_masked;
     {
       void *(*function) (void *);
       void *nptr;
+#ifdef DEBUG
       A4GL_debug ("HAS COPY FUNCTION...");
+#endif
       function = A4GL_get_datatype_function_i (dtype, "COPY");
       nptr = function (ptr);
       A4GL_push_param (nptr, dtype + DTYPE_MALLOCED);
@@ -1329,7 +1379,9 @@ int dtype_masked;
       return;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Couldnt process datatype %x", dtype);
+#endif
   /* exitwith("Internal Error : Couldnt process datatype %x\n",dtype);  too many arguments to function `exitwith' */
   A4GL_exitwith ("Internal Error : Couldnt process datatype \n");
 

@@ -94,7 +94,9 @@ A4GL_display_reference (void *vptr, int size, int size_c, struct struct_scr_fiel
       char using_buff[256];
       if (ptr == 0 || A4GL_isnull (DTYPE_REFERENCE, vptr))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Int value is null");
+#endif
 	  strcpy (buff_16, "");
 	  return buff_16;
 	}
@@ -102,7 +104,9 @@ A4GL_display_reference (void *vptr, int size, int size_c, struct struct_scr_fiel
 
       if (A4GL_isnull (DTYPE_REFERENCE, vptr))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Int value is null");
+#endif
 	  strcpy (buff_16, "");
 	  return buff_16;
 	}
@@ -122,11 +126,15 @@ A4GL_display_reference (void *vptr, int size, int size_c, struct struct_scr_fiel
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_16, size_c);
+#ifdef DEBUG
       A4GL_debug ("display_int Got '%s'", buff_16);
+#endif
       return buff_16;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning '%s'", buff_16);
+#endif
 
   return buff_16;
 }
@@ -171,7 +179,9 @@ A4GL_convto_reference (int d1, void *p1, int d2, void *p2, int size)
 void
 add_reference_support (void)
 {
+#ifdef DEBUG
   A4GL_debug ("Has reference_support");
+#endif
   A4GL_add_datatype_function_i (DTYPE_REFERENCE, "INIT", (void *) A4GL_null_reference);
   A4GL_add_datatype_function_i (DTYPE_REFERENCE, "ISNULL", (void *) A4GL_isnull_reference);	//
   A4GL_add_datatype_function_i (DTYPE_REFERENCE, "SETDTYPE", (void *) A4GL_zero_reference);	// Invalid conversion set it to 0

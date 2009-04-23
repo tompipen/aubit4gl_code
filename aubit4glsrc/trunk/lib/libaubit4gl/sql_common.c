@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.78 2009-04-22 20:03:52 mikeaubury Exp $
+# $Id: sql_common.c,v 1.79 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,9 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
   if (logfnameset == -1)
     return;
 
+#ifdef DEBUG
   A4GL_debug ("SQL on line %d in %s:%s\n", line, mod, sql);
+#endif
 
   if (logfnameset == 1)
     {
@@ -242,7 +244,7 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
 
   // if we've got to here - we've got a file to write to...
   //
-  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm);
+  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf|%ld|%lf\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm,(long)a4gl_sqlca.sqlcode, get_now_as_double());
   fclose (fout);
 
 }
@@ -263,11 +265,15 @@ A4GL_set_status (int a, int sql)
 {
   if (aclfgli_get_err_flg ())
     {
+#ifdef DEBUG
       A4GL_debug ("set_status: errflg is set - not setting new status %d", a);
+#endif
       return 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_set_status(%d,%d)", a, sql);
+#endif
 
   if ((!aclfgli_get_err_flg ()) || a >= 0)
     {
@@ -277,7 +283,9 @@ A4GL_set_status (int a, int sql)
 
       if (a < 0)
 	aclfgli_set_err_flg ();
+#ifdef DEBUG
       A4GL_debug ("Status set to %d", a);
+#endif
       return 1;
     }
   else
@@ -291,7 +299,9 @@ A4GL_set_status (int a, int sql)
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Status set to %d and errflg is set - not setting it to %d/%d", a4gl_status, a, sql);
+#endif
 	  return 0;
 	}
     }
@@ -319,10 +329,14 @@ A4GL_set_sqlerrm (char *m, char *p)
 	  FPRINTF (flog, "%ld - %s - %s\n", a4gl_sqlca.sqlcode, m, p);
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("A4GLSQL_set_sqlerrm('%s','%s')", m, p);
+#endif
   if (!m || !p)
     {
+#ifdef DEBUG
       A4GL_debug ("Nullpointer, doing nothing!");
+#endif
       return;
     }
   strncpy (a4gl_sqlca.sqlerrm, m, sizeof (a4gl_sqlca.sqlerrm));
@@ -338,7 +352,9 @@ void
 A4GL_set_sqlerrd (int a0, int a1, int a2, int a3, int a4, int a5)
 {
 
+#ifdef DEBUG
   A4GL_debug ("A4GLSQL_set_sqlerrd(%d,%d,%d,%d,%d,%d)", a0, a1, a2, a3, a4, a5);
+#endif
   a4gl_sqlca.sqlerrd[0] = a0;
   a4gl_sqlca.sqlerrd[1] = a1;
   a4gl_sqlca.sqlerrd[2] = a2;
@@ -364,7 +380,9 @@ A4GL_set_sqlerrd (int a0, int a1, int a2, int a3, int a4, int a5)
 void
 A4GL_xset_status (int a)
 {
+#ifdef DEBUG
   A4GL_debug ("A4GLSQL_xset_status(%d)", a);
+#endif
   A4GL_set_status (a, 0);
 }
 
@@ -396,7 +414,9 @@ A4GL_init_connection (char *dbName)
 int
 A4GL_get_status (void)
 {
+#ifdef DEBUG
   A4GL_debug ("Status=%d sqlca.sqlcode=%d", a4gl_status, a4gl_sqlca.sqlcode);
+#endif
 
   if (a4gl_status == 0 && a4gl_sqlca.sqlcode < 0)
     a4gl_status = a4gl_sqlca.sqlcode;
@@ -418,7 +438,9 @@ A4GL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDI
   if (must_convert)
     {
       //sql1 = A4GL_apisql_strdup (sql1);
+#ifdef DEBUG
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
+#endif
       sql1 = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1, converted);
     }
   A4GL_trim (fname);
@@ -573,7 +595,9 @@ unbadchar (char *s)
 void
 A4GL_set_dialect (char *dialect)
 {
+#ifdef DEBUG
   A4GL_debug ("set_dialect");
+#endif
   if (dialect && (*dialect > 0))
     {
       strcpy (source_dialect, dialect);
@@ -613,7 +637,9 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
   double t1;
   double t2;
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_prepare_select  must_convert=%d s=%s\n", must_convert, s);
+#endif
 
   SPRINTF1 (buff, "%s", unbadchar (mod));
 
@@ -627,7 +653,9 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
   sold = s;
   if (must_convert)
     {
+#ifdef DEBUG
       A4GL_debug ("curr_sess->dbms_dialect=%s", curr_sess->dbms_dialect);
+#endif
       s = acl_strdup (A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s, converted));
 
     }
@@ -713,7 +741,9 @@ A4GL_add_prepare (char *pname, void *vsid)
     }
 
 
+#ifdef DEBUG
 A4GL_debug("Add prepare %s = %s\n", pname,sid->select);
+#endif
 
   a = A4GL_findPreparedStatementbySid (sid);
   if (a >= 0)
@@ -743,7 +773,9 @@ A4GL_execute_sql (char *pname, int ni, void *vibind)
 double t1;
 double t2;
   ibind = vibind;
+#ifdef DEBUG
   A4GL_debug ("A4GL_execute_sql : %s ",pname);
+#endif
   sid = A4GL_find_prepare (pname);	// ,0
 
   if (sid != 0)
@@ -751,7 +783,9 @@ double t2;
 	int rval;
       //sid->ibind = ibind;
       //sid->ni = ni;
+#ifdef DEBUG
       	A4GL_debug("A4GL_execute .. stmt=%s select=%s\n", pname, sid->select);
+#endif
      
   	t1=get_now_as_double();
         rval=A4GLSQL_execute_implicit_sql (sid, 0, ni, ibind);
@@ -999,7 +1033,9 @@ A4GL_addPreparedStatement (char *name, char *anonname, void *sid, void *extra_da
   int a;
   int found = -1;
 
+#ifdef DEBUG
   A4GL_debug ("npreparedStatements=%d\n", npreparedStatements);
+#endif
   if (npreparedStatements)
     {
       for (a = 0; a < npreparedStatements; a++)
@@ -1437,7 +1473,9 @@ A4GL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
   strcpy (cname, xcolname);
   A4GL_trim (cname);
 
+#ifdef DEBUG
   A4GL_debug ("READ COLUMNS\n");
+#endif
 
   if (A4GLSQL_get_columns (tabname, cname, dtype, size))
     {
@@ -1542,7 +1580,9 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
     {
       if (!fgets (buff, 256, f))
 	break;
+#ifdef DEBUG
       A4GL_debug ("Read : %s\n", buff);
+#endif
       ptr = strchr (buff, '#');
       if (ptr)
 	{
@@ -1567,7 +1607,9 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
       if (ptr_next != 0)
 	{
 	  *ptr_next = 0;
+#ifdef DEBUG
 	  A4GL_debug ("compare dbname : %s to %s\n", buff, dbname);
+#endif
 	  if (strcmp (buff, dbname) != 0)
 	    {
 	      continue;
@@ -1594,7 +1636,9 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
 		}
 
 	      // if we've got to here - we've got the username as password..
+#ifdef DEBUG
 	      A4GL_debug ("uname=%s passwd=%s", ptr_fields[1], ptr_fields[2]);
+#endif
 	      strcpy (uname, ptr_fields[1]);
 	      strcpy (passwd, ptr_fields[2]);
 	      if (passwd[0] == '!')
@@ -1713,7 +1757,9 @@ A4GL_sqlid_encrypt (void)
 
       strcpy (buff_orig, buff);
 
+#ifdef DEBUG
       A4GL_debug ("Read : %s\n", buff);
+#endif
       ptr = strchr (buff, '#');
       if (ptr)
 	{
@@ -1758,7 +1804,9 @@ A4GL_sqlid_encrypt (void)
 		}
 
 	      // if we've got to here - we've got the username as password..
+#ifdef DEBUG
 	      A4GL_debug ("uname=%s passwd=%s", ptr_fields[1], ptr_fields[2]);
+#endif
 	      strcpy (uname, ptr_fields[1]);
 	      strcpy (passwd, ptr_fields[2]);
 	      if (passwd[0] != '!')
@@ -2141,7 +2189,9 @@ sid=vsid;
 
 	sid->refcnt|=REF_CNT_DECLARE;
 
+#ifdef DEBUG
 	A4GL_debug("A4GL_declare .. cursor =%s select=%s\n", cursname, sid->select);
+#endif
 
 	if (cid) {
 		cid->cursorState=E_CURSOR_DECLARED;
@@ -2222,7 +2272,9 @@ A4GL_apisql_add_sess (char *sessname)
 {
   struct sess *next;
   next = curr_sess;
+#ifdef DEBUG
   A4GL_debug ("Add session : %s\n", sessname);
+#endif
   curr_sess = (struct sess *) acl_malloc2 (sizeof (struct sess));
   strcpy (curr_sess->sessname, sessname);
   strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
@@ -2342,7 +2394,9 @@ void
 A4GL_apisql_must_convert (void)
 {
 
+#ifdef DEBUG
   A4GL_debug ("Here");
+#endif
   /* if no source dialect is set, use the default */
   if (*source_dialect == '\0')
     {
@@ -2355,13 +2409,17 @@ A4GL_apisql_must_convert (void)
     {
       return;
     }
+#ifdef DEBUG
   A4GL_debug ("SQLCONVERT=%s source_dialect='%s' dbms_dialect='%s'",
 	      acl_getenv ("SQLCONVERT"), source_dialect, curr_sess->dbms_dialect);
+#endif
   if (A4GL_isyes (acl_getenv ("SQLCONVERT")) && (source_dialect[0] > '\0')
       && (curr_sess->dbms_dialect[0] > '\0')
       && ((strcmp (curr_sess->dbms_dialect, source_dialect) != 0) || A4GL_isyes (acl_getenv ("ALWAYS_CONVERT"))))
     {
+#ifdef DEBUG
       A4GL_debug ("Setting Must convert");
+#endif
       if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
 	{
 	  must_convert = 0;
@@ -2373,7 +2431,9 @@ A4GL_apisql_must_convert (void)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Not setting must convert");
+#endif
     }
 }
 
@@ -2383,7 +2443,9 @@ A4GL_swap_bind_stmt (char *stmt, char t, char **sb, int *sc, void *bind, int cnt
 {
   struct s_sid *p;
   p = A4GL_find_prepare (stmt);
+#ifdef DEBUG
   A4GL_debug ("p=%p", p);
+#endif
   if (p)
     {
       if (sb)
@@ -2494,7 +2556,9 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
 
 
 void A4GL_free_prepare(struct s_sid *sid) {
+#ifdef DEBUG
 	A4GL_debug("free prepare : %s",sid->select);
+#endif
 	if (sid->refcnt==0) {
       		if (A4GL_removePreparedStatementBySid (sid))  {
 			A4GLSQL_free_prepare_internal(sid);

@@ -167,7 +167,9 @@ acl_free_full (void *ptr, char *f, long line)
   //if (has_malloc_context()) { 
   //A4GL_rm_associated_mem(A4GL_get_malloc_context(), ptr); 
   //}
+#ifdef DEBUG
   A4GL_debug ("Free %p %s %d", ptr, f, line);
+#endif
 
 
 

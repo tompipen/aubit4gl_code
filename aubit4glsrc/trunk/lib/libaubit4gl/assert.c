@@ -14,7 +14,9 @@ A4GL_assertion_failed (char *s)
     return;
   asserting++;
   A4GL_set_errm (s);
+#ifdef DEBUG
   A4GL_debug ("%s", A4GL_null_as_null (s));
+#endif
 
   if (A4GL_isyes (acl_getenv ("DOING_CM")))
     {
@@ -54,7 +56,6 @@ A4GL_assertion_failed (char *s)
 void
 A4GL_assertion (int a, char *s)
 {
-/* A4GL_debug("Assertion ? a=%d s=%s",a,s); */
   if (a)
     {
       A4GL_assertion_failed (s);
@@ -75,7 +76,6 @@ A4GL_assertion (int a, char *s)
 void
 A4GL_assertion_full (int a, char *s, char *mod, int ln)
 {
-/* A4GL_debug("Assertion ? a=%d s=%s",a,s); */
   if (a)
     {
       char buff[2000];

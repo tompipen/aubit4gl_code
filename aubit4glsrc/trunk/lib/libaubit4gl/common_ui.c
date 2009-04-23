@@ -28,7 +28,9 @@ A4GL_fgl_die_with_msg (int n, char *s)
     }
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
+#ifdef DEBUG
   A4GL_debug ("End of program - exit(%d).", n);
+#endif
   PRINTF ("%s\n", s);
   exit (n);
 }
@@ -62,6 +64,8 @@ A4GL_fgl_die (int n)
     }
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
+#ifdef DEBUG
   A4GL_debug ("End of program - exit(%d).", n);
+#endif
   exit (n);
 }

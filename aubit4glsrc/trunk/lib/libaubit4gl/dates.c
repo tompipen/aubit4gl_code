@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.24 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: dates.c,v 1.25 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -186,7 +186,9 @@ gen_dateno2 (int day, int month, int year)
   long temp;
   if (month < 1 || month > 12)
     {
+#ifdef DEBUG
       A4GL_debug ("Invalid Month");
+#endif
       return DATE_INVALID;
     }
   if (day < 1)
@@ -228,11 +230,15 @@ A4GL_gen_dateno (int day, int month, int year)
 #endif
   z = gen_dateno2 (day, month, year);
 
+#ifdef DEBUG
   A4GL_debug ("z=%d\n", z);
+#endif
   if (z == DATE_INVALID)
     {
       //A4GL_exitwith ("Invalid date");
+#ifdef DEBUG
       A4GL_debug ("Invalid date ? %ld %ld ", z, DATE_INVALID);
+#endif
       return z;
     }
   return z;
@@ -249,7 +255,9 @@ get_yr (int d)
 {
   int e;
   int h, l;
+#ifdef DEBUG
   A4GL_debug ("D=%d\n", d);
+#endif
   if (d == DATE_INVALID)
     return d;
   e = (int) ((double) (d - 13 + EPOCH) / 365.2425) + 1;
@@ -327,21 +335,27 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
 {
   int i, leap;
   int year;
+#ifdef DEBUG
   A4GL_debug ("d=%d\n", d);
+#endif
   *day = 0;
   *mn = 0;
   *yr = 0;
   if (d == DATE_INVALID)
     return 0;
   year = get_yr (d);
+#ifdef DEBUG
   A4GL_debug ("YEAR = %d\n", year);
+#endif
   *day = d - A4GL_gen_dateno (1, 1, year) + 1;
 
   if (*day == DATE_INVALID)
     return 0;
 
   leap = leap_year (year);
+#ifdef DEBUG
   A4GL_debug ("leap=%d\n", leap);
+#endif
   for (i = 1; i <= 12; i++)
     {
       *day -= days_in_month[leap][i];
@@ -353,7 +367,9 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
     }
   *mn = i;
   *yr = year;
+#ifdef DEBUG
   A4GL_debug ("All done..");
+#endif
   return 1;
 }
 
@@ -367,7 +383,9 @@ A4GL_modify_year (int a)
 #ifdef DEBUG
   /* {DEBUG} */
   {
+#ifdef DEBUG
     A4GL_debug ("Modify year");
+#endif
   }
 #endif
   a = A4GL_y2kmode (a);

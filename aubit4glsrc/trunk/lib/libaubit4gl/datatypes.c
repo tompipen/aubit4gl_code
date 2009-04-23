@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.33 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: datatypes.c,v 1.34 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -343,7 +343,9 @@ A4GL_add_datatype_function_i (int a, char *funcname, void *func)
 {
   if (!inited)
     A4GL_init_datatypes ();
+#ifdef DEBUG
   A4GL_debug ("Adding function %s to datatype %d (%p)", A4GL_null_as_null (funcname), a, func);
+#endif
 
   dtypes[a].funcs = realloc (dtypes[a].funcs, (dtypes[a].funcs_len + 1) * sizeof (struct dtype_functions *));
 
@@ -368,7 +370,9 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
   char buff[256];
   int nret;
 
+#ifdef DEBUG
   A4GL_debug ("in call_datatype_function obj=%p dtype=%d funcname=%s nparam=%d", obj, dtype, A4GL_null_as_null (funcname), nparam);
+#endif
   SPRINTF1 (buff, ":%s", A4GL_null_as_null (funcname));
 
   if (!inited)
@@ -405,7 +409,9 @@ A4GL_add_datatype_function_n (char *name, char *funcname, void *func)
   int a;
   if (!inited)
     A4GL_init_datatypes ();
+#ifdef DEBUG
   A4GL_debug ("Add_datatype_function_n : %s %s %p", A4GL_null_as_null (name), A4GL_null_as_null (funcname), func);
+#endif
   a = A4GL_find_datatype (name);
   if (a == -1)
     return 0;
@@ -465,16 +471,22 @@ A4GL_add_conversion (char *from, char *to, void *func)
   int b;
   if (!inited)
     A4GL_init_datatypes ();
+#ifdef DEBUG
   A4GL_debug ("In Adding conversions... with %p", func);
+#endif
   a = A4GL_find_datatype (from);
   b = A4GL_find_datatype (to);
 
   if (a == -1 || b == -1)
     {
+#ifdef DEBUG
       A4GL_debug ("Unable to resolve either from or to");
+#endif
       return;
     }
+#ifdef DEBUG
   A4GL_debug ("Adding conversion from %s(%d) to %s(%d) with %p", A4GL_null_as_null (from), a, A4GL_null_as_null (to), b, func);
+#endif
   A4GL_set_convmatrix (a, b, func);
 
 }
@@ -505,7 +517,9 @@ A4GL_add_default_datatypes (void)
   A4GL_add_datatype ("NCHAR", 15, 0);
   A4GL_add_default_operations ();
 
+#ifdef DEBUG
   A4GL_debug ("Finished adding default data types");
+#endif
 }
 
 

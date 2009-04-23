@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.51 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: error.c,v 1.52 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -112,16 +112,22 @@ A4GL_get_err_for_errstr (char *s)
 {
   static struct s_err err_default = { "Unknown error", ERR_UNDEF };
   int a;
+#ifdef DEBUG
   A4GL_debug ("Looking for error desc for errmsg=\"%s\"", s);
+#endif
   for (a = 0; errors[a].a4gl_errno; a++)
     {
       if (strcmp (s, errors[a].errmsg) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Found error desc, a4gl_errno=%i", errors[a].a4gl_errno);
+#endif
 	  return &errors[a];
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Error desc not found, returning default");
+#endif
   return &err_default;
 }
 
@@ -154,7 +160,9 @@ A4GL_exitwith (char *s)
   struct s_err *errdesc;
   errdesc = A4GL_get_err_for_errstr (s);
 
+#ifdef DEBUG
   A4GL_debug ("Setting status, cache_status, cache_errmsg");
+#endif
   cache_errmsg = errdesc->errmsg;	// static, read-only - safe
   if (errdesc->a4gl_errno == ERR_UNDEF)	//not found
     {
@@ -188,7 +196,9 @@ A4GL_exitwith_sql (char *s)
   struct s_err *errdesc;
   errdesc = A4GL_get_err_for_errstr (s);
 
+#ifdef DEBUG
   A4GL_debug ("Setting status, cache_status, cache_errmsg");
+#endif
   cache_errmsg = errdesc->errmsg;	// static, read-only - safe
   if (errdesc->a4gl_errno == ERR_UNDEF)	//not found
     {
@@ -243,14 +253,20 @@ A4GL_get_errmsg (int z)
 {
   int a = 0;
   char *ptr;
+#ifdef DEBUG
   A4GL_debug ("In get errm");
+#endif
   if (z == cache_status)
     {
+#ifdef DEBUG
       A4GL_debug ("Cached...");
+#endif
       return cache_errmsg;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Looking up error... %d", a);
+#endif
   for (a = 0; errors[a].a4gl_errno; a++)
     {
       if (errors[a].a4gl_errno + A4GL_ERR_BASE == z)
@@ -258,15 +274,21 @@ A4GL_get_errmsg (int z)
 	  return errors[a].errmsg;
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Not found...");
+#endif
   ptr = A4GLSQL_get_errmsg (0 - z);
   if (ptr)
     {
+#ifdef DEBUG
       A4GL_debug ("Returning A4GLSQL_get_errmsg \"%s\"", lasterrorstr);
+#endif
       return ptr;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning lasterror %p \"%s\"", lasterrorstr, lasterrorstr);
+#endif
   return lasterrorstr;
 }
 

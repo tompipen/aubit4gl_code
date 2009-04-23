@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.89 2009-03-31 09:54:23 mikeaubury Exp $
+# $Id: ui.c,v 1.90 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -199,7 +199,9 @@ A4GL_req_field (void *s, char itype, char type, ...)
 
   if (found == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Unable to determine current action... - itype='%c'", itype);
+#endif
       A4GL_exitwith ("Unable to determine current action...");
     }
 
@@ -250,9 +252,13 @@ void
 aclfgli_pr_message (int attr, int wait, int n)
 {
   char *s;
+#ifdef DEBUG
   A4GL_debug ("In aclfgli_pr_message : %d", n);
+#endif
   s = A4GL_pull_off_data_for_display (n, DISPLAY_TYPE_DISPLAY_AT);
+#ifdef DEBUG
   A4GL_debug (" called pull_off_data_for_display  s=%s", s);
+#endif
   aclfgli_pr_message_internal (attr, wait, s);
   free (s);
 }
@@ -303,16 +309,18 @@ A4GL_display_at (int n, int a)
   y = A4GL_pop_int ();
 
   A4GL_set_status (0, 0);
-  //A4GL_debug_print_stack ();
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+#ifdef DEBUG
   A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & 0xff, tos_size, tos_ptr);
+#endif
   //A4GL_assertion(tos_ptr==0,"Invalid pointer passed to display_at");
   if ((tos_dtype & 0xff) == 0 && tos_size == 0)
     {
       char *ctos_ptr;
+#ifdef DEBUG
       A4GL_debug ("Maybe null....");
+#endif
       ctos_ptr = (char *) tos_ptr;
-      //A4GL_debug("50 Clear end of line required... %d %d",ctos_ptr[0],ctos_ptr[1]);
       clr_end_of_line = 1;
     }
 
@@ -349,7 +357,9 @@ A4GL_display_at (int n, int a)
       line_length++;
       if (strlen (s) > line_length)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("'%s' seems to long to display... - I'm gonna trim it..", s);
+#endif
 	  s[line_length] = 0;
 
 	}
@@ -357,11 +367,15 @@ A4GL_display_at (int n, int a)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("Finding display_internal clr_end_of_line=%d", clr_end_of_line);
+#endif
 
   if (strlen (s))
     {
+#ifdef DEBUG
       A4GL_debug ("display_internal - attr =%x", a);
+#endif
       A4GL_display_internal (x, y, s, a, clr_end_of_line);
     }
   else
@@ -382,7 +396,9 @@ A4GL_display_at (int n, int a)
     }
 
   free (s);
+#ifdef DEBUG
   A4GL_debug ("Done Display@");
+#endif
   A4GL_clr_last_was_empty ();
 
   if (!aclfgli_get_err_flg ())
@@ -425,12 +441,6 @@ A4GL_endis_fields (int en_dis, ...)
   return a;
 }
 
-//void A4GL_clr_form_fields (int to_defaults, char *defs)
-//{
-
-  //A4GL_debug ("FIXME: not implemented: clr_form_fields");
-
-//}
 
 void
 A4GL_clr_fields (int to_defaults, ...)
@@ -455,7 +465,9 @@ A4GL_fgl_getfldbuf (void *inp, char itype, struct s_field_name *orig_fldlist, ..
 
   va_start (ap, orig_fldlist);
 
+#ifdef DEBUG
   A4GL_debug ("itype=%c", itype);
+#endif
   if (itype == 'I' || itype == 'C')
     {
       a = A4GL_fgl_getfldbuf_ap (inp, orig_fldlist, &ap);
@@ -599,7 +611,9 @@ A4GL_pull_off_data_for_display (int n, int display_type)
 
   for (z = n - 1; z >= 0; z--)
     {
+#ifdef DEBUG
       A4GL_debug ("z=%d n=%d\n", z, n);
+#endif
       A4GL_get_top_of_stack (z + 1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
       ptr = 0;
@@ -618,7 +632,9 @@ A4GL_pull_off_data_for_display (int n, int display_type)
 	    ptr = acl_strdup (ptr);
 	  if (ptr)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Display returns %s\n", ptr);
+#endif
 	    }
 
 
@@ -650,7 +666,9 @@ A4GL_pull_off_data_for_display (int n, int display_type)
 
 	}
 
+#ifdef DEBUG
       A4GL_debug ("ptr='%s'\n", ptr);
+#endif
 
 
       buff = realloc (buff, strlen (s) + strlen (ptr) + 1);
@@ -667,10 +685,14 @@ A4GL_pull_off_data_for_display (int n, int display_type)
       s=realloc(s,ls+1);
       memset(s,0,ls+1);
       strcpy (s, buff);
+#ifdef DEBUG
       A4GL_debug ("s='%s' %p %d %d\n", s, s, strlen (s), ls);
+#endif
     }
   free (buff);
+#ifdef DEBUG
   A4GL_debug ("pull_off_data_for_display returns %s", s);
+#endif
   for (z = 0; z < n; z++)
     {
       A4GL_drop_param ();
@@ -706,15 +728,21 @@ void
 A4GL_processed_onkey_v2 (char *iot, char *base)
 {
   int *ptr;
+#ifdef DEBUG
   A4GL_debug ("In A4GL_processed_onkey_v2");
+#endif
   ptr = GETPTR (iot, base, "processed_onkey");
   if (ptr == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Darn - no processed_onkey %s (%p)", iot, base);
+#endif
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Processed key... %d in %s @ %p", *ptr, iot, base);
+#endif
       *ptr = 0;
     }
 }
@@ -747,7 +775,9 @@ A4GL_field_name_str_match (char *f1, char *f2)
   else
     a = 0;
 
+#ifdef DEBUG
   A4GL_debug ("field_name_str_match : %s %s -> %d", f1p, f2p, a);
+#endif
   return a;
 }
 
@@ -856,7 +886,9 @@ int
 A4GL_key_map (int keycode)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("Got key %d", keycode);
+#endif
   if (key_mappings == 0)
     return keycode;
 
@@ -864,11 +896,15 @@ A4GL_key_map (int keycode)
     {
       if (key_mappings[a].src_keycode == keycode)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Found mapping - %d -> %d", keycode, key_mappings[a].dest_keycode);
+#endif
 	  return key_mappings[a].dest_keycode;
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("No key match - %d", keycode);
+#endif
   return keycode;
 }
 
@@ -916,12 +952,16 @@ int
 A4GL_has_event_for_field (int cat, char *a, struct aclfgl_event_list *evt)
 {
   int n;
+#ifdef DEBUG
   A4GL_debug ("Looking for a %d event on field %s HEF", cat, a);
+#endif
   for (n = 0; evt[n].event_type; n++)
     {
       if (evt[n].event_type == cat && A4GL_field_name_str_match (evt[n].field, a))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("FOUND ONE HEF");
+#endif
 	  return evt[n].block;
 	}
     }
@@ -940,7 +980,9 @@ A4GL_has_event_for_action (char *a, struct aclfgl_event_list *evt)
 	{
 	  if (A4GL_aubit_strcasecmp (evt[n].field, a) == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("FOUND ONE HEF");
+#endif
 	      return evt[n].block;
 	    }
 	}
@@ -1606,33 +1648,44 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
   int ab;
   char s[256];
 
+#ifdef DEBUG
   A4GL_debug ("Field : %p \n", field);
+#endif
 
   strcpy (s, s_x);
   A4GL_trim (s);
+#ifdef DEBUG
   A4GL_debug ("attr_name_match : %s", s);
+#endif
   A4GL_bname (s, tabname, colname);
 
 
+#ifdef DEBUG
   A4GL_debug ("Splits to %s & %s", tabname, colname);
   A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
+#endif
 
 
   aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
-  /* A4GL_debug ("Matches = %d %d ", aa, ab); */
   if ((ab == 0) || (colname[0] == '*'))
     {
+#ifdef DEBUG
       A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)", s, tabname, colname, field->tabname, field->colname);
+#endif
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Matched %s.%s = %s.%s ", tabname, colname, field->tabname, field->colname);
+#endif
       return 1;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname, field->colname, colname);
+#endif
 
   return 0;
 }
@@ -1686,7 +1739,9 @@ A4GL_fgl_keyval (int _np)
   if (_np != 1)
     {
       A4GL_set_status (-3000, 0);
+#ifdef DEBUG
       A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1", _np);
+#endif
 
       for (_r = 0; _r < _np; _r++)
 	{
@@ -1695,10 +1750,14 @@ A4GL_fgl_keyval (int _np)
     }
 
   v0 = A4GL_char_pop ();
+#ifdef DEBUG
   A4GL_debug ("TST1 - v0=%s", v0);
+#endif
 
   _r = A4GL_key_val (v0);
+#ifdef DEBUG
   A4GL_debug ("TST1 - r=%d\n", _r);
+#endif
   A4GL_push_long (_r);
   acl_free (v0);
   return 1;
@@ -1728,12 +1787,16 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
   had_length = strlen (ss);
   strcpy (s, ss);
   A4GL_trim (s);
+#ifdef DEBUG
   A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
+#endif
 
   if (A4GL_aubit_strcasecmp (ptr, "NULL") == 0)
     {
       // Check for a null...
+#ifdef DEBUG
       A4GL_debug ("NULL ALLOWED");
+#endif
       if (strlen (s) == 0)
 	{
 	  return 1;
@@ -1753,7 +1816,9 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
     {
       ptr3[0] = 0;
       ptr3++;
+#ifdef DEBUG
       A4GL_debug ("a range has been specified '%s' to '%s'", ptr, ptr3);
+#endif
     }
 
   if (dtype != DTYPE_CHAR)
@@ -1764,8 +1829,11 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 	{
 	  dim = 0x2010;
 	}
+#ifdef DEBUG
       A4GL_debug ("Not a string expression");
       A4GL_debug ("Pushing '%s'", s);
+#endif
+
       A4GL_push_char (s);
       A4GL_pop_param (&buff[0], dtype, dim);
 
@@ -1774,39 +1842,54 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 
       if (dtype == 1)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Popped ptr1 : %d", *(int *) ptr1);
+#endif
 	}
+#ifdef DEBUG
       A4GL_debug ("Pushing '%s'", ptr);
+#endif
       A4GL_push_char (ptr);
       A4GL_pop_param (&buff2[0], dtype, dim);
 
+#ifdef DEBUG
       if (A4GL_isnull (dtype + ENCODE_SIZE (dim), buff))
 	{
 	  A4GL_debug ("GOT NULL !!!");
 	}
+#endif
+
       ptr2 = buff2;
       if (dtype == 1)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Popped ptr2 : %d", *(int *) ptr2);
+#endif
 	}
 
       /* do we have a range of values to check ? */
       if (ptr3)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Pushing '%s'", ptr3);
+#endif
 	  A4GL_push_char (ptr3);
 	  A4GL_pop_param (&buff3[0], dtype, dim);
 	  ptr3 = buff3;
 	  if (dtype == 1)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Popped ptr3 : %d", *(int *) ptr3);
+#endif
 	    }
 	}
 
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("String expression");
+#endif
       ptr1 = s;
       ptr2 = ptr;
     }
@@ -1827,9 +1910,13 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
+#ifdef DEBUG
       A4GL_debug_print_stack ();
+#endif
       A4GL_pushop (OP_EQUAL);
+#ifdef DEBUG
       A4GL_debug ("Checking for equal");
+#endif
       free (s);
 
 
@@ -1838,7 +1925,9 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 	  && chk_again && !strncmp (ptr, "NULL", 4))
 	{
 
+#ifdef DEBUG
 	  A4GL_debug ("zero not equal to NULL during form range checks");
+#endif
 	  chk_again = 0;
 	}
       return chk_again;
@@ -1850,9 +1939,13 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
     {
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
+#ifdef DEBUG
       A4GL_debug_print_stack ();
+#endif
       A4GL_pushop (OP_GREATER_THAN_EQ);
+#ifdef DEBUG
       A4GL_debug ("Checking for <=");
+#endif
       if (A4GL_pop_bool () == 0)
 	{
 	  free (s);
@@ -1862,9 +1955,13 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
       //A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr3);
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr3, dtype);
+#ifdef DEBUG
       A4GL_debug_print_stack ();
+#endif
       A4GL_pushop (OP_LESS_THAN_EQ);
+#ifdef DEBUG
       A4GL_debug ("Checking for >=");
+#endif
       free (s);
       if (A4GL_pop_bool () == 0)
 	return FALSE;
@@ -1890,7 +1987,9 @@ A4GL_get_fcompile_err (void)
 void
 A4GL_ensure_current_window_is (char *s)
 {
+#ifdef DEBUG
   A4GL_debug ("ENSURE %s (got %s)", s, A4GL_get_currwin_name ());
+#endif
   if (strcmp (A4GL_get_currwin_name (), s) == 0)
     return;
   A4GL_current_window (s);
@@ -1954,7 +2053,9 @@ A4GL_show_menu_large_get_matches (ACL_Menu * menu, char *typed_portion, int widt
 	  // Lets copy our option in...
 	  strcpy (buff_opt, &opt1->opt_title[1]);
 	  buff_opt[strlen (typed_portion)] = 0;
+#ifdef DEBUG
 	  A4GL_debug ("[ %s, %s ]", typed_portion, buff_opt);
+#endif
 
 
 	  if (A4GL_aubit_strcasecmp (typed_portion, buff_opt) == 0)
@@ -2184,19 +2285,25 @@ A4GL_split_config (char *str)
 	  args_type[a] = TYPE_INT;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("'%s' = --%s-- type=%d\n", args[a], args_val[a],
 		  args_type[a]);
+#endif
     }
 
   if (args_cnt == 1)
     {
       if (strlen (args_val[0]) == 0 && strlen (args[0]))
 	{
+#ifdef DEBUG
 	  A4GL_debug ( "Looking at :%s\n", args[0]);
+#endif
 	  if (A4GL_key_val (args[0]) > 255)
 	    {
 	      // Looks like the config is just a key..
+#ifdef DEBUG
 	      A4GL_debug ( "Key ? %s\n", args[0]);
+#endif
 	      args_type[0] = TYPE_CHAR;
 	      args_val[0] = strdup (args[0]);	//@FIXME - memory leak
 	      //if (args_val[0][0]=='f' && (args_arg[0][1]>='1' && args_val[0][1]<='9')) {a4gl_upshift(args_val[0]);}
@@ -2237,7 +2344,9 @@ A4GL_find_param (char *name)
 
   if (reqd)
     {
+#ifdef DEBUG
       A4GL_debug ("Required Parameter not found %s\n", name);
+#endif
       return 0;
     }
   else

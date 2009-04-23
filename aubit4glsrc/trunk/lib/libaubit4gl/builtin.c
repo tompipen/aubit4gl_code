@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.138 2009-03-05 07:59:51 mikeaubury Exp $
+# $Id: builtin.c,v 1.139 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -215,12 +215,18 @@ aclfgl_fgl_getenv (int nargs)
     }
   g = A4GL_char_pop ();
   A4GL_trim (g);
+#ifdef DEBUG
   A4GL_debug ("Looking up %s", A4GL_null_as_null (g));
+#endif
   p = acl_getenv_not_set_as_0 (g);
+#ifdef DEBUG
   A4GL_debug ("Got back %p");
+#endif
   if (p)
     {
+#ifdef DEBUG
       A4GL_debug (" %s = '%s'", A4GL_null_as_null (g), A4GL_null_as_null (p));
+#endif
     }
 
 
@@ -372,7 +378,9 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   va_list ap;
   va_start (ap, b);
   va_end (ap);
+#ifdef DEBUG
   A4GL_debug ("Entering a4gl_substr");
+#endif
   if (A4GL_isnull (DTYPE_CHAR, ca))
     return "";
 
@@ -409,12 +417,18 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
     {
       if ((size_t) (b - a + 1) > strlen (ca))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Need a little more..");
+#endif
 	  free (np);
 	  free (np2);
 
+#ifdef DEBUG
 	  A4GL_debug ("b=%d a=%d", b, a);
+#endif
+#ifdef DEBUG
 	  A4GL_debug ("Want %d bytes ", b - a + 2);
+#endif
 	  np = acl_malloc2 ((size_t) (b - a + 2));
 	  np2 = acl_malloc2 ((size_t) (b - a + 2));
 	  memset (np, 0, (size_t) (b - a + 2));
@@ -472,7 +486,9 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
   }
 #endif
 
+#ifdef DEBUG
   A4GL_debug ("a=%d b-a+1=%d", a, b - a + 1);
+#endif
 
   strncpy (np2, &np[a], (size_t) (b - a + 1));
   np2[b - a + 1] = 0;
@@ -481,7 +497,9 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
     A4GL_debug (">>>>Set to %s", A4GL_null_as_null (np2));
   }
 #endif
+#ifdef DEBUG
   A4GL_debug ("Exiting a4gl_substr");
+#endif
   return np2;
 }
 
@@ -544,7 +562,9 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
 int
 A4GL_get_count (void)
 {
+#ifdef DEBUG
   A4GL_debug ("mv_arr_count=%d XYX", mv_arr_count);
+#endif
   return mv_arr_count;
 }
 
@@ -848,7 +868,9 @@ A4GL_startlog (char *fname, int l, int n)
 
   A4GL_trim (fname);
   A4GL_trim (s);
+#ifdef DEBUG
   A4GL_debug ("START LOG (%s Line:%d) to file '%s'\n", A4GL_null_as_null (fname), l, A4GL_null_as_null (s));
+#endif
 
 
   if (A4GL_isyes (acl_getenv ("RESTARTLOG")))
@@ -900,7 +922,9 @@ A4GL_errorlog (char *fname, int l, int nargs)
 
   //s = A4GL_char_pop ();
   s = A4GL_pull_off_data_for_display (nargs, DISPLAY_TYPE_DISPLAY_AT);
+#ifdef DEBUG
   A4GL_debug ("ERROR LOG - %s Line:%d %s\n", A4GL_null_as_null (fname), l, A4GL_null_as_null (s));
+#endif
 
   A4GL_trim (s);
   if (error_log_file)
@@ -940,12 +964,18 @@ A4GL_errorlog (char *fname, int l, int nargs)
 void
 A4GL_close_errorlog_file (void)
 {
+#ifdef DEBUG
   A4GL_debug ("Close_errlog_file");
+#endif
   if (error_log_file)
     {
+#ifdef DEBUG
       A4GL_debug ("error log was open");
+#endif
       fclose (error_log_file);
+#ifdef DEBUG
       A4GL_debug ("not any more...");
+#endif
       error_log_file = 0;
     }
 }
@@ -1268,12 +1298,16 @@ acli_interval (char *s, int n)
 {
   struct_ival c;
   //char *ptr;
+#ifdef DEBUG
   A4GL_debug ("acli_interval s=%s n=%d\n", A4GL_null_as_null (s), n);
+#endif
   memset (&c, 0, sizeof (c));
   c.ltime = n & 16;
   c.stime = n / 16;
   A4GL_ctoint (s, &c, n);
+#ifdef DEBUG
   A4GL_debug ("acli_interval - pop'd c - n=%x", n);
+#endif
   A4GL_push_interval (&c, n);
 
 }
@@ -1291,12 +1325,16 @@ acli_datetime (char *s, int n)
   //char *ptr;
   char buff[255];
 
+#ifdef DEBUG
   A4GL_debug ("acli_datetime s=%s n=%d\n", A4GL_null_as_null (s), n);
+#endif
   c.ltime = n & 16;
   c.stime = n / 16;
   A4GL_ctodt (s, &c, n);
   A4GL_push_dtime (&c);
+#ifdef DEBUG
   A4GL_debug ("ADDED DATETIME TO STACK - %d %d", c.stime, c.ltime);
+#endif
 
   A4GL_pop_char (buff, 40);
   A4GL_push_dtime (&c);
@@ -1540,7 +1578,9 @@ int
 aclfgl_fgl_getkey (int n)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("FGL1");
+#endif
   A4GL_set_status (0, 0);
   a = 0;
   while (a == 0)
@@ -1560,7 +1600,9 @@ aclfgl_fgl_getkey_wait (int n)
   long s;
   long t;
   s = (long) time (0);
+#ifdef DEBUG
   A4GL_debug ("FGL1");
+#endif
   wait = A4GL_pop_long ();
 
   A4GL_set_status (0, 0);
@@ -1633,7 +1675,9 @@ aclfgl_fgl_scr_size (int n)
   srec = A4GL_get_srec (s);
   if (!srec)
     {
+#ifdef DEBUG
       A4GL_debug ("screen record '%s' not found in current form", s);
+#endif
       A4GL_push_long (-1);
     }
   else
@@ -1675,7 +1719,9 @@ int
 aclfgl_fgl_dialog_getfieldname (int n)
 {
 //function returns the name of the current field.
+#ifdef DEBUG
   A4GL_debug ("WARNING: fgl_dialog_getfieldname() not yet implemented!");
+#endif
   A4GL_push_char ("");
   return 1;
 }
@@ -1685,7 +1731,9 @@ int
 aclfgl_fgl_dialog_getbuffer (int n)
 {
 // returns the value of the current field:
+#ifdef DEBUG
   A4GL_debug ("WARNING: fgl_dialog_getbuffer() not yet implemented!");
+#endif
   A4GL_push_char ("");
   return 1;
 }
@@ -1695,7 +1743,9 @@ aclfgl_fgl_dialog_setbuffer (int n)
 {
 // function sets the value of the current field:
   char *p1 = A4GL_char_pop ();
+#ifdef DEBUG
   A4GL_debug ("WARNING: fgl_dialog_setbuffer() not yet implemented!");
+#endif
   free (p1);
   return 0;
 }
@@ -1704,7 +1754,9 @@ int
 aclfgl_fgl_buffertouched (int n)
 {
 // Returns  INTEGER  TRUE if the last field has been modified.
+#ifdef DEBUG
   A4GL_debug ("WARNING: fgl_buffertouched() not yet implemented!");
+#endif
   A4GL_push_int (1);
   return 1;
 }
@@ -1715,7 +1767,9 @@ aclfgl_fgl_setkeylabel (int n)
 {
   //char *p1;
   //char *p2;
+#ifdef DEBUG
   A4GL_debug ("WARNING: fgl_setkeylabel() not yet implemented!");
+#endif
   //p1=A4GL_char_pop();
   //p2=A4GL_char_pop();
   A4GL_direct_to_ui ("setkeylabel", (char *) n);
@@ -1751,7 +1805,9 @@ aclfgl_fgl_dialog_setkeylabel (int n)
 {
   //char *p1;
   //char *p2;
+#ifdef DEBUG
   A4GL_debug ("WARNING: fgl_dialog_setkeylabel() not yet implemented!");
+#endif
   //p1=A4GL_char_pop();
   //p2=A4GL_char_pop();
   A4GL_direct_to_ui ("dialog_setkeylabel", (char *) n);

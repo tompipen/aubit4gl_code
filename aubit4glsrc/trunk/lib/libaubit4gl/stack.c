@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.233 2009-04-22 05:41:06 mikeaubury Exp $
+# $Id: stack.c,v 1.234 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -280,8 +280,10 @@ A4GL_pop_bool (void)
 
   if (ptr != 0 && ptr != 1)
     {
+#ifdef DEBUG
       A4GL_debug ("1 SERIOUS PROBLEM ????? ptr=%d", ptr);
       A4GL_debug_print_stack ();
+#endif
     }
   if (ptr)
     return 1;
@@ -316,7 +318,9 @@ A4GL_pop_int8 (void)
 {
   int8 b = 0;
   A4GL_pop_param (&b, DTYPE_INT8, 0);
+#ifdef DEBUG
   A4GL_debug ("POPPED = %lld\n", b);
+#endif
   return b;
 }
 
@@ -328,7 +332,9 @@ A4GL_push_int8 (int8 a)
   ptr = malloc (sizeof (a));
   memcpy (ptr, &a, sizeof (a));
 
+#ifdef DEBUG
   A4GL_debug ("%lld %lld\n", *(int8 *) ptr, a);
+#endif
   A4GL_push_param (ptr, DTYPE_INT8 + DTYPE_MALLOCED);
   return 1;
 
@@ -464,7 +470,9 @@ A4GL_pop_var (void *p, int d)
       A4GL_exitwith ("Error in conversion");
       if (A4GL_isyes (acl_getenv ("NO_CONV_ERR")))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Ignoreing");
+#endif
 	  a4gl_status = 0;
 	}
 #ifdef DEBUG
@@ -617,7 +625,9 @@ A4GL_char_pop_size (int *sz)
 #endif
   if (params_cnt <= 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Stack got corrupted");
+#endif
       A4GL_assertion (1, "Stack got corrupted");
       A4GL_fgl_die (1);
     }
@@ -629,7 +639,9 @@ A4GL_char_pop_size (int *sz)
       if (A4GL_has_datatype_function_i (f, ">STRING"))
 	{
 	  char *(*function) (void *, int, char *, int);
+#ifdef DEBUG
 	  A4GL_debug ("Calling >STRING for datatype");
+#endif
 	  function = A4GL_get_datatype_function_i (f, ">STRING");
 	  s = function (params[params_cnt - 1].ptr, params[params_cnt - 1].size, 0, 0);
 	  A4GL_drop_param ();
@@ -759,7 +771,9 @@ A4GL_pop_param (void *p, int d, int size)
 
   if (params_cnt <= 0)
     {
+#ifdef DEBUG
       A4GL_debug ("1 Stack got corrupted");
+#endif
       A4GL_assertion (1, "Stack got corrupted");
       A4GL_fgl_die (1);
     }
@@ -792,8 +806,10 @@ A4GL_pop_param (void *p, int d, int size)
 	  //A4GL_debug("Doing conv");
 	  A4GL_conversion_ok (1);
 	  params_cnt--;
+#ifdef DEBUG
 	  A4GL_debug ("params[params_cnt].dtype=%d d=%d", params[params_cnt].dtype, d);
 	  A4GL_debug ("MASKED params[params_cnt].dtype=%d d=%d", params[params_cnt].dtype & DTYPE_MASK, d & DTYPE_MASK);
+#endif
 	  b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK, params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 
 	  if (b == 0)
@@ -805,22 +821,30 @@ A4GL_pop_param (void *p, int d, int size)
 		{
 		  // Do nothing 
 		  A4GL_conversion_ok (0);
+#ifdef DEBUG
 		  A4GL_debug ("Bad conversion");
+#endif
 
 		  if (A4GL_isyes (acl_getenv ("NO_CONV_ERR")))
 		    {
+#ifdef DEBUG
 		      A4GL_debug ("Ignoreing");
+#endif
 		      a4gl_status = 0;
 		    }
 		}
 	      else
 		{
 		  A4GL_conversion_ok (0);
+#ifdef DEBUG
 		  A4GL_debug ("Bad conversion");
+#endif
 
 		  if (A4GL_isyes (acl_getenv ("NO_CONV_ERR")))
 		    {
+#ifdef DEBUG
 		      A4GL_debug ("Ignoreing");
+#endif
 		      a4gl_status = 0;
 		    }
 		}
@@ -977,31 +1001,42 @@ A4GL_push_param (void *p, int d)
     {
       A4GL_assertion (1, "Size<0 for char");
     }
+#ifdef DEBUG
   A4GL_debug ("50 push_param %p %d size=%d", p, d, size);
+#endif
 
   if (params == 0)
     {
       int nbytes = 0;
-      nbytes = sizeof (struct param) * NUM_PARAM, A4GL_debug ("20 Assign stack : %d bytes", nbytes);
+      nbytes = sizeof (struct param) * NUM_PARAM; 
+#ifdef DEBUG
+      A4GL_debug ("20 Assign stack : %d bytes", nbytes);
+#endif
       params = (struct param *) acl_malloc (nbytes, "Assign stack");
       alloc_params_cnt = NUM_PARAM;
     }
 
   if (params != 0 && params_cnt >= alloc_params_cnt)
     {
+#ifdef DEBUG
       A4GL_debug ("15 Allocating more space for stack\n");
+#endif
       alloc_params_cnt += NUM_PARAM;
       params = (struct param *) realloc (params, sizeof (struct param) * alloc_params_cnt);
     }
 
   if (params != 0 && params_cnt < alloc_params_cnt - NUM_PARAM && params_cnt > 1)
     {
+#ifdef DEBUG
       A4GL_debug ("15 Allocating less space for stack\n");
+#endif
       alloc_params_cnt -= NUM_PARAM;
       params = (struct param *) realloc (params, sizeof (struct param) * alloc_params_cnt);
     }
 
+#ifdef DEBUG
   A4GL_debug ("51 Allocated stack space %d %d", d, OP_MASK_BASE);
+#endif
 
 
   if (d == FUNCTION_OP)
@@ -1014,8 +1049,8 @@ A4GL_push_param (void *p, int d)
   if (d < OP_MASK_BASE)
     {
 
-      A4GL_debug ("51 Have data");
 #ifdef DEBUG
+      A4GL_debug ("51 Have data");
       /*  A4GL_debug ("7 Adding ptr=%p d=%d (%d masked) to stack %d\n", p, d, d & DTYPE_MASK, params_cnt); */
 #endif
 
@@ -1063,7 +1098,9 @@ A4GL_push_param (void *p, int d)
 
       params[params_cnt].size = size;
       params_cnt++;
+#ifdef DEBUG
       A4GL_debug ("99 All done..");
+#endif
       call_list--;
       return;
     }
@@ -1089,7 +1126,9 @@ A4GL_push_param (void *p, int d)
 
 	  zzz = 1;
 
+#ifdef DEBUG
 	  A4GL_debug ("9 zzz=%d\n", zzz);
+#endif
 
 	  if (zzz == 0)
 	    {
@@ -1733,7 +1772,9 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_CONCAT:
+#ifdef DEBUG
       A4GL_debug ("In concat %d %d", n1, n2);
+#endif
       /* if (n1) {drop_param (); return;} */
 
       if ((n1 || n2))
@@ -1764,7 +1805,9 @@ A4GL_push_param (void *p, int d)
 		  free (s1);
 		  free (s2);
 		  n2 = 0;
+#ifdef DEBUG
 		  A4GL_debug ("Fudging...");
+#endif
 		  call_list--;
 		  return;
 		}
@@ -1814,7 +1857,9 @@ A4GL_push_param (void *p, int d)
       A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
       A4GL_get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
 
+#ifdef DEBUG
       A4GL_debug ("OP_USING %d %d %d %d s1=%d s2=%d", n1, n2, dn1, dn2, s1, s2);
+#endif
 
       if (n1)
 	{
@@ -1822,7 +1867,9 @@ A4GL_push_param (void *p, int d)
 	  char *ptr;
 	  A4GL_drop_param ();
 	  A4GL_drop_param ();
+#ifdef DEBUG
 	  A4GL_debug ("PUSHED NULL %d", dn1 >> 16);
+#endif
 	  ptr = acl_malloc2 (s1 + 1);
 	  memset (ptr, ' ', s1);
 	  ptr[s1] = 0;
@@ -1855,7 +1902,9 @@ A4GL_push_param (void *p, int d)
       break;
 
     case OP_CLIP:
+#ifdef DEBUG
       A4GL_debug ("OP_CLIP");
+#endif
       A4GL_func_clip ();
 
 
@@ -1904,12 +1953,16 @@ A4GL_push_param (void *p, int d)
 	  return;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("OP MOD : %f %f\n", doubleb, doublea);
+#endif
       {
 	int a1, a2;
 	a1 = (int) doubleb;
 	a2 = (int) doublea;
+#ifdef DEBUG
 	A4GL_debug ("a1=%d  a2=%d", a1, a2);
+#endif
 	A4GL_push_long (a1 % a2);
       }
       break;
@@ -2178,7 +2231,9 @@ A4GL_push_current (int a, int b)
 	    /* no support for fractions of a second yet */
     );
   buff[27] = 0;
+#ifdef DEBUG
   A4GL_debug ("Time is %s", A4GL_null_as_null (buff));
+#endif
   A4GL_assertion (b < 0 || b > 12, "push_current parameter out of range");
   pstart = ptrs2[b] + 1;
   buff[pstart] = 0;
@@ -2189,7 +2244,9 @@ A4GL_push_current (int a, int b)
   n = (a << 4) + b;
 
   acli_datetime (buff2, n);
+#ifdef DEBUG
   A4GL_debug ("All done - push_current...");
+#endif
 #endif
 }
 
@@ -2226,13 +2283,21 @@ A4GL_push_time (void)
   struct tm *local_time;
   time_t now;
   char buff[20];
+#ifdef DEBUG
   A4GL_debug ("In push_time");
+#endif
   (void) time (&now);
+#ifdef DEBUG
   A4GL_debug ("Called time...");
+#endif
   local_time = localtime (&now);
+#ifdef DEBUG
   A4GL_debug ("Got local time");
+#endif
   SPRINTF3 (buff, "%02d:%02d:%02d", local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+#ifdef DEBUG
   A4GL_debug ("Time is %s", A4GL_null_as_null (buff));
+#endif
   A4GL_push_char (buff);
 #endif
 }
@@ -2312,7 +2377,9 @@ A4GL_opboolean (void)
 	  acl_free (z2);
 	  z1 = 0;
 	  z2 = 0;
+#ifdef DEBUG
 	  A4GL_debug ("String compare gives %d\n", cmp);
+#endif
 	  return cmp;
 	}
       if (d1 == DTYPE_VCHAR || d2 == DTYPE_VCHAR)
@@ -2335,7 +2402,9 @@ A4GL_opboolean (void)
 	      acl_free (z2);
 	      z1 = 0;
 	      z2 = 0;
+#ifdef DEBUG
 	      A4GL_debug ("String compare gives %d\n", cmp);
+#endif
 	      return cmp;
 	    }
 	}
@@ -2343,7 +2412,9 @@ A4GL_opboolean (void)
 
       a = A4GL_pop_double ();
       b = A4GL_pop_double ();
+#ifdef DEBUG
       A4GL_debug ("%lf %lf", a, b);
+#endif
       diff = b - a;
       if (diff < 0)
 	diff = 0.0 - diff;
@@ -2353,7 +2424,9 @@ A4GL_opboolean (void)
 #endif
       if (diff < 0.00000000000000001 && a != b)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Near as dammit equal..");
+#endif
 	  return 0;
 	}
       if (b > a)
@@ -2364,7 +2437,9 @@ A4GL_opboolean (void)
 	{
 	  return -1;
 	}
+#ifdef DEBUG
       A4GL_debug ("Equal");
+#endif
       return 0;
 
     }
@@ -2388,7 +2463,9 @@ A4GL_opboolean (void)
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Doesn't look much like a float to me (%s)", A4GL_null_as_null (z1));
+#endif
 	  return -2;
 	}
       //b = strtod (z1,&ptr);
@@ -2397,18 +2474,24 @@ A4GL_opboolean (void)
   else
     {
       first = 0;
+#ifdef DEBUG
       A4GL_debug ("second is string");
+#endif
       a = A4GL_pop_double ();
       z1 = A4GL_char_pop ();
       //b = strtod (z1,&ptr);
       if (A4GL_stof (z1, &b, 0))
 	{
 	  //A4GL_debug("OK as a float..");
+#ifdef DEBUG
 	  A4GL_debug ("looks like a float");
+#endif
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Doesn't look much like a float to me (%s)", A4GL_null_as_null (z1));
+#endif
 	  return -2;
 	}
       //A4GL_debug ("2 --> %s %lf", z1, a);
@@ -2419,7 +2502,9 @@ A4GL_opboolean (void)
 
       if (!A4GL_isnull (DTYPE_DATE, (void *) &adate))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("String looks like it is a date...");
+#endif
 
 	  if (first == 0)
 	    b = (double) adate;
@@ -2596,19 +2681,25 @@ add_to_z (char *z, char *s)
       z = acl_strdup ("");
     }
 
+#ifdef DEBUG
   A4GL_debug ("Adding '%s' to '%s'", A4GL_null_as_null (s), A4GL_null_as_null (z));
+#endif
   ptr = acl_strdup (z);
 
   l = strlen (z) + strlen (s) + 1;
 
+#ifdef DEBUG
   A4GL_debug ("New size=%d", l);
+#endif
 
   z = (char *) realloc (z, l);
   strcpy (z, ptr);
   strcat (z, s);
 
   free (ptr);
+#ifdef DEBUG
   A4GL_debug ("z=%s", A4GL_null_as_null (z));
+#endif
 
   return z;
 }
@@ -2630,7 +2721,9 @@ A4GL_params_on_stack (char *_paramnames[], int n)
   if (n == 0)
     return 0;
 
+#ifdef DEBUG
   A4GL_debug ("Generating parameter list n=%d", n);
+#endif
 
   for (a = 0; a < n; a++)
     {
@@ -2641,7 +2734,9 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 	if (_paramnames) {
       if (a && _paramnames[a] == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Ran out of parameters");
+#endif
 	  z = add_to_z (z, " + MORE");
 	  return z;
 	}
@@ -2657,32 +2752,44 @@ A4GL_params_on_stack (char *_paramnames[], int n)
       if ((params[a].dtype & DTYPE_MASK) != DTYPE_CHAR)
 	{
 	  sz = 30;
+#ifdef DEBUG
 	  A4GL_debug ("not char - sz=30");
+#endif
 	}
       else
 	{
 	  sz = params[a].size;
+#ifdef DEBUG
 	  A4GL_debug ("char - sz=%d", sz);
+#endif
 	}
 
       buff = acl_malloc2 (sz + 10);
+#ifdef DEBUG
       A4GL_debug ("Calling conv...");
+#endif
 
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
 
 
+#ifdef DEBUG
       A4GL_debug ("Conv gives us '%s'", A4GL_null_as_null (buff));
+#endif
 
       buff2 = buff;
       buff2 = A4GL_lrtrim (buff);
+#ifdef DEBUG
       A4GL_debug ("buff2=%s\n", buff2);
+#endif
 
       if (a)
 	{
 	  z = add_to_z (z, ",");
 	}
 
+#ifdef DEBUG
       A4GL_debug ("1. z=%s", A4GL_null_as_null (z));
+#endif
 	if (_paramnames) {
       		z = add_to_z (z, _paramnames[a]);
       		z = add_to_z (z, "=");
@@ -2692,7 +2799,9 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 
       free (buff);
     }
+#ifdef DEBUG
   A4GL_debug ("Generated : %s", A4GL_null_as_null (z));
+#endif
   return z;
 }
 
@@ -3179,9 +3288,14 @@ A4GL_isnull (int type, char *buff)
 	long i2;
 
 	i1 = Aint32union.i_long & 0xffffffff;
+
+#ifdef DEBUG
 	A4GL_debug ("i1=%d\n", i1);
+#endif
 	i2 = (*(AInt32 *) buff) & 0xffffffff;
+#ifdef DEBUG
 	A4GL_debug ("i2=%d\n", i2);
+#endif
 	if (i1 == i2)
 	  {
 	    if (A4GL_null_other (buff, type) != 1)
@@ -4019,7 +4133,9 @@ A4GL_lrtrim (char *str)
 {
   char *obuf;
   char *s = 0;
+#ifdef DEBUG
   A4GL_debug ("new lrtrim");
+#endif
 
   if (str)
     {
@@ -4033,7 +4149,9 @@ A4GL_lrtrim (char *str)
 	}
       A4GL_trim (str);
     }
+#ifdef DEBUG
   A4GL_debug ("Trimmed :'%s'", str);
+#endif
   return str;
 }
 
@@ -4310,7 +4428,9 @@ char s[2000];
 
   A4GL_pop_char(s,200);
   A4GL_init_dec(b,0,0);
+#ifdef DEBUG
 A4GL_debug("s=%s\n",s);
+#endif
   A4GL_str_dot_to_dec(s, b);
 
   //acl_free(s);
@@ -4368,7 +4488,9 @@ void A4GL_pop_sized_decimal_from_float(fgldecimal *b,int use_sigdig) {
 			continue;
 		}
 	
+#ifdef DEBUG
 		A4GL_debug("%c %d %d \n",buff[a],digits,dec);
+#endif
 		if (usingsig) {sigdig++;}
 		
 		if (sigdig>maxsigdig && past_dot) {
@@ -4480,24 +4602,101 @@ if (nrets) {
 }
 
 
-void A4GL_pushIntEq(int a,int b) {
-static int nvalint;
-static int setnvalint=0;
-if (!setnvalint) {
- 	A4GL_setnull (DTYPE_INT, &nvalint, 0);
-	setnvalint=1;
+void A4GL_pushIntEq (int a, int b)
+{
+  static int nvalint;
+  static int setnvalint = 0;
+  if (!setnvalint)
+    {
+      A4GL_setnull (DTYPE_INT, &nvalint, 0);
+      setnvalint = 1;
+    }
+  if (a == nvalint || b == nvalint)
+    { /* if either is null - the result is false.. */
+      A4GL_push_int (0); return;
+    }
+  if (a == b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
 }
-	if (a==nvalint || b==nvalint) {
-			// if either is null - the result is false..
-			A4GL_push_int(0);
-			return;
-	}
-	if (a==b) {
-		A4GL_push_int(1);
-	} else {
-		A4GL_push_int(0);
-	}
 
+
+void A4GL_pushIntNE (int a, int b)
+{
+  static int nvalint;
+  static int setnvalint = 0;
+  if (!setnvalint)
+    {
+      A4GL_setnull (DTYPE_INT, &nvalint, 0);
+      setnvalint = 1;
+    }
+  if (a == nvalint || b == nvalint)
+    { /* if either is null - the result is false.. */
+      A4GL_push_int (0); return;
+    }
+  if (a != b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
+}
+
+void A4GL_pushIntLt (int a, int b)
+{
+  static int nvalint;
+  static int setnvalint = 0;
+  if (!setnvalint)
+    {
+      A4GL_setnull (DTYPE_INT, &nvalint, 0);
+      setnvalint = 1;
+    }
+  if (a == nvalint || b == nvalint)
+    { /* if either is null - the result is false.. */
+      A4GL_push_int (0); return;
+    }
+  if (a < b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
+}
+
+
+void A4GL_pushIntGt (int a, int b)
+{
+  static int nvalint;
+  static int setnvalint = 0;
+  if (!setnvalint)
+    {
+      A4GL_setnull (DTYPE_INT, &nvalint, 0);
+      setnvalint = 1;
+    }
+  if (a == nvalint || b == nvalint)
+    { /* if either is null - the result is false.. */
+      A4GL_push_int (0); return;
+    }
+  if (a >b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
+}
+
+void A4GL_pushIntLE (int a, int b)
+{
+  static int nvalint;
+  static int setnvalint = 0;
+  if (!setnvalint)
+    {
+      A4GL_setnull (DTYPE_INT, &nvalint, 0);
+      setnvalint = 1;
+    }
+  if (a == nvalint || b == nvalint)
+    { /* if either is null - the result is false.. */
+      A4GL_push_int (0); return;
+    }
+  if (a <= b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
+}
+void A4GL_pushIntGE (int a, int b)
+{
+  static int nvalint;
+  static int setnvalint = 0;
+  if (!setnvalint)
+    {
+      A4GL_setnull (DTYPE_INT, &nvalint, 0);
+      setnvalint = 1;
+    }
+  if (a == nvalint || b == nvalint)
+    { /* if either is null - the result is false.. */
+      A4GL_push_int (0); return;
+    }
+  if (a >= b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
 }
 
 // ================================ EOF ================================

@@ -22,7 +22,9 @@ static void A4GL_int8dec_ops (int op);
 void
 add_int8_support (void)
 {
+#ifdef DEBUG
   A4GL_debug ("No int8_support");
+#endif
 }
 #else
 
@@ -36,7 +38,9 @@ A4GL_display_int8 (void *ptr, int size, int size_c, struct struct_scr_field *fie
   int8 value_in_ptr = 0;
   static char buff_16[256];
   memset (buff_16, 0, sizeof (buff_16));
+#ifdef DEBUG
   A4GL_debug ("A4GL_display_int..");
+#endif
   if (ptr == 0)
     {				// Assume its null
       strcpy (buff_16, "                    ");
@@ -75,12 +79,16 @@ A4GL_display_int8 (void *ptr, int size, int size_c, struct struct_scr_field *fie
       char using_buff[256];
       if (ptr)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("DISPLAY_TYPE_DISPLAY_TO : %d", *(int *) ptr);
+#endif
 	}
 
       if (ptr == 0 || A4GL_isnull (DTYPE_INT8, ptr))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Int value is null");
+#endif
 	  strcpy (buff_16, "");
 	  return buff_16;
 	}
@@ -89,7 +97,9 @@ A4GL_display_int8 (void *ptr, int size, int size_c, struct struct_scr_field *fie
 
       if (A4GL_isnull (DTYPE_INT8, (void *) &a))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Int value is null");
+#endif
 	  strcpy (buff_16, "");
 	  return buff_16;
 	}
@@ -109,11 +119,15 @@ A4GL_display_int8 (void *ptr, int size, int size_c, struct struct_scr_field *fie
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_16, size_c);
+#ifdef DEBUG
       A4GL_debug ("display_int Got '%s'", buff_16);
+#endif
       return buff_16;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning '%s'", buff_16);
+#endif
 
   return buff_16;
 }
@@ -158,7 +172,9 @@ A4GL_conv_copy_int8 (void *p)
 {
   int8 *ptr;
   ptr = (int8 *) malloc (sizeof (int8));
+#ifdef DEBUG
   A4GL_debug ("Malloc : %p", ptr);
+#endif
   *ptr = *(int8 *) p;
   return ptr;
 }
@@ -173,7 +189,9 @@ A4GL_int8_smint_ops (int op)
 //fgldecimal c_d;
   char s1[2000];
   char s2[2000];
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_int8 ();
   a = A4GL_pop_int ();
   switch (op)
@@ -276,7 +294,9 @@ A4GL_smint_int8_ops (int op)
   char s2[2000];
 
 //fgldecimal c_d;
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_int ();
   a = A4GL_pop_int8 ();
   switch (op)
@@ -380,7 +400,9 @@ A4GL_int8_int8_ops (int op)
   char s1[2000];
   char s2[2000];
 //fgldecimal c_d;
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_int8 ();
   a = A4GL_pop_int8 ();
 
@@ -489,7 +511,9 @@ A4GL_int_int8_ops (int op)
   char s1[2000];
   char s2[2000];
 
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_int ();
   a = A4GL_pop_int8 ();
 
@@ -603,7 +627,9 @@ A4GL_int8_int_ops (int op)
   char s1[2000];
   char s2[2000];
 
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
 
 //A4GL_pop_param (&b, DTYPE_INT8, 0);
   a = A4GL_pop_long ();
@@ -635,17 +661,23 @@ A4GL_int8_int_ops (int op)
     {
     case OP_ADD:
       c = a + b;
+#ifdef DEBUG
       A4GL_debug ("c=%lld a=%ld b=%lld\n", c, a, b);
+#endif
       A4GL_push_int8 (c);
       return;
     case OP_SUB:
       c = a - b;
+#ifdef DEBUG
       A4GL_debug ("c=%lld a=%ld b=%lld\n", c, a, b);
+#endif
       A4GL_push_int8 (c);
       return;
     case OP_MULT:
       c = a * b;
+#ifdef DEBUG
       A4GL_debug ("c=%lld a=%ld b=%lld\n", c, a, b);
+#endif
       A4GL_push_null (DTYPE_INT8, 0);
       return;
 
@@ -716,7 +748,9 @@ A4GL_float_int8_ops (int op)
   int d;
 
   //printf ("A4GL_float_int8_ops\n");
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_double ();
   a = A4GL_pop_int8 ();
   switch (op)
@@ -798,7 +832,9 @@ A4GL_int8_float_ops (int op)
   int d;
 
   //printf ("A4GL_int8_float_ops\n");
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_int8 ();
   a = A4GL_pop_double ();
   switch (op)
@@ -879,7 +915,9 @@ A4GL_int8_smfloat_ops (int op)
   double c;
   int d;
 
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_int8 ();
   a = A4GL_pop_double ();
   switch (op)
@@ -959,7 +997,9 @@ A4GL_smfloat_int8_ops (int op)
   float c;
   int d;
 
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   b = A4GL_pop_float ();
   a = A4GL_pop_int8 ();
   switch (op)
@@ -1045,10 +1085,14 @@ A4GL_int8dec_ops (int op)
   int d;
   //char *a1;
   //char *a2;
+#ifdef DEBUG
   A4GL_debug ("here");
+#endif
   A4GL_pop_var2 (&b, 5, 0x4020);
   A4GL_pop_var2 (&a, 5, 0x4020);
+#ifdef DEBUG
   A4GL_debug ("dec_dec_ops");
+#endif
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
       A4GL_push_null (DTYPE_DECIMAL, 0);
@@ -1056,7 +1100,9 @@ A4GL_int8dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 64, 32);
 
@@ -1135,7 +1181,9 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
   //int8 l;
   char buff[256];
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_conv_int8 %d %d p1=%p p2=%p\n", d1, d2, p1, p2);
+#endif
   if (d1 == DTYPE_INT8)
     {
       SPRINTF1 (buff, "%lld", *(int8 *) p1);
@@ -1208,31 +1256,43 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 	    {
 	      *(int8 *) p2 = *(double *) p1;
 	    }
+#ifdef DEBUG
 	  A4GL_debug ("p2=%lld\n", *(int8 *) p2);
+#endif
 	  return 1;
 	case DTYPE_SMFLOAT:
 	  *(int8 *) p2 = *(float *) p1;
+#ifdef DEBUG
 	  A4GL_debug ("p2=%lld\n", *(int8 *) p2);
+#endif
 	  return 1;
 	case DTYPE_INT:
 	  *(int8 *) p2 = *(int *) p1;
+#ifdef DEBUG
 	  A4GL_debug ("p2=%lld\n", *(int8 *) p2);
+#endif
 	  return 1;
 	case DTYPE_SMINT:
 	  *(int8 *) p2 = *(short *) p1;
+#ifdef DEBUG
 	  A4GL_debug ("p2=%lld\n", *(int8 *) p2);
+#endif
 	  return 1;
 	case DTYPE_DECIMAL:
 	  {
 	    char buff[2000];
 	    strcpy (buff, A4GL_dec_to_str (p1, 0));
 	    sscanf (buff, "%lld", (int8 *) p2);
+#ifdef DEBUG
 	    A4GL_debug ("p2=%lld\n", *(int8 *) p2);
+#endif
 	  }
 	  return 1;
 	case DTYPE_CHAR:
 	  sscanf (p1, "%lld", (int8 *) p2);
+#ifdef DEBUG
 	  A4GL_debug ("p2=%lld\n", *(int8 *) p2);
+#endif
 	  return 1;
 
 
@@ -1246,7 +1306,11 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 void
 add_int8_support (void)
 {
+#ifdef DEBUG
+#ifdef DEBUG
   A4GL_debug ("Has int8_support");
+#endif
+#endif
   A4GL_add_datatype_function_i (DTYPE_INT8, "INIT", (void *) A4GL_null_int8);
   A4GL_add_datatype_function_i (DTYPE_INT8, "ISNULL", (void *) A4GL_isnull_int8);	//
   A4GL_add_datatype_function_i (DTYPE_INT8, "SETDTYPE", (void *) A4GL_zero_int8);	// Invalid conversion set it to 0

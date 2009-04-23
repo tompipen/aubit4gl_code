@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.150 2009-04-18 07:59:20 mikeaubury Exp $
+# $Id: ops.c,v 1.151 2009-04-23 10:12:30 mikeaubury Exp $
 #
 */
 
@@ -179,7 +179,9 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
   ptr2 = p;
   if (s_in != 0 || n_in != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("EXPECTING s_in=0 and n_in=0\n");
+#endif
       return 0;
     }
 
@@ -204,7 +206,9 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 
 
   ptr = A4GL_make_using_tostring (ptr2, size >> 8, size & 255);	//,string_sz,n*2,l);
+#ifdef DEBUG
   A4GL_debug ("Make using returns %s", ptr);
+#endif
   A4GL_push_char (ptr);
   A4GL_pushop (OP_USING);
   ptr = A4GL_char_pop ();
@@ -321,7 +325,9 @@ A4GL_dec_dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
   switch (op)
@@ -456,8 +462,6 @@ A4GL_mon_dec_ops (int op)
   A4GL_pop_sized_decimal(&b);
   A4GL_pop_sized_decimal(&a);
 
-//A4GL_debug("A->%s\n",A4GL_dec_to_str(&a,32));
-//A4GL_debug("B->%s\n",A4GL_dec_to_str(&b,32));
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
@@ -471,7 +475,9 @@ A4GL_mon_dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -575,7 +581,9 @@ A4GL_dec_mon_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -679,7 +687,9 @@ A4GL_mon_mon_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -782,7 +792,9 @@ A4GL_dec_sm_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -885,7 +897,9 @@ A4GL_mon_sm_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -988,7 +1002,9 @@ A4GL_dec_int_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1092,7 +1108,9 @@ A4GL_mon_int_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1195,7 +1213,9 @@ A4GL_dec_float_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1298,7 +1318,9 @@ A4GL_dec_smfloat_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1398,7 +1420,9 @@ A4GL_mon_float_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1500,7 +1524,9 @@ A4GL_mon_smfloat_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1601,7 +1627,9 @@ A4GL_sm_dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1704,7 +1732,9 @@ A4GL_int_dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1806,7 +1836,9 @@ A4GL_float_dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -1916,7 +1948,9 @@ A4GL_smfloat_dec_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -2020,7 +2054,9 @@ A4GL_sm_mon_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -2123,7 +2159,9 @@ A4GL_int_mon_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -2223,7 +2261,9 @@ A4GL_pop_sized_decimal_from_float(&a,9);
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -2324,7 +2364,9 @@ A4GL_smfloat_mon_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
   A4GL_init_dec (&dc, 32, 16);
 
@@ -2415,11 +2457,15 @@ A4GL_smfloat_smfloat_ops (int op)
 
   b = A4GL_pop_float ();
   a = A4GL_pop_float ();
+#ifdef DEBUG
   A4GL_debug ("smfloat smfloat\n");
   A4GL_debug ("%f %f\n", a, b);
+#endif
   if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a) || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("smflot_smfloat- one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -2430,7 +2476,9 @@ A4GL_smfloat_smfloat_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -2550,7 +2598,9 @@ A4GL_char_char_ops (int op)
 
   if (A4GL_isnull (DTYPE_CHAR, (void *) a) || A4GL_isnull (DTYPE_CHAR, (void *) b))
     {
+#ifdef DEBUG
       A4GL_debug ("One of them is null...");
+#endif
       if (isCompare (op))
 	{
 	  free (a);
@@ -2699,9 +2749,13 @@ A4GL_char_char_ops (int op)
 
     case OP_EQUAL:
       //if (strcmp(a,"journal")==0 && strcmp(b,"all")==0) { A4GL_assertion(1,"Testing"); }
+#ifdef DEBUG
       A4GL_debug ("Comparing %s %s - gives %d\n", A4GL_null_as_null (a), A4GL_null_as_null (b), (strcmp (a, b) == 0));
+#endif
       A4GL_push_int (strcmp (a, b) == 0);
+#ifdef DEBUG
       A4GL_debug ("Freeing my two popped strings %p and %p", a, b);
+#endif
       free (a);
       free (b);
       return;
@@ -2736,11 +2790,15 @@ A4GL_float_smfloat_ops (int op)
 
   b = A4GL_pop_float ();
   a = A4GL_pop_double ();
+#ifdef DEBUG
   A4GL_debug ("float smfloat\n");
   A4GL_debug ("%f %f\n", a, b);
+#endif
   if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a) || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("float_smallflt - one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -2751,7 +2809,9 @@ A4GL_float_smfloat_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -2843,11 +2903,15 @@ A4GL_smfloat_float_ops (int op)
 
   b = A4GL_pop_double ();
   a = A4GL_pop_float ();
+#ifdef DEBUG
   A4GL_debug ("smfloat float\n");
   A4GL_debug ("%f %f\n", a, b);
+#endif
   if (A4GL_isnull (DTYPE_SMFLOAT, (void *) &a) || A4GL_isnull (DTYPE_SMFLOAT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("smfloat_float - one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -2858,7 +2922,9 @@ A4GL_smfloat_float_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -3002,8 +3068,10 @@ A4GL_int_in_ops (int op)
       in2.ltime = 11;
     }
 
+#ifdef DEBUG
   A4GL_debug ("in_in.....");
   A4GL_debug_print_stack ();
+#endif
 
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in2.stime * 16 + in2.ltime);
 
@@ -3261,8 +3329,10 @@ A4GL_double_in_ops (int op)
       in2.ltime = 11;
     }
 
+#ifdef DEBUG
   A4GL_debug ("in_in.....");
   A4GL_debug_print_stack ();
+#endif
 
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in2.stime * 16 + in2.ltime);
 
@@ -3522,17 +3592,23 @@ A4GL_char_dt_ops (int op)
   A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
   p = A4GL_char_pop ();
 
+#ifdef DEBUG
   A4GL_debug ("popped everything off...");
+#endif
 // Lets try converting our string to a datetime with the same units as our datetime...
   A4GL_push_char (p);
   dt2.stime = dt1.stime;
   dt2.ltime = dt1.ltime;
+#ifdef DEBUG
   A4GL_debug ("Pushed our character back on - converting to a datetime...");
+#endif
 
   if (A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime))
     {
       // Success !
+#ifdef DEBUG
       A4GL_debug ("Converted ok");
+#endif
       A4GL_push_variable (&dt2, (ENCODE_SIZE (((dt2.stime * 16) + dt2.ltime))) + DTYPE_DTIME);
       A4GL_push_variable (&dt1, (ENCODE_SIZE (((dt1.stime * 16) + dt1.ltime))) + DTYPE_DTIME);
       A4GL_dt_dt_ops (op);
@@ -3565,7 +3641,9 @@ A4GL_dt_char_ops (int op)
   struct A4GLSQL_dtime dt1;
   struct A4GLSQL_dtime dt2;
   char *p;
+#ifdef DEBUG
   A4GL_debug ("in A4GL_dt_char_ops");
+#endif
   A4GL_get_top_of_stack (1, &dtype1, &sz1, (void *) &pdt1);
   A4GL_get_top_of_stack (2, &dtype2, &sz2, (void *) &pdt2);
 
@@ -3583,13 +3661,17 @@ A4GL_dt_char_ops (int op)
   p = A4GL_char_pop ();
   A4GL_pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
 
+#ifdef DEBUG
   A4GL_debug ("popped everything off...");
+#endif
 // Lets try converting our string to a datetime with the same units as our datetime...
   A4GL_push_char (p);
 
   dt2.stime = dt1.stime;
   dt2.ltime = dt1.ltime;
+#ifdef DEBUG
   A4GL_debug ("Pushed our character back on - converting to a datetime...");
+#endif
 
 
   if (A4GL_pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime))
@@ -3598,7 +3680,9 @@ A4GL_dt_char_ops (int op)
       A4GL_trim (p);
       if (strlen (p))
 	{			// They might just be checking its not blank...
+#ifdef DEBUG
 	  A4GL_debug ("Converted ok");
+#endif
 	  A4GL_push_variable (&dt1, (ENCODE_SIZE (((dt1.stime * 16) + dt1.ltime))) + DTYPE_DTIME);
 	  A4GL_push_variable (&dt2, (ENCODE_SIZE (((dt2.stime * 16) + dt2.ltime))) + DTYPE_DTIME);
 	  A4GL_dt_dt_ops (op);
@@ -3678,7 +3762,9 @@ A4GL_in_date_ops (int op)
   A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
   if (A4GL_isnull (DTYPE_INTERVAL, (void *) &in))
     {
+#ifdef DEBUG
       A4GL_debug ("INTERVAL IS NULL\n");
+#endif
       A4GL_drop_param ();
       A4GL_push_null (DTYPE_CHAR, 0);
       return;
@@ -3687,13 +3773,18 @@ A4GL_in_date_ops (int op)
   A4GL_pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
   if (A4GL_isnull (DTYPE_DTIME, (void *) &dt))
     {
+#ifdef DEBUG
       A4GL_debug ("DATE IS NULL\n");
+#endif
       A4GL_push_null (DTYPE_CHAR, 0);
       return;
     }
   A4GL_push_variable (&dt, 0x13000a);
   A4GL_push_variable (&in, ((in.stime * 16 + in.ltime) < 16) + DTYPE_INTERVAL);
+
+#ifdef DEBUG
   A4GL_debug_print_stack ();
+#endif
 
 // Now do it as a datetime/interval...
   A4GL_in_dt_ops (op);
@@ -3734,7 +3825,9 @@ A4GL_in_dt_ops (int op)
   int start;
   char *ptr;
 
+#ifdef DEBUG
   A4GL_debug ("in_dt_ops op=%d", op);
+#endif
   A4GL_get_top_of_stack (2, &d1, &s1, (void *) &pd);
   A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
 
@@ -3774,7 +3867,9 @@ A4GL_in_dt_ops (int op)
 
   if (A4GL_isnull (DTYPE_INTERVAL, (void *) &in))
     {
+#ifdef DEBUG
       A4GL_debug ("INTERVAL IS NULL\n");
+#endif
       A4GL_drop_param ();
       A4GL_push_null (DTYPE_CHAR, 0);
       return;
@@ -3787,7 +3882,9 @@ A4GL_in_dt_ops (int op)
 
   if (A4GL_isnull (DTYPE_DTIME, (void *) &dt))
     {
+#ifdef DEBUG
       A4GL_debug ("DATETIME IS NULL\n");
+#endif
       A4GL_push_null (DTYPE_CHAR, 0);
       return;
 
@@ -3797,6 +3894,7 @@ A4GL_in_dt_ops (int op)
   A4GL_decode_interval (&in, &ival_data[0], &isneg);
 
 
+#ifdef DEBUG
   A4GL_debug ("\n\nInterval : Y=%d\n", ival_data[0]);
   A4GL_debug ("Interval : M=%d\n", ival_data[1]);
   A4GL_debug ("Interval : D=%d\n", ival_data[2]);
@@ -3805,12 +3903,14 @@ A4GL_in_dt_ops (int op)
   A4GL_debug ("Interval : S=%d\n", ival_data[5]);
   A4GL_debug ("Interval : F=%d\n", ival_data[6]);
 
+#endif
 
 
   A4GL_decode_datetime (&dt, &dtime_data[0]);
 
 
 
+#ifdef DEBUG
   A4GL_debug ("Datetime : Y=%d\n", dtime_data[0]);
   A4GL_debug ("Datetime : M=%d\n", dtime_data[1]);
   A4GL_debug ("Datetime : D=%d\n", dtime_data[2]);
@@ -3819,6 +3919,7 @@ A4GL_in_dt_ops (int op)
   A4GL_debug ("Datetime : S=%d\n", dtime_data[5]);
   A4GL_debug ("Datetime : F=%d\n", dtime_data[6]);
 
+#endif
 
 
   dt_days = A4GL_gen_dateno (dtime_data[2], dtime_data[1], dtime_data[0]);	// As a date....
@@ -3834,7 +3935,9 @@ A4GL_in_dt_ops (int op)
   in_seconds = 0;
 
 
+#ifdef DEBUG
   A4GL_debug (":::1 %d %lf %d -  %s", dt_days, dt_seconds, in_months, (op == OP_ADD) ? "Add" : "Subtract");
+#endif
 
   if (in_months)
     {				// We're dealing with month information...
@@ -3871,8 +3974,9 @@ A4GL_in_dt_ops (int op)
       if (A4GL_days_in_month (dtime_data[1], dtime_data[0]) < dtime_data[2])
 	{
 	  // We've done something like 30/01/2001 -> 30/02/2001 which isn't valid
-	  A4GL_debug ("dim=%d data[2]=%d data[1]=%d data[0]=%d\n", A4GL_days_in_month (dtime_data[1], dtime_data[0]), dtime_data[2],
-		      dtime_data[1], dtime_data[0]);
+#ifdef DEBUG
+	  A4GL_debug ("dim=%d data[2]=%d data[1]=%d data[0]=%d\n", A4GL_days_in_month (dtime_data[1], dtime_data[0]), dtime_data[2], dtime_data[1], dtime_data[0]);
+#endif
 	  ok = 0;
 	  A4GL_push_null (DTYPE_CHAR, 0);
 	  return;
@@ -3886,9 +3990,12 @@ A4GL_in_dt_ops (int op)
       in_seconds += (double) ival_data[4] * 60.0;	// Minutes
       in_seconds += ival_data[5] + (double) ival_data[6] / 100000.0;	// Seconds
 
-      if (isneg)
+      if (isneg) {
 	in_seconds *= -1.0;
+      }
+#ifdef DEBUG
       A4GL_debug (":::2 %d %lf %d %lf %s", dt_days, dt_seconds, in_months, in_seconds, (op == OP_ADD) ? "Add" : "Subtract");
+#endif
 
       if (op == OP_ADD)
 	{
@@ -4039,6 +4146,7 @@ A4GL_in_dt_ops (int op)
 
   if (ok)
     {
+#ifdef DEBUG
       A4GL_debug ("Datetime : Y=%d\n", dtime_data[0]);
       A4GL_debug ("Datetime : M=%d\n", dtime_data[1]);
       A4GL_debug ("Datetime : D=%d\n", dtime_data[2]);
@@ -4048,10 +4156,14 @@ A4GL_in_dt_ops (int op)
       A4GL_debug ("Datetime : F=%d\n", dtime_data[6]);
 
       A4GL_debug ("I reckon thats ok...");
+
+#endif
       SPRINTF7 (buff_2, "%04d-%02d-%02d %02d:%02d:%02d.%05d",
 		dtime_data[0], dtime_data[1], dtime_data[2], dtime_data[3], dtime_data[4], dtime_data[5], dtime_data[6]);
 
+#ifdef DEBUG
       A4GL_debug ("Buff = %s", buff_2);
+#endif
       start = 0;
       if (dtime_data[0] > 0 && !start)
 	start = 1;
@@ -4288,10 +4400,14 @@ A4GL_date_date_ops (int op)
   b = A4GL_pop_long ();
   a = A4GL_pop_long ();
 
+#ifdef DEBUG
   A4GL_debug ("MATH ROUTINE : date_date");
+#endif
   if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("date_date - one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -4302,7 +4418,9 @@ A4GL_date_date_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -4410,7 +4528,9 @@ A4GL_date_char_ops (int op)
   if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_CHAR, (void *) &ptr))
     {
       free (ptr);
+#ifdef DEBUG
       A4GL_debug ("int_date - one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -4548,11 +4668,15 @@ A4GL_date_int_ops (int op)
   b = A4GL_pop_long ();
   a = A4GL_pop_long ();
 
+#ifdef DEBUG
   A4GL_debug ("MATH ROUTINE : date_int %d %d", a, b);
+#endif
 
   if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("int_date - one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -4563,7 +4687,9 @@ A4GL_date_int_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -4663,11 +4789,15 @@ A4GL_int_date_ops (int op)
   b = A4GL_pop_long ();
   a = A4GL_pop_long ();
 
+#ifdef DEBUG
   A4GL_debug ("MATH ROUTINE : int_date");
+#endif
 
   if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_INT, (void *) &b))
     {
+#ifdef DEBUG
       A4GL_debug ("int_int - one is null");
+#endif
       if (isCompare (op))
 	{
 	  A4GL_push_int (0);
@@ -4678,7 +4808,9 @@ A4GL_int_date_ops (int op)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("OK - neither is null");
+#endif
     }
 
 #ifdef DEBUG
@@ -4797,7 +4929,9 @@ A4GL_in_in_ops (int op)
       ival_data2[a] = 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("in_in_ops - op=%d", op);
+#endif
 // d2 op d1
 
   A4GL_get_top_of_stack (2, &d2, &s2, (void *) &pi2);
@@ -4805,7 +4939,9 @@ A4GL_in_in_ops (int op)
 
 //printf("Here d1=%d s1=%x d2=%d s2=%x\n",d1,s1,d2,s2);
 
+#ifdef DEBUG
   A4GL_debug_print_stack ();
+#endif
 
   if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
     {
@@ -4886,7 +5022,9 @@ A4GL_in_in_ops (int op)
 
 
 
+#ifdef DEBUG
   A4GL_debug ("se1=%d\n", se1);
+#endif
   if (se1 == 2)
     {
       in1.stime = 0x82;		// MONTH(8)
@@ -4907,8 +5045,10 @@ A4GL_in_in_ops (int op)
       in.ltime = in1.ltime;
     }
 
+#ifdef DEBUG
   A4GL_debug ("in_in.....");
   A4GL_debug_print_stack ();
+#endif
   A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in1.ltime);
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
   if (in1.stime == 0 || in1.ltime == 0 || in2.stime == 0 || in2.ltime == 0)
@@ -4938,8 +5078,9 @@ A4GL_in_in_ops (int op)
       df2 /= 100000.0;
       d_i1 += df1;
       d_i2 += df2;
-      //printf ("d_i1=%f d_i2=%f", d_i1, d_i2);
+#ifdef DEBUG
       A4GL_debug ("d_i1=%f d_i2=%f", d_i1, d_i2);
+#endif
     }
 
 
@@ -4972,7 +5113,9 @@ A4GL_in_in_ops (int op)
 	  char buff_4[256];
 	  SPRINTF1 (buff_4, "%f", d_i1);
 	  A4GL_decstr_convert (buff_4, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+#ifdef DEBUG
 	  A4GL_debug ("Converting : %s to interval second to second", buff_4);
+#endif
 	  acli_interval (buff_4, 0x867);	// was 866
 	  A4GL_cast_top_of_stack_to_dtype (DTYPE_INTERVAL + ENCODE_SIZE (0x249));
 	  return;
@@ -5001,7 +5144,9 @@ A4GL_in_in_ops (int op)
 	  char buff_6[256];
 	  SPRINTF1 (buff_6, "%f", d_i1);
 	  A4GL_decstr_convert (buff_6, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
+#ifdef DEBUG
 	  A4GL_debug ("Converting : %s to interval second to second", buff_6);
+#endif
 	  acli_interval (buff_6, 0x867);	// Was 866
 	  A4GL_cast_top_of_stack_to_dtype (DTYPE_INTERVAL + ENCODE_SIZE (0x249));
 	  return;
@@ -5095,7 +5240,9 @@ A4GL_in_char_ops (int op)
       ival_data1[a] = 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("in_in_ops - op=%d", op);
+#endif
 // d2 op d1
 
   A4GL_get_top_of_stack (1, &d2, &s2, (void *) &ptr);
@@ -5138,7 +5285,9 @@ A4GL_in_char_ops (int op)
   ptr = A4GL_char_pop ();
   A4GL_drop_param ();		// We've already memcpy'd this across...
 
+#ifdef DEBUG
   A4GL_debug ("Got stuff off stack...");
+#endif
 
   // Not normal to add two strings...
   A4GL_whats_in_a_string (ptr, &d2, &s2);
@@ -5232,7 +5381,9 @@ A4GL_dt_dt_ops (int op)
       A4GL_drop_param ();
       A4GL_drop_param ();
 
+#ifdef DEBUG
       A4GL_debug ("Can only subtract, ==, != , <, <=, >,>= datetimes at the minute...");
+#endif
       A4GL_push_int (0);
       return;
     }
@@ -5284,11 +5435,13 @@ A4GL_dt_dt_ops (int op)
   A4GL_decode_datetime (&dt1, &dtime_data1[0]);
   A4GL_decode_datetime (&dt2, &dtime_data2[0]);
 
+#ifdef DEBUG
   A4GL_debug ("Dtime1=%d %d %d %d %d %d %d",
 	      dtime_data1[0], dtime_data1[1], dtime_data1[2], dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]);
 
   A4GL_debug ("Dtime2=%d %d %d %d %d %d %d",
 	      dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+#endif
 
 
 
@@ -5429,12 +5582,14 @@ A4GL_dt_dt_ops (int op)
 	    }
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Op LT : %d (-%d <%d >%d", op, OP_SUB, OP_LESS_THAN, OP_GREATER_THAN);
 
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data1[0], dtime_data1[1], dtime_data1[2], dtime_data1[3], dtime_data1[4],
 		  dtime_data1[5], dtime_data1[6]);
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 
       dtime_data2[0] -= dtime_data1[0];	// Y
       dtime_data2[1] -= dtime_data1[1];	//
@@ -5444,8 +5599,10 @@ A4GL_dt_dt_ops (int op)
       dtime_data2[5] -= dtime_data1[5];
       dtime_data2[6] -= dtime_data1[6];
 
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 // Borrow some seconds for fractions
       while (dtime_data2[6] < 0)
 	{
@@ -5453,8 +5610,10 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[5]--;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 // Borrow some minutes for seconds
       while (dtime_data2[5] < 0)
 	{
@@ -5462,8 +5621,10 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[4]--;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 // Borrow some hours for minutes
       while (dtime_data2[4] < 0)
 	{
@@ -5471,8 +5632,10 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[3]--;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 // Borrow some days for some hours..
       while (dtime_data2[3] < 0)
 	{
@@ -5480,8 +5643,10 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data2[2]--;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 // Borrow some months for some days. @ FIXME @todo fix days in months
       while (dtime_data2[2] < 0)
 	{
@@ -5497,21 +5662,25 @@ A4GL_dt_dt_ops (int op)
 	    }
 	}
 
+#ifdef DEBUG
 
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
+#endif
 // Borrow some years for some months.
       while (dtime_data2[1] < 0)
 	{
 	  dtime_data2[1] += 12;
 	  dtime_data2[0]--;
 	}
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d %d %d %d", dtime_data2[0], dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4],
 		  dtime_data2[5], dtime_data2[6]);
 
       A4GL_debug ("Y %d M %d D %d H %d M %d S %d", dtime_data2[0],
 		  dtime_data2[1], dtime_data2[2], dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
+#endif
 
 
 
@@ -5532,10 +5701,15 @@ A4GL_dt_dt_ops (int op)
 	    {
 	      SPRINTF5 (buff_7, "%d %02d:%02d:%02d.%05d", dtime_data2[2],
 			dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+#ifdef DEBUG
 	      A4GL_debug ("Got buff as : %s - op=%d\n", buff_7, op);
+
+#endif
 	      A4GL_ctoint (buff_7, &in, 0x53b);
+#ifdef DEBUG
 	      A4GL_debug ("Pushing Interval - %p - s=%x e=%x made from %s", &in, in.stime, in.ltime);
 	      A4GL_debug ("Buff = %s %x %x", buff_7);
+#endif
 	      if (inverted)
 		{
 		  in.is_neg = 1;
@@ -5600,7 +5774,9 @@ A4GL_dt_dt_ops (int op)
 	    }
 
 
+#ifdef DEBUG
 	  A4GL_debug (" Boolean values ->    %d %d %d", lt, eq, gt);
+#endif
 
 	  if (op == (OP_LESS_THAN))
 	    {
@@ -5674,7 +5850,9 @@ A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *f
   long a;
   long value_in_ptr = 0;
   static char buff_8[256];
+#ifdef DEBUG
   A4GL_debug ("A4GL_display_int..");
+#endif
 
   if (!A4GL_isnull (DTYPE_INT, ptr))
     {
@@ -5719,12 +5897,16 @@ A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *f
       char using_buff[256];
       if (ptr)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("DISPLAY_TYPE_DISPLAY_TO : %d", *(int *) ptr);
+#endif
 	}
 
       if (ptr == 0 || A4GL_isnull (DTYPE_INT, ptr))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Int value is null");
+#endif
 	  strcpy (buff_8, "");
 	  return buff_8;
 	}
@@ -5733,7 +5915,9 @@ A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *f
 
       if (A4GL_isnull (DTYPE_INT, (void *) &a))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Int value is null");
+#endif
 	  strcpy (buff_8, "");
 	  return buff_8;
 	}
@@ -5753,11 +5937,15 @@ A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *f
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_8, string_sz);
+#ifdef DEBUG
       A4GL_debug ("display_int Got '%s'", buff_8);
+#endif
       return buff_8;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning '%s'", buff_8);
+#endif
 
   return buff_8;
 }
@@ -5769,7 +5957,9 @@ A4GL_display_smint (void *ptr, int size, int string_sz, struct struct_scr_field 
   static char buff_9[256];
 
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_display_smint..");
+#endif
 
   if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT)
     {
@@ -5806,7 +5996,9 @@ A4GL_display_smint (void *ptr, int size, int string_sz, struct struct_scr_field 
 	  return buff_9;
 	}
       a = *(short *) ptr;
+#ifdef DEBUG
       A4GL_debug ("display_smint a=%d", a);
+#endif
       if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
@@ -5821,7 +6013,9 @@ A4GL_display_smint (void *ptr, int size, int string_sz, struct struct_scr_field 
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
       A4GL_pop_char (buff_9, string_sz);
+#ifdef DEBUG
       A4GL_debug ("display_smint Got '%s'", buff_9);
+#endif
       return buff_9;
     }
 
@@ -6061,7 +6255,9 @@ A4GL_display_date (void *ptr, int size, int string_sz, struct struct_scr_field *
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_display_date..");
+#endif
 
   if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT)
     {
@@ -6123,12 +6319,16 @@ A4GL_display_date (void *ptr, int size, int string_sz, struct struct_scr_field *
       char using_buff[256];
       if (ptr)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("DISPLAY_TYPE_DISPLAY_TO : DATE(%d)", *(int *) ptr);
+#endif
 	}
 
       if (ptr == 0 || A4GL_isnull (DTYPE_INT, ptr))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Date value is null");
+#endif
 	  strcpy (buff_12, "");
 	  return buff_12;
 	}
@@ -6137,7 +6337,9 @@ A4GL_display_date (void *ptr, int size, int string_sz, struct struct_scr_field *
 
       if (A4GL_isnull (DTYPE_DATE, (void *) &a))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Date value is null");
+#endif
 	  strcpy (buff_12, "");
 	  return buff_12;
 	}
@@ -6181,19 +6383,27 @@ A4GL_display_date (void *ptr, int size, int string_sz, struct struct_scr_field *
 	    }
 	}
 
+#ifdef DEBUG
       A4GL_debug ("display_date Got '%s'", buff_12);
+#endif
       /* pascal_v. Display stars when date does not fit in field as Informix */
       if (strlen (buff_12) > string_sz)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("This does not fit in field (length = %d)", string_sz);
+#endif
 	  memset (buff_12, '*', string_sz);
 	  buff_12[string_sz] = 0;
 	}
+#ifdef DEBUG
       A4GL_debug ("Returning '%s'", buff_12);
+#endif
       return buff_12;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning '%s'", buff_12);
+#endif
 
   return buff_12;
 }
@@ -6224,7 +6434,9 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
   static char buff_13[256];
   char *tmpptr;
 
+#ifdef DEBUG
   A4GL_debug ("Display_decimal size=%d", size);
+#endif
   //if (string_sz==-1) { return 0; }
 
   if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT)
@@ -6260,7 +6472,6 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	  string_sz = n + 1;
 	}
 
-//A4GL_debug("Calling make_using.. ptr=%p");
       A4GL_push_char (A4GL_make_using_tostring (ptr, size >> 8, size & 255));
       A4GL_pushop (OP_USING);
       ptr = A4GL_char_pop ();
@@ -6354,7 +6565,9 @@ A4GL_display_money (void *ptr, int size, int string_sz, struct struct_scr_field 
   fgldecimal *fgldec;
   fgldec = ptr;
 
+#ifdef DEBUG
   A4GL_debug ("Display_money");
+#endif
   memset(buff_14,0,sizeof(buff_14));
   if (display_type == DISPLAY_TYPE_DISPLAY || display_type == DISPLAY_TYPE_PRINT)
     {
@@ -6385,10 +6598,14 @@ A4GL_display_money (void *ptr, int size, int string_sz, struct struct_scr_field 
 	  l = NUM_DEC (ptr2);
 	  n = n - l + 1;
 	  string_sz = n + 1;
+#ifdef DEBUG
 	  A4GL_debug ("Forcing size : %x (dig=%d dec=%d)", string_sz, n,l);
+#endif
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Calling make_using.. ");
+#endif
       strcpy (buff_14, "-");
 
       ubuff=A4GL_make_using_tostring (ptr, (size >> 8), size & 255);
@@ -6562,7 +6779,9 @@ A4GL_display_interval (void *ptr, int size, int string_sz, struct struct_scr_fie
 char *
 A4GL_display_byte (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type)
 {
+#ifdef DEBUG
   A4GL_debug ("display byte");
+#endif
   return 0;
 }
 
@@ -6763,7 +6982,9 @@ A4GL_conv_copy_nchar (char *p)
 #endif
       ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
     }
+#ifdef DEBUG
   A4GL_debug ("Created ptr=%p", ptr);
+#endif
   return ptr;
   //A4GL_push_param (ptr, (DTYPE_NCHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 }
@@ -6875,7 +7096,9 @@ DTYPE_SERIAL
 
 
 
+#ifdef DEBUG
   A4GL_debug ("Finished adding default operations");
+#endif
 
 
   A4GL_add_datatype_function_i (DTYPE_INT, "DISPLAY", (void *) A4GL_display_int);
@@ -6988,7 +7211,9 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   int a;
   int c;
   int l;
+#ifdef DEBUG
   A4GL_debug ("make_using_sz - size=%d num dec = %d dig=%d", sz, dec, dig);
+#endif
 
   //if (dec<0) dec=5;
 
@@ -7005,7 +7230,9 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
       A4GL_ltrim (buff_sz);
       A4GL_trim (buff_sz);
 
+#ifdef DEBUG
       A4GL_debug ("make_using_sz dectos returns ---> %s", buff_sz);
+#endif
       if (buff_sz[0] == '-' && buff_sz[1] == '.')
 	{
 	  char buff[200];
@@ -7037,7 +7264,9 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
 	      // Still doesn't fit - we're stuffed...
 	      memset (buff_sz, '*', sz);
 	      buff_sz[sz] = 0;
+#ifdef DEBUG
 	      A4GL_debug ("make_using_sz - doesn't fit buff_sz=%s", buff_sz);
+#endif
 	      return buff_sz;
 	    }
 
@@ -7113,7 +7342,9 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 	val = 0;
       if (val == 1)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Its a decimal");
+#endif
 	  *d = DTYPE_DECIMAL;
 	  *sz = 32 * 256 + 16;	// Could work out a proper size here...
 	  A4GL_conversion_ok (orig_conv_ok);
@@ -7132,7 +7363,9 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 	{
 	  *d = DTYPE_INT;
 	  *sz = 4;
+#ifdef DEBUG
 	  A4GL_debug ("Its an integer");
+#endif
 	  A4GL_conversion_ok (orig_conv_ok);
 	  a4gl_status = orig_stat;
 	  return;
@@ -7152,7 +7385,9 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
     {
       *d = DTYPE_DATE;
       *sz = 4;
+#ifdef DEBUG
       A4GL_debug ("Its a date");
+#endif
       A4GL_conversion_ok (orig_conv_ok);
       a4gl_status = orig_stat;
       return;
@@ -7179,7 +7414,9 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 		val = 0;
 	      if (val)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Possible DATETIME %d to %d", a, b);
+#endif
 		  *d = DTYPE_DTIME;
 		  *sz = (a << 4) + b;
 		  return;
@@ -7211,7 +7448,9 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 
 	  if (A4GL_valid_int (str, ibuff, size_b))
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Possible INTERVAL %d to %d", a, b);
+#endif
 	      *d = DTYPE_INTERVAL;
 	      *sz = size_b;
 	      return;
