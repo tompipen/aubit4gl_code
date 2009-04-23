@@ -3059,7 +3059,7 @@ YY_RULE_SETUP
 case 212:
 YY_RULE_SETUP
 #line 336 "screen.lex"
-{if (ign_kw(yystate, KW_RIGHT)) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_RIGHT;}
+{if (ign_kw(yystate, KW_RIGHT)) REJECT;strcpy(yylval.str,yytext);  return KW_RIGHT;}
 	YY_BREAK
 case 213:
 YY_RULE_SETUP

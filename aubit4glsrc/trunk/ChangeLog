@@ -1,4 +1,22 @@
 ---------------------------
+Thu Apr 23 11:26:50 BST 2009
+---------------------------
+1.10RC_57 Released
+---------------------------
+	
+	Added #ifdef DEBUG .. #endif around more A4GL_debug statements
+	Other small optimizations
+	
+	SQLMETRICS for ESQL/C generation
+	
+	Add 'RIGHT' field attribute
+	
+	Decimal/Float/Smallfloat fixup for comparison checking	(add
+	significant digit check for Floats)
+	
+	Small memory leak fixup for MYSQL driver
+	
+---------------------------
 Sat Apr 18 10:57:02 BST 2009
 ---------------------------
 1.10RC_56 Released
