@@ -1,0 +1,99 @@
+/*
+=====================================================================
+                        Source: gui.rule
+=====================================================================
+*/
+
+check_menu_cmd : CHECK_MENUITEM menu_item_list
+{
+		$<cmd>$=new_check_menu_cmd($<str_list>2);
+		
+}
+;
+
+menu_item_list:
+        menu_item {
+			$<str_list>$=malloc(sizeof(str_list));
+			$<str_list>$->str_list_entry.str_list_entry_len=1;
+			$<str_list>$->str_list_entry.str_list_entry_val=malloc(sizeof(char *)* $<str_list>$->str_list_entry.str_list_entry_len);
+			$<str_list>$->str_list_entry.str_list_entry_val[0]=$<str>1;
+		}
+		| menu_item_list KW_COMMA menu_item {
+			$<str_list>$->str_list_entry.str_list_entry_len=$<str_list>1->str_list_entry.str_list_entry_len+1;
+			$<str_list>$->str_list_entry.str_list_entry_val=realloc($<str_list>1->str_list_entry.str_list_entry_val, sizeof(char *)* $<str_list>$->str_list_entry.str_list_entry_len);
+			$<str_list>$->str_list_entry.str_list_entry_val[$<str_list>$->str_list_entry.str_list_entry_len-1]=$<str>3;
+		}
+;
+
+menu_item:  identifier {
+        SPRINTF1($<str>$,"%s",$<str>1);
+}
+;
+
+uncheck_menu_cmd : UNCHECK_MENUITEM menu_item_list { $<cmd>$=new_uncheck_menu_cmd($<str_list>2);  }
+;
+
+disable_menu_cmd : DISABLE_MENUITEMS menu_item_list { $<cmd>$=new_disable_menu_cmd($<str_list>2);  }
+;
+
+
+enable_menu_cmd : ENABLE_MENUITEMS menu_item_list { $<cmd>$=new_enable_menu_cmd($<str_list>2);  } 
+;
+
+
+
+msg_box_cmd : MESSAGEBOX fgl_expr_list_ptr
+        		op_caption
+        		op_icon
+        		op_buttons
+			op_def_but
+        		op_disable_msg
+        		op_returning_msg {
+		$<cmd>$=new_msg_box_cmd($<ptr_list>2,$<ptr_list>3,$<integer_val>4, $<integer_val>5, $<integer_val>6, $<integer_val>7, $<ptr>8);
+	}
+;
+
+op_disable_msg :
+		{$<integer_val>$=0;}
+		| DISABLE_PROGRAM {$<integer_val>$=1;}
+		| DISABLE_ALL {$<integer_val>$=2;}
+;
+
+
+op_returning_msg :  {$<ptr>$=0;}
+        | gm_returning_msg {$<ptr>$=$<ptr>1;}
+;
+
+gm_returning_msg: RETURNING ensured_variable_usage_expression {
+			$<ptr>$=$<ptr>2;
+	}
+;
+
+op_caption : {$<ptr_list>$=0;} | gm_caption {$<ptr_list>$=$<ptr_list>1;}
+;
+
+gm_caption: CAPTION fgl_expr_list_ptr {$<ptr_list>$=$<ptr_list>1;}
+		;
+
+op_icon : 
+	 {$<integer_val>$=0;}
+	| gm_icon  {$<integer_val>$= $<integer_val>1;}
+;
+
+gm_icon: ICON INT_VALUE  {
+	$<integer_val>$=atol($<str>2);
+}
+;
+
+op_buttons : {$<integer_val>$=0;} | gm_buttons {$<integer_val>$=atol($<str>1); }
+;
+
+gm_buttons : BUTTONS INT_VALUE ;
+
+op_def_but : {$<integer_val>$=0;}| DEFAULT INT_VALUE {$<integer_val>$=atol($<str>2); }
+;
+
+
+/* ================================ gui.rule ============================= */
+
+

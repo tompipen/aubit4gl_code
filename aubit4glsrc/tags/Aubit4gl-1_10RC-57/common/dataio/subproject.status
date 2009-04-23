@@ -1,0 +1,55 @@
+Name: libDATA_menu_list
+Parent: aubit4glsrc
+Description: IO routine used by packers for individual structure 
+Functionality: Internal data structures libraries
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Routines are created by xgen
+
+Name: libDATA_module
+Parent: aubit4glsrc
+Description: IO routine used by packers for PCODE 'module' structure 
+Functionality: Internal data structures libraries
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Routines are created by xgen
+
+Name: libDATA_report
+Parent: aubit4glsrc
+Description: IO routine used by packers for ACE report structure
+Functionality: Internal data structures libraries
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Routines are created by xgen
+
+Name: libDATA_struct_form
+Parent: aubit4glsrc
+Description: IO routine used by packers for fcompile form structure
+Functionality: Internal data structures libraries
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Routines are created by xgen

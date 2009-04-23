@@ -1,0 +1,3 @@
+#!/bin/sh
+
+$AUBITDIR/bin/a4gl.4ae

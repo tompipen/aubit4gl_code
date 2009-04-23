@@ -1,0 +1,2 @@
+#!/bin/sh
+runforms.4ae $@
