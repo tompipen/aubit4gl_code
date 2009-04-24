@@ -1,6 +1,7 @@
+include ../../../incl/Makefile-common
 
 ZLIB=-DHAVE_ZLIB 
-CFLAGS=-g -fPIC -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB) #-DHAVE_ZLIB
+CFLAGS=-g -fPIC -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB)   
 
 
 HAVE_FLEXML:=$(shell type flexml 2> /dev/null)
@@ -15,16 +16,16 @@ endif
 
 
 
-all: module_def.dtd libPACKER_XMLBEST.so 
+all: module_def.dtd libPACKER_XMLBEST${SO_EXT}
 
 
 %.o : %c
-	$(CC) -c $<
+	$(CC)  ${SO_LDFLAGS} -c $<
 fgl.setparent.o: fgl.setparent.c 
-	$(CC) $(CFLAGS) -c $<
+	$(CC)  ${SO_LDFLAGS} $(CFLAGS) -c $<
 
-libPACKER_XMLBEST.so: pack_xml.o fgl.xo.o overloads.h overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o  overloads_read.o
-	$(CC) $(CFLAGS) -shared -fPIC -I../../../incl pack_xml.o fgl.xo.o overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o overloads_read.o -o `aubit-config DEFAULT_PLUGINDIR`/libPACKER_XMLBEST.so 
+libPACKER_XMLBEST${SO_EXT}: pack_xml.o fgl.xo.o overloads.h overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o  overloads_read.o
+	$(CC) ${SO_LDFLAGS} $(CFLAGS) -shared -fPIC -I../../../incl pack_xml.o fgl.xo.o overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o overloads_read.o -o `aubit-config DEFAULT_PLUGINDIR`/libPACKER_XMLBEST${SO_EXT}  -lz -L${ROOT_DIR}/lib -laubit4gl
 
 
 

@@ -238,8 +238,11 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 				exit(1);
 			}
 
-			
+#ifdef EBADR
 			if (errno==EBADF || errno==EBADR) {
+#else
+			if (errno==EBADF) {
+#endif
 				// something wrong - so die..
 				break;
 			}
