@@ -406,6 +406,7 @@ function compile_optionals()
 	call run("Logical reports", "cd lib/liblogical && sh makeit",0)
 	call run("ESQL helper Simple","cd lib/libesql && sh make_simple",0)
 	call run("Static TUI", "cd lib/libui/ui_curses; sh make_static",0)
+	call run("SQLMetrics", "cd tools/sqlmetrics; make",0)
 
 
 end function
