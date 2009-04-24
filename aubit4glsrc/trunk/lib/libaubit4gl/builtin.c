@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.139 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: builtin.c,v 1.140 2009-04-24 09:57:09 mikeaubury Exp $
 #
 */
 
@@ -2069,4 +2069,20 @@ aclfgl_aclfgl_call_in_shared (int a)
   return A4GL_call_4gl_dll (ptr2, ptr1, a - 2);
 
   return 0;
+}
+
+
+int aclfgl_fgl_system(int n) {
+	A4GL_assertion(1,"fgl_system not implemented");
+	return 0;
+}
+
+int aclfgl_fgl_init4js(int n) {
+	A4GL_assertion(1,"fgl_init4js not implemented");
+	return 0;
+}
+
+int aclfgl_fgl_fglgui(int n) {
+	A4GL_push_int(0);
+	return 1;
 }
