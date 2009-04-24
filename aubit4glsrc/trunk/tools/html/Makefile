@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2006-07-27 16:04:26 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2009-04-24 10:03:23 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -73,6 +73,7 @@ simple_html.sf:
 	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae $$@' >> simple_html
 	@echo "simple_html sh script created"
 
+dll: libA4GL_HTML${SO_EXT}
 libA4GL_HTML${SO_EXT}: ${LIBROOT}/libA4GL_HTML${SO_EXT}
 ${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.c
 #	${FGLPCEXEC} ${AS_DLL} $^ -o $@
