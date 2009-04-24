@@ -46,12 +46,16 @@ public:
     void setArrCount(int cnt);// { i_arrCount = cnt; };
     void setMaxArrSize(int max);// { i_maxArrSize = max; };
 
+    void setIgnoreRowChange(bool b) { b_ignoreRowChange = b; };
+    bool ignoreRowChange() { return b_ignoreRowChange; };
+
 private:
     int i_arrCount;
     int i_arrLine;
     int i_scrLine;
     int i_maxArrSize;
     bool b_ignoreFocus;
+    bool b_ignoreRowChange;
 
 public slots:
    void fieldChanged(QModelIndex, QModelIndex);
@@ -65,6 +69,7 @@ protected:
 
 signals:
    void fieldEvent(Fgl::Event);
+   void setArrLine(int);
    void accepted();
    
 };

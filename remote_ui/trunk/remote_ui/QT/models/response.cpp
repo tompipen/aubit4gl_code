@@ -40,13 +40,25 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
    this->appendChild(responseElement = this->createElement("TRIGGERED"));
    responseElement.setAttribute("ID", id);
 
+   /*
    QWidget *focusWidget = p_currForm->focusWidget();
    QString colName = WidgetHelper::getWidgetColName(focusWidget);
 
    if(!colName.isNull() && !colName.isEmpty() &&  (p_currForm->dialog() == NULL && (p_currForm->menu() == NULL || !p_currForm->menu()->isEnabled()))){
       responseElement.setAttribute("INFIELD", colName);
    }
+   */
 
+   if(p_currForm->input() || p_currForm->construct()){
+      addSyncValues();
+   }
+   else{
+      if(p_currForm->inputArray() || p_currForm->displayArray()){
+         addScreenRecSyncValues();
+      }
+   }
+
+   /*
    if(p_currForm->dialog() == NULL && 
       (p_currForm->menu() == NULL || !p_currForm->menu()->isEnabled())){
       if(p_currForm->input() || p_currForm->construct()){
@@ -69,6 +81,7 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
          }
       }
    }
+   */
 }
 
 void Response::addSyncValues()
@@ -107,7 +120,6 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (p_screenRecord->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-   qDebug() << "ARR:" << p_screenRecord->arrCount();
    int arrCount = p_screenRecord->arrCount();
    if(arrCount <= 0) arrCount = 1;
    
@@ -191,6 +203,44 @@ void Response::addScreenRecSyncValues(Matrix *p_matrix)
       }
       syncValuesElement.appendChild(syncValueElement);
    }
+}
+
+void Response::addScreenRecSyncValues()
+{
+   QDomElement syncRowsElement = this->createElement("SYNCROWS");
+   responseElement.appendChild(syncRowsElement);
+
+   int arrCount = p_currForm->context->options["ARRCOUNT"];
+   qDebug() << "ARRCOUNT:" << arrCount;
+
+   /*
+   for(int i=0; i<p_currForm->context->fieldList.count(); i++){
+      QWidget *widget = p_currForm->findFieldByName(p_currForm->context->fieldList.at(i));
+
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+            TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+            int arrCount = p_screenRecord->arrCount();
+            if(arrCount <= 0) arrCount = 1;
+   
+
+            responseElement.setAttribute("ARRCOUNT", arrCount);
+
+            int scrLine = p_screenRecord->scrLine();
+            if(scrLine <= 0) scrLine = 1;
+
+            int arrLine = p_screenRecord->scrLine();
+            if(arrLine <= 0) arrLine = 1;
+
+            responseElement.setAttribute("SCRLINE", scrLine);
+
+            responseElement.setAttribute("ARRLINE", arrLine);
+         }
+      }
+   }
+   */
 }
 
 bool Response::checkOnActionEvents(QString *id){

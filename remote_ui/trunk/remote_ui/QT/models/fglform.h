@@ -163,10 +163,13 @@ public:
 
    Fgl::Context *context;
 
+   QWidget* findFieldByName(QString);
+   QList<QWidget*> findFieldsByName(QString);
+
 
 public slots:
    void buttonClicked(QString);
-   void fieldEvent(Fgl::Event, QWidget* widget = NULL);
+   void fieldEvent(Fgl::Event, QWidget* = NULL);
 
    //action defaults
    void cancelTriggered();
@@ -201,6 +204,7 @@ public slots:
    //void setStartMenu(XML2Menu* menu);
    void setStartMenu(const QDomDocument &doc);
    void createContextMenu(const QPoint&);
+   void setScreenRecordArrLine(int);
 
 
 private:
@@ -247,6 +251,7 @@ signals:
    void sendDirect(QString);
    void accepted();
    void setClearEvents();
+   void setArrLine(int);
 
 protected:
    bool eventFilter(QObject *obj, QEvent *event);

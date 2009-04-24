@@ -32,6 +32,7 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
    i_scrLine = 0;
    i_maxArrSize = 0;
    b_ignoreFocus = false;
+   b_ignoreRowChange = false;
 
    const int rowHeight = fontMetrics().height() + 2;
    verticalHeader()->setDefaultSectionSize(rowHeight);
@@ -243,20 +244,25 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 
    if(current.row() != prev.row()){
       if(prev.row() > -1){
-         event.type = Fgl::AFTER_ROW_EVENT;
-         emit fieldEvent(event);
+         if(!b_ignoreRowChange){
+            emit setArrLine(current.row()+1);
+            event.type = Fgl::AFTER_ROW_EVENT;
+            emit fieldEvent(event);
+         }
 
          if(current.row()+1 > i_arrCount){
             i_arrCount = current.row()+1;
          }
       }
 
-
       if(current.row() > -1){
-         event.type = Fgl::BEFORE_ROW_EVENT;
-         emit fieldEvent(event);
-         i_arrLine = current.row()+1;
-         i_scrLine = current.row()+1;
+         if(!b_ignoreRowChange){
+            emit setArrLine(current.row()+1);
+            event.type = Fgl::BEFORE_ROW_EVENT;
+            emit fieldEvent(event);
+            i_arrLine = current.row()+1;
+            i_scrLine = current.row()+1;
+         }
       }
    }
 
@@ -587,7 +593,6 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    const QStyleOptionViewItem &/* option */,
    const QModelIndex &/* index */) const
 {
-   qDebug() << "PARENT:" << this->parent();
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    editor->setAutoFillBackground(true);
    

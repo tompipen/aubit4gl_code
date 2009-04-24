@@ -806,6 +806,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
 
       if(TableView *tableView = qobject_cast<TableView *> (formElements().at(i))){
          connect(tableView, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
+         connect(tableView, SIGNAL(setArrLine(int)), this, SLOT(setScreenRecordArrLine(int)));
          connect(tableView, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
       }
 
@@ -1855,4 +1856,71 @@ void FglForm::createContextMenu(const QPoint &pos)
       contextMenu->exec(menuPos);
    }
    delete contextMenu;
+}
+
+QWidget* FglForm::findFieldByName(QString fieldName)
+{
+   QList<QWidget*> ql_fields = ql_formFields;
+
+   int index = fieldName.indexOf(".");
+   int index2 = fieldName.indexOf("[");
+
+   if(index2 > 0){
+      int index3 = fieldName.indexOf("]")+1;
+
+      fieldName.remove(index2, index3-index2);
+      index = fieldName.indexOf(".");
+   }
+
+   if(index < 0){
+      // DISPLAY BY NAME
+      QList<QString> keys = recordView.keys();
+      for(int i=0; i<keys.count(); i++){
+         QList<Fgl::Link> links = recordView[keys.at(i)];
+         for(int j=0; j<links.count(); j++){
+            Fgl::Link link = links.at(j);
+            if(link.colName == fieldName)
+               return ql_fields.at(link.fieldIdRef);
+         }
+      }
+   }
+   else{
+     QString tabName = fieldName.mid(0,index);
+     fieldName = fieldName.mid(index+1,fieldName.length()-index-1);
+      // DISPLAY TO
+     QList<Fgl::Link> links = recordView[tabName];
+     for(int i=0; i<links.count(); i++){
+        Fgl::Link link = links.at(i);
+        if(link.colName == fieldName){
+           return ql_fields.at(link.fieldIdRef);
+        }
+     }
+   }
+}
+
+QList<QWidget*> FglForm::findFieldsByName(QString fieldName)
+{
+
+   QList<QWidget*> ql_foundFields;
+
+   QList<QWidget*> ql_fields = ql_formFields;
+
+   int index = fieldName.indexOf(".*");
+
+   QString tabName = fieldName.left(index);
+
+   QList<Fgl::Link> links = recordView[tabName];
+   for(int i=0; i<links.count(); i++){
+      Fgl::Link link = links.at(i);
+      ql_foundFields << ql_fields.at(link.fieldIdRef);
+   }
+
+   return ql_foundFields;
+}
+
+void FglForm::setScreenRecordArrLine(int line)
+{
+
+   setArrLine(line);
+
 }
