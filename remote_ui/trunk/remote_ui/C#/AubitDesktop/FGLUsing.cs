@@ -650,6 +650,10 @@ namespace AubitDesktop
         {
             decimal d;
             bool isneg = false;
+            if (value == "")
+            {
+                return "";
+            }
             d = Convert.ToDecimal(value);
             if (d < 0)
             {
