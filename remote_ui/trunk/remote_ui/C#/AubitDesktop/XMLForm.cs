@@ -184,6 +184,8 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public int autoSize;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("FormField", Type = typeof(FormField))]

@@ -1215,14 +1215,21 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        if (o.FORM.ATTRIBUTES != null)
+                        if (o.FORM == null)
                         {
-                            FGLForm frm = new FGLForm(o.FORM);
-                            OpenForms.addForm(o.FORMNAME, frm);
+                            MessageBox.Show("Unable to open form..." + o.FORMNAME);
                         }
                         else
                         {
-                            Console.WriteLine("No form!!!");
+                            if (o.FORM.ATTRIBUTES != null)
+                            {
+                                FGLForm frm = new FGLForm(o.FORM);
+                                OpenForms.addForm(o.FORMNAME, frm);
+                            }
+                            else
+                            {
+                                Console.WriteLine("No form!!!");
+                            }
                         }
                     }
 

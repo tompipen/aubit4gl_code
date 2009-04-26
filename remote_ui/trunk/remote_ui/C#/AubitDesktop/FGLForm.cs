@@ -146,11 +146,18 @@ namespace AubitDesktop
                         height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
                         width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
 
-                        thisScreensPanel.AutoSize = false;
+                        if (p.autoSize == 1)
+                        {
+                            thisScreensPanel.AutoSize = true; // false;
+                        }
+                        else
+                        {
+                            thisScreensPanel.AutoSize = false;
+                        }
                         thisScreensPanel.Height = GuiLayout.get_gui_h(height+1);
                         thisScreensPanel.Width = GuiLayout.get_gui_w(width+1);
 
-                 //       thisScreensPanel.BackColor = Color.Purple;
+                        thisScreensPanel.BorderStyle = BorderStyle.Fixed3D;
                         
 
                         foreach (object a in p.Items)
