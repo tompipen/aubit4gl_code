@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.92 2009-04-14 07:54:16 mikeaubury Exp $
+# $Id: pg8.c,v 1.93 2009-04-27 07:33:27 mikeaubury Exp $
 #*/
 
 
@@ -2437,12 +2437,20 @@ conv_sqldtype (int pgtype, int pglen, int *a4gl_dtype, int *a4gl_len)
 
   if (pgtype == dtype_bpcharoid)
     {
-      *a4gl_dtype = DTYPE_CHAR;
-      *a4gl_len = pglen;
+	if (pglen==-1) {
+		// Indeterminate for some reason
+      		*a4gl_dtype = DTYPE_VCHAR;
+      		*a4gl_len = 255;
+	} else {
+      		*a4gl_dtype = DTYPE_CHAR;
+      		*a4gl_len = pglen;
+	}
       return 1;
     }
+
   if (pgtype == dtype_varcharoid)
     {
+      if (pglen==-1) pglen=255;
       *a4gl_dtype = DTYPE_VCHAR;
       *a4gl_len = pglen;
       return 1;
@@ -3968,8 +3976,7 @@ A4GL_assertion(colno<0,"colno<0");
   switch (type)
     {
     case 0:
-      conv_sqldtype (PQftype (res, colno), PQfsize (res, colno), &dtype,
-		     &prc);
+      conv_sqldtype (PQftype (res, colno), PQfsize (res, colno), &dtype, &prc);
       rval = dtype;
       break;
 
@@ -3979,10 +3986,22 @@ A4GL_assertion(colno<0,"colno<0");
 
     case 2:
       rval = PQfmod (res, colno);
+	if (rval==-1) {
+      		conv_sqldtype (PQftype (res, colno), PQfsize (res, colno), &dtype, &prc);
+		if (dtype==DTYPE_VCHAR) {
+			rval=255;
+		}
+	}
       break;
 
     case 3:
       rval = PQfsize (res, colno);
+	if (rval==-1) {
+      		conv_sqldtype (PQftype (res, colno), PQfsize (res, colno), &dtype, &prc);
+		if (dtype==DTYPE_VCHAR) {
+			rval=255;
+		}
+	}
       break;
 
     case 4:
