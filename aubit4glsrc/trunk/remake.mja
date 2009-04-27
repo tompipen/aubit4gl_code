@@ -50,6 +50,14 @@ cd lib/libui/ui_curses
 sh make_static
 
 
+cd /home/aubit4gl/aubit4glsrc/tools/sqlmetrics
+make clean
+make
+cd /home/aubit4gl/aubit4glsrc/tools/quickguide
+make clean
+make
+
+
 cd /home/aubit4gl/aubit4glsrc
 cd lib/libsql/esqlc
 sh make_static

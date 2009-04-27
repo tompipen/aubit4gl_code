@@ -39,6 +39,10 @@ int aclfgl_aclfgl_walk_pointers (int n);
 int aclfgl_fgl_exitfm(int n);
 int aclfgl_aclfgl_flush_ui(int n);
 int aclfgl_fgl_winmessage(int n);
+int aclfgl_fgl_system(int n);
+int aclfgl_fgl_init4js(int n);
+int aclfgl_fgl_fglgui(int n);
+
 // These are UI functions - included in the generated a4gl_API_ui.h file
 //int aclfgl_aclfgl_set_display_field_delimiters(int nparam);
 //int aclfgl_aclfgl_add_acs_mapping(int nparam);
