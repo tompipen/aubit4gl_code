@@ -4,15 +4,20 @@ define mv_lastused char(512)
 function load_menu()
   	call clear_screen_portion()
 		MENU "Load SQLMetrics"
-			command "All" "Load all *.log files"
+			command "All" "Load all *.log files (Directory mode)"
 				if load_all() then
 					next option "Exit"
 				end if
 			
-			command "Choose" "Choose files to load"
+			command "Choose" "Choose files to load (Directory mode)"
 				if load_some() then
 					next option "Exit"
 				end if
+
+			command "File" "Use A4GL_SQLMETRICS in file mode"
+				message "Loading..."
+				call load_file(" ",fgl_getenv("A4GL_SQLMETRICS") clipped) 
+				message "Loaded"
 		
 			command key(esc,"E") "Exit"  "Return to main menu"
 				exit menu
@@ -111,7 +116,11 @@ define lr record
 	curtime datetime year to fraction(3) --	 timestamp
     end record
 
-let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
+if lv_path !=" " then
+	let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
+else
+	let lv_filename =  lv_file clipped, ".log"
+end if
 display "loading ... ", lv_filename clipped
 call channel::open_file("log",lv_filename,"r")
 call channel::set_delimiter("log","|")
