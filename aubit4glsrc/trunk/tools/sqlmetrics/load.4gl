@@ -14,27 +14,9 @@ function load_menu()
 					next option "Exit"
 				end if
 		
-			command "Truncate" "Delete all existing SQLMetrics from table"
-				if confirm_yes_no() = "Yes" then
-					call delete_rows() 
-					next option "All"
-				end if
-
-			command "Exit"  "Return to main menu"
+			command key(esc,"E") "Exit"  "Return to main menu"
 				exit menu
 		end menu
-end function
-
-function confirm_yes_no()
-    MENU "CONFIRM"
-      BEFORE MENU
-        CALL display_banner()
-
-      COMMAND KEY "n" "No" "No - I don't want to drop it"
-      		RETURN "No"
-      COMMAND KEY "y" "Yes" "Yes - I do want to drop it"
-      		RETURN "Yes"
-    END MENU
 end function
 
 FUNCTION more_yes_no()
@@ -42,7 +24,7 @@ FUNCTION more_yes_no()
       BEFORE MENU
         CALL display_banner()
 
-      COMMAND KEY "n" "No" "No - I don't want to load more"
+      COMMAND KEY ("n",esc) "No" "No - I don't want to load more"
       		RETURN "No"
       COMMAND KEY "y" "Yes" "Yes - I do want to load more"
       		RETURN "Yes"
@@ -124,7 +106,9 @@ define lr record
 	sql char(2048), -- is the SQL being processed.
 	module varchar(32), --	 is the modulename of the 4gl where this SQL is located
 	lineno int, --	 is the line number in the 4gl where this SQL is located
-	elatime float --	 is the execution of this statement in seconds
+	elatime float, --	 is the execution of this statement in seconds
+	sql_code int, --	 sqlca.sqlcode
+	curtime float --	 timestamp
     end record
 
 let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
@@ -132,11 +116,7 @@ display "loading ... ", lv_filename clipped
 call channel::open_file("log",lv_filename,"r")
 call channel::set_delimiter("log","|")
 while channel::read("log",[lr.*])
-    insert into sql_log (application, pid, type, cursorname, sql, module, lineno, elatime) values (lr.*)
+    insert into sql_log (application, pid, type, cursorname, sql, module, lineno, elatime, sql_code, curtime) values (lr.*)
 end while
 call channel::close("log")
-end function
-
-function delete_rows()
-delete from sql_log
 end function

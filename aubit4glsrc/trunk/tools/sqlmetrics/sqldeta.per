@@ -11,12 +11,12 @@ screen
         [f0001                                                           ]
         [f0001                                                           ]
         [f0001                                                           ]
-            Count Application          Module                Line
-           [f0002|f0003                |f0004              |f0005]
-           [f0002|f0003                |f0004              |f0005]
-           [f0002|f0003                |f0004              |f0005]
-           [f0002|f0003                |f0004              |f0005]
-           [f0002|f0003                |f0004              |f0005]
+ Count Application           Module               Line Timestamp
+[f0002|f0003                |f0004              |f0005|f0006              ]
+[f0002|f0003                |f0004              |f0005|f0006              ]
+[f0002|f0003                |f0004              |f0005|f0006              ]
+[f0002|f0003                |f0004              |f0005|f0006              ]
+[f0002|f0003                |f0004              |f0005|f0006              ]
 }
 end
 attributes
@@ -26,8 +26,9 @@ f0002 = formonly.count,noentry;
 f0003 = formonly.app,noentry;
 f0004 = formonly.module,noentry;
 f0005 = formonly.line,noentry;
+f0006 = formonly.time,noentry;
 end
 
 instructions 
 delimiters "  "
-screen record srec2[5] (count,app,module,line)
+screen record srec2[5] (count,app,module,line,time)

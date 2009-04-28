@@ -5,6 +5,9 @@ menu "SQLMetrics"
 	command "Load" "Load sqlmetrics into analyze table"
 		call load_menu()
 
+	command "Purge" "Purge rows from  sqlmetrics table"
+		call purge_menu()
+
 	command "Analyze" "Analyze metrics already loaded"
 		call analyze_menu()
 

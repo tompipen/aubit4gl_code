@@ -7,7 +7,9 @@ defer interrupt
 
 	call form_is_compiled(splash,"MEMPACKED","GENERIC")
 	call form_is_compiled(sqls,"MEMPACKED","GENERIC")
+	call form_is_compiled(sqlerr,"MEMPACKED","GENERIC")
 	call form_is_compiled(sqldeta,"MEMPACKED","GENERIC")
+	call form_is_compiled(purge,"MEMPACKED","GENERIC")
 
 	# Let the library know to ignore the SQLMETRICS setting
 	# we dont want to log the SQLs we're using to analyse
@@ -43,7 +45,7 @@ defer interrupt
 			display "   ------------------------------------------------------"
 			display " "
 			display "Please manually create a database called 'sqlmetrics'"
-			display "and create the tables as in $AUBITDIR/tools/a4gl/create_tables.sql."
+			display "and create the tables as in $AUBITDIR/tools/sqlmetrics/create_tables.sql."
 			display " "
 			display "If the database exists then ensure you have permission to connect to it"
 			exit program 1
@@ -80,9 +82,11 @@ create table sql_log
    cursorname varchar(30), -- is the name of the cursor for a OPEN/FETCH/DECLARE/PUT
    sql varchar(2048), --  is the SQL being processed.
    module varchar(30), --  is the modulename of the 4gl where this SQL is located
-   lineno int, --  is the line number in the 4gl where this SQL is located
-   elatime float --    is the execution of this statement in seconds
-  );
+   lineno int,     --  is the line number in the 4gl where this SQL is located
+   elatime float,  --  is the execution of this statement in seconds
+   sql_code int,   --  sqlca.sqlcode
+   curtime double precision   --  timestamp
+  )
 
 if sqlca.sqlcode<0 then
 
@@ -97,8 +101,10 @@ if sqlca.sqlcode<0 then
    	sql char(2048), --  is the SQL being processed.
    	module varchar(30), --  is the modulename of the 4gl where this SQL is located
    	lineno int, --  is the line number in the 4gl where this SQL is located
-   	elatime float --    is the execution of this statement in seconds
-  	);
+   	elatime float, --    is the execution of this statement in seconds
+    sql_code int,   --  sqlca.sqlcode
+    curtime double precision   --  timestamp
+  	)
 
 	if sqlca.sqlcode<0 then
 		call err_createtables(sqlca.sqlcode)
@@ -151,7 +157,7 @@ end function
 function get_version()
 define lv_str char(80)
 
-let lv_str="SQLMetrics IDE  Version ",mc_version using "##&.&&"
+let lv_str="SQLMetrics  Version ",mc_version using "##&.&&"
 return lv_str
 end function
 
@@ -197,4 +203,20 @@ end function
 
 function set_and_display_banner() 
 	call display_banner()
+end function
+
+function str2epoch(p_datetime)
+define p_datetime char(30)
+define lv_time double precision
+CODE
+#include <time.h>
+struct tm tm;
+time_t t;
+strptime(p_datetime,"%Y-%m-%d %T",&tm);
+t=mktime(&tm);
+// printf("t=%g\n",t);
+lv_time = t;
+ENDCODE
+# display "time=", lv_time
+return lv_time
 end function
