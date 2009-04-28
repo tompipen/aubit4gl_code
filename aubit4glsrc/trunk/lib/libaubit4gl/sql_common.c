@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.79 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: sql_common.c,v 1.80 2009-04-28 13:15:39 mikeaubury Exp $
 #
 */
 
@@ -244,7 +244,7 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
 
   // if we've got to here - we've got a file to write to...
   //
-  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf|%ld|%lf\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm,(long)a4gl_sqlca.sqlcode, get_now_as_double());
+  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf|%ld|%s\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm,(long)a4gl_sqlca.sqlcode, A4GL_getTimecode());
   fclose (fout);
 
 }
