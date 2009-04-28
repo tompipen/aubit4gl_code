@@ -8,5 +8,5 @@ create table sql_log (
    lineno int,     --  is the line number in the 4gl where this SQL is located
    elatime float,  --  is the execution of this statement in seconds
    sql_code int,   --  sqlca.sqlcode
-   curtime double precision   --  timestamp
+   curtime datetime year to fraction(3) --  timestamp
   )

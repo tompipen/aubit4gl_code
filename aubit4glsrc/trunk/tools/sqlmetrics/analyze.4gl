@@ -150,7 +150,7 @@ define lr record
            app varchar(32),
            module varchar(32),
            lineno int,
-           curtime double precision
+           curtime datetime year to second
        end record
 define la array[30] of record
            count int,
@@ -174,7 +174,7 @@ foreach c_sqldeta using lp_sql into lr.*
     let la[lv_i].app = lr.app
     let la[lv_i].module = lr.module
     let la[lv_i].lineno = lr.lineno
-    let la[lv_i].time = epoch2str(lr.curtime)
+    let la[lv_i].time = lr.curtime
     if lv_i > 29 then exit foreach end if
 end foreach
 #display "total=", lv_i
