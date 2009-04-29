@@ -1,0 +1,28 @@
+Name: mcompile
+Parent: aubit4glsrc
+Description: Plexus compatible "menu handler" compiler for GUI mode only. Parses .menu files and generates compiled menus in various formats using plug-ins
+Functionality: Menu compiler
+Build: Always built by root makefile
+Example: see --help
+Depends: None, but needs GTK+ libraries at run-time
+Documentation: Manual?
+Regressed: maybe one test ?
+Maintainer: MA
+Status: 2
+Todo:
+Notes:
+
+Name: mdecompile
+Parent: aubit4glsrc
+Description: De-compiles compiled menus back into source code format
+Functionality: Menu de-compiler
+Build: Always built by root makefile
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 2
+Todo:
+Notes: Useful primarily for debugging
+
