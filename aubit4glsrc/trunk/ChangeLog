@@ -1,4 +1,27 @@
 ---------------------------
+Wed Apr 29 14:35:59 BST 2009
+---------------------------
+1.10RC_58 Released
+---------------------------
+	
+	Win32 fixups for UI=XML
+	
+	Allow load of SQLMETRICS in File mode
+	
+	,
+	
+	,
+	
+	sqlmetrics: Initial support for sqlcode and timestamp
+	
+	Fix UNION with different sized strings returning CHAR(-1) in pg8.c
+	
+	fgllint fixups
+	
+	Added #ifdef DEBUG .. #endif around more A4GL_debug statements
+	Other small optimizations
+	
+---------------------------
 Thu Apr 23 11:26:50 BST 2009
 ---------------------------
 1.10RC_57 Released

@@ -890,7 +890,7 @@ report_cnt++;
   }
   printc
     ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n", namespaced_report_name);
-  printc ("   A4GL_pop_params_and_save_blobs(_rbind,%d,&_blobdata);\n", cnt);
+  printc ("   A4GL_pop_params_and_save_blobs(_rbind,%d,&_bloibdata);\n", cnt);
   printc ("               %s(0,REPORT_AFTERDATA);", namespaced_report_name);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");

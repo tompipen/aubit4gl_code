@@ -11,6 +11,8 @@ int format_section_is_last=0;
 int batch_size=100;
 char function_name[2000]="MAIN";
 void show_usage(char *argv0) ;
+int ispdf=0;
+
 /*
 # 4GL code generator
 #
@@ -148,6 +150,11 @@ main (int argc, char *argv[])
 			}
 			a++;
 			continue;
+		}
+		if (strcmp(argv[a],"-PDF")==0) {
+			ispdf++;
+			used[a]=1;
+			a++;
 		}
 
 		if (strcmp(argv[a],"-C")==0) {
@@ -309,7 +316,11 @@ dump_report ()
   }
   fprintf (fout, "\n");
 
+  if (ispdf) {
+  fprintf (fout, "PDFREPORT rep_%s(lr_data)\n", this_report.report_name);
+  } else {
   fprintf (fout, "REPORT rep_%s(lr_data)\n", this_report.report_name);
+  }
   fprintf (fout, "DEFINE lr_data RECORD\n");
   print_variables (CAT_SQL, 1);
   fprintf (fout, "END RECORD\n");

@@ -7,7 +7,7 @@ static int madmath (char *module, int lineno, expr_str * p);
 extern int yylineno;
 
 
-static void ensure_dtype (char *module, int lineno, struct expr_str *e, int dtype, int nonull);
+void ensure_dtype (char *module, int lineno, struct expr_str *e, int dtype, int nonull); // This should not be static - its called elsewhere...
 static void ensure_smint (char *module, int lineno, struct expr_str *s, int notnull);
 static void ensure_char (char *module, int lineno, struct expr_str *s, int notnull);
 static void ensure_dtime (char *module, int lineno, struct expr_str *s, int notnull);

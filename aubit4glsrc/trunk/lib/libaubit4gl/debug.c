@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.67 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: debug.c,v 1.68 2009-04-29 13:36:40 mikeaubury Exp $
 #
 */
 
@@ -667,7 +667,7 @@ a4gl_basename (char **ppsz)
 
 
 char *
-A4GL_getTimecode (void)
+A4GL_getTimecode (void) // Also used by SQLMETRICS for its timestamp - so make sure this returns a *** VALID DATETIME ***
 {
   static char buff[30] = "";
   int mja_day;
@@ -680,11 +680,7 @@ A4GL_getTimecode (void)
   month = local_time->tm_mon + 1;
   mja_day = local_time->tm_mday;
 
-  SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
-	    year, month, mja_day, local_time->tm_hour, local_time->tm_min, local_time->tm_sec, tv1.tv_usec
-	    /* , 0 */
-	    /* no support for fractions of a second yet */
-    );
+  SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld", year, month, mja_day, local_time->tm_hour, local_time->tm_min, local_time->tm_sec, tv1.tv_usec ); /* MUST BE A VALID DATETIME */
   buff[27] = 0;
 
   return buff;
