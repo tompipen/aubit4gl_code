@@ -10,6 +10,8 @@ defer interrupt
 	call form_is_compiled(sqlerr,"MEMPACKED","GENERIC")
 	call form_is_compiled(sqldeta,"MEMPACKED","GENERIC")
 	call form_is_compiled(purge,"MEMPACKED","GENERIC")
+	call form_is_compiled(purge2,"MEMPACKED","GENERIC")
+	call form_is_compiled(audit,"MEMPACKED","GENERIC")
 
 	# Let the library know to ignore the SQLMETRICS setting
 	# we dont want to log the SQLs we're using to analyse

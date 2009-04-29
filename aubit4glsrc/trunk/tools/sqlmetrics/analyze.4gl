@@ -11,7 +11,7 @@ function analyze_menu()
 			command "Invalid" "SQL statements with error"
 				call analyze_invalid()
 
-			command "Exit"  "Return to main menu"
+			command key(ESC,"e") "Exit"  "Return to main menu"
 				exit menu
 		end menu
 end function
