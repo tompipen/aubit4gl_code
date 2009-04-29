@@ -54,6 +54,10 @@ then
 	echo "Making ESQL/C helper library"
 	cd /usr/src/aubit/aubit4glsrc/lib/libesql
 	make
+
+	echo "Making fgllint and fglcalltree"
+	cd /usr/src/aubit/aubit4glsrc/compilers/4glc
+	make fgllint fglcalltree
 	
 	echo "Making static libaubit4gl library"
 	cd /usr/src/aubit/aubit4glsrc/lib/libaubit4gl
