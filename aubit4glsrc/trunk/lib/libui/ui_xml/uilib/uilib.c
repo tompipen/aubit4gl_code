@@ -754,9 +754,14 @@ uilib_sleep (int nargs)
   n = POPint ();
   send_to_ui ("<SLEEP PAUSE=\"%d\"/>", n);
   flush_ui ();
+#ifdef __WIN32__
+  Sleep (n);
+#else
   sleep (n);
+#endif
   return 0;
 }
+
 
 
 /*

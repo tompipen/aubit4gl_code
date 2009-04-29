@@ -7,15 +7,11 @@
 #include <sys/types.h>
 
 
-#ifdef WIN32
-#error "Unable to compile on win32 atm"
-#else
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include "sock_xml.h"
 
-#endif
+
+
+
 
 #include <sys/time.h>
 
@@ -32,8 +28,6 @@
 #ifdef WIN32
 
 #else
-#include <netinet/in.h>
-#include <netdb.h>
 #endif /* win32 */
 #endif /* NOPROXY */
 
@@ -69,7 +63,7 @@ void A4GL_trim (char *p);
  */
 
 static int
-atoport (char *service,char *proto)
+atoport_noproxy (char *service,char *proto)
 {
   int port;
   long int lport;
@@ -146,17 +140,24 @@ if (local_acl_getenv("AFGLSERVER")) {
 int
 connect_ui_noproxy (void)
 {
-  struct sockaddr_un server;
+  //struct sockaddr_un server;
   struct sockaddr_in address;
   struct in_addr *addr;
   int rval;
   int cnt;
+#ifdef __WIN32__
+WSADATA wsaData;
+WORD wVersionRequested=MAKEWORD(1,1);
+#endif
 int type=SOCK_STREAM;
 int port;
+
   char *netport="1350";
   char *netaddress = "localhost";
 
-
+#ifdef __WIN32__
+WSAStartup(wVersionRequested,&wsaData);
+#endif
   if (local_acl_getenv("AFGLSERVER")) {
   	   netaddress=local_acl_getenv("AFGLSERVER");
   }
@@ -165,7 +166,7 @@ int port;
   }
 
 
-  port= atoport (netport, "tcp");
+  port= atoport_noproxy (netport, "tcp");
   addr = atoaddr (netaddress);
   if (addr==0) {
             fprintf(stderr, "Error : Unable to identify address for AFGLSERVER\n");
@@ -180,19 +181,34 @@ int port;
 
 
   clientui_sock_read = socket (AF_INET, type, 0);
-  if (clientui_sock_read < 0)
+#ifdef __WIN32__
+  if (clientui_sock_read ==INVALID_SOCKET )
     {
-      perror ("opening stream socket");
+	printf("Win32.. Address : %s port=%s\n",netaddress,netport);
+        perror ("opening stream socket (1)");
+	cleanup();
+        exit (1);
+    }
+#else
+  if (clientui_sock_read <0 )
+    {
+		printf("Address : %s port=%s\n",netaddress,netport);
+      perror ("opening stream socket (1)");
 	cleanup();
       exit (1);
     }
+#endif
   UIdebug (3, "Got socket\n");
   clientui_sock_write = clientui_sock_read;
 
 
   for (cnt = 0; cnt < 4; cnt++)
     {
+#ifdef __WIN32__
+      Sleep (1);
+#else
       usleep (100000);
+#endif
       rval = connect (clientui_sock_read, (struct sockaddr *) &address, sizeof (address));
 
       if (rval < 0)
@@ -203,7 +219,7 @@ int port;
 
   if (rval < 0)
     {
-      UIdebug (3, "closing - connect to %s failed.(%d)\n", server.sun_path, rval);
+      UIdebug (3, "closing - connect failed.(%d)\n", rval);
       close (clientui_sock_read);
       return 0;
     }
@@ -217,7 +233,7 @@ int port;
 int
 connect_ui_proxy (void)
 {
-  struct sockaddr_un server;
+
 
   /* Create socket. */
   if (!getenv ("PROXYPIPE"))
@@ -230,6 +246,11 @@ connect_ui_proxy (void)
     }
   else
     {
+#ifdef __WIN32__
+	printf("connect_ui_proxy -Not available for win32\n");
+	exit(2);
+#else
+  struct sockaddr_un server;
 
 	int rval;
 	int cnt;
@@ -237,7 +258,7 @@ connect_ui_proxy (void)
       clientui_sock_read = socket (AF_UNIX, SOCK_STREAM, 0);
       if (clientui_sock_read < 0)
 	{
-	  perror ("opening stream socket");
+	  perror ("opening stream socket (2)");
 	cleanup();
 	  exit (1);
 	}
@@ -265,10 +286,10 @@ connect_ui_proxy (void)
 	  	close (clientui_sock_read);
 	  	return 0;
 	}
+#endif
     }
   UIdebug(3,"set envelope\n");
   set_envelope_mode ();
-
   return 1;
 }
 
@@ -289,7 +310,7 @@ send_to_ui (char *s, ...)
   strcat (buff, "\n");
   UIdebug (4,"[[%s]]\n", buff);
   pipe_sock_puts (clientui_sock_write, buff);
-	something++;
+  something++;
   gettimeofday(&tn,0);
   if (tn.tv_sec-tl.tv_sec>5) {
 		//timeout_flush_ui();
