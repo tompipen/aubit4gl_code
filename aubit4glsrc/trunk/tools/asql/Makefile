@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.59 2008-12-17 15:30:44 mikeaubury Exp $
+# $Id: Makefile,v 1.60 2009-04-29 11:07:14 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -220,7 +220,7 @@ all : ${ALL} install
 ################
 #Target to make asql Informix version
 asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
-	${IFX4GLPC} -t EC -td INFORMIX ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	${IFX4GLPC} -V2 -t EC -td INFORMIX ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Informix version of asql            |"

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.234 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: stack.c,v 1.235 2009-04-29 11:03:14 mikeaubury Exp $
 #
 */
 
@@ -4214,6 +4214,7 @@ A4GL_pause_execution_msg (char *s)
     PRINTF ("--PAUSE EXECUTION->%s\n", s);
 
 
+#ifndef __WIN32__
 if (A4GL_isyes(acl_getenv("A4GL_CORDUMP_ON_PAUSE_EXECUTION"))) {
 		// This is set if we're running the tests..
 		// by the time we get to run the regression tests
@@ -4223,6 +4224,10 @@ if (A4GL_isyes(acl_getenv("A4GL_CORDUMP_ON_PAUSE_EXECUTION"))) {
 	PRINTF("A4GL_CORDUMP_ON_PAUSE_EXECUTION is set - dumping core\n");
 	A4GL_core_dump();
 }
+#endif
+
+
+
 }
 
 void

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.90 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: ui.c,v 1.91 2009-04-29 11:03:14 mikeaubury Exp $
 #
 */
 
@@ -377,6 +377,7 @@ A4GL_display_at (int n, int a)
       A4GL_debug ("display_internal - attr =%x", a);
 #endif
       A4GL_display_internal (x, y, s, a, clr_end_of_line);
+	A4GL_debug("Done display");
     }
   else
     {

@@ -5,5 +5,5 @@ A4GL_C_OPTS=-I$INFORMIXDIR/incl -I$INFORMIXDIR/incl/esql
 A4GL_EC_COMP=esql -e
 A4GL_EC_OPTS=-I$INFORMIXDIR/incl -I$AUBITDIR/incl
 A4GL_PREC_COMP=esql -E -I$AUBITDIR/incl
-A4GL_LINK=gcc -mms-bitfields -Wl,--export-all-symbols $IFX_LIBS
+A4GL_LINK=gcc -mms-bitfields -Wl,--export-all-symbols -Wl,--stack=10000000 $IFX_LIBS
 

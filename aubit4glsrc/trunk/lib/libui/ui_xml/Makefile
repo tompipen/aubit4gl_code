@@ -3,14 +3,18 @@ ROOT=../../..
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
+ifneq "${COMSPEC}" ""
+        LINKLIBS        =-lwsock32
+endif
 
-CFLAGS+=-I$(ROOT)/incl -I. -Iuilib
+
+CFLAGS+=-I$(ROOT)/incl -I. -Iuilib -fPIC 
 
 
 all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
 
 ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
-	${LD} ${SO_LDFLAGS}  -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib
+	${LD} ${SO_LDFLAGS}  -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
 
 proxy: proxy.o pipe.o debug.o
 	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o

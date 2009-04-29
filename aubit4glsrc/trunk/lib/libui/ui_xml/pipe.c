@@ -4,14 +4,17 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/un.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
-#include <signal.h>
+
+#include "sock_xml.h"
+//#include <sys/un.h>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+//#include <arpa/inet.h>
+//#include <sys/wait.h>
+//#include <signal.h>
+//#include <sys/select.h>
+
 #include <ctype.h>
-#include <sys/select.h>
 #include "pipe.h"
 #include "debug.h"
 
@@ -109,7 +112,12 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 
 	  if (retval > 0)
 	    {
+		errno=0;
+#ifdef __WIN32__
+		bytes_read=recv(sockfd,&buff[0],1,0);
+#else
 	      	bytes_read = read (sockfd, &buff[0], 1);
+#endif
 		last_read=buff[0];
 	    }
 	  else
@@ -123,6 +131,7 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 	      // No bytes read...
 	      if (errno)
 		{
+			printf("Errno=%d\n",errno);
 		  perror ("recv");
 		}
 	      UIdebug (1,"No bytes read %d %d %d\n", errno, retval, bytes_read);
@@ -175,8 +184,13 @@ char *borig;
 borig=buf;
   while (bytes_read < count)
     {
-      do this_read = read (sockfd, buf, count - bytes_read); 
-
+      do {
+#ifdef __WIN32__
+		this_read = recv(sockfd,buf,count-bytes_read,0);
+#else
+		this_read = read (sockfd, buf, count - bytes_read); 
+#endif
+      }
       while ((this_read < 0));
 
 
@@ -226,14 +240,27 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 		flog=fopen("logproxy.out","a");
 		if (flog) {
 			fwrite(buf,count - bytes_sent,1,flog);
-		fclose(flog);
+			fclose(flog);
 		}
 	}
+
+
+#ifdef __WIN32__
+	  this_write = send (sockfd, buf, count - bytes_sent,0);
+#else
 	  this_write = write (sockfd, buf, count - bytes_sent);
+#endif
+
+
 		loop_cnt++;
 
 		if(errno) {
-			printf("Errno=%d\n",errno); sleep(1);
+			printf("Errno=%d\n",errno); 
+#ifdef __WIN32__
+			Sleep(1);
+#else
+			sleep(1);
+#endif
 			if (errno==32) {
 				exit(1);
 			}
@@ -329,7 +356,11 @@ pipe_flush (int sockfd)
      }
      
       pipe_sock_write (sockfd, buff, strlen (buff));
-      fsync (sockfd);
+#ifdef __WIN32__
+ 	_commit(sockfd);
+#else
+      	fsync (sockfd);
+#endif
    }
 
 	strcpy(sock_buff[sockfd],get_leadin(sockfd));

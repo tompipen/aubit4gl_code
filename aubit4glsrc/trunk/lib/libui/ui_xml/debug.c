@@ -15,7 +15,9 @@ static char *get_timestamp(void) {
   static char buff[50];
   struct timeval tv1;
 
-
+#ifdef __WIN32__
+return "<time unavailable>";
+#else
   gettimeofday (&tv1, 0);
 
   local_time = localtime (&tv1.tv_sec);
@@ -34,6 +36,7 @@ static char *get_timestamp(void) {
     );
 
 	return buff;
+#endif
 }
 
 
