@@ -5,6 +5,7 @@
  *     */
 #include <stdlib.h>
 #include <sys/types.h>
+#include <string.h>
 
 
 #include "sock_xml.h"
@@ -36,6 +37,7 @@
 #include "../pipe.h"
 #include "comms.h"
 
+void set_using_stdio(int n);
 void A4GL_set_last_cursor(int n);
 
 
