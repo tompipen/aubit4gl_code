@@ -130,7 +130,13 @@ static char *local_acl_getenv(char *s) {
 
 int
 connect_ui (void) {
-if (local_acl_getenv("AFGLSERVER")) {
+char *s;
+s=local_acl_getenv("AFGLSERVER");
+if (s) {
+	if (strlen(s)==0) s=0;
+}
+
+if (s) {
 	return connect_ui_noproxy();
 } else {
 	return connect_ui_proxy();
@@ -239,6 +245,7 @@ connect_ui_proxy (void)
   if (!getenv ("PROXYPIPE"))
     {
       UIdebug (1,"No socket specified via PROXYPIPE - running standalone\n"); fflush(stdout);
+	set_using_stdio(1);
       clientui_sock_read = 0;	// STDIN
       clientui_sock_write = 1;	// STDOUT
 	

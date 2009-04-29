@@ -25,6 +25,13 @@ char **sock_buff=0;
 int nsock=0;
 int startedenvelope=0;
 int handshaking=1;
+int using_stdio=0;
+
+
+
+void set_using_stdio(int n) {
+	using_stdio=n;
+}
 
 
 static char *get_leadin(int n) ;
@@ -99,10 +106,19 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
   char *current_position;
   char last_read = 0;
   int retval;
+	int use_read;
   memset (str, 0, count);
   current_position = str;
   errno = 0;
   UIdebug(4,"READING from : %d",sockfd);
+#ifdef __WIN32__
+	use_read=0;
+	if (using_stdio) {
+		use_read=1;
+	}
+#else
+	use_read=1;
+#endif
   while (last_read != 10)
     {
       while (1)
@@ -113,11 +129,11 @@ int pipe_sock_gets (int sockfd, char *str, size_t count)
 	  if (retval > 0)
 	    {
 		errno=0;
-#ifdef __WIN32__
-		bytes_read=recv(sockfd,&buff[0],1,0);
-#else
+if (use_read) {
 	      	bytes_read = read (sockfd, &buff[0], 1);
-#endif
+} else {
+		bytes_read=recv(sockfd,&buff[0],1,0);
+}
 		last_read=buff[0];
 	    }
 	  else
@@ -182,14 +198,27 @@ pipe_sock_read (int sockfd, char *buf, size_t count)
   int this_read;
 char *borig;
 borig=buf;
+int use_read;
+
+
   while (bytes_read < count)
     {
       do {
 #ifdef __WIN32__
-		this_read = recv(sockfd,buf,count-bytes_read,0);
+	use_read=0;
+	if (using_stdio) {
+		use_read=1;
+	}
 #else
-		this_read = read (sockfd, buf, count - bytes_read); 
+	use_read=1;
 #endif
+
+if (use_read) {
+		this_read = read (sockfd, buf, count - bytes_read); 
+} else {
+		this_read = recv(sockfd,buf,count-bytes_read,0);
+}
+
       }
       while ((this_read < 0));
 
@@ -226,7 +255,18 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 {
   size_t bytes_sent = 0;
   int this_write;
+  int use_write=0;
   FILE *flog;
+
+
+#ifdef __WIN32__
+	use_write=0;
+	if (using_stdio) {
+		use_write=1;
+	}
+#else
+	use_write=1;
+#endif
 
   ensure_sock(sockfd);
   while (bytes_sent < count)
@@ -245,11 +285,11 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 	}
 
 
-#ifdef __WIN32__
-	  this_write = send (sockfd, buf, count - bytes_sent,0);
-#else
+if (use_write) {
 	  this_write = write (sockfd, buf, count - bytes_sent);
-#endif
+} else {
+	  this_write = send (sockfd, buf, count - bytes_sent,0);
+}
 
 
 		loop_cnt++;
@@ -357,7 +397,9 @@ pipe_flush (int sockfd)
      
       pipe_sock_write (sockfd, buff, strlen (buff));
 #ifdef __WIN32__
- 	_commit(sockfd);
+	if (!using_stdio) {
+ 		_commit(sockfd);
+	}
 #else
       	fsync (sockfd);
 #endif

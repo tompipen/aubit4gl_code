@@ -84,13 +84,6 @@ static int set_reading_form(char *form_id, char *form_name) {
 	return 1;
 }
 
-/*
-static int
-A4GL_win_stack_cnt (void)
-{
-  return win_stack_cnt;
-}
-*/
 
 static int
 A4GL_niy (char *func)
@@ -267,6 +260,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 //printf("Win_stack called with %p %s %c\n",w,name,op);
   if (op == '^')
     {
+	A4GL_debug("win stack ^");
       A4GL_win_stack (w, name, '+');
       A4GL_win_stack (w, name, '-');
       return 0;
@@ -324,6 +318,7 @@ A4GL_win_stack (struct s_windows *w, char *name, int op)
 
 
     }
+  A4GL_debug ("Done win_stack : %p %c", w, op);
 
   return w;
 
@@ -340,6 +335,7 @@ add_window (char *s, int w, int h, int border)
   win->h = h;
   win->border = border;
   win->visible = 1;
+  A4GL_debug("Add window : %s",s);
   A4GL_win_stack (win, s, '+');
 }
 
@@ -1505,8 +1501,9 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     {
       win_stack[a] = 0;
     }
-
+A4GL_debug("ui_init");
   add_window ("screen", 80, 24, 0);
+A4GL_debug("added window 'screen'");
   if (generate_xml_forms==-1) {
 	if (A4GL_isyes(acl_getenv("ALWAYSUSEXMLFORMS"))) {
 		generate_xml_forms=1;
@@ -1514,20 +1511,27 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
 		generate_xml_forms=0;
 	}
   }
+A4GL_debug("...");
   send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\">", argv[0], get_ui_id ('r'));
   for (a = 0; nm[a]; a++)
     {
       send_to_ui ("<ENV NAME=\"%s\" VALUE=\"%s\"/>", nm[a], uilib_xml_escape (acl_getenv (nm[a])));
     }
+A4GL_debug("...");
 
   send_to_ui ("</PROGRAMSTARTUP>");
+A4GL_debug("...");
   tmpnam (stderr_fname);
+A4GL_debug("...");
   def_stderr = fopen (stderr_fname, "w");
+A4GL_debug("...");
   if (def_stderr)
     {
       A4GL_set_stderr (def_stderr);
     }
+A4GL_debug("...");
   flush_ui ();
+  A4GL_debug("Done ui_init...");
   return 1;
 }
 
