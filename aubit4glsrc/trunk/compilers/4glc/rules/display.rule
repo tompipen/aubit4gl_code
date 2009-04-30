@@ -67,6 +67,7 @@ display_b_n_cmd : DISPLAY_BY_NAME expanded_ibind_var_list display_attr {
 		add_feature("DISPLAY_BY_NAME");
 		
 		$<cmd>$=cmd_display_by_name($<ptr_list>2, $<attrib>3);
+	inc_var_usage_from_binding_list($<ptr_list>2);
 		
 		map_ui("DISPLAYBYNAME");
                 } 
@@ -101,6 +102,7 @@ display_array_cmd : DISPLAY_ARRAY {
                  if (!check_input_or_display_array_variable($<ptr>3)) {
                                     a4gl_yyerror("Variable cannot be used for an DISPLAY ARRAY");
                  }
+	inc_var_usage($<ptr>3);
 
 			/* $<binding_comp_list>$=copy_togenbind('o'); */
 	  	A4GL_new_events();
