@@ -23,7 +23,7 @@
 int ran_gtk_init=0;
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_gtk.c,v 1.150 2009-04-15 14:57:09 mikeaubury Exp $";
+  "$Id: lowlevel_gtk.c,v 1.151 2009-04-30 12:01:00 mikeaubury Exp $";
 #endif
 
 
@@ -3572,7 +3572,7 @@ A4GL_LL_int_form_driver (void *vform, int mode)
 }
 
 long
-A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext, int invis, int reqd, int compress, int has_picture)
+A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext, int invis, int reqd, int compress, int has_picture,int rightalign)
 {
   A4GL_debug ("Setting defs");
 

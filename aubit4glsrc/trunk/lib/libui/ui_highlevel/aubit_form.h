@@ -33,3 +33,5 @@
 #define A4GL_form_unpost_form unpost_form
 #define A4GL_form_form_sub form_sub
 #define A4GL_form_field_info field_info
+#define A4GL_set_field_just set_field_just
+#define A4GL_field_just field_just

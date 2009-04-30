@@ -223,6 +223,10 @@ typedef struct formnode {
 #endif
 
 
+#define JUSTIFY_LEFT            (1)
+#define JUSTIFY_CENTER          (2)
+#define JUSTIFY_RIGHT           (3)
+
        int A4GL_form_set_current_field(FORM *form, FIELD *field);
        FIELD *A4GL_form_current_field(const FORM *);
        int A4GL_form_set_form_page(FORM *form, int n);
@@ -260,3 +264,5 @@ typedef struct formnode {
        bool A4GL_form_new_page(const FIELD *field);
        FIELD *A4GL_form_new_field(int height, int width, int toprow, int leftcol, int offscreen, int nbuffers);
 	int A4GL_form_field_info(const FIELD *f, int *rows, int *cols, int *frow, int *fcol, int *nrow, int *nbuf);
+	int A4GL_set_field_just(const FIELD *f, int justify) ;
+	int A4GL_field_just(const FIELD *f) ;

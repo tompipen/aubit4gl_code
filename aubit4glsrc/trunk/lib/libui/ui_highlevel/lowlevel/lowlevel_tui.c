@@ -49,7 +49,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.126 2009-03-25 17:28:06 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.127 2009-04-30 12:01:00 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -92,7 +92,7 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: lowlevel_tui.c,v 1.126 2009-03-25 17:28:06 mikeaubury Exp $";
+  "$Id: lowlevel_tui.c,v 1.127 2009-04-30 12:01:00 mikeaubury Exp $";
 #endif
 int inprompt = 0;
 static void A4GL_local_mja_endwin (void);
@@ -1251,7 +1251,9 @@ A4GL_LL_make_field (int frow, int fcol, int rows, int cols, char *widget,
       A4GL_form_field_opts_off (f, O_EDIT);
       A4GL_form_field_opts_off (f, O_BLANK);
       A4GL_debug ("STATIC ON");
-      A4GL_form_field_opts_off (f, O_STATIC);
+
+      A4GL_form_field_opts_on (f, O_STATIC);
+
     }
   else
     {
@@ -1487,7 +1489,7 @@ A4GL_LL_get_field_userptr (void *field)
  */
 long
 A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
-			int invis, int reqd, int compress, int has_picture)
+			int invis, int reqd, int compress, int has_picture,int rightalign)
 {
   //struct struct_scr_field *f;
   int bc;
@@ -1538,7 +1540,7 @@ A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
     }
   else
     {
-      A4GL_form_field_opts_off (field, O_STATIC);
+      A4GL_form_field_opts_on (field, O_STATIC);
       A4GL_form_set_max_field (field, A4GL_mja_get_field_width (field));
     }
 
@@ -1558,6 +1560,11 @@ A4GL_LL_set_field_attr (void *field, int dtype, int dynamic, int autonext,
       A4GL_debug ("ZZZZ - SET OPTS");
       A4GL_form_field_opts_on (field, O_WRAP);
     }
+
+
+  if (rightalign) {
+		A4GL_set_field_just(field,JUSTIFY_RIGHT);
+  }
 
   return A4GL_form_field_opts(field);
 }
@@ -1635,8 +1642,10 @@ A4GL_LL_set_field_buffer (void *field, int n, char *str,char *orig)
   int a;
   A4GL_debug ("LL_set_field_buffer : '%s' from ", str,A4GL_form_field_buffer (field, n));
 
+
   a = A4GL_form_set_field_buffer (field, n, str);
-  A4GL_debug ("set_field_buffer : %s returns %d field buffer=%s opts=%x", str, a, A4GL_form_field_buffer (field, n), A4GL_form_field_opts (field));
+
+  A4GL_debug ("set_field_buffer : %s returns %d field buffer=%s opts=%x just=%d", str, a, A4GL_form_field_buffer (field, n), A4GL_form_field_opts (field), A4GL_field_just(field));
   A4GL_debug_print_field_opts (field);
 
 }

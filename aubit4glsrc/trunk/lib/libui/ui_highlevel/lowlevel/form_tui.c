@@ -1016,4 +1016,9 @@ A4GL_form_form_driver (FORM * form, long c)
   return E_OK;
 }
 
-
+int A4GL_set_field_just(const FIELD *f, int justify)  {
+	return E_OK; // Does nothing..
+}
+int A4GL_field_just(const FIELD *f)  {
+	return 0; // Does nothing..
+}

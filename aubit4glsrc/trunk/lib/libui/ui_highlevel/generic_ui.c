@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.155 2009-04-15 14:22:29 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.156 2009-04-30 12:00:59 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -4088,6 +4088,7 @@ A4GL_set_field_attr_for_ll (void *formdets, void *field)
   int compress;
   int has_picture;
   long a;
+int rightalign;
 
   fprop = (struct struct_scr_field *) A4GL_ll_get_field_userptr (field);
 
@@ -4096,10 +4097,11 @@ A4GL_set_field_attr_for_ll (void *formdets, void *field)
   reqd = A4GL_has_bool_attribute (fprop, FA_B_REQUIRED);
   compress = A4GL_has_bool_attribute (fprop, FA_B_COMPRESS);
   has_picture = A4GL_has_str_attribute (fprop, FA_S_PICTURE);
+  rightalign=A4GL_has_bool_attribute (fprop, FA_B_RIGHT);
   A4GL_default_attributes (field, fprop->datatype, has_picture,formdets);
 
 
-  a = A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext, invis, reqd, compress, has_picture);
+  a = A4GL_LL_set_field_attr (field, fprop->datatype, fprop->dynamic, autonext, invis, reqd, compress, has_picture, rightalign);
   	A4GL_ll_set_field_opts (field, a);
 
 
