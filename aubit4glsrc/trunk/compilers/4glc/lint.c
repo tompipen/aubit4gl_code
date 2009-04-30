@@ -4713,6 +4713,7 @@ open_lintfile (char *s)
   if (get_lint_style () == 2)
     {
       fprintf (lintfile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+          fprintf (lintfile, "<PROGRAM>\n");
     }
 
 }
@@ -4727,6 +4728,7 @@ close_lintfile ()
   if (get_lint_style () == 2)
     {
       fprintf (lintfile, "</LINTS>\n");
+          fprintf (lintfile, "</PROGRAM>\n");
     }
   if (lintfile)
     {

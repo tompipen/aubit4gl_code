@@ -18,40 +18,129 @@ int yylineno;
 
 module_definition this_module;
 
-int main(int argc,char *argv[]) {
-module_definition *m;
-int a;
-
-if (argc<2) {
-	printf("Usage : %s infile infile...\n",argv[0]);
-	exit(2);
-}
-A4GL_build_user_resources ();
-open_lintfile(0);
-
-m=malloc(sizeof(struct module_definition)*(argc-1));
-
-for (a=1;a<argc;a++) {
-	char buff[256];
-	strcpy(buff, argv[a]);
-	if (strstr(buff,".dat")!=0) {
-		char *p;
-		p=strstr(buff,".dat");
-		*p=0;
-		//printf("Buff=%s\n",buff);
-	}
-	printf("Loading %s : ", buff); fflush(stdout);
-	if ( A4GL_read_data_from_file("module_definition",&m[a-1],buff)) {
-		printf("OK...\n"); fflush(stdout);
-	} else {
-		printf("- Failed to load %s\n", argv[a]); fflush(stdout);
-		exit(1);
-	}
+static void trimnl(char *s) {
+	char *ptr;
+	ptr=strchr(s,'\n'); if (ptr) *ptr=0;
+	ptr=strchr(s,'\r'); if (ptr) *ptr=0;
 }
 
-check_program(m, argc-1);
-close_lintfile();
-exit(0);
+int
+main (int argc, char *argv[])
+{
+  module_definition *m;
+  int a;
+int num=0;
+
+  if (argc < 2)
+    {
+      printf ("Usage : %s infile infile...\n", argv[0]);
+      exit (2);
+    }
+  A4GL_build_user_resources ();
+  open_lintfile (0);
+
+
+  if (strcmp(argv[1], "-f")==0)
+    { // Read file to process from a file
+	// can be used when there are *lots* of files
+	// and we run out of space on the command line..
+      char *fname;
+      FILE *f;
+      char buff[512];
+	int lines=0;
+      fname = argv[2];
+      f = fopen (fname, "r");
+      if (f == 0)
+	{
+	  printf ("Unable to open input file (%s)\n",fname);
+	  exit (2);
+	}
+
+
+
+	// Get the number of lines
+	lines=0;
+      while (1)
+	{
+	  strcpy (buff, "");
+	  fgets (buff, 511, f);
+	  if (feof (f))
+	    break;
+		lines++;
+	}
+	rewind(f);
+
+
+  	m = malloc (sizeof (struct module_definition) * (lines));
+	lines=0;
+      while (1)
+	{
+	  strcpy (buff, "");
+	  fgets (buff, 511, f);
+	  if (feof (f))
+	    break;
+		trimnl(buff);
+	  if (strstr (buff, ".dat") != 0)
+	    {
+	      char *p;
+	      p = strstr (buff, ".dat");
+	      *p = 0;
+	      //printf("Buff=%s\n",buff);
+	    }
+
+	  printf ("Loading %s : ", buff);
+	  fflush (stdout);
+	  if (A4GL_read_data_from_file ("module_definition", &m[lines++], buff))
+	    {
+	      printf ("OK...\n");
+	      fflush (stdout);
+	    }
+	  else
+	    {
+	      printf ("- Failed to load %s\n", buff);
+	      fflush (stdout);
+	      exit (1);
+	    }
+
+	}
+	fclose(f);
+	num=lines;
+    }
+  else
+    {
+  	m = malloc (sizeof (struct module_definition) * (argc - 1));
+
+      for (a = 1; a < argc; a++)
+	{
+	  char buff[256];
+	  strcpy (buff, argv[a]);
+	  if (strstr (buff, ".dat") != 0)
+	    {
+	      char *p;
+	      p = strstr (buff, ".dat");
+	      *p = 0;
+	      //printf("Buff=%s\n",buff);
+	    }
+	  printf ("Loading %s : ", buff);
+	  fflush (stdout);
+	  if (A4GL_read_data_from_file ("module_definition", &m[a - 1], buff))
+	    {
+	      printf ("OK...\n");
+	      fflush (stdout);
+	    }
+	  else
+	    {
+	      printf ("- Failed to load %s\n", argv[a]);
+	      fflush (stdout);
+	      exit (1);
+	    }
+	}
+	num=argc-1;
+    }
+
+  check_program (m, num );
+  close_lintfile ();
+  exit (0);
 }
 
 
