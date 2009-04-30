@@ -12,6 +12,77 @@ int nomain = 0;
 char *decode_cmd_type (enum cmd_type value);
 int A4GL_is_valid_4gl_type (char *s);
 int inc4GL = 1;
+  struct s_severities
+  {
+    char *code;
+    int severity;
+  } severities[1000] =
+  {
+    {
+    "DEAD", 5},
+    {
+    "CS.VNAME", 0},
+    {
+    "CS.EXITDIRECT", 0},
+    {
+    "CS.EXITNOTMAIN", 0},
+    {
+    "CS.GETERRORRECORD", 0},
+    {
+    "CS.MRET", 1},
+    {
+    "CS.FRET", 1},
+    {
+    "CS.NOOTHERWISE", 1},
+    {
+    "CS.WRITESQLCA", 2},
+    {
+    "VARNOTUSED", 1},
+    {
+    "VARASSNOTUSED", 1},
+    {
+    "TOOCOMPLEX", 2},
+    {
+    "FUNCNOTCALLED", 4},
+    {
+    "VARUSED", 6},
+    {
+    "STRINGLONG", 3},
+    {
+    "MRETNUM", 8},
+    {
+    "CONCATFROMNONSTR", 2},
+    {
+    "FUNCRETCNT", 8},
+    {
+    "MISMATCHSELECT", 4},
+    {
+    "SELECTSTAR", 2},
+    {
+    "IFSQLCA", 2},
+    {
+    "SELECTNOTINTO", 2},
+    {
+    "INSERTNOCOLS", 2},
+    {
+    "CHKSTATUS", 4},
+    {
+    "REPORD", 3},
+    {
+    "DIFFMATH", 4},
+    {
+    "LETEXPR", 3},
+    {
+    "FORVARNUM", 6},
+    {
+    "FORENDEXPR", 4},
+    {
+    "VNAMEDTYPE", 6},
+    {
+    "PARAMNOTUSED", 2},
+    {
+    NULL, 0}
+  };
 
 #define LINTMODULE_FOR_PROGRAM "[PROGRAM]"
 extern int yylineno;
@@ -4465,82 +4536,57 @@ set_lint_module (char *s)
 }
 
 
+static void add_severity(char *s, int n) {
+int a;
+for (a=0;a<1000;a++) {
+	if (severities[a].code==0) {
+		severities[a].code=strdup(s);
+		severities[a].severity=n;
+		severities[a+1].code=0;
+		severities[a+1].severity=0;
+		return;
+	}
+
+	if (strcmp(severities[a].code,s)==0) {
+		// Found it already
+		severities[a].severity=n;
+		return;
+	}
+}
+}
+
+static void add_custom_severities(void) {
+char *fname;
+FILE *f;
+char code[200];
+char buff[256];
+int level;
+fname=acl_getenv("A4GL_LINTSEVERITYFILE");
+if (fname) {
+	if (strlen(fname)==0) fname=0;
+}
+
+if (fname==0) {return;}
+f=fopen(fname,"r");
+if (f==0) return;
+while (1) {
+	strcpy(buff,"");
+	fgets(buff,256,f);
+	if (feof(f)) break;
+	A4GL_trim_nl(buff);
+	A4GL_trim(buff);
+	if (sscanf(buff,"%s %d",code,&level)==2) {
+		add_severity(code,level);
+	}
+}
+fclose(f);
+}
 
 static int
 get_severity (char *code)
 {
   int a;
-  struct s_severities
-  {
-    char *code;
-    int severity;
-  } severities[] =
-  {
-    {
-    "DEAD", 5},
-    {
-    "CS.VNAME", 0},
-    {
-    "CS.EXITDIRECT", 0},
-    {
-    "CS.EXITNOTMAIN", 0},
-    {
-    "CS.GETERRORRECORD", 0},
-    {
-    "CS.MRET", 1},
-    {
-    "CS.FRET", 1},
-    {
-    "CS.NOOTHERWISE", 1},
-    {
-    "CS.WRITESQLCA", 2},
-    {
-    "VARNOTUSED", 1},
-    {
-    "VARASSNOTUSED", 1},
-    {
-    "TOOCOMPLEX", 2},
-    {
-    "FUNCNOTCALLED", 4},
-    {
-    "VARUSED", 6},
-    {
-    "STRINGLONG", 3},
-    {
-    "MRETNUM", 8},
-    {
-    "CONCATFROMNONSTR", 2},
-    {
-    "FUNCRETCNT", 8},
-    {
-    "MISMATCHSELECT", 4},
-    {
-    "SELECTSTAR", 2},
-    {
-    "IFSQLCA", 2},
-    {
-    "SELECTNOTINTO", 2},
-    {
-    "INSERTNOCOLS", 2},
-    {
-    "CHKSTATUS", 4},
-    {
-    "REPORD", 3},
-    {
-    "DIFFMATH", 4},
-    {
-    "LETEXPR", 3},
-    {
-    "FORVARNUM", 6},
-    {
-    "FORENDEXPR", 4},
-    {
-    "VNAMEDTYPE", 6},
-    {
-    "PARAMNOTUSED", 2},
-    {
-    NULL, 0}
-  };
+
 
 
   for (a = 0; severities[a].code; a++)
@@ -6344,6 +6390,7 @@ init_lint (void)
       lint_expect_list[a] = NULL;
       lint_ignore_list[a] = NULL;
     }
+  add_custom_severities();
 }
 
 

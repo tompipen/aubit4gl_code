@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.222 2009-04-20 18:37:45 mikeaubury Exp $
+# $Id: ioform.c,v 1.223 2009-04-30 17:35:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.222 2009-04-20 18:37:45 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.223 2009-04-30 17:35:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -555,6 +555,25 @@ A4GL_set_field_attr (FIELD * field)
       local_field_opts_on (field, O_AUTOSKIP);
     }
 
+    if (A4GL_has_bool_attribute (f, FA_B_RIGHT)) { 
+	int a;
+	void *c=NULL;
+	FORM *frm=NULL;
+	A4GL_debug("RIGHT ALIGN...");
+	frm=field->form;
+	if (frm) { c=frm->current; frm->current=NULL;}
+
+	a=set_field_just (field, JUSTIFY_RIGHT); 
+	field_opts_on(field,O_STATIC);
+	if (a!=E_OK ) {
+		A4GL_debug("... .COULDNT SET RIGHT JUSTIFY");
+		//A4GL_pause_execution();
+	}
+	if (frm) {
+		frm->current=c;
+	}
+    }
+
   if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE))
     {
       A4GL_debug ("Invisible ***");
@@ -782,8 +801,7 @@ struct struct_scr_field *fprop;
 
       for (a1 = 0; a1 < n1; a1++)
 	{
-	  metric_no =
-	    formdets->fileform->fields.fields_val[a].metric.metric_val[a1];
+	  metric_no = formdets->fileform->fields.fields_val[a].metric.metric_val[a1];
 	  A4GL_debug ("Metric number read as %d\n", metric_no);
 
 	  if (formdets->fileform->metrics.metrics_val[metric_no].field != 0)
@@ -792,12 +810,10 @@ struct struct_scr_field *fprop;
 	      if (ptr != 0)
 		{
 		  A4GL_debug ("Has associated attribute!");
-		  set_field_userptr ((FIELD *) formdets->fileform->metrics.
-				     metrics_val[metric_no].field, ptr);
-		  A4GL_set_field_attr ((FIELD *) formdets->fileform->metrics.
-				       metrics_val[metric_no].field);
+		  set_field_userptr ((FIELD *) formdets->fileform->metrics.metrics_val[metric_no].field, ptr);
+		  A4GL_set_field_attr ((FIELD *) formdets->fileform->metrics.  metrics_val[metric_no].field);
 		fprop=(struct struct_scr_field *) ptr;
-    		if (A4GL_has_bool_attribute (fprop, FA_B_RIGHT)) { set_field_just ((FIELD *)formdets->fileform->metrics.  metrics_val[metric_no].field, JUSTIFY_RIGHT); }
+
 
 		  A4GL_debug ("Done\n");
 		}
@@ -2512,7 +2528,27 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   A4GL_debug ("f->do_reverse=%d attr=%x", a, attr);
 
 
+    if (A4GL_has_bool_attribute (f, FA_B_RIGHT)) { 
+	int a;
+	void *c=NULL;
+	FORM *frm=NULL;
+	A4GL_debug("RIGHT ALIGN...");
+	
+	frm=field->form;
+	if (frm) { c=frm->current; frm->current=NULL;}
 
+	a=set_field_just (field, JUSTIFY_RIGHT); 
+	field_opts_on(field,O_STATIC);
+	if (a!=E_OK ) {
+		A4GL_debug("... .COULDNT SET RIGHT JUSTIFY");
+		//A4GL_pause_execution();
+	}
+	if (frm) {
+		frm->current=c;
+	}
+    }
+
+  A4GL_debug("Justification : %d (%d %d %d %d)\n",field_just(field), NO_JUSTIFICATION, JUSTIFY_RIGHT, JUSTIFY_LEFT,  JUSTIFY_CENTER);
 
 
   A4GL_display_field_contents (field, d1, s1, ptr1, d1+ENCODE_SIZE(s1));
@@ -2912,6 +2948,9 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   a = strlen (buff2);
   b = A4GL_get_field_width_w (field,1);
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff, buff2, a, b);
+
+
+
   if (a < A4GL_get_field_width_w (field,1) && (!(field_opts(field)&O_WRAP)))
     {
       A4GL_debug ("Adding padding");
@@ -2931,6 +2970,8 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 		A4GL_debug("Extra trim for the wordwrap");
 		A4GL_trim(buff2);
   }
+
+
 
   A4GL_debug("setting field buffer to %s .. %d ",buff2, A4GL_get_field_width_w (field,1));
 
@@ -3403,6 +3444,9 @@ char * get_print_field_opts_as_string (FIELD * a)
     strcat (str, " O_STATIC");
   if (z & O_PASSOK)
     strcat (str, " O_PASSOK");
+
+  if (field_just(a)==JUSTIFY_RIGHT) { strcat(str," RIGHT"); }
+
 return str;
 }
 
@@ -3437,6 +3481,8 @@ A4GL_debug_print_field_opts (FIELD * a)
     strcat (str, " O_STATIC");
   if (z & O_PASSOK)
     strcat (str, " O_PASSOK");
+
+  if (field_just(a)==JUSTIFY_RIGHT) { strcat(str," RIGHT"); }
   A4GL_debug ("UUU Field %p attribs= %s: (%s)", a, str,field_buffer(a,0));
 }
 

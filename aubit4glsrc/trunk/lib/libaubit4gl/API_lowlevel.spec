@@ -137,7 +137,7 @@ A4GL_LL_set_carat void* form -> void
 /* void A4GL_LL_set_current_field void* form void* field */
 A4GL_LL_set_current_field void* form void* field -> void
 
-A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture  -> long
+A4GL_LL_set_field_attr void* field int dtype int dynamic int autonext int invis int required int compress int has_picture int right -> long
 
 /* void A4GL_LL_set_field_back void* field int attr */
 A4GL_LL_set_field_back void* field int attr -> void
