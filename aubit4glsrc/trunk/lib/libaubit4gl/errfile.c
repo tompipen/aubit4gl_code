@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.28 2009-05-02 12:46:18 mikeaubury Exp $
+# $Id: errfile.c,v 1.29 2009-05-02 13:41:16 mikeaubury Exp $
 #
 */
 
@@ -63,7 +63,7 @@ static char buff[2048];
 static FILE *fout = 0;
 static long le;
 static int errline;
-
+static char crlf[20]="\n";
 /*
 =====================================================================
                     Functions prototypes
@@ -136,6 +136,13 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
       s -= a;
     }
   le = as - s2;
+
+  if (strstr(buff,"\r\n")) {
+	strcpy(crlf,"\r\n");
+  } else {
+	strcpy(crlf,"\n");
+  }
+
   A4GL_prerrmark (fout, (int) (as - s2));
   return fout;
 }
@@ -150,7 +157,7 @@ A4GL_write_cont (FILE * f)
 {
   int a, s = 1;
   a = 2048;
-  FPRINTF (fout, "\n");
+  FPRINTF (fout, "%s",crlf);
   while (s > 0)
     {
       /* if (feof(f)) break; */
@@ -175,7 +182,6 @@ void
 A4GL_find_nl (FILE * f, long fp, long *s, long *e)
 {
   char buff[10];
-
   while (fp > 0)
     {
       fseek (f, fp, SEEK_SET);
@@ -204,11 +210,6 @@ void
 A4GL_prerrmark (FILE * f, int a)
 {
   int b;
-#ifdef __WIN32__
-char *crlf="\r\n";
-#else
-char *crlf="\n";
-#endif
   FPRINTF (f, "|");
   for (b = 1; b < a - 1; b++)
     {
@@ -274,11 +275,11 @@ A4GL_write_errfile_many_errors (char *errfile, FILE * fin, struct s_module_error
 	{
 	  if (e[a].lineno == ln)
 	    {
-	      FPRINTF (fout, "|\n");
-	      FPRINTF (fout, "|%s\n", e[a].err_str);
+	      FPRINTF (fout, "|%s",crlf);
+	      FPRINTF (fout, "|%s%s", e[a].err_str,crlf);
 	      if (a == 20 && maxed)
 		{
-		  FPRINTF (fout, "| ****  Too many errors - further errors ignored ****\n");
+		  FPRINTF (fout, "| ****  Too many errors - further errors ignored ****%s",crlf);
 		}
 	    }
 	}
