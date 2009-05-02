@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.27 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: errfile.c,v 1.28 2009-05-02 12:46:18 mikeaubury Exp $
 #
 */
 
@@ -204,13 +204,18 @@ void
 A4GL_prerrmark (FILE * f, int a)
 {
   int b;
+#ifdef __WIN32__
+char *crlf="\r\n";
+#else
+char *crlf="\n";
+#endif
   FPRINTF (f, "|");
   for (b = 1; b < a - 1; b++)
     {
       FPRINTF (f, "_");
     }
-  FPRINTF (f, "^\n");
-  FPRINTF (f, "| Error at line %d, character %d\n", errline, (int) le);
+  FPRINTF (f, "^%s",crlf);
+  FPRINTF (f, "| Error at line %d, character %d%s", errline, (int) le,crlf);
 
 }
 
