@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.181 2009-04-02 11:04:46 mikeaubury Exp $
+# $Id: report.c,v 1.182 2009-05-03 17:59:59 mikeaubury Exp $
 #
 */
 
@@ -127,6 +127,7 @@ void A4GL_skip_top_of_page (struct rep_structure *rep, int n);
 //int A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb);
 
 void A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int right_margin, int entry);
+void A4GL_rep_print_tag (struct rep_structure *rep, int entry,char *_tag);
 void A4GL_need_lines (struct rep_structure *rep);
 void A4GL_add_spaces (void);
 static char *A4GL_mk_temp_tab (struct BINDING *b, int n);
@@ -806,6 +807,22 @@ A4GL_internal_open_report_file (struct rep_structure *rep, int no_param)
     }
 }
 
+
+void A4GL_rep_print_tag(struct rep_structure *rep,int entry,char *_tag) {
+char *str;
+char buff[2000];
+	int sl;
+	int diff;
+	str=A4GL_report_char_pop();
+	//colno=rep->col_no;
+	sprintf(buff,"##TAG(%s,%s)##",_tag,str);
+	diff=strlen(buff)-strlen(str);
+	A4GL_push_char(buff);
+	A4GL_rep_print(rep,1,1,0,entry);
+	rep->col_no-=diff;
+	acl_free(str);
+
+}
 
 /**
  *

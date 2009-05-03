@@ -59,7 +59,8 @@ input_cmd	:	KW_INPUT inp_rest {
   					A4GL_new_events();
 					push_blockcommand ("INPUT");
 			
-			} end_input { 
+			} atline { set_cmdlineno($<integer_val>4); }
+ 			end_input { 
 				int sio;
 				int blk;
 					blk=get_sio_ids("INPUT");
@@ -70,12 +71,12 @@ input_cmd	:	KW_INPUT inp_rest {
 					pop_blockcommand ("INPUT");
 					map_ui_endblock("INPUT");
 					A4GL_drop_events();
-					$<cmd>$->cmd_data.command_data_u.input_cmd.events=$<on_events>4;
+					$<cmd>$->cmd_data.command_data_u.input_cmd.events=$<on_events>6;
 
 			}
 		;
 
-input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FROM idm_input_array  {
+input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FROM idm_input_array  atline {
 				if (!check_input_or_display_array_variable($<ptr>2)) {
 					a4gl_yyerror("Variable cannot be used for an INPUT ARRAY");
 				}
@@ -91,7 +92,8 @@ input_array_cmd	:	KW_INPUT_ARRAY variable_usage_expression opt_slice opt_defs FR
 				sio=get_sio_id("INPUT");
 
 				  pop_blockcommand ("INPUT");
-				$<cmd>$=new_input_array_cmd($<ptr>6, $<ptr>2, $<attrib>8,$<on_events>10, $<e_boolean>4, $<integer_val>9,sio,blk,$<str>3);
+				set_cmdlineno($<integer_val>7);
+				$<cmd>$=new_input_array_cmd($<ptr>6, $<ptr>2, $<attrib>9,$<on_events>11, $<e_boolean>4, $<integer_val>10,sio,blk,$<str>3);
 				map_ui_endblock("INPUT");
 				A4GL_drop_events();
 		}

@@ -18,6 +18,7 @@ LIB_PREFIX A4GLPDFREP_
 
 
 A4GL_pdf_rep_print void* rep, int a, int s, int right_margin,int why  -> void
+A4GL_pdf_rep_print_tag void* rep  int why char* tag -> void
 A4GL_pdf_fputmanyc FILE* f, int c, int cnt -> void
 A4GL_pdf_set_column void* rep -> void
 A4GL_pdf_skip_to void* rep, double a -> void

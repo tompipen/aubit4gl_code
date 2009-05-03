@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.131 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: compile.c,v 1.132 2009-05-03 17:59:59 mikeaubury Exp $
 #*/
 
 /**
@@ -1223,7 +1223,11 @@ compiled_4gl++;
 	copy_sourcecode_in_memfile(yyin, &this_module.source_code.lines.lines_len,&this_module.source_code.lines.lines_val );
 	A4GL_memfile_fseek (yyin, 0, SEEK_END);
 	A4GL_remove_comments_in_memfile(yyin);
-
+	if (A4GL_isyes(acl_getenv("A4GL_COMPILING_LIBRARY"))) {
+		this_module.moduleIsInLibrary=1;
+	} else {
+		this_module.moduleIsInLibrary=0;
+	}
         ncomm=A4GL_GetNumberOfComments();
         if (ncomm==0) {
                 this_module.comment_list.comment_list_val=0;
@@ -2034,4 +2038,9 @@ void remove_file(char *base,char *ext) {
 
 }
 
+
+void setIsLibraryModule(int n) {
+	 this_module.moduleIsInLibrary=n;
+
+}
 /* ==================================== EOF =============================== */

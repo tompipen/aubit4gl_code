@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.53 2009-04-29 15:39:36 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.54 2009-05-03 17:59:59 mikeaubury Exp $
 */
 
 /**
@@ -90,6 +90,7 @@ struct s_sid * A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDIN
 
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
 void A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,int entry);
+void A4GL_rep_print_tag(struct rep_structure *rep,int entry,char *_tag);
 void A4GL_close_report_file(struct rep_structure *rep);
 int A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b);
 void A4GL_set_column (struct rep_structure *rep);

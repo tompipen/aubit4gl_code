@@ -434,6 +434,8 @@ expr_as_string_when_possible (expr_str * e)
     case ET_EXPR_ASSOC:
 	return strdup("ASSOC");
 
+case ET_EXPR_PARAMETER:
+	return e->expr_str_u.expr_param.expr_string;
 
     default:
       A4GL_pause_execution ();	// ---  Place holder for error handling  --- SAFE TO LEAVE IN...

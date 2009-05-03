@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.33 2009-03-13 17:13:51 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.34 2009-05-03 17:59:59 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1665,6 +1665,7 @@ struct module_definition {
 	module_entry_ptr module_entries<>;
 	str full_path_filename;
 	struct s_source_code source_code;
+	long moduleIsInLibrary;
 };
 
 
@@ -1977,6 +1978,7 @@ enum e_expr_type {
                 ET_EXPR_CM,
 		ET_EXPR_FUNC,
 		ET_EXPR_RIGHT_ALIGNED,
+		ET_EXPR_TAG,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 	
 };
@@ -1986,6 +1988,11 @@ struct s_expr_aligned {
 	struct expr_str *print_to;
 };
 
+
+struct s_expr_tag	{
+	struct expr_str *print_text;
+	struct expr_str *tag;
+};
 
 struct s_expr_cached {
 	int cache_num;
@@ -2254,6 +2261,9 @@ union expr_str switch ( enum e_expr_type expr_type) {
 
 	case ET_EXPR_RIGHT_ALIGNED:
 		struct s_expr_aligned	*expr_aligned;
+
+	case ET_EXPR_TAG:
+		struct s_expr_tag	*expr_tag;
 
 	case ET_E_V_OR_LIT_VAR: 		struct expr_str *var;
 	case ET_E_V_OR_LIT_INT: 		int i;

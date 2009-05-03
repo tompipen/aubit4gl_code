@@ -90,19 +90,19 @@ display_form_cmd : DISPLAY_FORM form_name_p display_attr {
 	}
 ;
 
-display_array_cmd : DISPLAY_ARRAY {
+display_array_cmd : DISPLAY_ARRAY atline {
 		add_feature("UI_DISPLAY_ARRAY");
 		map_ui_block("DISPLAYARRAY");
 		push_blockcommand("DISPLAY");
 		 $<integer_val>$=get_sio_id("DISPLAY");
 		} 
-	variable_usage_expression opt_slice KW_TO idm_input_array
-	opt_scroll display_attr
+			variable_usage_expression opt_slice KW_TO idm_input_array
+			opt_scroll display_attr
 		{
-                 if (!check_input_or_display_array_variable($<ptr>3)) {
+                 if (!check_input_or_display_array_variable($<ptr>4)) {
                                     a4gl_yyerror("Variable cannot be used for an DISPLAY ARRAY");
                  }
-	inc_var_usage($<ptr>3);
+	inc_var_usage($<ptr>4);
 
 			/* $<binding_comp_list>$=copy_togenbind('o'); */
 	  	A4GL_new_events();
@@ -111,7 +111,8 @@ display_array_cmd : DISPLAY_ARRAY {
 		//add_continue_blockcommand ("DISPLAY");  
 	  	A4GL_drop_events();
 		map_ui_endblock("DISPLAYARRAY");
-		$<cmd>$=new_display_array_cmd($<ptr>6,$<ptr>3, $<attrib>8, $<on_events>10, $<field_entry>7,$<integer_val>2,  $<str>4);
+				set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_display_array_cmd($<ptr>7,$<ptr>4, $<attrib>9, $<on_events>11, $<field_entry>8,$<integer_val>3,  $<str>5);
 		pop_blockcommand("DISPLAY");
 }
 ;

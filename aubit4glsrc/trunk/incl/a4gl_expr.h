@@ -77,6 +77,7 @@ int A4GL_is_just_expr_clipped(char *v,struct expr_str_list *ptr);
 int get_variable_dtype_from_variable_expression(expr_str *ptr);
 struct expr_str *A4GL_new_quoted_string (char *value);
 struct expr_str *A4GL_new_expr_aligned(enum e_expr_type etype, struct expr_str *text, struct expr_str *to);
+struct expr_str *A4GL_new_expr_tag(struct expr_str *text, struct expr_str *tag) ;
 struct expr_str *A4GL_new_select_list_item_expr(struct s_select_list_item *s) ;
 
 //struct expr_str *new_select_list_query(struct s_select *s1);

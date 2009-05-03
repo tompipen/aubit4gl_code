@@ -3411,23 +3411,40 @@ int a;
   for (a=0;a<cmd_data->print_expr->list.list_len;a++) {
 		struct expr_str *e;
 		e=cmd_data->print_expr->list.list_val[a];
-		if (e->expr_type == ET_EXPR_WORDWRAP) {
-			printc("{int _wordwrap;");
-			if (e->expr_str_u.expr_wordwrap->wrap_at->expr_type == ET_EXPR_LITERAL_LONG && e->expr_str_u.expr_wordwrap ->wrap_at->expr_str_u.expr_long == 0) {
-				printc("_wordwrap=_rep.right_margin;");
-			} else {
-				print_expr(e->expr_str_u.expr_wordwrap->wrap_at);
-				printc("_wordwrap=A4GL_pop_int();");
-			}
-			// We're not printing the WORDWRAP - we need to decode the
-			// wordwrap and change our print accordingly...
-			print_expr(e->expr_str_u.expr_wordwrap->expr);
-    			printc ("A4GL_%srep_print(&_rep,1,1,_wordwrap,%d);\n", generate_ispdf (),rep_print_entry++);
-			printc("}");
-		} else {
-			print_expr(e);
-    			printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", generate_ispdf (), wrap,rep_print_entry++);
+		switch (e->expr_type) {
+			case ET_EXPR_WORDWRAP: 
+				printc("{int _wordwrap;");
+				if (e->expr_str_u.expr_wordwrap->wrap_at->expr_type == ET_EXPR_LITERAL_LONG && e->expr_str_u.expr_wordwrap ->wrap_at->expr_str_u.expr_long == 0) {
+					printc("_wordwrap=_rep.right_margin;");
+				} else {
+					print_expr(e->expr_str_u.expr_wordwrap->wrap_at);
+					printc("_wordwrap=A4GL_pop_int();");
+				}
+				// We're not printing the WORDWRAP - we need to decode the
+				// wordwrap and change our print accordingly...
+				print_expr(e->expr_str_u.expr_wordwrap->expr);
+    				printc ("A4GL_%srep_print(&_rep,1,1,_wordwrap,%d);\n", generate_ispdf (),rep_print_entry++);
+				printc("}");
+				break;
+			
+			case ET_EXPR_TAG:
+		
+				printc("{");
+				printc("char *_tag;");
+				print_expr(e->expr_str_u.expr_tag->tag);
+				printc("_tag=A4GL_char_pop();");
+				print_expr(e->expr_str_u.expr_tag->print_text);
+    				printc("A4GL_%srep_print_tag(&_rep,%d,_tag);\n", generate_ispdf (), rep_print_entry++);
+				printc("free(_tag);");
+				printc("}");
+				break;
+		 
+			default:  
+				print_expr(e);
+    				printc ("A4GL_%srep_print(&_rep,1,1,%s,%d);\n", generate_ispdf (), wrap,rep_print_entry++);
+				break;
 		}
+		
   }
   }
   printc ("A4GL_%srep_print(&_rep,0,%d,0,-1);\n", generate_ispdf (), cmd_data->semi==EB_TRUE);
