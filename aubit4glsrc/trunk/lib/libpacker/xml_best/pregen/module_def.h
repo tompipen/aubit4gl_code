@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/04/24 11:37:26.
+ * Generated 2009/05/03 21:10:55.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -207,6 +207,8 @@ extern void STag_s_expr_pdf_function_call(void);
 extern void ETag_s_expr_pdf_function_call(void);
 extern void STag_s_expr_shared_function_call(void);
 extern void ETag_s_expr_shared_function_call(void);
+extern void STag_s_expr_tag(void);
+extern void ETag_s_expr_tag(void);
 extern void STag_s_expr_tmp(void);
 extern void ETag_s_expr_tmp(void);
 extern void STag_s_expr_wordwrap(void);
@@ -1017,6 +1019,8 @@ typedef int AT_report_format_section_lines_in_header;
 #define AU_report_format_section_lines_in_header NULL
 typedef int AT_struct_current_win_cmd_nm;
 #define AU_struct_current_win_cmd_nm NULL
+typedef int AT_s_expr_tag_nm;
+#define AU_s_expr_tag_nm NULL
 typedef int AT_program_definition_nm;
 #define AU_program_definition_nm NULL
 typedef int AT_struct_unload_cmd_nm;
@@ -1677,6 +1681,8 @@ typedef int AT_s_import_datatype_dtype_name;
 #define AU_s_import_datatype_dtype_name NULL
 typedef int AT_struct_declare_cmd_scroll;
 #define AU_struct_declare_cmd_scroll NULL
+typedef int AT_module_definition_moduleIsInLibrary;
+#define AU_module_definition_moduleIsInLibrary NULL
 typedef int AT_s_update_pair_column_name;
 #define AU_s_update_pair_column_name NULL
 typedef int AT_attrib_invisible;
@@ -2330,6 +2336,8 @@ extern AT_report_format_section_lines_in_header AX_report_format_section_lines_i
 #define A_report_format_section_lines_in_header (bufferstack + AX_report_format_section_lines_in_header)
 extern AT_struct_current_win_cmd_nm AX_struct_current_win_cmd_nm;
 #define A_struct_current_win_cmd_nm (bufferstack + AX_struct_current_win_cmd_nm)
+extern AT_s_expr_tag_nm AX_s_expr_tag_nm;
+#define A_s_expr_tag_nm (bufferstack + AX_s_expr_tag_nm)
 extern AT_program_definition_nm AX_program_definition_nm;
 #define A_program_definition_nm (bufferstack + AX_program_definition_nm)
 extern AT_struct_unload_cmd_nm AX_struct_unload_cmd_nm;
@@ -2990,6 +2998,8 @@ extern AT_s_import_datatype_dtype_name AX_s_import_datatype_dtype_name;
 #define A_s_import_datatype_dtype_name (bufferstack + AX_s_import_datatype_dtype_name)
 extern AT_struct_declare_cmd_scroll AX_struct_declare_cmd_scroll;
 #define A_struct_declare_cmd_scroll (bufferstack + AX_struct_declare_cmd_scroll)
+extern AT_module_definition_moduleIsInLibrary AX_module_definition_moduleIsInLibrary;
+#define A_module_definition_moduleIsInLibrary (bufferstack + AX_module_definition_moduleIsInLibrary)
 extern AT_s_update_pair_column_name AX_s_update_pair_column_name;
 #define A_s_update_pair_column_name (bufferstack + AX_s_update_pair_column_name)
 extern AT_attrib_invisible AX_attrib_invisible;

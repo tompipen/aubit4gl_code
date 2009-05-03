@@ -4876,19 +4876,19 @@ get_lint_style (void)
     {
       lintoutputstyle = 0;
 
-      if (strcmp(acl_getenv ("A4GL_LINTSTYLE"),"TXT")==0)
+      if (A4GL_aubit_strcasecmp(acl_getenv ("A4GL_LINTSTYLE"),"TXT")==0)
 	{
 	  lintoutputstyle = 1;
 	  return lintoutputstyle;
 	}
 
-      if (strcmp(acl_getenv ("A4GL_LINTSTYLE"),"XML")==0)
+      if (A4GL_aubit_strcasecmp(acl_getenv ("A4GL_LINTSTYLE"),"XML")==0)
 	{
 	  lintoutputstyle = 2;
 	  return lintoutputstyle;
 	}
 
-      if (strcmp(acl_getenv ("A4GL_LINTSTYLE"),"UNL")==0)
+      if (A4GL_aubit_strcasecmp(acl_getenv ("A4GL_LINTSTYLE"),"UNL")==0)
 	{
 	  lintoutputstyle = 3;
 	  return lintoutputstyle;
