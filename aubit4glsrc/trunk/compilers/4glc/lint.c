@@ -1335,17 +1335,19 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		  //int is_string;
 		  	expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
 
-			s=expr_as_string_when_possible(expr);
+			s=strdup(expr_as_string_when_possible(expr));
 			for (next=b+1;next<r->cmd_data.command_data_u.case_cmd.whens->whens.whens_len;next++) {
-				s2=expr_as_string_when_possible(r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[next]->when_expr);
-	//printf("s=%s s2=%s\n",s,s2);
+				s2=strdup(expr_as_string_when_possible(r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[next]->when_expr));
 				if (strcmp(s,s2)==0) {
 					char buff[200];
+	//printf("s=%s s2=%s\n",s,s2);
 						sprintf(buff,"seen again line %d", r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[next]->lineno);
 		      				A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "WHENDUP", "DUPLICATE WHEN", buff);
 						break;
 				}
+				free(s2);
 			}
+			free(s);
 		}
 
 	  if (r->cmd_data.command_data_u.case_cmd.case_expr == 0)
