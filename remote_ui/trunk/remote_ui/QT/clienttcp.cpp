@@ -1469,6 +1469,10 @@ void ProtocolHandler::handleInputElement(const QDomNode& domNode)
       setFormOpts(nodeName, QString("WITHOUT_DEFAULTS"), withoutDefaults);
       setFormOpts(nodeName, QString("WRAP"), wrap);
       setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
+
+      createActionMenu();
+      createActionMenuButton("ACCEPT", "ACCEPT", "");
+      createActionMenuButton("CANCEL", "CANCEL", "");
    }
 
    QDomNodeList children = domNode.childNodes();
