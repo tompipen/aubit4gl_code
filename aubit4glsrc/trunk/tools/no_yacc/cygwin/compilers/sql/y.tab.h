@@ -39,25 +39,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2181,
-     NAMED = 2182,
-     NAMED_GEN = 2183,
-     CHAR_VALUE = 2184,
-     NOT_USED_1 = 2185,
-     NOT_USED_2 = 2186,
-     NOT_USED_3 = 2187,
-     NOT_USED_4 = 2188,
-     NOT_USED_5 = 2189,
-     NOT_USED_6 = 2190,
-     NOT_USED_7 = 2191,
-     NOT_USED_8 = 2192,
-     NUMBER_VALUE = 2193,
-     SEMICOLON = 2194,
-     QUESTION_MARK = 2195,
-     CLINE = 2196,
-     CH = 2197,
-     MARK_VAR = 2198,
-     END_MARK_VAR = 2199,
+     INT_VALUE = 2203,
+     NAMED = 2204,
+     NAMED_GEN = 2205,
+     CHAR_VALUE = 2206,
+     NOT_USED_1 = 2207,
+     NOT_USED_2 = 2208,
+     NOT_USED_3 = 2209,
+     NOT_USED_4 = 2210,
+     NOT_USED_5 = 2211,
+     NOT_USED_6 = 2212,
+     NOT_USED_7 = 2213,
+     NOT_USED_8 = 2214,
+     NUMBER_VALUE = 2215,
+     SEMICOLON = 2216,
+     QUESTION_MARK = 2217,
+     CLINE = 2218,
+     CH = 2219,
+     MARK_VAR = 2220,
+     END_MARK_VAR = 2221,
      LEFT_JOIN = 1002,
      INNER_JOIN = 1005,
      USING_BTREE = 1028,
@@ -284,29 +284,31 @@
      TIME = 1823,
      KW_TODAY = 1830,
      KW_ROWID = 1831,
-     TIMESTAMP = 2179
+     TIMESTAMP = 2179,
+     KW_TAG = 2200,
+     LINTMODULEISLIBRARY = 2201
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2181
-#define NAMED 2182
-#define NAMED_GEN 2183
-#define CHAR_VALUE 2184
-#define NOT_USED_1 2185
-#define NOT_USED_2 2186
-#define NOT_USED_3 2187
-#define NOT_USED_4 2188
-#define NOT_USED_5 2189
-#define NOT_USED_6 2190
-#define NOT_USED_7 2191
-#define NOT_USED_8 2192
-#define NUMBER_VALUE 2193
-#define SEMICOLON 2194
-#define QUESTION_MARK 2195
-#define CLINE 2196
-#define CH 2197
-#define MARK_VAR 2198
-#define END_MARK_VAR 2199
+#define INT_VALUE 2203
+#define NAMED 2204
+#define NAMED_GEN 2205
+#define CHAR_VALUE 2206
+#define NOT_USED_1 2207
+#define NOT_USED_2 2208
+#define NOT_USED_3 2209
+#define NOT_USED_4 2210
+#define NOT_USED_5 2211
+#define NOT_USED_6 2212
+#define NOT_USED_7 2213
+#define NOT_USED_8 2214
+#define NUMBER_VALUE 2215
+#define SEMICOLON 2216
+#define QUESTION_MARK 2217
+#define CLINE 2218
+#define CH 2219
+#define MARK_VAR 2220
+#define END_MARK_VAR 2221
 #define LEFT_JOIN 1002
 #define INNER_JOIN 1005
 #define USING_BTREE 1028
@@ -534,6 +536,8 @@
 #define KW_TODAY 1830
 #define KW_ROWID 1831
 #define TIMESTAMP 2179
+#define KW_TAG 2200
+#define LINTMODULEISLIBRARY 2201
 
 
 
@@ -569,7 +573,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 573 "y.tab.h"
+#line 577 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
