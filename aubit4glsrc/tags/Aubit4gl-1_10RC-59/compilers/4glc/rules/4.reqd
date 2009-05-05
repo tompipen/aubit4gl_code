@@ -1,0 +1,42 @@
+%token <str> NAME
+%left KW_COMMA
+%right KW_ASCII COLUMN KW_SPACES KW_USING KW_WORDWRAP
+%left WHERE
+%left KW_OR         
+%left KW_AND        
+%right KW_CLIPPED 
+%left KW_NOT
+%left IS_NULL IS_NOT_NULL
+%left GREATER_THAN_EQ LESS_THAN GREATER_THAN EQUAL LESS_THAN_EQ NOT_EQUAL
+%right MATCHES NOT_MATCHES LIKE NOT_LIKE
+%left KW_MINUS KW_PLUS
+%left KW_DIVIDE KW_MULTIPLY
+%left KW_POWER KW_MOD
+/* %left KW_UNITS */
+%left UMINUS
+%left OPEN_BRACKET CLOSE_BRACKET
+%left TYPECAST
+
+%right COMMAND
+%token NUMBER_VALUE
+%token CHAR_VALUE
+%token CHAR_VALUE_TRANSLATED
+%token INT_VALUE
+%token NAMED_GEN
+/* %token COMMENT */
+%token CLINE
+%token SQLLINE
+%token KW_CSTART
+%token KW_CEND
+%token USER_DTYPE_ORIG
+%token USER_DTYPE_NEW
+%token SQL_TEXT
+%token KW_WHENEVER_SET
+%token COMMENT
+
+%type <variable_list_ptr> define_multiple define_section def_part define_set def_part2
+%type <variable_ptr>  dtype array_variable record_variable dtype2 dtype_ident time_dtypes define_constant
+%type <str> define_ident constant_value var_def_name  op_char define_table_name like_var
+%type <str_list> var_def_list  link_to_pk_list
+%type <int_list> number_arr_list
+%type <integer_val> datetime_qual interval_qual interval_qual_i dtime_start dtime_val dtime_end opt_frac opt_unit_size dtfrac int_start int_start_unit int_end number_arr_assoc ranking number_value_arr  

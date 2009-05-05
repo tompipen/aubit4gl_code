@@ -1,0 +1,77 @@
+/*
+=====================================================================
+                        Source: attributes.rule
+=====================================================================
+*/
+
+
+opt_attributes:	 { clr_attrib(&curr_attrib); $<attrib>$=0;}
+		| attributes_def { $<attrib>$=$<attrib>1;}
+;
+
+attributes_def	: ATTRIBUTES OPEN_BRACKET { clr_attrib(&curr_attrib); } attribs_sec CLOSE_BRACKET  {
+			$<attrib>$=malloc(sizeof(attrib)); memcpy($<attrib>$, &curr_attrib,sizeof(struct attrib));
+		}
+;
+
+
+
+attribs_sec	: attribute 
+		| attribs_sec KW_COMMA attribute 
+
+;
+
+
+attribute	: BLACK     			{curr_attrib.color=attr_code("BLACK");}
+		| BLUE      			{curr_attrib.color=attr_code("BLUE");}
+		| CYAN      			{curr_attrib.color=attr_code("CYAN");}
+		| GREEN     			{curr_attrib.color=attr_code("GREEN");}
+		| MAGENTA   			{curr_attrib.color=attr_code("MAGENTA");}
+		| KW_RED    			{curr_attrib.color=attr_code("RED");}
+		| WHITE     			{curr_attrib.color=attr_code("WHITE");}
+		| YELLOW    			{curr_attrib.color=attr_code("YELLOW");}
+		| REVERSE   			{curr_attrib.reverse=EB_TRUE;}
+		| BLINK      			{curr_attrib.blink=EB_TRUE;}
+		| UNDERLINE 			{curr_attrib.underline=EB_TRUE;}
+		| BOLD       			{curr_attrib.bold=EB_TRUE;}
+		| NORMAL     			{curr_attrib.normal=EB_TRUE;}
+		| INVISIBLE  			{curr_attrib.invisible=EB_TRUE;}
+		| DIM        			{curr_attrib.dim=EB_TRUE;}
+              	| NO_NEW_LINES 			{curr_attrib.no_new_lines=EB_TRUE;}
+		| KW_STYLE EQUAL fgl_expr_c 	{curr_attrib.style_expr=$<ptr>3; }
+		| char_or_var_vl 		{curr_attrib.var_attrib=$<ptr>1; }
+		| input_array_attributes 
+	;
+
+win_attributes:	/*empty*/ { clr_attrib(&curr_attrib);  $<attrib>$=0; } 
+		| win_attributes_def {  $<attrib>$=malloc(sizeof(attrib)); memcpy($<attrib>$, &curr_attrib,sizeof(struct attrib)); }
+;
+
+	
+win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET { clr_attrib(&curr_attrib); } 
+				wattribs_sec CLOSE_BRACKET 
+
+;
+
+wattribs_sec	: 	wattribute {strcpy($<str>$,$<str>1);}
+		| 	wattribs_sec KW_COMMA wattribute {SPRINTF2($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+wattribute	: attribute  
+		| BORDER 			{ curr_attrib.border=EB_TRUE; }
+		| KW_PAD CHAR_VALUE 		{ curr_attrib.pad=strdup($<str>2); }
+		| COMMENT_LINE line_no 		{ curr_attrib.comment_line=$<ptr>2; }
+		| FORM_LINE line_no 		{ curr_attrib.form_line   =$<ptr>2; }
+		| ERROR_LINE line_no 		{ curr_attrib.error_line  =$<ptr>2; }
+		| MENU_LINE line_no 		{ curr_attrib.menu_line   =$<ptr>2; }
+		| MSG_LINE line_no 		{ curr_attrib.message_line=$<ptr>2; }
+		| PROMPT_LINE line_no 		{ curr_attrib.prompt_line =$<ptr>2; }
+		| KW_TEXT EQUAL CHAR_VALUE 	{ curr_attrib.text=strdup($<str>3); }
+		| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+			/* Decode this with A4GL_strattr_to_num */
+                        curr_attrib.variable_str=$<ptr>3;
+                }
+
+;
+
+
