@@ -1,4 +1,18 @@
 ---------------------------
+Tue May  5 18:42:55 BST 2009
+---------------------------
+1.10RC_59 Released
+---------------------------
+	
+	Menu positioning (and logo) fixups for HL_GTK
+	
+	fgllint fixups
+	
+	SQLMetrics : Basic audit skeleton
+	
+	Win32 fixups for UI=XML
+	
+---------------------------
 Wed Apr 29 14:35:59 BST 2009
 ---------------------------
 1.10RC_58 Released
