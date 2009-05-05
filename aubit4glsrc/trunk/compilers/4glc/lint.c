@@ -4986,7 +4986,10 @@ A4GL_transform_basename (char *s)
     return s;
   else
     {
-      sprintf (buff, "F%s", strrchr (s, '/') + 1);
+
+      //sprintf (buff, "F%s", strrchr (s, '/') + 1);
+      sprintf (buff, "%s", strrchr (s, '/') + 1);
+
       return buff;
       return strrchr (s, '/') + 1;
     }

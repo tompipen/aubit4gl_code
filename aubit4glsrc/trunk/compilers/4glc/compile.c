@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.132 2009-05-03 17:59:59 mikeaubury Exp $
+# $Id: compile.c,v 1.133 2009-05-05 14:12:38 mikeaubury Exp $
 #*/
 
 /**
@@ -2010,7 +2010,8 @@ char *A4GL_compiling_module_basename(void) {
 	static char buff[256];
 	if (strrchr(compiling_module_name,'/')==0) return compiling_module_name;
 	else {
-		sprintf(buff,"F%s", strrchr(compiling_module_name,'/')+1);
+		//sprintf(buff,"F%s", strrchr(compiling_module_name,'/')+1);
+		sprintf(buff,"%s", strrchr(compiling_module_name,'/')+1);
 		return buff;
 		return strrchr(compiling_module_name,'/')+1;
 	}
