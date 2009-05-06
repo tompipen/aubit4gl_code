@@ -153,18 +153,25 @@ A4GL_check_compiled_form();
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 A4GL_write_form();}
 ;
+
 database_section :
-DATABASE FORMONLY {the_form.dbname=acl_strdup("formonly");}
+DATABASE FORMONLY {the_form.dbname=acl_strdup("formonly");
+the_form.allowNullInput=1;
+}
 | DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=acl_strdup(downshift($<str>2));
 if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
+the_form.allowNullInput=0;
 }
-| DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
+| DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");
+the_form.allowNullInput=0;
+}
 | DATABASE dbname {the_form.dbname=acl_strdup(downshift($<str>2));
 if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
+the_form.allowNullInput=1;
 }
 ;
 
@@ -705,6 +712,13 @@ field_tag :  op_field_tag_type
 					A4GL_add_str_attr(fld,FA_S_WIDGETTYPE,$<str>1);
 				}
 			}
+			if (the_form.allowNullInput==0) {
+				struct struct_scr_field *fld;
+				fld=A4GL_get_fld();
+				if (!A4GL_has_bool_attribute(fld,FA_B_NOTNULL)) {
+					A4GL_add_bool_attr(fld,FA_B_NOTNULL);
+				}
+			}
 		}
 ;
 
@@ -900,6 +914,13 @@ op_field_desc
 	if (a4gl_status!=0) {
 		yyerror(A4GL_get_fcompile_err());
 	}
+
+
+	if (fld->datatype &256) {
+			if (!A4GL_has_bool_attribute(fld,FA_B_NOTNULL)) {
+					A4GL_add_bool_attr(fld,FA_B_NOTNULL);
+				}
+			}
 }
 ;
 

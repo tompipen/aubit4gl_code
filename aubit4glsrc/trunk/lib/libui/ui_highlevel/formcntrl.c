@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.79 2009-02-23 17:31:51 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.80 2009-05-06 10:42:19 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.79 2009-02-23 17:31:51 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.80 2009-05-06 10:42:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1195,12 +1195,19 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 
 	      if (A4GL_fprop_flag_get (sio->currentfield, FLAG_FIELD_TOUCHED))
 		{
-		  A4GL_trim (buff);
+		  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
 
-		  if (strlen (buff))
+ 		if (!A4GL_has_bool_attribute (fprop, FA_B_NOTNULL)) {
+		  A4GL_trim (buff);
+		}
+
+		  if (strlen (buff) || A4GL_has_bool_attribute (fprop, FA_B_NOTNULL))
 		    {
 		      char buff2[10024];
 		      A4GL_debug ("Field is not null");
+			if (strlen(buff)==0) {
+				strcpy(buff,"  ");
+			}
 		      strcpy (buff2, (char *) A4GL_fld_data_ignore_format (fprop, buff));
 		      strcpy (buff, buff2);
 		      A4GL_push_char (buff);

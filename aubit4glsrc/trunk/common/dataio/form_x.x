@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.26 2009-03-26 19:56:48 mikeaubury Exp $
+# $Id: form_x.x,v 1.27 2009-05-06 10:42:16 mikeaubury Exp $
 #*/
 
 /**
@@ -94,8 +94,8 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_SCROLLBARS_BOTH,
 	FA_B_SCROLLBARS_VERTICAL,
 	FA_B_SCROLLBARS_HORIZONAL,
-	FA_B_AUTOSIZE
-	
+	FA_B_AUTOSIZE,
+	FA_B_NOTNULL
 };
 
 enum FA_COLOUR {
@@ -347,6 +347,7 @@ struct struct_form
 	struct struct_master_of  master_of<>;
 	struct s_composites composites<>;
 	struct s_layout *layout;
+	int allowNullInput;
 	string magic2<>;
 };
 
