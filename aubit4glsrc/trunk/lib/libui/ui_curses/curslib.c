@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.159 2009-05-07 08:11:45 mikeaubury Exp $
+# $Id: curslib.c,v 1.160 2009-05-07 15:05:00 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.159 2009-05-07 08:11:45 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.160 2009-05-07 15:05:00 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2068,8 +2068,10 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
   A4GL_mja_gotoxy (menu->menu_offset - 1, 1 + menu->menu_line);
   buff = realloc (buff, w + 1);
   memset (buff, ' ', w);
+
   buff[w - menu->menu_offset + 2] = 0;
   A4GL_tui_printr (0, buff);
+A4GL_debug("Clr menu : %s\n",buff);
 }
 
 
