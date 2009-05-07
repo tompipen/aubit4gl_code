@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.481 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.482 2009-05-07 20:01:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.481 2009-04-23 10:12:30 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.482 2009-05-07 20:01:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3129,6 +3129,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 		case DTYPE_CHAR:
 		case DTYPE_VCHAR:
 		case DTYPE_NCHAR:
+		case DTYPE_NVCHAR:
                         printc ("A4GL_push_char(\" \");");
                         printc ("A4GL_pop_var2(&%s,%d,0x%x);\n", prefix2, d1, size);
 			break;
@@ -4742,7 +4743,7 @@ clr_suppress_lines();
 
 		switch (nv->var_data.variable_type) {
 			case VARIABLE_TYPE_SIMPLE:
-      				if (nv->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR ) {
+      				if (nv->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR   || nv->var_data.variable_data_u.v_simple.datatype==DTYPE_NVCHAR ) {
 					printc("struct _dynelem_%s { char dummyname[%d];};", name,nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
 					printc("char **%s=0;",name);
 				} else {
@@ -4799,7 +4800,7 @@ clr_suppress_lines();
 	    }
 	}
 
-      if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR  || v->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR)
+      if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_VCHAR  || v->var_data.variable_data_u.v_simple.datatype==DTYPE_NCHAR || v->var_data.variable_data_u.v_simple.datatype==DTYPE_NVCHAR)
 	{			/* Its a 'char' (may need varchar & friends too...*/
 
 
@@ -4910,7 +4911,7 @@ char * local_rettype (char *s)
 	"fglvarchar",        // 13 
 	"struct_ival",  // 14 
 	"char", //15
-	"nvarchar",
+	"fglvarchar", // NVARCHAR
 	"int8", // 17
 	"serial8", // 18
 	0
