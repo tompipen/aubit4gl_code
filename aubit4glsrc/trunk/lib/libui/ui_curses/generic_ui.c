@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.50 2008-11-04 23:19:02 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.51 2009-05-07 08:11:45 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -81,7 +81,10 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 
   fc= A4GL_find_char (menu, a);
 
-  if (fc) return 1;
+  if (fc) {
+      		//A4GL_display_menu (menu);
+		return 1;
+  }
 
 
 
@@ -200,7 +203,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
   opt2 = (ACL_Menu_Opts *) menu->curr_option;
 
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
-
+//A4GL_pause_execution();
 
   if (!opt2->attributes & ACL_MN_HIDE)	// Is it hidden ? 
     {
@@ -232,6 +235,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
   if (flg)
     {
       menu->curr_option = (ACL_Menu_Opts *) opt2;
+	  	menu->curr_page =menu->curr_option->page;
       A4GL_debug ("We're on it!");
       return 1;
     }
@@ -242,6 +246,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 		p=show_menu_large(menu, key);
 		if (p) {
 			menu->curr_option=p;
+	  	menu->curr_page =menu->curr_option->page;
 			return 1;
 		}
 		return 0;
@@ -284,6 +289,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 	  if (flg)
 	    {
 	      menu->curr_option = (ACL_Menu_Opts *) opt1;
+	  	menu->curr_page =menu->curr_option->page;
 	      return 1;
 	    }
 

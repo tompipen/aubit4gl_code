@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.52 2009-05-01 07:50:05 mikeaubury Exp $";
+  "$Id: menu.c,v 1.53 2009-05-07 08:11:45 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -546,6 +546,7 @@ A4GL_debug("menu_loop not type 1");
       int opt_no;
       opt_no = menu->curr_option->opt_no;
       menu->curr_option = old_option;	// We don't want to change option to a non-printing option
+ 		menu->curr_page =menu->curr_option->page;
       return opt_no;
 
     }

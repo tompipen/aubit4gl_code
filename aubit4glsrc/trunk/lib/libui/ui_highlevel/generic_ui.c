@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.156 2009-04-30 12:00:59 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.157 2009-05-07 08:11:45 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -228,6 +228,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
   if (flg)
     {
       menu->curr_option = (ACL_Menu_Opts *) opt2;
+ 		menu->curr_page =menu->curr_option->page;
       A4GL_debug ("We're on it!");
       return 1;
     }
@@ -238,6 +239,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
       if (p)
 	{
 	  menu->curr_option = p;
+ 		menu->curr_page =menu->curr_option->page;
 	  return 1;
 	}
       return 0;
@@ -281,6 +283,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 	  if (flg)
 	    {
 	      menu->curr_option = (ACL_Menu_Opts *) opt1;
+ 		menu->curr_page =menu->curr_option->page;
 	      return 1;
 	    }
 	  opt1 = (ACL_Menu_Opts *) opt1->next_option;
