@@ -40,14 +40,12 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
    this->appendChild(responseElement = this->createElement("TRIGGERED"));
    responseElement.setAttribute("ID", id);
 
-   /*
    QWidget *focusWidget = p_currForm->focusWidget();
    QString colName = WidgetHelper::getWidgetColName(focusWidget);
 
    if(!colName.isNull() && !colName.isEmpty() &&  (p_currForm->dialog() == NULL && (p_currForm->menu() == NULL || !p_currForm->menu()->isEnabled()))){
       responseElement.setAttribute("INFIELD", colName);
    }
-   */
 
    if(p_currForm->input() || p_currForm->construct()){
       addSyncValues();
@@ -161,33 +159,13 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
    }
 }
 
-void Response::addScreenRecSyncValues(Matrix *p_matrix)
+void Response::addScreenRecSyncValues()
 {
-
-
-   int arrCount = p_matrix->arrCount();
-   if(arrCount <= 0) arrCount = 1;
-   
-
-   responseElement.setAttribute("ARRCOUNT", arrCount);
-
-   /*
-   int scrLine = p_matrix->scrLine();
-   if(scrLine <= 0) scrLine = 1;
-
-   int arrLine = p_matrix->scrLine();
-   if(arrLine <= 0) arrLine = 1;
-
-   responseElement.setAttribute("SCRLINE", scrLine);
-
-   responseElement.setAttribute("ARRLINE", arrLine);
-   */
-
-   if(!p_currForm->inputArray())
-      return;
-
    QDomElement syncRowsElement = this->createElement("SYNCROWS");
    responseElement.appendChild(syncRowsElement);
+
+   int arrCount = p_currForm->context->options["ARRCOUNT"];
+   qDebug() << p_currForm->context->options.keys();
 
    for(int i=0; i<arrCount; i++){
       QDomElement syncRowElement = this->createElement("ROW");
@@ -195,52 +173,24 @@ void Response::addScreenRecSyncValues(Matrix *p_matrix)
       syncRowsElement.appendChild(syncRowElement);
       QDomElement syncValuesElement = this->createElement("SYNCVALUES");
       syncRowElement.appendChild(syncValuesElement);
-      QDomElement syncValueElement = this->createElement("SYNCVALUE");
-      QString text = p_matrix->text(i);
-      if(!text.isEmpty()){
-         QDomText syncValueText = this->createTextNode(text);
-         syncValueElement.appendChild(syncValueText);
-      }
-      syncValuesElement.appendChild(syncValueElement);
-   }
-}
-
-void Response::addScreenRecSyncValues()
-{
-   QDomElement syncRowsElement = this->createElement("SYNCROWS");
-   responseElement.appendChild(syncRowsElement);
-
-   int arrCount = p_currForm->context->options["ARRCOUNT"];
-   qDebug() << "ARRCOUNT:" << arrCount;
-
-   /*
-   for(int i=0; i<p_currForm->context->fieldList.count(); i++){
-      QWidget *widget = p_currForm->findFieldByName(p_currForm->context->fieldList.at(i));
-
-      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-            QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
-            TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-            int arrCount = p_screenRecord->arrCount();
-            if(arrCount <= 0) arrCount = 1;
-   
-
-            responseElement.setAttribute("ARRCOUNT", arrCount);
-
-            int scrLine = p_screenRecord->scrLine();
-            if(scrLine <= 0) scrLine = 1;
-
-            int arrLine = p_screenRecord->scrLine();
-            if(arrLine <= 0) arrLine = 1;
-
-            responseElement.setAttribute("SCRLINE", scrLine);
-
-            responseElement.setAttribute("ARRLINE", arrLine);
+     
+      for(int j=0; j<p_currForm->context->fieldList.count(); j++){
+         QWidget *widget = p_currForm->findFieldByName(p_currForm->context->fieldList.at(j));
+         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+            if(TableView *p_screenRecord = qobject_cast<TableView *> (de)){
+               QModelIndex currIndex = p_screenRecord->model()->index(i, j);
+               QDomElement syncValueElement = this->createElement("SYNCVALUE");
+               QString text = p_screenRecord->model()->data(currIndex).toString();
+               if(!text.isEmpty()){
+                  QDomText syncValueText = this->createTextNode(text);
+                  syncValueElement.appendChild(syncValueText);
+               }
+               syncValuesElement.appendChild(syncValueElement);
+            }
          }
       }
    }
-   */
+
 }
 
 bool Response::checkOnActionEvents(QString *id){
