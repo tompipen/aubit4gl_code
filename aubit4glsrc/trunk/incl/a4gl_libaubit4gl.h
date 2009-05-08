@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.378 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.379 2009-05-08 10:04:40 mikeaubury Exp $
 #
 */
 
@@ -514,6 +514,7 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) ;
 #define DTYPE_VCHAR     13
 #define DTYPE_INTERVAL  14
 #define DTYPE_NCHAR  15
+#define DTYPE_NVCHAR  16
 #define DTYPE_INT8         17
 #define DTYPE_SERIAL8      18
 
