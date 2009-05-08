@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.231 2009-03-13 15:40:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.232 2009-05-08 15:05:17 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.231 2009-03-13 15:40:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.232 2009-05-08 15:05:17 mikeaubury Exp $";
 #endif
 
 
@@ -3886,6 +3886,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
     return 0;
 
   if (dataType==15) dataType=DTYPE_CHAR; // NCHAR
+  if (dataType==16) dataType=DTYPE_VCHAR; // NCHAR
   *dtype = dataType;
   *colname = columnName;
   *size = fixlength (dataType, length);
