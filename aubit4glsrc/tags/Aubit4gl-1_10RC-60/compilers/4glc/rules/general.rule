@@ -1,0 +1,230 @@
+/*
+=====================================================================
+                        Source: general.rule
+=====================================================================
+*/
+
+line_no		:
+	KW_LAST KW_MINUS INT_VALUE 		{$<ptr>$=A4GL_new_literal_long_long(-1-(atoi($<str>3)));}
+	| KW_LAST 				{$<ptr>$=A4GL_new_literal_long_long(-1);}
+	| KW_FIRST KW_PLUS INT_VALUE 		{$<ptr>$=A4GL_new_literal_long_long(atoi($<str>3)+1);}
+	| KW_FIRST 				{$<ptr>$=A4GL_new_literal_long_long(1);}
+	| INT_VALUE 				{$<ptr>$=A4GL_new_literal_long_str($<str>1);}
+	| ensured_variable_usage_expression 		{$<ptr>$=$<ptr>1;}
+	| KW_OFF 				{$<ptr>$=A4GL_new_literal_long_long(0);}
+;
+
+atline :  {$<integer_val>$=token_read_on_line; A4GL_get_current_comments(token_read_on_line, token_read_on_col);}
+;
+	
+
+file_name	:	CHAR_VALUE {$<ptr>$=new_variable_or_literal( ET_E_V_OR_LIT_STRING, $<str>1); } 
+			| cvariable  
+;
+g_file_name	:	CHAR_VALUE {strcpy($<str>$,$<str>1); }
+	
+;
+
+/*
+a_number	:	fgl_expr_c;
+
+coords_pl	:	a_number KW_COMMA a_number {
+				struct expr_str_list *l;
+				l=A4GL_new_ptr_list($<ptr>1);
+				l=A4GL_new_append_ptr_list(l,A4GL_new_ptr_list($<ptr>2);
+				$<ptr_list>$=l;
+			}
+;
+
+display_coords_pl	:	coords_pl;
+*/
+
+field_name_as_struct	:	
+		identifier { 
+			$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string($<str>1,ET_EXPR_IDENTIFIER),NULL,1);
+		}
+		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
+				char buff[256];
+				SPRINTF1(buff,"int_to_id(%s)",$<str>3);
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),NULL,0); 
+		}
+		| identifier KW_DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { 
+				char buff[256];
+				SPRINTF2(buff,"int_to_id(%s.%s)",$<str>1,$<str>5); 
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),NULL,0); 
+		}
+		| identifier OPEN_SQUARE arr_expr_e CLOSE_SQUARE {
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string($<str>1,ET_EXPR_IDENTIFIER),$<ptr>3,1);
+		}
+		| identifier KW_DOT KW_MULTIPLY {
+				char buff[256];
+				SPRINTF1(buff,"%s.*",$<str>1);
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER), NULL,1);
+				add_feature("SRECDOTSTAR");
+		}
+		| identifier OPEN_SQUARE arr_expr_e CLOSE_SQUARE KW_DOT KW_MULTIPLY {
+				char buff[256];
+				SPRINTF1(buff,"%s.*",$<str>1);
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),$<ptr>3,1);
+				add_feature("SRECDOTSTAR");
+		}
+		| identifier KW_DOT identifier 	{
+				char buff[256];
+				SPRINTF2(buff,"%s.%s",$<str>1,$<str>3);
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),NULL,1);
+		}
+		| identifier OPEN_SQUARE arr_expr_e CLOSE_SQUARE KW_DOT identifier {
+				char buff[256];
+				SPRINTF2(buff,"%s.%s",$<str>1,$<str>6);
+				$<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_EXPR_IDENTIFIER),$<ptr>3,1);
+		}
+		| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+				$<field_entry>$=new_field_entry($<ptr>3,NULL,0);
+		}
+		| VARIABLE OPEN_BRACKET char_or_var_vl KW_COMMA arr_expr_e CLOSE_BRACKET {
+				$<field_entry>$=new_field_entry($<ptr>3,$<ptr>5,0);
+		}
+;
+
+field_name_or_char_as_struct: field_name_as_struct {$<field_entry>$=$<field_entry>1;}
+	| CHAR_VALUE { 
+                 char buff[256];
+                 SPRINTF1(buff,"%s",$<str>1);
+                 $<field_entry>$=new_field_entry(A4GL_new_expr_simple_string(buff,ET_E_V_OR_LIT_STRING),NULL,0);
+	}
+;
+
+cursor_name_1_p	:	ident_or_var_sql_p {
+				$<ptr>$=$<ptr>1;
+			}
+;
+
+put_cursor_name_p	:	ident_or_var_sql_p {$<ptr>$=$<ptr>1; }
+;
+
+fetch_cursor_name_p	:	ident_or_var_sql_p {$<ptr>$=$<ptr>1; }
+;
+
+win_name_p	:	ident_or_var_p {$<ptr>$=$<ptr>1;
+		ADDMAP_P("Window",$<ptr>1);
+}
+
+;
+
+open_win_name_p	:	ident_or_var_p { 
+	$<ptr>$=$<ptr>1;
+	ADDMAP_P("Window",$<ptr>1);
+}
+;
+
+form_name_p	: ident_or_var_p {
+	$<ptr>$=$<ptr>1;
+	ADDMAP_P("Form",$<ptr>1);
+}
+;
+
+open_form_name_p	: ident_or_var_p {
+	$<ptr>$=$<ptr>1;
+	ADDMAP_P("Open Form",$<ptr>1);
+			}
+;
+
+opt_help_no_i		:	{$<integer_val>$=0; } | KW_HELP INT_VALUE {$<integer_val>$=atoi($<str>2);};
+
+
+identifier	:  NAMED  { 
+			strcpy($<str>$,downshift($<str>1)) ;
+}
+;
+
+
+ident_or_var_p	: ident_p2  {
+			$<ptr>1=$<ptr>1;
+			}  
+;
+
+ident_or_var_sql_p: ident_p2_sql  {
+			$<ptr>1=$<ptr>1;
+			}  
+;
+
+
+ident_p2 : NAMED { 
+		//@ FIXME
+			strcpy($<str>$,downshift($<str>1));
+			strcpy(last_var,$<str>$);
+			strcpy($<str>$,do_clobbering(&this_module, clobber,downshift($<str>1))) ;
+			$<ptr>$=A4GL_new_expr_simple_string($<str>$, ET_EXPR_IDENTIFIER);
+	} 
+	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3, ET_EXPR_VARIABLE_IDENTIFIER);
+	}
+;
+
+
+
+ident_p2_sql : NAMED { 
+			strcpy($<str>$,do_clobbering_sql(&this_module, clobber,downshift($<str>1))) ;
+			strcpy(last_var,downshift($<str>$));
+			$<ptr>$=A4GL_new_expr_simple_string($<str>$, ET_EXPR_IDENTIFIER);
+	} 
+	| VARIABLE OPEN_BRACKET char_or_var_vl CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3, ET_EXPR_VARIABLE_IDENTIFIER);
+	}
+;
+
+
+cvariable : ensured_variable_usage_expression  {
+		char errbuff[256];
+		int dtype;
+		dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1);
+		if (dtype==-1) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		} else {
+		dtype=dtype &DTYPE_MASK;
+		if (dtype!=DTYPE_CHAR && dtype!=DTYPE_VCHAR &&  dtype!=DTYPE_NCHAR ) {
+			a4gl_yyerror("Only a character variable can be used for this");
+			YYERROR;
+		}
+		}
+		$<ptr>$=$<ptr>1;
+	}
+;
+
+
+conn_id_p : ident_or_var_sql_p;
+
+
+real_number : NUMBER_VALUE | KW_DOT INT_VALUE {
+		SPRINTF1($<str>$,".%s",$<str>2);
+};
+
+
+char_or_var_vl : CHAR_VALUE {
+			$<ptr>$=new_variable_or_literal(ET_E_V_OR_LIT_STRING, $<str>1);
+		}
+		| variable_usage_expression {
+			char errbuff[256];
+			int dtype;
+			dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1);
+			if (dtype==-1) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			} else {
+				dtype=dtype&DTYPE_MASK; 
+                		if (dtype!=DTYPE_CHAR&&dtype!=DTYPE_VCHAR && dtype!=DTYPE_NCHAR) {
+					a4gl_yyerror("Variable must be of type char..");YYERROR; 
+				}
+			}
+			$<ptr>$=$<ptr>1;
+			inc_var_usage($<ptr>$);
+		}
+;
+
+
+opt_use2_p : {$<ptr>$=0; set_cmdlineno(yylineno); } | USE_SESSION conn_id_p KW_FOR { $<ptr>$=$<ptr>2; set_cmdlineno(yylineno); }
+;
+
+
+/* ============================ general.rule ====================== */
