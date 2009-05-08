@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.80 2009-04-18 07:56:31 mikeaubury Exp $
+# $Id: binding.c,v 1.81 2009-05-08 14:40:51 mikeaubury Exp $
 */
 
 /**
@@ -39,7 +39,7 @@
 #include "compile_c.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.80 2009-04-18 07:56:31 mikeaubury Exp $";
+		"$Id: binding.c,v 1.81 2009-05-08 14:40:51 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -392,6 +392,10 @@ sprintf(buff,"<<notset:%x:%c>>",get_binding_dtype(bind->list.list_val[a]), bind_
 	  SPRINTF2 (buff,"char _vi_%d[%d+1];", a, (get_binding_dtype(bind->list.list_val[a]) >> 16)*4);
 	  break;
 
+	case 16: // NVARCHAR
+	  SPRINTF2 (buff,"varchar _vi_%d[%d+1];", a, (get_binding_dtype(bind->list.list_val[a]) >> 16)*4);
+	  break;
+
 	case 1:
 	  SPRINTF1 (buff,"short _vi_%d;", a);
 	  break;
@@ -467,6 +471,9 @@ sprintf(buff,"<<notset:%x:%c>>",get_binding_dtype(bind->list.list_val[a]), bind_
 	  break;
 	case 15:
 	  SPRINTF2 (buff,"char _vo_%d[%d+1]=\"\";", a, (get_binding_dtype(bind->list.list_val[a]) >> 16)*4);
+	  break;
+	case 16: // NVARCHAR
+	  SPRINTF2 (buff,"varchar _vo_%d[%d+1]=\"\";", a, (get_binding_dtype(bind->list.list_val[a]) >> 16)*4);
 	  break;
 	case 1:
 	  SPRINTF1 (buff,"short _vo_%d=0;", a);
