@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.235 2009-04-29 11:03:14 mikeaubury Exp $
+# $Id: stack.c,v 1.236 2009-05-08 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -504,7 +504,7 @@ A4GL_pop_var2 (void *p, int d, int s)
   //A4GL_debug ("8 pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
 #endif
 
-  if (d == DTYPE_CHAR || d==DTYPE_NCHAR)
+  if (d == DTYPE_CHAR || d==DTYPE_NCHAR )
     {
       pl = A4GL_new_string (s);
       z = A4GL_pop_param (pl, d, s);
@@ -4443,9 +4443,9 @@ A4GL_debug("s=%s\n",s);
 
 void A4GL_pop_sized_decimal_from_float(fgldecimal *b,int use_sigdig) {
 	double d;
-	char *ptr;
+	//char *ptr;
 	char buff[100];
-	int n;
+	//int n;
 	int digits;
 	int l;
 	int dec=0;

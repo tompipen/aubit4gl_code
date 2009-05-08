@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.140 2009-04-24 09:57:09 mikeaubury Exp $
+# $Id: builtin.c,v 1.141 2009-05-08 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -317,7 +317,7 @@ aclfgl_length (int nargs)
     }
   A4GL_trim_not_nl (g);		// Trim just ' ' - not nl...
 
-  if ((d2&DTYPE_MASK)==DTYPE_NCHAR) {
+  if ((d2&DTYPE_MASK)==DTYPE_NCHAR || (d2&DTYPE_MASK)==DTYPE_NVCHAR) {
 	p=A4GL_wcswidth(g);
 	
   } else {

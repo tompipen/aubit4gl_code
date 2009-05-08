@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.84 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: calldll.c,v 1.85 2009-05-08 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -434,9 +434,9 @@ A4GL_dl_openlibrary (char *type, char *p)
 int
 A4GL_dl_has_library (char *type, char *p)
 {
-  void *dllhandle;
+  //void *dllhandle;
   static char buff[1024];
-  char buff2[1024];
+  //char buff2[1024];
   static char tmpbuff[1024];
   char *soext;
   char soext_2[256];

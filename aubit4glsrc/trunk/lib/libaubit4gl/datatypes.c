@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.34 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: datatypes.c,v 1.35 2009-05-08 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -515,6 +515,7 @@ A4GL_add_default_datatypes (void)
   A4GL_add_datatype ("VARCHAR", 13, 0);
   A4GL_add_datatype ("INTERVAL", 14, 0);
   A4GL_add_datatype ("NCHAR", 15, 0);
+  A4GL_add_datatype ("NVCHAR", 16, 0);
   A4GL_add_default_operations ();
 
 #ifdef DEBUG

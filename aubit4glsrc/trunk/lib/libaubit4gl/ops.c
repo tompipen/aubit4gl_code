@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.151 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: ops.c,v 1.152 2009-05-08 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,7 @@ char *A4GL_display_smfloat (void *ptr, int size, int string_sz, struct struct_sc
 char *A4GL_display_date (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
 char *A4GL_display_char (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
 char *A4GL_display_nchar (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
+char *A4GL_display_nvchar (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
 char *A4GL_display_vchar (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
 char *A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
 char *A4GL_display_money (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
@@ -6419,6 +6420,11 @@ A4GL_display_nchar (void *ptr, int size, int string_sz, struct struct_scr_field 
 {
   return 0;
 }
+char *
+A4GL_display_nvchar (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
+}
 
 char *
 A4GL_display_vchar (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type)
@@ -6943,19 +6949,50 @@ A4GL_display_text (void *ptr, int size, int string_sz, struct struct_scr_field *
 }
 
 
-int A4GL_conv_nchar_to_char (int d1, void *p1, int d2, void *p2, int size) {
+static int A4GL_conv_nchar_to_char (int d1, void *p1, int d2, void *p2, int size) {
 	  A4GL_string_set (p2, p1, size);
 	//A4GL_assertion(1,"NOt implemented");
 	return 1;
 }
 
-int A4GL_conv_char_to_nchar (int d1, void *p1, int d2, void *p2, int size) {
+static int A4GL_conv_char_to_nchar (int d1, void *p1, int d2, void *p2, int size) {
 	  A4GL_string_set (p2, p1, size);
 
 	//A4GL_assertion(1,"NOt implemented");
 	return 1;
 }
 
+static int A4GL_conv_nvchar_to_char (int d1, void *p1, int d2, void *p2, int size) {
+	  A4GL_string_set (p2, p1, size);
+	//A4GL_assertion(1,"NOt implemented");
+	return 1;
+}
+
+static int A4GL_conv_char_to_nvchar (int d1, void *p1, int d2, void *p2, int size) {
+	  A4GL_string_set (p2, p1, size);
+
+	//A4GL_assertion(1,"NOt implemented");
+	return 1;
+}
+
+static void *
+A4GL_conv_copy_nvchar (char *p)
+{
+  char *ptr;
+  //last_was_empty = 0;
+  A4GL_assertion (p == 0, "pointer was 0 in A4GL_push_char");
+  if (p[0] == 0 && p[1] != 0)
+    {
+      ptr = (char *) A4GL_new_string_set ((int) strlen (p) + 1, p);
+      ptr[0] = 0;
+      ptr[1] = 1;
+    }
+  else
+    {
+      ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
+    }
+  return ptr;
+}
 
 static void *
 A4GL_conv_copy_nchar (char *p)
@@ -7109,6 +7146,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_DATE, "DISPLAY", (void *) A4GL_display_date);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "DISPLAY", (void *) A4GL_display_char);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "DISPLAY", (void *) A4GL_display_nchar);
+  A4GL_add_datatype_function_i (DTYPE_NVCHAR, "DISPLAY", (void *) A4GL_display_nvchar);
   A4GL_add_datatype_function_i (DTYPE_VCHAR, "DISPLAY", (void *) A4GL_display_vchar);
   A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", (void *) A4GL_display_decimal);
   A4GL_add_datatype_function_i (DTYPE_MONEY, "DISPLAY", (void *) A4GL_display_money);
@@ -7122,6 +7160,10 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "CONVTO_0", (void *) A4GL_conv_nchar_to_char);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "COPY", (void *) A4GL_conv_copy_nchar);
+
+  A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_16", (void *) A4GL_conv_char_to_nvchar);
+  A4GL_add_datatype_function_i (DTYPE_NVCHAR, "CONVTO_0", (void *) A4GL_conv_nvchar_to_char);
+  A4GL_add_datatype_function_i (DTYPE_NVCHAR, "COPY", (void *) A4GL_conv_copy_nvchar);
 
 
   add_int8_support ();

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.101 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.102 2009-05-08 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -1113,6 +1113,7 @@ A4GL_func_using ()
     case DTYPE_TEXT:
     case DTYPE_VCHAR:
     case DTYPE_INTERVAL:
+    case DTYPE_NVCHAR:
     case DTYPE_NCHAR:
     default:
       {				// I hope this piece of code will be unneeded some day, so I copy-pasted it...
@@ -1301,6 +1302,7 @@ int dtype_masked;
   switch (dtype & DTYPE_MASK)
     {
     case DTYPE_NCHAR:
+    case DTYPE_NVCHAR:
     case DTYPE_CHAR:
       A4GL_push_char (ptr);
       return;
