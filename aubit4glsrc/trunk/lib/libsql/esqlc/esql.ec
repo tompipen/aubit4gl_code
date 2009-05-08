@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.232 2009-05-08 15:05:17 mikeaubury Exp $
+# $Id: esql.ec,v 1.233 2009-05-08 15:12:57 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.232 2009-05-08 15:05:17 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.233 2009-05-08 15:12:57 mikeaubury Exp $";
 #endif
 
 
@@ -1300,6 +1300,7 @@ int d_prec=0;
     {
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
+    case DTYPE_NVCHAR:
     case DTYPE_NCHAR:
       char_var = bind[idx].ptr;
 
@@ -1632,8 +1633,9 @@ int dstype;
     {
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
+    case DTYPE_NVCHAR:
     case DTYPE_NCHAR:
-	if (dstype==DTYPE_VCHAR || dstype==DTYPE_CHAR || dstype==DTYPE_NCHAR) {
+	if (dstype==DTYPE_VCHAR || dstype==DTYPE_CHAR || dstype==DTYPE_NCHAR || dstype==DTYPE_NVCHAR) {
     		EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:dslength = LENGTH;
 	} else {
 		dslength=64; 
@@ -1648,7 +1650,7 @@ int dstype;
 		if (dslength>bind[idx].size) {
 			A4GL_debug("TRUNC");
 			dslength=bind[idx].size;
-			if (dstype==DTYPE_VCHAR || dstype==DTYPE_CHAR || dstype==DTYPE_NCHAR) {
+			if (dstype==DTYPE_VCHAR || dstype==DTYPE_CHAR || dstype==DTYPE_NCHAR || dstype==DTYPE_NVCHAR ) {
 				sqlca.sqlwarn.sqlwarn0='W';
 				sqlca.sqlwarn.sqlwarn1='W';
 			}
@@ -1804,7 +1806,7 @@ int dstype;
 	  		return 1;
 		}
 	} else {
-		if (dstype==DTYPE_CHAR||dstype==DTYPE_VCHAR||dstype==DTYPE_NCHAR) {
+		if (dstype==DTYPE_CHAR||dstype==DTYPE_VCHAR||dstype==DTYPE_NCHAR ||dstype==DTYPE_NVCHAR) {
     			EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:tmpbuff = DATA;
 			A4GL_debug("Got : %s from db as char - needs to be a dtime\n",tmpbuff);
 		}
@@ -3223,6 +3225,7 @@ dataType=p_datatype;
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
     case DTYPE_NCHAR:
+    case DTYPE_NVCHAR:
 		length=p_len;
 
     //EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length = LENGTH;
@@ -3544,7 +3547,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 			index=colcnt+1;
   		EXEC SQL GET DESCRIPTOR 'descUnload' VALUE:index:indicator = INDICATOR,:dataType = TYPE;
 		column_types[colcnt]=dataType;
-		if (dataType==DTYPE_CHAR || dataType==DTYPE_VCHAR || dataType==DTYPE_NCHAR) {
+		if (dataType==DTYPE_CHAR || dataType==DTYPE_VCHAR || dataType==DTYPE_NCHAR ||dataType==DTYPE_NVCHAR) {
     			EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length = LENGTH;
 			column_sizes [colcnt]=length;
 		} else {
