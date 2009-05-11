@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgres.ec,v 1.1 2008-12-15 11:55:07 mikeaubury Exp $
+# $Id: postgres.ec,v 1.2 2009-05-11 15:30:06 mikeaubury Exp $
 #
 */
 
@@ -47,16 +47,20 @@ WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commne
 #include "a4gl_esql.h"
 #include "a4gl_API_esql_lib.h"
 
-
-
-
 void ESQLAPI_A4GL_afterexec_possible_serial(void) {
 	/* Get last serial number generated ??? */
 		EXEC SQL BEGIN DECLARE SECTION;
 		int last_ser;
 		EXEC SQL END DECLARE SECTION;
+
+		//$whenever sqlerror stop;
 		EXEC SQL SELECT lastval() INTO :last_ser;
 		A4GL_set_a4gl_sqlca_errd(1,last_ser);
+}
+
+void ensure_nextval(void ) {
+	EXEC SQL CREATE TEMPORARY SEQUENCE aubit4glblah_seq;
+	EXEC SQL select nextval('aubit4glblah_seq');
 }
 
 /* ============================================ EOF ========================================= */

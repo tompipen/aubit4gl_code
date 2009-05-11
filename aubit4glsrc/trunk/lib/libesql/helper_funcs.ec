@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.83 2009-04-18 07:56:31 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.84 2009-05-11 15:30:05 mikeaubury Exp $
 #
 */
 
@@ -100,6 +100,11 @@ WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commne
 
 #ifndef DIALECT_INFORMIX
 #define int4 long
+#endif
+
+
+#ifdef DIALECT_POSTGRES
+void ensure_nextval(void ) ;
 #endif
 
 void ESQLAPI_A4GL_connect_db(char *dbname) {
@@ -187,6 +192,7 @@ char *logging;
 FILE *logfile;
 #ifdef DIALECT_POSTGRES
 
+
 	ptr=local_get_connection();
 	if (ptr) {
 		logging=acl_getenv_not_set_as_0("ECPGLOGGING");
@@ -202,6 +208,8 @@ FILE *logfile;
 			}
 		}
 		EXEC SQL create temp table last_ser_table (lastval integer);
+
+		ensure_nextval();
 	}
 #endif
 return ptr;
