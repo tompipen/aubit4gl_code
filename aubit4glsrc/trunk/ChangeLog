@@ -1,4 +1,14 @@
 ---------------------------
+Mon May 11 12:17:46 BST 2009
+---------------------------
+1.10RC_60 Released
+---------------------------
+	
+	ensure menu option is visible when selected by key
+	
+	"without null input" fixup
+	
+---------------------------
 Tue May  5 18:42:55 BST 2009
 ---------------------------
 1.10RC_59 Released
