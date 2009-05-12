@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.81 2009-05-08 14:53:43 mikeaubury Exp $
+# $Id: sql_common.c,v 1.82 2009-05-12 17:05:34 mikeaubury Exp $
 #
 */
 
@@ -204,6 +204,8 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
 
   if (logfnameset == 0)
     {
+      char *lname;
+	char *ptr;
       fname = acl_getenv ("SQLMETRICS");
 
       if (fname == 0)
@@ -224,8 +226,20 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
           return;
 	}
 
+      lname=A4GL_get_running_program ();
+	ptr=strrchr(lname,'/');
+	if (ptr) {
+		lname=ptr+1;
+	}
+#ifdef  __WIN32__
+	ptr=strrchr(lname,'\\');
+	if (ptr) {
+		lname=ptr+1;
+	}
+#endif
+
       // Firstly - MAPSQL should be a directory...
-      SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (), getpid ());
+      SPRINTF3 (buff, "%s/%s_%d.log", fname, lname, getpid ());
       fout = fopen (buff, "a");
       if (fout == 0)
         {                       // Maybe - its just a file ?
