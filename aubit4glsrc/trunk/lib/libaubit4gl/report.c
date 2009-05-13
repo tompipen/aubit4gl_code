@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.182 2009-05-03 17:59:59 mikeaubury Exp $
+# $Id: report.c,v 1.183 2009-05-13 13:40:12 mikeaubury Exp $
 #
 */
 
@@ -144,6 +144,8 @@ char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
 void A4GL_finished_report (void);
 static void add_header_entry (struct rep_structure *rep, struct s_save_header *hdr, char *buff, int entry);
+static char *get_end_tag(char *tag_type) ;
+static char *get_start_tag(char *tag_type) ;
 
 
 int lvl = 0;
@@ -808,19 +810,36 @@ A4GL_internal_open_report_file (struct rep_structure *rep, int no_param)
 }
 
 
-void A4GL_rep_print_tag(struct rep_structure *rep,int entry,char *_tag) {
-char *str;
-char buff[2000];
-	int sl;
-	int diff;
-	str=A4GL_report_char_pop();
-	//colno=rep->col_no;
-	sprintf(buff,"##TAG(%s,%s)##",_tag,str);
-	diff=strlen(buff)-strlen(str);
-	A4GL_push_char(buff);
-	A4GL_rep_print(rep,1,1,0,entry);
-	rep->col_no-=diff;
-	acl_free(str);
+void
+A4GL_rep_print_tag (struct rep_structure *rep, int entry, char *_tag)
+{
+  char *str;
+  char buff[2000];
+  //int sl;
+  int diff;
+  str = A4GL_report_char_pop ();
+
+// We only want to embed the tag if we are generating a convertible report...
+
+  if (rep->output_mode == 'C')
+    {
+      //colno=rep->col_no;
+      sprintf (buff, "##TAG(%s,%s)##",str, _tag);
+      diff = strlen (buff) - strlen (str);
+      A4GL_push_char (buff);
+      A4GL_rep_print (rep, 1, 1, 0, entry);
+      rep->col_no -= diff;
+      acl_free (str);
+    }
+  else
+    {
+  	sprintf(buff,"%s%s%s",get_start_tag(_tag),str,get_end_tag(_tag));
+        diff = strlen (buff) - strlen (str);
+        A4GL_push_char (buff);
+        A4GL_rep_print (rep, 1, 1, 0, entry);
+        rep->col_no -= diff;
+        acl_free (str);
+    }
 
 }
 
@@ -3190,6 +3209,149 @@ A4GL_push_char(buff);
 free(buff);
 free(p);
 }
+
+
+static char *convTagExpr(char t, char *s) {
+char lbuff[200];
+static char lbuff_e[200];
+static char lbuff_s[200];
+int a;
+int b=0;
+int sl;
+sl=strlen(s);
+for (a=0;a<sl;a++) {
+	if (s[a]=='^') {
+		a++;
+		lbuff[b++]=s[a]-'a'+1;
+		continue;
+	}
+	lbuff[b++]=s[a];
+}
+lbuff[b]=0;
+if (t=='s') {
+	strcpy(lbuff_s,s);
+	return lbuff_s;
+}
+if (t=='e') {
+	strcpy(lbuff_e,s);
+	return lbuff_e;
+}
+A4GL_assertion(1,"Unhandled tag..");
+return "";
+}
+
+// Read the start and end tags 
+// from a file for report generation
+static char *get_tag(char *convFile, char t, char *s) {
+FILE *cfile;
+char ebuff[200];
+A4GL_debug("Get tag : %s\n",s);
+//
+//      bold=101
+//      /bold=101
+cfile=fopen(convFile,"r");
+if (cfile==NULL) return "";
+
+if (t=='e') {
+	if (s[0]=='<') {
+		sprintf(ebuff,"</%s",&s[1]);
+	} else {
+		sprintf(ebuff,"/%s",s);
+	}
+} else {
+	sprintf(ebuff,"%s",s);
+}
+
+while (1) {
+	char *ptr;
+	char buff[300];
+	int sl;
+	if (feof(cfile)) break;
+	strcpy(buff,"");
+	fgets(buff,256,cfile);
+	sl=strlen(buff);
+	if (sl) {
+		if (buff[sl-1]=='\n') {buff[sl-1]=0; sl--;}
+		if (buff[sl-1]=='\r') {buff[sl-1]=0; sl--;}
+	}
+	ptr=strchr(buff,'=');
+	if (ptr==0) continue;
+	*ptr=0;
+	ptr++;
+	if (strcmp(buff,ebuff)==0) {
+		char *ptr2;
+		fclose(cfile);
+		ptr2= convTagExpr(t, ptr);
+		A4GL_debug("Got : %s\n",ptr2);
+		return ptr2;
+	}
+	
+}
+		fclose(cfile);
+
+return "";
+}
+
+
+static char *get_start_tag(char *tag_type) {
+char buff_tag[200];
+char *rval;
+char *convFile;
+	convFile=acl_getenv("A4GL_TAGCONVFILE");
+	sprintf(buff_tag,"TAG_%s_S%s",convFile,tag_type);
+	if (A4GL_has_pointer(buff_tag, REPORT_TAG)) {
+		return A4GL_find_pointer(buff_tag,REPORT_TAG);
+	}
+	rval=get_tag(convFile, 's',tag_type);
+	A4GL_add_pointer(buff_tag,REPORT_TAG,strdup(rval));
+	return rval;
+
+}
+
+static char *get_end_tag(char *tag_type) {
+char buff_tag[200];
+char *convFile;
+char *rval;
+	convFile=acl_getenv("A4GL_TAGCONVFILE");
+	sprintf(buff_tag,"TAG_%s_E%s",convFile,tag_type);
+
+	if (A4GL_has_pointer(buff_tag, REPORT_TAG)) {
+		return A4GL_find_pointer(buff_tag,REPORT_TAG);
+	}
+	rval=get_tag(convFile, 'e',tag_type);
+	A4GL_add_pointer(buff_tag,REPORT_TAG,strdup(rval));
+	return rval;
+}
+
+
+
+
+char *A4GL_check_for_tags(char *s) {
+	static char tagline[10024];
+	char *p;
+
+	strcpy(tagline,s);
+        p=strstr(tagline,"##TAG(");
+
+        if (p) {
+                char *comma;
+                char buff[20000];
+                comma=strrchr(tagline,',');
+                if (comma==NULL) return s;
+                *comma=0;
+                comma++;
+                p=strstr(comma,")##");
+                if (p==NULL) return s;
+                *p=0;
+                sprintf(buff,"%s",&tagline[6]);
+                sprintf(tagline,"%s%s%s",get_start_tag(comma),buff,get_end_tag(comma));
+                //strcpy(tagline,buff);
+                return tagline;
+        }
+	return s;
+}
+
+
 
 
 /*

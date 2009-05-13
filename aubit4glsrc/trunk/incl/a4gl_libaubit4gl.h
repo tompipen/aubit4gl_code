@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.379 2009-05-08 10:04:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.380 2009-05-13 13:40:29 mikeaubury Exp $
 #
 */
 
@@ -360,7 +360,7 @@
 #define HASREQUIREMENT        	'%'
 #define PREPAREPG        	'|'
 #define HARU_IMAGE        	'h'
-
+#define REPORT_TAG		'~'
 #define BLOCK_USED		'R'
 #define ESQL_CURSOR_OPEN		'Y'
 int A4GL_ESQL_cursor_is_open(char *s) ;
@@ -2887,7 +2887,7 @@ void A4GL_pushIntGt(int a,int b);
 void A4GL_pushIntLt(int a,int b);
 void A4GL_pushIntLE(int a,int b);
 void A4GL_pushIntGE(int a,int b);
-
+char *A4GL_check_for_tags(char *s) ;
 int simple_expr_datatype(struct expr_str *p);
 void A4GL_set_logsqlstart(void );
 #include "a4gl_builtin_funcs.h"
