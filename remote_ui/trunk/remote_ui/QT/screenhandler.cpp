@@ -1131,6 +1131,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
             context->fieldList << widget->accessibleName();
          }
          else{
+            widget->setProperty("touched", 0);
             context->fieldList.removeOne(widget->accessibleName());
          }
          if(focus){
@@ -1150,6 +1151,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
                context->fieldList << widget->accessibleName();
             }
             else{
+               widget->setProperty("touched", 0);
                context->fieldList.removeOne(widget->accessibleName());
             }
             if(focus){

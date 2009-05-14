@@ -1078,6 +1078,8 @@ void WidgetHelper::paste(QObject* object)
 void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 {
 
+   object->setProperty("touched", 1);
+
    if(Label *widget = qobject_cast<Label *> (object)){
       if(widget->pixmap() == 0){
          widget->setText(fieldValue);
