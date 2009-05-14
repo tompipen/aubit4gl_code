@@ -42,6 +42,7 @@ struct uiinput
   int num_field_data;
   char **field_data;
   char *infield;
+  int *touched;
 };
 
 
@@ -53,6 +54,7 @@ struct uiconstruct
   char **field_data;
   char **field_content_data;
   char *infield;
+  int *touched;
 };
 
 struct uimenu
@@ -82,6 +84,7 @@ struct uiinputarray
   int num_field_data;
   char **field_data;
   char *infield;
+  int **touched;
 };
 
 struct uiprompt
@@ -1283,6 +1286,10 @@ uilib_free_input (int nargs)
 	contexts[context].ui.input.variable_data=0;
   }
 
+  if (contexts[context].ui.input.touched) {
+    free (contexts[context].ui.input.touched);
+	contexts[context].ui.input.touched=0;
+  }
 
 
 
@@ -1454,7 +1461,6 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       send_to_ui (" <VALUES>");
       for (a = 0; a < contexts[context].ui.input.nfields; a++)
 	{
-	
 	  send_to_ui ("  <VALUE CHANGED=\"%d\">%s</VALUE>",
 		      contexts[context].ui.input.changed[a], xml_escape (contexts[context].ui.input.variable_data[a]));
 	}
@@ -1505,7 +1511,11 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	      free (contexts[context].ui.input.field_data[a]);
 	      contexts[context].ui.input.field_data[a] = 0;
 	    }
+
 	  contexts[context].ui.input.variable_data[a] = last_attr->sync.vals[a].value;
+	  contexts[context].ui.input.touched[a] = last_attr->sync.vals[a].touched;
+
+
 	  if (contexts[context].ui.input.field_data)
 	    {
 	      if (last_attr->sync.vals[a].fieldname)
@@ -1591,6 +1601,7 @@ uilib_input_start (int nargs)
   contexts[cinput].ui.input.changed = malloc (sizeof (int) * nfields);
   contexts[cinput].ui.input.field_data = malloc (sizeof (char *) * nfields);
   contexts[cinput].ui.input.variable_data = malloc (sizeof (char *) * nfields);
+  contexts[cinput].ui.input.touched= malloc (sizeof (int) * nfields);
 
 //printf("Allocating .ui.input.variable_data for %d fields\n", nfields);
 
@@ -1601,6 +1612,7 @@ uilib_input_start (int nargs)
       contexts[cinput].ui.input.changed[a] = 0;
       contexts[cinput].ui.input.field_data[a] = 0;
       contexts[cinput].ui.input.variable_data[a] = 0;
+      contexts[cinput].ui.input.touched[a] = 0;
     }
   suspend_flush (1);
   send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\" WRAP=\"%d\">\n%s", cinput, attr, todefs, wrap, last_field_list);
@@ -1740,11 +1752,13 @@ uilib_construct_start (int nargs)
 
   contexts[cconstruct].ui.construct.num_field_data = nfields;
   contexts[cconstruct].ui.construct.field_data = malloc (sizeof (char *) * nfields);
+  contexts[cconstruct].ui.construct.touched = malloc (sizeof (int) * nfields);
   contexts[cconstruct].ui.construct.field_content_data = malloc (sizeof (char *) * nfields);
 
   for (a = 0; a < contexts[cconstruct].ui.construct.num_field_data; a++)
     {
       contexts[cconstruct].ui.construct.field_data[a] = 0;
+      contexts[cconstruct].ui.construct.touched[a] = 0;
       contexts[cconstruct].ui.construct.field_content_data[a] = 0;
     }
 
@@ -1813,6 +1827,7 @@ uilib_construct_loop (int nargs)
 	      contexts[context].ui.construct.field_data[a] = 0;
 	    }
 	  contexts[context].ui.construct.field_content_data[a] = last_attr->sync.vals[a].value;
+	  contexts[context].ui.construct.touched[a]=last_attr->sync.vals[a].touched;
 	  contexts[context].ui.construct.field_data[a] = last_attr->sync.vals[a].fieldname;
 	}
 	}
@@ -2166,11 +2181,13 @@ allow_insert=POPint();
   contexts[ci].ui.inputarray.changed_rows = malloc (arrsize * sizeof (int));
 //printf("CREATING\n");
   contexts[ci].ui.inputarray.variable_data = malloc (arrsize * sizeof (char **));
+  contexts[ci].ui.inputarray.touched = malloc (arrsize * sizeof (int *));
 
   for (a = 0; a < arrsize; a++)
     {
       char **p;
       contexts[ci].ui.inputarray.variable_data[a] = malloc (nvals * sizeof (char *));
+      contexts[ci].ui.inputarray.touched[a] = malloc (nvals * sizeof (int));
       contexts[ci].ui.inputarray.changed_rows[a] = 0;
       p = contexts[ci].ui.inputarray.variable_data[a];
       for (b = 0; b < nvals; b++)
@@ -2374,6 +2391,7 @@ uilib_input_array_loop (int n)
 	    {
 	      char **p;
 	      p = contexts[context].ui.inputarray.variable_data[arrline];
+		contexts[context].ui.inputarray.touched[arrline][b]=last_attr->rows.row[a].sync.vals[b].touched;
 	      if (p[b])
 		{
 		  free (p[b]);
@@ -2383,8 +2401,7 @@ uilib_input_array_loop (int n)
 	}
     }
 
-  UIdebug (7, "INPUT ARRAY GETS sl=%d al=%d #=%d\n", contexts[context].ui.inputarray.scr_line,
-	   contexts[context].ui.inputarray.arr_line, contexts[context].ui.inputarray.count);
+  UIdebug (7, "INPUT ARRAY GETS sl=%d al=%d #=%d\n", contexts[context].ui.inputarray.scr_line, contexts[context].ui.inputarray.arr_line, contexts[context].ui.inputarray.count);
   pushint (i);
   return 1;
 }
@@ -2808,4 +2825,125 @@ field_match (char *a, char *b)
   if (strcmp (a, b) == 0)
     return 1;
   return 0;
+}
+
+
+
+int
+uilib_touched (int nargs)
+{
+  int context;
+  //char *fld;
+  int nfields;
+  char **fields;
+  int a;
+
+  nfields = nargs - 1;
+  fields = malloc (sizeof (char *) * nfields);
+  for (a = 0; a < nfields; a++)
+    {
+      fields[a] = charpop ();
+    }
+  context = POPint ();
+
+  if (context>=0)
+    {
+      if (contexts[context].type == UIINPUT)
+	{
+	  int a;
+	  int b;
+	  char **flist;
+	  int nflist;
+	  flist = contexts[context].ui.input.field_data;
+	  nflist = contexts[context].ui.input.num_field_data;
+	  for (b = 0; b < nfields; b++)
+	    {
+	      int pushed = 0;
+	      for (a = 0; a < nflist; a++)
+		{
+		  if (field_match (flist[a], fields[b]))
+		    {
+		      pushint (contexts[context].ui.input.touched[a]);
+		      pushed++;
+		      break;
+		    }
+		}
+
+	      if (!pushed)
+		{
+			pushint(0);
+		}
+	    }
+	  return nfields;
+	}
+
+
+      if (contexts[context].type == UIINPUTARRAY)
+	{
+	  int a;
+	  int b;
+	  char **flist;
+	  int nflist;
+	  int currline;
+	  flist = contexts[context].ui.inputarray.field_data;
+	  nflist = contexts[context].ui.inputarray.num_field_data;
+	  currline = contexts[context].ui.inputarray.arr_line;
+	  for (b = 0; b < nfields; b++)
+	    {
+	      int pushed = 0;
+	      for (a = 0; a < nflist; a++)
+		{
+		  if (field_match (flist[a], fields[b]))
+		    {
+		      pushint (contexts[context].ui.inputarray.touched[currline][a]);
+		      pushed++;
+		      break;
+		    }
+		}
+	      if (!pushed)
+		{
+		  pushint (0);
+		}
+	    }
+	  return nfields;
+	}
+
+
+
+      if (contexts[context].type == UICONSTRUCT)
+	{
+	  int a;
+	  int b;
+	  char **flist;
+	  int nflist;
+	  flist = contexts[context].ui.construct.field_data;
+	  nflist = contexts[context].ui.construct.num_field_data;
+	  for (b = 0; b < nfields; b++)
+	    {
+	      int pushed = 0;
+	      for (a = 0; a < nflist; a++)
+		{
+		  if (field_match (flist[a], fields[b]))
+		    {
+		      pushint (contexts[context].ui.construct.touched[a]);
+		      pushed++;
+		      break;
+		    }
+		}
+	      if (!pushed)
+		{
+		  pushint (0);
+		}
+	    }
+	  return nfields;
+	}
+    }
+
+  fprintf (stderr, "******** UNSUPPORTED GETFLDBUF OPERATION **********\n");
+
+  for (a = 0; a < nfields; a++)
+    {
+      PUSHquote ("<notset>");
+    }
+  return nfields;
 }

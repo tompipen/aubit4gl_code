@@ -3,6 +3,7 @@
 struct s_syncvalue {
         char *value;
 	char *fieldname;
+	int touched;
         int fieldtype;
 };
 
@@ -36,7 +37,8 @@ struct s_attr {
 	char *infield;
         char *fileid;
         int filelen;
-         char *programname;
+        char *programname;
+	int bufferTouched;
 
 } ;
 

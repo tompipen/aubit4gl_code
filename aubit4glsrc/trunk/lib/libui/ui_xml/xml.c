@@ -3285,20 +3285,58 @@ UILIB_A4GL_init_color (int n, int r, int g, int b)
   niy ();
 }
 
+
+
 int
 UILIB_A4GL_fgl_fieldtouched_input_ap (void *input, va_list * ap)
 {
-  int rval;
-  niy ();
-  return rval;
+  int context;
+  char *argp;
+  int n;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) input) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+  A4GL_push_int (context);
+  n = 1;
+
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+      A4GL_push_char (argp);
+      n++;
+    }
+  n = uilib_touched (n);
+  return n;
+
+
 }
 
 int
 UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *input, va_list * ap)
 {
-  int rval;
-  niy ();
-  return rval;
+  int context;
+  char *argp;
+  int n;
+  A4GL_push_char ("XML");
+  A4GL_push_int (((long) input) & 0xffffffff);
+  uilib_get_context (2);
+  context = A4GL_pop_int ();
+  A4GL_push_int (context);
+  n = 1;
+
+  while ((argp = va_arg (*ap, char *)))
+    {
+      int i;
+      i = va_arg (*ap, int);
+      A4GL_trim (argp);
+      A4GL_push_char (argp);
+      n++;
+    }
+  n = uilib_touched (n);
+  return n;
 }
 
 void
