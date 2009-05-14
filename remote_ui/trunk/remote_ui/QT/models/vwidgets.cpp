@@ -37,6 +37,7 @@ Button::Button(QWidget *parent)
     : QPushButton(parent)
 {
 
+   setProperty("touched", false);
    if(parent == NULL){
       connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    }
@@ -59,6 +60,7 @@ void Button::buttonClicked()
 LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
 {
+   setProperty("touched", false);
    this->setFixedHeight(defHeight);
    setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -76,6 +78,8 @@ LineEdit::LineEdit(QWidget *parent)
 
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
+
+   connect(this, SIGNAL(editingFinished()), this, SLOT(isTouched()));
 
 }
 
@@ -227,6 +231,7 @@ void DateEdit::buttonClicked()
 TextEdit::TextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
+   setProperty("touched", false);
    b_noEntry = false;
    b_autoNext = false;
    b_required = false;
@@ -1310,6 +1315,7 @@ void Calendar::setDay(){
 
 ProgressBar::ProgressBar(QWidget *parent) : QProgressBar(parent)
 {
+   setProperty("touched", false);
    setTextVisible(false);
 }
 
@@ -1320,12 +1326,14 @@ WebView::WebView(QWidget *parent) : QWebView(parent)
 
 ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
 {
+   setProperty("touched", false);
    setEnabled(false);
    setEditable(false);
 }
 
 CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
 {
+   setProperty("touched", false);
    setValueChecked(QString::number(1));
    setValueUnchecked(QString::number(0));
    setTristate(true);
@@ -1334,6 +1342,7 @@ CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
 
 CheckBox::CheckBox(QString text, QWidget *parent) : QCheckBox(text, parent)
 {
+   setProperty("touched", false);
    setValueChecked(QString::number(1));
    setValueUnchecked(QString::number(0));
    setTristate(true);

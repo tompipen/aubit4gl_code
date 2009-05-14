@@ -67,6 +67,8 @@ public:
     void setSqlType(QString);
     QString sqlType() { return qs_sqlType; };
     const QValidator* getValidator() { return valid; };
+    void setTouchendEnabled(bool t) { setProperty("touched", t); };
+    bool touched() { return property("touched").toInt(); };
 
     bool b_denyFocus;
 
@@ -82,6 +84,9 @@ private:
     bool b_compress;
     QString qs_shift;
     const QValidator* valid;
+
+public slots:
+    void isTouched() { setProperty("touched", true); };
 
 signals:
    void widgetOpen();

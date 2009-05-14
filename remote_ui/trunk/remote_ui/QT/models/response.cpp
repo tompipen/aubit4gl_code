@@ -98,6 +98,7 @@ void Response::addSyncValues()
          if(widget->accessibleName() == p_currForm->context->fieldList.at(j) ||
             widget->objectName() == p_currForm->context->fieldList.at(j)){
             syncValueElement.setAttribute("FIELDNAME", widget->accessibleName());
+            syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
             QString text = WidgetHelper::fieldText(widget);
 
             if(!text.isEmpty()){
