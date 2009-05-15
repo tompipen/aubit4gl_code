@@ -2164,6 +2164,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
   printc("char _currAttr[256];");
   printc ("int _fld_dr; int _exec_block= 0;\nchar *_curr_win=0;char _sio_%d[%ld];char *_sio_kw_%d=\"s_disp_arr\";\n",sio_id, a4gl_sizeof (struct s_disp_arr) + 10,sio_id);
   print_event_list(cmd_data->events);
+  printc("memset(_sio_%d,0,sizeof(_sio_%d));",sio_id,sio_id);
 
 
   A4GL_assertion(cmd_data->arrayname->expr_type!=ET_EXPR_VARIABLE_USAGE,"Expecting a variable usage");
@@ -2398,6 +2399,7 @@ struct expr_str_list *li;
   print_event_list(cmd_data->events);
   print_field_name_list_as_struct("_fldlist",cmd_data->list,0);
    local_print_bind_set_value_g (li,1,0,'i');
+  printc("memset(_sio_%d,0,sizeof(_sio_%d));",sio_id,sio_id);
   
   print_field_name_list_as_struct("_fldlist",cmd_data->list,1);
   printc ("while(_fld_dr!=0){\n");
@@ -2495,10 +2497,10 @@ int ccc;
   printc("char _sio_%d[%ld];", sio_id,a4gl_sizeof (struct s_screenio) + 10);
   printc("char _inp_io_type='I';");
   printc("char *_sio_kw_%d=\"s_screenio\";", sio_id);
-
   print_field_name_list_as_struct("_fldlist",cmd_data->field_list,0); // Set up structure
   printc ("int _forminit=1;\n");
   print_event_list(cmd_data->events);
+  printc("memset(_sio_%d,0,sizeof(_sio_%d));",sio_id,sio_id);
   print_field_name_list_as_struct("_fldlist",cmd_data->field_list,1); // Set values
   printc ("while(_fld_dr!=0){\n");
   tmp_ccnt++;
@@ -2707,6 +2709,7 @@ int inp_flags=0;
 	printc("[0];");
 	clr_nonewlines();
   }
+  printc("memset(_sio_%d,0,sizeof(_sio_%d));",sio_id,sio_id);
 
 
   // cnt = print_arr_bind_g (bind);
@@ -2898,6 +2901,7 @@ char *text;
   printc("char _style[256]=\"\";");
   printc("char _sio_%d[%ld];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw_%d=\"s_prompt\";int _acl_prompt_timeout=%d;\n", cmd_data->sio, a4gl_sizeof (struct s_prompt), cmd_data->sio, timeout);
   print_event_list (cmd_data->events);
+  printc("memset(_sio_%d,0,sizeof(_sio_%d));",cmd_data->sio,cmd_data->sio);
   A4GL_print_expr_list_concat (cmd_data->prompt_str);
 
 	if (cmd_data->prompt_str_attrib  && cmd_data->prompt_str_attrib->var_attrib) {

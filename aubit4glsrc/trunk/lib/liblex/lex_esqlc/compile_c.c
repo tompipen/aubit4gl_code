@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.482 2009-05-07 20:01:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.483 2009-05-15 17:03:16 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.482 2009-05-07 20:01:41 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.483 2009-05-15 17:03:16 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1983,11 +1983,19 @@ real_print_expr (struct expr_str *ptr)
 			break;
 
 	case ET_EXPR_FIELD_TOUCHED:
-		printc("A4GL_push_int(A4GL_fgl_fieldtouched(&_sio_%d,_inp_io_type,%s,NULL,0));",(int)ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
+		if (ptr->expr_str_u.expr_field_touched->field_list==0) {
+			printc("A4GL_push_int(A4GL_fgl_fieldtouched_current(&_sio_%d,_inp_io_type));",(int)ptr->expr_str_u.expr_field_touched->sio_id);
+		} else {
+			printc("A4GL_push_int(A4GL_fgl_fieldtouched(&_sio_%d,_inp_io_type,%s,NULL,0));",(int)ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
+		}
 		break;
 
 	case ET_EXPR_NOT_FIELD_TOUCHED:
-		printc("A4GL_push_int(!A4GL_fgl_fieldtouched(&_sio_%d,_inp_io_type,%s,NULL,0));",(int)ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
+		if (ptr->expr_str_u.expr_field_touched->field_list==NULL) {
+			printc("A4GL_push_int(!A4GL_fgl_fieldtouched_current(&_sio_%d,_inp_io_type));",(int)ptr->expr_str_u.expr_field_touched->sio_id);
+		} else {
+			printc("A4GL_push_int(!A4GL_fgl_fieldtouched(&_sio_%d,_inp_io_type,%s,NULL,0));",(int)ptr->expr_str_u.expr_field_touched->sio_id,local_field_name_list_as_char(ptr->expr_str_u.expr_field_touched->field_list));
+		}
 		break;
 
 	case ET_EXPR_IVAL_VAL:
@@ -5852,8 +5860,18 @@ char smbuff[256];
 		int upperbound;
 		upperbound=sgs_topvar->arr_subscripts.arr_subscripts_val[a];
 		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
+			long n;
+			n=u->expr_str_u.expr_long-1;
+			if (n<0||n>=upperbound) {
+				char buff[200];
+				sprintf(buff,"Must be between 1 and %d", upperbound);
+				        yylineno=line_for_cmd;
+                			set_yytext(buff);
+
+				a4gl_yyerror("Invalid subscript");
+			}
 			// We can make the 'long's look a little neater as we can subtract the 1..
-			sprintf(smbuff, "A4GL_bounds_check(%ld,%ld)", (long)u->expr_str_u.expr_long-1,(long)upperbound);
+			sprintf(smbuff, "%ld", (long)u->expr_str_u.expr_long-1);
 		} else {
 			sprintf(smbuff, "(A4GL_bounds_check(%s-1,%ld))", local_expr_as_string(u),(long)upperbound);
 		}

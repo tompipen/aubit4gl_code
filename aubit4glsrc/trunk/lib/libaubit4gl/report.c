@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.185 2009-05-15 16:30:31 mikeaubury Exp $
+# $Id: report.c,v 1.186 2009-05-15 17:03:16 mikeaubury Exp $
 #
 */
 
@@ -3278,7 +3278,7 @@ while (1) {
 	if (ptr==0) continue;
 	*ptr=0;
 	ptr++;
-	if (strcmp(buff,ebuff)==0) {
+	if (A4GL_aubit_strcasecmp(buff,ebuff)==0) {
 		char *ptr2;
 		fclose(cfile);
 		ptr2= convTagExpr(t, ptr);

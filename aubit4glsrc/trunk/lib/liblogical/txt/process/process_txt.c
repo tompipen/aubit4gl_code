@@ -19,6 +19,7 @@ struct s_tag ***tags;
 
 int page_touched = 0;
 FILE *rep_fout;
+int maxwidth;
 
 
 int RP_default_file (void *report,char *errbuff,void *rbx, int rbs) {
@@ -170,14 +171,17 @@ static void dump_tagged_line(FILE *fout, int l,int width, char *s) {
 int sl;
 int a;
 
-
 sl=strlen(s);
-for (a=0;a<sl;a++) {
+for (a=0;a<width;a++) {
 	if (tags[l][a]!=0) {
 		fprintf(fout,"%s%s%s", A4GL_get_start_tag(tags[l][a]->tag), tags[l][a]->text, A4GL_get_end_tag(tags[l][a]->tag));
 		a+=strlen(tags[l][a]->text)-1;
 	} else {
-		fprintf(fout,"%c",s[a]);
+		if (a<sl)  {
+			fprintf(fout,"%c",s[a]);
+		} else {
+			fprintf(fout," ");
+		}
 	}
 }
 
@@ -185,7 +189,7 @@ for (a=0;a<sl;a++) {
 }
 
 static void
-output_page (FILE * fout, int w, int h)
+output_page (FILE * fout, int width, int h)
 {
   int a;
   int hnew;
@@ -206,7 +210,7 @@ A4GL_debug("output_page");
 	  if (a == hnew-1) {
 		ptr=ChkForBarcode(lines[a]);
 			if (have_tags[a]) {
-				dump_tagged_line(fout,a,w, ptr);
+				dump_tagged_line(fout,a,width, ptr);
 			} else {
 	  			fprintf (fout, "%s", ptr);
 			}
@@ -215,14 +219,14 @@ A4GL_debug("output_page");
 		ptr=ChkForBarcode(lines[a]);
 		if (term_crnl) {
 			if (have_tags[a]) {
-				dump_tagged_line(fout,a,w, ptr);
+				dump_tagged_line(fout,a,width, ptr);
 			} else {
 	  			fprintf (fout, "%s", ptr);
 			}
 	  		fprintf (fout, "\r\n");
 		} else {
 			if (have_tags[a]) {
-				dump_tagged_line(fout,a,w, ptr);
+				dump_tagged_line(fout,a,width, ptr);
 			} else {
 	  			fprintf (fout, "%s", ptr);
 			}
@@ -240,14 +244,14 @@ A4GL_debug("output_page");
 	  	ptr=ChkForBarcode(lines[a]);
 		if (term_crnl) {
 			if (have_tags[a]) {
-				dump_tagged_line(fout,a,w, ptr);
+				dump_tagged_line(fout,a,width, ptr);
 			} else {
 	  			fprintf (fout, "%s", ptr);
 			}
 	  		fprintf (fout, "\r\n");
 		} else {
 			if (have_tags[a]) {
-				dump_tagged_line(fout,a,w, ptr);
+				dump_tagged_line(fout,a,width, ptr);
 			} else {
 	  			fprintf (fout, "%s", ptr);
 			}
@@ -401,7 +405,7 @@ A4GL_debug("here");
 			}
     		}
 	}
-      	output_page (rep_fout, report->max_col, report->page_length);
+      	output_page (rep_fout, report->max_col + 1+report->left_margin, report->page_length);
     }
 
 
