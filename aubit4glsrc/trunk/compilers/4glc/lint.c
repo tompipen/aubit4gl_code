@@ -1124,10 +1124,20 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 
       if (r->cmd_data.type == E_CMD_DISPLAY_ARRAY_CMD || r->cmd_data.type == E_CMD_INPUT_ARRAY_CMD)
 	{
+	  int isWithoutDefaults=-1;
 	  int bcnt;
 	  struct command *r2;
 	  int found_setcount = 0;
 	  //int c=0;
+
+	  if (r->cmd_data.type == E_CMD_INPUT_ARRAY_CMD) {
+			if (r->cmd_data.command_data_u.input_array_cmd.without_defaults==EB_TRUE) {
+				isWithoutDefaults=1;
+			} else {
+				isWithoutDefaults=0;
+			}
+	  }
+
 	  for (bcnt = cnt; bcnt >= 0; bcnt--)
 	    {
 	      r2 = func_cmds->cmds.cmds_val[bcnt];
@@ -1146,7 +1156,8 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		}
 	    }
 
-	  if (!found_setcount)
+//printf("isWithoutDefaults=%d\n", isWithoutDefaults);
+	  if (!found_setcount && (isWithoutDefaults==1 || isWithoutDefaults==-1)) /* Its not without defaults */
 	    {
 	      A4GL_lint (module_name, r->lineno, "NSETCOUNT", "Cannot see a 'setcount' immediately before an Input/Display array", NULL);
 	    }
