@@ -651,10 +651,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
             event.type = Fgl::ONKEY_EVENT;
             event.attribute = QString::number(fKeyNum);
             fieldEvent(event);
-            break;
+            return true;
          }
       }
-      return true;
    }
 
    return QMainWindow::eventFilter(obj, event);
