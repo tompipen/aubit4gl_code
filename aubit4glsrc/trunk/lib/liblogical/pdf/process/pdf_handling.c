@@ -7,6 +7,7 @@
 #include "pdflib.h"
 #include "pdf_handling.h"
 
+enum e_style currentStyle=FONT_STYLE_NORMAL;
 
 PDF *p = 0;
 extern struct pdf_layout layout;
@@ -186,10 +187,29 @@ static int add_font(char *s) {
 	return nloaded_fonts-1;
 
 }
+
+
+
+
 static int select_font(char *fname,int size,int isdefault) {
 	char buff[2000];
+	static char *lname;
+	static int lsize;
 	int a;
-	strcpy(buff,fname);
+
+	if (fname) {
+		lname=fname;
+		lsize=size;
+	} else {
+		fname=lname;
+		size=lsize;
+	}
+
+	switch (currentStyle) {
+		case FONT_STYLE_NORMAL: strcpy(buff,fname); break;
+		case FONT_STYLE_BOLD: if (!strstr(fname,"Bold")) {sprintf(buff,"%s-Bold",fname);} break;
+		case FONT_STYLE_ITALIC: if (!strstr(fname,"Italic")) {sprintf(buff,"%s-Italic",fname);} break;
+	}
 
 
         A4GL_trim (buff);
@@ -213,6 +233,11 @@ static int select_font(char *fname,int size,int isdefault) {
 }
 
 
+int set_font_style(enum e_style type) {
+	currentStyle=type;
+	select_font(NULL,0,0);
+	return 1;
+}
 
 
 void
@@ -422,6 +447,7 @@ int a;
 
   PDF_end_page (p);
 }
+
 
 
 int select_font_for(int block,int entry) {

@@ -126,7 +126,41 @@ char str_img[256];
 char buff[2000];
 int image;
 double xd,yd,wd,hd;
+set_font_style(FONT_STYLE_NORMAL);
     if (!isBarcode(s, &xd,&yd,&wd,&hd,str)) {
+		if (strncmp(s, "##TAG(",6)==0) {
+        		static char tagline[10024];
+        		char *p;
+		
+        		strcpy(tagline,s);
+        		p=strstr(tagline,"##TAG(");
+		
+        		if (p) {
+                		char *comma;
+                		char buff[20000];
+                		comma=strrchr(tagline,',');
+                		if (comma!=NULL)  {
+                			*comma=0;
+                			comma++;
+                			p=strstr(comma,")##");
+                			if (p!=NULL) {
+                				*p=0;
+                				sprintf(buff,"%s",&tagline[6]);
+						buff[strlen(buff)-3]=0; /* Remove the trailing )## */
+						if (A4GL_aubit_strcasecmp(comma,"B")==0 || A4GL_aubit_strcasecmp(comma,"<B>")==0 ) {
+							set_font_style(FONT_STYLE_BOLD);
+						}
+						if (A4GL_aubit_strcasecmp(comma,"I")==0 || A4GL_aubit_strcasecmp(comma,"<I>")==0 ) {
+							set_font_style(FONT_STYLE_ITALIC);
+						}
+						use_default=0;
+						s=buff;
+					}
+				}
+			}
+
+		}
+
 		if (use_default ) {
   			ptr = lines[y - 1];
   			memcpy (&ptr[x - 1], s, strlen (s));
@@ -261,7 +295,6 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
 	}
     }
 
-    //select_font_for(-1,-1); // Wont be found - so it'll use the default..
     output_page (p, report->max_col, report->page_length,lines);
   }
 

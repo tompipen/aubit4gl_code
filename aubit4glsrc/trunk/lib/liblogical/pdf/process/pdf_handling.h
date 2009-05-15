@@ -7,3 +7,8 @@ void setupPageSize(int w);
 void start_pdf_page (PDF * p, int w, int h);
 int select_font_for(int block,int entry) ;
 void output_page (PDF * p, int w, int h, char **lines);
+enum e_style {
+	FONT_STYLE_NORMAL,
+	FONT_STYLE_BOLD,
+	FONT_STYLE_ITALIC
+};
