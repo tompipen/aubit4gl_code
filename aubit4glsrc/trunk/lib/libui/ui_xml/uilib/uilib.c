@@ -2817,13 +2817,36 @@ set_construct_clause (int context, char *ptr)
 static int
 field_match (char *a, char *b)
 {
+char *ptr_a;
+char *ptr_b;
   if (a == 0)
     return 0;
   if (b == 0)
     return 0;
-  fprintf (stderr, "Field  name match : '%s' '%s'\n", a, b);
-  if (strcmp (a, b) == 0)
-    return 1;
+  fprintf (stderr, "Field  name match : '%s' '%s' : ", a, b);
+
+  if (strcmp (a, b) == 0) {
+	printf("Match\n");
+    	return 1;
+  }
+  ptr_a=strchr(a,'.'); if (ptr_a) ptr_a++; 
+  ptr_b=strchr(b,'.'); if (ptr_b) ptr_b++; 
+  if (ptr_a && ptr_b==0) {
+	// Assume they match - one is missing a table name...
+	if (strcmp(ptr_a,b)==0) {
+	printf("Match\n");
+		return 1;
+	}
+  }
+  if (ptr_a==0 && ptr_b) {
+	// Assume they match - one is missing a table name...
+	if (strcmp(a,ptr_b)==0) {
+	printf("Match\n");
+		return 1;
+	}
+  }
+
+printf("Not matched\n");
   return 0;
 }
 
@@ -2863,18 +2886,11 @@ uilib_touched (int nargs)
 		{
 		  if (field_match (flist[a], fields[b]))
 		    {
-		      pushint (contexts[context].ui.input.touched[a]);
-		      pushed++;
-		      break;
+			if (contexts[context].ui.input.touched[a]) return 1;
 		    }
 		}
-
-	      if (!pushed)
-		{
-			pushint(0);
-		}
 	    }
-	  return nfields;
+	  return 0;
 	}
 
 
@@ -2895,17 +2911,14 @@ uilib_touched (int nargs)
 		{
 		  if (field_match (flist[a], fields[b]))
 		    {
-		      pushint (contexts[context].ui.inputarray.touched[currline][a]);
+
+		      if (contexts[context].ui.inputarray.touched[currline][a]) return 1;
 		      pushed++;
 		      break;
 		    }
 		}
-	      if (!pushed)
-		{
-		  pushint (0);
-		}
 	    }
-	  return nfields;
+	  return 0;
 	}
 
 
@@ -2925,15 +2938,10 @@ uilib_touched (int nargs)
 		{
 		  if (field_match (flist[a], fields[b]))
 		    {
-		      pushint (contexts[context].ui.construct.touched[a]);
-		      pushed++;
-		      break;
+		      if (contexts[context].ui.construct.touched[a]) return 1;
 		    }
 		}
-	      if (!pushed)
-		{
-		  pushint (0);
-		}
+		return 0;
 	    }
 	  return nfields;
 	}
@@ -2941,9 +2949,5 @@ uilib_touched (int nargs)
 
   fprintf (stderr, "******** UNSUPPORTED GETFLDBUF OPERATION **********\n");
 
-  for (a = 0; a < nfields; a++)
-    {
-      PUSHquote ("<notset>");
-    }
-  return nfields;
+  return 0;
 }
