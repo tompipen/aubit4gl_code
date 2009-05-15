@@ -166,20 +166,21 @@ void Response::addScreenRecSyncValues()
    responseElement.appendChild(syncRowsElement);
 
    int arrCount = p_currForm->context->options["ARRCOUNT"];
-   qDebug() << p_currForm->context->options.keys();
 
-   for(int i=0; i<arrCount; i++){
-      QDomElement syncRowElement = this->createElement("ROW");
-      syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
-      syncRowsElement.appendChild(syncRowElement);
-      QDomElement syncValuesElement = this->createElement("SYNCVALUES");
-      syncRowElement.appendChild(syncValuesElement);
+   if(p_currForm->context->fieldList.count() == 1){
+      for(int i=0; i<arrCount; i++){
+         QDomElement syncRowElement = this->createElement("ROW");
+         syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
+         syncRowsElement.appendChild(syncRowElement);
+         QDomElement syncValuesElement = this->createElement("SYNCVALUES");
+         syncRowElement.appendChild(syncValuesElement);
      
-      for(int j=0; j<p_currForm->context->fieldList.count(); j++){
-         QWidget *widget = p_currForm->findFieldByName(p_currForm->context->fieldList.at(j));
-         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-            if(TableView *p_screenRecord = qobject_cast<TableView *> (de)){
-               QModelIndex currIndex = p_screenRecord->model()->index(i, j);
+         for(int j=0; j<p_currForm->context->fieldList.count(); j++){
+            QWidget *widget = p_currForm->findFieldByName(p_currForm->context->fieldList.at(j));
+            if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+               if(TableView *p_screenRecord = qobject_cast<TableView *> (de->parent())){
+                  QModelIndex currIndex = p_screenRecord->model()->index(i, j);
+
                QDomElement syncValueElement = this->createElement("SYNCVALUE");
                QString text = p_screenRecord->model()->data(currIndex).toString();
                if(!text.isEmpty()){
@@ -187,9 +188,37 @@ void Response::addScreenRecSyncValues()
                   syncValueElement.appendChild(syncValueText);
                }
                syncValuesElement.appendChild(syncValueElement);
+               }
             }
          }
       }
+   }
+   else{
+      for(int i=0; i<arrCount; i++){
+         QDomElement syncRowElement = this->createElement("ROW");
+         syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
+         syncRowsElement.appendChild(syncRowElement);
+         QDomElement syncValuesElement = this->createElement("SYNCVALUES");
+         syncRowElement.appendChild(syncValuesElement);
+     
+         for(int j=0; j<p_currForm->context->fieldList.count(); j++){
+            QWidget *widget = p_currForm->findFieldByName(p_currForm->context->fieldList.at(j));
+            if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+               if(TableView *p_screenRecord = qobject_cast<TableView *> (de->parent())){
+                  QModelIndex currIndex = p_screenRecord->model()->index(i, 0);
+
+               QDomElement syncValueElement = this->createElement("SYNCVALUE");
+               QString text = p_screenRecord->model()->data(currIndex).toString();
+               if(!text.isEmpty()){
+                  QDomText syncValueText = this->createTextNode(text);
+                  syncValueElement.appendChild(syncValueText);
+               }
+               syncValuesElement.appendChild(syncValueElement);
+               }
+            }
+         }
+      }
+      
    }
 
 }
