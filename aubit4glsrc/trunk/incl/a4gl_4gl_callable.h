@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.54 2009-05-03 17:59:59 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.55 2009-05-15 16:25:24 mikeaubury Exp $
 */
 
 /**
@@ -201,6 +201,7 @@ char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
 int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec, int use_error);
 void A4GL_assertion (int a, char *s);
 char * acl_getenv_not_set_as_0 (char *s);
+int A4GL_fgl_fieldtouched_current(void *sio, char itype);
 //int A4GL_fgl_infield (void *inp,char itype,...);
 #ifndef LOCATE_VAR_DEFINED
 #define LOCATE_VAR_DEFINED

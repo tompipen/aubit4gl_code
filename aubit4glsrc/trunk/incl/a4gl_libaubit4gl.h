@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.380 2009-05-13 13:40:29 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.381 2009-05-15 16:25:24 mikeaubury Exp $
 #
 */
 
@@ -2890,6 +2890,10 @@ void A4GL_pushIntGE(int a,int b);
 char *A4GL_check_for_tags(char *s) ;
 int simple_expr_datatype(struct expr_str *p);
 void A4GL_set_logsqlstart(void );
+int A4GL_fgl_fieldtouched_current(void *sio, char itype);
+char *A4GL_get_end_tag(char *tag_type) ;
+char *A4GL_get_start_tag(char *tag_type) ;
+//
 #include "a4gl_builtin_funcs.h"
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */

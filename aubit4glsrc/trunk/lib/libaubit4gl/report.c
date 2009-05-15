@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.183 2009-05-13 13:40:12 mikeaubury Exp $
+# $Id: report.c,v 1.184 2009-05-15 16:25:58 mikeaubury Exp $
 #
 */
 
@@ -144,8 +144,8 @@ char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
 void A4GL_finished_report (void);
 static void add_header_entry (struct rep_structure *rep, struct s_save_header *hdr, char *buff, int entry);
-static char *get_end_tag(char *tag_type) ;
-static char *get_start_tag(char *tag_type) ;
+//static char *get_end_tag(char *tag_type) ;
+//static char *get_start_tag(char *tag_type) ;
 
 
 int lvl = 0;
@@ -833,7 +833,7 @@ A4GL_rep_print_tag (struct rep_structure *rep, int entry, char *_tag)
     }
   else
     {
-  	sprintf(buff,"%s%s%s",get_start_tag(_tag),str,get_end_tag(_tag));
+  	sprintf(buff,"%s%s%s",A4GL_get_start_tag(_tag),str,A4GL_get_end_tag(_tag));
         diff = strlen (buff) - strlen (str);
         A4GL_push_char (buff);
         A4GL_rep_print (rep, 1, 1, 0, entry);
@@ -3293,7 +3293,7 @@ return "";
 }
 
 
-static char *get_start_tag(char *tag_type) {
+char *A4GL_get_start_tag(char *tag_type) {
 char buff_tag[200];
 char *rval;
 char *convFile;
@@ -3308,7 +3308,7 @@ char *convFile;
 
 }
 
-static char *get_end_tag(char *tag_type) {
+char *A4GL_get_end_tag(char *tag_type) {
 char buff_tag[200];
 char *convFile;
 char *rval;
@@ -3344,7 +3344,7 @@ char *A4GL_check_for_tags(char *s) {
                 if (p==NULL) return s;
                 *p=0;
                 sprintf(buff,"%s",&tagline[6]);
-                sprintf(tagline,"%s%s%s",get_start_tag(comma),buff,get_end_tag(comma));
+                sprintf(tagline,"%s%s%s",A4GL_get_start_tag(comma),buff,A4GL_get_end_tag(comma));
                 //strcpy(tagline,buff);
                 return tagline;
         }
