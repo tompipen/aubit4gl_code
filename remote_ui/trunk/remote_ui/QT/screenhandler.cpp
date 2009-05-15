@@ -1914,6 +1914,8 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
 
    Fgl::Context *context = getCurrentContext();
 
+   context->options[attribute] = value;
+
    if(type == "MENU"){
    }
 
@@ -2388,6 +2390,7 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
 
    int index = fieldName.indexOf(".*");
    bool focus = true;
+
    if(index < 0){
    }
    else{
