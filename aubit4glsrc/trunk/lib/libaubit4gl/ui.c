@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.91 2009-04-29 11:03:14 mikeaubury Exp $
+# $Id: ui.c,v 1.92 2009-05-15 16:25:58 mikeaubury Exp $
 #
 */
 
@@ -2356,5 +2356,32 @@ A4GL_find_param (char *name)
     }
 
 }
+
+
+#ifdef RESERVED_FOR_FUTURE_EXPANSION
+static int A4GL_fgl_fieldtouched_current_input (struct s_screenio *sio) {
+	return 0;
+}
+static int A4GL_fgl_fieldtouched_current_input_array (struct s_inp_arr *sio) {
+	return 0;
+}
+
+
+int A4GL_fgl_fieldtouched_current(void *sio, char itype) {
+  if (itype == 'I' || itype == 'C')
+    {
+      return A4GL_fgl_fieldtouched_current_input ((struct s_screenio *)sio);
+    }
+
+  if (itype == 'A')
+    {
+      return A4GL_fgl_fieldtouched_current_input_array ((struct s_inp_arr *)sio);
+    }
+A4GL_assertion(1,"Invalid itype");
+return 0;
+}
+#endif
+
+
 
 /* ============================= EOF ================================ */

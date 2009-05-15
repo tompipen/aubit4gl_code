@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.184 2009-05-15 16:25:58 mikeaubury Exp $
+# $Id: report.c,v 1.185 2009-05-15 16:30:31 mikeaubury Exp $
 #
 */
 
@@ -3222,7 +3222,7 @@ sl=strlen(s);
 for (a=0;a<sl;a++) {
 	if (s[a]=='^') {
 		a++;
-		lbuff[b++]=s[a]-'a'+1;
+		lbuff[b++]=a4gl_tolower(s[a])-'a'+1;
 		continue;
 	}
 	lbuff[b++]=s[a];
