@@ -654,7 +654,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
             break;
          }
       }
-      return false;
+      return true;
    }
 
    return QMainWindow::eventFilter(obj, event);
