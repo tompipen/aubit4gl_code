@@ -79,7 +79,7 @@ LineEdit::LineEdit(QWidget *parent)
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
 
-   connect(this, SIGNAL(editingFinished()), this, SLOT(isTouched()));
+   connect(this, SIGNAL(textChanged(const QString)), this, SLOT(isTouched()));
 
 }
 
@@ -1077,8 +1077,6 @@ void WidgetHelper::paste(QObject* object)
 
 void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 {
-
-   object->setProperty("touched", 1);
 
    if(Label *widget = qobject_cast<Label *> (object)){
       if(widget->pixmap() == 0){
