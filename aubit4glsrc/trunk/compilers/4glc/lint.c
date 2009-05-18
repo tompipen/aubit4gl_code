@@ -154,6 +154,20 @@ struct s_function_prototype
   int lineno;
 };
 
+struct s_function_statistics {
+	char *module;
+	char *fname;
+        int tot_lines;
+	int loc;
+	int lines_of_comments;
+	int lines_of_ws;
+	int cc; /* Complexity */
+	int number_of_commands;
+};
+
+struct s_function_statistics *function_stats=NULL;
+int nfunction_stats=0;
+
 static int system_function (char *funcname);
 struct s_function_prototype *fprototypes = 0;
 
@@ -179,6 +193,20 @@ struct global_variable_assignement
 struct global_variable_assignement *gass = 0;
 int ngass = 0;
 
+
+static void add_function_stat( char *module, char *fname, int tot_lines, int loc, int lines_of_comments, int lines_of_ws, int cc,int number_of_commands) {
+nfunction_stats++;
+function_stats=realloc(function_stats,sizeof(function_stats[0])*nfunction_stats);
+//printf("adding %s %s @ %d - %d\n", module,fname, nfunction_stats, tot_lines);
+function_stats[nfunction_stats-1].module=module;
+function_stats[nfunction_stats-1].fname=fname;
+function_stats[nfunction_stats-1].tot_lines=tot_lines;
+function_stats[nfunction_stats-1].loc=loc;
+function_stats[nfunction_stats-1].lines_of_comments=lines_of_comments;
+function_stats[nfunction_stats-1].lines_of_ws=lines_of_ws;
+function_stats[nfunction_stats-1].cc=cc;
+function_stats[nfunction_stats-1].number_of_commands=number_of_commands;
+}
 
 int
 add_global_variable_assignement (char *s, char *currfunc, char *module, int line)
@@ -671,13 +699,25 @@ static void
 check_function_for_complexity (struct module_definition *d, struct s_function_definition *f)
 {
   int ncomments = 0;
-  int a;
+  int a=0;
   struct commands *func_cmds = 0;
   int flow = 0;
+  char *lines_used;
+  int nlines=0;
+int lines_of_ws=0;
+int loc=0;
+
+  nlines=f->lastlineno-f->lineno+1;
+  lines_used=malloc(nlines+1);
+  memset(lines_used,' ',nlines);
+  lines_used[nlines]=0;
+
   for (a = 0; a < d->comment_list.comment_list_len; a++)
     {
-      if (d->comment_list.comment_list_val[a].lineno >= f->lineno && d->comment_list.comment_list_val[a].lineno <= f->lastlineno)
+      if (d->comment_list.comment_list_val[a].lineno >= f->lineno && d->comment_list.comment_list_val[a].lineno <= f->lastlineno) {
 	ncomments++;
+	lines_used[d->comment_list.comment_list_val[a].lineno-f->lineno]='#';
+      }
     }
 
 
@@ -687,6 +727,7 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 
   for (a = 0; a < func_cmds->cmds.cmds_len; a++)
     {
+      lines_used[func_cmds->cmds.cmds_val[a]->lineno-f->lineno]='@';
       switch (func_cmds->cmds.cmds_val[a]->cmd_data.type)
 	{
 	case E_CMD_WHILE_CMD:
@@ -695,6 +736,7 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 	case E_CMD_CASE_CMD:
 	case E_CMD_IF_CMD:
 	case E_CMD_MENU_CMD:
+      lines_used[func_cmds->cmds.cmds_val[a]->lineno-f->lineno]='>';
 	  flow++;
 	  break;
 
@@ -702,11 +744,18 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 	  break;
 	}
     }
+
   if (flow > 10 || f->lastlineno - f->lineno > 250)
     {
       A4GL_lint (f->module, f->lineno, "TOOCOMPLEX", "Function is too complex", f->funcname);
     }
 
+  for (a=0;a<nlines;a++) {
+	if (lines_used[a]==' ') lines_of_ws++;
+	if (lines_used[a]=='>') loc++; // Flow
+	if (lines_used[a]=='@') loc++; // Non-flow
+  }
+  add_function_stat( f->module, f->funcname, nlines, loc, ncomments, lines_of_ws, flow,func_cmds->cmds.cmds_len) ;
 
 }
 
@@ -4768,6 +4817,25 @@ open_lintfile (char *s)
 
 }
 
+static char *get_stats(char *mod, char*func) {
+static char buff[2048];
+int a;
+for (a=0;a<nfunction_stats;a++) {
+if ( strcmp(function_stats[a].fname,func)==0 && strcmp(function_stats[a].module,mod)==0) {
+	sprintf(buff," LINES=\"%d\" LINES_OF_CODE=\"%d\" COMPLEXITY=\"%d\" LINES_OF_WS=\"%d\" LINES_OF_COMMENTS=\"%d\" NUMBER_COMMANDS=\"%d\"",
+		function_stats[a].tot_lines,
+		function_stats[a].loc,
+		function_stats[a].cc,
+		function_stats[a].lines_of_ws,
+		function_stats[a].lines_of_comments,
+		function_stats[a].number_of_commands
+	);
+	return buff;
+	}
+}
+strcpy(buff,"");
+return buff;
+}
 
 static void dump_function_definitions(void) {
   int b;
@@ -4780,11 +4848,14 @@ static void dump_function_definitions(void) {
 		case E_MET_FUNCTION_DEFINITION:
 		case E_MET_MAIN_DEFINITION:
 			if (this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname[0]!='!')  {
-      			fprintf (lintfile, "<FUNCTION TYPE=\"FUNCTION\" NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" ENDLINE=\"%d\"/>\n", 
+      			fprintf (lintfile, "<FUNCTION TYPE=\"FUNCTION\" NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" ENDLINE=\"%d\"%s/>\n", 
 			this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname,
 			this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.module,
 			this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.lineno,
-			this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.lastlineno
+			this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.lastlineno,
+			get_stats(
+				this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.module,
+				this_module.module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname)
 			);
 			}
 			break;
@@ -6644,3 +6715,5 @@ has_lint_expect (char *c)
     }
   return 0;
 }
+
+
