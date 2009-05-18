@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.52 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: error.c,v 1.53 2009-05-18 12:40:39 mikeaubury Exp $
 #
 */
 
@@ -57,7 +57,7 @@
 #include "tmperrs.h"
 #endif
 
-char *err_txt;
+static char *err_txt;
 /*
 =====================================================================
                     Constants definitions
