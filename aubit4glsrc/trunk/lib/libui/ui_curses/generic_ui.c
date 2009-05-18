@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.52 2009-05-07 15:05:00 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.53 2009-05-18 12:41:24 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -514,8 +514,10 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
   A4GL_debug ("Menu attrib %d\n", attr);
   while ((argp = va_arg (*ap, char *)))
     {
-      A4GL_trim (argp);
-      A4GL_debug ("change attrib to %d of %s", attr, argp);
+	char buff[3000];
+	strcpy(buff,argp);
+      A4GL_trim (buff);
+      A4GL_debug ("change attrib to %d of %s", attr, buff);
       option = (ACL_Menu_Opts *) menu->first;
       matches=0;
       for (a = 0; a < menu->num_opts; a++)
@@ -536,10 +538,10 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
           A4GL_debug ("trim %s", s);
           flg = 0;
 
-          if (strcmp (argp, MENU_ALL) != 0)
+          if (strcmp (buff, MENU_ALL) != 0)
             {
-              A4GL_debug ("Cmp '%s' to '%s'", s, argp);
-              if (A4GL_menu_opts_compare (s, argp,MENU_COMPARE_SHOWHIDE) == 0)
+              A4GL_debug ("Cmp '%s' to '%s'", s, buff);
+              if (A4GL_menu_opts_compare (s, buff,MENU_COMPARE_SHOWHIDE) == 0)
                 {
                   A4GL_debug ("Cmpok\n");
                   flg = 1;
@@ -555,7 +557,7 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
           if (flg == 1)
             {
 		    matches++;
-              A4GL_debug ("   FOund it : %s , %s (%x) %d", s, argp,
+              A4GL_debug ("   FOund it : %s , %s (%x) %d", s, buff,
                      option->attributes & ACL_MN_HIDE, attr);
               if (attr)
                 {
