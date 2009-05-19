@@ -22,7 +22,7 @@
 
 Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocument()
 {
-
+  
    this->p_currForm = p_currForm;
 
    this->showCursorPos = cursorPos;
