@@ -167,6 +167,12 @@ void Response::addScreenRecSyncValues()
 
    int arrCount = p_currForm->context->options["ARRCOUNT"];
 
+
+   /*
+   if(!p_currForm->inputArray())
+      return;
+      */
+
    if(p_currForm->context->fieldList.count() == 1){
       for(int i=0; i<arrCount; i++){
          QDomElement syncRowElement = this->createElement("ROW");
@@ -187,6 +193,16 @@ void Response::addScreenRecSyncValues()
                   QDomText syncValueText = this->createTextNode(text);
                   syncValueElement.appendChild(syncValueText);
                }
+
+               int scrLine = p_screenRecord->scrLine();
+               if(scrLine <= 0) scrLine = 1;
+
+               int arrLine = p_screenRecord->scrLine();
+               if(arrLine <= 0) arrLine = 1;
+
+               responseElement.setAttribute("SCRLINE", scrLine);
+
+               responseElement.setAttribute("ARRLINE", arrLine);
                syncValuesElement.appendChild(syncValueElement);
                }
             }
@@ -213,6 +229,17 @@ void Response::addScreenRecSyncValues()
                   QDomText syncValueText = this->createTextNode(text);
                   syncValueElement.appendChild(syncValueText);
                }
+               syncValuesElement.appendChild(syncValueElement);
+
+               int scrLine = p_screenRecord->scrLine();
+               if(scrLine <= 0) scrLine = 1;
+
+               int arrLine = p_screenRecord->scrLine();
+               if(arrLine <= 0) arrLine = 1;
+
+               responseElement.setAttribute("SCRLINE", scrLine);
+
+               responseElement.setAttribute("ARRLINE", arrLine);
                syncValuesElement.appendChild(syncValueElement);
                }
             }
