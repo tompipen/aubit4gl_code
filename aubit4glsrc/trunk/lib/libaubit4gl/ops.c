@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.152 2009-05-08 14:53:43 mikeaubury Exp $
+# $Id: ops.c,v 1.153 2009-05-21 08:51:15 mikeaubury Exp $
 #
 */
 
@@ -3922,6 +3922,8 @@ A4GL_in_dt_ops (int op)
 
 #endif
 
+  if (dtime_data[1]==0) dtime_data[1]=1;
+  if (dtime_data[2]==0) dtime_data[2]=1;
 
   dt_days = A4GL_gen_dateno (dtime_data[2], dtime_data[1], dtime_data[0]);	// As a date....
 

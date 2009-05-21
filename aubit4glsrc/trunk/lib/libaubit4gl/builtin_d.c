@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.102 2009-05-08 14:53:43 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.103 2009-05-21 08:51:14 mikeaubury Exp $
 #
 */
 
@@ -759,6 +759,21 @@ aclfgl_day (int n)
 {
   long d;
   int day, mn, yr;
+  int d1;
+  int s1;
+  char *ptr1;
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+  d1 = d1 & DTYPE_MASK;
+
+  if (d1 == DTYPE_DTIME)
+    {
+	struct_dtime dtd;
+	A4GL_setnull(10,&dtd,0x33); /* Day to day */
+ 	A4GL_pop_var2(&dtd,10,0x33);
+   	A4GL_push_variable(&dtd,0x33000a);
+	return 1;
+    }
+
   d = A4GL_pop_date ();
   if (A4GL_isnull (DTYPE_DATE, (void *) &d))
     {
@@ -780,6 +795,22 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
 {
   long d;
   int day, mn, yr;
+  int d1;
+  int s1;
+  char *ptr1;
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+  d1 = d1 & DTYPE_MASK;
+
+  if (d1==DTYPE_DTIME) {
+	//
+	struct_dtime dtd;
+	A4GL_setnull(10,&dtd,0x22); /* month to month */
+ 	A4GL_pop_var2(&dtd,10,0x22);
+   	A4GL_push_variable(&dtd,0x22000a);
+	return 1;
+  }
+
+
   d = A4GL_pop_date ();
   if (A4GL_isnull (DTYPE_DATE, (void *) &d))
     {
@@ -788,7 +819,10 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
     }
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (mn);
+  
   return 1;
+
+  return 0;
 }
 
 /**
@@ -802,6 +836,12 @@ aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it
   long d;
   int day, mn, yr;
   long d2;
+  int d1;
+  int s1;
+  char *ptr1;
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+  d1 = d1 & DTYPE_MASK;
+
   d = A4GL_pop_date ();
   if (A4GL_isnull (DTYPE_DATE, (void *) &d))
     {
@@ -824,6 +864,23 @@ aclfgl_year (int n)
 {
   long d;
   int day, mn, yr;
+
+  int d1;
+  int s1;
+  char *ptr1;
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+  d1 = d1 & DTYPE_MASK;
+
+  if (d1 == DTYPE_DTIME)
+    {
+	struct_dtime dtd;
+	A4GL_setnull(10,&dtd,0x11); /* year to year */
+ 	A4GL_pop_var2(&dtd,10,0x11);
+   	A4GL_push_variable(&dtd,0x11000a);
+	return 1;
+    }
+
+
   d = A4GL_pop_date ();
   if (A4GL_isnull (DTYPE_DATE, (void *) &d))
     {
@@ -832,6 +889,8 @@ aclfgl_year (int n)
     }
   A4GL_get_date (d, &day, &mn, &yr);
   A4GL_push_int (yr);
+
+
   return 1;
 }
 
@@ -850,8 +909,8 @@ A4GL_func_clip (void)
   int isnumeric = 0;
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
-
   d1 = d1 & DTYPE_MASK;
+
   switch (d1)
     {
     case DTYPE_SMINT:
