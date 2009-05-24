@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.172 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: newpanels.c,v 1.173 2009-05-24 20:17:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.172 2009-04-23 10:12:30 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.173 2009-05-24 20:17:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -538,7 +538,7 @@ void
   int a;
   int form_created_with_window;
   WINDOW *win = 0;
-char buff[256];
+char buff[256]="";
   PANEL *panel = 0;
   struct s_form_dets *f;
   A4GL_debug("before remove window - currwinno=%d",currwinno);
@@ -622,7 +622,6 @@ char buff[256];
   }
 #endif
 
-  		A4GL_del_pointer (buff, ATTRIBUTE);
 	if (f) {
 		FORM *curses_form;
 #ifdef DEBUG
@@ -631,6 +630,7 @@ char buff[256];
   }
 #endif
   		SPRINTF1(buff,"%p",f);
+  		A4GL_del_pointer (buff, ATTRIBUTE);
 
 		if (form_created_with_window) {
 #ifdef DEBUG
