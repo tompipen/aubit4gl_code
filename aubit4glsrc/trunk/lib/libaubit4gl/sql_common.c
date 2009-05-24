@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.83 2009-05-24 18:26:59 mikeaubury Exp $
+# $Id: sql_common.c,v 1.84 2009-05-24 19:19:32 mikeaubury Exp $
 #
 */
 
@@ -2051,7 +2051,7 @@ int A4GL_open_cursor(char* s,int no,void* vibind) {
 	if (cid) {
 		if (cid->statement) {
 			if (cid->statement->select) {
-  			log_sql("FETCH",s,cid->statement->select,t2,NULL,0); 
+  			log_sql("OPEN",s,cid->statement->select,t2,NULL,0); 
 			}
 		}
 	}
