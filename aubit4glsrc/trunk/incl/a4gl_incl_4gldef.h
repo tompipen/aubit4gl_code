@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.127 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.128 2009-05-24 18:26:59 mikeaubury Exp $
 */
 
 /**
@@ -523,6 +523,15 @@ int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char
 #else
 #define int8 long long
 #define serial8 long long
+#endif
+
+
+#ifndef A4GL_aubit_strcasecmp
+#if HAVE_STRCASECMP
+#define A4GL_aubit_strcasecmp strcasecmp
+#else
+#define A4GL_aubit_strcasecmp A4GL_aubit_strcasecmp_internal
+#endif
 #endif
 
 

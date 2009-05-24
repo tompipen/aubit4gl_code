@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.93 2009-04-27 07:33:27 mikeaubury Exp $
+# $Id: pg8.c,v 1.94 2009-05-24 18:26:59 mikeaubury Exp $
 #*/
 
 
@@ -3236,7 +3236,9 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
       int next_param = 0;
       int param;
 	int instr=0;
-      for (a = 0; a < strlen (stmt); a++)
+      int sl;
+	sl= strlen (stmt);
+      for (a = 0; a < sl; a++)
 	{
 	  int has_match;
 	  has_match = 0;
@@ -3307,6 +3309,22 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 		    {
 		    case DTYPE_CHAR:
 		    case DTYPE_NCHAR:
+			{
+		      //A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
+		      //str = A4GL_char_pop ();
+  			static char buff3[64000];
+  			static char buff4[64000];
+			strcpy(buff3,ibind[param].ptr);
+		        A4GL_trim (buff3);
+		      	sprintf (buff4, "'%s'",pgescape_str(buff3, strlen(buff3)));
+			strcat(buff2,buff4);
+			}
+		      //strcat (buff2, pgescape_str (str, strlen (str)));
+		      //strcat (buff2, "'");
+		      //free (str);
+		      break;
+
+
 		    case DTYPE_DTIME:
 		    case DTYPE_INTERVAL:
 		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
@@ -3319,12 +3337,18 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 		      break;
 
 		    case DTYPE_VCHAR:
-		      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
-		      str = A4GL_char_pop ();
-		      strcat (buff2, "'");
-		      strcat (buff2, pgescape_str (str, strlen (str)));
-		      strcat (buff2, "'");
-		      free (str);
+  			//static char buff3[64000];
+			//strcpy(buff3,ibind[param].ptr);
+		        //A4GL_trim (buff3);
+		      	sprintf (buff3, "'%s'",pgescape_str(ibind[param].ptr, strlen(ibind[param].ptr)));
+			strcat(buff2,buff3);
+
+		      //A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
+		      //str = A4GL_char_pop ();
+		      //strcat (buff2, "'");
+		      //strcat (buff2, pgescape_str (str, strlen (str)));
+		      //strcat (buff2, "'");
+		      //free (str);
 		      break;
 
 		    case DTYPE_MONEY:
@@ -3345,6 +3369,16 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 		      SPRINTF1 (buff3, "%16.8lf", *(double *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 		      break;
+
+		    case DTYPE_INT:
+		      SPRINTF1 (buff3, "%d", *(int *) ibind[param].ptr);
+		      strcat (buff2, buff3);
+			break;
+
+		    case DTYPE_SMINT:
+		      SPRINTF1 (buff3, "%d", *(short *) ibind[param].ptr);
+		      strcat (buff2, buff3);
+			break;
 
 		    case DTYPE_DATE:
 		      strcat (buff2, "to_date('");

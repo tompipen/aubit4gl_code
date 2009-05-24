@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.55 2009-05-15 16:25:24 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.56 2009-05-24 18:26:59 mikeaubury Exp $
 */
 
 /**
@@ -72,6 +72,17 @@ extern "C"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
 #include "a4gl_builtin_funcs.h"
+
+
+#ifndef A4GL_aubit_strcasecmp
+#if HAVE_STRCASECMP 
+#define A4GL_aubit_strcasecmp strcasecmp
+#else
+#define A4GL_aubit_strcasecmp A4GL_aubit_strcasecmp_internal
+int A4GL_aubit_strcasecmp_internal (char *a, char *b);
+#endif
+#endif
+
 int A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int rep_end);

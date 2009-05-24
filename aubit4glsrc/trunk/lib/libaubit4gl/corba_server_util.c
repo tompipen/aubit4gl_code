@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.35 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.36 2009-05-24 18:26:59 mikeaubury Exp $
 #
 */
 
@@ -552,7 +552,7 @@ A4GL_isyes (char *s)
  * @todo Describe function
  */
 int
-A4GL_aubit_strcasecmp (char *a, char *b)
+A4GL_aubit_strcasecmp_internal (char *a, char *b)
 {
   int c;
   int l1;

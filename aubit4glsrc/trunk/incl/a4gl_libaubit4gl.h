@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.381 2009-05-15 16:25:24 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.382 2009-05-24 18:26:59 mikeaubury Exp $
 #
 */
 
@@ -441,6 +441,19 @@ void A4GL_ESQL_set_cursor_is_closed(char *s) ;
 #define BADFILE 		3
 #define NOWRITE 		4
 #define BADWRITE 		5
+
+
+int A4GL_aubit_strcasecmp_internal (char *a, char *b);
+
+#ifndef A4GL_aubit_strcasecmp
+#if HAVE_STRCASECMP 
+#define A4GL_aubit_strcasecmp strcasecmp
+#else
+#define A4GL_aubit_strcasecmp A4GL_aubit_strcasecmp_internal
+#endif
+#endif
+
+
 
 #define STREQL(a,b) 	(strcmp(a,b)==0)
 #define STRNEQ(a,b) 	(strcmp(a,b)!=0)
@@ -1687,7 +1700,6 @@ int A4GL_sock_write_int (char *buf, size_t count);
   char *A4GL_fullpath_dbpath (char *fname);
 
   /* ========================== match.c ================================== */
-  int A4GL_aubit_strcasecmp (char *a, char *b);
   int A4GL_matche (register char *p, register char *t,char m,char s,char b); /* m=multi s=single b=brace eg '*' '?' '[' */
 
   /* =========================== gui.c =================================== */

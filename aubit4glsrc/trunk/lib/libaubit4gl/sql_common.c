@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.82 2009-05-12 17:05:34 mikeaubury Exp $
+# $Id: sql_common.c,v 1.83 2009-05-24 18:26:59 mikeaubury Exp $
 #
 */
 
@@ -2118,6 +2118,7 @@ void *A4GL_find_cursor (char *cname)
 {
   struct s_cid *ptr;
   int a;
+  static int lastCursor=-1;
   ptr = NULL; /* .... */
 
 
@@ -2126,12 +2127,22 @@ void *A4GL_find_cursor (char *cname)
 		return NULL;
   }
 
-
-  for (a=0;a<ndeclaredCursors;a++) {
-	if (A4GL_aubit_strcasecmp(declaredCursors[a].cursorname,cname)==0) {
-		ptr=declaredCursors[a].cid;
-		break;
+  if (lastCursor!=-1) {
+	// Is it the same as last time ? 
+  	if (A4GL_aubit_strcasecmp(declaredCursors[lastCursor].cursorname,cname)==0) {
+		ptr=declaredCursors[lastCursor].cid;
 	}
+	if (ptr) return ptr;
+  }
+
+  if (ptr==NULL) {
+  	for (a=0;a<ndeclaredCursors;a++) {
+		if (A4GL_aubit_strcasecmp(declaredCursors[a].cursorname,cname)==0) {
+			lastCursor=a;
+			ptr=declaredCursors[a].cid;
+			break;
+		}
+  	}
   }
 
 

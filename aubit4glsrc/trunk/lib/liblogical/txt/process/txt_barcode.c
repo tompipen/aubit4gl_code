@@ -307,6 +307,7 @@ char *S;
 static char buff[20000];
 int code=39;
 
+
 if (A4GL_isyes(acl_getenv("BARCODE25"))) {
         code=25;
 }
