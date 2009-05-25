@@ -1409,7 +1409,7 @@ struct struct_execute_cmd exec_cmd;
 		case ET_EXPR_SQLBLOCK_INTO:
 			break;
 		case ET_EXPR_VARIABLE_USAGE:
-			strcat(buff,"?");
+			strcat(buff," ?");
 			break;
 
 		case ET_EXPR_SQLBLOCK_TEXT:
