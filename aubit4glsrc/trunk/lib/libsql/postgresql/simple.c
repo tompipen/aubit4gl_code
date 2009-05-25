@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.44 2009-05-25 08:31:09 mikeaubury Exp $
+# $Id: simple.c,v 1.45 2009-05-25 08:36:46 mikeaubury Exp $
 #*/
 
 
@@ -1000,7 +1000,6 @@ void *A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,
 	n->ibind=ibind;
 	n->ni=ni;
 	n->obind=obind;
-n->select=NULL;
 	n->sql=strdup(s);
 	n->name=strdup(uniqid);
 	//A4GL_add_pointer(uniqid,PREPAREPG,n);
