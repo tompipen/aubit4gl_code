@@ -79,6 +79,7 @@ void Parser::parseForm(QDomDocument xmlForm)
       }
 
       if(cnt > ql_formFields.count()*ql_formFields.count()*10){
+         return;
          qFatal("SORTING FIELDS FAILED EXITING");
          break;
       }
@@ -394,7 +395,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
  
       int fieldCount = ql_formFields.count();
  
-      int fieldAt = fieldCount - colCount + i;
+      int fieldAt = ql_formFields.count() - children.count();
  
  
       if(colText.isEmpty()){

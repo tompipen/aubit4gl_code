@@ -699,13 +699,30 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
    if(i_Frm < 0)
       return;
 
-   Fgl::Context *context = getCurrentContext();
+   Context *context = getCurrentContext();
    if(context == NULL)
       return;
 
+   
+   if(context->fieldList().count()-1 >= fieldNo){
+      QWidget *widget = context->fieldList().at(fieldNo);
+
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+      }
+      else{
+         WidgetHelper::setFieldText(widget, fieldValue);
+      }
+      return;
+   }
+   else{
+     qFatal("ERROR: Too many Fields for setFieldBuffer");
+      return;
+   }
+
+
    QString fieldName;
-   if(context->fieldList.count()-1 >= fieldNo){
-      fieldName = context->fieldList.at(fieldNo);
+   if(context->fieldList().count()-1 >= fieldNo){
+      fieldName = context->fieldList().at(fieldNo)->accessibleName();
    }
    else{
       qFatal("Field not found in ScreenHandler::setFieldBuffer(int, QString)");
@@ -752,8 +769,8 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
       return;
 
    QString fieldName;
-   if(context->fieldList.count()-1 >= fieldNo){
-      fieldName = context->fieldList.at(fieldNo);
+   if(context->fieldList().count()-1 >= fieldNo){
+      fieldName = context->fieldList().at(fieldNo);
    }
    else{
       return;
@@ -1023,8 +1040,15 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
 
 void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
 {
+   Context *context = getCurrentContext();
+
+   context->setScreenRecordValues(row, fieldValues);
+
+   return;
+
 //   QList<QWidget*> ql_fields = p_fglform->formElements();
    QList<QWidget*> ql_fields = p_fglform->ql_formFields;
+   qDebug() << "FIELDVALUES:" << fieldValues;
    for(int i=0; i<ql_fields.size(); i++){
 
       QWidget *widget = ql_fields.at(i);
@@ -1047,6 +1071,7 @@ void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
                col = 0;
             }
 
+            qDebug() << "I:" << i;
             QString fieldValue = fieldValues.at(i);
             QModelIndex modelIndex = table->index(row, col, QModelIndex());
             table->setData(modelIndex, fieldValue, Qt::EditRole);
@@ -1115,30 +1140,33 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
    if(i_Frm < 0)
       return;
 
-   Fgl::Context *context = getCurrentContext();
+   Context *context = getCurrentContext();
    if(context == NULL)
       return;
    
    // For fieldlist = table.*
    int index = fieldName.indexOf(".*");
 
+qDebug() << "SET FIELD ENABLED:" << fieldName;
    if(index < 0){
       // No wildcard
       QWidget *widget = p_fglform->findFieldByName(fieldName);
       if(widget != NULL){
-         widget->setEnabled(enable);
+         //widget->setEnabled(enable);
          if(enable) {
-            context->fieldList << widget->accessibleName();
+            context->addField(widget);
          }
+/*
          else{
             widget->setProperty("touched", 0);
-            context->fieldList.removeOne(widget->accessibleName());
+            context->fieldList().removeOne(widget);
          }
          if(focus){
             widget->setFocus();
             widget->update();
             focus = false;
          }
+*/
       }
    }
    else{
@@ -1146,19 +1174,21 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
       for(int i=0; i<ql_fields.count(); i++){
          QWidget *widget = ql_fields.at(i);
          if(widget != NULL){
-            widget->setEnabled(enable);
+            //widget->setEnabled(enable);
             if(enable) {
-               context->fieldList << widget->accessibleName();
+               context->addField(widget);
             }
+/*
             else{
                widget->setProperty("touched", 0);
-               context->fieldList.removeOne(widget->accessibleName());
+               context->fieldList().removeOne(widget);
             }
             if(focus){
                widget->setFocus();
                widget->update();
                focus = false;
             }
+*/
          }
       }
    }
@@ -1200,7 +1230,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
          if(rx.exactMatch(widget->accessibleName())){ 
             widget->setEnabled(enable);
             if(enable) {
-               context->fieldList << widget->accessibleName();
+               context->fieldList() << widget->accessibleName();
             }
             else{
             }
@@ -1242,7 +1272,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
          if((widget->objectName() == fieldName || widget->accessibleName() == fieldName)){ //&& !widget->inherits("QLabel")){
             widget->setEnabled(enable);
             if(enable)
-               context->fieldList << widget->accessibleName();
+               context->fieldList() << widget->accessibleName();
 
             if(focus){
                widget->setFocus();
@@ -1639,32 +1669,32 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
    if(i_Frm < 0)
       return;
 
-   Fgl::Context *context = getContext(i_context);
+   Context *context = getContext(i_context);
 
    if(value){
       if(type == "MENU"){
          p_fglform->setState(Fgl::MENU);
-         context->state = Fgl::MENU;
+         context->setState(Fgl::MENU);
       }
 
       if(type == "INPUT"){
          p_fglform->setState(Fgl::INPUT);
-         context->state = Fgl::INPUT;
+         context->setState(Fgl::INPUT);
       }
 
       if(type == "CONSTRUCT"){
          p_fglform->setState(Fgl::CONSTRUCT);
-         context->state = Fgl::CONSTRUCT;
+         context->setState(Fgl::CONSTRUCT);
       }
 
       if(type == "DISPLAYARRAY"){
          p_fglform->setState(Fgl::DISPLAYARRAY);
-         context->state = Fgl::DISPLAYARRAY;
+         context->setState(Fgl::DISPLAYARRAY);
       }
 
       if(type == "INPUTARRAY"){
          p_fglform->setState(Fgl::INPUTARRAY);
-         context->state = Fgl::INPUTARRAY;
+         context->setState(Fgl::INPUTARRAY);
       }
    }
    else{
@@ -1687,10 +1717,12 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
          if(p_fglform->input()){
             p_fglform->revertState(Fgl::INPUT);
 
-            QStringList fields = context->fieldList;
+/*
+            QStringList fields = context->fieldList();
             for(int i=0; i<fields.count(); i++){
                setFieldEnabled(fields.at(i), false, false);
             }
+*/
             freeContext(i_context);
             p_fglform->ql_responseQueue.clear();
             p_fglform->ql_formEvents.clear();
@@ -1699,14 +1731,16 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
 
          if(p_fglform->inputArray()){
 //            QList<QWidget*> ql_fields = p_fglform->formElements();
-            for(int i=0; i<context->fieldList.count(); i++){
-               QWidget *widget = p_fglform->findFieldByName(context->fieldList.at(i));
+/*
+            for(int i=0; i<context->fieldList().count(); i++){
+               QWidget *widget = p_fglform->findFieldByName(context->fieldList().at(i));
                if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
                   if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
                      tableView->setEnabled(false);
                   }
                }
             }
+*/
             p_fglform->revertState(Fgl::INPUTARRAY);
             freeContext(i_context);
             p_fglform->ql_responseQueue.clear();
@@ -1718,6 +1752,7 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
       if(type == "CONSTRUCT"){
          p_fglform->revertState(Fgl::CONSTRUCT);
 //         QList<QWidget*> ql_fields = p_fglform->formElements();
+/*
          QList<QWidget*> ql_fields = p_fglform->ql_formFields;
          for(int i=0; i<ql_fields.size(); i++){
             QWidget *widget = (QWidget*) ql_fields.at(i);
@@ -1731,20 +1766,22 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
                textEdit->setEnabled(false);
             }
          }
+*/
          freeContext(i_context);
       }
-   }
 
    if(type == "DISPLAY"){
 //      QList<QWidget*> ql_fields = p_fglform->formElements();
-      for(int i=0; i<context->fieldList.count(); i++){
-         QWidget *widget = p_fglform->findFieldByName(context->fieldList.at(i));
+/*
+      for(int i=0; i<context->fieldList().count(); i++){
+         QWidget *widget = p_fglform->findFieldByName(context->fieldList().at(i));
          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
             if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
                tableView->setEnabled(false);
                }
          }
       }
+*/
       p_fglform->revertState(Fgl::DISPLAYARRAY);
    }
 
@@ -1828,8 +1865,8 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
          if(p_fglform->input()){
             p_fglform->revertState(Fgl::INPUT);
 
-            for(int i=0; i<context->fieldList.count(); i++){
-               setFieldEnabled(context->fieldList.at(i), false, false);
+            for(int i=0; i<context->fieldList().count(); i++){
+               setFieldEnabled(context->fieldList().at(i), false, false);
             }
             freeContext(i_context);
             p_fglform->ql_responseQueue.clear();
@@ -1912,10 +1949,11 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
    if(value < 0)
       return;
 
-   Fgl::Context *context = getCurrentContext();
+   Context *context = getCurrentContext();
 
-   context->options[attribute] = value;
+   context->setOption(attribute,value);
 
+/*
    if(type == "MENU"){
    }
 
@@ -1923,7 +1961,6 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
    }
 
    if(type == "INPUT"){
-      context->options[attribute] = value;
    }
 
    if(type == "CONSTRUCT"){
@@ -1993,6 +2030,7 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
          }
       }
    }
+*/
 }
 
 //------------------------------------------------------------------------------
@@ -2386,8 +2424,38 @@ void ScreenHandler::setKeyLabel(int dialog, QString label, QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool input)
 {
-   Fgl::Context *context = getCurrentContext();
+   Context *context = getCurrentContext();
 
+   QList<QWidget*> ql_fields = p_fglform->findFieldsByName(fieldName);
+   for(int i=0; i< ql_fields.count(); i++){
+
+      QWidget *widget = ql_fields.at(i);
+
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            
+            context->addScreenRecord(tableView, input);
+/*
+            tableView->setInputEnabled(input);
+            tableView->setEnabled(enable);
+            if(enable){
+               if(!input && focus){
+                  tableView->selectRow(0);
+                  focus = false;
+               }
+               else{
+                  QModelIndex index = tableView->model()->index(0, 0, QModelIndex());
+                  if(index.isValid() && focus){
+                     tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+                     focus = false;
+                  }
+               }
+            }
+*/
+         }
+      }
+   }
+/*
    int index = fieldName.indexOf(".*");
    bool focus = true;
 
@@ -2400,7 +2468,7 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
          QWidget *widget = ql_fields.at(i);
 
          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-            context->fieldList << de->objectName();
+            context->fieldList() << de->objectName();
             if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
                tableView->setInputEnabled(input);
                tableView->setEnabled(enable);
@@ -2421,6 +2489,7 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
          }
       }
    }
+*/
 }
 
 //------------------------------------------------------------------------------
@@ -2625,13 +2694,14 @@ void ScreenHandler::setArrLine(int line)
    if(p_fglform == NULL)
       return;
 
-   Fgl::Context *context = getCurrentContext();
+   Context *context = getCurrentContext();
 
    if(context == NULL)
       return;
 
-   for(int i=0; i<context->fieldList.count(); i++){
-      QWidget *widget = p_fglform->findFieldByName(context->fieldList.at(i));
+/*
+   for(int i=0; i<context->fieldList().count(); i++){
+      QWidget *widget = p_fglform->findFieldByName(context->fieldList().at(i));
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
          if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
             QModelIndex index = tableView->currentIndex();
@@ -2646,6 +2716,7 @@ void ScreenHandler::setArrLine(int line)
          }
       }
    }
+*/
 
 
 
@@ -2687,12 +2758,12 @@ void ScreenHandler::setScrLine(int line)
    }
 }
 
-Fgl::Context* ScreenHandler::getContext(int i_context)
+Context* ScreenHandler::getContext(int i_context)
 {
    int contextCount = contexts.count()-1;
 
    for(int i=contextCount; i<i_context; i++){
-      Fgl::Context *context = new Fgl::Context;
+      Context *context = new Context;
       contexts << context;
    }
 
@@ -2700,7 +2771,7 @@ Fgl::Context* ScreenHandler::getContext(int i_context)
 
 }
 
-Fgl::Context* ScreenHandler::getCurrentContext()
+Context* ScreenHandler::getCurrentContext()
 {
    if(contexts.count() > 0){
       return contexts.at(contexts.count()-1);
@@ -2714,7 +2785,8 @@ void ScreenHandler::freeContext(int i_context)
 {
    int contextCount = contexts.count()-1;
    if(contextCount >= i_context)
-      contexts.removeAt(i_context);
+      contexts.takeAt(i_context)->deleteLater();
+      //contexts.removeAt(i_context);
 
 }
 

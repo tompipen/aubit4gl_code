@@ -49,14 +49,14 @@ public:
    //
    void setInputFields(QStringList);
    Prompt *p_prompt;
-   Fgl::Context* getContext(int);
-   Fgl::Context* getCurrentContext();
+   Context* getContext(int);
+   Context* getCurrentContext();
    void freeContext(int);
 
    QHash<QString, QString> qh_env;
    void setSearchPaths();
 private:
-   QList<Fgl::Context*> contexts;
+   QList<Context*> contexts;
    bool cursorPos;
 
    FglForm *p_fglform;

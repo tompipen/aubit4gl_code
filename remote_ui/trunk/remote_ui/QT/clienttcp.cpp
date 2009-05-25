@@ -1356,6 +1356,15 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
          input = true;
       }
 
+      setFormOpts(arrayElement.nodeName(), QString("ARRCOUNT"), arrCount);
+      setFormOpts(arrayElement.nodeName(), QString("ARRVARIABLES"), arrVariables);
+      setFormOpts(arrayElement.nodeName(), QString("MAXARRSIZE"), maxArrSize);
+      setFormOpts(arrayElement.nodeName(), QString("WITHOUT_DEFAULTS"), withoutDefaults);
+      setFormOpts(arrayElement.nodeName(), QString("ALLOWINSERT"), allowInsert);
+      setFormOpts(arrayElement.nodeName(), QString("ALLOWDELETE"), allowDelete);
+      setFormOpts(arrayElement.nodeName(), QString("NONEWLINES"), noNewLines);
+      setFormOpts(arrayElement.nodeName(), QString("WRAP"), wrap);
+
       createActionMenu();
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
@@ -1386,14 +1395,6 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
                if(arrayElement.nodeName() == "DISPLAYARRAY" ||
                   arrayElement.nodeName() == "INPUTARRAY"){
                   setScreenRecordEnabled(screenRecordName, true, input);
-                  setFormOpts(arrayElement.nodeName(), QString("ARRCOUNT"), arrCount);
-                  setFormOpts(arrayElement.nodeName(), QString("ARRVARIABLES"), arrVariables);
-                  setFormOpts(arrayElement.nodeName(), QString("MAXARRSIZE"), maxArrSize);
-                  setFormOpts(arrayElement.nodeName(), QString("WITHOUT_DEFAULTS"), withoutDefaults);
-                  setFormOpts(arrayElement.nodeName(), QString("ALLOWINSERT"), allowInsert);
-                  setFormOpts(arrayElement.nodeName(), QString("ALLOWDELETE"), allowDelete);
-                  setFormOpts(arrayElement.nodeName(), QString("NONEWLINES"), noNewLines);
-                  setFormOpts(arrayElement.nodeName(), QString("WRAP"), wrap);
                }
             }
          }

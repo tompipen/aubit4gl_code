@@ -20,11 +20,13 @@ public:
      int fieldIdRef;
    } Link;
 
+/*
    typedef struct {
       State state;
       QStringList fieldList;
       QHash<QString, int> options;
    } Context;
+*/
 };
 
 #endif

@@ -32,6 +32,7 @@
 #include "dialog.h"
 #include "table.h"
 #include <include/fgl.h>
+#include <context.h>
 
 class FglForm : public QMainWindow
 {
@@ -161,7 +162,7 @@ public:
 
    QList<QWidget*> formElements();
 
-   Fgl::Context *context;
+   Context *context;
 
    QWidget* findFieldByName(QString);
    QList<QWidget*> findFieldsByName(QString);

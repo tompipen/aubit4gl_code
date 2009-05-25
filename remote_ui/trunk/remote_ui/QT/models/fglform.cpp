@@ -1099,11 +1099,10 @@ void FglForm::nextfield()
       //  If context option says not to wrap
       //  and input field is the last field in the list
       //  then trigger after "INPUT" event
-      if(!this->context->options["WRAP"]){
-         if(context->fieldList.count() > 0){
-            QString lastField = context->fieldList.last();
-            if(lastField == currentWidget->accessibleName() ||
-               lastField == currentWidget->objectName()){
+      if(!this->context->getOption("WRAP")){
+         if(context->fieldList().count() > 0){
+            QWidget* lastField = context->fieldList().last();
+            if(lastField == currentWidget){
                Fgl::Event event;
                switch(state()){
                   case Fgl::INPUT:
@@ -1903,6 +1902,8 @@ QList<QWidget*> FglForm::findFieldsByName(QString fieldName)
    QList<QWidget*> ql_foundFields;
 
    QList<QWidget*> ql_fields = ql_formFields;
+
+   qDebug() << "FORM FIELDS:" << ql_fields;
 
    int index = fieldName.indexOf(".*");
 

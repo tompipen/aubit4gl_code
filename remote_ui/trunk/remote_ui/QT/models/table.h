@@ -160,7 +160,6 @@ public:
    void setColumn(int c) { i_column = c; };
    int column() { return i_column; } ;
 
-
 protected:
    bool eventFilter(QObject *editor, QEvent *event);
 
@@ -173,6 +172,7 @@ public slots:
 private:
    QWidget *p_fglform;
    QDomElement formElement;
+   QString qs_text;
 
    int i_column;
 };
