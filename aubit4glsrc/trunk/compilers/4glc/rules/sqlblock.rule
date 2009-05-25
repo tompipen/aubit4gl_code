@@ -29,6 +29,11 @@ sql_block_entry:
 		        $<ptr>$=A4GL_new_expr_simple (ET_EXPR_SQLBLOCK_INTO);
         		$<ptr>$->expr_str_u.expr_list=$<ptr_list>2;
 	}
+	| DOLLAR SQL_TEXT { 
+      char  numbered_value[300];
+      sprintf(numbered_value,"$%s",$<str>2);
+		  $<ptr>$=A4GL_new_expr_simple_string(numbered_value, ET_EXPR_SQLBLOCK_TEXT);
+	}
 	| DOLLAR ensured_variable_usage_expression { 
 			$<ptr>$=$<ptr>2;
 	}
