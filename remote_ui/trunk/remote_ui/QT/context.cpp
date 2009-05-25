@@ -17,7 +17,6 @@ Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
 
 Context::~Context()
 {
-   qDebug() << "KILLED";
    for(int i=0; i<ql_fieldList.count(); i++){
       QWidget *field = ql_fieldList.at(i);
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (field)){
@@ -48,11 +47,6 @@ Context::~Context()
 void Context::addField(QWidget *field)
 {
 
-   qDebug() << "ADD FIELD";
-   qDebug() << "STATE:" << fgl_state;
-   qDebug() << "FIELD:" << field;
-   qDebug() << "OPTIONS:" << qh_options;
-   qDebug() << "";
    if(!ql_fieldList.contains(field)){
 
       field->setEnabled(true);
@@ -100,11 +94,6 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
 {
 
    if(!ql_fieldList.contains(screenRec)){
-   qDebug() << "ADD ScreenRecord" << this;
-   qDebug() << "STATE:" << fgl_state;
-   qDebug() << "FIELD:" << screenRec;
-   qDebug() << "OPTIONS:" << qh_options;
-   qDebug() << "";
       if(TableView *tableView = qobject_cast<TableView *> (screenRec)){
 
          tableView->setInputEnabled(input);
@@ -131,8 +120,8 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
 void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIndex & previous)
 {
 
-   qDebug() << "ROW CHANGED!" << current << QObject::sender()->parent();
-   qDebug() << "";
+   if(fgl_state != Fgl::INPUTARRAY && fgl_state != Fgl::DISPLAYARRAY)
+      return;
 
    setOption("ARRLINE", current.row());
    setOption("SCRLINE", current.row());
@@ -147,6 +136,8 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
             QModelIndex index = tableView->model()->index(current.row(), current.column());
             tableView->setCurrentIndex(index);
          }
+         if(current.row() > tableView->arrCount())
+            setOption("ARRCOUNT", current.row());
       }
    }
 
@@ -155,24 +146,17 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
 
 void Context::screenRecordColumnChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-
-   qDebug() << "COLUMN CHANGED" << QObject::sender();
-   
 }
 
 QStringList Context::getScreenRecordValues(int row)
 {
    QStringList fieldValues;
 
-   qDebug() << "GET SCREEN RECORD VALUES";
-   qDebug() << "FIELDS:" << ql_fieldList;
-
    for(int i=0; i<ql_fieldList.count(); i++){
 
       if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
          for(int j=0; j<tableView->model()->columnCount(); j++){
             QModelIndex currIndex = tableView->model()->index(row, j);
-   qDebug() << "VALUES:" << currIndex <<  tableView->model()->data(currIndex).toString();
             fieldValues << tableView->model()->data(currIndex).toString();
          }
       }
@@ -209,7 +193,10 @@ void Context::setRowChanged()
 
    rowChangedCnt++;
    if(rowChangedCnt == ql_fieldList.count()){
-      emit rowChanged();
+      
+      Fgl::Event event;
+      event.type = Fgl::AFTER_ROW_EVENT;
+      //emit fieldEvent(event);
       rowChangedCnt=0;
    }
 

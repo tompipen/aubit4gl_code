@@ -186,8 +186,6 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
 
 void Response::addScreenRecSyncValues()
 {
-   QDomElement syncRowsElement = this->createElement("SYNCROWS");
-   responseElement.appendChild(syncRowsElement);
 
    int arrCount = p_currForm->context->getOption("ARRCOUNT");
    if(arrCount <= 0) arrCount = 1;
@@ -206,6 +204,9 @@ void Response::addScreenRecSyncValues()
 
    if(p_currForm->context->state() != Fgl::INPUTARRAY)
       return;
+
+   QDomElement syncRowsElement = this->createElement("SYNCROWS");
+   responseElement.appendChild(syncRowsElement);
 
    for(int i=0; i<arrCount; i++){
       QDomElement syncRowElement = this->createElement("ROW");

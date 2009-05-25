@@ -35,7 +35,7 @@
 
 FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
-   context = 0;
+   context = NULL;
 
    if(!windowName.isEmpty()){
       this->windowName = windowName;
@@ -1902,8 +1902,6 @@ QList<QWidget*> FglForm::findFieldsByName(QString fieldName)
    QList<QWidget*> ql_foundFields;
 
    QList<QWidget*> ql_fields = ql_formFields;
-
-   qDebug() << "FORM FIELDS:" << ql_fields;
 
    int index = fieldName.indexOf(".*");
 

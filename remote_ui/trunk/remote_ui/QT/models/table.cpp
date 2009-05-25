@@ -283,7 +283,6 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
       }
    }
 
-
 }
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)
@@ -293,12 +292,12 @@ TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableM
       insertRows(i, 1, QModelIndex());
    }
 
-   b_input = false;
+   b_input = true;
 }
 
 TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
 {
-   b_input = false;
+   b_input = true;
    this->columns = 0;
 }
 
@@ -310,6 +309,9 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 {
    int row = index.row();
    int column = index.column();
+
+   if(column == -1 || row == -1)
+      return QVariant();
 
    if (role == Qt::DisplayRole || role == Qt::EditRole)
    {

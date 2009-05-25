@@ -38,7 +38,7 @@ public slots:
    void screenRecordColumnChanged(const QModelIndex &current, const QModelIndex &previous);
 
 signals:
-   void rowChanged();
+   void fieldEvent(Fgl::Event);
     
 };
 

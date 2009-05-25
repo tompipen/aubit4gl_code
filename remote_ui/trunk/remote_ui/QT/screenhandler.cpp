@@ -1147,7 +1147,6 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
    // For fieldlist = table.*
    int index = fieldName.indexOf(".*");
 
-qDebug() << "SET FIELD ENABLED:" << fieldName;
    if(index < 0){
       // No wildcard
       QWidget *widget = p_fglform->findFieldByName(fieldName);
@@ -2045,7 +2044,10 @@ void ScreenHandler::waitForEvent()
       return;
 
 
-   p_fglform->context = getCurrentContext();
+   if(p_fglform->context != getCurrentContext()){
+      p_fglform->context = getCurrentContext();
+      connect(p_fglform->context, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
+   }
 
    if(b_newForm && p_fglform->dialog () == NULL){
       b_newForm = false;

@@ -309,6 +309,7 @@ protected:
 signals:
    void returnPressed();
    void fieldEvent(QString);
+   void fieldEvent(Fgl::Event);
 
 };
 
