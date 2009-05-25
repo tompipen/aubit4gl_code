@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.186 2009-05-15 17:03:16 mikeaubury Exp $
+# $Id: report.c,v 1.187 2009-05-25 08:07:56 mikeaubury Exp $
 #
 */
 
@@ -3190,17 +3190,19 @@ int len;
 char *p;
 char *buff;
 int spaces;
+int sp;
 // something is on the stack - and we need to make sure its long
 // enough..
 len=A4GL_pop_int();
 p=A4GL_char_pop();
-if (strlen(p)>=len) {
+sp=strlen(p)+1;
+if (sp>=len) {
 	A4GL_push_char(p);
 	A4GL_push_empty_char();
 	free(p);
 	return;
 }
-spaces=len-strlen(p);
+spaces=len-sp;
 buff=malloc(spaces+1);
 memset(buff,' ',spaces);
 buff[spaces]=0;
