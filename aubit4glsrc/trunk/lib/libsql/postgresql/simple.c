@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.42 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: simple.c,v 1.43 2009-05-25 07:55:28 mikeaubury Exp $
 #*/
 
 
@@ -1044,5 +1044,10 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
     return 1;
 }
 
+int
+A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void *binding) {
+A4GL_assertion(1," A4GLSQLLIB_A4GLSQL_execute_implicit_sql not implemented in A4GL_SQLTYPE=pg use A4GL_SQLTYPE=pg8");
+return 0;
+}
 
 /* =============================== EOF ============================== */
