@@ -117,6 +117,7 @@ fix_insert_expr (int mode)
       		while (1) {
 	  		colname[0] = 0;
 	  		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+			idtype=idtype&DTYPE_MASK;
 	  		strcpy (colname, ccol);
 	  		if (rval == 0)
 	    		break;
@@ -143,6 +144,7 @@ fix_insert_expr (int mode)
       		while (1) {
 	  		colname[0] = 0;
 	  		rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+			idtype=idtype&DTYPE_MASK;
 	  		strcpy (colname, ccol);
 	  		if (rval == 0)
 	    		break;

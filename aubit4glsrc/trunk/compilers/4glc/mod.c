@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.327 2009-02-23 17:31:48 mikeaubury Exp $
+# $Id: mod.c,v 1.328 2009-05-26 12:16:56 mikeaubury Exp $
 #
 */
 
@@ -2151,6 +2151,7 @@ int idtype, isize;
 	idtype=-1;
 	ptr=A4GL_4glc_get_gen (UPDCOL, a);
 	rval = A4GL_read_columns (current_upd_table, ptr, &idtype, &isize);
+			idtype=idtype&DTYPE_MASK;
 	if (idtype==-1 || rval!=1) continue;
 //printf("Here %d %d rval=%d\n", idtype,isize,rval);
 	if ((idtype &  DTYPE_MASK )==DTYPE_SERIAL) {
@@ -3016,6 +3017,7 @@ l=NULL;
         {
           colname[0] = 0;
           rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+			idtype=idtype&DTYPE_MASK;
 	
           if (rval == 0)
             break;

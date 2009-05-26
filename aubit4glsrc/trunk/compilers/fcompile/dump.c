@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.23 2008-11-05 14:23:35 mikeaubury Exp $
+# $Id: dump.c,v 1.24 2009-05-26 12:16:57 mikeaubury Exp $
 #*/
 
 /**
@@ -91,6 +91,14 @@ char *desc_bool[] = {
   "WANTNORETURNS",
   "FONTPITCHFIXED",
   "FONTPITCHVARIABLE",
+        "AUTOSCALE",
+        "STRETCH_BOTH",
+        "STRETCH_Y",
+        "SCROLLBARS_BOTH",
+        "SCROLLBARS_VERTICAL",
+        "SCROLLBARS_HORIZONAL",
+        "AUTOSIZE",
+        "NOTNULL",
 
   0
 };

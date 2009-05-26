@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.49 2008-11-30 09:36:30 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.50 2009-05-26 12:16:57 mikeaubury Exp $
 #*/
 
 /**
@@ -1149,7 +1149,22 @@ real_add_bool_attr (struct struct_scr_field *f, int type)
     "WORDWRAP",
     "COMPRESS",
     "UPSHIFT",
-    "DOWNSHIFT","REQUIRED","NOUPDATE","QUERYCLEAR","ZEROFILL","RIGHT"
+    "DOWNSHIFT","REQUIRED","NOUPDATE","QUERYCLEAR","ZEROFILL","RIGHT",
+  "HIDDEN",
+  "SCROLL",
+  "WANTTABS",
+  "WANTNORETURNS",
+  "FONTPITCHFIXED",
+  "FONTPITCHVARIABLE",
+        "AUTOSCALE",
+        "STRETCH_BOTH",
+        "STRETCH_Y",
+        "SCROLLBARS_BOTH",
+        "SCROLLBARS_VERTICAL",
+        "SCROLLBARS_HORIZONAL",
+        "AUTOSIZE",
+        "NOTNULL"
+
   };
 
   A4GL_debug ("add_bool_attr\n");

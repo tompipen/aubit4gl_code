@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.8 2009-04-01 19:50:26 mikeaubury Exp $
+# $Id: variables_new.c,v 1.9 2009-05-26 12:16:56 mikeaubury Exp $
 #
 */
 
@@ -382,6 +382,8 @@ struct variable *v;
 
   while (1)
     {
+	int isnotnull=0;
+
       colname[0] = 0;
 
       ccol = 0;
@@ -401,9 +403,16 @@ struct variable *v;
       strcpy (colname, ccol);
       trim_spaces (colname);
 
+	if (idtype&256) { // Not null...
+		idtype-=256;
+		isnotnull=1;
+	}
+
 	if (idtype>DTYPE_MASK) {
+		printf("Unexpected datatype : %d\n", idtype);
 		A4GL_pause_execution(); // Safe to commit
 	}
+
        v=new_simple_variable(colname, idtype,isize,0);
 
        SPRINTF2(buff,"%s.%s", tableName, colname);

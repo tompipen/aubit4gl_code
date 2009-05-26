@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.157 2009-05-06 10:42:18 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.158 2009-05-26 12:16:57 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.157 2009-05-06 10:42:18 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.158 2009-05-26 12:16:57 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1206,7 +1206,11 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	      else
 		{
 		  A4GL_debug ("Field is null");
-		  A4GL_push_null (DTYPE_CHAR, 0);
+ 				if (A4GL_has_bool_attribute(fprop,FA_B_NOTNULL))  {
+					A4GL_push_char(" ");
+				} else {
+		  			A4GL_push_null (DTYPE_CHAR, 0);
+				}
 		}
 
 

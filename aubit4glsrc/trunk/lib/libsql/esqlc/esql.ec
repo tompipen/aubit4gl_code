@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.233 2009-05-08 15:12:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.234 2009-05-26 12:16:57 mikeaubury Exp $
 #
 */
 
@@ -73,44 +73,33 @@ WARNING !!!! Informix esqlc compiler on Windows DOES NOT ACCEPT C++ stype commne
 =====================================================================
 */
 
-//int A4GL_dttoc (void *a, void *b, int size);
 
 #define KAGEL_UNLOAD
 
 
 #define IN_A4GL
-//Not referenced anywhere:
-//#define DEFINE_SQLCA
 
 /** Informix ESQL/C database connector type */
 #define ESQL_CONNECTOR   0
 
-//Prevent Aubit headers from definig sqlc record; we will use the one
-//provided in Informix headers instead.
-//WARNING: Since sqlca is used in many places in Aubit code, is this safe?
+/*Prevent Aubit headers from definig sqlc record; we will use the one
+ provided in Informix headers instead.
+WARNING: Since sqlca is used in many places in Aubit code, is this safe?
+*/
+
 #define _SQLCA_DEFINED_
 #include  <sqltypes.h>
 #include <string.h>
 #include <limits.h>
-//#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 static void copy_sqlca_Stuff(int warnings) ;
 void A4GL_rm_associated_mem (void *orig, void *newbytes);
 
 #define isSqlError() internal_isSqlError(__FILE__,__LINE__)
-//#ifndef __QUERIX__
 $include sqlca;
-//#else
-//not sure about this:
-//$include qxdefs.h;
-//#endif
 
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_expr.h"
 char unloadBuffer[BUFSIZ];
-//static void A4GL_quick_trim(char *s) ;
-//#define PRECODEEC '|'
-
-//extern sqlca_struct a4gl_sqlca;
 dll_export sqlca_struct a4gl_sqlca;
 
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) ;
@@ -146,10 +135,6 @@ static void internal_free_cursor (char *s,int reset_Sqlca);
 #define FETCH__RELATIVE 		5
 #define FETCH__ABSOLUTE 		6
 
-//#define TU_ENCODE(len,s,e) (((len)<<8) | ((s)<<4) | (e))
-//#define TU_DTENCODE(s,e) TU_ENCODE(((e)-(s)+((s)==TU_YEAR?4:2)), s, e)
-//#define TU_IENCODE(len,s,e) TU_ENCODE(((e)-(s)+(len)),s,e)
-//#define TU_FLEN(len) (TU_LEN(len)-(TU_END(len)-TU_START(len)))
 static void A4GL_sql_copy_interval(void *infxv, void *a4glv,int isnull,int size,int mode);
 
 EXEC SQL BEGIN DECLARE SECTION;
@@ -181,7 +166,6 @@ static char dectoasc_decsep=0;
 static int error_just_in_case (void);
 static int processPreStatementBinds (struct s_sid *sid);
 
-//static void freeStatement(struct s_sid *sid) ;
 
 EXEC SQL include sqlca;
 
@@ -196,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.233 2009-05-08 15:12:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.234 2009-05-26 12:16:57 mikeaubury Exp $";
 #endif
 
 
@@ -205,7 +189,6 @@ static const char rcs[] =
 static int statementCount = 0;
 
 /** Indicate if an error as ocurred in order to return error codes */
-//static int errorOcurred;
 
 /**
  * Information about a connection to a database.
@@ -325,9 +308,6 @@ A4GL_debug("isSqlError Called from : %s %d",s,l);
 
 
 
-#ifdef DEBUG
-//A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_sqlca.sqlawarn[1], a4gl_sqlca.sqlawarn[2], a4gl_sqlca.sqlawarn[3], a4gl_sqlca.sqlawarn[4], a4gl_sqlca.sqlawarn[5], a4gl_sqlca.sqlawarn[6], a4gl_sqlca.sqlawarn[7]);
-#endif
   
 
 
@@ -588,13 +568,13 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   db = buff;
   A4GL_debug ("-->%s<--\n", buff);
 
-// Have we got an active db session ?
+/* Have we got an active db session ? */
   if (have_connected)
     {
 
       EXEC SQL DISCONNECT 'default';
       removeESQLConnection ("default");
-      // Not any more we havent...
+      /* Not any more we havent... */
     }
 
 
@@ -697,7 +677,7 @@ initUser (const char *dbName, const char *userName)
   retPass = (char *) acl_getenv_not_set_as_0 ("SQLPWD");
   if (retUser && retPass) {
   	if (strcmp(retUser,"informix")==0 && strcmp(retPass,"ifmx")==0) {
-		// These are the defaults - so mean nothings has been set..
+		/* These are the defaults - so mean nothings has been set.. */
 		retUser=NULL;
 		retPass=NULL;
 	}
@@ -858,10 +838,10 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
                 }
         incvasc(ptr,infx);
 
-        // Debugging stuff only
+        /* Debugging stuff only */
                 A4GL_debug("Copy interval in - aubit=%s\n",ptr);
                 A4GL_debug("                Informix=%s\n",buff);
-        // End of Debugging stuff only
+        /* End of Debugging stuff only */
 
                         free(ptr);
                 }
@@ -875,21 +855,17 @@ if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'")
                         intoasc(infx,buff);
 
 			if (A4GL_ctoint(buff,a4gl,size)) {
-                        	//A4GL_push_char(buff);
-				//memset(a4gl,0,sizeof(struct ival));
-                        	//A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
-	
-				// DEBUG
+				/* DEBUG */
                         	A4GL_push_interval(a4gl,size);
                         	ptr=A4GL_char_pop();
                 		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
                 		A4GL_debug("                Informix=%s\n",buff);
                         	free(ptr);
+				/* End of DEBUG */
 			} else {
 				A4GL_debug("Couldn't convert");
 			}
 			
-			// End of DEBUG
                 }
 
 }
@@ -960,8 +936,6 @@ A4GLSQLLIB_A4GLSQL_get_currdbname (void)
 }
 
 
-//static void freeStatement(struct s_sid *sid) {
-//}
 
 /**
  * Create an sql statement structure.
@@ -1041,10 +1015,7 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
   if (sid) {
 	statementName=uniqId;
-        //A4GLSQL_free_prepare(sid);
-        //A4GL_removePreparedStatementBySid(sid);
 	EXEC SQL FREE :statementName;
-	//free(sid);
   }
 
   sid = newStatement (ibind, ni, obind, no, s,uniqId);
@@ -1056,7 +1027,6 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
 
 
-  //A4GLSQL_add_prepare(sid->statementName,sid);
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
   EXEC SQL PREPARE:statementName FROM:statementText;
 
@@ -1066,7 +1036,6 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
     {
 
 
-      //A4GLSQL_del_prepare(sid->statementName);
       A4GL_set_status (sqlca.sqlcode, 1);
 
 	free(sid);
@@ -1097,7 +1066,6 @@ getIfmxDataType (int dataType)
 
 
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) {
-//
 short indicat=0;
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
@@ -1133,7 +1101,6 @@ if (dtype==DTYPE_BYTE) {
                         infx->loc_oflags = LOC_RONLY;   /* contents are to be read by engine */
                         infx->loc_size = -1;            /* read to end of file */
                         infx->loc_indicator = 0;   	/* not a null blob */
-                        //infx->loc_buffer = (char *) NULL;
                 }
 		return;
         }
@@ -1142,12 +1109,10 @@ if (dtype==DTYPE_BYTE) {
         if (mode=='o') {
                 if (p_indicat) indicat=*p_indicat;
                 if (indicat==-1||risnull(CLOCATORTYPE,(void*)infx)) { 
-			//a4gl->where=0;
 			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
 
 		}
 		if (infx->loc_indicator==-1) {
-			//a4gl->where=0;
 			A4GL_setnull(DTYPE_BYTE,(void *)a4gl,size); return;
 		}
 
@@ -1177,7 +1142,6 @@ if (dtype==DTYPE_BYTE) {
 
 static void get_scale(char *b, int *p_prec, int *p_scale) {
 char buff[10000];
-//int c;
 int a;
 int l;
 strcpy(buff,b);
@@ -1191,12 +1155,12 @@ if (l==0) {*p_prec=2; return;}
 
 for (a=0;a<l;a++) {
 	if (buff[a]==A4GL_get_convfmts()->db_decfmt.decsep) {
-		*p_scale=strlen(&buff[a+1]); // get the number of remaining digits..
-		*p_prec=l;        // subtract from the total length
+		*p_scale=strlen(&buff[a+1]); /* get the number of remaining digits.. */
+		*p_prec=l;        /* subtract from the total length */
 		return ;
 	}
 }
-// defaults to p_prec=strlen, with p_scale=0 (because we didn't find a '.')
+/* defaults to p_prec=strlen, with p_scale=0 (because we didn't find a '.') */
 
 }
 /**
@@ -1220,7 +1184,6 @@ for (a=0;a<l;a++) {
 static int
 bindInputValue (char *descName, int idx, struct BINDING *bind)
 {
-  //static const char function[] = "bindInputValue";
   EXEC SQL begin declare section;
   char *descriptorName = descName;
   int index = idx + 1;
@@ -1240,10 +1203,8 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   dtime_t dtime_var;
 int d_scale=0;
 int d_prec=0;
-  //datetime year to second dtime_var;
   intrvl_t interval_var;
   byte byte_var;
-	//long dlength;
   /*
      fglbyte byte_var;
      fgltext text_var;
@@ -1252,10 +1213,7 @@ int d_prec=0;
   EXEC SQL END DECLARE SECTION;
   fgldecimal *fgl_decimal;
   FglDate *fgl_date;
-  //fglmoney *fgl_money;
-  //fglbyte *fgl_byte;
   FglDatetime *fgl_dtime;
-  //FglInterval *fgl_interval;
   char genData[256];
   int arr_dtime[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1275,7 +1233,7 @@ int d_prec=0;
 
 
   dataType = getIfmxDataType (bind[idx].dtype);
-  length = bind[idx].size;	// unfix_length...
+  length = bind[idx].size;	/* unfix_length... */
   A4GL_debug ("In binding - %d %d ptr=%p", dataType, length, bind[idx].ptr);
 
 
@@ -1304,7 +1262,7 @@ int d_prec=0;
     case DTYPE_NCHAR:
       char_var = bind[idx].ptr;
 
-      length++;			// Add space for the \0
+      length++;			/* Add space for the \0 */
 
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, LENGTH =: length, DATA =:char_var;
       break;
@@ -1381,14 +1339,8 @@ int d_prec=0;
 	    return 1;
 	  }
 	get_scale(b, &d_prec, &d_scale);
-	 //d_prec=money_var.dec_ndgts*2;
-	 //d_scale=d_prec-(money_var.dec_exp*2);
-	//if (d_prec==0 && d_scale==128) { /* 0.0 */ d_prec=5; d_scale=2; }
 
 
-	//if (d_prec==0) 		{ d_prec=16; }
-	//if (d_scale>31) 	{ d_scale=31; }
-	//if (d_prec<d_scale) d_prec=d_scale+1;
 
 
       }
@@ -1422,10 +1374,8 @@ int d_prec=0;
 	    }
 	}
       char_var = genData;
-      //dataType = 0;
       length = 255;
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =: dtime_var; 
-		//, LENGTH =:length;
       if (sqlca.sqlcode != 0)
 	{
 	  A4GL_debug ("Bugger - bombed");
@@ -1525,7 +1475,6 @@ processInputBind (char *descName, int bCount, struct BINDING *bind)
 static int
 bindOutputValue (struct s_sid *sid, char *descName, int idx, struct BINDING *bind)
 {
-  //static const char function[] = "bindOutputValue";
   EXEC SQL begin declare section;
   int ncols;
   char *descriptorName = descName;
@@ -1534,9 +1483,7 @@ bindOutputValue (struct s_sid *sid, char *descName, int idx, struct BINDING *bin
   int dataType;
   int cnt;
   short indicator;
-  //loc_t blob;
   char *char_var;
-  //short smint_var;
   long int_var;
   int8 int8_var;
   int8 *iptr;
@@ -1580,7 +1527,6 @@ int dstype;
   dataType = getIfmxDataType (bind[idx].dtype);
 
 
-  //length = bind[idx].size;	// unfix datatype ?
 
 
 
@@ -1681,7 +1627,6 @@ int dstype;
       		*(short *) bind[idx].ptr = int_var;
 	} else {
 		A4GL_set_a4gl_sqlca_sqlcode(-1214);
-      		//A4GL_exitwith ("Value exceeds limit of SMALLINT precision");
       		*(short *) bind[idx].ptr = 0;
 		return 1;
 	}
@@ -1778,7 +1723,6 @@ int dstype;
 	A4GL_setnull(DTYPE_MONEY,bind[idx].ptr,bind[idx].size);
 	ensure_dot_format_for_decimal_string(tmpbuff);
       A4GL_str_dot_to_dec (tmpbuff, (void *)bind[idx].ptr);
-      //A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
 
 
       break;
@@ -1838,10 +1782,9 @@ int dstype;
 
 	ei=sid->extra_info;
 	if (ei) {
-		//struct fgl_int_loc *bv;
 		for (cnt=0;cnt<ei->nblobs;cnt++) {
 			if (ei->raw_blobs[cnt].f==bind[idx].ptr) {
-				// We've got out 4gl variable...
+				/* We've got out 4gl variable... */
 				if (byte_var.loc_loctype==LOCMEMORY) {
 					char *x;
 					((fglbyte *) ei->raw_blobs[cnt].f)->memsize=byte_var.loc_bufsize;
@@ -1866,10 +1809,10 @@ int dstype;
        EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:byte_var = DATA;
 	ei=sid->extra_info;
 	if (ei) {
-		//struct fgl_int_loc *bv;
+		/*struct fgl_int_loc *bv; */
 		for (cnt=0;cnt<ei->nblobs;cnt++) {
 			if (ei->raw_blobs[cnt].f==bind[idx].ptr) {
-				// We've got out 4gl variable...
+				/* We've got out 4gl variable... */
 				if (byte_var.loc_loctype==LOCMEMORY) {
 					char *x;
 					((fglbyte *) ei->raw_blobs[cnt].f)->memsize=byte_var.loc_bufsize;
@@ -1932,7 +1875,6 @@ allocateOutputDescriptor (char *descName, int bCount, struct BINDING *bind)
   int bindCount = bCount;
   int lstatus;
   EXEC SQL end declare section;
-  //register int i;
 
   A4GL_debug ("allocOutput - %s cnt=%d", descriptorName, bindCount);
 
@@ -2091,7 +2033,6 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 	int n;
 	struct s_extra_info *e2;
 	int nb;
-	//int a;
 	EXEC SQL END DECLARE SECTION;
 
 	e->nblobs++;
@@ -2109,7 +2050,7 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 	A4GL_assertion(p==0,"No blob passed in") ;
 	e->raw_blobs[e->nblobs-1].f=p; /* Store the original fgl pointer for this blob */
 
-	// Copy into a Blob from a piece of SQL...
+	/* Copy into a Blob from a piece of SQL... */
 	n=nv+1;
 	if (dir=='o') {
 	       	i->loc_loctype = -1;
@@ -2143,7 +2084,6 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 	}
 
 	if (dir=='i') {
-		// 
 	
 	}
 
@@ -2232,14 +2172,13 @@ processPreStatementBinds (struct s_sid *sid)
 
       EXEC SQL DESCRIBE:statementName USING SQL DESCRIPTOR:descriptorName;
 
-      // If we contain any blobs - we need to al(locate) somewhere to put them first..
-      //
+      /* If we contain any blobs - we need to al(locate) somewhere to put them first.. */
       for (a=0;a<sid->no;a++) {
 		if (sid->obind[a].dtype==DTYPE_BYTE|| sid->obind[a].dtype==DTYPE_TEXT) {
 			if (!A4GL_islocated(sid->obind[a].ptr)) {
-				// It wasn't initialize - or located..
+				/* It wasn't initialize - or located.. */
 				A4GL_exitwith("Use of unlocated blob variable...");
-			} else { // It is located...
+			} else { /* It is located... */
 				struct fgl_int_loc *p;
 				loc_t *infx_var;
 				infx_var=acl_malloc2(sizeof(loc_t));
@@ -2420,8 +2359,6 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid,int singleton)
 {
 struct s_sid *sid;
   EXEC SQL begin declare section;
-  //char *statementName;
-  //char *statementText;
   char *statementName;
   char buff[256];
   EXEC SQL end declare section;
@@ -2480,8 +2417,6 @@ sid=vsid;
   SPRINTF1(buff,"%p",sid);
   if (singleton) {
 	internal_free_cursor(statementName,0);
-	//acl_free(sid);
-  	//EXEC SQL FREE :statementName;
   }
   return 0;
 }
@@ -2492,8 +2427,8 @@ error_just_in_case ()
 
   if (sqlca.sqlcode == 0)
     {
-      // We have an error - but its not in Informix...
-      // We'll fake one - how about -410
+      /* We have an error - but its not in Informix...
+       We'll fake one - how about -410 */
       sqlca.sqlcode = -410;
       esqlErrorHandler ();
     }
@@ -2524,10 +2459,7 @@ struct s_sid *sid;
 char buff[255];
   EXEC SQL begin declare section;
   char *statementName;
-  //char *descriptorName;
-  //int inputBindCount;
   EXEC SQL end declare section;
-  //int rc = 0;
 
   sid=vsid;
 
@@ -2612,8 +2544,6 @@ A4GL_debug("ALl ok - copy 1");
 	a4gl_sqlca.sqlawarn[8]=0;
 #endif
 
-//A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_sqlca.sqlawarn[1], a4gl_sqlca.sqlawarn[2], a4gl_sqlca.sqlawarn[3], a4gl_sqlca.sqlawarn[4], a4gl_sqlca.sqlawarn[5], a4gl_sqlca.sqlawarn[6], a4gl_sqlca.sqlawarn[7]);
-	//strcpy(a4gl_sqlca.sqlstate,sqlca.sqlstate);
 
 
 
@@ -2630,8 +2560,6 @@ A4GL_debug("ALl ok - copy 1");
   if (singleton) {
 	A4GL_debug("Free : %s",statementName);
 	internal_free_cursor(statementName,0);
-	//sid->statementName="FREED";
-	//sid->select="FREED";
   }
 
   return 0;
@@ -2725,9 +2653,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = cursname;
   char *statementName;
-  //char *outputDescriptorName;
   EXEC SQL END DECLARE SECTION;
-  //int retval = 0;
   struct s_cid *cursorIdentification;
   struct s_sid *sid;
 	sid=vsid;
@@ -2738,9 +2664,6 @@ A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll
     		return (struct s_cid *) 0;
 	}
 
-  //if (A4GL_has_pointer (cursname, CURCODE)) {
-		//internal_free_cursor(cursname,0);
-   //}
 
 
 
@@ -2877,14 +2800,14 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
 
 
   if (ni) {
-	// They've used a value on the OPEN
+	/* They've used a value on the OPEN */
 	save_ni=sid->ni;
 	save_ibind=sid->ibind;
 	sid->ni=ni;
 	sid->ibind=(struct BINDING *)vibind;
   }
 
-  processPreStatementBinds (sid);	// MJA 150503
+  processPreStatementBinds (sid);	/* MJA 150503 */
 
   inputDescriptorName = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
@@ -2905,7 +2828,6 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
     case OUTPUT_BIND:
       A4GL_debug ("Into on an open ?");
       EXEC SQL OPEN:cursorName
-	//INTO SQL DESCRIPTOR :outputDescriptorName
        ;
       break;
 
@@ -2917,7 +2839,6 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
         USING SQL DESCRIPTOR:inputDescriptorName
 
 
-//INTO SQL DESCRIPTOR :outputDescriptorName
 ;
       break;
     }
@@ -3013,8 +2934,6 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name,
   EXEC SQL END DECLARE SECTION;
   struct s_sid *sid;
   struct s_cid *cid;
-  //int was_zero=0;
-  //struct BINDING *bx;
   void *o1;
   int o2;
 	      struct BINDING *obind;
@@ -3023,7 +2942,7 @@ A4GL_debug("A4GLSQL_fetch_cursor\n");
   cid = (struct s_cid *) A4GL_find_cursor (cursorName);
 
   if (cid==0) {
-	if (sqlca.sqlcode==0) {// Fetch attempted on unknown cursor and no error..
+	if (sqlca.sqlcode==0) {/* Fetch attempted on unknown cursor and no error.. */
 		sqlca.sqlcode=-1;
 	}
 	return 1;
@@ -3137,7 +3056,6 @@ A4GLSQLLIB_A4GLSQL_put_insert_internal (char *cursor, void *vibind, int n)
   struct BINDING *ibind;
   ibind=vibind;
 
-  //cursorName = A4GL_char_pop ();
 
 
 cursorName=cursor;
@@ -3216,8 +3134,6 @@ printField (FILE * unloadFile, int idx, char *descName,int p_datatype,int p_len,
   int rc = 0;
 
 dataType=p_datatype;
-  //EXEC SQL GET DESCRIPTOR 'descUnload' VALUE:index:indicator = INDICATOR;
-  //if (indicator == -1) { return 0; } 
 
 
   switch (dataType)
@@ -3228,13 +3144,6 @@ dataType=p_datatype;
     case DTYPE_NVCHAR:
 		length=p_len;
 
-    //EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length = LENGTH;
-
-      //if (isSqlError ())
-	//{
-	  //rc = 1;
-	  //break;
-	//}
 
         if (length>last_char_var) {
 		A4GL_debug("Realloci %d %d",length,last_char_var);
@@ -3310,7 +3219,6 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      //fgl_decimal = acl_malloc2 (sizeof (fgldecimal));
 
       fgl_decimal = &actual_fgl_decimal;
       char_varx=(char *)&fgl_decimal->dec_data[2];
@@ -3322,7 +3230,6 @@ dataType=p_datatype;
 	}
 	A4GL_trim(char_varx);
       fputs (char_varx,unloadFile);
-      //free (fgl_decimal);
       break;
 
 
@@ -3340,7 +3247,6 @@ dataType=p_datatype;
       A4GL_quick_trim(char_varx);
       fputs (char_varx,unloadFile);
 
-      //free (char_var);
       break;
     case DTYPE_MONEY:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: money_var =
@@ -3351,7 +3257,7 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fgl_money = &actual_fgl_money; //malloc (sizeof (fglmoney));
+      fgl_money = &actual_fgl_money; 
 	char_varx=(char *)&fgl_money->dec_data[2];
       if (dectoasc (&money_var,char_varx, 64, -1))
 	{
@@ -3360,7 +3266,6 @@ dataType=p_datatype;
 	}
       fputs (char_varx,unloadFile);
 	A4GL_trim(char_varx);
-      //free (fgl_money);
       break;
     case DTYPE_DTIME:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: dtime_var =
@@ -3371,14 +3276,13 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fgl_dtime = &actual_fgl_dtime; //malloc (sizeof (FglDatetime));
+      fgl_dtime = &actual_fgl_dtime; 
       if (dttoasc (&dtime_var, fgl_dtime->data))
 	{
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
       fputs (fgl_dtime->data,unloadFile);
-      //free (fgl_dtime);
       break;
 
     case DTYPE_INTERVAL:
@@ -3390,14 +3294,14 @@ dataType=p_datatype;
 	  break;
 	}
       if (indicator == -1) { return 0; } 
-      fgl_interval = &actual_fgl_interval; //malloc (sizeof (FglInterval));
+      fgl_interval = &actual_fgl_interval; 
       if (intoasc (&interval_var, fgl_interval->data))
 	{
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
       fputs (fgl_interval->data,unloadFile);
-      //free (fgl_interval);
+      
       break;
     case DTYPE_BYTE:
       break;
@@ -3431,7 +3335,6 @@ void
 A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind)
 {
   int cnt = 0;
-  //static char databuf[64000];
   FILE *unloadFile;
   int rc = 0;
   int nrows=0;
@@ -3443,7 +3346,6 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
   int colcnt;
   int *column_types=0;
   int *column_sizes=0;
-  //int coltype;
   EXEC SQL END DECLARE SECTION;
 
   char *fname;
@@ -3555,7 +3457,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 		}
   }
 
-  // Get the data
+  /* Get the data */
   while (1)
     {
 	if (a4gl_status<0) break;
@@ -3714,7 +3616,6 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
   int numberOfColumns;
-  //int MaxColumns = 1024;		//we will be able to process tables with maximum 1024 columns
   EXEC SQL END DECLARE SECTION;
 
   SPRINTF1 (strSelect, "select * from %s\n", tabname);
@@ -3760,7 +3661,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
 #ifdef DEBUG
       A4GL_debug ("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s",
 		  numberOfColumns);
-      //FIXME: can we read error returned by ESQL/C lib here, and sent it to debug() ?
+      /*FIXME: can we read error returned by ESQL/C lib here, and sent it to debug() ? */
       A4GL_debug ("ESQL/C Error message:%s", A4GLSQLLIB_A4GLSQL_get_sqlerrm ());
 #endif
       return 0;
@@ -3804,7 +3705,7 @@ Infx_dt_to_A4gl_dt (int n)
     case TU_F5:
       return 11;
     }
-  // Shouldn't get to here
+  /* Shouldn't get to here */
   return 3;
 }
 
@@ -3877,20 +3778,25 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   int idx = getColumnsOrder;
   int dataType;
   int length;
+  int nullable;
   static char columnName[64];
   EXEC SQL END DECLARE SECTION;
 
   if (idx > getColumnsMax)
     return 0;
-
+  nullable=0;
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' VALUE:idx:columnName =
-    NAME,:dataType = TYPE,:length = LENGTH;
+    NAME,:dataType = TYPE,:length = LENGTH, :nullable=NULLABLE;
   if (isSqlError ())
     return 0;
 
-  if (dataType==15) dataType=DTYPE_CHAR; // NCHAR
-  if (dataType==16) dataType=DTYPE_VCHAR; // NCHAR
+  if (dataType==15) dataType=DTYPE_CHAR; /* NCHAR */
+  if (dataType==16) dataType=DTYPE_VCHAR; /* NCHAR */
+if (nullable) {
   *dtype = dataType;
+} else {
+  *dtype = dataType+256;
+}
   *colname = columnName;
   *size = fixlength (dataType, length);
   A4GL_debug ("dtype=%d size=%d colname=%s\n", *dtype, *size, *colname);
@@ -3940,7 +3846,6 @@ A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
 int lstatus;
   EXEC SQL BEGIN DECLARE SECTION;
   char *cursorName = currname;
-  //void *ptr;
   EXEC SQL END DECLARE SECTION;
   
   lstatus=a4gl_sqlca.sqlcode;
@@ -3950,8 +3855,6 @@ int lstatus;
     return 1;
   if (lstatus<0 && sqlca.sqlcode==0) {
 		A4GL_set_status(lstatus,1);
-		//a4gl_status=lstatus;
-		//a4gl_sqlca.sqlcode=lstatus;
   }
   return 0;
 }
@@ -4120,7 +4023,6 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int s
 	int a;
 	$int mintid;
 	$char tabname[65];
-	//int i;
 	if (mode==1) mintid=99; else mintid=0;
 	$declare c_get_tables cursor for select tabname from systables where tabid>$mintid order by tabname;
 	$open c_get_tables;
@@ -4137,7 +4039,7 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int s
   }
 
 
-  // This is the important to implement
+  /* This is the important to implement */
   if (strcmp (service, "COLUMNS") == 0) {
     return fillColumnsArray (info, mx, arr1, szarr1, arr2, szarr2, mode);
   }
@@ -4179,23 +4081,20 @@ long
 A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type) {
 $struct sqlda *udesc;
 $char *sql_stmt;
-//$struct sqlvar_struct *col;
 struct s_sid *sid;
-//int i;
 
-  sid = A4GL_find_prepare (stmt);	// ,0
+  sid = A4GL_find_prepare (stmt);
   
   if(sid==0)     { A4GL_exitwith ("Statement could not be found"); return 0; }
 
 
   sql_stmt=sid->statementName;
   
-  //A4GL_debug("Looking for statement : %s\n",stmt);
   EXEC SQL DESCRIBE $sql_stmt INTO udesc;
   if (sqlca.sqlcode==0) {
 
   if (type==5) { return udesc->sqld; }
-  if (type==6) { return 0; } // How many rows ?
+  if (type==6) { return 0; } /* How many rows ? */
 
   if (type==0) { return udesc->sqlvar[colno-1].sqltype;}
   if (type==1) { return (long)udesc->sqlvar[colno-1].sqlname;}
@@ -4220,21 +4119,11 @@ A4GLSQLLIB_A4GLSQL_dbms_dialect (void)
   return "INFORMIX";
 }
 
-#ifdef XX
-int
-A4GLSQL_initlib ()
-{
-// Does nothing
-return 1;
-}
-#endif
-
 
 static struct expr_str_list *A4GL_add_validation_elements_to_expr(struct expr_str_list *ptr,char *val) {
 char *ptr2;
 char *ptrn;
 struct expr_str *ptr3;
-//char buff[256];
 A4GL_trim(val);
 ptr2=val;
 while (1) {
@@ -4258,11 +4147,9 @@ t_expr_str_list *A4GLSQLLIB_A4GLSQL_get_validation_expr(char *tabname,char *coln
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];
-//struct expr_str *ptr=0;
 EXEC SQL END DECLARE SECTION;
 char *cptr=0;
 t_expr_str_list *plist=0;
-//int cnt;
 
 cptr=acl_getenv("A4GL_SYSCOL_VAL");
 
@@ -4285,7 +4172,7 @@ while (1) {
 	EXEC SQL FETCH c_get_val INTO  $val;
 	if (sqlca.sqlcode!=0) break;
 	plist=A4GL_add_validation_elements_to_expr(plist,val);
-	// Process it...
+	/* Process it... */
 }
 return plist;
 
@@ -4295,10 +4182,8 @@ char *A4GLSQLLIB_A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
 EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 static char val[65];
-//struct expr_str *ptr=0;
 EXEC SQL END DECLARE SECTION;
 char *cptr=0;
-//int cnt;
 
 cptr=acl_getenv("A4GL_SYSCOL_VAL");
 
@@ -4393,9 +4278,7 @@ static void A4GL_quick_trim(char *s) {
 static void A4GL_quick_trim2(char *s) {
         char *ptr;
 	int a;
-	//char *eptr;
 	a=strlen(s);
-	//eptr=&s[a-1];
 
 	ptr=strrchr(s,' ');
 	while (ptr) {
@@ -4448,10 +4331,8 @@ static void A4GL_quick_trim2(char *s) {
 #include <string.h>
 #include <errno.h>
 
-//EXEC SQL include sqlca;
 EXEC SQL include sqlhdr;
 EXEC SQL include sqlda;
-//EXEC SQL include "sqltypes.h";
 EXEC SQL include decimal;
 EXEC SQL include datetime;
 EXEC SQL include locator;
@@ -4460,15 +4341,10 @@ EXEC SQL include locator;
 #define BUFFSIZE 256
 #define DELIM "|"
 #define STMTSIZE 2001
-//char unloadBuffer[BUFSIZ*4];
 
 /*
  * PROTOTYPES 
  */
-//void dumprec (struct sqlda *);
-//int strip (char *str, int len);
-//int stripl (char *str, int len);
-//int charcpy (unsigned char *target, unsigned char *source, long len);
 void dumpSQLDA (struct sqlda *desc);
 
 /*
@@ -4510,7 +4386,6 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   int pos;
   char *cp;
   int i, j;
-  //int nrows = 0;
   struct sqlda *udesc;
   struct sqlvar_struct *col;
   long  reccount = 0;
@@ -4520,7 +4395,6 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   static int nd=0;
   static short *colszs=0;
   char *fname=0;
-  //int sstatus=0;
   struct BINDING *ibind;
   ibind = vibind;
 
@@ -4530,7 +4404,6 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   if (colszs) {free(colszs);colszs=0;}
 
 
-  // if (locat)    {free(locat);locat=0;}
 
   strSql = sqlStr;
   fname = strdup (fname_o);
@@ -4716,7 +4589,6 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
 
 
 
-  // loc = (loc_t *) acl_malloc2 (sizeof (loc_t));
 
 
 
@@ -4735,7 +4607,6 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
       /*
        * Allocate indicator array for this column. 
        */
-      //ipary[i] = (short *) malloc (sizeof (short));
       /*
        * Adjust pointer for each column for alignment in insert sqlda 
        */
@@ -4802,7 +4673,6 @@ if (nbind)
     for (;;)
     {
 
-    //fetchit:
 
       EXEC SQL FETCH fetch_curs USING DESCRIPTOR udesc;
 		A4GL_debug("Fetch : %d",sqlca.sqlcode);
@@ -4964,8 +4834,8 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
   for (col = ldesc->sqlvar, i = 0; i < ldesc->sqld; col++, i++)
     {
 	
-	ptr=ldesc->sqlvar[i].sqldata ; //+ (row * ldesc->sqlvar[i].sqllen);
-	ind=*ldesc->sqlvar[i].sqlind ; //[row]; //  + (row * sizeof(short));
+	ptr=ldesc->sqlvar[i].sqldata ; 
+	ind=*ldesc->sqlvar[i].sqlind ;
 
 
       errno = 0;
@@ -5016,8 +4886,8 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 		{
 		int blen=0;
 	        alen = stripl((char *) ptr, col->sqllen);
-		// sqllen seems to retain the maximum size used so far which isnt what we want
-		// use the length instead...
+		/* sqllen seems to retain the maximum size used so far which isnt what we want
+		 use the length instead... */
 		blen=strlen(ptr);
 	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, blen);
 		}

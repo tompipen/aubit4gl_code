@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.157 2009-04-21 11:15:04 mikeaubury Exp $
+# $Id: iarray.c,v 1.158 2009-05-26 12:16:57 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: iarray.c,v 1.157 2009-04-21 11:15:04 mikeaubury Exp $";
+		"$Id: iarray.c,v 1.158 2009-05-26 12:16:57 mikeaubury Exp $";
 #endif
 
 /**
@@ -585,7 +585,11 @@ int var_dtype;
     }
   else
     {
-      A4GL_push_null (b[x_col].dtype, b[x_col].size);
+	 if (A4GL_has_bool_attribute (fprop, FA_B_NOTNULL)) {
+	  	A4GL_push_char(" ");
+	 } else {
+      		A4GL_push_null (b[x_col].dtype, b[x_col].size);
+	}
     }
   A4GL_debug ("Pushed field buffer :'%s'", ptr);
 
@@ -2857,7 +2861,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 /******************************************************************************/
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_FIELD)
     {
-      struct struct_scr_field *fprop;
+      struct struct_scr_field *fprop=NULL;
       int attr;
 
 
@@ -2869,6 +2873,7 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
       A4GL_debug ("form_Field_chk returns %d\n", ffc_rval);
 
 
+      fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
       if (ffc_rval != -4)
 	{
 	  char buff[10024];
@@ -2890,9 +2895,6 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 
 	  if (arr->currentfield)
 	    {
-	      fprop =
-		(struct struct_scr_field
-		 *) (field_userptr (arr->currentfield));
 	      strcpy (buff, field_buffer (arr->currentfield, 0));
 
 	      A4GL_debug ("has_str_attrib - 3");
@@ -2956,7 +2958,11 @@ A4GL_debug("BEFORE FIELD ***** %d ", arr->curr_line_is_new);
 	  else
 	    {
 	      A4GL_debug ("Field is null");
-	      A4GL_push_null (DTYPE_CHAR, 0);
+ 				if (A4GL_has_bool_attribute(fprop,FA_B_NOTNULL))  {
+					A4GL_push_char(" ");
+				} else {
+	      				A4GL_push_null (DTYPE_CHAR, 0);
+				}
 	    }
 
 	  A4GL_debug ("Calling pop_iarr_var");
@@ -3206,9 +3212,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 		bno=a+arr->start_slice;
 	}
 
-      fprop =
-	(struct struct_scr_field
-	 *) (field_userptr (arr->field_list[scr_line - 1][a]));
+      fprop = (struct struct_scr_field *) (field_userptr (arr->field_list[scr_line - 1][a]));
 
       // cc 2004.09.06 defualt attribute show be FGL_CMD_DISPLAY_CMD,
       //               only the current field be set to FGL_CMD_INPUT
@@ -3255,7 +3259,13 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 	{
 	  strcpy (buff, "");
 	  cptr = buff;
-	  A4GL_push_null (DTYPE_CHAR, 1);
+
+	 if (A4GL_has_bool_attribute (fprop, FA_B_NOTNULL)) {
+	  	A4GL_push_char(" ");
+	 } else {
+	  	A4GL_push_null (DTYPE_CHAR, 1);
+	 }
+
 	  A4GL_debug ("ZZZZZ : %d %p %x", arr->binding[bno].dtype, cptr, arr->binding[bno].size);
 	  A4GL_setnull (arr->binding[bno].dtype, cptr, arr->binding[bno].size);
 	}

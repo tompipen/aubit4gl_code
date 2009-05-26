@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.45 2008-12-07 15:46:31 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.46 2009-05-26 12:16:57 mikeaubury Exp $
 #*/
 
 /**
@@ -1263,7 +1263,22 @@ char buff[1024];
     "COMPRESS",
     "UPSHIFT",
     "DOWNSHIFT",
-	"REQUIRED","NOUPDATE","QUERYCLEAR","ZEROFILL","RIGHT"
+	"REQUIRED","NOUPDATE","QUERYCLEAR","ZEROFILL","RIGHT",
+  "HIDDEN",
+  "SCROLL",
+  "WANTTABS",
+  "WANTNORETURNS",
+  "FONTPITCHFIXED",
+  "FONTPITCHVARIABLE",
+        "AUTOSCALE",
+        "STRETCH_BOTH",
+        "STRETCH_Y",
+        "SCROLLBARS_BOTH",
+        "SCROLLBARS_VERTICAL",
+        "SCROLLBARS_HORIZONAL",
+        "AUTOSIZE",
+        "NOTNULL"
+
   };
 
   A4GL_debug ("add_bool_attr\n");

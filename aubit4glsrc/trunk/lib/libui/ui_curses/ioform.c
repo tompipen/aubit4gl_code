@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.223 2009-04-30 17:35:38 mikeaubury Exp $
+# $Id: ioform.c,v 1.224 2009-05-26 12:16:57 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.223 2009-04-30 17:35:38 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.224 2009-05-26 12:16:57 mikeaubury Exp $";
 #endif
 
 /**
@@ -953,7 +953,9 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 	      fprop = (struct struct_scr_field *) (field_userptr (f));
 	      A4GL_debug ("fprop=%p", fprop);
 
-
+ 		if (A4GL_has_bool_attribute (fprop, FA_B_NOTNULL)) { // Force a 'REQUIRED' check for any "not null" fields..
+			chk_required=1;
+ 		}
 
 	      if (fprop != 0)
 		{
@@ -1712,10 +1714,16 @@ static int pad_char;
 
 	  		A4GL_trim (buff);
 		
-	  		if (strlen (buff))
-	    		A4GL_push_char (buff);
-	  		else
-	    		A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
+	  		if (strlen (buff)) {
+	    			A4GL_push_char (buff);
+			} 
+	  		else {
+ 				if (A4GL_has_bool_attribute(prop,FA_B_NOTNULL))  {
+					A4GL_push_char(" ");
+				} else {
+	    				A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
+				}
+			}
 	  		A4GL_debug ("Calling pop_var2..");
 		
 	   		A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
@@ -2687,6 +2695,7 @@ int has_wordwrap;
   if (!has_format && !ignore_formatting)
     {
       A4GL_debug ("Has no format.. dtype_field=%d", dtype_field & DTYPE_MASK);
+
       if (A4GL_has_datatype_function_i (dtype_field & DTYPE_MASK, "DISPLAY"))
 	{
 	  char *ptr;
@@ -2697,7 +2706,26 @@ int has_wordwrap;
 	    A4GL_get_datatype_function_i (dtype_field & DTYPE_MASK, "DISPLAY");
 	  if (function)
 	    {
-	      A4GL_debug ("Has a function - calling XXXX - size=%d decode_size=%d", s1, DECODE_SIZE (dtype_field));
+	        A4GL_debug ("Has a function - calling XXXX - size=%d decode_size=%d", s1, DECODE_SIZE (dtype_field));
+		A4GL_debug("field_width=%d", field_width);
+
+		if (d1_ptr==DTYPE_CHAR) {
+			A4GL_debug("ptr1=%s\n",ptr1);
+		}
+
+		if ((dtype_field& DTYPE_MASK)!=(d1_ptr&DTYPE_MASK)) {
+			// We can't pass in this pointer - because its not valid for the required datatype
+			// lets try converting it to that datatype and hope for the best...
+			if (d1_ptr==DTYPE_CHAR) {
+				static char buff[2000];
+				A4GL_push_char(ptr1);
+				A4GL_pop_param(&buff, dtype_field&DTYPE_MASK, DECODE_SIZE(dtype_field));
+				ptr1=buff;
+			} else {
+			ptr1=NULL;
+			}
+		}
+
 	      ptr = function (ptr1, DECODE_SIZE(dtype_field), field_width, f, DISPLAY_TYPE_DISPLAY_TO);
 	      A4GL_debug ("Returns %p\n", ptr);
 	    }
@@ -2705,6 +2733,7 @@ int has_wordwrap;
 	    {
 	      ptr = 0;
 	    }
+
 	  if (ptr != 0)
 	    {
 	      A4GL_debug ("Here.. %s", ptr);

@@ -916,11 +916,26 @@ op_field_desc
 	}
 
 
-	if (fld->datatype &256) {
+	if ((fld->datatype&256)==256) {
 			if (!A4GL_has_bool_attribute(fld,FA_B_NOTNULL)) {
 					A4GL_add_bool_attr(fld,FA_B_NOTNULL);
 				}
+			
+			if (!A4GL_has_bool_attribute(fld,FA_B_REQUIRED)) {
+				switch (fld->datatype&DTYPE_MASK) {
+					case DTYPE_CHAR:
+					case DTYPE_NCHAR:
+					case DTYPE_VCHAR:
+					case DTYPE_NVCHAR:
+						break;
+					// Characters can be spaces - everything else would have to be null
+					// but nulls are not allowed - so it must be 'required' as well
+					default : 
+						A4GL_add_bool_attr(fld,FA_B_REQUIRED);
+						break;
+				}
 			}
+	}
 }
 ;
 
