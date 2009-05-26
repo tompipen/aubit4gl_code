@@ -609,6 +609,9 @@ define f, homedir, default_filename, prompt_msg char(255)
 
 	let prompt_msg = "Please enter filename (ENTER=", default_filename clipped,") :"
 	let int_flag=false
+	if length(prompt_msg)>80 then
+		let prompt_msg = "Please enter filename (ENTER=default)"
+	end if
 	prompt prompt_msg for f
 	if int_flag=true then
 		initialize mv_filename to null
