@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.36 2009-05-24 18:26:59 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.37 2009-05-26 08:06:10 mikeaubury Exp $
 #
 */
 
@@ -358,7 +358,8 @@ A4GL_sprintf (char *f, int l, char *dest, size_t sdest, char *fmt, ...)
 {
   char buff[256];
   int x;
-  char *c;
+  static char *c=0;
+  static int  lastc_size=0;
   va_list args;
   char xbuff[20000];
 
@@ -383,7 +384,10 @@ We can end up with problems with overlapping - eg
   if (sdest > sizeof (char *))
     {				// We do this one...
       va_start (args, fmt);
-      c = acl_malloc2 (sdest);
+	if (sdest>lastc_size) {
+      		c = acl_malloc2 (sdest);
+		lastc_size=sdest;
+	}
       x = VSNPRINTF (c, sdest, fmt, args);
       if (x >= sdest)
 	{
@@ -392,7 +396,7 @@ We can end up with problems with overlapping - eg
 	  A4GL_assertion (1, buff);
 	}
       strcpy (dest, c);
-      free (c);
+      /* free (c); */
 // DO NOT CALL A4GL_debug from this function!!!!
     }
   else

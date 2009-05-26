@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.94 2009-05-24 18:26:59 mikeaubury Exp $
+# $Id: pg8.c,v 1.95 2009-05-26 08:07:26 mikeaubury Exp $
 #*/
 
 
@@ -3177,7 +3177,8 @@ int lstatus;
   if (ptr->mode & 0x4000)
     {
       char buff[256];
-      SPRINTF1 (buff, "CLOSE %s", currname);
+	strcpy(buff,"CLOSE ");
+	strcat(buff, currname);
       execute_dont_care (current_con, buff);
       ptr->mode -= 0x4000;
     }
