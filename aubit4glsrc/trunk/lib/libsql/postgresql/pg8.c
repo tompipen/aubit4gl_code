@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.95 2009-05-26 08:07:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.96 2009-05-26 08:12:56 mikeaubury Exp $
 #*/
 
 
@@ -1983,6 +1983,7 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 	  s = realloc (s, sl + 2);
 	}
 
+A4GL_debug("COPY DTYPE : %d\n", obind[b].dtype &DTYPE_MASK);
       switch (obind[b].dtype)
 	{
 
@@ -3305,6 +3306,8 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 		}
 	      else
 		{
+
+A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
 
 		  switch (ibind[param].dtype)
 		    {
