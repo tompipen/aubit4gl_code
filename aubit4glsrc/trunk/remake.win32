@@ -63,6 +63,8 @@ then
 	cd /usr/src/aubit/aubit4glsrc/lib/libaubit4gl
 	make -f makefile.static
 	
+	cd /usr/src/aubit/aubit4glsrc/tools/quickguide
+	make 
 	cd /usr/src/aubit/aubit4glsrc/tools/asql
 	
 
