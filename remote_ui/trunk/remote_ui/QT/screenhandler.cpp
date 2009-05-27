@@ -936,7 +936,7 @@ void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QStrin
    if(!(row < 0 || col < 0)){
       QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
       modelIndex = proxyModel->mapFromSource(modelIndex);
-      screenRecord->model()->setData(modelIndex, fieldValue);
+      screenRecord->model()->setData(modelIndex, fieldValue.trimmed());
    }
 }
 void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldValues)
@@ -1048,7 +1048,6 @@ void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
 
 //   QList<QWidget*> ql_fields = p_fglform->formElements();
    QList<QWidget*> ql_fields = p_fglform->ql_formFields;
-   qDebug() << "FIELDVALUES:" << fieldValues;
    for(int i=0; i<ql_fields.size(); i++){
 
       QWidget *widget = ql_fields.at(i);
@@ -1071,7 +1070,6 @@ void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
                col = 0;
             }
 
-            qDebug() << "I:" << i;
             QString fieldValue = fieldValues.at(i);
             QModelIndex modelIndex = table->index(row, col, QModelIndex());
             table->setData(modelIndex, fieldValue, Qt::EditRole);
@@ -1504,11 +1502,40 @@ void ScreenHandler::clearEvents()
 //------------------------------------------------------------------------------
 void ScreenHandler::setEvent(QString event, QString attribute, int id)
 {
-   if(event == "BEFORE_INPUT_EVENT" ||
-      event == "BEFORE_CONSTRUCT_EVENT" ||
-      event == "BEFORE_DISPLAY_EVENT"){
-      if(p_fglform != NULL)
-         p_fglform->ql_responseQueue << QString::number(id);
+   if(event == "BEFORE_MENU_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_INPUT_EVENT;
+      event.id = id;
+
+      p_fglform->ql_formEvents << event;
+      return;
+   }
+
+   if(event == "BEFORE_INPUT_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_INPUT_EVENT;
+      event.id = id;
+
+      p_fglform->ql_formEvents << event;
+      return;
+   }
+
+   if(event == "BEFORE_CONSTRUCT_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_CONSTRUCT_EVENT;
+      event.id = id;
+
+      p_fglform->ql_formEvents << event;
+      return;
+   }
+
+   if(event == "BEFORE_DISPLAY_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_DISPLAY_EVENT;
+      event.id = id;
+
+      p_fglform->ql_formEvents << event;
+      return;
    }
 
    if(event == "AFTER_INPUT_EVENT"){

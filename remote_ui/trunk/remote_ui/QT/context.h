@@ -26,6 +26,9 @@ public:
    QStringList getScreenRecordValues(int);
    void setScreenRecordValues(int, QStringList);
 
+   void sendBeforeEvent();
+   void sendAfterEvent();
+
 private:
    Fgl::State fgl_state;
    QList<QWidget*> ql_fieldList;

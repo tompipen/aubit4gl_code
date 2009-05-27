@@ -7,12 +7,16 @@ Context::Context(QObject *parent) : QObject(parent)
 {
    this->rowChangedCnt = 0;
    this->fgl_state = Fgl::IDLE;
+
+   sendBeforeEvent();
 }
 
 Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
 {
    this->rowChangedCnt = 0;
    this->fgl_state = state;
+
+   sendBeforeEvent();
 }
 
 Context::~Context()
@@ -41,6 +45,73 @@ Context::~Context()
                break;
          }
       }
+   }
+
+   sendAfterEvent();
+}
+
+void Context::sendBeforeEvent()
+{
+
+   Fgl::Event event;
+
+   switch(fgl_state){
+      case Fgl::MENU:
+         event.type = Fgl::BEFORE_MENU_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::INPUT:
+         event.type = Fgl::BEFORE_INPUT_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::CONSTRUCT:
+         event.type = Fgl::BEFORE_CONSTRUCT_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::DISPLAYARRAY:
+         event.type = Fgl::BEFORE_DISPLAY_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::INPUTARRAY:
+         event.type = Fgl::BEFORE_INPUT_EVENT;
+         emit fieldEvent(event);
+         break;
+
+      default: break;
+   }
+
+
+}
+
+void Context::sendAfterEvent()
+{
+   return;
+
+   Fgl::Event event;
+
+   switch(fgl_state){
+      case Fgl::MENU:
+         event.type = Fgl::AFTER_MENU_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::INPUT:
+         event.type = Fgl::AFTER_INPUT_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::CONSTRUCT:
+         event.type = Fgl::AFTER_CONSTRUCT_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::DISPLAYARRAY:
+         event.type = Fgl::AFTER_DISPLAY_EVENT;
+         emit fieldEvent(event);
+         break;
+      case Fgl::INPUTARRAY:
+         event.type = Fgl::AFTER_INPUT_EVENT;
+         emit fieldEvent(event);
+         break;
+
+      default: break;
    }
 }
 
@@ -101,6 +172,11 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
             if(!input){
                tableView->selectRow(0);
             }
+            else{
+               QModelIndex index = tableView->model()->index(0, 0);
+               tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
+               tableView->edit(index);
+            }
          }
          tableView->setEnabled(true);
          ql_fieldList << tableView;
@@ -136,8 +212,12 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
             QModelIndex index = tableView->model()->index(current.row(), current.column());
             tableView->setCurrentIndex(index);
          }
-         if(current.row() > tableView->arrCount())
-            setOption("ARRCOUNT", current.row());
+         if(current.row()+1 > tableView->arrCount()){
+            setOption("ARRCOUNT", current.row()+1);
+         }
+         else{
+            setOption("ARRCOUNT", tableView->arrCount());
+         }
       }
    }
 

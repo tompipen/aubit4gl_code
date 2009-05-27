@@ -96,12 +96,11 @@ void Response::addSyncValues()
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
          // TODO
          syncValueElement.setAttribute("FIELDNAME", de->objectName());
-         syncValueElement.setAttribute("TOUCHED", 0);
-         text = "ASD";
+         //syncValueElement.setAttribute("TOUCHED", 0);
       }
       else{
          syncValueElement.setAttribute("FIELDNAME", widget->objectName());
-         syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
+         //syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
          text = WidgetHelper::fieldText(widget);
       }
 
@@ -122,7 +121,7 @@ void Response::addSyncValues()
          if(widget == p_currForm->context->fieldList().at(j)){
             
             syncValueElement.setAttribute("FIELDNAME", widget->accessibleName());
-            syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
+//            syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
             QString text = WidgetHelper::fieldText(widget);
 
             if(!text.isEmpty()){
@@ -187,7 +186,7 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
 void Response::addScreenRecSyncValues()
 {
 
-   int arrCount = p_currForm->context->getOption("ARRCOUNT");
+   int arrCount = p_currForm->context->getOption("ARRCOUNT")+1;
    if(arrCount <= 0) arrCount = 1;
 
    responseElement.setAttribute("ARRCOUNT", arrCount);

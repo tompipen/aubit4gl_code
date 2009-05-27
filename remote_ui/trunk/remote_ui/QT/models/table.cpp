@@ -266,6 +266,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
       }
    }
 
+   /*
    if(current.column() > -1 && current.row() > -1){
       // only allow focus for fields that have a focus policy
       if(this->focusWidget() != NULL && this->focusWidget()->focusPolicy() != Qt::NoFocus){
@@ -282,6 +283,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
          }
       }
    }
+   */
 
 }
 
