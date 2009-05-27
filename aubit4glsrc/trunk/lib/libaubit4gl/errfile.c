@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.29 2009-05-02 13:41:16 mikeaubury Exp $
+# $Id: errfile.c,v 1.30 2009-05-27 12:57:19 mikeaubury Exp $
 #
 */
 
@@ -100,7 +100,11 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
   int b;
   //int errorno;
 
+#ifdef __WIN32__
+  fout = A4GL_mja_fopen (fname, "wb");
+#else
   fout = A4GL_mja_fopen (fname, "w");
+#endif
   if (fout == 0)
     {
       PRINTF ("Unable to open %s\n", fname);
@@ -136,7 +140,6 @@ A4GL_write_errfile (FILE * f, char *fname, long as, int lineno)
       s -= a;
     }
   le = as - s2;
-
   if (strstr(buff,"\r\n")) {
 	strcpy(crlf,"\r\n");
   } else {
@@ -220,14 +223,6 @@ A4GL_prerrmark (FILE * f, int a)
 
 }
 
-/*
-main() {
-FILE *f;
-f=mja_fopen("test","r");
-write_errfile(f,"test.out",10);
-write_cont(f);
-}
-*/
 
 
 /**
