@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.50 2009-05-26 12:16:57 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.51 2009-05-27 12:55:26 mikeaubury Exp $
 #*/
 
 /**
@@ -930,7 +930,11 @@ A4GLFORM_A4GL_write_form (void)
       int a;
       int len;
       A4GL_debug ("Asc...\n");
+#ifdef __WIN32_
+      fxx = fopen (fname, "rb");
+#else
       fxx = fopen (fname, "r");
+#endif
       fseek (fxx, 0, SEEK_END);
       len = ftell (fxx);
       rewind (fxx);

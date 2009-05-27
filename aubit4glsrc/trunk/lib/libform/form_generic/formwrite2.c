@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.46 2009-05-26 12:16:57 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.47 2009-05-27 12:55:25 mikeaubury Exp $
 #*/
 
 /**
@@ -981,7 +981,11 @@ int a;
       int len;
 	char *override;
       A4GL_debug ("Asc...\n");
+#ifdef __WIN32__
+      fxx = fopen ((char *)A4GL_get_last_outfile (), "rb");
+#else
       fxx = fopen ((char *)A4GL_get_last_outfile (), "r");
+#endif
       if (fxx == 0)
 	{
 	  A4GL_error_with ("Unable to open output file(%s)\n", fname, 0);
