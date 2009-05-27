@@ -1,4 +1,33 @@
 ---------------------------
+Wed May 27 18:05:21 BST 2009
+---------------------------
+1.10RC_61 Released
+---------------------------
+	
+	win32 fixups
+	
+	win32 fixup
+	
+	NOT NULL fixups for forms
+	
+	Add some experimental performance improvements
+	
+	datetime fixups
+	
+	menu option with trailing ' ' fixup
+	
+	err_txt fixup
+	
+	Add function statistics for fgllint XML output
+	
+	TAG handling
+	
+	Remove any leading directory name when creating an SQLMETRICS file
+	under $A4GL_SQLMETRICS
+	
+	Fix insert on Postgresql with Esql/c
+	
+---------------------------
 Mon May 11 12:17:46 BST 2009
 ---------------------------
 1.10RC_60 Released
