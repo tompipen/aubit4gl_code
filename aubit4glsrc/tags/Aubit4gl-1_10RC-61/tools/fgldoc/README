@@ -1,0 +1,65 @@
+Introduction
+============
+
+This is version 2.00 of fgldoc, a documenter for Informix-4GL programs.
+See the "Installation" section of this file for building and installation
+instructions.  The program is documented in the manual page "fgldoc.1"; a
+preformatted version is included as "fgldoc.txt".
+
+
+Requirements
+============
+
+1. An ANSI C compiler.
+
+2. ESQL/C or Informix-4GL (C compiled, not RDS), if you want the ability to
+   access the program design database directly.  Any version from 4.00
+   onwards should work.  Be warned that connections are implicit and use
+   your current credentials; CONNECT TO... USER... USING is not implemented.
+
+Point #2 implies having proper development and run-time licenses for the
+machine(s) where you build and run fgldoc.  The term "proper" doesn't even
+begin to describe all the variations and nuances that could exist; for a
+reasonably detailed (and certainly more authoritative) discussion of the
+matter, consult the file "Informix.License" from the DBD::Informix
+distribution, available at any CPAN site (a Perl module repository, start
+from http://www.perl.org if you don't know how to find one).  That said, in
+the anticipated case of running fgldoc on the same machine where it was
+compiled it is probably OK to use the locally installed ESQL/C software
+for building the program.
+
+
+Installation
+============
+
+If you have a working ESQL/C or Informix-4GL setup and want to use it with
+fgldoc, make sure that INFORMIXDIR is set and $INFORMIXDIR/bin is in $PATH,
+and start the "configure" script with
+
+    ./configure
+
+The script will make a number of checks and, if all is well, generate
+"Makefile" and "config.h".  To build fgldoc, type "make"; after that, type
+"make install" to install the program and the manual page, or copy them to
+a suitable directory by hand.
+
+Those who don't have ESQL/C or do not wish to use it should specify the
+"--without-esqlc" argument with "configure", like so:
+
+    ./configure --without-esqlc
+
+Building and installation steps are the same.
+
+N.B. If the INFORMIXC environment variable is set, the "configure" script
+and the Makefile will NOT pass the value of CFLAGS to esql.
+
+
+Copyright and License
+=====================
+
+Copyright (c) 1995-1999 Ivan Nejgebauer <ian@uns.ns.ac.yu>
+
+This program is free software released under the GNU General Public
+License.  If built with software components provided by Informix Software
+Inc., the compiled program can only be used and distributed subject to
+restrictions imposed by your licensing agreement with Informix.

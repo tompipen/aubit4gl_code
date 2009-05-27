@@ -1,0 +1,34 @@
+database formonly
+screen
+{
+[title]Count   SQL                                                   Max   Min
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+[f0001|f0002|t|f0003                                               |f0004|f0005]
+}
+end
+attributes
+title=formonly.title,noentry;
+
+f0001 = formonly.data,noentry;
+f0002 = formonly.count,noentry;
+t     = formonly.trap,autonext,upshift,invisible,
+        comments='Type "X" to see detail';
+f0003 = formonly.sql,noentry;
+f0004 = formonly.max,noentry;
+f0005 = formonly.min,noentry;
+end
+
+instructions 
+delimiters "  "
+screen record srec1[13] (data,count,trap,sql,max,min)

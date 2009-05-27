@@ -1,0 +1,17 @@
+/*
+=====================================================================
+                        Source: free.rule
+=====================================================================
+*/
+
+
+free_cmd :
+		opt_use2_p FREE fetch_cursor_name_p {
+			add_feature("FREE_CURSOR");
+			set_cmdlineno(token_read_on_line);
+			$<cmd>$=new_free_cmd($<ptr>1, $<ptr>3);
+			
+		}
+;
+
+
