@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.483 2009-05-15 17:03:16 mikeaubury Exp $
+# $Id: compile_c.c,v 1.484 2009-05-27 09:50:37 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.483 2009-05-15 17:03:16 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.484 2009-05-27 09:50:37 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6401,8 +6401,7 @@ void print_field(struct fh_field_entry*field ) {
 	set_nonewlines();
 	print_ident(field->field);
 	if (field->fieldsub) {
-		printc(",");
-		real_print_expr(field->fieldsub);
+		printc(",%s",local_expr_as_string(field->fieldsub));
 	} else {
 		printc(",0");
 	}
