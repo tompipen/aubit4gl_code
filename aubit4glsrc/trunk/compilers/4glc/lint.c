@@ -704,14 +704,15 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
   int flow = 0;
   char *lines_used;
   int nlines=0;
-int lines_of_ws=0;
-int loc=0;
+  int lines_of_ws=0;
+  int loc=0;
 
   nlines=f->lastlineno-f->lineno+1;
   lines_used=malloc(nlines+1);
-  memset(lines_used,' ',nlines);
-  lines_used[nlines]=0;
-
+  memset(lines_used,'_',nlines);
+  lines_used[nlines-1]=0;
+  lines_used[0]='F';
+  lines_used[nlines-2]='F';
   for (a = 0; a < d->comment_list.comment_list_len; a++)
     {
       if (d->comment_list.comment_list_val[a].lineno >= f->lineno && d->comment_list.comment_list_val[a].lineno <= f->lastlineno) {
@@ -721,9 +722,22 @@ int loc=0;
     }
 
 
+  for (a=f->lineno;a<f->lastlineno;a++) {
+	char buff[2000];
+  	char *ptr;
+  	ptr=d->source_code.lines.lines_val[a-1];
+	strcpy(buff, ptr);
+	A4GL_trim(buff);
+	if (strlen(buff)==0) lines_used[a-f->lineno]=' ';
+  }
+
   func_cmds = linearise_commands (0, 0);
   linearise_commands (func_cmds, f->func_commands);
 
+
+  for (a = 0; a < f->variables.variables.variables_len; a++) {
+		lines_used[f->variables.variables.variables_val[a]->lineno-f->lineno]='D';
+  }
 
   for (a = 0; a < func_cmds->cmds.cmds_len; a++)
     {
@@ -736,7 +750,7 @@ int loc=0;
 	case E_CMD_CASE_CMD:
 	case E_CMD_IF_CMD:
 	case E_CMD_MENU_CMD:
-      lines_used[func_cmds->cmds.cmds_val[a]->lineno-f->lineno]='>';
+      		lines_used[func_cmds->cmds.cmds_val[a]->lineno-f->lineno]='>';
 	  flow++;
 	  break;
 
@@ -750,11 +764,16 @@ int loc=0;
       A4GL_lint (f->module, f->lineno, "TOOCOMPLEX", "Function is too complex", f->funcname);
     }
 
-  for (a=0;a<nlines;a++) {
+  for (a=0;a<nlines-1;a++) {
 	if (lines_used[a]==' ') lines_of_ws++;
 	if (lines_used[a]=='>') loc++; // Flow
 	if (lines_used[a]=='@') loc++; // Non-flow
   }
+
+
+  printf("%s '%s'\n", f->funcname, lines_used);
+
+
   add_function_stat( f->module, f->funcname, nlines, loc, ncomments, lines_of_ws, flow,func_cmds->cmds.cmds_len) ;
 
 }

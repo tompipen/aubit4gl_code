@@ -5,17 +5,16 @@
 */
 
 
-error_cmd	: KW_ERROR fgl_expr_concat opt_attributes {
+error_cmd	: KW_ERROR atline fgl_expr_concat opt_attributes {
 				add_feature("ERROR");
 				map_ui("ERROR");
-				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>2), EB_FALSE , $<attrib>3 );
-				//print_error($<ptr_list>2, $<str>3,0,last_style);
+			set_cmdlineno($<integer_val>2);
+				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>3), EB_FALSE , $<attrib>4 );
 		}
-		| KW_ERROR fgl_expr_concat opt_attributes  WAIT_FOR_KEY { 
+		| KW_ERROR atline fgl_expr_concat opt_attributes  WAIT_FOR_KEY { 
 				add_feature("ERROR_WAIT");
+			set_cmdlineno($<integer_val>2);
 				map_ui("ERRORWAIT");
-				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>2), EB_TRUE , $<attrib>3 );
-
-				// print_error($<ptr_list>2, $<str>3,1,last_style);
+				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>3), EB_TRUE , $<attrib>4 );
 			}
 ;
