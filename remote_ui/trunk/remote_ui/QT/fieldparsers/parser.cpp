@@ -467,17 +467,19 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
 
    connect(p_screenRecord->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), p_screenRecord, SLOT(fieldChanged(QModelIndex, QModelIndex))); 
 
+   p_screenRecord->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+   p_screenRecord->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
 
    QHeaderView *header = p_screenRecord->horizontalHeader(); 
    header->setStretchLastSection(true);
    header->setVisible(false);
 
-   int recordHeight = header->height();
-   int recordWidth = 0;
+   QHeaderView *vert = p_screenRecord->verticalHeader();
+   vert->setVisible(false);
 
-   for(int i=0; i<pageSize; i++){
-      recordHeight += p_screenRecord->rowHeight(i)+2;
-   }
+   int recordHeight = 0;
+   int recordWidth = 0;
 
    int formW = matrixElement.firstChild().toElement().attribute("width").toInt();
    int gridWidth = matrixElement.firstChild().toElement().attribute("gridWidth").toInt();
@@ -487,7 +489,11 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    int h = wi->height();
    delete wi;
  
-   recordWidth += w + 7;
+   recordWidth += w+6;
+
+   for(int i=0; i<pageSize; i++){
+      recordHeight += h+4;
+   }
 
    p_screenRecord->setColumnName(0,matrixElement.attribute("colName"));
  
@@ -499,15 +505,17 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
  
    p_screenRecord->setItemDelegate(de);
 
-   QHeaderView *vert = p_screenRecord->verticalHeader();
-   vert->setDefaultSectionSize(h+1); 
-   vert->resizeSections(QHeaderView::Fixed);
-
-   for(int i=0; i<vert->count(); i++){
-      vert->resizeSection(i, h+1);
+   for(int i=0; i<header->count(); i++){
+      header->resizeSection(i, w+2);
    }
 
-   p_screenRecord->setFixedSize(recordWidth, recordHeight);
+   for(int i=0; i<vert->count(); i++){
+      vert->resizeSection(i, h+2);
+   }
+
+   p_screenRecord->setFixedWidth(recordWidth);
+   p_screenRecord->setFixedHeight(recordHeight);
+   //p_screenRecord->setFixedSize(recordWidth, recordHeight);
 
    int x = matrixElement.firstChild().toElement().attribute("posX").toInt();
    int y = matrixElement.firstChild().toElement().attribute("posY").toInt();
