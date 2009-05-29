@@ -104,9 +104,10 @@ signals:
    void setKeyLabel(int, QString, QString);
    void setCursorPosition(int);
 
-   void handleAubitForm(QString, QString);
+   void handleAubitForm(QString, QString, bool);
+   void displayForm(QString);
 
-   void handleXMLForm(QString, QString);
+   void handleXMLForm(QString, QString, bool);
    void handleXMLToolBar(QString);
    void handleXMLStartMenu(QString);
    void handleXMLActions(QString);

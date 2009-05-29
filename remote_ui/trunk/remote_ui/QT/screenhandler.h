@@ -62,7 +62,7 @@ private:
    FglForm *p_fglform;
 //   QList<QWidget*> ql_formFields;
    QHash<QString, QLayout* > qh_fglLayouts;
-   QHash<int, QDomDocument > qh_formFiles;
+   QHash<QString, QString > qh_formFiles;
    QHash<int, QList<QWidget*> > qh_formFields;
    QHash<int, ActionMenu*> qh_formActionMenus;
    //QWidget *startMenu;
@@ -90,8 +90,9 @@ private:
 public slots:
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0);
    void createPrompt(QString, int, QString);
-   void handleAubitForm(QString, QString);
-   void handleXMLForm(QString, QString);
+   void handleAubitForm(QString, QString, bool);
+   void handleXMLForm(QString, QString, bool);
+   void displayForm(QString);
    void handleXMLToolBar(QString);
    void handleXMLStartMenu(QString);
    void handleXMLActions(QString);

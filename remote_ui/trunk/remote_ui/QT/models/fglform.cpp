@@ -781,7 +781,12 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
    //formWidget->setEnabled(false);
 
    QSplitter *formSplitter = (QSplitter*) this->centralWidget();
-   formSplitter->addWidget(formWidget);
+   if(formSplitter->count() > 0){
+      QWidget *widget = formSplitter->widget(0);
+      widget->hide();
+      widget->deleteLater();
+   }
+   formSplitter->insertWidget(0,formWidget);
    //formParser->getFormWidget()->show();
 
    this->ql_formFields << formParser->getFieldList();

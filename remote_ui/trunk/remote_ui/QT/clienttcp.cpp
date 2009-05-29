@@ -193,11 +193,14 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setWindowTitle(QString)), 
            p_currScreenHandler, SLOT(setWindowTitle(QString)));
    // handles original aubit4gl forms
-   connect(&ph, SIGNAL(handleAubitForm(QString, QString)), 
-           p_currScreenHandler, SLOT(handleAubitForm(QString, QString)));
+   connect(&ph, SIGNAL(handleAubitForm(QString, QString, bool)), 
+           p_currScreenHandler, SLOT(handleAubitForm(QString, QString, bool)));
+   // handles original aubit4gl forms
+   connect(&ph, SIGNAL(displayForm(QString)), 
+           p_currScreenHandler, SLOT(displayForm(QString)));
    // handles the new xml forms
-   connect(&ph, SIGNAL(handleXMLForm(QString, QString)), 
-           p_currScreenHandler, SLOT(handleXMLForm(QString, QString)));
+   connect(&ph, SIGNAL(handleXMLForm(QString, QString, bool)), 
+           p_currScreenHandler, SLOT(handleXMLForm(QString, QString, bool)));
    // transfer the received tool bar to the screen handler (4tb file)
    connect(&ph, SIGNAL(handleXMLToolBar(QString)),  
            p_currScreenHandler, SLOT(handleXMLToolBar(QString)));
@@ -834,10 +837,44 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       return;
    }
 
-   if(childElement.nodeName() == "OPENWINDOWWITHFORM" ||
-      childElement.nodeName() == "OPENFORM"){
+   if(childElement.nodeName() == "OPENFORM"){
+      QString window = childElement.attribute("FORMNAME");
 
-      closeWindow("screen");
+      if(childElement.firstChildElement().nodeName() == "XMLFORM"){
+        QDomDocument xmlForm = encodeXMLFile(childElement.text());
+        QString xmlFormString = xmlForm.toString();
+
+        handleXMLForm(window, xmlFormString, false);
+      }
+
+      if(childElement.firstChildElement().nodeName() == "FORM"){
+         QDomDocument xmlForm("FORM");
+         xmlForm.appendChild(childElement.firstChildElement());
+         
+         QString xmlFormString = xmlForm.toString();
+         handleAubitForm(window, xmlFormString, false);
+      }
+
+      QDomNodeList ql_nodes = childElement.childNodes();
+      for(int k=0; k<ql_nodes.count(); k++){
+         if(ql_nodes.at(k).nodeName() == "FORM"){
+            QDomDocument xmlForm("FORM");
+            xmlForm.appendChild(ql_nodes.at(k));
+         
+            QString xmlFormString = xmlForm.toString();
+            handleAubitForm(window, xmlFormString, false);
+         }
+      }
+      return;
+   }
+
+   if(childElement.nodeName() == "DISPLAYFORM"){
+      displayForm(childElement.attribute("FORMNAME"));
+   }
+
+   if(childElement.nodeName() == "OPENWINDOWWITHFORM"){
+
+//      closeWindow("screen");
 
       // Window Title
       QString window = childElement.attribute("WINDOW");
@@ -886,7 +923,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
         QDomDocument xmlForm = encodeXMLFile(childElement.text());
         QString xmlFormString = xmlForm.toString();
 
-        handleXMLForm(window, xmlFormString);
+        handleXMLForm(window, xmlFormString, true);
       }
 
       if(childElement.firstChildElement().nodeName() == "FORM"){
@@ -894,7 +931,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          xmlForm.appendChild(childElement.firstChildElement());
          
          QString xmlFormString = xmlForm.toString();
-         handleAubitForm(window, xmlFormString);
+         handleAubitForm(window, xmlFormString, true);
       }
 
       QDomNodeList ql_nodes = childElement.childNodes();
@@ -904,7 +941,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
             xmlForm.appendChild(ql_nodes.at(k));
          
             QString xmlFormString = xmlForm.toString();
-            handleAubitForm(window, xmlFormString);
+            handleAubitForm(window, xmlFormString, true);
          }
       }
       return;

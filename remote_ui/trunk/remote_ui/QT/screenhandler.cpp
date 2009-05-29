@@ -145,14 +145,16 @@ FglForm* ScreenHandler::currForm()
 // Description  : passes the FormFile to the parsing function and adds
 //                the returning layouts and fields to the FglForm
 //------------------------------------------------------------------------------
-void ScreenHandler::handleXMLForm(QString formName, QString xmlFormString)
+void ScreenHandler::handleXMLForm(QString formName, QString xmlFormString, bool openWindow)
 {
-   Q_UNUSED(formName);
+   qh_formFiles[formName] = xmlFormString;
 
-   QDomDocument xmlForm;
-   xmlForm.setContent(xmlFormString);
+   if(openWindow){
+      QDomDocument xmlForm;
+      xmlForm.setContent(xmlFormString);
 
-   p_fglform->setFormLayout(xmlForm);
+      p_fglform->setFormLayout(xmlForm);
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -161,25 +163,41 @@ void ScreenHandler::handleXMLForm(QString formName, QString xmlFormString)
 // Description  : passes the FormFile to the parsing function and adds
 //                the returning layouts and fields to the FglForm
 //------------------------------------------------------------------------------
-void ScreenHandler::handleAubitForm(QString formName, QString xmlFormString)
+void ScreenHandler::handleAubitForm(QString formName, QString xmlFormString, bool openWindow)
 {
 
-   Q_UNUSED(formName);
+   qh_formFiles[formName] = xmlFormString;
 
-   // Before Creating a form we increase the counter
-   // so the form knows there is a layout waiting
-   cnt_form++;
+   if(openWindow){
+      QDomDocument xmlForm;
+      xmlForm.setContent(xmlFormString);
 
-   QDomDocument xmlForm;
-   xmlForm.setContent(xmlFormString);
+      p_fglform->setFormLayout(xmlForm);
+   }
 
-   int height = xmlForm.documentElement().attribute("height").toInt();
-   int width = xmlForm.documentElement().attribute("width").toInt();
+}
 
-   QSize *size = new QSize(width, height);
-   ql_formSizes << size;
+//------------------------------------------------------------------------------
+// Method       : handleXMLForm()
+// Filename     : screenhandler.cpp
+// Description  : passes the FormFile to the parsing function and adds
+//                the returning layouts and fields to the FglForm
+//------------------------------------------------------------------------------
+void ScreenHandler::displayForm(QString formName)
+{
+   QString xmlFormString = qh_formFiles[formName];
 
-   p_fglform->setFormLayout(xmlForm);
+   if(!xmlFormString.isEmpty()){
+
+      QDomDocument xmlForm;
+      xmlForm.setContent(xmlFormString);
+
+      p_fglform->setFormLayout(xmlForm);
+   }
+   else{
+      QString error = QString("No such Form %1").arg(formName);
+      qFatal(error.toAscii());
+   }
 }
 
 //------------------------------------------------------------------------------
