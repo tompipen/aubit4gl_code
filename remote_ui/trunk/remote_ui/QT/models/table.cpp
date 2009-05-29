@@ -325,6 +325,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
       }
 
    }else{
+      /*
       //Job 18105: Align Text Left and Int Right
       if(role == Qt::TextAlignmentRole){
          bool ok = false;
@@ -340,6 +341,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
             }
          }
       }
+      */
 
       //return QAbstractTableModel::data(index, role);
       return QVariant();   // hier sollte man den Datentyp der Spalte aus der

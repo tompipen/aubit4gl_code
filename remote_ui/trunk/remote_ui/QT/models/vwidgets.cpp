@@ -731,7 +731,7 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
    bool wantTabs = textEditElement.attribute("wantTabs").toInt();
    bool wantReturns = textEditElement.attribute("wantReturns").toInt();
 
-   TextEdit *textEdit = new TextEdit;
+   TextEdit *textEdit = new TextEdit(parent);
    textEdit->setAccessibleName(name);
    textEdit->setObjectName(colName);
    textEdit->name = name;
