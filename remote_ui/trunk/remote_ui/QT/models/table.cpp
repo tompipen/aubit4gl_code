@@ -285,6 +285,18 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
    }
    */
 
+   if(current.column() > -1){
+      // ignore field event if the before field was also ignored
+      if(!b_ignoreFocus){
+         event.type = Fgl::BEFORE_FIELD_EVENT;
+         event.attribute = table->qsl_colNames.at(current.column());
+         emit fieldEvent(event);
+      }
+      else{
+         b_ignoreFocus = false;
+      }
+   }
+
 }
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)

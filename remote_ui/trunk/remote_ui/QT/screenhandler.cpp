@@ -2746,7 +2746,7 @@ void ScreenHandler::setArrLine(int line)
    if(context == NULL)
       return;
 
-/*
+   /*
    for(int i=0; i<context->fieldList().count(); i++){
       QWidget *widget = p_fglform->findFieldByName(context->fieldList().at(i));
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
@@ -2763,8 +2763,20 @@ void ScreenHandler::setArrLine(int line)
          }
       }
    }
-*/
+   */
 
+   for(int i=0; i<context->fieldList().count(); i++){
+      if(TableView *tableView = qobject_cast<TableView *> (context->fieldList().at(i))){
+            QModelIndex index = tableView->currentIndex();
+            QModelIndex newIndex = tableView->model()->index(line-1, index.column(), QModelIndex());
+            if(newIndex.isValid()){
+               //tableView->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::NoUpdate);
+               tableView->setIgnoreRowChange(true);
+               tableView->selectRow(line-1);
+               tableView->setIgnoreRowChange(false);
+            }
+      }
+   }
 
 
    /*
