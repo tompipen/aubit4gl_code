@@ -41,7 +41,7 @@ MAIN
 
 	LET lv_char = "1234.5678901234"
 	LET lv_smallfloat = lv_char
-	IF lv_smallfloat < 1234.5678 or lv_smallfloat > 1234.5679 OR lv_smallfloat IS NULL THEN
+	IF lv_smallfloat < 1234.5678 or lv_smallfloat > 1234.5700 OR lv_smallfloat IS NULL THEN
 	   DISPLAY "A smallfloat on a string was not converted to smallfloat : ", 
 		         lv_smallfloat 
 		 LET exitStatus = 1

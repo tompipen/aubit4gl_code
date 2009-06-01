@@ -16,14 +16,14 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DIFF}
-# ${DEFAULT_RUN} ${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_RUN}
+#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Test for MID 0001273: 5.6311311387e-14 evaluates as 0"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_INTEGER DEFINE_CHAR USE_REPORT ORDER_BY CURSOR_SELECT FOREACH REPORT_FIRST_PAGE_HEADER ON_EVERY_ROW ON_LAST_ROW REPORT_PAGE_TRAILER "
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
