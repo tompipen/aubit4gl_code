@@ -986,6 +986,11 @@ sql_value_expr_list :
 
 value_specification:
 	 literal
+        | DOLLAR identifier {
+                        if (find_variable($<str>2)==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
+                        SPRINTF1($<str>$,"\n2(%d)",find_variable($<str>2));
+                        }
+
 	;
 
 
