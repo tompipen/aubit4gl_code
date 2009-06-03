@@ -771,7 +771,10 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
   }
 
 
-  printf("%s '%s'\n", f->funcname, lines_used);
+  // printf("%s '%s'\n", f->funcname, lines_used);
+  // viaamani_update 'F DDDDDD @@_@>@_@>@_@>@@_@@@_@@______@F#p^^^B^A'
+  // viaamani_input2 'FD@__@@@_@@@@_@F#b^B^A'
+  printf("%s\n", f->funcname);
 
 
   add_function_stat( f->module, f->funcname, nlines, loc, ncomments, lines_of_ws, flow,func_cmds->cmds.cmds_len) ;
