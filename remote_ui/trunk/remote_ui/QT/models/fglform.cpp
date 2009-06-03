@@ -1135,6 +1135,7 @@ void FglForm::nextfield()
       }
    }
    else{
+      /*
       //find active screenRecord
       for(int i=0; i<formElements().size(); i++){
          if(formElements().at(i)->inherits("TableView")){
@@ -1144,6 +1145,7 @@ void FglForm::nextfield()
             }
          }
       }
+      */
    }
 }
 
