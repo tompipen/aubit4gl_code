@@ -741,6 +741,9 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
 
   for (a = 0; a < func_cmds->cmds.cmds_len; a++)
     {
+	if (func_cmds->cmds.cmds_val[a]->lineno-f->lineno<0 || func_cmds->cmds.cmds_val[a]->lineno-f->lineno>=nlines) { 
+			//A4GL_pause_execution();
+		continue; }
       lines_used[func_cmds->cmds.cmds_val[a]->lineno-f->lineno]='@';
       switch (func_cmds->cmds.cmds_val[a]->cmd_data.type)
 	{

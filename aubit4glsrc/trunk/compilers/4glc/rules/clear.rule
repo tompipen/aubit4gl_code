@@ -10,11 +10,13 @@ op_to_defs :
 | TO_DEFAULTS {$<e_boolean>$=1; }
 ;
 
-clear_cmd       :       CLEARSCR {
+clear_cmd       :       CLEARSCR  {
+				set_cmdlineno(token_read_on_line);
                                 $<cmd>$=new_clear_cmd(E_CLR_SCREEN,NULL,0);
                                 add_feature("UI_CLEAR_SCREEN");
                                 map_ui("CLEARSCREEN");}
                 |       CLEARWIN win_name_p {
+				set_cmdlineno(token_read_on_line);
                                 $<cmd>$=new_clear_cmd(E_CLR_WINDOW,$<ptr>2,0);
                                 add_feature("UI_CLEAR_WINDOW");
                                 map_ui("CLEARWINDOW");
