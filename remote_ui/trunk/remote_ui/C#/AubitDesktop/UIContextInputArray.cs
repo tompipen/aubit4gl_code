@@ -108,7 +108,7 @@ namespace AubitDesktop
         private FGLFoundField CurrentField;
             private int CurrentFieldNo=-1;
 
-
+        private bool doneBeforeRowForFirst = false;
 
         public bool contextIsActive()
         {
@@ -223,7 +223,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(afterRow.ID));
+                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID));
                         }
 
                     }
@@ -316,7 +316,6 @@ namespace AubitDesktop
                     if (beforeRow != null)
                     {
                         this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID));
-
                     }
 
                 }
@@ -529,6 +528,21 @@ namespace AubitDesktop
                     continue;
                 }
 
+                if (evt is AFTER_FIELD_EVENT)
+                {
+                    AFTER_FIELD_EVENT e;
+                    e = (AFTER_FIELD_EVENT)evt;
+                    afterFieldList.Add(e);
+                    continue;
+                }
+                if (evt is BEFORE_FIELD_EVENT)
+                {
+                    BEFORE_FIELD_EVENT e;
+                    e = (BEFORE_FIELD_EVENT)evt;
+                    beforeFieldList.Add(e);
+                    continue;
+                }
+
                 if (evt is BEFORE_ROW_EVENT)
                 {
                     BEFORE_ROW_EVENT e;
@@ -550,6 +564,11 @@ namespace AubitDesktop
                     ON_ACTION_EVENT e;
                     e = (ON_ACTION_EVENT)evt;
                     onActionList.Add(e);
+                    continue;
+                }
+
+                if (evt is AFTER_INPUT_EVENT)
+                {
                     continue;
                 }
                 MessageBox.Show("Unhandled Event for INPUT ARRAY");
@@ -852,6 +871,11 @@ namespace AubitDesktop
             mainWin.setActiveToolBarKeys(KeyList, true, true, true);
 
 
+
+
+
+
+
             if (nextMove != MoveType.MoveTypeNoPendingMovement)
             {
                 // Theres a pending movement...
@@ -898,6 +922,11 @@ namespace AubitDesktop
             redisplay_arr(true);
 
             this.EventTriggered = UInputArrayContext_EventTriggered;
+            if (beforeRow != null && doneBeforeRowForFirst ==false)
+            {
+                doneBeforeRowForFirst = true;
+                this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID));
+            }
 
             // Clear the context on all fields
             mainWin.SetContext(FGLContextType.ContextNone);

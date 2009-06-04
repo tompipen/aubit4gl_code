@@ -98,6 +98,11 @@ namespace AubitDesktop
                     continue;
                 }
 
+                if (evt is AFTER_CONSTRUCT_EVENT)
+                {
+                    //Just ignore it...
+                    continue;
+                }
                 MessageBox.Show("Unhandled Event for CONSTRUCT");
             }
 

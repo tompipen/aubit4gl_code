@@ -497,9 +497,20 @@ namespace AubitDesktop
         {
 
             FGLWidget fld;
-            string widgetType;
+            string widgetType=null;
             fld = null;
-            widgetType = ff.Items[0].GetType().ToString();
+            if (ff.Items != null)
+            {
+                if (ff.Items[0] != null)
+                {
+                    widgetType = ff.Items[0].GetType().ToString();
+                }
+            }
+            if (widgetType == null)
+            {
+                MessageBox.Show("Invalid form widget");
+                return null;
+            }
 
             switch (widgetType)
             {
@@ -551,7 +562,7 @@ namespace AubitDesktop
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Button":
-                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0],"",index,ma);
+                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Button)ff.Items[0],"",index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.CheckBox":
