@@ -2771,9 +2771,11 @@ void ScreenHandler::setArrLine(int line)
             QModelIndex newIndex = tableView->model()->index(line-1, index.column(), QModelIndex());
             if(newIndex.isValid()){
                //tableView->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::NoUpdate);
-               tableView->setIgnoreRowChange(true);
+               tableView->blockSignals(true);
+//               tableView->setIgnoreRowChange(true);
                tableView->selectRow(line-1);
-               tableView->setIgnoreRowChange(false);
+//               tableView->setIgnoreRowChange(false);
+               tableView->blockSignals(false);
             }
       }
    }

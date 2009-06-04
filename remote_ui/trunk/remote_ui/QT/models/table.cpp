@@ -157,6 +157,10 @@ void TableView::accept()
    if(!table->b_input){
       emit accepted();
    }
+   else{
+      b_ignoreFocus = true;
+      nextfield();
+   }
 }
 
 void TableView::nextfield()
@@ -226,9 +230,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-
    Fgl::Event event;
-
 
    if(prev.column() > -1){
       // ignore field event if the before field was also ignored
@@ -266,37 +268,24 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
       }
    }
 
-   /*
    if(current.column() > -1 && current.row() > -1){
       // only allow focus for fields that have a focus policy
-      if(this->focusWidget() != NULL && this->focusWidget()->focusPolicy() != Qt::NoFocus){
-         event.type = Fgl::BEFORE_FIELD_EVENT;
-         event.attribute = table->qsl_colNames.at(current.column());
-         emit fieldEvent(event);
-      }
-      else{
-         // if field has no focus policy then it should not get the focus!
-         // set ignore = true so the after field event also does not get triggered
-         b_ignoreFocus = true;
-         if(table->b_input){
-            this->focusNextChild();
+      if(this->focusWidget() != NULL){
+         if(this->focusWidget()->focusPolicy() != Qt::NoFocus){
+            event.type = Fgl::BEFORE_FIELD_EVENT;
+            event.attribute = table->qsl_colNames.at(current.column());
+            emit fieldEvent(event);
+         }
+         else{
+            // if field has no focus policy then it should not get the focus!
+            // set ignore = true so the after field event also does not get triggered
+            b_ignoreFocus = true;
+            if(table->b_input){
+               this->focusNextChild();
+            }
          }
       }
    }
-   */
-
-   if(current.column() > -1){
-      // ignore field event if the before field was also ignored
-      if(!b_ignoreFocus){
-         event.type = Fgl::BEFORE_FIELD_EVENT;
-         event.attribute = table->qsl_colNames.at(current.column());
-         emit fieldEvent(event);
-      }
-      else{
-         b_ignoreFocus = false;
-      }
-   }
-
 }
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)

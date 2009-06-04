@@ -175,7 +175,7 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
             else{
                QModelIndex index = tableView->model()->index(0, 0);
                tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
-               tableView->edit(index);
+               //tableView->edit(index);
             }
          }
          tableView->setEnabled(true);

@@ -1146,6 +1146,14 @@ void FglForm::nextfield()
          }
       }
       */
+      for(int i=0; i<context->fieldList().size(); i++){
+         if(context->fieldList().at(i)->inherits("TableView")){
+            TableView *view = (TableView*) context->fieldList().at(i);
+            if(view->isEnabled()){
+               view->nextfield();
+            }
+         }
+      }
    }
 }
 
