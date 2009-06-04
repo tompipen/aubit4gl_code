@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.484 2009-05-27 09:50:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.485 2009-06-04 20:58:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.484 2009-05-27 09:50:37 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.485 2009-06-04 20:58:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5859,9 +5859,11 @@ char smbuff[256];
 	if (sgs_topvar)  {
 		int upperbound;
 		upperbound=sgs_topvar->arr_subscripts.arr_subscripts_val[a];
+		if (upperbound!=-1) {
 		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
 			long n;
 			n=u->expr_str_u.expr_long-1;
+			
 			if (n<0||n>=upperbound) {
 				char buff[200];
 				sprintf(buff,"Must be between 1 and %d", upperbound);
@@ -5874,6 +5876,9 @@ char smbuff[256];
 			sprintf(smbuff, "%ld", (long)u->expr_str_u.expr_long-1);
 		} else {
 			sprintf(smbuff, "(A4GL_bounds_check(%s-1,%ld))", local_expr_as_string(u),(long)upperbound);
+		}
+		} else {
+			sprintf(smbuff, "(%s-1)", local_expr_as_string(u));
 		}
 	} else {
 		if (u->expr_type==ET_EXPR_LITERAL_LONG) {
