@@ -129,6 +129,18 @@ namespace AubitDesktop
         }
 
 
+        public FGLButtonFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Button button, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
+        {
+
+            ATTRIB a;
+            a = createAttribForWidget(ff);
+
+
+            createWidget(a, ma, Convert.ToInt32(button.posY), index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+
+        }
+
+
 
 
         public FGLButtonFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
