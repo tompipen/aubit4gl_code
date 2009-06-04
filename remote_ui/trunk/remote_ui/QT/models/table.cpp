@@ -187,7 +187,7 @@ void TableView::prevfield()
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
    if(table->b_input){
-      this->focusNextChild();
+      this->focusPreviousChild();
    }
    else{
       int currentRow = currentIndex().row();
@@ -286,8 +286,15 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
             // if field has no focus policy then it should not get the focus!
             // set ignore = true so the after field event also does not get triggered
             b_ignoreFocus = true;
-            if(table->b_input){
-               this->focusNextChild();
+            if(current.column() > prev.column()){
+               if(table->b_input){
+                  this->nextfield();
+               }
+            }
+            else{
+               if(table->b_input){
+                  this->prevfield();
+               }
             }
          }
       }

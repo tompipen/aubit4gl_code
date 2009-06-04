@@ -1169,9 +1169,19 @@ void FglForm::prevfield()
    }
    else{
       //find active screenRecord
+      /*
       for(int i=0; i<formElements().size(); i++){
          if(formElements().at(i)->inherits("TableView")){
             TableView *view = (TableView*) formElements().at(i);
+            if(view->isEnabled()){
+               view->prevfield();
+            }
+         }
+      }
+      */
+      for(int i=0; i<context->fieldList().size(); i++){
+         if(context->fieldList().at(i)->inherits("TableView")){
+            TableView *view = (TableView*) context->fieldList().at(i);
             if(view->isEnabled()){
                view->prevfield();
             }
