@@ -206,6 +206,9 @@ void TableView::setInputEnabled(bool enable)
       this->setEditTriggers(QAbstractItemView::AllEditTriggers);
       this->setShowGrid(true);
       this->setAlternatingRowColors(false);
+      QHeaderView *header = this->horizontalHeader();
+      QObject::disconnect(header, SIGNAL(sectionClicked(int)),
+                          this, SLOT(sortByColumn(int)));
    }
    else{
       this->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -213,6 +216,9 @@ void TableView::setInputEnabled(bool enable)
       this->setEditTriggers(QAbstractItemView::NoEditTriggers);
       this->setShowGrid(false);
       this->setAlternatingRowColors(true);
+      QHeaderView *header = this->horizontalHeader();
+      QObject::connect(header, SIGNAL(sectionClicked(int)),
+                       this, SLOT(sortByColumn(int)));
    }
 
    if(this->model() != NULL){
