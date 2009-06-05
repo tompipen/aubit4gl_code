@@ -662,9 +662,24 @@ namespace AubitDesktop
 
         internal bool isField(string fieldName)
         {
-            if (useName == fieldName) return true;
-            if (fullName == fieldName) return true;
-            if (shortName == fieldName) return true;
+            int dim;
+            dim = this.subscript;
+            if (fieldName.Contains("["))
+            {
+                                int idx;
+
+                idx = fieldName.IndexOf("[");
+                string s = fieldName.Substring(idx + 1);
+                s = s.Replace("]", "");
+
+                dim = Convert.ToInt32(s);
+                fieldName = fieldName.Substring(0, idx);
+   
+            }
+            
+            if (useName == fieldName  && dim==this.subscript) return true;
+            if (fullName == fieldName && dim == this.subscript) return true;
+            if (shortName == fieldName && dim == this.subscript) return true;
             return false;
         }
 

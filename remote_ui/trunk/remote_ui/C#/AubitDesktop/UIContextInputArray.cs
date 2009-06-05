@@ -688,7 +688,14 @@ namespace AubitDesktop
 
         public void setNextField(string fieldName)
         {
-            throw new ApplicationException("INPUT ARRAY cant do nextfields");
+            foreach (FGLFoundField f in activeFields)
+            {
+                if (f.isField(fieldName) )
+                {
+                    setCurrentField = f;
+                }
+            }
+            //throw new ApplicationException("INPUT ARRAY cant do nextfields");
         }
 
         public void NavigateToTab()
