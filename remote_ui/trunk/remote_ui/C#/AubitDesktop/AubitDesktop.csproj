@@ -71,6 +71,7 @@
     <Compile Include="AubitTSBtn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UIContextDisplayArrayInTable.cs" />
     <Compile Include="EnvelopeReader.cs" />
     <Compile Include="Eval.cs" />
     <Compile Include="FGLApplicationPanel.cs">

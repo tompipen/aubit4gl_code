@@ -773,14 +773,18 @@ namespace AubitDesktop
                     {
                         if (a.clickHandler != null)
                         {
-                            a.clickHandler(a, new EventArgs());
+                            a.clickHandler(a, null);
                         }
                         else
                         {
                             MessageBox.Show("No click handler ?");
                         }
-                        e.Handled = true;
-                        e.SuppressKeyPress = true;
+
+
+                        //e.Handled = true;
+                        //e.SuppressKeyPress = true;
+
+
                         return true;
                     }
 

@@ -629,6 +629,13 @@ namespace AubitDesktop
             windows[0].clearForm();
             
         }
+
+
+
+        internal DataGridView FindRecord(FIELD[] fIELD)
+        {
+            return windows[0].findRecord(fIELD);
+        }
     }
 
 
@@ -964,6 +971,11 @@ namespace AubitDesktop
         {
             this.CurrentForm.clearForm();
             
+        }
+
+        internal DataGridView findRecord(FIELD[] fIELD)
+        {
+            return CurrentForm.FindRecord(fIELD);
         }
     }
 

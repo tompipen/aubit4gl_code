@@ -36,6 +36,7 @@ namespace AubitDesktop
         public List<FGLWidget> fields;
         //private List<Label> labels;
         private List<FGLScreenRecord> ScreenRecords;
+        private Hashtable grids;
         
         public int maxcol;
         public int maxline;
@@ -123,8 +124,21 @@ namespace AubitDesktop
                 #region Table
                 case "AubitDesktop.Xml.XMLForm.Table":
                     {
+                        DataGridView d;
                         AubitDesktop.Xml.XMLForm.Table p;
                         p = (AubitDesktop.Xml.XMLForm.Table)child;
+                        d = new DataGridView();
+                        d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+                        d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
+                        d.AutoSize = true;
+                        d.ReadOnly = true;
+                        
+                        d.ColumnCount = p.TableColumn.Length;
+                        d.RowCount = Convert.ToInt32(p.pageSize);
+                        d.Visible = true;
+                        if (this.grids == null) this.grids = new Hashtable();
+                        this.grids.Add( p.tabName,d);
+                        parent.Controls.Add(d);
                     }
                     break;
                 #endregion
@@ -642,6 +656,7 @@ namespace AubitDesktop
             
             data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
             TextReader txtr = new StringReader(data);
+            //txtr= UTF8Encoding
             try
             {
                 theForm = (AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
@@ -945,6 +960,18 @@ namespace AubitDesktop
                 
                 dim = Convert.ToInt32(s);
                 colName = colName.Substring(0, idx );
+            }
+
+            if (tabName.Contains("["))
+            {
+                int idx;
+
+                idx = tabName.IndexOf("[");
+                string s = tabName.Substring(idx + 1);
+                s = s.Replace("]", "");
+
+                dim = Convert.ToInt32(s);
+                tabName = tabName.Substring(0, idx);
             }
 
             if (tabName != "")
@@ -1261,6 +1288,33 @@ namespace AubitDesktop
             {
                 fld.Text = "";
                 fld.Attribute = -1;
+            }
+        }
+
+        internal DataGridView FindRecord(FIELD[] fIELD)
+        {
+            string fld;
+            fld = fIELD[0].NAME;
+            if (grids == null) return null;
+            if (grids.ContainsKey(fld))
+            {
+                return (DataGridView)grids[fIELD[0].NAME];
+            }
+
+            fld = fld.Replace(".*", "");
+            if (grids.ContainsKey(fld) )
+            {
+                return (DataGridView)grids[fld];
+            }
+
+
+            else
+            {
+                foreach (object s in grids.Keys)
+                {
+                    MessageBox.Show((string)s);
+                }
+                return null;
             }
         }
     }
