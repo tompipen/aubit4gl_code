@@ -358,11 +358,21 @@ namespace AubitDesktop
         void tsBtnUp_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
                 dc = (UIDisplayArrayContext)currentContext;
                 dc.upkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
                 
             }
@@ -371,20 +381,52 @@ namespace AubitDesktop
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
                 dc.upkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
-
             }
+
+            if (currentContext is UIDisplayArrayInTableContext)
+            {
+                // Let the ui handle it..
+                if (e != null)
+                {
+                    // Its a real button click - if it was a fake click because of a 
+                    // matched keypress e would be null...
+                    //MessageBox.Show("Null");
+                    UIDisplayArrayInTableContext dc;
+                    dc = (UIDisplayArrayInTableContext)currentContext;
+                    dc.upkeyPressed();
+                }
+                return;
+            }
+
             throw new NotImplementedException();
         }
 
         void tsBtnDown_Click(object sender, EventArgs e)
         {
+           
             this.ErrorText = "";
+
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof( KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
                 dc = (UIDisplayArrayContext)currentContext;
                 dc.downkeyPressed();
+                if (ke!=null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
             }
             if (currentContext is UIInputArrayContext)
@@ -392,9 +434,30 @@ namespace AubitDesktop
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
                 dc.downkeyPressed();
+                if (ke!=null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
             }
 
+
+            if (currentContext is UIDisplayArrayInTableContext)
+            {
+                // Let the ui handle it..
+                if (e != null)
+                {
+                    // Its a real button click - if it was a fake click because of a 
+                    // matched keypress e would be null...
+                    //MessageBox.Show("Null");
+                    UIDisplayArrayInTableContext dc;
+                    dc = (UIDisplayArrayInTableContext)currentContext;
+                    dc.downkeyPressed();
+                }
+                // Let the ui handle it..
+                return;
+            }
 
             throw new NotImplementedException();
             
@@ -404,17 +467,33 @@ namespace AubitDesktop
         void tsBtnInsert_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             if (currentContext is UIInputArrayContext)
             {
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
                 dc.InsertkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
             }
+
         }
 
         void tsBtnDelete_Click(object sender, EventArgs e)
         {
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             this.ErrorText = "";
             this.ErrorText = "";
             if (currentContext is UIInputArrayContext)
@@ -422,18 +501,33 @@ namespace AubitDesktop
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
                 dc.DeletekeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
             }
         }
 
         void tsBtnPgDown_Click(object sender, EventArgs e)
         {
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
                 dc = (UIDisplayArrayContext)currentContext;
                 dc.pgDownkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
             }
 
@@ -442,6 +536,27 @@ namespace AubitDesktop
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
                 dc.pgDownkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
+                return;
+            }
+
+            if (currentContext is UIDisplayArrayInTableContext)
+            {
+                // Let the ui handle it..
+                // Let the ui handle it..
+                if (e != null)
+                {
+                    // Its a real button click - if it was a fake click because of a 
+                    // matched keypress e would be null...
+                    //MessageBox.Show("Null");
+                    UIDisplayArrayInTableContext dc;
+                    dc = (UIDisplayArrayInTableContext)currentContext;
+                    dc.pgDownkeyPressed();
+                }
                 return;
             }
             throw new NotImplementedException();
@@ -449,12 +564,22 @@ namespace AubitDesktop
 
         void tsBtnPgUp_Click(object sender, EventArgs e)
         {
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
             {
                 UIDisplayArrayContext dc;
                 dc = (UIDisplayArrayContext)currentContext;
                 dc.pgUpkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
                 return;
             }
             if (currentContext is UIInputArrayContext)
@@ -462,6 +587,28 @@ namespace AubitDesktop
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
                 dc.pgUpkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
+                return;
+            }
+            if (currentContext is UIDisplayArrayInTableContext)
+            {
+
+                // Let the ui handle it..
+
+                if (e != null)
+                {
+                    // Its a real button click - if it was a fake click because of a 
+                    // matched keypress e would be null...
+                    //MessageBox.Show("Null");
+                    UIDisplayArrayInTableContext dc;
+                    dc = (UIDisplayArrayInTableContext)currentContext;
+                    dc.pgUpkeyPressed();
+                }
+
                 return;
             }
             throw new NotImplementedException();
@@ -472,6 +619,11 @@ namespace AubitDesktop
         {
             string reply;
             AubitTSBtn o;
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             this.ErrorText = "";
             o = (AubitTSBtn)sender;
             reply = null;
@@ -487,7 +639,12 @@ namespace AubitDesktop
             }
             if (reply == null) return;
             TopWindow. stdNetworkConnection.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
-
+            if (ke != null)
+            {
+                ke.Handled = true;
+                ke.SuppressKeyPress = true;
+            }
+            
         }
 
         public void ensureAcceptInterruptButtonsOnToolStrip()
@@ -703,14 +860,29 @@ namespace AubitDesktop
         private void tsBtnCancel_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             string eventText = "<TRIGGERED ID=\"INTERRUPT\"/>";
             TopWindow.SendString(eventText,true);
             currentContext.DeactivateContext();
+            if (ke != null)
+            {
+                ke.Handled = true;
+                ke.SuppressKeyPress = true;
+            }
         }
 
 
         private void tsBtnAccept_Click(object sender, EventArgs e)
         {
+            KeyEventArgs ke = null;
+            if (e.GetType() == typeof(KeyEventArgs))
+            {
+                ke = (KeyEventArgs)e;
+            }
             this.ErrorText = "";
             string eventText = currentContext.getAcceptString();
             if (eventText != null)
@@ -718,6 +890,12 @@ namespace AubitDesktop
                 TopWindow.SendString(eventText,true);
             }
             currentContext.DeactivateContext();
+            if (ke != null)
+            {
+                ke.Handled = true;
+                ke.SuppressKeyPress = true;
+            }
+            return ;
         }
 
         public void TabSelected()
@@ -1349,8 +1527,18 @@ namespace AubitDesktop
                 #region DISPLAYARRAY
                 if (a is DISPLAYARRAY)
                 {
+                    DataGridView v;
                     DISPLAYARRAY da = (DISPLAYARRAY)a;
-                    contexts.Insert(Convert.ToInt32(da.CONTEXT), new UIDisplayArrayContext(this,da));
+                    v = FindRecord(da.FIELDLIST);
+                    if (v!=null)
+                    {
+                        contexts.Insert(Convert.ToInt32(da.CONTEXT), new UIDisplayArrayInTableContext(this, da));
+                    }
+                    else
+                    {
+                        contexts.Insert(Convert.ToInt32(da.CONTEXT), new UIDisplayArrayContext(this, da));
+                    }
+
                     commands.Remove(a);
                     continue;
                 }
@@ -1722,6 +1910,11 @@ namespace AubitDesktop
         internal void clrErrorTextFromFieldValidation()
         {
             ErrorText = "";
+        }
+
+        internal DataGridView FindRecord(FIELD[] fIELD)
+        {
+            return ApplicationWindows.FindRecord(fIELD);
         }
     }
 
