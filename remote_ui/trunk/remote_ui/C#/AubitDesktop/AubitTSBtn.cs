@@ -30,7 +30,10 @@ namespace AubitDesktop
         private string iD;
         private bool _isProgramAdded;
         private string _programTag;
+        public delegate bool HandledEventHandler(object sender, EventArgs e);
+        
         private EventHandler _clickHandler;
+
         public EventHandler clickHandler
         {
             get
