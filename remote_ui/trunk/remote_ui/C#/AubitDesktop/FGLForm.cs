@@ -132,10 +132,12 @@ namespace AubitDesktop
                         d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
                         d.AutoSize = true;
                         d.ReadOnly = true;
+                        d.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
                         
                         d.ColumnCount = p.TableColumn.Length;
                         d.RowCount = Convert.ToInt32(p.pageSize);
                         d.Visible = true;
+                        d.RowHeadersVisible = false;
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,d);
                         parent.Controls.Add(d);

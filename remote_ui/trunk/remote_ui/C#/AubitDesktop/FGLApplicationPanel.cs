@@ -359,9 +359,12 @@ namespace AubitDesktop
         {
             this.ErrorText = "";
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             if (currentContext is UIDisplayArrayContext)
             {
@@ -413,9 +416,12 @@ namespace AubitDesktop
             this.ErrorText = "";
 
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof( KeyEventArgs))
+            if (e!=null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             if (currentContext is UIDisplayArrayContext)
             {
@@ -468,9 +474,12 @@ namespace AubitDesktop
         {
             this.ErrorText = "";
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             if (currentContext is UIInputArrayContext)
             {
@@ -490,9 +499,12 @@ namespace AubitDesktop
         void tsBtnDelete_Click(object sender, EventArgs e)
         {
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             this.ErrorText = "";
             this.ErrorText = "";
@@ -513,9 +525,12 @@ namespace AubitDesktop
         void tsBtnPgDown_Click(object sender, EventArgs e)
         {
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
@@ -565,9 +580,12 @@ namespace AubitDesktop
         void tsBtnPgUp_Click(object sender, EventArgs e)
         {
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             this.ErrorText = "";
             if (currentContext is UIDisplayArrayContext)
@@ -620,9 +638,12 @@ namespace AubitDesktop
             string reply;
             AubitTSBtn o;
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             this.ErrorText = "";
             o = (AubitTSBtn)sender;
