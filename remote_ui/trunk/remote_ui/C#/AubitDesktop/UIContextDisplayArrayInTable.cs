@@ -86,6 +86,7 @@ namespace AubitDesktop
 
         public string getAcceptString()
         {
+            setLines();
             return "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
         }
 
@@ -151,14 +152,21 @@ namespace AubitDesktop
             {
                 DataGridViewRow r;
                 string[] data;
-                data=new string[p.ROWS[row].VALUES.Length];
+                data=new string[p.ROWS[row].VALUES.Length+1];
                 r = new DataGridViewRow();
+
+                // We'll use the first column to store the index
+                // for the current row...
+                data[0] = "" + (row+1);
+
                 for (int col = 0; col < p.ROWS[row].VALUES.Length;col++ )
                 {
-                    data[col]=p.ROWS[row].VALUES[col].Text;
+                    data[col+1]=p.ROWS[row].VALUES[col].Text;
                 }
                 displayArrayGrid.Rows.Add(data);
             }
+
+            displayArrayGrid.Columns[0].Visible = false;
 
             if (beforeRow != null)
             {
@@ -248,27 +256,45 @@ namespace AubitDesktop
 
         void displayArrayGrid_RowLeave(object sender, DataGridViewCellEventArgs e)
         {
-            if (afterRow.ID!="")
+            if (displayArrayGrid.CurrentRow != null)
             {
-                setLines();
-                this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+
+
+                if (afterRow.ID != "")
+                {
+                    setLines(e.RowIndex);
+                    if (this.EventTriggered != null)
+                    {
+                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    }
+                }
             }
         }
 
         void displayArrayGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (beforeRow.ID!="")
+            if (displayArrayGrid.CurrentRow != null)
             {
-                setLines();
-                this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                if (beforeRow.ID != "")
+                {
+                    setLines(e.RowIndex);
+                    if (this.EventTriggered != null)
+                    {
+                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    }
+                }
             }
-            
         }
 
+        private void setLines(int n)
+        {
+            this.arrLine = Convert.ToInt32((string)displayArrayGrid.Rows[n].Cells[0].Value);
+            this.scrLine = this.arrLine;
+        }
         private void setLines()
         {
-            this.arrLine = displayArrayGrid.CurrentRow.Index;
-            this.scrLine = displayArrayGrid.CurrentRow.Index;
+            this.arrLine = Convert.ToInt32((string)displayArrayGrid.Rows[ displayArrayGrid.CurrentRow.Index].Cells[0].Value);
+            this.scrLine = this.arrLine;
         }
 
         public void DeactivateContext()
@@ -293,7 +319,7 @@ namespace AubitDesktop
         {
             if (displayArrayGrid.CurrentRow.Index > 0)
             {
-                displayArrayGrid.CurrentCell=displayArrayGrid.Rows[displayArrayGrid.CurrentRow.Index-1].Cells[0];
+                displayArrayGrid.CurrentCell=displayArrayGrid.Rows[displayArrayGrid.CurrentRow.Index-1].Cells[1];
             }
         }
 
@@ -301,7 +327,7 @@ namespace AubitDesktop
         {
             if (displayArrayGrid.CurrentRow.Index<displayArrayGrid.Rows.Count-1)
             {
-                displayArrayGrid.CurrentCell = displayArrayGrid.Rows[displayArrayGrid.CurrentRow.Index + 1].Cells[0];
+                displayArrayGrid.CurrentCell = displayArrayGrid.Rows[displayArrayGrid.CurrentRow.Index + 1].Cells[1];
             }
             
         }
@@ -312,7 +338,7 @@ namespace AubitDesktop
             n= displayArrayGrid.CurrentRow.Index+ displayArrayGrid.DisplayedRowCount(false);
             if (n < displayArrayGrid.Rows.Count-1)
             {
-                displayArrayGrid.CurrentCell = displayArrayGrid.Rows[n].Cells[0];
+                displayArrayGrid.CurrentCell = displayArrayGrid.Rows[n].Cells[1];
               
             }
         }
@@ -323,7 +349,7 @@ namespace AubitDesktop
             n = displayArrayGrid.CurrentRow.Index - displayArrayGrid.DisplayedRowCount(false);
             if (displayArrayGrid.CurrentRow.Index >=0)
             {
-                displayArrayGrid.CurrentCell = displayArrayGrid.Rows[n].Cells[0];
+                displayArrayGrid.CurrentCell = displayArrayGrid.Rows[n].Cells[1];
          
             }
             
