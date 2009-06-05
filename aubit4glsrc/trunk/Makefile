@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.69 2009-04-12 13:01:12 mikeaubury Exp $
+# $Id: Makefile,v 1.70 2009-06-05 11:30:28 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -46,7 +46,7 @@ include incl/Makefile-common
 ###############################
 #All targets in this make file are "phony" targets - they do not create
 #anything, they just invoke other make files:
-.PHONY: all clean default log corecompile extra ide api.headers glade help deinstall
+.PHONY: all clean default log corecompile extra ide api.headers glade help deinstall config
 
 ###############################
 #Things we compile by default
@@ -2937,6 +2937,7 @@ test_cc:
 
 bin/4glpc: corecompile
 	
+config: a4gl_setup
 quickguide:a4gl_setup
 
 a4gl_setup:  bin/4glpc

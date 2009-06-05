@@ -10,6 +10,7 @@ unset DEBUG
 
 export FGLLOGTXT="Aubit Computing Ltd Binary Build"
 
+
 rm /usr/lib/libaubit4gl.so
 
 if [ "$1" != "" ] 
@@ -19,6 +20,12 @@ then
 		cvs  update -d #> cvs.update.log1 2> cvs.update.log2
 	fi
 	make cleanall
+	find . -name "*.ao" -exec rm {} \;
+	find . -name "*.o" -exec rm {} \;
+	find . -name "*.so" -exec rm {} \;
+	rm bin/*.4ae
+	file bin/* | grep "stripped" | awk -F':' '{print $1}' | xargs rm 
+
 	export CFLAGS=-g 
 	rm /home/aubit4gl/aubit4gl/bin/aubit-config
 	./configure  --with-unixodbc=/usr/local/unixODBC --without-sapdb  --prefix=/home/aubit4gl/aubit4glbin --without-curl

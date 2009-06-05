@@ -115,7 +115,7 @@ char *chk_alias(char *s);
 %token KW_COMPOSITES 
 %token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED  OPEN_BRACE CLOSE_BRACE TITLE
 FORMONLY COMMENT
-%token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE
+%token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE CHARACTER_ENCODING
 %token SEMICOLON LOOKUP JOINING LOOKUP_FROM
 %token OPEN_BRACKET CLOSE_BRACKET STAR DIVIDE PLUS MINUS RECORD COMMA THROUGH TYPE DELIMITERS
 %token KW_CHAR KW_INT KW_DATE KW_FLOAT SMALLFLOAT SMALLINT KW_DECIMAL MONEY DATETIME INTERVAL LIKE
@@ -148,10 +148,17 @@ FORMONLY COMMENT
 
 /* rules */
 form_def : 
-database_section screen_or_layout_section op_table_section attribute_section op_instruction_section {
+database_section encoding_section screen_or_layout_section op_table_section attribute_section op_instruction_section {
 A4GL_check_compiled_form();
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 A4GL_write_form();}
+;
+
+encoding_section :
+	{the_form.encoding="";}
+	|  CHARACTER_ENCODING  CHAR_VALUE {
+		the_form.encoding=strdup(A4GL_strip_quotes($<str>2));
+	}
 ;
 
 database_section :

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.27 2009-05-06 10:42:16 mikeaubury Exp $
+# $Id: form_x.x,v 1.28 2009-06-05 11:30:29 mikeaubury Exp $
 #*/
 
 /**
@@ -334,6 +334,7 @@ struct struct_form
 	long fcompile_version;
  	long compiled_time;
 	string dbname<>;
+ 	string encoding<>;
 	string delim<>;
 	int maxcol;
 	int maxline;

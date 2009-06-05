@@ -12,7 +12,7 @@ define mv_cnt integer
 
 
 # Total number of programs to compile...
-define lc_num_compiles constant 97
+define lc_num_compiles constant 100
 
 define lv_fail array[200] of char(80)
 define lv_ok array[200] of  char(80)
@@ -318,7 +318,6 @@ function compile_optionals()
 	call run("4GL LEXTYPE", "$A4GL_MAKE -C lib/liblex/lex_4gl",1)
 	call run("SPL LEXTYPE", "$A4GL_MAKE -C lib/liblex/lex_spl",1)
 	call run("Dummy SQLPARSEr", "$A4GL_MAKE -C lib/libsqlparse/none",5)
-	#call run("4glpc compilation tool", "$A4GL_MAKE -C tools/4glpc",5)
 	call run("AACE Compiler", "$A4GL_MAKE -C compilers/ace",4)
 	call run("Form Compiler", "$A4GL_MAKE -C compilers/fcompile",5)
 	call run("Help Compiler", "$A4GL_MAKE -C compilers/helpcompile",5)
@@ -367,7 +366,6 @@ function compile_optionals()
 	call run("DUMMY RPC functions", "$A4GL_MAKE -C lib/librpc/no_rpc",4)
 	call run("SUN ONC/RPC functions", "$A4GL_MAKE -C lib/librpc/sun_rpc",1)
 	call run("XML RPC functions", "$A4GL_MAKE -C lib/librpc/xml_rpc",1)
-	#call run("CONSOLE UI", "$A4GL_MAKE -C lib/libui/ui_console",99)
 	call run("CURSES UI", "$A4GL_MAKE -C lib/libui/ui_curses",5)
 	call run("GLADE UI", "$A4GL_MAKE -C lib/libui/ui_glade",1)
 	call run("GLADE UI helper library", "$A4GL_MAKE -C lib/libui/ui_glade/glade_lib",1)
@@ -399,7 +397,6 @@ function compile_optionals()
 	call run("HARU PDF", "$A4GL_MAKE -C lib/libpdf haru.dummy",0)
 	call run("WRITE LEXTYPE", "$A4GL_MAKE -C lib/liblex/lex_write",0)
 	call run("Quick setup guide", "$A4GL_MAKE -C tools/quickguide",0)
-
 	call run("Postgresql static libs", "$A4GL_MAKE -C lib/libsql/postgresql libSQL_pg8l.so libSQL_pg8ls.so",0)
 	call run("ASQL_I", "$A4GL_MAKE -C tools/asql asql_i.4ae",0)
 	call run("ASQL_P", "$A4GL_MAKE -C tools/asql asql_p.4ae",0)
@@ -407,6 +404,7 @@ function compile_optionals()
 	call run("ESQL helper Simple","cd lib/libesql && sh make_simple",0)
 	call run("Static TUI", "cd lib/libui/ui_curses; sh make_static",0)
 	call run("SQLMetrics", "cd tools/sqlmetrics; make",0)
+	call run("FORMXML Packer", "cd lib/libpacker/formxml; make",0)
 
 
 end function

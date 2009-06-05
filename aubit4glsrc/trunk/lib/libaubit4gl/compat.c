@@ -58,6 +58,19 @@ popdub (double *s)
 
 }
 
+
+void
+pushdub (double *s)
+{
+   A4GL_push_double (*s);
+}
+
+void
+pushflo (float *s)
+{
+   A4GL_push_float (*s);
+}
+
 void
 popflo (float *s)
 {
@@ -419,3 +432,17 @@ _locate (void *b, int x, int y, char *z)
   A4GL_assertion (1, "_locate not implemented");
   return 0;
 }
+
+
+void fgl_end() {
+}
+
+int fgl_start(char *s) {
+	return 1;
+}
+
+int fgl_exitfm() {
+	A4GL_gotolinemode();
+	return 1;
+}
+	

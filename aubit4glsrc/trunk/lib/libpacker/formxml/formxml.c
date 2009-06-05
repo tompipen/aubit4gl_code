@@ -1082,7 +1082,16 @@ void dump_layout(struct_form *f, struct s_layout *layout) {
 
 
 void dump_form_layout(struct_form *f) {
+int n=0;
+
+	if (f->layout->layout_type==LAYOUT_TABLE) {
+		fprintf(ofile,"<VBox >\n");
+		n++;
+	}
  	dump_layout(f, f->layout);
+	if (n) {
+		fprintf(ofile,"</VBox>\n");
+	}
 }
 
 
@@ -1463,7 +1472,7 @@ void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
 
 
         fprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-	fprintf(ofile,"<Form name=\"%s\" sqlDbName=\"%s\" width=\"%d\" height=\"%d\" delimiters=\"%s\">\n",fname, f->dbname, f->maxcol, f->maxline, f->delim);
+	fprintf(ofile,"<Form name=\"%s\" sqlDbName=\"%s\" width=\"%d\" height=\"%d\" delimiters=\"%s\" encoding=\"%s\">\n",fname, f->dbname, f->maxcol, f->maxline, f->delim,f->encoding);
 	if (f->layout==0) {
 		// Its a screen not a layout
 		dump_form_screen(f);
@@ -1823,7 +1832,7 @@ static char * get_sql_dtype ( int dtype)
 
   dtype_sz = dtype >> 16;
   dtype = dtype & 0xffff;
-  switch (dtype)
+  switch (dtype & DTYPE_MASK)
     {
     case DTYPE_CHAR:
       sprintf (buff_dtype, "CHAR(%d)", dtype_sz);

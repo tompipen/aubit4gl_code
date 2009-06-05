@@ -416,7 +416,7 @@ open_db (char *s)
       SPRINTF2 (buff, "Could not connect to database %s (%s)",
                A4GL_null_as_null (db),
                A4GL_null_as_null (A4GLSQL_get_sqlerrm ()));
-       fprintf(stderr,"%s",buff);
+       		fprintf(stderr,"%s",buff);
 	//exit(2);
 	dbopen=0;
     }

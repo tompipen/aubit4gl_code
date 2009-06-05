@@ -185,6 +185,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "input" 		{if (ign_kw(yystate,INPUT)) REJECT;strcpy(yylval.str,yytext); return INPUT;}
 "like"		{if (ign_kw(yystate, LIKE)) REJECT; strcpy(yylval.str, yytext); return(LIKE);}
 "database"		{if (ign_kw(yystate, DATABASE)) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
+"character encoding"		{if (ign_kw(yystate, CHARACTER_ENCODING)) REJECT; strcpy(yylval.str, yytext); return(CHARACTER_ENCODING);}
 "schema"		{if (ign_kw(yystate, DATABASE)) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ign_kw(yystate,INSTRUCTIONS)) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
 "attributes"		{if (ign_kw(yystate, ATTRIBUTES)) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.141 2009-05-08 14:53:43 mikeaubury Exp $
+# $Id: builtin.c,v 1.142 2009-06-05 11:30:30 mikeaubury Exp $
 #
 */
 
@@ -2084,5 +2084,14 @@ int aclfgl_fgl_init4js(int n) {
 
 int aclfgl_fgl_fglgui(int n) {
 	A4GL_push_int(0);
+	return 1;
+}
+
+int aclfgl_aclfgl_file_exists(int n) {
+char *ptr;
+	ptr=A4GL_char_pop();
+	A4GL_trim(ptr);
+	A4GL_push_int( A4GL_file_exists (ptr));
+	free(ptr);
 	return 1;
 }

@@ -19,7 +19,7 @@ H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
-DNM			([A-Za-z0-9.]*)
+DNM			([A-Za-z0-9._]*)
 FNM			({DNM}\/)+{DNM}
 %{
 #include <stdio.h>

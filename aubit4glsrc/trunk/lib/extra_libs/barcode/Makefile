@@ -15,10 +15,10 @@ all:  $(ALL)
 
 ${PLUGINDIR}/libbarcode${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
-	cp $@ $(AUBITDIR)
+	#cp $@ $(AUBITDIR)/
 
 testbarcode: testbarcode.4gl
 	4glc -o testbarcode  testbarcode.4gl
 
 clean:
-	rm -f barcodelookup.o barcodelookup.so testbarcode
+	rm -f barcodelookup.o barcodelookup.so testbarcode ${PLUGINDIR}/libbarcode${SO_EXT}
