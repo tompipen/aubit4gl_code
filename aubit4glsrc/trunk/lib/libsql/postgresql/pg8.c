@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.96 2009-05-26 08:12:56 mikeaubury Exp $
+# $Id: pg8.c,v 1.97 2009-06-06 09:35:07 mikeaubury Exp $
 #*/
 
 
@@ -3344,6 +3344,8 @@ A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
   			//static char buff3[64000];
 			//strcpy(buff3,ibind[param].ptr);
 		        //A4GL_trim (buff3);
+		        //A4GL_pause_execution();
+	//printf("'%s'\n", ibind[param].ptr);
 		      	sprintf (buff3, "'%s'",pgescape_str(ibind[param].ptr, strlen(ibind[param].ptr)));
 			strcat(buff2,buff3);
 
