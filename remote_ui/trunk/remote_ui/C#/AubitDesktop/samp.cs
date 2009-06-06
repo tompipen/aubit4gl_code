@@ -570,6 +570,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("PROGRAMSTOP", Type = typeof(PROGRAMSTOP))]
         [System.Xml.Serialization.XmlElementAttribute("PROMPT", Type = typeof(PROMPT))]
         [System.Xml.Serialization.XmlElementAttribute("WAITFOREVENT", Type = typeof(WAITFOREVENT))]
+        [System.Xml.Serialization.XmlElementAttribute("GETKEY", Type = typeof(GETKEY))]
         [System.Xml.Serialization.XmlElementAttribute("NEXTFIELD", Type = typeof(NEXTFIELD))]
         [System.Xml.Serialization.XmlElementAttribute("HIDEOPTION", Type = typeof(HIDEOPTION))]
         [System.Xml.Serialization.XmlElementAttribute("UIOPTION", Type = typeof(UIOPTION))]
@@ -1029,6 +1030,13 @@ namespace AubitDesktop
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class GETKEY
+    {
+
+    }
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class WAITFOREVENT
     {
 
@@ -1135,6 +1143,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(PROGRAMSTOP), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(PROMPT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(WAITFOREVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(GETKEY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTFIELD), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(HIDEOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIOPTION), IsNullable = false)]

@@ -236,19 +236,32 @@ namespace AubitDesktop
 
         public bool hasKeyInToolbar(string key)
         {
-            foreach (AubitTSBtn o in Fkeys)
-            {
-                if (o.ActiveKey == key) return true;
+            foreach (ToolStripItem i in toolStrip1) {
+                AubitTSBtn o;
+                if (i.GetType() == typeof(AubitTSBtn))
+                {
+                    o = (AubitTSBtn)i;
+                    if (o.ActiveKey == key) return true;
+                }
             }
             return false;
         }
 
         internal AubitTSBtn getKeyFromToolbar(string key)
         {
-            foreach (AubitTSBtn o in Fkeys)
+
+            foreach (ToolStripItem i in toolStrip1)
             {
-                if (o.ActiveKey == key) return o;
+                AubitTSBtn o;
+                if (i.GetType() == typeof(AubitTSBtn))
+                {
+                    o = (AubitTSBtn)i;
+                    if (o.ActiveKey == key) return o;
+                }
             }
+
+
+
             return null;
         }
 
@@ -260,6 +273,7 @@ namespace AubitDesktop
 
         public void setActiveToolBarKeys(List<ONKEY_EVENT> keys,bool showAcceptInterrupt,bool showUpDownButtons,bool showInsertDeleteButtons)
         {
+            this.SuspendLayout();
             // We dont want any keys active ? 
             if (keys == null)
             {
@@ -317,10 +331,10 @@ namespace AubitDesktop
                 {
                     
                     
-                        if (!hasKeyInOnkeyEventList(keys, o.ActiveKey))
-                        {
+                      //  if (!hasKeyInOnkeyEventList(keys, o.ActiveKey))
+                      //  {
                             o.Visible = false;
-                        }
+                      //  }
                     
                 }
 
@@ -352,6 +366,8 @@ namespace AubitDesktop
 
             }
             TopWindow.setToolbar(toolStrip1);
+
+            this.ResumeLayout();
         }
 
 
@@ -1720,6 +1736,13 @@ namespace AubitDesktop
                     mc.showOption(so.OPTION);
                     commands.Remove(a);
                     continue;
+                }
+                #endregion
+                #region GETKEY
+                if (a is GETKEY)
+                {
+                    MessageBox.Show("Application error - GETKEY is not supported by the UI");
+                    commands.Remove(a);
                 }
                 #endregion
                 #region WAITFOREVENT

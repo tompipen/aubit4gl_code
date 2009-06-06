@@ -94,8 +94,11 @@ namespace AubitDesktop
                 txt = a.TEXT;
                 if (txt.Length == 0) txt = null;
 
+
+
                 if (txt == null)
                 {
+
                     string[] menukeys;
                     menukeys = a.KEYS.Split(',');
                     foreach (string s in menukeys) {
@@ -104,10 +107,36 @@ namespace AubitDesktop
                         e.KEY = s;
                         keyList.Add(e);
                     }
+                     
                 }
                 else
                 {
-                    
+
+
+                    string[] menukeys;
+                    menukeys = a.KEYS.Split(',');
+                    foreach (string s in menukeys)
+                    {
+                        int n=-1;
+                        ONKEY_EVENT e = new ONKEY_EVENT();
+                        try
+                        {
+                            n = Convert.ToInt32(s);
+                        }
+                        catch { }
+                        if (n <= 26 || n> 255)
+                        {
+                            if (s.Trim() != "" && n!=-1)
+                            {
+                                e.ID = a.ID;
+                                e.KEY = s;
+                                keyList.Add(e);
+                            }
+                        }
+                    }
+
+
+
                     btn = new UIMenuBarButton(txt, a.ID);
 
                     if (a.DESCRIPTION != null)
