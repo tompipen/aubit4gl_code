@@ -81,20 +81,25 @@ namespace AubitDesktop
 
                         FlowLayoutPanel thisLayoutControlsPanel;
                         p = (AubitDesktop.Xml.XMLForm.VBox)child;
-
+                        
                         thisLayoutControlsPanel = new FlowLayoutPanel();
+                        thisLayoutControlsPanel.SuspendLayout();
                         thisLayoutControlsPanel.Visible = true;
+                        //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         thisLayoutControlsPanel.Top = 0;
                         thisLayoutControlsPanel.Left = 0;
                         thisLayoutControlsPanel.AutoSize = true;
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.TopDown;
                         parent.Controls.Add(thisLayoutControlsPanel);
-
+                        if (p.border)
+                        {
+                            thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
+                        }
                         foreach (object a in p.Items)
                         {
                             addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
                         }
-
+                        thisLayoutControlsPanel.ResumeLayout();
                     }
                     break;
                 #endregion
@@ -109,15 +114,21 @@ namespace AubitDesktop
                         thisLayoutControlsPanel = new FlowLayoutPanel();
                         thisLayoutControlsPanel.Visible = true;
                         thisLayoutControlsPanel.Top = 0;
+                        //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         thisLayoutControlsPanel.Left = 0;
                         thisLayoutControlsPanel.AutoSize = true;
+                        if (p.border)
+                        {
+                            thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
+                        }
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.LeftToRight;
                         parent.Controls.Add(thisLayoutControlsPanel);
-
+                        thisLayoutControlsPanel.SuspendLayout();
                         foreach (object a in p.Items)
                         {
                             addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
                         }
+                        thisLayoutControlsPanel.ResumeLayout();
                     }
                     break;
                 #endregion
@@ -150,6 +161,8 @@ namespace AubitDesktop
                         AubitDesktop.Xml.XMLForm.Grid p;
                         int height;
                         int width;
+                        bool doAutosize=false;
+
                         p = (AubitDesktop.Xml.XMLForm.Grid)child;
                         Panel thisScreensPanel;
                         
@@ -159,21 +172,34 @@ namespace AubitDesktop
                         thisScreensPanel.Top = 0;
                         thisScreensPanel.Left = 0;
 
+                        if (p.autoSize == 1)
+                        {
+                            doAutosize = true;
+                        }
                         height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
                         width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                        if (parent.GetType() == typeof(FlowLayoutPanel))
+                        {
+                            doAutosize = true;
+                        }
 
-                        if (p.autoSize == 1)
+                        if (doAutosize)
                         {
                             thisScreensPanel.AutoSize = true; // false;
                         }
                         else
                         {
                             thisScreensPanel.AutoSize = false;
+                            thisScreensPanel.Height = GuiLayout.get_gui_h(height + 1);
+                            thisScreensPanel.Width = GuiLayout.get_gui_w(width + 1);
                         }
-                        thisScreensPanel.Height = GuiLayout.get_gui_h(height+1);
-                        thisScreensPanel.Width = GuiLayout.get_gui_w(width+1);
+                       // thisScreensPanel.Height = GuiLayout.get_gui_h(height+1);
+                        //thisScreensPanel.Width = GuiLayout.get_gui_w(width+1);
 
-                        thisScreensPanel.BorderStyle = BorderStyle.Fixed3D;
+                        if (p.border)
+                        {
+                            thisScreensPanel.BorderStyle = BorderStyle.Fixed3D;
+                        }
                         
 
                         foreach (object a in p.Items)
@@ -539,19 +565,19 @@ namespace AubitDesktop
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.DateEdit":
-                    fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.DateEdit)ff.Items[0],"",index,ma);
+                    fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.DateEdit)ff.Items[0], ((AubitDesktop.Xml.XMLForm.DateEdit)ff.Items[0]).config, index, ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.TextEdit":
                     {
-                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0],"",index,ma);
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0], ((AubitDesktop.Xml.XMLForm.TextEdit)ff.Items[0]).config, index, ma);
                     }
 
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.ButtonEdit":
                     {
-                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0], "", index,ma);
+                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ButtonEdit)ff.Items[0]).config, index, ma);
                     }
 
                     break;
@@ -561,7 +587,7 @@ namespace AubitDesktop
                     if (ff.sqlType != null && ff.sqlType == "DATE")  //&& thisAttrib.ATTRIB_FORMAT == null)
                     {
                         // Its a date
-                        fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],"",index,ma);
+                        fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0], ((AubitDesktop.Xml.XMLForm.Edit)ff.Items[0]).config, index, ma);
                     }
                     else
                     {
@@ -570,37 +596,37 @@ namespace AubitDesktop
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Image":
-                    fld = new FGLPixmapFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Image)ff.Items[0],"",index,ma);
+                    fld = new FGLPixmapFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Image)ff.Items[0], ((AubitDesktop.Xml.XMLForm.Image)ff.Items[0]).config, index, ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Browser":
-                    fld = new FGLBrowserFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Browser)ff.Items[0],"",index,ma);
+                    fld = new FGLBrowserFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Browser)ff.Items[0],((AubitDesktop.Xml.XMLForm.Browser) ff.Items[0]).config,index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Button":
-                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Button)ff.Items[0],"",index,ma);
+                    fld = new FGLButtonFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Button)ff.Items[0], ((AubitDesktop.Xml.XMLForm.Button)ff.Items[0]).config, index, ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.CheckBox":
-                    fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], "", index,ma);
+                    fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0]).config, index, ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.ComboBox":
-                    fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], "", index,ma);
+                    fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0]).config, index, ma);
                     break;
 
                
                 case "AubitDesktop.Xml.XMLForm.Label":
-                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Label)ff.Items[0], "",index,ma);
+                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Label)ff.Items[0], ((AubitDesktop.Xml.XMLForm.Label)ff.Items[0]).config, index, ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.RipLABEL":
-                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.RipLABEL)ff.Items[0], "",index,ma);
+                    fld = new FGLLabelFieldWidget(ff, (AubitDesktop.Xml.XMLForm.RipLABEL)ff.Items[0], ((AubitDesktop.Xml.XMLForm.RipLABEL)ff.Items[0]).config, index, ma);
                     break;
 
 
                 case "AubitDesktop.Xml.XMLForm.ProgressBar":
-                    fld = new FGLProgressBarFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ProgressBar)ff.Items[0], "", index,ma);
+                    fld = new FGLProgressBarFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ProgressBar)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ProgressBar)ff.Items[0]).config, index, ma);
                     break;
 
 
@@ -1105,6 +1131,8 @@ namespace AubitDesktop
             List<FGLFoundField> fldlist;
                 
             fldlist = FindFields(d.FIELDLIST);
+            /// @fixme - need to check for a screen record
+            /// when using a TABLE..
             
             if (d.VALUES.Length!=fldlist.Count) {
                 MessageBox.Show("Wrong number of fields");

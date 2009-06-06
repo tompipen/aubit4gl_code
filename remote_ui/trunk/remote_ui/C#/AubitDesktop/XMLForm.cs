@@ -67,6 +67,10 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string gridWidth;
 
             /// <remarks/>
@@ -152,6 +156,8 @@ namespace AubitDesktop.Xml.XMLForm
         /// <remarks/>
         public class VBox
         {
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public bool border;
             [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("Table", Type = typeof(Table))]
@@ -164,6 +170,9 @@ namespace AubitDesktop.Xml.XMLForm
         /// <remarks/>
         public class HBox
         {
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public bool border;
+
             [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("Table", Type = typeof(Table))]
@@ -180,6 +189,9 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string height;
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public bool border;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -269,6 +281,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class ButtonEdit
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -324,7 +339,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class Button
         {
-
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string comments;
@@ -375,6 +392,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class CheckBox
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -411,6 +431,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class ComboBox
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string comments;
@@ -532,6 +555,9 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string autoScale;
 
             /// <remarks/>
@@ -570,6 +596,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class Label
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -617,9 +646,20 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string posX;
 
-            /// <remarks/>
+                        /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string posY;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string pixelHeight;
+
+                        /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string pixelWidth;
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -635,6 +675,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class ProgressBar
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -673,6 +716,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class RipLABEL
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -763,6 +809,10 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string action;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
         }
 
         /// <remarks/>
