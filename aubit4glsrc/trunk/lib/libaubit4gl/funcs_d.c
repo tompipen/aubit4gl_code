@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.112 2009-04-18 07:54:51 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.113 2009-06-06 09:07:45 mikeaubury Exp $
 #
 */
 
@@ -364,9 +364,9 @@ A4GL_pad_string (char *ptr, int size)
   int s;
   s = (int) strlen (ptr);
   p = size - s;
-
   if (p > 0)
     {
+A4GL_debug("Padding to size %d by adding %d spaces",size,p);
       memset (&ptr[s], ' ', p);
     }
 /*

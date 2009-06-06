@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.142 2009-06-05 11:30:30 mikeaubury Exp $
+# $Id: builtin.c,v 1.143 2009-06-06 09:07:44 mikeaubury Exp $
 #
 */
 
@@ -520,7 +520,21 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
     A4GL_debug ("let_substr");
   }
 #endif
-  A4GL_pad_string (ca, DECODE_SIZE (dtype));
+  if ((dtype&DTYPE_MASK)==DTYPE_VCHAR) {
+	int max_sz;
+	int curr_sz;
+	curr_sz=strlen(ca);
+	max_sz=DECODE_SIZE (dtype);
+	if (b>curr_sz) {
+		curr_sz=b;
+	}
+	if (curr_sz>max_sz) {
+		curr_sz=max_sz;
+	}
+  	A4GL_pad_string (ca, curr_sz);
+  } else {
+  	A4GL_pad_string (ca, DECODE_SIZE (dtype));
+  }
 #ifdef DEBUG
   {
     A4GL_debug ("Start with '%s'", A4GL_null_as_null (ca));
