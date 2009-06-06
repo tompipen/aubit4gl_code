@@ -681,10 +681,27 @@ namespace AubitDesktop
                 return;
             }
             ser = new XmlSerializer(t);
-            
+
             data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
+
+            try
+            {
+                if (Program.AppSettings.defaultEncoding.Trim() == "")
+                {
+                    Program.AppSettings.defaultEncoding = "ISO8859-1";
+                    Program.SaveSettings();
+                }
+                    Encoding enc = ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
+                    enc.GetString(Convert.FromBase64String(f.Text));
+                    data = enc.GetString(Convert.FromBase64String(f.Text)); // System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
+                
+            }
+            catch (Exception e) {
+                MessageBox.Show("Unable to use default encoding: " + e.Message);
+            }
+
             TextReader txtr = new StringReader(data);
-            //txtr= UTF8Encoding
+          
             try
             {
                 theForm = (AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);

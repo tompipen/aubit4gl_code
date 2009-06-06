@@ -67,6 +67,11 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.cmsSystrayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmClose = new System.Windows.Forms.ToolStripMenuItem();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtDefaultEncoding = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -77,6 +82,7 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).BeginInit();
             this.tpConnections.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).BeginInit();
+            this.cmsSystrayMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -230,6 +236,8 @@ namespace AubitDesktop
             // 
             // tpOptions
             // 
+            this.tpOptions.Controls.Add(this.txtDefaultEncoding);
+            this.tpOptions.Controls.Add(this.label4);
             this.tpOptions.Controls.Add(this.lblPortWarn);
             this.tpOptions.Controls.Add(this.txtPort);
             this.tpOptions.Controls.Add(this.label5);
@@ -456,6 +464,46 @@ namespace AubitDesktop
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.BalloonTipText = "Aubit4GL Desktop Client";
+            this.notifyIcon1.ContextMenuStrip = this.cmsSystrayMenu;
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "Aubit Desktop";
+            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            // 
+            // cmsSystrayMenu
+            // 
+            this.cmsSystrayMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmClose});
+            this.cmsSystrayMenu.Name = "cmsSystrayMenu";
+            this.cmsSystrayMenu.Size = new System.Drawing.Size(112, 26);
+            // 
+            // tsmClose
+            // 
+            this.tsmClose.Name = "tsmClose";
+            this.tsmClose.Size = new System.Drawing.Size(111, 22);
+            this.tsmClose.Text = "Close";
+            this.tsmClose.Click += new System.EventHandler(this.tsmClose_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(175, 175);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(89, 13);
+            this.label4.TabIndex = 26;
+            this.label4.Text = "Default Encoding";
+            // 
+            // txtDefaultEncoding
+            // 
+            this.txtDefaultEncoding.Location = new System.Drawing.Point(270, 172);
+            this.txtDefaultEncoding.Name = "txtDefaultEncoding";
+            this.txtDefaultEncoding.Size = new System.Drawing.Size(100, 20);
+            this.txtDefaultEncoding.TabIndex = 27;
+            this.txtDefaultEncoding.TextChanged += new System.EventHandler(this.txtDefaultEncoding_TextChanged);
+            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -466,10 +514,12 @@ namespace AubitDesktop
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "mainfrm";
+            this.ShowInTaskbar = false;
             this.Text = "Aubit Desktop";
             this.Load += new System.EventHandler(this.mainfrm_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.mainfrm_FormClosed);
             this.Move += new System.EventHandler(this.mainfrm_Move);
+            this.Resize += new System.EventHandler(this.mainfrm_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -482,6 +532,7 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).EndInit();
             this.tpConnections.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).EndInit();
+            this.cmsSystrayMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -526,5 +577,10 @@ namespace AubitDesktop
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblPortWarn;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.ContextMenuStrip cmsSystrayMenu;
+        private System.Windows.Forms.ToolStripMenuItem tsmClose;
+        private System.Windows.Forms.TextBox txtDefaultEncoding;
+        private System.Windows.Forms.Label label4;
     }
 }

@@ -51,6 +51,7 @@ namespace AubitDesktop
                 nbXScale.Enabled = false;
                 nbYScale.Enabled = false;
                 txtPort.Enabled = false;
+                txtDefaultEncoding.Enabled = false;
             }
 
             if (ListenMode)
@@ -126,6 +127,7 @@ namespace AubitDesktop
             nbYScale.Value = Program.AppSettings.yscale;
             nbXScale.Value = Program.AppSettings.xscale;
             txtPort.Text = Program.AppSettings.Port;
+            txtDefaultEncoding.Text = Program.AppSettings.defaultEncoding;
         }
 
         private void showInterruptKeycode()
@@ -593,6 +595,30 @@ namespace AubitDesktop
         private void tpOptions_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void mainfrm_Resize(object sender, EventArgs e)
+        {
+            if (FormWindowState.Minimized == WindowState)
+                Hide();
+
+        }
+
+        private void tsmClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void txtDefaultEncoding_TextChanged(object sender, EventArgs e)
+        {
+            Program.AppSettings.defaultEncoding = txtDefaultEncoding.Text;
+            Program.SaveSettings();
         }
     }
 }
