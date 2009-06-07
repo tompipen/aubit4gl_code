@@ -353,6 +353,9 @@ layout_attribute:
 	| KW_ACTION EQUAL NAMED {
 		add_str_layout_attrib(FA_S_ACTION, $<str>3); 
 	}
+	| KW_BORDER {
+		add_bool_layout_attrib(FA_B_BORDER);
+	}
 ;
 
 layout_attribute_list:

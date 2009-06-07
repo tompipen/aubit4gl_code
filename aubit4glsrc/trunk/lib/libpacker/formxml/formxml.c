@@ -908,6 +908,7 @@ strcpy(buff,"");
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, " noEntry=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, " required=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN)) { strcat(buff, " hidden=\"1\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_BORDER)) { strcat(buff, " border=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_UPSHIFT)) { strcat(buff, " shift=\"up\""); }
 	else {
 		if (A4GL_has_bool_attribute(fprop, FA_B_DOWNSHIFT)) { strcat(buff, " shift=\"down\""); }
