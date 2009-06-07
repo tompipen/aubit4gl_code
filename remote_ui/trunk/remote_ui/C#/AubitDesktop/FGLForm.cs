@@ -144,10 +144,16 @@ namespace AubitDesktop
                         d.AutoSize = true;
                         d.ReadOnly = true;
                         d.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-                        
+                        d.AllowUserToResizeColumns = false;
+                        d.AllowUserToResizeRows = false;
+
+                        // Maybe need these visible if we have some titles for them :-)
+                        d.ColumnHeadersVisible = false;
+                       
                         d.ColumnCount = p.TableColumn.Length;
                         d.RowCount = Convert.ToInt32(p.pageSize);
                         d.Visible = true;
+                        d.AutoSize = false;
                         d.RowHeadersVisible = false;
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,d);
