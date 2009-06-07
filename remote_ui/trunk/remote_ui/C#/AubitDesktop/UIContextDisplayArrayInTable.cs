@@ -154,7 +154,7 @@ namespace AubitDesktop
                 string[] data;
                 data=new string[p.ROWS[row].VALUES.Length+1];
                 r = new DataGridViewRow();
-
+                
                 // We'll use the first column to store the index
                 // for the current row...
                 data[0] = "" + (row+1);
@@ -162,8 +162,12 @@ namespace AubitDesktop
                 for (int col = 0; col < p.ROWS[row].VALUES.Length;col++ )
                 {
                     data[col+1]=p.ROWS[row].VALUES[col].Text;
+                    displayArrayGrid.AutoResizeColumn(col);
                 }
                 displayArrayGrid.Rows.Add(data);
+
+                displayArrayGrid.AutoResizeRow(row);
+                displayArrayGrid.AutoResizeColumnHeadersHeight();
             }
 
             displayArrayGrid.Columns[0].Visible = false;
@@ -249,7 +253,10 @@ namespace AubitDesktop
             if (initialRow)
             {
                 initialRow = false;
-                this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                if (beforeRow != null)
+                {
+                    this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                }
             }
 
         }
