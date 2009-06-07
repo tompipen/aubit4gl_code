@@ -692,14 +692,15 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyPress(object sender, KeyPressEventArgs e)
         {
-            
+            //MessageBox.Show("Keypress..");
         }
+
 
 
 
         private void frmMainAppWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            string key="";
+        string key="";
 
             string keycode;
             string rkey = "";
@@ -752,7 +753,7 @@ namespace AubitDesktop
             }
             // Key wasnt found...
 
-            
+           // currentContext.keyPreview(e,rkey);
 
 
         }
@@ -762,11 +763,12 @@ namespace AubitDesktop
             string fglKey;
             foreach (ToolStripItem i in topWindowToolStrip.Items)
             {
-
                 if (i is AubitTSBtn)
                 {
                     AubitTSBtn a;
                     if (i.Visible == false) continue;
+
+
                     a = (AubitTSBtn)i;
                     fglKey = FGLUtils.getKeyNameFromFGLKeyCode(a.ActiveKey);
                     if (fglKey == key)
@@ -783,12 +785,14 @@ namespace AubitDesktop
 
                         //e.Handled = true;
                         //e.SuppressKeyPress = true;
-
+                        
 
                         return true;
                     }
 
+                    
                 }
+
             }
             return false;
         }

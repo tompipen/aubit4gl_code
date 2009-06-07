@@ -111,6 +111,11 @@ namespace AubitDesktop
             }
         }
 
+        public override void gotFocus()
+        {
+            
+        }
+
 
         private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {

@@ -251,6 +251,24 @@ namespace AubitDesktop
 
 
 
+        static internal bool isNumericDatatype(FGLUtils.FGLDataTypes n)
+        {
+            switch ( n)
+            {
+                case FGLUtils.FGLDataTypes.DTYPE_SMINT:
+                case FGLUtils.FGLDataTypes.DTYPE_INT:
+                case FGLUtils.FGLDataTypes.DTYPE_SERIAL:
+                case FGLUtils.FGLDataTypes.DTYPE_FLOAT:
+                case FGLUtils.FGLDataTypes.DTYPE_DATE:
+                case FGLUtils.FGLDataTypes.DTYPE_SMFLOAT:
+                case FGLUtils.FGLDataTypes.DTYPE_DECIMAL:
+                case FGLUtils.FGLDataTypes.DTYPE_MONEY:
+                    return true;
+            }
+
+            return false;
+        }
+
         static internal void SaveSettings()
         {
             try

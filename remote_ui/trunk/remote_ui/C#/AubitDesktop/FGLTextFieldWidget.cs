@@ -37,11 +37,15 @@ namespace AubitDesktop
         Label l;
         Button b;
 
+        bool atFirst;
+
         internal override void setIsOnSelectedRow(bool isSelected)
         {
             isOnSelectedRow = isSelected;
             adjustDisplayPropertiesForContext();            
         }
+
+
 
         public new void setToolTip(ToolTip t, string s)
         {
@@ -132,12 +136,13 @@ namespace AubitDesktop
         private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
-
+            //t.TabStop = true;
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
                     l.Visible = true;
                     t.Visible = false;
+                    t.ReadOnly = true;
                     break;
 
 
@@ -176,6 +181,24 @@ namespace AubitDesktop
                     t.ReadOnly = false;
                     break;
 
+                case FGLContextType.ContextInput:
+                case FGLContextType.ContextInputArray:
+                    if (this.NoEntry)
+                    {
+                        t.Visible = false;
+                        l.Visible = true;
+                        t.ReadOnly = false;
+                    }
+                    else
+                    {
+                        t.Visible = true;
+                        l.Visible = false;
+                        t.ReadOnly = false;
+                    }
+                    // We can't trap the tabstops if this is true..
+                    //t.TabStop = false;
+                    break;
+
                 default:
                     if (this.NoEntry)
                     {
@@ -192,6 +215,9 @@ namespace AubitDesktop
                     break;
 
             }
+
+            //if (t.ReadOnly == true) t.TabStop = false;
+            //else t.TabStop = true;
         }
 
         internal override Control WindowsWidget
@@ -264,7 +290,6 @@ namespace AubitDesktop
                     l.Text = val;
                 }
                 t.Text = val;
-                
             }
         }
 
@@ -436,7 +461,7 @@ namespace AubitDesktop
             {
                 t.PasswordChar = '*';
             }
-
+           
             p.Margin = new Padding(0, 0, 0, 0);
             p.Padding = new Padding(0, 0, 0, 0);
             l.Margin = new Padding(0, 0, 0, 0);
@@ -452,6 +477,8 @@ namespace AubitDesktop
             p.AutoSize = true;
 
 
+            //t.BackColor = Color.Red;
+            //l.BackColor = Color.Blue;
 
             if (rows > 1)
             {
@@ -570,10 +597,13 @@ namespace AubitDesktop
             }
 
            // p.Size = l.Size;
-
+            
             t.CausesValidation = true;
+            t.KeyDown += new KeyEventHandler(t_KeyDown);
+            t.KeyPress += new KeyPressEventHandler(t_KeyPress);
             t.LostFocus += new EventHandler(t_LostFocus);
             t.GotFocus += new EventHandler(t_GotFocus);
+            t.TextChanged += new EventHandler(t_TextChanged);
             //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             if (b != null)
             {
@@ -587,6 +617,56 @@ namespace AubitDesktop
             t.Visible = true;
 
             this.id = id;
+            this.ContextType = FGLContextType.ContextNone;
+            adjustDisplayPropertiesForContext();
+        }
+
+        void t_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+
+
+        public override void gotFocus()
+        {
+            atFirst = false;
+            if (format != null)
+            {
+                if (format != "" || Program.isNumericDatatype(datatype))
+                {
+                    if (t.SelectionStart == 0|| true)
+                    {
+                        if (t.SelectionLength == 0)
+                        {
+                            t.SelectionStart = 0;
+                            t.SelectionLength = t.Text.Length;
+                        }
+                        
+                    }
+                }
+            }
+            //MessageBox.Show("Here...");
+        }
+
+        void t_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            /*
+            e.KeyCode;
+            if (e.KeyCode )
+            {
+                if (t.SelectionStart==0) {
+                    MessageBox.Show("Clear?");
+                }
+            }
+             * */
+        }
+
+        void t_TextChanged(object sender, EventArgs e)
+        {
+            l.Text = t.Text;
+            atFirst = false;
         }
 
 

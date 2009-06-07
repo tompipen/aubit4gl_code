@@ -84,6 +84,7 @@ namespace AubitDesktop
         }
 
 
+
         public void downkeyPressed()
         {
             mainWin.clrErrorTextFromFieldValidation();

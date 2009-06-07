@@ -48,7 +48,7 @@ namespace AubitDesktop
             return _contextIsActive;
         }
 
-        
+
         public UIInputContext(FGLApplicationPanel f, INPUT i)
         {
             KeyList = new List<ONKEY_EVENT>();

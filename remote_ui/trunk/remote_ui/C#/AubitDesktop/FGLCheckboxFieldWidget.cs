@@ -96,6 +96,12 @@ namespace AubitDesktop
             adjustDisplayPropertiesForContext();
         }
 
+
+        public override void gotFocus()
+        {
+
+        }
+
         private void adjustDisplayPropertiesForContext()
         {
             

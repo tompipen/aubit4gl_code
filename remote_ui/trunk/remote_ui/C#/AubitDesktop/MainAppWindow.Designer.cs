@@ -63,6 +63,7 @@ namespace AubitDesktop
             this.neverToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoToolbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.macroEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topWindowToolStrip = new System.Windows.Forms.ToolStrip();
             this.EnvReaderTimer = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -76,7 +77,6 @@ namespace AubitDesktop
             this.txtSend = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.macroEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -356,6 +356,13 @@ namespace AubitDesktop
             this.saveWindowToolStripMenuItem.Text = "Save Window";
             this.saveWindowToolStripMenuItem.Click += new System.EventHandler(this.saveWindowToolStripMenuItem_Click);
             // 
+            // macroEditorToolStripMenuItem
+            // 
+            this.macroEditorToolStripMenuItem.Name = "macroEditorToolStripMenuItem";
+            this.macroEditorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.macroEditorToolStripMenuItem.Text = "Macro Editor";
+            this.macroEditorToolStripMenuItem.Click += new System.EventHandler(this.macroEditorToolStripMenuItem_Click);
+            // 
             // topWindowToolStrip
             // 
             this.topWindowToolStrip.Location = new System.Drawing.Point(0, 24);
@@ -387,6 +394,7 @@ namespace AubitDesktop
             this.splitContainer1.Size = new System.Drawing.Size(1073, 568);
             this.splitContainer1.SplitterDistance = 879;
             this.splitContainer1.TabIndex = 7;
+            this.splitContainer1.TabStop = false;
             // 
             // splitContainer2
             // 
@@ -404,6 +412,7 @@ namespace AubitDesktop
             this.splitContainer2.Size = new System.Drawing.Size(879, 568);
             this.splitContainer2.SplitterDistance = 339;
             this.splitContainer2.TabIndex = 18;
+            this.splitContainer2.TabStop = false;
             // 
             // applicationLauncherPanel
             // 
@@ -506,13 +515,6 @@ namespace AubitDesktop
             this.label1.Size = new System.Drawing.Size(32, 13);
             this.label1.TabIndex = 14;
             this.label1.Text = "Send";
-            // 
-            // macroEditorToolStripMenuItem
-            // 
-            this.macroEditorToolStripMenuItem.Name = "macroEditorToolStripMenuItem";
-            this.macroEditorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.macroEditorToolStripMenuItem.Text = "Macro Editor";
-            this.macroEditorToolStripMenuItem.Click += new System.EventHandler(this.macroEditorToolStripMenuItem_Click);
             // 
             // frmMainAppWindow
             // 

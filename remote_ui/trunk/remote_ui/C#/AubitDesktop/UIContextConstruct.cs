@@ -123,6 +123,9 @@ namespace AubitDesktop
         {
         }
 
+
+        
+
         public string getSyncValues()
         {
             string s;

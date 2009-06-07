@@ -82,7 +82,7 @@ namespace AubitDesktop
         }
 
 
- 
+
 
         public string getAcceptString()
         {

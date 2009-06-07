@@ -130,6 +130,13 @@ namespace AubitDesktop
 
         }
 
+
+        public override void gotFocus()
+        {
+
+        }
+
+
         private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;

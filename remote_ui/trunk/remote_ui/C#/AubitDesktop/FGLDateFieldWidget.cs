@@ -213,6 +213,10 @@ namespace AubitDesktop
         }
 
 
+        public override  void  gotFocus()
+        {
+        }
+
         override public string Text // The current fields value
         {
             get

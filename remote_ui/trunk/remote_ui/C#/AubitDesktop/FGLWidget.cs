@@ -132,6 +132,10 @@ namespace AubitDesktop
             }
         }
 
+        public virtual void gotFocus()
+        {
+            throw new NotImplementedException("Should be overridden");
+        }
 
         public virtual void setFocus()
         {
@@ -853,6 +857,7 @@ namespace AubitDesktop
                 this.onGotFocus(this, this.comment);
             }
 
+            gotFocus();
 
         }
 

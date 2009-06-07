@@ -111,6 +111,8 @@ namespace AubitDesktop
             {
             }
 
+
+
             public void ActivateContext(UIEventHandler UIPromptContext_EventTriggered, VALUE[] values, ROW[] rows)
             {
                 promptForm.EventTriggered += new UIEventHandler(UIPromptContext_EventTriggered);

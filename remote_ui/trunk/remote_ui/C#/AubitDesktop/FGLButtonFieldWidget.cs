@@ -140,7 +140,10 @@ namespace AubitDesktop
 
         }
 
+        public override void gotFocus()
+        {
 
+        }
 
 
         public FGLButtonFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)

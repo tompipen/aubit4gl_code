@@ -126,7 +126,9 @@ namespace AubitDesktop
             }
         }
 
-
+        public override void gotFocus()
+        {
+        }
 
 
         public FGLPixmapFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Image pixmap, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)

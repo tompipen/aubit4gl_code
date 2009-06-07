@@ -115,6 +115,8 @@ namespace AubitDesktop
             return _contextIsActive;
         }
 
+
+
         private string getTriggeredText(string ID)
         {
             string cfield;
@@ -1065,12 +1067,19 @@ namespace AubitDesktop
                 _contextIsActive = true;
             }
 
-            //setContextForCurrentRow();
-            setFocusToCurrentRow();
-            inputFocusActive = true;
-            if (!CurrentField.fglField.hasFocus)
-            {
-                CurrentField.fglField.setFocus();
+
+
+
+                //setContextForCurrentRow();
+                setFocusToCurrentRow();
+                inputFocusActive = true;
+
+                if (CurrentField.subscript == scrLine)
+                {
+                if (!CurrentField.fglField.hasFocus)
+                {
+                    CurrentField.fglField.setFocus();
+                }
             }
             
         }
@@ -1086,7 +1095,7 @@ namespace AubitDesktop
             currrow.Add(screenRecord[this.scrLine - 1,a]);
             }
             
-            mainWin.SetContext(FGLContextType.ContextInput, currrow, this);
+            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this);
             inputFocusActive = wasinputFocusActive;
         }
 

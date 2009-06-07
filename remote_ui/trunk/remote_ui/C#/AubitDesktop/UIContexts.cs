@@ -80,6 +80,8 @@ namespace AubitDesktop
         string getAcceptString();
 
         void setNextField(string p);
+
+    
     }
 
  

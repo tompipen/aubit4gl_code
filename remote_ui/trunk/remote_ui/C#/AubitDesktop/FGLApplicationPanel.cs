@@ -754,7 +754,8 @@ namespace AubitDesktop
                 tsBtnPgDown = new AubitTSBtn();
                 tsBtnInsert = new AubitTSBtn();
                 tsBtnDelete = new AubitTSBtn();
-                
+
+
 
                 // 
                 // tsBtnAccept
@@ -877,6 +878,8 @@ namespace AubitDesktop
                 this.tsBtnDelete.Visible = true;
                 this.toolStrip1.Add(tsBtnDelete);
 
+            //
+
 
 
 
@@ -898,9 +901,12 @@ namespace AubitDesktop
         {
             this.ErrorText = "";
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             string eventText = "<TRIGGERED ID=\"INTERRUPT\"/>";
             TopWindow.SendString(eventText,true);
@@ -916,9 +922,12 @@ namespace AubitDesktop
         private void tsBtnAccept_Click(object sender, EventArgs e)
         {
             KeyEventArgs ke = null;
-            if (e.GetType() == typeof(KeyEventArgs))
+            if (e != null)
             {
-                ke = (KeyEventArgs)e;
+                if (e.GetType() == typeof(KeyEventArgs))
+                {
+                    ke = (KeyEventArgs)e;
+                }
             }
             this.ErrorText = "";
             string eventText = currentContext.getAcceptString();
@@ -1743,6 +1752,15 @@ namespace AubitDesktop
                 {
                     MessageBox.Show("Application error - GETKEY is not supported by the UI");
                     commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region DRAWBOX
+                if (a is DRAWBOX)
+                {
+                    Console.WriteLine("Application error - DRAWBOX is not supported by the UI");
+                    commands.Remove(a);
+                    continue;
                 }
                 #endregion
                 #region WAITFOREVENT

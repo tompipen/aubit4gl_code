@@ -58,7 +58,10 @@ namespace AubitDesktop
         }
 
 
- 
+        public override void gotFocus()
+        {
+
+        }
 
         public override void setFocus()
         {
