@@ -89,6 +89,7 @@ namespace AubitDesktop
                         thisLayoutControlsPanel.Top = 0;
                         thisLayoutControlsPanel.Left = 0;
                         thisLayoutControlsPanel.AutoSize = true;
+                        //thisLayoutControlsPanel.BackColor = Color.Purple;
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.TopDown;
                         parent.Controls.Add(thisLayoutControlsPanel);
                         if (p.border)
@@ -135,25 +136,39 @@ namespace AubitDesktop
                 #region Table
                 case "AubitDesktop.Xml.XMLForm.Table":
                     {
+                        bool showHeaders = false;
                         DataGridView d;
                         AubitDesktop.Xml.XMLForm.Table p;
                         p = (AubitDesktop.Xml.XMLForm.Table)child;
                         d = new DataGridView();
                         d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
                         d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
+                        d.Dock = DockStyle.Fill;
                         d.AutoSize = true;
                         d.ReadOnly = true;
                         d.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
                         d.AllowUserToResizeColumns = false;
                         d.AllowUserToResizeRows = false;
 
-                        // Maybe need these visible if we have some titles for them :-)
-                        d.ColumnHeadersVisible = false;
+
                        
-                        d.ColumnCount = p.TableColumn.Length;
+                        d.ColumnCount = p.TableColumn.Length+1; // First column is reserved for the line number..
                         d.RowCount = Convert.ToInt32(p.pageSize);
+
+                        d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
+                        
+                        for (int a = 0; a < p.TableColumn.Length; a++)
+                        {
+                            if (p.TableColumn[a].text == null) continue;
+                            if (p.TableColumn[a].text.Length == 0) continue;
+                            d.Columns[a+1].HeaderText = p.TableColumn[a].text;
+                            showHeaders = true;
+                        }
+                        // Maybe need these visible if we have some titles for them :-)
+                        d.ColumnHeadersVisible = showHeaders;
                         d.Visible = true;
-                        d.AutoSize = false;
+                        //d.AutoSize = false;
+                        d.Columns[0].Visible = false; // Hide first column - its just the line number..
                         d.RowHeadersVisible = false;
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,d);
@@ -690,6 +705,7 @@ namespace AubitDesktop
 
             data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
 
+            
             try
             {
                 if (Program.AppSettings.defaultEncoding.Trim() == "")
@@ -697,9 +713,12 @@ namespace AubitDesktop
                     Program.AppSettings.defaultEncoding = "ISO8859-1";
                     Program.SaveSettings();
                 }
+                if (Program.AppSettings.defaultEncoding != "UTF8")
+                {
                     Encoding enc = ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
-                    enc.GetString(Convert.FromBase64String(f.Text));
+                    //enc.GetString(Convert.FromBase64String(f.Text));
                     data = enc.GetString(Convert.FromBase64String(f.Text)); // System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
+                }
                 
             }
             catch (Exception e) {
@@ -727,6 +746,7 @@ namespace AubitDesktop
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
             thisFormsPanel.AutoSize = true;
+            thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
             thisFormsPanel.Dock = DockStyle.Fill;
 
             ScreenRecords = new List<FGLScreenRecord>();

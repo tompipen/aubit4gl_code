@@ -460,9 +460,32 @@ namespace AubitDesktop
 
         
         public void SendString(string text,bool callSetWaitCursor) {
+            string finalString;
             if (callSetWaitCursor) { setWaitCursor(); }
 
-            stdNetworkConnection.SendString(text);
+            if (Program.AppSettings.defaultEncoding.Trim() == "")
+            {
+                Program.AppSettings.defaultEncoding = "ISO8859-1";
+                Program.SaveSettings();
+            }
+
+            finalString = text;
+            try
+            {
+                if (Program.AppSettings.defaultEncoding != "UTF8")
+                {
+                    Encoding enc = ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
+                    ASCIIEncoding ascii = new ASCIIEncoding();
+                    byte[] byteArray = Encoding.UTF8.GetBytes(text);
+                    byte[] asciiArray = Encoding.Convert(Encoding.UTF8, enc, byteArray);
+                     finalString = ascii.GetString(asciiArray);
+
+                }
+            }
+            catch { } 
+
+
+            stdNetworkConnection.SendString(finalString);
             //resetPing();
 
         }

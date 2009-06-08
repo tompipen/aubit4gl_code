@@ -935,6 +935,9 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class TableColumn
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string text;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
