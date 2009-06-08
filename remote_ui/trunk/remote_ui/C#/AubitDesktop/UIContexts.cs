@@ -40,7 +40,8 @@ namespace AubitDesktop
         /// </summary>
         /// <returns></returns>
         bool contextIsActive();
- 
+
+        bool useKeyPress(KeyEventArgs ke);
 
         /// <summary>
         /// Activate a context

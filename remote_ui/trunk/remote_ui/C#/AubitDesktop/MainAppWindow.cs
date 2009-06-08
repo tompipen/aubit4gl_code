@@ -634,7 +634,11 @@ namespace AubitDesktop
             }
             else
             {
-                toolStripProgressBar2.Visible = false;
+                try
+                {
+                    toolStripProgressBar2.Visible = false;
+                }
+                catch { } 
             }
         }
 
@@ -777,7 +781,7 @@ namespace AubitDesktop
             // Key wasnt found...
 
            // currentContext.keyPreview(e,rkey);
-
+            if (currentContext.useKeyPress(e)) return;
 
         }
 
@@ -789,10 +793,14 @@ namespace AubitDesktop
                 if (i is AubitTSBtn)
                 {
                     AubitTSBtn a;
-                    if (i.Visible == false) continue;
+                    
+                    
 
 
                     a = (AubitTSBtn)i;
+                    if (i.Visible == false) continue;
+
+
                     fglKey = FGLUtils.getKeyNameFromFGLKeyCode(a.ActiveKey);
                     if (fglKey == key)
                     {

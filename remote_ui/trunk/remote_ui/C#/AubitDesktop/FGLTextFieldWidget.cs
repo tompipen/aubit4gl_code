@@ -162,15 +162,10 @@ namespace AubitDesktop
                     if (isOnSelectedRow)
                     {
                         p.BorderStyle = BorderStyle.FixedSingle;
-                        
-                        //t.BorderStyle = BorderStyle.FixedSingle;
-                        //l.BorderStyle = BorderStyle.FixedSingle;
                     }
                     else
                     {
                         p.BorderStyle = BorderStyle.None;
-                        //t.BorderStyle = BorderStyle.Fixed3D;
-                        //l.BorderStyle = BorderStyle.Fixed3D;
                     }
                     break;
 
@@ -181,8 +176,8 @@ namespace AubitDesktop
                     t.ReadOnly = false;
                     break;
 
+
                 case FGLContextType.ContextInput:
-                case FGLContextType.ContextInputArray:
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -197,6 +192,32 @@ namespace AubitDesktop
                     }
                     // We can't trap the tabstops if this is true..
                     //t.TabStop = false;
+                    break;
+
+                case FGLContextType.ContextInputArray:
+                    if (this.NoEntry)
+                    {
+                        t.Visible = false;
+                        l.Visible = true;
+                        t.ReadOnly = false;
+                    }
+                    else
+                    {
+                        if (isOnSelectedRow)
+                        {
+                           // t.BackColor =Color.White;
+                            t.Visible = true;
+                            l.Visible = false;
+                            t.ReadOnly = false;
+                        }
+                        else
+                        {
+                            t.Visible = false;
+                            l.Visible = true;
+                            t.ReadOnly = false;
+                            //t.BackColor = SystemColors.GrayText;
+                        }
+                    }
                     break;
 
                 default:

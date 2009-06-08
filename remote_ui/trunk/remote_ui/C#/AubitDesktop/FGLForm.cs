@@ -144,6 +144,7 @@ namespace AubitDesktop
                         d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
                         d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
                         d.Dock = DockStyle.Fill;
+                       
                         d.AutoSize = true;
                         d.ReadOnly = true;
                         d.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -739,6 +740,12 @@ namespace AubitDesktop
 
             this.maxcol = Convert.ToInt32(theForm.width);
             this.maxline = Convert.ToInt32(theForm.height);
+            if (theForm.XmlFormItems[0].GetType() != typeof(AubitDesktop.Xml.XMLForm.Screen))
+            {
+                // Autosize - not actual size...
+                this.maxcol = -1;
+                this.maxline = -1;
+            }
             tooltips = new ToolTip();
             tooltips.ShowAlways = true;
 

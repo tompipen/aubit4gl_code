@@ -46,6 +46,13 @@ namespace AubitDesktop
                 
             }
 
+
+            public bool useKeyPress(KeyEventArgs ke)
+            {
+                return false;
+            }
+
+
             public UIPromptContext(FGLApplicationPanel f, PROMPT p)
             {
                 //Label l;

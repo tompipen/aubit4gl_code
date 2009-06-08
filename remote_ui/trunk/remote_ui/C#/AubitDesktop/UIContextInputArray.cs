@@ -115,7 +115,10 @@ namespace AubitDesktop
             return _contextIsActive;
         }
 
-
+        public bool useKeyPress(KeyEventArgs ke)
+        {
+            return false;
+        }
 
         private string getTriggeredText(string ID)
         {
@@ -937,7 +940,7 @@ namespace AubitDesktop
                 this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID));
             }
 
-            // Clear the context on all fields
+            // clear the context context on all fields
             mainWin.SetContext(FGLContextType.ContextNone);
 
 
@@ -1091,8 +1094,12 @@ namespace AubitDesktop
             wasinputFocusActive = inputFocusActive;
             inputFocusActive = false;
             List<FGLFoundField> currrow=new List<FGLFoundField>();
-            for (a=0;a<this.nCols;a++) {
-            currrow.Add(screenRecord[this.scrLine - 1,a]);
+            for (int row = 0; row < scrRecLines; row++)
+            {
+                for (a = 0; a < this.nCols; a++)
+                {
+                    currrow.Add(screenRecord[row, a]);
+                }
             }
             
             mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this);

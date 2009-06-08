@@ -921,8 +921,15 @@ namespace AubitDesktop
 
             if (isContainable)
             {
-                WindowWidget.Height = GuiLayout.get_gui_y(f.maxline) + 20;
-                WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
+                if (f.maxcol >= 0 && f.maxline >= 0)
+                {
+                    WindowWidget.Height = GuiLayout.get_gui_y(f.maxline) + 20;
+                    WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
+                }
+                else
+                {
+                    WindowWidget.AutoSize = true;
+                }
 
             }
         }

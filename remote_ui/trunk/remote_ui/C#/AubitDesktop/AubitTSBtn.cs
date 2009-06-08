@@ -59,6 +59,10 @@ namespace AubitDesktop
             }
         }
 
+        public bool HiddenNormalKey=false;
+        
+       
+
         public string programTag
         {
             get

@@ -83,7 +83,10 @@ namespace AubitDesktop
             return _contextIsActive;
         }
 
-
+        public bool useKeyPress(KeyEventArgs ke)
+        {
+            return false;
+        }
 
         public void downkeyPressed()
         {

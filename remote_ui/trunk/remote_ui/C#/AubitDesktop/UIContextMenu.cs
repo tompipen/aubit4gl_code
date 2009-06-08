@@ -72,7 +72,93 @@ namespace AubitDesktop
         
         }
 
+        public bool isNormalKey(KeyEventArgs ke, string s)
+        {
+            if (ke.Alt) return false;
+            if (ke.Control) return false;
+            s = s.ToUpper();
+            if (ke.KeyCode == Keys.A && s == "A") { return true; }
+            if (ke.KeyCode == Keys.B && s == "B") { return true; }
+            if (ke.KeyCode == Keys.C && s == "C") { return true; }
+            if (ke.KeyCode == Keys.D && s == "D") { return true; }
+            if (ke.KeyCode == Keys.E && s == "E") { return true; }
+            if (ke.KeyCode == Keys.F && s == "F") { return true; }
+            if (ke.KeyCode == Keys.G && s == "G") { return true; }
+            if (ke.KeyCode == Keys.H && s == "H") { return true; }
+            if (ke.KeyCode == Keys.I && s== "I") { return true; }
+            if (ke.KeyCode == Keys.J && s == "J") { return true; }
+            if (ke.KeyCode == Keys.K && s == "K") { return true; }
+            if (ke.KeyCode == Keys.L && s == "L") { return true; }
+            if (ke.KeyCode == Keys.M && s == "M") { return true; }
+            if (ke.KeyCode == Keys.N && s== "N") { return true; }
+            if (ke.KeyCode == Keys.O && s == "O") { return true; }
+            if (ke.KeyCode == Keys.P && s == "P") { return true; }
+            if (ke.KeyCode == Keys.Q && s== "Q") { return true; }
+            if (ke.KeyCode == Keys.R && s == "R") { return true; }
+            if (ke.KeyCode == Keys.S && s == "S") { return true; }
+            if (ke.KeyCode == Keys.T && s== "T") { return true; }
+            if (ke.KeyCode == Keys.U && s== "U") { return true; }
+            if (ke.KeyCode == Keys.V && s == "V") { return true; }
+            if (ke.KeyCode == Keys.W && s == "W") { return true; }
+            if (ke.KeyCode == Keys.X && s == "X") { return true; }
+            if (ke.KeyCode == Keys.Y && s == "Y") { return true; }
+            if (ke.KeyCode == Keys.Z && s == "Z") { return true; }
+            if (ke.KeyCode == Keys.D0 && s == "0") { return true; }
+            if (ke.KeyCode == Keys.D1 && s == "1") { return true; }
+            if (ke.KeyCode == Keys.D2 && s == "2") { return true; }
+            if (ke.KeyCode == Keys.D3 && s == "3") { return true; }
+            if (ke.KeyCode == Keys.D4 && s == "4") { return true; }
+            if (ke.KeyCode == Keys.D5 && s == "5") { return true; }
+            if (ke.KeyCode == Keys.D6 && s == "6") { return true; }
+            if (ke.KeyCode == Keys.D7 && s == "7") { return true; }
+            if (ke.KeyCode == Keys.D8 && s == "8") { return true; }
+            if (ke.KeyCode == Keys.D9 && s == "9") { return true; }
+            return false;
 
+        }
+
+        public bool useKeyPress(KeyEventArgs ke)
+        {
+            int cnt;
+            MENUCOMMAND matchedCommand=null; 
+            cnt = 0;
+
+            
+            foreach (MENUCOMMAND a in thismenu.MENUCOMMANDS)
+            {
+                string txt = a.TEXT;
+
+                if (txt == null) continue;
+
+                if (a.KEYS != "")
+                {
+                    string[]keys=a.KEYS.Split(',');
+                    for (int n=0;n<keys.Length;n++) {
+                        if (keys[n].Length == 1) { txt = keys[n]; break; }
+                    }
+                }
+                if (txt == "") continue;
+                if (isNormalKey(ke,txt.Substring(0,1))) {
+                    matchedCommand = a;
+                    cnt++;
+                }
+
+            }
+            if (cnt == 0) return false;
+            if (cnt == 1)
+            {
+                string eventText = "<TRIGGERED ID=\"" +matchedCommand .ID + "\"/>";
+                if (EventTriggered != null)
+                {
+                    EventTriggered(matchedCommand,matchedCommand.ID , eventText);
+                    DeactivateContext();
+                    return true;
+                }
+            }
+
+            Console.WriteLine("GUI can't handle multiple keys");
+            return false;
+        }
 
         public UIMenuContext(FGLApplicationPanel f, MENU m)
         {
@@ -96,7 +182,7 @@ namespace AubitDesktop
                 txt = a.TEXT;
                 if (txt.Length == 0) txt = null;
 
-
+                
 
                 if (txt == null)
                 {
@@ -114,27 +200,48 @@ namespace AubitDesktop
                 else
                 {
 
-
+                    
                     string[] menukeys;
-                    menukeys = a.KEYS.Split(',');
+                    if (a.KEYS == "")
+                    {
+                        
+                        menukeys = new string[1];
+                        //menukeys[0] =1;
+
+                            char []arr=a.TEXT.Substring(0,1).ToCharArray();
+                            menukeys[0] = ((int)(arr[0])).ToString();
+                            
+
+                    }
+                    else
+                    {
+                        menukeys = a.KEYS.Split(',');
+                    }
+
                     foreach (string s in menukeys)
                     {
-                        int n=-1;
+                        int n = -1;
                         ONKEY_EVENT e = new ONKEY_EVENT();
                         try
                         {
                             n = Convert.ToInt32(s);
                         }
                         catch { }
-                        if (n <= 26 || n> 255)
+
+
+                        if (s.Trim() != "" && n != -1)
                         {
-                            if (s.Trim() != "" && n!=-1)
+                            e.ID = a.ID;
+                            e.KEY = s;
+                            if (n <= 26 || n > 255)
                             {
-                                e.ID = a.ID;
-                                e.KEY = s;
                                 keyList.Add(e);
+                               
                             }
+
+                            
                         }
+
                     }
 
 

@@ -82,7 +82,10 @@ namespace AubitDesktop
         }
 
 
-
+        public bool useKeyPress(KeyEventArgs ke)
+        {
+            return false;
+        }
 
         public string getAcceptString()
         {

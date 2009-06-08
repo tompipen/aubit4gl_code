@@ -328,14 +328,8 @@ namespace AubitDesktop
                 // Ok - there are some keys - but not all of them will be used..
                 // so we need to remove any that are not in use by making them invisible
                 foreach (AubitTSBtn o in Fkeys)
-                {
-                    
-                    
-                      //  if (!hasKeyInOnkeyEventList(keys, o.ActiveKey))
-                      //  {
-                            o.Visible = false;
-                      //  }
-                    
+                {                  
+                            o.Visible = false;      
                 }
 
 
@@ -359,7 +353,9 @@ namespace AubitDesktop
                     }
                     else
                     {
+
                         o.Visible = true;
+
                         o.ID = key.ID;
                     }
                 }
