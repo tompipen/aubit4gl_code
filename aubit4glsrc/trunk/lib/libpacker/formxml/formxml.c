@@ -1063,7 +1063,7 @@ topLine[511]=0;
 		get_attribs(f, attr_no, buff_tabcol,0);
 		txt=find_label (f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		if (txt) {
-			sprintf(nmbuff," Text=\"%s\"", txt);
+			sprintf(nmbuff," text=\"%s\"",xml_escape( txt));
 		} else {
 			strcpy(nmbuff,"");
 		}

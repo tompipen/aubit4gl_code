@@ -2419,6 +2419,9 @@ uilib_has_array_values (int n)
       if (contexts[context].ui.inputarray.changed_rows[a])
 	{
 	  UIdebug (5, "Found a changed row : %d", a + 1);
+
+		//printf("Found a changed row %d\n",a+1);
+
 	  pushint (a + 1);
 	  return 1;
 	}
@@ -2447,10 +2450,12 @@ uilib_input_get_array_values (int n)
 
       if (strlen (p[b]) == 0)
         {
+		//printf("%d : NULL\n",b);
           A4GL_push_null (0, 0);
         }
       else
         {
+		//printf("%d : %s\n",b,p[b]);
       	PUSHquote (p[b]);
         }
     }
