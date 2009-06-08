@@ -241,7 +241,9 @@ namespace AubitDesktop
         public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             int cnt = 0;
-            mainWin.SetContext(FGLContextType.ContextNone);
+
+
+           // mainWin.SetContext(FGLContextType.ContextNone);
 
             mainWin.SetContext(FGLContextType.ContextInput, activeFields, this);
 
@@ -261,11 +263,12 @@ namespace AubitDesktop
                 setCurrentField = null;
             }
 
-            if (CurrentField==null) {
+
+            if (CurrentField == null)
+            {
                 CurrentField = activeFields[0];
                 CurrentField.fglField.setFocus();
             }
-
 
             //mainWin.CommentText = CurrentField.fglField.comment;
 
@@ -361,7 +364,7 @@ namespace AubitDesktop
                 _contextIsActive = true;
             }
 
-            
+            //Application.DoEvents();
             
         }
 
