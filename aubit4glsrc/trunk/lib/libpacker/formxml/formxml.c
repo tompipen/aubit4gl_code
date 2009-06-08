@@ -5,6 +5,7 @@
 
 static char *get_sql_dtype ( int dtype);
 static char * xml_escape (char *s);
+static char * find_label (int x, int y);
 FILE *ofile;
 /*
 void write_xml_form(FILE *ofile, char *fname, struct_form *f) ;
@@ -165,7 +166,7 @@ int formonly;
 
 fprop=&f->attributes.attributes_val[attr_no];
 
-        if (strcmp(f->attributes.attributes_val[attr_no].tabname,"formonly")!=0) {
+        if (strcmp(f->attributes.attributes_val[attr_no].tabname,"formonly")==0) {
 		formonly=1;
 	} else {
 		formonly=0;
@@ -997,10 +998,15 @@ int a;
 int scr;
 int dim=-1;
 char scrname[200];
+char topLine[512]; // string to store label texts
+
+memset(topLine,' ',512);
+topLine[511]=0;
 	
 	get_layout_attribs(layout,buff);
 
  	scr=layout->screen_no;
+ merge_labels(f, scr);
 	if (layout->children.children_len!=0) {
 		A4GL_assertion(1,"not expecting children in a table");
 	}
@@ -1024,24 +1030,48 @@ char scrname[200];
     	fprintf (ofile, "<Table pageSize=\"%d\" tabName=\"%s\" %s>\n",dim, scrname,buff);
 
 
+// Lets set up our 'topline' with any labels on line 0...
+  for (a = 0; a < f->metrics.metrics_len; a++) {
+      		if (f->metrics.metrics_val[a].scr != scr) continue;
+		if (strlen(f->metrics.metrics_val[a].label)) {
+				if (f->metrics.metrics_val[a].y==0) {
+					// Only copy if its on the first line...
+					strncpy(&topLine[f->metrics.metrics_val[a].x],f->metrics.metrics_val[a].label, strlen(f->metrics.metrics_val[a].label));
+				}
+		}
+		continue;
+  }
+
+//A4GL_trim(topLine);
+//printf("TopLine=%s\n",topLine);
+
   for (a = 0; a < f->metrics.metrics_len; a++) {
 		int attr_no;
+		char *txt;
+		char nmbuff[512];
       		if (f->metrics.metrics_val[a].scr != scr) continue;
-		if (strlen(f->metrics.metrics_val[a].label)) continue;
+		if (strlen(f->metrics.metrics_val[a].label)) {
+				continue;
+		}
 		attr_no=get_attrno_for_metric(f,a);
 		if (hasPrintedAttribute(attr_no)) continue;
 		addPrintedAttribute(attr_no);
   		tabIndex++;
 
-	 fieldNo=attr_no;
+	 	fieldNo=attr_no;
 	
 		get_attribs(f, attr_no, buff_tabcol,0);
-
-      		fprintf (ofile, "<TableColumn name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\">\n", 
+		txt=find_label (f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
+		if (txt) {
+			sprintf(nmbuff," Text=\"%s\"", txt);
+		} else {
+			strcpy(nmbuff,"");
+		}
+      		fprintf (ofile, "<TableColumn name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\"%s>\n", 
 
 	       			f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
 	       			f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff_tabcol,
-	       			tabIndex);
+	       			tabIndex, nmbuff);
 
       		print_widget (f, a, attr_no,"Table");
 
@@ -1160,7 +1190,7 @@ has_label (int x, int y, int w, int set, int fy)
       if (x <= screen_convert_fields[a].x && x + w >= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
 	ok = 2;
 
-      if (set && ok && 0 )
+      if (set && ok && 1 )
 	{
 	  screen_convert_fields[a].field_start = x;
 	  screen_convert_fields[a].y = fy;
@@ -1245,7 +1275,7 @@ void make_screen (struct_form * f,int scr)
 	  int because_of=0;
 	  int w;
 	  int w2;
-	  int fstart = -1;
+	  int fstart = x;
 	  if (screen[y][x] != ' ' && screen[y][x] != 1 && screen[y][x] != 2)
 	    {
 	      for (w = x + 1; w <= f->maxcol; w++)
@@ -1350,7 +1380,19 @@ void make_screen (struct_form * f,int scr)
 }
 
 
+static char * find_label (int x, int y)
+{
+  int a;
+  for (a = 0; a < nfields; a++)
+    {
+      if (screen_convert_fields[a].y == y && screen_convert_fields[a].field_start == x)
+        {
+          return screen_convert_fields[a].label;
+        }
+    }
 
+return 0;
+}
 
 int merge_labels(struct_form *f, int scr) {
 	if (screen_convert_fields) {free(screen_convert_fields);  screen_convert_fields=0;}
@@ -1831,15 +1873,16 @@ static char * get_sql_dtype ( int dtype)
   static char buff_dtype[256];
   int dtype_sz;
 
+
   dtype_sz = dtype >> 16;
   dtype = dtype & 0xffff;
   switch (dtype & DTYPE_MASK)
     {
     case DTYPE_CHAR:
-      sprintf (buff_dtype, "CHAR(%d)", dtype_sz);
+      sprintf (buff_dtype, "CHAR");
       break;
     case DTYPE_VCHAR:
-      sprintf (buff_dtype, "VARCHAR(%d)", dtype_sz);
+      sprintf (buff_dtype, "VARCHAR");
       break;
     case DTYPE_INT:
       sprintf (buff_dtype, "INTEGER");
