@@ -1171,34 +1171,61 @@ namespace AubitDesktop
 
         public void DisplayTo(DISPLAYTO d)
         {
-            List<FGLFoundField> fldlist;
-                
-            fldlist = FindFields(d.FIELDLIST);
-            /// @fixme - need to check for a screen record
-            /// when using a TABLE..
             
-            if (d.VALUES.Length!=fldlist.Count) {
-                MessageBox.Show("Wrong number of fields");
-            } else {
-                for (int a=0;a<d.VALUES.Length;a++) {
-                    if (fldlist[a].fglField.format != null)
+            List<DataGridViewCell> dgCells;
+
+
+            dgCells = FindRecordCells(d.FIELDLIST);
+
+            if (dgCells != null)
+            {
+               
+                if (d.VALUES.Length !=dgCells.Count)
+                {
+                    MessageBox.Show("Wrong number of fields");
+                }
+                else
+                {
+                    for (int a = 0; a < d.VALUES.Length; a++)
                     {
-                        string s="";
-                        try
-                        {
-                            s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VALUES[a].Text, fldlist[a].fglField.datatype);
-                        }
-                        catch (Exception )
-                        {
-                            // Does nothing..
-                        }
-                        fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
-                        fldlist[a].fglField.Text = s;
+                        dgCells[a].Value = d.VALUES[a].Text;
+                            //fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
+                            //fldlist[a].fglField.Text = d.VALUES[a].Text;
+                        
                     }
-                    else
+                }
+            }
+            else
+            {
+                List<FGLFoundField> fldlist;
+                fldlist = FindFields(d.FIELDLIST);
+                if (d.VALUES.Length != fldlist.Count)
+                {
+                    MessageBox.Show("Wrong number of fields");
+                }
+                else
+                {
+                    for (int a = 0; a < d.VALUES.Length; a++)
                     {
-                        fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
-                        fldlist[a].fglField.Text = d.VALUES[a].Text;
+                        if (fldlist[a].fglField.format != null)
+                        {
+                            string s = "";
+                            try
+                            {
+                                s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VALUES[a].Text, fldlist[a].fglField.datatype);
+                            }
+                            catch (Exception)
+                            {
+                                // Does nothing..
+                            }
+                            fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
+                            fldlist[a].fglField.Text = s;
+                        }
+                        else
+                        {
+                            fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
+                            fldlist[a].fglField.Text = d.VALUES[a].Text;
+                        }
                     }
                 }
             }
@@ -1388,6 +1415,123 @@ namespace AubitDesktop
                     MessageBox.Show((string)s);
                 }
                 return null;
+            }
+        }
+
+        internal List<DataGridViewCell> FindRecordCells(FIELD[] fIELD)
+        {
+            string fld;
+            DataGridView dg;
+            List<DataGridViewCell> dgCells;
+            if (grids == null) return null;
+
+            //@fixme : limitation here that you can only display to one type of cells in any one DISPLAYTO
+            // if you display to a grid - it must be the only thing in the display...
+
+            dgCells = new List<DataGridViewCell>();
+            
+
+            for (int a = 0; a < fIELD.Length; a++)
+            {
+                string tabName="";
+                string colName="";
+                int subscript=1;
+
+                fld = fIELD[a].NAME;
+                string[] tabcol=fld.Split('.');
+
+                if (tabcol.Length == 1)
+                {
+                    tabName = "";
+                    colName = tabcol[0];
+                }
+
+                if (tabcol.Length == 2)
+                {
+                    tabName = tabcol[0];
+                    colName = tabcol[1];
+
+                }
+
+                if (colName.Contains("["))
+                {
+                    int idx;
+                    idx = colName.IndexOf("[");
+                    string s = colName.Substring(idx + 1);
+                    s = s.Replace("]", "");
+                    subscript = Convert.ToInt32(s);
+                    colName = colName.Substring(0, idx);
+                }
+
+                if (tabName.Contains("["))
+                {
+                    int idx;
+                    idx = tabName.IndexOf("[");
+                    string s = tabName.Substring(idx + 1);
+                    s = s.Replace("]", "");
+                    subscript = Convert.ToInt32(s);
+                    tabName = tabName.Substring(0, idx);
+                }
+
+                if (tabName != "")
+                {
+                    if (!grids.ContainsKey(tabName))
+                    {
+                        return null;
+                    }
+                }
+
+
+                // we need to look up the tabName and column from the screen record....
+                for (int sr = 0; sr < ScreenRecords.Count; sr++)
+                {
+                    if (this.ScreenRecords[sr].name == tabName || tabName=="")
+                    {
+                        if (grids.ContainsKey(ScreenRecords[sr].name))
+                        {
+                            dg = (DataGridView)grids[ScreenRecords[sr].name];
+                        }
+                        else
+                        {
+                            dg = null;
+                        }
+
+                        if (colName != "*")
+                        {
+                            int attr = ScreenRecords[sr].FindAttributeNo(colName);
+                            if (attr != -1)
+                            {
+                                if (dg == null)
+                                {
+                                    MessageBox.Show("DG is null");
+                                }
+                                else
+                                {
+                                    dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (dg == null)
+                            {
+                                MessageBox.Show("DG is null for *");
+                            }
+                            foreach (int attr in ScreenRecords[sr].AttributeNoList())
+                            {
+                                dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (dgCells.Count == 0)
+            {
+                return null;
+            }else {
+                return dgCells;
             }
         }
     }
