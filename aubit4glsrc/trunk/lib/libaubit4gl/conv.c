@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.174 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: conv.c,v 1.175 2009-06-09 14:18:56 mikeaubury Exp $
 #
 */
 
@@ -150,6 +150,7 @@ void A4GL_setsf (void *p);
 
 int A4GL_inttoint (void *a, void *b, int size);
 
+
 int A4GL_inttoc (void *a1, void *b, int size);
 int A4GL_mdectol (void *zz, void *aa, int sz_ignore);
 int A4GL_mdectof (void *zz, void *aa, int sz_ignore);
@@ -261,6 +262,11 @@ static void print_res_l (int ln, char *s);
 
 static int size_of_operand = 0;
 
+static int getdt_as_dbl(struct A4GLSQL_dtime *d,double *val) ;
+static int A4GL_dttoi (void *a, void *b, int size) ;
+static int A4GL_dttol (void *a, void *b, int size) ;
+static int A4GL_dttosf (void *a, void *b, int size) ;
+static int A4GL_dttof (void *a, void *b, int size) ;
 /*
 =====================================================================
                     Variables definitions
@@ -324,7 +330,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   {
   NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
   {
-  A4GL_dttoc, NO, NO, NO, NO, NO, NO, A4GL_dt_to_d, NO, NO, A4GL_dttodt, NO, NO, A4GL_dttovc, NO, NO},
+  A4GL_dttoc, A4GL_dttoi, A4GL_dttol, A4GL_dttof, A4GL_dttosf, NO, NO, A4GL_dt_to_d, NO, NO, A4GL_dttodt, NO, NO, A4GL_dttovc, NO, NO},
   {
   NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO, NO},
   {
@@ -901,6 +907,69 @@ A4GL_ctodt (void *av, void *b, int size)
 
   return 1;
 
+}
+
+static int getdt_as_dbl(struct A4GLSQL_dtime *d,double *val) {
+	/* SECOND -> anything, or YEAR ->YEAR, MONTH ->MONTH  etc */
+	if (d->stime>=6 || d->stime==d->ltime) {
+		char buff[200];	
+		A4GL_dttoc(d,buff,40);
+		return (sscanf(buff,"%lf",val)==1);
+	}
+	return 0;
+}
+
+
+static int A4GL_dttoi (void *a, void *b, int size) {
+  	struct A4GLSQL_dtime *d;
+	double val;
+	int ok=0;
+  	d = a;
+	ok=getdt_as_dbl(d,&val);
+	if (ok) {
+		*(int *)b=(int)val;
+		return 1;
+	}
+	return 0;
+}
+
+static int A4GL_dttol (void *a, void *b, int size) {
+  	struct A4GLSQL_dtime *d;
+	double val;
+	int ok=0;
+  	d = a;
+	ok=getdt_as_dbl(d,&val);
+	if (ok) {
+		*(long *)b=(long)val;
+		return 1;
+	}
+	return 0;
+}
+
+static int A4GL_dttosf (void *a, void *b, int size) {
+  	struct A4GLSQL_dtime *d;
+	double val;
+	int ok=0;
+  	d = a;
+	ok=getdt_as_dbl(d,&val);
+	if (ok) {
+		*(float *)b=(float)val;
+		return 1;
+	}
+	return 0;
+}
+
+static int A4GL_dttof (void *a, void *b, int size) {
+  	struct A4GLSQL_dtime *d;
+	double val;
+	int ok=0;
+  	d = a;
+	ok=getdt_as_dbl(d,&val);
+	if (ok) {
+		*(float *)b=(double)val;
+		return 1;
+	}
+	return 0;
 }
 
 /**
@@ -4485,3 +4554,6 @@ A4GL_set_setdtype (int dtype, void *ptr)
 {
   setdtype[dtype] = ptr;
 }
+
+
+
