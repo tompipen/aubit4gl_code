@@ -1838,6 +1838,8 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
    freeContext(i_context);
    }
 
+   p_fglform->checkState();
+
 }
 
 /*
