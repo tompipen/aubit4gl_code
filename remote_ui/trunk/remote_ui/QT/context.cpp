@@ -201,11 +201,18 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
    if(fgl_state != Fgl::INPUTARRAY && fgl_state != Fgl::DISPLAYARRAY)
       return;
 
-   setOption("ARRLINE", current.row());
-   setOption("SCRLINE", current.row());
 
    for(int i=0; i<ql_fieldList.count(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+         if(tableView->model() == current.model()){
+            QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+            int arrLine = proxyModel->mapToSource(tableView->currentIndex()).row();
+            int scrLine = tableView->currentIndex().row();
+
+            setOption("SCRLINE", scrLine);
+            setOption("ARRLINE", arrLine);
+         }
+
          if(fgl_state == Fgl::INPUTARRAY){
             QModelIndex index = tableView->model()->index(current.row(), current.column());
             tableView->selectionModel()->select(index, QItemSelectionModel::Select);
