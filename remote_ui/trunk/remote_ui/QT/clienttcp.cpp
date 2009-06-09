@@ -1573,7 +1573,6 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 
       nodeName = currentElement.nodeName();
 
-      /*
       if(nodeName == "FIELDLIST"){
          qsl_fieldList.clear();
       }
@@ -1588,8 +1587,8 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
          qsl_fieldList << field;
          setFieldEnabled(field, true, focus);
       }
-      */
 
+      /*
       if(nodeName == "COLUMNS"){
          qsl_fieldList.clear();
       }
@@ -1604,6 +1603,7 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
          qsl_fieldList << field;
          setFieldEnabled(field, true, focus);
       }
+      */
 
       handleConstructElement(currentElement);
    }
