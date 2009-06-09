@@ -8,7 +8,7 @@ main
 define lv_mes char(10)
 define lv_dt datetime year to minute
 define lv_d date
-let lv_d = mdy(0,6,2009)
+let lv_d = mdy(6,9,2009) 
 let lv_mes = elemes(month(lv_d))
 display lv_mes
 let lv_dt = "2009-06-09 08:40"
