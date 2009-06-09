@@ -148,11 +148,9 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
 
    responseElement.setAttribute("ARRCOUNT", arrCount);
 
-   int scrLine = p_screenRecord->scrLine();
-   if(scrLine <= 0) scrLine = 1;
+   int scrLine = p_screenRecord->currentIndex().row()+1;
 
-   int arrLine = p_screenRecord->scrLine();
-   if(arrLine <= 0) arrLine = 1;
+   int arrLine = proxyModel->mapFromSource(p_screenRecord->currentIndex()).row()+1;
 
    responseElement.setAttribute("SCRLINE", scrLine);
 
