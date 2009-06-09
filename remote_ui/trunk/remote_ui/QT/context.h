@@ -28,6 +28,7 @@ public:
 
    void sendBeforeEvent();
    void sendAfterEvent();
+   void checkOptions();
 
 private:
    Fgl::State fgl_state;

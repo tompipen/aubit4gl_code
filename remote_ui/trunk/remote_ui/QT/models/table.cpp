@@ -20,6 +20,7 @@
 #include <QItemSelectionModel>
 #include <QKeyEvent>
 #include <QFontMetrics>
+#include <QScrollBar>
 
 #include "table.h"
 
@@ -53,8 +54,45 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
    QObject::disconnect(header, SIGNAL(sectionPressed(int)),
                        this, SLOT(selectColumn(int)));
 
+   this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
    this->setInputEnabled(false);
    this->setEnabled(false);
+}
+
+void TableView::resize()
+{
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+         int height = 4;
+         int width = 4;
+
+         /*
+         if(this->horizontalHeader()->isVisible())
+            height += this->horizontalHeader()->height();
+            */
+
+         if(!this->verticalHeader()->isHidden())
+            width += this->verticalHeader()->width();
+
+         for(int i=0; i<table->rowCount(QModelIndex());i++){
+            height += this->rowHeight(i);
+         }
+
+         for(int j=0; j<table->columnCount(QModelIndex()); j++){
+            width += this->columnWidth(j);
+         }
+
+         if(!this->horizontalScrollBar()->isHidden()){
+            height+= this->horizontalScrollBar()->height();
+         }
+
+         if(!this->verticalScrollBar()->isHidden()){
+            width+= this->verticalScrollBar()->width();
+         }
+
+         this->setFixedSize(width, height);
+      }
+   }
 }
 
 void TableView::setArrCount(int cnt)

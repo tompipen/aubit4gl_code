@@ -2106,6 +2106,7 @@ void ScreenHandler::waitForEvent()
    }
 
    checkFields();
+   p_fglform->context->checkOptions();
    p_fglform->raise();
 
    p_fglform->checkState();
@@ -2948,6 +2949,7 @@ sep = QChar(':');
 
 void ScreenHandler::checkFields()
 {
+   return;
    if(p_fglform == NULL)
       return;
 

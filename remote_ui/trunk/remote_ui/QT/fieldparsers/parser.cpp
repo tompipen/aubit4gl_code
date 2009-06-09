@@ -438,7 +438,8 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       ql_formFields << (QWidget*) de;
    }
  
-   p_screenRecord->setFixedSize(recordWidth, recordHeight);
+   //p_screenRecord->setFixedSize(recordWidth, recordHeight);
+   p_screenRecord->resize();
  
    addWidgets(p_screenRecord);
  

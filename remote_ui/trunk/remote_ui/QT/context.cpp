@@ -291,3 +291,30 @@ void Context::setOption(QString name, int value)
 {
    qh_options[name] = value;
 }
+
+void Context::checkOptions()
+{
+
+   QStringList qsl_keys = qh_options.keys();
+
+   for(int i=0; i<qsl_keys.count(); i++){
+      QString key = qsl_keys.at(i);
+
+      if(key == "ARRCOUNT"){
+         for(int i=0; i<ql_fieldList.count(); i++){
+            if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+               tableView->setArrCount(qh_options[key]);
+            }
+         }
+      }
+
+      if(key == "MAXARRSIZE"){
+         for(int i=0; i<ql_fieldList.count(); i++){
+            if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+               tableView->setMaxArrSize(qh_options[key]);
+            }
+         }
+      }
+   }
+
+}

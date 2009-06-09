@@ -37,6 +37,7 @@ public:
    int maxArrSize() { return i_maxArrSize; };
    int arrLine() { return i_arrLine; };
    int scrLine() { return i_scrLine; };
+   void resize();
 
     void setInputEnabled(bool);
     void setColumnLabel(int, Label*);
@@ -77,6 +78,8 @@ signals:
 
 class TableModel : public QAbstractTableModel
 {
+   Q_OBJECT;
+
 public:
     TableModel(int rows, int columns, QObject *parent = 0);
     TableModel(QObject *parent = 0);
