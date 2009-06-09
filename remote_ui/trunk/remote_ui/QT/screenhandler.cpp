@@ -198,6 +198,8 @@ void ScreenHandler::displayForm(QString formName)
       QString error = QString("No such Form %1").arg(formName);
       qFatal(error.toAscii());
    }
+
+   p_fglform->show();
 }
 
 //------------------------------------------------------------------------------
