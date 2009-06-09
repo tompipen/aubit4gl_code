@@ -56,3 +56,4 @@ void write_xml_form(FILE *wofile, char *fname, struct_form *f);
 int get_num_labels(void) ;
 int get_label(int n, char **label, int *x,int *y) ;
 
+void convertMatrix(struct_form *f);
