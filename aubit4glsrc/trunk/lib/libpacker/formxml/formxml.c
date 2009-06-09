@@ -1520,7 +1520,7 @@ void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
 
      int b=0;
      int convert_matrix=0;
-     if(f->layout == 0){
+     if(f->layout == 0 && !A4GL_isno(acl_getenv("A4GL_AUTOCONVSCRAR"))){
         for (b=0;b<f->attributes.attributes_len;b++) {
            // We've found our attribute..
            int dim1=0;
