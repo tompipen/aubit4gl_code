@@ -414,6 +414,7 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
        int column = index.column();
 
        this->fields[row][column] = value.toString();
+
        emit dataChanged ( index,index );
        return true;
     }
@@ -548,7 +549,9 @@ bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 
       beginRemoveRows(QModelIndex(), position, position+rows-1);
       this->rows -= rows;
-      this->fields.remove(position);
+      for(int i=1; i<rows; i++){
+         this->fields.remove(position+i);
+      }
       endRemoveRows();
 
       return true;
