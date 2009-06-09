@@ -510,7 +510,7 @@ dump_getdata ()
   			fprintf(fout,"OPEN c_i_%s\n", this_report.report_name);
 		}
       		fprintf (fout, "LET lv_rid=0\n");
-      		fprintf (fout, "FOREACH c_r_%s INTO lr_data.*\n", this_report.report_name);
+      		fprintf (fout, "FOREACH c_%s INTO lr_data.*\n", this_report.report_name);
 		if (use_insert_cursor) {
   			fprintf(fout,  "   LET lv_cnt=lv_cnt+1\n");
 			if (batch_size<100000) { // If its more than this - don't batch it at all...
