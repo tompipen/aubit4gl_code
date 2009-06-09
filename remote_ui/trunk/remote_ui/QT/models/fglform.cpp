@@ -605,7 +605,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    processResponse();
 
    if(event->type() == QEvent::FocusIn){
-      if(WidgetHelper::isFieldWidget(obj)){
+      if(WidgetHelper::isFieldWidget(obj) && (input() || screenRecord() || construct())){
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
             QFocusEvent *fe = (QFocusEvent*) event;
                if(this->focusWidget() != currentWidget){
@@ -620,7 +620,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    }
 
    if(event->type() == QEvent::FocusOut){
-      if(WidgetHelper::isFieldWidget(obj)){
+      if(WidgetHelper::isFieldWidget(obj) && (input() || screenRecord() || construct())){
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
             QFocusEvent *fe = (QFocusEvent*) event;
             if(fe->reason() != Qt::ActiveWindowFocusReason &&

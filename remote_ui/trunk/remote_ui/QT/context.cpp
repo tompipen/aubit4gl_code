@@ -23,6 +23,7 @@ Context::~Context()
 {
    for(int i=0; i<ql_fieldList.count(); i++){
       QWidget *field = ql_fieldList.at(i);
+      field->blockSignals(true);
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (field)){
          TableView *tableView = (TableView*) de->parent();
          tableView->setEnabled(false);
@@ -45,6 +46,7 @@ Context::~Context()
                break;
          }
       }
+      field->blockSignals(false);
    }
 
    sendAfterEvent();
