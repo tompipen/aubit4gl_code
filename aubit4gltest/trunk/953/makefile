@@ -60,11 +60,11 @@ endif
 #Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(1)
 #Replace "${MODULES}" with list of actual modules constituting this program if
 #this test needs more then one program <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(2)
-progname${TARGET_EXT}: ${MODULES}
+progname${TARGET_EXT}: fgl_pushfoat.4gl pushfloat.c
 #see included makefile for definition of DEFAULT_LINK. Overide it here if you
 #need to with something like:
 #	${FGLC} $^ -o $@
-	${DEFAULT_LINK}
+	4glpc -o progname${TARGET_EXT}  -I/home/aubit4gl/aubit4glsrc/incl/compat fgl_pushfoat.4gl pushfloat.c
 
 
 #Add one or more of above targets here, if test uses more then one program

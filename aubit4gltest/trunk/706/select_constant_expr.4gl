@@ -430,7 +430,7 @@ define aSecond interval second to second
     LET exitStatus = 1
   END IF
   IF r_.currYearHour != 	CURRENT YEAR TO HOUR  THEN
-    DISPLAY "Diferent value 30"
+    DISPLAY "Diferent value 30"," current=",CURRENT YEAR TO HOUR," value from db=",r_.currYearHour
     LET exitStatus = 1
   END IF
   IF r_.currYearMinute != 	CURRENT YEAR TO MINUTE  THEN

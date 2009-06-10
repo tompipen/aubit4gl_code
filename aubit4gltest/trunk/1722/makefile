@@ -16,16 +16,16 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
+run: compile ; ${DEFAULT_DIFF}
 #	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "PG8 Varchar test"
 
-db_test: 				; @echo "0"
+db_test: 				; @echo "1"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_INTEGER DEFINE_CHAR USE_REPORT ORDER_BY CURSOR_SELECT FOREACH REPORT_FIRST_PAGE_HEADER ON_EVERY_ROW ON_LAST_ROW REPORT_PAGE_TRAILER "
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""

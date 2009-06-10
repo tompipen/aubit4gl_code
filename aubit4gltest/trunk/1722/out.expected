@@ -1,0 +1,24 @@
+
+Test: CHAR/VARCHAR variable comparison
+PASS: var1 = var2
+
+Test: Assign CHAR to VARCHAR, then do VARCHAR/VARCHAR comparison
+PASS: var2 = var3
+
+Test: CHAR to database VARCHAR comparison using prepared query
+PASS: Record found using cursor
+
+Test: VARCHAR to database VARCHAR comparison using prepared query
+PASS: Record found using cursor
+
+Test: VARCHAR (from CHAR) to database VARCHAR comparison using prepared query
+PASS: Record found using cursor
+
+Test: CHAR to database VARCHAR comparison using declared cursor
+PASS: Record found using cursor
+
+Test: VARCHAR to database VARCHAR comparison using declared cursor
+PASS: Record found using cursor
+
+Test: VARCHAR (from CHAR) to database VARCHAR comparison using declared cursor
+PASS: Record found using cursor
