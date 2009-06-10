@@ -47,7 +47,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(578, 27);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(191, 29);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // promptLabel
@@ -56,7 +56,7 @@
             this.promptLabel.Dock = System.Windows.Forms.DockStyle.Left;
             this.promptLabel.Location = new System.Drawing.Point(3, 0);
             this.promptLabel.Name = "promptLabel";
-            this.promptLabel.Size = new System.Drawing.Size(35, 27);
+            this.promptLabel.Size = new System.Drawing.Size(35, 29);
             this.promptLabel.TabIndex = 0;
             this.promptLabel.Text = "label1";
             this.promptLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -76,7 +76,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(578, 27);
+            this.ClientSize = new System.Drawing.Size(191, 29);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "PromptWindow";
             this.Text = "Prompt";

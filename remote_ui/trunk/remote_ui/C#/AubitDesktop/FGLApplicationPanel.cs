@@ -1908,7 +1908,8 @@ namespace AubitDesktop
         internal void setPrompt(Control p)
         {
             
-            p.Width = this.Width-10;
+            //p.Width = this.TopWindow.Width-10;
+           
             ApplicationWindows.setPrompt(p, this.options.PromptLine);
         }
 

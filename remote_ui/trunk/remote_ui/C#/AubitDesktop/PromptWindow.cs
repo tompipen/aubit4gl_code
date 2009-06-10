@@ -94,7 +94,7 @@ namespace AubitDesktop
                 NonWindowPromptPanel = new Panel();
                 //NonWindowPromptPanel.BorderStyle = BorderStyle.Fixed3D;
                 h = GuiLayout.get_gui_h(1);
-
+                //NonWindowPromptPanel.AutoSize = true;
                 this.tableLayoutPanel1.Parent = NonWindowPromptPanel;
                 NonWindowPromptPanel.Height = h+2;
                 
