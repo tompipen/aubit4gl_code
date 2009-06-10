@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.97 2009-06-06 09:35:07 mikeaubury Exp $
+# $Id: pg8.c,v 1.98 2009-06-10 10:06:06 mikeaubury Exp $
 #*/
 
 
@@ -3341,6 +3341,15 @@ A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
 		      break;
 
 		    case DTYPE_VCHAR:
+
+                      A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
+                      str = A4GL_char_pop ();
+                      strcat (buff2, "'");
+                      strcat (buff2, pgescape_str (str, strlen (str)));
+                      strcat (buff2, "'");
+                      free (str);
+                      break;
+/*
   			//static char buff3[64000];
 			//strcpy(buff3,ibind[param].ptr);
 		        //A4GL_trim (buff3);
@@ -3355,7 +3364,9 @@ A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
 		      //strcat (buff2, pgescape_str (str, strlen (str)));
 		      //strcat (buff2, "'");
 		      //free (str);
+		      
 		      break;
+*/
 
 		    case DTYPE_MONEY:
 		    case DTYPE_DECIMAL:
