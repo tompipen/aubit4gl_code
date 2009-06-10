@@ -28,8 +28,6 @@ namespace AubitDesktop
     class UIInputContext : UIContext
     {
         private event UIEventHandler EventTriggered;
-
-    
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
         private FGLFoundField CurrentField;
@@ -41,7 +39,10 @@ namespace AubitDesktop
         private List<BEFORE_FIELD_EVENT> beforeFieldList;
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
- 
+
+
+        List<string> pendingTriggerResponses;
+
 
         public bool contextIsActive()
         {
@@ -68,7 +69,7 @@ namespace AubitDesktop
                 {
                     ONKEY_EVENT e;
                     e = (ONKEY_EVENT)evt;
-                    KeyList.Add(e);   
+                    KeyList.Add(e);
                     continue;
                 }
 
@@ -178,7 +179,7 @@ namespace AubitDesktop
             }
         }
 
-        public void befAftFieldTriggered(object source, string ID, string TriggeredText)
+        public void befAftFieldTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             foreach (FGLFoundField f in activeFields)
             {
@@ -194,7 +195,8 @@ namespace AubitDesktop
                 TriggeredText=getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
             }
 
-            this.EventTriggered(source, ID, TriggeredText);
+            
+            this.EventTriggered(source, ID, TriggeredText,this);
 
             foreach (FGLFoundField f in activeFields) {
                 if (f.fglField==source) {
@@ -202,6 +204,7 @@ namespace AubitDesktop
                     break;
                 }
             }
+            DeactivateContext();
             
         }
 
@@ -209,7 +212,7 @@ namespace AubitDesktop
 
 
 
-        public void onActionTriggered(object source, string ID, string TriggeredText)
+        public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             if (TriggeredText == "")
             {
@@ -217,7 +220,7 @@ namespace AubitDesktop
             }
             if (this.EventTriggered != null)
             {
-                this.EventTriggered(source, ID, TriggeredText);
+                this.EventTriggered(source, ID, TriggeredText,this);
             }
             else
             {

@@ -163,6 +163,8 @@ namespace AubitDesktop
 
             createWidget(thisAttribute, null,row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             SizeControl(null,0,pb);
+            ContextTypeChanged();
+
         }
 
 

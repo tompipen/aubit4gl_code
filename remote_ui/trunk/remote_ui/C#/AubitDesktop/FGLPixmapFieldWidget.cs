@@ -182,6 +182,7 @@ namespace AubitDesktop
                         ;
                     }
                 }
+                ContextTypeChanged();
             }
             #endregion
 

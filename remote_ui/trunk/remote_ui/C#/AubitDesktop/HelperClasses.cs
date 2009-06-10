@@ -954,7 +954,11 @@ namespace AubitDesktop
 
         internal void SetContext(FGLContextType contextType)
         {
-            CurrentForm.SetContext(contextType);
+            try
+            {
+                CurrentForm.SetContext(contextType);
+            }
+            catch { }
         }
 
         internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
@@ -1266,6 +1270,8 @@ namespace AubitDesktop
 
                 }
             }
+
+            return keyCode.ToString();
             return null;
         }
 

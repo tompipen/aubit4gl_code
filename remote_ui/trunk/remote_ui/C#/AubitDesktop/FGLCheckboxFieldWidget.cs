@@ -234,6 +234,7 @@ namespace AubitDesktop
             this.strTrue = cbox.valueChecked;
             this.strFalse = cbox.valueUnchecked;
             this.strIndeterminate = "";
+            adjustDisplayPropertiesForContext();
 
         }
 

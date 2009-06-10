@@ -129,7 +129,7 @@ namespace AubitDesktop
         {
             if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
-                this.onUIEvent(this, this.onActionID, "");
+                this.onUIEvent(this, this.onActionID, "",null);
             }
         }
 
@@ -164,6 +164,7 @@ namespace AubitDesktop
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
             //if (this.Text == "") this.Text = tabcol;
             l.Click += new EventHandler(b_Click);
+            ContextTypeChanged();
         }
     }
 }

@@ -46,6 +46,7 @@ namespace AubitDesktop
         FGLApplicationPanel currentPanel;
         private showMode _showApplicationLauncher;
         bool _hasApplicationtree;
+
       
 
         bool hasApplicationTree
@@ -780,9 +781,12 @@ namespace AubitDesktop
             }
             // Key wasnt found...
 
-           // currentContext.keyPreview(e,rkey);
-            if (currentContext.useKeyPress(e)) return;
 
+            if (currentContext!=null)
+            {
+                // currentContext.keyPreview(e,rkey);
+                if (currentContext.useKeyPress(e)) return;
+            }
         }
 
         private bool CheckForToolStripKey(KeyEventArgs e, string key)

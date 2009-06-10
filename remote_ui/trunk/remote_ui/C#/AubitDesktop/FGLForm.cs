@@ -512,7 +512,46 @@ namespace AubitDesktop
                         b.width = widget.width;
                         return new FGLButtonFieldWidget(ffx, b,widget.config,index,ma);
                     }
+                case "CHECK":
+                    {
+                        string title="";
+                        AubitDesktop.Xml.XMLForm.CheckBox c;
+                        c = new AubitDesktop.Xml.XMLForm.CheckBox();
+                        c.action = widget.action;
+                        c.comments = widget.comments;
+                        c.config = widget.config;
+                        c.gridWidth = widget.gridWidth;
+                        c.posX = widget.posX;
+                        c.posY = widget.posY;
+                        c.width = widget.width;
+                        string[] configstrs = c.config.Split(' ');
+                        if (configstrs.Length > 2)
+                        {
+                            title = "";
+                            for (int z = 2; z < configstrs.Length; z++)
+                            {
+                                if (title.Length>0) title += " " + configstrs[z];
+                                else title+=configstrs[z];
+                            }
+                        }
+                        if (configstrs.Length>=2) {
+                            c.valueChecked = configstrs[0];
+                            c.valueUnchecked = configstrs[1];
+                        }
 
+                        if (title.StartsWith("{"))
+                        {
+                            title = title.Substring(1);
+
+                        }
+                        if (title.EndsWith("}"))
+                        {
+                            title=title.Remove(title.Length - 1,1);
+                        }
+                        c.text = title;
+                        
+                        return new FGLCheckboxFieldWidget(ffx, c, widget.config, index,ma);
+                    }
 
                 case "LABEL":
                     {

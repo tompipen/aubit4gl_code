@@ -148,7 +148,23 @@ namespace AubitDesktop
     }
 
 
-
+    public class WINQUESTION
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TITLE;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TEXT;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string DEFAULT;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string POS;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ICON;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string DANGER;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string BUTTON;
+    }
 
     public class REQUESTFILE
     {
@@ -579,6 +595,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("SETWINDOWTITLE", Type = typeof(SETWINDOWTITLE))]
         [System.Xml.Serialization.XmlElementAttribute("REQUESTFILE", Type = typeof(REQUESTFILE))]
         [System.Xml.Serialization.XmlElementAttribute("SHOWOPTION", Type = typeof(SHOWOPTION))]
+        [System.Xml.Serialization.XmlElementAttribute("WINQUESTION", Type = typeof(WINQUESTION))]
         [System.Xml.Serialization.XmlElementAttribute("UIDIRECT", Type = typeof(UIDIRECT))]
         [System.Xml.Serialization.XmlElementAttribute("FILE", Type = typeof(FILE))]
         [System.Xml.Serialization.XmlElementAttribute("EXECUTE", Type = typeof(EXECUTE))]
@@ -1153,6 +1170,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETWINDOWTITLE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETAPPLICATIONLAUNCHERXML), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(REQUESTFILE), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(WINQUESTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SHOWOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIDIRECT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(FILE), IsNullable = false)]

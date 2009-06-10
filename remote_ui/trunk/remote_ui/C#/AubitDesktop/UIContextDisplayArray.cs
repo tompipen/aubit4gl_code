@@ -101,7 +101,7 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeDown;
-                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
 
                 }
                 else
@@ -110,7 +110,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                     }
 
@@ -119,7 +119,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
 
                     }
@@ -191,21 +191,21 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeUp;
-                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
 
                 }
                 else
                 {
                     if (afterRow != null)
                     {
-                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                     }
 
                     moveUp();
 
                     if (beforeRow != null)
                     {
-                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
 
                     }
 
@@ -249,7 +249,7 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypePageUp;
-                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
 
                 }
                 else
@@ -258,7 +258,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                     }
 
@@ -267,7 +267,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
 
                     }
@@ -295,7 +295,7 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypePageDown;
-                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
 
                 }
                 else
@@ -304,7 +304,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                     }
 
@@ -313,7 +313,7 @@ namespace AubitDesktop
                     {
                         if (this.EventTriggered != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
 
                     }
@@ -498,14 +498,14 @@ namespace AubitDesktop
 
 
 
-        public void onActionTriggered(object source, string ID, string TriggeredText)
+        public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             if (TriggeredText == "")
             {
                 TriggeredText =    "<TRIGGERED ID=\""+ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>";
             }
 
-            this.EventTriggered(source, ID, TriggeredText);
+            this.EventTriggered(source, ID, TriggeredText,this);
         }
 
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
@@ -540,7 +540,7 @@ namespace AubitDesktop
                         moveUp();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -549,7 +549,7 @@ namespace AubitDesktop
                         movePgUp();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -558,7 +558,7 @@ namespace AubitDesktop
                         movePgDown();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -567,7 +567,7 @@ namespace AubitDesktop
                         moveDown();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                            this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;

@@ -43,6 +43,7 @@ namespace AubitDesktop
         private List<ToolStripItem> toolStrip1;
         private string ApplicationName;
         private string Username;
+        private UIContext immediateContext = null;
         private ToolTip tooltips;
         FGLWindow winScreen;
         // Toolstrip buttons....
@@ -212,13 +213,25 @@ namespace AubitDesktop
 
 
 
-        void UIContext_EventTriggered(object source, string ID, string TriggeredText)
+        void UIContext_EventTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
+            if (u == null) u = currentContext;
+
+            if (u != currentContext) { Console.WriteLine("Trigger for non current context"); return; }
+
+
             if (TriggeredText == "")
             {
                 TriggeredText="<TRIGGERED ID=\""+ID+"\"/>";
             }
+           
            TopWindow.SendString(TriggeredText,true);
+           if (immediateContext != null)
+           {
+               immediateContext.FreeContext();
+               immediateContext = null;
+           }
+           u.DeactivateContext();
         }
 
 
@@ -672,6 +685,14 @@ namespace AubitDesktop
             }
             if (reply == null) return;
             TopWindow. stdNetworkConnection.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
+
+            try
+            {
+                currentContext.DeactivateContext();
+            }
+            catch { }
+
+
             if (ke != null)
             {
                 ke.Handled = true;
@@ -1603,7 +1624,6 @@ namespace AubitDesktop
                     i = (INPUT)a;
                     
                     contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIInputContext(this, i));
-
                     commands.Remove(a);
                     continue;
                 }
@@ -1687,7 +1707,7 @@ namespace AubitDesktop
                 #region SETINTR
                 if (a is SETINTR)
                 {
-                    MessageBox.Show("Backend Interrupted");
+                    //MessageBox.Show("Backend Interrupted");
                     commands.Remove(a);
                     continue;
                 }
@@ -1743,12 +1763,24 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+                #region WINQUESTION
+                if (a is WINQUESTION)
+                {
+                    WINQUESTION i;
+                    i = (WINQUESTION)a;
+                    immediateContext=new UIMiscContext(this, i);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
                 #region GETKEY
                 if (a is GETKEY)
                 {
-                    MessageBox.Show("Application error - GETKEY is not supported by the UI");
-                    commands.Remove(a);
-                    continue;
+                        GETKEY i;
+                        i = (GETKEY)a;
+                        immediateContext= new UIMiscContext(this, i);
+                        commands.Remove(a);
+                        continue;
                 }
                 #endregion
                 #region DRAWBOX
@@ -1764,35 +1796,52 @@ namespace AubitDesktop
                 {
                     //string rval;
                     WAITFOREVENT w;
-
                     w = (WAITFOREVENT)a;
-                    //MessageBox.Show("Here" );
-                    int idx;
-                    for (idx = 0; idx < contexts.Count; idx++)
+                    if (w.CONTEXT == null)
                     {
+                        currentContext = immediateContext;
+                        // An immediateContext is basically a UIContextMisc which just returns something
+                        // Atm - we've got GETKEY and WINQUESTION in this category..
+                        immediateContext.ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+                        // We only activate it once - so we can clear it now...
 
-                        if (idx == Convert.ToInt32(w.CONTEXT))
-                        { // This is the active context
-                            if (contexts[idx] != null)
-                            {
-                                TopWindow.clrWaitCursor();
-                                contexts[idx].ActivateContext(UIContext_EventTriggered,w.VALUES, w.ROWS);
-                                currentContext = contexts[idx];
-                            }
-                            else
-                            {
-                                MessageBox.Show("Internal error - no context object");
-                            }
-                        }
-                        else
-                        {
-                            if (contexts[idx] != null)
-                            {
-                                contexts[idx].DeactivateContext();
-                            }
-                        }
-                        commands.Remove(a);
                     }
+                    else
+                    {
+                        //MessageBox.Show("Here" );
+                        int idx;
+                        for (idx = 0; idx < contexts.Count; idx++)
+                        {
+
+                            {
+
+
+                                if (idx == Convert.ToInt32(w.CONTEXT))
+                                { // This is the active context
+                                    if (contexts[idx] != null)
+                                    {
+                                        TopWindow.clrWaitCursor();
+                                        contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+                                        currentContext = contexts[idx];
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Internal error - no context object");
+                                    }
+                                }
+                                else
+                                {
+                                    if (contexts[idx] != null)
+                                    {
+                                        contexts[idx].DeactivateContext();
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    commands.Remove(a);
+
                     continue;
                 }
                 #endregion

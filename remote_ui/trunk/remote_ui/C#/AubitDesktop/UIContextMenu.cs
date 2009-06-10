@@ -150,7 +150,7 @@ namespace AubitDesktop
                 string eventText = "<TRIGGERED ID=\"" +matchedCommand .ID + "\"/>";
                 if (EventTriggered != null)
                 {
-                    EventTriggered(matchedCommand,matchedCommand.ID , eventText);
+                    EventTriggered(matchedCommand,matchedCommand.ID , eventText,this);
                     DeactivateContext();
                     return true;
                 }
@@ -303,7 +303,7 @@ namespace AubitDesktop
             eventText = "<TRIGGERED ID=\"" + a.ID + "\"/>";
             if (EventTriggered != null)
             {
-                EventTriggered(a, a.ID, eventText);
+                EventTriggered(a, a.ID, eventText,this);
                 DeactivateContext();
             }
 
@@ -339,7 +339,7 @@ namespace AubitDesktop
 
         public void DeactivateContext()
         {
-            mainWin.SetMenuBarButtons(null);
+            //mainWin.SetMenuBarButtons(null);
             _contextIsActive = false;
             EventTriggered = null;
             menuPanel.Enabled = false;

@@ -68,9 +68,16 @@
     <Compile Include="AboutBox1.Designer.cs">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </Compile>
+    <Compile Include="AubitMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AubitMessageBox.Designer.cs">
+      <DependentUpon>AubitMessageBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="AubitTSBtn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UIContextMisc.cs" />
     <Compile Include="UIContextDisplayArrayInTable.cs" />
     <Compile Include="EnvelopeReader.cs" />
     <Compile Include="Eval.cs" />
@@ -200,6 +207,10 @@
     <EmbeddedResource Include="AboutBox1.resx">
       <DependentUpon>AboutBox1.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AubitMessageBox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AubitMessageBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FGLTxtControl.resx">
       <DependentUpon>FGLTxtControl.cs</DependentUpon>

@@ -316,7 +316,7 @@ namespace AubitDesktop
 
             createComboBoxWidget(a,ma,
                 Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Item);
-
+            adjustDisplayPropertiesForContext();
         }
 
 
@@ -347,8 +347,8 @@ namespace AubitDesktop
             
             t.Size = p.Size;
 
-            
 
+            t.TextChanged += new EventHandler(t_TextChanged);
 
             // Any columns used for the button must be subtracted from the length of the 
             // textbox..
@@ -409,6 +409,11 @@ namespace AubitDesktop
             this.id = id;
         }
 
+        void t_TextChanged(object sender, EventArgs e)
+        {
+            l.Text = t.Text;
+        }
+
 
 
 
@@ -463,10 +468,17 @@ namespace AubitDesktop
 
         public static FGLComboEntry[] createItems(AubitDesktop.Xml.XMLForm.Item[] items) {
             FGLComboEntry []o;
-            o = new FGLComboEntry[items.Length];
-            for (int a = 0; a < items.Length; a++)
+            if (items!= null)
             {
-                o[a] = new FGLComboEntry(items[a].name, items[a].text);
+                o = new FGLComboEntry[items.Length];
+                for (int a = 0; a < items.Length; a++)
+                {
+                    o[a] = new FGLComboEntry(items[a].name, items[a].text);
+                }
+            }
+            else
+            {
+                o = new FGLComboEntry[0];
             }
             return o;
         }

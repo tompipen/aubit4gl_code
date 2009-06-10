@@ -37,7 +37,7 @@ namespace AubitDesktop
         string _comment;
         int _pixelheight;
         int _pixelwidth;
-        internal FGLContextType _ContextType;
+        internal FGLContextType _ContextType=FGLContextType.ContextNone;
         int _row;
         int _column;
         int _rows;
@@ -823,7 +823,7 @@ namespace AubitDesktop
             this.clrErrorTextBeforeFieldValidation();
             if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
-                this.onUIEvent(this, this.onActionID, "");
+                this.onUIEvent(this, this.onActionID, "",null);
             }
         }
 
@@ -849,7 +849,7 @@ namespace AubitDesktop
 
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
-                this.onUIEvent(this, this.beforeFieldID, "");
+                this.onUIEvent(this, this.beforeFieldID, "",null);
             }
 
             if (this.onGotFocus != null)
@@ -871,7 +871,7 @@ namespace AubitDesktop
             {
                 if (this.afterFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
                 {
-                    this.onUIEvent(this, this.afterFieldID, "");
+                    this.onUIEvent(this, this.afterFieldID, "",null);
                 }
             }
 

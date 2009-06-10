@@ -35,9 +35,10 @@ namespace AubitDesktop
         public bool charMode;
         public event UIEventHandler EventTriggered;
         private Panel NonWindowPromptPanel;
+        private UIContext context;
         List<FGLKeyEvent> KeyEvents;
 
-        public PromptWindow(string text, int FieldAttr, int PromptAttr, string promptStyle, bool charMode,string attribtext)
+        public PromptWindow(string text, int FieldAttr, int PromptAttr, string promptStyle, bool charMode,string attribtext, UIContext u)
         {
 
             InitializeComponent();
@@ -46,6 +47,7 @@ namespace AubitDesktop
             this.charMode = charMode;
             this.KeyEvents = new List<FGLKeyEvent>();
             this.NonWindowPromptPanel = null;
+            context = u;
             if (attribtext.Length>0)
             {
                 this.Text = attribtext;
@@ -122,7 +124,7 @@ namespace AubitDesktop
 
                 if (EventTriggered != null)
                 {
-                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>");
+                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",context);
                 }
             }
         }
@@ -137,7 +139,7 @@ namespace AubitDesktop
             {
                 if (k.isKey(key))
                 {
-                    EventTriggered(this, k.ID.ToString(), "<TRIGGERED ID=\"" + k.ID.ToString() + "\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>");
+                    EventTriggered(this, k.ID.ToString(), "<TRIGGERED ID=\"" + k.ID.ToString() + "\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",context);
                     return;
                 }
             }

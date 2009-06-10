@@ -78,7 +78,7 @@ namespace AubitDesktop
                     charMode = true;
                 }
 
-                promptForm = new PromptWindow(p.TEXT, Convert.ToInt32(p.FIELDATTRIBUTE), Convert.ToInt32(p.PROMPTATTRIBUTE), promptStyle, charMode,p.ATTRIB_TEXT);
+                promptForm = new PromptWindow(p.TEXT, Convert.ToInt32(p.FIELDATTRIBUTE), Convert.ToInt32(p.PROMPTATTRIBUTE), promptStyle, charMode,p.ATTRIB_TEXT,this);
 
                 foreach (object evt in p.EVENTS)
                 {
@@ -176,13 +176,7 @@ namespace AubitDesktop
                     promptForm = null;
                 }
                 _contextIsActive = false;
-              
-                
+                              
             }
-
-
         }
-
-
-
 }

@@ -217,13 +217,13 @@ namespace AubitDesktop
         }
 
 
-        public void onActionTriggered(object source, string ID, string TriggeredText)
+        public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             if (TriggeredText == "")
             {
                 TriggeredText =    "<TRIGGERED ID=\""+ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>";
             }
-            this.EventTriggered(source, ID, TriggeredText);
+            this.EventTriggered(source, ID, TriggeredText,this);
         }
 
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
@@ -258,7 +258,7 @@ namespace AubitDesktop
                 initialRow = false;
                 if (beforeRow != null)
                 {
-                    this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                    this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                 }
             }
 
@@ -275,7 +275,7 @@ namespace AubitDesktop
                     setLines(e.RowIndex);
                     if (this.EventTriggered != null)
                     {
-                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                     }
                 }
             }
@@ -290,7 +290,7 @@ namespace AubitDesktop
                     setLines(e.RowIndex);
                     if (this.EventTriggered != null)
                     {
-                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>");
+                        this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                     }
                 }
             }

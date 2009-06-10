@@ -95,7 +95,7 @@ namespace AubitDesktop
         {
             if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
-                this.onUIEvent(this, this.onActionID, "");
+                this.onUIEvent(this, this.onActionID, "",null);
             }
         }
 

@@ -163,7 +163,7 @@ namespace AubitDesktop
 
 
 
-        public void befAftFieldTriggered(object source, string ID, string TriggeredText)
+        public void befAftFieldTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             foreach (FGLFoundField f in activeFields)
             {
@@ -182,7 +182,7 @@ namespace AubitDesktop
 
             if (this.EventTriggered != null)
             {
-                this.EventTriggered(source, ID, TriggeredText);
+                this.EventTriggered(source, ID, TriggeredText,this);
             }
             else
             {
@@ -202,14 +202,14 @@ namespace AubitDesktop
 
 
 
-        public void onActionTriggered(object source, string ID, string TriggeredText)
+        public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             if (TriggeredText == "")
             {
                 TriggeredText = getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
             }
 
-            this.EventTriggered(source, ID, TriggeredText);
+            this.EventTriggered(source, ID, TriggeredText,u);
         }
 
 

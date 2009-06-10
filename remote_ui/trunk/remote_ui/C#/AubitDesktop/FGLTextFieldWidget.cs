@@ -535,7 +535,7 @@ namespace AubitDesktop
                     }
                 }
 
-
+                adjustDisplayPropertiesForContext();
             }
 
 
