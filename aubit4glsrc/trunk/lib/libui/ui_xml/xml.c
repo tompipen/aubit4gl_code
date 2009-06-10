@@ -2434,7 +2434,7 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
   send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
   a = get_event_from_ui ();
-  if (a == -100)
+  if (a == -118)
     {
       return "cancel";
     }
@@ -2458,6 +2458,10 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
     {
       return "no";
     }
+
+
+  return last_attr->lastkey;
+
 	printf("Bad winquestion result: %d\n",a);
   return "InvalidReturnedValue";
 }
