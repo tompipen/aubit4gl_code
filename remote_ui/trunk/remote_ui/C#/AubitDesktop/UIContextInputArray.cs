@@ -42,6 +42,7 @@ namespace AubitDesktop
         private List<BEFORE_FIELD_EVENT> beforeFieldList;
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
+        private List<string> pendingEvents;
 
         private enum MoveType
         {
@@ -50,11 +51,12 @@ namespace AubitDesktop
             MoveTypeUp,
             MoveTypeTo,
             MoveTypePageDown,
-            MoveTypePageUp
+            MoveTypePageUp,
+            MoveTypeFirst
         };
 
 
-        private MoveType nextMove;
+        private MoveType nextMove = MoveType.MoveTypeFirst;
         /// <summary>
         /// Total number of rows in the dataset
         /// </summary>
@@ -97,7 +99,7 @@ namespace AubitDesktop
         
         private FGLFoundField[,] screenRecord;
         private List<ONKEY_EVENT> KeyList;
-        private event UIEventHandler EventTriggered;
+        private event UIEventHandler eventTriggered;
 
         private BEFORE_ROW_EVENT beforeRow;
         private AFTER_ROW_EVENT afterRow;
@@ -106,7 +108,18 @@ namespace AubitDesktop
         private List<FGLFoundField> activeFields;
         private FGLFoundField setCurrentField;
         private FGLFoundField CurrentField;
-            private int CurrentFieldNo=-1;
+        private int _currentFieldNo = -1;
+
+        public int CurrentFieldNo
+        {
+            get { return _currentFieldNo; }
+            set {
+                if (_currentFieldNo != value)
+                {
+                    _currentFieldNo = value;
+                }
+            }
+        }
 
         private bool doneBeforeRowForFirst = false;
 
@@ -206,17 +219,15 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeDown;
-                    this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                    sendTrigger(afterRow.ID);
+                    //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
 
                 }
                 else
                 {
                     if (afterRow != null)
                     {
-                        if (this.EventTriggered != null)
-                        {
-                            this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-                        }
+                        sendTrigger(afterRow.ID);
                     }
 
                     moveDown();
@@ -226,10 +237,8 @@ namespace AubitDesktop
                     }
                     if (beforeRow != null)
                     {
-                        if (this.EventTriggered != null)
-                        {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-                        }
+                        sendTrigger(beforeRow.ID);
+
 
                     }
 
@@ -305,23 +314,23 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeUp;
-                    this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                    sendTrigger(afterRow.ID);
+                   // this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
 
                 }
                 else
                 {
-                    if (afterRow != null)
-                    {
-
-                        this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-                    }
+                        sendTrigger(afterRow.ID);
+                        //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                    
 
                     moveUp();
 
-                    if (beforeRow != null)
-                    {
-                        this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-                    }
+
+
+                    sendTrigger(beforeRow.ID);
+                       // this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+
 
                 }
             }
@@ -391,27 +400,24 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypePageUp;
-                    this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                    sendTrigger(afterRow.ID);
+                    //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
 
                 }
                 else
                 {
                     if (afterRow != null)
                     {
-                        if (this.EventTriggered != null)
-                        {
-                            this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-                        }
+                        sendTrigger(afterRow.ID);
                     }
+
 
                     movePgUp();
                     if (beforeRow != null)
                     {
-                        if (this.EventTriggered != null)
-                        {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-                        }
-
+                        sendTrigger(beforeRow.ID);
+                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+                        
                     }
 
                 }
@@ -438,26 +444,26 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypePageDown;
-                    this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                    sendTrigger(afterRow.ID);
+                    
 
                 }
                 else
                 {
                     if (afterRow != null)
                     {
-                        if (this.EventTriggered != null)
-                        {
-                            this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-                        }
+                      
+                            sendTrigger(afterRow.ID);
+                            
+                      
                     }
 
                     movePgDown();
                     if (beforeRow != null)
                     {
-                        if (this.EventTriggered != null)
-                        {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-                        }
+                       
+                            sendTrigger(beforeRow.ID);
+                       
 
                     }
 
@@ -485,9 +491,10 @@ namespace AubitDesktop
             nCols = Convert.ToInt32(p.ARRVARIABLES);
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;
+            this.pendingEvents = new List<string>();
             this.arrLine = 1;
             this.scrLine = 1;
-            this.nextMove = 0;
+            this.nextMove = MoveType.MoveTypeFirst;
             this.lastarrLine = -1;
             this.nRows = Convert.ToInt32(p.ARRCOUNT);
             this.maxRows = Convert.ToInt32(p.MAXARRSIZE);
@@ -595,6 +602,18 @@ namespace AubitDesktop
 
         }
 
+        private void sendTrigger(string ID)
+        {
+            if (this.eventTriggered != null)
+            {
+                this.eventTriggered(null, ID, getTriggeredText(ID), this);
+            }
+            else
+            {
+                pendingEvents.Add(ID);
+            }
+        }
+
         private bool decode_bool_from_xml(string p)
         {
             if (p == null) return false;
@@ -667,7 +686,9 @@ namespace AubitDesktop
         {
             setContextForCurrentRow();
             Console.WriteLine("set focus : CurrentFieldNo=" + CurrentFieldNo);
+            int saveCurrentFieldNo;
 
+            saveCurrentFieldNo = CurrentFieldNo;
 
             for (int row = 0; row < this.scrRecLines; row++)
             {
@@ -684,15 +705,18 @@ namespace AubitDesktop
                 }
             }
 
-            if (CurrentFieldNo == -1) CurrentFieldNo = 0;
+            CurrentFieldNo = saveCurrentFieldNo;
+            if (CurrentFieldNo == -1)
+            {
+                CurrentFieldNo = 0;
+            }
             screenRecord[scrLine - 1,CurrentFieldNo].fglField.setFocus();
-
-
 
         }
 
         public void setNextField(string fieldName)
         {
+            pendingEvents.Clear();
             foreach (FGLFoundField f in activeFields)
             {
                 if (f.isField(fieldName) )
@@ -722,6 +746,7 @@ namespace AubitDesktop
         void inputGotFocus(object source,string comment)
         {
             int a;
+            bool found = false;
 
             
 
@@ -750,7 +775,8 @@ namespace AubitDesktop
             
 
             // Now work out what field we're on..
-            CurrentFieldNo = -1;
+            //CurrentFieldNo = -1;
+            found = false;
             for (int row = 0; row < this.scrRecLines; row++)
             {
                 for (int col = 0; col < this.nCols; col++)
@@ -759,10 +785,11 @@ namespace AubitDesktop
                     {
                         Console.WriteLine("Found current field no col="+col+" row="+row);
                         CurrentFieldNo = col;
+                        found = true;
                         break;
                     }
                 }
-                if (CurrentFieldNo >= 0) break;
+                if (found) break;
             }
             //if (CurrentFieldNo == 1)
             //{
@@ -791,7 +818,7 @@ namespace AubitDesktop
                 //getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
             }
 
-            this.EventTriggered(source, ID, TriggeredText,this);
+            sendTrigger(ID);
 
             foreach (FGLFoundField f in activeFields)
             {
@@ -857,12 +884,12 @@ namespace AubitDesktop
 
         public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
-            if (TriggeredText == "")
+           /* if (TriggeredText == "")
             {
                 TriggeredText = getTriggeredText(ID);
-            }
-
-            this.EventTriggered(source, ID, TriggeredText,this);
+            }*/
+            sendTrigger(ID);
+            //this.EventTriggered(source, ID, TriggeredText,this);
         }
 
 
@@ -871,6 +898,14 @@ namespace AubitDesktop
         public void ActivateContext(UIEventHandler UInputArrayContext_EventTriggered, VALUE[] val, ROW[] rows)
         {
             //int cnt = 0;
+            
+            if (pendingEvents.Count > 0)
+            {
+                string s = pendingEvents[0];
+                pendingEvents.RemoveAt(0);
+                sendTrigger(s);
+                DeactivateContext();
+            }
 
             inputFocusActive = false;
 
@@ -882,7 +917,7 @@ namespace AubitDesktop
             
             mainWin.setActiveToolBarKeys(KeyList, true, true, true);
 
-
+            this.eventTriggered = UInputArrayContext_EventTriggered;
 
 
 
@@ -890,14 +925,24 @@ namespace AubitDesktop
 
             if (nextMove != MoveType.MoveTypeNoPendingMovement)
             {
+                
                 // Theres a pending movement...
                 switch (nextMove)
                 {
+                    case MoveType.MoveTypeFirst:
+                        if (beforeRow != null)
+                        {
+                            sendTrigger(beforeRow.ID);
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
                     case MoveType.MoveTypeUp:
                         moveUp();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+                            sendTrigger(beforeRow.ID);
+                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -906,7 +951,8 @@ namespace AubitDesktop
                         movePgUp();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID), this);
+                            sendTrigger(beforeRow.ID);
+                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID), this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -915,7 +961,8 @@ namespace AubitDesktop
                         movePgDown();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+                            sendTrigger(beforeRow.ID);
+                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -924,7 +971,8 @@ namespace AubitDesktop
                         moveDown();
                         if (beforeRow != null)
                         {
-                            this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+                            sendTrigger(beforeRow.ID);
+                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -933,13 +981,13 @@ namespace AubitDesktop
             }
             redisplay_arr(true);
 
-            this.EventTriggered = UInputArrayContext_EventTriggered;
+            /*
             if (beforeRow != null && doneBeforeRowForFirst ==false)
             {
                 doneBeforeRowForFirst = true;
                 this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
             }
-
+*/
             // clear the context context on all fields
             mainWin.SetContext(FGLContextType.ContextNone);
 
@@ -1114,7 +1162,7 @@ namespace AubitDesktop
 
             mainWin.SetContext(FGLContextType.ContextNone);
 
-            EventTriggered = null;
+            eventTriggered = null;
             _contextIsActive = false;
             inputFocusActive = false;
         }

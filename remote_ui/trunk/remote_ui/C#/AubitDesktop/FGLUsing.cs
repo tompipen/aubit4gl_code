@@ -228,9 +228,14 @@ namespace AubitDesktop
             }
 
 
-
-            M_main = Convert.ToDecimal(value);
-
+            try
+            {
+                M_main = Convert.ToDecimal(value);
+            }
+            catch
+            {
+                return "";
+            }
 
 
             if (fmt.IndexOf('.') >= 0)

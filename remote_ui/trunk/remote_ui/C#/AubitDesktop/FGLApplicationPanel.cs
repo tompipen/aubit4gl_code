@@ -1821,8 +1821,9 @@ namespace AubitDesktop
                                     if (contexts[idx] != null)
                                     {
                                         TopWindow.clrWaitCursor();
-                                        contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
                                         currentContext = contexts[idx];
+                                        contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+                                        
                                     }
                                     else
                                     {
