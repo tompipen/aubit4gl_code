@@ -423,12 +423,13 @@ namespace AubitDesktop
         {
             // Try seeing if we have a specific prompt line...
             int promptLine = windows[0].prompt_line;
-            if ( promptLine== 255)
+            if ( promptLine== 255|| promptLine==-1)
             {
                promptLine = promptLineFromOptions;
             }
             p.Top = GuiLayout.get_gui_y(promptLine);
             p.Left = 5;
+            p.Width = windows[0].WindowWidget.Width-10;
             windows[0].WindowWidget.Controls.Add(p);
             p.Visible = true;
             p.BringToFront();
