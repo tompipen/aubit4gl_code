@@ -63,7 +63,7 @@ void TableView::resize()
 {
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-         int height = 4;
+         int height = 0;
          int width = 4;
 
          /*
