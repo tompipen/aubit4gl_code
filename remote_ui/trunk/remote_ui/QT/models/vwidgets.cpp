@@ -486,6 +486,7 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
+   QString defaultValue = formField.attribute("defaultValue");
 
    bool hidden   = formField.attribute("hidden").toInt();
 
@@ -495,6 +496,7 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
    browser->setObjectName(colName);
    browser->name = name;
    browser->colName = colName;
+   browser->setDefaultValue(defaultValue);
 
    QString comments = browserElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -521,6 +523,7 @@ Button* WidgetHelper::createButton(const QDomElement& formField, QWidget *parent
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
+   QString defaultValue = formField.attribute("defaultValue");
 
    QString action = buttonElement.attribute("action");
 
@@ -532,6 +535,7 @@ Button* WidgetHelper::createButton(const QDomElement& formField, QWidget *parent
    button->setObjectName(colName);
    button->name = name;
    button->colName = colName;
+   button->setDefaultValue(defaultValue);
 
    QString comments = buttonElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -563,6 +567,7 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    int w  = lineEditElement.attribute("width").toInt();
 
@@ -585,6 +590,7 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
    lineEdit->setNoEntry(noEntry);
    lineEdit->setAutoNext(autoNext);
    lineEdit->setSqlType(sqlType);
+   lineEdit->setDefaultValue(defaultValue);
 
    QString comments = lineEditElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -611,6 +617,7 @@ ButtonEdit* WidgetHelper::createButtonEdit(const QDomElement& formField,QWidget 
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    int w  = lineEditElement.attribute("width").toInt();
 
@@ -633,6 +640,7 @@ ButtonEdit* WidgetHelper::createButtonEdit(const QDomElement& formField,QWidget 
    lineEdit->setNoEntry(noEntry);
    lineEdit->setAutoNext(autoNext);
    lineEdit->setSqlType(sqlType);
+   lineEdit->setDefaultValue(defaultValue);
 
    QString comments = lineEditElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -659,6 +667,7 @@ DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *par
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    int w  = lineEditElement.attribute("width").toInt();
 
@@ -679,6 +688,7 @@ DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *par
    lineEdit->setNoEntry(noEntry);
    lineEdit->setAutoNext(autoNext);
    lineEdit->setSqlType(sqlType);
+   lineEdit->setDefaultValue(defaultValue);
 
    QString comments = lineEditElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -705,6 +715,7 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    bool required = formField.attribute("required").toInt();
    bool notNull = formField.attribute("notNull").toInt();
@@ -739,6 +750,7 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
    textEdit->sqlTabName = tabName;
    textEdit->setWantTabs(wantTabs);
    textEdit->setWantReturns(wantReturns);
+   textEdit->setDefaultValue(defaultValue);
 
    QString comments = textEditElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -782,6 +794,7 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    bool required = formField.attribute("required").toInt();
    bool notNull = formField.attribute("notNull").toInt();
@@ -808,6 +821,7 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
    ComboBox *comboBox = new ComboBox(parent);
    comboBox->setAccessibleName(name);
    comboBox->setObjectName(colName);
+   comboBox->setDefaultValue(defaultValue);
 
    int height = comboBoxElement.attribute("height").toInt();
    if(height < 1) height = 1;
@@ -856,6 +870,7 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    bool required = formField.attribute("required").toInt();
    bool notNull = formField.attribute("notNull").toInt();
@@ -884,6 +899,7 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
    CheckBox *checkBox = new CheckBox(text, parent);
    checkBox->setAccessibleName(name);
    checkBox->setObjectName(colName);
+   checkBox->setDefaultValue(defaultValue);
 
    if(!valueChecked.isEmpty()){
       checkBox->setValueChecked(valueChecked);
@@ -934,6 +950,7 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   QString defaultValue = formField.attribute("defaultValue");
 
    bool required = formField.attribute("required").toInt();
    bool notNull = formField.attribute("notNull").toInt();
@@ -1104,6 +1121,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
+      widget->clear();
       widget->insert(fieldValue);
       return;
    }
@@ -1168,6 +1186,85 @@ QString WidgetHelper::fieldText(QObject *object)
 
    if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
       return QString::number(widget->value());
+   }
+
+   return QString("Widget not found");
+
+}
+
+void WidgetHelper::setDefaultFieldText(QObject *object)
+{
+
+   if(Button *widget = qobject_cast<Button *> (object)){
+      QString fieldValue = widget->defaultValue();
+      widget->setText(fieldValue);
+      return;
+   }
+
+   if(WebView *widget = qobject_cast<WebView *> (object)){
+      QString fieldValue = widget->defaultValue();
+		
+      widget->load(QUrl(fieldValue,QUrl::TolerantMode));
+	
+      return;
+   }
+
+   if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
+      QString fieldValue = widget->defaultValue();
+      widget->clear();
+      widget->insert(fieldValue);
+      return;
+   }
+
+   if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
+      QString fieldValue = widget->defaultValue();
+      widget->setText(fieldValue);
+      return;
+   }
+
+   if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
+      QString fieldValue = widget->defaultValue();
+      widget->addItem(fieldValue);
+      return;
+   }
+
+   if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
+      QString fieldValue = widget->defaultValue();
+      widget->setValue(fieldValue.toInt());
+      return;
+   }
+
+}
+
+QString WidgetHelper::defaultFieldText(QObject *object)
+{
+
+   if(Button *widget = qobject_cast<Button *> (object)){
+      return widget->defaultValue();
+   }
+
+   if(WebView *widget = qobject_cast<WebView *> (object)){
+      return widget->defaultValue();
+   }
+
+   if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
+      return widget->defaultValue();
+   }
+
+   if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
+      return widget->defaultValue();
+   }
+
+   if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
+      return widget->defaultValue();
+   }
+
+   if(CheckBox *widget = qobject_cast<CheckBox *> (object)){
+      return widget->defaultValue();
+   }
+
+   if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
+      return widget->defaultValue();
    }
 
    return QString("Widget not found");

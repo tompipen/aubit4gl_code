@@ -69,6 +69,8 @@ public:
     const QValidator* getValidator() { return valid; };
     void setTouchendEnabled(bool t) { setProperty("touched", t); };
     bool touched() { return property("touched").toInt(); };
+    void setDefaultValue(QString def) { qs_default = def; };
+    QString defaultValue() { return qs_default; };
 
     bool b_denyFocus;
 
@@ -84,6 +86,7 @@ private:
     bool b_compress;
     QString qs_shift;
     const QValidator* valid;
+    QString qs_default;
 
 public slots:
     void isTouched() { setProperty("touched", true); };
@@ -118,6 +121,11 @@ public:
     QString name;
     QString colName;
     QString action;
+    void setDefaultValue(QString def) { qs_default = def; };
+    QString defaultValue() { return qs_default; };
+
+private:
+   QString qs_default;
 
 signals:
    void fieldEvent(Fgl::Event);
@@ -158,6 +166,11 @@ class ComboBox : public QComboBox
 
 public:
    ComboBox(QWidget *parent = 0);
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
+
+private:
+   QString qs_default;
 
 signals:
    void fieldEvent(Fgl::Event);
@@ -175,10 +188,13 @@ public:
    QString valueChecked() { return qs_valueChecked;};
    void setValueUnchecked(QString val) { qs_valueUnchecked = val; };
    QString valueUnchecked() { return qs_valueUnchecked;};
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
 
 private:
    QString qs_valueChecked;
    QString qs_valueUnchecked;
+   QString qs_default;
 
 signals:
    void fieldEvent(Fgl::Event);
@@ -226,6 +242,11 @@ public:
    ProgressBar(QWidget *parent = 0);
    QString name;
    QString colName;
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
+
+private:
+   QString qs_default;
 };
 
 class VRadioGroup : public QGroupBox
@@ -249,6 +270,11 @@ public:
    Slider(QWidget *parent = 0);
    QString name;
    QString colName;
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
+
+private:
+   QString qs_default;
 
 signals:
    void fieldEvent(Fgl::Event);
@@ -282,6 +308,8 @@ public:
    QString shift() { return qs_shift; };
    void setSqlType(QString);
    QString sqlType() { return qs_sqlType; };
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
 
    void setWantTabs(bool wt);
    bool wantTabs(){ return b_wantTabs; };
@@ -302,6 +330,7 @@ private:
    QString qs_shift;
    bool b_wantTabs;
    bool b_wantReturns;
+   QString qs_default;
 
 protected:
    void keyPressEvent(QKeyEvent*);
@@ -321,6 +350,11 @@ public:
    TimeEdit(QWidget *parent = 0);
    QString name;
    QString colName;
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
+
+private:
+   QString qs_default;
 
 signals:
    void fieldEvent(Fgl::Event);
@@ -435,6 +469,11 @@ public:
    WebView(QWidget *parent = 0);
    QString name;
    QString colName;
+   void setDefaultValue(QString def) { qs_default = def; };
+   QString defaultValue() { return qs_default; };
+
+private:
+   QString qs_default;
 
 
 
@@ -466,6 +505,9 @@ public:
                                                  // and has the given Name
    static void setFieldText(QObject*, QString);
    static QString fieldText(QObject*);
+
+   static void setDefaultFieldText(QObject*);
+   static QString defaultFieldText(QObject*);
 
    static void copy(QObject*);
    static void cut(QObject*);

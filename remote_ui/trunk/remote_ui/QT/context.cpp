@@ -142,7 +142,7 @@ void Context::addField(QWidget *field)
             ql_fieldList << field;
 
             if(!qh_options["WITHOUT_DEFAULTS"]){
-               WidgetHelper::setFieldText(field,"");
+               WidgetHelper::setDefaultFieldText(field);
             }
 
             switch(fgl_state){
