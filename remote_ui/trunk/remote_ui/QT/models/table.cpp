@@ -126,6 +126,9 @@ void TableView::setMaxArrSize(int cnt)
 
    i_maxArrSize = cnt;
 
+   return;
+/*
+
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
@@ -133,6 +136,7 @@ void TableView::setMaxArrSize(int cnt)
       int newRows = i_maxArrSize - table->rowCount(QModelIndex());
       table->insertRows(table->rowCount(QModelIndex()), newRows, QModelIndex());
    }
+   */
 
 }
 
@@ -184,6 +188,20 @@ void TableView::keyPressEvent(QKeyEvent *event)
    if(event->key() == QKeySequence("Enter") ||
       event->key() == QKeySequence("Return")){
       accept();
+   }
+
+   if(event->key() == QKeySequence("Tab")){
+      QModelIndex current = this->currentIndex();
+
+      QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+      TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+      if(current.row()+1 == table->rowCount(QModelIndex()) &&
+         current.column()+1 == table->columnCount(QModelIndex())){
+         if(i_maxArrSize > table->rowCount(QModelIndex()))
+            table->insertRows(table->rowCount(QModelIndex()), 1, QModelIndex());
+      }
+
    }
    return QTableView::keyPressEvent(event);
 }
@@ -550,7 +568,9 @@ bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
       beginRemoveRows(QModelIndex(), position, position+rows-1);
       this->rows -= rows;
       for(int i=1; i<rows; i++){
+         if(this->fields.count() > position+i){
          this->fields.remove(position+i);
+         }
       }
       endRemoveRows();
 

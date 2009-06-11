@@ -24,7 +24,6 @@ public:
    void setOption(QString, int);
    int getOption(QString name) { return qh_options[name]; };
    QStringList getScreenRecordValues(int);
-   void setScreenRecordValues(int, QStringList);
 
    void sendBeforeEvent();
    void sendAfterEvent();

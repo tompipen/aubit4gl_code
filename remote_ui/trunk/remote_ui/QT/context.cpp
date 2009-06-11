@@ -191,6 +191,33 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
 
          connect(tableView->selectionModel(), SIGNAL(currentColumnChanged ( const QModelIndex&, const QModelIndex&)), 
                  this, SLOT(screenRecordColumnChanged(const QModelIndex&, const QModelIndex&)));
+
+         QStringList qsl_keys = qh_options.keys();
+
+         for(int i=0; i<qsl_keys.count(); i++){
+            QString key = qsl_keys.at(i);
+
+            if(key == "ARRCOUNT"){
+               for(int i=0; i<ql_fieldList.count(); i++){
+                  if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+                     tableView->setArrCount(qh_options[key]);
+                     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+                     TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+                     if(qh_options[key] > table->rowCount(QModelIndex()))
+                        table->insertRows(table->rowCount(QModelIndex()), (qh_options[key]-table->rowCount(QModelIndex())), QModelIndex());
+                  }
+               }
+            }
+
+            if(key == "MAXARRSIZE"){
+               for(int i=0; i<ql_fieldList.count(); i++){
+                  if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+                     tableView->setMaxArrSize(qh_options[key]);
+                  }
+               }
+            }
+         }
       }
    }
 }
@@ -211,21 +238,21 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
 
             setOption("SCRLINE", scrLine);
             setOption("ARRLINE", arrLine);
-         }
 
-         if(fgl_state == Fgl::INPUTARRAY){
-            QModelIndex index = tableView->model()->index(current.row(), current.column());
-            tableView->selectionModel()->select(index, QItemSelectionModel::Select);
-         }
-         else{
-            QModelIndex index = tableView->model()->index(current.row(), current.column());
-            tableView->setCurrentIndex(index);
-         }
-         if(current.row()+1 > tableView->arrCount()){
-            setOption("ARRCOUNT", current.row()+1);
-         }
-         else{
-            setOption("ARRCOUNT", tableView->arrCount());
+            if(fgl_state == Fgl::INPUTARRAY){
+               QModelIndex index = tableView->model()->index(current.row(), current.column());
+               tableView->selectionModel()->select(index, QItemSelectionModel::Select);
+            }
+            else{
+               QModelIndex index = tableView->model()->index(current.row(), current.column());
+               tableView->setCurrentIndex(index);
+            }
+            if(current.row()+1 > tableView->arrCount()){
+               setOption("ARRCOUNT", current.row()+1);
+            }
+            else{
+               setOption("ARRCOUNT", tableView->arrCount());
+            }
          }
       }
    }
@@ -255,26 +282,6 @@ QStringList Context::getScreenRecordValues(int row)
    }
 
    return fieldValues;
-}
-
-void Context::setScreenRecordValues(int row, QStringList values)
-{
-   int valueCnt = 0;
-
-   for(int i=0; i<ql_fieldList.count(); i++){
-      if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
-         for(int j=0; j<tableView->model()->columnCount(); j++){
-            QModelIndex currIndex = tableView->model()->index(row, j);
-            tableView->model()->setData(currIndex, values.at(valueCnt));
-            valueCnt++;
-         }
-      }
-      else{
-          WidgetHelper::setFieldText(ql_fieldList.at(i), values.at(valueCnt));
-          valueCnt++;
-      }
-   }
-   
 }
 
 void Context::setRowChanged()
@@ -313,6 +320,11 @@ void Context::checkOptions()
          for(int i=0; i<ql_fieldList.count(); i++){
             if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
                tableView->setArrCount(qh_options[key]);
+               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+               if(qh_options[key] > table->rowCount(QModelIndex()))
+                  table->insertRows(table->rowCount(QModelIndex()), (qh_options[key]-table->rowCount(QModelIndex())), QModelIndex());
             }
          }
       }

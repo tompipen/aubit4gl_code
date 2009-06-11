@@ -1062,35 +1062,20 @@ void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
 {
    Context *context = getCurrentContext();
 
-   context->setScreenRecordValues(row, fieldValues);
+   for(int i=0; i<context->fieldList().count(); i++){
+      QWidget *widget = context->fieldList().at(i);
 
-   return;
+      if(TableView *tableView = qobject_cast<TableView *> (widget)){
+         QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+         TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-//   QList<QWidget*> ql_fields = p_fglform->formElements();
-   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
-   for(int i=0; i<ql_fields.size(); i++){
+         if(fieldValues.count() != table->columnCount(QModelIndex())){
+            qFatal("ERROR: Too many or too few values for Table");
+         }
 
-      QWidget *widget = ql_fields.at(i);
+         for(int col=0; col<table->columnCount(QModelIndex()); col++){
+            QString fieldValue = fieldValues.at(col);
 
-      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-            QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
-            TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-            if(table->rowCount(QModelIndex()) < row+1){
-               table->insertRow(row, QModelIndex());
-            }
-
-            int col = table->columnCount(QModelIndex())-1;
-            if(col >= 1){
-               //TABLE
-               col = i;
-            }
-            else{
-               col = 0;
-            }
-
-            QString fieldValue = fieldValues.at(i);
             QModelIndex modelIndex = table->index(row, col, QModelIndex());
             table->setData(modelIndex, fieldValue, Qt::EditRole);
          }

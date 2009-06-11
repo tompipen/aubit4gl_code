@@ -145,7 +145,6 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
    int arrCount = p_screenRecord->arrCount();
    if(arrCount <= 0) arrCount = 1;
    
-
    responseElement.setAttribute("ARRCOUNT", arrCount);
 
    int scrLine = p_screenRecord->currentIndex().row()+1;
@@ -184,7 +183,7 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
 void Response::addScreenRecSyncValues()
 {
 
-   int arrCount = p_currForm->context->getOption("ARRCOUNT")+1;
+   int arrCount = p_currForm->context->getOption("ARRCOUNT");
    if(arrCount <= 0) arrCount = 1;
 
    responseElement.setAttribute("ARRCOUNT", arrCount);
