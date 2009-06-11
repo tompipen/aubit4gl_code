@@ -78,8 +78,8 @@ namespace AubitDesktop
         /// Gets the string to send when the 'ACCEPT' button is pressed on the toolbar.
         /// </summary>
         /// <returns></returns>
-        string getAcceptString();
-
+        //string getAcceptString();
+        void toolBarAcceptClicked();
         void setNextField(string p);
 
     

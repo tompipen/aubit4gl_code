@@ -57,15 +57,15 @@ namespace AubitDesktop
         /// </summary>
         private int arrLine;
 
-        private int lastarrLine;
+
 
         /// <summary>
         /// Number of lines in the screen record
         /// </summary>
-        private int scrRecLines;
+
 
         private ROW[] Data;
-        private FGLFoundField[,] screenRecord;
+
         private List<ONKEY_EVENT> KeyList;
         private event UIEventHandler EventTriggered;
 
@@ -87,15 +87,18 @@ namespace AubitDesktop
             return false;
         }
 
-        public string getAcceptString()
+
+        public void toolBarAcceptClicked()
         {
             setLines();
-            return "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            string txt= "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            this.EventTriggered(null, "ACCEPT", txt, this);
         }
+
 
         public UIDisplayArrayInTableContext(FGLApplicationPanel f, DISPLAYARRAY p)
         {
-            int cnt;
+
             //nCols = Convert.ToInt32(p.ARRVARIABLES);
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;

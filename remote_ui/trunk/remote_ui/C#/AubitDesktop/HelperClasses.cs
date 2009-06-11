@@ -585,9 +585,9 @@ namespace AubitDesktop
             windows[0].SetContext(contextType);
         }
 
-        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
+        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext,List<ONKEY_EVENT> keyList)
         {
-            windows[0].SetContext(contextType,pfields,  currContext);
+            windows[0].SetContext(contextType,pfields,  currContext, keyList);
         }
 
         internal List<FGLFoundField> FindFields(FIELD[] fieldlist)
@@ -962,9 +962,9 @@ namespace AubitDesktop
             catch { }
         }
 
-        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
+        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext,List<ONKEY_EVENT> keyList)
         {
-            CurrentForm.SetContext(contextType, pfields);
+            CurrentForm.SetContext(contextType, pfields,keyList);
         }
 
         internal List<FGLFoundField> FindFields(FIELD[] fieldlist)
@@ -1273,7 +1273,7 @@ namespace AubitDesktop
             }
 
             return keyCode.ToString();
-            return null;
+
         }
 
 

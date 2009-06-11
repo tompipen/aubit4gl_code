@@ -46,12 +46,12 @@ namespace AubitDesktop
             }
 
 
-            public string getAcceptString()
+            public void toolBarAcceptClicked()
             {
-                // Not needed for a miscContext...
-                throw new NotImplementedException();
-                
+                // Does nothing for this context
             }
+
+           
 
 
             public bool useKeyPress(KeyEventArgs ke)
@@ -123,12 +123,14 @@ namespace AubitDesktop
                 {
                     case MiscContextType.MiscContextWinquestion:
                         string r=AubitMessageBox.Show(wq);
+                        r = r.Trim();
                         string rd = "ACCEPT";
                         switch (r.ToUpper())
                         {
                             case "YES": rd = "-101"; break;
-                            case "CANCEL": rd = "-100"; break;
+                           
                             case "IGNORE": rd = "-120"; break;
+                            case "CANCEL": rd = "-118"; break;
                             case "OK": rd = "-119"; break;
                             case "RETRY": rd = "-121"; break;
                             case "NO": rd = "-102"; break;
@@ -136,7 +138,7 @@ namespace AubitDesktop
 
                         if (rd == "ACCEPT")
                         { // We can't decode it do an ID - send it back as the 'LASTKEY'...
-                            this.EventTriggered(null, r, "<TRIGGERED ID=\"ACCEPT\" LASTLEY=\"" + r + "\"/>",this);
+                            this.EventTriggered(null, r, "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>",this);
                         }
                         else
                         {

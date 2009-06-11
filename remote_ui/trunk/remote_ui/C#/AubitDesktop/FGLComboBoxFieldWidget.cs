@@ -32,10 +32,14 @@ namespace AubitDesktop
     {
         //FGLContextType _ContextType;
         private int id;
-        ComboBox t;
+
+        private string buttonId;
+        private string fakeKeyId;
+        TextBox t;
+        Button pb;
         Panel p;
         Label l;
-        FGLComboEntry[] cbItems;
+        
         
 
         internal override void setIsOnSelectedRow(bool isSelected)
@@ -79,7 +83,6 @@ namespace AubitDesktop
             }
         }
 
-
         public override int tabIndex
         {
             set
@@ -96,7 +99,6 @@ namespace AubitDesktop
                 return false;
             }
         }
-
 
         public override void setFocus()
         {
@@ -121,10 +123,6 @@ namespace AubitDesktop
 
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
-
-
-
-
             //_ContextType = value;
             adjustDisplayPropertiesForContext();
 
@@ -140,12 +138,14 @@ namespace AubitDesktop
         private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
+            pb.Enabled = false;
 
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
                     l.Visible = true;
                     t.Visible = false;
+                    pb.Enabled = false;
                     break;
 
 
@@ -162,22 +162,45 @@ namespace AubitDesktop
                     if (isOnSelectedRow)
                     {
                         p.BorderStyle = BorderStyle.FixedSingle;
+
                     }
                     else
                     {
                         p.BorderStyle = BorderStyle.None;
+
                     }
+
                     break;
 
 
                 case FGLContextType.ContextInput:
-                case FGLContextType.ContextInputArray:
-                case FGLContextType.ContextConstruct:
-                    setItems();
+                case FGLContextType.ContextConstruct:                    
                     t.Visible = true;
+                    if (buttonId != "")
+                    {   // Only enable if there is an ON_KEY event for it...
+                        pb.Enabled = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not using this button - its not got an onkey");
+                    }
                     l.Visible = false;
                     break;
 
+
+
+
+                case FGLContextType.ContextInputArray:
+                    t.Visible = true;
+                    if (isOnSelectedRow)
+                    {
+                        if (buttonId != "")
+                        {   // Only enable if there is an ON_KEY event for it...
+                            pb.Enabled = true;
+                        }
+                    }
+                    l.Visible = false;
+                    break;
 
 
                 default:
@@ -185,13 +208,11 @@ namespace AubitDesktop
                     {
                         t.Visible = false;
                         l.Visible = true;
-                        
                     }
                     else
                     {
                         t.Visible = true;
                         l.Visible = false;
-                        
                     }
                     break;
 
@@ -218,6 +239,19 @@ namespace AubitDesktop
             }
         }
 
+        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        {
+            buttonId = "";
+            foreach (ONKEY_EVENT a in keyList)
+            {
+                if (a.KEY == fakeKeyId)
+                {
+                    buttonId = a.ID;
+                    break;
+                }
+            }
+           // MessageBox.Show("Here");
+        }
 
         override public string Text // The current fields value
         {
@@ -315,37 +349,85 @@ namespace AubitDesktop
 
 
             createComboBoxWidget(a,ma,
-                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Item);
+                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include);
             adjustDisplayPropertiesForContext();
         }
 
 
 
-        private void createComboBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, AubitDesktop.Xml.XMLForm.Item[] items)
+        private void createComboBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
-
-            int bcol = 0;
 
             this.SetWidget(thisAttribute,ma, row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             p = new Panel();
             l = new Label();
+            pb = new Button();
+            t = new System.Windows.Forms.TextBox();
+
             l.TextAlign = ContentAlignment.MiddleLeft;
-            t = new System.Windows.Forms.ComboBox();
+
+            buttonId = "";
+
+
+            string[] str = config.Split(' ');
+
+            fakeKeyId = "";
+            if (str.Length == 2)
+            {
+                Image i;
+                
+                i = FGLUtils.getImageFromName(str[0]);
+                if (i == null)
+                {
+                    i = FGLUtils.getImageFromName("zoom");
+                }
+                if (i != null)
+                {
+
+                    //pb.AutoSize = true;
+                    pb.Image = i;
+                    
+                   pb.Size = new Size(i.Width+10, i.Height+2);
+                    
+                    fakeKeyId = FGLUtils.getKeyCodeFromKeyName(str[1]);
+                }
+  
+            }
+
+            if (str.Length == 1)
+            {
+                Image i;
+                i = FGLUtils.getImageFromName("zoom");
+                if (i != null)
+                {
+                    pb.Image = i;
+                    pb.ClientSize = new Size(i.Width, i.Height);
+
+                }
+                fakeKeyId = FGLUtils.getKeyCodeFromKeyName(str[0]);
+            }
+
+            pb.Click += new EventHandler(pb_Click);
+
+            pb.Dock = DockStyle.Right;
             
+            pb.Margin = new Padding(0, 0, 0, 0);
+            pb.Padding = new Padding(0, 0, 0, 0);
             p.Margin = new Padding(0, 0, 0, 0);
             p.Padding = new Padding(0, 0, 0, 0);
             l.Margin = new Padding(0, 0, 0, 0);
             l.Padding = new Padding(0, 0, 0, 0);
             t.Margin = new Padding(0, 0, 0, 0);
             t.Padding = new Padding(0, 0, 0, 0);
-
-
             t.Visible = true;
             t.Enabled = true;
+            pb.Visible = true;
+            pb.TabStop = false;
             SizeControl(ma,index,p);
             
-            t.Size = p.Size;
+            t.Height = p.Size.Height;
+            t.Width = p.Size.Width - pb.Width ;
 
 
             t.TextChanged += new EventHandler(t_TextChanged);
@@ -353,102 +435,72 @@ namespace AubitDesktop
             // Any columns used for the button must be subtracted from the length of the 
             // textbox..
 
-
+/*
             if (columns > 2)
             {
-                t.Width = GuiLayout.get_gui_w(columns + 1);
+                p.Width = GuiLayout.get_gui_w(columns + 1);
             }
             else
             {
-                t.Width = GuiLayout.get_gui_w(3);
+                p.Width = GuiLayout.get_gui_w(3);
             }
+*/
 
             t.MaxLength = columns;
 
 
             l.Size = t.Size;
 
-            /*
-            if (Upshift)
-            {
-                
-                t.CharacterCasing = CharacterCasing.Upper;
-            }
 
-            if (Downshift)
-            {
-                t.CharacterCasing = CharacterCasing.Lower;
-            }
-            */
-
-
-            l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
+           // l.Dock = DockStyle.Fill;
+           
 
-            t.AutoCompleteMode = AutoCompleteMode.Suggest;
-            t.DropDownStyle = ComboBoxStyle.DropDown;
-            
+            t.AutoCompleteMode = AutoCompleteMode.Suggest;       
             p.Controls.Add(t);
             p.Controls.Add(l);
+            p.Controls.Add(pb);
 
 
-            cbItems = FGLComboEntry.createItems(items);
-
-            setItems();
-
+           
             // p.Size = l.Size;
 
 
             t.CausesValidation = true;
-            t.LostFocus += new EventHandler(t_LostFocus);
-            t.GotFocus += new EventHandler(t_GotFocus);
-            t.Click += new EventHandler(t_Click);
-            t.Visible = true;
-            t.Enabled = true;
+            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            t.Enter += new EventHandler(t_GotFocus);
+            //t.Click += new EventHandler(t_Click);
+
 
             this.id = id;
+            adjustDisplayPropertiesForContext();
         }
+
+        void pb_Click(object sender, EventArgs e)
+        {
+
+            if (this.buttonId != "")
+            {
+
+                this.onUIEvent(this, this.buttonId, "", null);
+            }
+            else
+            {
+                if (this.onActionID != "")
+                {
+                    this.onUIEvent(this, this.onActionID, "", null);
+                }
+            }
+        }
+
+
+
+
 
         void t_TextChanged(object sender, EventArgs e)
         {
             l.Text = t.Text;
         }
-
-
-
-
-
-        private void setItems()
-        {
-            bool hasBlank = false;
-
-            t.BeginUpdate();
-            t.Items.Clear();
-
-            
-            for (int a = 0; a < cbItems.Length; a++)
-            {
-                
-                if (cbItems[a].ToString() == "") hasBlank = true;
-                t.Items.Add(cbItems[a]);
-            }
-
-            
-            
-            if (_ContextType == FGLContextType.ContextConstruct && ! hasBlank)
-            {
-                
-                t.Items.Add(""); /* Add a blank so we can do a search properly */
-            }
-            t.EndUpdate();
-        }
-
-
-
-
-
-
-
     }
 
     class FGLComboEntry {

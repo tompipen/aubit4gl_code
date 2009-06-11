@@ -32,7 +32,7 @@ namespace AubitDesktop
         /// </summary>
         private bool _contextIsActive;
         private FGLApplicationPanel mainWin;
-        private List<Int32> PendingEvents;
+        private List<string> PendingEvents;
 
         /// <summary>
         /// Set when we want to monitor for focus changes.
@@ -42,7 +42,7 @@ namespace AubitDesktop
         private List<BEFORE_FIELD_EVENT> beforeFieldList;
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
-        private List<string> pendingEvents;
+
 
         private enum MoveType
         {
@@ -121,8 +121,6 @@ namespace AubitDesktop
             }
         }
 
-        private bool doneBeforeRowForFirst = false;
-
         public bool contextIsActive()
         {
             return _contextIsActive;
@@ -146,7 +144,7 @@ namespace AubitDesktop
             }
             
 
-            return "<TRIGGERED ID=\"" + ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" " + cfield +  " LASTKEY=\"" + mainWin.lastKey + "\">"+ getSyncValues() +"</TRIGGERED>";
+            return "<TRIGGERED ID=\"" + ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" " + cfield +  " LASTKEY=\"" + mainWin.LastKey + "\">"+ getSyncValues() +"</TRIGGERED>";
         }
 
         public void DeletekeyPressed()
@@ -478,20 +476,21 @@ namespace AubitDesktop
 
 
 
-        public string getAcceptString()
+        public void toolBarAcceptClicked()
         {
-            return getTriggeredText("ACCEPT");
-            
+            this.eventTriggered(null, "ACCEPT", getTriggeredText("ACCEPT"), this);
         }
+
+       
 
         public UIInputArrayContext(FGLApplicationPanel f, INPUTARRAY p)
         {
             int cnt;
-            PendingEvents = new List<int>();
+            PendingEvents = new List<string>();
             nCols = Convert.ToInt32(p.ARRVARIABLES);
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;
-            this.pendingEvents = new List<string>();
+            this.PendingEvents = new List<string>();
             this.arrLine = 1;
             this.scrLine = 1;
             this.nextMove = MoveType.MoveTypeFirst;
@@ -610,7 +609,7 @@ namespace AubitDesktop
             }
             else
             {
-                pendingEvents.Add(ID);
+                PendingEvents.Add(ID);
             }
         }
 
@@ -716,7 +715,7 @@ namespace AubitDesktop
 
         public void setNextField(string fieldName)
         {
-            pendingEvents.Clear();
+            PendingEvents.Clear();
             foreach (FGLFoundField f in activeFields)
             {
                 if (f.isField(fieldName) )
@@ -899,13 +898,15 @@ namespace AubitDesktop
         {
             //int cnt = 0;
             
-            if (pendingEvents.Count > 0)
+            if (PendingEvents.Count > 0)
             {
-                string s = pendingEvents[0];
-                pendingEvents.RemoveAt(0);
+                string s = PendingEvents[0];
+                PendingEvents.RemoveAt(0);
                 sendTrigger(s);
                 DeactivateContext();
             }
+
+     
 
             inputFocusActive = false;
 
@@ -1150,7 +1151,7 @@ namespace AubitDesktop
                 }
             }
             
-            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this);
+            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this,KeyList);
             inputFocusActive = wasinputFocusActive;
         }
 

@@ -37,7 +37,6 @@ namespace AubitDesktop
         Label l;
         Button b;
 
-        bool atFirst;
 
         internal override void setIsOnSelectedRow(bool isSelected)
         {
@@ -622,8 +621,8 @@ namespace AubitDesktop
             t.CausesValidation = true;
             t.KeyDown += new KeyEventHandler(t_KeyDown);
             t.KeyPress += new KeyPressEventHandler(t_KeyPress);
-            t.LostFocus += new EventHandler(t_LostFocus);
-            t.GotFocus += new EventHandler(t_GotFocus);
+            t.Validating +=new System.ComponentModel.CancelEventHandler(t_Validating);
+            t.Enter += new EventHandler(t_GotFocus);
             t.TextChanged += new EventHandler(t_TextChanged);
             //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             if (b != null)
@@ -651,7 +650,7 @@ namespace AubitDesktop
 
         public override void gotFocus()
         {
-            atFirst = false;
+            
             if (format != null)
             {
                 if (format != "" || Program.isNumericDatatype(datatype))
@@ -687,7 +686,7 @@ namespace AubitDesktop
         void t_TextChanged(object sender, EventArgs e)
         {
             l.Text = t.Text;
-            atFirst = false;
+
         }
 
 

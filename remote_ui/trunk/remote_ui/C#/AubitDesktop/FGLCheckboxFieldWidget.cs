@@ -261,8 +261,8 @@ namespace AubitDesktop
             //cb.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             
             cb.CausesValidation = true;
-            cb.LostFocus += new EventHandler(t_LostFocus);
-            cb.GotFocus += new EventHandler(t_GotFocus);
+            cb.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            cb.Enter += new EventHandler(t_GotFocus);
             
             
             cb.Click += new EventHandler(t_Click);

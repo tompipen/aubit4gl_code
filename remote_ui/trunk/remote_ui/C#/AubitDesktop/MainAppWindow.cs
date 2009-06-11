@@ -47,7 +47,12 @@ namespace AubitDesktop
         private showMode _showApplicationLauncher;
         bool _hasApplicationtree;
 
-      
+
+
+        public Control getCurrentControl()
+        {
+            return ActiveControl;
+        }
 
         bool hasApplicationTree
         {
@@ -865,7 +870,7 @@ namespace AubitDesktop
         }
         */
 
-
+        
 
         string getCurrentApplicationKey(string keyType, string defaultKey)
         {

@@ -141,9 +141,11 @@ namespace AubitDesktop
             return s;
         }
 
-        public string getAcceptString()
+
+        public void toolBarAcceptClicked()
         {
-            return "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
+            string txt ="<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
+            this.EventTriggered(null, "ACCEPT", txt, this);   
         }
 
 
@@ -158,7 +160,7 @@ namespace AubitDesktop
             {
                 cfield = "";
             }
-            return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.lastKey + "\"" + ">";
+            return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\"" + ">";
         }
 
 
@@ -231,7 +233,7 @@ namespace AubitDesktop
 
 
             mainWin.SetContext(FGLContextType.ContextNone);
-            mainWin.SetContext(FGLContextType.ContextConstruct, activeFields, this);
+            mainWin.SetContext(FGLContextType.ContextConstruct, activeFields, this,KeyList);
             mainWin.setActiveToolBarKeys(KeyList,true);
 
 

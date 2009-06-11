@@ -429,6 +429,56 @@ namespace AubitDesktop.Xml.XMLForm
 
         /// <remarks/>
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+        public class ComboListBox
+        {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string config;
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string comments;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string gridWidth;
+
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string shift;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string posX;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string posY;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string format;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string autoNext;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string action;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlElementAttribute()]
+            public Item[] Items;
+        }
+
+
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class ComboBox
         {
             /// <remarks/>
@@ -470,9 +520,7 @@ namespace AubitDesktop.Xml.XMLForm
                         /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string action;
-            /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute()]
-            public Item[] Item;
+
         }
 
         /// <remarks/>

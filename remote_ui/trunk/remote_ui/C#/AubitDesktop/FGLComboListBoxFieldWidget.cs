@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Copyright (c) 2008 The Aubit Development Team. 
  *  All rights reserved. See CREDITS file.
  *  
@@ -26,17 +26,17 @@ using System.Drawing;
 
 namespace AubitDesktop
 {
-    // A text widget fgl field widget...
-    class FGLDateFieldWidget : FGLWidget
-    {
 
-        DateTimePicker t;
+    // A text widget fgl field widget...
+    public class FGLComboListBoxFieldWidget : FGLWidget
+    {
+        //FGLContextType _ContextType;
+        private int id;
+        ComboBox t;
         Panel p;
         Label l;
-
-
-
-
+        FGLComboEntry[] cbItems;
+        
 
         internal override void setIsOnSelectedRow(bool isSelected)
         {
@@ -102,7 +102,7 @@ namespace AubitDesktop
         {
             t.Focus();
             t.Select();
-            
+            t.SelectionLength = 0;
         }
 
         override public Color BackColor
@@ -130,6 +130,13 @@ namespace AubitDesktop
 
         }
 
+
+        public override void gotFocus()
+        {
+
+        }
+
+
         private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
@@ -155,24 +162,23 @@ namespace AubitDesktop
                     if (isOnSelectedRow)
                     {
                         p.BorderStyle = BorderStyle.FixedSingle;
-
-                        //t.BorderStyle = BorderStyle.FixedSingle;
-                        //l.BorderStyle = BorderStyle.FixedSingle;
                     }
                     else
                     {
                         p.BorderStyle = BorderStyle.None;
-                        //t.BorderStyle = BorderStyle.Fixed3D;
-                        //l.BorderStyle = BorderStyle.Fixed3D;
                     }
                     break;
 
 
+                case FGLContextType.ContextInput:
+                case FGLContextType.ContextInputArray:
                 case FGLContextType.ContextConstruct:
+                    setItems();
                     t.Visible = true;
                     l.Visible = false;
-                    
                     break;
+
+
 
                 default:
                     if (this.NoEntry)
@@ -213,10 +219,6 @@ namespace AubitDesktop
         }
 
 
-        public override  void  gotFocus()
-        {
-        }
-
         override public string Text // The current fields value
         {
             get
@@ -233,15 +235,10 @@ namespace AubitDesktop
                 }
 
 
-                if (_ContextType == FGLContextType.ContextInput || _ContextType==FGLContextType.ContextInputArray ||  _ContextType == FGLContextType.ContextDisplayArray)
+                if (_ContextType == FGLContextType.ContextInput || _ContextType == FGLContextType.ContextDisplayArray)
                 {
                     if (this.format != null)
                     {
-
-
-
-
-
                         if (this.format.Length > 0 && val != null)
                         {
                             val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
@@ -258,80 +255,55 @@ namespace AubitDesktop
                     }
 
                 }
-
+                if (val == null) val = "";
 
                     l.Text = val;
-                t.Text = val;
+               // t.Text = val;
 
             }
         }
 
 
-
-
-
-
-
-
-
-
-
-        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.DateEdit edit,string config,int index,AubitDesktop.Xml.XMLForm.Matrix ma)
+        public int MaxLength
         {
-            ATTRIB a;
-            a = createAttribForWidget(ff);
-            if (edit.format != null)
+            get
             {
-                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
-                a.ATTRIB_FORMAT.Text = edit.format;
+                return t.MaxLength;
             }
-
-
-
-            if (edit.comments != null)
+            set
             {
-                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
-                a.ATTRIB_COMMENTS.Text = edit.comments;
+                t.MaxLength = value;
             }
-
-            if (edit.autoNext != null && edit.autoNext == "1")
-            {
-                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
-            }
-
-            
-
-            createWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
         }
 
 
 
-        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Edit edit,string config,int index, AubitDesktop.Xml.XMLForm.Matrix ma)
+        public FGLComboListBoxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ComboListBox cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
-            a = createAttribForWidget(ff);
-            if (edit.format != null)
+            a = createAttribForWidget(ffx);
+            if (cbox.format != null)
             {
                 a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
-                a.ATTRIB_FORMAT.Text = edit.format;
+                a.ATTRIB_FORMAT.Text = cbox.format;
             }
 
 
 
-            if (edit.comments != null)
+            if (cbox.comments != null)
             {
                 a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
-                a.ATTRIB_COMMENTS.Text = edit.comments;
+                a.ATTRIB_COMMENTS.Text = cbox.comments;
             }
 
-            if (edit.autoNext != null && edit.autoNext == "1")
+            if (cbox.autoNext != null && cbox.autoNext == "1")
             {
                 a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
             }
 
-            if (edit.shift != null)
+            if (cbox.shift != null)
             {
-                if (edit.shift == "down")
+                if (cbox.shift == "down")
                 {
                     a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
                 }
@@ -341,62 +313,143 @@ namespace AubitDesktop
                 }
             }
 
-            createWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "",config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+
+            createComboBoxWidget(a,ma,
+                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Items);
+            adjustDisplayPropertiesForContext();
         }
 
 
-        public FGLDateFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
+
+        private void createComboBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, AubitDesktop.Xml.XMLForm.Item[] items)
         {
 
-            createWidget(thisAttribute, null,row, 0,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
-        }
 
-        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
-        {
-
-            this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            this.SetWidget(thisAttribute,ma, row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             p = new Panel();
             l = new Label();
             l.TextAlign = ContentAlignment.MiddleLeft;
-            t = new System.Windows.Forms.DateTimePicker();
-            t.Format = DateTimePickerFormat.Custom;
-            t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; 
+            t = new System.Windows.Forms.ComboBox();
+            
+            p.Margin = new Padding(0, 0, 0, 0);
+            p.Padding = new Padding(0, 0, 0, 0);
+            l.Margin = new Padding(0, 0, 0, 0);
+            l.Padding = new Padding(0, 0, 0, 0);
+            t.Margin = new Padding(0, 0, 0, 0);
+            t.Padding = new Padding(0, 0, 0, 0);
+
+
             t.Visible = true;
             t.Enabled = true;
+            SizeControl(ma,index,p);
+            
+            t.Size = p.Size;
 
-            p.Location = GuiLayout.getPoint(ma,index, column, row);
-            p.AutoSize = true;
 
-            t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+            t.TextChanged += new EventHandler(t_TextChanged);
+
+            // Any columns used for the button must be subtracted from the length of the 
+            // textbox..
+
 
             if (columns > 2)
             {
-                t.Width = GuiLayout.get_gui_w(columns + 2);
+                t.Width = GuiLayout.get_gui_w(columns + 1);
             }
             else
             {
                 t.Width = GuiLayout.get_gui_w(3);
             }
 
+            t.MaxLength = columns;
+
+
             l.Size = t.Size;
+
+            /*
+            if (Upshift)
+            {
+                
+                t.CharacterCasing = CharacterCasing.Upper;
+            }
+
+            if (Downshift)
+            {
+                t.CharacterCasing = CharacterCasing.Lower;
+            }
+            */
+
 
             l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
+
+            t.AutoCompleteMode = AutoCompleteMode.Suggest;
+            t.DropDownStyle = ComboBoxStyle.DropDown;
+            
             p.Controls.Add(t);
             p.Controls.Add(l);
-            p.Size = t.Size;
 
-            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-            t.Enter+= new EventHandler(t_GotFocus);
-            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-            adjustDisplayPropertiesForContext();
+
+            cbItems = FGLComboEntry.createItems(items);
+
+            setItems();
+
+            // p.Size = l.Size;
+
+
+            t.CausesValidation = true;
+            t.Validating +=new System.ComponentModel.CancelEventHandler(t_Validating);
+            t.Enter += new EventHandler(t_GotFocus);
+            t.Click += new EventHandler(t_Click);
+            t.Visible = true;
+            t.Enabled = true;
+
+            this.id = id;
         }
 
-       
+        void t_TextChanged(object sender, EventArgs e)
+        {
+            l.Text = t.Text;
+        }
+
+
+
+
+
+        private void setItems()
+        {
+            bool hasBlank = false;
+
+            t.BeginUpdate();
+            t.Items.Clear();
+
+            
+            for (int a = 0; a < cbItems.Length; a++)
+            {
+                
+                if (cbItems[a].ToString() == "") hasBlank = true;
+                t.Items.Add(cbItems[a]);
+            }
+
+            
+            
+            if (_ContextType == FGLContextType.ContextConstruct && ! hasBlank)
+            {
+                
+                t.Items.Add(""); /* Add a blank so we can do a search properly */
+            }
+            t.EndUpdate();
+        }
+
+
+
+
+
+
+
     }
 
 
 }
-

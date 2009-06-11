@@ -10,10 +10,7 @@ namespace AubitDesktop
 {
     public partial class frmFieldOverlay : Form
     {
-        private decimal originalHeight;
-        private decimal originalWidth;
-        private decimal originalTop;
-        private decimal originalLeft;
+
 
         public int attributeNo
         {

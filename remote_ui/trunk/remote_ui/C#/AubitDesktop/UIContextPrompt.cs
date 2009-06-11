@@ -39,13 +39,12 @@ namespace AubitDesktop
             }
 
 
-            public string getAcceptString()
+            public void toolBarAcceptClicked()
             {
-                // Not needed for a prompt...
-                throw new NotImplementedException();
-                
+                // Does nothing for a menu....
             }
 
+            
 
             public bool useKeyPress(KeyEventArgs ke)
             {

@@ -46,6 +46,7 @@ namespace AubitDesktop
 
         
 
+
         public Control control
         {
             get
@@ -54,6 +55,8 @@ namespace AubitDesktop
             }
         }
 
+
+        
 
         public FGLForm()
         {
@@ -672,9 +675,14 @@ namespace AubitDesktop
                     fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0]).config, index, ma);
                     break;
 
+                case "AubitDesktop.Xml.XMLForm.ComboListBox":
+                    fld = new FGLComboListBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboListBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ComboListBox)ff.Items[0]).config, index, ma);
+                    break;
+
                 case "AubitDesktop.Xml.XMLForm.ComboBox":
                     fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0]).config, index, ma);
                     break;
+
 
                
                 case "AubitDesktop.Xml.XMLForm.Label":
@@ -1302,23 +1310,24 @@ namespace AubitDesktop
         }
 
 
-        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields)
+        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields,List<ONKEY_EVENT> keyList)
         {
             
             this.thisFormsPanel.SuspendLayout();
+          
             // We'll only set the active fields...
             foreach (FGLWidget i in this.fields)
             {
+                i.setKeyList(keyList);
                 if (pfields.Contains(i))
                 {
-                    
                     i.ContextType = contextType;
-                    
                 }
                 else
                 {
                     i.ContextType = FGLContextType.ContextNone;
                 }
+
             }
             this.thisFormsPanel.ResumeLayout();
         }
@@ -1404,8 +1413,8 @@ namespace AubitDesktop
 
         internal void saveForm()
         {
-            String XmlizedString = null;
-            int a;
+
+
             MessageBox.Show("Not implemented yet");
             /*
             MemoryStream memoryStream = new MemoryStream();

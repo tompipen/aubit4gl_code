@@ -35,8 +35,7 @@ namespace AubitDesktop
         string _Config;
         string _Widget;
         string _comment;
-        int _pixelheight;
-        int _pixelwidth;
+
         internal FGLContextType _ContextType=FGLContextType.ContextNone;
         int _row;
         int _column;
@@ -322,7 +321,10 @@ namespace AubitDesktop
             }
         }
 
-        public UIGotFocusHandler onGotFocus
+
+
+
+       public UIGotFocusHandler onGotFocus
         {
             set
             {
@@ -333,6 +335,7 @@ namespace AubitDesktop
                 return _onGotFocus;
             }
         }
+       
 
 
         public List<string> includeValues;
@@ -820,16 +823,18 @@ namespace AubitDesktop
 
         internal void t_Click(object sender, EventArgs e)
         {
+            
             this.clrErrorTextBeforeFieldValidation();
             if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.onActionID, "",null);
             }
+            
         }
 
-        internal void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
 
+        internal void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {         
             if (!validateField(sender))
             {
                 e.Cancel = true;
@@ -840,12 +845,14 @@ namespace AubitDesktop
             }
         }
 
+
+
        
 
         internal void t_GotFocus(object sender, EventArgs e)
         {
-            
-            
+
+            Console.WriteLine("Got focus");
 
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
@@ -863,6 +870,8 @@ namespace AubitDesktop
 
         internal void t_LostFocus(object sender, EventArgs e)
         {
+            /*
+            Console.WriteLine("Lost focus");
             if (!validateField(sender))
             {
                 ((Control)sender).Focus();
@@ -874,6 +883,7 @@ namespace AubitDesktop
                     this.onUIEvent(this, this.afterFieldID, "",null);
                 }
             }
+            */
 
         }
 
@@ -932,8 +942,7 @@ namespace AubitDesktop
 
         public void SizeControl(AubitDesktop.Xml.XMLForm.Matrix ma, int index, Control c)
         {
-            int x;
-            int y;
+
             c.Height = GuiLayout.get_gui_h(_rows);
             if (_columns > 2)
             {
@@ -987,6 +996,11 @@ namespace AubitDesktop
             }
         }
 
+
+        internal virtual void setKeyList(List<ONKEY_EVENT> keyList)
+        {
+            
+        }
     }
 
 }

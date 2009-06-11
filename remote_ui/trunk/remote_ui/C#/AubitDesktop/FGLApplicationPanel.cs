@@ -74,7 +74,13 @@ namespace AubitDesktop
         private List<AubitTSBtn> programButtons;
         //private Control parentControl;
         private frmMainAppWindow TopWindow; // The window containing the tabpage control
-        public  string lastKey;
+        private string lastKey;
+
+        public string LastKey
+        {
+            get { return lastKey; }
+            set { lastKey = value; }
+        }
 
 
         public string getApplicationKey(string keyType)
@@ -947,12 +953,17 @@ namespace AubitDesktop
                 }
             }
             this.ErrorText = "";
+            /*
             string eventText = currentContext.getAcceptString();
             if (eventText != null)
             {
                 TopWindow.SendString(eventText,true);
             }
             currentContext.DeactivateContext();
+             * */
+            setLastKey("ACCEPT");
+            
+            currentContext.toolBarAcceptClicked();
             if (ke != null)
             {
                 ke.Handled = true;
@@ -1941,9 +1952,9 @@ namespace AubitDesktop
             ApplicationWindows.SetContext(contextType);
         }
 
-        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext)
+        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext,List<ONKEY_EVENT> keyList)
         {
-            ApplicationWindows.SetContext(contextType, pfields, currContext);
+            ApplicationWindows.SetContext(contextType, pfields, currContext, keyList);
         }
 
         public List<FGLFoundField> FindFields(FIELD[] fieldlist)
@@ -1967,7 +1978,7 @@ namespace AubitDesktop
         */
 
 
-        internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext)
+        internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext,List<ONKEY_EVENT> keyList)
         {
             int cnt = 0;
             List<FGLWidget> l = new List<FGLWidget>();
@@ -1975,7 +1986,7 @@ namespace AubitDesktop
                 fld.fglField.tabIndex = cnt++;
                 l.Add(fld.fglField);
             }
-            SetContext(p, l,currContext);
+            SetContext(p, l,currContext,keyList);
         }
 
         internal List<FGLFoundField> FindField(string p)

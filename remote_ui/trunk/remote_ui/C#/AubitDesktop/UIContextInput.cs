@@ -30,7 +30,42 @@ namespace AubitDesktop
         private event UIEventHandler EventTriggered;
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
-        private FGLFoundField CurrentField;
+        private FGLFoundField _currentField;
+
+        private FGLFoundField CurrentField
+        {
+            get
+            {
+                return _currentField;
+            }
+            set
+            {
+                if (_currentField != value)
+                {
+                    if (_currentField != null)
+                    {
+                        if (_currentField.fglField.afterFieldID != "")
+                        {
+                            sendTrigger(_currentField.fglField.afterFieldID);
+                           // DeactivateContext();
+                        }
+                    }
+                    Console.WriteLine("Change in field");
+                }
+
+                _currentField = value;
+
+                if (_currentField != null)
+                {
+                    if (_currentField.fglField.beforeFieldID != "")
+                    {
+                        sendTrigger(_currentField.fglField.beforeFieldID);
+                        DeactivateContext();
+                    }
+                }
+            }
+        }
+
         private FGLApplicationPanel mainWin;
         private List<ONKEY_EVENT> KeyList;
 
@@ -39,9 +74,10 @@ namespace AubitDesktop
         private List<BEFORE_FIELD_EVENT> beforeFieldList;
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
+       // private FGLWidget currentWidget = null;
 
 
-        List<string> pendingTriggerResponses;
+        List<string> PendingEvents;
 
 
         public bool contextIsActive()
@@ -54,6 +90,20 @@ namespace AubitDesktop
             return false;
         }
 
+        private void sendTrigger(string ID)
+        {
+            if (this.EventTriggered != null)
+            {
+                this.EventTriggered(null, ID, getTriggeredTag(ID), this);
+                this.EventTriggered = null;
+                //DeactivateContext();
+            }
+            else
+            {
+                PendingEvents.Add(ID);
+            }
+        }
+
         public UIInputContext(FGLApplicationPanel f, INPUT i)
         {
             KeyList = new List<ONKEY_EVENT>();
@@ -63,6 +113,8 @@ namespace AubitDesktop
             onActionList = new List<ON_ACTION_EVENT>();
             setCurrentField = null;
             CurrentField = null;
+            PendingEvents = new List<string>();
+
             foreach (object evt in i.EVENTS)
             {
                 if (evt is ONKEY_EVENT)
@@ -133,6 +185,16 @@ namespace AubitDesktop
             return s;
         }
 
+        public void toolBarAcceptClicked()
+        {
+            if (fieldsAreAllOk())
+            {
+                sendTrigger("ACCEPT");
+                //"<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
+            }
+        }
+
+        /*
         public string getAcceptString()
         {
 
@@ -145,6 +207,7 @@ namespace AubitDesktop
                 return null;
             }
         }
+         * */
 
         private bool fieldsAreAllOk()
         {
@@ -163,7 +226,7 @@ namespace AubitDesktop
             {
                 cfield = "";
             }
-            return "<TRIGGERED ID=\"" + ID + "\" "+cfield+" LASTKEY=\""+mainWin.lastKey+"\""+">";
+            return "<TRIGGERED ID=\"" + ID + "\" "+cfield+" LASTKEY=\""+mainWin.LastKey+"\""+"/>";
         }
 
 
@@ -179,7 +242,7 @@ namespace AubitDesktop
             }
         }
 
-        public void befAftFieldTriggered(object source, string ID, string TriggeredText,UIContext u)
+        public void ActionFieldTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             foreach (FGLFoundField f in activeFields)
             {
@@ -190,21 +253,11 @@ namespace AubitDesktop
                 }
             }
 
-            if (TriggeredText == "")
+            if (ID != "")
             {
-                TriggeredText=getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
+                sendTrigger(ID);
             }
-
-            
-            this.EventTriggered(source, ID, TriggeredText,this);
-
-            foreach (FGLFoundField f in activeFields) {
-                if (f.fglField==source) {
-                    CurrentField = f;
-                    break;
-                }
-            }
-            DeactivateContext();
+          
             
         }
 
@@ -214,18 +267,8 @@ namespace AubitDesktop
 
         public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
-            if (TriggeredText == "")
-            {
-                TriggeredText = getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
-            }
-            if (this.EventTriggered != null)
-            {
-                this.EventTriggered(source, ID, TriggeredText,this);
-            }
-            else
-            {
-                MessageBox.Show("Warning - might have missed a before field/after field");
-            }
+
+            sendTrigger(ID);
         }
 
 
@@ -238,6 +281,15 @@ namespace AubitDesktop
 
         void inputGotFocus(object source,string comment)
         {
+            foreach (FGLFoundField f in activeFields)
+            {
+                if (f.fglField == source)
+                {
+                    CurrentField = f;
+                    break;
+                }
+            }
+
             mainWin.CommentText = comment;
         }
 
@@ -245,17 +297,46 @@ namespace AubitDesktop
         {
             int cnt = 0;
 
+            if (!_contextIsActive)
+            {
+                _contextIsActive = true;
+            }
+            // We should always get a set of values
+            // if we dont - then it must be an INPUT without the WITHOUT DEFAULTS
+            // and this must be the first time around - so we should set up the defaults...
 
-           // mainWin.SetContext(FGLContextType.ContextNone);
+            foreach (FGLFoundField f in activeFields)
+            {
+                if (values == null)
+                {
+                    f.fglField.Text = f.fglField.defaultValue;
+                }
+                else
+                {
+                    f.fglField.Text = values[cnt++].Text;
+                }
+            }
 
-            mainWin.SetContext(FGLContextType.ContextInput, activeFields, this);
 
+            if (PendingEvents.Count > 0)
+            {
+                string s = PendingEvents[0];
+                PendingEvents.RemoveAt(0);
+                sendTrigger(s);
+                DeactivateContext();
+            }
+
+
+            mainWin.SetContext(FGLContextType.ContextInput, activeFields, this,KeyList);
             mainWin.setActiveToolBarKeys(KeyList,true);
+
+
             this.EventTriggered = UIInputContext_EventTriggered;
 
             foreach (FGLFoundField f in activeFields) {
                 f.fglField.fieldValidationFailed = inputFieldValidationHandler;
                 f.fglField.onGotFocus = inputGotFocus;
+                f.fglField.onUIEvent = onActionTriggered;
             }
 
 
@@ -295,7 +376,7 @@ namespace AubitDesktop
 
                 foreach (FGLFoundField ffield in ff) {
                     ffield.fglField.afterFieldID = e.ID;
-                    ffield.fglField.onUIEvent = befAftFieldTriggered;
+                    
                 }
 
             }
@@ -320,11 +401,11 @@ namespace AubitDesktop
                 foreach (FGLFoundField ffield in ff)
                 {
                     ffield.fglField.beforeFieldID = e.ID;
-                    ffield.fglField.onUIEvent = befAftFieldTriggered;
                 }
 
             }
             #endregion
+
 
             #region set up "on action" event IDs
             // Set up the actions by setting the onActionID property of the widget..
@@ -335,7 +416,7 @@ namespace AubitDesktop
                
                 {
                     ffield.fglField.onActionID = e.ID;
-                    ffield.fglField.onUIEvent = onActionTriggered;
+                    
                     ffield.fglField.Enabled = true;
                     ffield.fglField.ContextType = FGLContextType.ContextInput;
                 }
@@ -344,28 +425,14 @@ namespace AubitDesktop
             #endregion
 
 
-            // We should always get a set of values
-            // if we dont - then it must be an INPUT without the WITHOUT DEFAULTS
-            // and this must be the first time around - so we should set up the defaults...
 
-            foreach (FGLFoundField f in activeFields) {
-                if (values == null)
-                {
-                    f.fglField.Text = f.fglField.defaultValue;
-                }
-                else
-                {
-                    f.fglField.Text = values[cnt++].Text;
-                }
 
                 
                 
-            }
+                
+            
 
-            if (!_contextIsActive)
-            {
-                _contextIsActive = true;
-            }
+
 
             //Application.DoEvents();
             
@@ -376,12 +443,15 @@ namespace AubitDesktop
 
         public void DeactivateContext()
         {
-
-            mainWin.setActiveToolBarKeys(null,false);
-            mainWin.SetContext(FGLContextType.ContextNone);
-            _contextIsActive = false;
             EventTriggered = null;
-            mainWin.CommentText = "";
+            if (_contextIsActive)
+            {
+                mainWin.setActiveToolBarKeys(null, false);
+                mainWin.SetContext(FGLContextType.ContextNone);
+                _contextIsActive = false;
+                EventTriggered = null;
+                mainWin.CommentText = "";
+            }
         }
 
         public void FreeContext()

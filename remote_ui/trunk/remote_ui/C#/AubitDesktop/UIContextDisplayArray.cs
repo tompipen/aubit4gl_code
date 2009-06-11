@@ -328,10 +328,10 @@ namespace AubitDesktop
         }
 
 
-
-        public string getAcceptString()
+        public void toolBarAcceptClicked()
         {
-            return "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            string txt= "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            this.EventTriggered(null, "ACCEPT", txt, this);            
         }
 
         public UIDisplayArrayContext(FGLApplicationPanel f, DISPLAYARRAY p)
@@ -511,7 +511,7 @@ namespace AubitDesktop
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             //mainWin.SetContext(FGLContextType.ContextNone);
-            mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this);
+            mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this,KeyList);
 
             foreach (ON_ACTION_EVENT e in onActionList)
             {

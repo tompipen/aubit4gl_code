@@ -65,12 +65,13 @@ namespace AubitDesktop
         }
         List<ONKEY_EVENT> keyList;
 
-        public string getAcceptString()
+
+        public void toolBarAcceptClicked()
         {
-            // Not needed for a menu...
-                throw new NotImplementedException();
-        
+            // Does nothing for a menu....
         }
+
+        
 
         public bool isNormalKey(KeyEventArgs ke, string s)
         {
