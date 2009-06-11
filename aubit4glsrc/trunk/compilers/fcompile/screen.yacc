@@ -1283,7 +1283,28 @@ color :
 			else {
 	        		yyerror("Colour number out of range 0-7");
 			}
-		strcpy($<str>$,$<str>1);
+
+		/* Translate from Informix colour codes to Aubit ones...*/
+		switch (*ptr) {
+			/*
+			0: WHITE/ NORMAL
+			1: YELLOW/BOLD
+			2: MAGENTA/BOLD
+			3: RED/BOLD
+			4: CYAN/DIM
+			5: GREEN/DIM
+			6: BLUE/DIM
+			7: BLACK/DIM
+			*/
+			case 0: strcpy($<str>$,"7"); break;
+			case 1: strcpy($<str>$,"3"); break;
+			case 2: strcpy($<str>$,"5"); break;
+			case 3: strcpy($<str>$,"1"); break;
+			case 4: strcpy($<str>$,"6"); break;
+			case 5: strcpy($<str>$,"2"); break;
+			case 6: strcpy($<str>$,"4"); break;
+			case 7: strcpy($<str>$,"0"); break;
+		}
 		}
 
 | 	REVERSE { sprintf($<str>$,"%d",A4GL_get_attr_from_string("REVERSE")); }
