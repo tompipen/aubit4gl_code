@@ -597,6 +597,9 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
       lineEdit->setToolTip(comments);
    }
 
+   QString picture = lineEditElement.attribute("picture");
+   lineEdit->setPicture(picture);
+
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
@@ -647,6 +650,9 @@ ButtonEdit* WidgetHelper::createButtonEdit(const QDomElement& formField,QWidget 
       lineEdit->setToolTip(comments);
    }
 
+   QString picture = lineEditElement.attribute("picture");
+   lineEdit->setPicture(picture);
+
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
@@ -694,6 +700,9 @@ DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *par
    if(!comments.isEmpty()){
       lineEdit->setToolTip(comments);
    }
+
+   QString picture = lineEditElement.attribute("picture");
+   lineEdit->setPicture(picture);
 
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
@@ -832,6 +841,7 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
    if(!comments.isEmpty()){
       comboBox->setToolTip(comments);
    }
+
 
    for(int i=0; i<comboBoxElement.childNodes().count(); i++){
       QDomElement itemElement = comboBoxElement.childNodes().at(i).toElement();

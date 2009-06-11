@@ -71,6 +71,8 @@ public:
     bool touched() { return property("touched").toInt(); };
     void setDefaultValue(QString def) { qs_default = def; };
     QString defaultValue() { return qs_default; };
+    void setPicture(QString pic) { qs_picture = pic; setInputMask(pic); };
+    QString picture() { return qs_picture; };
 
     bool b_denyFocus;
 
@@ -87,6 +89,7 @@ private:
     QString qs_shift;
     const QValidator* valid;
     QString qs_default;
+    QString qs_picture;
 
 public slots:
     void isTouched() { setProperty("touched", true); };
