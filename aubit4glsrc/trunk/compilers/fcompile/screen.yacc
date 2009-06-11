@@ -813,7 +813,28 @@ op_field_desc
 			att_color=strdup(att_color);
 			A4GL_trim(att_color);
 			if (strlen(att_color)>0) {
-				attr+=atoi(att_color);
+
+		switch (att_color[0]) {
+			/*
+			0: WHITE/ NORMAL
+			1: YELLOW/BOLD
+			2: MAGENTA/BOLD
+			3: RED/BOLD
+			4: CYAN/DIM
+			5: GREEN/DIM
+			6: BLUE/DIM
+			7: BLACK/DIM
+			*/
+			case '0': attr+=7; break;
+			case '1': attr+=3; break;
+			case '2': attr+=5; break;
+			case '3': attr+=1; break;
+			case '4': attr+=6; break;
+			case '5': attr+=2; break;
+			case '6': attr+=4; break;
+			case '7': attr+=0; break;
+		}
+				
 			}
 			free(att_color);
 		}
