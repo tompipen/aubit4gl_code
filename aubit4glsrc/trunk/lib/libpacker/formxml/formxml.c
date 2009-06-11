@@ -1191,7 +1191,7 @@ has_label (int x, int y, int w, int set, int fy)
       if (x <= screen_convert_fields[a].x && x + w >= screen_convert_fields[a].x + strlen (screen_convert_fields[a].label))
 	ok = 2;
 
-      if (set && ok && 1 )
+      if (set && ok && 0 )
 	{
 	  screen_convert_fields[a].field_start = x;
 	  screen_convert_fields[a].y = fy;
@@ -1531,8 +1531,9 @@ void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
         }
      }
 
-     if(convert_matrix)
+     if(convert_matrix) {
         convertMatrix(f);
+     }
 
 
 	if (f->layout==0) {

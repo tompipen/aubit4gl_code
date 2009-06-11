@@ -2016,8 +2016,8 @@ uilib_display_array_start (int nargs)
   contexts[ci].ui.displayarray.count = m_arr_count;
 
   m_arr_count = m_arr_count;
-  m_arr_curr = 0;
-  m_scr_line = 0;
+  m_arr_curr = 1;
+  m_scr_line = 1;
 
   suspend_flush (1);
   send_to_ui ("<DISPLAYARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" ARRVARIABLES=\"%d\">\n%s", ci, attr, m_arr_count, nbind,last_field_list);
@@ -2172,8 +2172,8 @@ allow_insert=POPint();
   contexts[ci].ui.inputarray.count = m_arr_count;
 
   m_arr_count = m_arr_count;
-  m_arr_curr = 0;
-  m_scr_line = 0;
+  m_arr_curr = 1;
+  m_scr_line = 1;
 
   contexts[ci].ui.inputarray.maxarrsize = arrsize;
   contexts[ci].ui.inputarray.nvals = nvals;

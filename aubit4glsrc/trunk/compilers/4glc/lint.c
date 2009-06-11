@@ -63,11 +63,11 @@ int inc4GL = 1;
     {
     "IFSQLCA", 2},
     {
-    "SELECTNOTINTO", 2},
+    "SELECTNOTINTO", 4},
     {
     "INSERTNOCOLS", 2},
     {
-    "CHKSTATUS", 4},
+    "CHKSTATUS", 2},
     {
     "REPORD", 3},
     {

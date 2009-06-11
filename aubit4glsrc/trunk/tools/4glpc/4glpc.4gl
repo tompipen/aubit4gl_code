@@ -567,6 +567,7 @@ end if
 		WHEN "-s1"			let mv_stacktrace=1 continue for
 
 
+		WHEN "--islibrarymodule"	call aclfgl_setenv("A4GL_COMPILING_LIBRARY","Y") continue for
 		WHEN "--dump-strings"		let mv_dump_strings=1 call aclfgl_setenv("A4GL_DUMPSTRINGS","Y")continue for
 		WHEN "--dump-strings-ident"	let mv_dump_strings=2 call aclfgl_setenv("A4GL_DUMPSTRINGS","ident") continue for
 		WHEN "--ident-start"		let a=a+1 call aclfgl_setenv("A4GL_DUMPSTRINGS_START",arg_val(a)) continue for
