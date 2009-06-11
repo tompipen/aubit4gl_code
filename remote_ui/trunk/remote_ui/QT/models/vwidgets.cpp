@@ -1109,7 +1109,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
-      widget->insert(fieldValue);
+      widget->setText(fieldValue);
       return;
    }
 
