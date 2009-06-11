@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.173 2009-05-24 20:17:41 mikeaubury Exp $
+# $Id: newpanels.c,v 1.174 2009-06-11 12:45:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.173 2009-05-24 20:17:41 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.174 2009-06-11 12:45:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -376,7 +376,6 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
       A4GL_debug ("Adding border %x", attrib);
 
       A4GL_set_bkg (win, attrib);
-
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
       wborder (win, '|', '|', '-', '-', '+','+', '+', '+');
    } else {

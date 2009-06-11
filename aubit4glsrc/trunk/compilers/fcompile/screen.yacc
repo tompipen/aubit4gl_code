@@ -1296,14 +1296,14 @@ color :
 			6: BLUE/DIM
 			7: BLACK/DIM
 			*/
-			case 0: strcpy($<str>$,"7"); break;
-			case 1: strcpy($<str>$,"3"); break;
-			case 2: strcpy($<str>$,"5"); break;
-			case 3: strcpy($<str>$,"1"); break;
-			case 4: strcpy($<str>$,"6"); break;
-			case 5: strcpy($<str>$,"2"); break;
-			case 6: strcpy($<str>$,"4"); break;
-			case 7: strcpy($<str>$,"0"); break;
+			case '0': strcpy($<str>$,"7"); break;
+			case '1': strcpy($<str>$,"3"); break;
+			case '2': strcpy($<str>$,"5"); break;
+			case '3': strcpy($<str>$,"1"); break;
+			case '4': strcpy($<str>$,"6"); break;
+			case '5': strcpy($<str>$,"2"); break;
+			case '6': strcpy($<str>$,"4"); break;
+			case '7': strcpy($<str>$,"0"); break;
 		}
 		}
 
