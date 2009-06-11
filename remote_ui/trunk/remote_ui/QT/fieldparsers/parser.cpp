@@ -238,17 +238,14 @@ void Parser::parseElement(const QDomNode& xmlNode)
          continue;
       }
 
-      /*
       if(nodeName == "Matrix"){
-         Matrix *widget = new Matrix;
          int pageSize = currentElement.attribute("pageSize").toInt();
 
          QDomElement fieldElement = currentElement.firstChildElement();
 
-         for(int ps=0; ps<pageSize; ps++){
-            QWidget *mwidget = WidgetHelper::createFormWidget(currentElement);
-            widget->addWidget(mwidget);
-         }
+         QWidget *widget = WidgetHelper::createFormWidget(currentElement);
+
+         widget->setFixedHeight(widget->height()*pageSize);
 
          int w = fieldElement.attribute("width").toInt();
          int posX = fieldElement.attribute("posX").toInt();
@@ -257,10 +254,9 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
          widget->setProperty("fieldId", currentElement.attribute("fieldId").toInt());
 
-         addWidgets(widget, true, posY, posX, gridWidth, currentElement.attribute("pageSize").toInt());
+         addWidgets(widget, true, posY, posX, gridWidth, pageSize);
          continue;
       }
-      */
 
       if(nodeName == "HLine"){
          int posX = currentElement.attribute("posX").toInt();
@@ -299,9 +295,11 @@ void Parser::parseElement(const QDomNode& xmlNode)
          handleTableColumn(currentElement);
       }
 
+      /*
       if(nodeName == "Matrix"){
          handleMatrixColumn(currentElement);
       }
+      */
 
       if(nodeName == "RecordView"){
          handleRecordView(currentElement);

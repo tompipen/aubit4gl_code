@@ -1104,12 +1104,12 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
-      widget->setText(fieldValue);
+      widget->insert(fieldValue);
       return;
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
-      widget->setText(fieldValue);
+      widget->insert(fieldValue);
       return;
    }
 
