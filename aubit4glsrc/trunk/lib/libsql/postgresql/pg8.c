@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.98 2009-06-10 10:06:06 mikeaubury Exp $
+# $Id: pg8.c,v 1.99 2009-06-12 12:41:42 mikeaubury Exp $
 #*/
 
 
@@ -1228,7 +1228,7 @@ if (strcmp(cptr,"NONE")==0) return 0;
 	default: break;
     }
 
-if (nrows<=1) return 0;
+if (nrows<1) return 0;
 
 strcpy(buff,"");
 
