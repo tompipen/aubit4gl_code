@@ -6,6 +6,7 @@ code
 #ifndef DTYPE_CHAR
 #define DTYPE_CHAR      0
 #define DTYPE_VCHAR     13
+#define DTYPE_MASK             255
 #endif
 endcode
 define mv_table_cnt integer
@@ -375,6 +376,11 @@ endcode
 	let lv_info="FieldType", a using "<<<<<"
 	let gv_dtypes[b]=a4gl_get_info("form","fxx",lv_info)
 
+	if  gv_dtypes[b]>255 then
+		 let gv_dtypes[b]=gv_dtypes[b]-256
+	end if
+	
+
 
 	let lv_info="FieldDets", a using "<<<<<"
         let mv_field_pointers[b]=a4gl_get_info("form","fxx",lv_info)
@@ -440,7 +446,7 @@ code
       ibind[a].end_char_subscript = 0;
 
 
-      if (!A4GL_has_bool_attribute ((void *) mv_field_pointers[a], FA_B_NOENTRY) || gv_dtypes[a] == DTYPE_SERIAL)
+      if (!A4GL_has_bool_attribute ((void *) mv_field_pointers[a], FA_B_NOENTRY) || (gv_dtypes[a]&DTYPE_MASK) == DTYPE_SERIAL)
 	{
 	 
 	  strcpy (mv_insert_columns[ni], mv_field_list[a]);
@@ -456,7 +462,7 @@ code
 	  obind_i_cnt = ni;
 	} 
 
-      if (gv_dtypes[a] != DTYPE_SERIAL
+      if ((gv_dtypes[a]&DTYPE_MASK) != DTYPE_SERIAL
 	  && !A4GL_has_bool_attribute ((void *) mv_field_pointers[a],
 				       FA_B_NOENTRY))
 	{
@@ -621,6 +627,10 @@ if lv_where_clause is null then
 end if
 
 let mv_column_list=lv_column_list
+if mv_column_list is null or mv_column_list matches " " then
+	error "Internal error - no column list"
+	exit program 2
+end if
 return lv_where_clause
 
 END FUNCTION
@@ -795,7 +805,7 @@ code
   int _fld_dr = -100;
   int _exec_block = 0;
   char *fldname;
-  char sio_2[74];
+  char sio_2[1024];
   char _inp_io_type = 'I';
   char *sio_kw_2 = "s_screenio";
   int _forminit = 1;
@@ -806,6 +816,7 @@ code
   };
   struct s_field_name_list list = { 0, 0 }; 
   list.nfields = gv_fields;
+	memset(sio_2,0,sizeof(sio_2));
   list.field_name_list = (struct s_field_name *) realloc (list.field_name_list, sizeof (list.field_name_list[0]) * gv_fields);
 
   for (lv_cnt = 0; lv_cnt < gv_fields; lv_cnt++)
@@ -861,10 +872,10 @@ code
       if (_exec_block == 2) { 
 		int a;
 		// Before input...
-
 		if (!lv_isupd) {
 			for (a=0;a<gv_fields;a++) {
-				if (gv_dtypes[a]==DTYPE_SERIAL) {
+				if ((gv_dtypes[a]&DTYPE_MASK)==DTYPE_SERIAL) {
+	
 					// Its a serial field
 					*(long *)gv_field_data[a]=0;
 					A4GL_push_char("0");
@@ -1087,7 +1098,7 @@ strcat(sql,") VALUES (");
 for (a=0;a<obind_i_cnt;a++) {
 	if (a) strcat(sql,",");
 
-	if (obind_i[a].dtype==DTYPE_SERIAL) {
+	if ((obind_i[a].dtype&DTYPE_MASK)==DTYPE_SERIAL) {
 		long *p;
 		has_serial=1;
 		p=obind_i[a].ptr;
