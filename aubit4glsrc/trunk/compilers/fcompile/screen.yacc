@@ -928,17 +928,105 @@ op_field_desc
 	        yyerror("A button must have a default value for its caption");
 	        YYERROR;
 	}
+
+
 	if (!(A4GL_has_str_attribute(fld,FA_S_PICTURE)) && strcmp(the_form.dbname,"formonly")!=0 ) {
 		char *p;
-	
 		p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"PICTURE");
 		if (p) {
-			// Theres a picture in syscolval - but nothing in the form -
-			// Use the syscolval one...
+			// Theres a picture in syscolval - but nothing in the form - use the syscolval one...
 			A4GL_add_str_attr(fld,FA_S_PICTURE,p);
-			//printf("Setting field picture from syscolval (%s)\n",p);
 		}
 	}
+
+		// COMMENTS
+		// DEFAULT
+		// PICTURE
+
+		// INCLUDE
+
+		// AUTONEXT
+		// SHIFT
+		// VERIFY
+
+
+	if (strcmp(the_form.dbname,"formonly")!=0 ) {
+
+		// String ...
+		if (!(A4GL_has_str_attribute(fld,FA_S_PICTURE))) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"PICTURE");
+			if (p) {
+				// Theres a picture in syscolval - but nothing in the form - use the syscolval one...
+				A4GL_add_str_attr(fld,FA_S_PICTURE,p);
+			}
+		}
+
+		if (!(A4GL_has_str_attribute(fld,FA_S_COMMENTS))) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"COMMENTS");
+			if (p) {
+				A4GL_add_str_attr(fld,FA_S_COMMENTS,p);
+			}
+		}
+
+		if (!(A4GL_has_str_attribute(fld,FA_S_DEFAULT))) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"DEFAULT");
+			if (p) {
+				A4GL_add_str_attr(fld,FA_S_DEFAULT,p);
+			}
+		}
+
+		if (!(A4GL_has_str_attribute(fld,FA_S_INCLUDE))) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"INCLUDE");
+			if (p) {
+				p=process_include(p);
+				A4GL_add_str_attr(fld,FA_S_INCLUDE,p);
+			}
+		}
+
+	
+
+		// Booleans...
+		if (!(A4GL_has_bool_attribute(fld,FA_B_AUTONEXT))) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"AUTONEXT");
+			if (p) {
+				// Theres a picture in syscolval - but nothing in the form - use the syscolval one...
+				A4GL_add_bool_attr(fld,FA_B_AUTONEXT);
+			}
+		}
+
+		if (!(A4GL_has_bool_attribute(fld,FA_B_VERIFY))) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"VERIFY");
+			if (p) {
+				// Theres a picture in syscolval - but nothing in the form - use the syscolval one...
+				A4GL_add_bool_attr(fld,FA_B_VERIFY);
+			}
+		}
+
+		if (!A4GL_has_bool_attribute(fld,FA_B_UPSHIFT)  &&! A4GL_has_bool_attribute(fld,FA_B_DOWNSHIFT)) {
+			char *p;
+			p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"SHIFT");
+			if (p) {
+				if (strcmp(p,"UP")==0) {
+					A4GL_add_bool_attr(fld,FA_B_UPSHIFT);
+				}
+				if (strcmp(p,"DOWN")==0) {
+					A4GL_add_bool_attr(fld,FA_B_DOWNSHIFT);
+				}
+			}
+		}
+
+	}
+
+
+
+
+
 
 	a4gl_status=0;
 	A4GL_set_field(currftag,fld);

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.22 2008-07-06 11:34:26 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.23 2009-06-12 11:31:40 mikeaubury Exp $
 #*/
 
 /**
@@ -1257,7 +1257,7 @@ printf("now in get_record\n");
 		}
 		fprintf(fout,"        OPEN c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
-		fprintf(fout,"        FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
+		fprintf(fout,"        FETCH c_%s%02d%02d INTO gr_%s.*\n",
 			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
 		fprintf(fout,"        CLOSE c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
@@ -1295,7 +1295,7 @@ printf("now in get_record\n");
 		}
 		fprintf(fout,"        OPEN c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
-		fprintf(fout,"        FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
+		fprintf(fout,"        FETCH c_%s%02d%02d INTO gr_%s.*\n",
 			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
 		fprintf(fout,"        CLOSE c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.68 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: fcompile.c,v 1.69 2009-06-12 11:31:40 mikeaubury Exp $
 #*/
 
 /**
@@ -126,6 +126,9 @@ main (int argc, char *argv[])
   int cnt_files = 0;
 
   A4GL_setarg0 (argv[0]);
+
+
+
 
   if (argc == 1)
     {
@@ -572,6 +575,68 @@ downshift (char *a)
 
 
 
+// Process an 'INCLUDE' - typically used on a SYSCOLVAL 'INCLUDE' value
+// as it would normally be parsed by the form compiler...
+// 
+//  test with something like 
+//
+// 	printf("'%s'\n", process_include("1,2, 3"));
+// 	printf("'%s'\n", process_include("Null, \"Y\", \"N\""));
+// 	printf("'%s'\n", process_include("NULL, -9999999 to 99999999"));
+//
+char *process_include(char *s) {
+int a;
+int b;
+char inquote=0;
+static char origbuff[20000];
+static char buff[20000];
+b=0;
+memset(origbuff,0,sizeof(origbuff));
+strcpy(origbuff,s);
+s=origbuff;
+
+buff[b++]='\n';
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='\'') {
+		 if (inquote==0) { inquote='\''; continue; }
+		 if (inquote=='\'') inquote=0; continue;
+	}
+
+	if (s[a]=='"') {
+		if (inquote==0) { inquote='"'; continue; }
+		if (inquote=='"') { inquote=0; continue; }
+	}
+
+	if (s[a]==' ' && s[a+1]=='t' && s[a+2]=='o' && s[a+3]==' ') {
+			buff[b++]='\t';
+			a+=3;	
+			continue;
+	}
+
+	if (s[a]==' ' && ! inquote) continue;  // Skip any whitespace if not quoted...
+
+	if (s[a]==',' && !inquote) {
+			buff[b++]='\n';
+			continue;
+	}
+
+	if (!inquote) {
+		if (a4gl_tolower(s[a])=='n' && a4gl_tolower(s[a+1])=='u' && a4gl_tolower(s[a+2])=='l' && a4gl_tolower(s[a+3])=='l' ) {
+			buff[b++]='N';
+			buff[b++]='U';
+			buff[b++]='L';
+			buff[b++]='L';
+			a+=3;
+			continue;
+		}
+	}
+
+	buff[b++]=s[a];
+}
+buff[b]=0;
+return buff;
+}
+
 
 
 //********************************************************************************
@@ -619,6 +684,9 @@ void new_layout_attribs(void) {
 	f_holder_for_layout_attributes.bool_attribs.bool_attribs_len=0;
 	f_holder_for_layout_attributes.bool_attribs.bool_attribs_val=0;
 }
+
+
+
 
 //********************************************************************************
 //            END OF LAYOUT ATTRIBUTE HANDLING

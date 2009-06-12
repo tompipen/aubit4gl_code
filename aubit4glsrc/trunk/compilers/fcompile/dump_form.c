@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.23 2008-11-05 14:23:35 mikeaubury Exp $
+# $Id: dump_form.c,v 1.24 2009-06-12 11:31:40 mikeaubury Exp $
 #*/
 
 /**
@@ -97,6 +97,16 @@ char *desc_bool[] = {
   "WANTNORETURNS",
   "FONTPITCHFIXED",
   "FONTPITCHVARIABLE",
+        "AUTOSCALE",
+        "STRETCH=BOTH",
+        "STRETCH=Y",
+        "SCROLLBARS=BOTH",
+        "SCROLLBARS=VERTICAL",
+        "SCROLLBARS=HORIZONAL",
+        "AUTOSIZE",
+        "NOTNULL",
+        "BORDER",
+
   0
 };
 
@@ -917,7 +927,7 @@ printf("now in display_record\n");
 
 		if (!attr_found) {
 		    fprintf(fout,"        LET gv_attribute = set_delimiter(%d,0)\n", t+1);
-		    fprintf(fout,"        DISPLAY BY NAME\n");
+		    fprintf(fout,"        DISPLAY\n");
 		    attr_found++;
 		}
 		if (printed) fprintf(fout, ",\n");
@@ -926,7 +936,22 @@ printf("now in display_record\n");
 			f->attributes.attributes_val[a].colname);
 		printed++;
 	    }
-	    if (attr_found) {
+	   if (attr_found) {
+		fprintf(fout, " TO ");
+	    printed = 0;
+	    for (a=0;a<f->attributes.attributes_len;a++) {
+		if (strcmp(f->attributes.attributes_val[a].tabname,
+			       f->tables.tables_val[t].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,s, a);
+		if (!ptr) continue;
+		if (printed) fprintf(fout, ",\n");
+		fprintf(fout,"          %s.%s",
+			f->attributes.attributes_val[a].tabname,
+			f->attributes.attributes_val[a].colname);
+		printed++;
+	    }
+
+
 		fprintf(fout,"\n");
 		fprintf(fout,"          ATTRIBUTE(gv_attribute)\n");
 		fprintf(fout,"        LET gv_attribute = set_delimiter(%d,1)\n", t+1);
@@ -1292,7 +1317,7 @@ printf("now in get_record\n");
 		}
 		fprintf(fout,"        OPEN c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
-		fprintf(fout,"        FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
+		fprintf(fout,"        FETCH c_%s%02d%02d INTO gr_%s.*\n",
 			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
 		fprintf(fout,"        CLOSE c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
@@ -1330,7 +1355,7 @@ printf("now in get_record\n");
 		}
 		fprintf(fout,"        OPEN c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
-		fprintf(fout,"        FETCH FIRST c_%s%02d%02d INTO gr_%s.*\n",
+		fprintf(fout,"        FETCH c_%s%02d%02d INTO gr_%s.*\n",
 			mung(fname),t+1,s+1, f->tables.tables_val[s].tabname);
 		fprintf(fout,"        CLOSE c_%s%02d%02d\n",
 			mung(fname),t+1,s+1);
@@ -1503,7 +1528,11 @@ printf("now in input_record\n");
         for (s=0;s< f->snames.snames_len; s++) {
 	    fprintf(fout,"        WHEN %d\t# %s screen %d\n", s+1,
 		f->tables.tables_val[t].tabname, s+1);
-	    attr_found = 0; printed = 0;
+	    attr_found = 0; 
+
+
+
+	    printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
 		int cnt;
 		if (strcmp(f->attributes.attributes_val[a].tabname,
@@ -1520,7 +1549,7 @@ printf("now in input_record\n");
 		ptr=screen_has_attribute(f,s, a);
 		if (!ptr) continue;
 		if (!attr_found) {
-		    fprintf(fout,"          INPUT BY NAME\n");
+		    fprintf(fout,"          INPUT \n");
 		    attr_found++;
 		}
 		if (printed) fprintf(fout, ",\n");
@@ -1548,9 +1577,38 @@ printf("now in input_record\n");
 		printed++;
 //		if (lookup_printed) printed=0;
 	    }
+
+
 	    if (attr_found) {
+	      fprintf(fout,"            WITHOUT DEFAULTS FROM \n");
+	    printed = 0;
+	    for (a=0;a<f->attributes.attributes_len;a++) {
+		int cnt;
+		if (strcmp(f->attributes.attributes_val[a].tabname,
+			       f->tables.tables_val[t].tabname)!=0) continue;
+		int reject_field=0;
+		for (b=0; b<f->attributes.attributes_val[a].bool_attribs.bool_attribs_len; b++) {
+		  if (f->attributes.attributes_val[a].datatype==DTYPE_SERIAL) reject_field++; 
+		  switch (f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]) {
+		    case FA_B_NOUPDATE: reject_field++; break;
+		    default: break;
+		  }
+		}
+		if (reject_field) continue;
+		ptr=screen_has_attribute(f,s, a);
+		if (!ptr) continue;
+		if (printed) fprintf(fout, ",\n");
+		fprintf(fout,"            %s.%s", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+		printed++;
+		}
+	    
+
+
+
+
+
+
 	      fprintf(fout,"\n");
-	      fprintf(fout,"            WITHOUT DEFAULTS\n");
 	      fprintf(fout,"            ON KEY (INTERRUPT)\n");
 	      fprintf(fout,"                LET int_flag = TRUE\n");
 	      fprintf(fout,"                LET abort_flag = TRUE\n");
@@ -1762,6 +1820,8 @@ int b;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_QUERYCLEAR) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_ZEROFILL) continue;
 			if (a->bool_attribs.bool_attribs_val[b]==FA_B_RIGHT) continue;
+			if (a->bool_attribs.bool_attribs_val[b]==FA_B_NOTNULL) continue;
+
 			fprintf (fout,", %s",desc_bool[a->bool_attribs.bool_attribs_val[b]]);
 		}
 
