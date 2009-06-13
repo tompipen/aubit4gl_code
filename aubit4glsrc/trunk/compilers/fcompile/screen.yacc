@@ -951,7 +951,6 @@ op_field_desc
 
 
 	if (strcmp(the_form.dbname,"formonly")!=0 ) {
-
 		// String ...
 		if (!(A4GL_has_str_attribute(fld,FA_S_PICTURE))) {
 			char *p;

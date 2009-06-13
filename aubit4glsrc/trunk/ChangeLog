@@ -1,4 +1,37 @@
 ---------------------------
+Sat Jun 13 11:12:28 BST 2009
+---------------------------
+1.10RC_62 Released
+---------------------------
+	
+	SYSCOLVAL fixups for fcompile
+	
+	Fixup for runforms
+	
+	MID 1281: function month return string, invalid conversion to int
+	
+	added a check for envvariable A4GL_AUTOCONVSCRAR to turn off the
+	autoconversion
+	
+	added a conversion routine to convert the matrix in a screen to a
+	table in a vbox
+	
+	MID 1280
+	
+	Small lint fixup
+	
+	lint : removed debug messages
+	
+	Add variables to the list of possible values for an IN in ACE
+	reports
+	
+	lint updates
+	
+	win32 fixups
+	
+	win32 fixup
+	
+---------------------------
 Wed May 27 18:05:21 BST 2009
 ---------------------------
 1.10RC_61 Released

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.99 2009-06-12 12:41:42 mikeaubury Exp $
+# $Id: pg8.c,v 1.100 2009-06-13 10:23:49 mikeaubury Exp $
 #*/
 
 
@@ -323,8 +323,6 @@ return s;
 }
 
 
-
-
 static PGconn *local_PQsetdbLogin(const char *pghost, const char *pgport,
                          const char *pgoptions, const char *pgtty,
                          const char *inDbName,
@@ -612,7 +610,7 @@ char *ptr;
 	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
   }
 
-strcpy(currentConName, "default");
+  strcpy(currentConName, "default");
   A4GL_add_pointer ("default", SESSCODE, current_con);
   return 0;
 }
@@ -3341,7 +3339,6 @@ A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
 		      break;
 
 		    case DTYPE_VCHAR:
-
                       A4GL_push_param (ibind[param].ptr, ibind[param].dtype);
                       str = A4GL_char_pop ();
                       strcat (buff2, "'");

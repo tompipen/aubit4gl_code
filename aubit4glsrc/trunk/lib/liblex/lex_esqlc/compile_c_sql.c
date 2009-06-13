@@ -433,6 +433,7 @@ char buff[256];
   	print_copy_status_with_sql (0);
  	printc("if (a4gl_sqlca.sqlcode>=0) {");
 	print_execute_cmd(&e,1);
+        printc ("A4GL_free_cursor (\"%s\");\n",buff);
 	printc("}");
   	print_copy_status_with_sql (0);
   	print_undo_use(cmd_data->connid);

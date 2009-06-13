@@ -12,7 +12,7 @@ define mv_cnt integer
 
 
 # Total number of programs to compile...
-define lc_num_compiles constant 100
+define lc_num_compiles constant 101
 
 define lv_fail array[200] of char(80)
 define lv_ok array[200] of  char(80)
@@ -403,6 +403,7 @@ function compile_optionals()
 	call run("Logical reports", "cd lib/liblogical && sh makeit",0)
 	call run("ESQL helper Simple","cd lib/libesql && sh make_simple",0)
 	call run("Static TUI", "cd lib/libui/ui_curses; sh make_static",0)
+	call run("Static TUI (5.7) ", "cd lib/libui/ui_curses; make -f Makefile.static",0)
 	call run("SQLMetrics", "cd tools/sqlmetrics; make",0)
 	call run("FORMXML Packer", "cd lib/libpacker/formxml; make",0)
 

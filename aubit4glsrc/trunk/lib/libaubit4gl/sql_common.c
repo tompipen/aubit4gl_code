@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.84 2009-05-24 19:19:32 mikeaubury Exp $
+# $Id: sql_common.c,v 1.85 2009-06-13 10:23:48 mikeaubury Exp $
 #
 */
 
@@ -63,6 +63,7 @@ static int must_convert = 0;
 
 char save_esql_session[256];
 char lastDBUserName[256] = "";
+static void run_default_sql(void) ;
 
 
 enum e_stmt_state
@@ -415,8 +416,10 @@ A4GL_init_connection (char *dbName)
   int rc;
   rc = A4GLSQL_init_connection_internal (dbName);
   A4GL_setenv ("USING_ESQLC", "N", 1);
-  if (rc == 0)
-    A4GL_apisql_add_sess ("default");
+  if (rc == 0) {
+    	A4GL_apisql_add_sess ("default");
+	run_default_sql();
+  }
   return rc;
 }
 
@@ -524,8 +527,10 @@ A4GL_init_session (char *dsn, char *sessname,  char *usr, char *pwd)
 {
   int rc;
   rc = A4GLSQL_init_session_internal (sessname, dsn, usr, pwd);
-  if (rc == 0)
+  if (rc == 0) {
     A4GL_apisql_add_sess (sessname);
+	run_default_sql();
+  }
   return rc;
 }
 
@@ -2608,6 +2613,24 @@ void A4GL_logsql(int lineno,char *module, char *s,char *type,char *cursor) {
 		esql_cmd_start=get_now_as_double();
 	}
   	log_sql(type,cursor,cleanup(s),get_now_as_double()-esql_cmd_start,module,lineno);
+}
+
+
+
+static void run_default_sql(void) {
+int a;
+
+for (a=0;a<=10;a++)  {
+	char *ptr;
+	ptr=A4GLSQLCV_default_sql(a);
+	if (ptr) {
+		//printf("Execute : %s\n", ptr);
+   		A4GL_add_prepare("a4gl_initsql",(void *)A4GL_prepare_select(0,0,0,0,ptr,"internal_initsql",a,0,1));
+   		A4GL_execute_sql("a4gl_initsql",0,0);
+		A4GL_free_cursor("a4gl_initsql");
+		
+   	}
+   }
 }
 
 // ================================ EOF ================================

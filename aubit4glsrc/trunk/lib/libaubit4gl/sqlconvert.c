@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.166 2009-04-17 14:32:20 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.167 2009-06-13 10:23:48 mikeaubury Exp $
 #
 */
 
@@ -90,6 +90,7 @@ enum cond_conditions
   STR_GE,
   STR_LT,
   STR_GT,
+  STR_MATCHES
 };
 
 
@@ -514,7 +515,6 @@ int sz;
 	continue;
 
       SPRINTF2 (thisline, "File %s Line : %d ", name, line);
-//printf("t=%s len=%d\n",t,len);
       if (strncmp (t, "IF", len) == 0)
 	{
 	  char ptest[200] = "<notset>";
@@ -552,56 +552,62 @@ int sz;
 	      cond = STR_LT;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 1 && strncmp (t, ">", 1) == 0)
+	  if (t && len == 1 && strncmp (t, ">", 2) == 0)
 	    {
 	      cond = STR_GT;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
 
-	  if (t && len == 2 && (strncmp (t, "!=", 1) == 0 || strncmp (t, "<>", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "!=", 2) == 0 || strncmp (t, "<>", 1) == 0))
 	    {
 	      cond = STR_NE;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
 
-	  if (t && len == 2 && (strncmp (t, ">=", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, ">=", 2) == 0))
 	    {
 	      cond = STR_GE;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 2 && (strncmp (t, "<=", 1) == 0))
+	  if (t && len == 7 && (strncmp (t, "MATCHES", 7) == 0))
+	    {
+	      cond = STR_MATCHES;
+	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
+	    }
+
+	  if (t && len == 2 && (strncmp (t, "<=", 2) == 0))
 	    {
 	      cond = STR_LE;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
 
 	  // Integer comparisons
-	  if (t && len == 2 && (strncmp (t, "eq", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "eq", 2) == 0))
 	    {
 	      cond = INT_EQ;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 2 && (strncmp (t, "ne", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "ne", 2) == 0))
 	    {
 	      cond = INT_NE;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 2 && (strncmp (t, "ge", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "ge", 2) == 0))
 	    {
 	      cond = INT_GE;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 2 && (strncmp (t, "gt", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "gt", 2) == 0))
 	    {
 	      cond = INT_GT;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 2 && (strncmp (t, "le", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "le", 2) == 0))
 	    {
 	      cond = INT_LE;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
 	    }
-	  if (t && len == 2 && (strncmp (t, "lt", 1) == 0))
+	  if (t && len == 2 && (strncmp (t, "lt", 2) == 0))
 	    {
 	      cond = INT_LT;
 	      p1 = A4GL_cv_next_token ((t + len), &len, 0);
@@ -623,6 +629,12 @@ int sz;
 	      A4GL_assertion (1, "Invalid condition in convertion file IF");
 	      return;
 	    }
+          if (pval[0]=='"') {
+			char buff[200];
+			strcpy(buff,A4GL_strip_quotes(pval));
+			strcpy(pval,buff);
+
+		}
 
 	  ok = 0;
 	  switch (cond)
@@ -669,6 +681,12 @@ int sz;
 		    ok = (comp >= 0);
 		}
 	      break;
+			
+            case STR_MATCHES:
+			//printf("MATCHES : (%s) (%s)\n", acl_getenv(ptest),pval);
+		ok=A4GL_mja_match(acl_getenv(ptest),pval,'M');
+		break;
+
 	    case INT_EQ:
 	    case INT_NE:
 	    case INT_GT:
@@ -837,6 +855,7 @@ int sz;
 
       if (t && len == 1 && *t == '=')
 	{
+	  // Skip over any '='
 	  t = A4GL_cv_next_token ((t + len), &len, 0);
 	}
 
@@ -878,7 +897,7 @@ int sz;
 	}
 
 
-    }
+    } // while
   if (if_stack_cnt != 0)
     {
       FPRINTF (stderr, "%s\n", thisline);
@@ -1275,6 +1294,25 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 
 
 
+char *A4GLSQLCV_default_sql(int n) {
+int b;
+  for (b = 0; b < current_conversion_rules_cnt; b++)
+    {
+      if (current_conversion_rules[b].type == CVSQL_DEFAULT_SQL)
+	{
+	  if (n==atol(current_conversion_rules[b].data.from))
+	    {
+	      return current_conversion_rules[b].data.to;
+	    }
+	}
+    }
+ return NULL;
+}
+
+
+
+
+
 char *
 A4GLSQLCV_dtype_alias (char *s)
 {
@@ -1661,6 +1699,10 @@ A4GLSQLCV_matches_string (char *not, char *str, char *esc)
 
   return buff;
 }
+
+
+
+
 
 
 char *

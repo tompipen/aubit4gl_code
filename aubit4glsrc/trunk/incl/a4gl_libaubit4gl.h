@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.382 2009-05-24 18:26:59 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.383 2009-06-13 10:23:48 mikeaubury Exp $
 #
 */
 
@@ -1289,6 +1289,7 @@ void A4GL_copy_back_blobs(void *_blobdata,int nrets);
 void A4GL_set_last_cursor(int n);
   void A4GL_display_at (int n, int a);
   void A4GL_push_dtime (struct A4GLSQL_dtime *p);
+
   void A4GL_push_int (short p);
   void A4GL_push_long (long p);
   void A4GL_push_date (long p);
@@ -2145,6 +2146,7 @@ int A4GL_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_nullfunc (void);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s,  int is_select_into);
+char *A4GLSQLCV_default_sql(int n);
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
 char *A4GLSQLCV_get_forupdate (char *collist);
 char *A4GLSQLCV_check_sql(char *s ,int *converted) ;
@@ -2157,7 +2159,6 @@ char *A4GLSQLCV_check_tablename(char *t) ;
 char *A4GLSQLCV_make_tablename(char *t,char *c) ;
 char *A4GLSQLCV_ownerize_tablename(char *owner, char *table);
 char *A4GLSQLCV_db_tablename(char *dbname, char*instance, char*ownerized_tablename );
-
 
 void A4GL_add_feature(char *s);
 char *A4GLSQLCV_get_sqlconst(char *cval);

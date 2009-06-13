@@ -57,7 +57,7 @@ let int_flag=false
 PROMPT "COMMENT >>" FOR lv_txt
 LET lv_txt="\"",lv_txt clipped,"\""
 IF int_flag=false THEN
-	call add_val(lv_rid,"COMMENT",lv_txt)
+	call add_val(lv_rid,"COMMENTS",lv_txt)
 END IF
 END FUNCTION
 
