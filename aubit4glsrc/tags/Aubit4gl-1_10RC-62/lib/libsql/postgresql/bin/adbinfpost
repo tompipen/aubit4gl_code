@@ -1,0 +1,143 @@
+# read an Informix dbexport and load it into a Postgresql database
+
+
+if createdb $1 >/dev/null 2>&1
+then
+   echo "Base de Datos $1 Creada "
+   cd $1.exp
+   echo "SET DATESTYLE TO 'SQL,MDY';" >formato.sql
+   psql -d $1 -f formato.sql
+   DL=`grep delimiter $1.sql|cut -d" " -f 6`
+   echo "Delimitador: $DL "
+   sleep 2
+   for t in `ls *.unl|cut -d. -f 1`
+   do
+      echo "Transformando $t.unl --> $t.loa " 
+      echo "sed -e 's/$DL$//g' < $t.unl > $t.loa  " >dep.sh
+      sh dep.sh
+   done
+   cp -f $1.sql $1.dep
+   for u in `grep dba $1.sql|cut -f 2 -d\"`
+   do
+     echo "sed -e 's/\"$u\"\.//g' < $1.dep >$1.new" >dep.sh
+     sh dep.sh
+     cp -f $1.new $1.dep
+   done
+   echo "sed -e 's/row size =/          /g' < $1.dep >$1.new" >dep.sh
+   sh dep.sh
+   cp -f $1.new $1.dep
+   echo "sed -e 's/number of rows/              /g' < $1.dep >$1.new" >dep.sh
+   sh dep.sh
+   cp -f $1.new $1.sk1
+   awk -v path=$PWD -v deli=$DL '{
+     swtab=substr($0,1,7)
+     if (swtab=="{ TABLE")
+     {
+       tab=substr($0,9,15)
+     }
+   
+     if (swtab=="{ unloa")
+     {
+       arc=substr($0,22,14)
+     }
+
+     swctab=substr($0,1,12)
+     if (swctab=="create table")
+     {
+       print ""
+       print "SET client_encoding = 'LATIN1';" 
+       print ""
+       vr=1
+     }
+   
+     swctab=substr($0,1,12)
+     if (swctab=="create uniqu")
+     {
+       vidx=substr($0,1,180)
+       print vidx
+     }
+   
+     swctab=substr($0,1,12)
+     if (swctab=="create index")
+     {
+       vidx=substr($0,1,180)
+       print vidx
+     }
+   
+     swcclu=substr($0,1,14)
+     if (swcclu=="create cluster")
+     {
+       vclu=substr($0,22,160)
+       print "create index " vclu
+     }
+
+     vrow=substr($0,1,180)
+     if (swctab=="revoke all o")
+     {
+       vr=2
+     }
+   
+     if (vr=="1")
+     {
+       print  vrow
+     }
+  
+     if (vr=="2")
+     {
+       print ""
+       print "copy " tab " from " "X" path "/" arc "X" " using delimiters X" deli "X with null as XX;"
+       print ""
+       vr=0
+     }
+   }' $1.sk1 > $1.skl;
+   
+   cp -f $1.skl $1.sk1
+   echo "sed -e \"s/X/\'/g\" < $1.sk1 >$1.skl" >dep.sh
+   sh dep.sh
+   cp -f $1.skl $1.sk1
+   echo "sed -e \"s/\.unl/\.loa/g\" < $1.sk1 >$1.skl" >dep.sh
+   sh dep.sh
+   cp -f $1.skl $1.sk1
+   echo "sed -e \"s/datetime hour to minute/char\(5\)/g\" < $1.sk1 >$1.skl" >dep.sh
+   sh dep.sh
+   cp -f $1.skl $1.sk1
+   echo "sed -e \"s/datetime year to month/char\(7\)/g\" < $1.sk1 >$1.skl" >dep.sh
+   sh dep.sh
+   rm -f dep.sh $1.new $1.sk1 $i.dep
+   mv $1.skl $1.imp
+   psql $1 -f $1.imp
+   echo "SET DATESTYLE TO 'SQL,MDY';" >sysviews.sql
+   echo "create view syscolumns as " >>sysviews.sql
+   echo "select attrelid as tabid," >>sysviews.sql
+   echo "       attname as colname," >>sysviews.sql
+   echo "       attnum as colno," >>sysviews.sql
+   echo "       atttypid as coltype," >>sysviews.sql
+   echo "       attlen as collength" >>sysviews.sql
+   echo "from pg_attribute;" >>sysviews.sql
+   
+   echo "create view systables as " >>sysviews.sql
+   echo "select oid as tabid," >>sysviews.sql
+   echo "       0 as nrows," >>sysviews.sql
+   echo "      'T'::char(1) as tabtype," >>sysviews.sql
+   echo "      relnatts as ncols," >>sysviews.sql
+   echo "      relname as tabname" >>sysviews.sql
+   echo "from pg_class where relname !~* 'idx' ;" >>sysviews.sql
+   
+   echo "create view sysindexes as " >>sysviews.sql
+   echo "select oid as tabid," >>sysviews.sql
+   echo "       0 as nrows," >>sysviews.sql
+   echo "      'I'::char(1) as idxtype," >>sysviews.sql
+   echo "      relnatts as ncols," >>sysviews.sql
+   echo "      relname as idxname" >>sysviews.sql
+   echo "from pg_class where relname ~* 'idx';" >>sysviews.sql
+   
+   echo "create view sysusers as" >>sysviews.sql
+   echo "select usename as username," >>sysviews.sql
+   echo "       'D'::char(1) as usertype," >>sysviews.sql
+   echo "       9::smallint as priority," >>sysviews.sql
+   echo "       passwd as password" >>sysviews.sql
+   echo "from pg_user;" >>sysviews.sql
+   psql $1 -f sysviews.sql
+else
+   echo "Ya Existe Base de Datos $1 "
+fi

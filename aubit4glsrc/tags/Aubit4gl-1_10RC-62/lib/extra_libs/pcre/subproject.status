@@ -1,0 +1,13 @@
+Name: libA4GL_pcre
+Parent: aubit4glsrc
+Description: Perl compatible regular expressions wrapper. Some x4GL language bindings.
+Functionality: Perl compatible regular expressions support library
+Build:
+Example: See makefile
+Depends: pcre library
+Documentation: See PCRE manual
+Regressed: none
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
