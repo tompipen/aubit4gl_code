@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.21 2008-07-23 16:25:17 mikeaubury Exp $
+# $Id: form_x.x,v 1.22 2009-06-15 17:36:47 mikeaubury Exp $
 #*/
 
 /**
@@ -93,8 +93,10 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_STRETCH_Y,
 	FA_B_SCROLLBARS_BOTH,
 	FA_B_SCROLLBARS_VERTICAL,
-	FA_B_SCROLLBARS_HORIZONAL
-	
+	FA_B_SCROLLBARS_HORIZONAL,
+	FA_B_AUTOSIZE,
+	FA_B_NOTNULL,
+	FA_B_BORDER
 };
 
 enum FA_COLOUR {
@@ -128,7 +130,10 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_VALUEMIN,
 	FA_S_VALUEMAX,
 	FA_S_ITEMS,
-	FA_S_TEXT
+	FA_S_TEXT,
+	FA_S_OPTIONS,
+	FA_S_VALUECHECKED,
+	FA_S_VALUEUNCHECKED
 };
 
 struct struct_field_attr_string {
@@ -330,6 +335,7 @@ struct struct_form
 	long fcompile_version;
  	long compiled_time;
 	string dbname<>;
+ 	string encoding<>;
 	string delim<>;
 	int maxcol;
 	int maxline;
@@ -343,6 +349,7 @@ struct struct_form
 	struct struct_master_of  master_of<>;
 	struct s_composites composites<>;
 	struct s_layout *layout;
+	int allowNullInput;
 	string magic2<>;
 };
 
@@ -357,7 +364,8 @@ enum ITEMTYPES {
 	ITEMTYPE_SPECIAL=5,
 	ITEMTYPE_LIST=6,
 	ITEMTYPE_NOT=7,
-	ITEMTYPE_EXITNOW=8
+	ITEMTYPE_EXITNOW=8,
+	ITEMTYPE_FCALL=9
 };
 
 enum EXPRESSIONTYPES {
@@ -377,7 +385,9 @@ struct listitemlist  {
 };
 
 
-union u_expression switch (int itemtype) {
+union u_expression switch (enum ITEMTYPES  itemtype) {
+	case ITEMTYPE_NULL: void;
+	case ITEMTYPE_EXITNOW: void;
 	case ITEMTYPE_INT     : int intval;
 	case ITEMTYPE_CHAR    : string charval<>;
 	case ITEMTYPE_FIELD   : string field<>;
@@ -385,6 +395,7 @@ union u_expression switch (int itemtype) {
 	case ITEMTYPE_SPECIAL : string special<>;
 	case ITEMTYPE_LIST    : struct listitemlist listy<>;
 	case ITEMTYPE_NOT     : struct u_expression *notexpr;
+	case ITEMTYPE_FCALL   : struct s_at_call *call;
 };
 
 typedef struct s_complex_expr t_complex_expr; 
