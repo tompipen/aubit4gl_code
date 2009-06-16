@@ -386,11 +386,8 @@ if (ignorekw!=1) REJECT;
                         test_extend=1;
                 }
                 if (
+			 ((strcmp(yytext,"p")==0 || strcmp(yytext,"q")==0 || strcmp(yytext,"b")==0 || strcmp(yytext,"d")==0 ) &&fstart==-1) ||
                         strcmp(yytext,"+")==0 ||
-                        strcmp(yytext,"p")==0 ||
-                        strcmp(yytext,"q")==0 ||
-                        strcmp(yytext,"b")==0 ||
-                        strcmp(yytext,"d")==0 ||
                         strcmp(yytext,"-")==0 ||
                         strcmp(yytext,"|")==0 ||
                         (test_extend && (
@@ -417,11 +414,10 @@ return(NAMED);}
 			test_extend=1;
 		}
 		if (
+			 ((strcmp(yytext,"p")==0 || strcmp(yytext,"q")==0 || strcmp(yytext,"b")==0 || strcmp(yytext,"d")==0 ) &&fstart==-1)
+
+			||
 			strcmp(yytext,"+")==0 ||
-			strcmp(yytext,"p")==0 ||
-			strcmp(yytext,"q")==0 ||
-			strcmp(yytext,"b")==0 ||
-			strcmp(yytext,"d")==0 ||
 			strcmp(yytext,"-")==0 ||
 			strcmp(yytext,"|")==0 ||
 			(test_extend && ( 

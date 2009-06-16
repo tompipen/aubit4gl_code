@@ -620,6 +620,9 @@ CLOSE_SQUARE
 		A4GL_add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,3,"");
 	else
 		A4GL_add_field($<str>3,fstart+1,lineno,colno-fstart-1,scr,2,"");
+
+       fstart=-1;
+
 }
 
 
@@ -1035,6 +1038,7 @@ op_field_desc
 
 
 	if ((fld->datatype&256)==256) {
+			fld->datatype-=256;
 			if (!A4GL_has_bool_attribute(fld,FA_B_NOTNULL)) {
 					A4GL_add_bool_attr(fld,FA_B_NOTNULL);
 				}

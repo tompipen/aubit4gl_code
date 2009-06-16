@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.69 2009-06-12 11:31:40 mikeaubury Exp $
+# $Id: fcompile.c,v 1.70 2009-06-16 13:35:48 mikeaubury Exp $
 #*/
 
 /**
@@ -82,7 +82,7 @@ char currftag[256];
 int fldno;
 int scr = 0;
 int newscreen = 0;
-int fstart;
+int fstart=-1;
 char *default_database = 0;
 //int A4GLF_open_db (char *s);
 int opened_db=0;
