@@ -17,6 +17,7 @@ int yylineno;
 
 
 module_definition this_module;
+int set_exit=0;
 
 static void trimnl(char *s) {
 	char *ptr;
@@ -30,6 +31,7 @@ main (int argc, char *argv[])
   module_definition *m;
   int a;
 int num=0;
+int narg;
 
   if (argc < 2)
     {
@@ -40,7 +42,17 @@ int num=0;
   open_lintfile (0);
 
 
-  if (strcmp(argv[1], "-f")==0)
+
+  narg=1;
+
+
+  if (strcmp(argv[1], "-e")==0) {
+	narg++;
+	set_exit=1;
+  }
+
+
+  if (strcmp(argv[1], "-f")==0 || strcmp(argv[1], "-fe")==0 || strcmp(argv[1], "-ef")==0)
     { // Read file to process from a file
 	// can be used when there are *lots* of files
 	// and we run out of space on the command line..
@@ -50,6 +62,12 @@ int num=0;
 	int lines=0;
       fname = argv[2];
       f = fopen (fname, "r");
+
+	if (strchr(argv[1],'e')) {
+		set_exit=1;
+  	}
+
+
       if (f == 0)
 	{
 	  printf ("Unable to open input file (%s)\n",fname);
@@ -108,9 +126,9 @@ int num=0;
     }
   else
     {
-  	m = malloc (sizeof (struct module_definition) * (argc - 1));
+  	m = malloc (sizeof (struct module_definition) * (argc - narg));
 
-      for (a = 1; a < argc; a++)
+      for (a = narg; a < argc; a++)
 	{
 	  char buff[256];
 	  strcpy (buff, argv[a]);
@@ -123,7 +141,7 @@ int num=0;
 	    }
 	  printf ("Loading %s : ", buff);
 	  fflush (stdout);
-	  if (A4GL_read_data_from_file ("module_definition", &m[a - 1], buff))
+	  if (A4GL_read_data_from_file ("module_definition", &m[a - narg], buff))
 	    {
 	      printf ("OK...\n");
 	      fflush (stdout);
@@ -135,11 +153,17 @@ int num=0;
 	      exit (1);
 	    }
 	}
-	num=argc-1;
+	num=argc-narg;
     }
 
   check_program (m, num );
   close_lintfile ();
+  if (set_exit) {
+	if (get_nlints()) {
+		exit(1);
+	}
+	exit(0);
+  }
   exit (0);
 }
 

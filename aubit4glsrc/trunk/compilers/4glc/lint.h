@@ -30,6 +30,7 @@ void create_protos_from_module(module_definition *this_module);
 void log_proto(struct expr_str *fcall, struct expr_str_list *ret);
 char *lint_get_variable_usage_as_string (struct variable_usage *var_usage);
 char * lint_get_ident_as_string (struct module_definition *mod, struct expr_str *ptr);
+int get_nlints(void);
 //char *expr_as_string_when_possible(expr_str *e);
 //void set_yytext(char *s);
 #endif

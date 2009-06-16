@@ -12,6 +12,8 @@ int nomain = 0;
 char *decode_cmd_type (enum cmd_type value);
 int A4GL_is_valid_4gl_type (char *s);
 int inc4GL = 1;
+int nlints=0;
+
   struct s_severities
   {
     char *code;
@@ -4757,7 +4759,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
   if (!A4GL_isyes (acl_getenv ("SUPPRESSLINT")))
     {
-
+      nlints++;
       switch (get_lint_style ())
 	{
 	case 0:
@@ -4774,9 +4776,6 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
 	case 1:
 	  {
-	    //char fname[200];
-	    //strcpy(fname,module);
-	    //strcat(fname,".4gl");
 	    sprintf (buff, "%-20s:%-6d (Severity:%2d)", module, lintline, severity);
 	  }
 	  if (extra)
@@ -6742,3 +6741,7 @@ has_lint_expect (char *c)
 }
 
 
+
+int get_nlints(void) {
+	return nlints;
+}
