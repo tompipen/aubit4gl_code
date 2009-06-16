@@ -38,6 +38,7 @@ namespace AubitDesktop
         Button b;
 
 
+
         internal override void setIsOnSelectedRow(bool isSelected)
         {
             isOnSelectedRow = isSelected;
@@ -120,6 +121,8 @@ namespace AubitDesktop
             }
             
         }
+
+       
 
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
@@ -416,7 +419,11 @@ namespace AubitDesktop
 
 
             createTextWidget(a,ma,
-                Convert.ToInt32(edit.posY) , index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), action, config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include, true,image);
+                Convert.ToInt32(edit.posY) , index, 
+                Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), 
+                Widget, config,
+                -1, ffx.sqlTabName + "." + ffx.colName,
+                action, Convert.ToInt32(ffx.fieldId), ffx.include, true,image);
 
         }
 

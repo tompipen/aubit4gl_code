@@ -246,7 +246,12 @@ namespace AubitDesktop
             {
                 if (a.KEY == fakeKeyId)
                 {
+                    if (this.Action == null || this.Action == "")
+                    {
+                        onActionID = a.ID;
+                    }
                     buttonId = a.ID;
+
                     break;
                 }
             }

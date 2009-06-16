@@ -148,6 +148,9 @@ namespace AubitDesktop
                     onActionList.Add(e);
                     continue;
                 }
+
+
+
                 if (evt is AFTER_INPUT_EVENT)
                 {
                     //Just ignore it...

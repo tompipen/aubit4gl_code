@@ -28,22 +28,22 @@ namespace AubitDesktop
 {
     public class FGLWidget /* : ContainerControl */
     {
-        int _attributeNo;
-        string _TableName;
-        string _ColumnName;
-        string _Action;
-        string _Config;
-        string _Widget;
-        string _comment;
+       private int _attributeNo;
+        private string _TableName;
+        private string _ColumnName;
+        private string _Action;
+        private string _Config;
+        private string _Widget;
+        private string _comment;
 
         internal FGLContextType _ContextType=FGLContextType.ContextNone;
-        int _row;
-        int _column;
-        int _rows;
-        int _columns;
-        int _attribute;
-        int _id;
-        bool _FieldTextChanged;
+        private int _row;
+        private int _column;
+        private int _rows;
+        private int _columns;
+        private int _attribute;
+        private int _id;
+        private bool _FieldTextChanged;
         internal Hashtable configSettings;
 
 
