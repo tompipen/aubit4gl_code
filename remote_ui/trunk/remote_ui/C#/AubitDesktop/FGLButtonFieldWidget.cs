@@ -117,6 +117,25 @@ namespace AubitDesktop
             }
         }
 
+
+        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        {
+
+            foreach (ONKEY_EVENT a in keyList)
+            {
+                if (a.KEY == FGLUtils.getKeyCodeFromKeyName(Action))
+                {
+                    // The action is really a fake keypress...
+                    onActionID = a.ID;
+
+
+
+                    break;
+                }
+            }
+
+        }
+
         public FGLButtonFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ButtonEdit button, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
 

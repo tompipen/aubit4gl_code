@@ -147,6 +147,24 @@ namespace AubitDesktop
             createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
         }
 
+        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        {
+
+            foreach (ONKEY_EVENT a in keyList)
+            {
+                if (a.KEY == FGLUtils.getKeyCodeFromKeyName(Action))
+                {
+                    // The action is really a fake keypress...
+                    onActionID = a.ID;
+
+
+
+                    break;
+                }
+            }
+
+        }
+
         private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
             this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
