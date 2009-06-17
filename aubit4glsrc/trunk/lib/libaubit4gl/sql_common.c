@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.85 2009-06-13 10:23:48 mikeaubury Exp $
+# $Id: sql_common.c,v 1.86 2009-06-17 13:56:58 mikeaubury Exp $
 #
 */
 
@@ -2536,7 +2536,9 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
   struct BINDING ibind_int[] = {
     {&tmpvar_i, 2, 0, 0, 0, 0}
   };				/* end of binding */
-
+  if (strcmp(acl_getenv("A4GL_SQLTYPE"),"FILESCHEMA")==0) {
+		return 0;
+  }
   strcpy (syscolatt, acl_getenv ("A4GL_SYSCOL_ATT"));
 
   SPRINTF1 (cname, "chkscatt_%d", cntsql_0++);

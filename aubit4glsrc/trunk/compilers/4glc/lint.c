@@ -3287,6 +3287,10 @@ promoteable (int a, int b)
 	// Always allow a NULL - as it should fit into any datatype
 	return  b;
   }
+
+  if (b==DTYPE_NULL) {
+	return a;
+  }
   A4GL_assertion (a == DTYPE_SERIAL || b == DTYPE_SERIAL, "No serials in here..");
 
   if (a == b)

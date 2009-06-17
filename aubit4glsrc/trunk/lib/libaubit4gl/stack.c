@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.236 2009-05-08 14:53:43 mikeaubury Exp $
+# $Id: stack.c,v 1.237 2009-06-17 13:56:58 mikeaubury Exp $
 #
 */
 
@@ -915,7 +915,11 @@ A4GL_pop_params (struct BINDING *b, int n)
 	}
       else
 	{
-	  A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
+		if (dtype==DTYPE_NULL) {
+			A4GL_drop_param();
+		} else {
+	  		A4GL_pop_param (b[a].ptr, b[a].dtype, b[a].size);
+		}
 	}
     }
 }

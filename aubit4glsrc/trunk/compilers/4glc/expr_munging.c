@@ -1696,7 +1696,8 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
     case ET_EXPR_EXISTS_SUBQUERY:
       return FAKE_DTYPE_BOOL;
 
-
+	case ET_EXPR_RETURN_NULL:
+		return DTYPE_NULL;
 
     default:
 
