@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.486 2009-06-04 21:00:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.487 2009-06-17 08:24:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.486 2009-06-04 21:00:57 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.487 2009-06-17 08:24:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2377,6 +2377,10 @@ switch (e->expr_type) {
 		// Can happen on a PUT  - but its never a substring...
 		return DTYPE_CHAR+ENCODE_SIZE(1);
 
+
+	case ET_EXPR_RETURN_NULL: /* Only used when looking for a NULL in the RETURNING of a CALL */
+		return DTYPE_NULL;
+
 	case ET_EXPR_LITERAL_LONG:
 		return 2;
 
@@ -4276,6 +4280,10 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
           			printc ("ibind[%d].ptr= &a4gl_putval_%d;", a, putvalcnt);
 				putvalcnt++;
 				break;
+
+			case ET_EXPR_RETURN_NULL:
+				break;
+
 			default:
 				A4GL_assertion(1,"Internal error - Unexpected expression type");
 			

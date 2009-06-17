@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.34 2009-05-03 17:59:59 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.35 2009-06-17 08:24:53 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1979,6 +1979,7 @@ enum e_expr_type {
 		ET_EXPR_FUNC,
 		ET_EXPR_RIGHT_ALIGNED,
 		ET_EXPR_TAG,
+                ET_EXPR_RETURN_NULL,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 	
 };

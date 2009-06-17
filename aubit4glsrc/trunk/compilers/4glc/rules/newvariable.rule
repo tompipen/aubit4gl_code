@@ -150,8 +150,28 @@ e_ibind_var_list: e_ibind_var  {
 	}
 ;
 
+e_ibind_var_list_with_null: e_ibind_var_with_null  {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+        |       e_ibind_var_list_with_null KW_COMMA e_ibind_var_with_null  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
 
 e_ibind_var : ibind_var {
+                char errbuff[256];
+		struct expr_str *p;
+		p=$<ptr>1;
+		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			if (!ensure_variable(errbuff,p,0))  {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
+		}
+	}
+;
+
+e_ibind_var_with_null : ibind_var_with_null {
                 char errbuff[256];
 		struct expr_str *p;
 		p=$<ptr>1;
@@ -170,6 +190,10 @@ expanded_ibind_var_list: e_ibind_var_list {
 ;
 
 
+expanded_ibind_var_list_with_null: e_ibind_var_list_with_null {
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); 
+	}
+;
 
 
 expanded_obind_var_list: obind_var_list {
@@ -189,6 +213,18 @@ ibind_var : variable_usage_expression
 	    | literal_expr
 ;
 
+ibind_var_with_null : variable_usage_expression  
+            | variable_usage_expression THRU variable_usage_expression  {
+                $<ptr>$=A4GL_new_expr_list();
+		$<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+            }
+	    | literal_expr
+	| KW_NULL {
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_RETURN_NULL);
+	}
+;
 
 obind_var_list_ord: obind_var_ord  {$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);}
          | obind_var_list_ord KW_COMMA obind_var_ord  {
