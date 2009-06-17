@@ -1053,7 +1053,10 @@ op_field_desc
 					// Characters can be spaces - everything else would have to be null
 					// but nulls are not allowed - so it must be 'required' as well
 					default : 
-						A4GL_add_bool_attr(fld,FA_B_REQUIRED);
+						if (!A4GL_has_bool_attribute(fld,FA_B_NOENTRY)) {
+							// Forcing 'REQUIRED' on a 'NOENTRY' is just dumb...
+							A4GL_add_bool_attr(fld,FA_B_REQUIRED);
+						}
 						break;
 				}
 			}
@@ -1653,34 +1656,6 @@ items_entry :
 	| KW_NULL {
 		strcpy($<str>$,"");
 	}
-;
-
-incl_entry_old : 
-CHAR_VALUE   { 
-	if (strlen($<str>1)==2) {/* "" */
-		sprintf($<str>$,"NULL");
-	} else {
-		strcpy($<str>$,A4GL_char_val($<str>1)); 
-	}
-}
-| NAMED   {strcpy($<str>$,$<str>1); }
-| NAMED TO NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
-| NAMED COLON NAMED  {sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
-| CH   {strcpy($<str>$,$<str>1);}
-| number_value 
-| number_value TO number_value { sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
-| number_value COLON number_value { sprintf($<str>$,"%s\t%s",$<str>1,$<str>3); }
-| CHAR_VALUE TO CHAR_VALUE {
-	sprintf($<str>$,"%s\t",A4GL_char_val($<str>1));
-	sprintf($<str>$,"%s%s",$<str>$,A4GL_char_val($<str>3));
-}
-| CHAR_VALUE COLON CHAR_VALUE {
-	sprintf($<str>$,"%s\t",A4GL_char_val($<str>1));
-	sprintf($<str>$,"%s%s",$<str>$,A4GL_char_val($<str>3));
-}
-| KW_NULL {
-	sprintf($<str>$,"NULL");
-}
 ;
 
 
