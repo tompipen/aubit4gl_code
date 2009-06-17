@@ -46,6 +46,23 @@ namespace AubitDesktop
         }
 
 
+        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        {
+           
+            foreach (ONKEY_EVENT a in keyList)
+            {
+                if (a.KEY == FGLUtils.getKeyCodeFromKeyName(Action))
+                {
+                    // The action is really a fake keypress...
+                                    onActionID = a.ID;
+            
+            
+
+                    break;
+                }
+            }
+            // MessageBox.Show("Here");
+        }
 
         public new void setToolTip(ToolTip t, string s)
         {
