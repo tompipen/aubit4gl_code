@@ -80,8 +80,8 @@ namespace AubitDesktop
         /// The current screen line
         /// </summary>
         private int scrLine;
-        private string [,]Data;
-        private bool []rowDataChanged;
+        private string[,] Data;
+        private bool[] rowDataChanged;
 
 
         /// <summary>
@@ -96,14 +96,14 @@ namespace AubitDesktop
         /// </summary>
         private int scrRecLines;
 
-        
+
         private FGLFoundField[,] screenRecord;
         private List<ONKEY_EVENT> KeyList;
         private event UIEventHandler eventTriggered;
 
         private BEFORE_ROW_EVENT beforeRow;
         private AFTER_ROW_EVENT afterRow;
-        
+
 
         private List<FGLFoundField> activeFields;
         private FGLFoundField setCurrentField;
@@ -113,7 +113,8 @@ namespace AubitDesktop
         public int CurrentFieldNo
         {
             get { return _currentFieldNo; }
-            set {
+            set
+            {
                 if (_currentFieldNo != value)
                 {
                     _currentFieldNo = value;
@@ -142,9 +143,9 @@ namespace AubitDesktop
             {
                 cfield = "";
             }
-            
 
-            return "<TRIGGERED ID=\"" + ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" " + cfield +  " LASTKEY=\"" + mainWin.LastKey + "\">"+ getSyncValues() +"</TRIGGERED>";
+
+            return "<TRIGGERED ID=\"" + ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\">" + getSyncValues() + "</TRIGGERED>";
         }
 
         public void DeletekeyPressed()
@@ -158,11 +159,11 @@ namespace AubitDesktop
             {
                 for (int col = 0; col < nCols; col++)
                 {
-                    Data[a-1, col] = Data[a , col];
+                    Data[a - 1, col] = Data[a, col];
                 }
-                rowDataChanged[a-1] = true;
+                rowDataChanged[a - 1] = true;
 
-            
+
             }
             for (int col = 0; col < nCols; col++)
             {
@@ -170,7 +171,7 @@ namespace AubitDesktop
             }
             rowDataChanged[nRows - 1] = true;
             nRows--;
-            drawArrAll();   
+            drawArrAll();
         }
 
         public void InsertkeyPressed()
@@ -189,16 +190,17 @@ namespace AubitDesktop
 
             for (int a = nRows; a >= arrLine; a--)
             {
-                for (int col=0;col<nCols;col++) {
-                    Data[a , col] = Data[a-1, col];
+                for (int col = 0; col < nCols; col++)
+                {
+                    Data[a, col] = Data[a - 1, col];
                 }
                 rowDataChanged[a] = true;
             }
 
             rowDataChanged[arrLine - 1] = true;
             for (int col = 0; col < nCols; col++)
-            {   
-                    Data[arrLine-1, col] = activeFields[col].fglField.defaultValue;
+            {
+                Data[arrLine - 1, col] = activeFields[col].fglField.defaultValue;
             }
             drawArrAll();
         }
@@ -207,9 +209,9 @@ namespace AubitDesktop
         {
             mainWin.clrErrorTextFromFieldValidation();
             copyFieldData();
-            if (arrLine < nRows || (arrLine<maxRows && allowInsert && !noNewLines))
+            if (arrLine < nRows || (arrLine < maxRows && allowInsert && !noNewLines))
             {
-                
+
                 // If we've got a before row *and* an after row - we need to send to packets back - but 
                 // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
                 // so - we'll store the movement and do it later...
@@ -241,7 +243,7 @@ namespace AubitDesktop
                     }
 
                 }
-         
+
             }
             else
             {
@@ -252,7 +254,7 @@ namespace AubitDesktop
 
         private void moveDown()
         {
-            
+
             arrLine++;
             scrLine++;
             if (scrLine > scrRecLines)
@@ -271,7 +273,7 @@ namespace AubitDesktop
 
         private void movePgDown()
         {
-            
+
             arrLine += this.scrRecLines;
             if (arrLine > this.nRows)
             {
@@ -285,7 +287,7 @@ namespace AubitDesktop
 
         private void movePgUp()
         {
-            
+
             if (arrLine <= scrLine) scrLine = 1;
             arrLine = arrLine - this.scrRecLines;
             while (arrLine - scrLine < 0) arrLine++;
@@ -313,21 +315,21 @@ namespace AubitDesktop
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeUp;
                     sendTrigger(afterRow.ID);
-                   // this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                    // this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
 
                 }
                 else
                 {
-                        sendTrigger(afterRow.ID);
-                        //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-                    
+                    //sendTrigger(afterRow.ID);
+                    //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+
 
                     moveUp();
 
 
 
                     sendTrigger(beforeRow.ID);
-                       // this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+                    // this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
 
 
                 }
@@ -359,11 +361,11 @@ namespace AubitDesktop
 
         private void copyFieldData()
         {
-            
+
             int topline;
-            
-            
-            
+
+
+
             topline = arrLine - scrLine + 1;
 
             for (int row = 0; row < scrRecLines; row++)
@@ -373,11 +375,12 @@ namespace AubitDesktop
                     string olddata;
                     string newdata;
                     olddata = Data[row + topline - 1, col];
-                    newdata=this.screenRecord[row,col].fglField.Text;
-                    if (olddata!=newdata) {
-                        rowDataChanged[row+topline-1]=true;
-                        Data[row+topline-1, col] =newdata;
-                    
+                    newdata = this.screenRecord[row, col].fglField.Text;
+                    if (olddata != newdata)
+                    {
+                        rowDataChanged[row + topline - 1] = true;
+                        Data[row + topline - 1, col] = newdata;
+
                     }
                 }
             }
@@ -414,8 +417,8 @@ namespace AubitDesktop
                     if (beforeRow != null)
                     {
                         sendTrigger(beforeRow.ID);
-                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-                        
+                        //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+
                     }
 
                 }
@@ -443,25 +446,25 @@ namespace AubitDesktop
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypePageDown;
                     sendTrigger(afterRow.ID);
-                    
+
 
                 }
                 else
                 {
                     if (afterRow != null)
                     {
-                      
-                            sendTrigger(afterRow.ID);
-                            
-                      
+
+                        sendTrigger(afterRow.ID);
+
+
                     }
 
                     movePgDown();
                     if (beforeRow != null)
                     {
-                       
-                            sendTrigger(beforeRow.ID);
-                       
+
+                        sendTrigger(beforeRow.ID);
+
 
                     }
 
@@ -481,7 +484,7 @@ namespace AubitDesktop
             this.eventTriggered(null, "ACCEPT", getTriggeredText("ACCEPT"), this);
         }
 
-       
+
 
         public UIInputArrayContext(FGLApplicationPanel f, INPUTARRAY p)
         {
@@ -497,18 +500,18 @@ namespace AubitDesktop
             this.lastarrLine = -1;
             this.nRows = Convert.ToInt32(p.ARRCOUNT);
             this.maxRows = Convert.ToInt32(p.MAXARRSIZE);
-            
-                this.noNewLines = decode_bool_from_xml(p.NONEWLINES);
 
-                this.allowInsert = decode_bool_from_xml(p.ALLOWINSERT);
-                this.allowDelete = decode_bool_from_xml(p.ALLOWDELETE);
+            this.noNewLines = decode_bool_from_xml(p.NONEWLINES);
 
-            
+            this.allowInsert = decode_bool_from_xml(p.ALLOWINSERT);
+            this.allowDelete = decode_bool_from_xml(p.ALLOWDELETE);
+
+
 
             setCurrentField = null;
             CurrentField = null;
             CurrentFieldNo = -1;
-            
+
             beforeRow = null;
             afterRow = null;
 
@@ -517,7 +520,7 @@ namespace AubitDesktop
             onActionList = new List<ON_ACTION_EVENT>();
 
 
-            this.Data=new string[Convert.ToInt32(p.MAXARRSIZE),nCols];
+            this.Data = new string[Convert.ToInt32(p.MAXARRSIZE), nCols];
             this.rowDataChanged = new bool[Convert.ToInt32(p.MAXARRSIZE)];
 
             for (int a = 0; a < Convert.ToInt32(p.MAXARRSIZE); a++)
@@ -589,13 +592,13 @@ namespace AubitDesktop
             activeFields = f.FindFieldArray(p.FIELDLIST);
             scrRecLines = activeFields.Count / nCols;
             cnt = 0;
-            screenRecord = new FGLFoundField[scrRecLines,nCols];
+            screenRecord = new FGLFoundField[scrRecLines, nCols];
             for (int a = 0; a < scrRecLines; a++)
             {
                 //screenRecord[a] = new FGLFoundField[nCols];
                 for (int b = 0; b < nCols; b++)
                 {
-                    screenRecord[a,b] = activeFields[cnt++];
+                    screenRecord[a, b] = activeFields[cnt++];
                 }
             }
 
@@ -620,7 +623,7 @@ namespace AubitDesktop
             if (Convert.ToInt32(p) > 0) return true;
             return false;
 
-            
+
         }
 
 
@@ -628,7 +631,7 @@ namespace AubitDesktop
         {
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line - 1,a].fglField.Text = "";
+                screenRecord[scr_line - 1, a].fglField.Text = "";
             }
         }
 
@@ -640,7 +643,7 @@ namespace AubitDesktop
             scr_line = lineno - topline + 1;
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line - 1,a].fglField.Text = this.Data[lineno - 1,a];
+                screenRecord[scr_line - 1, a].fglField.Text = this.Data[lineno - 1, a];
             }
 
         }
@@ -695,11 +698,11 @@ namespace AubitDesktop
                 {
                     if (row == scrLine - 1)
                     {
-                        screenRecord[row,col].fglField.isOnSelectedRow = true;
+                        screenRecord[row, col].fglField.isOnSelectedRow = true;
                     }
                     else
                     {
-                        screenRecord[row,col].fglField.isOnSelectedRow = false;
+                        screenRecord[row, col].fglField.isOnSelectedRow = false;
                     }
                 }
             }
@@ -709,7 +712,7 @@ namespace AubitDesktop
             {
                 CurrentFieldNo = 0;
             }
-            screenRecord[scrLine - 1,CurrentFieldNo].fglField.setFocus();
+            screenRecord[scrLine - 1, CurrentFieldNo].fglField.setFocus();
 
         }
 
@@ -718,7 +721,7 @@ namespace AubitDesktop
             PendingEvents.Clear();
             foreach (FGLFoundField f in activeFields)
             {
-                if (f.isField(fieldName) )
+                if (f.isField(fieldName))
                 {
                     setCurrentField = f;
                 }
@@ -735,19 +738,19 @@ namespace AubitDesktop
         }
 
         void inputFieldValidationHandler(object source, string failedText, out bool ignore)
-                {
+        {
             ignore = false;
             mainWin.setErrorTextFromFieldValidation(failedText);
-            
+
         }
 
 
-        void inputGotFocus(object source,string comment)
+        void inputGotFocus(object source, string comment)
         {
             int a;
             bool found = false;
 
-            
+
 
 
             Console.WriteLine("In input got focus");
@@ -762,16 +765,16 @@ namespace AubitDesktop
             a = 0;
             foreach (FGLFoundField f in activeFields)
             {
-                
+
                 if (f.fglField == source)
                 {
-                    Console.WriteLine("Found current field... @ "+a);
+                    Console.WriteLine("Found current field... @ " + a);
                     CurrentField = f;
                     break;
                 }
                 a++;
             }
-            
+
 
             // Now work out what field we're on..
             //CurrentFieldNo = -1;
@@ -782,7 +785,7 @@ namespace AubitDesktop
                 {
                     if (this.screenRecord[row, col] == CurrentField)
                     {
-                        Console.WriteLine("Found current field no col="+col+" row="+row);
+                        Console.WriteLine("Found current field no col=" + col + " row=" + row);
                         CurrentFieldNo = col;
                         found = true;
                         break;
@@ -795,12 +798,12 @@ namespace AubitDesktop
             //    MessageBox.Show("Somewhere");
             //}
 
-            Console.WriteLine("Triggered a currentfieldno "+CurrentFieldNo);
+            Console.WriteLine("Triggered a currentfieldno " + CurrentFieldNo);
         }
 
 
 
-        public void befAftFieldTriggered(object source, string ID, string TriggeredText,UIContext u)
+        public void befAftFieldTriggered(object source, string ID, string TriggeredText, UIContext u)
         {
             foreach (FGLFoundField f in activeFields)
             {
@@ -834,24 +837,24 @@ namespace AubitDesktop
         public string getSyncValues()
         {
             string s;
-            
+
             copyFieldData();
 
             s = "<SYNCROWS>";
             for (int row = 0; row < this.nRows; row++)
             {
-                
+
 
                 if (rowDataChanged[row])
                 {
                     s += "<ROW SUBSCRIPT=\"" + (row + 1) + "\">";
                     s += "<SYNCVALUES>";
-                     
+
                     for (int col = 0; col < this.nCols; col++)
                     {
                         FGLFoundField i;
-                            i = activeFields[col]; // we can just use the first set of fields - should be duplicated for the subsequent rows...
-                            s += "<SYNCVALUE FIELDNAME=\"" + i.useName + "\">" + System.Security.SecurityElement.Escape(Data[row,col]) + "</SYNCVALUE>";
+                        i = activeFields[col]; // we can just use the first set of fields - should be duplicated for the subsequent rows...
+                        s += "<SYNCVALUE FIELDNAME=\"" + i.useName + "\">" + System.Security.SecurityElement.Escape(Data[row, col]) + "</SYNCVALUE>";
 
                     }
                     s += "</SYNCVALUES>";
@@ -881,23 +884,56 @@ namespace AubitDesktop
 
 
 
-        public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
+        public void onActionTriggered(object source, string ID, string TriggeredText, UIContext u)
         {
-           /* if (TriggeredText == "")
-            {
-                TriggeredText = getTriggeredText(ID);
-            }*/
+            /* if (TriggeredText == "")
+             {
+                 TriggeredText = getTriggeredText(ID);
+             }*/
             sendTrigger(ID);
             //this.EventTriggered(source, ID, TriggeredText,this);
         }
 
 
-        
+
 
         public void ActivateContext(UIEventHandler UInputArrayContext_EventTriggered, VALUE[] val, ROW[] rows)
         {
             //int cnt = 0;
-            
+
+            #region Copy data from WAITFOREVENT packet
+            if (rows != null)
+            {
+                bool needRedisplay = false;
+                for (int row = 0; row < rows.Length; row++)
+                {
+                    // We should always get a full set of values
+                    for (int a = 0; a < this.nCols; a++)
+                    {
+                        //bool isNew=false;
+
+                        //if (rows[row].VALUES[a].Text == null) isNew = true;
+
+                        if (row > this.nRows)
+                        {
+                            Data[Convert.ToInt32(rows[row].SUBSCRIPT) - 1, a] = activeFields[a].fglField.defaultValue;
+                        }
+                        else
+                        {
+                            Data[Convert.ToInt32(rows[row].SUBSCRIPT) - 1, a] = rows[row].VALUES[a].Text;
+                        }
+                        activeFields[a].fglField.Text = Data[Convert.ToInt32(rows[row].SUBSCRIPT) - 1, a];
+                        needRedisplay = true;
+                    }
+                }
+
+                if (needRedisplay)
+                {
+                    redisplay_arr(true);
+                }
+            }
+            #endregion
+
             if (PendingEvents.Count > 0)
             {
                 string s = PendingEvents[0];
@@ -906,7 +942,7 @@ namespace AubitDesktop
                 DeactivateContext();
             }
 
-     
+
 
             inputFocusActive = false;
 
@@ -915,7 +951,7 @@ namespace AubitDesktop
                 rowDataChanged[row] = false;
             }
 
-            
+
             mainWin.setActiveToolBarKeys(KeyList, true, true, true);
 
             this.eventTriggered = UInputArrayContext_EventTriggered;
@@ -926,7 +962,7 @@ namespace AubitDesktop
 
             if (nextMove != MoveType.MoveTypeNoPendingMovement)
             {
-                
+
                 // Theres a pending movement...
                 switch (nextMove)
                 {
@@ -1085,35 +1121,6 @@ namespace AubitDesktop
             }
             #endregion
 
-            #region Copy data from WAITFOREVENT packet
-            if (rows != null)
-            {
-                bool needRedisplay = false;
-                for (int row= 0; row < rows.Length; row++)
-                {
-                    // We should always get a full set of values
-                    for (int a=0;a<this.nCols;a++) {
-                        //bool isNew=false;
-                        
-                        //if (rows[row].VALUES[a].Text == null) isNew = true;
-
-                        if (row>this.nRows) {
-                            Data[Convert.ToInt32(rows[row].SUBSCRIPT)-1,a]=activeFields[a].fglField.defaultValue;
-                        } else {
-                            Data[Convert.ToInt32(rows[row].SUBSCRIPT)-1,a]=rows[row].VALUES[a].Text;
-                        }
-                        activeFields[a].fglField.Text = Data[Convert.ToInt32(rows[row].SUBSCRIPT)-1, a];
-                        needRedisplay = true;
-                    }
-                }
-
-                if (needRedisplay)
-                {
-                    redisplay_arr(true);
-                }
-            }
-            #endregion
-
             if (!_contextIsActive)
             {
                 _contextIsActive = true;
@@ -1122,18 +1129,18 @@ namespace AubitDesktop
 
 
 
-                //setContextForCurrentRow();
-                setFocusToCurrentRow();
-                inputFocusActive = true;
+            //setContextForCurrentRow();
+            setFocusToCurrentRow();
+            inputFocusActive = true;
 
-                if (CurrentField.subscript == scrLine)
-                {
+            if (CurrentField.subscript == scrLine)
+            {
                 if (!CurrentField.fglField.hasFocus)
                 {
                     CurrentField.fglField.setFocus();
                 }
             }
-            
+
         }
 
         private void setContextForCurrentRow()
@@ -1142,7 +1149,7 @@ namespace AubitDesktop
             bool wasinputFocusActive;
             wasinputFocusActive = inputFocusActive;
             inputFocusActive = false;
-            List<FGLFoundField> currrow=new List<FGLFoundField>();
+            List<FGLFoundField> currrow = new List<FGLFoundField>();
             for (int row = 0; row < scrRecLines; row++)
             {
                 for (a = 0; a < this.nCols; a++)
@@ -1150,8 +1157,8 @@ namespace AubitDesktop
                     currrow.Add(screenRecord[row, a]);
                 }
             }
-            
-            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this,KeyList);
+
+            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this, KeyList);
             inputFocusActive = wasinputFocusActive;
         }
 

@@ -47,7 +47,7 @@ namespace AubitDesktop
                         if (_currentField.fglField.afterFieldID != "")
                         {
                             sendTrigger(_currentField.fglField.afterFieldID);
-                           // DeactivateContext();
+                            // DeactivateContext();
                         }
                     }
                     Console.WriteLine("Change in field");
@@ -74,7 +74,7 @@ namespace AubitDesktop
         private List<BEFORE_FIELD_EVENT> beforeFieldList;
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
-       // private FGLWidget currentWidget = null;
+        // private FGLWidget currentWidget = null;
 
 
         List<string> PendingEvents;
@@ -85,7 +85,7 @@ namespace AubitDesktop
             return _contextIsActive;
         }
 
-       public  bool useKeyPress(KeyEventArgs ke)
+        public bool useKeyPress(KeyEventArgs ke)
         {
             return false;
         }
@@ -160,10 +160,10 @@ namespace AubitDesktop
             }
 
             mainWin = f;
-            
+
             activeFields = f.FindFields(i.FIELDLIST);
             activeFields[0].fglField.setFocus();
-            
+
         }
 
 
@@ -229,7 +229,16 @@ namespace AubitDesktop
             {
                 cfield = "";
             }
-            return "<TRIGGERED ID=\"" + ID + "\" "+cfield+" LASTKEY=\""+mainWin.LastKey+"\""+"/>";
+
+            if (ID == "ACCEPT")
+            {
+                return "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
+            }
+            else
+            {
+                return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\"" + "/>";
+            }
+
         }
 
 
@@ -245,7 +254,7 @@ namespace AubitDesktop
             }
         }
 
-        public void ActionFieldTriggered(object source, string ID, string TriggeredText,UIContext u)
+        public void ActionFieldTriggered(object source, string ID, string TriggeredText, UIContext u)
         {
             foreach (FGLFoundField f in activeFields)
             {
@@ -260,15 +269,15 @@ namespace AubitDesktop
             {
                 sendTrigger(ID);
             }
-          
-            
+
+
         }
 
 
 
 
 
-        public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
+        public void onActionTriggered(object source, string ID, string TriggeredText, UIContext u)
         {
 
             sendTrigger(ID);
@@ -282,7 +291,7 @@ namespace AubitDesktop
         }
 
 
-        void inputGotFocus(object source,string comment)
+        void inputGotFocus(object source, string comment)
         {
             foreach (FGLFoundField f in activeFields)
             {
@@ -316,7 +325,15 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    f.fglField.Text = values[cnt++].Text;
+                    if (f.fglField.Text == "")
+                    {
+                        f.fglField.Text = values[cnt++].Text;
+                    }
+                    else
+                    {
+                        cnt++;
+                    }
+
                 }
             }
 
@@ -330,13 +347,14 @@ namespace AubitDesktop
             }
 
 
-            mainWin.SetContext(FGLContextType.ContextInput, activeFields, this,KeyList);
-            mainWin.setActiveToolBarKeys(KeyList,true);
+            mainWin.SetContext(FGLContextType.ContextInput, activeFields, this, KeyList);
+            mainWin.setActiveToolBarKeys(KeyList, true);
 
 
             this.EventTriggered = UIInputContext_EventTriggered;
 
-            foreach (FGLFoundField f in activeFields) {
+            foreach (FGLFoundField f in activeFields)
+            {
                 f.fglField.fieldValidationFailed = inputFieldValidationHandler;
                 f.fglField.onGotFocus = inputGotFocus;
                 f.fglField.onUIEvent = onActionTriggered;
@@ -367,7 +385,7 @@ namespace AubitDesktop
             foreach (AFTER_FIELD_EVENT e in afterFieldList)
             {
                 List<FGLFoundField> ff = mainWin.FindField(e.FIELD);
-                
+
                 if (ff == null)
                 {
                     throw new ApplicationException("field not found :" + e.FIELD);
@@ -377,9 +395,10 @@ namespace AubitDesktop
                     throw new ApplicationException("field not found : " + e.FIELD);
                 }
 
-                foreach (FGLFoundField ffield in ff) {
+                foreach (FGLFoundField ffield in ff)
+                {
                     ffield.fglField.afterFieldID = e.ID;
-                    
+
                 }
 
             }
@@ -415,11 +434,10 @@ namespace AubitDesktop
             //
             foreach (ON_ACTION_EVENT e in onActionList)
             {
-                foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION)) 
-               
+                foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION))
                 {
                     ffield.fglField.onActionID = e.ID;
-                    
+
                     ffield.fglField.Enabled = true;
                     ffield.fglField.ContextType = FGLContextType.ContextInput;
                 }
@@ -430,15 +448,15 @@ namespace AubitDesktop
 
 
 
-                
-                
-                
-            
+
+
+
+
 
 
 
             //Application.DoEvents();
-            
+
         }
 
 
@@ -462,7 +480,7 @@ namespace AubitDesktop
             //mainWin.setActiveToolBarKeys(null);
             _contextIsActive = false;
             EventTriggered = null;
-            
+
         }
     }
 }
