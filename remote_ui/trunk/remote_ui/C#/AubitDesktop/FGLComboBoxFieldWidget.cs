@@ -473,7 +473,7 @@ namespace AubitDesktop
 
             t.CausesValidation = true;
             t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-            t.Enter += new EventHandler(t_GotFocus);
+            t.GotFocus += new EventHandler(t_GotFocus);
             //t.Click += new EventHandler(t_Click);
 
 

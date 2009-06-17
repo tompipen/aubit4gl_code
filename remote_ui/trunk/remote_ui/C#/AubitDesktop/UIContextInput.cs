@@ -31,6 +31,7 @@ namespace AubitDesktop
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
         private FGLFoundField _currentField;
+        private bool settingNextField = false;
 
         private FGLFoundField CurrentField
         {
@@ -44,15 +45,18 @@ namespace AubitDesktop
                 {
                     if (_currentField != null)
                     {
-                        if (_currentField.fglField.afterFieldID != "")
+                        if (_currentField.fglField.afterFieldID != "" && settingNextField==false)
                         {
                             sendTrigger(_currentField.fglField.afterFieldID);
+                            settingNextField = true;
+                            setCurrentField = value;
+                            return;
                             // DeactivateContext();
                         }
                     }
                     Console.WriteLine("Change in field");
                 }
-
+                settingNextField = false;
                 _currentField = value;
 
                 if (_currentField != null)
@@ -236,7 +240,7 @@ namespace AubitDesktop
             }
             else
             {
-                return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\"" + "/>";
+                return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\"" + ">" + getSyncValues()+"</TRIGGERED>";
             }
 
         }
@@ -252,6 +256,7 @@ namespace AubitDesktop
                     setCurrentField = f;
                 }
             }
+            PendingEvents.Clear();
         }
 
         public void ActionFieldTriggered(object source, string ID, string TriggeredText, UIContext u)
@@ -308,6 +313,10 @@ namespace AubitDesktop
         public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             int cnt = 0;
+            int tstop = 0;
+           
+
+            Console.WriteLine("Activating context..");
 
             if (!_contextIsActive)
             {
@@ -319,13 +328,14 @@ namespace AubitDesktop
 
             foreach (FGLFoundField f in activeFields)
             {
+                Console.WriteLine(f.fullName);
                 if (values == null)
                 {
                     f.fglField.Text = f.fglField.defaultValue;
                 }
                 else
                 {
-                    if (f.fglField.Text == "")
+                    if (f.fglField.Text == "" || true)
                     {
                         f.fglField.Text = values[cnt++].Text;
                     }
@@ -335,6 +345,7 @@ namespace AubitDesktop
                     }
 
                 }
+                f.fglField.tabIndex = tstop++;
             }
 
 
@@ -374,6 +385,9 @@ namespace AubitDesktop
                 CurrentField = activeFields[0];
                 CurrentField.fglField.setFocus();
             }
+
+            CurrentField.fglField.setFocus();
+            
 
             //mainWin.CommentText = CurrentField.fglField.comment;
 

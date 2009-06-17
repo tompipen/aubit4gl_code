@@ -604,6 +604,7 @@ namespace AubitDesktop
             {
 
                 b = new Button();
+                b.TabStop = false;
                 if (configSettings["TEXT"] != null)
                 {
                     b.Text = (string)configSettings["TEXT"];
