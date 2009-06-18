@@ -934,6 +934,7 @@ namespace AubitDesktop
             }
             #endregion
 
+            this.eventTriggered = UInputArrayContext_EventTriggered;
             if (PendingEvents.Count > 0)
             {
                 string s = PendingEvents[0];
@@ -954,7 +955,7 @@ namespace AubitDesktop
 
             mainWin.setActiveToolBarKeys(KeyList, true, true, true);
 
-            this.eventTriggered = UInputArrayContext_EventTriggered;
+
 
 
 
