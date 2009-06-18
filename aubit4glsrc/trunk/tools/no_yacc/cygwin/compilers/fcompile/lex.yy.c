@@ -3221,11 +3221,8 @@ if (ignorekw!=1) REJECT;
                         test_extend=1;
                 }
                 if (
+			 ((strcmp(yytext,"p")==0 || strcmp(yytext,"q")==0 || strcmp(yytext,"b")==0 || strcmp(yytext,"d")==0 ) &&fstart==-1) ||
                         strcmp(yytext,"+")==0 ||
-                        strcmp(yytext,"p")==0 ||
-                        strcmp(yytext,"q")==0 ||
-                        strcmp(yytext,"b")==0 ||
-                        strcmp(yytext,"d")==0 ||
                         strcmp(yytext,"-")==0 ||
                         strcmp(yytext,"|")==0 ||
                         (test_extend && (
@@ -3245,7 +3242,7 @@ return(NAMED);}
 	YY_BREAK
 case 241:
 YY_RULE_SETUP
-#line 411 "screen.lex"
+#line 408 "screen.lex"
 {
         if (ignorekw==0) REJECT;
 	strcpy(yylval.str,yytext);
@@ -3255,11 +3252,10 @@ YY_RULE_SETUP
 			test_extend=1;
 		}
 		if (
+			 ((strcmp(yytext,"p")==0 || strcmp(yytext,"q")==0 || strcmp(yytext,"b")==0 || strcmp(yytext,"d")==0 ) &&fstart==-1)
+
+			||
 			strcmp(yytext,"+")==0 ||
-			strcmp(yytext,"p")==0 ||
-			strcmp(yytext,"q")==0 ||
-			strcmp(yytext,"b")==0 ||
-			strcmp(yytext,"d")==0 ||
 			strcmp(yytext,"-")==0 ||
 			strcmp(yytext,"|")==0 ||
 			(test_extend && ( 
@@ -3281,10 +3277,10 @@ return CH;
 	YY_BREAK
 case 242:
 YY_RULE_SETUP
-#line 444 "screen.lex"
+#line 440 "screen.lex"
 ECHO;
 	YY_BREAK
-#line 3288 "lex.yy.c"
+#line 3284 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 			case YY_STATE_EOF(comment):
 			case YY_STATE_EOF(instructions):
@@ -4281,7 +4277,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 444 "screen.lex"
+#line 440 "screen.lex"
 
 
 
