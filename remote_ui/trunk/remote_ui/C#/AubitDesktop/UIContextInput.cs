@@ -31,7 +31,7 @@ namespace AubitDesktop
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
         private FGLFoundField _currentField;
-        private bool settingNextField = false;
+
 
         private FGLFoundField CurrentField
         {
@@ -41,32 +41,10 @@ namespace AubitDesktop
             }
             set
             {
-                if (_currentField != value)
-                {
-                    if (_currentField != null)
-                    {
-                        if (_currentField.fglField.afterFieldID != "" && settingNextField==false)
-                        {
-                            sendTrigger(_currentField.fglField.afterFieldID);
-                            settingNextField = true;
-                            setCurrentField = value;
-                            return;
-                            // DeactivateContext();
-                        }
-                    }
-                    Console.WriteLine("Change in field");
-                }
-                settingNextField = false;
                 _currentField = value;
 
-                if (_currentField != null)
-                {
-                    if (_currentField.fglField.beforeFieldID != "")
-                    {
-                        sendTrigger(_currentField.fglField.beforeFieldID);
-                        DeactivateContext();
-                    }
-                }
+
+
             }
         }
 
@@ -298,17 +276,52 @@ namespace AubitDesktop
 
         void inputGotFocus(object source, string comment)
         {
+            bool setField = false;
+            FGLFoundField field=null;
             foreach (FGLFoundField f in activeFields)
             {
                 if (f.fglField == source)
                 {
-                    CurrentField = f;
+                    field = f;
                     break;
                 }
             }
 
             mainWin.CommentText = comment;
+
+            if (CurrentField == field) return;
+            if (field == setCurrentField) return;
+
+            if (CurrentField != null)
+            {
+                if (CurrentField.fglField.afterFieldID != "")
+                {
+                    sendTrigger(CurrentField.fglField.afterFieldID);
+                    setField = true;
+                }
+            }
+
+            CurrentField = field;
+
+            
+            if (CurrentField != null)
+            {
+                if (CurrentField.fglField.beforeFieldID != "")
+                {
+                    setField = true;
+                    sendTrigger(CurrentField.fglField.beforeFieldID);
+                }
+            }
+
+            if (setField)
+            {
+                // The context will be deactivated - so we need to say where we're going next...
+                setCurrentField = field;
+            }
+
         }
+
+
 
         public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
@@ -348,13 +361,14 @@ namespace AubitDesktop
                 f.fglField.tabIndex = tstop++;
             }
 
-
+            this.EventTriggered = UIInputContext_EventTriggered;
             if (PendingEvents.Count > 0)
             {
                 string s = PendingEvents[0];
                 PendingEvents.RemoveAt(0);
                 sendTrigger(s);
-                DeactivateContext();
+                //DeactivateContext();
+                return;
             }
 
 
@@ -362,7 +376,7 @@ namespace AubitDesktop
             mainWin.setActiveToolBarKeys(KeyList, true);
 
 
-            this.EventTriggered = UIInputContext_EventTriggered;
+           
 
             foreach (FGLFoundField f in activeFields)
             {
@@ -374,9 +388,12 @@ namespace AubitDesktop
 
             if (setCurrentField != null) // Next field has been registered..
             {
+                
                 CurrentField = setCurrentField;
+                
                 CurrentField.fglField.setFocus();
                 setCurrentField = null;
+
             }
 
 
