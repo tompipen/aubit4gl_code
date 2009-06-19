@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.225 2009-06-16 13:44:07 mikeaubury Exp $
+# $Id: ioform.c,v 1.226 2009-06-19 16:18:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.225 2009-06-16 13:44:07 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.226 2009-06-19 16:18:11 mikeaubury Exp $";
 #endif
 
 /**
@@ -953,9 +953,9 @@ if (A4GL_input_required_handling()==REQUIRED_TYPE_FIELD) {
 	      fprop = (struct struct_scr_field *) (field_userptr (f));
 	      A4GL_debug ("fprop=%p", fprop);
 
- 		if (A4GL_has_bool_attribute (fprop, FA_B_NOTNULL)) { // Force a 'REQUIRED' check for any "not null" fields..
-			chk_required=1;
- 		}
+ 		//if (A4GL_has_bool_attribute (fprop, FA_B_NOTNULL)) { // Force a 'REQUIRED' check for any "not null" fields..
+			//chk_required=1;
+ 		//}
 
 	      if (fprop != 0)
 		{
