@@ -88,6 +88,8 @@ int nlints=0;
 	{"LABELNOTUSED",2},
 	{"MADMATH",6},
 	{"WHENDUP",6},
+	{"MODNOTCALLEDUNSAFE",2},
+	{"MODNOTCALLEDSAFE",6},
 
     {
     NULL, 0}
@@ -1417,7 +1419,6 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		char *s;
 		char *s2;
 		int next;
-		int found;
 		  expr_str *expr;
 		  //int is_string;
 		  	expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
@@ -1441,11 +1442,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 	    {
 	      for (b = 0; b < r->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; b++)
 		{
-		char *s;
-		char *s2;
-		int next;
 		  expr_str *expr;
-		  //int is_string;
 		  	expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
 
 
@@ -3802,6 +3799,125 @@ find_module (module_definition * mods, int nmodules, char *name)
 }
 
 
+
+
+static int isCalledFromOtherModule(module_definition *mod, char *module, char *function) {
+int a;
+int b;
+char *called_from;
+call_list *l=NULL;
+
+// We need to check if a function is called from a function in another module...
+// It might well be that *that* function isn't called from MAIN - but if we the
+// module containing this function then we'll end up with a link error..
+// So - this is basically the switch between a MODNOTCALLEDSAFE and MODNOTCALLEDUNSAFE types
+  for (a = 0; a < mod->module_entries.module_entries_len; a++) {
+      struct module_entry *m;
+      m = mod->module_entries.module_entries_val[a];
+	l=NULL;
+	called_from=NULL;
+      switch (m->met_type)
+	{
+	case E_MET_FUNCTION_DEFINITION:
+	  {
+	    struct s_function_definition *f;
+	    f = &m->module_entry_u.function_definition;
+
+	    called_from=f->funcname;
+
+            l=&f->call_list;
+	  }
+	  break;
+
+	case E_MET_MAIN_DEFINITION:
+	  {
+	    struct s_function_definition *f;
+	    f = &m->module_entry_u.function_definition;
+            l=&f->call_list;
+	    called_from=f->funcname;
+	  }
+	  break;
+
+	case E_MET_REPORT_DEFINITION:
+	  {
+	    struct s_report_definition *fr;
+	    fr = &m->module_entry_u.report_definition;
+            l=&fr->call_list;
+	    called_from=fr->funcname;
+	} 
+	break;
+
+	case E_MET_PDF_REPORT_DEFINITION:
+	  {
+	    struct s_pdf_report_definition *fr;
+	    fr = &m->module_entry_u.pdf_report_definition;
+            l=&fr->call_list;
+	    called_from=fr->funcname;
+	  }
+	  break;
+
+	case E_MET_FORMHANDLER_DEFINITION:
+	  printf ("Not implemented yet (E_MET_FORMHANDLER_DEFINITION.1)\n");
+	  exit (4);
+	  break;
+
+	case E_MET_CMD:
+	  {
+	    struct command *c;
+	    c = m->module_entry_u.cmd;
+	    if (c->cmd_data.type == E_CMD_LINT_IGNORE_CMD)
+	      {
+		set_lint_ignore (c);
+	      }
+
+	  }
+	  break;
+
+
+	default:
+	  break;		// Cant have a function prototype
+	}
+	if (l==NULL) continue;
+	
+
+  for (b = 0; b < l->calls_by_expr.calls_by_expr_len; b++)
+    {
+      expr_str *e;
+      e = l->calls_by_expr.calls_by_expr_val[b];
+
+      if (e->expr_type == ET_EXPR_SHARED_FCALL)
+	{
+	  // just continue..
+	  continue;
+	}
+
+      if (e->expr_type == ET_EXPR_BOUND_FCALL)
+	{
+	  continue;
+	}
+
+      if (e->expr_type == ET_EXPR_FCALL)
+	{
+	if (strcmp( e->expr_str_u.expr_function_call->fname,function)==0) {	
+		char buff1[2000];
+		char buff2[2000];
+		strcpy(buff1,e->expr_str_u.expr_function_call->module);
+		if (!strstr(buff1,".4gl")) { strcat(buff1,".4gl"); }
+		strcpy(buff2,module);
+		if (!strstr(buff2,".4gl")) { strcat(buff2,".4gl"); }
+			if (strcmp(buff1,buff2)!=0) {
+				//printf("Called %s %s %s %s!\n", called_from,function, buff1,buff2);
+				return 1;
+			}
+		}
+
+
+	}
+  }
+}
+return 0;
+}
+
 int
 check_program (module_definition * mods, int nmodules)
 {
@@ -3815,6 +3931,7 @@ check_program (module_definition * mods, int nmodules)
   char *fname;
   int mcnt;
   int fromLibrary[50000];
+int isCalled=0;
 
 
   init_lint ();
@@ -4299,10 +4416,16 @@ check_program (module_definition * mods, int nmodules)
 	  switch (m->met_type)
 	    {
 	    case E_MET_FUNCTION_DEFINITION:
+
 	      fno = find_function (m->module_entry_u.function_definition.funcname);
-	      if (calltree[fno])
+	      if (calltree[fno]) {
 		mod_used++;
+		}
+	      if (isCalledFromOtherModule(&this_module, m->module_entry_u.function_definition.module, m->module_entry_u.function_definition.funcname)) {
+			isCalled++;
+	      }
 	      break;
+
 
 	    default:
 	      mod_used++;
@@ -4345,7 +4468,12 @@ check_program (module_definition * mods, int nmodules)
 	  if (has_something)
 	    {
 		if (mods[a].moduleIsInLibrary==0) {
-	      		A4GL_lint (mods[a].module_name, 1, "MODNOTCALLED", "No Functions are called", 0);
+			if (isCalled) {
+				//printf("------------------------>%s\n", m->module_entry_u.function_definition.funcname);
+	      			A4GL_lint (mods[a].module_name, 1, "MODNOTCALLEDUNSAFE", "No functions can be called from MAIN", 0);
+			} else {
+	      			A4GL_lint (mods[a].module_name, 1, "MODNOTCALLEDSAFE", "No Functions are called", 0);
+			}
 		}
 	    }
 	  else
@@ -4871,7 +4999,6 @@ return buff;
 }
 
 static void dump_function_definitions(void) {
-  int b;
   int a;
 
   fprintf(lintfile,"<FUNCTIONS>\n");
