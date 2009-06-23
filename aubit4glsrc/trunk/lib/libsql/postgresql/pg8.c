@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.100 2009-06-13 10:23:49 mikeaubury Exp $
+# $Id: pg8.c,v 1.101 2009-06-23 10:33:26 mikeaubury Exp $
 #*/
 
 
@@ -1687,7 +1687,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 
 
-  if (currServerVersion >= 80200)
+  if (currServerVersion >= 80200 || !A4GL_isno(acl_getenv("PG8USEINSERTRETURN")))
     {
 
       use_insert_return = 1;
