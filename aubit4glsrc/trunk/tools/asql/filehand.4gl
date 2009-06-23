@@ -131,6 +131,7 @@ if lv_type="ALL" or get_type_id(lv_type)==a then
 	let lv_fname=mv_tmpinfile[a]
 code
 	A4GL_trim(lv_fname);
+	//A4GL_assertion(strcmp(lv_fname,"/tmp/mja1.out")==0,"UNLINK MY FILE1");
 	unlink(lv_fname);
 endcode
 end if
@@ -468,6 +469,7 @@ int a;
 for (a=0;a<1000;a++) {
 	if (used_files[a]) {
 		//printf("DELETE %s\n",used_files[a]);
+			//A4GL_assertion(strcmp(used_files[a],"/tmp/mja1.out")==0,"UNLINK MY FILE2");
 		unlink(used_files[a]);
 	}
 }
@@ -569,6 +571,7 @@ function remove_file(lv_fname)
 define lv_fname char(512)
 code
 A4GL_trim(lv_fname);
+	//A4GL_assertion(strcmp(lv_fname,"/tmp/mja1.out")==0,"UNLINK MY FILE3");
 unlink(lv_fname);
 endcode
 end function

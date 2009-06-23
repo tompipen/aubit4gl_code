@@ -916,7 +916,8 @@ A4GL_trim(lv_name);
 if (lv_fmode[0]=='f')  {
 	A4GL_debug("OUTPUT fopen(%s,%s)",lv_name,lv_amode);
 	lv_out=(long)fopen(lv_name,lv_amode);
-	add_temp_file(lv_name);
+	// This shouldn't be a 'temp_file' - they've requested it as an output file!
+	//add_temp_file(lv_name);
 } else {
 	A4GL_push_char("DISPLAY");
 	// Go to line mode..
