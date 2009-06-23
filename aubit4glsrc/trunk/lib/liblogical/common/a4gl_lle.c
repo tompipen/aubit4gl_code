@@ -143,8 +143,10 @@ struct r_report *read_report_output(char *fname) {
 
   if (gzfin == 0)
     {
-        printf ("Unable to open input file : %s\n", fname);
-		A4GL_assertion(1,"Unable to open input");
+	char buff[2000];
+        //printf ("Unable to open input file : %s\n", fname);
+		sprintf(buff, "Unable to open input file : %s",fname);
+		A4GL_assertion(1,buff);
 	return 0;
     }
 
