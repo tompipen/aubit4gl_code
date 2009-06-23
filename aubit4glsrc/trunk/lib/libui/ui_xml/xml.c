@@ -3083,7 +3083,14 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
   int context;
   char *argp;
   int infield;
+
+  if (inp==NULL) {
+		A4GL_exitwith("INFIELD can only be used within the INPUT/INPUT ARRAY/CONSTRUCT for the XML gui");
+		A4GL_push_int(0);
+		return 1;
+  }
   A4GL_push_char ("XML");
+  
   A4GL_push_int (((long) inp) & 0xffffffff);
   uilib_get_context (2);
   context = A4GL_pop_int ();
