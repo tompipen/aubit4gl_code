@@ -20,6 +20,7 @@ static int m_arr_curr = 0;
 static int m_scr_line = 0;
 static int m_arr_count = 0;
 char *mLastKey = 0;
+static char lastInfield[255]="";
 
 
 enum ui_state
@@ -1297,6 +1298,11 @@ uilib_free_input (int nargs)
   return 0;
 }
 
+
+static void set_infield(char *inField) {
+	strcpy(lastInfield,inField);
+}
+
 int
 uilib_input_get_values (int nargs)
 {
@@ -1364,6 +1370,7 @@ uilib_input_loop (int nargs)
       // return whatever the before menu was...
       contexts[context].state = UI_INITIALIZED;
       contexts[context].ui.input.infield = 0;
+	set_infield("");
       pushint (0);
       return 1;
     }
@@ -1530,6 +1537,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       if (contexts[context].ui.input.infield)
 	free (contexts[context].ui.input.infield);
       contexts[context].ui.input.infield = strdup (last_attr->infield);
+	set_infield(contexts[context].ui.input.infield);
     }
   pushint (i);
   return 1;
@@ -1840,6 +1848,7 @@ uilib_construct_loop (int nargs)
 	  free (contexts[context].ui.construct.infield);
 	}
       contexts[context].ui.construct.infield = strdup (last_attr->infield);
+	set_infield(contexts[context].ui.construct.infield);
     }
   pushint (i);
   return 1;
@@ -2327,6 +2336,7 @@ uilib_input_array_loop (int n)
       // return whatever the before menu was...
       contexts[context].state = UI_INITIALIZED;
       contexts[context].ui.inputarray.infield = 0;
+	set_infield("");
       pushint (0);
       return 1;
     }
@@ -2362,6 +2372,7 @@ uilib_input_array_loop (int n)
       if (contexts[context].ui.inputarray.infield)
         free (contexts[context].ui.inputarray.infield);
       contexts[context].ui.inputarray.infield = strdup (last_attr->infield);
+	set_infield(contexts[context].ui.inputarray.infield);
     }
 
   m_arr_count = last_attr->arrcount;
@@ -2695,6 +2706,8 @@ uilib_infield (int n)
 	  f = contexts[context].ui.construct.infield;
 	}
 
+    } else {
+	f=lastInfield;
     }
 
   if (f)
@@ -2886,7 +2899,7 @@ uilib_touched (int nargs)
 	  nflist = contexts[context].ui.input.num_field_data;
 	  for (b = 0; b < nfields; b++)
 	    {
-	      int pushed = 0;
+	      //int pushed = 0;
 	      for (a = 0; a < nflist; a++)
 		{
 		  if (field_match (flist[a], fields[b]))

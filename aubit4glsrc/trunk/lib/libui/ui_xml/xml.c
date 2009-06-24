@@ -3080,6 +3080,8 @@ A4GL_debug("Got context as : %d\n",context);
   return rval;
 }
 
+
+
 int
 UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 {
@@ -3089,15 +3091,14 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
   int infield;
 
   if (inp==NULL) {
-		A4GL_exitwith("INFIELD can only be used within the INPUT/INPUT ARRAY/CONSTRUCT for the XML gui");
-		A4GL_push_int(0);
-		return 1;
+	/* It might be an input or an input array - we dont know.. - we have no context - match against the last recorded infield*/
+  	context = -1;
+  } else {
+  	A4GL_push_char ("XML");
+  	A4GL_push_int (((long) inp) & 0xffffffff);
+  	uilib_get_context (2);
+  	context = A4GL_pop_int ();
   }
-  A4GL_push_char ("XML");
-  
-  A4GL_push_int (((long) inp) & 0xffffffff);
-  uilib_get_context (2);
-  context = A4GL_pop_int ();
 
   while ((argp = va_arg (*ap, char *)))
     {
