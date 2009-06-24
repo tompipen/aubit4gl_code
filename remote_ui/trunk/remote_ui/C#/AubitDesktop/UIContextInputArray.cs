@@ -33,7 +33,7 @@ namespace AubitDesktop
         private bool _contextIsActive;
         private FGLApplicationPanel mainWin;
         private List<string> PendingEvents;
-
+        private bool rowIsNew;
         /// <summary>
         /// Set when we want to monitor for focus changes.
         /// Typically - we dont care when setting up/activating the fields
@@ -52,7 +52,9 @@ namespace AubitDesktop
             MoveTypeTo,
             MoveTypePageDown,
             MoveTypePageUp,
-            MoveTypeFirst
+            MoveTypeFirst,
+            MoveTypeInsert,
+            MoveTypeDelete
 
         };
 
@@ -164,7 +166,10 @@ namespace AubitDesktop
                 mainWin.setErrorTextFromFieldValidation("ARR_DEL_MSG");
                 return;
             }
+            nextMove = MoveType.MoveTypeDelete;
+        }
 
+        void doDelete() {
             for (int a = arrLine; a <= nRows; a++)
             {
                 for (int col = 0; col < nCols; col++)
@@ -186,6 +191,7 @@ namespace AubitDesktop
 
         public void InsertkeyPressed()
         {
+            
             if (!allowInsert)
             {
                 mainWin.setErrorTextFromFieldValidation("ARR_INS_MSG");
@@ -197,6 +203,26 @@ namespace AubitDesktop
                 mainWin.setErrorTextFromFieldValidation("INPARRAY_FULL_MSG");
                 return;
             }
+
+            nextMove = MoveType.MoveTypeInsert;
+            if (CurrentField.fglField.afterFieldID!="")
+            {
+                sendTrigger(CurrentField.fglField.afterFieldID);
+            }
+
+            if (beforeInsert!=null)
+            {
+                sendTrigger(beforeInsert.ID);
+            }
+
+
+
+
+        }
+
+
+
+        void doInsert() {
 
             for (int a = nRows; a >= arrLine; a--)
             {
@@ -211,15 +237,24 @@ namespace AubitDesktop
             for (int col = 0; col < nCols; col++)
             {
                 Data[arrLine - 1, col] = activeFields[col].fglField.defaultValue;
+            
             }
+            rowIsNew = true;
             drawArrAll();
         }
 
+
+
         public void downkeyPressed()
         {
+            rowIsNew = false;
             mainWin.clrErrorTextFromFieldValidation();
             copyFieldData();
-            masterSaveFieldNo = CurrentFieldNo; 
+            masterSaveFieldNo = CurrentFieldNo;
+
+
+
+
             if (arrLine < nRows || (arrLine < maxRows && allowInsert && !noNewLines))
             {
                 if (beforeRow != null && afterRow != null)
@@ -239,15 +274,14 @@ namespace AubitDesktop
                     moveDown();
                     if (arrLine >= nRows)
                     {
+                        rowIsNew = true;
                         nRows = arrLine;
                     }
                     if (beforeRow != null)
                     {
                         sendTrigger(beforeRow.ID);
                     }
-
                 }
-
             }
             else
             {
@@ -280,7 +314,6 @@ namespace AubitDesktop
 
         private void movePgDown()
         {
-
             arrLine += this.scrRecLines;
             if (arrLine > this.nRows)
             {
@@ -322,24 +355,12 @@ namespace AubitDesktop
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeUp;
-                    sendTrigger(afterRow.ID);
-                    // this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-
+                    sendTrigger(afterRow.ID);   
                 }
                 else
                 {
-                    //sendTrigger(afterRow.ID);
-                    //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
-
-
                     moveUp();
-
-
-
                     sendTrigger(beforeRow.ID);
-                    // this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-
-
                 }
             }
             else
@@ -351,6 +372,7 @@ namespace AubitDesktop
 
         private void moveUp()
         {
+            rowIsNew = false;
             scrLine--;
             arrLine--;
             if (scrLine == 0)
@@ -396,6 +418,7 @@ namespace AubitDesktop
 
         public void pgUpkeyPressed()
         {
+            rowIsNew = false;
             copyFieldData();
             mainWin.clrErrorTextFromFieldValidation();
 
@@ -441,6 +464,7 @@ namespace AubitDesktop
         public void pgDownkeyPressed()
         {
             copyFieldData();
+            rowIsNew = false;
             mainWin.clrErrorTextFromFieldValidation();
 
             if (arrLine < nRows)
@@ -489,7 +513,11 @@ namespace AubitDesktop
 
         public void toolBarAcceptClicked()
         {
-            this.eventTriggered(null, "ACCEPT", getTriggeredText("ACCEPT"), this);
+            if (CurrentField.fglField.afterFieldID != "")
+            {
+                sendTrigger(CurrentField.fglField.afterFieldID);
+            }
+            sendTrigger("ACCEPT");
         }
 
 
@@ -791,9 +819,9 @@ namespace AubitDesktop
                 if (f.isField(fieldName))
                 {
                     setCurrentField = f;
+                    nextMove = MoveType.MoveTypeNoPendingMovement;
                 }
             }
-            //throw new ApplicationException("INPUT ARRAY cant do nextfields");
         }
 
         public void NavigateToTab()
@@ -1021,11 +1049,12 @@ namespace AubitDesktop
             }
 
 
-            mainWin.setActiveToolBarKeys(KeyList, true, true, true);
+
 
 
             if (nextMove != MoveType.MoveTypeNoPendingMovement)
             {
+                bool sentTrigger = false;
 
                 // Theres a pending movement...
                 switch (nextMove)
@@ -1034,6 +1063,7 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
+                            sentTrigger = true;
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1042,7 +1072,29 @@ namespace AubitDesktop
                         moveUp();
                         if (beforeRow != null)
                         {
-                            sendTrigger(beforeRow.ID);          
+                            sendTrigger(beforeRow.ID);
+                            sentTrigger = true;
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
+                    case MoveType.MoveTypeInsert:
+                        doInsert();
+                        if (afterInsert!=null)
+                        {
+                            sendTrigger(afterInsert.ID);
+                            sentTrigger = true;
+                        }
+                        nextMove = MoveType.MoveTypeNoPendingMovement;
+                        break;
+
+                    case MoveType.MoveTypeDelete:
+                        doDelete();
+                        if (afterDelete != null)
+                        {
+                            sendTrigger(afterDelete.ID);
+                            sentTrigger = true;
+
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1052,6 +1104,7 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
+                            sentTrigger = true;
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1061,6 +1114,7 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
+                            sentTrigger = true;
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1070,12 +1124,17 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
+                            sentTrigger = true;
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
 
                 }
+
+                if (sentTrigger) return; /* we've sent another response - so we dont have anything else to do.. */
             }
+
+            mainWin.setActiveToolBarKeys(KeyList, true, true, true);
             redisplay_arr(true);
 
 

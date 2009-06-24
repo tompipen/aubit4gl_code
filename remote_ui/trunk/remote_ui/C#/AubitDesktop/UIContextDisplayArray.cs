@@ -330,7 +330,15 @@ namespace AubitDesktop
 
         public void toolBarAcceptClicked()
         {
-            string txt= "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            string txt;
+            foreach (ONKEY_EVENT a in KeyList) {
+                if (a.KEY=="ACCEPT"||a.KEY=="2016") {
+                    txt = "<TRIGGERED ID=\""+a.ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+                    this.EventTriggered(null, a.ID, txt, this);
+                    return;
+                }
+            }
+             txt= "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
             this.EventTriggered(null, "ACCEPT", txt, this);            
         }
 

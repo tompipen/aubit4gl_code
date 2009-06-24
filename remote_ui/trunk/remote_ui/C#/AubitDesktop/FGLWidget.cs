@@ -853,11 +853,12 @@ namespace AubitDesktop
         {
 
             Console.WriteLine("Got focus");
-
+            /*
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
                 this.onUIEvent(this, this.beforeFieldID, "",null);
             }
+            */
 
             if (this.onGotFocus != null)
             {
