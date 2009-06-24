@@ -1055,6 +1055,10 @@ decode_event_id (int i)
     {
       return "AFTER INSERT";
     }
+  if (i == A4GL_EVENT_AFTER_DELETE)
+    {
+      return "AFTER DELETE";
+    }
   if (i == A4GL_EVENT_ON_ACTION)
     {
       return "ON ACTION";
