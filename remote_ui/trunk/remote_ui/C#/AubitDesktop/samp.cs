@@ -253,6 +253,15 @@ namespace AubitDesktop
     }
 
     /// <remarks/>
+    public class AFTER_DELETE_EVENT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ID;
+    }
+
+    /// <remarks/>
     public class CLEARWINDOW
     {
 
@@ -391,12 +400,7 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
-        
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_CONSTRUCT_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
@@ -792,11 +796,7 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INPUT_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
@@ -851,13 +851,15 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_FIELD_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_INSERT_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INSERT_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_DELETE_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_DELETE_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INPUT_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
         public object[] EVENTS;
     }
@@ -1021,13 +1023,8 @@ namespace AubitDesktop
         public string ATTRIB_TEXT;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_ROW_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_FIELD_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_INSERT_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
         public object[] EVENTS;
     }
 
