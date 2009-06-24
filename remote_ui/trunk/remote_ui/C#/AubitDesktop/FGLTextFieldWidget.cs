@@ -159,6 +159,7 @@ namespace AubitDesktop
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
+                    
                     l.Visible = true;
                     t.Visible = false;
                     t.ReadOnly = true;

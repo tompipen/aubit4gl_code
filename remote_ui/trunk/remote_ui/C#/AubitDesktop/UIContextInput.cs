@@ -42,9 +42,6 @@ namespace AubitDesktop
             set
             {
                 _currentField = value;
-
-
-
             }
         }
 
@@ -78,7 +75,6 @@ namespace AubitDesktop
             {
                 this.EventTriggered(null, ID, getTriggeredTag(ID), this);
                 this.EventTriggered = null;
-                //DeactivateContext();
             }
             else
             {
@@ -367,7 +363,6 @@ namespace AubitDesktop
                 string s = PendingEvents[0];
                 PendingEvents.RemoveAt(0);
                 sendTrigger(s);
-                //DeactivateContext();
                 return;
             }
 

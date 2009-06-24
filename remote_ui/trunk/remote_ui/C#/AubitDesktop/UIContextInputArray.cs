@@ -43,7 +43,7 @@ namespace AubitDesktop
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
 
-
+        private int masterSaveFieldNo = -1;
         private enum MoveType
         {
             MoveTypeNoPendingMovement,
@@ -53,6 +53,7 @@ namespace AubitDesktop
             MoveTypePageDown,
             MoveTypePageUp,
             MoveTypeFirst
+
         };
 
 
@@ -103,6 +104,10 @@ namespace AubitDesktop
 
         private BEFORE_ROW_EVENT beforeRow;
         private AFTER_ROW_EVENT afterRow;
+        private BEFORE_INSERT_EVENT beforeInsert;
+        private AFTER_INSERT_EVENT afterInsert;
+        private BEFORE_DELETE_EVENT beforeDelete;
+        private AFTER_DELETE_EVENT afterDelete;
 
 
         private List<FGLFoundField> activeFields;
@@ -132,6 +137,9 @@ namespace AubitDesktop
             return false;
         }
 
+
+
+
         private string getTriggeredText(string ID)
         {
             string cfield;
@@ -144,9 +152,10 @@ namespace AubitDesktop
                 cfield = "";
             }
 
-
             return "<TRIGGERED ID=\"" + ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\">" + getSyncValues() + "</TRIGGERED>";
         }
+
+
 
         public void DeletekeyPressed()
         {
@@ -155,6 +164,7 @@ namespace AubitDesktop
                 mainWin.setErrorTextFromFieldValidation("ARR_DEL_MSG");
                 return;
             }
+
             for (int a = arrLine; a <= nRows; a++)
             {
                 for (int col = 0; col < nCols; col++)
@@ -162,13 +172,13 @@ namespace AubitDesktop
                     Data[a - 1, col] = Data[a, col];
                 }
                 rowDataChanged[a - 1] = true;
-
-
             }
+
             for (int col = 0; col < nCols; col++)
             {
                 Data[nRows, col] = "";
             }
+
             rowDataChanged[nRows - 1] = true;
             nRows--;
             drawArrAll();
@@ -209,18 +219,14 @@ namespace AubitDesktop
         {
             mainWin.clrErrorTextFromFieldValidation();
             copyFieldData();
+            masterSaveFieldNo = CurrentFieldNo; 
             if (arrLine < nRows || (arrLine < maxRows && allowInsert && !noNewLines))
             {
-
-                // If we've got a before row *and* an after row - we need to send to packets back - but 
-                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
-                // so - we'll store the movement and do it later...
                 if (beforeRow != null && afterRow != null)
                 {
                     // We've got to send the before/after row triggers..
                     nextMove = MoveType.MoveTypeDown;
                     sendTrigger(afterRow.ID);
-                    //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
 
                 }
                 else
@@ -238,8 +244,6 @@ namespace AubitDesktop
                     if (beforeRow != null)
                     {
                         sendTrigger(beforeRow.ID);
-
-
                     }
 
                 }
@@ -254,7 +258,7 @@ namespace AubitDesktop
 
         private void moveDown()
         {
-
+            
             arrLine++;
             scrLine++;
             if (scrLine > scrRecLines)
@@ -267,7 +271,10 @@ namespace AubitDesktop
                 redisplay_arr(false);
             }
             lastarrLine = arrLine;
+                       
             setFocusToCurrentRow();
+            
+           
         }
 
 
@@ -297,6 +304,7 @@ namespace AubitDesktop
             }
             redisplay_arr(true);
             lastarrLine = arrLine;
+
             setFocusToCurrentRow();
         }
 
@@ -304,7 +312,7 @@ namespace AubitDesktop
         {
             copyFieldData();
             mainWin.clrErrorTextFromFieldValidation();
-
+            masterSaveFieldNo = CurrentFieldNo;
             if (arrLine > 1)
             {
                 // If we've got a before row *and* an after row - we need to send to packets back - but 
@@ -549,6 +557,7 @@ namespace AubitDesktop
                     afterFieldList.Add(e);
                     continue;
                 }
+
                 if (evt is BEFORE_FIELD_EVENT)
                 {
                     BEFORE_FIELD_EVENT e;
@@ -570,6 +579,38 @@ namespace AubitDesktop
                     AFTER_ROW_EVENT e;
                     e = (AFTER_ROW_EVENT)evt;
                     afterRow = e;
+                    continue;
+                }
+
+                if (evt is AFTER_DELETE_EVENT)
+                {
+                    AFTER_DELETE_EVENT e;
+                    e = (AFTER_DELETE_EVENT)evt;
+                    afterDelete = e;
+                    continue;
+                }
+
+                if (evt is BEFORE_DELETE_EVENT)
+                {
+                    BEFORE_DELETE_EVENT e;
+                    e = (BEFORE_DELETE_EVENT)evt;
+                    beforeDelete = e;
+                    continue;
+                }
+
+                if (evt is AFTER_INSERT_EVENT)
+                {
+                    AFTER_INSERT_EVENT e;
+                    e = (AFTER_INSERT_EVENT)evt;
+                    afterInsert = e;
+                    continue;
+                }
+
+                if (evt is BEFORE_INSERT_EVENT)
+                {
+                    BEFORE_INSERT_EVENT e;
+                    e = (BEFORE_INSERT_EVENT)evt;
+                    beforeInsert = e;
                     continue;
                 }
 
@@ -689,9 +730,24 @@ namespace AubitDesktop
             setContextForCurrentRow();
             Console.WriteLine("set focus : CurrentFieldNo=" + CurrentFieldNo);
             int saveCurrentFieldNo;
+            if (masterSaveFieldNo>=0)
+            {
+                saveCurrentFieldNo = masterSaveFieldNo;
+                CurrentFieldNo = saveCurrentFieldNo;
+                masterSaveFieldNo = -1;
+            }
+            else
+            {
 
-            saveCurrentFieldNo = CurrentFieldNo;
+                saveCurrentFieldNo = CurrentFieldNo;
+            }
 
+
+            // We'll do this enable/disable in two parts
+            // so we always have the current row active
+            // until the new row is active...
+            // If we did it in one go - we'd disable the old row befor enabling the new row when moving down...
+            // Enable the new row...
             for (int row = 0; row < this.scrRecLines; row++)
             {
                 for (int col = 0; col < this.nCols; col++)
@@ -700,7 +756,18 @@ namespace AubitDesktop
                     {
                         screenRecord[row, col].fglField.isOnSelectedRow = true;
                     }
-                    else
+                  
+
+                }
+            }
+
+            // Disable the old rows..
+            for (int row = 0; row < this.scrRecLines; row++)
+            {
+                for (int col = 0; col < this.nCols; col++)
+                {
+                                        if (row != scrLine - 1)
+
                     {
                         screenRecord[row, col].fglField.isOnSelectedRow = false;
                     }
@@ -805,6 +872,8 @@ namespace AubitDesktop
 
         public void befAftFieldTriggered(object source, string ID, string TriggeredText, UIContext u)
         {
+            if (inputFocusActive == false) return;
+
             foreach (FGLFoundField f in activeFields)
             {
                 if (f.fglField == source)
@@ -940,7 +1009,6 @@ namespace AubitDesktop
                 string s = PendingEvents[0];
                 PendingEvents.RemoveAt(0);
                 sendTrigger(s);
-                DeactivateContext();
             }
 
 
@@ -954,11 +1022,6 @@ namespace AubitDesktop
 
 
             mainWin.setActiveToolBarKeys(KeyList, true, true, true);
-
-
-
-
-
 
 
             if (nextMove != MoveType.MoveTypeNoPendingMovement)
@@ -979,8 +1042,7 @@ namespace AubitDesktop
                         moveUp();
                         if (beforeRow != null)
                         {
-                            sendTrigger(beforeRow.ID);
-                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
+                            sendTrigger(beforeRow.ID);          
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -990,7 +1052,6 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
-                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID), this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1000,7 +1061,6 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
-                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1010,7 +1070,6 @@ namespace AubitDesktop
                         if (beforeRow != null)
                         {
                             sendTrigger(beforeRow.ID);
-                            //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
                         }
                         nextMove = MoveType.MoveTypeNoPendingMovement;
                         break;
@@ -1019,13 +1078,7 @@ namespace AubitDesktop
             }
             redisplay_arr(true);
 
-            /*
-            if (beforeRow != null && doneBeforeRowForFirst ==false)
-            {
-                doneBeforeRowForFirst = true;
-                this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-            }
-*/
+
             // clear the context context on all fields
             mainWin.SetContext(FGLContextType.ContextNone);
 
@@ -1132,7 +1185,6 @@ namespace AubitDesktop
 
             //setContextForCurrentRow();
             setFocusToCurrentRow();
-            inputFocusActive = true;
 
             if (CurrentField.subscript == scrLine)
             {
@@ -1141,6 +1193,8 @@ namespace AubitDesktop
                     CurrentField.fglField.setFocus();
                 }
             }
+            inputFocusActive = true;
+
 
         }
 
@@ -1168,7 +1222,7 @@ namespace AubitDesktop
         public void DeactivateContext()
         {
             mainWin.setActiveToolBarKeys(null, false);
-
+            inputFocusActive = false;
             mainWin.SetContext(FGLContextType.ContextNone);
 
             eventTriggered = null;

@@ -261,6 +261,16 @@ namespace AubitDesktop
         public string ID;
     }
 
+
+    /// <remarks/>
+    public class BEFORE_DELETE_EVENT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ID;
+    }
+
     /// <remarks/>
     public class CLEARWINDOW
     {
