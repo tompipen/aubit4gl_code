@@ -1,0 +1,14 @@
+Name: libPACKER_PACKED
+Parent: aubit4glsrc
+Description: Used internally by plug-ins and compilers to create and read compiled representation of resource files
+Functionality: PACKER
+Build:
+Example: A4GL_PACKER
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 5
+Todo:
+Notes:
+

@@ -1,0 +1,100 @@
+.\" @(#)$Id: i4glxref.1j,v 1.1 2002-11-28 06:40:47 afalout Exp $
+'\" @(#)Manual page: I4GLXREF -- I4GL program cross-referencing tool
+.so tmac.esee
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-11-28 06:40:47 $)
+.TH I4GLXREF 1J "JLSS Informix Tools"
+.SH NAME
+i4glxref \(em create cross-reference listing of I4GL programs
+.SH SYNOPSIS
+\fBi4glxref\fP [-V] [-f keywordfile] [-p] [file ...]
+.SH DESCRIPTION
+\fBi4glxref\fP produces a cross-reference listing for one or more
+Informix-4GL source files, documenting all the variables and table and
+database usages which it can locate.
+The names are then sorted into dictionary order and presented in a
+format which identifies the file, and the line numbers within each
+file where the names occur.
+.P
+Some of the line numbers have a suffix letter, which will be one of:
+.br
+.nf
+B	database
+D	variable defined
+F	function
+L	variable defined like
+M	main
+R	report
+.sp 0.5v
+f	form opened
+c	cursor declared
+w	window opened
+p	statement prepared
+.br
+.fi
+The line numbers without a suffix letter are references to named
+objects, such as variables, columns, tables, views, synonyms, forms,
+windows, cursors, etc.
+Note that both the variable and the table (and column) are tagged with `L'
+when the declaration uses \s-2LIKE\s0.
+.P
+If only one file is processed, then the format is modified to drop the file
+name column and the colon which follows it.
+.P
+The `\*c-V\*d' option prints out the version number of the program and exits.
+.P
+The `\*c-f\*d' option allows you to specify an alternative list of keywords.
+The standard set is built-in but can be replaced by the contents of a file
+which is in case-insensitive but sorted order, with one keyword per line
+(and no leading or trailing blanks).
+Note that \fBi4glxref\fP will use a certain amount of built-in knowledge to
+determine which keywords are significant.
+.P
+The '\*c-p\*d' option prints out the list of keywords in use and terminates
+without processing any files.
+If the `\*c-f\*d' flag is used, it prints out the keywords in that file.
+Otherwise, it prints out the internal list of keywords.
+.SH EXAMPLE
+Given the file \*cexample.4gl\*d:
+.eS S
+.so example.4gl
+.eE
+and the file \*creport.4gl\*d:
+.eS S
+.so report.4gl
+.eE
+and the file \*cfunction.4gl\*d:
+.eS S
+.so function.4gl
+.eE
+\fBi4glxref\fP produces the output:
+.eS S
+.so example.out
+.eE
+.SH "SEE ALSO"
+sqlfmt(1J)
+.SH FILES
+fglxref \(em program which examines source code
+.SH DIAGNOSTICS
+Only if it can't open files, or if your version of AWK(1) does not
+support functions, or if it can't find SORT(1).
+.SH BUGS
+\fBi4glxref\fP uses the modern version of \fBawk\fP which supports functions.
+It assumes that it is called \fInawk\fP, though this can be over-ridden
+by specifying the environment variable AWK.
+.P
+If the source code uses words which \fBi4glxref\fP thinks are keywords
+as variables, it will not print out all your variables.
+You might want to tailor the list of keywords using the `\*c-f\*d' option.
+.P
+Things hidden inside strings (such as prepared select statements)
+remain hidden, and therefore are not cross-referenced.
+.P
+If there are more than 10,000 lines in a file, the output becomes imperfectly
+columnar \(em and the author of the I4GL code containing 10,000 lines in a single
+file should be shot!
+.SH AUTHOR
+Jonathan Leffler
+.br
+JLSS
+.br
+4th November 1998

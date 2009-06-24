@@ -1,0 +1,115 @@
+if [ "$1" = "" ]; then
+   echo "Debe Digitar Base de Datos (aexpxport <dbname>)"
+else
+   if (test -s $1.exp); then
+      echo "Directorio de exportacion ya existe ...($1.exp)"
+   else
+      mkdir -p $1.exp
+      chmod 777 $1.exp
+      cd $1.exp
+      echo "\o systab.out" >tab.sql
+      echo "\a           " >>tab.sql
+      echo "\t           " >>tab.sql
+      echo "select tabname from systables where substr(tabname,1,2)!='pg';" >>tab.sql
+      >$1.sql
+      >$1.down
+      DL=\|
+      DL=,
+      echo "Delimitador: $DL "
+      sleep 2
+      psql -d $1 -f tab.sql -q
+      echo "systables " >>systab.out
+      echo "sysusers " >>systab.out
+      echo "sysindexes " >>systab.out
+      echo "syscolumns " >>systab.out
+      for t in `cat systab.out`
+      do
+        pg_dump $1 -t $t -f $t.sql -s
+        awk -v path=$PWD -v deli=$DL '{
+           swctab=substr($0,1,12)
+           if (swctab=="CREATE TABLE")
+           {
+             tab=substr($0,14,15)
+             vr=1
+           }
+
+           swview=substr($0,1,11)
+           if (swview=="CREATE VIEW")
+           {
+             vv=1
+             vr=0
+           }
+
+           swendv=substr($0,1,11)
+           if (swendv=="ALTER TABLE")
+           {
+              if (vv=="1")
+              {
+                vv=0
+              }
+           }
+
+           vrow=substr($0,1,200)
+           if (vv=="1")
+           {
+             print vrow
+           }
+
+           vrow=substr($0,1,180)
+           if (vr=="1")
+           {
+             print  vrow
+           }
+   
+           swctab=substr($0,1,2)
+           if (swctab==");")
+           {
+             print ""
+             print "COPY " tab " from " "X" path "/" tab "X" " using delimiters X" deli "X with null as XX;"
+             vr=2
+           }
+     
+           if (vr=="2")
+           {
+             print ""
+             print ""
+             vr=0
+           }
+         }' $t.sql > $1.sq2;
+         cp -f $1.sq2 $1.sq3
+         echo "sed -e \"s/( from/ from/g\" < $1.sq3 >$1.sq2" >dep.sh
+         sh dep.sh
+         cp -f $1.sq2 $1.sq3
+         echo "sed -e \"s/ (X/\.unl\'/g\" < $1.sq3 >$1.sq2" >dep.sh
+         sh dep.sh
+         cp -f $1.sq2 $1.sq3
+         echo "sed -e \"s/X/\'/g\" < $1.sq3 >$1.sq2" >dep.sh
+         sh dep.sh
+         mv -f $1.sq2 bajar.sql
+         grep 'INDEX' $t.sql |grep CREATE >>bajar.sql
+         cat bajar.sql
+         cat bajar.sql >>$1.sql
+         grep 'INDEX' $t.sql |grep CREATE >>$1.sql
+         rm -f $t.sql
+
+         cp bajar.sql $t.imp
+
+         grep 'COPY' bajar.sql >$1.sq3
+         echo "sed -e \"s/ from / to /g\" < $1.sq3 >$1.sq2" >dep.sh
+         sh dep.sh
+         cp -f $1.sq2 $1.sq3
+         echo "sed -e \"s/ with null as ''//g\" < $1.sq3 >$1.sq2" >dep.sh
+         sh dep.sh
+         mv -f $1.sq2 download.sql
+         rm -f dep.sh 
+         psql -d $1 -f download.sql
+         cat download.sql >>$1.down
+         #break
+      done
+      rm -f $t.sql $1.sq3 $i.sq2 bajar.sql download.sql
+      rm -f systab.out
+      echo ""
+      echo "adbexport completed"
+      echo "" 
+   fi
+fi

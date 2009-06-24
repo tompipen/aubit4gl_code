@@ -1,0 +1,13 @@
+Name: layout_engine
+Parent: aubit4glsrc
+Description: Allows editing of a logical report layout. 
+Functionality: Logical reports layout editor
+Build: make liblogical in root; there is also a script "makeit" in lib/liblogical dir
+Example:
+Depends: GTK+ vesrion 2; libPDF
+Documentation:
+Regressed:
+Maintainer: MA
+Status:
+Todo:
+Notes: This is used by the report processor to generate the final report from meta data. See logical reports
