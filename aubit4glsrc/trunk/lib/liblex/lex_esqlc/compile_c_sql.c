@@ -249,7 +249,7 @@ if (!already_in_command) {
    switch (cmd_data->cl_type) {
 		case E_CT_DATABASE:     printc ("A4GL_close_database();\n"); break;
 		case E_CT_SESSION:      printc ("A4GLSQL_close_session(%s);\n", get_ident_as_string(cmd_data->ident)); break;
-		case E_CT_CURS_OR_PREP: printc ("A4GL_close_cursor(%s);\n",  get_ident_as_string(cmd_data->ident)); break;
+		case E_CT_CURS_OR_PREP: printc ("A4GL_close_cursor(%s,1);\n",  get_ident_as_string(cmd_data->ident)); break;
   }
 
 if (!already_in_command) {
@@ -1321,7 +1321,7 @@ tmp_ccnt--;
   printc("if (_cursoropen) {");
   tmp_ccnt++;
 	print_use_session(cmd_data->connid);
-  printc ("A4GL_close_cursor(%s);\n",  get_ident_as_string(cmd_data->cursorname)); 
+  printc ("A4GL_close_cursor(%s,1);\n",  get_ident_as_string(cmd_data->cursorname)); 
   printc("if (a4gl_status == 0) { if (_fetcherr) {A4GL_set_status(_fetcherr,1);}}");
   printc("if (a4gl_status == 100) { if (_fetcherr) {a4gl_sqlca.sqlcode = a4gl_status=_fetcherr;} else {a4gl_sqlca.sqlcode = a4gl_status = 0; }}");
 	print_undo_use(cmd_data->connid);

@@ -43,7 +43,7 @@ A4GLSQL_free_prepare_internal void* sid -> void
 A4GLSQL_fetch_cursor_internal char* cursor_name int fetch_mode int fetch_when int nibind void* ibind -> int
 A4GLSQL_open_cursor_internal char* s int no void* vibind -> int
 A4GLSQL_flush_cursor_internal char* cursor -> void
-A4GLSQL_close_cursor_internal char* currname -> int
+A4GLSQL_close_cursor_internal char* currname int explicit -> int
 A4GLSQL_declare_cursor_internal int upd_hold void* sid int scroll char* cursname -> void*
 A4GLSQL_prepare_select_internal void* ibind int ni void* obind int no char* s char* uniqid int singleton -> void*
 

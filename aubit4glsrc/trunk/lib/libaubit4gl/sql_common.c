@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.86 2009-06-17 13:56:58 mikeaubury Exp $
+# $Id: sql_common.c,v 1.87 2009-06-25 08:15:49 mikeaubury Exp $
 #
 */
 
@@ -1965,7 +1965,7 @@ void A4GL_free_cursor(char* cursor_name) {
 		}
 
 		if (ptr->cursorState==E_CURSOR_OPEN) {
-			A4GL_close_cursor(cursor_name);
+			A4GL_close_cursor(cursor_name,0);
 		}
 
 		ptr->cursorState=E_CURSOR_FREED; /* wont be around long - but just in case the memory gets reused by mistake */
@@ -2047,7 +2047,7 @@ int A4GL_open_cursor(char* s,int no,void* vibind) {
 	A4GL_assertion(cid->cursorState==E_CURSOR_FREED,"opening a freed cursor");
 
 	if (cid->cursorState==E_CURSOR_OPEN) {
-		A4GL_close_cursor(s);
+		A4GL_close_cursor(s,0);
 	}
 
   	t1=get_now_as_double();
@@ -2174,7 +2174,7 @@ void A4GL_flush_cursor(char* cursor) {
 	A4GLSQL_flush_cursor_internal(cursor);
 }
 
-int A4GL_close_cursor(char* currname) {
+int A4GL_close_cursor(char* currname,int explicit) {
 	int bad;
 	struct s_cid *cid;
 
@@ -2186,7 +2186,7 @@ int A4GL_close_cursor(char* currname) {
                 return 1;
         }
 
-	bad=A4GLSQL_close_cursor_internal(currname);
+	bad=A4GLSQL_close_cursor_internal(currname,explicit );
 	cid->cursorState=E_CURSOR_CLOSED;
 	return bad;
 

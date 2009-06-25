@@ -364,3 +364,4 @@
 374|Database error
 376|Not available in windows build
 378|Database name not set
+380|INFIELD can only be used within the INPUT/INPUT ARRAY/CONSTRUCT for the XML gui

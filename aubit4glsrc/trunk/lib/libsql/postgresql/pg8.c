@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.101 2009-06-23 10:33:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.102 2009-06-25 08:15:50 mikeaubury Exp $
 #*/
 
 
@@ -2795,6 +2795,8 @@ A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll
   cid->o_ni = 0;
   cid->o_no = 0;
   cid->DeclareSql = 0;
+ cid->o_lastopenibind=NULL;
+  cid->o_lastopenni=0;
 
   cid->cursorState=E_CURSOR_DECLARED;
 
@@ -2903,6 +2905,12 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s1, int ni, void *vibind)
   char *buff2;
   struct s_sid *n;
 
+//if (ni==0) { A4GL_pause_execution(); }
+
+
+
+
+A4GL_debug("ni=%d\n",ni);
 	strcpy(s,s1);
 	A4GL_trim(s);
 
@@ -2953,10 +2961,15 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s1, int ni, void *vibind)
       ni = n->ni;
       ibind = n->ibind;
     }
+   
 
+  cid->o_lastopenibind=ibind;
+  cid->o_lastopenni=ni;
 
+  A4GL_debug("before replace_ibind ni =%d",ni);
 
   buff2 = replace_ibind (cid->DeclareSql, ni, ibind,1);
+
   A4GL_debug ("cid->DeclareSql=%s buff2=%s\n", cid->DeclareSql, buff2);
   cid->hstmt = PQexec (current_con, set_explain(buff2));
 	SET_EXPLAIN_FINISHED;
@@ -3159,7 +3172,7 @@ A4GL_trim(cursor_name);
 
 
 int
-A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
+A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname,int explicit)
 {
   struct s_cid *ptr;
 int lstatus;
@@ -3186,6 +3199,10 @@ int lstatus;
 
   if (lstatus<0) {
   	A4GLSQL_set_sqlca_sqlcode (lstatus);
+  }
+  if (ptr && explicit) {
+  	ptr->o_lastopenibind=NULL;
+  	ptr->o_lastopenni=0;
   }
 
   return 1;

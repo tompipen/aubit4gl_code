@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.57 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: load.c,v 1.58 2009-06-25 08:15:49 mikeaubury Exp $
 #
 */
 
@@ -765,7 +765,7 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
   if (use_insert_cursor)
     {
       A4GL_debug ("Close");
-      A4GL_close_cursor ("a4gl_load");
+      A4GL_close_cursor ("a4gl_load",1);
     }
 
   if (ibind)

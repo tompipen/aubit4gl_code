@@ -34,7 +34,41 @@ var_ident_vl_n: variable_usage_expression {
 			$<ptr>$=$<ptr>1;
 		}
 	}
+	| vi_column_name {
+		$<ptr>$=$<ptr>1;
+	}
+
 ;
+
+
+vi_column_name: 
+        CHAR_VALUE KW_DOT identifier KW_DOT identifier {
+		$<ptr>$=A4GL_new_select_list_item_expr(new_select_list_item_col(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5,NULL));
+	}
+        | CHAR_VALUE KW_DOT identifier KW_DOT identifier  OPEN_SQUARE vi_subscript_expr CLOSE_SQUARE     {
+		$<ptr>$=A4GL_new_select_list_item_expr(new_select_list_item_col(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5,&$<int_list>7));
+	}
+;
+
+vi_subscript_expr:
+	INT_VALUE {
+		$<int_list>$.i0=atol($<str>1); 
+		$<int_list>$.i1=0; 
+		$<int_list>$.i2=0; 
+		$<int_list>$.i3=0; 
+		$<int_list>$.i4=0; 
+		$<int_list>$.i5=0;
+	}
+	| INT_VALUE KW_COMMA INT_VALUE {
+		$<int_list>$.i0=atol($<str>1); 
+		$<int_list>$.i1=atol($<str>2); 
+		$<int_list>$.i2=0; 
+		$<int_list>$.i3=0; 
+		$<int_list>$.i4=0; 
+		$<int_list>$.i5=0;
+	}
+;
+
 
 obind_var_list: bind_var_list {
 		char buff[256];

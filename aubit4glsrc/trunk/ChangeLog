@@ -1,4 +1,20 @@
 ---------------------------
+Thu Jun 25 09:09:02 BST 2009
+---------------------------
+1.10RC_63 Released
+---------------------------
+	
+	INFIELD fixup when not in an INPUT/INPUT ARRAY/CONSTRUCT for XML
+	GUIs
+	
+	Implicit REQUIRED fixup for when a field is marked NOENTRY.
+	
+	Allow 'NULL' in RETURNINIG clause of a CALL
+	
+	Add 'fgllint -e' to set exit status if any LINT errors have been
+	reported...
+	
+---------------------------
 Sat Jun 13 11:12:28 BST 2009
 ---------------------------
 1.10RC_62 Released

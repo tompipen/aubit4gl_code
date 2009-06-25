@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.49 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: nosql.c,v 1.50 2009-06-25 08:15:50 mikeaubury Exp $
 #*/
 
 /**
@@ -89,7 +89,7 @@ char* A4GLSQLLIB_A4GLSQL_get_currdbname(void ) NOPE0
 char* A4GLSQLLIB_A4GLSQL_get_errmsg(int a) NOPE0
 char* A4GLSQLLIB_A4GLSQL_get_sqlerrm(void ) NOPE0
 char* A4GLSQLLIB_A4GLSQL_syscolval_expr(char* tabname,char* colname,char* typ) NOPE0
-int A4GLSQLLIB_A4GLSQL_close_cursor_internal(char* currname) NOPE0
+int A4GLSQLLIB_A4GLSQL_close_cursor_internal(char* currname,int explicit) NOPE0
 int A4GLSQLLIB_A4GLSQL_close_session_internal(char* sessname) NOPE0
 int A4GLSQLLIB_A4GLSQL_end_get_columns(void ) NOPE0
 int A4GLSQLLIB_A4GLSQL_execute_implicit_select(void* sid,int singleton) NOPE0

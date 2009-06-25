@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.187 2009-05-25 08:07:56 mikeaubury Exp $
+# $Id: report.c,v 1.188 2009-06-25 08:15:49 mikeaubury Exp $
 #
 */
 
@@ -1883,7 +1883,7 @@ void
 A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
 {
   char b2[200];
-  A4GL_close_cursor (cursor_for_rep_tab (b));
+  A4GL_close_cursor (cursor_for_rep_tab (b),1);
   A4GL_execute_implicit_sql (A4GL_prepare_select (0, 0, 0, 0, A4GL_drop_temp_tab (b), "__internal_report", 99, 0, 0), 1, 0,
 				0);
   A4GL_free_duplicate_binding (reread, n);

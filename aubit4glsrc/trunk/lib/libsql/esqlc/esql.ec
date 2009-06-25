@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.234 2009-05-26 12:16:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.235 2009-06-25 08:15:50 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.234 2009-05-26 12:16:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.235 2009-06-25 08:15:50 mikeaubury Exp $";
 #endif
 
 
@@ -3841,7 +3841,7 @@ A4GLSQLLIB_A4GLSQL_dbms_name (void)
  * @return
  */
 int
-A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
+A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname,int explicit)
 {
 int lstatus;
   EXEC SQL BEGIN DECLARE SECTION;

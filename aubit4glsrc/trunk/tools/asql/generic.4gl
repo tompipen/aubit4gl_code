@@ -1056,7 +1056,7 @@ endcode
 
 function execute_select_free()
 code
-   A4GL_close_cursor("generic_crexec");
+   A4GL_close_cursor("generic_crexec",1);
    A4GL_free_cursor ("generic_stexecp");
    A4GL_free_cursor ("generic_crexec");
 endcode

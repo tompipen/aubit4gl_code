@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.232 2009-02-26 11:33:34 mikeaubury Exp $
+# $Id: sql.c,v 1.233 2009-06-25 08:15:50 mikeaubury Exp $
 #
 */
 
@@ -2145,7 +2145,7 @@ if (ptr) {
  *   - 1 Cursor closed
  */
 int
-A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *cname)
+A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *cname,int explicit)
 {
     struct s_cid *ptr;
     SQLRETURN rc;
@@ -5186,7 +5186,7 @@ aclfgli_clr_err_flg();
     {
         A4GL_fetch_cursor ("c_get_val2", 2, 1, 1, obind);
         if (a4gl_sqlca.sqlcode != 0) break;
-    	A4GL_close_cursor ("c_get_val2");
+    	A4GL_close_cursor ("c_get_val2",1);
 	A4GL_free_cursor ("c_get_val2");
 	strcpy(buff, obind[0].ptr);
 	return buff;

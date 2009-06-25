@@ -2282,7 +2282,7 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
 /*****************************************************************************/
 
 int
-A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname)
+A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname,int explicit)
 {
   struct s_cid *ptr;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
