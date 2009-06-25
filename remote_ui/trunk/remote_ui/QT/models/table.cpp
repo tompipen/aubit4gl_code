@@ -90,7 +90,9 @@ void TableView::resize()
             width+= this->verticalScrollBar()->width();
          }
 
-         this->setFixedSize(width, height);
+         //this->setFixedSize(width, height);
+         this->setMinimumSize(width, height);
+         this->setFixedWidth(width);
       }
    }
 }
