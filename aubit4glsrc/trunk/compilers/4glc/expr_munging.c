@@ -5,7 +5,7 @@ static int madmath (char *module, int lineno, expr_str * p);
 
 #define FAKE_DTYPE_BOOL 90
 extern int yylineno;
-
+char *expr_as_string_when_possible(expr_str *e);
 
 void ensure_dtype (char *module, int lineno, struct expr_str *e, int dtype, int nonull); // This should not be static - its called elsewhere...
 static void ensure_smint (char *module, int lineno, struct expr_str *s, int notnull);
@@ -530,18 +530,35 @@ fix_compare (char *module, int lineno, char *op, struct expr_str *s)
   int l;
   int r;
   int fixed = 0;
+      struct expr_str *le;
+      struct expr_str *re;
 
   l = expr_datatype (module, lineno, s->expr_str_u.expr_op->left) & DTYPE_MASK;
   r = expr_datatype (module, lineno, s->expr_str_u.expr_op->right) & DTYPE_MASK;
+      le = s->expr_str_u.expr_op->left;
+      re = s->expr_str_u.expr_op->right;
+
+
+	if (le->expr_type==ET_EXPR_VARIABLE_USAGE && re->expr_type==ET_EXPR_VARIABLE_USAGE) {
+		char *s1;
+		char *s2;
+		s1=strdup(expr_as_string_when_possible(le));
+		s2=strdup(expr_as_string_when_possible(re));
+		if (strcmp(s1,s2)==0) {
+		  	A4GL_lint (module, lineno, "SAMEVARCOMP", "Comparing for equality of same variable", 0);
+		}
+		free(s1);
+		free(s2);
+	}
 
   if (strcmp (op, "=") == 0)
     {
-      struct expr_str *le;
-      struct expr_str *re;
+      //struct expr_str *le;
+      //struct expr_str *re;
       char *len = 0;
       char *ren = 0;
-      le = s->expr_str_u.expr_op->left;
-      re = s->expr_str_u.expr_op->right;
+
+
 
       if (le->expr_type == ET_EXPR_FCALL)
 	{
@@ -557,8 +574,7 @@ fix_compare (char *module, int lineno, char *op, struct expr_str *s)
 	    {
 	      if (strcmp (len, "fgl_lastkey") == 0)
 		{
-		  A4GL_lint (le->expr_str_u.expr_function_call->module, le->expr_str_u.expr_function_call->line, "LASTKEYLIT",
-			     "Comparing fgl_lastkey against a literal integer", 0);
+		  A4GL_lint (le->expr_str_u.expr_function_call->module, le->expr_str_u.expr_function_call->line, "LASTKEYLIT", "Comparing fgl_lastkey against a literal integer", 0);
 		}
 	    }
 	}

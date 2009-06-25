@@ -1645,7 +1645,19 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 	      A4GL_lint (module_name, r->lineno, "LETCOUNT", "Mismatch in number of parameters", 0);
 	    }
 
-
+	if (from_exprs==1 && varlist->list.list_len==1) {
+		if (expr_list->list.list_val[0]->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			char *s1;
+			char *s2;
+			s1=strdup(expr_as_string_when_possible(varlist->list.list_val[0]));
+			s2=strdup(expr_as_string_when_possible(expr_list->list.list_val[0]));
+			if (strcmp(s1,s2)==0) {
+				A4GL_lint (module_name, r->lineno, "SAMEVARASSIGN", "Assignment of variable to itself", 0);
+			}
+			free(s1);
+			free(s2);
+		}
+	}
 	  for (b = 0; b < varlist->list.list_len; b++)
 	    {
 	      if (strncmp (expr_as_string_when_possible (varlist->list.list_val[b]), "a4gl_sqlca", 10) == 0)
