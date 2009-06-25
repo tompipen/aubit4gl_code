@@ -92,7 +92,7 @@ void TableView::resize()
 
          //this->setFixedSize(width, height);
          this->setMinimumSize(width, height);
-         this->setFixedWidth(width);
+//         this->setFixedWidth(width);
       }
    }
 }
