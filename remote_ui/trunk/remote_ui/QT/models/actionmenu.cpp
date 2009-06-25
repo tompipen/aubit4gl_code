@@ -238,5 +238,16 @@ void ActionMenu::removeButtons()
          button->deleteLater();
       }
    }
+}
+
+void ActionMenu::hideButtons(bool hide)
+{
+
+   QList<QPushButton*> buttons;
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         button->setVisible(!hide);
+      }
+   }
    
 }

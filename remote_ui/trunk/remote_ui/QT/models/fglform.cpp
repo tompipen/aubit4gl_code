@@ -432,9 +432,7 @@ void FglForm::setActionMenuEnabled(bool enable)
    p_actionMenu->setEnabled(enable);
 
 
-   if(!enable){
-      p_actionMenu->removeButtons();
-   }
+   p_actionMenu->hideButtons(!enable);
 }
 
 //------------------------------------------------------------------------------

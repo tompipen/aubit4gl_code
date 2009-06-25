@@ -37,6 +37,7 @@ public:
    QList<QPushButton*> buttons();
 
    void removeButtons();
+   void hideButtons(bool);
 
 private:
    QLayout* layout;

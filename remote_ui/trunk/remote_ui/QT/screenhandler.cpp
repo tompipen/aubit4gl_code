@@ -1650,6 +1650,10 @@ void ScreenHandler::createActionMenu()
       qh_formActionMenus[i_Frm] = actionMenu;
       p_fglform->setActionMenu(qh_formActionMenus[i_Frm]);
       p_fglform->setMenuEnabled(false);
+
+      Context *context = getCurrentContext();
+      if(context == NULL)
+         return;
    }
 
 }
