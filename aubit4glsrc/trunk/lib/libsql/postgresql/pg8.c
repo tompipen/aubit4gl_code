@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.102 2009-06-25 08:15:50 mikeaubury Exp $
+# $Id: pg8.c,v 1.103 2009-06-25 08:24:20 mikeaubury Exp $
 #*/
 
 
@@ -2905,7 +2905,6 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s1, int ni, void *vibind)
   char *buff2;
   struct s_sid *n;
 
-//if (ni==0) { A4GL_pause_execution(); }
 
 
 
@@ -2961,7 +2960,18 @@ A4GL_debug("ni=%d\n",ni);
       ni = n->ni;
       ibind = n->ibind;
     }
-   
+  
+  if(ni==0) { 
+	// Still 0 - maybe they did an OPEN before  - and this is a foreach..
+	if (cid->o_lastopenni) {
+		if (strstr(cid->DeclareSql,"$1")) {
+		// Looks like it uses a parameter...
+			ni=cid->o_lastopenni;
+			ibind=cid->o_lastopenibind;
+		}
+	}
+  }
+
 
   cid->o_lastopenibind=ibind;
   cid->o_lastopenni=ni;
