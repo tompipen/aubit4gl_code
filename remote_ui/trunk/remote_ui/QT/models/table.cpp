@@ -354,6 +354,11 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
             }
          }
       }
+      else{
+         event.type = Fgl::BEFORE_FIELD_EVENT;
+         event.attribute = table->qsl_colNames.at(current.column());
+         emit fieldEvent(event);
+      }
    }
 }
 
