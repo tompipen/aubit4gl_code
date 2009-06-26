@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.226 2009-06-19 16:18:11 mikeaubury Exp $
+# $Id: ioform.c,v 1.227 2009-06-26 17:05:31 gyver309 Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.226 2009-06-19 16:18:11 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.227 2009-06-26 17:05:31 gyver309 Exp $";
 #endif
 
 /**
@@ -3725,6 +3725,13 @@ A4GL_copy_field_data (struct s_form_dets *form,int var_dtype)
 			A4GL_pop_param (buff, DTYPE_CHAR,
 					A4GL_get_field_width (form->
 							      currentfield));
+			if (A4GL_is_numeric_datatype(fprop->datatype))
+			{
+			    A4GL_decstr_convert(buff,
+				    A4GL_get_convfmts()->posix_decfmt,
+				    A4GL_get_convfmts()->ui_decfmt, 0, 1, sizeof(buff));
+			}
+
 			A4GL_mja_set_field_buffer (form->currentfield, 0,
 						   buff);
 		      }
