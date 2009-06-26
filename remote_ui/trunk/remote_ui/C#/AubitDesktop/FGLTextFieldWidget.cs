@@ -155,6 +155,9 @@ namespace AubitDesktop
         private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
+
+            t.BackColor = SystemColors.Window;
+            t.ForeColor = SystemColors.WindowText;
             //t.TabStop = true;
             switch (_ContextType)
             {
@@ -167,11 +170,42 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextDisplayArray:
+                case FGLContextType.ContextDisplayArrayInactive:
                     if (t.Visible != true)
                     {
                         t.Visible = true;
                     }
                     if (l.Visible != false)
+                    {
+                        l.Visible = false;
+                    }
+                    if (t.ReadOnly != true)
+                    {
+                        t.ReadOnly = true;
+                    }
+
+                    if (isOnSelectedRow)
+                    {
+                        t.BackColor = SystemColors.Highlight;
+                        t.ForeColor = SystemColors.HighlightText;
+                       // p.BorderStyle = BorderStyle.FixedSingle;
+                        //p.BackColor = Color.Red;
+                    }
+                    else
+                    {
+
+                        //p.BackColor = Color.Black;
+                        //p.BorderStyle = BorderStyle.None;
+
+                    }
+                    break;
+/*
+                case FGLContextType.ContextDisplayArray:
+                    if (t.Visible != true)
+                    {
+                        t.Visible = true;
+                    }
+                    if (l.Visible !=false)
                     {
                         l.Visible = false;
                     }
@@ -188,6 +222,7 @@ namespace AubitDesktop
                         p.BorderStyle = BorderStyle.None;
                     }
                     break;
+ * */
 
 
                 case FGLContextType.ContextConstruct:
@@ -665,6 +700,7 @@ namespace AubitDesktop
             this.id = id;
             this.ContextType = FGLContextType.ContextNone;
             adjustDisplayPropertiesForContext();
+
         }
 
         void t_KeyPress(object sender, KeyPressEventArgs e)

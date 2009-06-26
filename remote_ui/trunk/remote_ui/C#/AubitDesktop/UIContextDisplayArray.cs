@@ -74,7 +74,13 @@ namespace AubitDesktop
 
         private BEFORE_ROW_EVENT beforeRow;
         private AFTER_ROW_EVENT afterRow;
+        private AFTER_INPUT_EVENT afterInput;
         private List<ON_ACTION_EVENT> onActionList;
+
+        /// <summary>
+        /// Indicates if we are processing the AFTER DISPLAY section
+        /// </summary>
+        private bool finishing;
 
         private List<FGLFoundField> activeFields;
         
@@ -338,17 +344,42 @@ namespace AubitDesktop
         public void toolBarAcceptClicked()
         {
             string txt;
-            foreach (ONKEY_EVENT a in KeyList) {
-                if (a.KEY=="ACCEPT"||a.KEY=="2016") {
-                    txt = "<TRIGGERED ID=\""+a.ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+
+            if (afterInput != null)
+            {
+                finishing = true;
+                txt = "<TRIGGERED ID=\"" + afterInput.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+                this.EventTriggered(null, afterInput.ID, txt, this);
+                return;
+            }
+            else
+            {
+
+                sendAcceptTrigger();
+            }
+
+        }
+
+
+
+        private void sendAcceptTrigger()
+        {
+            string txt;
+            foreach (ONKEY_EVENT a in KeyList)
+            {
+                if (a.KEY == "ACCEPT" || a.KEY == "2016")
+                {
+                    txt = "<TRIGGERED ID=\"" + a.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
                     this.EventTriggered(null, a.ID, txt, this);
                     return;
                 }
             }
-             txt= "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
-            this.EventTriggered(null, "ACCEPT", txt, this);            
+            txt = "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            this.EventTriggered(null, "ACCEPT", txt, this);
+            return;
         }
-
+        
+        
         public UIDisplayArrayContext(FGLApplicationPanel f, DISPLAYARRAY p)
         {
             int cnt;
@@ -362,6 +393,7 @@ namespace AubitDesktop
             this.nRows = Convert.ToInt32(p.ARRCOUNT);
             onActionList = new List<ON_ACTION_EVENT>();
             Data = p.ROWS;
+            finishing = false;
             
             beforeRow = null;
             afterRow = null;
@@ -398,6 +430,11 @@ namespace AubitDesktop
                     ON_ACTION_EVENT e;
                     e = (ON_ACTION_EVENT)evt;
                     onActionList.Add(e);
+                    continue;
+                }
+                if (evt is AFTER_INPUT_EVENT)
+                {
+                    afterInput = (AFTER_INPUT_EVENT)evt;
                     continue;
                 }
                 MessageBox.Show("Unhandled Event for DISPLAY ARRAY");
@@ -513,6 +550,12 @@ namespace AubitDesktop
 
 
 
+        public void continueContext()
+        {
+            finishing = false;
+        }
+
+
         public void onActionTriggered(object source, string ID, string TriggeredText,UIContext u)
         {
             if (TriggeredText == "")
@@ -525,6 +568,7 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
+            
             //mainWin.SetContext(FGLContextType.ContextNone);
             mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this,KeyList);
 
@@ -535,7 +579,7 @@ namespace AubitDesktop
                     ffield.fglField.onActionID = e.ID;
                     ffield.fglField.onUIEvent = onActionTriggered;
                     ffield.fglField.Enabled = true;
-                    ffield.fglField.ContextType = FGLContextType.ContextInput;
+                    ffield.fglField.ContextType = FGLContextType.ContextDisplayArray;
                 }
 
             }
@@ -593,6 +637,13 @@ namespace AubitDesktop
             
             this.EventTriggered = UIDisplayArrayContext_EventTriggered;
 
+            if (finishing)
+            {
+                finishing = false;
+                // ACCEPT was pressed and there was an AFTER DISPLAY processed..
+                this.EventTriggered(null, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>", this);
+                return;
+            }
             if (!_contextIsActive)
             {
                 _contextIsActive = true;
@@ -605,7 +656,7 @@ namespace AubitDesktop
         {
             mainWin.setActiveToolBarKeys(null, false);
 
-            mainWin.SetContext(FGLContextType.ContextNone);
+            mainWin.SetContext(FGLContextType.ContextDisplayArrayInactive);
             
             EventTriggered = null;
             _contextIsActive = false;
@@ -615,6 +666,7 @@ namespace AubitDesktop
         public void FreeContext()
         {
             _contextIsActive = false;
+            mainWin.SetContext(FGLContextType.ContextNone);
         }
 
 

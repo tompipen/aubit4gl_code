@@ -55,6 +55,7 @@ namespace AubitDesktop
         ContextInput,
         ContextConstruct,
         ContextDisplayArray,
+        ContextDisplayArrayInactive,
         ContextInputArray,
         ContextMenu,
         ContextPrompt

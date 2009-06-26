@@ -1540,6 +1540,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INPUT_EVENT), IsNullable = false)]
         public object[] EVENTS;
 
     }

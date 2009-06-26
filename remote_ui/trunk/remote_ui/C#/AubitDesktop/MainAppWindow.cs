@@ -754,7 +754,7 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyPress(object sender, KeyPressEventArgs e)
         {
-            //MessageBox.Show("Keypress..");
+            Console.WriteLine("Keypress");
         }
 
 
