@@ -154,11 +154,16 @@ A4GL_init_default_formats ()
   a4gl_convfmts.using_decfmt.thsep = 0;
 
   A4GL_debug ("Default numeric formats: a4gl=<%c%c> db=<%c%c> printf=<%c%c> scanf=<%c%c> using=<%c%c>\n",
-	      a4gl_convfmts.ui_decfmt.decsep, a4gl_convfmts.ui_decfmt.thsep,
-	      a4gl_convfmts.db_decfmt.decsep, a4gl_convfmts.db_decfmt.thsep,
-	      a4gl_convfmts.printf_decfmt.decsep, a4gl_convfmts.printf_decfmt.thsep,
-	      a4gl_convfmts.scanf_decfmt.decsep, a4gl_convfmts.scanf_decfmt.thsep,
-	      a4gl_convfmts.using_decfmt.decsep, a4gl_convfmts.using_decfmt.thsep);
+	      a4gl_convfmts.ui_decfmt.decsep ? a4gl_convfmts.ui_decfmt.decsep : 'N',
+	      a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : 'N',
+	      a4gl_convfmts.db_decfmt.decsep ? a4gl_convfmts.db_decfmt.decsep : 'N',
+	      a4gl_convfmts.db_decfmt.thsep ? a4gl_convfmts.db_decfmt.thsep : 'N',
+	      a4gl_convfmts.printf_decfmt.decsep ? a4gl_convfmts.printf_decfmt.decsep : 'N',
+	      a4gl_convfmts.printf_decfmt.thsep ? a4gl_convfmts.printf_decfmt.thsep : 'N',
+	      a4gl_convfmts.scanf_decfmt.decsep ? a4gl_convfmts.scanf_decfmt.decsep : 'N',
+	      a4gl_convfmts.scanf_decfmt.thsep ? a4gl_convfmts.scanf_decfmt.thsep : 'N',
+	      a4gl_convfmts.using_decfmt.decsep ? a4gl_convfmts.using_decfmt.decsep : 'N',
+	      a4gl_convfmts.using_decfmt.thsep ? a4gl_convfmts.using_decfmt.thsep : 'N');
 }
 
 /**
