@@ -378,7 +378,7 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
     b[0] = 0;
 
   optr = b;
-  if (maxlen != -1)
+  if (maxlen != -1 && st != DEC_STATE_S_OK)
     {
       if (o > maxlen)
 	{
