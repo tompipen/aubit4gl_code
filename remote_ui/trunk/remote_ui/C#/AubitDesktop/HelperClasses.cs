@@ -1277,7 +1277,7 @@ namespace AubitDesktop
         }
 
 
-        public static string getKeyCodeFromKeyName(string keyname)
+        public static int getKeyCodeFromKeyName(string keyname)
         {
             string txt = keyname;
 
@@ -1303,18 +1303,18 @@ namespace AubitDesktop
                 case "F18": txt = "3017"; break;
                 case "F19": txt = "3018"; break;
                 case "F20": txt = "3019"; break;
-                case "F21": txt = "F21"; break;
-                case "F22": txt = "F22"; break;
-                case "F23": txt = "F23"; break;
-                case "F24": txt = "F24"; break;
-                case "F25": txt = "F25"; break;
-                case "F26": txt = "F26"; break;
-                case "F27": txt = "F27"; break;
-                case "F28": txt = "F28"; break;
-                case "F29": txt = "F29"; break;
-                case "F30": txt = "F30"; break;
-                case "F31": txt = "F31"; break;
-                case "F32": txt = "F32"; break;
+                case "F21": txt = "3020"; break;
+                case "F22": txt = "3021"; break;
+                case "F23": txt = "3022"; break;
+                case "F24": txt = "3023"; break;
+                case "F25": txt = "3024"; break;
+                case "F26": txt = "3025"; break;
+                case "F27": txt = "3026"; break;
+                case "F28": txt = "3027"; break;
+                case "F29": txt = "3028"; break;
+                case "F30": txt = "3029"; break;
+                case "F31": txt = "3030"; break;
+                case "F32": txt = "3031"; break;
                 case "UP": txt = "2000"; break;
                 case "DOWN": txt = "2001"; break;
                 case "LEFT": txt = "2002"; break;
@@ -1352,7 +1352,14 @@ namespace AubitDesktop
                 case "CONTROL-Y": txt = "25"; break;
                 case "CONTROL-Z": txt = "26"; break;
             }
-            return txt;
+            try
+            {
+                return Convert.ToInt32(txt);
+            }
+            catch
+            {
+                return -1;
+            }
         }
 
 

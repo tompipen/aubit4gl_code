@@ -71,7 +71,17 @@ namespace AubitDesktop
             // Does nothing for a menu....
         }
 
-        
+        public bool externallyTriggeredID(string ID)
+        {
+            string eventText = "<TRIGGERED ID=\"" + ID + "\"/>";
+            if (EventTriggered != null)
+            {
+                EventTriggered(null, ID, eventText, this);
+                //DeactivateContext();
+                return true;
+            }
+            return false;
+        }
 
         public bool isNormalKey(KeyEventArgs ke, string s)
         {
@@ -152,7 +162,7 @@ namespace AubitDesktop
                 if (EventTriggered != null)
                 {
                     EventTriggered(matchedCommand,matchedCommand.ID , eventText,this);
-                    DeactivateContext();
+                    //DeactivateContext();
                     return true;
                 }
             }
@@ -305,7 +315,7 @@ namespace AubitDesktop
             if (EventTriggered != null)
             {
                 EventTriggered(a, a.ID, eventText,this);
-                DeactivateContext();
+                //DeactivateContext();
             }
 
         }

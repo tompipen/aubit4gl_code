@@ -300,48 +300,21 @@ namespace AubitDesktop
                 {
                     o.Visible = false;
                 }
-                tsBtnCancel.Visible = false;
-                tsBtnAccept.Visible = false;
+
+                if (tsBtnCancel!=null)
+                {
+                    tsBtnCancel.Visible = false;
+                    tsBtnAccept.Visible = false;
+
+                    setStockButtons(false, false, false);
+                }
             }
             else
             {
                 ensureAcceptInterruptButtonsOnToolStrip();
 
-                
-                        if (showAcceptInterrupt)
-                        {
-                            tsBtnAccept.Visible=true;
-                            tsBtnCancel.Visible=true;
-                        }
-                        else
-                        {
-                            tsBtnAccept.Visible=false;
-                            tsBtnCancel.Visible=false;
-                        }
 
-                        if (showInsertDeleteButtons)
-                        {
-                             tsBtnDelete.Visible = true;
-                            tsBtnInsert.Visible=true;
-                        } else {
-                            tsBtnDelete.Visible = false;
-                            tsBtnInsert.Visible = false;
-                        }
-
-                        if (showUpDownButtons)
-                        {
-                            tsBtnPgUp.Visible = true;
-                            tsBtnPgDown.Visible = true;
-                            tsBtnUp.Visible = true;
-                            tsBtnDown.Visible = true;
-                        }
-                        else
-                        {
-                            tsBtnPgUp.Visible = false;
-                            tsBtnPgDown.Visible = false;
-                            tsBtnUp.Visible = false;
-                            tsBtnDown.Visible = false;
-                        }
+                setStockButtons(showAcceptInterrupt, showUpDownButtons, showInsertDeleteButtons);
 
 
                 // Ok - there are some keys - but not all of them will be used..
@@ -383,6 +356,49 @@ namespace AubitDesktop
             TopWindow.setToolbar(toolStrip1);
 
             this.ResumeLayout();
+        }
+
+        private void setStockButtons(bool showAcceptInterrupt, bool showUpDownButtons, bool showInsertDeleteButtons)
+        {
+            if (showAcceptInterrupt)
+            {
+                if (tsBtnCancel != null)
+                {
+                    tsBtnAccept.Visible = true;
+                    tsBtnCancel.Visible = true;
+                }
+            }
+            else
+            {
+                tsBtnAccept.Visible = false;
+                tsBtnCancel.Visible = false;
+            }
+
+            if (showInsertDeleteButtons)
+            {
+                tsBtnDelete.Visible = true;
+                tsBtnInsert.Visible = true;
+            }
+            else
+            {
+                tsBtnDelete.Visible = false;
+                tsBtnInsert.Visible = false;
+            }
+
+            if (showUpDownButtons)
+            {
+                tsBtnPgUp.Visible = true;
+                tsBtnPgDown.Visible = true;
+                tsBtnUp.Visible = true;
+                tsBtnDown.Visible = true;
+            }
+            else
+            {
+                tsBtnPgUp.Visible = false;
+                tsBtnPgDown.Visible = false;
+                tsBtnUp.Visible = false;
+                tsBtnDown.Visible = false;
+            }
         }
 
 
@@ -690,7 +706,14 @@ namespace AubitDesktop
                 reply = o.ID;
             }
             if (reply == null) return;
-            TopWindow. stdNetworkConnection.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
+
+
+           currentContext.externallyTriggeredID(reply);
+
+            //currentContext.useKeyPress
+
+
+            //TopWindow. stdNetworkConnection.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
 
             try
             {
@@ -1037,11 +1060,14 @@ namespace AubitDesktop
         public void ConsumeEnvelopeCommands()
         {
             int cnt = 0;
+            DateTime stime = System.DateTime.Now;
             List<object> run_commands;
             SendPing();
             //System.Diagnostics.Debug.WriteLine("In consume envelope commands (bottom level)");
             if (this.commands == null) return;
             if (this.commands.Count == 0) return;
+
+            //Console.WriteLine("Consuming...");
             //System.Diagnostics.Debug.WriteLine("consuming...");
             this.SuspendLayout();
 
@@ -1051,6 +1077,8 @@ namespace AubitDesktop
             {
                 run_commands.Add(a);
             }
+
+
             //System.Diagnostics.Debug.WriteLine("Copied");
             ErrorText="";
 
@@ -1058,6 +1086,8 @@ namespace AubitDesktop
             // Go through one at a time...
             foreach (object a in run_commands)
             {
+                Console.WriteLine("Cumtime before : " + (System.DateTime.Now - stime)+" "+a.GetType().ToString());
+
                 //System.Diagnostics.Debug.WriteLine("IN foreach");
                 TopWindow.setProgress( run_commands.Count,cnt);
                 cnt++;
@@ -1819,22 +1849,23 @@ namespace AubitDesktop
                     }
                     else
                     {
+                     
                         //MessageBox.Show("Here" );
                         int idx;
                         for (idx = 0; idx < contexts.Count; idx++)
                         {
-
                             {
-
-
                                 if (idx == Convert.ToInt32(w.CONTEXT))
                                 { // This is the active context
                                     if (contexts[idx] != null)
                                     {
+                                       
                                         TopWindow.clrWaitCursor();
+                                      
                                         currentContext = contexts[idx];
+                                        Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime)); 
                                         contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
-                                        
+                                        Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
                                     }
                                     else
                                     {
@@ -1862,6 +1893,7 @@ namespace AubitDesktop
                 MessageBox.Show(" Unhandled: " + a.ToString());
             }
             try {
+                Console.WriteLine("Cumtime after : " + (System.DateTime.Now - stime));
                 // This may fail if the window is closed because the application that
                 // was in it is now closed - but we dont care about updating the progress bar in an invisible window ;-)
             TopWindow.setProgress(0,0);
@@ -1871,6 +1903,7 @@ namespace AubitDesktop
 
             // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
             this.ResumeLayout();
+            Console.WriteLine("Consumed:"+(DateTime.Now-stime));
         }
 
 
@@ -1980,13 +2013,17 @@ namespace AubitDesktop
 
         internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext,List<ONKEY_EVENT> keyList)
         {
+           
             int cnt = 0;
+            
             List<FGLWidget> l = new List<FGLWidget>();
             foreach (FGLFoundField fld in activeFields) {
                 fld.fglField.tabIndex = cnt++;
                 l.Add(fld.fglField);
             }
+            
             SetContext(p, l,currContext,keyList);
+           
         }
 
         internal List<FGLFoundField> FindField(string p)

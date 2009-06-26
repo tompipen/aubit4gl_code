@@ -34,7 +34,7 @@ namespace AubitDesktop
         private int id;
 
         private string buttonId;
-        private string fakeKeyId;
+        private int fakeKeyId;
         TextBox t;
         Button pb;
         Panel p;
@@ -244,7 +244,7 @@ namespace AubitDesktop
             buttonId = "";
             foreach (ONKEY_EVENT a in keyList)
             {
-                if (a.KEY == fakeKeyId)
+                if (Convert.ToInt32(a.KEY) == fakeKeyId)
                 {
                     if (this.Action == null || this.Action == "")
                     {
@@ -377,7 +377,7 @@ namespace AubitDesktop
 
             string[] str = config.Split(' ');
 
-            fakeKeyId = "";
+            fakeKeyId = -1;
             if (str.Length == 2)
             {
                 Image i;

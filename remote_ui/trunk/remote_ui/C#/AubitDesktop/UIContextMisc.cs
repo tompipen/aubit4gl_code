@@ -51,8 +51,12 @@ namespace AubitDesktop
                 // Does nothing for this context
             }
 
-           
 
+
+            public bool externallyTriggeredID(string ID)
+            {
+                return false;
+            }
 
             public bool useKeyPress(KeyEventArgs ke)
             {
@@ -67,12 +71,12 @@ namespace AubitDesktop
                         }
                     }
                         if (lastKey==null) {
-                    lastKey = FGLUtils.decodeKeycode(ke.Control, ke.Shift, ke.Alt, ke.KeyCode);
+                            lastKey = FGLUtils.decodeKeycode(ke.Control, ke.Shift, ke.Alt, ke.KeyCode);
                         }
                  //   MessageBox.Show("KEYVALYE : "+ke.KeyValue);
                     appPanel.setLastKey(lastKey);
                     //appsetLastKeyInApplication(lastKey);
-                    lastKey=FGLUtils.getKeyCodeFromKeyName(lastKey);
+                    lastKey=  FGLUtils.getKeyCodeFromKeyName(lastKey).ToString();
                     ke.SuppressKeyPress = true;
 
                     this.EventTriggered( null, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\""+lastKey+"\"/>",this);
@@ -144,7 +148,7 @@ namespace AubitDesktop
                         {
                             this.EventTriggered(null, r, "<TRIGGERED ID=\"" + rd + "\"/>",this);
                         }
-                        this.DeactivateContext();
+                        //this.DeactivateContext();
                         break;
                 }
             }

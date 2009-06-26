@@ -1312,13 +1312,20 @@ namespace AubitDesktop
 
         public void SetContext(FGLContextType contextType, List<FGLWidget> pfields,List<ONKEY_EVENT> keyList)
         {
+            int a;
             
+
+      
             this.thisFormsPanel.SuspendLayout();
           
             // We'll only set the active fields...
-            foreach (FGLWidget i in this.fields)
+            for (a=0;a<this.fields.Count;a++) 
             {
+                
+                FGLWidget i = this.fields[a];
+               
                 i.setKeyList(keyList);
+                
                 if (pfields.Contains(i))
                 {
                     i.ContextType = contextType;
@@ -1327,9 +1334,11 @@ namespace AubitDesktop
                 {
                     i.ContextType = FGLContextType.ContextNone;
                 }
-
+                
             }
+            
             this.thisFormsPanel.ResumeLayout();
+            
         }
 
         public void Dispose()

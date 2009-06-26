@@ -132,7 +132,7 @@ namespace AubitDesktop
 
         private void showInterruptKeycode()
         {
-            lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text);
+            lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text).ToString();
         }
 
 
@@ -493,7 +493,7 @@ namespace AubitDesktop
 
         private void tbInterruptKey_TextChanged(object sender, EventArgs e)
         {
-            lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text);
+            lblKeyCode.Text = FGLUtils.getKeyCodeFromKeyName(tbInterruptKey.Text).ToString();
         }
 
         private void btnDuplicate_Click(object sender, EventArgs e)

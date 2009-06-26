@@ -88,6 +88,13 @@ namespace AubitDesktop
             return false;
         }
 
+        public bool externallyTriggeredID(string ID)
+        {
+            string txt = "<TRIGGERED ID=\""+ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            this.EventTriggered(null, ID, txt, this);
+            return true;
+        }
+
         public void downkeyPressed()
         {
             mainWin.clrErrorTextFromFieldValidation();

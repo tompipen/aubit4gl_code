@@ -82,6 +82,12 @@ namespace AubitDesktop
             }
         }
 
+        public bool externallyTriggeredID(string ID)
+        {
+            sendTrigger(ID);
+            return true;
+        }
+
         public UIInputContext(FGLApplicationPanel f, INPUT i)
         {
             KeyList = new List<ONKEY_EVENT>();

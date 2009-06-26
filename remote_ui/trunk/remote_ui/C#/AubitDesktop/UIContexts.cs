@@ -42,6 +42,8 @@ namespace AubitDesktop
         bool contextIsActive();
 
         bool useKeyPress(KeyEventArgs ke);
+        bool externallyTriggeredID(string ID);
+
 
         /// <summary>
         /// Activate a context

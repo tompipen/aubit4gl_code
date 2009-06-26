@@ -120,12 +120,13 @@ namespace AubitDesktop
     }
 
     /// <remarks/>
-    public class ONKEY_EVENT
+    public class ONKEY_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
+        */
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
@@ -244,31 +245,34 @@ namespace AubitDesktop
     }
 
     /// <remarks/>
-    public class AFTER_INSERT_EVENT
+    public class AFTER_INSERT_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
+         * */
     }
 
     /// <remarks/>
-    public class AFTER_DELETE_EVENT
+    public class AFTER_DELETE_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
+         * */
     }
 
 
     /// <remarks/>
-    public class BEFORE_DELETE_EVENT
+    public class BEFORE_DELETE_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
+         * */
     }
 
     /// <remarks/>
@@ -426,80 +430,91 @@ namespace AubitDesktop
         public string NAME;
     }
 
+    public class generic_event
+    {
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ID;
+    }
+
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
-    public class AFTER_FIELD_EVENT
+    public class AFTER_FIELD_EVENT:generic_event
+    {
+                /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string FIELD;
+        
+        /*
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ID; */
+    }
+
+    /// <remarks/>
+    public class AFTER_ROW_EVENT : generic_event
+    {
+        /*
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ID;
+         * */
+    }
+
+    /// <remarks/>
+    public class AFTER_CONSTRUCT_EVENT : generic_event
+    {
+        /*
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string ID; */
+    }
+
+
+    /// <remarks/>
+    public class BEFORE_FIELD_EVENT : generic_event
     {
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string FIELD;
 
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
-    }
-
-    /// <remarks/>
-    public class AFTER_ROW_EVENT
-    {
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ID;
-    }
-
-    /// <remarks/>
-    public class AFTER_CONSTRUCT_EVENT
-    {
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ID;
-    }
-
-
-    /// <remarks/>
-    public class BEFORE_FIELD_EVENT
-    {
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string FIELD;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ID;
+        */
     }
 
 
 
     /// <remarks/>
-    public class BEFORE_INSERT_EVENT
+    public class BEFORE_INSERT_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
+         * */
     }
 
     /// <remarks/>
-    public class AFTER_INPUT_EVENT
+    public class AFTER_INPUT_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ID;
+        public string ID; */
     }
 
 
     /// <remarks/>
-    public class ON_ACTION_EVENT
+    public class ON_ACTION_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ID;
+        public string ID;*/
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
@@ -508,12 +523,13 @@ namespace AubitDesktop
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
-    public class BEFORE_ROW_EVENT
+    public class BEFORE_ROW_EVENT : generic_event
     {
-
+        /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string ID;
+         * */
     }
 
 

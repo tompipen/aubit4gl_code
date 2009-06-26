@@ -28,7 +28,6 @@ namespace AubitDesktop
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMainAppWindow));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar2 = new System.Windows.Forms.ToolStripProgressBar();
@@ -65,7 +64,6 @@ namespace AubitDesktop
             this.saveWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.macroEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topWindowToolStrip = new System.Windows.Forms.ToolStrip();
-            this.EnvReaderTimer = new System.Windows.Forms.Timer(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.applicationLauncherPanel = new System.Windows.Forms.Panel();
@@ -371,12 +369,6 @@ namespace AubitDesktop
             this.topWindowToolStrip.TabIndex = 1;
             this.topWindowToolStrip.Text = "toolStrip1";
             // 
-            // EnvReaderTimer
-            // 
-            this.EnvReaderTimer.Enabled = true;
-            this.EnvReaderTimer.Interval = 20;
-            this.EnvReaderTimer.Tick += new System.EventHandler(this.EnvReaderTimer_Tick);
-            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -564,7 +556,6 @@ namespace AubitDesktop
         private System.Windows.Forms.ToolStripStatusLabel lblMessage;
         private System.Windows.Forms.ToolStripStatusLabel lblError;
         private System.Windows.Forms.ToolStripStatusLabel lblLineDisplay;
-        private System.Windows.Forms.Timer EnvReaderTimer;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Panel MenuBarPanel;
         private System.Windows.Forms.GroupBox groupBox1;

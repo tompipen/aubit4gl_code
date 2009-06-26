@@ -95,6 +95,14 @@ namespace AubitDesktop
             this.EventTriggered(null, "ACCEPT", txt, this);
         }
 
+        public bool externallyTriggeredID(string ID)
+        {
+            setLines();
+            string txt = "<TRIGGERED ID=\""+ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
+            this.EventTriggered(null, ID, txt, this);
+            return false;
+        }
+
 
         public UIDisplayArrayInTableContext(FGLApplicationPanel f, DISPLAYARRAY p)
         {

@@ -46,6 +46,8 @@ namespace AubitDesktop
             this.btnShortcutRemove = new System.Windows.Forms.Button();
             this.btnShortcutAdd = new System.Windows.Forms.Button();
             this.tpOptions = new System.Windows.Forms.TabPage();
+            this.txtDefaultEncoding = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.lblPortWarn = new System.Windows.Forms.Label();
             this.txtPort = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -70,8 +72,6 @@ namespace AubitDesktop
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmsSystrayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmClose = new System.Windows.Forms.ToolStripMenuItem();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtDefaultEncoding = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -260,6 +260,23 @@ namespace AubitDesktop
             this.tpOptions.Text = "Options";
             this.tpOptions.UseVisualStyleBackColor = true;
             this.tpOptions.Click += new System.EventHandler(this.tpOptions_Click);
+            // 
+            // txtDefaultEncoding
+            // 
+            this.txtDefaultEncoding.Location = new System.Drawing.Point(270, 172);
+            this.txtDefaultEncoding.Name = "txtDefaultEncoding";
+            this.txtDefaultEncoding.Size = new System.Drawing.Size(100, 20);
+            this.txtDefaultEncoding.TabIndex = 27;
+            this.txtDefaultEncoding.TextChanged += new System.EventHandler(this.txtDefaultEncoding_TextChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(175, 175);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(89, 13);
+            this.label4.TabIndex = 26;
+            this.label4.Text = "Default Encoding";
             // 
             // lblPortWarn
             // 
@@ -462,6 +479,7 @@ namespace AubitDesktop
             // 
             // timer1
             // 
+            this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // notifyIcon1
@@ -486,23 +504,6 @@ namespace AubitDesktop
             this.tsmClose.Size = new System.Drawing.Size(111, 22);
             this.tsmClose.Text = "Close";
             this.tsmClose.Click += new System.EventHandler(this.tsmClose_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(175, 175);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(89, 13);
-            this.label4.TabIndex = 26;
-            this.label4.Text = "Default Encoding";
-            // 
-            // txtDefaultEncoding
-            // 
-            this.txtDefaultEncoding.Location = new System.Drawing.Point(270, 172);
-            this.txtDefaultEncoding.Name = "txtDefaultEncoding";
-            this.txtDefaultEncoding.Size = new System.Drawing.Size(100, 20);
-            this.txtDefaultEncoding.TabIndex = 27;
-            this.txtDefaultEncoding.TextChanged += new System.EventHandler(this.txtDefaultEncoding_TextChanged);
             // 
             // mainfrm
             // 

@@ -141,6 +141,12 @@ namespace AubitDesktop
             return s;
         }
 
+        public bool externallyTriggeredID(string ID)
+        {
+            string txt = "<TRIGGERED ID=\""+ID+"\" LASTKEY=\"ACCEPT\">" + getSyncValues() + "</TRIGGERED>";
+            this.EventTriggered(null, ID, txt, this);  
+            return true;
+        }
 
         public void toolBarAcceptClicked()
         {

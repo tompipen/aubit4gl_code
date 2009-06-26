@@ -852,7 +852,7 @@ namespace AubitDesktop
         internal void t_GotFocus(object sender, EventArgs e)
         {
 
-            Console.WriteLine("Got focus");
+            
             /*
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {

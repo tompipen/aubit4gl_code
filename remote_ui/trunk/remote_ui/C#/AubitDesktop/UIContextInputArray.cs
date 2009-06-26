@@ -5,7 +5,7 @@
  *  
  *  This file is part of Aubit 4gl.
  *
- *  Aubit 4gl is free software: you can redistribute it and/or modify
+ *  Aubit 4gl is free software: you can redistribute ict and/or modify
  *  it under the terms of the GNU General Public License version 2 as 
  *  published by the Free Software Foundation.
  *
@@ -32,34 +32,27 @@ namespace AubitDesktop
         /// </summary>
         private bool _contextIsActive;
         private FGLApplicationPanel mainWin;
-        private List<string> PendingEvents;
-        private bool rowIsNew;
+       // private List<string> PendingEvents;
+        private int curr_line_is_new;
         /// <summary>
         /// Set when we want to monitor for focus changes.
         /// Typically - we dont care when setting up/activating the fields
         /// </summary>
         private bool inputFocusActive;
-        private List<BEFORE_FIELD_EVENT> beforeFieldList;
-        private List<AFTER_FIELD_EVENT> afterFieldList;
+      //  private List<BEFORE_FIELD_EVENT> beforeFieldList;
+       // private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
 
-        private int masterSaveFieldNo = -1;
-        private enum MoveType
-        {
-            MoveTypeNoPendingMovement,
-            MoveTypeDown,
-            MoveTypeUp,
-            MoveTypeTo,
-            MoveTypePageDown,
-            MoveTypePageUp,
-            MoveTypeFirst,
-            MoveTypeInsert,
-            MoveTypeDelete
+        DateTime ActivateStime = DateTime.Now;
 
-        };
+        private INPUTARRAY this_input_array;
+       // int CurrentFieldNo;
+
+       // private int masterSaveFieldNo = -1;
 
 
-        private MoveType nextMove = MoveType.MoveTypeFirst;
+
+     //   private MoveType nextMove = MoveType.MoveTypeFirst;
         /// <summary>
         /// Total number of rows in the dataset
         /// </summary>
@@ -104,16 +97,16 @@ namespace AubitDesktop
         private List<ONKEY_EVENT> KeyList;
         private event UIEventHandler eventTriggered;
 
+        /*
         private BEFORE_ROW_EVENT beforeRow;
         private AFTER_ROW_EVENT afterRow;
         private BEFORE_INSERT_EVENT beforeInsert;
         private AFTER_INSERT_EVENT afterInsert;
         private BEFORE_DELETE_EVENT beforeDelete;
         private AFTER_DELETE_EVENT afterDelete;
-
-
+        */
         private List<FGLFoundField> activeFields;
-        private FGLFoundField setCurrentField;
+      //  private FGLFoundField setCurrentField;
         private FGLFoundField CurrentField;
         private int _currentFieldNo = -1;
 
@@ -166,10 +159,30 @@ namespace AubitDesktop
                 mainWin.setErrorTextFromFieldValidation("ARR_DEL_MSG");
                 return;
             }
-            nextMove = MoveType.MoveTypeDelete;
+            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_DELETE,CurrentField, null, 0);
+            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_DELETE,CurrentField, null, 0);
+            checkControlStack();
         }
 
-        void doDelete() {
+        private bool checkControlStack()
+        {
+            bool sentTrigger = false;
+            while (fcntrl_cnt > 0)
+            {
+                int r;
+                r = process_control_stack();
+                if (r != -1)
+                {
+                    sentTrigger = true;
+                    sendTrigger("" + r);
+                    break;
+                }
+            }
+            return sentTrigger;
+        }
+
+        void doDelete()
+        {
             for (int a = arrLine; a <= nRows; a++)
             {
                 for (int col = 0; col < nCols; col++)
@@ -191,7 +204,7 @@ namespace AubitDesktop
 
         public void InsertkeyPressed()
         {
-            
+
             if (!allowInsert)
             {
                 mainWin.setErrorTextFromFieldValidation("ARR_INS_MSG");
@@ -204,25 +217,31 @@ namespace AubitDesktop
                 return;
             }
 
-            nextMove = MoveType.MoveTypeInsert;
-            if (CurrentField.fglField.afterFieldID!="")
-            {
-                sendTrigger(CurrentField.fglField.afterFieldID);
-            }
-
-            if (beforeInsert!=null)
-            {
-                sendTrigger(beforeInsert.ID);
-            }
+            Movement ptr = new Movement();
 
 
+            ptr.scrLine = scrLine;
+            ptr.arrLine = arrLine;
+            ptr.attrib_no = 0;
 
+            FGLFoundField f = screenRecord[scrLine - 1,CurrentFieldNo];
+            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_FIELD, f, new Movement(ptr), 0);
+            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_INSERT, CurrentField, null, 0);
+
+            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_ROW, f, null, 0);
+            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_FIELD, f, null, 0);
+
+            checkControlStack();
 
         }
 
 
+        
 
-        void doInsert() {
+
+
+        void doInsert()
+        {
 
             for (int a = nRows; a >= arrLine; a--)
             {
@@ -237,9 +256,10 @@ namespace AubitDesktop
             for (int col = 0; col < nCols; col++)
             {
                 Data[arrLine - 1, col] = activeFields[col].fglField.defaultValue;
-            
+
             }
-            rowIsNew = true;
+
+
             drawArrAll();
         }
 
@@ -247,52 +267,27 @@ namespace AubitDesktop
 
         public void downkeyPressed()
         {
-            rowIsNew = false;
+
             mainWin.clrErrorTextFromFieldValidation();
-            copyFieldData();
-            masterSaveFieldNo = CurrentFieldNo;
-
-
-
-
+            //copyFieldData();
+            Console.WriteLine("DownKeyDetected " + (DateTime.Now - ActivateStime));
             if (arrLine < nRows || (arrLine < maxRows && allowInsert && !noNewLines))
             {
-                if (beforeRow != null && afterRow != null)
-                {
-                    // We've got to send the before/after row triggers..
-                    nextMove = MoveType.MoveTypeDown;
-                    sendTrigger(afterRow.ID);
-
-                }
-                else
-                {
-                    if (afterRow != null)
-                    {
-                        sendTrigger(afterRow.ID);
-                    }
-
-                    moveDown();
-                    if (arrLine >= nRows)
-                    {
-                        rowIsNew = true;
-                        nRows = arrLine;
-                    }
-                    if (beforeRow != null)
-                    {
-                        sendTrigger(beforeRow.ID);
-                    }
-                }
+                A4GL_newMovement_single(scrLine + 1, arrLine + 1, 0, 'D');
+                checkControlStack();
+                
             }
             else
             {
                 // Tried to move off the top...
                 mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
             }
+            Console.WriteLine("DownKeyProcessed " + (DateTime.Now - ActivateStime));
         }
 
         private void moveDown()
         {
-            
+
             arrLine++;
             scrLine++;
             if (scrLine > scrRecLines)
@@ -305,10 +300,10 @@ namespace AubitDesktop
                 redisplay_arr(false);
             }
             lastarrLine = arrLine;
-                       
+
             setFocusToCurrentRow();
-            
-           
+
+
         }
 
 
@@ -343,25 +338,16 @@ namespace AubitDesktop
 
         public void upkeyPressed()
         {
-            copyFieldData();
+            //copyFieldData();
             mainWin.clrErrorTextFromFieldValidation();
-            masterSaveFieldNo = CurrentFieldNo;
+            
             if (arrLine > 1)
             {
-                // If we've got a before row *and* an after row - we need to send to packets back - but 
-                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
-                // so - we'll store the movement and do it later...
-                if (beforeRow != null && afterRow != null)
-                {
-                    // We've got to send the before/after row triggers..
-                    nextMove = MoveType.MoveTypeUp;
-                    sendTrigger(afterRow.ID);   
-                }
-                else
-                {
-                    moveUp();
-                    sendTrigger(beforeRow.ID);
-                }
+                A4GL_newMovement_single(
+                           scrLine - 1, arrLine - 1,
+                           CurrentFieldNo, 'U');
+                checkControlStack();
+
             }
             else
             {
@@ -372,7 +358,7 @@ namespace AubitDesktop
 
         private void moveUp()
         {
-            rowIsNew = false;
+           
             scrLine--;
             arrLine--;
             if (scrLine == 0)
@@ -418,41 +404,16 @@ namespace AubitDesktop
 
         public void pgUpkeyPressed()
         {
-            rowIsNew = false;
-            copyFieldData();
+            //copyFieldData();
             mainWin.clrErrorTextFromFieldValidation();
-
-            if (arrLine > scrRecLines)
+            if (arrLine - scrRecLines >= 1)
             {
 
-                // If we've got a before row *and* an after row - we need to send to packets back - but 
-                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
-                // so - we'll store the movement and do it later...
-                if (beforeRow != null && afterRow != null)
-                {
-                    // We've got to send the before/after row triggers..
-                    nextMove = MoveType.MoveTypePageUp;
-                    sendTrigger(afterRow.ID);
-                    //this.EventTriggered(null, afterRow.ID, getTriggeredText(afterRow.ID),this);
+                A4GL_newMovement_single(
+                            scrLine,
+                            arrLine - scrRecLines, CurrentFieldNo, 'U');
+                checkControlStack();
 
-                }
-                else
-                {
-                    if (afterRow != null)
-                    {
-                        sendTrigger(afterRow.ID);
-                    }
-
-
-                    movePgUp();
-                    if (beforeRow != null)
-                    {
-                        sendTrigger(beforeRow.ID);
-                        //this.EventTriggered(null, beforeRow.ID, getTriggeredText(beforeRow.ID),this);
-
-                    }
-
-                }
             }
             else
             {
@@ -463,44 +424,29 @@ namespace AubitDesktop
 
         public void pgDownkeyPressed()
         {
-            copyFieldData();
-            rowIsNew = false;
+            //copyFieldData();
+
             mainWin.clrErrorTextFromFieldValidation();
 
-            if (arrLine < nRows)
+            if (arrLine + scrRecLines <= this.maxRows)
             {
-
-                // If we've got a before row *and* an after row - we need to send to packets back - but 
-                // we can only send the 'before' packet - after we've send the 'after' - and got the 'waitforevent' back again...
-                // so - we'll store the movement and do it later...
-                if (beforeRow != null && afterRow != null)
+                if (arrLine + scrRecLines > nRows)
                 {
-                    // We've got to send the before/after row triggers..
-                    nextMove = MoveType.MoveTypePageDown;
-                    sendTrigger(afterRow.ID);
-
-
+                    mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
                 }
                 else
                 {
-                    if (afterRow != null)
+                    if (allowInsert)
                     {
-
-                        sendTrigger(afterRow.ID);
-
-
+                        A4GL_newMovement_single(scrLine, nRows + 1, CurrentFieldNo, 'D');
+                        checkControlStack();
                     }
-
-                    movePgDown();
-                    if (beforeRow != null)
+                    else
                     {
-
-                        sendTrigger(beforeRow.ID);
-
-
+                        mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
                     }
-
                 }
+
             }
             else
             {
@@ -525,35 +471,31 @@ namespace AubitDesktop
         public UIInputArrayContext(FGLApplicationPanel f, INPUTARRAY p)
         {
             int cnt;
-            PendingEvents = new List<string>();
+
             nCols = Convert.ToInt32(p.ARRVARIABLES);
             KeyList = new List<ONKEY_EVENT>();
+            onActionList = new List<ON_ACTION_EVENT>();
             mainWin = f;
-            this.PendingEvents = new List<string>();
-            this.arrLine = 1;
-            this.scrLine = 1;
-            this.nextMove = MoveType.MoveTypeFirst;
+           
+            this.arrLine = -1;
+            this.scrLine = -1;
+           
             this.lastarrLine = -1;
             this.nRows = Convert.ToInt32(p.ARRCOUNT);
             this.maxRows = Convert.ToInt32(p.MAXARRSIZE);
 
             this.noNewLines = decode_bool_from_xml(p.NONEWLINES);
-
             this.allowInsert = decode_bool_from_xml(p.ALLOWINSERT);
             this.allowDelete = decode_bool_from_xml(p.ALLOWDELETE);
+            A4GL_init_control_stack();
+            this_input_array = p;
 
-
-
-            setCurrentField = null;
+           
             CurrentField = null;
             CurrentFieldNo = -1;
 
-            beforeRow = null;
-            afterRow = null;
 
-            afterFieldList = new List<AFTER_FIELD_EVENT>();
-            beforeFieldList = new List<BEFORE_FIELD_EVENT>();
-            onActionList = new List<ON_ACTION_EVENT>();
+
 
 
             this.Data = new string[Convert.ToInt32(p.MAXARRSIZE), nCols];
@@ -568,6 +510,9 @@ namespace AubitDesktop
                 this.rowDataChanged[a] = false;
             }
 
+
+
+
             foreach (object evt in p.EVENTS)
             {
                 if (evt is ONKEY_EVENT)
@@ -578,70 +523,7 @@ namespace AubitDesktop
                     continue;
                 }
 
-                if (evt is AFTER_FIELD_EVENT)
-                {
-                    AFTER_FIELD_EVENT e;
-                    e = (AFTER_FIELD_EVENT)evt;
-                    afterFieldList.Add(e);
-                    continue;
-                }
-
-                if (evt is BEFORE_FIELD_EVENT)
-                {
-                    BEFORE_FIELD_EVENT e;
-                    e = (BEFORE_FIELD_EVENT)evt;
-                    beforeFieldList.Add(e);
-                    continue;
-                }
-
-                if (evt is BEFORE_ROW_EVENT)
-                {
-                    BEFORE_ROW_EVENT e;
-                    e = (BEFORE_ROW_EVENT)evt;
-                    beforeRow = e;
-                    continue;
-                }
-
-                if (evt is AFTER_ROW_EVENT)
-                {
-                    AFTER_ROW_EVENT e;
-                    e = (AFTER_ROW_EVENT)evt;
-                    afterRow = e;
-                    continue;
-                }
-
-                if (evt is AFTER_DELETE_EVENT)
-                {
-                    AFTER_DELETE_EVENT e;
-                    e = (AFTER_DELETE_EVENT)evt;
-                    afterDelete = e;
-                    continue;
-                }
-
-                if (evt is BEFORE_DELETE_EVENT)
-                {
-                    BEFORE_DELETE_EVENT e;
-                    e = (BEFORE_DELETE_EVENT)evt;
-                    beforeDelete = e;
-                    continue;
-                }
-
-                if (evt is AFTER_INSERT_EVENT)
-                {
-                    AFTER_INSERT_EVENT e;
-                    e = (AFTER_INSERT_EVENT)evt;
-                    afterInsert = e;
-                    continue;
-                }
-
-                if (evt is BEFORE_INSERT_EVENT)
-                {
-                    BEFORE_INSERT_EVENT e;
-                    e = (BEFORE_INSERT_EVENT)evt;
-                    beforeInsert = e;
-                    continue;
-                }
-
+            
                 if (evt is ON_ACTION_EVENT)
                 {
                     ON_ACTION_EVENT e;
@@ -650,11 +532,7 @@ namespace AubitDesktop
                     continue;
                 }
 
-                if (evt is AFTER_INPUT_EVENT)
-                {
-                    continue;
-                }
-                MessageBox.Show("Unhandled Event for INPUT ARRAY");
+
             }
 
 
@@ -673,15 +551,23 @@ namespace AubitDesktop
 
         }
 
+
+        public bool externallyTriggeredID(string ID)
+        {
+            sendTrigger(ID);
+            return true;
+        }
+
         private void sendTrigger(string ID)
         {
             if (this.eventTriggered != null)
             {
                 this.eventTriggered(null, ID, getTriggeredText(ID), this);
+                inputFocusActive = false;
             }
             else
             {
-                PendingEvents.Add(ID);
+                MessageBox.Show("Cant send now");
             }
         }
 
@@ -696,23 +582,24 @@ namespace AubitDesktop
         }
 
 
-        private void clrScrRecordLine(int scr_line)
+        private void clrScrRecordLine(int scrLine)
         {
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line - 1, a].fglField.Text = "";
+                screenRecord[scrLine - 1, a].fglField.Text = "";
             }
         }
 
         private void drawArr(bool currentRow, int lineno)
         {
             int topline;
-            int scr_line;
-            topline = arrLine - scrLine + 1;
-            scr_line = lineno - topline + 1;
+            int scrLine;
+            topline = arrLine - this.scrLine + 1;
+            scrLine = lineno - topline + 1;
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line - 1, a].fglField.Text = this.Data[lineno - 1, a];
+              //  Console.WriteLine("Setting " + (scrLine - 1) + "," + a + " = " + this.Data[lineno - 1, a]);
+                screenRecord[scrLine - 1, a].fglField.Text = this.Data[lineno - 1, a];
             }
 
         }
@@ -749,27 +636,18 @@ namespace AubitDesktop
                     clrScrRecordLine(a + 1);
                 }
             }
-            //setFocusToCurrentRow();
+            
         }
 
 
         private void setFocusToCurrentRow()
         {
+          
+
+            
             setContextForCurrentRow();
-            Console.WriteLine("set focus : CurrentFieldNo=" + CurrentFieldNo);
-            int saveCurrentFieldNo;
-            if (masterSaveFieldNo>=0)
-            {
-                saveCurrentFieldNo = masterSaveFieldNo;
-                CurrentFieldNo = saveCurrentFieldNo;
-                masterSaveFieldNo = -1;
-            }
-            else
-            {
-
-                saveCurrentFieldNo = CurrentFieldNo;
-            }
-
+            
+            
 
             // We'll do this enable/disable in two parts
             // so we always have the current row active
@@ -784,44 +662,66 @@ namespace AubitDesktop
                     {
                         screenRecord[row, col].fglField.isOnSelectedRow = true;
                     }
-                  
+
 
                 }
             }
-
+            
             // Disable the old rows..
             for (int row = 0; row < this.scrRecLines; row++)
             {
                 for (int col = 0; col < this.nCols; col++)
                 {
-                                        if (row != scrLine - 1)
-
+                    if (row != scrLine - 1)
                     {
                         screenRecord[row, col].fglField.isOnSelectedRow = false;
                     }
                 }
             }
 
-            CurrentFieldNo = saveCurrentFieldNo;
+           
             if (CurrentFieldNo == -1)
             {
                 CurrentFieldNo = 0;
             }
+           
             screenRecord[scrLine - 1, CurrentFieldNo].fglField.setFocus();
-
+           
         }
 
         public void setNextField(string fieldName)
         {
-            PendingEvents.Clear();
-            foreach (FGLFoundField f in activeFields)
+            int a;
+            int attrib = -1;
+
+            if (CurrentField != null)
             {
-                if (f.isField(fieldName))
+                A4GL_init_control_stack();
+            }
+
+            if (fieldName == "NEXT")
+            {
+                attrib = CurrentFieldNo + 1;
+            }
+            if (fieldName == "PREVIOUS")
+            {
+                attrib = CurrentFieldNo - 1;
+            }
+
+            if (attrib == -1)
+            {
+                a = 0;
+                foreach (FGLFoundField f in activeFields)
                 {
-                    setCurrentField = f;
-                    nextMove = MoveType.MoveTypeNoPendingMovement;
+                    if (f.isField(fieldName))
+                    {
+                        attrib = a;
+                        break;
+                    }
+                    a++;
                 }
             }
+            A4GL_newMovement_single(scrLine, arrLine, attrib, 'R');
         }
 
         public void NavigateToTab()
@@ -848,28 +748,30 @@ namespace AubitDesktop
 
 
 
-            Console.WriteLine("In input got focus");
+           // Console.WriteLine("In input got focus");
             mainWin.CommentText = comment;
 
             if (!inputFocusActive)
             {
-                Console.WriteLine("Ignoreing field change - we're messing with the fields...");
+              //  Console.WriteLine("Ignoreing field change - we're messing with the fields...");
                 return;
             }
 
+      
             a = 0;
+            /*
             foreach (FGLFoundField f in activeFields)
             {
 
                 if (f.fglField == source)
                 {
                     Console.WriteLine("Found current field... @ " + a);
-                    CurrentField = f;
+                    fField = f;
                     break;
                 }
                 a++;
             }
-
+            */
 
             // Now work out what field we're on..
             //CurrentFieldNo = -1;
@@ -878,26 +780,25 @@ namespace AubitDesktop
             {
                 for (int col = 0; col < this.nCols; col++)
                 {
-                    if (this.screenRecord[row, col] == CurrentField)
+                    if (this.screenRecord[row, col].fglField == source)
                     {
-                        Console.WriteLine("Found current field no col=" + col + " row=" + row);
-                        CurrentFieldNo = col;
+                       // Console.WriteLine("Found current field no col=" + col + " row=" + row);
+                        A4GL_newMovement_single(row+1, arrLine, col, 'F');
                         found = true;
                         break;
                     }
                 }
-                if (found) break;
+                if (found)
+                {
+                    checkControlStack();
+                    break;
+                }
             }
-            //if (CurrentFieldNo == 1)
-            //{
-            //    MessageBox.Show("Somewhere");
-            //}
-
             Console.WriteLine("Triggered a currentfieldno " + CurrentFieldNo);
         }
 
 
-
+/*
         public void befAftFieldTriggered(object source, string ID, string TriggeredText, UIContext u)
         {
             if (inputFocusActive == false) return;
@@ -929,13 +830,13 @@ namespace AubitDesktop
             }
 
         }
-
+        */
 
         public string getSyncValues()
         {
             string s;
 
-            copyFieldData();
+            //copyFieldData();
 
             s = "<SYNCROWS>";
             for (int row = 0; row < this.nRows; row++)
@@ -963,21 +864,7 @@ namespace AubitDesktop
             return s;
         }
 
-        /*
-        public string getTriggeredTag(string ID)
-        {
-            string cfield;
-            if (CurrentField != null)
-            {
-                cfield = " INFIELD=\"" + CurrentField.useName + "\"";
-            }
-            else
-            {
-                cfield = "";
-            }
-            return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.lastKey + "\"" + ">";
-        }
-        */
+
 
 
 
@@ -991,12 +878,12 @@ namespace AubitDesktop
             //this.EventTriggered(source, ID, TriggeredText,this);
         }
 
-
-
-
         public void ActivateContext(UIEventHandler UInputArrayContext_EventTriggered, VALUE[] val, ROW[] rows)
         {
-            //int cnt = 0;
+          ActivateStime = DateTime.Now;
+            Console.WriteLine("Activate Context..");
+
+            inputFocusActive = false;
 
             #region Copy data from WAITFOREVENT packet
             if (rows != null)
@@ -1032,107 +919,34 @@ namespace AubitDesktop
             #endregion
 
             this.eventTriggered = UInputArrayContext_EventTriggered;
-            if (PendingEvents.Count > 0)
+            if (arrLine == -1 && scrLine == -1)
             {
-                string s = PendingEvents[0];
-                PendingEvents.RemoveAt(0);
-                sendTrigger(s);
+                A4GL_newMovement_single(1, 1, 0, 'N');
             }
 
-
-
-            inputFocusActive = false;
+          
 
             for (int row = 0; row < this.nRows; row++)
             {
                 rowDataChanged[row] = false;
             }
 
-
-
-
-
-            if (nextMove != MoveType.MoveTypeNoPendingMovement)
+          
+            if (!_contextIsActive)
             {
-                bool sentTrigger = false;
-
-                // Theres a pending movement...
-                switch (nextMove)
-                {
-                    case MoveType.MoveTypeFirst:
-                        if (beforeRow != null)
-                        {
-                            sendTrigger(beforeRow.ID);
-                            sentTrigger = true;
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                    case MoveType.MoveTypeUp:
-                        moveUp();
-                        if (beforeRow != null)
-                        {
-                            sendTrigger(beforeRow.ID);
-                            sentTrigger = true;
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                    case MoveType.MoveTypeInsert:
-                        doInsert();
-                        if (afterInsert!=null)
-                        {
-                            sendTrigger(afterInsert.ID);
-                            sentTrigger = true;
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                    case MoveType.MoveTypeDelete:
-                        doDelete();
-                        if (afterDelete != null)
-                        {
-                            sendTrigger(afterDelete.ID);
-                            sentTrigger = true;
-
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                    case MoveType.MoveTypePageUp:
-                        movePgUp();
-                        if (beforeRow != null)
-                        {
-                            sendTrigger(beforeRow.ID);
-                            sentTrigger = true;
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                    case MoveType.MoveTypePageDown:
-                        movePgDown();
-                        if (beforeRow != null)
-                        {
-                            sendTrigger(beforeRow.ID);
-                            sentTrigger = true;
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                    case MoveType.MoveTypeDown:
-                        moveDown();
-                        if (beforeRow != null)
-                        {
-                            sendTrigger(beforeRow.ID);
-                            sentTrigger = true;
-                        }
-                        nextMove = MoveType.MoveTypeNoPendingMovement;
-                        break;
-
-                }
-
-                if (sentTrigger) return; /* we've sent another response - so we dont have anything else to do.. */
+                _contextIsActive = true;
             }
+
+            if (fcntrl_cnt>0)
+            {
+                checkControlStack();
+                if (!_contextIsActive)
+                {
+                    Console.WriteLine("Activate finished early " + (DateTime.Now - ActivateStime));
+                    return;
+                }
+            }
+
 
             mainWin.setActiveToolBarKeys(KeyList, true, true, true);
             redisplay_arr(true);
@@ -1141,7 +955,7 @@ namespace AubitDesktop
             // clear the context context on all fields
             mainWin.SetContext(FGLContextType.ContextNone);
 
-
+      
             #region Set up field validation for active fields
             foreach (FGLFoundField f in activeFields)
             {
@@ -1151,12 +965,7 @@ namespace AubitDesktop
             #endregion
 
             #region set the current field
-            if (setCurrentField != null) // Next field has been registered..
-            {
-                CurrentField = setCurrentField;
-                CurrentField.fglField.setFocus();
-                setCurrentField = null;
-            }
+
 
             if (CurrentField == null)
             {
@@ -1167,56 +976,6 @@ namespace AubitDesktop
             #endregion
 
 
-            #region setup after field event IDs
-            // We might want to cache these results....
-            // Set up the after fields by setting the afterFieldID property of the widget..
-            //
-            foreach (AFTER_FIELD_EVENT e in afterFieldList)
-            {
-                List<FGLFoundField> ff = mainWin.FindField(e.FIELD);
-
-                if (ff == null)
-                {
-                    throw new ApplicationException("field not found :" + e.FIELD);
-                }
-                if (ff.Count == 0)
-                {
-                    throw new ApplicationException("field not found : " + e.FIELD);
-                }
-
-                foreach (FGLFoundField ffield in ff)
-                {
-                    ffield.fglField.afterFieldID = e.ID;
-                    ffield.fglField.onUIEvent = befAftFieldTriggered;
-                }
-
-            }
-            #endregion
-
-            #region set up before field event IDs
-            // Set up the after fields by setting the afterFieldID property of the widget..
-            //
-            foreach (BEFORE_FIELD_EVENT e in beforeFieldList)
-            {
-                List<FGLFoundField> ff = mainWin.FindField(e.FIELD);
-
-                if (ff == null)
-                {
-                    throw new ApplicationException("field not found :" + e.FIELD);
-                }
-                if (ff.Count == 0)
-                {
-                    throw new ApplicationException("field not found : " + e.FIELD);
-                }
-
-                foreach (FGLFoundField ffield in ff)
-                {
-                    ffield.fglField.beforeFieldID = e.ID;
-                    ffield.fglField.onUIEvent = befAftFieldTriggered;
-                }
-
-            }
-            #endregion
 
             #region set up "on action" event IDs
             // Set up the actions by setting the onActionID property of the widget..
@@ -1234,10 +993,6 @@ namespace AubitDesktop
             }
             #endregion
 
-            if (!_contextIsActive)
-            {
-                _contextIsActive = true;
-            }
 
 
 
@@ -1249,20 +1004,21 @@ namespace AubitDesktop
             {
                 if (!CurrentField.fglField.hasFocus)
                 {
+           
                     CurrentField.fglField.setFocus();
+                 
                 }
             }
+   
             inputFocusActive = true;
-
+            Console.WriteLine("Activate finished normally " + (DateTime.Now - ActivateStime));
 
         }
 
         private void setContextForCurrentRow()
         {
             int a;
-            bool wasinputFocusActive;
-            wasinputFocusActive = inputFocusActive;
-            inputFocusActive = false;
+
             List<FGLFoundField> currrow = new List<FGLFoundField>();
             for (int row = 0; row < scrRecLines; row++)
             {
@@ -1271,15 +1027,14 @@ namespace AubitDesktop
                     currrow.Add(screenRecord[row, a]);
                 }
             }
-
+           
             mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this, KeyList);
-            inputFocusActive = wasinputFocusActive;
+            
         }
-
-
 
         public void DeactivateContext()
         {
+            Console.WriteLine("Deactivate start at " + (DateTime.Now - ActivateStime));
             mainWin.setActiveToolBarKeys(null, false);
             inputFocusActive = false;
             mainWin.SetContext(FGLContextType.ContextNone);
@@ -1287,12 +1042,888 @@ namespace AubitDesktop
             eventTriggered = null;
             _contextIsActive = false;
             inputFocusActive = false;
+
+                Console.WriteLine("Active -> Deactive in " + (DateTime.Now-ActivateStime ));
+        
         }
 
         public void FreeContext()
         {
             _contextIsActive = false;
         }
+
+
+        internal class Movement
+        {
+            public int scrLine;
+            public int arrLine;
+            public int attrib_no;
+
+            internal Movement()
+            {
+                scrLine = 0;
+                arrLine = 0;
+                attrib_no = 0;
+
+            }
+
+            internal Movement(Movement m)
+            {
+                this.scrLine = m.scrLine;
+                this.arrLine = m.arrLine;
+                this.attrib_no = m.attrib_no;
+            }
+        }
+
+
+        enum e_formcontrol
+        {
+            FORMCONTROL_BEFORE_FIELD = 1,
+            FORMCONTROL_AFTER_FIELD = 2,
+            FORMCONTROL_BEFORE_INPUT = 3,
+            FORMCONTROL_AFTER_INPUT = 4,
+            FORMCONTROL_EXIT_INPUT_OK = 5,
+            FORMCONTROL_EXIT_INPUT_ABORT = 6,
+            FORMCONTROL_KEY_PRESS = 7,
+            FORMCONTROL_BEFORE_INSERT = 8,
+            FORMCONTROL_BEFORE_DELETE = 9,
+            FORMCONTROL_AFTER_INSERT = 10,
+            FORMCONTROL_AFTER_DELETE = 11,
+            FORMCONTROL_BEFORE_ROW = 12,
+            FORMCONTROL_AFTER_ROW = 13,
+            /* formloop controls ? Don't know if we need these yet... */
+            FORMCONTROL_REQUEST_FIELD,
+            FORMCONTROL_ENABLE_FIELD,
+            FORMCONTROL_DISABLE_FIELD,
+            FORMCONTROL_HIDE_FIELD
+
+
+        };
+
+
+
+        enum e_event
+        {
+            A4GL_EVENT_BEF_ROW = -10,
+            A4GL_EVENT_AFT_ROW = -11,
+            A4GL_EVENT_BEFORE_DELETE = -12,
+            A4GL_EVENT_AFTER_DELETE = -13,
+            A4GL_EVENT_BEFORE_INSERT = -14,
+            A4GL_EVENT_AFTER_INSERT = -15,
+            A4GL_EVENT_BEF_INSERT_DELETE = -17,
+            A4GL_EVENT_AFT_INSERT_DELETE = -18,
+
+
+            A4GL_EVENT_ON_IDLE = -50,
+            A4GL_EVENT_ON_INTERVAL = -51,
+            A4GL_EVENT_ON_TIME = -52,
+
+
+            A4GL_EVENT_KEY_PRESS = -90,
+            A4GL_EVENT_ON_ACTION = -91,
+            A4GL_EVENT_AFTER_INP_CLEAN = -94,
+            A4GL_EVENT_AFTER_INP = -95,
+            A4GL_EVENT_BEFORE_FIELD = -97,
+            A4GL_EVENT_AFTER_FIELD = -98,
+            A4GL_EVENT_BEFORE_INP = -99,
+            A4GL_EVENT_BEFORE_FIELD_1 = -197,
+            A4GL_EVENT_AFTER_FIELD_1 = -198
+
+        };
+
+        class formcontrol
+        {
+            internal e_formcontrol op;
+            internal FGLFoundField field;
+            internal int extent;
+            internal Movement parameter;
+            internal int state;
+        }
+        int fcntrl_cnt=0;
+
+        formcontrol[] fcntrl;
+
+
+        /* 
+        * This function adds a value to the control stack
+        * this is read to determine when to call before/after fields etc
+        *
+        */
+        void
+        A4GL_add_to_control_stack(e_formcontrol op, FGLFoundField field, Movement parameter, int extent)
+        {
+            int a;
+
+            a = this.fcntrl_cnt;
+            this.fcntrl[a].op = op;
+            this.fcntrl[a].parameter = parameter;
+            this.fcntrl[a].field = field;
+            this.fcntrl[a].extent = extent;
+            this.fcntrl[a].state = 99;
+            this.fcntrl_cnt++;
+        }
+
+
+
+        /* 
+        * process any waiting actions 
+        *
+        */
+        int
+       process_control_stack()
+        {
+            int a;
+            int rval;
+            int new_state;
+            Movement ptr_movement;
+            int cnt;
+            int nv;
+
+            rval = -1;
+            new_state = 99;
+
+
+            a = this.fcntrl_cnt - 1;
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_AFTER_INPUT)
+            {
+                mainWin.CommentText = "";
+                //A4GL_comments (0);
+                if (this.fcntrl[a].state == 99)
+                {
+                    new_state = 50;
+
+                    if (A4GL_has_event(e_event.A4GL_EVENT_AFTER_INP) > 0)
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_AFTER_INP);
+                    else
+                        rval = -1;
+                }
+
+                if (this.fcntrl[a].state == 50)
+                {
+                    mainWin.CommentText = "";
+                    //A4GL_comments (0);
+                    new_state = 0;
+                    if (A4GL_has_event(e_event.A4GL_EVENT_AFTER_INP_CLEAN) > 0)
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_AFTER_INP_CLEAN);
+                    else
+                        rval = -1;
+                }
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_EXIT_INPUT_OK)
+            {
+
+                //A4GL_comments (0);
+                mainWin.CommentText = "";
+                if (this.fcntrl[a].state == 99)
+                {
+                    if (this.CurrentField != null)
+                    {
+                        A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_ROW, this.CurrentField, null, 0);
+                        if (this.curr_line_is_new == 2)
+                        {
+                            A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_INSERT, this.CurrentField, null, 0);
+                        }
+
+                        if (this.curr_line_is_new == 1)
+                        {		// They didn't change anything - so not a real insert...
+                            this.nRows--;
+                        }
+
+                        this.curr_line_is_new = 0;
+                        A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_FIELD, this.CurrentField, null, 0);
+                    }
+                    new_state = 50;
+                    rval = -1;
+                }
+
+                if (this.fcntrl[a].state == 50)
+                {
+                    new_state = 10;
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_INPUT, null, null, 0);
+                    rval = -1;
+                }
+                if (this.fcntrl[a].state == 10)
+                {
+                    new_state = 0;
+                    rval = -1;
+                }
+
+
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_EXIT_INPUT_ABORT)
+            {
+                if (this.fcntrl[a].state == 99)
+                {
+                    //A4GL_comments (0);
+                    mainWin.CommentText = "";
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_INPUT, null, null, 0);
+                    rval = -1;
+                    new_state = 10;
+                }
+
+
+                if (this.fcntrl[a].state == 10)
+                {
+                    new_state = 0;
+                }
+
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_BEFORE_DELETE)
+            {
+                if (this.fcntrl[a].state == 99)
+                {
+                    new_state = 50;
+                    if (A4GL_has_event(e_event.A4GL_EVENT_BEFORE_DELETE) > 0)
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_BEFORE_DELETE);
+                    else
+                    {
+                        if (A4GL_has_event(e_event.A4GL_EVENT_BEF_INSERT_DELETE) > 0)
+                            rval = A4GL_has_event(e_event.A4GL_EVENT_BEF_INSERT_DELETE);
+                    }
+                }
+
+                if (this.fcntrl[a].state == 50)
+                {
+                    new_state = 0;
+                    delete_line_in_array();
+                }
+
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_AFTER_DELETE)
+            {
+                if (this.fcntrl[a].state == 99)
+                {
+                    new_state = 50;
+                    if (A4GL_has_event(e_event.A4GL_EVENT_AFTER_DELETE) > 0)
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_AFTER_DELETE);
+                    else
+                    {
+                        if (A4GL_has_event(e_event.A4GL_EVENT_AFT_INSERT_DELETE) > 0)
+                            rval = A4GL_has_event(e_event.A4GL_EVENT_AFT_INSERT_DELETE);
+                    }
+                }
+
+                if (this.fcntrl[a].state == 50)
+                {
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_ROW, this.CurrentField, null, 0);
+                    new_state = 25;
+                    rval = -1;
+                }
+
+                if (this.fcntrl[a].state == 25)
+                {
+                    Movement ptr=new Movement();
+                    FGLFoundField next_field;
+
+                    next_field = this.screenRecord[this.scrLine - 1, CurrentFieldNo];
+                    ptr.scrLine = this.scrLine;
+                    ptr.arrLine = this.arrLine;
+                    ptr.attrib_no = this.CurrentFieldNo;
+
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_FIELD, next_field, new Movement(ptr), 0);
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_ROW, next_field, new Movement(ptr), 0);
+
+                    new_state = 10;
+                    rval = -1;
+                }
+
+                if (this.fcntrl[a].state == 10)
+                {
+                    new_state = 0;
+                }
+
+
+
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_BEFORE_ROW)
+            {
+
+                if (this.fcntrl[a].state == 99)
+                {
+                    ptr_movement = this.fcntrl[a].parameter;
+                    if (ptr_movement.arrLine > this.nRows)
+                    {
+                        init_arrLine(ptr_movement.arrLine);
+                        this.curr_line_is_new = 1;
+                    }
+                    else
+                    {
+                        this.curr_line_is_new = 0;
+                    }
+
+                    this.scrLine = ptr_movement.scrLine;
+                    // A4GL_set_scrLine (ptr_movement.scrLine);
+
+                    this.arrLine = ptr_movement.arrLine;
+                    // A4GL_set_arr_curr (ptr_movement.arrLine);
+
+
+                    new_state = 50;
+                    rval = -1;
+
+                    if (A4GL_has_event(e_event.A4GL_EVENT_BEF_ROW) > 0)
+                    {
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_BEF_ROW);
+                    }
+                }
+
+
+
+                if (this.fcntrl[a].state == 50)
+                {
+                    ptr_movement = this.fcntrl[a].parameter;
+
+                    if (this.curr_line_is_new > 0)
+                    {
+
+
+                        A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_INSERT, null, null, 0);
+                    }
+                    new_state = 25;
+                }
+
+                if (this.fcntrl[a].state == 25)
+                {
+                    new_state = 0;
+                }
+            }
+
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_AFTER_ROW)
+            {
+                new_state = 0;
+
+                if (A4GL_has_event(e_event.A4GL_EVENT_AFT_ROW) > 0)
+                    rval = A4GL_has_event(e_event.A4GL_EVENT_AFT_ROW);
+            }
+
+
+
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_BEFORE_INSERT)
+            {
+                if (this.fcntrl[a].state == 99)
+                {
+                    // We want to do the actual insert here...
+                    new_state = 80;
+
+                }
+
+                if (this.fcntrl[a].state == 80)
+                {
+                    insert_line_in_array();
+                    new_state = 50;
+                }
+
+                if (this.fcntrl[a].state == 50)
+                {			// BEFORE INSERT 
+                    new_state = 0;
+                    if (A4GL_has_event(e_event.A4GL_EVENT_BEFORE_INSERT) > 0)
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_BEFORE_INSERT);
+                    else
+                    {
+                        if (A4GL_has_event(e_event.A4GL_EVENT_BEF_INSERT_DELETE) > 0)
+                            rval = A4GL_has_event(e_event.A4GL_EVENT_BEF_INSERT_DELETE);
+                    }
+                    this.curr_line_is_new = 1;
+                }
+
+
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_AFTER_INSERT)
+            {
+                this.curr_line_is_new = 0;
+                new_state = 0;
+                if (A4GL_has_event(e_event.A4GL_EVENT_AFTER_INSERT) > 0)
+                    rval = A4GL_has_event(e_event.A4GL_EVENT_AFTER_INSERT);
+                else
+                {
+                    if (A4GL_has_event(e_event.A4GL_EVENT_AFT_INSERT_DELETE) > 0)
+                        rval = A4GL_has_event(e_event.A4GL_EVENT_AFT_INSERT_DELETE);
+                }
+            }
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_KEY_PRESS)
+            {
+
+                if (this.fcntrl[a].state == 99)
+                {
+                    new_state = 0;
+                    rval = -1;
+                    if (A4GL_has_event_for_keypress(this.fcntrl[a].extent)>0)
+                    {
+                        rval = A4GL_has_event_for_keypress(this.fcntrl[a].extent);
+                    }
+                }
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_BEFORE_FIELD)
+            {
+                int attr;
+                if (this.fcntrl[a].state == 99)
+                {
+                    new_state = 50;
+                    ptr_movement = this.fcntrl[a].parameter;
+                    this.CurrentFieldNo = ptr_movement.attrib_no;
+                    this.arrLine = ptr_movement.arrLine;
+                    this.scrLine = ptr_movement.scrLine;
+                    this.CurrentField = this.screenRecord[scrLine - 1,CurrentFieldNo];
+
+                    if (A4GL_has_event_for_field(e_event.A4GL_EVENT_BEFORE_FIELD, this.fcntrl[a].field)>0)
+                    {
+                        rval = A4GL_has_event_for_field(e_event.A4GL_EVENT_BEFORE_FIELD, this.fcntrl[a].field);
+                    }
+                }
+
+
+                if (this.fcntrl[a].state == 50)
+                {
+                    this.CurrentField = this.screenRecord[scrLine - 1,CurrentFieldNo];
+                    //A4GL_LL_set_current_field (this.currform->form, arr.CurrentField);
+                    new_state = 0;
+                }
+
+            }
+
+
+            if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_AFTER_FIELD)
+            {
+
+                bool ffc_rval;
+
+                ffc_rval = A4GL_form_field_chk_iarr(-1);
+
+                if (ffc_rval)
+                {
+                    new_state = 0;
+                    if (A4GL_has_event_for_field(e_event.A4GL_EVENT_AFTER_FIELD, this.fcntrl[a].field)>0)
+                    {
+                        rval = A4GL_has_event_for_field(e_event.A4GL_EVENT_AFTER_FIELD, this.fcntrl[a].field);
+                    }
+                }
+                else
+                {
+                    new_state = 0;
+                    A4GL_init_control_stack();
+                    rval = -1;
+                    return -1;
+                }
+            }
+
+            if (new_state != 0)
+            {
+                if (this.fcntrl[a].state == new_state)
+                {
+                    MessageBox.Show("Internal error - no change in state..");
+                }
+                this.fcntrl[a].state = new_state;
+            }
+            else
+            {
+                if (a != this.fcntrl_cnt - 1)
+                {
+                    MessageBox.Show("Internal error - bad change in state ");
+                    return -1;
+                }
+                this.fcntrl_cnt--;
+
+            }
+            return rval;
+        }
+
+        private void insert_line_in_array()
+        {
+            //throw new Exception("The method or operation is not implemented.");
+            doInsert();
+        }
+
+        private void init_arrLine(int p)
+        {
+            //throw new Exception("The method or operation is not implemented.");
+        }
+
+        private void delete_line_in_array()
+        {
+            doDelete();
+        }
+
+        private bool A4GL_form_field_chk_iarr(int p)
+        {
+            return true;
+        }
+
+        private int A4GL_has_event_for_keypress(int p)
+        {
+            foreach (object evt in this_input_array.EVENTS)
+            {
+                generic_event ge;
+                ge = (generic_event)evt;
+
+                if (evt is ONKEY_EVENT)
+                {
+                    ONKEY_EVENT oke;
+                    oke = (ONKEY_EVENT)evt;
+                    if (FGLUtils.getKeyCodeFromKeyName(oke.KEY) == p) return Convert.ToInt32(ge.ID);
+                }
+            }
+            return -1;
+
+        }
+
+        private int A4GL_has_event_for_field(e_event e, FGLFoundField fGLFoundField)
+        {
+            foreach (object evt in this_input_array.EVENTS)
+            {
+                generic_event ge;
+                ge = (generic_event)evt;
+
+                switch (e)
+                {
+                    case e_event.A4GL_EVENT_BEFORE_FIELD:
+                        if (evt is BEFORE_FIELD_EVENT)
+                        {
+                            BEFORE_FIELD_EVENT bf_evt;
+                            bf_evt = (BEFORE_FIELD_EVENT)evt;
+                            List<FGLFoundField> ff = mainWin.FindField(bf_evt.FIELD);
+                             
+                            
+                            if (isMatch(bf_evt.FIELD, fGLFoundField)) return Convert.ToInt32(bf_evt.ID);
+                            
+
+                            
+                        }
+                        break;
+
+                    case e_event.A4GL_EVENT_AFTER_FIELD:
+                        if (evt is AFTER_FIELD_EVENT)
+                        {
+                            AFTER_FIELD_EVENT af_evt;
+                            af_evt = (AFTER_FIELD_EVENT)evt;
+
+                                if (isMatch(af_evt.FIELD,fGLFoundField)) return Convert.ToInt32(af_evt.ID);
+                            
+                        }
+                        break;
+                }
+            }
+            return -1;
+         
+        }
+
+        private bool isMatch(string f, FGLFoundField fGLFoundField)
+        {
+            if (f == fGLFoundField.fullName)
+            {
+                return true;
+            }
+            if (f == fGLFoundField.shortName)
+            {
+                return true;
+            }
+
+            return false;
+
+        }
+
+        private void A4GL_init_control_stack()
+        {
+            int a;
+            fcntrl_cnt = 0;
+            fcntrl = new formcontrol[10];
+            for (a = 0; a < 10; a++)
+            {
+                fcntrl[a] = new formcontrol();
+            }
+            
+        }
+
+        private int A4GL_has_event(e_event e)
+        {
+            foreach (object evt in this.this_input_array.EVENTS)
+            {
+                generic_event ge;
+                ge = (generic_event)evt;
+
+                switch (e)
+                {
+                    case e_event.A4GL_EVENT_AFT_INSERT_DELETE:
+                        if (evt is AFTER_INSERT_EVENT) return Convert.ToInt32(ge.ID);
+                        if (evt is AFTER_DELETE_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_AFT_ROW:
+                        if (evt is AFTER_ROW_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_BEF_ROW:
+                        if (evt is BEFORE_ROW_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_AFTER_DELETE:
+                        if (evt is AFTER_DELETE_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_BEFORE_DELETE:
+                        if (evt is BEFORE_DELETE_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_AFTER_INSERT:
+                        if (evt is AFTER_INSERT_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_BEFORE_INSERT:
+                        if (evt is BEFORE_INSERT_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_ON_ACTION:
+                        if (evt is ON_ACTION_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+                    
+
+                    case e_event.A4GL_EVENT_AFTER_INP:
+                        if (evt is AFTER_INPUT_EVENT) return Convert.ToInt32(ge.ID);
+                        break;
+
+                    case e_event.A4GL_EVENT_AFTER_INP_CLEAN:
+                        MessageBox.Show("Used???");
+                        break;
+                        
+                    default:
+                        Console.WriteLine("Ignore : " + e.ToString());
+                        break;
+
+                }
+            }
+            return -1;
+        }
+
+
+
+
+
+
+        /*
+         *  Set up a record for a desired movement...
+         */
+        void
+        A4GL_newMovement_single(int scrLine, int arrLine, int attrib, char why)
+        {
+            FGLFoundField last_field = null;
+            FGLFoundField next_field = null;
+            //struct struct_scr_field *f;
+
+
+            // Sanity check the movements....
+
+            if (arrLine < 1)
+            {
+
+                A4GL_newMovement_single( scrLine, 1, attrib, why);
+                return;
+            }
+
+            if (scrLine > arrLine)
+            {
+                scrLine = arrLine;
+            }
+
+            if (attrib < 0)
+            {
+                // attempt to move too far to the left
+                // In informix - this results in just going up a line - still on field 0
+                A4GL_newMovement_single(scrLine, arrLine - 1, 0, why);
+                return;
+            }
+
+
+            if (scrLine > scrRecLines)
+            {
+                scrLine = scrRecLines;
+                A4GL_newMovement_single(scrLine, arrLine, attrib, why);
+                return;
+            }
+
+            if (scrLine <= 0)
+            {
+                scrLine = 1;
+                A4GL_newMovement_single(scrLine, arrLine, attrib, why);
+                return;
+            }
+
+            if ((arrLine + 1) - scrLine < 0)
+            {
+                scrLine = arrLine - scrLine + 1;
+                A4GL_newMovement_single(scrLine, arrLine, attrib, why);
+                return;
+            }
+
+
+
+            if (attrib >= this.nCols && attrib >= 0)
+            {
+                // Too far over to the right - wrap around to the start of the next line
+                A4GL_newMovement_single(scrLine + 1, arrLine + 1, 0, why);
+                return;
+            }
+
+
+
+            if (arrLine > maxRows)
+            {				// Attempting to move off the bottom of the array...
+                mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
+                A4GL_newMovement_single(scrLine, nRows, CurrentFieldNo, why);
+                // Do nothing at all...
+                return;
+            }
+
+
+            if (arrLine > nRows)
+            {				// Attempting to move off the bottom of the current set_count
+                // @todo - check see if we need to do this here or later...
+                if (!allowInsert || noNewLines)
+                {
+
+                    // Do nothing at all...
+                    return;		// NO NEW ROWS....
+                }
+            }
+
+
+            if (scrLine > 0)
+            {
+                last_field = CurrentField;
+            }
+            else
+            {
+                last_field = null;
+            }
+
+            next_field = screenRecord[scrLine - 1, attrib];
+
+            if (next_field.fglField.NoEntry || (next_field.fglField.datatype == FGLUtils.FGLDataTypes.DTYPE_SERIAL))
+            {
+                while (true)
+                {
+
+                    next_field = screenRecord[0, attrib];
+
+                    if (next_field.fglField.NoEntry)
+                    {
+
+                        if (why == 'R' || why == 0 || why == 'D' || why == 'Q')
+                            attrib++;
+                        else
+                            attrib--;
+
+                        if (attrib >= nCols && attrib >= 0)
+                        {
+                            attrib = 0;
+                            scrLine++;
+                            arrLine++;
+                            if (arrLine > nRows)
+                            {		// Attempting to move off the bottom of the array...
+                                mainWin.setErrorTextFromFieldValidation("ARR_DIR_MSG");
+                                A4GL_newMovement_single(scrLine - 1, arrLine - 1, 0, why);
+                                return;
+                            }
+                        }
+
+                        if (attrib < 0)
+                        {
+                            attrib = 0;	//arr->srec->attribs.attribs_len;
+                            why = '0';
+                            scrLine--;
+                            arrLine--;
+                        }
+                    }
+                    else
+                    {
+                        A4GL_newMovement_single(scrLine, arrLine, attrib, why);	// So keep going...
+                        return;
+                    }
+                }
+            }
+
+
+            if (arrLine != this.arrLine)
+            {
+                Movement ptr = new Movement();
+
+                if (!A4GL_double_chk_line(scrLine - 1, why))
+                {			// somethings wrong with our current line
+                    return;
+                }
+                copyFieldData();
+                ptr.scrLine = scrLine;
+                ptr.arrLine = arrLine;
+                ptr.attrib_no = attrib;
+
+                A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_FIELD, next_field, new Movement(ptr),0);
+                A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_ROW, next_field, new Movement(ptr),0);
+
+                if (last_field !=null || why == 'Q')
+                {
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_ROW, last_field, null, 0);
+                    if (curr_line_is_new > 0)
+                    {
+                        A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_INSERT, last_field, null, 0);
+                    }
+                    curr_line_is_new = 0;
+
+                    if (last_field != null)
+                    {
+                        A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_FIELD, last_field, null, 0);
+                    }
+
+                }
+               // redisplay_arr(true);
+                //if (scrLine > 0)
+               // {
+               //     setFocusToCurrentRow();
+               // }
+            }
+            else
+            {
+                Movement ptr=new Movement();
+                Movement ptr_x;
+                int x_sz;
+                ptr.scrLine = scrLine;
+                ptr.arrLine = arrLine;
+                ptr.attrib_no = attrib;
+                ptr_x = new Movement(ptr);
+                A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_BEFORE_FIELD, next_field, ptr_x, 0);
+
+                if (last_field != null)
+                {
+                    A4GL_add_to_control_stack(e_formcontrol.FORMCONTROL_AFTER_FIELD, last_field, null, 0);
+                }
+            }
+        }
+
+        private bool A4GL_double_chk_line(int p, char why)
+        {
+            if (arrLine == -1) return true;
+     
+            return true;
+        }
+
+
 
 
     }

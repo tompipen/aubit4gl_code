@@ -46,6 +46,7 @@ namespace AubitDesktop
         FGLApplicationPanel currentPanel;
         private showMode _showApplicationLauncher;
         bool _hasApplicationtree;
+        private event EventHandler EnvelopeReadyForConsumption;
 
 
 
@@ -220,8 +221,27 @@ namespace AubitDesktop
                 stdNetworkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
                 stdNetworkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
                 stdNetworkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+                EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
 
 
+        }
+
+        private delegate void ConsumeEnvelopeDelegate();
+
+        public void ConsumeEnvelopeHandler()
+        {
+            DateTime s;
+            s = System.DateTime.Now;
+            //Console.WriteLine("CONSUMING: " + System.DateTime.Now);
+            this.ConsumeEnvelopeCommands();
+            Console.WriteLine("CONSUMED in " + (System.DateTime.Now-s));
+        }
+
+        void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Ready for consumption");
+            this.BeginInvoke(new ConsumeEnvelopeDelegate( ConsumeEnvelopeHandler));
+            //this.ConsumeEnvelopeCommands();
         }
 
         private void setUpMainAppWindow()
@@ -367,7 +387,7 @@ namespace AubitDesktop
         }
         void n_DisconnectedFromServer(object sender, EventArgs e)
         {
-            EnvReaderTimer_Tick(null, null);
+            EnvelopeReadyForConsumption(null,null);
             //MessageBox.Show("Disconnected from server (1)");
             this.Dispose();
         }
@@ -394,10 +414,10 @@ namespace AubitDesktop
             ENVELOPE enew;
             int a;
             int ID;
-           
+         
             
             FGLApplicationPanel appPanel;
-
+       
             if (e.Data == "") return;
             updating = true;
             
@@ -408,9 +428,15 @@ namespace AubitDesktop
                 if (p.ApplicationEnvelopeID==ID) { // We've found it..
                     for (a = 0; a < enew.COMMANDS.Length; a++)
                     {
+
                         p.commands.Add(enew.COMMANDS[a]);
                     }
                     updating = false;
+
+                    if (EnvelopeReadyForConsumption!=null)
+                    {
+                        EnvelopeReadyForConsumption(null, null);
+                    }
                     return;
                 }
             }
@@ -421,9 +447,18 @@ namespace AubitDesktop
             for (a = 0; a < enew.COMMANDS.Length; a++)
             {
                 appPanel.commands.Add(enew.COMMANDS[a]);
+
             }
+
             updating = false;
+            if (EnvelopeReadyForConsumption != null)
+            {
+                EnvelopeReadyForConsumption(null, null);
+            }
+           
         }
+
+
 
         public void addNewTabPage(int ID, string appName, FGLApplicationPanel appPanel)
         {
@@ -510,24 +545,18 @@ namespace AubitDesktop
         }
 
 
-        private void EnvReaderTimer_Tick(object sender, EventArgs e)
-        {
-            if (updating) return;
-
-           
-            EnvReaderTimer.Enabled = false;
-            if (EnvReaderTimer.Interval != 100)
-            {
-                EnvReaderTimer.Interval = 100;
-            }
-            this.ConsumeEnvelopeCommands();
-            EnvReaderTimer.Enabled = true;
-        }
-
+       
         private void ConsumeEnvelopeCommands()
         {
            
             int a=0;
+            if (updating)
+            {
+                Console.WriteLine("Cant consume - updating");
+                return;
+            }
+
+            //Console.WriteLine("Consume1");
             while (a<RunningApplications.Count)
             {
                 RunningApplications[a].ConsumeEnvelopeCommands();
@@ -735,13 +764,20 @@ namespace AubitDesktop
         {
         string key="";
 
-            string keycode;
+            int keycode;
             string rkey = "";
 
             key = FGLUtils.decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
             if (key == null) return;
 
-
+            if (key == "ControlKey")
+            {
+                return;
+            }
+            if (key == "ShiftKey")
+            {
+                return;
+            }
 
 
             keycode = FGLUtils.getKeyCodeFromKeyName(key);
@@ -976,6 +1012,7 @@ namespace AubitDesktop
         private void frmMainAppWindow_Load(object sender, EventArgs e)
         {
             Program.setWindowPosition(this.GetType().ToString() + stdNetworkConnection.application, this);
+           
         }
 
         private void frmMainAppWindow_FormClosed(object sender, FormClosedEventArgs e)
@@ -1114,7 +1151,8 @@ namespace AubitDesktop
             MacroEditor me = new MacroEditor();
             me.Show();
         }
-        
+
+
     }
 
     class launcherCmdNode : TreeNode

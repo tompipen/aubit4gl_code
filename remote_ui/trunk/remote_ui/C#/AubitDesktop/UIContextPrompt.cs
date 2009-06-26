@@ -52,6 +52,12 @@ namespace AubitDesktop
             }
 
 
+            public bool externallyTriggeredID(string ID)
+            {
+                MessageBox.Show("Here");
+                return false;
+            }
+
             public UIPromptContext(FGLApplicationPanel f, PROMPT p)
             {
                 //Label l;
