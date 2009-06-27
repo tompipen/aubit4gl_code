@@ -957,11 +957,6 @@ namespace AubitDesktop
             }
         }
 
-        private void MenuBarPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void alwaysToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.showMenuBar = showMode.ShowAlways;
