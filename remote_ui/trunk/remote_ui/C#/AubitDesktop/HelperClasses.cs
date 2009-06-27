@@ -707,6 +707,7 @@ namespace AubitDesktop
         public int CharWidth;
         public bool isContainable;
         public Control WindowWidget;
+        public Form WindowFormWidget;
         bool KeepFormOpenWhenWindowCloses;
         
 
@@ -748,6 +749,7 @@ namespace AubitDesktop
             p.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             //p.BackColor = Color.Aqua;
             WindowWidget = p;
+            WindowFormWidget = null;
             WindowWidget.Visible = true;
 
             WindowWidget.Top = 15;
@@ -784,6 +786,7 @@ namespace AubitDesktop
                         Panel p;
                         p = new Panel();
                         WindowWidget = p;
+                        WindowFormWidget = null;
                         if (border)
                         {
                             p.BorderStyle = BorderStyle.Fixed3D;
@@ -799,6 +802,7 @@ namespace AubitDesktop
                         g = new GroupBox();
                         g.Text = text;
                         WindowWidget = g;
+                        WindowFormWidget = null;
                         WindowWidget.Visible = true;
                         g.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
                     }
@@ -811,6 +815,7 @@ namespace AubitDesktop
                         frm = new Form();
                         frm.Text = text;
                         WindowWidget = frm;
+                        WindowFormWidget = frm;
                         frm.AutoSize = true;
                         frm.Width = 10;
                         frm.Height = 10;
@@ -832,6 +837,7 @@ namespace AubitDesktop
                         frm.Visible = false;
                         frm.Text = text;
                         WindowWidget = frm;
+                        WindowFormWidget = frm;
                         frm.AutoSize = true;
                         frm.Width = 10;
                         frm.Height = 10;

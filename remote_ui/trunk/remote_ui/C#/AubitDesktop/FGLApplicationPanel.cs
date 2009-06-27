@@ -1569,12 +1569,12 @@ namespace AubitDesktop
                         this.Controls.Add(win.WindowWidget);
                     }
 
-                    if (win.isModal)
+                    if (win.isModal && win.WindowFormWidget!=null)
                     {
                         // This doesn't seem to work atm - gettting errors 
                         // saying you cant show it as its already visible - even though its not!
                             win.WindowWidget.Visible = false;
-                         TopWindow.ShowDialog(win.WindowWidget);
+                         TopWindow.ShowDialog(win.WindowFormWidget);
                     }
 
                     ApplicationWindows.PushWindow(win);
