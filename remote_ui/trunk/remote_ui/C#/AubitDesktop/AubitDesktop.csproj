@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="FGLComboListBoxFieldWidget.cs" />
     <Compile Include="formMovements.cs" />
+    <Compile Include="resourcesInterface.cs" />
     <Compile Include="UIContextMisc.cs" />
     <Compile Include="UIContextDisplayArrayInTable.cs" />
     <Compile Include="EnvelopeReader.cs" />
