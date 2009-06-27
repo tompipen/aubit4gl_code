@@ -40,7 +40,7 @@ namespace AubitDesktop
         private string _commenttext;
         private string _messagetext;
         private string _linedisplaytext;
-        private List<ToolStripItem> toolStrip1;
+        private List<AubitTSBtn> toolStrip1;
         private string ApplicationName;
         private string Username;
         private UIContext immediateContext = null;
@@ -183,7 +183,7 @@ namespace AubitDesktop
             
             this.Controls.Add(winScreen.WindowWidget);
             ApplicationWindows.PushWindow(winScreen);
-            this.toolStrip1 = new List<ToolStripItem>();
+            this.toolStrip1 = new List<AubitDesktop.AubitTSBtn>();
             this.AutoScroll = true;
             this.SetAutoScrollMargin(5, 5);
             

@@ -677,7 +677,7 @@ namespace AubitDesktop
             }
         }
 
-        internal void setToolbar(List<ToolStripItem> toolStrip)
+        internal void setToolbar(List<AubitTSBtn> toolStrip)
         {
             
             this.topWindowToolStrip.Items.Clear();
