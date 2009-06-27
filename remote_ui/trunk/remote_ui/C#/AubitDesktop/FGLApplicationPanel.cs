@@ -255,13 +255,13 @@ namespace AubitDesktop
 
         public bool hasKeyInToolbar(string key)
         {
-            foreach (ToolStripItem i in toolStrip1) {
-                AubitTSBtn o;
-                if (i.GetType() == typeof(AubitTSBtn))
-                {
-                    o = (AubitTSBtn)i;
-                    if (o.ActiveKey == key) return true;
-                }
+            foreach (AubitTSBtn i in toolStrip1) {
+                //AubitTSBtn o;
+                //if (i.GetType() == typeof(AubitTSBtn))
+                //{
+                  //  o = (AubitTSBtn)i;
+                    if (i.ActiveKey == key) return true;
+                //}
             }
             return false;
         }
