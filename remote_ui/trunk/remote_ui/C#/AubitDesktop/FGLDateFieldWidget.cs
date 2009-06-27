@@ -30,7 +30,7 @@ namespace AubitDesktop
     class FGLDateFieldWidget : FGLWidget
     {
 
-        DateTimePicker t;
+        DateTimePicker dateTimePicker_t;
         Panel p;
         Label l;
 
@@ -48,7 +48,7 @@ namespace AubitDesktop
         {
             t.SetToolTip(this.l, s);
             t.SetToolTip(this.p, s);
-            t.SetToolTip(this.t, s);
+            t.SetToolTip(this.dateTimePicker_t, s);
         }
 
 
@@ -75,7 +75,7 @@ namespace AubitDesktop
             {
                 p.Width = value;
                 l.Width = value;
-                t.Width = value;
+                dateTimePicker_t.Width = value;
             }
         }
 
@@ -84,7 +84,7 @@ namespace AubitDesktop
         {
             set
             {
-                t.TabIndex = value;
+                dateTimePicker_t.TabIndex = value;
             }
         }
 
@@ -92,7 +92,7 @@ namespace AubitDesktop
         {
             get
             {
-                if (t.Enabled && t.Focused) return true;
+                if (dateTimePicker_t.Enabled && dateTimePicker_t.Focused) return true;
                 return false;
             }
         }
@@ -100,8 +100,8 @@ namespace AubitDesktop
 
         public override void setFocus()
         {
-            t.Focus();
-            t.Select();
+            dateTimePicker_t.Focus();
+            dateTimePicker_t.Select();
             
         }
 
@@ -109,12 +109,12 @@ namespace AubitDesktop
         {
             set
             {
-                this.t.BackColor = value;
+                this.dateTimePicker_t.BackColor = value;
                 this.l.BackColor = value;
             }
             get
             {
-                return this.t.BackColor;
+                return this.dateTimePicker_t.BackColor;
             }
 
         }
@@ -138,14 +138,14 @@ namespace AubitDesktop
             {
                 case FGLContextType.ContextNone:
                     l.Visible = true;
-                    t.Visible = false;
+                    dateTimePicker_t.Visible = false;
                     break;
 
 
                 case FGLContextType.ContextDisplayArray:
-                    if (t.Visible != true)
+                    if (dateTimePicker_t.Visible != true)
                     {
-                        t.Visible = true;
+                        dateTimePicker_t.Visible = true;
                     }
                     if (l.Visible != false)
                     {
@@ -169,7 +169,7 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextConstruct:
-                    t.Visible = true;
+                    dateTimePicker_t.Visible = true;
                     l.Visible = false;
                     
                     break;
@@ -177,13 +177,13 @@ namespace AubitDesktop
                 default:
                     if (this.NoEntry)
                     {
-                        t.Visible = false;
+                        dateTimePicker_t.Visible = false;
                         l.Visible = true;
                         
                     }
                     else
                     {
-                        t.Visible = true;
+                        dateTimePicker_t.Visible = true;
                         l.Visible = false;
                         
                     }
@@ -204,11 +204,11 @@ namespace AubitDesktop
         {
             get
             {
-                return t.Enabled;
+                return dateTimePicker_t.Enabled;
             }
             set
             {
-                t.Enabled = value;
+                dateTimePicker_t.Enabled = value;
             }
         }
 
@@ -239,13 +239,13 @@ namespace AubitDesktop
         {
             get
             {
-                return t.Text;
+                return dateTimePicker_t.Text;
             }
             set
             {
                 string val;
                 val = value;
-                if (val != t.Text)
+                if (val != dateTimePicker_t.Text)
                 {
                     this.FieldTextChanged = true;
                 }
@@ -279,7 +279,7 @@ namespace AubitDesktop
 
 
                     l.Text = val;
-                t.Text = val;
+                dateTimePicker_t.Text = val;
 
             }
         }
@@ -378,37 +378,37 @@ namespace AubitDesktop
             p = new Panel();
             l = new Label();
             l.TextAlign = ContentAlignment.MiddleLeft;
-            t = new System.Windows.Forms.DateTimePicker();
-            t.Format = DateTimePickerFormat.Custom;
-            t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; 
-            t.Visible = true;
-            t.Enabled = true;
+            dateTimePicker_t = new System.Windows.Forms.DateTimePicker();
+            dateTimePicker_t.Format = DateTimePickerFormat.Custom;
+            dateTimePicker_t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; 
+            dateTimePicker_t.Visible = true;
+            dateTimePicker_t.Enabled = true;
 
             p.Location = GuiLayout.getPoint(ma,index, column, row);
             p.AutoSize = true;
 
-            t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+            dateTimePicker_t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
 
             if (columns > 2)
             {
-                t.Width = GuiLayout.get_gui_w(columns + 2);
+                dateTimePicker_t.Width = GuiLayout.get_gui_w(columns + 2);
             }
             else
             {
-                t.Width = GuiLayout.get_gui_w(3);
+                dateTimePicker_t.Width = GuiLayout.get_gui_w(3);
             }
 
-            l.Size = t.Size;
+            l.Size = dateTimePicker_t.Size;
 
             l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
-            p.Controls.Add(t);
+            p.Controls.Add(dateTimePicker_t);
             p.Controls.Add(l);
-            p.Size = t.Size;
+            p.Size = dateTimePicker_t.Size;
 
-            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-            t.Enter+= new EventHandler(t_GotFocus);
-            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            dateTimePicker_t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            dateTimePicker_t.Enter+= new EventHandler(t_GotFocus);
+            dateTimePicker_t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             adjustDisplayPropertiesForContext();
         }
 

@@ -342,7 +342,6 @@ namespace AubitDesktop
                             val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
                         }
                     }
-                    
                 }
 
                 if (_ContextType == FGLContextType.ContextNone)
@@ -351,7 +350,6 @@ namespace AubitDesktop
                     {
                         val = val.TrimEnd(null);
                     }
-                    
                 }
 
                 if (t.PasswordChar == '*')

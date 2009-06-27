@@ -32,7 +32,7 @@ namespace AubitDesktop
     {
         //FGLContextType _ContextType;
         private int id;
-        CheckBox cb;
+        CheckBox cbFieldWidget;
 
         string strIndeterminate;
         string strTrue;
@@ -48,7 +48,7 @@ namespace AubitDesktop
 
         public new void setToolTip(ToolTip t, string s)
         {
-            t.SetToolTip(this.cb, s);
+            t.SetToolTip(this.cbFieldWidget, s);
         }
 
 
@@ -57,7 +57,7 @@ namespace AubitDesktop
         {
             set
             {
-                cb.TabIndex = value;
+                cbFieldWidget.TabIndex = value;
             }
         }
 
@@ -65,7 +65,7 @@ namespace AubitDesktop
         {
             get
             {
-                if (cb.Enabled && cb.Focused) return true;
+                if (cbFieldWidget.Enabled && cbFieldWidget.Focused) return true;
                 return false;
             }
         }
@@ -73,7 +73,7 @@ namespace AubitDesktop
 
         public override void setFocus()
         {
-            cb.Focus();
+            cbFieldWidget.Focus();
         }
 
 
@@ -82,11 +82,11 @@ namespace AubitDesktop
         {
             if (notNull)
             {
-                cb.ThreeState = false;
+                cbFieldWidget.ThreeState = false;
             }
             else
             {
-                cb.ThreeState = true;
+                cbFieldWidget.ThreeState = true;
             }
         }
 
@@ -110,30 +110,30 @@ namespace AubitDesktop
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
-                    cb.Enabled = false;
-                    cb.ThreeState=false;
+                    cbFieldWidget.Enabled = false;
+                    cbFieldWidget.ThreeState=false;
                     break;
 
 
                 case FGLContextType.ContextDisplayArray:
-                    cb.Enabled=false;
-                    cb.ThreeState=false;
+                    cbFieldWidget.Enabled=false;
+                    cbFieldWidget.ThreeState=false;
 
                     
                     break;
 
 
                 case FGLContextType.ContextConstruct:
-                    cb.Enabled=true;
-                    cb.ThreeState=true;
+                    cbFieldWidget.Enabled=true;
+                    cbFieldWidget.ThreeState=true;
                     break;
 
                 case FGLContextType.ContextInput:
                 case FGLContextType.ContextInputArray:
                    if (this.NoEntry) {
-                       cb.Enabled=false;
+                       cbFieldWidget.Enabled=false;
                    } else {
-                    cb.Enabled=true;
+                    cbFieldWidget.Enabled=true;
                    }
                    setThreeState();
                     //cb.ThreeState=false;
@@ -145,11 +145,11 @@ namespace AubitDesktop
                     setThreeState();
                     if (this.NoEntry)
                     {
-                        cb.Enabled = false;
+                        cbFieldWidget.Enabled = false;
                     }
                     else
                     {
-                        cb.Enabled=false;
+                        cbFieldWidget.Enabled=false;
                     }
                     break;
 
@@ -160,7 +160,7 @@ namespace AubitDesktop
         {
             get
             {
-                return (Control)cb;
+                return (Control)cbFieldWidget;
             }
         }
 
@@ -188,7 +188,7 @@ namespace AubitDesktop
         {
             get
             {
-                switch (cb.CheckState) {
+                switch (cbFieldWidget.CheckState) {
 
                     case CheckState.Checked:
                     return strTrue;
@@ -203,24 +203,24 @@ namespace AubitDesktop
             }
             set
             {
-                CheckState oldvalue = cb.CheckState;
+                CheckState oldvalue = cbFieldWidget.CheckState;
                 if (value == strTrue)
                 {
-                    cb.CheckState = CheckState.Checked;
+                    cbFieldWidget.CheckState = CheckState.Checked;
                 }
 
                 if (value == strFalse)
                 {
-                    cb.CheckState = CheckState.Unchecked;
+                    cbFieldWidget.CheckState = CheckState.Unchecked;
                 }
 
                 if (value == strIndeterminate)
                 {
-                    cb.CheckState = CheckState.Indeterminate;
+                    cbFieldWidget.CheckState = CheckState.Indeterminate;
                 }
 
 
-                if (oldvalue != cb.CheckState)
+                if (oldvalue != cbFieldWidget.CheckState)
                 {
                     this.FieldTextChanged = true;
                 }
@@ -265,25 +265,25 @@ namespace AubitDesktop
 
             this.SetWidget(thisAttribute,ma, row, index,column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
-            cb = new CheckBox();
-            SizeControl(ma,index,cb);
+            cbFieldWidget = new CheckBox();
+            SizeControl(ma,index,cbFieldWidget);
             if (cbText != null)
             {
-                cb.Text = cbText;
+                cbFieldWidget.Text = cbText;
             }
-            cb.AutoCheck = true;
-            cb.AutoEllipsis = true;
-            cb.Visible = true;
+            cbFieldWidget.AutoCheck = true;
+            cbFieldWidget.AutoEllipsis = true;
+            cbFieldWidget.Visible = true;
 
             
             //cb.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             
-            cb.CausesValidation = true;
-            cb.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
-            cb.Enter += new EventHandler(t_GotFocus);
+            cbFieldWidget.CausesValidation = true;
+            cbFieldWidget.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            cbFieldWidget.Enter += new EventHandler(t_GotFocus);
             
             
-            cb.Click += new EventHandler(t_Click);
+            cbFieldWidget.Click += new EventHandler(t_Click);
             
             this.id = id;
         }
