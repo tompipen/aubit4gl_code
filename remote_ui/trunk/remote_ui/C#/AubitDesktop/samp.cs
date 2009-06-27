@@ -611,6 +611,8 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("MESSAGE", Type = typeof(MESSAGE))]
         [System.Xml.Serialization.XmlElementAttribute("ERROR", Type = typeof(MESSAGE))]
         [System.Xml.Serialization.XmlElementAttribute("NEXTOPTION", Type = typeof(NEXTOPTION))]
+        [System.Xml.Serialization.XmlElementAttribute("SETSCRLINE", Type = typeof(SETSCRLINE))]
+        [System.Xml.Serialization.XmlElementAttribute("SETARRLINE", Type = typeof(SETARRLINE))]
         [System.Xml.Serialization.XmlElementAttribute("OPENWINDOWWITHFORM", Type = typeof(OPENWINDOWWITHFORM))]
         [System.Xml.Serialization.XmlElementAttribute("OPTIONS", Type = typeof(OPTIONS))]
         [System.Xml.Serialization.XmlElementAttribute("PROGRAMSTARTUP", Type = typeof(PROGRAMSTARTUP))]
@@ -909,6 +911,28 @@ namespace AubitDesktop
     }
 
 
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class SETARRLINE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int LINE;
+
+    }
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class SETSCRLINE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int LINE;
+
+    }
+
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -1187,6 +1211,9 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(GETKEY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTFIELD), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(HIDEOPTION), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETARRLINE), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETSCRLINE), IsNullable = false)]
+
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETKEYLABEL), IsNullable = false)]

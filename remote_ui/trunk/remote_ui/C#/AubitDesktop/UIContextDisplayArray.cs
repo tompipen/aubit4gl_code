@@ -670,6 +670,16 @@ namespace AubitDesktop
         }
 
 
+
+        internal void setArrLine(int p)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        internal void setScrLine(int p)
+        {
+           // Doesn't need to do anything
+        }
     }
 
 

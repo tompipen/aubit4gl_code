@@ -721,7 +721,10 @@ namespace AubitDesktop
                     a++;
                 }
             }
-            A4GL_newMovement_single(scrLine, arrLine, attrib, 'R');
+            if (attrib != CurrentFieldNo)
+            {
+                A4GL_newMovement_single(scrLine, arrLine, attrib, 'R');
+            }
         }
 
         public void NavigateToTab()
@@ -1925,7 +1928,19 @@ namespace AubitDesktop
 
 
 
+        internal void setArrLine(int p)
+        {
+            if (arrLine != p)
+            {
+                A4GL_newMovement_single(scrLine, p, 0, 'S');
+            }
+            //checkControlStack();
+        }
 
+        internal void setScrLine(int p)
+        {
+            // Does nothing in GUI
+        }
     }
 
 

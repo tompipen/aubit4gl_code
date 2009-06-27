@@ -312,6 +312,8 @@ namespace AubitDesktop
             this.arrLine = Convert.ToInt32((string)displayArrayGrid.Rows[n].Cells[0].Value);
             this.scrLine = this.arrLine;
         }
+
+
         private void setLines()
         {
             this.arrLine = Convert.ToInt32((string)displayArrayGrid.Rows[ displayArrayGrid.CurrentRow.Index].Cells[0].Value);
@@ -374,6 +376,16 @@ namespace AubitDesktop
          
             }
             
+        }
+
+        internal void setArrLine(int p)
+        {
+            displayArrayGrid.CurrentCell = displayArrayGrid.Rows[p - 1].Cells[1];
+        }
+
+        internal void setScrLine(int p)
+        {
+            // Doesn't need to do anything...
         }
     }
 

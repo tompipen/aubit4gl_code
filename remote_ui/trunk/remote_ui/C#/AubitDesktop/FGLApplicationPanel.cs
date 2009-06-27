@@ -1799,6 +1799,63 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+
+                #region SETARRLINE
+                if (a is SETARRLINE)
+                {
+                    if (currentContext is UIInputArrayContext)
+                    {
+                        UIInputArrayContext ia;
+                        ia = (UIInputArrayContext)currentContext;
+                        ia.setArrLine(((SETARRLINE)a).LINE);
+                    }
+
+                    if (currentContext is UIDisplayArrayContext)
+                    {
+                        UIDisplayArrayContext da;
+                        da = (UIDisplayArrayContext)currentContext;
+                        da.setArrLine(((SETARRLINE)a).LINE);
+                    }
+
+                    if (currentContext is UIDisplayArrayInTableContext)
+                    {
+                        UIDisplayArrayInTableContext da;
+                        da = (UIDisplayArrayInTableContext)currentContext;
+                        da.setArrLine(((SETARRLINE)a).LINE);
+                    }
+                    commands.Remove(a);
+                    continue;
+
+                }
+                #endregion
+
+                #region SETSCRLINE
+                if (a is SETSCRLINE)
+                {
+                    if (currentContext is UIInputArrayContext)
+                    {
+                        UIInputArrayContext ia;
+                        ia = (UIInputArrayContext)currentContext;
+                        ia.setScrLine(((SETSCRLINE)a).LINE);
+                    }
+
+                    if (currentContext is UIDisplayArrayContext)
+                    {
+                        UIDisplayArrayContext da;
+                        da = (UIDisplayArrayContext)currentContext;
+                        da.setScrLine(((SETSCRLINE)a).LINE);
+                    }
+
+                    if (currentContext is UIDisplayArrayInTableContext)
+                    {
+                        UIDisplayArrayInTableContext da;
+                        da = (UIDisplayArrayInTableContext)currentContext;
+                        da.setScrLine(((SETSCRLINE)a).LINE);
+                    }
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
                 #region WINQUESTION
                 if (a is WINQUESTION)
                 {
