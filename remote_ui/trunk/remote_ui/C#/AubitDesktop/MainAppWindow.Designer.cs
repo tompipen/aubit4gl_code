@@ -460,7 +460,6 @@ namespace AubitDesktop
             this.MenuBarPanel.Padding = new System.Windows.Forms.Padding(5);
             this.MenuBarPanel.Size = new System.Drawing.Size(190, 568);
             this.MenuBarPanel.TabIndex = 7;
-            this.MenuBarPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.MenuBarPanel_Paint);
             // 
             // groupBox1
             // 
