@@ -409,6 +409,12 @@ namespace AubitDesktop
             this.Cursor = Cursors.Arrow;
         }
 
+        public void ShowApplication()
+        {
+            this.Show();
+        }
+
+
         void n_ReceivedEnvelopeFromServer(object sender, ReceivedEventArgs e)
         {
             ENVELOPE enew;
@@ -1148,6 +1154,14 @@ namespace AubitDesktop
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>True - to indicate that its ok to null/dispose this window</returns>
+        internal bool FailedToStart()
+        {
+            return true;
+        }
     }
 
     class launcherCmdNode : TreeNode

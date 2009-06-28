@@ -773,8 +773,8 @@ namespace AubitDesktop
                 ((AubitNetwork)sender).setEnvelopeMode();
                
                 Program.myConsole.ClearText();
-                
-                appwin.Show();
+
+                appwin.ShowApplication();
                 return;
             }
 
@@ -783,8 +783,11 @@ namespace AubitDesktop
                 MessageBox.Show("Application did not start\nIs that the correct Application name ? ");
                 this.Disconnect();
                 this.connectionFailed = true;
-                appwin.Dispose();
-                appwin = null;
+                if (appwin.FailedToStart())
+                {
+                    appwin.Dispose();
+                    appwin = null;
+                }
                 
                 return;
             }
@@ -794,16 +797,22 @@ namespace AubitDesktop
                 MessageBox.Show("Incorrect login details - connection refused");
                 this.Disconnect();
                 this.connectionFailed = true;
-                appwin.Dispose();
-                appwin = null;
+                if (appwin.FailedToStart())
+                {
+                    appwin.Dispose();
+                    appwin = null;
+                } 
                 //stdNetworkConnection = null;
                 return;
             }
             if (e.Data == "TIMEOUT")
             {
                 MessageBox.Show("Timeout...");
-                appwin.Dispose();
-                appwin = null;
+                if (appwin.FailedToStart())
+                {
+                    appwin.Dispose();
+                    appwin = null;
+                }
                 return;
             }
             MessageBox.Show(e.Data);
