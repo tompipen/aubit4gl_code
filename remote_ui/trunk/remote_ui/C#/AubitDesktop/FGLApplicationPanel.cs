@@ -73,7 +73,7 @@ namespace AubitDesktop
         FGLOpenedForms OpenForms;
         private List<AubitTSBtn> programButtons;
         //private Control parentControl;
-        private frmMainAppWindow TopWindow; // The window containing the tabpage control
+        internal frmMainAppWindow TopWindow; // The window containing the tabpage control
         private string lastKey;
 
         public string LastKey
