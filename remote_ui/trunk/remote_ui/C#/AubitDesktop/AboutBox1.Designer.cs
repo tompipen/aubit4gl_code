@@ -131,7 +131,6 @@
             this.logoPictureBox.Location = new System.Drawing.Point(3, 3);
             this.logoPictureBox.Name = "logoPictureBox";
             this.logoPictureBox.Size = new System.Drawing.Size(108, 95);
-            this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.logoPictureBox.TabIndex = 26;
             this.logoPictureBox.TabStop = false;
             // 
@@ -158,7 +157,6 @@
             this.tableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
