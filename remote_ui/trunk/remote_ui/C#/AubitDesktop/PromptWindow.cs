@@ -35,7 +35,7 @@ namespace AubitDesktop
         public bool charMode;
         public event UIEventHandler EventTriggered;
         private Panel NonWindowPromptPanel;
-        private UIContext context;
+        private UIContext promptContext;
         List<FGLKeyEvent> KeyEvents;
 
         public PromptWindow(string text, int FieldAttr, int PromptAttr, string promptStyle, bool charMode,string attribtext, UIContext u)
@@ -47,7 +47,7 @@ namespace AubitDesktop
             this.charMode = charMode;
             this.KeyEvents = new List<FGLKeyEvent>();
             this.NonWindowPromptPanel = null;
-            context = u;
+            promptContext = u;
             if (attribtext.Length>0)
             {
                 this.Text = attribtext;
@@ -124,7 +124,7 @@ namespace AubitDesktop
 
                 if (EventTriggered != null)
                 {
-                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",context);
+                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",promptContext);
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace AubitDesktop
             {
                 if (k.isKey(key))
                 {
-                    EventTriggered(this, k.ID.ToString(), "<TRIGGERED ID=\"" + k.ID.ToString() + "\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",context);
+                    EventTriggered(this, k.ID.ToString(), "<TRIGGERED ID=\"" + k.ID.ToString() + "\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",promptContext);
                     return;
                 }
             }
