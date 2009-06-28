@@ -28,6 +28,139 @@
 
 int defHeight = 21;
 
+FormField::FormField(QWidget *parent) : QWidget(parent)
+{
+   b_noEntry =  false;
+   b_notNull = false;
+   b_required = false;
+   b_touched = false;
+
+   i_fieldId = -1;
+   i_tabIndex = -1;
+   
+}
+
+QString FormField::name()
+{
+   return qs_name;
+}
+
+void FormField::setName(QString name)
+{
+   qs_name = name;
+}
+
+QString FormField::colName()
+{
+   return qs_colName;
+}
+
+void FormField::setColName(QString colName)
+{
+   qs_colName = colName;
+}
+
+QString FormField::sqlTabName()
+{
+   return qs_sqlTabName;
+}
+
+void FormField::setSqlTabName(QString tabName)
+{
+   qs_sqlTabName = tabName;
+}
+
+QString FormField::sqlType()
+{
+   return qs_sqlType;
+}
+
+void FormField::setSqlType(QString sqlType)
+{
+   qs_sqlType = sqlType;
+}
+
+bool FormField::noEntry()
+{
+   return b_noEntry;
+}
+
+void FormField::setNoEntry(bool noEntry)
+{
+   b_noEntry = noEntry;
+}
+
+bool FormField::notNull()
+{
+   return b_notNull;
+}
+
+void FormField::setNotNull(bool notNull)
+{
+   b_notNull = notNull;
+}
+
+bool FormField::required()
+{
+   return b_required;
+}
+
+void FormField::setRequired(bool req)
+{
+   b_required = req;
+}
+
+int FormField::fieldId()
+{
+   return i_fieldId;
+}
+
+void FormField::setFieldId(int id)
+{
+   i_fieldId = id;
+}
+
+int FormField::tabIndex()
+{
+   return i_tabIndex;
+}
+
+void FormField::setTabIndex(int ti)
+{
+   i_tabIndex = ti;
+}
+
+bool FormField::touched()
+{
+   return b_touched;
+}
+
+QString FormField::text()
+{
+   return QString();
+}
+
+void FormField::setText(QString test)
+{
+   
+}
+
+QString FormField::defaultValue()
+{
+   return qs_defaultValue;
+}
+
+void FormField::setDefaultValue(QString val)
+{
+   qs_defaultValue = val;
+}
+
+void FormField::addField(QWidget *widget)
+{
+   widget->setParent(this);
+   qDebug() << "ADDED:" << widget;
+}
+
 //------------------------------------------------------------------------------
 // Method       : Button()
 // Filename     : xml2form.cpp
@@ -432,6 +565,43 @@ QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *p
    }
 
    return new QWidget(parent);
+}
+
+FormField* WidgetHelper::createFormField(const QDomElement& formField, QWidget *parent)
+{
+   QString name    = formField.attribute("name");
+   QString colName = formField.attribute("colName");
+   QString tabName = formField.attribute("sqlTabName");
+   QString sqlType = formField.attribute("sqlType");
+
+   bool hidden   = formField.attribute("hidden").toInt();
+   bool noEntry  = formField.attribute("noEntry").toInt();
+   bool notNull  = formField.attribute("notNull").toInt();
+   bool required  = formField.attribute("required").toInt();
+
+   int fieldId  = formField.attribute("fieldId").toInt();
+   int tabIndex = formField.attribute("tabIndex").toInt();
+
+   QString defaultValue = formField.attribute("defaultValue");
+
+   FormField *fField = new FormField;
+   fField->setName(name);
+   fField->setColName(colName);
+   fField->setSqlTabName(tabName);
+   fField->setSqlType(sqlType);
+   fField->setHidden(hidden);
+   fField->setNoEntry(noEntry);
+   fField->setNotNull(notNull);
+   fField->setRequired(required);
+   fField->setFieldId(fieldId);
+   fField->setTabIndex(tabIndex);
+   fField->setDefaultValue(defaultValue);
+
+   //QWidget *childWidget = WidgetHelper::createFormWidget(formField.firstChild().toElement(), fField);
+   QWidget *childWidget = WidgetHelper::createFormWidget(formField, fField);
+   fField->addField(childWidget);
+
+   return fField;
 }
 
 Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)

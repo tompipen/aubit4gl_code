@@ -40,6 +40,53 @@
 #include <QTextCursor>
 #include <include/fgl.h>
 
+class FormField : public QWidget
+{
+   Q_OBJECT;
+
+public:
+   FormField(QWidget *parent = 0);
+   QString name();
+   void setName(QString);
+   QString colName();
+   void setColName(QString);
+   QString sqlTabName();
+   void setSqlTabName(QString);
+   QString sqlType();
+   void setSqlType(QString);
+   bool noEntry();
+   void setNoEntry(bool);
+   bool notNull();
+   void setNotNull(bool);
+   bool required();
+   void setRequired(bool);
+   int fieldId();
+   void setFieldId(int);
+   int tabIndex();
+   void setTabIndex(int);
+   bool touched();
+   QString text();
+   void setText(QString);
+   QString defaultValue();
+   void setDefaultValue(QString);
+   void addField(QWidget*);
+
+private:
+   QString qs_name;
+   QString qs_colName;
+   QString qs_sqlTabName;
+   QString qs_sqlType;
+   QString qs_text;
+   QString qs_defaultValue;
+   bool b_noEntry;
+   bool b_notNull;
+   bool b_required;
+   int i_fieldId;
+   int i_tabIndex;
+   bool b_touched;
+   void setTouched(bool);
+};
+
 class LineEdit : public QLineEdit
 {
    Q_OBJECT;
@@ -492,6 +539,7 @@ public:
    static QString getWidgetName(QObject*);
    static QString getWidgetColName(QObject*);
    static Edit* createEdit(const QDomElement&, QWidget *parent = NULL);
+   static FormField* createFormField(const QDomElement&, QWidget *parent = NULL);
    static Label* createLabel(const QDomElement&, QWidget *parent = NULL);
    static Button* createButton(const QDomElement&, QWidget *parent = NULL);
    static QWidget* createFormWidget(const QDomElement&, QWidget *parent = NULL);
