@@ -1063,6 +1063,10 @@ decode_event_id (int i)
     {
       return "ON ACTION";
     }
+  if (i== A4GL_EVENT_AFT_INSERT_DELETE) {
+      return "AFTER INSERT_DELETE";
+
+  }
 
 
   A4GL_assertion (1, "UNKNOWN event ID");

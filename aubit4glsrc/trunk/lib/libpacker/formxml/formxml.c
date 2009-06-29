@@ -6,6 +6,7 @@
 static char *get_sql_dtype ( int dtype);
 static char * xml_escape (char *s);
 static char * find_label (int x, int y);
+static int isCharType(int n) ;
 FILE *ofile;
 /*
 void write_xml_form(FILE *ofile, char *fname, struct_form *f) ;
@@ -158,7 +159,7 @@ int b;
 }
 
 
-void get_attribs(struct_form *f, int attr_no, char *buff,int mode) {
+void get_attribs(struct_form *f, int attr_no, char *buff,int mode,int metric_no) {
 struct struct_scr_field *fprop;
 char smbuff[200];
 strcpy(buff, "");
@@ -174,9 +175,16 @@ fprop=&f->attributes.attributes_val[attr_no];
 
 if (mode==0) { // FormField 
         if (formonly) {
-		sprintf(smbuff," sqlType=\"%s\"", get_sql_dtype(f->attributes.attributes_val[attr_no].datatype+(f->attributes.attributes_val[attr_no].dtype_size<<16)));
-		strcat(buff,smbuff);
-	}
+
+            if (isCharType(f->attributes.attributes_val[attr_no].datatype)) {
+               if (f->attributes.attributes_val[attr_no].dtype_size==0) {
+                     f->attributes.attributes_val[attr_no].dtype_size=f->metrics.metrics_val[metric_no].w;
+               }
+            }
+            }
+		      sprintf(smbuff," sqlType=\"%s\"", get_sql_dtype(f->attributes.attributes_val[attr_no].datatype+
+               (f->attributes.attributes_val[attr_no].dtype_size<<16)));
+		      strcat(buff,smbuff);
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, " noEntry=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, " required=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN)) { strcat(buff, " hidden=\"1\""); }
@@ -391,7 +399,7 @@ char posbuf[200];
 		return;
 	}
 
-	get_attribs(f, attr_no, buff,1);
+	get_attribs(f, attr_no, buff,1,metric_no);
 
 	fprintf(ofile, "  <Edit width=\"%d\" %s %s/>\n",
                         f->metrics.metrics_val[metric_no].w,
@@ -404,7 +412,7 @@ void print_buttonedit_attr(struct_form *f, int metric_no, int attr_no,int oldsty
 //char *s;
 char buff[2000];
 char posbuf[200];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -425,7 +433,7 @@ void print_button_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,c
 //char *s;
 char buff[2000];
 char posbuf[200];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -447,7 +455,7 @@ void print_browser_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,
 //char *s;
 char buff[2000];
 char posbuf[200];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -473,7 +481,7 @@ char posbuf[200];
 
 struct_scr_field *fprop;
 fprop=&f->attributes.attributes_val[attr_no];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -496,7 +504,7 @@ char posbuf[200];
 
 struct_scr_field *fprop;
 fprop=&f->attributes.attributes_val[attr_no];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -533,7 +541,7 @@ void print_progressbar_attr(struct_form *f, int metric_no, int attr_no,int oldst
 //char *s;
 char buff[2000];
 char posbuf[200];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -555,7 +563,7 @@ void print_image_attr(struct_form *f, int metric_no, int attr_no,int oldstyle,ch
 char buff[2000];
 char posbuf[200];
 
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
@@ -575,7 +583,7 @@ char posbuf[200];
 void print_unknown_widget_attr(struct_form *f, char *widget, int metric_no, int attr_no,int oldstyle,char *why) {
 //char *s;
 char buff[2000];
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 char posbuf[200];
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
@@ -605,7 +613,7 @@ char posbuf[200];
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
- get_attribs(f, attr_no, buff,1);
+ get_attribs(f, attr_no, buff,1,metric_no);
 
 	if (oldstyle) {
 			fprintf(ofile, "  <DateEdit %s width=\"%d\" %s />\n", 
@@ -632,7 +640,7 @@ char posbuf[200];
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
 //printf("Heigh=%d\n",  f->metrics.metrics_val[metric_no].h);
-        get_attribs(f, attr_no, buff,1);
+        get_attribs(f, attr_no, buff,1,metric_no);
  	if (strstr(buff, " scroll=")==0 && oldstyle!=2) { 
 		// Seems to always have scroll=1
 		strcat(buff," scroll=\"1\"");
@@ -785,7 +793,7 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
   int ismatrix;
 
 
-  get_attribs (f, attr_no, buff, 0);
+  get_attribs (f, attr_no, buff, 0,metric_no);
 
   fieldNo=attr_no;
   if (isInScreenArray (f, attr_no, &dim1,NULL)) {
@@ -1060,7 +1068,7 @@ topLine[511]=0;
 
 	 	fieldNo=attr_no;
 	
-		get_attribs(f, attr_no, buff_tabcol,0);
+		get_attribs(f, attr_no, buff_tabcol,0,a);
 		txt=find_label (f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		if (txt) {
 			sprintf(nmbuff," text=\"%s\"",xml_escape( txt));
@@ -1892,18 +1900,19 @@ static char * get_sql_dtype ( int dtype)
   //char buff[256];
   static char buff_dtype[256];
   int dtype_sz;
-
+printf("%x\n",dtype);
 
   dtype_sz = dtype >> 16;
   dtype = dtype & 0xffff;
   switch (dtype & DTYPE_MASK)
     {
-    case DTYPE_CHAR:
-      sprintf (buff_dtype, "CHAR");
-      break;
-    case DTYPE_VCHAR:
-      sprintf (buff_dtype, "VARCHAR");
-      break;
+        case DTYPE_CHAR:
+              sprintf (buff_dtype, "CHAR(%d)", dtype_sz);
+                    break;
+                        case DTYPE_VCHAR:
+                              sprintf (buff_dtype, "VARCHAR(%d)", dtype_sz);
+                                    break;
+
     case DTYPE_INT:
       sprintf (buff_dtype, "INTEGER");
       break;
@@ -2050,4 +2059,15 @@ void convertMatrix(struct_form *f) {
          f->layout->children.children_val[f->layout->children.children_len-1]=table_layout;
       }
    }
+}
+
+static int isCharType(int n) {
+   switch (n&DTYPE_MASK) { 
+         case DTYPE_CHAR:
+         case DTYPE_VCHAR:
+         case DTYPE_NCHAR:
+         case DTYPE_NVCHAR:
+               return 1;
+   }
+   return 0;
 }

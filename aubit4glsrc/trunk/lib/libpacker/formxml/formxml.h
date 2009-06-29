@@ -12,7 +12,7 @@ void get_screen_size_dims(struct_form *f, int scr, int *width, int *height);
 int isline(char *s);
 char *conv_to_xml_include(char *s);
 int is_metric(struct_form *f, int field_no, int metric_no);
-void get_attribs(struct_form *f, int attr_no, char *buff, int mode);
+void get_attribs(struct_form *f, int attr_no, char *buff, int mode,int metric_no);
 int isLabel(struct_form *f, int attr_no);
 void print_widget(struct_form *f, int metric_no, int attr_no, char *why);
 void print_entry(struct_form *f, int metric_no, int attr_no, char *why);
