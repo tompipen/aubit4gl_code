@@ -39,6 +39,7 @@ Context::~Context()
                if(LineEdit *lineEdit = qobject_cast<LineEdit *> (field)){
                   lineEdit->setMaxLength(lineEdit->w);
                   lineEdit->setValidator(lineEdit->getValidator());
+                  lineEdit->setInputMask(lineEdit->picture());
                }
 
                break;
@@ -152,6 +153,7 @@ void Context::addField(QWidget *field)
                   if(LineEdit *lineEdit = qobject_cast<LineEdit *> (field)){
                      lineEdit->setMaxLength(32767);
                      lineEdit->setValidator(NULL);
+                     lineEdit->setInputMask(NULL);
                   }
 
                   break;

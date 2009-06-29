@@ -1608,6 +1608,24 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       return;
    }
 
+   if(event == "BEFORE_INSERT_DELETE_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::BEFORE_INSERT_DELETE_EVENT;
+      event.id = id;
+
+      p_fglform->ql_formEvents << event;
+      return;
+   }
+
+   if(event == "AFTER_INSERT_DELETE_EVENT"){
+      Fgl::Event event;
+      event.type = Fgl::AFTER_INSERT_DELETE_EVENT;
+      event.id = id;
+
+      p_fglform->ql_formEvents << event;
+      return;
+   }
+
    if(event == "ONKEY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::ONKEY_EVENT;
