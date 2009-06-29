@@ -113,9 +113,18 @@ expr_as_string_when_possible (expr_str * e)
       }
       break;
     case ET_EXPR_GET_FLDBUF:
+
       return "<GET_FLDBUF>";
+      
     case ET_EXPR_ASCII:
-      return "<ASCII>";
+         {
+         char buff[20000];
+         char *ptr;
+               ptr=strdup(expr_as_string_when_possible(e->expr_str_u.expr_expr));
+               sprintf(buff,"ASCII(%s)",ptr);
+               free(ptr);
+               return strdup(buff);
+         }
 
     case ET_EXPR_FIELD_TOUCHED:
       return "FIELD_TOUCHED(...)";

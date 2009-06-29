@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.87 2009-06-25 08:15:49 mikeaubury Exp $
+# $Id: sql_common.c,v 1.88 2009-06-29 13:51:18 dbuettner Exp $
 #
 */
 
@@ -201,6 +201,7 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
     }
 
 
+  if (mod==NULL) mod=" ";
   if (strcmp(mod,"INTERNAL")==0) return;
 
   if (logfnameset == 0)

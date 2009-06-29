@@ -1055,6 +1055,7 @@ get_var_lit (expr_str * x)
       return x->expr_str_u.si;
 // case ET_E_V_OR_LIT_NULL: return "";
     default:
+      return expr_as_string_when_possible(x);
       A4GL_assertion (1, "Unexpected expression type");
 
     }
@@ -1224,13 +1225,18 @@ get_event (event_data * a)
 
     case EVENT_ON_ACTION:
       sprintf (buff, "EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action));
-
+      return buff;
     case EVENT_BEFORE:
       sprintf (buff, "EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      return buff;
+
     case EVENT_AFTER:
       sprintf (buff, "EVENT_TYPE=\"AFTER\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      return buff;
+
     case EVENT_ON:
       sprintf (buff, "EVENT_TYPE=\"ON\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      return buff;
 
     case EVENT_ON_IDLE:
       return "EVENT_ON_IDLE";

@@ -1065,7 +1065,9 @@ decode_event_id (int i)
     }
   if (i== A4GL_EVENT_AFT_INSERT_DELETE) {
       return "AFTER INSERT_DELETE";
-
+  }
+  if (i== A4GL_EVENT_BEF_INSERT_DELETE) {
+      return "BEFORE INSERT_DELETE";
   }
 
 

@@ -1900,7 +1900,6 @@ static char * get_sql_dtype ( int dtype)
   //char buff[256];
   static char buff_dtype[256];
   int dtype_sz;
-printf("%x\n",dtype);
 
   dtype_sz = dtype >> 16;
   dtype = dtype & 0xffff;
