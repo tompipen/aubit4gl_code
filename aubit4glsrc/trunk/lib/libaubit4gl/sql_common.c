@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.88 2009-06-29 13:51:18 dbuettner Exp $
+# $Id: sql_common.c,v 1.89 2009-06-29 18:32:38 mikeaubury Exp $
 #
 */
 
@@ -1591,7 +1591,7 @@ A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
     {
       strcpy (fname, ptr);
     }
-
+A4GL_debug("Reading : %s\n",fname);
 
   f = fopen (fname, "r");
   if (f == 0)
@@ -1758,6 +1758,7 @@ A4GL_sqlid_encrypt (void)
     {
       strcpy (fname, ptr);
     }
+A4GL_debug("Reading : %s\n",fname);
   f = fopen (fname, "r");
 
   if (f == 0)
