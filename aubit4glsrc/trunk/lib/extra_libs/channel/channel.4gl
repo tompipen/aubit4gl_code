@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.23 2009-02-23 17:31:49 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.24 2009-06-30 18:38:56 mikeaubury Exp $
 }
 
 {**
@@ -51,12 +51,8 @@ void *A4GL_find_pointer (const char *pname, char t);
 long A4GL_has_pointer (const char *pname, char t);
 void A4GL_del_pointer (char *pname, char t);
 void A4GL_add_pointer (char *orig_name, char type, void *ptr);
-int aclfgl_read(int ni,void *i,int no,void *o) ;
-#ifdef USING_BINDING
-int aclfgl_write(int ni,void *i,int no,void *o) ;
-#else
+int aclfgl_read(int nparam) ;
 int aclfgl_write (int n) ;
-#endif
 
 endcode
 
@@ -314,25 +310,30 @@ end function
 
 
 code
-int aclfgl_read(int ni,void *i,int no,void *o) {
+int aclfgl_read(int nparam) {
 char *handle;
 char buff[20000];
-struct BINDING *ibind;
-struct BINDING *obind;
+struct BINDING *obind=NULL;
 FILE *f;
 char delim_c;
 int d;
+int no;
 char *ptr;
-ibind=i;
-obind=o;
 
-	if (ni==0) { A4GL_push_int(0); return 1;}
-	if ((ibind[0].dtype&0xffff)!=0) {A4GL_push_int(0); return 1;}
-	handle=ibind[0].ptr;
-	A4GL_push_char(handle);
+// We expect 2 parameters...
+
+if (nparam!=2) {
+		A4GL_push_int(0);
+	return 1;
+}
+
+if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding when reading...
+	A4GL_push_int(0);
+	return 1;
+}
+
 	handle=A4GL_char_pop();
 	A4GL_trim(handle);
-
 
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
@@ -351,6 +352,7 @@ obind=o;
 				A4GL_setnull(obind[a].dtype,obind[a].ptr,obind[a].size);
 			}
 		A4GL_push_int(0);
+		if (obind) free(obind);
 		return 1;
 		
 	}
@@ -396,63 +398,18 @@ obind=o;
 
 
 	A4GL_push_int(1);
+		if (obind) free(obind);
 	return 1;
 }
 endcode
 
 code
-#ifdef USING_BINDING
-int aclfgl_write(int ni,void *i,int no,void *o) {
-char *handle;
-FILE *f;
-char buff[20000];
-struct BINDING *ibind;
-struct BINDING *obind;
-char delim_c;
-int d;
-char *ptr;
-int a;
-ibind=i;
-obind=o;
-
-	if (ni==0) { A4GL_push_int(0); return 1;}
-	if ((ibind[0].dtype&0xffff)!=0) {A4GL_push_int(0); return 1;}
-	handle=ibind[0].ptr;
-	A4GL_push_char(handle);
-	handle=A4GL_char_pop();
-	A4GL_trim(handle);
-
-
-	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
-		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
-	} else {
-		delim_c=' ';
-	}
-
-
-	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
-	if (f==0) { A4GL_push_int(0); 
-			A4GL_exitwith("File is not open");
-		return 1;}
-	
-	for (a=0;a<no;a++) {
-		A4GL_push_param(obind[a].ptr,obind[a].dtype+ENCODE_SIZE(obind[a].size));
-		ptr=A4GL_char_pop();
-		if (a) fprintf(f,"%c",delim_c);
-		fprintf(f,"%s",ptr);
-	}
-	fprintf(f,"\n");
-
-
-	A4GL_push_int(1);
-	return 1;
-}
-#else
 int aclfgl_write (int n) {
 char *ptr=0;
 char *handle;
 FILE *f;
-int nn;
+struct BINDING *ibind=NULL;
+int ni;
 char *ptr2;
 char **px=0;
 int l=0;
@@ -460,21 +417,14 @@ int d;
 char delim_c;
 int a;
 char ds[2];
-nn=n;
 
-px=(char **)acl_malloc2(sizeof(char *)*n);
-while (nn) {
-		nn--;
-		ptr2=A4GL_char_pop();
-		A4GL_trim(ptr2);
-		l+=strlen(ptr2)+2;
-		px[nn]=ptr2;
+
+if (!A4GL_pop_binding_from_stack(&ibind,&ni,'o')) { // Its an output binding when reading...
+	A4GL_push_int(0);
+	return 1;
 }
-
-ptr=(char *)acl_malloc2(l);
-handle=px[0];
+handle=A4GL_char_pop();
 A4GL_trim(handle);
-
 
 if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
@@ -482,15 +432,11 @@ if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 	delim_c=' ';
 }
 
-ds[1]=0;
-ds[0]=delim_c;
+	ds[1]=0;
+	ds[0]=delim_c;
 
-strcpy(ptr,"");
 
-	for (a=1;a<n;a++) {
-		if (a>=2) strcat(ptr,ds);
-		strcat(ptr,px[a]);
-	}
+
 
 	f=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
 	if (f==0) { 
@@ -498,15 +444,22 @@ strcpy(ptr,"");
 			free(px);
 			free(ptr);
 			A4GL_exitwith("File is not open");
+			if (ibind) free(ibind);
 			return 0;
 	}
-	fprintf(f,"%s\n",ptr);
-	free(ptr);
-	for (a=0;a<n;a++) free(px[a]);
-	free(px);
+	for (a=0;a<ni;a++) {
+		if (a>=1) fprintf(f,"%s",ds);
+      		A4GL_push_param(ibind[a].ptr,ibind[a].dtype+ENCODE_SIZE(ibind[a].size));
+      		ptr=A4GL_char_pop();
+			A4GL_trim(ptr);
+		fprintf(f,"%s",ptr);
+			free(ptr);
+	}
+	fprintf(f,"\n",ptr);
+			if (ibind) free(ibind);
+
 	return 0;
 }
-#endif
 endcode
 
 

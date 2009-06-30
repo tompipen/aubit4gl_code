@@ -1871,17 +1871,14 @@ struct command *c;
 
 struct command *new_call_cmd(expr_str* p_fcall,expr_str_list* p_returning) {
 struct command *c;
-   	c=new_command(E_CMD_CALL_CMD);
-   	c->cmd_data.command_data_u.call_cmd.fcall=p_fcall;
-
-	//if (p_fcall->expr_str_u.expr_function_call->parameters) {
-		//p_fcall->expr_str_u.expr_function_call->parameters=A4GL_rationalize_list(p_fcall->expr_str_u.expr_function_call->parameters);
-	//}
-
-   c->cmd_data.command_data_u.call_cmd.returning=p_returning;
-
-   //inc_var_assigned_from_binding_list(p_returning);
-   add_to_call_list_by_call(c);
+	
+	c=check_for_member_call_alias(p_fcall,p_returning);
+	if (c==NULL) {
+   		c=new_command(E_CMD_CALL_CMD);
+   		c->cmd_data.command_data_u.call_cmd.fcall=p_fcall;
+   		c->cmd_data.command_data_u.call_cmd.returning=p_returning;
+   		add_to_call_list_by_call(c);
+	}
    return c;
 }
 
@@ -1954,6 +1951,7 @@ struct on_event *new_event(e_event event_type, void *data, commands *cmds,int li
 
         case EVENT_BEFORE_FIELD:	oe->evt_data.event_data_u.before_field=(fh_field_list *)data; break;
         case EVENT_AFTER_FIELD: 	oe->evt_data.event_data_u.after_field=(fh_field_list *)data; break;
+        case EVENT_ON_CHANGE: 	oe->evt_data.event_data_u.after_field=(fh_field_list *)data; break;
         case EVENT_MENU_COMMAND: 	oe->evt_data.event_data_u.mnoption  =(menuoption *)data; break;
 
 	default : A4GL_assertion(1,"Unexpected event");

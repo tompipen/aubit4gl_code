@@ -1,6 +1,6 @@
 /* XML application for module_def.dtd.
  * Includes actions from module_def.act.
- * Generated 2009/06/27 07:44:41.
+ * Generated 2009/06/30 18:38:09.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -2726,6 +2726,11 @@ tmpVar->event_data_u.before_field=0;
 }
 /* tmpVar->event_data_u.after_field; is_vararray=0 skip=0 */
 
+if (tmpVar->event_type==EVENT_ON_CHANGE) {
+tmpVar->event_data_u.after_field=0;
+}
+/* tmpVar->event_data_u.after_field; is_vararray=0 skip=0 */
+
 if (tmpVar->event_type==EVENT_AFTER_FIELD) {
 tmpVar->event_data_u.after_field=0;
 }
@@ -2751,7 +2756,7 @@ tmpVar->event_data_u.after=0;
 
 void STag_on_event(void)
 {
-#line 2338 "module_def.act"
+#line 2343 "module_def.act"
 
 
 {
@@ -2775,7 +2780,7 @@ else {tmpVar->colno=atol(A_on_event_colno);}
 
 void STag_on_events(void)
 {
-#line 2359 "module_def.act"
+#line 2364 "module_def.act"
 
 
 {
@@ -2792,7 +2797,7 @@ tmpVar->event.event_val=0;
 
 void STag_struct_menu_cmd(void)
 {
-#line 2373 "module_def.act"
+#line 2378 "module_def.act"
 
 
 {
@@ -2824,7 +2829,7 @@ tmpVar->menu_attrib_image=0;
 
 void STag_struct_prompt_cmd(void)
 {
-#line 2402 "module_def.act"
+#line 2407 "module_def.act"
 
 
 {
@@ -2860,7 +2865,7 @@ else {tmpVar->blockid=atol(A_struct_prompt_cmd_blockid);}
 
 void STag_struct_display_array_cmd(void)
 {
-#line 2435 "module_def.act"
+#line 2440 "module_def.act"
 
 
 {
@@ -2902,7 +2907,7 @@ else {tmpVar->slice_end=atol(A_struct_display_array_cmd_slice_end);}
 
 void STag_struct_input_cmd(void)
 {
-#line 2474 "module_def.act"
+#line 2479 "module_def.act"
 
 
 {
@@ -2939,7 +2944,7 @@ else {tmpVar->blockid=atol(A_struct_input_cmd_blockid);}
 
 void STag_cons_list_entry(void)
 {
-#line 2508 "module_def.act"
+#line 2513 "module_def.act"
 
 
 {
@@ -2959,7 +2964,7 @@ else {tmpVar->colname=strdup(A_cons_list_entry_colname);}
 
 void STag_cons_list(void)
 {
-#line 2525 "module_def.act"
+#line 2530 "module_def.act"
 
 
 {
@@ -2976,7 +2981,7 @@ tmpVar->list.list_val=0;
 
 void STag_struct_input_array_cmd(void)
 {
-#line 2539 "module_def.act"
+#line 2544 "module_def.act"
 
 
 {
@@ -3019,7 +3024,7 @@ else {tmpVar->slice_end=atol(A_struct_input_array_cmd_slice_end);}
 
 void STag_struct_construct_cmd(void)
 {
-#line 2579 "module_def.act"
+#line 2584 "module_def.act"
 
 
 {
@@ -3060,7 +3065,7 @@ tmpVar->callback_function=0;
 
 void STag_user_details(void)
 {
-#line 2617 "module_def.act"
+#line 2622 "module_def.act"
 
 
 {
@@ -3078,7 +3083,7 @@ tmpVar->password=0;
 
 void STag_struct_free_rep_cmd(void)
 {
-#line 2632 "module_def.act"
+#line 2637 "module_def.act"
 
 
 {
@@ -3098,7 +3103,7 @@ else {tmpVar->namespace=strdup(A_struct_free_rep_cmd_namespace);}
 
 void STag_struct_alloc_arr_cmd(void)
 {
-#line 2649 "module_def.act"
+#line 2654 "module_def.act"
 
 
 {
@@ -3114,7 +3119,7 @@ tmpVar->variable=0;
 
 void STag_struct_dealloc_arr_cmd(void)
 {
-#line 2662 "module_def.act"
+#line 2667 "module_def.act"
 
 
 {
@@ -3130,7 +3135,7 @@ tmpVar->variable=0;
 
 void STag_struct_resize_arr_cmd(void)
 {
-#line 2675 "module_def.act"
+#line 2680 "module_def.act"
 
 
 {
@@ -3146,7 +3151,7 @@ tmpVar->variable=0;
 
 void STag_struct_enable_cmd(void)
 {
-#line 2688 "module_def.act"
+#line 2693 "module_def.act"
 
 
 {
@@ -3162,7 +3167,7 @@ tmpVar->srec=0;
 
 void STag_struct_enable_form_cmd(void)
 {
-#line 2701 "module_def.act"
+#line 2706 "module_def.act"
 
 
 {
@@ -3180,7 +3185,7 @@ tmpVar->srec=0;
 
 void STag_struct_disable_cmd(void)
 {
-#line 2716 "module_def.act"
+#line 2721 "module_def.act"
 
 
 {
@@ -3196,7 +3201,7 @@ tmpVar->srec=0;
 
 void STag_struct_disable_form_cmd(void)
 {
-#line 2729 "module_def.act"
+#line 2734 "module_def.act"
 
 
 {
@@ -3214,7 +3219,7 @@ tmpVar->srec=0;
 
 void STag_struct_msg_box_cmd(void)
 {
-#line 2744 "module_def.act"
+#line 2749 "module_def.act"
 
 
 {
@@ -3246,7 +3251,7 @@ tmpVar->returning=0;
 
 void STag_struct_next_form_cmd(void)
 {
-#line 2773 "module_def.act"
+#line 2778 "module_def.act"
 
 
 {
@@ -3266,7 +3271,7 @@ else {tmpVar->field=strdup(A_struct_next_form_cmd_field);}
 
 void STag_struct_call_shared_cmd(void)
 {
-#line 2790 "module_def.act"
+#line 2795 "module_def.act"
 
 
 {
@@ -3283,7 +3288,7 @@ else {tmpVar->niy=strdup(A_struct_call_shared_cmd_niy);}
 
 void STag_struct_open_statusbox_cmd(void)
 {
-#line 2804 "module_def.act"
+#line 2809 "module_def.act"
 
 
 {
@@ -3308,7 +3313,7 @@ tmpVar->sz_height=0;
 
 void STag_struct_set_session_cmd(void)
 {
-#line 2826 "module_def.act"
+#line 2831 "module_def.act"
 
 
 {
@@ -3331,7 +3336,7 @@ tmpVar->s3=0;
 
 void STag_command_data(void)
 {
-#line 2846 "module_def.act"
+#line 2851 "module_def.act"
 
 
 {
@@ -3873,7 +3878,7 @@ memset(&tmpVar->command_data_u.lint_expect_cmd,0,sizeof(tmpVar->command_data_u.l
 
 void STag_fgl_comment(void)
 {
-#line 3385 "module_def.act"
+#line 3390 "module_def.act"
 
 
 {
@@ -3902,7 +3907,7 @@ else {tmpVar->type=A_fgl_comment_type[0];}
 
 void STag_command(void)
 {
-#line 3411 "module_def.act"
+#line 3416 "module_def.act"
 
 
 {
@@ -3930,7 +3935,7 @@ else {tmpVar->module=strdup(A_command_module);}
 
 void STag_vname(void)
 {
-#line 3436 "module_def.act"
+#line 3441 "module_def.act"
 
 
 {
@@ -3950,7 +3955,7 @@ else {tmpVar->alias=strdup(A_vname_alias);}
 
 void STag_vname_name_list(void)
 {
-#line 3453 "module_def.act"
+#line 3458 "module_def.act"
 
 
 {
@@ -3967,7 +3972,7 @@ tmpVar->names.names_val=0;
 
 void STag_constant_data(void)
 {
-#line 3467 "module_def.act"
+#line 3472 "module_def.act"
 
 
 {
@@ -4008,7 +4013,7 @@ else {tmpVar->constant_data_u.data_f=atof(A_constant_data_data_f);}
 
 void STag_linked_variable(void)
 {
-#line 3505 "module_def.act"
+#line 3510 "module_def.act"
 
 
 {
@@ -4027,7 +4032,7 @@ memset(&tmpVar->col_list,0,sizeof(tmpVar->col_list));
 
 void STag_assoc_array_variable(void)
 {
-#line 3521 "module_def.act"
+#line 3526 "module_def.act"
 
 
 {
@@ -4049,7 +4054,7 @@ else {tmpVar->char_size=atol(A_assoc_array_variable_char_size);}
 
 void STag_simple_variable(void)
 {
-#line 3540 "module_def.act"
+#line 3545 "module_def.act"
 
 
 {
@@ -4072,7 +4077,7 @@ else {tmpVar->dimensions[1]=atol(A_simple_variable_dimensions_1);}
 
 void STag_record_variable(void)
 {
-#line 3560 "module_def.act"
+#line 3565 "module_def.act"
 
 
 {
@@ -4097,7 +4102,7 @@ else {tmpVar->user_ptr=strdup(A_record_variable_user_ptr);}
 
 void STag_object_variable(void)
 {
-#line 3582 "module_def.act"
+#line 3587 "module_def.act"
 
 
 {
@@ -4116,7 +4121,7 @@ tmpVar->definition=0;
 
 void STag_assoc_subscript(void)
 {
-#line 3598 "module_def.act"
+#line 3603 "module_def.act"
 
 
 {
@@ -4135,7 +4140,7 @@ tmpVar->subscript_value=0;
 
 void STag_variable_data(void)
 {
-#line 3614 "module_def.act"
+#line 3619 "module_def.act"
 
 
 {
@@ -4182,7 +4187,7 @@ tmpVar->variable_data_u.type_declaration=0;
 
 void STag_variable(void)
 {
-#line 3658 "module_def.act"
+#line 3663 "module_def.act"
 
 
 {
@@ -4233,7 +4238,7 @@ else {tmpVar->lineno=atol(A_variable_lineno);}
 
 void STag_lint_warning(void)
 {
-#line 3706 "module_def.act"
+#line 3711 "module_def.act"
 
 
 {
@@ -4253,7 +4258,7 @@ else {tmpVar->warning=strdup(A_lint_warning_warning);}
 
 void STag_variable_list(void)
 {
-#line 3723 "module_def.act"
+#line 3728 "module_def.act"
 
 
 {
@@ -4270,7 +4275,7 @@ tmpVar->variables.variables_val=0;
 
 void STag_flist(void)
 {
-#line 3737 "module_def.act"
+#line 3742 "module_def.act"
 
 
 {
@@ -4293,7 +4298,7 @@ else {tmpVar->special=strdup(A_flist_special);}
 
 void STag_file_description(void)
 {
-#line 3757 "module_def.act"
+#line 3762 "module_def.act"
 
 
 {
@@ -4313,7 +4318,7 @@ tmpVar->list.list_val=0;
 
 void STag_globals_definition(void)
 {
-#line 3774 "module_def.act"
+#line 3779 "module_def.act"
 
 
 {
@@ -4341,7 +4346,7 @@ memset(&tmpVar->exported_global_variables,0,sizeof(tmpVar->exported_global_varia
 
 void STag_s_dependant_tables(void)
 {
-#line 3799 "module_def.act"
+#line 3804 "module_def.act"
 
 
 {
@@ -4361,7 +4366,7 @@ else {tmpVar->checksuminfo=strdup(A_s_dependant_tables_checksuminfo);}
 
 void STag_s_source_code(void)
 {
-#line 3816 "module_def.act"
+#line 3821 "module_def.act"
 
 
 {
@@ -4378,7 +4383,7 @@ tmpVar->lines.lines_val=0;
 
 void STag_module_definition(void)
 {
-#line 3830 "module_def.act"
+#line 3835 "module_def.act"
 
 
 {
@@ -4453,7 +4458,7 @@ else {tmpVar->moduleIsInLibrary=atol(A_module_definition_moduleIsInLibrary);}
 
 void STag_expr_str_list(void)
 {
-#line 3902 "module_def.act"
+#line 3907 "module_def.act"
 
 
 {
@@ -4470,7 +4475,7 @@ tmpVar->list.list_val=0;
 
 void STag_s_expr_op(void)
 {
-#line 3916 "module_def.act"
+#line 3921 "module_def.act"
 
 
 {
@@ -4490,7 +4495,7 @@ tmpVar->escape=0;
 
 void STag_s_expr_function_call(void)
 {
-#line 3933 "module_def.act"
+#line 3938 "module_def.act"
 
 
 {
@@ -4518,7 +4523,7 @@ else {tmpVar->line=atol(A_s_expr_function_call_line);}
 
 void STag_s_expr_pdf_function_call(void)
 {
-#line 3958 "module_def.act"
+#line 3963 "module_def.act"
 
 
 {
@@ -4546,7 +4551,7 @@ else {tmpVar->line=atol(A_s_expr_pdf_function_call_line);}
 
 void STag_s_expr_shared_function_call(void)
 {
-#line 3983 "module_def.act"
+#line 3988 "module_def.act"
 
 
 {
@@ -4577,7 +4582,7 @@ else {tmpVar->line=atol(A_s_expr_shared_function_call_line);}
 
 void STag_s_expr_infield(void)
 {
-#line 4011 "module_def.act"
+#line 4016 "module_def.act"
 
 
 {
@@ -4602,7 +4607,7 @@ else {tmpVar->line=atol(A_s_expr_infield_line);}
 
 void STag_s_expr_get_fldbuf(void)
 {
-#line 4033 "module_def.act"
+#line 4038 "module_def.act"
 
 
 {
@@ -4627,7 +4632,7 @@ else {tmpVar->line=atol(A_s_expr_get_fldbuf_line);}
 
 void STag_s_expr_form_is_compiled(void)
 {
-#line 4055 "module_def.act"
+#line 4060 "module_def.act"
 
 
 {
@@ -4651,7 +4656,7 @@ else {tmpVar->line=atol(A_s_expr_form_is_compiled_line);}
 
 void STag_s_expr_field_touched(void)
 {
-#line 4076 "module_def.act"
+#line 4081 "module_def.act"
 
 
 {
@@ -4676,7 +4681,7 @@ else {tmpVar->line=atol(A_s_expr_field_touched_line);}
 
 void STag_s_expr_wordwrap(void)
 {
-#line 4098 "module_def.act"
+#line 4103 "module_def.act"
 
 
 {
@@ -4694,7 +4699,7 @@ tmpVar->wrap_at=0;
 
 void STag_s_expr_member_function_call(void)
 {
-#line 4113 "module_def.act"
+#line 4118 "module_def.act"
 
 
 {
@@ -4721,7 +4726,7 @@ else {tmpVar->line=atol(A_s_expr_member_function_call_line);}
 
 void STag_s_expr_extend(void)
 {
-#line 4137 "module_def.act"
+#line 4142 "module_def.act"
 
 
 {
@@ -4740,7 +4745,7 @@ else {tmpVar->to=atol(A_s_expr_extend_to);}
 
 void STag_s_expr_external_call(void)
 {
-#line 4153 "module_def.act"
+#line 4158 "module_def.act"
 
 
 {
@@ -4776,7 +4781,7 @@ else {tmpVar->line=atol(A_s_expr_external_call_line);}
 
 void STag_s_expr_current(void)
 {
-#line 4186 "module_def.act"
+#line 4191 "module_def.act"
 
 
 {
@@ -4796,7 +4801,7 @@ else {tmpVar->to=atol(A_s_expr_current_to);}
 
 void STag_s_expr_in(void)
 {
-#line 4203 "module_def.act"
+#line 4208 "module_def.act"
 
 
 {
@@ -4814,7 +4819,7 @@ tmpVar->elist=0;
 
 void STag_s_expr_datetime(void)
 {
-#line 4218 "module_def.act"
+#line 4223 "module_def.act"
 
 
 {
@@ -4834,7 +4839,7 @@ else {tmpVar->extend=atol(A_s_expr_datetime_extend);}
 
 void STag_s_expr_tmp(void)
 {
-#line 4235 "module_def.act"
+#line 4240 "module_def.act"
 
 
 {
@@ -4854,7 +4859,7 @@ else {tmpVar->dtype=atol(A_s_expr_tmp_dtype);}
 
 void STag_s_expr_interval(void)
 {
-#line 4252 "module_def.act"
+#line 4257 "module_def.act"
 
 
 {
@@ -4874,7 +4879,7 @@ else {tmpVar->extend=atol(A_s_expr_interval_extend);}
 
 void STag_s_expr_exists_sq(void)
 {
-#line 4269 "module_def.act"
+#line 4274 "module_def.act"
 
 
 {
@@ -4890,7 +4895,7 @@ tmpVar->subquery=0;
 
 void STag_s_expr_in_sq(void)
 {
-#line 4282 "module_def.act"
+#line 4287 "module_def.act"
 
 
 {
@@ -4908,7 +4913,7 @@ tmpVar->subquery=0;
 
 void STag_s_expr_cast(void)
 {
-#line 4297 "module_def.act"
+#line 4302 "module_def.act"
 
 
 {
@@ -4936,7 +4941,7 @@ else {tmpVar->force=atol(A_s_expr_cast_force);}
 
 void STag_s_expr_bound_fcall(void)
 {
-#line 4322 "module_def.act"
+#line 4327 "module_def.act"
 
 
 {
@@ -4958,8 +4963,6 @@ else {tmpVar->module=strdup(A_s_expr_bound_fcall_module);}
 if (AU_s_expr_bound_fcall_line) {tmpVar->line=0;} /* ZZZ */
 else {tmpVar->line=atol(A_s_expr_bound_fcall_line);}
 
-/* tmpVar->channel; is_vararray=0 skip=0 */
-tmpVar->channel=0;
 /* tmpVar->values; is_vararray=0 skip=0 */
 tmpVar->values=0;
 }
@@ -4969,7 +4972,7 @@ tmpVar->values=0;
 
 void STag_s_expr_agg(void)
 {
-#line 4352 "module_def.act"
+#line 4355 "module_def.act"
 
 
 {
@@ -4999,7 +5002,7 @@ else {tmpVar->blockid=atol(A_s_expr_agg_blockid);}
 
 void STag_s_expr_dynarr_extent(void)
 {
-#line 4379 "module_def.act"
+#line 4382 "module_def.act"
 
 
 {
@@ -5018,7 +5021,7 @@ else {tmpVar->n=atol(A_s_expr_dynarr_extent_n);}
 
 void STag_s_func(void)
 {
-#line 4395 "module_def.act"
+#line 4398 "module_def.act"
 
 
 {
@@ -5038,7 +5041,7 @@ else {tmpVar->namespace=strdup(A_s_func_namespace);}
 
 void STag_s_expr_aligned(void)
 {
-#line 4412 "module_def.act"
+#line 4415 "module_def.act"
 
 
 {
@@ -5056,7 +5059,7 @@ tmpVar->print_to=0;
 
 void STag_s_expr_tag(void)
 {
-#line 4427 "module_def.act"
+#line 4430 "module_def.act"
 
 
 {
@@ -5074,7 +5077,7 @@ tmpVar->tag=0;
 
 void STag_s_expr_cached(void)
 {
-#line 4442 "module_def.act"
+#line 4445 "module_def.act"
 
 
 {
@@ -5094,7 +5097,7 @@ else {tmpVar->ref_cnt=atol(A_s_expr_cached_ref_cnt);}
 
 void STag_s_expr_parameter(void)
 {
-#line 4459 "module_def.act"
+#line 4462 "module_def.act"
 
 
 {
@@ -5114,7 +5117,7 @@ else {tmpVar->expr_string=strdup(A_s_expr_parameter_expr_string);}
 
 void STag_expr_str(void)
 {
-#line 4476 "module_def.act"
+#line 4479 "module_def.act"
 
 
 {
@@ -5212,6 +5215,11 @@ tmpVar->expr_str_u.expr_list=0;
 /* tmpVar->expr_str_u.expr_list; is_vararray=0 skip=0 */
 
 if (tmpVar->expr_type==ET_EXPR_THROUGH) {
+tmpVar->expr_str_u.expr_list=0;
+}
+/* tmpVar->expr_str_u.expr_list; is_vararray=0 skip=0 */
+
+if (tmpVar->expr_type==ET_EXPR_BINDING) {
 tmpVar->expr_str_u.expr_list=0;
 }
 /* tmpVar->expr_str_u.expr_list; is_vararray=0 skip=0 */
@@ -5700,7 +5708,7 @@ memset(&tmpVar->expr_str_u.expr_func,0,sizeof(tmpVar->expr_str_u.expr_func));
 
 void STag_fh_field_entry(void)
 {
-#line 5059 "module_def.act"
+#line 5067 "module_def.act"
 
 
 {
@@ -5718,7 +5726,7 @@ tmpVar->fieldsub=0;
 
 void STag_fh_field_list(void)
 {
-#line 5074 "module_def.act"
+#line 5082 "module_def.act"
 
 
 {
@@ -5735,7 +5743,7 @@ tmpVar->field_list_entries.field_list_entries_val=0;
 
 void STag_variable_usage_with_asc_desc(void)
 {
-#line 5088 "module_def.act"
+#line 5096 "module_def.act"
 
 
 {
@@ -5754,7 +5762,7 @@ else {tmpVar->asc_desc=A_variable_usage_with_asc_desc_asc_desc[0];}
 
 void STag_variable_usage(void)
 {
-#line 5104 "module_def.act"
+#line 5112 "module_def.act"
 
 
 {
@@ -5792,7 +5800,7 @@ tmpVar->next=0;
 
 void STag_s_select_list_item_list(void)
 {
-#line 5139 "module_def.act"
+#line 5147 "module_def.act"
 
 
 {
@@ -5809,7 +5817,7 @@ tmpVar->list.list_val=0;
 
 void STag_s_sli_case(void)
 {
-#line 5153 "module_def.act"
+#line 5161 "module_def.act"
 
 
 {
@@ -5826,7 +5834,7 @@ tmpVar->elements.elements_val=0;
 
 void STag_s_sli_case_element(void)
 {
-#line 5167 "module_def.act"
+#line 5175 "module_def.act"
 
 
 {
@@ -5844,7 +5852,7 @@ tmpVar->response=0;
 
 void STag_s_sli_cast(void)
 {
-#line 5182 "module_def.act"
+#line 5190 "module_def.act"
 
 
 {
@@ -5863,7 +5871,7 @@ else {tmpVar->datatype=strdup(A_s_sli_cast_datatype);}
 
 void STag_sql_statement(void)
 {
-#line 5198 "module_def.act"
+#line 5206 "module_def.act"
 
 
 {
@@ -5893,7 +5901,7 @@ else {tmpVar->nobind=atol(A_sql_statement_nobind);}
 
 void STag_s_table_list_element(void)
 {
-#line 5225 "module_def.act"
+#line 5233 "module_def.act"
 
 
 {
@@ -5916,7 +5924,7 @@ tmpVar->columns.columns_val=0;
 
 void STag_s_table_list(void)
 {
-#line 5245 "module_def.act"
+#line 5253 "module_def.act"
 
 
 {
@@ -5933,7 +5941,7 @@ tmpVar->tables.tables_val=0;
 
 void STag_s_table(void)
 {
-#line 5259 "module_def.act"
+#line 5267 "module_def.act"
 
 
 {
@@ -5962,7 +5970,7 @@ tmpVar->outer_join_condition=0;
 
 void STag_s_select_finish(void)
 {
-#line 5285 "module_def.act"
+#line 5293 "module_def.act"
 
 
 {
@@ -5987,7 +5995,7 @@ else {tmpVar->nolog=atol(A_s_select_finish_nolog);}
 
 void STag_sq_subquery(void)
 {
-#line 5307 "module_def.act"
+#line 5315 "module_def.act"
 
 
 {
@@ -6006,7 +6014,7 @@ tmpVar->list=0;
 
 void STag_s_limit(void)
 {
-#line 5323 "module_def.act"
+#line 5331 "module_def.act"
 
 
 {
@@ -6029,7 +6037,7 @@ else {tmpVar->offset=atol(A_s_limit_offset);}
 
 void STag_list_of_integers(void)
 {
-#line 5343 "module_def.act"
+#line 5351 "module_def.act"
 
 
 {
@@ -6046,7 +6054,7 @@ tmpVar->list.list_val=0;
 
 void STag_ilist(void)
 {
-#line 5357 "module_def.act"
+#line 5365 "module_def.act"
 
 
 {
@@ -6078,7 +6086,7 @@ else {tmpVar->i5=atol(A_ilist_i5);}
 
 void STag_s_select(void)
 {
-#line 5386 "module_def.act"
+#line 5394 "module_def.act"
 
 
 {
@@ -6126,7 +6134,7 @@ else {tmpVar->extra_statement=strdup(A_s_select_extra_statement);}
 
 void STag_s_select_list_item_column(void)
 {
-#line 5431 "module_def.act"
+#line 5439 "module_def.act"
 
 
 {
@@ -6148,7 +6156,7 @@ memset(&tmpVar->subscript,0,sizeof(tmpVar->subscript));
 
 void STag_s_select_list_item_sq_expression(void)
 {
-#line 5450 "module_def.act"
+#line 5458 "module_def.act"
 
 
 {
@@ -6167,7 +6175,7 @@ tmpVar->sq=0;
 
 void STag_s_select_list_item_complex_expr(void)
 {
-#line 5466 "module_def.act"
+#line 5474 "module_def.act"
 
 
 {
@@ -6188,7 +6196,7 @@ else {strcpy(tmpVar->op,A_s_select_list_item_complex_expr_op);}
 
 void STag_s_select_list_item_between_expr(void)
 {
-#line 5484 "module_def.act"
+#line 5492 "module_def.act"
 
 
 {
@@ -6208,7 +6216,7 @@ tmpVar->to=0;
 
 void STag_s_select_list_item_sli_expr(void)
 {
-#line 5501 "module_def.act"
+#line 5509 "module_def.act"
 
 
 {
@@ -6226,7 +6234,7 @@ tmpVar->right=0;
 
 void STag_s_select_list_item_slil_expr(void)
 {
-#line 5516 "module_def.act"
+#line 5524 "module_def.act"
 
 
 {
@@ -6244,7 +6252,7 @@ tmpVar->right_list=0;
 
 void STag_s_select_list_item_agg_expr(void)
 {
-#line 5531 "module_def.act"
+#line 5539 "module_def.act"
 
 
 {
@@ -6263,7 +6271,7 @@ tmpVar->expr=0;
 
 void STag_s_select_list_item_builtin_fcall(void)
 {
-#line 5547 "module_def.act"
+#line 5555 "module_def.act"
 
 
 {
@@ -6282,7 +6290,7 @@ tmpVar->params=0;
 
 void STag_s_select_list_item_fcall(void)
 {
-#line 5563 "module_def.act"
+#line 5571 "module_def.act"
 
 
 {
@@ -6301,7 +6309,7 @@ tmpVar->params=0;
 
 void STag_s_select_list_item_extend(void)
 {
-#line 5579 "module_def.act"
+#line 5587 "module_def.act"
 
 
 {
@@ -6323,7 +6331,7 @@ else {strcpy(tmpVar->to,A_s_select_list_item_extend_to);}
 
 void STag_s_select_list_item_regex(void)
 {
-#line 5598 "module_def.act"
+#line 5606 "module_def.act"
 
 
 {
@@ -6344,7 +6352,7 @@ else {strcpy(tmpVar->escape,A_s_select_list_item_regex_escape);}
 
 void STag_s_select_list_item_data(void)
 {
-#line 5616 "module_def.act"
+#line 5624 "module_def.act"
 
 
 {
@@ -6664,7 +6672,7 @@ tmpVar->s_select_list_item_data_u.var_usage_list=0;
 
 void STag_s_select_list_item(void)
 {
-#line 5933 "module_def.act"
+#line 5941 "module_def.act"
 
 
 {
@@ -6686,7 +6694,7 @@ else {tmpVar->sign=atol(A_s_select_list_item_sign);}
 
 void STag_s_function_definition(void)
 {
-#line 5952 "module_def.act"
+#line 5960 "module_def.act"
 
 
 {
@@ -6734,7 +6742,7 @@ else {tmpVar->comment=strdup(A_s_function_definition_comment);}
 
 void STag_s_report_definition(void)
 {
-#line 5997 "module_def.act"
+#line 6005 "module_def.act"
 
 
 {
@@ -6791,7 +6799,7 @@ else {tmpVar->comment=strdup(A_s_report_definition_comment);}
 
 void STag_s_pdf_report_definition(void)
 {
-#line 6051 "module_def.act"
+#line 6059 "module_def.act"
 
 
 {
@@ -6848,7 +6856,7 @@ else {tmpVar->comment=strdup(A_s_pdf_report_definition_comment);}
 
 void STag_s_class_definition(void)
 {
-#line 6105 "module_def.act"
+#line 6113 "module_def.act"
 
 
 {
@@ -6877,7 +6885,7 @@ tmpVar->class_entries.class_entries_val=0;
 
 void STag_s_import_function_definition(void)
 {
-#line 6131 "module_def.act"
+#line 6139 "module_def.act"
 
 
 {
@@ -6906,7 +6914,7 @@ else {tmpVar->colno=atol(A_s_import_function_definition_colno);}
 
 void STag_s_import_legacy_definition(void)
 {
-#line 6157 "module_def.act"
+#line 6165 "module_def.act"
 
 
 {
@@ -6932,7 +6940,7 @@ else {tmpVar->colno=atol(A_s_import_legacy_definition_colno);}
 
 void STag_s_import_datatype(void)
 {
-#line 6180 "module_def.act"
+#line 6188 "module_def.act"
 
 
 {
@@ -6955,7 +6963,7 @@ else {tmpVar->lineno=atol(A_s_import_datatype_lineno);}
 
 void STag_s_import_package(void)
 {
-#line 6200 "module_def.act"
+#line 6208 "module_def.act"
 
 
 {
@@ -6978,7 +6986,7 @@ else {tmpVar->lineno=atol(A_s_import_package_lineno);}
 
 void STag_s_formhandler_definition(void)
 {
-#line 6220 "module_def.act"
+#line 6228 "module_def.act"
 
 
 {
@@ -7010,7 +7018,7 @@ tmpVar->extra_warnings.extra_warnings_val=0;
 
 void STag_module_entry(void)
 {
-#line 6249 "module_def.act"
+#line 6257 "module_def.act"
 
 
 {
@@ -7082,7 +7090,7 @@ tmpVar->module_entry_u.cmd=0;
 
 void STag_program_definition(void)
 {
-#line 6318 "module_def.act"
+#line 6326 "module_def.act"
 
 
 {
@@ -7099,7 +7107,7 @@ tmpVar->modules.modules_val=0;
 
 void ETag_form_field(void)
 {
-#line 6332 "module_def.act"
+#line 6340 "module_def.act"
 
 
 {
@@ -7117,7 +7125,7 @@ Call_Callback ("form_field", nm, tmpVar);
 
 void ETag_x_y(void)
 {
-#line 6347 "module_def.act"
+#line 6355 "module_def.act"
 
 
 {
@@ -7135,7 +7143,7 @@ Call_Callback ("x_y", nm, tmpVar);
 
 void ETag_s_full_col(void)
 {
-#line 6362 "module_def.act"
+#line 6370 "module_def.act"
 
 
 {
@@ -7153,7 +7161,7 @@ Call_Callback ("s_full_col", nm, tmpVar);
 
 void ETag_s_exchange_clobber(void)
 {
-#line 6377 "module_def.act"
+#line 6385 "module_def.act"
 
 
 {
@@ -7171,7 +7179,7 @@ Call_Callback ("s_exchange_clobber", nm, tmpVar);
 
 void ETag_dt_display(void)
 {
-#line 6392 "module_def.act"
+#line 6400 "module_def.act"
 
 
 {
@@ -7189,7 +7197,7 @@ Call_Callback ("dt_display", nm, tmpVar);
 
 void ETag_str_list(void)
 {
-#line 6407 "module_def.act"
+#line 6415 "module_def.act"
 
 
 {
@@ -7207,7 +7215,7 @@ Call_Callback ("str_list", nm, tmpVar);
 
 void ETag_field(void)
 {
-#line 6422 "module_def.act"
+#line 6430 "module_def.act"
 
 
 {
@@ -7225,7 +7233,7 @@ Call_Callback ("field", nm, tmpVar);
 
 void ETag_attrib(void)
 {
-#line 6437 "module_def.act"
+#line 6445 "module_def.act"
 
 
 {
@@ -7243,7 +7251,7 @@ Call_Callback ("attrib", nm, tmpVar);
 
 void ETag_funcname_list(void)
 {
-#line 6452 "module_def.act"
+#line 6460 "module_def.act"
 
 
 {
@@ -7261,7 +7269,7 @@ Call_Callback ("funcname_list", nm, tmpVar);
 
 void ETag_struct_start_rpc_cmd(void)
 {
-#line 6467 "module_def.act"
+#line 6475 "module_def.act"
 
 
 {
@@ -7279,7 +7287,7 @@ Call_Callback ("struct_start_rpc_cmd", nm, tmpVar);
 
 void ETag_struct_lint_ignore_cmd(void)
 {
-#line 6482 "module_def.act"
+#line 6490 "module_def.act"
 
 
 {
@@ -7297,7 +7305,7 @@ Call_Callback ("struct_lint_ignore_cmd", nm, tmpVar);
 
 void ETag_struct_lint_expect_cmd(void)
 {
-#line 6497 "module_def.act"
+#line 6505 "module_def.act"
 
 
 {
@@ -7315,7 +7323,7 @@ Call_Callback ("struct_lint_expect_cmd", nm, tmpVar);
 
 void ETag_struct_cancel_cmd(void)
 {
-#line 6512 "module_def.act"
+#line 6520 "module_def.act"
 
 
 {
@@ -7333,7 +7341,7 @@ Call_Callback ("struct_cancel_cmd", nm, tmpVar);
 
 void ETag_struct_update_cmd(void)
 {
-#line 6527 "module_def.act"
+#line 6535 "module_def.act"
 
 
 {
@@ -7351,7 +7359,7 @@ Call_Callback ("struct_update_cmd", nm, tmpVar);
 
 void ETag_s_update_pair(void)
 {
-#line 6542 "module_def.act"
+#line 6550 "module_def.act"
 
 
 {
@@ -7369,7 +7377,7 @@ Call_Callback ("s_update_pair", nm, tmpVar);
 
 void ETag_struct_insert_cmd(void)
 {
-#line 6557 "module_def.act"
+#line 6565 "module_def.act"
 
 
 {
@@ -7387,7 +7395,7 @@ Call_Callback ("struct_insert_cmd", nm, tmpVar);
 
 void ETag_struct_delete_cmd(void)
 {
-#line 6572 "module_def.act"
+#line 6580 "module_def.act"
 
 
 {
@@ -7405,7 +7413,7 @@ Call_Callback ("struct_delete_cmd", nm, tmpVar);
 
 void ETag_struct_close_cmd(void)
 {
-#line 6587 "module_def.act"
+#line 6595 "module_def.act"
 
 
 {
@@ -7423,7 +7431,7 @@ Call_Callback ("struct_close_cmd", nm, tmpVar);
 
 void ETag_struct_close_sql_cmd(void)
 {
-#line 6602 "module_def.act"
+#line 6610 "module_def.act"
 
 
 {
@@ -7441,7 +7449,7 @@ Call_Callback ("struct_close_sql_cmd", nm, tmpVar);
 
 void ETag_struct_free_cmd(void)
 {
-#line 6617 "module_def.act"
+#line 6625 "module_def.act"
 
 
 {
@@ -7459,7 +7467,7 @@ Call_Callback ("struct_free_cmd", nm, tmpVar);
 
 void ETag_struct_continue_cmd(void)
 {
-#line 6632 "module_def.act"
+#line 6640 "module_def.act"
 
 
 {
@@ -7477,7 +7485,7 @@ Call_Callback ("struct_continue_cmd", nm, tmpVar);
 
 void ETag_struct_ext_cmd(void)
 {
-#line 6647 "module_def.act"
+#line 6655 "module_def.act"
 
 
 {
@@ -7495,7 +7503,7 @@ Call_Callback ("struct_ext_cmd", nm, tmpVar);
 
 void ETag_struct_defer_cmd(void)
 {
-#line 6662 "module_def.act"
+#line 6670 "module_def.act"
 
 
 {
@@ -7513,7 +7521,7 @@ Call_Callback ("struct_defer_cmd", nm, tmpVar);
 
 void ETag_struct_code_cmd(void)
 {
-#line 6677 "module_def.act"
+#line 6685 "module_def.act"
 
 
 {
@@ -7531,7 +7539,7 @@ Call_Callback ("struct_code_cmd", nm, tmpVar);
 
 void ETag_struct_disable_menu_cmd(void)
 {
-#line 6692 "module_def.act"
+#line 6700 "module_def.act"
 
 
 {
@@ -7549,7 +7557,7 @@ Call_Callback ("struct_disable_menu_cmd", nm, tmpVar);
 
 void ETag_struct_enable_menu_cmd(void)
 {
-#line 6707 "module_def.act"
+#line 6715 "module_def.act"
 
 
 {
@@ -7567,7 +7575,7 @@ Call_Callback ("struct_enable_menu_cmd", nm, tmpVar);
 
 void ETag_struct_check_menu_cmd(void)
 {
-#line 6722 "module_def.act"
+#line 6730 "module_def.act"
 
 
 {
@@ -7585,7 +7593,7 @@ Call_Callback ("struct_check_menu_cmd", nm, tmpVar);
 
 void ETag_struct_uncheck_menu_cmd(void)
 {
-#line 6737 "module_def.act"
+#line 6745 "module_def.act"
 
 
 {
@@ -7603,7 +7611,7 @@ Call_Callback ("struct_uncheck_menu_cmd", nm, tmpVar);
 
 void ETag_struct_goto_cmd(void)
 {
-#line 6752 "module_def.act"
+#line 6760 "module_def.act"
 
 
 {
@@ -7621,7 +7629,7 @@ Call_Callback ("struct_goto_cmd", nm, tmpVar);
 
 void ETag_struct_label_cmd(void)
 {
-#line 6767 "module_def.act"
+#line 6775 "module_def.act"
 
 
 {
@@ -7639,7 +7647,7 @@ Call_Callback ("struct_label_cmd", nm, tmpVar);
 
 void ETag_struct_error_cmd(void)
 {
-#line 6782 "module_def.act"
+#line 6790 "module_def.act"
 
 
 {
@@ -7657,7 +7665,7 @@ Call_Callback ("struct_error_cmd", nm, tmpVar);
 
 void ETag_struct_execute_cmd(void)
 {
-#line 6797 "module_def.act"
+#line 6805 "module_def.act"
 
 
 {
@@ -7675,7 +7683,7 @@ Call_Callback ("struct_execute_cmd", nm, tmpVar);
 
 void ETag_struct_execute_immediate_cmd(void)
 {
-#line 6812 "module_def.act"
+#line 6820 "module_def.act"
 
 
 {
@@ -7693,7 +7701,7 @@ Call_Callback ("struct_execute_immediate_cmd", nm, tmpVar);
 
 void ETag_struct_flush_cmd(void)
 {
-#line 6827 "module_def.act"
+#line 6835 "module_def.act"
 
 
 {
@@ -7711,7 +7719,7 @@ Call_Callback ("struct_flush_cmd", nm, tmpVar);
 
 void ETag_struct_sleep_cmd(void)
 {
-#line 6842 "module_def.act"
+#line 6850 "module_def.act"
 
 
 {
@@ -7729,7 +7737,7 @@ Call_Callback ("struct_sleep_cmd", nm, tmpVar);
 
 void ETag_struct_move_cmd(void)
 {
-#line 6857 "module_def.act"
+#line 6865 "module_def.act"
 
 
 {
@@ -7747,7 +7755,7 @@ Call_Callback ("struct_move_cmd", nm, tmpVar);
 
 void ETag_struct_show_menu_cmd(void)
 {
-#line 6872 "module_def.act"
+#line 6880 "module_def.act"
 
 
 {
@@ -7765,7 +7773,7 @@ Call_Callback ("struct_show_menu_cmd", nm, tmpVar);
 
 void ETag_struct_show_cmd(void)
 {
-#line 6887 "module_def.act"
+#line 6895 "module_def.act"
 
 
 {
@@ -7783,7 +7791,7 @@ Call_Callback ("struct_show_cmd", nm, tmpVar);
 
 void ETag_struct_hide_cmd(void)
 {
-#line 6902 "module_def.act"
+#line 6910 "module_def.act"
 
 
 {
@@ -7801,7 +7809,7 @@ Call_Callback ("struct_hide_cmd", nm, tmpVar);
 
 void ETag_struct_run_cmd(void)
 {
-#line 6917 "module_def.act"
+#line 6925 "module_def.act"
 
 
 {
@@ -7819,7 +7827,7 @@ Call_Callback ("struct_run_cmd", nm, tmpVar);
 
 void ETag_struct_run_waiting_for_cmd(void)
 {
-#line 6932 "module_def.act"
+#line 6940 "module_def.act"
 
 
 {
@@ -7837,7 +7845,7 @@ Call_Callback ("struct_run_waiting_for_cmd", nm, tmpVar);
 
 void ETag_struct_scroll_cmd(void)
 {
-#line 6947 "module_def.act"
+#line 6955 "module_def.act"
 
 
 {
@@ -7855,7 +7863,7 @@ Call_Callback ("struct_scroll_cmd", nm, tmpVar);
 
 void ETag_struct_exit_prog_cmd(void)
 {
-#line 6962 "module_def.act"
+#line 6970 "module_def.act"
 
 
 {
@@ -7873,7 +7881,7 @@ Call_Callback ("struct_exit_prog_cmd", nm, tmpVar);
 
 void ETag_commands(void)
 {
-#line 6977 "module_def.act"
+#line 6985 "module_def.act"
 
 
 {
@@ -7891,7 +7899,7 @@ Call_Callback ("commands", nm, tmpVar);
 
 void ETag_struct_return_cmd(void)
 {
-#line 6992 "module_def.act"
+#line 7000 "module_def.act"
 
 
 {
@@ -7909,7 +7917,7 @@ Call_Callback ("struct_return_cmd", nm, tmpVar);
 
 void ETag_struct_prepare_cmd(void)
 {
-#line 7007 "module_def.act"
+#line 7015 "module_def.act"
 
 
 {
@@ -7927,7 +7935,7 @@ Call_Callback ("struct_prepare_cmd", nm, tmpVar);
 
 void ETag_locate_pos(void)
 {
-#line 7022 "module_def.act"
+#line 7030 "module_def.act"
 
 
 {
@@ -7945,7 +7953,7 @@ Call_Callback ("locate_pos", nm, tmpVar);
 
 void ETag_struct_locate_cmd(void)
 {
-#line 7037 "module_def.act"
+#line 7045 "module_def.act"
 
 
 {
@@ -7963,7 +7971,7 @@ Call_Callback ("struct_locate_cmd", nm, tmpVar);
 
 void ETag_struct_message_cmd(void)
 {
-#line 7052 "module_def.act"
+#line 7060 "module_def.act"
 
 
 {
@@ -7981,7 +7989,7 @@ Call_Callback ("struct_message_cmd", nm, tmpVar);
 
 void ETag_struct_init_cmd(void)
 {
-#line 7067 "module_def.act"
+#line 7075 "module_def.act"
 
 
 {
@@ -7999,7 +8007,7 @@ Call_Callback ("struct_init_cmd", nm, tmpVar);
 
 void ETag_struct_next_field_cmd(void)
 {
-#line 7082 "module_def.act"
+#line 7090 "module_def.act"
 
 
 {
@@ -8017,7 +8025,7 @@ Call_Callback ("struct_next_field_cmd", nm, tmpVar);
 
 void ETag_struct_at_term_cmd(void)
 {
-#line 7097 "module_def.act"
+#line 7105 "module_def.act"
 
 
 {
@@ -8035,7 +8043,7 @@ Call_Callback ("struct_at_term_cmd", nm, tmpVar);
 
 void ETag_struct_next_option_cmd(void)
 {
-#line 7112 "module_def.act"
+#line 7120 "module_def.act"
 
 
 {
@@ -8053,7 +8061,7 @@ Call_Callback ("struct_next_option_cmd", nm, tmpVar);
 
 void ETag_struct_show_option_cmd(void)
 {
-#line 7127 "module_def.act"
+#line 7135 "module_def.act"
 
 
 {
@@ -8071,7 +8079,7 @@ Call_Callback ("struct_show_option_cmd", nm, tmpVar);
 
 void ETag_struct_hide_option_cmd(void)
 {
-#line 7142 "module_def.act"
+#line 7150 "module_def.act"
 
 
 {
@@ -8089,7 +8097,7 @@ Call_Callback ("struct_hide_option_cmd", nm, tmpVar);
 
 void ETag_struct_for_cmd(void)
 {
-#line 7157 "module_def.act"
+#line 7165 "module_def.act"
 
 
 {
@@ -8107,7 +8115,7 @@ Call_Callback ("struct_for_cmd", nm, tmpVar);
 
 void ETag_struct_display_form_cmd(void)
 {
-#line 7172 "module_def.act"
+#line 7180 "module_def.act"
 
 
 {
@@ -8125,7 +8133,7 @@ Call_Callback ("struct_display_form_cmd", nm, tmpVar);
 
 void ETag_call_list(void)
 {
-#line 7187 "module_def.act"
+#line 7195 "module_def.act"
 
 
 {
@@ -8143,7 +8151,7 @@ Call_Callback ("call_list", nm, tmpVar);
 
 void ETag_struct_call_cmd(void)
 {
-#line 7202 "module_def.act"
+#line 7210 "module_def.act"
 
 
 {
@@ -8161,7 +8169,7 @@ Call_Callback ("struct_call_cmd", nm, tmpVar);
 
 void ETag_struct_pdf_call_cmd(void)
 {
-#line 7217 "module_def.act"
+#line 7225 "module_def.act"
 
 
 {
@@ -8179,7 +8187,7 @@ Call_Callback ("struct_pdf_call_cmd", nm, tmpVar);
 
 void ETag_if_cond(void)
 {
-#line 7232 "module_def.act"
+#line 7240 "module_def.act"
 
 
 {
@@ -8197,7 +8205,7 @@ Call_Callback ("if_cond", nm, tmpVar);
 
 void ETag_if_conds(void)
 {
-#line 7247 "module_def.act"
+#line 7255 "module_def.act"
 
 
 {
@@ -8215,7 +8223,7 @@ Call_Callback ("if_conds", nm, tmpVar);
 
 void ETag_struct_if_cmd(void)
 {
-#line 7262 "module_def.act"
+#line 7270 "module_def.act"
 
 
 {
@@ -8233,7 +8241,7 @@ Call_Callback ("struct_if_cmd", nm, tmpVar);
 
 void ETag_struct_foreach_cmd(void)
 {
-#line 7277 "module_def.act"
+#line 7285 "module_def.act"
 
 
 {
@@ -8251,7 +8259,7 @@ Call_Callback ("struct_foreach_cmd", nm, tmpVar);
 
 void ETag_single_option(void)
 {
-#line 7292 "module_def.act"
+#line 7300 "module_def.act"
 
 
 {
@@ -8269,7 +8277,7 @@ Call_Callback ("single_option", nm, tmpVar);
 
 void ETag_manyoptions(void)
 {
-#line 7307 "module_def.act"
+#line 7315 "module_def.act"
 
 
 {
@@ -8287,7 +8295,7 @@ Call_Callback ("manyoptions", nm, tmpVar);
 
 void ETag_struct_options_cmd(void)
 {
-#line 7322 "module_def.act"
+#line 7330 "module_def.act"
 
 
 {
@@ -8305,7 +8313,7 @@ Call_Callback ("struct_options_cmd", nm, tmpVar);
 
 void ETag_startrep(void)
 {
-#line 7337 "module_def.act"
+#line 7345 "module_def.act"
 
 
 {
@@ -8323,7 +8331,7 @@ Call_Callback ("startrep", nm, tmpVar);
 
 void ETag_bluebar(void)
 {
-#line 7352 "module_def.act"
+#line 7360 "module_def.act"
 
 
 {
@@ -8341,7 +8349,7 @@ Call_Callback ("bluebar", nm, tmpVar);
 
 void ETag_pdf_startrep(void)
 {
-#line 7367 "module_def.act"
+#line 7375 "module_def.act"
 
 
 {
@@ -8359,7 +8367,7 @@ Call_Callback ("pdf_startrep", nm, tmpVar);
 
 void ETag_convert(void)
 {
-#line 7382 "module_def.act"
+#line 7390 "module_def.act"
 
 
 {
@@ -8377,7 +8385,7 @@ Call_Callback ("convert", nm, tmpVar);
 
 void ETag_struct_convert_cmd(void)
 {
-#line 7397 "module_def.act"
+#line 7405 "module_def.act"
 
 
 {
@@ -8395,7 +8403,7 @@ Call_Callback ("struct_convert_cmd", nm, tmpVar);
 
 void ETag_struct_finish_cmd(void)
 {
-#line 7412 "module_def.act"
+#line 7420 "module_def.act"
 
 
 {
@@ -8413,7 +8421,7 @@ Call_Callback ("struct_finish_cmd", nm, tmpVar);
 
 void ETag_struct_start_cmd(void)
 {
-#line 7427 "module_def.act"
+#line 7435 "module_def.act"
 
 
 {
@@ -8431,7 +8439,7 @@ Call_Callback ("struct_start_cmd", nm, tmpVar);
 
 void ETag_struct_let_cmd(void)
 {
-#line 7442 "module_def.act"
+#line 7450 "module_def.act"
 
 
 {
@@ -8449,7 +8457,7 @@ Call_Callback ("struct_let_cmd", nm, tmpVar);
 
 void ETag_rowscols(void)
 {
-#line 7457 "module_def.act"
+#line 7465 "module_def.act"
 
 
 {
@@ -8467,7 +8475,7 @@ Call_Callback ("rowscols", nm, tmpVar);
 
 void ETag_windowtype(void)
 {
-#line 7472 "module_def.act"
+#line 7480 "module_def.act"
 
 
 {
@@ -8485,7 +8493,7 @@ Call_Callback ("windowtype", nm, tmpVar);
 
 void ETag_struct_open_window_cmd(void)
 {
-#line 7487 "module_def.act"
+#line 7495 "module_def.act"
 
 
 {
@@ -8503,7 +8511,7 @@ Call_Callback ("struct_open_window_cmd", nm, tmpVar);
 
 void ETag_s_fetch_place(void)
 {
-#line 7502 "module_def.act"
+#line 7510 "module_def.act"
 
 
 {
@@ -8521,7 +8529,7 @@ Call_Callback ("s_fetch_place", nm, tmpVar);
 
 void ETag_s_fetch(void)
 {
-#line 7517 "module_def.act"
+#line 7525 "module_def.act"
 
 
 {
@@ -8539,7 +8547,7 @@ Call_Callback ("s_fetch", nm, tmpVar);
 
 void ETag_struct_fetch_cmd(void)
 {
-#line 7532 "module_def.act"
+#line 7540 "module_def.act"
 
 
 {
@@ -8557,7 +8565,7 @@ Call_Callback ("struct_fetch_cmd", nm, tmpVar);
 
 void ETag_struct_open_form_cmd(void)
 {
-#line 7547 "module_def.act"
+#line 7555 "module_def.act"
 
 
 {
@@ -8575,7 +8583,7 @@ Call_Callback ("struct_open_form_cmd", nm, tmpVar);
 
 void ETag_struct_open_form_gui_cmd(void)
 {
-#line 7562 "module_def.act"
+#line 7570 "module_def.act"
 
 
 {
@@ -8593,7 +8601,7 @@ Call_Callback ("struct_open_form_gui_cmd", nm, tmpVar);
 
 void ETag_struct_unload_cmd(void)
 {
-#line 7577 "module_def.act"
+#line 7585 "module_def.act"
 
 
 {
@@ -8611,7 +8619,7 @@ Call_Callback ("struct_unload_cmd", nm, tmpVar);
 
 void ETag_struct_load_cmd(void)
 {
-#line 7592 "module_def.act"
+#line 7600 "module_def.act"
 
 
 {
@@ -8629,7 +8637,7 @@ Call_Callback ("struct_load_cmd", nm, tmpVar);
 
 void ETag_struct_connect_cmd(void)
 {
-#line 7607 "module_def.act"
+#line 7615 "module_def.act"
 
 
 {
@@ -8647,7 +8655,7 @@ Call_Callback ("struct_connect_cmd", nm, tmpVar);
 
 void ETag_report_block_data(void)
 {
-#line 7622 "module_def.act"
+#line 7630 "module_def.act"
 
 
 {
@@ -8665,7 +8673,7 @@ Call_Callback ("report_block_data", nm, tmpVar);
 
 void ETag_report_format_section_entry(void)
 {
-#line 7637 "module_def.act"
+#line 7645 "module_def.act"
 
 
 {
@@ -8683,7 +8691,7 @@ Call_Callback ("report_format_section_entry", nm, tmpVar);
 
 void ETag_report_format_section(void)
 {
-#line 7652 "module_def.act"
+#line 7660 "module_def.act"
 
 
 {
@@ -8701,7 +8709,7 @@ Call_Callback ("report_format_section", nm, tmpVar);
 
 void ETag_report_orderby_section(void)
 {
-#line 7667 "module_def.act"
+#line 7675 "module_def.act"
 
 
 {
@@ -8719,7 +8727,7 @@ Call_Callback ("report_orderby_section", nm, tmpVar);
 
 void ETag_struct_display_cmd(void)
 {
-#line 7682 "module_def.act"
+#line 7690 "module_def.act"
 
 
 {
@@ -8737,7 +8745,7 @@ Call_Callback ("struct_display_cmd", nm, tmpVar);
 
 void ETag_struct_display_b_n_cmd(void)
 {
-#line 7697 "module_def.act"
+#line 7705 "module_def.act"
 
 
 {
@@ -8755,7 +8763,7 @@ Call_Callback ("struct_display_b_n_cmd", nm, tmpVar);
 
 void ETag_struct_open_cursor_cmd(void)
 {
-#line 7712 "module_def.act"
+#line 7720 "module_def.act"
 
 
 {
@@ -8773,7 +8781,7 @@ Call_Callback ("struct_open_cursor_cmd", nm, tmpVar);
 
 void ETag_struct_put_cmd(void)
 {
-#line 7727 "module_def.act"
+#line 7735 "module_def.act"
 
 
 {
@@ -8791,7 +8799,7 @@ Call_Callback ("struct_put_cmd", nm, tmpVar);
 
 void ETag_s_cur_def(void)
 {
-#line 7742 "module_def.act"
+#line 7750 "module_def.act"
 
 
 {
@@ -8809,7 +8817,7 @@ Call_Callback ("s_cur_def", nm, tmpVar);
 
 void ETag_struct_declare_cmd(void)
 {
-#line 7757 "module_def.act"
+#line 7765 "module_def.act"
 
 
 {
@@ -8827,7 +8835,7 @@ Call_Callback ("struct_declare_cmd", nm, tmpVar);
 
 void ETag_struct_validate_cmd(void)
 {
-#line 7772 "module_def.act"
+#line 7780 "module_def.act"
 
 
 {
@@ -8845,7 +8853,7 @@ Call_Callback ("struct_validate_cmd", nm, tmpVar);
 
 void ETag_struct_while_cmd(void)
 {
-#line 7787 "module_def.act"
+#line 7795 "module_def.act"
 
 
 {
@@ -8863,7 +8871,7 @@ Call_Callback ("struct_while_cmd", nm, tmpVar);
 
 void ETag_struct_current_win_cmd(void)
 {
-#line 7802 "module_def.act"
+#line 7810 "module_def.act"
 
 
 {
@@ -8881,7 +8889,7 @@ Call_Callback ("struct_current_win_cmd", nm, tmpVar);
 
 void ETag_when(void)
 {
-#line 7817 "module_def.act"
+#line 7825 "module_def.act"
 
 
 {
@@ -8899,7 +8907,7 @@ Call_Callback ("when", nm, tmpVar);
 
 void ETag_whens(void)
 {
-#line 7832 "module_def.act"
+#line 7840 "module_def.act"
 
 
 {
@@ -8917,7 +8925,7 @@ Call_Callback ("whens", nm, tmpVar);
 
 void ETag_struct_case_cmd(void)
 {
-#line 7847 "module_def.act"
+#line 7855 "module_def.act"
 
 
 {
@@ -8935,7 +8943,7 @@ Call_Callback ("struct_case_cmd", nm, tmpVar);
 
 void ETag_struct_output_cmd(void)
 {
-#line 7862 "module_def.act"
+#line 7870 "module_def.act"
 
 
 {
@@ -8953,7 +8961,7 @@ Call_Callback ("struct_output_cmd", nm, tmpVar);
 
 void ETag_struct_term_rep_cmd(void)
 {
-#line 7877 "module_def.act"
+#line 7885 "module_def.act"
 
 
 {
@@ -8971,7 +8979,7 @@ Call_Callback ("struct_term_rep_cmd", nm, tmpVar);
 
 void ETag_clear_data(void)
 {
-#line 7892 "module_def.act"
+#line 7900 "module_def.act"
 
 
 {
@@ -8989,7 +8997,7 @@ Call_Callback ("clear_data", nm, tmpVar);
 
 void ETag_struct_clear_cmd(void)
 {
-#line 7907 "module_def.act"
+#line 7915 "module_def.act"
 
 
 {
@@ -9007,7 +9015,7 @@ Call_Callback ("struct_clear_cmd", nm, tmpVar);
 
 void ETag_struct_sql_cmd(void)
 {
-#line 7922 "module_def.act"
+#line 7930 "module_def.act"
 
 
 {
@@ -9025,7 +9033,7 @@ Call_Callback ("struct_sql_cmd", nm, tmpVar);
 
 void ETag_struct_select_cmd(void)
 {
-#line 7937 "module_def.act"
+#line 7945 "module_def.act"
 
 
 {
@@ -9043,7 +9051,7 @@ Call_Callback ("struct_select_cmd", nm, tmpVar);
 
 void ETag_struct_skip_cmd(void)
 {
-#line 7952 "module_def.act"
+#line 7960 "module_def.act"
 
 
 {
@@ -9061,7 +9069,7 @@ Call_Callback ("struct_skip_cmd", nm, tmpVar);
 
 void ETag_struct_skip_by_cmd(void)
 {
-#line 7967 "module_def.act"
+#line 7975 "module_def.act"
 
 
 {
@@ -9079,7 +9087,7 @@ Call_Callback ("struct_skip_by_cmd", nm, tmpVar);
 
 void ETag_struct_skip_to_cmd(void)
 {
-#line 7982 "module_def.act"
+#line 7990 "module_def.act"
 
 
 {
@@ -9097,7 +9105,7 @@ Call_Callback ("struct_skip_to_cmd", nm, tmpVar);
 
 void ETag_struct_sql_transact_cmd(void)
 {
-#line 7997 "module_def.act"
+#line 8005 "module_def.act"
 
 
 {
@@ -9115,7 +9123,7 @@ Call_Callback ("struct_sql_transact_cmd", nm, tmpVar);
 
 void ETag_struct_set_database_cmd(void)
 {
-#line 8012 "module_def.act"
+#line 8020 "module_def.act"
 
 
 {
@@ -9133,7 +9141,7 @@ Call_Callback ("struct_set_database_cmd", nm, tmpVar);
 
 void ETag_struct_whenever_cmd(void)
 {
-#line 8027 "module_def.act"
+#line 8035 "module_def.act"
 
 
 {
@@ -9151,7 +9159,7 @@ Call_Callback ("struct_whenever_cmd", nm, tmpVar);
 
 void ETag_struct_sql_block_cmd(void)
 {
-#line 8042 "module_def.act"
+#line 8050 "module_def.act"
 
 
 {
@@ -9169,7 +9177,7 @@ Call_Callback ("struct_sql_block_cmd", nm, tmpVar);
 
 void ETag_struct_need_cmd(void)
 {
-#line 8057 "module_def.act"
+#line 8065 "module_def.act"
 
 
 {
@@ -9187,7 +9195,7 @@ Call_Callback ("struct_need_cmd", nm, tmpVar);
 
 void ETag_struct_print_cmd(void)
 {
-#line 8072 "module_def.act"
+#line 8080 "module_def.act"
 
 
 {
@@ -9205,7 +9213,7 @@ Call_Callback ("struct_print_cmd", nm, tmpVar);
 
 void ETag_struct_print_file_cmd(void)
 {
-#line 8087 "module_def.act"
+#line 8095 "module_def.act"
 
 
 {
@@ -9223,7 +9231,7 @@ Call_Callback ("struct_print_file_cmd", nm, tmpVar);
 
 void ETag_struct_print_img_cmd(void)
 {
-#line 8102 "module_def.act"
+#line 8110 "module_def.act"
 
 
 {
@@ -9241,7 +9249,7 @@ Call_Callback ("struct_print_img_cmd", nm, tmpVar);
 
 void ETag_struct_pause_cmd(void)
 {
-#line 8117 "module_def.act"
+#line 8125 "module_def.act"
 
 
 {
@@ -9259,7 +9267,7 @@ Call_Callback ("struct_pause_cmd", nm, tmpVar);
 
 void ETag_menuoption(void)
 {
-#line 8132 "module_def.act"
+#line 8140 "module_def.act"
 
 
 {
@@ -9277,7 +9285,7 @@ Call_Callback ("menuoption", nm, tmpVar);
 
 void ETag_event_data(void)
 {
-#line 8147 "module_def.act"
+#line 8155 "module_def.act"
 
 
 {
@@ -9295,7 +9303,7 @@ Call_Callback ("event_data", nm, tmpVar);
 
 void ETag_on_event(void)
 {
-#line 8162 "module_def.act"
+#line 8170 "module_def.act"
 
 
 {
@@ -9313,7 +9321,7 @@ Call_Callback ("on_event", nm, tmpVar);
 
 void ETag_on_events(void)
 {
-#line 8177 "module_def.act"
+#line 8185 "module_def.act"
 
 
 {
@@ -9331,7 +9339,7 @@ Call_Callback ("on_events", nm, tmpVar);
 
 void ETag_struct_menu_cmd(void)
 {
-#line 8192 "module_def.act"
+#line 8200 "module_def.act"
 
 
 {
@@ -9349,7 +9357,7 @@ Call_Callback ("struct_menu_cmd", nm, tmpVar);
 
 void ETag_struct_prompt_cmd(void)
 {
-#line 8207 "module_def.act"
+#line 8215 "module_def.act"
 
 
 {
@@ -9367,7 +9375,7 @@ Call_Callback ("struct_prompt_cmd", nm, tmpVar);
 
 void ETag_struct_display_array_cmd(void)
 {
-#line 8222 "module_def.act"
+#line 8230 "module_def.act"
 
 
 {
@@ -9385,7 +9393,7 @@ Call_Callback ("struct_display_array_cmd", nm, tmpVar);
 
 void ETag_struct_input_cmd(void)
 {
-#line 8237 "module_def.act"
+#line 8245 "module_def.act"
 
 
 {
@@ -9403,7 +9411,7 @@ Call_Callback ("struct_input_cmd", nm, tmpVar);
 
 void ETag_cons_list_entry(void)
 {
-#line 8252 "module_def.act"
+#line 8260 "module_def.act"
 
 
 {
@@ -9421,7 +9429,7 @@ Call_Callback ("cons_list_entry", nm, tmpVar);
 
 void ETag_cons_list(void)
 {
-#line 8267 "module_def.act"
+#line 8275 "module_def.act"
 
 
 {
@@ -9439,7 +9447,7 @@ Call_Callback ("cons_list", nm, tmpVar);
 
 void ETag_struct_input_array_cmd(void)
 {
-#line 8282 "module_def.act"
+#line 8290 "module_def.act"
 
 
 {
@@ -9457,7 +9465,7 @@ Call_Callback ("struct_input_array_cmd", nm, tmpVar);
 
 void ETag_struct_construct_cmd(void)
 {
-#line 8297 "module_def.act"
+#line 8305 "module_def.act"
 
 
 {
@@ -9475,7 +9483,7 @@ Call_Callback ("struct_construct_cmd", nm, tmpVar);
 
 void ETag_user_details(void)
 {
-#line 8312 "module_def.act"
+#line 8320 "module_def.act"
 
 
 {
@@ -9493,7 +9501,7 @@ Call_Callback ("user_details", nm, tmpVar);
 
 void ETag_struct_free_rep_cmd(void)
 {
-#line 8327 "module_def.act"
+#line 8335 "module_def.act"
 
 
 {
@@ -9511,7 +9519,7 @@ Call_Callback ("struct_free_rep_cmd", nm, tmpVar);
 
 void ETag_struct_alloc_arr_cmd(void)
 {
-#line 8342 "module_def.act"
+#line 8350 "module_def.act"
 
 
 {
@@ -9529,7 +9537,7 @@ Call_Callback ("struct_alloc_arr_cmd", nm, tmpVar);
 
 void ETag_struct_dealloc_arr_cmd(void)
 {
-#line 8357 "module_def.act"
+#line 8365 "module_def.act"
 
 
 {
@@ -9547,7 +9555,7 @@ Call_Callback ("struct_dealloc_arr_cmd", nm, tmpVar);
 
 void ETag_struct_resize_arr_cmd(void)
 {
-#line 8372 "module_def.act"
+#line 8380 "module_def.act"
 
 
 {
@@ -9565,7 +9573,7 @@ Call_Callback ("struct_resize_arr_cmd", nm, tmpVar);
 
 void ETag_struct_enable_cmd(void)
 {
-#line 8387 "module_def.act"
+#line 8395 "module_def.act"
 
 
 {
@@ -9583,7 +9591,7 @@ Call_Callback ("struct_enable_cmd", nm, tmpVar);
 
 void ETag_struct_enable_form_cmd(void)
 {
-#line 8402 "module_def.act"
+#line 8410 "module_def.act"
 
 
 {
@@ -9601,7 +9609,7 @@ Call_Callback ("struct_enable_form_cmd", nm, tmpVar);
 
 void ETag_struct_disable_cmd(void)
 {
-#line 8417 "module_def.act"
+#line 8425 "module_def.act"
 
 
 {
@@ -9619,7 +9627,7 @@ Call_Callback ("struct_disable_cmd", nm, tmpVar);
 
 void ETag_struct_disable_form_cmd(void)
 {
-#line 8432 "module_def.act"
+#line 8440 "module_def.act"
 
 
 {
@@ -9637,7 +9645,7 @@ Call_Callback ("struct_disable_form_cmd", nm, tmpVar);
 
 void ETag_struct_msg_box_cmd(void)
 {
-#line 8447 "module_def.act"
+#line 8455 "module_def.act"
 
 
 {
@@ -9655,7 +9663,7 @@ Call_Callback ("struct_msg_box_cmd", nm, tmpVar);
 
 void ETag_struct_next_form_cmd(void)
 {
-#line 8462 "module_def.act"
+#line 8470 "module_def.act"
 
 
 {
@@ -9673,7 +9681,7 @@ Call_Callback ("struct_next_form_cmd", nm, tmpVar);
 
 void ETag_struct_call_shared_cmd(void)
 {
-#line 8477 "module_def.act"
+#line 8485 "module_def.act"
 
 
 {
@@ -9691,7 +9699,7 @@ Call_Callback ("struct_call_shared_cmd", nm, tmpVar);
 
 void ETag_struct_open_statusbox_cmd(void)
 {
-#line 8492 "module_def.act"
+#line 8500 "module_def.act"
 
 
 {
@@ -9709,7 +9717,7 @@ Call_Callback ("struct_open_statusbox_cmd", nm, tmpVar);
 
 void ETag_struct_set_session_cmd(void)
 {
-#line 8507 "module_def.act"
+#line 8515 "module_def.act"
 
 
 {
@@ -9727,7 +9735,7 @@ Call_Callback ("struct_set_session_cmd", nm, tmpVar);
 
 void ETag_command_data(void)
 {
-#line 8522 "module_def.act"
+#line 8530 "module_def.act"
 
 
 {
@@ -9745,7 +9753,7 @@ Call_Callback ("command_data", nm, tmpVar);
 
 void ETag_fgl_comment(void)
 {
-#line 8537 "module_def.act"
+#line 8545 "module_def.act"
 
 
 {
@@ -9763,7 +9771,7 @@ Call_Callback ("fgl_comment", nm, tmpVar);
 
 void ETag_command(void)
 {
-#line 8552 "module_def.act"
+#line 8560 "module_def.act"
 
 
 {
@@ -9781,7 +9789,7 @@ Call_Callback ("command", nm, tmpVar);
 
 void ETag_vname(void)
 {
-#line 8567 "module_def.act"
+#line 8575 "module_def.act"
 
 
 {
@@ -9799,7 +9807,7 @@ Call_Callback ("vname", nm, tmpVar);
 
 void ETag_vname_name_list(void)
 {
-#line 8582 "module_def.act"
+#line 8590 "module_def.act"
 
 
 {
@@ -9817,7 +9825,7 @@ Call_Callback ("vname_name_list", nm, tmpVar);
 
 void ETag_constant_data(void)
 {
-#line 8597 "module_def.act"
+#line 8605 "module_def.act"
 
 
 {
@@ -9835,7 +9843,7 @@ Call_Callback ("constant_data", nm, tmpVar);
 
 void ETag_linked_variable(void)
 {
-#line 8612 "module_def.act"
+#line 8620 "module_def.act"
 
 
 {
@@ -9853,7 +9861,7 @@ Call_Callback ("linked_variable", nm, tmpVar);
 
 void ETag_assoc_array_variable(void)
 {
-#line 8627 "module_def.act"
+#line 8635 "module_def.act"
 
 
 {
@@ -9871,7 +9879,7 @@ Call_Callback ("assoc_array_variable", nm, tmpVar);
 
 void ETag_simple_variable(void)
 {
-#line 8642 "module_def.act"
+#line 8650 "module_def.act"
 
 
 {
@@ -9889,7 +9897,7 @@ Call_Callback ("simple_variable", nm, tmpVar);
 
 void ETag_record_variable(void)
 {
-#line 8657 "module_def.act"
+#line 8665 "module_def.act"
 
 
 {
@@ -9907,7 +9915,7 @@ Call_Callback ("record_variable", nm, tmpVar);
 
 void ETag_object_variable(void)
 {
-#line 8672 "module_def.act"
+#line 8680 "module_def.act"
 
 
 {
@@ -9925,7 +9933,7 @@ Call_Callback ("object_variable", nm, tmpVar);
 
 void ETag_assoc_subscript(void)
 {
-#line 8687 "module_def.act"
+#line 8695 "module_def.act"
 
 
 {
@@ -9943,7 +9951,7 @@ Call_Callback ("assoc_subscript", nm, tmpVar);
 
 void ETag_variable_data(void)
 {
-#line 8702 "module_def.act"
+#line 8710 "module_def.act"
 
 
 {
@@ -9961,7 +9969,7 @@ Call_Callback ("variable_data", nm, tmpVar);
 
 void ETag_variable(void)
 {
-#line 8717 "module_def.act"
+#line 8725 "module_def.act"
 
 
 {
@@ -9979,7 +9987,7 @@ Call_Callback ("variable", nm, tmpVar);
 
 void ETag_lint_warning(void)
 {
-#line 8732 "module_def.act"
+#line 8740 "module_def.act"
 
 
 {
@@ -9997,7 +10005,7 @@ Call_Callback ("lint_warning", nm, tmpVar);
 
 void ETag_variable_list(void)
 {
-#line 8747 "module_def.act"
+#line 8755 "module_def.act"
 
 
 {
@@ -10015,7 +10023,7 @@ Call_Callback ("variable_list", nm, tmpVar);
 
 void ETag_flist(void)
 {
-#line 8762 "module_def.act"
+#line 8770 "module_def.act"
 
 
 {
@@ -10033,7 +10041,7 @@ Call_Callback ("flist", nm, tmpVar);
 
 void ETag_file_description(void)
 {
-#line 8777 "module_def.act"
+#line 8785 "module_def.act"
 
 
 {
@@ -10051,7 +10059,7 @@ Call_Callback ("file_description", nm, tmpVar);
 
 void ETag_globals_definition(void)
 {
-#line 8792 "module_def.act"
+#line 8800 "module_def.act"
 
 
 {
@@ -10069,7 +10077,7 @@ Call_Callback ("globals_definition", nm, tmpVar);
 
 void ETag_s_dependant_tables(void)
 {
-#line 8807 "module_def.act"
+#line 8815 "module_def.act"
 
 
 {
@@ -10087,7 +10095,7 @@ Call_Callback ("s_dependant_tables", nm, tmpVar);
 
 void ETag_s_source_code(void)
 {
-#line 8822 "module_def.act"
+#line 8830 "module_def.act"
 
 
 {
@@ -10105,7 +10113,7 @@ Call_Callback ("s_source_code", nm, tmpVar);
 
 void ETag_module_definition(void)
 {
-#line 8837 "module_def.act"
+#line 8845 "module_def.act"
 
 
 {
@@ -10123,7 +10131,7 @@ Call_Callback ("module_definition", nm, tmpVar);
 
 void ETag_expr_str_list(void)
 {
-#line 8852 "module_def.act"
+#line 8860 "module_def.act"
 
 
 {
@@ -10141,7 +10149,7 @@ Call_Callback ("expr_str_list", nm, tmpVar);
 
 void ETag_s_expr_op(void)
 {
-#line 8867 "module_def.act"
+#line 8875 "module_def.act"
 
 
 {
@@ -10159,7 +10167,7 @@ Call_Callback ("s_expr_op", nm, tmpVar);
 
 void ETag_s_expr_function_call(void)
 {
-#line 8882 "module_def.act"
+#line 8890 "module_def.act"
 
 
 {
@@ -10177,7 +10185,7 @@ Call_Callback ("s_expr_function_call", nm, tmpVar);
 
 void ETag_s_expr_pdf_function_call(void)
 {
-#line 8897 "module_def.act"
+#line 8905 "module_def.act"
 
 
 {
@@ -10195,7 +10203,7 @@ Call_Callback ("s_expr_pdf_function_call", nm, tmpVar);
 
 void ETag_s_expr_shared_function_call(void)
 {
-#line 8912 "module_def.act"
+#line 8920 "module_def.act"
 
 
 {
@@ -10213,7 +10221,7 @@ Call_Callback ("s_expr_shared_function_call", nm, tmpVar);
 
 void ETag_s_expr_infield(void)
 {
-#line 8927 "module_def.act"
+#line 8935 "module_def.act"
 
 
 {
@@ -10231,7 +10239,7 @@ Call_Callback ("s_expr_infield", nm, tmpVar);
 
 void ETag_s_expr_get_fldbuf(void)
 {
-#line 8942 "module_def.act"
+#line 8950 "module_def.act"
 
 
 {
@@ -10249,7 +10257,7 @@ Call_Callback ("s_expr_get_fldbuf", nm, tmpVar);
 
 void ETag_s_expr_form_is_compiled(void)
 {
-#line 8957 "module_def.act"
+#line 8965 "module_def.act"
 
 
 {
@@ -10267,7 +10275,7 @@ Call_Callback ("s_expr_form_is_compiled", nm, tmpVar);
 
 void ETag_s_expr_field_touched(void)
 {
-#line 8972 "module_def.act"
+#line 8980 "module_def.act"
 
 
 {
@@ -10285,7 +10293,7 @@ Call_Callback ("s_expr_field_touched", nm, tmpVar);
 
 void ETag_s_expr_wordwrap(void)
 {
-#line 8987 "module_def.act"
+#line 8995 "module_def.act"
 
 
 {
@@ -10303,7 +10311,7 @@ Call_Callback ("s_expr_wordwrap", nm, tmpVar);
 
 void ETag_s_expr_member_function_call(void)
 {
-#line 9002 "module_def.act"
+#line 9010 "module_def.act"
 
 
 {
@@ -10321,7 +10329,7 @@ Call_Callback ("s_expr_member_function_call", nm, tmpVar);
 
 void ETag_s_expr_extend(void)
 {
-#line 9017 "module_def.act"
+#line 9025 "module_def.act"
 
 
 {
@@ -10339,7 +10347,7 @@ Call_Callback ("s_expr_extend", nm, tmpVar);
 
 void ETag_s_expr_external_call(void)
 {
-#line 9032 "module_def.act"
+#line 9040 "module_def.act"
 
 
 {
@@ -10357,7 +10365,7 @@ Call_Callback ("s_expr_external_call", nm, tmpVar);
 
 void ETag_s_expr_current(void)
 {
-#line 9047 "module_def.act"
+#line 9055 "module_def.act"
 
 
 {
@@ -10375,7 +10383,7 @@ Call_Callback ("s_expr_current", nm, tmpVar);
 
 void ETag_s_expr_in(void)
 {
-#line 9062 "module_def.act"
+#line 9070 "module_def.act"
 
 
 {
@@ -10393,7 +10401,7 @@ Call_Callback ("s_expr_in", nm, tmpVar);
 
 void ETag_s_expr_datetime(void)
 {
-#line 9077 "module_def.act"
+#line 9085 "module_def.act"
 
 
 {
@@ -10411,7 +10419,7 @@ Call_Callback ("s_expr_datetime", nm, tmpVar);
 
 void ETag_s_expr_tmp(void)
 {
-#line 9092 "module_def.act"
+#line 9100 "module_def.act"
 
 
 {
@@ -10429,7 +10437,7 @@ Call_Callback ("s_expr_tmp", nm, tmpVar);
 
 void ETag_s_expr_interval(void)
 {
-#line 9107 "module_def.act"
+#line 9115 "module_def.act"
 
 
 {
@@ -10447,7 +10455,7 @@ Call_Callback ("s_expr_interval", nm, tmpVar);
 
 void ETag_s_expr_exists_sq(void)
 {
-#line 9122 "module_def.act"
+#line 9130 "module_def.act"
 
 
 {
@@ -10465,7 +10473,7 @@ Call_Callback ("s_expr_exists_sq", nm, tmpVar);
 
 void ETag_s_expr_in_sq(void)
 {
-#line 9137 "module_def.act"
+#line 9145 "module_def.act"
 
 
 {
@@ -10483,7 +10491,7 @@ Call_Callback ("s_expr_in_sq", nm, tmpVar);
 
 void ETag_s_expr_cast(void)
 {
-#line 9152 "module_def.act"
+#line 9160 "module_def.act"
 
 
 {
@@ -10501,7 +10509,7 @@ Call_Callback ("s_expr_cast", nm, tmpVar);
 
 void ETag_s_expr_bound_fcall(void)
 {
-#line 9167 "module_def.act"
+#line 9175 "module_def.act"
 
 
 {
@@ -10519,7 +10527,7 @@ Call_Callback ("s_expr_bound_fcall", nm, tmpVar);
 
 void ETag_s_expr_agg(void)
 {
-#line 9182 "module_def.act"
+#line 9190 "module_def.act"
 
 
 {
@@ -10537,7 +10545,7 @@ Call_Callback ("s_expr_agg", nm, tmpVar);
 
 void ETag_s_expr_dynarr_extent(void)
 {
-#line 9197 "module_def.act"
+#line 9205 "module_def.act"
 
 
 {
@@ -10555,7 +10563,7 @@ Call_Callback ("s_expr_dynarr_extent", nm, tmpVar);
 
 void ETag_s_func(void)
 {
-#line 9212 "module_def.act"
+#line 9220 "module_def.act"
 
 
 {
@@ -10573,7 +10581,7 @@ Call_Callback ("s_func", nm, tmpVar);
 
 void ETag_s_expr_aligned(void)
 {
-#line 9227 "module_def.act"
+#line 9235 "module_def.act"
 
 
 {
@@ -10591,7 +10599,7 @@ Call_Callback ("s_expr_aligned", nm, tmpVar);
 
 void ETag_s_expr_tag(void)
 {
-#line 9242 "module_def.act"
+#line 9250 "module_def.act"
 
 
 {
@@ -10609,7 +10617,7 @@ Call_Callback ("s_expr_tag", nm, tmpVar);
 
 void ETag_s_expr_cached(void)
 {
-#line 9257 "module_def.act"
+#line 9265 "module_def.act"
 
 
 {
@@ -10627,7 +10635,7 @@ Call_Callback ("s_expr_cached", nm, tmpVar);
 
 void ETag_s_expr_parameter(void)
 {
-#line 9272 "module_def.act"
+#line 9280 "module_def.act"
 
 
 {
@@ -10645,7 +10653,7 @@ Call_Callback ("s_expr_parameter", nm, tmpVar);
 
 void ETag_expr_str(void)
 {
-#line 9287 "module_def.act"
+#line 9295 "module_def.act"
 
 
 {
@@ -10663,7 +10671,7 @@ Call_Callback ("expr_str", nm, tmpVar);
 
 void ETag_fh_field_entry(void)
 {
-#line 9302 "module_def.act"
+#line 9310 "module_def.act"
 
 
 {
@@ -10681,7 +10689,7 @@ Call_Callback ("fh_field_entry", nm, tmpVar);
 
 void ETag_fh_field_list(void)
 {
-#line 9317 "module_def.act"
+#line 9325 "module_def.act"
 
 
 {
@@ -10699,7 +10707,7 @@ Call_Callback ("fh_field_list", nm, tmpVar);
 
 void ETag_variable_usage_with_asc_desc(void)
 {
-#line 9332 "module_def.act"
+#line 9340 "module_def.act"
 
 
 {
@@ -10717,7 +10725,7 @@ Call_Callback ("variable_usage_with_asc_desc", nm, tmpVar);
 
 void ETag_variable_usage(void)
 {
-#line 9347 "module_def.act"
+#line 9355 "module_def.act"
 
 
 {
@@ -10735,7 +10743,7 @@ Call_Callback ("variable_usage", nm, tmpVar);
 
 void ETag_s_select_list_item_list(void)
 {
-#line 9362 "module_def.act"
+#line 9370 "module_def.act"
 
 
 {
@@ -10753,7 +10761,7 @@ Call_Callback ("s_select_list_item_list", nm, tmpVar);
 
 void ETag_s_sli_case(void)
 {
-#line 9377 "module_def.act"
+#line 9385 "module_def.act"
 
 
 {
@@ -10771,7 +10779,7 @@ Call_Callback ("s_sli_case", nm, tmpVar);
 
 void ETag_s_sli_case_element(void)
 {
-#line 9392 "module_def.act"
+#line 9400 "module_def.act"
 
 
 {
@@ -10789,7 +10797,7 @@ Call_Callback ("s_sli_case_element", nm, tmpVar);
 
 void ETag_s_sli_cast(void)
 {
-#line 9407 "module_def.act"
+#line 9415 "module_def.act"
 
 
 {
@@ -10807,7 +10815,7 @@ Call_Callback ("s_sli_cast", nm, tmpVar);
 
 void ETag_sql_statement(void)
 {
-#line 9422 "module_def.act"
+#line 9430 "module_def.act"
 
 
 {
@@ -10825,7 +10833,7 @@ Call_Callback ("sql_statement", nm, tmpVar);
 
 void ETag_s_table_list_element(void)
 {
-#line 9437 "module_def.act"
+#line 9445 "module_def.act"
 
 
 {
@@ -10843,7 +10851,7 @@ Call_Callback ("s_table_list_element", nm, tmpVar);
 
 void ETag_s_table_list(void)
 {
-#line 9452 "module_def.act"
+#line 9460 "module_def.act"
 
 
 {
@@ -10861,7 +10869,7 @@ Call_Callback ("s_table_list", nm, tmpVar);
 
 void ETag_s_table(void)
 {
-#line 9467 "module_def.act"
+#line 9475 "module_def.act"
 
 
 {
@@ -10879,7 +10887,7 @@ Call_Callback ("s_table", nm, tmpVar);
 
 void ETag_s_select_finish(void)
 {
-#line 9482 "module_def.act"
+#line 9490 "module_def.act"
 
 
 {
@@ -10897,7 +10905,7 @@ Call_Callback ("s_select_finish", nm, tmpVar);
 
 void ETag_sq_subquery(void)
 {
-#line 9497 "module_def.act"
+#line 9505 "module_def.act"
 
 
 {
@@ -10915,7 +10923,7 @@ Call_Callback ("sq_subquery", nm, tmpVar);
 
 void ETag_s_limit(void)
 {
-#line 9512 "module_def.act"
+#line 9520 "module_def.act"
 
 
 {
@@ -10933,7 +10941,7 @@ Call_Callback ("s_limit", nm, tmpVar);
 
 void ETag_list_of_integers(void)
 {
-#line 9527 "module_def.act"
+#line 9535 "module_def.act"
 
 
 {
@@ -10951,7 +10959,7 @@ Call_Callback ("list_of_integers", nm, tmpVar);
 
 void ETag_ilist(void)
 {
-#line 9542 "module_def.act"
+#line 9550 "module_def.act"
 
 
 {
@@ -10969,7 +10977,7 @@ Call_Callback ("ilist", nm, tmpVar);
 
 void ETag_s_select(void)
 {
-#line 9557 "module_def.act"
+#line 9565 "module_def.act"
 
 
 {
@@ -10987,7 +10995,7 @@ Call_Callback ("s_select", nm, tmpVar);
 
 void ETag_s_select_list_item_column(void)
 {
-#line 9572 "module_def.act"
+#line 9580 "module_def.act"
 
 
 {
@@ -11005,7 +11013,7 @@ Call_Callback ("s_select_list_item_column", nm, tmpVar);
 
 void ETag_s_select_list_item_sq_expression(void)
 {
-#line 9587 "module_def.act"
+#line 9595 "module_def.act"
 
 
 {
@@ -11023,7 +11031,7 @@ Call_Callback ("s_select_list_item_sq_expression", nm, tmpVar);
 
 void ETag_s_select_list_item_complex_expr(void)
 {
-#line 9602 "module_def.act"
+#line 9610 "module_def.act"
 
 
 {
@@ -11041,7 +11049,7 @@ Call_Callback ("s_select_list_item_complex_expr", nm, tmpVar);
 
 void ETag_s_select_list_item_between_expr(void)
 {
-#line 9617 "module_def.act"
+#line 9625 "module_def.act"
 
 
 {
@@ -11059,7 +11067,7 @@ Call_Callback ("s_select_list_item_between_expr", nm, tmpVar);
 
 void ETag_s_select_list_item_sli_expr(void)
 {
-#line 9632 "module_def.act"
+#line 9640 "module_def.act"
 
 
 {
@@ -11077,7 +11085,7 @@ Call_Callback ("s_select_list_item_sli_expr", nm, tmpVar);
 
 void ETag_s_select_list_item_slil_expr(void)
 {
-#line 9647 "module_def.act"
+#line 9655 "module_def.act"
 
 
 {
@@ -11095,7 +11103,7 @@ Call_Callback ("s_select_list_item_slil_expr", nm, tmpVar);
 
 void ETag_s_select_list_item_agg_expr(void)
 {
-#line 9662 "module_def.act"
+#line 9670 "module_def.act"
 
 
 {
@@ -11113,7 +11121,7 @@ Call_Callback ("s_select_list_item_agg_expr", nm, tmpVar);
 
 void ETag_s_select_list_item_builtin_fcall(void)
 {
-#line 9677 "module_def.act"
+#line 9685 "module_def.act"
 
 
 {
@@ -11131,7 +11139,7 @@ Call_Callback ("s_select_list_item_builtin_fcall", nm, tmpVar);
 
 void ETag_s_select_list_item_fcall(void)
 {
-#line 9692 "module_def.act"
+#line 9700 "module_def.act"
 
 
 {
@@ -11149,7 +11157,7 @@ Call_Callback ("s_select_list_item_fcall", nm, tmpVar);
 
 void ETag_s_select_list_item_extend(void)
 {
-#line 9707 "module_def.act"
+#line 9715 "module_def.act"
 
 
 {
@@ -11167,7 +11175,7 @@ Call_Callback ("s_select_list_item_extend", nm, tmpVar);
 
 void ETag_s_select_list_item_regex(void)
 {
-#line 9722 "module_def.act"
+#line 9730 "module_def.act"
 
 
 {
@@ -11185,7 +11193,7 @@ Call_Callback ("s_select_list_item_regex", nm, tmpVar);
 
 void ETag_s_select_list_item_data(void)
 {
-#line 9737 "module_def.act"
+#line 9745 "module_def.act"
 
 
 {
@@ -11203,7 +11211,7 @@ Call_Callback ("s_select_list_item_data", nm, tmpVar);
 
 void ETag_s_select_list_item(void)
 {
-#line 9752 "module_def.act"
+#line 9760 "module_def.act"
 
 
 {
@@ -11221,7 +11229,7 @@ Call_Callback ("s_select_list_item", nm, tmpVar);
 
 void ETag_s_function_definition(void)
 {
-#line 9767 "module_def.act"
+#line 9775 "module_def.act"
 
 
 {
@@ -11239,7 +11247,7 @@ Call_Callback ("s_function_definition", nm, tmpVar);
 
 void ETag_s_report_definition(void)
 {
-#line 9782 "module_def.act"
+#line 9790 "module_def.act"
 
 
 {
@@ -11257,7 +11265,7 @@ Call_Callback ("s_report_definition", nm, tmpVar);
 
 void ETag_s_pdf_report_definition(void)
 {
-#line 9797 "module_def.act"
+#line 9805 "module_def.act"
 
 
 {
@@ -11275,7 +11283,7 @@ Call_Callback ("s_pdf_report_definition", nm, tmpVar);
 
 void ETag_s_class_definition(void)
 {
-#line 9812 "module_def.act"
+#line 9820 "module_def.act"
 
 
 {
@@ -11293,7 +11301,7 @@ Call_Callback ("s_class_definition", nm, tmpVar);
 
 void ETag_s_import_function_definition(void)
 {
-#line 9827 "module_def.act"
+#line 9835 "module_def.act"
 
 
 {
@@ -11311,7 +11319,7 @@ Call_Callback ("s_import_function_definition", nm, tmpVar);
 
 void ETag_s_import_legacy_definition(void)
 {
-#line 9842 "module_def.act"
+#line 9850 "module_def.act"
 
 
 {
@@ -11329,7 +11337,7 @@ Call_Callback ("s_import_legacy_definition", nm, tmpVar);
 
 void ETag_s_import_datatype(void)
 {
-#line 9857 "module_def.act"
+#line 9865 "module_def.act"
 
 
 {
@@ -11347,7 +11355,7 @@ Call_Callback ("s_import_datatype", nm, tmpVar);
 
 void ETag_s_import_package(void)
 {
-#line 9872 "module_def.act"
+#line 9880 "module_def.act"
 
 
 {
@@ -11365,7 +11373,7 @@ Call_Callback ("s_import_package", nm, tmpVar);
 
 void ETag_s_formhandler_definition(void)
 {
-#line 9887 "module_def.act"
+#line 9895 "module_def.act"
 
 
 {
@@ -11383,7 +11391,7 @@ Call_Callback ("s_formhandler_definition", nm, tmpVar);
 
 void ETag_module_entry(void)
 {
-#line 9902 "module_def.act"
+#line 9910 "module_def.act"
 
 
 {
@@ -11401,7 +11409,7 @@ Call_Callback ("module_entry", nm, tmpVar);
 
 void ETag_program_definition(void)
 {
-#line 9917 "module_def.act"
+#line 9925 "module_def.act"
 
 
 {
@@ -11419,7 +11427,7 @@ Call_Callback ("program_definition", nm, tmpVar);
 
 void ETag_str(void)
 {
-#line 9932 "module_def.act"
+#line 9940 "module_def.act"
 
 
 {
@@ -11433,7 +11441,7 @@ SetParent(A_str_nm,XMLGetTopOfStack(), &p);
 
 void ETag_funcname(void)
 {
-#line 9942 "module_def.act"
+#line 9950 "module_def.act"
 
 
 {
@@ -11447,7 +11455,7 @@ SetParent(A_funcname_nm,XMLGetTopOfStack(), &p);
 
 void ETag_short(void)
 {
-#line 9953 "module_def.act"
+#line 9961 "module_def.act"
 
 
 {
@@ -11461,7 +11469,7 @@ SetParent(A_short_nm,XMLGetTopOfStack(), &p);
 
 void ETag_long(void)
 {
-#line 9964 "module_def.act"
+#line 9972 "module_def.act"
 
 
 {
@@ -11475,7 +11483,7 @@ SetParent(A_long_nm,XMLGetTopOfStack(), &p);
 
 void ETag_int(void)
 {
-#line 9974 "module_def.act"
+#line 9982 "module_def.act"
 
 
 {

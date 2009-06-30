@@ -186,15 +186,14 @@ print_call_cmd (struct_call_cmd * cmd_data)
   t = cmd_data->fcall->expr_type;
 
   real_print_func_call (cmd_data->fcall);
-  if (t == ET_EXPR_BOUND_FCALL)
-    {
-      print_returning_g (1, cmd_data->returning, 1);
-    }
+  if (t == ET_EXPR_BOUND_FCALL || t==ET_EXPR_SHARED_FCALL)
+  {
+      	print_returning_g (1, cmd_data->returning, 1);
+  }
   else
-    {
-      print_returning_g (1, cmd_data->returning, 0);
-    }
-
+  {
+      	print_returning_g (1, cmd_data->returning, 0);
+  }
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -1130,6 +1129,8 @@ print_return_cmd (struct_return_cmd * cmd_data)
 	}
     }
 
+
+  printc("A4GL_dec_refcount(_objData);");
 
   if (!is_in_report ()) {
     printc("A4GL_copy_back_blobs(_blobdata,%d);",n);

@@ -302,6 +302,10 @@ ensure_bool (char *module, int lineno, struct expr_str *s, int notnull)
       l = expr_datatype (module, lineno, s->expr_str_u.expr_op->left) & DTYPE_MASK;
       r = expr_datatype (module, lineno, s->expr_str_u.expr_op->right) & DTYPE_MASK;
 
+      if (l == DTYPE_SERIAL)
+	l = DTYPE_INT;
+      if (r == DTYPE_SERIAL)
+	r = DTYPE_INT;
 
 
       if (l != r)		// 1

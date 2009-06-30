@@ -270,6 +270,7 @@ char *decode_e_event(enum e_event value) {
  case EVENT_BEFORE_CONSTRUCT: return "EVENT_BEFORE_CONSTRUCT";
  case EVENT_BEFORE_MENU   : return "EVENT_BEFORE_MENU";
  case EVENT_AFTER_FIELD   : return "EVENT_AFTER_FIELD";
+ case EVENT_ON_CHANGE   : return "EVENT_ON_CHANG";
  case EVENT_MENU_COMMAND  : return "EVENT_MENU_COMMAND";
  case EVENT_BEFORE_OPEN_FORM: return "EVENT_BEFORE_OPEN_FORM";
  case EVENT_AFTER_EVENT   : return "EVENT_AFTER_EVENT";

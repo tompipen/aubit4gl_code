@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.35 2009-05-03 17:59:59 mikeaubury Exp $
+# $Id: expr.c,v 1.36 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -348,6 +348,12 @@ expr_name (enum e_expr_type e)
 	return "ET_EXPR_RIGHT_ALIGNED";
 	case ET_EXPR_TAG:
 	return "ET_EXPR_TAG";
+case ET_EXPR_BINDING: return "ET_EXPR_BINDING";
+
+    case ET_EXPR_RETURN_NULL: 
+	return "ET_EXPR_RETURN_NULL";
+
+
     }
   PRINTF ("Expression Type : %d\n", e);
   return "Oopps - dont know";
@@ -979,6 +985,8 @@ A4GL_new_expr_extend (struct expr_str *ptr, int to)
   return p2;
 }
 
+
+
 struct expr_str *
 A4GL_new_expr_member_fcall (struct expr_str *var_usage_ptr, struct expr_str_list *params, char *mod, int line, char *p_namespace)
 {
@@ -997,7 +1005,7 @@ A4GL_new_expr_member_fcall (struct expr_str *var_usage_ptr, struct expr_str_list
 
 
 struct expr_str *
-A4GL_new_expr_bound_fcall (char *lib, char *function, char *mod, int line, expr_str * channel, expr_str_list * values,
+A4GL_new_expr_bound_fcall (char *lib, char *function, char *mod, int line, expr_str_list * values,
 			   char *p_namespace)
 {
   struct s_expr_bound_fcall *p;
@@ -1009,17 +1017,8 @@ A4GL_new_expr_bound_fcall (char *lib, char *function, char *mod, int line, expr_
   p->lib = acl_strdup (lib);
   p->module = mod;
   p->line = line;
-  p->channel = channel;
   p->values = values;
 
-  //p->nibind=l_ibindcnt;
-  //p->ibind=malloc(sizeof(binding_comp_list));
-  //p->ibind->bindings.bindings_len=l_ibindcnt;
-  //memcpy(p->ibind->bindings.bindings_val,l_ibind,l_ibindcnt*sizeof(binding_comp));
-//
-  //p->ebind=malloc(sizeof(binding_comp_list));
-  //p->ebind->bindings.bindings_len=l_ebindcnt;
-  //memcpy(p->ebind->bindings.bindings_val,l_ebind,l_ebindcnt*sizeof(binding_comp));
 
   p2->expr_str_u.expr_bound_fcall = p;
   return p2;
@@ -1029,7 +1028,7 @@ A4GL_new_expr_bound_fcall (char *lib, char *function, char *mod, int line, expr_
 
 
 struct expr_str *
-A4GL_new_expr_shared_fcall (char *lib, char *function, struct expr_str_list *params, char *mod, int line, char *p_namespace)
+A4GL_new_expr_shared_fcall (char *lib, char *function, struct expr_str_list *params, char *mod, int line, char *p_namespace,char *errbuff)
 {
   struct s_expr_shared_function_call *p;
   struct expr_str *p2;
@@ -1042,6 +1041,55 @@ A4GL_new_expr_shared_fcall (char *lib, char *function, struct expr_str_list *par
   p->module = mod;
   p->line = line;
   p2->expr_str_u.expr_shared_function_call = p;
+  if (strcmp(lib,"channel")==0) {
+		if (strcmp(function,"read")==0) {
+			// read expected 2 parameters - the second should be a BINDING..
+			if (params) {
+				if (params->list.list_len!=2) {
+					strcpy(errbuff,"Expected 2 parameters");
+					return NULL;
+				}
+
+				// If the second parameter is not a BINDING - for it to be one...
+				if (params->list.list_val[1]->expr_type!=ET_EXPR_BINDING) {
+					params->list.list_val[1]=A4GL_new_expr_binding(A4GL_new_ptr_list(params->list.list_val[1]));
+				}
+			} else {
+					strcpy(errbuff,"Expected 2 parameters");
+					return NULL;
+			}
+		}
+		if (strcmp(function,"write")==0) {
+			if (params) {
+				if (params->list.list_len<2) {
+					strcpy(errbuff,"Expected 2 parameters");
+					return NULL;
+				} 
+
+				// If we get to here - its 2 or more...
+				if (params->list.list_len==2) {
+					if (params->list.list_val[1]->expr_type!=ET_EXPR_BINDING) {
+						params->list.list_val[1]=A4GL_new_expr_binding(A4GL_new_ptr_list(params->list.list_val[1]));
+					}
+				} else { 
+					int a;
+					// More than 2 parameters - fake them into a BINDING
+					expr_str_list *l=A4GL_new_ptr_list(NULL);
+					for (a=1;a<params->list.list_len;a++) {
+						A4GL_new_append_ptr_list(l,params->list.list_val[a]);
+					}
+					params->list.list_len=2;
+					params->list.list_val[1]= A4GL_new_expr_binding(l);
+				}
+				
+			} else {
+				strcpy(errbuff,"Expected 2 parameters");
+				return NULL;
+			}
+		}
+  }
+  strcpy(errbuff,"");
+
   return p2;
 }
 
@@ -1595,6 +1643,16 @@ A4GL_new_expr_list_with_list (expr_str_list * list)
 {
   struct expr_str *p;
   p = A4GL_new_expr_simple (ET_EXPR_EXPR_LIST);
+  p->expr_str_u.expr_list = list;
+  return p;
+}
+
+
+struct expr_str *
+A4GL_new_expr_binding (expr_str_list * list)
+{
+  struct expr_str *p;
+  p = A4GL_new_expr_simple (ET_EXPR_BINDING);
   p->expr_str_u.expr_list = list;
   return p;
 }

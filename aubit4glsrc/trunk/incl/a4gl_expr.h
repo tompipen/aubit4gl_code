@@ -18,7 +18,7 @@ struct expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameter
 struct expr_str *A4GL_new_expr_form_is_compiled(char *formname, expr_str_list *params,char *mod,int line);
 struct expr_str * A4GL_new_translated_string (char *value);
 struct expr_str *A4GL_new_expr_funcdef(char *funcname, char *namespace);
-
+struct expr_str * A4GL_new_expr_binding (expr_str_list * list);
 struct expr_str *report_position_expr_x(struct expr_str *expr) ;
 struct expr_str *report_position_expr_y(struct expr_str *expr) ;
 struct expr_str *report_position_current_y(void ) ;
@@ -40,8 +40,8 @@ struct expr_str *A4GL_new_expr_simple_string(char *str,enum e_expr_type type) ;
 struct expr_str *A4GL_new_expr_assoc(char *s, expr_str *subscript);
 
 struct expr_str *A4GL_new_expr_simple_expr(struct expr_str *ptr,enum e_expr_type type);
-struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line, char *p_namespace);
-struct expr_str *A4GL_new_expr_bound_fcall(char *lib,char *function,char *mod,int line, expr_str *channel_id, expr_str_list *params, char *p_namespace);
+struct expr_str *A4GL_new_expr_shared_fcall(char *lib,char *function,struct expr_str_list *params,char *mod,int line, char *p_namespace,char *errbuf);
+struct expr_str *A4GL_new_expr_bound_fcall(char *lib,char *function,char *mod,int line, expr_str_list *params, char *p_namespace);
 struct expr_str *A4GL_new_expr_member_fcall(struct expr_str *var_usage,struct expr_str_list *params,char *mod,int line, char *p_namespace);
 struct expr_str_list *A4GL_rationalize_list(struct expr_str_list *l);
 struct expr_str *A4GL_new_expr_fcall(char *function,struct expr_str_list *params,char *mod,int line,char *p_namespace);

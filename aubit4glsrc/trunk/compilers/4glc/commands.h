@@ -166,5 +166,14 @@ struct expr_str *generate_sql_expr(struct expr_str *p);
 char *cmds_get_variable_usage_as_string (struct variable_usage *var_usage);
 struct command *set_cmd_comment(struct command *cmd,char *s);
 void set_module_comment(char *s);
+
+
+
+
+
+struct command *check_for_member_call_alias(expr_str *p_fcall,expr_str_list *p_returning);
+
+
 #endif
+
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.237 2009-06-17 13:56:58 mikeaubury Exp $
+# $Id: stack.c,v 1.238 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -322,6 +322,37 @@ A4GL_pop_int8 (void)
   A4GL_debug ("POPPED = %lld\n", b);
 #endif
   return b;
+}
+
+
+
+int A4GL_push_binding_onto_stack(struct BINDING *b, int n) {
+struct s_save_binding *ptr;
+	int sl;
+	ptr=malloc(sizeof(struct s_save_binding));
+	// We need to copy the binding - because the binding itself will go
+	// out of scope...
+	//
+	sl=sizeof(struct BINDING)*n;
+	ptr->b=malloc(sl);
+	memcpy(ptr->b,b,sl);
+	ptr->nbind=n;
+  	A4GL_push_param (ptr, DTYPE_BINDING + DTYPE_MALLOCED);
+	return 1;
+}
+
+
+int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) {
+	struct s_save_binding ptr;
+	ptr.b=0;
+	ptr.nbind=0;
+
+  	A4GL_pop_param (&ptr, DTYPE_BINDING, 0);
+
+	*b=ptr.b;
+	*n=ptr.nbind;
+
+	return 1;
 }
 
 int
@@ -4706,6 +4737,19 @@ void A4GL_pushIntGE (int a, int b)
       A4GL_push_int (0); return;
     }
   if (a >= b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
+}
+
+
+
+void A4GL_dec_refcount( void **objects) {
+	int a;
+
+	if (objects==NULL) return;
+
+	for (a=0;objects[a];a++) {
+
+	}
+
 }
 
 // ================================ EOF ================================

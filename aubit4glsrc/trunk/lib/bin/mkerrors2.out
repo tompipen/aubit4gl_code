@@ -365,3 +365,9 @@
 376|Not available in windows build
 378|Database name not set
 380|INFIELD can only be used within the INPUT/INPUT ARRAY/CONSTRUCT for the XML gui
+382|Expects 2 parameters
+384|Unable to find function (%s)
+385|Out of heap
+386|Not an object of type base.channel - or not initialized
+387|expects 1 parameter
+388|Expected 1 parameter

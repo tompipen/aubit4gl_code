@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.175 2009-06-09 14:18:56 mikeaubury Exp $
+# $Id: conv.c,v 1.176 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -3647,7 +3647,9 @@ static int have_slots[MAX_CONV_SLOTS];
 	{
 	  if ((dtype2 & DTYPE_MASK) < (sizeof (setdtype) / sizeof (void *)))
 	    {
-	      setdtype[dtype2 & DTYPE_MASK] (p2);
+		if (setdtype[dtype2 & DTYPE_MASK]) {
+	      		setdtype[dtype2 & DTYPE_MASK] (p2);
+		}
 	    }
 	}
       return -1;

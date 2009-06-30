@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.103 2009-05-21 08:51:14 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.104 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -167,6 +167,16 @@ A4GL_push_long (long p)
   /* memset(ptr,0,sizeof(long)); */
   *ptr = p;
   A4GL_push_param (ptr, DTYPE_INT + DTYPE_MALLOCED);
+}
+
+void
+A4GL_push_objectID (long p)
+{
+  long *ptr;
+  ptr = (long *) acl_malloc (sizeof (long), "push long");
+  /* memset(ptr,0,sizeof(long)); */
+  *ptr = p;
+  A4GL_push_param (ptr, DTYPE_OBJECT + DTYPE_MALLOCED);
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.92 2009-05-15 16:25:58 mikeaubury Exp $
+# $Id: ui.c,v 1.93 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -2383,5 +2383,38 @@ return 0;
 #endif
 
 
+int aclfgl_aclfgl_ui_interface_loadtoolbar(int n) {
+char *a;
+char buff[2000];
+a=A4GL_char_pop();
+A4GL_trim(a);
+sprintf(buff,"%s.4tb",a);
+A4GL_push_char(buff);
+aclfgl_aclfgl_send_to_ui(1);
+return 0;
+}
+
+
+int aclfgl_aclfgl_ui_interface_loadactiondefauts(int n) {
+char *a;
+char buff[2000];
+a=A4GL_char_pop();
+A4GL_trim(a);
+sprintf(buff,"%s.4ad",a);
+A4GL_push_char(buff);
+aclfgl_aclfgl_send_to_ui(1);
+return 0;
+}
+
+int aclfgl_aclfgl_ui_interface_loadstyles(int n) {
+char *a;
+char buff[2000];
+a=A4GL_char_pop();
+A4GL_trim(a);
+sprintf(buff,"%s.4st",a);
+A4GL_push_char(buff);
+aclfgl_aclfgl_send_to_ui(1);
+return 0;
+}
 
 /* ============================= EOF ================================ */

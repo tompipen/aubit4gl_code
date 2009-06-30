@@ -43,6 +43,16 @@ int aclfgl_fgl_system(int n);
 int aclfgl_fgl_init4js(int n);
 int aclfgl_fgl_fglgui(int n);
 
+
+int aclfgl_aclfgl_ui_interface_loadtoolbar(int n) ;
+int aclfgl_aclfgl_ui_interface_loadactiondefauts(int n) ;
+int aclfgl_aclfgl_ui_interface_loadstyles(int n) ;
+
+
+
+
+
+
 // These are UI functions - included in the generated a4gl_API_ui.h file
 //int aclfgl_aclfgl_set_display_field_delimiters(int nparam);
 //int aclfgl_aclfgl_add_acs_mapping(int nparam);

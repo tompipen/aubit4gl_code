@@ -42,13 +42,16 @@ call_ext: function_call_expr opt_return {
 			e=A4GL_new_expr_form_is_compiled($<str>3, $<ptr_list>5,infilename,lastlineno);
    			$<cmd>$=new_call_cmd(e,NULL);
 	}
-   | KW_CHANNEL_WRITE OPEN_BRACKET char_or_var_vl KW_COMMA opt_cw_ebind_var_list CLOSE_BRACKET  opt_return {
-	        struct expr_str_list *p1;
-		char errbuff[256];
-		ensure_variable(errbuff, $<ptr>3,1);
-                p1=A4GL_new_prepend_ptr_list($<ptr_list>5,$<ptr>3);
-		$<ptr>$=A4GL_new_expr_shared_fcall("channel", "write",p1,infilename,lastlineno, get_namespace("channel::write"));
-   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>7);
+   | KW_CHANNEL_WRITE OPEN_BRACKET func_expr_call_args CLOSE_BRACKET  opt_return {
+		char buff[200];
+		$<ptr>$=A4GL_new_expr_shared_fcall("channel", "write",$<ptr_list>3,infilename,lastlineno, get_namespace("channel::write"),buff);
+		if ($<ptr>$==0) {
+			a4gl_yyerror(buff);
+			$<cmd>$=NULL;
+		} else {
+   			$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>5);
+		}
+		
         }
 
 /*
@@ -88,7 +91,6 @@ func_expr_call_args	: func_arg { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }
 
 
 func_arg :	fgl_expr_c  {$<ptr>$=$<ptr>1;}
-	| KW_NULL 		{$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);}
 ;
 
 remote_host_name : CHAR_VALUE | identifier { SPRINTF1($<str>$,"\"%s\"",$<str>1); }

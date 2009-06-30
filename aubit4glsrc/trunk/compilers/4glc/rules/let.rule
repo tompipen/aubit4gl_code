@@ -13,11 +13,17 @@ int to_vars;
 }
 ;
 
-op_expr_null : KW_NULL { 
-		$<ptr_list>$=0; 
-	}
-	| fgl_expr_concat  {
+op_expr_null : 
+fgl_expr_concat  {
 		$<ptr_list>$=$<ptr_list>1;
+		// Check to see if they've assigned a value of 'NULL'
+		if ($<ptr_list>1) {
+			if ($<ptr_list>1->list.list_len==1) {
+				if ($<ptr_list>1->list.list_val[0]->expr_type==ET_EXPR_NULL) {
+					$<ptr_list>$=0;
+				}
+			}
+		}
 	}
 ;
 

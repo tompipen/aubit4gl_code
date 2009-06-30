@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.9 2009-05-26 12:16:56 mikeaubury Exp $
+# $Id: variables_new.c,v 1.10 2009-06-30 18:38:54 mikeaubury Exp $
 #
 */
 
@@ -750,8 +750,6 @@ struct variable *new_associate_variable(int assoc_char_size,int assoc_arr_size,s
 
 static struct variable *find_class(char *name) {
 	return new_simple_variable("objectid",DTYPE_INT,0,0);
-	A4GL_assertion(1,"Not implemented yet");
-	return NULL;
 }
 
 // Create a variable containing an Object of type 'name'...

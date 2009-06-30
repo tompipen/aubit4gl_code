@@ -41,7 +41,16 @@
 	/* but sometimes it'll be useful... */
 	//#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
 	//#define strcat(d,s) A4GL_strcat(d,s,__FILE__,__LINE__,(long)sizeof(d))
+void add_base_channel_support(void) ;
 
+struct s_save_binding {
+        struct BINDING *b;
+        int nbind;
+};
+struct sObject *new_object(char *type) ;
+int ensureObject(char *type,int objectId, struct sObject **o) ;
+void A4GL_push_objectID (long p);
+void A4GL_object_displose(int objectId);
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 
 

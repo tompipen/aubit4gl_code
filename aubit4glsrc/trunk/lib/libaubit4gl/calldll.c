@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.85 2009-05-08 14:53:43 mikeaubury Exp $
+# $Id: calldll.c,v 1.86 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -865,6 +865,150 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 }
 
 
+/**
+ * Loading of 4gl dll for UNIX systems.
+ * Called from 4gl code
+ *
+ * @param filename The dynamic library file name.
+ * @param function The function name.
+ * @param args The arguments ???
+ */
+int
+A4GL_call_4gl_dll_bound_new (char *filename, char *function, int nparam)
+{
+  void *dllhandle;
+  char buff[512];
+  char nfunc[256];
+  char nfile[256];
+  int (*func_ptr_b) (int);
+  int a;
+
+  if ((!acl_getenv ("AUBITDIR")) || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
+    {
+      A4GL_exitwith ("Error: Cannot determine AUBITDIR - STOP.");
+      A4GL_fgl_die_with_msg (43, "Error: Cannot determine AUBITDIR - STOP");
+    }
+
+  A4GL_set_status (0, 0);
+  strcpy (nfile, filename);
+
+  if (strncmp (nfile, "a4gl_", 5) == 0)
+    {				/* Do upshift on A4GL */
+      nfile[0] = 'A';
+      nfile[1] = '4';
+      nfile[2] = 'G';
+      nfile[3] = 'L';
+    }
+#ifdef DEBUG
+  A4GL_debug ("nfile=%s\n", A4GL_null_as_null (nfile));
+#endif
+
+  strcpy (nfunc, "");
+  if (strncmp (function, "aclfglclass", 11) != 0)
+    {
+
+#if (defined(__MACH__) && defined(__APPLE__))
+      strcpy (nfunc, "aclfgl__");
+#else
+      strcpy (nfunc, "aclfgl_");
+#endif
+    }
+  strcat (nfunc, function);
+  A4GL_trim (nfunc);
+  A4GL_trim (nfile);
+
+#ifdef DEBUG
+  A4GL_debug ("Trying %s", A4GL_null_as_null (filename));
+#endif
+  dllhandle = dlopen (filename, RTLD_LAZY);
+#ifdef DEBUG
+  if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
+#endif
+
+  if (dllhandle == 0)
+    {
+      SPRINTF5 (buff, "%s/plugins-%s_%d/lib%s.%s", acl_getenv ("AUBITDIR"), A4GL_internal_version (), A4GL_internal_build (), nfile,
+		SO_EXT);
+#ifdef DEBUG
+      A4GL_debug ("Trying %s", A4GL_null_as_null (buff));
+#endif
+      dllhandle = dlopen (buff, RTLD_LAZY);
+#ifdef DEBUG
+      if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
+#endif
+    }
+
+  if (dllhandle == 0)
+    {
+      SPRINTF2 (buff, "./lib%s.%s", nfile, SO_EXT);
+#ifdef DEBUG
+      A4GL_debug ("Trying %s", A4GL_null_as_null (buff));
+#endif
+      dllhandle = dlopen (buff, RTLD_LAZY);
+#ifdef DEBUG
+      if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
+#endif
+    }
+
+  if (dllhandle == 0)
+    {
+      SPRINTF2 (buff, "./%s.%s", nfile, SO_EXT);
+      A4GL_debug ("Trying %s", A4GL_null_as_null (buff));
+      dllhandle = dlopen (buff, RTLD_LAZY);
+#ifdef DEBUG
+      if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
+#endif
+    }
+
+  if (dllhandle == 0)
+    {
+	char *fname;
+        SPRINTF2 (buff, "%s.%s", nfile, SO_EXT);
+	fname=A4GL_fullpath_classpath(buff);
+	if (fname) {
+      		dllhandle = dlopen (fname, RTLD_LAZY);
+	} else {
+        	SPRINTF2 (buff, "lib%s.%s", nfile, SO_EXT);
+		fname=A4GL_fullpath_classpath(buff);
+		if (fname) {
+      			dllhandle = dlopen (fname, RTLD_LAZY);
+		}
+	}
+
+#ifdef DEBUG
+      if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
+#endif
+    }
+
+  if (dllhandle == 0)
+    {
+#ifdef DEBUG
+      A4GL_debug ("No library handle");
+#endif
+      A4GL_exitwith ("Unable to load shared library file");
+      return -1;
+    }
+
+  func_ptr_b = dlsym (dllhandle, nfunc);
+
+  if (func_ptr_b == NULL)
+    {
+#ifdef DEBUG
+      A4GL_debug ("No function handle");
+#endif
+      A4GL_exitwith ("Unable to load function from shared libary");
+      return -1;
+    }
+
+#ifdef DEBUG
+  A4GL_debug ("Calling function");
+#endif
+  a = func_ptr_b (nparam);
+  //A4GL_debug ("Closing handle");
+  //dlclose (dllhandle);
+  return a;
+
+}
 
 /**
  * Loading of 4gl dll for UNIX systems.

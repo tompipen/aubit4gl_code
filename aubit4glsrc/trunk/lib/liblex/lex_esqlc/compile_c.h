@@ -276,3 +276,4 @@ int dump_command(struct command_data *cd);
 int clr_rep_print_entry(void);
 void print_generation_copy_status (void);
 int chk_ibind_select(struct s_select *s);
+void dump_objdata(struct variable_list *variables);

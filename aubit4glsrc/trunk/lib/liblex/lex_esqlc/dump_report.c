@@ -794,6 +794,8 @@ report_cnt++;
         }
       printc ("#");
 
+  dump_objdata(variables);
+
 
   A4GL_assertion(report_orderby_section==0, "No order by section (not even implicit)");
   if (report_orderby_section->variables) {
@@ -878,6 +880,7 @@ report_cnt++;
 	asc_desc[a]=0;
 
       print_report_table (funcname , 'R', cnt,asc_desc,parameters,report_orderby_section->variables);
+      printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
       printc ("return;");
       printc("}");
@@ -924,6 +927,7 @@ report_cnt++;
       printc (" }");
       printc ("        %s(0,REPORT_FINISH);\n", namespaced_report_name);
 	      print_report_table (funcname , 'E', cnt,asc_desc,parameters,report_orderby_section->variables);
+      printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
 	      printc ("        return;");
 	      printc ("    }\n");
@@ -941,6 +945,7 @@ report_cnt++;
   printc("if (acl_ctrl==REPORT_CONVERT) {");
   printc("char *_f; char *_o; char *_l; int _to_pipe; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); _to_pipe=A4GL_pop_int();\n");
   printc("A4GL_convert_report(&_rep,_f,_o,_l,_to_pipe);");
+      printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
   printc("return ;");
   printc("}");
@@ -950,6 +955,7 @@ report_cnt++;
   if (rep_type == REP_TYPE_NORMAL) {
   printc("if (acl_ctrl==REPORT_FREE) {");
   printc("A4GL_free_report(&_rep);");
+      printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
   printc("return ;");
   printc("}");
@@ -964,6 +970,7 @@ report_cnt++;
       printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
       printc ("   if (fgl_rep_orderby==1) {");
       print_report_table (funcname , 'M', cnt,asc_desc,parameters,report_orderby_section->variables);
+      printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
       printc ("       return;");
       printc ("   }\n");
@@ -1002,6 +1009,7 @@ int z;
   print_report_ctrl (report_cnt, report_orderby_section->rord_type, namespaced_report_name,rep_type, report_format_section, report_orderby_section, aggregates);
 
   tmp_ccnt--;
+      printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
   printc ("\n} /* end of report */\n");
   return 1;

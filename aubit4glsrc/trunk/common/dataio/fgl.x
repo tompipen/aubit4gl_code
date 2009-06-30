@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.35 2009-06-17 08:24:53 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.36 2009-06-30 18:38:54 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1095,6 +1095,7 @@ enum e_event {
 	EVENT_AFTER,
 	EVENT_BEFORE_EVENT,
 	EVENT_ON,
+	EVENT_ON_CHANGE,
 	EVENT_AFTER_INP_CLEAN
 };
 
@@ -1136,6 +1137,7 @@ union event_data switch (enum e_event event_type) {
 
 	case EVENT_BEFORE_EVENT: void;
 	case EVENT_BEFORE_FIELD: struct fh_field_list *before_field;
+	case EVENT_ON_CHANGE: /*! struct fh_field_list *after_field; !*/
 	case EVENT_AFTER_FIELD: struct fh_field_list *after_field;
 	case EVENT_MENU_COMMAND : menuoption *mnoption;
 	case EVENT_AFTER_EVENT: void;
@@ -1770,6 +1772,7 @@ struct s_expr_external_call {
         int line;
 };
 
+
 struct s_expr_current {
         int from;
         int to;
@@ -1820,7 +1823,6 @@ struct s_expr_bound_fcall {
         str fname;
         str module;
         int line;
-	struct expr_str *channel;
 	struct expr_str_list *values;
 };
 
@@ -1846,6 +1848,7 @@ struct s_func {
 
 enum e_expr_type {
                 ET_EXPR_EXPR_LIST,
+                ET_EXPR_BINDING,
                 ET_EXPR_STRING,
                 ET_EXPR_TODAY,
                 ET_EXPR_TIME,
@@ -2008,7 +2011,7 @@ struct s_expr_parameter {
 
 
 union expr_str switch ( enum e_expr_type expr_type) {
-
+		case ET_EXPR_RETURN_NULL: /*! void; !*/
 	case ET_EXPR_TODAY: /*! void; !*/
 	case ET_EXPR_TIME: /*! void; !*/
 	case ET_EXPR_LINENO: /*! void; !*/
@@ -2069,6 +2072,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
                 /*! struct expr_str_list                    *expr_list; !*/
 	case ET_EXPR_THROUGH:
                 /*! struct expr_str_list                    *expr_list; !*/
+        case ET_EXPR_BINDING:
+                /*! struct expr_str_list                    *expr_list; !*/
 	case ET_EXPR_EXPR_LIST:
                 /*! struct expr_str_list                    *expr_list; !*/
 	case ET_EXPR_CONCAT_LIST:
@@ -2128,6 +2133,7 @@ union expr_str switch ( enum e_expr_type expr_type) {
 
 	case ET_EXPR_CURRENT:
                 struct s_expr_current                     *expr_current;
+
 
 	case ET_EXPR_GET_FLDBUF:
                 struct s_expr_get_fldbuf                  *expr_get_fldbuf;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.56 2009-05-24 18:26:59 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.57 2009-06-30 18:38:56 mikeaubury Exp $
 */
 
 /**
@@ -147,6 +147,8 @@ int A4GL_set_line_extended (char *s, long l, const char *level, const char * fun
 char *a4gl_substr (char *s, int dtype, int a, int b, ...);
 void A4GL_push_dtime (struct A4GLSQL_dtime *p);
 void A4GL_push_int (short p);
+int A4GL_push_binding_onto_stack(struct BINDING *b, int n);
+int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) ;
 void A4GL_push_long (long p);
 void A4GL_push_date (long p);
 void A4GL_push_float (float p);
@@ -213,6 +215,7 @@ int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec
 void A4GL_assertion (int a, char *s);
 char * acl_getenv_not_set_as_0 (char *s);
 int A4GL_fgl_fieldtouched_current(void *sio, char itype);
+void A4GL_dec_refcount(void **obj);
 //int A4GL_fgl_infield (void *inp,char itype,...);
 #ifndef LOCATE_VAR_DEFINED
 #define LOCATE_VAR_DEFINED

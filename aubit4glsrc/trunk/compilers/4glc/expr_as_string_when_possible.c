@@ -69,6 +69,7 @@ expr_as_string_when_possible (expr_str * e)
       }
       break;
 
+
     case ET_EXPR_IDENTIFIER:
       {
 	char buff[23000];

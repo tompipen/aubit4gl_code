@@ -428,7 +428,7 @@ dtype :
 			$$=new_variable_object("STRING");
 		} 
 	|	BASECHANNEL {
-			$$=new_variable_object("BASECHANNEL");
+			$$=new_variable_object("base.channel");
 		} 
 	|	STATUSBOX {
 			$$=new_variable_object("STATUSBOX");

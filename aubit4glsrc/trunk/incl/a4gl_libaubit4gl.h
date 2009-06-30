@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.383 2009-06-13 10:23:48 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.384 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -532,6 +532,7 @@ int A4GL_aubit_strcasecmp_internal (char *a, char *b);
 #define DTYPE_SERIAL8      18
 
 #define DTYPE_OBJECT    99
+#define DTYPE_BINDING    95
 #define DTYPE_DYNAMIC_ARRAY      98
 #define DTYPE_REFERENCE    97
 #define DTYPE_STRING    96
@@ -1263,6 +1264,8 @@ enum cmd_types {
 
   int8 A4GL_pop_int8 (void);
   int A4GL_push_int8 (int8 a);
+int A4GL_push_binding_onto_stack(struct BINDING *b, int n);
+int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) ;
 
   long A4GL_pop_long (void);
   long A4GL_pop_date (void);
@@ -2342,6 +2345,7 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define A4GL_EVENT_BEFORE_INP  		-99
 #define A4GL_EVENT_BEFORE_FIELD_1 	-197
 #define A4GL_EVENT_AFTER_FIELD_1 	-198
+#define A4GL_EVENT_ON_CHANGE 		-199
 
 
 void A4GL_free_associated_mem(void *orig);
@@ -2416,8 +2420,8 @@ char *A4GL_get_tmp_rep(char *mod,char *f);
 void a4gl_upshift(char *s);
 void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c4, char c5, char c6, char c7);
 void A4GL_copy_sqlca_sqlawarn_string8( char *c);
-int
-A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind);
+int A4GL_call_4gl_dll_bound (char *filename, char *function, int ni,struct BINDING *ibind,int no,struct BINDING *obind);
+int A4GL_call_4gl_dll_bound_new (char *filename, char *function, int nparam);
 int A4GL_execute_sql (char *pname, int ni, void *vibind);
 int A4GL_add_prepare (char *pname, void *vsid);
 
@@ -2906,6 +2910,13 @@ void A4GL_set_logsqlstart(void );
 int A4GL_fgl_fieldtouched_current(void *sio, char itype);
 char *A4GL_get_end_tag(char *tag_type) ;
 char *A4GL_get_start_tag(char *tag_type) ;
+void A4GL_dec_refcount(void **obj);
+struct sObject {
+	char *objType;
+	int objHeapId;
+	int refCnt;
+	void *objData;
+};
 //
 #include "a4gl_builtin_funcs.h"
 

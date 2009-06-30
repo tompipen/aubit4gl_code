@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.487 2009-06-17 08:24:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.488 2009-06-30 18:38:56 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.487 2009-06-17 08:24:21 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.488 2009-06-30 18:38:56 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1467,36 +1467,29 @@ real_print_expr (struct expr_str *ptr)
 
 	case ET_EXPR_BOUND_FCALL : 
 		{
-		//extern long a_ibind;
-		//extern long a_ebind;
-		struct expr_str_list i;
-		struct expr_str_list e;
-
+		struct expr_str_list *i;
 		struct s_expr_bound_fcall *f;
-		//int ni;
-		//int ne;
+		int n;
   		if (is_in_report()) { set_doing_a_report_call(); }
 		f=ptr->expr_str_u.expr_bound_fcall;
 	        printc("{ /*X1*/");
-		
+		i=A4GL_rationalize_list(f->values);
+		real_print_expr_list(i);
+		/*
 		i.list.list_len=1;
 		i.list.list_val=malloc(sizeof(struct expr_str *));
 		i.list.list_val[0]=f->channel;
-		if (f->values==0) {
-			//A4GL_assertion(1,"No values");
-			f->values=&e;
-			e.list.list_len=0;
-			e.list.list_val=0;
-		}
 
-  			print_bind_definition_g (&i,'i');
-  			print_bind_definition_g (f->values,'e');
+		
 
-  			print_bind_set_value_g (&i,'i');
+  		print_bind_definition_g (&i,'i');
+  		print_bind_definition_g (f->values,'e');
 
-  			print_bind_set_value_g (f->values,'e');
+  		print_bind_set_value_g (&i,'i');
+  		print_bind_set_value_g (f->values,'e');
+		*/
 	        printc("  A4GL_set_status(0,0);");
-		printc("  if (A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind)!=1 && a4gl_status==0) { ",f->lib, f->fname,1,f->values->list.list_len);
+		printc("  if (A4GL_call_4gl_dll_bound_new(%s,%s,%d)!=1 && a4gl_status==0) { ",f->lib, f->fname,i->list.list_len);
 		printc("    A4GL_set_status(-3001,0);");
 		printc("    A4GL_chk_err(%d,_module_name);",f->line);
 		printc("  }");
@@ -1567,7 +1560,21 @@ real_print_expr (struct expr_str *ptr)
 		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
-  	      printc ("_retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype,func, nparam);
+		if (datatype==0xff || datatype==0x63) {// object
+			char class_func[2000];
+			char basevar[200];
+			sprintf(basevar,"&%s",s);
+		if (v) {
+				sprintf(class_func, "%s.%s",v->var_data.variable_data_u.v_object.class_name  ,func);
+		} else {
+				strcpy(basevar,"NULL");
+				sprintf(class_func,"%s.%s",s,func);
+		}
+
+  	      		printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT,class_func, nparam);
+		} else {
+  	      		printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", s,datatype,func, nparam);
+		}
 
 	      printc ("      if (_retvars!=1) {");
 	      printc ("          A4GL_set_status(-3001,0);");
@@ -2117,6 +2124,19 @@ real_print_expr (struct expr_str *ptr)
 		}
 		break;
 
+	case ET_EXPR_BINDING: 
+		// This is a expr_str_list - which is being used as a binding..
+		{
+			printc("{");
+		      	print_bind_definition_g (ptr->expr_str_u.expr_list,'i');
+		 	print_bind_set_value_g (ptr->expr_str_u.expr_list,'i');
+			printc("A4GL_push_binding_onto_stack(ibind,%d);",ptr->expr_str_u.expr_list->list.list_len);
+			printc("}");
+
+		}
+		
+		break;
+
         case ET_EXPR_PDF_CURRENT_Y:
 		if (is_in_report ()) {
 			printc("A4GL_get_current_pdf_y(&_rep);");
@@ -2127,8 +2147,7 @@ real_print_expr (struct expr_str *ptr)
 
 		
 	      default: 
-					       	
-			printf("Expression type : %d (%s) \n",ptr->expr_type, decode_e_expr_type(ptr->expr_type));
+		      printf("Expression type : %d (%s) \n",ptr->expr_type, decode_e_expr_type(ptr->expr_type));
 		      A4GL_assertion(1,"Unhandled expression type");
 
 	}
@@ -2373,6 +2392,9 @@ switch (e->expr_type) {
 		// Can happen on a PUT  - but its never a substring...
 		return DTYPE_CHAR + ENCODE_SIZE(strlen(e->expr_str_u.expr_string));
 
+	case ET_EXPR_OP_CONCAT:
+		return DTYPE_CHAR;
+
 	case ET_EXPR_NULL:
 		// Can happen on a PUT  - but its never a substring...
 		return DTYPE_CHAR+ENCODE_SIZE(1);
@@ -2383,6 +2405,8 @@ switch (e->expr_type) {
 
 	case ET_EXPR_LITERAL_LONG:
 		return 2;
+
+	return DTYPE_CHAR; // assume its a character string..
 
 	default:
 		A4GL_assertion(1,"Not implemented");
@@ -2722,6 +2746,7 @@ void real_print_expr_list (struct expr_str_list *l)
 
 
 
+
 /**
  *
  * @todo Describe function
@@ -2794,6 +2819,7 @@ real_print_func_call (t_expr_str * fcall)
   }
 
 
+
   if (fcall->expr_type==ET_EXPR_MEMBER_FCALL)  {
       struct s_expr_member_function_call *p;
       //struct expr_str_list *expr;
@@ -2854,7 +2880,23 @@ real_print_func_call (t_expr_str * fcall)
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
       		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-  	      printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype,func, nparam);
+
+		if (datatype==0xff || datatype==0x63) {// object
+			char class_func[2000];
+			char basevar[200];
+			sprintf(basevar,"&%s",s);
+		if (v) {
+				sprintf(class_func, "%s.%s",v->var_data.variable_data_u.v_object.class_name  ,func);
+		} else {
+				strcpy(basevar,"NULL");
+				sprintf(class_func,"%s.%s",s,func);
+		}
+
+
+  	      		printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT,class_func, nparam);
+		} else {
+  	      		printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype,func, nparam);
+		}
 
       print_reset_state_after_call(0);
 
@@ -3934,6 +3976,14 @@ print_event_list (struct on_events*events)
 			}
 			}
 			break;
+        case EVENT_ON_CHANGE: //struct fh_field_list *after_field;
+			{
+			int b;
+			for(b=0;b<evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_len;b++) {
+				printc ("{%d,%d,0,%s},", A4GL_EVENT_ON_CHANGE, a + 1, local_expr_as_string(evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_val[b].field));
+			}
+			}
+			break;
 
 	default:
         	//case EVENT_ANYKEY_PRESS: 
@@ -4285,7 +4335,15 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 				break;
 
 			default:
-				A4GL_assertion(1,"Internal error - Unexpected expression type");
+				printh("static char *a4gl_putval_%d=NULL;\n",putvalcnt);
+				printc ("if (a4gl_putval_%d) free(a4gl_putval_%d);",putvalcnt,putvalcnt);
+				real_print_expr(bind->list.list_val[a]);
+				printc ("a4gl_putval_%d=A4GL_char_pop();",putvalcnt);
+          			printc ("ibind[%d].ptr= &a4gl_putval_%d;", a, putvalcnt);
+          			printc ("ibind[%d].dtype=  0 /* DTYPE_CHAR */ +strlen(ibind[%d].ptr);", a,a);
+				putvalcnt++;
+			break;
+			
 			
 	}
         }
@@ -5307,6 +5365,7 @@ expr_str_list *expanded_params;
               print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
             }
         }
+	dump_objdata(&function_definition->variables);
       print_fgllib_start (current_module->mod_dbname, current_module->schema_only==EB_TRUE,  current_module->force_ui ,current_module->debug_filename);
       print_function_variable_init (&function_definition->variables);
       printInitFunctionStack ();
@@ -5348,6 +5407,9 @@ expr_str_list *expanded_params;
               printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs,_module_name,%d);\n",function_definition->lineno);
             }
         }
+
+
+	dump_objdata(&function_definition->variables);
 
 
       if (A4GL_doing_pcode ())
@@ -5410,6 +5472,7 @@ expr_str_list *expanded_params;
   else
     {
 	printPopFunction(0,function_definition->lastlineno);
+      printc("A4GL_dec_refcount(_objData);");
       printc("A4GL_copy_back_blobs(_blobdata,0);");
       printc ("return 0;\n");
       tmp_ccnt--;
@@ -7287,4 +7350,15 @@ struct command *get_last_cmd(void ) {
 	return last_cmd;
 }
 
+
+void dump_objdata(struct variable_list *variables) {
+int a;
+	printc(" void *_objData[]={");
+	for (a=0;a<variables->variables.variables_len;a++) {
+		if (variables->variables.variables_val[a]->var_data.variable_type==VARIABLE_TYPE_OBJECT) {
+			printc("&%s,",variables->variables.variables_val[a]->names.names.names_val[0].name);
+		}
+	}
+	printc("NULL};");
+}
 

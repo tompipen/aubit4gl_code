@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.153 2009-05-21 08:51:15 mikeaubury Exp $
+# $Id: ops.c,v 1.154 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -165,6 +165,24 @@ A4GL_dtype_function_char_getlength (char *base, int nparam)
 }
 
 
+static int
+A4GL_dtype_function_char_substring (char *base, int nparam)
+{ 
+  int s=-1;
+  int e=-1;
+  if (nparam==1) {
+	s=A4GL_pop_long();
+	e=s;
+  }
+
+  if (nparam==2) {
+	e=A4GL_pop_long();
+	s=A4GL_pop_long();
+  }
+  if (s<0 || e<0) return 0;
+  A4GL_push_substr(base,strlen(base)<<16,s,e,0);
+  return 1;
+}
 
 
 char *
@@ -6951,6 +6969,23 @@ A4GL_display_text (void *ptr, int size, int string_sz, struct struct_scr_field *
 }
 
 
+static int A4GL_conv_binding_to_binding(int d1, void *p1,int d2,void *p2, int size) {
+memcpy(p2,p1,sizeof( struct s_save_binding));
+return 1;
+}
+
+
+static int A4GL_conv_object_to_object(int d1, void *p1,int d2,void *p2, int size) {
+// Copy the Object ID across...
+int p;
+p=*(int *)p2;
+if (p) {
+	A4GL_object_displose(p);
+}
+memcpy(p2,p1,sizeof(long));
+return 1;
+}
+
 static int A4GL_conv_nchar_to_char (int d1, void *p1, int d2, void *p2, int size) {
 	  A4GL_string_set (p2, p1, size);
 	//A4GL_assertion(1,"NOt implemented");
@@ -7139,6 +7174,8 @@ DTYPE_SERIAL
   A4GL_debug ("Finished adding default operations");
 #endif
 
+  A4GL_set_setdtype(DTYPE_BINDING,NULL);
+  A4GL_set_setdtype(DTYPE_OBJECT,NULL);
 
   A4GL_add_datatype_function_i (DTYPE_INT, "DISPLAY", (void *) A4GL_display_int);
   A4GL_add_datatype_function_i (DTYPE_SERIAL, "DISPLAY", (void *) A4GL_display_int);
@@ -7158,7 +7195,10 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *) A4GL_display_text);
 
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
+  A4GL_add_datatype_function_i (DTYPE_CHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
 
+  A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "CONVTO_99", (void *) A4GL_conv_object_to_object);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "CONVTO_0", (void *) A4GL_conv_nchar_to_char);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "COPY", (void *) A4GL_conv_copy_nchar);
@@ -7170,7 +7210,7 @@ DTYPE_SERIAL
 
   add_int8_support ();
   add_reference_support ();
-
+  add_base_channel_support();
 
 
 #ifndef CSCC

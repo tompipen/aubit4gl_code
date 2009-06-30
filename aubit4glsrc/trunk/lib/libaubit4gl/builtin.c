@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.143 2009-06-06 09:07:44 mikeaubury Exp $
+# $Id: builtin.c,v 1.144 2009-06-30 18:38:56 mikeaubury Exp $
 #
 */
 
@@ -81,7 +81,7 @@ int aclfgl_ddeconnect (char *progname, char *ddemessage);
 void aclfgl_ddefinishall (void);
 char *aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand);
 //void aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType);
-void aclfgl_fgl_keysetlabel (char *keyName, char *labelText);
+int aclfgl_fgl_keysetlabel (int n) ;
 char *aclfgl_fgl_strtosend (char *str);
 int aclfgl_winexecwait (char *exec_string);
 int aclfgl_winexec (char *exec_string);
@@ -1541,10 +1541,11 @@ aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand)
  * 
  * (deprecated, use fgl_setkeylabel() or fgl_dialog_setkeylabel() instead)
 **/
-void
-aclfgl_fgl_keysetlabel (char *keyName, char *labelText)
+int 
+aclfgl_fgl_keysetlabel (int n) 
 {
-  A4GL_exitwith ("4Js keysetlabel function not implemented");
+  A4GL_direct_to_ui ("setkeylabel", (char *) n);
+return 0;
 }
 
 /**

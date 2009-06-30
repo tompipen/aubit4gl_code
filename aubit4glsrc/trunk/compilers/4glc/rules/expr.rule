@@ -7,6 +7,9 @@
 fgl_expr_c :
  	boolean_expr
 	| function_call_expr
+	| KW_NULL {
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);
+	}
 	| fgl_expr_c KW_AND fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_AND,0); }
 	| fgl_expr_c KW_OR fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_OR,0); }
 	| fgl_expr_c KW_SPACES 			{ 
@@ -21,6 +24,9 @@ fgl_expr_c :
 	| pdf_expr
 	| literal_expr 
 	| variable_entry 
+	| OPEN_SQUARE fgl_expr_list_ptr CLOSE_SQUARE {
+		$<ptr>$=A4GL_new_expr_binding(expand_variables_in_expr_str_list($<ptr_list>2,0,0));
+	}
 	| KW_MINUS fgl_expr_c %prec UMINUS	{ 
 		$<ptr>$=A4GL_new_expr_neg($<ptr>2); 
 	}
@@ -103,7 +109,7 @@ op_fgl_expr_ret_list_v2: {$<ptr_list>$=0;}
 
 
 fgl_expr_ret : fgl_expr_c 
-	| KW_NULL {$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);}
+	/* | KW_NULL {$<ptr>$=A4GL_new_expr_simple(ET_EXPR_NULL);} */
 ;
 
 fgl_expr_ret_list 	: fgl_expr_ret { $<ptr_list>$=A4GL_new_ptr_list($<ptr>1); }
@@ -530,6 +536,10 @@ function_call_expr:
 /* These can potentially return more than one value...                   */
 /*                                                                       */
 /*************************************************************************/
+	| UI_INTERFACE_DOT_FRONTCALL OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_fcall("ui_interface_dot_frontcall",$<ptr_list>4,infilename,lastlineno, "aclfgl_");
+		add_to_call_list_by_expr($<ptr>$);
+	}
 	| UI_INTERFACE_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
 		SPRINTF1(buff,"aclfgl_ui_interface_%s",downshift($<str>2));
@@ -576,21 +586,29 @@ function_call_expr:
 		add_to_call_list_by_expr($<ptr>$);
 		map_call($<ptr>$);
 		}
-   	| KW_CHANNEL_READ OPEN_BRACKET fgl_expr_c KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,$<ptr>3, $<ptr_list>6, get_namespace("channel::read"));
-		add_to_call_list_by_expr($<ptr>$);
-        }
-   	| KW_CHANNEL_READ OPEN_BRACKET fgl_expr_c KW_COMMA ebind_var_list CLOSE_BRACKET  {
-		$<ptr>$=A4GL_new_expr_bound_fcall("\"channel\"", "\"read\"",infilename,lastlineno,$<ptr>3 ,$<ptr_list>5 , get_namespace("channel::read"));
-		add_to_call_list_by_expr($<ptr>$);
+   	| KW_CHANNEL_READ OPEN_BRACKET func_call_args CLOSE_BRACKET {
+		char errbuff[200];
+	        $<ptr>$=A4GL_new_expr_shared_fcall("channel", "read",$<ptr_list>3,infilename,lastlineno, get_namespace("channel::read"),errbuff);
+		
+		if ($<ptr>$==NULL) {
+			a4gl_yyerror(errbuff);
+		} else {
+			add_to_call_list_by_expr($<ptr>$);
+		}
         }
    	| identifier DOUBLE_COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno, get_namespace($<str>1)); 
-		add_to_call_list_by_expr($<ptr>$);
+		char errbuff[200];
+		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno, get_namespace($<str>1),errbuff); 
+		if ($<ptr>$==NULL) {
+			a4gl_yyerror(errbuff);
+		} else {
+			add_to_call_list_by_expr($<ptr>$);
+		}
 	}
 
    	| SHARED identifier KW_IN identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno, get_namespace($<str>2)); 
+		char errbuff[200];
+		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno, get_namespace($<str>2),errbuff); 
 		add_to_call_list_by_expr($<ptr>$);
 	}
 	| CURSOR_NAME_FUNCTION OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {

@@ -17,6 +17,7 @@ event_timer :
 event_field: 
 	BEFFIELD bef_field_list_as_struct atline commands_as_list 	{$<on_event>$=new_event(EVENT_BEFORE_FIELD, (void *)$<field_list>2,$<commands>4,$<integer_val>3); }
 	| AFTFIELD aft_field_list_as_struct atline commands_as_list  	{$<on_event>$=new_event(EVENT_AFTER_FIELD, (void *)$<field_list>2,$<commands>4,$<integer_val>3); }
+	| ON_CHANGE aft_field_list_as_struct atline commands_as_list  	{$<on_event>$=new_event(EVENT_ON_CHANGE, (void *)$<field_list>2,$<commands>4,$<integer_val>3); }
 ;
 
 

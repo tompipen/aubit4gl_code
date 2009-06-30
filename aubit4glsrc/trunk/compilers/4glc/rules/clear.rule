@@ -37,6 +37,10 @@ clear_cmd       :       CLEARSCR  {
                                 $<cmd>$=new_clear_cmd(E_CLR_FIELDS,$<field_list>2,$<e_boolean>3);
                                 add_feature("UI_CLEAR_FIELD"); map_ui("CLEARFIELDS");
                 }
+                |       DISPLAY_NULL_TO field_name_list_as_struct {
+                                $<cmd>$=new_clear_cmd(E_CLR_FIELDS,$<field_list>2,0);
+                                add_feature("UI_CLEAR_FIELD"); map_ui("CLEARFIELDS");
+                }
 ;
 
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.10 2009-04-01 11:55:08 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.11 2009-06-30 18:38:54 mikeaubury Exp $
 #*/
 
 
@@ -825,6 +825,8 @@ decode_event (int n)
       return "BEFORE_FIELD";
     case A4GL_EVENT_AFTER_FIELD:
       return "AFTER_FIELD";
+    case A4GL_EVENT_ON_CHANGE:
+      return "ON_CHANGE";
     case A4GL_EVENT_BEFORE_INP:
       return "BEFORE_INP";
     case A4GL_EVENT_BEFORE_FIELD_1:
