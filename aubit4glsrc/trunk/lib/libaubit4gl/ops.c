@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.155 2009-07-01 09:13:46 mikeaubury Exp $
+# $Id: ops.c,v 1.156 2009-07-01 10:08:27 mikeaubury Exp $
 #
 */
 
@@ -7212,6 +7212,7 @@ DTYPE_SERIAL
   add_reference_support ();
   add_base_channel_support();
   add_ui_interface_support();
+  add_ui_window_support();
 
 
 #ifndef CSCC
