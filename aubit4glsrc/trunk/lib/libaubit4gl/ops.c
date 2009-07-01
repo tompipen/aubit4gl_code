@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.159 2009-07-01 14:00:25 mikeaubury Exp $
+# $Id: ops.c,v 1.160 2009-07-01 16:02:44 mikeaubury Exp $
 #
 */
 
@@ -6990,7 +6990,7 @@ static int A4GL_conv_object_to_object(int d1, void *p1,int d2,void *p2, int size
 int p;
 p=*(int *)p2;
 if (p) {
-	A4GL_object_displose(p);
+	A4GL_object_dispose(p);
 }
 memcpy(p2,p1,sizeof(long));
 return 1;
@@ -7005,7 +7005,13 @@ static int A4GL_conv_nchar_to_char (int d1, void *p1, int d2, void *p2, int size
 static int A4GL_conv_char_to_object (int d1, void *p1, int d2, void *p2, int size) { 
 	A4GL_pause_execution();
 	A4GL_assertion(1,"Not implemented yet");
-return 0;
+	return 0;
+}
+
+static int A4GL_conv_int_to_object (int d1, void *p1, int d2, void *p2, int size) { 
+	A4GL_pause_execution();
+	A4GL_assertion(1,"Not implemented yet");
+	return 0;
 }
 
 
@@ -7218,7 +7224,12 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, "CONVTO_99", (void *) A4GL_conv_object_to_object);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
+
+
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_99", (void *) A4GL_conv_char_to_object);
+  A4GL_add_datatype_function_i (DTYPE_INT, "CONVTO_99", (void *) A4GL_conv_int_to_object);
+
+
 
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "CONVTO_0", (void *) A4GL_conv_nchar_to_char);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "COPY", (void *) A4GL_conv_copy_nchar);

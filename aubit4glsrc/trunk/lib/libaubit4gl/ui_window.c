@@ -161,11 +161,48 @@ static int ui_form_setfieldhidden(int *objectID, int nParam) {
 	free(field);
 
 	return 0;
+}
 
+
+static int ui_window_settext(int *objectID, int nParam) {
+        struct ui_window_data *data;
+	char *text;
+        struct sObject *ptr;
+        struct BINDING ibind[]= {
+                {NULL,0,0,0,0,0},
+                {NULL,0,0,0,0,0}
+        };
+
+        text=A4GL_char_pop();
+        A4GL_trim(text);
+
+	
+
+        if (!ensureObject("ui.window",*objectID,&ptr)) {
+                A4GL_exitwith("Not an object of type ui.form - or not initialized");
+                return 0;
+        }
+
+        if (nParam!=1) {
+                A4GL_exitwith("expects 1 parameter");
+                return 0;
+        }
+        data=ptr->objData;
+
+        ibind[0].ptr=data->windowID;
+        ibind[0].size=strlen(data->windowID);
+        ibind[1].size=strlen(text);
+        ibind[1].ptr=text;
+	
+	A4GL_ui_frontcall("INTERNAL","ui.window.settext", ibind,2,NULL,0);
+	free(text);
+
+	return 0;
 }
 
 void add_ui_window_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.getcurrent", (void *) ui_window_getcurrent);
+	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.settext", (void *) ui_window_settext);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.getform", (void *) ui_window_getform);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setelementhidden", (void *) ui_form_setelementhidden);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setfieldhidden", (void *) ui_form_setfieldhidden);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.57 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.58 2009-07-01 16:02:43 mikeaubury Exp $
 */
 
 /**
@@ -132,6 +132,7 @@ void A4GL_debug_full (char *fmt, ...);
 void A4GL_debug_full_extended (char *fmt, ...);
 int A4GL_pop_var (void *p, int d);
 int A4GL_pop_var2 (void *p, int d, int s);
+void A4GL_pop_object(char *objtype,void *obj,int dtype,int size) ;
 int A4GL_pop_char (char *z, int size);
 int A4GL_pop_param (void *p, int d, int size);
 void A4GL_pop_params (struct BINDING *b, int n);

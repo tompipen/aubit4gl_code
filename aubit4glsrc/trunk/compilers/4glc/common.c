@@ -222,6 +222,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 			u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 			u->datatype = -2;
 			u->datatype_length = 0;
+			u->object_type = 0;
 			u->escope = E_SCOPE_LOCAL;	/* must be local - its a parameter... */
 			append_record_entries (rec_var, u, rval);
 		      }
@@ -552,12 +553,14 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		int vtype;
 		next = vu->next;
 
+		//A4GL_pause_execution();
 
 		avar=v->var_data.variable_data_u.v_object.definition;
 	  	vu->variable_id = a;
+		vu->object_type=v->var_data.variable_data_u.v_object.class_name;
 		vtype=avar->var_data.variable_type;
 		A4GL_assertion(vtype!=VARIABLE_TYPE_SIMPLE  && vtype!=VARIABLE_TYPE_RECORD, "Expecting a simple variable or a record");
-
+		
 		if (vtype==VARIABLE_TYPE_SIMPLE) {
 				vu->datatype=DTYPE_OBJECT;
 				/*
@@ -573,6 +576,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 			A4GL_assertion(1,"Current thinking is we should just store an Object ID - so this should never happen");
 			// Must be a record...
 	  		vu->datatype = -2;	
+			vu->object_type = 0;
 			vu->datatype_length = 0;
 			vrec=avar;
 		}
@@ -602,6 +606,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	  vu->variable_id = a;
 	  vu->datatype = -2;	// RECORD...
 		vu->datatype_length = 0;
+		vu->object_type = 0;
 	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len) {
 		if (vu->subscripts.subscripts_len==0 && v->arr_subscripts.arr_subscripts_len) {
 			if (v->arr_subscripts.arr_subscripts_val[0]==-1) {
@@ -668,6 +673,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 			// Must be a record...
 	  		vu->datatype = -2;	
 	  		vu->datatype_length=0;
+	  		vu->object_type=0;
 			vrec=avar->variable;
 		}
 

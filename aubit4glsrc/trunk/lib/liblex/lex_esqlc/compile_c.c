@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.490 2009-07-01 13:11:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.491 2009-07-01 16:02:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.490 2009-07-01 13:11:56 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.491 2009-07-01 16:02:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -277,6 +277,7 @@ static int check_isobject(char *s) {
 	if (strcasecmp(s,"ui.window")==0) return DTYPE_OBJECT;
 	if (strcasecmp(s,"ui.form")==0) return DTYPE_OBJECT;
 	if (strcasecmp(s,"ui.interface")==0) return DTYPE_OBJECT;
+	if (strcasecmp(s,"ui.combobox")==0) return DTYPE_OBJECT;
 
 	return 0xff;
 }
@@ -6037,7 +6038,11 @@ struct variable *sgs_topvar;
     }
   else
     {
-      printc ("A4GL_pop_var2(&");
+	if (u->object_type) {
+      		printc ("A4GL_pop_object(\"%s\",&", u->object_type);
+	} else {
+      		printc ("A4GL_pop_var2(&");
+	}
     }
 
 

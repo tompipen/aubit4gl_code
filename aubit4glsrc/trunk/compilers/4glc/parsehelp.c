@@ -1495,12 +1495,6 @@ if (v==NULL) return 0;
 
 ensure_variable(errbuff, e, 0);
 
-/*
-vu->datatype=vu2.datatype; 
-vu->datatype_length=vu2.datatype_length;
-vu->scope=vu2.scope;
-vu->variable_id=vu2.variable_id;
-*/
 
 // Is it a single dimensional array ?
 if (v->arr_subscripts.arr_subscripts_len==1) return 1;

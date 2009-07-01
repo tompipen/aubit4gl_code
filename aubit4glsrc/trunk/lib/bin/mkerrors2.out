@@ -371,3 +371,6 @@
 386|Not an object of type base.channel - or not initialized
 387|expects 1 parameter
 388|Expected 1 parameter
+390|Not an object of type ui.window - or not initialized
+391|Not an object of type ui.form - or not initialized
+392|Type cannot be converted to an object (%s)

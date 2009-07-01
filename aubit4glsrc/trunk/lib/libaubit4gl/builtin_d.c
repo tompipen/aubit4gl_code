@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.104 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.105 2009-07-01 16:02:44 mikeaubury Exp $
 #
 */
 
@@ -1370,6 +1370,7 @@ int dtype_masked;
 #endif
   switch (dtype & DTYPE_MASK)
     {
+
     case DTYPE_NCHAR:
     case DTYPE_NVCHAR:
     case DTYPE_CHAR:
@@ -1385,6 +1386,11 @@ int dtype_masked;
 #endif
       A4GL_push_int (*(short *) ptr);
       return;
+
+case DTYPE_OBJECT:
+      A4GL_push_objectID (*(long *) ptr);
+      return;
+
     case 2:
 #ifdef DEBUG
       A4GL_debug ("LONG");

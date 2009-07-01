@@ -46,12 +46,24 @@ struct sObject *new_object(char *type) {
 	return o;
 }
 
+int getObject(int objectId, struct sObject **o) {
+
+	init_objects();
+
+	if (objectId==0) return 0;
+	if (heapOfObjects[objectId].objType==NULL ) return 0;
+	*o=&heapOfObjects[objectId];
+	return 1;
+}
+
 int ensureObject(char *type,int objectId, struct sObject **o) {
 	init_objects();
 
 	if (objectId==0) return 0;
 	if (heapOfObjects[objectId].objType==NULL ) return 0;
-	if (strcmp(heapOfObjects[objectId].objType,type)!=0) return 0;
+	if (type) {
+		if (strcmp(heapOfObjects[objectId].objType,type)!=0) return 0;
+	}
 	if (heapOfObjects[objectId].objData==NULL ) return 0;
 
 	*o=&heapOfObjects[objectId];
@@ -85,7 +97,7 @@ static void A4GL_call_object_destructor(int objectID)
 
 }
 
-void A4GL_object_displose(int objectId) {
+void A4GL_object_dispose(int objectId) {
 	
 	if (heapOfObjects[objectId].objType!=NULL) {
 

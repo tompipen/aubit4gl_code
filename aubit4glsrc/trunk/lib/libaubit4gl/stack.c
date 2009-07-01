@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.238 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: stack.c,v 1.239 2009-07-01 16:02:44 mikeaubury Exp $
 #
 */
 
@@ -432,6 +432,58 @@ A4GL_cast_top_of_stack_to_dtype (int dtype)
   A4GL_pop_var2 (buff1, dtype & DTYPE_MASK, DECODE_SIZE (dtype));
   A4GL_push_variable (buff1, dtype);
 }
+
+
+void A4GL_pop_object(char *objtype,void *obj,int dtype,int size) {
+	int d0;
+	char buff[200];
+	int s0;
+	char *pi;
+	A4GL_get_top_of_stack (1, &d0, &s0, (void *) &pi);
+
+// Is the thing on the stack an object ? 
+
+	if ((d0&DTYPE_MASK)==DTYPE_OBJECT) {
+		struct sObject *o;
+		int objId;
+	// Get the object ID
+		objId=*(long*) pi;
+		// Now find the object itself
+		if (getObject(objId,&o)) {
+			// Is it the same type ?
+			if (strcmp(o->objType,objtype)==0) {
+				memcpy(obj,pi,sizeof(long));
+				A4GL_drop_param();
+				return ;
+			}
+			A4GL_assertion(1,"Dont have any casting abilities yet");
+		} else {
+			A4GL_assertion(1,"Unable to get object details");
+			A4GL_drop_param();
+		}
+	}
+
+	// Its not an object on the stack - do we have a routine to convert ?
+
+	sprintf(buff,"%d->%s",d0&DTYPE_MASK, objtype);
+	A4GL_debug("standard type to object coinversion - Looking for '%s'\n", buff);
+	if (A4GL_has_datatype_function_i(DTYPE_OBJECT, buff)) {
+		// We've got a routine to do it...
+	        void (*function) (char *,void *);
+          	function = A4GL_get_datatype_function_i (DTYPE_OBJECT, buff);
+          	function (objtype,obj);
+	} else {
+		//Theres no routine to do it..
+		A4GL_drop_param();
+		A4GL_set_err_txt(objtype);
+		A4GL_exitwith("Type cannot be converted to an object (%s)");
+		
+	}
+
+
+	return ;
+}
+
 
 /**
  * Pop a double value from the stack.

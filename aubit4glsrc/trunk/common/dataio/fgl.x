@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.36 2009-06-30 18:38:54 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.37 2009-07-01 16:02:43 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -2310,6 +2310,7 @@ struct variable_usage {
         expr_str *substrings_start;
         expr_str *substrings_end;
         int variable_id;
+	str object_type;
 	int datatype;
 	int datatype_length;
         enum e_scope escope;
