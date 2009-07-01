@@ -77,3 +77,16 @@ CLINE	<embedded c code>
 KW_CEND	endcode
 CHAR_VALUE	character-string
 val_number	number_value
+data_type	<datatype>
+curr_clause	<CURRENT value>
+INTERVAL_VALUE	<interval value>
+DATETIME_VALUE	<datetime value>
+interval_func_params	<interval>
+op_extend_di	<datetime specifier>
+default_clause	<default clause>
+column_constraint_list_ss	<column constraint>
+declare_cursor_name_and_clr_p	<cursor name>
+cursor_specification1_ins_ss	<insert statement>
+cursor_specification1_all_ss	<sql statement>
+opt_use2_p	<use session>
+key_value	<key>

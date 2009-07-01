@@ -1176,7 +1176,7 @@ print_file_command: PRINT_FILE string {
 	$<cmd>$.acerep_command_u.cmd_printfile.filename_expr.type=EXPRTYPE_VARIABLE_SUB;
 	$<cmd>$.acerep_command_u.cmd_printfile.filename_expr.expr_u.var_usage=$<var_usage>2;
 	}
-;
+
 ;
 
 skip_command : SKIP int_val LINES {

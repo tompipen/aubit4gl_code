@@ -61,3 +61,7 @@ diagrams: parser commands entries
 commands: mkcommands ../4glc/rules/generated/fgl.infx.yacc
 	sh mkcommands
 	
+upload:
+	scp  ebnf-eps-directory/*.pdf aubit@www.aubit.com:/home/aubit/public_html/aubit4gl/syntax
+	scp  per/ebnf-eps-directory/*.pdf aubit@www.aubit.com:/home/aubit/public_html/aubit4gl/syntax/per
+	scp  ace/ebnf-eps-directory/*.pdf aubit@www.aubit.com:/home/aubit/public_html/aubit4gl/syntax/ace
