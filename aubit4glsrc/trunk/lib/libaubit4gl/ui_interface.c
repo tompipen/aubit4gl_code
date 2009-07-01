@@ -88,10 +88,26 @@ static int ui_interface_refresh(int *objectID,int nparam) {
 	return 0;
 }
 
+static int ui_interface_settext(int *objectID,int nparam) {
+char *text;
+        struct BINDING ibind[]= {
+                {NULL,0,500,0,0,0}
+        };
+	text=A4GL_char_pop();
+	A4GL_trim(text);
+	ibind[0].size=strlen(text);
+	ibind[0].ptr=text;
+
+	A4GL_ui_frontcall("INTERNAL","ui.interface.settext", ibind,1,0,0);
+	
+	return 0;
+}
+
 void add_ui_interface_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadtoolbar", (void *) ui_interface_loadtoolbar);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadactiondefauts", (void *) ui_interface_loadactiondefauts);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadstyles", (void *) ui_interface_loadstyles);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.frontcall", (void *) ui_interface_frontcall);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.refresh", (void *) ui_interface_refresh);
+	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.settext", (void *) ui_interface_settext);
 }

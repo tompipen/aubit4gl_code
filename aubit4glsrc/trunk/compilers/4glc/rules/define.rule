@@ -421,6 +421,9 @@ dtype :
 	|	UIFORM {
 			$$=new_variable_object("ui.form");
 		} 
+	|	UICOMBOBOX {
+			$$=new_variable_object("ui.combobox");
+		} 
 	|	OMDOMNODE {
 			$$=new_variable_object("OMDOMNODE");
 		} 
