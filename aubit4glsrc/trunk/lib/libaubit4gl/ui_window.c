@@ -157,7 +157,7 @@ static int ui_form_setfieldhidden(int *objectID, int nParam) {
 	ibind[1].ptr=field;
 	ibind[2].ptr=&vis;
 	
-	A4GL_ui_frontcall("INTERNAL","ui.form.setelementhidden", ibind,3,NULL,0);
+	A4GL_ui_frontcall("INTERNAL","ui.form.setfieldhidden", ibind,3,NULL,0);
 	free(field);
 
 	return 0;
