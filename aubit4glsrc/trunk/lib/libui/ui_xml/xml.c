@@ -3795,7 +3795,7 @@ char buff[100000];
 char smbuff[20000];
 obind=vobind;
 ibind=vibind;
-sprintf(buff,"<FRONTCALL MODULE=\"%s\" NAME=\"%s\">",uilib_xml_escape(module),uilib_xml_escape(name));
+sprintf(buff,"<FRONTCALL MODULE=\"%s\" NAME=\"%s\" EXPECT=\"%d\">",uilib_xml_escape(module),uilib_xml_escape(name),no);
 if (ni) {
 	int a;
 	strcat(buff,"<VALUES>");
