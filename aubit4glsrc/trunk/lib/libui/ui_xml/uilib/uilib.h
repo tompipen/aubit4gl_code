@@ -93,3 +93,4 @@ int uilib_free_display (int nargs);
 int uilib_touched (int n) ;
 
 int uilib_get_call_result(void);
+int uilib_do_frontcall(char *s, int no);

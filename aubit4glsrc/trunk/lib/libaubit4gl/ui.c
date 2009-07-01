@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.93 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: ui.c,v 1.94 2009-07-01 09:13:46 mikeaubury Exp $
 #
 */
 
@@ -2383,6 +2383,7 @@ return 0;
 #endif
 
 
+/*
 int aclfgl_aclfgl_ui_interface_loadtoolbar(int n) {
 char *a;
 char buff[2000];
@@ -2416,5 +2417,6 @@ A4GL_push_char(buff);
 aclfgl_aclfgl_send_to_ui(1);
 return 0;
 }
+*/
 
 /* ============================= EOF ================================ */

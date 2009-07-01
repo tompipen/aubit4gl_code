@@ -416,7 +416,10 @@ dtype :
 			$$=new_variable_object("FORM");
 		} 
 	|	UIWINDOW {
-			$$=new_variable_object("UIWINDOW");
+			$$=new_variable_object("ui.window");
+		} 
+	|	UIFORM {
+			$$=new_variable_object("ui.form");
 		} 
 	|	OMDOMNODE {
 			$$=new_variable_object("OMDOMNODE");

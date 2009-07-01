@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.488 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.489 2009-07-01 09:13:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.488 2009-06-30 18:38:56 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.489 2009-07-01 09:13:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -269,6 +269,17 @@ static void real_print_expr (struct expr_str *ptr);
                     Functions definitions
 =====================================================================
 */
+
+
+static int check_isobject(char *s) {
+
+	if (strcasecmp(s,"base.channel")==0) return DTYPE_OBJECT;
+	if (strcasecmp(s,"ui.window")==0) return DTYPE_OBJECT;
+	if (strcasecmp(s,"ui.form")==0) return DTYPE_OBJECT;
+	if (strcasecmp(s,"ui.interface")==0) return DTYPE_OBJECT;
+
+	return 0xff;
+}
 
 char *
 c_generation_trans_quote (char *s)
@@ -1560,7 +1571,16 @@ real_print_expr (struct expr_str *ptr)
 		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
-		if (datatype==0xff || datatype==0x63) {// object
+		if (datatype==0xff) {
+			datatype=check_isobject(s);
+			if (datatype!=DTYPE_OBJECT) {
+				
+				a4gl_yyerror("%s is not an object type");
+				return;
+			}
+		}
+
+		if (datatype==DTYPE_OBJECT) {// object
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",s);
@@ -2881,7 +2901,16 @@ real_print_func_call (t_expr_str * fcall)
 		datatype=vu_bottom->datatype & DTYPE_MASK;
       		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
 
-		if (datatype==0xff || datatype==0x63) {// object
+		if (datatype==0xff) {
+			datatype=check_isobject(s);
+			if (datatype!=DTYPE_OBJECT) {
+				set_yytext(s);
+				a4gl_yyerror("not an object type");
+				return;
+			}
+		}
+
+		if (datatype==DTYPE_OBJECT) {// object
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",s);

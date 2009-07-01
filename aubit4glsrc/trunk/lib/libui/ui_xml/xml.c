@@ -2114,13 +2114,13 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
   int acnt;
   int ninp;
   inp = vinp;
-  int count;
-  count = A4GL_get_count ();
+  int count=-1;
 
   if (init)
     {
       char buff[2000];
       //int a;
+      count = A4GL_get_count ();
       A4GL_push_int (count);
       uilib_set_count (1);
       suspend_flush (1);
@@ -2175,9 +2175,13 @@ UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int ini
       A4GL_push_int ((long) vinp & 0xffffffff);
       uilib_get_context (2);
       context = A4GL_pop_long ();
-    }
+    } 
 
-
+if (count==-1) {
+        A4GL_push_int (context);
+	uilib_get_input_array_count(1);
+	count=A4GL_pop_int();
+	}
 
   for (acnt = 0; acnt < count; acnt++)
     {
@@ -3783,3 +3787,34 @@ int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
 	return 0;
 }
 
+
+void UILIB_A4GL_ui_frontcall(char *module, char*name, void *vibind, int ni, void *vobind, int no) {
+struct BINDING *ibind;
+struct BINDING *obind;
+char buff[100000];
+char smbuff[20000];
+obind=vobind;
+ibind=vibind;
+sprintf(buff,"<FRONTCALL MODULE=\"%s\" NAME=\"%s\">",uilib_xml_escape(module),uilib_xml_escape(name));
+if (ni) {
+	int a;
+	strcat(buff,"<VALUES>");
+	for (a=0;a<ni;a++) {
+		char *ptr;
+		 A4GL_push_param (ibind[a].ptr, ibind[a].dtype + ENCODE_SIZE (ibind[a].size));
+		ptr=A4GL_char_pop();
+		A4GL_trim(ptr);
+		sprintf(smbuff,"<VALUE>%s</VALUE>",uilib_xml_escape(ptr));
+		strcat(buff,smbuff);
+		free(ptr);
+	}
+	strcat(buff,"</VALUES>");
+}
+strcat(buff,"</FRONTCALL>");
+if (uilib_do_frontcall(buff,no)) {
+	int a;
+	for (a=no-1;a>=0;a--){ 
+	      A4GL_pop_var2 (obind[a].ptr,obind[a].dtype, obind[a].size);
+	}
+}
+}

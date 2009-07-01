@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.36 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: datatypes.c,v 1.37 2009-07-01 09:13:46 mikeaubury Exp $
 #
 */
 
@@ -387,8 +387,7 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
     }
   if (ptr == 0)
     {
-
-	A4GL_set_err_txt(buff);
+      A4GL_set_err_txt(buff);
       A4GL_exitwith ("Unable to find function (%s)");
       return 0;
     }

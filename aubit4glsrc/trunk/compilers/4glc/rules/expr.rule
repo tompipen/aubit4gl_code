@@ -536,6 +536,7 @@ function_call_expr:
 /* These can potentially return more than one value...                   */
 /*                                                                       */
 /*************************************************************************/
+/*
 	| UI_INTERFACE_DOT_FRONTCALL OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_fcall("ui_interface_dot_frontcall",$<ptr_list>4,infilename,lastlineno, "aclfgl_");
 		add_to_call_list_by_expr($<ptr>$);
@@ -576,6 +577,7 @@ function_call_expr:
 		}
 		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
 	}
+*/
 	| KW_CAST OPEN_BRACKET fgl_expr_c KW_AS cast_dtype CLOSE_BRACKET {
 		make_cast(infilename,lastlineno, $<ptr>3,$<integer_val>5,0,1);
 		$<ptr>$=$<ptr>3;

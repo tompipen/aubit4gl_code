@@ -263,7 +263,10 @@ if (b>=allocated) {
 
 fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
 }
-  A4GL_assertion (b >= allocated, "XML escape buffer too small");
+  if (b >= allocated ) {
+	fprintf(stderr, "XML escape buffer too small") ;
+	exit(2);
+  }
   buff[b] = 0;
   return buff;
 }
@@ -1504,9 +1507,11 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	{
 	  if (contexts[context].ui.input.num_field_data < last_attr->sync.nvalues)
 	    {
-	      printf ("contexts[context].ui.input.num_field_data=%d ", contexts[context].ui.input.num_field_data);
-	      printf ("last_attr->sync.nvalues=%d\n", last_attr->sync.nvalues);
-	      A4GL_assertion (1, "too many values sent back");
+	      fprintf (stderr,"contexts[context].ui.input.num_field_data=%d ", contexts[context].ui.input.num_field_data);
+	      fprintf (stderr,"last_attr->sync.nvalues=%d\n", last_attr->sync.nvalues);
+		
+	     fprintf (stderr, "too many values sent back");
+	exit(2);
 	    }
 	  if (contexts[context].ui.input.variable_data[a])
 	    {
@@ -2418,6 +2423,13 @@ uilib_input_array_loop (int n)
 }
 
 
+int uilib_get_input_array_count(int n) {
+	int context;
+  	context = POPint ();
+	pushint(contexts[context].ui.inputarray.count);
+	return  1;
+}
+
 int
 uilib_has_array_values (int n)
 {
@@ -2951,7 +2963,7 @@ uilib_touched (int nargs)
 	  nflist = contexts[context].ui.construct.num_field_data;
 	  for (b = 0; b < nfields; b++)
 	    {
-	      int pushed = 0;
+	      //int pushed = 0;
 	      for (a = 0; a < nflist; a++)
 		{
 		  if (field_match (flist[a], fields[b]))
@@ -2969,3 +2981,24 @@ uilib_touched (int nargs)
 
   return 0;
 }
+
+
+
+int uilib_do_frontcall(char *s,int no) {
+  int a;
+  send_to_ui(s);
+  send_to_ui ("<WAITFOREVENT/>");
+  flush_ui ();
+  get_event_from_ui ();
+  if (last_attr->sync.nvalues==no) {
+
+  	for (a = 0; a < last_attr->sync.nvalues; a++) {
+		PUSHquote(last_attr->sync.vals[a].value);
+  	}
+	return 1;
+  } else {
+	return 0;
+	}
+}
+
+

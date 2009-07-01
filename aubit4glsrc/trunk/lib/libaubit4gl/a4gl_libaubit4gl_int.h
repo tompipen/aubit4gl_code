@@ -42,6 +42,7 @@
 	//#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,(long)sizeof(d))
 	//#define strcat(d,s) A4GL_strcat(d,s,__FILE__,__LINE__,(long)sizeof(d))
 void add_base_channel_support(void) ;
+void add_ui_interface_support(void) ;
 
 struct s_save_binding {
         struct BINDING *b;
