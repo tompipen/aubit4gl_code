@@ -129,6 +129,7 @@ const int *token_groups[]={
     token_group_1,
     token_group_1,
     token_group_1,
+    token_group_1,
     token_group_31,
     token_group_32,
     token_group_1,
