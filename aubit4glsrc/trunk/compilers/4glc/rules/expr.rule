@@ -531,57 +531,15 @@ function_call_expr:
  			$<ptr>$=A4GL_new_expr_extend($<ptr>3,$<integer_val>4);
 	}
 
+	| KW_CAST OPEN_BRACKET fgl_expr_c KW_AS cast_dtype CLOSE_BRACKET {
+		make_cast(infilename,lastlineno, $<ptr>3,$<integer_val>5,0,1);
+		$<ptr>$=$<ptr>3;
+	}
 /*************************************************************************/
 /*                                                                       */
 /* These can potentially return more than one value...                   */
 /*                                                                       */
 /*************************************************************************/
-/*
-	| UI_INTERFACE_DOT_FRONTCALL OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_fcall("ui_interface_dot_frontcall",$<ptr_list>4,infilename,lastlineno, "aclfgl_");
-		add_to_call_list_by_expr($<ptr>$);
-	}
-	| UI_INTERFACE_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		char buff[256];
-		SPRINTF1(buff,"aclfgl_ui_interface_%s",downshift($<str>2));
-		if (!A4GL_is_internal_class_function("ui_interface",$<str>2)) {
-			char buff[256];
-			SPRINTF1(buff,"%s is not a member of the UI.Interface class",$<str>2);
-   			a4gl_yyerror(buff);
-   			YYERROR;
-		}
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
-		add_to_call_list_by_expr($<ptr>$);
-	}
-	| UI_WINDOW_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		char buff[256];
-		SPRINTF1(buff,"aclfgl_ui_window_%s",downshift($<str>2));
-		if (!A4GL_is_internal_class_function("ui_window",$<str>2)) {
-			char buff[256];
-			SPRINTF1(buff,"%s is not a member of the UI.Window class",$<str>2);
-   			a4gl_yyerror(buff);
-   			YYERROR;
-		}
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
-		add_to_call_list_by_expr($<ptr>$);
-	}
-	| UI_DOT_FORM_DOT identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
-		char buff[256];
-		
-		SPRINTF1(buff,"aclfgl_ui_form_%s",downshift($<str>2));
-		if (!A4GL_is_internal_class_function("ui_form",$<str>2)) {
-			char buff[256];
-			SPRINTF1(buff,"%s is not a member of the UI.Form class",$<str>2);
-   			a4gl_yyerror(buff);
-   			YYERROR;
-		}
-		$<ptr>$=A4GL_new_expr_fcall(buff,$<ptr_list>4,infilename,lastlineno, get_namespace(buff));
-	}
-*/
-	| KW_CAST OPEN_BRACKET fgl_expr_c KW_AS cast_dtype CLOSE_BRACKET {
-		make_cast(infilename,lastlineno, $<ptr>3,$<integer_val>5,0,1);
-		$<ptr>$=$<ptr>3;
-	}
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		ADDMAP("Call",$<str>1);
 		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno, get_namespace($<str>1));

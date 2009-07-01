@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.156 2009-07-01 10:08:27 mikeaubury Exp $
+# $Id: ops.c,v 1.157 2009-07-01 13:11:55 mikeaubury Exp $
 #
 */
 
@@ -151,6 +151,16 @@ a4gl_local_trunc (double d)
 }
 
 
+static int
+A4GL_dtype_function_dynamic_arr_getlength(char *base, int nparam)
+{
+  if (nparam != 0)
+    {
+      return 0;
+    }
+   A4GL_dynarr_extent(base,1);
+	return 1;
+}
 
 
 static int
@@ -7195,6 +7205,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *) A4GL_display_text);
 
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
+  A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":getlength", (void *) A4GL_dtype_function_dynamic_arr_getlength);
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
 
   A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);

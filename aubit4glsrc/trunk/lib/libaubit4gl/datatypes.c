@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.38 2009-07-01 10:08:27 mikeaubury Exp $
+# $Id: datatypes.c,v 1.39 2009-07-01 13:11:54 mikeaubury Exp $
 #
 */
 
@@ -359,6 +359,17 @@ A4GL_add_datatype_function_i (int a, char *funcname, void *func)
   return 1;
 }
 
+
+
+int A4GL_call_datatype_function_i_as_int(void *obj, int dtype, char *funcname) {
+int a;
+	a=A4GL_call_datatype_function_i(obj,dtype,funcname,0);
+	if (a==1) {
+	a=A4GL_pop_int();
+	return a;
+	}
+	return 0;
+}
 /**
  *
  * @todo Describe function

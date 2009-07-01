@@ -461,6 +461,9 @@ case ET_EXPR_BOUND_FCALL:
    return strdup("BOUND_FCALL");
 
 
+case ET_EXPR_MEMBER_FCALL:
+	return strdup("MEMBER_FUNCTIONCALL");
+
     default:
       A4GL_pause_execution ();	// ---  Place holder for error handling  --- SAFE TO LEAVE IN...
       printf ("Unhandled expression in dynamic sql(%s)\n", expr_name (e->expr_type));
