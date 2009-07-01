@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.157 2009-07-01 13:11:55 mikeaubury Exp $
+# $Id: ops.c,v 1.158 2009-07-01 13:48:26 mikeaubury Exp $
 #
 */
 
@@ -7002,6 +7002,11 @@ static int A4GL_conv_nchar_to_char (int d1, void *p1, int d2, void *p2, int size
 	return 1;
 }
 
+static int A4GL_conv_char_to_object (int d1, void *p1, int d2, void *p2, int size) { 
+	A4GL_pause_execution();
+}
+
+
 static int A4GL_conv_char_to_nchar (int d1, void *p1, int d2, void *p2, int size) {
 	  A4GL_string_set (p2, p1, size);
 
@@ -7211,6 +7216,8 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, "CONVTO_99", (void *) A4GL_conv_object_to_object);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
+  A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_99", (void *) A4GL_conv_char_to_object);
+
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "CONVTO_0", (void *) A4GL_conv_nchar_to_char);
   A4GL_add_datatype_function_i (DTYPE_NCHAR, "COPY", (void *) A4GL_conv_copy_nchar);
 

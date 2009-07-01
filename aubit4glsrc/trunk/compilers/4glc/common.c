@@ -208,6 +208,12 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 		      // Cant pass in an array...
 		      //find_variable_vu_in (errbuff, u, var_list->variables.variables_val, var_list->variables.variables_len,1);
 		      break;
+		    case VARIABLE_TYPE_OBJECT:
+		      u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
+		      A4GL_new_append_ptr_list (rval, A4GL_new_expr_push_variable (u,current_is_report()));
+		      // Cant pass in an array...
+		      //find_variable_vu_in (errbuff, u, var_list->variables.variables_val, var_list->variables.variables_len,1);
+		      break;
 
 		    case VARIABLE_TYPE_RECORD:
 		      {
