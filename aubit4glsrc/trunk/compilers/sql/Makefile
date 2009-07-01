@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.13 2009-04-12 13:01:13 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2009-07-01 07:58:44 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -17,7 +17,7 @@ include ${ROOT}/incl/Makefile-common
 
 ifeq "${LEX}" "no"
 	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.sqlparse_yy.c
-	CFLAGS+=-DLEX_YY_PREGEN=1
+	CFLAGS+=-DLEX_YY_PREGEN=1 -DLEX_YY=\"$(LEX_YY_C)\"
 else
 	LEX_YY_C	=lex.yy.c
 endif
@@ -105,7 +105,7 @@ endif
 
 
 y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c cmds.c $(STATESFILES)
-	${CC} ${CFLAGS} -c $< -o $@
+	${CC} -I. ${CFLAGS} -c $< -o $@
 
 mk_sstates.c: $(STATESDEP)
 	${SH} mkstates $(AWK)
