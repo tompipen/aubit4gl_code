@@ -51,11 +51,11 @@ op_otherwise_command : {$<commands>$=0;} | OTHERWISE {  lastlineno=yylineno;} co
 ;
 
 
-when_command		: WHEN fgl_expr_c atline op_then {  lastlineno=yylineno;} commands_as_list { 	
+when_command		: WHEN atline fgl_expr_c op_then {  lastlineno=yylineno;} commands_as_list { 	
 				$<when>$=malloc(sizeof(when));
-				$<when>$->when_expr=chk_expr($<ptr>2);
+				$<when>$->when_expr=chk_expr($<ptr>3);
 				$<when>$->when_commands=$<commands>6;
-				$<when>$->lineno=$<integer_val>3;
+				$<when>$->lineno=$<integer_val>2;
 				$<when>$->colno=0;
  				setinc(-1);
 			}

@@ -20,6 +20,7 @@ char *lint_module = 0;
 static void load_boltons (char *fname);
 static int add_calltree_calls (char *s, commands * func_commands, int mode);
 char *decode_rb (enum report_blocks a);
+static int ignore_user_function(char *name) ;
 
 
 int inc4GL = 1;			/* Include 4gl in the output */
@@ -269,6 +270,9 @@ printDot (void)
 
       if (hasNode (nodes[a].calls, NODE_FUNC_DEFINED, -1) || printAllFuncs)
 	{
+
+      if (ignore_user_function(nodes[a].calls)) continue;
+
 	  if (simpleGraph)
 	    {
 	      fprintf (dot_output, "%s -> %s\n", nodes[a].function,
@@ -659,6 +663,8 @@ system_function_dtype (char *funcname)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "month") == 0)
     return DTYPE_INT;
+  if (A4GL_aubit_strcasecmp (funcname, "fgl_winmessage") == 0)
+    return DTYPE_INT; 
 
   if (A4GL_aubit_strcasecmp (funcname, "winexec") == 0)
     return DTYPE_SMINT;

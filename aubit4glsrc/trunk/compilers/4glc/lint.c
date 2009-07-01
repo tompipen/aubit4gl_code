@@ -2987,6 +2987,8 @@ system_function_dtype (char *funcname)
     return DTYPE_INT;
   if (A4GL_aubit_strcasecmp (funcname, "month") == 0)
     return DTYPE_INT;
+  if (A4GL_aubit_strcasecmp (funcname, "fgl_winbutton") == 0)
+    return DTYPE_INT;
 
   if (A4GL_aubit_strcasecmp (funcname, "winexec") == 0)
     return DTYPE_SMINT;
