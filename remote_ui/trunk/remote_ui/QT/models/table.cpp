@@ -227,7 +227,21 @@ void TableView::nextfield()
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
    if(table->b_input){
-      this->focusNextChild();
+      int currentRow = currentIndex().row();
+      int rowCount = table->rowCount(QModelIndex());
+
+      int currentCol = currentIndex().column();
+      int colCount = table->columnCount(QModelIndex());
+      
+      if(currentCol < colCount-1){
+         /*
+         QModelIndex tindex = table->index(currentRow, currentCol+1);
+         QModelIndex index = proxyModel->mapFromSource(tindex);
+
+         setCurrentIndex(index);
+         update();
+         */
+      }
    }
    else{
       int currentRow = currentIndex().row();
@@ -333,35 +347,48 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
    }
 
    if(current.column() > -1 && current.row() > -1){
+      event.type = Fgl::BEFORE_FIELD_EVENT;
+      event.attribute = table->qsl_colNames.at(current.column());
+      emit fieldEvent(event);
+      
       // only allow focus for fields that have a focus policy
-      if(this->focusWidget() != NULL){
-         if(this->focusWidget()->focusPolicy() != Qt::NoFocus){
+      if(table->b_input && isReadOnlyColumn(current.column())){
+         this->nextfield();
+      }
+
+
+
+      /*
+      if(!isReadOnlyColumn(current.column())){
             event.type = Fgl::BEFORE_FIELD_EVENT;
             event.attribute = table->qsl_colNames.at(current.column());
             emit fieldEvent(event);
-         }
-         else{
-            // if field has no focus policy then it should not get the focus!
-            // set ignore = true so the after field event also does not get triggered
-            b_ignoreFocus = true;
-            if(current.column() > prev.column()){
-               if(table->b_input){
-                  this->nextfield();
-               }
-            }
-            else{
-               if(table->b_input){
-                  this->prevfield();
-               }
-            }
-         }
       }
       else{
-         event.type = Fgl::BEFORE_FIELD_EVENT;
-         event.attribute = table->qsl_colNames.at(current.column());
-         emit fieldEvent(event);
+         // if field has no focus policy then it should not get the focus!
+         // set ignore = true so the after field event also does not get triggered
+         b_ignoreFocus = true;
+         if(current.column() > prev.column()){
+            if(table->b_input){
+               this->nextfield();
+            }
+         }
+         else{
+            if(table->b_input){
+               this->prevfield();
+            }
+         }
       }
+      */
    }
+}
+
+bool TableView::isReadOnlyColumn(int col)
+{
+   if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
+      return dele->readOnly();
+   }
+   return false;
 }
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)
@@ -663,6 +690,12 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
    i_column = -1;
    this->p_fglform = NULL;
    this->formElement = formElement;
+
+   QWidget *editor = WidgetHelper::createFormWidget(this->formElement);
+
+   if(LineEdit *le = qobject_cast<LineEdit *> (editor)){
+      b_readOnly = le->noEntry();
+   }
 }
 
 QSize LineEditDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

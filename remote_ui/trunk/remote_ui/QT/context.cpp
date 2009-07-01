@@ -122,6 +122,7 @@ void Context::addField(QWidget *field)
 {
 
    if(!ql_fieldList.contains(field)){
+      ql_fieldList << field;
 
       field->setEnabled(true);
 
@@ -137,10 +138,11 @@ void Context::addField(QWidget *field)
             ql_fieldList << field;
          }
          else{
-            if(ql_fieldList.count() == 0)
+            /*
+            if(ql_fieldList.count() == 1)
                field->setFocus();
+               */
 
-            ql_fieldList << field;
 
             if(!qh_options["WITHOUT_DEFAULTS"]){
                WidgetHelper::setDefaultFieldText(field);

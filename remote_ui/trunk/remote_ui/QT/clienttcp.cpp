@@ -273,6 +273,10 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    // cursor on a field
    connect(&ph, SIGNAL(setFieldFocus(QString)), 
            p_currScreenHandler, SLOT(setFieldFocus(QString)));
+   connect(&ph, SIGNAL(setFieldHidden(QString, bool)), 
+           p_currScreenHandler, SLOT(setFieldHidden(QString, bool)));
+   connect(&ph, SIGNAL(setElementHidden(QString, bool)), 
+           p_currScreenHandler, SLOT(setElementHidden(QString, bool)));
    // activates table in screen form
    connect(&ph, SIGNAL(setScreenRecordEnabled(QString, bool, bool)), 
            p_currScreenHandler, SLOT(setScreenRecordEnabled(QString, bool, bool)));
@@ -785,6 +789,93 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       }
    }
 
+   if(childElement.nodeName() == "FRONTCALL"){
+      QString qs_module = childElement.attribute("MODULE");
+      QString qs_name = childElement.attribute("NAME");
+      int expect = childElement.attribute("EXPECT").toInt();
+
+      QDomElement paramsElement = childElement.firstChildElement();
+      QString value;
+
+      if(qs_module == "Standard"){
+       
+      }
+
+      if(qs_module == "INTERNAL"){
+         qDebug() << "INTERNAL:" << qs_name; 
+
+         if(qs_name == "ui.window.getcurrent"){
+            value = QString::number(p_currScreenHandler->getCurrWindow());
+         }
+
+         if(qs_name == "ui.window.getform"){
+            value = QString::number(p_currScreenHandler->getCurrForm());
+         }
+
+         if(qs_name == "ui.form.setelementhidden"){
+            int form = -1;
+            QString fieldName;
+            int hidden = false;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               if(k == 0){
+                  form = valuesElement.text().toInt();
+               }
+
+               if(k == 1){
+                  fieldName = valuesElement.text();
+               }
+
+               if(k == 2){
+                  hidden = valuesElement.text().toInt();
+               }
+            }
+            setElementHidden(fieldName, hidden);
+         }
+
+         if(qs_name == "ui.form.setfieldhidden"){
+            int form = -1;
+            QString fieldName;
+            int hidden = false;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               if(k == 0){
+                  form = valuesElement.text().toInt();
+               }
+
+               if(k == 1){
+                  fieldName = valuesElement.text();
+               }
+
+               if(k == 2){
+                  hidden = valuesElement.text().toInt();
+               }
+            }
+            setFieldHidden(fieldName, hidden);
+         }
+
+         if(qs_name == "ui.interface.refresh"){
+         }
+      }
+
+      if(expect > 0){
+         QDomDocument doc;
+         QDomElement triggeredElement = doc.createElement("TRIGGERED");
+         doc.appendChild(triggeredElement);
+
+         QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
+         triggeredElement.appendChild(syncValuesElement);
+         QDomElement syncValueElement = doc.createElement("SYNCVALUE");
+         syncValuesElement.appendChild(syncValueElement);
+         QDomText text = doc.createTextNode(value);
+         syncValueElement.appendChild(text);
+         QString returnString = doc.toString();
+
+         makeResponse(returnString.trimmed());
+      }
+      
+   }
+
 
    if(childElement.nodeName() == "CREATEWINDOW"){
       QString window = childElement.attribute("WINDOW");
@@ -1073,6 +1164,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       handleEventsElement(childElement);
       handleInputElement(childElement);
       setFieldOrder(qsl_fieldList);
+      setFieldFocus(qsl_fieldList.first());
       return;
    }
 
@@ -1086,6 +1178,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       createActionMenuButton("CANCEL", "CANCEL", "");
       handleConstructElement(childElement);
       setFieldOrder(qsl_fieldList);
+      setFieldFocus(qsl_fieldList.first());
 
       return;
    }
@@ -1537,7 +1630,7 @@ void ProtocolHandler::handleInputElement(const QDomNode& domNode)
 
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
-         setFieldEnabled(field, true, focus);
+         setFieldEnabled(field, true, false);
       }
 
       handleInputElement(currentElement);

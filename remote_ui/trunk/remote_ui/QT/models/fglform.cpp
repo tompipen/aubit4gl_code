@@ -606,13 +606,18 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       if(WidgetHelper::isFieldWidget(obj) && (input() || screenRecord() || construct())){
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
             QFocusEvent *fe = (QFocusEvent*) event;
-               if(this->focusWidget() != currentWidget){
-                  currentWidget = widget;
-                  Fgl::Event fgl_event;
-                  fgl_event.type = Fgl::BEFORE_FIELD_EVENT;
-                  fgl_event.attribute = widget->objectName();
-                  fieldEvent(fgl_event);
+            if(this->focusWidget() != currentWidget){
+               currentWidget = widget;
+               Fgl::Event fgl_event;
+               fgl_event.type = Fgl::BEFORE_FIELD_EVENT;
+               fgl_event.attribute = widget->objectName();
+               fieldEvent(fgl_event);
+
+               if(LineEdit *le = qobject_cast<LineEdit *> (widget)){
+                  if(le->isReadOnly())
+                     nextfield();
                }
+            }
          }
       }
    }
@@ -792,6 +797,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
    for(int i=0; i<formElements().size(); i++){
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (formElements().at(i))){
          connect(lineEdit, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
+         connect(lineEdit, SIGNAL(nextField()), this, SLOT(nextfield()));
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          lineEdit->installEventFilter(this);
       }
@@ -1124,12 +1130,25 @@ void FglForm::nextfield()
                fieldEvent(event);
             }
             else{
+               QWidget *current = currentWidget;
                focusNextChild();
+               if(current == currentWidget){
+                  Fgl::Event event;
+                  event.type = Fgl::AFTER_FIELD_EVENT;
+                  fieldEvent(event, current);
+               }
             }
          }
       }
       else{
+         QWidget *current = currentWidget;
          focusNextChild();
+
+         if(current == currentWidget){
+            Fgl::Event event;
+            event.type = Fgl::AFTER_FIELD_EVENT;
+            fieldEvent(event, current);
+         }
       }
    }
    else{

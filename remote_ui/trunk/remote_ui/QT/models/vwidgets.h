@@ -140,6 +140,7 @@ private:
 
 public slots:
     void isTouched() { setProperty("touched", true); };
+    void checkNext(const QString&);
 
 signals:
    void widgetOpen();

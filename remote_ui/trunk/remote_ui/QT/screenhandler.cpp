@@ -78,6 +78,11 @@ int ScreenHandler::getCurrForm()
    return cnt_form-1;
 }
 
+int ScreenHandler::getCurrWindow()
+{
+   return cnt_form-1;
+}
+
 //------------------------------------------------------------------------------
 // Method       : createWindow()
 // Filename     : screenhandler.cpp
@@ -1337,8 +1342,22 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       return;
    }
 
-   QWidget *widget = p_fglform->findFieldByName(fieldName);
+   // For fieldlist = table.*
+   int index = fieldName.indexOf(".*");
 
+   QWidget *widget = NULL;
+
+   if(index < 0){
+      widget = p_fglform->findFieldByName(fieldName);
+   }
+   else{
+      widget = p_fglform->findFieldsByName(fieldName).first();
+   }
+
+   if(widget == NULL){
+      qFatal("No Field found to set Focus");
+   }
+    
    if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
       if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
          int index = fieldName.indexOf(".");
@@ -1357,7 +1376,6 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       widget->setFocus();
    }
 }
-
 //------------------------------------------------------------------------------
 // Method       : setFieldFocus(QString FieldName )
 // Filename     : screenhandler.cpp
@@ -1433,6 +1451,58 @@ void ScreenHandler::setFieldFocus(QString fieldName)
    }
 }
 */
+//------------------------------------------------------------------------------
+// Method       : setFieldFocus(QString FieldName )
+// Filename     : screenhandler.cpp
+// Description  : sets the focus for the Field
+//------------------------------------------------------------------------------
+void ScreenHandler::setFieldHidden(QString fieldName, bool hidden)
+{
+   fieldName = fieldName.trimmed();
+
+   int i_Frm = getCurrForm();
+
+   if(i_Frm < 0)
+      return;
+
+   if(QWidget *widget = qobject_cast<QWidget *> (p_fglform->findFieldByName(fieldName))){
+      widget->setHidden(hidden);
+   }
+   
+}
+
+//------------------------------------------------------------------------------
+// Method       : setFieldFocus(QString FieldName )
+// Filename     : screenhandler.cpp
+// Description  : sets the focus for the Field
+//------------------------------------------------------------------------------
+void ScreenHandler::setElementHidden(QString fieldName, bool hidden)
+{
+   fieldName = fieldName.trimmed();
+
+   int i_Frm = getCurrForm();
+
+   if(i_Frm < 0)
+      return;
+
+   if(QWidget *widget = qobject_cast<QWidget *> (p_fglform->findFieldByName(fieldName))){
+      widget->setHidden(hidden);
+   }
+   else{
+      if(LineEditDelegate *widget = qobject_cast<LineEditDelegate *> (p_fglform->findFieldByName(fieldName))){
+         int col = widget->column();
+         if(TableView *tableView = qobject_cast<TableView *> (widget->parent())){
+            if(hidden){
+               tableView->hideColumn(col);
+            }
+            else{
+               tableView->showColumn(col);
+            }
+         }
+      }
+   }
+   
+}
 
 //------------------------------------------------------------------------------
 // Method       : setArrayFocus()
@@ -2117,7 +2187,9 @@ void ScreenHandler::waitForEvent()
    }
 
    checkFields();
-   p_fglform->context->checkOptions();
+   if(p_fglform->context != NULL)
+      p_fglform->context->checkOptions();
+
    p_fglform->raise();
 
    p_fglform->checkState();

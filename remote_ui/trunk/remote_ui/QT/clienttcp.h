@@ -121,6 +121,8 @@ signals:
    void clearFieldBuffer(QString);
    void setFieldEnabled(QString, bool, bool);
    void setFieldFocus(QString);
+   void setFieldHidden(QString, bool);
+   void setElementHidden(QString, bool);
    void setScreenRecordEnabled(QString,bool, bool);
    void loadArrayValues(QStringList, QStringList);
    void loadArrayValues(QStringList);

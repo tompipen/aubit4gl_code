@@ -380,6 +380,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       QString colText = currentElement.attribute("text");
       QString colName = currentElement.attribute("colName");
       QString name = currentElement.attribute("name");
+      int hidden = currentElement.attribute("hidden").toInt();
       int fieldId = currentElement.attribute("fieldId").toInt();
       p_screenRecord->setColumnName(i,colName);
  
@@ -423,6 +424,10 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
 
       p_screenRecord->setItemDelegateForColumn(i,de);
+
+      if(hidden)
+         p_screenRecord->hideColumn(i);
+
       header->resizeSection(i, w+1); 
 
       QHeaderView *vert = p_screenRecord->verticalHeader();

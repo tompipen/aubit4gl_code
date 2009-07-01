@@ -213,6 +213,7 @@ LineEdit::LineEdit(QWidget *parent)
    this->setEnabled(false);
 
    connect(this, SIGNAL(textChanged(const QString)), this, SLOT(isTouched()));
+   connect(this, SIGNAL(textChanged(const QString)), this, SLOT(checkNext(const QString)));
 
 }
 
@@ -235,6 +236,14 @@ void LineEdit::setSqlType(QString sqlType)
    WidgetHelper::setValidator(this);
    valid = this->validator();
 } 
+
+void LineEdit::checkNext(const QString &textr){
+   QString test = this->text();
+   if((textr.length() >= this->maxLength()) && 
+      this->hasFocus() && 
+      (textr != test))
+      emit nextField();
+}
 
 //------------------------------------------------------------------------------
 // Method       : Edit()

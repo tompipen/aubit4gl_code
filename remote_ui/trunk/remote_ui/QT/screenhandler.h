@@ -38,6 +38,7 @@ public:
    ~ScreenHandler();
    //void handleXMLForm(const QDomDocument&);
    int getCurrForm();
+   int getCurrWindow();
    FglForm* currForm();
 
    QList<QSize*> ql_formSizes;
@@ -111,6 +112,8 @@ public slots:
    void setScrLine(int);
    void setFieldEnabled(QString, bool, bool);
    void setFieldFocus(QString);
+   void setFieldHidden(QString, bool);
+   void setElementHidden(QString, bool);
    void setArrayFocus(QWidget*, QString);
    void createMenu(QString, QString, QString, QString);
    void createMenuButton(int, QString, QString, QStringList);

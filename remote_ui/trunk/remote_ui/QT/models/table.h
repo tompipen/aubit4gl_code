@@ -57,6 +57,7 @@ private:
     int i_maxArrSize;
     bool b_ignoreFocus;
     bool b_ignoreRowChange;
+    bool isReadOnlyColumn(int);
 
 public slots:
    void fieldChanged(QModelIndex, QModelIndex);
@@ -162,6 +163,7 @@ public:
 
    void setColumn(int c) { i_column = c; };
    int column() { return i_column; } ;
+   bool readOnly() { return b_readOnly; };
 
 protected:
    bool eventFilter(QObject *editor, QEvent *event);
@@ -176,6 +178,7 @@ private:
    QWidget *p_fglform;
    QDomElement formElement;
    QString qs_text;
+   bool b_readOnly;
 
    int i_column;
 };
