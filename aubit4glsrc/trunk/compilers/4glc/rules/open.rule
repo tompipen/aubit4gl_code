@@ -11,6 +11,13 @@ open_window_cmd :
 			add_feature("UI_OPEN_WINDOW");
 			map_ui("OPENWINDOW");
 			}
+	|
+	OPEN_WINDOW open_win_name_p WITH window_type win_attributes  {
+
+			$<cmd>$=new_open_window_cmd($<ptr>2,A4GL_new_literal_long_long(1),A4GL_new_literal_long_long(1),&$<wt>4,$<attrib>5);
+			add_feature("UI_OPEN_WINDOW");
+			map_ui("OPENWINDOW");
+			}
 ;
 
 
