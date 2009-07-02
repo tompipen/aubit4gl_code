@@ -39,6 +39,7 @@ attribute	: BLACK     			{curr_attrib.color=attr_code("BLACK");}
 		| DIM        			{curr_attrib.dim=EB_TRUE;}
               	| NO_NEW_LINES 			{curr_attrib.no_new_lines=EB_TRUE;}
 		| KW_STYLE EQUAL fgl_expr_c 	{curr_attrib.style_expr=$<ptr>3; }
+		| KW_PICTURE EQUAL fgl_expr_c /* Ignored for now */
 		| char_or_var_vl 		{curr_attrib.var_attrib=$<ptr>1; }
 		| input_array_attributes 
 	| UNBUFFERED
