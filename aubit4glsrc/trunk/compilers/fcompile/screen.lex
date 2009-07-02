@@ -268,6 +268,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "picture"		{if (ign_kw(yystate, PICTURE)) REJECT;strcpy(yylval.str,yytext); return PICTURE;}
 "program"		{if (ign_kw(yystate, PROGRAM)) REJECT;strcpy(yylval.str,yytext); return PROGRAM;}
 "required"		{if (ign_kw(yystate, REQUIRED)) REJECT;strcpy(yylval.str,yytext); return REQUIRED;}
+"unhidable"		{if (ign_kw(yystate, UNHIDABLE)) REJECT;strcpy(yylval.str,yytext); return UNHIDABLE;}
 "dynamic"		{if (ign_kw(yystate, DYNAMIC)) REJECT;strcpy(yylval.str,yytext); return DYNAMIC;}
 "dim"		{if (ign_kw(yystate, DIM)) REJECT;strcpy(yylval.str,yytext); return DIM;}
 "bold"		{if (ign_kw(yystate,BOLD)) REJECT;strcpy(yylval.str,yytext); return BOLD;}

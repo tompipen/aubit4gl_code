@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.29 2009-06-07 09:32:04 mikeaubury Exp $
+# $Id: form_x.x,v 1.30 2009-07-02 07:49:05 mikeaubury Exp $
 #*/
 
 /**
@@ -96,7 +96,8 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_SCROLLBARS_HORIZONAL,
 	FA_B_AUTOSIZE,
 	FA_B_NOTNULL,
-	FA_B_BORDER
+	FA_B_BORDER,
+	FA_B_UNHIDABLE
 };
 
 enum FA_COLOUR {
