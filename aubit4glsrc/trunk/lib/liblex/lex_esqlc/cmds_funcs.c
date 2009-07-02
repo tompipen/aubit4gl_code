@@ -2230,6 +2230,8 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
                         vu_next->next->substrings_start=0;
                         vu_next->next->substrings_end=0;
                         vu_next->next->next=0;
+                        vu_next->next->object_type="";
+
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;
                         vu_next->next->escope=cmd_data->arrayname->expr_str_u.expr_variable_usage->escope;
                         vu_next->next->variable_id=a;
@@ -2687,6 +2689,7 @@ int inp_flags=0;
                         vu_next->next->substrings_start=0;
                         vu_next->next->substrings_end=0;
                         vu_next->next->next=0;
+                        vu_next->next->object_type="";
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;
                         vu_next->next->escope=cmd_data->arrayname->expr_str_u.expr_variable_usage->escope;
                         vu_next->next->variable_id=a;
