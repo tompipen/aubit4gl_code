@@ -41,6 +41,7 @@ attribute	: BLACK     			{curr_attrib.color=attr_code("BLACK");}
 		| KW_STYLE EQUAL fgl_expr_c 	{curr_attrib.style_expr=$<ptr>3; }
 		| char_or_var_vl 		{curr_attrib.var_attrib=$<ptr>1; }
 		| input_array_attributes 
+	| UNBUFFERED
 	;
 
 win_attributes:	/*empty*/ { clr_attrib(&curr_attrib);  $<attrib>$=0; } 
