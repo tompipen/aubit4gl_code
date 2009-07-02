@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.493 2009-07-02 08:46:16 mikeaubury Exp $
+# $Id: compile_c.c,v 1.494 2009-07-02 10:15:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.493 2009-07-02 08:46:16 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.494 2009-07-02 10:15:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4372,8 +4372,8 @@ int local_print_bind_set_value_g (struct expr_str_list *bind,int ignore_esqlc,in
 				printc ("if (a4gl_putval_%d) free(a4gl_putval_%d);",putvalcnt,putvalcnt);
 				real_print_expr(bind->list.list_val[a]);
 				printc ("a4gl_putval_%d=A4GL_char_pop();",putvalcnt);
-          			printc ("ibind[%d].ptr= &a4gl_putval_%d;", a, putvalcnt);
-          			printc ("ibind[%d].dtype=  0 /* DTYPE_CHAR */ +strlen(ibind[%d].ptr);", a,a);
+          			printc ("ibind[%d].ptr= a4gl_putval_%d;", a, putvalcnt);
+          			printc ("ibind[%d].dtype=  0 /* DTYPE_CHAR */ +(strlen(ibind[%d].ptr)<<16);", a,a);
 				putvalcnt++;
 			break;
 			
