@@ -305,6 +305,7 @@ int c3;
 			u=new_variable_usage(0,rec_var->variables.variables_val[c]->names.names.names_val[0].name,0);
 			p=A4GL_memdup(parent,sizeof(struct variable_usage));
 			p->next=0;
+			p->object_type="";
 			append_variable_usage(p,u);
 
 			dim=0;
