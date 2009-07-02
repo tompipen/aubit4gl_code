@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.36 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: expr.c,v 1.37 2009-07-02 13:03:27 mikeaubury Exp $
 #
 */
 
@@ -383,9 +383,23 @@ A4GL_new_ptr_list (struct expr_str *ptr)
 struct expr_str_list *
 A4GL_new_append_ptr_list (struct expr_str_list *l, struct expr_str *ptr)
 {
+int lvl=0;
   l->list.list_len++;
   l->list.list_val = realloc (l->list.list_val, sizeof (struct expr_str) * l->list.list_len);
   l->list.list_val[l->list.list_len - 1] = ptr;
+#ifdef DEBUG_OBJECT_TYPE
+if (ptr->expr_type==ET_EXPR_VARIABLE_USAGE) {
+struct variable_usage *u=ptr->expr_str_u.expr_variable_usage;
+while (u) {
+		printf("Lvl:%d\n",lvl); fflush(stdout);
+	if (strlen(u->object_type)!=0)  {
+		printf("u->Object_type=%s\n",u->object_type);
+	}
+	lvl++;
+	u=u->next;
+	}
+}
+#endif
   return l;
 }
 
