@@ -1,5 +1,5 @@
 /* Validating XML processor for module_def.dtd.
- * Generated 2009/06/30 19:47:08.
+ * Generated 2009/07/02 07:52:23.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -1166,6 +1166,8 @@ AT_startrep_with_bottom_margin AX_startrep_with_bottom_margin;
 #define A_startrep_with_bottom_margin (bufferstack + AX_startrep_with_bottom_margin)
 AT_vname_name_list_nm AX_vname_name_list_nm;
 #define A_vname_name_list_nm (bufferstack + AX_vname_name_list_nm)
+AT_variable_usage_object_type AX_variable_usage_object_type;
+#define A_variable_usage_object_type (bufferstack + AX_variable_usage_object_type)
 AT_s_report_definition_comment AX_s_report_definition_comment;
 #define A_s_report_definition_comment (bufferstack + AX_s_report_definition_comment)
 AT_struct_move_cmd_nm AX_struct_move_cmd_nm;
@@ -14849,6 +14851,7 @@ const char* *statenames=NULL;
   AX_variable_usage_datatype_length = 0;
   AX_variable_usage_escope = 0;
   AX_variable_usage_nm = 0;
+  AX_variable_usage_object_type = 0;
   AX_variable_usage_variable_id = 0;
   AX_variable_usage_variable_name = 0;
   ENTER(AL_variable_usage); pushbuffer(0);
@@ -14866,6 +14869,9 @@ const char* *statenames=NULL;
 
  "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_variable_usage_nm);
  "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_variable_usage_nm);
+
+ "object_type"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_variable_usage_object_type);
+ "object_type"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_variable_usage_object_type);
 
  "variable_id"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_variable_usage_variable_id);
  "variable_id"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_variable_usage_variable_id);

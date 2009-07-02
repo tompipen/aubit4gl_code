@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.491 2009-07-01 16:02:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.492 2009-07-02 07:14:33 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.491 2009-07-01 16:02:44 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.492 2009-07-02 07:14:33 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1520,7 +1520,7 @@ real_print_expr (struct expr_str *ptr)
 	      struct expr_str_list *l;
 	struct variable_usage *vu;
 	struct variable_usage *vu_top;
-	struct variable *v;
+	//struct variable *v=NULL;
 	//char errbuff[256];
 	//enum e_scope scope;
 	struct variable_usage *vu_n;
@@ -1568,15 +1568,17 @@ real_print_expr (struct expr_str *ptr)
 		vu_n->next=0;
 		func=vu->variable_name;
 		s=generation_get_variable_usage_as_string(vu_top);
+	A4GL_pause_execution();
 		//v=local_find_variable_from_usage(vu_top);
-		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+		//v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+		
+		//
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
 		if (datatype==0xff) {
 			datatype=check_isobject(s);
 			if (datatype!=DTYPE_OBJECT) {
-				
-				a4gl_yyerror("%s is not an object type");
+				a4gl_yyerror("is not an object type (1)");
 				return;
 			}
 		}
@@ -1585,8 +1587,9 @@ real_print_expr (struct expr_str *ptr)
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",s);
-		if (v) {
-				sprintf(class_func, "%s.%s",v->var_data.variable_data_u.v_object.class_name  ,func);
+
+		if (vu_top->object_type) {
+				sprintf(class_func, "%s.%s",vu_top->object_type  ,func);
 		} else {
 				strcpy(basevar,"NULL");
 				sprintf(class_func,"%s.%s",s,func);
@@ -6039,6 +6042,7 @@ struct variable *sgs_topvar;
   else
     {
 	if (u->object_type) {
+		A4GL_pause_execution();
       		printc ("A4GL_pop_object(\"%s\",&", u->object_type);
 	} else {
       		printc ("A4GL_pop_var2(&");

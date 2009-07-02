@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/06/30 19:47:08.
+ * Generated 2009/07/02 07:52:23.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -1629,6 +1629,8 @@ typedef int AT_startrep_with_bottom_margin;
 #define AU_startrep_with_bottom_margin NULL
 typedef int AT_vname_name_list_nm;
 #define AU_vname_name_list_nm NULL
+typedef int AT_variable_usage_object_type;
+#define AU_variable_usage_object_type NULL
 typedef int AT_s_report_definition_comment;
 #define AU_s_report_definition_comment NULL
 typedef int AT_struct_move_cmd_nm;
@@ -2946,6 +2948,8 @@ extern AT_startrep_with_bottom_margin AX_startrep_with_bottom_margin;
 #define A_startrep_with_bottom_margin (bufferstack + AX_startrep_with_bottom_margin)
 extern AT_vname_name_list_nm AX_vname_name_list_nm;
 #define A_vname_name_list_nm (bufferstack + AX_vname_name_list_nm)
+extern AT_variable_usage_object_type AX_variable_usage_object_type;
+#define A_variable_usage_object_type (bufferstack + AX_variable_usage_object_type)
 extern AT_s_report_definition_comment AX_s_report_definition_comment;
 #define A_s_report_definition_comment (bufferstack + AX_s_report_definition_comment)
 extern AT_struct_move_cmd_nm AX_struct_move_cmd_nm;

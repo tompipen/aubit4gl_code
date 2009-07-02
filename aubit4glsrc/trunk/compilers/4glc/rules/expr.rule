@@ -238,6 +238,12 @@ variable_entry :
 			inc_var_usage($<ptr>$);
 	}
 	| variable_usage_expression OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
+		char errbuff[256];
+		enum e_scope scope;
+		struct variable*v;
+		struct variable_usage *vu_top;
+		vu_top=$<ptr>1->expr_str_u.expr_variable_usage;
+		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		$<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1)); 
 		inc_var_usage($<ptr>$);
 	}

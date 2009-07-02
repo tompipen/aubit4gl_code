@@ -111,6 +111,7 @@ struct variable_usage *new_usage;
         new_usage=malloc(sizeof(struct variable_usage));
         memcpy(new_usage,vu,sizeof(struct variable_usage));
         new_usage->next=0;
+	new_usage->object_type=0;
         if (vu->next) {
                 new_usage->next=clone_variable_usage(vu->next);
         }
@@ -391,6 +392,7 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 
   newv->variable_id = -1;
   newv->datatype = -1;
+newv->object_type=0;
   newv->escope = E_SCOPE_NOTSET;
   newv->next = 0;
 
