@@ -741,8 +741,10 @@ fpart
 | fpart_list SEMICOLON fpart
 ;
 
+eq_or_colon: EQUAL | COLON 
+;
 fpart : 
-EQUAL { 
+eq_or_colon { 
 	A4GL_init_fld();
 }
 field_type op_att 

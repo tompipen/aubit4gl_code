@@ -33,7 +33,7 @@ enum e_scrmodes {
 
 
 
-char screen[200][200];
+char screen[400][400];
 
 struct s_field
 {
@@ -1220,7 +1220,7 @@ void make_screen (struct_form * f,int scr)
   int fno;
   int b;
 
-  if (f->maxcol > 200 || f->maxline > 200)
+  if (f->maxcol > 400 || f->maxline > 400)
     {
       printf ("Too wide or too long\n");
       exit (1);
