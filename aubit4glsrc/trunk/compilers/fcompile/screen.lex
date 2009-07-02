@@ -256,6 +256,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "color"		{if (ign_kw(yystate, COLOR)) REJECT;strcpy(yylval.str,yytext); return COLOR;}
 "composites"		{if (ign_kw(yystate, KW_COMPOSITES)) REJECT;strcpy(yylval.str,yytext); return KW_COMPOSITES;}
 "comments"	{if (ign_kw(yystate, COMMENTS)) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
+"comment"	{if (ign_kw(yystate, COMMENTS)) REJECT;strcpy(yylval.str,yytext); return COMMENTS;}
 "default"	{if (ign_kw(yystate, DEFAULT)) REJECT;strcpy(yylval.str,yytext); return DEFAULT;}
 "display"		{if (ign_kw(yystate, DISPLAY)) REJECT;strcpy(yylval.str,yytext); return DISPLAY;}
 "downshift"		{if (ign_kw(yystate, DOWNSHIFT)) REJECT;strcpy(yylval.str,yytext); return DOWNSHIFT;}
