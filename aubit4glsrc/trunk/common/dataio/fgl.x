@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.37 2009-07-01 16:02:43 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.38 2009-07-02 08:58:32 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1753,6 +1753,16 @@ struct s_expr_member_function_call {
         int line;
 };
 
+struct s_expr_member_function_call_n {
+	struct expr_str *var_usage_ptr;
+	str funcName;
+	str objectType;
+	str namespace;
+        expr_str_list *parameters;
+        str module;
+        int line;
+};
+
 
 struct s_expr_extend {
         struct expr_str *expr;
@@ -1905,6 +1915,7 @@ enum e_expr_type {
                 ET_EXPR_PDF_FCALL,
                 ET_EXPR_SHARED_FCALL,
                 ET_EXPR_MEMBER_FCALL,
+                ET_EXPR_MEMBER_FCALL_NEW,
                 ET_EXPR_COLUMN,
                 ET_EXPR_REPORT_EMAIL,
                 ET_EXPR_REPORT_PRINTER,
@@ -2087,6 +2098,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
                 struct s_expr_shared_function_call        *expr_shared_function_call;
 	case ET_EXPR_MEMBER_FCALL:
                 struct s_expr_member_function_call        *expr_member_function_call;
+	case ET_EXPR_MEMBER_FCALL_NEW:
+                struct s_expr_member_function_call_n        *expr_member_function_call_n;
 	case ET_EXPR_EXTERNAL:
                 struct s_expr_external_call               *expr_external_call;
 

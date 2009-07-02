@@ -204,8 +204,9 @@ int
 print_cancel_cmd (struct_cancel_cmd * cmd_data)
 {
   print_cmd_start ();
-  A4GL_assertion (1, "CANCEL not implemented yet");
-  return 0;
+	printc("A4GL_ui_cancel(%d);",cmd_data->c);
+  //A4GL_assertion (1, "CANCEL not implemented yet");
+  return 1;
 }
 
 

@@ -94,3 +94,4 @@ int uilib_touched (int n) ;
 
 int uilib_get_call_result(void);
 int uilib_do_frontcall(char *s, int no);
+int uilib_get_input_array_count(int n);

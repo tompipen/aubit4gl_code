@@ -110,3 +110,4 @@ aclfgl_aclfgl_set_display_field_delimiters int nparam -> int
 aclfgl_aclfgl_add_acs_mapping int nparam -> int
 aclfgl_aclfgl_set_application_xml int nparam -> int
 A4GL_ui_frontcall char* module char* name void* ibind int ni void* obind int no -> void
+A4GL_ui_cancel int type -> void

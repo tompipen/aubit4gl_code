@@ -3818,3 +3818,11 @@ if (uilib_do_frontcall(buff,no)) {
 	}
 }
 }
+
+void UILIB_A4GL_ui_cancel( int n) {
+if (n==0)  {
+	send_to_ui("<CANCEL_INSERT/>");
+}	else {
+	send_to_ui("<CANCEL_DELETE/>");
+}
+}
