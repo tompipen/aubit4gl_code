@@ -16,6 +16,14 @@ call_ext: function_call_expr opt_return {
 		//start_bind('i',0);
 	}
    | variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  opt_return {
+                struct variable *v;
+                struct variable_usage *vu_top;
+                char errbuff[256];
+                        enum e_scope scope;
+
+                vu_top=$<ptr>1->expr_str_u.expr_variable_usage;
+                v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+
                 $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace("-"));
    		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),$<ptr_list>5);
    }

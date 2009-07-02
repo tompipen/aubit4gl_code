@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.492 2009-07-02 07:14:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.493 2009-07-02 08:46:16 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.492 2009-07-02 07:14:33 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.493 2009-07-02 08:46:16 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -90,7 +90,7 @@ char * local_rettype (char *s);
 int tmp_ccnt=0;
 
 int set_dont_use_indicators=0;
-
+#define find_variable_vu_ptr NONO_DONT_USE_find_variable_vu_ptr
 extern int yylineno;
 int useIntOptimization=1;
 
@@ -1568,7 +1568,7 @@ real_print_expr (struct expr_str *ptr)
 		vu_n->next=0;
 		func=vu->variable_name;
 		s=generation_get_variable_usage_as_string(vu_top);
-	A4GL_pause_execution();
+	//A4GL_pause_execution();
 		//v=local_find_variable_from_usage(vu_top);
 		//v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		
@@ -1595,7 +1595,7 @@ real_print_expr (struct expr_str *ptr)
 				sprintf(class_func,"%s.%s",s,func);
 		}
 
-  	      		printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT,class_func, nparam);
+  	      	printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT,class_func, nparam);
 		} else {
   	      		printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", s,datatype,func, nparam);
 		}
@@ -2854,7 +2854,7 @@ real_print_func_call (t_expr_str * fcall)
 	      struct expr_str_list *l;
 	struct variable_usage *vu;
 	struct variable_usage *vu_top;
-	struct variable *v;
+	//struct variable *v;
 	char errbuff[256];
 	enum e_scope scope;
 	struct variable_usage *vu_n;
@@ -2900,7 +2900,7 @@ real_print_func_call (t_expr_str * fcall)
 		vu_n->next=0;
 		func=vu->variable_name;
 		s=generation_get_variable_usage_as_string(vu_top);
-		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+		//v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
       		printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
@@ -2918,8 +2918,8 @@ real_print_func_call (t_expr_str * fcall)
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",s);
-		if (v) {
-				sprintf(class_func, "%s.%s",v->var_data.variable_data_u.v_object.class_name  ,func);
+		if (vu_top->object_type) {
+				sprintf(class_func, "%s.%s",vu_top->object_type  ,func);
 		} else {
 				strcpy(basevar,"NULL");
 				sprintf(class_func,"%s.%s",s,func);
@@ -6042,7 +6042,7 @@ struct variable *sgs_topvar;
   else
     {
 	if (u->object_type) {
-		A4GL_pause_execution();
+		//A4GL_pause_execution();
       		printc ("A4GL_pop_object(\"%s\",&", u->object_type);
 	} else {
       		printc ("A4GL_pop_var2(&");
@@ -6531,14 +6531,14 @@ switch (s->expr_type) {
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",svar);
-		if (v) {
-				sprintf(class_func, "%s.%s",v->var_data.variable_data_u.v_object.class_name  ,func);
+		if (vu_top->object_type) {
+				sprintf(class_func, "%s.%s",vu_top->object_type  ,func);
 		} else {
 				strcpy(basevar,"NULL");
 				sprintf(class_func,"%s.%s",svar,func);
 		}
 
-
+		
  	      		sprintf (rbuff,"A4GL_call_datatype_function_i_as_int(%s,0x%x,\"%s\")\n", basevar, DTYPE_OBJECT,class_func);
 		} else {
   	      		sprintf (rbuff,"A4GL_call_datatype_function_i_as_int(&%s,0x%x,\"%s\")\n", svar, datatype,func);
