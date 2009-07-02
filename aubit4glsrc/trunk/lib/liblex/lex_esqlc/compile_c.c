@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.495 2009-07-02 10:43:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.496 2009-07-02 13:25:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.495 2009-07-02 10:43:13 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.496 2009-07-02 13:25:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6514,7 +6514,7 @@ switch (s->expr_type) {
 		vu_n->next=0;
 		func=vu->variable_name;
 		svar=generation_get_variable_usage_as_string(vu_top);
-		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+		//v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 		vu_bottom=usage_bottom_level(vu_top);
 		datatype=vu_bottom->datatype & DTYPE_MASK;
 
