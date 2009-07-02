@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.24 2009-06-30 18:38:56 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.25 2009-07-02 10:38:53 mikeaubury Exp $
 }
 
 {**
@@ -455,8 +455,8 @@ if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 		fprintf(f,"%s",ptr);
 			free(ptr);
 	}
-	fprintf(f,"\n",ptr);
-			if (ibind) free(ibind);
+	fprintf(f,"\n");
+	if (ibind) free(ibind);
 
 	return 0;
 }

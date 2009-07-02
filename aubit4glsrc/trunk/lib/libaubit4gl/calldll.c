@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.86 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: calldll.c,v 1.87 2009-07-02 10:38:53 mikeaubury Exp $
 #
 */
 
@@ -724,6 +724,8 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   char nfile[256];
   int (*func_ptr) (int);
   int a;
+
+
 #ifdef DEBUG
   A4GL_debug ("Call 4gl dll : %s %s %d", filename, function, args);
 #endif
@@ -768,6 +770,10 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   A4GL_debug ("Trying %s", A4GL_null_as_null (filename));
 #endif
 
+  if (A4GL_has_pointer(filename,'`')) {
+		dllhandle=A4GL_find_pointer(filename,'`');
+		A4GL_debug("%s Opened already : %p",filename, dllhandle);
+  } else {
   dllhandle = dlopen (filename, RTLD_LAZY);
 #ifdef DEBUG
   if (dllhandle == 0) {
@@ -843,6 +849,12 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
       return -1;
     }
 
+  
+  	if (dllhandle) {
+		A4GL_add_pointer(filename,'`',dllhandle);
+  	}
+  }
+ 
   func_ptr = dlsym (dllhandle, nfunc);
 
   if (func_ptr == NULL)

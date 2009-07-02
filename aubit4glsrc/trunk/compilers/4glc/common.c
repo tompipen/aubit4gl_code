@@ -111,7 +111,7 @@ struct variable_usage *new_usage;
         new_usage=malloc(sizeof(struct variable_usage));
         memcpy(new_usage,vu,sizeof(struct variable_usage));
         new_usage->next=0;
-	new_usage->object_type=0;
+	new_usage->object_type="";
         if (vu->next) {
                 new_usage->next=clone_variable_usage(vu->next);
         }
@@ -223,7 +223,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 			u = new_variable_usage (0, parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, 0);
 			u->datatype = -2;
 			u->datatype_length = 0;
-			u->object_type = 0;
+			u->object_type = "";
 			u->escope = E_SCOPE_LOCAL;	/* must be local - its a parameter... */
 			append_record_entries (rec_var, u, rval);
 		      }
@@ -392,7 +392,7 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 
   newv->variable_id = -1;
   newv->datatype = -1;
-newv->object_type=0;
+newv->object_type="";
   newv->escope = E_SCOPE_NOTSET;
   newv->next = 0;
 
@@ -578,7 +578,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 			A4GL_assertion(1,"Current thinking is we should just store an Object ID - so this should never happen");
 			// Must be a record...
 	  		vu->datatype = -2;	
-			vu->object_type = 0;
+			vu->object_type = "";
 			vu->datatype_length = 0;
 			vrec=avar;
 		}
@@ -608,7 +608,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	  vu->variable_id = a;
 	  vu->datatype = -2;	// RECORD...
 		vu->datatype_length = 0;
-		vu->object_type = 0;
+		vu->object_type = "";
 	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len) {
 		if (vu->subscripts.subscripts_len==0 && v->arr_subscripts.arr_subscripts_len) {
 			if (v->arr_subscripts.arr_subscripts_val[0]==-1) {
@@ -675,7 +675,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 			// Must be a record...
 	  		vu->datatype = -2;	
 	  		vu->datatype_length=0;
-	  		vu->object_type=0;
+	  		vu->object_type="";
 			vrec=avar->variable;
 		}
 

@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.494 2009-07-02 10:15:06 mikeaubury Exp $
+# $Id: compile_c.c,v 1.495 2009-07-02 10:43:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.494 2009-07-02 10:15:06 mikeaubury Exp $";
+		"$Id: compile_c.c,v 1.495 2009-07-02 10:43:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1588,7 +1588,7 @@ real_print_expr (struct expr_str *ptr)
 			char basevar[200];
 			sprintf(basevar,"&%s",s);
 
-		if (vu_top->object_type) {
+		if (strlen(vu_top->object_type)) {
 				sprintf(class_func, "%s.%s",vu_top->object_type  ,func);
 		} else {
 				strcpy(basevar,"NULL");
@@ -2918,7 +2918,7 @@ real_print_func_call (t_expr_str * fcall)
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",s);
-		if (vu_top->object_type) {
+		if (strlen(vu_top->object_type)) {
 				sprintf(class_func, "%s.%s",vu_top->object_type  ,func);
 		} else {
 				strcpy(basevar,"NULL");
@@ -6041,7 +6041,7 @@ struct variable *sgs_topvar;
     }
   else
     {
-	if (u->object_type) {
+	if (strlen(u->object_type)) {
 		//A4GL_pause_execution();
       		printc ("A4GL_pop_object(\"%s\",&", u->object_type);
 	} else {
@@ -6531,7 +6531,7 @@ switch (s->expr_type) {
 			char class_func[2000];
 			char basevar[200];
 			sprintf(basevar,"&%s",svar);
-		if (vu_top->object_type) {
+		if (strlen(vu_top->object_type)) {
 				sprintf(class_func, "%s.%s",vu_top->object_type  ,func);
 		} else {
 				strcpy(basevar,"NULL");
