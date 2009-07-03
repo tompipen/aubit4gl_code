@@ -14,6 +14,7 @@ define a integer
 
 	let a=fgl_dynarr_extentsize(aa,1)
 	display "size=",a
+	display "Size as member call : ", aa.getlength()
 
 
 	for a=1 to 33
