@@ -418,17 +418,17 @@ dtype :
 	|	UIWINDOW {
 			$$=new_variable_object("ui.window");
 		} 
+	| OMDOMNODE {
+			$$=new_variable_object("om.domnode");
+	}
+	| OMNODELIST {
+			$$=new_variable_object("om.nodelist");
+	}
 	|	UIFORM {
 			$$=new_variable_object("ui.form");
 		} 
 	|	UICOMBOBOX {
 			$$=new_variable_object("ui.combobox");
-		} 
-	|	OMDOMNODE {
-			$$=new_variable_object("OMDOMNODE");
-		} 
-	|	OMNODELIST {
-			$$=new_variable_object("OMNODELIST");
 		} 
 	|	STRING {
 			//$$=new_variable_object("STRING");

@@ -89,7 +89,6 @@ struct command *check_for_member_call_alias(expr_str *p_fcall,expr_str_list *p_r
 
 	if (A4GL_aubit_strcasecmp(p_fcall->expr_str_u.expr_member_function_call_n->funcName, "clear")==0) {
 			struct expr_str_list *plist;
-			ubottom->next=NULL;
 			plist=A4GL_new_ptr_list(p_fcall->expr_str_u.expr_member_function_call_n->var_usage_ptr);
 			// Its really an INITIALIZE not a clear...
 			return new_init_cmd(plist,NULL,1);
