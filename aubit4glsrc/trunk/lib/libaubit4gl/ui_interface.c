@@ -110,4 +110,5 @@ void add_ui_interface_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.frontcall", (void *) ui_interface_frontcall);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.refresh", (void *) ui_interface_refresh);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.settext", (void *) ui_interface_settext);
+		//ui.interface.getrootnode
 }

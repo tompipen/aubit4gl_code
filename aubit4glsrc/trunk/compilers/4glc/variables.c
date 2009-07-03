@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.107 2009-03-16 12:38:08 mikeaubury Exp $
+# $Id: variables.c,v 1.108 2009-07-03 12:45:25 mikeaubury Exp $
 #
 */
 
@@ -702,6 +702,7 @@ get_last_class_var (void)
 	if (strcmp(invarname,"index")==0) {
 		return "a4gl_index";
 	}
+
 	return 0;
 }
 

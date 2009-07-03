@@ -5972,11 +5972,12 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
   struct commands *func_cmds;
   int nreturns;
   int a;
-  struct command *r;
+  struct command *r=0;
   int *dtypes = 0;
   func_cmds = linearise_commands (0, 0);
 
   linearise_commands (func_cmds, function_definition->func_commands);
+
 
   nreturns = 0;
   for (a = 0; a < func_cmds->cmds.cmds_len; a++)
@@ -6034,8 +6035,8 @@ gen_function_prototypes (int e, struct s_function_definition *function_definitio
       fprototypes[e].nreturns = 0;
     }
 
-  fprototypes[e].module=r->module;
-  fprototypes[e].lineno=r->lineno;
+  fprototypes[e].module=function_definition->module;
+  fprototypes[e].lineno=function_definition->lineno;
 }
 
 

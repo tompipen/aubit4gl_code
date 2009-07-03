@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.49 2008-07-06 11:34:28 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.50 2009-07-03 12:45:25 mikeaubury Exp $
 */
 
 /**
@@ -237,6 +237,10 @@ struct s_constr_list {
 #define A4GL_trc(fmt,...) 
 
 #endif //NODEBUG
+
+#ifdef unix
+#undef unix
+#endif
 
 #define MENU_ALL "_AlL_"
 

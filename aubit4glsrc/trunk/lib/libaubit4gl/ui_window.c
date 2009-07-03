@@ -57,7 +57,7 @@ static int ui_window_getform(int *objectID, int nParam) {
         }
 
         if (nParam!=0) {
-                A4GL_exitwith("expects 1 parameter");
+                A4GL_exitwith("expects 0 parameter");
                 return 0;
         }
 
@@ -71,6 +71,8 @@ static int ui_window_getform(int *objectID, int nParam) {
 	}
         return 0;
 }
+
+
 
 static int new_ui_form(char *formID) {
         struct sObject *obj;
