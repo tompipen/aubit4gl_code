@@ -461,7 +461,7 @@ case ET_EXPR_BOUND_FCALL:
    return strdup("BOUND_FCALL");
 
 
-case ET_EXPR_MEMBER_FCALL:
+case ET_EXPR_MEMBER_FCALL_NEW:
 	return strdup("MEMBER_FUNCTIONCALL");
 
     default:

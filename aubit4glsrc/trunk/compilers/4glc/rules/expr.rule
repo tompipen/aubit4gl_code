@@ -17,7 +17,16 @@ fgl_expr_c :
 			add_feature("ET_EXPR_SPACES"); 
 	}
 	| fgl_expr_c CONCAT_PIPES fgl_expr_c 	{ 
-			$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_CONCAT,0);
+			if ($<ptr>1->expr_type==ET_EXPR_LITERAL_STRING && $<ptr>3->expr_type==ET_EXPR_LITERAL_STRING)  {
+				char *s;
+				s=malloc(1+strlen($<ptr>1->expr_str_u.expr_string)+strlen($<ptr>3->expr_str_u.expr_string));
+				strcpy(s,$<ptr>1->expr_str_u.expr_string);
+				strcat(s,$<ptr>3->expr_str_u.expr_string);
+				$<ptr>$=A4GL_new_literal_string(s);
+				free(s);
+			} else {
+				$<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_CONCAT,0);
+			}
 	}
 	| report_only_expr
 	| builtin_expr
@@ -237,6 +246,8 @@ variable_entry :
 			}
 			inc_var_usage($<ptr>$);
 	}
+	| member_fcall {$<ptr>$=$<ptr>1;}
+/*
 	| variable_usage_expression OPEN_BRACKET opt_func_call_args CLOSE_BRACKET  {
 		char errbuff[256];
 		enum e_scope scope;
@@ -248,6 +259,7 @@ variable_entry :
 		$<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1)); 
 		inc_var_usage($<ptr>$);
 	}
+*/
 	| variable_usage_expression THRU variable_usage_expression {
 		char errbuff[256];
                 $<ptr>$=A4GL_new_expr_list();
@@ -824,6 +836,67 @@ cast_dtype:
 			}
 			$<integer_val>$=idtype+ENCODE_SIZE(isize);
 		}
+;
+
+
+member_fcall: 
+ 	variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET   {
+                struct variable *v;
+                struct variable_usage *vu_top,*vu, *vu_n,*vu_bottom;
+		int datatype;
+		struct expr_str *var;
+                char errbuff[256]="";
+                enum e_scope scope;
+		char *s;
+		char *func;
+		char *objtype;
+
+		var=$<ptr>1;
+
+		/* The last part is the name of the function - so we need to strip that out */
+                vu_top=$<ptr>1->expr_str_u.expr_variable_usage;
+
+                vu=vu_top;
+
+                while (vu->next) {
+                        vu_n=vu;
+                        vu=vu->next;
+                }
+		/* Remove the link to the function */
+	        vu_n->next = 0;
+
+		/* But get the function name */
+        	func = vu->variable_name;
+
+
+		/* Can we find a variable with the name ? */
+                v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+        	vu_bottom = usage_bottom_level (vu_top);
+        	datatype = vu_bottom->datatype & DTYPE_MASK;
+		objtype="";
+		if (v==0) {
+			/* Nope - but all is not lost - if its a 'static' member function and the 'variable' is the name of the object - eg ui.window */
+			s = cmds_get_variable_usage_as_string (vu_top);
+			if(A4GL_check_isobject_name(s)) {
+				/* Yeah - Its an object type */
+				objtype=s;
+				datatype=DTYPE_OBJECT;
+				var=NULL; 
+			} else {
+				/* Nope - cant use it */
+				set_yytext(s);
+				a4gl_yyerror("is not an object type");
+			}
+		} else { 
+			/* Its a straightforward variable */
+			/* If its really an object - object type will be set to a non-empty string */
+			objtype=vu_top->object_type;
+		}
+
+
+                $<ptr>$=A4GL_new_expr_member_fcall_n(var,func, objtype, datatype, $<ptr_list>3,infilename,lastlineno,get_namespace("-"));
+		inc_var_usage($<ptr>$);
+   }
 ;
 
 /* ============================ expr.rule =========================== */

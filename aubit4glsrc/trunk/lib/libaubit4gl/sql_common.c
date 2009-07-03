@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.89 2009-06-29 18:32:38 mikeaubury Exp $
+# $Id: sql_common.c,v 1.90 2009-07-03 10:53:45 mikeaubury Exp $
 #
 */
 
@@ -1949,11 +1949,14 @@ A4GL_get_clobbered_from (char *s)
 
 
 
-void A4GL_free_cursor(char* cursor_name) {
+void A4GL_free_cursor(char* cursor_name, int partOfOtherCommand) {
 	struct s_cid *ptr=NULL;
 	struct s_sid *sid=NULL;
 
-	a4gl_sqlca.sqlcode=0;
+	if (!partOfOtherCommand) {
+		a4gl_sqlca.sqlcode=0;
+	}
+
 	ptr=A4GL_find_cursor(cursor_name);
 
         if (ptr) {
@@ -2212,7 +2215,7 @@ sid=vsid;
         cid = A4GL_find_cursor(cursname);
 
 	if (cid) {
-		A4GL_free_cursor(cursname);
+		A4GL_free_cursor(cursname,1);
 	}
 
   	t1=get_now_as_double();
@@ -2631,7 +2634,7 @@ for (a=0;a<=10;a++)  {
 		//printf("Execute : %s\n", ptr);
    		A4GL_add_prepare("a4gl_initsql",(void *)A4GL_prepare_select(0,0,0,0,ptr,"internal_initsql",a,0,1));
    		A4GL_execute_sql("a4gl_initsql",0,0);
-		A4GL_free_cursor("a4gl_initsql");
+		A4GL_free_cursor("a4gl_initsql",1);
 		
    	}
    }

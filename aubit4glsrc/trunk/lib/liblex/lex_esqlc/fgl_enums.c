@@ -370,7 +370,6 @@ char *decode_e_expr_type(enum e_expr_type value) {
  case ET_EXPR_FCALL       : return "ET_EXPR_FCALL";
  case ET_EXPR_PDF_FCALL   : return "ET_EXPR_PDF_FCALL";
  case ET_EXPR_SHARED_FCALL: return "ET_EXPR_SHARED_FCALL";
- case ET_EXPR_MEMBER_FCALL: return "ET_EXPR_MEMBER_FCALL";
  case ET_EXPR_COLUMN      : return "ET_EXPR_COLUMN";
  case ET_EXPR_REPORT_EMAIL: return "ET_EXPR_REPORT_EMAIL";
  case ET_EXPR_REPORT_PRINTER: return "ET_EXPR_REPORT_PRINTER";

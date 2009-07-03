@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.103 2009-06-25 08:24:20 mikeaubury Exp $
+# $Id: pg8.c,v 1.104 2009-07-03 10:53:54 mikeaubury Exp $
 #*/
 
 
@@ -1649,7 +1649,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		ok=0;
 	}
 	
-  	if (singleton) { A4GL_free_cursor(statementName); }
+  	if (singleton) { A4GL_free_cursor(statementName,1); }
 	return ok;
   } else {
 
@@ -1908,7 +1908,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 	    }
 	}
  	if (res) { PQclear(res); res=0; }
-  	if (singleton) { A4GL_free_cursor(statementName); }
+  	if (singleton) { A4GL_free_cursor(statementName,1); }
       return 0;
     }
 
@@ -1927,7 +1927,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
    if (res) { PQclear(res); res=0; }
 
 
-  if (singleton) { A4GL_free_cursor(statementName); }
+  if (singleton) { A4GL_free_cursor(statementName,1); }
 
   return 1;
 }

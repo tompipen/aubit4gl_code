@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.188 2009-06-25 08:15:49 mikeaubury Exp $
+# $Id: report.c,v 1.189 2009-07-03 10:53:44 mikeaubury Exp $
 #
 */
 
@@ -1889,7 +1889,7 @@ A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread)
   A4GL_free_duplicate_binding (reread, n);
   SPRINTF2 (b2, "a4glrp_%lx%d", (long) (b), n);
   if (A4GL_find_prepare(b2)) {
-  	A4GL_free_cursor (b2);	// Actually a free prepare - but its the same function ;-)
+  	A4GL_free_cursor (b2,0);	// Actually a free prepare - but its the same function ;-)
   }
 
 }

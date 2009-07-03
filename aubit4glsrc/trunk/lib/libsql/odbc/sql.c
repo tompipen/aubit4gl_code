@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.233 2009-06-25 08:15:50 mikeaubury Exp $
+# $Id: sql.c,v 1.234 2009-07-03 10:53:54 mikeaubury Exp $
 #
 */
 
@@ -5187,7 +5187,7 @@ aclfgli_clr_err_flg();
         A4GL_fetch_cursor ("c_get_val2", 2, 1, 1, obind);
         if (a4gl_sqlca.sqlcode != 0) break;
     	A4GL_close_cursor ("c_get_val2",1);
-	A4GL_free_cursor ("c_get_val2");
+	A4GL_free_cursor ("c_get_val2",1);
 	strcpy(buff, obind[0].ptr);
 	return buff;
     }

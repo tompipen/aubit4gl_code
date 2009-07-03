@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.176 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: conv.c,v 1.177 2009-07-03 10:53:44 mikeaubury Exp $
 #
 */
 
@@ -226,7 +226,7 @@ int A4GL_mdectod (void *zz, void *aa, int sz_ignore);
 
 //static fgldecimal *dec_math (fgldecimal *s, fgldecimal *w, fgldecimal *r, char op);
 //static void match_dec (fgldecimal *f, fgldecimal *t, int *a, int *b);
-void A4GL_set_setdtype (int dtype, void *ptr);
+//void A4GL_set_setdtype (int dtype, void *ptr);
 int A4GL_dectod (void *zz, void *aa, int sz_ignore);
 int A4GL_d_to_dt (void *a, void *b, int size);
 int A4GL_dt_to_d (void *a, void *b, int size);

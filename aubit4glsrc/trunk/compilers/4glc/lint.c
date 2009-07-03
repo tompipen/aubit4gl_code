@@ -5546,11 +5546,11 @@ linearise_expressions (struct expr_str_list *list)
 	  }
 	  break;
 
-	case ET_EXPR_MEMBER_FCALL:
+	case ET_EXPR_MEMBER_FCALL_NEW:
 	  {
-	    struct s_expr_member_function_call *expr_member_function_call;
-	    expr_member_function_call = list->list.list_val[b]->expr_str_u.expr_member_function_call;
-	    cache_expression_list (list, expr_member_function_call->parameters);
+	    struct s_expr_member_function_call_n *expr_member_function_call_n;
+	    expr_member_function_call_n = list->list.list_val[b]->expr_str_u.expr_member_function_call_n;
+	    cache_expression_list (list, expr_member_function_call_n->parameters);
 	  }
 	  break;
 

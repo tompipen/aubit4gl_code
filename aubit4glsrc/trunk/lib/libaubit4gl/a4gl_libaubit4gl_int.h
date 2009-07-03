@@ -54,6 +54,7 @@ int getObject(int objectId, struct sObject **o) ;
 int ensureObject(char *type,int objectId, struct sObject **o) ;
 void A4GL_push_objectID (long p);
 void A4GL_object_dispose(int objectId);
+void A4GL_set_setdtype (int dtype, void *ptr);
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 
 

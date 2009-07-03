@@ -431,11 +431,14 @@ char buff[256];
 
 	print_prepare_cmd(&p,1);
   	print_copy_status_with_sql (0);
+
+
+	// The free on the prepare will splat any errors...
  	printc("if (a4gl_sqlca.sqlcode>=0) {");
 	print_execute_cmd(&e,1);
-        printc ("A4GL_free_cursor (\"%s\");\n",buff);
-	printc("}");
   	print_copy_status_with_sql (0);
+        printc ("A4GL_free_cursor (\"%s\",1);\n",buff);
+	printc("}");
   	print_undo_use(cmd_data->connid);
   return 1;
 }
@@ -449,7 +452,7 @@ print_free_cmd (struct_free_cmd * cmd_data)
   //struct expr_str *cursorname;
   print_cmd_start ();
 print_use_session(cmd_data->connid);
-  printc ("A4GL_free_cursor (%s);\n",get_ident_as_string(cmd_data->cursorname));
+  printc ("A4GL_free_cursor (%s,0);\n",get_ident_as_string(cmd_data->cursorname));
   print_copy_status_with_sql (0);
 print_undo_use(cmd_data->connid);
   return 1;

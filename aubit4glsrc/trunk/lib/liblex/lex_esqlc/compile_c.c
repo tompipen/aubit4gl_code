@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.497 2009-07-03 05:54:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.498 2009-07-03 10:53:45 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.497 2009-07-03 05:54:55 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.498 2009-07-03 10:53:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -269,24 +269,6 @@ static void real_print_expr (struct expr_str *ptr);
 =====================================================================
 */
 
-
-static int
-check_isobject (char *s)
-{
-
-  if (strcasecmp (s, "base.channel") == 0)
-    return DTYPE_OBJECT;
-  if (strcasecmp (s, "ui.window") == 0)
-    return DTYPE_OBJECT;
-  if (strcasecmp (s, "ui.form") == 0)
-    return DTYPE_OBJECT;
-  if (strcasecmp (s, "ui.interface") == 0)
-    return DTYPE_OBJECT;
-  if (strcasecmp (s, "ui.combobox") == 0)
-    return DTYPE_OBJECT;
-
-  return 0xff;
-}
 
 char *
 c_generation_trans_quote (char *s)
@@ -1611,7 +1593,6 @@ real_print_expr (struct expr_str *ptr)
       {
 	struct expr_str_list *i;
 	struct s_expr_bound_fcall *f;
-	int n;
 	if (is_in_report ())
 	  {
 	    set_doing_a_report_call ();
@@ -1648,107 +1629,45 @@ real_print_expr (struct expr_str *ptr)
 
 
 
-    case ET_EXPR_MEMBER_FCALL:
-      {
-	int a;
-	struct expr_str *vu_e;
-	int nparam = 0;
-	struct expr_str_list *l;
-	struct variable_usage *vu;
-	struct variable_usage *vu_top;
-	//struct variable *v=NULL;
-	//char errbuff[256];
-	//enum e_scope scope;
-	struct variable_usage *vu_n;
-	struct s_expr_member_function_call *p;
-	char *func;
-	char *s;
-	int datatype;
-	char errbuff[256];
-	enum e_scope scope;
+case ET_EXPR_MEMBER_FCALL_NEW:
+    {
+      struct s_expr_member_function_call_n *p;
+      int a;
+      int nparam = 0;
+      struct expr_str_list *l;
 
-	struct variable_usage *vu_bottom;
-	p = ptr->expr_str_u.expr_member_function_call;
-	l = p->parameters;
-	nparam = 0;
-	if (l)
-	  {
-	    nparam = l->list.list_len;
-	    for (a = 0; a < l->list.list_len; a++)
-	      {
-		real_print_expr (l->list.list_val[a]);
-	      }
-	  }
-	printc ("{");
-	printc ("      int _retvars;");
-	vu_e = p->var_usage_ptr;
-	vu = 0;
-	switch (vu_e->expr_type)
-	  {
-	  case ET_EXPR_VARIABLE_USAGE:
-	    vu_top = vu_e->expr_str_u.expr_variable_usage;
-	    break;
-	  default:
-	    break;
-	  }
-	if (vu_top == 0)
-	  {
-	    a4gl_yyerror ("Unable to get variable usage");
-	    return;
-	  }
-	vu = vu_top;
+	p = ptr->expr_str_u.expr_member_function_call_n;
+      l = p->parameters;
+      nparam = 0;
+      if (l)
+	{
+	  nparam = l->list.list_len;
+	  for (a = 0; a < l->list.list_len; a++) { real_print_expr (l->list.list_val[a]); }
+	}
+      printc ("{");
+      printc ("      int _retvars;");
+      if (p->datatype == DTYPE_OBJECT)
+	{			// object
+	  char class_func[2000];
+	  char basevar[2000];
 
-	while (vu->next)
-	  {
-	    vu_n = vu;
-	    vu = vu->next;
-	  }
-	// When  we get to here vu_n should be the last portion of the variale
-	// vu should be the function
-	vu_n->next = 0;
-	func = vu->variable_name;
-	s = generation_get_variable_usage_as_string (vu_top);
-	//A4GL_pause_execution();
-	//v=local_find_variable_from_usage(vu_top);
-	//v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
+	  if (p->var_usage_ptr)
+	    {
+		sprintf(basevar,"&%s", generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage));
+	      	sprintf (class_func, "%s.%s", p->objectType, p->funcName);
+	    }
+	  else
+	    {
+	      strcpy (basevar, "NULL");
+	      sprintf (class_func, "%s.%s", p->objectType, p->funcName);
+	    }
 
-	//
-	vu_bottom = usage_bottom_level (vu_top);
-	datatype = vu_bottom->datatype & DTYPE_MASK;
-	if (datatype == 0xff)
-	  {
-	    datatype = check_isobject (s);
-	    if (datatype != DTYPE_OBJECT)
-	      {
-		a4gl_yyerror ("is not an object type (1)");
-		return;
-	      }
-	  }
-
-	if (datatype == DTYPE_OBJECT)
-	  {			// object
-	    char class_func[2000];
-	    char basevar[200];
-	    sprintf (basevar, "&%s", s);
-
-	    if (strlen (vu_top->object_type))
-	      {
-		sprintf (class_func, "%s.%s", vu_top->object_type, func);
-	      }
-	    else
-	      {
-		strcpy (basevar, "NULL");
-		sprintf (class_func, "%s.%s", s, func);
-	      }
-
-	    printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT,
-		    class_func, nparam);
-	  }
-	else
-	  {
-	    printc ("_retvars=A4GL_call_datatype_function_i(&%s,%d,\"%s\",%d);\n", s, datatype, func, nparam);
-	  }
-
+	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT, class_func, nparam);
+	}
+      else
+	{	// Normal variable..
+	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage), p->datatype, p->funcName, nparam);
+	}
 	printc ("      if (_retvars!=1) {");
 	printc ("          A4GL_set_status(-3001,0);");
 	printc ("          A4GL_chk_err(%d,\"%s\");", p->line, p->module);
@@ -1756,9 +1675,9 @@ real_print_expr (struct expr_str *ptr)
 	printc ("          A4GL_push_null(2,0);");
 	printc ("      }");
 	printc ("}");
-      }
 
-      break;
+      return;
+    }
 
     case ET_EXPR_REPORT_PRINTER:
       printc ("A4GL_push_char(acl_getenv(\"DBPRINT\"));");
@@ -3148,106 +3067,44 @@ real_print_func_call (t_expr_str * fcall)
     }
 
 
-
-  if (fcall->expr_type == ET_EXPR_MEMBER_FCALL)
+  if (fcall->expr_type == ET_EXPR_MEMBER_FCALL_NEW)
     {
-      struct s_expr_member_function_call *p;
-      //struct expr_str_list *expr;
-      //int nargs;
+      struct s_expr_member_function_call_n *p;
       int a;
-      struct expr_str *vu_e;
       int nparam = 0;
       struct expr_str_list *l;
-      struct variable_usage *vu;
-      struct variable_usage *vu_top;
-      //struct variable *v;
-      char errbuff[256];
-      enum e_scope scope;
-      struct variable_usage *vu_n;
-      char *func;
-      char *s;
-      int datatype;
-      struct variable_usage *vu_bottom;
 
-      p = fcall->expr_str_u.expr_member_function_call;
-      //p = ptr->expr_str_u.expr_member_function_call;
+      p = fcall->expr_str_u.expr_member_function_call_n;
       l = p->parameters;
       nparam = 0;
       if (l)
 	{
 	  nparam = l->list.list_len;
-	  for (a = 0; a < l->list.list_len; a++)
-	    {
-	      real_print_expr (l->list.list_val[a]);
-	    }
+	  for (a = 0; a < l->list.list_len; a++) { real_print_expr (l->list.list_val[a]); }
 	}
       printc ("{");
       printc ("      int _retvars;");
-      vu_e = p->var_usage_ptr;
-      vu = 0;
-      switch (vu_e->expr_type)
-	{
-	case ET_EXPR_VARIABLE_USAGE:
-	  vu_top = vu_e->expr_str_u.expr_variable_usage;
-	  break;
-	default:
-	  break;
-	}
-      if (vu_top == 0)
-	{
-	  a4gl_yyerror ("Unable to get variable usage");
-	  return;
-	}
-      vu = vu_top;
-
-      while (vu->next)
-	{
-	  vu_n = vu;
-	  vu = vu->next;
-	}
-      // When  we get to here vu_n should be the last portion of the variale
-      // vu should be the function
-      vu_n->next = 0;
-      func = vu->variable_name;
-      s = generation_get_variable_usage_as_string (vu_top);
-      //v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
-      vu_bottom = usage_bottom_level (vu_top);
-      datatype = vu_bottom->datatype & DTYPE_MASK;
       printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-
-      if (datatype == 0xff)
-	{
-	  datatype = check_isobject (s);
-	  if (datatype != DTYPE_OBJECT)
-	    {
-	      set_yytext (s);
-	      a4gl_yyerror ("not an object type");
-	      return;
-	    }
-	}
-
-      if (datatype == DTYPE_OBJECT)
+      if (p->datatype == DTYPE_OBJECT)
 	{			// object
 	  char class_func[2000];
-	  char basevar[200];
-	  sprintf (basevar, "&%s", s);
-	  if (strlen (vu_top->object_type))
+	  char basevar[2000];
+	  if (p->var_usage_ptr)
 	    {
-	      sprintf (class_func, "%s.%s", vu_top->object_type, func);
+		sprintf(basevar, "&%s",generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage));
+	      	sprintf (class_func, "%s.%s", p->objectType, p->funcName);
 	    }
 	  else
 	    {
 	      strcpy (basevar, "NULL");
-	      sprintf (class_func, "%s.%s", s, func);
+	      sprintf (class_func, "%s.%s", p->objectType, p->funcName);
 	    }
 
-
-	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT,
-		  class_func, nparam);
+	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(%s,0x%x,\"%s\",%d);\n", basevar, DTYPE_OBJECT, class_func, nparam);
 	}
       else
-	{
-	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", s, datatype, func, nparam);
+	{	// Normal variable..
+	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_datatype_function_i(&%s,0x%x,\"%s\",%d);\n", generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage), p->datatype, p->funcName, nparam);
 	}
 
       print_reset_state_after_call (0);
@@ -7190,90 +7047,38 @@ local_expr_as_string (expr_str * s)
       return rbuff;
       return s->expr_str_u.expr_string;
 
-    case ET_EXPR_MEMBER_FCALL:
+    case ET_EXPR_MEMBER_FCALL_NEW:
       {
-	struct s_expr_member_function_call *p;
-	char *svar;
-	//struct expr_str_list *expr;
-	//int nargs;
-	int a;
-	struct expr_str *vu_e;
-	struct expr_str_list *l;
-	struct variable_usage *vu;
-	struct variable_usage *vu_top;
-	struct variable *v;
-	char errbuff[256];
-	enum e_scope scope;
-	struct variable_usage *vu_n;
-	char *func;
-	int datatype;
-	struct variable_usage *vu_bottom;
+	struct s_expr_member_function_call_n *p;
+        int a;
+        int nparam = 0;
+        struct expr_str_list *l;
 
-	p = s->expr_str_u.expr_member_function_call;
-	//p = ptr->expr_str_u.expr_member_function_call;
-	vu_e = p->var_usage_ptr;
-	vu = 0;
-	switch (vu_e->expr_type)
-	  {
-	  case ET_EXPR_VARIABLE_USAGE:
-	    vu_top = vu_e->expr_str_u.expr_variable_usage;
-	    break;
-	  default:
-	    break;
-	  }
-	if (vu_top == 0)
-	  {
-	    a4gl_yyerror ("Unable to get variable usage");
-	    return "";
-	  }
-	vu = vu_top;
 
-	while (vu->next)
-	  {
-	    vu_n = vu;
-	    vu = vu->next;
-	  }
-	// When  we get to here vu_n should be the last portion of the variale
-	// vu should be the function
-	vu_n->next = 0;
-	func = vu->variable_name;
-	svar = generation_get_variable_usage_as_string (vu_top);
-	//v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
-	vu_bottom = usage_bottom_level (vu_top);
-	datatype = vu_bottom->datatype & DTYPE_MASK;
+	p = s->expr_str_u.expr_member_function_call_n;
 
-	if (datatype == 0xff)
-	  {
-	    datatype = check_isobject (svar);
-	    if (datatype != DTYPE_OBJECT)
-	      {
-		set_yytext (svar);
-		a4gl_yyerror ("not an object type");
-		return "";
-	      }
-	  }
 
-	if (datatype == DTYPE_OBJECT)
-	  {			// object
+	if (p->datatype==DTYPE_OBJECT)
+	  {			// object 
 	    char class_func[2000];
 	    char basevar[200];
-	    sprintf (basevar, "&%s", svar);
-	    if (strlen (vu_top->object_type))
-	      {
-		sprintf (class_func, "%s.%s", vu_top->object_type, func);
-	      }
-	    else
-	      {
-		strcpy (basevar, "NULL");
-		sprintf (class_func, "%s.%s", svar, func);
-	      }
-
+          if (p->var_usage_ptr)
+            {
+                sprintf(basevar, "&%s",generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage));
+                sprintf (class_func, "%s.%s", p->objectType, p->funcName);
+            }
+          else
+            {
+		// Object static
+              strcpy (basevar, "NULL");
+              sprintf (class_func, "%s.%s", p->objectType, p->funcName);
+            }
 
 	    sprintf (rbuff, "A4GL_call_datatype_function_i_as_int(%s,0x%x,\"%s\")\n", basevar, DTYPE_OBJECT, class_func);
 	  }
 	else
 	  {
-	    sprintf (rbuff, "A4GL_call_datatype_function_i_as_int(&%s,0x%x,\"%s\")\n", svar, datatype, func);
+	    sprintf (rbuff, "A4GL_call_datatype_function_i_as_int(&%s,0x%x,\"%s\")\n", generation_get_variable_usage_as_string(p->var_usage_ptr->expr_str_u.expr_variable_usage), p->datatype, p->funcName);
 	  }
 	return rbuff;
       }

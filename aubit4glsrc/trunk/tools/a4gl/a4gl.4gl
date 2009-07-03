@@ -149,6 +149,35 @@ if sqlca.sqlcode<0 then
 	call err_createtables()
 end if
 
+if dbms_dialect()  MATCHES "*POSTGRES*" then
+
+	# Create the trigger to handle the SERIAL on 'entity'
+	execute immediate "CREATE OR REPLACE FUNCTION get_next_entity_entity() RETURNS TRIGGER AS $$"||
+	" BEGIN"||
+    	" IF NEW.entity = 0 then"||
+      	" SELECT nextval('entity_entity_seq') into NEW.entity;"||
+   	" ELSE"||
+      	" IF NEW.entity > 0 THEN"||
+         	" PERFORM setval('entity_entity_seq',NEW.entity);"||
+   	" END IF;"||
+	" END IF;"||
+	" RETURN NEW;"||
+	" END;"||
+	"$$ LANGUAGE plpgsql"
+
+	if sqlca.sqlcode<0 then
+		call err_createtables()
+	end if
+
+	execute immediate "drop trigger sertrig_entity_entity on entity"
+	execute immediate "create trigger sertrig_entity_entity before insert on entity for each row execute procedure get_next_entity_entity()"
+if sqlca.sqlcode<0 then
+	call err_createtables()
+end if
+
+end if
+
+
 whenever error stop
 
 end function

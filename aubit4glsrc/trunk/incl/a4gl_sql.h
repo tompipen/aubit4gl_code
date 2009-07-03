@@ -92,7 +92,7 @@ void A4GL_set_sqlerrm (char *m, char *p);
 
 
 // Cursor handling...
-void A4GL_free_cursor(char* cursor_name) ;
+void A4GL_free_cursor(char* cursor_name,int partOfAnotherCommand) ;
 int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) ;
 int A4GL_open_cursor(char* s,int no,void* vibind) ;
 void A4GL_flush_cursor(char* cursor) ;

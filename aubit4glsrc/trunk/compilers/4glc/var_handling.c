@@ -53,6 +53,22 @@ set_variable_usage_substr (struct variable_usage *var, int sub, expr_str *val)
 
 
 
+int A4GL_check_isobject_name(char *s) {
+
+  if (strcasecmp (s, "base.channel") == 0)
+    return DTYPE_OBJECT;
+  if (strcasecmp (s, "ui.window") == 0)
+    return DTYPE_OBJECT;
+  if (strcasecmp (s, "ui.form") == 0)
+    return DTYPE_OBJECT;
+  if (strcasecmp (s, "ui.interface") == 0)
+    return DTYPE_OBJECT;
+  if (strcasecmp (s, "ui.combobox") == 0)
+    return DTYPE_OBJECT;
+
+  return 0;
+}
+
 
 // Check to see if an expression is a Member function call - and if it is - does it have
 // an alias.
@@ -63,38 +79,21 @@ set_variable_usage_substr (struct variable_usage *var, int sub, expr_str *val)
 // is a 'member' function call - which does an initialize - so we might as well issue an
 // initialize command instead !
 struct command *check_for_member_call_alias(expr_str *p_fcall,expr_str_list *p_returning) {
-	struct variable_usage *u;
-	struct variable_usage *utop;
+	//struct variable_usage *u;
+	//struct variable_usage *utop;
 	struct variable_usage *ubottom;
-	if (p_fcall->expr_type!=ET_EXPR_MEMBER_FCALL) {
+	if (p_fcall->expr_type!=ET_EXPR_MEMBER_FCALL_NEW) {
 		return NULL;
 	}
 
-	u=p_fcall->expr_str_u.expr_member_function_call->var_usage_ptr->expr_str_u.expr_variable_usage;
-	utop=u;
-	ubottom=NULL;
-	while (u->next!=NULL) {
-			ubottom=u;
-			u=u->next;
-	}
 
-	if (A4GL_aubit_strcasecmp(u->variable_name,"clear")==0) {
+	if (A4GL_aubit_strcasecmp(p_fcall->expr_str_u.expr_member_function_call_n->funcName, "clear")==0) {
 			struct expr_str_list *plist;
 			ubottom->next=NULL;
-			plist=A4GL_new_ptr_list(p_fcall->expr_str_u.expr_member_function_call->var_usage_ptr);
+			plist=A4GL_new_ptr_list(p_fcall->expr_str_u.expr_member_function_call_n->var_usage_ptr);
 			// Its really an INITIALIZE not a clear...
 			return new_init_cmd(plist,NULL,1);
 	}
-
-#ifdef notyet
-	if (A4GL_aubit_strcasecmp(u->variable_name,"deleteelement")==0) {
-			struct expr_str_list *plist;
-			ubottom->next=NULL;
-			plist=A4GL_new_ptr_list(p_fcall->expr_str_u.expr_member_function_call->var_usage_ptr);
-			// Its really an INITIALIZE not a clear...
-			return new_init_cmd(plist,NULL,1);
-	}
-#endif
 
 
 	return NULL;

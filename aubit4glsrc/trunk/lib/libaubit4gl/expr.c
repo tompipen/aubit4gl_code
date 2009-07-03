@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.37 2009-07-02 13:03:27 mikeaubury Exp $
+# $Id: expr.c,v 1.38 2009-07-03 10:53:44 mikeaubury Exp $
 #
 */
 
@@ -193,8 +193,8 @@ expr_name (enum e_expr_type e)
       return "ET_EXPR_PDF_FCALL";
     case ET_EXPR_SHARED_FCALL:
       return "ET_EXPR_SHARED_FCALL";
-    case ET_EXPR_MEMBER_FCALL:
-      return "ET_EXPR_MEMBER_FCALL";
+    case ET_EXPR_MEMBER_FCALL_NEW:
+      return "ET_EXPR_MEMBER_FCALL_NEW";
     case ET_EXPR_COLUMN:
       return "ET_EXPR_COLUMN";
     case ET_EXPR_REPORT_EMAIL:
@@ -383,12 +383,12 @@ A4GL_new_ptr_list (struct expr_str *ptr)
 struct expr_str_list *
 A4GL_new_append_ptr_list (struct expr_str_list *l, struct expr_str *ptr)
 {
-int lvl=0;
   l->list.list_len++;
   l->list.list_val = realloc (l->list.list_val, sizeof (struct expr_str) * l->list.list_len);
   l->list.list_val[l->list.list_len - 1] = ptr;
 #ifdef DEBUG_OBJECT_TYPE
 if (ptr->expr_type==ET_EXPR_VARIABLE_USAGE) {
+int lvl=0;
 struct variable_usage *u=ptr->expr_str_u.expr_variable_usage;
 while (u) {
 		printf("Lvl:%d\n",lvl); fflush(stdout);
@@ -999,8 +999,37 @@ A4GL_new_expr_extend (struct expr_str *ptr, int to)
   return p2;
 }
 
+/*
+struct s_expr_member_function_call_n {
+        struct expr_str *var_usage_ptr;
+        str funcName;
+        str objectType;
+        str namespace;
+        expr_str_list *parameters;
+        str module;
+        int line;
+};
+*/
 
+struct expr_str *
+A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, char *objtype, int datatype, struct expr_str_list *params, char *mod, int line, char *p_namespace) {
+  struct s_expr_member_function_call_n *p;
+  struct expr_str *p2;
+  p = malloc (sizeof (struct s_expr_member_function_call_n));
+  p2 = A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL_NEW);
+  p->var_usage_ptr = var_usage_ptr;
+  p->funcName=strdup(funcname);
+  p->objectType=strdup(objtype);
+  p->datatype=datatype;
+  p->parameters = params;
+  p->namespace = strdup (p_namespace);
+  p->module = strdup (mod);
+  p->line = line;
+  p2->expr_str_u.expr_member_function_call_n = p;
+  return p2;
+}
 
+/*
 struct expr_str *
 A4GL_new_expr_member_fcall (struct expr_str *var_usage_ptr, struct expr_str_list *params, char *mod, int line, char *p_namespace)
 {
@@ -1016,6 +1045,7 @@ A4GL_new_expr_member_fcall (struct expr_str *var_usage_ptr, struct expr_str_list
   p2->expr_str_u.expr_member_function_call = p;
   return p2;
 }
+*/
 
 
 struct expr_str *

@@ -79,6 +79,7 @@ struct expr_str *A4GL_new_quoted_string (char *value);
 struct expr_str *A4GL_new_expr_aligned(enum e_expr_type etype, struct expr_str *text, struct expr_str *to);
 struct expr_str *A4GL_new_expr_tag(struct expr_str *text, struct expr_str *tag) ;
 struct expr_str *A4GL_new_select_list_item_expr(struct s_select_list_item *s) ;
+struct expr_str * A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, char *objtype, int datatype, struct expr_str_list *params, char *mod, int line, char *p_namespace) ;
 
 //struct expr_str *new_select_list_query(struct s_select *s1);
 #ifdef MOVED

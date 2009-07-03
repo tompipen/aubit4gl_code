@@ -2361,7 +2361,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
 
-    case ET_EXPR_MEMBER_FCALL:
+    case ET_EXPR_MEMBER_FCALL_NEW:
       A4GL_assertion (1, "Not implemented");
       break;
 

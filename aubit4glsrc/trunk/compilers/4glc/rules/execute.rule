@@ -35,7 +35,7 @@ execute_cmd : opt_use2_p EXECUTE atline stmt_id_p {
                 $<cmd>$=new_execute_cmd($<ptr>1, $<ptr_list>6, $<ptr_list>8, $<ptr>4);
                 add_feature("EXECUTE");
         }
-        | opt_use2_p EXECUTE_IMMEDIATE atline char_or_var_vl {
+        | opt_use2_p EXECUTE_IMMEDIATE atline fgl_expr_c {
 		    set_cmdlineno($<integer_val>3);
                 add_feature("EXECUTE_IMMEDIATE");
                 $<cmd>$=new_execute_immediate_cmd($<ptr>1, $<ptr>4);
