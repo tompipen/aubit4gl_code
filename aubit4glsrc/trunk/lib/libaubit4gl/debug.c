@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.68 2009-04-29 13:36:40 mikeaubury Exp $
+# $Id: debug.c,v 1.69 2009-07-04 12:40:10 mikeaubury Exp $
 #
 */
 
@@ -132,6 +132,11 @@ open_debugfile (void)
 }
 
 
+#define MAX_DEBUG 90000
+#ifndef DEBUG
+void A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func, char *fmt, ...) {
+}
+#else
 
 void
 A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const char *func, char *fmt, ...)
@@ -150,7 +155,6 @@ A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const 
     }
 
   static va_list args;
-#define MAX_DEBUG 90000
   static char buff[MAX_DEBUG + 1];
   static int a;
   static int dbg_level = -1;
@@ -268,6 +272,7 @@ A4GL_debug_full_extended_ln (char *fname, long lineno, const char *level, const 
   indebug = 0;
 
 }
+#endif
 
 /**
  * The A4GL_debug function.

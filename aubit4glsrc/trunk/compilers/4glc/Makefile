@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.48 2009-04-01 11:55:08 mikeaubury Exp $
+# $Id: Makefile,v 1.49 2009-07-04 12:40:09 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -82,7 +82,25 @@ CMODS_LIB       =\
                 		${Y_TAB_C} \
                 		${WANTKW_C}
 
+CMODS_LIB_OPT       =\
+				API_lex.c API_parse_self.c  \
+				compile.c class.c clobber.c \
+				dim.c \
+				field_handling.c \
+				globals.c \
+				import.c labels.c insert_curs.c fix_insert.c \
+				linearise.c \
+				rules/generated/kw.c \
+				list.c lexer.c lex.c  expr_munging.c lint.c \
+                                mod.c commands.c  map.c extendedmap.c parsehelp.c common.c \
+                                ../../lib/generated/std_funcs.c  \
+                                var_handling.c variables.c variables_new.c \
+                		${Y_TAB_C} \
+                		${ROOT}/compilers/4glc/rules/generated/states_optimised.c
+
+
 CMODS           =${CMODS_EXE} ${CMODS_LIB}
+CMODS_OPT       =${CMODS_EXE} ${CMODS_LIB_OPT}
 
 ifneq "${GETOPT_LONG}" "yes"
 	ifeq "${GETOPT_LONG}" "iberty"
@@ -93,7 +111,9 @@ ifneq "${GETOPT_LONG}" "yes"
 endif
 
 4GLCAOBJ		=${CMODS:.c=.o}
+4GLCAOBJ_OPT		=${CMODS_OPT:.c=.op}
 OBJS_LIB		=${CMODS_LIB:.c=.o}
+OBJS_LIB_OPT		=${CMODS_LIB_OPT:.c=.op}
 
 #Use this to create dependency for the parser:
 RULES_SRC		=$(wildcard rules/*.reqd) $(wildcard rules/*.rule) $(wildcard rules/sqlpack/infx/*.rule)
@@ -105,7 +125,7 @@ RULES_SRC		=$(wildcard rules/*.reqd) $(wildcard rules/*.rule) $(wildcard rules/s
 
 ifdef COMSPEC
 	ALL			=${ROOT}/lib/lib4glc${SO_EXT}
-    CMODS		=${CMODS_EXE}
+    	CMODS		=${CMODS_EXE}
 	4GLCAOBJ	=${CMODS:.c=.o}
     4GL_LIB     =-l4glc
 endif
@@ -337,6 +357,25 @@ fgllink: fgllink.o API_lex.o expr_munging.o linearise.o common.o ../../lib/gener
 	$(CC) -I$(ROOT)/incl -rdynamic -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	cp fgllink $(AUBITDIR)/bin
 
+
+${ROOT}/compilers/4glc/rules/generated/states_optimised.c: rules/generated/mk_states.c mk_states_opt.c
+	gcc -DMKSTATESOPTS -g -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated  rules/generated/mk_states.c  -o ${ROOT}/compilers/4glc/rules/generated/mk_states_optimised
+	${ROOT}/compilers/4glc/rules/generated/mk_states_optimised > ${ROOT}/compilers/4glc/rules/generated/states_optimised.c
+	
+
+%.op:%.c
+	gcc -Wall -DOPTIMIZED -c -o $@ -O3 -fPIC -DPIC -DSRC_TREE  -DHAVE_CONFIG_H  -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated -I${ROOT}/compilers/4glc/rules $<
+
+optclean:
+	find . -name "*.op" -exec rm {} \;
+
+opt: ../../bin/4glc_opt
+../../bin/4glc_opt: ${4GLCAOBJ_OPT} 
+	echo ${LD_EXE}
+	echo ${AUBIT_LIB} 
+	echo ${4GL_LIB} 
+	echo  ${EXTRASYSTEMLIBS}
+	${LD} -rdynamic -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
 
 # --------------------------------- EOF -----------------------------
 

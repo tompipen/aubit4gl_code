@@ -84,6 +84,7 @@ END {
       print " "
    }
    print "#include \"mk_states_1.h\""
+	print "#include \"mk_states_opt.c\""
    
         print "/* andrej moved here from top: */"
         print "int FGLPARSE_allow_token_state(int yystate,int yytoken) {"

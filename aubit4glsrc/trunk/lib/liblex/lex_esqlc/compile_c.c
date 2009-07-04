@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.498 2009-07-03 10:53:45 mikeaubury Exp $
+# $Id: compile_c.c,v 1.499 2009-07-04 12:40:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.498 2009-07-03 10:53:45 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.499 2009-07-04 12:40:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -217,6 +217,7 @@ extern int get_rep_no_orderby (void);
 void print_variable_usage_for_bind (expr_str * v);
 static void print_function_variable_init (variable_list * fvars);
 int chk_ibind_select_internal (struct s_select *s);
+static char *get_objectTypeAsStringForBind(expr_str *bindvar);
 //char *get_variable_usage_as_string(struct variable_usage *u ) ;
 /*
 =====================================================================
@@ -776,14 +777,22 @@ open_outfile (void)
   strcpy (buff, ctime (&ttime));
   A4GL_trim_nl (buff);
 
+  if (A4GL_isyes(acl_getenv("INCLTIMEINCFILE"))) {
   FPRINTF (outfile, "static char const _rcsid[]=\"$FGLIdent: %s.4gl Compiler-%s%d Time:%s Log:%s $\";\n", this_module_name,
 	   A4GL_internal_version (), A4GL_internal_build (), buff, logtxt);
+	} else {
+  FPRINTF (outfile, "static char const _rcsid[]=\"$FGLIdent: %s.4gl Compiler-%s%d  Log:%s $\";\n", this_module_name,
+	   A4GL_internal_version (), A4GL_internal_build (),  logtxt);
+
+	}
 
   FPRINTF (outfile, "static void a4gl_show_compiled_version(void) {\n");
   FPRINTF (outfile, "printf(\"Log: %s\\n\");\n", escape_quotes_and_remove_nl (logtxt));
   FPRINTF (outfile, "printf(\"Aubit4GL Version: %s%d\\n\");\n", A4GL_internal_version (), A4GL_internal_build ());
 
-  FPRINTF (outfile, "printf(\"Compiled Time %s\\n\");\n", buff);
+  if (A4GL_isyes(acl_getenv("INCLTIMEINCFILE"))) {
+  	FPRINTF (outfile, "printf(\"Compiled Time %s\\n\");\n", buff);
+	}
   FPRINTF (outfile, "exit(0);\n");
   FPRINTF (outfile, "}\n\n");
 
@@ -2768,7 +2777,7 @@ print_param_g (char i, char *fname, struct expr_str_list *bind)
   if (bind->list.list_len == 0)
     {
       set_suppress_lines ();
-      printc ("{NULL,0,0,0,0,0}");
+      printc ("{NULL,0,0,0,0,0,NULL}");
     }
   else
     {
@@ -2779,7 +2788,7 @@ print_param_g (char i, char *fname, struct expr_str_list *bind)
 	  dtype = get_binding_dtype (bind->list.list_val[a]);
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{NULL,%d,%d,0,0,0}", (int) dtype & 0xffff, (int) dtype >> 16);
+	  printc ("{NULL,%d,%d,0,0,0,%s}", (int) dtype & 0xffff, (int) dtype >> 16, get_objectTypeAsStringForBind(bind->list.list_val[a]));
 
 	}
     }
@@ -4439,6 +4448,20 @@ print_bind_definition_g (struct expr_str_list *l, char i)
 }
 
 
+static char *get_objectTypeAsStringForBind(expr_str *bindvar) {
+	if (bindvar->expr_type==ET_EXPR_VARIABLE_USAGE) {
+		struct variable_usage *vu;
+		vu=bindvar->expr_str_u.expr_variable_usage;
+		if (strlen(vu->object_type)) {
+			static char buff[256];
+			sprintf(buff,"\"%s\"",vu->object_type);
+			return buff;
+		}
+		
+	}
+	return "NULL";
+}
+
 
 int
 print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char lbind_type)
@@ -4490,7 +4513,7 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
 	  if (lbind->list.list_len == 0)
 
 	    {
-	      printc ("{NULL,0,0,0,0,0}");
+	      printc ("{NULL,0,0,0,0,0,NULL}");
 	    }
 
 	  for (a = 0; a < lbind->list.list_len; a++)
@@ -4500,19 +4523,23 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
 		{
 		  // chk_init_var (lbind->list.list_val[a].varname);
 		  A4GL_assertion (1, "check_initvar was previously called");
-		  printc ("{NULL,%d,%d,0,0,0}%c", (int) get_binding_dtype (lbind->list.list_val[a]) & 0xffff,
-			  (int) get_binding_dtype (lbind->list.list_val[a]) >> 16, (a < lbind->list.list_len - 1) ? ',' : ' ');
+		  printc ("{NULL,%d,%d,0,0,0,%s}%c", (int) get_binding_dtype (lbind->list.list_val[a]) & 0xffff,
+			  (int) get_binding_dtype (lbind->list.list_val[a]) >> 16, 
+				get_objectTypeAsStringForBind(lbind->list.list_val[a]),
+(a < lbind->list.list_len - 1) ? ',' : ' '
+		);
 		}
 	      else
 		{
 
-		  printc ("{NULL,%d,%d,0,0,0}%c",
+		  printc ("{NULL,%d,%d,0,0,0,%s}%c",
 			  (int) get_binding_dtype (lbind->list.list_val[a]) & 0xffff,
 			  (int) get_binding_dtype (lbind->list.list_val[a]) >> 16,
 			  /*
 			     get_start_char_subscript (lbind->list.list_val[a]),
 			     get_end_char_subscript (lbind->list.list_val[a]), 
 			   */
+				get_objectTypeAsStringForBind(lbind->list.list_val[a]),
 			  (a < lbind->list.list_len - 1) ? ',' : ' ');
 	    }} printc ("\n}; \n");
 
@@ -4581,6 +4608,9 @@ local_print_bind_set_value_g (struct expr_str_list *bind, int ignore_esqlc, int 
     {
       for (a = 0; a < bind->list.list_len; a++)
 	{
+
+
+
 	  if (!ignore_esqlc && doing_esql ())
 	    {
 	      printc ("native_binding_i[%d].ptr= &_vi_%d; ", a, a);

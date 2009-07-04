@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.328 2009-05-26 12:16:56 mikeaubury Exp $
+# $Id: mod.c,v 1.329 2009-07-04 12:40:09 mikeaubury Exp $
 #
 */
 
@@ -3073,8 +3073,9 @@ struct s_select_list_item_list * prval;
  * and some checks/debugs/breakpoints etc
  * */
 struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i) {
- struct s_select_list_item_list * prval;
+ struct s_select_list_item_list * prval=NULL;
  struct variable_usage *u;
+
  if (i->data.type !=E_SLI_VARIABLE_USAGE) {
   	prval=new_select_list_item_list(i);
   	return prval;

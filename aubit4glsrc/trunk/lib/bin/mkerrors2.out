@@ -374,3 +374,4 @@
 390|Not an object of type ui.window - or not initialized
 391|Not an object of type ui.form - or not initialized
 392|Type cannot be converted to an object (%s)
+394|expects 0 parameter

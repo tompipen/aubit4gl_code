@@ -4576,11 +4576,11 @@ int isCalled=0;
     {
       struct module_entry *m;
       char *repname = 0;
-      char *module;
+      char *module=NULL;
       int r_outputed = 0;
       int r_started = 0;
       int r_finished = 0;
-      int lineno;
+      int lineno=0;
       m = this_module.module_entries.module_entries_val[mcnt];
       switch (m->met_type)
 	{

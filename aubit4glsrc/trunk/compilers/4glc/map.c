@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.50 2008-07-06 11:34:25 mikeaubury Exp $
+# $Id: map.c,v 1.51 2009-07-04 12:40:09 mikeaubury Exp $
 #*/
 
 /**
@@ -226,7 +226,7 @@ rm_quotes (char *s)
   if (*s == 0)
     return;
 
-  for (d = s; *s; *s++)
+  for (d = s; *s; s++)
     {
       if (*s != '"')
 	*d++ = *s;

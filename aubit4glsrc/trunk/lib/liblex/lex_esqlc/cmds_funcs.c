@@ -2203,7 +2203,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
 		}
 		dtype=encode_variable_datatype(v2->var_data.variable_data_u.v_simple.datatype, v2->var_data.variable_data_u.v_simple.dimensions[0], v2->var_data.variable_data_u.v_simple.dimensions[1]);
 
-	 	printc("{NULL,%d,%d,0,0,0}%s", dtype&DTYPE_MASK,DECODE_SIZE(dtype), (a==v->var_data.variable_data_u.v_record.variables.variables_len)?"":",");
+	 	printc("{NULL,%d,%d,0,0,0,NULL}%s", dtype&DTYPE_MASK,DECODE_SIZE(dtype), (a==v->var_data.variable_data_u.v_record.variables.variables_len)?"":",");
 	}
 	printc("};");
 
@@ -2237,7 +2237,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
                         vu_next->next->variable_id=a;
 			vu_as_expr=A4GL_new_expr_push_variable(vu_top, is_in_report());
 			set_nonewlines();
-			printc("obind[%d].ptr= &",a);
+			printc("obind[%d].ptr= &",a); // cant use objects in display array - so worry about object_type/objectType
 			print_variable_usage(vu_as_expr);
 			printc(";");
 			clr_nonewlines();
@@ -2247,7 +2247,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
 	// Its a simple array of a single datatype
 	// just a little easier than the record !
   	cnt = 1;
-	printc("static struct BINDING obind[1]={ {NULL,%d,%d,0,0,0} };",v->var_data.variable_data_u.v_simple.datatype &DTYPE_MASK,DECODE_SIZE(v->var_data.variable_data_u.v_simple.datatype));
+	printc("static struct BINDING obind[1]={ {NULL,%d,%d,0,0,0,NULL} };",v->var_data.variable_data_u.v_simple.datatype &DTYPE_MASK,DECODE_SIZE(v->var_data.variable_data_u.v_simple.datatype));
 	set_nonewlines();
 	printc("obind[0].ptr= &");
 	print_variable_usage(cmd_data->arrayname);
@@ -2662,7 +2662,7 @@ int inp_flags=0;
 		}
 		dtype=encode_variable_datatype(v2->var_data.variable_data_u.v_simple.datatype, v2->var_data.variable_data_u.v_simple.dimensions[0], v2->var_data.variable_data_u.v_simple.dimensions[1]);
 
-	 	printc("{NULL,%d,%d,0,0,0}%s /* 1 */", dtype&DTYPE_MASK,DECODE_SIZE(dtype), (a==v->var_data.variable_data_u.v_record.variables.variables_len)?"":",");
+	 	printc("{NULL,%d,%d,0,0,0,NULL}%s /* 1 */", dtype&DTYPE_MASK,DECODE_SIZE(dtype), (a==v->var_data.variable_data_u.v_record.variables.variables_len)?"":",");
 	}
 	printc("};");
 
@@ -2695,7 +2695,7 @@ int inp_flags=0;
                         vu_next->next->variable_id=a;
 			vu_as_expr=A4GL_new_expr_push_variable(vu_top, is_in_report());
 			set_nonewlines();
-			printc("obind[%d].ptr= &",a);
+			printc("obind[%d].ptr= &",a); // cant use objects in display array - so worry about object_type/objectTyp
 			print_variable_usage(vu_as_expr);
 			printc(";");
 			clr_nonewlines();
@@ -2707,9 +2707,9 @@ int inp_flags=0;
   	cnt = 1;
 	int dtype;
 		dtype=encode_variable_datatype(v->var_data.variable_data_u.v_simple.datatype, v->var_data.variable_data_u.v_simple.dimensions[0], v->var_data.variable_data_u.v_simple.dimensions[1]);
-	printc("static struct BINDING obind[1]={ {NULL,%d,%d,0,0,0} }; /* 2 */",dtype &DTYPE_MASK,DECODE_SIZE(dtype));
+	printc("static struct BINDING obind[1]={ {NULL,%d,%d,0,0,0,NULL} }; /* 2 */",dtype &DTYPE_MASK,DECODE_SIZE(dtype));
 	set_nonewlines();
-	printc("obind[0].ptr= &");
+	printc("obind[0].ptr= &"); // cant use objects in display array - so worry about object_type/objectTyp
 	print_variable_usage(cmd_data->arrayname);
 	printc("[0];");
 	clr_nonewlines();

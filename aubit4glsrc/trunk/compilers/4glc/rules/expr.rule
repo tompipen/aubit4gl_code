@@ -842,7 +842,7 @@ cast_dtype:
 member_fcall: 
  	variable_usage_expression  OPEN_BRACKET opt_func_call_args CLOSE_BRACKET   {
                 struct variable *v;
-                struct variable_usage *vu_top,*vu, *vu_n,*vu_bottom;
+                struct variable_usage *vu_top=NULL,*vu=NULL, *vu_n=NULL,*vu_bottom=NULL;
 		int datatype;
 		struct expr_str *var;
                 char errbuff[256]="";

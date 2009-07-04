@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.128 2009-05-24 18:26:59 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.129 2009-07-04 12:40:10 mikeaubury Exp $
 */
 
 /**
@@ -91,6 +91,7 @@ extern "C"
     long start_char_subscript;
     long end_char_subscript;
     void *libptr;
+	char *objectType;
   };
 
 

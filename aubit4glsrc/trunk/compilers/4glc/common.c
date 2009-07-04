@@ -552,7 +552,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	//  Its an object ..
 		struct variable *avar;
 	  	struct variable_usage *next;
-		struct variable *vrec;
+		struct variable *vrec=NULL;
 		int vtype;
 		next = vu->next;
 
@@ -656,7 +656,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	//  Its an associative array..
 		struct assoc_array_variable *avar;
 	  	struct variable_usage *next;
-		struct variable *vrec;
+		struct variable *vrec=NULL;
 		int vtype;
 		next = vu->next;
 		avar=&v->var_data.variable_data_u.v_assoc;

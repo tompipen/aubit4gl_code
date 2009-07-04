@@ -98,6 +98,9 @@ char *A4GL_get_current_comments(int lineno,int colno) {
 	char *ptr;
 	char buff[200000]="";
 	strcpy(buff,"");
+	if (A4GL_isyes(acl_getenv("DONTSAVECOMMENTS"))) {
+		return "";	
+	}
 	ptr=A4GL_has_comment(lineno,colno);
 	while (ptr) {
 		if (strlen(buff)) strcat(buff,"\n");

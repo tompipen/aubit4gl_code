@@ -960,7 +960,7 @@ struct command *print_linked_cmd (int type, expr_str *var)
   //char tabname[640];
   //char pklist[256];
   //int ni;
-   struct command *cmd;
+   struct command *cmd=NULL;
 
 #ifdef FIXME
   if (last_var_is_linked (tabname, pklist))

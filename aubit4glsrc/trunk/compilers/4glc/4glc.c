@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.76 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: 4glc.c,v 1.77 2009-07-04 12:40:09 mikeaubury Exp $
 #
 */
 
@@ -98,9 +98,14 @@ main (int argc, char *argv[])
     struct rlimit rl;
 #endif
 
+#ifdef OPTIMIZED
+	A4GL_setenv("DONTSAVECOMMENTS","Y",1); // Dont store the comments in the parse tree - only need for lint etc..
+#endif
 
   A4GL_setarg0 (argv[0]);
+#ifdef DEBUG
   A4GL_debug ("Initializing 4glc\n");
+#endif
   memset(infilename,0,sizeof(infilename));
    //init_blk();
   //init_states ();
@@ -164,7 +169,9 @@ main (int argc, char *argv[])
 
   //A4GL_write_generated_code(module);
 
+#ifdef DEBUG
   A4GL_debug ("Exiting 4glc");
+#endif
   exit (x);
 }
 

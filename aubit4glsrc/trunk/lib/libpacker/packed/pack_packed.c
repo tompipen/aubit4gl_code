@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.48 2009-05-03 17:59:59 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.49 2009-07-04 12:40:10 mikeaubury Exp $
 #*/
 
 /**
@@ -197,7 +197,9 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *versi
 
       infile = A4GL_open_file_dbpath (buff);
       if (infile) {
+#ifdef DEBUG
 		A4GL_debug("Got infile : %p\n",infile);
+#endif
 	return 1;
 	}
       return 0;
@@ -223,7 +225,9 @@ A4GLPacker_A4GL_close_packer (char dir)
 	    fclose (outfile);
     } else {
 	    // funny - nothing opened...
+#ifdef DEBUG
 	    A4GL_debug("Couldn't close packer - it wasn't open");
+#endif
     }
   }
 
@@ -232,7 +236,9 @@ A4GLPacker_A4GL_close_packer (char dir)
     		fclose (infile);
 	  } else {
 	    // funny - nothing opened...
+#ifdef DEBUG
 	    A4GL_debug("Couldn't close packer - it wasn't open");
+#endif
 	  }
   }
 }
@@ -274,7 +280,9 @@ A4GLPacker_output_end_array (char *s, int type, int len)
 int
 A4GLPacker_output_short (char *name, short val, int ptr, int isarr)
 {
+#ifdef DEBUG
   A4GL_debug ("Outputing SHORT %s : 0x%x", name, val);
+#endif
   val = a4gl_htons (val);
   return fwrite (&val, 1, sizeof (val), outfile);
 }
@@ -282,7 +290,9 @@ A4GLPacker_output_short (char *name, short val, int ptr, int isarr)
 int
 A4GLPacker_output_char (char *name, char val, int ptr, int isarr)
 {
+#ifdef DEBUG
   A4GL_debug ("Outputing CHAR %s : 0x%x", name, val);
+#endif
   return fwrite (&val, 1, sizeof (char), outfile);
 }
 
@@ -312,10 +322,14 @@ int
 A4GLPacker_output_long (char *name, long val, int ptr, int isarr)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("Outputing LONG %s - 0x%x (%x)\n", name, val,a4gl_htonl (val));
+#endif
   val = a4gl_htonl (val);
   a = fwrite (&val, 1, sizeof (val), outfile);
+#ifdef DEBUG
   A4GL_debug ("a=%d\n", a);
+#endif
   return a;
 }
 
@@ -344,15 +358,21 @@ A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
   //printf ("Output string - %s length first (%d) pos=%ld\n", val,strlen (val), ftell (outfile));
 	//fflush(stdout);
 	
+#ifdef DEBUG
   A4GL_debug ("Output string - length first (%d)", strlen (val));
   A4GL_debug ("Output string -  pos=%ld", ftell (outfile));
+#endif
   A4GLPacker_output_long (name, strlen (val), ptr, isarr);
+#ifdef DEBUG
   A4GL_debug ("outputing string itself (%s)", val);
+#endif
   a = fwrite (val, 1, strlen (val), outfile);
 
   if (strlen (val) == 0)
     a = 1;
+#ifdef DEBUG
   A4GL_debug ("pos now = %d", ftell (outfile));
+#endif
 
   //printf("Written\n");fflush(stdout);
 
@@ -377,7 +397,9 @@ A4GLPacker_output_double (char *name, double val, int ptr, int isarr)
 int
 A4GLPacker_output_start_struct (char *s, char *n, int ptr, int isarr)
 {
+#ifdef DEBUG
   A4GL_debug ("Starting struct %s\n", s);
+#endif
   return 1;
 }
 
@@ -462,7 +484,10 @@ A4GLPacker_input_start_array (char *s, int type, int *len)
   int a;
   a = A4GLPacker_input_int (s, len, 0, -1);
   if (!a) { A4GL_debug("Failed to read array %s",s); }
+#ifdef DEBUG
   A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
+
+#endif
   return a;
 }
 
@@ -509,13 +534,17 @@ int a;
     {
       long z=0;
       a=A4GLPacker_input_long (name, &z, ptr, isarr);
+#ifdef DEBUG
 	A4GL_debug("Read : %d",  z);
+#endif
 	*val=z;
     }
   else
     {
       a=A4GLPacker_input_short (name, (short *) val, ptr, isarr);
+#ifdef DEBUG
 	A4GL_debug("Read : %d", * (int *) val);
+#endif
     }
   if (!a) { A4GL_debug("Failed to read int %s",name); }
 return a;
@@ -532,7 +561,9 @@ A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
   /* long n; */
   a = fread (val, 1, sizeof (long), infile);
   //if (ferror(infile)) { printf("ferr too %d\n",errno); }
+#ifdef DEBUG
   A4GL_debug("LONG Got %s %x %x",name,*val, a4gl_ntohl (*val));
+#endif
   *val = a4gl_ntohl (*val);
   if (!a) { A4GL_debug("Failed to read long %s",name); }
   return a;
@@ -572,15 +603,21 @@ long l;
 int a;
 char *xptr;
 
+#ifdef DEBUG
   A4GL_debug ("Inputing string '%s'", name);
+#endif
 //  A4GL_debug ("xxxxxxxxxxxx calling A4GLPacker_input_long()");
 
   if (!A4GLPacker_input_long (name, &l, 0, -1)) {
+#ifdef DEBUG
 	  A4GL_debug ("wwwwwwwwwwwwwww ZERO!");
+#endif
 	return 0;
   }
   A4GL_assertion(l<0||l>64000,"Dubious length of string") ;
+#ifdef DEBUG
   A4GL_debug ("Got length as 0x%d", l);
+#endif
 	xptr=acl_malloc2_With_Context (l+1);	/* Extra 1 for the \0 */
  A4GL_assertion(xptr==0,"Failed to allocate memory");
   *val = xptr;
@@ -589,7 +626,9 @@ char *xptr;
   
   if (a == 0 && l == 0)
     return 1;
+#ifdef DEBUG
 A4GL_debug("Got string : %s",*val);
+#endif
   return a;
 }
 
