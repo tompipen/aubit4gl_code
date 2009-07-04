@@ -1,0 +1,15 @@
+/*
+=====================================================================
+                        Source: sleep.rule
+=====================================================================
+*/
+
+sleep_cmd : SLEEP atline fgl_expr_c {
+		add_feature("SLEEP");
+		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_sleep_cmd(chk_expr($<ptr>3));
+		
+	}
+;
+
+

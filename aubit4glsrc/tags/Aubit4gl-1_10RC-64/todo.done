@@ -1,0 +1,90 @@
+
+
+Please occasionally remove items that are completed from this list.
+
+
+4GL
+	implement extend() 4GL function ** DONE
+	implement datetime() & interval() 4GL functions ** DONE
+	'thru' on display etc ************** DONE
+	initialize array/record containing array ** DONE
+	Allow auto initialize of function variables (As per pcode) ** DONE (And module level too - globals still outstanding)
+	Add globals header file into variable declaration ** DONE
+	Create function names export ** DONE - they are included in the .glb
+        Dynamic arrays ** DONE (mostly )
+
+
+Enhancements
+
+	as a fix for hard-coded DATABASE directive in .4gl and .per files,
+	make an option on the compiler (every compiler that might need to access
+	the database - 4glc, fcompile...). --database=dbname@theserver
+        EXECUTE IMMEDIATE ** DONE
+        The concatenation operator <string-expr> || <string-expr>  ** DONE
+        SQL/ END SQL blocks
+
+
+ESQL/C
+	Fix OPEN USING in esql/c (in lex)                     *** DONE IN LEX
+	Fix FETCH (relative/absolute etc)                     *** DONE
+	Fix Declare SCROLL/WITH HOLD/FOR UPDATE in esql/c LEX *** DONE
+	Fix Declare INTO in esql/c LEX                        *** DONE
+	
+
+
+FIXME's
+
+
+GTK
+
+
+UI
+        Implement proper message stack (current way doesn't work properly) **DONE
+        Add fldbuf & infield for multiple fields **DONE
+
+Other unimplemented functions
+	Pause in reports  *** done using prompt...
+        INPUT ARRAY  ** DONE
+        ERROR - needs a window... **DONE
+        get_fldbuf  ** DONE
+        check infield etc ** DONE
+
+
+SQL Parser
+	IN (variable,variable) ** DONE
+	add extend() SQL function into parser *********** DONE
+
+
+SQL plugins
+
+ACE
+
+XML-RPC
+
+TUI
+        implement Field attribute hierarchy ** DONE
+        implement Field expression parsing ** DONE (for most expressions..)
+        implement attribute 'lines' hierarchy ** DONE
+        clean up construct... ** DONE
+
+PERL
+
+CVS
+
+Build system & make files
+
+
+MANUALS
+
+WEBSITE
+
+PACKAGING
+
+MISC
+
+Windows port
+
+
+Ad-Hoc Bug Fixes
+----------------
+
