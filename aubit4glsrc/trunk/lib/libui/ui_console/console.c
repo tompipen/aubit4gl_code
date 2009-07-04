@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.50 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: console.c,v 1.51 2009-07-04 18:45:54 mikeaubury Exp $
 #*/
 
 /**
@@ -613,7 +613,7 @@ int
  UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text, char *style)
 {
   char *promptstr;
-  int width;
+  //int width=0;
   struct s_prompt *prompt;
   prompt = vprompt;
 
@@ -623,8 +623,8 @@ int
   prompt->charmode = c;
   prompt->promptstr = promptstr;
   prompt->lastkey = 0;
-  width -= strlen (promptstr);
-  width--;
+  //width -= strlen (promptstr);
+  //width--;
   A4GL_set_status (0, 0);
   printf ("%s", promptstr);
   fflush (stdout);

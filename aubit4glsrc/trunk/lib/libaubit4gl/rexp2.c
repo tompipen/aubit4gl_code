@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.58 2008-11-13 21:28:04 mikeaubury Exp $
+# $Id: rexp2.c,v 1.59 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -630,7 +630,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
 	      || (zz > 1 && A4GL_is_construct_op (constr_bits[zz], 0, NULL) != OR))
 	    {
 	      //int n;
-	      int parts[10];
+	      int parts[33];
 	      //char buff[2000];
 	      if (!A4GL_valid_int (constr_bits[zz], parts, 0))
 		{

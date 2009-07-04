@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.167 2009-06-13 10:23:48 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.168 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -3112,7 +3112,7 @@ get_dollared_sql_var (char *s)
 {
   static char buff[256];
   char buff2[256];
-  char *c;
+  char *c=NULL;
 
   if (A4GL_aubit_strcasecmp (s, "$TODAY") == 0)
     {
@@ -3145,7 +3145,7 @@ get_dollared_sql_var (char *s)
   if (A4GL_aubit_strcasecmp (s, "$DBUSER") == 0)
     {
       SPRINTF1 (buff, "'%s'", A4GL_get_connection_username ());
-      acl_free (c);
+      //acl_free (c);
       return buff;
     }
 

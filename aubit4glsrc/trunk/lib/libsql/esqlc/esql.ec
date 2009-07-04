@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.235 2009-06-25 08:15:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.236 2009-07-04 18:45:53 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.235 2009-06-25 08:15:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.236 2009-07-04 18:45:53 mikeaubury Exp $";
 #endif
 
 
@@ -2771,7 +2771,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
   char *inputDescriptorName;
   char *outputDescriptorName;
   int save_ni=-1;
-  struct BINDING *save_ibind;
+  struct BINDING *save_ibind=NULL;
 
   EXEC SQL END DECLARE SECTION;
 
@@ -3049,7 +3049,7 @@ A4GLSQLLIB_A4GLSQL_put_insert_internal (char *cursor, void *vibind, int n)
 {
   exec sql begin declare section;
   char *cursorName;
-  char *descriptorName;
+  char *descriptorName=NULL;
   struct s_sid *sid;
   struct s_cid *cid;
   exec sql end declare section;

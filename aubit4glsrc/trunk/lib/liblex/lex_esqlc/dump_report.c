@@ -767,8 +767,8 @@ report_orderby_section *report_orderby_section, void *report_output_section , re
 ) {
 int a;
 int cnt;
-int order_by_type;
-char *asc_desc;
+int order_by_type=0;
+char *asc_desc=NULL;
 char namespaced_report_name[256];
 
 

@@ -465,7 +465,7 @@ char * get_ibind_usage_nl (int a, char *context,struct expr_str *var) {
 char * get_sql_variable_usage_internal (variable_usage * u, char dir)
 {
   struct expr_str *e;
-  int a;
+  int a=0;
   static char smbuff[2000];
   e = A4GL_new_expr_push_variable (u, is_in_report());
 
@@ -1080,7 +1080,7 @@ char *cname;
 int
 print_put_cmd (struct_put_cmd * cmd_data)
 {
-int n;
+int nvar=0;
 struct expr_str_list *bind;
 
 bind=cmd_data->values;
@@ -1163,7 +1163,7 @@ if (bind && bind->list.list_len==0) {
   if (bind && bind->list.list_len) {
   printc ("{ /*ins1 */\n");
 
-  n = print_bind_definition_g (bind,'i');
+  nvar = print_bind_definition_g (bind,'i');
   print_bind_set_value_g (bind,'i');
   print_conversions_g (bind,'i');
   }
@@ -1190,7 +1190,7 @@ if (bind && bind->list.list_len) {
 
 		if (bind_using_literals) {
 
-		for (a=0;a<n;a++) {
+		for (a=0;a<nvar;a++) {
 			set_nonewlines();
 			switch (bind->list.list_val[a]->expr_type) {
 			case ET_EXPR_NULL:
@@ -1206,14 +1206,14 @@ if (bind && bind->list.list_len) {
 				printc("%s", get_esql_ident_as_string(bind->list.list_val[a]));
 			}
 
-			if (a<n-1) printc(",");
+			if (a<nvar-1) printc(",");
 			clr_nonewlines();
 		}
 		} else {
-		for (a=0;a<n;a++) {
+		for (a=0;a<nvar;a++) {
 			set_nonewlines();
 				printc("%s",get_ibind_usage (a,"PUT",  bind->list.list_val[a]));
-			if (a<n-1) printc(",");
+			if (a<nvar-1) printc(",");
 			clr_nonewlines();
 			}
 		}
@@ -1223,11 +1223,11 @@ if (bind && bind->list.list_len) {
   else
     {
 
-      if (n)
+      if (nvar)
 	{
 	int a;
 	  printc ("FROM ");
-	  for (a = 0; a < n; a++)
+	  for (a = 0; a < nvar; a++)
 	    {
 	      if (a)
 		printc (",");
@@ -1848,7 +1848,7 @@ char *prepname=0;
 int var_cname;
 int var_prepname;
 char *vcname;
-char *stmt;
+char *stmt=NULL;
 char buff[2000];
 	int converted;
 int block_started=0;

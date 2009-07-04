@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.160 2009-07-01 16:02:44 mikeaubury Exp $
+# $Id: ops.c,v 1.161 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -67,21 +67,15 @@ void A4GL_smfloat_float_ops (int op);
 void A4GL_float_smfloat_ops (int op);
 void A4GL_smfloat_smfloat_ops (int op);
 void A4GL_char_dt_ops (int op);
-//void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 void A4GL_int_int_ops (int op);
 int A4GL_dectos (void *z, void *w, int size);
-//char * A4GL_make_using_tostring (char *ptr, int d, int n);
 
 void A4GL_add_default_operations (void);
 void A4GL_dt_in_ops (int op);
 void A4GL_in_dt_ops (int op);
-//void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
-//void A4GL_ltrim(char *s) ;
 void A4GL_dt_char_ops (int op);
 void A4GL_dt_dt_ops (int op);
-//int A4GL_ctodt (void *a, void *b, int size);
-//int A4GL_ctoint (void *a, void *b, int size);
 
 
 char *A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
@@ -199,10 +193,7 @@ char *
 A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 {
   static char buff_1[256];
-//int n,l;
-//fgldecimal *p_d;
   char *ptr2;
-//int string_sz;
   char *ptr;
 
   ptr2 = p;
@@ -225,13 +216,8 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
       return buff_1;
     }
 
-//size=(NUM_DIG(ptr2)<<8)+NUM_DEC(ptr2);
   A4GL_push_dec (p, 0, size);
 
-//n=NUM_DIG(ptr2);
-//l=NUM_DEC(ptr2);
-//string_sz=n;
-//if (l) string_sz++;
 
 
   ptr = A4GL_make_using_tostring (ptr2, size >> 8, size & 255);	//,string_sz,n*2,l);
@@ -485,8 +471,6 @@ A4GL_mon_dec_ops (int op)
   long l2;
   double dbl;
   int d;
-  //char *a1;
-  //char *a2;
   
   A4GL_pop_sized_decimal(&b);
   A4GL_pop_sized_decimal(&a);
@@ -591,12 +575,8 @@ A4GL_dec_mon_ops (int op)
   long l2;
   double dbl;
   int d;
-  //char *a1;
-  //char *a2;
   A4GL_pop_sized_decimal(&b);
   A4GL_pop_sized_decimal(&a);
-  //A4GL_pop_var2 (&b, 5, 0x2010);
-  //A4GL_pop_var2 (&a, 5, 0x2010);
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
@@ -803,10 +783,7 @@ A4GL_dec_sm_ops (int op)
   long l2;
   double dbl;
   int d;
-  //char *a1;
-  //char *a2;
   A4GL_pop_var2 (&b, 5, 0x2000);
-  //A4GL_pop_var2 (&a, 5, 0x2010);
   A4GL_pop_sized_decimal(&a);
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
@@ -1330,8 +1307,6 @@ A4GL_dec_smfloat_ops (int op)
   long l2;
   double dbl;
   int d;
-  //char *a1;
-  //char *a2;
   A4GL_pop_sized_decimal_from_float(&b,6);
   A4GL_pop_sized_decimal(&a);
 
@@ -3820,6 +3795,7 @@ A4GL_in_date_ops (int op)
 
 }
 
+
 /**
  * Add all the default operations to the system
  *
@@ -5320,13 +5296,22 @@ A4GL_in_char_ops (int op)
   A4GL_debug ("Got stuff off stack...");
 #endif
 
+
+
   // Not normal to add two strings...
-  A4GL_whats_in_a_string (ptr, &d2, &s2);
-
-
-
+  	A4GL_whats_in_a_string (ptr, &d2, &s2);
+	
   A4GL_push_interval (&in1, s1);
+  
+#ifdef DEBUG
+A4GL_debug("Here.. %d %d",d2,s2);
 
+#endif
+
+
+#ifdef DEBUG
+A4GL_debug("Here..");
+#endif
   done1 = 0;
   if (d2 == DTYPE_CHAR)
     {
@@ -5372,7 +5357,13 @@ A4GL_in_char_ops (int op)
       A4GL_assertion (1, "Unhandled character operation");
     }
 
+#ifdef DEBUG
+A4GL_debug("Here..");
+#endif
   A4GL_pushop (op);
+#ifdef DEBUG
+A4GL_debug("Here..");
+#endif
   return;
 }
 
@@ -7447,6 +7438,9 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
   *d = DTYPE_CHAR;
   *sz = strlen (s);
 
+
+	if (strcmp(s,"0-1")==0) { *d=DTYPE_INTERVAL; *sz=0x612; }
+
   orig_conv_ok = A4GL_conversion_ok (-1);
 
   if (strchr (s, a4gl_convfmts.ui_decfmt.decsep))
@@ -7544,13 +7538,16 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
     }
 
 
+
+
+
 // Lets put right what might have gone wrong..
   a4gl_status = orig_stat;
   A4GL_conversion_ok (orig_conv_ok);
 
   for (a = 0; a <= 10; a++)
     {
-      int size_b;
+      int size_b=0;
       for (b = a; b <= 10; b++)
 	{
 	  char str[256];
@@ -7563,13 +7560,16 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 	  if ((a == 0 || a == 1) && b > 1)
 	    continue;
 
-	  if (A4GL_valid_int (str, ibuff, size_b))
+	  if (A4GL_valid_int (str, NULL , size_b))
 	    {
 #ifdef DEBUG
 	      A4GL_debug ("Possible INTERVAL %d to %d", a, b);
 #endif
 	      *d = DTYPE_INTERVAL;
 	      *sz = size_b;
+#ifdef DEBUG
+	      A4GL_debug ("returning %d %d %d %x", a, b, *d,*sz);
+#endif
 	      return;
 	    }
 

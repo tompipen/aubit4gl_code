@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.227 2009-06-26 17:05:31 gyver309 Exp $
+# $Id: ioform.c,v 1.228 2009-07-04 18:45:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.227 2009-06-26 17:05:31 gyver309 Exp $";
+		"$Id: ioform.c,v 1.228 2009-07-04 18:45:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -1362,7 +1362,7 @@ void
 A4GL_turn_field_on2 (FIELD * f, int a)
 {
   struct struct_scr_field *fprop;
-  int xx;
+  int xx=0;
   A4GL_assertion (f == 0, "Field is zero in turn_field_on2");
   A4GL_debug ("Turn field on %p %d", f, a);
   fprop = (struct struct_scr_field *) (field_userptr (f));
@@ -3648,7 +3648,7 @@ A4GL_copy_field_data (struct s_form_dets *form,int var_dtype)
   char buff2[8000] = "";
   FORM *mform;
   int ppr;
-  int x, y;
+  int x=0, y=0;
   struct struct_scr_field *fprop;
   mform = form->form;
   A4GL_debug ("form->currentfield=%p", form->currentfield);
@@ -4727,7 +4727,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	      //int mm;
 	      int rval;
 	      char *mmm_s;
-	      int mmm;
+	      int mmm=0;
 	      int dd;
 	      //int yyyy;
 	      int yy;

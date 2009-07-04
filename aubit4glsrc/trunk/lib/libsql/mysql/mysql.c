@@ -744,7 +744,7 @@ A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
   int dtype;
   int prc;
   MYSQL_FIELD *field;
-  int rval;
+  int rval=0;
 
   if (type == 6)
     return mysql_stmt_affected_rows (stmt);
@@ -2446,7 +2446,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 	  //MYSQL_ROW row;
 	  int dtype;
 	  int prc;
-	  int sz;
+	  int sz=0;
 	  my_bool *ind;
 	  unsigned long *longs;
 	  int *dtypes;

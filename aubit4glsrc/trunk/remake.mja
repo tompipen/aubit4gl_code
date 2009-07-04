@@ -28,7 +28,7 @@ then
 
 	export CFLAGS=-g 
 	rm /home/aubit4gl/aubit4gl/bin/aubit-config
-	./configure  --with-unixodbc=/usr/local/unixODBC --without-sapdb  --prefix=/home/aubit4gl/aubit4glbin --without-curl
+	./configure  --with-unixodbc=/usr/local/unixODBC --without-sapdb  --prefix=/home/aubit4gl/aubit4glbin --without-curl --enable-optimised
 
  #--with-pgodbc=/usr/local  
 

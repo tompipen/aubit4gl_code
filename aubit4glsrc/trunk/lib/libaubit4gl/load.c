@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.58 2009-06-25 08:15:49 mikeaubury Exp $
+# $Id: load.c,v 1.59 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -1117,7 +1117,7 @@ aclfgl_aclfgl_split_on_delimiter (int n)
   int ml;
   char *delim = "|";
   char *cptr[MAXLOADCOLS];
-  char *lbuff;
+  char *lbuff=NULL;
 
   if (n == 1)
     {

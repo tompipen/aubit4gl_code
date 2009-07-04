@@ -24666,9 +24666,9 @@ if test "$enable_optimised" = "yes" ; then
       { $as_echo "$as_me:$LINENO: result: yes" >&5
 $as_echo "yes" >&6; }
       AUBIT_DEBUG=0
-      A4GL_CFLAGS="$CFLAGS -O3 -DNODEBUG"
+      A4GL_CFLAGS="$CFLAGS -O2 -DNODEBUG"
       DBGFLAG=
-      STD_CFLAGS="$STD_CFLAGS -O3"
+      STD_CFLAGS=" -O2"
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
     A4GL_CFLAGS="$CFLAGS -g -Wall -DDEBUG"
@@ -61885,7 +61885,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.430 2009-07-04 12:40:02 mikeaubury Exp $
+| $Id: configure,v 1.431 2009-07-04 18:45:45 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

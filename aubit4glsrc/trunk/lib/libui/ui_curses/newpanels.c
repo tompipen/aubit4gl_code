@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.174 2009-06-11 12:45:38 mikeaubury Exp $
+# $Id: newpanels.c,v 1.175 2009-07-04 18:45:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.174 2009-06-11 12:45:38 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.175 2009-07-04 18:45:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -535,7 +535,7 @@ void
  UILIB_A4GL_remove_window (char *win_name)
 {
   int a;
-  int form_created_with_window;
+  int form_created_with_window=0;
   WINDOW *win = 0;
 char buff[256]="";
   PANEL *panel = 0;

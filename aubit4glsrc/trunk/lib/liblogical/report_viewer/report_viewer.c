@@ -737,7 +737,7 @@ void gtk_object_set_data_from_int (void *obj, char *name,int data) {
 
 int fontSIZE(GtkWidget *parent, char *str, int type, PangoFontDescription * desc)
 {
-int width, height, ret;
+int width, height, ret=0;
 //PangoFontDescription *desc;
 PangoLayout *layout = pango_layout_new (gtk_widget_get_pango_context (parent /* drawing area, e.g. */));
 

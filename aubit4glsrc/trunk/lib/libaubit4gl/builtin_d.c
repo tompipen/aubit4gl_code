@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.105 2009-07-01 16:02:44 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.106 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -1281,6 +1281,9 @@ A4GL_push_interval (struct ival *p, int size)
 {
   struct ival *ptr;
   struct ival *ival;
+#ifdef DEBUG
+  A4GL_debug ("in push interval");
+#endif
   ptr = (struct ival *) acl_malloc (sizeof (struct ival), "push_ival");
   memset (ptr, 0, sizeof (struct ival));
   memcpy (ptr, p, sizeof (struct ival));

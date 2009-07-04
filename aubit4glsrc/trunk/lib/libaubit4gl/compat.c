@@ -434,14 +434,14 @@ _locate (void *b, int x, int y, char *z)
 }
 
 
-void fgl_end() {
+void fgl_end(void) {
 }
 
 int fgl_start(char *s) {
 	return 1;
 }
 
-int fgl_exitfm() {
+int fgl_exitfm(void) {
 	A4GL_gotolinemode();
 	return 1;
 }

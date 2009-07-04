@@ -55,11 +55,11 @@ yywrap (void)
 
 
 int is_column_name(char *s) {
-int a;
+int a=0;
 struct s_field_pos_list *x;
 
 if (m_filedef->delim!=0) {
-	if (s[0]!='f'&&s[a]!='F') return 0;
+	if (s[0]!='f'&&s[0]!='F') return 0;
 	if (strlen(s)<=2) return 0; // just f, or f?
 	
 	for (a=1;a<strlen(s);a++) {

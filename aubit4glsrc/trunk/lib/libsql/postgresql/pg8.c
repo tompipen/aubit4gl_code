@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.104 2009-07-03 10:53:54 mikeaubury Exp $
+# $Id: pg8.c,v 1.105 2009-07-04 18:45:54 mikeaubury Exp $
 #*/
 
 
@@ -1649,6 +1649,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
 		ok=0;
 	}
 	
+  	statementName =n->statementName;
   	if (singleton) { A4GL_free_cursor(statementName,1); }
 	return ok;
   } else {
@@ -3261,7 +3262,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
       int a;
       int buff2cnt = 0;
       int next_param = 0;
-      int param;
+      int param=0;
 	int instr=0;
       int sl;
 	sl= strlen (stmt);

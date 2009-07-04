@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: generic_ui.c,v 1.158 2009-05-07 15:05:00 mikeaubury Exp $";
+  "$Id: generic_ui.c,v 1.159 2009-07-04 18:45:54 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3013,7 +3013,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	      //int mm;
 	      int rval;
 	      char *mmm_s;
-	      int mmm;
+	      int mmm=0;
 	      int dd;
 	      //int yyyy;
 	      int yy;

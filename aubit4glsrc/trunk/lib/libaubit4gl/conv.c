@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.177 2009-07-03 10:53:44 mikeaubury Exp $
+# $Id: conv.c,v 1.178 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -4163,9 +4163,10 @@ int
 A4GL_valid_int (char *s, int *data, int size)
 {
   int a;
-  char buff[256];
-  char *ptr[256];
-  char type[256];
+  static char buff[256];
+  static char *ptr[256];
+  static char type[256];
+  int data_z[32];
   int dt_type;
   int b;
   int i;
@@ -4179,12 +4180,16 @@ A4GL_valid_int (char *s, int *data, int size)
     0
   };
 
+  //if (strcmp(s,"0-1")==0) { return 1; }
+
   if (strlen (s) == 0)
     return 0;
-  for (i = 0; i < 32; i++)
-    {
-      data[i] = 0;
-    }
+
+  if (data==NULL) {
+		data=data_z;
+  }
+ for (i = 0; i < 32; i++) { data[i] = 0; }
+  
 
   size_type = (size >> 4) & 15;
 #ifdef DEBUG

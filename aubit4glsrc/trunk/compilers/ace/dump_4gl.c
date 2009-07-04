@@ -105,7 +105,7 @@ main (int argc, char *argv[])
   int a;
   int *used;
   int nused;
-  char *name_param;
+  char *name_param=NULL;
   fout = stdout;
   used=malloc(sizeof(int)*argc);
 

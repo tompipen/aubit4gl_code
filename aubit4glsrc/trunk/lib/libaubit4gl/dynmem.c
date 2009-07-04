@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.8 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: dynmem.c,v 1.9 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -112,7 +112,7 @@ A4GL_alloc_dynarr (void *var_ptr, void *old_ptr, int dim1, int dim2, int dim3, i
   a->dims[2] = dim2;
   a->dims[3] = dim3;
   a->dims[4] = dim4;
-  a->dims[5] = dim5;
+  //a->dims[5] = dim5;
 
   a->total_mem = total_bytes;
   a->var_ptr = var_ptr;

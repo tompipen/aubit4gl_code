@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.83 2009-03-25 17:27:58 mikeaubury Exp $
+# $Id: helper.c,v 1.84 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -1498,7 +1498,7 @@ A4GL_tea_string_decipher (char *s)
 {
   char buff[1000];
   static char buff_out[1000];
-  char smbuff[5];
+  char smbuff[15];
   int a;
   long key[4];
   char rbuff[9];

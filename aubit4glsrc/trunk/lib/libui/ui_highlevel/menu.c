@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.53 2009-05-07 08:11:45 mikeaubury Exp $";
+  "$Id: menu.c,v 1.54 2009-07-04 18:45:54 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -673,7 +673,7 @@ A4GL_debug("menu_loop_type_1");
       else
 	{
 	  ACL_Menu_Opts *f = menu->first;
-	  int found;
+	  int found=0;
 	  int res = 0;
 	  /* first check optkey */
 

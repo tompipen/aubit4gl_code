@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.90 2009-07-03 10:53:45 mikeaubury Exp $
+# $Id: sql_common.c,v 1.91 2009-07-04 18:45:51 mikeaubury Exp $
 #
 */
 
@@ -356,7 +356,7 @@ A4GL_set_sqlerrm (char *m, char *p)
       return;
     }
   strncpy (a4gl_sqlca.sqlerrm, m, sizeof (a4gl_sqlca.sqlerrm));
-  a4gl_sqlca.sqlerrm[sizeof (a4gl_sqlca.sqlerrm)] = 0;
+  a4gl_sqlca.sqlerrm[sizeof (a4gl_sqlca.sqlerrm)-1] = 0;
   strncpy (a4gl_sqlca.sqlerrp, p, 8);
   a4gl_sqlca.sqlerrp[8] = 0;
 }

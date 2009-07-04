@@ -371,7 +371,7 @@ generate_qrcode (PDF * p, char *str, double xpos, double ypos, double pdfwidth, 
   int version = 1;
   int level = QR_ECLEVEL_L;
   int mask = -1;
-  QRcode *qrcode;
+  QRcode *qrcode=NULL;
   QRinput *input = 0;
   int x;
   int y;

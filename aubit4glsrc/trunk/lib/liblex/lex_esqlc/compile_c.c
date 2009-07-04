@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.499 2009-07-04 12:40:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.500 2009-07-04 18:45:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.499 2009-07-04 12:40:10 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.500 2009-07-04 18:45:52 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4466,7 +4466,7 @@ static char *get_objectTypeAsStringForBind(expr_str *bindvar) {
 int
 print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char lbind_type)
 {
-  int a;
+  int a=0;
   struct expr_str_list empty;
   empty.list.list_len = 0;
   empty.list.list_val = 0;
