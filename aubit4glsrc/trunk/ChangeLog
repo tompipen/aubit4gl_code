@@ -1,4 +1,31 @@
 ---------------------------
+Sun Jul  5 10:37:24 BST 2009
+---------------------------
+1.10RC_64 Released
+---------------------------
+	
+	add --enable-optimised Some other minor performance improvements
+	
+	indentation
+	
+	Add getlength for dynamic arrays
+	
+	More UI_XML extensions (initial ui.form & ui.window)
+	
+	Major updates to Object extensions.  Allow base.channel variables
+	Allow DISPLAY NULL TO .. as alias for CLEAR Add ON CHANGE (for XML
+	UI only atm) Allow charvariable.substring(x,y) Add
+	interface.ui.loadToolbar, interface.ui.loadActionDefaults,
+	interface.ui.loadStyles for XML UI Add CALL ui.Interface.FrontCall
+	for XML UI
+	
+	fixup for build tests 1643 and 1653 ...
+	
+	Bugfix for broken decimal separator support in INPUT ARRAY
+	
+	Fixed debug message (decimal format info)
+	
+---------------------------
 Thu Jun 25 09:09:02 BST 2009
 ---------------------------
 1.10RC_63 Released
