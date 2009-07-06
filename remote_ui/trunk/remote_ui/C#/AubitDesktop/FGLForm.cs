@@ -372,6 +372,9 @@ namespace AubitDesktop
                         lb = (AubitDesktop.Xml.XMLForm.Label)child;
                         Label l;
                         l = new Label();
+                        l.BackColor = System.Drawing.SystemColors.Control;
+                        l.ForeColor = System.Drawing.SystemColors.ControlText;
+
                         if (isJustLines(lb.text))
                         {
                             // We'll fake a line by using a panel with a border...
@@ -901,6 +904,8 @@ namespace AubitDesktop
                     FORMLABEL flabel = (FORMLABEL)o;
                     Label l;
                     l = new Label();
+                    l.BackColor = System.Drawing.SystemColors.Control;
+                    l.ForeColor = System.Drawing.SystemColors.ControlText;
                     if (isJustLines(flabel.Text))
                     {
                         Panel p;
