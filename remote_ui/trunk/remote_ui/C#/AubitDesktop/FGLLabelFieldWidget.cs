@@ -178,6 +178,8 @@ namespace AubitDesktop
             this.SetWidget(thisAttribute, ma,row,index, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             l = new Label();
             l.TextAlign = ContentAlignment.MiddleLeft;
+            l.BackColor = System.Drawing.SystemColors.Control;
+            l.ForeColor = System.Drawing.SystemColors.ControlText;
             SizeControl(ma,index,l);
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
             //if (this.Text == "") this.Text = tabcol;
