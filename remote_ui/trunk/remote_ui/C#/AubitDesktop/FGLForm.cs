@@ -120,7 +120,7 @@ namespace AubitDesktop
                         thisLayoutControlsPanel.Top = 0;
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         thisLayoutControlsPanel.Left = 0;
-                        thisLayoutControlsPanel.AutoSize = true;
+                        
                         if (p.border)
                         {
                             thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
@@ -133,6 +133,7 @@ namespace AubitDesktop
                             addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
                         }
                         thisLayoutControlsPanel.ResumeLayout();
+                        thisLayoutControlsPanel.AutoSize = true;
                     }
                     break;
                 #endregion
@@ -799,7 +800,7 @@ namespace AubitDesktop
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
-            thisFormsPanel.AutoSize = true;
+            
             thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
             thisFormsPanel.Dock = DockStyle.Fill;
 
@@ -836,10 +837,12 @@ namespace AubitDesktop
                         addLayoutToParentForXmlForm( thisFormsPanel, o);
                         break;
 
+
                     default:
                         throw new ApplicationException("Invalid object to add to parent for xmlform (top level)");
                 }
 
+                thisFormsPanel.AutoSize = true;
                 // MessageBox.Show(data, "Not implemented yet");
             }
         }
@@ -921,6 +924,7 @@ namespace AubitDesktop
                         this.thisFormsPanel.Controls.Add(l);
                     }
                     continue;
+                    thisFormsPanel.AutoSize = true;
                 }
 
                 if (o is FORMFIELD)
