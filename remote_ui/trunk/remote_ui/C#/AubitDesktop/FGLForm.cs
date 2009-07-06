@@ -856,9 +856,9 @@ namespace AubitDesktop
                         throw new ApplicationException("Invalid object to add to parent for xmlform (top level)");
                 }
 
-                thisFormsPanel.AutoSize = true;
                 // MessageBox.Show(data, "Not implemented yet");
             }
+                thisFormsPanel.AutoSize = true;
         }
         #endregion
 
