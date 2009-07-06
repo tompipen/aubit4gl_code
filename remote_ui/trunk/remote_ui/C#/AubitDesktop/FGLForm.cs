@@ -86,6 +86,7 @@ namespace AubitDesktop
                         p = (AubitDesktop.Xml.XMLForm.VBox)child;
                         
                         thisLayoutControlsPanel = new FlowLayoutPanel();
+                        thisLayoutControlsPanel.Name = "VBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.SuspendLayout();
                         thisLayoutControlsPanel.Visible = true;
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
@@ -117,6 +118,7 @@ namespace AubitDesktop
 
                         thisLayoutControlsPanel = new FlowLayoutPanel();
                         thisLayoutControlsPanel.Visible = true;
+                        thisLayoutControlsPanel.Name = "HBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.Top = 0;
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         thisLayoutControlsPanel.Left = 0;
@@ -177,6 +179,7 @@ namespace AubitDesktop
                         d.RowHeadersVisible = false;
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,d);
+                        d.Name = "TABLE" + d.GetHashCode();
                         parent.Controls.Add(d);
                     }
                     break;
@@ -233,6 +236,7 @@ namespace AubitDesktop
                         {
                             addLayoutToParentForXmlForm(thisScreensPanel, a);
                         }
+                        thisScreensPanel.Name = "VBOX" + thisScreensPanel.GetHashCode();
                         parent.Controls.Add(thisScreensPanel);
                     }
                     break;
@@ -401,6 +405,7 @@ namespace AubitDesktop
                             l.Height = 1;
                             l.Width = 1;
                             //labels.Add(l);
+                            l.Name = "Label" + l.Top +"_"+ l.Left;
                             parent.Controls.Add(l);
                         }
                     }

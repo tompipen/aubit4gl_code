@@ -769,7 +769,7 @@ namespace AubitDesktop
                         Panel p;
                         p = new Panel();
                         WindowWidget = p;
-                        p.Name = "PanNormal" + windowName;
+                        p.Name = "PanNormal" + windowName; 
                         WindowFormWidget = null;
                         if (border)
                         {
