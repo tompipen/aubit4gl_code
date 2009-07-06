@@ -41,7 +41,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(586, 272);
             this.textBox1.TabIndex = 0;
-            this.textBox1.Text = "MessageBox.Show(\"Hello World\");";
+            this.textBox1.Text = "Program.Show(\"Hello World\");";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // button1

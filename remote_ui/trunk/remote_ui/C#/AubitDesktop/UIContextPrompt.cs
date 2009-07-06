@@ -54,7 +54,7 @@ namespace AubitDesktop
 
             public bool externallyTriggeredID(string ID)
             {
-                MessageBox.Show("Here");
+                Program.Show("Here");
                 return false;
             }
 
@@ -97,7 +97,7 @@ namespace AubitDesktop
                         continue;
                     }
 
-                    MessageBox.Show("Unhandled Event for PROMPT");
+                    Program.Show("Unhandled Event for PROMPT");
                 }
 
                 if (promptStyle == "NORMAL")

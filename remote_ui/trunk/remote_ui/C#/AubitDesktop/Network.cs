@@ -249,7 +249,7 @@ namespace AubitDesktop
                 cnt++;
                 if (cnt > 40)
                 {
-                    MessageBox.Show("No envelope handler ????");
+                    Program.Show("No envelope handler ????");
                     this.Disconnect();
                     return;
                 }
@@ -483,7 +483,7 @@ namespace AubitDesktop
                             cmd = cmd.Substring(index + 1);
                             if (cmd == "\n")
                             {
-                                MessageBox.Show("OOps\n");
+                                Program.Show("OOps\n");
                                 cmd = "";
                             }
                         }
@@ -552,7 +552,7 @@ namespace AubitDesktop
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.ToString());
+                    Program.Show(e.ToString());
                 }
                 return a;
             }
@@ -626,7 +626,7 @@ namespace AubitDesktop
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Program.Show(ex.Message);
                 tcpStream = null;
                 return;
             }
@@ -682,7 +682,7 @@ namespace AubitDesktop
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                Program.Show(e.ToString());
             }
 
             if (this.connectionType == "SSH")
@@ -780,7 +780,7 @@ namespace AubitDesktop
 
             if (e.Data == "FAILED TO START")
             {
-                MessageBox.Show("Application did not start\nIs that the correct Application name ? ");
+                Program.Show("Application did not start\nIs that the correct Application name ? ");
                 this.Disconnect();
                 this.connectionFailed = true;
                 if (appwin.FailedToStart())
@@ -794,7 +794,7 @@ namespace AubitDesktop
 
             if (e.Data == "AUTHFAILED")
             {
-                MessageBox.Show("Incorrect login details - connection refused");
+                Program.Show("Incorrect login details - connection refused");
                 this.Disconnect();
                 this.connectionFailed = true;
                 if (appwin.FailedToStart())
@@ -807,7 +807,7 @@ namespace AubitDesktop
             }
             if (e.Data == "TIMEOUT")
             {
-                MessageBox.Show("Timeout...");
+                Program.Show("Timeout...");
                 if (appwin.FailedToStart())
                 {
                     appwin.Dispose();
@@ -815,7 +815,7 @@ namespace AubitDesktop
                 }
                 return;
             }
-            MessageBox.Show(e.Data);
+            Program.Show(e.Data);
         }
     }
 }

@@ -727,7 +727,7 @@ namespace AubitDesktop
                 }
             }
             
-            //MessageBox.Show("Here...");
+            //Program.Show("Here...");
         }
 
         void t_KeyDown(object sender, KeyEventArgs e)
@@ -738,7 +738,7 @@ namespace AubitDesktop
             if (e.KeyCode )
             {
                 if (t.SelectionStart==0) {
-                    MessageBox.Show("Clear?");
+                    Program.Show("Clear?");
                 }
             }
              * */

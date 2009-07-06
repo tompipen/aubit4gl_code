@@ -64,7 +64,7 @@ namespace AubitDesktop
         {
             if (this.lstProtocol.SelectedIndex == -1)
             {
-                MessageBox.Show("You must select a protocol");
+                Program.Show("You must select a protocol");
                 lstProtocol.Focus();
                 return;
             }

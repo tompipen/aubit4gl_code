@@ -441,7 +441,7 @@ namespace AubitDesktop
                 {
                     // Its a real button click - if it was a fake click because of a 
                     // matched keypress e would be null...
-                    //MessageBox.Show("Null");
+                    //Program.Show("Null");
                     UIDisplayArrayInTableContext dc;
                     dc = (UIDisplayArrayInTableContext)currentContext;
                     dc.upkeyPressed();
@@ -498,7 +498,7 @@ namespace AubitDesktop
                 {
                     // Its a real button click - if it was a fake click because of a 
                     // matched keypress e would be null...
-                    //MessageBox.Show("Null");
+                    //Program.Show("Null");
                     UIDisplayArrayInTableContext dc;
                     dc = (UIDisplayArrayInTableContext)currentContext;
                     dc.downkeyPressed();
@@ -609,7 +609,7 @@ namespace AubitDesktop
                 {
                     // Its a real button click - if it was a fake click because of a 
                     // matched keypress e would be null...
-                    //MessageBox.Show("Null");
+                    //Program.Show("Null");
                     UIDisplayArrayInTableContext dc;
                     dc = (UIDisplayArrayInTableContext)currentContext;
                     dc.pgDownkeyPressed();
@@ -663,7 +663,7 @@ namespace AubitDesktop
                 {
                     // Its a real button click - if it was a fake click because of a 
                     // matched keypress e would be null...
-                    //MessageBox.Show("Null");
+                    //Program.Show("Null");
                     UIDisplayArrayInTableContext dc;
                     dc = (UIDisplayArrayInTableContext)currentContext;
                     dc.pgUpkeyPressed();
@@ -1044,7 +1044,7 @@ namespace AubitDesktop
                 if (n.Subtract(lastPing) > pingInterval)
                 {
                     lastPing = n;
-                    //MessageBox.Show("Ping!");
+                    //Program.Show("Ping!");
                     TopWindow.SendString("<PING/>",false);
                 }
             }
@@ -1105,7 +1105,7 @@ namespace AubitDesktop
 
                     SetServerEnviron ( p.ENV);
                     commands.Remove(a);
-                    //MessageBox.Show("Application would like to start! Program=" + p.PROGRAMNAME + " ID=" + p.ID);
+                    //Program.Show("Application would like to start! Program=" + p.PROGRAMNAME + " ID=" + p.ID);
                     continue;
                 }
                 #endregion
@@ -1134,7 +1134,7 @@ namespace AubitDesktop
                             }
                             catch (Exception Ex)
                             {
-                                MessageBox.Show(Ex.ToString());
+                                Program.Show(Ex.ToString());
                             }
                         }
                         if (fs != null)
@@ -1153,7 +1153,7 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        MessageBox.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
+                        Program.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
                     }
                     commands.Remove(a);
                     continue;
@@ -1162,14 +1162,14 @@ namespace AubitDesktop
                 #region EXECUTE
                 if (a is EXECUTE)
                 {
-                    //MessageBox.Show(((EXECUTE)a).Text,"EXECUTE");
+                    //Program.Show(((EXECUTE)a).Text,"EXECUTE");
                     if (Program.AppSettings.allowExec)
                     {
                         System.Diagnostics.Process.Start(((EXECUTE)a).Text);
                     }
                     else
                     {
-                        MessageBox.Show("The 4GL program tried to execute " + ((EXECUTE)a).Text + " but this is disallowed by the Aubit Desktop Client settings");
+                        Program.Show("The 4GL program tried to execute " + ((EXECUTE)a).Text + " but this is disallowed by the Aubit Desktop Client settings");
                     }
                     commands.Remove(a);
                     continue;
@@ -1178,7 +1178,7 @@ namespace AubitDesktop
                 #region UIDIRECT
                 if (a is UIDIRECT)
                 {
-                    MessageBox.Show(((UIDIRECT)a).Text,"UIDIRECT");
+                    Program.Show(((UIDIRECT)a).Text,"UIDIRECT");
                     commands.Remove(a);
                     continue;
                 }
@@ -1333,7 +1333,7 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        MessageBox.Show("Unable to find form " + d.FORMNAME);
+                        Program.Show("Unable to find form " + d.FORMNAME);
                     }
                     commands.Remove(a);
                     continue;
@@ -1353,7 +1353,7 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        MessageBox.Show("Unable to find form " + d.FORMNAME);
+                        Program.Show("Unable to find form " + d.FORMNAME);
                     }
                     commands.Remove(a);
                     continue;
@@ -1363,7 +1363,7 @@ namespace AubitDesktop
                 if (a is DISPLAYAT)
                 {
                     Console.WriteLine("DISPLAY .. AT is not support for GUI - please recode your application");
-                 //   MessageBox.Show("DISPLAY .. AT is not support for GUI - please recode your application");
+                 //   Program.Show("DISPLAY .. AT is not support for GUI - please recode your application");
                     commands.Remove(a);
                     continue;
                 }
@@ -1408,7 +1408,7 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        MessageBox.Show("The 4GL program tried to request a file  " + ((REQUESTFILE)a).FILEID + " but this is disallowed by the Aubit Desktop Client settings");
+                        Program.Show("The 4GL program tried to request a file  " + ((REQUESTFILE)a).FILEID + " but this is disallowed by the Aubit Desktop Client settings");
                     }
                     commands.Remove(a);
 
@@ -1494,7 +1494,7 @@ namespace AubitDesktop
                     {
                         if (o.FORM == null)
                         {
-                            MessageBox.Show("Unable to open form..." + o.FORMNAME);
+                            Program.Show("Unable to open form..." + o.FORMNAME);
                         }
                         else
                         {
@@ -1692,7 +1692,7 @@ namespace AubitDesktop
                     b = (MESSAGE)a;
                     if (Convert.ToInt32(b.WAIT) != 0)
                     {
-                        MessageBox.Show(b.Text,"Application Message");
+                        Program.Show(b.Text,"Application Message");
                     }
                     else
                     {
@@ -1744,7 +1744,7 @@ namespace AubitDesktop
                 #region SETINTR
                 if (a is SETINTR)
                 {
-                    //MessageBox.Show("Backend Interrupted");
+                    //Program.Show("Backend Interrupted");
                     commands.Remove(a);
                     continue;
                 }
@@ -1766,7 +1766,7 @@ namespace AubitDesktop
                                 txt += p.line[idx].Text + "\n";
                             }
                         }
-                        MessageBox.Show("Program Exited with non-zero exit status\n" + txt);
+                        Program.Show("Program Exited with non-zero exit status\n" + txt);
                     }
                     commands.Remove(a);
                     TopWindow.clrWaitCursor();
@@ -1903,7 +1903,7 @@ namespace AubitDesktop
                     else
                     {
                      
-                        //MessageBox.Show("Here" );
+                        //Program.Show("Here" );
                         int idx;
                         for (idx = 0; idx < contexts.Count; idx++)
                         {
@@ -1922,7 +1922,7 @@ namespace AubitDesktop
                                     }
                                     else
                                     {
-                                        MessageBox.Show("Internal error - no context object");
+                                        Program.Show("Internal error - no context object");
                                     }
                                 }
                                 else
@@ -1943,7 +1943,7 @@ namespace AubitDesktop
                 #endregion
                 commands.Remove(a);
                 this.TopWindow.AddTextToConsole(" Unhandled: " + a.ToString());
-                MessageBox.Show(" Unhandled: " + a.ToString());
+                Program.Show(" Unhandled: " + a.ToString());
             }
             try {
                 Console.WriteLine("Cumtime after : " + (System.DateTime.Now - stime));
@@ -2001,6 +2001,19 @@ namespace AubitDesktop
             }
         }
 
+
+
+
+        private void ensureParentSize(Control c, int maxWidth, int maxHeight)
+        {
+            if (c.Parent.Width < maxWidth || c.Parent.Height < maxHeight)
+            {
+                ensureParentSize(c.Parent, maxWidth, maxHeight);
+                c.Parent.Width = maxWidth;
+                c.Parent.Height = maxHeight;
+            }
+        }
+
         /// <summary>
         /// Debug routine to print out the sizes of the various controls..
         /// </summary>
@@ -2008,7 +2021,11 @@ namespace AubitDesktop
         /// <param name="level"></param>
         private void ensureSizeWindow(Control control, string level)
         {
+            int maxWidth = control.Width;
+            int maxHeight = control.Height;
+
             //  ContainerControl c=null;
+
 
             Console.WriteLine(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
             if (control.HasChildren)
@@ -2016,7 +2033,32 @@ namespace AubitDesktop
                 foreach (Control d in control.Controls)
                 {
                     ensureSizeWindow(d, level + " ");
+                    if (d.Height + d.Top > maxHeight)
+                    {
+                        maxHeight = d.Height + d.Top;
+                    }
+                    if (d.Width + d.Left > maxWidth)
+                    {
+                        maxWidth = d.Width + d.Left;
+                    }
+
+
                 }
+            }
+
+            if (control.Height < maxHeight || control.Width < maxWidth)
+            {
+                control.MinimumSize = new Size(maxWidth, maxHeight);
+                ensureParentSize(control, maxWidth, maxHeight);
+                control.Size = new Size(maxWidth, maxHeight);
+            }
+
+
+
+            if (control.Width == 100 && control.Height == 100)
+            {
+                Console.WriteLine("Failed");
+                //Program.Show((Gizmox.WebGUI.Forms.Form) null,"Unfixed");
             }
 
 

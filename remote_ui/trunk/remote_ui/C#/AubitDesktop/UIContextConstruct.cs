@@ -103,7 +103,7 @@ namespace AubitDesktop
                     //Just ignore it...
                     continue;
                 }
-                MessageBox.Show("Unhandled Event for CONSTRUCT");
+                Program.Show("Unhandled Event for CONSTRUCT");
             }
 
             mainWin = f;
@@ -194,7 +194,7 @@ namespace AubitDesktop
             }
             else
             {
-                MessageBox.Show("Warning - might have missed a before field/after field");
+                Program.Show("Warning - might have missed a before field/after field");
             }
 
             foreach (FGLFoundField f in activeFields)

@@ -437,7 +437,7 @@ namespace AubitDesktop
                     afterInput = (AFTER_INPUT_EVENT)evt;
                     continue;
                 }
-                MessageBox.Show("Unhandled Event for DISPLAY ARRAY");
+                Program.Show("Unhandled Event for DISPLAY ARRAY");
             }
 
             

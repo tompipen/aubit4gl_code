@@ -77,7 +77,7 @@ namespace AubitDesktop
             {
                 if (a.Name == Name) return a.AttributeNo;
             }
-            MessageBox.Show("Field " + Name + " was not found");
+            Program.Show("Field " + Name + " was not found");
             return -1;
         }
     }

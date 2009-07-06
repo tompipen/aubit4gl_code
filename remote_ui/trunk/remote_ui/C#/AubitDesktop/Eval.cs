@@ -80,7 +80,7 @@ namespace AubitDesktop
             
             
             
-            if (code == null) code = "MessageBox.Show(\"Hello World\");";
+            if (code == null) code = "Program.Show(\"Hello World\");";
             oCParams.ReferencedAssemblies.Add("system.dll");
             oCParams.ReferencedAssemblies.Add("system.xml.dll");
             oCParams.ReferencedAssemblies.Add("system.data.dll");
@@ -125,7 +125,7 @@ namespace AubitDesktop
                 oExecInstance = oAssy.CreateInstance("AubitDesktop.EvalRunTime");
                 if (oExecInstance == null)
                 {
-                    System.Windows.Forms.MessageBox.Show("Unable to locate function");
+                   Program.Show("Unable to locate function");
                 }
                 else
                 {

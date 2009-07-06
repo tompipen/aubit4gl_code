@@ -598,7 +598,7 @@ namespace AubitDesktop
                     
 
                 default:
-                    MessageBox.Show("Unhandled widget type");
+                    Program.Show("Unhandled widget type");
                     break;
             }
 
@@ -628,7 +628,7 @@ namespace AubitDesktop
             }
             if (widgetType == null)
             {
-                MessageBox.Show("Invalid form widget");
+                Program.Show("Invalid form widget");
                 return null;
             }
 
@@ -715,7 +715,7 @@ namespace AubitDesktop
 
 
                 default:
-                    MessageBox.Show("Unhandled widget type : " + widgetType);
+                    Program.Show("Unhandled widget type : " + widgetType);
                     break;
             }
 
@@ -755,12 +755,12 @@ namespace AubitDesktop
             t = typeof(AubitDesktop.Xml.XMLForm.Form);
             if (f.Text == null)
             {
-                MessageBox.Show("XML form was not passed to frontend");
+                Program.Show("XML form was not passed to frontend");
                 return;
             }
             if (f.Text.Length == 0)
             {
-                MessageBox.Show("XML form was passed to frontend but was empty");
+                Program.Show("XML form was passed to frontend but was empty");
                 return;
             }
             ser = new XmlSerializer(t);
@@ -784,7 +784,7 @@ namespace AubitDesktop
                 
             }
             catch (Exception e) {
-                MessageBox.Show("Unable to use default encoding: " + e.Message);
+                Program.Show("Unable to use default encoding: " + e.Message);
             }
 
             TextReader txtr = new StringReader(data);
@@ -795,7 +795,7 @@ namespace AubitDesktop
             }
             catch (Exception e)
             {
-                MessageBox.Show("Unable to process XML file:" + e.ToString());
+                Program.Show("Unable to process XML file:" + e.ToString());
                 return;
             }
 
@@ -856,7 +856,7 @@ namespace AubitDesktop
                         throw new ApplicationException("Invalid object to add to parent for xmlform (top level)");
                 }
 
-                // MessageBox.Show(data, "Not implemented yet");
+                // Program.Show(data, "Not implemented yet");
             }
                 thisFormsPanel.AutoSize = true;
         }
@@ -882,7 +882,7 @@ namespace AubitDesktop
             tooltips.ShowAlways = true;
             if (f == null)
             {
-                MessageBox.Show("Unable to open form");
+                Program.Show("Unable to open form");
                 return;
             }
 
@@ -993,7 +993,7 @@ namespace AubitDesktop
                     break;
 
                 default:
-                    MessageBox.Show("Unhandled widget type : " + formfld.WIDGET);
+                    Program.Show("Unhandled widget type : " + formfld.WIDGET);
                     break;
             }
 
@@ -1195,7 +1195,7 @@ namespace AubitDesktop
 
             if (foundFields.Count == 0)
             {
-                MessageBox.Show("FindField failed");
+                Program.Show("FindField failed");
             }
 
             return foundFields;
@@ -1258,7 +1258,7 @@ namespace AubitDesktop
                
                 if (d.VALUES.Length !=dgCells.Count)
                 {
-                    MessageBox.Show("Wrong number of fields");
+                    Program.Show("Wrong number of fields");
                 }
                 else
                 {
@@ -1277,7 +1277,7 @@ namespace AubitDesktop
                 fldlist = FindFields(d.FIELDLIST);
                 if (d.VALUES.Length != fldlist.Count)
                 {
-                    MessageBox.Show("Wrong number of fields");
+                    Program.Show("Wrong number of fields");
                 }
                 else
                 {
@@ -1310,7 +1310,7 @@ namespace AubitDesktop
         // Enable all widgets with associated 'ACTIONS'..
         public void EnableActionWidgets()
         {
-            MessageBox.Show("Enable Action widgets");
+            Program.Show("Enable Action widgets");
         }
 
         public void SetContext(FGLContextType contextType)
@@ -1446,7 +1446,7 @@ namespace AubitDesktop
         {
 
 
-            MessageBox.Show("Not implemented yet");
+            Program.Show("Not implemented yet");
             /*
             MemoryStream memoryStream = new MemoryStream();
             
@@ -1463,7 +1463,7 @@ namespace AubitDesktop
 
             XmlizedString = UTF8ByteArrayToString(memoryStream.ToArray());
 
-            MessageBox.Show(XmlizedString);
+            Program.Show(XmlizedString);
              * */
             
         }
@@ -1498,7 +1498,7 @@ namespace AubitDesktop
             {
                 foreach (object s in grids.Keys)
                 {
-                    MessageBox.Show((string)s);
+                    Program.Show((string)s);
                 }
                 return null;
             }
@@ -1589,7 +1589,7 @@ namespace AubitDesktop
                             {
                                 if (dg == null)
                                 {
-                                    MessageBox.Show("DG is null");
+                                    Program.Show("DG is null");
                                 }
                                 else
                                 {
@@ -1602,7 +1602,7 @@ namespace AubitDesktop
                         {
                             if (dg == null)
                             {
-                                MessageBox.Show("DG is null for *");
+                                Program.Show("DG is null for *");
                             }
                             foreach (int attr in ScreenRecords[sr].AttributeNoList())
                             {

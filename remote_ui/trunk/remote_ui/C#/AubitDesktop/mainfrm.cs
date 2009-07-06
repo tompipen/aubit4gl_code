@@ -63,7 +63,7 @@ namespace AubitDesktop
                 }
                 catch (Exception )
                 {
-                    MessageBox.Show("Unable to start socket listener, is another instance already running?", "Aubit Desktop");
+                    Program.Show("Unable to start socket listener, is another instance already running?", "Aubit Desktop");
                     this.Close();
                     return;
                     //Application.Exit();
@@ -338,7 +338,7 @@ namespace AubitDesktop
             string passWord;
             AubitDesktop.Xml.Shortcut s;
             if (lstShortcuts.SelectedIndex<0) {
-                MessageBox.Show("No shortcut selected");
+                Program.Show("No shortcut selected");
                 return;
             }
             s = Program.AppSettings.Shortcuts[lstShortcuts.SelectedIndex];
@@ -395,7 +395,7 @@ namespace AubitDesktop
             networkConnection.application = app;
 
             if (protocol.ListenMode && this.enableListeningModeToolStripMenuItem.Checked==false) {
-                MessageBox.Show("This protocol requires the client to be in 'Listening' mode - but that is currently disabled","Can't start shortcut",MessageBoxButtons.OK,MessageBoxIcon.Hand);
+                Program.Show("This protocol requires the client to be in 'Listening' mode - but that is currently disabled","Can't start shortcut",MessageBoxButtons.OK,MessageBoxIcon.Hand);
                 return null;
             }
             try
@@ -425,7 +425,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            MessageBox.Show("Unable to start remote application");
+                            Program.Show("Unable to start remote application");
                         }
                         return null;
                         
@@ -439,7 +439,7 @@ namespace AubitDesktop
                         break;
 
                     case "RSH": // Calls back
-                        MessageBox.Show("Not implemented yet...");
+                        Program.Show("Not implemented yet...");
                         break;
 
                     case "PROXY": 
@@ -457,7 +457,7 @@ namespace AubitDesktop
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Program.Show(ex.Message);
             }
 
             if (!networkConnection.isConnected())
@@ -563,7 +563,7 @@ namespace AubitDesktop
         {
             if (lstShortcuts.SelectedIndex >= 0)
             {
-                DialogResult r= MessageBox.Show("Are you sure you want to remove this item", "Delete shortcut", MessageBoxButtons.YesNo);
+                DialogResult r= Program.Show("Are you sure you want to remove this item", "Delete shortcut", MessageBoxButtons.YesNo);
                 if (r==DialogResult.Yes) {
 
                 

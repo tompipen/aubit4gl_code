@@ -239,7 +239,7 @@ namespace AubitDesktop
 
         void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
         {
-            //MessageBox.Show("Ready for consumption");
+            //Program.Show("Ready for consumption");
             this.BeginInvoke(new ConsumeEnvelopeDelegate( ConsumeEnvelopeHandler));
             //this.ConsumeEnvelopeCommands();
         }
@@ -388,13 +388,13 @@ namespace AubitDesktop
         void n_DisconnectedFromServer(object sender, EventArgs e)
         {
             EnvelopeReadyForConsumption(null,null);
-            //MessageBox.Show("Disconnected from server (1)");
+            //Program.Show("Disconnected from server (1)");
             this.Dispose();
         }
 
         void n_ConnectingFailed(object sender, EventArgs e)
         {
-            //MessageBox.Show("Disconnected from server (2)");
+            //Program.Show("Disconnected from server (2)");
             this.Dispose();
         }
 
@@ -588,7 +588,7 @@ namespace AubitDesktop
                     return;
                 }
             }
-            MessageBox.Show("Unable to find application panel");
+            Program.Show("Unable to find application panel");
         }
 
         internal void AddTextToConsole(string p)
@@ -706,7 +706,7 @@ namespace AubitDesktop
 
         private void enableEditModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Not implemented yet");
+            Program.Show("Not implemented yet");
         }
 
         object Control_ActiveControl(object x) 
@@ -861,7 +861,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            MessageBox.Show("No click handler ?");
+                            Program.Show("No click handler ?");
                         }
 
 
@@ -1036,7 +1036,7 @@ namespace AubitDesktop
             }
             catch (Exception e) 
             {
-                MessageBox.Show(e.ToString(), "Error getting XML application launcher file");
+                Program.Show(e.ToString(), "Error getting XML application launcher file");
                 return;
             }
             
@@ -1047,7 +1047,7 @@ namespace AubitDesktop
             }
             catch (Exception e)
             {
-                MessageBox.Show( e.ToString(),"Unable to load Menu");
+                Program.Show( e.ToString(),"Unable to load Menu");
             }
             if (sMenu != null)
             {

@@ -155,7 +155,7 @@ namespace AubitDesktop
                     AcceptKey = val; break;
 
                 default:
-                    MessageBox.Show("Option " + s + " not implemented yet");
+                    Program.Show("Option " + s + " not implemented yet");
                     break;
 
             }

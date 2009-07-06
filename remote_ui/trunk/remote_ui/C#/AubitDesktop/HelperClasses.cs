@@ -375,7 +375,7 @@ namespace AubitDesktop
         {
             if (!windows[0].hasForm) // Top level window...
             {
-                MessageBox.Show("No form has been display in the window"); return;
+                Program.Show("No form has been display in the window"); return;
             }
             windows[0].DisplayTo(d);
 
@@ -385,7 +385,7 @@ namespace AubitDesktop
         {
             if (!windows[0].hasForm) // Top level window...
             {
-                MessageBox.Show("No form has been display in the window"); return;
+                Program.Show("No form has been display in the window"); return;
             }
             windows[0].doInput(i);
         }
@@ -476,7 +476,7 @@ namespace AubitDesktop
                     return;
                 }
             }
-            MessageBox.Show("Window not found for ClearWindow");
+            Program.Show("Window not found for ClearWindow");
         }
 
         public void MoveWindowToTop(string windowName)
@@ -497,7 +497,7 @@ namespace AubitDesktop
                 }
             }
             // If we get to here - we've not found the window at all
-            MessageBox.Show("Window " + windowName + " not found");
+            Program.Show("Window " + windowName + " not found");
         }
 
 
@@ -519,7 +519,7 @@ namespace AubitDesktop
                 }
             }
             // If we get to here - we've not found the window at all
-            MessageBox.Show("Window " + windowName + " not found");
+            Program.Show("Window " + windowName + " not found");
         }
 
 
@@ -554,7 +554,7 @@ namespace AubitDesktop
                 }
             }
             // If we get to here - we've not found the window at all
-            MessageBox.Show("Window " + w.windowName + " not found");
+            Program.Show("Window " + w.windowName + " not found");
         }
 
         internal void ClearPrompt(Control p)
@@ -608,7 +608,7 @@ namespace AubitDesktop
         {
             if (!windows[0].hasForm) // Top level window...
             {
-                MessageBox.Show("No form has been display in the window"); return;
+                Program.Show("No form has been display in the window"); return;
             }
             windows[0].clearForm();
             
@@ -707,7 +707,7 @@ namespace AubitDesktop
             // This should only be used for 'SCREEN' 
             if (windowName.ToLower() != "screen")
             {
-                MessageBox.Show("FGLWindow(windowname) should only be called for 'SCREEN'");
+                Program.Show("FGLWindow(windowname) should only be called for 'SCREEN'");
                 return;
             }
             this.windowName = windowName;
@@ -836,7 +836,7 @@ namespace AubitDesktop
 
 
                 default:
-                    MessageBox.Show("Unhandled window style");
+                    Program.Show("Unhandled window style");
                     break;
             }
 

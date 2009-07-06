@@ -155,7 +155,7 @@ namespace AubitDesktop
                     onActionList.Add(e);
                     continue;
                 }
-                MessageBox.Show("Unhandled Event for DISPLAY ARRAY");
+                Program.Show("Unhandled Event for DISPLAY ARRAY");
             }
 
 
@@ -210,7 +210,7 @@ namespace AubitDesktop
 
         private void setFocusToCurrentRow()
         {
-            MessageBox.Show("Fixme");
+            Program.Show("Fixme");
         }
 
         public void setNextField(string fieldName)

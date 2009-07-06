@@ -67,7 +67,7 @@ namespace AubitDesktop
 
         public void showMessage(String arg0)
         {
-            MessageBox.Show(arg0);
+            Program.Show(arg0);
         }
 
         #region UIKeyboardInteractive Members
@@ -139,7 +139,7 @@ namespace AubitDesktop
 
             //System.Collections.Hashtable config = new Hashtable();
             //config.Add("StrictHostKeyChecking", "no");
-            //System.Windows.Forms.MessageBox.Show(session.getConfig("StrictHostKeyChecking"));
+            //System.Windows.Forms.Program.Show(session.getConfig("StrictHostKeyChecking"));
             //session.setConfig(config);
            
             //session.setUserInfo(new MyUserInfo(password));
@@ -225,7 +225,7 @@ namespace AubitDesktop
             if (session != null) { sessionConnected = session.isConnected(); }
             if (channel != null) { channelConnected = channel.isConnected(); }
             System.Diagnostics.Debug.WriteLine("SC=" + sessionConnected + " CC=" + channelConnected);
-          //  MessageBox.Show("SC="+sessionConnected+" CC="+channelConnected);
+          //  Program.Show("SC="+sessionConnected+" CC="+channelConnected);
             return sessionConnected;
         }
 

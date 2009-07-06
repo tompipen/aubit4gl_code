@@ -141,7 +141,7 @@ namespace AubitDesktop
                     //Just ignore it...
                     continue;
                 }
-                MessageBox.Show("Unhandled Event for INPUT");
+                Program.Show("Unhandled Event for INPUT");
             }
 
             mainWin = f;

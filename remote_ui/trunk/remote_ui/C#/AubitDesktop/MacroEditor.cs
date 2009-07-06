@@ -52,7 +52,7 @@ namespace AubitDesktop
             }
             else
             {
-                MessageBox.Show("Didn't compile");
+                Program.Show("Didn't compile");
             }
         }
 
@@ -69,12 +69,12 @@ namespace AubitDesktop
                 {
                     s += ce.ToString() + "\n";
                 }
-                MessageBox.Show(s, "Compile error");
+                Program.Show(s, "Compile error");
 
             }
             else
             {
-            //    MessageBox.Show("Compiled ok");
+            //    Program.Show("Compiled ok");
             }
             this.Text = t;
 

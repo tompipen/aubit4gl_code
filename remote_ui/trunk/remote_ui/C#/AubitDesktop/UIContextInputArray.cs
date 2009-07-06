@@ -567,7 +567,7 @@ namespace AubitDesktop
             }
             else
             {
-                MessageBox.Show("Cant send now");
+                Program.Show("Cant send now");
             }
         }
 
@@ -1533,7 +1533,7 @@ namespace AubitDesktop
             {
                 if (this.fcntrl[a].state == new_state)
                 {
-                    MessageBox.Show("Internal error - no change in state..");
+                    Program.Show("Internal error - no change in state..");
                 }
                 this.fcntrl[a].state = new_state;
             }
@@ -1541,7 +1541,7 @@ namespace AubitDesktop
             {
                 if (a != this.fcntrl_cnt - 1)
                 {
-                    MessageBox.Show("Internal error - bad change in state ");
+                    Program.Show("Internal error - bad change in state ");
                     return -1;
                 }
                 this.fcntrl_cnt--;
@@ -1704,7 +1704,7 @@ namespace AubitDesktop
                         break;
 
                     case e_event.A4GL_EVENT_AFTER_INP_CLEAN:
-                        MessageBox.Show("Used???");
+                        Program.Show("Used???");
                         break;
                         
                     default:

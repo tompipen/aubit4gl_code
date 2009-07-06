@@ -133,7 +133,7 @@ namespace AubitDesktop
                 }
                 //catch (Exception e)
                 //{
-                  //  MessageBox.Show(e.ToString(), "Exception triggered...");
+                  //  Program.Show(e.ToString(), "Exception triggered...");
                 //}
             }
         }
@@ -285,10 +285,30 @@ namespace AubitDesktop
             }
             catch (Exception e)
             {
-                MessageBox.Show("Unable to save settings : " + e.ToString());
+                Program.Show("Unable to save settings : " + e.ToString());
             }
         }
 
 
+
+        internal static void Show(string p)
+        {
+            MessageBox.Show(p);
+        }
+
+        internal static void Show(string p, string p_2)
+        {
+            MessageBox.Show(p, p_2);
+        }
+
+        internal static void Show(string p, string p_2, MessageBoxButtons messageBoxButtons, MessageBoxIcon messageBoxIcon)
+        {
+            MessageBox.Show(p, p_2, messageBoxButtons, messageBoxIcon);
+        }
+
+        internal static DialogResult Show(string p, string p_2, MessageBoxButtons messageBoxButtons)
+        {
+            return MessageBox.Show(p, p_2, messageBoxButtons);
+        }
     }
 }

@@ -255,7 +255,7 @@ namespace AubitDesktop
                     break;
                 }
             }
-           // MessageBox.Show("Here");
+           // Program.Show("Here");
         }
 
         override public string Text // The current fields value

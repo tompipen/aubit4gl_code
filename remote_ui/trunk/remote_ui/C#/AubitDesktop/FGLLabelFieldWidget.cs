@@ -105,7 +105,7 @@ namespace AubitDesktop
             {
                 this.BackColor = System.Drawing.SystemColors.Control;
             }
-            //MessageBox.Show("Attrib changed");
+            //Program.Show("Attrib changed");
         }
 
         public override string Text // The current fields value
@@ -120,7 +120,7 @@ namespace AubitDesktop
                 l.Text = value;
                 //if (this.Attribute!=0 && this.Attribute!=-1)
                 //{
-                //    MessageBox.Show("ATTRIB");
+                //    Program.Show("ATTRIB");
                 //}
             }
         }

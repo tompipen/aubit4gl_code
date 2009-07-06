@@ -73,7 +73,7 @@ namespace AubitDesktop
                         if (lastKey==null) {
                             lastKey = FGLUtils.decodeKeycode(ke.Control, ke.Shift, ke.Alt, ke.KeyCode);
                         }
-                 //   MessageBox.Show("KEYVALYE : "+ke.KeyValue);
+                 //   Program.Show("KEYVALYE : "+ke.KeyValue);
                     appPanel.setLastKey(lastKey);
                     //appsetLastKeyInApplication(lastKey);
                     lastKey=  FGLUtils.getKeyCodeFromKeyName(lastKey).ToString();
