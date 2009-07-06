@@ -22,7 +22,7 @@ static int ui_interface_loadtoolbar(int *objectID, int nparam) {
 	return 0;
 }
 
-static int ui_interface_loadactiondefauts(int *objectID, int nparam) {
+static int ui_interface_loadactiondefaults(int *objectID, int nparam) {
 	char *a;
 	char buff[2000];
 	if (nparam!=1) {
@@ -105,7 +105,7 @@ char *text;
 
 void add_ui_interface_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadtoolbar", (void *) ui_interface_loadtoolbar);
-	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadactiondefauts", (void *) ui_interface_loadactiondefauts);
+	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadactiondefaults", (void *) ui_interface_loadactiondefaults);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadstyles", (void *) ui_interface_loadstyles);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.frontcall", (void *) ui_interface_frontcall);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.refresh", (void *) ui_interface_refresh);
