@@ -803,7 +803,7 @@ namespace AubitDesktop
             
             thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
             thisFormsPanel.Dock = DockStyle.Fill;
-
+            thisFormsPanel.BackColor = SystemColors.Control;
             ScreenRecords = new List<FGLScreenRecord>();
             foreach (object o in theForm.XmlFormItems)
             {
