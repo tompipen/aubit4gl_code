@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.144 2009-06-30 18:38:56 mikeaubury Exp $
+# $Id: builtin.c,v 1.145 2009-07-06 14:53:43 mikeaubury Exp $
 #
 */
 
@@ -1544,7 +1544,7 @@ aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand)
 int 
 aclfgl_fgl_keysetlabel (int n) 
 {
-  A4GL_direct_to_ui ("setkeylabel", (char *) n);
+  A4GL_direct_to_ui ("setkeylabel", "2");
 return 0;
 }
 
@@ -1787,7 +1787,7 @@ aclfgl_fgl_setkeylabel (int n)
 #endif
   //p1=A4GL_char_pop();
   //p2=A4GL_char_pop();
-  A4GL_direct_to_ui ("setkeylabel", (char *) n);
+  A4GL_direct_to_ui ("setkeylabel", "2");
 
   //free(p1);
   //free(p2);
@@ -1804,7 +1804,7 @@ A4GL_set_last_cursor (int n)
 int
 aclfgl_fgl_dialog_setcursor (int n)
 {
-  A4GL_direct_to_ui ("dialog_setcursor", (char *) n);
+  A4GL_direct_to_ui ("dialog_setcursor", "2");
   return 0;
 }
 
@@ -1825,7 +1825,7 @@ aclfgl_fgl_dialog_setkeylabel (int n)
 #endif
   //p1=A4GL_char_pop();
   //p2=A4GL_char_pop();
-  A4GL_direct_to_ui ("dialog_setkeylabel", (char *) n);
+  A4GL_direct_to_ui ("dialog_setkeylabel", "2");
   //free(p1);
   //free(p2);
   return 0;
