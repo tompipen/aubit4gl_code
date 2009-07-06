@@ -1562,6 +1562,7 @@ namespace AubitDesktop
                     if (win.isContainable)
                     {
                         this.Controls.Add(win.WindowWidget);
+                        ensureSizeWindow(win.WindowWidget, "");
                     }
 
                     if (win.isModal && win.WindowFormWidget!=null)
@@ -2000,6 +2001,27 @@ namespace AubitDesktop
             }
         }
 
+        /// <summary>
+        /// Debug routine to print out the sizes of the various controls..
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="level"></param>
+        private void ensureSizeWindow(Control control, string level)
+        {
+            //  ContainerControl c=null;
+
+            Console.WriteLine(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
+            if (control.HasChildren)
+            {
+                foreach (Control d in control.Controls)
+                {
+                    ensureSizeWindow(d, level + " ");
+                }
+            }
+
+
+
+        }
 
         internal void setPrompt(Control p)
         {

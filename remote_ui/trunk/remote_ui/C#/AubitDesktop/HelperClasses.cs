@@ -728,6 +728,7 @@ namespace AubitDesktop
             this.LineHeight = 0;
             this.CharWidth = 0;
             Panel p = new Panel();
+            p.Name = "WinPan" + windowName;
             p.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             //p.BackColor = Color.Aqua;
             WindowWidget = p;
@@ -768,6 +769,7 @@ namespace AubitDesktop
                         Panel p;
                         p = new Panel();
                         WindowWidget = p;
+                        p.Name = "PanNormal" + windowName;
                         WindowFormWidget = null;
                         if (border)
                         {
@@ -841,6 +843,7 @@ namespace AubitDesktop
 
             WindowWidget.Top = GuiLayout.get_gui_y(y);
             WindowWidget.Left = GuiLayout.get_gui_x(x);
+            WindowWidget.Name = "WindowFor" + windowName;
 
 
         }

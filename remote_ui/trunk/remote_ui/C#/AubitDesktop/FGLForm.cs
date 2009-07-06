@@ -194,6 +194,7 @@ namespace AubitDesktop
                         
 
                         thisScreensPanel = new Panel();
+                        thisScreensPanel.Name = "PnGrid" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
                         thisScreensPanel.Top = 0;
                         thisScreensPanel.Left = 0;
@@ -289,6 +290,7 @@ namespace AubitDesktop
                             // we can then look up the size of that panel to 
                             // work out how large to make our tabcontrol...
                             tpp = new Panel();
+                            tpp.Name = "Tpp" + p.GetHashCode();
                             tpp.SuspendLayout();
                             tpp.AutoSize = true;
                      
@@ -322,6 +324,7 @@ namespace AubitDesktop
                         p = (AubitDesktop.Xml.XMLForm.Screen)child;
 
                         thisScreensPanel = new Panel();
+                        thisScreensPanel.Name = "Screens" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
                         thisScreensPanel.Top = 0;
                         thisScreensPanel.Left = 0;
@@ -356,6 +359,7 @@ namespace AubitDesktop
                         // We'll fake a like by using a panel with a border...
                         Panel p_for_line;
                         p_for_line = new Panel();
+                        p_for_line.Name = "Hline" + p_for_line.GetHashCode();
                         p_for_line.Top = GuiLayout.get_gui_y(Convert.ToInt32(hl.posY));
                         p_for_line.Left = GuiLayout.get_gui_x(Convert.ToInt32(hl.posX));
                         p_for_line.Height = 4;
@@ -380,6 +384,7 @@ namespace AubitDesktop
                             // We'll fake a line by using a panel with a border...
                             Panel p_for_line;
                             p_for_line = new Panel();
+                            p_for_line.Name = "PLine" + p_for_line.GetHashCode();
                             p_for_line.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
                             p_for_line.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
                             p_for_line.Height = 4;
@@ -802,6 +807,7 @@ namespace AubitDesktop
 
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
+            thisFormsPanel.Name = "FormPanel" + f.NAME;
             thisFormsPanel.Visible = true;
             
             thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
@@ -864,6 +870,7 @@ namespace AubitDesktop
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
+            thisFormsPanel.Name = "StdForm" + f.GetHashCode();
             this.thisFormsPanel.Top = 15;
             this.thisFormsPanel.Left = 5;
             tooltips = new ToolTip();
@@ -910,6 +917,7 @@ namespace AubitDesktop
                     {
                         Panel p;
                         p = new Panel();
+                        p.Name = "Lines" + p.GetHashCode();
                         p.Top = GuiLayout.get_gui_y(Convert.ToInt32(flabel.ROW));
                         p.Left = GuiLayout.get_gui_x(Convert.ToInt32(flabel.COLUMN));
                         p.Height = 4;
