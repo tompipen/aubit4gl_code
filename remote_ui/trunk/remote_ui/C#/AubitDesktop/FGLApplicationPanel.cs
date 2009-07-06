@@ -1937,7 +1937,7 @@ namespace AubitDesktop
                         }
                     }
                     commands.Remove(a);
-
+                    this.TopWindow.clrWaitCursor();
                     continue;
                 }
                 #endregion
