@@ -175,8 +175,6 @@ static int ui_window_settext(int *objectID, int nParam) {
                 {NULL,0,0,0,0,0}
         };
 
-        text=A4GL_char_pop();
-        A4GL_trim(text);
 
 	
 
@@ -189,6 +187,10 @@ static int ui_window_settext(int *objectID, int nParam) {
                 A4GL_exitwith("expects 1 parameter");
                 return 0;
         }
+
+        text=A4GL_char_pop();
+        A4GL_trim(text);
+
         data=ptr->objData;
 
         ibind[0].ptr=data->windowID;
