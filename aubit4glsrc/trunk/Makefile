@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.70 2009-06-05 11:30:28 mikeaubury Exp $
+# $Id: Makefile,v 1.71 2009-07-06 18:24:52 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -596,7 +596,7 @@ clean.distclean:
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
-		clean.swig clean.project clean.liblogical clean.perl 
+		clean.swig clean.project clean.liblogical clean.perl  clean.rest
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
@@ -2943,3 +2943,32 @@ quickguide:a4gl_setup
 a4gl_setup:  bin/4glpc
 	make -C tools/quickguide
 	bin/quickguide.4ae
+clean.rest:
+	rm -f ./compilers/ace/*.4ae ./compilers/ace/*.ao ./compilers/ace/*.o \
+	./compilers/xgen_new/*.4ae ./compilers/xgen_new/*.ao ./compilers/xgen_new/*.o \
+	./lib/extra_libs/barcode/*.4ae ./lib/extra_libs/barcode/*.ao ./lib/extra_libs/barcode/*.o \
+	./lib/extra_libs/mantisconnect/*.4ae ./lib/extra_libs/mantisconnect/*.ao ./lib/extra_libs/mantisconnect/*.o \
+	./lib/extra_libs/pcre/*.4ae ./lib/extra_libs/pcre/*.ao ./lib/extra_libs/pcre/*.o \
+	./lib/extra_libs/pick/*.4ae ./lib/extra_libs/pick/*.ao ./lib/extra_libs/pick/*.o \
+	./lib/extra_libs/pop/*.4ae ./lib/extra_libs/pop/*.ao ./lib/extra_libs/pop/*.o \
+	./lib/liblex/lex_4gl/*.4ae ./lib/liblex/lex_4gl/*.ao ./lib/liblex/lex_4gl/*.o \
+	./lib/liblex/lex_spl/*.4ae ./lib/liblex/lex_spl/*.ao ./lib/liblex/lex_spl/*.o \
+	./lib/liblex/lex_write/*.4ae ./lib/liblex/lex_write/*.ao ./lib/liblex/lex_write/*.o \
+	./lib/liblogical/html/process/*.4ae ./lib/liblogical/html/process/*.ao ./lib/liblogical/html/process/*.o \
+	./lib/libpacker/formxml/*.4ae ./lib/libpacker/formxml/*.ao ./lib/libpacker/formxml/*.o \
+	./lib/libpacker/xml_best/*.4ae ./lib/libpacker/xml_best/*.ao ./lib/libpacker/xml_best/*.o \
+	./lib/libui/ui_xml/*.4ae ./lib/libui/ui_xml/*.ao ./lib/libui/ui_xml/*.o \
+	./lib/libui/ui_xml/bin/*.4ae ./lib/libui/ui_xml/bin/*.ao ./lib/libui/ui_xml/bin/*.o \
+	./lib/libui/ui_xml/uilib/*.4ae ./lib/libui/ui_xml/uilib/*.ao ./lib/libui/ui_xml/uilib/*.o \
+	./lib/libui/ui_xml/uilib/xml/*.4ae ./lib/libui/ui_xml/uilib/xml/*.ao ./lib/libui/ui_xml/uilib/xml/*.o \
+	./tools/a4gl/*.4ae ./tools/a4gl/*.ao ./tools/a4gl/*.o \
+	./tools/adbload/*.4ae ./tools/adbload/*.ao ./tools/adbload/*.o \
+	./tools/asql/runforms/*.4ae ./tools/asql/runforms/*.ao ./tools/asql/runforms/*.o \
+	./tools/ide/*.4ae ./tools/ide/*.ao ./tools/ide/*.o \
+	./tools/jabber/*.4ae ./tools/jabber/*.ao ./tools/jabber/*.o \
+	./tools/odbctest/*.4ae ./tools/odbctest/*.ao ./tools/odbctest/*.o \
+	./tools/quickguide/*.4ae ./tools/quickguide/*.ao ./tools/quickguide/*.o \
+	./tools/sqlmetrics/*.4ae ./tools/sqlmetrics/*.ao ./tools/sqlmetrics/*.o \
+	./tools/test/altris/*.4ae ./tools/test/altris/*.ao ./tools/test/altris/*.o \
+	./tools/test_rep/*.4ae ./tools/test_rep/*.ao ./tools/test_rep/*.o
+

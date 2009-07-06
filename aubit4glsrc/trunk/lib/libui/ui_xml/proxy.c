@@ -138,7 +138,7 @@ static int hexToInt(int h){
 static char *A4GL_tea_string_decipher(char *s) {
 	char buff[1000];
 	static char buff_out[1000];
-	char smbuff[5];
+	char smbuff[15];
 	int a;
 	unsigned long key[4];
 	char rbuff[9];

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.228 2009-07-04 18:45:54 mikeaubury Exp $
+# $Id: ioform.c,v 1.229 2009-07-06 18:22:09 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.228 2009-07-04 18:45:54 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.229 2009-07-06 18:22:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -1386,7 +1386,11 @@ A4GL_turn_field_on2 (FIELD * f, int a)
 		if (!A4GL_isyes(acl_getenv("ALLOWDYNAMIC"))) {
 			A4GL_assertion(1,"Dynamic fields not working atm...");
 		}
-      set_max_field (f, 0); // DYNAMIC
+		if (fprop->dynamic<0) {
+      			set_max_field (f, 0); // DYNAMIC - Lots
+		} else {
+      			set_max_field (f, fprop->dynamic); // DYNAMIC
+		}
   } else {
 	int w;
   	if (!a  ) {
