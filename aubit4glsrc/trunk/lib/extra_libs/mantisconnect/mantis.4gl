@@ -19,15 +19,12 @@ code
 
 
 int A4GL_isscrmode (void);
-//char * acl_getenv_not_set_as_0 (char *s);
 static struct ns1__AccountData *getUserAccount(char *username) ;
 struct soap soap;
 static struct ns1__ObjectRef *newObjectRef (char *s) ;
 static void trim_scrdump(char *s) ;
 char *A4GL_get_running_program(void);
 int aclfgl_fgl_getpid(int n);
-//int aclfgl_aclfgl_get_user(int n);
-//int aclfgl_aclfgl_getcwd(int n);
 int aclfgl_aclfgl_text_as_str(int n);
 
 

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.159 2009-06-17 14:34:39 mikeaubury Exp $
+# $Id: iarray.c,v 1.160 2009-07-07 18:09:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.159 2009-06-17 14:34:39 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.160 2009-07-07 18:09:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -2187,16 +2187,22 @@ process_control_stack_internal (struct s_inp_arr *arr)
       A4GL_debug ("DO EXIT_INPUT_OK");
       A4GL_comments (0);
 
+
       if (arr->fcntrl[a].state == 99)
 	{
 	  if (arr->currentfield)
 	    {
+	int was_insert=0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
-	      A4GL_debug ("Checking curr_line_is_new : %d for after insert", arr->curr_line_is_new);
-	      if (arr->curr_line_is_new == 2)
+	      A4GL_debug ("Checking curr_line_is_new : %d for after insert %d %d", arr->curr_line_is_new,arr->arr_line, arr->no_arr);
+
+	if (arr->curr_line_is_new == 2) was_insert=1;
+	if (arr->curr_line_is_new==1 && arr->arr_line<arr->no_arr) { was_insert=1;}
+
+	      if (was_insert)
 		{		// If its just 1 then they've not changed anything here...
 		  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0);
-		}
+		} else {
 
 	      A4GL_debug ("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 	      if (arr->curr_line_is_new == 1)
@@ -2204,6 +2210,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 		  arr->no_arr--;
 		  A4GL_set_arr_count (arr->no_arr);	// No new lines ...
 		}
+	}
 
 
 
