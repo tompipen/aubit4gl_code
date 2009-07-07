@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.59 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: load.c,v 1.60 2009-07-07 09:12:06 mikeaubury Exp $
 #
 */
 
@@ -54,7 +54,7 @@
 /* tuneable */
 #define MAXLOADCOLS 1024
 #define MAXCOLLENGTH 32
-#define LOADBUFFSIZE 32000
+#define LOADBUFFSIZE 64000
 
 
 static int doing_load = 0;
@@ -67,14 +67,18 @@ static int doing_load = 0;
 
 /* Buffer that contains the current line being loaded */
 static char loadbuff[LOADBUFFSIZE];
+static char loadbufftmp[LOADBUFFSIZE];
 
 /* Column name list where information is to be loaded */
 static char col_list[MAXLOADCOLS][MAXCOLLENGTH];
+static int col_list_types[MAXLOADCOLS];
 
 /* Array with pointers to each delimiter in current load line */
 static char *colptr[MAXLOADCOLS];
 extern sqlca_struct a4gl_sqlca;
 
+fgltext text_vars[MAXLOADCOLS];
+fglbyte byte_vars[MAXLOADCOLS];
 
 /*
 =====================================================================
@@ -261,6 +265,23 @@ clr_colptr (int freeit)
   return 1;
 }
 
+
+// Check if the line ends in a slash - 
+// but ignore any trailing \n or \r in the line..
+static int endswithslash(char*s) {
+int sl;
+sl=strlen(s)-1;
+	while (1) {
+		if (s[sl]=='\n') {sl--; continue;}
+		if (s[sl]=='\r') {sl--; continue;}
+		break;
+	}
+	if (s[sl]=='\\') {
+		return sl;
+	}
+	return 0;
+}
+
 #ifdef LOAD_ORIG
 /**
  * Implementation of the 4gl load instruction.
@@ -357,6 +378,13 @@ char nullbuff[200];
     }
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
 
+  for (a=0;a<cnt;a++) {
+	int idtype;
+	int isize;
+	col_list_types[a]=DTYPE_CHAR;
+	A4GL_read_columns (tabname, col_list[a], &col_list_types[a], &isize);
+  }
+
   insertstr = gen_insert_for_load (tabname, cnt);
 
 
@@ -375,14 +403,63 @@ char nullbuff[200];
       clr_colptr (0);
     }
 
+   ibind = acl_malloc2 (sizeof (struct BINDING) * cnt);
+
+   for (a = 0; a < cnt; a++)
+	{
+	int b;
+	
+	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+
+	 switch (col_list_types[a]&DTYPE_MASK) {
+		case DTYPE_BYTE:
+	  		ibind[a].ptr = &byte_vars[a];
+			A4GL_locate_var(ibind[a].ptr,'M',NULL);
+			byte_vars[a].memsize=0;
+			byte_vars[a].ptr=0;
+			byte_vars[a].isnull='Y';
+	  		ibind[a].dtype = DTYPE_BYTE;
+			break;
+		case DTYPE_TEXT:
+	  		ibind[a].ptr = &text_vars[a];
+			text_vars[a].memsize=0;
+			text_vars[a].ptr=0;
+			text_vars[a].isnull='Y';
+			A4GL_locate_var(ibind[a].ptr,'M',NULL);
+	  		ibind[a].dtype = DTYPE_TEXT;
+			break;
+		default:
+	  		ibind[a].dtype = DTYPE_CHAR;
+			break;
+	  }
+	  ibind[a].start_char_subscript = 0;
+	  ibind[a].end_char_subscript = 0;
+	  ibind[a].libptr = 0;
+  }
+
 
   A4GL_setnull (DTYPE_CHAR, nullbuff, 1);
   while (1)
     {
+     
       strcpy (loadbuff, "");
-      fgets (loadbuff, LOADBUFFSIZE - 1, p);
+ 	fgets (loadbuff, LOADBUFFSIZE - 1, p);
+
+	while (1) {
+	int sl;
+			sl=endswithslash(loadbuff) ;
+			if (sl) {loadbuff[sl]=0;} 
+			else {
+				break;
+			}
+      			fgets (loadbufftmp, LOADBUFFSIZE - 1, p);
+			strcat(loadbuff,loadbufftmp);
+	}
+
       A4GL_debug ("Read line '%s'\n", loadbuff);
-      if (feof (p) && strlen (loadbuff))
+
+
+      if (feof (p) && strlen (loadbuff)) // If its the last line - make sure we've got a whole line with a trailing \n
 	{
 	  if (loadbuff[strlen (loadbuff) - 1] != '\n')
 	    {
@@ -457,29 +534,51 @@ char nullbuff[200];
 
       A4GL_set_status (0, 1);
 
-      if (ibind)
-	{
-	  free (ibind);
-	}
 
-      ibind = acl_malloc2 (sizeof (struct BINDING) * cnt);
+
       for (a = 0; a < cnt; a++)
 	{
 	int b;
 	
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
 
+	 switch (col_list_types[a]&DTYPE_MASK) {
+		case DTYPE_BYTE:
+			byte_vars[a].memsize=strlen(colptr[a])+1;
+			byte_vars[a].ptr=colptr[a];
+			ibind[a].dtype=DTYPE_BYTE; // Reset - just in case it was NULL and set to CHAR later on...
+			if (byte_vars[a].memsize) {
+				byte_vars[a].isnull='N';
+			} else {
+				byte_vars[a].isnull='Y';
+			}
+			break;
 
-	  ibind[a].ptr = colptr[a];
-	  ibind[a].dtype = DTYPE_CHAR;
-	  ibind[a].start_char_subscript = 0;
-	  ibind[a].end_char_subscript = 0;
-	  ibind[a].libptr = 0;
+		case DTYPE_TEXT:
+			ibind[a].dtype=DTYPE_TEXT; // Reset - just in case it was NULL and set to CHAR later on...
+			text_vars[a].memsize=strlen(colptr[a])+1;
+			text_vars[a].ptr=colptr[a];
+			if (text_vars[a].memsize) {
+				text_vars[a].isnull='N';
+			} else {
+				text_vars[a].isnull='Y';
+			}
+			break;
+
+		default:
+	  		ibind[a].ptr = colptr[a];
+			break;
+	  }
+
+	  //ibind[a].start_char_subscript = 0;
+	  //ibind[a].end_char_subscript = 0;
+	  //ibind[a].libptr = 0;
 
 	  if (strlen (colptr[a]) == 0)
 	    {
-	      ibind[a].size = 1;
+	       ibind[a].size = 1;
 		ibind[a].ptr=nullbuff;
+		ibind[a].dtype=DTYPE_CHAR;
 	      //A4GL_setnull (ibind[a].dtype, ibind[a].ptr, 1);
 	    }
 	  else
@@ -502,6 +601,7 @@ char nullbuff[200];
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
 	  fclose (p);
+  		free(ibind);
 	  doing_load = 0;
 	  return 0;
 	}
@@ -517,6 +617,7 @@ char nullbuff[200];
     {
       clr_colptr (1);
     }
+  free(ibind);
   doing_load = 0;
   return 1;
 }
@@ -642,6 +743,7 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
       ibind = acl_malloc2 (sizeof (struct BINDING) * cnt);
       for (a = 0; a < cnt; a++)
 	{
+	  
 	  ibind[a].ptr = colptr[a];
 	  colptr[a] = "";
 	  ibind[a].dtype = DTYPE_CHAR;
