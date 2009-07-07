@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.236 2009-07-04 18:45:53 mikeaubury Exp $
+# $Id: esql.ec,v 1.237 2009-07-07 08:49:35 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.236 2009-07-04 18:45:53 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.237 2009-07-07 08:49:35 mikeaubury Exp $";
 #endif
 
 
@@ -1069,14 +1069,15 @@ void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat
 short indicat=0;
         if (mode=='i') {
                 if (p_indicat) *p_indicat=0;
+
                 if ((A4GL_isnull(DTYPE_BYTE,(void *)a4gl) || a4gl->where==0) && p_indicat ) {
 			if (p_indicat) *p_indicat=-1; 
                         infx->loc_indicator = -1;   /* a null blob */
-return;}
+			return;}
                 if ((A4GL_isnull(DTYPE_BYTE,(void *)a4gl) || a4gl->where==0) ) {
 			rsetnull(CLOCATORTYPE,(void *)infx);
                         infx->loc_indicator = -1;   /* a null blob */
-return;}
+		return;}
 
 		memset(infx,0,sizeof(*infx));
                 infx->loc_loctype = -1;
@@ -1090,7 +1091,8 @@ if (dtype==DTYPE_BYTE) {
                 if (a4gl->where=='M') {
                         infx->loc_loctype = LOCMEMORY;
                         infx->loc_bufsize = a4gl->memsize;
-                        infx->loc_oflags = 0;
+			infx->loc_size=a4gl->memsize;
+                        infx->loc_oflags = LOC_RONLY;
                         infx->loc_indicator = 0;   /* not a null blob */
                         infx->loc_buffer = (char *) a4gl->ptr;
                 }
@@ -1959,7 +1961,7 @@ getDescriptorName (char *statementName, char bindType)
 static int
 getStatementBindType (struct s_sid *sid)
 {
-A4GL_debug("getStatementBindType : %p %p %d %d",sid->obind,sid->ibind,sid->no,sid->ni);
+  A4GL_debug("getStatementBindType : obind=%p ibind=%p no=%d ni=%d",sid->obind,sid->ibind,sid->no,sid->ni);
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0 &&
       sid->ibind != (struct BINDING *) 0 && sid->ni > 0)
     return INPUT_OUTPUT_BIND;
@@ -2002,6 +2004,7 @@ executeStatement (struct s_sid *sid)
     EXEC SQL EXECUTE:statementName;
       break;
     case INPUT_BIND:
+	A4GL_debug("Input bind");
     EXEC SQL EXECUTE: statementName USING SQL DESCRIPTOR:inputDescriptorName;
       break;
     case OUTPUT_BIND:
