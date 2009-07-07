@@ -33,12 +33,24 @@ namespace AubitDesktop
         //FGLContextType _ContextType;
         private int id;
         CheckBox cbFieldWidget;
+        Panel p;
 
         string strIndeterminate;
         string strTrue;
         string strFalse;
         bool notNull;
 
+        new public bool Enabled
+        {
+            get
+            {
+                return cbFieldWidget.Enabled;
+            }
+            set
+            {
+                cbFieldWidget.Enabled = value;
+            }
+        }
 
         internal override void setIsOnSelectedRow(bool isSelected)
         {
@@ -50,8 +62,6 @@ namespace AubitDesktop
         {
             t.SetToolTip(this.cbFieldWidget, s);
         }
-
-
 
         public override int tabIndex
         {
@@ -70,13 +80,10 @@ namespace AubitDesktop
             }
         }
 
-
         public override void setFocus()
         {
             cbFieldWidget.Focus();
         }
-
-
 
         private void setThreeState()
         {
@@ -90,23 +97,33 @@ namespace AubitDesktop
             }
         }
 
-
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
             adjustDisplayPropertiesForContext();
         }
 
-
         public override void gotFocus()
         {
+            Console.WriteLine("gotfocus");
+            setFocusColor(true);
+        }
 
+
+        private void setFocusColor(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                this.BackColor = Color.Black;
+
+            }
+            else
+            {
+                this.BackColor = SystemColors.Control;
+            }
         }
 
         private void adjustDisplayPropertiesForContext()
         {
-            
-            
-            
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
@@ -129,13 +146,36 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextInput:
+                    if (this.NoEntry)
+                    {
+                        cbFieldWidget.Enabled = false;
+                    }
+                    else
+                    {
+                        cbFieldWidget.Enabled = true;
+                    }
+                    setThreeState();
+                    //cb.ThreeState=false;
+                    break;
+
                 case FGLContextType.ContextInputArray:
-                   if (this.NoEntry) {
-                       cbFieldWidget.Enabled=false;
-                   } else {
-                    cbFieldWidget.Enabled=true;
-                   }
-                   setThreeState();
+
+                    if (isOnSelectedRow)
+                    {
+                        if (this.NoEntry)
+                        {
+                            cbFieldWidget.Enabled = false;
+                        }
+                        else
+                        {
+                            cbFieldWidget.Enabled = true;
+                        }
+                        setThreeState();
+                    }
+                    else
+                    {
+                        cbFieldWidget.Enabled = false;
+                    }
                     //cb.ThreeState=false;
                     break;
 
@@ -163,7 +203,6 @@ namespace AubitDesktop
                 return (Control)cbFieldWidget;
             }
         }
-
 
         override internal void setKeyList(List<ONKEY_EVENT> keyList)
         {
@@ -261,11 +300,11 @@ namespace AubitDesktop
         private void createCheckBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, string cbText)
         {
 
-           
-
             this.SetWidget(thisAttribute,ma, row, index,column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             cbFieldWidget = new CheckBox();
+            
+           
             SizeControl(ma,index,cbFieldWidget);
             if (cbText != null)
             {
@@ -274,18 +313,40 @@ namespace AubitDesktop
             cbFieldWidget.AutoCheck = true;
             cbFieldWidget.AutoEllipsis = true;
             cbFieldWidget.Visible = true;
-
-            
+            cbFieldWidget.AutoSize = true;
+            cbFieldWidget.Padding = new Padding(1,1,0,1);
+            setFocusColor(false);
+            //cbFieldWidget.Text = "#";
             //cb.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             
             cbFieldWidget.CausesValidation = true;
             cbFieldWidget.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             cbFieldWidget.Enter += new EventHandler(t_GotFocus);
-            
-            
+            cbFieldWidget.Leave += new EventHandler(cbFieldWidget_Leave);
+            cbFieldWidget.TabStop = true;
             cbFieldWidget.Click += new EventHandler(t_Click);
-            
+           
+            cbFieldWidget.KeyPress += new KeyPressEventHandler(cbFieldWidget_KeyPress);
+           
             this.id = id;
+        }
+
+        void cbFieldWidget_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = false;
+        }
+
+        void cbFieldWidget_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode = Keys.Down)
+            {
+                
+            }
+        }
+
+        void cbFieldWidget_Leave(object sender, EventArgs e)
+        {
+            setFocusColor(false);
         }
 
 
