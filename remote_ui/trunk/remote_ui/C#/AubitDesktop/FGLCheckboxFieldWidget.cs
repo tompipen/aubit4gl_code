@@ -338,10 +338,7 @@ namespace AubitDesktop
 
         void cbFieldWidget_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (e.KeyCode = Keys.Down)
-            {
-                
-            }
+           
         }
 
         void cbFieldWidget_Leave(object sender, EventArgs e)
