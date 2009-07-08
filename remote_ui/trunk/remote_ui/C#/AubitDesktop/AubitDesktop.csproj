@@ -78,6 +78,7 @@
     <Compile Include="AubitTSBtn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FGLRadioFieldWidget.cs" />
     <Compile Include="FGLComboListBoxFieldWidget.cs" />
     <Compile Include="formMovements.cs" />
     <Compile Include="resourcesInterface.cs" />

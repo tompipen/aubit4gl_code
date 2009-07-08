@@ -1535,7 +1535,7 @@ namespace AubitDesktop
                 #region OPENWINDOWWITHFORM
                 if (a is OPENWINDOWWITHFORM)
                 {
-                    FGLForm frm;
+                    FGLForm frm=null;
                     FGLWindow win;
                     bool border;
                     OPENWINDOWWITHFORM w;
@@ -1547,33 +1547,44 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        frm = new FGLForm(w.FORM);
+                        if (w.FORM == null)
+                        {
+                            MessageBox.Show("Unable to open form - is it compiled ? ");
+                            Application.Exit();
+                        }
+                        else
+                        {
+                            frm = new FGLForm(w.FORM);
+                        }
                     }
-                    if (w.BORDER == "0") border = false; else border = true;
-                    win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), border);
-
-                    win.setForm(frm, false);
-
-                    win.sizeWindow(frm);
-
-                    // Our 'window' might be a proper windows forms window (with title bar etc)
-                    // in which case - we dont want to add it to our windows panel - but just 
-                    // let it float...
-                    if (win.isContainable)
+                    if (frm != null)
                     {
-                        this.Controls.Add(win.WindowWidget);
-                        ensureSizeWindow(win.WindowWidget, "");
-                    }
+                        if (w.BORDER == "0") border = false; else border = true;
+                        win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), border);
 
-                    if (win.isModal && win.WindowFormWidget!=null)
-                    {
-                        // This doesn't seem to work atm - gettting errors 
-                        // saying you cant show it as its already visible - even though its not!
+                        win.setForm(frm, false);
+
+                        win.sizeWindow(frm);
+
+                        // Our 'window' might be a proper windows forms window (with title bar etc)
+                        // in which case - we dont want to add it to our windows panel - but just 
+                        // let it float...
+                        if (win.isContainable)
+                        {
+                            this.Controls.Add(win.WindowWidget);
+                            ensureSizeWindow(win.WindowWidget, "");
+                        }
+
+                        if (win.isModal && win.WindowFormWidget != null)
+                        {
+                            // This doesn't seem to work atm - gettting errors 
+                            // saying you cant show it as its already visible - even though its not!
                             win.WindowWidget.Visible = false;
-                         TopWindow.ShowDialog(win.WindowFormWidget);
-                    }
+                            TopWindow.ShowDialog(win.WindowFormWidget);
+                        }
 
-                    ApplicationWindows.PushWindow(win);
+                        ApplicationWindows.PushWindow(win);
+                    }
                     this.MinimumSize = new System.Drawing.Size(GuiLayout.get_gui_w(ApplicationWindows.minimumScreenWidth), GuiLayout.get_gui_h(ApplicationWindows.minimumScreenHeight));
                     commands.Remove(a);
                     continue;

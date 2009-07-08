@@ -529,6 +529,35 @@ namespace AubitDesktop
                         b.width = widget.width;
                         return new FGLButtonFieldWidget(ffx, b,widget.config,index,ma);
                     }
+
+
+                case "RIPRADIO":
+                    {
+                        AubitDesktop.Xml.XMLForm.RipRADIO c = new AubitDesktop.Xml.XMLForm.RipRADIO();
+                        c.action = widget.action;
+                        c.comments = widget.comments;
+                        c.config = widget.config;
+                        c.gridWidth = widget.gridWidth;
+                        c.posX = widget.posX;
+                        c.posY = widget.posY;
+                        c.width = widget.width;
+                        return new FGLRadioFieldWidget(ffx, c, widget.config, index, ma);
+                    }
+                case "Radio":
+                    {
+                        AubitDesktop.Xml.XMLForm.Radio c = new AubitDesktop.Xml.XMLForm.Radio();
+                        c.action = widget.action;
+                        c.comments = widget.comments;
+                        c.config = widget.config;
+                        c.gridWidth = widget.gridWidth;
+                        c.posX = widget.posX;
+                        c.posY = widget.posY;
+                        c.width = widget.width;
+                        return new FGLRadioFieldWidget(ffx, c, widget.config, index, ma);
+                    }
+
+
+
                 case "CHECK":
                     {
                         string title="";
@@ -689,6 +718,15 @@ namespace AubitDesktop
                     fld = new FGLCheckboxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.CheckBox)ff.Items[0]).config, index, ma);
                     break;
 
+                case "AubitDesktop.Xml.XMLForm.Radio":
+                    fld = new FGLRadioFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Radio)ff.Items[0], ((AubitDesktop.Xml.XMLForm.Radio)ff.Items[0]).config, index, ma);
+                    break;
+
+                case "AubitDesktop.Xml.XMLForm.RipRADIO":
+                    fld = new FGLRadioFieldWidget(ff, (AubitDesktop.Xml.XMLForm.RipRADIO)ff.Items[0], ((AubitDesktop.Xml.XMLForm.RipRADIO)ff.Items[0]).config, index, ma);
+                    break;
+
+
                 case "AubitDesktop.Xml.XMLForm.ComboListBox":
                     fld = new FGLComboListBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboListBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ComboListBox)ff.Items[0]).config, index, ma);
                     break;
@@ -764,6 +802,9 @@ namespace AubitDesktop
                 return;
             }
             ser = new XmlSerializer(t);
+            ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);
+            ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
+            ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
 
             data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
 
@@ -859,6 +900,21 @@ namespace AubitDesktop
                 // Program.Show(data, "Not implemented yet");
             }
                 thisFormsPanel.AutoSize = true;
+        }
+
+        void ser_UnknownNode(object sender, XmlNodeEventArgs e)
+        {
+            throw new Exception("XML form contains an unknown node : " + e.NodeType);
+        }
+
+        void ser_UnknownElement(object sender, XmlElementEventArgs e)
+        {
+            throw new Exception("XML form contains an unknown attribute : " + e.Element + " Expected: " + e.ExpectedElements);
+        }
+
+        void ser_UnknownAttribute(object sender, XmlAttributeEventArgs e)
+        {
+            throw new Exception("XML form contains an unknown attribute : "+e.Attr+ " Expected: "+e.ExpectedAttributes);
         }
         #endregion
 

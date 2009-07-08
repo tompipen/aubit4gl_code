@@ -1035,6 +1035,45 @@ namespace AubitDesktop
             }
         }
 
+        public static List<string> splitConfig(string s)
+        {
+            bool inbrace=false;
+            int last_a = 0;
+            List<string> d = new List<string>();
+            s += " ";
+            for (int a = 0; a < s.Length; a++)
+            {
+
+                if ((s[a]==' '||a==s.Length-1) && inbrace==false) {
+                    string n;
+                    n = s.Substring(last_a, a - last_a);
+                    if (n.Trim() != "")
+                    {
+                        string n2;
+                        n2=n.Trim();
+                        if (n2.StartsWith("{") && n2.EndsWith("}"))
+                        {
+                            n2 = n2.Substring(1, n2.Length - 2);
+                        }
+                            d.Add(n2);
+                    }
+                    last_a = a;
+                }
+
+                if (s[a] == '{' && !inbrace)
+                {
+                    inbrace = true;
+                }
+                if (s[a] == '}' && inbrace)
+                {
+                    inbrace = false;
+                }
+                
+            }
+            
+            return d;
+        }
+
         public static char a4gl_convfmts_ui_decfmt_thsep
         {
             get

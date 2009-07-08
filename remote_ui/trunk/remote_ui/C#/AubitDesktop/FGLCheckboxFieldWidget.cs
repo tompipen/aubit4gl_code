@@ -33,7 +33,7 @@ namespace AubitDesktop
         //FGLContextType _ContextType;
         private int id;
         CheckBox cbFieldWidget;
-        Panel p;
+       // Panel p;
 
         string strIndeterminate;
         string strTrue;
