@@ -326,20 +326,11 @@ namespace AubitDesktop
             cbFieldWidget.TabStop = true;
             cbFieldWidget.Click += new EventHandler(t_Click);
            
-            cbFieldWidget.KeyPress += new KeyPressEventHandler(cbFieldWidget_KeyPress);
+           // cbFieldWidget.KeyPress += new KeyPressEventHandler(cbFieldWidget_KeyPress);
            
             this.id = id;
         }
 
-        void cbFieldWidget_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = false;
-        }
-
-        void cbFieldWidget_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-           
-        }
 
         void cbFieldWidget_Leave(object sender, EventArgs e)
         {
