@@ -1127,6 +1127,11 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string sqlType;
 
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string defaultValue;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string tabIndex;
