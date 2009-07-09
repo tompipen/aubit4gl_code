@@ -1163,7 +1163,7 @@ namespace AubitDesktop
             return true;
         }
 
-        internal static void ensureSizeWindow(Panel thisScreensPanel, string p)
+        internal static void ensureSizeWindow(Control thisScreensPanel, string p)
         {
             // This is required for the Web version to ensure all panels are correctly sized...
         }

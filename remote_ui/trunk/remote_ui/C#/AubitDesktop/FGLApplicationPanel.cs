@@ -1572,7 +1572,7 @@ namespace AubitDesktop
                         if (win.isContainable)
                         {
                             this.Controls.Add(win.WindowWidget);
-                            ensureSizeWindow(win.WindowWidget, "");
+                          frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
                         }
 
                         if (win.isModal && win.WindowFormWidget != null)
@@ -2015,70 +2015,10 @@ namespace AubitDesktop
 
 
 
-        private void ensureParentSize(Control c, int maxWidth, int maxHeight)
-        {
-            if (c.Parent.Width < maxWidth || c.Parent.Height < maxHeight)
-            {
-                ensureParentSize(c.Parent, maxWidth, maxHeight);
-                c.Parent.Width = maxWidth;
-                c.Parent.Height = maxHeight;
-            }
-        }
-
-
-        private int nmCounter = 0;
-        /// <summary>
-        /// Debug routine to print out the sizes of the various controls..
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="level"></param>
-        private void ensureSizeWindow(Control control, string level)
-        {
-            int maxWidth = control.Width;
-            int maxHeight = control.Height;
-
-            //  ContainerControl c=null;
-            if (control.Name == "")
-            {
-                control.Name = "Cntrl" + nmCounter;
-            }
-            Console.WriteLine(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
-            if (control.HasChildren)
-            {
-                foreach (Control d in control.Controls)
-                {
-                    ensureSizeWindow(d, level + " ");
-                    if (d.Height + d.Top > maxHeight)
-                    {
-                        maxHeight = d.Height + d.Top;
-                    }
-                    if (d.Width + d.Left > maxWidth)
-                    {
-                        maxWidth = d.Width + d.Left;
-                    }
-
-
-                }
-            }
-
-            if (control.Height < maxHeight || control.Width < maxWidth)
-            {
-                control.MinimumSize = new Size(maxWidth, maxHeight);
-                ensureParentSize(control, maxWidth, maxHeight);
-                control.Size = new Size(maxWidth, maxHeight);
-            }
 
 
 
-            if (control.Width == 100 && control.Height == 100)
-            {
-                Console.WriteLine("Failed");
-                //Program.Show((Gizmox.WebGUI.Forms.Form) null,"Unfixed");
-            }
-
-
-
-        }
+        
 
         internal void setPrompt(Control p)
         {
