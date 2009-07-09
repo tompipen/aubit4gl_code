@@ -355,7 +355,7 @@ namespace AubitDesktop
                     rbFieldWidget[a] = rb;
                     p.Controls.Add(rb);
                     rb.AutoSize = true;
-                    if (rb.Width>minWidth) minWidth= rb.DisplayRectangle.Width;
+                    if (rb.Width>minWidth) minWidth= rb.Width;
                     rb.Visible = true;
                     rb.TabStop = true;
                     rb.Enabled = true;
@@ -367,11 +367,11 @@ namespace AubitDesktop
            // p.BackColor = Color.Red;
             p.Visible = true;
             
-            p.MinimumSize = new Size(minWidth, rbFieldWidget[0].DisplayRectangle.Height*r.Items.Length);
+            p.MinimumSize = new Size(minWidth, rbFieldWidget[0].Height*r.Items.Length);
         //    p.AutoSize = true;
             
             p.CausesValidation = true;
-            p.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+           // p.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             p.Enter += new EventHandler(t_GotFocus);        
             p.TabStop = true;
    
