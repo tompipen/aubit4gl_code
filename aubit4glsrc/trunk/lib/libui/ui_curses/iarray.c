@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.160 2009-07-07 18:09:15 mikeaubury Exp $
+# $Id: iarray.c,v 1.161 2009-07-09 13:27:16 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.160 2009-07-07 18:09:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.161 2009-07-09 13:27:16 mikeaubury Exp $";
 #endif
 
 /**
@@ -1985,7 +1985,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 		  A4GL_debug ("attrib now : %d - too far to the right (%d)", attrib, arr->srec->attribs.attribs_len);
 		  attrib = 0;
 
-		  if (1) // A4GL_double_chk_line (arr, arr->scr_line - 1, why))
+		  if (1)	// A4GL_double_chk_line (arr, arr->scr_line - 1, why))
 		    {		// our current line looks ok...
 
 		      sl = scr_line + 1;
@@ -2192,25 +2192,32 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	{
 	  if (arr->currentfield)
 	    {
-	int was_insert=0;
+	      int was_insert = 0;
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
-	      A4GL_debug ("Checking curr_line_is_new : %d for after insert %d %d", arr->curr_line_is_new,arr->arr_line, arr->no_arr);
+	      A4GL_debug ("Checking curr_line_is_new : %d for after insert %d %d", arr->curr_line_is_new, arr->arr_line,
+			  arr->no_arr);
 
-	if (arr->curr_line_is_new == 2) was_insert=1;
-	if (arr->curr_line_is_new==1 && arr->arr_line<arr->no_arr) { was_insert=1;}
+	      if (arr->curr_line_is_new == 2)
+		was_insert = 1;
+	      if (arr->curr_line_is_new == 1 && arr->arr_line < arr->no_arr)
+		{
+		  was_insert = 1;
+		}
 
 	      if (was_insert)
 		{		// If its just 1 then they've not changed anything here...
 		  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INSERT, arr->currentfield, 0, 0);
-		} else {
-
-	      A4GL_debug ("arr->curr_line_is_new=%d", arr->curr_line_is_new);
-	      if (arr->curr_line_is_new == 1)
-		{		// They didn't change anything - so not a real insert...
-		  arr->no_arr--;
-		  A4GL_set_arr_count (arr->no_arr);	// No new lines ...
 		}
-	}
+	      else
+		{
+
+		  A4GL_debug ("arr->curr_line_is_new=%d", arr->curr_line_is_new);
+		  if (arr->curr_line_is_new == 1)
+		    {		// They didn't change anything - so not a real insert...
+		      arr->no_arr--;
+		      A4GL_set_arr_count (arr->no_arr);	// No new lines ...
+		    }
+		}
 
 
 
@@ -2526,15 +2533,24 @@ process_control_stack_internal (struct s_inp_arr *arr)
 
       if (arr->fcntrl[a].state == 50)
 	{
-
-	  if (arr->curr_line_is_new && A4GL_something_in_entire_row_has_changed (arr, arr->scr_line - 1))
+	  if (arr->fcntrl[a].extent == A4GLKEY_UP || arr->fcntrl[a].extent == A4GLKEY_PGUP)
 	    {
-	      arr->curr_line_is_new = 0;
-	      //A4GL_pause_execution();
+
+		//A4GL_pause_execution();
+
+	      // Are we moving away from a newly inserted line - which has not changed ?
+	      // If so - we can just remove that line and theres no AFTER INSERT
+	      if (arr->curr_line_is_new == 1 && arr->no_arr == arr->arr_line)	// MJAMJA111
+		{
+		  if (!A4GL_something_in_entire_row_has_changed (arr, arr->scr_line - 1))
+		    {
+		      arr->curr_line_is_new = 0;
+		  arr->no_arr--;
+		  A4GL_set_arr_count (arr->no_arr);	// No new lines ...
+		}
 	    }
+	}
 
-
-	  //A4GL_set_arr_count (arr->no_arr);
 
 	  new_state = 25;
 	  if (arr->processed_onkey != 0)
@@ -3685,7 +3701,7 @@ A4GL_double_chk_line (struct s_inp_arr *s, int ln, char why)
 		{
 		  // Well there wasn't - so it is required....
 		  A4GL_error_nobox (acl_getenv ("FIELD_REQD_MSG"), 0);
-		A4GL_debug("Force back to scr : %d arrline: %d attrib : %d",s->scr_line,s->arr_line,b);
+		  A4GL_debug ("Force back to scr : %d arrline: %d attrib : %d", s->scr_line, s->arr_line, b);
 		  A4GL_newMovement (s, s->scr_line, s->arr_line, b, why);
 		  return 0;
 		}
