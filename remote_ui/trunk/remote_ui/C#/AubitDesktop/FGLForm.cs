@@ -86,6 +86,9 @@ namespace AubitDesktop
                         p = (AubitDesktop.Xml.XMLForm.VBox)child;
                         
                         thisLayoutControlsPanel = new FlowLayoutPanel();
+                        // Make it big - we'll resize later
+                        thisLayoutControlsPanel.Width = 2000;
+                        thisLayoutControlsPanel.Height = 2000;
                         thisLayoutControlsPanel.Name = "VBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.SuspendLayout();
                         thisLayoutControlsPanel.Visible = true;
@@ -117,6 +120,9 @@ namespace AubitDesktop
                         
 
                         thisLayoutControlsPanel = new FlowLayoutPanel();
+                        // Make it big - we'll resize later
+                        thisLayoutControlsPanel.Width = 2000;
+                        thisLayoutControlsPanel.Height = 2000;
                         thisLayoutControlsPanel.Visible = true;
                         thisLayoutControlsPanel.Name = "HBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.Top = 0;
@@ -1000,7 +1006,7 @@ namespace AubitDesktop
                         this.thisFormsPanel.Controls.Add(l);
                     }
                     continue;
-                    thisFormsPanel.AutoSize = true;
+                    
                 }
 
                 if (o is FORMFIELD)
@@ -1011,7 +1017,7 @@ namespace AubitDesktop
                     thisAttrib = f.ATTRIBUTES[Convert.ToInt32(formfld.ATTRIBUTE_NO)];
                     fld = makeFieldWidget(thisAttrib, formfld);
                 }
-
+                thisFormsPanel.AutoSize = true;
             }
             #endregion 
         }
