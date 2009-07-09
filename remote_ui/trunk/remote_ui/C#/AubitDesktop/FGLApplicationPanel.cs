@@ -2025,6 +2025,8 @@ namespace AubitDesktop
             }
         }
 
+
+        private int nmCounter = 0;
         /// <summary>
         /// Debug routine to print out the sizes of the various controls..
         /// </summary>
@@ -2036,8 +2038,10 @@ namespace AubitDesktop
             int maxHeight = control.Height;
 
             //  ContainerControl c=null;
-
-
+            if (control.Name == "")
+            {
+                control.Name = "Cntrl" + nmCounter;
+            }
             Console.WriteLine(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
             if (control.HasChildren)
             {
