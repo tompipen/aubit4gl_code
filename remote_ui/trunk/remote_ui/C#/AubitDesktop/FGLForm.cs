@@ -397,6 +397,9 @@ namespace AubitDesktop
                             l = new TextBox();
                             l.ReadOnly = true;
                             l.BorderStyle = BorderStyle.None;
+                            l.TabStop = false;
+                            //l.Enabled = false;
+                            
                             l.Text = lb.text;
                             l.ForeColor = Color.Black;
                             l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
