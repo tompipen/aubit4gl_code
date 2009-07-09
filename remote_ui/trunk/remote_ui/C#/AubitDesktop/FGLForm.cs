@@ -93,8 +93,8 @@ namespace AubitDesktop
                         thisLayoutControlsPanel.SuspendLayout();
                         thisLayoutControlsPanel.Visible = true;
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
-                        thisLayoutControlsPanel.Top = 0;
-                        thisLayoutControlsPanel.Left = 0;
+                        thisLayoutControlsPanel.Top = 5;
+                        thisLayoutControlsPanel.Left = 5;
                         thisLayoutControlsPanel.AutoSize = true;
                         //thisLayoutControlsPanel.BackColor = Color.Purple;
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.TopDown;
@@ -125,9 +125,9 @@ namespace AubitDesktop
                         thisLayoutControlsPanel.Height = 2000;
                         thisLayoutControlsPanel.Visible = true;
                         thisLayoutControlsPanel.Name = "HBOX" + thisLayoutControlsPanel.GetHashCode();
-                        thisLayoutControlsPanel.Top = 0;
+                        thisLayoutControlsPanel.Top = 5;
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
-                        thisLayoutControlsPanel.Left = 0;
+                        thisLayoutControlsPanel.Left = 5;
                         
                         if (p.border)
                         {
@@ -205,8 +205,8 @@ namespace AubitDesktop
                         thisScreensPanel = new Panel();
                         thisScreensPanel.Name = "PnGrid" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
-                        thisScreensPanel.Top = 0;
-                        thisScreensPanel.Left = 0;
+                        thisScreensPanel.Top = 5;
+                        thisScreensPanel.Left = 5;
 
                         if (p.autoSize == 1)
                         {
@@ -221,7 +221,8 @@ namespace AubitDesktop
 
                         if (doAutosize)
                         {
-                            thisScreensPanel.AutoSize = true; // false;
+                            thisScreensPanel.Width = 2000;
+                            thisScreensPanel.Height = 2000;
                         }
                         else
                         {
@@ -244,6 +245,10 @@ namespace AubitDesktop
                         }
                         thisScreensPanel.Name = "VBOX" + thisScreensPanel.GetHashCode();
                         parent.Controls.Add(thisScreensPanel);
+                        if (doAutosize)
+                        {
+                            thisScreensPanel.AutoSize = true;
+                        }
                     }
                     break;
                 #endregion
