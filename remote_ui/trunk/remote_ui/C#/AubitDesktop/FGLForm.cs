@@ -249,6 +249,9 @@ namespace AubitDesktop
                         parent.Controls.Add(thisScreensPanel);
                         if (doAutosize)
                         {
+
+                            frmMainAppWindow.ensureSizeWindow(thisScreensPanel, "");
+
                             thisScreensPanel.AutoSize = true;
                         }
                     }
