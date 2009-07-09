@@ -194,8 +194,7 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.Grid":
                     {
                         AubitDesktop.Xml.XMLForm.Grid p;
-                        int height;
-                        int width;
+
                         bool doAutosize=false;
 
                         p = (AubitDesktop.Xml.XMLForm.Grid)child;
@@ -212,8 +211,7 @@ namespace AubitDesktop
                         {
                             doAutosize = true;
                         }
-                        height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
-                        width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+
                         if (parent.GetType() == typeof(FlowLayoutPanel))
                         {
                             doAutosize = true;
@@ -226,6 +224,10 @@ namespace AubitDesktop
                         }
                         else
                         {
+                              int height;
+                              int width;
+                              height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
+                              width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
                             thisScreensPanel.AutoSize = false;
                             thisScreensPanel.Height = GuiLayout.get_gui_h(height + 1);
                             thisScreensPanel.Width = GuiLayout.get_gui_w(width + 1);
@@ -243,7 +245,7 @@ namespace AubitDesktop
                         {
                             addLayoutToParentForXmlForm(thisScreensPanel, a);
                         }
-                        thisScreensPanel.Name = "VBOX" + thisScreensPanel.GetHashCode();
+                        thisScreensPanel.Name = "Grid" + thisScreensPanel.GetHashCode();
                         parent.Controls.Add(thisScreensPanel);
                         if (doAutosize)
                         {
