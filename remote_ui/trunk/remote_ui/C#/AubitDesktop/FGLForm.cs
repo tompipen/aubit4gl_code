@@ -378,11 +378,6 @@ namespace AubitDesktop
                     {
                         AubitDesktop.Xml.XMLForm.Label lb;
                         lb = (AubitDesktop.Xml.XMLForm.Label)child;
-                        Label l;
-                        l = new Label();
-                        l.BackColor = System.Drawing.SystemColors.Control;
-                        l.ForeColor = System.Drawing.SystemColors.ControlText;
-
                         if (isJustLines(lb.text))
                         {
                             // We'll fake a line by using a panel with a border...
@@ -393,20 +388,24 @@ namespace AubitDesktop
                             p_for_line.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
                             p_for_line.Height = 4;
                             p_for_line.Width = GuiLayout.get_gui_w(lb.text.Length + 1) - 1;
-                            p_for_line.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+                            p_for_line.BorderStyle =BorderStyle.Fixed3D;
                             parent.Controls.Add(p_for_line);
                         }
                         else
                         {
+                            TextBox l;
+                            l = new TextBox();
+                            l.ReadOnly = true;
+                            l.BorderStyle = BorderStyle.None;
                             l.Text = lb.text;
-                            l.AutoSize = true;
+                            l.ForeColor = Color.Black;
                             l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
                             l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
-                            l.Height = 1;
-                            l.Width = 1;
-                            //labels.Add(l);
-                            l.Name = "Label" + l.Top +"_"+ l.Left;
+                            l.Height = GuiLayout.get_gui_h(1);
+                            l.Width = GuiLayout.get_gui_w(l.Text.Length);
+                            l.Name = "Label" + l.Top + "_" + l.Left;
                             parent.Controls.Add(l);
+                            l.AutoSize = true;
                         }
                     }
                     break;
