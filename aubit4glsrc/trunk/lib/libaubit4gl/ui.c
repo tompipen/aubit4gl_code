@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.94 2009-07-01 09:13:46 mikeaubury Exp $
+# $Id: ui.c,v 1.95 2009-07-10 09:47:37 mikeaubury Exp $
 #
 */
 
@@ -289,12 +289,8 @@ void
 A4GL_display_at (int n, int a)
 {
 
-  //int b;
-  //int z;
   int x, y;
   char *s = 0;
-  //char *ptr;
-  //char *buff = 0;
   int tos_size;
   int tos_dtype;
   void *tos_ptr;
@@ -347,18 +343,31 @@ A4GL_display_at (int n, int a)
 
       if (A4GL_iscurrborder ())
 	{
+#ifdef DEBUG
+		A4GL_debug("A4GL_get_curr_width=%d x=%d", A4GL_get_curr_width(),x);
+#endif
 	  line_length = A4GL_get_curr_width () - x;
+#ifdef DEBUG
+		A4GL_debug("LL = %d",line_length);
+#endif
 	}
       else
 	{
+#ifdef DEBUG
+		A4GL_debug("A4GL_get_curr_width=%d x=%d", A4GL_get_curr_width(),x);
+#endif
 	  line_length = A4GL_get_curr_width () - x + 1;
+#ifdef DEBUG
+		A4GL_debug("LL = %d",line_length);
+#endif
 	}
 
       line_length++;
+	if (line_length<0) line_length=0;
       if (strlen (s) > line_length)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("'%s' seems to long to display... - I'm gonna trim it..", s);
+	  A4GL_debug ("'%s' seems to long to display... - I'm gonna trim it.. line_length=%d", s, line_length);
 #endif
 	  s[line_length] = 0;
 

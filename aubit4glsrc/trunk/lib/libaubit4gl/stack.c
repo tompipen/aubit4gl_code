@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.240 2009-07-10 09:40:32 mikeaubury Exp $
+# $Id: stack.c,v 1.241 2009-07-10 09:47:37 mikeaubury Exp $
 #
 */
 
@@ -1075,7 +1075,7 @@ A4GL_push_param (void *p, int d)
   int dn1;
   int dn2;
   int ob;
-
+int r;
   static int call_list = 0;
 
   call_list++;
@@ -1600,7 +1600,6 @@ A4GL_push_param (void *p, int d)
 
   switch (d)
     {
-      int r;
 
     case OP_MATCHES:
 
