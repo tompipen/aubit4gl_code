@@ -1518,35 +1518,9 @@ struct command *c;
 static int local_last_whencode[10]={-1,-1,-1,-1,-1,-1,-1};
 static char *local_last_whento[10]={0,0,0,0,0,0,0,0,0,0};
 int type;
-
-//printf("new_whenever_cmd\n");
-if (p_whencode==-1 && p_whento==0) {
-	int a;
-	for (a=0;a<10;a++) {
-		local_last_whencode[a]=-1;
-		local_last_whento[a]=0;
-	} 
-	return 0;
+if (p_whencode==-1 && p_whento==NULL) {
+	return NULL;
 }
-
-type=p_whencode>>4;
-if (local_last_whencode[type]==-1) {
-	local_last_whencode[type]=p_whencode;
-	local_last_whento[type]=p_whento;
-} else {
-
-	if (local_last_whencode[type]==p_whencode) {
-		if (local_last_whento[type]==0 && p_whento==0) {
-			//A4GL_lint("Coding Standards: Resetting WHENEVER ... to same settings"); // COMMENTED OUT
-		} 
-		if (local_last_whento[type]!=0 && p_whento!=0) {
-			if (strcmp(local_last_whento[type],p_whento)==0) {
-				//A4GL_lint("Coding Standards: Resetting WHENEVER ... to same settings"); // COMMENTED OUT
-			}
-		}
-	}
-}
-
 
    c=new_command(E_CMD_WHENEVER_CMD);
    c->cmd_data.command_data_u.whenever_cmd.whencode=p_whencode;
