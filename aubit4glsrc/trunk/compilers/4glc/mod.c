@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.330 2009-07-10 12:48:38 mikeaubury Exp $
+# $Id: mod.c,v 1.331 2009-07-10 13:39:29 mikeaubury Exp $
 #
 */
 
@@ -3304,7 +3304,6 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 	  continue;
 
 	case E_CMD_SKIP_CMD:
-		A4GL_pause_execution();
 		if (cmds->cmds.cmds_val[a]->cmd_data.command_data_u.skip_cmd.skip_amt->expr_type==ET_EXPR_LITERAL_LONG) {
 	  		nprints += cmds->cmds.cmds_val[a]->cmd_data.command_data_u.skip_cmd.skip_amt->expr_str_u.expr_long;
 		} else  {

@@ -746,7 +746,6 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
   for (a = 0; a < func_cmds->cmds.cmds_len; a++)
     {
 	if (func_cmds->cmds.cmds_val[a]->lineno-f->lineno<0 || func_cmds->cmds.cmds_val[a]->lineno-f->lineno>=nlines) { 
-			//A4GL_pause_execution();
 		continue; }
       lines_used[func_cmds->cmds.cmds_val[a]->lineno-f->lineno]='@';
       switch (func_cmds->cmds.cmds_val[a]->cmd_data.type)
@@ -4870,7 +4869,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
   if (module_in == 0)
     {
-      A4GL_pause_execution ();
+      A4GL_pause_execution (); // SAFE TO LEAVE IN
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
     }
