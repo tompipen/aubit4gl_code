@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.500 2009-07-04 18:45:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.501 2009-07-10 12:23:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.500 2009-07-04 18:45:52 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.501 2009-07-10 12:23:20 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2580,10 +2580,11 @@ get_binding_dtype (expr_str * e)
     case ET_EXPR_LITERAL_LONG:
       return 2;
 
+    default:
       return DTYPE_CHAR;	// assume its a character string..
 
-    default:
-      A4GL_assertion (1, "Not implemented");
+    /*default:
+      A4GL_assertion (1, "Not implemented"); */
     }
   return 0;
 
