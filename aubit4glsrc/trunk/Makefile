@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.71 2009-07-06 18:24:52 mikeaubury Exp $
+# $Id: Makefile,v 1.72 2009-07-10 11:55:43 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2961,6 +2961,7 @@ clean.rest:
 	./lib/libui/ui_xml/bin/*.4ae ./lib/libui/ui_xml/bin/*.ao ./lib/libui/ui_xml/bin/*.o \
 	./lib/libui/ui_xml/uilib/*.4ae ./lib/libui/ui_xml/uilib/*.ao ./lib/libui/ui_xml/uilib/*.o \
 	./lib/libui/ui_xml/uilib/xml/*.4ae ./lib/libui/ui_xml/uilib/xml/*.ao ./lib/libui/ui_xml/uilib/xml/*.o \
+	./lib/liblex/lex_cs/*.o \
 	./tools/a4gl/*.4ae ./tools/a4gl/*.ao ./tools/a4gl/*.o \
 	./tools/adbload/*.4ae ./tools/adbload/*.ao ./tools/adbload/*.o \
 	./tools/asql/runforms/*.4ae ./tools/asql/runforms/*.ao ./tools/asql/runforms/*.o \

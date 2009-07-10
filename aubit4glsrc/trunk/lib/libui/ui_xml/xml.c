@@ -632,7 +632,7 @@ UILIB_A4GL_add_menu_option (void *menu, char *txt, char *keys_orig, char *desc, 
       a = A4GL_key_val (keys);
       if (a == -1)
 	{
-	  A4GL_push_char ("");
+	  A4GL_push_empty_char ();
 	}
       else
 	{
@@ -1157,7 +1157,7 @@ dump_events (struct aclfgl_event_list *e)
 	{
 	  A4GL_push_int (e[a].block);
 	  A4GL_push_char (decode_event_id (e[a].event_type));
-	  A4GL_push_char ("");
+	  A4GL_push_empty_char ();
 	  uilib_event (3);
 	  continue;
 	}
@@ -1181,14 +1181,14 @@ dump_events (struct aclfgl_event_list *e)
 		  //printc ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (event_id));
 		  A4GL_push_int (e[a].block);
 		  A4GL_push_char (decode_event_id (e[a].event_type));
-		  A4GL_push_char ("");
+		  A4GL_push_empty_char ();
 		  uilib_event (3);
 		}
 	      else
 		{
 		  A4GL_push_int (e[a].block);
 		  A4GL_push_char (decode_event_id (e[a].event_type));
-		  A4GL_push_char ("");
+		  A4GL_push_empty_char ();
 		  uilib_event (3);
 		  //printf ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (e[a].event_type));
 		}

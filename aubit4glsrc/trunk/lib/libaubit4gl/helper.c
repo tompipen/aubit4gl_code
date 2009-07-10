@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.84 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: helper.c,v 1.85 2009-07-10 11:55:45 mikeaubury Exp $
 #
 */
 
@@ -317,7 +317,7 @@ int_get_info_form (char *ptr, char *info)
       if (used_value < p->fileform->records.records_len) {
       		A4GL_push_char (p->fileform->records.records_val[used_value].name);
 	} else {
-      		A4GL_push_char ("");
+      		A4GL_push_char (" ");
 	}
       break;
 
@@ -334,7 +334,7 @@ int_get_info_form (char *ptr, char *info)
       if (used_value < p->fileform->snames.snames_len)
 	A4GL_push_char (p->fileform->snames.snames_val[used_value].name);
       else
-	A4GL_push_char ("");
+	A4GL_push_char (" ");
 
       break;
 
@@ -353,7 +353,7 @@ int_get_info_form (char *ptr, char *info)
 	}
       else
 	{
-	  A4GL_push_char ("");
+	  A4GL_push_char (" ");
 	}
       break;
 
@@ -443,7 +443,7 @@ int_get_info_form (char *ptr, char *info)
 	    A4GL_push_char (" ");
 	  }
       else
-	A4GL_push_char ("");
+	A4GL_push_char (" ");
       break;
 
     case 14:			// Alias name
@@ -457,7 +457,7 @@ int_get_info_form (char *ptr, char *info)
 	    A4GL_push_char (" ");
 	  }
       else
-	A4GL_push_char ("");
+	A4GL_push_char (" ");
 
 
       break;
@@ -565,7 +565,7 @@ int_get_info_statement (char *ptr, char *info)
 	if (p != 0)
 	  A4GL_push_char (p);
 	else
-	  A4GL_push_char ("");
+	  A4GL_push_char (" ");
 #ifdef DEBUG
 	/* {DEBUG} */
 	{
@@ -1914,7 +1914,7 @@ char *value;
 int dtype;
 int dtype_length;
 
-if (n!=5) {A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GL_push_char("");return 1;}
+if (n!=5) {A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GL_push_empty_char();return 1;}
 
 
 dtype_length=A4GL_pop_long();

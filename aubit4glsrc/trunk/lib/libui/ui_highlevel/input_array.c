@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.69 2009-04-21 11:15:05 mikeaubury Exp $
+# $Id: input_array.c,v 1.70 2009-07-10 11:55:54 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.69 2009-04-21 11:15:05 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.70 2009-07-10 11:55:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -229,7 +229,7 @@ insert_line_in_array (struct s_inp_arr *inpa)
       return;
     }
 
-  for (a = inpa->no_arr + 1; a >= inpa->arr_line; a--)
+  for (a = inpa->no_arr + 1; a > inpa->arr_line; a--)
     {
       src_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 2);
       dest_ptr = (char *) inpa->binding[0].ptr + inpa->arr_elemsize * (a - 1);

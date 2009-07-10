@@ -3,6 +3,7 @@ define mc_version constant 0.8
 
 main
 define lv_dialect char(20)
+define lv_makefile char(512) # Used for $ a4gl -p {programname}
 defer interrupt
 
 	#if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
@@ -23,7 +24,11 @@ defer interrupt
 	call form_is_compiled(entities,"MEMPACKED","GENERIC")
 	call form_is_compiled(settings,"MEMPACKED","GENERIC")
 
-	call copyright_banner()
+
+	if upshift(fgl_getenv("A4GL_BANNER"))="N" THEN
+	else
+		call copyright_banner()
+	end if
 
 	options message line last
 	options input wrap
@@ -63,8 +68,17 @@ defer interrupt
 		message " "
 	end if
 		
+	if num_args()=2 then
+		 if arg_val(1)="-p" then
+			        call get_makefile_for(arg_val(2)) returning lv_makefile
+        			call generate_makefile(arg_val(2), lv_makefile)
+				exit program
+		end if
+		
+	end if
 	call main_menu()
 end main
+
 
 
 function err_createtables()

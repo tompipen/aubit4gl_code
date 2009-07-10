@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.25 2009-07-02 10:38:53 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.26 2009-07-10 11:55:45 mikeaubury Exp $
 }
 
 {**
@@ -319,6 +319,7 @@ char delim_c;
 int d;
 int no;
 char *ptr;
+char *readBytes;
 
 // We expect 2 parameters...
 
@@ -346,7 +347,10 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 	if (f==0) { A4GL_push_int(0); 
 			A4GL_exitwith("File is not open");
 		return 1;}
-	if (!fgets(buff,19998,f)) {
+	strcpy(buff,"");
+	readBytes=fgets(buff,sizeof(buff)-2,f);
+
+	if (!readBytes) {
 		int a;
 		for (a=0;a<no;a++) {
 				A4GL_setnull(obind[a].dtype,obind[a].ptr,obind[a].size);
@@ -354,15 +358,17 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 		A4GL_push_int(0);
 		if (obind) free(obind);
 		return 1;
-		
 	}
-	buff[19999]=0;
+		
+	buff[sizeof(buff)-1]=0;
 
 	if (!A4GL_isno(acl_getenv("KEEPNLONREAD"))) {
 		int x;
+		
 		x=strlen(buff);
-		if (buff[x-1]=='\n' || buff[x-1]=='\r') {buff[x-1]=0; x--;}
-		if (buff[x-1]=='\n' || buff[x-1]=='\r') {buff[x-1]=0; x--;}
+		if (x>0) { if (buff[x-1]=='\n' || buff[x-1]=='\r') {buff[x-1]=0; x--;} }
+			if (x>0) {if (buff[x-1]=='\n' || buff[x-1]=='\r') {buff[x-1]=0; x--;}}
+		
 	}
 
 	if (no==1) {

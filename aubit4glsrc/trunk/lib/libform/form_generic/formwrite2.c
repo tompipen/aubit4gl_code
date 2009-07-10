@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.48 2009-07-01 12:07:29 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.49 2009-07-10 11:55:46 mikeaubury Exp $
 #*/
 
 /**
@@ -439,6 +439,7 @@ real_set_field (char *s, struct struct_scr_field *f)
 		if (strlen(fmt)!=w) {
 			if (A4GL_isyes(acl_getenv("IGNOREFMTERR"))) ;
                         else {
+			//printf ("%d !=%d\n", strlen(fmt),w );
       				A4GL_error_with ("FORMAT string is not the same size as the field\n", 0, 0);
 			}
 		}

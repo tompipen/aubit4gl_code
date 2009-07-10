@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.189 2009-07-03 10:53:44 mikeaubury Exp $
+# $Id: report.c,v 1.190 2009-07-10 11:55:45 mikeaubury Exp $
 #
 */
 
@@ -1214,7 +1214,7 @@ A4GL_set_column (struct rep_structure *rep)
   long a;
   long needn;
   a = A4GL_pop_long ();
-  A4GL_push_char ("");
+A4GL_push_empty_char();
   A4GL_debug ("in set_column a=%d Calling rep_print", a);
   A4GL_rep_print (rep, 1, 1, 0, -2);
 #ifdef DEBUG
@@ -1268,7 +1268,7 @@ A4GL_set_column (struct rep_structure *rep)
       }
 #endif
     }
-  A4GL_push_char ("");
+  A4GL_push_empty_char ();
 }
 
 /**
@@ -2016,12 +2016,14 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname_x, int opt_semi)
       if (strlen (buff))
 	{
 	  // Trim any trailing \n
+	  
 	  while (buff[strlen (buff) - 1] == '\n' || buff[strlen (buff) - 1] == '\r')
 	    {
 	      int c;
 	      has_cr++;
 	      c = strlen (buff);
 	      buff[c - 1] = 0;
+		if (strlen(buff)==0) break;
 	    }
 	}
       A4GL_push_char (buff);

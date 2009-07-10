@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.73 2009-02-26 19:03:22 mikeaubury Exp $";
+  "$Id: misc.c,v 1.74 2009-07-10 11:55:54 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -613,13 +613,13 @@ UILIB_A4GL_push_constr (void *vs)
   if (s->nfields < 0)
     {
       A4GL_debug ("NO CONSTRUCT - No fields\n");
-      A4GL_push_char ("");
+      A4GL_push_empty_char ();
       return 0;
     }
   if (s->currform == 0)
     {
       A4GL_debug ("NO CONSTRUCT - No form\n");
-      A4GL_push_char ("");
+      A4GL_push_empty_char ();
       return 0;
     }
   A4GL_LL_int_form_driver (s->currform->form, AUBIT_REQ_FIRST_PAGE);
@@ -652,7 +652,7 @@ UILIB_A4GL_push_constr (void *vs)
 
 
         if (ptr==0) { // some error in the field...
-                A4GL_push_char ("");
+                A4GL_push_empty_char ();
                 return 0;
         }
 

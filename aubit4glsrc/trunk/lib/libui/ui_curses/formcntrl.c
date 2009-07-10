@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.159 2009-06-19 16:18:10 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.160 2009-07-10 11:55:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.159 2009-06-19 16:18:10 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.160 2009-07-10 11:55:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -901,7 +901,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 					// This isn't right....
 					// the keypress will already have been mostly actioned...
-                                	if (!isprint(k)) A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k,__LINE__);
+                                	if (!a_isprint(k)) A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k,__LINE__);
 
 					// Do we already have an extended value ? 
 					if (sio->constr[sio->curr_attrib].value) {
@@ -2313,7 +2313,7 @@ strcpy(newfieldval,"");
         a=post_form(f);
         A4GL_debug("construct - post_form = %d",a);
 	
-	if (isprint(init_key) && init_key>=0 && init_key<=255) {
+	if (a_isprint(init_key) && init_key>=0 && init_key<=255) {
 		if (construct_not_added) {
 			char smbuff[2];
 			smbuff[0]=init_key;

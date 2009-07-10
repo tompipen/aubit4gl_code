@@ -946,10 +946,10 @@ check_linearised_commands (char *module_name, commands * func_cmds)
   int nretvals = 0;
 
   struct command *r;
-  int local_last_whencode[10] = { -1, -1, -1, -1, -1, -1, -1 };
-  char *local_last_whento[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int local_last_whencode[1000] = { -1, -1, -1, -1, -1, -1, -1 };
+  char *local_last_whento[1000] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-  for (cnt = 0; cnt < 10; cnt++)
+  for (cnt = 0; cnt < 1000; cnt++)
     {
       local_last_whencode[cnt] = -1;
       local_last_whento[cnt] = 0;

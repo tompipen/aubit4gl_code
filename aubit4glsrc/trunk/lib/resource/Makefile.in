@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.22 2008-12-16 14:25:53 mikeaubury Exp $
+# $Id: Makefile.in,v 1.23 2009-07-10 11:55:55 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -80,7 +80,7 @@ CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
 ## ==================================================================
 
 ${ROOT}/bin/aubit-config: ${OBJS} ${LIBROOT}/generated/project.c
-	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
+	${LD_EXE} ${EXE_CFLAGS} -I../libincl -o $@ $^
 #	${CP} $@ ../../bin
 
 ${LIBROOT}/generated/project.c:

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.241 2009-07-10 09:47:37 mikeaubury Exp $
+# $Id: stack.c,v 1.242 2009-07-10 11:55:46 mikeaubury Exp $
 #
 */
 
@@ -1886,7 +1886,6 @@ int r;
 		  char *s2;
 		  s1 = A4GL_char_pop ();
 		  s2 = A4GL_char_pop ();
-		  //push_char ("");
 		  A4GL_push_char (s1);
 		  free (s1);
 		  free (s2);
@@ -3508,7 +3507,7 @@ aclfgl_aclfgl_text_as_str (int n)
       if (f == 0)
 	{
 	  A4GL_exitwith ("Unable to load blob file");
-	  A4GL_push_char ("");
+	  A4GL_push_char (" ");
 	  return 1;
 	}
       fseek (f, 0, SEEK_END);
@@ -3592,7 +3591,7 @@ aclfgl_aclfgl_byte_as_str (int n)
       if (f == 0)
 	{
 	  A4GL_exitwith ("Unable to load blob file");
-	  A4GL_push_char ("");
+	  A4GL_push_char (" ");
 	  return 1;
 	}
       fseek (f, 0, SEEK_END);

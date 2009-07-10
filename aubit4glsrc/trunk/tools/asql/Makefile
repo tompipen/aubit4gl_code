@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.60 2009-04-29 11:07:14 mikeaubury Exp $
+# $Id: Makefile,v 1.61 2009-07-10 11:55:55 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -155,7 +155,7 @@ ALL_PROGS				+=asql_g${A4GL_EXE_EXT}
 VERBOSE_FLAG	=--verbose
 #4GLPC			=${FGLPCEXEC} ${VERBOSE_FLAG}
 #FGLPC_VERBOSE_FLAG=-V5
-4GLPC			=4glpc ${FGLPC_VERBOSE_FLAG}  
+4GLPC			=4glpc -V5 -fbounds-checking ${FGLPC_VERBOSE_FLAG}  
 IFX4GLPC			=NEVER_CONVERT=Y 4glpc ${FGLPC_VERBOSE_FLAG} 
 
 ################

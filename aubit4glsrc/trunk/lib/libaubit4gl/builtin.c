@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.145 2009-07-06 14:53:43 mikeaubury Exp $
+# $Id: builtin.c,v 1.146 2009-07-10 11:55:45 mikeaubury Exp $
 #
 */
 
@@ -234,7 +234,7 @@ aclfgl_fgl_getenv (int nargs)
     {
       if (A4GL_isyes (acl_getenv ("ENV_NOT_SET_AS_STR")))
 	{			// Historic Aubit4GL behaviour
-	  A4GL_push_char ("");
+	  A4GL_push_empty_char ();
 	}
       else
 	{
@@ -273,7 +273,7 @@ aclfgl_dbms_dialect (int n)	// n should always be 0
 
   p = A4GLSQL_dbms_dialect ();
   if (p == 0)
-    A4GL_push_char ("");
+    A4GL_push_empty_char ();
   else
     A4GL_push_char (A4GLSQL_dbms_dialect ());
   //acl_free (g); // Is this here for a reason ?
@@ -1737,7 +1737,7 @@ aclfgl_fgl_dialog_getfieldname (int n)
 #ifdef DEBUG
   A4GL_debug ("WARNING: fgl_dialog_getfieldname() not yet implemented!");
 #endif
-  A4GL_push_char ("");
+  A4GL_push_empty_char ();
   return 1;
 }
 
@@ -1749,7 +1749,7 @@ aclfgl_fgl_dialog_getbuffer (int n)
 #ifdef DEBUG
   A4GL_debug ("WARNING: fgl_dialog_getbuffer() not yet implemented!");
 #endif
-  A4GL_push_char ("");
+  A4GL_push_empty_char ();
   return 1;
 }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.62 2009-02-26 12:32:00 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.63 2009-07-10 11:55:53 mikeaubury Exp $
 #*/
 
 /**
@@ -161,7 +161,7 @@ int entry=0;
 	    {
 	      if (strcmp (rep->output_loc_str, "stdout") == 0)
 		{
-		  A4GL_push_char ("");
+		  A4GL_push_empty_char ();
 		  A4GL_push_int (-1);
 		  A4GL_push_int (-1);
 		  A4GL_display_at (1, 0);
@@ -361,7 +361,7 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
       }
 #endif
     }
-  A4GL_push_char ("");
+  A4GL_push_empty_char ();
   A4GL_pdf_move (rep); 
 
 }
@@ -865,7 +865,7 @@ A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
 
   p->line_no = p->line_no + (double) y;
   p->col_no = p->col_no + (double) x;
-  A4GL_push_char ("");
+  A4GL_push_empty_char ();
   A4GL_pdf_rep_print (p, 1, cr, 0, -1);
   return;
 }

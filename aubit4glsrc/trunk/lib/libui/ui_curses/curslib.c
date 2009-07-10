@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.160 2009-05-07 15:05:00 mikeaubury Exp $
+# $Id: curslib.c,v 1.161 2009-07-10 11:55:53 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.160 2009-05-07 15:05:00 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.161 2009-07-10 11:55:53 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -329,7 +329,7 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
 
 
 
-  A4GL_push_char ("");
+  A4GL_push_empty_char ();
   a = A4GL_geterror_line ();
   A4GL_debug ("Error line = %d", a);
   A4GL_push_int (a);

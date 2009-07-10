@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.113 2009-06-06 09:07:45 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.114 2009-07-10 11:55:45 mikeaubury Exp $
 #
 */
 
@@ -742,7 +742,7 @@ a4gl_using_from_string (char *str_to_set, int s, char *fmt, char *numeric, int i
       strcpy (buff_decimal, "0.0");
     }
   ptr_decimal = &buff_decimal[2];
-  A4GL_lpad (buff_integer, 33);
+  A4GL_lpad (buff_integer, 65);
 
   if (num_places > 64 || strlen (ptr_decimal) >= 64)
     {
@@ -753,12 +753,12 @@ a4gl_using_from_string (char *str_to_set, int s, char *fmt, char *numeric, int i
       return;
     }
   strcat (buff_decimal, "000000000000000000000000000000000");
-  ptr_decimal[32] = 0;
+  ptr_decimal[64] = 0;
 
   A4GL_debug("setting str to %s", fmt);
 
   strcpy (str_to_set, fmt);
-  variable_called_b = 32;
+  variable_called_b = 64;
   isprnt = 1;
   // first, ensure the format string is wide enough to hold the number
   // if not, try drop trailing decimals, otherwise flag overflow with *'s
@@ -870,7 +870,7 @@ a4gl_using_from_string (char *str_to_set, int s, char *fmt, char *numeric, int i
 		isprnt = 0;
 	    } 
 	
-
+          A4GL_assertion(variable_called_b<0,"Internal error - var<0");
 	  A4GL_debug ("setting str[%d]=%c", v_a, buff_integer[variable_called_b]); 
 
 	  str_to_set[v_a] = buff_integer[variable_called_b--];

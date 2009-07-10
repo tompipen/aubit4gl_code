@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.49 2009-07-04 12:40:09 mikeaubury Exp $
+# $Id: Makefile,v 1.50 2009-07-10 11:55:44 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -338,7 +338,7 @@ reload_static:  ../../bin/reload_static
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
 ../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
-	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
+	$(LD_EXE) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 	#cp fgllint $(AUBITDIR)/bin
 
 calltree_expr.o: expr_as_string_when_possible.c
@@ -354,7 +354,7 @@ fglcalltree:../../bin/fglcalltree
 	#cp $@ $(AUBITDIR)/bin
 
 fgllink: fgllink.o API_lex.o expr_munging.o linearise.o common.o ../../lib/generated/std_funcs.c
-	$(CC) -I$(ROOT)/incl -rdynamic -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC)  -I$(ROOT)/incl -rdynamic -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	cp fgllink $(AUBITDIR)/bin
 
 

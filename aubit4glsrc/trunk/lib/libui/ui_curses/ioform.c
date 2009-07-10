@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.230 2009-07-09 13:27:17 mikeaubury Exp $
+# $Id: ioform.c,v 1.231 2009-07-10 11:55:53 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.230 2009-07-09 13:27:17 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.231 2009-07-10 11:55:53 mikeaubury Exp $";
 #endif
 
 /**
@@ -3081,13 +3081,13 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
   if (s->nfields < 0)
     {
       A4GL_debug ("NO CONSTRUCT - No fields\n");
-      A4GL_push_char ("");
+      A4GL_push_empty_char ();
       return 0;
     }
   if (s->currform == 0)
     {
       A4GL_debug ("NO CONSTRUCT - No form\n");
-      A4GL_push_char ("");
+      A4GL_push_empty_char ();
       return 0;
     }
   A4GL_int_form_driver (s->currform->form, REQ_FIRST_PAGE);
@@ -3097,7 +3097,7 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
   if (s->field_list == 0)
     {
       A4GL_exitwith ("Internal error - no field list");
-      A4GL_push_char ("");
+      A4GL_push_empty_char ();
       return 0;
     }
   A4GL_debug ("s-field_list[0]=%p", s->field_list[0]);
@@ -3124,7 +3124,7 @@ A4GL_debug("UILIB_A4GL_push_constr----------------------------------------------
 		}
 
 	if (ptr==0) { // some error in the field...
-      		A4GL_push_char ("");
+      		A4GL_push_empty_char ();
       		return 0;
 	}
 	
