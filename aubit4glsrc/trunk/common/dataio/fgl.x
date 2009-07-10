@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.39 2009-07-03 10:53:42 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.40 2009-07-10 12:48:37 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -993,7 +993,7 @@ struct struct_select_cmd {
 };
 
 struct struct_skip_cmd {
-	int lines;
+	struct expr_str *skip_amt;
 };
 
 struct struct_skip_by_cmd {

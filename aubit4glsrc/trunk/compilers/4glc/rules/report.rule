@@ -438,14 +438,15 @@ format_action :
 	 FIRST_PAGE_HEADER { push_report_block("FIRST",'P',""); } atline commands_as_list {
 		int lineno; char errmsg[256];
 	 	add_feature("REPORT_FIRST_PAGE_HEADER");
+		set_cmdlineno($<integer_val>3);
 		rep_struct.lines_in_first_header=A4GL_check_lines_for_prints($<commands>4,&lineno,errmsg);
 		pdf_rep_struct.lines_in_first_header=rep_struct.lines_in_first_header;
-		set_cmdlineno($<integer_val>3);
 		$<report_format_section_entry>$=new_report_format_section_entry(RB_FIRST_PAGE_HEADER,NULL, $<commands>4,0,$<integer_val>3);
 		}
 	| PAGE_TRAILER { add_feature("REPORT_PAGE_TRAILER"); push_report_block("TRAILER",'T',"");
  		} atline commands_as_list {
 		int lineno; char errmsg[256];
+		set_cmdlineno($<integer_val>3);
 		rep_struct.lines_in_trailer=A4GL_check_lines_for_prints($<commands>4,&lineno,errmsg);
 		pdf_rep_struct.lines_in_trailer=rep_struct.lines_in_trailer;
 	
@@ -457,15 +458,14 @@ format_action :
 		}
 
 
-		set_cmdlineno($<integer_val>3);
 		$<report_format_section_entry>$=new_report_format_section_entry(RB_PAGE_TRAILER,NULL, $<commands>4,0,$<integer_val>3);
 	}
 	| PAGE_HEADER { push_report_block("HEADER",'p',""); } atline commands_as_list {
 		int lineno; char errmsg[256];
 	 	add_feature("REPORT_PAGE_HEADER");
+		set_cmdlineno($<integer_val>3);
 		rep_struct.lines_in_header=A4GL_check_lines_for_prints($<commands>4,&lineno,errmsg);
 		pdf_rep_struct.lines_in_header=rep_struct.lines_in_header;
-		set_cmdlineno($<integer_val>3);
 		$<report_format_section_entry>$=new_report_format_section_entry(RB_PAGE_HEADER,NULL, $<commands>4,0,$<integer_val>3);
 	}
 	| ON_EVERY_ROW { push_report_block("EVERY",'E',""); add_feature("ON_EVERY_ROW");  } atline commands_as_list {
@@ -538,20 +538,17 @@ op_lines : {strcpy($<str>$,"0");} | KWLINE {strcpy($<str>$,"1");}
 
 
 skip_cmd : 
-	SKIP INT_VALUE op_lines {
-			double n;
+	SKIP atline fgl_expr_c op_lines {
 			char buff[256];
-			strcpy(buff,$<str>3);
-			n=atof($<str>2);
+			strcpy(buff,$<str>4);
+			set_cmdlineno($<integer_val>2);
 			if (buff[0]=='1') {
-				int ni;
-				ni=atoi($<str>2);
-				$<cmd>$=new_skip_cmd(ni);
+				$<cmd>$=new_skip_cmd($<ptr>3);
 			} else {
 				if (rep_type!=REP_TYPE_PDF) { 
 					a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; 
 				} 
-				$<cmd>$=new_skip_by_cmd(A4GL_new_literal_double_str($<str>2));
+				$<cmd>$=new_skip_by_cmd($<ptr>3);
 			}
 	}
 	;

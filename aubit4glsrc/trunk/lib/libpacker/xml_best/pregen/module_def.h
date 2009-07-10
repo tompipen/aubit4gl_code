@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/07/09 16:32:47.
+ * Generated 2009/07/10 13:40:31.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -947,8 +947,6 @@ typedef int AT_pdf_startrep_ascii_height;
 #define AU_pdf_startrep_ascii_height NULL
 typedef int AT_pdf_startrep_fontname;
 #define AU_pdf_startrep_fontname NULL
-typedef int AT_struct_skip_cmd_lines;
-#define AU_struct_skip_cmd_lines NULL
 typedef int AT_globals_definition_nm;
 #define AU_globals_definition_nm NULL
 typedef int AT_s_table_nm;
@@ -2272,8 +2270,6 @@ extern AT_pdf_startrep_ascii_height AX_pdf_startrep_ascii_height;
 #define A_pdf_startrep_ascii_height (bufferstack + AX_pdf_startrep_ascii_height)
 extern AT_pdf_startrep_fontname AX_pdf_startrep_fontname;
 #define A_pdf_startrep_fontname (bufferstack + AX_pdf_startrep_fontname)
-extern AT_struct_skip_cmd_lines AX_struct_skip_cmd_lines;
-#define A_struct_skip_cmd_lines (bufferstack + AX_struct_skip_cmd_lines)
 extern AT_globals_definition_nm AX_globals_definition_nm;
 #define A_globals_definition_nm (bufferstack + AX_globals_definition_nm)
 extern AT_s_table_nm AX_s_table_nm;

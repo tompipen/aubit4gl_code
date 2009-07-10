@@ -73,7 +73,7 @@ struct command *new_select_cmd(expr_str *p_connid, struct s_select * p_sql,char 
 struct command *new_sql_transact_cmd(expr_str *p_connid, int p_trans);
 struct command *new_set_database_cmd(expr_str* p_dbname,e_boolean p_exclusive);
 struct command *new_whenever_cmd(int p_whencode, char *p_whento);
-struct command *new_skip_cmd(int p_lines);
+struct command *new_skip_cmd(struct expr_str *p_lines);
 struct command *new_skip_by_cmd(struct expr_str *p_lines);
 struct command *new_skip_to_cmd(struct expr_str *p_lines);
 struct command *new_need_cmd(expr_str* p_expr);

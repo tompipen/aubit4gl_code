@@ -7822,7 +7822,11 @@ if (last_parent!=parent) {
       break;
 
     case E_CMD_SKIP_CMD:
-      printc ("SKIP %d LINES", r->cmd_data.command_data_u.skip_cmd.lines);
+      set_nonewlines ();
+      printc ("SKIP ");
+	real_print_expr(r->cmd_data.command_data_u.skip_cmd.skip_amt);
+      printc (" LINES");
+      clr_nonewlines ();
       break;
 
     case E_CMD_PRINT_CMD:

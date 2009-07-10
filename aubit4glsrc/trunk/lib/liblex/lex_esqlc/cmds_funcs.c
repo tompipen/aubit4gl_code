@@ -3374,7 +3374,7 @@ int print_need_cmd(struct_need_cmd *cmd_data) {
 /******************************************************************************/
 int print_skip_cmd(struct_skip_cmd *cmd_data) {
   print_cmd_start ();
-  printc ("A4GL_push_int(%d);", cmd_data->lines );
+  print_expr(cmd_data->skip_amt);
   printc ("A4GL_%saclfgli_skip_lines(&_rep);\n", generate_ispdf ());
   print_copy_status_not_sql (0);
   return 1;
