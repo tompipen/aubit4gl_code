@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.239 2009-07-01 16:02:44 mikeaubury Exp $
+# $Id: stack.c,v 1.240 2009-07-10 09:40:32 mikeaubury Exp $
 #
 */
 
@@ -4297,8 +4297,9 @@ A4GL_pause_execution (void)
 void
 A4GL_pause_execution_msg (char *s)
 {
-  if (1)
+  if (1) {
     PRINTF ("--PAUSE EXECUTION->%s\n", s);
+  }
 
 
 #ifndef __WIN32__

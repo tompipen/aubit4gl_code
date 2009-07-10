@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.60 2009-07-07 09:12:06 mikeaubury Exp $
+# $Id: load.c,v 1.61 2009-07-10 09:40:32 mikeaubury Exp $
 #
 */
 
@@ -441,19 +441,22 @@ char nullbuff[200];
   A4GL_setnull (DTYPE_CHAR, nullbuff, 1);
   while (1)
     {
-     
-      strcpy (loadbuff, "");
- 	fgets (loadbuff, LOADBUFFSIZE - 1, p);
-
-	while (1) {
+     char *readBytes;
+        strcpy (loadbuff, "");
+ 	readBytes=fgets (loadbuff, LOADBUFFSIZE - 1, p);
+	
+	while (readBytes) {
 	int sl;
 			sl=endswithslash(loadbuff) ;
 			if (sl) {loadbuff[sl]=0;} 
 			else {
 				break;
 			}
-      			fgets (loadbufftmp, LOADBUFFSIZE - 1, p);
-			strcat(loadbuff,loadbufftmp);
+			
+      			readBytes=fgets (loadbufftmp, LOADBUFFSIZE - 1, p);
+			if (readBytes) {
+				strcat(loadbuff,loadbufftmp);
+			}
 	}
 
       A4GL_debug ("Read line '%s'\n", loadbuff);

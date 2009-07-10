@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.10 2009-06-30 18:38:54 mikeaubury Exp $
+# $Id: variables_new.c,v 1.11 2009-07-10 09:39:02 mikeaubury Exp $
 #
 */
 
@@ -87,7 +87,7 @@ char *ptr;
 
 
 buff=strdup(orig);
-p=malloc(strlen(srch)+1);
+p=malloc((strlen(srch)+1)*sizeof(int));
 p[0]=buff;
 for (a=0;a<strlen(srch);a++) {
         p[a+1]=strchr(p[a],srch[a]);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.178 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: conv.c,v 1.179 2009-07-10 09:40:32 mikeaubury Exp $
 #
 */
 
@@ -1719,6 +1719,7 @@ static void
 prepend_0_if_required (char *ptr)
 {
   static char buff[200];
+  //static char ptr[256];
   strcpy (buff, ptr);
   if (ptr[0] == '.')
     {
@@ -1730,6 +1731,7 @@ prepend_0_if_required (char *ptr)
       strcpy (buff, "-0");
       strcat (buff, &ptr[1]);
     }
+  A4GL_trim(buff);
   strcpy (ptr, buff);
 }
 

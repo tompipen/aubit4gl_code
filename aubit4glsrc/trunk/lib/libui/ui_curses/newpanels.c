@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.175 2009-07-04 18:45:54 mikeaubury Exp $
+# $Id: newpanels.c,v 1.176 2009-07-10 09:39:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.175 2009-07-04 18:45:54 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.176 2009-07-10 09:39:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -3249,9 +3249,12 @@ int
  UILIB_A4GL_iscurrborder (void)
 {
   A4GL_debug ("currwinno=%d", currwinno);
+if (currwinno>=0) {
   A4GL_debug ("Winattr=%p", windows[currwinno].winattr);
   A4GL_debug ("border=%p", windows[currwinno].winattr.border);
   return windows[currwinno].winattr.border;
+} 
+return 0;
 }
 
 
