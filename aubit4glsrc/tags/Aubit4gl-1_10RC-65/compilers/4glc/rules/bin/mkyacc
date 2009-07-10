@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: mkyacc,v 1.25 2009-01-12 10:19:43 mikeaubury Exp $
+#
+
+# This script builds "generated/fgl.yacc" files from several files
+# A Bison parser, will use fgl.yacc to create y.tab.c from it
+
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
+
+ofile=$1
+if [ "$ofile" = "" ]
+then
+	ofile="generated/fgl.yacc"
+fi
+
+if [ ! -w $ofile ] &&  [ -f $ofile ]
+then
+	chmod 666 $ofile
+	touch $ofile
+fi
+
+if [ "$2" != "" ]
+then
+	A4GL_SQLPACK=$2
+fi
+
+if [ "$A4GL_SQLPACK" = "" ]
+then
+	A4GL_SQLPACK="infx"
+fi
+
+cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > $ofile
+echo "/* ========================== from mkyacc =========================== */" >> $ofile
+#echo "commands_xxx : | command1 ;" >> $ofile
+
+#echo "all_commands : commands_all opt_semi ;" >> $ofile
+
+#echo 'command1	: all_commands  {
+#chk4var=0;A4GL_lex_printcomment("/* [Comm:%s] */\n",$<str>$);
+#if (A4GL_isyes(acl_getenv("INCLINES")))
+#A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+	#A4GL_prchkerr(lastlineno,infilename);
+	#lastlineno=yylineno;
+#}
+#| command1  all_commands {
+#A4GL_lex_printcomment("/* [COMM:%s] */\n",$<str>2);chk4var=0;
+#if (A4GL_isyes(acl_getenv("INCLINES")))
+#A4GL_lex_printc("{A4GL_debug(\"Line %d %s:%s\");}",lastlineno,infilename,convstrsql(larr));
+###/* if (A4GL_aubit_strcasecmp($<str>$,"whenever")!=0)  */
+#A4GL_prchkerr(lastlineno,infilename);
+#lastlineno=yylineno;
+#}
+#;' >> $ofile
+
+#commands_all :  {print_cmd_start();} commands_all1 {print_cmd_end();};
+echo "
+commands_all1: op_doc4gl_comment commands_all2 {
+		$<cmd>$=set_cmd_comment($<cmd>2,$<sql_string>1);
+		
+	}
+;
+
+commands_all2 	:" >> $ofile
+
+grep -h "^[^ ]*_cmd.*:" $ofile | $AWK '
+(NR==1) {print " 		" $1 " {add_used_cmd(\"" $1 "\");$<cmd>$=$<cmd>1;}" }
+(NR!=1) {print "	|	" $1 " {add_used_cmd(\"" $1 "\");$<cmd>$=$<cmd>1;}" }' > /tmp/aaa$$
+cat /tmp/aaa$$ >> $ofile
+rm /tmp/aaa$$
+echo " | error;" >> $ofile
+
+echo "/* ========================== end from mkyacc =========================== */" >> $ofile
+cat last.reqd >> $ofile
+echo "char *FGLPARSE_A4GL_compiled_sqlpack(void ) {char *s=\"$A4GL_SQLPACK\"; return A4GL_decode_packtype(s);}" >>  $ofile
+chmod 444 $ofile
+
+
+#------------------------------ EOF --------------------------------

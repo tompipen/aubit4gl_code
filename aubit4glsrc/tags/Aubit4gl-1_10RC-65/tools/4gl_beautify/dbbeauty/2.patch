@@ -1,0 +1,44 @@
+
+*** dbbeauty.c.newest Tue Jun  2 14:43:44 1998
+--- dbbeauty.c Tue Jun  2 15:31:40 1998
+***************
+*** 113,124 ****
+				(void)putchar(c);
+		continue;
+		case '"':
+!			(void)putchar(c);
+!			while ((c = getchar()) != '"' && c != '\n' && !feof(stdin))
+  				(void)putchar(c);
+! 			if (!feof(stdin))
+! 				(void)putchar(c);
+! 			continue;
+  		}
+  		if (!fglalpha(c))
+  			break;
+--- 113,135 ----
+				(void)putchar(c);
+			continue;
+		case '"':
+! {
+! char was_bs = 0;
+!
+			(void)putchar(c);
+! while (((c = getchar()) != '"' || was_bs) &&
+! c != '\n' && !feof(stdin))
+! {
+! (void)putchar(c);
+! if (c == '\\')
+! was_bs ^= 1;
+! else
+! was_bs = 0;
+! }
+! if (!feof(stdin))
+! (void)putchar(c);
+! continue;
+! }
+  }
+  if (!fglalpha(c))
+  break;
+
+
+

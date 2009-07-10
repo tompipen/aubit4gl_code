@@ -1,0 +1,13 @@
+Name: convertsql
+Parent: aubit4glsrc
+Description: Command line SQL Dialect convertor
+Functionality: SQL Dialect
+Build: Made by root makefile
+Example: see --help
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status:  4
+Todo: 
+Notes: Useful as a quick check on what Aubit4gl will do with your SQL! Similar in functionality to sql_parse

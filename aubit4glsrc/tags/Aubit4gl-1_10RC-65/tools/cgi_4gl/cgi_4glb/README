@@ -1,0 +1,16 @@
+This directory contains a version of formsproc.c proposed by John Cokos.
+The comments that accompanied his submission to the Repository follow
+below:
+
+
+From: jcokos@ccs.net (John Cokos)
+Date: Mon, 26 Jan 1998 17:40:15 -0500
+
+I have lots of "web stuff" running that use these functions.  I can't tell
+you how happy I was to find the original version of this.  Now that I
+"fixed" it, it has become indespensible, and enabled me to do lots of web
+programmin that previously was very kludgey (We use informix 2.x and 4.1
+...  Informix's webdriver cgi is not available for us, and none of the Perl
+Interfaces work either).  This code was a godsend.
+
+John
