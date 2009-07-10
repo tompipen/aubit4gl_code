@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.129 2009-07-04 12:40:10 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.130 2009-07-10 14:06:26 mikeaubury Exp $
 */
 
 /**
@@ -138,7 +138,7 @@ extern "C"
 	 */
   typedef struct
   {
-    unsigned char dec_data[64];	       /**< The value stored in money variable */
+    unsigned char dec_data[128];	       /**< The value stored in money variable */
   }
   fglmoney;
 
