@@ -1,4 +1,20 @@
 ---------------------------
+Sun Jul 12 08:48:26 BST 2009
+---------------------------
+1.10RC_65 Released
+---------------------------
+	
+	Allow SKIP <expression> LINES as opposed to SKIP <integer> LINES.
+	
+	memory fixups
+	
+	Radio buttons in forms
+	
+	input array fixup - ensure AFTER INSERT is triggered on ACCEPT
+	
+	load fixup for blobs
+	
+---------------------------
 Sun Jul  5 10:37:24 BST 2009
 ---------------------------
 1.10RC_64 Released
