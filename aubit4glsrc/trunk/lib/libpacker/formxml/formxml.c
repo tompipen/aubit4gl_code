@@ -1201,6 +1201,22 @@ new_field (int y, int x, int w, char because_of, int fstart)
 
 
 
+static int has_label_ending(int x,int y) {
+  int a;
+  for (a = 0; a < nfields; a++) {
+      if (y==screen_convert_fields[a].y) continue; 	// Same line doesn't count..
+
+      if (screen_convert_fields[a].label == 0)
+	continue;
+
+      if (screen_convert_fields[a].y==y-1 || screen_convert_fields[a].y==y+1) {
+		if (screen_convert_fields[a].x+screen_convert_fields[a].w==x) return 1;
+	}
+
+  }
+return 0;
+}
+
 
 int
 has_label (int x, int y, int w, int set, int fy)
@@ -1318,12 +1334,16 @@ void make_screen (struct_form * f,int scr)
   for (y = 0; y < f->maxline; y++)
     {
 
-      // Convert all ':' to spaces - they'd look rubbish anyway....
-      for (x = 0; x < f->maxcol; x++)
-	{
-	  if (screen[y][x] == ':')
-	    screen[y][x] = ' ';
-	}
+      		// Convert all ':' to spaces - they'd look rubbish anyway....
+      		for (x = 0; x < f->maxcol; x++)
+			{
+	  			if (screen[y][x] == ':') {
+					if (A4GL_isyes(acl_getenv("XMLFORM_REMOVECOLON"))) {
+	    					screen[y][x] = ' ';
+					}
+				}
+			}
+	
 
       for (x = 0; x < f->maxcol; x++)
 	{
@@ -1331,16 +1351,16 @@ void make_screen (struct_form * f,int scr)
 	  int w;
 	  int w2;
 	  int fstart = x;
-	  if (screen[y][x] != ' ' && screen[y][x] != 1 && screen[y][x] != 2)
+	  if ((screen[y][x] != ' ' ) && screen[y][x] != 1 && screen[y][x] != 2)
 	    {
 	      for (w = x + 1; w <= f->maxcol; w++)
 		{
-		  if (screen[y][w - 1] == ' ' && screen[y][w] == 0)
+		  if ((screen[y][w - 1] == ' ' ) && screen[y][w] == 0)
 		    {
 		      because_of = ' ';
 		      break;
 		    }		// more than 1 space
-		  if (screen[y][w - 1] == ' ' && screen[y][w] == ' ')
+		  if ((screen[y][w - 1] == ' ' )  && (screen[y][w] == ' '))
 		    {
 		      because_of = ' ';
 		      break;
@@ -1357,7 +1377,7 @@ void make_screen (struct_form * f,int scr)
 		{
 		  for (w2 = w; w2 < f->maxcol; w2++)
 		    {
-		      if (screen[y][w2] == ' ')
+		      if (screen[y][w2] == ' ' )
 			continue;
 		      if (screen[y][w2] == 1)
 			{
@@ -1472,9 +1492,13 @@ for (a=0;a<nfields;a++) {
 	    }
 	  else
 	    {
-	      fprintf (ofile, "<Label text=\"%s\" posY=\"%d\" posX=\"%d\" gridWidth=\"%ld\"/>\n",
+		char guess_align='L';
+
+		if (has_label_ending( screen_convert_fields[a].x+ screen_convert_fields[a].w, screen_convert_fields[a].y)) guess_align='R';
+
+	        fprintf (ofile, "<Label text=\"%s\" posY=\"%d\" posX=\"%d\" gridWidth=\"%ld\" guessAlign=\"%c\"/>\n",
 		       xml_escape (screen_convert_fields[a].label), screen_convert_fields[a].y, screen_convert_fields[a].x,
-		       (long)strlen (screen_convert_fields[a].label));
+		       (long)strlen (screen_convert_fields[a].label), guess_align);
 	    }
 	
 }
