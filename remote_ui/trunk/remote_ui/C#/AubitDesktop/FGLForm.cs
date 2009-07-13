@@ -43,6 +43,7 @@ namespace AubitDesktop
         //int n = 0;
         private Panel thisFormsPanel;
         private ToolTip tooltips;
+        private Font fixedWidthFont;
 
         
 
@@ -413,8 +414,19 @@ namespace AubitDesktop
                             l = new TextBox();
                             l.ReadOnly = true;
                             l.BorderStyle = BorderStyle.None;
+                            if (fixedWidthFont == null)
+                            {
+                                fixedWidthFont = new Font(FontFamily.GenericMonospace,10, FontStyle.Regular);
+                            }
+                            l.Font = fixedWidthFont;
+                            
+                            if (lb.guessAlign == "R")
+                            {
+                                l.TextAlign = HorizontalAlignment.Right;
+                            }
+                           
                             l.TabStop = false;
-                            //l.Enabled = false;
+  
                             
                             l.Text = lb.text;
                             l.ForeColor = Color.Black;

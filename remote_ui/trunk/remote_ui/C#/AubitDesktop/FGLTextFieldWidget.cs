@@ -528,12 +528,14 @@ namespace AubitDesktop
         {
 
             int bcol=0;
-
+            int totalWidth = 0;
             this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
-
+           
             p = new Panel();
             l = new Label();
+            p.BorderStyle = BorderStyle.None;
             l.TextAlign = ContentAlignment.MiddleLeft;
+            
             t = new System.Windows.Forms.TextBox();
             if (thisAttribute.ATTRIB_INVISIBLE!=null)
             {
@@ -546,17 +548,12 @@ namespace AubitDesktop
             l.Padding = new Padding(0, 0, 0, 0);
             t.Margin = new Padding(0, 0, 0, 0);
             t.Padding = new Padding(0, 0, 0, 0);
-
+            p.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
 
             t.Visible = true;
             t.Enabled = true;
             SizeControl(ma,index,p);
-            //p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
-            p.AutoSize = true;
-
-
-            //t.BackColor = Color.Red;
-            //l.BackColor = Color.Blue;
+         //   p.AutoSize = true;
 
             if (rows > 1)
             {
@@ -575,21 +572,7 @@ namespace AubitDesktop
                 else
                 {
 
-                    if (columns > 10)
-                    {
-                        bcol = 5;
-                    }
-                    else
-                    {
-                        if (columns > 5)
-                        {
-                            bcol = 2;
-                        }
-                        else
-                        {
-                            bcol = 1;
-                        }
-                    }
+                    bcol = -1;
                 }
 
                 adjustDisplayPropertiesForContext();
@@ -599,26 +582,26 @@ namespace AubitDesktop
             // Any columns used for the button must be subtracted from the length of the 
             // textbox..
                
-            t.Size = new Size(GuiLayout.get_gui_w(columns-bcol), GuiLayout.get_gui_h(rows));
-            l.Size = new Size(GuiLayout.get_gui_w(columns - bcol), GuiLayout.get_gui_h(rows));
-            p.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
-
+           // t.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+            //l.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+           
+            t.Height = GuiLayout.get_gui_h(rows);
 
 
             if (columns > 2)
             {
-                t.Width = GuiLayout.get_gui_w(columns + 1);
+               totalWidth = GuiLayout.get_gui_w(columns + 1);
             }
             else
             {
-                t.Width = GuiLayout.get_gui_w(3);
+                totalWidth = GuiLayout.get_gui_w(3);
             }
 
             t.MaxLength = columns;
 
             //t.KeyDown += new KeyEventHandler(t_KeyDown);
             //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
-            l.Size = t.Size;
+          
             if (Upshift)
             {
                 t.CharacterCasing = CharacterCasing.Upper;
@@ -648,8 +631,16 @@ namespace AubitDesktop
                     b.Text = "!";
                 }
 
-                b.Size = new Size(GuiLayout.get_gui_w(bcol), GuiLayout.get_gui_h(rows)-4);
+                //b.Size = new Size(GuiLayout.get_gui_w(bcol), GuiLayout.get_gui_h(rows)-4);
                 b.Top = 0;
+                if (bcol > 0)
+                {
+                    b.Width = GuiLayout.get_gui_w(bcol);
+                }
+                else
+                {
+                    b.Width = GuiLayout.get_gui_w(1);
+                }
                 if (configSettings["IMAGE"] == null)
                 {
                     b.Image = FGLUtils.getImageFromName("zoom");
@@ -658,16 +649,34 @@ namespace AubitDesktop
                 {
                     b.Image = FGLUtils.getImageFromName((string)configSettings["IMAGE"]);
                 }
-
-                b.Left = t.Width + 1;
+              
+                //b.Height = GuiLayout.get_gui_h(rows) - 4;
+                b.Height = b.Image.Height+4;
+                b.Width = b.Image.Width+4;
+                if (b.Image.Height >t.Height)
+                {
+                    b.Height = t.Height;
+                }
+               
+                if (bcol >0 )
+                {
+                    t.Width = totalWidth - (GuiLayout.get_gui_w(bcol) + 5);
+                    b.Left = totalWidth - b.Width;
+                } else {
+                    t.Width=totalWidth-(b.Width +5);
+                    b.Left = totalWidth - b.Width;    
+                }
+                
                 //b.Left = GuiLayout.get_gui_x(column) ;     /* thats 2 pixels - not 2 characters */
                 b.Visible = true;
             }
             else
             {
                 b = null;
+                t.Width = totalWidth;
             }
-
+            p.Height = GuiLayout.get_gui_h(rows);
+            l.Size = t.Size;
             p.Controls.Add(t);
             p.Controls.Add(l);
             if (b!=null)
@@ -697,6 +706,9 @@ namespace AubitDesktop
 
             this.id = id;
             this.ContextType = FGLContextType.ContextNone;
+          //  p.BackColor = Color.Green;
+          //  l.BackColor = Color.Blue;
+          //  t.BackColor = Color.Red;
             adjustDisplayPropertiesForContext();
 
         }

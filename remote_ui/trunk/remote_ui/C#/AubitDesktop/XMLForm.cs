@@ -777,6 +777,8 @@ namespace AubitDesktop.Xml.XMLForm
                         /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string action;
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string guessAlign;
         }
 
         /// <remarks/>

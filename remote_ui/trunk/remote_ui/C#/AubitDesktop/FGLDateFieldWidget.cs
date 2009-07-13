@@ -26,29 +26,49 @@ using System.Drawing;
 
 namespace AubitDesktop
 {
+
     // A text widget fgl field widget...
-    class FGLDateFieldWidget : FGLWidget
+    public class FGLDateFieldWidget : FGLWidget
     {
-
-        DateTimePicker dateTimePicker_t;
+        //FGLContextType _ContextType;
+        private int id;
+        DateTimePicker t;
         Panel p;
-        Label l;
-
-
+      //  Label l;
+        Button b;
 
 
 
         internal override void setIsOnSelectedRow(bool isSelected)
         {
             isOnSelectedRow = isSelected;
-            adjustDisplayPropertiesForContext();
+            adjustDisplayPropertiesForContext();            
+        }
+
+
+        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        {
+            if (Action == "") return;  
+            foreach (ONKEY_EVENT a in keyList)
+            {
+                if (Convert.ToInt32(a.KEY) == FGLUtils.getKeyCodeFromKeyName(Action))
+                {
+                    // The action is really a fake keypress...
+                                    onActionID = a.ID;
+            
+            
+
+                    break;
+                }
+            }
+
         }
 
         public new void setToolTip(ToolTip t, string s)
         {
-            t.SetToolTip(this.l, s);
+            //t.SetToolTip(this.l, s);
             t.SetToolTip(this.p, s);
-            t.SetToolTip(this.dateTimePicker_t, s);
+            t.SetToolTip(this.t, s);
         }
 
 
@@ -65,7 +85,7 @@ namespace AubitDesktop
             }
         }
 
-        public override int Width
+        public override  int Width
         {
             get
             {
@@ -74,8 +94,8 @@ namespace AubitDesktop
             set
             {
                 p.Width = value;
-                l.Width = value;
-                dateTimePicker_t.Width = value;
+             //   l.Width = value;
+                t.Width = value;
             }
         }
 
@@ -84,7 +104,7 @@ namespace AubitDesktop
         {
             set
             {
-                dateTimePicker_t.TabIndex = value;
+                t.TabIndex = value;
             }
         }
 
@@ -92,16 +112,16 @@ namespace AubitDesktop
         {
             get
             {
-                if (dateTimePicker_t.Enabled && dateTimePicker_t.Focused) return true;
+                if (t.Enabled && t.Focused) return true;
                 return false;
             }
         }
 
-
+        
         public override void setFocus()
         {
-            dateTimePicker_t.Focus();
-            dateTimePicker_t.Select();
+            t.Focus();
+            t.Select();
             
         }
 
@@ -109,21 +129,23 @@ namespace AubitDesktop
         {
             set
             {
-                this.dateTimePicker_t.BackColor = value;
-                this.l.BackColor = value;
+                this.t.BackColor = value;
+               // this.l.BackColor = value;
             }
             get
             {
-                return this.dateTimePicker_t.BackColor;
+                return this.t.BackColor;
             }
-
+            
         }
+
+       
 
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
 
-
-
+            
+            
 
             //_ContextType = value;
             adjustDisplayPropertiesForContext();
@@ -134,62 +156,94 @@ namespace AubitDesktop
         {
             p.BorderStyle = BorderStyle.None;
 
+            t.BackColor = SystemColors.Window;
+            t.ForeColor = SystemColors.WindowText;
+            //t.TabStop = true;
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
-                    l.Visible = true;
-                    dateTimePicker_t.Visible = false;
+                    
+                 //   l.Visible = true;
+                    t.Enabled = false;
                     break;
 
 
                 case FGLContextType.ContextDisplayArray:
-                    if (dateTimePicker_t.Visible != true)
-                    {
-                        dateTimePicker_t.Visible = true;
-                    }
-                    if (l.Visible != false)
-                    {
-                        l.Visible = false;
-                    }
+                case FGLContextType.ContextDisplayArrayInactive:
+                    t.Enabled = false;
+
 
                     if (isOnSelectedRow)
                     {
-                        p.BorderStyle = BorderStyle.FixedSingle;
-
-                        //t.BorderStyle = BorderStyle.FixedSingle;
-                        //l.BorderStyle = BorderStyle.FixedSingle;
+                        t.BackColor = SystemColors.Highlight;
+                        t.ForeColor = SystemColors.HighlightText;
                     }
                     else
                     {
-                        p.BorderStyle = BorderStyle.None;
-                        //t.BorderStyle = BorderStyle.Fixed3D;
-                        //l.BorderStyle = BorderStyle.Fixed3D;
+
+
+
                     }
                     break;
 
-
                 case FGLContextType.ContextConstruct:
-                    dateTimePicker_t.Visible = true;
-                    l.Visible = false;
+                    t.Enabled= true;
                     
+                    break;
+
+
+                case FGLContextType.ContextInput:
+                    if (this.NoEntry)
+                    {
+                        t.Enabled = false;
+                        
+                    }
+                    else
+                    {
+                        t.Enabled = true;
+                        
+                    }
+                    // We can't trap the tabstops if this is true..
+                    //t.TabStop = false;
+                    break;
+
+                case FGLContextType.ContextInputArray:
+                    if (this.NoEntry)
+                    {
+                        t.Enabled = false;
+                        
+                    }
+                    else
+                    {
+                        if (isOnSelectedRow)
+                        {
+                           // t.BackColor =Color.White;
+                            t.Enabled = true;
+                            
+                        }
+                        else
+                        {
+                            t.Enabled = false;
+                            
+                        }
+                    }
                     break;
 
                 default:
                     if (this.NoEntry)
                     {
-                        dateTimePicker_t.Visible = false;
-                        l.Visible = true;
+                        t.Enabled = false;
                         
                     }
                     else
                     {
-                        dateTimePicker_t.Visible = true;
-                        l.Visible = false;
-                        
+                        t.Enabled = false;
                     }
                     break;
 
             }
+
+            
         }
 
         internal override Control WindowsWidget
@@ -204,100 +258,62 @@ namespace AubitDesktop
         {
             get
             {
-                return dateTimePicker_t.Enabled;
+                return t.Enabled;
             }
             set
             {
-                dateTimePicker_t.Enabled = value;
+                t.Enabled = value;
             }
         }
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
-        {
-
-            foreach (ONKEY_EVENT a in keyList)
-            {
-                if (Convert.ToInt32(a.KEY) == FGLUtils.getKeyCodeFromKeyName(Action))
-                {
-                    // The action is really a fake keypress...
-                    onActionID = a.ID;
-
-
-
-                    break;
-                }
-            }
-
-        }
-
-
-        public override  void  gotFocus()
-        {
-        }
 
         override public string Text // The current fields value
         {
             get
             {
-                return dateTimePicker_t.Text;
+                return t.Text;
             }
             set
             {
                 string val;
                 val = value;
-                if (val != dateTimePicker_t.Text)
+                if (val != t.Text)
                 {
                     this.FieldTextChanged = true;
                 }
 
 
-                if (_ContextType == FGLContextType.ContextInput || _ContextType==FGLContextType.ContextInputArray ||  _ContextType == FGLContextType.ContextDisplayArray)
+                if (_ContextType == FGLContextType.ContextInput || _ContextType == FGLContextType.ContextInputArray || _ContextType == FGLContextType.ContextDisplayArray)
                 {
                     if (this.format != null)
                     {
-
-
-
-
-
-                        if (this.format.Length > 0 && val != null)
+                        if (this.format.Length > 0 && val!=null)
                         {
                             val = FGLUsing.A4GL_func_using(this.format, val, this.datatype);
                         }
                     }
-
                 }
 
                 if (_ContextType == FGLContextType.ContextNone)
                 {
-                    if (val != null)
+                    if (val!=null)
                     {
                         val = val.TrimEnd(null);
                     }
-
                 }
 
-
-                    l.Text = val;
-                dateTimePicker_t.Text = val;
-
+                
+                t.Text = val;
             }
         }
 
 
 
 
-
-
-
-
-
-
-
-        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.DateEdit edit,string config,int index,AubitDesktop.Xml.XMLForm.Matrix ma)
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
-            a = createAttribForWidget(ff);
+            a = createAttribForWidget(ffx);
             if (edit.format != null)
             {
                 a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
@@ -317,24 +333,42 @@ namespace AubitDesktop
                 a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
             }
 
-            
 
-            createWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+
+
+            
+            createTextWidget(a,ma,
+                Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX),1, Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
+            
         }
 
 
 
-        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Edit edit,string config,int index, AubitDesktop.Xml.XMLForm.Matrix ma)
+
+
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ButtonEdit edit, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
-            a = createAttribForWidget(ff);
+            string action="";
+            string image="";
+            a = createAttribForWidget(ffx);
+
+            
             if (edit.format != null)
             {
                 a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
                 a.ATTRIB_FORMAT.Text = edit.format;
             }
 
+            if (edit.action != null)
+            {
+                action = (string)edit.action;
+            }
 
+            if (edit.image!=null)
+            {
+                image = (string)edit.image;
+            }
 
             if (edit.comments != null)
             {
@@ -359,16 +393,229 @@ namespace AubitDesktop
                 }
             }
 
-            createWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "",config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+
+            createTextWidget(a,ma,
+                Convert.ToInt32(edit.posY) , index, 
+                Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), 
+                Widget, config,
+                -1, ffx.sqlTabName + "." + ffx.colName,
+                action, Convert.ToInt32(ffx.fieldId), ffx.include, true,image);
+
         }
 
+        
 
+        public FGLDateFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.DateEdit edit, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ffx);
+            if (edit.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = edit.format;
+            }
+            
+
+
+            if (edit.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = edit.comments;
+            }
+
+            if (edit.autoNext != null && edit.autoNext=="1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+
+
+            
+            createTextWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
+            
+            
+        }
+        
+
+     
         public FGLDateFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl)
         {
+            createTextWidget(thisAttribute, null,row, 0,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl, false, "");
+        }
+        
 
-            createWidget(thisAttribute, null,row, 0,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+        private void createTextWidget(ATTRIB thisAttribute,  AubitDesktop.Xml.XMLForm.Matrix ma,int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, bool buttonEdit, string buttonImage)
+        {
+
+            int bcol=0;
+
+            this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+           
+            p = new Panel();
+          
+            p.BorderStyle = BorderStyle.Fixed3D;
+          
+                        t = new System.Windows.Forms.DateTimePicker();
+            t.Format = DateTimePickerFormat.Custom;
+            t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; 
+            t.Visible = true;
+            t.Enabled = true;
+            
+
+            p.Margin = new Padding(0, 0, 0, 0);
+            p.Padding = new Padding(0, 0, 0, 0);
+          
+            t.Margin = new Padding(0, 0, 0, 0);
+            t.Padding = new Padding(0, 0, 0, 0);
+
+
+            t.Visible = true;
+            t.Enabled = true;
+            SizeControl(ma,index,p);
+            //p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
+            p.AutoSize = true;
+
+
+            //t.BackColor = Color.Red;
+            //l.BackColor = Color.Blue;
+
+
+
+            
+
+
+            // Any columns used for the button must be subtracted from the length of the 
+            // textbox..
+               
+            t.Size = new Size(GuiLayout.get_gui_w(columns-bcol), GuiLayout.get_gui_h(rows));
+           
+            p.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+
+
+
+            if (columns > 2)
+            {
+                t.Width = GuiLayout.get_gui_w(columns + 1);
+            }
+            else
+            {
+                t.Width = GuiLayout.get_gui_w(3);
+            }
+
+            
+            //t.KeyDown += new KeyEventHandler(t_KeyDown);
+            //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
+            
+
+
+
+
+
+            if (buttonEdit)
+            {
+                b = new Button();
+                b.TabStop = false;
+                if (configSettings["TEXT"] != null)
+                {
+                    b.Text = (string)configSettings["TEXT"];
+                }
+                else
+                {
+                    b.Text = "!";
+                }
+
+                b.Size = new Size(GuiLayout.get_gui_w(bcol), GuiLayout.get_gui_h(rows)-4);
+                b.Top = 0;
+                if (configSettings["IMAGE"] == null)
+                {
+                    b.Image = FGLUtils.getImageFromName("zoom");
+                }
+                else
+                {
+                    b.Image = FGLUtils.getImageFromName((string)configSettings["IMAGE"]);
+                }
+
+                b.Left = t.Width + 1;
+                //b.Left = GuiLayout.get_gui_x(column) ;     /* thats 2 pixels - not 2 characters */
+                b.Visible = true;
+            }
+            else
+            {
+                b = null;
+            }
+
+            p.Controls.Add(t);
+
+            if (b!=null)
+            {
+                p.Controls.Add(b);
+            }
+
+           // p.Size = l.Size;
+            
+            t.CausesValidation = true;
+            t.KeyDown += new KeyEventHandler(t_KeyDown);
+            t.KeyPress += new KeyPressEventHandler(t_KeyPress);
+            t.Validating +=new System.ComponentModel.CancelEventHandler(t_Validating);
+            t.Enter += new EventHandler(t_GotFocus);
+            t.TextChanged += new EventHandler(t_TextChanged);
+            //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            if (b != null)
+            {
+                b.Click += new EventHandler(t_Click);
+            }
+            else
+            {
+                t.Click += new EventHandler(t_Click);
+            }
+            t.Visible = true;
+
+            this.id = id;
+            this.ContextType = FGLContextType.ContextNone;
+            adjustDisplayPropertiesForContext();
 
         }
+
+        void t_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+
+
+        public override void gotFocus()
+        {
+            
+
+            
+            //Program.Show("Here...");
+        }
+
+        void t_KeyDown(object sender, KeyEventArgs e)
+        {
+
+
+        }
+
+        void t_TextChanged(object sender, EventArgs e)
+        {
+
+
+        }
+
+
+
+
+
+
+
+    }
+
+
+}
+
+/*
+
 
         private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
@@ -415,6 +662,6 @@ namespace AubitDesktop
        
     }
 
+*/
 
-}
 
