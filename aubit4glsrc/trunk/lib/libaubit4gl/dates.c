@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.25 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: dates.c,v 1.26 2009-07-13 14:15:18 mikeaubury Exp $
 #
 */
 
@@ -533,6 +533,135 @@ A4GL_days_in_month (int m, int y)
   int leap;
   leap = leap_year (y);
   return days_in_month[leap][m];
+}
+
+
+
+
+int
+A4GL_get_date_from_formatted_date (char *format, char *data)
+{
+  int m = -1;
+  int d = -1;
+  int y = -1;
+  int ytype = 0;
+  char fmt_internal[2000];
+  char data_internal[2000];
+  char buff[200];
+  int a;
+
+
+
+  memset (fmt_internal, 0, sizeof (fmt_internal));
+  memset (data_internal, 0, sizeof (data_internal));
+  strcpy (fmt_internal, format);
+  strcpy (data_internal, data);
+
+  A4GL_trim (data_internal);
+  A4GL_trim (fmt_internal);
+
+  for (a = 0; a < strlen (fmt_internal); a++)
+    {
+      if (fmt_internal[a] == 'y' && fmt_internal[a + 1] == 'y' && fmt_internal[a + 2] == 'y' && fmt_internal[a + 3] == 'y')
+	{
+	  // Got a 4 digit year...
+	  buff[0] = data_internal[a];
+	  buff[1] = data_internal[a + 1];
+	  buff[2] = data_internal[a + 2];
+	  buff[3] = data_internal[a + 3];
+	  buff[4] = 0;
+	  y = atol (buff);
+	  fmt_internal[a] = ' ';
+	  fmt_internal[a + 1] = ' ';
+	  fmt_internal[a + 2] = ' ';
+	  fmt_internal[a + 3] = ' ';
+	  ytype = 4;
+	}
+
+      if (fmt_internal[a] == 'm' && fmt_internal[a + 1] == 'm' && fmt_internal[a + 2] == 'm' && m == -1)
+	{
+	  int mno;
+	// 2 digit month
+	  strcpy (buff, &data_internal[a]);
+	  for (mno = 1; mno <= 12; mno++)
+	    {
+	      char *full_month;
+	      full_month = A4GL_find_str_resource_int ("_MON", mno);
+		if (strncmp (full_month, &data_internal[a], strlen (full_month)) == 0)
+		{
+		  m = mno;
+		  break;
+		}
+	    }
+	  if (m != -1)
+	    {
+	      fmt_internal[a] = ' ';
+	      fmt_internal[a + 1] = ' ';
+	      fmt_internal[a + 2] = ' ';
+	    }
+	}
+
+
+      if (fmt_internal[a] == 'd' && fmt_internal[a + 1] == 'd' && fmt_internal[a + 2] == 'd')
+	{
+	// 3 digit day..
+	  fmt_internal[a] = ' ';
+	  fmt_internal[a + 1] = ' ';
+	  fmt_internal[a + 2] = ' ';
+	}
+
+      if (fmt_internal[a] == 'd' && fmt_internal[a + 1] == 'd' && d == -1)
+	{
+	// 2 digit day
+	  buff[0] = data_internal[a];
+	  buff[1] = data_internal[a + 1];
+	  buff[2] = 0;
+	  d = atol (buff);
+	  fmt_internal[a] = ' ';
+	  fmt_internal[a + 1] = ' ';
+	}
+
+
+      if (fmt_internal[a] == 'm' && fmt_internal[a + 1] == 'm' && m == -1)
+	{
+	  buff[0] = data_internal[a];
+	  buff[1] = data_internal[a + 1];
+	  buff[2] = 0;
+	  m = atol (buff);
+	  fmt_internal[a] = ' ';
+	  fmt_internal[a + 1] = ' ';
+	}
+
+
+      if (fmt_internal[a] == 'y' && fmt_internal[a + 1] == 'y' && y == -1)
+	{
+	  // 2 digit year...
+	  buff[0] = data_internal[a];
+	  buff[1] = data_internal[a + 1];
+	  buff[2] = 0;
+	  y = atol (buff);
+          if (y) {y=A4GL_y2kmode(y);}
+	  fmt_internal[a] = ' ';
+	  fmt_internal[a + 1] = ' ';
+	}
+    }
+
+
+if (m!=-1 && d!=-1 && y!=-1) {
+	int dno;
+	char *ptr;
+	// So - we think we've got it sorted
+	// does using this date result in this date string with this format ? 
+	dno= A4GL_gen_dateno(d,m,y);
+	ptr= A4GL_using_date(dno,format);
+	if (strcmp(ptr,data)==0) {
+		// Cool - we found it!
+			return dno;
+	}
+}
+
+return 0;
+
 }
 
 /* ============================= EOF =============================== */

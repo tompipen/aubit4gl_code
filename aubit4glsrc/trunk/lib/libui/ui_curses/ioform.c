@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.231 2009-07-10 11:55:53 mikeaubury Exp $
+# $Id: ioform.c,v 1.232 2009-07-13 14:15:20 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.231 2009-07-10 11:55:53 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.232 2009-07-13 14:15:20 mikeaubury Exp $";
 #endif
 
 /**
@@ -4659,6 +4659,9 @@ return buff;
 }
 
 
+
+
+
 // CHeck if out date looks like our formatted data
 // 
 static int matched_date_format(char *fmt,char *data) {
@@ -4746,11 +4749,19 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	      int dd;
 	      //int yyyy;
 	      int yy;
+	int date_as_int;
 	      char *d;
+		date_as_int=A4GL_get_date_from_formatted_date(ptr, fld_data);
+		if (date_as_int!=0)  {
+  				A4GL_push_date (date_as_int);
+	  			d = A4GL_char_pop ();
+	  			strcpy (buff_new, d);
+	  			free (d);
+	  			fld_data = buff_new;
+		}
 
 		if (!matched_date_format(ptr,fld_data)) {
-      				if (A4GL_stod (fld_data, &adate, 0) == 1 )
-					{
+      				if (A4GL_stod (fld_data, &adate, 0) == 1 ) {
 	  				char *d;
 	  				static char buff_new[256];
 	  				A4GL_push_date (adate);
@@ -4758,8 +4769,8 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	  				strcpy (buff_new, d);
 	  				free (d);
 	  				fld_data = buff_new;
-				
 				}
+				
 				return fld_data;
 		}
 
