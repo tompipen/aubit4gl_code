@@ -1082,14 +1082,14 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		}
 
 
-	      if (ok == 0
-		  && r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len !=
-		  r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len)
+		if (r->cmd_data.command_data_u.insert_cmd.column_list) {
+	      if (ok == 0 && r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len != r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len)
 		{
 		  char buff[200];
 		  sprintf (buff, "%d!=%d", r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len,
 			   r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len);
 		  A4GL_lint (module_name, r->lineno, "INSERTCOLS", "Number of columns in INSERT does not match number of values", buff);
+		}
 		}
 	    }
 	}
