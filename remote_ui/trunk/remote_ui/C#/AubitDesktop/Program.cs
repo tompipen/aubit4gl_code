@@ -128,9 +128,9 @@ namespace AubitDesktop
             if (frmMain!=null && !frmMain.IsDisposed)
             {
                // try
-                {
+                //{
                     Application.Run(frmMain);
-                }
+                //}
                 //catch (Exception e)
                 //{
                   //  Program.Show(e.ToString(), "Exception triggered...");

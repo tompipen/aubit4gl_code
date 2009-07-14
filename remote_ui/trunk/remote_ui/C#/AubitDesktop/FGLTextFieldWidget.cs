@@ -36,6 +36,7 @@ namespace AubitDesktop
         Panel p;
         Label l;
         Button b;
+        int _maxLength = 0;
 
 
 
@@ -229,10 +230,12 @@ namespace AubitDesktop
                     t.Visible = true;
                     l.Visible = false;
                     t.ReadOnly = false;
+                    t.MaxLength = 0;
                     break;
 
 
                 case FGLContextType.ContextInput:
+                    t.MaxLength = _maxLength;
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -250,6 +253,7 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextInputArray:
+                    t.MaxLength = _maxLength;
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -371,10 +375,12 @@ namespace AubitDesktop
         public int MaxLength
         {
             get{
-                   return t.MaxLength;
+                return _maxLength;
+                   //return t.MaxLength;
             } 
             set {
-                t.MaxLength=value;
+                _maxLength = value;
+                //t.MaxLength=value;
             }
         }
 

@@ -39,8 +39,23 @@ namespace AubitDesktop
         Button pb;
         Panel p;
         Label l;
-        
-        
+        int _maxLength = 0;
+
+
+
+        public int MaxLength
+        {
+            get
+            {
+                return _maxLength;
+                //return t.MaxLength;
+            }
+            set
+            {
+                _maxLength = value;
+                //t.MaxLength=value;
+            }
+        }
 
         internal override void setIsOnSelectedRow(bool isSelected)
         {
@@ -174,7 +189,15 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextInput:
-                case FGLContextType.ContextConstruct:                    
+                case FGLContextType.ContextConstruct:
+                    if (_ContextType == FGLContextType.ContextInput)
+                    {
+                        t.MaxLength = _maxLength;
+                    }
+                    else
+                    {
+                        t.MaxLength = 0;
+                    }
                     t.Visible = true;
                     if (buttonId != "")
                     {   // Only enable if there is an ON_KEY event for it...
@@ -191,6 +214,7 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextInputArray:
+                    t.MaxLength = _maxLength;
                     t.Visible = true;
                     if (isOnSelectedRow)
                     {
@@ -255,7 +279,7 @@ namespace AubitDesktop
                     break;
                 }
             }
-           // Program.Show("Here");
+
         }
 
         override public string Text // The current fields value
@@ -297,23 +321,13 @@ namespace AubitDesktop
                 if (val == null) val = "";
 
                     l.Text = val;
-               // t.Text = val;
+
 
             }
         }
 
 
-        public int MaxLength
-        {
-            get
-            {
-                return t.MaxLength;
-            }
-            set
-            {
-                t.MaxLength = value;
-            }
-        }
+
 
 
 

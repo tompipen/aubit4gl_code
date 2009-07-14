@@ -36,6 +36,7 @@ namespace AubitDesktop
         Panel p;
         Label l;
         FGLComboEntry[] cbItems;
+
         
 
         internal override void setIsOnSelectedRow(bool isSelected)

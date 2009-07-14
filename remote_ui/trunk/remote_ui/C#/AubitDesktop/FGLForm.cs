@@ -887,6 +887,7 @@ namespace AubitDesktop
 
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
+            thisFormsPanel.SuspendLayout(); 
             thisFormsPanel.Name = "FormPanel" + f.NAME;
             thisFormsPanel.Visible = true;
             
@@ -934,6 +935,7 @@ namespace AubitDesktop
                 // Program.Show(data, "Not implemented yet");
             }
                 thisFormsPanel.AutoSize = true;
+                thisFormsPanel.ResumeLayout(); 
         }
 
         void ser_UnknownNode(object sender, XmlNodeEventArgs e)
@@ -965,6 +967,11 @@ namespace AubitDesktop
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
+
+
+            thisFormsPanel.SuspendLayout(); 
+
+
             thisFormsPanel.Name = "StdForm" + f.GetHashCode();
             this.thisFormsPanel.Top = 15;
             this.thisFormsPanel.Left = 5;
@@ -983,6 +990,8 @@ namespace AubitDesktop
             this.thisFormsPanel.Height = GuiLayout.get_gui_y(Convert.ToInt32(f.SCREENS.MAXLINE));
             this.thisFormsPanel.AutoSize = true;
             // this.BorderStyle = BorderStyle.FixedSingle;
+
+            
 
             ScreenRecords = new List<FGLScreenRecord>();
             foreach (SCREENRECORD sr in f.SCREENRECORDS)
@@ -1045,6 +1054,8 @@ namespace AubitDesktop
                 }
                 thisFormsPanel.AutoSize = true;
             }
+
+            thisFormsPanel.ResumeLayout(); 
             #endregion 
         }
 
