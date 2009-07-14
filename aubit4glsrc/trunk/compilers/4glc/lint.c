@@ -1082,7 +1082,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		}
 
 
-		if (r->cmd_data.command_data_u.insert_cmd.column_list) {
+		if (r->cmd_data.command_data_u.insert_cmd.column_list && r->cmd_data.command_data_u.insert_cmd.value_list) {
 	      if (ok == 0 && r->cmd_data.command_data_u.insert_cmd.column_list->str_list_entry.str_list_entry_len != r->cmd_data.command_data_u.insert_cmd.value_list->list.list_len)
 		{
 		  char buff[200];
@@ -4346,10 +4346,9 @@ int isCalled=0;
 	      bad_load++;
 
 
-	      sprintf (buff, "%s First in %s.4gl Lines %d (%s.4gl %d, %d %d)", fprototypes[a].pname, mod_a, yylineno_a, mod_b,
-		       yylineno_b, a, b);
+	      sprintf (buff, "%s First in %s.4gl Lines %d (%s.4gl %d, %d %d)", fprototypes[a].pname, mod_a, yylineno_a, mod_b, yylineno_b, a, b);
 	      A4GL_lint (mod_b, yylineno_b, "FUNCDUP", "Function name is duplicated", buff);
-
+		fprintf(stderr, "Function name is duplicated:%s",buff);
 	    }
 	}
     }
