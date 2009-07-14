@@ -426,6 +426,7 @@ namespace AubitDesktop
                             }
                            
                             l.TabStop = false;
+                            //l.Enabled = false;
   
                             
                             l.Text = lb.text;
@@ -436,6 +437,8 @@ namespace AubitDesktop
                             l.Height = GuiLayout.get_gui_h(1);
                             l.Width = GuiLayout.get_gui_w(l.Text.Length);
                             l.Name = "Label" + l.Top + "_" + l.Left;
+                            l.TabIndex = 0;
+                            l.TabStop = false;
                             parent.Controls.Add(l);
                             l.AutoSize = true;
                         }
