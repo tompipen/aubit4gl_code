@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.146 2009-07-10 11:55:45 mikeaubury Exp $
+# $Id: builtin.c,v 1.147 2009-07-14 16:52:42 mikeaubury Exp $
 #
 */
 
@@ -1999,21 +1999,30 @@ aclfgl_fgl_winbutton (int nargs)
   char *pos;
   char *icon;
   int danger;
-  if (nargs != 6)
+  if (nargs != 6 && nargs!=5)
     {
       A4GL_pop_args (nargs);
       A4GL_set_status (-3001, 0);
       return 0;
     }
 
+ if (nargs==6) {
   danger = A4GL_pop_int ();
+ } else {
+	danger=0;
+ }
   icon = A4GL_char_pop ();
+A4GL_trim(icon);
   pos = A4GL_char_pop ();
+A4GL_trim(pos);
   def = A4GL_char_pop ();
+A4GL_trim(def);
   text = A4GL_char_pop ();
+A4GL_trim(text);
   title = A4GL_char_pop ();
+A4GL_trim(title);
   A4GL_push_char (A4GL_ui_fgl_winquestion (title, text, def, pos, icon, danger, 1));
-  return 0;
+  return 1;
 }
 
 

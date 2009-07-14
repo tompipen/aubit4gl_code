@@ -59,12 +59,12 @@ endobj
 <?adobe-xap-filters esc="CRLF"?>
 <x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='XMP toolkit 2.9.1-13, framework 1.6'>
 <rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:iX='http://ns.adobe.com/iX/1.0/'>
-<rdf:Description rdf:about='deb4a7e5-9e50-11e9-0000-6a2cee49f9ab' xmlns:pdf='http://ns.adobe.com/pdf/1.3/' pdf:Producer='GPL Ghostscript 8.64'/>
-<rdf:Description rdf:about='deb4a7e5-9e50-11e9-0000-6a2cee49f9ab' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2009-07-01T12:42:57+01:00</xmp:ModifyDate>
-<xmp:CreateDate>2009-07-01T12:42:57+01:00</xmp:CreateDate>
+<rdf:Description rdf:about='06059a4d-a86c-11e9-0000-6a2cee49f9ab' xmlns:pdf='http://ns.adobe.com/pdf/1.3/' pdf:Producer='GPL Ghostscript 8.64'/>
+<rdf:Description rdf:about='06059a4d-a86c-11e9-0000-6a2cee49f9ab' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2009-07-14T09:22:31+01:00</xmp:ModifyDate>
+<xmp:CreateDate>2009-07-14T09:22:31+01:00</xmp:CreateDate>
 <xmp:CreatorTool>\(using ebnf2ps v4.3\)</xmp:CreatorTool></rdf:Description>
-<rdf:Description rdf:about='deb4a7e5-9e50-11e9-0000-6a2cee49f9ab' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='deb4a7e5-9e50-11e9-0000-6a2cee49f9ab'/>
-<rdf:Description rdf:about='deb4a7e5-9e50-11e9-0000-6a2cee49f9ab' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>ebnf--CLINE.eps</rdf:li></rdf:Alt></dc:title></rdf:Description>
+<rdf:Description rdf:about='06059a4d-a86c-11e9-0000-6a2cee49f9ab' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='06059a4d-a86c-11e9-0000-6a2cee49f9ab'/>
+<rdf:Description rdf:about='06059a4d-a86c-11e9-0000-6a2cee49f9ab' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>ebnf--CLINE.eps</rdf:li></rdf:Alt></dc:title></rdf:Description>
 </rdf:RDF>
 </x:xmpmeta>
                                                                         
@@ -74,8 +74,8 @@ endstream
 endobj
 2 0 obj
 <</Producer(GPL Ghostscript 8.64)
-/CreationDate(D:20090701124257+01'00')
-/ModDate(D:20090701124257+01'00')
+/CreationDate(D:20090714092231+01'00')
+/ModDate(D:20090714092231+01'00')
 /Title(ebnf--CLINE.eps)
 /Creator(\(using ebnf2ps v4.3\))>>endobj
 xref
@@ -95,7 +95,7 @@ xref
 0000000933 00000 n 
 trailer
 << /Size 13 /Root 1 0 R /Info 2 0 R
-/ID [<7D0903D156588AF2D2E190866C3E23AB><7D0903D156588AF2D2E190866C3E23AB>]
+/ID [<71310A98AFE0E10B080352365FD0C953><71310A98AFE0E10B080352365FD0C953>]
 >>
 startxref
 2520

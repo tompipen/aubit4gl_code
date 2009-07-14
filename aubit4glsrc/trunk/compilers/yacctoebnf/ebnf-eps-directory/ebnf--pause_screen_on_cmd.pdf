@@ -56,12 +56,12 @@ endobj
 <?adobe-xap-filters esc="CRLF"?>
 <x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='XMP toolkit 2.9.1-13, framework 1.6'>
 <rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:iX='http://ns.adobe.com/iX/1.0/'>
-<rdf:Description rdf:about='f429d1e6-9e50-11e9-0000-fbcd7f3e3860' xmlns:pdf='http://ns.adobe.com/pdf/1.3/' pdf:Producer='GPL Ghostscript 8.64'/>
-<rdf:Description rdf:about='f429d1e6-9e50-11e9-0000-fbcd7f3e3860' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2009-07-01T12:43:33+01:00</xmp:ModifyDate>
-<xmp:CreateDate>2009-07-01T12:43:33+01:00</xmp:CreateDate>
+<rdf:Description rdf:about='1d4487cd-a86c-11e9-0000-fbcd7f3e3860' xmlns:pdf='http://ns.adobe.com/pdf/1.3/' pdf:Producer='GPL Ghostscript 8.64'/>
+<rdf:Description rdf:about='1d4487cd-a86c-11e9-0000-fbcd7f3e3860' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2009-07-14T09:23:10+01:00</xmp:ModifyDate>
+<xmp:CreateDate>2009-07-14T09:23:10+01:00</xmp:CreateDate>
 <xmp:CreatorTool>\(using ebnf2ps v4.3\)</xmp:CreatorTool></rdf:Description>
-<rdf:Description rdf:about='f429d1e6-9e50-11e9-0000-fbcd7f3e3860' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='f429d1e6-9e50-11e9-0000-fbcd7f3e3860'/>
-<rdf:Description rdf:about='f429d1e6-9e50-11e9-0000-fbcd7f3e3860' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>ebnf--pause_screen_on_cmd.eps</rdf:li></rdf:Alt></dc:title></rdf:Description>
+<rdf:Description rdf:about='1d4487cd-a86c-11e9-0000-fbcd7f3e3860' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='1d4487cd-a86c-11e9-0000-fbcd7f3e3860'/>
+<rdf:Description rdf:about='1d4487cd-a86c-11e9-0000-fbcd7f3e3860' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>ebnf--pause_screen_on_cmd.eps</rdf:li></rdf:Alt></dc:title></rdf:Description>
 </rdf:RDF>
 </x:xmpmeta>
                                                                         
@@ -71,8 +71,8 @@ endstream
 endobj
 2 0 obj
 <</Producer(GPL Ghostscript 8.64)
-/CreationDate(D:20090701124333+01'00')
-/ModDate(D:20090701124333+01'00')
+/CreationDate(D:20090714092310+01'00')
+/ModDate(D:20090714092310+01'00')
 /Title(ebnf--pause_screen_on_cmd.eps)
 /Creator(\(using ebnf2ps v4.3\))>>endobj
 xref
@@ -92,7 +92,7 @@ xref
 0000000995 00000 n 
 trailer
 << /Size 13 /Root 1 0 R /Info 2 0 R
-/ID [<5D0712A5A788F2F542DB8755CBD64993><5D0712A5A788F2F542DB8755CBD64993>]
+/ID [<3870DEB2FCB4C47484247350ACAAEF76><3870DEB2FCB4C47484247350ACAAEF76>]
 >>
 startxref
 2610
