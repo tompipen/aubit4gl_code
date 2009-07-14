@@ -650,13 +650,15 @@ namespace AubitDesktop
                     b.Image = FGLUtils.getImageFromName((string)configSettings["IMAGE"]);
                 }
               
-                //b.Height = GuiLayout.get_gui_h(rows) - 4;
-                b.Height = b.Image.Height+4;
-                b.Width = b.Image.Width+4;
-                if (b.Image.Height >t.Height)
-                {
-                    b.Height = t.Height;
-                }
+          
+                b.Height = b.Image.Height+4;    // NOTWEBGUI
+                b.Width = b.Image.Width + 4;    // NOTWEBGUI
+                if (b.Image.Height > t.Height)  // NOTWEBGUI
+                {                               // NOTWEBGUI
+                    b.Height = t.Height;        // NOTWEBGUI
+                }                               // NOTWEBGUI
+
+                // WEBGUI  b.AutoSize = true;
                
                 if (bcol >0 )
                 {
