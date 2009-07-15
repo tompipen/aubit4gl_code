@@ -88,7 +88,7 @@ namespace AubitDesktop
             {
                 row = row + index;
             }
-            return new System.Drawing.Point(GuiLayout.get_gui_x(column - 1), GuiLayout.get_gui_y(row));
+            return new System.Drawing.Point(GuiLayout.get_gui_x(column ), GuiLayout.get_gui_y(row));
             //throw new Exception("The method or operation is not implemented.");
         }
     }
