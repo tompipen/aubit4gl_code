@@ -411,6 +411,16 @@ namespace AubitDesktop
                         else
                         {
                             bool useTextbox = false;
+                            //
+                            // In the web gui - we want to use a textbox not a label
+                            // as the labels dont appear to be working properly...
+                            //
+                            // However - even readonly, non-tabstop textboxes
+                            // seem to be able to get focus in the normal client!
+                            //
+
+                            // This will get filtered by the conversion routine..
+
                             //WEBGUI useTextbox=true;
 
                             if (useTextbox)
