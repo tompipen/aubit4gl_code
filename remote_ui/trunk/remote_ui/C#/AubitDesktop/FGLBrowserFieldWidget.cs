@@ -134,7 +134,7 @@ namespace AubitDesktop
 
 
             pb.Visible = true;
-            pb.Location = GuiLayout.getPoint(ma, index, column - 1, row);
+            pb.Location = GuiLayout.getPoint(ma, index, column , row);
         }
 
 
