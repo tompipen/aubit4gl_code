@@ -471,8 +471,8 @@ namespace AubitDesktop
                                 }
                                 l.TabStop = false;
                                 l.Text = lb.text;
-                                l.ForeColor = Color.Black;
-                                l.BackColor = parent.BackColor;
+                               // l.ForeColor = Color.Black;
+                               // l.BackColor = parent.BackColor;
                                 l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
                                 l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
                                 l.Height = GuiLayout.get_gui_h(1);

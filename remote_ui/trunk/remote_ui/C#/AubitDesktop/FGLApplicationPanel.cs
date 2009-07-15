@@ -1173,7 +1173,25 @@ namespace AubitDesktop
                     //Program.Show(((EXECUTE)a).Text,"EXECUTE");
                     if (Program.AppSettings.allowExec)
                     {
-                        System.Diagnostics.Process.Start(((EXECUTE)a).Text);
+                        string prog;
+                        string args;
+                        prog = ((EXECUTE)a).Text.Trim();
+                        if (prog.StartsWith("'"))
+                        {
+                            int n;
+                            prog = prog.Substring(1);
+                            n = prog.IndexOf("'");
+                            args = prog.Substring(n + 1);
+                            prog = prog.Substring(0, n);
+                        }
+                        else
+                        {
+                            int n;
+                            n = prog.IndexOf(" ");
+                            args = prog.Substring(n + 1);
+                            prog = prog.Substring(0, n );
+                        }
+                        System.Diagnostics.Process.Start(prog,args);
                     }
                     else
                     {
