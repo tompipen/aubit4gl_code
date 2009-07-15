@@ -410,37 +410,69 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            TextBox l;
-                            l = new TextBox();
-                            l.ReadOnly = true;
-                            l.BorderStyle = BorderStyle.None;
-                            if (fixedWidthFont == null)
+                            bool useTextbox = false;
+                            //WEBGUI useTextbox=true;
+
+                            if (useTextbox)
                             {
-                                fixedWidthFont = new Font(FontFamily.GenericMonospace,10, FontStyle.Regular);
+                                TextBox l;
+                                l = new TextBox();
+                                l.ReadOnly = true;
+                                l.BorderStyle = BorderStyle.None;
+                                if (fixedWidthFont == null)
+                                {
+                                    fixedWidthFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
+                                }
+                                l.Font = fixedWidthFont;
+
+                                if (lb.guessAlign == "R")
+                                {
+                                    l.TextAlign = HorizontalAlignment.Right;
+                                }
+                                l.TabStop = false;
+                                l.Text = lb.text;
+                                l.ForeColor = Color.Black;
+                                l.BackColor = parent.BackColor;
+                                l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
+                                l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
+                                l.Height = GuiLayout.get_gui_h(1);
+                                l.Width = GuiLayout.get_gui_w(l.Text.Length);
+                                l.Name = "Label" + l.Top + "_" + l.Left;
+                                l.TabIndex = 0;
+                                l.TabStop = false;
+                                parent.Controls.Add(l);
+                                l.AutoSize = true;
                             }
-                            l.Font = fixedWidthFont;
-                            
-                            if (lb.guessAlign == "R")
+                            else
                             {
-                                l.TextAlign = HorizontalAlignment.Right;
+                                Label l;
+                                l = new Label();
+                                
+                                l.BorderStyle = BorderStyle.None;
+                                if (fixedWidthFont == null)
+                                {
+                                    fixedWidthFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
+                                }
+                                l.Font = fixedWidthFont;
+
+                                if (lb.guessAlign == "R")
+                                {
+                                    l.TextAlign = ContentAlignment.MiddleRight;
+                                }
+                                l.TabStop = false;
+                                l.Text = lb.text;
+                                l.ForeColor = Color.Black;
+                                l.BackColor = parent.BackColor;
+                                l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
+                                l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
+                                l.Height = GuiLayout.get_gui_h(1);
+                                l.Width = GuiLayout.get_gui_w(l.Text.Length);
+                                l.Name = "Label" + l.Top + "_" + l.Left;
+                                l.TabIndex = 0;
+                                l.TabStop = false;
+                                parent.Controls.Add(l);
+                                l.AutoSize = true;
                             }
-                           
-                            l.TabStop = false;
-                            //l.Enabled = false;
-  
-                            
-                            l.Text = lb.text;
-                            l.ForeColor = Color.Black;
-                            l.BackColor = parent.BackColor;
-                            l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
-                            l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
-                            l.Height = GuiLayout.get_gui_h(1);
-                            l.Width = GuiLayout.get_gui_w(l.Text.Length);
-                            l.Name = "Label" + l.Top + "_" + l.Left;
-                            l.TabIndex = 0;
-                            l.TabStop = false;
-                            parent.Controls.Add(l);
-                            l.AutoSize = true;
                         }
                     }
                     break;
