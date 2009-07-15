@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.121 2008-10-14 10:56:50 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.122 2009-07-15 19:54:35 mikeaubury Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -735,9 +735,15 @@ IODBC_SRC_TAR_GZ	=${IODBC_SRC_NAME}.tar.gz
 PDFLIB_INFO			=http://www.pdflib.com
 
 #Unix source code:
-PDFLIB_PATH			=http://www.pdflib.com/binaries/PDFlib/703
-PDFLIB_SRC          =PDFlib-Lite-7.0.3
-PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
+#http://www.pdflib.com/binaries/PDFlib/704/PDFlib-Lite-7.0.4p4.tar.gz
+#Unix source code:
+#PDFLIB_PATH                    =http://www.pdflib.com/binaries/PDFlib/703
+PDFLIB_PATH                     =http://www.pdflib.com/binaries/PDFlib/704
+#PDFLIB_SRC          =PDFlib-Lite-7.0.3
+PDFLIB_SRC          =PDFlib-Lite-7.0.4p4
+PDFLIB_SRC_TGZ          =${PDFLIB_SRC}.tar.gz
+
+
 
 #Linux binary:
 #NOTE: Binary packages of PDFlib will require commertial licensing, 
