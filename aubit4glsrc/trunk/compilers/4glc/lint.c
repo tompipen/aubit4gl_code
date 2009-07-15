@@ -1425,6 +1425,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 			s=strdup(expr_as_string_when_possible(expr));
 			for (next=b+1;next<r->cmd_data.command_data_u.case_cmd.whens->whens.whens_len;next++) {
 				s2=strdup(expr_as_string_when_possible(r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[next]->when_expr));
+	
 				if (strcmp(s,s2)==0) {
 					char buff[200];
 	//printf("s=%s s2=%s\n",s,s2);

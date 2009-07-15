@@ -89,7 +89,7 @@ expr_as_string_when_possible (expr_str * e)
 	ptr = strdup (expr_as_string_when_possible (e->expr_str_u.expr_expr));
 	sprintf (smbuff, "(%s)", ptr);
 	free (ptr);
-	return smbuff;
+	return strdup(smbuff);
       }
       break;
 
@@ -100,7 +100,7 @@ expr_as_string_when_possible (expr_str * e)
       {
 	static char smbuff[200];
 	sprintf (smbuff, " %ld", e->expr_str_u.expr_long);
-	return smbuff;
+	return strdup(smbuff);
       }
       break;
 
@@ -253,7 +253,7 @@ expr_as_string_when_possible (expr_str * e)
 	strcpy (buff, "INFIELD(");
 	strcat (buff, expr_as_string_field_name_list_as_char (e->expr_str_u.expr_infield->field_list));
 	strcat (buff, ")");
-	return buff;		//"INFIELD(..)";
+	return strdup(buff);		//"INFIELD(..)";
       }
 
     case ET_EXPR_OP_GREATER_THAN_EQ:
