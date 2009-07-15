@@ -805,6 +805,7 @@ namespace AubitDesktop
                 this.tsBtnAccept.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnAccept.ID = "ACCEPT";
                 this.tsBtnAccept.Image = global::AubitDesktop.ToolBarImages.accept; // NOTWEBGUI
+                // WEBGUI this.tsBtnAccept.Image = "Icons.accept.png";
                 this.tsBtnAccept.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnAccept.Name = "tsBtnAccept";
                 this.tsBtnAccept.Size = new System.Drawing.Size(23, 22);
@@ -818,6 +819,7 @@ namespace AubitDesktop
                 this.tsBtnCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnCancel.ID = "INTERRUPT";
                 this.tsBtnCancel.Image = global::AubitDesktop.ToolBarImages.cancel; // NOTWEBGUI
+                // WEBGUI this.tsBtnCancel.Image = "Icons.cancel.png";
                 this.tsBtnCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnCancel.Name = "tsBtnCancel";
                 this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
@@ -832,8 +834,9 @@ namespace AubitDesktop
                 //
                 this.tsBtnUp.ActiveKey = "Up";
                 this.tsBtnUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnUp.ID = "Up";
+                this.tsBtnUp.ID = "Up";                
                 this.tsBtnUp.Image = global::AubitDesktop.ToolBarImages.arrup; // NOTWEBGUI
+                // WEBGUI this.tsBtnUp.Image = "Icons.arrup.png";
                 this.tsBtnUp.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnUp.Name = "tsBtnUp";
                 this.tsBtnUp.Size = new System.Drawing.Size(23, 22);
@@ -849,6 +852,7 @@ namespace AubitDesktop
                 this.tsBtnDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnDown.ID = "Down";
                 this.tsBtnDown.Image = global::AubitDesktop.ToolBarImages.arrdown; // NOTWEBGUI
+                // WEBGUI this.tsBtnDown.Image = "Icons.arrdown.png";
                 this.tsBtnDown.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnDown.Name = "tsBtnDown";
                 this.tsBtnDown.Size = new System.Drawing.Size(23, 22);
@@ -865,6 +869,7 @@ namespace AubitDesktop
                 this.tsBtnPgDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnPgDown.ID = "PgDn";
                 this.tsBtnPgDown.Image = global::AubitDesktop.ToolBarImages.arrpgdown; // NOTWEBGUI
+                // WEBGUI this.tsBtnPgDown.Image = "Icons.arrpgdown.png";
                 this.tsBtnPgDown.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnPgDown.Name = "tsBtnPgDown";
                 this.tsBtnPgDown.Size = new System.Drawing.Size(23, 22);
@@ -879,6 +884,7 @@ namespace AubitDesktop
                 this.tsBtnPgUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnPgUp.ID = "PgUp";
                 this.tsBtnPgUp.Image = global::AubitDesktop.ToolBarImages.arrpgup; // NOTWEBGUI
+                // WEBGUI this.tsBtnPgUp.Image = "Icons.arrpgup.png";
                 this.tsBtnPgUp.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnPgUp.Name = "tsBtnPgUp";
                 this.tsBtnPgUp.Size = new System.Drawing.Size(23, 22);
@@ -894,6 +900,7 @@ namespace AubitDesktop
                 this.tsBtnInsert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnInsert.ID = "Insert";
                 this.tsBtnInsert.Image = global::AubitDesktop.ToolBarImages.neu; // NOTWEBGUI
+                // WEBGUI this.tsBtnInsert.Image = "Icons.insert.png";
                 this.tsBtnInsert.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnInsert.Name = "tsBtnInsert";
                 this.tsBtnInsert.Size = new System.Drawing.Size(23, 22);
@@ -910,6 +917,7 @@ namespace AubitDesktop
                 this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
                 this.tsBtnDelete.ID = "Delete";
                 this.tsBtnDelete.Image = global::AubitDesktop.ToolBarImages.delete; // NOTWEBGUI
+                //WEBGUI this.tsBtnDelete.Image ="Icons.delete.png";
                 this.tsBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
                 this.tsBtnDelete.Name = "tsBtnDelete";
                 this.tsBtnDelete.Size = new System.Drawing.Size(23, 22);
