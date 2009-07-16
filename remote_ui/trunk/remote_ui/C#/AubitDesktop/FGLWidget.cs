@@ -118,6 +118,7 @@ namespace AubitDesktop
         }
 
 
+
         public virtual string Text // The current fields value
         {
             get

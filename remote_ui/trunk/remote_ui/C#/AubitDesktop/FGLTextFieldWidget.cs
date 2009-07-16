@@ -36,6 +36,7 @@ namespace AubitDesktop
         Panel p;
         Label l;
         Button b;
+        int reservedButtonWidth=0;
         int _maxLength = 0;
 
 
@@ -189,8 +190,6 @@ namespace AubitDesktop
                     {
                         t.BackColor = SystemColors.Highlight;
                         t.ForeColor = SystemColors.HighlightText;
-                       // p.BorderStyle = BorderStyle.FixedSingle;
-                        //p.BackColor = Color.Red;
                     }
                     else
                     {
@@ -200,30 +199,7 @@ namespace AubitDesktop
 
                     }
                     break;
-/*
-                case FGLContextType.ContextDisplayArray:
-                    if (t.Visible != true)
-                    {
-                        t.Visible = true;
-                    }
-                    if (l.Visible !=false)
-                    {
-                        l.Visible = false;
-                    }
-                    if (t.ReadOnly != true)
-                    {
-                        t.ReadOnly = true;
-                    }
-                    if (isOnSelectedRow)
-                    {
-                        p.BorderStyle = BorderStyle.FixedSingle;
-                    }
-                    else
-                    {
-                        p.BorderStyle = BorderStyle.None;
-                    }
-                    break;
- * */
+
 
 
                 case FGLContextType.ContextConstruct:
@@ -235,7 +211,7 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextInput:
-                    t.MaxLength = _maxLength;
+                    t.MaxLength = _maxLength-reservedButtonWidth;
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -253,7 +229,7 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextInputArray:
-                    t.MaxLength = _maxLength;
+                    t.MaxLength = _maxLength-reservedButtonWidth;
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -264,7 +240,6 @@ namespace AubitDesktop
                     {
                         if (isOnSelectedRow)
                         {
-                           // t.BackColor =Color.White;
                             t.Visible = true;
                             l.Visible = false;
                             t.ReadOnly = false;
@@ -274,7 +249,6 @@ namespace AubitDesktop
                             t.Visible = false;
                             l.Visible = true;
                             t.ReadOnly = false;
-                            //t.BackColor = SystemColors.GrayText;
                         }
                     }
                     break;
@@ -295,9 +269,6 @@ namespace AubitDesktop
                     break;
 
             }
-
-            //if (t.ReadOnly == true) t.TabStop = false;
-            //else t.TabStop = true;
         }
 
         internal override Control WindowsWidget
@@ -372,15 +343,15 @@ namespace AubitDesktop
         }
 
 
-        public int MaxLength
+        public  int MaxLength
         {
             get{
                 return _maxLength;
-                   //return t.MaxLength;
+          
             } 
             set {
                 _maxLength = value;
-                //t.MaxLength=value;
+                
             }
         }
 
@@ -559,7 +530,7 @@ namespace AubitDesktop
             t.Visible = true;
             t.Enabled = true;
             SizeControl(ma,index,p);
-         //   p.AutoSize = true;
+ 
 
             if (rows > 1)
             {
@@ -603,7 +574,7 @@ namespace AubitDesktop
                 totalWidth = GuiLayout.get_gui_w(3);
             }
 
-            t.MaxLength = columns;
+            this.MaxLength = columns;
 
             //t.KeyDown += new KeyEventHandler(t_KeyDown);
             //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
@@ -639,14 +610,18 @@ namespace AubitDesktop
 
                 //b.Size = new Size(GuiLayout.get_gui_w(bcol), GuiLayout.get_gui_h(rows)-4);
                 b.Top = 0;
+                
                 if (bcol > 0)
                 {
+                    reservedButtonWidth = bcol;
                     b.Width = GuiLayout.get_gui_w(bcol);
                 }
                 else
                 {
+                    reservedButtonWidth = 1;
                     b.Width = GuiLayout.get_gui_w(1);
                 }
+
                 if (configSettings["IMAGE"] == null)
                 {
                     b.Image = FGLUtils.getImageFromName("zoom");
@@ -714,9 +689,6 @@ namespace AubitDesktop
 
             this.id = id;
             this.ContextType = FGLContextType.ContextNone;
-          //  p.BackColor = Color.Green;
-          //  l.BackColor = Color.Blue;
-          //  t.BackColor = Color.Red;
             adjustDisplayPropertiesForContext();
 
         }
@@ -747,21 +719,13 @@ namespace AubitDesktop
                 }
             }
             
-            //Program.Show("Here...");
+  
         }
 
         void t_KeyDown(object sender, KeyEventArgs e)
         {
 
-            /*
-            e.KeyCode;
-            if (e.KeyCode )
-            {
-                if (t.SelectionStart==0) {
-                    Program.Show("Clear?");
-                }
-            }
-             * */
+
         }
 
         void t_TextChanged(object sender, EventArgs e)
