@@ -365,6 +365,9 @@ namespace AubitDesktop
 
                 }
                 f.fglField.tabIndex = tstop++;
+                f.fglField.afterFieldID = "";
+                f.fglField.beforeFieldID = "";
+                f.fglField.onActionID = "";
             }
 
             this.EventTriggered = UIInputContext_EventTriggered;

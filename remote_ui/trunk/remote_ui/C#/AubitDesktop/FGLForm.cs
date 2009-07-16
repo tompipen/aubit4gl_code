@@ -90,6 +90,7 @@ namespace AubitDesktop
                         // Make it big - we'll resize later
                         thisLayoutControlsPanel.Width = 2000;
                         thisLayoutControlsPanel.Height = 2000;
+                        
                         thisLayoutControlsPanel.Name = "VBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.SuspendLayout();
                         thisLayoutControlsPanel.Visible = true;
@@ -442,7 +443,7 @@ namespace AubitDesktop
                                 l.TabStop = false;
                                 l.Text = lb.text;
                                 l.ForeColor = Color.Black;
-                                l.BackColor = parent.BackColor;
+                                l.BackColor = SystemColors.Control;
                                 l.Top = GuiLayout.get_gui_y(Convert.ToInt32(lb.posY));
                                 l.Left = GuiLayout.get_gui_x(Convert.ToInt32(lb.posX));
                                 l.Height = GuiLayout.get_gui_h(1);

@@ -47,6 +47,13 @@ namespace AubitDesktop
         private showMode _showApplicationLauncher;
         bool _hasApplicationtree;
         private event EventHandler EnvelopeReadyForConsumption;
+        public Color defaultBackColor
+        {
+            get
+            {
+                return panel1.BackColor;
+            }
+        }
 
 
 

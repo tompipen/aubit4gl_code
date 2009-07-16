@@ -801,39 +801,7 @@ namespace AubitDesktop
         }
 
 
-/*
-        public void befAftFieldTriggered(object source, string ID, string TriggeredText, UIContext u)
-        {
-            if (inputFocusActive == false) return;
 
-            foreach (FGLFoundField f in activeFields)
-            {
-                if (f.fglField == source)
-                {
-                    CurrentField = f;
-                    break;
-                }
-            }
-
-            if (TriggeredText == "")
-            {
-                TriggeredText = getTriggeredText(ID);
-                //getTriggeredTag(ID) + getSyncValues() + "</TRIGGERED>";
-            }
-
-            sendTrigger(ID);
-
-            foreach (FGLFoundField f in activeFields)
-            {
-                if (f.fglField == source)
-                {
-                    CurrentField = f;
-                    break;
-                }
-            }
-
-        }
-        */
 
         public string getSyncValues()
         {
@@ -964,6 +932,9 @@ namespace AubitDesktop
             {
                 f.fglField.fieldValidationFailed = inputFieldValidationHandler;
                 f.fglField.onGotFocus = inputGotFocus;
+                f.fglField.beforeFieldID = "";
+                f.fglField.afterFieldID = "";
+                f.fglField.onActionID = "";
             }
             #endregion
 
