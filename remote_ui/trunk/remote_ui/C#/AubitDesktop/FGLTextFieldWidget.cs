@@ -36,7 +36,7 @@ namespace AubitDesktop
         Panel p;
         Label l;
         Button b;
-        int reservedButtonWidth=0;
+      //  int reservedButtonWidth=0;
         int _maxLength = 0;
 
 
@@ -211,7 +211,7 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextInput:
-                    t.MaxLength = _maxLength-reservedButtonWidth;
+                    t.MaxLength = _maxLength;
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -229,7 +229,7 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextInputArray:
-                    t.MaxLength = _maxLength-reservedButtonWidth;
+                    t.MaxLength = _maxLength;
                     if (this.NoEntry)
                     {
                         t.Visible = false;
@@ -525,11 +525,31 @@ namespace AubitDesktop
             l.Padding = new Padding(0, 0, 0, 0);
             t.Margin = new Padding(0, 0, 0, 0);
             t.Padding = new Padding(0, 0, 0, 0);
-            p.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
+
+
+            if (buttonEdit)
+            {
+
+                if (configSettings["BUTTONWIDTH"] != null)
+                {
+                    bcol = Convert.ToInt32((string)configSettings["BUTTONWIDTH"]);
+                }
+                else
+                {
+
+                    bcol = 1;
+                }
+            }
+
+            
 
             t.Visible = true;
             t.Enabled = true;
             SizeControl(ma,index,p);
+            if (bcol > 0)
+            {
+                p.Size = new Size(GuiLayout.get_gui_w(columns + bcol+1) + 5, GuiLayout.get_gui_h(rows));
+            }
  
 
             if (rows > 1)
@@ -539,22 +559,9 @@ namespace AubitDesktop
                 t.Multiline = false;
             }
 
-            if (buttonEdit)
-            {
 
-                if (configSettings["BUTTONWIDTH"]!=null)
-                {
-                    bcol = Convert.ToInt32((string)configSettings["BUTTONWIDTH"]);
-                }
-                else
-                {
 
-                    bcol = -1;
-                }
-
-                adjustDisplayPropertiesForContext();
-            }
-
+              
 
             // Any columns used for the button must be subtracted from the length of the 
             // textbox..
@@ -567,7 +574,7 @@ namespace AubitDesktop
 
             if (columns > 2)
             {
-               totalWidth = GuiLayout.get_gui_w(columns + 1);
+               totalWidth = GuiLayout.get_gui_w(columns);
             }
             else
             {
@@ -613,12 +620,12 @@ namespace AubitDesktop
                 
                 if (bcol > 0)
                 {
-                    reservedButtonWidth = bcol;
+                    //reservedButtonWidth = bcol;
                     b.Width = GuiLayout.get_gui_w(bcol);
                 }
                 else
                 {
-                    reservedButtonWidth = 1;
+                    //reservedButtonWidth = 1;
                     b.Width = GuiLayout.get_gui_w(1);
                 }
 
@@ -643,11 +650,11 @@ namespace AubitDesktop
                
                 if (bcol >0 )
                 {
-                    t.Width = totalWidth - (GuiLayout.get_gui_w(bcol) + 5);
-                    b.Left = totalWidth - b.Width;
+                    t.Width = totalWidth; // -(GuiLayout.get_gui_w(bcol) + 5);
+                    b.Left = totalWidth; // -b.Width;
                 } else {
-                    t.Width=totalWidth-(b.Width +5);
-                    b.Left = totalWidth - b.Width;    
+                    t.Width = totalWidth; //-(b.Width +5);
+                    b.Left = totalWidth ; // -b.Width;    
                 }
                 
                 //b.Left = GuiLayout.get_gui_x(column) ;     /* thats 2 pixels - not 2 characters */
