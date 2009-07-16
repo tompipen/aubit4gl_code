@@ -186,6 +186,8 @@ namespace AubitDesktop
 
                 
                 if (txt == "") continue;
+                if (a.KEYS != "") continue;
+
                 if (isNormalKey(ke,txt.Substring(0,1))) {
                     matchedCommand = a;
                     cnt++;
