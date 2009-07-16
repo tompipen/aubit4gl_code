@@ -511,7 +511,7 @@ namespace AubitDesktop
             p = new Panel();
             l = new Label();
             p.BorderStyle = BorderStyle.None;
-            l.TextAlign = ContentAlignment.MiddleLeft;
+            l.TextAlign = ContentAlignment.TopLeft;
             
             t = new System.Windows.Forms.TextBox();
             if (thisAttribute.ATTRIB_INVISIBLE!=null)
