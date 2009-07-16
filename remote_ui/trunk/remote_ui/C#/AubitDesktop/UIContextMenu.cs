@@ -83,6 +83,16 @@ namespace AubitDesktop
             return false;
         }
 
+        public bool isNormalKey(KeyEventArgs ke, int asciiVal)
+        {
+            if (asciiVal > 255) return false;
+            if (asciiVal <= 0) return false;
+            char []b=new char[1];
+            b[0] = (char)asciiVal;
+            string s = new string(b);
+            return isNormalKey(ke, s);
+        }
+
         public bool isNormalKey(KeyEventArgs ke, string s)
         {
             if (ke.Alt) return false;
@@ -134,20 +144,47 @@ namespace AubitDesktop
             MENUCOMMAND matchedCommand=null; 
             cnt = 0;
 
-            
+            foreach (MENUCOMMAND a in thismenu.MENUCOMMANDS)
+            {
+                string txt = "";
+                if (a.KEYS != "")
+                {
+                    string[] keys = a.KEYS.Split(',');
+                    for (int n = 0; n < keys.Length; n++)
+                    {
+
+
+                        
+                            int kval=-1;
+                            try
+                            {
+                                kval = Convert.ToInt32(keys[n]);
+                            }
+                            catch { } 
+
+                            if (isNormalKey(ke, kval))
+                            {
+                                string eventText = "<TRIGGERED ID=\"" + a.ID + "\"/>";
+                                if (EventTriggered != null)
+                                {
+                                    EventTriggered(matchedCommand, a.ID, eventText, this);
+                                }
+                                return true;
+                            }
+                        }
+
+                    
+                }
+            }
+
+
             foreach (MENUCOMMAND a in thismenu.MENUCOMMANDS)
             {
                 string txt = a.TEXT;
 
                 if (txt == null) continue;
 
-                if (a.KEYS != "")
-                {
-                    string[]keys=a.KEYS.Split(',');
-                    for (int n=0;n<keys.Length;n++) {
-                        if (keys[n].Length == 1) { txt = keys[n]; break; }
-                    }
-                }
+                
                 if (txt == "") continue;
                 if (isNormalKey(ke,txt.Substring(0,1))) {
                     matchedCommand = a;
