@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.161 2009-07-10 11:55:53 mikeaubury Exp $
+# $Id: curslib.c,v 1.162 2009-07-16 19:47:58 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.161 2009-07-10 11:55:53 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.162 2009-07-16 19:47:58 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -53,6 +53,7 @@ static char const module_id[] =
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
 #include <locale.h>		/* utf8 */
+#include <term.h>
 
 char *a_strchr (char *s, char c);
 /*
@@ -1269,6 +1270,29 @@ UILIB_A4GLUI_ui_init (int argc, char *argv[])
   init_curses_mode = 0;
   return 1;
 }
+
+
+static char *
+visichar(int ch)
+{
+    static char temp[10];
+
+    ch = toupper(ch);
+    if (ch == '\\') {
+        strcpy(temp, "\\\\");
+    } else if (ch == '\033') {
+        strcpy(temp, "\\E");
+    } else if (ch < ' ') {
+        sprintf(temp, "\\%03o", ch);
+    } else if (ch >= 127) {
+        sprintf(temp, "\\%03o", ch);
+    } else {
+        sprintf(temp, "%c", ch);
+    }
+    return temp;
+}
+
+
 
 
 void

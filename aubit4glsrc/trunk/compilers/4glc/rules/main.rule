@@ -173,11 +173,6 @@ func_def	: op_doc4gl_comment ldeffunction {
     				A4GL_lex_printcomment("/*end function*/\n");
     				A4GL_chk_and_clr_labels();
 				map_function_end();
-
-				//if (strcmp($<str>2,"static ")!=0) {
-					// We don't export static functions
-				 	//variable_add_function($<module_entry>$); /* (-1,$<str>4,"","","add_function");  */
-				//}
   			}
 ;
 

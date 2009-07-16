@@ -1758,7 +1758,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
     }
 
   if (strcmp(what,"EXECUTE")==0) {
-      send_to_ui ("<EXECUTE>%s</EXECUTE>", string);
+      send_to_ui ("<EXECUTE>%s</EXECUTE>",uilib_xml_escape( string));
 	return;
   }
 
@@ -1986,7 +1986,7 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
           A4GL_push_long (context);
-          uilib_free_display (1);
+          //uilib_free_display (1);
 	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	}
     }
@@ -1998,7 +1998,7 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
       if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	{
       	A4GL_push_long (context);
-          uilib_free_display (1);
+          //uilib_free_display (1);
 	  return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	}
     }
@@ -2038,11 +2038,20 @@ UILIB_A4GL_finish_screenio (void *sio, char *siotype)
   if (strcmp (siotype, "s_inp_arr") == 0)
     {
       uilib_free_input_array (1);
+	return ;
     }
-  else
+
+  if (strcmp (siotype, "s_screenio") == 0)
     {
       uilib_free_input (1);
+	return ;
     }
+  if (strcmp (siotype, "s_disp_arr") == 0)
+    {
+      uilib_free_display (1);
+	return ;
+    }
+A4GL_assertion(1,"Unhandled free_screenio");
 }
 
 void

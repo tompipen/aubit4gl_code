@@ -2329,8 +2329,9 @@ if (cmd_data->events) {
 	tmp_ccnt--;
   printc ("}\n");
 	tmp_ccnt--;
-  printc ("}\n");
 printc("END_BLOCK_%d:;", cmd_data->blockid);
+  printc("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",sio_id,sio_id);
+  printc ("}\n");
 
   //print_reset_state_after_call();
   printcomment ("/* end display */\n");
