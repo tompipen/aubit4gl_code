@@ -511,7 +511,14 @@ namespace AubitDesktop
             p = new Panel();
             l = new Label();
             p.BorderStyle = BorderStyle.None;
-            l.TextAlign = ContentAlignment.TopLeft;
+            if (rows > 1)
+            {
+                l.TextAlign = ContentAlignment.TopLeft;
+            }
+            else
+            {
+                l.TextAlign = ContentAlignment.MiddleLeft;
+            }
             
             t = new System.Windows.Forms.TextBox();
             if (thisAttribute.ATTRIB_INVISIBLE!=null)
@@ -572,13 +579,13 @@ namespace AubitDesktop
             t.Height = GuiLayout.get_gui_h(rows);
 
 
-            if (columns > 2)
+            if (columns > 2 || true)
             {
-               totalWidth = GuiLayout.get_gui_w(columns);
+               totalWidth = GuiLayout.get_gui_w(columns+1);
             }
             else
             {
-                totalWidth = GuiLayout.get_gui_w(3);
+                totalWidth = GuiLayout.get_gui_w(4);
             }
 
             this.MaxLength = columns;
@@ -599,6 +606,7 @@ namespace AubitDesktop
 
             l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
+            //l.BackColor = Color.Red;
 
 
             if (buttonEdit)
@@ -666,6 +674,8 @@ namespace AubitDesktop
                 t.Width = totalWidth;
             }
             p.Height = GuiLayout.get_gui_h(rows);
+            l.Left = 0;
+            l.Top = 0;
             l.Size = t.Size;
             p.Controls.Add(t);
             p.Controls.Add(l);

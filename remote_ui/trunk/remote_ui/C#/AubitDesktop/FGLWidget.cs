@@ -944,12 +944,12 @@ namespace AubitDesktop
 
         public void SizeControl(AubitDesktop.Xml.XMLForm.Matrix ma, int index, Control c)
         {
-            int coffset = 0;
+           // int coffset = 0;
             c.Height = GuiLayout.get_gui_h(_rows);
-            if (_columns > 2)
+            if (_columns > 2 || true)
             {
                 c.Width = GuiLayout.get_gui_w(_columns + 1);
-                coffset = 1;
+              //  coffset = 1;
             }
             else
             {
