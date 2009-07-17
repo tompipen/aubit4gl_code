@@ -414,6 +414,17 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 			A4GL_pop_var2(args[a],11,0);
 		} else {
       			args[a] = A4GL_char_pop ();
+			switch (d1&DTYPE_MASK) {
+				case DTYPE_INT:
+				case DTYPE_SMINT:
+				case DTYPE_FLOAT:
+				case DTYPE_SMFLOAT:
+				case DTYPE_DECIMAL:
+				case DTYPE_MONEY:
+				case DTYPE_SERIAL:
+					A4GL_lrtrim(args[a]);
+					break;
+			}
 		}
     }
 

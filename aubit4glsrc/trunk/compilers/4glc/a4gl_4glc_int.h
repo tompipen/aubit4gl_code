@@ -763,6 +763,10 @@ int A4GL_has_serial_column_marker(char *tabname,char *colname) ;
 int current_is_report(void) ;
 void setIsLibraryModule(int n);
 int has_variable_name (struct vname_name_list *namelist, char *name);
+void linearise_commands_from_events (struct commands *master_list, struct on_events *evt_list);
+struct s_module_entry_ptr_list  * new_module_entry_list(struct  module_entry *p) ;
+struct s_module_entry_ptr_list  * append_module_entry_list(struct s_module_entry_ptr_list  *l, struct  module_entry *p);
+
 #ifndef DEFINED_SET_CLOBBER
 #define DEFINED_SET_CLOBBER
 void A4GL_set_clobber (char *c);

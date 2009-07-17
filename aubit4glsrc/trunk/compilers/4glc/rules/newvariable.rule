@@ -84,7 +84,7 @@ obind_var_list: bind_var_list {
 
 
 
-
+/*
 ebind_var_list: bind_var_list {
 		char buff[256];
 		if (!set_bind_var_dtype("ebind_var_list",buff,$<ptr_list>1)) {
@@ -94,6 +94,7 @@ ebind_var_list: bind_var_list {
 		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1);
 	}
 ;
+*/
 
 obind_var_let_list: bind_var_list {
 		char buff[256];

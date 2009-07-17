@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.40 2009-07-10 12:48:37 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.41 2009-07-17 16:24:48 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1627,6 +1627,11 @@ struct file_description {
 typedef struct module_entry* module_entry_ptr;
 
 
+struct s_module_entry_ptr_list  {
+	module_entry_ptr module_entry_ptr_list<>; 
+};
+
+
 struct globals_definition {
 	str mod_dbname;
 	str external_datatypes<>;
@@ -2862,7 +2867,7 @@ struct s_class_definition {
 	str parentname; 
 
 	struct expr_str_list expression_list;
-	variable_list public_variables;
+	/* variable_list public_variables; */      /* Should we have public variables ? */
 	variable_list private_variables;
 	module_entry_ptr class_entries<>;
 };

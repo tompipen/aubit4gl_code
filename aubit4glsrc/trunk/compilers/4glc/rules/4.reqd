@@ -34,9 +34,12 @@
 %token KW_WHENEVER_SET
 %token COMMENT
 
-%type <variable_list_ptr> define_multiple define_section def_part define_set def_part2
+%type <variable_list_ptr> define_multiple define_section def_part define_set def_part2 op_private_define_section 
 %type <variable_ptr>  dtype array_variable record_variable dtype2 dtype_ident time_dtypes define_constant
 %type <str> define_ident constant_value var_def_name  op_char define_table_name like_var
 %type <str_list> var_def_list  link_to_pk_list
 %type <int_list> number_arr_list
 %type <integer_val> datetime_qual interval_qual interval_qual_i dtime_start dtime_val dtime_end opt_frac opt_unit_size dtfrac int_start int_start_unit int_end number_arr_assoc ranking number_value_arr  
+%type <module_entry> class_entry
+%type <module_entry_list> class_entries
+%type <class_definition> class_definition

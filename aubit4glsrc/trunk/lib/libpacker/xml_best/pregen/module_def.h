@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/07/16 20:30:15.
+ * Generated 2009/07/17 12:36:40.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -235,6 +235,8 @@ extern void STag_s_import_package(void);
 extern void ETag_s_import_package(void);
 extern void STag_s_limit(void);
 extern void ETag_s_limit(void);
+extern void STag_s_module_entry_ptr_list(void);
+extern void ETag_s_module_entry_ptr_list(void);
 extern void STag_s_pdf_report_definition(void);
 extern void ETag_s_pdf_report_definition(void);
 extern void STag_s_report_definition(void);
@@ -817,6 +819,8 @@ typedef int AT_variable_usage_with_asc_desc_nm;
 #define AU_variable_usage_with_asc_desc_nm NULL
 typedef int AT_sq_subquery_nm;
 #define AU_sq_subquery_nm NULL
+typedef int AT_s_module_entry_ptr_list_nm;
+#define AU_s_module_entry_ptr_list_nm NULL
 typedef int AT_attrib_border;
 #define AU_attrib_border NULL
 typedef int AT_s_expr_pdf_function_call_nm;
@@ -2140,6 +2144,8 @@ extern AT_variable_usage_with_asc_desc_nm AX_variable_usage_with_asc_desc_nm;
 #define A_variable_usage_with_asc_desc_nm (bufferstack + AX_variable_usage_with_asc_desc_nm)
 extern AT_sq_subquery_nm AX_sq_subquery_nm;
 #define A_sq_subquery_nm (bufferstack + AX_sq_subquery_nm)
+extern AT_s_module_entry_ptr_list_nm AX_s_module_entry_ptr_list_nm;
+#define A_s_module_entry_ptr_list_nm (bufferstack + AX_s_module_entry_ptr_list_nm)
 extern AT_attrib_border AX_attrib_border;
 #define A_attrib_border (bufferstack + AX_attrib_border)
 extern AT_s_expr_pdf_function_call_nm AX_s_expr_pdf_function_call_nm;

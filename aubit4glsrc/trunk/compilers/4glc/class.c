@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.19 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: class.c,v 1.20 2009-07-17 16:24:48 mikeaubury Exp $
 #
 */
 
@@ -75,28 +75,28 @@ extern int list_class_cnt;
 //andrej int read_class (char *s,int is_parent);
 
 /* static functions declared here */
-static void write_variable_header (struct variable *v);
-static void write_variable_simple (struct variable *v);
-static void write_variable_linked (struct variable *v);
-static void write_variable_record (struct variable *v);
-static void write_variable_object (struct variable *v);
-static void write_variable_assoc (struct variable *v);
-static void write_variable_constant (struct variable *v);
-static void read_class_int (char *name, int *val);
-static void read_class_string (char *name, char **val, int alloc);
-static void read_class_char (char *name, char *val);
-static void read_class_float (char *name, double *val);
-static void read_variable_header (struct variable *v);
-static void read_variable_simple (struct variable *v);
-static void read_variable_linked (struct variable *v);
-static void read_variable_record (struct variable *v);
-static void read_variable_object (struct variable *v);
-static void read_variable_assoc (struct variable *v);
-static void read_variable_constant (struct variable *v);
+//static void write_variable_header (struct variable *v);
+//static void write_variable_simple (struct variable *v);
+//static void write_variable_linked (struct variable *v);
+//static void write_variable_record (struct variable *v);
+//static void write_variable_object (struct variable *v);
+//static void write_variable_assoc (struct variable *v);
+//static void write_variable_constant (struct variable *v);
+//static void read_class_int (char *name, int *val);
+//static void read_class_string (char *name, char **val, int alloc);
+//static void read_class_char (char *name, char *val);
+//static void read_class_float (char *name, double *val);
+//static void read_variable_header (struct variable *v);
+//static void read_variable_simple (struct variable *v);
+//static void read_variable_linked (struct variable *v);
+//static void read_variable_record (struct variable *v);
+//static void read_variable_object (struct variable *v);
+//static void read_variable_assoc (struct variable *v);
+//static void read_variable_constant (struct variable *v);
 //static void generate_globals_for (char *s);
-static void write_variable_function (struct variable *v);
-static void read_variable_function (struct variable *v);
-static void do_append (void);
+//static void write_variable_function (struct variable *v);
+//static void read_variable_function (struct variable *v);
+//static void do_append (void);
 //andrej void dump_class (void);
 int class_call(char *s,char *f,int args);
 
@@ -109,6 +109,8 @@ struct s_class_definition *this_class;
 
 char tmpbuff[1024] = "";
 
+
+/*
 void
 do_append (void)
 {
@@ -122,6 +124,7 @@ do_append (void)
   else
     strcat (allbuff, tmpbuff);
 }
+*/
 
 
 int 
@@ -145,7 +148,7 @@ char *fname;
 
 
 
-
+/*
 static void escape (char *buff) {
 char buff2[1024];
 int a;
@@ -158,7 +161,7 @@ buff2[b]=0;
 strcpy(buff,buff2);
 
 }
-
+*/
 
 
 
@@ -260,7 +263,7 @@ void new_class(char *cname, char *pname) {
 	this_class=malloc(sizeof(struct s_class_definition));
 	/* this_class->classname=strdup(cname);
 	this_class->parentname=strdup(pname); */
-	this_class->public_variables.variables.variables_len=0;
+	//this_class->public_variables.variables.variables_len=0;
 	this_class->private_variables.variables.variables_len=0;
 	this_class->class_entries.class_entries_len=0;
 	this_class->class_entries.class_entries_val=0;
@@ -273,6 +276,28 @@ void new_class(char *cname, char *pname) {
 int read_class (char *s, int is_parent)
 {
 A4GL_assertion(1,"Not implemented yet");
+return 0;
+}
+
+
+struct s_module_entry_ptr_list  * new_module_entry_list(struct  module_entry *p) {
+	struct s_module_entry_ptr_list  *l;
+	l=malloc(sizeof(struct s_module_entry_ptr_list));
+	l->module_entry_ptr_list.module_entry_ptr_list_len=0;
+	l->module_entry_ptr_list.module_entry_ptr_list_val=0;
+	if (p)  {
+		append_module_entry_list(l,p);
+	}
+	return l;
+
+}
+struct s_module_entry_ptr_list  * append_module_entry_list(struct s_module_entry_ptr_list  *l, struct  module_entry *p) {
+	if (p!=NULL) {
+		 l->module_entry_ptr_list.module_entry_ptr_list_len++;
+		 l->module_entry_ptr_list.module_entry_ptr_list_val=realloc( l->module_entry_ptr_list.module_entry_ptr_list_val, sizeof( l->module_entry_ptr_list.module_entry_ptr_list_val[0])* l->module_entry_ptr_list.module_entry_ptr_list_len);
+		 l->module_entry_ptr_list.module_entry_ptr_list_val[ l->module_entry_ptr_list.module_entry_ptr_list_len-1]=p;
+	}
+	return l;
 }
 
 /* ================================ EOF =================================== */

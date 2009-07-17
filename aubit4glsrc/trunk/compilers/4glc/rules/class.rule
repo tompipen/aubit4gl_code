@@ -1,32 +1,57 @@
 class_definition:
-	KW_CLASS identifier op_extends define_section  {
-			new_class($<str>2,$<str>3);
-		} class_entries END_CLASS   {
-			add_class_module_entry();
-		}
-
+	KW_CLASS identifier op_extends  { clr_variable(); clr_function_constants (); 
+			this_module.module_variables.variables.variables_len=0;
+			this_module.module_variables.variables.variables_val=0;
+		}   op_private_define_section {
+			if ($5) {
+                                        set_uses_constants($5);
+                                        merge_variable_list(&this_module.module_variables, $5);
+                                        sort_variables(this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len);
+			}
+	} class_entries END_CLASS {
+		$$=NULL;
+	}
 ;
 
 
+
 op_extends:
-	{
-		strcpy($<str>$,"");
-	} | KW_EXTENDS identifier {
+	| KW_EXTENDS identifier {
 		/* Should probably read the parent definition here... */
 		strcpy($<str>$,$<str>2);
 	}
 ;
 
+op_private_define_section: 
+	/* All variables are private for a class atm.... */
+	/* We may eventually allow public ones - so lets ensure they use the PRIVATE keyword for now */
+	{$$=NULL;}
+	 | KW_PRIVATE define_multiple { $$=$2;}
+;
+
+
+/*
+op_public_define_section: 
+	{$$=NULL}
+	| KW_PUBLIC  define_multiple { $$=$2; }	
+	| define_multiple { $$=$1; }	
+;
+*/
+
 
 class_entries :
-	class_entry 
-	| class_entries class_entry
+	class_entry  {
+		$<module_entry_list>$=new_module_entry_list($1);
+	}
+	| class_entries class_entry {
+		$<module_entry_list>$=append_module_entry_list($1,$2);
+	}
 ;
 
 
 class_entry: 
-	func_def {add_class_entry($<module_entry>1);}
-	| module_code {add_class_entry($<module_entry>1);}
-	| whenever_cmd {add_class_entry($<module_entry>1);}
+	func_def  {$$=$<module_entry>1;}
+	| module_code  {$$=$<module_entry>1;}
+	| whenever_cmd  {$$=$<module_entry>1;}
 ;
 

@@ -187,7 +187,7 @@ main_def:
     		//variable_action(-1,$<str>2,"","","add_function"); 
     		strcpy(curr_func,"MAIN");
     		clr_variable(); 
-  				clr_function_constants (); 
+  		clr_function_constants (); 
 		clr_call_list();
     		push_blockcommand("MAIN"); 
     		ADDMAP_MODULE("MAIN","MAIN");
@@ -197,8 +197,6 @@ main_def:
   define_section {
 			struct variable_list v;
 			char errbuff[256];
-			//set_local_variables($5);
-                        //set_variables(&v,'L');
 
 		} commands_as_list END_MAIN {
 	pop_blockcommand("MAIN");
