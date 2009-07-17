@@ -147,6 +147,10 @@ namespace AubitDesktop
             mainWin = f;
 
             activeFields = f.FindFields(c.FIELDLIST);
+            foreach (FGLFoundField fld in activeFields)
+            {
+                fld.fglField.Text = "";
+            }
             activeFields[0].fglField.setFocus();
 
         }
