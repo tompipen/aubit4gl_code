@@ -1568,12 +1568,14 @@ get_args (int nargs)
 {
   char **args;
   int a;
+
   UIdebug (5, "In get_args\n");
   args = malloc (sizeof (char *) * (nargs + 1));
   UIdebug (5, "Alloc args : %d\n", nargs);
   args[nargs] = 0;
   for (a = nargs; a > 0; a--)
     {
+
       UIdebug (5, "set args[%d]\n", a - 1);
       args[a - 1] = charpop ();
       UIdebug (5, "set args[%d]=%s\n", a - 1, args[a - 1]);

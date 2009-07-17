@@ -419,11 +419,20 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 				case DTYPE_SMINT:
 				case DTYPE_FLOAT:
 				case DTYPE_SMFLOAT:
-				case DTYPE_DECIMAL:
 				case DTYPE_MONEY:
 				case DTYPE_SERIAL:
 					A4GL_lrtrim(args[a]);
 					break;
+
+				case DTYPE_DECIMAL:
+					A4GL_lrtrim(args[a]);
+					if (args[a][0]=='.') {
+						char buff[2000];
+						sprintf(buff,"0%s",args[a]);
+						free(args[a]);
+						args[a]=strdup(buff);
+					}
+
 			}
 		}
     }
@@ -1346,7 +1355,34 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	    {
 	      for (b = 0; b < sreal->novars; b++)
 		{
+		char *fixnumeric;
 		  A4GL_push_param (sreal->vars[b].ptr, sreal->vars[b].dtype + ENCODE_SIZE (sreal->vars[b].size));
+		  switch (sreal->vars[b].dtype&DTYPE_MASK) {
+                                case DTYPE_INT:
+                                case DTYPE_SMINT:
+                                case DTYPE_FLOAT:
+                                case DTYPE_SMFLOAT:
+                                case DTYPE_MONEY:
+                                case DTYPE_SERIAL:
+					fixnumeric=A4GL_char_pop();
+                                        A4GL_lrtrim(fixnumeric);
+					A4GL_push_char(fixnumeric);
+					free(fixnumeric);
+                                        break;
+
+                                case DTYPE_DECIMAL:
+					fixnumeric=A4GL_char_pop();
+                                        A4GL_lrtrim(fixnumeric);
+                                        if (fixnumeric[0]=='.') {
+                                                char buff[2000];
+                                                sprintf(buff,"0%s",fixnumeric);
+						A4GL_push_char(buff);
+                                        } else {
+						A4GL_push_char(fixnumeric);
+					}
+					free(fixnumeric);
+
+		  }
 		}
 
 	      uilib_input_loop (sreal->novars + 1);
