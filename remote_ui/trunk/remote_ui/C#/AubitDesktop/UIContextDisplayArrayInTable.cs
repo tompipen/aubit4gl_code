@@ -29,7 +29,7 @@ namespace AubitDesktop
     {
         private bool _contextIsActive;
         private FGLApplicationPanel mainWin;
-        DataGridView displayArrayGrid;
+        FormattedGridView displayArrayGrid;
         private bool initialRow=false;
 
         //private int currentRow;
@@ -161,6 +161,7 @@ namespace AubitDesktop
 
             displayArrayGrid = f.FindRecord(p.FIELDLIST);
             displayArrayGrid.Rows.Clear();
+            
 
             for (int row = 0; row < p.ROWS.Length; row++)
             {
@@ -195,7 +196,8 @@ namespace AubitDesktop
             {
                 displayArrayGrid.RowLeave += new DataGridViewCellEventHandler(displayArrayGrid_RowLeave);
             }
-
+           
+          //  displayArrayGrid.RowCount = 5;
             displayArrayGrid.Enabled = false;
         }
 
@@ -237,6 +239,9 @@ namespace AubitDesktop
             this.EventTriggered(source, ID, TriggeredText,this);
         }
 
+
+        
+
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             
@@ -253,7 +258,8 @@ namespace AubitDesktop
             }
             displayArrayGrid.Enabled = true;
 
-            
+            displayArrayGrid.onDblClick= new EventHandler(displayArrayGrid_DoubleClick);
+
             mainWin.setActiveToolBarKeys(KeyList, true,true,false);
            
             
@@ -273,6 +279,11 @@ namespace AubitDesktop
                 }
             }
 
+        }
+
+        void displayArrayGrid_DoubleClick(object sender, EventArgs e)
+        {
+            toolBarAcceptClicked();
         }
 
         void displayArrayGrid_RowLeave(object sender, DataGridViewCellEventArgs e)
@@ -325,7 +336,7 @@ namespace AubitDesktop
             mainWin.setActiveToolBarKeys(null, false);
             displayArrayGrid.Enabled = false;
             mainWin.SetContext(FGLContextType.ContextNone);
-            
+            displayArrayGrid.onDblClick = null;
             EventTriggered = null;
             _contextIsActive = false;
            

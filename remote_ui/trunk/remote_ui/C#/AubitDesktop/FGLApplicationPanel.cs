@@ -224,7 +224,10 @@ namespace AubitDesktop
             if (u == null) u = currentContext;
 
             if (u != currentContext) { Console.WriteLine("Trigger for non current context"); return; }
-
+            if (TriggeredText == null)
+            {
+                TriggeredText = "";
+            }
 
             if (TriggeredText == "")
             {
@@ -2166,7 +2169,7 @@ namespace AubitDesktop
             ErrorText = "";
         }
 
-        internal DataGridView FindRecord(FIELD[] fIELD)
+        internal FormattedGridView FindRecord(FIELD[] fIELD)
         {
             return ApplicationWindows.FindRecord(fIELD);
         }

@@ -88,8 +88,8 @@ namespace AubitDesktop
                         
                         thisLayoutControlsPanel = new FlowLayoutPanel();
                         // Make it big - we'll resize later
-                        thisLayoutControlsPanel.Width = 2000;
-                        thisLayoutControlsPanel.Height = 2000;
+                        // WEBGUI thisLayoutControlsPanel.Width = 2000; 
+                        // WEBGUI thisLayoutControlsPanel.Height = 2000;
                         
                         thisLayoutControlsPanel.Name = "VBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.SuspendLayout();
@@ -123,8 +123,8 @@ namespace AubitDesktop
 
                         thisLayoutControlsPanel = new FlowLayoutPanel();
                         // Make it big - we'll resize later
-                        thisLayoutControlsPanel.Width = 2000;
-                        thisLayoutControlsPanel.Height = 2000;
+                      //WEBGUI   thisLayoutControlsPanel.Width = 2000;
+                        //WEBGUI   thisLayoutControlsPanel.Height = 2000;
                         thisLayoutControlsPanel.Visible = true;
                         thisLayoutControlsPanel.Name = "HBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.Top = 5;
@@ -151,15 +151,16 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.Table":
                     {
                         bool showHeaders = false;
-                        DataGridView d;
+                        FormattedGridView d;
                         AubitDesktop.Xml.XMLForm.Table p;
                         p = (AubitDesktop.Xml.XMLForm.Table)child;
-                        d = new DataGridView();
+                        d = new FormattedGridView();
                         d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
                         d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
                         d.Dock = DockStyle.Fill;
                        
                         d.AutoSize = true;
+                        d.ScrollBars = ScrollBars.Vertical;
                         d.ReadOnly = true;
                         d.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
                         d.AllowUserToResizeColumns = false;
@@ -168,7 +169,8 @@ namespace AubitDesktop
 
                        
                         d.ColumnCount = p.TableColumn.Length+1; // First column is reserved for the line number..
-                        d.RowCount = Convert.ToInt32(p.pageSize);
+                        
+                        d.RowsToDisplay = Convert.ToInt32(p.pageSize);
 
                         d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
                         
@@ -221,8 +223,8 @@ namespace AubitDesktop
 
                         if (doAutosize)
                         {
-                            thisScreensPanel.Width = 2000;
-                            thisScreensPanel.Height = 2000;
+                            //WEBGUI   thisScreensPanel.Width = 2000;
+                            //WEBGUI thisScreensPanel.Height = 2000;
                         }
                         else
                         {
@@ -1621,20 +1623,20 @@ namespace AubitDesktop
             }
         }
 
-        internal DataGridView FindRecord(FIELD[] fIELD)
+        internal FormattedGridView FindRecord(FIELD[] fIELD)
         {
             string fld;
             fld = fIELD[0].NAME;
             if (grids == null) return null;
             if (grids.ContainsKey(fld))
             {
-                return (DataGridView)grids[fIELD[0].NAME];
+                return (FormattedGridView)grids[fIELD[0].NAME];
             }
 
             fld = fld.Replace(".*", "");
             if (grids.ContainsKey(fld) )
             {
-                return (DataGridView)grids[fld];
+                return (FormattedGridView)grids[fld];
             }
 
 

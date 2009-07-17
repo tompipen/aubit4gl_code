@@ -679,6 +679,7 @@ namespace AubitDesktop
             l.Size = t.Size;
             p.Controls.Add(t);
             p.Controls.Add(l);
+            p.AutoSize = true; //NOTWEBGUI
             if (b!=null)
             {
                 p.Controls.Add(b);

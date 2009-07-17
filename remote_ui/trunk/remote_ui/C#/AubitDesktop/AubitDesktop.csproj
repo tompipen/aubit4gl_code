@@ -151,7 +151,9 @@
     <Compile Include="frmConsole.Designer.cs">
       <DependentUpon>frmConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="HelperClasses.cs" />
+    <Compile Include="HelperClasses.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MacroEditor.cs">
       <SubType>Form</SubType>
     </Compile>

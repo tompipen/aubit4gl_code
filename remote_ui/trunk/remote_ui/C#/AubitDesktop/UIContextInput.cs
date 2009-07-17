@@ -147,7 +147,15 @@ namespace AubitDesktop
             mainWin = f;
 
             activeFields = f.FindFields(i.FIELDLIST);
-            activeFields[0].fglField.setFocus();
+            foreach (FGLFoundField fld in activeFields)
+            {
+                if (fld.fglField.NoEntry == false)
+                {
+                    setCurrentField = fld;
+                    //fld.fglField.setFocus();
+                    break;
+                }
+            }
 
         }
 
@@ -222,11 +230,26 @@ namespace AubitDesktop
 
         public void setNextField(string fieldName)
         {
+            bool found = false;
             foreach (FGLFoundField f in activeFields)
             {
-                if (f.isField(fieldName))
+                if (found && f.fglField.NoEntry == false)
                 {
                     setCurrentField = f;
+                    break;
+                }
+
+                if (f.isField(fieldName))
+                {
+                    if (f.fglField.NoEntry == false)
+                    {
+                        setCurrentField = f;
+                        break;
+                    }
+                    else
+                    {
+                        found = true;
+                    }
                 }
             }
             PendingEvents.Clear();

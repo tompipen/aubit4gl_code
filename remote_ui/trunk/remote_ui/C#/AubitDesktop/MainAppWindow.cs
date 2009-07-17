@@ -1050,7 +1050,8 @@ namespace AubitDesktop
             try
             {
                 // Deserialize the content of the file into the settings...
-                sMenu = (AubitDesktop.Xml.StartMenu)reader.Deserialize(file);    
+                sMenu = (AubitDesktop.Xml.StartMenu)reader.Deserialize(file);
+                file.Close();
             }
             catch (Exception e)
             {
@@ -1064,7 +1065,9 @@ namespace AubitDesktop
             {
                 hasApplicationTree = false;
                 showOrHideApplicationLauncher();
+         
             }
+           
         }
 
         

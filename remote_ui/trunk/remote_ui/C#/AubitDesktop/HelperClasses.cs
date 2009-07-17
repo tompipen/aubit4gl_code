@@ -30,6 +30,143 @@ using System.Xml;
 namespace AubitDesktop
 {
 
+    public class FormattedGridView : DataGridView
+    {
+
+        private bool __FirstPaint = true;
+
+        private int __RowsToDisplay;
+        private EventHandler _onDblClick;
+
+        public EventHandler onDblClick
+        {
+            get
+            {
+                return _onDblClick;
+            }
+            set
+            {
+                _onDblClick = value;
+            }
+        }
+
+
+
+        public FormattedGridView()
+        {
+            this.Paint += new PaintEventHandler(GridView_Paint);
+            this.DoubleClick += new EventHandler(FormattedGridView_DoubleClick);
+         //   InitializeComponent();
+
+        }
+
+        void FormattedGridView_DoubleClick(object sender, EventArgs e)
+        {
+
+            this.onDblClick(sender, e);
+            
+        }
+
+        public int RowsToDisplay
+        {
+
+            get { return __RowsToDisplay; }
+
+            set { __RowsToDisplay = value; }
+
+        }
+
+        /// <summary>
+
+        /// Adds a confirmation box on deletes.
+
+        /// </summary>
+
+        private void GridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+
+            if (!e.Row.IsNewRow)
+            {
+
+                DialogResult response =
+
+                MessageBox.Show("Are you sure you want to delete this record?", "Delete Record?", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+
+                MessageBoxDefaultButton.Button2);
+
+                if (response == DialogResult.No)
+                {
+
+                    e.Cancel = true;
+
+                }
+
+            }
+
+        }
+
+        private int GetGridHeight()
+        {
+
+            int x = 0;
+
+            foreach (DataGridViewRow row in Rows)
+            {
+
+                x += row.Height;
+
+            }
+
+            x += ColumnHeadersHeight;
+
+            x += 2;
+
+            return x;
+
+        }
+
+        private int GetMaxGridSize()
+        {
+
+            int singleRowHeight = Rows[0].Height;
+
+            if (__RowsToDisplay == 0)
+            {
+
+                return 300;
+
+            }
+
+            else
+            {
+
+                return singleRowHeight * __RowsToDisplay + ColumnHeadersHeight + 2;
+
+            }
+
+        }
+
+        private void GridView_Paint(object sender, PaintEventArgs e)
+        {
+
+            if (__RowsToDisplay == 0) return;
+
+            if (__FirstPaint)
+            {
+
+                __FirstPaint = false;
+
+                MaximumSize = new System.Drawing.Size(1024, GetMaxGridSize());
+
+            }
+
+            Height = GetGridHeight();
+
+        }
+
+    }
+
+ 
 
     public enum FGLContextType
     {
@@ -616,7 +753,7 @@ namespace AubitDesktop
 
 
 
-        internal DataGridView FindRecord(FIELD[] fIELD)
+        internal FormattedGridView FindRecord(FIELD[] fIELD)
         {
             return windows[0].findRecord(fIELD);
         }
@@ -992,7 +1129,7 @@ namespace AubitDesktop
             
         }
 
-        internal DataGridView findRecord(FIELD[] fIELD)
+        internal FormattedGridView findRecord(FIELD[] fIELD)
         {
             return CurrentForm.FindRecord(fIELD);
         }
