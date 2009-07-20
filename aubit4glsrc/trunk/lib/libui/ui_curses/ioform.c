@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.232 2009-07-13 14:15:20 mikeaubury Exp $
+# $Id: ioform.c,v 1.233 2009-07-20 13:30:03 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.232 2009-07-13 14:15:20 mikeaubury Exp $";
+		"$Id: ioform.c,v 1.233 2009-07-20 13:30:03 mikeaubury Exp $";
 #endif
 
 /**
@@ -567,7 +567,6 @@ A4GL_set_field_attr (FIELD * field)
 	field_opts_on(field,O_STATIC);
 	if (a!=E_OK ) {
 		A4GL_debug("... .COULDNT SET RIGHT JUSTIFY");
-		//A4GL_pause_execution();
 	}
 	if (frm) {
 		frm->current=c;
@@ -2553,7 +2552,6 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 	field_opts_on(field,O_STATIC);
 	if (a!=E_OK ) {
 		A4GL_debug("... .COULDNT SET RIGHT JUSTIFY");
-		//A4GL_pause_execution();
 	}
 	if (frm) {
 		frm->current=c;
@@ -4741,23 +4739,25 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	    {
 	      char tmpbuff[200];
 		char format[256];
-	      static char buff_new[256];
 	      //int mm;
 	      int rval;
 	      char *mmm_s;
+	      static char buff_new[256];
 	      int mmm=0;
 	      int dd;
 	      //int yyyy;
 	      int yy;
-	int date_as_int;
+		int date_as_int;
 	      char *d;
 		date_as_int=A4GL_get_date_from_formatted_date(ptr, fld_data);
 		if (date_as_int!=0)  {
+	      		static char buff_n[256];
   				A4GL_push_date (date_as_int);
 	  			d = A4GL_char_pop ();
-	  			strcpy (buff_new, d);
+	  			strcpy (buff_n, d);
 	  			free (d);
-	  			fld_data = buff_new;
+	  			fld_data = buff_n;
+			return fld_data;
 		}
 
 		if (!matched_date_format(ptr,fld_data)) {
@@ -4773,6 +4773,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 				
 				return fld_data;
 		}
+
 
 	      memset (buff_new, 0, 255);
 		strcpy(format,ptr); // 'format' will get changed by the calls to get_data_from_formatted_field

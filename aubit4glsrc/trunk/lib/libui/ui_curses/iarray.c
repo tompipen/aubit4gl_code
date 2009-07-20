@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.162 2009-07-10 11:55:53 mikeaubury Exp $
+# $Id: iarray.c,v 1.163 2009-07-20 13:30:03 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.162 2009-07-10 11:55:53 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.163 2009-07-20 13:30:03 mikeaubury Exp $";
 #endif
 
 /**
@@ -558,14 +558,15 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem, struct B
       struct struct_scr_field *fprop;
       char *ptr2;
       fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
-
+	A4GL_debug("ptr=%s",ptr);
       ptr2 = A4GL_fld_data_ignore_format (fprop, ptr);
+	A4GL_debug("ptr2=%s",ptr2);
       if (ptr2 != ptr)
 	{
 	  A4GL_debug ("Free ptr");
 	  acl_free (ptr);
 	  ptr = strdup (ptr2);
-	}
+	} 
       A4GL_push_char (ptr);
       var_dtype = b[x_col].dtype;
       if (A4GL_get_convfmts ()->ui_decfmt.decsep != '.'
