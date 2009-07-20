@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.72 2009-07-10 11:55:43 mikeaubury Exp $
+# $Id: Makefile,v 1.73 2009-07-20 16:16:43 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -598,46 +598,46 @@ clean.all: cleanall
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 		clean.swig clean.project clean.liblogical clean.perl  clean.rest
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
-	$(MAKE) -C lib clean
-	$(MAKE) -C lib/libui/ui_console clean
-	$(MAKE) -C lib/libui/ui_curses clean
-#	$(MAKE) -C lib/libui/ui_gtk clean
-	$(MAKE) -C lib/extra_libs/file clean
-	$(MAKE) -C lib/extra_libs/pick clean
-	$(MAKE) -C lib/extra_libs/string clean
-	$(MAKE) -C lib/extra_libs/roman clean
-	$(MAKE) -C lib/libexdata clean
-	$(MAKE) -C lib/libpacker/packed clean
-	$(MAKE) -C lib/libpacker/perl clean
-	$(MAKE) -C lib/libpacker/xdr clean
-	$(MAKE) -C lib/libpacker/xml clean
-	$(MAKE) -C compilers/4glc/rules clean
-	$(MAKE) -C compilers/4glc clean
-	$(MAKE) -C compilers/sql clean
-	$(MAKE) -C compilers/pcode clean
-	$(MAKE) -C tools/extras_compile clean
-	$(MAKE) -C compilers/fcompile clean
-	$(MAKE) -C compilers/menus clean
-	$(MAKE) -C compilers/ace clean
-	$(MAKE) -C compilers/helpcompile clean
-	$(MAKE) -C compilers/xgen clean
-	$(MAKE) -C common/dataio clean
-	${RM} lib/swig/lib_wrap.doc
-	$(MAKE) -C tools/test clean
-	$(MAKE) -C tools/test/gui clean
-	$(MAKE) -C tools/convertsql clean
-	$(MAKE) -C tools/4glpc clean
-	$(MAKE) -C tools/adbschema clean
-	$(MAKE) -C tools/afinderr clean
-	$(MAKE) -C tools/configuration clean
-	$(MAKE) -C tools/asql clean
-	$(MAKE) -C tools/a4gl clean
-	$(MAKE) -C tools/misql clean
-	$(MAKE) -C tools/aupscol clean
-	$(MAKE) -C tools/adbload2 clean
-	$(MAKE) -C help clean
-	$(MAKE) -C glade/ide clean
-	$(MAKE) -C lib/extra_libs/errhook clean
+	$(MAKE) -C lib clean || true
+	$(MAKE) -C lib/libui/ui_console clean || true
+	$(MAKE) -C lib/libui/ui_curses clean || true
+#	$(MAKE) -C lib/libui/ui_gtk clean || true
+	$(MAKE) -C lib/extra_libs/file clean || true
+	$(MAKE) -C lib/extra_libs/pick clean || true
+	$(MAKE) -C lib/extra_libs/string clean || true
+	$(MAKE) -C lib/extra_libs/roman clean || true
+	$(MAKE) -C lib/libexdata clean || true
+	$(MAKE) -C lib/libpacker/packed clean || true
+	$(MAKE) -C lib/libpacker/perl clean || true
+	$(MAKE) -C lib/libpacker/xdr clean || true
+	$(MAKE) -C lib/libpacker/xml clean || true
+	$(MAKE) -C compilers/4glc/rules clean || true
+	$(MAKE) -C compilers/4glc clean || true
+	$(MAKE) -C compilers/sql clean || true
+	$(MAKE) -C compilers/pcode clean || true
+	$(MAKE) -C tools/extras_compile clean || true
+	$(MAKE) -C compilers/fcompile clean || true
+	$(MAKE) -C compilers/menus clean || true
+	$(MAKE) -C compilers/ace clean || true
+	$(MAKE) -C compilers/helpcompile clean || true
+	$(MAKE) -C compilers/xgen clean || true
+	$(MAKE) -C common/dataio clean || true
+	${RM} lib/swig/lib_wrap.doc 
+	$(MAKE) -C tools/test clean || true
+	$(MAKE) -C tools/test/gui clean || true
+	$(MAKE) -C tools/convertsql clean || true
+	$(MAKE) -C tools/4glpc clean || true
+	$(MAKE) -C tools/adbschema clean || true
+	$(MAKE) -C tools/afinderr clean || true
+	$(MAKE) -C tools/configuration clean || true
+	$(MAKE) -C tools/asql clean || true
+	$(MAKE) -C tools/a4gl clean || true
+	$(MAKE) -C tools/misql clean || true
+	$(MAKE) -C tools/aupscol clean || true
+	$(MAKE) -C tools/adbload2 clean || true
+	$(MAKE) -C help clean || true
+	$(MAKE) -C glade/ide clean || true
+	$(MAKE) -C lib/extra_libs/errhook clean || true
 	@echo " "	
 	
 	@echo "+--------------------------------------------------------------------+"
