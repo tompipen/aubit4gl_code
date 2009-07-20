@@ -1,0 +1,18 @@
+database FORMONLY
+
+screen
+{
+ d1            d2
+[d1        ] [d2        ]
+[d1        ] [d2        ]
+[d1        ] [d2        ]
+[d1        ] [d2        ]
+}
+end
+
+attributes
+d1 = formonly.d1 type date,format="dd/mm/yyyy";
+d2 = formonly.d2 type date,format="dd/mm/yyyy";
+
+instructions
+screen record sa[4] (d1, d2)
