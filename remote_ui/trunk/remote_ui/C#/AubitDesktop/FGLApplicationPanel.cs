@@ -1659,7 +1659,17 @@ namespace AubitDesktop
                 if (a is INPUTARRAY)
                 {
                     INPUTARRAY ia = (INPUTARRAY)a;
-                    contexts.Insert(Convert.ToInt32(ia.CONTEXT), new UIInputArrayContext(this, ia));
+                    DataGridView v;
+
+                    v = FindRecord(ia.FIELDLIST);
+                    if (v != null)
+                    {
+                        contexts.Insert(Convert.ToInt32(ia.CONTEXT), new UIInputArrayInTableContext(this, ia));
+                    }
+                    else
+                    {
+                        contexts.Insert(Convert.ToInt32(ia.CONTEXT), new UIInputArrayContext(this, ia));
+                    }
                     commands.Remove(a);
                     continue;
                 }

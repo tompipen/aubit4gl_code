@@ -103,20 +103,42 @@ namespace AubitDesktop
             return false;
         }
 
+        public void setUpData(ROW[] rows) {
+            for (int row = 0; row < rows.Length; row++)
+            {
+                DataGridViewRow r;
+                string[] data;
+                data = new string[rows[row].VALUES.Length + 1];
+                r = new DataGridViewRow();
 
-        public UIInputArrayInTableContext(FGLApplicationPanel f, DISPLAYARRAY p)
+                // We'll use the first column to store the index
+                // for the current row...
+                data[0] = "" + (row + 1);
+
+                for (int col = 0; col < rows[row].VALUES.Length; col++)
+                {
+                    data[col + 1] = rows[row].VALUES[col].Text;
+                    inputArrayGrid.AutoResizeColumn(col);
+                }
+                inputArrayGrid.Rows.Add(data);
+
+                inputArrayGrid.AutoResizeRow(row);
+                inputArrayGrid.AutoResizeColumnHeadersHeight();
+            }
+        }
+
+        public UIInputArrayInTableContext(FGLApplicationPanel f, INPUTARRAY p)
         {
 
-            //nCols = Convert.ToInt32(p.ARRVARIABLES);
+           
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;
             this.arrLine = 1;
             this.scrLine = 1;
-            //this.nextMove= 0;
-            //this.lastarrLine = -1;
-            //this.nRows = Convert.ToInt32(p.ARRCOUNT);
+
             onActionList = new List<ON_ACTION_EVENT>();
-            Data = p.ROWS;
+
+            //Data = p.ROWS;
             
             beforeRow = null;
             afterRow = null;
@@ -162,27 +184,7 @@ namespace AubitDesktop
             inputArrayGrid = f.FindRecord(p.FIELDLIST);
             inputArrayGrid.Rows.Clear();
 
-            for (int row = 0; row < p.ROWS.Length; row++)
-            {
-                DataGridViewRow r;
-                string[] data;
-                data=new string[p.ROWS[row].VALUES.Length+1];
-                r = new DataGridViewRow();
-                
-                // We'll use the first column to store the index
-                // for the current row...
-                data[0] = "" + (row+1);
 
-                for (int col = 0; col < p.ROWS[row].VALUES.Length;col++ )
-                {
-                    data[col+1]=p.ROWS[row].VALUES[col].Text;
-                    inputArrayGrid.AutoResizeColumn(col);
-                }
-                inputArrayGrid.Rows.Add(data);
-
-                inputArrayGrid.AutoResizeRow(row);
-                inputArrayGrid.AutoResizeColumnHeadersHeight();
-            }
 
             inputArrayGrid.Columns[0].Visible = false;
 
@@ -212,6 +214,7 @@ namespace AubitDesktop
         {
             Program.Show("Fixme");
         }
+
 
         public void setNextField(string fieldName)
         {

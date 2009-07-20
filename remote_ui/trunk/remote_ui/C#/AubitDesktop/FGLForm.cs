@@ -190,6 +190,7 @@ namespace AubitDesktop
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,d);
                         d.Name = "TABLE" + d.GetHashCode();
+                        d.sizeGrid();
                         parent.Controls.Add(d);
                     }
                     break;
