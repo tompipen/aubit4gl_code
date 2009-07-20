@@ -1976,8 +1976,38 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
 	  for (b = 0; b < d->nbind; b++)
 	    {
 	      char *cptr;
+		char *aptr;
 	      cptr = (char *) d->binding[b].ptr + d->arr_elemsize * (a);
 	      A4GL_push_param (cptr, d->binding[b].dtype + ENCODE_SIZE (d->binding[b].size));
+	      switch (d->binding[b].dtype&DTYPE_MASK) {
+				case DTYPE_INT:
+				case DTYPE_SMINT:
+				case DTYPE_FLOAT:
+				case DTYPE_SMFLOAT:
+				case DTYPE_MONEY:
+				case DTYPE_SERIAL:
+					aptr=A4GL_char_pop();
+					A4GL_lrtrim(aptr);
+					A4GL_push_char(aptr);
+					free(aptr);
+					break;
+
+				case DTYPE_DECIMAL:
+					aptr=A4GL_char_pop();
+					A4GL_lrtrim(aptr);
+					if (aptr[0]=='.') {
+						char buff[2000];
+						sprintf(buff,"0%s",aptr);
+						free(aptr);
+						aptr=strdup(buff);
+					}
+					A4GL_push_char(aptr);
+					free(aptr);
+					break;		
+			
+			}
+
+
 	    }
 	  uilib_display_array_line (d->nbind + 1);
 	}
@@ -2247,12 +2277,40 @@ if (count==-1) {
       for (b = 0; b < inp->nbind; b++)
 	{
 	  char *cptr;
+	char *aptr;
 	  cptr = (char *) inp->binding[b].ptr + inp->arr_elemsize * (acnt);
 	//printf("DTYPE=%d\n",inp->binding[b].dtype );
 	//if ((inp->binding[b].dtype  & DTYPE_MASK)==DTYPE_CHAR) {
 			//printf("Pushing  : %s\n", cptr);
 	//}
 	  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
+	      switch (inp->binding[b].dtype&DTYPE_MASK) {
+				case DTYPE_INT:
+				case DTYPE_SMINT:
+				case DTYPE_FLOAT:
+				case DTYPE_SMFLOAT:
+				case DTYPE_MONEY:
+				case DTYPE_SERIAL:
+					aptr=A4GL_char_pop();
+					A4GL_lrtrim(aptr);
+					A4GL_push_char(aptr);
+					free(aptr);
+					break;
+
+				case DTYPE_DECIMAL:
+					aptr=A4GL_char_pop();
+					A4GL_lrtrim(aptr);
+					if (aptr[0]=='.') {
+						char buff[2000];
+						sprintf(buff,"0%s",aptr);
+						free(aptr);
+						aptr=strdup(buff);
+					}
+					A4GL_push_char(aptr);
+					free(aptr);
+					break;		
+			
+	    }
 	}
       uilib_input_array_sync (inp->nbind + 2);
     }
