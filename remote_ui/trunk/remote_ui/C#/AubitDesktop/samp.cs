@@ -60,7 +60,7 @@ namespace AubitDesktop
     }
 
     /// <remarks/>
-   
+
     public class MENU
     {
 
@@ -176,6 +176,12 @@ namespace AubitDesktop
 
     }
 
+    public class FIELDDELIMITERS
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string DELIMS;
+    }
+
     /// <remarks/>
     public class HIDEOPTION
     {
@@ -219,7 +225,7 @@ namespace AubitDesktop
         public TEXT[] VALUES;
     }
 
-    
+
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class TEXT
@@ -439,12 +445,12 @@ namespace AubitDesktop
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
-    public class AFTER_FIELD_EVENT:generic_event
+    public class AFTER_FIELD_EVENT : generic_event
     {
-                /// <remarks/>
+        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string FIELD;
-        
+
         /*
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
@@ -578,9 +584,9 @@ namespace AubitDesktop
     }
 
 
-// -------------------------
-    
- 
+    // -------------------------
+
+
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public class COMMANDS
@@ -623,6 +629,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("NEXTFIELD", Type = typeof(NEXTFIELD))]
         [System.Xml.Serialization.XmlElementAttribute("HIDEOPTION", Type = typeof(HIDEOPTION))]
         [System.Xml.Serialization.XmlElementAttribute("UIOPTION", Type = typeof(UIOPTION))]
+        [System.Xml.Serialization.XmlElementAttribute("FIELDDELIMITERS", Type = typeof(FIELDDELIMITERS))]
         [System.Xml.Serialization.XmlElementAttribute("SETKEYLABEL", Type = typeof(SETKEYLABEL))]
         [System.Xml.Serialization.XmlElementAttribute("SETWINDOWTITLE", Type = typeof(SETWINDOWTITLE))]
         [System.Xml.Serialization.XmlElementAttribute("REQUESTFILE", Type = typeof(REQUESTFILE))]
@@ -872,7 +879,7 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute]
         public int WRAP;
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
         public FIELD[] FIELDLIST;
@@ -1131,7 +1138,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
         public ROW[] ROWS;
 
-        
+
     }
 
 
@@ -1211,6 +1218,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(GETKEY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(NEXTFIELD), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(HIDEOPTION), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(FIELDDELIMITERS), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETARRLINE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETSCRLINE), IsNullable = false)]
 
