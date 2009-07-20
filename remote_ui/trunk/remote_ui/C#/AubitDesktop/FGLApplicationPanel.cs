@@ -1120,6 +1120,16 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+
+                #region FIELDDELIMITERS
+                if (a is FIELDDELIMITERS)
+                {
+                    // Ignore field delimiters command...
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+
                 #region FILE
                 if (a is FILE)
                 {
