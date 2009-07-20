@@ -54,7 +54,7 @@ namespace AubitDesktop
 
         public FormattedGridView()
         {
-            this.Paint += new PaintEventHandler(GridView_Paint);
+            this.Paint += new PaintEventHandler(GridView_Paint); // NOTWEBGUI
             this.DoubleClick += new EventHandler(FormattedGridView_DoubleClick);
          //   InitializeComponent();
 
@@ -75,6 +75,12 @@ namespace AubitDesktop
             set { __RowsToDisplay = value; }
 
         }
+
+   	public void sizeGrid() {
+            MaximumSize = new System.Drawing.Size(1024, GetMaxGridSize()); 
+            Height = GetGridHeight(); 
+
+	}
 
         /// <summary>
 
@@ -146,23 +152,16 @@ namespace AubitDesktop
 
         }
 
-        private void GridView_Paint(object sender, PaintEventArgs e)
-        {
-
-            if (__RowsToDisplay == 0) return;
-
-            if (__FirstPaint)
-            {
-
-                __FirstPaint = false;
-
-                MaximumSize = new System.Drawing.Size(1024, GetMaxGridSize());
-
-            }
-
-            Height = GetGridHeight();
-
-        }
+        private void GridView_Paint(object sender, PaintEventArgs e) // NOTWEBGUI
+        { // NOTWEBGUI
+            if (__RowsToDisplay == 0) return; // NOTWEBGUI
+            if (__FirstPaint) // NOTWEBGUI
+            { // NOTWEBGUI
+                __FirstPaint = false; // NOTWEBGUI
+                MaximumSize = new System.Drawing.Size(1024, GetMaxGridSize()); // NOTWEBGUI
+            } // NOTWEBGUI
+            Height = GetGridHeight(); // NOTWEBGUI
+        } // NOTWEBGUI
 
     }
 
