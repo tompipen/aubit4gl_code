@@ -41,18 +41,29 @@ namespace AubitDesktop
         public int maxcol;
         public int maxline;
         //int n = 0;
-        private Panel thisFormsPanel;
+        private Panel _thisFormsPanel;
+        private Panel thisFormsPanel
+        {
+            get
+            {
+                return _thisFormsPanel;
+            }
+            set
+            {
+                _thisFormsPanel = value;
+            }
+        }
         private ToolTip tooltips;
         private Font fixedWidthFont;
 
         
 
 
-        public Control control
+        public Panel control
         {
             get
             {
-                return (Control)thisFormsPanel;
+                return thisFormsPanel;
             }
         }
 
@@ -937,7 +948,7 @@ namespace AubitDesktop
             thisFormsPanel.Name = "FormPanel" + f.NAME;
             thisFormsPanel.Visible = true;
             
-            thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
+           // thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
             thisFormsPanel.Dock = DockStyle.Fill;
             thisFormsPanel.BackColor = SystemColors.Control;
             ScreenRecords = new List<FGLScreenRecord>();

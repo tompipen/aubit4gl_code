@@ -474,7 +474,8 @@ namespace AubitDesktop
             SizeControl(ma,index,p);
             //p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             p.AutoSize = true;
-
+            p.Name = "DTPP_" + tabcol;
+            t.Name = "DTPT_" + tabcol;
 
             //t.BackColor = Color.Red;
             //l.BackColor = Color.Blue;

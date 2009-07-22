@@ -879,6 +879,7 @@ namespace AubitDesktop
 
         public FGLWindow(string windowName, int x, int y, int attribute, string text, string style, int error_line, int prompt_line, int menu_line, int comment_line, int message_line, bool border)
         {
+            int colourCode;
             this.windowName = windowName;
             this.x = x;
             this.y = y;
@@ -897,6 +898,8 @@ namespace AubitDesktop
             this.isModal = false;
             this.CurrentForm = null;
 
+            colourCode = (attribute & 0xf00)>>8;
+
             switch (style)
             {
                 case "":
@@ -905,7 +908,7 @@ namespace AubitDesktop
                         Panel p;
                         p = new Panel();
                         WindowWidget = p;
-                        p.Name = "PanNormal" + windowName; 
+                        p.Name = "PanNormal" + windowName;
                         WindowFormWidget = null;
                         if (border)
                         {
@@ -913,6 +916,32 @@ namespace AubitDesktop
                         }
                         p.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
                         WindowWidget.Visible = true;
+                        switch (colourCode)
+                        {
+                            case 1:
+                                p.BackColor = System.Drawing.Color.LightCoral;
+                                break;
+
+                            case 2:
+                                p.BackColor = System.Drawing.Color.LightGreen;
+                                break;
+
+                            case 3:
+                                p.BackColor = System.Drawing.Color.LightGoldenrodYellow;
+                                break;
+
+                            case 4:
+                                p.BackColor = System.Drawing.Color.LightBlue;
+                                break;
+
+                            case 5:
+                                p.BackColor = System.Drawing.Color.Magenta;
+                                break;
+
+                            case 6:
+                                p.BackColor = System.Drawing.Color.LightCyan;
+                                break;
+                        }
                     }
                     break;
 
@@ -975,6 +1004,7 @@ namespace AubitDesktop
                     Program.Show("Unhandled window style");
                     break;
             }
+            // WEBGUI WindowWidget.BackColor = System.Drawing.Color.FromArgb(240, 240, 240);
 
 
             WindowWidget.Top = GuiLayout.get_gui_y(y);
@@ -1016,7 +1046,12 @@ namespace AubitDesktop
             {
                 this.CharWidth = f.maxcol;
             }
-       
+
+            if (this.WindowWidget.BackColor != System.Drawing.SystemColors.Control)
+            {
+                f.control.BackColor = this.WindowWidget.BackColor;
+            }
+
                 //WindowWidget.BackColor = Color.Aqua;
                 WindowWidget.Controls.Add(f.control);
        

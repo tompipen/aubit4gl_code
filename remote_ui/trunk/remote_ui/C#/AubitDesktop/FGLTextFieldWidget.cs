@@ -507,7 +507,7 @@ namespace AubitDesktop
             int bcol=0;
             int totalWidth = 0;
             this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
-           
+          
             p = new Panel();
             l = new Label();
             p.BorderStyle = BorderStyle.None;
@@ -533,6 +533,9 @@ namespace AubitDesktop
             t.Margin = new Padding(0, 0, 0, 0);
             t.Padding = new Padding(0, 0, 0, 0);
 
+            p.Name = "TWP_" + tabcol;
+            t.Name = "TWT_" + tabcol;
+            l.Name = "TWL_" + tabcol;
 
             if (buttonEdit)
             {
