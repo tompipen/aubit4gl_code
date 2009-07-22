@@ -161,6 +161,7 @@ namespace AubitDesktop
 
             displayArrayGrid = f.FindRecord(p.FIELDLIST);
             displayArrayGrid.Rows.Clear();
+            // WEBGUIONLY displayArrayGrid.sizeGrid(); 
             
 
             for (int row = 0; row < p.ROWS.Length; row++)
