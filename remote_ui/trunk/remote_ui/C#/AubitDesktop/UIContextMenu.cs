@@ -374,6 +374,7 @@ namespace AubitDesktop
                 mainWin.SetMenuBarButtons(this.menuPanel);
             }
             menuPanel.Enabled = true;
+            // WEBGUI menuPanel.BackColor = System.Drawing.Color.White;
         }
 
         public void NavigateAwayTab()
@@ -393,6 +394,7 @@ namespace AubitDesktop
             _contextIsActive = false;
             EventTriggered = null;
             menuPanel.Enabled = false;
+            // WEBGUI menuPanel.BackColor = System.Drawing.Color.FromArgb(240,240,240);
         }
 
         public void FreeContext()
