@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.108 2009-07-03 12:45:25 mikeaubury Exp $
+# $Id: variables.c,v 1.109 2009-07-23 14:30:52 mikeaubury Exp $
 #
 */
 
@@ -311,7 +311,7 @@ A4GL_get_current_variable_scope (void)
     }
   else
     {
-      if (variable_scope == E_SCOPE_EXPORTED_GLOBAL)
+      if (variable_scope == E_SCOPE_EXPORTED_GLOBAL || variable_scope=='g')
 	{
 	  scope = E_SCOPE_EXPORTED_GLOBAL;
 	}

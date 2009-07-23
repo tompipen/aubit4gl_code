@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.50 2009-07-10 11:55:44 mikeaubury Exp $
+# $Id: Makefile,v 1.51 2009-07-23 14:30:51 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -130,11 +130,9 @@ ifdef COMSPEC
     4GL_LIB     =-l4glc
 endif
 
-ALL				+=${ROOT}/bin/4glc fgllint
+ALL				+=${ROOT}/bin/4glc 
 
 
-core: ${ROOT}/bin/4glc 
-4glc: ${ROOT}/lib/lib4glc${SO_EXT}
 
 C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I.  -Irules -I${GENRULES}
 #-I${ROOT}/lib -I${ROOT}/lib/libincl
@@ -175,6 +173,9 @@ endif
 
 all: a4gl_4glc_int.h ${ALL} 
 	@echo "Default targets (${ALL}) successfully compiled."
+
+core: ${ROOT}/bin/4glc 
+4glc: ${ROOT}/lib/lib4glc${SO_EXT}
 
 a4gl_4glc_int.h: API_lex.c API_parse.c
 
@@ -340,6 +341,12 @@ reload_static:  ../../bin/reload_static
 ../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
 	$(LD_EXE) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 	#cp fgllint $(AUBITDIR)/bin
+
+mkglobals: ../../bin/mkglobals
+../../bin/mkglobals: mk_globals.o API_lex_self.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  $(ROOT)/lib/liblex/lex_4gl/compile_4gl.c   $(ROOT)/lib/liblex/lex_4gl/common.o  $(ROOT)/lib/liblex/lex_4gl/binding.o  $(ROOT)/lib/liblex/lex_4gl/init.o   $(ROOT)/lib/liblex/lex_4gl/class.o
+
+	$(LD_EXE) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
+
 
 calltree_expr.o: expr_as_string_when_possible.c
 

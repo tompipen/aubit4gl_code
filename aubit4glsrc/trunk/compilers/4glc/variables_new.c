@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.11 2009-07-10 09:39:02 mikeaubury Exp $
+# $Id: variables_new.c,v 1.12 2009-07-23 14:30:52 mikeaubury Exp $
 #
 */
 
@@ -313,8 +313,13 @@ struct variable_list *append_variable_list(struct variable_list *list, struct va
 	}
 
 	if (list_already_has(list, ptr->names.names.names_val[0].name)) {
-		a4gl_yyerror("A variable with this name already exists");
-		return NULL;
+		if (A4GL_get_current_variable_scope() == E_SCOPE_EXPORTED_GLOBAL && A4GL_isyes(acl_getenv("IGNDUPGLOBALS"))) {
+			fprintf(stderr,"Ignoring variable : %s - already exists\n", ptr->names.names.names_val[0].name);
+			return list;
+		} else {
+			a4gl_yyerror("A variable with this name already exists");
+			return NULL;
+		}
 	}
 	list->variables.variables_len++;
 	list->variables.variables_val=realloc(list->variables.variables_val, list->variables.variables_len*sizeof(list->variables.variables_val[0]));
