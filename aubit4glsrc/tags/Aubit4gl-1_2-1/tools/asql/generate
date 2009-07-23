@@ -1,0 +1,141 @@
+awk -F'|' '
+BEGIN {
+printed=0
+print "DEFINE mv_info_name char(64)"
+print " "
+print "FUNCTION set_info_text(lv_s)"
+print "DEFINE lv_s CHAR(64)"
+print "LET mv_info_name=lv_s"
+print "END FUNCTION"
+print " "
+}
+
+($1=="KEEPMENU"||$1=="MENU"||$1=="SINGLEMENU") {
+	printed++;
+	menufunc=$2
+	menu_title=$3
+	menu_type=0
+	if ($1=="MENU") menu_type=1
+	if ($1=="KEEPMENU") menu_type=2
+	delete menu_options
+	delete menu_titles
+	delete menu_call
+	delete menu_key
+	x=0
+	next
+}
+
+(NF==4) {
+	menu_options[x]=$1
+	menu_key[x]=$2
+	menu_titles[x]=$3
+	menu_call[x]=$4
+	x++;
+}
+
+
+
+
+(NF==0 && x>0) {
+	if (menu_type==2) {
+		print "FUNCTION " menufunc "(lv_lastoption)"
+	} else {
+		print "FUNCTION " menufunc "()"
+	}
+	print "DEFINE lv_option INTEGER"
+	print "DEFINE lv_lastoption INTEGER"
+	print "DEFINE lv_run INTEGER"
+	print "DEFINE lv_menukey CHAR(1)"
+	print "DEFINE lv_hadmenu INTEGER"
+	print ""
+	print "LET lv_hadmenu=has_menu_action()"
+
+	if (menu_type!=2) {
+		print "LET lv_lastoption=-1"
+	}
+	print "LET lv_run=TRUE"
+	print " "
+	menufunc="alreadyprinted"
+	print "WHILE lv_run"
+
+	print "  IF has_menu_action() THEN"
+	print "    LET lv_menukey=get_menu_action()"
+	print ""
+	print "    CASE lv_menukey"
+	for(cnt=0;cnt<x;cnt++) {
+	print "      WHEN \"" menu_key[cnt] "\" LET lv_option=" cnt
+	}
+	print "    END CASE"
+	print "    CALL display_banner()"
+	print ""
+	print "  ELSE"
+
+	if (menu_title=="INFO") {
+		title="mv_info_name"
+	} else {
+		title="\"" menu_title "\""
+	}
+	print "    LET lv_menukey=\"-\""
+	print "    MENU " title 
+	print "      BEFORE MENU"
+	print "        SET PAUSE MODE ON"
+	print "        CALL display_banner()"
+	print "        CASE lv_lastoption"
+	for(cnt=0;cnt<x;cnt++) { 
+	print "          WHEN " cnt " NEXT OPTION \"" menu_options[cnt] "\""
+	}
+	print "        END CASE"
+	print "        SET PAUSE MODE OFF"
+	print " "
+
+	for(cnt=0;cnt<x;cnt++) {
+		if (menu_key[cnt]=="") {
+			print "      COMMAND \"" menu_options[cnt] "\" \"" menu_titles[cnt] "\""
+		} else {
+			print "      COMMAND KEY \"" menu_key[cnt] "\" \"" menu_options[cnt] "\" \"" menu_titles[cnt] "\""
+		}
+
+ 
+		print "        LET lv_option=" cnt  
+		print "        EXIT MENU"
+
+	}
+	
+	print "    END MENU"
+	print " "
+	print "  END IF"
+	print "  LET lv_lastoption=lv_option"
+	print " "
+	print "  CASE lv_option"
+	for(cnt=0;cnt<x;cnt++) {
+		printf "      WHEN " cnt
+		if (menu_call[cnt]=="EXIT") {
+			print " LET lv_run=FALSE"
+		} else {
+			if (substr(menu_call[cnt],0,6)=="RETURN" && menu_type!=1) {
+				print " " menu_call[cnt]
+			} else {
+			print " CALL " menu_call[cnt] "()"
+			if (menu_type!=0) {
+				print "             IF lv_hadmenu THEN EXIT PROGRAM END IF"
+			}
+			if (menu_type!=1) {
+				print "        LET lv_run=FALSE"
+			}
+			}
+			
+		}
+	}
+	print "  END CASE"
+	print "END WHILE"
+
+
+	print "END FUNCTION"
+	print " "
+	print " "
+
+	print " "
+	print " "
+	x=0
+}' menus.txt
+

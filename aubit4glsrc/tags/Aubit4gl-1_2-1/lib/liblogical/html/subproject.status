@@ -1,0 +1,29 @@
+Name: libLOGREPPROC_HTML
+Parent: aubit4glsrc
+Description: Generates HTML output from logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+Name: libLOGREP_HTML
+Parent: aubit4glsrc
+Description: HTML layout editor module for logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+

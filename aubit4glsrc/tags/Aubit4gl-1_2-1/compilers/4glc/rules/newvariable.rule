@@ -1,0 +1,454 @@
+/*
+ebind_var_list
+ibind_var_list
+init_bind_var_list
+obind_var_let_list
+obind_var_list
+obind_var_list_ord
+op_param_var_list
+use_arr_var 
+var
+var_ident_ibind_sli
+var_ident_ibind_ss
+var_ident_qchar_e
+var_ident_vl
+variable
+*/
+
+var_ident_vl: var_ident_vl_n {$<ptr>$=$<ptr>1;}
+	| DOLLAR var_ident_vl_n {$<ptr>$=$<ptr>2;}
+	| COLON var_ident_vl_n {$<ptr>$=$<ptr>2;}
+; 
+
+var_ident_vl_n: variable_usage_expression {
+		char errbuff[256];
+		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1 || ignore_var_usage_for_builtin_variable($<ptr>1)) { 
+			// Its not a variable - so we dont care about any errors..
+			$<ptr>$=generate_sql_expr($<ptr>1); 
+		
+			if ($<ptr>$ ==0 ) {
+				a4gl_yyerror("Invalid identifier");
+				YYERROR;
+			}
+		}  else {
+			$<ptr>$=$<ptr>1;
+		}
+	}
+	| vi_column_name {
+		$<ptr>$=$<ptr>1;
+	}
+
+;
+
+
+vi_column_name: 
+        CHAR_VALUE KW_DOT identifier KW_DOT identifier {
+		$<ptr>$=A4GL_new_select_list_item_expr(new_select_list_item_col(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5,NULL));
+	}
+        | CHAR_VALUE KW_DOT identifier KW_DOT identifier  OPEN_SQUARE vi_subscript_expr CLOSE_SQUARE     {
+		$<ptr>$=A4GL_new_select_list_item_expr(new_select_list_item_col(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5,&$<int_list>7));
+	}
+;
+
+vi_subscript_expr:
+	INT_VALUE {
+		$<int_list>$.i0=atol($<str>1); 
+		$<int_list>$.i1=0; 
+		$<int_list>$.i2=0; 
+		$<int_list>$.i3=0; 
+		$<int_list>$.i4=0; 
+		$<int_list>$.i5=0;
+	}
+	| INT_VALUE KW_COMMA INT_VALUE {
+		$<int_list>$.i0=atol($<str>1); 
+		$<int_list>$.i1=atol($<str>2); 
+		$<int_list>$.i2=0; 
+		$<int_list>$.i3=0; 
+		$<int_list>$.i4=0; 
+		$<int_list>$.i5=0;
+	}
+;
+
+
+obind_var_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("obind_var_list", buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$=$<ptr_list>1;
+	}
+;
+
+
+
+
+
+/*
+ebind_var_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("ebind_var_list",buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1);
+	}
+;
+*/
+
+obind_var_let_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("obind_var_let_list",buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$=fully_expand_variables_in_expr_str_list($<ptr_list>1);
+	}
+;
+
+init_bind_var_list: bind_var_list {
+		char buff[256];
+		if (!set_bind_var_dtype("init_bind_var_list",buff,$<ptr_list>1)) {
+				a4gl_yyerror(buff);
+				YYERROR;
+		}
+		$<ptr_list>$= expand_variables_in_expr_str_list( $<ptr_list>1,1,0);
+	}
+;
+
+
+bind_var_list:	bind_var  {
+			$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+	|	bind_var_list KW_COMMA bind_var  {
+			$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
+
+bind_var : 
+	bind_var_2
+	| DOLLAR bind_var_2 {
+		$<ptr>$=$<ptr>2;
+	}
+	| COLON bind_var_2 {
+		$<ptr>$=$<ptr>2;
+	}
+;
+	
+
+bind_var_2: variable_usage_expression  { $<ptr>$=$<ptr>1; }
+	| variable_usage_expression THRU variable_usage_expression  {
+                $<ptr>$=A4GL_new_expr_list();
+		$<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+	}
+;
+
+var_ident_ibind_sli: var_ident_vl  {
+		$<s_select_list_item>$=convert_fgl_expr_to_sql_expr($<ptr>1);
+	} 
+ 	|  var_ident_vl THRU var_ident_vl {
+		expr_str *e;
+		struct s_select_list_item *i;
+ 		e=A4GL_new_expr_list();
+                e->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list(e->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list(e->expr_str_u.expr_list,$<ptr>3);
+		i=convert_fgl_expr_to_sql_expr(e);
+		$<s_select_list_item>$=i;
+	}
+;
+
+/* Ibinds are slightly different - because we can have literals too */
+/*
+ibind_var_list: ibind_var  {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+        |       ibind_var_list KW_COMMA ibind_var  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
+*/
+
+e_ibind_var_list: e_ibind_var  {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+        |       e_ibind_var_list KW_COMMA e_ibind_var  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
+
+e_ibind_var_list_with_null: e_ibind_var_with_null  {
+		$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+	}
+        |       e_ibind_var_list_with_null KW_COMMA e_ibind_var_with_null  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
+
+e_ibind_var : ibind_var {
+                char errbuff[256];
+		struct expr_str *p;
+		p=$<ptr>1;
+		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			if (!ensure_variable(errbuff,p,0))  {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
+		}
+	}
+;
+
+e_ibind_var_with_null : ibind_var_with_null {
+                char errbuff[256];
+		struct expr_str *p;
+		p=$<ptr>1;
+		if (p->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			if (!ensure_variable(errbuff,p,0))  {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			}
+		}
+	}
+;
+
+expanded_ibind_var_list: e_ibind_var_list {
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); 
+	}
+;
+
+
+expanded_ibind_var_list_with_null: e_ibind_var_list_with_null {
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,0,1); 
+	}
+;
+
+
+expanded_obind_var_list: obind_var_list {
+		int a;
+		$<ptr_list>$=expand_variables_in_expr_str_list($<ptr_list>1,1,1); 
+		inc_var_assigned_from_binding_list($<ptr_list>$);
+	}
+;
+
+ibind_var : variable_usage_expression  
+            | variable_usage_expression THRU variable_usage_expression  {
+                $<ptr>$=A4GL_new_expr_list();
+		$<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+            }
+	    | literal_expr
+;
+
+ibind_var_with_null : variable_usage_expression  
+            | variable_usage_expression THRU variable_usage_expression  {
+                $<ptr>$=A4GL_new_expr_list();
+		$<ptr>$->expr_type=ET_EXPR_THROUGH;
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>1);
+                A4GL_new_append_ptr_list($<ptr>$->expr_str_u.expr_list,$<ptr>3);
+            }
+	    | literal_expr
+	| KW_NULL {
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_RETURN_NULL);
+	}
+;
+
+obind_var_list_ord: obind_var_ord  {$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);}
+         | obind_var_list_ord KW_COMMA obind_var_ord  {
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+	}
+;
+
+obind_var_ord : variable_usage_expression optional_asc_desc {
+	$<ptr>$=A4GL_new_variable_usage_with_asc_desc($<ptr>1,$<str>2);
+}
+;
+
+optional_asc_desc:
+        { strcpy($<str>$,"A");}
+        | ASC { strcpy($<str>$,"A");  }
+        | DESC { strcpy($<str>$,"D"); }
+;
+
+
+op_param_var_list:   {$<ptr_list>$=0;}
+                | fparam_var_list {$<ptr_list>$=$<ptr_list>1;}
+;
+
+
+fparam_var_list:        func_def_var {
+				$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+                        }
+                        | fparam_var_list KW_COMMA func_def_var {
+				$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+                        }
+;
+
+func_def_var: 
+		identifier {
+			char *name;
+			name=remap_top_level_variables($<str>1);
+			if (!name) name=$<str>1;
+			$<ptr>$=A4GL_new_expr_param(name, EB_FALSE);
+		}
+		| ASCOPY identifier {
+			char *name;
+			name=remap_top_level_variables($<str>2);
+			if (!name) name=$<str>2;
+			$<ptr>$=A4GL_new_expr_param(name, EB_TRUE);
+		}
+;
+
+var_ident_qchar_e :
+	variable_usage_expression {
+		char errbuff[256]="";
+
+		if (get_variable_dtype_from_variable_usage_expression(errbuff, $<ptr>1)==-1) { 
+                        if (is_valid_identifier($<ptr>1)) {
+                                char *ident;
+                                ident=get_id_from_variable_usage_expression($<ptr>1);
+                                $<ptr>$=A4GL_new_expr_simple_string(ident, ET_EXPR_IDENTIFIER);
+			} else {
+				a4gl_yyerror("Invalid identifier");
+				YYERROR;
+			}
+		} else {
+			inc_var_usage($<ptr>1);
+                	$<ptr>$=$<ptr>1;
+		}
+	}
+	| variable_usage_expression ATSIGN identifier {
+		char buff[300];
+		SPRINTF2(buff,"%s@%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3);
+                $<ptr>$=A4GL_new_literal_string(buff);
+	}
+        | variable_usage_expression ATSIGN identifier COLON identifier{
+                char buff[300];
+                sprintf(buff,"%s@%s:%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3,$<str>5);
+                $<ptr>$=A4GL_new_literal_string(buff);
+        }
+        | variable_usage_expression ATSIGN identifier COLON INT_VALUE {
+                char buff[300];
+                sprintf(buff,"%s@%s:%s", get_id_from_variable_usage_expression($<ptr>1), $<str>3,$<str>5);
+                $<ptr>$=A4GL_new_literal_string(buff);
+        }
+        | CHAR_VALUE  {
+                $<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
+        }
+;
+
+
+
+variable_usage_expression: variable_usage  {
+		$<ptr>$=A4GL_new_expr_push_variable($<var_usg>1,current_is_report());
+	} 
+;
+
+
+variable_usage: variable_usage_i {
+		 $<var_usg>$=check_var_usage($<var_usg>1);
+	}
+;
+variable_usage_i:
+	var4_item_vu
+	| variable_usage KW_DOT var4_item_vu {
+		$<var_usg>$=append_variable_usage($<var_usg>1,$<var_usg>3);
+	}
+	| variable_usage KW_DOT KW_MULTIPLY {
+		$<var_usg>$=new_variable_usage($<var_usg>1,"*",0);
+	}
+;
+
+num_list_e: num_list_element_e
+{
+ $<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+}
+|num_list_e KW_COMMA num_list_element_e
+{
+ $<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>1,$<ptr>3);
+}
+;
+
+
+
+
+num_list_element_e: arr_expr_e
+{
+        $<ptr>$=$<ptr>1;
+};
+
+
+
+var4_item_vu:
+        array_r_variable_or_ident_vu {
+			$<var_usg>$=$<var_usg>1;
+	} 
+	| identifier { $<var_usg>$=new_variable_usage(0,$<str>1,0); }
+;
+
+
+
+array_r_variable_or_ident_vu: identifier arr_subscripts_al
+{
+  struct expr_str_list *array;
+  struct expr_str_list *substr;
+	struct expr_str *assoc_ptr;
+  struct array_list *al;
+
+  $<var_usg>$=new_variable_usage(0,$<str>1,0);
+  al=$<array_list>2;
+  array=al->array;
+  substr=al->substr;
+  assoc_ptr=al->assoc_var;
+
+  if (array) {
+	for (cnt=0;cnt< array->list.list_len;cnt++) {
+		set_variable_usage_subscript($<var_usg>$,cnt,array->list.list_val[cnt]);
+	}
+  }
+
+  if (substr) {
+	for (cnt=0;cnt< substr->list.list_len;cnt++) {
+		set_variable_usage_substr($<var_usg>$,cnt,substr->list.list_val[cnt]);
+	}
+  }
+
+  if (assoc_ptr) {
+		expr_str *p;
+		p=A4GL_new_expr_assoc($<str>1,assoc_ptr);
+		set_variable_usage_subscript($<var_usg>$,cnt,p);
+  }
+}
+;
+
+arr_subscripts_al :
+        OPEN_SQUARE num_list_e CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript or substring");
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=$<ptr_list>2;
+		al->substr=NULL;
+		al->assoc_var=NULL;
+		$<array_list>$=al;
+        } 
+	| OPEN_SQUARE num_list_e CLOSE_SQUARE OPEN_SQUARE num_list_e CLOSE_SQUARE {
+		struct array_list *al;
+         	A4GL_debug("---> Subscript & substring");
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=$<ptr_list>2;
+		al->substr=$<ptr_list>5;
+		al->assoc_var=NULL;
+		$<array_list>$=al;
+        }
+	| OPEN_SHEV fgl_expr_c CLOSE_SHEV {
+		struct array_list *al;
+		al=acl_malloc2(sizeof(struct array_list));
+		al->array=NULL;
+		al->substr=NULL;
+		al->assoc_var=$<ptr>2;
+		$<array_list>$=al;
+	}
+;
+
