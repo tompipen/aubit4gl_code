@@ -1215,3 +1215,5 @@ struct s_kw {
 #define RIGHT_ALIGNED 2208
 #define KW_TAG 2209
 #define LINTMODULEISLIBRARY 2210
+#define KW_PUBLIC 2211
+#define KW_PRIVATE 2212

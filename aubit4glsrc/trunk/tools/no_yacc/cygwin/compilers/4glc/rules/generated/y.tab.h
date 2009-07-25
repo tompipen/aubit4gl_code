@@ -39,7 +39,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2212,
+     NAME = 2214,
      KW_COMMA = 1732,
      KW_WORDWRAP = 1512,
      KW_USING = 1664,
@@ -69,25 +69,25 @@
      KW_DIVIDE = 1678,
      KW_MOD = 1746,
      KW_POWER = 1650,
-     UMINUS = 2213,
+     UMINUS = 2215,
      CLOSE_BRACKET = 1521,
      OPEN_BRACKET = 1563,
-     TYPECAST = 2214,
+     TYPECAST = 2216,
      COMMAND = 1523,
-     NUMBER_VALUE = 2215,
-     CHAR_VALUE = 2216,
-     CHAR_VALUE_TRANSLATED = 2217,
-     INT_VALUE = 2218,
-     NAMED_GEN = 2219,
-     CLINE = 2220,
-     SQLLINE = 2221,
-     KW_CSTART = 2222,
-     KW_CEND = 2223,
-     USER_DTYPE_ORIG = 2224,
-     USER_DTYPE_NEW = 2225,
-     SQL_TEXT = 2226,
-     KW_WHENEVER_SET = 2227,
-     COMMENT = 2228,
+     NUMBER_VALUE = 2217,
+     CHAR_VALUE = 2218,
+     CHAR_VALUE_TRANSLATED = 2219,
+     INT_VALUE = 2220,
+     NAMED_GEN = 2221,
+     CLINE = 2222,
+     SQLLINE = 2223,
+     KW_CSTART = 2224,
+     KW_CEND = 2225,
+     USER_DTYPE_ORIG = 2226,
+     USER_DTYPE_NEW = 2227,
+     SQL_TEXT = 2228,
+     KW_WHENEVER_SET = 2229,
+     COMMENT = 2230,
      KW_DOC4GLCOMMENT = 1000,
      ON_CLOSE_APPLICATION_STOP = 1001,
      LEFT_JOIN = 1002,
@@ -1266,11 +1266,13 @@
      CURR_LINE_NO = 2207,
      RIGHT_ALIGNED = 2208,
      KW_TAG = 2209,
-     LINTMODULEISLIBRARY = 2210
+     LINTMODULEISLIBRARY = 2210,
+     KW_PUBLIC = 2211,
+     KW_PRIVATE = 2212
    };
 #endif
 /* Tokens.  */
-#define NAME 2212
+#define NAME 2214
 #define KW_COMMA 1732
 #define KW_WORDWRAP 1512
 #define KW_USING 1664
@@ -1300,25 +1302,25 @@
 #define KW_DIVIDE 1678
 #define KW_MOD 1746
 #define KW_POWER 1650
-#define UMINUS 2213
+#define UMINUS 2215
 #define CLOSE_BRACKET 1521
 #define OPEN_BRACKET 1563
-#define TYPECAST 2214
+#define TYPECAST 2216
 #define COMMAND 1523
-#define NUMBER_VALUE 2215
-#define CHAR_VALUE 2216
-#define CHAR_VALUE_TRANSLATED 2217
-#define INT_VALUE 2218
-#define NAMED_GEN 2219
-#define CLINE 2220
-#define SQLLINE 2221
-#define KW_CSTART 2222
-#define KW_CEND 2223
-#define USER_DTYPE_ORIG 2224
-#define USER_DTYPE_NEW 2225
-#define SQL_TEXT 2226
-#define KW_WHENEVER_SET 2227
-#define COMMENT 2228
+#define NUMBER_VALUE 2217
+#define CHAR_VALUE 2218
+#define CHAR_VALUE_TRANSLATED 2219
+#define INT_VALUE 2220
+#define NAMED_GEN 2221
+#define CLINE 2222
+#define SQLLINE 2223
+#define KW_CSTART 2224
+#define KW_CEND 2225
+#define USER_DTYPE_ORIG 2226
+#define USER_DTYPE_NEW 2227
+#define SQL_TEXT 2228
+#define KW_WHENEVER_SET 2229
+#define COMMENT 2230
 #define KW_DOC4GLCOMMENT 1000
 #define ON_CLOSE_APPLICATION_STOP 1001
 #define LEFT_JOIN 1002
@@ -2498,6 +2500,8 @@
 #define RIGHT_ALIGNED 2208
 #define KW_TAG 2209
 #define LINTMODULEISLIBRARY 2210
+#define KW_PUBLIC 2211
+#define KW_PRIVATE 2212
 
 
 
@@ -2601,11 +2605,13 @@ typedef union YYSTYPE
         struct constant_data 		*v_const_ptr;
         struct linked_variable 		*v_linked_ptr;
 	struct variable_list 		*variable_list_ptr;
+	struct s_module_entry_ptr_list  *module_entry_list;
+	struct s_class_definition 	*class_definition;
 	
 
 
 /* Line 1676 of yacc.c  */
-#line 2609 "y.tab.h"
+#line 2615 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

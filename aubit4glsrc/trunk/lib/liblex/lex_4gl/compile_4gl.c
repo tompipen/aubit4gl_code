@@ -75,7 +75,7 @@ char *make_sql_string_and_free (char *first, ...);
 
 /* STATIC FUNCTIONS PROTOTYPES */
 static void open_outfile (void);
-static void print_variable_new (struct variable *v, enum e_scope scope, int level);
+void print_variable_new (struct variable *v, enum e_scope scope, int level);
 static char *decode_dt (int a, int b);
 static char *decode_ival_define1 (int n);
 static char *decode_ival_define2 (int n);
@@ -340,7 +340,12 @@ add_vname (char *f, char *v, int dtype)
 }
 
 
-static void
+void
+tmp_ccntplus (void) {
+	tmp_ccnt++;
+}
+
+void
 tmp_ccntminus (void)
 {
   tmp_ccnt--;
@@ -435,7 +440,7 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
     }
 }
 
-static void
+void
 merge_files (void)
 {
   FILE *h;
@@ -450,6 +455,19 @@ merge_files (void)
     {
       A4GL_debug (">>> NO C FILES... ");
       return;
+    }
+
+
+  if (outfile)
+    {
+      fclose (outfile);
+      outfile = 0;
+    }
+
+  if (hfile)
+    {
+      fclose (hfile);
+      hfile = 0;
     }
 
 
@@ -3600,7 +3618,7 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 
 
 /******************************************************************************/
-static void
+void
 print_variable_new (struct variable *v, enum e_scope scope, int level)
 {
   dump_comments (v->lineno);
@@ -3619,13 +3637,16 @@ open_outfile (void)
   char filename_for_c[132];
   char err[132];
   //char *ptr;
-  char *outputfilename;
+  char *outputfilename=0;
   char *override;
   override = acl_getenv_not_set_as_0 ("OVERRIDE_OUTPUT");
 
 
-
-  outputfilename = curr_module->module_name;
+  if (curr_module) {
+  	outputfilename = curr_module->module_name;
+  } else {
+	outputfilename="Blah";
+  }
 
   if (outputfilename == 0)
     {
@@ -3953,6 +3974,7 @@ static char *
 local_has_comment (int n, int c, char *type)
 {
   int a;
+	if (curr_module==NULL) return NULL;
   for (a = 0; a < curr_module->comment_list.comment_list_len; a++)
     {
       if (curr_module->comment_list.comment_list_val[a].printed)
@@ -4844,6 +4866,9 @@ print_events_as_4gl (on_events * es, struct command *parent)
 	{
 	case EVENT_BEF_ROW:
 	  printc ("BEFORE ROW");
+	  break;
+	case EVENT_ON_CHANGE:
+	  printc ("ON CHANGE");
 	  break;
 
 	case EVENT_AFT_ROW:
@@ -9926,5 +9951,14 @@ LEXLIB_A4GL_initlex (void)
 }
 
 
+
+
+
+int LEXLIB_LEX_initlib() {
+return 1;
+}
+
+void LEXLIB_print_niy(char *type) {
+}
 
 

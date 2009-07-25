@@ -1,4 +1,34 @@
 ---------------------------
+Sat Jul 25 10:50:05 BST 2009
+---------------------------
+1.2_1 Released
+---------------------------
+	
+	Add IGNDUPGLOBALS
+	
+	Fixup for MID 1317 (build test 1807)
+	
+	,
+	
+	,
+	
+	,
+	
+	,
+	
+	,
+	
+	,
+	
+	DISPLAY ARRAY fixup for XML GUIs
+	
+	Add more function keys (F66->F99)
+	
+	Small lint fixups
+	
+	Small 'Date' fixup for fields with more complex FORMATs
+	
+---------------------------
 Sun Jul 12 08:48:26 BST 2009
 ---------------------------
 1.10RC_65 Released
