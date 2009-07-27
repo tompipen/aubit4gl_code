@@ -27,6 +27,7 @@ FORM=GENERIC
 PACKER=PACKED
 
 
+LEXTYPE=WRITE
 
 ###############################################################################
 
@@ -192,12 +193,6 @@ else
 		API+=../libpacker/packed/pack_packed.o
 	endif
 endif
-
-
-
-
-
-
 
 
 
