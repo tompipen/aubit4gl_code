@@ -27,14 +27,322 @@ using System.Drawing;
 namespace AubitDesktop
 {
 
+    using System;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Runtime.InteropServices;
+    using System.Threading;
+    using System.Windows.Forms;
+
+    // Copyright (c) 2005 Claudio Grazioli, http://www.grazioli.ch
+    //
+    // This implementation of a nullable DateTimePicker is a new implementation
+    // from scratch, but it is based on ideas I took from this nullable 
+    // DateTimePickers:
+    // - http://www.omnitalented.com/Blog/PermaLink,guid,9ee757fe-a3e8-46f7-ad04-ef7070934dc8.aspx 
+    //   from Alexander Shirshov
+    // - http://www.codeproject.com/cs/miscctrl/Nullable_DateTimePicker.asp 
+    //   from Pham Minh Tri
+    //
+    // This code is free software; you can redistribute it and/or modify it.
+    // However, this header must remain intact and unchanged.  Additional
+    // information may be appended after this header.  Publications based on
+    // this code must also include an appropriate reference.
+    // 
+    // This code is distributed in the hope that it will be useful, but 
+    // WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+    // or FITNESS FOR A PARTICULAR PURPOSE.
+    //
+
+
+        /// <summary>
+        /// Represents a Windows date time picker control. It enhances the .NET standard <b>DateTimePicker</b>
+        /// control with a ReadOnly mode as well as with the possibility to show empty values (null values).
+        /// </summary>
+        [ComVisible(false)]
+        public class NullableDateTimePicker : System.Windows.Forms.DateTimePicker
+        {
+            #region Member variables
+            // true, when no date shall be displayed (empty DateTimePicker)
+            private bool _isNull;
+
+            // If _isNull = true, this value is shown in the DTP
+            private string _nullValue;
+
+            // The format of the DateTimePicker control
+            private DateTimePickerFormat _format = DateTimePickerFormat.Long;
+
+            // The custom format of the DateTimePicker control
+            private string _customFormat;
+
+            // The format of the DateTimePicker control as string
+            private string _formatAsString;
+            #endregion
+
+            #region Constructor
+            /// <summary>
+            /// Default Constructor
+            /// </summary>
+            public NullableDateTimePicker()
+                : base()
+            {
+                base.Format = DateTimePickerFormat.Custom;
+                NullValue = " ";
+                Format = DateTimePickerFormat.Long;
+            }
+            #endregion
+
+            #region Public properties
+
+            public new string Text
+            {
+                get
+                {
+                    return base.Text;
+                }
+                set
+                {
+                    if (value == "")
+                    {
+                        this.Value = null;
+                    }
+                    else
+                    {
+                        base.Text = value;
+                    }
+                }
+            }
+            /// <summary>
+            /// Gets or sets the date/time value assigned to the control.
+            /// </summary>
+            /// <value>The DateTime value assigned to the control
+            /// </value>
+            /// <remarks>
+            /// <p>If the <b>Value</b> property has not been changed in code or by the user, it is set
+            /// to the current date and time (<see cref="DateTime.Now"/>).</p>
+            /// <p>If <b>Value</b> is <b>null</b>, the DateTimePicker shows 
+            /// <see cref="NullValue"/>.</p>
+            /// </remarks>
+            public new Object Value
+            {
+                get
+                {
+                    if (_isNull)
+                        return null;
+                    else
+                        return base.Value;
+                }
+                set
+                {
+                    if (value == null || value == DBNull.Value)
+                    {
+                        SetToNullValue();
+                    }
+                    else
+                    {
+                        SetToDateTimeValue();
+                        base.Value = (DateTime)value;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the format of the date and time displayed in the control.
+            /// </summary>
+            /// <value>One of the <see cref="DateTimePickerFormat"/> values. The default is 
+            /// <see cref="DateTimePickerFormat.Long"/>.</value>
+            [Browsable(true)]
+            [DefaultValue(DateTimePickerFormat.Long), TypeConverter(typeof(Enum))]
+            public new DateTimePickerFormat Format
+            {
+                get { return _format; }
+                set
+                {
+                    _format = value;
+                    SetFormat();
+                    OnFormatChanged(EventArgs.Empty);
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the custom date/time format string.
+            /// <value>A string that represents the custom date/time format. The default is a null
+            /// reference (<b>Nothing</b> in Visual Basic).</value>
+            /// </summary>
+            public new String CustomFormat
+            {
+                get { return _customFormat; }
+                set
+                {
+                    _customFormat = value;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the string value that is assigned to the control as null value. 
+            /// </summary>
+            /// <value>The string value assigned to the control as null value.</value>
+            /// <remarks>
+            /// If the <see cref="Value"/> is <b>null</b>, <b>NullValue</b> is
+            /// shown in the <b>DateTimePicker</b> control.
+            /// </remarks>
+            [Browsable(true)]
+            [Category("Behavior")]
+            [Description("The string used to display null values in the control")]
+            [DefaultValue(" ")]
+            public String NullValue
+            {
+                get { return _nullValue; }
+                set { _nullValue = value; }
+            }
+            #endregion
+
+            #region Private methods/properties
+            /// <summary>
+            /// Stores the current format of the DateTimePicker as string. 
+            /// </summary>
+            private string FormatAsString
+            {
+                get { return _formatAsString; }
+                set
+                {
+                    _formatAsString = value;
+                    base.CustomFormat = value;
+                }
+            }
+
+            /// <summary>
+            /// Sets the format according to the current DateTimePickerFormat.
+            /// </summary>
+            private void SetFormat()
+            {
+                CultureInfo ci = Thread.CurrentThread.CurrentCulture;
+                DateTimeFormatInfo dtf = ci.DateTimeFormat;
+                switch (_format)
+                {
+                    case DateTimePickerFormat.Long:
+                        FormatAsString = dtf.LongDatePattern;
+                        break;
+                    case DateTimePickerFormat.Short:
+                        FormatAsString = dtf.ShortDatePattern;
+                        break;
+                    case DateTimePickerFormat.Time:
+                        FormatAsString = dtf.ShortTimePattern;
+                        break;
+                    case DateTimePickerFormat.Custom:
+                        FormatAsString = this.CustomFormat;
+                        break;
+                }
+            }
+
+            /// <summary>
+            /// Sets the <b>DateTimePicker</b> to the value of the <see cref="NullValue"/> property.
+            /// </summary>
+            private void SetToNullValue()
+            {
+                _isNull = true;
+                base.CustomFormat = (_nullValue == null || _nullValue == String.Empty) ? " " : "'" + _nullValue + "'";
+            }
+
+            /// <summary>
+            /// Sets the <b>DateTimePicker</b> back to a non null value.
+            /// </summary>
+            private void SetToDateTimeValue()
+            {
+                if (_isNull)
+                {
+                    SetFormat();
+                    _isNull = false;
+                    base.OnValueChanged(new EventArgs());
+                }
+            }
+            #endregion
+
+            #region OnXXXX()
+
+            /// <summary>
+            /// This member overrides <see cref="DateTimePicker.OnCloseUp"/>.
+            /// </summary>
+            /// <param name="e"></param>
+            protected override void OnCloseUp(EventArgs e)
+            {
+                if (Control.MouseButtons == MouseButtons.None)
+                {
+                    if (_isNull)
+                    {
+                        SetToDateTimeValue();
+                        _isNull = false;
+                    }
+                }
+                base.OnCloseUp(e);
+            }
+
+            /// <summary>
+            /// This member overrides <see cref="Control.OnKeyDown"/>.
+            /// </summary>
+            /// <param name="e"></param>
+            protected override void OnKeyUp(KeyEventArgs e)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    this.Value = null;
+                    OnValueChanged(EventArgs.Empty);
+                }
+                base.OnKeyUp(e);
+            }
+            #endregion
+        }
+    
+
+        public class DateTimePickerNull
+ : System.Windows.Forms.DateTimePicker
+        {
+
+            public DateTimePickerNull()
+            {
+                this.ShowCheckBox = true;
+            }
+
+            public string BindMe
+            {
+                get
+                {
+                    if (this.Checked)
+                    {
+                        return base.Text;
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
+                set
+                {
+                    if (System.Convert.IsDBNull(value) || value=="")
+                    {
+                        this.Checked = false;
+                    }
+                    else
+                    {
+                        if (this.Checked == false)
+                            this.Checked = true;
+
+                        this.Text=value;
+                    }
+                }
+            }
+
+        
+    }
+
+
     // A text widget fgl field widget...
     public class FGLDateFieldWidget : FGLWidget
     {
-        //FGLContextType _ContextType;
+
         private int id;
-        DateTimePicker t;
+        NullableDateTimePicker tNullable;
         Panel p;
-      //  Label l;
         Button b;
 
 
@@ -68,7 +376,7 @@ namespace AubitDesktop
         {
             //t.SetToolTip(this.l, s);
             t.SetToolTip(this.p, s);
-            t.SetToolTip(this.t, s);
+            t.SetToolTip(this.tNullable, s);
         }
 
 
@@ -95,7 +403,7 @@ namespace AubitDesktop
             {
                 p.Width = value;
              //   l.Width = value;
-                t.Width = value;
+                tNullable.Width = value;
             }
         }
 
@@ -104,7 +412,7 @@ namespace AubitDesktop
         {
             set
             {
-                t.TabIndex = value;
+                tNullable.TabIndex = value;
             }
         }
 
@@ -112,7 +420,7 @@ namespace AubitDesktop
         {
             get
             {
-                if (t.Enabled && t.Focused) return true;
+                if (tNullable.Enabled && tNullable.Focused) return true;
                 return false;
             }
         }
@@ -120,8 +428,8 @@ namespace AubitDesktop
         
         public override void setFocus()
         {
-            t.Focus();
-            t.Select();
+            tNullable.Focus();
+            tNullable.Select();
             
         }
 
@@ -129,12 +437,12 @@ namespace AubitDesktop
         {
             set
             {
-                this.t.BackColor = value;
+                this.tNullable.BackColor = value;
                // this.l.BackColor = value;
             }
             get
             {
-                return this.t.BackColor;
+                return this.tNullable.BackColor;
             }
             
         }
@@ -156,27 +464,27 @@ namespace AubitDesktop
         {
             p.BorderStyle = BorderStyle.None;
 
-            t.BackColor = SystemColors.Window;
-            t.ForeColor = SystemColors.WindowText;
+            tNullable.BackColor = SystemColors.Window;
+            tNullable.ForeColor = SystemColors.WindowText;
             //t.TabStop = true;
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
                     
                  //   l.Visible = true;
-                    t.Enabled = false;
+                    tNullable.Enabled = false;
                     break;
 
 
                 case FGLContextType.ContextDisplayArray:
                 case FGLContextType.ContextDisplayArrayInactive:
-                    t.Enabled = false;
+                    tNullable.Enabled = false;
 
 
                     if (isOnSelectedRow)
                     {
-                        t.BackColor = SystemColors.Highlight;
-                        t.ForeColor = SystemColors.HighlightText;
+                        tNullable.BackColor = SystemColors.Highlight;
+                        tNullable.ForeColor = SystemColors.HighlightText;
                     }
                     else
                     {
@@ -187,7 +495,7 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextConstruct:
-                    t.Enabled= true;
+                    tNullable.Enabled = true;
                     
                     break;
 
@@ -195,12 +503,12 @@ namespace AubitDesktop
                 case FGLContextType.ContextInput:
                     if (this.NoEntry)
                     {
-                        t.Enabled = false;
+                        tNullable.Enabled = false;
                         
                     }
                     else
                     {
-                        t.Enabled = true;
+                        tNullable.Enabled = true;
                         
                     }
                     // We can't trap the tabstops if this is true..
@@ -210,7 +518,7 @@ namespace AubitDesktop
                 case FGLContextType.ContextInputArray:
                     if (this.NoEntry)
                     {
-                        t.Enabled = false;
+                        tNullable.Enabled = false;
                         
                     }
                     else
@@ -218,12 +526,12 @@ namespace AubitDesktop
                         if (isOnSelectedRow)
                         {
                            // t.BackColor =Color.White;
-                            t.Enabled = true;
+                            tNullable.Enabled = true;
                             
                         }
                         else
                         {
-                            t.Enabled = false;
+                            tNullable.Enabled = false;
                             
                         }
                     }
@@ -232,12 +540,12 @@ namespace AubitDesktop
                 default:
                     if (this.NoEntry)
                     {
-                        t.Enabled = false;
+                        tNullable.Enabled = false;
                         
                     }
                     else
                     {
-                        t.Enabled = false;
+                        tNullable.Enabled = false;
                     }
                     break;
 
@@ -258,11 +566,11 @@ namespace AubitDesktop
         {
             get
             {
-                return t.Enabled;
+                return tNullable.Enabled;
             }
             set
             {
-                t.Enabled = value;
+                tNullable.Enabled = value;
             }
         }
 
@@ -271,13 +579,14 @@ namespace AubitDesktop
         {
             get
             {
-                return t.Text;
+                return tNullable.Text;
             }
             set
             {
                 string val;
                 val = value;
-                if (val != t.Text)
+                if (val == "") val = null;
+                if (val != tNullable.Text)
                 {
                     this.FieldTextChanged = true;
                 }
@@ -302,8 +611,15 @@ namespace AubitDesktop
                     }
                 }
 
-                
-                t.Text = val;
+                if (val == null)
+                {
+                    tNullable.Text = "";
+                    tNullable.Value = null;
+                }
+                else
+                {
+                    tNullable.Text = val;
+                }
             }
         }
 
@@ -454,28 +770,28 @@ namespace AubitDesktop
             p = new Panel();
           
             p.BorderStyle = BorderStyle.Fixed3D;
-          
-                        t = new System.Windows.Forms.DateTimePicker();
-            t.Format = DateTimePickerFormat.Custom;
-            t.CustomFormat = FGLUtils.DBDATEFormat_dotnet; 
-            t.Visible = true;
-            t.Enabled = true;
+
+            tNullable = new NullableDateTimePicker();
+            tNullable.Format = DateTimePickerFormat.Custom;
+            tNullable.CustomFormat = FGLUtils.DBDATEFormat_dotnet;
+            tNullable.Visible = true;
+            tNullable.Enabled = true;
             
 
             p.Margin = new Padding(0, 0, 0, 0);
             p.Padding = new Padding(0, 0, 0, 0);
-          
-            t.Margin = new Padding(0, 0, 0, 0);
-            t.Padding = new Padding(0, 0, 0, 0);
+
+            tNullable.Margin = new Padding(0, 0, 0, 0);
+            tNullable.Padding = new Padding(0, 0, 0, 0);
 
 
-            t.Visible = true;
-            t.Enabled = true;
+            tNullable.Visible = true;
+            tNullable.Enabled = true;
             SizeControl(ma,index,p);
             //p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             p.AutoSize = true;
             p.Name = "DTPP_" + tabcol;
-            t.Name = "DTPT_" + tabcol;
+            tNullable.Name = "DTPT_" + tabcol;
 
             //t.BackColor = Color.Red;
             //l.BackColor = Color.Blue;
@@ -487,8 +803,8 @@ namespace AubitDesktop
 
             // Any columns used for the button must be subtracted from the length of the 
             // textbox..
-               
-            t.Size = new Size(GuiLayout.get_gui_w(columns-bcol), GuiLayout.get_gui_h(rows));
+
+            tNullable.Size = new Size(GuiLayout.get_gui_w(columns - bcol), GuiLayout.get_gui_h(rows));
            
             p.Size = new Size(GuiLayout.get_gui_w(columns), GuiLayout.get_gui_h(rows));
 
@@ -496,11 +812,11 @@ namespace AubitDesktop
 
             if (columns > 2)
             {
-                t.Width = GuiLayout.get_gui_w(columns + 1);
+                tNullable.Width = GuiLayout.get_gui_w(columns + 1);
             }
             else
             {
-                t.Width = GuiLayout.get_gui_w(3);
+                tNullable.Width = GuiLayout.get_gui_w(3);
             }
 
             
@@ -536,7 +852,7 @@ namespace AubitDesktop
                     b.Image = FGLUtils.getImageFromName((string)configSettings["IMAGE"]);
                 }
 
-                b.Left = t.Width + 1;
+                b.Left = tNullable.Width + 1;
                 //b.Left = GuiLayout.get_gui_x(column) ;     /* thats 2 pixels - not 2 characters */
                 b.Visible = true;
             }
@@ -545,7 +861,7 @@ namespace AubitDesktop
                 b = null;
             }
 
-            p.Controls.Add(t);
+            p.Controls.Add(tNullable);
 
             if (b!=null)
             {
@@ -553,13 +869,13 @@ namespace AubitDesktop
             }
 
            // p.Size = l.Size;
-            
-            t.CausesValidation = true;
-            t.KeyDown += new KeyEventHandler(t_KeyDown);
-            t.KeyPress += new KeyPressEventHandler(t_KeyPress);
-            t.Validating +=new System.ComponentModel.CancelEventHandler(t_Validating);
-            t.Enter += new EventHandler(t_GotFocus);
-            t.TextChanged += new EventHandler(t_TextChanged);
+
+            tNullable.CausesValidation = true;
+            tNullable.KeyDown += new KeyEventHandler(t_KeyDown);
+            tNullable.KeyPress += new KeyPressEventHandler(t_KeyPress);
+            tNullable.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
+            tNullable.Enter += new EventHandler(t_GotFocus);
+            tNullable.TextChanged += new EventHandler(t_TextChanged);
             //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             if (b != null)
             {
@@ -567,12 +883,13 @@ namespace AubitDesktop
             }
             else
             {
-                t.Click += new EventHandler(t_Click);
+                tNullable.Click += new EventHandler(t_Click);
             }
-            t.Visible = true;
+            tNullable.Visible = true;
 
             this.id = id;
             this.ContextType = FGLContextType.ContextNone;
+            
             adjustDisplayPropertiesForContext();
 
         }
