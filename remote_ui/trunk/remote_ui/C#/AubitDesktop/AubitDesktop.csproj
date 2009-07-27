@@ -99,6 +99,7 @@
     <Compile Include="FGLComboBoxFieldWidget.cs">
     </Compile>
     <Compile Include="FGLDateFieldWidget.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="FGLForm.cs" />
     <Compile Include="FGLLabelFieldWidget.cs">
