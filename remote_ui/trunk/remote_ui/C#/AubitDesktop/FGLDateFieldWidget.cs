@@ -165,7 +165,7 @@ namespace AubitDesktop
                 {
                     _format = value;
                     SetFormat();
-                    OnFormatChanged(EventArgs.Empty);
+                    OnFormatChanged(EventArgs.Empty); //NOTWEBGUI
                 }
             }
 
@@ -270,17 +270,16 @@ namespace AubitDesktop
             /// </summary>
             /// <param name="e"></param>
             protected override void OnCloseUp(EventArgs e) //NOTWEBGUI
-            //WEBGUI  protected  void OnCloseUp(EventArgs e)
-            {
-                if (Control.MouseButtons == MouseButtons.None)
-                {
-                    if (_isNull)
-                    {
-                        SetToDateTimeValue();
-                        _isNull = false;
-                    }
-                }
-                base.OnCloseUp(e);
+            { //NOTWEBGUI
+                if (Control.MouseButtons == MouseButtons.None) //NOTWEBGUI
+                {//NOTWEBGUI
+                    if (_isNull)//NOTWEBGUI
+                    {//NOTWEBGUI
+                        SetToDateTimeValue();//NOTWEBGUI
+                        _isNull = false;//NOTWEBGUI
+                    }//NOTWEBGUI
+                }//NOTWEBGUI
+                base.OnCloseUp(e);//NOTWEBGUI
             }
 
             /// <summary>
