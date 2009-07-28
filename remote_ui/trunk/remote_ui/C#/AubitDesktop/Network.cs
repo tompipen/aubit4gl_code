@@ -368,7 +368,7 @@ namespace AubitDesktop
             {
                 s = s + "\n";
             }
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(s);
+            byte[] msg = Program.remoteEncoding.GetBytes(s);
             try
             {
                 streamWrite(msg, 0, msg.Length);
@@ -424,7 +424,7 @@ namespace AubitDesktop
 
                     if (readBytes >= 0)
                     {
-                        cmd += System.Text.Encoding.ASCII.GetString(buffer, 0, readBytes);
+                        cmd += Program.remoteEncoding.GetString(buffer, 0, readBytes);
                     }
                     else
                     {

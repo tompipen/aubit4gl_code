@@ -781,16 +781,8 @@ namespace AubitDesktop
                     break;
 
 
-                case "AubitDesktop.Xml.XMLForm.Edit":
-                    if (ff.sqlType != null && ff.sqlType == "DATE")  //&& thisAttrib.ATTRIB_FORMAT == null)
-                    {
-                        // Its a date
-                        fld = new FGLDateFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0], ((AubitDesktop.Xml.XMLForm.Edit)ff.Items[0]).config, index, ma);
-                    }
-                    else
-                    {
-                        fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],index,ma);
-                    }
+                case "AubitDesktop.Xml.XMLForm.Edit":                 
+                    fld = new FGLTextFieldWidget(ff, (AubitDesktop.Xml.XMLForm.Edit)ff.Items[0],index,ma);
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.Image":
@@ -897,27 +889,7 @@ namespace AubitDesktop
             ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
             ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
 
-            data = System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
-
-            
-            try
-            {
-                if (Program.AppSettings.defaultEncoding.Trim() == "")
-                {
-                    Program.AppSettings.defaultEncoding = "ISO8859-1";
-                    Program.SaveSettings();
-                }
-                if (Program.AppSettings.defaultEncoding != "UTF8")
-                {
-                    Encoding enc = ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
-                    //enc.GetString(Convert.FromBase64String(f.Text));
-                    data = enc.GetString(Convert.FromBase64String(f.Text)); // System.Text.ASCIIEncoding.ASCII.GetString(Convert.FromBase64String(f.Text));
-                }
-                
-            }
-            catch (Exception e) {
-                Program.Show("Unable to use default encoding: " + e.Message);
-            }
+            data = Program.remoteEncoding.GetString(Convert.FromBase64String(f.Text));
 
             TextReader txtr = new StringReader(data);
           
@@ -1124,19 +1096,13 @@ namespace AubitDesktop
             {
                 case "": // Default widget is a text box field...
                 case "TEXT":
-                    if ((Convert.ToInt32(thisAttrib.DATATYPE) & 255) == 7 && thisAttrib.ATTRIB_FORMAT == null)
-                    {
-                        // Its a date
-                        fld = new FGLDateFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
-
-                    }
-                    else
-                    {
                         fld = new FGLTextFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC,false);
-
-                    }
                     break;
 
+
+                case "DATEEDIT":
+                    fld = new FGLDateFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
+                    break;
                 case "PIXMAP":
                     fld = new FGLPixmapFieldWidget(thisAttrib, Convert.ToInt32(formfld.ROW), Convert.ToInt32(formfld.COLUMN), Convert.ToInt32(formfld.ROWS), Convert.ToInt32(formfld.COLS), formfld.WIDGET, formfld.CONFIG, Convert.ToInt32(formfld.ID), formfld.TABCOL, formfld.ACTION, Convert.ToInt32(formfld.ATTRIBUTE_NO), formfld.INC);
                     break;

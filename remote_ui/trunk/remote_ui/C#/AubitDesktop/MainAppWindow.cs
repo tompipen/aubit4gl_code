@@ -433,7 +433,10 @@ namespace AubitDesktop
        
             if (e.Data == "") return;
             updating = true;
+
             
+            
+
             enew = EnvReader.ReadFromXml(e.Data);
             ID = Convert.ToInt32(enew.ID);
             

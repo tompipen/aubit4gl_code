@@ -108,7 +108,12 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        base.Text = value;
+                        try
+                        {
+                            this.Value = FGLUtils.getDate(value);
+                        }
+                        catch { } 
+                        //base.Text = value;
                     }
                 }
             }
@@ -787,6 +792,7 @@ namespace AubitDesktop
 
             tNullable.Visible = true;
             tNullable.Enabled = true;
+            tNullable.Value = null;
             SizeControl(ma,index,p);
             //p.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             p.AutoSize = true;

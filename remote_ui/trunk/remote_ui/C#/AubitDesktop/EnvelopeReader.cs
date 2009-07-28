@@ -47,11 +47,14 @@ namespace AubitDesktop
             XmlSerializer ser;
 
             ser= new XmlSerializer(t);
-            theXmlString = s;
+
+
+                theXmlString = s;
+
 
             //s = "<ENVELOPE><COMMANDS><PROGRAMSTOP/></COMMANDS></ENVELOPE>";
-            TextReader r = new StringReader(s);
-
+            TextReader r = new StringReader(theXmlString);
+            
             
             
             ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);

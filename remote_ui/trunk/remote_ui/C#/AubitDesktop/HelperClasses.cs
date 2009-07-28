@@ -1183,6 +1183,7 @@ namespace AubitDesktop
     public static class FGLUtils
     {
 
+
         static string _dbdate="MDY4/";
 
         public static string DBDATE

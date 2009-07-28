@@ -30,7 +30,9 @@ namespace AubitDesktop
         static public mainfrm frmMain;
         static public AubitDesktop.Xml.Settings AppSettings;
         static internal frmConsole myConsole;
-         static string AppSettingsFile; 
+        static string AppSettingsFile;
+
+        static public System.Text.Encoding remoteEncoding;
 
         /// <summary>
         /// The main entry point for the application.
@@ -43,6 +45,7 @@ namespace AubitDesktop
             string port;
             bool ListenMode = false;
             bool minimised = false;
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Control.CheckForIllegalCrossThreadCalls = false;
@@ -121,6 +124,18 @@ namespace AubitDesktop
                     minimised = true;
                 }
             }
+
+            if (Program.AppSettings.defaultEncoding.Trim() == "")
+            {
+                Program.AppSettings.defaultEncoding = "ISO8859-1";
+                Program.SaveSettings();
+            }
+
+            if (Program.AppSettings.defaultEncoding != "UTF8")
+            {
+                remoteEncoding = System.Text.ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);                
+            }
+
 
             
             frmMain = new mainfrm(AllowEdit, Autorun, port, minimised,ListenMode);
