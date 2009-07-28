@@ -199,6 +199,20 @@ namespace AubitDesktop
 
         private bool fieldsAreAllOk()
         {
+            System.ComponentModel.CancelEventArgs ce;
+            ce = new System.ComponentModel.CancelEventArgs();
+            ce.Cancel = false;
+            foreach (FGLFoundField f in activeFields)
+            {                
+                f.fglField.t_Validating(f, ce);
+                if (ce.Cancel)
+                {
+                    CurrentField = f;
+
+                    CurrentField.fglField.setFocus();
+                                        return false;
+                }
+            }
             return true;
         }
 
@@ -523,7 +537,7 @@ namespace AubitDesktop
             }
 
                 careAboutFocus = true;
-
+                mainWin.CommentText = CurrentField.fglField.comment;
 
 
             //Application.DoEvents();
