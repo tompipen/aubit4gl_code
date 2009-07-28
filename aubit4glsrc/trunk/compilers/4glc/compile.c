@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.133 2009-05-05 14:12:38 mikeaubury Exp $
+# $Id: compile.c,v 1.134 2009-07-28 15:04:31 mikeaubury Exp $
 #*/
 
 /**
@@ -1770,7 +1770,7 @@ a4gl_yyerror (char *s)
   }
 
   if (A4GL_isyes(acl_getenv("LIST_ERRS"))) {
-	if (strcmp(s,"Variable not found")==0) return;
+	//if (strcmp(s,"Variable not found")==0) return;
 	add_module_error(yylineno,s);
   	return;
   }
