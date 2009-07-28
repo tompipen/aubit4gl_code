@@ -269,7 +269,8 @@ namespace AubitDesktop
             /// This member overrides <see cref="DateTimePicker.OnCloseUp"/>.
             /// </summary>
             /// <param name="e"></param>
-            protected override void OnCloseUp(EventArgs e)
+            protected override void OnCloseUp(EventArgs e) //NOTWEBGUI
+            //WEBGUI  protected  void OnCloseUp(EventArgs e)
             {
                 if (Control.MouseButtons == MouseButtons.None)
                 {
@@ -298,47 +299,6 @@ namespace AubitDesktop
             #endregion
         }
     
-
-        public class DateTimePickerNull
- : System.Windows.Forms.DateTimePicker
-        {
-
-            public DateTimePickerNull()
-            {
-                this.ShowCheckBox = true;
-            }
-
-            public string BindMe
-            {
-                get
-                {
-                    if (this.Checked)
-                    {
-                        return base.Text;
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                }
-                set
-                {
-                    if (System.Convert.IsDBNull(value) || value=="")
-                    {
-                        this.Checked = false;
-                    }
-                    else
-                    {
-                        if (this.Checked == false)
-                            this.Checked = true;
-
-                        this.Text=value;
-                    }
-                }
-            }
-
-        
-    }
 
 
     // A text widget fgl field widget...
