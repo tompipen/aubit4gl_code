@@ -280,7 +280,7 @@ namespace AubitDesktop
                     }//NOTWEBGUI
                 }//NOTWEBGUI
                 base.OnCloseUp(e);//NOTWEBGUI
-            }
+            } //NOTWEBGUI
 
             /// <summary>
             /// This member overrides <see cref="Control.OnKeyDown"/>.
