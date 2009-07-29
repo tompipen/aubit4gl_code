@@ -450,7 +450,13 @@ expr_as_string_when_possible (expr_str * e)
     case ET_EXPR_LINENO:
 		return strdup("lineno");
 
-
+case ET_EXPR_CAST:
+	{
+		char buff[20000];
+		sprintf(buff,"CAST (%s AS %s)", expr_as_string_when_possible(e->expr_str_u.expr_cast->expr),rettype_integer(e->expr_str_u.expr_cast->target_dtype));
+		return strdup(buff);
+	}
+	break;
     case ET_EXPR_ASSOC:
 	return strdup("ASSOC");
 

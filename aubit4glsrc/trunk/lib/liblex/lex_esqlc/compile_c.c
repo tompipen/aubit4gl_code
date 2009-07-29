@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.502 2009-07-29 12:14:00 mikeaubury Exp $
+# $Id: compile_c.c,v 1.503 2009-07-29 15:33:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.502 2009-07-29 12:14:00 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.503 2009-07-29 15:33:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7075,10 +7075,25 @@ local_expr_as_string (expr_str * s)
     case ET_EXPR_IDENTIFIER:
       sprintf (rbuff, "\"%s\"", s->expr_str_u.expr_string);
       return rbuff;
+
     case ET_EXPR_LITERAL_STRING:
       sprintf (rbuff, "\"%s\"", s->expr_str_u.expr_string);
       return rbuff;
       return s->expr_str_u.expr_string;
+
+    case ET_EXPR_CAST:
+		{
+		char *ptr;
+		ptr=strdup(local_expr_as_string(s->expr_str_u.expr_cast->expr));
+		if ((s->expr_str_u.expr_cast->src_dtype&DTYPE_MASK)==DTYPE_CHAR) {
+			if ((s->expr_str_u.expr_cast->target_dtype&DTYPE_MASK)==DTYPE_INT || (s->expr_str_u.expr_cast->target_dtype&DTYPE_MASK)==DTYPE_SMINT) {
+				sprintf(rbuff, "atol(%s)",ptr);
+				return rbuff;
+			}
+		}
+		sprintf(rbuff, "A4GL_Cast_%d_to_%d(%s)",s->expr_str_u.expr_cast->src_dtype&DTYPE_MASK, s->expr_str_u.expr_cast->target_dtype&DTYPE_MASK,ptr);
+		return rbuff;
+		}
 
     case ET_EXPR_MEMBER_FCALL_NEW:
       {

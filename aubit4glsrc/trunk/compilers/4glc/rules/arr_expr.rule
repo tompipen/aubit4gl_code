@@ -43,11 +43,19 @@ arr_expr_e :
 				YYERROR;
 			} else {		
 				a=a&DTYPE_MASK;
+					if (A4GL_isyes(acl_getenv("AUTOCASTSUBSCRIPT"))) { // @env AUTOCAST - Automatically cast Character strings to integers when used as subscripts
+
+					if (a==DTYPE_CHAR) {
+    						make_cast(infilename,lastlineno, $<ptr>1,2,0,1);
+						a=2;
+					}
+				}
   					if (a!=DTYPE_INT&&a!=DTYPE_SMINT && a!=DTYPE_SERIAL) {
-    					a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
-    					YYERROR;
-    					/* error processing */;
-  				}
+    						a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
+    						YYERROR;
+    						/* error processing */;
+  					}
+			
 			}
   			$<ptr>$=$<ptr>1;
 			inc_var_usage($<ptr>$);
