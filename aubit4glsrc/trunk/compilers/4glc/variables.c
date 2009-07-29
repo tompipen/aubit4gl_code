@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.109 2009-07-23 14:30:52 mikeaubury Exp $
+# $Id: variables.c,v 1.110 2009-07-29 12:13:59 mikeaubury Exp $
 #
 */
 
@@ -672,6 +672,8 @@ is_system_variable (char *s)
   if (strcmp (s, "curr_line_no") == 0)
     return 1;
   if (strcmp (s, "err_status") == 0)
+    return 1;
+  if (strcmp (s, "sqlerrmessage") == 0)
     return 1;
   if (strcmp (s, "aiplib_status") == 0)
     return 1;

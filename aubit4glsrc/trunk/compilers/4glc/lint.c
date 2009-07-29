@@ -2382,6 +2382,8 @@ local_is_system_variable (char *s)
     return 1;
   if (A4GL_aubit_strcasecmp (s, "curr_line_no") == 0)
     return 1;
+  if (A4GL_aubit_strcasecmp (s, "sqlerrmessage") == 0)
+    return 1;
   if (A4GL_aubit_strcasecmp (s, "err_status") == 0)
     return 1;
   if (A4GL_aubit_strcasecmp (s, "aiplib_status") == 0)

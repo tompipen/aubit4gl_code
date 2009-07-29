@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.501 2009-07-10 12:23:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.502 2009-07-29 12:14:00 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.501 2009-07-10 12:23:20 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.502 2009-07-29 12:14:00 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5161,6 +5161,8 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
       if (strcasecmp (v->names.names.names_val[0].name, "curr_file_name") == 0)
 	skip++;
       if (strcasecmp (v->names.names.names_val[0].name, "curr_line_no") == 0)
+	skip++;
+      if (strcasecmp (v->names.names.names_val[0].name, "sqlerrmessage") == 0)
 	skip++;
 
       if (skip)

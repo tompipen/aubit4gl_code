@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.386 2009-07-13 14:15:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.387 2009-07-29 12:14:00 mikeaubury Exp $
 #
 */
 
@@ -1609,6 +1609,8 @@ void A4GL_push_decimal_str(char *p);
   int A4GL_get_errcode_for_errstr (char *s);
   void A4GL_exitwith (char *s);
   void A4GL_exitwith_sql (char *s);
+  void A4GL_exitwith_sql_detail (char *s,char *detail);
+  void A4GL_set_sqlerrmessage(char *s) ;
   void A4GL_set_errm (char *s);
   void A4GL_set_error (char *fmt, ...);
 

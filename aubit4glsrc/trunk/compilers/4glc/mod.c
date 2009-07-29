@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.331 2009-07-10 13:39:29 mikeaubury Exp $
+# $Id: mod.c,v 1.332 2009-07-29 12:13:59 mikeaubury Exp $
 #
 */
 
@@ -751,6 +751,8 @@ struct variable *v_sqlca;
 
   append_variable_list(vlist, new_simple_variable("curr_file_name",DTYPE_CHAR,32,0));
   append_variable_list(vlist, new_simple_variable("curr_line_no",DTYPE_INT,0,0));
+
+  append_variable_list(vlist, new_simple_variable("sqlerrmessage",DTYPE_CHAR,255,0));
 
   append_variable_list(vlist, new_simple_variable("err_status",DTYPE_INT,0,0));
   append_variable_list(vlist, new_simple_variable("aiplib_status",DTYPE_INT,0,0));

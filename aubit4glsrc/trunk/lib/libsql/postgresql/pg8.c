@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.105 2009-07-04 18:45:54 mikeaubury Exp $
+# $Id: pg8.c,v 1.106 2009-07-29 12:14:18 mikeaubury Exp $
 #*/
 
 
@@ -520,13 +520,17 @@ char *ptr;
 
   if (PQstatus (current_con) == CONNECTION_BAD)
     {
-      if (PQerrorMessage (current_con))
+      if (PQerrorMessage (current_con)) {
 	SPRINTF2 (buff2, "%s - %s", PQerrorMessage (current_con), dbName);
-      else
+      A4GL_set_errm (buff2);
+      A4GL_exitwith_sql_detail ("Could not connect to database",PQerrorMessage(current_con));
+	}
+      else {
 	SPRINTF1 (buff2, "%s - No explanation from the backend", dbName);
-
       A4GL_set_errm (buff2);
       A4GL_exitwith_sql ("Could not connect to database ");
+	}
+
       return -1;
 
     }
@@ -1341,6 +1345,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
       A4GL_debug ("Got : %d (%s)", PQresultStatus (res2),
 		  PQerrorMessage (current_con));
       SetErrno (res2);
+		A4GL_set_sqlerrmessage( PQerrorMessage (current_con));
       //A4GL_exitwith_sql ("Unexpected postgres return code3\n");
       free (fname);
       free (sqlStr);
@@ -1747,6 +1752,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
     default:
       A4GL_debug ("Bad : %s ", PQerrorMessage (current_con));
       SetErrno (res);
+		A4GL_set_sqlerrmessage( PQerrorMessage (current_con));
       ok = 0;
     }
 
@@ -2997,6 +3003,7 @@ A4GL_debug("ni=%d\n",ni);
     default:
       A4GL_debug ("Bad prepare %s", PQerrorMessage (current_con));
       SetErrno (cid->hstmt);
+		A4GL_set_sqlerrmessage( PQerrorMessage (current_con));
       return 1;
     }
 
@@ -3107,7 +3114,7 @@ A4GL_trim(cursor_name);
     default:
       A4GL_debug ("Bad %s", PQerrorMessage (current_con));
       SetErrno (res);
-      A4GL_exitwith_sql ("Unexpected postgres return code1\n");
+      A4GL_exitwith_sql_detail ("Unexpected postgres return code1\n",  PQerrorMessage (current_con));
       return 1;
     }
 
@@ -3531,6 +3538,7 @@ chk_res (PGresult * res)
       if (res)
 	{
 	  SetErrno (res);
+		A4GL_set_sqlerrmessage( PQerrorMessage (current_con));
 	}
       else
 	{
@@ -3943,6 +3951,7 @@ int isset=0;
     {
 	char *s;
 		s=PQerrorMessage (current_con);
+		A4GL_set_sqlerrmessage(s);
 		A4GL_debug("No resultset - s=%s\n", s);
 	  	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-349);
       if (last_msg) free (last_msg);

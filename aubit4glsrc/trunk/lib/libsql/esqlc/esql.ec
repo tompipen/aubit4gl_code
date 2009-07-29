@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.237 2009-07-07 08:49:35 mikeaubury Exp $
+# $Id: esql.ec,v 1.238 2009-07-29 12:14:18 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.237 2009-07-07 08:49:35 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.238 2009-07-29 12:14:18 mikeaubury Exp $";
 #endif
 
 
@@ -274,6 +274,7 @@ static void A4GL_sql_exitwith(char *s) {
 		s1=a4gl_status;
 		A4GL_exitwith(s);
 		if (s1==0  && a4gl_status!=0) { a4gl_sqlca.sqlcode=a4gl_status; }
+		A4GL_set_sqlerrmessage(s);
 }
 
 
@@ -305,8 +306,9 @@ A4GL_debug("isSqlError Called from : %s %d",s,l);
   strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
   strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
 
-
-
+  if (sqlca.sqlcode<0) {
+  A4GL_set_sqlerrmessage(A4GLSQLLIB_A4GLSQL_get_errmsg(sqlca.sqlcode));
+  }
 
   
 

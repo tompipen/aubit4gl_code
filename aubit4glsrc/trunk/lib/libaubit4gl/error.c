@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.53 2009-05-18 12:40:39 mikeaubury Exp $
+# $Id: error.c,v 1.54 2009-07-29 12:14:00 mikeaubury Exp $
 #
 */
 
@@ -81,6 +81,7 @@ char lasterrorstr[1024] = "";
 static int cache_status = 0;
 static char *cache_errmsg = "";
 static int int_err_flg = 0;
+char sqlerrmessage[256]="";
 //void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
 struct s_err *A4GL_get_errdesc_for_errstr (char *s);
@@ -183,7 +184,23 @@ A4GL_exitwith (char *s)
 #endif
 }
 
+void
+A4GL_exitwith_sql_detail (char *s,char *detail) {
+char buff[20000];
+A4GL_exitwith_sql(s);
+sprintf(buff,"%s:%s",s,detail);
+buff[sizeof(sqlerrmessage)]=0;
+strcpy(sqlerrmessage,buff);
+A4GL_trim(sqlerrmessage);
+}
 
+void A4GL_set_sqlerrmessage(char *s) {
+char buff[20000];
+strcpy(buff,s);
+buff[sizeof(sqlerrmessage)]=0;
+strcpy(sqlerrmessage,buff);
+A4GL_trim(sqlerrmessage);
+}
 
 /**
  *
@@ -195,6 +212,8 @@ A4GL_exitwith_sql (char *s)
 #ifndef IGNOREEXITWITH
   struct s_err *errdesc;
   errdesc = A4GL_get_err_for_errstr (s);
+
+  strcpy(sqlerrmessage,s);
 
 #ifdef DEBUG
   A4GL_debug ("Setting status, cache_status, cache_errmsg");
