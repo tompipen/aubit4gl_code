@@ -2264,6 +2264,10 @@ local_get_expr_as_string (struct expr_str *ptr)
       return acl_strdup (buff);
       break;
 
+   case ET_EXPR_SQLERRMESSAGE:
+	return "SQLERRMESSAGE";
+	break;
+
     case ET_E_V_OR_LIT_STRING:
       sprintf (buff, "%s", ptr->expr_str_u.s);
       return acl_strdup (buff);

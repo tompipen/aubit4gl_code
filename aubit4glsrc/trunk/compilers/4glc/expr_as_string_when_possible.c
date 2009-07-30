@@ -169,6 +169,9 @@ expr_as_string_when_possible (expr_str * e)
       break;
 
 
+    case ET_EXPR_SQLERRMESSAGE:
+	return strdup("SQLERRMESSAGE");
+	break;
 
     case ET_EXPR_LITERAL_LONG:
 
