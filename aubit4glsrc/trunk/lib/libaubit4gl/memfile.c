@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.43 2009-07-30 07:11:11 mikeaubury Exp $
+# $Id: memfile.c,v 1.44 2009-07-30 08:40:37 mikeaubury Exp $
 #
 */
 
@@ -517,9 +517,7 @@ int escp=0;
 
 
       if (buff[a]=='\\') {
-		if (type==TYPE_IN_NOTHING) {
 			escp=!escp;
-		}
 	}
 
      if (buff[a]=='\n') {
