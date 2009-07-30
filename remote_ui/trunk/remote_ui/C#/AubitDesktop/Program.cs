@@ -34,6 +34,20 @@ namespace AubitDesktop
 
         static public System.Text.Encoding remoteEncoding;
 
+        static public string getLocalisedString(byte[] buffer,int readBytes)
+        {
+            try
+            {
+               string  s=remoteEncoding.GetString(buffer, 0, readBytes);
+                return s;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            return "";
+        }
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -133,7 +147,15 @@ namespace AubitDesktop
 
             if (Program.AppSettings.defaultEncoding != "UTF8")
             {
-                remoteEncoding = System.Text.ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);                
+                try
+                {
+                    remoteEncoding = System.Text.ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
+                }
+                catch (Exception e)
+                {
+                    remoteEncoding = System.Text.ASCIIEncoding.GetEncoding("UTF-8");
+                }
+
             }
 
 

@@ -110,12 +110,14 @@ namespace AubitDesktop.Xml
     public class Settings
     {
 
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "string")]
+        public string defaultEncoding;
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "string")]
         public string Port;
 
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "string")]
-        public string defaultEncoding;
+
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "string")]

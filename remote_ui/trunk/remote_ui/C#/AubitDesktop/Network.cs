@@ -406,9 +406,10 @@ namespace AubitDesktop
             while (true)
             {
                 int index;
+
                 //Read the command's Type.
                 //System.Diagnostics.Debug.WriteLine("In loop...");
-                byte[] buffer = new byte[256];
+                byte[] buffer = new byte[100000];
                 if (this.isConnected() == false)
                 {
                     System.Diagnostics.Debug.WriteLine("Connection dropped");   
@@ -417,18 +418,15 @@ namespace AubitDesktop
                 try
                 {
                     int readBytes = streamRead(buffer, 0, buffer.Length);
-                    //if (readBytes == 0)
-                    //{
-                    //    break;
-                    //}
 
-                    if (readBytes >= 0)
+                    if (readBytes > 0) 
                     {
-                        cmd += Program.remoteEncoding.GetString(buffer, 0, readBytes);
+
+                        cmd +=Program.getLocalisedString(buffer,readBytes);
                     }
                     else
                     {
-                        cmd = "";
+                       // break;
                     }
                 } catch (Exception ) {
                     System.Diagnostics.Debug.WriteLine("Exceptioned..");
