@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.148 2009-07-30 07:11:11 mikeaubury Exp $
+# $Id: builtin.c,v 1.149 2009-07-30 18:23:27 mikeaubury Exp $
 #
 */
 
@@ -1556,12 +1556,18 @@ return 0;
 int
 aclfgl_fgl_winmessage (int n) 
 {
-char *windowTitle; 
-char *message; 
-char *iconType;
-iconType=A4GL_char_pop();
-message=A4GL_char_pop();
-windowTitle=A4GL_char_pop();
+char *windowTitle=""; 
+char *message=""; 
+char *iconType="";
+if (n>2) {
+	iconType=A4GL_char_pop();
+}
+if (n>1) {
+	message=A4GL_char_pop();
+	windowTitle=A4GL_char_pop();
+} else {
+	message=A4GL_char_pop();
+}
 
   A4GL_ui_fgl_winquestion (windowTitle, message, "Ok", "Ok",iconType, 0,0);
 free(iconType);
