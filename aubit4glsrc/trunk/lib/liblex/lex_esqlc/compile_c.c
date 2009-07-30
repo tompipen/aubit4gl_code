@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.503 2009-07-29 15:33:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.504 2009-07-30 09:01:12 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.503 2009-07-29 15:33:47 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.504 2009-07-30 09:01:12 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1193,7 +1193,6 @@ real_print_expr (struct expr_str *ptr)
     case ET_EXPR_REDUCED:
       A4GL_assertion (1, "ET_EXPR_REDUCED should never be printed");
       break;
-
     case ET_EXPR_LAST:
       A4GL_assertion (1, "ET_EXPR_LAST should never be printed");
       break;
@@ -1254,6 +1253,9 @@ real_print_expr (struct expr_str *ptr)
       free (ptr->expr_str_u.expr_string);
       break;
 
+   case ET_EXPR_SQLERRMESSAGE:
+	printc("A4GL_push_sqlerrmessage();");
+	break;
     case ET_EXPR_VARIABLE_USAGE:
       print_push_variable_usage (ptr);
       break;

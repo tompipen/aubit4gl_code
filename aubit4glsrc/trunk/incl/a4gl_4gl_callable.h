@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.59 2009-07-10 11:55:45 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.60 2009-07-30 09:01:12 mikeaubury Exp $
 */
 
 /**
@@ -156,6 +156,7 @@ void A4GL_push_float (float p);
 void A4GL_push_dec (char *p, int ismoney,int size);
 void A4GL_push_double (double p);
 void A4GL_push_chars (char *p, int dtype, int size);
+void A4GL_push_sqlerrmessage(void);
 void A4GL_push_empty_char(void);
 void A4GL_push_char (char *p);
 void A4GL_push_variable (void *ptr, int dtype);

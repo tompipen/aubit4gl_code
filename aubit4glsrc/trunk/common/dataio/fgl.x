@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.41 2009-07-17 16:24:48 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.42 2009-07-30 09:01:11 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1991,6 +1991,7 @@ enum e_expr_type {
 		ET_EXPR_RIGHT_ALIGNED,
 		ET_EXPR_TAG,
                 ET_EXPR_RETURN_NULL,
+		ET_EXPR_SQLERRMESSAGE,
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 	
 };
@@ -2038,6 +2039,7 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_MODULE_FUNC: /*!         void; !*/
 	case ET_EXPR_PDF_CURRENT_X: /*! void; !*/
 	case ET_EXPR_PDF_CURRENT_Y: /*! void; !*/
+	case ET_EXPR_SQLERRMESSAGE: /*! void; !*/
 	case ET_EXPR_LAST:
 		void;
 

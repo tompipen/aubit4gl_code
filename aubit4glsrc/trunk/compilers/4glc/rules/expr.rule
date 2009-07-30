@@ -210,6 +210,9 @@ literal_expr:
 	| CURR_FILE_NAME  {
 		$<ptr>$=A4GL_new_literal_string(infilename);
 	}
+	| SQLERRMESSAGE {
+		$<ptr>$=A4GL_new_expr_simple(ET_EXPR_SQLERRMESSAGE);
+	}
 ;
 
 
