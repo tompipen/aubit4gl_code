@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.79 2009-03-13 15:40:01 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.80 2009-07-30 18:28:02 mikeaubury Exp $
 #
 */
 
@@ -1331,7 +1331,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		    (select->table_elements.tables.tables_val[0].tabname, p->data.s_select_list_item_data_u.column.colname))
 		  {
 		    char *t;
-		    if (select->table_elements.tables.tables_val[0].alias)
+		    if (select->table_elements.tables.tables_val[0].alias && strlen(select->table_elements.tables.tables_val[0].alias))
 		      {
 			t = select->table_elements.tables.tables_val[0].alias;
 		      }
@@ -1409,7 +1409,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		    (select->table_elements.tables.tables_val[0].tabname, p->data.s_select_list_item_data_u.column.colname))
 		  {
 
-		    if (select->table_elements.tables.tables_val[0].alias)
+		    if (select->table_elements.tables.tables_val[0].alias && strlen(select->table_elements.tables.tables_val[0].alias))
 		      {
 			return
 			  acl_strdup_With_Context (A4GLSQLCV_check_colname_alias
@@ -1575,7 +1575,7 @@ find_table (struct s_select *select, struct s_select_list_item *i)
     {
       for (a = 0; a < select->table_elements.tables.tables_len; a++)
 	{
-	  if (select->table_elements.tables.tables_val[a].alias)
+	  if (select->table_elements.tables.tables_val[a].alias && strlen(select->table_elements.tables.tables_val[a].alias))
 	    {
 	      A4GL_assertion (i->data.s_select_list_item_data_u.column.tabname == 0, "tabname shouldn't be null");
 
@@ -1735,7 +1735,7 @@ preprocess_sql_statement (struct s_select *select)
 		  int b;
 		  for (b = 0; b < select->table_elements.tables.tables_len; b++)
 		    {
-		      if (select->table_elements.tables.tables_val[b].alias)
+		      if (select->table_elements.tables.tables_val[b].alias && strlen(select->table_elements.tables.tables_val[b].alias))
 			{
 			  tname = select->table_elements.tables.tables_val[b].alias;
 			}
@@ -1905,6 +1905,7 @@ preprocess_sql_statement (struct s_select *select)
 			    {
 
 			      t = select->table_elements.tables.tables_val[b].alias;
+				if (t) { if (strlen(select->table_elements.tables.tables_val[b].alias)==0) t=0; }
 			      if (!t)
 				{
 
@@ -1951,6 +1952,7 @@ preprocess_sql_statement (struct s_select *select)
 		{
 		  char *t = "Unknown";
 		  t = select->table_elements.tables.tables_val[0].alias;
+				if (t) { if (strlen(select->table_elements.tables.tables_val[0].alias)==0) t=0; }
 		  if (t == 0)
 		    {
 		      t = select->table_elements.tables.tables_val[0].tabname;
@@ -2028,7 +2030,7 @@ find_tabname_for_alias (struct s_select *select, char *alias)
 
   if (select->table_elements.tables.tables_len == 1)
     {
-      if (select->table_elements.tables.tables_val[0].alias)
+      if (select->table_elements.tables.tables_val[0].alias && strlen(select->table_elements.tables.tables_val[0].alias))
 	{
 	  if (A4GL_aubit_strcasecmp (alias, select->table_elements.tables.tables_val[0].alias) == 0)
 	    {
@@ -2039,7 +2041,7 @@ find_tabname_for_alias (struct s_select *select, char *alias)
     }
   for (a = 0; a < select->table_elements.tables.tables_len; a++)
     {
-      if (select->table_elements.tables.tables_val[a].alias)
+      if (select->table_elements.tables.tables_val[a].alias && strlen(select->table_elements.tables.tables_val[a].alias))
 	{
 	  if (A4GL_aubit_strcasecmp (alias, select->table_elements.tables.tables_val[a].alias) == 0)
 	    {

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.149 2009-07-30 18:23:27 mikeaubury Exp $
+# $Id: builtin.c,v 1.150 2009-07-30 18:28:02 mikeaubury Exp $
 #
 */
 
@@ -1570,9 +1570,13 @@ if (n>1) {
 }
 
   A4GL_ui_fgl_winquestion (windowTitle, message, "Ok", "Ok",iconType, 0,0);
+if (n>2) {
 free(iconType);
-free(message);
+} 
+if (n>1) {
 free(windowTitle);
+}
+free(message);
 return 0;
 }
 
