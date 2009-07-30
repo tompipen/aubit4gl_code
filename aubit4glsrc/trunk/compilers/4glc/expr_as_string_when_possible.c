@@ -27,6 +27,81 @@ return buff;
 }
 
 
+static char *local_rettype (char *s) {
+  static char rs[20] = "long";
+  int a;
+
+  strcpy(rs,"unknown");
+
+  A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
+
+  a = atoi (s);
+
+  A4GL_debug ("In rettype");
+  if (A4GL_has_datatype_function_i (a, "OUTPUT"))
+    {
+      /* char *(*function) (); */
+      char *(*function) (void);
+      A4GL_debug ("In datatype");
+      function = A4GL_get_datatype_function_i (a, "OUTPUT");
+      A4GL_debug ("Copy");
+      strcpy (rs, function ());
+      A4GL_debug ("Returning %s\n", A4GL_null_as_null (rs));
+      return rs;
+    }
+  if (strcmp (s, "0") == 0)
+    strcpy (rs, "CHAR");
+  if (strcmp (s, "1") == 0)
+    strcpy (rs, "SMALLINT");
+  if (strcmp (s, "2") == 0)
+    strcpy (rs, "INTEGER");
+  if (strcmp (s, "3") == 0)
+    strcpy (rs, "FLOAT");
+  if (strcmp (s, "4") == 0)
+    strcpy (rs, "SMALLFLOAT");
+  if (strcmp (s, "5") == 0)
+    strcpy (rs, "DECIMAL");
+  if (strcmp (s, "6") == 0)
+    strcpy (rs, "INTEGER");
+  if (strcmp (s, "7") == 0)
+    strcpy (rs, "DATE");
+  if (strcmp (s, "8") == 0)
+    strcpy (rs, "MONEY");
+  if (strcmp (s, "10") == 0)
+    strcpy (rs, "DATETIME");
+  if (strcmp (s, "11") == 0)
+    strcpy (rs, "BYTE");
+  if (strcmp (s, "12") == 0)
+    strcpy (rs, "TEXT");
+  if (strcmp (s, "13") == 0)
+    strcpy (rs, "VARCHAR");
+  if (strcmp (s, "14") == 0)
+    strcpy (rs, "INTERVAL");
+  return strdup (rs);
+}
+
+
+
+/**
+ *  *  * Gets the C data type corresponding to 4gl data type
+ *   *   *
+ *    *    * @param s A string with the numeric 4gl data type (@see find_type())
+ *     *     * @return The string (static) with the C declaration
+ *      *      */
+static char * local_rettype_integer (int n)
+{
+          char s[200];
+
+            /*static char rs[20] = "long";*/
+            /*int a;*/
+
+            A4GL_debug ("rettype_integer : %d\n", n);
+
+              SPRINTF1 (s, "%d", n);
+                return local_rettype (s);
+}
+
+
 static char *expr_as_string_field_name_list_as_char(struct fh_field_list *fl) {
 int a;
 char *ptr=0;
@@ -453,7 +528,7 @@ expr_as_string_when_possible (expr_str * e)
 case ET_EXPR_CAST:
 	{
 		char buff[20000];
-		sprintf(buff,"CAST (%s AS %s)", expr_as_string_when_possible(e->expr_str_u.expr_cast->expr),rettype_integer(e->expr_str_u.expr_cast->target_dtype));
+		sprintf(buff,"CAST (%s AS %s)", expr_as_string_when_possible(e->expr_str_u.expr_cast->expr),local_rettype_integer(e->expr_str_u.expr_cast->target_dtype));
 		return strdup(buff);
 	}
 	break;

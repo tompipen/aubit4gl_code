@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.135 2009-01-23 18:24:14 mikeaubury Exp $
+# $Id: lexer.c,v 1.136 2009-07-30 07:11:10 mikeaubury Exp $
 #*/
 
 /**
@@ -499,76 +499,6 @@ read_word2 (FILE * f, int *t)
 	  return word;
 
 	}
-
-#ifdef COMMENTS_ARE_NOW_REMOVED_BEFORE_LEXING
-      if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  int z;
-	  if (strlen (word) > 0)
-	    {
-	      mja_ungetc (a, f);
-	      return word;
-	    }
-	  z = mja_fgetc (f);
-	  mja_ungetc (z, f);
-	  if (z == '-')
-	    {
-	      while (1)
-		{
-		  a = mja_fgetc (f);
-		  if (A4GL_memfile_feof (f))
-		    break;
-		  if (a == '\n' || a == '\r')
-		    break;
-		  ccat (word, a, instrs || instrd);
-		}
-	      *t = KWS_COMMENT;
-	      return word;
-	    }
-	}
-
-
-      if (a == '!' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  char c;
-	  c = mja_fgetc (f);
-	  if (c == '}')
-	    {
-	      strcpy (word, "!}");
-	      *t = KWS_COMMENT;
-	      return word;
-	    }
-	  else
-	    {
-	      mja_ungetc (c, f);
-	    }
-	}
-
-      if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
-	{
-	  if (strlen (word) > 0)
-	    {
-	      mja_ungetc (a, f);
-	      return word;
-	    }
-
-	  a = mja_fgetc (f);
-	  if (a != '!')
-	    {
-	      while (1)
-		{
-		  a = mja_fgetc (f);
-		  if (A4GL_memfile_feof (f))
-		    break;
-		  if (a == '}')
-		    break;
-		  /* ccat(word,a,instrs||instrd); */
-		}
-	    }
-	  *t = KWS_COMMENT;
-	  return word;
-	}
-#endif
 
       if ((a == '\n' || a == '\r') && escp == 0)
 	{

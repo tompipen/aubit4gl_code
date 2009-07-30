@@ -816,7 +816,17 @@ expr_char_length (char *module, int lineno, expr_str * ptr)
   switch (ptr->expr_type)
     {
     case ET_EXPR_LITERAL_STRING:
-      return strlen (ptr->expr_str_u.expr_string);
+	{
+		int c=0;
+		int a;
+		int sl;
+		sl=strlen(ptr->expr_str_u.expr_string);
+		for (a=0;a<sl;a++) {
+			if (ptr->expr_str_u.expr_string[a]=='\\') a++;
+			c++;
+		}
+		return c;
+	}
 
     case ET_EXPR_OP_USING:
       return expr_char_length (module, lineno, ptr->expr_str_u.expr_op->right);

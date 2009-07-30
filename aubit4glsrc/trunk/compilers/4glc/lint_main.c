@@ -231,6 +231,9 @@ dbopen=1;
 }
 
 
+
+
+
 //int isdbopeb() {
 	//return dbopen;
 //}

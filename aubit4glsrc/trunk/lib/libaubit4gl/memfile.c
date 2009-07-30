@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.42 2009-02-24 15:05:06 mikeaubury Exp $
+# $Id: memfile.c,v 1.43 2009-07-30 07:11:11 mikeaubury Exp $
 #
 */
 
@@ -453,6 +453,7 @@ A4GL_remove_comments_in_memfile (FILE * f)
   char cmbuff[20000];
   int cmcnt = 0;
   int colno = 0;
+int escp=0;
 
 /*
   save=acl_getenv("SAVE_COMMENTS");
@@ -514,7 +515,18 @@ A4GL_remove_comments_in_memfile (FILE * f)
 	  type -= TYPE_IN_CODE;
 	}
 
-      if (buff[a] == '"' && buff[a - 1] != '\\' && (type == TYPE_IN_NOTHING || type == TYPE_IN_DBL_STRING))
+
+      if (buff[a]=='\\') {
+		if (type==TYPE_IN_NOTHING) {
+			escp=!escp;
+		}
+	}
+
+     if (buff[a]=='\n') {
+		escp=0;
+     }
+
+      if (buff[a] == '"' && !escp && (type == TYPE_IN_NOTHING || type == TYPE_IN_DBL_STRING))
 	{
 	  if (type & TYPE_IN_DBL_STRING)
 	    type -= TYPE_IN_DBL_STRING;
@@ -522,7 +534,7 @@ A4GL_remove_comments_in_memfile (FILE * f)
 	    type += TYPE_IN_DBL_STRING;
 	}
 
-      if (buff[a] == '\'' && buff[a - 1] != '\\' && (type == TYPE_IN_NOTHING || type == TYPE_IN_SINGLE_STRING))
+      if (buff[a] == '\'' && !escp && (type == TYPE_IN_NOTHING || type == TYPE_IN_SINGLE_STRING))
 	{
 	  if (type & TYPE_IN_SINGLE_STRING)
 	    type -= TYPE_IN_SINGLE_STRING;
