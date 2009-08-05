@@ -2212,7 +2212,7 @@ for (param_to_add=0;param_to_add<n->list.list_len;param_to_add++) {
 			break;
 	}
 }
-
+//printf("Returning %d\n", n->list.list_len);
 return n;
 }
 

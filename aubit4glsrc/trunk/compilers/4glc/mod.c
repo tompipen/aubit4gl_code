@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.333 2009-08-05 16:15:38 mikeaubury Exp $
+# $Id: mod.c,v 1.334 2009-08-05 16:19:01 mikeaubury Exp $
 #
 */
 
@@ -3045,7 +3045,7 @@ l=NULL;
 	}
 
 	if (uses_serial) {
-	if (!A4GL_isno(acl_getenv("IGNSERIALWARN"))) {
+	if (!A4GL_isno(acl_getenv("SERIALWARN"))) {
 		A4GL_warn("Serial column dropped from UPDATE statement (serial columns cannot be updated)");
 	}
 		value_list->list.list_len= value_list_new.list.list_len;
