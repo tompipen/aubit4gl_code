@@ -1130,7 +1130,9 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 	  preprocess_sql_statement (s);
 	  if (s->into)
 	    {
-	      nvars = s->into->list.list_len;
+		struct expr_str_list *l;
+		l=s->into;
+	      	nvars = l->list.list_len;
 	    }
 	  else
 	    {
@@ -1138,6 +1140,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 	    }
 
 	  ncols = s->select_list->list.list_len;
+
 
 	  if (nvars != ncols)
 	    {
