@@ -386,7 +386,8 @@ generate_qrcode (PDF * p, char *str, double xpos, double ypos, double pdfwidth, 
     goto alldone;
   QRinput_setVersion (input, version);
   QRinput_setErrorCorrectionLevel (input, level);
-  qrcode = QRcode_encodeMask (input, mask);
+  //qrcode = QRcode_encodeMask (input, mask);
+  qrcode = QRcode_encodeInput (input);
 
   if (qrcode == NULL)
     goto alldone;
