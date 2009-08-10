@@ -83,7 +83,6 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 }
 void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
 {
-  qDebug() << mainFrameToolBar;
     QMenu contextMenu(this);
   contextMenu.addAction(mainFrameToolBar->toggleViewAction());
   contextMenu.exec(event->globalPos());
