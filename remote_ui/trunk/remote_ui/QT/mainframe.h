@@ -39,8 +39,9 @@ class MainFrame : public  QMainWindow
 
 public:
    MainFrame(bool onlyLogin = false, QWidget *parent = 0);
-   QAction *exitAction;
    QProcess *p_currOpenNetwork;
+
+
 
 public slots:
    void cleanUp();
@@ -48,14 +49,16 @@ public slots:
 private:
    QTabWidget *tabWidget;
    QErrorMessage *errorMessageMainFrame;
-
    void tcpListener();
    void createStatusBar();
    ClientTcp *clientTcp;
+   QAction *exitAction;
+   QToolBar *mainFrameToolBar;
+
 
 protected:
    void closeEvent(QCloseEvent *event);
-
+   void contextMenuEvent(QContextMenuEvent*);
 };
 
 

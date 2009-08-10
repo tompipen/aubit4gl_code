@@ -31,10 +31,10 @@
 // Description  : starts first screen window, starts tcp server (tcpListener)  
 //------------------------------------------------------------------------------
 
-MainFrame::MainFrame(bool onlyLogin, QWidget *parent)
-    : QMainWindow(parent)
+MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 {
    p_currOpenNetwork=NULL;
+   mainFrameToolBar = NULL;
 
    errorMessageMainFrame = new QErrorMessage(this);
 
@@ -53,17 +53,19 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent)
 
       // setting up actions for the clients toolbar
       //
+
+
       exitAction = new QAction(tr("Exit"), this);
       exitAction->setShortcut(tr("Ctrl+Q"));
       exitAction->setStatusTip(tr("Exit Client"));
 
       connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-
-      QToolBar *mainFrameToolBar = new QToolBar(tr("ToolBar"));
-      mainFrameToolBar->addAction(exitAction); 
-
-      mainFrameToolBar->setAllowedAreas(Qt::BottomToolBarArea); 
+      mainFrameToolBar = new QToolBar(tr("ToolBar"));
+      mainFrameToolBar->addAction(exitAction);
+      mainFrameToolBar->setAllowedAreas(Qt::BottomToolBarArea|Qt::TopToolBarArea);
       addToolBar(Qt::TopToolBarArea, mainFrameToolBar);
+
+          
 
       // making the statusbar
       //
@@ -78,6 +80,13 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent)
    // start listening to the network
    //
    tcpListener();
+}
+void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
+{
+  qDebug() << mainFrameToolBar;
+    QMenu contextMenu(this);
+  contextMenu.addAction(mainFrameToolBar->toggleViewAction());
+  contextMenu.exec(event->globalPos());
 }
 
 
