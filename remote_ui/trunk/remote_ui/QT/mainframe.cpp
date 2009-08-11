@@ -31,10 +31,26 @@
 // Description  : starts first screen window, starts tcp server (tcpListener)  
 //------------------------------------------------------------------------------
 
+void MainFrame::ReadSettings()
+{
+      QSettings settings("Ventas AG", "Ventas Desktop Client");
+  QVariant fontsetting = settings.value("font");
+  QString fontsetting2;
+  fontsetting2 = fontsetting.toString();
+  QFont fontsetting3;
+  fontsetting3.fromString(fontsetting2);
+  QApplication::setFont(fontsetting3);
+}
+
+
+
 MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 {
+  ReadSettings();
+
    p_currOpenNetwork=NULL;
    mainFrameToolBar = NULL;
+
 
    errorMessageMainFrame = new QErrorMessage(this);
 
@@ -49,7 +65,8 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 
       tabWidget->addTab(new ShortcutsTab(this),   tr("Shortcuts"));
       tabWidget->addTab(new OptionsTab(),          tr("Options"));
-      tabWidget->addTab(new ConnectionsTab(),      tr("Connections"));
+      connectionsTab = new ConnectionsTab(this);
+      tabWidget->addTab(connectionsTab,      tr("Connections"));
 
       // setting up actions for the clients toolbar
       //
@@ -110,8 +127,60 @@ void MainFrame::createStatusBar()
 ConnectionsTab::ConnectionsTab(QWidget *parent)
     : QWidget(parent)
 {
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *connectionLabel = new QLabel(tr("Connections:"));
+    tableWidget = new QTableWidget(0, 4, this);
+    QStringList labels;
+
+    labels << tr("Name") << tr("Id") << tr("Typ") << tr("Date");
+    tableWidget->setHorizontalHeaderLabels(labels);
+    tableWidget->verticalHeader()->hide();
+    tableWidget->setShowGrid(false);
+    tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableWidget->resizeColumnsToContents();
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+
+    layout->addWidget(connectionLabel);
+    layout->addWidget(tableWidget);
+    setLayout(layout);
 }
 
+void ConnectionsTab::addConnection()
+{
+    ClientTcp *clientTcp = (ClientTcp*) QObject::sender();
+    QObject::connect(clientTcp->socket, SIGNAL(disconnected()), this, SLOT(delConnection()));
+
+    QString ip = clientTcp->socket->peerAddress().toString();
+    port = clientTcp->socket->peerPort();
+
+    int row = listpruef.count();
+
+    qDebug() << "IP:" << ip;
+    qDebug() << "Port:" << port;
+    portshow = QString::number(port);
+    tableWidget->insertRow(listpruef.count());
+    tableWidget->setItem(listpruef.count(), 0, new QTableWidgetItem(portshow));
+    listpruef << port;
+    tableWidget->resizeColumnsToContents();
+    tableWidget->horizontalHeader()->setStretchLastSection(true);
+}
+
+void ConnectionsTab::delConnection()
+{
+
+ClientSocket *socket = (ClientSocket*) QObject::sender();
+int checkport = socket->peerPort();
+for(int i=0; i<listpruef.count(); i++) {
+    if(listpruef.at(i) == checkport){
+       tableWidget->removeRow(i);
+       listpruef.removeAt(i);
+   }
+}
+
+}
 
 //------------------------------------------------------------------------------
 // Method       : OptionsTab()
@@ -122,8 +191,111 @@ ConnectionsTab::ConnectionsTab(QWidget *parent)
 OptionsTab::OptionsTab(QWidget *parent)
     : QWidget(parent)
 {
+
+
+       QButtonGroup *buttons = new QButtonGroup;
+       QGroupBox *fontbox = new QGroupBox(tr("Font"));
+       QLabel *fontlabel = new QLabel(tr("Font : "));
+       QPushButton *select = new QPushButton("&Select",this);
+       QPushButton *reset = new QPushButton("&Reset",this);
+       fontedit = new QLineEdit;
+
+
+       QHBoxLayout *layoutbox = new QHBoxLayout;
+       fontbox->setLayout(layoutbox);
+
+
+       QHBoxLayout *fontlayout = new QHBoxLayout;
+       fontlayout->addWidget(fontlabel);
+       fontlayout->addWidget(fontedit);
+
+       QVBoxLayout *leftlayout = new QVBoxLayout;
+       leftlayout->addLayout(fontlayout);
+        leftlayout->addStretch();
+
+       QVBoxLayout *buttonlayout = new QVBoxLayout;
+
+       buttonlayout->addWidget(select);
+       buttonlayout->addWidget(reset);
+       buttonlayout->setSpacing(5);
+
+       layoutbox->addLayout(leftlayout);
+       layoutbox->addLayout(buttonlayout);
+
+
+       QVBoxLayout *mainlayout = new QVBoxLayout;
+       mainlayout->addWidget(fontbox);
+       mainlayout->addSpacing(1000);
+       setLayout(mainlayout);
+
+
+       connect(select,SIGNAL(clicked()), this,SLOT(fontdialog()));
+       connect(reset,SIGNAL(clicked()), this,SLOT(reset()));
+
+     //LineEdit
+QFont fontload;
+fontload = QApplication::font();
+QString fontconv;
+fontconv = fontload.toString();
+QStringList splitlist;
+splitlist = fontconv.split(",");
+QString fonteingabe;
+fonteingabe.append(splitlist[0]);
+fonteingabe.append(",");
+fonteingabe.append(splitlist[1]);
+if (fonteingabe == "Arial,8")
+{
+fonteingabe.append("(Default)");
+fontedit->insert(fonteingabe);
+}
+else
+{
+fontedit->insert(fonteingabe);
+}
+fonteingabe = "";
 }
 
+
+
+
+void OptionsTab::reset()
+{
+fontedit->clear();
+QFont base = QFont("Arial", 8);
+QApplication::setFont(base);
+fonteingabe = "Arial,8(Default)";
+fontedit->insert(fonteingabe);
+fonteingabe = "";
+}
+
+void OptionsTab::fontdialog()
+{
+ bool ok;
+ QFont font = QFontDialog::getFont(&ok, QApplication::font(), this);
+ if (ok) {
+fontedit->clear();
+QApplication::setFont(font);
+fontconv = font.toString();
+splitlist = fontconv.split(",");
+
+fonteingabe.append(splitlist[0]);
+fonteingabe.append(",");
+fonteingabe.append(splitlist[1]);
+if (fonteingabe == "Arial,8")
+{
+fonteingabe.append("(Default)");
+fontedit->insert(fonteingabe);
+}
+else
+{
+fontedit->insert(fonteingabe);
+}
+fonteingabe = "";
+ }
+ else {
+
+ }
+}
 
 //------------------------------------------------------------------------------
 // Method       : ShortcutsTab()
@@ -360,11 +532,12 @@ void ShortcutsTab::updateListBox()
 void MainFrame::tcpListener()
 {
    clientTcp = new ClientTcp(this);
-
+qDebug() << clientTcp;
    if(!clientTcp->listen(QHostAddress::Any, 1350)){
       errorMessageMainFrame->showMessage(
             tr("ERROR: Failed to bind to port"));
    }
+       connect(clientTcp,SIGNAL(newConnection()),connectionsTab,SLOT(addConnection()));
 }
 
 
@@ -522,6 +695,10 @@ void MainFrame::cleanUp()
 //------------------------------------------------------------------------------
 void MainFrame::closeEvent(QCloseEvent *event)
 {
+   QSettings settings("Ventas AG", "Ventas Desktop Client");
+   QString fontsettingwrite;
+   fontsettingwrite = QApplication::font().toString();
+   settings.setValue("font", fontsettingwrite);
    event->ignore();
    QMessageBox *messagebox = new QMessageBox();
    int quit = 0;

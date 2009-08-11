@@ -27,12 +27,33 @@
 #include <QStatusBar>
 #include <QMainWindow>
 #include <QHostInfo>
+#include <QTableWidget>
 
 #include "clienttcp.h"
 #include "confwin.h"
 
+class ConnectionsTab : public QWidget
+{
+   Q_OBJECT;
 
-//class MainFrame : public QDialog
+public:
+   ConnectionsTab(QWidget *parent = 0);
+   int row;
+   QString portshow;
+   int port;
+   QList<int> listpruef;
+
+
+   private:
+      QTableWidget *tableWidget;
+
+   public slots:
+      void addConnection();
+      void delConnection();
+
+};
+
+//class MainFrame : public QDialog1
 class MainFrame : public  QMainWindow
 {
    Q_OBJECT
@@ -40,7 +61,7 @@ class MainFrame : public  QMainWindow
 public:
    MainFrame(bool onlyLogin = false, QWidget *parent = 0);
    QProcess *p_currOpenNetwork;
-
+   ClientTcp *clientTcp;
 
 
 public slots:
@@ -51,10 +72,10 @@ private:
    QErrorMessage *errorMessageMainFrame;
    void tcpListener();
    void createStatusBar();
-   ClientTcp *clientTcp;
    QAction *exitAction;
    QToolBar *mainFrameToolBar;
-
+   ConnectionsTab *connectionsTab;
+   void ReadSettings();
 
 protected:
    void closeEvent(QCloseEvent *event);
@@ -108,16 +129,26 @@ class OptionsTab : public QWidget
 
 public:
    OptionsTab(QWidget *parent = 0);
+   QLineEdit *fontedit;
+   QString fontconv;
+   QStringList splitlist;
+   QString fonteingabe;
+
+public slots:
+    void fontdialog();
+    void reset();
 };
 
+//class FontDialog : public QFontDialog
+//{
+//    Q_OBJECT
+//
+//    public:
+//    FontDialog(QWidget *parent = 0);
+//
+//};
 
-class ConnectionsTab : public QWidget
-{
-   Q_OBJECT
 
-public:
-   ConnectionsTab(QWidget *parent = 0);
-};
 
 
 #endif
