@@ -50,6 +50,7 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 
    p_currOpenNetwork=NULL;
    mainFrameToolBar = NULL;
+   connectionsTab = NULL;
 
 
    errorMessageMainFrame = new QErrorMessage(this);
@@ -532,12 +533,14 @@ void ShortcutsTab::updateListBox()
 void MainFrame::tcpListener()
 {
    clientTcp = new ClientTcp(this);
-qDebug() << clientTcp;
    if(!clientTcp->listen(QHostAddress::Any, 1350)){
       errorMessageMainFrame->showMessage(
             tr("ERROR: Failed to bind to port"));
    }
-       connect(clientTcp,SIGNAL(newConnection()),connectionsTab,SLOT(addConnection()));
+
+   if(connectionsTab != NULL){
+      connect(clientTcp,SIGNAL(newConnection()),connectionsTab,SLOT(addConnection()));
+   }
 }
 
 
