@@ -90,7 +90,7 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
       createStatusBar();
    }
    else{
-      LoginForm *loginForm = new LoginForm;
+      LoginForm *loginForm = new LoginForm(this);
       setCentralWidget(loginForm);
    }
       setWindowTitle(tr("VDC - Ventas Desktop Client"));

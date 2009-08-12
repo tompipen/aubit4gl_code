@@ -34,7 +34,12 @@
 LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
-   QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
+   MainFrame *mainFrame = (MainFrame*) parent;
+
+   QStatusBar *statusBar = mainFrame->statusBar();
+   statusBar->showMessage("Message");
+
+    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
    trayIcon->setIcon(QIcon("./pics/ventas.png"));
 
    QMenu *menu = new QMenu;
