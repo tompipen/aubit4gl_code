@@ -194,12 +194,14 @@ OptionsTab::OptionsTab(QWidget *parent)
 {
 
 
+
        QButtonGroup *buttons = new QButtonGroup;
        QGroupBox *fontbox = new QGroupBox(tr("Font"));
        QLabel *fontlabel = new QLabel(tr("Font : "));
        QPushButton *select = new QPushButton("&Select",this);
        QPushButton *reset = new QPushButton("&Reset",this);
        fontedit = new QLineEdit;
+       fontedit->setReadOnly(true);
 
 
        QHBoxLayout *layoutbox = new QHBoxLayout;
@@ -249,6 +251,7 @@ if (fonteingabe == "Arial,8")
 fonteingabe.append("(Default)");
 fontedit->insert(fonteingabe);
 }
+
 else
 {
 fontedit->insert(fonteingabe);

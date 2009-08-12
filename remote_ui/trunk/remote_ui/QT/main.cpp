@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QModelIndex>("QModelIndex");
     qRegisterMetaType<QModelIndex>("QDomDocument");
     qRegisterMetaType<QModelIndex>("QDomElement");
-
+    mainframe.move(QCursor::pos());
     mainframe.show();
    
     mainframe.activateWindow();

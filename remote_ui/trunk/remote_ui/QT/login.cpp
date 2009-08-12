@@ -37,7 +37,7 @@ LoginForm::LoginForm(QWidget *parent)
    MainFrame *mainFrame = (MainFrame*) parent;
 
    QStatusBar *statusBar = mainFrame->statusBar();
-   statusBar->showMessage("Message");
+   statusBar->showMessage("Welcome!");
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
    trayIcon->setIcon(QIcon("./pics/ventas.png"));
@@ -62,7 +62,7 @@ LoginForm::LoginForm(QWidget *parent)
 
    QMenuBar *menuBar = new QMenuBar;
    QAction *option = new QAction(tr("&Option"), this);
-   option->setStatusTip(tr("Open the Option Window"));
+   option->setStatusTip(tr("Opens the Option Window"));
    connect(option, SIGNAL(triggered()), this, SLOT(option()));
    menuBar->addAction(option);
 
@@ -131,14 +131,22 @@ LoginForm::LoginForm(QWidget *parent)
 
 void LoginForm::option()
 {
-
-       OptionsTab *optionsTab = new OptionsTab;
+       int windowcheck = 1;
+       OptionsTab *optionsTab = new OptionsTab();
        optionsTab->setWindowTitle(tr("VDC - Options"));
+
+       optionsTab->move(QCursor::pos());
        optionsTab->show();
+       showMessage("Test der Welt");
 
 
+}
 
+void LoginForm::showMessage(QString m)
+{
+   MainFrame *mf = (MainFrame*) this->parent();
 
+   mf->statusBar()->showMessage(m);
 }
 
 //------------------------------------------------------------------------------
