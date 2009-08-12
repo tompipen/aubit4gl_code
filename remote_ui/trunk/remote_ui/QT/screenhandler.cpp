@@ -1342,38 +1342,47 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       return;
    }
 
-   // For fieldlist = table.*
-   int index = fieldName.indexOf(".*");
-
    QWidget *widget = NULL;
 
-   if(index < 0){
-      widget = p_fglform->findFieldByName(fieldName);
+   if(fieldName == "CURRENT"){
+      widget = p_fglform->currentField();
    }
    else{
-      widget = p_fglform->findFieldsByName(fieldName).first();
-   }
 
-   if(widget == NULL){
-      qFatal("No Field found to set Focus");
-   }
-    
-   if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-      if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-         int index = fieldName.indexOf(".");
-         if(index > 0){
-            fieldName.remove(index+1, fieldName.length()-index-1);
-         }
+      // For fieldlist = table.*
+      int index = fieldName.indexOf(".*");
 
-         int index2 = fieldName.indexOf("[");
-         if(index2 < 0){
-            fieldName = QString("%1[%2]").arg(fieldName).arg(tableView->currentIndex().row()+1);
-         }
-         setArrayFocus(tableView, fieldName);
+
+      if(index < 0){
+         widget = p_fglform->findFieldByName(fieldName);
       }
-   }
-   else{
-      widget->setFocus();
+      else{
+         widget = p_fglform->findFieldsByName(fieldName).first();
+      }
+
+      if(widget == NULL){
+         qFatal("No Field found to set Focus");
+         //qDebug("No Field found to set Focus");
+         return;
+      }
+    
+      if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+            int index = fieldName.indexOf(".");
+            if(index > 0){
+               fieldName.remove(index+1, fieldName.length()-index-1);
+            }
+
+            int index2 = fieldName.indexOf("[");
+            if(index2 < 0){
+               fieldName = QString("%1[%2]").arg(fieldName).arg(tableView->currentIndex().row()+1);
+            }
+            setArrayFocus(tableView, fieldName);
+         }
+      }
+      else{
+         widget->setFocus();
+      }
    }
 }
 //------------------------------------------------------------------------------
@@ -1915,7 +1924,7 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
    freeContext(i_context);
    }
 
-   p_fglform->checkState();
+   //p_fglform->checkState();
 
 }
 

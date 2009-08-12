@@ -51,7 +51,6 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    b_getch_swin = false;
    p_actionMenu = NULL;
-   p_dialog = NULL;
    p_toolBar = NULL;
    b_denyFocus = false;
    b_allowClose = false;
