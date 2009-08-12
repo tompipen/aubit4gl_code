@@ -36,7 +36,13 @@ class LoginForm : public QWidget
 public:
 
    LoginForm(QWidget *parent = 0);
+   QLineEdit *fontedit;
+   QString fontconv;
+   QStringList splitlist;
+   QString fonteingabe;
 
+public slots:
+   void option();
 private slots:
 
    void okPressed();

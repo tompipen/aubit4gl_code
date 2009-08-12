@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
     bool loginForm = false;
+
+    loginForm = true;
+
     if(argc >= 2 &&
        QString(argv[1]) == "-l")
        loginForm = true;

@@ -21,6 +21,7 @@
 #include <QMenu>
 #include <QAction>
 #include "login.h"
+#include "mainframe.h"
 
 
 //------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
-   trayIcon->setIcon(QIcon("./pics/dircrea.png"));
+   trayIcon->setIcon(QIcon("./pics/ventas.png"));
 
    QMenu *menu = new QMenu;
    QAction *showAction = menu->addAction("Show Login Window");
@@ -52,6 +53,14 @@ LoginForm::LoginForm(QWidget *parent)
 
    errorMessageLoginForm = new QErrorMessage(this);
 
+   // MenuBar
+
+   QMenuBar *menuBar = new QMenuBar;
+   QAction *option = new QAction(tr("&Option"), this);
+   option->setStatusTip(tr("Open the Option Window"));
+   connect(option, SIGNAL(triggered()), this, SLOT(option()));
+   menuBar->addAction(option);
+
 
    // instantiating labels and line edits - facilitating user input
    // labels should be filled by text-variables - later
@@ -60,11 +69,11 @@ LoginForm::LoginForm(QWidget *parent)
    usernameLineEdit    = new QLineEdit;
    setFocusProxy(usernameLineEdit);
 
-   passwordLabel       = new QLabel(tr("Password"));
+   passwordLabel       = new QLabel(tr("Password:"));
    passwordLineEdit    = new QLineEdit;
    passwordLineEdit->setEchoMode(QLineEdit::Password);
 
-   serverLabel         = new QLabel(tr("Server"));
+   serverLabel         = new QLabel(tr("Server:"));
    serverLineEdit      = new QLineEdit;
 
    applicationLabel    = new QLabel(tr("Application"));
@@ -88,13 +97,15 @@ LoginForm::LoginForm(QWidget *parent)
    // setup the buttons layout for the form / widget
    //
    QHBoxLayout *buttonLayout = new QHBoxLayout;
-   buttonLayout->addStretch(1);
+
    buttonLayout->addWidget(okButton);
+   buttonLayout->addStretch(1);
    buttonLayout->addWidget(cancelButton);
 
    // setup the labels layout for the form / widget
    //
    QVBoxLayout *loginLayout = new QVBoxLayout;
+   loginLayout->setMenuBar(menuBar);
    loginLayout->addWidget(serverLabel);
    loginLayout->addWidget(serverLineEdit);
    loginLayout->addWidget(usernameLabel);
@@ -113,6 +124,17 @@ LoginForm::LoginForm(QWidget *parent)
 
 }
 
+void LoginForm::option()
+{
+
+       OptionsTab *optionsTab = new OptionsTab;
+       optionsTab->setWindowTitle(tr("VDC - Options"));
+       optionsTab->show();
+
+
+
+
+}
 
 //------------------------------------------------------------------------------
 // Method       : void writeFile()
@@ -183,7 +205,7 @@ void LoginForm::saveEdits(){
 void LoginForm::okPressed()
 {
 
-   //hideLogin();
+   hideLogin();
    QSettings settings;
    QString server = serverLineEdit->text();
    QString user = usernameLineEdit->text();
@@ -205,6 +227,7 @@ void LoginForm::okPressed()
 //------------------------------------------------------------------------------
 void LoginForm::cancelPressed()
 {
+qDebug() << "EXIT1";
    exit(0);
 }
 

@@ -46,7 +46,7 @@ void MainFrame::ReadSettings()
 
 MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 {
-  ReadSettings();
+   ReadSettings();
 
    p_currOpenNetwork=NULL;
    mainFrameToolBar = NULL;
@@ -226,7 +226,7 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        QVBoxLayout *mainlayout = new QVBoxLayout;
        mainlayout->addWidget(fontbox);
-       mainlayout->addSpacing(1000);
+       //mainlayout->addSpacing(1000);
        setLayout(mainlayout);
 
 
@@ -254,6 +254,8 @@ else
 fontedit->insert(fonteingabe);
 }
 fonteingabe = "";
+
+
 }
 
 
@@ -267,7 +269,9 @@ QApplication::setFont(base);
 fonteingabe = "Arial,8(Default)";
 fontedit->insert(fonteingabe);
 fonteingabe = "";
+writeSettings();
 }
+
 
 void OptionsTab::fontdialog()
 {
@@ -296,6 +300,15 @@ fonteingabe = "";
  else {
 
  }
+writeSettings();
+}
+void OptionsTab::writeSettings()
+{
+   QSettings settings("Ventas AG", "Ventas Desktop Client");
+   int status = settings.status();
+   QString fontsettingwrite;
+   fontsettingwrite = QApplication::font().toString();
+   settings.setValue("font", fontsettingwrite);
 }
 
 //------------------------------------------------------------------------------
@@ -698,10 +711,6 @@ void MainFrame::cleanUp()
 //------------------------------------------------------------------------------
 void MainFrame::closeEvent(QCloseEvent *event)
 {
-   QSettings settings("Ventas AG", "Ventas Desktop Client");
-   QString fontsettingwrite;
-   fontsettingwrite = QApplication::font().toString();
-   settings.setValue("font", fontsettingwrite);
    event->ignore();
    QMessageBox *messagebox = new QMessageBox();
    int quit = 0;

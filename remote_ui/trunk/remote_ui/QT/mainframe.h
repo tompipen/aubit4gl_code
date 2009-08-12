@@ -136,6 +136,7 @@ public:
 
 public slots:
     void fontdialog();
+    void writeSettings();
     void reset();
 };
 
