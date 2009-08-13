@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.106 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.107 2009-08-13 18:51:42 mikeaubury Exp $
 #
 */
 
@@ -557,6 +557,9 @@ aclfgl_mdy (int n)
 {
   int m, d, y;
   long z;
+	if (n!=3) {
+		A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+	}
   y = A4GL_pop_int ();
   d = A4GL_pop_int ();
   m = A4GL_pop_int ();

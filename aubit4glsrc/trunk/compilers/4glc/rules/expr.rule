@@ -563,8 +563,13 @@ function_call_expr:
 /*                                                                       */
 /*************************************************************************/
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
+		char buff[256];
 		ADDMAP("Call",$<str>1);
 		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno, get_namespace($<str>1));
+		if (!A4GL_check_fcall_for_builtin_functions($<ptr>$,buff,NULL,0)) {
+			a4gl_yyerror(buff);
+			$<ptr>$=0;
+		}
 		add_to_call_list_by_expr($<ptr>$);
 		map_call($<ptr>$);
 		}

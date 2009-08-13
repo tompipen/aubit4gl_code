@@ -1846,10 +1846,80 @@ struct command *c;
    return c;
 }
 
+int A4GL_check_fcall_for_builtin_functions(expr_str* p_fcall,char *buff,struct expr_str_list* returning,int isFuncCall  ) {
+struct builtin_functions_to_check {
+	char *fname;
+	int nparams;
+	int rvals;
+} funcs[]={
+	{"mdy",3,1},
+	{NULL,0,0}
+};
+
+int a;
+
+if (p_fcall->expr_type==ET_EXPR_FCALL) {
+	struct s_expr_function_call *fcall;
+	fcall= p_fcall->expr_str_u.expr_function_call;
+	for (a=0;funcs[a].fname;a++) {
+		if (strcmp( funcs[a].fname,fcall->fname)==0) {
+			int np=0;
+			if (fcall->parameters ) {
+				np=fcall->parameters->list.list_len;
+			}
+			
+			
+			if (np !=funcs[a].nparams && funcs[a].nparams!=-1) {
+				sprintf(buff,"Builtin function '%s' expects %d parameters but is only being passed in %d.", 
+						funcs[a].fname,funcs[a].nparams,fcall->parameters->list.list_len);
+				return 0;
+			} else {
+				return 1;
+			}
+
+			if (isFuncCall==0) {
+				// Its an expression - so we expect 1 value back...
+				if (funcs[a].rvals!=1 && funcs[a].rvals!=-1) {
+					sprintf(buff,"Builtin function '%s' returns %d values not 1 values.", 
+						funcs[a].fname,funcs[a].rvals);
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+
+
+			if (returning==NULL) continue;
+
+			if (returning->list.list_len !=funcs[a].rvals && funcs[a].rvals!=-1) {
+				sprintf(buff,"Builtin function '%s' returns %d values not %d.", 
+						funcs[a].fname,funcs[a].rvals,returning->list.list_len);
+				return 0;
+			} else {
+				return 1;
+			}
+
+		}
+	}
+	
+}
+return 1;
+}
+
 struct command *new_call_cmd(expr_str* p_fcall,expr_str_list* p_returning) {
 struct command *c;
-	
+char buff[256];
+
 	c=check_for_member_call_alias(p_fcall,p_returning);
+	if (c!=NULL) {
+		return c;
+	}
+
+	if (!A4GL_check_fcall_for_builtin_functions(p_fcall,buff, p_returning,1)) {
+		a4gl_yyerror(buff);
+		return NULL;
+	}
+
 	if (c==NULL) {
    		c=new_command(E_CMD_CALL_CMD);
    		c->cmd_data.command_data_u.call_cmd.fcall=p_fcall;
