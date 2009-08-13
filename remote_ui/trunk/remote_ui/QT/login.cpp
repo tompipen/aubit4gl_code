@@ -133,11 +133,11 @@ void LoginForm::option()
 {
        int windowcheck = 1;
        OptionsTab *optionsTab = new OptionsTab();
+       connect(optionsTab, SIGNAL(showMessage(QString)), this, SLOT(showMessage(QString)));
        optionsTab->setWindowTitle(tr("VDC - Options"));
 
        optionsTab->move(QCursor::pos());
        optionsTab->show();
-       showMessage("Test der Welt");
 
 
 }
@@ -146,7 +146,9 @@ void LoginForm::showMessage(QString m)
 {
    MainFrame *mf = (MainFrame*) this->parent();
 
-   mf->statusBar()->showMessage(m);
+   if(mf != NULL){
+      mf->statusBar()->showMessage(m, 2000);
+   }
 }
 
 //------------------------------------------------------------------------------

@@ -272,6 +272,7 @@ QApplication::setFont(base);
 fonteingabe = "Arial,8(Default)";
 fontedit->insert(fonteingabe);
 fonteingabe = "";
+showMessage("Font set to Default");
 writeSettings();
 }
 
@@ -293,10 +294,14 @@ if (fonteingabe == "Arial,8")
 {
 fonteingabe.append("(Default)");
 fontedit->insert(fonteingabe);
+showMessage("Font set to Default");
 }
 else
 {
 fontedit->insert(fonteingabe);
+QString showstatus = "Font set to ";
+showstatus.append(fonteingabe);
+showMessage(showstatus);
 }
 fonteingabe = "";
  }

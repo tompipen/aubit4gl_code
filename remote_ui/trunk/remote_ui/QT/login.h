@@ -43,6 +43,8 @@ public:
 
 public slots:
    void option();
+   void showMessage(QString m);
+      
 private slots:
 
    void okPressed();
@@ -50,7 +52,7 @@ private slots:
    void saveEdits();
    void showLogin();
    void hideLogin();
-   void showMessage(QString);
+
 
 private:
 

@@ -134,6 +134,9 @@ public:
    QStringList splitlist;
    QString fonteingabe;
 
+signals:
+    void showMessage(QString m);
+
 public slots:
     void fontdialog();
     void writeSettings();
