@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.57 2009-02-23 17:31:48 mikeaubury Exp $
+# $Id: globals.c,v 1.58 2009-08-14 08:18:56 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,8 @@ extern module_definition this_module;
 
 char *get_default_database (void);
 void A4GLPACKER_clrlibptr (void);
+char *expand_env_vars_in_cmdline (char *s, int showerrs);
+
 
 /*
 =====================================================================
@@ -272,6 +274,7 @@ read_glob (char *s)
   struct globals_definition g;
   int XMLBEST=0;
 
+  s=expand_env_vars_in_cmdline(s,0);
   /* MJA - NEWVARIABLE*/
   strcpy (ii, s);
   strcat (ii, ".glb");
