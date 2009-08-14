@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.504 2009-07-30 09:01:12 mikeaubury Exp $
+# $Id: compile_c.c,v 1.505 2009-08-14 08:17:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.504 2009-07-30 09:01:12 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.505 2009-08-14 08:17:20 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5260,6 +5260,15 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 		{
 		  printc ("struct _dynelem_%s { char dummyname[%d];};", name,
 			  nv->var_data.variable_data_u.v_simple.dimensions[0] + 1);
+  if (static_extern_flg == 1)
+    {
+      printc ( "static ");
+    }
+
+  if (static_extern_flg == 2)
+    {
+      printc ( "extern ");
+    }
 		  printc ("char **%s=0;", name);
 		}
 	      else
