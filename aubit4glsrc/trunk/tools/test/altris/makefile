@@ -3,13 +3,13 @@ LD=/usr2/develop/SCCS/objects
 CFLAGS=-s -c
 
 .SUFFIXES:
-.SUFFIXES: .msg .hlp .4gl .o .per .frm .ace .arc .c .4go
+.SUFFIXES: .msg .hlp .4gl .o .ao .per .frm .ace .arc .c .4go
 .c.ao:
 	gcc $(CFLAGS) random.c key_press.c
 .msg.hlp:
 	mkmessage $< 
 .4gl.ao:
-	${FGLPCEXEC} $(CFLAGS) altris.4gl
+	4glpc $(CFLAGS) altris.4gl
 .per.frm: 
 	fcompiple $<
 .ace.arc: 
@@ -28,4 +28,4 @@ EXE: $(EXE)
 RDS: $(RDS)
 
 altris.4ae : altris.ao key_press.o random.o
-	${FGLPCEXEC} altris.ao key_press.o random.o -o altris1.4ae
+	4glpc altris.ao key_press.o random.o -o altris1.4ae

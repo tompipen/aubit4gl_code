@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.239 2009-08-10 17:19:52 mikeaubury Exp $
+# $Id: esql.ec,v 1.240 2009-08-14 08:22:57 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.239 2009-08-10 17:19:52 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.240 2009-08-14 08:22:57 mikeaubury Exp $";
 #endif
 
 
@@ -1299,6 +1299,7 @@ int d_prec=0;
 	vptr = (void *) bind[idx].ptr;
 	fgl_decimal = (fgldecimal *) vptr;
 	b = A4GL_dec_to_str (fgl_decimal, 0);
+	A4GL_debug("dec_to_str returnings %s",b);
 	get_scale(b, &d_prec, &d_scale);
 	rval=deccvasc (b, strlen (b), &decimal_var);
 
