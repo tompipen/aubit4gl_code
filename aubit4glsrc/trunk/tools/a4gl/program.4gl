@@ -861,6 +861,9 @@ for b=1 to length(lv_str)
 	end if
 	let lv_newstr[a]=lv_str[b] let a=a+1
 end for
+if lv_mode=1 then 
+	let lv_newstr[a]=")"
+end if
 return lv_newstr
 end function
 
