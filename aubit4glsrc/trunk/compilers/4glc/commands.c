@@ -1357,6 +1357,10 @@ struct command *c;
 	
    c->cmd_data.command_data_u.input_cmd.variables=p_variables;
 
+if (p_without_defaults==EB_TRUE) {
+	inc_var_usage_from_binding_list(p_variables);
+
+}
 	inc_var_assigned_from_binding_list(p_variables);
    c->cmd_data.command_data_u.input_cmd.events=p_events;
    c->cmd_data.command_data_u.input_cmd.attributes=p_attrib;
