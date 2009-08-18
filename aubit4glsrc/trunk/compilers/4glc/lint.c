@@ -3368,6 +3368,14 @@ promoteable (int a, int b)
   if (b==DTYPE_NULL) {
 	return a;
   }
+
+	if ((a&DTYPE_MASK)==DTYPE_INTERVAL && (b&DTYPE_MASK)==DTYPE_INTERVAL) {
+		if (DECODE_SIZE(a)==0 ) {
+			return b;
+		}
+			return a;
+		printf("Testing :  %x %x\n",a,b);
+	}
   A4GL_assertion (a == DTYPE_SERIAL || b == DTYPE_SERIAL, "No serials in here..");
 
   if (a == b)
