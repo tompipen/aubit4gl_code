@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.13 2009-08-18 13:33:46 mikeaubury Exp $
+# $Id: variables_new.c,v 1.14 2009-08-18 13:56:20 mikeaubury Exp $
 #
 */
 
@@ -313,7 +313,17 @@ struct variable_list *append_variable_list(struct variable_list *list, struct va
 	}
 
 	if (list_already_has(list, ptr->names.names.names_val[0].name)) {
-		if (A4GL_get_current_variable_scope() == E_SCOPE_EXPORTED_GLOBAL && A4GL_isyes(acl_getenv("IGNDUPGLOBALS"))) {
+		enum e_scope s;
+		int ignore_err=0;
+		s=A4GL_get_current_variable_scope();
+		if (s == E_SCOPE_EXPORTED_GLOBAL && A4GL_isyes(acl_getenv("IGNDUPGLOBALS"))) {
+			ignore_err++;
+		}
+		if (ptr->escope==E_SCOPE_IMPORTED_GLOBAL &&  A4GL_isyes(acl_getenv("IGNDUPGLOBALS"))) {
+			ignore_err++;
+		}
+
+		if (ignore_err) {
 			fprintf(stderr,"Ignoring variable : %s - already exists\n", ptr->names.names.names_val[0].name);
 			return list;
 		} else {
