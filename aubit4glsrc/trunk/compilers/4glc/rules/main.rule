@@ -15,10 +15,28 @@ class_module: class_definition
 
 trad_module: op_module_header
 	{
+	char b[256];
+	char *ptr;
 		if (glob_only==1) {
        			A4GL_debug("Read globals section so Im done\n");
        			YYACCEPT;
 		}
+	lastlineno=yylineno;
+	// Allow a 'default' globals file to be included in all 4gls...
+	// but - we'll only read it - if this isn't a 'GLOBALS' file too...
+	if (this_module.exported_global_variables.variables.variables_len==0) {
+		ptr=acl_getenv_not_set_as_0("DEFAULT_GLOBALS");
+		if (ptr) {
+			strcpy(b,ptr);
+			set_current_variable_scope('G');
+			tr_glob_fname(b);
+			A4GL_debug("Reading globals file %s\n",b);
+			rm_quote(b);
+			read_glob(b);
+			add_globals_file_to_this_module(b);
+			set_current_variable_scope('m');
+		}
+	}
 	
 		set_4gl_vars();
 
@@ -284,9 +302,9 @@ xglobals_entry : globals_entry
 ;
 
 globals_entry: GLOBALS {
-		strcpy(curr_func,"[Globals]");
-		set_current_variable_scope('g');
-		A4GL_lex_printcomment("/* start of globals */\n");
+			strcpy(curr_func,"[Globals]");
+			set_current_variable_scope('g');
+			A4GL_lex_printcomment("/* start of globals */\n");
 		} glob_section  {
 				file_out_nl("3");
 				strcpy(curr_func,"Module");
@@ -314,8 +332,10 @@ glob_section : define_section END_GLOBALS {
 	set_current_variable_scope('m');
 	
 }
+/* Dont these do anything useful....
 | module_code  
 | db_section
+*/
 ;
 
 
