@@ -1766,7 +1766,7 @@ int a;
 			return 0;
 		}
 	}
-
+   inc_var_usage_from_binding_list(p_variables);
    c->cmd_data.command_data_u.locate_cmd.variables=p_variables;
    memcpy(&c->cmd_data.command_data_u.locate_cmd.where, p_where,sizeof(locate_pos));
    return c;
