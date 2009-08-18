@@ -544,6 +544,13 @@ case ET_EXPR_PARAMETER:
 case ET_EXPR_BOUND_FCALL:
    return strdup("BOUND_FCALL");
 
+case ET_EXPR_SHARED_FCALL:
+	{
+	char buff[200];
+		sprintf(buff,"ET_EXPR_SHARED_FCALL:%p",e);
+   		return strdup(buff);
+	}
+	
 
 case ET_EXPR_MEMBER_FCALL_NEW:
 	return strdup("MEMBER_FUNCTIONCALL");

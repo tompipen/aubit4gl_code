@@ -1697,6 +1697,10 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
       return DTYPE_INT;
 
 
+    case ET_EXPR_SHARED_FCALL:
+		return DTYPE_INT;
+
+
     case ET_EXPR_BOUND_FCALL:
 	return DTYPE_INT;
 		
