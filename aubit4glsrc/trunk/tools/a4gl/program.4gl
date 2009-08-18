@@ -1066,6 +1066,14 @@ end foreach
 call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${FGLOBJS})")
 call channel::write("make"," ")
 
+
+if lv_buildstr != " " then
+	call channel::write("make","prerequisits: $(BUILDDIR)")
+	call channel::write("make","	if [ ! -d $(BUILDDIR) ] ; then ; mkdir $(BUILDDIR); chmod 777 $(BUILDDIR); fi")
+else
+	call channel::write("make","prerequisits: ")
+end if
+
 # And the second time through
 foreach c_get_modules into lv_type,lv_name,lv_flags
 
@@ -1120,7 +1128,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 end foreach
 
 
-call channel::write("make","compile: "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
+call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
 call channel::write("make"," ")
 call channel::write("make","run: compile")
 if lv_buildstr is not null and lv_buildstr != " " then
