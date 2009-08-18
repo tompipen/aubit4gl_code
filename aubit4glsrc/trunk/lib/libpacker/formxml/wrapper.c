@@ -65,7 +65,11 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
         if (strcmp(name,"struct_form")==0) {
                 char buff[256];
                 char *override;
-                override=acl_getenv_not_set_as_0("OVERRIDE_OUTPUT");
+       		override=acl_getenv_not_set_as_0 ("OVERRIDE_PACKER_OUTPUT");
+
+		if (override==NULL) {
+                	override=acl_getenv_not_set_as_0("OVERRIDE_OUTPUT");
+		}
 
                 if (override) {
                         strcpy(buff,override);
@@ -97,4 +101,9 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 	return 0;
 
 }
+
+
+
+
+
 
