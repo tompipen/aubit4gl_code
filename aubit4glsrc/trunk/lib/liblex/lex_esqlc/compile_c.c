@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.506 2009-08-18 09:57:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.507 2009-08-18 09:59:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.506 2009-08-18 09:57:39 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.507 2009-08-18 09:59:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5295,9 +5295,14 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 		}
 	      else
 		{
-		  printc ("struct _dynelem_%s { %s dummyname;};", name,
-			  local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
-		  printc ("%s *%s=0;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+		  if (static_extern_flg == 2) {
+		  	printc ("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
+		  	printc ("extern %s *%s;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+			
+		  } else {
+		  	printc ("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
+		  	printc ("%s *%s=0;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+			}
 		}
 	      break;
 
