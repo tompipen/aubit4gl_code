@@ -1480,6 +1480,9 @@ return -1;
 struct command *new_input_array_cmd(struct expr_str* p_srec,struct expr_str * p_arrayname,struct attrib *p_attrib,struct on_events* p_events,e_boolean p_without_defaults,int p_helpno,int p_sio,int p_blk,char *slice) {
 struct command *c;
    c=new_command(E_CMD_INPUT_ARRAY_CMD);
+if (p_without_defaults==EB_TRUE) {
+	inc_var_usage(p_arrayname);
+}
 	inc_var_assigned(p_arrayname);
    c->cmd_data.command_data_u.input_array_cmd.srec=p_srec;
    c->cmd_data.command_data_u.input_array_cmd.arrayname=p_arrayname;
