@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.12 2009-07-23 14:30:52 mikeaubury Exp $
+# $Id: variables_new.c,v 1.13 2009-08-18 13:33:46 mikeaubury Exp $
 #
 */
 
@@ -147,7 +147,7 @@ static struct variable * new_base_variable(char *name) {
 
 	v->is_extern=0;
 	v->defsrc="";
-	v->user_system='-';
+	v->user_system=get_variable_user_system();
 		
 	v->arr_subscripts.arr_subscripts_len=0;
 	v->arr_subscripts.arr_subscripts_val=0;

@@ -2016,6 +2016,57 @@ int set=0;
 }
 
 
+static void
+check_for_globals_abuse (module_definition * d) {
+int a;
+int b;
+int found;
+char *names[2000];
+int used[2000];
+int nnames=0;
+
+if (d->global_files==0) return;
+
+for (a=0;a<2000;a++) {
+	names[a]=0;
+	used[a]=0;
+}
+
+// We want to check if any of our 'globals' files are included
+// but dont actually have any variables we need...
+// so - lets go through the files we have..
+//
+// First - lets generate a list of all of the GLOBALS we seem to be using..
+for (b=0;b<d->imported_global_variables.variables.variables_len;b++) {
+ 	variable_ptr p;
+	static char *lastname=0;
+
+	p=d->imported_global_variables.variables.variables_val[b];
+	found=0;
+
+	if (p->user_system=='S') continue;
+	for (a=0;a<nnames;a++) {
+		if (names[a]) {
+			if (strcmp(names[a],  p->src_module)==0) {
+				used[a]+=p->usage+p->assigned;
+				found++;
+				break;
+			}
+		}
+	}
+
+	if (!found) {
+		used[nnames]+=p->usage+p->assigned;
+		names[nnames++]=p->src_module;
+	}
+}
+for (a=0;a<nnames;a++) {
+	if (used[a]==0) {
+		      A4GL_lint (d->module_name, 1, "GLOBALNOTUSED", "GLOBALS file has been included which does not appear to be used",names[a]);
+	}
+}
+	
+}
 
 
 // This goes through all the functions in a module and checks that WHENEVER ERROR CALL get_error_record
@@ -4530,6 +4581,12 @@ int isCalled=0;
     {
       check_whenever_abuse (&mods[a]);
     }
+
+  for (a = 0; a < nmodules; a++)
+    {
+	check_for_globals_abuse(&mods[a]);
+    }
+
 
   all_cmds = linearise_commands (0, 0);
 
