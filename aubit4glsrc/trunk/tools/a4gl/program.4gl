@@ -110,6 +110,7 @@ define lv_makefile char(512)
 	call get_makefile_for(lv_name) returning lv_makefile
 
 	call generate_makefile(lv_name, lv_makefile)
+	message "Generated makefile" 
 
 end function
 
@@ -821,6 +822,48 @@ end function
 
 
 
+function is_valid_env_var_char(lv_c) 
+define lv_c char(1)
+let lv_c=upshift(lv_c)
+
+if lv_c>="A" and lv_c<="Z" then
+		return true
+end if
+
+if lv_c>="0" and lv_c<="9" then
+		return true
+end if
+
+if lv_c="_" then return true end if
+
+return false
+
+end function
+
+function replace_env_var_with_make_var(lv_str)
+define lv_str char(256)
+define lv_newstr char(256)
+define a,b integer
+define lv_mode integer
+let lv_newstr=" "
+let a=1
+let lv_mode=0
+for b=1 to length(lv_str)
+	if lv_str[b]="$" then
+		let lv_newstr[a]="$" let a=a+1
+		let lv_newstr[a]="(" let a=a+1
+		let lv_mode=1
+		continue for
+	end if
+	if lv_mode=1 and not is_valid_env_var_char(lv_str[b]) then
+		let lv_newstr[a]=")" let a=a+1
+		let lv_mode=0
+	end if
+	let lv_newstr[a]=lv_str[b] let a=a+1
+end for
+return lv_newstr
+end function
+
 function generate_makefile(lv_prog,lv_makefile)
 define lv_prog char(16)
 define lv_makefile char(512)
@@ -836,8 +879,16 @@ define lv_filetime integer
 
 call ensure_syspgma4gl()
 
-message "Generating makefile..." 
+let lv_makefile=aclfgl_expand_env_vars_in_cmdline (lv_makefile)
+
+display  "Generating makefile : " ,lv_makefile clipped
+
 call channel::open_file("make",lv_makefile, "w")
+
+if status<0 then
+	display "Unable to open output file:", lv_makefile clipped
+	return
+end if
 
 # Lets start off with some easy stuff- 
 # we'll just dump the BUILDDIR LFLAGS CFLAGS straight from the databse
@@ -847,8 +898,11 @@ where (justuser is null or justuser matches " " or justuser=user)
 and progname=lv_prog
 
 if sqlca.sqlcode=100 then
-	initialize  lv_build_in_db,lv_linkflags,lv_compflags to null
+	initialize lv_build_in_db,lv_linkflags,lv_compflags to null
 end if
+
+let lv_build_in_db=replace_env_var_with_make_var(lv_build_in_db)
+
 if lv_build_in_db is not null and lv_build_in_db != " " then
 	if lv_build_in_db[length(lv_build_in_db)]="/" then
 		let lv_build_in_db=lv_build_in_db[1,length(lv_build_in_db)-1]
@@ -911,12 +965,18 @@ end foreach
 # We need to set up the extension for the ESQL/C files - 
 # we dont normally store them but it easy to work it out..
 #
+call channel::write("make","ifeq \"$(A4GL_LINTSTYLE)\" \"\"")
+call channel::write("make"," A4GL_LINTSTYLE=XML")
+call channel::write("make"," export A4GL_LINTSTYLE")
+call channel::write("make","endif")
+
 call channel::write("make","ifeq \"$(A4GL_LEXDIALECT)\" \"POSTGRES\"")
 call channel::write("make"," A4GL_EC_EXT=.cpc")
 call channel::write("make","else")
 call channel::write("make"," A4GL_EC_EXT=.ec")
 call channel::write("make","endif")
 call channel::write("make"," ")
+call channel::write("make","FCOMPILE=fcompile")
 call channel::write("make","ifeq \"$(A4GL_FORMTYPE)\" \"GENERIC\"")
 call channel::write("make"," ifeq \"$(A4GL_PACKER)\" \"PACKED\"")
 call channel::write("make","  A4GL_FULL_FORM_EXT=$(A4GL_FRM_BASE_EXT)$(A4GL_PACKED_EXT)")
@@ -927,10 +987,19 @@ call channel::write("make"," endif")
 call channel::write("make"," ifeq \"$(A4GL_PACKER)\" \"XML\"")
 call channel::write("make","  A4GL_FULL_FORM_EXT=$(A4GL_FRM_BASE_EXT)$(A4GL_XML_EXT)")
 call channel::write("make"," endif")
+call channel::write("make"," ")
+call channel::write("make"," ifeq \"$(A4GL_USE_FORMXML)\" \"Y\"")
+call channel::write("make","  A4GL_FULL_FORM_EXT=.xml")
+call channel::write("make","  FCOMPILE=\"A4GL_PACKER=FORMXML\" fcompile")
+call channel::write("make"," endif")
 call channel::write("make","else")
 call channel::write("make"," A4GL_FULL_FORM_EXT=$(A4GL_FRM_BASE_EXT)")
 call channel::write("make","endif")
 call channel::write("make"," ")
+call channel::write("make","ifeq  \"$(A4GL_LINTFILE)\" \"\"")
+call channel::write("make"," A4GL_LINTFILE=lint_"||lv_prog clipped||".xml")
+call channel::write("make"," export A4GL_LINTFILE")
+call channel::write("make","endif")
 
 
 # Default target is 'compile'
@@ -948,6 +1017,7 @@ declare c_get_modules cursor for
 foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_flags is not null and lv_flags !=" " then
+		let lv_flags=replace_env_var_with_make_var(lv_flags)
 		if lv_flags[length(lv_flags)]="/" then
 			let lv_flags=lv_flags[1,length(lv_flags)-1]
 		end if
@@ -997,8 +1067,8 @@ call channel::write("make"," ")
 foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_flags is not null and lv_flags !=" " then
+		let lv_flags=replace_env_var_with_make_var(lv_flags)
 		if lv_flags[length(lv_flags)]="/" then
-
 			let lv_flags=lv_flags[1,length(lv_flags)-1] 
 
 		end if
@@ -1030,7 +1100,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_type="f" then # C Form code
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT)$(A4GL_OBJ_EXT): "||lv_fullname clipped||".per")
-		call channel::write("make","	fcompile -o "||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT) -c $^")
+		call channel::write("make","	$(FCOMPILE) -o "||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT) -c $^")
 		call channel::write("make","	4glpc -o $@ -c "||lv_buildstr clipped||lv_name clipped||"$(A4GL_FRM_BASE_EXT).c")
 	end if
 
@@ -1041,10 +1111,11 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_type="F" then # Form
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_FULL_FORM_EXT): "||lv_fullname clipped||".per")
-		call channel::write("make","	fcompile -o $@ $^")
+		call channel::write("make","	$(FCOMPILE) -o $@ $^")
 	end if
 	call channel::write("make"," ")
 end foreach
+
 
 call channel::write("make","compile: "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
 call channel::write("make"," ")
@@ -1065,7 +1136,8 @@ call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(FORMS)
 
 
 call channel::write("make"," ")
-call channel::write("make","lint : ${MIFS}")
+call channel::write("make","lint : ${A4GL_LINTFILE}")
+call channel::write("make","$(A4GL_LINTFILE) : ${MIFS}")
 call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fgllint ${MIFS}")
 
 call channel::write("make"," ")
@@ -1083,7 +1155,6 @@ update program set genmakefile=lv_filetime
 where progname=lv_prog
 and (justuser is null or justuser matches " " or justuser=user)
 
-message "Generated makefile" 
 
 end function
 
