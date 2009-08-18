@@ -912,6 +912,7 @@ ORDER KW_BY obind_var_list_ord
 		as the variables are not *really* used for the ORDER EXTERNAL - its just indicative of
 		the order
 	*/
+	inc_var_assigned_from_binding_list($<ptr_list>3);
 	inc_var_usage_from_binding_list($<ptr_list>3);
 }
 | ORDER_EXTERNAL_BY obind_var_list_ord {

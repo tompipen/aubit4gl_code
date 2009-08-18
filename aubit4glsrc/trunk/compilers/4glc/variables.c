@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.110 2009-07-29 12:13:59 mikeaubury Exp $
+# $Id: variables.c,v 1.111 2009-08-18 21:06:07 mikeaubury Exp $
 #
 */
 
@@ -574,12 +574,22 @@ clr_function_constants ()
 
 
 
-int inc_var_usage(expr_str *s) {
+int inc_var_usage(expr_str *s_orig) {
 struct variable *v;
-struct variable_usage *u;
+struct variable_usage *u=0;
 struct variable_usage *utop;
-if (s->expr_type!=ET_EXPR_VARIABLE_USAGE) return 0 ;
-u=s->expr_str_u.expr_variable_usage;
+
+
+
+if (s_orig->expr_type==ET_EXPR_VARIABLE_USAGE) {
+	u=s_orig->expr_str_u.expr_variable_usage;
+}
+if (s_orig->expr_type==ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC) {
+	u=s_orig->expr_str_u.expr_variable_usage_with_asc_desc->var_usage;
+}
+
+if (u==0) return 0;
+
 
 utop=u;
 while (1) {
@@ -607,12 +617,19 @@ return 1;
 
 int inc_var_assigned(expr_str *s) {
 struct variable *v;
-struct variable_usage *u;
+struct variable_usage *u=0;
 struct variable_usage *utop;
 if (s==0) return 1;
-if (s->expr_type!=ET_EXPR_VARIABLE_USAGE) return 1;
-u=s->expr_str_u.expr_variable_usage;
+if (s->expr_type==ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC) {
+	u=s->expr_str_u.expr_variable_usage_with_asc_desc->var_usage;
+}
+if (s->expr_type==ET_EXPR_VARIABLE_USAGE) {
+	u=s->expr_str_u.expr_variable_usage;
+}
 
+if (u==0) {
+	return 1;
+}
 utop=u;
 while (1) {
 	char errbuff[256];

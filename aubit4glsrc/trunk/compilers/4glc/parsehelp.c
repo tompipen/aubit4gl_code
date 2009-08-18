@@ -2247,6 +2247,9 @@ int a;
 		if (l->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
                 	inc_var_usage(l->list.list_val[a]);
 		}
+		if (l->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC) {
+                	inc_var_usage(l->list.list_val[a]);
+		}
         }
 	return 1;
 }
@@ -2256,7 +2259,11 @@ int a;
         if (l==0) return 1;
         for (a=0;a<l->list.list_len;a++) {
 		if (l->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
-                inc_var_assigned(l->list.list_val[a]);
+                	inc_var_assigned(l->list.list_val[a]);
+		}
+
+		if (l->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC) {
+                	inc_var_assigned(l->list.list_val[a]);
 		}
         }
 	return 1;
