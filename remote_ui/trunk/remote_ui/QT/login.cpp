@@ -35,12 +35,12 @@ LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
    MainFrame *mainFrame = (MainFrame*) parent;
-
+   bool adminMenu = mainFrame->adminMenu;
    QStatusBar *statusBar = mainFrame->statusBar();
-   statusBar->showMessage("Welcome!");
+   statusBar->showMessage("Welcome!", 2000);
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
-   trayIcon->setIcon(QIcon("./pics/ventas.png"));
+   trayIcon->setIcon(QIcon("./pics/ventas.ico"));
 
    QMenu *menu = new QMenu;
    QAction *showAction = menu->addAction("Show Login Window");
@@ -62,9 +62,20 @@ LoginForm::LoginForm(QWidget *parent)
 
    QMenuBar *menuBar = new QMenuBar;
    QAction *option = new QAction(tr("&Option"), this);
+   QMenu *admin = new QMenu(tr("&Admin"), this);
+   QAction *hosts = new QAction(tr("&Hosts"), this);
    option->setStatusTip(tr("Opens the Option Window"));
+   hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
    connect(option, SIGNAL(triggered()), this, SLOT(option()));
    menuBar->addAction(option);
+
+   if (adminMenu == true)
+   {
+   menuBar->addMenu(admin);
+   admin->addAction(hosts);
+   connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
+}
+
 
 
    // instantiating labels and line edits - facilitating user input
@@ -128,10 +139,171 @@ LoginForm::LoginForm(QWidget *parent)
    setLayout(loginLayout);
 
 }
+//Hosts Settings
+void LoginForm::hosts()
+{
+       QDialog *hostsDialog = new QDialog(this);
+       QLabel *description = new QLabel(tr("Hosts Data"));
+       QVBoxLayout *mainLayout = new QVBoxLayout;
+       QTableWidget *hostsTable = new QTableWidget(this);
+       QStringList labels;
+       labels << tr("IP-Adress") << tr("Host-Name") << tr("Comments");
+       hostsTable->setColumnCount(3);
+       hostsTable->setHorizontalHeaderLabels(labels);
+       hostsTable->verticalHeader()->hide();
+       hostsTable->setShowGrid(false);
+       hostsTable->resizeColumnsToContents();
+       hostsTable->horizontalHeader()->setStretchLastSection(true);
+
+       QFile file("/etc/hosts");
+     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+         return;
+
+     QTextStream in(&file);
+     int rowcount = 0;
+     QString feld;
+     QStringList feldarray;
+     QVector<QStringList> dateiarray;
+     int feldcount = 0;
+     while (!in.atEnd()) {
+         QString line = in.readLine();
+
+         for(int i=0; i<line.count(); i++){
+
+             if(line.at(i).isSpace() || i+1 == line.count()){
+
+                 if(i+1 == line.count())
+                     feld += line.at(i);
+
+                 if(!feld.isEmpty()){
+                    feldarray.insert(feldcount,feld);
+                    feldcount++;
+                    feld.clear();
+                 }
+             }
+             else{
+                 if(line.at(i) == '#' && i == 0)
+                 {
+                  i=1000000;
+                 }
+
+                 else
+                 {
+                   feld += line.at(i);
+                 }
+             }
+
+         }
+         if(feldarray.count() > 0){
+
+                 feldcount = 0;
+                 dateiarray.insert(rowcount, feldarray);
+                 rowcount++;
+                 feldarray.clear();
+         }
+     }
+
+hostsTable->setRowCount(rowcount);
+QString addhost;
+int check2 = 0;
+for(int i=0; i < dateiarray.count(); i++)
+{
+     feldarray = dateiarray.at(i);
+     for(int j=0; j<feldarray.count(); j++)
+     {
+         QString feld = feldarray.at(j);
+         if (j > 1 && !feld.startsWith("#"))
+         {
+         check2--;
+
+         addhost = hostsTable->item(i, check2)->text();
+         addhost += "    ";
+         addhost += feld;
+
+         hostsTable->setItem(i ,check2, new QTableWidgetItem(addhost));
+     check2++;
+     }
+         else
+         {
+             hostsTable->setItem(i, check2, new QTableWidgetItem(feld));
+             check2++;
+
+                             }
+
+     }
+     check2 = 0;
+ }
+       QPushButton *addButton = new QPushButton(tr("Add Host"));
+       connect(addButton, SIGNAL(clicked()), this, SLOT(addHost()));
+       mainLayout->addWidget(description);
+       mainLayout->addWidget(hostsTable);
+       mainLayout->addWidget(addButton);
+       hostsDialog->setLayout(mainLayout);
+       hostsDialog->setWindowTitle(tr("VDC - Hosts Settings"));
+       hostsDialog->move(QCursor::pos());
+       hostsDialog->show();
+
+}
+
+void LoginForm::addHost()
+{
+        QDialog *hostsAdd = new QDialog(this);
+        QVBoxLayout *mainLayout = new QVBoxLayout;
+        QHBoxLayout *ipfeld = new QHBoxLayout;
+        firstip = new QLineEdit;
+        seccondip = new QLineEdit;
+        thirdip = new QLineEdit;
+        fourthip = new QLineEdit;
+        hostnames = new QLineEdit;
+        comments = new QLineEdit;
+        QPushButton *add = new QPushButton(tr("Add Host"), hostsAdd);
+
+
+        ipfeld->addWidget(firstip);
+        ipfeld->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeld->addWidget(seccondip);
+        ipfeld->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeld->addWidget(thirdip);
+        ipfeld->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeld->addWidget(fourthip);
+        mainLayout->addLayout(ipfeld);
+        mainLayout->addWidget(hostnames);
+        mainLayout->addWidget(comments);
+        mainLayout->addWidget(add);
+        connect(add, SIGNAL(clicked()), this, SLOT(writeHost()));
+        hostsAdd->setLayout(mainLayout);
+        hostsAdd->setWindowTitle(tr("VDC - Add Host"));
+        hostsAdd->move(QCursor::pos());
+        hostsAdd->show();
+}
+
+void LoginForm::writeHost()
+{
+   QString entry;
+   QFile file("/etc/hosts");
+   if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
+   return;
+  entry += "\n";
+  entry += firstip->text();
+  entry +=  ".";
+  entry += seccondip->text();
+  entry +=  ".";
+  entry += thirdip->text();
+  entry += ".";
+  entry += fourthip->text();
+  entry += "  ";
+  entry += hostnames->text();
+  entry += "  ";
+  entry += "#";
+  entry += comments->text();
+  QTextStream stream(&file);
+  stream << entry;
+  QDialog *dia = (QDialog*) QObject::sender()->parent();
+  dia->close();
+}
 
 void LoginForm::option()
 {
-       int windowcheck = 1;
        OptionsTab *optionsTab = new OptionsTab();
        connect(optionsTab, SIGNAL(showMessage(QString)), this, SLOT(showMessage(QString)));
        optionsTab->setWindowTitle(tr("VDC - Options"));
@@ -242,7 +414,6 @@ void LoginForm::okPressed()
 //------------------------------------------------------------------------------
 void LoginForm::cancelPressed()
 {
-qDebug() << "EXIT1";
    exit(0);
 }
 

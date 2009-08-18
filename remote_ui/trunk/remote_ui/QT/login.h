@@ -40,11 +40,19 @@ public:
    QString fontconv;
    QStringList splitlist;
    QString fonteingabe;
+   QLineEdit *firstip;
+   QLineEdit *seccondip;
+   QLineEdit *thirdip;
+   QLineEdit *fourthip;
+   QLineEdit *hostnames;
+   QLineEdit *comments;
 
 public slots:
    void option();
+   void hosts();
    void showMessage(QString m);
-      
+   void addHost();
+   void writeHost();
 private slots:
 
    void okPressed();
@@ -64,7 +72,6 @@ private:
    QLabel *questionLabel;
    QLabel *warningLabel;
    QLabel *errorLabel;
-
    QLabel *topLabel;
    QLabel *usernameLabel;
    QLabel *passwordLabel;
@@ -89,6 +96,11 @@ private:
    QString qs_openFilename;
    void loadSettings();
 };
+
+
+
+
+
 
 #endif
 

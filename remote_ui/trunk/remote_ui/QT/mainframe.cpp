@@ -44,7 +44,7 @@ void MainFrame::ReadSettings()
 
 
 
-MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
+MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
    ReadSettings();
 
@@ -54,7 +54,23 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 
 
    errorMessageMainFrame = new QErrorMessage(this);
+  QStringList parameter;
+  parameter = QCoreApplication::arguments();
+   bool onlyLogin;
 
+   adminMenu = true;
+   onlyLogin = true;
+ for(int i=0; i<parameter.count(); i++)
+  {
+     if (parameter.at(i) == "-l")
+     {
+         onlyLogin = true;
+     }
+     if (parameter.at(i) == "-a")
+     {
+         adminMenu = true;
+     }
+ }
 
    if(onlyLogin == false){
       tabWidget = new QTabWidget;
@@ -101,9 +117,13 @@ MainFrame::MainFrame(bool onlyLogin, QWidget *parent) : QMainWindow(parent)
 }
 void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
 {
-    QMenu contextMenu(this);
+  if(mainFrameToolBar != NULL)
+    {
+  QMenu contextMenu(this);
   contextMenu.addAction(mainFrameToolBar->toggleViewAction());
   contextMenu.exec(event->globalPos());
+}
+
 }
 
 

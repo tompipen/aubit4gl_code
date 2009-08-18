@@ -20,6 +20,7 @@
 
 #include "confwin.h"
 #include "mainframe.h"
+#include "login.h"
 #include "clienttcp.h"
 
 //--------------------------------------------------------- (C) VENTAS AG 2006 -
@@ -38,13 +39,13 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("ventas.com");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
-    bool loginForm = false;
 
-    loginForm = true;
 
-    if(argc >= 2 &&
-       QString(argv[1]) == "-l")
-       loginForm = true;
+
+
+//    if(argc >= 2 &&
+//       QString(argv[1]) == "-l")
+//       loginForm = true;
 
     QFont yavcFont("Arial", 8);
     yavcFont.setFixedPitch(true);
@@ -55,8 +56,6 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(ventasLogo);
 
-    MainFrame mainframe(loginForm);
-
     // we need to register the QStringList with the meta-object system
     // to make it usable for signal/slot connections
     //
@@ -64,6 +63,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QModelIndex>("QModelIndex");
     qRegisterMetaType<QModelIndex>("QDomDocument");
     qRegisterMetaType<QModelIndex>("QDomElement");
+    MainFrame mainframe;
     mainframe.move(QCursor::pos());
     mainframe.show();
    

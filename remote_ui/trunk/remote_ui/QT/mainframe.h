@@ -59,10 +59,10 @@ class MainFrame : public  QMainWindow
    Q_OBJECT
 
 public:
-   MainFrame(bool onlyLogin = false, QWidget *parent = 0);
+   MainFrame(QWidget *parent = 0);
    QProcess *p_currOpenNetwork;
    ClientTcp *clientTcp;
-
+   bool adminMenu;
 
 public slots:
    void cleanUp();
