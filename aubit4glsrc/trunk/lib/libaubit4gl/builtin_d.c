@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.107 2009-08-13 18:51:42 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.108 2009-08-18 20:58:25 fortiz Exp $
 #
 */
 
@@ -600,6 +600,9 @@ int
 aclfgl_abs (int n)
 {
   double p;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   p = A4GL_pop_double ();
   if (p < 0)
     p = (double) 0.0 - p;
@@ -633,6 +636,9 @@ int
 aclfgl_ord (int n)
 {
   unsigned char *s;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   s = (unsigned char *) A4GL_char_pop ();
   A4GL_push_long (s[0]);
   free (s);
@@ -648,6 +654,9 @@ int
 aclfgl_root (int n)
 {
   double p, p2, res;
+  if (n!=2) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   p = A4GL_pop_double ();
   p2 = A4GL_pop_double ();
   p = 1.0 / p;
@@ -668,6 +677,9 @@ aclfgl_sqrt (int n)
 #ifdef DEBUG
   A4GL_debug ("SQRT\n");
 #endif
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   p2 = A4GL_pop_double ();
 #ifdef DEBUG
   A4GL_debug ("p2=%f\n", p2);
@@ -747,6 +759,9 @@ int
 aclfgl_date (int n)
 {
   long d;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   d = A4GL_pop_date ();
   A4GL_push_date (d);
   return 1;
@@ -756,6 +771,9 @@ int
 aclfgl_time (int n)
 {
   struct_dtime a;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   A4GL_pop_var2 (&a, 10, 0x46);
   A4GL_push_variable (&a, 0x46000a);
   return 1;
@@ -775,6 +793,9 @@ aclfgl_day (int n)
   int d1;
   int s1;
   char *ptr1;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
   d1 = d1 & DTYPE_MASK;
 
@@ -811,6 +832,9 @@ aclfgl_month (int n)		/* FIXME: why does this function have a parameter, if it's
   int d1;
   int s1;
   char *ptr1;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
   d1 = d1 & DTYPE_MASK;
 
@@ -852,6 +876,9 @@ aclfgl_weekday (int n)		/* FIXME: why does this function have a parameter, if it
   int d1;
   int s1;
   char *ptr1;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
   d1 = d1 & DTYPE_MASK;
 
@@ -881,6 +908,9 @@ aclfgl_year (int n)
   int d1;
   int s1;
   char *ptr1;
+  if (n!=1) {
+    A4GL_set_status(-3002,0);A4GL_pop_args(n);A4GLSTK_popFunction_nl(0,5);return -1;
+  }
   A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
   d1 = d1 & DTYPE_MASK;
 

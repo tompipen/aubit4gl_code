@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.150 2009-07-30 18:28:02 mikeaubury Exp $
+# $Id: builtin.c,v 1.151 2009-08-18 20:58:25 fortiz Exp $
 #
 */
 
@@ -271,6 +271,12 @@ aclfgl_dbms_dialect (int n)	// n should always be 0
 //char *g;
   char *p;
 
+  if (n != 0)
+    {
+      A4GL_pop_args (n);
+      A4GL_set_status (-3001, 0);
+      return 0;
+    }
   p = A4GLSQL_dbms_dialect ();
   if (p == 0)
     A4GL_push_empty_char ();

@@ -1860,6 +1860,8 @@ struct builtin_functions_to_check {
 	int rvals;
 } funcs[]={
 	{"mdy",3,1},
+	{"length",1,1},
+	{"weekday",1,1},
 	{NULL,0,0}
 };
 
