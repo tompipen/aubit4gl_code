@@ -1,6 +1,6 @@
 # When running Aubit programs as CGI in web server, use A4GL_UI=CONSOLE
 
-# $Id: libahtmllib.4gl,v 1.8 2007-06-05 18:06:20 fortiz Exp $
+# $Id: libahtmllib.4gl,v 1.9 2009-08-19 18:00:46 fortiz Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:
@@ -818,15 +818,12 @@ end function
 code
 aclfgl_html_list(int a) {
 	int c;
-//	char s[256];
 	char s[1000];
 	for (c=0;c<a;c++) {
-//		memset(s,0,255);
 		memset(s,0,999);
-//		A4GL_pop_char(s,80);
-		A4GL_pop_char(s,1000);
+		A4GL_pop_char(s,999);
 		trim(s);
-		printf("<li>%s</li>\n",s,c,a);
+		printf("<li>%s</li>\n",s);
 	}
 return 0;
 }

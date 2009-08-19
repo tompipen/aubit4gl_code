@@ -7,7 +7,7 @@
 #
 # vread() function to read HTTPvar
 #                                                                      
-# $Id: ahtmllib.4gl,v 1.1 2007-06-07 20:34:15 fortiz Exp $
+# $Id: ahtmllib.4gl,v 1.2 2009-08-19 17:59:18 fortiz Exp $
 #
 ########################################################################
 
@@ -549,7 +549,7 @@ aclfgl_html_list(int a) {
 	char s[1000];
 	for (c=0;c<a;c++) {
 		memset(s,0,999);
-		A4GL_pop_char(s,1000);
+		A4GL_pop_char(s,999);
 		trim(s);
 		printf("<li>%s</li>\n",s,c,a);
 	}
