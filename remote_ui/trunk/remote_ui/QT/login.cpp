@@ -143,17 +143,26 @@ LoginForm::LoginForm(QWidget *parent)
 
 }
 
+
+
+
 void LoginForm::welcomeBar()
 {
 showMessage("Welcome!");
 }
 //Hosts Settings
+
 void LoginForm::hosts()
 {
-       QDialog *hostsDialog = new QDialog(this);
+   HostsData *hosts = new HostsData(this);
+   hosts->show();
+}
+//Hosts Settings
+HostsData::HostsData(QWidget *parent) : QDialog(parent)
+{
        QLabel *description = new QLabel(tr("Hosts Data"));
        QVBoxLayout *mainLayout = new QVBoxLayout;
-       QTableWidget *hostsTable = new QTableWidget(this);
+       hostsTable = new QTableWidget(this);
        QStringList labels;
        labels << tr("IP-Adress") << tr("Host-Name") << tr("Comments");
        hostsTable->setColumnCount(3);
@@ -162,8 +171,27 @@ void LoginForm::hosts()
        hostsTable->setShowGrid(false);
        hostsTable->resizeColumnsToContents();
        hostsTable->horizontalHeader()->setStretchLastSection(true);
+readHost();
 
-       QFile file("/etc/hosts");
+       QPushButton *addButton = new QPushButton(tr("Add Host"));
+       QPushButton *saveButton = new QPushButton(tr("Save Hosts Data"));
+       connect(addButton, SIGNAL(clicked()), this, SLOT(addHost()));
+       connect(saveButton, SIGNAL(clicked()), this, SLOT(saveHost()));
+       mainLayout->addWidget(description);
+       mainLayout->addWidget(hostsTable);
+       mainLayout->addWidget(addButton);
+       mainLayout->addWidget(saveButton);
+       setLayout(mainLayout);
+       setWindowTitle(tr("VDC - Hosts Settings"));
+       move(QCursor::pos());
+       show();
+
+}
+
+void HostsData::readHost()
+{
+
+     QFile file("/home/ms/hosts");
      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
          return;
 
@@ -190,15 +218,8 @@ void LoginForm::hosts()
                  }
              }
              else{
-                 if(line.at(i) == '#' && i == 0)
-                 {
-                  i=1000000;
-                 }
 
-                 else
-                 {
                    feld += line.at(i);
-                 }
              }
 
          }
@@ -209,6 +230,7 @@ void LoginForm::hosts()
                  rowcount++;
                  feldarray.clear();
          }
+
      }
 
 hostsTable->setRowCount(rowcount);
@@ -219,6 +241,7 @@ for(int i=0; i < dateiarray.count(); i++)
      feldarray = dateiarray.at(i);
      for(int j=0; j<feldarray.count(); j++)
      {
+
          QString feld = feldarray.at(j);
          if (j > 1 && !feld.startsWith("#"))
          {
@@ -235,63 +258,155 @@ for(int i=0; i < dateiarray.count(); i++)
          {
              hostsTable->setItem(i, check2, new QTableWidgetItem(feld));
              check2++;
+             if(j == 0 && feld.startsWith("#"))
+             {
+               hostsTable->hideRow(i);
+             }
 
                              }
 
      }
      check2 = 0;
  }
-       QPushButton *addButton = new QPushButton(tr("Add Host"));
-       connect(addButton, SIGNAL(clicked()), this, SLOT(addHost()));
-       mainLayout->addWidget(description);
-       mainLayout->addWidget(hostsTable);
-       mainLayout->addWidget(addButton);
-       hostsDialog->setLayout(mainLayout);
-       hostsDialog->setWindowTitle(tr("VDC - Hosts Settings"));
-       hostsDialog->move(QCursor::pos());
-       hostsDialog->show();
-
+  file.close();
 }
 
-void LoginForm::addHost()
+void HostsData::saveHost()
+{
+   QFile file("/home/ms/hosts");
+   if (!file.open(QIODevice::WriteOnly))
+   return;
+
+  QTextStream stream(&file);
+  for(int i=0; i < hostsTable->rowCount();i++)
+  {
+      for(int j=0; j < hostsTable->columnCount();j++)
+      {
+         QTableWidgetItem *item = hostsTable->item(i,j);
+         if(item != NULL && item->text() != " " && !item->text().isNull() && !item->text().isEmpty())
+         {
+            QString txt = item->text();
+            stream << txt << " ";
+         }
+        }
+//      QTableWidgetItem *item = hostsTable->item(i,0);
+//      if(item != NULL || item->text() != " " || item->text().isNull() || item->text().isEmpty())
+//      {
+        stream << "\n";
+//     }
+     }
+
+           file.close();
+           readHost();
+  }
+
+
+void HostsData::addHost()
 {
         QDialog *hostsAdd = new QDialog(this);
-        QVBoxLayout *mainLayout = new QVBoxLayout;
+        QVBoxLayout *mainLayoutAdd = new QVBoxLayout;
         QHBoxLayout *ipfeld = new QHBoxLayout;
+        QHBoxLayout *ipfeldv4 = new QHBoxLayout;
+        QHBoxLayout *ipfeldv6 = new QHBoxLayout;
+        QHBoxLayout *select = new QHBoxLayout;
+        QRadioButton *radioipv4 = new QRadioButton("Select IPv4", this);
+        QRadioButton *radioipv6 = new QRadioButton("Select IPv6", this);
+        ipv4 = new QWidget(this);
+        ipv6 = new QWidget(this);
+        ipv4->setLayout(ipfeldv4);
+        ipv6->setLayout(ipfeldv6);
+        radioipv4->setChecked(true);
         firstip = new QLineEdit;
         seccondip = new QLineEdit;
         thirdip = new QLineEdit;
         fourthip = new QLineEdit;
         hostnames = new QLineEdit;
         comments = new QLineEdit;
+        firstipv6 = new QLineEdit;
+        seccondipv6 = new QLineEdit;
+        thirdipv6 = new QLineEdit;
+        fourthipv6 = new QLineEdit;
+        fifthipv6 = new QLineEdit;
+        sixthipv6 = new QLineEdit;
+        seventhipv6 = new QLineEdit;
+        eighthipv6 = new QLineEdit;
+        ipfeld->addWidget(ipv4);
+        ipfeld->addWidget(ipv6);
+
         QPushButton *add = new QPushButton(tr("Add Host"), hostsAdd);
+        select->addWidget(radioipv4);
+        select->addWidget(radioipv6);
+
+        mainLayoutAdd->addLayout(select);
+        connect(radioipv4,SIGNAL(clicked()), this, SLOT(checkipv4()));
+        connect(radioipv6,SIGNAL(clicked()), this, SLOT(checkipv6()));
 
 
-        ipfeld->addWidget(firstip);
-        ipfeld->addWidget(new QLabel(tr("<b>.</b>")));
-        ipfeld->addWidget(seccondip);
-        ipfeld->addWidget(new QLabel(tr("<b>.</b>")));
-        ipfeld->addWidget(thirdip);
-        ipfeld->addWidget(new QLabel(tr("<b>.</b>")));
-        ipfeld->addWidget(fourthip);
-        mainLayout->addLayout(ipfeld);
-        mainLayout->addWidget(hostnames);
-        mainLayout->addWidget(comments);
-        mainLayout->addWidget(add);
+        //ipfeldv4
+
+        ipfeldv4->addWidget(firstip);
+        ipfeldv4->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeldv4->addWidget(seccondip);
+        ipfeldv4->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeldv4->addWidget(thirdip);
+        ipfeldv4->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeldv4->addWidget(fourthip);
+
+        //ipfeldv6
+
+        ipfeldv6->addWidget(firstipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(seccondipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(thirdipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(fourthipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(fifthipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(sixthipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(seventhipv6);
+        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(eighthipv6);
+
+
+        checkipv4();
+
+        mainLayoutAdd->addLayout(ipfeld);
+        mainLayoutAdd->addWidget(hostnames);
+        mainLayoutAdd->addWidget(comments);
+        mainLayoutAdd->addWidget(add);
         connect(add, SIGNAL(clicked()), this, SLOT(writeHost()));
-        hostsAdd->setLayout(mainLayout);
+        hostsAdd->setLayout(mainLayoutAdd);
         hostsAdd->setWindowTitle(tr("VDC - Add Host"));
         hostsAdd->move(QCursor::pos());
         hostsAdd->show();
 }
 
-void LoginForm::writeHost()
+void HostsData::checkipv6()
+{
+ipcheck = false;
+ipv4->hide();
+ipv6->show();
+    }
+
+void HostsData::checkipv4()
+{
+ipcheck = true;
+ipv6->hide();
+ipv4->show();
+}
+
+void HostsData::writeHost()
 {
    QString entry;
-   QFile file("/etc/hosts");
+   QFile file("/home/ms/hosts");
    if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
    return;
   entry += "\n";
+  if(ipcheck == true)
+  {
   entry += firstip->text();
   entry +=  ".";
   entry += seccondip->text();
@@ -299,6 +414,25 @@ void LoginForm::writeHost()
   entry += thirdip->text();
   entry += ".";
   entry += fourthip->text();
+}
+  if(ipcheck == false)
+  {
+  entry += firstipv6->text();
+  entry +=  ":";
+  entry += seccondipv6->text();
+  entry +=  ":";
+  entry += thirdipv6->text();
+  entry +=  ":";
+  entry += fourthipv6->text();
+  entry +=  ":";
+  entry += fifthipv6->text();
+  entry +=  ":";
+  entry += sixthipv6->text();
+  entry +=  ":";
+  entry += seventhipv6->text();
+  entry +=  ":";
+  entry += eighthipv6->text();
+}
   entry += "  ";
   entry += hostnames->text();
   entry += "  ";
@@ -307,7 +441,10 @@ void LoginForm::writeHost()
   QTextStream stream(&file);
   stream << entry;
   QDialog *dia = (QDialog*) QObject::sender()->parent();
+  file.close();
+  readHost();
   dia->close();
+
 }
 
 void LoginForm::option()
@@ -321,6 +458,7 @@ void LoginForm::option()
 
 
 }
+
 
 void LoginForm::showMessage(QString m)
 {

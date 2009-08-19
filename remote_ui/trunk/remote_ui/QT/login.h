@@ -22,11 +22,12 @@
 
 #include <QLabel>
 #include <QErrorMessage>
+#include <QTableWidget>
 
 #include "clienttcp.h"
 
 
-class LoginForm : public QWidget
+class LoginForm  : public QWidget
 {
    // required for slot and signal using
    //
@@ -40,20 +41,13 @@ public:
    QString fontconv;
    QStringList splitlist;
    QString fonteingabe;
-   QLineEdit *firstip;
-   QLineEdit *seccondip;
-   QLineEdit *thirdip;
-   QLineEdit *fourthip;
-   QLineEdit *hostnames;
-   QLineEdit *comments;
 
 
 public slots:
    void option();
-   void hosts();
    void showMessage(QString m);
-   void addHost();
-   void writeHost();
+   void hosts();
+
    void welcomeBar();
 
 private slots:
@@ -100,9 +94,46 @@ private:
    void loadSettings();
 };
 
+class HostsData  : public QDialog
+{
+   // required for slot and signal using
+   //
+   Q_OBJECT
+public:
+   HostsData(QWidget *parent = 0);
+   QLineEdit *firstip;
+   QLineEdit *seccondip;
+   QLineEdit *thirdip;
+   QLineEdit *fourthip;
+
+   QLineEdit *firstipv6;
+   QLineEdit *seccondipv6;
+   QLineEdit *thirdipv6;
+   QLineEdit *fourthipv6;
+   QLineEdit *fifthipv6;
+   QLineEdit *sixthipv6;
+   QLineEdit *seventhipv6;
+   QLineEdit *eighthipv6;
+   QVBoxLayout *ipfeldlayout;
+   QHBoxLayout *ipfeldv4;
+   QVBoxLayout *ipfeldv6;
+   QLineEdit *hostnames;
+   QLineEdit *comments;
+   QTableWidget *hostsTable;
+   QWidget *ipv4;
+   QWidget *ipv6;
+   bool ipcheck;
+
+public slots:
 
 
-
+   void addHost();
+   void writeHost();
+   void readHost();
+   void saveHost();
+   void checkipv4();
+   void checkipv6();
+};
 
 
 #endif
