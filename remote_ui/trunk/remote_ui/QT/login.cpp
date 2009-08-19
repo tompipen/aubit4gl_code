@@ -66,17 +66,20 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *hosts = new QAction(tr("&Hosts"), this);
    option->setStatusTip(tr("Opens the Option Window"));
    hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
+   admin->setStatusTip(tr("Opens the Hosts Data Settings"));
    connect(option, SIGNAL(triggered()), this, SLOT(option()));
    menuBar->addAction(option);
 
    if (adminMenu == true)
    {
+   statusBar->showMessage("Login Screen started in Admin Mode", 3000);
+   QTimer *timer = new QTimer(this);
+   connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
+   timer->start(3000);
    menuBar->addMenu(admin);
    admin->addAction(hosts);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
-}
-
-
+   }
 
    // instantiating labels and line edits - facilitating user input
    // labels should be filled by text-variables - later
@@ -138,6 +141,11 @@ LoginForm::LoginForm(QWidget *parent)
    //
    setLayout(loginLayout);
 
+}
+
+void LoginForm::welcomeBar()
+{
+showMessage("Welcome!");
 }
 //Hosts Settings
 void LoginForm::hosts()

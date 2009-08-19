@@ -47,12 +47,15 @@ public:
    QLineEdit *hostnames;
    QLineEdit *comments;
 
+
 public slots:
    void option();
    void hosts();
    void showMessage(QString m);
    void addHost();
    void writeHost();
+   void welcomeBar();
+
 private slots:
 
    void okPressed();

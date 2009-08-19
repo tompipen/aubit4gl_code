@@ -58,6 +58,4 @@ SOURCES += confwin.cpp \
     fieldparsers/xml2form.cpp \
     fieldparsers/parser.cpp \
     xmlparsers/xml2menu.cpp \
-    xmlparsers/xml2style.cpp 
-
-#/opt/qtsdk-2009.01/share/qtcreator/gdbmacros/gdbmacros.cpp
+    xmlparsers/xml2style.cpp
