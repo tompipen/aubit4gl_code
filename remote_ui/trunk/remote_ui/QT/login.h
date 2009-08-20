@@ -105,7 +105,7 @@ public:
    QLineEdit *seccondip;
    QLineEdit *thirdip;
    QLineEdit *fourthip;
-
+   QString hostspath;
    QLineEdit *firstipv6;
    QLineEdit *seccondipv6;
    QLineEdit *thirdipv6;
@@ -133,6 +133,7 @@ public slots:
    void saveHost();
    void checkipv4();
    void checkipv6();
+   QString checkOS();
 };
 
 

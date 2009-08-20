@@ -149,6 +149,7 @@ LoginForm::LoginForm(QWidget *parent)
 void LoginForm::welcomeBar()
 {
 showMessage("Welcome!");
+
 }
 //Hosts Settings
 
@@ -160,6 +161,8 @@ void LoginForm::hosts()
 //Hosts Settings
 HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {
+       checkOS();
+       hostspath = "%SYSTEMROOT%\\system32\\drivers\\etc\\hosts";
        QLabel *description = new QLabel(tr("Hosts Data"));
        QVBoxLayout *mainLayout = new QVBoxLayout;
        hostsTable = new QTableWidget(this);
@@ -188,10 +191,35 @@ readHost();
 
 }
 
+QString HostsData::checkOS()
+{
+   QString pfad;
+   qDebug() << QSysInfo::MacintoshVersion;
+   int windows = QSysInfo::WindowsVersion;
+   if (windows > 15 && windows < 159)
+   {
+     QStringList system = QProcess::systemEnvironment();
+     pfad = system.filter("SYSTEMROOT").at(0).split("=").at(1);
+     pfad += "\\system32\\drivers\\etc\\hosts";
+   }
+   if (windows > 1 && windows < 15)
+   {
+     QStringList system = QProcess::systemEnvironment();
+     pfad = system.filter("WINDIR").at(0).split("=").at(1);
+     pfad += "\\hosts";
+   qDebug() << pfad;
+}
+   else{
+       pfad = "/etc/hosts";
+   }
+    return pfad;
+  }
+
+
 void HostsData::readHost()
 {
 
-     QFile file("/home/ms/hosts");
+     QFile file(hostspath);
      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
          return;
 
@@ -273,7 +301,7 @@ for(int i=0; i < dateiarray.count(); i++)
 
 void HostsData::saveHost()
 {
-   QFile file("/home/ms/hosts");
+   QFile file(hostspath);
    if (!file.open(QIODevice::WriteOnly))
    return;
 
@@ -401,7 +429,7 @@ ipv4->show();
 void HostsData::writeHost()
 {
    QString entry;
-   QFile file("/home/ms/hosts");
+   QFile file(hostspath);
    if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
    return;
   entry += "\n";
