@@ -163,7 +163,7 @@ HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {
        hostspath = checkOS();
 
-       QLabel *description = new QLabel(tr("Hosts Data"));
+       QLabel *description = new QLabel(tr("<h2>Host Data</h2> <br> <b>CAUTION :</b> Be sure that you login as Admin/root <br> otherwise you can't edit these Settings"));
        QVBoxLayout *mainLayout = new QVBoxLayout;
        hostsTable = new QTableWidget(this);
        QStringList labels;
@@ -228,7 +228,6 @@ QString HostsData::checkOS()
 
 void HostsData::readHost()
 {
-
      QFile file(hostspath);
      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
          return;
@@ -349,6 +348,9 @@ void HostsData::addHost()
         QHBoxLayout *select = new QHBoxLayout;
         QRadioButton *radioipv4 = new QRadioButton("Select IPv4", this);
         QRadioButton *radioipv6 = new QRadioButton("Select IPv6", this);
+        QLabel *iplabel = new QLabel(tr("IP-Address :"));
+        QLabel *hostnamelabel = new QLabel(tr("Hostnames :"));
+        QLabel *commentlabel = new QLabel(tr("Comments :"));
         ipv4 = new QWidget(this);
         ipv6 = new QWidget(this);
         ipv4->setLayout(ipfeldv4);
@@ -371,6 +373,20 @@ void HostsData::addHost()
         ipfeld->addWidget(ipv4);
         ipfeld->addWidget(ipv6);
 
+        QRegExp regExpv4("25[0-4]|2[0-4][0-9]|[01]?[0-9][0-9]");
+        QRegExp regExpv6("[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]");
+        firstip->setValidator(new QRegExpValidator(regExpv4, this));
+        seccondip->setValidator(new QRegExpValidator(regExpv4, this));
+        thirdip->setValidator(new QRegExpValidator(regExpv4, this));
+        fourthip->setValidator(new QRegExpValidator(regExpv4, this));
+        firstipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        seccondipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        thirdipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        fourthipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        fifthipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        sixthipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        seventhipv6->setValidator(new QRegExpValidator(regExpv6, this));
+        eighthipv6->setValidator(new QRegExpValidator(regExpv6, this));
         QPushButton *add = new QPushButton(tr("Add Host"), hostsAdd);
         select->addWidget(radioipv4);
         select->addWidget(radioipv6);
@@ -378,7 +394,7 @@ void HostsData::addHost()
         mainLayoutAdd->addLayout(select);
         connect(radioipv4,SIGNAL(clicked()), this, SLOT(checkipv4()));
         connect(radioipv6,SIGNAL(clicked()), this, SLOT(checkipv6()));
-
+        mainLayoutAdd->addWidget(iplabel);
 
         //ipfeldv4
 
@@ -412,7 +428,9 @@ void HostsData::addHost()
         checkipv4();
 
         mainLayoutAdd->addLayout(ipfeld);
+        mainLayoutAdd->addWidget(hostnamelabel);
         mainLayoutAdd->addWidget(hostnames);
+        mainLayoutAdd->addWidget(commentlabel);
         mainLayoutAdd->addWidget(comments);
         mainLayoutAdd->addWidget(add);
         connect(add, SIGNAL(clicked()), this, SLOT(writeHost()));
