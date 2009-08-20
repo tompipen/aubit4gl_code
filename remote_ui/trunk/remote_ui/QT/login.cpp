@@ -161,8 +161,8 @@ void LoginForm::hosts()
 //Hosts Settings
 HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {
-       checkOS();
-       hostspath = "%SYSTEMROOT%\\system32\\drivers\\etc\\hosts";
+       hostspath = checkOS();
+
        QLabel *description = new QLabel(tr("Hosts Data"));
        QVBoxLayout *mainLayout = new QVBoxLayout;
        hostsTable = new QTableWidget(this);
@@ -193,25 +193,35 @@ readHost();
 
 QString HostsData::checkOS()
 {
+
    QString pfad;
-   qDebug() << QSysInfo::MacintoshVersion;
+
+   #ifdef Q_WS_WIN
    int windows = QSysInfo::WindowsVersion;
    if (windows > 15 && windows < 159)
-   {
-     QStringList system = QProcess::systemEnvironment();
-     pfad = system.filter("SYSTEMROOT").at(0).split("=").at(1);
-     pfad += "\\system32\\drivers\\etc\\hosts";
-   }
+      {
+        QStringList system = QProcess::systemEnvironment();
+        pfad = system.filter("SYSTEMROOT").at(0).split("=").at(1);
+        pfad += "\\system32\\drivers\\etc\\hosts";
+      }
    if (windows > 1 && windows < 15)
-   {
-     QStringList system = QProcess::systemEnvironment();
-     pfad = system.filter("WINDIR").at(0).split("=").at(1);
-     pfad += "\\hosts";
-   qDebug() << pfad;
-}
-   else{
-       pfad = "/etc/hosts";
-   }
+      {
+        QStringList system = QProcess::systemEnvironment();
+        pfad = system.filter("WINDIR").at(0).split("=").at(1);
+        pfad += "\\hosts";
+      }
+   #endif
+
+   #ifdef Q_WS_MAC
+   pfad = "/private/etc/hosts";
+   #endif
+
+   #ifdef Q_WS_X11
+   pfad = "/etc/hosts";
+   #endif
+
+
+
     return pfad;
   }
 
