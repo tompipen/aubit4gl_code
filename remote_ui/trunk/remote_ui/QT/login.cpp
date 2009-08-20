@@ -163,7 +163,8 @@ HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {
        hostspath = checkOS();
 
-       QLabel *description = new QLabel(tr("<h2>Host Data</h2> <br> <b>CAUTION :</b> Be sure that you login as Admin/root <br> otherwise you can't edit these Settings"));
+       QLabel *description = new QLabel(tr("<h2>Host Data</h2>"));
+       QLabel *description2 = new QLabel(tr("<b>CAUTION :</b> Be sure that you login as Admin/root <br> otherwise you can't edit these Settings"));
        QVBoxLayout *mainLayout = new QVBoxLayout;
        hostsTable = new QTableWidget(this);
        QStringList labels;
@@ -181,6 +182,7 @@ readHost();
        connect(addButton, SIGNAL(clicked()), this, SLOT(addHost()));
        connect(saveButton, SIGNAL(clicked()), this, SLOT(saveHost()));
        mainLayout->addWidget(description);
+       mainLayout->addWidget(description2);
        mainLayout->addWidget(hostsTable);
        mainLayout->addWidget(addButton);
        mainLayout->addWidget(saveButton);
