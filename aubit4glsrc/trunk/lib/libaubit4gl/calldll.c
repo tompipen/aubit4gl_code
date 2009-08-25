@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.87 2009-07-02 10:38:53 mikeaubury Exp $
+# $Id: calldll.c,v 1.88 2009-08-25 10:06:25 mikeaubury Exp $
 #
 */
 
@@ -716,15 +716,20 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
  * @param args The arguments ???
  */
 int
-A4GL_call_4gl_dll (char *filename, char *function, int args)
+A4GL_call_4gl_dll (char *xfilename, char *function, int args)
 {
   void *dllhandle;
-  char buff[512];
+  char buff[1024];
   char nfunc[256];
   char nfile[256];
+  char filename[400];
   int (*func_ptr) (int);
   int a;
 
+
+  memset(filename,0,sizeof(filename));
+  memset(buff,0,sizeof(buff));
+  strcpy(filename,xfilename);
 
 #ifdef DEBUG
   A4GL_debug ("Call 4gl dll : %s %s %d", filename, function, args);

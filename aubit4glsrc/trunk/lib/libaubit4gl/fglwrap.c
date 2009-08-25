@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.148 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.149 2009-08-25 10:06:25 mikeaubury Exp $
 #
 */
 
@@ -1625,7 +1625,7 @@ aclfgl_aclfgl_expand_env_vars_in_cmdline (int n)
 char *
 expand_env_vars_in_cmdline (char *s, int showerrs)
 {
-  static char buff[20000];
+  static char buff[100000];
   char varname[200];
   int a;
   int start_var;
@@ -1688,11 +1688,13 @@ expand_env_vars_in_cmdline (char *s, int showerrs)
 	    }
 
 	  strcat (buff, ptr);
+	   A4GL_assertion(strlen(buff)>sizeof(buff),"Buffer overrun detected");
 	}
       else
 	{
 	  strcat (buff, "$");
 	  strcat (buff, varname);
+	   A4GL_assertion(strlen(buff)>sizeof(buff),"Buffer overrun detected");
 
 	  if (showerrs)
 	    {
@@ -1704,6 +1706,7 @@ expand_env_vars_in_cmdline (char *s, int showerrs)
 	}
       b = strlen (buff);
     }
+	   A4GL_assertion(strlen(buff)>sizeof(buff),"Buffer overrun detected");
   return buff;
 }
 
