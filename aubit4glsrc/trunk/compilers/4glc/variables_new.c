@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.14 2009-08-18 13:56:20 mikeaubury Exp $
+# $Id: variables_new.c,v 1.15 2009-08-25 20:28:36 mikeaubury Exp $
 #
 */
 
@@ -59,6 +59,7 @@ char system_or_user = '-';
 #define RECORD_LEVELS 128
 /**/
 
+static int compvar(const void *p1,const void *p2) ;
 
 void
 set_variable_user_system (char n)
@@ -263,6 +264,7 @@ struct variable_list *new_variable_list(struct variable *ptr) {
 	vlist=malloc(sizeof(struct variable_list));
 	vlist->variables.variables_len=0;
 	vlist->variables.variables_val=NULL;
+	vlist->sorted_list=0;
 
 	if (ptr) {
 		return append_variable_list(vlist, ptr);
@@ -271,12 +273,44 @@ struct variable_list *new_variable_list(struct variable *ptr) {
 }
 
 
+#define LIST_RESORT_LENGTH 500
+
+#define OPTIMISE_VARS
+
+static int compvar(const void *p1,const void *p2) {
+	struct variable **v1;
+	struct variable **v2;
+	v1=(struct variable **)p1;
+	v2=(struct variable **)p2;
+	return strcasecmp((*v1)->names.names.names_val[0].name, (*v2)->names.names.names_val[0].name);
+}
 
 static int list_already_has(struct variable_list *list, char *name) {
 int a;
 if (list==NULL) return 0;
 
-for (a=0;a<list->variables.variables_len;a++) {	
+
+#ifdef OPTIMISE_VARS
+if (list->variables.variables_len-list->sorted_list>=LIST_RESORT_LENGTH) {
+	qsort(list->variables.variables_val, list->variables.variables_len, sizeof(struct variable *), compvar);
+	list->sorted_list=list->variables.variables_len;
+}
+
+if (list->sorted_list) {
+	struct variable v;
+	struct variable *vp;
+ 	vname vnames[1];
+	vnames[0].name=name;
+	vp=&v;
+	v.names.names.names_val=vnames;
+	v.names.names.names_len=1;
+	if (bsearch(&vp, list->variables.variables_val, list->sorted_list, sizeof(struct variable *),compvar)) {
+		return 1;
+	}
+}
+#endif
+
+for (a=list->sorted_list;a<list->variables.variables_len;a++) {	
 	struct variable *p;
 	int b;
 	p=list->variables.variables_val[a];
@@ -311,6 +345,7 @@ struct variable_list *append_variable_list(struct variable_list *list, struct va
 	if (ptr->names.names.names_len==0) {
 		A4GL_assertion(1,"Variable has no name...");
 	}
+
 
 	if (list_already_has(list, ptr->names.names.names_val[0].name)) {
 		enum e_scope s;
@@ -644,6 +679,7 @@ struct variable_list *merge_variable_list(struct variable_list *list, struct var
 		list=malloc(sizeof(struct variable_list));
 		list->variables.variables_len=0;
 		list->variables.variables_val=NULL;
+		list->sorted_list=0;
 	}
 
 	if (list2) {
