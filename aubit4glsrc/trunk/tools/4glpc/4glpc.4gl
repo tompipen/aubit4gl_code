@@ -1138,7 +1138,7 @@ end function
 
 ################################################################################
 function runit(lv_str)
-define lv_str char(10240)
+define lv_str char(32000)
 
 RUN lv_str clipped
 
@@ -1186,7 +1186,7 @@ function run_4glc(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(10000)
+define lv_runstr char(32000)
 define lv_status integer
 
 
@@ -1276,7 +1276,7 @@ function run_4glc_xmlmif(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(10000)
+define lv_runstr char(32000)
 define lv_status integer
 
 
@@ -1358,7 +1358,7 @@ function run_4glc_mif(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(10000)
+define lv_runstr char(32000)
 define lv_status integer
 
 
@@ -1440,7 +1440,7 @@ function check_exit_status(p_status,p_filename,p_runstr)
 define p_status integer
 define p_filename char(512)
 define p_runstr char(10240)
-define lv_runstr char(10240)
+define lv_runstr char(32000)
 define lv_errsize integer
 
 #call remove_file(mv_warnfile)
@@ -1517,7 +1517,7 @@ function run_esql_prec(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(10240)
+define lv_runstr char(32000)
 define lv_status integer
 
 if mv_verbose>=1 then
@@ -1562,7 +1562,7 @@ function run_compile(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(10240)
+define lv_runstr char(32000)
 define lv_compile_c_opts char(512)
 define lv_status integer
 
@@ -1631,7 +1631,7 @@ function run_compile_esql(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
-define lv_runstr char(10240)
+define lv_runstr char(32000)
 define lv_status integer
 
 if mv_makecompile then
@@ -1702,7 +1702,7 @@ end function
 function run_link(lv_output)
 define lv_status integer
 define  lv_output char(512)
-define lv_runstr char(10240)
+define lv_runstr char(32000)
 
 if mv_makecompile then
 	if mv_verbose>=3 then
@@ -1774,7 +1774,7 @@ end function
 function run_link_lib(lv_output)
 define lv_status integer
 define  lv_output char(512)
-define lv_runstr char(10240)
+define lv_runstr char(32000)
 
 if mv_makecompile then
 	if mv_verbose>=3 then
