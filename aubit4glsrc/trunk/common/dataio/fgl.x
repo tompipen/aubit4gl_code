@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.42 2009-07-30 09:01:11 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.43 2009-08-25 20:28:57 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1603,7 +1603,11 @@ struct lint_warning {
 
 struct variable_list {
 	variable_ptr variables<>;
+	int sorted_list;
 };
+
+
+
 enum flist_type {
         FLIST_NORMAL,
         FLIST_SPECIAL
