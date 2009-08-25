@@ -1069,7 +1069,7 @@ call channel::write("make"," ")
 
 if lv_buildstr != " " then
 	call channel::write("make","prerequisits: $(BUILDDIR)")
-	call channel::write("make","	if [ ! -d $(BUILDDIR) ] ; then ; mkdir $(BUILDDIR); chmod 777 $(BUILDDIR); fi")
+	call channel::write("make","	if [ ! -d $(BUILDDIR) ] ; then mkdir $(BUILDDIR); chmod 777 $(BUILDDIR); fi")
 else
 	call channel::write("make","prerequisits: ")
 end if
