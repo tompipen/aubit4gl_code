@@ -1048,7 +1048,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_type="F" then # Form
 		if lv_flags is not null and lv_flags != " " then
-			call channel::write("make","FORMS+="||lv_flags clipped||"/"||lv_name clipped||"$(A4GL_FULL_FORM_EXT)")
+			call channel::write("make","FORMS+="||lv_buildstr clipped||"/"||lv_name clipped||"$(A4GL_FULL_FORM_EXT)")
 		else
 			call channel::write("make","FORMS+="||lv_name clipped||"$(A4GL_FULL_FORM_EXT)")
 		end if
