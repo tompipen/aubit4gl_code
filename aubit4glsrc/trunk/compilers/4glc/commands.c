@@ -2223,6 +2223,7 @@ struct module_entry *c;
 
         c->module_entry_u.formhandler_definition.variables.variables.variables_len=0;
         c->module_entry_u.formhandler_definition.variables.variables.variables_val=NULL;
+        c->module_entry_u.formhandler_definition.variables.sorted_list=0;
 	
 	
 
@@ -2238,6 +2239,7 @@ struct module_entry *c;
    c->module_entry_u.function_definition.namespace=strdup(get_namespace(p_funcname));
    c->module_entry_u.function_definition.isstatic=p_isstatic;
    c->module_entry_u.function_definition.variables.variables.variables_len=0;
+   c->module_entry_u.function_definition.variables.sorted_list=0;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
    c->module_entry_u.function_definition.expression_list.list.list_len=0;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
@@ -2277,6 +2279,7 @@ struct module_entry *c;
    c->module_entry_u.function_definition.isstatic=EB_FALSE;
    c->module_entry_u.function_definition.variables.variables.variables_len=0;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
+   c->module_entry_u.function_definition.variables.sorted_list=0;
    c->module_entry_u.function_definition.parameters=0;
    c->module_entry_u.function_definition.func_commands=p_commands;
    c->module_entry_u.function_definition.module=A4GL_compiling_module_basename();
@@ -2467,6 +2470,7 @@ struct module_entry *c;
 	list_of_aggregates.list.list_val=0;
    c->module_entry_u.report_definition.variables.variables.variables_len=0;
    c->module_entry_u.report_definition.variables.variables.variables_val=NULL;
+   c->module_entry_u.report_definition.variables.sorted_list=0;
 
    c->module_entry_u.pdf_report_definition.call_list.calls_by_call.calls_by_call_len=this_functions_call_list->calls_by_call.calls_by_call_len;
    c->module_entry_u.pdf_report_definition.call_list.calls_by_call.calls_by_call_val=this_functions_call_list->calls_by_call.calls_by_call_val;
@@ -2518,6 +2522,7 @@ struct module_entry *c;
 	c->module_entry_u.report_definition.extra_warnings.extra_warnings_val=0;
    c->module_entry_u.report_definition.variables.variables.variables_len=0;
    c->module_entry_u.report_definition.variables.variables.variables_val=NULL;
+   c->module_entry_u.report_definition.variables.sorted_list=0;
 
    c->module_entry_u.report_definition.call_list.calls_by_call.calls_by_call_len=this_functions_call_list->calls_by_call.calls_by_call_len;
    c->module_entry_u.report_definition.call_list.calls_by_call.calls_by_call_val=this_functions_call_list->calls_by_call.calls_by_call_val;

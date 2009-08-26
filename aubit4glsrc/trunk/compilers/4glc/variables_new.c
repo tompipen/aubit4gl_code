@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.15 2009-08-25 20:28:36 mikeaubury Exp $
+# $Id: variables_new.c,v 1.16 2009-08-26 12:12:29 mikeaubury Exp $
 #
 */
 
@@ -679,6 +679,11 @@ struct variable_list *merge_variable_list(struct variable_list *list, struct var
 		list=malloc(sizeof(struct variable_list));
 		list->variables.variables_len=0;
 		list->variables.variables_val=NULL;
+		list->sorted_list=0;
+	}
+
+
+	if (list->variables.variables_len==0) {
 		list->sorted_list=0;
 	}
 

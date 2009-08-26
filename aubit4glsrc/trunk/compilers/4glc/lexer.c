@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.136 2009-07-30 07:11:10 mikeaubury Exp $
+# $Id: lexer.c,v 1.137 2009-08-26 12:12:29 mikeaubury Exp $
 #*/
 
 /**
@@ -1226,7 +1226,6 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 
 A4GL_debug("p=%s buff=%s",p,buff);
   /* check for literal numbers - these cannot be key words or identifiers */
-  strcpy (str, p);
 
   a = isnum (p);
   if (a == 1)
@@ -1241,6 +1240,7 @@ A4GL_debug("p=%s buff=%s",p,buff);
       return NUMBER_VALUE;
     }
 
+  strcpy (str, p);
   return t;
 }
 
