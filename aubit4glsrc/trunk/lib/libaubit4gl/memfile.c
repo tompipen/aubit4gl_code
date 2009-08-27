@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.45 2009-07-31 07:59:46 mikeaubury Exp $
+# $Id: memfile.c,v 1.46 2009-08-27 17:26:44 mikeaubury Exp $
 #
 */
 
@@ -330,22 +330,22 @@ A4GL_memfile_fread (char *ptr, int s, int n, FILE * f)
       int a;
       //debug("Reading from buff start@:%d s=%d n=%d",pos,s,n);
       memcpy (ptr, &buff[pos], s * n);
-      for (a = 0; a < s * n; a++)
-	{
+      //for (a = 0; a < s * n; a++)
+	//{
 	  //debug("%02x: %c",
 	  //ptr[a]&0xff,
 	  //isprint(ptr[a]&0xff)?ptr[a]&0xff:'.'
 	  //);
-	}
+	//}
 
       //debug("And from pos:");
-      for (a = 0; a < s * n; a++)
-	{
+      //for (a = 0; a < s * n; a++)
+	//{
 	  //debug("%02x: %c",
 	  //buff[pos+a]&0xff,
 	  //isprint(buff[pos+a]&0xff)?buff[pos+a]&0xff:'.'
 	  //);
-	}
+	//}
 
       pos += s * n;
       //debug("Reading from buff pos now %d",pos);

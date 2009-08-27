@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.508 2009-08-27 13:18:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.509 2009-08-27 17:27:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.508 2009-08-27 13:18:22 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.509 2009-08-27 17:27:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1298,6 +1298,12 @@ real_print_expr (struct expr_str *ptr)
       break;
 
     case ET_EXPR_COLUMN:
+	if (ptr->expr_str_u.expr_expr->expr_type==ET_EXPR_COLUMN) {
+		// using a COLUMN COLUMN x ? ???
+		// we can't allow that :-)
+		a4gl_yyerror("Can't use 'COLUMN COLUMN' for an expression, are you missing a number and a ',' ?");
+		break;
+	}
       real_print_expr (ptr->expr_str_u.expr_expr);
       if (current_cmd->cmd_data.type == E_CMD_PRINT_CMD)
 	{
