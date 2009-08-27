@@ -1710,6 +1710,21 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
     case ET_EXPR_OP_POWER:
       return DTYPE_FLOAT;
     case ET_EXPR_AGGREGATE:
+	if (p->expr_str_u.expr_agg->agg_type=='C') { // Count
+		return DTYPE_INT;
+	}
+	if (p->expr_str_u.expr_agg->agg_type=='A') { //  Average
+		return expr_datatype (module, lineno, p->expr_str_u.expr_agg->agg_expr);
+	}
+	if (p->expr_str_u.expr_agg->agg_type=='N') { //Min
+		return expr_datatype (module, lineno, p->expr_str_u.expr_agg->agg_expr);
+	}
+	if (p->expr_str_u.expr_agg->agg_type=='X') { //Max
+		return expr_datatype (module, lineno, p->expr_str_u.expr_agg->agg_expr);
+	}
+	if (p->expr_str_u.expr_agg->agg_type=='S') { //Sum
+		return expr_datatype (module, lineno, p->expr_str_u.expr_agg->agg_expr);
+	}
       return DTYPE_FLOAT;
 
     case ET_EXPR_NOT_FIELD_TOUCHED:
