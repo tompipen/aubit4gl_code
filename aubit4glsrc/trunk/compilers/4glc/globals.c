@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.58 2009-08-14 08:18:56 mikeaubury Exp $
+# $Id: globals.c,v 1.59 2009-08-28 13:08:53 mikeaubury Exp $
 #
 */
 
@@ -113,7 +113,6 @@ generate_globals_for (char *s)
 
   strcpy (buff, s);
 
-//printf("generate_globals_for %s",s);
 
   /*NOTE: we will get path in s only if it was specified in GLOBALS declaration*/
   if (strchr (buff, '/'))
@@ -310,6 +309,7 @@ read_glob (char *s)
 
   if (A4GL_file_exists(iiglb) && A4GL_file_is_newer(iiglb,ii4gl)) {
   	a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
+	
   }
 
 

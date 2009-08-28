@@ -3,7 +3,8 @@
 #include "a4gl_API_parse_lib.h"
 #include "parsehelp.h"
 #include "var_handling.h"
-#include "trim_spaces.h"
+#include "variables_new.h"
+//#include "trim_spaces.h"
 
 //void sort_variables(void *ptr, int n) ;
 extern struct cmds command_stack[CMD_STACK_SIZE];
@@ -149,6 +150,7 @@ if (c_orderby->rord_type == REPORT_ORDERBY_IMPLICIT) {
 return -1;
 }
 
+/*
 static int strsplit(char *orig,char *srch, ...) {
 char **p;
 char *buff;
@@ -185,6 +187,7 @@ while (ptr && a<=strlen(srch)) {
 va_end(args);
 return strlen(srch)+1;
 }
+*/
 
 
 
@@ -1611,6 +1614,16 @@ p=ptr->expr_str_u.expr_variable_usage;
 scope=E_SCOPE_NOTSET;
 v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 if (v==0) {
+	if (A4GL_strstartswith(expr_as_string_when_possible(ptr),"txx_") && A4GL_isyes(acl_getenv("GENERATE_TXXVARS"))) { 
+
+		add_txx_variable(&this_module.imported_global_variables, expr_as_string_when_possible(ptr));
+		v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
+		if (v) {
+			return 1;
+		} 
+	}
+
+
 	if (strlen(errbuff)==0) { 
 		// No specific error - so put in something...
 		set_yytext(expr_as_string_when_possible(ptr));

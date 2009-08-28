@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.16 2009-08-26 12:12:29 mikeaubury Exp $
+# $Id: variables_new.c,v 1.17 2009-08-28 13:08:53 mikeaubury Exp $
 #
 */
 
@@ -840,4 +840,20 @@ for (a=0;a<report_vars->variables.variables_len;a++) {
 
 
 return 0;
+}
+
+
+
+void add_txx_variable(struct variable_list *vlist_to_add_to, char *s) {
+  	struct variable_list *vlist;
+		#define SIZE_OF_TXX 32
+                FILE *fout;
+                char c;
+                fout=fopen("g_txx","a");
+                if (fout) {
+                        fprintf(fout,"%s\n",s, SIZE_OF_TXX);
+                }
+
+                vlist=create_variable_list(new_str_list(s), new_simple_variable(NULL,DTYPE_CHAR,SIZE_OF_TXX,0));
+                merge_variable_list(vlist_to_add_to,vlist);
 }
