@@ -935,6 +935,12 @@ call channel::write("make","FGLOBJS=")
 call channel::write("make","OTHOBJS=")
 call channel::write("make","OBJS_CFORMS=")
 call channel::write("make","GLOBALS=")
+call channel::write("make","GLOBALS_DEF=")
+
+if fgl_getenv("VMAKE")!=" "  then
+	call channel::write("make","G_TXX="||lv_buildstr||"g_txx_"||lv_prog clipped)
+	call channel::write("make","export G_TXX")
+end if
 
 
 call add_setting_if_missing(lv_prog,"A4GL_PACKER")
@@ -1031,8 +1037,10 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 		if lv_type="G" then
 			if lv_flags is not null and lv_flags != " " then
 				call channel::write("make","GLOBALS+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
+				call channel::write("make","GLOBALS_DEF+="||lv_flags clipped||"/"||lv_name clipped||".glb.dat")
 			else
 				call channel::write("make","GLOBALS+="||lv_name clipped||".4gl")
+				call channel::write("make","GLOBALS_DEF+="||lv_name clipped||".glb.dat")
 			end if
 		end if
 		call channel::write("make","FGLOBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
@@ -1128,6 +1136,12 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 end foreach
 
 
+
+# Not a full clean - just the intermediates...
+call channel::write("make","tidy:")
+call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(MIFS) $(GLOBAL_DEFS)")
+call channel::write("make"," ")
+
 call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
 call channel::write("make"," ")
 call channel::write("make","run: compile")
@@ -1143,10 +1157,21 @@ call channel::write("make","	4glpc $(LFLAGS) -o $@ $(FGLOBJS) $(OTHOBJS) $(OBJS_
 
 call channel::write("make"," ")
 call channel::write("make","clean:")
-call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS} "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
+call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS} $(GLOBAL_DEFS)  "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) ")
+
+if fgl_getenv("VMAKE")!= " " then
+	call channel::write("make","	rm -f $(G_TXX) "||lv_buildstr clipped || "g_"||lv_prog clipped||"txv.4gl")
+end if
 
 
 call channel::write("make"," ")
+
+if fgl_getenv("VMAKE") !=" " then
+	# Special code for Ventas to generate the global txt file
+	call channel::write("make",lv_buildstr clipped || "g_"||lv_prog clipped||"txv.4gl: $(G_TXX)")
+	call channel::write("make","	mktxx $G_TXX $@")
+	call channel::write("make","")
+end if
 call channel::write("make","lint : ${A4GL_LINTFILE}")
 call channel::write("make","$(A4GL_LINTFILE) : ${MIFS}")
 call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fgllint ${MIFS}")
