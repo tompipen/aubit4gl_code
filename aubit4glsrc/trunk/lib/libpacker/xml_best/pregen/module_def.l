@@ -1,5 +1,5 @@
 /* Validating XML processor for module_def.dtd.
- * Generated 2009/08/18 08:51:52.
+ * Generated 2009/08/25 21:32:23.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -256,6 +256,8 @@ AT_s_pdf_report_definition_funcname AX_s_pdf_report_definition_funcname;
 #define A_s_pdf_report_definition_funcname (bufferstack + AX_s_pdf_report_definition_funcname)
 AT_command_comment AX_command_comment;
 #define A_command_comment (bufferstack + AX_command_comment)
+AT_variable_list_sorted_list AX_variable_list_sorted_list;
+#define A_variable_list_sorted_list (bufferstack + AX_variable_list_sorted_list)
 AT_assoc_array_variable_char_size AX_assoc_array_variable_char_size;
 #define A_assoc_array_variable_char_size (bufferstack + AX_assoc_array_variable_char_size)
 AT_module_definition_compiled_time AX_module_definition_compiled_time;
@@ -14863,12 +14865,16 @@ const char* *statenames=NULL;
 
 <ROOT_variable_list,S_s_pdf_report_definition_2,S_globals_definition,S_s_formhandler_definition,S_module_definition,S_s_pdf_report_definition_1,S_s_report_definition_2,S_s_function_definition_1,S_globals_definition_1,S_s_class_definition_1,S_module_definition_1,S_s_function_definition,S_s_function_definition_2,S_s_formhandler_definition_2,S_s_report_definition,S_s_report_definition_1,S_globals_definition_2,S_module_definition_2,S_s_class_definition_2,S_s_class_definition,S_s_pdf_report_definition,S_s_formhandler_definition_1>"<variable_list"{s} {
   AX_variable_list_nm = 0;
+  AX_variable_list_sorted_list = 0;
   ENTER(AL_variable_list); pushbuffer(0);
   }
 
 <AL_variable_list>{
  "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_variable_list_nm);
  "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_variable_list_nm);
+
+ "sorted_list"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_variable_list_sorted_list);
+ "sorted_list"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_variable_list_sorted_list);
 
  ">" {
   LEAVE; STag_variable_list();pcdata_ix = 0; ENTER(S_variable_list);

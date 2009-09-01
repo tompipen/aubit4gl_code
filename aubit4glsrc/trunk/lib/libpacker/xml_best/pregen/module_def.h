@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/08/18 08:51:52.
+ * Generated 2009/08/25 21:32:23.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -721,6 +721,8 @@ typedef int AT_s_pdf_report_definition_funcname;
 #define AU_s_pdf_report_definition_funcname NULL
 typedef int AT_command_comment;
 #define AU_command_comment NULL
+typedef int AT_variable_list_sorted_list;
+#define AU_variable_list_sorted_list NULL
 typedef int AT_assoc_array_variable_char_size;
 #define AU_assoc_array_variable_char_size NULL
 typedef int AT_module_definition_compiled_time;
@@ -2046,6 +2048,8 @@ extern AT_s_pdf_report_definition_funcname AX_s_pdf_report_definition_funcname;
 #define A_s_pdf_report_definition_funcname (bufferstack + AX_s_pdf_report_definition_funcname)
 extern AT_command_comment AX_command_comment;
 #define A_command_comment (bufferstack + AX_command_comment)
+extern AT_variable_list_sorted_list AX_variable_list_sorted_list;
+#define A_variable_list_sorted_list (bufferstack + AX_variable_list_sorted_list)
 extern AT_assoc_array_variable_char_size AX_assoc_array_variable_char_size;
 #define A_assoc_array_variable_char_size (bufferstack + AX_assoc_array_variable_char_size)
 extern AT_module_definition_compiled_time AX_module_definition_compiled_time;
