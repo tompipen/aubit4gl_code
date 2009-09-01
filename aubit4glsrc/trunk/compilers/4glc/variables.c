@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.111 2009-08-18 21:06:07 mikeaubury Exp $
+# $Id: variables.c,v 1.112 2009-09-01 17:19:59 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ enum e_scope variable_scope = E_SCOPE_MODULE;
 void set_local_variables(struct variable_list *vlist) {
 	local_variables=vlist;
 	if (local_variables) {
-        	sort_variables(local_variables->variables.variables_val, local_variables->variables.variables_len);
+        	sort_variables_v(local_variables);
 	}
 }
 
@@ -149,31 +149,6 @@ void make_constant_available(struct variable *v) {
 	lv_uses_constants++;
 }
 
-/*
-// We need to keep track of the constants we're currently processing so
-// that we can use them within our current block - eg
-//
-// DEFINE lc_length 80
-// DEFINE lv_str CHAR(lc_length)
-//  
-struct variable_list *current_scoped_constants=NULL;
-
-void make_constant_available(struct variable *v) {
-	if (current_scoped_constants==NULL) {
-		current_scoped_constants=new_variable_list(v);
-	} else {
-		append_variable_list(current_scoped_constants,v);
-	}
-	lv_uses_constants++;
-       	sort_variables(current_scoped_constants->variables.variables_val, current_scoped_constants->variables.variables_len);
-}
-
-
-static void clr_current_constants(void) {
-	current_scoped_constants=NULL;
-	lv_uses_constants=0;
-}
-*/
 
 
 static int count_constants_in_list (struct variable_list *v) {
@@ -864,7 +839,7 @@ return " ";
 }
 
 struct variable * find_variable_vu_in_list(char *errbuff, struct variable_usage *v, struct variable_list *vlist, int err_if_while_array,int level) {
-	return find_variable_vu_in(errbuff,v,vlist->variables.variables_val, vlist->variables.variables_len,err_if_while_array,level);
+	return find_variable_vu_in(errbuff,v,vlist->variables.variables_val, vlist->variables.variables_len,err_if_while_array,level,vlist);
 }
 
 

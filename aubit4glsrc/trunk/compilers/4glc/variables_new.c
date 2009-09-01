@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.17 2009-08-28 13:08:53 mikeaubury Exp $
+# $Id: variables_new.c,v 1.18 2009-09-01 17:20:02 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,7 @@
 
 extern int token_read_on_line;
 extern char *outputfilename;
+int allow_sorting=1;
 
 char system_or_user = '-';
 
@@ -291,7 +292,7 @@ if (list==NULL) return 0;
 
 
 #ifdef OPTIMISE_VARS
-if (list->variables.variables_len-list->sorted_list>=LIST_RESORT_LENGTH) {
+if (list->variables.variables_len-list->sorted_list>=LIST_RESORT_LENGTH && allow_sorting) {
 	qsort(list->variables.variables_val, list->variables.variables_len, sizeof(struct variable *), compvar);
 	list->sorted_list=list->variables.variables_len;
 }
@@ -846,14 +847,23 @@ return 0;
 
 void add_txx_variable(struct variable_list *vlist_to_add_to, char *s) {
   	struct variable_list *vlist;
-		#define SIZE_OF_TXX 32
+		#define SIZE_OF_TXX 80
                 FILE *fout;
+                  char *fname;
                 char c;
-                fout=fopen("g_txx","a");
+                  fname=acl_getenv_not_set_as_0("G_TXX");
+                  if (fname==0) fname="g_txx";
+                 
+                fout=fopen(fname,"a");
                 if (fout) {
+#ifdef DEBUG
+                     A4GL_debug("Appending %s to %s\n", s, fname );
+#endif
                         fprintf(fout,"%s\n",s, SIZE_OF_TXX);
                 }
+                 allow_sorting=0;
 
                 vlist=create_variable_list(new_str_list(s), new_simple_variable(NULL,DTYPE_CHAR,SIZE_OF_TXX,0));
                 merge_variable_list(vlist_to_add_to,vlist);
+                 allow_sorting=1;
 }

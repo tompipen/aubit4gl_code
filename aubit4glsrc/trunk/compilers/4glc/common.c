@@ -33,30 +33,59 @@ A4GL_assertion ((v1==0 || v2==0), "Invalid pointer");
 return strcmp(v1->names.names.names_val[0].name,v2->names.names.names_val[0].name);
 }
 
-void sort_variables(void *ptr, int n) {
-	if (n==0) return;
-	if (ptr) {
-        	qsort(ptr,  n, sizeof( void*), (void *)compare_var);
-	}
+void sort_variables_v(struct variable_list *v) {
+int n;
+void *ptr;
+   if (v==0) return;
+           n=v->variables.variables_len;
+            if ( v->sorted_list==n) return;
+   //printf("v->sorted_list=%d v->len=%d\n", v->sorted_list,n);
+                   ptr=v->variables.variables_val;
+                      if (n==0) return;
+                         if (ptr) {
+                                  qsort(ptr,  n, sizeof( void*), (void *)compare_var);
+                                           v->sorted_list=n;
+                                     }
 }
 
 
-struct variable *find_variable_quick(char *name, struct variable **list, int cnt) {
+struct variable *find_variable_quick(char *name, struct variable **list, int cnt,int sorted_cnt) {
         struct variable *v;
         struct variable vsearch;
         struct vname names;
 	struct variable **vs;
-        names.name=name;
-        vsearch.names.names.names_val=&names;
-        vsearch.names.names.names_len=1;
+int a;
+   names.name=name;
+   vsearch.names.names.names_val=&names;
+   vsearch.names.names.names_len=1;
 	v=&vsearch;
 	vs=&v;
-        vs=bsearch((void*)vs, list, cnt, sizeof(void *), (void *)compare_var);
+
+   if (sorted_cnt==-1) sorted_cnt=cnt;
+// Check any sorted portion
+
+   vs=bsearch((void*)vs, list, sorted_cnt, sizeof(void *), (void *)compare_var);
+
 	if (vs) {
+      //printf("cachie hit for %s\n", name);
 		return *vs;
-	} else {
-		return 0;
 	}
+   //printf("Sort cache miss... %d out of %d for %s\n", cnt,sorted_cnt, name);
+
+// Now the unsorted portion..
+   for (a=0;a<cnt;a++) {
+      struct variable *p;
+      int b;
+      p=list[a];
+      for (b=0;b<p->names.names.names_len;b++) {
+         if (A4GL_aubit_strcasecmp(p->names.names.names_val[b].name,name)==0) {
+               return  p;
+         }
+      }
+   }
+
+
+
 	return 0;
 }
 
@@ -244,7 +273,7 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
 	p=rval->list.list_val[a]->expr_str_u.expr_variable_usage;
        if (p->datatype!=DTYPE_REFERENCE) {
       		find_variable_vu_in (errbuff, rval->list.list_val[a]->expr_str_u.expr_variable_usage, var_list->variables.variables_val,
-			   var_list->variables.variables_len, 1, 0);
+			   var_list->variables.variables_len, 1, 0,var_list);
 	}
     }
 
@@ -595,7 +624,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 
           return find_variable_vu_in (errbuff, next,
                                       vrec->var_data.variable_data_u.v_record.variables.variables_val,
-                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array,level+1);
+                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array,level+1, NULL);
 
 		}
 
@@ -644,7 +673,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	      return v;
 	    }
 
-	  return find_variable_vu_in (errbuff, next, v->var_data.variable_data_u.v_record.variables.variables_val, v->var_data.variable_data_u.v_record.variables.variables_len, 0,level+1);
+	  return find_variable_vu_in (errbuff, next, v->var_data.variable_data_u.v_record.variables.variables_val, v->var_data.variable_data_u.v_record.variables.variables_len, 0,level+1,NULL);
 	}
 
 
@@ -691,7 +720,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 
           return find_variable_vu_in (errbuff, next,
                                       vrec->var_data.variable_data_u.v_record.variables.variables_val,
-                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array,level+1);
+                                      vrec->var_data.variable_data_u.v_record.variables.variables_len, err_if_whole_array,level+1,NULL);
 
 		
 	}
@@ -702,7 +731,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 
 
 struct variable *
-find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt, int err_if_whole_array, int level)
+find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt, int err_if_whole_array, int level,struct variable_list *src_vlist)
 {
   char *var_section;
   //char var_nextsection[256];
@@ -721,7 +750,13 @@ find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable *
     {
       if (level == 0)
 	{
-	  r = find_variable_quick (var_section, list, cnt);
+      int sorted_cnt=0;
+         if (src_vlist) {
+                  sorted_cnt=src_vlist->sorted_list;
+         } else {
+                  sorted_cnt=-1;
+         }
+	  r = find_variable_quick (var_section, list, cnt,sorted_cnt);
 	  if (r)
 	    {
 	      int b;

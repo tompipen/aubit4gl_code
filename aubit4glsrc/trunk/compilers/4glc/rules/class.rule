@@ -6,7 +6,7 @@ class_definition:
 			if ($5) {
                                         set_uses_constants($5);
                                         merge_variable_list(&this_module.module_variables, $5);
-                                        sort_variables(this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len);
+                                        sort_variables_v(&this_module.module_variables);
 			}
 	} class_entries END_CLASS {
 		$$=NULL;
@@ -30,13 +30,6 @@ op_private_define_section:
 ;
 
 
-/*
-op_public_define_section: 
-	{$$=NULL}
-	| KW_PUBLIC  define_multiple { $$=$2; }	
-	| define_multiple { $$=$1; }	
-;
-*/
 
 
 class_entries :

@@ -938,8 +938,12 @@ call channel::write("make","GLOBALS=")
 call channel::write("make","GLOBALS_DEF=")
 
 if fgl_getenv("VMAKE")!=" "  then
-	call channel::write("make","G_TXX="||lv_buildstr||"g_txx_"||lv_prog clipped)
+	call channel::write("make","G_TXX="||lv_buildstr clipped||"g_txx_"||lv_prog clipped)
 	call channel::write("make","export G_TXX")
+	call channel::write("make","A4GL_UI=CONSOLE")
+	call channel::write("make","export A4GL_UI")
+	call channel::write("make","A4GL_GENERATE_TXXVARS=Y")
+	call channel::write("make","export A4GL_GENERATE_TXXVARS")
 end if
 
 
@@ -1071,6 +1075,18 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 end foreach
 
+
+
+
+
+if fgl_getenv("VMAKE")!= " " then
+	call channel::write("make","FGLOBJS+="||lv_buildstr clipped || "g_"||lv_prog clipped||"txv$(A4GL_OBJ_EXT)")
+end if
+
+
+
+
+
 call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${FGLOBJS})")
 call channel::write("make"," ")
 
@@ -1137,9 +1153,12 @@ end foreach
 
 
 
+
+
 # Not a full clean - just the intermediates...
 call channel::write("make","tidy:")
 call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(MIFS) $(GLOBAL_DEFS)")
+call channel::write("make","	rm -f $(G_TXX) "||lv_buildstr clipped || "g_"||lv_prog clipped||"txv.4gl")
 call channel::write("make"," ")
 
 call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
@@ -1168,10 +1187,18 @@ call channel::write("make"," ")
 
 if fgl_getenv("VMAKE") !=" " then
 	# Special code for Ventas to generate the global txt file
-	call channel::write("make",lv_buildstr clipped || "g_"||lv_prog clipped||"txv.4gl: $(G_TXX)")
-	call channel::write("make","	mktxx $G_TXX $@")
-	call channel::write("make","")
+	   call channel::write("make",lv_buildstr clipped || "g_"||lv_prog clipped||"txv.4gl: $(G_TXX)")
+	   call channel::write("make","	$(HOME)/mja/mktxx $(G_TXX) $@")
+	   call channel::write("make","")
+
+
+		call channel::write("make",lv_buildstr clipped||"g_"||lv_prog clipped||"txv$(A4GL_OBJ_EXT): "|| lv_buildstr clipped||"g_"||lv_prog clipped||"txv.4gl")
+		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
+		call channel::write("make","$(G_TXX): $(FGLOBJS)")
+		call channel::write("make","	touch $(G_TXX)")
 end if
+
+
 call channel::write("make","lint : ${A4GL_LINTFILE}")
 call channel::write("make","$(A4GL_LINTFILE) : ${MIFS}")
 call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fgllint ${MIFS}")

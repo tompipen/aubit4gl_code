@@ -750,9 +750,9 @@ struct menu_attrib {
            struct expr_str *menu_attrib_image;
 };
 void add_dependant_table(char *s);
-void sort_variables(void *ptr, int n) ;
+void sort_variables_v(struct variable_list *vlist);
 
-struct variable *find_variable_quick(char *name, struct variable **list, int cnt) ;
+struct variable *find_variable_quick(char *name, struct variable **list, int cnt,int sorted_cnt) ;
 struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *var_section,  struct variable_usage *vu,int a,int err_if_whole_array,int level) ;
 //int A4GL_module_has_function(struct module_definition *module, char *s,char *file,struct flist *ptr);
 char * compile_ispdf (void);

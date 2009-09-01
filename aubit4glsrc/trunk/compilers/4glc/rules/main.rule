@@ -40,9 +40,9 @@ trad_module: op_module_header
 	
 		set_4gl_vars();
 
-		sort_variables(this_module.exported_global_variables.variables.variables_val, this_module.exported_global_variables.variables.variables_len);
-		sort_variables(this_module.imported_global_variables.variables.variables_val, this_module.imported_global_variables.variables.variables_len);
-		sort_variables(this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len);
+		sort_variables_v(&this_module.exported_global_variables);
+		sort_variables_v(&this_module.imported_global_variables);
+		sort_variables_v(&this_module.module_variables);
 
 
 		set_uses_constants(&this_module.exported_global_variables);
@@ -127,7 +127,7 @@ module_define_section : define_set {
 				if ($1) {
 					set_uses_constants($1);
 					merge_variable_list(&this_module.module_variables, $1);
-					sort_variables(this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len);
+					sort_variables_v(&this_module.module_variables);
 				}
 			}
 			;
@@ -184,7 +184,7 @@ func_def	: op_doc4gl_comment ldeffunction {
 			commands_as_list END_FUNCTION {
 				$<module_entry>$=new_function_definition($<str>4,$<e_boolean>2,$<ptr_list>6, $<commands>12,$<integer_val>9,$<sql_string>1);
 				merge_variable_list(&$<module_entry>$->module_entry_u.function_definition.variables, $10);
-				sort_variables($<module_entry>$->module_entry_u.function_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.function_definition.variables.variables.variables_len);
+				sort_variables_v(&$<module_entry>$->module_entry_u.function_definition.variables);
 
     				pop_blockcommand("FUNC");
     				clr_function_constants ();
@@ -223,7 +223,7 @@ main_def:
 	A4GL_lex_printcomment("/*end main */\n");
 	$<module_entry>$=new_main_definition($<commands>7,$<integer_val>3,$<sql_string>1);
 	merge_variable_list(&$<module_entry>$->module_entry_u.function_definition.variables, $5);
-	sort_variables($<module_entry>$->module_entry_u.function_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.function_definition.variables.variables.variables_len);
+	sort_variables_v(&$<module_entry>$->module_entry_u.function_definition.variables);
 
 
 

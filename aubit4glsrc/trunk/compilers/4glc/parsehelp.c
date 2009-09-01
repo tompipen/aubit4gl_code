@@ -6,7 +6,6 @@
 #include "variables_new.h"
 //#include "trim_spaces.h"
 
-//void sort_variables(void *ptr, int n) ;
 extern struct cmds command_stack[CMD_STACK_SIZE];
 extern int nblock_no;
 extern struct s_report_stack report_stack[REPORTSTACKSIZE];
@@ -664,9 +663,9 @@ void set_variables (variable_list *v,char why) {
 			} else {
 		        	v->variables.variables_len=local_variables->variables.variables_len;
                         	v->variables.variables_val=malloc(local_variables->variables.variables_len*sizeof(struct variable *));
-				sort_variables(local_variables->variables.variables_val, local_variables->variables.variables_len);
+				sort_variables_v(local_variables);
                         	memcpy(v->variables.variables_val,local_variables->variables.variables_val, local_variables->variables.variables_len*sizeof(struct variable *));
-				sort_variables(v->variables.variables_val, v->variables.variables_len);
+				sort_variables_v(v);
 			}
 			return ;
  	}
@@ -676,9 +675,9 @@ void set_variables (variable_list *v,char why) {
 
 			if ( v->variables.variables_len) {
                         	v->variables.variables_val=malloc(this_module.exported_global_variables.variables.variables_len*sizeof(struct variable *));
-				sort_variables(this_module.exported_global_variables.variables.variables_val, this_module.exported_global_variables.variables.variables_len);
+				sort_variables_v(&this_module.exported_global_variables);
                         	memcpy(v->variables.variables_val,this_module.exported_global_variables.variables.variables_val, this_module.exported_global_variables.variables.variables_len*sizeof(struct variable *));
-				sort_variables(v->variables.variables_val, v->variables.variables_len);
+				sort_variables_v(v);
 			} else {
 			 	v->variables.variables_val=NULL;
 			}
@@ -687,21 +686,20 @@ void set_variables (variable_list *v,char why) {
 
 
 	if (why=='G') {
-			sort_variables(this_module.imported_global_variables.variables.variables_val, this_module.imported_global_variables.variables.variables_len);
+			sort_variables_v(&this_module.imported_global_variables);
 		       v->variables.variables_len=this_module.imported_global_variables.variables.variables_len;
                        v->variables.variables_val=malloc(this_module.imported_global_variables.variables.variables_len*sizeof(struct variable *));
                        memcpy(v->variables.variables_val,this_module.imported_global_variables.variables.variables_val, this_module.imported_global_variables.variables.variables_len*sizeof(struct variable *));
-			sort_variables(v->variables.variables_val, v->variables.variables_len);
+			sort_variables_v(v);
 		return ;
  	}
 
 	if (why=='m') {
-	//printf("Set variables %d %p\n",list_module_cnt, list_module);
-			sort_variables(this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len);
+			sort_variables_v(&this_module.module_variables);
 		       v->variables.variables_len=this_module.module_variables.variables.variables_len;
                        v->variables.variables_val=malloc(this_module.module_variables.variables.variables_len*sizeof(struct variable *));
                        memcpy(v->variables.variables_val,this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len*sizeof(struct variable *));
-			sort_variables(v->variables.variables_val, v->variables.variables_len);
+			sort_variables_v(v);
 		return ;
  	}
 
@@ -1411,6 +1409,7 @@ char *get_variable_as_string_from_variable_usage_expression(expr_str *ptr) {
 
 int get_variable_dtype_from_variable_usage_expression(char *errbuff, expr_str *ptr) { 
 int type=0;
+ char *str="";
 struct variable_usage *p;
 struct variable *v;
 enum e_scope scope;
@@ -1432,12 +1431,26 @@ if (ptr->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 
 p=ptr->expr_str_u.expr_variable_usage;
 scope=E_SCOPE_NOTSET;
+
 v=find_variable_vu_ptr(errbuff, p,&scope,1);
 
 if (v==0) {
+ str=expr_as_string_when_possible(ptr);
+
+ if (A4GL_strstartswith(str,"txx_") && A4GL_isyes(acl_getenv("GENERATE_TXXVARS"))) {
+
+		add_txx_variable(&this_module.imported_global_variables,str);
+		v=find_variable_vu_ptr(errbuff, p,&scope,1);
+  }
+  }
+
+  if (v==0) {
+ str=expr_as_string_when_possible(ptr);
+
+
 	if (strlen(errbuff)==0) {
-		set_yytext(expr_as_string_when_possible(ptr));
-		strcpy(errbuff,"Variable has not defined");
+		set_yytext(str);
+		strcpy(errbuff,"Variable has not been defined");
 	}
 	return -1;
 }
@@ -1614,13 +1627,19 @@ p=ptr->expr_str_u.expr_variable_usage;
 scope=E_SCOPE_NOTSET;
 v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 if (v==0) {
-	if (A4GL_strstartswith(expr_as_string_when_possible(ptr),"txx_") && A4GL_isyes(acl_getenv("GENERATE_TXXVARS"))) { 
+   char *str;
+      str=expr_as_string_when_possible(ptr);
+	if (A4GL_strstartswith(str,"txx_") && A4GL_isyes(acl_getenv("GENERATE_TXXVARS"))) { 
 
-		add_txx_variable(&this_module.imported_global_variables, expr_as_string_when_possible(ptr));
+		add_txx_variable(&this_module.imported_global_variables,str);
 		v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 		if (v) {
 			return 1;
 		} 
+
+A4GL_pause_execution();
+        printf("Added a variable which then wasn't found - very strange - lets try again\n");
+		v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 	}
 
 

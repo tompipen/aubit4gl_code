@@ -973,7 +973,7 @@ report_def : op_doc4gl_comment   rep_or_localrep
 			//set_variables(&$<module_entry>$->module_entry_u.report_definition.variables,'L');
 
                         merge_variable_list(&$<module_entry>$->module_entry_u.report_definition.variables, $10);
-                        sort_variables($<module_entry>$->module_entry_u.report_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.report_definition.variables.variables.variables_len);
+                        sort_variables_v(&$<module_entry>$->module_entry_u.report_definition.variables);
 
 			clr_function_constants();
 			 A4GL_chk_and_clr_labels();
@@ -1153,7 +1153,7 @@ pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 			//set_variables(&$<module_entry>$->module_entry_u.pdf_report_definition.variables,'L');
 
                          merge_variable_list(&$<module_entry>$->module_entry_u.pdf_report_definition.variables, $10);
-                         sort_variables($<module_entry>$->module_entry_u.pdf_report_definition.variables.variables.variables_val, $<module_entry>$->module_entry_u.pdf_report_definition.variables.variables.variables_len);
+                         sort_variables_v(&$<module_entry>$->module_entry_u.pdf_report_definition.variables);
 
 			clr_function_constants();
 			 A4GL_chk_and_clr_labels();
