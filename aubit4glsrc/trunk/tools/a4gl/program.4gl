@@ -1241,7 +1241,7 @@ if fgl_getenv("VMAKE") !=" " then
 		   call channel::write("make","	cp $(ALL4GLSRC) $(COPYDIR)")
 		   call channel::write("make","	cp $(ALLPERSRC) $(COPYDIR)")
 		   call channel::write("make","	cp $(LFILE_DIR)/make_"||lv_prog clipped||"_tmp $(COPYDIR)/Makefile")
-		   call channel::write("make","	cp $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(COPYDIR)")
+		   call channel::write("make","	cp $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(COPYDIR) || exit 0")
 		   call channel::write("make","")
       end if
 
