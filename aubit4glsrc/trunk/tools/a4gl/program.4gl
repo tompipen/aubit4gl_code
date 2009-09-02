@@ -968,7 +968,7 @@ declare c_getsettings cursor for
     order by 1
 
 foreach c_getsettings  into lv_name,lv_value
-	call channel::write("make",lv_name clipped||"="||lv_value clipped)
+	call channel::write("make",lv_name clipped||"="||replace_env_var_with_make_var(lv_value) clipped)
 	call channel::write("make","export "||lv_name clipped)
 end foreach
 
@@ -1020,6 +1020,11 @@ call channel::write("make","endif")
 if fgl_getenv("VMAKE")!=" "  then
 	call channel::write("make","G_TXX=$(LFILE_DIR)/g_txx_"||lv_prog clipped)
 	call channel::write("make","export G_TXX")
+   call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
+   call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
+   call channel::write("make","endif")
+		   call channel::write("make","ALL4GLSRC=")
+		   call channel::write("make","ALLPERSRC=")
 end if
 
 
@@ -1047,13 +1052,22 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 		end if
 	end if
 
+
+	if lv_flags is null or lv_flags=" " then
+		let lv_fullname=lv_name
+	else
+		let lv_fullname=lv_flags clipped||"/"||lv_name
+	end if
+
 	# Globals         Module       C-Code         ESQL/C code
 	if lv_type="G" or lv_type="M" then 
 		if lv_type="G" then
 			if lv_flags is not null and lv_flags != " " then
-				call channel::write("make","GLOBALS+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
+	         call channel::write("make","ALL4GLSRC+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
+				call channel::write("make","GLOBALS+="  ||lv_flags clipped||"/"||lv_name clipped||".4gl")
 				call channel::write("make","GLOBALS_DEF+="||lv_flags clipped||"/"||lv_name clipped||".glb.dat")
 			else
+				call channel::write("make","ALL4GLSRC+="||lv_name clipped||".4gl")
 				call channel::write("make","GLOBALS+="||lv_name clipped||".4gl")
 				call channel::write("make","GLOBALS_DEF+="||lv_name clipped||".glb.dat")
 			end if
@@ -1070,12 +1084,18 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	if lv_type="F" then # Form
+		call channel::write("make","ALLPERSRC+="||lv_fullname clipped||".per")
+
 		if lv_flags is not null and lv_flags != " " then
 			call channel::write("make","FORMS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_FULL_FORM_EXT)")
 		else
 			call channel::write("make","FORMS+="||lv_name clipped||"$(A4GL_FULL_FORM_EXT)")
 		end if
 	end if
+
+   if lv_type="M" then
+	         call channel::write("make","ALL4GLSRC+="||lv_fullname clipped||".4gl")
+   end if
 
 	if lv_type="L" then # Libraries
 		if lv_flags is not null and lv_flags != " " then
@@ -1126,6 +1146,8 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	if lv_type="G" then # Globals
+
+
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl")
 		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $^")
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl")
@@ -1208,6 +1230,21 @@ if fgl_getenv("VMAKE") !=" " then
 		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
 		call channel::write("make","$(G_TXX): $(FGLOBJS)")
 		call channel::write("make","	touch $(G_TXX)")
+
+      if lv_prog not matches "*_tmp" then
+         # Rule to copy all the source 4gl and forms etc into the COPYDIR directory
+         # Replicates the copytmp for Ventas...
+         call channel::write("make","$(COPYDIR):")
+		   call channel::write("make","	mkdir $(COPYDIR)")
+		   call channel::write("make","")
+         call channel::write("make","copy: $(COPYDIR)")
+		   call channel::write("make","	cp $(ALL4GLSRC) $(COPYDIR)")
+		   call channel::write("make","	cp $(ALLPERSRC) $(COPYDIR)")
+		   call channel::write("make","	cp $(LFILE_DIR)/make_"||lv_prog clipped||"_tmp $(COPYDIR)/Makefile")
+		   call channel::write("make","	cp $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(COPYDIR)")
+		   call channel::write("make","")
+      end if
+
 end if
 
 
