@@ -21,6 +21,7 @@ Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
 
 Context::~Context()
 {
+   return;
    for(int i=0; i<ql_fieldList.count(); i++){
       QWidget *field = ql_fieldList.at(i);
       field->blockSignals(true);
@@ -30,7 +31,7 @@ Context::~Context()
       }
       else{
 
-         field->setEnabled(false);
+         //field->setEnabled(false);
 
          switch(fgl_state){
             case Fgl::INPUT:
@@ -185,6 +186,7 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
             }
          }
          tableView->setEnabled(true);
+         qDebug() << "TABLEVIEW ENABLED!" << tableView;
          ql_fieldList << tableView;
 
          setOption("ARRLINE", 0);

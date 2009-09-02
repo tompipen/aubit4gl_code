@@ -999,7 +999,7 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
                int col = table->columnCount(QModelIndex())-1;
-               if(col > 1)
+               if(col > 0)
                   col = i;
    
                if(table->rowCount(QModelIndex()) < row+1){
@@ -2941,8 +2941,17 @@ Context* ScreenHandler::getCurrentContext()
 void ScreenHandler::freeContext(int i_context)
 {
    int contextCount = contexts.count()-1;
-   if(contextCount >= i_context)
-      contexts.takeAt(i_context)->deleteLater();
+   if(contextCount >= i_context){
+      Context *context = contexts.takeAt(i_context);
+      for(int i=0; i<context->fieldList().count(); i++){
+         QWidget *field = context->fieldList().at(i);
+         field->blockSignals(true);
+         field->setEnabled(false);
+         field->blockSignals(false);
+      }
+      delete context;
+      //->deleteLater();
+   }
       //contexts.removeAt(i_context);
 
 }
