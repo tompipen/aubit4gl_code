@@ -802,14 +802,14 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       }
 
       if(qs_module == "INTERNAL"){
-         qDebug() << "INTERNAL:" << qs_name; 
-
          if(qs_name == "ui.window.getcurrent"){
-            value = QString::number(p_currScreenHandler->getCurrWindow());
+            //TODO
+            //value = QString::number(p_currScreenHandler->getCurrWindow());
          }
 
          if(qs_name == "ui.window.getform"){
-            value = QString::number(p_currScreenHandler->getCurrForm());
+            //TODO
+            //value = QString::number(p_currScreenHandler->getCurrForm());
          }
 
          if(qs_name == "ui.form.setelementhidden"){

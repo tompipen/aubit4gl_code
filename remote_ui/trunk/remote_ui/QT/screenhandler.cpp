@@ -96,14 +96,16 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
    cnt_form++;
    int i_Frm = getCurrForm();
 
+   /*
    QWidget *parentWidget = NULL;
 
    if(i_Frm > 0 && p_fglform != NULL){
       parentWidget = p_fglform;
    }
+   */
 
    //p_fglform = new FglForm(windowTitle, parentWidget);
-   p_fglform = new FglForm(windowTitle, parentWidget);
+   p_fglform = new FglForm(windowTitle, p_fglform);
 
    connect(p_fglform, SIGNAL(processResponse()), this, SLOT(processResponse()));
    connect(p_fglform, SIGNAL(sendDirect(QString)), this, SLOT(sendDirect(QString)));
@@ -1802,6 +1804,7 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
       return;
 
    Context *context = getContext(i_context);
+   p_fglform->context = context;
 
    if(value){
       if(type == "MENU"){

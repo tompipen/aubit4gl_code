@@ -37,6 +37,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    context = NULL;
 
+   setWindowModality(Qt::WindowModal);
+
    if(!windowName.isEmpty()){
       this->windowName = windowName;
    }
@@ -1053,6 +1055,8 @@ void FglForm::setDefaultStatusBar(const bool &sm)
 //------------------------------------------------------------------------------
 void FglForm::setWindowType(const QString &sm)
 {
+   //TODO
+   return;
 
    if(sm == "modal"){
       setWindowModality(Qt::WindowModal);
