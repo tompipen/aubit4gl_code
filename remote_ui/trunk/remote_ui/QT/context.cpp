@@ -186,7 +186,6 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
             }
          }
          tableView->setEnabled(true);
-         qDebug() << "TABLEVIEW ENABLED!" << tableView;
          ql_fieldList << tableView;
 
          setOption("ARRLINE", 0);
