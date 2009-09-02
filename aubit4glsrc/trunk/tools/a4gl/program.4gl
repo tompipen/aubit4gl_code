@@ -820,8 +820,6 @@ if not has_setting(lv_prog,lv_name)  then
 end if
 end function
 
-
-
 function is_valid_env_var_char(lv_c) 
 define lv_c char(1)
 let lv_c=upshift(lv_c)
@@ -845,9 +843,11 @@ define lv_str char(256)
 define lv_newstr char(256)
 define a,b integer
 define lv_mode integer
+
 let lv_newstr=" "
 let a=1
 let lv_mode=0
+
 for b=1 to length(lv_str)
 	if lv_str[b]="$" then
 		let lv_newstr[a]="$" let a=a+1
@@ -855,10 +855,14 @@ for b=1 to length(lv_str)
 		let lv_mode=1
 		continue for
 	end if
-	if lv_mode=1 and not is_valid_env_var_char(lv_str[b]) then
-		let lv_newstr[a]=")" let a=a+1
-		let lv_mode=0
+   
+	if lv_mode=1 then
+      if not is_valid_env_var_char(lv_str[b]) then
+		   let lv_newstr[a]=")" let a=a+1
+		   let lv_mode=0
+      end if
 	end if
+
 	let lv_newstr[a]=lv_str[b] let a=a+1
 end for
 if lv_mode=1 then 
