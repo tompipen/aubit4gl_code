@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.60 2009-09-02 14:41:04 mikeaubury Exp $
+# $Id: globals.c,v 1.61 2009-09-02 15:17:21 mikeaubury Exp $
 #
 */
 
@@ -274,22 +274,35 @@ read_glob (char *s)
   int XMLBEST=0;
 
   s=expand_env_vars_in_cmdline(s,0);
-
   if (A4GL_isyes(acl_getenv("TRY_LOCAL_GLOBALS_FIRST"))) {
+		static char buff[2000]="";
 	if (s[0]=='/') {
-		static char buff[2000];
 		char *s2;
 		s2=rindex(s,'/')+1;
 		sprintf(buff,"%s",s2);
-		if (A4GL_file_exists(s2))  {
+//printf("Here : %s\n",s);
+		if (A4GL_file_exists(buff))  {
+         printf("Using local version of %s for globals\n",s2);
 			s=buff;
+         
 		} else {
 			sprintf(buff,"%s.4gl",s2);
-			if (A4GL_file_exists(s2))  {
+			if (A4GL_file_exists(buff))  {
+            //printf("Using local version of %s for globals\n",s2);
 				s=buff;
-			}
+			} else {
+            strcpy(buff,"");
+            }
 		}
+        if (strlen(buff)) {
+            char *p;
+                  p=strstr(buff,".4gl");
+                     if (p) {
+                        *p=0;
+                          }
+         }
 	}
+
   }
   /* MJA - NEWVARIABLE*/
   strcpy (ii, s);
