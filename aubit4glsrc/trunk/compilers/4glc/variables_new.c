@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.18 2009-09-01 17:20:02 mikeaubury Exp $
+# $Id: variables_new.c,v 1.19 2009-09-03 15:49:48 mikeaubury Exp $
 #
 */
 
@@ -845,15 +845,26 @@ return 0;
 
 
 
-void add_txx_variable(struct variable_list *vlist_to_add_to, char *s) {
+void add_txx_variable(struct variable_list *vlist_to_add_to, char *s_orig) {
   	struct variable_list *vlist;
+char *ptr;
 		#define SIZE_OF_TXX 80
                 FILE *fout;
                   char *fname;
                 char c;
+	char s[200]="";
                   fname=acl_getenv_not_set_as_0("G_TXX");
                   if (fname==0) fname="g_txx";
                  
+strcpy(s,s_orig);
+ptr=strchr(s,'[');
+if (ptr) {
+	*ptr=0;
+}
+if (strchr(s,'.')) {
+	a4gl_yyerror("txx_ variable automatically added cannot be part of a record...\n");
+	return;
+}
                 fout=fopen(fname,"a");
                 if (fout) {
 #ifdef DEBUG
@@ -862,6 +873,7 @@ void add_txx_variable(struct variable_list *vlist_to_add_to, char *s) {
                         fprintf(fout,"%s\n",s, SIZE_OF_TXX);
                 }
                  allow_sorting=0;
+	
 
                 vlist=create_variable_list(new_str_list(s), new_simple_variable(NULL,DTYPE_CHAR,SIZE_OF_TXX,0));
                 merge_variable_list(vlist_to_add_to,vlist);
