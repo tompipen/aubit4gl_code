@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.19 2009-09-03 15:49:48 mikeaubury Exp $
+# $Id: variables_new.c,v 1.20 2009-09-03 15:55:12 mikeaubury Exp $
 #
 */
 
@@ -851,7 +851,7 @@ char *ptr;
 		#define SIZE_OF_TXX 80
                 FILE *fout;
                   char *fname;
-                char c;
+                //char c;
 	char s[200]="";
                   fname=acl_getenv_not_set_as_0("G_TXX");
                   if (fname==0) fname="g_txx";
@@ -860,6 +860,7 @@ strcpy(s,s_orig);
 ptr=strchr(s,'[');
 if (ptr) {
 	*ptr=0;
+	A4GL_trim(s);
 }
 if (strchr(s,'.')) {
 	a4gl_yyerror("txx_ variable automatically added cannot be part of a record...\n");
@@ -870,7 +871,7 @@ if (strchr(s,'.')) {
 #ifdef DEBUG
                      A4GL_debug("Appending %s to %s\n", s, fname );
 #endif
-                        fprintf(fout,"%s\n",s, SIZE_OF_TXX);
+                        fprintf(fout,"%s\n",s);
                 }
                  allow_sorting=0;
 	
