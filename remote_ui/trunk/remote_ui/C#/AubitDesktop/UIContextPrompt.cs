@@ -54,7 +54,7 @@ namespace AubitDesktop
 
             public bool externallyTriggeredID(string ID)
             {
-                Program.Show("Here");
+                //Program.Show("Here");
                 return false;
             }
 
