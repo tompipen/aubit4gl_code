@@ -1800,7 +1800,7 @@ namespace AubitDesktop
                     if (next_field.fglField.NoEntry)
                     {
 
-                        if (why == 'R' || why == 0 || why == 'D' || why == 'Q')
+                        if (why == 'R' || why == '0' || why == 'D' || why == 'Q')
                             attrib++;
                         else
                             attrib--;
