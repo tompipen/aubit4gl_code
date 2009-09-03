@@ -56,7 +56,18 @@ namespace AubitDesktop
         /// <summary>
         /// Total number of rows in the dataset
         /// </summary>
-        private int nRows;
+        private int _nRows;
+        private int nRows
+        {
+            get
+            {
+                return _nRows;
+            }
+            set
+            {
+                _nRows = value;
+            }
+        }
 
         /// <summary>
         /// Total maximum size of the 4gl array
@@ -459,10 +470,12 @@ namespace AubitDesktop
 
         public void toolBarAcceptClicked()
         {
+            copyFieldData();
             if (CurrentField.fglField.afterFieldID != "")
             {
                 sendTrigger(CurrentField.fglField.afterFieldID);
             }
+            
             sendTrigger("ACCEPT");
         }
 
@@ -1328,6 +1341,7 @@ namespace AubitDesktop
                     ptr_movement = this.fcntrl[a].parameter;
                     if (ptr_movement.arrLine > this.nRows)
                     {
+                        this.nRows = ptr_movement.arrLine;
                         init_arrLine(ptr_movement.arrLine);
                         this.curr_line_is_new = 1;
                     }
