@@ -79,13 +79,14 @@ void ClientTcp::incomingConnection(int socketID)
    // to read from network
    //
    socket = new ClientSocket(this);
-
    p_arr_socket << socket;
    i_cnt_socket++;
 
 
    // when socket gets data the server has to reply
    //
+   connect(&socket->ph, SIGNAL(debugtext(const QString&)) ,dw , SLOT(debugOut(const QString&)));
+
    connect(socket, SIGNAL(makeResponse(QString)), 
            this, SLOT(clientReturn(QString)));
 
@@ -103,9 +104,11 @@ void ClientTcp::incomingConnection(int socketID)
       //Commandline arguments for Debugging
       QStringList args = QApplication::arguments();
 
-      if(args.contains("-D")){
-         //graphical debug (open Debug window)
-      }
+//      if(args.contains("-D")){
+//         //graphical debug (open Debug window)
+//          //qsl_xmlCommands.at(i);
+//      qDebug() << "-D läuft";
+//      }
 
       if(args.contains("-d")){
          //non-graphical debug (write to file)
@@ -140,12 +143,22 @@ void ClientTcp::incomingConnection(int socketID)
 // Method       : newSocket()
 // Filename     : tcpclient.cpp
 // Description  : newSocket method... --- atm not in use
-//------------------------------------------------------------------------------
+//-------------entTcp-----------------------------------------------------------------
 
 void ClientTcp::newSocket()
 {
    setMaxPendingConnections(16);
 }
+
+void ClientTcp::setDebugModus(bool debugModus)
+{
+ dw = new DebugWindow();
+ if (debugModus)
+ {
+     dw->show();
+    }
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : ClientSocket()
@@ -320,6 +333,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(fileBrowser(QString, QString, QString, QString, QString)), p_currScreenHandler, SLOT(fileBrowser(QString, QString, QString, QString, QString)));
 
 }
+
 
 
 void ClientSocket::makeOwnResponse(QString qs_replyString)
@@ -549,6 +563,8 @@ void ProtocolHandler::run()
       QTextStream out(&file);
       out << qsl_xmlCommands.at(i);
    }
+
+   emit debugtext(qsl_xmlCommands.at(i));
 
          QDomElement envelope = doc.documentElement();
          QDomElement commands = envelope.firstChildElement("COMMANDS");
@@ -1984,4 +2000,18 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
 
    return false;
 
+}
+
+DebugWindow::DebugWindow(QWidget *parent) : QDialog(parent)
+{
+mainLayout = new QVBoxLayout(this);
+edit = new QTextEdit(this);
+mainLayout->addWidget(edit);
+setLayout(mainLayout);
+}
+
+void DebugWindow::debugOut(QString debugtext)
+{
+//debugfull.append(debugtext);
+edit->append(debugtext);
 }

@@ -37,9 +37,26 @@
 static qint32 connID=0; 
 static qint32 curr_connID=0;
 
+class DebugWindow : public QDialog
+{
+
+    Q_OBJECT;
+
+    public:
+      DebugWindow(QWidget *parent = 0);
+      QVBoxLayout *mainLayout;
+      QTextEdit *edit;
+      QString debugfull;
+
+    public slots:
+      void debugOut(QString);
+
+
+};
+
 class ProtocolHandler : public QThread
 {
-   Q_OBJECT
+   Q_OBJECT;
 
 public:
    ~ProtocolHandler();
@@ -47,8 +64,8 @@ public:
 
    // Holds the XMLProtocolString
    QString request;
+   DebugWindow *dw;
    ScreenHandler *p_currScreenHandler;
-
    QString qs_shortCutUser;
    QString qs_shortCutPass;
    QString qs_shortCutProgram;
@@ -100,6 +117,7 @@ signals:
 
    void createActionMenu();
    void createActionMenuButton(QString, QString, QString);
+   void debugtext( const QString& );
 
    void setKeyLabel(int, QString, QString);
    void setCursorPosition(int);
@@ -149,12 +167,12 @@ public slots:
 
 class ClientSocket : public QTcpSocket
 {
-   Q_OBJECT
+   Q_OBJECT;
 
    public:
       ClientSocket(QObject *parent = 0, QString user = "", QString pass = "", QString program = "");
       ~ClientSocket();
-
+      DebugWindow *dw;
       ProtocolHandler ph;
 
    private:
@@ -184,7 +202,8 @@ class ClientTcp : public QTcpServer
       //ClientSocket *p_arr_socket[16];
       QList<ClientSocket*> p_arr_socket;
       int i_cnt_socket;
-
+      void setDebugModus(bool);
+      DebugWindow *dw;
 
       public slots:
          void newSocket();
@@ -197,6 +216,7 @@ class ClientTcp : public QTcpServer
    private:
       QErrorMessage *errorMessageTcpClient;
       QTextStream out;
+      bool debugModus;
 
       int cnt_replied;
 
@@ -204,6 +224,8 @@ class ClientTcp : public QTcpServer
    protected:
       void incomingConnection(int socketID);
 };
+
+
 
 
 #endif

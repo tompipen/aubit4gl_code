@@ -36,8 +36,9 @@ LoginForm::LoginForm(QWidget *parent)
 {
    MainFrame *mainFrame = (MainFrame*) parent;
    bool adminMenu = mainFrame->adminMenu;
+   bool debugModus = mainFrame->debugModus;
    QStatusBar *statusBar = mainFrame->statusBar();
-   statusBar->showMessage("Welcome!", 2000);
+//   statusBar->showMessage("Welcome!", 2000);
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
    trayIcon->setIcon(QIcon("./pics/ventas.ico"));
@@ -66,20 +67,38 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *hosts = new QAction(tr("&Hosts"), this);
    option->setStatusTip(tr("Opens the Option Window"));
    hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
-   admin->setStatusTip(tr("Opens the Hosts Data Settings"));
    connect(option, SIGNAL(triggered()), this, SLOT(option()));
    menuBar->addAction(option);
 
    if (adminMenu == true)
    {
    statusBar->showMessage("Login Screen started in Admin Mode", 3000);
-   QTimer *timer = new QTimer(this);
-   connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
-   timer->start(3000);
+//   QTimer *timer = new QTimer(this);
+//   connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
+//   timer->start(3000);
    menuBar->addMenu(admin);
    admin->addAction(hosts);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
    }
+else
+    {
+//       QTimer *timer = new QTimer(this);
+//       connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
+//       timer->start(3000);
+welcomeBar();
+}
+
+
+
+    // Add the DebugMenu
+//  if (debugModus == true)
+//{
+//      statusBar->showMessage("Login Screen started in Debug Mode");
+//      QAction *debug = new QAction(tr("&Debug"), this);
+//      admin->addAction(debug);
+//      connect(debug, SIGNAL(triggered()), this, SLOT(debug()));
+//  }
+
 
    // instantiating labels and line edits - facilitating user input
    // labels should be filled by text-variables - later
@@ -131,6 +150,11 @@ LoginForm::LoginForm(QWidget *parent)
    loginLayout->addWidget(usernameLineEdit);
    loginLayout->addWidget(passwordLabel);
    loginLayout->addWidget(passwordLineEdit);
+   if(adminMenu == true)
+   {
+       loginLayout->addWidget(applicationLabel);
+       loginLayout->addWidget(applicationLineEdit);
+   }
    loginLayout->addStretch(1);
 
    // putting buttons and line edits in one single layout
@@ -158,6 +182,10 @@ void LoginForm::hosts()
    HostsData *hosts = new HostsData(this);
    hosts->show();
 }
+
+
+
+
 //Hosts Settings
 HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {

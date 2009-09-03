@@ -63,7 +63,7 @@ public:
    QProcess *p_currOpenNetwork;
    ClientTcp *clientTcp;
    bool adminMenu;
-
+   bool debugModus;
 public slots:
    void cleanUp();
 

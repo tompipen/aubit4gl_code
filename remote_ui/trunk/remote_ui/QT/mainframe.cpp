@@ -70,6 +70,10 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
      {
          adminMenu = true;
      }
+          if (parameter.at(i) == "-D")
+     {
+         debugModus = true;
+     }
  }
 
    if(onlyLogin == false){
@@ -129,7 +133,7 @@ void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
 
 //------------------------------------------------------------------------------
 // Method       : createStatusBar()
-// Filename     : mainframe.cpp
+// Filename :S    : mainframe.cpp
 // Description  : createStatusBar logic
 //------------------------------------------------------------------------------
 
@@ -574,6 +578,8 @@ void ShortcutsTab::updateListBox()
 void MainFrame::tcpListener()
 {
    clientTcp = new ClientTcp(this);
+   clientTcp->setDebugModus(debugModus);
+
    if(!clientTcp->listen(QHostAddress::Any, 1350)){
       errorMessageMainFrame->showMessage(
             tr("ERROR: Failed to bind to port"));

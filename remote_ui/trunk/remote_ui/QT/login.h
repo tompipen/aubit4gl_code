@@ -47,7 +47,6 @@ public slots:
    void option();
    void showMessage(QString m);
    void hosts();
-
    void welcomeBar();
 
 private slots:
@@ -135,7 +134,6 @@ public slots:
    void checkipv6();
    QString checkOS();
 };
-
 
 #endif
 
