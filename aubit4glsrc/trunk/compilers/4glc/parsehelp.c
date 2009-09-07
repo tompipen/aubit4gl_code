@@ -1407,6 +1407,21 @@ char *get_variable_as_string_from_variable_usage_expression(expr_str *ptr) {
 }
 
 
+static int isAutoAddVariable(char *str) {
+printf("isAutoAddVariable (%s)\n",str);
+ if (!A4GL_isyes(acl_getenv("GENERATE_TXXVARS")))  return 0 ;
+ if (A4GL_strstartswith(str,"txx_")) return 1;
+ if (A4GL_strstartswith(str,"case_")) {
+   if (strstr(str,"case_k."))  return 0;
+   //if (strstr(str,"case_t"))  return 0;
+   if (strstr(str,"case_array"))  return 0;
+   return 1;
+ }
+
+return 0;
+}
+
+
 int get_variable_dtype_from_variable_usage_expression(char *errbuff, expr_str *ptr) { 
 int type=0;
  char *str="";
@@ -1437,8 +1452,7 @@ v=find_variable_vu_ptr(errbuff, p,&scope,1);
 if (v==0) {
  str=expr_as_string_when_possible(ptr);
 
- if (A4GL_strstartswith(str,"txx_") && A4GL_isyes(acl_getenv("GENERATE_TXXVARS"))) {
-
+ if (isAutoAddVariable(str)) {
 		add_txx_variable(&this_module.imported_global_variables,str);
 		v=find_variable_vu_ptr(errbuff, p,&scope,1);
   }
@@ -1629,7 +1643,7 @@ v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 if (v==0) {
    char *str;
       str=expr_as_string_when_possible(ptr);
-	if (A4GL_strstartswith(str,"txx_") && A4GL_isyes(acl_getenv("GENERATE_TXXVARS"))) { 
+	if (isAutoAddVariable(str)) {
 
 		add_txx_variable(&this_module.imported_global_variables,str);
 		v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);

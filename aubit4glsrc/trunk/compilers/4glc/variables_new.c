@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.20 2009-09-03 15:55:12 mikeaubury Exp $
+# $Id: variables_new.c,v 1.21 2009-09-07 11:35:20 mikeaubury Exp $
 #
 */
 
@@ -863,7 +863,7 @@ if (ptr) {
 	A4GL_trim(s);
 }
 if (strchr(s,'.')) {
-	a4gl_yyerror("txx_ variable automatically added cannot be part of a record...\n");
+	a4gl_yyerror("txx_/case_ variable automatically added cannot be part of a record...\n");
 	return;
 }
                 fout=fopen(fname,"a");
