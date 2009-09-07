@@ -976,7 +976,10 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
                }
 
                QString fieldValue = fieldValues.at(i);
-               QModelIndex modelIndex = table->index(row, col, QModelIndex());
+               //QModelIndex modelIndex = table->index(row, col, QModelIndex());
+               QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
+               modelIndex = proxyModel->mapToSource(modelIndex);
+
                table->setData(modelIndex, fieldValue, Qt::EditRole);
             }
          }
@@ -1000,7 +1003,9 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
                }
    
                QString fieldValue = fieldValues.at(i);
-               QModelIndex modelIndex = table->index(row, col, QModelIndex());
+               //QModelIndex modelIndex = table->index(row, col, QModelIndex());
+               QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
+               modelIndex = proxyModel->mapToSource(modelIndex);
                table->setData(modelIndex, fieldValue, Qt::EditRole);
             }
             cnt_values++;
