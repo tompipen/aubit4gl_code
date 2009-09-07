@@ -55,6 +55,7 @@ private:
    QLayout* layout;
    QButtonGroup *buttonGroup;
    QString m_menuStyle;
+   QPushButton *currentButton;
 
 protected:
    void resizeEvent(QResizeEvent *);

@@ -35,9 +35,6 @@
 
 #include <models/fglform.h>
 
-static qint32 connID=0; 
-static qint32 curr_connID=0;
-
 class DebugWindow : public QDialog
 {
 

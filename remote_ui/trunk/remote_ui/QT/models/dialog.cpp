@@ -99,13 +99,13 @@ void Dialog::createButton(int id, QString text, QString tooltip)
 
 
    // Add the Button to the Layout
-   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
+//   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
       buttonLayout->addWidget(button);
-   }
+//   }
 
-   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
-      buttonLayout->addWidget(button);
-   }
+//   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
+//      buttonLayout->addWidget(button);
+//   }
 
    buttonGroup->addButton(button, id);
 }
@@ -123,13 +123,13 @@ void Dialog::createAction(int id, QString text)
    button->setVisible(false);
 
    // Add the Button to the Layout
-   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
+//   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
       buttonLayout->addWidget(button);
-   }
+//   }
 
-   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
-      buttonLayout->addWidget(button);
-   }
+//   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
+//      buttonLayout->addWidget(button);
+ //  }
 
    buttonGroup->addButton(button, id);
 }

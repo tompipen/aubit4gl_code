@@ -37,9 +37,7 @@ LoginForm::LoginForm(QWidget *parent)
    MainFrame *mainFrame = (MainFrame*) parent;
 
    bool adminMenu = mainFrame->adminMenu;
-//   bool debugModus = mainFrame->debugMode;
    QStatusBar *statusBar = mainFrame->statusBar();
-//   statusBar->showMessage("Welcome!", 2000);
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
    trayIcon->setIcon(QIcon("./pics/ventas.ico"));

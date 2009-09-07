@@ -29,9 +29,9 @@ HEADERS += confwin.h \
     models/response.h \
     models/table.h \
     context.h \
-    fieldparsers/aubit2fields.h \
-    fieldparsers/xml2fields.h \
-    fieldparsers/xml2form.h \
+#    fieldparsers/aubit2fields.h \
+#    fieldparsers/xml2fields.h \
+#    fieldparsers/xml2form.h \
     fieldparsers/parser.h \
     xmlparsers/xml2menu.h \
     xmlparsers/xml2style.h
@@ -53,9 +53,9 @@ SOURCES += confwin.cpp \
     models/response.cpp \
     models/table.cpp \
     context.cpp \
-    fieldparsers/aubit2fields.cpp \
-    fieldparsers/xml2fields.cpp \
-    fieldparsers/xml2form.cpp \
+#    fieldparsers/aubit2fields.cpp \
+#    fieldparsers/xml2fields.cpp \
+#    fieldparsers/xml2form.cpp \
     fieldparsers/parser.cpp \
     xmlparsers/xml2menu.cpp \
     xmlparsers/xml2style.cpp

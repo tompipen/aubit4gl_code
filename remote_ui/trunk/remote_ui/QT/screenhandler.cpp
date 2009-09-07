@@ -92,17 +92,10 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
 {
    Q_UNUSED(x);
    Q_UNUSED(y);
+   Q_UNUSED(h);
+   Q_UNUSED(w);
 
    cnt_form++;
-   int i_Frm = getCurrForm();
-
-   /*
-   QWidget *parentWidget = NULL;
-
-   if(i_Frm > 0 && p_fglform != NULL){
-      parentWidget = p_fglform;
-   }
-   */
 
    //p_fglform = new FglForm(windowTitle, parentWidget);
    p_fglform = new FglForm(windowTitle, p_fglform);
@@ -1115,7 +1108,6 @@ void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
             }
 
             int colCount = table->columnCount(QModelIndex());
-            int rowCount = table->rowCount(QModelIndex());
             int row = 0;
 
             for(int i=0; i<qsl_arrayValues.count(); i+=colCount){
@@ -1144,6 +1136,8 @@ void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
 {
+   Q_UNUSED(focus);
+
    fieldName = fieldName.trimmed();
 
    int i_Frm = getCurrForm();
@@ -2257,8 +2251,6 @@ void ScreenHandler::sendDirect(QString cmd)
 void ScreenHandler::free(QString type)
 {
 
-   int i_Frm = getCurrForm();
-
    if(p_prompt != NULL && type == "PROMPT"){
       p_prompt->setVisible(false);
       p_prompt->close();
@@ -2500,7 +2492,7 @@ void ScreenHandler::closeWindow(QString windowName)
          int i_Frm = getCurrForm();
          initForm(i_Frm);
          cnt_form--;
-         FglForm *window = ql_fglForms.takeAt(i);
+         ql_fglForms.takeAt(i);
 //         window->deleteLater();
          i_Frm = getCurrForm();
 
@@ -2578,61 +2570,9 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
          if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
             
             context->addScreenRecord(tableView, input);
-/*
-            tableView->setInputEnabled(input);
-            tableView->setEnabled(enable);
-            if(enable){
-               if(!input && focus){
-                  tableView->selectRow(0);
-                  focus = false;
-               }
-               else{
-                  QModelIndex index = tableView->model()->index(0, 0, QModelIndex());
-                  if(index.isValid() && focus){
-                     tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
-                     focus = false;
-                  }
-               }
-            }
-*/
          }
       }
    }
-/*
-   int index = fieldName.indexOf(".*");
-   bool focus = true;
-
-   if(index < 0){
-   }
-   else{
-      QList<QWidget*> ql_fields = p_fglform->findFieldsByName(fieldName);
-      for(int i=0; i< ql_fields.count(); i++){
-
-         QWidget *widget = ql_fields.at(i);
-
-         if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-            context->fieldList() << de->objectName();
-            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-               tableView->setInputEnabled(input);
-               tableView->setEnabled(enable);
-               if(enable){
-                  if(!input && focus){
-                     tableView->selectRow(0);
-                     focus = false;
-                  }
-                  else{
-                     QModelIndex index = tableView->model()->index(0, 0, QModelIndex());
-                     if(index.isValid() && focus){
-                        tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
-                        focus = false;
-                     }
-                  }
-               }
-            }
-         }
-      }
-   }
-*/
 }
 
 //------------------------------------------------------------------------------
@@ -2717,7 +2657,6 @@ void ScreenHandler::loadArrayValues(QStringList qsl_tabNames, QStringList qsl_ar
                }
 
                int colCount = table->columnCount(QModelIndex());
-               int rowCount = table->rowCount(QModelIndex());
                int row = 0;
 
                for(int i=0; i<qsl_arrayValues.count(); i+=colCount){
@@ -3058,14 +2997,5 @@ void ScreenHandler::checkFields()
       return;
 
    bool enable = (p_fglform->state() != Fgl::CONSTRUCT);
-
-//   QList<QWidget*> ql_fields = p_fglform->formElements();
-   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
-   for(int i=0; i<ql_fields.size(); i++){
-      QWidget *widget = ql_fields.at(i);
-
-      //switch(widget->sqlType()){
-      //}
-   }
 }
 

@@ -140,9 +140,9 @@ QString FormField::text()
    return QString();
 }
 
-void FormField::setText(QString test)
+void FormField::setText(QString text)
 {
-   
+  
 }
 
 QString FormField::defaultValue()
@@ -158,7 +158,6 @@ void FormField::setDefaultValue(QString val)
 void FormField::addField(QWidget *widget)
 {
    widget->setParent(this);
-   qDebug() << "ADDED:" << widget;
 }
 
 //------------------------------------------------------------------------------
@@ -691,6 +690,9 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
    }
 
    browser->setFixedHeight(defHeight);
+   QFontMetrics fm = browser->fontMetrics();
+   int width = w*fm.width("W")+10;
+   browser->setFixedWidth(width);
 
    return browser;
 }
@@ -708,7 +710,7 @@ Button* WidgetHelper::createButton(const QDomElement& formField, QWidget *parent
 
    bool hidden   = formField.attribute("hidden").toInt();
 
-   Button *button = new Button();
+   Button *button = new Button(parent);
    button->action = action;
    button->setAccessibleName(name);
    button->setObjectName(colName);
@@ -947,6 +949,9 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
 
    int height = textEditElement.attribute("height").toInt();
    if(height < 1) height = 1;
+
+   if(hidden)
+      textEdit->setVisible(false);
 
    textEdit->setFixedHeight(defHeight*height);
    

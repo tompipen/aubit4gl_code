@@ -35,8 +35,8 @@ ClientTcp::ClientTcp(QObject *parent)
     : QTcpServer(parent)
 {
    cnt_replied=0;
-
    i_cnt_socket=0;
+
    socket = NULL;
 
    {
@@ -85,11 +85,8 @@ void ClientTcp::incomingConnection(int socketID)
 
    // when socket gets data the server has to reply
    //
-
-   if(debugModus)
-   {
    connect(&socket->ph, SIGNAL(debugtext(const QString&)) ,dw , SLOT(debugOut(const QString&)));
-}
+
    connect(socket, SIGNAL(makeResponse(QString)), 
            this, SLOT(clientReturn(QString)));
 
@@ -156,10 +153,11 @@ void ClientTcp::newSocket()
 void ClientTcp::setDebugModus(bool debugModus)
 {
  dw = new DebugWindow();
-if (debugModus)
-{
+ qDebug() << "DEBUG:" << debugModus;
+ if (debugModus)
+ {
      dw->show();
-    }
+ }
 }
 
 
@@ -173,8 +171,6 @@ if (debugModus)
 ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString program)
     : QTcpSocket(parent)
 {
-   curr_connID = connID;
-
    ph.qs_shortCutUser = name;
    ph.qs_shortCutPass = pass;
    ph.qs_shortCutProgram = program;
@@ -183,7 +179,6 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    // ProtocolHandlers section
    //
    p_currScreenHandler = new ScreenHandler(this);
-   connID++;
 
    // Thread to handle protocols data
    //
@@ -784,7 +779,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    }
 
    if(childElement.nodeName() == "CALL"){
-      int paramCount = childElement.attribute("NPARAMS").toInt();
+      //int paramCount = childElement.attribute("NPARAMS").toInt();
       QDomElement paramsElement = childElement.firstChildElement();
 
       QString qs_function = paramsElement.text();
@@ -2011,7 +2006,6 @@ mainLayout = new QVBoxLayout(this);
 edit = new QTextEdit(this);
 mainLayout->addWidget(edit);
 setLayout(mainLayout);
-setWindowTitle(tr("Debug Window"));
 }
 
 void DebugWindow::debugOut(QString debugtext)

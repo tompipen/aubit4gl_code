@@ -184,8 +184,6 @@ void ConnectionsTab::addConnection()
 
     int row = listpruef.count();
 
-    qDebug() << "IP:" << ip;
-    qDebug() << "Port:" << port;
     portshow = QString::number(port);
     tableWidget->insertRow(listpruef.count());
     tableWidget->setItem(listpruef.count(), 0, new QTableWidgetItem(portshow));
@@ -217,10 +215,6 @@ for(int i=0; i<listpruef.count(); i++) {
 OptionsTab::OptionsTab(QWidget *parent)
     : QWidget(parent)
 {
-
-
-
-       QButtonGroup *buttons = new QButtonGroup;
        QGroupBox *fontbox = new QGroupBox(tr("Font"));
        QLabel *fontlabel = new QLabel(tr("Font : "));
        QPushButton *select = new QPushButton("&Select",this);

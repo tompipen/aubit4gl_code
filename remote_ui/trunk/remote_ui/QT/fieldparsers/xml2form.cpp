@@ -145,7 +145,7 @@ void XML2Form::outputTree(const QDomNode& domNode, QLayout* parent)
          // form field relevant elements found 
          // so we've to handle them 
          // 
-         if(handleFormField(childElement, parent)); 
+         handleFormField(childElement, parent); 
  
       }else if(childElement.nodeName() == "TableColumn"){ 
          QSortFilterProxyModel *proxyModel; 
@@ -157,7 +157,7 @@ void XML2Form::outputTree(const QDomNode& domNode, QLayout* parent)
             i_formWidth  = childElement.attribute("width").toInt(); 
             i_formHeight = childElement.attribute("height").toInt(); 
  
-            if(handleTableColumn(childElement.parentNode().toElement(), parent)); 
+            handleTableColumn(childElement.parentNode().toElement(), parent); 
  
             b_table = true; 
              
@@ -188,10 +188,6 @@ void XML2Form::outputTree(const QDomNode& domNode, QLayout* parent)
            tab->v_colTabNames << childElement.attribute("colName"); 
          } 
  
-         if(i == children.count()-1){ 
-            QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (p_screenRecord->model()); 
-            TableModel *tab = static_cast<TableModel*> (proxyModel->sourceModel()); 
-         } 
           
       }else{ 
         

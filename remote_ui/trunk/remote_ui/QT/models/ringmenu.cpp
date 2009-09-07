@@ -28,6 +28,7 @@
 //------------------------------------------------------------------------------
 RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 {
+   currentButton = NULL;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
    this->setEnabled(false);
@@ -49,6 +50,7 @@ RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 RingMenu::RingMenu(QString title, QString style, QString image, 
                    QWidget *parent) : QGroupBox(title, parent)
 {
+   currentButton = NULL;
 
    if(!style.isEmpty()){
       this->setProperty("menuStyle", style);
@@ -118,7 +120,9 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 //------------------------------------------------------------------------------
 void RingMenu::hideButton(int id)
 {
-   //TODO Implement
+   if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(id))){
+      button->setVisible(false);
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -175,6 +179,7 @@ void RingMenu::selectButton(QString name)
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text() == name)
             button->setFocus();
+            currentButton = button;
       }
    }
 }

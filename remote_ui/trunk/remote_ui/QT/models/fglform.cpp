@@ -606,7 +606,6 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    if(event->type() == QEvent::FocusIn){
       if(WidgetHelper::isFieldWidget(obj) && (input() || screenRecord() || construct())){
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
-            QFocusEvent *fe = (QFocusEvent*) event;
             if(this->focusWidget() != currentWidget){
                currentWidget = widget;
                Fgl::Event fgl_event;
@@ -696,6 +695,10 @@ void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
            }
            break;
 
+      case Fgl::BEFORE_INSERT_DELETE_EVENT:
+      case Fgl::AFTER_INSERT_DELETE_EVENT:
+      case Fgl::BEFORE_MENU_EVENT:
+      case Fgl::AFTER_MENU_EVENT:
       case Fgl::BEFORE_INPUT_EVENT:
       case Fgl::AFTER_INPUT_EVENT:
       case Fgl::BEFORE_CONSTRUCT_EVENT:
@@ -1580,7 +1583,7 @@ void FglForm::checkState()
    }
 
    if(state != Fgl::IDLE){
-     bool en = (state == Fgl::INPUT || state == Fgl::CONSTRUCT || state == Fgl::DISPLAYARRAY || state == Fgl::INPUTARRAY);
+     //bool en = (state == Fgl::INPUT || state == Fgl::CONSTRUCT || state == Fgl::DISPLAYARRAY || state == Fgl::INPUTARRAY);
      checkToolBar();
    }
 
@@ -1939,6 +1942,8 @@ QWidget* FglForm::findFieldByName(QString fieldName)
         }
      }
    }
+
+   return NULL;
 }
 
 QList<QWidget*> FglForm::findFieldsByName(QString fieldName)
