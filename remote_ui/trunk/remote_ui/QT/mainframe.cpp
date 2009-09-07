@@ -60,6 +60,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 
    adminMenu = true;
    onlyLogin = true;
+   debugModus = false;
  for(int i=0; i<parameter.count(); i++)
   {
      if (parameter.at(i) == "-l")

@@ -42,13 +42,12 @@ public:
    QStringList splitlist;
    QString fonteingabe;
 
-
 public slots:
    void option();
    void showMessage(QString m);
    void hosts();
    void welcomeBar();
-
+   void debugToggle(bool checked);
 private slots:
 
    void okPressed();

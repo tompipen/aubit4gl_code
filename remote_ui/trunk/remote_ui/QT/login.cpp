@@ -35,8 +35,9 @@ LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
    MainFrame *mainFrame = (MainFrame*) parent;
+
    bool adminMenu = mainFrame->adminMenu;
-   bool debugModus = mainFrame->debugModus;
+//   bool debugModus = mainFrame->debugMode;
    QStatusBar *statusBar = mainFrame->statusBar();
 //   statusBar->showMessage("Welcome!", 2000);
 
@@ -65,11 +66,14 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *option = new QAction(tr("&Option"), this);
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QAction *hosts = new QAction(tr("&Hosts"), this);
+   QAction *toggledebug = new QAction(tr("&Toggle Debug"), this);
+   toggledebug->setCheckable(true);
+   toggledebug->setChecked(true);
    option->setStatusTip(tr("Opens the Option Window"));
    hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
    connect(option, SIGNAL(triggered()), this, SLOT(option()));
    menuBar->addAction(option);
-
+   connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
    if (adminMenu == true)
    {
    statusBar->showMessage("Login Screen started in Admin Mode", 3000);
@@ -79,6 +83,14 @@ LoginForm::LoginForm(QWidget *parent)
    menuBar->addMenu(admin);
    admin->addAction(hosts);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
+   }
+   if (mainFrame->debugModus && adminMenu)
+   {
+       admin->addAction(toggledebug);
+   }
+   if (mainFrame->debugModus && !adminMenu)
+   {
+       menuBar->addAction(toggledebug);
    }
 else
     {
@@ -167,7 +179,19 @@ welcomeBar();
 
 }
 
+void LoginForm::debugToggle(bool checked)
+{
+    MainFrame *mainFrame = (MainFrame*) parent();
+    if(checked)
+    {
+        mainFrame->clientTcp->dw->setVisible(true);
+    }
+    if(!checked)
+    {
+        mainFrame->clientTcp->dw->setVisible(false);
+    }
 
+}
 
 
 void LoginForm::welcomeBar()

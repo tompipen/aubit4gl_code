@@ -32,6 +32,7 @@
 #include <QDomDocument>
 
 #include "screenhandler.h"
+
 #include <models/fglform.h>
 
 static qint32 connID=0; 
@@ -197,14 +198,14 @@ class ClientTcp : public QTcpServer
    public:
       ClientTcp(QObject *parent = 0);
       ~ClientTcp();
-
       ClientSocket *socket;
       //ClientSocket *p_arr_socket[16];
       QList<ClientSocket*> p_arr_socket;
       int i_cnt_socket;
       void setDebugModus(bool);
       DebugWindow *dw;
-
+      bool debugModus;
+//      MainFrame *mf;
       public slots:
          void newSocket();
       //   void makeNewConnection();
@@ -216,7 +217,7 @@ class ClientTcp : public QTcpServer
    private:
       QErrorMessage *errorMessageTcpClient;
       QTextStream out;
-      bool debugModus;
+
 
       int cnt_replied;
 

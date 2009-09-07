@@ -35,8 +35,8 @@ ClientTcp::ClientTcp(QObject *parent)
     : QTcpServer(parent)
 {
    cnt_replied=0;
-   i_cnt_socket=0;
 
+   i_cnt_socket=0;
    socket = NULL;
 
    {
@@ -85,8 +85,11 @@ void ClientTcp::incomingConnection(int socketID)
 
    // when socket gets data the server has to reply
    //
-   connect(&socket->ph, SIGNAL(debugtext(const QString&)) ,dw , SLOT(debugOut(const QString&)));
 
+   if(debugModus)
+   {
+   connect(&socket->ph, SIGNAL(debugtext(const QString&)) ,dw , SLOT(debugOut(const QString&)));
+}
    connect(socket, SIGNAL(makeResponse(QString)), 
            this, SLOT(clientReturn(QString)));
 
@@ -153,8 +156,8 @@ void ClientTcp::newSocket()
 void ClientTcp::setDebugModus(bool debugModus)
 {
  dw = new DebugWindow();
- if (debugModus)
- {
+if (debugModus)
+{
      dw->show();
     }
 }
@@ -2008,6 +2011,7 @@ mainLayout = new QVBoxLayout(this);
 edit = new QTextEdit(this);
 mainLayout->addWidget(edit);
 setLayout(mainLayout);
+setWindowTitle(tr("Debug Window"));
 }
 
 void DebugWindow::debugOut(QString debugtext)
