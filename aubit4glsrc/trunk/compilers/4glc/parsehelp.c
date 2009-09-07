@@ -1845,8 +1845,6 @@ char errbuff[256];
 int c1,c2,c3;
 enum e_scope scope;
 
-//printf("Here length=%d\n",l->list.list_len);
-//printf("-->%s\n",expr_as_string_when_possible(e));
 
 	if (e->expr_type!=ET_EXPR_VARIABLE_USAGE) {
 		A4GL_new_append_ptr_list(l,e);
