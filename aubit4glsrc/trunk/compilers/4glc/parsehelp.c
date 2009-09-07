@@ -1408,7 +1408,7 @@ char *get_variable_as_string_from_variable_usage_expression(expr_str *ptr) {
 
 
 static int isAutoAddVariable(char *str) {
-printf("isAutoAddVariable (%s)\n",str);
+//printf("isAutoAddVariable (%s)\n",str);
  if (!A4GL_isyes(acl_getenv("GENERATE_TXXVARS")))  return 0 ;
  if (A4GL_strstartswith(str,"txx_")) return 1;
  if (A4GL_strstartswith(str,"case_")) {
