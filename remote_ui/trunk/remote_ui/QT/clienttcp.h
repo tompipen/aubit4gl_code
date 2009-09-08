@@ -45,11 +45,12 @@ class DebugWindow : public QDialog
       QVBoxLayout *mainLayout;
       QTextEdit *edit;
       QString debugfull;
+      QLineEdit *search;
 
     public slots:
       void debugOut(QString);
-
-
+      void forwardsearch();
+      void backwardsearch();
 };
 
 class ProtocolHandler : public QThread
