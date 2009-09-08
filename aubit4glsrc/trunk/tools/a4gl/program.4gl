@@ -1228,7 +1228,7 @@ if fgl_getenv("VMAKE") !=" " then
 	# Special code for Ventas to generate the global txt file
 	   call channel::write("make","phony.g_"||lv_prog clipped||"txv: $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
 	   call channel::write("make","$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl: $(G_TXX)")
-	   call channel::write("make","	$(HOME)/mja/mktxx $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl g_"||lv_prog clipped||"txv.4gl")
+	   call channel::write("make","	mktxx $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl g_"||lv_prog clipped||"txv.4gl")
 	   call channel::write("make","")
 
 
