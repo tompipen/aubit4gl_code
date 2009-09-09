@@ -12,8 +12,8 @@ QT += webkit
 
 # Input
 HEADERS += confwin.h \
-    mainframe.h \
     login.h \
+    mainframe.h \
     clienttcp.h \
     screenhandler.h \
     include/fgl.h \

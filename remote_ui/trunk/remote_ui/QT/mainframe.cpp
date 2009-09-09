@@ -619,7 +619,7 @@ void ShortcutsTab::requestApplication()
 //------------------------------------------------------------------------------
 // Method       : dispErrToSB()
 // Filename     : mainframe.cpp
-// Description  : display QProcessErrors to Statusbar
+// Description  : display QProcessErrors to
 //------------------------------------------------------------------------------
 
 void ShortcutsTab::dispErrToSB(){

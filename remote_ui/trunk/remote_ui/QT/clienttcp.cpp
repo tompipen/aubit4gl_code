@@ -2026,10 +2026,23 @@ edit->append(debugtext);
 void DebugWindow::forwardsearch()
 {
 edit->find(search->text());
-}
 
+if (!edit->find(search->text()))
+if (edit->find(search->text(), QTextDocument::FindBackward))
+{
+edit->moveCursor(QTextCursor::Start);
+edit->find(search->text());
+}
+}
 
 void DebugWindow::backwardsearch()
 {
 edit->find(search->text(), QTextDocument::FindBackward);
+
+if (!edit->find(search->text(), QTextDocument::FindBackward))
+if (edit->find(search->text()))
+{
+edit->moveCursor(QTextCursor::End);
+edit->find(search->text(), QTextDocument::FindBackward);
+}
 }

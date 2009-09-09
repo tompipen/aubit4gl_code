@@ -41,6 +41,7 @@ public:
    QString fontconv;
    QStringList splitlist;
    QString fonteingabe;
+   QMenu *admin;
 
 public slots:
    void option();
@@ -123,7 +124,6 @@ public:
    bool ipcheck;
 
 public slots:
-
 
    void addHost();
    void writeHost();
