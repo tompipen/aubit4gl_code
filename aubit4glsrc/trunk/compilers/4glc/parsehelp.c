@@ -2045,12 +2045,24 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 				}
 				A4GL_debug("Got : %s %d \n", cmds_get_variable_usage_as_string(vu1), err_if_whole_array);
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
-				if (v1==0) {
+
+
+				if (v1==0 && A4GL_isyes(acl_getenv("GENERATE_TXXVARS")) ) {// Second try...
+               char *str;
+               //expr_str *p;
+               str=expr_as_string_when_possible(parameters->list.list_val[param_to_add]);
+
+            if (isAutoAddVariable(str)) {
+		         add_txx_variable(&this_module.imported_global_variables,str);
+		         v1=find_variable_vu_ptr(errbuff, vu1,&scope,1);
+            }
+              } 
+              if (v1==0) {
 					set_yytext(expr_as_string_when_possible(parameters->list.list_val[param_to_add]));
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
-						a4gl_yyerror("Variable not found");
+						a4gl_yyerror("Variable not found (1)");
 					}
 					return 0;
 				}
@@ -2112,7 +2124,7 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
-						a4gl_yyerror("Variable not found");
+						a4gl_yyerror("Variable not found (2)");
 					}
 					return 0;
 				}
@@ -2172,7 +2184,7 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
-						a4gl_yyerror("Variable not found");
+						a4gl_yyerror("Variable not found (3)");
 					}
 					return 0;
 				}
@@ -2182,7 +2194,7 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 					if(strlen(errbuff)) {
 						a4gl_yyerror(errbuff);
 					} else {
-						a4gl_yyerror("Variable not found");
+						a4gl_yyerror("Variable not found (4)");
 					}
 					return 0;
 				}
