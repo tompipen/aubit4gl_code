@@ -200,7 +200,7 @@ class ClientTcp : public QTcpServer
       //ClientSocket *p_arr_socket[16];
       QList<ClientSocket*> p_arr_socket;
       int i_cnt_socket;
-      void setDebugModus(bool);
+      void setDebugModus(bool, QWidget*);
       DebugWindow *dw;
       bool debugModus;
 //      MainFrame *mf;

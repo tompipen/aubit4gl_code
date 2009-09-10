@@ -150,10 +150,10 @@ void ClientTcp::newSocket()
    setMaxPendingConnections(16);
 }
 
-void ClientTcp::setDebugModus(bool debugModus)
+void ClientTcp::setDebugModus(bool debugModus, QWidget *parent)
 {
- dw = new DebugWindow();
- if (debugModus)
+ dw = new DebugWindow(parent);
+ if (!debugModus)
  {
      dw->show();
  }
@@ -2007,6 +2007,7 @@ edit = new QTextEdit(this);
 search = new QLineEdit(this);
 QPushButton *backward = new QPushButton(tr("Backward"));
 QPushButton *forward = new QPushButton(tr("Forward"));
+backward->setDefault(true);
 connect(forward,SIGNAL(clicked()), this, SLOT(forwardsearch()));
 connect(backward,SIGNAL(clicked()), this, SLOT(backwardsearch()));
 mainLayout->addWidget(edit);
@@ -2044,5 +2045,6 @@ if (edit->find(search->text()))
 {
 edit->moveCursor(QTextCursor::End);
 edit->find(search->text(), QTextDocument::FindBackward);
+
 }
 }

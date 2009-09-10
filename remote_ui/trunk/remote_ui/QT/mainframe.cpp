@@ -573,7 +573,7 @@ void ShortcutsTab::updateListBox()
 void MainFrame::tcpListener()
 {
    clientTcp = new ClientTcp(this);
-   clientTcp->setDebugModus(debugModus);
+   clientTcp->setDebugModus(debugModus, this);
 
    if(!clientTcp->listen(QHostAddress::Any, 1350)){
       errorMessageMainFrame->showMessage(
