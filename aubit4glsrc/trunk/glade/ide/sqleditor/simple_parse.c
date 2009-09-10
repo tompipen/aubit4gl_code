@@ -4,8 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "a4gl_incl_4glhdr.h"
+
 #include "simple.h"
-#include "a4gl_libaubit4gl.h"
 
 
 void clr_stmt(void) ;
