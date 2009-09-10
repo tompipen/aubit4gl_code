@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.176 2009-07-10 09:39:41 mikeaubury Exp $
+# $Id: newpanels.c,v 1.177 2009-09-10 11:57:48 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.176 2009-07-10 09:39:41 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.177 2009-09-10 11:57:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -1379,6 +1379,7 @@ A4GL_get_curr_border (void)
 }
 
 
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -1456,7 +1457,7 @@ A4GL_mja_setcolor (int typ)
     }
   A4GL_debug ("Done..");
 }
-
+#endif
 
 /**
  *

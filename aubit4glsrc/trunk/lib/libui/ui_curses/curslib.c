@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.163 2009-07-16 19:50:13 mikeaubury Exp $
+# $Id: curslib.c,v 1.164 2009-09-10 11:57:47 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.163 2009-07-16 19:50:13 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.164 2009-09-10 11:57:47 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -78,6 +78,7 @@ char *a_strchr (char *s, char c);
 
 #define MAXENTS 1000
 #define FILESIZE 64
+#define message ERROR ERROR
 /*
    #define getbegyx(w,y,x)      ((y) = getbegy(w), (x) = getbegx(w))
    #define getmaxyx(w,y,x)      ((y) = getmaxy(w), (x) = getmaxx(w))
@@ -95,7 +96,7 @@ char *a_strchr (char *s, char c);
 WINDOW *curr_error_window = 0;
 PANEL *curr_error_panel = 0;
 int curr_error_panel_visible = 0;
-void A4GL_do_pause (void);
+//void A4GL_do_pause (void);
 static int A4GL_local_get_curr_window_attr (void);
 
 int have_default_colors = 0;
@@ -142,26 +143,22 @@ int UILIB_A4GLUI_initlib (void);
 //void A4GL_refresh_error_window(void) ;
 //int A4GL_has_timeout(int a) ;
 
-static void a4gl_gettext (int l, int t, int r, int b, char *buf);
-static void message (textarea * area, char *str, int x, int a);
+//static void a4gl_gettext (int l, int t, int r, int b, char *buf);
+//static void message (textarea * area, char *str, int x, int a);
 //static void A4GL_chktag (char *buff, int fno);
 static void A4GL_menu_setcolor (ACL_Menu * menu, int typ);
 //static void A4GL_set_value (int fno, char *buffer);
 static int A4GL_menu_getkey (ACL_Menu * menu);
 //static void A4GL_clear_menu (ACL_Menu * menu);
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
-static void A4GL_newbox (textarea * area, int l, int t, int r, int b,
-			 int typ);
-static int A4GL_set_combi_opts (int n, char *lst, int lstwidth, int scwidth,
-				char *nme);
-static void A4GL_copy_opts (int opt, int n, char *lst, int lstwidth, int x,
-			    int y, int w, int l, int h);
-static int A4GL_do_key_combi (int h);
-static void A4GL_combi_dispopts (int opt, char *lst, int lstwidth, int x,
-				 int y, int w, int l, int h, int type);
+//static void A4GL_newbox (textarea * area, int l, int t, int r, int b, int typ);
+//static int A4GL_set_combi_opts (int n, char *lst, int lstwidth, int scwidth, char *nme);
+//static void A4GL_copy_opts (int opt, int n, char *lst, int lstwidth, int x, int y, int w, int l, int h);
+//static int A4GL_do_key_combi (int h);
+//static void A4GL_combi_dispopts (int opt, char *lst, int lstwidth, int x, int y, int w, int l, int h, int type);
 static int A4GL_getkey (void);
-static void A4GL_puttext (int x1, int y1, int x2, int y2, char *buf);
-static void A4GL_horiz_disp_opt (int row, int x, int y, int type);
+//static void A4GL_puttext (int x1, int y1, int x2, int y2, char *buf);
+//static void A4GL_horiz_disp_opt (int row, int x, int y, int type);
 static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 //static char *A4GL_mfgets (char *s, int n, FILE * fp);
 //static int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
@@ -180,26 +177,6 @@ static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
  * @todo Describe function
  */
 
-
-/**
- *
- * @todo Describe function
- */
-static void
-message (textarea * area, char *str, int x, int a)
-{
-  int pos;
-
-  /*YELLOW ON CYAN */
-  A4GL_mja_setcolor (TITLE_COL);
-  pos = (UILIB_A4GL_get_curr_width () - strlen (str)) / 2;
-  A4GL_newbox (area, pos + x, a, pos + x + strlen (str) + 1, a, NORMAL_BOX);
-  A4GL_mja_gotoxy (pos + x + 1, a);
-  /* print ("%s", str); */
-  A4GL_tui_printr (1, "%s", str);
-  A4GL_mja_refresh ();
-  A4GL_mja_setcolor (NORMAL_TEXT);
-}
 
 
 /**
@@ -343,204 +320,9 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
   print_panel_stack ();
 }
 
-/**
- * Used.
- * @todo Describe function
- */
-void
-A4GL_error_box (char *str, int attr)
-{
-  int a, pos;
-  //WINDOW *x;
-
-   A4GL_chkwin ();
-  /*YELLOW ON RED */
-  //A4GL_mja_setcolor (ERROR_COL);
-   a = 4;
-   pos = (A4GL_screen_width () - (strlen (str))) / 2;
-   A4GL_push_long(4);A4GL_push_long(pos);A4GL_push_long(3);A4GL_push_long(strlen(str));
-   A4GL_cr_window("a4gl_error",1,255,255,255,255,1,255,255,attr,0 /* STYLE */,0 /* TEXT */);
-   A4GL_push_char(str);
-   A4GL_push_long(2);
-   A4GL_push_long(1);
-   A4GL_display_at(1,0xffffffff);
-   str=acl_getenv ("ERROR_MSG");
-   pos = (A4GL_screen_width () - (strlen (str))) / 2;
-   A4GL_push_long(17);A4GL_push_long(pos);A4GL_push_long(3);A4GL_push_long(strlen(str));
-   A4GL_cr_window("a4gl_prompt",1,255,255,255,255,1,255,255,4352,0 ,0 /* TEXT */);
-   A4GL_push_char(str);
-   A4GL_push_long(2);
-   A4GL_push_long(1);
-   A4GL_display_at(1,0xffffffff);
-   while (A4GL_getch_win ()<=0) ;
-   A4GL_remove_window("a4gl_prompt");
-   A4GL_remove_window("a4gl_error");
-
-}
 
 
-/**
- * dstn = destination string, menu option selected is copied into here
- * str  = prompt string
- * x = starting X location
- * y = starting Y location
- * w = width
- * h = height
- * lst = list of strings each are lstwidth long
- * eg. char opt[20][80]
- * opt would be passed as lst
- * 80 would be passed as lstwidth
- * nopts=total number of options
- *
- *
- * @todo Describe function
- */
-void
-A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
-		 char *lst, int lstwidth, int nopts, char *nme, int border)
-{
-  int a, pos;
-  int fwidth, numdisp_opts;
-  char st[80];
-  static int last_opt = -1;
-
-  st[0] = 0;
-  A4GL_mja_setcolor (NORMAL_TEXT);
-  a = y;
-  pos = (UILIB_A4GL_get_curr_width () - strlen (str)) / 2;
-  A4GL_create_blank_window ("combI", x, y, x + w, y + h, border);
-  A4GL_mja_gotoxy (1, 2);
-  for (a = 0; a < w - 1; a++)
-    {
-      A4GL_mja_gotoxy (1 + a, 3);
-      /* print ("-"); */
-      A4GL_tui_printr (0, "-");
-    }
-  fwidth = A4GL_set_combi_opts (nopts, lst, lstwidth, w - 2, nme) + 1;
-  last_opt = curr_opt;
-  numdisp_opts = (w - 2) / fwidth;
-  numdisp_opts = numdisp_opts * (h - 4);
-  if (numdisp_opts > nopts)
-    numdisp_opts = nopts;
-  A4GL_copy_opts (0, numdisp_opts, lst, lstwidth, x + 1, y + 3, w / fwidth,
-		  fwidth, h);
-  if (nopts > 0)
-    A4GL_combi_dispopts (curr_opt, lst, lstwidth, x + 1, y + 3, w / fwidth,
-			 fwidth, h, INVERT);
-  A4GL_mja_gotoxy (1, 1);
-  /* print ("%s > %s", str, st); */
-  A4GL_tui_printr (0, "%s > %s", str, st);
-  UILIB_A4GL_zrefresh ();
-  max_opt = nopts - 1;
-  abort_pressed = 0;
-  while (1)
-    {
-      a = A4GL_do_key_combi (h - 4);
-      if (abort_pressed || a == 1)
-	break;
-      if (a > 1000)
-	{
-	  a = a - 1000;
-	  if ((a == 8 || a == 24 || a == 127) && strlen (st) >= 1)
-	    {
-	      st[strlen (st) - 1] = 0;
-	      A4GL_mja_gotoxy (1, 1);
-	      /* print ("%s > %s ", str, st); */
-	      A4GL_tui_printr (0, "%s > %s ", str, st);
-	    }
-	  else if (a_isprint (a) && strlen (st) <= (w - strlen (str) - 5))
-	    SPRINTF2 (st, "%s%c", st, a);
-	}
-      if (last_opt != curr_opt)
-	{
-	  if (last_opt >= 0)
-	    {
-	      if (nopts > 0)
-		A4GL_combi_dispopts (last_opt, lst, lstwidth, 1, 3,
-				     w / fwidth, fwidth, h, NORM);
-	    }
-	  if (nopts > 0)
-	    A4GL_combi_dispopts (curr_opt, lst, lstwidth, 1, 3, w / fwidth,
-				 fwidth, h, INVERT);
-	  last_opt = curr_opt;
-	}
-      A4GL_mja_gotoxy (1, 1);
-      /* print ("%s > %s", str, st); */
-      A4GL_tui_printr (0, "%s > %s", str, st);
-      UILIB_A4GL_zrefresh ();
-    }
-
-  UILIB_A4GL_remove_window ("combI");
-
-  if (abort_pressed)
-    dstn[0] = 0;
-  else if (strlen (st) == 0)
-    strcpy (dstn, opts[curr_opt]);
-  else
-    strcpy (dstn, st);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_copy_opts (int opt, int n, char *lst, int lstwidth, int x, int y, int w,
-		int l, int h)
-{
-  int a;
-  for (a = 0; a < n; a++)
-    {
-      strcpy (opts[a], &lst[(a + opt) * lstwidth]);
-      A4GL_combi_dispopts (a, lst, lstwidth, x, y, w, l, h, NORM);
-    }
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_combi_dispopts (int opt, char *lst, int lstwidth, int x, int y, int w,
-		     int l, int h, int type)
-{
-  h = h - 4;
-  A4GL_disp_opt (opt, ((opt / h) * l) + 1, (opt % h) + 4, l, type);
-  A4GL_mja_setcolor (NORMAL_TEXT);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_set_combi_opts (int n, char *lst, int lstwidth, int scwidth, char *nme)
-{
-  int a;
-  int mlen = 0;
-  int wid;
-  char nm[80];
-  curr_opt = 0;
-  if (n == 0)
-    return 1;
-  for (a = 0; a < n; a++)
-    {
-      if (strlen (&lst[a * lstwidth]) > mlen)
-	mlen = strlen (&lst[a * lstwidth]);
-      strncpy (nm, &lst[a * lstwidth], lstwidth);
-      if (strcmp (nm, nme) == 0)
-	{
-	  curr_opt = a;
-	}
-    }
-  wid = scwidth / a;
-  wid = scwidth / wid;
-  return mlen;
-}
-
-
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -560,7 +342,7 @@ A4GL_newbox (textarea * area, int l, int t, int r, int b, int typ)
   area->y1 = t;
   area->y2 = b;
 }
-
+#endif
 
 
 
@@ -665,82 +447,6 @@ UILIB_aclfgl_fgl_drawbox (int n)
   return 0;
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_disp_opt (row, x, y, l, type)
-     int row, x, y, l, type;
-{
-  char disopt[20];
-  if (type == INVERT)
-    A4GL_mja_setcolor (INVERT_MENU);
-  else
-    A4GL_mja_setcolor (NORMAL_MENU);
-  A4GL_mja_gotoxy (x, y);
-  SPRINTF2 (disopt, "%%-%d.%ds", l, l);
-  /* print (disopt, opts[row]); */
-  A4GL_tui_printr (0, disopt, opts[row]);
-  A4GL_mja_setcolor (NORMAL_MENU);
-
-}
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_do_key_combi (int h)
-{
-  int a;
-  abort_pressed = FALSE;
-  a = A4GL_getkey ();
-  if (a == UPKEY)
-    {
-      curr_opt = curr_opt - 1;
-      if (curr_opt < 0)
-	curr_opt = max_opt;
-      a = 0;
-    }
-
-  if (a == LEFTKEY)
-    {
-      curr_opt = curr_opt - h;
-      if (curr_opt < 0)
-	curr_opt = max_opt;
-      a = 0;
-    }
-
-  if (a == DOWNKEY)
-    {
-      curr_opt = curr_opt + 1;
-      if (curr_opt > max_opt)
-	curr_opt = 0;
-      a = 0;
-    }
-
-
-  if (a == RIGHTKEY)
-    {
-      curr_opt = curr_opt + h;
-      if (curr_opt > max_opt)
-	curr_opt = 0;
-      a = 0;
-    }
-
-  if (a == ESC) // IGNORE - nothing to do with ACCEPT
-    {
-      abort_pressed = 1;
-    }
-
-  if (a == CR)
-    {
-      return 1;
-    }
-
-  return a + 1000;
-}
 
 
 
@@ -792,48 +498,21 @@ A4GL_do_key_menu (void)
 }
 
 
+#ifdef DO_WE_NEED
 /**
  *
  * @todo Describe function
  */
-void
-A4GL_clearbox (textarea * area)
+void A4GL_clearbox (textarea * area)
 {
   /*wclear(area->win_no); */
   delwin (area->win_no);
   A4GL_debug ("delwin : %p", area->win_no);
   A4GL_puttext (area->x1, area->y1, area->x2, area->y2, (area->buf));
 }
+#endif
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_do_pause (void)
-{
-  WINDOW *x;
-  int w;
-  int emw;
-  char buff[80];
 
-  w = A4GL_screen_width ();
-  SPRINTF1 (buff, " %s ", acl_getenv ("ERROR_MSG"));
-  emw = strlen (buff);
-  x = A4GL_create_blank_window ("a4gl_pause", ((w - emw) / 2), 20, emw, 3, 1);
-  A4GL_mja_gotoxy (1, 2);
-  A4GL_mja_setcolor (ERROR_COL);
-  /* print ("%s",buff); */
-  A4GL_tui_printr (0, "%s", buff);
-  UILIB_A4GL_zrefresh ();
-  abort_pressed = FALSE;
-  doupdate ();
-  A4GL_debug ("getch_win...");
-  while (A4GL_getch_win ()<=0) ;
-  A4GL_debug ("Done getch_win");
-  UILIB_A4GL_remove_window ("a4gl_pause");
-  A4GL_mja_setcolor (NORMAL_TEXT);
-}
 
 
 /**
@@ -878,322 +557,7 @@ acllib_pause (char *s)
 }
 
 
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_edit (string, type, length, x, y)
-     char *string;
-     char type;
-     int x, y, length;
-{
-  textarea area;
-  int a;
-  int len = 0;
-  int flg = 0;
 
-  if (abort_pressed)
-    return 0;
-  len = strlen (string);
-  if (type == 'Y')
-    len = 0;
-  if (x == 0)
-    x = (UILIB_A4GL_get_curr_width () - length) / 2;
-
-  /* textbackground(COLOR_BLACK); */
-
-  /*A4GL_newbox (&area, x, y, x + length + 1, y + 2, NORMAL_BOX); */
-#ifdef DEBUG
-  A4GL_debug ("Box %d %d %d", x, y, x + length);
-#endif
-  A4GL_newbox (&area, x, y, x + length + 1, y + 1, NORMAL_BOX);
-  wattron (area.win_no, A_NORMAL);
-
-  /* A4GL_mja_setcolor (NORMAL_TEXT); */
-  for (a = len; a < length; a++)
-    string[a] = ' ';
-  string[length] = 0;
-  A4GL_mja_gotoxy (x + 1, y + 1);
-  A4GL_debug ("wprintw - %s", string);
-  wprintw (area.win_no, "%s", string);
-  UILIB_A4GL_zrefresh ();
-  while (1 == 1)
-    {
-      A4GL_mja_gotoxy (x + len + 1, y + 1);
-      abort_pressed = FALSE;
-      a = A4GL_getkey ();
-      if (a == ESC) // IGNORE - nothing to do with ACCEPT
-	{
-	  abort_pressed = 1;
-	  A4GL_clearbox (&area);
-	  A4GL_mja_setcolor (NORMAL_TEXT);
-	  A4GL_error_box ("Operation Aborted", 0);
-	  string[0] = 0;
-	  return 0;
-	}
-      if ((a == BS || a == 127 || a == KEY_DC || a == KEY_DL || a == 24
-	   || a == KEY_BACKSPACE || a == 8) && len > 0)
-	{
-	  if (string[len - 1] == '.' && type == 'D')
-	    flg = 0;
-	  string[len - 1] = ' ';
-	  len = len - 1;
-	  A4GL_mja_gotoxy (x + 1 + len, y + 1);
-	  wprintw (area.win_no, " ");
-	  UILIB_A4GL_zrefresh ();
-	  continue;
-	}
-      if (a == CR)
-	{
-	  A4GL_clearbox (&area);
-	  if (type != 'Y')
-	    string[len] = 0;
-	  else
-	    string[1] = 0;
-	  return 0;
-	}
-      if (A4GL_check_type (a, type, flg, len) && len < length)
-	{
-	  if (type == 'Y')
-	    {
-	      a = a4gl_toupper (a);
-	    }
-	  string[len] = a;
-	  len = len + 1;
-	  if (a == '.' && type == 'D')
-	    flg = 1;
-	  A4GL_mja_gotoxy (x + len, y + 1);
-	  wprintw (area.win_no, "%c", a);
-	  UILIB_A4GL_zrefresh ();
-	  if (type == 'Y')
-	    len = 0;
-	}
-    }
-  return 1;
-}
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_check_type (char c, char type, int flg, int len)
-{
-
-
-  if (type == 'N')
-    {
-      return (isdigit (c));
-    }
-
-
-  if (type == 'D')
-    {
-      return (isdigit (c) || (c == A4GL_get_convfmts()->ui_decfmt.decsep && flg == 0)
-	      || (c == '-' && len == 0));
-    }
-
-
-  if (type == 'A')
-    {
-      return (a_isprint (c));
-    }
-
-  if (type == 'Y')
-    {
-      c = a4gl_toupper (c);
-      return (c == 'Y' || c == 'y' || c == 'N' || c == 'n');
-    }
-
-  return 0;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_ask_char (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
-{
-  char inbuf[80] = "";
-  textarea area;
-  textarea area2;
-  inbuf[0] = 0;
-
-  strcpy (inbuf, s);
-  A4GL_newbox (&area2, (((80 - a) / 2) - 4), 11, (((80 - a) / 2) + a + 4), 15,
-	       1);
-  message (&area, prompt, 0, 10);
-  A4GL_edit (inbuf, 'A', a, 0, 12);
-  A4GL_clearbox (&area);
-  A4GL_clearbox (&area2);
-  strcpy (s, inbuf);
-}
-
-
-void
-A4GL_ask_cmdline (char *prompt, char *s, int a)
-{
-  char lv_cmd[100 + 1];
-  //int x;
-  //int y;
-  int_flag = 0;
-  A4GL_push_long (UILIB_A4GL_get_curr_height ());
-  A4GL_push_long (1);
-  A4GL_push_long (1);
-  A4GL_push_long (UILIB_A4GL_get_curr_width ());
-  UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
-			(0x0),0,0);
-  A4GL_push_char ("!");
-//START_BLOCK_1:
-  {
-    char _p[36];
-    int _fld_dr;
-    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0,"","");
-    while (GET_AS_INT ("s_prompt", _p, "mode") != 2)
-      {
-	static struct aclfgl_event_list _sio_evt[] = { {0} };
-
-	_fld_dr = UILIB_A4GL_prompt_loop_v2 (&_p, 0, _sio_evt);
-	//CONTINUE_BLOCK_1:;      /* add_continue */
-      }
-    A4GL_pop_var (&lv_cmd, 6553600);
-  }
-//END_BLOCK_1:;
-  aclfgli_clr_err_flg ();
-  if (int_flag)
-    strcpy (lv_cmd, "");
-  A4GL_trim (lv_cmd);
-  lv_cmd[a] = 0;
-  strcpy (s, lv_cmd);
-  UILIB_A4GL_remove_window ("aclfgl_promptwin");
-}
-
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_ask_cmdline_old (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
-{
-  char inbuf[80] = "";
-  textarea area2;
-  inbuf[0] = 0;
-
-#ifdef DEBUG
-  A4GL_debug ("in ask_cmdline");
-#endif
-  strcpy (inbuf, s);
-#ifdef DEBUG
-  A4GL_debug ("newbox");
-#endif
-
-  A4GL_newbox (&area2, 2, 20, 76, 24, BORDER_BOX);
-
-  /*message (&area, prompt, 0, 10); */
-  /*
-     A4GL_mja_setcolor (NORMAL_TEXT);
-     A4GL_debug("printw");
-     wprintw (area2.win_no,"$ ");
-     A4GL_debug("Set edit1");
-   */
-
-  A4GL_edit (inbuf, 'A', a, 3, 22);
-
-#ifdef DEBUG
-  A4GL_debug ("Done edit1");
-#endif
-  /* A4GL_mja_setcolor (NORMAL_TEXT); */
-  /*A4GL_clearbox (&area); */
-
-  A4GL_clearbox (&area2);
-  strcpy (s, inbuf);
-}
-#endif
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_ask_int (prompt)		/*  prompt for an integer from user  */
-     char *prompt;
-{
-  int i;
-  char inbuf[80];
-  textarea area;
-
-  i = 0;
-  inbuf[0] = 0;
-  message (&area, prompt, 0, 9);
-  A4GL_edit (inbuf, 'N', 10, 0, 12);
-  sscanf (inbuf, "%d", &i);
-  A4GL_clearbox (&area);
-  return i;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-double
-A4GL_ask_dbl (prompt)		/*  prompt for an integer from user  */
-     char *prompt;
-{
-  double d;
-  char inbuf[110];
-  textarea area;
-
-  d = 0.0;
-  inbuf[0] = 0;
-  message (&area, prompt, 0, 9);
-  A4GL_edit (inbuf, 'D', 20, 0, 12);
-  A4GL_decstr_convert(inbuf, a4gl_convfmts.ui_decfmt, a4gl_convfmts.scanf_decfmt, 0, 1, -1);
-  sscanf (inbuf, "%lf", &d);
-  A4GL_clearbox (&area);
-  return d;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_ask_verify (prompt)	/*  prompt for verification  */
-     char *prompt;
-{
-  int i;
-  char kch, inbuf[80];
-  int rm_disp = 0;
-  textarea area;
-  textarea area1;
-
-  if (abort_pressed)
-    return 0;
-  if (strlen (prompt) > 0)
-    {
-      message (&area1, prompt, 0, 5);
-      rm_disp = 1;
-    }
-  message (&area, " ( Enter 'Y' for Yes 'N' for No ) ", 0, 9);
-  strcpy (inbuf, "Y");
-  A4GL_edit (inbuf, 'Y', 1, 0, 12);
-  sscanf (inbuf, "%c", &kch);
-  if (a4gl_toupper (kch) == 'Y')
-    i = 1;
-  else
-    i = 0;
-
-  if (rm_disp)
-    A4GL_clearbox (&area1);
-  A4GL_clearbox (&area);
-  return i;
-}
 
 
 
@@ -1213,6 +577,7 @@ A4GL_setreledit (int x, int y)
 
 
 
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -1235,7 +600,10 @@ a4gl_gettext (int l, int t, int r, int b, char *buf)
 	}
     }
 }
+#endif
 
+
+#ifdef REMOVED
 /**
  *
  * @todo Describe function
@@ -1258,6 +626,7 @@ A4GL_puttext (int x1, int y1, int x2, int y2, char *buf)
     }
   A4GL_mja_refresh ();
 }
+#endif
 
 
 /**
@@ -1386,105 +755,6 @@ A4GL_endit (void)
 }
 
 
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_disp_horiz_menu (char *title, int y, int mn_type)
-{
-  char disp_str[80];
-  int disp_cnt;
-  int posarr[20];
-  textarea area;
-  int row;
-  int mn_offset;
-  int old_opt;
-  int num_rows = 0;
-
-  A4GL_chkwin ();
-  if (mn_type == ACL_MN_HORIZ_BOXED)
-    mn_offset = 1;
-  else
-    mn_offset = 0;
-  disp_cnt = 0;
-
-  for (row = 0; row < 10; row++)
-    {
-      if (opts[row][0] == 0)
-	{
-	  num_rows = row - 1;
-	  break;
-	}
-      posarr[row] = disp_cnt;
-      disp_cnt += strlen (opts[row]);
-      disp_cnt += 1;
-    }
-  disp_str[0] = 0;
-  disp_cnt = 2;
-  A4GL_mja_setcolor (NORMAL_TEXT);
-  if (strlen (title) > 0)
-    {
-      if (mn_type == 0)
-	{
-	  SPRINTF1 (disp_str, "%s:  ", title);
-	  disp_cnt = strlen (disp_str) + 2;
-	}
-      else
-	SPRINTF1 (disp_str, " %s ", title);
-    }
-  abort_pressed = 0;
-  A4GL_mja_setcolor (NORMAL_TEXT);
-/*YELLOW ON BLACK */
-  A4GL_newbox (&area, 1, y, 80, y + 3, BORDER_BOX);
-  A4GL_mja_gotoxy (1 + mn_offset * 2, y);
-  printw (disp_str);
-  for (row = 0; row <= num_rows; row++)
-    {
-      A4GL_horiz_disp_opt (row, posarr[row] + disp_cnt, y + mn_offset, NORM);
-    }
-  curr_opt = 0;
-  max_opt = num_rows;
-  A4GL_horiz_disp_opt (curr_opt, posarr[curr_opt] + disp_cnt, y + mn_offset,
-		       INVERT);
-  while (1 == 1)
-    {
-      old_opt = curr_opt;
-      if (A4GL_do_key_menu ())
-	break;
-      if (abort_pressed)
-	break;
-      A4GL_horiz_disp_opt (old_opt, posarr[old_opt] + disp_cnt, y + mn_offset,
-			   NORM);
-      A4GL_horiz_disp_opt (curr_opt, posarr[curr_opt] + disp_cnt,
-			   y + mn_offset, INVERT);
-      UILIB_A4GL_zrefresh ();
-    }
-  A4GL_clearbox (&area);
-  A4GL_mja_setcolor (NORMAL_TEXT);
-  if (abort_pressed)
-    return max_opt;
-
-  return curr_opt;
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_horiz_disp_opt (row, x, y, type)
-     int row, x, y, type;
-{
-  if (type == INVERT)
-    A4GL_mja_setcolor (INVERT_MENU);
-  else
-    A4GL_mja_setcolor (NORMAL_MENU);
-  A4GL_mja_gotoxy (x, y);
-  printw ("%s", opts[row]);
-  A4GL_mja_setcolor (NORMAL_MENU);
-  printw (" ");
-}
 
 
 
@@ -1868,90 +1138,8 @@ A4GL_display_menu (ACL_Menu * menu)
 }
 
 
-#ifdef OLD
-/**
- *
- * @todo Describe function
- */
-static void
-A4GL_clear_menu (ACL_Menu * menu)
-{
-  PANEL *p;
-  WINDOW *w;
-  p = A4GL_find_pointer (menu->window_name, PANCODE);
-  w = A4GL_find_pointer (menu->window_name, WINCODE);
-
-#ifdef DEBUG
-  A4GL_debug ("Deleting Window..%p", w);
-  A4GL_debug ("Deleting Panel %p", p);
-#endif
-
-  del_panel (p);		/* this is causing problems INVESTIGATE */
-
-  A4GL_del_pointer (menu->window_name, PANCODE);
-  A4GL_del_pointer (menu->window_name, WINCODE);
-
-  delwin (w);			// Maybe copy to parent window first....
-  A4GL_debug ("delwin : %p", w);
-  // Informix seems to retain the menu rather than clear it...
-
-  /* UILIB_A4GL_remove_window (menu->window_name); */
-
-  A4GL_mja_setcolor (NORMAL_TEXT);
-
-}
-#endif
 
 
-#ifdef MOVED
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_clear_prompt (struct s_prompt *prmt)
-{
-  WINDOW *p;
-//int a;
-//FIELD **sarr;
-
-
-#ifdef DEBUG
-  A4GL_debug ("Clearing prompt...");
-#endif
-
-  p = prmt->win;
-
-
-#ifdef __WIN3x2__
-  {
-  int width;
-  char *buff;
-  WINDOW *cw;
-  width = UILIB_A4GL_get_curr_width ();
-  cw = (WINDOW *) A4GL_get_currwin ();
-  buff=malloc(width+1);
-  memset(buff,' ',width);
-  buff[width]=0;
-  wmove(cw,0,0);
-  wprintw(cw,buff);
-  free(buff);
-  UILIB_A4GL_zrefresh ();
-  }
-#else
-if (p)
-    {
-      werase(p);
-      delwin (p);
-      A4GL_debug ("delwin : %p", p);
-      prmt->win = 0;
-      UILIB_A4GL_zrefresh ();
-    }
-#endif
-
-
-}
-#endif
 
 
 
@@ -2098,228 +1286,6 @@ curs_err (char *str)
 */
 
 
-#ifdef VERY_OLD
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_load_form (char *fname2, int fno1, int fno)
-{
-  FILE *formfile;
-  char buffer[133];
-  char fname[32];
-  int currno;
-  char fname3[64];
-
-  strcpy (fname3, fname2);
-  strcat (fname3, acl_getenv ("A4GL_FRM_BASE_EXT"));
-  formfile = A4GL_mja_fopen (fname3, "rt");
-  currno = 0;
-  if (formfile == 0)
-    {
-      PRINTF ("Form couldn't be opened\n");
-      exit (0);
-    }
-
-  while (!feof (formfile))
-    {
-      if (A4GL_mfgets (buffer, 132, formfile) == 0)
-	break;
-      if (buffer[0] == '[')
-	{
-	  strcpy (fname, buffer);
-	  strcpy (formnames[fno], buffer);
-	  currno++;
-	  if (currno == fno1)
-	    {
-	      namescnt = 0;
-	      formdetails[fno][0] = 0;
-	      while (1)
-		{
-		  if (feof (formfile))
-		    break;
-		  if (A4GL_mfgets (buffer, 132, formfile) == 0)
-		    break;
-		  A4GL_stripnl (buffer);
-		  if (buffer[0] == '[')
-		    break;
-		  A4GL_chktag (buffer, fno);
-		  strcat (formdetails[fno], buffer);
-		  if (strcmp (fname, "General") == 0)
-		    {
-		      if (strnicmp (buffer, "menu_line=", 9) == 0)
-			{
-
-			  sscanf (buffer, "menu_line=%d", &menu_line);
-
-			}
-		      if (strnicmp (buffer, "menutitle=", 10) == 0)
-			{
-			  A4GL_gsub (buffer);
-			  sscanf (buffer, "menutitle=%s", menutitle);
-			  A4GL_gsub (menutitle);
-			}
-		      if (strnicmp (buffer, "title=", 6) == 0)
-			{
-			  A4GL_gsub (buffer);
-			  sscanf (buffer, "title=%s", titledesc);
-			  A4GL_gsub (titledesc);
-			}
-		    }
-		}
-	      A4GL_load_formdata (fname2, fname, fno);
-	      fclose (formfile);
-	      if (stricmp (fname, "[General]\n") == 0)
-		return -1;
-	      else
-		return 1;
-	    }
-	}
-    }
-  return 0;
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_load_formdata (char *fname2, char *ftitle, int fno)
-{
-  FILE *formfile;
-  char buffer[133];
-  char fname[32];
-  int currno;
-  char fname3[64];
-  strcpy (fname3, fname2);
-  strcat (fname3, ".ini");
-  formfile = A4GL_mja_fopen (fname3, "rt");
-  currno = 0;
-  if (formfile == 0)
-    {
-      return 1;
-    }
-
-  while (!feof (formfile))
-    {
-      if (A4GL_mfgets (buffer, 132, formfile) == 0)
-	break;
-      if (buffer[0] == '[')
-	{
-	  strcpy (fname, buffer);
-	  currno++;
-	  if (strcmp (fname, ftitle) == 0)
-	    {
-	      while (!feof (formfile))
-		{
-		  if (A4GL_mfgets (buffer, 132, formfile) == 0)
-		    break;
-		  A4GL_stripnl (buffer);
-		  if (feof (formfile))
-		    break;
-		  if (buffer[0] == '[')
-		    break;
-		  A4GL_set_value (fno, buffer);
-		}
-
-	      fclose (formfile);
-	      return 0;
-	    }
-	}
-    }
-
-  fclose (formfile);
-  return 0;
-}
-
-
-
-/**
- *
- * @todo Describe function
- */
-static void
-A4GL_chktag (char *buff, int fno)
-{
-  char buff2[132];
-  char *ptr, *ptr_end;
-  strcpy (buff2, buff);
-  ptr = a_strchr (buff2, '{');
-  if (ptr == NULL)
-    return;
-  while (1)
-    {
-      ptr = a_strchr (buff2, '{');
-      if (ptr == NULL)
-	break;
-      ptr_end = a_strchr (buff2, '}');
-      *ptr_end = 0;
-      *ptr = 0;
-      if (namescnt == MAXFIELDS)
-	{
-	  A4GL_assertion(1, "Too Many field on single form\n") 
-	  exit (0);
-	}
-      strcpy (names[fno][namescnt++], ptr + 1);
-
-      strcat (buff2, ptr_end + 1);
-    }
-  strcpy (buff, buff2);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-static void
-A4GL_set_value (int fno, char *buffer)
-{
-  int a;
-  char *name;
-  char *value;
-  name = buffer;
-  value = a_strchr (buffer, '=');
-  if (value == 0)
-    return;
-  *value = 0;
-  value++;
-  for (a = 0; a < MAXFIELDS; a++)
-    {
-      if (strcmp (names[fno][a], name) == 0)
-	{
-	  strcpy (arr[fno][a], value);
-	  break;
-	}
-    }
-}
-
-/**
- *
- * @todo Describe function
- */
-char *
-A4GL_mfgets (char *s, int n, FILE * fp)
-{
-  char *z;
-  while (1)
-    {
-      s[0] = 0;
-      z = fgets (s, n, fp);
-      if (feof (fp) || z == NULL)
-	{
-	  return 0;
-	}
-      if (s[0] == '#')
-	continue;
-      break;
-    }
-  return z;
-}
-
-#endif
 
 
 
@@ -2335,25 +1301,6 @@ A4GL_clrscr (void)
   A4GL_mja_refresh ();
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_set_message (char *str, int x, int y)
-{
-  message (&set_mess, str, x, y);
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_clr_message (void)
-{
-  A4GL_clearbox (&set_mess);
-}
 
 
 /**
@@ -2428,135 +1375,6 @@ A4GL_getkey (void)
 }
 
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_chklistbox (char **arr, int elem, int mult, int x, int y, int w, int h)
-{
-  int a;
-  textarea area;
-  int pg_top = 0;
-  char pbuff[40];
-  int sel;
-
-#define pos_chklistbox(p) A4GL_mja_gotoxy(x+1,y+1+p-pg_top)
-
-
-  if (h > elem)
-    h = elem;
-  A4GL_newbox (&area, x, y, x + w + 1, y + h + 1, BORDER_BOX);
-
-  A4GL_mja_gotoxy (x + 1, y + 1);
-  SPRINTF2 (pbuff, "%%-%d.%ds %%c", w - 2, w - 2);
-  for (a = 0; a < 1024; a++)
-    selected[a] = ' ';
-
-  curr_opt = 0;
-  for (a = 0; a < h; a++)
-    {
-      if (a >= elem)
-	break;
-      if (curr_opt == a)
-	A4GL_mja_setcolor (TITLE_COL);
-      else
-	A4GL_mja_setcolor (NORMAL_TEXT);
-      pos_chklistbox (a);
-      printw (pbuff, arr[a], selected[a]);
-    }
-
-  A4GL_mja_refresh ();
-  abort_pressed = 0;
-  max_opt = elem - 1;
-  sel = 0;
-  while (1)
-    {
-
-      a = curr_opt;
-
-      if (A4GL_do_key_menu ())
-	{
-	  if (selected[a] == ' ')
-	    {
-	      selected[a] = 'X';
-	      sel++;
-	    }
-	  else
-	    {
-	      selected[a] = ' ';
-	      sel--;
-	    }
-	  if (mult == 0)
-	    break;
-	}
-
-      if (abort_pressed)
-	break;
-
-      if (curr_opt - pg_top >= h)
-	{
-	  pg_top = curr_opt - h + 1;
-	  for (a = 0; a < h; a++)
-	    {
-	      if (curr_opt == a + pg_top)
-		A4GL_mja_setcolor (TITLE_COL);
-	      else
-		A4GL_mja_setcolor (NORMAL_TEXT);
-	      pos_chklistbox (a + pg_top);
-	      printw (pbuff, arr[a + pg_top], selected[a + pg_top]);
-	    }
-	  continue;
-	}
-
-      if (curr_opt - pg_top <= 0)
-	{
-	  pg_top = curr_opt;
-	  for (a = 0; a < h; a++)
-	    {
-	      if (a >= elem + pg_top)
-		break;
-	      if (curr_opt == a + pg_top)
-		A4GL_mja_setcolor (TITLE_COL);
-	      else
-		A4GL_mja_setcolor (NORMAL_TEXT);
-	      pos_chklistbox (a + pg_top);
-	      printw (pbuff, arr[a + pg_top], selected[a + pg_top]);
-	    }
-	  continue;
-	}
-
-      A4GL_mja_setcolor (NORMAL_TEXT);
-      pos_chklistbox (a);
-      printw (pbuff, arr[a], selected[a]);
-      A4GL_mja_setcolor (TITLE_COL);
-      pos_chklistbox (curr_opt);
-      printw (pbuff, arr[curr_opt], selected[curr_opt]);
-      A4GL_mja_setcolor (NORMAL_TEXT);
-      A4GL_mja_refresh ();
-
-    }
-  A4GL_clearbox (&area);
-  if (mult)
-    {
-      SPRINTF1 (pbuff, "%d rows selected", sel);
-      A4GL_error_box (pbuff, 0);
-    }
-}
-
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_isselected (int a)
-{
-  if (selected[a] == 'X')
-    return 1;
-  else
-    return 0;
-}
 
 
 /**
@@ -2944,109 +1762,6 @@ ACL_MN_HORIZ_BOXED,
  * @todo Describe function
  */
 
-#ifdef OLD
-
-ACL_Menu *
-A4GL_new_menu_tui_oldway (char *title,
-			  int x, int y,
-			  int mn_type, int help_no, int nopts, va_list * ap)
-{
-  int ret;
-  char *argp_c = 0;
-  char op1[256];
-  char buff[256];
-  int argp_i;
-  ACL_Menu *menu;
-  ACL_Menu_Opts *opt1;
-  ACL_Menu_Opts *opt2;
-
-  if (nopts < 1)
-    return 0;
-  strcpy (buff, title);
-  A4GL_trim (buff);
-  A4GL_debug (" - Menu title : '%s'", title);
-  menu = nalloc (ACL_Menu);
-  strcpy (menu->menu_title, buff);
-  A4GL_trim (menu->menu_title);
-
-
-  menu->menu_type = mn_type;
-  menu->help_no = help_no;
-  menu->curr_option = 0;
-  menu->window_name[0] = 0;
-  menu->x = x;
-  menu->y = y;
-  menu->curr_page = 0;
-  menu->mn_offset = 0;
-  opt1 = nalloc (ACL_Menu_Opts);
-  menu->first = (ACL_Menu_Opts *) opt1;
-  opt1->prev_option = 0;
-  /* va_start (ap, nopts); */
-  A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
-  //A4GL_gui_startmenu (title, (long) menu);
-  for (ret = 0; ret < nopts; ret++)
-    {
-      if (ret != 0)
-	{
-	  opt2 = nalloc (ACL_Menu_Opts);
-	  (ACL_Menu_Opts *) opt2->prev_option = (ACL_Menu_Opts *) opt1;
-	  (ACL_Menu_Opts *) opt1->next_option = (ACL_Menu_Opts *) opt2;
-	  opt2->next_option = 0;
-	  opt1 = opt2;
-	}
-      opt1->opt_no = ret;
-      if (strlen (argp_c))
-	{
-	  strcpy (opt1->opt_title, " ");
-	  strcpy (op1, argp_c);
-	  //A4GL_gui_menuopt (argp_c, (int) opt1);
-	  A4GL_trim (op1);
-	  strcat (opt1->opt_title, op1);
-	  strcat (opt1->opt_title, " ");
-	}
-      else
-	{
-	  strcpy (opt1->opt_title, "");
-	}
-
-      opt1->optlength = strlen (opt1->opt_title);
-
-      argp_c = va_arg (*ap, char *);
-      strcpy (opt1->optkey, argp_c);
-
-      argp_c = va_arg (*ap, char *);
-      strcpy (opt1->shorthelp, argp_c);
-
-      argp_i = va_arg (*ap, int);
-      opt1->help_no = argp_i;
-      A4GL_debug ("Help number for %s = %d", opt1->opt_title, argp_i);
-
-      argp_i = va_arg (*ap, int);
-      opt1->attributes = argp_i;
-
-      if (opt1->optlength == 0)
-	opt1->attributes |= ACL_MN_HIDE;
-      /* gui_menuopt(opt1->opt_title,opt1->shorthelp,opt1->optkey,opt1->help_no,opt1->attributes); */
-    }
-  va_end (*ap);
-  menu->last = (ACL_Menu_Opts *) opt1;
-
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
-  while (menu->curr_option->attributes & ACL_MN_HIDE)
-    {
-      if (menu->curr_option == menu->last)
-	break;
-      (ACL_Menu_Opts *) menu->curr_option =
-	(ACL_Menu_Opts *) menu->curr_option->next_option;
-    }
-
-
-  //A4GL_gui_setfocus ((int) menu->curr_option);
-  menu->num_opts = nopts;
-  //A4GL_gui_endmenu ((int) menu);
-  return menu;
-}
-#endif
 
 
 /**
@@ -3176,76 +1891,6 @@ UILIB_A4GLUI_initlib (void)
 }
 
 
-#ifdef OLD
-void
-A4GL_flatten_menu (ACL_Menu * menu)
-{
-  WINDOW *m;
-  WINDOW *p;
-  int a;
-  int x;
-  int y;
-  int px;
-  int py;
-
-
-  if (A4GL_isyes (acl_getenv ("HIDE_MENU")))
-    {
-      A4GL_debug ("No Flattened menu");
-      return;
-    }
-
-  px = menu->gw_x;
-  py = menu->gw_y;
-  A4GL_debug ("px=%d py=%d menu->gw_b=%d menu->y=%d", px, py, menu->gw_b,
-	      menu->y);
-  if (menu->gw_b)
-    {
-      px -= 1;
-      //py -= 1;
-      //px -= 0;
-      //py -= 0;
-    }
-  else
-    {
-
-      //px-=2;
-      //py-=2;
-
-      px = 0;			// I'm sure this is gonna come back and bite me...
-      //py = 0;
-    }
-  m = menu->menu_win;
-  p = A4GL_find_pointer (menu->window_name, MNPARCODE);
-
-
-  if (p && m);
-  else
-    return;
-
-
-  for (y = 0; y <= 1; y++)
-    {
-      for (x = 0; x < menu->w; x++)
-	{
-	  a = mvwinch (m, y, x);
-	  if (A4GL_isyes (acl_getenv ("DIM_INACTIVE_MENU")))
-	    {
-	      if (a & A_BOLD)
-		a -= A_BOLD;
-	      if (a & A_NORMAL)
-		a -= A_NORMAL;
-	      a |= A_DIM;
-	    }
-	  A4GL_debug ("%d - px+x=%d,py+y=%d %04x %c", x, x + px, y + py, a,
-		      a & 0xff);
-	  mvwaddch (p, y + py, x + px, a);
-	}
-    }
-  A4GL_debug ("Flattened menu %d ", menu->w);
-  //A4GL_zrefresh();
-}
-#endif
 
 
 int
