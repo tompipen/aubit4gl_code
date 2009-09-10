@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.177 2009-09-10 11:57:48 mikeaubury Exp $
+# $Id: newpanels.c,v 1.178 2009-09-10 15:33:10 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.177 2009-09-10 11:57:48 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.178 2009-09-10 15:33:10 mikeaubury Exp $";
 #endif
 
 /**
@@ -1517,15 +1517,22 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
 
 
-      if (a==-1) {
+      if (a==-1 ) {
+	if (abort_pressed) {
+			//A4GL_debug("logkey %d", A4GL_key_val("INTERRUPT"));
+			A4GL_logkey(A4GLKEY_INTERRUPT);
+	}
 #ifdef USE_HALF_DELAY
 	if(!no_delay) {
 	      	nocbreak();
 	}
 #endif
 	      	cbreak();
+
+	
 	      	return 0;
       }
+
 
       if (a == KEY_MOUSE)
 	{
