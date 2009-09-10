@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.160 2009-07-10 11:55:53 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.161 2009-09-10 16:19:30 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.160 2009-07-10 11:55:53 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.161 2009-09-10 16:19:30 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1622,7 +1622,12 @@ static int internal_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 // Wait for a key..
 
 
-  	a = A4GL_getch_win ();
+  	  a = A4GL_getch_win ();
+          if (abort_pressed)
+            {
+              a = A4GLKEY_INTERRUPT;
+            }
+
 
 
   	if (a!=0&&a!=-1) {
