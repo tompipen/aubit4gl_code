@@ -14,8 +14,10 @@
 // Enjoy using it!
 //
 //------------------------------------------------------------------------------
-#include <QtGui>
 #include <QFile>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QSettings>
 #include "confwin.h"
 
 
