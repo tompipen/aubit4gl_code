@@ -1710,7 +1710,7 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       Fgl::Event event;
       event.type = Fgl::ONKEY_EVENT;
       event.id = id;
-      event.attribute= attribute;
+      event.attribute= Fgl::stringToKey(attribute);
 
       p_fglform->ql_formEvents << event;
       return;
@@ -1720,7 +1720,7 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       Fgl::Event event;
       event.type = Fgl::ONACTION_EVENT;
       event.id = id;
-      event.attribute= attribute;
+      event.attribute= Fgl::stringToKey(attribute);
 
       p_fglform->ql_formEvents << event;
       return;

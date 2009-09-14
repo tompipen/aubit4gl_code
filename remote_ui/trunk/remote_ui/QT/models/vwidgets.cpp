@@ -233,9 +233,10 @@ Button::Button(QWidget *parent)
 void Button::buttonClicked()
 {
    Fgl::Event event;
-   event.type = Fgl::ONACTION_EVENT;
+   event.type = Fgl::ONKEY_EVENT;
    event.attribute = this->action;
    emit fieldEvent(event);
+   qDebug() << "FIELDEVENT!";
 }
 
 //------------------------------------------------------------------------------
