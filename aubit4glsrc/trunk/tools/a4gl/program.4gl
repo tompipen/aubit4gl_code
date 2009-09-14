@@ -1029,7 +1029,8 @@ call channel::write("make","endif")
 
 
 if fgl_getenv("VMAKE")!=" "  then
-	call channel::write("make","G_TXX=$(LFILE_DIR)/g_txx_"||lv_prog clipped)
+	#call channel::write("make","G_TXX=$(LFILE_DIR)/g_txx_"||lv_prog clipped)
+	call channel::write("make","G_TXX=$(VMAKE)/g_txx_"||lv_prog clipped)
 	call channel::write("make","export G_TXX")
    call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
    call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
@@ -1207,9 +1208,14 @@ call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(MIFS) $(GLOBALS_DEFS)
 call channel::write("make","	rm -f $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl  $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
 call channel::write("make"," ")
 
+call channel::write("make","tidy_globals_dats:")
+call channel::write("make","	@rm -f $(GLOBALS_DEFS)")
+
 call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
+
 call channel::write("make"," ")
 call channel::write("make","run: compile")
+
 if lv_buildstr is not null and lv_buildstr != " " then
 	call channel::write("make","	cd ",lv_buildstr," &&  ./"||lv_prog clipped||"$(A4GL_EXE_EXT)")
 else

@@ -728,10 +728,14 @@ if lv_genmakefile is null then
 	let lv_genmakefile=0
 end if
 
-if lv_progoutdir is null or lv_progoutdir matches " " then
-	let lv_makefile="./",lv_progmakefile
+if lv_progmakefile[1]="$" or lv_progmakefile[1]="/" then
+	   let lv_makefile=lv_progmakefile
 else
-	let lv_makefile=lv_progoutdir clipped,"/",lv_progmakefile
+   if lv_progoutdir is null or lv_progoutdir matches " " then
+	   let lv_makefile="./",lv_progmakefile
+   else
+	   let lv_makefile=lv_progoutdir clipped,"/",lv_progmakefile
+   end if
 end if
 
 
