@@ -298,7 +298,7 @@ void Context::checkOptions()
       QString key = qsl_keys.at(i);
 
       if(key == "ARRCOUNT"){
-         return;
+         //return;
          for(int i=0; i<ql_fieldList.count(); i++){
             if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
                tableView->setArrCount(qh_options[key]);
@@ -307,6 +307,9 @@ void Context::checkOptions()
 
                if(qh_options[key] > table->rowCount(QModelIndex()))
                   table->insertRows(table->rowCount(QModelIndex()), (qh_options[key]-table->rowCount(QModelIndex())), QModelIndex());
+
+               if(qh_options[key] < table->rowCount(QModelIndex()))
+                  table->removeRows(table->rowCount(QModelIndex()), (table->rowCount(QModelIndex())-qh_options[key]), QModelIndex());
             }
          }
       }

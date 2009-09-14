@@ -28,7 +28,7 @@
 
 int defHeight = 21;
 
-FormField::FormField(QWidget *parent) : QWidget(parent)
+FormField::FormField(QObject *parent) : QObject(parent)
 {
    b_noEntry =  false;
    b_notNull = false;
@@ -37,8 +37,10 @@ FormField::FormField(QWidget *parent) : QWidget(parent)
 
    i_fieldId = -1;
    i_tabIndex = -1;
+   p_field = NULL;
    
 }
+
 
 QString FormField::name()
 {
@@ -100,6 +102,16 @@ void FormField::setNotNull(bool notNull)
    b_notNull = notNull;
 }
 
+bool FormField::hidden()
+{
+   return b_hidden;
+}
+
+void FormField::setHidden(bool hidden)
+{
+   b_hidden = hidden;
+}
+
 bool FormField::required()
 {
    return b_required;
@@ -135,12 +147,12 @@ bool FormField::touched()
    return b_touched;
 }
 
-QString FormField::text()
+QString FormField::text(int row)
 {
    return QString();
 }
 
-void FormField::setText(QString text)
+void FormField::setText(QString text, int row)
 {
   
 }
@@ -157,7 +169,49 @@ void FormField::setDefaultValue(QString val)
 
 void FormField::addField(QWidget *widget)
 {
-   widget->setParent(this);
+//   widget->setParent(this);
+    p_field = widget;
+}
+
+QDomDocument FormField::toXML()
+{
+   QDomDocument doc("");
+
+   QString cName = QString(this->metaObject()->className());
+   QDomElement formFieldElement = doc.createElement(cName);
+   formFieldElement.setAttribute("name", name());
+   formFieldElement.setAttribute("colName", colName());
+   formFieldElement.setAttribute("fieldId", fieldId());
+   formFieldElement.setAttribute("sqlTabName", sqlTabName());
+   formFieldElement.setAttribute("sqlTabName", sqlTabName());
+   formFieldElement.setAttribute("sqlType", sqlType());
+   formFieldElement.setAttribute("tabIndex", tabIndex());
+
+   if(p_field != NULL){
+//      formFieldElement.appendChild(p_field->toXML());
+   }
+
+   doc.appendChild(formFieldElement);
+
+   return doc;
+}
+
+TableColumn::TableColumn(QObject *parent) : FormField(parent)
+{
+   b_noEntry =  false;
+   b_notNull = false;
+   b_required = false;
+   b_touched = false;
+
+   i_fieldId = -1;
+   i_tabIndex = -1;
+   p_field = NULL;
+   
+}
+
+void TableColumn::setText(QString text, int row)
+{
+  
 }
 
 //------------------------------------------------------------------------------
@@ -606,8 +660,8 @@ FormField* WidgetHelper::createFormField(const QDomElement& formField, QWidget *
    fField->setDefaultValue(defaultValue);
 
    //QWidget *childWidget = WidgetHelper::createFormWidget(formField.firstChild().toElement(), fField);
-   QWidget *childWidget = WidgetHelper::createFormWidget(formField, fField);
-   fField->addField(childWidget);
+   //QWidget *childWidget = WidgetHelper::createFormWidget(formField, fField);
+   //fField->addField(childWidget);
 
    return fField;
 }

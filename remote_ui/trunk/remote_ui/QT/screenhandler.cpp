@@ -955,7 +955,7 @@ void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QStrin
 
    if(!(row < 0 || col < 0)){
       QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
-      modelIndex = proxyModel->mapFromSource(modelIndex);
+      modelIndex = proxyModel->mapToSource(modelIndex);
       screenRecord->model()->setData(modelIndex, fieldValue.trimmed());
    }
 }
@@ -3004,3 +3004,14 @@ void ScreenHandler::checkFields()
    bool enable = (p_fglform->state() != Fgl::CONSTRUCT);
 }
 
+
+void ScreenHandler::setUpdatesEnabled(bool en)
+{
+   for(int i=0; i<ql_fglForms.size(); i++){
+         FglForm *form = ql_fglForms.at(i);
+
+      if(form != NULL){
+         form->setUpdatesEnabled(en);
+      }
+   }
+}

@@ -20,6 +20,7 @@
 #include <QtGui>
 #include <QDomDocument>
 #include <QDomNode>
+#include <models/vwidgets.h>
 
 class Parser : public QWidget
 {
@@ -36,6 +37,7 @@ private:
    QHBoxLayout* layout;
    QWidget *p_fglform;
    QList<QWidget*> ql_formFields;
+   QList<FormField*> ql_fglFields;
    QColor qcol_BaseColor;
    QLayout *currentLayout;
    QWidget *currentWidget;

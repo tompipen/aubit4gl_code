@@ -40,12 +40,12 @@
 #include <QTextCursor>
 #include <include/fgl.h>
 
-class FormField : public QWidget
+class FormField : public QObject
 {
    Q_OBJECT;
 
 public:
-   FormField(QWidget *parent = 0);
+   FormField(QObject *parent = 0);
    QString name();
    void setName(QString);
    QString colName();
@@ -58,6 +58,8 @@ public:
    void setNoEntry(bool);
    bool notNull();
    void setNotNull(bool);
+   bool hidden();
+   void setHidden(bool);
    bool required();
    void setRequired(bool);
    int fieldId();
@@ -65,26 +67,42 @@ public:
    int tabIndex();
    void setTabIndex(int);
    bool touched();
-   QString text();
-   void setText(QString);
+   virtual QString text(int row = 0);
+   virtual void setText(QString s = "", int row = 0);
    QString defaultValue();
    void setDefaultValue(QString);
    void addField(QWidget*);
+   QDomDocument toXML();
 
 private:
+   QString qs_text;
+
+protected:
    QString qs_name;
    QString qs_colName;
    QString qs_sqlTabName;
    QString qs_sqlType;
-   QString qs_text;
    QString qs_defaultValue;
    bool b_noEntry;
    bool b_notNull;
    bool b_required;
+   bool b_hidden;
    int i_fieldId;
    int i_tabIndex;
    bool b_touched;
    void setTouched(bool);
+   QWidget *p_field;
+};
+
+class TableColumn : public FormField
+{
+   Q_OBJECT;
+
+public:
+   TableColumn(QObject *parent = 0);
+   void setText(QString s = "", int row = 0);
+
+
 };
 
 class LineEdit : public QLineEdit
@@ -161,6 +179,7 @@ protected:
    void focusOutEvent(QFocusEvent *);
 */
 };
+
 
 class Button : public QPushButton
 {

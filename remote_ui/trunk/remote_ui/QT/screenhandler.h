@@ -146,6 +146,8 @@ public slots:
    void setClearEvents();
    void fileBrowser(QString, QString, QString, QString, QString);
 
+   void setUpdatesEnabled(bool);
+
 signals:
    void fglFormResponse(QString);
 };

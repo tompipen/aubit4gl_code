@@ -223,7 +223,11 @@ void Parser::parseElement(const QDomNode& xmlNode)
       }
 
       if(nodeName == "FormField"){
+         FormField *formField = WidgetHelper::createFormField(currentElement);
+         ql_fglFields << formField;
+
          QWidget *widget = WidgetHelper::createFormWidget(currentElement);
+         formField->addField(widget);
 
          QDomElement fieldElement = currentElement.firstChildElement();
 
@@ -388,6 +392,9 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
  
       int formW = currentElement.firstChild().toElement().attribute("width").toInt();
       QWidget *wi = WidgetHelper::createFormWidget(currentElement);
+      TableColumn *tableColumn = (TableColumn*) WidgetHelper::createFormField(currentElement);
+      ql_fglFields << tableColumn;
+      tableColumn->addField(wi);
       int w = wi->width();
       int h = wi->height();
       delete wi;
@@ -546,7 +553,7 @@ void Parser::addWidgets(QWidget *widget, bool add, int x, int y, int gridWidth, 
    if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){
       layout->setColumnMinimumWidth(y,0);
       layout->setRowMinimumHeight(x,0);
-      layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft);
+      layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
    }
 
    if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (currentLayout)){

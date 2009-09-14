@@ -153,7 +153,7 @@ void ClientTcp::newSocket()
 void ClientTcp::setDebugModus(bool debugModus, QWidget *parent)
 {
  dw = new DebugWindow(parent);
- if (!debugModus)
+ if (debugModus)
  {
      dw->show();
  }
@@ -193,6 +193,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
       connect(&ph, SIGNAL(makeResponse(QString)), 
              this, SLOT(makeOwnResponse(QString)));
    }
+   connect(&ph, SIGNAL(setUpdatesEnabled(bool)),
+           p_currScreenHandler, SLOT(setUpdatesEnabled(bool)));
    // OPEN FORM
    connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int)), 
            p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int)));
@@ -568,7 +570,9 @@ void ProtocolHandler::run()
          QDomElement child    = commands.firstChildElement();
 
          while(!child.isNull()){
+            setUpdatesEnabled(false);
             outputTree(child);
+            setUpdatesEnabled(true);
 
             child = child.nextSiblingElement();
          }
@@ -2001,21 +2005,22 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
 
 DebugWindow::DebugWindow(QWidget *parent) : QDialog(parent)
 {
-mainLayout = new QVBoxLayout(this);
-QHBoxLayout *searchline = new QHBoxLayout(this);
-edit = new QTextEdit(this);
-search = new QLineEdit(this);
-QPushButton *backward = new QPushButton(tr("Backward"));
-QPushButton *forward = new QPushButton(tr("Forward"));
-backward->setDefault(true);
-connect(forward,SIGNAL(clicked()), this, SLOT(forwardsearch()));
-connect(backward,SIGNAL(clicked()), this, SLOT(backwardsearch()));
-mainLayout->addWidget(edit);
-mainLayout->addLayout(searchline);
-searchline->addWidget(search);
-searchline->addWidget(backward);
-searchline->addWidget(forward);
-setLayout(mainLayout);
+   mainLayout = new QVBoxLayout;
+   QHBoxLayout *searchline = new QHBoxLayout;
+   edit = new QTextEdit();
+   edit->setReadOnly(true);
+   search = new QLineEdit();
+   QPushButton *backward = new QPushButton(tr("Backward"));
+   QPushButton *forward = new QPushButton(tr("Forward"));
+   backward->setDefault(true);
+   connect(forward,SIGNAL(clicked()), this, SLOT(forwardsearch()));
+   connect(backward,SIGNAL(clicked()), this, SLOT(backwardsearch()));
+   mainLayout->addWidget(edit);
+   mainLayout->addLayout(searchline);
+   searchline->addWidget(search);
+   searchline->addWidget(backward);
+   searchline->addWidget(forward);
+   setLayout(mainLayout);
 }
 
 void DebugWindow::debugOut(QString debugtext)

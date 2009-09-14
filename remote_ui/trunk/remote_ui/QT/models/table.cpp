@@ -234,13 +234,11 @@ void TableView::nextfield()
       int colCount = table->columnCount(QModelIndex());
       
       if(currentCol < colCount-1){
-         /*
          QModelIndex tindex = table->index(currentRow, currentCol+1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
 
          setCurrentIndex(index);
          update();
-         */
       }
    }
    else{

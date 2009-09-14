@@ -94,6 +94,7 @@ private:
 
 signals:
    void makeResponse(QString);
+   void setUpdatesEnabled(bool);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
    void createWindow(QString, QString, int, int, int, int);
