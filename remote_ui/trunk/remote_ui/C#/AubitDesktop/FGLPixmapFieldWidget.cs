@@ -137,7 +137,7 @@ namespace AubitDesktop
             a = createAttribForWidget(ff);
 
 
-            createWidget(a, ma,Convert.ToInt32(pixmap.posY),index, Convert.ToInt32(pixmap.posX), 1, Convert.ToInt32(pixmap.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(pixmap.posY),index, Convert.ToInt32(pixmap.posX), 1, Convert.ToInt32(pixmap.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, pixmap.action, Convert.ToInt32(ff.fieldId), ff.include);
             
         }
 

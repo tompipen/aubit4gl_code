@@ -156,7 +156,7 @@ namespace AubitDesktop
             ATTRIB a;
             
             a = createAttribForWidget(ff);
-            createWidget(a, ma,Convert.ToInt32(label.posY), index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(label.posY), index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, label.action, Convert.ToInt32(ff.fieldId), ff.include);
         }
 
         public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)

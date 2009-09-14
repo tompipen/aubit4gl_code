@@ -143,7 +143,7 @@ namespace AubitDesktop
             a = createAttribForWidget(ff);
 
 
-            createWidget(a, ma,Convert.ToInt32(button.posY),index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(button.posY),index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, button.action, Convert.ToInt32(ff.fieldId), ff.include);
             
         }
 
@@ -155,7 +155,7 @@ namespace AubitDesktop
             a = createAttribForWidget(ff);
 
 
-            createWidget(a, ma, Convert.ToInt32(button.posY), index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma, Convert.ToInt32(button.posY), index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, button.action, Convert.ToInt32(ff.fieldId), ff.include);
 
         }
 

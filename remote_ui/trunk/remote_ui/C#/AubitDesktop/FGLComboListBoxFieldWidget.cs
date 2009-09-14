@@ -316,7 +316,7 @@ namespace AubitDesktop
 
 
             createComboBoxWidget(a,ma,
-                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Items);
+                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, cbox.action, Convert.ToInt32(ffx.fieldId), ffx.include,cbox.Items);
             adjustDisplayPropertiesForContext();
         }
 

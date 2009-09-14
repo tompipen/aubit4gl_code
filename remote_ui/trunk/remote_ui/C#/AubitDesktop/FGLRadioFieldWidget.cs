@@ -324,7 +324,7 @@ namespace AubitDesktop
 
 
             createRadioButtonWidget(a, ma,
-                Convert.ToInt32(cbox.posY), index, Convert.ToInt32(cbox.posX), Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, "", Convert.ToInt32(ffx.fieldId), ffx.include, cbox);
+                Convert.ToInt32(cbox.posY), index, Convert.ToInt32(cbox.posX), Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, cbox.action, Convert.ToInt32(ffx.fieldId), ffx.include, cbox);
 
 
             adjustDisplayPropertiesForContext();
