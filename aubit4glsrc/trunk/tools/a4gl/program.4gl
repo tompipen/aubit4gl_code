@@ -951,8 +951,8 @@ call channel::write("make","GLOBALS_DEFS=")
 if fgl_getenv("VMAKE")!=" "  then
 	call channel::write("make","A4GL_UI=CONSOLE")
 	call channel::write("make","export A4GL_UI")
-	call channel::write("make","A4GL_GENERATE_TXXVARS=Y")
-	call channel::write("make","export A4GL_GENERATE_TXXVARS")
+	#call channel::write("make","A4GL_GENERATE_TXXVARS=Y")
+	#call channel::write("make","export A4GL_GENERATE_TXXVARS")
 end if
 
 
@@ -1250,8 +1250,9 @@ if fgl_getenv("VMAKE") !=" " then
 		call channel::write("make", lv_buildstr clipped||"t_"||lv_prog clipped||"$(A4GL_OBJ_EXT): "|| "$(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
 		call channel::write("make","	A4GL_GENERATE_TXXVARS=N DBPATH=$(DBPATH):$(V4GL):$(LFILE_DIR) 4glpc -K $(CFLAGS) -o $@ $<")
 
-		call channel::write("make","$(G_TXX): $(FGLOBJS)")
-		call channel::write("make","	touch $(G_TXX)")
+		call channel::write("make","$(G_TXX):  $(ALL4GLSRC)")
+  		call channel::write("make","	mktxx_grep $(ALL4GLSRC) > $(G_TXX)")
+                                                       
 
       if lv_prog not matches "*_tmp" then
          # Rule to copy all the source 4gl and forms etc into the COPYDIR directory
