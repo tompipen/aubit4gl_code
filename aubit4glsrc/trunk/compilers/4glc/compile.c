@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.134 2009-07-28 15:04:31 mikeaubury Exp $
+# $Id: compile.c,v 1.135 2009-09-16 15:13:56 mikeaubury Exp $
 #*/
 
 /**
@@ -1028,8 +1028,7 @@ initArguments (int argc, char *argv[])
 		  A4GL_debug ("Command returned code %d", ret);
 		#endif
 		if (ret) {
-		  FPRINTF (stderr,"Error compiling %s - check %s.err\n", output_object,
-			  output_object);
+		  FPRINTF (stderr,"Error compiling %s - check %s.err\n", output_object, output_object);
 		  FPRINTF (stderr,"Failed command was: %s\n", buff);
 		  FPRINTF (stderr,"Exit code is: %d\n", ret);
 		  /*fixme: show err file*/
@@ -1351,7 +1350,22 @@ compiled_4gl++;
 	if (module_errors_cnt) {
 		char errfile[1024];
 		yyparse_ret=-1;
-		SPRINTF1 (errfile, "%s.err", outputfile);
+       if (A4GL_isyes(acl_getenv("LOCALERRFILE"))) {
+            char *ptr=0;
+            ptr=rindex(outputfile,'/');
+#ifdef __WIN32__
+            if (ptr==0) {
+               ptr=rindex(outputfile,'\\');
+               if (ptr) ptr++;
+            }
+#endif
+            if (ptr==NULL) ptr=outputfile;
+               if (ptr) ptr++;
+
+		      SPRINTF1 (errfile, "%s.err", ptr);
+         } else {
+		      SPRINTF1 (errfile, "%s.err", outputfile);
+         }
 		rewind(yyin);
 		A4GL_write_errfile_many_errors(errfile,yyin,module_errors,module_errors_cnt);
 		fclose(yyin);
@@ -1776,7 +1790,23 @@ a4gl_yyerror (char *s)
   }
 
   ld = A4GL_memfile_ftell (yyin);
-  SPRINTF1 (errfile, "%s.err", outputfile);
+
+  if (A4GL_isyes(acl_getenv("LOCALERRFILE"))) {
+            char *ptr=0;
+            ptr=rindex(outputfile,'/');
+               if (ptr) ptr++;
+#ifdef __WIN32__
+            if (ptr==0) {
+               ptr=rindex(outputfile,'\\');
+               if (ptr) ptr++;
+            }
+#endif
+      if (ptr==NULL) ptr=outputfile;
+
+      SPRINTF1 (errfile, "%s.err", ptr);
+  } else {
+      SPRINTF1 (errfile, "%s.err", outputfile);
+  }
   a = 0;
 
   if (fpos!=ld || posterror) {
@@ -1821,7 +1851,7 @@ a4gl_yyerror (char *s)
         }
   }
   A4GL_write_cont (yyin);
-  fprintf (stderr,"Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
+  fprintf (stderr,"Error compiling %s.4gl - check %s\n", outputfile, errfile);
  exit (2);
 }
 

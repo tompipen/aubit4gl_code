@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.70 2009-06-16 13:35:48 mikeaubury Exp $
+# $Id: fcompile.c,v 1.71 2009-09-16 15:14:24 mikeaubury Exp $
 #*/
 
 /**
@@ -273,8 +273,22 @@ main (int argc, char *argv[])
   A4GL_init_form ();
 
   atexit(bye);
+      if (A4GL_isyes(acl_getenv("LOCALERRFILE"))) {
+            char *ptr=0;
+            ptr=rindex(outputfile,'/');
+#ifdef __WIN32__
+            if (ptr==0) {
+               ptr=rindex(outputfile,'\\');
+               if (ptr) ptr++;
+            }
+#endif
+            if (ptr==NULL) ptr=outputfile;
+               if (ptr) ptr++;
 
-  sprintf (errfile, "%s.err", outputfilename);
+            SPRINTF1 (errfile, "%s.err", ptr);
+   } else {
+      sprintf (errfile, "%s.err", outputfilename);
+   }
   A4GL_delete_file(errfile);
   A4GL_delete_compiled_form_file();
 
@@ -340,7 +354,22 @@ a4gl_form_yyerror (char *s)
   long ld;
   ld = ftell(yyin); //buffpos ();
   ld=reposition_to_line(yylineno, yyin);
-  sprintf (errfile, "%s.err", outputfilename);
+      if (A4GL_isyes(acl_getenv("LOCALERRFILE"))) {
+            char *ptr=0;
+            ptr=rindex(outputfile,'/');
+#ifdef __WIN32__
+            if (ptr==0) {
+               ptr=rindex(outputfile,'\\');
+               if (ptr) ptr++;
+            }
+#endif
+            if (ptr==NULL) ptr=outputfile;
+               if (ptr) ptr++;
+
+            SPRINTF1 (errfile, "%s.err", ptr);
+   } else {
+      sprintf (errfile, "%s.err", outputfilename);
+   }
   f = A4GL_write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
   A4GL_write_cont (yyin);

@@ -1035,8 +1035,11 @@ if fgl_getenv("VMAKE")!=" "  then
    call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
    call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
    call channel::write("make","endif")
-		   call channel::write("make","ALL4GLSRC=")
-		   call channel::write("make","ALLPERSRC=")
+	call channel::write("make","ALL4GLSRC=")
+	call channel::write("make","ALLPERSRC=")
+	call channel::write("make","GLOBALS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
+	call channel::write("make","DEFAULT_GLOBALS=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
+	call channel::write("make","export DEFAULT_GLOBALS")
 end if
 
 
@@ -1160,10 +1163,12 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	if lv_type="G" then # Globals
-
-
-		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl")
-		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $^")
+      if fgl_getenv("VMAKE")!= " " then
+		   call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl $(DEFAULT_GLOBALS)")
+      else
+		   call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl")
+      end if
+		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl")
 		call channel::write("make","	A4GL_PACKER_EXT=.mif A4GL_PACKER=PACKED 4glpc -t WRITE -o $@ $<")
 	end if
@@ -1248,7 +1253,7 @@ if fgl_getenv("VMAKE") !=" " then
 		call channel::write("make", lv_buildstr clipped||"g_"||lv_prog clipped||"txv$(A4GL_OBJ_EXT): "|| "$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
 		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
 		call channel::write("make", lv_buildstr clipped||"t_"||lv_prog clipped||"$(A4GL_OBJ_EXT): "|| "$(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
-		call channel::write("make","	A4GL_GENERATE_TXXVARS=N DBPATH=$(DBPATH):$(V4GL):$(LFILE_DIR) 4glpc -K $(CFLAGS) -o $@ $<")
+		call channel::write("make","	unset DEFAULT_GLOBALS; DBPATH=$(DBPATH):$(V4GL):$(LFILE_DIR) 4glpc -K $(CFLAGS) -o $@ $<")
 
 		call channel::write("make","$(G_TXX):  $(ALL4GLSRC)")
   		call channel::write("make","	mktxx_grep $(ALL4GLSRC) > $(G_TXX)")
