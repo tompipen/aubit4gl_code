@@ -17,7 +17,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QLineEdit>
-
+#include <QSplashScreen>
 #include "confwin.h"
 #include "mainframe.h"
 #include "login.h"
@@ -33,13 +33,16 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    QString fileName; 
 
+    QSplashScreen *splash = new QSplashScreen;
+    splash->setPixmap(QPixmap("./pics/splash.png"));
+    splash->show();
+    QString fileName; 
     QCoreApplication::setOrganizationName("VENTAS");
     QCoreApplication::setOrganizationDomain("ventas.com");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
-
+sleep(3);
 
 
 
@@ -66,9 +69,9 @@ int main(int argc, char *argv[])
     MainFrame mainframe;
     mainframe.move(QCursor::pos());
     mainframe.show();
-   
+    splash->finish(&mainframe);
     mainframe.activateWindow();
     mainframe.raise();
-
+    delete splash;
     return app.exec();
 }
