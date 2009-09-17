@@ -646,7 +646,7 @@ void LoginForm::saveEdits(){
 void LoginForm::okPressed()
 {
 
-   hideLogin();
+   //hideLogin();
    QSettings settings;
    QString server = serverLineEdit->text();
    QString user = usernameLineEdit->text();
