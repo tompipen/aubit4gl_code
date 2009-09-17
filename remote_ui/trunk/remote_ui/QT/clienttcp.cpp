@@ -1923,6 +1923,13 @@ ProtocolHandler::~ProtocolHandler()
 
 }
 
+ProtocolHandler::ProtocolHandler(QObject *parent) : QThread(parent)
+{
+
+   b_read = false;
+   b_write = false;
+}
+
 bool ProtocolHandler::sendFile(QString name)
 {
    QDomDocument doc;

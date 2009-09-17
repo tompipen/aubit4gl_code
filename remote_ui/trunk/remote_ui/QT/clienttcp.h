@@ -58,6 +58,7 @@ class ProtocolHandler : public QThread
    Q_OBJECT;
 
 public:
+   ProtocolHandler(QObject *parent = NULL);
    ~ProtocolHandler();
    void run();
 
