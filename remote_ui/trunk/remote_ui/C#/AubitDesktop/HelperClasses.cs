@@ -1482,6 +1482,8 @@ namespace AubitDesktop
 
         public static int getKeyCodeFromKeyName(string keyname)
         {
+            if (keyname == null) return -1;
+
             string txt = keyname;
 
             switch (keyname.ToUpper())
