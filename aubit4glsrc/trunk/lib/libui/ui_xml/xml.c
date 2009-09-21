@@ -781,6 +781,7 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
   A4GL_make_field_slist_from_ap (&list, ap,0);
   if (list.field_name_list[0].fpos != 0 && list.field_name_list[0].fpos != 1)
     {
+	A4GL_pause_execution();
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, get_field_with_subscript_as_string(list.field_name_list[0].fname, list.field_name_list[0].fpos));
     }
   else
@@ -821,9 +822,9 @@ clr_exiting_context(context);
     }
 
 
-  A4GL_make_field_slist_from_ap (&list, ap, arr->scr_line);
+  A4GL_make_field_slist_from_ap (&list, ap, 0);
 
-  	send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, get_field_with_subscript_as_string(list.field_name_list[0].fname, list.field_name_list[0].fpos));
+  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, get_field_with_subscript_as_string(list.field_name_list[0].fname, list.field_name_list[0].fpos));
 
 
   return rval;
