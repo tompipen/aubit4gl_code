@@ -97,6 +97,7 @@ namespace AubitDesktop
             this.lblMessage,
             this.lblError,
             this.lblLineDisplay});
+            this.statusStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.statusStrip1.Location = new System.Drawing.Point(0, 617);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1073, 22);
@@ -115,19 +116,24 @@ namespace AubitDesktop
             this.lblComment.Name = "lblComment";
             this.lblComment.Size = new System.Drawing.Size(55, 17);
             this.lblComment.Text = "comments";
+            this.lblComment.TextChanged += new System.EventHandler(this.lblComment_TextChanged);
             // 
             // lblMessage
             // 
             this.lblMessage.Name = "lblMessage";
             this.lblMessage.Size = new System.Drawing.Size(49, 17);
             this.lblMessage.Text = "message";
+            this.lblMessage.Click += new System.EventHandler(this.lblMessage_Click);
+            this.lblMessage.TextChanged += new System.EventHandler(this.lblMessage_TextChanged);
             // 
             // lblError
             // 
+            this.lblError.BackColor = System.Drawing.SystemColors.Control;
             this.lblError.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblError.Name = "lblError";
             this.lblError.Size = new System.Drawing.Size(36, 17);
             this.lblError.Text = "error";
+            this.lblError.TextChanged += new System.EventHandler(this.lblError_TextChanged);
             // 
             // lblLineDisplay
             // 
@@ -135,6 +141,7 @@ namespace AubitDesktop
             this.lblLineDisplay.Name = "lblLineDisplay";
             this.lblLineDisplay.Size = new System.Drawing.Size(60, 17);
             this.lblLineDisplay.Text = "LineDisplay";
+            this.lblLineDisplay.TextChanged += new System.EventHandler(this.lblLineDisplay_TextChanged);
             // 
             // menuStrip1
             // 

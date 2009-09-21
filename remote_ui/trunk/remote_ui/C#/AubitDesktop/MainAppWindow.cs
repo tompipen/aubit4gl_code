@@ -1180,6 +1180,35 @@ namespace AubitDesktop
         {
             // This is required for the Web version to ensure all panels are correctly sized...
         }
+
+        private void lblError_TextChanged(object sender, EventArgs e)
+        {
+            statusStrip1.Refresh();
+
+            
+        }
+
+        private void lblMessage_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblComment_TextChanged(object sender, EventArgs e)
+        {
+            statusStrip1.Refresh();
+        }
+
+        private void lblMessage_TextChanged(object sender, EventArgs e)
+        {
+            statusStrip1.Refresh();
+        }
+
+        private void lblLineDisplay_TextChanged(object sender, EventArgs e)
+        {
+            statusStrip1.Refresh();
+        }
+
+
     }
 
     class launcherCmdNode : TreeNode
