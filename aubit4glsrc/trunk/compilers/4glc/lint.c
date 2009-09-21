@@ -29,7 +29,7 @@ int nlints=0;
     {
     "CS.EXITNOTMAIN", 0},
     {
-    "CS.GETERRORRECORD", 0},
+    "CS.GETERRORRECORD", 1},
     {
     "CS.ERRORHANDLER", 0},
     {
@@ -588,6 +588,8 @@ check_cmds_for_dead_code (struct commands *cmds)
 	  return;
 	}
 
+
+      A4GL_assertion (cmds->cmds.cmds_val[a]->cmd_data.type <0 || cmds->cmds.cmds_val[a]->cmd_data.type> E_CMD_LAST,"Corrupt Cmd");
       switch (cmds->cmds.cmds_val[a]->cmd_data.type)
 	{
 
@@ -4480,8 +4482,11 @@ int isCalled=0;
 	    {
 	    case E_MET_FUNCTION_DEFINITION:
 		if ( fprototypes[a].pname[0]!=' ') {
+	
+		      if (fromLibrary[a]==0) {
 	      		yylineno = m->module_entry_u.function_definition.lineno;
 	      		A4GL_lint (m->module_entry_u.function_definition.module, m->module_entry_u.function_definition.lineno, "FUNCNOTCALLED", "Function is defined but never called", m->module_entry_u.function_definition.funcname);
+		      }
 		}
 	      break;
 	    default:		// dont care
@@ -5508,6 +5513,7 @@ load_boltons (char *fname)
   while (1)
     {
       char *p[3];
+      memset(buff,0,sizeof(buff));
       fgets (buff, 255, f);
       lineno++;
       if (feof (f))
@@ -6169,6 +6175,7 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
       f = fopen ("protos.out", "a");
       fprintf (f, "%s|", fcall->expr_str_u.expr_function_call->fname);
       l = A4GL_rationalize_list (fcall->expr_str_u.expr_function_call->parameters);
+	if (l==0) return;
       for (a = 0; a < l->list.list_len; a++)
 	{
 	  if (a)

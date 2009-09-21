@@ -591,8 +591,8 @@ function check_program_for_module(lv_mname)
 define lv_mname char(256)
 define lv_cwd char(256)
 define lv_cnt integer
-define lv_prog char(16)
-define lv_last_used_prog char(16)
+define lv_prog char(128)
+define lv_last_used_prog char(128)
 define lv_have_last_used integer
 define lv_makefile char(512)
 define lv_objfile char(512)
@@ -660,7 +660,7 @@ end function
 
 
 function get_object_file_for(lv_prog,lv_mname)
-define lv_prog char(16)
+define lv_prog char(128)
 define lv_mname char(256)
 define lv_builddir char(512)
 define lv_objext char(10)
@@ -694,7 +694,7 @@ end function
 
 
 function get_makefile_for(lv_prog)
-define lv_prog char(16)
+define lv_prog char(128)
 define lv_progoutdir, lv_progmakefile char(256)
 define lv_makefile char(512)
 define lv_genmakefile 	integer

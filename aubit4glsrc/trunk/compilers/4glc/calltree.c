@@ -19,9 +19,10 @@ extern int yylineno;
 char *lint_module = 0;
 static void load_boltons (char *fname);
 static int add_calltree_calls (char *s, commands * func_commands, int mode);
+static int find_function (char *s);
 char *decode_rb (enum report_blocks a);
 static int ignore_user_function(char *name) ;
-
+int ignLibFunc=1;
 
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
@@ -76,6 +77,7 @@ struct function
   struct function_calls *calls;
   void *ptr;
   int called;
+  int isInLibrary;
 
   char *whenever_error_func;
   char *whenever_any_error_func;
@@ -771,6 +773,15 @@ if (n) {
 	}
 }
 
+
+if (ignLibFunc) {
+	int a;
+	a=find_function(name);
+	if (a!=-1)  {
+		if (functions[a].isInLibrary) return 1;
+	}
+}
+
 return 0;
 
 }
@@ -793,7 +804,7 @@ system_function (char *funcname)
 
 
 static void
-add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr)
+add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary)
 {
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
@@ -805,6 +816,7 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
   functions[functions_cnt - 1].calls = 0;
   functions[functions_cnt - 1].ptr = ptr;
   functions[functions_cnt - 1].called = 0;
+  functions[functions_cnt - 1].isInLibrary=isInLibrary;
 
 
   functions[functions_cnt - 1].whenever_error_func = whenever_error_func;
@@ -856,8 +868,7 @@ pop_callstack (void)
 }
 */
 
-static int
-find_function (char *s)
+static int find_function (char *s)
 {
   int a;
   for (a = 0; a < functions_cnt; a++)
@@ -2077,28 +2088,28 @@ check_program (module_definition * mods, int nmodules)
 	    case E_MET_MAIN_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
-			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition);
+			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary);
 	      break;
 
 	    case E_MET_FUNCTION_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.funcname,
-			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition);
+			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary);
 	      break;
 
 	    case E_MET_REPORT_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.funcname,
-			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition);
+			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition, mods[a].moduleIsInLibrary);
 	      break;
 
 	    case E_MET_PDF_REPORT_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname,
-			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition);
+			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition, mods[a].moduleIsInLibrary);
 	      break;
 
 	    case E_MET_CMD:
@@ -2478,6 +2489,16 @@ main (int argc, char *argv[])
       if (strcmp (argv[b], "-4gl") == 0)
 	{
 	  inc4GL = 1;
+	  continue;
+	}
+      if (strcmp (argv[b], "-lib") == 0)
+	{
+	   ignLibFunc = 0;
+	  continue;
+	}
+      if (strcmp (argv[b], "-nolib") == 0)
+	{
+	   ignLibFunc = 1;
 	  continue;
 	}
 

@@ -33,6 +33,7 @@ main (int argc, char *argv[])
 int num=0;
 int narg;
 
+
   if (argc < 2)
     {
       printf ("Usage : %s infile infile...\n", argv[0]);

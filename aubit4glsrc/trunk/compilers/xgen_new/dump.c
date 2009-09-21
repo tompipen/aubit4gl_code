@@ -427,8 +427,8 @@ dump_write_xml (char *name)
   for (a = 0; a < nall_enums; a++)
     {
       int b;
-      fprintf (hfile_proto, "int decode_%s(char * evalue) ;\n", all_enums[a].enum_name);
-      fprintf (hfile, "int decode_%s(char * evalue) {\n", all_enums[a].enum_name);
+      fprintf (hfile_proto, "int xmlbest_reader__decode_%s(char * evalue) ;\n", all_enums[a].enum_name);
+      fprintf (hfile, "int xmlbest_reader__decode_%s(char * evalue) {\n", all_enums[a].enum_name);
       for (b = 0; b < all_enums[a].nelements; b++)
 	{
 	  fprintf (hfile, "  if (strcmp(evalue,\"%s\")==0) { return %s; }\n",
@@ -1105,7 +1105,7 @@ dump_write_dtd (char *name)
 	  fprintf (hfile_act_start, "if ({!%s}) {tmpVar->%s=0;} /*DDD */\n",
 		   all_elements[a].union_switch_on_enum_type,
 		   all_elements[a].union_switch_on_enum_name);
-	  fprintf (hfile_act_start, "else {tmpVar->%s=decode_%s({%s});}\n\n",
+	  fprintf (hfile_act_start, "else {tmpVar->%s=xmlbest_reader__decode_%s({%s});}\n\n",
 		   all_elements[a].union_switch_on_enum_name,
 		   all_elements[a].union_switch_on_enum_type,
 		   all_elements[a].union_switch_on_enum_type);
@@ -1228,7 +1228,7 @@ dump_write_dtd (char *name)
 			 e->vname.name, union_name, e->vname.name);
 	      if (!skip || strlen (union_match_before))
 		fprintf (hfile_act_start,
-			 "else {tmpVar->%s%s=decode_%s({%s});}\n\n",
+			 "else {tmpVar->%s%s=xmlbest_reader__decode_%s({%s});}\n\n",
 			 union_name, e->vname.name, e->datatype.type,
 			 e->vname.name);
 	      if (!skip || strlen (union_match_before))

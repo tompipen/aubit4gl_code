@@ -921,7 +921,8 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
     case ET_EXPR_OP_AND:
       ensure_bool (module, lineno, p->expr_str_u.expr_op->left, 0);
       ensure_bool (module, lineno, p->expr_str_u.expr_op->right, 0);
-      return DTYPE_INT;		// Actually boolean
+      return FAKE_DTYPE_BOOL;		// Actually boolean
+
     case ET_EXPR_CAST:
       return p->expr_str_u.expr_cast->target_dtype;
     case ET_EXPR_DAY_FUNC:

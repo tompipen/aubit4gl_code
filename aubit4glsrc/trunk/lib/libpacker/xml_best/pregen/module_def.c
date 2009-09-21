@@ -1,6 +1,6 @@
 /* XML application for module_def.dtd.
  * Includes actions from module_def.act.
- * Generated 2009/08/25 21:32:24.
+ * Generated 2009/09/10 16:49:26.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -162,7 +162,7 @@ t_dt_display *tmpVar;
 XMLPushOntoStack("dt_display",  sizeof(t_dt_display),1,0,1,A_dt_display_nm);
 tmpVar=(t_dt_display *)XMLGetTopOfStack();
 if (AU_dt_display_dt_display_type) {tmpVar->dttype=0;} /*DDD */
-else {tmpVar->dttype=decode_dt_display_type(A_dt_display_dt_display_type);}
+else {tmpVar->dttype=xmlbest_reader__decode_dt_display_type(A_dt_display_dt_display_type);}
 
 /* tmpVar->dt_display_u.x_y; is_vararray=0 skip=0 */
 
@@ -240,28 +240,28 @@ if (AU_attrib_color) {tmpVar->color=0;} /* ZZZ */
 else {tmpVar->color=atol(A_attrib_color);}
 
 if (AU_attrib_nonewlines) {tmpVar->nonewlines=0;}/* EEE */
-else {tmpVar->nonewlines=decode_e_boolean(A_attrib_nonewlines);}
+else {tmpVar->nonewlines=xmlbest_reader__decode_e_boolean(A_attrib_nonewlines);}
 
 if (AU_attrib_bold) {tmpVar->bold=0;}/* EEE */
-else {tmpVar->bold=decode_e_boolean(A_attrib_bold);}
+else {tmpVar->bold=xmlbest_reader__decode_e_boolean(A_attrib_bold);}
 
 if (AU_attrib_blink) {tmpVar->blink=0;}/* EEE */
-else {tmpVar->blink=decode_e_boolean(A_attrib_blink);}
+else {tmpVar->blink=xmlbest_reader__decode_e_boolean(A_attrib_blink);}
 
 if (AU_attrib_reverse) {tmpVar->reverse=0;}/* EEE */
-else {tmpVar->reverse=decode_e_boolean(A_attrib_reverse);}
+else {tmpVar->reverse=xmlbest_reader__decode_e_boolean(A_attrib_reverse);}
 
 if (AU_attrib_dim) {tmpVar->dim=0;}/* EEE */
-else {tmpVar->dim=decode_e_boolean(A_attrib_dim);}
+else {tmpVar->dim=xmlbest_reader__decode_e_boolean(A_attrib_dim);}
 
 if (AU_attrib_invisible) {tmpVar->invisible=0;}/* EEE */
-else {tmpVar->invisible=decode_e_boolean(A_attrib_invisible);}
+else {tmpVar->invisible=xmlbest_reader__decode_e_boolean(A_attrib_invisible);}
 
 if (AU_attrib_underline) {tmpVar->underline=0;}/* EEE */
-else {tmpVar->underline=decode_e_boolean(A_attrib_underline);}
+else {tmpVar->underline=xmlbest_reader__decode_e_boolean(A_attrib_underline);}
 
 if (AU_attrib_normal) {tmpVar->normal=0;}/* EEE */
-else {tmpVar->normal=decode_e_boolean(A_attrib_normal);}
+else {tmpVar->normal=xmlbest_reader__decode_e_boolean(A_attrib_normal);}
 
 /* tmpVar->style_expr; is_vararray=0 skip=0 */
 tmpVar->style_expr=0;
@@ -274,16 +274,16 @@ tmpVar->count=0;
 /* tmpVar->maxcount; is_vararray=0 skip=0 */
 tmpVar->maxcount=0;
 if (AU_attrib_allow_insert) {tmpVar->allow_insert=0;}/* EEE */
-else {tmpVar->allow_insert=decode_e_boolean(A_attrib_allow_insert);}
+else {tmpVar->allow_insert=xmlbest_reader__decode_e_boolean(A_attrib_allow_insert);}
 
 if (AU_attrib_allow_delete) {tmpVar->allow_delete=0;}/* EEE */
-else {tmpVar->allow_delete=decode_e_boolean(A_attrib_allow_delete);}
+else {tmpVar->allow_delete=xmlbest_reader__decode_e_boolean(A_attrib_allow_delete);}
 
 if (AU_attrib_no_new_lines) {tmpVar->no_new_lines=0;}/* EEE */
-else {tmpVar->no_new_lines=decode_e_boolean(A_attrib_no_new_lines);}
+else {tmpVar->no_new_lines=xmlbest_reader__decode_e_boolean(A_attrib_no_new_lines);}
 
 if (AU_attrib_border) {tmpVar->border=0;}/* EEE */
-else {tmpVar->border=decode_e_boolean(A_attrib_border);}
+else {tmpVar->border=xmlbest_reader__decode_e_boolean(A_attrib_border);}
 
 if (AU_attrib_text) {tmpVar->text=0;} /* CCC */
 else {tmpVar->text=strdup(A_attrib_text);}
@@ -390,7 +390,7 @@ t_struct_cancel_cmd *tmpVar;
 XMLPushOntoStack("struct_cancel_cmd",  sizeof(t_struct_cancel_cmd),1,0,1,A_struct_cancel_cmd_nm);
 tmpVar=(t_struct_cancel_cmd *)XMLGetTopOfStack();
 if (AU_struct_cancel_cmd_c) {tmpVar->c=0;}/* EEE */
-else {tmpVar->c=decode_cancel_type(A_struct_cancel_cmd_c);}
+else {tmpVar->c=xmlbest_reader__decode_cancel_type(A_struct_cancel_cmd_c);}
 
 }
 
@@ -497,7 +497,7 @@ t_struct_close_cmd *tmpVar;
 XMLPushOntoStack("struct_close_cmd",  sizeof(t_struct_close_cmd),1,0,1,A_struct_close_cmd_nm);
 tmpVar=(t_struct_close_cmd *)XMLGetTopOfStack();
 if (AU_struct_close_cmd_cl_type) {tmpVar->cl_type=0;}/* EEE */
-else {tmpVar->cl_type=decode_e_close_type_nosql(A_struct_close_cmd_cl_type);}
+else {tmpVar->cl_type=xmlbest_reader__decode_e_close_type_nosql(A_struct_close_cmd_cl_type);}
 
 /* tmpVar->ident; is_vararray=0 skip=0 */
 tmpVar->ident=0;
@@ -516,7 +516,7 @@ t_struct_close_sql_cmd *tmpVar;
 XMLPushOntoStack("struct_close_sql_cmd",  sizeof(t_struct_close_sql_cmd),1,0,1,A_struct_close_sql_cmd_nm);
 tmpVar=(t_struct_close_sql_cmd *)XMLGetTopOfStack();
 if (AU_struct_close_sql_cmd_cl_type) {tmpVar->cl_type=0;}/* EEE */
-else {tmpVar->cl_type=decode_e_close_type_withsql(A_struct_close_sql_cmd_cl_type);}
+else {tmpVar->cl_type=xmlbest_reader__decode_e_close_type_withsql(A_struct_close_sql_cmd_cl_type);}
 
 /* tmpVar->ident; is_vararray=0 skip=0 */
 tmpVar->ident=0;
@@ -553,7 +553,7 @@ t_struct_continue_cmd *tmpVar;
 XMLPushOntoStack("struct_continue_cmd",  sizeof(t_struct_continue_cmd),1,0,1,A_struct_continue_cmd_nm);
 tmpVar=(t_struct_continue_cmd *)XMLGetTopOfStack();
 if (AU_struct_continue_cmd_what) {tmpVar->what=0;}/* EEE */
-else {tmpVar->what=decode_e_block_cmd(A_struct_continue_cmd_what);}
+else {tmpVar->what=xmlbest_reader__decode_e_block_cmd(A_struct_continue_cmd_what);}
 
 if (AU_struct_continue_cmd_block_id) {tmpVar->block_id=0;} /* ZZZ */
 else {tmpVar->block_id=atol(A_struct_continue_cmd_block_id);}
@@ -576,7 +576,7 @@ t_struct_ext_cmd *tmpVar;
 XMLPushOntoStack("struct_ext_cmd",  sizeof(t_struct_ext_cmd),1,0,1,A_struct_ext_cmd_nm);
 tmpVar=(t_struct_ext_cmd *)XMLGetTopOfStack();
 if (AU_struct_ext_cmd_what) {tmpVar->what=0;}/* EEE */
-else {tmpVar->what=decode_e_block_cmd(A_struct_ext_cmd_what);}
+else {tmpVar->what=xmlbest_reader__decode_e_block_cmd(A_struct_ext_cmd_what);}
 
 if (AU_struct_ext_cmd_block_id) {tmpVar->block_id=0;} /* ZZZ */
 else {tmpVar->block_id=atol(A_struct_ext_cmd_block_id);}
@@ -596,7 +596,7 @@ t_struct_defer_cmd *tmpVar;
 XMLPushOntoStack("struct_defer_cmd",  sizeof(t_struct_defer_cmd),1,0,1,A_struct_defer_cmd_nm);
 tmpVar=(t_struct_defer_cmd *)XMLGetTopOfStack();
 if (AU_struct_defer_cmd_what) {tmpVar->what=0;}/* EEE */
-else {tmpVar->what=decode_e_defer(A_struct_defer_cmd_what);}
+else {tmpVar->what=xmlbest_reader__decode_e_defer(A_struct_defer_cmd_what);}
 
 }
 
@@ -730,7 +730,7 @@ tmpVar=(t_struct_error_cmd *)XMLGetTopOfStack();
 /* tmpVar->expr_list; is_vararray=0 skip=0 */
 tmpVar->expr_list=0;
 if (AU_struct_error_cmd_wait_for_key) {tmpVar->wait_for_key=0;}/* EEE */
-else {tmpVar->wait_for_key=decode_e_boolean(A_struct_error_cmd_wait_for_key);}
+else {tmpVar->wait_for_key=xmlbest_reader__decode_e_boolean(A_struct_error_cmd_wait_for_key);}
 
 /* tmpVar->attributes; is_vararray=0 skip=0 */
 tmpVar->attributes=0;
@@ -829,7 +829,7 @@ tmpVar->x=0;
 /* tmpVar->y; is_vararray=0 skip=0 */
 tmpVar->y=0;
 if (AU_struct_move_cmd_relative) {tmpVar->relative=0;}/* EEE */
-else {tmpVar->relative=decode_e_boolean(A_struct_move_cmd_relative);}
+else {tmpVar->relative=xmlbest_reader__decode_e_boolean(A_struct_move_cmd_relative);}
 
 }
 
@@ -902,10 +902,10 @@ tmpVar=(t_struct_run_cmd *)XMLGetTopOfStack();
 /* tmpVar->run_string; is_vararray=0 skip=0 */
 tmpVar->run_string=0;
 if (AU_struct_run_cmd_wait) {tmpVar->wait=0;}/* EEE */
-else {tmpVar->wait=decode_e_boolean(A_struct_run_cmd_wait);}
+else {tmpVar->wait=xmlbest_reader__decode_e_boolean(A_struct_run_cmd_wait);}
 
 if (AU_struct_run_cmd_run_mode) {tmpVar->run_mode=0;}/* EEE */
-else {tmpVar->run_mode=decode_run_mode(A_struct_run_cmd_run_mode);}
+else {tmpVar->run_mode=xmlbest_reader__decode_run_mode(A_struct_run_cmd_run_mode);}
 
 /* tmpVar->returning; is_vararray=0 skip=0 */
 tmpVar->returning=0;
@@ -1039,7 +1039,7 @@ t_locate_pos *tmpVar;
 XMLPushOntoStack("locate_pos",  sizeof(t_locate_pos),1,0,1,A_locate_pos_nm);
 tmpVar=(t_locate_pos *)XMLGetTopOfStack();
 if (AU_locate_pos_e_location) {tmpVar->where=0;} /*DDD */
-else {tmpVar->where=decode_e_location(A_locate_pos_e_location);}
+else {tmpVar->where=xmlbest_reader__decode_e_location(A_locate_pos_e_location);}
 
 /* tmpVar->locate_pos_u.filename; is_vararray=0 skip=0 */
 
@@ -1083,7 +1083,7 @@ tmpVar->message_expr=0;
 /* tmpVar->attributes; is_vararray=0 skip=0 */
 tmpVar->attributes=0;
 if (AU_struct_message_cmd_wait) {tmpVar->wait=0;}/* EEE */
-else {tmpVar->wait=decode_e_boolean(A_struct_message_cmd_wait);}
+else {tmpVar->wait=xmlbest_reader__decode_e_boolean(A_struct_message_cmd_wait);}
 
 }
 
@@ -1495,7 +1495,7 @@ t_bluebar *tmpVar;
 XMLPushOntoStack("bluebar",  sizeof(t_bluebar),1,0,1,A_bluebar_nm);
 tmpVar=(t_bluebar *)XMLGetTopOfStack();
 if (AU_bluebar_style) {tmpVar->style=0;}/* EEE */
-else {tmpVar->style=decode_bluebar_style(A_bluebar_style);}
+else {tmpVar->style=xmlbest_reader__decode_bluebar_style(A_bluebar_style);}
 
 if (AU_bluebar_r) {tmpVar->r=0;} /* AAA */
 else {tmpVar->r=atof(A_bluebar_r);}
@@ -1562,13 +1562,13 @@ if (AU_pdf_startrep_pagetrailersize) {tmpVar->pagetrailersize=0;} /* AAA */
 else {tmpVar->pagetrailersize=atof(A_pdf_startrep_pagetrailersize);}
 
 if (AU_pdf_startrep_isdefault) {tmpVar->isdefault=0;}/* EEE */
-else {tmpVar->isdefault=decode_e_boolean(A_pdf_startrep_isdefault);}
+else {tmpVar->isdefault=xmlbest_reader__decode_e_boolean(A_pdf_startrep_isdefault);}
 
 if (AU_pdf_startrep_ascii_height) {tmpVar->ascii_height=0;}/* EEE */
-else {tmpVar->ascii_height=decode_e_boolean(A_pdf_startrep_ascii_height);}
+else {tmpVar->ascii_height=xmlbest_reader__decode_e_boolean(A_pdf_startrep_ascii_height);}
 
 if (AU_pdf_startrep_ascii_width) {tmpVar->ascii_width=0;}/* EEE */
-else {tmpVar->ascii_width=decode_e_boolean(A_pdf_startrep_ascii_width);}
+else {tmpVar->ascii_width=xmlbest_reader__decode_e_boolean(A_pdf_startrep_ascii_width);}
 
 /* tmpVar->bluebar; is_vararray=0 skip=0 */
 memset(&tmpVar->bluebar,0,sizeof(tmpVar->bluebar));
@@ -1712,7 +1712,7 @@ t_windowtype *tmpVar;
 XMLPushOntoStack("windowtype",  sizeof(t_windowtype),1,0,1,A_windowtype_nm);
 tmpVar=(t_windowtype *)XMLGetTopOfStack();
 if (AU_windowtype_e_wintype) {tmpVar->wintype=0;} /*DDD */
-else {tmpVar->wintype=decode_e_wintype(A_windowtype_e_wintype);}
+else {tmpVar->wintype=xmlbest_reader__decode_e_wintype(A_windowtype_e_wintype);}
 
 /* tmpVar->windowtype_u.formfilename; is_vararray=0 skip=0 */
 
@@ -1937,7 +1937,7 @@ t_report_block_data *tmpVar;
 XMLPushOntoStack("report_block_data",  sizeof(t_report_block_data),1,0,1,A_report_block_data_nm);
 tmpVar=(t_report_block_data *)XMLGetTopOfStack();
 if (AU_report_block_data_report_blocks) {tmpVar->rb=0;} /*DDD */
-else {tmpVar->rb=decode_report_blocks(A_report_block_data_report_blocks);}
+else {tmpVar->rb=xmlbest_reader__decode_report_blocks(A_report_block_data_report_blocks);}
 
 /* tmpVar->report_block_data_u.variables; is_vararray=0 skip=0 */
 
@@ -2019,7 +2019,7 @@ t_report_orderby_section *tmpVar;
 XMLPushOntoStack("report_orderby_section",  sizeof(t_report_orderby_section),1,0,1,A_report_orderby_section_nm);
 tmpVar=(t_report_orderby_section *)XMLGetTopOfStack();
 if (AU_report_orderby_section_rord_type) {tmpVar->rord_type=0;}/* EEE */
-else {tmpVar->rord_type=decode_e_report_orderby(A_report_orderby_section_rord_type);}
+else {tmpVar->rord_type=xmlbest_reader__decode_e_report_orderby(A_report_orderby_section_rord_type);}
 
 /* tmpVar->variables; is_vararray=0 skip=0 */
 tmpVar->variables=0;
@@ -2042,7 +2042,7 @@ tmpVar->exprs=0;
 /* tmpVar->where; is_vararray=0 skip=0 */
 tmpVar->where=0;
 if (AU_struct_display_cmd_by_name) {tmpVar->by_name=0;}/* EEE */
-else {tmpVar->by_name=decode_e_boolean(A_struct_display_cmd_by_name);}
+else {tmpVar->by_name=xmlbest_reader__decode_e_boolean(A_struct_display_cmd_by_name);}
 
 /* tmpVar->attributes; is_vararray=0 skip=0 */
 tmpVar->attributes=0;
@@ -2151,13 +2151,13 @@ tmpVar->cursorname=0;
 /* tmpVar->declare_dets; is_vararray=0 skip=0 */
 tmpVar->declare_dets=0;
 if (AU_struct_declare_cmd_with_hold) {tmpVar->with_hold=0;}/* EEE */
-else {tmpVar->with_hold=decode_e_boolean(A_struct_declare_cmd_with_hold);}
+else {tmpVar->with_hold=xmlbest_reader__decode_e_boolean(A_struct_declare_cmd_with_hold);}
 
 if (AU_struct_declare_cmd_scroll) {tmpVar->scroll=0;}/* EEE */
-else {tmpVar->scroll=decode_e_boolean(A_struct_declare_cmd_scroll);}
+else {tmpVar->scroll=xmlbest_reader__decode_e_boolean(A_struct_declare_cmd_scroll);}
 
 if (AU_struct_declare_cmd_isstmt) {tmpVar->isstmt=0;}/* EEE */
-else {tmpVar->isstmt=decode_e_boolean(A_struct_declare_cmd_isstmt);}
+else {tmpVar->isstmt=xmlbest_reader__decode_e_boolean(A_struct_declare_cmd_isstmt);}
 
 if (AU_struct_declare_cmd_cursor_type) {tmpVar->cursor_type=0;} /* BBB */
 else {tmpVar->cursor_type=A_struct_declare_cmd_cursor_type[0];}
@@ -2340,7 +2340,7 @@ t_clear_data *tmpVar;
 XMLPushOntoStack("clear_data",  sizeof(t_clear_data),1,0,1,A_clear_data_nm);
 tmpVar=(t_clear_data *)XMLGetTopOfStack();
 if (AU_clear_data_e_clear) {tmpVar->clr_type=0;} /*DDD */
-else {tmpVar->clr_type=decode_e_clear(A_clear_data_e_clear);}
+else {tmpVar->clr_type=xmlbest_reader__decode_e_clear(A_clear_data_e_clear);}
 
 /* tmpVar->clear_data_u.window; is_vararray=0 skip=0 */
 
@@ -2379,7 +2379,7 @@ tmpVar=(t_struct_clear_cmd *)XMLGetTopOfStack();
 /* tmpVar->clr_data; is_vararray=0 skip=0 */
 memset(&tmpVar->clr_data,0,sizeof(tmpVar->clr_data));
 if (AU_struct_clear_cmd_todefaults) {tmpVar->todefaults=0;}/* EEE */
-else {tmpVar->todefaults=decode_e_boolean(A_struct_clear_cmd_todefaults);}
+else {tmpVar->todefaults=xmlbest_reader__decode_e_boolean(A_struct_clear_cmd_todefaults);}
 
 }
 
@@ -2505,7 +2505,7 @@ tmpVar=(t_struct_set_database_cmd *)XMLGetTopOfStack();
 /* tmpVar->set_dbname; is_vararray=0 skip=0 */
 tmpVar->set_dbname=0;
 if (AU_struct_set_database_cmd_exclusive_mode) {tmpVar->exclusive_mode=0;}/* EEE */
-else {tmpVar->exclusive_mode=decode_e_boolean(A_struct_set_database_cmd_exclusive_mode);}
+else {tmpVar->exclusive_mode=xmlbest_reader__decode_e_boolean(A_struct_set_database_cmd_exclusive_mode);}
 
 }
 
@@ -2581,7 +2581,7 @@ tmpVar=(t_struct_print_cmd *)XMLGetTopOfStack();
 /* tmpVar->print_expr; is_vararray=0 skip=0 */
 tmpVar->print_expr=0;
 if (AU_struct_print_cmd_semi) {tmpVar->semi=0;}/* EEE */
-else {tmpVar->semi=decode_e_boolean(A_struct_print_cmd_semi);}
+else {tmpVar->semi=xmlbest_reader__decode_e_boolean(A_struct_print_cmd_semi);}
 
 }
 
@@ -2600,7 +2600,7 @@ tmpVar=(t_struct_print_file_cmd *)XMLGetTopOfStack();
 /* tmpVar->filename; is_vararray=0 skip=0 */
 tmpVar->filename=0;
 if (AU_struct_print_file_cmd_semi) {tmpVar->semi=0;}/* EEE */
-else {tmpVar->semi=decode_e_boolean(A_struct_print_file_cmd_semi);}
+else {tmpVar->semi=xmlbest_reader__decode_e_boolean(A_struct_print_file_cmd_semi);}
 
 }
 
@@ -2626,7 +2626,7 @@ if (AU_struct_print_img_cmd_img_type) {tmpVar->img_type=0;} /* CCC */
 else {tmpVar->img_type=strdup(A_struct_print_img_cmd_img_type);}
 
 if (AU_struct_print_img_cmd_semi) {tmpVar->semi=0;}/* EEE */
-else {tmpVar->semi=decode_e_boolean(A_struct_print_img_cmd_semi);}
+else {tmpVar->semi=xmlbest_reader__decode_e_boolean(A_struct_print_img_cmd_semi);}
 
 }
 
@@ -2682,7 +2682,7 @@ t_event_data *tmpVar;
 XMLPushOntoStack("event_data",  sizeof(t_event_data),1,0,1,A_event_data_nm);
 tmpVar=(t_event_data *)XMLGetTopOfStack();
 if (AU_event_data_e_event) {tmpVar->event_type=0;} /*DDD */
-else {tmpVar->event_type=decode_e_event(A_event_data_e_event);}
+else {tmpVar->event_type=xmlbest_reader__decode_e_event(A_event_data_e_event);}
 
 
 if (tmpVar->event_type==EVENT_ON_IDLE) {
@@ -2842,7 +2842,7 @@ tmpVar->prompt_str_attrib=0;
 /* tmpVar->prompt_fld_attrib; is_vararray=0 skip=0 */
 tmpVar->prompt_fld_attrib=0;
 if (AU_struct_prompt_cmd_for_char) {tmpVar->for_char=0;}/* EEE */
-else {tmpVar->for_char=decode_e_boolean(A_struct_prompt_cmd_for_char);}
+else {tmpVar->for_char=xmlbest_reader__decode_e_boolean(A_struct_prompt_cmd_for_char);}
 
 /* tmpVar->promptvar; is_vararray=0 skip=0 */
 tmpVar->promptvar=0;
@@ -2922,10 +2922,10 @@ tmpVar->events=0;
 /* tmpVar->attributes; is_vararray=0 skip=0 */
 tmpVar->attributes=0;
 if (AU_struct_input_cmd_by_name) {tmpVar->by_name=0;}/* EEE */
-else {tmpVar->by_name=decode_e_boolean(A_struct_input_cmd_by_name);}
+else {tmpVar->by_name=xmlbest_reader__decode_e_boolean(A_struct_input_cmd_by_name);}
 
 if (AU_struct_input_cmd_without_defaults) {tmpVar->without_defaults=0;}/* EEE */
-else {tmpVar->without_defaults=decode_e_boolean(A_struct_input_cmd_without_defaults);}
+else {tmpVar->without_defaults=xmlbest_reader__decode_e_boolean(A_struct_input_cmd_without_defaults);}
 
 if (AU_struct_input_cmd_helpno) {tmpVar->helpno=0;} /* ZZZ */
 else {tmpVar->helpno=atol(A_struct_input_cmd_helpno);}
@@ -2996,7 +2996,7 @@ tmpVar->attributes=0;
 /* tmpVar->events; is_vararray=0 skip=0 */
 tmpVar->events=0;
 if (AU_struct_input_array_cmd_without_defaults) {tmpVar->without_defaults=0;}/* EEE */
-else {tmpVar->without_defaults=decode_e_boolean(A_struct_input_array_cmd_without_defaults);}
+else {tmpVar->without_defaults=xmlbest_reader__decode_e_boolean(A_struct_input_array_cmd_without_defaults);}
 
 if (AU_struct_input_array_cmd_helpno) {tmpVar->helpno=0;} /* ZZZ */
 else {tmpVar->helpno=atol(A_struct_input_array_cmd_helpno);}
@@ -3031,7 +3031,7 @@ t_struct_construct_cmd *tmpVar;
 XMLPushOntoStack("struct_construct_cmd",  sizeof(t_struct_construct_cmd),1,0,1,A_struct_construct_cmd_nm);
 tmpVar=(t_struct_construct_cmd *)XMLGetTopOfStack();
 if (AU_struct_construct_cmd_by_name) {tmpVar->by_name=0;}/* EEE */
-else {tmpVar->by_name=decode_e_boolean(A_struct_construct_cmd_by_name);}
+else {tmpVar->by_name=xmlbest_reader__decode_e_boolean(A_struct_construct_cmd_by_name);}
 
 /* tmpVar->constr_var; is_vararray=0 skip=0 */
 tmpVar->constr_var=0;
@@ -3044,7 +3044,7 @@ tmpVar->events=0;
 /* tmpVar->attributes; is_vararray=0 skip=0 */
 tmpVar->attributes=0;
 if (AU_struct_construct_cmd_without_defaults) {tmpVar->without_defaults=0;}/* EEE */
-else {tmpVar->without_defaults=decode_e_boolean(A_struct_construct_cmd_without_defaults);}
+else {tmpVar->without_defaults=xmlbest_reader__decode_e_boolean(A_struct_construct_cmd_without_defaults);}
 
 if (AU_struct_construct_cmd_helpno) {tmpVar->helpno=0;} /* ZZZ */
 else {tmpVar->helpno=atol(A_struct_construct_cmd_helpno);}
@@ -3343,7 +3343,7 @@ t_command_data *tmpVar;
 XMLPushOntoStack("command_data",  sizeof(t_command_data),1,0,1,A_command_data_nm);
 tmpVar=(t_command_data *)XMLGetTopOfStack();
 if (AU_command_data_cmd_type) {tmpVar->type=0;} /*DDD */
-else {tmpVar->type=decode_cmd_type(A_command_data_cmd_type);}
+else {tmpVar->type=xmlbest_reader__decode_cmd_type(A_command_data_cmd_type);}
 
 /* tmpVar->command_data_u.start_rpc_cmd; is_vararray=0 skip=0 */
 
@@ -3979,7 +3979,7 @@ t_constant_data *tmpVar;
 XMLPushOntoStack("constant_data",  sizeof(t_constant_data),1,0,1,A_constant_data_nm);
 tmpVar=(t_constant_data *)XMLGetTopOfStack();
 if (AU_constant_data_e_constant_type) {tmpVar->consttype=0;} /*DDD */
-else {tmpVar->consttype=decode_e_constant_type(A_constant_data_e_constant_type);}
+else {tmpVar->consttype=xmlbest_reader__decode_e_constant_type(A_constant_data_e_constant_type);}
 
 
 if (tmpVar->consttype==CONST_TYPE_CHAR) {
@@ -4147,7 +4147,7 @@ t_variable_data *tmpVar;
 XMLPushOntoStack("variable_data",  sizeof(t_variable_data),1,0,1,A_variable_data_nm);
 tmpVar=(t_variable_data *)XMLGetTopOfStack();
 if (AU_variable_data_e_variable_type) {tmpVar->variable_type=0;} /*DDD */
-else {tmpVar->variable_type=decode_e_variable_type(A_variable_data_e_variable_type);}
+else {tmpVar->variable_type=xmlbest_reader__decode_e_variable_type(A_variable_data_e_variable_type);}
 
 /* tmpVar->variable_data_u.v_simple; is_vararray=0 skip=0 */
 
@@ -4202,7 +4202,7 @@ if (AU_variable_user_system) {tmpVar->user_system=0;} /* BBB */
 else {tmpVar->user_system=A_variable_user_system[0];}
 
 if (AU_variable_escope) {tmpVar->escope=0;}/* EEE */
-else {tmpVar->escope=decode_e_scope(A_variable_escope);}
+else {tmpVar->escope=xmlbest_reader__decode_e_scope(A_variable_escope);}
 
 if (AU_variable_is_static) {tmpVar->is_static=0;} /* ZZZ */
 else {tmpVar->is_static=atol(A_variable_is_static);}
@@ -4288,7 +4288,7 @@ if (AU_flist_name) {tmpVar->name=0;} /* CCC */
 else {tmpVar->name=strdup(A_flist_name);}
 
 if (AU_flist_type) {tmpVar->type=0;}/* EEE */
-else {tmpVar->type=decode_flist_type(A_flist_type);}
+else {tmpVar->type=xmlbest_reader__decode_flist_type(A_flist_type);}
 
 if (AU_flist_special) {tmpVar->special=0;} /* CCC */
 else {tmpVar->special=strdup(A_flist_special);}
@@ -4351,7 +4351,7 @@ else {tmpVar->mod_dbname=strdup(A_globals_definition_mod_dbname);}
 tmpVar->external_datatypes.external_datatypes_len=0; // Blah
 tmpVar->external_datatypes.external_datatypes_val=0;
 if (AU_globals_definition_schema_only) {tmpVar->schema_only=0;}/* EEE */
-else {tmpVar->schema_only=decode_e_boolean(A_globals_definition_schema_only);}
+else {tmpVar->schema_only=xmlbest_reader__decode_e_boolean(A_globals_definition_schema_only);}
 
 if (AU_globals_definition_compiled_time) {tmpVar->compiled_time=0;} /* ZZZ */
 else {tmpVar->compiled_time=atol(A_globals_definition_compiled_time);}
@@ -4434,10 +4434,10 @@ tmpVar->comment_list.comment_list_val=0;
 tmpVar->imported_files.imported_files_len=0; // Blah
 tmpVar->imported_files.imported_files_val=0;
 if (AU_module_definition_schema_only) {tmpVar->schema_only=0;}/* EEE */
-else {tmpVar->schema_only=decode_e_boolean(A_module_definition_schema_only);}
+else {tmpVar->schema_only=xmlbest_reader__decode_e_boolean(A_module_definition_schema_only);}
 
 if (AU_module_definition_genStackInfo) {tmpVar->genStackInfo=0;}/* EEE */
-else {tmpVar->genStackInfo=decode_e_boolean(A_module_definition_genStackInfo);}
+else {tmpVar->genStackInfo=xmlbest_reader__decode_e_boolean(A_module_definition_genStackInfo);}
 
 if (AU_module_definition_module_name) {tmpVar->module_name=0;} /* CCC */
 else {tmpVar->module_name=strdup(A_module_definition_module_name);}
@@ -5133,7 +5133,7 @@ t_s_expr_parameter *tmpVar;
 XMLPushOntoStack("s_expr_parameter",  sizeof(t_s_expr_parameter),1,0,1,A_s_expr_parameter_nm);
 tmpVar=(t_s_expr_parameter *)XMLGetTopOfStack();
 if (AU_s_expr_parameter_isReference) {tmpVar->isReference=0;}/* EEE */
-else {tmpVar->isReference=decode_e_boolean(A_s_expr_parameter_isReference);}
+else {tmpVar->isReference=xmlbest_reader__decode_e_boolean(A_s_expr_parameter_isReference);}
 
 if (AU_s_expr_parameter_expr_string) {tmpVar->expr_string=0;} /* CCC */
 else {tmpVar->expr_string=strdup(A_s_expr_parameter_expr_string);}
@@ -5153,7 +5153,7 @@ t_expr_str *tmpVar;
 XMLPushOntoStack("expr_str",  sizeof(t_expr_str),1,0,1,A_expr_str_nm);
 tmpVar=(t_expr_str *)XMLGetTopOfStack();
 if (AU_expr_str_e_expr_type) {tmpVar->expr_type=0;} /*DDD */
-else {tmpVar->expr_type=decode_e_expr_type(A_expr_str_e_expr_type);}
+else {tmpVar->expr_type=xmlbest_reader__decode_e_expr_type(A_expr_str_e_expr_type);}
 
 /* tmpVar->expr_str_u.expr_param; is_vararray=0 skip=0 */
 
@@ -5820,7 +5820,7 @@ if (AU_variable_usage_datatype_length) {tmpVar->datatype_length=0;} /* ZZZ */
 else {tmpVar->datatype_length=atol(A_variable_usage_datatype_length);}
 
 if (AU_variable_usage_escope) {tmpVar->escope=0;}/* EEE */
-else {tmpVar->escope=decode_e_scope(A_variable_usage_escope);}
+else {tmpVar->escope=xmlbest_reader__decode_e_scope(A_variable_usage_escope);}
 
 /* tmpVar->next; is_vararray=0 skip=0 */
 tmpVar->next=0;
@@ -5988,7 +5988,7 @@ else {tmpVar->alias=strdup(A_s_table_alias);}
 /* tmpVar->next; is_vararray=0 skip=0 */
 tmpVar->next=0;
 if (AU_s_table_outer_type) {tmpVar->outer_type=0;}/* EEE */
-else {tmpVar->outer_type=decode_e_outer_type(A_s_table_outer_type);}
+else {tmpVar->outer_type=xmlbest_reader__decode_e_outer_type(A_s_table_outer_type);}
 
 /* tmpVar->outer_next; is_vararray=0 skip=0 */
 tmpVar->outer_next=0;
@@ -6195,7 +6195,7 @@ t_s_select_list_item_sq_expression *tmpVar;
 XMLPushOntoStack("s_select_list_item_sq_expression",  sizeof(t_s_select_list_item_sq_expression),1,0,1,A_s_select_list_item_sq_expression_nm);
 tmpVar=(t_s_select_list_item_sq_expression *)XMLGetTopOfStack();
 if (AU_s_select_list_item_sq_expression_type) {tmpVar->type=0;}/* EEE */
-else {tmpVar->type=decode_sq_expression_type(A_s_select_list_item_sq_expression_type);}
+else {tmpVar->type=xmlbest_reader__decode_sq_expression_type(A_s_select_list_item_sq_expression_type);}
 
 /* tmpVar->sq; is_vararray=0 skip=0 */
 tmpVar->sq=0;
@@ -6391,7 +6391,7 @@ t_s_select_list_item_data *tmpVar;
 XMLPushOntoStack("s_select_list_item_data",  sizeof(t_s_select_list_item_data),1,0,1,A_s_select_list_item_data_nm);
 tmpVar=(t_s_select_list_item_data *)XMLGetTopOfStack();
 if (AU_s_select_list_item_data_e_sli) {tmpVar->type=0;} /*DDD */
-else {tmpVar->type=decode_e_sli(A_s_select_list_item_data_e_sli);}
+else {tmpVar->type=xmlbest_reader__decode_e_sli(A_s_select_list_item_data_e_sli);}
 
 
 if (tmpVar->type==E_SLI_IBIND) {
@@ -6739,7 +6739,7 @@ if (AU_s_function_definition_namespace) {tmpVar->namespace=0;} /* CCC */
 else {tmpVar->namespace=strdup(A_s_function_definition_namespace);}
 
 if (AU_s_function_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
-else {tmpVar->isstatic=decode_e_boolean(A_s_function_definition_isstatic);}
+else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_function_definition_isstatic);}
 
 /* tmpVar->expression_list; is_vararray=0 skip=0 */
 memset(&tmpVar->expression_list,0,sizeof(tmpVar->expression_list));
@@ -6787,7 +6787,7 @@ if (AU_s_report_definition_namespace) {tmpVar->namespace=0;} /* CCC */
 else {tmpVar->namespace=strdup(A_s_report_definition_namespace);}
 
 if (AU_s_report_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
-else {tmpVar->isstatic=decode_e_boolean(A_s_report_definition_isstatic);}
+else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_report_definition_isstatic);}
 
 /* tmpVar->expression_list; is_vararray=0 skip=0 */
 memset(&tmpVar->expression_list,0,sizeof(tmpVar->expression_list));
@@ -6844,7 +6844,7 @@ if (AU_s_pdf_report_definition_namespace) {tmpVar->namespace=0;} /* CCC */
 else {tmpVar->namespace=strdup(A_s_pdf_report_definition_namespace);}
 
 if (AU_s_pdf_report_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
-else {tmpVar->isstatic=decode_e_boolean(A_s_pdf_report_definition_isstatic);}
+else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_pdf_report_definition_isstatic);}
 
 /* tmpVar->expression_list; is_vararray=0 skip=0 */
 memset(&tmpVar->expression_list,0,sizeof(tmpVar->expression_list));
@@ -7055,7 +7055,7 @@ t_module_entry *tmpVar;
 XMLPushOntoStack("module_entry",  sizeof(t_module_entry),1,0,1,A_module_entry_nm);
 tmpVar=(t_module_entry *)XMLGetTopOfStack();
 if (AU_module_entry_module_entry_type) {tmpVar->met_type=0;} /*DDD */
-else {tmpVar->met_type=decode_module_entry_type(A_module_entry_module_entry_type);}
+else {tmpVar->met_type=xmlbest_reader__decode_module_entry_type(A_module_entry_module_entry_type);}
 
 /* tmpVar->module_entry_u.import_function_definition; is_vararray=0 skip=0 */
 

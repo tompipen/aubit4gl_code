@@ -100,7 +100,7 @@ create table entity
   (
     entity serial not null ,
     entity_type char(1),
-    progname char(16),
+    progname char(128),
     justuser char(8),
     name char(60),
     flags char(60)
@@ -112,7 +112,7 @@ if sqlca.sqlcode<0 then
   	(
     	entity integer not null ,
     	entity_type char(1),
-    	progname char(16),
+    	progname char(128),
     	justuser char(8),
     	name char(60),
     	flags char(60)
@@ -137,7 +137,7 @@ end if
 
 create table afglsettings
   (
-    progname char(16),
+    progname char(128),
     justuser char(8),
     name char(32),
     value char(70)
@@ -149,7 +149,7 @@ end if
 
 create table program
   (
-    progname char(16),
+    progname char(128),
     justuser char(8),
     progoutdir char(256),
     progmakefile char(256),
@@ -283,7 +283,7 @@ return s1
 end function
 
 function add_default_setting(lv_name,lv_user,lv_s)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 define lv_s char(32)
 define lv_v char(70)
@@ -297,7 +297,7 @@ end function
 
 
 function add_default_settings(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 
 call add_default_setting(lv_name,lv_user,"A4GL_EXE_EXT")
@@ -319,7 +319,7 @@ end if
 end function
 
 function get_setting(lv_prog,lv_name)
-define lv_prog char(16)
+define lv_prog char(128)
 define lv_name char(32)
 define lv_v char(70)
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.52 2009-08-18 10:06:33 mikeaubury Exp $
+# $Id: Makefile,v 1.53 2009-09-21 10:30:39 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -384,6 +384,9 @@ opt: ../../bin/4glc_opt
 	echo  ${EXTRASYSTEMLIBS}
 	${LD} -rdynamic -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
 
-fglsplit:  split.o
+fglsplit:../../bin/fglsplit
+
+../../bin/fglsplit:  split.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
+	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 # --------------------------------- EOF -----------------------------
 

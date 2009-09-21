@@ -2,7 +2,7 @@ Simple guide to debugging
 -------------------------
 
 
-Debugging in Aubit4gl is more complicated that using the 
+Debugging in Aubit4gl is more complicated than using the 
 PCODE interactive debugger - this is because we compile to C 
 and not to PCODE!
 

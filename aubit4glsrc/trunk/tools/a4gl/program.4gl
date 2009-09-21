@@ -51,7 +51,7 @@ end function
 
 ################################################################################
 function program_modify()
-define lv_name char(16)
+define lv_name char(128)
 define lv_cnt integer
 define lv_user char(8)
 
@@ -83,7 +83,7 @@ end function
 
 ################################################################################
 function program_generate_makefile()
-define lv_name char(16)
+define lv_name char(128)
 define lv_cnt integer
 define lv_makefile char(512)
 
@@ -118,7 +118,7 @@ end function
 
 ################################################################################
 function program_new()
-define lv_name char(16)
+define lv_name char(128)
 define lv_cnt integer
 define lv_user char(8)
 	let lv_name=prompt_get("New Program >>","Enter the program name you which to use")
@@ -148,7 +148,7 @@ end function
 
 ################################################################################
 function maintain_program(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 define lv_ok integer
 define lv_expert_mode integer
@@ -240,7 +240,7 @@ end function
 # Add the list of programs from our database to our pick list
 ################################################################################
 function add_programs_from_db()
-define lv_prog char(16)
+define lv_prog char(128)
 
 call ensure_syspgma4gl()
 
@@ -308,7 +308,7 @@ end function
 function program_edit_program(lv_name)
 define lv_ok integer
 define lv_a record
-    progname char(16),
+    progname char(128),
     justuser char(8),
     progoutdir char(256),
     progmakefile char(256),
@@ -317,7 +317,7 @@ define lv_a record
     lastupd integer,
     genmakefile integer
 end record
-define lv_name char(16)
+define lv_name char(128)
 define lv_exists integer
 
 
@@ -386,7 +386,7 @@ end function
 ################################################################################
 # Set the timestamp on the program so we can compare to the makefile
 function updated_program(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 define lv_now integer
 define lv_makefile char(512)
@@ -405,7 +405,7 @@ end function
 
 ################################################################################
 function set_makefiletimestamp(lv_name,lv_user,lv_makefile)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 define lv_now integer
 define lv_makefile char(256)
@@ -420,7 +420,7 @@ end function
 
 ################################################################################
 function program_compile()
-define lv_name char(16)
+define lv_name char(128)
 define lv_makefile char(512)
 define lv_cnt integer
 define lv_ok integer
@@ -590,12 +590,12 @@ end function
 ################################################################################
 function edit_program_entity(lv_name, lv_user, lv_type)
 define lv_user char(8)
-define lv_name char(16)
+define lv_name char(128)
 define lv_type char(1)
 define lv_r array[500] of record 
     entity integer,
     entity_type char(1),
-    progname char(16),
+    progname char(128),
     justuser char(8),
     name char(60),
     flags char(60)
@@ -678,55 +678,55 @@ end function
 
 ################################################################################
 function program_edit_modules(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	call edit_program_entity(lv_name,lv_user, "M")
 end function
 
 ################################################################################
 function program_edit_globals(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	call edit_program_entity(lv_name,lv_user, "G")
 end function
 
 ################################################################################
 function program_edit_forms(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	call edit_program_entity(lv_name,lv_user, "F")
 end function
 
 ################################################################################
 function program_edit_libraries(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	call edit_program_entity(lv_name, lv_user,"L")
 end function
 
 ################################################################################
 function program_edit_c(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	call edit_program_entity(lv_name, lv_user,"C")
 end function
 ################################################################################
 function program_edit_ec(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	call edit_program_entity(lv_name, lv_user,"E")
 end function
 
 ################################################################################
 function program_edit_dependencies(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 	error "Not implemented yet"
 end function
 
 ################################################################################
 function program_edit_settings(lv_name,lv_user)
-define lv_name char(16)
+define lv_name char(128)
 define lv_user char(8)
 define lv_n char(32)
 define lv_v char(70)
@@ -788,12 +788,12 @@ return mv_lastused
 end function
 
 function set_last_used_program(lv_lastused)
-define lv_lastused char(16)
+define lv_lastused char(128)
 let mv_lastused=lv_lastused
 end function
 
 function has_setting(lv_prog,lv_name)
-define lv_prog char(16)
+define lv_prog char(128)
 define lv_name char(32)
 define lv_val char(70)
 
@@ -812,7 +812,7 @@ define lv_val char(70)
 end function
 
 function add_setting_if_missing(lv_prog,lv_name)
-define lv_prog chaR(16)
+define lv_prog chaR(128)
 define lv_name char(32)
 
 if not has_setting(lv_prog,lv_name)  then
@@ -879,7 +879,7 @@ return lv_newstr
 end function
 
 function generate_makefile(lv_prog,lv_makefile)
-define lv_prog char(16)
+define lv_prog char(128)
 define lv_makefile char(512)
 define lv_build_in_db char(256)
 define lv_linkflags char(256)
@@ -889,8 +889,13 @@ define lv_flags char(70)
 define lv_type char(1)
 define lv_fullname char(512)
 define lv_buildstr char(256)
+define lv_uses_4gls integer
+define lv_uses_forms integer
 define lv_filetime integer
 
+
+let lv_uses_4gls=false
+let lv_uses_forms=false
 call ensure_syspgma4gl()
 
 let lv_makefile=aclfgl_expand_env_vars_in_cmdline (lv_makefile)
@@ -1076,6 +1081,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	# Globals         Module       C-Code         ESQL/C code
 	if lv_type="G" or lv_type="M" then 
+      let lv_uses_4gls=true
 		if lv_type="G" then
 			if lv_flags is not null and lv_flags != " " then
 	         call channel::write("make","ALL4GLSRC+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
@@ -1099,6 +1105,7 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	if lv_type="F" then # Form
+      let lv_uses_forms=true
 		call channel::write("make","ALLPERSRC+="||lv_fullname clipped||".per")
 
 		if lv_flags is not null and lv_flags != " " then
@@ -1210,13 +1217,29 @@ end foreach
 # Not a full clean - just the intermediates...
 call channel::write("make","tidy:")
 call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(MIFS) $(GLOBALS_DEFS)")
-call channel::write("make","	rm -f $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl  $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
 call channel::write("make"," ")
+
+if fgl_getenv("VMAKE")!= " " then
+   call channel::write("make","cleantxx:")
+   call channel::write("make","	rm -f $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl  $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
+end if
 
 call channel::write("make","tidy_globals_dats:")
 call channel::write("make","	@rm -f $(GLOBALS_DEFS)")
 
-call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
+if lv_uses_4gls then
+   if lv_uses_forms then
+      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
+   else
+      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
+   end if
+else
+   if lv_uses_forms then
+      call channel::write("make","compile: prerequisits $(FORMS)")
+   else
+      call channel::write("make","compile: prerequisits ")
+   end if
+end if
 
 call channel::write("make"," ")
 call channel::write("make","run: compile")

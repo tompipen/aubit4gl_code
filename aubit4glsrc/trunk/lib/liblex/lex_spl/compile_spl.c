@@ -2588,7 +2588,7 @@ print_start_record (int isstatic_extern, char *varname, struct variable *v, int 
       if (v->arr_subscripts.arr_subscripts_len)
 	{
 	  char arrbuff[256];
-	  A4GL_yyerror ("Can't use arrays in SPL");
+	  a4gl_yyerror ("Can't use arrays in SPL");
 	  return;
 
 	  //make_arr_str (arrbuff, v);
@@ -2605,7 +2605,7 @@ print_start_record (int isstatic_extern, char *varname, struct variable *v, int 
       if (v->arr_subscripts.arr_subscripts_len)
 	{
 	  char arrbuff[256];
-	  A4GL_yyerror ("Can't use arrays in SPL");
+	  a4gl_yyerror ("Can't use arrays in SPL");
 	  return;
 	  //make_arr_str (arrbuff, v);
 	  //printc ("%s ARRAY[%s] OF RECORD \n", varname, arrbuff);
@@ -2778,7 +2778,7 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 
       if (v->arr_subscripts.arr_subscripts_len)
 	{
-	  A4GL_yyerror ("Can't use arrays in SPL");
+	  a4gl_yyerror ("Can't use arrays in SPL");
 	  return;
 	}
 
@@ -3311,7 +3311,7 @@ get_variable_usage_1 (struct variable_usage *var_usage, int lvl)
   if (var_usage->subscripts.subscripts_len)
     {
       int a;
-      A4GL_yyerror ("Can't use arrays in SPL");
+      a4gl_yyerror ("Can't use arrays in SPL");
     }
 
   if (var_usage->substrings_start)
@@ -3525,7 +3525,7 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 	      if (nreturns >= MAX_RETURN_VALUES)
 		{
 		  yylineno = r->lineno;
-		  A4GL_yyerror ("Too many return values");
+		  a4gl_yyerror ("Too many return values");
 		  return;
 		}
 	      for (b = 0; b < nreturns; b++)
