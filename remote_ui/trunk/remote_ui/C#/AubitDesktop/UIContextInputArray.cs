@@ -189,6 +189,10 @@ namespace AubitDesktop
                     break;
                 }
             }
+            if (!sentTrigger)
+            {
+                setFocusToCurrentRow();
+            }
             return sentTrigger;
         }
 
@@ -313,7 +317,6 @@ namespace AubitDesktop
             lastarrLine = arrLine;
 
             setFocusToCurrentRow();
-
 
         }
 
