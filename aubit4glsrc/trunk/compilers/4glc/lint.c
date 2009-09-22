@@ -177,7 +177,7 @@ struct s_function_prototype *fprototypes = 0;
 
 struct s_function_prototype *fboltons = 0;
 int nboltons = 0;
-static int is_bolton_function (char *s);
+int is_bolton_function (char *s);
 
 
 struct global_variable_function
@@ -5378,6 +5378,16 @@ is_bolton_function (char *s)
 	}
     }
   return -1;
+}
+
+
+int bolton_function_datatype(char *s) {
+ int a;
+ a= is_bolton_function(s);
+ if(a!=-1) {
+ 	fboltons[a].return_dtypes[0];
+ }
+ return -1;
 }
 
 

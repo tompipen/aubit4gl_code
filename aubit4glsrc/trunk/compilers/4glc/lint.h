@@ -25,6 +25,7 @@ void close_lintfile(void);
 int get_lint_style(void);
 void dump_prototypes(void);
 //int is_bolton_function(char *s);
+int bolton_function_datatype(char *funcname);
 void gen_function_prototypes(int e, struct s_function_definition *function_definition);
 void create_protos_from_module(module_definition *this_module);
 void log_proto(struct expr_str *fcall, struct expr_str_list *ret);

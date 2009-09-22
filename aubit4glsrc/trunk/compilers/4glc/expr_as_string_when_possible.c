@@ -134,7 +134,7 @@ expr_as_string_when_possible (expr_str * e)
   switch (e->expr_type)
     {
     case ET_EXPR_LITERAL_EMPTY_STRING:
-      return "";
+      return "\"\"";
       //case ET_EXPR_SUBSTRING: return "?1?";
     case ET_EXPR_LITERAL_STRING:
       {
@@ -233,9 +233,10 @@ expr_as_string_when_possible (expr_str * e)
       }
 
     case ET_EXPR_FALSE:
-      return "0";
+      return "FALSE";
+
     case ET_EXPR_TRUE:
-      return "1";
+      return "TRUE";
 
     case ET_EXPR_OP_CONCAT:
       {

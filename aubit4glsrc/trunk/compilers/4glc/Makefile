@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.53 2009-09-21 10:30:39 mikeaubury Exp $
+# $Id: Makefile,v 1.54 2009-09-22 08:09:36 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -387,6 +387,14 @@ opt: ../../bin/4glc_opt
 fglsplit:../../bin/fglsplit
 
 ../../bin/fglsplit:  split.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
+	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+
+
+expr_munging_proto.o: expr_munging.c
+	$(CC) $(CFLAGS)  -c -o expr_munging_proto.o expr_munging.c -Dfind_function_single_rtype=find_function_single_rtype_proto
+
+fglproto: ../../bin/fglproto
+../../bin/fglproto:  prototypes.o API_lex.o  lint.o expr_munging_proto.o linearise.o   common.o ../../lib/generated/std_funcs.c  
 	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 # --------------------------------- EOF -----------------------------
 
