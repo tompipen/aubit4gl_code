@@ -835,14 +835,24 @@ namespace AubitDesktop
 
 
         internal void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {         
-            if (!validateField())
+        {
+            if (_ContextType == FGLContextType.ContextInputArray)
             {
-                e.Cancel = true;
+                // We'll handle the validation within the input array
+                // rather than with a validation handler...
+                e.Cancel = false;
             }
             else
             {
-                e.Cancel = false;
+
+                if (!validateField())
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    e.Cancel = false;
+                }
             }
         }
 
