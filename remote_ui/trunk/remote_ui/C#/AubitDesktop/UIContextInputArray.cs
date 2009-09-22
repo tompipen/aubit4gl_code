@@ -1803,6 +1803,17 @@ namespace AubitDesktop
             }
 
             next_field = screenRecord[scrLine - 1, attrib];
+            if (next_field != CurrentField)
+            {
+                if (CurrentField != null)
+                {
+                    if (!CurrentField.fglField.validateField())
+                    {
+                        return;
+                        //MessageBox.Show("Invalid field contents");
+                    }
+                }
+            }
 
             if (next_field.fglField.NoEntry || (next_field.fglField.datatype == FGLUtils.FGLDataTypes.DTYPE_SERIAL))
             {
