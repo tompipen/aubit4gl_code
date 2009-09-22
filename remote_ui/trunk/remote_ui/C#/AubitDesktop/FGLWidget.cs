@@ -719,7 +719,7 @@ namespace AubitDesktop
         }
 
 
-        bool validateField(object field)
+        internal bool validateField() 
         {
             bool ign = false;
 
@@ -836,7 +836,7 @@ namespace AubitDesktop
 
         internal void t_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {         
-            if (!validateField(sender))
+            if (!validateField())
             {
                 e.Cancel = true;
             }
