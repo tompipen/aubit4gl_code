@@ -20956,7 +20956,7 @@ ADDMAP("Call Formhandler",(yyvsp[(1) - (1)].str));
     {
 				add_feature("OPEN_SESSION");
 				if ((yyvsp[(5) - (5)].user_details)) {
-					(yyval.cmd)=new_connect_cmd((yyvsp[(2) - (5)].ptr),(yyvsp[(4) - (5)].ptr),(yyvsp[(5) - (5)].user_details)->username, (yyvsp[(5) - (5)].user_details)->password);
+					(yyval.cmd)=new_connect_cmd((yyvsp[(4) - (5)].ptr),(yyvsp[(2) - (5)].ptr),(yyvsp[(5) - (5)].user_details)->username, (yyvsp[(5) - (5)].user_details)->password);
 				}
 		}
     break;
@@ -21058,7 +21058,7 @@ ADDMAP("Call Formhandler",(yyvsp[(1) - (1)].str));
 #line 6853 "fgl.infx.yacc"
     {
 	add_feature("CONNECT");
-	(yyval.cmd)=new_connect_cmd((yyvsp[(4) - (5)].ptr),(yyvsp[(3) - (5)].ptr),(yyvsp[(5) - (5)].pair).s1,(yyvsp[(5) - (5)].pair).s2);
+	(yyval.cmd)=new_connect_cmd((yyvsp[(3) - (5)].ptr),(yyvsp[(4) - (5)].ptr),(yyvsp[(5) - (5)].pair).s1,(yyvsp[(5) - (5)].pair).s2);
 }
     break;
 

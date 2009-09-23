@@ -84,7 +84,7 @@ op_absolute: {$<e_boolean>$=0;}
 open_session_cmd : OPEN_SESSION conn_id_p TO_DATABASE var_ident_qchar_e user_details {
 				add_feature("OPEN_SESSION");
 				if ($<user_details>5) {
-					$<cmd>$=new_connect_cmd($<ptr>2,$<ptr>4,$<user_details>5->username, $<user_details>5->password);
+					$<cmd>$=new_connect_cmd($<ptr>4,$<ptr>2,$<user_details>5->username, $<user_details>5->password);
 				}
 		}
 ;
@@ -143,7 +143,7 @@ op_disable : 	{strcpy($<str>$,"0");}
 connect_cmd :
 CONNECT KW_TO var_ident_vl op_connect_as_p con_user_details {
 	add_feature("CONNECT");
-	$<cmd>$=new_connect_cmd($<ptr>4,$<ptr>3,$<pair>5.s1,$<pair>5.s2);
+	$<cmd>$=new_connect_cmd($<ptr>3,$<ptr>4,$<pair>5.s1,$<pair>5.s2);
 }
 ;
 
