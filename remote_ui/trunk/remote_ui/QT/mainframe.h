@@ -64,8 +64,10 @@ public:
    ClientTcp *clientTcp;
    bool adminMenu;
    bool debugModus;
+
 public slots:
    void cleanUp();
+   void debugClose();
 
 private:
    QTabWidget *tabWidget;
@@ -76,6 +78,9 @@ private:
    QToolBar *mainFrameToolBar;
    ConnectionsTab *connectionsTab;
    void ReadSettings();
+
+signals:
+       void debugSignal();
 
 protected:
    void closeEvent(QCloseEvent *event);
@@ -136,6 +141,7 @@ public:
 
 signals:
     void showMessage(QString m);
+
 
 public slots:
     void fontdialog();

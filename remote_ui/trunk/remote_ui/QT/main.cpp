@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("ventas.com");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
-sleep(3);
+//sleep(3);
 
 
 

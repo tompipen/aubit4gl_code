@@ -60,7 +60,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 
    adminMenu = true;
    onlyLogin = true;
-   debugModus = false;
+   debugModus = true;
  for(int i=0; i<parameter.count(); i++)
   {
      if (parameter.at(i) == "-l")
@@ -113,6 +113,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
    else{
       LoginForm *loginForm = new LoginForm(this);
       setCentralWidget(loginForm);
+      connect(this, SIGNAL(debugSignal()), loginForm, SLOT (debugCheck()));
    }
       setWindowTitle(tr("VDC - Ventas Desktop Client"));
 
@@ -759,4 +760,8 @@ void MainFrame::closeEvent(QCloseEvent *event)
          event->accept();
          close();
       }
+}
+void MainFrame::debugClose()
+{
+    emit debugSignal();
 }

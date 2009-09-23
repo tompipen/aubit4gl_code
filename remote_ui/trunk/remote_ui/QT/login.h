@@ -42,6 +42,7 @@ public:
    QStringList splitlist;
    QString fonteingabe;
    QMenu *admin;
+   QAction *toggledebug;
 
 public slots:
    void option();
@@ -49,8 +50,9 @@ public slots:
    void hosts();
    void welcomeBar();
    void debugToggle(bool checked);
-private slots:
+   void debugCheck();
 
+private slots:
    void okPressed();
    void cancelPressed();
    void saveEdits();

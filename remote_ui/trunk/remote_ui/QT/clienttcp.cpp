@@ -153,6 +153,9 @@ void ClientTcp::newSocket()
 void ClientTcp::setDebugModus(bool debugModus, QWidget *parent)
 {
  dw = new DebugWindow(parent);
+qDebug ()<< parent;
+connect(dw , SIGNAL(debugClose()), parent, SLOT(debugClose()));
+
  if (debugModus)
  {
      dw->show();
@@ -2057,6 +2060,9 @@ if (edit->find(search->text()))
 {
 edit->moveCursor(QTextCursor::End);
 edit->find(search->text(), QTextDocument::FindBackward);
-
 }
+}
+void DebugWindow::closeEvent(QCloseEvent *event)
+{
+   emit debugClose();
 }

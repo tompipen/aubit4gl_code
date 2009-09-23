@@ -64,7 +64,7 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *option = new QAction(tr("&Option"), this);
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QAction *hosts = new QAction(tr("&Hosts"), this);
-   QAction *toggledebug = new QAction(tr("&Toggle Debug"), this);
+   toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
    option->setStatusTip(tr("Opens the Option Window"));
@@ -154,14 +154,14 @@ welcomeBar();
    //
    QVBoxLayout *loginLayout = new QVBoxLayout;
    loginLayout->setMenuBar(menuBar);
-   loginLayout->addWidget(serverLabel);
-   loginLayout->addWidget(serverLineEdit);
    loginLayout->addWidget(usernameLabel);
    loginLayout->addWidget(usernameLineEdit);
    loginLayout->addWidget(passwordLabel);
    loginLayout->addWidget(passwordLineEdit);
    if(adminMenu == true)
    {
+       loginLayout->addWidget(serverLabel);
+       loginLayout->addWidget(serverLineEdit);
        loginLayout->addWidget(applicationLabel);
        loginLayout->addWidget(applicationLineEdit);
    }
@@ -702,3 +702,7 @@ void LoginForm::loadSettings()
       passwordLineEdit->setText(pass);
    }
 }
+void LoginForm::debugCheck()
+{
+        toggledebug->setChecked(false);
+    }

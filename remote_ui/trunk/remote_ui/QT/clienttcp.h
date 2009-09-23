@@ -51,6 +51,10 @@ class DebugWindow : public QDialog
       void debugOut(QString);
       void forwardsearch();
       void backwardsearch();
+      void closeEvent(QCloseEvent *event);
+    signals:
+      void debugClose();
+
 };
 
 class ProtocolHandler : public QThread
