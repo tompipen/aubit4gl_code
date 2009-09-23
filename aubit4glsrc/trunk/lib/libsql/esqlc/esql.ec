@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.240 2009-08-14 08:22:57 mikeaubury Exp $
+# $Id: esql.ec,v 1.241 2009-09-23 17:49:48 mikeaubury Exp $
 #
 */
 
@@ -180,7 +180,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.240 2009-08-14 08:22:57 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.241 2009-09-23 17:49:48 mikeaubury Exp $";
 #endif
 
 
@@ -889,15 +889,25 @@ A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname)
   char *connectionName = sessname;
   EXEC SQL end declare section;
   int retval = 0;
+  int oldsqlcode;
+
+  oldsqlcode=sqlca.sqlcode;
 
   if (connectionName == NULL)
     EXEC SQL SET CONNECTION DEFAULT;
   else
   EXEC SQL SET CONNECTION:connectionName;
-  if (isSqlError ())
+  if (isSqlError ()) {
     retval = 1;
-  else
+	a4gl_sqlca.sqlcode=sqlca.sqlcode;
+  }
+  else {
     setCurrentESQLConnection (connectionName);
+	a4gl_sqlca.sqlcode=oldsqlcode;
+  }
+
+
+
   return retval;
 }
 
