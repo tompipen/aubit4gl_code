@@ -327,6 +327,12 @@ main (int argc, char *argv[])
       exit (2);
     }
 
+
+  if (getenv ("AFGLSERVER")) {
+		printf("WARNING:\nAFGLSERVER is set - this is probably *not* what you want when using the proxy\n");
+		exit(2);
+  }
+
   if (argc > 1)
     {
       printf ("STANDALONE MODE\n");
