@@ -966,6 +966,7 @@ call add_setting_if_missing(lv_prog,"A4GL_FRM_BASE_EXT")
 call add_setting_if_missing(lv_prog,"A4GL_PACKED_EXT")
 call add_setting_if_missing(lv_prog,"A4GL_XML_EXT")
 call add_setting_if_missing(lv_prog,"A4GL_EXE_EXT")
+call add_setting_if_missing(lv_prog,"A4GL_EXE_PREFIX")
 call add_setting_if_missing(lv_prog,"A4GL_FORMTYPE")
 call add_setting_if_missing(lv_prog,"A4GL_HELP_EXT")
 call add_setting_if_missing(lv_prog,"A4GL_OBJ_EXT")
@@ -1229,9 +1230,9 @@ call channel::write("make","	@rm -f $(GLOBALS_DEFS)")
 
 if lv_uses_4gls then
    if lv_uses_forms then
-      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
+      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
    else
-      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT)")
+      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT)")
    end if
 else
    if lv_uses_forms then
@@ -1245,18 +1246,18 @@ call channel::write("make"," ")
 call channel::write("make","run: compile")
 
 if lv_buildstr is not null and lv_buildstr != " " then
-	call channel::write("make","	cd ",lv_buildstr," &&  ./"||lv_prog clipped||"$(A4GL_EXE_EXT)")
+	call channel::write("make","	cd ",lv_buildstr," &&  ./$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT)")
 else
-	call channel::write("make","	./"||lv_prog clipped||"$(A4GL_EXE_EXT)")
+	call channel::write("make","	./$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT)")
 end if
 call channel::write("make"," ")
 
-call channel::write("make",lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT): $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) ")
+call channel::write("make",lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT): $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) ")
 call channel::write("make","	4glpc $(LFLAGS) -o $@ $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(LIBS)")
 
 call channel::write("make"," ")
 call channel::write("make","clean:")
-call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS} $(GLOBALS_DEFS)  "||lv_buildstr clipped||lv_prog clipped||"$(A4GL_EXE_EXT) ")
+call channel::write("make","	rm -f $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(FORMS) ${MIFS} $(GLOBALS_DEFS)  "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT) ")
 
 if fgl_getenv("VMAKE")!= " " then
 	call channel::write("make","	rm -f $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
