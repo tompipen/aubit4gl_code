@@ -1060,7 +1060,7 @@ topLine[511]=0;
 	get_layout_attribs(layout,buff);
 
  	scr=layout->screen_no;
- merge_labels(f, scr);
+ 	merge_labels(f, scr);
 	if (layout->children.children_len!=0) {
 		A4GL_assertion(1,"not expecting children in a table");
 	}
@@ -1074,8 +1074,10 @@ topLine[511]=0;
 			break;
 		}
    }
+
+
    if (dim<=1) {
-		printf("Unable to get table size");
+		printf("Unable to get table size\n");
 		exit(2);
    }
 		

@@ -1,6 +1,6 @@
 /* XML application for module_def.dtd.
  * Includes actions from module_def.act.
- * Generated 2009/09/10 16:49:26.
+ * Generated 2009/09/24 08:34:07.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
