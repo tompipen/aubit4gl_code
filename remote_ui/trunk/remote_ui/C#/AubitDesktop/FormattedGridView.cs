@@ -22,6 +22,7 @@ namespace AubitDesktop
          internal string comments;
 
 
+
         
         internal FormattedCellSettings( )
         {
@@ -39,18 +40,17 @@ namespace AubitDesktop
 
     public class FormattedGridView : DataGridView
     {
-       // DataGridView internalDataGrid;
-
         Xml.XMLForm.Table table;
         FormattedCellSettings[] widgetSettings;
-
-
-        private bool __FirstPaint = true;
         private int __RowsToDisplay;
         private EventHandler _onDblClick;
 
-        
 
+        internal int enteredCellColumn = -1;
+        internal int enteredCellRow = -1;
+
+        internal int leftCellColumn = -1;
+        internal int leftCellRow = -1;
 
 
         public EventHandler onDblClick
@@ -125,24 +125,6 @@ namespace AubitDesktop
                 object o;
 
                 o = this.Rows[line].Cells[a + 1];
-
-                /*
-                if (o.GetType() == typeof(DataGridViewCheckBoxCell))
-                {
-                    DataGridViewCheckBoxCell c;
-                    c = (DataGridViewCheckBoxCell)o;
-                    if ((string)c.TrueValue == Data[line, a])
-                    {
-                        c.Value = true;
-                    }
-                    else
-                    {
-                        c.Value = false;
-                    }
-                    continue;
-                }
-                */
-
                 FGLUtils.setCellValue(this.Rows[line].Cells[a + 1], Data[line, a]);
                 
             }
@@ -212,7 +194,6 @@ namespace AubitDesktop
 
             if (e.Control is TextBox)
             {
-
                 TextBox tb;
                 tb = (TextBox)e.Control;
                 tb.CharacterCasing = CharacterCasing.Normal;
@@ -234,25 +215,20 @@ namespace AubitDesktop
 
         void FormattedGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            /*
             // Are we just setting up ? 
             if (e.ColumnIndex -1 > this.widgetSettings.Length) return;
 
             if (e.Value == null) return;
 
 
-            if (this.widgetSettings[e.ColumnIndex-1].upshift) {
-                e.Value=((string)e.Value).ToUpper();
-                e.FormattingApplied=true;
-            }
-
-            if (this.widgetSettings[e.ColumnIndex - 1].downshift)
+            if (this.widgetSettings[e.ColumnIndex - 1].format != null && this.widgetSettings[e.ColumnIndex - 1].format.Trim() != "")
             {
-                e.Value = ((string)e.Value).ToLower();
+
+                e.Value = FGLUsing.A4GL_func_using(widgetSettings[e.ColumnIndex - 1].format, (string)e.Value, widgetSettings[e.ColumnIndex - 1].datatype);
                 e.FormattingApplied = true;
-            }
-            */
-          //  Console.WriteLine("CELLFORMATTING");
+            }         
+            
+                
         }
 
 
@@ -260,7 +236,13 @@ namespace AubitDesktop
         {
             if (afterFieldHandler != null)
             {
-                afterFieldHandler(e.RowIndex, e.ColumnIndex-1);
+                if (leftCellColumn != e.ColumnIndex || leftCellRow != e.RowIndex)
+                {
+                    leftCellColumn = e.ColumnIndex;
+                    leftCellRow = e.RowIndex;
+                    afterFieldHandler(e.RowIndex, e.ColumnIndex - 1);
+
+                }
             }  
         }
 
@@ -268,7 +250,16 @@ namespace AubitDesktop
         {
             if (this.beforeFieldHandler != null)
             {
-                beforeFieldHandler(e.RowIndex, e.ColumnIndex-1);
+                Console.WriteLine("Enter cell : " + e.RowIndex + " " + e.ColumnIndex);
+                if (enteredCellColumn != e.ColumnIndex || enteredCellRow != e.RowIndex)
+                {
+                    Console.WriteLine("not the same as old cell :  " + enteredCellRow + " " + enteredCellColumn);
+                    enteredCellRow = e.RowIndex;
+                    enteredCellColumn = e.ColumnIndex;
+                    
+                    beforeFieldHandler(e.RowIndex, e.ColumnIndex - 1);
+
+                }
             }
         }
 
@@ -662,6 +653,19 @@ namespace AubitDesktop
         internal string getComments(int columnId)
         {
             return widgetSettings[columnId].comments;
+        }
+
+        internal void init()
+        {
+            enteredCellColumn = -1;
+            enteredCellRow = -1;
+            leftCellColumn = -1;
+            leftCellRow = -1;
+            onDblClick = null;
+            AfterRow = null;
+            BeforeRow = null;
+            beforeFieldHandler = null;
+            afterFieldHandler = null;
         }
     }
 
