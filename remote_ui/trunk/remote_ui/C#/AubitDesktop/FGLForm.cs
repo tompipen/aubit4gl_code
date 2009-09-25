@@ -294,7 +294,9 @@ namespace AubitDesktop
                                 Xml.XMLForm.Edit e=(Xml.XMLForm.Edit)item;
                                 dt.MaxInputLength =Convert.ToInt32( e.gridWidth);
 
-
+                                                        // Make it right aligned then...
+                                d.Columns[a + 1].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                    
 
                                 d.setFormat(a,e.format);
                                 d.setComments(a, e.comments);

@@ -218,7 +218,8 @@ namespace AubitDesktop
             inputArrayGrid.Columns[0].Visible = false;
 
 
-            
+            inputArrayGrid.init();
+
             foreach (object evt in p.EVENTS)
             {
                 if (evt is ONKEY_EVENT)
@@ -321,7 +322,7 @@ namespace AubitDesktop
 
 
             
-            inputArrayGrid.setFieldToStart(); 
+           // inputArrayGrid.setFieldToStart(); 
 
             //inputArrayGrid.Enabled = false;
         }
@@ -519,6 +520,10 @@ namespace AubitDesktop
 
           
             inputArrayGrid.Enabled = true;
+            if (inputArrayGrid.CurrentCell == null)
+            {
+                inputArrayGrid.setFieldToStart(); 
+            }
         }
 
         private void startHandlers( )
@@ -535,8 +540,8 @@ namespace AubitDesktop
             {
                 inputArrayGrid.AfterRow = new DataGridViewCellEventHandler(RowLeave);
             }
-            inputArrayGrid.beforeFieldHandler += new UIArrayTableHandler(beforeFieldHandler);
-            inputArrayGrid.afterFieldHandler += new UIArrayTableHandler(afterFieldHandler);
+            inputArrayGrid.beforeFieldHandler = new UIArrayTableHandler(beforeFieldHandler);
+            inputArrayGrid.afterFieldHandler = new UIArrayTableHandler(afterFieldHandler);
         }
 
         void beforeFieldHandler(int rowid, int columnId)
@@ -768,7 +773,7 @@ namespace AubitDesktop
                 MessageBox.Show(e.Message);
             }
 
-            //throw new Exception("The method or operation is not implemented.");
+           
         }
     }
 
