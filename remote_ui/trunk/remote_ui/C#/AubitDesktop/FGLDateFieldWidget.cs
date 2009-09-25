@@ -479,6 +479,7 @@ namespace AubitDesktop
                     //t.TabStop = false;
                     break;
 
+                case FGLContextType.ContextInputArrayInactive:
                 case FGLContextType.ContextInputArray:
                     if (this.NoEntry)
                     {

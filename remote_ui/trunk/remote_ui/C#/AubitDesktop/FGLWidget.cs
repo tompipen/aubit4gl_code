@@ -579,13 +579,13 @@ namespace AubitDesktop
 
 
 
-        internal int decode_datatype_size(string p)
+        static internal int decode_datatype_size(string p)
         {
 
             return 0;
         }
 
-        internal int decode_datatype(string p)
+        static internal int decode_datatype(string p)
         {
             p=p.TrimStart(' ');
             if (p.StartsWith("DECIMAL")) return 5;

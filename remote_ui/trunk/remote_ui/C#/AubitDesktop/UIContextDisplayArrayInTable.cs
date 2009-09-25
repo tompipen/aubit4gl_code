@@ -188,6 +188,7 @@ namespace AubitDesktop
 
             displayArrayGrid.Columns[0].Visible = false;
 
+            /*
             if (beforeRow != null)
             {
                 displayArrayGrid.RowEnter += new DataGridViewCellEventHandler(displayArrayGrid_RowEnter);
@@ -197,6 +198,7 @@ namespace AubitDesktop
             {
                 displayArrayGrid.RowLeave += new DataGridViewCellEventHandler(displayArrayGrid_RowLeave);
             }
+             * */
            
           //  displayArrayGrid.RowCount = 5;
             displayArrayGrid.Enabled = false;
@@ -262,6 +264,16 @@ namespace AubitDesktop
 
             displayArrayGrid.onDblClick= new EventHandler(displayArrayGrid_DoubleClick);
 
+
+            if (afterRow != null)
+            {
+                displayArrayGrid.AfterRow = new DataGridViewCellEventHandler(displayArrayGrid_RowLeave);
+            }
+            if (beforeRow != null)
+            {
+                displayArrayGrid.BeforeRow = new DataGridViewCellEventHandler(displayArrayGrid_RowEnter);
+            }
+
             mainWin.setActiveToolBarKeys(KeyList, true,true,false);
            
             
@@ -280,7 +292,7 @@ namespace AubitDesktop
                     this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
                 }
             }
-
+            displayArrayGrid.context = FGLContextType.ContextDisplayArray;
         }
 
         void displayArrayGrid_DoubleClick(object sender, EventArgs e)
@@ -337,7 +349,8 @@ namespace AubitDesktop
         {
             mainWin.setActiveToolBarKeys(null, false);
             displayArrayGrid.Enabled = false;
-            mainWin.SetContext(FGLContextType.ContextNone);
+            mainWin.SetContext(FGLContextType.ContextDisplayArrayInactive);
+            displayArrayGrid.context = FGLContextType.ContextDisplayArrayInactive;
             displayArrayGrid.onDblClick = null;
             EventTriggered = null;
             _contextIsActive = false;
@@ -347,6 +360,7 @@ namespace AubitDesktop
         public void FreeContext()
         {
             _contextIsActive = false;
+            displayArrayGrid.context = FGLContextType.ContextNone;
         }
 
 

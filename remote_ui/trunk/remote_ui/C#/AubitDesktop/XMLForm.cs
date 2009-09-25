@@ -1076,6 +1076,9 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string pageSize;
 
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string width;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string tabName;
@@ -1125,6 +1128,9 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string sqlTabName;
 
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string notNull;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string sqlType;
@@ -1154,7 +1160,7 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
             [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
             [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
-            public object[] Items;
+            public object Item;
         }
 
         /// <remarks/>

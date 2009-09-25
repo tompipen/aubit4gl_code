@@ -146,7 +146,7 @@ namespace AubitDesktop
 
             foreach (MENUCOMMAND a in thismenu.MENUCOMMANDS)
             {
-                string txt = "";
+            
                 if (a.KEYS != "")
                 {
                     string[] keys = a.KEYS.Split(',');

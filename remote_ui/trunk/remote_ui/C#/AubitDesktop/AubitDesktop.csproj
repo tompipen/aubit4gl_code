@@ -78,6 +78,9 @@
     <Compile Include="AubitTSBtn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FormattedGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UIContextInputArrayInTable.cs" />
     <Compile Include="FGLRadioFieldWidget.cs" />
     <Compile Include="FGLComboListBoxFieldWidget.cs" />
@@ -153,7 +156,6 @@
       <DependentUpon>frmConsole.cs</DependentUpon>
     </Compile>
     <Compile Include="HelperClasses.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="MacroEditor.cs">
       <SubType>Form</SubType>

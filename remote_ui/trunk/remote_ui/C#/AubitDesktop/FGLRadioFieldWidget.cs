@@ -35,7 +35,7 @@ namespace AubitDesktop
         RadioButton[] rbFieldWidget;
         string[] strValues;
         FlowLayoutPanel p;
-        bool notNull;
+      //  bool notNull;
 
 
         new public bool Enabled
@@ -263,7 +263,7 @@ namespace AubitDesktop
 
         public FGLRadioFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.RipRADIO cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
-            string title = "";
+            
             AubitDesktop.Xml.XMLForm.Radio cnew;
             cnew = new AubitDesktop.Xml.XMLForm.Radio();
 
@@ -312,8 +312,8 @@ namespace AubitDesktop
             ATTRIB a;
             a = createAttribForWidget(ffx);
 
-            if (ffx.notNull != null && ffx.notNull == "1") notNull = true;
-            else notNull = false;
+            //if (ffx.notNull != null && ffx.notNull == "1") notNull = true;
+            //else notNull = false;
 
 
             if (cbox.comments != null)

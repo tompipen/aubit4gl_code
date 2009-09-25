@@ -26,6 +26,7 @@ using System.Windows.Forms;
 namespace AubitDesktop
 {
     public delegate void UIEventHandler(object source, string ID, string TriggeredText, UIContext u);
+    public delegate void UIArrayTableHandler(int RowId, int columnId);
     public delegate void UIGotFocusHandler(object source, string comment);
     public delegate void UIFieldValidationHandler(object source, string failedText, out bool ignore);
     

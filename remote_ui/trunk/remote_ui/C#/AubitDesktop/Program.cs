@@ -163,14 +163,9 @@ namespace AubitDesktop
             frmMain = new mainfrm(AllowEdit, Autorun, port, minimised,ListenMode);
             if (frmMain!=null && !frmMain.IsDisposed)
             {
-               // try
-                //{
+
                     Application.Run(frmMain);
-                //}
-                //catch (Exception e)
-                //{
-                  //  Program.Show(e.ToString(), "Exception triggered...");
-                //}
+
             }
         }
 

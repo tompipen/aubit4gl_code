@@ -244,6 +244,11 @@ namespace AubitDesktop
             Console.WriteLine("CONSUMED in " + (System.DateTime.Now-s));
         }
 
+         protected override bool  ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+ 	            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
         {
             //Program.Show("Ready for consumption");
@@ -778,7 +783,7 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyDown(object sender, KeyEventArgs e)
         {
-        string key="";
+            string key="";
 
             int keycode;
             string rkey = "";

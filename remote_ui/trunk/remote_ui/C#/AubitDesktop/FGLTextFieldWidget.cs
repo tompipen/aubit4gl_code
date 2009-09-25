@@ -228,7 +228,7 @@ namespace AubitDesktop
                     // We can't trap the tabstops if this is true..
                     //t.TabStop = false;
                     break;
-
+                case FGLContextType.ContextInputArrayInactive:
                 case FGLContextType.ContextInputArray:
                     t.MaxLength = _maxLength;
                     if (this.NoEntry)

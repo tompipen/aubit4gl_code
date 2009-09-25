@@ -164,45 +164,232 @@ namespace AubitDesktop
                         bool showHeaders = false;
                         FormattedGridView d;
                         AubitDesktop.Xml.XMLForm.Table p;
+
                         p = (AubitDesktop.Xml.XMLForm.Table)child;
-                        d = new FormattedGridView();
-                        d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-                        d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
-                        d.Dock = DockStyle.Fill;
-                       
-                        d.AutoSize = true;
-                        d.ScrollBars = ScrollBars.Vertical;
-                        d.ReadOnly = true;
-                        d.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-                        d.AllowUserToResizeColumns = false;
-                        d.AllowUserToResizeRows = false;
+                        d = new FormattedGridView(p);
+                        d.DataError += new DataGridViewDataErrorEventHandler(d_DataError);
 
 
+
+                     //   d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+                     //   d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
+                     //   d.Dock = DockStyle.Fill;
                        
-                        d.ColumnCount = p.TableColumn.Length+1; // First column is reserved for the line number..
+                       // d.AutoSize = true;
+                        //d.ScrollBars = ScrollBars.Vertical;
+
+                        d.ScrollBars = ScrollBars.Both;
+                       
+
+                        d.Columns.Clear();
+
+                        // Add a column to store the row number...
+                        d.Columns.Add(new DataGridViewTextBoxColumn());
+                        d.Columns[0].ReadOnly=true;
+
+                            
+                        //d.ColumnCount = p.TableColumn.Length+1; // First column is reserved for the line number..
                         
                         d.RowsToDisplay = Convert.ToInt32(p.pageSize);
 
-                        d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
-                        
+                        if (p.width != null && p.width != "")
+                        {
+                            d.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                        }
+                        else
+                        {
+                            d.AutoSize = true;
+                            //d.MinimumSize =new Size(d.MinimumSize.Height, GuiLayout.get_gui_w(80);
+                        }
+
+                        int minWidth = 50;
                         for (int a = 0; a < p.TableColumn.Length; a++)
                         {
-                            if (p.TableColumn[a].text == null) continue;
-                            if (p.TableColumn[a].text.Length == 0) continue;
-                            d.Columns[a+1].HeaderText = p.TableColumn[a].text;
-                            showHeaders = true;
+                          
+                            string title;
+                            bool added = false;
+                            object item;
+                            item = p.TableColumn[a].Item;
+
+                            title="";
+                            if (p.TableColumn[a].text != null && p.TableColumn[a].text.Length>0) {
+                                title=p.TableColumn[a].text;
+                            }
+                            
+
+
+                            // If we've got an old style widget - lets refactor it into a new style one...
+                            if (item.GetType()==typeof(Xml.XMLForm.Widget)) {
+                                Xml.XMLForm.Widget w;
+                                w = (Xml.XMLForm.Widget)item;
+                               
+                                switch (w.Type)
+                                {
+                                    case "CHECK":
+                                        AubitDesktop.Xml.XMLForm.CheckBox c = CreateCheckBoxFromWidget(w);
+                                        item = (object)c;
+                                        break;
+
+                                    default:
+                                        MessageBox.Show("Unhandled old style widget - please report widget type : " + w.Type);
+                                        break;
+
+                                }
+                            }
+
+                            #region CheckBox handling...
+                            if (item.GetType() == typeof(Xml.XMLForm.CheckBox))
+                            {
+                                Xml.XMLForm.CheckBox c;
+                                DataGridViewCheckBoxColumn dc;
+                                c=(Xml.XMLForm.CheckBox)item;
+
+                               
+
+                                dc=new System.Windows.Forms.DataGridViewCheckBoxColumn();
+                                if (p.TableColumn[a].notNull=="1") {
+                                    dc.ThreeState=true;
+                                } else {
+                                    dc.ThreeState=false;
+                                }
+                                dc.IndeterminateValue = "";
+                                dc.TrueValue = "1";
+                                dc.FalseValue = "0";
+
+                                if (c.valueChecked!=null)
+                                {
+                                    dc.TrueValue = c.valueChecked;
+                                }
+
+                                if (c.valueUnchecked != null)
+                                {
+                                    dc.FalseValue = c.valueUnchecked;
+                                }
+                                
+                                if (c.text != null && c.text!="")
+                                {
+                                    title=c.text;
+                                }
+                                
+
+                                if (c.comments!=null && c.comments!="") {
+                                    dc.ToolTipText = c.comments;
+                                }
+
+                                dc.ValueType = typeof(string);
+                                d.Columns.Add(dc);
+                                minWidth += 75;
+                                added = true;
+                            }
+                            #endregion
+
+
+                            if (item.GetType()==typeof(Xml.XMLForm.Edit)) {
+                                added = true;
+                                DataGridViewTextBoxColumn dt;
+                                dt = new System.Windows.Forms.DataGridViewTextBoxColumn();
+                              
+                                d.Columns.Add(dt);
+                                
+                                Xml.XMLForm.Edit e=(Xml.XMLForm.Edit)item;
+                                dt.MaxInputLength =Convert.ToInt32( e.gridWidth);
+
+
+
+                                d.setFormat(a,e.format);
+                                d.setComments(a, e.comments);
+
+                                if (e.shift != null)
+                                {
+                                    
+                                        d.setShift(a, e.shift);
+                                    
+                                } 
+
+                                if (e.format != null && e.format != "")
+                                {
+                                    if (p.TableColumn[a].sqlType == "DATE")
+                                    {
+                                        d.Columns[a + 1].DefaultCellStyle.Format = FGLUtils.fglFormatToDotNetFormat(e.format);
+                                    }
+                                    else
+                                    {
+                                        d.Columns[a + 1].DefaultCellStyle.Format = e.format;
+                                    }
+                                }
+                                d.Columns[a + 1].ValueType = typeof(string);
+                               
+
+                                if (Convert.ToInt32(e.width) > 0)
+                                {
+                                    d.Columns[a + 1].Width = GuiLayout.get_gui_w(Convert.ToInt32(e.width));                                
+                                    minWidth += d.Columns[a + 1].Width;
+                                }
+                                else
+                                {
+                                    d.Columns[a + 1].Width = GuiLayout.get_gui_w(dt.MaxInputLength);
+                                    minWidth += d.Columns[a + 1].Width;
+                                }
+                                
+                            }
+
+                            if (!added)
+                            {
+                                d.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn());
+                                d.Columns[a + 1].ValueType = typeof(string);
+                            }
+
+                            d.Columns[a+1].HeaderText=title;
+                            
+
+                            if (title.Trim()!= "")
+                            {
+                                showHeaders = true;
+                            }
+
+                            if (p.TableColumn[a].noEntry=="1")
+                            {
+                                d.Columns[a + 1].ReadOnly = true;
+                            }
+
+                            if (p.TableColumn[a].hidden=="1")
+                            {
+                                d.Columns[a + 1].Visible = false;
+                            }
+                            
                         }
+
+                        if (showHeaders)
+                        {
+                            d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
+                        }
+                        else
+                        {
+                            d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
+                        
+                        }
+                        
                         // Maybe need these visible if we have some titles for them :-)
                         d.ColumnHeadersVisible = showHeaders;
                         d.Visible = true;
-                        //d.AutoSize = false;
                         d.Columns[0].Visible = false; // Hide first column - its just the line number..
                         d.RowHeadersVisible = false;
+
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,d);
+
                         d.Name = "TABLE" + d.GetHashCode();
+                        if (d.Width < minWidth)
+                        {
+                            d.Width = minWidth;
+                        }
+                        d.AutoSize = false;
                         d.sizeGrid();
+                        d.context = FGLContextType.ContextNone;
                         parent.Controls.Add(d);
+
+                     
+                        
                     }
                     break;
                 #endregion
@@ -556,6 +743,11 @@ namespace AubitDesktop
             }
         }
 
+        void d_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            throw new Exception("The method or operation is not implemented."+e.Exception.Message);
+        }
+
         private static AubitDesktop.Xml.XMLForm.FormField createFormFieldFromMatrix(AubitDesktop.Xml.XMLForm.Matrix ma, int itm)
         {
             AubitDesktop.Xml.XMLForm.FormField ff = new AubitDesktop.Xml.XMLForm.FormField();
@@ -651,41 +843,7 @@ namespace AubitDesktop
 
                 case "CHECK":
                     {
-                        string title="";
-                        AubitDesktop.Xml.XMLForm.CheckBox c;
-                        c = new AubitDesktop.Xml.XMLForm.CheckBox();
-                        c.action = widget.action;
-                        c.comments = widget.comments;
-                        c.config = widget.config;
-                        c.gridWidth = widget.gridWidth;
-                        c.posX = widget.posX;
-                        c.posY = widget.posY;
-                        c.width = widget.width;
-                        string[] configstrs = c.config.Split(' ');
-                        if (configstrs.Length > 2)
-                        {
-                            title = "";
-                            for (int z = 2; z < configstrs.Length; z++)
-                            {
-                                if (title.Length>0) title += " " + configstrs[z];
-                                else title+=configstrs[z];
-                            }
-                        }
-                        if (configstrs.Length>=2) {
-                            c.valueChecked = configstrs[0];
-                            c.valueUnchecked = configstrs[1];
-                        }
-
-                        if (title.StartsWith("{"))
-                        {
-                            title = title.Substring(1);
-
-                        }
-                        if (title.EndsWith("}"))
-                        {
-                            title=title.Remove(title.Length - 1,1);
-                        }
-                        c.text = title;
+                        AubitDesktop.Xml.XMLForm.CheckBox c = CreateCheckBoxFromWidget(widget);
                         
                         return new FGLCheckboxFieldWidget(ffx, c, widget.config, index,ma);
                     }
@@ -724,6 +882,47 @@ namespace AubitDesktop
 
             throw new NotImplementedException("UNhandled widget " + widget.Type.ToUpper());
             
+        }
+
+        private static AubitDesktop.Xml.XMLForm.CheckBox CreateCheckBoxFromWidget(AubitDesktop.Xml.XMLForm.Widget widget)
+        {
+            string title = "";
+            AubitDesktop.Xml.XMLForm.CheckBox c;
+            c = new AubitDesktop.Xml.XMLForm.CheckBox();
+            c.action = widget.action;
+            c.comments = widget.comments;
+            c.config = widget.config;
+            c.gridWidth = widget.gridWidth;
+            c.posX = widget.posX;
+            c.posY = widget.posY;
+            c.width = widget.width;
+            string[] configstrs = c.config.Split(' ');
+            if (configstrs.Length > 2)
+            {
+                title = "";
+                for (int z = 2; z < configstrs.Length; z++)
+                {
+                    if (title.Length > 0) title += " " + configstrs[z];
+                    else title += configstrs[z];
+                }
+            }
+            if (configstrs.Length >= 2)
+            {
+                c.valueChecked = configstrs[0];
+                c.valueUnchecked = configstrs[1];
+            }
+
+            if (title.StartsWith("{"))
+            {
+                title = title.Substring(1);
+
+            }
+            if (title.EndsWith("}"))
+            {
+                title = title.Remove(title.Length - 1, 1);
+            }
+            c.text = title;
+            return c;
         }
 
 
@@ -1388,7 +1587,9 @@ namespace AubitDesktop
                 {
                     for (int a = 0; a < d.VALUES.Length; a++)
                     {
-                        dgCells[a].Value = d.VALUES[a].Text;
+                        FGLUtils.setCellValue(dgCells[a], d.VALUES[a].Text);
+
+                            //dgCells[a].Value = d.VALUES[a].Text;
                             //fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
                             //fldlist[a].fglField.Text = d.VALUES[a].Text;
                         

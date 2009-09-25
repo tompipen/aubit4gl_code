@@ -843,37 +843,37 @@ namespace AubitDesktop
     {
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ARRCOUNT;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int ARRCOUNT;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "string")]
         public string ATTRIBUTE;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "string")]
         public string CONTEXT;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string MAXARRSIZE;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int MAXARRSIZE;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ARRVARIABLES;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int ARRVARIABLES;
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string WITHOUT_DEFAULTS;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int WITHOUT_DEFAULTS;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ALLOWINSERT;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int ALLOWINSERT;
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ALLOWDELETE;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int ALLOWDELETE;
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string NONEWLINES;
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int NONEWLINES;
 
 
         /// <remarks/>

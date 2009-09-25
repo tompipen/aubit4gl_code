@@ -257,11 +257,12 @@ namespace AubitDesktop
 
         void doInsert()
         {
-
+            
             for (int a = nRows; a >= arrLine; a--)
             {
                 for (int col = 0; col < nCols; col++)
                 {
+                    if (a >= maxRows) continue;
                     Data[a, col] = Data[a - 1, col];
                 }
                 rowDataChanged[a] = true;
@@ -587,6 +588,12 @@ namespace AubitDesktop
             }
         }
 
+        private bool decode_bool_from_xml(int p)
+        {
+            if (p == 1) return true;
+            return false;
+        }
+
         private bool decode_bool_from_xml(string p)
         {
             if (p == null) return false;
@@ -761,7 +768,7 @@ namespace AubitDesktop
 
         void inputGotFocus(object source, string comment)
         {
-            int a;
+    
             bool found = false;
 
 
@@ -777,23 +784,9 @@ namespace AubitDesktop
             }
 
       
-            a = 0;
-            /*
-            foreach (FGLFoundField f in activeFields)
-            {
 
-                if (f.fglField == source)
-                {
-                    Console.WriteLine("Found current field... @ " + a);
-                    fField = f;
-                    break;
-                }
-                a++;
-            }
-            */
 
             // Now work out what field we're on..
-            //CurrentFieldNo = -1;
             found = false;
             for (int row = 0; row < this.scrRecLines; row++)
             {
@@ -1027,12 +1020,12 @@ namespace AubitDesktop
             Console.WriteLine("Deactivate start at " + (DateTime.Now - ActivateStime));
             mainWin.setActiveToolBarKeys(null, false);
             inputFocusActive = false;
-            mainWin.SetContext(FGLContextType.ContextNone);
+            mainWin.SetContext( FGLContextType.ContextInputArrayInactive);
 
             eventTriggered = null;
             _contextIsActive = false;
             inputFocusActive = false;
-
+            
                 Console.WriteLine("Active -> Deactive in " + (DateTime.Now-ActivateStime ));
         
         }
@@ -1166,8 +1159,7 @@ namespace AubitDesktop
             int rval;
             int new_state;
             Movement ptr_movement;
-            int cnt;
-            int nv;
+
 
             rval = -1;
             new_state = 99;
@@ -1466,7 +1458,7 @@ namespace AubitDesktop
 
             if (this.fcntrl[a].op == e_formcontrol.FORMCONTROL_BEFORE_FIELD)
             {
-                int attr;
+       
                 if (this.fcntrl[a].state == 99)
                 {
                     new_state = 50;
@@ -1904,7 +1896,7 @@ namespace AubitDesktop
             {
                 Movement ptr=new Movement();
                 Movement ptr_x;
-                int x_sz;
+          
                 ptr.scrLine = scrLine;
                 ptr.arrLine = arrLine;
                 ptr.attrib_no = attrib;

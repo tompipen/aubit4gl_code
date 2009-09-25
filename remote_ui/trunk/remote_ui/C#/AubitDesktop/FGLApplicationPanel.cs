@@ -437,6 +437,19 @@ namespace AubitDesktop
                 return;
             }
 
+            if (currentContext is UIInputArrayInTableContext)
+            {
+                if (e != null)
+                {
+                    // Its a real button click - if it was a fake click because of a 
+                    // matched keypress e would be null...
+                    UIInputArrayInTableContext ic;
+                    ic = (UIInputArrayInTableContext)currentContext;
+                    ic.downkeyPressed();
+                }
+                return;
+            }
+
             if (currentContext is UIDisplayArrayInTableContext)
             {
                 // Let the ui handle it..
@@ -510,6 +523,21 @@ namespace AubitDesktop
                 return;
             }
 
+            if (currentContext is UIInputArrayInTableContext)
+            {
+                // Let the ui handle it..
+                if (e != null)
+                {
+                    // Its a real button click - if it was a fake click because of a 
+                    // matched keypress e would be null...
+                    UIInputArrayInTableContext ic;
+                    ic = (UIInputArrayInTableContext)currentContext;
+                    ic.downkeyPressed();
+                }
+                // Let the ui handle it..
+                return;
+            }
+
             throw new NotImplementedException();
             
         }
@@ -539,6 +567,18 @@ namespace AubitDesktop
                 return;
             }
 
+            if (currentContext is UIInputArrayInTableContext)
+            {
+                UIInputArrayInTableContext dc;
+                dc = (UIInputArrayInTableContext)currentContext;
+                dc.InsertkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
+                return;
+            }
         }
 
         void tsBtnDelete_Click(object sender, EventArgs e)
@@ -557,6 +597,19 @@ namespace AubitDesktop
             {
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
+                dc.DeletekeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
+                return;
+            }
+
+            if (currentContext is UIInputArrayInTableContext)
+            {
+                UIInputArrayInTableContext dc;
+                dc = (UIInputArrayInTableContext)currentContext;
                 dc.DeletekeyPressed();
                 if (ke != null)
                 {
@@ -595,6 +648,19 @@ namespace AubitDesktop
             {
                 UIInputArrayContext dc;
                 dc = (UIInputArrayContext)currentContext;
+                dc.pgDownkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
+                return;
+            }
+
+            if (currentContext is UIInputArrayInTableContext)
+            {
+                UIInputArrayInTableContext dc;
+                dc = (UIInputArrayInTableContext)currentContext;
                 dc.pgDownkeyPressed();
                 if (ke != null)
                 {
@@ -657,6 +723,20 @@ namespace AubitDesktop
                 }
                 return;
             }
+
+            if (currentContext is UIInputArrayInTableContext)
+            {
+                UIInputArrayInTableContext dc;
+                dc = (UIInputArrayInTableContext)currentContext;
+                dc.pgUpkeyPressed();
+                if (ke != null)
+                {
+                    ke.Handled = true;
+                    ke.SuppressKeyPress = true;
+                }
+                return;
+            }
+
             if (currentContext is UIDisplayArrayInTableContext)
             {
 
@@ -1086,7 +1166,7 @@ namespace AubitDesktop
 
 
             //System.Diagnostics.Debug.WriteLine("Copied");
-            ErrorText="";
+        //    ErrorText="";
 
             cnt = 0;
             // Go through one at a time...
