@@ -232,7 +232,7 @@ namespace AubitDesktop
             {
                 M_main = Convert.ToDecimal(value);
             }
-            catch
+            catch (Exception ex) 
             {
                 return "";
             }

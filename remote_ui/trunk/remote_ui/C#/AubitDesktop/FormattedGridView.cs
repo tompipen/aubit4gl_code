@@ -6,25 +6,27 @@ using System.Text;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Data;
 
 namespace AubitDesktop
 {
-     class FormattedCellSettings
+    class FormattedCellSettings
     {
         internal string format;
         internal bool Required;
-         internal List<string> includeValues;
-         internal FGLUtils.FGLDataTypes datatype;
-         internal int datatype_length;
-         internal string defaultValue;
-         internal bool upshift;
-         internal bool downshift;
-         internal string comments;
+        internal List<string> includeValues;
+        internal FGLUtils.FGLDataTypes datatype;
+        internal int datatype_length;
+        internal string defaultValue;
+        internal bool upshift;
+        internal bool downshift;
+        internal string comments;
 
 
 
-        
-        internal FormattedCellSettings( )
+
+
+        internal FormattedCellSettings()
         {
             format = null;
             Required = false;
@@ -38,19 +40,50 @@ namespace AubitDesktop
 
     }
 
+
     public class FormattedGridView : DataGridView
     {
-        Xml.XMLForm.Table table;
+        internal Xml.XMLForm.Table table;
         FormattedCellSettings[] widgetSettings;
         private int __RowsToDisplay;
         private EventHandler _onDblClick;
-
-
+        internal bool addedNewRowBelow=false;
         internal int enteredCellColumn = -1;
         internal int enteredCellRow = -1;
-
+        internal int enteredRow = -1;
         internal int leftCellColumn = -1;
         internal int leftCellRow = -1;
+        private int _maxRows;
+        internal int maxRows
+        {
+            get
+            {
+                return _maxRows;
+            }
+            set
+            {
+                if (_maxRows != value)
+                {
+                    _maxRows = value;
+                    setAllowUserToAddRows();
+                }
+
+            }
+        }
+
+        private bool _allowInsertRow;
+        internal bool allowInsertRow
+        {
+            get
+            {
+                return _allowInsertRow;
+            }
+            set
+            {
+                _allowInsertRow = value;
+                setAllowUserToAddRows();
+            }
+        }
 
 
         public EventHandler onDblClick
@@ -82,7 +115,15 @@ namespace AubitDesktop
         internal DataGridViewCellEventHandler BeforeRow = null;
 
         internal UIArrayTableHandler beforeFieldHandler = null;
-        internal UIArrayTableHandler afterFieldHandler = null; 
+        internal UIArrayTableHandler afterFieldHandler = null;
+
+        /*
+        internal UIArrayTableHandler beforeInsert = null;
+        internal UIArrayTableHandler beforeDelete = null;
+
+        internal UIArrayTableHandler afterInsert = null;
+        internal UIArrayTableHandler afterDelete = null;
+        */
 
         FGLContextType _context = FGLContextType.ContextNone;
 
@@ -166,6 +207,7 @@ namespace AubitDesktop
                 case FGLContextType.ContextInputArray:
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
+                    
                     ReadOnly = false;
                     SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
                     break;
@@ -177,20 +219,92 @@ namespace AubitDesktop
 
         private void setUpHandlers()
         {
+
+
+
             RowEnter += new DataGridViewCellEventHandler(Grid_RowEnter);
-            RowLeave += new DataGridViewCellEventHandler(Grid_RowLeave);
-           // DoubleClick += new EventHandler(Grid_DoubleClick);
+    
+            RowValidated += new DataGridViewCellEventHandler(Grid_RowLeave);
             CellValidating += new DataGridViewCellValidatingEventHandler(FormattedGridView_CellValidating);
+            RowValidating += new DataGridViewCellCancelEventHandler(FormattedGridView_RowValidating);
             DefaultValuesNeeded += new DataGridViewRowEventHandler(FormattedGridView_DefaultValuesNeeded);
+
+      
+
             CellEnter += new DataGridViewCellEventHandler(FormattedGridView_CellEnter);
             CellLeave += new DataGridViewCellEventHandler(FormattedGridView_CellLeave);
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
-            this.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing); 
+            EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
+            //this.Rows.CollectionChanged += new System.ComponentModel.CollectionChangeEventHandler(Rows_CollectionChanged);
+            //RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
+        }
+
+
+
+        
+
+        /// <summary>
+        /// Set the AllowUserToAddRows depending on the current number of rows, the current context
+        /// and whether the program has 'NONEWLINES' etc
+        /// </summary>
+        private void setAllowUserToAddRows()
+        {
+
+            if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextInputArrayInactive)
+            {
+                AllowUserToAddRows = false;
+                return;
+            }
+
+            // Is it disallowed in the program ? 
+            if (allowInsertRow == false)
+            {
+                AllowUserToAddRows = false;
+                return;
+            }
+
+            // Have we run out of space ? 
+            if (Rows.Count > maxRows)
+            {
+                if (AllowUserToAddRows != false)
+                {
+                    AllowUserToAddRows = false;
+                    return;
+                }
+            }
+
+            AllowUserToAddRows = true;
+        }
+    
+
+
+        void FormattedGridView_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
+        {
+
+            string s;
+            s = "";
+
+            try
+            {
+                s = (string)Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            }
+            catch
+            {
+                s = "";
+            }
+
+
+
+                if (!validateField(e.RowIndex, e.ColumnIndex,s))
+                {
+                    e.Cancel = true;
+                } 
             
         }
 
         void FormattedGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
+            if (CurrentCell.ColumnIndex == 0) return;
 
             if (e.Control is TextBox)
             {
@@ -215,6 +329,8 @@ namespace AubitDesktop
 
         void FormattedGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
+            if (e.ColumnIndex == 0) return;
+
             // Are we just setting up ? 
             if (e.ColumnIndex -1 > this.widgetSettings.Length) return;
 
@@ -223,8 +339,16 @@ namespace AubitDesktop
 
             if (this.widgetSettings[e.ColumnIndex - 1].format != null && this.widgetSettings[e.ColumnIndex - 1].format.Trim() != "")
             {
-
-                e.Value = FGLUsing.A4GL_func_using(widgetSettings[e.ColumnIndex - 1].format, (string)e.Value, widgetSettings[e.ColumnIndex - 1].datatype);
+                string val;
+                try
+                {
+                    val = (string)e.Value;
+                }
+                catch
+                {
+                    val = "";
+                }
+                e.Value = FGLUsing.A4GL_func_using(widgetSettings[e.ColumnIndex - 1].format, val, widgetSettings[e.ColumnIndex - 1].datatype);
                 e.FormattingApplied = true;
             }         
             
@@ -234,6 +358,21 @@ namespace AubitDesktop
 
         void FormattedGridView_CellLeave(object sender, DataGridViewCellEventArgs e)
         {
+            string val;
+       //     DataGridViewCellValidatingEventArgs e_val;
+
+
+            if (e.ColumnIndex == 0) return;
+
+            try
+            {
+                val = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            }
+            catch
+            {
+                val = null;
+            }
+            
             if (afterFieldHandler != null)
             {
                 if (leftCellColumn != e.ColumnIndex || leftCellRow != e.RowIndex)
@@ -243,11 +382,19 @@ namespace AubitDesktop
                     afterFieldHandler(e.RowIndex, e.ColumnIndex - 1);
 
                 }
-            }  
+            }
+
+            
+
+
+
         }
 
         void FormattedGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.ColumnIndex == 0) return;
+
+
             if (this.beforeFieldHandler != null)
             {
                 Console.WriteLine("Enter cell : " + e.RowIndex + " " + e.ColumnIndex);
@@ -261,19 +408,27 @@ namespace AubitDesktop
 
                 }
             }
+            
+
+
         }
 
         internal void FormattedGridView_DefaultValuesNeeded(object sender, DataGridViewRowEventArgs e)
         {
-            e.Row.Cells[0].Value = ""+e.Row.Index;
+            e.Row.Cells[0].Value = "XXX";
             for (int a = 0; a < table.TableColumn.Length; a++)
             {
                 if (table.TableColumn[a].defaultValue != null && table.TableColumn[a].defaultValue != "")
                 {
                     FGLUtils.setCellValue(e.Row.Cells[a + 1], table.TableColumn[a].defaultValue);
-                   //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                }
+                else
+                {
+                    FGLUtils.setCellValue(e.Row.Cells[a + 1], "");
                 }
             }
+            EndEdit();
         }
 
 
@@ -285,7 +440,8 @@ namespace AubitDesktop
             bool ign = false;
             FormattedCellSettings w;
             //FGLWidget w = null;
-           
+            if (col == 0) return true;
+
             w = widgetSettings[col-1];
             if (w == null) return true;
 
@@ -397,7 +553,7 @@ namespace AubitDesktop
             int len;
             len = t.TableColumn.Length;
             this.table = t;
-            setUpHandlers();
+           
             widgetSettings = new FormattedCellSettings[len];
 
             for (int a = 0; a < len; a++)
@@ -436,10 +592,14 @@ namespace AubitDesktop
                     }
 
                 }
-                //widgetSettings[a].includeValues=t.TableColumn[a].include;
+                
                 widgetSettings[a].defaultValue=t.TableColumn[a].defaultValue;
             }
-
+            this.MultiSelect = false;
+            EditMode = DataGridViewEditMode.EditOnEnter;
+            AutoGenerateColumns = false;
+            setUpHandlers();
+            
         }
 
 
@@ -447,18 +607,21 @@ namespace AubitDesktop
         #region EventForwarders
         void Grid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (BeforeRow != null)
+
+            setAllowUserToAddRows();
+           
+            if (BeforeRow != null && enteredRow!=e.RowIndex)
             {
-                if (CurrentCell != null)
-                {
-                    Console.WriteLine("Row = " + e.RowIndex + " " + CurrentCell.RowIndex);
-                }
+                enteredRow = e.RowIndex;
                 BeforeRow(sender, e);
             }
+
+
         }
 
         void Grid_RowLeave(object sender, DataGridViewCellEventArgs e)
         {
+            setAllowUserToAddRows();
             if (AfterRow != null)
             {
                 AfterRow(sender, e);
@@ -575,7 +738,13 @@ namespace AubitDesktop
 
         internal string getInfield()
         {
+         
             if (this.CurrentCell == null) return "";
+            if (this.CurrentCell.ColumnIndex == 0) { 
+                // This field is normally hidden - it contains the subscript
+                // but its sometimes 'visible' whilst debugging...
+                return ""; }
+
             return " INFIELD=\"" + table.TableColumn[this.CurrentCell.ColumnIndex - 1].colName + "\"";
         }
 
@@ -592,37 +761,12 @@ namespace AubitDesktop
             CurrentCell = Rows[0].Cells[1];
         }
 
-        internal void setField(int arrLine, string fieldName)
-        {
-            bool found = false;
-            int cell = 0;
-            
-            if (fieldName.ToLower() == "next")
-            {
-                cell = CurrentCell.ColumnIndex + 1;
-                if (cell > table.TableColumn.Length) cell = table.TableColumn.Length;
-                found = true;
-            }
-
-            if (fieldName.ToLower().StartsWith("prev"))
-            {
-                cell = CurrentCell.ColumnIndex - 1;
-                if (cell <= 0) cell = 1;
-                found = true;
-            }
 
 
-            if (fieldName.ToLower().StartsWith("curr"))
-            {
-                cell = CurrentCell.ColumnIndex ;               
-                found = true;
-            }
 
 
-            if (fieldName != null && !found) { cell=getCellNumberForField(fieldName); }
-            CurrentCell = Rows[arrLine - 1].Cells[cell+1]; // Skip the first cell - its just the line number...
-        }
 
+        
 
         internal void setFormat(int columnIndex, string format)
         {
@@ -666,7 +810,14 @@ namespace AubitDesktop
             BeforeRow = null;
             beforeFieldHandler = null;
             afterFieldHandler = null;
+            CurrentCell = null;
         }
     }
 
+
+
+
+
+
+    
 }

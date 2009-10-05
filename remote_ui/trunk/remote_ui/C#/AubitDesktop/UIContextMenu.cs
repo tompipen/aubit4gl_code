@@ -160,7 +160,7 @@ namespace AubitDesktop
                             {
                                 kval = Convert.ToInt32(keys[n]);
                             }
-                            catch { } 
+                            catch (Exception Ex) { } 
 
                             if (isNormalKey(ke, kval))
                             {
@@ -276,7 +276,7 @@ namespace AubitDesktop
                         {
                             n = Convert.ToInt32(s);
                         }
-                        catch { }
+                        catch (Exception Ex) { }
 
 
                         if (s.Trim() != "" && n != -1)

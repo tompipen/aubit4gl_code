@@ -599,7 +599,7 @@ namespace AubitDesktop
                     this.OnDisconnectedFromServer(new EventArgs());
                     return true;
                 }
-                catch
+                catch (Exception Ex)
                 {
                     return false;
                 }
@@ -723,7 +723,7 @@ namespace AubitDesktop
                     this.OnDisconnectedFromServer(new EventArgs());
                     return true;
                 }
-                catch
+                catch (Exception Ex)
                 {
                     return false;
                 }

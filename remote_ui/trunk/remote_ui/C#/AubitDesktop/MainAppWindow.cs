@@ -252,7 +252,15 @@ namespace AubitDesktop
         void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
         {
             //Program.Show("Ready for consumption");
-            this.BeginInvoke(new ConsumeEnvelopeDelegate( ConsumeEnvelopeHandler));
+            try
+            {
+                this.BeginInvoke(new ConsumeEnvelopeDelegate(ConsumeEnvelopeHandler));
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+
             //this.ConsumeEnvelopeCommands();
         }
 
@@ -544,7 +552,7 @@ namespace AubitDesktop
 
                 }
             }
-            catch { } 
+            catch (Exception Ex) { } 
 
 
             stdNetworkConnection.SendString(finalString);
@@ -683,7 +691,7 @@ namespace AubitDesktop
                         toolStripProgressBar2.Visible = false;
                     }
                 }
-                catch
+                catch (Exception Ex)
                 {
 
                 }
@@ -694,7 +702,7 @@ namespace AubitDesktop
                 {
                     toolStripProgressBar2.Visible = false;
                 }
-                catch { } 
+                catch (Exception Ex) { } 
             }
         }
 

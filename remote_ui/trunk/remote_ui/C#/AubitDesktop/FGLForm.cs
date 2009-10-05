@@ -162,12 +162,12 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.Table":
                     {
                         bool showHeaders = false;
-                        FormattedGridView d;
+                        FormattedGridView gridArray;
                         AubitDesktop.Xml.XMLForm.Table p;
 
                         p = (AubitDesktop.Xml.XMLForm.Table)child;
-                        d = new FormattedGridView(p);
-                        d.DataError += new DataGridViewDataErrorEventHandler(d_DataError);
+                        gridArray = new FormattedGridView(p);
+                        gridArray.DataError += new DataGridViewDataErrorEventHandler(d_DataError);
 
 
 
@@ -178,27 +178,27 @@ namespace AubitDesktop
                        // d.AutoSize = true;
                         //d.ScrollBars = ScrollBars.Vertical;
 
-                        d.ScrollBars = ScrollBars.Both;
+                        gridArray.ScrollBars = ScrollBars.Both;
                        
 
-                        d.Columns.Clear();
+                        gridArray.Columns.Clear();
 
                         // Add a column to store the row number...
-                        d.Columns.Add(new DataGridViewTextBoxColumn());
-                        d.Columns[0].ReadOnly=true;
+                        gridArray.Columns.Add("subscript","");
+                        gridArray.Columns[0].ReadOnly=true;
+                        gridArray.Columns[0].DataPropertyName = "subscript";
 
                             
-                        //d.ColumnCount = p.TableColumn.Length+1; // First column is reserved for the line number..
                         
-                        d.RowsToDisplay = Convert.ToInt32(p.pageSize);
+                        gridArray.RowsToDisplay = Convert.ToInt32(p.pageSize);
 
                         if (p.width != null && p.width != "")
                         {
-                            d.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                            gridArray.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
                         }
                         else
                         {
-                            d.AutoSize = true;
+                            gridArray.AutoSize = true;
                             //d.MinimumSize =new Size(d.MinimumSize.Height, GuiLayout.get_gui_w(80);
                         }
 
@@ -275,9 +275,10 @@ namespace AubitDesktop
                                 if (c.comments!=null && c.comments!="") {
                                     dc.ToolTipText = c.comments;
                                 }
-
+                               
+                                
                                 dc.ValueType = typeof(string);
-                                d.Columns.Add(dc);
+                                gridArray.Columns.Add(dc);
                                 minWidth += 75;
                                 added = true;
                             }
@@ -288,23 +289,24 @@ namespace AubitDesktop
                                 added = true;
                                 DataGridViewTextBoxColumn dt;
                                 dt = new System.Windows.Forms.DataGridViewTextBoxColumn();
-                              
-                                d.Columns.Add(dt);
+
+                                
+                                gridArray.Columns.Add(dt);
                                 
                                 Xml.XMLForm.Edit e=(Xml.XMLForm.Edit)item;
                                 dt.MaxInputLength =Convert.ToInt32( e.gridWidth);
 
                                                         // Make it right aligned then...
-                                d.Columns[a + 1].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                                gridArray.Columns[a + 1].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                     
 
-                                d.setFormat(a,e.format);
-                                d.setComments(a, e.comments);
+                                gridArray.setFormat(a,e.format);
+                                gridArray.setComments(a, e.comments);
 
                                 if (e.shift != null)
                                 {
                                     
-                                        d.setShift(a, e.shift);
+                                        gridArray.setShift(a, e.shift);
                                     
                                 } 
 
@@ -312,37 +314,37 @@ namespace AubitDesktop
                                 {
                                     if (p.TableColumn[a].sqlType == "DATE")
                                     {
-                                        d.Columns[a + 1].DefaultCellStyle.Format = FGLUtils.fglFormatToDotNetFormat(e.format);
+                                        gridArray.Columns[a + 1].DefaultCellStyle.Format = FGLUtils.fglFormatToDotNetFormat(e.format);
                                     }
                                     else
                                     {
-                                        d.Columns[a + 1].DefaultCellStyle.Format = e.format;
+                                        gridArray.Columns[a + 1].DefaultCellStyle.Format = e.format;
                                     }
                                 }
-                                d.Columns[a + 1].ValueType = typeof(string);
+                                gridArray.Columns[a + 1].ValueType = typeof(string);
                                
 
                                 if (Convert.ToInt32(e.width) > 0)
                                 {
-                                    d.Columns[a + 1].Width = GuiLayout.get_gui_w(Convert.ToInt32(e.width));                                
-                                    minWidth += d.Columns[a + 1].Width;
+                                    gridArray.Columns[a + 1].Width = GuiLayout.get_gui_w(Convert.ToInt32(e.width));                                
+                                    minWidth += gridArray.Columns[a + 1].Width;
                                 }
                                 else
                                 {
-                                    d.Columns[a + 1].Width = GuiLayout.get_gui_w(dt.MaxInputLength);
-                                    minWidth += d.Columns[a + 1].Width;
+                                    gridArray.Columns[a + 1].Width = GuiLayout.get_gui_w(dt.MaxInputLength);
+                                    minWidth += gridArray.Columns[a + 1].Width;
                                 }
                                 
                             }
 
                             if (!added)
                             {
-                                d.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn());
-                                d.Columns[a + 1].ValueType = typeof(string);
+                                gridArray.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn());
+                                gridArray.Columns[a + 1].ValueType = typeof(string);
                             }
 
-                            d.Columns[a+1].HeaderText=title;
-                            
+                            gridArray.Columns[a+1].HeaderText=title;
+                            gridArray.Columns[a+1].DataPropertyName = "col" + (a+1);
 
                             if (title.Trim()!= "")
                             {
@@ -351,44 +353,44 @@ namespace AubitDesktop
 
                             if (p.TableColumn[a].noEntry=="1")
                             {
-                                d.Columns[a + 1].ReadOnly = true;
+                                gridArray.Columns[a + 1].ReadOnly = true;
                             }
 
                             if (p.TableColumn[a].hidden=="1")
                             {
-                                d.Columns[a + 1].Visible = false;
+                                gridArray.Columns[a + 1].Visible = false;
                             }
                             
                         }
 
                         if (showHeaders)
                         {
-                            d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
+                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
                         }
                         else
                         {
-                            d.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
+                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
                         
                         }
                         
                         // Maybe need these visible if we have some titles for them :-)
-                        d.ColumnHeadersVisible = showHeaders;
-                        d.Visible = true;
-                        d.Columns[0].Visible = false; // Hide first column - its just the line number..
-                        d.RowHeadersVisible = false;
-
+                        gridArray.ColumnHeadersVisible = showHeaders;
+                        gridArray.Visible = true;
+                        gridArray.Columns[0].Visible = false; // Hide first column - its just the line number..
+                        gridArray.RowHeadersVisible = false;
+                       // gridArray.Columns[0].HeaderText = "Subscript";
                         if (this.grids == null) this.grids = new Hashtable();
-                        this.grids.Add( p.tabName,d);
+                        this.grids.Add( p.tabName,gridArray);
 
-                        d.Name = "TABLE" + d.GetHashCode();
-                        if (d.Width < minWidth)
+                        gridArray.Name = "TABLE" + gridArray.GetHashCode();
+                        if (gridArray.Width < minWidth)
                         {
-                            d.Width = minWidth;
+                            gridArray.Width = minWidth;
                         }
-                        d.AutoSize = false;
-                        d.sizeGrid();
-                        d.context = FGLContextType.ContextNone;
-                        parent.Controls.Add(d);
+                        gridArray.AutoSize = false;
+                        gridArray.sizeGrid();
+                        gridArray.context = FGLContextType.ContextNone;
+                        parent.Controls.Add(gridArray);
 
                      
                         
@@ -747,7 +749,8 @@ namespace AubitDesktop
 
         void d_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
-            throw new Exception("The method or operation is not implemented."+e.Exception.Message);
+            
+            //throw new Exception("The method or operation is not implemented."+e.Exception.Message);
         }
 
         private static AubitDesktop.Xml.XMLForm.FormField createFormFieldFromMatrix(AubitDesktop.Xml.XMLForm.Matrix ma, int itm)

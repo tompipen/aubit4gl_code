@@ -19,18 +19,28 @@
  */
 
 using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
+
+
 namespace AubitDesktop
 {
+
+
+
+
     class UIInputArrayInTableContext : UIContext
     {
         private bool _contextIsActive;
         private FGLApplicationPanel mainWin;
         FormattedGridView inputArrayGrid;
-        
+        private bool currLineIsInserted;
+      //  private bool []rowWasAutoInserted;
+        private bool firstTime = true;
+        private int maxRows;
 
         class s_pending {
             public s_pending(string text, int scrLine)
@@ -43,33 +53,32 @@ namespace AubitDesktop
         };
         List<s_pending> PendingEvents;
 
-        private int []beforeFieldEventIds;
-        private int []afterFieldEventIds;
+
         private string lastKey="";
         private bool allowInsert=true;
         private bool allowDelete=true;
-
+        private int rowLeft = -1;
+        
 
         /// <summary>
         /// Number of variables across the screen array..
         /// </summary>
         private int nCols;
 
-        //private int currentRow;
-        
+        //private bool[] rowDataChanged;
+        private DataTable Data;
+
         private enum MoveType {
             MoveTypeNoPendingMovement,
-            MoveTypeDown,
-            MoveTypeUp,
-            MoveTypeTo,
-            MoveTypePageDown,
-            MoveTypePageUp
+            MoveTypeInsert,
+            MoveTypeDelete
         };
 
+        private MoveType nextMove =  MoveType.MoveTypeNoPendingMovement;
 
         int arrLine=0;
 
-
+        bool lastLineIsAutoInserted=false;
 
 
         /// <summary>
@@ -77,15 +86,32 @@ namespace AubitDesktop
         /// </summary>
 
 
-        private string[,] Data;
-        private bool[] rowDataChanged;
+        
+        
 
+
+
+
+        #region event handlers
         private List<ONKEY_EVENT> KeyList;
         private event UIEventHandler EventTriggered;
 
         private BEFORE_ROW_EVENT beforeRow;
         private AFTER_ROW_EVENT afterRow;
         private List<ON_ACTION_EVENT> onActionList;
+
+        private BEFORE_DELETE_EVENT beforeDelete;
+        private BEFORE_INSERT_EVENT beforeInsert;
+
+        private AFTER_DELETE_EVENT afterDelete;
+        private AFTER_INSERT_EVENT afterInsert;
+        private int[] beforeFieldEventIds;
+        private int[] afterFieldEventIds;
+#endregion
+
+
+
+
       
         public bool contextIsActive()
         {
@@ -123,40 +149,54 @@ namespace AubitDesktop
         /// <param name="rows"></param>
         public void setUpData(ROW[] rows)
         {
+            DataGridViewCell c;
+            c = inputArrayGrid.CurrentCell;
+
+
+            Data.BeginLoadData();
+
 
             for (int row = 0; row < rows.Length; row++)
             {
-                int subscript;
-                subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
-                while (subscript >= inputArrayGrid.Rows.Count)
+                int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
+                while (subscript >= Data.Rows.Count)
                 {
-                    string[] data = new string[nCols + 1];
-                    data[0] = "" + inputArrayGrid.Rows.Count;      
-                    inputArrayGrid.Rows.Add(data);
+                    string[] newData;
+                    newData = new string[nCols + 1];
+                    for (int cnt = 0; cnt <= nCols; cnt++)
+                    {
+                        newData[cnt] = null;
+                    }
+                    Data.Rows.Add(newData);
+
                 }
             }
 
 
             for (int row = 0; row < rows.Length; row++)
             {
-                DataGridViewRow r;
-                int subscript;
-                r = new DataGridViewRow();
-                subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
-
+                int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
 
                 // We'll use the first column to store the index
                 // for the current row...
-                //  Data[subscript,0] = "" + (row + 1);
 
+
+                Data.Rows[subscript][0] = "XXX";
                 for (int col = 0; col < rows[row].VALUES.Length; col++)
                 {
-                    Data[subscript, col] = rows[row].VALUES[col].Text;
+                    Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
+
                 }
-
-
-                inputArrayGrid.syncData(subscript,nCols, Data);
+                // as we've been passed these values in - 
+                // it makes sense not to send them back straight away again
+                // so we call 'AcceptChanges' to mark the rows as 'unchanged' after we've just
+                // changed them ;-)
+                Data.Rows[subscript].AcceptChanges();
             }
+
+
+            inputArrayGrid.CurrentCell = c;
+            Data.EndLoadData();
         }
 
 
@@ -169,24 +209,39 @@ namespace AubitDesktop
            
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;
-           // this.arrLine = 1;
-           // this.scrLine = 1;
             nCols = p.ARRVARIABLES;
+            maxRows = p.MAXARRSIZE;
 
-            
-            Data=new string[p.MAXARRSIZE, p.ARRVARIABLES];
-            rowDataChanged = new bool[p.MAXARRSIZE];
-            PendingEvents = new List<s_pending>();
-            
-            for (int a = 0; a < p.MAXARRSIZE; a++)
+
+            Data = new DataTable();  //new string[p.MAXARRSIZE, p.ARRVARIABLES];
+            for (int a = 0; a <= nCols; a++) // One extra for the subscript....
             {
-                rowDataChanged[a] = false;
-                for (int b = 0; b < p.ARRVARIABLES; b++)
+                if (a == 0)
                 {
-                    Data[a,b] = null;
+                    Data.Columns.Add("subscript");
+                }
+                else
+                {
+                    Data.Columns.Add("col"+a);
                 }
             }
 
+
+          //  rowWasAutoInserted = new bool[maxRows];
+       //     rowDataChanged = new bool[maxRows];
+
+          //  inputArrayGrid.maxRows = maxRows;
+
+
+            PendingEvents = new List<s_pending>();
+
+            for (int a = 0; a < maxRows; a++)
+            {
+              //  rowDataChanged[a] = false;
+               // rowWasAutoInserted[a] = false;
+            }
+
+            
 
             // Set up the 'blank' event IDs for before
             // and after fields for the Cell number
@@ -214,10 +269,10 @@ namespace AubitDesktop
                 MessageBox.Show("Screen record " + p.FIELDLIST + " not found - fix your 4gl!");
                 Application.Exit();
             }
+
+
+            // Make sure the array is completely cleared down..
             inputArrayGrid.Rows.Clear();
-            inputArrayGrid.Columns[0].Visible = false;
-
-
             inputArrayGrid.init();
 
             foreach (object evt in p.EVENTS)
@@ -236,6 +291,35 @@ namespace AubitDesktop
                     e = (BEFORE_ROW_EVENT)evt;
                     beforeRow = e;
                     continue;
+                }
+
+                if (evt is BEFORE_DELETE_EVENT)
+                {
+                    BEFORE_DELETE_EVENT e;
+                    e = (BEFORE_DELETE_EVENT)evt;
+                    beforeDelete = e;
+                }
+
+                if (evt is BEFORE_INSERT_EVENT)
+                {
+                    BEFORE_INSERT_EVENT e;
+                    e = (BEFORE_INSERT_EVENT)evt;
+                    beforeInsert = e;
+                }
+
+
+                if (evt is AFTER_DELETE_EVENT)
+                {
+                   AFTER_DELETE_EVENT e;
+                    e = (AFTER_DELETE_EVENT)evt;
+                    afterDelete = e;
+                }
+
+                if (evt is AFTER_INSERT_EVENT)
+                {
+                    AFTER_INSERT_EVENT e;
+                    e = (AFTER_INSERT_EVENT)evt;
+                    afterInsert = e;
                 }
 
                 if (evt is AFTER_ROW_EVENT)
@@ -267,8 +351,6 @@ namespace AubitDesktop
                     {
                         MessageBox.Show("BEFORE FIELD " + e.FIELD + " - field not found");
                     }
-
-                  //  MessageBox.Show("Before field needs fixing");
                     continue;
 
                 }
@@ -297,34 +379,23 @@ namespace AubitDesktop
 
 
 
-            if (p.NONEWLINES==1
-                || p.ALLOWINSERT==0)
-            {
-                inputArrayGrid.AllowUserToAddRows = false;
+            if (p.NONEWLINES==1 || p.ALLOWINSERT==0)      {
                 allowInsert = false;
             }
             else
             {
-                inputArrayGrid.AllowUserToAddRows = true;
-                allowInsert = true;
+
+                    allowInsert = true;
             }
 
             if (p.ALLOWDELETE == 1)
             {
-                inputArrayGrid.AllowUserToDeleteRows = true;
                 allowDelete = true;
             }
             else
             {
-                inputArrayGrid.AllowUserToDeleteRows = false;
                 allowDelete = false;
             }
-
-
-            
-           // inputArrayGrid.setFieldToStart(); 
-
-            //inputArrayGrid.Enabled = false;
         }
 
 
@@ -359,7 +430,7 @@ namespace AubitDesktop
         /// <param name="fieldName"></param>
         public void setNextField(string fieldName)
         {
-            inputArrayGrid.setField(arrLine, fieldName);
+            setField(arrLine, fieldName);
         }
 
         public void NavigateToTab()
@@ -389,70 +460,92 @@ namespace AubitDesktop
         public string getSyncValues()
         {
             string s;
+            string subscript_string;
+            int row;
+            //  copyFieldData();
 
-            copyFieldData();
+            
 
-            s = "<SYNCROWS>";
-            for (int row = 0; row < rowDataChanged.Length; row++)
+            s = "\n<SYNCROWS>\n";
+            for (row = 0; row < Data.Rows.Count; row++)
             {
-                if (rowDataChanged[row])
+                try
                 {
-                    s += "<ROW SUBSCRIPT=\"" + (row + 1) + "\">";
-                    s += "<SYNCVALUES>";
+                    // Make sure the array and the grid are sync'd up...
+                    Data.Rows[row].EndEdit();
 
-                    for (int col = 0; col < this.nCols; col++)
-                    {
-                        s += "<SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(Data[row, col]) + "</SYNCVALUE>";
-                    }
+                    // If we've not changed anything - then we dont need to send it back..
+                    if (Data.Rows[row].RowState == DataRowState.Unchanged) continue;
 
-                    s += "</SYNCVALUES>";
-                    s += "</ROW>";
+                    Data.Rows[row].AcceptChanges();
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+                /*
+                try {
+                    subscript_string=Data.Rows[row][0].ToString();
+                } catch {
+                    subscript_string = "";
+                }
+                if (subscript_string == "") continue;
+                */
+
+                subscript_string = "" + (row + 1);
+                s += " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
+                s += "  <SYNCVALUES>\n";
+
+                for (int col = 0; col < this.nCols; col++)
+                {
+                    string rval = "";
+                    try
+                    {
+                        rval = (string)Data.Rows[row][col + 1];
+                    }
+                    catch
+                    {
+                        rval = "";
+                    }
+                    s += "   <SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SYNCVALUE>\n";
+                }
+
+                s += "  </SYNCVALUES>\n";
+                s += " </ROW>\n";
             }
-            s += "</SYNCROWS>";
+            s += "</SYNCROWS>\n";
+
+
 
             return s;
         }
 
-        private void copyFieldData()
-        {
 
 
-            for (int row = 0; row < rowDataChanged.Length; row++)
-            {
-                // Indicate that the row is the same as last time..
-                rowDataChanged[row] = false;
 
-                // Now is our row greater than the number of rows in the datagrid ? 
-                // If so - we need to pretend to get the values - we'll use "null"...
-                //
-                if (row >= inputArrayGrid.Rows.Count)
-                {
-                    for (int col = 0; col < nCols; col++)
-                    {
-                        if (Data[row, col] != null) rowDataChanged[row] = true;
-                        Data[row, col] = null;
-                    }
-                }
-                else
-                {
-                    for (int col = 0; col < nCols; col++)
-                    {
-                        string newVal=(string)inputArrayGrid.Rows[row].Cells[col+1].Value;
-                        if (Data[row, col] != newVal)
-                        {
-                            rowDataChanged[row] = true;
-                            Console.WriteLine("Different @ "+row+" "+col+" Data was : "+Data[row,col]+" now "+newVal);
-                            Data[row, col] = newVal;
-                        }
-                    }
-                }
-            }
-        }
+
+
+
 
 
         public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
+            if (nextMove == MoveType.MoveTypeInsert)
+            {
+                doInsertRow();
+                nextMove = MoveType.MoveTypeNoPendingMovement;
+            }
+
+            if (nextMove == MoveType.MoveTypeDelete)
+            {
+                doDeleteRow();
+                if (afterDelete!=null)
+                {
+                    sendTrigger(afterDelete.ID, -1);
+                    return;
+                }
+            }
 
             stopHandlers();
             foreach (ON_ACTION_EVENT e in onActionList)
@@ -470,31 +563,37 @@ namespace AubitDesktop
 
             int crow = -1;
             int ccol = -1;
-            if (inputArrayGrid.CurrentCell != null)
+            // Do we have a current cell ? 
+            // If this is the first time around - assume we dont...
+            if (inputArrayGrid.CurrentCell != null && firstTime==false)
             {
+                
                 crow = inputArrayGrid.CurrentCell.RowIndex;
                 ccol = inputArrayGrid.CurrentCell.ColumnIndex;
-            }
+                Console.WriteLine("Crow=" + crow + " ccol=" + ccol);
+            }            
+
             if (rows != null)
             {
                 setUpData(rows);
             }
-            if (crow != -1 && ccol != -1)
+  
+            if (inputArrayGrid.DataSource != Data)
             {
-                if (inputArrayGrid.CurrentCell != null)
-                {
-                    if (crow != inputArrayGrid.CurrentCell.RowIndex || ccol != inputArrayGrid.CurrentCell.ColumnIndex)
-                    {
-                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
-                    }
-                }
-                else
-                {
-                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
-                }
+                
+                inputArrayGrid.DataSource = Data;
+            }
+
+            if (firstTime)
+            {
+                inputArrayGrid.CurrentCell = null;
             }
 
             startHandlers();
+
+
+
+
             mainWin.setActiveToolBarKeys(KeyList,true ,true,true);
 
             if (!_contextIsActive)
@@ -504,7 +603,7 @@ namespace AubitDesktop
 
 
             inputArrayGrid.context = FGLContextType.ContextInputArray;
-            
+
             if (PendingEvents.Count > 0)
             {
                 s_pending p;
@@ -518,31 +617,138 @@ namespace AubitDesktop
                 return;
             }
 
+            if (crow != -1 && ccol != -1 && !firstTime)
+            {
+                if (inputArrayGrid.CurrentCell != null)
+                {
+                    if (crow != inputArrayGrid.CurrentCell.RowIndex || ccol != inputArrayGrid.CurrentCell.ColumnIndex)
+                    {
+                        Console.WriteLine("Moving to crow:" + crow + " ccol:" + ccol);
+                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Moving from nowhere to crow:" + crow + " ccol:" + ccol);
+                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
+                }
+            }
+
+
+            if ((crow == -1 && crow == -1) || firstTime)
+            {
+                setField(1, null);
+                firstTime = false;
+            }
           
             inputArrayGrid.Enabled = true;
+
+            
+            inputArrayGrid.allowInsertRow = allowInsert;
+            inputArrayGrid.maxRows = maxRows;
+            
+
+
+            if (allowDelete)
+            {
+                inputArrayGrid.AllowUserToDeleteRows = true;
+            }
+            else
+            {
+                inputArrayGrid.AllowUserToDeleteRows = false;
+            }
+
             if (inputArrayGrid.CurrentCell == null)
             {
                 inputArrayGrid.setFieldToStart(); 
             }
+
+
+
         }
 
-        private void startHandlers( )
+
+        internal void setField(int arrLine, string fieldName)
         {
-            inputArrayGrid.fieldValidationFailed = inputFieldValidationHandler;
-            
 
-            if (beforeRow != null)
+
+            bool found = false;
+            int cell = 0;
+            string loweredFieldName;
+
+
+            if (fieldName != null)
             {
-                inputArrayGrid.BeforeRow = new DataGridViewCellEventHandler(RowEnter);
+                loweredFieldName = fieldName.ToLower();
+            }
+            else
+            {
+                // There isn't a field name - this is used if we just want to move to this
+                // row. This is done when we start for example to move to the first
+                // editable field....
+                loweredFieldName = "";
             }
 
-            if (afterRow != null)
+            if (loweredFieldName == "next")
             {
-                inputArrayGrid.AfterRow = new DataGridViewCellEventHandler(RowLeave);
+                cell = inputArrayGrid.CurrentCell.ColumnIndex + 1;
+                if (cell > inputArrayGrid.table.TableColumn.Length) cell = inputArrayGrid.table.TableColumn.Length;
+                found = true;
             }
-            inputArrayGrid.beforeFieldHandler = new UIArrayTableHandler(beforeFieldHandler);
-            inputArrayGrid.afterFieldHandler = new UIArrayTableHandler(afterFieldHandler);
+
+
+            if (loweredFieldName.StartsWith("prev"))
+            {
+                cell = inputArrayGrid.CurrentCell.ColumnIndex - 1;
+                if (cell <= 0) cell = 1;
+                found = true;
+            }
+
+
+            if (loweredFieldName.StartsWith("curr"))
+            {
+                cell = inputArrayGrid.CurrentCell.ColumnIndex;
+                found = true;
+            }
+
+
+            if (fieldName != null && !found)
+            {
+                cell = getCellNumberForField(fieldName);
+            }
+
+            while (inputArrayGrid.table.TableColumn[cell].noEntry != null && inputArrayGrid.table.TableColumn[cell].noEntry == "1")
+            {
+                int looped = 0;
+                if (cell == inputArrayGrid.table.TableColumn.Length) // Are we at the end of the row ?
+                {
+                    cell = 0;
+                    looped++;
+                    if (looped == 2)
+                    {
+                        // There are just no fields which are not marked as 'noentry'...
+                        MessageBox.Show("Error - Input array cannot settle on an editable field");
+                        Application.Exit();
+                    }
+
+                    arrLine++;
+
+                    if (arrLine >= inputArrayGrid.RowCount)
+                    {
+                        arrLine = inputArrayGrid.RowCount - 1;
+                    }
+
+                }
+                cell++;
+            }
+
+            inputArrayGrid.CurrentCell = inputArrayGrid.Rows[arrLine - 1].Cells[cell + 1]; // Skip the first cell - its just the line number...
+            PendingEvents.Clear();
         }
+
+
+
+
 
         void beforeFieldHandler(int rowid, int columnId)
         {
@@ -589,21 +795,28 @@ namespace AubitDesktop
 
             if (rowIndex>=0)
             {
-                arrLine = Convert.ToInt32((string)inputArrayGrid.Rows[rowIndex].Cells[0].Value);
+
+                arrLine = rowIndex+1;
                 scrLine = arrLine;
             }
             else
             {
-                arrLine = Convert.ToInt32((string)inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index].Cells[0].Value);
+                arrLine = inputArrayGrid.CurrentRow.Index+1;
                 scrLine = arrLine;
             }
 
 
+            if (arrLine == 0)
+            {
+                throw new ApplicationException("a row was found with no valid subscript");
+            }
 
             if (this.EventTriggered != null)
             {
-                this.EventTriggered(null, ID, getTriggeredTag(ID,arrLine,scrLine), this);
+                UIEventHandler EventTriggeredSave;
+                EventTriggeredSave=this.EventTriggered;
                 this.EventTriggered = null;
+                EventTriggeredSave(null, ID, getTriggeredTag(ID,arrLine,scrLine), this);
             }
             else
             {
@@ -611,13 +824,25 @@ namespace AubitDesktop
             }
         }
 
+
         private string getTriggeredTag(string ID,int arrLine, int scrLine)
         {
             string infieldStr = inputArrayGrid.getInfield();
+            string rval="";
+            try
+            {
+                string syncValues = getSyncValues();
+                rval = "<TRIGGERED ID=\"" + ID + "\""+
+                       " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\"" 
+                       + infieldStr + " ARRCOUNT=\""+Data.Rows.Count+"\">" + syncValues +
+                    "</TRIGGERED>";
+            } catch (Exception Ex) {
+                MessageBox.Show("Error getting value for return:"+Ex.Message);
+                Application.Exit();
 
-            return "<TRIGGERED ID=\"" + ID + "\" ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\""+this.lastKey+"\""+infieldStr+">"+
-                getSyncValues()+
-                "</TRIGGERED>";
+            }
+
+            return rval;
         }
 
 
@@ -629,22 +854,26 @@ namespace AubitDesktop
                 {
                     if (afterRow.ID != "")
                     {
+                        if (afterInsert!=null && currLineIsInserted)
+                        {
+                            sendTrigger(afterInsert.ID, e.RowIndex);
+                        }
                         sendTrigger(afterRow.ID, e.RowIndex);
                     }
                 }
             }
+
+            currLineIsInserted = false;
+            rowLeft = e.RowIndex;
         }
 
         void RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if (inputArrayGrid.CurrentRow != null)
+            if (beforeRow != null)
             {
-                if (beforeRow != null)
+                if (beforeRow.ID != "")
                 {
-                    if (beforeRow.ID != "")
-                    {
-                        sendTrigger(beforeRow.ID, e.RowIndex);
-                    }
+                    sendTrigger(beforeRow.ID, e.RowIndex);
                 }
             }
         }
@@ -664,10 +893,30 @@ namespace AubitDesktop
 
         private void stopHandlers()
         {
-            inputArrayGrid.fieldValidationFailed = null;
-            
+            inputArrayGrid.fieldValidationFailed = null;            
             inputArrayGrid.BeforeRow = null;
             inputArrayGrid.AfterRow = null;
+            inputArrayGrid.beforeFieldHandler=null;
+            inputArrayGrid.afterFieldHandler = null;
+        }
+
+        private void startHandlers()
+        {
+            inputArrayGrid.fieldValidationFailed = inputFieldValidationHandler;
+
+
+            if (beforeRow != null)
+            {
+                inputArrayGrid.BeforeRow = new DataGridViewCellEventHandler(RowEnter);
+            }
+
+            if (afterRow != null)
+            {
+                inputArrayGrid.AfterRow = new DataGridViewCellEventHandler(RowLeave);
+            }
+            inputArrayGrid.beforeFieldHandler = new UIArrayTableHandler(beforeFieldHandler);
+            inputArrayGrid.afterFieldHandler = new UIArrayTableHandler(afterFieldHandler);
+
         }
 
         public void FreeContext()
@@ -695,7 +944,6 @@ namespace AubitDesktop
             {
                 inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index + 1].Cells[1];
             }
-            
         }
 
         internal void pgDownkeyPressed()
@@ -740,24 +988,58 @@ namespace AubitDesktop
         {
             if (!allowInsert) return;
 
-            try {
-                int r;
-                r = inputArrayGrid.CurrentRow.Index;
-                inputArrayGrid.Rows.Insert(inputArrayGrid.CurrentRow.Index, 1);
-                  // now put the cursor back to the current row..
-                inputArrayGrid.setField(r+1, null);  
-
-                // Setup any default values..
-                inputArrayGrid.FormattedGridView_DefaultValuesNeeded(null,new DataGridViewRowEventArgs(inputArrayGrid.CurrentRow));
-              
-                
-
-            //throw new Exception("The method or operation is not implemented.");
-            }
-            catch (Exception e)
+            if (beforeInsert != null)
             {
-                MessageBox.Show(e.Message);
+                sendTrigger(beforeInsert.ID, -1);
+                nextMove = MoveType.MoveTypeInsert;
             }
+            else
+            {
+                if (inputArrayGrid.Rows.Count < maxRows)
+                {
+                    int r = inputArrayGrid.CurrentRow.Index;
+                    doInsertRow();
+                    setField(r + 1, null);
+                }
+                else
+                {
+                    MessageBox.Show("Cant insert more rows - array is full");
+                }
+            }
+        }
+
+
+
+        private void doInsertRow()
+        {
+            int r;
+            
+            DataRow newRow;
+            r = inputArrayGrid.CurrentRow.Index;
+            
+            newRow = Data.NewRow();
+
+            newRow[0] = "XXX"; // @todo Do we need to increment the following rows ? 
+
+            
+            for (int a = 0; a < inputArrayGrid. table.TableColumn.Length; a++)
+            {
+                if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                {
+                    newRow[a+1]= inputArrayGrid.table.TableColumn[a].defaultValue;
+                    //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                }
+                else
+                {
+                    newRow[a+1] = "";
+                }
+            }
+            
+          
+            Data.Rows.InsertAt(newRow, r);
+            
+
+            
         }
 
         internal void DeletekeyPressed()
@@ -766,7 +1048,7 @@ namespace AubitDesktop
 
             try
             {
-                inputArrayGrid.Rows.RemoveAt(inputArrayGrid.CurrentRow.Index);
+                doDeleteRow();
             }
             catch (Exception e)
             {
@@ -775,8 +1057,59 @@ namespace AubitDesktop
 
            
         }
+
+        private void doDeleteRow()
+        {
+            if (inputArrayGrid.CurrentRow == null)
+            {
+                MessageBox.Show("No row selected to remove!");
+                return;
+            }
+
+            inputArrayGrid.EndEdit();
+            inputArrayGrid.Rows.RemoveAt(inputArrayGrid.CurrentRow.Index);
+        }
     }
 
 
+
+
+    /*
+        private void copyFieldData()
+        {
+
+
+            for (int row = 0; row < rowDataChanged.Length; row++)
+            {
+                // Indicate that the row is the same as last time..
+                rowDataChanged[row] = false;
+
+                // Now is our row greater than the number of rows in the datagrid ? 
+                // If so - we need to pretend to get the values - we'll use "null"...
+                //
+                if (row >= inputArrayGrid.Rows.Count)
+                {
+                    for (int col = 0; col < nCols; col++)
+                    {
+                        if (Data[row][col] != null) rowDataChanged[row] = true;
+                        Data[row][col] = null;
+                    }
+                }
+                else
+                {
+                    for (int col = 0; col < nCols; col++)
+                    {
+                        string newVal=(string)inputArrayGrid.Rows[row].Cells[col+1].Value;
+                        if (Data[row, col] != newVal)
+                        {
+                            rowDataChanged[row] = true;
+                            Console.WriteLine("Different @ "+row+" "+col+" Data was : "+Data[row,col]+" now "+newVal);
+                            Data[row, col] = newVal;
+                        }
+                    }
+                }
+            }
+        }
+        */
 
 }

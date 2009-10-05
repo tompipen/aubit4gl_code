@@ -988,7 +988,7 @@ namespace AubitDesktop
             {
                 CurrentForm.SetContext(contextType);
             }
-            catch { }
+            catch (Exception Ex)  { }
         }
 
         internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext,List<ONKEY_EVENT> keyList)
@@ -1162,7 +1162,7 @@ namespace AubitDesktop
                 i = System.Drawing.Image.FromFile(f);
                 if (i != null) return i;
             }
-            catch { }
+            catch (Exception Ex) { }
 
             return null;
         }
@@ -1430,7 +1430,7 @@ namespace AubitDesktop
             {
                 return Convert.ToInt32(txt);
             }
-            catch
+            catch (Exception Ex)
             {
                 return -1;
             }
@@ -1658,6 +1658,7 @@ namespace AubitDesktop
 
         static public bool IsValidForType(FGLDataTypes datatype, string value, string format)
         {
+            if (value == null) return true;
             if (value.Trim() == "") return true;
             
             switch (datatype)
@@ -1710,7 +1711,7 @@ namespace AubitDesktop
                                 ok = true;
                             }
                         }
-                        catch { }
+                        catch (Exception Ex) { }
 
                         if (ok)
                         {

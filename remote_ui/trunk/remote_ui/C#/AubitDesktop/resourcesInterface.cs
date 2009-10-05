@@ -16,7 +16,7 @@ namespace AubitDesktop
             {
                 obj = rm.GetObject(name);
             }
-            catch
+            catch (Exception Ex)
             {
                 obj = null;
             }

@@ -797,7 +797,7 @@ namespace AubitDesktop
             {
                 currentContext.DeactivateContext();
             }
-            catch { }
+            catch (Exception Ex)  { }
 
 
             if (ke != null)
@@ -1425,7 +1425,7 @@ namespace AubitDesktop
                         //Image i = getImageFromName(o.IMAGE);
                         btn.Image=FGLUtils.getImageFromName( o.IMAGE);
                     }
-                    catch
+                    catch (Exception Ex)
                     {
                     }
                     btn.ToolTipText = o.TOOLTIP;

@@ -163,16 +163,16 @@ namespace AubitDesktop
             frmMain = new mainfrm(AllowEdit, Autorun, port, minimised,ListenMode);
             if (frmMain!=null && !frmMain.IsDisposed)
             {
-                try
-                {
+                //try
+               // {
                     Application.Run(frmMain);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
-                    throw;
-                }
+                //}
+                //catch (Exception e)
+               // {
+               //     Console.WriteLine(e.Message);
+               //     Console.WriteLine(e.StackTrace);
+                  //  throw(e);
+               // }
             }
         }
 

@@ -128,6 +128,12 @@ namespace AubitDesktop
             nbXScale.Value = Program.AppSettings.xscale;
             txtPort.Text = Program.AppSettings.Port;
             txtDefaultEncoding.Text = Program.AppSettings.defaultEncoding;
+            this.FormClosing += new FormClosingEventHandler(mainfrm_FormClosing);
+        }
+
+        void mainfrm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         private void showInterruptKeycode()
@@ -271,10 +277,6 @@ namespace AubitDesktop
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            
-            //bool updList = false;
-            
-            // Disable the time 
             timer1.Enabled = false;
 
             if (this.server == null || enableListeningModeToolStripMenuItem.Checked==false)
@@ -287,24 +289,16 @@ namespace AubitDesktop
             timer1.Enabled = false;
             if (this.server.Pending())
             {
-                System.Net.IPEndPoint ep;
-                //System.Net.IPEndPoint lp;
-              
+                System.Net.IPEndPoint ep;              
                 TcpClient client = server.AcceptTcpClient();
-                //nConnections++;
-                //check_count();
                 ep=(System.Net.IPEndPoint)client.Client.RemoteEndPoint;
-                //Console.WriteLine(ep.Address.ToString());
-                //updList = true;
-                //connID++;
                 AubitNetwork an;
                 an = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleEnvelope,client);
                 AppWin = new frmMainAppWindow(an);
                 AppWin.Show();
+                
             }
             timer1.Enabled = true;
-
-        
         }
 
         private void lstShortcuts_SelectedIndexChanged(object sender, EventArgs e)
