@@ -181,7 +181,7 @@ namespace AubitDesktop
                 // for the current row...
 
 
-                Data.Rows[subscript][0] = "XXX";
+                Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
                 for (int col = 0; col < rows[row].VALUES.Length; col++)
                 {
                     Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
@@ -1033,7 +1033,7 @@ namespace AubitDesktop
             
             newRow = Data.NewRow();
 
-            newRow[0] = "XXX"; // @todo Do we need to increment the following rows ? 
+            newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
 
             
             for (int a = 0; a < inputArrayGrid. table.TableColumn.Length; a++)

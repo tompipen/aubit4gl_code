@@ -424,7 +424,9 @@ namespace AubitDesktop
 
         internal void FormattedGridView_DefaultValuesNeeded(object sender, DataGridViewRowEventArgs e)
         {
-            e.Row.Cells[0].Value = "XXX";
+            e.Row.Cells[0].Value = "XXX"; // First column was to hold the subscript - but its currently not used....
+
+
             for (int a = 0; a < table.TableColumn.Length; a++)
             {
                 if (table.TableColumn[a].defaultValue != null && table.TableColumn[a].defaultValue != "")

@@ -164,32 +164,16 @@ namespace AubitDesktop
                         bool showHeaders = false;
                         FormattedGridView gridArray;
                         AubitDesktop.Xml.XMLForm.Table p;
-
                         p = (AubitDesktop.Xml.XMLForm.Table)child;
                         gridArray = new FormattedGridView(p);
                         gridArray.DataError += new DataGridViewDataErrorEventHandler(d_DataError);
-
-
-
-                     //   d.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-                     //   d.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCells);
-                     //   d.Dock = DockStyle.Fill;
-                       
-                       // d.AutoSize = true;
-                        //d.ScrollBars = ScrollBars.Vertical;
-
                         gridArray.ScrollBars = ScrollBars.Both;
-                       
-
                         gridArray.Columns.Clear();
 
                         // Add a column to store the row number...
                         gridArray.Columns.Add("subscript","");
                         gridArray.Columns[0].ReadOnly=true;
-                        gridArray.Columns[0].DataPropertyName = "subscript";
-
-                            
-                        
+                        gridArray.Columns[0].DataPropertyName = "subscript";                        
                         gridArray.RowsToDisplay = Convert.ToInt32(p.pageSize);
 
                         if (p.width != null && p.width != "")
@@ -199,13 +183,11 @@ namespace AubitDesktop
                         else
                         {
                             gridArray.AutoSize = true;
-                            //d.MinimumSize =new Size(d.MinimumSize.Height, GuiLayout.get_gui_w(80);
                         }
 
                         int minWidth = 50;
                         for (int a = 0; a < p.TableColumn.Length; a++)
-                        {
-                          
+                        {              
                             string title;
                             bool added = false;
                             object item;
@@ -215,9 +197,8 @@ namespace AubitDesktop
                             if (p.TableColumn[a].text != null && p.TableColumn[a].text.Length>0) {
                                 title=p.TableColumn[a].text;
                             }
-                            
 
-
+                            #region Widget Handling
                             // If we've got an old style widget - lets refactor it into a new style one...
                             if (item.GetType()==typeof(Xml.XMLForm.Widget)) {
                                 Xml.XMLForm.Widget w;
@@ -360,25 +341,26 @@ namespace AubitDesktop
                             {
                                 gridArray.Columns[a + 1].Visible = false;
                             }
-                            
+
                         }
+                            #endregion
 
                         if (showHeaders)
                         {
-                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
+                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  
                         }
                         else
                         {
-                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  //d.Rows[0].Height * Convert.ToInt32(p.pageSize) + d.ColumnHeadersHeight + 2;
-                        
+                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  
                         }
                         
                         // Maybe need these visible if we have some titles for them :-)
                         gridArray.ColumnHeadersVisible = showHeaders;
                         gridArray.Visible = true;
+
                         gridArray.Columns[0].Visible = false; // Hide first column - its just the line number..
                         gridArray.RowHeadersVisible = false;
-                       // gridArray.Columns[0].HeaderText = "Subscript";
+                       
                         if (this.grids == null) this.grids = new Hashtable();
                         this.grids.Add( p.tabName,gridArray);
 
