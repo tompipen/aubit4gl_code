@@ -252,28 +252,37 @@ namespace AubitDesktop
 
             if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextInputArrayInactive)
             {
-                AllowUserToAddRows = false;
+                if (AllowUserToAddRows != false) // Only set this if we need to..
+                {
+                    AllowUserToAddRows = false;
+                }
                 return;
             }
 
             // Is it disallowed in the program ? 
             if (allowInsertRow == false)
             {
-                AllowUserToAddRows = false;
+                if (AllowUserToAddRows != false) // Only set this if we need to..
+                {
+                    AllowUserToAddRows = false;
+                }
                 return;
             }
 
             // Have we run out of space ? 
             if (Rows.Count > maxRows)
             {
-                if (AllowUserToAddRows != false)
+                if (AllowUserToAddRows != false) // Only set this if we need to..
                 {
                     AllowUserToAddRows = false;
                     return;
                 }
             }
 
-            AllowUserToAddRows = true;
+            if (AllowUserToAddRows != true) // Only set this if we need to..
+            {
+                AllowUserToAddRows = true;
+            }
         }
     
 
