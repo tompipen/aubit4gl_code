@@ -69,9 +69,6 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.cmsSystrayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tsmClose = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -82,7 +79,6 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).BeginInit();
             this.tpConnections.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).BeginInit();
-            this.cmsSystrayMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -482,29 +478,6 @@ namespace AubitDesktop
             this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // notifyIcon1
-            // 
-            this.notifyIcon1.BalloonTipText = "Aubit4GL Desktop Client";
-            this.notifyIcon1.ContextMenuStrip = this.cmsSystrayMenu;
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "Aubit Desktop";
-            this.notifyIcon1.Visible = true;
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
-            // 
-            // cmsSystrayMenu
-            // 
-            this.cmsSystrayMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmClose});
-            this.cmsSystrayMenu.Name = "cmsSystrayMenu";
-            this.cmsSystrayMenu.Size = new System.Drawing.Size(112, 26);
-            // 
-            // tsmClose
-            // 
-            this.tsmClose.Name = "tsmClose";
-            this.tsmClose.Size = new System.Drawing.Size(111, 22);
-            this.tsmClose.Text = "Close";
-            this.tsmClose.Click += new System.EventHandler(this.tsmClose_Click);
-            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -515,7 +488,6 @@ namespace AubitDesktop
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "mainfrm";
-            this.ShowInTaskbar = false;
             this.Text = "Aubit Desktop";
             this.Load += new System.EventHandler(this.mainfrm_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.mainfrm_FormClosed);
@@ -533,7 +505,6 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.nbYScale)).EndInit();
             this.tpConnections.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lstConnections)).EndInit();
-            this.cmsSystrayMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -578,9 +549,6 @@ namespace AubitDesktop
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblPortWarn;
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.ContextMenuStrip cmsSystrayMenu;
-        private System.Windows.Forms.ToolStripMenuItem tsmClose;
         private System.Windows.Forms.TextBox txtDefaultEncoding;
         private System.Windows.Forms.Label label4;
     }
