@@ -41,6 +41,7 @@ SOURCES += confwin.cpp \
     login.cpp \
     clienttcp.cpp \
     screenhandler.cpp \
+    include/fgl.cpp \
     models/fglform.cpp \
     models/statusbar.cpp \
     models/vwidgets.cpp \

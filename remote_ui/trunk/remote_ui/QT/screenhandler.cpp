@@ -3015,3 +3015,8 @@ void ScreenHandler::setUpdatesEnabled(bool en)
       }
    }
 }
+
+void ScreenHandler::setEnv(QString name, QString env)
+{
+   Fgl::env[name] = env;
+}

@@ -1377,6 +1377,7 @@ void ProtocolHandler::handleStartup(const QDomNode& domNode)
          QString value = currentElement.attribute("VALUE");
 
          p_currScreenHandler->qh_env[name] = value;
+         p_currScreenHandler->setEnv(name, value);
 
          /*
          if(name == "DBPATH"){

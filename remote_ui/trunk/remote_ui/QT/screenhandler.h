@@ -56,6 +56,8 @@ public:
 
    QHash<QString, QString> qh_env;
    void setSearchPaths();
+   void setEnv(QString, QString);
+
 private:
    QList<Context*> contexts;
    bool cursorPos;

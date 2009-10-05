@@ -267,8 +267,24 @@ LineEdit::LineEdit(QWidget *parent)
    this->setEnabled(false);
 
    connect(this, SIGNAL(textChanged(const QString)), this, SLOT(isTouched()));
-   connect(this, SIGNAL(textChanged(const QString)), this, SLOT(checkNext(const QString)));
+   connect(this, SIGNAL(editingFinished()), this, SLOT(check()));
+//   connect(this, SIGNAL(textChanged(const QString)), this, SLOT(checkNext(const QString)));
+}
 
+
+void LineEdit::check()
+{
+
+   QString text = this->text();
+
+   //Set textformat if format given
+   if(!qs_format.isEmpty()&& Fgl::isValidForType(dt_dataType, text, qs_format)){
+      this->setText(text);
+   }
+   else{
+      //TODO: send error to messagebar
+      this->setText("");
+   }
 }
 
 void LineEdit::setNoEntry(bool ro)
@@ -286,6 +302,9 @@ void LineEdit::setNoEntry(bool ro)
 
 void LineEdit::setSqlType(QString sqlType)
 { 
+   Fgl::DataType dataType = Fgl::decodeDataType(sqlType);
+
+   dt_dataType = dataType;
    this->qs_sqlType = sqlType;
    WidgetHelper::setValidator(this);
    valid = this->validator();
@@ -835,6 +854,9 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
 
    QString picture = lineEditElement.attribute("picture");
    lineEdit->setPicture(picture);
+
+   QString format = lineEditElement.attribute("format");
+   lineEdit->setFormat(format);
 
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;

@@ -67,6 +67,8 @@ public:
    int tabIndex();
    void setTabIndex(int);
    bool touched();
+   void setFormat(QString f) { qs_format = f; };
+   QString format() { return qs_format; };
    virtual QString text(int row = 0);
    virtual void setText(QString s = "", int row = 0);
    QString defaultValue();
@@ -79,6 +81,7 @@ private:
 
 protected:
    QString qs_name;
+   QString qs_format;
    QString qs_colName;
    QString qs_sqlTabName;
    QString qs_sqlType;
@@ -131,6 +134,7 @@ public:
     QString shift() { return qs_shift; };
     void setSqlType(QString);
     QString sqlType() { return qs_sqlType; };
+    Fgl::DataType dataType() { return dt_dataType; };
     const QValidator* getValidator() { return valid; };
     void setTouchendEnabled(bool t) { setProperty("touched", t); };
     bool touched() { return property("touched").toInt(); };
@@ -138,6 +142,8 @@ public:
     QString defaultValue() { return qs_default; };
     void setPicture(QString pic) { qs_picture = pic; setInputMask(pic); };
     QString picture() { return qs_picture; };
+    void setFormat(QString f) { qs_format = f; };
+    QString format() { return qs_format; };
 
     bool b_denyFocus;
 
@@ -155,9 +161,12 @@ private:
     const QValidator* valid;
     QString qs_default;
     QString qs_picture;
+    QString qs_format;
+    Fgl::DataType dt_dataType;
 
 public slots:
     void isTouched() { setProperty("touched", true); };
+    void check();
     void checkNext(const QString&);
 
 signals:
