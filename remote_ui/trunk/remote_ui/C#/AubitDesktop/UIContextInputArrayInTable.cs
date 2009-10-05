@@ -211,7 +211,7 @@ namespace AubitDesktop
             mainWin = f;
             nCols = p.ARRVARIABLES;
             maxRows = p.MAXARRSIZE;
-
+           
 
             Data = new DataTable();  //new string[p.MAXARRSIZE, p.ARRVARIABLES];
             for (int a = 0; a <= nCols; a++) // One extra for the subscript....
@@ -531,6 +531,7 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
+
             if (nextMove == MoveType.MoveTypeInsert)
             {
                 doInsertRow();
@@ -548,6 +549,7 @@ namespace AubitDesktop
             }
 
             stopHandlers();
+
             foreach (ON_ACTION_EVENT e in onActionList)
             {
                 foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION))
@@ -563,6 +565,7 @@ namespace AubitDesktop
 
             int crow = -1;
             int ccol = -1;
+
             // Do we have a current cell ? 
             // If this is the first time around - assume we dont...
             if (inputArrayGrid.CurrentCell != null && firstTime==false)
@@ -577,10 +580,15 @@ namespace AubitDesktop
             {
                 setUpData(rows);
             }
+          //  inputArrayGrid.allowInsertRow = allowInsert;
+          //  inputArrayGrid.maxRows = maxRows;
   
             if (inputArrayGrid.DataSource != Data)
             {
-                
+                if (inputArrayGrid.maxRows != maxRows)
+                {
+                    inputArrayGrid.maxRows = maxRows;
+                }
                 inputArrayGrid.DataSource = Data;
             }
 
@@ -635,17 +643,23 @@ namespace AubitDesktop
             }
 
 
+            inputArrayGrid.allowInsertRow = allowInsert;
+            inputArrayGrid.maxRows = maxRows;
             if ((crow == -1 && crow == -1) || firstTime)
             {
+                //if (inputArrayGrid.Rows.Count == 0)
+               // {
+
+             //   }
                 setField(1, null);
+
                 firstTime = false;
             }
           
             inputArrayGrid.Enabled = true;
 
             
-            inputArrayGrid.allowInsertRow = allowInsert;
-            inputArrayGrid.maxRows = maxRows;
+
             
 
 
