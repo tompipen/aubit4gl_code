@@ -10,6 +10,10 @@ extern "C"
 
 
 int aclfgl_aclfgl_call_in_shared(int a) ;
+int aclfgl_aclfgl_file_exists(int n);
+int aclfgl_fgl_grid_header(int n);
+int aclfgl_fgl_file_to_client(int _nargs);
+int aclfgl_fgl_message_box(int _nargs);
 int aclfgl_aclfgl_client_execute(int _nargs);
 int aclfgl_aclfgl_client_set(int _nargs);
 int aclfgl_aclfgl_embed_barcode (int _nargs);

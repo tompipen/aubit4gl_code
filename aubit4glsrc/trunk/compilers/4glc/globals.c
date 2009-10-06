@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.62 2009-09-07 14:58:17 mikeaubury Exp $
+# $Id: globals.c,v 1.63 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -399,7 +399,9 @@ read_glob (char *s)
       	open_db (dbname);
     }
 
-
+  if (g.exported_global_variables.variables.variables_len==0) {
+		printf("WARNING: No globals variables were read from file %s (Missing GLOBALS.. END GLOBALS?)\n", ii4gl);
+  }
   // We need to change the scope on these imported globals - as they'll
   // be marked as 'external globals' in the file that exports them ;-)
   set_variable_scope_for_variable_list(&g.exported_global_variables,E_SCOPE_IMPORTED_GLOBAL);

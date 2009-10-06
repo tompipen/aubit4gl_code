@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.9 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: dynmem.c,v 1.10 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,7 @@ Allocate a dynamic array...
 	old_ptr     = old value
 	dim1..dim5  = dimensions
 	total_bytes = total amount of memory requested..
-	isRealloc   = resize old memory 
+	isRealloc   = resize old memory  (1=normal REALLOC, 2 = appendelement (dont care if it didn't exist - create it)
 */
 void *
 A4GL_alloc_dynarr (void *var_ptr, void *old_ptr, int dim1, int dim2, int dim3, int dim4, int dim5, int total_bytes, int isRealloc)
@@ -83,7 +83,7 @@ A4GL_alloc_dynarr (void *var_ptr, void *old_ptr, int dim1, int dim2, int dim3, i
       has_old = 0;
     }
 
-  if (isRealloc && has_old == 0)
+  if (isRealloc==1 && has_old == 0)
     {
       if (a)
 	free (a);
@@ -176,3 +176,101 @@ A4GL_push_dynamic_array (void *p, int sz)
 {
   A4GL_assertion (1, "passing dynamic arrays is not implemented yet");
 }
+
+
+
+
+
+
+struct s_arr {
+	void **ptr;
+	int size;
+	int d1;
+	int d2;
+	int d3;
+};
+
+
+
+// This function converts from a A4GL_call_dynarr_function_i_as_int to a A4GL_call_datatype_function_i_as_int
+// by creating a "struct s_arr" to pass in instead.
+// this holds the unit size of the array elements - and the dimension we're applying it to...
+//
+
+int A4GL_call_dynarr_function_i_as_int(void *arr, int d1,int d2,int d3, int sz,char *func,int nparam) {
+	struct s_arr arr_ptr;
+	arr_ptr.ptr=arr;
+	arr_ptr.size=sz;
+	arr_ptr.d1=d1;
+	arr_ptr.d2=d2;
+	arr_ptr.d3=d3;
+	return A4GL_call_datatype_function_i_as_int(&arr_ptr,DTYPE_DYNAMIC_ARRAY,func,nparam);
+}
+
+int A4GL_call_dynarr_function_i(void *arr, int d1,int d2,int d3, int sz,char *func,int nparam) {
+	struct s_arr arr_ptr;
+	arr_ptr.ptr=arr;
+	arr_ptr.size=sz;
+	if (d1==0) d1=1;
+	if (d2==0) d2=1;
+	if (d3==0) d3=1;
+	arr_ptr.d1=d1;
+	arr_ptr.d2=d2;
+	arr_ptr.d3=d3;
+	return A4GL_call_datatype_function_i(&arr_ptr,DTYPE_DYNAMIC_ARRAY,func,nparam);
+}
+
+
+static int dynamic_array_appendelement(void *arr, int n) {
+	struct s_arr *a;
+	void *ptr;
+	a=arr;
+	ptr=A4GL_alloc_dynarr(a->ptr,*a->ptr,a->d1,a->d2,a->d3,0,0,(a->d1*a->d2*a->d3) * a->size,2);
+	*a->ptr=ptr;
+	return 0;
+}
+
+static void dynamic_array_deleteelement(void *arr, int n) {
+	struct s_arr *a;
+	a=arr;
+
+	A4GL_assertion(1,"Not implemented");
+}
+
+static void dynamic_array_insertelement(void *arr, int n) {
+	struct s_arr *a;
+	a=arr;
+
+	A4GL_assertion(1,"Not implemented");
+}
+
+
+static int dynamic_array_getlength(void *arr, int n) {
+int p=0;
+	struct s_arr *a;
+	a=arr;
+
+  	if (n==1) {
+		p=A4GL_pop_int();
+  	} else {
+		if (a->d1>0) { p=1; }
+		if (a->d2>0) { p=2; }
+		if (a->d3>0) { p=3; }
+	}
+
+  	A4GL_dynarr_extent(a->ptr,p);
+
+	return 1;
+}
+
+
+
+
+void add_dyn_support(void) {
+	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":getlength", (void *) dynamic_array_getlength);
+	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":appendelement", (void *) dynamic_array_appendelement);
+	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":insertelement", (void *) dynamic_array_insertelement);
+	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":deleteelement", (void *) dynamic_array_deleteelement);
+}
+
+

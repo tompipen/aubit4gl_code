@@ -2069,11 +2069,19 @@ print_init_cmd (struct_init_cmd * cmd_data)
 	      else
 		{
 		  struct variable v2;
+		if ( v->arr_subscripts.arr_subscripts_len==1 &&  v->arr_subscripts.arr_subscripts_val[0]<0) {
+		  if (u_bottom->subscripts.subscripts_len != v->arr_subscripts.arr_subscripts_val[0]*-1)
+		    {
+		      a4gl_yyerror ("Subscript mismatch");
+		      return 0;
+		    }
+		} else {
 		  if (u_bottom->subscripts.subscripts_len != v->arr_subscripts.arr_subscripts_len)
 		    {
 		      a4gl_yyerror ("Subscript mismatch");
 		      return 0;
 		    }
+		}
 		  // We need to null the this specific on..
 		  memcpy (&v2, v, sizeof (v2));
 		  v2.arr_subscripts.arr_subscripts_len = 0;

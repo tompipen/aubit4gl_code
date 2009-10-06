@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.161 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: ops.c,v 1.162 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -7209,7 +7209,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *) A4GL_display_text);
 
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
-  A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":getlength", (void *) A4GL_dtype_function_dynamic_arr_getlength);
+  //A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":getlength", (void *) A4GL_dtype_function_dynamic_arr_getlength);
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
 
   A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);
@@ -7235,6 +7235,7 @@ DTYPE_SERIAL
   add_base_channel_support();
   add_ui_interface_support();
   add_ui_window_support();
+  add_dyn_support();
 
 
 #ifndef CSCC

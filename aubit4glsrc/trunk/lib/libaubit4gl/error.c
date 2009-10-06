@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.55 2009-07-30 09:01:12 mikeaubury Exp $
+# $Id: error.c,v 1.56 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -85,7 +85,10 @@ static char sqlerrmessage[256]="";
 //void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
 struct s_err *A4GL_get_errdesc_for_errstr (char *s);
-//int aclfgli_get_err_flg (void);
+
+int *ignoreList=NULL;
+int nIgnoreList=0;
+
 
 /*
 =====================================================================
@@ -100,6 +103,8 @@ char *A4GL_get_errmsg (int z);
                     Functions definitions
 =====================================================================
 */
+static int is_in_ignore_list(int l);
+
 
 
 #define ERR_UNDEF  -30001
@@ -164,6 +169,8 @@ A4GL_exitwith (char *s)
 #ifdef DEBUG
   A4GL_debug ("Setting status, cache_status, cache_errmsg");
 #endif
+
+
   cache_errmsg = errdesc->errmsg;	// static, read-only - safe
   if (errdesc->a4gl_errno == ERR_UNDEF)	//not found
     {
@@ -180,7 +187,8 @@ A4GL_exitwith (char *s)
       		cache_status = -1*errdesc->a4gl_errno;
 	}
     }
-//    A4GL_fgl_die (1);
+
+
 #endif
 }
 
@@ -239,6 +247,7 @@ A4GL_exitwith_sql (char *s)
       		cache_status = -1*errdesc->a4gl_errno;
 	}
     }
+
 //    A4GL_fgl_die (errdesc->a4gl_errno);
 #endif
 }
@@ -361,7 +370,8 @@ aclfgli_clr_err_flg (void)
 void
 aclfgli_set_err_flg (void)
 {
-//printf("Set errflag\n");
+
+  if (is_in_ignore_list(a4gl_status)) return;
   int_err_flg = 1;
 }
 
@@ -376,5 +386,62 @@ aclfgli_get_err_flg (void)
   return int_err_flg;
 }
 
+
+
+void A4GL_clr_ignore_error_list(void ) {
+	if (ignoreList) {
+		free(ignoreList);
+	}
+	ignoreList=NULL;
+	nIgnoreList=0;
+
+}
+
+static void add_to_ignore_list(int l) {
+	if (ignoreList==NULL) {
+		ignoreList=malloc(sizeof(int)) ;
+		ignoreList[0]=l;
+		nIgnoreList=1;
+		return;
+	}
+
+	nIgnoreList++;
+	ignoreList=realloc(ignoreList,sizeof(int)*nIgnoreList);
+	ignoreList[nIgnoreList-1]=l;
+}
+
+static int is_in_ignore_list(int l) {
+int a;
+	if (ignoreList==NULL) {
+		return 0;
+	}
+	for (a=0;a<nIgnoreList;a++) {
+		if (ignoreList[a]==l) return 1;
+	}
+	return 0;
+}
+
+
+
+void A4GL_set_ignore_error_list(int n,...) {
+  va_list ap;
+  int l;
+
+  A4GL_clr_ignore_error_list();
+
+
+  // Add the first integer
+  add_to_ignore_list(n);
+  va_start (ap, n);
+
+  while (1)
+    {
+        l = va_arg (ap, int);
+	// Keep going until we get a '0'...
+        if (l==0) return;
+	add_to_ignore_list(l);
+    }
+  va_end(ap);
+}
 
 /* ======================== EOF ======================= */

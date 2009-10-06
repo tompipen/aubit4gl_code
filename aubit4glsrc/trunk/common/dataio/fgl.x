@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.43 2009-08-25 20:28:57 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.44 2009-10-06 15:03:21 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1476,6 +1476,9 @@ struct fgl_comment {
 	char type;
 };
 
+struct cmd_int_list {
+	int int_vals<>;
+};
 
 struct command {
 	command_data cmd_data; /* defined later */
@@ -1483,6 +1486,7 @@ struct command {
 	int lineno;
 	int colno;
 	str module;
+	struct cmd_int_list *ignore_error_list;
 };
 
 
@@ -1765,6 +1769,14 @@ struct s_expr_member_function_call_n {
         int line;
 };
 
+struct s_expr_dynarr_function_call_n {
+	struct expr_str *var_usage_ptr;
+	str funcName;
+	str namespace;
+        expr_str_list *parameters;
+        str module;
+        int line;
+};
 
 struct s_expr_extend {
         struct expr_str *expr;
@@ -1917,6 +1929,7 @@ enum e_expr_type {
                 ET_EXPR_PDF_FCALL,
                 ET_EXPR_SHARED_FCALL,
                 ET_EXPR_MEMBER_FCALL_NEW,
+                ET_EXPR_DYNARR_FCALL_NEW,
                 ET_EXPR_COLUMN,
                 ET_EXPR_REPORT_EMAIL,
                 ET_EXPR_REPORT_PRINTER,
@@ -2101,6 +2114,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
                 struct s_expr_shared_function_call        *expr_shared_function_call;
 	case ET_EXPR_MEMBER_FCALL_NEW:
                 struct s_expr_member_function_call_n        *expr_member_function_call_n;
+	case ET_EXPR_DYNARR_FCALL_NEW:
+                struct s_expr_dynarr_function_call_n        *expr_dynarr_function_call_n;
 	case ET_EXPR_EXTERNAL:
                 struct s_expr_external_call               *expr_external_call;
 

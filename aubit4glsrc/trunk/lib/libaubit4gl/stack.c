@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.242 2009-07-10 11:55:46 mikeaubury Exp $
+# $Id: stack.c,v 1.243 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -4392,7 +4392,7 @@ A4GL_get_length (char *s)
 
 
 long A4GL_bounds_check( long n,long maxbound) {
-if (maxbound==-1) {
+if (maxbound<0) {
 		// Its a dynamic array - ignore it for now...
 		 	return n;
 		 }

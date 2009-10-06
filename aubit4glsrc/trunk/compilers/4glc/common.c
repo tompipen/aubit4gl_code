@@ -513,6 +513,15 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 					}
 				}
 	  		}
+
+		  if (v->arr_subscripts.arr_subscripts_len==1 && v->arr_subscripts.arr_subscripts_val[0]<0) {
+			// For a dybamic array - the subscript is the RANKING of the array (1= 1 Dimensional , 2=2 dimensional etc */
+			if (v->arr_subscripts.arr_subscripts_val[0]*-1!= vu->subscripts.subscripts_len && err_if_whole_array) {
+		      set_yytext(var_section);
+		      sprintf (errbuff, "'%s' subscript count mismatch (1.2) %d != %d", var_section, v->arr_subscripts.arr_subscripts_val[0]*-1, vu->subscripts.subscripts_len);
+		      return 0;
+			}
+		  } else {
 		  // We have an array variable...
 		  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array)
 		    {
@@ -520,6 +529,7 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		      sprintf (errbuff, "'%s' subscript count mismatch (1.1) %d != %d", var_section, v->arr_subscripts.arr_subscripts_len, vu->subscripts.subscripts_len);
 		      return 0;
 		    }
+		}
 		}
 	      else
 		{
@@ -650,17 +660,20 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		}
 	  }
 
-	  if (v->arr_subscripts.arr_subscripts_len != vu->subscripts.subscripts_len && err_if_whole_array ) 
+	  if (v->arr_subscripts.arr_subscripts_len==1 && v->arr_subscripts.arr_subscripts_val[0]<0) {
+	  if (v->arr_subscripts.arr_subscripts_val[0]*-1!= vu->subscripts.subscripts_len && err_if_whole_array ) 
 		{
 		      set_yytext(var_section);
-		      sprintf (errbuff, "'%s' subscript count mismatch (2.1) [%d subscripts - expecting %d]", var_section, vu->subscripts.subscripts_len, v->arr_subscripts.arr_subscripts_len);
+		      sprintf (errbuff, "'%s' subscript count mismatch (2.1) [%d subscripts - expecting %d]", var_section, v->arr_subscripts.arr_subscripts_val[0]*-1, v->arr_subscripts.arr_subscripts_len);
 		      return 0;
 		}
+	  } else {
 			
 	if (v->arr_subscripts.arr_subscripts_len && vu->subscripts.subscripts_len!=v->arr_subscripts.arr_subscripts_len && next) {
 			set_yytext(var_section);
 		      sprintf (errbuff, "'%s' is an array and cant be used like this without selecting a subscript", var_section);
 		      return 0;
+	}
 	}
 
 	  if (next == 0)

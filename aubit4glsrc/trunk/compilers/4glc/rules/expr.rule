@@ -877,10 +877,22 @@ member_fcall:
         	func = vu->variable_name;
 
 
+
 		/* Can we find a variable with the name ? */
                 v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
         	vu_bottom = usage_bottom_level (vu_top);
+	
         	datatype = vu_bottom->datatype & DTYPE_MASK;
+			
+		if (v) {
+			if (v->arr_subscripts.arr_subscripts_len) { 
+				if (v->arr_subscripts.arr_subscripts_val[0]<0) {
+					datatype=DTYPE_DYNAMIC_ARRAY;
+				}
+			}
+		}
+	
+
 		objtype="";
 		if (v==0) {
 			/* Nope - but all is not lost - if its a 'static' member function and the 'variable' is the name of the object - eg ui.window */

@@ -165,11 +165,15 @@ int get_validate_list_cnt (void);
 struct expr_str *generate_sql_expr(struct expr_str *p);
 char *cmds_get_variable_usage_as_string (struct variable_usage *var_usage);
 struct command *set_cmd_comment(struct command *cmd,char *s);
+struct command *set_cmd_errors(struct command *cmd,struct cmd_int_list *ilist);
 void set_module_comment(char *s);
 
 
 
+struct cmd_int_list *new_cmd_int_list(void) ;
+void append_cmd_int_list(struct cmd_int_list *list, int l) ;
 
+int has_cmd_int_list(struct cmd_int_list *list, int l);
 
 struct command *check_for_member_call_alias(expr_str *p_fcall,expr_str_list *p_returning);
 

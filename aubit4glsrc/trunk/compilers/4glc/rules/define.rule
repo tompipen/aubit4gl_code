@@ -190,9 +190,9 @@ array_variable :
 			/****************************************************************************************/
 			if ($$) {
 	                         $$->arr_subscripts.arr_subscripts_len=1;
-                                 $$->arr_subscripts.arr_subscripts_val=malloc(sizeof(int)* $$->arr_subscripts.arr_subscripts_len);
+                                 $$->arr_subscripts.arr_subscripts_val=malloc(sizeof(int));
                                  $$->arr_subscripts.arr_subscripts_val[0]=$2;
-			}
+			} 
 		}
 	|	ASSOCIATE op_char assoc_open_bracket INT_VALUE assoc_close_bracket WITH_ARRAY OPEN_SQUARE number_arr_assoc CLOSE_SQUARE KW_OF dtype_ident  {
 			$$=new_associate_variable(atol($<str>4),$8,$11);

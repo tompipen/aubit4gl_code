@@ -553,8 +553,11 @@ case ET_EXPR_SHARED_FCALL:
 	}
 	
 
-case ET_EXPR_MEMBER_FCALL_NEW:
+     case ET_EXPR_MEMBER_FCALL_NEW:
 	return strdup("MEMBER_FUNCTIONCALL");
+
+     case ET_EXPR_DYNARR_FCALL_NEW:
+	return strdup("DYNARR_FUNCTIONCALL");
 
     default:
       A4GL_pause_execution ();	// ---  Place holder for error handling  --- SAFE TO LEAVE IN...

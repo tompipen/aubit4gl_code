@@ -54,7 +54,7 @@ struct command *new_command (enum cmd_type ct) {
 	c->module=A4GL_compiling_module_basename();
 	c->comment=A4GL_get_current_comments(c->lineno, c->colno);
 
-	//c->lint_ignores=NULL;
+	c->ignore_error_list=NULL;
 
 	return c;
 }
@@ -2618,6 +2618,41 @@ struct command *set_cmd_comment(struct command *cmd,char *s) {
 	return cmd;
 }
 
+
+struct command *set_cmd_errors(struct command *cmd,struct cmd_int_list *ilist) {
+	if (ilist && cmd->cmd_data.type==E_CMD_RETURN_CMD) {
+		a4gl_yyerror("You cannot use an IGNORE ERRORS .. on a RETURN");
+		return cmd;
+	}
+	cmd->ignore_error_list=ilist;
+	return cmd;
+}
+
 void set_module_comment(char *s) {
 	// does nothing yet
+}
+
+
+struct cmd_int_list *new_cmd_int_list(void) {
+struct  cmd_int_list *n;
+n=malloc(sizeof(cmd_int_list));
+n->int_vals.int_vals_len=0;
+n->int_vals.int_vals_val=NULL;
+return n;
+}
+
+void append_cmd_int_list(struct cmd_int_list *list, int l) {
+list->int_vals.int_vals_len++;
+list->int_vals.int_vals_val=realloc(list->int_vals.int_vals_val, sizeof(list->int_vals.int_vals_val[0])*list->int_vals.int_vals_len);
+list->int_vals.int_vals_val[list->int_vals.int_vals_len-1]=l;
+}
+
+
+int has_cmd_int_list(struct cmd_int_list *list, int l) {
+int a;
+if (list==NULL) return 0;
+for (a=0;a<list->int_vals.int_vals_len;a++) {
+	if ( list->int_vals.int_vals_val[0]==l) return 1;
+}
+return 0;
 }

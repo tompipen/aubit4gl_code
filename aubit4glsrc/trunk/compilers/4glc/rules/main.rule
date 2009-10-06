@@ -339,6 +339,22 @@ glob_section : define_section END_GLOBALS {
 ;
 
 
+neg_integer : 
+	KW_MINUS INT_VALUE {
+		sprintf($<str>$,"-%s",$<str>2);
+	}
+;
+
+d_int_list: neg_integer {$<cmd_int_list>$=new_cmd_int_list();
+			append_cmd_int_list($<cmd_int_list>$,atol($<str>1));
+			}
+	| d_int_list KW_COMMA neg_integer { append_cmd_int_list($<cmd_int_list>1,atol($<str>3));}
+;
+
+op_ignore_errors:
+	{$<cmd_int_list>$=NULL;}
+	| IGNORE_ERRORS OPEN_BRACKET d_int_list CLOSE_BRACKET KW_FOR {$<cmd_int_list>$=$<cmd_int_list>3;}
+;
+
 
 /* ========================== main.rule ============================= */
-

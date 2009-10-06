@@ -17,6 +17,11 @@ extern "C"
   int A4GL_add_datatype (char *name, int rq, int precision);
   int A4GL_add_datatype_function_n (char *name, char *funcname, void *func);
   void A4GL_add_conversion (char *from, char *to, void *func);
+  int A4GL_call_dynarr_function_i_as_int(void *arr, int d1,int d2,int d3, int sz,char *func,int nparam) ;
+  int A4GL_call_dynarr_function_i(void *arr, int d1,int d2,int d3, int sz,char *func,int nparam) ;
+  int A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam);
+  int A4GL_call_datatype_function_i_as_int (void *obj, int dtype, char *funcname, int nparam);
+
   /* ============================ end from datatypes.c ============================ */
 
 

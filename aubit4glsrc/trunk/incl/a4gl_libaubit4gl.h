@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.388 2009-07-30 09:01:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.389 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -2134,6 +2134,7 @@ int A4GL_has_errorlog (void);
 	/*int A4GL_add_datatype_function_i (int a, char *funcname, void (*function)(int)); */
 #else
 	int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
+
 #endif
 void A4GL_close_errorlog_file (void);
 void A4GL_set_last_outfile (char *s);
@@ -2919,12 +2920,19 @@ int A4GL_fgl_fieldtouched_current(void *sio, char itype);
 char *A4GL_get_end_tag(char *tag_type) ;
 char *A4GL_get_start_tag(char *tag_type) ;
 void A4GL_dec_refcount(void **obj);
+
 struct sObject {
 	char *objType;
 	int objHeapId;
 	int refCnt;
 	void *objData;
 };
+
+
+
+void A4GL_set_ignore_error_list(int n, ...) ;
+void A4GL_clr_ignore_error_list(void);
+
 //
 #include "a4gl_builtin_funcs.h"
 

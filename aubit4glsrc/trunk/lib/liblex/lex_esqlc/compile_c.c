@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.509 2009-08-27 17:27:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.510 2009-10-06 15:03:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.509 2009-08-27 17:27:18 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.510 2009-10-06 15:03:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -180,7 +180,6 @@ char when_to_tmp[64] = "";
 char when_to[8][128] = { "", "", "", "", "", "", "", "" };
 */
 int LEX_initlib (void);
-//int dump_command(struct command_data *cd) ;
 //void print_variable_usage(expr_str *v) ;
 //char *local_expr_as_string(expr_str *s) ;
 //void print_push_variable_usage (expr_str *ptr);
@@ -188,6 +187,7 @@ char *get_dbg_variable_name (expr_str * v);
 //expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *parameters);
 //static void order_by_report_stack (int report_stack_cnt);
 static void A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap);
+static int isDynamicArraySubscript (struct variable *sgs_topvar, int a, expr_str * u);
 //void A4GL_internal_lex_printh (char *fmt, va_list * ap);
 //void A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
 //void print_rep_ret (int report_cnt,int addit);
@@ -201,6 +201,7 @@ void print_nullify (char type, variable_list * v);
 //int print_bind_dir_definition_g (struct expr_str_list *lbind,int ignore_esql, char lbind_type);
 //static void print_output_rep (struct rep_structure *rep, int report_cnt,char *curr_rep_name);
 static void print_end_record (char *vname, struct variable *v, int level);
+static char * generation_get_variable_usage_as_string_for_dynarr (struct variable_usage *u,int incl_subscript);
 
 int rep_print_code;
 int last_orderby_type = -1;
@@ -470,8 +471,58 @@ print_copy_status_with_sql (int l)
 }
 
 
+
+// This function looks through the command parent stack (including the current command) and prints the list of all errors to ignore..
+static void print_ignore_error_list(void) {
+	int cmd;
+	int a;
+	struct cmd_int_list *list=NULL;
+	// Go through the parent stack 
+	for (cmd=0;cmd<parent_stack_cnt;cmd++) {
+		if ( parent_stack[cmd]->ignore_error_list==NULL) continue;
+		// If we've got to here - we've got a list of values we want to ignore...
+		for (a=0;a<parent_stack[cmd]->ignore_error_list->int_vals.int_vals_len;a++) {
+
+			// Is the value already in our list ? 
+			if (!has_cmd_int_list(list, parent_stack[cmd]->ignore_error_list->int_vals.int_vals_val[a])) {	
+				if (list==NULL) {
+					list=new_cmd_int_list();
+				}
+				// No - its not - so add it...
+				append_cmd_int_list(list, parent_stack[cmd]->ignore_error_list->int_vals.int_vals_val[a]);
+			}
+		}
+	}
+
+	if (list==NULL) {
+		printc("A4GL_clr_ignore_error_list();");
+		return;
+	}
+
+
+	if (list->int_vals.int_vals_len) {
+		// We've got something to print !
+		set_nonewlines();
+		printc("A4GL_set_ignore_error_list(");
+		for (a=0;a<list->int_vals.int_vals_len;a++) {
+			if (a) printc(",");
+			printc("%d",list->int_vals.int_vals_val[a]);
+		}
+		free(list->int_vals.int_vals_val);
+		if (a) {
+			printc(",0);");
+		} else {
+			printc("0);");
+		}
+		clr_nonewlines();
+	}
+
+	free(list);
+	
+}
+
 static int
-dump_cmd (struct command *r)
+dump_cmd (struct command *r,int isAtModuleLevel)
 {
   int ok;
   int last_line = 0;
@@ -492,15 +543,20 @@ dump_cmd (struct command *r)
 
   parent_stack[parent_stack_cnt++] = r;
 
-  /*
-     if (r->cmd_data.type != E_CMD_CODE_CMD)
-     {
-     printc ("\n\naclfgli_clr_err_flg(); //%d \n\n", line_for_cmd);
-     }
-   */
 
   current_cmd = r;
   dump_comments (r->lineno);
+
+  if (!isAtModuleLevel) {
+  	print_ignore_error_list(); 
+  } else {
+	if (r->ignore_error_list!=NULL) {
+      		yylineno = line_for_cmd;
+		a4gl_yyerror("You cannot IGNORE a command at module level!");
+		return 0;
+	}
+  }
+
   switch (current_entry->met_type)
     {
     case E_MET_REPORT_DEFINITION:
@@ -1696,6 +1752,44 @@ real_print_expr (struct expr_str *ptr)
 		    generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage), p->datatype,
 		    p->funcName, nparam);
 	  }
+	printc ("      if (_retvars!=1) {");
+	printc ("          A4GL_set_status(-3001,0);");
+	printc ("          A4GL_chk_err(%d,\"%s\");", p->line, p->module);
+	printc ("          A4GL_pop_args(_retvars);");
+	printc ("          A4GL_push_null(2,0);");
+	printc ("      }");
+	printc ("}");
+
+	return;
+      }
+
+
+
+
+    case ET_EXPR_DYNARR_FCALL_NEW:
+      {
+	struct s_expr_dynarr_function_call_n *p;
+	int a;
+	int nparam = 0;
+	struct expr_str_list *l;
+
+	p = ptr->expr_str_u.expr_dynarr_function_call_n;
+	l = p->parameters;
+	nparam = 0;
+	if (l)
+	  {
+	    nparam = l->list.list_len;
+	    for (a = 0; a < l->list.list_len; a++)
+	      {
+		real_print_expr (l->list.list_val[a]);
+	      }
+	  }
+	printc ("{");
+	printc ("      int _retvars;");
+	    printc ("A4GL_set_status(0,0); _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
+		    generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
+		    generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 
+			p->funcName, nparam);
 	printc ("      if (_retvars!=1) {");
 	printc ("          A4GL_set_status(-3001,0);");
 	printc ("          A4GL_chk_err(%d,\"%s\");", p->line, p->module);
@@ -3148,6 +3242,36 @@ real_print_func_call (t_expr_str * fcall)
       return;
     }
 
+  if (fcall->expr_type == ET_EXPR_DYNARR_FCALL_NEW)
+    {
+      struct s_expr_dynarr_function_call_n *p;
+      int a;
+      int nparam = 0;
+      struct expr_str_list *l;
+
+      p = fcall->expr_str_u.expr_dynarr_function_call_n;
+      l = p->parameters;
+      nparam = 0;
+      if (l)
+	{
+	  nparam = l->list.list_len;
+	  for (a = 0; a < l->list.list_len; a++)
+	    {
+	      real_print_expr (l->list.list_val[a]);
+	    }
+	}
+      printc ("{");
+      printc ("      int _retvars;");
+      printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
+	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
+		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
+		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 
+		  p->funcName, nparam);
+
+      print_reset_state_after_call (0);
+
+      return;
+    }
 
   if (fcall->expr_type == ET_EXPR_SHARED_FCALL)
     {
@@ -3371,7 +3495,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 
   if (v->arr_subscripts.arr_subscripts_len && expand_array)
     {
-      if (v->arr_subscripts.arr_subscripts_val[0] == -1)
+      if (v->arr_subscripts.arr_subscripts_val[0] <0 )
 	{
 	  // dynamic array 
 	  if (!explicit)
@@ -3858,8 +3982,13 @@ print_end_record (char *vname, struct variable *v, int level)
 	  strcpy (buff, "");
 	  for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	    {
-	      if (a)
-		strcat (buff, "][");
+	      if (a) {
+			if (v->arr_subscripts.arr_subscripts_val[0]<0) {
+				strcat (buff, ","); // |,|
+			} else {
+				strcat (buff, "][");
+			}
+		} 
 	      sprintf (smbuff, "%d", v->arr_subscripts.arr_subscripts_val[a]);
 	      strcat (buff, smbuff);
 	    }
@@ -4046,7 +4175,7 @@ print_realloc_arr (char *s, char *d)
       dim[0] = 1;
     }
   l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof(%s[0]),1);", s, s, s, dim[0], dim[1], dim[2], dim[3], dim[4], l,
+  printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof(struct _dynelem_%s),1);", s, s, s, dim[0], dim[1], dim[2], dim[3], dim[4], l,
 	  s);
 }
 
@@ -5110,7 +5239,11 @@ make_arr_str (char *s, struct variable *v)
     {
       if (a)
 	{
-	  strcat (s, "][");
+		if (v->arr_subscripts.arr_subscripts_val[0]<0) {
+			strcat (buff, ","); // |,|
+		} else {
+	  		strcat (s, "][");
+		}
 	}
       SPRINTF1 (buff, "%d", v->arr_subscripts.arr_subscripts_val[a]);
       strcat (s, buff);
@@ -5266,7 +5399,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 
   if (v->arr_subscripts.arr_subscripts_len)
     {
-      if (v->arr_subscripts.arr_subscripts_val[0] == -1)
+      if (v->arr_subscripts.arr_subscripts_val[0] <0)
 	{			// Dynamic array
 	  struct variable *nv;
 	  nv = v;
@@ -5864,7 +5997,7 @@ dump_commands (commands * c)
 
   for (a = 0; a < c->cmds.cmds_len; a++)
     {
-      dump_cmd (c->cmds.cmds_val[a]);
+      dump_cmd (c->cmds.cmds_val[a],0);
       last_cmd = c->cmds.cmds_val[a];
     }
 
@@ -6281,9 +6414,11 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 	  current_entry_variables = &m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.variables;
 	  ok = dump_pdf_report (&m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition);
 	  break;
+
 	case E_MET_CMD:
-	  ok = dump_cmd (m->module_entries.module_entries_val[a]->module_entry_u.cmd);
+	  ok = dump_cmd (m->module_entries.module_entries_val[a]->module_entry_u.cmd,1);
 	  break;
+
 	case E_MET_MAIN_DEFINITION:
 	  current_entry_variables = &m->module_entries.module_entries_val[a]->module_entry_u.function_definition.variables;
 	  ok = dump_function (&m->module_entries.module_entries_val[a]->module_entry_u.function_definition, 1);
@@ -6513,6 +6648,28 @@ set_get_subscript_as_string_next (struct variable *sgs_topvar, struct variable_u
   return sgs_topvar;
 }
 
+
+
+
+
+
+
+static int isDynamicArraySubscript (struct variable *sgs_topvar, int a, expr_str * u)
+{
+  static char buff[256];
+  char smbuff[256];
+
+  if (sgs_topvar)
+    {
+        int upperbound;
+        upperbound = sgs_topvar->arr_subscripts.arr_subscripts_val[0];
+	if (upperbound<0) return 1;
+	return 0;
+
+    }
+return 0;
+}
+
 static char *
 get_subscript_as_string_with_check (struct variable *sgs_topvar, int a, expr_str * u)
 {
@@ -6652,8 +6809,14 @@ print_pop_usage (expr_str * v)
 	      printc ("[");
 	      for (a = 0; a < u->subscripts.subscripts_len; a++)
 		{
-		  if (a)
-		    printc ("][");
+		  if (a) {
+			if (isDynamicArraySubscript(sgs_topvar, a, u->subscripts.subscripts_val[a])) {
+		    		printc (","); // |,|
+			} else {
+			// @FIXME
+		    		printc ("][");
+			}
+		  }
 		  printc ("%s", get_subscript_as_string_with_check (sgs_topvar, a, u->subscripts.subscripts_val[a]));
 		  /*
 		     if (u->subscripts.subscripts_val[a]->expr_type==ET_EXPR_LITERAL_LONG) {      
@@ -6793,8 +6956,15 @@ print_variable_usage_gen (expr_str * v, int err_if_substring)
 	      printc ("[");
 	      for (a = 0; a < u->subscripts.subscripts_len; a++)
 		{
-		  if (a)
-		    printc ("][");
+		  if (a) {
+			if (isDynamicArraySubscript(sgs_topvar, a, u->subscripts.subscripts_val[a])) {
+		    		printc (","); // |,|
+			} else {
+				// @FIXME
+		    		printc ("][");
+			}
+			
+		}
 		  printc ("%s", get_subscript_as_string_with_check (sgs_topvar, a, u->subscripts.subscripts_val[a]));
 		  /*
 		     if (u->subscripts.subscripts_val[a]->expr_type==ET_EXPR_LITERAL_LONG) {
@@ -6973,8 +7143,13 @@ print_push_variable_usage (expr_str * ptr)
 	      printc ("[");
 	      for (a = 0; a < u->subscripts.subscripts_len; a++)
 		{
-		  if (a)
-		    printc ("][");
+		  if (a) {	
+			if (isDynamicArraySubscript(sgs_topvar, a, u->subscripts.subscripts_val[a])) {
+		    		printc (","); // |,|
+			} else {
+		    		printc ("][");
+			}
+		  }
 		  printc ("%s", get_subscript_as_string_with_check (sgs_topvar, a, u->subscripts.subscripts_val[a]));
 		  //printc("(%s)-1", local_expr_as_string(u->subscripts.subscripts_val[a]));
 		}
@@ -7003,6 +7178,91 @@ print_push_variable_usage (expr_str * ptr)
 }
 
 
+char *
+generation_get_variable_usage_as_string_for_dynarr (struct variable_usage *u, int incl_subscript)
+{
+  static char rbuff[2000];
+  int substring = 0;
+  char buff[2000];
+  expr_str *substring_start;
+  expr_str *substring_end;
+  struct variable *sgs_topvar;
+
+  struct variable_usage *ub;
+  ub = usage_bottom_level (u);
+
+
+  substring = is_substring_variable_usage (u, &substring_start, &substring_end);
+
+  if (substring)
+    {
+      A4GL_assertion (1, "Cant use a substring here");
+      printc ("A4GL_push_substr(");
+    }
+
+  strcpy (buff, "");
+  sgs_topvar = set_get_subscript_as_string_top (u);
+  while (u)
+    {
+      strcat (buff, u->variable_name);
+
+      if (u == ub)
+	{
+	  int sublen;
+	  int a;
+	  sublen = u->subscripts.subscripts_len;
+	  if (incl_subscript==1)
+	    {
+
+	      for (a = 0; a < 3; a++)
+		{
+		  strcat (buff, ",");
+		  if (a < sublen)
+		    {
+		      strcat (buff, expr_as_string_when_possible (u->subscripts.subscripts_val[a]));
+		    }
+		  else
+		    {
+		      strcat (buff, "0");
+		    }
+		}
+	    }
+	}
+      else
+	{
+	  if (u->subscripts.subscripts_len)
+	    {
+	      int a;
+	      strcat (buff, "[");
+	      for (a = 0; a < u->subscripts.subscripts_len; a++)
+		{
+		  if (a)
+		    {
+		      if (isDynamicArraySubscript (sgs_topvar, a, u->subscripts.subscripts_val[a]))
+			{
+			  strcat (buff, ",");	// |,|
+			}
+		      else
+			{
+			  strcat (buff, "][");
+			}
+		    }
+		  strcat (buff, get_subscript_as_string_with_check (sgs_topvar, a, u->subscripts.subscripts_val[a]));
+		  //strcat(buff, local_expr_as_string(u->subscripts.subscripts_val[a]));
+		  //strcat(buff, "-1");
+		}
+	      strcat (buff, "]");
+	    }
+	}
+      if (u->next == 0)
+	break;
+      strcat (buff, ".");
+      u = u->next;
+      sgs_topvar = set_get_subscript_as_string_next (sgs_topvar, u);
+    }
+  strcpy (rbuff, buff);
+  return strdup(rbuff);
+}
 
 char *
 generation_get_variable_usage_as_string (struct variable_usage *u)
@@ -7032,8 +7292,13 @@ generation_get_variable_usage_as_string (struct variable_usage *u)
 	  strcat (buff, "[");
 	  for (a = 0; a < u->subscripts.subscripts_len; a++)
 	    {
-	      if (a)
-		strcat (buff, "][");
+	      if (a) {
+			if (isDynamicArraySubscript(sgs_topvar, a, u->subscripts.subscripts_val[a])) {
+		    		strcat (buff,","); // |,|
+			} else {
+				strcat (buff, "][");
+			}
+		}
 	      strcat (buff, get_subscript_as_string_with_check (sgs_topvar, a, u->subscripts.subscripts_val[a]));
 	      //strcat(buff, local_expr_as_string(u->subscripts.subscripts_val[a]));
 	      //strcat(buff, "-1");
@@ -7183,6 +7448,22 @@ local_expr_as_string (expr_str * s)
 		     generation_get_variable_usage_as_string (p->var_usage_ptr->expr_str_u.expr_variable_usage), p->datatype,
 		     p->funcName);
 	  }
+	return rbuff;
+      }
+
+
+
+    case ET_EXPR_DYNARR_FCALL_NEW:
+      {
+	struct s_expr_dynarr_function_call_n *p;
+	int a;
+	int nparam = 0;
+	struct expr_str_list *l;
+		p = s->expr_str_u.expr_dynarr_function_call_n;
+	    	sprintf (rbuff, "A4GL_call_dynarr_function_i_as_int(&%s,sizeof(struct _dynelem_%s),\"%s\",0)\n",
+		     generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1),  
+		     generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0),  
+			p->funcName);
 	return rbuff;
       }
 

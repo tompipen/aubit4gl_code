@@ -5648,6 +5648,13 @@ linearise_expressions (struct expr_str_list *list)
 	    cache_expression_list (list, expr_member_function_call_n->parameters);
 	  }
 	  break;
+	case ET_EXPR_DYNARR_FCALL_NEW:
+	  {
+	    struct s_expr_dynarr_function_call_n *expr_dynarr_function_call_n;
+	    expr_dynarr_function_call_n = list->list.list_val[b]->expr_str_u.expr_dynarr_function_call_n;
+	    cache_expression_list (list, expr_dynarr_function_call_n->parameters);
+	  }
+	  break;
 
 	case ET_EXPR_EXTERNAL:
 	  {

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.38 2009-07-03 10:53:44 mikeaubury Exp $
+# $Id: expr.c,v 1.39 2009-10-06 15:03:21 mikeaubury Exp $
 #
 */
 
@@ -352,6 +352,11 @@ case ET_EXPR_BINDING: return "ET_EXPR_BINDING";
 
     case ET_EXPR_RETURN_NULL: 
 	return "ET_EXPR_RETURN_NULL";
+case ET_EXPR_DYNARR_FCALL_NEW:
+	return "ET_EXPR_DYNARR_FCALL_NEW";
+case ET_EXPR_SQLERRMESSAGE:
+	return "ET_EXPR_SQLERRMESSAGE";
+
 
 
     }
@@ -999,6 +1004,24 @@ A4GL_new_expr_extend (struct expr_str *ptr, int to)
   return p2;
 }
 
+
+
+static struct expr_str * A4GL_new_expr_dynarr_fcall_n (struct expr_str *var_usage_ptr, char *funcname, struct expr_str_list *params, char *mod, int line, char *p_namespace)  {
+  struct s_expr_dynarr_function_call_n *p;
+  struct expr_str *p2;
+
+  p = malloc (sizeof (struct s_expr_member_function_call_n));
+  p2 = A4GL_new_expr_simple (ET_EXPR_DYNARR_FCALL_NEW);
+  p->var_usage_ptr = var_usage_ptr;
+  p->funcName=strdup(funcname);
+  p->parameters = params;
+  p->namespace = strdup (p_namespace);
+  p->module = strdup (mod);
+  p->line = line;
+  p2->expr_str_u.expr_dynarr_function_call_n = p;
+  return p2;
+}
+
 /*
 struct s_expr_member_function_call_n {
         struct expr_str *var_usage_ptr;
@@ -1015,6 +1038,11 @@ struct expr_str *
 A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, char *objtype, int datatype, struct expr_str_list *params, char *mod, int line, char *p_namespace) {
   struct s_expr_member_function_call_n *p;
   struct expr_str *p2;
+
+  if (datatype==DTYPE_DYNAMIC_ARRAY) {
+		return A4GL_new_expr_dynarr_fcall_n (var_usage_ptr, funcname, params, mod, line, p_namespace) ;
+	}
+	
   p = malloc (sizeof (struct s_expr_member_function_call_n));
   p2 = A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL_NEW);
   p->var_usage_ptr = var_usage_ptr;
