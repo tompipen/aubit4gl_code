@@ -750,7 +750,7 @@ if file_exists(lv_makefile) then
 	let lv_filetime=get_file_time(lv_makefile)
 	
 	if lv_lastupd>lv_filetime then
-		if lv_genmakefile<lv_filetime then
+		if lv_genmakefile<lv_filetime  and lv_genmakefile!=0 then
 			open window w_warn at 10,5 with form "warn"  attribute (border,menu line 2)
 	
 			 #       1234567890123456789012345678901234567890123456789012345678901234567890

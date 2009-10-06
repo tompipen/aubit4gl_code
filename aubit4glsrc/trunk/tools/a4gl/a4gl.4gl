@@ -70,8 +70,8 @@ defer interrupt
 		
 	if num_args()=2 then
 		 if arg_val(1)="-p" then
-			        call get_makefile_for(arg_val(2)) returning lv_makefile
-        			#call generate_makefile(arg_val(2), lv_makefile)
+			         call get_makefile_for(arg_val(2)) returning lv_makefile
+        			   #call generate_makefile(arg_val(2), lv_makefile)
 				exit program
 		end if
 		
