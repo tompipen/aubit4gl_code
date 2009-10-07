@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.10 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: dynmem.c,v 1.11 2009-10-07 12:41:43 mikeaubury Exp $
 #
 */
 
@@ -253,9 +253,9 @@ int p=0;
   	if (n==1) {
 		p=A4GL_pop_int();
   	} else {
-		if (a->d1>0) { p=1; }
-		if (a->d2>0) { p=2; }
-		if (a->d3>0) { p=3; }
+		if (a->d1>=1) { p=1; }
+		if (a->d2>1) { p=2; }
+		if (a->d3>1) { p=3; }
 	}
 
   	A4GL_dynarr_extent(a->ptr,p);
