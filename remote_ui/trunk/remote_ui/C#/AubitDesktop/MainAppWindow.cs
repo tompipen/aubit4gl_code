@@ -567,11 +567,7 @@ namespace AubitDesktop
         }
 
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            stdNetworkConnection.SendString(txtSend.Text);
-            button1.Enabled = false;
-        }
+
 
 
        

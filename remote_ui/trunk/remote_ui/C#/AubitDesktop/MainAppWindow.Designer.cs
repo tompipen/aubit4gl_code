@@ -71,10 +71,6 @@ namespace AubitDesktop
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.MenuBarPanel = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.txtSend = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -85,8 +81,6 @@ namespace AubitDesktop
             this.splitContainer2.SuspendLayout();
             this.applicationLauncherPanel.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.MenuBarPanel.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -460,59 +454,12 @@ namespace AubitDesktop
             // MenuBarPanel
             // 
             this.MenuBarPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.MenuBarPanel.Controls.Add(this.groupBox1);
             this.MenuBarPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MenuBarPanel.Location = new System.Drawing.Point(0, 0);
             this.MenuBarPanel.Name = "MenuBarPanel";
             this.MenuBarPanel.Padding = new System.Windows.Forms.Padding(5);
             this.MenuBarPanel.Size = new System.Drawing.Size(190, 568);
             this.MenuBarPanel.TabIndex = 7;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.txtSend);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox1.Location = new System.Drawing.Point(5, 394);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(176, 165);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
-            this.groupBox1.Visible = false;
-            // 
-            // txtSend
-            // 
-            this.txtSend.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSend.Location = new System.Drawing.Point(7, 38);
-            this.txtSend.Multiline = true;
-            this.txtSend.Name = "txtSend";
-            this.txtSend.Size = new System.Drawing.Size(163, 92);
-            this.txtSend.TabIndex = 16;
-            this.txtSend.TabStop = false;
-            this.txtSend.Text = "<TRIGGERED ID=\'2\'/>";
-            // 
-            // button1
-            // 
-            this.button1.Enabled = false;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(7, 136);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 15;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(4, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
-            this.label1.TabIndex = 14;
-            this.label1.Text = "Send";
             // 
             // frmMainAppWindow
             // 
@@ -546,9 +493,6 @@ namespace AubitDesktop
             this.splitContainer2.ResumeLayout(false);
             this.applicationLauncherPanel.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.MenuBarPanel.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -564,10 +508,6 @@ namespace AubitDesktop
         private System.Windows.Forms.ToolStripStatusLabel lblLineDisplay;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Panel MenuBarPanel;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox txtSend;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;

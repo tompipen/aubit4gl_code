@@ -1188,7 +1188,11 @@ namespace AubitDesktop
                 i = getImageFromImagePath(name, "C:/aubit4gl;" + Properties.Resources.ImageDirectory);
                 try
                 {
-                    i = new System.Drawing.Bitmap(name);
+                    FileStream stream = File.OpenRead(name);
+                    i = (System.Drawing.Bitmap)System.Drawing.Bitmap.FromStream(stream);
+                    stream.Close();
+
+                    //i = new System.Drawing.Bitmap(name);
                 }
                 catch (Exception)
                 {

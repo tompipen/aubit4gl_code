@@ -192,13 +192,7 @@ namespace AubitDesktop
             this.Dock = DockStyle.Fill;
             this.Visible = true;
             this.Enabled = true;
-            /*
-            for (int a = 1; a <= 36; a++)
-            {
-                AddToolBarKey("F" + a, "");
-            }
-             * */
-            //parentControl.Controls.Add(this);
+
 
         }
 
