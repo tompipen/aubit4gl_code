@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/09/30 09:44:31.
+ * Generated 2009/10/06 16:37:55.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -61,6 +61,8 @@ extern void STag_call_list(void);
 extern void ETag_call_list(void);
 extern void STag_clear_data(void);
 extern void ETag_clear_data(void);
+extern void STag_cmd_int_list(void);
+extern void ETag_cmd_int_list(void);
 extern void STag_command(void);
 extern void ETag_command(void);
 extern void STag_command_data(void);
@@ -1263,6 +1265,8 @@ typedef int AT_struct_print_img_cmd_nm;
 #define AU_struct_print_img_cmd_nm NULL
 typedef int AT_s_expr_op_nm;
 #define AU_s_expr_op_nm NULL
+typedef int AT_cmd_int_list_nm;
+#define AU_cmd_int_list_nm NULL
 typedef int AT_struct_construct_cmd_helpno;
 #define AU_struct_construct_cmd_helpno NULL
 typedef int AT_struct_term_rep_cmd_repname;
@@ -1837,10 +1841,10 @@ typedef int AT_struct_fetch_cmd_nm;
 #define AU_struct_fetch_cmd_nm NULL
 typedef int AT_variable_assigned;
 #define AU_variable_assigned NULL
-typedef int AT_struct_init_cmd_nm;
-#define AU_struct_init_cmd_nm NULL
 typedef int AT_struct_input_array_cmd_helpno;
 #define AU_struct_input_array_cmd_helpno NULL
+typedef int AT_struct_init_cmd_nm;
+#define AU_struct_init_cmd_nm NULL
 typedef int AT_s_select_list_item_fcall_nm;
 #define AU_s_select_list_item_fcall_nm NULL
 typedef int AT_s_select_list_item_extend_from;
@@ -2600,6 +2604,8 @@ extern AT_struct_print_img_cmd_nm AX_struct_print_img_cmd_nm;
 #define A_struct_print_img_cmd_nm (bufferstack + AX_struct_print_img_cmd_nm)
 extern AT_s_expr_op_nm AX_s_expr_op_nm;
 #define A_s_expr_op_nm (bufferstack + AX_s_expr_op_nm)
+extern AT_cmd_int_list_nm AX_cmd_int_list_nm;
+#define A_cmd_int_list_nm (bufferstack + AX_cmd_int_list_nm)
 extern AT_struct_construct_cmd_helpno AX_struct_construct_cmd_helpno;
 #define A_struct_construct_cmd_helpno (bufferstack + AX_struct_construct_cmd_helpno)
 extern AT_struct_term_rep_cmd_repname AX_struct_term_rep_cmd_repname;
@@ -3174,10 +3180,10 @@ extern AT_struct_fetch_cmd_nm AX_struct_fetch_cmd_nm;
 #define A_struct_fetch_cmd_nm (bufferstack + AX_struct_fetch_cmd_nm)
 extern AT_variable_assigned AX_variable_assigned;
 #define A_variable_assigned (bufferstack + AX_variable_assigned)
-extern AT_struct_init_cmd_nm AX_struct_init_cmd_nm;
-#define A_struct_init_cmd_nm (bufferstack + AX_struct_init_cmd_nm)
 extern AT_struct_input_array_cmd_helpno AX_struct_input_array_cmd_helpno;
 #define A_struct_input_array_cmd_helpno (bufferstack + AX_struct_input_array_cmd_helpno)
+extern AT_struct_init_cmd_nm AX_struct_init_cmd_nm;
+#define A_struct_init_cmd_nm (bufferstack + AX_struct_init_cmd_nm)
 extern AT_s_select_list_item_fcall_nm AX_s_select_list_item_fcall_nm;
 #define A_s_select_list_item_fcall_nm (bufferstack + AX_s_select_list_item_fcall_nm)
 extern AT_s_select_list_item_extend_from AX_s_select_list_item_extend_from;
