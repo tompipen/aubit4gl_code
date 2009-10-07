@@ -988,6 +988,8 @@ foreach c_getsettings  into lv_name,lv_value
 	call channel::write("make",lv_name clipped||"="||replace_env_var_with_make_var(lv_value) clipped)
 	call channel::write("make","export "||lv_name clipped)
 end foreach
+call channel::write("make","A4GL_PROGNAME="||lv_prog clipped)
+call channel::write("make","export A4GL_PROGNAME")
 
 
 # We need to set up the extension for the ESQL/C files - 
