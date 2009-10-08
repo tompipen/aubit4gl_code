@@ -1184,6 +1184,11 @@ namespace AubitDesktop
         public string ID;
 
 
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string PID;
+
+
+
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CLEARFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CLEARWINDOW), IsNullable = false)]

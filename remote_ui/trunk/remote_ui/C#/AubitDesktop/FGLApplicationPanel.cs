@@ -72,7 +72,6 @@ namespace AubitDesktop
         }
         FGLOpenedForms OpenForms;
         private List<AubitTSBtn> programButtons;
-        //private Control parentControl;
         internal frmMainAppWindow TopWindow; // The window containing the tabpage control
         private string lastKey;
 
@@ -165,7 +164,6 @@ namespace AubitDesktop
 
         public FGLApplicationPanel(frmMainAppWindow topwin, string pUsername, string pApplication,int ID)
         {
-           
             TopWindow = topwin;
             this.ApplicationEnvelopeID = ID;
             this.OpenForms = new FGLOpenedForms();
@@ -227,7 +225,11 @@ namespace AubitDesktop
             {
                 TriggeredText="<TRIGGERED ID=\""+ID+"\"/>";
             }
-           
+
+
+            // Add in our socket definition...
+            TriggeredText = TriggeredText.Replace("<TRIGGERED ", "<TRIGGERED ENVELOPEID=\"" + this.ApplicationEnvelopeID + "\" ");
+
            TopWindow.SendString(TriggeredText,true);
            if (immediateContext != null)
            {
@@ -785,8 +787,7 @@ namespace AubitDesktop
             //currentContext.useKeyPress
 
 
-            //TopWindow. stdNetworkConnection.SendString("<TRIGGERED ID=\"" + reply + "\"/>");
-
+     
             try
             {
                 currentContext.DeactivateContext();
@@ -1034,7 +1035,7 @@ namespace AubitDesktop
                     ke = (KeyEventArgs)e;
                 }
             }
-            string eventText = "<TRIGGERED ID=\"INTERRUPT\"/>";
+            string eventText = "<TRIGGERED ENVELOPEID=\"" + this.ApplicationEnvelopeID + "\" ID=\"INTERRUPT\"/>";
             TopWindow.SendString(eventText,true);
             currentContext.DeactivateContext();
             if (ke != null)
@@ -1130,7 +1131,8 @@ namespace AubitDesktop
                 {
                     lastPing = n;
                     //Program.Show("Ping!");
-                    TopWindow.SendString("<PING/>",false);
+                    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>", false);
+                  //  TopWindow.SendString("<PING/>", false);
                 }
             }
             
@@ -1229,9 +1231,10 @@ namespace AubitDesktop
                             }
                             catch (Exception Ex)
                             {
-                                Program.Show(Ex.ToString());
+                                Program.Show(Ex.ToString(),"Error opening file : "+f.NAME);
                             }
                         }
+
                         if (fs != null)
                         {
                             sw = new BinaryWriter(fs);
@@ -1242,7 +1245,7 @@ namespace AubitDesktop
                             fs.Close();
                             if (oname.EndsWith(".4sm"))
                             {
-                                this.TopWindow.loadApplicationLauncherTree(oname);
+                                this.TopWindow.loadApplicationLauncherTree(oname,this.ApplicationEnvelopeID);
                             }
                         }
                     }
@@ -1307,7 +1310,7 @@ namespace AubitDesktop
                 #region SETAPPLICATIONLAUNCHERXML
                 if (a is SETAPPLICATIONLAUNCHERXML)
                 {
-                    this.TopWindow.loadApplicationLauncherTree(((SETAPPLICATIONLAUNCHERXML)a).FILE);
+                    this.TopWindow.loadApplicationLauncherTree(((SETAPPLICATIONLAUNCHERXML)a).FILE,this.ApplicationEnvelopeID);
                     commands.Remove(a);
                     continue;
                 }
@@ -1511,7 +1514,7 @@ namespace AubitDesktop
 
                         if (fileContents != null)
                         {
-                            s = "<TRIGGERED ID=\"FILEREQUEST\" FILEID=\"" + System.Security.SecurityElement.Escape(fileID) + "\" FILELEN=\"" + flen + "\">";
+                            s = "<TRIGGERED ENVELOPEID=\"" + this.ApplicationEnvelopeID + "\" ID=\"FILEREQUEST\" FILEID=\"" + System.Security.SecurityElement.Escape(fileID) + "\" FILELEN=\"" + flen + "\">";
                             s += "<SYNCVALUES><SYNCVALUE>";
                             s += Convert.ToBase64String(fileContents);
                             s += "</SYNCVALUE></SYNCVALUES>";
@@ -1580,7 +1583,7 @@ namespace AubitDesktop
                             break;
 
                         case "SHOWAPPLICATIONTREE":
-                            TopWindow.loadApplicationLauncherTree(u.VALUE);
+                            TopWindow.loadApplicationLauncherTree(u.VALUE,this.ApplicationEnvelopeID);
                             break;
                         case "WORKSPACEBACKGROUND":
                             //this.BackgroundImage = FGLUtils.getImageFromName(u.VALUE);
@@ -1905,6 +1908,8 @@ namespace AubitDesktop
                     commands.Remove(a);
                     TopWindow.clrWaitCursor();
                     TopWindow.removeTabPage(this);
+                    
+                    
                     continue;
                 }
                 #endregion

@@ -47,6 +47,8 @@ namespace AubitDesktop
         private showMode _showApplicationLauncher;
         bool _hasApplicationtree;
         private event EventHandler EnvelopeReadyForConsumption;
+        internal int applicationLauncherId;
+
         public Color defaultBackColor
         {
             get
@@ -197,7 +199,7 @@ namespace AubitDesktop
         {
             AubitTSBtn o;
             o=(AubitTSBtn)sender;
-            stdNetworkConnection.SendString("<TRIGGERED ID=\"" + o.ID + "\"/>");
+            stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"" + o.ID + "\"/>");
         }
 
 
@@ -508,6 +510,18 @@ namespace AubitDesktop
 
         public void removeTabPage(FGLApplicationPanel appPanel)
         {
+            bool forceClose = false;
+            if (applicationLauncherId == appPanel.ApplicationEnvelopeID)
+            {
+                // They are closing the application panel!
+                if (tabControl1.TabCount > 1)
+                {
+                    MessageBox.Show("Application launcher is exiting - all other program will exit too");
+                    forceClose = true;
+                }
+            }
+            if (appPanel == null) return;
+
             foreach (TabPage tp in this.tabControl1.TabPages)
             {
                 if (tp.Controls.Contains(appPanel))
@@ -516,14 +530,18 @@ namespace AubitDesktop
                    
                     appPanel.Dispose();
                     appPanel = null;
-                    if (this.tabControl1.TabCount == 0)
+                }
+            }
+
+
+                    if (this.tabControl1.TabCount == 0 || forceClose)
                     {
                         this.Close();
                         this.Dispose();
                     }
                     return;
-                }
-            }
+            
+            
             
         }
 
@@ -1042,7 +1060,7 @@ namespace AubitDesktop
         }
 
 
-        public void loadApplicationLauncherTree(string XMLFile)
+        public void loadApplicationLauncherTree(string XMLFile,int applicationLauncherId)
         {
             AubitDesktop.Xml.StartMenu sMenu=null;
             System.IO.StreamReader file = null;
@@ -1071,7 +1089,7 @@ namespace AubitDesktop
             }
             if (sMenu != null)
             {
-                showApplicationMenu(sMenu);
+                showApplicationMenu(sMenu, applicationLauncherId);
             }
             else
             {
@@ -1084,7 +1102,7 @@ namespace AubitDesktop
 
         
 
-        private void showApplicationMenu(AubitDesktop.Xml.StartMenu sMenu)
+        private void showApplicationMenu(AubitDesktop.Xml.StartMenu sMenu,int applicationLauncherId)
         {
             applicationLauncherTreeView.Nodes.Clear();
             TreeNode root = new TreeNode(sMenu.text);
@@ -1099,6 +1117,7 @@ namespace AubitDesktop
             }
 
             root.Expand();
+            this.applicationLauncherId = applicationLauncherId;
         }
 
         private void addTreeNodes(TreeNode root, AubitDesktop.Xml.StartMenuGroup startMenuGroup)
@@ -1130,10 +1149,7 @@ namespace AubitDesktop
 
         }
 
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            loadApplicationLauncherTree("//dell2800/tmp/startmenu.xml");
-        }
+
 
         private void applicationLauncherTreeView_DoubleClick(object sender, EventArgs e)
         {
@@ -1141,7 +1157,7 @@ namespace AubitDesktop
             if (applicationLauncherTreeView.SelectedNode is launcherCmdNode)
             {
                 launcherCmdNode l = (launcherCmdNode)applicationLauncherTreeView.SelectedNode;
-                stdNetworkConnection.SendString("<TRIGGERED ID=\"EXEC\" PROGRAMNAME=\""+ System.Security.SecurityElement.Escape(l.cmd)+"\"/>");
+                stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXEC\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
                 
             }
         }
