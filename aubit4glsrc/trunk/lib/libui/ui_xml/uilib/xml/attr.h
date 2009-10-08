@@ -25,6 +25,8 @@ struct s_rows {
 
 struct s_attr {
 	char *id;
+	char *envelopeId;
+	char *yourId;
 	char *data;
 	char *type;
 	struct s_syncvalues sync;

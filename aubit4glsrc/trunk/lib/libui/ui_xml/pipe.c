@@ -344,7 +344,12 @@ char *get_leadin(int n) {
 static char leadin[400];
 
    if (!handshaking) {
- 		SPRINTF (leadin, "<ENVELOPE ID=\"%d\">\n<COMMANDS>\n",n);
+		int id;
+		id=getMyId();
+		if (id==-1) {
+			id=n;
+		}
+ 		SPRINTF (leadin, "<ENVELOPE ID=\"%d\" PID=\"%d\">\n<COMMANDS>\n",id,getpid());
 		return leadin;
    } else {
 		return "";

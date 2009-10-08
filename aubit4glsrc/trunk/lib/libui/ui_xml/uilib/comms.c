@@ -37,6 +37,10 @@
 #include "../pipe.h"
 #include "comms.h"
 
+int myId=-1; 	// myId may be set from the Proxy to tell us what descriptor its using
+		// if its set - then we'll use this as our envelope ID..
+
+
 void set_using_stdio(int n);
 void A4GL_set_last_cursor(int n);
 
@@ -49,6 +53,7 @@ int clientui_sock_write = 0;
 
 struct s_attr *last_attr = 0;
 
+int A4GL_strstartswith(char *str, char *srch_for);
 char sockbuff[20000] = "";
 //static void timeout_flush_ui (void);
 void A4GL_trim (char *p);
@@ -233,7 +238,9 @@ WSAStartup(wVersionRequested,&wsaData);
     }
   UIdebug (3, "set envelope\n");
 //sleep(30);
+printf("Setting envelope mode");
   set_envelope_mode ();
+
 
   return 1;
 }
@@ -272,6 +279,7 @@ connect_ui_proxy (void)
 	  exit (1);
 	}
 	UIdebug(3,"Got socket\n");
+
       clientui_sock_write = clientui_sock_read;
 
 
@@ -281,6 +289,8 @@ connect_ui_proxy (void)
       server.sun_family = AF_UNIX;
       strcpy (server.sun_path, getenv ("PROXYPIPE"));
 	
+      UIdebug(3,"Attempting to connect to Unix socket :%s we'll call it %d\n", server.sun_path, clientui_sock_read);
+
 	for (cnt=0;cnt<4;cnt++) {
       		usleep(100000);
       		rval=connect (clientui_sock_read, (struct sockaddr *) &server, sizeof (struct sockaddr_un));
@@ -299,6 +309,11 @@ connect_ui_proxy (void)
     }
   UIdebug(3,"set envelope\n");
   set_envelope_mode ();
+//printf("Get event from ui\n");
+  // The first thing we should get back is actually from the
+  // proxy should should be a yourId...
+  get_event_from_ui();
+//printf("Got event from ui");
   return 1;
 }
 
@@ -347,6 +362,10 @@ send_to_ui_no_nl (char *s, ...)
 }
 
 
+int getMyId(void) {
+	return myId;
+}
+
 
 int
 get_event_from_ui ()
@@ -361,17 +380,24 @@ get_event_from_ui ()
 
   while (1)
     {
+
+
+	//printf("Getting data from : clientui_sock_read=%d clientui_sock_write=%d\n", clientui_sock_read, clientui_sock_write);
+ 
+
+
       UIdebug (4, "Getting from buffer\n");
       if (!pipe_sock_gets (clientui_sock_read, buff, 2550))
 	{
 	  UIdebug (2, "PIPE CLOSED - client disconnected ?\n");
-	cleanup();
+	  cleanup();
 	  exit (0);
 	}
 
+	//printf("Got something\n");
 
 	//printf("Buff=%s\n",buff);
-	if (strcmp(buff,"<PING/>")==0) {
+	if (A4GL_strstartswith(buff,"<PING ")) {
 		// Just a 'keep-alive' indicator.....
 		continue;
 	}
@@ -443,7 +469,12 @@ get_event_from_ui ()
 	    }
 	}
     }
-
+  
+  if (attr->yourId) {
+		
+		myId=atol(attr->yourId);
+		//printf("Been passed a 'yourId' of %s\n",attr->yourId);
+  }
 
   //printf("Id=%s\n",attr->id);
   A4GL_set_last_cursor(attr->lastcursor);
@@ -503,8 +534,10 @@ get_event_from_ui ()
 
       if (strcmp (attr->id, "EXEC") == 0)
 	{
-            printf("----> EXEC %s\n", attr->programname);
-            system(attr->programname);
+		char buff[2000];
+		sprintf(buff,"%s &", attr->programname);
+            //printf("----> EXEC %s\n", buff);
+            system(buff);
               n=-105;
 	}
 

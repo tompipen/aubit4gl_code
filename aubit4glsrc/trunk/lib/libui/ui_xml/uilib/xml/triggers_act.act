@@ -55,6 +55,8 @@ return n;
 		sync.vals=0;
 		sync.nvalues=0;
 		lexed_attr.id=0;
+		lexed_attr.envelopeId=0;
+		lexed_attr.yourId=0;
 		lexed_attr.data=0;
 		lexed_attr.type=0;
 		lexed_attr.scrline=0;
@@ -69,6 +71,8 @@ return n;
                 lexed_attr.programname=0;
 
 		if ({ID}) lexed_attr.id=strdup({ID}); 
+		if ({ENVELOPEID}) lexed_attr.envelopeId=strdup({ENVELOPEID}); 
+		if ({YOURID}) lexed_attr.yourId=strdup({YOURID}); 
 		if ({TYPE}) lexed_attr.type=strdup({TYPE}); 
 		if ({DATA}) lexed_attr.data=strdup({DATA}); 
 		if ({SCRLINE}) lexed_attr.scrline=atoi({SCRLINE}); 

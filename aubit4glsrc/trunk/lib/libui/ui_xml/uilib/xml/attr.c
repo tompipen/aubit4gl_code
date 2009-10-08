@@ -13,7 +13,7 @@ int myinputlim;
 
 void dump_attr(struct s_attr *a) {
 	int c;
-	printf("ID=%s Data=%s Type=%s\n",a->id,a->data,a->type);
+	printf("ID=%s Data=%s Type=%s EnvelopeId=%s\n",a->id,a->data,a->type, a->envelopeId);
 	printf("%d values\n",a->sync.nvalues);
 	for (c=0;c<a->sync.nvalues;c++) {
 		printf("%s\n",a->sync.vals[c].value);
