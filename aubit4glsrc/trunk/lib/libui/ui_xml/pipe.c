@@ -349,6 +349,11 @@ static char leadin[400];
 		if (id==-1) {
 			id=n;
 		}
+		if (id==0) {
+			printf("INTERNAL ERROR - ID SHOULD NOT BE 0\n");
+			printf("n=%d getMyId=%d\n", n,getMyId());
+			exit(2);
+		}
  		SPRINTF (leadin, "<ENVELOPE ID=\"%d\" PID=\"%d\">\n<COMMANDS>\n",id,getpid());
 		return leadin;
    } else {

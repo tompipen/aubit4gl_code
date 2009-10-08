@@ -238,7 +238,7 @@ WSAStartup(wVersionRequested,&wsaData);
     }
   UIdebug (3, "set envelope\n");
 //sleep(30);
-printf("Setting envelope mode");
+//printf("Setting envelope mode");
   set_envelope_mode ();
 
 
