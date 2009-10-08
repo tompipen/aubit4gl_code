@@ -919,6 +919,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      UIdebug (3, "WRITING TO FGLPROG '%s'\n", buff);
 	      rval=write (latest_ui, buff, strlen (buff));
 		if (rval==-1) {
+	      		UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", buff,latest_ui);
 			perror("write failed sending to fgl");
 		}
 		
@@ -947,6 +948,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		}
 	      else
 		{
+		int rval;
 		  buff[nb] = 0;
 		  UIdebug (2, "DATA FROM FGLPROG : %s (%d)\n", buff, nb);
 		  //printf ("Data from %d - %s\n", fglprog[a], small (buff));
@@ -962,7 +964,11 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		    {
 		      latest_ui = fglprog[a];
 		    }
-		  write (clientui_write, buff, strlen (buff));
+		  rval=write (clientui_write, buff, strlen (buff));
+			if (rval==-1) {
+				printf("Write failed writing to client - %s, on %d", buff, clientui_write);
+				UIdebug(2,"Write failed writing to client - %s, on %d", buff, clientui_write);
+			}
 		}
 	    }
 	}
