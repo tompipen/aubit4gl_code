@@ -48,7 +48,8 @@ namespace AubitDesktop
         }
 
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList,UIContext currContext)
         {
             if (Action == "") return;
             if (Action == null) return;
@@ -66,6 +67,7 @@ namespace AubitDesktop
             }
 
         }
+         * */
 
         public new void setToolTip(ToolTip t, string s)
         {
@@ -396,7 +398,8 @@ namespace AubitDesktop
             
             createTextWidget(a,ma,
                 Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, edit.action, Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
-            
+
+            setPixelSize(edit.pixelWidth, edit.pixelHeight);
         }
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ButtonEdit edit, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
@@ -454,6 +457,8 @@ namespace AubitDesktop
                 -1, ffx.sqlTabName + "." + ffx.colName,
                 action, Convert.ToInt32(ffx.fieldId), ffx.include, true,image);
 
+            setPixelSize(edit.pixelWidth, edit.pixelHeight);
+
         }
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
@@ -493,7 +498,7 @@ namespace AubitDesktop
 
             
             createTextWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, edit.action, Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
-            
+            setPixelSize(edit.pixelWidth, edit.pixelHeight);
             
         }
 

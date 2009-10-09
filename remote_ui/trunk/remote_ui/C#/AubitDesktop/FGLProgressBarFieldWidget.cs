@@ -76,7 +76,6 @@ namespace AubitDesktop
             }
         }
 
-
         public override string Text // The current fields value
         {
             get
@@ -99,39 +98,44 @@ namespace AubitDesktop
             }
         }
 
-        public FGLProgressBarFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ProgressBar pb, string config, int index,AubitDesktop.Xml.XMLForm.Matrix ma)
+        public FGLProgressBarFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ProgressBar xmlPb, string config, int index,AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
-            createWidget(a, Convert.ToInt32(pb.posY) + index, Convert.ToInt32(pb.posX), 1, Convert.ToInt32(pb.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(xmlPb.posY) , index, Convert.ToInt32(xmlPb.posX), 1, Convert.ToInt32(xmlPb.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
             this.pb.Enabled = true;
-
-            if (pb.valueMax != null)
+            this.pb.Visible = true;
+            if (xmlPb.valueMax != null)
             {
-                this.pb.Maximum = Convert.ToInt32(pb.valueMax);
+                this.pb.Maximum = Convert.ToInt32(xmlPb.valueMax);
             }
 
-            if (pb.valueMin != null)
+            if (xmlPb.valueMin != null)
             {
-                this.pb.Minimum= Convert.ToInt32(pb.valueMin);
+                this.pb.Minimum= Convert.ToInt32(xmlPb.valueMin);
+
             }
+            
 
             if (configSettings.ContainsKey("MAX")) { this.pb.Maximum = Convert.ToInt32((string)configSettings["MAX"]); }
             if (configSettings.ContainsKey("MIN")) { this.pb.Minimum= Convert.ToInt32((string)configSettings["MIN"]); }
             if (configSettings.ContainsKey("MAXIMUM")) { this.pb.Maximum = Convert.ToInt32((string)configSettings["MAXIMUM"]); }
             if (configSettings.ContainsKey("MINIMUM")) { this.pb.Minimum = Convert.ToInt32((string)configSettings["MINIMUM"]); }
+        
+            setPixelSize(xmlPb.pixelWidth, xmlPb.pixelHeight);
 
         }
 
 
 
 
-        private void createWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
-            this.SetWidget(thisAttribute, null,row, 0,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            this.SetWidget(thisAttribute, ma,row, 0,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             pb = new ProgressBar();
-            SizeControl(null,0,pb);
+            SizeControl(ma,index,pb);
             pb.Click += new EventHandler(b_Click);
+            
         }
     }
 }

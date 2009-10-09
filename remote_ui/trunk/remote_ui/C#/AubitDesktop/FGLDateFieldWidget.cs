@@ -317,8 +317,8 @@ namespace AubitDesktop
             adjustDisplayPropertiesForContext();            
         }
 
-
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList,UIContext currContext)
         {
             if (Action == "") return;  
             foreach (ONKEY_EVENT a in keyList)
@@ -335,6 +335,7 @@ namespace AubitDesktop
             }
 
         }
+        */
 
         public new void setToolTip(ToolTip t, string s)
         {
@@ -416,15 +417,12 @@ namespace AubitDesktop
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
 
-            
-            
-
             //_ContextType = value;
             adjustDisplayPropertiesForContext();
 
         }
 
-        private void adjustDisplayPropertiesForContext()
+        private  void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
 

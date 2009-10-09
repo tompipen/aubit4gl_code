@@ -28,7 +28,7 @@ namespace AubitDesktop
 {
     public class FGLWidget /* : ContainerControl */
     {
-       private int _attributeNo;
+        private int _attributeNo;
         private string _TableName;
         private string _ColumnName;
         private string _Action;
@@ -36,7 +36,7 @@ namespace AubitDesktop
         private string _Widget;
         private string _comment;
 
-        internal FGLContextType _ContextType=FGLContextType.ContextNone;
+        internal FGLContextType _ContextType = FGLContextType.ContextNone;
         private int _row;
         private int _column;
         private int _rows;
@@ -48,7 +48,7 @@ namespace AubitDesktop
 
 
         ATTRIB attrib;
-        
+
 
 
         private UIFieldValidationHandler _fieldValidationFailed;
@@ -59,6 +59,23 @@ namespace AubitDesktop
         internal string _beforeFieldID;
         internal string _onActionID;
         private bool _isOnSelectedRow;
+
+        private int _pixelWidth;
+        private int _pixelHeight;
+        private int _fakeKeyId;
+
+
+        /// <summary>
+        /// fakeKeyId is set by a KEY=.. in the config - or as part of the definition for a combobox..
+        /// </summary>
+        internal int fakeKeyId
+        {
+            set
+            {
+                _fakeKeyId = value;
+            }
+        }
+
 
         /// <summary>
         /// Used to indicate if this widget is on the current row in a
@@ -105,7 +122,7 @@ namespace AubitDesktop
             }
         }
 
-        public  bool Enabled
+        public bool Enabled
         {
             get
             {
@@ -152,7 +169,7 @@ namespace AubitDesktop
         }
 
 
-        public  virtual bool Visible
+        public virtual bool Visible
         {
             get
             {
@@ -164,7 +181,7 @@ namespace AubitDesktop
             }
         }
 
-        public   virtual int Top
+        public virtual int Top
         {
             get
             {
@@ -176,7 +193,7 @@ namespace AubitDesktop
             }
         }
 
-        public  virtual int Width
+        public virtual int Width
         {
             get
             {
@@ -188,7 +205,7 @@ namespace AubitDesktop
             }
         }
 
-        public  virtual int Left
+        public virtual int Left
         {
             get
             {
@@ -200,7 +217,7 @@ namespace AubitDesktop
             }
         }
 
-        public  virtual int Height
+        public virtual int Height
         {
             get
             {
@@ -211,7 +228,7 @@ namespace AubitDesktop
                 WindowsWidget.Height = value;
             }
         }
-        
+
 
         public virtual bool hasFocus
         {
@@ -270,7 +287,7 @@ namespace AubitDesktop
         }
 
 
-        
+
 
         public FGLContextType ContextType
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
@@ -285,7 +302,7 @@ namespace AubitDesktop
         }
 
 
-        
+
         public string beforeFieldID
         {
             get
@@ -325,7 +342,7 @@ namespace AubitDesktop
 
 
 
-       public UIGotFocusHandler onGotFocus
+        public UIGotFocusHandler onGotFocus
         {
             set
             {
@@ -336,14 +353,14 @@ namespace AubitDesktop
                 return _onGotFocus;
             }
         }
-       
+
 
 
         public List<string> includeValues;
 
-       
 
-       
+
+
         /// <summary>
         /// current display attribute...
         /// </summary>
@@ -484,7 +501,8 @@ namespace AubitDesktop
                     return true;
                 }
             }
-            set {
+            set
+            {
                 if (value)
                 {
                     attrib.ATTRIB_UPSHIFT = new ATTRIB_UPSHIFT();
@@ -517,7 +535,7 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    attrib.ATTRIB_REQUIRED= null;
+                    attrib.ATTRIB_REQUIRED = null;
                 }
             }
         }
@@ -546,7 +564,7 @@ namespace AubitDesktop
             }
         }
 
-        
+
 
 
 
@@ -554,25 +572,28 @@ namespace AubitDesktop
 
         public FGLWidget()
         {
-         _attributeNo = -1;
-         _TableName="";
-         _ColumnName = "";
-         _Action="";
-         _Config="";
-         _Widget="";
+            _attributeNo = -1;
+            _TableName = "";
+            _ColumnName = "";
+            _Action = "";
+            _Config = "";
+            _Widget = "";
 
-         _row=-1;
-         _column=-1;
-         _rows=-1;
-         _columns=-1;
-         _id=-1;
-         _FieldTextChanged=false;
-         _comment = "";
+            _row = -1;
+            _column = -1;
+            _rows = -1;
+            _columns = -1;
+            _id = -1;
+            _FieldTextChanged = false;
+            _comment = "";
+            _pixelWidth = -1;
+            _pixelHeight = -1;
         }
 
-        internal void SetWidget() {
+        internal void SetWidget()
+        {
 
-            
+
             attrib = new ATTRIB();
 
         }
@@ -587,7 +608,7 @@ namespace AubitDesktop
 
         static internal int decode_datatype(string p)
         {
-            p=p.TrimStart(' ');
+            p = p.TrimStart(' ');
             if (p.StartsWith("DECIMAL")) return 5;
             if (p.StartsWith("CHAR")) return 0;
             if (p.StartsWith("VARCHAR")) return 13;
@@ -608,11 +629,26 @@ namespace AubitDesktop
                 default:  // probably not a great fallback but better than nothing..
                     return 0;
             }
-                   
+
+        }
+
+        internal void setPixelSize(string pixelWidth, string pixelHeight)
+        {
+            if (pixelHeight != null && pixelHeight.Length > 0)
+            {
+                WindowsWidget.Height = Convert.ToInt32(pixelHeight);
+                _pixelHeight = WindowsWidget.Height;
+            }
+
+            if (pixelWidth != null && pixelWidth.Length > 0)
+            {
+                WindowsWidget.Width = Convert.ToInt32(pixelWidth);
+                _pixelWidth = WindowsWidget.Width;
+            }
         }
 
 
-        internal void SetWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma,  int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        internal void SetWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
             //string[] configArr;
 
@@ -628,7 +664,7 @@ namespace AubitDesktop
             _comment = "";
             if (thisAttribute.ATTRIB_COMMENTS != null)
             {
-                
+
                 _comment = thisAttribute.ATTRIB_COMMENTS.Text;
             }
 
@@ -719,12 +755,12 @@ namespace AubitDesktop
         }
 
 
-        internal bool validateField() 
+        internal bool validateField()
         {
             bool ign = false;
 
-            
-            
+
+
 
             if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
             {
@@ -808,7 +844,7 @@ namespace AubitDesktop
             }
 
 
-            
+
             return true;
         }
 
@@ -824,13 +860,13 @@ namespace AubitDesktop
 
         internal void t_Click(object sender, EventArgs e)
         {
-            
+
             this.clrErrorTextBeforeFieldValidation();
             if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
-                this.onUIEvent(this, this.onActionID, "",null);
+                this.onUIEvent(this, this.onActionID, "", null);
             }
-            
+
         }
 
 
@@ -858,12 +894,12 @@ namespace AubitDesktop
 
 
 
-       
+
 
         internal void t_GotFocus(object sender, EventArgs e)
         {
 
-            
+
             /*
             if (this.beforeFieldID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
             {
@@ -949,17 +985,14 @@ namespace AubitDesktop
 
         }
 
-
-
-
         public void SizeControl(AubitDesktop.Xml.XMLForm.Matrix ma, int index, Control c)
         {
-           // int coffset = 0;
+            // int coffset = 0;
             c.Height = GuiLayout.get_gui_h(_rows);
             if (_columns > 2 || true)
             {
                 c.Width = GuiLayout.get_gui_w(_columns + 1);
-              //  coffset = 1;
+                //  coffset = 1;
             }
             else
             {
@@ -978,7 +1011,7 @@ namespace AubitDesktop
 
             c.Visible = true;
 
-            c.Location = GuiLayout.getPoint(ma, index, _column , _row);
+            c.Location = GuiLayout.getPoint(ma, index, _column, _row);
         }
 
 
@@ -1010,10 +1043,58 @@ namespace AubitDesktop
         }
 
 
-        internal virtual void setKeyList(List<ONKEY_EVENT> keyList)
+
+
+
+        internal virtual void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIContext currContext,UIEventHandler _evtHandler)
         {
-            
+            string lastActionId;
+            if (Action == "") return;
+            if (Action == null) return;
+
+            lastActionId = onActionID;
+
+            onActionID = "";
+
+            foreach (ONKEY_EVENT a in keyList)
+            {
+                if (Convert.ToInt32(a.KEY) == _fakeKeyId)
+                {
+                    // The action is really a fake keypress...
+                    onActionID = a.ID;
+                    break;
+                }
+
+                if (Convert.ToInt32(a.KEY) == FGLUtils.getKeyCodeFromKeyName(Action))
+                {
+                    // The action is really a fake keypress...
+                    onActionID = a.ID;
+
+
+
+                    break;
+                }
+            }
+
+            foreach (ON_ACTION_EVENT a in actionList)
+            {
+                if (a.ACTION.ToLower() == Action.ToLower())
+                {
+                    onActionID = a.ID;
+                }
+            }
+
+            if (onActionID != "")
+            {
+                _onUIEvent = _evtHandler;
+            }
+
+            if (lastActionId != onActionID)
+            {
+                
+                ContextTypeChanged();
+            }
+           
         }
     }
-
 }

@@ -383,7 +383,7 @@ namespace AubitDesktop
             }
 
 
-            mainWin.SetContext(FGLContextType.ContextConstruct, activeFields, this, KeyList);
+            mainWin.SetContext(FGLContextType.ContextConstruct, activeFields, this, KeyList, onActionList, UIInputContext_EventTriggered);
             mainWin.setActiveToolBarKeys(KeyList, true);
 
 

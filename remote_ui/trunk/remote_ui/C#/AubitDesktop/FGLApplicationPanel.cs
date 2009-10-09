@@ -2184,9 +2184,9 @@ namespace AubitDesktop
             ApplicationWindows.SetContext(contextType);
         }
 
-        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext,List<ONKEY_EVENT> keyList)
+        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext, List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIEventHandler _EventTriggered)
         {
-            ApplicationWindows.SetContext(contextType, pfields, currContext, keyList);
+            ApplicationWindows.SetContext(contextType, pfields, currContext, keyList,actionList,_EventTriggered);
         }
 
         public List<FGLFoundField> FindFields(FIELD[] fieldlist)
@@ -2210,7 +2210,7 @@ namespace AubitDesktop
         */
 
 
-        internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext,List<ONKEY_EVENT> keyList)
+        internal void SetContext(FGLContextType p, List<FGLFoundField> activeFields, UIContext currContext, List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList,UIEventHandler _evtHandler)
         {
            
             int cnt = 0;
@@ -2221,7 +2221,7 @@ namespace AubitDesktop
                 l.Add(fld.fglField);
             }
             
-            SetContext(p, l,currContext,keyList);
+            SetContext(p, l,currContext,keyList,actionList,_evtHandler);
            
         }
 

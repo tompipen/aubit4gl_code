@@ -35,19 +35,30 @@ namespace AubitDesktop
 
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
-            
-                
-                if (_ContextType == FGLContextType.ContextNone)
+
+            adjustDisplayPropertiesForContext();
+        }
+
+        internal  void adjustDisplayPropertiesForContext()
+        {
+            if (_ContextType == FGLContextType.ContextNone)
+            {
+                if (this.onActionID == "")
                 {
                     this.Enabled = false;
-                    b.Enabled = false;
+                    btn.Enabled = false;
                 }
                 else
                 {
                     this.Enabled = true;
-                    b.Enabled = true;
+                    btn.Enabled = true;
                 }
-            
+            }
+            else
+            {
+                this.Enabled = true;
+                btn.Enabled = true;
+            }
         }
 
 
@@ -55,7 +66,7 @@ namespace AubitDesktop
         {
             set
             {
-                b.TabIndex = value;
+                btn.TabIndex = value;
             }
         }
 
@@ -68,18 +79,18 @@ namespace AubitDesktop
         }
 
 
-        Button b;
+        Button btn;
 
         public override void setFocus()
         {
-            b.Focus();
+            btn.Focus();
         }
 
         internal override Control WindowsWidget
         {
             get
             {
-                return (Control)b;
+                return (Control)btn;
             }
         }
 
@@ -88,11 +99,11 @@ namespace AubitDesktop
             get
             {
                 
-                return b.Enabled;
+                return btn.Enabled;
             }
             set
             {
-                b.Enabled=value;
+                btn.Enabled=value;
             }
         }
 
@@ -100,26 +111,31 @@ namespace AubitDesktop
         {
             get
             {
-                return b.Text;
+                return btn.Text;
 
             }
             set
             {
-                b.Text=value;
+                btn.Text=value;
             }
         }
 
         void b_Click(object sender, EventArgs e)
         {
-            if (this.onActionID != "" && this.onUIEvent != null && _ContextType != FGLContextType.ContextNone)
+            if (this.onActionID != "" && this.onUIEvent != null )
             {
                 this.onUIEvent(this, this.onActionID, "",null);
             }
         }
 
-
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIContext currContext)
         {
+            
+            if (Action == "") return;
+            if (Action == null) return;
+
+            onActionID = "";
 
             foreach (ONKEY_EVENT a in keyList)
             {
@@ -134,7 +150,17 @@ namespace AubitDesktop
                 }
             }
 
+            foreach (ON_ACTION_EVENT a in actionList) {
+                if (a.ACTION.ToLower() == Action.ToLower())
+                {
+                    onActionID = a.ID;
+                }
+            }
+
+            ContextTypeChanged();
+
         }
+        */
 
         public FGLButtonFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.ButtonEdit button, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
@@ -143,7 +169,7 @@ namespace AubitDesktop
             a = createAttribForWidget(ff);
 
 
-            createWidget(a, ma,Convert.ToInt32(button.posY),index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, button.action, Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(button.posY),index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, button.action, Convert.ToInt32(ff.fieldId), ff.include,button.text);
             
         }
 
@@ -155,8 +181,9 @@ namespace AubitDesktop
             a = createAttribForWidget(ff);
 
 
-            createWidget(a, ma, Convert.ToInt32(button.posY), index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, button.action, Convert.ToInt32(ff.fieldId), ff.include);
 
+            createWidget(a, ma, Convert.ToInt32(button.posY), index, Convert.ToInt32(button.posX), 1, Convert.ToInt32(button.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, button.action, Convert.ToInt32(ff.fieldId), ff.include,button.text);
+            setPixelSize(button.pixelWidth, button.pixelHeight);
         }
 
         public override void gotFocus()
@@ -168,16 +195,28 @@ namespace AubitDesktop
         public FGLButtonFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
 
-            createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl,null);
         }
 
-        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl,string txt)
         {
-            this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
-            b = new Button();
-            SizeControl(ma,index,b);
+
+
+            this.SetWidget(thisAttribute, ma, row, index, column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
+
+            btn = new Button();
+            SizeControl(ma, index, btn);
+
+            btn.Visible = true;
+            btn.AutoSize = true;
+
+
+            if (txt != null && txt.Length > 0)
+            {
+                this.Text = txt;
+            }
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
-            b.Click += new EventHandler(b_Click);
+            btn.Click += new EventHandler(b_Click);
             ContextTypeChanged();
         }
     }

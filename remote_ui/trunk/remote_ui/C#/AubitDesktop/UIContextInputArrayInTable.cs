@@ -78,7 +78,8 @@ namespace AubitDesktop
 
         int arrLine=0;
 
-        bool lastLineIsAutoInserted=false;
+       
+
 
 
         /// <summary>

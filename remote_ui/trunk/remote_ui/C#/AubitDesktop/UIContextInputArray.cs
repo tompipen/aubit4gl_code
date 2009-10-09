@@ -1010,8 +1010,8 @@ namespace AubitDesktop
                     currrow.Add(screenRecord[row, a]);
                 }
             }
-           
-            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this, KeyList);
+
+            mainWin.SetContext(FGLContextType.ContextInputArray, currrow, this, KeyList, onActionList, eventTriggered);
             
         }
 

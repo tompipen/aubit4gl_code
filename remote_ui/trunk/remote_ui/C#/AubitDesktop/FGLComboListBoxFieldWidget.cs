@@ -138,7 +138,7 @@ namespace AubitDesktop
         }
 
 
-        private void adjustDisplayPropertiesForContext()
+        private  void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
 
@@ -278,6 +278,47 @@ namespace AubitDesktop
         }
 
 
+        public FGLComboListBoxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ComboBox cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
+        {
+            ATTRIB a;
+            a = createAttribForWidget(ffx);
+            if (cbox.format != null)
+            {
+                a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
+                a.ATTRIB_FORMAT.Text = cbox.format;
+            }
+
+
+
+            if (cbox.comments != null)
+            {
+                a.ATTRIB_COMMENTS = new ATTRIB_COMMENTS();
+                a.ATTRIB_COMMENTS.Text = cbox.comments;
+            }
+
+            if (cbox.autoNext != null && cbox.autoNext == "1")
+            {
+                a.ATTRIB_AUTONEXT = new ATTRIB_AUTONEXT();
+            }
+
+            if (cbox.shift != null)
+            {
+                if (cbox.shift == "down")
+                {
+                    a.ATTRIB_DOWNSHIFT = new ATTRIB_DOWNSHIFT();
+                }
+                else
+                {
+                    a.ATTRIB_UPSHIFT = new ATTRIB_UPSHIFT();
+                }
+            }
+
+
+            createComboBoxWidget(a, ma,
+                Convert.ToInt32(cbox.posY), index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, cbox.action, Convert.ToInt32(ffx.fieldId), ffx.include, cbox.Items);
+            adjustDisplayPropertiesForContext();
+            setPixelSize(cbox.pixelWidth, cbox.pixelHeight);
+        }
 
         public FGLComboListBoxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ComboListBox cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {

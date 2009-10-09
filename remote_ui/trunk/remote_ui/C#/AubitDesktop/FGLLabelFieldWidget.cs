@@ -133,7 +133,8 @@ namespace AubitDesktop
             }
         }
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIContext currContext)
         {
 
             foreach (ONKEY_EVENT a in keyList)
@@ -150,6 +151,7 @@ namespace AubitDesktop
             }
 
         }
+        */
 
         public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.Label label, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
@@ -157,6 +159,7 @@ namespace AubitDesktop
             
             a = createAttribForWidget(ff);
             createWidget(a, ma,Convert.ToInt32(label.posY), index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, label.action, Convert.ToInt32(ff.fieldId), ff.include);
+            setPixelSize(label.pixelWidth, label.pixelHeight);
         }
 
         public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
@@ -164,6 +167,7 @@ namespace AubitDesktop
             ATTRIB a;
             a = createAttribForWidget(ff);
             createWidget(a, ma,Convert.ToInt32(label.posY),index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            setPixelSize(label.pixelWidth, label.pixelHeight);
         }
 
 

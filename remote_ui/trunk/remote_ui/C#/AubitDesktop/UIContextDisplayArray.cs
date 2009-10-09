@@ -570,7 +570,7 @@ namespace AubitDesktop
         {
             
             //mainWin.SetContext(FGLContextType.ContextNone);
-            mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this,KeyList);
+            mainWin.SetContext(FGLContextType.ContextDisplayArray, activeFields, this, KeyList, onActionList, UIDisplayArrayContext_EventTriggered);
 
             foreach (ON_ACTION_EVENT e in onActionList)
             {

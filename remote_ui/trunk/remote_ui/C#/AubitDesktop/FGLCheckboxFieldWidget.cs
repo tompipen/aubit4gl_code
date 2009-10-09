@@ -113,7 +113,12 @@ namespace AubitDesktop
         {
             if (hasFocus)
             {
-                this.BackColor = Color.Black;
+                // Do we have anything to set focus on ?
+                if (cbFieldWidget.Text.Length==0) {
+                    // No - so make the background black 
+                    // so we can see this has focus..
+                    this.BackColor = Color.Black;
+                }
 
             }
             else
@@ -122,18 +127,32 @@ namespace AubitDesktop
             }
         }
 
-        private void adjustDisplayPropertiesForContext()
+        private  void adjustDisplayPropertiesForContext()
         {
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
-                    cbFieldWidget.Enabled = false;
+                    if (onActionID != "")
+                    {
+                        cbFieldWidget.Enabled = true;
+                    }
+                    else
+                    {
+                        cbFieldWidget.Enabled = false;
+                    }
                     cbFieldWidget.ThreeState=false;
                     break;
 
 
                 case FGLContextType.ContextDisplayArray:
-                    cbFieldWidget.Enabled=false;
+                    if (onActionID != "")
+                    {
+                        cbFieldWidget.Enabled = true;
+                    }
+                    else
+                    {
+                        cbFieldWidget.Enabled = false;
+                    }
                     cbFieldWidget.ThreeState=false;
 
                     
@@ -148,6 +167,7 @@ namespace AubitDesktop
                 case FGLContextType.ContextInput:
                     if (this.NoEntry)
                     {
+
                         cbFieldWidget.Enabled = false;
                     }
                     else
@@ -168,7 +188,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            cbFieldWidget.Enabled = true;
+                            cbFieldWidget.Enabled = true; // ??????
                         }
                         setThreeState();
                     }
@@ -204,7 +224,9 @@ namespace AubitDesktop
             }
         }
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIContext currContext)
         {
 
             foreach (ONKEY_EVENT a in keyList)
@@ -220,7 +242,18 @@ namespace AubitDesktop
                 }
             }
 
+            foreach (ON_ACTION_EVENT a in actionList)
+            {
+                if (a.ACTION == Action)
+                {
+                    onActionID = a.ID;
+                }
+            }
+
+            adjustDisplayPropertiesForContext();
+
         }
+        */
 
 
         override public string Text // The current fields value
@@ -287,6 +320,8 @@ namespace AubitDesktop
 
             createCheckBoxWidget(a,ma,
                 Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, cbox.action, Convert.ToInt32(ffx.fieldId), ffx.include,cbox.text);
+
+            setPixelSize(cbox.pixelWidth, cbox.pixelHeight);
 
             this.strTrue = cbox.valueChecked;
             this.strFalse = cbox.valueUnchecked;

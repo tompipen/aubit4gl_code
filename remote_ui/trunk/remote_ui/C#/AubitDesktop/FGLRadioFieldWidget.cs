@@ -113,7 +113,7 @@ namespace AubitDesktop
         {
         }
 
-        private void adjustDisplayPropertiesForContext()
+        private  void adjustDisplayPropertiesForContext()
         {
             switch (_ContextType)
             {
@@ -199,7 +199,8 @@ namespace AubitDesktop
             }
         }
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList,List<ON_ACTION_EVENT> actionList,UIContext currContext)
         {
 
             foreach (ONKEY_EVENT a in keyList)
@@ -208,7 +209,7 @@ namespace AubitDesktop
                 {
                     // The action is really a fake keypress...
                     onActionID = a.ID;
-
+                    
 
 
                     break;
@@ -216,7 +217,7 @@ namespace AubitDesktop
             }
 
         }
-
+        */
 
         override public string Text // The current fields value
         {
@@ -278,6 +279,8 @@ namespace AubitDesktop
             cnew.posY = cbox.posY;
             cnew.shift = cbox.shift;
             cnew.width = cbox.width;
+            cnew.pixelHeight = cbox.pixelHeight;
+            cnew.pixelWidth = cbox.pixelWidth;
             List<string> items = FGLUtils.splitConfig(config);
             if (items.Count == 0)
             {
@@ -304,6 +307,7 @@ namespace AubitDesktop
         public FGLRadioFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Radio cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             makeRadio(ffx, cbox, config, index, ma);
+            setPixelSize(cbox.pixelWidth, cbox.pixelHeight);
 
         }
 

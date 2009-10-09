@@ -364,6 +364,13 @@ namespace AubitDesktop
 
         public void SendString(string s)
         {
+            if (s.Contains("<TRIGGERED") && !s.Contains("ENVELOPEID"))
+            {
+                MessageBox.Show("Got a triggered without an envelope ID...");
+                throw new ApplicationException("Internal error...");
+            }
+
+
             if (sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
             {
                 s = s + "\n";

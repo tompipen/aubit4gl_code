@@ -33,8 +33,8 @@ namespace AubitDesktop
         //FGLContextType _ContextType;
         private int id;
 
-        private string buttonId;
-        private int fakeKeyId;
+       // private string buttonId;
+        
         TextBox t;
         Button pb;
         Panel p;
@@ -150,7 +150,7 @@ namespace AubitDesktop
         }
 
 
-        private void adjustDisplayPropertiesForContext()
+        private  void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
             pb.Enabled = false;
@@ -160,7 +160,10 @@ namespace AubitDesktop
                 case FGLContextType.ContextNone:
                     l.Visible = true;
                     t.Visible = false;
-                    pb.Enabled = false;
+                    if (onActionID != "")
+                    {
+                        pb.Enabled = true;
+                    }
                     break;
 
 
@@ -199,12 +202,15 @@ namespace AubitDesktop
                         t.MaxLength = 0;
                     }
                     t.Visible = true;
-                    if (buttonId != "")
+                    if (onActionID != "")
                     {   // Only enable if there is an ON_KEY event for it...
                         pb.Enabled = true;
                     }
                     else
                     {
+                                                
+                        
+                        
                         Console.WriteLine("Not using this button - its not got an onkey");
                     }
                     l.Visible = false;
@@ -218,10 +224,11 @@ namespace AubitDesktop
                     t.Visible = true;
                     if (isOnSelectedRow)
                     {
-                        if (buttonId != "")
+                        if (onActionID != "")
                         {   // Only enable if there is an ON_KEY event for it...
                             pb.Enabled = true;
                         }
+                        
                     }
                     l.Visible = false;
                     break;
@@ -263,9 +270,12 @@ namespace AubitDesktop
             }
         }
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIContext currContext)
         {
-            buttonId = "";
+            onActionID = "";
+
             foreach (ONKEY_EVENT a in keyList)
             {
                 if (Convert.ToInt32(a.KEY) == fakeKeyId)
@@ -274,13 +284,26 @@ namespace AubitDesktop
                     {
                         onActionID = a.ID;
                     }
-                    buttonId = a.ID;
+                   // buttonId = a.ID;
 
                     break;
                 }
             }
 
+
+            foreach (ON_ACTION_EVENT a in actionList)
+            {
+                if (a.ACTION == Action)
+                {
+                    onActionID = a.ID;
+
+                }
+            }
+
+            ContextTypeChanged();
+
         }
+         */
 
         override public string Text // The current fields value
         {
@@ -368,13 +391,14 @@ namespace AubitDesktop
 
 
             createComboBoxWidget(a,ma,
-                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, cbox.action, Convert.ToInt32(ffx.fieldId), ffx.include);
+                Convert.ToInt32(cbox.posY) , index, Convert.ToInt32(cbox.posX), 1, Convert.ToInt32(cbox.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, cbox.action, Convert.ToInt32(ffx.fieldId), ffx.include,cbox.text);
             adjustDisplayPropertiesForContext();
+            setPixelSize(cbox.pixelWidth, cbox.pixelHeight);
         }
 
 
 
-        private void createComboBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        private void createComboBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row,int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl,string txt)
         {
 
             this.SetWidget(thisAttribute,ma, row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
@@ -386,7 +410,7 @@ namespace AubitDesktop
 
             l.TextAlign = ContentAlignment.MiddleLeft;
 
-            buttonId = "";
+            onActionID = "";
 
 
             string[] str = config.Split(' ');
@@ -414,6 +438,10 @@ namespace AubitDesktop
   
             }
 
+            if (txt != null && txt.Length > 0)
+            {
+                pb.Text = txt;
+            }
             if (str.Length == 1)
             {
                 Image i;
@@ -498,18 +526,10 @@ namespace AubitDesktop
         void pb_Click(object sender, EventArgs e)
         {
 
-            if (this.buttonId != "")
-            {
-
-                this.onUIEvent(this, this.buttonId, "", null);
-            }
-            else
-            {
                 if (this.onActionID != "")
                 {
                     this.onUIEvent(this, this.onActionID, "", null);
                 }
-            }
         }
 
 

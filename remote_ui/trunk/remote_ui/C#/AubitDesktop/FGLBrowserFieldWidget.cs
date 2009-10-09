@@ -154,7 +154,8 @@ namespace AubitDesktop
 
 
             createWidget(a, ma,Convert.ToInt32(browser.posY),index, Convert.ToInt32(browser.posX), 1, Convert.ToInt32(browser.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
-            
+
+            setPixelSize(browser.pixelWidth, browser.pixelHeight);
         }
 
 

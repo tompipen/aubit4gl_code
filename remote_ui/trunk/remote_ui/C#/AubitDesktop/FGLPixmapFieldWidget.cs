@@ -35,6 +35,7 @@ namespace AubitDesktop
     public class FGLPixmapFieldWidget : FGLWidget
     {
 
+
         internal override void ContextTypeChanged()
         {
             // Does nothing...
@@ -138,7 +139,7 @@ namespace AubitDesktop
 
 
             createWidget(a, ma,Convert.ToInt32(pixmap.posY),index, Convert.ToInt32(pixmap.posX), 1, Convert.ToInt32(pixmap.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, pixmap.action, Convert.ToInt32(ff.fieldId), ff.include);
-            
+            setPixelSize(pixmap.pixelWidth, pixmap.pixelHeight);
         }
 
         public FGLPixmapFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
@@ -147,7 +148,8 @@ namespace AubitDesktop
             createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
         }
 
-        override internal void setKeyList(List<ONKEY_EVENT> keyList)
+        /*
+        override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIContext currContext)
         {
 
             foreach (ONKEY_EVENT a in keyList)
@@ -164,6 +166,9 @@ namespace AubitDesktop
             }
 
         }
+        */
+
+
 
         private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {

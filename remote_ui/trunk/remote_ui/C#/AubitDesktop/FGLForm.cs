@@ -1001,7 +1001,7 @@ namespace AubitDesktop
                     break;
 
                 case "AubitDesktop.Xml.XMLForm.ComboBox":
-                    fld = new FGLComboBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0]).config, index, ma);
+                    fld = new FGLComboListBoxFieldWidget(ff, (AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0], ((AubitDesktop.Xml.XMLForm.ComboBox)ff.Items[0]).config, index, ma);
                     break;
 
 
@@ -1644,7 +1644,7 @@ namespace AubitDesktop
         }
 
 
-        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields,List<ONKEY_EVENT> keyList)
+        public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList,UIContext currContext,UIEventHandler _evtHandler)
         {
             int a;
             
@@ -1658,7 +1658,7 @@ namespace AubitDesktop
                 
                 FGLWidget i = this.fields[a];
                
-                i.setKeyList(keyList);
+                i.setKeyList(keyList,actionList,currContext,_evtHandler);
                 
                 if (pfields.Contains(i))
                 {
