@@ -31,6 +31,7 @@ namespace AubitDesktop
             private bool _contextIsActive;
             private FGLApplicationPanel mainWin;
             private List<ONKEY_EVENT> KeyList;
+            private List<ON_ACTION_EVENT> onActionList;
             private PromptWindow promptForm;
             private string promptStyle;
             public bool contextIsActive()
@@ -64,6 +65,7 @@ namespace AubitDesktop
                 //TextBox tb;
                 bool charMode;
                 KeyList = new List<ONKEY_EVENT>();
+                onActionList = new List<ON_ACTION_EVENT>();
                 mainWin = f;
 
 
@@ -96,6 +98,12 @@ namespace AubitDesktop
                         //f.AddToolBarKey(e.KEY, e.ID);
                         continue;
                     }
+                    if (evt is ON_ACTION_EVENT)
+                    {
+                        ON_ACTION_EVENT e;
+                        e = (ON_ACTION_EVENT)evt;
+                        onActionList.Add(e);
+                    }
 
                     Program.Show("Unhandled Event for PROMPT");
                 }
@@ -117,6 +125,7 @@ namespace AubitDesktop
 
             public void NavigateToTab()
             {
+                mainWin.setActiveToolBarKeys(KeyList, onActionList, false);
             }
 
             public void NavigateAwayTab()
@@ -129,7 +138,7 @@ namespace AubitDesktop
             {
                 promptForm.EventTriggered += new UIEventHandler(UIPromptContext_EventTriggered);
                 promptForm.SetPromptFocus();
-                mainWin.setActiveToolBarKeys(KeyList,false);
+                mainWin.setActiveToolBarKeys(KeyList,onActionList, false);
                 
                 if (!_contextIsActive)
                 {
@@ -153,7 +162,7 @@ namespace AubitDesktop
 
             public void DeactivateContext()
             {
-                mainWin.setActiveToolBarKeys(null,false);
+                mainWin.setActiveToolBarKeys(null,null,false);
 
                 _contextIsActive = false;
                 promptForm.clrEventTrigger();

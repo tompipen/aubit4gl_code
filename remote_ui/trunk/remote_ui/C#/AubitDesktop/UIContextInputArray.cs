@@ -752,6 +752,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
+            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, true);
         }
 
         public void NavigateAwayTab()
@@ -928,7 +929,7 @@ namespace AubitDesktop
             }
 
 
-            mainWin.setActiveToolBarKeys(KeyList, true, true, true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList, true, true, true);
             redisplay_arr(true);
 
 
@@ -1018,7 +1019,7 @@ namespace AubitDesktop
         public void DeactivateContext()
         {
             Console.WriteLine("Deactivate start at " + (DateTime.Now - ActivateStime));
-            mainWin.setActiveToolBarKeys(null, false);
+            mainWin.setActiveToolBarKeys(null, null, false);
             inputFocusActive = false;
             mainWin.SetContext( FGLContextType.ContextInputArrayInactive);
 

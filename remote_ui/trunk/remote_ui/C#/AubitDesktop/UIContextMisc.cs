@@ -32,6 +32,7 @@ namespace AubitDesktop
                     MiscContextGetKey
             };
 
+
             private MiscContextType contextType;
             private WINQUESTION wq;
             private GETKEY gk;
@@ -107,6 +108,7 @@ namespace AubitDesktop
 
             public void NavigateToTab()
             {
+                appPanel.setActiveToolBarKeys(null, null,false);
             }
 
             public void NavigateAwayTab()

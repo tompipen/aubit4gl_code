@@ -262,6 +262,28 @@ namespace AubitDesktop
             return false;
         }
 
+        public bool hasActionInToolbar(string actionName)
+        {
+            foreach (AubitTSBtn i in toolStrip1)
+            {
+                if (i.Action ==actionName) return true;
+            }
+            return false;
+        }
+
+        internal AubitTSBtn getActionFromToolbar(string actionName)
+        {
+            foreach (AubitTSBtn i in toolStrip1)
+            {
+
+
+                if (i.Action ==actionName) return i;
+
+            }
+            return null;
+        }
+
+
         internal AubitTSBtn getKeyFromToolbar(string key)
         {
 
@@ -279,16 +301,19 @@ namespace AubitDesktop
         }
 
 
-        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, bool showAcceptInterrupt)
+        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, List<ON_ACTION_EVENT> actions, bool showAcceptInterrupt)
         {
-            setActiveToolBarKeys(keys,showAcceptInterrupt,false,false);
+            setActiveToolBarKeys(keys,actions, showAcceptInterrupt,false,false);
         }
 
-        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys,bool showAcceptInterrupt,bool showUpDownButtons,bool showInsertDeleteButtons)
+        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, List<ON_ACTION_EVENT> actions, bool showAcceptInterrupt, bool showUpDownButtons, bool showInsertDeleteButtons)
         {
             this.SuspendLayout();
+
+
+
             // We dont want any keys active ? 
-            if (keys == null)
+            if (keys == null && actions==null)
             {
                 foreach (AubitTSBtn o in Fkeys)
                 {
@@ -299,18 +324,16 @@ namespace AubitDesktop
                 {
                     tsBtnCancel.Visible = false;
                     tsBtnAccept.Visible = false;
-
                     setStockButtons(false, false, false);
                 }
             }
             else
             {
+
+
+
                 ensureAcceptInterruptButtonsOnToolStrip();
-
-
                 setStockButtons(showAcceptInterrupt, showUpDownButtons, showInsertDeleteButtons);
-
-
                 // Ok - there are some keys - but not all of them will be used..
                 // so we need to remove any that are not in use by making them invisible
                 foreach (AubitTSBtn o in Fkeys)
@@ -318,37 +341,67 @@ namespace AubitDesktop
                             o.Visible = false;      
                 }
 
-
-                // we'll move through our keys and enable them...
-                foreach (ONKEY_EVENT key in keys)
+                if (keys != null)
                 {
-                    AubitTSBtn o;
-
-                    // Has the key already been added ? 
-                    if (!hasKeyInToolbar(key.KEY))
+                    // we'll move through our keys and enable them...
+                    foreach (ONKEY_EVENT key in keys)
                     {
-                        // Dang - we need to add it..
-                        AddToolBarKey(key.KEY, key.ID);
-                    }
+                        AubitTSBtn o;
 
-                    // This should never fail - because we've added it if it was missing!
-                    o=getKeyFromToolbar(key.KEY);
-                    if (o == null)
-                    {
-                        throw new Exception("This shouldn't happen - key is missing from menubar");
-                    }
-                    else
-                    {
+                        // Has the key already been added ? 
+                        if (!hasKeyInToolbar(key.KEY))
+                        {
+                            // Dang - we need to add it..
+                            AddToolBarKey(key.KEY, key.ID);
+                        }
 
-                        o.Visible = true;
+                        // This should never fail - because we've added it if it was missing!
+                        o = getKeyFromToolbar(key.KEY);
+                        if (o == null)
+                        {
+                            throw new Exception("This shouldn't happen - key is missing from menubar");
+                        }
+                        else
+                        {
 
-                        o.ID = key.ID;
+                            o.Visible = true;
+
+                            o.ID = key.ID;
+                        }
                     }
                 }
 
-            }
-            TopWindow.setToolbar(toolStrip1);
+                if (actions != null)
+                {
+                    // we'll move through our keys and enable them...
+                    foreach (ON_ACTION_EVENT action in actions)
+                    {
+                        AubitTSBtn o;
 
+                        // Has the key already been added ? 
+                        if (!hasActionInToolbar(action.ACTION))
+                        {
+                            // Dang - we need to add it..
+                            AddToolBarAction(action.ACTION, action.ID);
+                        }
+
+                        // This should never fail - because we've added it if it was missing!
+                        o = getActionFromToolbar(action.ACTION);
+                        if (o == null)
+                        {
+                            throw new Exception("This shouldn't happen - key is missing from menubar");
+                        }
+                        else
+                        {
+
+                            o.Visible = true;
+                            o.ID = action.ID;
+                        }
+                    }
+                }
+            }
+
+            TopWindow.setToolbar(toolStrip1);
             this.ResumeLayout();
         }
 
@@ -812,6 +865,28 @@ namespace AubitDesktop
 
         }
 
+
+        public void AddToolBarAction(string action, string ID)
+        {
+            AubitTSBtn b;
+
+            ensureAcceptInterruptButtonsOnToolStrip();
+
+            // No - Create a new one..
+            b = new AubitTSBtn();
+            b.isProgramAdded = false;
+            b.Action = action;
+            b.Text = action;
+            b.ID = ID;
+            b.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText;
+            b.Visible = false;
+            
+            b.clickHandler = b_Click;
+
+            this.toolStrip1.Add(b);
+        }
+
+
         public void AddToolBarKey(string Key, string Text, string ID)
         {
             AubitTSBtn b;
@@ -1170,10 +1245,10 @@ namespace AubitDesktop
             {
                 Console.WriteLine("Cumtime before : " + (System.DateTime.Now - stime)+" "+a.GetType().ToString());
 
-                //System.Diagnostics.Debug.WriteLine("IN foreach");
+
                 TopWindow.setProgress( run_commands.Count,cnt);
                 cnt++;
-                //System.Diagnostics.Debug.WriteLine("Consuming event : " + cnt + " of " + run_commands.Count);
+
                 #region PROGRAMSTARTUP
                 if (a is PROGRAMSTARTUP)
                 {
@@ -2137,6 +2212,10 @@ namespace AubitDesktop
             if (currentContext != null)
             {
                 currentContext.NavigateAwayTab();
+            }
+            else
+            {
+                setActiveToolBarKeys(null, null, false);
             }
         }
 

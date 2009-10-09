@@ -15,6 +15,19 @@ namespace AubitDesktop.Xml
         public string text;
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string name;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int disabled;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string image;
+
+
+        /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("StartMenuCommand", Type = typeof(StartMenuCommand))]
         [System.Xml.Serialization.XmlElementAttribute("StartMenuGroup", Type = typeof(StartMenuGroup))]
         public object[] Items;
@@ -32,6 +45,24 @@ namespace AubitDesktop.Xml
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string text;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string image;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string name;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int disabled;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int waiting;
+
+
     }
 
     /// <remarks/>
@@ -42,6 +73,10 @@ namespace AubitDesktop.Xml
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string text;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string name;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute()]

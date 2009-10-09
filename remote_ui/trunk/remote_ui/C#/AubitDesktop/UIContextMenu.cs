@@ -366,7 +366,7 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIMenuContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
-            mainWin.setActiveToolBarKeys(keyList,false);
+            mainWin.setActiveToolBarKeys(keyList,null,false);
             EventTriggered += new UIEventHandler(UIMenuContext_EventTriggered);
             if (!_contextIsActive)
             {
@@ -385,6 +385,7 @@ namespace AubitDesktop
         public void NavigateToTab()
         {
             mainWin.SetMenuBarButtons(this.menuPanel);
+            mainWin.setActiveToolBarKeys(keyList, null, false);
         }
 
 

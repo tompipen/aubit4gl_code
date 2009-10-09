@@ -436,6 +436,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
+            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, true);
         }
 
         public void NavigateAwayTab()
@@ -603,7 +604,7 @@ namespace AubitDesktop
 
 
 
-            mainWin.setActiveToolBarKeys(KeyList,true ,true,true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList, true ,true,true);
 
             if (!_contextIsActive)
             {
@@ -897,7 +898,7 @@ namespace AubitDesktop
 
         public void DeactivateContext()
         {
-            mainWin.setActiveToolBarKeys(null, false);
+            mainWin.setActiveToolBarKeys(null, null, false);
             mainWin.SetContext(FGLContextType.ContextInputArrayInactive);
             inputArrayGrid.context = FGLContextType.ContextInputArrayInactive;
             EventTriggered = null;

@@ -163,6 +163,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
+            mainWin.setActiveToolBarKeys(KeyList, onActionList, true);
         }
 
         public void NavigateAwayTab()
@@ -418,7 +419,7 @@ namespace AubitDesktop
 
 
             mainWin.SetContext(FGLContextType.ContextInput, activeFields, this, KeyList, onActionList, UIInputContext_EventTriggered);
-            mainWin.setActiveToolBarKeys(KeyList, true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList, true);
 
 
            
@@ -553,7 +554,7 @@ namespace AubitDesktop
             EventTriggered = null;
             if (_contextIsActive)
             {
-                mainWin.setActiveToolBarKeys(null, false);
+                mainWin.setActiveToolBarKeys(null, null, false);
                 mainWin.SetContext(FGLContextType.ContextNone);
                 _contextIsActive = false;
                 EventTriggered = null;

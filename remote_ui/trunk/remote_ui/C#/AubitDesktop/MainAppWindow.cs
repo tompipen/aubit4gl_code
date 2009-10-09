@@ -728,7 +728,6 @@ namespace AubitDesktop
             {
                     for (int a = 0; a < toolStrip.Count;a++ )
                     {
-                        
                         this.topWindowToolStrip.Items.Add(toolStrip[a]);
                     }   
             }
@@ -1125,6 +1124,8 @@ namespace AubitDesktop
             bool hasCommands=false;
             TreeNode node;
             node=new TreeNode(startMenuGroup.text);
+            
+            
             root.Nodes.Add(node);
             foreach (object o in startMenuGroup.Items) {
                 if (o is AubitDesktop.Xml.StartMenuGroup) {
@@ -1135,7 +1136,7 @@ namespace AubitDesktop
                     TreeNode cmdNode;
                     AubitDesktop.Xml.StartMenuCommand smc;
                     smc=(AubitDesktop.Xml.StartMenuCommand)o;
-                    cmdNode=new launcherCmdNode(smc.text,smc.exec);
+                    cmdNode=new launcherCmdNode(smc.text,smc.exec,smc.disabled,smc.image,smc.waiting);
                     node.Nodes.Add(cmdNode);
                     
                     hasCommands = true;
@@ -1157,8 +1158,21 @@ namespace AubitDesktop
             if (applicationLauncherTreeView.SelectedNode is launcherCmdNode)
             {
                 launcherCmdNode l = (launcherCmdNode)applicationLauncherTreeView.SelectedNode;
-                stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXEC\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
-                
+                if (l.xmlenabled == false)
+                {
+                    MessageBox.Show("This item cannot be executed as it is disabled");
+                }
+                else
+                {
+                    if (l.waiting)
+                    {
+                        stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXECWAIT\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
+                    }
+                    else
+                    {
+                        stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXEC\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
+                    }
+                }
             }
         }
 
@@ -1240,6 +1254,25 @@ namespace AubitDesktop
     {
 
         private string _cmd;
+        private bool _waiting;
+        private bool _xmlenabled;
+
+        internal bool waiting
+        {
+            get
+            {
+                return _waiting;
+            }
+        }
+
+        internal bool xmlenabled
+        {
+            get
+            {
+                return _xmlenabled;
+            }
+        }
+
         public string cmd
         {
             get
@@ -1247,9 +1280,28 @@ namespace AubitDesktop
                 return _cmd;
             }
         }
-        public launcherCmdNode(string text, string cmd): base(text)
+
+        public launcherCmdNode(string text, string cmd,int disabled, string image,int waiting): base(text)
         {
             this._cmd = cmd;
+            if (waiting == 1)
+            {
+                this._waiting = true;
+            }
+            else
+            {
+                this._waiting = false;
+            }
+
+            if (disabled == 0)
+            {
+                _xmlenabled = true;
+            } else {
+                _xmlenabled = false;
+            }
+
         }
+
+        
     }
 }

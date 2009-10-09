@@ -226,6 +226,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
+            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, false);
         }
 
         public void NavigateAwayTab()
@@ -274,7 +275,7 @@ namespace AubitDesktop
                 displayArrayGrid.BeforeRow = new DataGridViewCellEventHandler(displayArrayGrid_RowEnter);
             }
 
-            mainWin.setActiveToolBarKeys(KeyList, true,true,false);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList, true,true,false);
            
             
             this.EventTriggered = UIDisplayArrayContext_EventTriggered;
@@ -347,7 +348,7 @@ namespace AubitDesktop
 
         public void DeactivateContext()
         {
-            mainWin.setActiveToolBarKeys(null, false);
+            mainWin.setActiveToolBarKeys(null, null,false);
             displayArrayGrid.Enabled = false;
             mainWin.SetContext(FGLContextType.ContextDisplayArrayInactive);
             displayArrayGrid.context = FGLContextType.ContextDisplayArrayInactive;
