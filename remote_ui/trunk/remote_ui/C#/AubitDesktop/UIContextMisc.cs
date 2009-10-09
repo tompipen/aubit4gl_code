@@ -29,13 +29,15 @@ namespace AubitDesktop
         {
             public enum MiscContextType {
                     MiscContextWinquestion,
-                    MiscContextGetKey
+                    MiscContextGetKey,
+                MiscContextFrontCall
             };
 
 
             private MiscContextType contextType;
             private WINQUESTION wq;
             private GETKEY gk;
+            private FRONTCALL frontCall;
             FGLApplicationPanel appPanel;
             private event UIEventHandler EventTriggered;
 
@@ -86,6 +88,13 @@ namespace AubitDesktop
                 return false;
             }
 
+            public UIMiscContext(FGLApplicationPanel f, FRONTCALL p)
+            {
+                frontCall = p;
+                appPanel = f;
+                contextType = MiscContextType.MiscContextFrontCall;
+                
+            }
 
             public UIMiscContext(FGLApplicationPanel f, WINQUESTION p)
             {
@@ -117,6 +126,59 @@ namespace AubitDesktop
 
 
 
+
+            private string doFrontCall(string module, string name, VALUE[] values, string expectReturn)
+            {
+                int numberOfReturnValues = 0; // total number of return values expected
+                string[] retStrings = null;        // string array to store the return values
+
+                string rval;                // string containing the complete TRIGGERED...
+
+                if (expectReturn != null)
+                {
+                    try
+                    {
+                        numberOfReturnValues = Convert.ToInt32(expectReturn);
+                    }
+                    catch { }
+                }
+
+                if (numberOfReturnValues > 0)
+                {
+                    retStrings = new string[numberOfReturnValues];
+                    for (int a = 0; a < numberOfReturnValues; a++)
+                    {
+                        retStrings[a] = "";
+                    }
+                }
+
+
+
+                // Code to actually set 'retStrings' based on whats been called!
+
+
+
+
+
+
+
+                rval = "<TRIGGERED ID=\"FRONTCALLRETURN\">";
+                if (numberOfReturnValues > 0 && retStrings != null)
+                {
+                    rval += "<SYNCVALUES>";
+                    for (int a = 0; a < numberOfReturnValues; a++)
+                    {
+                        rval += "<SYNCVALUE>" + retStrings[a] + "</SYNCVALUE>";
+                    }
+                    rval += "</SYNCVALUES>";
+                }
+                rval += "</TRIGGERED>";
+                return rval;
+            }
+
+
+
+
             public void ActivateContext(UIEventHandler UIContext_EventTriggered, VALUE[] values, ROW[] rows)
             {
                 EventTriggered = UIContext_EventTriggered;
@@ -127,14 +189,21 @@ namespace AubitDesktop
 
                 switch (contextType)
                 {
+                    case MiscContextType.MiscContextFrontCall:
+                        {
+                            string rval = doFrontCall(frontCall.MODULE, frontCall.NAME, frontCall.VALUES, frontCall.EXPECT);
+                            this.EventTriggered(null, "FRONTCALLRETURN", rval, this);
+                        }
+                        break;
+
                     case MiscContextType.MiscContextWinquestion:
-                        string r=AubitMessageBox.Show(wq);
+                        string r = AubitMessageBox.Show(wq);
                         r = r.Trim();
                         string rd = "ACCEPT";
                         switch (r.ToUpper())
                         {
                             case "YES": rd = "-101"; break;
-                           
+
                             case "IGNORE": rd = "-120"; break;
                             case "CANCEL": rd = "-118"; break;
                             case "OK": rd = "-119"; break;
@@ -144,11 +213,11 @@ namespace AubitDesktop
 
                         if (rd == "ACCEPT")
                         { // We can't decode it do an ID - send it back as the 'LASTKEY'...
-                            this.EventTriggered(null, r, "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>",this);
+                            this.EventTriggered(null, r, "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>", this);
                         }
                         else
                         {
-                            this.EventTriggered(null, r, "<TRIGGERED ID=\"" + rd + "\"/>",this);
+                            this.EventTriggered(null, r, "<TRIGGERED ID=\"" + rd + "\"/>", this);
                         }
                         //this.DeactivateContext();
                         break;

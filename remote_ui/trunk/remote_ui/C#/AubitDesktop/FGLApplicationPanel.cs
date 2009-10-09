@@ -1236,12 +1236,9 @@ namespace AubitDesktop
             DateTime stime = System.DateTime.Now;
             List<object> run_commands;
             SendPing();
-            //System.Diagnostics.Debug.WriteLine("In consume envelope commands (bottom level)");
+
             if (this.commands == null) return;
             if (this.commands.Count == 0) return;
-
-            //Console.WriteLine("Consuming...");
-            //System.Diagnostics.Debug.WriteLine("consuming...");
             this.SuspendLayout();
 
             // Make a copy of our commands to run through
@@ -1252,8 +1249,6 @@ namespace AubitDesktop
             }
 
 
-            //System.Diagnostics.Debug.WriteLine("Copied");
-        //    ErrorText="";
 
             cnt = 0;
             // Go through one at a time...
@@ -2095,6 +2090,17 @@ namespace AubitDesktop
                     continue;
                 }
                 #endregion
+                #region FRONTCALL
+                if (a is FRONTCALL)
+                {
+                    FRONTCALL call;
+                    call = (FRONTCALL)a;
+                    immediateContext = new UIMiscContext(this, call);
+                   
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
                 #region WINQUESTION
                 if (a is WINQUESTION)
                 {
@@ -2197,6 +2203,7 @@ namespace AubitDesktop
             Console.WriteLine("Consumed:"+(DateTime.Now-stime));
         }
 
+        
 
 
         

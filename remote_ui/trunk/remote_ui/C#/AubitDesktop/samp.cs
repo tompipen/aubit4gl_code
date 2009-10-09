@@ -59,6 +59,22 @@ namespace AubitDesktop
         public string[] Text;
     }
 
+
+    public class FRONTCALL
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string NAME;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string EXPECT;
+
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = true)]
+        public VALUE[] VALUES;
+
+    }
     /// <remarks/>
 
     public class MENU
@@ -614,6 +630,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("INPUTARRAY", Type = typeof(INPUTARRAY))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYARRAY", Type = typeof(DISPLAYARRAY))]
         [System.Xml.Serialization.XmlElementAttribute("MENU", Type = typeof(MENU))]
+        [System.Xml.Serialization.XmlElementAttribute("FRONTCALL", Type = typeof(FRONTCALL))]
         [System.Xml.Serialization.XmlElementAttribute("MESSAGE", Type = typeof(MESSAGE))]
         [System.Xml.Serialization.XmlElementAttribute("ERROR", Type = typeof(MESSAGE))]
         [System.Xml.Serialization.XmlElementAttribute("NEXTOPTION", Type = typeof(NEXTOPTION))]
@@ -1212,6 +1229,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(INPUTARRAY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYARRAY), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(MENU), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(FRONTCALL), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(MESSAGE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ERROR), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(OPENWINDOWWITHFORM), IsNullable = false)]
