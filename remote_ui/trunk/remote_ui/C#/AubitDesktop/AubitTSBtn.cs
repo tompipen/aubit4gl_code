@@ -30,6 +30,7 @@ namespace AubitDesktop
         private string iD;
         private bool _isProgramAdded;
         private string _programTag;
+        /*
         private string _action;
         internal string Action
         {
@@ -41,7 +42,7 @@ namespace AubitDesktop
             {
                 _action = value;
             }
-        }
+        }*/
 
         public delegate bool HandledEventHandler(object sender, EventArgs e);
         

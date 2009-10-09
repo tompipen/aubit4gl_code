@@ -262,26 +262,26 @@ namespace AubitDesktop
             return false;
         }
 
-        public bool hasActionInToolbar(string actionName)
+
+        public bool hasActionInToolbar(string action)
         {
+            int keyCode;
+            keyCode = FGLUtils.getKeyCodeFromKeyName(action);
+            if (keyCode != -1)
+            {
+                action = "" + keyCode;
+            }
+
             foreach (AubitTSBtn i in toolStrip1)
             {
-                if (i.Action ==actionName) return true;
+
+
+                if (i.ActiveKey == action) return true;
+
             }
             return false;
         }
 
-        internal AubitTSBtn getActionFromToolbar(string actionName)
-        {
-            foreach (AubitTSBtn i in toolStrip1)
-            {
-
-
-                if (i.Action ==actionName) return i;
-
-            }
-            return null;
-        }
 
 
         internal AubitTSBtn getKeyFromToolbar(string key)
@@ -386,7 +386,7 @@ namespace AubitDesktop
                         }
 
                         // This should never fail - because we've added it if it was missing!
-                        o = getActionFromToolbar(action.ACTION);
+                        o = getKeyFromToolbar(action.ACTION);
                         if (o == null)
                         {
                             throw new Exception("This shouldn't happen - key is missing from menubar");
@@ -869,7 +869,20 @@ namespace AubitDesktop
         public void AddToolBarAction(string action, string ID)
         {
             AubitTSBtn b;
+            int keyCode;
+            string key;
+            keyCode=FGLUtils.getKeyCodeFromKeyName(action);
+            if (keyCode != -1)
+            {
 
+                AddToolBarKey(action, action, ID);
+            }
+            else
+            {
+                AddToolBarKey(""+keyCode, action, ID);
+            }
+
+            /*
             ensureAcceptInterruptButtonsOnToolStrip();
 
             // No - Create a new one..
@@ -884,6 +897,7 @@ namespace AubitDesktop
             b.clickHandler = b_Click;
 
             this.toolStrip1.Add(b);
+            */
         }
 
 
@@ -896,12 +910,14 @@ namespace AubitDesktop
             // Does it already exist ? 
             for (int a = 0; a < Fkeys.Count; a++)
             {
+                Console.WriteLine(Fkeys[a].ActiveKey + " " + Key);
                 if (Fkeys[a].ActiveKey == Key)
                 {
                     //Fkeys[a].Text = Text;
                     return;
                 }
             }
+
 
             // No - Create a new one..
             b = new AubitTSBtn();
@@ -1487,7 +1503,15 @@ namespace AubitDesktop
                         btn.programTag = o.TAG;
                         programButtons.Add(btn);
                     }
-                    btn.ActiveKey = o.KEYVAL;
+                    int keyCode = FGLUtils.getKeyCodeFromKeyName(o.KEYVAL);
+                    if (keyCode == -1)
+                    {
+                        btn.ActiveKey = o.KEYVAL;
+                    }
+                    else
+                    {
+                        btn.ActiveKey = "" + keyCode;
+                    }
                     btn.isProgramAdded = true;
                     btn.Text = o.BUTTON;
                     btn.programTag = o.TAG;
