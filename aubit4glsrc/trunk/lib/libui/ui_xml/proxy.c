@@ -896,13 +896,12 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 	  if (z)
 	    {
-
 	      //printf ("z=%d newid=%d\n", z, new_id);
-
-	      latest_ui = new_id;
+	      	latest_ui = new_id;
 		if (latest_ui<1000) {
 			// Loo
-			printf("Confused! - expecting a number over 1000");
+			printf("Confused! - expecting a number over 1000 - got %d",latest_ui);
+			exit(2);
 		} else {
 			latest_ui-=1000;
 		}
@@ -1006,7 +1005,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		  fglprog[a] = nc;
 		  UIdebug (4, "Put in slot %d (%d)\n", a, fglprog[a]);
 			// Lets tell the 4gl program what we want it to be called...
-		  	sprintf(buff,"<TRIGGERED YOURID=\"%d\"/>\n",1000+fglprog[a]);
+		  	sprintf(buff,"<TRIGGERED ID=\"SETYOURID\" YOURID=\"%d\"/>\n",1000+fglprog[a]);
 			pipe_sock_puts(nc,buff);
 			pipe_flush(nc);
 		  nc = 0;	

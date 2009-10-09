@@ -37,6 +37,8 @@
 #include "../pipe.h"
 #include "comms.h"
 
+#define ID_SETYOURID -122
+
 int _myId=-1; 	// myId may be set from the Proxy to tell us what descriptor its using
 		// if its set - then we'll use this as our envelope ID..
 
@@ -248,7 +250,7 @@ WSAStartup(wVersionRequested,&wsaData);
 int
 connect_ui_proxy (void)
 {
-
+int a;
 
   /* Create socket. */
   if (!getenv ("PROXYPIPE"))
@@ -312,7 +314,13 @@ connect_ui_proxy (void)
 //printf("Get event from ui\n");
   // The first thing we should get back is actually from the
   // proxy should should be a yourId...
-  get_event_from_ui();
+  UIdebug (0, "Waiting for TRIGGERED to set YOURID");
+  a=get_event_from_ui();
+  if (a!=ID_SETYOURID) {
+		printf("Expecting trigger to be ID_SETYOURID (SETYOURID) - but got %d -exiting\n",a);
+		exit(2);
+	}
+  UIdebug (0, "Got TRIGGERED setting YOURID...");
 //printf("Got event from ui");
   return 1;
 }
@@ -428,6 +436,11 @@ get_event_from_ui ()
 		      // Cool - its a single line triggered...
 		      UIdebug (5, "Single line trigger : %s\n", buff);
 		      attr = xml_parse (localbuff);
+  		if (attr->yourId) {
+			if (strlen(attr->yourId)) {
+				set_myId(atol(attr->yourId));
+			}
+  		}
 		      break;
 		    }
 		}
@@ -526,7 +539,10 @@ get_event_from_ui ()
 	{
 	  n = -121;
 	}
-
+      if (strcmp (attr->id, "SETYOURID") == 0)
+	{
+	  n = ID_SETYOURID;
+	}
 
       if (strcmp (attr->id, "FILEREQUEST") == 0)
 	{
