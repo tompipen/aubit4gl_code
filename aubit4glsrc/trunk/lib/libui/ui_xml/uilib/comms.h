@@ -9,5 +9,8 @@ int connect_ui_noproxy (void);
 int connect_ui_proxy (void);
 int getMyId(void);
 
+#define ID_FRONTCALLRETURN -123
+
+
 
 

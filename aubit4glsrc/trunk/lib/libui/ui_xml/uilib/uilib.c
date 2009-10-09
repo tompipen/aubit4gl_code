@@ -2998,7 +2998,12 @@ if (no) {
 	// We only need to wait if we are expecting some result
   send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
-  get_event_from_ui ();
+  a=get_event_from_ui ();
+	if (a!=ID_FRONTCALLRETURN) {
+		printf("Internal error - expecting a ID_FRONTCALLRETURN\n");
+		return 0;
+	}
+
   if (last_attr->sync.nvalues==no) {
 
   	for (a = 0; a < last_attr->sync.nvalues; a++) {

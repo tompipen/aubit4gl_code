@@ -544,6 +544,11 @@ get_event_from_ui ()
 	  n = ID_SETYOURID;
 	}
 
+      if (strcmp (attr->id, "FRONTCALLRETURN") == 0)
+	{
+	  n = ID_FRONTCALLRETURN;
+	}
+
       if (strcmp (attr->id, "FILEREQUEST") == 0)
 	{
 	  n = -103;
