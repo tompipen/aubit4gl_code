@@ -37,7 +37,7 @@
 #include "../pipe.h"
 #include "comms.h"
 
-int myId=-1; 	// myId may be set from the Proxy to tell us what descriptor its using
+int _myId=-1; 	// myId may be set from the Proxy to tell us what descriptor its using
 		// if its set - then we'll use this as our envelope ID..
 
 
@@ -363,7 +363,13 @@ send_to_ui_no_nl (char *s, ...)
 
 
 int getMyId(void) {
-	return myId;
+	UIdebug(2,"GetMyId from comms.c : %d",_myId);
+	return _myId;
+}
+
+static void set_myId(int n) {
+	UIdebug(2,"Setting myId=%d",n);
+	_myId=n;
 }
 
 
@@ -461,11 +467,10 @@ get_event_from_ui ()
 
       if (strstr (localbuff, "</TRIGGERED>"))
 	{
-
-	  attr = xml_parse (localbuff);
+	  	attr = xml_parse (localbuff);
   		if (attr->yourId) {
 			if (strlen(attr->yourId)) {
-				myId=atol(attr->yourId);
+				set_myId(atol(attr->yourId));
 			}
   		}
 	  free (localbuff);

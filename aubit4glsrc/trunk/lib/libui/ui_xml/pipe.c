@@ -26,7 +26,7 @@ int nsock=0;
 int startedenvelope=0;
 int handshaking=1;
 int using_stdio=0;
-
+int getMyId(void);
 
 
 void set_using_stdio(int n) {
@@ -346,6 +346,7 @@ static char leadin[400];
    if (!handshaking) {
 		int id;
 		id=getMyId();
+		UIdebug(2,"getMyId returns %d",id);
 		if (id==-1) {
 			id=n;
 		}

@@ -1208,5 +1208,6 @@ encrypt_passwdfile (void)
 }
 
 int getMyId(void ) {
+	UIdebug(2,"getMyId is from proxy.c - using -1");
 	return -1;
 }
