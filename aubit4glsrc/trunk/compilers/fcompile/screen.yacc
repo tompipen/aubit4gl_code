@@ -699,6 +699,7 @@ op_field_tag_type:
 	| KW_LABEL {strcpy($<str>$,"Label");}
 	| KW_DATEEDIT {strcpy($<str>$,"DateEdit");}
 	| KW_BUTTONEDIT {strcpy($<str>$,"ButtonEdit");}
+	| BUTTON {strcpy($<str>$,"Button");}
 	| KW_IMAGE {strcpy($<str>$,"Image");}
 	| KW_PROGRESSBAR {strcpy($<str>$,"ProgressBar");} 
 	| KW_COMBOBOX {strcpy($<str>$,"ComboBox");} 
