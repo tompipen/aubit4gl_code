@@ -597,7 +597,14 @@ namespace AubitDesktop
                 totalWidth = GuiLayout.get_gui_w(4);
             }
 
-            this.MaxLength = columns;
+            if (rows == 1)
+            {
+                this.MaxLength = columns;
+            }
+            else
+            {
+                this.MaxLength = columns * rows;
+            }
 
             //t.KeyDown += new KeyEventHandler(t_KeyDown);
             //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
