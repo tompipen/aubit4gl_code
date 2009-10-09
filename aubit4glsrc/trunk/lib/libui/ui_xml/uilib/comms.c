@@ -453,7 +453,7 @@ get_event_from_ui ()
 	  if (localbuff == 0)
 	    {
 	      UIdebug (0, "Unable to allocate memory");
-	cleanup();
+	      cleanup();
 	      exit (1);
 	    }
 	  strcat (localbuff, buff);
@@ -461,7 +461,13 @@ get_event_from_ui ()
 
       if (strstr (localbuff, "</TRIGGERED>"))
 	{
+
 	  attr = xml_parse (localbuff);
+  		if (attr->yourId) {
+			if (strlen(attr->yourId)) {
+				myId=atol(attr->yourId);
+			}
+  		}
 	  free (localbuff);
 	  if (attr)
 	    {
@@ -470,11 +476,6 @@ get_event_from_ui ()
 	}
     }
   
-  if (attr->yourId) {
-		
-		myId=atol(attr->yourId);
-		//printf("Been passed a 'yourId' of %s\n",attr->yourId);
-  }
 
   //printf("Id=%s\n",attr->id);
   A4GL_set_last_cursor(attr->lastcursor);

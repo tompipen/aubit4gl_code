@@ -1317,8 +1317,13 @@ uilib_input_get_values (int nargs)
 
   for (a = 0; a < contexts[context].ui.input.nfields; a++)
     {
-      UIdebug (5, "Pushing input data : %d %s\n", a, contexts[context].ui.input.variable_data[a]);
-      if (strlen (contexts[context].ui.input.variable_data[a]) == 0)
+	char *field_data;
+	field_data=contexts[context].ui.input.variable_data[a];
+	if (field_data==0) field_data="";
+
+      UIdebug (5, "Pushing input data : %d %s\n", a, field_data);
+	
+      if (strlen (field_data) == 0)
 	{
 		//printf("Pushing NULL\n");
 	  A4GL_push_null (0, 0);
