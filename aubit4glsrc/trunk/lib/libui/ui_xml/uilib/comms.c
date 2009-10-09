@@ -436,11 +436,11 @@ get_event_from_ui ()
 		      // Cool - its a single line triggered...
 		      UIdebug (5, "Single line trigger : %s\n", buff);
 		      attr = xml_parse (localbuff);
-  		if (attr->yourId) {
-			if (strlen(attr->yourId)) {
-				set_myId(atol(attr->yourId));
-			}
-  		}
+  			if (attr->yourId) {
+				if (strlen(attr->yourId)) {
+					set_myId(atol(attr->yourId));
+				}
+  			}
 		      break;
 		    }
 		}
@@ -561,6 +561,15 @@ get_event_from_ui ()
             //printf("----> EXEC %s\n", buff);
             system(buff);
               n=-105;
+	}
+
+
+      if (strcmp (attr->id, "EXECWAIT") == 0)
+	{
+		char buff[2000];
+		sprintf(buff,"%s", attr->programname);
+            	system(buff);
+              	n=-105;
 	}
 
       if (strcmp (attr->id, "INTERRUPT") == 0)

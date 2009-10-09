@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2009/10/08 20:25:09.
+ * Generated 2009/10/09 17:23:13.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -62,12 +62,73 @@ static char *inbuff=0;
 char *myinputptr;
 int myinputlim;
 
+
+static int haveLexedAttr=0;
 static struct s_attr lexed_attr;
 static struct s_syncvalues sync;
 
 struct s_attr *xml_parse(char *s) {
 	int rval;
         inbuff=s;
+	if (haveLexedAttr==0) {
+		// first time through
+		haveLexedAttr=1;
+		lexed_attr.id=0;
+		lexed_attr.envelopeId=0;
+		lexed_attr. yourId=0;
+		lexed_attr. data=0;
+		lexed_attr. type=0;
+		lexed_attr. lastkey=0;
+		lexed_attr. infield=0;
+		lexed_attr. fileid=0;
+		lexed_attr. programname=0;
+	}
+		if (lexed_attr.id!=0) {
+			free(lexed_attr.id);
+			lexed_attr.id=0;
+		}
+
+		if (lexed_attr.envelopeId!=0) {
+			free(lexed_attr.envelopeId);
+			lexed_attr.envelopeId=0;
+		}
+
+		if (lexed_attr. yourId!=0) {
+			free(lexed_attr. yourId);
+			lexed_attr. yourId=0;
+		}
+
+		if (lexed_attr. data!=0) {
+			free(lexed_attr. data);
+			lexed_attr. data=0;
+		}
+
+		if (lexed_attr. type!=0) {
+			free(lexed_attr. type);
+			lexed_attr. type=0;
+		}
+
+		if (lexed_attr. lastkey!=0) {
+			free(lexed_attr. lastkey);
+			lexed_attr. lastkey=0;
+		}
+
+		if (lexed_attr. infield!=0) {
+			free(lexed_attr. infield);
+			lexed_attr. infield=0;
+		}
+
+		if (lexed_attr. fileid!=0) {
+			free(lexed_attr. fileid);
+			lexed_attr. fileid=0;
+		}
+
+		if (lexed_attr. programname!=0) {
+			free(lexed_attr. programname);
+			lexed_attr. programname=0;
+		}
+
+
         myinputlim=strlen(s);
         myinputptr=inbuff;
         memset(&lexed_attr,0, sizeof(struct s_attr));
@@ -77,6 +138,8 @@ struct s_attr *xml_parse(char *s) {
 	}
 
         rval=xml_yylex(); 
+
+
 	if (rval==0) {
                 return &lexed_attr;
         } else {
@@ -100,7 +163,7 @@ return n;
 
 void STag_TRIGGERED(void)
 {
-#line 52 "triggers_act.act"
+#line 115 "triggers_act.act"
 
 	 
 	{
@@ -146,7 +209,7 @@ void STag_TRIGGERED(void)
 
 void ETag_TRIGGERED(void)
 {
-#line 93 "triggers_act.act"
+#line 156 "triggers_act.act"
 
 	 
 	{
@@ -158,7 +221,7 @@ void ETag_TRIGGERED(void)
 
 void STag_SYNCVALUES(void)
 {
-#line 101 "triggers_act.act"
+#line 164 "triggers_act.act"
 
 	 
 	{
@@ -180,7 +243,7 @@ void STag_SYNCVALUES(void)
 
 void ETag_SYNCVALUES(void)
 {
-#line 119 "triggers_act.act"
+#line 182 "triggers_act.act"
 
 	 
 	{
@@ -192,7 +255,7 @@ void ETag_SYNCVALUES(void)
 
 void ETag_SYNCVALUE(void)
 {
-#line 127 "triggers_act.act"
+#line 190 "triggers_act.act"
 
 	 
 	{
@@ -216,7 +279,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 147 "triggers_act.act"
+#line 210 "triggers_act.act"
 
 	 
 	{
@@ -232,7 +295,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 158 "triggers_act.act"
+#line 221 "triggers_act.act"
 
 	 
 	{
@@ -248,7 +311,7 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 170 "triggers_act.act"
+#line 233 "triggers_act.act"
 
 	 
 	{
@@ -266,7 +329,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 184 "triggers_act.act"
+#line 247 "triggers_act.act"
 
 
 /* XML application entry points. */

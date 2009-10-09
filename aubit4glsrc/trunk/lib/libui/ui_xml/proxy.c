@@ -14,6 +14,7 @@
 #include <sys/select.h>
 #include "pipe.h"
 #include "debug.h"
+#include "uilib/xml/attr.h"
 
 #ifdef htons
 #undef htons
@@ -37,7 +38,7 @@
 
 #define BACKLOG 10		// how many pending connections queue will hold
 
-int getMyId(void ) ; // This is normally from 'pipe.c' - by we need one in here so it will link...
+int getMyId (void);		// This is normally from 'pipe.c' - by we need one in here so it will link...
 
 //#define STREAM_BUFF_SIZE 10000
 //char sock_buff[20000];
@@ -76,6 +77,14 @@ hex_digit (int n)
   if (n == 15)
     return 'f';
   return 'x';
+}
+
+
+
+static int
+A4GL_strstartswith (char *s, char *w)
+{
+  return (strncmp (s, w, strlen (w)) == 0);
 }
 
 
@@ -728,7 +737,7 @@ maintain_socket (int newfd_orig)
 
 
 
-
+/*
 static char *
 small (char *s)
 {
@@ -746,7 +755,7 @@ small (char *s)
       }
   return buff;
 }
-
+*/
 
 void
 wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
@@ -761,7 +770,6 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
   int max = 0;
   //int timeoutconnect;
   struct sockaddr_in their_addr;	// connector's address information
-  int latest_ui = 0;
   socklen_t sin_size;
 
 //printf("wait_for_some_action\n");
@@ -868,12 +876,17 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
       UIdebug (5, "checking what needs to be read");
       if (FD_ISSET (clientui_read, &rfds))
 	{
+	  static char *mainbuff = 0;	// a place holder to add all our strings onto...
+  	int latest_ui = 0;
 	  char buff[260];
 	  int nb;
 	  int new_id;
 	  int z;
+	  int usable = 0;
 	  memset (buff, 0, sizeof (buff));
+
 	  nb = read (clientui_read, buff, 255);
+
 	  if (nb <= 0)
 	    {
 	      UIdebug (1, "Client died ?\n");
@@ -884,44 +897,110 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	  UIdebug (2, "DATA FROM CLIENT : %s\n", buff);
 	  //printf ("Data from client : %s - latest_ui=%d\n", small (buff), latest_ui);
 
-
-	  z = sscanf (buff, "<TRIGGERED ENVELOPEID=\"%d", &new_id);
-
-/*
-	  if (z==0) {
-	  	z = sscanf (buff, "<PING ENVELOPEID=\"%d", &new_id);
-	  }
-*/
-	
-
-	  if (z)
+	  if (mainbuff == 0 && A4GL_strstartswith (buff, "<PING "))
 	    {
-	      //printf ("z=%d newid=%d\n", z, new_id);
-	      	latest_ui = new_id;
-		if (latest_ui<1000) {
-			// Loo
-			printf("Confused! - expecting a number over 1000 - got %d",latest_ui);
-			exit(2);
-		} else {
-			latest_ui-=1000;
-		}
+	      mainbuff = strdup (buff);
+	      usable = 1;
 	    }
 	  else
 	    {
-	      //latest_ui = fglprog[a];
+	      int is_full_tag = 0;
+	      if (mainbuff)
+		{
+		  mainbuff = realloc (mainbuff, strlen (mainbuff) + strlen (buff) + 1);
+		  strcat (mainbuff, buff);
+		}
+	      else
+		{
+		  mainbuff = strdup (buff);
+		}
+	      UIdebug (3,"set mainbuff\n");
+	      UIdebug (3,"String now :---------------------------------------------\n%s\n----------------------------------\n", mainbuff);
+
+	      if (strstr (mainbuff, "</TRIGGERED>"))
+		{
+		  is_full_tag = 1;
+		}
+
+	      if (!is_full_tag && strstr (mainbuff, "<TRIGGERED"))
+		{
+		  int l;
+		  l = strlen (mainbuff);
+		  while (mainbuff[l - 1] == '\n' || mainbuff[l - 1] == '\r')
+		    {
+		      l--;
+		    }
+
+		  // Well - its a good start - does it and in /> ?
+		  if (mainbuff[l - 2] == '/' && mainbuff[l - 1] == '>')
+		    {
+		      // Even better - final check - we should have any extra
+		      // starting tags - so we don't wabt to see any '<' after the first one..
+		      //
+		      if (!strchr (&mainbuff[1], '<'))
+			{
+			  is_full_tag = 1;
+			}
+		    }
+		}
+
+	      if (is_full_tag)
+		{
+		  struct s_attr *attr;
+		  attr = xml_parse (mainbuff);
+		 UIdebug (3,"Parsed gives %p\n", attr);
+		  if (attr != NULL)
+		    {
+
+		      latest_ui = atol (attr->envelopeId);
+
+		      if (latest_ui < 1000)
+			{
+			  printf ("Invalid Envelope ID - must be > 1000\n");
+			}
+		      else
+			{
+			  latest_ui -= 1000;
+
+						UIdebug(2,"Set latest_ui=%d\n",latest_ui);
+
+			}
+		    }
+		  else
+		    {
+		      latest_ui = 0;
+		    }
+		  usable = 1;
+		}
+	      else
+		{
+		  usable = 0;
+		}
 	    }
 
 
-	  if (latest_ui)
+
+	  z = sscanf (buff, "<TRIGGERED ENVELOPEID=\"%d", &new_id);
+
+
+	  if (usable)
 	    {
-	      int rval;
-	      UIdebug (3, "WRITING TO FGLPROG '%s'\n", buff);
-	      rval=write (latest_ui, buff, strlen (buff));
-		if (rval==-1) {
-	      		UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", buff,latest_ui);
-			perror("write failed sending to fgl");
+	      if (latest_ui)
+		{
+		  int rval;
+		  UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", buff,latest_ui);
+		  rval = write (latest_ui, buff, strlen (buff));
+		  if (rval == -1)
+		    {
+		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", buff, latest_ui);
+		      printf ("Failed - latest_ui=%d\n", latest_ui);
+		      perror ("write failed sending to fgl");
+		    }
+
 		}
-		
+
+	      free (mainbuff);
+	      mainbuff = 0;
 	    }
 	}
 
@@ -936,8 +1015,8 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	    {
 	      char buff[260];
 	      int nb;
-	      int new_id;
-	      int z;
+	      //int new_id;
+	      //int z;
 	      //memset(buff,0,sizeof(buff));
 	      nb = read (fglprog[a], buff, 255);
 	      if (nb <= 0)
@@ -947,11 +1026,11 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		}
 	      else
 		{
-		int rval;
+		  int rval;
 		  buff[nb] = 0;
 		  UIdebug (2, "DATA FROM FGLPROG : %s (%d)\n", buff, nb);
 		  //printf ("Data from %d - %s\n", fglprog[a], small (buff));
-
+/*
 		  z = sscanf (buff, "<ENVELOPE ID=\"%d", &new_id);
 
 		  if (z)
@@ -963,11 +1042,13 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		    {
 		      latest_ui = fglprog[a];
 		    }
-		  rval=write (clientui_write, buff, strlen (buff));
-			if (rval==-1) {
-				printf("Write failed writing to client - %s, on %d", buff, clientui_write);
-				UIdebug(2,"Write failed writing to client - %s, on %d", buff, clientui_write);
-			}
+*/
+		  rval = write (clientui_write, buff, strlen (buff));
+		  if (rval == -1)
+		    {
+		      printf ("Write failed writing to client - %s, on %d", buff, clientui_write);
+		      UIdebug (2, "Write failed writing to client - %s, on %d", buff, clientui_write);
+		    }
 		}
 	    }
 	}
@@ -1001,14 +1082,14 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	    {
 	      if (fglprog[a] == 0)
 		{
-		char buff[2000];
+		  char buff[2000];
 		  fglprog[a] = nc;
 		  UIdebug (4, "Put in slot %d (%d)\n", a, fglprog[a]);
-			// Lets tell the 4gl program what we want it to be called...
-		  	sprintf(buff,"<TRIGGERED ID=\"SETYOURID\" YOURID=\"%d\"/>\n",1000+fglprog[a]);
-			pipe_sock_puts(nc,buff);
-			pipe_flush(nc);
-		  nc = 0;	
+		  // Lets tell the 4gl program what we want it to be called...
+		  sprintf (buff, "<TRIGGERED ID=\"SETYOURID\" YOURID=\"%d\"/>\n", 1000 + fglprog[a]);
+		  pipe_sock_puts (nc, buff);
+		  pipe_flush (nc);
+		  nc = 0;
 		  break;
 		}
 	    }
@@ -1206,7 +1287,9 @@ encrypt_passwdfile (void)
   return 1;
 }
 
-int getMyId(void ) {
-	UIdebug(2,"getMyId is from proxy.c - using -1");
-	return -1;
+int
+getMyId (void)
+{
+  UIdebug (2, "getMyId is from proxy.c - using -1");
+  return -1;
 }

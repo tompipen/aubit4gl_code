@@ -16,8 +16,8 @@ all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
 ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
 	${LD} ${SO_LDFLAGS}  -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
 
-proxy: proxy.o pipe.o debug.o
-	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o
+proxy: proxy.o pipe.o debug.o uilib/xml/triggers_act.c uilib/xml/attr.c ./uilib/xml/triggers.c
+	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o uilib/xml/triggers_act.c uilib/xml/attr.c ./uilib/xml/triggers.c
 
 noproxy: noproxy.o pipe.o debug.o
 	${CC} ${CFLAGS_NO_PEDANTIC} -g -o noproxy noproxy.o pipe.o debug.o
