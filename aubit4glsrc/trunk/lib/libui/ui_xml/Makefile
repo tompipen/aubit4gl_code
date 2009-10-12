@@ -8,7 +8,7 @@ ifneq "${COMSPEC}" ""
 endif
 
 
-CFLAGS+=-I$(ROOT)/incl -I. -Iuilib -fPIC 
+CFLAGS+=-I$(ROOT)/incl -I. -Iuilib -fPIC  
 
 
 all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
@@ -16,8 +16,15 @@ all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
 ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
 	${LD} ${SO_LDFLAGS}  -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
 
-proxy: proxy.o pipe.o debug.o uilib/xml/triggers_act.c uilib/xml/attr.c ./uilib/xml/triggers.c
-	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o uilib/xml/triggers_act.c uilib/xml/attr.c ./uilib/xml/triggers.c
+
+./uilib/xml/pregenerated/triggers.o: ./uilib/xml/pregenerated/triggers.c
+	${CC} -c -o $@ ${CFLAGS} -I./uilib/xml ./uilib/xml/pregenerated/triggers.c
+
+./uilib/xml/pregenerated/triggers_act.o: ./uilib/xml/pregenerated/triggers_act.c
+	${CC} -c -o $@ ${CFLAGS} -I./uilib/xml ./uilib/xml/pregenerated/triggers_act.c
+
+proxy: proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o 
+	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o
 
 noproxy: noproxy.o pipe.o debug.o
 	${CC} ${CFLAGS_NO_PEDANTIC} -g -o noproxy noproxy.o pipe.o debug.o
