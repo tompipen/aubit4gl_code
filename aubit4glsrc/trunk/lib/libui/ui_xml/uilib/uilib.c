@@ -2013,6 +2013,7 @@ uilib_scr_line (int nargs)
 int
 uilib_arr_curr (int nargs)
 {
+printf("uilib_arr_curr   m_arr_curr=%d\n",m_arr_curr);
   pushint (m_arr_curr);
   return 1;
 }
@@ -2200,7 +2201,6 @@ allow_insert=POPint();
   contexts[ci].ui.inputarray.nvals = nvals;
 
   contexts[ci].ui.inputarray.changed_rows = malloc (arrsize * sizeof (int));
-//printf("CREATING\n");
   contexts[ci].ui.inputarray.variable_data = malloc (arrsize * sizeof (char **));
   contexts[ci].ui.inputarray.touched = malloc (arrsize * sizeof (int *));
 
@@ -2274,7 +2274,6 @@ uilib_input_array_sync (int nargs)
 
   if (changed)
     {
-      //printf("some values changes - will need to resync row = %d ci=%d\n", row,ci);
       UIdebug (5, "some values changes - will need to resync row = %d ci=%d", row, ci);
     }
 
@@ -2337,7 +2336,6 @@ uilib_input_array_loop (int n)
       UIdebug (5, "not initialized\n");
       contexts[context].state = UI_WANT_BEFORE_INPUT;
       // Return -1 to intialize all the control blocks..
-      //printf("NOT INIT\n");
       pushint (-1);
       return 1;
     }
@@ -2366,12 +2364,15 @@ uilib_input_array_loop (int n)
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
+
   if (last_attr->scrline)
     {
+	//printf("SCRLINE : %d\n",  contexts[context].ui.inputarray.scr_line );
       contexts[context].ui.inputarray.scr_line = last_attr->scrline;
     }
   if (last_attr->arrline)
     {
+	//printf("ARRLINE : %d\n",  contexts[context].ui.inputarray.arr_line );
       contexts[context].ui.inputarray.arr_line = last_attr->arrline;
     }
   if (last_attr->arrcount)

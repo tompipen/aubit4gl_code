@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2009/10/09 17:23:13.
+ * Generated 2009/10/10 12:08:07.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -201,6 +201,7 @@ void STag_TRIGGERED(void)
 		if (A_TRIGGERED_PROGRAMNAME) lexed_attr.programname=strdup(A_TRIGGERED_PROGRAMNAME);
                 if (A_TRIGGERED_FILELEN) lexed_attr.filelen=atoi(A_TRIGGERED_FILELEN);
 
+	//printf("Arrline set to %d\n",lexed_attr.arrline);
 		
 	}
 	
@@ -209,7 +210,7 @@ void STag_TRIGGERED(void)
 
 void ETag_TRIGGERED(void)
 {
-#line 156 "triggers_act.act"
+#line 157 "triggers_act.act"
 
 	 
 	{
@@ -221,7 +222,7 @@ void ETag_TRIGGERED(void)
 
 void STag_SYNCVALUES(void)
 {
-#line 164 "triggers_act.act"
+#line 165 "triggers_act.act"
 
 	 
 	{
@@ -243,7 +244,7 @@ void STag_SYNCVALUES(void)
 
 void ETag_SYNCVALUES(void)
 {
-#line 182 "triggers_act.act"
+#line 183 "triggers_act.act"
 
 	 
 	{
@@ -255,7 +256,7 @@ void ETag_SYNCVALUES(void)
 
 void ETag_SYNCVALUE(void)
 {
-#line 190 "triggers_act.act"
+#line 191 "triggers_act.act"
 
 	 
 	{
@@ -279,7 +280,7 @@ void ETag_SYNCVALUE(void)
 
 void STag_SYNCROWS(void)
 {
-#line 210 "triggers_act.act"
+#line 211 "triggers_act.act"
 
 	 
 	{
@@ -295,7 +296,7 @@ void STag_SYNCROWS(void)
 
 void STag_ROW(void)
 {
-#line 221 "triggers_act.act"
+#line 222 "triggers_act.act"
 
 	 
 	{
@@ -311,7 +312,7 @@ void STag_ROW(void)
 
 void ETag_ROW(void)
 {
-#line 233 "triggers_act.act"
+#line 234 "triggers_act.act"
 
 	 
 	{
@@ -329,7 +330,7 @@ void ETag_ROW(void)
 } /* ETag_ROW */
 
 
-#line 247 "triggers_act.act"
+#line 248 "triggers_act.act"
 
 
 /* XML application entry points. */

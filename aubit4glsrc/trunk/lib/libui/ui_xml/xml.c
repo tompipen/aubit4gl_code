@@ -1711,7 +1711,7 @@ GetFile (char *id, char *filename)
     }
 }
 
-
+/*
 int UILIB_aclfgl_aclfgl_client_ui_call(int n) {
 char buff[2000];
 char smbuff[2000];
@@ -1732,6 +1732,7 @@ int a;
   	flush_ui ();
 	return uilib_get_call_result();
 }
+*/
 
 
 void
@@ -2366,9 +2367,12 @@ if (count==-1) {
 	}
     }
 
+printf("Here1\n");
   if (last_attr)
     {
       if (last_attr->arrline) {
+	//printf("Setting arrline ... %d\n", last_attr->arrline);
+printf("Here1 : %d\n", last_attr->arrline);
 	A4GL_set_arr_curr (last_attr->arrline);
 	inp->arr_line=last_attr->arrline;
       }

@@ -149,6 +149,7 @@ return n;
 		if ({PROGRAMNAME}) lexed_attr.programname=strdup({PROGRAMNAME});
                 if ({FILELEN}) lexed_attr.filelen=atoi({FILELEN});
 
+	//printf("Arrline set to %d\n",lexed_attr.arrline);
 		
 	}
 	]]>
