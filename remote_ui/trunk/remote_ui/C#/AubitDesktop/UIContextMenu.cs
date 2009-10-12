@@ -26,27 +26,6 @@ using System.Windows.Forms;
 namespace AubitDesktop
 {
 
-    class UIMenuBarButton : Button
-    {
-        string _ID;
-
-        public string ID
-        {
-            get
-            {
-                return _ID;
-            }
-        }
-
-        public UIMenuBarButton(string ButtonText, string ID)
-        {
-
-            this.Text = ButtonText;
-            this._ID = ID;
-            this.TabIndex = 1;
-        }
-    }
-
 
     class UIMenuContext : UIContext
     {
@@ -232,35 +211,36 @@ namespace AubitDesktop
                 txt = a.TEXT;
                 if (txt.Length == 0) txt = null;
 
-                
+
 
                 if (txt == null)
                 {
 
                     string[] menukeys;
                     menukeys = a.KEYS.Split(',');
-                    foreach (string s in menukeys) {
+                    foreach (string s in menukeys)
+                    {
                         ONKEY_EVENT e = new ONKEY_EVENT();
                         e.ID = a.ID;
                         e.KEY = s;
                         keyList.Add(e);
                     }
-                     
+
                 }
                 else
                 {
 
-                    
+
                     string[] menukeys;
                     if (a.KEYS == "")
                     {
-                        
+
                         menukeys = new string[1];
                         //menukeys[0] =1;
 
-                            char []arr=a.TEXT.Substring(0,1).ToCharArray();
-                            menukeys[0] = ((int)(arr[0])).ToString();
-                            
+                        char[] arr = a.TEXT.Substring(0, 1).ToCharArray();
+                        menukeys[0] = ((int)(arr[0])).ToString();
+
 
                     }
                     else
@@ -286,15 +266,12 @@ namespace AubitDesktop
                             if (n <= 26 || n > 255)
                             {
                                 keyList.Add(e);
-                               
+
                             }
 
-                            
                         }
 
                     }
-
-
 
                     btn = new UIMenuBarButton(txt, a.ID);
 
@@ -311,9 +288,9 @@ namespace AubitDesktop
                     top += btn.Height;
                 }
             }
-
-
+            mainWin.setActiveToolBarKeys(keyList, null, false, false, false);
         }
+
 
 
         public void showOption(string text)
@@ -418,5 +395,27 @@ namespace AubitDesktop
             }
         }
     }
+
+    class UIMenuBarButton : Button
+    {
+        string _ID;
+
+        public string ID
+        {
+            get
+            {
+                return _ID;
+            }
+        }
+
+        public UIMenuBarButton(string ButtonText, string ID)
+        {
+
+            this.Text = ButtonText;
+            this._ID = ID;
+            this.TabIndex = 1;
+        }
+    }
+
 
 }

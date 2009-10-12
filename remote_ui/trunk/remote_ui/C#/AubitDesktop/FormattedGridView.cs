@@ -53,7 +53,10 @@ namespace AubitDesktop
         internal int enteredRow = -1;
         internal int leftCellColumn = -1;
         internal int leftCellRow = -1;
+        internal bool rowChanged=false;
+        internal bool ignEvents=false;
         private int _maxRows;
+
         internal int maxRows
         {
             get
@@ -70,7 +73,7 @@ namespace AubitDesktop
 
             }
         }
-
+    //    private bool doIgnore;
         private bool _allowInsertRow;
         internal bool allowInsertRow
         {
@@ -117,14 +120,6 @@ namespace AubitDesktop
         internal UIArrayTableHandler beforeFieldHandler = null;
         internal UIArrayTableHandler afterFieldHandler = null;
 
-        /*
-        internal UIArrayTableHandler beforeInsert = null;
-        internal UIArrayTableHandler beforeDelete = null;
-
-        internal UIArrayTableHandler afterInsert = null;
-        internal UIArrayTableHandler afterDelete = null;
-        */
-
         FGLContextType _context = FGLContextType.ContextNone;
 
         internal int getCellNumberForField(string s)
@@ -135,6 +130,7 @@ namespace AubitDesktop
             {
                 if (table.TableColumn[a].name.ToLower() == s.ToLower()) return a;
                 if (table.TableColumn[a].colName.ToLower() == s.ToLower()) return a;
+                if (table.tabName.ToLower()+"."+ table.TableColumn[a].colName.ToLower() == s.ToLower()) return a;
                 if (table.TableColumn[a].sqlTabName.ToLower() + "." + table.TableColumn[a].colName.ToLower() == s.ToLower()) return a;
             }
             return -1;
@@ -232,11 +228,18 @@ namespace AubitDesktop
       
 
             CellEnter += new DataGridViewCellEventHandler(FormattedGridView_CellEnter);
-            CellLeave += new DataGridViewCellEventHandler(FormattedGridView_CellLeave);
+            this.CellValidated += new DataGridViewCellEventHandler(FormattedGridView_CellLeave);
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
+            this.RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
+            
             //this.Rows.CollectionChanged += new System.ComponentModel.CollectionChangeEventHandler(Rows_CollectionChanged);
             //RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
+        }
+
+        void FormattedGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+           // MessageBox.Show("Row added " + e.RowIndex + " " + e.RowCount);
         }
 
 
@@ -283,6 +286,8 @@ namespace AubitDesktop
             {
                 AllowUserToAddRows = true;
             }
+
+            
         }
     
 
@@ -368,10 +373,8 @@ namespace AubitDesktop
         void FormattedGridView_CellLeave(object sender, DataGridViewCellEventArgs e)
         {
             string val;
-       //     DataGridViewCellValidatingEventArgs e_val;
-
-
             if (e.ColumnIndex == 0) return;
+            if (ignEvents)  return;
 
             try
             {
@@ -381,6 +384,9 @@ namespace AubitDesktop
             {
                 val = null;
             }
+
+
+            
             
             if (afterFieldHandler != null)
             {
@@ -401,7 +407,12 @@ namespace AubitDesktop
 
         void FormattedGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
+
+            if (ignEvents) return;
+
+
             if (e.ColumnIndex == 0) return;
+
 
 
             if (this.beforeFieldHandler != null)
@@ -618,7 +629,11 @@ namespace AubitDesktop
         #region EventForwarders
         void Grid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
+            if (ignEvents)
+            {
 
+                //return;
+            }
             setAllowUserToAddRows();
            
             if (BeforeRow != null && enteredRow!=e.RowIndex)
@@ -632,12 +647,15 @@ namespace AubitDesktop
 
         void Grid_RowLeave(object sender, DataGridViewCellEventArgs e)
         {
+            // are we leaving just because its becoming deactivated ? 
+            if (ignEvents) return;
+
             setAllowUserToAddRows();
             if (AfterRow != null)
             {
                 AfterRow(sender, e);
             }
-
+            rowChanged = false;
         }
 
         void Grid_DoubleClick(object sender, EventArgs e)
@@ -822,7 +840,20 @@ namespace AubitDesktop
             beforeFieldHandler = null;
             afterFieldHandler = null;
             CurrentCell = null;
+            ignEvents = false;
         }
+
+        /*
+        internal void setIgnore()
+        {
+            doIgnore = true;
+        }
+
+        internal void endIgnore()
+        {
+            doIgnore = false;
+        }
+         */
     }
 
 

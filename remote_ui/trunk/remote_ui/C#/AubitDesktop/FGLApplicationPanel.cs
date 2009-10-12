@@ -30,7 +30,7 @@ using System.IO;
 
 namespace AubitDesktop
 {
-    public class FGLApplicationPanel : Panel
+    public class FGLApplicationPanel  : Panel
     {
         private FGLOptions options;
         public int ApplicationEnvelopeID;
@@ -182,6 +182,8 @@ namespace AubitDesktop
             this.Controls.Add(winScreen.WindowWidget);
             ApplicationWindows.PushWindow(winScreen);
             this.toolStrip1 = new List<AubitDesktop.AubitTSBtn>();
+
+
             this.AutoScroll = true;
             this.SetAutoScrollMargin(5, 5);
             

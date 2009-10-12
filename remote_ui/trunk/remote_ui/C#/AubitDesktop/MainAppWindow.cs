@@ -36,6 +36,7 @@ namespace AubitDesktop
     public partial class frmMainAppWindow : Form
     {
 
+        
         public AubitNetwork stdNetworkConnection;
         
         public UIContext currentContext = null;

@@ -816,9 +816,9 @@ namespace AubitDesktop
         public string getSyncValues()
         {
             string s;
-
+           
             //copyFieldData();
-
+            
             s = "<SYNCROWS>";
             for (int row = 0; row < this.nRows; row++)
             {

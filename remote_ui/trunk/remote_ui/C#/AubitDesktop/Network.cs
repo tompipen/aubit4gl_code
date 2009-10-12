@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Tamir.SharpSsh;
 using Tamir.SharpSsh.jsch;
+using System.IO.Compression;
 
 
 namespace AubitDesktop
@@ -380,6 +381,7 @@ namespace AubitDesktop
             {
                 streamWrite(msg, 0, msg.Length);
             }
+
             catch (Exception )
             {
                 if (this.ConnectionDied != null)
@@ -394,10 +396,12 @@ namespace AubitDesktop
         {
             if (useExplicitStreams)
             {
+                
                 sshStreamWrite.Write(msg, p, p_3);
             }
             else
             {
+                
                 tcpStream.Write(msg, p, p_3);
             }
         }

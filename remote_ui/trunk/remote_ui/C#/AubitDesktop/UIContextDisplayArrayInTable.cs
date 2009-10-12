@@ -160,6 +160,7 @@ namespace AubitDesktop
 
 
             displayArrayGrid = f.FindRecord(p.FIELDLIST);
+            displayArrayGrid.init();
             displayArrayGrid.Rows.Clear();
            
             

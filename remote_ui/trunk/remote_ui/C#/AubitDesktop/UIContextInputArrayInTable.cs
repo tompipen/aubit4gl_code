@@ -41,15 +41,21 @@ namespace AubitDesktop
       //  private bool []rowWasAutoInserted;
         private bool firstTime = true;
         private int maxRows;
+        private string[] lastRowData;
 
         class s_pending {
-            public s_pending(string text, int scrLine)
+            public s_pending(string ID, int scrLine,int arrLine)
             {
-                this.triggeredText = text;
+                //this.triggeredText = text;
                 this.scrLine = scrLine;
+                this.ID = ID;
+                this.arrLine = arrLine;
             }
-            public string triggeredText;
+
+            //public string triggeredText;
             public int scrLine;
+            public int arrLine;
+            public string ID;
         };
         List<s_pending> PendingEvents;
 
@@ -76,8 +82,19 @@ namespace AubitDesktop
 
         private MoveType nextMove =  MoveType.MoveTypeNoPendingMovement;
 
-        int arrLine=0;
+        private int _arrLine=1;
 
+        internal int arrLine
+        {
+            get
+            {
+                return _arrLine;
+            }
+            set
+            {
+                _arrLine = value;
+            }
+        }
        
 
 
@@ -215,6 +232,7 @@ namespace AubitDesktop
            
 
             Data = new DataTable();  //new string[p.MAXARRSIZE, p.ARRVARIABLES];
+            
             for (int a = 0; a <= nCols; a++) // One extra for the subscript....
             {
                 if (a == 0)
@@ -227,6 +245,7 @@ namespace AubitDesktop
                 }
             }
 
+            
 
           //  rowWasAutoInserted = new bool[maxRows];
        //     rowDataChanged = new bool[maxRows];
@@ -236,10 +255,10 @@ namespace AubitDesktop
 
             PendingEvents = new List<s_pending>();
 
+            lastRowData = new string[maxRows];
             for (int a = 0; a < maxRows; a++)
             {
-              //  rowDataChanged[a] = false;
-               // rowWasAutoInserted[a] = false;
+                lastRowData[a] = "";
             }
 
             
@@ -464,62 +483,56 @@ namespace AubitDesktop
             string s;
             string subscript_string;
             int row;
-            //  copyFieldData();
+
+
+
 
             
+            
 
+            // Originally - I used the DataTable - but that just doesn't sync properly
+            // I'm only using that at all because otherwise the autoinsert new row
+            // doesn't seem to work..
+            //
+            // Basically - the DataGridView isn't being very helpful...
+            //
             s = "\n<SYNCROWS>\n";
-            for (row = 0; row < Data.Rows.Count; row++)
+
+            for (row = 0; row <inputArrayGrid.Rows.Count; row++)
             {
-                try
-                {
-                    // Make sure the array and the grid are sync'd up...
-                    Data.Rows[row].EndEdit();
-
-                    // If we've not changed anything - then we dont need to send it back..
-                    if (Data.Rows[row].RowState == DataRowState.Unchanged) continue;
-
-                    Data.Rows[row].AcceptChanges();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-
-                /*
-                try {
-                    subscript_string=Data.Rows[row][0].ToString();
-                } catch {
-                    subscript_string = "";
-                }
-                if (subscript_string == "") continue;
-                */
-
+                string rowData;
                 subscript_string = "" + (row + 1);
-                s += " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
-                s += "  <SYNCVALUES>\n";
+                rowData = " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
+                rowData += "  <SYNCVALUES>\n";
 
                 for (int col = 0; col < this.nCols; col++)
                 {
                     string rval = "";
                     try
                     {
-                        rval = (string)Data.Rows[row][col + 1];
+                        rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].Value;   // Data.Rows[row][col + 1];
                     }
                     catch
                     {
                         rval = "";
                     }
-                    s += "   <SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SYNCVALUE>\n";
+
+                    rowData += "   <SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SYNCVALUE>\n";
                 }
 
-                s += "  </SYNCVALUES>\n";
-                s += " </ROW>\n";
+                rowData += "  </SYNCVALUES>\n";
+                rowData += " </ROW>\n";
+                if (lastRowData[row] != rowData)
+                { // Is it different to last time ? 
+                    lastRowData[row] = rowData;
+                    s += rowData;
+                }
             }
+
             s += "</SYNCROWS>\n";
 
-
-
+            
+            
             return s;
         }
 
@@ -551,7 +564,7 @@ namespace AubitDesktop
             }
 
             stopHandlers();
-
+            inputArrayGrid.ignEvents = true;
             foreach (ON_ACTION_EVENT e in onActionList)
             {
                 foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION))
@@ -600,7 +613,7 @@ namespace AubitDesktop
             }
 
             startHandlers();
-
+            inputArrayGrid.ignEvents = false;
 
 
 
@@ -611,6 +624,25 @@ namespace AubitDesktop
                 _contextIsActive = true;
             }
 
+            if (crow != -1 && ccol != -1 && !firstTime)
+            {
+                if (inputArrayGrid.CurrentCell != null)
+                {
+                    if (crow != inputArrayGrid.CurrentCell.RowIndex || ccol != inputArrayGrid.CurrentCell.ColumnIndex)
+                    {
+                        Console.WriteLine("Moving to crow:" + crow + " ccol:" + ccol);
+                        inputArrayGrid.ignEvents = false;
+                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
+                        inputArrayGrid.ignEvents = true;
+                    }
+                }
+                else
+                {
+                    
+                    Console.WriteLine("Moving from nowhere to crow:" + crow + " ccol:" + ccol);
+                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
+                }
+            }
 
             inputArrayGrid.context = FGLContextType.ContextInputArray;
 
@@ -620,29 +652,14 @@ namespace AubitDesktop
                 p = PendingEvents[0];
                 arrLine = p.scrLine;
 
-                string s = p.triggeredText;
+                string s = getTriggeredTag(p.ID, p.arrLine, p.scrLine); // p.triggeredText;
                 PendingEvents.RemoveAt(0);
                 sendPendingTrigger(s);
                 
                 return;
             }
 
-            if (crow != -1 && ccol != -1 && !firstTime)
-            {
-                if (inputArrayGrid.CurrentCell != null)
-                {
-                    if (crow != inputArrayGrid.CurrentCell.RowIndex || ccol != inputArrayGrid.CurrentCell.ColumnIndex)
-                    {
-                        Console.WriteLine("Moving to crow:" + crow + " ccol:" + ccol);
-                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Moving from nowhere to crow:" + crow + " ccol:" + ccol);
-                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
-                }
-            }
+
 
 
             inputArrayGrid.allowInsertRow = allowInsert;
@@ -661,10 +678,6 @@ namespace AubitDesktop
             inputArrayGrid.Enabled = true;
 
             
-
-            
-
-
             if (allowDelete)
             {
                 inputArrayGrid.AllowUserToDeleteRows = true;
@@ -731,6 +744,11 @@ namespace AubitDesktop
             if (fieldName != null && !found)
             {
                 cell = getCellNumberForField(fieldName);
+                if (cell == -1)
+                {
+                    MessageBox.Show("Field not field "+fieldName);
+                    return;
+                }
             }
 
             while (inputArrayGrid.table.TableColumn[cell].noEntry != null && inputArrayGrid.table.TableColumn[cell].noEntry == "1")
@@ -836,7 +854,8 @@ namespace AubitDesktop
             }
             else
             {
-                PendingEvents.Add(new s_pending(getTriggeredTag(ID,arrLine,arrLine),arrLine));
+                //PendingEvents.Add(new s_pending(getTriggeredTag(ID,arrLine,arrLine),arrLine));
+                PendingEvents.Add(new s_pending(ID, arrLine, arrLine));
             }
         }
 
@@ -850,7 +869,7 @@ namespace AubitDesktop
                 string syncValues = getSyncValues();
                 rval = "<TRIGGERED ID=\"" + ID + "\""+
                        " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\"" 
-                       + infieldStr + " ARRCOUNT=\""+Data.Rows.Count+"\">" + syncValues +
+                       + infieldStr + " ARRCOUNT=\""+ inputArrayGrid.Rows.Count+"\">" + syncValues +
                     "</TRIGGERED>";
             } catch (Exception Ex) {
                 MessageBox.Show("Error getting value for return:"+Ex.Message);
