@@ -988,11 +988,11 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      if (latest_ui)
 		{
 		  int rval;
-		  UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", buff,latest_ui);
-		  rval = write (latest_ui, buff, strlen (buff));
+		  UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", mainbuff,latest_ui);
+		  rval = write (latest_ui, mainbuff, strlen (mainbuff));
 		  if (rval == -1)
 		    {
-		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", buff, latest_ui);
+		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", mainbuff, latest_ui);
 		      printf ("Failed - latest_ui=%d\n", latest_ui);
 		      perror ("write failed sending to fgl");
 		    }
