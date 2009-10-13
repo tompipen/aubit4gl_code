@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.510 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.511 2009-10-13 10:08:54 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.510 2009-10-06 15:03:21 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.511 2009-10-13 10:08:54 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8022,6 +8022,7 @@ chk_ibind_select_internal (struct s_select *s)
   snew.group_by = 0;
   next = snew.next;
   snew.next = 0;
+  snew.modifier="<FAKE>";
 
   preprocess_sql_statement (&snew);
 
@@ -8044,7 +8045,6 @@ chk_ibind_select_internal (struct s_select *s)
 	  ptr->data.type = E_SLI_VARIABLE_USAGE_IN_SELECT_LIST;
 	  ok = 0;
 	}
-
     }
 
   return ok;
@@ -8183,7 +8183,7 @@ get_update_cmd (struct struct_update_cmd *updateCmd, int *converted)
   *converted = 0;
   strcpy (buff, "");
 
-  fake_select.modifier = 0;
+  fake_select.modifier = "<FAKE>";
   fake_select.limit.start = -1;
   fake_select.limit.end = -1;
   fake_select.limit.offset = -1;
@@ -8208,6 +8208,8 @@ get_update_cmd (struct struct_update_cmd *updateCmd, int *converted)
 
   fake_select.first->next = NULL;
   fake_select.first->outer_next = NULL;
+	  fake_select.first->outer_type = 0;
+	  fake_select.first->outer_join_condition = NULL;
 
   fake_select.table_elements.tables.tables_len = 0;
   fake_select.table_elements.tables.tables_val = 0;
@@ -8376,7 +8378,8 @@ get_delete_cmd (struct struct_delete_cmd *deleteCmd, int *converted)
 	  struct s_select fake_select;
 	  struct s_select_list_item_list l;
 	  struct s_table t;
-	  fake_select.modifier = 0;
+
+  	  fake_select.modifier = "<FAKE>";
 	  fake_select.limit.start = -1;
 	  fake_select.limit.end = -1;
 	  fake_select.limit.offset = -1;
@@ -8401,6 +8404,8 @@ get_delete_cmd (struct struct_delete_cmd *deleteCmd, int *converted)
 	  fake_select.first->alias = fake_select.first->tabname;
 	  fake_select.first->next = NULL;
 	  fake_select.first->outer_next = NULL;
+	  fake_select.first->outer_type = 0;
+	  fake_select.first->outer_join_condition = NULL;
 	  fake_select.table_elements.tables.tables_len = 0;
 	  fake_select.table_elements.tables.tables_val = 0;
 

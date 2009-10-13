@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.80 2009-07-30 18:28:02 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.81 2009-10-13 10:08:54 mikeaubury Exp $
 #
 */
 
@@ -72,6 +72,7 @@ char *find_tabname_for_alias (struct s_select *select, char *alias);
 //void load_temp_table (void);
 void make_list_item_list_from_select_stmt (struct s_select *parent_stmt, struct s_select *select);
 void make_list_in_subselect_stmt (struct s_select *orig, struct s_select *next);
+static void add_table_conditions_to_select(struct s_select *select, struct s_table *tab) ;
 //void preprocess_sql_statement (struct s_select *select);
 //struct s_table_list *A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a);
 
@@ -1630,11 +1631,16 @@ make_list_item_list_from_select_stmt (struct s_select *parent_stmt, struct s_sel
     return;
   if (select->select_list == 0)
     return;
+
   for (a = 0; a < select->select_list->list.list_len; a++)
     {
       make_list_item_list_from_select (select, select->select_list->list.list_val[a]);
     }
+
   make_list_item_list_from_select (select, select->where_clause);
+
+  add_table_conditions_to_select(select,select->first) ;
+
   make_list_item_list_from_select_list (select, select->group_by);
   make_list_item_list_from_select (select, select->having);
   if (select->next)
@@ -2654,6 +2660,26 @@ make_list_item_list_from_select_list (struct s_select *select, struct s_select_l
 }
 
 
+// Add any conditions in the outer joins to out master list...
+static void add_table_conditions_to_select(struct s_select *select, struct s_table *tab) {
+
+	// If we're processing a 'faked' select - from chk_ibind_select for example
+	// then we dont want to bother - as we're only expanding the select list anyway
+	if (select->modifier && strcmp(select->modifier,"<FAKE>")==0) {
+		return;
+	}
+	if (tab==NULL) return;
+
+	if (tab->outer_join_condition!=NULL) {
+      		make_list_item_list_from_select (select, tab->outer_join_condition);
+	}
+	if (tab->next) {
+		add_table_conditions_to_select(select,tab->next);
+	}
+	if (tab->outer_next) {
+		add_table_conditions_to_select(select,tab->outer_next);
+	}
+}
 
 // In this function - we want to walk through all of the expressions ins our select list, where clause etc
 // and construct a single list of all of these so we can go through the list for easy processing...
@@ -2664,7 +2690,9 @@ make_list_item_list_from_select (struct s_select *select, struct s_select_list_i
   if (p == 0)
     return;
 
-  add_select_list_item_list_once (&select->list_of_items, p);
+   add_select_list_item_list_once (&select->list_of_items, p);
+
+
 
   switch (p->data.type)
     {
