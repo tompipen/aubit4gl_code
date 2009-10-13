@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.63 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: globals.c,v 1.64 2009-10-13 13:26:50 mikeaubury Exp $
 #
 */
 
@@ -200,6 +200,14 @@ generate_globals_for (char *s)
 #endif
   
 
+  if (acl_getenv_not_set_as_0("A4GL_OVERRIDE_PACKER_OUTPUT")) {
+      unsetenv("A4GL_OVERRIDE_PACKER_OUTPUT");
+  }
+
+  if (acl_getenv_not_set_as_0("OVERRIDE_PACKER_OUTPUT")) {
+      unsetenv("OVERRIDE_PACKER_OUTPUT");
+  }
+
 // cc 2004.11.24 need to check for -d flag from parent process 
  if (has_default_database ()) 
  { 
@@ -263,6 +271,7 @@ read_glob (char *s)
   char ii4gl[255];
   char iiglb[255];
   char iii[256];
+  char override[2000];
   char *fname;
   char *dbname;
   int schemaonly;
@@ -293,6 +302,7 @@ read_glob (char *s)
             if (s2) {*s2=0;}
          }
   }
+
 
 
   if (A4GL_isyes(acl_getenv("TRY_LOCAL_GLOBALS_FIRST"))) {
@@ -341,7 +351,7 @@ read_glob (char *s)
   strcat (ii4gl, ".4gl");
 
   strcpy(iiglb,ii);
-
+  
   if (strcmp(acl_getenv("A4GL_PACKER"),"XMLBEST")==0) {
 	A4GLPACKER_clrlibptr();
 	A4GL_setenv("A4GL_PACKER","PACKED",1);
@@ -476,7 +486,15 @@ dump_gvars (void)
 }
 
 
+static int _has_globals=0;
 
+void set_has_globals(void) {
+_has_globals=1;
+}
+
+int has_globals(void)  {
+return _has_globals;
+}
 
 
 /* ================================ EOF =================================== */

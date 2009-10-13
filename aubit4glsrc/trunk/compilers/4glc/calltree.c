@@ -248,6 +248,7 @@ printDot (void)
 {
   FILE *dot_output = 0;
   FILE *unl_output=0;
+  char *mappedModName=0;
 
   int a;
   dot_output = fopen ("calltree.dot", "w");
@@ -271,11 +272,23 @@ printDot (void)
       if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
 	{
 	  // Its our function definition placeholder...
+     //
+            mappedModName=nodes[a].module;
+               if (acl_getenv_not_set_as_0("V4GL")) {
+               if (A4GL_strstartswith(mappedModName,acl_getenv_not_set_as_0("V4GL"))) {
+                     mappedModName+=strlen(acl_getenv_not_set_as_0("V4GL"));
+                          while (mappedModName[0]=='/') mappedModName++;
+                  }
+               }
 
 	if (nodes[a].checked==0) {
 		if (strcmp(nodes[a].module,"undefined")!=0)  {
-			fprintf(unl_output,"%s|%s|%d|%s|N\n",get_prog_name(), nodes[a].module,nodes[a].lineno, nodes[a].function);
-		}
+			fprintf(unl_output,"%s|%s|%d|%s|N\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
+		} else {
+         if (strcmp(nodes[a].function,NODE_FUNC_DEFINED)!=0) {
+			   fprintf(unl_output,"%s|missing|0|%s|M\n",get_prog_name(), nodes[a].function);
+         }
+      }
 		continue;
 	}
 
@@ -285,7 +298,7 @@ printDot (void)
 		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
 		       nodes[a].function, nodes[a].function,
 		       nodes[a].module, nodes[a].lineno);
-		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(), nodes[a].module,nodes[a].lineno, nodes[a].function);
+		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(), mappedModName,nodes[a].lineno, nodes[a].function);
 			break;
 
 		case 'F': /* Function */
@@ -293,7 +306,7 @@ printDot (void)
 		       		"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
 		       		nodes[a].function, nodes[a].function,
 		       		nodes[a].module, nodes[a].lineno);
-		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(),nodes[a].module,nodes[a].lineno, nodes[a].function);
+		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
 			break;
 	
 		case 'R': /* Report */
@@ -301,7 +314,7 @@ printDot (void)
 		   		"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
 		   		nodes[a].function, nodes[a].function,
 		   		nodes[a].module, nodes[a].lineno);
-		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(),nodes[a].module,nodes[a].lineno, nodes[a].function);
+		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
 					break;
 		case 'U': /* Undefined */
 			if (printAllFuncs) {
@@ -310,6 +323,7 @@ printDot (void)
 		   			nodes[a].function, nodes[a].function,
 		   			nodes[a].module, nodes[a].lineno);
 			}
+			   fprintf(unl_output,"%s|missing|0|%s|M\n",get_prog_name(), nodes[a].function);
 			break;
 	}
     }
@@ -703,6 +717,12 @@ system_function_dtype (char *funcname)
   if (A4GL_aubit_strcasecmp (funcname, "fgl_settitle") == 0)
     return -1;
 
+  if (A4GL_aubit_strcasecmp (funcname, "fgl_fglgui") == 0)
+    return 2;
+  if (A4GL_aubit_strcasecmp (funcname, "fgl_winbutton") == 0)
+    return 2;
+
+
 // INTs
   if (A4GL_aubit_strcasecmp (funcname, "aclfgl_sendfile_to_ui") == 0)
     return DTYPE_INT;
@@ -806,8 +826,16 @@ system_function_dtype (char *funcname)
 static int ignore_user_function(char *name) {
 static char *names[2000];
 static int n=0;
+
 if (name==NULL) { // load it up..
 	FILE *f;
+  if (acl_getenv_not_set_as_0("V4GL")) {
+     // Preload these as ignirable- as we dont want to count these hwne V4GL is set
+     // (Ventas)
+     names[n++]=strdup("let_textvar");
+     names[n++]=strdup("suchen_case_total");
+     names[n++]=strdup("let_textvar_kunde");
+  }
 	f=fopen("calltree.ignore","r");
 	if (f) {
 		char buff[256];

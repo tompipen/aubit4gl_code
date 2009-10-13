@@ -767,6 +767,10 @@ void linearise_commands_from_events (struct commands *master_list, struct on_eve
 struct s_module_entry_ptr_list  * new_module_entry_list(struct  module_entry *p) ;
 struct s_module_entry_ptr_list  * append_module_entry_list(struct s_module_entry_ptr_list  *l, struct  module_entry *p);
 int A4GL_check_fcall_for_builtin_functions(expr_str* p_fcall,char *buff,struct expr_str_list* returning,int isFuncCall  );
+
+void set_has_globals(void) ;
+int has_globals(void)  ;
+
 #ifndef DEFINED_SET_CLOBBER
 #define DEFINED_SET_CLOBBER
 void A4GL_set_clobber (char *c);

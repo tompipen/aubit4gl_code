@@ -24,7 +24,7 @@ trad_module: op_module_header
 	lastlineno=yylineno;
 	// Allow a 'default' globals file to be included in all 4gls...
 	// but - we'll only read it - if this isn't a 'GLOBALS' file too...
-	if (this_module.exported_global_variables.variables.variables_len==0) {
+	if (!has_globals()) {
 		ptr=acl_getenv_not_set_as_0("DEFAULT_GLOBALS");
 		if (ptr) {
 			strcpy(b,ptr);
@@ -315,6 +315,7 @@ glob_section : define_section END_GLOBALS {
  A4GL_lex_printcomment("/* end of globals */");
 	A4GL_debug("end of globals\n");
 	lastlineno=yylineno;
+      set_has_globals();
 	merge_variable_list(&this_module.exported_global_variables,$1);
 	set_current_variable_scope('m');
 }
