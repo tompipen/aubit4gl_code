@@ -1224,8 +1224,7 @@ namespace AubitDesktop
                 {
                     lastPing = n;
                     //Program.Show("Ping!");
-                    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>", false);
-                  //  TopWindow.SendString("<PING/>", false);
+                    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>\n", false);
                 }
             }
             
