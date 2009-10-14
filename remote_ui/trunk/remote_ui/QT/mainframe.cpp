@@ -60,7 +60,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 
    adminMenu = true;
    onlyLogin = true;
-   debugModus = true;
+   debugModus = false;
  for(int i=0; i<parameter.count(); i++)
   {
      if (parameter.at(i) == "-l")
@@ -183,7 +183,7 @@ void ConnectionsTab::addConnection()
     QString ip = clientTcp->socket->peerAddress().toString();
     port = clientTcp->socket->peerPort();
 
-    int row = listpruef.count();
+    //int row = listpruef.count();
 
     portshow = QString::number(port);
     tableWidget->insertRow(listpruef.count());
@@ -333,7 +333,7 @@ writeSettings();
 void OptionsTab::writeSettings()
 {
    QSettings settings("Ventas AG", "Ventas Desktop Client");
-   int status = settings.status();
+   //int status = settings.status();
    QString fontsettingwrite;
    fontsettingwrite = QApplication::font().toString();
    settings.setValue("font", fontsettingwrite);
