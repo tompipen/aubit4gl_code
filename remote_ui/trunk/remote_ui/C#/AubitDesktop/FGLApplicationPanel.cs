@@ -2239,6 +2239,7 @@ namespace AubitDesktop
             {
                 currentContext.NavigateToTab();
             }
+            TopWindow.currentContext = currentContext;
         }
 
         internal void NavigateAwayTab()
