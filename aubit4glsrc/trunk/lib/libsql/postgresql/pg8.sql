@@ -329,23 +329,28 @@ BEGIN
 LANGUAGE plpgsql;
 
 
+
 CREATE OR REPLACE FUNCTION matches_to_regexp (str text,esc text) RETURNS text AS $$
 declare
         lv_cnt integer;
         lv_rval text;
         lv_c char;
+        lv_contains_dot_start integer;
  BEGIN
         lv_cnt:=0;
         lv_rval:='^';
+        lv_contains_dot_start:=0;
 
 -- We should probably be looking at the esc too - but we'll leave that for now...
         for lv_cnt in 1..length(str) loop
                 lv_c:=substr(str,lv_cnt,1);
                 if lv_c='?' then
                         lv_rval:=lv_rval||'.';
+                        lv_contains_dot_start:=1;
                 else
                         if lv_c='*' then
                                 lv_rval:=lv_rval||'.*';
+                                lv_contains_dot_start:=1;
                         else
                                 if lv_c='.' then
                                         lv_rval:=lv_rval||'.';
@@ -356,6 +361,10 @@ declare
                 end if;
 
         end loop;
+
+        if lv_contains_dot_start=1 then
+                lv_rval=lv_rval||'[ ]+$';
+        end if;
 
         return lv_rval;
 
