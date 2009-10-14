@@ -460,7 +460,7 @@ namespace AubitDesktop
 
         public void NavigateAwayTab()
         {
-
+            
         }
 
 

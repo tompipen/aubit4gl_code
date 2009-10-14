@@ -1248,7 +1248,21 @@ namespace AubitDesktop
             statusStrip1.Refresh();
         }
 
-
+        internal void setActiveTab(FGLApplicationPanel fGLApplicationPanel)
+        {
+            foreach (TabPage tp in this.tabControl1.TabPages)
+            {
+                if (tp.Controls.Contains(fGLApplicationPanel))        
+                {
+                    if (tp != tabControl1.SelectedTab)
+                    {
+                        tabControl1.SelectedTab = tp;
+                    }
+                    return;
+                }
+            }
+            //Program.Show("Unable to find application panel");
+        }
     }
 
     class launcherCmdNode : TreeNode

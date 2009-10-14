@@ -164,6 +164,7 @@ namespace AubitDesktop
 
         public void NavigateAwayTab()
         {
+            
         }
 
         public string getSyncValues()

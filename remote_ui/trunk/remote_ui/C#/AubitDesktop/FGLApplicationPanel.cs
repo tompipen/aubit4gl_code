@@ -2162,7 +2162,8 @@ namespace AubitDesktop
                                         TopWindow.clrWaitCursor();
                                       
                                         currentContext = contexts[idx];
-                                        Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime)); 
+                                        Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime));
+                                        this.TopWindow.setActiveTab(this);
                                         contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
                                         Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
                                     }
