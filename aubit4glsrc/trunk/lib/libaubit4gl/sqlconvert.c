@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.168 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.169 2009-10-14 08:23:13 mikeaubury Exp $
 #
 */
 
@@ -1999,7 +1999,7 @@ CV_matches (char *type, char *string, char *esc)
       return string;
     }
 
-  if (strcmp (string, "?") == 0)
+  if (strcmp (string, "?") == 0 || A4GLSQLCV_check_requirement ("ALWAYS_USE_MATCHES_VAR_FUNC"))
     {
       int hr;
       hr = A4GLSQLCV_check_requirement ("MATCHES_VAR_FUNC");
@@ -2007,12 +2007,12 @@ CV_matches (char *type, char *string, char *esc)
 	{
 	  if (strcmp (esc, "?") != 0)
 	    {
-	      SPRINTF2 (buff, "%s(?,'%s')", current_conversion_rules[hr - 1].data.from, esc);
+	      SPRINTF3 (buff, "%s(%s,'%s')",  current_conversion_rules[hr - 1].data.from, string,esc);
 	    }
 	  else
 	    {
 	      //@ FIXME
-	      SPRINTF1 (buff, "%s(?,'?')", current_conversion_rules[hr - 1].data.from);
+	      SPRINTF2 (buff, "%s(%s,'?')", current_conversion_rules[hr - 1].data.from,string);
 	    }
 	  return buff;
 	}
@@ -2089,7 +2089,7 @@ CV_matches (char *type, char *string, char *esc)
 	  {
 	    if (strstr (buff, ".*"))
 	      {
-		strcat (buff, "$");
+		strcat (buff, "[ ]+$");
 	      }
 	  }
 	smallvar[0] = string[a];

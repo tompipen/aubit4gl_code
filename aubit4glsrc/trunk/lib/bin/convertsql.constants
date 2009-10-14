@@ -128,3 +128,4 @@ ESQL_DATATYPE Datatype to use for a 4gl datatype when generating ESQL/C code
 ALWAYS_CAST Force SQL casting when using a Variable in ESQL/C code
 LOBLAWSPECIAL  Does nothing anymore
 DEFAULT_SQL  Sql to automatically run when connecting to a database (use DEFAULT_SQL 0 = .... )
+ALWAYS_USE_MATCHES_VAR_FUNC Always use the MATCHES_VAR_FUNC - even for non variables
