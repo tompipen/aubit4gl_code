@@ -2057,79 +2057,88 @@ int A4GLPacker_A4GL_valid_common_header(char* module,char* version) {
 }
 
 void convertMatrix(struct_form *f) {
-   int scr = 1;
+   int scr = 0;
    int grid = 0;
    int table = 0;
    int dim1=0;
 
+
    int a;
    for (a = 0; a < f->metrics.metrics_len; a++) {
       int attr_no;
-      if (f->metrics.metrics_val[a].scr != scr) continue;
-      if (strlen(f->metrics.metrics_val[a].label)) continue;
+      if (f->metrics.metrics_val[a].scr != 1) continue;
       attr_no=get_attrno_for_metric(f,a);
-      if (!isInScreenArray (f, attr_no, &dim1,NULL)) {
-         f->metrics.metrics_val[a].scr = scr;
-         grid = 1;
-      }
-      else{
-         f->metrics.metrics_val[a].scr = scr+grid;
-         table = 1;
-      }
-   }
 
-   if(grid){
-      struct s_layout *layout;
-      layout=malloc(sizeof(struct s_layout));
+      if(!isInScreenArray (f, attr_no, &dim1,NULL)) {
+         table=0; //we are not in table (anymore)
 
-      layout->layout_type = LAYOUT_VBOX;
-      layout->children.children_len = 0;
-      layout->attrib = 0;
-      layout->screen_no = 0;
-      if (layout->children.children_len==0) {
-         layout->children.children_val=NULL;
-      }
+         if(!grid){
+            scr++;
+            grid = 1;
 
-      struct s_layout *grid_layout;
-      grid_layout=malloc(sizeof(struct s_layout));
-      grid_layout->layout_type = LAYOUT_GRID;
-      grid_layout->attrib = 0;
-      grid_layout->screen_no = scr;
-      grid_layout->children.children_len = 0;
 
-      layout->children.children_len++;
-      layout->children.children_val=realloc(layout->children.children_val, sizeof(struct s_layout *)*layout->children.children_len);
-      layout->children.children_val[layout->children.children_len-1]=grid_layout;
-      scr++;
+            if(f->layout == 0){
+               struct s_layout *layout;
+               layout=malloc(sizeof(struct s_layout));
+               layout->layout_type = LAYOUT_VBOX;
+               layout->children.children_len = 0;
+               layout->attrib = 0;
+               layout->screen_no = 0;
+               if (layout->children.children_len==0) {
+                  layout->children.children_val=NULL;
+               }
 
-      f->layout = layout;
-   }
+               f->layout = layout;
+            }
 
-   if(table){
-      struct s_layout *table_layout;
-      table_layout=malloc(sizeof(struct s_layout));
+            struct s_layout *grid_layout;
+            grid_layout=malloc(sizeof(struct s_layout));
+            grid_layout->layout_type = LAYOUT_GRID;
+            grid_layout->attrib = 0;
+            grid_layout->screen_no = scr;
+            grid_layout->children.children_len = 0;
 
-      if(f->layout == 0){
-         table_layout->layout_type = LAYOUT_TABLE;
-         table_layout->children.children_len = 0;
-         table_layout->attrib = 0;
-         table_layout->screen_no = scr+grid;
-         if (table_layout->children.children_len==0) {
-            table_layout->children.children_val=NULL; 
+            f->layout->children.children_len++;
+            f->layout->children.children_val=realloc(f->layout->children.children_val, sizeof(struct s_layout *)*f->layout->children.children_len);
+            f->layout->children.children_val[f->layout->children.children_len-1]=grid_layout;
          }
-         f->layout = table_layout;
       }
       else{
-         table_layout->layout_type = LAYOUT_TABLE;
-         table_layout->attrib = 0;
-         table_layout->screen_no = scr;
-         table_layout->children.children_len = 0;
+         grid = 0;
 
-         f->layout->children.children_len++;
-         f->layout->children.children_val=realloc(f->layout->children.children_val, sizeof(struct s_layout *)*f->layout->children.children_len);
-         f->layout->children.children_val[f->layout->children.children_len-1]=table_layout;
+         if(!table){
+            scr++;
+            table = 1;
+
+            if(f->layout == 0){
+               struct s_layout *layout;
+               layout=malloc(sizeof(struct s_layout));
+               layout->layout_type = LAYOUT_VBOX;
+               layout->children.children_len = 0;
+               layout->attrib = 0;
+               layout->screen_no = 0;
+               if (layout->children.children_len==0) {
+                  layout->children.children_val=NULL;
+               }
+
+               f->layout = layout;
+            }
+
+            struct s_layout *table_layout;
+            table_layout=malloc(sizeof(struct s_layout));
+            table_layout->layout_type = LAYOUT_TABLE;
+            table_layout->attrib = 0;
+            table_layout->screen_no = scr;
+            table_layout->children.children_len = 0;
+
+            f->layout->children.children_len++;
+            f->layout->children.children_val=realloc(f->layout->children.children_val, sizeof(struct s_layout *)*f->layout->children.children_len);
+            f->layout->children.children_val[f->layout->children.children_len-1]=table_layout;
+         }
       }
+      f->metrics.metrics_val[a].scr = scr;
    }
+
 }
 
 static int isCharType(int n) {
