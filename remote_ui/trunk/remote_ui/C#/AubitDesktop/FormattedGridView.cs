@@ -122,16 +122,34 @@ namespace AubitDesktop
 
         FGLContextType _context = FGLContextType.ContextNone;
 
-        internal int getCellNumberForField(string s)
+        internal int getCellNumberForField(string fieldName)
         {
             if (table == null) return -1;
 
+            int dim;
+            if (fieldName.Contains("["))
+            {
+                int idx;
+                idx = fieldName.IndexOf("[");
+                string sDim = fieldName.Substring(idx + 1);
+                string srest;
+                srest = sDim.Substring(sDim.IndexOf("]")+1);
+                sDim = sDim.Substring(0, sDim.IndexOf("]"));
+                //Replace("]", "");
+
+                dim = Convert.ToInt32(sDim);
+                fieldName = fieldName.Substring(0, idx) + srest;
+
+            }
+
             for (int a = 0; a < table.TableColumn.Length; a++)
             {
-                if (table.TableColumn[a].name.ToLower() == s.ToLower()) return a;
-                if (table.TableColumn[a].colName.ToLower() == s.ToLower()) return a;
-                if (table.tabName.ToLower()+"."+ table.TableColumn[a].colName.ToLower() == s.ToLower()) return a;
-                if (table.TableColumn[a].sqlTabName.ToLower() + "." + table.TableColumn[a].colName.ToLower() == s.ToLower()) return a;
+
+
+                if (table.TableColumn[a].name.ToLower() == fieldName.ToLower()) return a;
+                if (table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
+                if (table.tabName.ToLower()+"."+ table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
+                if (table.TableColumn[a].sqlTabName.ToLower() + "." + table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
             }
             return -1;
         }
