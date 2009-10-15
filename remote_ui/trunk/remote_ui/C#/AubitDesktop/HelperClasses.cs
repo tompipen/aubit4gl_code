@@ -306,6 +306,10 @@ namespace AubitDesktop
 
         public void addForm(string name, FGLForm f)
         {
+            if (OpenForms.Contains(name))
+            {
+                OpenForms.Remove(name);
+            }
             OpenForms.Add(name, f);
         }
 

@@ -35,7 +35,7 @@ namespace AubitDesktop
         private FGLOptions options;
         public int ApplicationEnvelopeID;
         private List<UIContext> contexts;
-        private List<AubitTSBtn> Fkeys;
+      //  private List<AubitTSBtn> Fkeys;
         private string _errortext;
         private string _commenttext;
         private string _messagetext;
@@ -187,7 +187,7 @@ namespace AubitDesktop
             this.AutoScroll = true;
             this.SetAutoScrollMargin(5, 5);
             
-            this.Fkeys = new List<AubitTSBtn>();
+          //  this.Fkeys = new List<AubitTSBtn>();
             this.AutoSize = true;
             this.Dock = DockStyle.Fill;
             this.Visible = true;
@@ -317,9 +317,11 @@ namespace AubitDesktop
             // We dont want any keys active ? 
             if (keys == null && actions==null)
             {
-                foreach (AubitTSBtn o in Fkeys)
+                foreach (AubitTSBtn o in toolStrip1)
                 {
-                    o.Visible = false;
+                    if (AubitTSBtn.isSystemAction(o.ID)) continue;
+                        o.ID = null;
+                    
                 }
 
                 if (tsBtnCancel!=null)
@@ -336,11 +338,14 @@ namespace AubitDesktop
 
                 ensureAcceptInterruptButtonsOnToolStrip();
                 setStockButtons(showAcceptInterrupt, showUpDownButtons, showInsertDeleteButtons);
+
+
                 // Ok - there are some keys - but not all of them will be used..
                 // so we need to remove any that are not in use by making them invisible
-                foreach (AubitTSBtn o in Fkeys)
-                {                  
-                            o.Visible = false;      
+                foreach (AubitTSBtn o in toolStrip1)
+                {
+                        if (AubitTSBtn.isSystemAction(o.ID)) continue;
+                        o.ID = null;
                 }
 
                 if (keys != null)
@@ -365,9 +370,6 @@ namespace AubitDesktop
                         }
                         else
                         {
-
-                            o.Visible = true;
-
                             o.ID = key.ID;
                         }
                     }
@@ -391,21 +393,30 @@ namespace AubitDesktop
                         o = getKeyFromToolbar(action.ACTION);
                         if (o == null)
                         {
-                            throw new Exception("This shouldn't happen - key is missing from menubar");
+                            MessageBox.Show("Program error : No toolbar button exists for action " + action.ACTION);
+                           // throw new Exception("This shouldn't happen - key is missing from menubar");
                         }
                         else
                         {
-
-                            o.Visible = true;
                             o.ID = action.ID;
                         }
                     }
                 }
             }
 
+            // Ensure that there are no options which are disabled by a HIDE OPTION or SHOW OPTION
+            // These will be disabled in the ActivateContext of the Menu itself *AFTER* this function has been 
+            // called...
+            foreach (AubitTSBtn a in toolStrip1)
+            {
+                a.forceDisable = false;
+            }
             TopWindow.setToolbar(toolStrip1);
             this.ResumeLayout();
         }
+
+
+
 
         private void setStockButtons(bool showAcceptInterrupt, bool showUpDownButtons, bool showInsertDeleteButtons)
         {
@@ -910,10 +921,10 @@ namespace AubitDesktop
             ensureAcceptInterruptButtonsOnToolStrip();
 
             // Does it already exist ? 
-            for (int a = 0; a < Fkeys.Count; a++)
+            for (int a = 0; a < toolStrip1.Count; a++)
             {
-                Console.WriteLine(Fkeys[a].ActiveKey + " " + Key);
-                if (Fkeys[a].ActiveKey == Key)
+                Console.WriteLine(toolStrip1[a].ActiveKey + " " + Key);
+                if (toolStrip1[a].ActiveKey == Key)
                 {
                     //Fkeys[a].Text = Text;
                     return;
@@ -932,7 +943,7 @@ namespace AubitDesktop
             b.Visible = false;
             //b.Click += new EventHandler(b_Click);
             b.clickHandler = b_Click;
-            Fkeys.Add(b);
+           // Fkeys.Add(b);
             this.toolStrip1.Add(b);
         }
 
@@ -943,11 +954,11 @@ namespace AubitDesktop
             ensureAcceptInterruptButtonsOnToolStrip();
 
             // Does it already exist ? 
-            for (int a = 0; a < Fkeys.Count; a++)
+            for (int a = 0; a < toolStrip1.Count; a++)
             {
-                if (Fkeys[a].ActiveKey == Key)
+                if (toolStrip1[a].ActiveKey == Key)
                 {
-                    Fkeys[a].Text = Text;
+                    toolStrip1[a].Text = Text;
                     return;
                 }
             }
@@ -958,14 +969,14 @@ namespace AubitDesktop
         {
             
                 
-                tsBtnAccept = new AubitDesktop.AubitTSBtn();
-                tsBtnCancel = new AubitDesktop.AubitTSBtn();
-                tsBtnUp = new AubitTSBtn();
-                tsBtnDown = new AubitTSBtn();
-                tsBtnPgUp = new AubitTSBtn();
-                tsBtnPgDown = new AubitTSBtn();
-                tsBtnInsert = new AubitTSBtn();
-                tsBtnDelete = new AubitTSBtn();
+                tsBtnAccept = new AubitDesktop.AubitTSBtn(true);
+                tsBtnCancel = new AubitDesktop.AubitTSBtn(true);
+                tsBtnUp = new AubitTSBtn(true);
+                tsBtnDown = new AubitTSBtn(true);
+                tsBtnPgUp = new AubitTSBtn(true);
+                tsBtnPgDown = new AubitTSBtn(true);
+                tsBtnInsert = new AubitTSBtn(true);
+                tsBtnDelete = new AubitTSBtn(true);
 
 
 
@@ -1224,7 +1235,8 @@ namespace AubitDesktop
                 {
                     lastPing = n;
                     //Program.Show("Ping!");
-                    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>\n", false);
+                    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>", false);
+                  //  TopWindow.SendString("<PING/>", false);
                 }
             }
             
@@ -1333,6 +1345,11 @@ namespace AubitDesktop
                             if (oname.EndsWith(".4sm"))
                             {
                                 this.TopWindow.loadApplicationLauncherTree(oname,this.ApplicationEnvelopeID);
+                            }
+
+                            if (oname.EndsWith(".4tb"))
+                            {
+                                this.loadToolbar(oname, this.ApplicationEnvelopeID);
                             }
                         }
                     }
@@ -1481,47 +1498,7 @@ namespace AubitDesktop
                 #region ADDTOTOOLBAR
                 if (a is ADDTOTOOLBAR)
                 {
-                    AubitTSBtn btn;
-                    ADDTOTOOLBAR o;
-
-                    btn=null;
-                    o = (ADDTOTOOLBAR)a;
-                    foreach (AubitTSBtn b in programButtons)
-                    {
-                        if (b.programTag == o.TAG)
-                        {
-                            btn = b; break;
-                        }
-                    }
-                    if (btn == null)
-                    {
-                        btn = new AubitTSBtn();
-                        btn.programTag = o.TAG;
-                        programButtons.Add(btn);
-                    }
-                    int keyCode = FGLUtils.getKeyCodeFromKeyName(o.KEYVAL);
-                    if (keyCode == -1)
-                    {
-                        btn.ActiveKey = o.KEYVAL;
-                    }
-                    else
-                    {
-                        btn.ActiveKey = "" + keyCode;
-                    }
-                    btn.isProgramAdded = true;
-                    btn.Text = o.BUTTON;
-                    btn.programTag = o.TAG;
-                    btn.clickHandler = b_Click;
-                    try
-                    {
-                        //Image i = getImageFromName(o.IMAGE);
-                        btn.Image=FGLUtils.getImageFromName( o.IMAGE);
-                    }
-                    catch (Exception Ex)
-                    {
-                    }
-                    btn.ToolTipText = o.TOOLTIP;
-                    toolStrip1.Add(btn);
+                    createToolbarButton((ADDTOTOOLBAR)a);
                     commands.Remove(a);
                     continue;
                 } 
@@ -2205,6 +2182,72 @@ namespace AubitDesktop
             Console.WriteLine("Consumed:"+(DateTime.Now-stime));
         }
 
+        private void createToolbarButton(ADDTOTOOLBAR o)
+        {
+            AubitTSBtn btn;
+
+            if (o == null)
+            {
+                o = new ADDTOTOOLBAR();
+                o.TOOLTIP = "";
+                o.TAG = "";
+                o.KEYVAL = "";
+                o.IMAGE = "";
+                o.ALWAYSSHOW = "0";
+                o.BUTTON = "|";
+            }
+            btn = null;
+
+            foreach (AubitTSBtn b in programButtons)
+            {
+                if (b.programTag == o.TAG)
+                {
+                    btn = b; break;
+                }
+            }
+
+            if (btn == null)
+            {
+                btn = new AubitTSBtn();
+                btn.programTag = o.TAG;
+                programButtons.Add(btn);
+            }
+
+            int keyCode = FGLUtils.getKeyCodeFromKeyName(o.KEYVAL);
+            if (keyCode == -1)
+            {
+                btn.ActiveKey = o.KEYVAL;
+            }
+            else
+            {
+                btn.ActiveKey = "" + keyCode;
+            }
+            btn.isProgramAdded = true;
+            btn.Text = o.BUTTON;
+            btn.programTag = o.TAG;
+            btn.clickHandler = b_Click;
+            btn.alwaysShow=showMode.ShowAlways;
+
+            switch (o.ALWAYSSHOW)
+            {
+                case "1": btn.alwaysShow = showMode.ShowAlways; break;
+                case "0": btn.alwaysShow = showMode.ShowNever; break;
+                case "2": btn.alwaysShow = showMode.ShowAuto; break;
+            }
+
+
+            try
+            {
+                //Image i = getImageFromName(o.IMAGE);
+                btn.Image = FGLUtils.getImageFromName(o.IMAGE);
+            }
+            catch (Exception Ex)
+            {
+            }
+            btn.ToolTipText = o.TOOLTIP;
+            toolStrip1.Add(btn);
+        }
+
         
 
 
@@ -2385,6 +2428,127 @@ namespace AubitDesktop
         {
             return ApplicationWindows.FindRecord(fIELD);
         }
+
+
+
+        public void loadToolbar(string XMLFile, int applicationLauncherId)
+        {
+            AubitDesktop.Xml.ToolBar sToolbar = null;
+            System.IO.StreamReader file = null;
+            System.Xml.Serialization.XmlSerializer reader = new
+            System.Xml.Serialization.XmlSerializer(typeof(AubitDesktop.Xml.ToolBar));
+            try
+            {
+                file =
+                   new System.IO.StreamReader(XMLFile);
+            }
+            catch (Exception e)
+            {
+                Program.Show(e.ToString(), "Error getting XML application launcher file");
+                return;
+            }
+
+            try
+            {
+                // Deserialize the content of the file into the settings...
+                sToolbar = (AubitDesktop.Xml.ToolBar)reader.Deserialize(file);
+                file.Close();
+            }
+            catch (Exception e)
+            {
+                Program.Show(e.ToString(), "Unable to load toolbar");
+            }
+
+            if (sToolbar != null)
+            {
+                toolStrip1.Clear();
+                loadButtonsInToolbar(sToolbar, applicationLauncherId);
+                addDefaultToolstripItems();
+            }
+        }
+
+        internal bool hasToolbarButton(string text)
+        {
+            foreach (AubitTSBtn a in toolStrip1) {
+                if (a.ActiveKey == text) return true;
+            }
+
+            return false;
+        }
+
+        private void loadButtonsInToolbar(AubitDesktop.Xml.ToolBar sToolbar, int applicationLauncherId)
+        {
+            if (sToolbar == null) return;
+            if (sToolbar.Items == null) return;
+            if (sToolbar.Items.Length == 0) return;
+
+
+            for (int a = 0; a < sToolbar.Items.Length; a++)
+            {
+                if (sToolbar.Items[a] is AubitDesktop.Xml.ToolBarItem)
+                {
+                    AubitDesktop.Xml.ToolBarItem tbi;
+                    tbi = (AubitDesktop.Xml.ToolBarItem)sToolbar.Items[a];
+                    ADDTOTOOLBAR addToToolBar;
+
+                    addToToolBar = new ADDTOTOOLBAR();
+                    switch (tbi.hidden)
+                    {
+                        case "1":
+                            addToToolBar.ALWAYSSHOW = "0";
+                            break;
+
+                        case "0":
+                            addToToolBar.ALWAYSSHOW = "1";
+                            break;
+
+                        case "2":
+                            addToToolBar.ALWAYSSHOW = "2";
+                            break;
+                    }
+                    addToToolBar.BUTTON = tbi.text;
+                    addToToolBar.IMAGE=tbi.image;
+                    addToToolBar.KEYVAL = FGLUtils.getKeyCodeFromKeyName(tbi.name).ToString();
+
+                    if (addToToolBar.KEYVAL == "-1")
+                    {
+                        addToToolBar.KEYVAL = tbi.name;
+                    }
+
+                    addToToolBar.TAG = "tb_" + addToToolBar.KEYVAL;
+                    addToToolBar.TOOLTIP=tbi.comment;
+                    createToolbarButton(addToToolBar);
+                }
+
+                if (sToolbar.Items[a] is AubitDesktop.Xml.ToolBarSeparator) {
+                    createToolbarButton(null);
+                }
+            }
+           
+        }
+
+
+
+        internal void setToolBarEnabled(string ID, bool hidden)
+        {
+            foreach (AubitTSBtn a in toolStrip1) {
+                if (a.ID == ID)
+                {
+                    if (hidden)
+                    {
+                        // Its not enabled in the MENU 
+                        // so it should not be enabled in the toolbar either...
+                        a.forceDisable = true;
+                    }
+                    else
+                    {
+
+                        a.forceDisable = false;
+                    }
+                }
+            }
+        }
+
     }
 
 }

@@ -82,4 +82,59 @@ namespace AubitDesktop.Xml
         [System.Xml.Serialization.XmlElementAttribute()]
         public StartMenuGroup[] StartMenuGroup;
     }
+
+
+
+
+
+
+
+
+
+    /// <remarks/>
+    public class ToolBarItem
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string image;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string name;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string text;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string comment;
+
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string hidden;
+    }
+
+    /// <remarks/>
+    public class ToolBarSeparator
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string hidden;
+    }
+
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
+    public class ToolBar
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ToolBarItem", Type = typeof(ToolBarItem))]
+        [System.Xml.Serialization.XmlElementAttribute("ToolBarSeparator", Type = typeof(ToolBarSeparator))]
+        public object[] Items;
+    }
+
+   
 }

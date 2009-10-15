@@ -133,7 +133,7 @@ namespace AubitDesktop
 
         void mainfrm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            throw new Exception("The method or operation is not implemented.");
+           // throw new Exception("The method or operation is not implemented.");
         }
 
         private void showInterruptKeycode()

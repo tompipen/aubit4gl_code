@@ -35,6 +35,7 @@ namespace AubitDesktop
         FGLApplicationPanel mainWin;
         private ToolTip tooltips = new ToolTip();
 
+
         GroupBox menuPanel;
         public event UIEventHandler EventTriggered;
 
@@ -43,7 +44,7 @@ namespace AubitDesktop
             return _contextIsActive;
         }
         List<ONKEY_EVENT> keyList;
-
+        List<ON_ACTION_EVENT> onActionList;
 
         public void toolBarAcceptClicked()
         {
@@ -202,7 +203,11 @@ namespace AubitDesktop
             menuPanel.Text = m.TITLE;
             menuPanel.Controls.Clear();
             menuPanel.Dock = DockStyle.Fill;
+
+
             keyList = new List<ONKEY_EVENT>();
+            onActionList = new List<ON_ACTION_EVENT>();
+            
 
             foreach (MENUCOMMAND a in m.MENUCOMMANDS)
             {
@@ -222,6 +227,7 @@ namespace AubitDesktop
                     {
                         ONKEY_EVENT e = new ONKEY_EVENT();
                         e.ID = a.ID;
+                        
                         e.KEY = s;
                         keyList.Add(e);
                     }
@@ -262,6 +268,7 @@ namespace AubitDesktop
                         if (s.Trim() != "" && n != -1)
                         {
                             e.ID = a.ID;
+                            
                             e.KEY = s;
                             if (n <= 26 || n > 255)
                             {
@@ -273,7 +280,26 @@ namespace AubitDesktop
 
                     }
 
+                    if (a.TEXT != null && a.TEXT != "")
+                    {
+                        if (f.hasToolbarButton(a.TEXT.ToLower()))
+                        {
+                            ON_ACTION_EVENT e;
+                            e=new ON_ACTION_EVENT();
+                            e.ACTION=a.TEXT.ToLower();
+                            e.ID=a.ID;
+                           
+                            onActionList.Add(e);
+
+                            // NOTE : 
+                            // We might want to add a 'continue' here - so
+                            // we dont have a menubutton of we have a toolbar button...
+
+                        }
+                    }
+
                     btn = new UIMenuBarButton(txt, a.ID);
+                    
 
                     if (a.DESCRIPTION != null)
                     {
@@ -288,7 +314,9 @@ namespace AubitDesktop
                     top += btn.Height;
                 }
             }
-            mainWin.setActiveToolBarKeys(keyList, null, false, false, false);
+
+
+         //   mainWin.setActiveToolBarKeys(keyList, onActionList, false, false, false);
         }
 
 
@@ -297,9 +325,12 @@ namespace AubitDesktop
         {
             for (int a = 0; a < menuPanel.Controls.Count; a++)
             {
-                if (menuPanel.Controls[a].Text == text || text == "ALL")
+                if (menuPanel.Controls[a].Text == text || text == "ALL" || text == "_AlL_")
                 {
-                    menuPanel.Controls[a].Enabled = true;
+                    UIMenuBarButton uib;
+                    uib = (UIMenuBarButton)menuPanel.Controls[a];
+                    uib.Hidden = false;
+                  //  menuPanel.Controls[a].Enabled = true;
                 }
             }
         }
@@ -309,9 +340,13 @@ namespace AubitDesktop
         {
             for (int a = 0; a < menuPanel.Controls.Count; a++)
             {
-                if (menuPanel.Controls[a].Text == text || text == "ALL")
+                if (menuPanel.Controls[a].Text == text || text == "ALL" || text=="_AlL_")
                 {
-                    menuPanel.Controls[a].Enabled = false;
+                    UIMenuBarButton uib;
+                    uib = (UIMenuBarButton)menuPanel.Controls[a];
+                    uib.Hidden = true;
+                    //menuPanel.Controls[a].Enabled = false;
+                    
                 }
             }
         }
@@ -338,12 +373,12 @@ namespace AubitDesktop
 
 
 
-
-
-
         public void ActivateContext(UIEventHandler UIMenuContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
-            mainWin.setActiveToolBarKeys(keyList,null,false);
+            mainWin.setActiveToolBarKeys(keyList,onActionList,false);
+            ensureKeyAndActionsAreDisabledOrEnabled();
+
+
             EventTriggered += new UIEventHandler(UIMenuContext_EventTriggered);
             if (!_contextIsActive)
             {
@@ -354,6 +389,27 @@ namespace AubitDesktop
             // WEBGUI menuPanel.BackColor = System.Drawing.Color.White;
         }
 
+        private void ensureKeyAndActionsAreDisabledOrEnabled()
+        {
+            for (int a = 0; a < menuPanel.Controls.Count; a++)
+            {
+                if (menuPanel.Controls[a] is UIMenuBarButton)
+                {
+                    UIMenuBarButton uib;
+                    uib = (UIMenuBarButton)menuPanel.Controls[a];
+                    setEnabled(uib.ID,uib.Hidden);
+                }
+                
+            }
+            
+            
+        }
+
+        private void setEnabled(string ID, bool hidden)
+        {
+            mainWin.setToolBarEnabled(ID, hidden);
+        }
+
         public void NavigateAwayTab()
         {
             mainWin.SetMenuBarButtons(null);
@@ -362,7 +418,7 @@ namespace AubitDesktop
         public void NavigateToTab()
         {
             mainWin.SetMenuBarButtons(this.menuPanel);
-            mainWin.setActiveToolBarKeys(keyList, null, false);
+            mainWin.setActiveToolBarKeys(keyList, onActionList, false);
         }
 
 
@@ -414,6 +470,22 @@ namespace AubitDesktop
             this.Text = ButtonText;
             this._ID = ID;
             this.TabIndex = 1;
+            this.hidden = false;
+        }
+
+        private bool hidden;
+
+        internal bool Hidden
+        {
+            get { return hidden; }
+            set
+            {
+                hidden = value;
+
+
+                if (hidden) Enabled = false;
+                else Enabled = true;
+            }
         }
     }
 

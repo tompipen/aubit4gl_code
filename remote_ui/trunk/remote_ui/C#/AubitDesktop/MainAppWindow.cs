@@ -1100,7 +1100,6 @@ namespace AubitDesktop
            
         }
 
-        
 
         private void showApplicationMenu(AubitDesktop.Xml.StartMenu sMenu,int applicationLauncherId)
         {

@@ -78,6 +78,9 @@
     <Compile Include="AubitTSBtn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FGLApplicationPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FormattedGridView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -90,9 +93,6 @@
     <Compile Include="UIContextDisplayArrayInTable.cs" />
     <Compile Include="EnvelopeReader.cs" />
     <Compile Include="Eval.cs" />
-    <Compile Include="FGLApplicationPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="FGLBrowserFieldWidget.cs">
     </Compile>
     <Compile Include="FGLButtonFieldWidget.cs">
