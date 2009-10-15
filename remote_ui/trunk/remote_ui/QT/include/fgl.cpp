@@ -62,6 +62,7 @@ namespace Fgl {
 
    bool fgl_using(QString fmt, QString *value)
    {
+      return true;
    }
 
    bool fgl_using_date(QString fmt, QString *value)
@@ -71,10 +72,13 @@ namespace Fgl {
       fmt = fmt.replace("mmm", "MMM");
       fmt = fmt.replace("mm", "MM");
       *value = d.toString(fmt);
+
+      return true;
    }
 
    bool fgl_using_string(QString fmt, QString *value, bool isneg)
    {
+      return true;
    }
 
    DataType decodeDataType(QString type)
@@ -278,7 +282,6 @@ namespace Fgl {
          case DTYPE_SMFLOAT:
          case DTYPE_MONEY:
             {
-               double d;
                bool ok;
                value.toDouble(&ok);
                if(ok)
@@ -364,4 +367,5 @@ namespace Fgl {
              return false;
       }
    }
+
 }

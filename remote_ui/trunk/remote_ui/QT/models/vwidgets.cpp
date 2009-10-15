@@ -236,7 +236,6 @@ void Button::buttonClicked()
    event.type = Fgl::ONKEY_EVENT;
    event.attribute = this->action;
    emit fieldEvent(event);
-   qDebug() << "FIELDEVENT!";
 }
 
 //------------------------------------------------------------------------------
@@ -278,11 +277,12 @@ void LineEdit::check()
    QString text = this->text();
 
    //Set textformat if format given
-   if(!qs_format.isEmpty()&& Fgl::isValidForType(dt_dataType, text, qs_format)){
+   if(Fgl::isValidForType(dt_dataType, text, qs_format)){
       this->setText(text);
    }
    else{
       //TODO: send error to messagebar
+      emit error("ERROR in Character conversion");
       this->setText("");
    }
 }
@@ -304,7 +304,21 @@ void LineEdit::setSqlType(QString sqlType)
 { 
    Fgl::DataType dataType = Fgl::decodeDataType(sqlType);
 
+
    dt_dataType = dataType;
+
+   switch(dt_dataType){
+       case Fgl::DTYPE_SMINT:
+       case Fgl::DTYPE_INT:
+       case Fgl::DTYPE_SMFLOAT:
+       case Fgl::DTYPE_FLOAT:
+       case Fgl::DTYPE_DECIMAL:
+          this->setAlignment(Qt::AlignRight);
+          break;
+
+       default:
+          this->setAlignment(Qt::AlignJustify|Qt::AlignLeft);
+   }
    this->qs_sqlType = sqlType;
    WidgetHelper::setValidator(this);
    valid = this->validator();
