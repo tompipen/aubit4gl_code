@@ -2073,8 +2073,20 @@ namespace AubitDesktop
                 {
                     FRONTCALL call;
                     call = (FRONTCALL)a;
-                    immediateContext = new UIMiscContext(this, call);
-                   
+
+                    // If we've got a 'RETURN' value - then we need to generate a context for it
+                    // so that we can send back the RETURN values when we get a WAITFOREVENT..
+                    //
+                    // If we *dont* have any RETURN values - we'll never get a WAITFOREVENT
+                    // so we need to call the frontcall *now*...
+                    if (call.EXPECT != "0")
+                    {
+                        immediateContext = new UIMiscContext(this, call);
+                    }
+                    else
+                    {
+                        UIMiscContext.FrontCallNoReturns(this, call);
+                    }
                     commands.Remove(a);
                     continue;
                 }
@@ -2389,9 +2401,6 @@ namespace AubitDesktop
             arr[0] = p;
             l=FindFields(arr);
             return l;
-
-            
-            
         }
 
         internal void setLastKey(string keycode)
