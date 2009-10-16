@@ -312,7 +312,8 @@ namespace AubitDesktop
             // 
             // loadToolStripMenuItem
             // 
-
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             // 
             // toolbarToolStripMenuItem
             // 

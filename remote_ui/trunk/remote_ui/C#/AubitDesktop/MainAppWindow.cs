@@ -1262,6 +1262,18 @@ namespace AubitDesktop
             }
             //Program.Show("Unable to find application panel");
         }
+
+        internal void setToolstripHeight(int p)
+        {
+            topWindowToolStrip.AutoSize = false;
+            topWindowToolStrip.Height = p;
+        }
+
+        internal void setToolstripImageSize(int p)
+        {
+            topWindowToolStrip.Size = new Size(p, p);
+            
+        }
     }
 
     class launcherCmdNode : TreeNode
