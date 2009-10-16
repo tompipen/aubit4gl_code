@@ -1285,7 +1285,7 @@ namespace AubitDesktop
 
         internal void setToolstripImageSize(int p)
         {
-            topWindowToolStrip.Size = new Size(p, p);
+            topWindowToolStrip.ImageScalingSize = new Size(p, p);
             
         }
     }
