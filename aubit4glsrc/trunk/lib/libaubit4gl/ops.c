@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.162 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: ops.c,v 1.163 2009-10-16 10:04:39 mikeaubury Exp $
 #
 */
 
@@ -7235,6 +7235,7 @@ DTYPE_SERIAL
   add_base_channel_support();
   add_ui_interface_support();
   add_ui_window_support();
+  add_ui_combobox_support();
   add_dyn_support();
 
 

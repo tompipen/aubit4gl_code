@@ -179,7 +179,7 @@ static int ui_window_settext(int *objectID, int nParam) {
 	
 
         if (!ensureObject("ui.window",*objectID,&ptr)) {
-                A4GL_exitwith("Not an object of type ui.form - or not initialized");
+                A4GL_exitwith("Not an object of type ui.window - or not initialized");
                 return 0;
         }
 

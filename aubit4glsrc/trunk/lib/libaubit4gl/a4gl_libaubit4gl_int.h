@@ -44,6 +44,7 @@
 void add_base_channel_support(void) ;
 void add_ui_interface_support(void) ;
 void add_ui_window_support(void) ;
+void add_ui_combobox_support(void) ;
 void add_dyn_support(void) ;
 
 struct s_save_binding {
