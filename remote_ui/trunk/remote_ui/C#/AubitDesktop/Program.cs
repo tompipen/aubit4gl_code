@@ -139,6 +139,12 @@ namespace AubitDesktop
                 }
             }
 
+            if (Program.AppSettings.defaultEncoding==null)
+            {
+                Program.AppSettings.defaultEncoding = "ISO8859-1";
+                Program.SaveSettings();
+            }
+
             if (Program.AppSettings.defaultEncoding.Trim() == "")
             {
                 Program.AppSettings.defaultEncoding = "ISO8859-1";
