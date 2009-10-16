@@ -232,6 +232,21 @@ namespace AubitDesktop
             set
             {
                 activeKey = value;
+                switch (activeKey)
+                {
+                    case "INTERRUPT":
+
+                    case "ACCEPT":
+                    case "2016": // ACCEPT...
+
+                    case "INSERT":
+                    case "2014": // Insert...
+
+                    case "DELETE":
+                    case "2015": // Delete...
+                        isInternalKey = true;
+                        break;
+                }
             }
         }
     }
