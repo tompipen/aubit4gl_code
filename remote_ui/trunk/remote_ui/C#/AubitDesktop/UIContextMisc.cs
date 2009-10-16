@@ -202,7 +202,6 @@ namespace AubitDesktop
 
 
 
-
         public void ActivateContext(UIEventHandler UIContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
             EventTriggered = UIContext_EventTriggered;
@@ -220,6 +219,7 @@ namespace AubitDesktop
                     }
                     break;
 
+
                 case MiscContextType.MiscContextWinquestion:
                     string r = AubitMessageBox.Show(wq);
                     r = r.Trim();
@@ -227,6 +227,7 @@ namespace AubitDesktop
                     switch (r.ToUpper())
                     {
                         case "YES": rd = "-101"; break;
+
 
                         case "IGNORE": rd = "-120"; break;
                         case "CANCEL": rd = "-118"; break;
