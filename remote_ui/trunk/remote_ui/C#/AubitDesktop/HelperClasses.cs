@@ -673,6 +673,20 @@ namespace AubitDesktop
             return false;
         }
 
+
+        internal string getColumnName()
+        {
+            int a = fullName.IndexOf('.');
+            return fullName.Substring(a + 1);
+        }
+
+        internal string getTableName()
+        {
+         
+            int a = fullName.IndexOf('.');
+            return fullName.Substring(0,a - 1);
+        
+        }
     };
 
     class FGLWindow
