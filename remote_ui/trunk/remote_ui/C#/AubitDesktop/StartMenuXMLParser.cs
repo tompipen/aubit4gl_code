@@ -129,6 +129,18 @@ namespace AubitDesktop.Xml
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
     public class ToolBar
     {
+        /// <summary>
+        /// height of the toolbar (Aubit Extension)
+        /// </summary>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string height;
+
+        /// <summary>
+        /// Size of the images on the toolbar (Aubit Extension)
+        /// </summary>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        
+        public string imageSize;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("ToolBarItem", Type = typeof(ToolBarItem))]
