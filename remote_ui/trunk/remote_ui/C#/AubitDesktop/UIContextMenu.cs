@@ -213,6 +213,7 @@ namespace AubitDesktop
             {
                 Button btn;
                 string txt;
+                bool isOnToolbar = false;
                 txt = a.TEXT;
                 if (txt.Length == 0) txt = null;
 
@@ -290,7 +291,7 @@ namespace AubitDesktop
                             e.ID=a.ID;
                            
                             onActionList.Add(e);
-
+                            isOnToolbar = true;
                             // NOTE : 
                             // We might want to add a 'continue' here - so
                             // we dont have a menubutton of we have a toolbar button...
@@ -316,8 +317,11 @@ namespace AubitDesktop
                         btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
                     }
 
-                    menuPanel.Controls.Add(btn);
-                    top += btn.Height;
+                    if (!isOnToolbar)
+                    {
+                        menuPanel.Controls.Add(btn);
+                        top += btn.Height;
+                    }
                 }
             }
 
@@ -336,7 +340,7 @@ namespace AubitDesktop
                     UIMenuBarButton uib;
                     uib = (UIMenuBarButton)menuPanel.Controls[a];
                     uib.Hidden = false;
-                  //  menuPanel.Controls[a].Enabled = true;
+                  
                 }
             }
         }
@@ -351,7 +355,7 @@ namespace AubitDesktop
                     UIMenuBarButton uib;
                     uib = (UIMenuBarButton)menuPanel.Controls[a];
                     uib.Hidden = true;
-                    //menuPanel.Controls[a].Enabled = false;
+                   
                     
                 }
             }

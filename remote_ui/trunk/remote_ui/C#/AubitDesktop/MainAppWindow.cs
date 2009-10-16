@@ -310,6 +310,7 @@ namespace AubitDesktop
         }
 
         public void showOrHideMenubar() {
+            int visibleCount = 0;
 
             switch (this.showMenuBar)
             {
@@ -330,8 +331,21 @@ namespace AubitDesktop
                     break;
             }
 
+            visibleCount = 0;
+            foreach (Control x in MenuBarPanel.Controls)
+            {
+                if (x is GroupBox) continue;
+                if (x.Visible)
+                {
+                    visibleCount++;
+                }
+            }
 
-            if (MenuBarPanel.Controls.Count>0) {
+
+
+            if (visibleCount>0) {
+
+
                 if (this.showMenuBar == showMode.ShowNever)
                 {
                     this.splitContainer1.Panel2Collapsed = true;
