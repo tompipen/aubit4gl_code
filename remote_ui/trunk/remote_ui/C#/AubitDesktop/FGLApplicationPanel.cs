@@ -996,7 +996,7 @@ namespace AubitDesktop
                 this.tsBtnInsert.clickHandler = new System.EventHandler(this.tsBtnInsert_Click);
             }
 
-            // If we've got no cancel button - 
+            // If we've got no delete button - 
             // has the user added one in the default toolbar ?
             if (tsBtnDelete == null && hasActionInToolbar("DELETE"))
             {
@@ -1005,9 +1005,39 @@ namespace AubitDesktop
             }
 
 
-                
-               
-                
+
+
+            // If we've got no delete button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnUp == null && hasActionInToolbar("UP"))
+            {
+                tsBtnUp= getKeyFromToolbar("UP");
+                this.tsBtnUp.clickHandler = new System.EventHandler(this.tsBtnUp_Click);
+            }
+
+            // If we've got no delete button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnPgUp == null && hasActionInToolbar("PGUP"))
+            {
+                tsBtnPgUp = getKeyFromToolbar("PGUP");
+                this.tsBtnPgUp.clickHandler = new System.EventHandler(this.tsBtnPgUp_Click);
+            }
+
+            // If we've got no delete button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnDown == null && hasActionInToolbar("DOWN"))
+            {
+                tsBtnDown = getKeyFromToolbar("DOWN");
+                this.tsBtnDown.clickHandler = new System.EventHandler(this.tsBtnDown_Click);
+            }
+
+            // If we've got no delete button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnPgDown == null && hasActionInToolbar("PGDN"))
+            {
+                tsBtnPgDown = getKeyFromToolbar("PGDN");
+                this.tsBtnPgDown.clickHandler = new System.EventHandler(this.tsBtnPgDown_Click);
+            }
 
 
                 if (tsBtnAccept==null)
@@ -1061,9 +1091,9 @@ namespace AubitDesktop
                     // tsBtnUp
                     //
                     tsBtnUp = new AubitTSBtn(true);
-                    this.tsBtnUp.ActiveKey = "Up";
+                    this.tsBtnUp.ActiveKey = "UP";
                     this.tsBtnUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                    this.tsBtnUp.ID = "Up";
+                    this.tsBtnUp.ID = "UP";
                     this.tsBtnUp.Image = global::AubitDesktop.ToolBarImages.arrup; // NOTWEBGUI
                     // WEBGUI this.tsBtnUp.Image = "Icons.arrup.png";
                     this.tsBtnUp.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1081,9 +1111,9 @@ namespace AubitDesktop
                     // tsBtnDown
                     //
                     tsBtnDown = new AubitTSBtn(true);
-                    this.tsBtnDown.ActiveKey = "Down";
+                    this.tsBtnDown.ActiveKey = "DOWN";
                     this.tsBtnDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                    this.tsBtnDown.ID = "Down";
+                    this.tsBtnDown.ID = "DOWN";
                     this.tsBtnDown.Image = global::AubitDesktop.ToolBarImages.arrdown; // NOTWEBGUI
                     // WEBGUI this.tsBtnDown.Image = "Icons.arrdown.png";
                     this.tsBtnDown.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1102,9 +1132,9 @@ namespace AubitDesktop
                     // tsBtnPgDown
                     //
                     tsBtnPgDown = new AubitTSBtn(true);
-                    this.tsBtnPgDown.ActiveKey = "PgDn";
+                    this.tsBtnPgDown.ActiveKey = "PGDN";
                     this.tsBtnPgDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                    this.tsBtnPgDown.ID = "PgDn";
+                    this.tsBtnPgDown.ID = "PGDN";
                     this.tsBtnPgDown.Image = global::AubitDesktop.ToolBarImages.arrpgdown; // NOTWEBGUI
                     // WEBGUI this.tsBtnPgDown.Image = "Icons.arrpgdown.png";
                     this.tsBtnPgDown.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1123,9 +1153,9 @@ namespace AubitDesktop
                     // tsBtnPgUp
                     //
                     tsBtnPgUp = new AubitTSBtn(true);
-                    this.tsBtnPgUp.ActiveKey = "PgUp";
+                    this.tsBtnPgUp.ActiveKey = "PGUP";
                     this.tsBtnPgUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                    this.tsBtnPgUp.ID = "PgUp";
+                    this.tsBtnPgUp.ID = "PGUP";
                     this.tsBtnPgUp.Image = global::AubitDesktop.ToolBarImages.arrpgup; // NOTWEBGUI
                     // WEBGUI this.tsBtnPgUp.Image = "Icons.arrpgup.png";
                     this.tsBtnPgUp.ImageTransparentColor = System.Drawing.Color.Magenta;

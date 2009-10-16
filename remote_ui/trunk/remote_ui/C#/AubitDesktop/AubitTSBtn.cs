@@ -84,6 +84,7 @@ namespace AubitDesktop
             this.alwaysShow = showMode.ShowAuto;
             isInternalKey = false;
             forceDisable = false;
+            
         }
 
         internal AubitTSBtn(bool isInternalKey)
@@ -91,6 +92,7 @@ namespace AubitDesktop
             this.isInternalKey = isInternalKey;
             this.alwaysShow = showMode.ShowAuto;
             forceDisable = false;
+     
         }
 
 
@@ -244,6 +246,18 @@ namespace AubitDesktop
 
                     case "DELETE":
                     case "2015": // Delete...
+
+                    case "DOWN":
+                    case "2001": // DOWN..
+
+                    case "UP":
+                    case "2000": // UP...
+
+                    case "PGUP":
+                    case "2006": // PGUP...
+
+                    case "PGDN":
+                    case "2005": // PGDN...
                         isInternalKey = true;
                         break;
                 }
