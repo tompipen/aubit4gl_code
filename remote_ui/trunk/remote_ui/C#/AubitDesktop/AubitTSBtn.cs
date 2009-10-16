@@ -130,10 +130,6 @@ namespace AubitDesktop
             if (!isInternalKey)
             {
 
-                if (Text == "Modify")
-                {
-                    Console.Write("Somewhere to breakpoint");
-                }
                 switch (alwaysShow)
                 {
                     case showMode.ShowNever:
