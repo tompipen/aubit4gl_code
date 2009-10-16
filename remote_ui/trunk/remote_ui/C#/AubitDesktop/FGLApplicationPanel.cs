@@ -1281,13 +1281,24 @@ namespace AubitDesktop
                     p = (PROGRAMSTARTUP)a;
                     this.Text = "Running : " + p.PROGRAMNAME + ", Logged in as " + this.Username + ", UniqID :" + p.ID;
                     progname = p.PROGRAMNAME;
-                    if (progname.StartsWith("/"))
+                    if (progname.StartsWith("/") || progname.StartsWith("./"))
                     {
                         progname = progname.Substring(progname.LastIndexOf("/") + 1);
                     }
                     
                     this.TopWindow.addNewTabPage(Convert.ToInt32(p.ID), progname, this);
-
+                    Console.Write("Looking for 4tb files in "+ System.IO.Directory.GetCurrentDirectory());
+                    if (System.IO.File.Exists(progname + ".4tb"))
+                    {
+                        loadToolbar(progname + ".4tb", this.ApplicationEnvelopeID);
+                    }
+                    else
+                    {
+                        if (System.IO.File.Exists("default.4tb"))
+                        {
+                            loadToolbar("default.4tb", this.ApplicationEnvelopeID);
+                        }
+                    }
 
                     SetServerEnviron ( p.ENV);
                     commands.Remove(a);
