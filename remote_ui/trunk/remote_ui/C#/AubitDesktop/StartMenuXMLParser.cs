@@ -62,6 +62,9 @@ namespace AubitDesktop.Xml
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int waiting;
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string hotKey;
 
     }
 

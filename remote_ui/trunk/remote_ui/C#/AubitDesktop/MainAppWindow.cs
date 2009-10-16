@@ -836,6 +836,11 @@ namespace AubitDesktop
                 return;
             }
 
+            if (scanApplicationLauncherForKey(key))
+            {
+                return;
+            }
+
 
             keycode = FGLUtils.getKeyCodeFromKeyName(key);
             string acceptKey = getCurrentApplicationKey("ACCEPT", "Esc");
@@ -887,6 +892,41 @@ namespace AubitDesktop
             }
         }
 
+        private launcherCmdNode FindNodeInHierarchy(TreeNodeCollection nodes, string hotKey)
+        {
+            for (int iCount = 0; iCount < nodes.Count; iCount++)
+            {
+                if (nodes[iCount] is launcherCmdNode)
+                {
+                    string launcherKey=((launcherCmdNode)nodes[iCount]).hotKey;
+                    if (launcherKey==null) continue;
+
+                    if (launcherKey.ToLower() == hotKey.ToLower())
+                    {
+                        return (launcherCmdNode)nodes[iCount];
+                    }
+                }
+
+
+                //Recursively search the text in the child nodes
+                return FindNodeInHierarchy(nodes[iCount].Nodes, hotKey);
+
+            }
+            return null;
+        }
+
+
+        private bool scanApplicationLauncherForKey(string hotkey)
+        {
+
+            launcherCmdNode n=FindNodeInHierarchy(applicationLauncherTreeView.Nodes, hotkey);
+            if (n == null) return false;
+            applicationLauncherTreeView.SelectedNode = n;
+            applicationLauncherTreeView_DoubleClick(null, null);
+           // MessageBox.Show("I'd like to run something please...");
+            return true;
+        }
+    
         private bool CheckForToolStripKey(KeyEventArgs e, string key)
         {
             string fglKey;
@@ -1150,7 +1190,7 @@ namespace AubitDesktop
                     TreeNode cmdNode;
                     AubitDesktop.Xml.StartMenuCommand smc;
                     smc=(AubitDesktop.Xml.StartMenuCommand)o;
-                    cmdNode=new launcherCmdNode(smc.text,smc.exec,smc.disabled,smc.image,smc.waiting);
+                    cmdNode=new launcherCmdNode(smc.text,smc.exec,smc.disabled,smc.image,smc.waiting,smc.hotKey);
                     node.Nodes.Add(cmdNode);
                     
                     hasCommands = true;
@@ -1332,9 +1372,12 @@ namespace AubitDesktop
             }
         }
 
-        public launcherCmdNode(string text, string cmd,int disabled, string image,int waiting): base(text)
+        internal string hotKey;
+
+        public launcherCmdNode(string text, string cmd,int disabled, string image,int waiting, string hotkey): base(text)
         {
             this._cmd = cmd;
+            this.hotKey = hotkey;
             if (waiting == 1)
             {
                 this._waiting = true;
