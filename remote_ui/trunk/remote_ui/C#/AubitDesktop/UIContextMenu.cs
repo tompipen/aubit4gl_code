@@ -310,6 +310,12 @@ namespace AubitDesktop
                     btn.Top = top;
                     btn.AutoSize = true;
                     btn.Left = 10;
+                    if (btn.Image!=null)
+                    {
+                        btn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+                        btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                    }
+
                     menuPanel.Controls.Add(btn);
                     top += btn.Height;
                 }
