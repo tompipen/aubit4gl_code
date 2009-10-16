@@ -1288,6 +1288,17 @@ namespace AubitDesktop
             topWindowToolStrip.ImageScalingSize = new Size(p, p);
             
         }
+
+        private void frmMainAppWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (tabControl1.TabCount > 0)
+            {
+                if (MessageBox.Show("Are you sure you want to exit", "Active programs", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
     }
 
     class launcherCmdNode : TreeNode

@@ -328,21 +328,21 @@ namespace AubitDesktop
             // alwaysToolbarToolStripMenuItem
             // 
             this.alwaysToolbarToolStripMenuItem.Name = "alwaysToolbarToolStripMenuItem";
-            this.alwaysToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.alwaysToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.alwaysToolbarToolStripMenuItem.Text = "Always";
             this.alwaysToolbarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolbarToolStripMenuItem_Click);
             // 
             // neverToolbarToolStripMenuItem
             // 
             this.neverToolbarToolStripMenuItem.Name = "neverToolbarToolStripMenuItem";
-            this.neverToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.neverToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.neverToolbarToolStripMenuItem.Text = "Never";
             this.neverToolbarToolStripMenuItem.Click += new System.EventHandler(this.neverToolbarToolStripMenuItem_Click);
             // 
             // autoToolbarToolStripMenuItem
             // 
             this.autoToolbarToolStripMenuItem.Name = "autoToolbarToolStripMenuItem";
-            this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.autoToolbarToolStripMenuItem.Text = "Auto";
             this.autoToolbarToolStripMenuItem.Click += new System.EventHandler(this.autoToolbarToolStripMenuItem_Click);
             // 
@@ -478,6 +478,7 @@ namespace AubitDesktop
             this.Load += new System.EventHandler(this.frmMainAppWindow_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMainAppWindow_FormClosed);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmMainAppWindow_KeyPress);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMainAppWindow_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMainAppWindow_KeyDown);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
