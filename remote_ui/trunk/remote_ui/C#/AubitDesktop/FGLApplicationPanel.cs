@@ -279,6 +279,7 @@ namespace AubitDesktop
 
 
                 if (i.ActiveKey == action) return true;
+                if (i.ActiveKey == ""+FGLUtils.getKeyCodeFromKeyName(action)) return true;
 
             }
             return false;
@@ -294,6 +295,7 @@ namespace AubitDesktop
                
                
                     if (i.ActiveKey == key) return i;
+                    if (i.ActiveKey == ""+FGLUtils.getKeyCodeFromKeyName(key)) return i;
                 
             }
 
@@ -346,6 +348,7 @@ namespace AubitDesktop
                 {
                         if (AubitTSBtn.isSystemAction(o.ID)) continue;
                         o.ID = null;
+
                 }
 
                 if (keys != null)
@@ -424,6 +427,7 @@ namespace AubitDesktop
             {
                 if (tsBtnCancel != null)
                 {
+                    
                     tsBtnAccept.Visible = true;
                     tsBtnCancel.Visible = true;
                 }
@@ -871,10 +875,9 @@ namespace AubitDesktop
 
         public void ensureAcceptInterruptButtonsOnToolStrip()
         {
-            if (tsBtnAccept==null) {
-            
+            //if (tsBtnAccept==null) {            
                 addDefaultToolstripItems();
-            }
+            //}
 
         }
 
@@ -967,148 +970,213 @@ namespace AubitDesktop
 
         private void addDefaultToolstripItems()
         {
-            
-                
-                tsBtnAccept = new AubitDesktop.AubitTSBtn(true);
-                tsBtnCancel = new AubitDesktop.AubitTSBtn(true);
-                tsBtnUp = new AubitTSBtn(true);
-                tsBtnDown = new AubitTSBtn(true);
-                tsBtnPgUp = new AubitTSBtn(true);
-                tsBtnPgDown = new AubitTSBtn(true);
-                tsBtnInsert = new AubitTSBtn(true);
-                tsBtnDelete = new AubitTSBtn(true);
-
-
-
-                // 
-                // tsBtnAccept
-                // 
-                this.tsBtnAccept.ActiveKey = "ACCEPT";
-                this.tsBtnAccept.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnAccept.ID = "ACCEPT";
-                this.tsBtnAccept.Image = global::AubitDesktop.ToolBarImages.accept; // NOTWEBGUI
-                // WEBGUI this.tsBtnAccept.Image = "Icons.accept.png";
-                this.tsBtnAccept.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnAccept.Name = "tsBtnAccept";
-                this.tsBtnAccept.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnAccept.Text = "Accept";
-                this.tsBtnAccept.clickHandler= new System.EventHandler(this.tsBtnAccept_Click);
-            
-                // 
-                // tsBtnCancel
-                // 
-                this.tsBtnCancel.ActiveKey = "INTERRUPT";
-                this.tsBtnCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnCancel.ID = "INTERRUPT";
-                this.tsBtnCancel.Image = global::AubitDesktop.ToolBarImages.cancel; // NOTWEBGUI
-                // WEBGUI this.tsBtnCancel.Image = "Icons.cancel.png";
-                this.tsBtnCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnCancel.Name = "tsBtnCancel";
-                this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnCancel.Text = "Cancel";
+            // If we've got no cancel button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnCancel == null && hasActionInToolbar("INTERRUPT")) {
+                tsBtnCancel = getKeyFromToolbar("INTERRUPT");
                 this.tsBtnCancel.clickHandler = new System.EventHandler(this.tsBtnCancel_Click);
+            }
 
-                this.tsBtnAccept.Visible = true;
-                this.tsBtnCancel.Visible = true;
-                this.toolStrip1.Add(tsBtnAccept);
-                this.toolStrip1.Add(tsBtnCancel);
-                // tsBtnUp
-                //
-                this.tsBtnUp.ActiveKey = "Up";
-                this.tsBtnUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnUp.ID = "Up";                
-                this.tsBtnUp.Image = global::AubitDesktop.ToolBarImages.arrup; // NOTWEBGUI
-                // WEBGUI this.tsBtnUp.Image = "Icons.arrup.png";
-                this.tsBtnUp.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnUp.Name = "tsBtnUp";
-                this.tsBtnUp.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnUp.Text = "Up";
-                this.tsBtnUp.clickHandler = new System.EventHandler(tsBtnUp_Click);
-
-                this.tsBtnUp.Visible = true;
-                this.toolStrip1.Add(tsBtnUp);
-
-                // tsBtnDown
-                //
-                this.tsBtnDown.ActiveKey = "Down";
-                this.tsBtnDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnDown.ID = "Down";
-                this.tsBtnDown.Image = global::AubitDesktop.ToolBarImages.arrdown; // NOTWEBGUI
-                // WEBGUI this.tsBtnDown.Image = "Icons.arrdown.png";
-                this.tsBtnDown.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnDown.Name = "tsBtnDown";
-                this.tsBtnDown.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnDown.Text = "Down";
-                this.tsBtnDown.clickHandler = new System.EventHandler(this.tsBtnDown_Click);
-
-                this.tsBtnDown.Visible = true;
-                this.toolStrip1.Add(tsBtnDown);
+            // If we've got no accept button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnAccept == null && hasActionInToolbar("ACCEPT"))
+            {
+                tsBtnAccept = getKeyFromToolbar("ACCEPT");
+                this.tsBtnAccept.clickHandler = new System.EventHandler(this.tsBtnAccept_Click);
+            }
 
 
-                // tsBtnPgDown
-                //
-                this.tsBtnPgDown.ActiveKey = "PgDn";
-                this.tsBtnPgDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnPgDown.ID = "PgDn";
-                this.tsBtnPgDown.Image = global::AubitDesktop.ToolBarImages.arrpgdown; // NOTWEBGUI
-                // WEBGUI this.tsBtnPgDown.Image = "Icons.arrpgdown.png";
-                this.tsBtnPgDown.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnPgDown.Name = "tsBtnPgDown";
-                this.tsBtnPgDown.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnPgDown.Text = "PgDn";
-                this.tsBtnPgDown.clickHandler = new System.EventHandler(this.tsBtnPgDown_Click);
 
-                this.tsBtnPgDown.Visible = true;
-                this.toolStrip1.Add(tsBtnPgDown);
-                // tsBtnPgUp
-                //
-                this.tsBtnPgUp.ActiveKey = "PgUp";
-                this.tsBtnPgUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnPgUp.ID = "PgUp";
-                this.tsBtnPgUp.Image = global::AubitDesktop.ToolBarImages.arrpgup; // NOTWEBGUI
-                // WEBGUI this.tsBtnPgUp.Image = "Icons.arrpgup.png";
-                this.tsBtnPgUp.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnPgUp.Name = "tsBtnPgUp";
-                this.tsBtnPgUp.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnPgUp.Text = "PgUp";
-                this.tsBtnPgUp.clickHandler = new System.EventHandler(this.tsBtnPgUp_Click);
 
-                this.tsBtnPgUp.Visible = true;
-                this.toolStrip1.Add(tsBtnPgUp);
-
-                // tsBtnInsert
-                //
-                this.tsBtnInsert.ActiveKey = "INSERT";
-                this.tsBtnInsert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnInsert.ID = "Insert";
-                this.tsBtnInsert.Image = global::AubitDesktop.ToolBarImages.neu; // NOTWEBGUI
-                // WEBGUI this.tsBtnInsert.Image = "Icons.insert.png";
-                this.tsBtnInsert.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnInsert.Name = "tsBtnInsert";
-                this.tsBtnInsert.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnInsert.Text = "Insert";
+            // If we've got no insert button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnInsert == null && hasActionInToolbar("INSERT"))
+            {
+                tsBtnInsert = getKeyFromToolbar("INSERT");
                 this.tsBtnInsert.clickHandler = new System.EventHandler(this.tsBtnInsert_Click);
+            }
 
-                this.tsBtnInsert.Visible = true;
-                this.toolStrip1.Add(tsBtnInsert);
-
-
-                // tsBtnDelete
-                //
-                this.tsBtnDelete.ActiveKey = "DELETE";
-                this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-                this.tsBtnDelete.ID = "Delete";
-                this.tsBtnDelete.Image = global::AubitDesktop.ToolBarImages.delete; // NOTWEBGUI
-                //WEBGUI this.tsBtnDelete.Image ="Icons.delete.png";
-                this.tsBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-                this.tsBtnDelete.Name = "tsBtnDelete";
-                this.tsBtnDelete.Size = new System.Drawing.Size(23, 22);
-                this.tsBtnDelete.Text = "Delete";
+            // If we've got no cancel button - 
+            // has the user added one in the default toolbar ?
+            if (tsBtnDelete == null && hasActionInToolbar("DELETE"))
+            {
+                tsBtnDelete = getKeyFromToolbar("DELETE");
                 this.tsBtnDelete.clickHandler = new System.EventHandler(this.tsBtnDelete_Click);
+            }
 
-                this.tsBtnDelete.Visible = true;
-                this.toolStrip1.Add(tsBtnDelete);
 
+                
+               
+                
+
+
+                if (tsBtnAccept==null)
+                {
+                    tsBtnAccept = new AubitDesktop.AubitTSBtn(true);
+                    // 
+                    // tsBtnAccept
+                    // 
+                    this.tsBtnAccept.ActiveKey = "ACCEPT";
+                    this.tsBtnAccept.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnAccept.ID = "ACCEPT";
+                    this.tsBtnAccept.Image = global::AubitDesktop.ToolBarImages.accept; // NOTWEBGUI
+                    // WEBGUI this.tsBtnAccept.Image = "Icons.accept.png";
+                    this.tsBtnAccept.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnAccept.Name = "tsBtnAccept";
+                    this.tsBtnAccept.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnAccept.Text = "Accept";
+                    this.tsBtnAccept.clickHandler = new System.EventHandler(this.tsBtnAccept_Click);
+                    this.tsBtnAccept.Visible = true;
+                    this.toolStrip1.Add(tsBtnAccept);
+                }
+
+            
+
+
+                if (tsBtnCancel==null)
+                {
+                    // 
+                    // tsBtnCancel
+                    // 
+                    tsBtnCancel = new AubitDesktop.AubitTSBtn(true);
+                    this.tsBtnCancel.ActiveKey = "INTERRUPT";
+                    this.tsBtnCancel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnCancel.ID = "INTERRUPT";
+                    this.tsBtnCancel.Image = global::AubitDesktop.ToolBarImages.cancel; // NOTWEBGUI
+                    // WEBGUI this.tsBtnCancel.Image = "Icons.cancel.png";
+                    this.tsBtnCancel.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnCancel.Name = "tsBtnCancel";
+                    this.tsBtnCancel.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnCancel.Text = "Cancel";
+                    this.tsBtnCancel.clickHandler = new System.EventHandler(this.tsBtnCancel_Click);
+                    this.tsBtnCancel.Visible = true;
+                    this.toolStrip1.Add(tsBtnCancel);
+                }
+
+
+
+
+                if (tsBtnUp == null)
+                {
+                    // tsBtnUp
+                    //
+                    tsBtnUp = new AubitTSBtn(true);
+                    this.tsBtnUp.ActiveKey = "Up";
+                    this.tsBtnUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnUp.ID = "Up";
+                    this.tsBtnUp.Image = global::AubitDesktop.ToolBarImages.arrup; // NOTWEBGUI
+                    // WEBGUI this.tsBtnUp.Image = "Icons.arrup.png";
+                    this.tsBtnUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnUp.Name = "tsBtnUp";
+                    this.tsBtnUp.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnUp.Text = "Up";
+                    this.tsBtnUp.clickHandler = new System.EventHandler(tsBtnUp_Click);
+
+                    this.tsBtnUp.Visible = true;
+                    this.toolStrip1.Add(tsBtnUp);
+                }
+
+                if (tsBtnDown == null)
+                {
+                    // tsBtnDown
+                    //
+                    tsBtnDown = new AubitTSBtn(true);
+                    this.tsBtnDown.ActiveKey = "Down";
+                    this.tsBtnDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnDown.ID = "Down";
+                    this.tsBtnDown.Image = global::AubitDesktop.ToolBarImages.arrdown; // NOTWEBGUI
+                    // WEBGUI this.tsBtnDown.Image = "Icons.arrdown.png";
+                    this.tsBtnDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnDown.Name = "tsBtnDown";
+                    this.tsBtnDown.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnDown.Text = "Down";
+                    this.tsBtnDown.clickHandler = new System.EventHandler(this.tsBtnDown_Click);
+
+                    this.tsBtnDown.Visible = true;
+                    this.toolStrip1.Add(tsBtnDown);
+                }
+
+
+                if (tsBtnPgDown == null)
+                {
+                    // tsBtnPgDown
+                    //
+                    tsBtnPgDown = new AubitTSBtn(true);
+                    this.tsBtnPgDown.ActiveKey = "PgDn";
+                    this.tsBtnPgDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnPgDown.ID = "PgDn";
+                    this.tsBtnPgDown.Image = global::AubitDesktop.ToolBarImages.arrpgdown; // NOTWEBGUI
+                    // WEBGUI this.tsBtnPgDown.Image = "Icons.arrpgdown.png";
+                    this.tsBtnPgDown.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnPgDown.Name = "tsBtnPgDown";
+                    this.tsBtnPgDown.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnPgDown.Text = "PgDn";
+                    this.tsBtnPgDown.clickHandler = new System.EventHandler(this.tsBtnPgDown_Click);
+
+                    this.tsBtnPgDown.Visible = true;
+                    this.toolStrip1.Add(tsBtnPgDown);
+                }
+
+
+                if (tsBtnPgUp == null)
+                {
+                    // tsBtnPgUp
+                    //
+                    tsBtnPgUp = new AubitTSBtn(true);
+                    this.tsBtnPgUp.ActiveKey = "PgUp";
+                    this.tsBtnPgUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnPgUp.ID = "PgUp";
+                    this.tsBtnPgUp.Image = global::AubitDesktop.ToolBarImages.arrpgup; // NOTWEBGUI
+                    // WEBGUI this.tsBtnPgUp.Image = "Icons.arrpgup.png";
+                    this.tsBtnPgUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnPgUp.Name = "tsBtnPgUp";
+                    this.tsBtnPgUp.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnPgUp.Text = "PgUp";
+                    this.tsBtnPgUp.clickHandler = new System.EventHandler(this.tsBtnPgUp_Click);
+
+                    this.tsBtnPgUp.Visible = true;
+                    this.toolStrip1.Add(tsBtnPgUp);
+                }
+
+                if (tsBtnInsert == null)
+                {
+                    // tsBtnInsert
+                    //
+                    tsBtnInsert = new AubitTSBtn(true);
+                    this.tsBtnInsert.ActiveKey = "INSERT";
+                    this.tsBtnInsert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnInsert.ID = "Insert";
+                    this.tsBtnInsert.Image = global::AubitDesktop.ToolBarImages.neu; // NOTWEBGUI
+                    // WEBGUI this.tsBtnInsert.Image = "Icons.insert.png";
+                    this.tsBtnInsert.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnInsert.Name = "tsBtnInsert";
+                    this.tsBtnInsert.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnInsert.Text = "Insert";
+                    this.tsBtnInsert.clickHandler = new System.EventHandler(this.tsBtnInsert_Click);
+
+                    this.tsBtnInsert.Visible = true;
+                    this.toolStrip1.Add(tsBtnInsert);
+                }
+
+                if (tsBtnDelete == null)
+                {
+                    // tsBtnDelete
+                    //
+                    tsBtnDelete = new AubitTSBtn(true);
+                    this.tsBtnDelete.ActiveKey = "DELETE";
+                    this.tsBtnDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+                    this.tsBtnDelete.ID = "Delete";
+                    this.tsBtnDelete.Image = global::AubitDesktop.ToolBarImages.delete; // NOTWEBGUI
+                    //WEBGUI this.tsBtnDelete.Image ="Icons.delete.png";
+                    this.tsBtnDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+                    this.tsBtnDelete.Name = "tsBtnDelete";
+                    this.tsBtnDelete.Size = new System.Drawing.Size(23, 22);
+                    this.tsBtnDelete.Text = "Delete";
+                    this.tsBtnDelete.clickHandler = new System.EventHandler(this.tsBtnDelete_Click);
+
+                    this.tsBtnDelete.Visible = true;
+                    this.toolStrip1.Add(tsBtnDelete);
+                }
             //
 
 
@@ -2472,16 +2540,27 @@ namespace AubitDesktop
             {
                 // Deserialize the content of the file into the settings...
                 sToolbar = (AubitDesktop.Xml.ToolBar)reader.Deserialize(file);
-                file.Close();
+                
             }
             catch (Exception e)
             {
+                file.Close();
                 Program.Show(e.ToString(), "Unable to load toolbar");
             }
+            file.Close();
+
 
             if (sToolbar != null)
             {
                 toolStrip1.Clear();
+                if (sToolbar.height != null)
+                {
+                    TopWindow.setToolstripHeight(Convert.ToInt32(sToolbar.height));
+                }
+                if (sToolbar.imageSize!=null)
+                {
+                    TopWindow.setToolstripImageSize(Convert.ToInt32(sToolbar.imageSize));
+                }
                 loadButtonsInToolbar(sToolbar, applicationLauncherId);
                 addDefaultToolstripItems();
             }
@@ -2528,7 +2607,14 @@ namespace AubitDesktop
                     }
                     addToToolBar.BUTTON = tbi.text;
                     addToToolBar.IMAGE=tbi.image;
-                    addToToolBar.KEYVAL = FGLUtils.getKeyCodeFromKeyName(tbi.name).ToString();
+                    if (tbi.name != "ACCEPT")
+                    {
+                        addToToolBar.KEYVAL = FGLUtils.getKeyCodeFromKeyName(tbi.name).ToString();
+                    }
+                    else
+                    {
+                        addToToolBar.KEYVAL = "ACCEPT";
+                    }
 
                     if (addToToolBar.KEYVAL == "-1")
                     {
