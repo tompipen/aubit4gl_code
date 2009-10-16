@@ -545,8 +545,15 @@ namespace AubitDesktop
     class FGLComboEntry {
         string _name;
         string _text;
+        internal string Name
+        {
+            get
+            {
+                return _name;
+            }
+        }
 
-        FGLComboEntry(string name, string text)
+        internal FGLComboEntry(string name, string text)
         {
             _name = name;
             _text = text;

@@ -35,7 +35,7 @@ namespace AubitDesktop
         ComboBox t;
         Panel p;
         Label l;
-        FGLComboEntry[] cbItems;
+       // FGLComboEntry[] cbItems;
 
         
 
@@ -174,7 +174,7 @@ namespace AubitDesktop
                 case FGLContextType.ContextInput:
                 case FGLContextType.ContextInputArray:
                 case FGLContextType.ContextConstruct:
-                    setItems();
+                  //  setItems();
                     t.Visible = true;
                     l.Visible = false;
                     break;
@@ -434,9 +434,9 @@ namespace AubitDesktop
             p.Controls.Add(l);
 
 
-            cbItems = FGLComboEntry.createItems(items);
+            FGLComboEntry[] cbItems = FGLComboEntry.createItems(items);
 
-            setItems();
+            setItems(cbItems);
 
             // p.Size = l.Size;
 
@@ -460,7 +460,7 @@ namespace AubitDesktop
 
 
 
-        private void setItems()
+        private void setItems(FGLComboEntry[] cbItems)
         {
             bool hasBlank = false;
 
@@ -491,6 +491,34 @@ namespace AubitDesktop
 
 
 
+
+        internal void ui_combobox_additem(string name, string text)
+        {
+            FGLComboEntry ce;
+            ce = new FGLComboEntry(name,text);
+            t.Items.Add(ce);
+        }
+
+        internal void ui_combobox_clear()
+        {
+            t.Items.Clear();
+        }
+
+        internal void ui_combobox_removeitem(string p)
+        {
+            foreach (FGLComboEntry ce in t.Items) {
+                if (ce.Name == p)
+                {
+                    t.Items.Remove(ce);
+                    break;
+                }
+            }
+        }
+
+        internal string ui_combobox_getitemcount()
+        {
+            return "" + t.Items.Count;
+        }
     }
 
 
