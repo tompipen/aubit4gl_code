@@ -1,0 +1,20 @@
+/*
+=====================================================================
+                        Source: error.rule
+=====================================================================
+*/
+
+
+error_cmd	: KW_ERROR atline fgl_expr_concat opt_attributes {
+				add_feature("ERROR");
+				map_ui("ERROR");
+			set_cmdlineno($<integer_val>2);
+				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>3), EB_FALSE , $<attrib>4 );
+		}
+		| KW_ERROR atline fgl_expr_concat opt_attributes  WAIT_FOR_KEY { 
+				add_feature("ERROR_WAIT");
+			set_cmdlineno($<integer_val>2);
+				map_ui("ERRORWAIT");
+				$<cmd>$=new_error_cmd(make_fgl_expr_list($<ptr_list>3), EB_TRUE , $<attrib>4 );
+			}
+;
