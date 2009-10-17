@@ -968,9 +968,6 @@ namespace AubitDesktop
                 {
                     AubitTSBtn a;
                     
-                    
-
-
                     a = (AubitTSBtn)i;
                     if (i.Visible == false) continue;
                     if (i.Enabled == false) continue;
