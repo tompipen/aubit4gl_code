@@ -711,6 +711,7 @@ maintain_socket (int newfd_orig)
       // the execv should 'splat' this program with our 4gl one...
       // (which is ok - because we did that fork first to make us a new process)
       perror ("Execv");
+      printf("Failed to start : %s - %d\n", prg, errno);
       UIdebug (0, "Failed to start : %s - %d\n", prg, errno);
       kill (getppid (), SIGTERM);	// If we didn't start - there little point in the server waiting for us...
       remove_pipes ();

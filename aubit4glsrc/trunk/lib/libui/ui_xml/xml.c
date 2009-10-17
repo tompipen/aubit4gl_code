@@ -2367,12 +2367,10 @@ if (count==-1) {
 	}
     }
 
-printf("Here1\n");
   if (last_attr)
     {
       if (last_attr->arrline) {
 	//printf("Setting arrline ... %d\n", last_attr->arrline);
-printf("Here1 : %d\n", last_attr->arrline);
 	A4GL_set_arr_curr (last_attr->arrline);
 	inp->arr_line=last_attr->arrline;
       }

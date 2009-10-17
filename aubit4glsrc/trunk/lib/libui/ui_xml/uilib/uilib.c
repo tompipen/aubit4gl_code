@@ -2995,6 +2995,12 @@ uilib_touched (int nargs)
 int uilib_do_frontcall(char *s,int no) {
   int a;
   send_to_ui(s);
+
+
+  flush_ui(); /// <---- JUST FOR DEBUGGING ...
+
+
+
 if (no) {
 	// We only need to wait if we are expecting some result
   send_to_ui ("<WAITFOREVENT/>");
