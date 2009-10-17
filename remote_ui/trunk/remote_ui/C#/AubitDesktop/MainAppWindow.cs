@@ -331,20 +331,9 @@ namespace AubitDesktop
                     break;
             }
 
-            visibleCount = 0;
-            foreach (Control x in MenuBarPanel.Controls)
-            {
-                if (x is GroupBox) continue;
-                if (x.Visible)
-                {
-                    visibleCount++;
-                }
-            }
 
 
-
-            if (visibleCount>0) {
-
+            if (hasSomethingVisible(MenuBarPanel)) {
 
                 if (this.showMenuBar == showMode.ShowNever)
                 {
@@ -370,6 +359,27 @@ namespace AubitDesktop
            
         }
 
+
+        /// <summary>
+        /// Scan through a control - if its a container - check its contents and check if we have any controls which 
+        /// are *not* containers - but has something visible in them....
+        /// </summary>
+        /// <param name="orig">Top level control to check</param>
+        /// <returns>true if there are any visible controls which are not just containers...</returns>
+        private static bool hasSomethingVisible(Control orig)
+        {           
+            if (orig.Visible == false) return false;
+            if (orig.Controls != null && orig.Controls.Count>0)
+            {
+                foreach (Control x in orig.Controls)
+                {
+                    if (hasSomethingVisible(x)) return true;                    
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         private void showOrHideApplicationLauncher()
         {
@@ -836,7 +846,7 @@ namespace AubitDesktop
                 return;
             }
 
-            if (scanApplicationLauncherForKey(key))
+            if (scanApplicationLauncherForKey(getWindowsKey(e.Control, e.Shift, e.Alt, key)))
             {
                 return;
             }
@@ -870,17 +880,19 @@ namespace AubitDesktop
             
             if (key == null) return;
 
-            setLastKeyInApplication(key);
+            setLastKeyInApplication(key); 
+           
+
             this.ErrorText = "";
 
             // Check for an explicit key name..
-            if (CheckForToolStripKey(e, key)) return;
+            if (CheckForToolStripKey(e, key, getWindowsKey(e.Control, e.Shift, e.Alt, key))) return;
 
 
             if (rkey != "")
             {
                 // Check for a 4GL key name (insert, delete, accept, escape etc)
-                if (CheckForToolStripKey(e, rkey)) return;
+                if (CheckForToolStripKey(e, rkey, getWindowsKey(e.Control, e.Shift, e.Alt,key))) return;
             }
             // Key wasnt found...
 
@@ -890,6 +902,26 @@ namespace AubitDesktop
                 // currentContext.keyPreview(e,rkey);
                 if (currentContext.useKeyPress(e)) return;
             }
+        }
+
+
+        /// <summary>
+        /// Get the name of a key in the form we use for a hotkey : 
+        /// [Control][Shift][Alt]Keyname
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="p_2"></param>
+        /// <param name="p_3"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private string getWindowsKey(bool control, bool shift, bool alt, string key)
+        {
+            string s="";
+            if (control) s += "Control-";
+            if (shift) s += "Shift-";
+            if (alt) s += "Alt-";
+            s += key;
+            return s;
         }
 
         private launcherCmdNode FindNodeInHierarchy(TreeNodeCollection nodes, string hotKey)
@@ -927,7 +959,7 @@ namespace AubitDesktop
             return true;
         }
     
-        private bool CheckForToolStripKey(KeyEventArgs e, string key)
+        private bool CheckForToolStripKey(KeyEventArgs e, string key,string altHotKey)
         {
             string fglKey;
             foreach (ToolStripItem i in topWindowToolStrip.Items)
@@ -941,10 +973,25 @@ namespace AubitDesktop
 
                     a = (AubitTSBtn)i;
                     if (i.Visible == false) continue;
+                    if (i.Enabled == false) continue;
 
+                    if (a.altHotKey != null && altHotKey!=null)
+                    {
+                        if (a.altHotKey != "" && altHotKey != "")
+                        {
+                            if (altHotKey.ToLower() == a.altHotKey.ToLower())
+                            {
+                                if (a.clickHandler != null)
+                                {
+                                    a.clickHandler(a, null);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
 
                     fglKey = FGLUtils.getKeyNameFromFGLKeyCode(a.ActiveKey);
-                    if (fglKey == key)
+                    if (fglKey.ToLower() == key.ToLower())
                     {
                         if (a.clickHandler != null)
                         {

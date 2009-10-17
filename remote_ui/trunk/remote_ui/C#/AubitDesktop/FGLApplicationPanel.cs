@@ -2316,6 +2316,7 @@ namespace AubitDesktop
                 o.IMAGE = "";
                 o.ALWAYSSHOW = "0";
                 o.BUTTON = "|";
+                o.ALTHOTKEY = "";
             }
             btn = null;
 
@@ -2348,6 +2349,7 @@ namespace AubitDesktop
             btn.programTag = o.TAG;
             btn.clickHandler = b_Click;
             btn.alwaysShow=showMode.ShowAlways;
+            btn.altHotKey = o.ALTHOTKEY;
 
             switch (o.ALWAYSSHOW)
             {
@@ -2637,6 +2639,8 @@ namespace AubitDesktop
                     }
                     addToToolBar.BUTTON = tbi.text;
                     addToToolBar.IMAGE=tbi.image;
+                    addToToolBar.ALTHOTKEY = tbi.hotKey;
+
                     if (tbi.name != "ACCEPT")
                     {
                         addToToolBar.KEYVAL = FGLUtils.getKeyCodeFromKeyName(tbi.name).ToString();

@@ -118,6 +118,13 @@ namespace AubitDesktop.Xml
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string hidden;
+
+        /// <summary>
+        /// hotKey allows you to define an alternate hotkey for this button..
+        /// Should be in the format [Control-][Shift-][Alt-]Keyname
+        /// </summary>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string hotKey;
     }
 
     /// <remarks/>

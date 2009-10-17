@@ -34,8 +34,14 @@ namespace AubitDesktop
 
     class AubitTSBtn : System.Windows.Forms.ToolStripButton
     {
-        private string activeKey;
+        private string activeKey; // 4GL style hotkey..
+        internal string altHotKey; // Alternate windows style hotkey...
+
+
         private string iD;
+
+
+
 
         /// <summary>
         /// Internal keys are internally managed to set the visibility

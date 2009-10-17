@@ -1187,6 +1187,10 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string TOOLTIP;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ALTHOTKEY;
     }
 
 
