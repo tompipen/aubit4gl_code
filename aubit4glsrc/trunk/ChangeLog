@@ -1,4 +1,78 @@
 ---------------------------
+Sat Oct 17 10:32:46 BST 2009
+---------------------------
+1.2_2 Released
+---------------------------
+	
+	Add combobox object support
+	
+	changed the function to convertMatrix records
+	
+	Fix assertion error reported by Peter Müller
+	
+	frontcall fixups
+	
+	more UI=XML fixups
+	
+	Fixup for multitab ui interface (sends and receives an ENVELOPEID
+	properly now)
+	
+	Add A4GL_PROGNAME to be the currently processing program name in
+	A4GL IDE generated makefiles
+	
+	Add 'IGNORE ERROR ([error number list]) FOR [4gl statement]'
+	
+	Add 4gl function prototyping program
+	
+	Small macosx fixup
+	
+	MID 1330 - fgllint : max(date) -> considered float : LETEXPR
+	
+	PRINT COLUMN COLUMN .. fixup for MID 1329
+	
+	Compilation speed optimisation
+	
+	Compilation speed optimisation
+	
+	,
+	
+	MID 1328
+	
+	builtin functions : check number of arguments
+	
+	builtin functions : check number of arguments
+	
+	MID 1327
+	
+	MID 1326 (for INPUT)
+	
+	MID  1326
+	
+	,
+	
+	,
+	
+	MID 1325
+	
+	MID 1324
+	
+	Add a 'DEFAULT_GLOBALS' setting which can be used to automatically
+	include a GLOBALS file in any module
+	
+	Allow shell variable exapansion in GLOBALS definitions - eg GLOBALS
+	"$DIR/somefile"
+	
+	Check parameters and return values to builtin functions (only MDY
+	atm)
+	
+	Minor fixups Added some Querix comptatibilty function stubs
+	
+	Add AUTOCASTSUBSCRIPT (cast character strings to integers when used
+	as a substring subscript)
+	
+	Add some sqlerrmessage support
+	
+---------------------------
 Sat Jul 25 10:50:05 BST 2009
 ---------------------------
 1.2_1 Released
