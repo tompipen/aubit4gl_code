@@ -14,16 +14,11 @@ using Gizmox.WebGUI.Forms;
 
 namespace AubitDesktop
 {
-    public partial class AboutBox1 : Form
+    public partial class wfAbout : Form
     {
-        public AboutBox1()
+        public wfAbout()
         {
             InitializeComponent();
-        }
-
-        private void AboutBox1_Load(object sender, EventArgs e)
-        {
-            
         }
     }
 }
