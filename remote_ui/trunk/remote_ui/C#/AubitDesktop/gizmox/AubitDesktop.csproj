@@ -1,0 +1,468 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{72E53EB8-A1D5-4035-9928-5E515A4C594A}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AubitDesktop</RootNamespace>
+    <AssemblyName>AubitDesktopWeb</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <StartPageUrl>Form1.wgx</StartPageUrl>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <StartPageUrl>Form1.wgx</StartPageUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DiffieHellman, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>W:\\DiffieHellman.dll</HintPath>
+    </Reference>
+    <Reference Include="Gizmox.WebGUI.Client, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=0fb8f99bd6cd7e23, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Gizmox.WebGUI.Common, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=263fa4ef694acff6, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Gizmox.WebGUI.Forms, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=c508b41386c60f1d, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Gizmox.WebGUI.Server, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=3de6eb684226c24d, processorArchitecture=MSIL" />
+    <Reference Include="Org.Mentalis.Security, Version=1.0.13.715, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>W:\\Org.Mentalis.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions.Design, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Tamir.SharpSSH, Version=1.1.1.13, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>W:\\Tamir.SharpSSH.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
+    <Content Include="Resources\Icons\accept.png" />
+    <Content Include="Resources\Icons\arr2beg.png" />
+    <Content Include="Resources\Icons\arr2end.png" />
+    <Content Include="Resources\Icons\arr2left.png" />
+    <Content Include="Resources\Icons\arr2righ.png" />
+    <Content Include="Resources\Icons\arrdown.png" />
+    <Content Include="Resources\Icons\arright.png" />
+    <Content Include="Resources\Icons\arrleft.png" />
+    <Content Include="Resources\Icons\arrpgdown.png" />
+    <Content Include="Resources\Icons\arrpgup.png" />
+    <Content Include="Resources\Icons\arrup.png" />
+    <Content Include="Resources\Icons\attention.png" />
+    <Content Include="Resources\Icons\Aubit.gif" />
+    <Content Include="Resources\Icons\Aubit.ico" />
+    <Content Include="Resources\Icons\auflist.png" />
+    <Content Include="Resources\Icons\backsl.png" />
+    <Content Include="Resources\Icons\balloon.png" />
+    <Content Include="Resources\Icons\bell.png" />
+    <Content Include="Resources\Icons\bigcombo.png" />
+    <Content Include="Resources\Icons\calc.png" />
+    <Content Include="Resources\Icons\calendar.png" />
+    <Content Include="Resources\Icons\camera.png" />
+    <Content Include="Resources\Icons\cancel.png" />
+    <Content Include="Resources\Icons\cascade.png" />
+    <Content Include="Resources\Icons\circle.png" />
+    <Content Include="Resources\Icons\combo.png" />
+    <Content Include="Resources\Icons\copy.png" />
+    <Content Include="Resources\Icons\cup.png" />
+    <Content Include="Resources\Icons\cut.png" />
+    <Content Include="Resources\Icons\debug_break.png" />
+    <Content Include="Resources\Icons\debug_break_disabled.png" />
+    <Content Include="Resources\Icons\debug_break_disabled_marker.png" />
+    <Content Include="Resources\Icons\debug_break_marker.png" />
+    <Content Include="Resources\Icons\debug_logo.png" />
+    <Content Include="Resources\Icons\debug_marker.png" />
+    <Content Include="Resources\Icons\debug_restart.png" />
+    <Content Include="Resources\Icons\debug_runtocursor.png" />
+    <Content Include="Resources\Icons\debug_stepinto.png" />
+    <Content Include="Resources\Icons\debug_stepout.png" />
+    <Content Include="Resources\Icons\debug_stepover.png" />
+    <Content Include="Resources\Icons\delete.png" />
+    <Content Include="Resources\Icons\dircrea.png" />
+    <Content Include="Resources\Icons\diropen.png" />
+    <Content Include="Resources\Icons\disk.png" />
+    <Content Include="Resources\Icons\drucken.png" />
+    <Content Include="Resources\Icons\ek.png" />
+    <Content Include="Resources\Icons\empty.png" />
+    <Content Include="Resources\Icons\eraser.png" />
+    <Content Include="Resources\Icons\exclamation.png" />
+    <Content Include="Resources\Icons\exit.png" />
+    <Content Include="Resources\Icons\export.png" />
+    <Content Include="Resources\Icons\feldhilf.png" />
+    <Content Include="Resources\Icons\fileclose.png" />
+    <Content Include="Resources\Icons\filefind.png" />
+    <Content Include="Resources\Icons\fileopen.png" />
+    <Content Include="Resources\Icons\fileprint.png" />
+    <Content Include="Resources\Icons\filesave.png" />
+    <Content Include="Resources\Icons\find.png" />
+    <Content Include="Resources\Icons\findfile.png" />
+    <Content Include="Resources\Icons\first.png" />
+    <Content Include="Resources\Icons\forwind.png" />
+    <Content Include="Resources\Icons\garbage.png" />
+    <Content Include="Resources\Icons\garbage2.png" />
+    <Content Include="Resources\Icons\gobegin.png" />
+    <Content Include="Resources\Icons\goend.png" />
+    <Content Include="Resources\Icons\goforw.png" />
+    <Content Include="Resources\Icons\gorev.png" />
+    <Content Include="Resources\Icons\group.png" />
+    <Content Include="Resources\Icons\hand.png" />
+    <Content Include="Resources\Icons\heart.png" />
+    <Content Include="Resources\Icons\help.png" />
+    <Content Include="Resources\Icons\helpques.png" />
+    <Content Include="Resources\Icons\hilfe.png" />
+    <Content Include="Resources\Icons\hook.png" />
+    <Content Include="Resources\Icons\import.png" />
+    <Content Include="Resources\Icons\information.png" />
+    <Content Include="Resources\Icons\key.png" />
+    <Content Include="Resources\Icons\kopier.png" />
+    <Content Include="Resources\Icons\korr.png" />
+    <Content Include="Resources\Icons\last.png" />
+    <Content Include="Resources\Icons\letter.png" />
+    <Content Include="Resources\Icons\lingua.png" />
+    <Content Include="Resources\Icons\lock.png" />
+    <Content Include="Resources\Icons\mag.png" />
+    <Content Include="Resources\Icons\mail.png" />
+    <Content Include="Resources\Icons\message.png" />
+    <Content Include="Resources\Icons\minus.png" />
+    <Content Include="Resources\Icons\neu.png" />
+    <Content Include="Resources\Icons\new.png" />
+    <Content Include="Resources\Icons\next.png" />
+    <Content Include="Resources\Icons\note.png" />
+    <Content Include="Resources\Icons\notebook.png" />
+    <Content Include="Resources\Icons\ok.png" />
+    <Content Include="Resources\Icons\open.png" />
+    <Content Include="Resources\Icons\open_alt.png" />
+    <Content Include="Resources\Icons\paste.png" />
+    <Content Include="Resources\Icons\pen.png" />
+    <Content Include="Resources\Icons\phone.png" />
+    <Content Include="Resources\Icons\plus.png" />
+    <Content Include="Resources\Icons\pointer.png" />
+    <Content Include="Resources\Icons\pos.png" />
+    <Content Include="Resources\Icons\prev.png" />
+    <Content Include="Resources\Icons\printer.png" />
+    <Content Include="Resources\Icons\prop.png" />
+    <Content Include="Resources\Icons\quest.png" />
+    <Content Include="Resources\Icons\question.png" />
+    <Content Include="Resources\Icons\quit.png" />
+    <Content Include="Resources\Icons\refresh.png" />
+    <Content Include="Resources\Icons\rewind.png" />
+    <Content Include="Resources\Icons\service.png" />
+    <Content Include="Resources\Icons\services.png" />
+    <Content Include="Resources\Icons\smiley.png" />
+    <Content Include="Resources\Icons\speaker.png" />
+    <Content Include="Resources\Icons\ssmiley.png" />
+    <Content Include="Resources\Icons\start.png" />
+    <Content Include="Resources\Icons\stop.png" />
+    <Content Include="Resources\Icons\suchen.png" />
+    <Content Include="Resources\Icons\sum.png" />
+    <Content Include="Resources\Icons\text.png" />
+    <Content Include="Resources\Icons\tilehorz.png" />
+    <Content Include="Resources\Icons\tilevert.png" />
+    <Content Include="Resources\Icons\time.png" />
+    <Content Include="Resources\Icons\uplevel.png" />
+    <Content Include="Resources\Icons\user.png" />
+    <Content Include="Resources\Icons\vor.png" />
+    <Content Include="Resources\Icons\weiteres.png" />
+    <Content Include="Resources\Icons\wizard.png" />
+    <Content Include="Resources\Icons\zoom.png" />
+    <Content Include="Resources\Icons\zurueck.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmWebLogin.resx">
+      <DependentUpon>frmWebLogin.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="goodbye.resx">
+      <DependentUpon>goodbye.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="W:\AubitMessageBox.resx">
+      <Link>AubitMessageBox.resx</Link>
+      <DependentUpon>AubitMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="W:\FGLTxtControl.resx">
+      <Link>FGLTxtControl.resx</Link>
+      <DependentUpon>FGLTxtControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="W:\PromptWindow.resx">
+      <Link>PromptWindow.resx</Link>
+      <DependentUpon>PromptWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="W:\ToolBarImages.resx">
+      <Link>ToolBarImages.resx</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wfMainAppWindow.resx">
+      <DependentUpon>wfMainAppWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox1.Designer.cs">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmWebLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmWebLogin.Designer.cs">
+      <DependentUpon>frmWebLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="goodbye.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="goodbye.Designer.cs">
+      <DependentUpon>goodbye.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="W:\AppSettings.cs">
+      <Link>AppSettings.cs</Link>
+    </Compile>
+    <Compile Include="W:\AubitMessageBox.cs">
+      <Link>AubitMessageBox.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="W:\AubitMessageBox.designer.cs">
+      <Link>AubitMessageBox.designer.cs</Link>
+      <DependentUpon>AubitMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="W:\AubitTSBtn.cs">
+      <Link>AubitTSBtn.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="W:\EnvelopeReader.cs">
+      <Link>EnvelopeReader.cs</Link>
+    </Compile>
+    <Compile Include="W:\Eval.cs">
+      <Link>Eval.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLApplicationPanel.cs">
+      <Link>FGLApplicationPanel.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="W:\FGLBrowserFieldWidget.cs">
+      <Link>FGLBrowserFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLButtonFieldWidget.cs">
+      <Link>FGLButtonFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLCheckboxFieldWidget.cs">
+      <Link>FGLCheckboxFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLComboBoxFieldWidget.cs">
+      <Link>FGLComboBoxFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLDateFieldWidget.cs">
+      <Link>FGLDateFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLForm.cs">
+      <Link>FGLForm.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLLabelFieldWidget.cs">
+      <Link>FGLLabelFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLOptions.cs">
+      <Link>FGLOptions.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLPixmapFieldWidget.cs">
+      <Link>FGLPixmapFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLProgressBarFieldWidget.cs">
+      <Link>FGLProgressBarFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLRadioFieldWidget.cs">
+      <Link>FGLRadioFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLScreenRecord.cs">
+      <Link>FGLScreenRecord.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLTextFieldWidget.cs">
+      <Link>FGLTextFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLTxtControl.cs">
+      <Link>FGLTxtControl.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="W:\FGLTxtControl.designer.cs">
+      <Link>FGLTxtControl.designer.cs</Link>
+      <DependentUpon>FGLTxtControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="W:\FGLUsing.cs">
+      <Link>FGLUsing.cs</Link>
+    </Compile>
+    <Compile Include="W:\FGLWidget.cs">
+      <Link>FGLWidget.cs</Link>
+    </Compile>
+    <Compile Include="W:\FieldOverlay.cs">
+      <Link>FieldOverlay.cs</Link>
+    </Compile>
+    <Compile Include="W:\frmFieldOverlay.cs">
+      <Link>frmFieldOverlay.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="W:\frmFieldOverlay.Designer.cs">
+      <Link>frmFieldOverlay.Designer.cs</Link>
+    </Compile>
+    <Compile Include="W:\HelperClasses.cs">
+      <Link>HelperClasses.cs</Link>
+    </Compile>
+    <Compile Include="W:\Network_web.cs">
+      <Link>Network_web.cs</Link>
+    </Compile>
+    <Compile Include="W:\PromptWindow.cs">
+      <Link>PromptWindow.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="W:\PromptWindow.designer.cs">
+      <Link>PromptWindow.designer.cs</Link>
+      <DependentUpon>PromptWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="W:\samp.cs">
+      <Link>samp.cs</Link>
+    </Compile>
+    <Compile Include="W:\ssh.cs">
+      <Link>ssh.cs</Link>
+    </Compile>
+    <Compile Include="W:\StartMenuXMLParser.cs">
+      <Link>StartMenuXMLParser.cs</Link>
+    </Compile>
+    <Compile Include="W:\ToolBarImages.Designer.cs">
+      <Link>ToolBarImages.Designer.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextConstruct.cs">
+      <Link>UIContextConstruct.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextDisplayArray.cs">
+      <Link>UIContextDisplayArray.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextDisplayArrayInTable.cs">
+      <Link>UIContextDisplayArrayInTable.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextInput.cs">
+      <Link>UIContextInput.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextInputArray.cs">
+      <Link>UIContextInputArray.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextMenu.cs">
+      <Link>UIContextMenu.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="W:\UIContextMisc.cs">
+      <Link>UIContextMisc.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContextPrompt.cs">
+      <Link>UIContextPrompt.cs</Link>
+    </Compile>
+    <Compile Include="W:\UIContexts.cs">
+      <Link>UIContexts.cs</Link>
+    </Compile>
+    <Compile Include="W:\XMLForm.cs">
+      <Link>XMLForm.cs</Link>
+    </Compile>
+    <Compile Include="wfMainAppWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wfMainAppWindow.Designer.cs">
+      <DependentUpon>wfMainAppWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="xref.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Images\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+
+	
+  -->
+  <Import Condition="" Project="$(MSBuildExtensionsPath)\Gizmox\v9.0\Gizmox.VWGApplication.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>False</AutoAssignPort>
+          <DevelopmentServerPort>8888</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

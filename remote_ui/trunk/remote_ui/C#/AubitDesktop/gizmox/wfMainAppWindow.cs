@@ -1,0 +1,869 @@
+#region Using
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+
+using Gizmox.WebGUI.Common;
+using Gizmox.WebGUI.Forms;
+
+#endregion
+
+namespace AubitDesktop
+{
+    public partial class frmMainAppWindow : Form
+    {
+        public UIContext currentContext = null;
+
+        public  showMode showMenuBar;
+        public showMode showToolbar;
+        public showMode showApplicationLauncher;
+        private event EventHandler EnvelopeReadyForConsumption;
+        private bool updating;
+        private List<FGLApplicationPanel> RunningApplications;
+        AubitNetwork networkConnection;
+        //frmWebLogin frm;
+        private bool hasQuit=false;
+        Goodbye gwin = null;
+        private bool _amWaitingForEvent = false;
+        private bool amWaitingForEvent
+        {
+            get
+            {
+                return _amWaitingForEvent;
+            }
+            set
+            {
+                Console.WriteLine("amWaitingForEvent set to " + value);
+                _amWaitingForEvent = value;
+            }
+        }
+
+
+        public string LineDisplayText
+        {
+            get
+            {
+                return sbLineDisplayText.Text;
+            }
+            set
+            {
+                sbLineDisplayText.Text = value;
+            }
+        }
+
+        public string MessageText
+        {
+            get
+            {
+                return sbMessageText.Text;
+            }
+            set
+            {
+                sbMessageText.Text = value;
+            }
+        }
+
+
+        public string ErrorText
+        {
+            get
+            {
+                return sbErrorText.Text;
+            }
+            set
+            {
+                sbErrorText.Text = value;
+            }
+        }
+
+        public string CommentText
+        {
+            get
+            {
+                return sbCommentText.Text;
+            }
+            set
+            {
+                sbCommentText.Text = value;
+            }
+        }
+
+        public frmMainAppWindow()
+        {
+            InitializeComponent();
+        }
+
+        internal void SendString(string TriggeredText, bool callSetWaitCursor)
+        {
+            
+
+            string finalString;
+            if (callSetWaitCursor) { setWaitCursor(); }
+
+            if (Program.AppSettings.defaultEncoding.Trim() == "")
+            {
+                Program.AppSettings.defaultEncoding = "ISO8859-1";
+                Program.SaveSettings();
+            }
+
+            finalString = TriggeredText;
+            try
+            {
+                if (Program.AppSettings.defaultEncoding != "UTF8")
+                {
+                    Encoding enc = ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
+                    ASCIIEncoding ascii = new ASCIIEncoding();
+                    byte[] byteArray = Encoding.UTF8.GetBytes(TriggeredText);
+                    byte[] asciiArray = Encoding.Convert(Encoding.UTF8, enc, byteArray);
+                    finalString = ascii.GetString(asciiArray);
+
+                }
+            }
+            catch { }
+
+
+            networkConnection.SendString(finalString);
+            amWaitingForEvent = true;
+
+
+            Console.WriteLine("Enable timer1");
+            timer1.Interval = 100;
+            timer1.Enabled = true;
+        }
+
+        void timer1_Tick(object sender, System.EventArgs e)
+        {
+            Console.WriteLine("Timer1Tick");
+            if (hasQuit)
+            {
+                doQuit();
+            }
+
+            if (amWaitingForEvent)
+            {
+                Console.WriteLine("Stopping timer - as I'm waiting for an event");
+                timer1.Enabled = false;
+            }
+        }
+
+        private void doQuit()
+        {
+
+       
+          
+            if (gwin == null)
+            {
+                this.Enabled = false;
+                gwin = new Goodbye();
+                gwin.Closed += new EventHandler(amb_Closed);
+                gwin.ShowDialog();
+            }
+            timer2.Enabled = false;
+
+        }
+
+        void amb_Closed(object sender, EventArgs e)
+        {
+            this.Close();
+            
+        }
+
+
+        public void SetMenuBarButtons(Control a)
+        {
+            MenuBarPanel.Controls.Clear();
+
+            if (a != null)
+            {
+                MenuBarPanel.Controls.Add(a);
+            }
+            showOrHideMenubar();
+            MenuBarPanel.Width = MenuBarPanel.Width;
+            mainAppPanel.Width = mainAppPanel.Width;
+            Console.WriteLine("SET MENUBARBUTTONS Sizeof a=" + a.Width + " " + a.Height);
+            
+
+        }
+
+
+        public void ShowDialog(Control f)
+        {
+
+        }
+
+        public void showOrHideMenubar()
+        {
+
+            MenuBarPanel.Visible = true;
+            return;
+            /*
+
+            if (MenuBarPanel.Controls.Count > 0 || true)
+            {
+                MenuBarPanel.Visible = true;
+
+            }
+            else
+            {
+                MenuBarPanel.Visible = false;
+
+                
+            }
+             * */
+
+        }
+
+
+        public void setWaitCursor()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            
+          //  timer1.Enabled = false;
+        }
+
+        public void clrWaitCursor()
+        {
+            amWaitingForEvent = true;
+            this.Cursor = Cursors.Arrow;
+            
+            //Application.DoEvents();
+        //      if (timer1.Enabled == false)
+        //     {
+        //        timer1.Enabled = true;
+        //    }
+            /*
+            if (timer1.Enabled == false)
+            {
+                timer1.Interval = 100;
+                timer1.Enabled = true;
+                this.ErrorText = "T...";
+            }
+            else
+            {
+                timer1.Enabled = false;
+                timer1.Interval = 100;
+                timer1.Enabled = true;
+            }
+             * */
+        }
+
+        internal void setToolbar(List<AubitTSBtn> toolStrip)
+        {
+
+            this.topWindowToolStrip.Buttons.Clear();
+            if (toolStrip.Count > 0)
+            {
+                for (int a = 0; a < toolStrip.Count; a++)
+                {
+
+                    this.topWindowToolStrip.Buttons.Add(toolStrip[a]);
+                }
+            }
+            showOrHideToolbar();
+
+        }
+
+        private void showOrHideToolbar()
+        {
+            if (topWindowToolStrip.Buttons.Count > 0)
+            {
+                topWindowToolStrip.Visible = true;
+            }
+            else
+            {
+                topWindowToolStrip.Visible = false;
+            }
+        }
+
+        internal void setProgress(int p, int cnt)
+        {
+            // Ignore for this one..
+        }
+
+        internal void loadApplicationLauncherTree(string oname,int applicationID)
+        {
+            // Does nothing on purpose..
+        }
+
+        internal void setTabTitle(FGLApplicationPanel fGLApplicationPanel, string p)
+        {
+            
+        }
+
+
+        internal void setActiveTab(FGLApplicationPanel fGLApplicationPanel)
+        {
+            // Does nothing on purpose..
+        }
+
+	internal void setToolstripHeight(int p) {
+            // Does nothing on purpose..
+	}
+
+	internal void setToolstripImageSize(int p) {
+            // Does nothing on purpose..
+	}
+
+        private void topWindowToolStrip_Click(object objSource, ToolBarItemEventArgs objArgs)
+        {
+            AboutBox1 abt;
+            abt = new AboutBox1();
+            abt.Show();
+        }
+
+        internal void addNewTabPage(int p, string progname, FGLApplicationPanel fGLApplicationPanel)
+        {
+            this.SuspendLayout();
+            mainAppPanel.AutoSize = true;
+            mainAppPanel.Visible = true;
+            
+           
+            mainAppPanel.Controls.Add(fGLApplicationPanel);
+            this.Width = this.Width;
+            mainAppPanel.Focus();
+            //mainAppPanel.BackColor = Color.Red;
+            //fGLApplicationPanel.BackColor = Color.Beige;
+            fGLApplicationPanel.AutoSize = true;
+
+
+        }
+
+        internal void AddTextToConsole(string p)
+        {
+            Console.WriteLine(p);
+        }
+
+        internal void removeTabPage(FGLApplicationPanel fGLApplicationPanel)
+        {
+            mainAppPanel.Controls.Clear();
+            if (VWGContext.Current != null)
+            {
+                MessageBox.Show("Application has exited");
+            }
+            hasQuit = true;
+        }
+
+    private void frmMainAppWindow_Load(object sender, EventArgs e)
+        {
+            showOrHideToolbar();
+            showOrHideMenubar();
+            
+            MessageText = "";
+            ErrorText = "";
+            CommentText = "";
+            LineDisplayText = "";
+           
+           // this.Context.CurrentTheme = new Theme("Black");
+
+            RunningApplications = new List<FGLApplicationPanel>();
+            Program.AppSettings = new AubitDesktop.Xml.Settings();
+            Program.AppSettings.AllowEdit = false;
+            Program.AppSettings.allowExec = false;
+            Program.AppSettings.interruptKey = "Control-C";
+            Program.AppSettings.ListenMode = false;
+            Program.AppSettings.Shortcuts = new List<AubitDesktop.Xml.Shortcut>();
+            Program.AppSettings.StartMinimized = false;
+            Program.AppSettings.WindowPositions = new List<AubitDesktop.Xml.WindowPosition>();
+            Program.AppSettings.xscale = 9;
+            Program.AppSettings.defaultEncoding = "ISO8859-1";
+            Program.AppSettings.yscale = 23;
+  
+          //  frm = new frmWebLogin();
+          //  frm.Closed += new EventHandler(frm_Closed);
+          //  frm.Show();
+            Console.WriteLine("Enable timer1");
+           // timer1.Enabled = true;
+            timer2.Enabled = true; /* Slow timer  - just to keep it pinging updates */
+            txtUsername.SelectAll();
+            txtUsername.Focus();
+            this.MenuBarPanel.BackColor = Color.FromArgb(240, 240, 240);
+            this.mainAppPanel.BackColor = Color.FromArgb(240, 240, 240);
+            toolBarButton1.Click += new EventHandler(toolBarButton1_Click);
+            btnPanel.Text = "";
+        }
+
+    void toolBarButton1_Click(object sender, EventArgs e)
+    {
+        AboutBox1 abt;
+        abt = new AboutBox1();
+        abt.Show();
+
+    }
+
+
+
+        void frm_Closed(object sender, EventArgs e)
+        {
+
+
+            
+                setWaitCursor();
+                networkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
+                networkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
+                networkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
+                networkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+                networkConnection.ConnectionDied += new EventHandler(networkConnection_ConnectionDied);
+
+                EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
+            //    this.Update();
+                try
+                {
+                    networkConnection.NewConnection("192.168.2.217", "3490", txtUsername.Text, txtPassword.Text, txtApplication.Text, "PROXY", this);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            
+            if (networkConnection != null && networkConnection.connectionFailed)
+            {
+                MessageBox.Show("Connection Failed");
+                clrWaitCursor();
+
+            }
+            else
+            {
+                loginPanel.Visible = false;
+              //  amWaitingForEvent = true;
+                Console.WriteLine("Enable timer1");
+                //resetPing();
+                timer1.Interval = 100;
+                timer1.Enabled = true;
+               // clrWaitCursor(); 
+            }
+
+
+            return;
+            /*
+
+
+            if (frm.logInClicked)
+            {
+                setWaitCursor();
+                networkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
+                networkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
+                networkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
+                networkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+                networkConnection.ConnectionDied += new EventHandler(networkConnection_ConnectionDied);
+                
+                EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
+                this.Update();
+                try
+                {
+                    networkConnection.NewConnection("192.168.2.217", "3490", frm.txtUsername.Text, frm.txtPassword.Text, frm.txtApplication.Text, "PROXY",this);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                
+            }
+            
+            if (networkConnection!=null && networkConnection.connectionFailed)
+            {
+               
+                frm.Show();
+                clrWaitCursor();
+
+            }
+            else
+            {
+                frm = null;
+                clrWaitCursor();
+                //timer1.Enabled = true;
+            }
+             * */
+        }
+
+        void networkConnection_ConnectionDied(object sender, EventArgs e)
+        {
+            this.mainAppPanel.Controls.Clear();
+            this.ErrorText = "Connection died";
+
+            //throw new NotImplementedException();
+        }
+
+        private void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Ready for consumption");
+            ConsumeEnvelopeHandler();
+            //this.ConsumeEnvelopeCommands();
+        }
+
+        public void ConsumeEnvelopeHandler()
+        {
+            DateTime s;
+            s = System.DateTime.Now;
+            //Console.WriteLine("CONSUMING: " + System.DateTime.Now);
+            ConsumeEnvelopeCommands();
+            Console.WriteLine("CONSUMED in " + (System.DateTime.Now - s));
+        }
+
+        private void ConsumeEnvelopeCommands()
+        {
+            int a = 0;
+            if (updating)
+            {
+                Console.WriteLine("Cant consume - updating");
+                return;
+            }
+
+            //Console.WriteLine("Consume1");
+            while (a < RunningApplications.Count)
+            {
+                RunningApplications[a].ConsumeEnvelopeCommands();
+                a++;
+            }
+            
+        }
+
+        void n_ConnectingFailed(object sender, EventArgs e)
+        {
+            this.MessageText=("Connection failed");
+        //    this.Close();
+        }
+
+        void n_DisconnectedFromServer(object sender, EventArgs e)
+        {
+            EnvelopeReadyForConsumption(null, null);
+            this.MessageText = "Server disconnected";
+            //MessageBox.Show("Server disconnect");
+           // this.Close();
+        }
+
+        void n_ReceivedEnvelopeFromServer(object sender, ReceivedEventArgs e)
+        {
+            ENVELOPE enew;
+            int a;
+            int ID;
+
+
+            FGLApplicationPanel appPanel;
+
+            if (e.Data == "") return;
+            updating = true;
+
+            enew = EnvReader.ReadFromXml(e.Data);
+            ID = Convert.ToInt32(enew.ID);
+
+            foreach (FGLApplicationPanel p in RunningApplications)
+            {
+                if (p.ApplicationEnvelopeID == ID)
+                { // We've found it..
+                    for (a = 0; a < enew.COMMANDS.Length; a++)
+                    {
+
+                        p.commands.Add(enew.COMMANDS[a]);
+                    }
+                    updating = false;
+
+                    if (EnvelopeReadyForConsumption != null)
+                    {
+                        EnvelopeReadyForConsumption(null, null);
+                    }
+                    return;
+                }
+            }
+
+            // If we get to here - we have no FGLApplication panel to use :-(
+            appPanel = new FGLApplicationPanel(this, this.networkConnection.username, this.networkConnection.application, Convert.ToInt32(enew.ID));
+            RunningApplications.Add(appPanel);
+            for (a = 0; a < enew.COMMANDS.Length; a++)
+            {
+                appPanel.commands.Add(enew.COMMANDS[a]);
+
+            }
+
+            updating = false;
+            if (EnvelopeReadyForConsumption != null)
+            {
+                EnvelopeReadyForConsumption(null, null);
+            }
+
+        }
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        internal void ShowApplication()
+        {
+            this.MessageText = ("Connected!");
+            mainAppPanel.Controls.Clear();
+           // Application.DoEvents();
+        }
+
+        internal bool FailedToStart()
+        {
+            ErrorText = "Failed to start";
+            return true;
+        }
+
+        private void mainAppPanel_Resize(object sender, EventArgs e)
+        {
+            //
+        }
+
+        private void mainAppPanel_GotFocus(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void mainAppPanel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private static void ensureParentSize(Control c, int maxWidth, int maxHeight)
+        {
+            if (c.Parent == null) return; 
+            if (c.Parent.Width < maxWidth || c.Parent.Height < maxHeight)
+            {
+                ensureParentSize(c.Parent, maxWidth, maxHeight);
+                c.Parent.Width = maxWidth;
+                c.Parent.Height = maxHeight;
+            }
+        }
+
+
+        public static int nmCounter = 0;
+        /// <summary>
+        /// Debug routine to print out the sizes of the various controls..
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="level"></param>
+        public static void ensureSizeWindow(Control control, string level)
+        {
+
+
+
+            if (control.Width == 2000)
+            {
+                control.Width = 100;
+                control.Height = 100;
+            }
+
+            int maxWidth = control.Width;
+            int maxHeight = control.Height;
+
+            //  ContainerControl c=null;
+            if (control.Name == "")
+            {
+                control.Name = "Cntrl" + nmCounter;
+            }
+
+            if (control.Height < 0 || control.Left < 0 || control.Width < 0 || control.Top < 0)
+            {
+                throw new ApplicationException("Invalid control size/location");
+            }
+
+            Console.WriteLine(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
+            if (control.HasChildren)
+            {
+                foreach (Control d in control.Controls)
+                {
+                    ensureSizeWindow(d, level + " ");
+                    if (d.Height + d.Top > maxHeight)
+                    {
+                        maxHeight = d.Height + d.Top;
+                    }
+                    if (d.Width + d.Left > maxWidth)
+                    {
+                        maxWidth = d.Width + d.Left;
+                    }
+
+
+                }
+            }
+
+            if (control.Height < maxHeight || control.Width < maxWidth)
+            {
+                control.MinimumSize = new Size(maxWidth, maxHeight);
+               frmMainAppWindow. ensureParentSize(control, maxWidth, maxHeight);
+                control.Size = new Size(maxWidth, maxHeight);
+            }
+
+
+
+            if (control.Width == 100 && control.Height == 100)
+            {
+                Console.WriteLine("Failed");
+                //Program.Show((Gizmox.WebGUI.Forms.Form) null,"Unfixed");
+            }
+
+
+
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            //Console.WriteLine("Timer2Tick");
+            if (hasQuit)
+            {
+                doQuit();
+            }
+        }
+
+        int cntrl_cnt = 0;
+
+        string doDump(Control c, string lvl)
+        {
+            string rval="";
+
+            if (c.GetType().Name == "AubitDesktop.UIMenuBarButton") return "";
+
+            if (c.Name == "")
+            {
+                c.Name = "nm_" + cntrl_cnt++;
+            }
+
+           
+                rval += lvl+c.GetType().ToString() + " " + c.Name + "= new " + c.GetType().ToString() + "();\n";
+                if (c.Text!="")
+                {
+                    rval+=lvl+c.Name+".Text=\""+c.Text+"\";\n";
+                }
+                rval += lvl + c.Name + ".Left=" + c.Left + ";\n";
+                rval += lvl + c.Name + ".Top=" + c.Top + ";\n";
+                rval += lvl + c.Name + ".Width=" + c.Width + ";\n";
+                rval += lvl + c.Name + ".Height=" + c.Height + ";\n";
+                rval += lvl + c.Name + ".BorderStyle=BorderStyle." + c.BorderStyle + ";\n";
+                if (c.Enabled)
+                {
+                    rval += lvl + c.Name + ".Enabled=true;\n";
+                }
+                else
+                {
+                    rval += lvl + c.Name + ".Enabled=false;\n";
+                }
+                if (c.Visible)
+                {
+                    rval += lvl + c.Name + ".Visible=true;\n";
+                }
+                else
+                {
+                    rval += lvl + c.Name + ".Visible=false;\n";
+                }
+                if (c.AutoSize)
+                {
+                    rval += lvl + c.Name + ".Width=2000;\n";
+                    rval += lvl + c.Name + ".Height=2000;\n";
+                    //rval += lvl + c.Name + ".AutoSize=true;\n";
+                }
+                else
+                {
+                    rval += lvl + c.Name + ".AutoSize=false;\n";
+                }
+
+                rval += lvl + c.Name + ".Dock=DockStyle." + c.Dock + ";\n";
+
+                //rval=(lvl+c.GetType().ToString()+"("+c.Name +","+ c.Text+")\n");
+            
+
+            if (c is Panel)
+            {
+                Panel p;
+                p = (Panel)c;
+                rval += lvl + c.Name + ".BorderStyle=BorderStyle." + p.BorderStyle + ";\n";
+                foreach (Control n in p.Controls)
+                {
+                    rval += doDump(n, lvl + " ");
+                    rval += lvl + c.Name + ".Controls.Add(" + n.Name + ");\n";
+                }
+                if (c.AutoSize)
+                {
+                    rval += lvl + c.Name + ".AutoSize=true;\n";
+                }
+                return rval;
+            }
+
+            if (c is GroupBox)
+            {
+                GroupBox p;
+                p = (GroupBox)c;
+                rval += lvl + c.Name + ".BorderStyle=BorderStyle." + p.BorderStyle + ";\n";
+                foreach (Control n in p.Controls)
+                {
+                    rval += doDump(n, lvl + " ");
+                    rval += lvl + c.Name + ".Controls.Add(" + n.Name + ");\n";
+                }
+                if (c.AutoSize)
+                {
+                    rval += lvl + c.Name + ".AutoSize=true;\n";
+                }
+                return rval;
+            }
+
+            if (c is FlowLayoutPanel)
+            {
+                FlowLayoutPanel p;
+                p = (FlowLayoutPanel)c;
+                rval += lvl + c.Name + ".FlowDirection=FlowDirection." + p.FlowDirection + ";\n";
+                foreach (Control n in p.Controls)
+                {
+                    rval += doDump(n, lvl + " ");
+                    rval += lvl + c.Name + ".Controls.Add(" + n.Name + ");\n";
+                }
+                if (c.AutoSize)
+                {
+                    rval += lvl + c.Name + ".AutoSize=true;\n";
+                }
+                return rval;
+            }
+
+            
+            if (c is frmMainAppWindow)
+            {
+                frmMainAppWindow p;
+                p = (frmMainAppWindow)c;
+                foreach (Control n in p.Controls)
+                {
+                    rval += doDump(n, lvl + " ");
+                    rval += lvl +  "topPanel.Controls.Add(" + n.Name + ");\n";
+                }
+                if (c.AutoSize)
+                {
+                    rval += lvl + c.Name + ".AutoSize=true;\n";
+                }
+                return rval;
+            }
+
+            if (c.AutoSize)
+            {
+                rval += lvl + c.Name + ".AutoSize=true;\n";
+            }
+            return rval;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string str;
+            str=doDump(this,"");
+            MessageBox.Show(str);
+        }
+
+        private void MenuBarPanel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void statusBar1_Click(object sender, EventArgs e)
+        {
+        }
+
+
+
+
+
+        
+    }
+}

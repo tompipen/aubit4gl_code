@@ -1,0 +1,15 @@
+<publishData>
+  <publishTarget publishUrl="\\dell2800\tmp\ad\">
+    <file relUrl="bin/Gizmox.WebGUI.Forms.dll" publishTime="06/09/2009 10:12:40" />
+    <file relUrl="bin/AubitDesktopWeb.dll" publishTime="06/27/2009 20:17:13" />
+    <file relUrl="bin/Tamir.SharpSSH.dll" publishTime="06/26/2009 17:31:51" />
+    <file relUrl="bin/Gizmox.WebGUI.Forms.xml" publishTime="06/09/2009 10:12:40" />
+    <file relUrl="bin/AubitDesktopWeb.pdb" publishTime="06/27/2009 20:17:13" />
+    <file relUrl="Readme.txt" publishTime="06/26/2009 11:57:57" />
+    <file relUrl="bin/Gizmox.WebGUI.Common.dll" publishTime="06/09/2009 10:13:36" />
+    <file relUrl="bin/Gizmox.WebGUI.Common.xml" publishTime="06/09/2009 10:12:30" />
+    <file relUrl="bin/DiffieHellman.dll" publishTime="06/26/2009 17:31:51" />
+    <file relUrl="bin/Gizmox.WebGUI.Server.dll" publishTime="06/09/2009 10:13:48" />
+    <file relUrl="bin/Org.Mentalis.Security.dll" publishTime="06/26/2009 17:31:51" />
+  </publishTarget>
+</publishData>
