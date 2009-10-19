@@ -1,0 +1,60 @@
+svn update
+cp *.res* gizmox
+for a in *.cs
+do
+	if [ $a = AboutBox1.Designer.cs ]
+	then 
+		continue
+	fi
+	if [ $a = AboutBox1.cs ]
+	then 
+		continue
+	fi
+
+	rm -f gizmox/$a
+	cat $a | sed 's/System.Windows.Forms/Gizmox.WebGUI.Forms/g'  | \
+		grep -v "MenuItem.Size = new System.Drawing.Size" | \
+		sed 's/AddRange.new Gizmox.WebGUI.Forms.ToolStripItem/AddRange(new Gizmox.WebGUI.Forms.MenuItem/g' | \
+		sed 's/statusStrip1.*Forms.MenuItem/statusStrip1.Items.AddRange(new Gizmox.WebGUI.Forms.Control/g' | \
+		sed 's/Gizmox.WebGUI.Forms.ToolStripButton/Gizmox.WebGUI.Forms.ToolStripItem/g' | \
+		sed 's/MenuItem.DropDownItems.AddRange/MenuItem.MenuItems.AddRange/g' | \
+		grep -v "\.toolStripProgressBar2" | \
+		grep -v "this.AutoScaleDimensions" | \
+		grep -v "this.AutoScaleMode" | \
+		grep -v "UseVisualStyleBackColor" | \
+		grep -v "CausesValidation" | \
+		grep -v "this.FormClosed" | \
+		grep -v "Program.saveWindowPosition(this" | \
+		grep -v "Program.setWindowPosition(this" | \
+		sed 's/Gizmox.WebGUI.Forms.PictureBox/Gizmox.WebGUI.Forms.PictureBoxCompat/g' | \
+		sed 's/PictureBox pb/PictureBoxCompat pb/g' | \
+		grep -v "    MacroEditor me = new MacroEditor();" | \
+        	grep -v "    me.Show();"   | \
+		grep -v "this.ShowIcon = " | \
+		grep -v "AutoEllipsis" | \
+		grep -v "tooltips.ShowAlways" | \
+		grep -v "cbFieldWidget.*Validating" | \
+		grep -v "dateTimePicker_t.*Validating" | \
+		grep -v "t.*Validating.*+=" | \
+		grep -v "AutoCompleteMode = " | \
+		grep -v "tsBtn.*DisplayStyle = " | \
+		grep -v "tsBtn.*Size = " | \
+		grep -v "SetAutoScrollMargin" | \
+		grep -v "ToolStripItemDisplayStyle" | \
+		grep -v "ke.SuppressKeyPress = true;" | \
+		grep -v "tsBtn.*ImageTransparentColor = " | \
+		sed 's/topWindowToolStrip.Items\./topWindowToolStrip.Controls./g' | \
+		sed 's/new PictureBox/new PictureBoxCompat/g' | \
+		grep -v "Program.myConsole.ClearText();" | \
+		sed 's/AubitTSBtn : Gizmox.WebGUI.Forms.ToolStripItem/AubitTSBtn : Gizmox.WebGUI.Forms.ToolStripButton/g' | \
+		grep -v "this.logoPictureBox.Image = global::AubitDesktop.Properties.Resources.Aubit;" | \
+		sed 's/Properties.Resources.ImageDirectory/FGLImageSettings.ImageDirectory/g' | \
+		grep -v "NOTWEBGUI"|  \
+	 	sed  's/\/\/.*WEBGUI//g' | \
+		awk '/if .target != null && target.InvokeRequired./ {getline;getline;next}
+		{print}' | \
+		sed 's/tabControl1.SelectedTab/tabControl1.TabPages[tabControl1.SelectedIndex]/g' > gizmox/$a
+		
+	chmod 444 gizmox/$a
+done
+
