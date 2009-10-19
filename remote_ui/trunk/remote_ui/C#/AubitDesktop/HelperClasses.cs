@@ -1513,7 +1513,7 @@ namespace AubitDesktop
                 case "2008": txt = "Help"; break;
                 case "2006": txt = "PrevPage"; break;
                 case "2016": txt = "Accept"; break;
-                case "27": txt = "Esc"; break;
+                case "27": txt = "Escape"; break;
 
                 case "1": txt = "Control-A"; break;
                 case "2": txt = "Control-B"; break;

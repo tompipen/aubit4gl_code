@@ -853,7 +853,7 @@ namespace AubitDesktop
 
 
             keycode = FGLUtils.getKeyCodeFromKeyName(key);
-            string acceptKey = getCurrentApplicationKey("ACCEPT", "Esc");
+            string acceptKey = getCurrentApplicationKey("ACCEPT", "Escape");
             string insertKey = getCurrentApplicationKey("INSERT", "F1");
             string deleteKey = getCurrentApplicationKey("DELETE", "F2");
 
@@ -950,7 +950,6 @@ namespace AubitDesktop
 
         private bool scanApplicationLauncherForKey(string hotkey)
         {
-
             launcherCmdNode n=FindNodeInHierarchy(applicationLauncherTreeView.Nodes, hotkey);
             if (n == null) return false;
             applicationLauncherTreeView.SelectedNode = n;
@@ -1027,7 +1026,7 @@ namespace AubitDesktop
          
             FGLApplicationPanel fGLApplicationPanel = null;
             TabPage tp = tabControl1.SelectedTab;
-            if (tp == null) { return "Esc"; }
+            if (tp == null) { return "Escape"; }
 
             foreach (Control c in tp.Controls)
             {
@@ -1043,7 +1042,7 @@ namespace AubitDesktop
                 return fGLApplicationPanel.getAcceptKey();
             }
 
-            return "Esc";
+            return "Escape";
         }
         */
 

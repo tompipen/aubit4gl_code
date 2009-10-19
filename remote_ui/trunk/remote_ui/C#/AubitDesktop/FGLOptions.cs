@@ -95,7 +95,7 @@ namespace AubitDesktop
         public FGLOptions()
         {
             this._messageline = 1;
-            this.AcceptKey="Esc";
+            this.AcceptKey="Escape";
             this.InputWrap=false;
             this._promptline = 1;
         }
