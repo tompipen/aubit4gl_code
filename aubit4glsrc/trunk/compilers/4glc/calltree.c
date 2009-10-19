@@ -1356,11 +1356,14 @@ get_event (event_data * a)
     case EVENT_BEFORE_FIELD:
       sprintf (buff, "EVENT_TYPE=\"BEFORE_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_field)));
       return buff;
+
     case EVENT_AFTER_FIELD:
       sprintf (buff, "EVENT_TYPE=\"AFTER_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.after_field)));
       return buff;
+
     case EVENT_ON_CHANGE:
       sprintf (buff, "EVENT_TYPE=\"ON_CHANGE\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.after_field)));
+	return buff;
     case EVENT_MENU_COMMAND:
       sprintf (buff, "EVENT_TYPE=\"MENU_COMMAND\" %s", get_menu_option (a->event_data_u.mnoption));
       return buff;
