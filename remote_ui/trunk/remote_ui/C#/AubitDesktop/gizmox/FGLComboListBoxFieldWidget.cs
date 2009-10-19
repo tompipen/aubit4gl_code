@@ -99,11 +99,12 @@ namespace AubitDesktop
         }
 
 
+	
         public override void setFocus()
         {
             t.Focus();
             t.Select();
-            t.SelectionLength = 0;
+
         }
 
         override public Color BackColor
@@ -265,15 +266,17 @@ namespace AubitDesktop
         }
 
 
+	 int _maxLength;
+
         public int MaxLength
         {
             get
             {
-                return t.MaxLength;
+		 return _maxLength;
             }
             set
             {
-                t.MaxLength = value;
+		 _maxLength=value;
             }
         }
 
@@ -405,7 +408,7 @@ namespace AubitDesktop
                 t.Width = GuiLayout.get_gui_w(3);
             }
 
-            t.MaxLength = columns;
+	 _maxLength=columns;
 
 
             l.Size = t.Size;
@@ -461,7 +464,6 @@ namespace AubitDesktop
         {
             bool hasBlank = false;
 
-            t.BeginUpdate();
             t.Items.Clear();
 
             
@@ -479,7 +481,6 @@ namespace AubitDesktop
                 
                 t.Items.Add(""); /* Add a blank so we can do a search properly */
             }
-            t.EndUpdate();
         }
 
 

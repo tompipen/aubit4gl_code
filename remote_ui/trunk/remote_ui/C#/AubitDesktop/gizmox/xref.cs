@@ -181,10 +181,5 @@ namespace AubitDesktop
     }
 
 
-    class FGLComboListBoxFieldWidget : FGLWidget
-    {
-        public FGLComboListBoxFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ComboListBox cbox, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
-        {
-        }
-    }
+
 }
