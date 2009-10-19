@@ -310,8 +310,8 @@ namespace AubitDesktop
 
         private void topWindowToolStrip_Click(object objSource, ToolBarItemEventArgs objArgs)
         {
-            AboutBox1 abt;
-            abt = new AboutBox1();
+            wfAbout abt;
+            abt = new wfAbout();
             abt.Show();
         }
 
@@ -388,8 +388,8 @@ namespace AubitDesktop
 
     void toolBarButton1_Click(object sender, EventArgs e)
     {
-        AboutBox1 abt;
-        abt = new AboutBox1();
+        wfAbout abt;
+        abt = new wfAbout();
         abt.Show();
 
     }
