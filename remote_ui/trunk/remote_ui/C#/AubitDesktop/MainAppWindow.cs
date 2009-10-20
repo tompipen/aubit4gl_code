@@ -49,6 +49,15 @@ namespace AubitDesktop
         bool _hasApplicationtree;
         private event EventHandler EnvelopeReadyForConsumption;
         internal int applicationLauncherId;
+        private bool hasButtonsOnMenuBar=false;
+
+
+        /// <summary>
+        /// Marker set to indicate if we should prompt to allow the closing of the window..
+        /// </summary>
+        private bool dontPrompt=false;
+
+
 
         public Color defaultBackColor
         {
@@ -310,16 +319,23 @@ namespace AubitDesktop
         {
             MenuBarPanel.Controls.Clear();
 
+            hasButtonsOnMenuBar = false;
             if (a != null)
             {
+                a.Visible = true;
                 MenuBarPanel.Controls.Add(a);
+                if (hasSomethingVisible(a))
+                {
+                    hasButtonsOnMenuBar = true;
+                }
             }
+
+            
             showOrHideMenubar();
         }
 
         public void showOrHideMenubar() {
             int visibleCount = 0;
-
             switch (this.showMenuBar)
             {
                 case showMode.ShowAlways:
@@ -341,7 +357,7 @@ namespace AubitDesktop
 
 
 
-            if (hasSomethingVisible(MenuBarPanel)) {
+            if (hasButtonsOnMenuBar) {
 
                 if (this.showMenuBar == showMode.ShowNever)
                 {
@@ -375,20 +391,43 @@ namespace AubitDesktop
         /// <param name="orig">Top level control to check</param>
         /// <returns>true if there are any visible controls which are not just containers...</returns>
         private static bool hasSomethingVisible(Control orig)
-        {           
-            if (orig.Visible == false) return false;
+        {
+
+            if (orig is UIMenuBarButton)
+            {
+                if (((UIMenuBarButton)orig).Hidden) return false;
+                return true;
+            }
+
+
+            if (orig.Visible == false)
+            {
+                if (orig is Panel || orig is GroupBox)
+                { 
+                    // Do nothing...
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+
+
+            // Is it a container control ? 
             if (orig.Controls != null && orig.Controls.Count>0)
             {
-                foreach (Control x in orig.Controls)
+                foreach ( Control x in  orig.Controls)
                 {
-                    if (hasSomethingVisible(x)) return true;                    
+                    if (hasSomethingVisible(x))
+                    {
+                               return true;
+                    }
                 }
                 return false;
             }
-            if (orig is GroupBox) return false; // Its just a container..
-            if (orig is FlowLayoutPanel) return false;
-            if (orig is Panel) return false;
-            return true;
+
+            return false;
         }
 
         private void showOrHideApplicationLauncher()
@@ -571,6 +610,7 @@ namespace AubitDesktop
 
                     if (this.tabControl1.TabCount == 0 || forceClose)
                     {
+                        dontPrompt = true;
                         this.Close();
                         this.Dispose();
                     }
@@ -691,6 +731,10 @@ namespace AubitDesktop
                 fGLApplicationPanel.NavigateToTab();
             }
             currentPanel = fGLApplicationPanel;
+            
+            showOrHideMenubar();
+            //showOrHideToolbar();
+            
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1415,11 +1459,17 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (tabControl1.TabCount > 0)
+
+
+            if (e.CloseReason == CloseReason.UserClosing && !dontPrompt)
             {
-                if (MessageBox.Show("Are you sure you want to exit", "Active programs", MessageBoxButtons.YesNo) == DialogResult.No)
+                // Ok - so this is a closing down by using the 'x' button..
+                if (tabControl1.TabCount > 0)
                 {
-                    e.Cancel = true;
+                    if (MessageBox.Show("Are you sure you want to exit", "Active programs", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        e.Cancel = true;
+                    }
                 }
             }
         }

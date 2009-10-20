@@ -29,7 +29,6 @@ namespace AubitDesktop
 
     class UIMenuContext : UIContext
     {
-        //private List<Button> MenuButtons;
         MENU thismenu;
         private bool _contextIsActive;
         FGLApplicationPanel mainWin;
