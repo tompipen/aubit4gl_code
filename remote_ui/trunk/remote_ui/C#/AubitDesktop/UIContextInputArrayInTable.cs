@@ -23,13 +23,12 @@ using System.Data;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 
 
 namespace AubitDesktop
 {
-
-
 
 
     class UIInputArrayInTableContext : UIContext
@@ -294,6 +293,7 @@ namespace AubitDesktop
             // Make sure the array is completely cleared down..
             inputArrayGrid.Rows.Clear();
             inputArrayGrid.init();
+            inputArrayGrid.maxRows = maxRows;
 
             foreach (object evt in p.EVENTS)
             {
@@ -486,7 +486,6 @@ namespace AubitDesktop
 
 
 
-
             
             
 
@@ -502,6 +501,8 @@ namespace AubitDesktop
             {
                 string rowData;
                 subscript_string = "" + (row + 1);
+                if (row >= maxRows) continue;
+
                 rowData = " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
                 rowData += "  <SYNCVALUES>\n";
 
@@ -600,10 +601,12 @@ namespace AubitDesktop
   
             if (inputArrayGrid.DataSource != Data)
             {
+                /*
                 if (inputArrayGrid.maxRows != maxRows)
                 {
                     inputArrayGrid.maxRows = maxRows;
                 }
+                 * */
                 inputArrayGrid.DataSource = Data;
             }
 
@@ -663,7 +666,8 @@ namespace AubitDesktop
 
 
             inputArrayGrid.allowInsertRow = allowInsert;
-            inputArrayGrid.maxRows = maxRows;
+/*            inputArrayGrid.maxRows = maxRows; */
+
             if ((crow == -1 && crow == -1) || firstTime)
             {
                 //if (inputArrayGrid.Rows.Count == 0)
@@ -864,12 +868,18 @@ namespace AubitDesktop
         {
             string infieldStr = inputArrayGrid.getInfield();
             string rval="";
+            int rows;
+            rows = inputArrayGrid.Rows.Count;
+            if (rows > maxRows)
+            {
+                rows = maxRows;
+            }
             try
             {
                 string syncValues = getSyncValues();
                 rval = "<TRIGGERED ID=\"" + ID + "\""+
                        " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\"" 
-                       + infieldStr + " ARRCOUNT=\""+ inputArrayGrid.Rows.Count+"\">" + syncValues +
+                       + infieldStr + " ARRCOUNT=\""+ rows+"\">" + syncValues +
                     "</TRIGGERED>";
             } catch (Exception Ex) {
                 MessageBox.Show("Error getting value for return:"+Ex.Message);
@@ -966,10 +976,10 @@ namespace AubitDesktop
         internal void upkeyPressed()
         {
             lastKey = "UP";
-            //if (inputArrayGrid.CurrentRow.Index > 0)
-            //{
-            //    inputArrayGrid.CurrentCell=inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index-1].Cells[1];
-            //}
+            if (inputArrayGrid.CurrentRow.Index > 0)
+            {
+                inputArrayGrid.CurrentCell=inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index-1].Cells[1];
+            }
         }
 
         internal void downkeyPressed()

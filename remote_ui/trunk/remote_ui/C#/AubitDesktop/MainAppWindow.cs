@@ -253,7 +253,7 @@ namespace AubitDesktop
             s = System.DateTime.Now;
             //Console.WriteLine("CONSUMING: " + System.DateTime.Now);
             this.ConsumeEnvelopeCommands();
-            Console.WriteLine("CONSUMED in " + (System.DateTime.Now-s));
+            //Console.WriteLine("CONSUMED in " + (System.DateTime.Now-s));
         }
 
          protected override bool  ProcessCmdKey(ref Message msg, Keys keyData)

@@ -236,6 +236,7 @@ namespace AubitDesktop
                                 dc.IndeterminateValue = "";
                                 dc.TrueValue = "1";
                                 dc.FalseValue = "0";
+                                
 
                                 if (c.valueChecked!=null)
                                 {

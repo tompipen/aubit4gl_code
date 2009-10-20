@@ -84,7 +84,8 @@
     <Compile Include="FormattedGridView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UIContextInputArrayInTable.cs" />
+    <Compile Include="UIContextInputArrayInTable.cs">
+    </Compile>
     <Compile Include="FGLRadioFieldWidget.cs" />
     <Compile Include="FGLComboListBoxFieldWidget.cs" />
     <Compile Include="formMovements.cs" />

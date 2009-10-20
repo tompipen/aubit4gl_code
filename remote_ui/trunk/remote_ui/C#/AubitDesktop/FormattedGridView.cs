@@ -57,6 +57,7 @@ namespace AubitDesktop
         internal bool ignEvents=false;
         private int _maxRows;
 
+        
         internal int maxRows
         {
             get
@@ -73,6 +74,10 @@ namespace AubitDesktop
 
             }
         }
+        
+
+
+
     //    private bool doIgnore;
         private bool _allowInsertRow;
         internal bool allowInsertRow
@@ -249,16 +254,19 @@ namespace AubitDesktop
             this.CellValidated += new DataGridViewCellEventHandler(FormattedGridView_CellLeave);
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
-            this.RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
-            
+           // this.RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
+            this.RowsRemoved += new DataGridViewRowsRemovedEventHandler(FormattedGridView_RowsRemoved);
+            //this.RowPrePaint += new DataGridViewRowPrePaintEventHandler(FormattedGridView_RowPrePaint);
             //this.Rows.CollectionChanged += new System.ComponentModel.CollectionChangeEventHandler(Rows_CollectionChanged);
             //RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
         }
 
-        void FormattedGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        void FormattedGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
-           // MessageBox.Show("Row added " + e.RowIndex + " " + e.RowCount);
+            setAllowUserToAddRows();
         }
+
+
 
 
 
@@ -270,6 +278,7 @@ namespace AubitDesktop
         /// </summary>
         private void setAllowUserToAddRows()
         {
+
 
             if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextInputArrayInactive)
             {
@@ -290,22 +299,24 @@ namespace AubitDesktop
                 return;
             }
 
+
+
             // Have we run out of space ? 
-            if (Rows.Count > maxRows)
+            if (Rows.Count >= maxRows)
             {
                 if (AllowUserToAddRows != false) // Only set this if we need to..
                 {
                     AllowUserToAddRows = false;
-                    return;
+                    
                 }
+                return;
             }
+
 
             if (AllowUserToAddRows != true) // Only set this if we need to..
             {
                 AllowUserToAddRows = true;
-            }
-
-            
+            }            
         }
     
 
@@ -579,7 +590,16 @@ namespace AubitDesktop
         {
             string s;
             s = "";
-            s = e.FormattedValue.ToString();
+            if (this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value is DBNull)
+            {
+                s = "";
+            }
+            else
+            {
+                s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+            }
+
+            //s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value; // e.FormattedValue.ToString();
             if (!validateField(e.RowIndex, e.ColumnIndex,s))
 
            {
@@ -652,7 +672,7 @@ namespace AubitDesktop
 
                 //return;
             }
-            setAllowUserToAddRows();
+          //  setAllowUserToAddRows();
            
             if (BeforeRow != null && enteredRow!=e.RowIndex)
             {

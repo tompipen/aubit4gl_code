@@ -511,7 +511,7 @@ namespace AubitDesktop
                     // matched keypress e would be null...
                     UIInputArrayInTableContext ic;
                     ic = (UIInputArrayInTableContext)currentContext;
-                    ic.downkeyPressed();
+                    ic.upkeyPressed();
                 }
                 return;
             }
@@ -2271,10 +2271,10 @@ namespace AubitDesktop
                                         TopWindow.clrWaitCursor();
                                       
                                         currentContext = contexts[idx];
-                                        Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime));
+                                        //Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime));
                                         this.TopWindow.setActiveTab(this);
                                         contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
-                                        Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
+                                       // Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
                                     }
                                     else
                                     {
@@ -2302,10 +2302,10 @@ namespace AubitDesktop
                 Program.Show(" Unhandled: " + a.ToString());
             }
             try {
-                Console.WriteLine("Cumtime after : " + (System.DateTime.Now - stime));
+              //  Console.WriteLine("Cumtime after : " + (System.DateTime.Now - stime));
                 // This may fail if the window is closed because the application that
                 // was in it is now closed - but we dont care about updating the progress bar in an invisible window ;-)
-            TopWindow.setProgress(0,0);
+                          TopWindow.setProgress(0,0);
                 }
             catch (Exception ) {
                 }
