@@ -385,7 +385,9 @@ namespace AubitDesktop
                 }
                 return false;
             }
-
+            if (orig is GroupBox) return false; // Its just a container..
+            if (orig is FlowLayoutPanel) return false;
+            if (orig is Panel) return false;
             return true;
         }
 
@@ -961,8 +963,8 @@ namespace AubitDesktop
             {
                 if (nodes[iCount] is launcherCmdNode)
                 {
-                    string launcherKey=((launcherCmdNode)nodes[iCount]).hotKey;
-                    if (launcherKey==null) continue;
+                    string launcherKey = ((launcherCmdNode)nodes[iCount]).hotKey;
+                    if (launcherKey == null) continue;
 
                     if (launcherKey.ToLower() == hotKey.ToLower())
                     {
@@ -970,11 +972,19 @@ namespace AubitDesktop
                     }
                 }
 
-
-                //Recursively search the text in the child nodes
-                return FindNodeInHierarchy(nodes[iCount].Nodes, hotKey);
-
+                if (nodes[iCount].Nodes != null)
+                {
+                    launcherCmdNode found = null;
+                    found=FindNodeInHierarchy(nodes[iCount].Nodes, hotKey);
+                    if (found!=null)
+                    {
+                        return found;
+                    }
+                }
             }
+                
+
+            
             return null;
         }
 
