@@ -249,7 +249,15 @@ namespace AubitDesktop
 
          protected override bool  ProcessCmdKey(ref Message msg, Keys keyData)
         {
- 	            return base.ProcessCmdKey(ref msg, keyData);
+            KeyEventArgs e;
+            e = new KeyEventArgs(keyData);
+            if (handleKeyPress(e))
+            {
+                return true;
+            } 
+
+                return base.ProcessCmdKey(ref msg, keyData);
+           
         }
 
         void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
@@ -821,7 +829,7 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Console.WriteLine("Keypress");
+         //   Console.WriteLine("Keypress");
         }
 
 
@@ -829,26 +837,43 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            string key="";
+            
+        }
+
+        private bool handleKeyPress(KeyEventArgs e)
+        {
+            string key = "";
 
             int keycode;
             string rkey = "";
 
             key = FGLUtils.decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
-            if (key == null) return;
+            if (key == null)
+            {
+                Console.WriteLine("Key : " + getWindowsKey(e.Control, e.Shift, e.Alt, key));
+            }
+            else
+            {
+                Console.WriteLine("Key : " + getWindowsKey(e.Control, e.Shift, e.Alt, key));
+            }
+            if (key == null) return false;
 
             if (key == "ControlKey")
             {
-                return;
+                return false;
             }
             if (key == "ShiftKey")
             {
-                return;
+                return false;
             }
+
+
+
+
 
             if (scanApplicationLauncherForKey(getWindowsKey(e.Control, e.Shift, e.Alt, key)))
             {
-                return;
+                return true;
             }
 
 
@@ -863,45 +888,51 @@ namespace AubitDesktop
                 rkey = "INTERRUPT";
             }
 
-            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("ACCEPT","Escape")))
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("ACCEPT", "Escape")))
             {
                 rkey = "ACCEPT";
+
             }
 
-            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("INSERT","F1")))
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("INSERT", "F1")))
             {
                 rkey = "INSERT";
             }
-            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("DELETE","F2")))
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("DELETE", "F2")))
             {
                 rkey = "DELETE";
             }
 
-            
-            if (key == null) return;
 
-            setLastKeyInApplication(key); 
-           
+            if (key == null) return false;
+
+
+
+            setLastKeyInApplication(key);
+
 
             this.ErrorText = "";
 
             // Check for an explicit key name..
-            if (CheckForToolStripKey(e, key, getWindowsKey(e.Control, e.Shift, e.Alt, key))) return;
+            if (CheckForToolStripKey(e, getWindowsKey(e.Control, e.Shift, e.Alt, key), getWindowsKey(e.Control, e.Shift, e.Alt, key))) return true;
 
 
             if (rkey != "")
             {
                 // Check for a 4GL key name (insert, delete, accept, escape etc)
-                if (CheckForToolStripKey(e, rkey, getWindowsKey(e.Control, e.Shift, e.Alt,key))) return;
+                if (CheckForToolStripKey(e, rkey, null)) return true;
             }
+
+
             // Key wasnt found...
 
 
-            if (currentContext!=null)
+            if (currentContext != null)
             {
                 // currentContext.keyPreview(e,rkey);
-                if (currentContext.useKeyPress(e)) return;
+                if (currentContext.useKeyPress(e)) return true;
             }
+            return false;
         }
 
 
