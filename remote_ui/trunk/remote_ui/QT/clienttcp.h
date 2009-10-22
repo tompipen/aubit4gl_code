@@ -76,6 +76,7 @@ public:
    QString fileName;
    bool b_read;
    bool b_write;
+   int pid;
 
 private:
    QString filterUmlauts(QString);
@@ -102,7 +103,7 @@ signals:
    void setUpdatesEnabled(bool);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
-   void createWindow(QString, QString, int, int, int, int);
+   void createWindow(QString, QString, int, int, int, int, QString);
    void setWindowTitle(QString);
 
    void createPrompt(QString, int, QString);

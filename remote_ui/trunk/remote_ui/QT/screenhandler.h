@@ -58,6 +58,9 @@ public:
    void setSearchPaths();
    void setEnv(QString, QString);
 
+protected:
+   bool eventFilter(QObject *obj, QEvent *ev);
+
 private:
    QList<Context*> contexts;
    bool cursorPos;
@@ -91,7 +94,7 @@ private:
    bool clearFieldEvents;
 
 public slots:
-   void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0);
+   void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "");
    void createPrompt(QString, int, QString);
    void handleAubitForm(QString, QString, bool);
    void handleXMLForm(QString, QString, bool);

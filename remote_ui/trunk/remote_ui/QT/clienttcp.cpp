@@ -152,14 +152,13 @@ void ClientTcp::newSocket()
 
 void ClientTcp::setDebugModus(bool debugModus, QWidget *parent)
 {
- dw = new DebugWindow(parent);
-qDebug ()<< parent;
-connect(dw , SIGNAL(debugClose()), parent, SLOT(debugClose()));
+   dw = new DebugWindow(parent);
+   connect(dw , SIGNAL(debugClose()), parent, SLOT(debugClose()));
 
- if (debugModus)
- {
-     dw->show();
- }
+   if (debugModus)
+   {
+      dw->show();
+   }
 }
 
 
@@ -199,8 +198,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setUpdatesEnabled(bool)),
            p_currScreenHandler, SLOT(setUpdatesEnabled(bool)));
    // OPEN FORM
-   connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int)), 
-           p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int)));
+   connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int, QString)), 
+           p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int, QString)));
    // PROMPT
    connect(&ph, SIGNAL(createPrompt(QString, int, QString)), 
            p_currScreenHandler, SLOT(createPrompt(QString, int, QString)));
@@ -569,6 +568,7 @@ void ProtocolHandler::run()
    emit debugtext(qsl_xmlCommands.at(i));
 
          QDomElement envelope = doc.documentElement();
+         pid = envelope.attribute("PID").toInt();
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -663,7 +663,8 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
-      createWindow("screen", "", 0, 0, 100, 100);
+      QString id = childElement.attribute("ID");
+      createWindow("screen", "", 0, 0, 100, 100, id);
       return;
    }
 
@@ -824,12 +825,19 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(qs_module == "INTERNAL"){
          if(qs_name == "ui.window.getcurrent"){
             //TODO
-            //value = QString::number(p_currScreenHandler->getCurrWindow());
+            value = QString::number(p_currScreenHandler->getCurrWindow());
          }
 
          if(qs_name == "ui.window.getform"){
             //TODO
-            //value = QString::number(p_currScreenHandler->getCurrForm());
+            value = QString::number(p_currScreenHandler->getCurrForm());
+         }
+
+         if(qs_name == "ui.window.settext"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement().nextSiblingElement();
+            value = valueElement.text();
+            setWindowTitle(value);
          }
 
          if(qs_name == "ui.form.setelementhidden"){
@@ -881,6 +889,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(expect > 0){
          QDomDocument doc;
          QDomElement triggeredElement = doc.createElement("TRIGGERED");
+         triggeredElement.setAttribute("ID", -123);
          doc.appendChild(triggeredElement);
 
          QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
@@ -899,6 +908,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "CREATEWINDOW"){
       QString window = childElement.attribute("WINDOW");
+      QString id = childElement.attribute("ID");
       
       // Position X
       int x = childElement.attribute("X").toInt();
@@ -944,7 +954,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       int message_line = childElement.attribute("MESSAGE_LINE").toInt();
       */
 
-      createWindow(window, style, x, y, h, w);
+      createWindow(window, style, x, y, h, w, id);
       return;
    }
 
@@ -989,6 +999,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
       // Window Title
       QString window = childElement.attribute("WINDOW");
+      QString id = childElement.attribute("ID");
       
       // Position X
       int x = childElement.attribute("X").toInt();
@@ -1028,7 +1039,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       int message_line = childElement.attribute("MESSAGE_LINE").toInt();
       */
 
-      createWindow(window, style, x, y, 0, 0);
+      createWindow(window, style, x, y, 0, 0, id);
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
         QDomDocument xmlForm = encodeXMLFile(childElement.text());
@@ -1094,11 +1105,11 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "PROMPT"){
       //int context = childElement.attribute("CONTEXT").toInt();
-      int promptAttribute = childElement.attribute("PROMPTATTRIBUTE").toInt();
-      int fieldAttribute = childElement.attribute("FIELDATTRIBUTE").toInt();
+      //int promptAttribute = childElement.attribute("PROMPTATTRIBUTE").toInt();
+      //int fieldAttribute = childElement.attribute("FIELDATTRIBUTE").toInt();
       QString text = childElement.attribute("TEXT");
       int charMode = childElement.attribute("CHARMODE").toInt();
-      int helpNo = childElement.attribute("CHARMODE").toInt();
+      //int helpNo = childElement.attribute("CHARMODE").toInt();
       QString attributeStyle = childElement.attribute("ATTRIB_STYLE");
       QString attributeText = childElement.attribute("ATTRIB_TEXT");
 
@@ -1364,8 +1375,6 @@ QDomDocument ProtocolHandler::encodeXMLFile(QString xmlString)
 void ProtocolHandler::handleStartup(const QDomNode& domNode)
 {
    QDomElement startupElement = domNode.toElement();
-
-   int attribute = -1;
 
    QDomElement currentElement = domNode.firstChild().toElement();
 
@@ -1783,7 +1792,7 @@ void ProtocolHandler::handleMenuElement(const QDomNode& domNode)
          QString desc = currentElement.attribute("DESCRIPTION");
 
          // HelpNumer of HelpMenu - not used
-         int helpno = currentElement.attribute("HELPNO").toInt();
+         //int helpno = currentElement.attribute("HELPNO").toInt();
 
          // TODO: Implement KEYS (text is NULL)
          if(!text.isEmpty()){
@@ -1911,10 +1920,15 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
 // Filename     : tcpclient.cpp
 // Description  : destructor for the thread object
 //------------------------------------------------------------------------------
-void ProtocolHandler::fglFormResponse(QString id)
+void ProtocolHandler::fglFormResponse(QString qs_id)
 {
-   id = filterUmlauts2(id);
-   makeResponse(id);
+   QDomDocument doc;
+   doc.setContent(qs_id);
+   QDomElement triggeredElement = doc.documentElement();
+//   triggeredElement.setAttribute("PID", pid);
+   qs_id = doc.toString();
+   qs_id = filterUmlauts2(qs_id);
+   makeResponse(qs_id);
 }
 
 //------------------------------------------------------------------------------
@@ -2065,5 +2079,6 @@ edit->find(search->text(), QTextDocument::FindBackward);
 }
 void DebugWindow::closeEvent(QCloseEvent *event)
 {
+   Q_UNUSED(event);
    emit debugClose();
 }

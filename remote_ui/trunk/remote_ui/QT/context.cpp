@@ -180,9 +180,12 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                tableView->selectRow(0);
             }
             else{
-               QModelIndex index = tableView->model()->index(0, 0);
-               tableView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
-               //tableView->edit(index);
+               MyFilter *proxyModel = (MyFilter*) tableView->model();
+               QModelIndex modelIndex = proxyModel->index(0, 0, QModelIndex());
+//               modelIndex = proxyModel->mapToSource(modelIndex);
+
+               tableView->setCurrentIndex(modelIndex);
+               tableView->edit(modelIndex);
             }
          }
          tableView->setEnabled(true);
@@ -220,6 +223,7 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
             setOption("SCRLINE", scrLine);
             setOption("ARRLINE", arrLine);
 
+            /*
             if(fgl_state == Fgl::INPUTARRAY){
                QModelIndex index = tableView->model()->index(current.row(), current.column());
                tableView->selectionModel()->select(index, QItemSelectionModel::Select);
@@ -228,6 +232,7 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
                QModelIndex index = tableView->model()->index(current.row(), current.column());
                tableView->setCurrentIndex(index);
             }
+            */
             if(current.row()+1 > tableView->arrCount()){
                setOption("ARRCOUNT", current.row()+1);
             }
@@ -287,6 +292,7 @@ QList<QWidget*> Context::fieldList()
 void Context::setOption(QString name, int value)
 {
    qh_options[name] = value;
+   checkOptions();
 }
 
 void Context::checkOptions()

@@ -166,6 +166,8 @@ public:
 
    QWidget* findFieldByName(QString);
    QList<QWidget*> findFieldsByName(QString);
+   void setId(QString id) { i_id = id.toInt(); };
+   int id() { return i_id; };
 
 
 public slots:
@@ -206,6 +208,7 @@ public slots:
    void setStartMenu(const QDomDocument &doc);
    void createContextMenu(const QPoint&);
    void setScreenRecordArrLine(int);
+   void error(const QString&);
 
 
 private:
@@ -242,6 +245,7 @@ private:
    QLabel *insLabel;
    int i_currentField;
    QWidget *fieldsContainer;
+   int i_id;
 
 private slots:
    void actionTriggered();

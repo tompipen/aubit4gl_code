@@ -97,6 +97,7 @@ void TableView::resize()
    }
 }
 
+
 void TableView::setArrCount(int cnt)
 {
 
@@ -104,6 +105,9 @@ void TableView::setArrCount(int cnt)
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+   if(table->b_input)
+      return;
 
    if(i_arrCount > table->rowCount(QModelIndex())){
       int newRows = i_arrCount - table->rowCount(QModelIndex());
@@ -297,7 +301,7 @@ void TableView::setInputEnabled(bool enable)
       table->b_input = enable;
       QItemSelectionModel *selection = this->selectionModel();
       QModelIndex index = table->index(0,0, QModelIndex());
-      selection->select(index, QItemSelectionModel::Clear);
+      //selection->select(index, QItemSelectionModel::Clear);
    }
 }
 
@@ -323,7 +327,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
    if(current.row() != prev.row()){
       if(prev.row() > -1){
          if(!b_ignoreRowChange){
-            emit setArrLine(current.row()+1);
+            emit setArrLineSignal(current.row()+1);
             event.type = Fgl::AFTER_ROW_EVENT;
             emit fieldEvent(event);
          }
@@ -335,7 +339,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 
       if(current.row() > -1){
          if(!b_ignoreRowChange){
-            emit setArrLine(current.row()+1);
+            emit setArrLineSignal(current.row()+1);
             event.type = Fgl::BEFORE_ROW_EVENT;
             emit fieldEvent(event);
             i_arrLine = current.row()+1;
@@ -387,6 +391,69 @@ bool TableView::isReadOnlyColumn(int col)
       return dele->readOnly();
    }
    return false;
+}
+
+void TableView::setScrLine(int line)
+{
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+         QModelIndex proxyIndex = proxyModel->index(currentIndex().column(), line);
+         setCurrentIndex(proxyIndex);
+      }
+
+   }
+}
+
+void TableView::setArrLine(int line)
+{
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+         QModelIndex proxyIndex = proxyModel->index(currentIndex().column(), line);
+         QModelIndex index = proxyModel->mapToSource(proxyIndex);
+         setCurrentIndex(index);
+      }
+
+   }
+}
+
+void TableView::setCurrentColumn(int col)
+{
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+         QModelIndex proxyIndex = proxyModel->index(col, currentIndex().row());
+         QModelIndex index = proxyModel->mapToSource(proxyIndex);
+         setCurrentIndex(index);
+      }
+   }
+}
+
+void TableView::setCurrentField(int row, int col)
+{
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+         QModelIndex proxyIndex = proxyModel->index(col, row);
+         QModelIndex index = proxyModel->mapToSource(proxyIndex);
+         setCurrentIndex(index);
+      }
+   }
+    
+}
+
+void TableView::setText(QString text, int row, int col)
+{
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+         QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
+         //modelIndex = proxyModel->mapFromSource(modelIndex);
+         model()->setData(modelIndex, text);
+      }
+
+   }
 }
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)
@@ -480,95 +547,6 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
    }
 
    return f;
-}
-
-bool TableModel::load(QStringList qsl_screenRecValues)
-{
-   return false;
-
-   QVector<QString> v(columns);
-
-   for(int i=0;i<qsl_screenRecValues.count();i+=columns) {
-      if(i+columns<=qsl_screenRecValues.count()){
-         int idx = 0;
-         for(int k=0;k<columns;k++){
-            v[idx] = qsl_screenRecValues.at(i+k);
-            idx++;
-         }
-
-         bool isNullRow = true;
-         for(int k=0;k<columns;k++){
-            if(v[k].size()>0)
-               isNullRow=false;
-         }
-
-         if(!isNullRow){
-            this->fields.append(v);
-         }
-      }
-   }
-
-   for(int i=0; i<columns; i++){
-      qsl_colNames << QString().number(i+1);
-   }
-
-   for(int i=0; i<this->fields.count(); i++){
-      if(i >= rows && i >= this->rows){
-         insertRows(i, 1, QModelIndex());
-      }
-   }
-
-   if(this->rows > this->fields.count()){
-      for(int i=this->rows; i>this->fields.count(); i--){
-         removeRows(i, 1, QModelIndex());
-      }
-   }
-   return true;
-
-
-   return false;
-
-   int rows = this->rows;
-
-   for(int i=0;i<qsl_screenRecValues.count();i+=columns) {
-      if(i+columns<=qsl_screenRecValues.count()){
-         int idx = 0;
-         for(int k=0;k<columns;k++){
-            v[idx] = qsl_screenRecValues.at(i+k);
-            idx++;
-         }
-
-         bool isNullRow = true;
-         for(int k=0;k<columns;k++){
-            if(v[k].size()>0)
-               isNullRow=false;
-         }
-
-         if(!isNullRow){
-            this->fields.append(v);
-         }
-      }
-   }
-
-   for(int i=0; i<columns; i++){
-      qsl_colNames << QString().number(i+1);
-   }
-
-   for(int i=0; i<this->fields.count(); i++){
-      if(i >= rows && i >= this->rows){
-         insertRows(i, 1, QModelIndex());
-      }
-      for(int j=0; j<this->fields[i].count(); j++){
-      }
-   }
-
-   if(this->rows > this->fields.count()){
-      for(int i=this->rows; i>this->fields.count(); i--){
-         removeRows(i, 1, QModelIndex());
-      }
-   }
-   return true;
-
 }
 
 bool TableModel::insertRows(int position, int rows, const QModelIndex &index)

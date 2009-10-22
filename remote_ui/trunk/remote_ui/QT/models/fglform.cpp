@@ -809,6 +809,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(lineEdit, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(lineEdit, SIGNAL(nextField()), this, SLOT(nextfield()));
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
+         connect(lineEdit, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
          lineEdit->installEventFilter(this);
       }
 
@@ -824,7 +825,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
 
       if(TableView *tableView = qobject_cast<TableView *> (formElements().at(i))){
          connect(tableView, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
-         connect(tableView, SIGNAL(setArrLine(int)), this, SLOT(setScreenRecordArrLine(int)));
+         connect(tableView, SIGNAL(setArrLineSignal(int)), this, SLOT(setScreenRecordArrLine(int)));
          connect(tableView, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
       }
 
@@ -1034,6 +1035,7 @@ void FglForm::setRingMenuPosition(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setActionPanelPosition(const QString &sm)
 {
+   Q_UNUSED(sm);
 }
 
 //------------------------------------------------------------------------------
@@ -1044,6 +1046,7 @@ void FglForm::setActionPanelPosition(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setSizable(const QString &sm)
 {
+   Q_UNUSED(sm);
 }
 
 //------------------------------------------------------------------------------
@@ -1054,6 +1057,7 @@ void FglForm::setSizable(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setDefaultStatusBar(const bool &sm)
 {
+   Q_UNUSED(sm);
 }
 
 //------------------------------------------------------------------------------
@@ -1124,6 +1128,7 @@ void FglForm::nextfield()
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
             if(lastField == currentWidget){
+               /*
                Fgl::Event event;
                switch(state()){
                   case Fgl::INPUT:
@@ -1140,6 +1145,7 @@ void FglForm::nextfield()
                }
 
                fieldEvent(event);
+               */
             }
             else{
                QWidget *current = currentWidget;
@@ -1977,4 +1983,10 @@ void FglForm::setScreenRecordArrLine(int line)
 
    setArrLine(line);
 
+}
+
+void FglForm::error(const QString& text){
+
+   StatusBar *statusBar = (StatusBar*) this->statusBar();
+   statusBar->displayError(text);
 }

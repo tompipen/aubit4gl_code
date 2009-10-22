@@ -49,6 +49,11 @@ public:
 
     void setIgnoreRowChange(bool b) { b_ignoreRowChange = b; };
     bool ignoreRowChange() { return b_ignoreRowChange; };
+    void setScrLine(int);
+    void setArrLine(int);
+    void setCurrentColumn(int);
+    void setCurrentField(int, int);
+    void setText(QString, int, int);
 
 private:
     int i_arrCount;
@@ -71,7 +76,7 @@ protected:
 
 signals:
    void fieldEvent(Fgl::Event);
-   void setArrLine(int);
+   void setArrLineSignal(int);
    void accepted();
    
 };
@@ -93,8 +98,6 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
-
-    bool load(QStringList);
 
     QVariant headerData( int section, Qt::Orientation orientation, int role ) const ;
 
