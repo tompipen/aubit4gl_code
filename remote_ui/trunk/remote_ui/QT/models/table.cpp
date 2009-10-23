@@ -26,8 +26,8 @@
 
 TableView::TableView(QWidget *parent) : QTableView(parent)
 {
-   this->setFocusPolicy(Qt::NoFocus);
-   this->installEventFilter(this);
+   //this->setFocusPolicy(Qt::NoFocus);
+   //this->installEventFilter(this);
    i_arrCount = 0;
    i_arrLine = 0;
    i_scrLine = 0;
@@ -120,11 +120,6 @@ void TableView::setArrCount(int cnt)
       }
    }
 
-}
-
-bool TableView::eventFilter(QObject *object, QEvent *event)
-{
-   return QTableView::eventFilter(object, event);
 }
 
 void TableView::setMaxArrSize(int cnt)
@@ -433,6 +428,7 @@ void TableView::setCurrentColumn(int col)
 
 void TableView::setCurrentField(int row, int col)
 {
+   this->setFocus();
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
