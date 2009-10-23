@@ -722,10 +722,8 @@ void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
 
       case Fgl::ONKEY_EVENT:
       case Fgl::ONACTION_EVENT:
-           qDebug() << "EVENT!";
            for(int i=0; i<ql_formEvents.size(); i++){
               Fgl::Event event = ql_formEvents.at(i);
-           qDebug() << "EVENT2!" << event.type << type.type << event.attribute.toLower() << type.attribute.toLower();
               if(event.type == type.type && 
                  event.attribute.toLower() == type.attribute.toLower()){
                  addToQueue(QString::number(event.id));

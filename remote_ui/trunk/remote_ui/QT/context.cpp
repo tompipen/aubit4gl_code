@@ -180,12 +180,15 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                tableView->selectRow(0);
             }
             else{
+               /*
                MyFilter *proxyModel = (MyFilter*) tableView->model();
                QModelIndex modelIndex = proxyModel->index(0, 0, QModelIndex());
 //               modelIndex = proxyModel->mapToSource(modelIndex);
 
                tableView->setCurrentIndex(modelIndex);
                tableView->edit(modelIndex);
+               */
+               tableView->setCurrentField(0,0);
             }
          }
          tableView->setEnabled(true);

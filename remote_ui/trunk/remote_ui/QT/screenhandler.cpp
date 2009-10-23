@@ -2007,6 +2007,9 @@ void ScreenHandler::setArrLine(int line)
 
    for(int i=0; i<context->fieldList().count(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (context->fieldList().at(i))){
+//            tableView->setIgnoreRowChange(true);
+            tableView->setArrLine(line-1);
+//            tableView->setIgnoreRowChange(false);
             /* dbutemp
             QModelIndex index = tableView->currentIndex();
             QModelIndex newIndex = tableView->model()->index(line-1, index.column(), QModelIndex());
@@ -2020,7 +2023,6 @@ void ScreenHandler::setArrLine(int line)
             }
             */
 
-            tableView->setArrLine(line-1);
       }
    }
 }

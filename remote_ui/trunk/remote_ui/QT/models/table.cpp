@@ -407,6 +407,7 @@ void TableView::setScrLine(int line)
 
 void TableView::setArrLine(int line)
 {
+   return;
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
@@ -435,7 +436,7 @@ void TableView::setCurrentField(int row, int col)
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-         QModelIndex proxyIndex = proxyModel->index(col, row);
+         QModelIndex proxyIndex = proxyModel->index(row, col);
          QModelIndex index = proxyModel->mapToSource(proxyIndex);
          setCurrentIndex(index);
       }

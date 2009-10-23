@@ -24,6 +24,7 @@
 
 Parser::Parser(QWidget *p_fglform) : QWidget()
 {
+   this->setFocusPolicy(Qt::NoFocus);
    this->p_fglform = p_fglform;
 
    layout = new QHBoxLayout;
