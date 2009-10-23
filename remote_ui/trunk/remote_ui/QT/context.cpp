@@ -175,6 +175,7 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
       if(TableView *tableView = qobject_cast<TableView *> (screenRec)){
 
          tableView->setInputEnabled(input);
+         tableView->setEnabled(true);
          if(ql_fieldList.count() == 0){
             if(!input){
                tableView->selectRow(0);
@@ -191,7 +192,6 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                tableView->setCurrentField(0,0);
             }
          }
-         tableView->setEnabled(true);
          ql_fieldList << tableView;
 
          setOption("ARRLINE", 0);
