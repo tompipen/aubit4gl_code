@@ -395,7 +395,6 @@ get_event_from_ui ()
   while (1)
     {
 
-
 	//printf("Getting data from : clientui_sock_read=%d clientui_sock_write=%d\n", clientui_sock_read, clientui_sock_write);
  
 
@@ -406,14 +405,6 @@ get_event_from_ui ()
 	  UIdebug (2, "PIPE CLOSED - client disconnected ?\n");
 	  cleanup();
 	  exit (0);
-	}
-
-	//printf("Got something\n");
-
-	//printf("Buff=%s\n",buff);
-	if (A4GL_strstartswith(buff,"<PING ")) {
-		// Just a 'keep-alive' indicator.....
-		continue;
 	}
 
 
@@ -480,6 +471,23 @@ get_event_from_ui ()
 
       if (strstr (localbuff, "</TRIGGERED>"))
 	{
+
+		while (1) {
+			char *pingptr;
+			int a;
+			int b;
+			// Filter out any ping - we'll deal with these later...
+			pingptr=strstr(localbuff,"<PING");
+			if (pingptr==0) break;
+			for (a=0;;a++) {
+				if (pingptr[a]=='/' && pingptr[a+1]=='>') {
+					for (b=0;b<=a;b++) {
+						pingptr[a]=' ';
+					}
+				}
+			}
+		}
+
 	  	attr = xml_parse (localbuff);
   		if (attr->yourId) {
 			if (strlen(attr->yourId)) {

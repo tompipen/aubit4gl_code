@@ -382,7 +382,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   suspend_flush (-1);
 
   add_window (name, last_w, last_h, border);
-
+  free(fname);
 
   return 0;
 }

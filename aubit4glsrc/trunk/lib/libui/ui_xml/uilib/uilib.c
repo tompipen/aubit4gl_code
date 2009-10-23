@@ -1636,6 +1636,10 @@ uilib_input_start (int nargs)
     }
   suspend_flush (1);
   send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\" WRAP=\"%d\">\n%s", cinput, attr, todefs, wrap, last_field_list);
+
+	free(attr);
+//free(mod);
+
   //pushint (cinput);
   return 0;
 }
@@ -1955,20 +1959,26 @@ if (fail_if_not_there) {
 int uilib_get_context_dont_care_if_doesnt_exist(int n) {
   char *mod;
   int line;
+int context;
   line = POPint ();
   mod = charpop ();
-  return get_context_for_modline(mod,line,0);
+  context= get_context_for_modline(mod,line,0);
+  free(mod);
+  return context;
 }
 
 int
 uilib_get_context (int nargs)
 {
+  int context;
   char *mod;
   int line;
   //int a;
   line = POPint ();
   mod = charpop ();
-  return get_context_for_modline(mod,line,1);
+  context=get_context_for_modline(mod,line,1);
+  free(mod);
+  return context;
 }
 
 int
