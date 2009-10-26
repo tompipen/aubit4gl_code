@@ -63,6 +63,7 @@ private:
     bool b_ignoreFocus;
     bool b_ignoreRowChange;
     bool isReadOnlyColumn(int);
+    bool checkBounds(const QModelIndex);
 
 public slots:
    void fieldChanged(QModelIndex, QModelIndex);
@@ -72,12 +73,12 @@ public slots:
 
 protected:
    void keyPressEvent(QKeyEvent *event);
-   bool eventFilter(QObject*, QEvent*);
 
 signals:
    void fieldEvent(Fgl::Event);
    void setArrLineSignal(int);
    void accepted();
+   void error(QString);
    
 };
 

@@ -825,6 +825,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(tableView, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(tableView, SIGNAL(setArrLineSignal(int)), this, SLOT(setScreenRecordArrLine(int)));
          connect(tableView, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
+         connect(tableView, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
       }
 
       if(LineEditDelegate *delegate = qobject_cast<LineEditDelegate *> (formElements().at(i))){

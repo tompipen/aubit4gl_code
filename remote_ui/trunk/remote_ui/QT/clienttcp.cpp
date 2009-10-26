@@ -900,7 +900,8 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          syncValueElement.appendChild(text);
          QString returnString = doc.toString();
 
-         makeResponse(returnString.trimmed());
+         //makeResponse(returnString.trimmed());
+         p_currScreenHandler->sendDirect(returnString.trimmed());
       }
       
    }

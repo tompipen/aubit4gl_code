@@ -31,7 +31,7 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
    i_arrCount = 0;
    i_arrLine = 0;
    i_scrLine = 0;
-   i_maxArrSize = 0;
+   i_maxArrSize = 1;
    b_ignoreFocus = false;
    b_ignoreRowChange = false;
 
@@ -237,7 +237,12 @@ void TableView::nextfield()
          QModelIndex index = proxyModel->mapFromSource(tindex);
 
          setCurrentIndex(index);
-         update();
+      }
+      else{
+         QModelIndex tindex = table->index(currentRow+1, 0);
+         QModelIndex index = proxyModel->mapFromSource(tindex);
+
+         setCurrentIndex(index);
       }
    }
    else{
@@ -304,6 +309,17 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 {
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+   if(!checkBounds(current)){
+      QModelIndex tindex = table->index(i_maxArrSize-1,current.column());
+      QModelIndex index = proxyModel->mapFromSource(tindex);
+
+      setCurrentIndex(index);
+
+      emit error(QString("There are no more Rows in this direction"));
+
+      return;
+   }
 
    Fgl::Event event;
 
@@ -451,6 +467,15 @@ void TableView::setText(QString text, int row, int col)
       }
 
    }
+}
+
+bool TableView::checkBounds(const QModelIndex current){
+
+   if(i_maxArrSize > 0 && current.row() > i_maxArrSize-1){
+      return false;
+   }
+
+   return true;
 }
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)
