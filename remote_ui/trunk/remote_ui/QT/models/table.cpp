@@ -37,6 +37,8 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
 
    const int rowHeight = fontMetrics().height() + 2;
    verticalHeader()->setDefaultSectionSize(rowHeight);
+   verticalHeader()->setFocusPolicy(Qt::NoFocus);
+   horizontalHeader()->setFocusPolicy(Qt::NoFocus);
 
    setTabKeyNavigation(true);
    this->verticalHeader()->hide();
@@ -90,8 +92,8 @@ void TableView::resize()
             width+= this->verticalScrollBar()->width();
          }
 
-         //this->setFixedSize(width, height);
-         this->setMinimumSize(width, height);
+         this->setFixedSize(width, height);
+         //this->setMinimumSize(width, height);
 //         this->setFixedWidth(width);
       }
    }
@@ -767,7 +769,8 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
    if(event->type() == QEvent::FocusOut){
       QFocusEvent *fe = (QFocusEvent*) event;
       if(fe->reason() == Qt::ActiveWindowFocusReason ||
-         fe->reason() == Qt::PopupFocusReason){
+         fe->reason() == Qt::PopupFocusReason ||
+         fe->reason() == Qt::MouseFocusReason){
          fe->ignore();
          return true;
       }
