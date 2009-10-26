@@ -884,9 +884,10 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	  int new_id;
 	  int z;
 	  int usable = 0;
+      int is_full_tag = 0;
 	  memset (buff, 0, sizeof (buff));
 
-	  nb = read (clientui_read, buff, 255);
+	  nb = read (clientui_read, buff, 1);
 
 	  if (nb <= 0)
 	    {
@@ -898,14 +899,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	  UIdebug (2, "DATA FROM CLIENT : %s\n", buff);
 	  //printf ("Data from client : %s - latest_ui=%d\n", small (buff), latest_ui);
 
-	  if (mainbuff == 0 && A4GL_strstartswith (buff, "<PING "))
-	    {
-	      mainbuff = strdup (buff);
-	      usable = 1;
-	    }
-	  else
-	    {
-	      int is_full_tag = 0;
+	    
 	      if (mainbuff)
 		{
 		  mainbuff = realloc (mainbuff, strlen (mainbuff) + strlen (buff) + 1);
@@ -915,8 +909,10 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		{
 		  mainbuff = strdup (buff);
 		}
+
 	      UIdebug (3,"set mainbuff\n");
 	      UIdebug (3,"String now :---------------------------------------------\n%s\n----------------------------------\n", mainbuff);
+
 
 	      if (strstr (mainbuff, "</TRIGGERED>"))
 		{
@@ -948,6 +944,19 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      if (is_full_tag)
 		{
 		  struct s_attr *attr;
+		char *ptr;
+
+		// get rid of any PING in the tag..
+		ptr=strstr(mainbuff,"<PING");
+
+		if (ptr) {
+			while (*ptr!='>'){ 
+				*ptr=' ';
+				ptr++;
+			}
+		}
+
+
 		  attr = xml_parse (mainbuff);
 		 UIdebug (3,"Parsed gives %p\n", attr);
 		  if (attr != NULL)
@@ -977,7 +986,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		{
 		  usable = 0;
 		}
-	    }
+	    
 
 
 

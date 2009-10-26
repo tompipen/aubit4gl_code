@@ -285,10 +285,13 @@ printDot (void)
 		if (strcmp(nodes[a].module,"undefined")!=0)  {
 			fprintf(unl_output,"%s|%s|%d|%s|N\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
 		} else {
-         if (strcmp(nodes[a].function,NODE_FUNC_DEFINED)!=0) {
-			   fprintf(unl_output,"%s|missing|0|%s|M\n",get_prog_name(), nodes[a].function);
-         }
-      }
+
+         		if (strcmp(nodes[a].function,NODE_FUNC_DEFINED)!=0) {
+					//if (is_bolton_function(nodes[a].function)==-1) {
+			   			fprintf(unl_output,"%s|missing|0|%s|M\n",get_prog_name(), nodes[a].function);
+					//}
+         		}
+      		}
 		continue;
 	}
 
@@ -2152,6 +2155,8 @@ check_program (module_definition * mods, int nmodules)
   char *fname;
   int mid;
 
+  //load_protos();
+
   fname = acl_getenv_not_set_as_0 ("CFUNCSFILE");
   if (fname)
     {
@@ -2161,6 +2166,7 @@ check_program (module_definition * mods, int nmodules)
     {
       printf ("WARNING - not CFUNCSFILE file specified\n");
     }
+
 
   for (a = 0; a < nmodules; a++)
     {
@@ -2376,7 +2382,6 @@ check_program (module_definition * mods, int nmodules)
 
 
 
-
 static void
 add_bolton (char *fname, char *params, char *rets)
 {
@@ -2486,7 +2491,7 @@ load_boltons (char *fname)
 
   while (1)
     {
-      char *p[3];
+      char *p[4];
       fgets (buff, 255, f);
       lineno++;
       if (feof (f))
@@ -2505,7 +2510,12 @@ load_boltons (char *fname)
 	    {
 	      *p[2] = 0;
 	      p[2]++;
-	      //printf("Loading : %s %s %s\n",p[0],p[1],p[2]);
+
+		p[3]=strchr(p[2],'|');
+		if (p[3]) {
+			*p[3]=0;
+		}
+
 	      printed++;
 	      add_bolton (p[0], p[1], p[2]);
 	    }

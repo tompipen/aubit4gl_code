@@ -18,6 +18,7 @@ struct command *new_cancel_cmd(enum cancel_type p_c);
 struct command *new_close_cmd(enum e_close_type_nosql p_type, expr_str *p_ident);
 struct command *new_close_sql_cmd(enum e_close_type_withsql p_type, expr_str *p_ident);
 struct command *new_free_cmd(expr_str *connid, expr_str *p_cursorname);
+struct command *new_free_blob_cmd(expr_str *p_var);
 struct command *new_continue_cmd(enum e_block_cmd p_what);
 struct command *new_ext_cmd(enum e_block_cmd p_what);
 struct command *new_defer_cmd(e_defer p_what);

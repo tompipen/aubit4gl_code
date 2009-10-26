@@ -75,7 +75,6 @@ ensure_dtype (char *module, int lineno, struct expr_str *e, int dtype, int notnu
       ensure_bool (module, lineno, e, notnull);
       return;
     }
-
   PRINTF ("Unhandled ensure ; %d (%x)\n", dtype, dtype);
 }
 

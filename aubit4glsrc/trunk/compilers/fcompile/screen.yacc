@@ -2206,10 +2206,13 @@ func_call_arg : expression {
 
 expression : 
 	single_expression
-	| expression KWAND expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"AND");  }
-	| expression KWOR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"OR");  }
+	| expression and_or expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);}
 
+;
 
+and_or: 
+	KWAND {strcpy($<str>$,"AND");}
+	| KWOR {strcpy($<str>$,"OR");}
 ;
 
 

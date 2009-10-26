@@ -1111,6 +1111,9 @@ void add_to_call_list_by_call(struct command *c) {
 }
 
 void add_to_call_list_by_expr(expr_str *c) {
+	
+	if (this_functions_call_list==0) return;
+
 	if (this_functions_call_list==0) {
 		clr_call_list();
 	}

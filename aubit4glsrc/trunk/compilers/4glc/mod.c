@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.335 2009-08-05 16:20:14 mikeaubury Exp $
+# $Id: mod.c,v 1.336 2009-10-26 08:23:24 mikeaubury Exp $
 #
 */
 
@@ -1671,6 +1671,12 @@ set_whenever_store (int c, char *p)
     whenever_store_p = acl_strdup (p);
   else
     whenever_store_p = 0;
+
+	if (c&WHEN_CALL) {
+		if (whentostore_p) {
+			add_to_call_list_by_expr(A4GL_new_expr_fcall(whentostore_p,NULL,infilename,lastlineno, get_namespace(whentostore_p)));
+		}
+	}
 }
 
 
@@ -3325,4 +3331,7 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
 
   return nprints;
 }
+
+
+
 /* ================================= EOF ============================= */

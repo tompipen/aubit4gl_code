@@ -131,6 +131,7 @@ print_pause_screen_off_cmd (void)
 }
 
 
+
 /******************************************************************************/
 int
 print_skip_to_top_cmd (void)
@@ -3538,6 +3539,14 @@ int rep_type;
 /******************************************************************************/
 
 
+int print_free_blob_cmd( struct_free_blob_cmd *cmd_data) {
+	set_nonewlines();
+	printc("A4GL_free_blob(");
+	print_variable_usage(cmd_data->var);
+	printc(");");
+	clr_nonewlines();
+	return 1;
+}
 
 
 

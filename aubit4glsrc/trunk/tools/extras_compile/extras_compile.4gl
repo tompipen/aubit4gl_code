@@ -12,7 +12,7 @@ define mv_cnt integer
 
 
 # Total number of programs to compile...
-define lc_num_compiles constant 102
+define lc_num_compiles constant 103
 
 define lv_fail array[200] of char(80)
 define lv_ok array[200] of  char(80)
@@ -391,6 +391,7 @@ function compile_optionals()
 	call run("showhelp display", "$A4GL_MAKE -C lib/libhelp",1)
 	call run("fgllint", "$A4GL_MAKE -C compilers/4glc fgllint",0)
 	call run("fglcalltree", "$A4GL_MAKE -C compilers/4glc fglcalltree",0)
+	call run("fglcallproto", "$A4GL_MAKE -C compilers/4glc fglproto",0)
 	call run("C#", "$A4GL_MAKE -C lib/liblex/lex_cs",0)
 	call run("XMLBEST", "$A4GL_MAKE -C lib/libpacker/xml_best",0)
 	call run("XML UI", "$A4GL_MAKE -C lib/libui/ui_xml",0)

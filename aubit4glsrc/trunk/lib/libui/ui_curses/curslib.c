@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.164 2009-09-10 11:57:47 mikeaubury Exp $
+# $Id: curslib.c,v 1.165 2009-10-26 08:23:35 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.164 2009-09-10 11:57:47 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.165 2009-10-26 08:23:35 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1374,6 +1374,43 @@ A4GL_getkey (void)
     }				/* end while */
 }
 
+void
+A4GL_ask_cmdline (char *prompt, char *s, int a)
+{
+  char lv_cmd[100 + 1];
+  //int x;
+  //int y;
+  int_flag = 0;
+  A4GL_push_long (UILIB_A4GL_get_curr_height ());
+  A4GL_push_long (1);
+  A4GL_push_long (1);
+  A4GL_push_long (UILIB_A4GL_get_curr_width ());
+  UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
+                        (0x0),0,0);
+  A4GL_push_char ("!");
+//START_BLOCK_1:
+  {
+    char _p[36];
+    int _fld_dr;
+    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0,"","");
+    while (GET_AS_INT ("s_prompt", _p, "mode") != 2)
+      {
+        static struct aclfgl_event_list _sio_evt[] = { {0} };
+
+        _fld_dr = UILIB_A4GL_prompt_loop_v2 (&_p, 0, _sio_evt);
+        //CONTINUE_BLOCK_1:;      /* add_continue */
+      }
+    A4GL_pop_var (&lv_cmd, 6553600);
+  }
+//END_BLOCK_1:;
+  aclfgli_clr_err_flg ();
+  if (int_flag)
+    strcpy (lv_cmd, "");
+  A4GL_trim (lv_cmd);
+  lv_cmd[a] = 0;
+  strcpy (s, lv_cmd);
+  UILIB_A4GL_remove_window ("aclfgl_promptwin");
+}
 
 
 

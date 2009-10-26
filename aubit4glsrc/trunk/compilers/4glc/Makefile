@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.54 2009-09-22 08:09:36 mikeaubury Exp $
+# $Id: Makefile,v 1.55 2009-10-26 08:23:23 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -72,7 +72,7 @@ CMODS_LIB       =\
 				dim.c \
 				field_handling.c \
 				globals.c \
-				import.c labels.c insert_curs.c fix_insert.c \
+				import.c labels.c insert_curs.c fix_insert.c load_prototypes.c \
 				linearise.c \
 				rules/generated/kw.c \
 				list.c lexer.c lex.c  expr_munging.c lint.c \
@@ -88,7 +88,7 @@ CMODS_LIB_OPT       =\
 				dim.c \
 				field_handling.c \
 				globals.c \
-				import.c labels.c insert_curs.c fix_insert.c \
+				import.c labels.c insert_curs.c fix_insert.c load_prototypes.c \
 				linearise.c \
 				rules/generated/kw.c \
 				list.c lexer.c lex.c  expr_munging.c lint.c \
@@ -338,7 +338,7 @@ reload_static:  ../../bin/reload_static
 ../../bin/reload_static : reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c mod.c
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/reload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
-../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
+../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
 	$(LD_EXE) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 	#cp fgllint $(AUBITDIR)/bin
 
@@ -351,7 +351,7 @@ mkglobals: ../../bin/mkglobals
 calltree_expr.o: expr_as_string_when_possible.c
 
 fglcalltree:../../bin/fglcalltree
-../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o
+../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o 
 	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	#cp fglcalltree $(AUBITDIR)/bin
@@ -394,7 +394,7 @@ expr_munging_proto.o: expr_munging.c
 	$(CC) $(CFLAGS)  -c -o expr_munging_proto.o expr_munging.c -Dfind_function_single_rtype=find_function_single_rtype_proto
 
 fglproto: ../../bin/fglproto
-../../bin/fglproto:  prototypes.o API_lex.o  lint.o expr_munging_proto.o linearise.o   common.o ../../lib/generated/std_funcs.c  
+../../bin/fglproto:  prototypes.o API_lex.o  lint.o expr_munging_proto.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
 	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 # --------------------------------- EOF -----------------------------
 

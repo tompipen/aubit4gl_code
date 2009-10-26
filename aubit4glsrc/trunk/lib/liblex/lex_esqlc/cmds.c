@@ -38,6 +38,7 @@ switch(cd->type) {
    case E_CMD_FOR_CMD              : ok=print_for_cmd(&cd->command_data_u.for_cmd); break;
    case E_CMD_FOREACH_CMD          : ok=print_foreach_cmd(&cd->command_data_u.foreach_cmd); break;
    case E_CMD_FREE_CMD             : ok=print_free_cmd(&cd->command_data_u.free_cmd); break;
+   case E_CMD_FREE_BLOB_CMD        : ok=print_free_blob_cmd(&cd->command_data_u.free_blob_cmd); break;
    case E_CMD_GOTO_CMD             : ok=print_goto_cmd(&cd->command_data_u.goto_cmd); break;
    case E_CMD_CHECK_MENU_CMD       : ok=print_check_menu_cmd(&cd->command_data_u.check_menu_cmd); break;
    case E_CMD_UNCHECK_MENU_CMD     : ok=print_uncheck_menu_cmd(&cd->command_data_u.uncheck_menu_cmd); break;

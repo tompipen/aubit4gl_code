@@ -472,6 +472,7 @@ get_event_from_ui ()
       if (strstr (localbuff, "</TRIGGERED>"))
 	{
 
+		/*
 		while (1) {
 			char *pingptr;
 			int a;
@@ -487,6 +488,7 @@ get_event_from_ui ()
 				}
 			}
 		}
+		*/
 
 	  	attr = xml_parse (localbuff);
   		if (attr->yourId) {

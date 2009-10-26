@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.243 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: stack.c,v 1.244 2009-10-26 08:23:24 mikeaubury Exp $
 #
 */
 
@@ -3533,6 +3533,10 @@ aclfgl_aclfgl_text_as_str (int n)
 }
 
 
+int A4GL_free_blob(fglbyte b) {
+//
+}
+
 void
 A4GL_get_blob_data (fglbyte * b, char **buffer, long *buffer_len)
 {
@@ -4802,5 +4806,7 @@ void A4GL_dec_refcount( void **objects) {
 	}
 
 }
+
+
 
 // ================================ EOF ================================

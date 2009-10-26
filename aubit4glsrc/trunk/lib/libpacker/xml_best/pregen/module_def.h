@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/10/17 09:28:37.
+ * Generated 2009/10/26 07:21:55.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -389,6 +389,8 @@ extern void STag_struct_for_cmd(void);
 extern void ETag_struct_for_cmd(void);
 extern void STag_struct_foreach_cmd(void);
 extern void ETag_struct_foreach_cmd(void);
+extern void STag_struct_free_blob_cmd(void);
+extern void ETag_struct_free_blob_cmd(void);
 extern void STag_struct_free_cmd(void);
 extern void ETag_struct_free_cmd(void);
 extern void STag_struct_free_rep_cmd(void);
@@ -711,6 +713,8 @@ typedef int AT_sql_statement_sql_string;
 #define AU_sql_statement_sql_string NULL
 typedef int AT_variable_escope;
 #define AU_variable_escope NULL
+typedef int AT_struct_free_blob_cmd_nm;
+#define AU_struct_free_blob_cmd_nm NULL
 typedef int AT_object_variable_nm;
 #define AU_object_variable_nm NULL
 typedef int AT_struct_connect_cmd_nm;
@@ -2050,6 +2054,8 @@ extern AT_sql_statement_sql_string AX_sql_statement_sql_string;
 #define A_sql_statement_sql_string (bufferstack + AX_sql_statement_sql_string)
 extern AT_variable_escope AX_variable_escope;
 #define A_variable_escope (bufferstack + AX_variable_escope)
+extern AT_struct_free_blob_cmd_nm AX_struct_free_blob_cmd_nm;
+#define A_struct_free_blob_cmd_nm (bufferstack + AX_struct_free_blob_cmd_nm)
 extern AT_object_variable_nm AX_object_variable_nm;
 #define A_object_variable_nm (bufferstack + AX_object_variable_nm)
 extern AT_struct_connect_cmd_nm AX_struct_connect_cmd_nm;

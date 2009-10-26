@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.44 2009-10-06 15:03:21 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.45 2009-10-26 08:23:23 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -101,6 +101,7 @@ enum cmd_type {
 	E_CMD_FOREACH_CMD,
 	E_CMD_FOR_CMD,
 	E_CMD_FREE_CMD,
+	E_CMD_FREE_BLOB_CMD,
 	E_CMD_FREE_REP_CMD,
 	E_CMD_GOTO_CMD,
 	E_CMD_HIDE_CMD,
@@ -331,6 +332,11 @@ struct struct_free_cmd {
 	struct expr_str *connid;
 	struct expr_str *cursorname;
 };
+
+struct struct_free_blob_cmd {
+	struct expr_str *var;
+};
+
 
 /* ***************************************************** */
 enum e_block_cmd {
@@ -1379,6 +1385,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_FOR_CMD: struct_for_cmd for_cmd;
 	case E_CMD_FOREACH_CMD: struct_foreach_cmd foreach_cmd;
 	case E_CMD_FREE_CMD: struct_free_cmd free_cmd;
+	case E_CMD_FREE_BLOB_CMD: struct_free_blob_cmd free_blob_cmd;
 	case E_CMD_GOTO_CMD: struct_goto_cmd goto_cmd;
 	case E_CMD_CHECK_MENU_CMD: struct_check_menu_cmd check_menu_cmd;
 	case E_CMD_UNCHECK_MENU_CMD: struct_uncheck_menu_cmd uncheck_menu_cmd;

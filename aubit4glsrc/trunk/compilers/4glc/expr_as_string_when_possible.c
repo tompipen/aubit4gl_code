@@ -392,6 +392,22 @@ expr_as_string_when_possible (expr_str * e)
       }
       break;
 
+	case ET_EXPR_EXTEND: 
+	{
+		char buff[2000];
+		sprintf(buff,"EXTEND(%s,%d)", 
+			expr_as_string_when_possible(e->expr_str_u.expr_extend->expr), e->expr_str_u.expr_extend->to);
+		return strdup(buff);
+	}
+	
+
+	case ET_EXPR_OP_YEAR:
+	{
+		char buff[2000];
+		sprintf(buff,"YEAR(%s)", expr_as_string_when_possible (e->expr_str_u.expr_expr));
+		return strdup(buff);
+	}
+	break;
 
 
     case ET_EXPR_DATE_EXPR:
@@ -558,6 +574,7 @@ case ET_EXPR_SHARED_FCALL:
 
      case ET_EXPR_DYNARR_FCALL_NEW:
 	return strdup("DYNARR_FUNCTIONCALL");
+
 
     default:
       A4GL_pause_execution ();	// ---  Place holder for error handling  --- SAFE TO LEAVE IN...

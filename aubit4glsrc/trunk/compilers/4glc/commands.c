@@ -567,6 +567,14 @@ struct command *c;
    c->cmd_data.command_data_u.free_cmd.connid=p_connid;
    return c;
 }
+
+
+struct command *new_free_blob_cmd(expr_str *p_var) { //!
+struct command *c;
+   c=new_command(E_CMD_FREE_BLOB_CMD);
+   c->cmd_data.command_data_u.free_blob_cmd.var=p_var;
+   return c;
+}
  
 
 struct command *new_lint_ignore_cmd(str_list *list) {

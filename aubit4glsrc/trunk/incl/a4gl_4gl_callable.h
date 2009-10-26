@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.61 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.62 2009-10-26 08:23:24 mikeaubury Exp $
 */
 
 /**
@@ -217,6 +217,7 @@ int A4GL_system_run_waiting (char *rstr, char *msg, int sleep_sec,int repeat_sec
 void A4GL_assertion (int a, char *s);
 int A4GL_menu_hide (ACL_Menu * menu, ...);
 int A4GL_menu_show (ACL_Menu * menu, ...);
+int A4GL_free_blob(fglbyte b);
 
 char * acl_getenv_not_set_as_0 (char *s);
 int A4GL_fgl_fieldtouched_current(void *sio, char itype);
