@@ -886,7 +886,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          }
       }
 
-      if(expect > 0){
+//      if(expect > 0){
          QDomDocument doc;
          QDomElement triggeredElement = doc.createElement("TRIGGERED");
          triggeredElement.setAttribute("ID", -123);
@@ -902,7 +902,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
          //makeResponse(returnString.trimmed());
          p_currScreenHandler->sendDirect(returnString.trimmed());
-      }
+//      }
       
    }
 

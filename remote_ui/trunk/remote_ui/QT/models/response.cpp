@@ -35,8 +35,6 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
    if(id == "CANCEL" || id == "Esc")
       id = "INTERRUPT";
 
-   checkOnActionEvents(&id);
-   
    this->appendChild(responseElement = this->createElement("TRIGGERED"));
    responseElement.setAttribute("ID", id);
 
@@ -220,8 +218,4 @@ void Response::addScreenRecSyncValues()
          syncValuesElement.appendChild(syncValueElement);
       }
    }
-}
-
-bool Response::checkOnActionEvents(QString *id){
-   return false;
 }

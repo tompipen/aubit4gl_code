@@ -792,12 +792,15 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
    //formWidget->setEnabled(false);
 
    QSplitter *formSplitter = (QSplitter*) this->centralWidget();
+   /*
    if(formSplitter->count() > 0){
       QWidget *widget = formSplitter->widget(0);
       widget->hide();
       widget->deleteLater();
    }
-   formSplitter->insertWidget(0,formWidget);
+   */
+   //formSplitter->insertWidget(0,formWidget);
+   formSplitter->addWidget(formWidget);
    //formParser->getFormWidget()->show();
 
    this->ql_formFields << formParser->getFieldList();
@@ -1123,7 +1126,6 @@ void FglForm::nextfield()
       //  If context option says not to wrap
       //  and input field is the last field in the list
       //  then trigger after "INPUT" event
-      qDebug() << "THIS" << context;
       if(!this->context->getOption("WRAP")){
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();

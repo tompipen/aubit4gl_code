@@ -39,8 +39,6 @@ private:
    void addScreenRecSyncValues(TableView*);
    void addScreenRecSyncValues(Matrix*);
    void addScreenRecSyncValues();
-
-   bool checkOnActionEvents(QString*);
 };
 
 #endif

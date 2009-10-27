@@ -2086,6 +2086,11 @@ void ScreenHandler::freeContext(int i_context)
          field->blockSignals(false);
       }
       delete context;
+      /*
+      context = getCurrentContext();
+      p_fglform->context = context;
+      */
+
       //->deleteLater();
    }
       //contexts.removeAt(i_context);
