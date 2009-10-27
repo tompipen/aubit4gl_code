@@ -62,12 +62,10 @@ int main(int argc, char *argv[])
     // we need to register the QStringList with the meta-object system
     // to make it usable for signal/slot connections
     //
-    /*
     qRegisterMetaType<QStringList>("QStringList");
     qRegisterMetaType<QModelIndex>("QModelIndex");
     qRegisterMetaType<QModelIndex>("QDomDocument");
     qRegisterMetaType<QModelIndex>("QDomElement");
-    */
     MainFrame mainframe;
     mainframe.move(QCursor::pos());
     mainframe.show();
