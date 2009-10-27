@@ -337,6 +337,10 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 
 "zerofill"		{if (ign_kw(yystate, KW_ZEROFILL)) REJECT;strcpy(yylval.str,yytext); if (doing_4gl()) return SQLONLY; else return KW_ZEROFILL;}
 "right"			{if (ign_kw(yystate, KW_RIGHT)) REJECT;strcpy(yylval.str,yytext);  return KW_RIGHT;}
+"justify"			{if (ign_kw(yystate, KW_JUSTIFY)) REJECT;strcpy(yylval.str,yytext);  return KW_JUSTIFY;}
+"tabindex"			{if (ign_kw(yystate, KW_TABINDEX)) REJECT;strcpy(yylval.str,yytext);  return KW_TABINDEX;}
+"not null"			{if (ign_kw(yystate, KW_NOT_NULL)) REJECT;strcpy(yylval.str,yytext);  return KW_NOT_NULL;}
+"center"			{if (ign_kw(yystate, KW_CENTER)) REJECT;strcpy(yylval.str,yytext);  return KW_CENTER;}
 "listbox"		{if (ign_kw(yystate, LISTBOX)) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 "button"		{if (ign_kw(yystate, BUTTON)) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 "panel"		{if (ign_kw(yystate, KW_PANEL)) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}

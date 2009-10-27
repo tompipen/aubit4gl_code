@@ -103,7 +103,7 @@ char *chk_alias(char *s);
 %left KW_OR
 %left KW_AND
 %left KW_NOT
-%left IS_NULL IS_NOT_NULL
+%left IS_NULL IS_NOT_NULL 
 %left  GREATERTHAN  LESSTHAN 
 %left KW_MINUS KW_PLUS
 %left KW_DIVIDE KW_MULTIPLY
@@ -124,7 +124,7 @@ FORMONLY COMMENT
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR KW_NONSPACE
 %token SQLONLY  WIDGET CONFIG KW_NL
 %token COMPARISON LESSTHAN GREATERTHAN KWOR KWAND KWAND1 KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
-%token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
+%token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION KW_JUSTIFY KW_CENTER KW_TABINDEX KW_NOT_NULL
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL DISPLAYONLY ALLOWING  
 
@@ -1151,13 +1151,12 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->dtype_size=A4GL_get_dtype_size();
 }
 | named_or_kw_any {
-				struct struct_scr_field *fld;
-				fld=A4GL_get_fld();
+	struct struct_scr_field *fld;
+	fld=A4GL_get_fld();
+	fld->tabname=acl_strdup("formonly");
 	fld->colname=acl_strdup($<str>1);
-	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
-	fld->tabname=A4GL_get_found_in_tab();
-        fld->dtype_size=A4GL_get_dtype_size();
+        fld->datatype=DTYPE_CHAR ;
+        fld->dtype_size=0;
 }
 
 | STAR named_or_kw_any DOT named_or_kw_any {
@@ -1349,6 +1348,9 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | KW_FONTPITCH EQUAL KW_VARIABLE { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_FONTPITCHVARIABLE); }
 | KW_SCROLL { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_SCROLL); }
 | KW_IMAGE EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_IMAGE,$<str>3); }
+| KW_JUSTIFY EQUAL LEFT { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"LEFT"); }
+| KW_JUSTIFY EQUAL KW_RIGHT { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"RIGHT"); }
+| KW_JUSTIFY EQUAL KW_CENTER { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"CENTER"); }
 | KW_PIXELHEIGHT EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_PIXELHEIGHT,$<str>3); }
 | KW_PIXELWIDTH EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_PIXELWIDTH,$<str>3); }
 | KW_SCROLLBARS_BOTH  { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_SCROLLBARS_BOTH); } 
@@ -1357,8 +1359,10 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | KW_STRETCH_Y  { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_STRETCH_Y); } 
 | KW_STRETCH_BOTH  { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_STRETCH_BOTH); } 
 | KW_ITEMS  EQUAL OPEN_BRACKET items_list CLOSE_BRACKET { A4GL_add_str_attr(A4GL_get_fld(),FA_S_ITEMS,$<str>4); } 
+| KW_TABINDEX EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_TABINDEX,$<str>3); } 
 | KW_VALUEMAX EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUEMAX,$<str>3); } 
 | KW_VALUEMIN EQUAL NUMBER_VALUE{ A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUEMIN,$<str>3); } 
+| KW_NOT_NULL EQUAL NUMBER_VALUE { A4GL_get_fld()->not_null=1;}
 
 | KW_VALUECHECKED EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUECHECKED,$<str>3); } 
 | KW_VALUEUNCHECKED EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUEUNCHECKED,$<str>3); } 
