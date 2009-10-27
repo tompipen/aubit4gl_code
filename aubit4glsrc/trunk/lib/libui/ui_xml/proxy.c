@@ -878,16 +878,17 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
       if (FD_ISSET (clientui_read, &rfds))
 	{
 	  static char *mainbuff = 0;	// a place holder to add all our strings onto...
-  	int latest_ui = 0;
+  	  int latest_ui = 0;
 	  char buff[260];
 	  int nb;
-	  int new_id;
+	  //int new_id;
 	  int z;
 	  int usable = 0;
-      int is_full_tag = 0;
+	  char *eptr;
+          int is_full_tag = 0;
 	  memset (buff, 0, sizeof (buff));
 
-	  nb = read (clientui_read, buff, 1);
+	  nb = read (clientui_read, buff, 25);
 
 	  if (nb <= 0)
 	    {
@@ -897,8 +898,6 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	  buff[nb] = 0;
 
 	  UIdebug (2, "DATA FROM CLIENT : %s\n", buff);
-	  //printf ("Data from client : %s - latest_ui=%d\n", small (buff), latest_ui);
-
 	    
 	      if (mainbuff)
 		{
@@ -917,6 +916,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      if (strstr (mainbuff, "</TRIGGERED>"))
 		{
 		  is_full_tag = 1;
+		  eptr=strstr(mainbuff,"</TRIGGERED>")+strlen("</TRIGGERED>");
 		}
 
 	      if (!is_full_tag && strstr (mainbuff, "<TRIGGERED"))
@@ -931,34 +931,34 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		  // Well - its a good start - does it and in /> ?
 		  if (mainbuff[l - 2] == '/' && mainbuff[l - 1] == '>')
 		    {
+			char *lptr;
 		      // Even better - final check - we should have any extra
 		      // starting tags - so we don't wabt to see any '<' after the first one..
 		      //
-		      if (!strchr (&mainbuff[1], '<'))
+		      lptr=strchr (&mainbuff[1], '<');
+			if (lptr) 
 			{
-			  is_full_tag = 1;
+				if (lptr>=&mainbuff[l]) {
+			  		is_full_tag = 1;
+					eptr=&mainbuff[l];
+				}
+			} else {
+			  	is_full_tag = 1;
+				eptr=0;
 			}
 		    }
 		}
 
+		
+
 	      if (is_full_tag)
 		{
-		  struct s_attr *attr;
+		struct s_attr *attr;
 		char *ptr;
-
-		// get rid of any PING in the tag..
-		ptr=strstr(mainbuff,"<PING");
-
-		if (ptr) {
-			while (*ptr!='>'){ 
-				*ptr=' ';
-				ptr++;
-			}
-		}
 
 
 		  attr = xml_parse (mainbuff);
-		 UIdebug (3,"Parsed gives %p\n", attr);
+		  UIdebug (3,"Parsed gives %p\n", attr);
 		  if (attr != NULL)
 		    {
 
@@ -972,7 +972,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 			{
 			  latest_ui -= 1000;
 
-						UIdebug(2,"Set latest_ui=%d\n",latest_ui);
+			  UIdebug(2,"Set latest_ui=%d\n",latest_ui);
 
 			}
 		    }
@@ -990,7 +990,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 
 
-	  z = sscanf (buff, "<TRIGGERED ENVELOPEID=\"%d", &new_id);
+	  //z = sscanf (buff, "<TRIGGERED ENVELOPEID=\"%d", &new_id);
 
 
 	  if (usable)
@@ -998,8 +998,36 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      if (latest_ui)
 		{
 		  int rval;
-		  UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", mainbuff,latest_ui);
-		  rval = write (latest_ui, mainbuff, strlen (mainbuff));
+			char lc;
+		  	UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", mainbuff,latest_ui);
+			if (eptr) {
+				lc=*eptr;
+				*eptr=0;
+			}
+		  	UIdebug (3, "PASSING THROUGH '%s' on %d\n", mainbuff,latest_ui);
+
+		  	rval = write (latest_ui, mainbuff, strlen (mainbuff));
+
+			if (eptr) {
+				char *buff;
+				*eptr=lc;
+				if (strlen(eptr)) {
+					buff=strdup(eptr);
+					free(mainbuff);
+					mainbuff=buff;
+		  			UIdebug (3, "RESTORING REST OF BUFFER '%s' on %d\n", mainbuff,latest_ui);
+				} else {
+	      				free (mainbuff);
+	      				mainbuff = 0;
+		  			UIdebug (3, "Nothing left for mainbuff (1)\n");
+				}
+			} else {
+		  			UIdebug (3, "Nothing left for mainbuff (2)\n");
+	      				free (mainbuff);
+	      				mainbuff = 0;
+				
+			}
+
 		  if (rval == -1)
 		    {
 		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", mainbuff, latest_ui);
@@ -1009,8 +1037,6 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 		}
 
-	      free (mainbuff);
-	      mainbuff = 0;
 	    }
 	}
 
