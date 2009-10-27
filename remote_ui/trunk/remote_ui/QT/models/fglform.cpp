@@ -1123,6 +1123,7 @@ void FglForm::nextfield()
       //  If context option says not to wrap
       //  and input field is the last field in the list
       //  then trigger after "INPUT" event
+      qDebug() << "THIS" << context;
       if(!this->context->getOption("WRAP")){
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();

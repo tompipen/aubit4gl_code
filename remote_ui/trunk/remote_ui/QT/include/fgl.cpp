@@ -129,7 +129,7 @@ namespace Fgl {
       if (arr_mdy[0].length() == 1) arr_mdy[0] = "0" + arr_mdy[0];
       if (arr_mdy[1].length() == 1) arr_mdy[1] = "0" + arr_mdy[1];
 
-      if(env["DBDATE"].contains("yyyy")){
+      if(dbDateToFormat(env["DBDATE"]).contains("yyyy")){
          if (arr_mdy[2].length() == 2)
          {  
             bool ok = true;
@@ -166,8 +166,11 @@ namespace Fgl {
       int cnt = 4;
       switch(dbdate.length()){
          case 5: // DMY4/
-            sep = dbdate.remove(dbdate.length()-1, 1);
-            cnt = dbdate.remove(dbdate.length()-1, 1).toInt();
+            sep = dbdate.mid(dbdate.length()-1, 1);
+            dbdate.remove(dbdate.length()-1, 1);
+            cnt = dbdate.mid(dbdate.length()-1, 1).toInt();
+            dbdate.remove(dbdate.length()-1, 1);
+
             for(int i=0; i<dbdate.length(); i++){
                bool found = false;
                if(dbdate.at(i) == 'D'){
@@ -187,7 +190,7 @@ namespace Fgl {
                   found = true;
                }
 
-               if(found && i < dbdate.length()){
+               if(found && i < dbdate.length()-1){
                   fmt += sep;
                   found = false;
                }

@@ -450,8 +450,9 @@ void TableView::setCurrentField(int row, int col)
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-         QModelIndex proxyIndex = proxyModel->index(row, col);
-         QModelIndex index = proxyModel->mapToSource(proxyIndex);
+         QModelIndex tindex = table->index(row-1, col-1);
+         QModelIndex index = proxyModel->mapFromSource(tindex);
+
          setCurrentIndex(index);
       }
    }
