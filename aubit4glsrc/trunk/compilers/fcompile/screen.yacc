@@ -412,10 +412,10 @@ layout_container:
 ;
 
 layout_section:
-	KW_LAYOUT
+	KW_LAYOUT layout_attributes
 	layout_container 
 	op_end {
-		$<layout>$=$<layout>2;
+		$<layout>$=$<layout>3;
 	}
 ;
 
