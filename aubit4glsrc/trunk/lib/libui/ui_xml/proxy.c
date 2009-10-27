@@ -922,6 +922,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      if (!is_full_tag && strstr (mainbuff, "<TRIGGERED"))
 		{
 		  int l;
+		//printf("Might be a single tag\n");
 		  l = strlen (mainbuff);
 		  while (mainbuff[l - 1] == '\n' || mainbuff[l - 1] == '\r')
 		    {
@@ -932,17 +933,21 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		  if (mainbuff[l - 2] == '/' && mainbuff[l - 1] == '>')
 		    {
 			char *lptr;
+			char *sptr;
+			sptr=strchr(mainbuff,'<');
 		      // Even better - final check - we should have any extra
 		      // starting tags - so we don't wabt to see any '<' after the first one..
-		      //
-		      lptr=strchr (&mainbuff[1], '<');
+		      
+		      lptr=strchr (sptr+1, '<');
 			if (lptr) 
 			{
+				printf("Got : '%s' - lptr=%s\n",mainbuff,lptr);
 				if (lptr>=&mainbuff[l]) {
 			  		is_full_tag = 1;
 					eptr=&mainbuff[l];
 				}
 			} else {
+				//printf("Got : '%s' - no lptr\n",mainbuff);
 			  	is_full_tag = 1;
 				eptr=0;
 			}
@@ -1013,7 +1018,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 				write(latest_ui,buff,1);
 			}
 			
-			fsync(latest_ui);
+			//fsync(latest_ui);
 
 		  if (rval == -1)
 		    {
@@ -1025,6 +1030,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 			if (eptr) {
 				char *buff;
 				*eptr=lc;
+				while (*eptr==' ' || *eptr=='\n' || *eptr=='\r') eptr++;
 				if (strlen(eptr)) {
 					buff=strdup(eptr);
 					free(mainbuff);
