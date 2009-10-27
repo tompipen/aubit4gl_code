@@ -888,7 +888,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
           int is_full_tag = 0;
 	  memset (buff, 0, sizeof (buff));
 
-	  nb = read (clientui_read, buff, 25);
+	  nb = read (clientui_read, buff, 250);
 
 	  if (nb <= 0)
 	    {
@@ -1007,7 +1007,21 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		  	UIdebug (3, "PASSING THROUGH '%s' on %d\n", mainbuff,latest_ui);
 
 		  	rval = write (latest_ui, mainbuff, strlen (mainbuff));
+			{
+				char buff[2];
+				sprintf(buff,"\n");
+				write(latest_ui,buff,1);
+			}
+			
+			fsync(latest_ui);
 
+		  if (rval == -1)
+		    {
+		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", mainbuff, latest_ui);
+		      printf ("Failed - latest_ui=%d\n", latest_ui);
+		      perror ("write failed sending to fgl");
+		    }
+			
 			if (eptr) {
 				char *buff;
 				*eptr=lc;
@@ -1028,12 +1042,6 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 				
 			}
 
-		  if (rval == -1)
-		    {
-		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", mainbuff, latest_ui);
-		      printf ("Failed - latest_ui=%d\n", latest_ui);
-		      perror ("write failed sending to fgl");
-		    }
 
 		}
 
