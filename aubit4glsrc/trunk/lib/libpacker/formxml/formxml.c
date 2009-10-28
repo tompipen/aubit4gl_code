@@ -208,6 +208,7 @@ if (mode==1) { // the label/button/field itself
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTONEXT)) { strcat(buff, " autoNext=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_ACTION))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_IMAGE))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_JUSTIFY)) { sprintf(smbuff, " justify=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_JUSTIFY))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_STYLE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_COMMENTS))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PICTURE))); strcat(buff,smbuff);}
@@ -727,8 +728,18 @@ char posbuf[200];
 			f->metrics.metrics_val[metric_no].w,posbuf);
 
         } else {
-			fprintf(ofile, "  <Label width=\"%d\" %s />\n", 
-				f->metrics.metrics_val[metric_no].w,posbuf);
+		struct_scr_field *fprop;
+		fprop=&f->attributes.attributes_val[attr_no];
+		char buff[2000];
+		char smbuff[200];
+ 		get_attribs(f, attr_no, buff,1,metric_no);
+		sprintf(smbuff," name=\"%s\"", f->attributes.attributes_val[attr_no].colname);
+		strcat(buff,smbuff);
+        	//if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
+
+		fprintf(ofile, "  <Label width=\"%d\" %s %s />\n", 
+				f->metrics.metrics_val[metric_no].w,	buff,
+				posbuf);
         }
 	return ;
 }
@@ -861,23 +872,30 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
     {
 	int stepx;
 	int column_count;
+	int useTabIndex;
+	struct struct_scr_field *fprop;
 	if (hasPrintedAttribute(attr_no)) return;
 	addPrintedAttribute(attr_no);
   	tabIndex++;
 	size_matrix(f,attr_no,&stepx,&column_count);
+	useTabIndex = tabIndex;
+	fprop=&f->attributes.attributes_val[attr_no];
+	if (A4GL_has_str_attribute(fprop, FA_S_TABINDEX)) {
+		useTabIndex=atoi(A4GL_get_str_attribute(fprop, FA_S_TABINDEX));
+	}
 
 	if (stepx==-1) {
       		fprintf (ofile,
 	       		"<Matrix pageSize=\"%d\" name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" >\n", dim,
 	       		f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
 	       		f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff,
-	       		tabIndex);
+	       		useTabIndex);
 	} else {
       		fprintf (ofile,
 	       		"<Matrix pageSize=\"%d\" name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" stepX=\"%d\" columnCount=\"%d\" >\n", dim,
 	       		f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
 	       		f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff,
-	       		tabIndex, stepx, column_count);
+	       		useTabIndex, stepx, column_count);
 
 	}
 	//  stepX="11" columnCount="7"
@@ -888,19 +906,43 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
     }
   else
     {
+	int isLabel=0;
+	int useTabIndex;
+	struct struct_scr_field *fprop;
+	char *new_style_widget=0;
+	fprop=&f->attributes.attributes_val[attr_no];
 	if (hasPrintedAttribute(attr_no)) return;
 	addPrintedAttribute(attr_no);
 
-  tabIndex++;
+  	tabIndex++;
+	useTabIndex = tabIndex;
+
+	if (A4GL_has_str_attribute(fprop, FA_S_TABINDEX)) {
+		useTabIndex=atoi(A4GL_get_str_attribute(fprop, FA_S_TABINDEX));
+	}
+	
+	if (A4GL_has_str_attribute(fprop, FA_S_WIDGETTYPE)) {
+        	new_style_widget=A4GL_get_str_attribute (fprop, FA_S_WIDGETTYPE);
+        	if (A4GL_aubit_strcasecmp(new_style_widget,"label")==0) {
+			isLabel=1;
+		}
+        }
+
+
+      if (!isLabel) {
       fprintf (ofile, "<FormField name=\"%s.%s\" colName=\"%s\" fieldId=\"%d\" sqlTabName=\"%s\" %s tabIndex=\"%d\" >\n",
 	       f->attributes.attributes_val[attr_no].tabname,
 	       f->attributes.attributes_val[attr_no].colname,
 	       f->attributes.attributes_val[attr_no].colname,
-	       fieldNo, f->attributes.attributes_val[attr_no].tabname, buff, tabIndex);
+	       fieldNo, f->attributes.attributes_val[attr_no].tabname, buff, useTabIndex);
+
+	}
 
       print_widget (f, metric_no, attr_no,"FormField");
 
-      fprintf (ofile, "</FormField>\n");
+	if (!isLabel) {
+      		fprintf (ofile, "</FormField>\n");
+	}
     }
 }
 
@@ -970,6 +1012,7 @@ strcpy(buff,"");
 	}
 	if (A4GL_has_bool_attribute(fprop, FA_B_AUTONEXT)) { strcat(buff, " autoNext=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_ACTION)) { sprintf(smbuff, " action=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_ACTION))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_JUSTIFY)) { sprintf(smbuff, " justify=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_JUSTIFY))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_IMAGE)) { sprintf(smbuff, " image=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_IMAGE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_STYLE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
@@ -1586,9 +1629,21 @@ for (scr=1; scr<=max_scr;scr++) {
 }
 
 
+static char *FormLayoutAttr_str(struct_form *f, enum FA_ATTRIBUTES_STRING str ) {
+int a;
+  if (f->layout_attrib==0) return NULL;
+  
+  for (a = 0; a < f->layout_attrib->str_attribs.str_attribs_len; a++)
+    {
+      if (f->layout_attrib->str_attribs.str_attribs_val[a].type == str)
+        return f->layout_attrib->str_attribs.str_attribs_val[a].value;
+    }
+  return NULL;
+}
 
 
 void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
+char *text;
 	initialize_xmlpacker();
 	ofile=wofile;
 
@@ -1596,7 +1651,13 @@ void write_xml_form(FILE *wofile, char *fname, struct_form *f) {
 
 
         fprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-	fprintf(ofile,"<Form name=\"%s\" sqlDbName=\"%s\" width=\"%d\" height=\"%d\" delimiters=\"%s\" encoding=\"%s\">\n",fname, f->dbname, f->maxcol, f->maxline, f->delim,f->encoding);
+	fprintf(ofile,"<Form name=\"%s\" sqlDbName=\"%s\" width=\"%d\" height=\"%d\" delimiters=\"%s\" encoding=\"%s\"",fname, f->dbname, f->maxcol, f->maxline, f->delim,f->encoding);
+	text=FormLayoutAttr_str(f,FA_S_TEXT);
+	if (text) {
+		fprintf(ofile," text=\"%s\"", xml_escape(text));
+	}
+
+	fprintf(ofile,">\n");
 
      int b=0;
      int convert_matrix=0;

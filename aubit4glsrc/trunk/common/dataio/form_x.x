@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.31 2009-10-27 18:54:22 mikeaubury Exp $
+# $Id: form_x.x,v 1.32 2009-10-28 09:55:45 mikeaubury Exp $
 #*/
 
 /**
@@ -353,6 +353,8 @@ struct struct_form
 	struct s_composites composites<>;
 	struct s_layout *layout;
 	int allowNullInput;
+	struct s_layout_attributes *layout_attrib;
+	string text<>;
 	string magic2<>;
 };
 

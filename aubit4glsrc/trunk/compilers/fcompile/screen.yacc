@@ -202,6 +202,7 @@ dbname :
 screen_or_layout_section : 
 	screen_section  {
 			the_form.layout=NULL;
+			the_form.layout_attrib=NULL;
 	}
 	| layout_section {
 			the_form.layout=$<layout>1;
@@ -412,10 +413,10 @@ layout_container:
 ;
 
 layout_section:
-	KW_LAYOUT layout_attributes
-	layout_container 
-	op_end {
-		$<layout>$=$<layout>3;
+	KW_LAYOUT layout_attributes { 
+		the_form.layout_attrib=$<layout_attrib>2;
+	} layout_container op_end {
+		$<layout>$=$<layout>4;
 	}
 ;
 
@@ -752,7 +753,9 @@ field_type op_att
 {
 				struct struct_scr_field *fld;
 				fld=A4GL_get_fld();
-	A4GL_make_downshift(fld->tabname);
+	if (fld->tabname) {
+		A4GL_make_downshift(fld->tabname);
+	}
 	A4GL_make_downshift(fld->colname);
 	fld->colours.colours_len=0;
 	fld->colours.colours_val=0;
@@ -1153,7 +1156,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 | named_or_kw_any {
 	struct struct_scr_field *fld;
 	fld=A4GL_get_fld();
-	fld->tabname=acl_strdup("formonly");
+	fld->tabname=acl_strdup("-");
 	fld->colname=acl_strdup($<str>1);
         fld->datatype=DTYPE_CHAR ;
         fld->dtype_size=0;
@@ -1348,9 +1351,9 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | KW_FONTPITCH EQUAL KW_VARIABLE { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_FONTPITCHVARIABLE); }
 | KW_SCROLL { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_SCROLL); }
 | KW_IMAGE EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_IMAGE,$<str>3); }
-| KW_JUSTIFY EQUAL LEFT { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"LEFT"); }
-| KW_JUSTIFY EQUAL KW_RIGHT { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"RIGHT"); }
-| KW_JUSTIFY EQUAL KW_CENTER { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"CENTER"); }
+| KW_JUSTIFY EQUAL LEFT { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"left"); }
+| KW_JUSTIFY EQUAL KW_RIGHT { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"right"); }
+| KW_JUSTIFY EQUAL KW_CENTER { A4GL_add_str_attr(A4GL_get_fld(),FA_S_JUSTIFY,"center"); }
 | KW_PIXELHEIGHT EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_PIXELHEIGHT,$<str>3); }
 | KW_PIXELWIDTH EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_PIXELWIDTH,$<str>3); }
 | KW_SCROLLBARS_BOTH  { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_SCROLLBARS_BOTH); } 
@@ -1362,7 +1365,7 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | KW_TABINDEX EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_TABINDEX,$<str>3); } 
 | KW_VALUEMAX EQUAL NUMBER_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUEMAX,$<str>3); } 
 | KW_VALUEMIN EQUAL NUMBER_VALUE{ A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUEMIN,$<str>3); } 
-| KW_NOT_NULL EQUAL NUMBER_VALUE { A4GL_get_fld()->not_null=1;}
+| KW_NOT_NULL { A4GL_get_fld()->not_null=1;}
 
 | KW_VALUECHECKED EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUECHECKED,$<str>3); } 
 | KW_VALUEUNCHECKED EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_VALUEUNCHECKED,$<str>3); } 

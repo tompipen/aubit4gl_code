@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.50 2009-07-29 12:14:00 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.51 2009-10-28 09:55:47 mikeaubury Exp $
 #*/
 
 /**
@@ -202,8 +202,10 @@ chk_alias (char *s)
 {
   int a;
   struct struct_form *the_form_ptr;
+  if (s==0) return s;
   the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("chk_alias\n");
+
   for (a = 0; a < the_form_ptr->tables.tables_len; a++)
     {
       if (strcasecmp (the_form_ptr->tables.tables_val[a].alias, s) == 0)
@@ -336,7 +338,9 @@ add_srec_direct (char *tab, int a)
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
   int z;
-  A4GL_make_downshift (tab);
+  if (tab==0) {
+		return ;
+	}
   A4GL_debug ("add_srec_direct\n");
   for (z = 0; z < the_form_ptr->records.records_len; z++)
     {
@@ -356,6 +360,11 @@ add_srec_direct (char *tab, int a)
       curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = a;
       return;
     }
+  if (strcasecmp (tab, "-") == 0)
+    {
+	return ;
+    }
+
   A4GL_error_with ("Table %s has not been defined in the tables section\n", tab, 0);
 }
 
@@ -387,6 +396,8 @@ real_set_field (char *s, struct struct_scr_field *f)
 
   A4GL_debug ("set_field\n");
 
+  if (f->tabname==0) return;
+
   /* is it an alias */
   ptr = chk_alias (f->tabname);
 
@@ -399,10 +410,9 @@ real_set_field (char *s, struct struct_scr_field *f)
 
   for (a = 0; a < the_form_ptr->attributes.attributes_len - 1; a++)
     {
-      if (strcasecmp
-	  (f->tabname, the_form_ptr->attributes.attributes_val[a].tabname) == 0
-	  && strcasecmp (f->colname,
-			 the_form_ptr->attributes.attributes_val[a].colname) == 0
+	if (the_form_ptr->attributes.attributes_val[a].tabname==0) continue;
+      if (strcasecmp (f->tabname, the_form_ptr->attributes.attributes_val[a].tabname) == 0
+	  && strcasecmp (f->colname, the_form_ptr->attributes.attributes_val[a].colname) == 0
 	  && f->subscripts[0] ==
 	  the_form_ptr->attributes.attributes_val[a].subscripts[0]
 	  && f->subscripts[0] ==
@@ -412,10 +422,12 @@ real_set_field (char *s, struct struct_scr_field *f)
 	}
     }
 
+  if (f->tabname!=0) {
   if (f->tabname[0] == 0 || f->colname[0] == 0)
     {
       A4GL_error_with ("Column %s.%s has not been found in the database\n", f->tabname, f->colname);
     }
+  }
 
   f->field_no = A4GLFORM_A4GL_find_field (s);
 	
@@ -689,6 +701,9 @@ find_attribs (int **ptr, char *tab, char *colname)
 
   for (a = 0; a < the_form_ptr->attributes.attributes_len; a++)
     {
+
+      //if (the_form_ptr->attributes.attributes_val[a].tabname==0) continue;
+
       if (strcasecmp (tab, the_form_ptr->attributes.attributes_val[a].tabname) == 0
 	  && strcasecmp (colname,
 			 the_form_ptr->attributes.attributes_val[a].colname) == 0)
