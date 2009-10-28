@@ -1039,20 +1039,7 @@ void ScreenHandler::setArrayFocus(QWidget *tableView, QString fieldName){
    }
 
    if(!(row < 0 && col < 0)){
-      /* dbutemp
-      QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
-      modelIndex = proxyModel->mapToSource(modelIndex);
-
-      QModelIndex index = screenRecord->currentIndex();
-      QItemSelectionModel *selection = screenRecord->selectionModel();
-
-      if(modelIndex.isValid()){
-         if(index != modelIndex){
-            selection->setCurrentIndex(modelIndex, QItemSelectionModel::NoUpdate);
-         }
-      }
-      */
-      screenRecord->setCurrentField(row, col);
+      screenRecord->setCurrentField(row+1, col+1);
    }
 
 }
@@ -2007,22 +1994,7 @@ void ScreenHandler::setArrLine(int line)
 
    for(int i=0; i<context->fieldList().count(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (context->fieldList().at(i))){
-//            tableView->setIgnoreRowChange(true);
             tableView->setArrLine(line-1);
-//            tableView->setIgnoreRowChange(false);
-            /* dbutemp
-            QModelIndex index = tableView->currentIndex();
-            QModelIndex newIndex = tableView->model()->index(line-1, index.column(), QModelIndex());
-            if(newIndex.isValid()){
-               //tableView->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::NoUpdate);
-               tableView->blockSignals(true);
-//               tableView->setIgnoreRowChange(true);
-               tableView->selectRow(line-1);
-//               tableView->setIgnoreRowChange(false);
-               tableView->blockSignals(false);
-            }
-            */
-
       }
    }
 }
@@ -2036,16 +2008,6 @@ void ScreenHandler::setScrLine(int line)
    QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
-         /*
-         if(tableView->isEnabled()){
-            QModelIndex index = tableView->currentIndex();
-            QModelIndex newIndex = tableView->model()->index(line-1, index.column(), QModelIndex());
-            if(newIndex.isValid()){
-              tableView->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::NoUpdate);
-            }
-            return;
-         }
-         */
          tableView->setScrLine(line-1);
       }
    }

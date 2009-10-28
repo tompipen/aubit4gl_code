@@ -770,6 +770,7 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
    if(event->type() == QEvent::FocusOut){
       QFocusEvent *fe = (QFocusEvent*) event;
       if(fe->reason() == Qt::ActiveWindowFocusReason ||
+         fe->reason() == Qt::OtherFocusReason ||
          fe->reason() == Qt::PopupFocusReason ||
          fe->reason() == Qt::MouseFocusReason){
          fe->ignore();
