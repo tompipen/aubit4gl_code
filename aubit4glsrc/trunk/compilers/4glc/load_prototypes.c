@@ -139,9 +139,10 @@ static void load_default_boltons() {
       add_bolton ("arr_curr","", "2");
       add_bolton ("scr_line","", "2");
       add_bolton ("fgl_settitle","0", "");
+      add_bolton ("length","0", "2");
       add_bolton ("fgl_winquestion","0,0,0,0,0,2", "0");
       add_bolton ("aclfgl_add_to_toolbar","0,0,0,0,0,2", "");
-	add_bolton ("fgl_drawbox","2,2,2,2", "");
+      add_bolton ("fgl_drawbox","2,2,2,2", "");
 }
 
 static void
@@ -240,18 +241,22 @@ void load_protos(void) {
 
 
 int get_bolton_nrets(int a) {
+	if (a<0 || a>=nboltons) { A4GL_assertion(1,"Bolton funcno out of range"); }
 	return fboltons[a].nreturns;
 }
 
 int get_bolton_rtype(int a,int rval) {
+	if (a<0 || a>=nboltons) { A4GL_assertion(1,"Bolton funcno out of range"); }
 	return fboltons[a].return_dtypes[rval];
 }
 
 int get_bolton_nparam(int a) {
+	if (a<0 || a>=nboltons) { A4GL_assertion(1,"Bolton funcno out of range"); }
 	return fboltons[a].nparams;
 }
 
 int get_bolton_param(int a,int param) {
+	if (a<0 || a>=nboltons) { A4GL_assertion(1,"Bolton funcno out of range"); }
 	return fboltons[a].param_dtypes[param];
 }
 

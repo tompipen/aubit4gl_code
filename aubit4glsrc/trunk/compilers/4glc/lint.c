@@ -3705,7 +3705,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree, struct call
 		  continue;
 		}
 
-	      if (is_bolton_function (e->expr_str_u.expr_function_call->fname))
+	      if (is_bolton_function (e->expr_str_u.expr_function_call->fname)!=-1)
 		{
 			int bolton_function;
 		  bolton_function=is_bolton_function (e->expr_str_u.expr_function_call->fname);
