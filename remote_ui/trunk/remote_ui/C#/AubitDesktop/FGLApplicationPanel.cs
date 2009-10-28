@@ -1475,7 +1475,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            MessageBox.Show("File coult not be opened : "+oname);
+                            MessageBox.Show("File could not be opened : "+oname);
                         }
                     }
                     else
