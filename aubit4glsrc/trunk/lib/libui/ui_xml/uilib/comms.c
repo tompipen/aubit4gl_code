@@ -251,7 +251,7 @@ int
 connect_ui_proxy (void)
 {
 int a;
-
+int needyourid=1;
   /* Create socket. */
   if (!getenv ("PROXYPIPE"))
     {
@@ -259,7 +259,7 @@ int a;
 	set_using_stdio(1);
       clientui_sock_read = 0;	// STDIN
       clientui_sock_write = 1;	// STDOUT
-	
+	needyourid=0;
 	//stdout=fopen("/dev/null","w");
     }
   else
@@ -311,6 +311,7 @@ int a;
     }
   UIdebug(3,"set envelope\n");
   set_envelope_mode ();
+if (needyourid) {
 //printf("Get event from ui\n");
   // The first thing we should get back is actually from the
   // proxy should should be a yourId...
@@ -321,6 +322,7 @@ int a;
 		exit(2);
 	}
   UIdebug (0, "Got TRIGGERED setting YOURID...");
+}
 //printf("Got event from ui");
   return 1;
 }
