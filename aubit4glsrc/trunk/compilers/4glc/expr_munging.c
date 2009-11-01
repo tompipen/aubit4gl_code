@@ -783,6 +783,7 @@ simple_expr_datatype (struct expr_str *p)
 	    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE (1);
 
 	  }
+	if ((u->datatype & DTYPE_MASK)==DTYPE_SERIAL) return DTYPE_INT;
 	return u->datatype;
       }
 
@@ -1026,6 +1027,9 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
 	    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE (1);
 
 	  }
+
+
+	if ((u->datatype & DTYPE_MASK)==DTYPE_SERIAL) return DTYPE_INT;
 	return u->datatype;
       }
 

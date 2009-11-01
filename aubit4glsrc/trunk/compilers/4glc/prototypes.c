@@ -456,6 +456,9 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
 	{
 
 	  functions[functions_cnt - 1].parameters[z] = expr_datatype (module, line, params->list.list_val[z]);
+		if (functions[functions_cnt - 1].parameters[z]==DTYPE_SERIAL) {
+			functions[functions_cnt - 1].parameters[z]=DTYPE_INT;
+		}
 	  functions[functions_cnt - 1].paramnames[z] = strdup (expr_as_string_when_possible (params->list.list_val[z]));
 
 	  //params.list.list_val;
@@ -657,6 +660,9 @@ prototype_returns (int a, command * c)
   for (d = 0; d < retvals->list.list_len; d++)
     {
       rl->returns[d] = expr_datatype (functions[a].module, functions[a].line, retvals->list.list_val[d]);
+	if ((rl->returns[d]&DTYPE_MASK) ==DTYPE_SERIAL) {
+		rl->returns[d]=DTYPE_INT;
+	}
       rl->retexprs[d] = expr_as_string_when_possible (retvals->list.list_val[d]);
 
       //if (d) printf(",");
@@ -879,6 +885,7 @@ proto_program (module_definition * mods, int nmodules)
 	  int b;
 	  for (b = 0; b < functions[a].nparameters; b++)
 	    {
+		int printed=0;
 	      fprintf (output, "   <EXPR NO=\"%d\" DATATYPE=\"%d\" LENGTH=\"%d\" NAME=\"%s\"/>\n",
 		       b, functions[a].parameters[b] & DTYPE_MASK, functions[a].parameters[b] >> 16, functions[a].paramnames[b]);
 	      if (b)
@@ -886,14 +893,30 @@ proto_program (module_definition * mods, int nmodules)
 		  strcat (buff_proto, ",");
 		}
 	      //sprintf(tmp,"%d",  functions[a].parameters[b]&DTYPE_MASK);
-	      if ((functions[a].parameters[b] & DTYPE_MASK) != DTYPE_INTERVAL)
-		{
-		  sprintf (tmp, "%d", functions[a].parameters[b] & DTYPE_MASK);
-		}
-	      else
+	      if ((functions[a].parameters[b] & DTYPE_MASK) == DTYPE_INTERVAL)
 		{
 		  sprintf (tmp, "%d", functions[a].parameters[b]);
+		  printed++;
 		}
+		if ((functions[a].parameters[b] & DTYPE_MASK)==DTYPE_SMINT)  {
+  			if (A4GL_strstartswith(functions[a].paramnames[b],"lb_") && A4GL_isyes(acl_getenv("USE_LB_AS_BOOL")) ) {
+		  		sprintf (tmp, "%d", 90);
+		  		printed++;
+			}
+  			if (A4GL_strstartswith(functions[a].paramnames[b],"mb_") && A4GL_isyes(acl_getenv("USE_LB_AS_BOOL")) ) {
+		  		sprintf (tmp, "%d", 90);
+		  		printed++;
+			}
+  			if (A4GL_strstartswith(functions[a].paramnames[b],"gb_") && A4GL_isyes(acl_getenv("USE_LB_AS_BOOL")) ) {
+		  		sprintf (tmp, "%d", 90);
+		  		printed++;
+			}
+		}
+
+		if (!printed) {
+		  	sprintf (tmp, "%d", functions[a].parameters[b] & DTYPE_MASK);
+		}
+		
 	      strcat (buff_proto, tmp);
 	    }
 	}

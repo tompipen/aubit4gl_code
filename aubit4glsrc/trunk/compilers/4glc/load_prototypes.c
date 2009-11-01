@@ -247,6 +247,7 @@ int get_bolton_nrets(int a) {
 
 int get_bolton_rtype(int a,int rval) {
 	if (a<0 || a>=nboltons) { A4GL_assertion(1,"Bolton funcno out of range"); }
+	if (fboltons[a].return_dtypes[rval]==DTYPE_SERIAL) return DTYPE_INT;
 	return fboltons[a].return_dtypes[rval];
 }
 
@@ -257,6 +258,7 @@ int get_bolton_nparam(int a) {
 
 int get_bolton_param(int a,int param) {
 	if (a<0 || a>=nboltons) { A4GL_assertion(1,"Bolton funcno out of range"); }
+	if (fboltons[a].param_dtypes[param]==DTYPE_SERIAL) return DTYPE_INT;
 	return fboltons[a].param_dtypes[param];
 }
 

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.21 2009-09-07 11:35:20 mikeaubury Exp $
+# $Id: variables_new.c,v 1.22 2009-11-01 18:41:43 mikeaubury Exp $
 #
 */
 
@@ -623,6 +623,12 @@ void set_variable_name(struct variable *v, char *name) {
 		}
                	v->names.names.names_val[0].name=strdup(name);
                	v->names.names.names_val[0].alias="";
+		if (
+		(A4GL_strstartswith(name,"lb_") || A4GL_strstartswith(name,"mb_") || A4GL_strstartswith(name,"gb_") )
+			&& A4GL_isyes(acl_getenv("USE_LB_AS_BOOL")) && v->var_data.variable_type==VARIABLE_TYPE_SIMPLE && v->var_data.variable_data_u.v_simple.datatype==1) {
+			v->var_data.variable_data_u.v_simple.datatype=90;  // FAKE_BOOL
+		}
+		//A4GL_pause_execution();	
 	}  else {
 		A4GL_assertion(1,"Not expecting an existing name");
 	}

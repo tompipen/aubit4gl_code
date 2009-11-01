@@ -2026,6 +2026,7 @@ check_pdf_report (struct module_definition *d, struct s_pdf_report_definition *r
 }
 
 
+
 static void
 check_function (struct module_definition *d, struct s_function_definition *f)
 {
@@ -2047,6 +2048,8 @@ check_function (struct module_definition *d, struct s_function_definition *f)
   check_linearised_commands (f->module, func_cmds);
   cache_expressions (&f->expression_list, func_cmds);
 
+
+  //check_expressions(&f->expression_list);
 
   set_expr_cache (&f->expression_list);
 
@@ -2736,6 +2739,27 @@ check_variable_name (char *modname, char *scope, struct variable *v)
 		 v->names.names.names_val[0].name);
     }
 
+  if (A4GL_strstartswith(v->names.names.names_val[0].name,"lb_")) {
+	if (v->var_data.variable_type==VARIABLE_TYPE_SIMPLE && v->var_data.variable_data_u.v_simple.datatype==2) {
+      		A4GL_lint (v->src_module, v->lineno, "VNAMEBOOLINT", "Variable name is like a boolean - but defined as INTEGER (not SMALLINT)",
+		 	v->names.names.names_val[0].name);
+	}
+  }
+  if (A4GL_strstartswith(v->names.names.names_val[0].name,"mb_")) {
+	if (v->var_data.variable_type==VARIABLE_TYPE_SIMPLE && v->var_data.variable_data_u.v_simple.datatype==2) {
+      		A4GL_lint (v->src_module, v->lineno, "VNAMEBOOLINT", "Variable name is like a boolean - but defined as INTEGER (not SMALLINT)",
+		 	v->names.names.names_val[0].name);
+	}
+  }
+
+  if (A4GL_strstartswith(v->names.names.names_val[0].name,"gb_")) {
+	if (v->var_data.variable_type==VARIABLE_TYPE_SIMPLE && v->var_data.variable_data_u.v_simple.datatype==2) {
+      		A4GL_lint (v->src_module, v->lineno, "VNAMEBOOLINT", "Variable name is like a boolean - but defined as INTEGER (not SMALLINT)",
+		 	v->names.names.names_val[0].name);
+	}
+  }
+
+
   if (A4GL_aubit_strcasecmp (scope, "ImportedGlobal") == 0)
     {
       // These should be picked up in the module in which they are exported...
@@ -2784,6 +2808,8 @@ check_variable_name (char *modname, char *scope, struct variable *v)
 	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Local variable does not begin with 'l'",
 		     v->names.names.names_val[0].name);
 	}
+
+
       if (!local_is_valid_vname (v, 'l'))
 	{
 	  A4GL_lint (v->src_module, v->lineno, "CS.VNAME", "Variable is not in the form sn_xxxx", v->names.names.names_val[0].name);
@@ -5225,7 +5251,7 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
   if (module_in == 0)
     {
-      A4GL_pause_execution ();	// SAFE TO LEAVE IN
+      //A4GL_pause_execution ();	// SAFE TO LEAVE IN
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
     }
@@ -6744,6 +6770,14 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
       struct expr_str *e;
       e = list.list.list_val[a];
 
+      if (e->expr_type==ET_EXPR_OP_ISNULL || e->expr_type==ET_EXPR_OP_ISNOTNULL) {
+		int dtype;
+		dtype=expr_datatype(module_name,lineno,e->expr_str_u.expr_expr);
+		if (dtype==90) {
+			  A4GL_lint (module_name, lineno, "BOOLNULL", "Checking for IS NULL or IS NOT NULL on something that looks boolean", 0);
+		}
+	}
+
       //printf ("check boolean : %d . %s (%d)\n", a, expr_name (list.list.list_val[a]->expr_type), list.list.list_val[a]->expr_type);
       if (e->expr_type == ET_EXPR_OP_EQUAL)
 	{
@@ -6800,10 +6834,13 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
 	    }
 	}
     }
+
+
   if (A4GL_is_just_literal (&list, NULL, done_true_false))
     {
       A4GL_lint (module_name, lineno, "IFCONST", "IF condition is constant", 0);
     }
+
 }
 
 
