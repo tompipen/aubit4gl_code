@@ -1,0 +1,131 @@
+NONE First place holder
+REPLACE Replace any occurrence of the string 'before' with 'after'
+REPLACE_EXPR Replace only if the 'before' text is found in an expression or where an expression is allowed, such as in a where clause or a select clause.
+REPLACE_COMMAND Replace, but only if the whole SQL statement matches the 'before' string
+REPLACE_SQLCONST Replace SQL Constant (USER, TRUE, FALSE,TODAY, ROWID, TIME)
+REPLACE_SQLFUNC Replace a call to an SQL function with a different function
+DOUBLE_TO_SINGLE_QUOTES  Change double quotes (") to single quotes (') around literal strings
+TRIMSQLLIKEVAL Trims the test operand on a LIKE (so that trailing spaces wont affect the result)
+RTRIMSQLLIKEVAL Trims the test operand on a LIKE (so that trailing spaces wont affect the result)
+MATCHES_VAR_FUNC Name a function which will do a runtime transform of a MATCHES string
+MATCHES_TO_LIKE     Change Informix_style 'matches' clause to one using 'like', and change * and ? to % and _ respectively.
+MATCHES_TO_REGEX Similar to 'matches-to-like' but uses the Postgres style regular expression syntax
+MATCHES_TO_REGEXP Replace MATCHES with 'REGEXP'
+MATCHES_TO_GLOB  Replace MATCHES with 'GLOB'
+SUBSTRING_FUNCTION Change Informix-style string subscripting to a function call, Replace with the name of the sql function.
+TABLE_ALIAS_AS Insert the word "as" before table alias names in a 'from' clause
+COLUMN_ALIAS_AS  Insert the word "as" before column/expression alias names in a 'select' clause
+ANSI_UPDATE_SYNTAX Convert Informix-style "update ... set (..,..) = (..,..) " to the ANSI standard format "update ... set ...=..., ...=... "
+MONEY_AS_DECIMAL  Use the DECIMAL datatype in place of MONEY
+MONEY_AS_MONEY  Use the DECIMAL datatype in place of MONEY (as opposed to MONEY_AS_DECIMAL)
+SQL_CURRENT_FUNCTION  Use a function for generating the current date/time - this function should accept two parameters "from" and "to" which are text strings eg "YEAR","SECOND"
+STRIP_ORDER_BY_INTO_TEMP  Strips order by's from select...into temp
+ADD_CASCADE Adds the keyword CASCADE to a drop table
+OMIT_NO_LOG  Ignores any "WITH NO LOG" on an into temp
+QUOTE_OWNER
+CHAR_TO_DATETIME
+CHAR_TO_INTERVAL
+NO_OWNER_QUOTE
+IGNORE_OWNER
+STRIP_QUOTES_FROM_OWNER
+ODBC_USE_DEPRECATED_SQLCOLUMNS
+CONSTRAINT_NAME_BEFORE     Move the constraint name in a constraint command to before the constraint definition,
+CONSTRAINT_NAME_AFTER     Move the constraint name in a constraint command to after the constraint definition,
+USE_INDICATOR
+USE_DATABASE_STMT
+USE_BINDING_FOR_PUT
+IGNORE_CLOSE_ERROR
+OMIT_INDEX_CLUSTER
+OMIT_INDEX_ORDER
+OMIT_INDEX_IN
+OMIT_INDEX_FILLFACTOR
+OMIT_INDEX_USING
+ESQL_UNLOAD
+ESQL_UNLOAD_FULL_PATH
+ESQL_AFTER_INSERT
+ESQL_AFTER_UPDATE
+ESQL_AFTER_DELETE
+IGNORE_DTYPE_VARCHAR_MIN
+INTERVAL_EXTEND_FUNCTION
+DATETIME_EXTEND_FUNCTION
+NO_SERIAL_START_VALUE
+SIMPLE_GRANT_UPDATE
+SIMPLE_GRANT_SELECT
+RENAME_TABLE_AS_ALTER_TABLE
+RENAME_COLUMN_AS_ALTER_TABLE
+FAKE_IMMEDIATE
+TEMP_AS_DECLARE_GLOBAL
+TEMP_AS_TEMPORARY
+TEMP_AS_GLOBAL_TEMPORARY
+INSERT_INTO_AS_SELECT_INTO
+SELECT_INTO_TEMP_AS_DECLARE_GLOBAL
+SELECT_INTO_TEMP_AS_DECLARE_INSERT
+SELECT_INTO_TEMP_AS_CREATE_TEMP_AS
+SELECT_INTO_TEMP_AS_CREATE_TEMPORARY_AS
+SELECT_INTO_TEMP_AS_CREATE_GLOBAL_TEMPORARY_BRACKETS
+SWAP_SQLCA62
+NO_ORDBY_INTO_TEMP
+ADD_SESSION_TO_TEMP_TABLE
+LIMIT_LINE
+NO_DELCARE_INTO
+NO_FETCH_WITHOUT_INTO
+NO_SELECT_WITHOUT_INTO
+NO_PUT
+FULL_INSERT
+INSERT_ALIAS_VALUE
+INSERT_ALIAS_COLUMN
+OMIT_SERIAL_COL_FROM_INSERT
+OMIT_UPDATE_TABLE
+NO_INSERT_CURSOR
+EMULATE_INSERT_CURSOR
+ESQL_UNLOAD_STRING
+ESQL_UNLOAD_LIB_FALLBACK
+CLOSE_CURSOR_BEFORE_OPEN
+DTIME_AS_CHAR
+DATE_AS_ISO_DATE_STRING
+SELECT_INTO_TEMP_INTO_TEMP_HASH
+SELECT_INTO_TEMP_INTO_HASH
+CREATE_TEMP_AS_CREATE_HASH
+CREATE_TEMP_AS_GLOBAL_TEMP_DELETE
+CREATE_TEMP_AS_GLOBAL_TEMP_PRESERVE
+EXECUTE_PROCEDURE_AS_EXEC
+NO_FOR_UPDATE Just strip any FOR UPDATE on a declare
+EMULATE_FOR_UPDATE
+DATE_STRING_TO_CAST_DATE
+DATE_STRING_TO_YMD
+DATE_STRING_TO_CAST_DMY
+ESCAPE_PLAN
+CASE_AS_PROCEDURE
+FIX_OUTER_JOINS
+NOT_EQUAL_AS_LESS_GREATER_THAN
+FAKE_ROWID_NAME
+EXPAND_COLUMNS
+DTYPE_ALIAS
+NO_UPDATE_TABLE
+NEVER_CONVERT Ignore ALL SQL translations
+NEVER_CONVERT_COLUMN Ignore all translations on column names (typically - dont try to prepend with table name)
+ADD_WITH_OIDS Append 'WITH OIDS' to the CREATE TABLE statements
+FORCE_HOLD_ALWAYS Force use of HOLD cursor for all cursors *except* HOLD cursors
+FORCE_HOLD_NEVER Never force the use of HOLD cursors
+FORCE_HOLD_EXCEPT_UPDATE Force use of HOLD cursor for all cursors *except* HOLD cursors
+FIRSTASLIMIT Replace "SELECT FIRST # ... " with "SELECT ... LIMIT #"
+FAKETABLELESS Fake tablesless selects (eg. SELECT USER;). If set it will add 'FROM systables WHERE tabid=1"
+OMIT_LOCK_MODE Omit the lock mode from a CREATE TABLE
+OMIT_TABLE_IN Omit the "IN space" from a CREATE TABLE
+OMIT_TABLE_EXTENTS Omit the "EXTENT SIZE #" and the "NEXT EXTENT #" from a CREATE TABLE
+ALLOW_TIMESTAMP_DATATYPE Allow the use of TIMESTAMP as an SQL datatype (if not set it will be replaced by DATETIME YEAR TO SECOND/FRACTION)
+ALLOW_TIME_DATATYPE Allow the use of TIME as an SQL datatype (if not set it will be replaced by DATETIME HOUR TO SECOND/FRACTION)
+UNLDATEASDBDATE Force unload for Postgresql in DBDATE format datestyle would normally use YYYY-MM-DD
+FORCE_DATE_CAST Forces the use of a date cast when binding a date datatype (seems to be required for recent versions of Postgres)
+REMAP_ERROR Remap a DB specific error to a informix compatible one
+NO_DECLARE_INTO Restrict compilation of DECLARE SELECT .. INTO because its not supported by the RDBMS
+FOR_UPDATE_DROP_COLLIST Drop the column list from a FOR UPDATE cursor
+FOR_UPDATE_NOWAIT Add NOWAIT to a FOR UPDATE 
+ODBC_LONGVARCHAR_AS_CHAR Force what would be a TEXT to be a CHAR because of a misleading reply from ODBC
+OUTER_JOINS_NB remove brackets around the table names when doing a ANSI outer join
+BUILTINSQL Select statements for various builtin queries
+ESQL_DATATYPE Datatype to use for a 4gl datatype when generating ESQL/C code
+ALWAYS_CAST Force SQL casting when using a Variable in ESQL/C code
+LOBLAWSPECIAL  Does nothing anymore
+DEFAULT_SQL  Sql to automatically run when connecting to a database (use DEFAULT_SQL 0 = .... )
+ALWAYS_USE_MATCHES_VAR_FUNC Always use the MATCHES_VAR_FUNC - even for non variables

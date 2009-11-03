@@ -1,0 +1,14 @@
+Name: libSQL_nosql
+Parent: aubit4glsrc
+Description: Dummy SQL plugin. Enables use of compiled programs with no database access
+Functionality: SQL
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer:
+Status: 4
+Todo:
+Notes: Primarily used for debugging
+

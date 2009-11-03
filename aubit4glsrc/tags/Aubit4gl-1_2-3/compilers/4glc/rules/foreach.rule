@@ -1,0 +1,31 @@
+/*
+=====================================================================
+                        Source: foreach.rule
+=====================================================================
+*/
+
+
+foreach_cmd	:	opt_use2_p FOREACH fetch_cursor_name_p atline opt_foreach_using_part opt_foreach_into_fetch_part {
+
+ 								add_feature("FOREACH"); push_blockcommand("FOREACH"); 
+ 								lastlineno=yylineno;
+				} 
+				commands_as_list END_FOREACH {
+								//add_continue_blockcommand ("FOREACH");
+				set_cmdlineno($<integer_val>4);
+				pop_blockcommand("FOREACH"); 
+				$<cmd>$=new_foreach_cmd($<ptr>1,$<ptr>3,$<ptr_list>5, $<ptr_list>6, $<commands>8);
+				inc_var_usage_from_binding_list($<ptr_list>5);
+				inc_var_assigned_from_binding_list($<ptr_list>6);
+			} 
+;
+
+
+
+opt_foreach_using_part: { $<ptr_list>$=0;}
+	| KW_USING expanded_ibind_var_list { $<ptr_list>$=$<ptr_list>2; add_feature("FORACH_USING");}
+
+;
+
+/* ====================== foreach.rule ============================== */
+
