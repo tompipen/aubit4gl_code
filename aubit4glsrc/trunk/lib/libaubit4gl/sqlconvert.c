@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.169 2009-10-14 08:23:13 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.170 2009-11-03 10:12:03 mikeaubury Exp $
 #
 */
 
@@ -1994,10 +1994,12 @@ CV_matches (char *type, char *string, char *esc)
   static char buff[1024];
   int a;
 
+//printf("CV_matches %s, %s, %s\n", type,string,esc);
   if (strncmp (string, "'@@VARIABLE[", 12) == 0)
     {
       return string;
     }
+
 
   if (strcmp (string, "?") == 0 || A4GLSQLCV_check_requirement ("ALWAYS_USE_MATCHES_VAR_FUNC"))
     {
@@ -2089,7 +2091,12 @@ CV_matches (char *type, char *string, char *esc)
 	  {
 	    if (strstr (buff, ".*"))
 	      {
-		strcat (buff, "[ ]+$");
+		if (buff[strlen(buff)-1]=='*') {
+			strcat (buff, "$");
+		} else {
+			strcat (buff, "[ ]*$");
+		}
+		//printf("buf=%s\n",buff);
 	      }
 	  }
 	smallvar[0] = string[a];

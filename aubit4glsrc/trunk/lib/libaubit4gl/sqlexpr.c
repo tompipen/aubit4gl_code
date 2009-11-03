@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.82 2009-10-26 08:23:24 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.83 2009-11-03 10:12:04 mikeaubury Exp $
 #
 */
 
@@ -961,9 +961,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char *p1;
 	char *p2;
 	p1 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val);
-	printf("p1=%s\n", p1);
+	//printf("p1=%s\n", p1);
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
-	printf("p2=%s\n", p2);
+	//printf("p2=%s\n", p2);
 	return make_sql_string_and_free (acl_strdup_With_Context (p1),
 					 acl_strdup_With_Context (A4GLSQLCV_matches_string ("", p2,convert_escape_str(
 											    p->data.s_select_list_item_data_u.
