@@ -188,7 +188,7 @@ QString TableView::getColumnName(int col)
 
 void TableView::keyPressEvent(QKeyEvent *event)
 {
-   if(event->key() == QKeySequence("Enter") ||
+    if(event->key() == QKeySequence("Enter") ||
       event->key() == QKeySequence("Return")){
       accept();
    }
@@ -204,6 +204,16 @@ void TableView::keyPressEvent(QKeyEvent *event)
          if(i_maxArrSize > table->rowCount(QModelIndex()))
             table->insertRows(table->rowCount(QModelIndex()), 1, QModelIndex());
       }
+
+   }
+
+   if(event->key() == QKeySequence("Down")){
+      QModelIndex current = this->currentIndex();
+
+      QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+      TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+       setScrLine(currentIndex().row()+1);
 
    }
    return QTableView::keyPressEvent(event);
@@ -453,7 +463,11 @@ void TableView::setCurrentField(int row, int col)
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
 
+         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          setCurrentIndex(index);
+         if(table->b_input){
+             edit(index);
+         }
       }
    }
     
