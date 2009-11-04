@@ -885,17 +885,16 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          if(qs_name == "ui.interface.refresh"){
          }
 
-         if(qs_name == "ui.combobox.additem"){
-         }
-
+         /*
          if(qs_name == "ui.combobox.additem"){
          }
 
          if(qs_name == "ui.combobox.clear"){
          }
 
-         if(qs_name == "ui.combobox.formname"){
+         if(qs_name == "ui.combobox.forname"){
          }
+         */
       }
 
 //      if(expect > 0){
