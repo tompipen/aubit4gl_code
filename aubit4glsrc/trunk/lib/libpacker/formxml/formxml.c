@@ -910,6 +910,7 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
 	int useTabIndex;
 	struct struct_scr_field *fprop;
 	char *new_style_widget=0;
+	char *new_style_widget_text=0;
 	fprop=&f->attributes.attributes_val[attr_no];
 	if (hasPrintedAttribute(attr_no)) return;
 	addPrintedAttribute(attr_no);
@@ -923,7 +924,8 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
 	
 	if (A4GL_has_str_attribute(fprop, FA_S_WIDGETTYPE)) {
         	new_style_widget=A4GL_get_str_attribute (fprop, FA_S_WIDGETTYPE);
-        	if (A4GL_aubit_strcasecmp(new_style_widget,"label")==0) {
+        	new_style_widget_text=A4GL_get_str_attribute (fprop, FA_S_TEXT); //labels with predefined text are static
+        	if (A4GL_aubit_strcasecmp(new_style_widget,"label")==0 && new_style_widget_text!=0) {
 			isLabel=1;
 		}
         }
@@ -1661,7 +1663,7 @@ char *text;
 
      int b=0;
      int convert_matrix=0;
-     if(f->layout == 0 && !A4GL_isno(acl_getenv("A4GL_AUTOCONVSCRAR"))){
+     if((f->layout == 0 || f->layout->layout_type == LAYOUT_GRID) && !A4GL_isno(acl_getenv("A4GL_AUTOCONVSCRAR"))){
         for (b=0;b<f->attributes.attributes_len;b++) {
            // We've found our attribute..
            int dim1=0;
@@ -2137,8 +2139,7 @@ void convertMatrix(struct_form *f) {
             scr++;
             grid = 1;
 
-
-            if(f->layout == 0){
+            if(f->layout == 0 || f->layout->layout_type == LAYOUT_GRID){
                struct s_layout *layout;
                layout=malloc(sizeof(struct s_layout));
                layout->layout_type = LAYOUT_VBOX;
