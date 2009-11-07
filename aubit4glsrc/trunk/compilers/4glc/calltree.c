@@ -2257,8 +2257,8 @@ check_program (module_definition * mods, int nmodules)
       for (a = 0; a < nmodules; a++)
 	{
 	  int line;
-	  fprintf (output, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\">\n", mods[a].module_name, a,
-		   xml_encode (mods[a].full_path_filename));
+	  fprintf (output, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\" LIBRARY=\"%ld\">\n", mods[a].module_name, a,
+		   xml_encode (mods[a].full_path_filename), mods[a].moduleIsInLibrary);
 	  for (line = 0; line < mods[a].source_code.lines.lines_len; line++)
 	    {
 	      fprintf (output, "<LINE>%s</LINE>\n", xml_encode (mods[a].source_code.lines.lines_val[line]));

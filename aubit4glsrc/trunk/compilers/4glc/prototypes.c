@@ -480,6 +480,44 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
 
       for (a = 0; a < all_cmds->cmds.cmds_len; a++)
 	{
+
+#ifdef GENERATE_CALLS_UNL
+/* This is used to generate some more prototypes  */
+	  if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_CALL_CMD) {
+			FILE *p;
+			p=fopen("calls.unl","a");
+			if (p) {
+				int b;
+				struct struct_call_cmd *c;
+				c=&all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd;
+				if (c->fcall->expr_type==ET_EXPR_FCALL) {
+					struct s_expr_function_call *fcall;
+					fcall=c->fcall->expr_str_u.expr_function_call;
+					fprintf(p,"%s|", fcall->fname);
+					if (fcall->parameters) {
+						for (b=0;b<fcall->parameters->list.list_len;b++)  {
+							int d;
+      							d= expr_datatype (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, fcall->parameters->list.list_val[b]);
+							if (b) fprintf(p,",");
+							fprintf(p,"%d",d&DTYPE_MASK);
+						}
+					}
+					fprintf(p,"|");
+					if (c->returning) {
+						for (b=0;b<c->returning->list.list_len;b++)  {
+							int d;
+      							d= expr_datatype (all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno, c->returning->list.list_val[b]);
+							if (b) fprintf(p,",");
+							fprintf(p,"%d",d&DTYPE_MASK);
+						}
+					}
+					fprintf(p,"|\n");
+				}
+			}
+			fclose(p);
+	  }
+#endif
+
 	  if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_RETURN_CMD)
 	    {
 

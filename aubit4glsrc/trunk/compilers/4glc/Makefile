@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.55 2009-10-26 08:23:23 mikeaubury Exp $
+# $Id: Makefile,v 1.56 2009-11-07 16:22:32 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -328,8 +328,22 @@ fgllint: ../../bin/fgllint
 
 extra: ../../bin/reload ../../bin/fgllint ../../bin/fglcalltree 
 
-../../bin/reload: reload.c API_lex.c common.c ../../lib/generated/std_funcs.c
-	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex.c common.c ../../lib/generated/std_funcs.c -o $@ -L$(AUBITDIR)/lib -laubit4gl  
+../../bin/reload: 	reload.c\
+				API_lex.c API_parse_self.c  \
+				compile.c class.c clobber.c \
+				dim.c \
+				field_handling.c \
+				globals.c \
+				import.c labels.c insert_curs.c fix_insert.c load_prototypes.c \
+				linearise.c \
+				rules/generated/kw.c \
+				list.c lexer.c lex.c  expr_munging.c lint.c \
+                                mod.c commands.c  map.c extendedmap.c parsehelp.c common.c \
+                                ../../lib/generated/std_funcs.c  \
+                                var_handling.c variables.c variables_new.c \
+                		${Y_TAB_C} \
+                		${ROOT}/compilers/4glc/rules/generated/states_optimised.c
+	$(CC) -g $(CFLAGS) -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  
 
 reload: ../../bin/reload
 

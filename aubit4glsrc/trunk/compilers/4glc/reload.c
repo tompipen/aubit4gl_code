@@ -10,12 +10,13 @@
 //#include <errno.h>
 
 
-int yylineno=0;
+//int yylineno=0;
 
 
 
 main(int argc,char *argv[]) {
 int ok;
+char buff[2000];
 	struct module_definition m;
 	if (argc!=2) {
 		int a;
@@ -65,14 +66,14 @@ int process_module (module_definition *loaded_module_definition) {
 }
 
 
-void A4GL_warn(char *s) {
-	A4GL_debug("WARNING : %s\n",s);
-}
+//void A4GL_warn(char *s) {
+	//A4GL_debug("WARNING : %s\n",s);
+//}
 
-void a4gl_yyerror(char *s) {
-	printf("%s\n",s);
-	exit(2);
-}
+//void a4gl_yyerror(char *s) {
+	//printf("%s\n",s);
+	//exit(2);
+//}
 
 
 
@@ -88,10 +89,10 @@ int output_str(char *n, char *r,int isptr,int arr) {
 }
 
 
-void set_yytext(char *s) {
+//void set_yytext(char *s) {
 //
-}
+//}
 
-int current_is_report() {
-return 0;
-}
+//int current_is_report() {
+//return 0;
+//}

@@ -21,7 +21,9 @@ trad_module: op_module_header
        			A4GL_debug("Read globals section so Im done\n");
        			YYACCEPT;
 		}
+
 	lastlineno=yylineno;
+
 	// Allow a 'default' globals file to be included in all 4gls...
 	// but - we'll only read it - if this isn't a 'GLOBALS' file too...
 	if (!has_globals()) {
