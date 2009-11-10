@@ -28,6 +28,7 @@
 //------------------------------------------------------------------------------
 RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 {
+   b_hideButtons = true;
    currentButton = NULL;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
@@ -50,6 +51,7 @@ RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 RingMenu::RingMenu(QString title, QString style, QString image, 
                    QWidget *parent) : QGroupBox(title, parent)
 {
+   b_hideButtons = true;
    currentButton = NULL;
 
    if(!style.isEmpty()){
@@ -121,7 +123,12 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 void RingMenu::hideButton(int id)
 {
    if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(id))){
-      button->setVisible(false);
+      if(b_hideButtons){
+         button->setVisible(false);
+      }
+      else{
+         button->setEnabled(false);
+      }
    }
 }
 
@@ -140,7 +147,12 @@ void RingMenu::hideButton(QString name)
          }
 
          if(text == name){
-            button->setVisible(false);
+            if(b_hideButtons){
+               button->setVisible(false);
+            }
+            else{
+               button->setEnabled(false);
+            }
             return;
          }
       }
@@ -161,8 +173,14 @@ void RingMenu::showButton(QString name)
             text.remove(text.indexOf("&"), 1);
          }
 
-         if(text == name)
-            button->setVisible(true);
+         if(text == name){
+            if(b_hideButtons){
+               button->setVisible(true);
+            }
+            else{
+               button->setEnabled(true);
+            }
+         }
       }
    }
 }
@@ -322,6 +340,18 @@ void RingMenu::setMenuStyle(const QString &ms)
 {
    if(ms == "none"){
       this->setVisible(false);
+   }
+}
+
+void RingMenu::setHideButtons(const QString &ms)
+{
+qDebug() << "MS:" << ms;
+
+   if(ms == "disable"){
+      b_hideButtons = false;
+   }
+   else {
+      b_hideButtons = true;
    }
 }
 

@@ -26,9 +26,16 @@ class RingMenu : public QGroupBox
 {
    Q_OBJECT
 
+   enum ButtonHideStyle { hidden, disabled };
+
    Q_PROPERTY(QString menuStyle
               READ getMenuStyle
               WRITE setMenuStyle
+              DESIGNABLE true)
+
+   Q_PROPERTY(QString hideButtons
+              READ getHideButtons
+              WRITE setHideButtons
               DESIGNABLE true)
 
 
@@ -48,6 +55,8 @@ public:
 
    QString getMenuStyle() const { return m_menuStyle; };
    void setMenuStyle(const QString &ms);
+   QString getHideButtons() const { return m_hideButtons; };
+   void setHideButtons(const QString &ms);
    void setOrientation(const Qt::Orientation &o);
 
 
@@ -55,6 +64,8 @@ private:
    QLayout* layout;
    QButtonGroup *buttonGroup;
    QString m_menuStyle;
+   QString m_hideButtons;
+   bool b_hideButtons;
    QPushButton *currentButton;
 
 protected:
