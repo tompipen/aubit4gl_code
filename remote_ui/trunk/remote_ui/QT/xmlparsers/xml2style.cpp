@@ -115,7 +115,8 @@ void XML2Style::outputTree(const QDomNode& domNode)
                qs_name == "commentPosition" ||
                qs_name == "messagePosition" ||
                qs_name == "errorMessagePosition" ||
-               qs_name == "statusBarType"){  
+               qs_name == "statusBarType" ||
+               qs_name == "hideButtons"){  
         
                qs_name.prepend("qproperty-");
                quote = true;
