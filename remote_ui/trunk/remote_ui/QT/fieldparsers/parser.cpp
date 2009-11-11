@@ -548,7 +548,8 @@ void Parser::addWidgets(QWidget *widget, bool add, int x, int y, int gridWidth, 
    }
 
    QPalette p = widget->palette();
-   p.setColor(QPalette::Disabled, QPalette::Base, qcol_BaseColor);
+   QColor col(qcol_BaseColor.red()-10, qcol_BaseColor.green()-10, qcol_BaseColor.blue()-10);
+   p.setColor(QPalette::Disabled, QPalette::Base, col);
    widget->setPalette(p);
 
    if(add)
