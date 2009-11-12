@@ -1507,8 +1507,16 @@ namespace AubitDesktop
                         {
                             int n;
                             n = prog.IndexOf(" ");
-                            args = prog.Substring(n + 1);
-                            prog = prog.Substring(0, n );
+                            if (n != -1)
+                            {
+                                args = prog.Substring(n + 1);
+                                prog = prog.Substring(0, n);
+                            }
+                            else
+                            {
+                                args = "";
+                            }
+
                         }
                         System.Diagnostics.Process.Start(prog,args);
                     }
