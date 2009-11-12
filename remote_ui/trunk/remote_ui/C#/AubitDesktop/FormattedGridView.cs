@@ -590,13 +590,16 @@ namespace AubitDesktop
         {
             string s;
             s = "";
-            if (this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value is DBNull)
+            DataGridViewCell c;
+            c = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+            if (c.EditedFormattedValue is DBNull)
             {
                 s = "";
             }
             else
             {
-                s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
             }
 
             //s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value; // e.FormattedValue.ToString();
