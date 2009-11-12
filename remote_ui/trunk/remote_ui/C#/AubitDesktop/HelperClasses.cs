@@ -1370,6 +1370,8 @@ namespace AubitDesktop
 
         public static int getKeyCodeFromKeyName(string keyname)
         {
+            int val;
+
             if (keyname == null)
             {
                 return -1;
@@ -1448,14 +1450,14 @@ namespace AubitDesktop
                 case "CONTROL-Y": txt = "25"; break;
                 case "CONTROL-Z": txt = "26"; break;
             }
-            try
-            {
-                return Convert.ToInt32(txt);
+
+
+            if (int.TryParse(txt, out val)) {
+                return val;   
             }
-            catch (Exception Ex)
-            {
-                return -1;
-            }
+            return -1;
+
+            
         }
 
 
