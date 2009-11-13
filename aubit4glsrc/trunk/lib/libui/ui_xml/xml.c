@@ -390,7 +390,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
 int
 UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 {
-  int rval;
+  int rval=0;
   char *field_list = "field_list";
   char **args;
   char *argp;
@@ -1945,7 +1945,7 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
   //int n;
   struct s_disp_arr *d;
   int context;
-  int rval;
+  int rval=0;
   d = (struct s_disp_arr *) disp;
 
   if (d->srec == 0)
@@ -2148,7 +2148,7 @@ UILIB_A4GL_read_fields (void *formdets)
 int
 UILIB_aclfgl_aclfgl_dump_screen (int n)
 {
-  int rval;
+  int rval=0;
   send_to_ui ("<DUMPSCREEN/>");
   return rval;
 }
@@ -2196,7 +2196,7 @@ UILIB_A4GL_iscurrborder ()
 int
 UILIB_A4GL_inp_arr_v2 (void *vinp, int defs, char *srecname, int attrib, int init, void *evt)
 {
-  int rval;
+  int rval=0;
   struct s_inp_arr *inp;
   int context = -1;
   int acnt;
@@ -2432,7 +2432,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
   long context;
   struct s_prompt *prompt;
   long ln;
-  int rval;
+  int rval=0;
   prompt = vprompt;
 
 
@@ -2508,7 +2508,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 int
 UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,char *style)
 {
-  int rval;
+  int rval=0;
   char *promptstr;
   static long ln = 0;
   //long context;
@@ -3323,7 +3323,7 @@ UILIB_A4GL_disp_h_menu (void *menu)
 int
 UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3331,7 +3331,7 @@ UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *
 long
 UILIB_A4GL_get_option_value_for_current_window (char type)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3339,7 +3339,7 @@ UILIB_A4GL_get_option_value_for_current_window (char type)
 int
 UILIB_A4GL_widget_name_match (void *w, char *name)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3347,7 +3347,7 @@ UILIB_A4GL_widget_name_match (void *w, char *name)
 int
 UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3356,7 +3356,7 @@ UILIB_A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 int
 UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3388,7 +3388,7 @@ UILIB_aclfgl_a4gl_set_page (int n)
 int
 UILIB_aclfgl_a4gl_get_page (int n)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3396,7 +3396,7 @@ UILIB_aclfgl_a4gl_get_page (int n)
 int
 UILIB_aclfgl_a4gl_run_gui (int nargs)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3410,7 +3410,7 @@ UILIB_A4GL_set_infield_from_stack ()
 int
 UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
 {
-  int rval;
+  int rval=0;
   niy ();
   return rval;
 }
@@ -3419,7 +3419,7 @@ UILIB_A4GL_fgl_fieldnametoid (char *f, char *s, int n)
 void *
 UILIB_A4GL_make_pixmap_gw (char *filename)
 {
-  void *rval;
+  void *rval=NULL;
   niy ();
   return rval;
 }
@@ -3529,7 +3529,7 @@ UILIB_A4GL_get_key (int timeout)
 void *
 UILIB_A4GL_create_menu (void *m, char *id, int mode, void *handler)
 {
-  void *rval;
+  void *rval=NULL;
   niy ();
   return rval;
 }
