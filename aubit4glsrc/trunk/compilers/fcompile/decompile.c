@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.24 2008-11-05 14:23:35 mikeaubury Exp $
+# $Id: decompile.c,v 1.25 2009-11-13 11:58:00 mikeaubury Exp $
 #
 */
 
@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
   //a = A4GL_read_data_from_file ("struct_form", &the_form, argv[1]);
   strcpy(form,argv[1]);
   strcat(form,".afr");
-printf("opening form %s\n",form);
+//printf("opening form %s\n",form);
   a = A4GL_read_data_from_file ("struct_form", &the_form, form);
 
   if (!a)
@@ -115,7 +115,7 @@ printf("opening form %s\n",form);
   } else {
 	module = argv[1];
   }
-  printf ("Dumping form %s\n",module);
+  //printf ("Dumping form %s\n",module);
   dump_form_desc (&the_form,module);
 return 0;
 }

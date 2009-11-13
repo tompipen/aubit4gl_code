@@ -15,6 +15,12 @@ void retdate (long x);
 void popdec_aubit (fgldecimal * x);
 //fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 
+int _acckey=2016;
+int _prvkey=2006;
+int _nxtkey=2005;
+int _delkey=2015;
+int _inskey=2014;
+int _hlpkey=2008;
 
 
 /* Prototypes for functions in here should be added to a4gl_incl_infx.h      */
@@ -424,6 +430,10 @@ pushlocator (void *x)
 {
   A4GL_assertion (1, "push_locator not implemented");
   return 0;
+}
+
+void poplocator(void **x) {
+  A4GL_assertion (1, "poplocator not implemented");
 }
 
 int

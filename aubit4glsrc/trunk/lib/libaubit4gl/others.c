@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.71 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: others.c,v 1.72 2009-11-13 11:58:01 mikeaubury Exp $
 #
 */
 
@@ -70,7 +70,7 @@ int ccnt = 0;			/* was in lexer.c */
 
 struct struct_form the_form;
 static struct struct_scr_field *fld=0;
-
+int eflastkey=0;
 static int as_c = 1;
 
 
@@ -355,6 +355,7 @@ void
 A4GL_set_last_key (int a)
 {
   m_lastkey = a;
+  eflastkey=a;
 }
 
 

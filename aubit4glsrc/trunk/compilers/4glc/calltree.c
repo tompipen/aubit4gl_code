@@ -2480,7 +2480,7 @@ load_boltons (char *fname)
   FILE *f;
   int lineno = 0;
   int printed;
-  char buff[256];
+  char buff[2560];
   if (fname == 0)
     return;
   if (strlen (fname) == 0)
@@ -2492,7 +2492,7 @@ load_boltons (char *fname)
   while (1)
     {
       char *p[4];
-      fgets (buff, 255, f);
+      fgets (buff, 2550, f);
       lineno++;
       if (feof (f))
 	break;

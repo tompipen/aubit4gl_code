@@ -98,6 +98,7 @@ struct s_severities
   "MODNOTCALLEDUNSAFE", 2},
   {
   "MODNOTCALLEDSAFE", 6},
+  {"CS.GC_TPAC", 5},
   {
   NULL, 0}
 };
@@ -1520,6 +1521,33 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 
 
 		  yylineno = r->lineno;
+		if (expr->expr_type==ET_EXPR_OP_EQUAL) {
+		char *ptr_l;
+		char *ptr_r;
+		expr_str *le;
+		expr_str *re;
+		ptr_l=expr_as_string_when_possible(expr->expr_str_u.expr_op->left);
+		ptr_r=expr_as_string_when_possible(expr->expr_str_u.expr_op->right);
+		printf("HERE : %s %s\n", ptr_l,ptr_r);
+		if (ptr_l){
+		if (strstr(ptr_l,"gc_tpacode"))  {	
+			if (strstr(ptr_r,"BL") || 
+			strstr(ptr_r,"AXA") || 
+			strstr(ptr_r,"SP") || 
+			strstr(ptr_r,"CL")) {
+		      		A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CS.GC_TPAC", "GC_TPAC used", 0);
+			}
+		}
+		if (strstr(ptr_r,"gc_tpacode"))  {	
+			if (strstr(ptr_l,"BL") || 
+			strstr(ptr_l,"AXA") || 
+			strstr(ptr_l,"SP") || 
+			strstr(ptr_l,"CL")) {
+		      		A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CS.GC_TPAC", "GC_TPAC used", 0);
+			}
+		}
+	}
+		}
 		  if (expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr) ==
 		      DTYPE_CHAR
 		      || expr_datatype (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno,
@@ -1528,6 +1556,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		      A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CASESTR",
 				 "Use of String for WHEN in a CASE with no expression", 0);
 		    }
+
 
 		  if (A4GL_is_just_int_literal (expr, 0))
 		    {
@@ -1552,7 +1581,40 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		    }
 
 
+
+		//check_boolean(module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, expr,1,0);
+
 		}
+	    } else {
+		char *ptr_l;
+		char *ptr_r;
+		ptr_l=expr_as_string_when_possible(r->cmd_data.command_data_u.case_cmd.case_expr);
+	      for (b = 0; b < r->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; b++)
+		{
+		  expr_str *expr;
+	      	expr = r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->when_expr;
+		ptr_r=expr_as_string_when_possible(expr);
+
+		if (ptr_l){
+		if (strstr(ptr_l,"gc_tpacode"))  {	
+			if (strstr(ptr_r,"BL") || 
+			strstr(ptr_r,"AXA") || 
+			strstr(ptr_r,"SP") || 
+			strstr(ptr_r,"CL")) {
+		      		A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CS.GC_TPAC", "GC_TPAC used", 0);
+			}
+		}
+		if (strstr(ptr_r,"gc_tpacode"))  {	
+			if (strstr(ptr_l,"BL") || 
+			strstr(ptr_l,"AXA") || 
+			strstr(ptr_l,"SP") || 
+			strstr(ptr_l,"CL")) {
+		      		A4GL_lint (module_name, r->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[b]->lineno, "CS.GC_TPAC", "GC_TPAC used", 0);
+			}
+		}
+	}
+		}
+
 	    }
 
 	  if (!r->cmd_data.command_data_u.case_cmd.otherwise)
@@ -1567,10 +1629,16 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 	  int cnt2;
 
 	  struct expr_str *fcall;
-	  char *funcname;
+	  char *funcname="";
 	  int b = -1;
+
 	  fcall = r->cmd_data.command_data_u.call_cmd.fcall;
-	  funcname = fcall->expr_str_u.expr_function_call->fname;
+
+           if (fcall->expr_type == ET_EXPR_FCALL) {
+	       funcname = fcall->expr_str_u.expr_function_call->fname;
+	   } else {
+		continue;
+		}
 
 	  if (fcall->expr_type == ET_EXPR_FCALL)
 	    {
@@ -5805,7 +5873,7 @@ load_boltons (char *fname)
 //char *params;
 //char *rets;
   int printed;
-  char buff[256];
+  char buff[2560];
   if (fname == 0)
     return;
   if (strlen (fname) == 0)
@@ -5818,7 +5886,7 @@ load_boltons (char *fname)
     {
       char *p[4];
       memset (buff, 0, sizeof (buff));
-      fgets (buff, 255, f);
+      fgets (buff, 2550, f);
       lineno++;
       if (feof (f))
 	break;
@@ -6807,6 +6875,11 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
 	      ptr_r = lint_get_variable_usage_as_string (r_e->expr_str_u.expr_variable_usage);
 	    }
 
+	if (ptr_r==NULL) {
+		ptr_r=expr_as_string_when_possible(r_e);
+	}
+
+
 	  if (ptr_l)
 	    {
 	      if (A4GL_is_just_int_literal (r_e, 100))
@@ -6831,7 +6904,26 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
 		      A4GL_lint (module_name, lineno, "IFSQLCA", "IF test on sqlca.sqlcode not following SQL statement", 0);
 		    }
 		}
+		if (ptr_l){
+	printf("%s %s\n",ptr_l,ptr_r);
+		if (strstr(ptr_l,"gc_tpacode"))  {	
+			if (strstr(ptr_r,"BL") || 
+			strstr(ptr_r,"AXA") || 
+			strstr(ptr_r,"SP") || 
+			strstr(ptr_r,"CL")) {
+		      		A4GL_lint (module_name, lineno, "CS.GC_TPAC", "GC_TPAC used", 0);
+			}
+		}
+		if (strstr(ptr_r,"gc_tpacode"))  {	
+			if (strstr(ptr_l,"BL") || 
+			strstr(ptr_l,"AXA") || 
+			strstr(ptr_l,"SP") || 
+			strstr(ptr_l,"CL")) {
+		      		A4GL_lint (module_name, lineno, "CS.GC_TPAC", "GC_TPAC used", 0);
+			}
+		}
 	    }
+	}
 	}
     }
 

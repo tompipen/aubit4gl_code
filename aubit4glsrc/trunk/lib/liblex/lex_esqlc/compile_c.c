@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.511 2009-10-13 10:08:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.512 2009-11-13 11:58:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.511 2009-10-13 10:08:54 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.512 2009-11-13 11:58:01 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5656,6 +5656,7 @@ local_rettype (char *s)
       return vals[i];
     }
 
+   if (i==90) return "bool";
 
   yylineno = line_for_cmd;
 

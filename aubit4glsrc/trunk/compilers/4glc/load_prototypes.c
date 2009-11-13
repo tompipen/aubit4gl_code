@@ -156,7 +156,7 @@ load_boltons (char *fname)
 //char *params;
 //char *rets;
   int printed;
-  char buff[256];
+  char buff[2560];
   if (fname == 0)
     return;
   if (strlen (fname) == 0)
@@ -172,7 +172,7 @@ load_boltons (char *fname)
     {
       char *p[4];
       memset(buff,0,sizeof(buff));
-      fgets (buff, 255, f);
+      fgets (buff, 2550, f);
       lineno++;
       if (feof (f))
 	break;
