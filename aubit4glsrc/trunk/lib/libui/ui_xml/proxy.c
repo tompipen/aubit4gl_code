@@ -971,7 +971,8 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 		      if (latest_ui < 1000)
 			{
-			  printf ("Invalid Envelope ID - must be > 1000\n");
+			  printf ("Invalid Envelope ID - must be > 1000 got %d\n",latest_ui);
+			printf("In : %s\n", mainbuff);
 			}
 		      else
 			{
