@@ -230,7 +230,13 @@ void ScreenHandler::handleXMLStartMenu(QString xmlFileString)
    if(!xmlFile.setContent(xmlFileString)){
    }
 
-   startMenu = xmlFile;
+   if(getCurrForm() == -1){
+      startMenu = xmlFile;
+   }
+   else{
+      if(p_fglform != NULL)
+         p_fglform->setStartMenu(xmlFile);
+   }
 }
 
 //------------------------------------------------------------------------------
