@@ -381,6 +381,11 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   send_to_ui ("</OPENWINDOWWITHFORM>");
   suspend_flush (-1);
 
+  if (last_w==1 && last_h==1) {
+		last_w=80;
+		last_h=24;
+  }
+
   add_window (name, last_w, last_h, border);
   free(fname);
 
@@ -781,7 +786,6 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
   A4GL_make_field_slist_from_ap (&list, ap,0);
   if (list.field_name_list[0].fpos != 0 && list.field_name_list[0].fpos != 1)
     {
-	A4GL_pause_execution();
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, get_field_with_subscript_as_string(list.field_name_list[0].fname, list.field_name_list[0].fpos));
     }
   else
