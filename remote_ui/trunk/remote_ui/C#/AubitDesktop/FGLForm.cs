@@ -42,7 +42,7 @@ namespace AubitDesktop
         public int maxline;
         //int n = 0;
         private Panel _thisFormsPanel;
-        private Panel thisFormsPanel
+        internal Panel thisFormsPanel
         {
             get
             {
@@ -56,9 +56,10 @@ namespace AubitDesktop
         private ToolTip tooltips;
         private Font fixedWidthFont;
 
+
         
 
-
+        /*
         public Panel control
         {
             get
@@ -66,15 +67,19 @@ namespace AubitDesktop
                 return thisFormsPanel;
             }
         }
+         * */
 
 
         
 
         public FGLForm()
         {
+            
             this.fields = null;
             thisFormsPanel = null;
         }
+
+      
 
 
         #region XML Form handling
@@ -565,12 +570,14 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.HLine":
                     {
                         AubitDesktop.Xml.XMLForm.HLine hl;
+                        int lineHeight;
                         hl = (AubitDesktop.Xml.XMLForm.HLine)child;
                         // We'll fake a like by using a panel with a border...
                         Panel p_for_line;
                         p_for_line = new Panel();
                         p_for_line.Name = "Hline" + p_for_line.GetHashCode();
-                        p_for_line.Top = GuiLayout.get_gui_y(Convert.ToInt32(hl.posY));
+                       // lineHeight=GuiLayout.get_gui_y(Convert.ToInt32(hl.posY+1))GuiLayout.get_gui_y(Convert.ToInt32(hl.posY))-GuiLayout.get_gui_y(Convert.ToInt32(hl.posY))
+                        p_for_line.Top = GuiLayout.get_gui_y(Convert.ToInt32(hl.posY))+8;
                         p_for_line.Left = GuiLayout.get_gui_x(Convert.ToInt32(hl.posX));
                         p_for_line.Height = 4;
                         p_for_line.Width = GuiLayout.get_gui_w(Convert.ToInt32(hl.gridWidth) + 1) - 1;
@@ -1151,7 +1158,14 @@ namespace AubitDesktop
                 // Program.Show(data, "Not implemented yet");
             }
                 thisFormsPanel.AutoSize = true;
-                thisFormsPanel.ResumeLayout(); 
+                thisFormsPanel.ResumeLayout();
+                this.thisFormsPanel.LocationChanged += new EventHandler(thisFormsPanel_LocationChanged);
+        }
+
+        void thisFormsPanel_LocationChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("????");
+
         }
 
         void ser_UnknownNode(object sender, XmlNodeEventArgs e)
@@ -1183,7 +1197,7 @@ namespace AubitDesktop
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
-
+            
 
             thisFormsPanel.SuspendLayout(); 
 
@@ -1341,7 +1355,8 @@ namespace AubitDesktop
             string underlines;
             string minuses;
             string equals;
-            
+
+            if (p == null) return false; 
             underlines = new string('_', p.Length);
             minuses = new string('-', p.Length);
             equals = new string('=', p.Length);
@@ -1902,7 +1917,8 @@ namespace AubitDesktop
                             {
                                 if (dg == null)
                                 {
-                                    Program.Show("DG is null");
+                                    //Program.Show("DG is null");
+                                    return null;
                                 }
                                 else
                                 {
@@ -1913,13 +1929,22 @@ namespace AubitDesktop
                         }
                         else
                         {
+                            int cnt = 0;
                             if (dg == null)
                             {
-                                Program.Show("DG is null for *");
+                                return null;
                             }
+
+                            while (dg.Rows.Count < subscript)
+                            {
+                                dg.Rows.Add();
+                               
+                            }
+
+                            Console.WriteLine("Got " + dg.Rows[subscript - 1].Cells.Count + " Cells with " + ScreenRecords[sr].AttributeNoList().Count+" attributes");
                             foreach (int attr in ScreenRecords[sr].AttributeNoList())
                             {
-                                dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
+                                dgCells.Add(dg.Rows[subscript - 1].Cells[cnt++]);
                             }
                         }
                     }
@@ -1933,5 +1958,70 @@ namespace AubitDesktop
                 return dgCells;
             }
         }
+
+        internal void Clear(CLEAR z)
+        {
+            List<DataGridViewCell> dgCells;
+
+            // firstly - is it in a ScreenRecord grid ?
+            dgCells = FindRecordCells(z.FIELDLIST);
+
+            if (dgCells != null)
+            {
+
+                
+                    for (int a = 0; a < dgCells.Count; a++)
+                    {
+                        if (z.todefault == "1")
+                        {
+                            FGLUtils.setCellValue(dgCells[a], (string)dgCells[a].DefaultNewRowValue);
+                        }
+                        else
+                        {
+                            FGLUtils.setCellValue(dgCells[a], "");
+                        }
+                    }
+                
+            }
+            else
+            {
+                List<FGLFoundField> fldlist;
+                fldlist = FindFields(z.FIELDLIST);
+                
+                
+                    for (int a = 0; a < fldlist.Count; a++)
+                    {
+
+                        string dval = "";
+                        if (fldlist[a].fglField.defaultValue != null)
+                        {
+                            dval = fldlist[a].fglField.defaultValue;
+                        }
+
+                        if (fldlist[a].fglField.format != null)
+                        {
+                            string s = "";
+                            try
+                            {
+                                s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, dval, fldlist[a].fglField.datatype);
+                            }
+                            catch (Exception)
+                            {
+                                // Does nothing..
+                            }
+                            fldlist[a].fglField.Attribute = 0;
+                            fldlist[a].fglField.Text = s;
+                        }
+                        else
+                        {
+                            fldlist[a].fglField.Attribute = 0;
+                            fldlist[a].fglField.Text = dval;
+                        }
+                    }
+                
+            }
+            
+        }
+
     }
 }

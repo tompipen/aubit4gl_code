@@ -71,6 +71,9 @@ namespace AubitDesktop
 
         private void sendTrigger(string ID)
         {
+
+
+
             if (this.EventTriggered != null)
             {
                 this.EventTriggered(null, ID, getTriggeredTag(ID), this);
@@ -84,12 +87,20 @@ namespace AubitDesktop
 
         public bool externallyTriggeredID(string ID)
         {
+            switch (ID)
+            {
+                case "ACCEPT": toolBarAcceptClicked(); return true;
+                // INTERRUPT can pass through - we dont mind ;-)
+            }
             sendTrigger(ID);
             return true;
         }
 
         public UIInputContext(FGLApplicationPanel f, INPUT i)
         {
+            bool haveAccept=false;
+            bool haveInterrupt=false;
+
             KeyList = new List<ONKEY_EVENT>();
             KeyList.Clear();
             afterFieldList = new List<AFTER_FIELD_EVENT>();
@@ -106,6 +117,16 @@ namespace AubitDesktop
                 {
                     ONKEY_EVENT e;
                     e = (ONKEY_EVENT)evt;
+                    if (e.KEY == ""+FGLUtils.getKeyCodeFromKeyName("ACCEPT"))
+                    {
+                        haveAccept = true;
+                    }
+                    if (e.KEY == ""+FGLUtils.getKeyCodeFromKeyName("INTERRUPT"))
+                    {
+                        haveInterrupt = true;
+                    }
+
+                   
                     KeyList.Add(e);
                     continue;
                 }
@@ -143,6 +164,17 @@ namespace AubitDesktop
                 }
                 Program.Show("Unhandled Event for INPUT");
             }
+            
+            if (!haveAccept)
+            {
+                KeyList.Add( new ONKEY_EVENT("ACCEPT","ACCEPT"));
+            }
+
+            if (!haveInterrupt)
+            {
+                KeyList.Add(new ONKEY_EVENT("INTERRUPT", "INTERRUPT"));
+                
+            }
 
             mainWin = f;
 
@@ -163,7 +195,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
-            mainWin.setActiveToolBarKeys(KeyList, onActionList, true);
+            mainWin.setActiveToolBarKeys(KeyList, onActionList);
         }
 
         public void NavigateAwayTab()
@@ -419,7 +451,7 @@ namespace AubitDesktop
 
 
             mainWin.SetContext(FGLContextType.ContextInput, activeFields, this, KeyList, onActionList, UIInputContext_EventTriggered);
-            mainWin.setActiveToolBarKeys(KeyList,onActionList, true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList);
 
 
            
@@ -554,7 +586,7 @@ namespace AubitDesktop
             EventTriggered = null;
             if (_contextIsActive)
             {
-                mainWin.setActiveToolBarKeys(null, null, false);
+                mainWin.setActiveToolBarKeys(null, null);
                 mainWin.SetContext(FGLContextType.ContextNone);
                 _contextIsActive = false;
                 EventTriggered = null;

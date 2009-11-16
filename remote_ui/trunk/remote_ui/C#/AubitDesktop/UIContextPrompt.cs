@@ -125,7 +125,7 @@ namespace AubitDesktop
 
             public void NavigateToTab()
             {
-                mainWin.setActiveToolBarKeys(KeyList, onActionList, false);
+                mainWin.setActiveToolBarKeys(KeyList, onActionList); //, false);
             }
 
             public void NavigateAwayTab()
@@ -138,7 +138,7 @@ namespace AubitDesktop
             {
                 promptForm.EventTriggered += new UIEventHandler(UIPromptContext_EventTriggered);
                 promptForm.SetPromptFocus();
-                mainWin.setActiveToolBarKeys(KeyList,onActionList, false);
+                mainWin.setActiveToolBarKeys(KeyList,onActionList); //, false);
                 
                 if (!_contextIsActive)
                 {
@@ -162,7 +162,7 @@ namespace AubitDesktop
 
             public void DeactivateContext()
             {
-                mainWin.setActiveToolBarKeys(null,null,false);
+                mainWin.setActiveToolBarKeys(null,null); //,false);
 
                 _contextIsActive = false;
                 promptForm.clrEventTrigger();

@@ -112,7 +112,7 @@ namespace AubitDesktop
                         {
                             this.Value = FGLUtils.getDate(value);
                         }
-                        catch (Exception Ex)  { } 
+                        catch (Exception )  { } 
                         //base.Text = value;
                     }
                 }

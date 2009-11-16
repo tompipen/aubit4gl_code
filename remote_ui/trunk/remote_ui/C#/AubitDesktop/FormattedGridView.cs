@@ -276,14 +276,25 @@ namespace AubitDesktop
         /// Set the AllowUserToAddRows depending on the current number of rows, the current context
         /// and whether the program has 'NONEWLINES' etc
         /// </summary>
-        private void setAllowUserToAddRows()
-        {
+        private void setAllowUserToAddRows() {
 
+
+
+            if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextDisplayArray)
+            {
+                this.Enabled = false;
+            }
+            else
+            {
+                this.Enabled = true;
+            }
 
             if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextInputArrayInactive)
             {
+                
                 if (AllowUserToAddRows != false) // Only set this if we need to..
                 {
+                    this.CancelEdit();  
                     AllowUserToAddRows = false;
                 }
                 return;
@@ -329,7 +340,40 @@ namespace AubitDesktop
 
             try
             {
-                s = (string)Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                
+                DataGridViewCell c = Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (c is DataGridViewCheckBoxCell)
+                {
+                    DataGridViewCheckBoxCell ch;
+                    ch = (DataGridViewCheckBoxCell)c;
+                    if (ch.EditedFormattedValue == null)
+                    {
+                        s = "";
+                    }
+                    else
+                    {
+                        if (ch.EditedFormattedValue is Boolean)
+                        {
+
+                            if ((Boolean)ch.EditedFormattedValue)
+                            {
+                                s = (string)ch.TrueValue;
+                            }
+                            else
+                            {
+                                s = (string)ch.FalseValue;
+                            }
+                        }
+                        else
+                        {
+                            s = (string)ch.EditedFormattedValue;
+                        }
+                    }
+                }
+                else
+                {
+                    s = (string)Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                }
             }
             catch
             {
@@ -599,7 +643,31 @@ namespace AubitDesktop
             }
             else
             {
-                s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
+                if (c.FormattedValueType==typeof(Boolean))
+                {
+                    DataGridViewCheckBoxCell ch;
+                    ch = (DataGridViewCheckBoxCell)c;
+                    if (ch.EditedFormattedValue == null)
+                    {
+                        s = null;
+                    }
+                    else
+                    {
+                        if ((Boolean)c.EditedFormattedValue)
+                        {
+
+                            s = (string)ch.TrueValue;
+                        }
+                        else
+                        {
+                            s = (string)ch.FalseValue;
+                        }
+                    }
+                }
+                else
+                {
+                    s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
+                }
             }
 
             //s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value; // e.FormattedValue.ToString();
@@ -616,7 +684,8 @@ namespace AubitDesktop
             int len;
             len = t.TableColumn.Length;
             this.table = t;
-           
+//            this.ReadOnly = true;
+  //          this.Enabled = false;
             widgetSettings = new FormattedCellSettings[len];
 
             for (int a = 0; a < len; a++)
@@ -662,7 +731,8 @@ namespace AubitDesktop
             EditMode = DataGridViewEditMode.EditOnEnter;
             AutoGenerateColumns = false;
             setUpHandlers();
-            
+            //setAllowUserToAddRows();
+            this.Enabled = false;
         }
 
 

@@ -200,7 +200,7 @@ namespace AubitDesktop
                     {
                         pb.Load(dir + "/" + (string)configSettings["FILENAME"]);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ) 
                     {
                         ;
                     }

@@ -97,6 +97,15 @@ namespace AubitDesktop
 
         public bool externallyTriggeredID(string ID)
         {
+            switch (ID)
+            {
+                case "PGUP": pgUpkeyPressed(); return true;
+                case "PGDN": pgDownkeyPressed(); return true;
+                case "DOWN": downkeyPressed(); return true;
+                case "UP": upkeyPressed(); return true;
+                case "ACCEPT": toolBarAcceptClicked(); return true;
+                // INTERRUPT can pass through - we dont mind ;-)
+            }
             setLines();
             string txt = "<TRIGGERED ID=\""+ID+"\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
             this.EventTriggered(null, ID, txt, this);
@@ -106,6 +115,12 @@ namespace AubitDesktop
 
         public UIDisplayArrayInTableContext(FGLApplicationPanel f, DISPLAYARRAY p)
         {
+            bool haveDown = false;
+            bool haveUp = false;
+            bool havePgDn = false;
+            bool havePgUp = false;
+            bool haveAccept = false;
+            bool haveInterrupt = false;
 
             //nCols = Convert.ToInt32(p.ARRVARIABLES);
             KeyList = new List<ONKEY_EVENT>();
@@ -128,6 +143,35 @@ namespace AubitDesktop
                 {
                     ONKEY_EVENT e;
                     e = (ONKEY_EVENT)evt;
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("ACCEPT"))
+                    {
+                        haveAccept = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INTERRUPT"))
+                    {
+                        haveInterrupt = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DOWN"))
+                    {
+                        haveDown = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("UP"))
+                    {
+                        haveUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGUP"))
+                    {
+                        havePgUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGDN"))
+                    {
+                        havePgDn = true;
+                    }
+                    
                     KeyList.Add(e);
                     continue;
                 }
@@ -158,6 +202,37 @@ namespace AubitDesktop
                 Program.Show("Unhandled Event for DISPLAY ARRAY");
             }
 
+            if (!haveAccept)
+            {
+                KeyList.Add(new ONKEY_EVENT("ACCEPT"));
+            }
+
+            if (!haveInterrupt)
+            {
+                KeyList.Add(new ONKEY_EVENT("INTERRUPT"));
+            }
+
+            if (!haveDown)
+            {
+                KeyList.Add(new ONKEY_EVENT("DOWN"));
+            }
+
+            if (!haveUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("UP"));
+            }
+
+            if (!havePgDn)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGDN"));
+            }
+
+            if (!havePgUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGUP"));
+            }
+
+            
 
             displayArrayGrid = f.FindRecord(p.FIELDLIST);
             displayArrayGrid.init();
@@ -227,7 +302,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
-            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, false);
+            mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true, true, false);
         }
 
         public void NavigateAwayTab()
@@ -276,7 +351,7 @@ namespace AubitDesktop
                 displayArrayGrid.BeforeRow = new DataGridViewCellEventHandler(displayArrayGrid_RowEnter);
             }
 
-            mainWin.setActiveToolBarKeys(KeyList,onActionList, true,true,false);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList); //, true,true,false);
            
             
             this.EventTriggered = UIDisplayArrayContext_EventTriggered;
@@ -349,7 +424,7 @@ namespace AubitDesktop
 
         public void DeactivateContext()
         {
-            mainWin.setActiveToolBarKeys(null, null,false);
+            mainWin.setActiveToolBarKeys(null, null); //,false);
             displayArrayGrid.Enabled = false;
             mainWin.SetContext(FGLContextType.ContextDisplayArrayInactive);
             displayArrayGrid.context = FGLContextType.ContextDisplayArrayInactive;

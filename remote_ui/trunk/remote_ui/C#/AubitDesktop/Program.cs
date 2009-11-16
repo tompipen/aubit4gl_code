@@ -62,7 +62,7 @@ namespace AubitDesktop
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Control.CheckForIllegalCrossThreadCalls = false;
+           // Control.CheckForIllegalCrossThreadCalls = false;
             AppSettings = null;
             AppSettingsFile=Application.UserAppDataPath+"\\AubitSettings.xml";
                 
@@ -157,7 +157,7 @@ namespace AubitDesktop
                 {
                     remoteEncoding = System.Text.ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
                     remoteEncoding = System.Text.ASCIIEncoding.GetEncoding("UTF-8");
                 }

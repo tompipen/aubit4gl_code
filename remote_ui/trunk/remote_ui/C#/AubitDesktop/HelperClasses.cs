@@ -445,6 +445,7 @@ namespace AubitDesktop
                         windows.Remove(wtest);
                         windows.Insert(0, w);
                         found = true;
+                        break;
                     }
                 }
                 if (!found)
@@ -626,6 +627,24 @@ namespace AubitDesktop
         {
             return windows[0].findRecord(fIELD);
         }
+
+        internal void Clear(CLEAR z)
+        {
+            if (!windows[0].hasForm) // Top level window...
+            {
+                Program.Show("No form has been display in the window"); return;
+            }
+            windows[0].Clear(z);
+
+         
+        }
+
+        internal void DisplayAt(DISPLAYAT d)
+        {
+
+            windows[0].DisplayAt(d);
+         
+        }
     }
 
 
@@ -689,371 +708,9 @@ namespace AubitDesktop
         }
     };
 
-    class FGLWindow
-    {
-        internal FGLForm CurrentForm;
-        public string windowName;
-        public int x;
-        public int y;
-        int attribute;
-        string text;
-        string style;
-        public bool isModal;
-        internal int error_line;
-        internal int prompt_line;
-        internal int menu_line;
-        internal int comment_line;
-        internal int message_line;
-        public bool border;
-        public int LineHeight;
-        public int CharWidth;
-        public bool isContainable;
-        public Control WindowWidget;
-        public Form WindowFormWidget;
-        bool KeepFormOpenWhenWindowCloses;
-        
-
-        public bool hasForm
-        {
-            get
-            {
-                return (CurrentForm != null);
-            }
-        }
 
 
-        public FGLWindow(string windowName)
-        {
-            // This should only be used for 'SCREEN' 
-            if (windowName.ToLower() != "screen")
-            {
-                Program.Show("FGLWindow(windowname) should only be called for 'SCREEN'");
-                return;
-            }
-            this.windowName = windowName;
-            this.x = 0;
-            this.y = 0;
-            this.attribute = 0;
-            this.text = "";
-            this.style = "";
-            this.error_line = 255;
-            this.prompt_line = 255;
-            this.menu_line = 255;
-            this.comment_line = 255;
-            this.message_line = 255;
-            this.border = false;
-            this.isContainable = true;
-            this.isModal = false;
-            this.CurrentForm = null;
-            this.LineHeight = 0;
-            this.CharWidth = 0;
-            Panel p = new Panel();
-            p.Name = "WinPan" + windowName;
-            p.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            //p.BackColor = Color.Aqua;
-            WindowWidget = p;
-            WindowFormWidget = null;
-            WindowWidget.Visible = true;
-
-            WindowWidget.Top = 15;
-            WindowWidget.Left = 5;
-            sizeWindowToFill();
-        }
-
-
-        public FGLWindow(string windowName, int x, int y, int attribute, string text, string style, int error_line, int prompt_line, int menu_line, int comment_line, int message_line, bool border)
-        {
-            int colourCode;
-            this.windowName = windowName;
-            this.x = x;
-            this.y = y;
-            this.LineHeight = 0;
-            this.CharWidth = 0;
-            this.attribute = attribute;
-            this.text = text;
-            this.style = style;
-            this.error_line = error_line;
-            this.prompt_line = prompt_line;
-            this.menu_line = menu_line;
-            this.comment_line = comment_line;
-            this.message_line = message_line;
-            this.border = border;
-            this.isContainable = true;
-            this.isModal = false;
-            this.CurrentForm = null;
-
-            colourCode = (attribute & 0xf00)>>8;
-
-            switch (style)
-            {
-                case "":
-                case "NORMAL":
-                    {
-                        Panel p;
-                        p = new Panel();
-                        WindowWidget = p;
-                        p.Name = "PanNormal" + windowName;
-                        WindowFormWidget = null;
-                        if (border)
-                        {
-                            p.BorderStyle = BorderStyle.Fixed3D;
-                        }
-                        p.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                        WindowWidget.Visible = true;
-                        switch (colourCode)
-                        {
-                            case 1:
-                                p.BackColor = System.Drawing.Color.LightCoral;
-                                break;
-
-                            case 2:
-                                p.BackColor = System.Drawing.Color.LightGreen;
-                                break;
-
-                            case 3:
-                                p.BackColor = System.Drawing.Color.LightGoldenrodYellow;
-                                break;
-
-                            case 4:
-                                p.BackColor = System.Drawing.Color.LightBlue;
-                                break;
-
-                            case 5:
-                                p.BackColor = System.Drawing.Color.Magenta;
-                                break;
-
-                            case 6:
-                                p.BackColor = System.Drawing.Color.LightCyan;
-                                break;
-                        }
-                    }
-                    break;
-
-                case "GROUPBOX":
-                    {
-                        GroupBox g; // Group boxes are always bordered....
-                        g = new GroupBox();
-                        g.Text = text;
-                        WindowWidget = g;
-                        WindowFormWidget = null;
-                        WindowWidget.Visible = true;
-                        g.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                    }
-                    break;
-
-
-                case "WINDOW":
-                    {
-                        Form frm;
-                        frm = new Form();
-                        frm.Text = text;
-                        WindowWidget = frm;
-                        WindowFormWidget = frm;
-                        frm.AutoSize = true;
-                        frm.Width = 10;
-                        frm.Height = 10;
-                        frm.StartPosition = FormStartPosition.CenterParent;
-                        frm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                        sizeWindowToFill();
-                    }
-
-                    WindowWidget.Visible = true;
-                    isContainable = false;
-                    break;
-
-
-                case "MODALWINDOW":
-                    {
-                        Form frm;
-
-                        frm = new Form();
-                        frm.Visible = false;
-                        frm.Text = text;
-                        WindowWidget = frm;
-                        WindowFormWidget = frm;
-                        frm.AutoSize = true;
-                        frm.Width = 10;
-                        frm.Height = 10;
-                        frm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-                        sizeWindowToFill();
-                    }
-
-                    isContainable = false;
-                    isModal = true;
-                    break;
-
-
-
-                default:
-                    Program.Show("Unhandled window style");
-                    break;
-            }
-            // WEBGUI WindowWidget.BackColor = System.Drawing.Color.FromArgb(240, 240, 240);
-
-
-            WindowWidget.Top = GuiLayout.get_gui_y(y);
-            WindowWidget.Left = GuiLayout.get_gui_x(x);
-            WindowWidget.Name = "WindowFor" + windowName;
-
-
-        }
-
-        public void DisplayTo(DISPLAYTO d)
-        {
-            this.CurrentForm.DisplayTo(d);
-        }
-
-        /*
-        public void doInput(INPUT i)
-        {
-            this.CurrentForm.DoInput(i);
-        }
-         * */
-
-
-        
-        public void setForm(FGLForm f, bool KeepFormOpenWhenWindowCloses)
-        {
-            if (this.CurrentForm != null)
-            {
-                if (WindowWidget != null)
-                {
-                    WindowWidget.Controls.Clear();
-                }
-            }
-            this.CurrentForm = f;
-            if (this.LineHeight == 0)
-            {
-                this.LineHeight = f.maxline;
-            }
-            if (this.CharWidth == 0)
-            {
-                this.CharWidth = f.maxcol;
-            }
-
-            if (this.WindowWidget.BackColor != System.Drawing.SystemColors.Control)
-            {
-                f.control.BackColor = this.WindowWidget.BackColor;
-            }
-
-                //WindowWidget.BackColor = Color.Aqua;
-                WindowWidget.Controls.Add(f.control);
-       
-            this.KeepFormOpenWhenWindowCloses = KeepFormOpenWhenWindowCloses;
-        }
-
-
-        public void RemoveForm()
-        {
-            if (this.CurrentForm != null)
-            {
-                WindowWidget.Controls.Clear();
-                this.CurrentForm.Dispose();
-                this.CurrentForm = null;
-            }
-        }
-
-
-        public void sizeWindow(int x, int y)
-        {
-            LineHeight = y;
-            CharWidth = x;
-            WindowWidget.Height = GuiLayout.get_gui_y(y);
-            WindowWidget.Width = GuiLayout.get_gui_x(x);
-        }
-
-        public void sizeWindow(FGLForm f)
-        {
-            LineHeight = f.maxline;
-            CharWidth = f.maxcol;
-
-            if (isContainable)
-            {
-                if (f.maxcol >= 0 && f.maxline >= 0)
-                {
-                    WindowWidget.Height = GuiLayout.get_gui_y(f.maxline) + 20;
-                    WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
-                }
-                else
-                {
-                    WindowWidget.AutoSize = true;
-                }
-
-            }
-        }
-
-        public void sizeWindowToFill()
-        {
-            WindowWidget.Dock = DockStyle.Fill;
-        }
-
-
-
-        internal void saveForm()
-        {
-            if (this.CurrentForm!=null)
-            {
-                this.CurrentForm.saveForm();
-            }
-
-            
-        }
-
-
-        internal void SetContext(FGLContextType contextType)
-        {
-            try
-            {
-                CurrentForm.SetContext(contextType);
-            }
-            catch (Exception Ex)  { }
-        }
-
-        internal void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext, List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList,UIEventHandler _evtHandler)
-        {
-            CurrentForm.SetContext(contextType, pfields,keyList,actionList,currContext,_evtHandler);
-        }
-
-        internal List<FGLFoundField> FindFields(FIELD[] fieldlist)
-        {
-            return CurrentForm.FindFields(fieldlist);
-        }
-
-        internal List<FGLFoundField> FindFields(string[] fieldlist)
-        {
-            return CurrentForm.FindFields(fieldlist);
-        }
-
-
-
-        internal void setNextField(string NextField)
-        {
-            CurrentForm.setNextField(NextField);
-        }
-
-        internal List<FGLFoundField> FindAction(string actionName)
-        {
-            return CurrentForm.FindAction(actionName);
-        }
-
-        internal List<FGLFoundField> FindFieldArray(FIELD[] fieldlist)
-        {
-            return CurrentForm.FindFieldArray(fieldlist);
-        }
-
-        internal void clearForm()
-        {
-            this.CurrentForm.clearForm();
-            
-        }
-
-        internal FormattedGridView findRecord(FIELD[] fIELD)
-        {
-            return CurrentForm.FindRecord(fIELD);
-        }
-    }
-
-
+ 
 
     public enum showMode
     {
@@ -1180,13 +837,14 @@ namespace AubitDesktop
                 i = System.Drawing.Image.FromFile(f);
                 if (i != null) return i;
             }
-            catch (Exception Ex) { }
+            catch (Exception ) { }
 
             return null;
         }
 
         internal static System.Drawing.Image getImageFromName(string name)
         {
+            if (name == null) return null;
             System.Drawing.Image i = (System.Drawing.Image)resourceInterface.getObject(name.ToLower());
             if (i != null)
             {
@@ -1198,6 +856,7 @@ namespace AubitDesktop
                 try
                 {
                     i = new System.Drawing.Bitmap(name);
+                    
                 } catch (Exception) {
                 }
                 if (i!=null) return i;
@@ -1420,6 +1079,7 @@ namespace AubitDesktop
                 case "HELP": txt = "2008"; break;
                 case "PREVPAGE": txt = "2006"; break;
                 case "ACCEPT": txt = "2016"; break;
+                case "INTERRUPT": txt = "2011"; break;
                 case "ESC": txt = "27"; break;
                 case "ESCAPE": txt = "27"; break;
 
@@ -1515,6 +1175,7 @@ namespace AubitDesktop
                 case "2008": txt = "Help"; break;
                 case "2006": txt = "PrevPage"; break;
                 case "2016": txt = "Accept"; break;
+                case "2011": txt = "Interrupt"; break;
                 case "27": txt = "Escape"; break;
 
                 case "1": txt = "Control-A"; break;
@@ -1652,6 +1313,7 @@ namespace AubitDesktop
         }
         
         public static void setCellValue(DataGridViewCell c, string value) {
+            c.ValueType=typeof(string);
             c.Value = value;
         }
 
@@ -1735,7 +1397,7 @@ namespace AubitDesktop
                                 ok = true;
                             }
                         }
-                        catch (Exception Ex) { }
+                        catch (Exception ) { }
 
                         if (ok)
                         {

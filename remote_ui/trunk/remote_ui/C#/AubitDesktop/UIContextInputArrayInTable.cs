@@ -71,6 +71,9 @@ namespace AubitDesktop
         private int nCols;
 
         //private bool[] rowDataChanged;
+     //   private DataTable Data;
+
+       // private BindingSource BS;
         private DataTable Data;
 
         private enum MoveType {
@@ -152,6 +155,17 @@ namespace AubitDesktop
 
         public bool externallyTriggeredID(string ID)
         {
+            switch (ID)
+            {
+                case "INSERT": InsertkeyPressed(); return true;
+                case "DELETE": DeletekeyPressed(); return true;
+                case "PGUP": pgUpkeyPressed(); return true;
+                case "PGDN": pgDownkeyPressed(); return true;
+                case "DOWN": downkeyPressed(); return true;
+                case "UP": upkeyPressed(); return true;
+                case "ACCEPT": toolBarAcceptClicked(); return true;
+                // INTERRUPT can pass through - we dont mind ;-)
+            }
             sendTrigger(ID, -1);
             return false;
         }
@@ -171,7 +185,8 @@ namespace AubitDesktop
 
 
             Data.BeginLoadData();
-
+            
+            
 
             for (int row = 0; row < rows.Length; row++)
             {
@@ -223,7 +238,16 @@ namespace AubitDesktop
         public UIInputArrayInTableContext(FGLApplicationPanel f, INPUTARRAY p)
         {
 
-           
+            bool haveDown = false;
+            bool haveUp = false;
+            bool havePgDn = false;
+            bool havePgUp = false;
+            bool haveAccept = false;
+            bool haveInterrupt = false;
+            bool haveDelete = false;
+            bool haveInsert = false;
+
+
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;
             nCols = p.ARRVARIABLES;
@@ -301,6 +325,43 @@ namespace AubitDesktop
                 {
                     ONKEY_EVENT e;
                     e = (ONKEY_EVENT)evt;
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("ACCEPT"))
+                    {
+                        haveAccept = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INTERRUPT"))
+                    {
+                        haveInterrupt = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DOWN"))
+                    {
+                        haveDown = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("UP"))
+                    {
+                        haveUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGUP"))
+                    {
+                        havePgUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGDN"))
+                    {
+                        havePgDn = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INSERT"))
+                    {
+                        haveInsert = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DELETE"))
+                    {
+                        haveDelete = true;
+                    }
                     KeyList.Add(e);
                     continue;
                 }
@@ -416,6 +477,46 @@ namespace AubitDesktop
             {
                 allowDelete = false;
             }
+
+            if (!haveAccept)
+            {
+                KeyList.Add(new ONKEY_EVENT("ACCEPT"));
+            }
+
+            if (!haveInterrupt)
+            {
+                KeyList.Add(new ONKEY_EVENT("INTERRUPT"));
+            }
+
+            if (!haveDown)
+            {
+                KeyList.Add(new ONKEY_EVENT("DOWN"));
+            }
+
+            if (!haveUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("UP"));
+            }
+
+            if (!havePgDn)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGDN"));
+            }
+
+            if (!havePgUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGUP"));
+            }
+
+            if (!haveInsert && allowInsert)
+            {
+                KeyList.Add(new ONKEY_EVENT("INSERT"));
+            }
+
+            if (!haveDelete && allowDelete)
+            {
+                KeyList.Add(new ONKEY_EVENT("DELETE"));
+            }
         }
 
 
@@ -455,7 +556,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
-            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, true);
+            mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true, true, true);
         }
 
         public void NavigateAwayTab()
@@ -598,8 +699,9 @@ namespace AubitDesktop
             }
           //  inputArrayGrid.allowInsertRow = allowInsert;
           //  inputArrayGrid.maxRows = maxRows;
-  
-            if (inputArrayGrid.DataSource != Data)
+
+            
+                        if (inputArrayGrid.DataSource != Data)
             {
                 /*
                 if (inputArrayGrid.maxRows != maxRows)
@@ -620,7 +722,7 @@ namespace AubitDesktop
 
 
 
-            mainWin.setActiveToolBarKeys(KeyList,onActionList, true ,true,true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList); //, true ,true,true);
 
             if (!_contextIsActive)
             {
@@ -921,13 +1023,14 @@ namespace AubitDesktop
                     sendTrigger(beforeRow.ID, e.RowIndex);
                 }
             }
+            
         }
 
 
 
         public void DeactivateContext()
         {
-            mainWin.setActiveToolBarKeys(null, null, false);
+            mainWin.setActiveToolBarKeys(null, null); //, false);
             mainWin.SetContext(FGLContextType.ContextInputArrayInactive);
             inputArrayGrid.context = FGLContextType.ContextInputArrayInactive;
             EventTriggered = null;
@@ -975,10 +1078,17 @@ namespace AubitDesktop
 
         internal void upkeyPressed()
         {
+            int n;
+            n = inputArrayGrid.CurrentRow.Index;
             lastKey = "UP";
-            if (inputArrayGrid.CurrentRow.Index > 0)
+            if (n > 0)
             {
-                inputArrayGrid.CurrentCell=inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index-1].Cells[1];
+                if (inputArrayGrid.IsCurrentCellInEditMode)
+                {
+                    inputArrayGrid.CancelEdit();
+                }
+                
+                inputArrayGrid.CurrentCell=inputArrayGrid.Rows[n-1].Cells[1];
             }
         }
 
@@ -987,7 +1097,14 @@ namespace AubitDesktop
             lastKey = "DOWN";
             if (inputArrayGrid.CurrentRow.Index<inputArrayGrid.Rows.Count-1)
             {
-                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index + 1].Cells[1];
+
+                try
+                {
+                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index + 1].Cells[1];
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 

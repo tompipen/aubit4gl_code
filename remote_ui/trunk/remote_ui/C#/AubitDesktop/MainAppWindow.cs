@@ -335,7 +335,7 @@ namespace AubitDesktop
         }
 
         public void showOrHideMenubar() {
-            int visibleCount = 0;
+            //int visibleCount = 0;
             switch (this.showMenuBar)
             {
                 case showMode.ShowAlways:
@@ -507,7 +507,8 @@ namespace AubitDesktop
 
         public void ShowApplication()
         {
-            this.Show();
+
+                this.Show();
         }
 
 
@@ -578,6 +579,7 @@ namespace AubitDesktop
             
             //appPanel.AutoScroll = true;
             tabControl1.SelectTab(tp);
+            doChangedRequiredWhenTabChanges();
             
         }
 
@@ -645,7 +647,7 @@ namespace AubitDesktop
 
                 }
             }
-            catch (Exception Ex) { } 
+            catch (Exception ) { } 
 
 
             stdNetworkConnection.SendString(finalString);
@@ -710,6 +712,11 @@ namespace AubitDesktop
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            doChangedRequiredWhenTabChanges();
+        }
+
+        private void doChangedRequiredWhenTabChanges()
+        {
             FGLApplicationPanel fGLApplicationPanel = null;
             TabPage tp = tabControl1.SelectedTab;
             if (tp == null) { return; }
@@ -722,7 +729,7 @@ namespace AubitDesktop
                 }
             }
 
-            if (currentPanel!=null)
+            if (currentPanel != null)
             {
                 currentPanel.NavigateAwayTab();
             }
@@ -731,10 +738,10 @@ namespace AubitDesktop
                 fGLApplicationPanel.NavigateToTab();
             }
             currentPanel = fGLApplicationPanel;
-            
+
             showOrHideMenubar();
             //showOrHideToolbar();
-            
+
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -784,7 +791,7 @@ namespace AubitDesktop
                         toolStripProgressBar2.Visible = false;
                     }
                 }
-                catch (Exception Ex)
+                catch (Exception )
                 {
 
                 }
@@ -795,7 +802,7 @@ namespace AubitDesktop
                 {
                     toolStripProgressBar2.Visible = false;
                 }
-                catch (Exception Ex) { } 
+                catch (Exception ) { } 
             }
         }
 
@@ -1046,6 +1053,9 @@ namespace AubitDesktop
         private bool CheckForToolStripKey(KeyEventArgs e, string key,string altHotKey)
         {
             string fglKey;
+
+            //return false;
+
             foreach (ToolStripItem i in topWindowToolStrip.Items)
             {
                 if (i is AubitTSBtn)
@@ -1227,6 +1237,7 @@ namespace AubitDesktop
         private void autoToolbarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.showToolbar = showMode.ShowAuto;
+            
         }
 
         private void frmMainAppWindow_Load(object sender, EventArgs e)

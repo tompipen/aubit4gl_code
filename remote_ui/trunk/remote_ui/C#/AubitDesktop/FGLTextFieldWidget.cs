@@ -48,6 +48,13 @@ namespace AubitDesktop
         }
 
 
+        public override void AttributeChanged()
+        {
+
+            adjustDisplayPropertiesForContext();
+            
+        }
+
         /*
         override internal void setKeyList(List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList,UIContext currContext)
         {
@@ -160,9 +167,18 @@ namespace AubitDesktop
         private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
-
             t.BackColor = SystemColors.Window;
+            l.BackColor = SystemColors.Control;
             t.ForeColor = SystemColors.WindowText;
+            if (this.Attribute != -1)
+            {
+                if ((this.Attribute & 4096) > 0)
+                { // reverse video 
+                    t.BackColor = System.Drawing.Color.Bisque;
+                    l.BackColor = System.Drawing.Color.Bisque;
+                }
+            }
+
             //t.TabStop = true;
             switch (_ContextType)
             {
@@ -230,6 +246,7 @@ namespace AubitDesktop
                     // We can't trap the tabstops if this is true..
                     //t.TabStop = false;
                     break;
+
                 case FGLContextType.ContextInputArrayInactive:
                 case FGLContextType.ContextInputArray:
                     t.MaxLength = _maxLength;
@@ -400,6 +417,12 @@ namespace AubitDesktop
                 Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), Convert.ToInt32 (edit.height), Convert.ToInt32(edit.gridWidth), "", config, -1, ffx.sqlTabName + "." + ffx.colName, edit.action, Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
 
             setPixelSize(edit.pixelWidth, edit.pixelHeight);
+
+            if (edit.fontPitch == "fixed")
+            {
+                t.Font = new Font(FontFamily.GenericMonospace, t.Font.Size);
+                l.Font = t.Font;
+            }
         }
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.ButtonEdit edit, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
@@ -459,6 +482,11 @@ namespace AubitDesktop
 
             setPixelSize(edit.pixelWidth, edit.pixelHeight);
 
+            if (edit.fontPitch == "fixed")
+            {
+                t.Font = new Font(FontFamily.GenericMonospace, t.Font.Size);
+                l.Font = t.Font;
+            }
         }
 
         public FGLTextFieldWidget(AubitDesktop.Xml.XMLForm.FormField ffx, AubitDesktop.Xml.XMLForm.Edit edit, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
@@ -499,7 +527,11 @@ namespace AubitDesktop
             
             createTextWidget(a, ma,Convert.ToInt32(edit.posY),index, Convert.ToInt32(edit.posX), 1, Convert.ToInt32(edit.gridWidth), "", edit.config, -1, ffx.sqlTabName + "." + ffx.colName, edit.action, Convert.ToInt32(ffx.fieldId), ffx.include,false,"");
             setPixelSize(edit.pixelWidth, edit.pixelHeight);
-            
+            if (edit.fontPitch == "fixed")
+            {
+                t.Font = new Font(FontFamily.GenericMonospace, t.Font.Size);
+                l.Font = t.Font;
+            }
         }
 
         public FGLTextFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo,string incl,bool buttonEdit)

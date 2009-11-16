@@ -295,6 +295,9 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string config;
 
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string fontPitch;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string comments;
@@ -829,10 +832,17 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string config;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string fontPitch;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string gridWidth;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string shift;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -981,6 +991,10 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string config;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string fontPitch;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]

@@ -43,12 +43,7 @@ namespace AubitDesktop
 
 
 
-        /// <summary>
-        /// Internal keys are internally managed to set the visibility
-        /// so they dont have the normal 'action' ID logic for hiding/showing...
-        /// These are used for things like the Accept/Interrupt/Up/Down etc etc etc
-        /// </summary>
-        private bool isInternalKey;
+
 
         private bool _isProgramAdded;
         private string _programTag;
@@ -88,18 +83,12 @@ namespace AubitDesktop
         internal AubitTSBtn()
         {
             this.alwaysShow = showMode.ShowAuto;
-            isInternalKey = false;
+       
             forceDisable = false;
             
         }
 
-        internal AubitTSBtn(bool isInternalKey)
-        {
-            this.isInternalKey = isInternalKey;
-            this.alwaysShow = showMode.ShowAuto;
-            forceDisable = false;
-     
-        }
+
 
 
         public delegate bool HandledEventHandler(object sender, EventArgs e);
@@ -135,8 +124,7 @@ namespace AubitDesktop
         internal void setVisibility()
         {
             bool makeVisible=true;
-            if (!isInternalKey)
-            {
+            
 
                 switch (alwaysShow)
                 {
@@ -182,7 +170,7 @@ namespace AubitDesktop
                 }
                 this.Visible = makeVisible;
                 }
-            }
+            
         }
 
     //    public bool HiddenNormalKey=false;
@@ -202,7 +190,7 @@ namespace AubitDesktop
         {
             
             if (actionID == "DIE") return true;
-            if (actionID == "quit") return true;
+            //if (actionID == "quit") return true;
             return false;
         }
 
@@ -240,33 +228,7 @@ namespace AubitDesktop
             set
             {
                 activeKey = value;
-                switch (activeKey)
-                {
-                    case "INTERRUPT":
-
-                    case "ACCEPT":
-                    case "2016": // ACCEPT...
-
-                    case "INSERT":
-                    case "2014": // Insert...
-
-                    case "DELETE":
-                    case "2015": // Delete...
-
-                    case "DOWN":
-                    case "2001": // DOWN..
-
-                    case "UP":
-                    case "2000": // UP...
-
-                    case "PGUP":
-                    case "2006": // PGUP...
-
-                    case "PGDN":
-                    case "2005": // PGDN...
-                        isInternalKey = true;
-                        break;
-                }
+                
             }
         }
     }

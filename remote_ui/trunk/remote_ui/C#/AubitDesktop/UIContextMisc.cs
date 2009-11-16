@@ -119,7 +119,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
-            appPanel.setActiveToolBarKeys(null, null, false);
+            appPanel.setActiveToolBarKeys(null, null);
         }
 
         public void NavigateAwayTab()
@@ -334,7 +334,7 @@ namespace AubitDesktop
 
                 case "ui.combobox.getindexof":
                     throw new ApplicationException("Combo." + name + " not implemented yet");
-                    return null;
+                    //return null;
 
                 case "ui.combobox.getitemcount":
                     {
@@ -350,11 +350,11 @@ namespace AubitDesktop
 
                 case "ui.combobox.getitemname":
                     throw new ApplicationException("Combo." + name + " not implemented yet");
-                    return null;
+                    //return null;
 
                 case "ui.combobox.getitemtext":
                     throw new ApplicationException("Combo." + name + " not implemented yet");
-                    return null;
+                    //return null;
 
                 case "ui.combobox.gettablename":
                     {
@@ -367,12 +367,12 @@ namespace AubitDesktop
 
                 case "ui.combobox.gettag":
                     throw new ApplicationException("Combo." + name + " not implemented yet");
-                    return null;
+                    //return null;
 
                 case "ui.combobox.gettextof":
 
                     throw new ApplicationException("Combo." + name + " not implemented yet");
-                    return null;
+                   // return null;
 
 
                 default:

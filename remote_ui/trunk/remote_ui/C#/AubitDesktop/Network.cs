@@ -105,6 +105,12 @@ namespace AubitDesktop
         internal bool connectionFailed;
         private frmMainAppWindow appwin;
 
+
+        bool inEnvelope = false;
+        string cmd = "";
+        string Envelope = "";
+
+
         
         private ssh sshExec;
 
@@ -113,7 +119,7 @@ namespace AubitDesktop
 
         private IPAddress ipAddress;
         private NetworkStream tcpStream;
-        private BackgroundWorker bwReceiver;
+       // private BackgroundWorker bwReceiver;
         private bool useExplicitStreams;
   
         public enum SocketStyle
@@ -255,10 +261,11 @@ namespace AubitDesktop
                     return;
                 }
             }
-            
+
+            Console.WriteLine("Got Message from server:" + DateTime.Now);
             //
           ReceivedEnvelopeFromServer(this, e);
-
+          Console.WriteLine("Processed Message from server:" + DateTime.Now);
         }
     
  
@@ -345,6 +352,8 @@ namespace AubitDesktop
             this.application = "Unknown";
             this.useExplicitStreams = false;
             this.tcpClient = c;
+
+            /*
             if (bwReceiver != null)
             {
                 if (bwReceiver.IsBusy)
@@ -355,16 +364,21 @@ namespace AubitDesktop
             }
             
             this.bwReceiver = new BackgroundWorker();
+             * */
             tcpStream = tcpClient.GetStream();
             
+            /*
             bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
             bwReceiver.WorkerSupportsCancellation = true;
             bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
             bwReceiver.RunWorkerAsync();
+            */
+            startNetworkReceive();
         }
 
         public void SendString(string s)
         {
+            Console.WriteLine("Sending Message to server:" + DateTime.Now);
             if (s.Contains("<TRIGGERED") && !s.Contains("ENVELOPEID"))
             {
                 MessageBox.Show("Got a triggered without an envelope ID...");
@@ -390,6 +404,7 @@ namespace AubitDesktop
                 }
 
             }
+            Console.WriteLine("Sent Message to server:" + DateTime.Now);
         }
 
         private void streamWrite(byte[] msg, int p, int p_3)
@@ -400,18 +415,28 @@ namespace AubitDesktop
                 sshStreamWrite.Write(msg, p, p_3);
             }
             else
-            {
-                
+            {                
                 tcpStream.Write(msg, p, p_3);
             }
         }
 
 
-       private void bwReceiver_doWork(object sender , DoWorkEventArgs e)
+
+        void startNetworkReceive() {
+          //  byte[] buffer = new byte[100000];
+            startStreamAsyncRead();
+        }
+
+
+
+
+
+       private void xxxbwReceiver_doWork(object sender , DoWorkEventArgs e)
         {
             bool inEnvelope=false;
             string cmd="";
-            string Envelope="";
+            string Envelope = "";
+
             e.Result = true;
 
             while (true)
@@ -426,6 +451,9 @@ namespace AubitDesktop
                     System.Diagnostics.Debug.WriteLine("Connection dropped");   
                     break;
                 }
+
+
+
                 try
                 {
                     int readBytes = streamRead(buffer, 0, buffer.Length);
@@ -451,6 +479,7 @@ namespace AubitDesktop
 
                 if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
                 {
+                   
                     index = cmd.IndexOf('\n');
                     while (index >= 0)
                     {
@@ -546,6 +575,124 @@ namespace AubitDesktop
         }
 
 
+        void processBytes(byte[] bytes, int nBytes)
+        {
+            cmd += Program.getLocalisedString(bytes, nBytes);
+
+            if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
+            {
+                int index;
+                index = cmd.IndexOf('\n');
+                while (index >= 0)
+                {
+                    string c;
+
+                    c = cmd.Substring(0, index);
+
+                    if (c.Length > 0)
+                    {
+                        if (c.StartsWith("<ENVELOPE"))
+                        {
+                            Envelope = "";
+                            inEnvelope = true;
+                        }
+                        if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
+                        {
+                            Envelope += (c + "\n");
+                        }
+
+                        if (!inEnvelope)
+                        {
+                            
+                            this.OnReceivedFromServer(new ReceivedEventArgs(null, c));
+                        }
+
+                        if (c.StartsWith("</ENVELOPE>"))
+                        {
+
+                            inEnvelope = false;
+
+
+                            this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
+
+                            Envelope = "";
+                        }
+                    }
+
+                    if (cmd.Length > index)
+                    {
+                        cmd = cmd.Substring(index + 1);
+                        if (cmd == "\n")
+                        {
+                            Program.Show("OOps\n");
+                            cmd = "";
+                        }
+                    }
+                    index = cmd.IndexOf('\n');
+                }
+            }
+        }
+
+        void dataReceivedSsh(IAsyncResult i)
+        {
+            byte[] buffer = (byte[])i.AsyncState;
+            int nBytes = sshStreamRead.EndRead(i);
+            if (nBytes != 0)
+            {
+                processBytes(buffer, nBytes);
+            }
+            startStreamAsyncRead();
+        }
+
+        void dataReceived(IAsyncResult i ) {
+            byte[] buffer = (byte[])i.AsyncState;
+            try
+            {
+                int nBytes = tcpStream.EndRead(i);
+                if (nBytes != 0) { processBytes(buffer, nBytes); }
+            }
+            catch (Exception )
+            {
+
+            }
+            startStreamAsyncRead();
+        }
+
+        private void startStreamAsyncRead()
+        {
+            byte[] buffer = new byte[100000];
+
+            if (this.isConnected() == false)
+            {
+                System.Diagnostics.Debug.WriteLine("isconnected is false");
+                this.OnServerDisconnected(new ServerEventArgs(this.tcpClient));
+                this.Disconnect();
+                return;
+            }
+
+            if (useExplicitStreams)
+            {
+                
+                AsyncCallback networkReadCallback = new AsyncCallback(dataReceivedSsh);
+                 sshStreamRead.BeginRead(buffer, 0, 100000, networkReadCallback, buffer);                
+            }
+            else
+            {
+                if (!tcpStream.CanRead) return; /* program probably died */
+
+                AsyncCallback networkReadCallback = new AsyncCallback(dataReceived);
+                try
+                {
+                    tcpStream.BeginRead(buffer, 0, 100000, networkReadCallback, buffer);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Disconnected?");
+                }
+               // tcpStream.Read(buffer, p, p_3);
+            }
+        }
+
         private int streamRead(byte[] buffer, int p, int p_3)
         {
             if (useExplicitStreams)
@@ -554,6 +701,7 @@ namespace AubitDesktop
                 try
                 {
                     a = sshStreamRead.Read(buffer, p, p_3);
+                   
                     if (a < 0)
                     {
                         this.Disconnect();
@@ -567,7 +715,19 @@ namespace AubitDesktop
             }
             else
             {
-                return tcpStream.Read(buffer, p, p_3);
+                int n=0;
+               // tcpStream.ReadTimeout = 100000000;
+                try
+                {
+                    n =
+                     tcpStream.Read(buffer, p, p_3);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+                
+                return n;
             }
 
         }
@@ -606,11 +766,11 @@ namespace AubitDesktop
                 {
                     //this.tcpClient.Shutdown(SocketShutdown.Both);
                     this.tcpClient.Close();
-                    this.bwReceiver.CancelAsync();
+                  //  this.bwReceiver.CancelAsync();
                     this.OnDisconnectedFromServer(new EventArgs());
                     return true;
                 }
-                catch (Exception Ex)
+                catch (Exception )
                 {
                     return false;
                 }
@@ -627,7 +787,9 @@ namespace AubitDesktop
             int port = Convert.ToInt32(sport);
             if (port == 0) port = 3490;
             tcpClient = new TcpClient();
-            ipAddress = Dns.GetHostEntry(server).AddressList[0];
+            
+            IPAddress[] ipaddresses=  Dns.GetHostAddresses(server);
+            if (ipaddresses.Length > 0) { ipAddress = ipaddresses[0]; }
             Application.DoEvents();
             try
             {
@@ -639,7 +801,7 @@ namespace AubitDesktop
                 tcpStream = null;
                 return;
             }
-
+            /*
             if (bwReceiver != null)
             {
                 if (bwReceiver.IsBusy)
@@ -648,17 +810,20 @@ namespace AubitDesktop
                 }
                 bwReceiver = null;
             }
+            */
+
 
             if (tcpClient.Connected)
             {
                 tcpStream = tcpClient.GetStream();
-                this.bwReceiver = new BackgroundWorker();
+
+                //this.bwReceiver = new BackgroundWorker();
                 this.ReceivedFromServer += new ReceivedEventHandler(n_ReceivedFromServer);
-                bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
-                bwReceiver.WorkerSupportsCancellation = true;
-                bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);        
-                bwReceiver.RunWorkerAsync();
-                
+                //bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
+                //bwReceiver.WorkerSupportsCancellation = true;
+                //bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);        
+                //bwReceiver.RunWorkerAsync();
+                startNetworkReceive();
 
             }
             else
@@ -709,13 +874,15 @@ namespace AubitDesktop
             sshStreamRead = sshExec.sOut;
             //sshExec.RunCommand(application);
 
+            /*
             this.bwReceiver = new BackgroundWorker();
 
             bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
             bwReceiver.WorkerSupportsCancellation = true;
             bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
             bwReceiver.RunWorkerAsync();
-            
+            */
+            startNetworkReceive();
 
         
         }
@@ -730,11 +897,11 @@ namespace AubitDesktop
                 {
                     //this.tcpClient.Shutdown(SocketShutdown.Both);
                     this.sshExec.Disconnect();
-                    this.bwReceiver.CancelAsync();
+                    //this.bwReceiver.CancelAsync();
                     this.OnDisconnectedFromServer(new EventArgs());
                     return true;
                 }
-                catch (Exception Ex)
+                catch (Exception )
                 {
                     return false;
                 }
@@ -782,8 +949,8 @@ namespace AubitDesktop
                 ((AubitNetwork)sender).setEnvelopeMode();
                
                 Program.myConsole.ClearText();
-
-                appwin.ShowApplication();
+                appwin.Invoke(new MethodInvoker(appwin.ShowApplication));
+                //appwin.ShowApplication();
                 return;
             }
 

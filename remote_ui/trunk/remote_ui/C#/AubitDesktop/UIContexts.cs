@@ -82,7 +82,7 @@ namespace AubitDesktop
         /// </summary>
         /// <returns></returns>
         //string getAcceptString();
-        void toolBarAcceptClicked();
+    //    void toolBarAcceptClicked();
         void setNextField(string p);
 
     
