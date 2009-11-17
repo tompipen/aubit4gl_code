@@ -185,7 +185,7 @@ namespace AubitDesktop
                 object o;
 
                 o = this.Rows[line].Cells[a + 1];
-                FGLUtils.setCellValue(this.Rows[line].Cells[a + 1], Data[line, a]);
+                FGLUtils.setCellValue(this.Rows[line].Cells[a + 1], Data[line, a],0);
                 
             }
         }
@@ -515,12 +515,12 @@ namespace AubitDesktop
             {
                 if (table.TableColumn[a].defaultValue != null && table.TableColumn[a].defaultValue != "")
                 {
-                    FGLUtils.setCellValue(e.Row.Cells[a + 1], table.TableColumn[a].defaultValue);
+                    FGLUtils.setCellValue(e.Row.Cells[a + 1], table.TableColumn[a].defaultValue,0);
                     //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
                 }
                 else
                 {
-                    FGLUtils.setCellValue(e.Row.Cells[a + 1], "");
+                    FGLUtils.setCellValue(e.Row.Cells[a + 1], "",0);
                 }
             }
             EndEdit();
