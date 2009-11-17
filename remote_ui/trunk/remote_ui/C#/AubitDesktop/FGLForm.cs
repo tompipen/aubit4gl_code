@@ -1590,7 +1590,7 @@ namespace AubitDesktop
                 {
                     for (int a = 0; a < d.VALUES.Length; a++)
                     {
-                        FGLUtils.setCellValue(dgCells[a], d.VALUES[a].Text);
+                        FGLUtils.setCellValue(dgCells[a], d.VALUES[a].Text,Convert.ToInt32(d.ATTRIBUTE));
 
                             //dgCells[a].Value = d.VALUES[a].Text;
                             //fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
@@ -1929,7 +1929,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            int cnt = 0;
+                            int cnt = 1;
                             if (dg == null)
                             {
                                 return null;
@@ -1942,6 +1942,8 @@ namespace AubitDesktop
                             }
 
                             Console.WriteLine("Got " + dg.Rows[subscript - 1].Cells.Count + " Cells with " + ScreenRecords[sr].AttributeNoList().Count+" attributes");
+                            // Its the whole screen record - so we'll just use the AttributeNoList as 
+                            // a total to count to...
                             foreach (int attr in ScreenRecords[sr].AttributeNoList())
                             {
                                 dgCells.Add(dg.Rows[subscript - 1].Cells[cnt++]);
@@ -1974,11 +1976,11 @@ namespace AubitDesktop
                     {
                         if (z.todefault == "1")
                         {
-                            FGLUtils.setCellValue(dgCells[a], (string)dgCells[a].DefaultNewRowValue);
+                            FGLUtils.setCellValue(dgCells[a], (string)dgCells[a].DefaultNewRowValue,0);
                         }
                         else
                         {
-                            FGLUtils.setCellValue(dgCells[a], "");
+                            FGLUtils.setCellValue(dgCells[a], "",0);
                         }
                     }
                 
