@@ -1312,7 +1312,17 @@ namespace AubitDesktop
             }
         }
         
-        public static void setCellValue(DataGridViewCell c, string value) {
+        public static void setCellValue(DataGridViewCell c, string value,int attrib) {
+            if (attrib == 4096)
+            {
+
+                c.DataGridView.Rows[c.RowIndex].DefaultCellStyle.BackColor = System.Drawing.Color.Bisque;
+
+            }
+            else
+            {
+                c.DataGridView.Rows[c.RowIndex].DefaultCellStyle.BackColor = System.Drawing.SystemColors.Control;
+            }
             c.ValueType=typeof(string);
             c.Value = value;
         }
