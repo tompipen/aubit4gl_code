@@ -113,7 +113,7 @@ end_block (int rb, struct s_rbx *rbx)
 		}
 	    }
 	}
-      fprintf (rep_out, "\n");
+      fprintf (rep_fout, "\n");
     }
 
 }
