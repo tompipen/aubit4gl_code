@@ -48,8 +48,8 @@
 #define MODE_BUY 1
 
 static int indent = 0;
-char currfunc[2000];
-char currmod[2000];
+char currfunc[2000]="";
+char currmod[2000]="";
 static int cache_expression (char *s, expr_str ** ptr, int mode);
 static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode);
 extern int yylineno;
@@ -63,6 +63,7 @@ int ignLibFunc=1;
 
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
+char top_level_function[200]="MAIN";
 
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
@@ -221,6 +222,7 @@ static void check_for_orphaned_functions(char *topfuncname) {
 
 	if (topfuncno==-1) return; // Couldn't find it..
 
+printf("Checking for orphaned functions from :%s\n", topfuncname);
 	nodes[topfuncno].checked=1; /* We've checked it now... */
 
 	for (a=0;a<nodescnt;a++) {
@@ -229,9 +231,11 @@ static void check_for_orphaned_functions(char *topfuncname) {
 				continue;
 			}
 			nodes[a].checked=1;
+printf("%s calls %s ? \n", topfuncname, nodes[a].calls);
 			check_for_orphaned_functions(nodes[a].calls);
 		}
 	}
+printf("Done Checking for orphaned functions from :%s\n", topfuncname);
 }
 
 static char *get_prog_name(void) {
@@ -264,11 +268,15 @@ printDot (void)
   fprintf (dot_output, "rankdir=LR;\nratio=fill;\nsplines=polyline;\noverlap=vpsc;\n");
 
   check_for_undefined_functions();
-  check_for_orphaned_functions("MAIN");
+  check_for_orphaned_functions(top_level_function);
 
 
   for (a = 0; a < nodescnt; a++)
     {
+	int fid;
+	fid=find_function(nodes[a].function);
+
+
       if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
 	{
 	  // Its our function definition placeholder...
@@ -294,6 +302,9 @@ printDot (void)
       		}
 		continue;
 	}
+
+	//if (fid==-1) continue;
+	//if (functions[fid].called==0) continue;
 
 	switch (nodes[a].type) {
 		case 'M': /* Main */
@@ -992,7 +1003,7 @@ print_indent (void)
 }
 
 static int
-cache_expression (char *s, expr_str ** ptr, int mode)
+cache_expression (char *sxx, expr_str ** ptr, int mode)
 {
   expr_str *expr;
   if (ptr == 0)
@@ -2153,7 +2164,7 @@ check_program (module_definition * mods, int nmodules)
   //int bad_load = 0;
   //struct commands *all_cmds = 0;
   char *fname;
-  int mid;
+  //int mid;
 
   //load_protos();
 
@@ -2227,12 +2238,14 @@ check_program (module_definition * mods, int nmodules)
 
 
   printf ("Program\n");
-  mid = find_function ("MAIN");
+/*
+  mid = find_function (top_level_function);
   if (mid < 0)
     {
       //printf ("No main...\n");
       //exit (2);
     }
+*/
 
   output = fopen ("calltree.xml", "w");
 
@@ -2272,6 +2285,7 @@ check_program (module_definition * mods, int nmodules)
 
   for (a = 0; a < functions_cnt; a++)
     {
+	strcpy(currfunc,"_____");
 	set_whenever_for_function(&functions[a]);
 
 	if (ignore_user_function(functions[a].function)) {	
@@ -2283,7 +2297,9 @@ check_program (module_definition * mods, int nmodules)
 	  struct s_function_definition *f;
 	  strcpy (currfunc, functions[a].function);
 	  strcpy (currmod, functions[a].module);
-	
+
+	//printf("Set currfunc to %s\n",currfunc);
+
 	  if (strcmp (functions[a].function, "MAIN") == 0) {
 	   	addFunction (currfunc, functions[a].module, functions[a].line,"M");
 	  } else {
@@ -2594,6 +2610,7 @@ main (int argc, char *argv[])
 	   ignLibFunc = 0;
 	  continue;
 	}
+
       if (strcmp (argv[b], "-nolib") == 0)
 	{
 	   ignLibFunc = 1;
@@ -2611,11 +2628,19 @@ main (int argc, char *argv[])
 	  printAllFuncs = 0;
 	  continue;
 	}
+
       if (strcmp (argv[b], "-Prog") == 0)
 	{
 	  incProg = 1;
 	  continue;
 	}
+
+      if (strcmp (argv[b], "-start") == 0) {
+		b++;
+		strcpy(top_level_function,argv[b]);
+		continue;
+	}
+
       if (strcmp (argv[b], "-NoProg") == 0)
 	{
 	  incProg = 0;
