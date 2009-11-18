@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.151 2009-08-18 20:58:25 fortiz Exp $
+# $Id: builtin.c,v 1.152 2009-11-18 08:02:19 mikeaubury Exp $
 #
 */
 
@@ -339,7 +339,28 @@ int
 A4GL_push_substr (char *ca, int dtype, int a, int b, ...)
 {
   char *p;
+
+  if (a>strlen(ca)) {
+			char *c;
+		if (b==0) b=a;
+		if ((b-a)>0) {
+			//A4GL_push_null(DTYPE_CHAR,b-a+1);
+      			c = malloc ( b-a+1);
+			memset(c,' ',b-a+1);
+			c[b-1+1]=0;
+      			A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE (1)) + DTYPE_MALLOCED);
+		} else {
+			//printf("xx %d %d\n",a,b);
+      			c = malloc ( 2);
+			strcpy(c," ");
+			//A4GL_push_null(DTYPE_CHAR,2);
+      			A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE (1)) + DTYPE_MALLOCED);
+		}
+		return 1;
+  }
   p = a4gl_substr (ca, dtype, a, b);
+
+
   if (strlen (p))
     {
       if (b == 0)
@@ -351,17 +372,16 @@ A4GL_push_substr (char *ca, int dtype, int a, int b, ...)
       char *c;
       if (b == 0)
 	b = a;
+	if ((b-a)<0) {
+		//printf("a=%d b=%d p=%s\n",a,b,p);
+		A4GL_push_null(DTYPE_CHAR,1);
+		return 1;
+	}
       c = malloc (b - a + 2);
 
       memset (c, ' ', b - a + 2);
       c[b - a + 1] = 0;
       A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE ((b - a + 1))) + DTYPE_MALLOCED);
-      /*
-         p=malloc(2);
-         p[0]=0;
-         p[1]=1;
-         A4GL_push_param(p,DTYPE_CHAR+(ENCODE_SIZE((b-a+1)))+DTYPE_MALLOCED);
-       */
     }
   return 1;
 }

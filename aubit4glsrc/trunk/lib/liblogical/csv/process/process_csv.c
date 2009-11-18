@@ -56,7 +56,6 @@ for (a=0;a<layout->nblocks;a++) {
 			if (centry[x].fixed_text) {
 				centry[x].special=centry[x].fixed_text;
 			}
-
 		}
 	}
 }
@@ -72,7 +71,7 @@ end_block (int rb, struct s_rbx *rbx)
   int last;
   struct csv_blocks *block;
   struct csv_entry *centry;
-
+//fprintf(rep_fout,"Block :%d:",rb);
 
 // First - we need to find our block to print...
   for (a = 0; a < layout->nblocks; a++)
@@ -114,7 +113,7 @@ end_block (int rb, struct s_rbx *rbx)
 		}
 	    }
 	}
-      fprintf (rep_fout, "\n");
+      fprintf (rep_out, "\n");
     }
 
 }
@@ -187,10 +186,12 @@ report=vreport;
 	// If we've got to here....
 
 	for (a=0;a<report->nblocks;a++) {
+		//printf("Start Block : %d\n", report->blocks[a].rb);
 		start_block(report->blocks[a].rb);
 		for (b=0;b<report->blocks[a].nentries;b++) {
 			process_block(report->blocks[a].rb, report->blocks[a].entries[b].entry_id, report->blocks[a].entries[b].string);
 		}
+		//printf("End Block : %d\n", report->blocks[a].rb);
 		end_block(report->blocks[a].rb,rbx);
         }
 
