@@ -1,3 +1,10 @@
+#ifndef ET_EXPR_CACHED_HANDLER
+// Just define it to be blank instead...
+// Cached expressions are used within the lint tool...
+#define ET_EXPR_CACHED_HANDLER
+
+#endif
+
 
 static char *expr_as_string_ident_as_string(expr_str *f,int quote) {
 static char buff[2000];
@@ -574,6 +581,11 @@ case ET_EXPR_SHARED_FCALL:
 
      case ET_EXPR_DYNARR_FCALL_NEW:
 	return strdup("DYNARR_FUNCTIONCALL");
+
+
+
+     ET_EXPR_CACHED_HANDLER
+
 
 
     default:

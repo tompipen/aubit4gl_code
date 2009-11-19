@@ -1,5 +1,6 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
+expr_str *expr_cached(expr_str *l) ;
 
 //#include "a4gl_libaubit4gl.h"
 //#include "lint.h"
@@ -107,16 +108,15 @@ int narg;
 	      //printf("Buff=%s\n",buff);
 	    }
 
-	  printf ("Loading %s : ", buff);
-	  fflush (stdout);
+	  // printf ("Loading %s : ", buff); fflush (stdout);
 	  if (A4GL_read_data_from_file ("module_definition", &m[lines++], buff))
 	    {
-	      printf ("OK...\n");
-	      fflush (stdout);
+	      //printf ("OK...\n");
+	      //fflush (stdout);
 	    }
 	  else
 	    {
-	      printf ("- Failed to load %s\n", buff);
+	      printf ("Failed to load %s\n", buff);
 	      fflush (stdout);
 	      exit (1);
 	    }
@@ -140,16 +140,16 @@ int narg;
 	      *p = 0;
 	      //printf("Buff=%s\n",buff);
 	    }
-	  printf ("Loading %s : ", buff);
-	  fflush (stdout);
+	  // printf ("Loading %s : ", buff);
+	  // fflush (stdout);
 	  if (A4GL_read_data_from_file ("module_definition", &m[a - narg], buff))
 	    {
-	      printf ("OK...\n");
-	      fflush (stdout);
+	      //printf ("OK...\n");
+	      //fflush (stdout);
 	    }
 	  else
 	    {
-	      printf ("- Failed to load %s\n", argv[a]);
+	      printf ("%s - Failed to load %s\n", buff, argv[a]);
 	      fflush (stdout);
 	      exit (1);
 	    }
@@ -193,6 +193,8 @@ A4GL_lint (char *s)
 
 #define ET_EXPR_VARIABLE_USAGE_call lint_get_variable_usage_as_string
 
+#define ET_EXPR_CACHED_HANDLER case ET_EXPR_CACHED: return expr_as_string_when_possible(expr_cached(e));
+
 #include "expr_as_string_when_possible.c"
 
 
@@ -224,6 +226,7 @@ open_db (char *s)
       SPRINTF2 (buff, "Could not connect to database %s (%s)",
                A4GL_null_as_null (db),
                A4GL_null_as_null (A4GLSQL_get_sqlerrm ()));
+
        		fprintf(stderr,"%s",buff);
 	//exit(2);
 	dbopen=0;

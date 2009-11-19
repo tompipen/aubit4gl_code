@@ -34,6 +34,8 @@ struct s_severities
   "CS.GETERRORRECORD", 1},
   {
   "CS.ERRORHANDLER", 0},
+  {"CS.TODAY", 0},
+  {"CS.CURRENT", 0},
   {
   "CS.MRET", 1},
   {
@@ -806,7 +808,7 @@ check_function_for_complexity (struct module_definition *d, struct s_function_de
   // printf("%s '%s'\n", f->funcname, lines_used);
   // viaamani_update 'F DDDDDD @@_@>@_@>@_@>@@_@@@_@@______@F#p^^^B^A'
   // viaamani_input2 'FD@__@@@_@@@@_@F#b^B^A'
-  printf ("%s\n", f->funcname);
+  //printf ("%s\n", f->funcname);
 
 
   add_function_stat (f->module, f->funcname, nlines, loc, ncomments, lines_of_ws, flow, func_cmds->cmds.cmds_len);
@@ -1528,7 +1530,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		expr_str *re;
 		ptr_l=expr_as_string_when_possible(expr->expr_str_u.expr_op->left);
 		ptr_r=expr_as_string_when_possible(expr->expr_str_u.expr_op->right);
-		printf("HERE : %s %s\n", ptr_l,ptr_r);
+		//printf("HERE : %s %s\n", ptr_l,ptr_r);
 		if (ptr_l){
 		if (strstr(ptr_l,"gc_tpacode"))  {	
 			if (strstr(ptr_r,"BL") || 
@@ -2468,8 +2470,8 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
-	      fflush (stdout);
+	      //printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      //fflush (stdout);
 	      check_function (d, &d->module_entries.module_entries_val[a]->module_entry_u.function_definition);
 	    }
 	  break;
@@ -2484,8 +2486,8 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
-	      fflush (stdout);
+	      //printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      //fflush (stdout);
 	      check_report (d, &d->module_entries.module_entries_val[a]->module_entry_u.report_definition);
 	    }
 	  break;
@@ -2800,6 +2802,12 @@ check_variable_name (char *modname, char *scope, struct variable *v)
   if (issystem)
     return;
 
+  if (A4GL_aubit_strcasecmp (scope, "ImportedGlobal") == 0)
+    {
+      // These should be picked up in the module in which they are exported...
+      return;
+    }
+
   if (A4GL_is_valid_4gl_type (v->names.names.names_val[0].name))
     {
 
@@ -2828,11 +2836,6 @@ check_variable_name (char *modname, char *scope, struct variable *v)
   }
 
 
-  if (A4GL_aubit_strcasecmp (scope, "ImportedGlobal") == 0)
-    {
-      // These should be picked up in the module in which they are exported...
-      return;
-    }
 
 
   if (A4GL_aubit_strcasecmp (scope, "Global") == 0)
@@ -2912,8 +2915,8 @@ check_module (struct module_definition *d)
   int b;
 
   all_cmds = linearise_commands (0, 0);
-  printf ("Check Module %s\n", d->module_name);
-  fflush (stdout);
+  //printf ("Check Module %s\n", d->module_name);
+  //fflush (stdout);
   for (a = 0; a < d->imported_global_variables.variables.variables_len; a++)
     {
       check_variable_name (d->module_name, "ImportedGlobal", d->imported_global_variables.variables.variables_val[a]);
@@ -4375,7 +4378,6 @@ check_program (module_definition * mods, int nmodules)
       fprintf (lintfile, "<LINTS>\n");
     }
 
-
   load_protos ();
 
   /*
@@ -4468,7 +4470,7 @@ check_program (module_definition * mods, int nmodules)
 	    }
 	}
 
-      printf ("Module : %s.4gl\n", mods[a].module_name);
+      //printf ("Module : %s.4gl\n", mods[a].module_name);
       for (b = 0; b < mods[a].module_entries.module_entries_len; b++)
 	{
 	  fromLibrary[this_module.module_entries.module_entries_len] = mods[a].moduleIsInLibrary;
@@ -4476,13 +4478,15 @@ check_program (module_definition * mods, int nmodules)
 	}
 
     }
+
+
   for (a = 0; a < nmodules; a++)
     {
       lint_module = mods[a].module_name;
       check_module (&mods[a]);
     }
 
-  printf ("Program\n");
+  //printf ("Program\n");
   if (dbname)
     {
       open_db (dbname);
@@ -4668,7 +4672,6 @@ check_program (module_definition * mods, int nmodules)
 	  break;		// Cant have a function prototype
 	}
     }
-
 
   bad_load = 0;
   // lets look for any duplicates...
@@ -5319,7 +5322,6 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 
   if (module_in == 0)
     {
-      //A4GL_pause_execution ();	// SAFE TO LEAVE IN
       printf ("WARNING : %s does not pass in a module!\n", code);
       module_in = lint_module;
     }
@@ -6218,6 +6220,22 @@ add_cache_expression (struct expr_str_list *list, expr_str * e)
   return list->list.list_len - 1;
 }
 
+
+expr_str *expr_cached(expr_str *l) {
+int num;
+if (expr_cache==NULL) {
+	A4GL_assertion(1,"No cache");
+}
+num=l->expr_str_u.expr_cached.cache_num;
+
+if (num>expr_cache->list.list_len || num<0) {
+	A4GL_assertion(1,"Invalid cache number");
+}
+
+return expr_cache->list.list_val[num];
+}
+
+
 static void
 cache_expression (struct expr_str_list *list, struct expr_str **eptr)
 {
@@ -6827,11 +6845,16 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
   struct expr_str_list list;
   list.list.list_len = 0;
   list.list.list_val = 0;
+struct expr_str_list *old_list;
 
   s3 = &s2;
   memcpy (&s2, s, sizeof (s2));
+
+  old_list=expr_cache;
+
   cache_expression (&list, &s3);
   linearise_expressions (&list);
+  expr_cache=&list;
 
   for (a = 0; a < list.list.list_len; a++)
     {
@@ -6844,6 +6867,17 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
 		if (dtype==90) {
 			  A4GL_lint (module_name, lineno, "BOOLNULL", "Checking for IS NULL or IS NOT NULL on something that looks boolean", 0);
 		}
+	}
+
+
+      if (e->expr_type==ET_EXPR_TODAY) {
+	//printf("***********************************************\n");
+			  A4GL_lint (module_name, lineno, "CS.TODAY", "Coding Standard: Use of TODAY builtin variable", 0);
+	}
+
+      if (e->expr_type==ET_EXPR_CURRENT) {
+	//printf("***********************************************\n");
+			  A4GL_lint (module_name, lineno, "CS.CURRENT", "Coding Standard: Use of CURRENT builtin variable", 0);
 	}
 
       //printf ("check boolean : %d . %s (%d)\n", a, expr_name (list.list.list_val[a]->expr_type), list.list.list_val[a]->expr_type);
@@ -6905,7 +6939,6 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
 		    }
 		}
 		if (ptr_l){
-	printf("%s %s\n",ptr_l,ptr_r);
 		if (strstr(ptr_l,"gc_tpacode"))  {	
 			if (strstr(ptr_r,"BL") || 
 			strstr(ptr_r,"AXA") || 
@@ -6933,6 +6966,7 @@ check_boolean (char *module_name, int lineno, expr_str * s, int last_was_sql, in
       A4GL_lint (module_name, lineno, "IFCONST", "IF condition is constant", 0);
     }
 
+  expr_cache=old_list;
 }
 
 
@@ -7379,7 +7413,6 @@ has_lint_ignore (char *c)
     {
       if (lint_ignore_list[a])
 	{
-	  //printf("%s %s\n", lint_ignore_list[a],c);
 	  if (strcmp (lint_ignore_list[a], c) == 0)
 	    {
 	      return 1;
@@ -7397,7 +7430,6 @@ has_lint_expect (char *c)
     {
       if (lint_expect_list[a])
 	{
-	  //printf("%s %s\n", lint_expect_list[a],c);
 	  if (strcmp (lint_expect_list[a], c) == 0)
 	    return 1;
 	}
