@@ -704,13 +704,16 @@ namespace AubitDesktop
             }
 
 
-            startHandlers();
+           
+           
             if (inputArrayGrid.DataSource != Data)
             {
                 inputArrayGrid.DataSource = Data;
+                inputArrayGrid.CurrentCell = null;
+                inputArrayGrid.init();
             }
 
-
+            startHandlers();
             
 
 

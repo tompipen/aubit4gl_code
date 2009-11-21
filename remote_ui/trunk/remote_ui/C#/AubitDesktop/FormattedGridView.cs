@@ -376,11 +376,13 @@ namespace AubitDesktop
                 return;
             }
 
-
-            if (CurrentRow.IsNewRow)
+            if (CurrentRow!=null)
             {
-                // We are the new row !
-                return;
+                if (CurrentRow.IsNewRow)
+                {
+                    // We are the new row !
+                    return;
+                }
             }
 
             // Have we run out of space ? 
