@@ -162,6 +162,16 @@ namespace AubitDesktop
             {
                 _currentContext = value;
                 TopWindow.currentContext = value;
+
+            }
+        }
+
+        public void quitContext() {
+            if (_currentContext != null)
+            {
+                _currentContext.DeactivateContext();
+                _currentContext.FreeContext();    
+                _currentContext = null;
             }
         }
         

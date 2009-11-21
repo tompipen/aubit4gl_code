@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Data;
+using System.ComponentModel;
 
 namespace AubitDesktop
 {
@@ -21,8 +22,6 @@ namespace AubitDesktop
         internal bool upshift;
         internal bool downshift;
         internal string comments;
-
-
 
 
 
@@ -47,17 +46,46 @@ namespace AubitDesktop
         FormattedCellSettings[] widgetSettings;
         private int __RowsToDisplay;
         private EventHandler _onDblClick;
-        internal bool addedNewRowBelow=false;
-        internal int enteredCellColumn = -1;
-        internal int enteredCellRow = -1;
-        internal int enteredRow = -1;
-        internal int leftCellColumn = -1;
-        internal int leftCellRow = -1;
-        internal bool rowChanged=false;
-        internal bool ignEvents=false;
+        internal bool addedNewRowBelow = false;
+        //internal int enteredCellColumn = -1;
+        //internal int enteredCellRow = -1;
+        //internal int enteredRow = -1;
+        //internal int leftCellColumn = -1;
+        //internal int leftCellRow = -1;
+        internal bool rowChanged = false;
+        //internal bool ignEvents = false;
         private int _maxRows;
+        internal int movingCellsInternally=0;
 
-        
+        private int currentRowId = -1;
+        private int currentColId = -1;
+        private bool rowIsNew = false;
+
+        internal int rowId
+        {
+            set
+            {
+                currentRowId=value;
+            }
+            get
+            {
+                return currentRowId;
+            }
+        }
+
+        internal int colId
+        {
+            get
+            {
+                return currentColId;
+            }
+            set
+            {
+                currentColId=value;
+            }
+        }
+
+
         internal int maxRows
         {
             get
@@ -74,11 +102,11 @@ namespace AubitDesktop
 
             }
         }
-        
 
 
 
-    //    private bool doIgnore;
+
+        //    private bool doIgnore;
         private bool _allowInsertRow;
         internal bool allowInsertRow
         {
@@ -119,8 +147,8 @@ namespace AubitDesktop
                 return _fieldValidationFailed;
             }
         }
-        internal DataGridViewCellEventHandler AfterRow = null;
-        internal DataGridViewCellEventHandler BeforeRow = null;
+        internal UIArrayTableRowHandler AfterRow = null;
+        internal UIArrayTableRowHandler BeforeRow = null;
 
         internal UIArrayTableHandler beforeFieldHandler = null;
         internal UIArrayTableHandler afterFieldHandler = null;
@@ -138,7 +166,7 @@ namespace AubitDesktop
                 idx = fieldName.IndexOf("[");
                 string sDim = fieldName.Substring(idx + 1);
                 string srest;
-                srest = sDim.Substring(sDim.IndexOf("]")+1);
+                srest = sDim.Substring(sDim.IndexOf("]") + 1);
                 sDim = sDim.Substring(0, sDim.IndexOf("]"));
                 //Replace("]", "");
 
@@ -153,7 +181,7 @@ namespace AubitDesktop
 
                 if (table.TableColumn[a].name.ToLower() == fieldName.ToLower()) return a;
                 if (table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
-                if (table.tabName.ToLower()+"."+ table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
+                if (table.tabName.ToLower() + "." + table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
                 if (table.TableColumn[a].sqlTabName.ToLower() + "." + table.TableColumn[a].colName.ToLower() == fieldName.ToLower()) return a;
             }
             return -1;
@@ -185,17 +213,19 @@ namespace AubitDesktop
                 object o;
 
                 o = this.Rows[line].Cells[a + 1];
-                FGLUtils.setCellValue(this.Rows[line].Cells[a + 1], Data[line, a],0);
-                
+                FGLUtils.setCellValue(this.Rows[line].Cells[a + 1], Data[line, a], 0);
+
             }
         }
 
         internal string getCellData(int row, int col)
         {
-            if (Rows[row].Cells[col].ValueType==typeof(string)) {
+            if (Rows[row].Cells[col].ValueType == typeof(string))
+            {
                 return ((string)Rows[row].Cells[col].Value).Trim();
             }
-            if (Rows[row].Cells[col].Value==null) {
+            if (Rows[row].Cells[col].Value == null)
+            {
                 return "";
             }
             return Rows[row].Cells[col].Value.ToString().Trim();
@@ -226,7 +256,7 @@ namespace AubitDesktop
                 case FGLContextType.ContextInputArray:
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
-                    
+
                     ReadOnly = false;
                     SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
                     break;
@@ -238,46 +268,82 @@ namespace AubitDesktop
 
         private void setUpHandlers()
         {
-
-
-
-            RowEnter += new DataGridViewCellEventHandler(Grid_RowEnter);
-    
-            RowValidated += new DataGridViewCellEventHandler(Grid_RowLeave);
-            CellValidating += new DataGridViewCellValidatingEventHandler(FormattedGridView_CellValidating);
-            RowValidating += new DataGridViewCellCancelEventHandler(FormattedGridView_RowValidating);
             DefaultValuesNeeded += new DataGridViewRowEventHandler(FormattedGridView_DefaultValuesNeeded);
-
-      
-
+            CellValidating +=new DataGridViewCellValidatingEventHandler(FormattedGridView_CellValidating);
+            this.RowEnter += new DataGridViewCellEventHandler(FormattedGridView_RowEnter);
+            this.CausesValidation = true;
             CellEnter += new DataGridViewCellEventHandler(FormattedGridView_CellEnter);
-            this.CellValidated += new DataGridViewCellEventHandler(FormattedGridView_CellLeave);
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
-           // this.RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
             this.RowsRemoved += new DataGridViewRowsRemovedEventHandler(FormattedGridView_RowsRemoved);
-            //this.RowPrePaint += new DataGridViewRowPrePaintEventHandler(FormattedGridView_RowPrePaint);
-            //this.Rows.CollectionChanged += new System.ComponentModel.CollectionChangeEventHandler(Rows_CollectionChanged);
-            //RowsAdded += new DataGridViewRowsAddedEventHandler(FormattedGridView_RowsAdded);
+            
         }
+
+        void FormattedGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (this.CurrentRow != null)
+            {
+                if (this.CurrentRow.IsNewRow)
+                {
+                    rowIsNew = true;
+                    cellMoved(-1, -1); // we want to trigger any before row/before fields as its a new row..
+                }
+                else
+                {
+                    rowIsNew = false;
+                }
+            }
+            else
+            {
+                rowIsNew = false;
+            }
+        }
+
+     
+        
+
+        internal void processPgDn()
+        {
+            base.ProcessNextKey(Keys.PageDown);
+        }
+
+        internal void processPgUp()
+        {
+            base.ProcessPriorKey(Keys.PageUp);
+        }
+       
+        internal void processDown()
+        {
+            base.ProcessDownKey(Keys.Down);
+        }
+
+        internal void processUp()
+        {
+            base.ProcessUpKey(Keys.Up);
+        }
+
+
+
 
         void FormattedGridView_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
         {
-            setAllowUserToAddRows();
+            cellMoved(-1, -1); // We want to trigger any before field/before rows...
+            //setAllowUserToAddRows();
         }
 
 
 
 
 
-        
+
 
         /// <summary>
         /// Set the AllowUserToAddRows depending on the current number of rows, the current context
         /// and whether the program has 'NONEWLINES' etc
         /// </summary>
-        private void setAllowUserToAddRows() {
-
+        private void setAllowUserToAddRows()
+        {
+            
 
 
             if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextDisplayArray)
@@ -291,10 +357,10 @@ namespace AubitDesktop
 
             if (context != FGLContextType.ContextInputArray && context != FGLContextType.ContextInputArrayInactive)
             {
-                
+
                 if (AllowUserToAddRows != false) // Only set this if we need to..
                 {
-                    this.CancelEdit();  
+                    this.CancelEdit();
                     AllowUserToAddRows = false;
                 }
                 return;
@@ -311,6 +377,11 @@ namespace AubitDesktop
             }
 
 
+            if (CurrentRow.IsNewRow)
+            {
+                // We are the new row !
+                return;
+            }
 
             // Have we run out of space ? 
             if (Rows.Count >= maxRows)
@@ -318,7 +389,7 @@ namespace AubitDesktop
                 if (AllowUserToAddRows != false) // Only set this if we need to..
                 {
                     AllowUserToAddRows = false;
-                    
+
                 }
                 return;
             }
@@ -327,9 +398,9 @@ namespace AubitDesktop
             if (AllowUserToAddRows != true) // Only set this if we need to..
             {
                 AllowUserToAddRows = true;
-            }            
+            }
         }
-    
+
 
 
         void FormattedGridView_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
@@ -340,7 +411,7 @@ namespace AubitDesktop
 
             try
             {
-                
+
                 DataGridViewCell c = Rows[e.RowIndex].Cells[e.ColumnIndex];
                 if (c is DataGridViewCheckBoxCell)
                 {
@@ -372,7 +443,15 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    s = (string)Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                    //s = (string)Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                    if (Rows[e.RowIndex].Cells[e.ColumnIndex].Value is DBNull)
+                    {
+                        s = "";
+                    }
+                    else
+                    {
+                        s = (string)Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                    }
                 }
             }
             catch
@@ -382,12 +461,18 @@ namespace AubitDesktop
 
 
 
-                if (!validateField(e.RowIndex, e.ColumnIndex,s))
-                {
-                    e.Cancel = true;
-                } 
-            
+            if (!validateField(e.RowIndex, e.ColumnIndex, s))
+            {
+                e.Cancel = true;
+            }
+
         }
+
+
+
+
+
+
 
         void FormattedGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
@@ -419,7 +504,7 @@ namespace AubitDesktop
             if (e.ColumnIndex == 0) return;
 
             // Are we just setting up ? 
-            if (e.ColumnIndex -1 > this.widgetSettings.Length) return;
+            if (e.ColumnIndex - 1 > this.widgetSettings.Length) return;
 
             if (e.Value == null) return;
 
@@ -437,74 +522,90 @@ namespace AubitDesktop
                 }
                 e.Value = FGLUsing.A4GL_func_using(widgetSettings[e.ColumnIndex - 1].format, val, widgetSettings[e.ColumnIndex - 1].datatype);
                 e.FormattingApplied = true;
-            }         
-            
-                
+            }
+        }
+
+        void ForceBackToCurrentCell()
+        {
+            this.CurrentCell = Rows[currentRowId].Cells[currentColId];
         }
 
 
-        void FormattedGridView_CellLeave(object sender, DataGridViewCellEventArgs e)
+        void cellMoved(int rowId, int colId)
         {
-            string val;
-            if (e.ColumnIndex == 0) return;
-            if (ignEvents)  return;
-
-            try
+            if (rowId == currentRowId && colId == currentColId)
             {
-                val = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-            }
-            catch
-            {
-                val = null;
+                return;
             }
 
-
-            
-            
-            if (afterFieldHandler != null)
+            if (movingCellsInternally>0 && false)
             {
-                if (leftCellColumn != e.ColumnIndex || leftCellRow != e.RowIndex)
+                currentRowId = rowId;
+                currentColId = colId;
+                return;
+            }
+
+
+            // Do we have an old field to validate ? 
+            if (currentColId != -1 && currentRowId != -1)
+            {
+        
+
+                // So - we're moving...
+                if (afterFieldHandler != null)
                 {
-                    leftCellColumn = e.ColumnIndex;
-                    leftCellRow = e.RowIndex;
-                    afterFieldHandler(e.RowIndex, e.ColumnIndex - 1);
-
+                    afterFieldHandler(currentRowId, currentColId - 1);
                 }
             }
 
-            
+            // Are we changing Rows too ? 
+            if (rowId != currentRowId)
+            {
+                if (currentRowId != -1)
+                {
+                    if (AfterRow != null)
+                    {
+                        AfterRow(currentRowId);
+                    }
+                }
+
+                if (BeforeRow != null && rowId!=-1)
+                {
+                    BeforeRow(rowId);
+                }
+                currentRowId = rowId;
+            }
 
 
 
+            if (colId != -1)
+            {
+                if (this.beforeFieldHandler != null)
+                {
+                    beforeFieldHandler(rowId, colId - 1);
+                }
+            }
+            currentColId = colId;
         }
+
+        /*
+        protected override void  OnCellEnter(DataGridViewCellEventArgs e)
+        {
+            cellMoved(e.RowIndex, e.ColumnIndex);
+            //base.OnCellEnter(e);
+        }
+         * */
+
 
         void FormattedGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
-
-            if (ignEvents) return;
-
-
-            if (e.ColumnIndex == 0) return;
-
-
-
-            if (this.beforeFieldHandler != null)
-            {
-                Console.WriteLine("Enter cell : " + e.RowIndex + " " + e.ColumnIndex);
-                if (enteredCellColumn != e.ColumnIndex || enteredCellRow != e.RowIndex)
-                {
-                    Console.WriteLine("not the same as old cell :  " + enteredCellRow + " " + enteredCellColumn);
-                    enteredCellRow = e.RowIndex;
-                    enteredCellColumn = e.ColumnIndex;
-                    
-                    beforeFieldHandler(e.RowIndex, e.ColumnIndex - 1);
-
-                }
-            }
-            
-
-
+           // setAllowUserToAddRows();
+            cellMoved(e.RowIndex, e.ColumnIndex);
         }
+
+
+        
+
 
         internal void FormattedGridView_DefaultValuesNeeded(object sender, DataGridViewRowEventArgs e)
         {
@@ -515,12 +616,12 @@ namespace AubitDesktop
             {
                 if (table.TableColumn[a].defaultValue != null && table.TableColumn[a].defaultValue != "")
                 {
-                    FGLUtils.setCellValue(e.Row.Cells[a + 1], table.TableColumn[a].defaultValue,0);
+                    FGLUtils.setCellValue(e.Row.Cells[a + 1], table.TableColumn[a].defaultValue, 0);
                     //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
                 }
                 else
                 {
-                    FGLUtils.setCellValue(e.Row.Cells[a + 1], "",0);
+                    FGLUtils.setCellValue(e.Row.Cells[a + 1], "", 0);
                 }
             }
             EndEdit();
@@ -530,17 +631,19 @@ namespace AubitDesktop
 
 
 
-        private bool validateField(int row, int col,string Text)
+        private bool validateField(int row, int col, string Text)
         {
             bool ign = false;
             FormattedCellSettings w;
             //FGLWidget w = null;
             if (col == 0) return true;
+            if (movingCellsInternally>0) return true;
 
-            w = widgetSettings[col-1];
+
+            w = widgetSettings[col - 1];
             if (w == null) return true;
 
-           // Text = getCellData(row, col);
+            // Text = getCellData(row, col);
 
 
             if (this.context == FGLContextType.ContextInputArray)
@@ -601,7 +704,7 @@ namespace AubitDesktop
                                 ok = true;
                                 break;
                             }
-                            if (s ==Text)
+                            if (s == Text)
                             {
                                 ok = true;
                                 break;
@@ -637,13 +740,24 @@ namespace AubitDesktop
             DataGridViewCell c;
             c = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
+            s = GetStringToValidate(c);
+        
+            if (!validateField(e.RowIndex, e.ColumnIndex, s))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private string GetStringToValidate(DataGridViewCell c)
+        {
+            string s;
             if (c.EditedFormattedValue is DBNull)
             {
                 s = "";
             }
             else
             {
-                if (c.FormattedValueType==typeof(Boolean))
+                if (c.FormattedValueType == typeof(Boolean))
                 {
                     DataGridViewCheckBoxCell ch;
                     ch = (DataGridViewCheckBoxCell)c;
@@ -666,26 +780,21 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
+                    s = (string)c.EditedFormattedValue;
                 }
             }
-
-            //s = (string)this.Rows[e.RowIndex].Cells[e.ColumnIndex].Value; // e.FormattedValue.ToString();
-            if (!validateField(e.RowIndex, e.ColumnIndex,s))
-
-           {
-                
-                e.Cancel = true;
-            }
+            return s;
         }
+
+
 
         public FormattedGridView(Xml.XMLForm.Table t)
         {
             int len;
             len = t.TableColumn.Length;
             this.table = t;
-//            this.ReadOnly = true;
-  //          this.Enabled = false;
+            //            this.ReadOnly = true;
+            //          this.Enabled = false;
             widgetSettings = new FormattedCellSettings[len];
 
             for (int a = 0; a < len; a++)
@@ -696,8 +805,8 @@ namespace AubitDesktop
                 widgetSettings[a].datatype_length = FGLWidget.decode_datatype_size(t.TableColumn[a].sqlType);
 
 
-                widgetSettings[a].format=null;
-                
+                widgetSettings[a].format = null;
+
 
 
                 if (t.TableColumn[a].include != null)
@@ -724,8 +833,8 @@ namespace AubitDesktop
                     }
 
                 }
-                
-                widgetSettings[a].defaultValue=t.TableColumn[a].defaultValue;
+
+                widgetSettings[a].defaultValue = t.TableColumn[a].defaultValue;
             }
             this.MultiSelect = false;
             EditMode = DataGridViewEditMode.EditOnEnter;
@@ -737,38 +846,12 @@ namespace AubitDesktop
 
 
 
-        #region EventForwarders
-        void Grid_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ignEvents)
-            {
-
-                //return;
-            }
-          //  setAllowUserToAddRows();
-           
-            if (BeforeRow != null && enteredRow!=e.RowIndex)
-            {
-                enteredRow = e.RowIndex;
-                BeforeRow(sender, e);
-            }
 
 
-        }
 
-        void Grid_RowLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            // are we leaving just because its becoming deactivated ? 
-            if (ignEvents) return;
+        
 
-            setAllowUserToAddRows();
-            if (AfterRow != null)
-            {
-                AfterRow(sender, e);
-            }
-            rowChanged = false;
-        }
-
+        
         void Grid_DoubleClick(object sender, EventArgs e)
         {
             if (this.onDblClick != null)
@@ -776,8 +859,7 @@ namespace AubitDesktop
                 this.onDblClick(sender, e);
             }
         }
-        #endregion
-
+        
 
         public int RowsToDisplay
         {
@@ -819,9 +901,7 @@ namespace AubitDesktop
                     e.Cancel = true;
 
                 }
-
             }
-
         }
 
         private int GetGridHeight()
@@ -829,23 +909,7 @@ namespace AubitDesktop
             return MaximumSize.Height;
 
 
-            /*
-            int x = 0;
-
-            foreach (DataGridViewRow row in Rows)
-            {
-
-                x += row.Height;
-
-            }
-
-            x += ColumnHeadersHeight;
-
-            x += 2;
-
-            return x;
-            */
-        }
+                }
 
         private int GetMaxGridSize()
         {
@@ -878,17 +942,20 @@ namespace AubitDesktop
 
         internal string getInfield()
         {
-         
+
             if (this.CurrentCell == null) return "";
-            if (this.CurrentCell.ColumnIndex == 0) { 
+            if (this.CurrentCell.ColumnIndex == 0)
+            {
                 // This field is normally hidden - it contains the subscript
                 // but its sometimes 'visible' whilst debugging...
-                return ""; }
+                return "";
+            }
 
             return " INFIELD=\"" + table.TableColumn[this.CurrentCell.ColumnIndex - 1].colName + "\"";
         }
 
-        internal string getFieldName(int columnIndex) {
+        internal string getFieldName(int columnIndex)
+        {
             return table.TableColumn[columnIndex].colName;
         }
 
@@ -906,7 +973,7 @@ namespace AubitDesktop
 
 
 
-        
+
 
         internal void setFormat(int columnIndex, string format)
         {
@@ -941,36 +1008,77 @@ namespace AubitDesktop
 
         internal void init()
         {
-            enteredCellColumn = -1;
-            enteredCellRow = -1;
-            leftCellColumn = -1;
-            leftCellRow = -1;
             onDblClick = null;
             AfterRow = null;
             BeforeRow = null;
             beforeFieldHandler = null;
             afterFieldHandler = null;
             CurrentCell = null;
-            ignEvents = false;
+            movingCellsInternally = 0;
+            currentRowId = -1;
+            currentColId = -1;
+            SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         }
 
-        /*
-        internal void setIgnore()
+
+        internal bool okToMove()
         {
-            doIgnore = true;
+            if (CurrentCell!=null) {
+                return validateField(CurrentCell.RowIndex, CurrentCell.ColumnIndex,GetStringToValidate(CurrentCell));
+            }
+            return true;
         }
 
-        internal void endIgnore()
+        internal void setActiveFocus()
         {
-            doIgnore = false;
+            bool incMovingCellsInternally = false;
+            if (currentColId == -1 && currentRowId == -1)
+            {
+               // first move - need to trigger the before fields/rows... 
+            }
+            else
+            {
+                incMovingCellsInternally = true;
+                this.movingCellsInternally++;
+            }
+
+            if (CurrentCell == null)
+            {
+                this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+            }
+            else
+            {
+
+                if (this.CurrentCell.ColumnIndex != currentColId || this.CurrentCell.RowIndex != currentRowId)
+                {
+                    if (currentRowId == -1 && currentColId == -1) ;
+                    else
+                    {
+                        this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                    }
+                }
+            }
+
+            if (incMovingCellsInternally)
+            {
+                movingCellsInternally --;
+            }
+            /*
+            this.Parent.Focus();
+            if (!this.Focused)
+            {
+                this.Focus();
+            }
+            this.Select();
+             * */
+            this.CurrentCell.Selected = true;
         }
-         */
+       
+    
+    
+    
+    
+    
     }
 
-
-
-
-
-
-    
 }

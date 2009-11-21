@@ -597,7 +597,7 @@ namespace AubitDesktop
                 }
             }
             if (appPanel == null) return;
-
+            
             foreach (TabPage tp in this.tabControl1.TabPages)
             {
                 if (tp.Controls.Contains(appPanel))

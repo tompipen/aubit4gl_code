@@ -646,6 +646,7 @@ namespace AubitDesktop
 
         void dataReceived(IAsyncResult i ) {
             byte[] buffer = (byte[])i.AsyncState;
+            
             try
             {
                 int nBytes = tcpStream.EndRead(i);
@@ -685,7 +686,7 @@ namespace AubitDesktop
                 {
                     tcpStream.BeginRead(buffer, 0, 100000, networkReadCallback, buffer);
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
                     MessageBox.Show("Disconnected?");
                 }

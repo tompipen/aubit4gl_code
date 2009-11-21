@@ -344,11 +344,11 @@ namespace AubitDesktop
 
             if (afterRow != null)
             {
-                displayArrayGrid.AfterRow = new DataGridViewCellEventHandler(displayArrayGrid_RowLeave);
+                displayArrayGrid.AfterRow = new UIArrayTableRowHandler(displayArrayGrid_RowLeave);
             }
             if (beforeRow != null)
             {
-                displayArrayGrid.BeforeRow = new DataGridViewCellEventHandler(displayArrayGrid_RowEnter);
+                displayArrayGrid.BeforeRow = new UIArrayTableRowHandler(displayArrayGrid_RowEnter);
             }
 
             mainWin.setActiveToolBarKeys(KeyList,onActionList); //, true,true,false);
@@ -377,7 +377,7 @@ namespace AubitDesktop
             toolBarAcceptClicked();
         }
 
-        void displayArrayGrid_RowLeave(object sender, DataGridViewCellEventArgs e)
+        void displayArrayGrid_RowLeave( int rowId)
         {
             if (displayArrayGrid.CurrentRow != null)
             {
@@ -385,7 +385,7 @@ namespace AubitDesktop
 
                 if (afterRow.ID != "")
                 {
-                    setLines(e.RowIndex);
+                    setLines(rowId);
                     if (this.EventTriggered != null)
                     {
                         this.EventTriggered(null, afterRow.ID, "<TRIGGERED ID=\"" + afterRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);
@@ -394,13 +394,13 @@ namespace AubitDesktop
             }
         }
 
-        void displayArrayGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
+        void displayArrayGrid_RowEnter(int rowId)
         {
             if (displayArrayGrid.CurrentRow != null)
             {
                 if (beforeRow.ID != "")
                 {
-                    setLines(e.RowIndex);
+                    setLines(rowId);
                     if (this.EventTriggered != null)
                     {
                         this.EventTriggered(null, beforeRow.ID, "<TRIGGERED ID=\"" + beforeRow.ID + "\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\"></TRIGGERED>",this);

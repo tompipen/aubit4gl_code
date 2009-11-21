@@ -570,7 +570,7 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.HLine":
                     {
                         AubitDesktop.Xml.XMLForm.HLine hl;
-                        int lineHeight;
+                        //int lineHeight;
                         hl = (AubitDesktop.Xml.XMLForm.HLine)child;
                         // We'll fake a like by using a panel with a border...
                         Panel p_for_line;
