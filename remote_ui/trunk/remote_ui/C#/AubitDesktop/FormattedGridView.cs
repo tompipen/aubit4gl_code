@@ -1046,14 +1046,19 @@ namespace AubitDesktop
 
             if (CurrentCell == null)
             {
-                this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                if (currentColId >= 0 && currentRowId >= 0)
+                {
+                    this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                }
             }
             else
             {
 
                 if (this.CurrentCell.ColumnIndex != currentColId || this.CurrentCell.RowIndex != currentRowId)
                 {
-                    if (currentRowId == -1 && currentColId == -1) ;
+                    if (currentRowId == -1 && currentColId == -1)
+                    {
+                    }
                     else
                     {
                         this.CurrentCell = Rows[currentRowId].Cells[currentColId];
