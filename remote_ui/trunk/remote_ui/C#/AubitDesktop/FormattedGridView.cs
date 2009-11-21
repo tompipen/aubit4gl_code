@@ -1078,7 +1078,11 @@ namespace AubitDesktop
             }
             this.Select();
              * */
-            this.CurrentCell.Selected = true;
+
+            if (CurrentCell != null)
+            {
+                this.CurrentCell.Selected = true;
+            }
         }
        
     
