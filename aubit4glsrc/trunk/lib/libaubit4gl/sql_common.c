@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.92 2009-09-23 20:38:48 mikeaubury Exp $
+# $Id: sql_common.c,v 1.93 2009-11-21 12:47:08 mikeaubury Exp $
 #
 */
 
@@ -1713,9 +1713,9 @@ int
 A4GL_sqlid_encrypt (void)
 {
   FILE *f;
-  char fname[256];
-  char buff[300];
-  char buff_orig[300];
+  char fname[256]="";
+  char buff[300]="";
+  char buff_orig[300]="";
   char *ptr_fields[3];
   char *ptr;
   char *ptr_next;
@@ -1723,6 +1723,7 @@ A4GL_sqlid_encrypt (void)
   FILE *fout;
   ptr = acl_getenv_not_set_as_0 ("A4GL_SQLACL");
 
+A4GL_debug("ptr=%s", ptr);
   if (ptr == 0)
     {
       ptr = acl_getenv_not_set_as_0 ("A4GL_ACLFILE");
@@ -1733,6 +1734,7 @@ A4GL_sqlid_encrypt (void)
 	}
     }
 
+A4GL_debug("ptr=%s", ptr);
 
 
   if (ptr == 0)
@@ -1742,6 +1744,7 @@ A4GL_sqlid_encrypt (void)
 	{
 	  strcpy (fname, "c:\\aubit4gl\\aubit4gl.acl");
 	}
+A4GL_debug("ptr=%s", ptr);
 #else
       strcpy (fname, acl_getenv ("HOME"));
       if (strlen (fname) == 0)
@@ -1752,12 +1755,20 @@ A4GL_sqlid_encrypt (void)
 	{
 	  strcat (fname, "/.aubit4gl.acl");
 	}
+A4GL_debug("ptr=%s", ptr);
 #endif
     }
   else
     {
       strcpy (fname, ptr);
+A4GL_debug("ptr=%s", ptr);
     }
+
+
+if (strlen(fname)==0) {
+	return 0;
+}
+
 A4GL_debug("Reading : %s\n",fname);
   f = fopen (fname, "r");
 
