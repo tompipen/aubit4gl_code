@@ -131,6 +131,7 @@ namespace AubitDesktop
 
         private AFTER_DELETE_EVENT afterDelete;
         private AFTER_INSERT_EVENT afterInsert;
+        private AFTER_INPUT_EVENT afterInput;
         private int[] beforeFieldEventIds;
         private int[] afterFieldEventIds;
 #endregion
@@ -157,7 +158,10 @@ namespace AubitDesktop
             {
                 lastKey = "ACCEPT";
                 inputArrayGrid.EndEdit();
-               
+                if (afterInput!=null)
+                {
+                    sendTrigger(afterInput.ID,-1);
+                }
                 sendTrigger("ACCEPT", -1);
             }
             else
@@ -395,6 +399,7 @@ namespace AubitDesktop
                     BEFORE_DELETE_EVENT e;
                     e = (BEFORE_DELETE_EVENT)evt;
                     beforeDelete = e;
+                    continue;
                 }
 
                 if (evt is BEFORE_INSERT_EVENT)
@@ -402,6 +407,7 @@ namespace AubitDesktop
                     BEFORE_INSERT_EVENT e;
                     e = (BEFORE_INSERT_EVENT)evt;
                     beforeInsert = e;
+                    continue;
                 }
 
 
@@ -410,6 +416,13 @@ namespace AubitDesktop
                    AFTER_DELETE_EVENT e;
                     e = (AFTER_DELETE_EVENT)evt;
                     afterDelete = e;
+                    continue;
+                }
+
+                if (evt is AFTER_INPUT_EVENT)
+                {
+                    afterInput = (AFTER_INPUT_EVENT)evt;
+                    continue;
                 }
 
                 if (evt is AFTER_INSERT_EVENT)
@@ -417,6 +430,7 @@ namespace AubitDesktop
                     AFTER_INSERT_EVENT e;
                     e = (AFTER_INSERT_EVENT)evt;
                     afterInsert = e;
+                    continue;
                 }
 
                 if (evt is AFTER_ROW_EVENT)
