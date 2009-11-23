@@ -51,10 +51,13 @@ for (a=0;a<layout->nblocks;a++) {
 		centry=block->matrix[y];
 		for (x=0;x<block->ncols;x++) {
 			if (centry[x].rb==rb) {
+				//printf("Cleared %d\n",x);
 				centry[x].special=0;
-			}
-			if (centry[x].fixed_text) {
-				centry[x].special=centry[x].fixed_text;
+			
+				if (centry[x].fixed_text) {
+					//printf("set %d to %s\n",x, centry[x].fixed_text);
+					centry[x].special=centry[x].fixed_text;
+				}
 			}
 		}
 	}
@@ -71,7 +74,6 @@ end_block (int rb, struct s_rbx *rbx)
   int last;
   struct csv_blocks *block;
   struct csv_entry *centry;
-//fprintf(rep_fout,"Block :%d:",rb);
 
 // First - we need to find our block to print...
   for (a = 0; a < layout->nblocks; a++)
@@ -81,7 +83,7 @@ end_block (int rb, struct s_rbx *rbx)
 
       block = &layout->blocks[a];
 
-      // We may nee to print somethings...
+      // We may need to print somethings...
       for (y = 0; y < block->nrows; y++)
 	{
 	  centry = block->matrix[y];
@@ -97,12 +99,12 @@ end_block (int rb, struct s_rbx *rbx)
 		}
 	    }
 
-
 	  // Print all of these cells...
 	  for (x = 0; x <= last; x++)
 	    {
-	      if (x || y)
+	      if (x || y) {
 		fprintf (rep_fout, ",");
+		}
 	      if (centry[x].special && strlen (centry[x].special) && centry[x].rb >= 0 && centry[x].entry >= 0)
 		{
 		  fprintf (rep_fout, "\"%s\"", centry[x].special);
@@ -113,8 +115,8 @@ end_block (int rb, struct s_rbx *rbx)
 		}
 	    }
 	}
-      fprintf (rep_fout, "\n");
     }
+      fprintf (rep_fout, "\n");
 
 }
 
@@ -133,7 +135,7 @@ for (a=0;a<layout->nblocks;a++) {
 		centry=block->matrix[y];
 		for (x=0;x<block->ncols;x++) {
 			if (centry[x].entry==entry_id && centry[x].rb==block_id) {
-				centry[x].special=s;
+				if (!centry[x].fixed_text) centry[x].special=s;
 			}
 		}
 	}
@@ -185,14 +187,15 @@ report=vreport;
   	}
 	// If we've got to here....
 
+	//printf("Total of %d blocks\n", report->nblocks);
 	for (a=0;a<report->nblocks;a++) {
-		//printf("Start Block : %d\n", report->blocks[a].rb);
-		start_block(report->blocks[a].rb);
-		for (b=0;b<report->blocks[a].nentries;b++) {
-			process_block(report->blocks[a].rb, report->blocks[a].entries[b].entry_id, report->blocks[a].entries[b].string);
+		if (report->blocks[a].nentries) {
+			start_block(report->blocks[a].rb);
+			for (b=0;b<report->blocks[a].nentries;b++) {
+				process_block(report->blocks[a].rb, report->blocks[a].entries[b].entry_id, report->blocks[a].entries[b].string);
+			}
+			end_block(report->blocks[a].rb,rbx);
 		}
-		//printf("End Block : %d\n", report->blocks[a].rb);
-		end_block(report->blocks[a].rb,rbx);
         }
 
 	if (strcmp(buff,"-")!=0) {
