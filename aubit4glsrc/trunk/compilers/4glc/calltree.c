@@ -58,8 +58,10 @@ static void load_boltons (char *fname);
 static int add_calltree_calls (char *s, commands * func_commands, int mode);
 static int find_function (char *s);
 char *decode_rb (enum report_blocks a);
+char *endTarget=0;
 static int ignore_user_function(char *name) ;
 int ignLibFunc=1;
+static int run_calltree (char *s);
 
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
@@ -115,6 +117,7 @@ struct function
   struct function_calls *calls;
   void *ptr;
   int called;
+  int callsEndTarget;
   int isInLibrary;
 
   char *whenever_error_func;
@@ -123,6 +126,8 @@ struct function
   int whenever_error_func_line;
   int whenever_any_error_func_line;
   int whenever_sql_error_func_line;
+  call_list *call_list;
+
 };
 
 
@@ -167,6 +172,14 @@ hasNode (char *fname, char *calls,int lineno)
 static void
 addNode (char *fname, char *calls,char *module, int line,char *type)
 {
+
+  if (endTarget) {
+	int fid;
+	// Lets skip anything that isn't on our callpath 
+	fid=find_function(calls); if (fid!=-1) { if (functions[fid].callsEndTarget==0) return; }
+	fid=find_function(fname); if (fid!=-1) { if (functions[fid].callsEndTarget==0) return; }
+  }
+
   if (!hasNode (fname, calls,line))
     {
       nodescnt++;
@@ -222,7 +235,7 @@ static void check_for_orphaned_functions(char *topfuncname) {
 
 	if (topfuncno==-1) return; // Couldn't find it..
 
-printf("Checking for orphaned functions from :%s\n", topfuncname);
+//printf("Checking for orphaned functions from :%s\n", topfuncname);
 	nodes[topfuncno].checked=1; /* We've checked it now... */
 
 	for (a=0;a<nodescnt;a++) {
@@ -231,7 +244,7 @@ printf("Checking for orphaned functions from :%s\n", topfuncname);
 				continue;
 			}
 			nodes[a].checked=1;
-printf("%s calls %s ? \n", topfuncname, nodes[a].calls);
+//printf("%s calls %s ? \n", topfuncname, nodes[a].calls);
 			check_for_orphaned_functions(nodes[a].calls);
 		}
 	}
@@ -903,7 +916,7 @@ system_function (char *funcname)
 
 
 static void
-add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary)
+add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary,  call_list * call_list)
 {
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
@@ -915,7 +928,10 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
   functions[functions_cnt - 1].calls = 0;
   functions[functions_cnt - 1].ptr = ptr;
   functions[functions_cnt - 1].called = 0;
+  functions[functions_cnt - 1].callsEndTarget = 0;
   functions[functions_cnt - 1].isInLibrary=isInLibrary;
+  functions[functions_cnt - 1].call_list = call_list;
+
 
 
   functions[functions_cnt - 1].whenever_error_func = whenever_error_func;
@@ -1002,6 +1018,19 @@ print_indent (void)
     }
 }
 
+static int is_end_target(char *s) {
+	// If nothing is set - it must be the end target...
+	if (endTarget==0) return 1;
+
+		printf("Is end target %s\n",s);
+	if (strcmp(s,endTarget)==0) {
+		printf("yez!\n");
+		return 1;
+	}
+	printf("No\n");
+	return 0;
+}
+
 static int
 cache_expression (char *sxx, expr_str ** ptr, int mode)
 {
@@ -1066,6 +1095,7 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 
   if (expr->expr_type == ET_EXPR_FCALL)
     {
+	int cnt=0;
       //int a;
       struct expr_str_list *params;
       // Got a function call - add it to the stack..
@@ -1082,17 +1112,15 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 	    }
 	}
       params = expr->expr_str_u.expr_function_call->parameters;
-      if (params)
-	cache_expression_list ("", params, mode);
+      if (params) {
+	cnt+= cache_expression_list ("", params, mode);
+	}
 
       if (!system_function (expr->expr_str_u.expr_function_call->fname))
 	{
-	  return 1;
-	}
-      else
-	{
-	  return 0;
-	}
+		cnt++;
+        }
+	return cnt;
     }
 
   return 0;
@@ -2193,28 +2221,36 @@ check_program (module_definition * mods, int nmodules)
 	    case E_MET_MAIN_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
-			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary);
+			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list
+				);
 	      break;
 
 	    case E_MET_FUNCTION_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.funcname,
-			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary);
+			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list
+				);
 	      break;
 
 	    case E_MET_REPORT_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.funcname,
-			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition, mods[a].moduleIsInLibrary);
+			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition, mods[a].moduleIsInLibrary,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.call_list
+		);
 	      break;
 
 	    case E_MET_PDF_REPORT_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname,
-			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition, mods[a].moduleIsInLibrary);
+			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition, mods[a].moduleIsInLibrary,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.call_list
+				);
 	      break;
 
 	    case E_MET_CMD:
@@ -2236,6 +2272,11 @@ check_program (module_definition * mods, int nmodules)
 
     }
 
+
+  if (endTarget) {
+	printf("Running calltree...");
+	run_calltree(top_level_function);
+  }
 
   printf ("Program\n");
 /*
@@ -2287,6 +2328,13 @@ check_program (module_definition * mods, int nmodules)
     {
 	strcpy(currfunc,"_____");
 	set_whenever_for_function(&functions[a]);
+
+	if (endTarget) {
+		if (functions[a].callsEndTarget==0) { 
+			printf("Skipped %s\n",functions[a].function);
+			continue; 
+		}
+	} 
 
 	if (ignore_user_function(functions[a].function)) {	
 		continue;
@@ -2641,6 +2689,12 @@ main (int argc, char *argv[])
 		continue;
 	}
 
+      if (strcmp (argv[b], "-end") == 0) {
+		b++;
+		endTarget=strdup(argv[b]);
+		continue;
+	}
+
       if (strcmp (argv[b], "-NoProg") == 0)
 	{
 	  incProg = 0;
@@ -2699,3 +2753,74 @@ decode_rb (enum report_blocks a)
 
   return "Blah3";
 }
+
+
+
+
+
+static int
+run_calltree_for (call_list * call_list)
+{
+  int a;
+int cnt=0;
+  struct s_expr_function_call *fcall;
+
+  for (a = 0; a < call_list->calls_by_expr.calls_by_expr_len; a++)
+    {
+      switch (call_list->calls_by_expr.calls_by_expr_val[a]->expr_type)
+	{
+	case ET_EXPR_FCALL:
+	  fcall = call_list->calls_by_expr.calls_by_expr_val[a]->expr_str_u.expr_function_call;
+	  cnt+=run_calltree (fcall->fname);
+	  break;
+
+	default:
+	  break;
+	}
+    }
+
+  return cnt;
+}
+
+
+// Go through and generate the whitelist of all functions
+// which are actually called...
+static int run_calltree (char *s)
+{
+  int a;
+  int cnt=0;
+
+
+  if (endTarget) {
+	if (strcmp(s,endTarget)==0) {
+		printf("Run_calltree for %s is endTarget\n",s);
+		cnt++;
+	}
+  }
+
+  if (system_function (s))
+    {
+      return 0;
+    }
+
+  for (a = 0; a < functions_cnt; a++)
+    {
+      if (strcmp (functions[a].function, s) == 0)
+	{
+	  if (functions[a].called == 0)
+	    {
+	      functions[a].called = 1;
+	      cnt+=run_calltree_for (functions[a].call_list);
+		if (cnt) {
+			functions[a].callsEndTarget=1;
+		}
+	    }
+	  printf("Run_calltree for %s returns %d\n", s, cnt);
+	  return cnt;
+	}
+    }
+  return 0;
+}
+
+
+

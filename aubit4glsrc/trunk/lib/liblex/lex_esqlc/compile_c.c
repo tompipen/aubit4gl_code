@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.512 2009-11-13 11:58:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.513 2009-11-23 15:25:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.512 2009-11-13 11:58:01 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.513 2009-11-23 15:25:25 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4198,6 +4198,9 @@ print_event_actions (char *loopvar, struct on_events *events)
       struct on_event *evt;
       evt = events->event.event_val[a];
 
+	if (evt->on_event_commands==NULL) continue;
+	if (evt->on_event_commands->cmds.cmds_len==0) continue;
+
 
       switch (events->event.event_val[a]->evt_data.event_type)
 	{
@@ -4289,6 +4292,11 @@ print_event_list (struct on_events *events)
     {
       struct on_event *evt;
       evt = events->event.event_val[a];
+
+	if (evt->on_event_commands==NULL) continue;
+	if (evt->on_event_commands->cmds.cmds_len==0) continue;
+
+
       //A4GL_get_event (a, &event_id, &event_dets);
       switch (events->event.event_val[a]->evt_data.event_type)
 	{
