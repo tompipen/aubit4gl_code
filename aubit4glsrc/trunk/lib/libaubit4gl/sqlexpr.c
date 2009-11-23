@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.83 2009-11-03 10:12:04 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.84 2009-11-23 11:24:59 mikeaubury Exp $
 #
 */
 
@@ -1310,7 +1310,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	  }
 	A4GL_assertion (p->data.s_select_list_item_data_u.column.colname == 0, "Column name was null pointer");
 
-	if (p->data.s_select_list_item_data_u.column.tabname)
+	if (p->data.s_select_list_item_data_u.column.tabname && strlen(p->data.s_select_list_item_data_u.column.tabname))
 	  {
 	    char *orig;
 	    char *rval;

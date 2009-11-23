@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.54 2009-10-16 10:04:38 mikeaubury Exp $
+# $Id: Makefile,v 1.55 2009-11-23 11:24:58 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -220,6 +220,7 @@ lib: ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
 ${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}: ${LIBROOT}/libaubit4gl-${A4GL_VERSION_STRING}${SO_EXT_LINKABLE}
 ifeq "${COMSPEC}" ""
 #Please dont use hard links!
+	rm -f "$@"
 	ln -s $^ $@
 else
 #Note - no linking on Windows
