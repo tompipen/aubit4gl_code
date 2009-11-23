@@ -71,13 +71,16 @@ namespace AubitDesktop
             }
             return n;
         }
-        public int FindAttributeNo(string Name)
+        public int FindAttributeNo(string Name,bool showErrIfNotFound)
         {
             foreach (FGLScreenRecordAttributes a in Attributes)
             {
                 if (a.Name == Name) return a.AttributeNo;
             }
-            Program.Show("Field " + Name + " was not found");
+            if (showErrIfNotFound)
+            {
+                Program.Show("Field " + Name + " was not found");
+            }
             return -1;
         }
     }

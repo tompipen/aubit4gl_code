@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
+using System.Data;
 
 namespace AubitDesktop
 {
@@ -1470,8 +1471,15 @@ namespace AubitDesktop
                     {
                         // We've found our record - now find our attribute..
                         if (colName != "*") { 
-                                attributeNo = sr.FindAttributeNo(colName);
-                                Attributes.Add(attributeNo);
+                                attributeNo = sr.FindAttributeNo(colName,false);
+                                if (attributeNo == -1)
+                                {
+                                    Program.Show("Unable to find field :" + colName);
+                                }
+                                else
+                                {
+                                    Attributes.Add(attributeNo);
+                                }
                         } else {
                             Attributes.AddRange(sr.AttributeNoList());
                         }
@@ -1614,6 +1622,14 @@ namespace AubitDesktop
                 {
                     for (int a = 0; a < d.VALUES.Length; a++)
                     {
+                        if (dgCells[a].DataGridView.DataSource == null)
+                        {
+                            FormattedGridView fg;
+                            fg = (FormattedGridView)dgCells[a].DataGridView;
+                            fg.clearDefaultData();
+                            fg.DataSource = fg.defaultData;
+
+                        }
                         FGLUtils.setCellValue(dgCells[a], d.VALUES[a].Text,Convert.ToInt32(d.ATTRIBUTE));
 
                             //dgCells[a].Value = d.VALUES[a].Text;
@@ -1951,7 +1967,7 @@ namespace AubitDesktop
                         #region colName = * checks
                         if (colName != "*")
                         {
-                            int attr = ScreenRecords[sr].FindAttributeNo(colName);
+                            int attr = ScreenRecords[sr].FindAttributeNo(colName,false);
                             if (attr != -1)
                             {
                                 if (dg == null)
@@ -1979,7 +1995,25 @@ namespace AubitDesktop
                             while (dg.Rows.Count < subscript)
                             {
                                 added = true;
-                                dg.Rows.Add();
+                                if (dg.DataSource == null)
+                                {
+                                    dg.Rows.Add();
+                                }
+                                else
+                                {
+
+                                    if (dg.DataSource is DataTable)
+                                    {
+                                        DataTable dt = (DataTable)dg.DataSource;
+                                        dt.Rows.Add();
+
+                                    }
+                                    else
+                                    {
+                                        throw new ApplicationException("Datasource is set - but its not a datatable");
+                                    }
+                                }
+
                                
                             }
 

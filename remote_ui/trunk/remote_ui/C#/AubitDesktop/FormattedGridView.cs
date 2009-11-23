@@ -50,6 +50,7 @@ namespace AubitDesktop
         private int __RowsToDisplay;
         private EventHandler _onDblClick;
         internal bool addedNewRowBelow = false;
+        internal DataTable defaultData;
         //internal int enteredCellColumn = -1;
         //internal int enteredCellRow = -1;
         //internal int enteredRow = -1;
@@ -88,6 +89,7 @@ namespace AubitDesktop
             }
         }
 
+     
 
         internal int maxRows
         {
@@ -813,6 +815,41 @@ namespace AubitDesktop
         }
 
 
+        public void copyFromDataset() {
+            string value;
+            if (DataSource == defaultData) return;
+            for (int row = 0; row < Convert.ToInt32(table.pageSize); row++)
+            {
+                for (int col = 0; col <= table.TableColumn.Length; col++)
+                {
+
+
+                    value = "";
+                    if (DataSource is DataTable)
+                    {
+                        DataTable dt = (DataTable)DataSource;
+                        if (row >= dt.Rows.Count)
+                        {
+                            value = "";
+                        }
+                        else
+                        {
+                            if (dt.Rows[row][col] is DBNull)
+                            {
+                                value = "";
+                            }
+                            else
+                            {
+                                value = (string)dt.Rows[row][col];
+                            }
+                        }
+                    }
+                    defaultData.Rows[row][ col] = value;
+                }
+
+            }
+            DataSource = defaultData;
+        }
 
         public FormattedGridView(Xml.XMLForm.Table t)
         {
@@ -822,6 +859,25 @@ namespace AubitDesktop
             //            this.ReadOnly = true;
             //          this.Enabled = false;
             widgetSettings = new FormattedCellSettings[len];
+            defaultData = new DataTable();
+            defaultData.Columns.Add("subscript");
+            for (int cols = 1; cols <= len; cols++)
+            {
+                defaultData.Columns.Add("col"+(cols-1));
+            }
+            
+
+            for (int rows = 0; rows < Convert.ToInt32(t.pageSize); rows++)
+            {
+                defaultData.Rows.Add();
+                for (int cols = 0; cols <= len; cols++)
+                {
+                    defaultData.Rows[rows][cols] = "";
+                }
+            }
+
+            //DataSource = defaultData;
+            
 
             for (int a = 0; a < len; a++)
             {
@@ -829,11 +885,7 @@ namespace AubitDesktop
                 widgetSettings[a].Required = (t.TableColumn[a].required != null && t.TableColumn[a].required == "1");
                 widgetSettings[a].datatype = (FGLUtils.FGLDataTypes)FGLWidget.decode_datatype(t.TableColumn[a].sqlType);
                 widgetSettings[a].datatype_length = FGLWidget.decode_datatype_size(t.TableColumn[a].sqlType);
-
-
                 widgetSettings[a].format = null;
-
-
 
                 if (t.TableColumn[a].include != null)
                 {
@@ -868,6 +920,7 @@ namespace AubitDesktop
             setUpHandlers();
             //setAllowUserToAddRows();
             this.Enabled = false;
+            //DataSource = defaultData;
         }
 
 
@@ -900,6 +953,10 @@ namespace AubitDesktop
         {
             MaximumSize = new System.Drawing.Size(1024, GetMaxGridSize());
             Height = MaximumSize.Height;
+            if (DataSource == null)
+            {
+                DataSource = defaultData;
+            }
 
         }
 
@@ -1140,6 +1197,18 @@ namespace AubitDesktop
 
 
 
+
+        internal void clearDefaultData()
+        {
+            for (int rows = 0; rows < Convert.ToInt32(table.pageSize); rows++)
+            {
+
+                for (int cols = 0; cols <= table.TableColumn.Length; cols++)
+                {
+                    defaultData.Rows[rows][cols] = "";
+                }
+            }
+        }
     }
 
 }

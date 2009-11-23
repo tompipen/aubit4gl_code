@@ -1083,6 +1083,8 @@ namespace AubitDesktop
             _contextIsActive = false;
             inputArrayGrid.context = FGLContextType.ContextNone;
             stopHandlers();
+            inputArrayGrid.copyFromDataset();
+            
         }
 
 
