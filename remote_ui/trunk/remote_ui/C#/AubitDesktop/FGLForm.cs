@@ -355,7 +355,7 @@ namespace AubitDesktop
                             {
                                 gridArray.setReadonly(a,true);
                                 gridArray.Columns[a + 1].ReadOnly = true;
-                                gridArray.Columns[a + 1].HeaderText = "READONLY";
+                                gridArray.Columns[a + 1].DefaultCellStyle.BackColor = Color.Bisque;
                             }
 
                             if (p.TableColumn[a].hidden=="1")
@@ -1536,7 +1536,16 @@ namespace AubitDesktop
 
             if (foundFields.Count == 0)
             {
-                Program.Show("FindField failed");
+                
+                if (hasRecordContainingField (name))
+                {
+                    Program.Show("The field " + name + " exists in a screen array defined as a \"grid\",\n but not as a normal field\n" +
+                                "You must change the form to use an old style screen record,\n or recode your 4gl to use a different form");
+                }
+                else
+                {
+                    Program.Show("FindField failed");
+                }
             }
 
             return foundFields;
@@ -1820,7 +1829,18 @@ namespace AubitDesktop
             }
         }
 
-        internal FormattedGridView FindRecord(FIELD[] fIELD)
+        internal bool hasRecordContainingField(string name)
+        {
+            FIELD f;
+            f=new FIELD();
+            f.NAME=name;
+            if (FindRecordCells(f) == null) return false;
+            return true;
+
+           
+        }
+
+        internal FormattedGridView FindRecord(params FIELD[] fIELD)
         {
             string fld;
             fld = fIELD[0].NAME;
@@ -1847,7 +1867,7 @@ namespace AubitDesktop
             }
         }
 
-        internal List<DataGridViewCell> FindRecordCells(FIELD[] fIELD)
+        internal List<DataGridViewCell> FindRecordCells(params FIELD[] fIELD)
         {
             string fld;
             DataGridView dg;
@@ -1911,6 +1931,9 @@ namespace AubitDesktop
                 }
 
 
+                bool added = false;
+
+                #region search through screen records
                 // we need to look up the tabName and column from the screen record....
                 for (int sr = 0; sr < ScreenRecords.Count; sr++)
                 {
@@ -1925,6 +1948,7 @@ namespace AubitDesktop
                             dg = null;
                         }
 
+                        #region colName = * checks
                         if (colName != "*")
                         {
                             int attr = ScreenRecords[sr].FindAttributeNo(colName);
@@ -1933,11 +1957,13 @@ namespace AubitDesktop
                                 if (dg == null)
                                 {
                                     //Program.Show("DG is null");
-                                    return null;
+                                   // return null;
                                 }
                                 else
                                 {
+                                    added = true;
                                     dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
+                                    
                                 }
 
                             }
@@ -1952,6 +1978,7 @@ namespace AubitDesktop
 
                             while (dg.Rows.Count < subscript)
                             {
+                                added = true;
                                 dg.Rows.Add();
                                
                             }
@@ -1964,9 +1991,11 @@ namespace AubitDesktop
                                 dgCells.Add(dg.Rows[subscript - 1].Cells[cnt++]);
                             }
                         }
+                        #endregion
                     }
                 }
             }
+                #endregion
 
             if (dgCells.Count == 0)
             {
