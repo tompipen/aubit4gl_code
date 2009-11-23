@@ -156,7 +156,13 @@ namespace AubitDesktop
             if (inputArrayGrid.okToMove())
             {
                 lastKey = "ACCEPT";
+                inputArrayGrid.EndEdit();
+               
                 sendTrigger("ACCEPT", -1);
+            }
+            else
+            {
+                MessageBox.Show("Can't ACCEPT at the minute...");
             }
         }
 
