@@ -70,6 +70,12 @@ namespace AubitDesktop
         /// </summary>
         private int nCols;
 
+        /// <summary>
+        /// Last arrLine seen - just in case there is no 
+        /// currently active line...
+        /// </summary>
+        private int lastArrLine;
+
         //private bool[] rowDataChanged;
      //   private DataTable Data;
 
@@ -902,7 +908,15 @@ namespace AubitDesktop
             }
             else
             {
-                arrLine = inputArrayGrid.CurrentRow.Index+1;
+                if (inputArrayGrid.CurrentRow != null)
+                {
+                    arrLine = inputArrayGrid.CurrentRow.Index + 1;
+                    lastArrLine = arrLine;
+                }
+                else
+                {
+                    arrLine = lastArrLine;
+                }
                 scrLine = arrLine;
             }
 

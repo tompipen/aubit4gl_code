@@ -22,7 +22,8 @@ namespace AubitDesktop
         internal bool upshift;
         internal bool downshift;
         internal string comments;
-
+        internal bool isPassword;
+        internal bool readOnly;
 
 
         internal FormattedCellSettings()
@@ -35,6 +36,8 @@ namespace AubitDesktop
             upshift = false;
             downshift = false;
             comments = "";
+            isPassword = false;
+            readOnly = false;
         }
 
     }
@@ -276,7 +279,22 @@ namespace AubitDesktop
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
             this.RowsRemoved += new DataGridViewRowsRemovedEventHandler(FormattedGridView_RowsRemoved);
+            CellBeginEdit += new DataGridViewCellCancelEventHandler(FormattedGridView_CellBeginEdit);
             
+        }
+
+        void FormattedGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            
+            if (Rows[e.RowIndex].Cells[e.ColumnIndex].ReadOnly) {
+                e.Cancel = true;
+            }
+                if (e.ColumnIndex>0) {
+            if (widgetSettings[e.ColumnIndex - 1].readOnly)
+            {
+                e.Cancel = true;
+            }
+                }
         }
 
         void FormattedGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
@@ -478,6 +496,7 @@ namespace AubitDesktop
 
         void FormattedGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
+            
             if (CurrentCell.ColumnIndex == 0) return;
 
             if (e.Control is TextBox)
@@ -999,8 +1018,20 @@ namespace AubitDesktop
             {
                 this.widgetSettings[a].upshift = true;
             }
+
         }
 
+
+        internal void setReadonly(int a,bool isReadOnly)
+        {
+            this.widgetSettings[a].readOnly = isReadOnly;
+        }
+
+
+        internal void setIsPassword(int a, bool isPassword)
+        {
+            this.widgetSettings[a].isPassword = isPassword;
+        }
 
 
         internal string getComments(int columnId)
@@ -1079,17 +1110,31 @@ namespace AubitDesktop
             this.Select();
              * */
 
+            if (CurrentCell == null)
+            {
+                try
+                {
+                    CurrentCell = Rows[0].Cells[1];
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Couldn't set currentcell");
+                }
+            }
+
             if (CurrentCell != null)
             {
                 this.CurrentCell.Selected = true;
             }
+
         }
-       
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     }
 
 }

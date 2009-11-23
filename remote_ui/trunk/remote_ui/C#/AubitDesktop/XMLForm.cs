@@ -725,6 +725,10 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string isPassword;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string comments;
 
             /// <remarks/>

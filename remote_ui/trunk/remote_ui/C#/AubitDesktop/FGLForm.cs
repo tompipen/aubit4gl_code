@@ -209,6 +209,7 @@ namespace AubitDesktop
                                 Xml.XMLForm.Widget w;
                                 w = (Xml.XMLForm.Widget)item;
                                
+                                
                                 switch (w.Type)
                                 {
                                     case "CHECK":
@@ -290,6 +291,18 @@ namespace AubitDesktop
                                 gridArray.setFormat(a,e.format);
                                 gridArray.setComments(a, e.comments);
 
+                                if (e.isPassword != null)
+                                {
+                                    if (e.isPassword == "1")
+                                    {
+                                        gridArray.setIsPassword(a,true);
+                                    }
+                                    else
+                                    {
+                                        gridArray.setIsPassword(a,false);
+                                    }
+                                }
+
                                 if (e.shift != null)
                                 {
                                     
@@ -340,7 +353,9 @@ namespace AubitDesktop
 
                             if (p.TableColumn[a].noEntry=="1")
                             {
+                                gridArray.setReadonly(a,true);
                                 gridArray.Columns[a + 1].ReadOnly = true;
+                                gridArray.Columns[a + 1].HeaderText = "READONLY";
                             }
 
                             if (p.TableColumn[a].hidden=="1")
