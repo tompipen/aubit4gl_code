@@ -512,6 +512,11 @@ namespace AubitDesktop
                 {
                     tb.CharacterCasing = CharacterCasing.Lower;
                 }
+
+                if (this.widgetSettings[CurrentCell.ColumnIndex - 1].isPassword)
+                {
+                    tb.PasswordChar = '*';
+                }
                 Console.WriteLine("EDITINGCONROLSHOWING - Textbox");
             }
             else
