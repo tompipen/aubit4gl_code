@@ -91,6 +91,7 @@ namespace AubitDesktop
         public void toolBarAcceptClicked()
         {
             setLines();
+
             string txt= "<TRIGGERED ID=\"ACCEPT\" ARRLINE=\"" + this.arrLine + "\" SCRLINE=\"" + this.scrLine + "\" LASTKEY=\"ACCEPT\"></TRIGGERED>";
             this.EventTriggered(null, "ACCEPT", txt, this);
         }
