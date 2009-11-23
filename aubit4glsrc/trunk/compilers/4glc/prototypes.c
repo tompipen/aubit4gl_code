@@ -418,8 +418,35 @@ system_function (char *funcname)
 }
 
 
+char *reports[1000];
+int nreports=0;
 
 
+
+static void add_report_called(char *s) { 
+// Just add these to a list - we'll "call" them
+// after we've loaded all of the reports/functions
+// The 'call_list' doesn't normally contain the reports - so we'll 
+// need to do these manually..
+int a;
+for (a=0;a<nreports;a++) {
+	if (strcmp(reports[a],s)==0) return ; /* already in the list */
+}
+nreports++;
+reports[nreports-1]=strdup(s);
+}
+
+
+/* 
+ * Run the reports which have been added to make
+ * sure they are marked as called
+ */
+static void call_report_called() {
+int a;
+	for (a=0;a<nreports;a++) {
+		run_calltree(reports[a]);
+	}
+}
 
 
 static void
@@ -480,6 +507,23 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
 
       for (a = 0; a < all_cmds->cmds.cmds_len; a++)
 	{
+
+
+		if (all_cmds->cmds.cmds_val[a]->cmd_data.type ==E_CMD_START_CMD)  {
+			add_report_called(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname);
+			continue;
+		}
+
+		if (all_cmds->cmds.cmds_val[a]->cmd_data.type ==E_CMD_FINISH_CMD)  {
+			add_report_called(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname);
+			continue;
+		}
+
+		if (all_cmds->cmds.cmds_val[a]->cmd_data.type ==E_CMD_OUTPUT_CMD)  {
+			add_report_called(all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname);
+			continue;
+		}
+
 
 #ifdef GENERATE_CALLS_UNL
 /* This is used to generate some more prototypes  */
@@ -812,7 +856,7 @@ proto_program (module_definition * mods, int nmodules)
 			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition,
 			    mods[a].moduleIsInLibrary, NULL,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.parameters,
-			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
+			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.call_list,
 			    mods[a].moduleIsInLibrary);
 	      break;
 
@@ -827,7 +871,7 @@ proto_program (module_definition * mods, int nmodules)
 			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition,
 			    mods[a].moduleIsInLibrary, NULL,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.parameters,
-			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
+			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.call_list,
 			    mods[a].moduleIsInLibrary);
 
 	      break;
@@ -887,6 +931,12 @@ proto_program (module_definition * mods, int nmodules)
 
   // see whats actually used...
   run_calltree ("MAIN");
+
+  // Now call all the reports that were called
+  // these wont be in the normal 'function' called...
+  
+  call_report_called();
+
   generate_blacklist ();
 
   // Now - we should have loaded all our function definitions
