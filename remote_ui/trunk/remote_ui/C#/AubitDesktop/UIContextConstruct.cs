@@ -153,7 +153,7 @@ namespace AubitDesktop
                     //Just ignore it...
                     continue;
                 }
-                Program.Show("Unhandled Event for INPUT");
+                Program.Show("Unhandled Event for CONSTRUCT");
             }
 
             if (!haveAccept)
