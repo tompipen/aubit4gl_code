@@ -795,14 +795,21 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        if ((Boolean)c.EditedFormattedValue)
+                        if (c.EditedFormattedValue is string)
                         {
-
-                            s = (string)ch.TrueValue;
+                            s = (string)c.EditedFormattedValue;
                         }
                         else
                         {
-                            s = (string)ch.FalseValue;
+                            if ((Boolean)c.EditedFormattedValue)
+                            {
+
+                                s = (string)ch.TrueValue;
+                            }
+                            else
+                            {
+                                s = (string)ch.FalseValue;
+                            }
                         }
                     }
                 }
