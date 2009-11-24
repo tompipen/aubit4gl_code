@@ -28,7 +28,7 @@
 //------------------------------------------------------------------------------
 RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 {
-   b_hideButtons = true;
+   b_hideButtons = false;
    currentButton = NULL;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
@@ -51,7 +51,7 @@ RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 RingMenu::RingMenu(QString title, QString style, QString image, 
                    QWidget *parent) : QGroupBox(title, parent)
 {
-   b_hideButtons = true;
+   b_hideButtons = false;
    currentButton = NULL;
 
    if(!style.isEmpty()){
@@ -345,7 +345,6 @@ void RingMenu::setMenuStyle(const QString &ms)
 
 void RingMenu::setHideButtons(const QString &ms)
 {
-qDebug() << "MS:" << ms;
 
    if(ms == "disable"){
       b_hideButtons = false;
