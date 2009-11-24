@@ -223,6 +223,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "serial" 		{if (ign_kw(yystate, SERIAL)) REJECT;strcpy(yylval.str,yytext); return SERIAL;}
 "byte" 		{if (ign_kw(yystate, KW_BYTE)) REJECT;strcpy(yylval.str,yytext); return KW_BYTE;}
 "text" 		{if (ign_kw(yystate, KW_TEXT)) REJECT;strcpy(yylval.str,yytext); return KW_TEXT;}
+"header" 		{if (ign_kw(yystate, KW_HEADER)) REJECT;strcpy(yylval.str,yytext); return KW_HEADER;}
 "varchar" 		{if (ign_kw(yystate, VARCHAR)) REJECT;strcpy(yylval.str,yytext); return VARCHAR;}
 "date" 		{if (ign_kw(yystate, KW_DATE)) REJECT;strcpy(yylval.str,yytext); return KW_DATE;}
 "datetime" 		{if (ign_kw(yystate,DATETIME)) REJECT;strcpy(yylval.str,yytext); return DATETIME;}

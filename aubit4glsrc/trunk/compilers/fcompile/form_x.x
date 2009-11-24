@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.22 2009-06-15 17:36:47 mikeaubury Exp $
+# $Id: form_x.x,v 1.23 2009-11-24 20:35:08 mikeaubury Exp $
 #*/
 
 /**
@@ -133,7 +133,8 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_TEXT,
 	FA_S_OPTIONS,
 	FA_S_VALUECHECKED,
-	FA_S_VALUEUNCHECKED
+	FA_S_VALUEUNCHECKED,
+	FA_S_HEADER
 };
 
 struct struct_field_attr_string {
