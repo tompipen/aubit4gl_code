@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.245 2009-11-24 20:37:22 mikeaubury Exp $
+# $Id: stack.c,v 1.246 2009-11-24 20:41:11 mikeaubury Exp $
 #
 */
 
@@ -4838,7 +4838,7 @@ int a;
 	for(a=0;a<n;a++) {
 		if (binding[a].ptr==varptr && binding[a].dtype==DTYPE_REFERENCE) {
 			if (binding[a].libptr) {
-				printf("COPYING %d bytes from %p to %p\n",sz, binding[a].ptr, binding[a].libptr);
+				//printf("COPYING %d bytes from %p to %p\n",sz, binding[a].ptr, binding[a].libptr);
 				//memset(binding[a].libptr,0,sz);
 				memcpy(binding[a].libptr, binding[a].ptr,sz);
 				return;
