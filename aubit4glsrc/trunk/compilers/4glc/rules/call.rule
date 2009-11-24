@@ -9,6 +9,10 @@ call_cmd	: FCALL atline {set_cmdlineno($<integer_val>2);} call_ext { set_cmdline
 ;
 
 
+copyback_cmd : COPYBACK ensured_variable_usage_expression {
+	$<cmd>$=new_copyback_cmd($<ptr>2);
+}
+;
 
 
 call_ext: function_call_expr opt_return {

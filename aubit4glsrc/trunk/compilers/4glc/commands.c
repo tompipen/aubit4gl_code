@@ -584,6 +584,12 @@ struct command *new_lint_ignore_cmd(str_list *list) {
 	return c;
 }
 
+struct command *new_copyback_cmd(expr_str *var) {
+	struct command *c;
+	c=new_command(E_CMD_COPYBACK_CMD);
+	c->cmd_data.command_data_u.copyback_cmd.variable=var;
+	return c;
+}
 
 struct command *new_lint_expect_cmd(str_list *list) {
 	struct command *c;

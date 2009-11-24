@@ -3532,6 +3532,36 @@ int rep_type;
 }
 
 
+int print_copyback_cmd(struct struct_copyback_cmd *c) {
+struct variable_usage *u;
+int a=0;
+	if (c->variable->expr_type!=ET_EXPR_VARIABLE_USAGE) {
+		a4gl_yyerror("Incompatible variable type");
+		return 0;
+	}
+
+	set_nonewlines();
+	printc("A4GL_copyback(&");
+	u=c->variable->expr_str_u.expr_variable_usage;
+	while (u) {
+		if (a) printc(".");
+		printc("%s",u->variable_name);
+		u=u->next;
+		a++;
+	}
+	a=0;
+	printc(",sizeof(");
+	u=c->variable->expr_str_u.expr_variable_usage;
+	while (u) {
+		if (a) printc(".");
+		printc("%s",u->variable_name);
+		u=u->next;
+		a++;
+	}
+	printc("),_fbind,_nargs);");
+	clr_nonewlines();
+	return 1;
+}
 /******************************************************************************/
 /*                                SQL COMMANDS                                */
 /* are in compile_c_sql.c  AND compile_c_esqlc.c - depending on LEXTYPE       */

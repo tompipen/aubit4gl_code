@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.62 2009-10-26 08:23:24 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.63 2009-11-24 20:37:22 mikeaubury Exp $
 */
 
 /**
@@ -226,6 +226,7 @@ void A4GL_dec_refcount(void **obj);
 
 void A4GL_set_ignore_error_list(int n, ...) ;
 void A4GL_clr_ignore_error_list(void);
+void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);
 
 //int A4GL_fgl_infield (void *inp,char itype,...);
 #ifndef LOCATE_VAR_DEFINED

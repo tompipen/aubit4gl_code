@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.244 2009-10-26 08:23:24 mikeaubury Exp $
+# $Id: stack.c,v 1.245 2009-11-24 20:37:22 mikeaubury Exp $
 #
 */
 
@@ -3535,6 +3535,7 @@ aclfgl_aclfgl_text_as_str (int n)
 
 int A4GL_free_blob(fglbyte b) {
 //
+return 0;
 }
 
 void
@@ -4647,6 +4648,15 @@ if (b) {
 				blobs->blobptrs_orig=realloc(blobs->blobptrs_orig, sizeof(void *)*blobs->nblobs);
 				blobs->blobptrs_orig[blobs->nblobs-1]=ptr1;
 			}
+			if ((b[a].dtype&DTYPE_MASK)==DTYPE_REFERENCE) {
+				int d1;
+				int s1;
+				void *ptr1;
+				struct s_pass_reference *s;
+
+				A4GL_get_top_of_stack ((n-a), &d1, &s1, (void **) &s);
+				b[a].libptr=s->bytes;
+			}
 		}
 	}
 }
@@ -4807,6 +4817,36 @@ void A4GL_dec_refcount( void **objects) {
 
 }
 
+
+// Copy back a reference variable
+// A function can be called with a COPYOF to copy an array into a function
+// This is a 'copy by value' - so the original array is maintained...
+// You can use the COPYBACK command to overwrite the array passed in 
+// with the copied data - so the original matches the new values..
+//
+// In this way - its possible to emulate a pass by reference...
+//
+// varptr  =  original 4gl variable in function (that is copied into)
+// sz      =  size of the entire array - we'll do a memcpy of this size...
+// binding =  4gl function bindings - we'll search this to find where we copied from
+// n       =  number of bindings..
+//
+// In order to help us - when the parameter was popped off - the original array pointer
+// should have been stored in libptr in the binding ;-)
+void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n) {
+int a;
+	for(a=0;a<n;a++) {
+		if (binding[a].ptr==varptr && binding[a].dtype==DTYPE_REFERENCE) {
+			if (binding[a].libptr) {
+				printf("COPYING %d bytes from %p to %p\n",sz, binding[a].ptr, binding[a].libptr);
+				//memset(binding[a].libptr,0,sz);
+				memcpy(binding[a].libptr, binding[a].ptr,sz);
+				return;
+			}
+		}
+	}
+A4GL_exitwith("Could not find copyback variable as a COPYOF parameter");
+}
 
 
 // ================================ EOF ================================

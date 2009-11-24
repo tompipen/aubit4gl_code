@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2009/11/20 10:07:03.
+ * Generated 2009/11/24 18:56:10.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -339,6 +339,8 @@ extern void STag_struct_continue_cmd(void);
 extern void ETag_struct_continue_cmd(void);
 extern void STag_struct_convert_cmd(void);
 extern void ETag_struct_convert_cmd(void);
+extern void STag_struct_copyback_cmd(void);
+extern void ETag_struct_copyback_cmd(void);
 extern void STag_struct_current_win_cmd(void);
 extern void ETag_struct_current_win_cmd(void);
 extern void STag_struct_dealloc_arr_cmd(void);
@@ -671,6 +673,8 @@ typedef int AT_s_expr_pdf_function_call_module;
 #define AU_s_expr_pdf_function_call_module NULL
 typedef int AT_s_expr_agg_expr_num;
 #define AU_s_expr_agg_expr_num NULL
+typedef int AT_struct_copyback_cmd_nm;
+#define AU_struct_copyback_cmd_nm NULL
 typedef int AT_variable_is_extern;
 #define AU_variable_is_extern NULL
 typedef int AT_s_function_definition_nm;
@@ -2012,6 +2016,8 @@ extern AT_s_expr_pdf_function_call_module AX_s_expr_pdf_function_call_module;
 #define A_s_expr_pdf_function_call_module (bufferstack + AX_s_expr_pdf_function_call_module)
 extern AT_s_expr_agg_expr_num AX_s_expr_agg_expr_num;
 #define A_s_expr_agg_expr_num (bufferstack + AX_s_expr_agg_expr_num)
+extern AT_struct_copyback_cmd_nm AX_struct_copyback_cmd_nm;
+#define A_struct_copyback_cmd_nm (bufferstack + AX_struct_copyback_cmd_nm)
 extern AT_variable_is_extern AX_variable_is_extern;
 #define A_variable_is_extern (bufferstack + AX_variable_is_extern)
 extern AT_s_function_definition_nm AX_s_function_definition_nm;

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.45 2009-10-26 08:23:23 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.46 2009-11-24 20:37:22 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -178,6 +178,7 @@ enum cmd_type {
         E_CMD_DELETE_CMD,
 	E_CMD_LINT_IGNORE_CMD,
 	E_CMD_LINT_EXPECT_CMD,
+E_CMD_COPYBACK_CMD,
 E_CMD_LAST
 };
 
@@ -260,6 +261,10 @@ struct struct_lint_ignore_cmd {
 
 struct struct_lint_expect_cmd {
 	struct str_list *values;
+};
+
+struct struct_copyback_cmd {
+	struct expr_str *variable;
 };
 	
 /* ***************************************************** */
@@ -1471,6 +1476,7 @@ union command_data switch (enum cmd_type type) {
 
 	case E_CMD_LINT_IGNORE_CMD: struct_lint_ignore_cmd lint_ignore_cmd;
 	case E_CMD_LINT_EXPECT_CMD: struct_lint_expect_cmd lint_expect_cmd;
+	case E_CMD_COPYBACK_CMD: struct_copyback_cmd copyback_cmd;
 	
 };
 

@@ -105,5 +105,7 @@ int print_update_cmd(struct_update_cmd *cmd_data);
 int print_validate_cmd(struct_validate_cmd *cmd_data);
 int print_whenever_cmd(struct_whenever_cmd *cmd_data);
 int print_while_cmd(struct_while_cmd *cmd_data);
+int print_copyback_cmd(struct_copyback_cmd *cmd_data);
+int print_free_blob_cmd(struct_free_blob_cmd *cmd_data);
 void print_cmd_start(void);
 int print_close_sql_cmd(struct_close_sql_cmd *cmd_data,int already_in_command);

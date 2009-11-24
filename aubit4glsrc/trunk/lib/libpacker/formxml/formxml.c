@@ -197,6 +197,7 @@ if (mode==0) { // FormField
 	 	strcat(buff, " notNull=\"1\""); 
 	}
 	if (A4GL_has_str_attribute(fprop, FA_S_DEFAULT)) { sprintf(smbuff, " defaultValue=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_DEFAULT))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " header=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_HEADER))); strcat(buff,smbuff);}
 
 }
 
@@ -239,7 +240,6 @@ if (mode==1) { // the label/button/field itself
 
 	if (A4GL_has_str_attribute(fprop, FA_S_VALUECHECKED)) { sprintf(smbuff, " valueChecked=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUECHECKED))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_VALUEUNCHECKED)) { sprintf(smbuff, " valueUnchecked=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_VALUEUNCHECKED))); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
 }
 
 
