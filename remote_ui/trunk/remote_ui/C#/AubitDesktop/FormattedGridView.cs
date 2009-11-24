@@ -817,17 +817,25 @@ namespace AubitDesktop
 
         public void copyFromDataset() {
             string value;
+            DataTable dt;
+            
+
             if (DataSource == defaultData) return;
-            for (int row = 0; row < Convert.ToInt32(table.pageSize); row++)
+
+                    if (!(DataSource is DataTable))    return;
+
+            dt= (DataTable)DataSource;
+            
+            defaultData.BeginLoadData();
+            
+            for (int 
+                row = 0; row < Convert.ToInt32(table.pageSize); row++)
             {
                 for (int col = 0; col <= table.TableColumn.Length; col++)
                 {
-
-
                     value = "";
-                    if (DataSource is DataTable)
-                    {
-                        DataTable dt = (DataTable)DataSource;
+            
+            
                         if (row >= dt.Rows.Count)
                         {
                             value = "";
@@ -843,11 +851,13 @@ namespace AubitDesktop
                                 value = (string)dt.Rows[row][col];
                             }
                         }
-                    }
-                    defaultData.Rows[row][ col] = value;
+                    
+                    defaultData.Rows[row][col]=value;
                 }
-
             }
+
+            DataSource = null;
+            defaultData.EndLoadData();
             DataSource = defaultData;
         }
 
@@ -863,7 +873,7 @@ namespace AubitDesktop
             defaultData.Columns.Add("subscript");
             for (int cols = 1; cols <= len; cols++)
             {
-                defaultData.Columns.Add("col"+(cols-1));
+                defaultData.Columns.Add("col"+(cols));
             }
             
 

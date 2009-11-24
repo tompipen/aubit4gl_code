@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using System.Data;
 
 namespace AubitDesktop
 {
@@ -31,6 +32,7 @@ namespace AubitDesktop
         private FGLApplicationPanel mainWin;
         FormattedGridView displayArrayGrid;
         private bool initialRow=false;
+        DataTable dt;
 
         //private int currentRow;
         
@@ -237,7 +239,17 @@ namespace AubitDesktop
 
             displayArrayGrid = f.FindRecord(p.FIELDLIST);
             displayArrayGrid.init();
-            displayArrayGrid.Rows.Clear();
+            displayArrayGrid.DataSource = null;
+            dt = new DataTable();
+
+            dt.Columns.Add("subscript");
+            for (int cols = 1; cols <= p.ROWS[0].VALUES.Length; cols++)
+            {
+                dt.Columns.Add("col" + (cols));
+            }
+            
+
+            //displayArrayGrid.Rows.Clear();
            
             
 
@@ -255,28 +267,31 @@ namespace AubitDesktop
                 for (int col = 0; col < p.ROWS[row].VALUES.Length;col++ )
                 {
                     data[col+1]=p.ROWS[row].VALUES[col].Text;
-                    displayArrayGrid.AutoResizeColumn(col);
+                    
                 }
-                displayArrayGrid.Rows.Add(data);
+                dt.Rows.Add(data);
+                //displayArrayGrid.Rows.Add(data);
 
-                displayArrayGrid.AutoResizeRow(row);
-                displayArrayGrid.AutoResizeColumnHeadersHeight();
+                //displayArrayGrid.AutoResizeRow(row);
+                //displayArrayGrid.AutoResizeColumnHeadersHeight();
             }
 
+            
             displayArrayGrid.Columns[0].Visible = false;
 
-            /*
-            if (beforeRow != null)
+            displayArrayGrid.DataSource = dt;
+            
+            displayArrayGrid.AutoResizeColumnHeadersHeight();
+            for (int row = 0; row < dt.Rows.Count; row++)
             {
-                displayArrayGrid.RowEnter += new DataGridViewCellEventHandler(displayArrayGrid_RowEnter);
+                displayArrayGrid.AutoResizeRow(row);
+
+                for (int col = 0; col < p.ROWS[row].VALUES.Length; col++)
+                {
+                    displayArrayGrid.AutoResizeColumn(col);
+                }
             }
 
-            if (afterRow != null)
-            {
-                displayArrayGrid.RowLeave += new DataGridViewCellEventHandler(displayArrayGrid_RowLeave);
-            }
-             * */
-           
           //  displayArrayGrid.RowCount = 5;
             displayArrayGrid.Enabled = false;
             // WEBGUI displayArrayGrid.sizeGrid(); 
@@ -439,6 +454,7 @@ namespace AubitDesktop
         {
             _contextIsActive = false;
             displayArrayGrid.context = FGLContextType.ContextNone;
+            displayArrayGrid.copyFromDataset();
         }
 
 
