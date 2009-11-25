@@ -377,3 +377,4 @@
 394|expects 0 parameter
 396|Not an object of type (ui.combo) or not initialized
 398|Not an object of type (ui.combobox) or not initialized
+400|Could not find copyback variable as a COPYOF parameter
