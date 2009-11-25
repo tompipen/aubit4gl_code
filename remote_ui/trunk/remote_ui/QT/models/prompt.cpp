@@ -51,11 +51,11 @@ Prompt::Prompt(QString text, int charMode, QWidget *parent, Qt::WindowFlags f) :
   this->setLayout(layout);
 
   //also create a Label with the text
-  Label *p_label = new Label(text);
+  QLabel *p_label = new QLabel(text);
   layout->addWidget(p_label);
 
   //create Input Field
-  p_lineEdit = new LineEdit;
+  p_lineEdit = new QLineEdit;
   p_lineEdit->setEnabled(true);
   p_lineEdit->setFocus();
   layout->addWidget(p_lineEdit);
