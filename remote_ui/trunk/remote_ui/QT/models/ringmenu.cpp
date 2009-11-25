@@ -195,9 +195,11 @@ void RingMenu::selectButton(QString name)
    name.prepend("&");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
-         if(button->text() == name)
+         if(button->text() == name){
             button->setFocus();
             currentButton = button;
+            return;
+         }
       }
    }
 }
@@ -272,7 +274,12 @@ void RingMenu::resizeEvent(QResizeEvent *event)
 
 void RingMenu::focusInEvent(QFocusEvent* event)
 {
-   this->focusNextChild();
+   if(currentButton == NULL){
+      this->focusNextChild();
+   }
+   else{
+      currentButton->setFocus();
+   }
    return QGroupBox::focusInEvent(event);
 }
 
@@ -290,6 +297,7 @@ bool RingMenu::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
+/*
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *key = (QKeyEvent*) event;
 
@@ -331,7 +339,7 @@ bool RingMenu::eventFilter(QObject *obj, QEvent *event)
          }
       }
    }
-
+*/
 
    return QGroupBox::eventFilter(obj, event);
 }
