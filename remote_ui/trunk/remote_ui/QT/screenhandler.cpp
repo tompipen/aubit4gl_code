@@ -512,6 +512,8 @@ void ScreenHandler::createPrompt(QString text, int charMode, QString style)
 void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValues)
 {
    int value_cnt = 0;
+   if(p_fglform == NULL)
+      return;
 
    for(int i=0; i<fieldNames.count(); i++){
       QString fieldName = fieldNames.at(i);
