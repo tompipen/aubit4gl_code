@@ -901,7 +901,7 @@ namespace AubitDesktop
 
         private static AubitDesktop.Xml.XMLForm.CheckBox CreateCheckBoxFromWidget(AubitDesktop.Xml.XMLForm.Widget widget)
         {
-            string title = "";
+            string title = null;
             AubitDesktop.Xml.XMLForm.CheckBox c;
             c = new AubitDesktop.Xml.XMLForm.CheckBox();
             c.action = widget.action;
