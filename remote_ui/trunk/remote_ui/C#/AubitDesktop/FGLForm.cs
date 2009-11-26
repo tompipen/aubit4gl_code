@@ -259,7 +259,7 @@ namespace AubitDesktop
                                     dc.FalseValue = c.valueUnchecked;
                                 }
                                 
-                                if (c.text != null && c.text!="")
+                                if (c.text != null && c.text!="" && title=="")
                                 {
                                     title=c.text;
                                 }
