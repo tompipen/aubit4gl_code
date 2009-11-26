@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.73 2009-07-20 16:16:43 mikeaubury Exp $
+# $Id: Makefile,v 1.74 2009-11-26 16:15:39 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -614,6 +614,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C compilers/4glc/rules clean || true
 	$(MAKE) -C compilers/4glc clean || true
 	$(MAKE) -C compilers/sql clean || true
+	${RM} -f bin/formgen_4gl bin/make_binfiles bin/xgen_new bin/fglproto bin/4glc_opt || true
 	$(MAKE) -C compilers/pcode clean || true
 	$(MAKE) -C tools/extras_compile clean || true
 	$(MAKE) -C compilers/fcompile clean || true

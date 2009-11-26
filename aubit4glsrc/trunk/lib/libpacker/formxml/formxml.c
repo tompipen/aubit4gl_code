@@ -197,7 +197,8 @@ if (mode==0) { // FormField
 	 	strcat(buff, " notNull=\"1\""); 
 	}
 	if (A4GL_has_str_attribute(fprop, FA_S_DEFAULT)) { sprintf(smbuff, " defaultValue=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_DEFAULT))); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " header=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_HEADER))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_HEADER)) { sprintf(smbuff, " header=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_HEADER))); strcat(buff,smbuff);}
 
 }
 
