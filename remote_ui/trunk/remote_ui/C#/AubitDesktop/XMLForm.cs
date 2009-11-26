@@ -1243,6 +1243,10 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string header;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string colName;
 
             /// <remarks/>

@@ -203,6 +203,10 @@ namespace AubitDesktop
                             if (p.TableColumn[a].text != null && p.TableColumn[a].text.Length>0) {
                                 title=p.TableColumn[a].text;
                             }
+                            if (p.TableColumn[a].header != null && p.TableColumn[a].header.Length > 0)
+                            {
+                                title = p.TableColumn[a].header;
+                            }
 
                             #region Widget Handling
                             // If we've got an old style widget - lets refactor it into a new style one...
