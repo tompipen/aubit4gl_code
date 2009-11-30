@@ -603,6 +603,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       return true;
    }
 
+   if(event->type() == QEvent::MouseButtonRelease){
+      QMouseEvent *mev = (QMouseEvent*) event;
+      if(!input() && !construct() && !screenRecord()){
+         createContextMenu(mev->globalPos());
+      }
+   }
+
    processResponse();
 
    if(event->type() == QEvent::FocusIn){
