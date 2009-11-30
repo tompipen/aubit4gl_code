@@ -210,6 +210,15 @@ void XML2Menu::outputTree(const QDomNode& domNode)
 int XML2Menu::readXML(const QDomDocument& doc)
 {
 
+   QString menu = doc.firstChild().toElement().attribute("type");
+
+   if(menu.isEmpty() || menu != "tree" || menu != "menu"){
+      menu = this->menu;
+   }
+   else{
+      this->menu = menu;
+   }
+
    if(menu == "tree"){
       treeWidget = new QTreeWidget;
       //treeWidget->setMinimumSize(50*5,20*10);

@@ -17,6 +17,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QSpacerItem>
+#include <QAction>
 
 #include "ringmenu.h"
 
@@ -77,7 +78,6 @@ RingMenu::RingMenu(QString title, QString style, QString image,
 
    this->layout = layout;
    setLayout(this->layout);
-
 }
 
 //------------------------------------------------------------------------------
@@ -99,9 +99,10 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
    button->installEventFilter(this);
    button->setShortcut(shortcut);
    button->setToolTip(tooltip);
-   QIcon icon(QString("pics:%0").arg(pic));
+//   QIcon icon(QString("pics:%0").arg(pic));
+   QIcon icon(QString("pics:blank.png"));
    button->setIcon(icon);
-   button->setIconSize(QSize(15,15));
+   button->setIconSize(QSize(45,25));
 
    // Add the Button to the Layout
    if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){

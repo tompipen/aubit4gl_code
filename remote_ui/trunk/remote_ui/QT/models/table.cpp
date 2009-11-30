@@ -73,11 +73,13 @@ void TableView::resize()
             height += this->horizontalHeader()->height();
             */
 
-         if(!this->verticalHeader()->isHidden())
+         if(!this->verticalHeader()->isHidden()){
             width += this->verticalHeader()->width();
+         }
 
          for(int i=0; i<table->rowCount(QModelIndex());i++){
             height += this->rowHeight(i);
+qDebug() << "HEIGHT1:" << height << this->rowHeight(i);
          }
 
          for(int j=0; j<table->columnCount(QModelIndex()); j++){
@@ -92,7 +94,7 @@ void TableView::resize()
             width+= this->verticalScrollBar()->width();
          }
 
-         this->setFixedSize(width, height);
+//         this->setFixedSize(width, height);
          //this->setMinimumSize(width, height);
 //         this->setFixedWidth(width);
       }
