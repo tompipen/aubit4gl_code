@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.149 2009-08-25 10:06:25 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.150 2009-12-01 15:25:00 mikeaubury Exp $
 #
 */
 
@@ -75,7 +75,7 @@ int p_numargs = 0;
 int isdebug = 0;
 int ui_mode = 0;
 static int initsig_child (void);
-
+int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
 /* extern int errno; */
 #include <errno.h>
 
@@ -797,6 +797,29 @@ aclfgl_arg_val (int n)
       A4GL_push_char (" ");	// Was N/A
       return 1;
     }
+  if (k==0) {
+	if (A4GL_isyes(acl_getenv("BASENAMEARGV0"))) {
+		char s[2000];
+		char *ptr;
+		char dirsep='/';
+		char *dot;
+		strcpy(s,p_args[0]);
+		ptr=s;
+		if (strchr(ptr,'\\')) {dirsep='\\';}
+		if (strchr(ptr,'/')) {dirsep='/';}
+		while (strchr(ptr,dirsep)) {
+			ptr=strchr(ptr,dirsep)+1;
+		}
+		dot=strchr(ptr,'.');
+		if (dot) {
+			*dot=0;
+		}
+		A4GL_push_char(ptr);
+		return 1;
+	}
+  }
+
+
   if (k < p_numargs)
     {
       A4GL_push_char (p_args[k]);
