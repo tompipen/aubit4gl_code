@@ -1839,7 +1839,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       p3 = A4GL_char_pop ();
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("<FGL_DIALOG_SETICON ICON=\"%s\" TEXT=\"%s\"  COMMAND=\"%s\"/>", uilib_xml_escape(p1), uilib_xml_escape (p2),uilib_xml_escape(p3));
+      send_to_ui ("<FGL_DIALOG_SETICON ICON=\"%s\" TEXT=\"%s\"  COMMAND_OR_KEY=\"%s\"/>", uilib_xml_escape(p1), uilib_xml_escape (p2),uilib_xml_escape(p3));
       free (p1);
       free (p2);
       free (p3);
