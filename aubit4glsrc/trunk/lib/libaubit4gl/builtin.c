@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.152 2009-11-18 08:02:19 mikeaubury Exp $
+# $Id: builtin.c,v 1.153 2009-12-01 16:01:11 mikeaubury Exp $
 #
 */
 
@@ -1829,6 +1829,13 @@ aclfgl_fgl_setkeylabel (int n)
   //free(p2);
   return 0;
 }
+
+
+int aclfgl_fgl_dialog_seticon(int n) {
+A4GL_direct_to_ui("fgl_dialog_seticon","3");
+return 0;
+}
+
 
 void
 A4GL_set_last_cursor (int n)

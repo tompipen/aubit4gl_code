@@ -1829,6 +1829,23 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       return;
     }
 
+  if (strcmp (what, "fgl_dialog_seticon") == 0)
+    {
+      //int a;
+      //int params;
+      char *p1;
+      char *p2;
+      char *p3;
+      p3 = A4GL_char_pop ();
+      p2 = A4GL_char_pop ();
+      p1 = A4GL_char_pop ();
+      send_to_ui ("<FGL_DIALOG_SETICON ICON=\"%s\" TEXT=\"%s\"  COMMAND=\"%s\"/>", uilib_xml_escape(p1), uilib_xml_escape (p2),uilib_xml_escape(p3));
+      free (p1);
+      free (p2);
+      free (p3);
+      return;
+    }
+
   if (strcmp (what, "setkeylabel") == 0)
     {
       //int a;
