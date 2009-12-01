@@ -221,7 +221,7 @@ int XML2Menu::readXML(const QDomDocument& doc)
 
    if(menu == "tree"){
       treeWidget = new QTreeWidget;
-      //treeWidget->setMinimumSize(50*5,20*10);
+      treeWidget->setMinimumSize(50*5,20*10);
       createTreeMenu(doc);
       connect(this->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(execAction()));
       return 1;
