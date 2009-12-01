@@ -97,9 +97,6 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
 
    cnt_form++;
 
-   if(!qs_interfaceTitle.isNull())
-      windowTitle = qs_interfaceTitle;
-
    //p_fglform = new FglForm(windowTitle, parentWidget);
    p_fglform = new FglForm(windowTitle, p_fglform);
    p_fglform->installEventFilter(this);
@@ -110,7 +107,12 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
    connect(p_fglform, SIGNAL(setClearEvents()), this, SLOT(setClearEvents()));
    connect(p_fglform, SIGNAL(setArrLine(int)), this, SLOT(setArrLine(int)));
 
-   p_fglform->setWindowTitle(windowTitle);
+   if(!qs_interfaceTitle.isNull())
+      p_fglform->setWindowTitle(qs_interfaceTitle);
+   else{
+      p_fglform->setWindowTitle(windowTitle);
+   }
+
    p_fglform->windowName = windowTitle;
 
    p_fglform->setStartMenu(startMenu);
