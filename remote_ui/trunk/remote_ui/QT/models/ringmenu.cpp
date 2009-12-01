@@ -37,6 +37,7 @@ RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
+   layout->setSpacing(0);
 
    buttonGroup = new QButtonGroup(this);
 
@@ -71,6 +72,7 @@ RingMenu::RingMenu(QString title, QString style, QString image,
 
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
+   layout->setSpacing(0);
 
    buttonGroup = new QButtonGroup(this);
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
