@@ -885,6 +885,14 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          if(qs_name == "ui.interface.refresh"){
          }
 
+         if(qs_name == "ui.interface.settext"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            QString value = valueElement.text();
+
+            p_currScreenHandler->setInterfaceText(value);
+         }
+
          /*
          if(qs_name == "ui.combobox.additem"){
          }

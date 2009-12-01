@@ -97,6 +97,9 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
 
    cnt_form++;
 
+   if(!qs_interfaceTitle.isNull())
+      windowTitle = qs_interfaceTitle;
+
    //p_fglform = new FglForm(windowTitle, parentWidget);
    p_fglform = new FglForm(windowTitle, p_fglform);
    p_fglform->installEventFilter(this);
@@ -2202,4 +2205,9 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 
    return QObject::eventFilter(obj, event);
 
+}
+
+void ScreenHandler::setInterfaceText(QString text)
+{
+   qs_interfaceTitle = text;
 }

@@ -57,6 +57,7 @@ public:
    QHash<QString, QString> qh_env;
    void setSearchPaths();
    void setEnv(QString, QString);
+   void setInterfaceText(QString);
 
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
@@ -64,6 +65,7 @@ protected:
 private:
    QList<Context*> contexts;
    bool cursorPos;
+   QString qs_interfaceTitle;
 
    FglForm *p_fglform;
 //   QList<QWidget*> ql_formFields;
