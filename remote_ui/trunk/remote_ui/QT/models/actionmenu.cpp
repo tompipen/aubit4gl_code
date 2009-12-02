@@ -100,6 +100,10 @@ void ActionMenu::createButton(QString id, QString text, QString shortcut)
    QPushButton *button = new QPushButton(text);
    button->setFocusPolicy(Qt::NoFocus);
    button->setObjectName(shortcut);
+   QIcon icon(QString("pics:blank.png"));
+   button->setIcon(icon);
+   button->setIconSize(QSize(40,25));
+
 
 
    // Add the Button to the Layout

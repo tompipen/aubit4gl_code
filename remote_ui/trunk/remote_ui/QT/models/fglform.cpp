@@ -942,7 +942,6 @@ void FglForm::setStartMenu(const QDomDocument &doc)
 //------------------------------------------------------------------------------
 void FglForm::setStyles(const QDomDocument& doc)
 {
-
    XML2Style *xml2Style = new XML2Style(this);
    xml2Style->readXML(doc);
    this->setStyleSheet(xml2Style->getStyleSheet());
@@ -1837,9 +1836,11 @@ void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 void FglForm::createContextMenu(const QPoint &pos)
 {
    QMenu* contextMenu = new QMenu(this);
+/*
    contextMenu->setStyleSheet("QMenu { background-color: blue;}  \
                                QMenu::item {background-color: transparent;}  \
                                QMenu::item:selected {background-color: red;}");
+*/
    QPoint menuPos;
 
    if(QObject::sender() != NULL){
