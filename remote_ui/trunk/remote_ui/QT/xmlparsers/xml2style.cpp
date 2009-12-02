@@ -94,7 +94,6 @@ void XML2Style::outputTree(const QDomNode& domNode)
                qs_name == "windowOptionMaximize" ||
                qs_name == "windowSystemMenu" ||
                qs_name == "sizable" ||
-               qs_name == "position" ||
                qs_name == "forceDefaultSettings" ||
                qs_name == "actionPanelPosition" ||
                qs_name == "actionPanelButtonSize" ||
