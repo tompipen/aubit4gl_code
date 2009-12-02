@@ -941,7 +941,7 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       }
 
       if(widget == NULL){
-         qFatal("No Field found to set Focus");
+         qFatal(QString("No Field found to set Focus: %1").arg(fieldName).toAscii());
          return;
       }
     
