@@ -781,7 +781,7 @@ void FglForm::sendMenuCommand(QString cmd)
 
    QString trigger = "<TRIGGERED ID=\"EXEC\" PROGRAMNAME=\"";
    trigger.append(cmd);
-   trigger.append("&amp;");
+//   trigger.append("&amp;");
    trigger.append("\"/>");
    sendDirect(trigger);
 }
