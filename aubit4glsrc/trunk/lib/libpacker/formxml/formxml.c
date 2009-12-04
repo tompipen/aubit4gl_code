@@ -1234,7 +1234,7 @@ int n=0;
 void
 new_field (int y, int x, int w, char because_of, int fstart)
 {
-  char buff[200];
+  char buff[2000];
   strcpy (buff, &screen[y][x]);
   buff[w] = 0;
 
