@@ -73,6 +73,7 @@ public slots:
 
 protected:
    void keyPressEvent(QKeyEvent *event);
+   void focusInEvent(QFocusEvent*);
 
 signals:
    void fieldEvent(Fgl::Event);

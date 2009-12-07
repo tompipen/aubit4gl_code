@@ -26,7 +26,7 @@
 
 TableView::TableView(QWidget *parent) : QTableView(parent)
 {
-   //this->setFocusPolicy(Qt::NoFocus);
+   this->setFocusPolicy(Qt::NoFocus);
    //this->installEventFilter(this);
    i_arrCount = 0;
    i_arrLine = 0;
@@ -285,6 +285,13 @@ void TableView::prevfield()
    }
 }
 
+void TableView::focusInEvent(QFocusEvent* event)
+{
+   QModelIndex currIndex = currentIndex();
+
+   return QTableView::focusInEvent(event);
+}
+
 void TableView::setInputEnabled(bool enable)
 { 
    if(enable){
@@ -467,7 +474,7 @@ void TableView::setCurrentField(int row, int col)
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          setCurrentIndex(index);
          if(table->b_input){
-             edit(index);
+//             edit(index);
          }
       }
    }
