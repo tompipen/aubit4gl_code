@@ -60,15 +60,15 @@ void Actions::parseElement(QDomNode xmlNode)
          QString text = currentElement.attribute("text");
 
          QKeySequence shortcut(currentElement.attribute("acceleratorName"));
-         if(!shortcut.isEmpty())
+         if(!shortcut.isEmpty() && (shortcut.toString().toLower() != "f12"))
             ql_shortcutList << shortcut;
 
          QKeySequence shortcut2(currentElement.attribute("acceleratorName2"));
-         if(!shortcut2.isEmpty())
+         if(!shortcut2.isEmpty() && (shortcut.toString().toLower() != "f12"))
             ql_shortcutList << shortcut2;
 
          QKeySequence shortcut3(currentElement.attribute("acceleratorName3"));
-         if(!shortcut3.isEmpty())
+         if(!shortcut3.isEmpty() && (shortcut.toString().toLower() != "f12"))
             ql_shortcutList << shortcut3;
 
          QAction *action = new QAction(text, p_fglform);
