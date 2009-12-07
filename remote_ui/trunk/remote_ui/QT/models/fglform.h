@@ -97,7 +97,7 @@ public:
    ToolBar* toolBar(){ return p_toolBar; };
    Qt::ToolBarArea toolBarPosition();
    void setActions(QDomDocument);
-   QList<QAction*> actions(){ return ql_formActions; };
+   QList<QAction*> actions(){ return ql_actionDefaults; };
    QList<QAction*> defActions(){ return ql_defaultActions; };
    void focusNextField() { this->focusNextChild(); };
    QWidget* currentField() { return currentWidget; };
@@ -219,7 +219,7 @@ private:
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
    ToolBar *p_toolBar;
-   QList<QAction*> ql_formActions;
+   QList<QAction*> ql_actionDefaults;
    QList<QAction*> ql_defaultActions;
    void addToQueue(QString);
    void createStatusBar();

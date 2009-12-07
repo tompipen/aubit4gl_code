@@ -23,7 +23,7 @@ namespace Fgl
      int fieldIdRef;
    } Link;
 
-      static QString stringToKey(QString s) {
+      static inline QString stringToKey(QString s) {
          if(s.toLower().startsWith("f")){
             s.remove(0,1);
             bool ok = false;

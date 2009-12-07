@@ -162,10 +162,10 @@ void FglForm::setActions(QDomDocument xmlFile)
    actions->parseFile(xmlFile);
 
 
-   ql_formActions = actions->actions();
+   ql_actionDefaults = actions->actions();
    QStringList names = actions->names();
-   for(int i=0; i<ql_formActions.size(); i++){
-      QAction *action = ql_formActions.at(i);
+   for(int i=0; i<ql_actionDefaults.size(); i++){
+      QAction *action = ql_actionDefaults.at(i);
       QString name = action->objectName();
 
       this->addAction(action);
@@ -1537,16 +1537,16 @@ void FglForm::checkToolBar()
          }
       }
 
-      QList<QString> formActions;
+      QList<QString> actionDefaults;
       for(int i=0; i<actions().size(); i++){
          if(actions().at(i)->isEnabled()){
             QString action = actions().at(i)->objectName();
-            formActions << action;
+            actionDefaults << action;
          }
       }
 
-      for(int i=0; i<formActions.size(); i++){
-         QString formAction = formActions.at(i);
+      for(int i=0; i<actionDefaults.size(); i++){
+         QString formAction = actionDefaults.at(i);
          for(int k=0; k<toolBarActions.size(); k++){
             QString toolBarAction = toolBarActions.at(k)->objectName();
             if(formAction == toolBarAction){
