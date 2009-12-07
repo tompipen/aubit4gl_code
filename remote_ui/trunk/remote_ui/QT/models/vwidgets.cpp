@@ -25,6 +25,7 @@
 #include <QDomElement>
 
 #include "vwidgets.h"
+#include "table.h"
 
 int defHeight = 21;
 
@@ -596,6 +597,10 @@ QString WidgetHelper::getWidgetColName(QObject* widget)
 
    if(TextEdit *textEdit = qobject_cast<TextEdit *> (widget)){
       return textEdit->colName;
+   }
+
+   if(TableView *table = qobject_cast<TableView *> (widget)){
+      return table->getColumnName(table->currentIndex().column());
    }
 
    return widgetColName;
