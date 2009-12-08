@@ -254,6 +254,7 @@ namespace AubitDesktop
             {
                 System.Threading.Thread.Sleep(100);
                 cnt++;
+                Application.DoEvents();
                 if (cnt > 40)
                 {
                     Program.Show("No envelope handler ????");
