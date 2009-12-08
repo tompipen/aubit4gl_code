@@ -228,14 +228,30 @@ namespace AubitDesktop
         }
         */
 
-        public frmMainAppWindow(AubitNetwork connection)
+
+        public frmMainAppWindow()
         {
 
             InitializeComponent();
             setUpMainAppWindow();
-            
+
+        }
+
+        public void setConnection(AubitNetwork connection) {
+            stdNetworkConnection = connection;
+            stdNetworkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
+            stdNetworkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
+            stdNetworkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+            EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
 
 
+        }
+
+        public frmMainAppWindow(AubitNetwork connection)
+        {
+
+                InitializeComponent();
+                setUpMainAppWindow();
                 stdNetworkConnection = connection;
                 stdNetworkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
                 stdNetworkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);

@@ -293,9 +293,11 @@ namespace AubitDesktop
                 TcpClient client = server.AcceptTcpClient();
                 ep=(System.Net.IPEndPoint)client.Client.RemoteEndPoint;
                 AubitNetwork an;
-                an = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleEnvelope,client);
-                AppWin = new frmMainAppWindow(an);
+                
+                AppWin = new frmMainAppWindow();
                 AppWin.Show();
+                an = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleEnvelope, client);
+                AppWin.setConnection(an);
                 
             }
             timer1.Enabled = true;
@@ -398,8 +400,9 @@ namespace AubitDesktop
                 if (protocol.ListenMode == false)
                 {
                     // If we dont need listen mode - we need to open the connection already...
-                    this.AppWin = new frmMainAppWindow(networkConnection);
+                    this.AppWin = new frmMainAppWindow();
                     this.AppWin.Show();
+                    this.AppWin.setConnection(networkConnection);
                 }
  
 
