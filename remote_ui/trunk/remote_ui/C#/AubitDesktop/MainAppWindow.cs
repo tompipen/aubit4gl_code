@@ -231,10 +231,8 @@ namespace AubitDesktop
 
         public frmMainAppWindow()
         {
-
             InitializeComponent();
             setUpMainAppWindow();
-
         }
 
         public void setConnection(AubitNetwork connection) {
@@ -244,6 +242,7 @@ namespace AubitDesktop
             stdNetworkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
             EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
 
+            Program.setWindowPosition(this.GetType().ToString() + stdNetworkConnection.application, this);
 
         }
 
@@ -1258,8 +1257,10 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_Load(object sender, EventArgs e)
         {
-            Program.setWindowPosition(this.GetType().ToString() + stdNetworkConnection.application, this);
-           
+            if (stdNetworkConnection != null)
+            {
+                Program.setWindowPosition(this.GetType().ToString() + stdNetworkConnection.application, this);
+            }
         }
 
         private void frmMainAppWindow_FormClosed(object sender, FormClosedEventArgs e)
