@@ -298,6 +298,7 @@ namespace AubitDesktop
                 AppWin.Show();
                 an = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleEnvelope, client);
                 AppWin.setConnection(an);
+                an.startNetworkReceive();
                 
             }
             timer1.Enabled = true;

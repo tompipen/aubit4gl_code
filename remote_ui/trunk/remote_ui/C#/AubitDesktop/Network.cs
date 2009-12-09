@@ -354,27 +354,11 @@ namespace AubitDesktop
             this.useExplicitStreams = false;
             this.tcpClient = c;
 
-            /*
-            if (bwReceiver != null)
-            {
-                if (bwReceiver.IsBusy)
-                {
-                    bwReceiver.CancelAsync();
-                }
-                bwReceiver = null;
-            }
-            
-            this.bwReceiver = new BackgroundWorker();
-             * */
+
             tcpStream = tcpClient.GetStream();
             
-            /*
-            bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
-            bwReceiver.WorkerSupportsCancellation = true;
-            bwReceiver.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwReceiver_RunWorkerCompleted);
-            bwReceiver.RunWorkerAsync();
-            */
-            startNetworkReceive();
+
+           // startNetworkReceive();
         }
 
         public void SendString(string s)
@@ -423,7 +407,7 @@ namespace AubitDesktop
 
 
 
-        void startNetworkReceive() {
+       public  void startNetworkReceive() {
           //  byte[] buffer = new byte[100000];
             startStreamAsyncRead();
         }
