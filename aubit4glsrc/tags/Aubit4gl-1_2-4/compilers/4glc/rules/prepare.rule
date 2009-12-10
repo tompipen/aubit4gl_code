@@ -1,0 +1,13 @@
+/*
+=====================================================================
+                        Source: prepare.rule
+=====================================================================
+*/
+
+
+prepare_cmd : opt_use2_p PREPARE stmt_id_p FROM char_or_var_vl
+{
+		$<cmd>$=new_prepare_cmd($<ptr>1, $<ptr>3, $<ptr>5);
+		add_feature("PREPARE");
+}
+;

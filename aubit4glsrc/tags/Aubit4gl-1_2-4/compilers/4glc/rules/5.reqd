@@ -1,0 +1,2 @@
+%type <integer_val> op_no_log_i
+%type <s_select_list_item_list> select_list_slil

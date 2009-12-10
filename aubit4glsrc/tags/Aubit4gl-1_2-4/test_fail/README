@@ -1,0 +1,13 @@
+This is a directory where test failures will be logged...
+
+If you run the tests with :
+
+ 	run_tests ... -log-unl -log-text="NODB" ...
+
+You should get error files/error messages logged here in the "NODB" directory etc...
+
+
+*** DO NOT ADD/COMMIT THE .ERR FILES BACK INTO CVS !!! ***
+
+You should probably just ignore it...
+

@@ -1,0 +1,14 @@
+Name: libA4GL_smtp
+Parent: aubit4glsrc
+Description: SMTP interface wrappers. 
+Functionality: SMTP interface support library
+Build:
+Example:
+Depends: SMTP libraries (specifically : libsmtp-0.8)
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 4
+Todo:  Non-standard makefile, needs incorporating into base build
+Notes:
+
