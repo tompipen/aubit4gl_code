@@ -43,6 +43,7 @@
 //#include "fgl.x.h"
 #include "a4gl_expr.h"
 #include "a4gl_API_lex.h"
+#include "a4gl_API_parse_lib.h"
 #include <stdio.h>
 #include "variables.h"
 
@@ -771,6 +772,18 @@ int A4GL_check_fcall_for_builtin_functions(expr_str* p_fcall,char *buff,struct e
 void set_has_globals(void) ;
 int has_globals(void)  ;
 
+
+int get_bolton_nrets(int a);
+int get_bolton_rtype(int a,int rval);
+int get_bolton_nparam(int a);
+int get_bolton_param(int a,int param) ;
+void load_protos(void);
+int is_bolton_function (char *funcname);
+
+expr_str * expr_cached (expr_str * l);
+
+
+//int FGLPARSE_allow_token_state(int yystate,int yytoken);
 #ifndef DEFINED_SET_CLOBBER
 #define DEFINED_SET_CLOBBER
 void A4GL_set_clobber (char *c);

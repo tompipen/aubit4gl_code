@@ -14,6 +14,7 @@ set_cmd :
 	| opt_use2_p SQLSIRR   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
 	| opt_use2_p SQLSICS   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
 	| opt_use2_p SQLSICR   		{$<cmd>$=new_sql_cmd($<ptr>1, $<str>2); add_feature("SET_ISOLATION");}
+	| opt_use2_p SET_DEBUG_FILE_TO fgl_expr_c {$<cmd>$=new_sql_debug_file_to_cmd($<ptr>1, $<ptr>3); }
 ;
 
 set_session_cmd : 

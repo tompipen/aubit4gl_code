@@ -11,7 +11,7 @@ free_cmd :
                         char errbuff[256];
 			int a=0;
 			expr_str *ptr=0;
-			int vtype;
+			//int vtype;
                         if ($<ptr>3->expr_type==ET_EXPR_VARIABLE_USAGE) {
                                 ptr=ensure_variable(errbuff,$<ptr>3,1);
                         	if (ptr!=0) {

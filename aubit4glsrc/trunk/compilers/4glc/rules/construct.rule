@@ -32,8 +32,8 @@ op_construct_callback :
 constr_rest:
 BY_NAME ensured_variable_usage_expression KW_ON constr_col_list opt_defs opt_help_no_i op_construct_callback input_attributes
 {
-	int a;
 	/*
+	int a;
 	fh_field_list *f;
 
         f = new_field_list ();

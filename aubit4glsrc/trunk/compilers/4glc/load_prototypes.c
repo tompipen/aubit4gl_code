@@ -12,7 +12,7 @@
 
 struct s_function_prototype *fboltons = 0;
 int nboltons = 0;
-int is_bolton_function (char *s);
+//int is_bolton_function (char *s);
 
 struct s_function_prototype
 {
@@ -131,7 +131,7 @@ add_bolton (char *fname, char *vparams, char *vrets)
 }
 
 
-static void load_default_boltons() {
+static void load_default_boltons(void) {
       add_bolton ("startlog","0", "");
       add_bolton ("errorlog","0", "");
       add_bolton ("set_count","2", "");

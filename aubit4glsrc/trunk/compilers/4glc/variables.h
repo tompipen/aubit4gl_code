@@ -63,4 +63,11 @@ void make_constant_available(struct variable *v) ;
 enum e_scope A4GL_get_current_variable_scope (void);
 struct variable_usage *make_variable_usage_from_string(char *buff);
 struct variable *find_dim_in_variable_list(struct variable_list *v,char *name);
+
+void set_in_create_procedure(void) ;
+void clr_in_create_procedure(void) ;
+void push_spl_block_variables(struct variable_list *p) ;
+
+void pop_spl_block_variables(struct variable_list *p) ;
+
 #endif

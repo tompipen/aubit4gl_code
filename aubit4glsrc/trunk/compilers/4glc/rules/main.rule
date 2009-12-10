@@ -170,7 +170,7 @@ func_def	: op_doc4gl_comment ldeffunction {
   			push_blockcommand("FUNC");
 			new_whenever_cmd(-1,0);
 		} atline define_section {
-  			int c;
+  			//int c;
 			char errbuff[256];
                         if (!check_parameters(errbuff,$10, $<ptr_list>6)) {
                                 a4gl_yyerror(errbuff);
@@ -215,8 +215,8 @@ main_def:
 			new_whenever_cmd(-1,0);
   	} 
   define_section {
-			struct variable_list v;
-			char errbuff[256];
+			//struct variable_list v;
+			//char errbuff[256];
 
 		} commands_as_list END_MAIN {
 	pop_blockcommand("MAIN");

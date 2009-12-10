@@ -1,5 +1,5 @@
 /* Validating XML processor for module_def.dtd.
- * Generated 2009/11/26 10:19:54.
+ * Generated 2009/12/10 18:48:28.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -112,6 +112,8 @@ AT_sql_statement_nm AX_sql_statement_nm;
 #define A_sql_statement_nm (bufferstack + AX_sql_statement_nm)
 AT_convert_towhat AX_convert_towhat;
 #define A_convert_towhat (bufferstack + AX_convert_towhat)
+AT_struct_spl_return_cmd_withResume AX_struct_spl_return_cmd_withResume;
+#define A_struct_spl_return_cmd_withResume (bufferstack + AX_struct_spl_return_cmd_withResume)
 AT_s_exchange_clobber_origval AX_s_exchange_clobber_origval;
 #define A_s_exchange_clobber_origval (bufferstack + AX_s_exchange_clobber_origval)
 AT_struct_print_file_cmd_semi AX_struct_print_file_cmd_semi;
@@ -252,6 +254,10 @@ AT_struct_connect_cmd_nm AX_struct_connect_cmd_nm;
 #define A_struct_connect_cmd_nm (bufferstack + AX_struct_connect_cmd_nm)
 AT_s_select_list_item_sq_expression_type AX_s_select_list_item_sq_expression_type;
 #define A_s_select_list_item_sq_expression_type (bufferstack + AX_s_select_list_item_sq_expression_type)
+AT_struct_sql_debug_file_cmd_nm AX_struct_sql_debug_file_cmd_nm;
+#define A_struct_sql_debug_file_cmd_nm (bufferstack + AX_struct_sql_debug_file_cmd_nm)
+AT_spl_if_cond_nm AX_spl_if_cond_nm;
+#define A_spl_if_cond_nm (bufferstack + AX_spl_if_cond_nm)
 AT_struct_locate_cmd_nm AX_struct_locate_cmd_nm;
 #define A_struct_locate_cmd_nm (bufferstack + AX_struct_locate_cmd_nm)
 AT_s_expr_cast_force AX_s_expr_cast_force;
@@ -290,6 +296,8 @@ AT_s_pdf_report_definition_isstatic AX_s_pdf_report_definition_isstatic;
 #define A_s_pdf_report_definition_isstatic (bufferstack + AX_s_pdf_report_definition_isstatic)
 AT_field_nm AX_field_nm;
 #define A_field_nm (bufferstack + AX_field_nm)
+AT_create_proc_data_isDBA AX_create_proc_data_isDBA;
+#define A_create_proc_data_isDBA (bufferstack + AX_create_proc_data_isDBA)
 AT_struct_prompt_cmd_helpno AX_struct_prompt_cmd_helpno;
 #define A_struct_prompt_cmd_helpno (bufferstack + AX_struct_prompt_cmd_helpno)
 AT_s_expr_dynarr_function_call_n_namespace AX_s_expr_dynarr_function_call_n_namespace;
@@ -316,8 +324,12 @@ AT_s_table_outer_type AX_s_table_outer_type;
 #define A_s_table_outer_type (bufferstack + AX_s_table_outer_type)
 AT_struct_uncheck_menu_cmd_nm AX_struct_uncheck_menu_cmd_nm;
 #define A_struct_uncheck_menu_cmd_nm (bufferstack + AX_struct_uncheck_menu_cmd_nm)
+AT_struct_spl_foreach_execute_cmd_nm AX_struct_spl_foreach_execute_cmd_nm;
+#define A_struct_spl_foreach_execute_cmd_nm (bufferstack + AX_struct_spl_foreach_execute_cmd_nm)
 AT_s_expr_get_fldbuf_sio_id AX_s_expr_get_fldbuf_sio_id;
 #define A_s_expr_get_fldbuf_sio_id (bufferstack + AX_s_expr_get_fldbuf_sio_id)
+AT_struct_spl_for_cmd_vname AX_struct_spl_for_cmd_vname;
+#define A_struct_spl_for_cmd_vname (bufferstack + AX_struct_spl_for_cmd_vname)
 AT_user_details_nm AX_user_details_nm;
 #define A_user_details_nm (bufferstack + AX_user_details_nm)
 AT_variable_list_nm AX_variable_list_nm;
@@ -348,6 +360,8 @@ AT_s_import_legacy_definition_module AX_s_import_legacy_definition_module;
 #define A_s_import_legacy_definition_module (bufferstack + AX_s_import_legacy_definition_module)
 AT_locate_pos_e_location AX_locate_pos_e_location;
 #define A_locate_pos_e_location (bufferstack + AX_locate_pos_e_location)
+AT_struct_spl_foreach_select_cmd_withHold AX_struct_spl_foreach_select_cmd_withHold;
+#define A_struct_spl_foreach_select_cmd_withHold (bufferstack + AX_struct_spl_foreach_select_cmd_withHold)
 AT_s_expr_shared_function_call_nm AX_s_expr_shared_function_call_nm;
 #define A_s_expr_shared_function_call_nm (bufferstack + AX_s_expr_shared_function_call_nm)
 AT_struct_convert_cmd_repname AX_struct_convert_cmd_repname;
@@ -416,6 +430,8 @@ AT_struct_let_cmd_nm AX_struct_let_cmd_nm;
 #define A_struct_let_cmd_nm (bufferstack + AX_struct_let_cmd_nm)
 AT_struct_msg_box_cmd_nm AX_struct_msg_box_cmd_nm;
 #define A_struct_msg_box_cmd_nm (bufferstack + AX_struct_msg_box_cmd_nm)
+AT_s_spl_block_nm AX_s_spl_block_nm;
+#define A_s_spl_block_nm (bufferstack + AX_s_spl_block_nm)
 AT_pdf_startrep_pageheadersize AX_pdf_startrep_pageheadersize;
 #define A_pdf_startrep_pageheadersize (bufferstack + AX_pdf_startrep_pageheadersize)
 AT_attrib_dim AX_attrib_dim;
@@ -436,6 +452,8 @@ AT_s_expr_dynarr_function_call_n_line AX_s_expr_dynarr_function_call_n_line;
 #define A_s_expr_dynarr_function_call_n_line (bufferstack + AX_s_expr_dynarr_function_call_n_line)
 AT_struct_if_cmd_lineno AX_struct_if_cmd_lineno;
 #define A_struct_if_cmd_lineno (bufferstack + AX_struct_if_cmd_lineno)
+AT_struct_spl_return_cmd_nm AX_struct_spl_return_cmd_nm;
+#define A_struct_spl_return_cmd_nm (bufferstack + AX_struct_spl_return_cmd_nm)
 AT_s_table_list_nm AX_s_table_list_nm;
 #define A_s_table_list_nm (bufferstack + AX_s_table_list_nm)
 AT_s_expr_cast_nm AX_s_expr_cast_nm;
@@ -446,6 +464,8 @@ AT_s_select_list_item_sli_expr_nm AX_s_select_list_item_sli_expr_nm;
 #define A_s_select_list_item_sli_expr_nm (bufferstack + AX_s_select_list_item_sli_expr_nm)
 AT_s_report_definition_nm AX_s_report_definition_nm;
 #define A_s_report_definition_nm (bufferstack + AX_s_report_definition_nm)
+AT_s_named_param_nm AX_s_named_param_nm;
+#define A_s_named_param_nm (bufferstack + AX_s_named_param_nm)
 AT_s_select_list_item_builtin_fcall_nm AX_s_select_list_item_builtin_fcall_nm;
 #define A_s_select_list_item_builtin_fcall_nm (bufferstack + AX_s_select_list_item_builtin_fcall_nm)
 AT_s_expr_extend_nm AX_s_expr_extend_nm;
@@ -458,6 +478,10 @@ AT_s_select_list_item_regex_escape AX_s_select_list_item_regex_escape;
 #define A_s_select_list_item_regex_escape (bufferstack + AX_s_select_list_item_regex_escape)
 AT_s_select_list_item_sq_expression_nm AX_s_select_list_item_sq_expression_nm;
 #define A_s_select_list_item_sq_expression_nm (bufferstack + AX_s_select_list_item_sq_expression_nm)
+AT_struct_spl_while_cmd_nm AX_struct_spl_while_cmd_nm;
+#define A_struct_spl_while_cmd_nm (bufferstack + AX_struct_spl_while_cmd_nm)
+AT_struct_spl_foreach_select_cmd_cursorName AX_struct_spl_foreach_select_cmd_cursorName;
+#define A_struct_spl_foreach_select_cmd_cursorName (bufferstack + AX_struct_spl_foreach_select_cmd_cursorName)
 AT_s_expr_bound_fcall_lib AX_s_expr_bound_fcall_lib;
 #define A_s_expr_bound_fcall_lib (bufferstack + AX_s_expr_bound_fcall_lib)
 AT_struct_init_cmd_tonull AX_struct_init_cmd_tonull;
@@ -510,12 +534,14 @@ AT_module_entry_nm AX_module_entry_nm;
 #define A_module_entry_nm (bufferstack + AX_module_entry_nm)
 AT_on_events_nm AX_on_events_nm;
 #define A_on_events_nm (bufferstack + AX_on_events_nm)
+AT_struct_spl_call_cmd_nm AX_struct_spl_call_cmd_nm;
+#define A_struct_spl_call_cmd_nm (bufferstack + AX_struct_spl_call_cmd_nm)
 AT_struct_insert_cmd_table AX_struct_insert_cmd_table;
 #define A_struct_insert_cmd_table (bufferstack + AX_struct_insert_cmd_table)
-AT_s_expr_cast_target_dtype AX_s_expr_cast_target_dtype;
-#define A_s_expr_cast_target_dtype (bufferstack + AX_s_expr_cast_target_dtype)
 AT_s_expr_member_function_call_n_line AX_s_expr_member_function_call_n_line;
 #define A_s_expr_member_function_call_n_line (bufferstack + AX_s_expr_member_function_call_n_line)
+AT_s_expr_cast_target_dtype AX_s_expr_cast_target_dtype;
+#define A_s_expr_cast_target_dtype (bufferstack + AX_s_expr_cast_target_dtype)
 AT_struct_msg_box_cmd_icon AX_struct_msg_box_cmd_icon;
 #define A_struct_msg_box_cmd_icon (bufferstack + AX_struct_msg_box_cmd_icon)
 AT_flist_name AX_flist_name;
@@ -664,10 +690,14 @@ AT_ilist_i0 AX_ilist_i0;
 #define A_ilist_i0 (bufferstack + AX_ilist_i0)
 AT_module_definition_mod_dbname AX_module_definition_mod_dbname;
 #define A_module_definition_mod_dbname (bufferstack + AX_module_definition_mod_dbname)
+AT_create_proc_data_funcname AX_create_proc_data_funcname;
+#define A_create_proc_data_funcname (bufferstack + AX_create_proc_data_funcname)
 AT_struct_ext_cmd_what AX_struct_ext_cmd_what;
 #define A_struct_ext_cmd_what (bufferstack + AX_struct_ext_cmd_what)
 AT_windowtype_e_wintype AX_windowtype_e_wintype;
 #define A_windowtype_e_wintype (bufferstack + AX_windowtype_e_wintype)
+AT_struct_spl_raise_exception_cmd_nm AX_struct_spl_raise_exception_cmd_nm;
+#define A_struct_spl_raise_exception_cmd_nm (bufferstack + AX_struct_spl_raise_exception_cmd_nm)
 AT_str_value AX_str_value;
 #define A_str_value (bufferstack + AX_str_value)
 AT_attrib_blink AX_attrib_blink;
@@ -680,6 +710,8 @@ AT_s_expr_shared_function_call_fname AX_s_expr_shared_function_call_fname;
 #define A_s_expr_shared_function_call_fname (bufferstack + AX_s_expr_shared_function_call_fname)
 AT_expr_str_list_nm AX_expr_str_list_nm;
 #define A_expr_str_list_nm (bufferstack + AX_expr_str_list_nm)
+AT_create_proc_data_nm AX_create_proc_data_nm;
+#define A_create_proc_data_nm (bufferstack + AX_create_proc_data_nm)
 AT_struct_while_cmd_nm AX_struct_while_cmd_nm;
 #define A_struct_while_cmd_nm (bufferstack + AX_struct_while_cmd_nm)
 AT_str_nm AX_str_nm;
@@ -690,6 +722,8 @@ AT_sql_statement_nibind AX_sql_statement_nibind;
 #define A_sql_statement_nibind (bufferstack + AX_sql_statement_nibind)
 AT_funcname_nm AX_funcname_nm;
 #define A_funcname_nm (bufferstack + AX_funcname_nm)
+AT_struct_spl_foreach_select_cmd_nm AX_struct_spl_foreach_select_cmd_nm;
+#define A_struct_spl_foreach_select_cmd_nm (bufferstack + AX_struct_spl_foreach_select_cmd_nm)
 AT_struct_code_cmd_nm AX_struct_code_cmd_nm;
 #define A_struct_code_cmd_nm (bufferstack + AX_struct_code_cmd_nm)
 AT_pdf_startrep_pagetrailersize AX_pdf_startrep_pagetrailersize;
@@ -734,10 +768,12 @@ AT_struct_exit_prog_cmd_nm AX_struct_exit_prog_cmd_nm;
 #define A_struct_exit_prog_cmd_nm (bufferstack + AX_struct_exit_prog_cmd_nm)
 AT_struct_if_cmd_else_lineno AX_struct_if_cmd_else_lineno;
 #define A_struct_if_cmd_else_lineno (bufferstack + AX_struct_if_cmd_else_lineno)
-AT_s_func_namespace AX_s_func_namespace;
-#define A_s_func_namespace (bufferstack + AX_s_func_namespace)
 AT_struct_hide_option_cmd_nm AX_struct_hide_option_cmd_nm;
 #define A_struct_hide_option_cmd_nm (bufferstack + AX_struct_hide_option_cmd_nm)
+AT_s_func_namespace AX_s_func_namespace;
+#define A_s_func_namespace (bufferstack + AX_s_func_namespace)
+AT_s_spl_execute_nm AX_s_spl_execute_nm;
+#define A_s_spl_execute_nm (bufferstack + AX_s_spl_execute_nm)
 AT_variable_src_module AX_variable_src_module;
 #define A_variable_src_module (bufferstack + AX_variable_src_module)
 AT_struct_input_array_cmd_without_defaults AX_struct_input_array_cmd_without_defaults;
@@ -754,10 +790,10 @@ AT_struct_next_form_cmd_field AX_struct_next_form_cmd_field;
 #define A_struct_next_form_cmd_field (bufferstack + AX_struct_next_form_cmd_field)
 AT_struct_construct_cmd_nm AX_struct_construct_cmd_nm;
 #define A_struct_construct_cmd_nm (bufferstack + AX_struct_construct_cmd_nm)
-AT_bluebar_nm AX_bluebar_nm;
-#define A_bluebar_nm (bufferstack + AX_bluebar_nm)
 AT_struct_free_rep_cmd_nm AX_struct_free_rep_cmd_nm;
 #define A_struct_free_rep_cmd_nm (bufferstack + AX_struct_free_rep_cmd_nm)
+AT_bluebar_nm AX_bluebar_nm;
+#define A_bluebar_nm (bufferstack + AX_bluebar_nm)
 AT_s_import_package_module AX_s_import_package_module;
 #define A_s_import_package_module (bufferstack + AX_s_import_package_module)
 AT_struct_declare_cmd_nm AX_struct_declare_cmd_nm;
@@ -778,6 +814,8 @@ AT_struct_start_rpc_cmd_nm AX_struct_start_rpc_cmd_nm;
 #define A_struct_start_rpc_cmd_nm (bufferstack + AX_struct_start_rpc_cmd_nm)
 AT_vname_alias AX_vname_alias;
 #define A_vname_alias (bufferstack + AX_vname_alias)
+AT_struct_spl_for_cmd_nm AX_struct_spl_for_cmd_nm;
+#define A_struct_spl_for_cmd_nm (bufferstack + AX_struct_spl_for_cmd_nm)
 AT_struct_input_cmd_helpno AX_struct_input_cmd_helpno;
 #define A_struct_input_cmd_helpno (bufferstack + AX_struct_input_cmd_helpno)
 AT_expr_str_i AX_expr_str_i;
@@ -874,6 +912,8 @@ AT_single_option_option AX_single_option_option;
 #define A_single_option_option (bufferstack + AX_single_option_option)
 AT_struct_open_statusbox_cmd_name AX_struct_open_statusbox_cmd_name;
 #define A_struct_open_statusbox_cmd_name (bufferstack + AX_struct_open_statusbox_cmd_name)
+AT_s_spl_execute_proc_name AX_s_spl_execute_proc_name;
+#define A_s_spl_execute_proc_name (bufferstack + AX_s_spl_execute_proc_name)
 AT_attrib_allow_insert AX_attrib_allow_insert;
 #define A_attrib_allow_insert (bufferstack + AX_attrib_allow_insert)
 AT_struct_declare_cmd_cursor_type AX_struct_declare_cmd_cursor_type;
@@ -920,12 +960,16 @@ AT_attrib_text AX_attrib_text;
 #define A_attrib_text (bufferstack + AX_attrib_text)
 AT_struct_display_array_cmd_nm AX_struct_display_array_cmd_nm;
 #define A_struct_display_array_cmd_nm (bufferstack + AX_struct_display_array_cmd_nm)
+AT_struct_spl_block_cmd_nm AX_struct_spl_block_cmd_nm;
+#define A_struct_spl_block_cmd_nm (bufferstack + AX_struct_spl_block_cmd_nm)
 AT_report_format_section_lines_in_trailer AX_report_format_section_lines_in_trailer;
 #define A_report_format_section_lines_in_trailer (bufferstack + AX_report_format_section_lines_in_trailer)
 AT_s_function_definition_isstatic AX_s_function_definition_isstatic;
 #define A_s_function_definition_isstatic (bufferstack + AX_s_function_definition_isstatic)
 AT_s_limit_start AX_s_limit_start;
 #define A_s_limit_start (bufferstack + AX_s_limit_start)
+AT_s_spl_for_item_nm AX_s_spl_for_item_nm;
+#define A_s_spl_for_item_nm (bufferstack + AX_s_spl_for_item_nm)
 AT_s_expr_external_call_nm AX_s_expr_external_call_nm;
 #define A_s_expr_external_call_nm (bufferstack + AX_s_expr_external_call_nm)
 AT_cons_list_entry_nm AX_cons_list_entry_nm;
@@ -952,6 +996,8 @@ AT_struct_load_cmd_tabname AX_struct_load_cmd_tabname;
 #define A_struct_load_cmd_tabname (bufferstack + AX_struct_load_cmd_tabname)
 AT_s_limit_nm AX_s_limit_nm;
 #define A_s_limit_nm (bufferstack + AX_s_limit_nm)
+AT_struct_spl_trace_cmd_nm AX_struct_spl_trace_cmd_nm;
+#define A_struct_spl_trace_cmd_nm (bufferstack + AX_struct_spl_trace_cmd_nm)
 AT_s_select_list_item_data_nm AX_s_select_list_item_data_nm;
 #define A_s_select_list_item_data_nm (bufferstack + AX_s_select_list_item_data_nm)
 AT_s_select_union_op AX_s_select_union_op;
@@ -1034,10 +1080,10 @@ AT_struct_open_window_cmd_nm AX_struct_open_window_cmd_nm;
 #define A_struct_open_window_cmd_nm (bufferstack + AX_struct_open_window_cmd_nm)
 AT_s_select_list_item_nm AX_s_select_list_item_nm;
 #define A_s_select_list_item_nm (bufferstack + AX_s_select_list_item_nm)
-AT_pdf_startrep_with_top_margin AX_pdf_startrep_with_top_margin;
-#define A_pdf_startrep_with_top_margin (bufferstack + AX_pdf_startrep_with_top_margin)
 AT_struct_free_rep_cmd_repname AX_struct_free_rep_cmd_repname;
 #define A_struct_free_rep_cmd_repname (bufferstack + AX_struct_free_rep_cmd_repname)
+AT_pdf_startrep_with_top_margin AX_pdf_startrep_with_top_margin;
+#define A_pdf_startrep_with_top_margin (bufferstack + AX_pdf_startrep_with_top_margin)
 AT_s_dependant_tables_tabname AX_s_dependant_tables_tabname;
 #define A_s_dependant_tables_tabname (bufferstack + AX_s_dependant_tables_tabname)
 AT_s_report_definition_funcname AX_s_report_definition_funcname;
@@ -1092,6 +1138,8 @@ AT_dt_display_nm AX_dt_display_nm;
 #define A_dt_display_nm (bufferstack + AX_dt_display_nm)
 AT_struct_validate_cmd_nm AX_struct_validate_cmd_nm;
 #define A_struct_validate_cmd_nm (bufferstack + AX_struct_validate_cmd_nm)
+AT_struct_create_proc_cmd_nm AX_struct_create_proc_cmd_nm;
+#define A_struct_create_proc_cmd_nm (bufferstack + AX_struct_create_proc_cmd_nm)
 AT_struct_declare_cmd_isstmt AX_struct_declare_cmd_isstmt;
 #define A_struct_declare_cmd_isstmt (bufferstack + AX_struct_declare_cmd_isstmt)
 AT_s_expr_pdf_function_call_namespace AX_s_expr_pdf_function_call_namespace;
@@ -1166,6 +1214,8 @@ AT_report_block_data_report_blocks AX_report_block_data_report_blocks;
 #define A_report_block_data_report_blocks (bufferstack + AX_report_block_data_report_blocks)
 AT_s_import_legacy_definition_nm AX_s_import_legacy_definition_nm;
 #define A_s_import_legacy_definition_nm (bufferstack + AX_s_import_legacy_definition_nm)
+AT_s_named_param_param_name AX_s_named_param_param_name;
+#define A_s_named_param_param_name (bufferstack + AX_s_named_param_param_name)
 AT_s_select_list_item_list_nm AX_s_select_list_item_list_nm;
 #define A_s_select_list_item_list_nm (bufferstack + AX_s_select_list_item_list_nm)
 AT_struct_input_array_cmd_slice AX_struct_input_array_cmd_slice;
@@ -1184,6 +1234,8 @@ AT_s_class_definition_parentname AX_s_class_definition_parentname;
 #define A_s_class_definition_parentname (bufferstack + AX_s_class_definition_parentname)
 AT_s_import_datatype_lineno AX_s_import_datatype_lineno;
 #define A_s_import_datatype_lineno (bufferstack + AX_s_import_datatype_lineno)
+AT_spl_if_conds_nm AX_spl_if_conds_nm;
+#define A_spl_if_conds_nm (bufferstack + AX_spl_if_conds_nm)
 AT_startrep_with_bottom_margin AX_startrep_with_bottom_margin;
 #define A_startrep_with_bottom_margin (bufferstack + AX_startrep_with_bottom_margin)
 AT_vname_name_list_nm AX_vname_name_list_nm;
@@ -1236,6 +1288,8 @@ AT_lint_warning_nm AX_lint_warning_nm;
 #define A_lint_warning_nm (bufferstack + AX_lint_warning_nm)
 AT_struct_pause_cmd_nm AX_struct_pause_cmd_nm;
 #define A_struct_pause_cmd_nm (bufferstack + AX_struct_pause_cmd_nm)
+AT_struct_spl_if_cmd_nm AX_struct_spl_if_cmd_nm;
+#define A_struct_spl_if_cmd_nm (bufferstack + AX_struct_spl_if_cmd_nm)
 AT_s_expr_cached_cache_num AX_s_expr_cached_cache_num;
 #define A_s_expr_cached_cache_num (bufferstack + AX_s_expr_cached_cache_num)
 AT_on_event_colno AX_on_event_colno;
@@ -1244,10 +1298,10 @@ AT_s_import_datatype_dtype_name AX_s_import_datatype_dtype_name;
 #define A_s_import_datatype_dtype_name (bufferstack + AX_s_import_datatype_dtype_name)
 AT_struct_declare_cmd_scroll AX_struct_declare_cmd_scroll;
 #define A_struct_declare_cmd_scroll (bufferstack + AX_struct_declare_cmd_scroll)
-AT_s_expr_member_function_call_n_nm AX_s_expr_member_function_call_n_nm;
-#define A_s_expr_member_function_call_n_nm (bufferstack + AX_s_expr_member_function_call_n_nm)
 AT_module_definition_moduleIsInLibrary AX_module_definition_moduleIsInLibrary;
 #define A_module_definition_moduleIsInLibrary (bufferstack + AX_module_definition_moduleIsInLibrary)
+AT_s_expr_member_function_call_n_nm AX_s_expr_member_function_call_n_nm;
+#define A_s_expr_member_function_call_n_nm (bufferstack + AX_s_expr_member_function_call_n_nm)
 AT_s_update_pair_column_name AX_s_update_pair_column_name;
 #define A_s_update_pair_column_name (bufferstack + AX_s_update_pair_column_name)
 AT_attrib_invisible AX_attrib_invisible;
@@ -1258,10 +1312,10 @@ AT_simple_variable_nm AX_simple_variable_nm;
 #define A_simple_variable_nm (bufferstack + AX_simple_variable_nm)
 AT_struct_next_field_cmd_sio AX_struct_next_field_cmd_sio;
 #define A_struct_next_field_cmd_sio (bufferstack + AX_struct_next_field_cmd_sio)
-AT_bluebar_b AX_bluebar_b;
-#define A_bluebar_b (bufferstack + AX_bluebar_b)
 AT_expr_str_nm AX_expr_str_nm;
 #define A_expr_str_nm (bufferstack + AX_expr_str_nm)
+AT_bluebar_b AX_bluebar_b;
+#define A_bluebar_b (bufferstack + AX_bluebar_b)
 AT_s_function_definition_funcname AX_s_function_definition_funcname;
 #define A_s_function_definition_funcname (bufferstack + AX_s_function_definition_funcname)
 AT_struct_menu_cmd_sio AX_struct_menu_cmd_sio;
@@ -1334,6 +1388,8 @@ AT_s_import_legacy_definition_funcname AX_s_import_legacy_definition_funcname;
 #define A_s_import_legacy_definition_funcname (bufferstack + AX_s_import_legacy_definition_funcname)
 AT_variable_user_system AX_variable_user_system;
 #define A_variable_user_system (bufferstack + AX_variable_user_system)
+AT_struct_spl_on_exception_cmd_nm AX_struct_spl_on_exception_cmd_nm;
+#define A_struct_spl_on_exception_cmd_nm (bufferstack + AX_struct_spl_on_exception_cmd_nm)
 AT_variable_usage AX_variable_usage;
 #define A_variable_usage (bufferstack + AX_variable_usage)
 AT_expr_str_e_expr_type AX_expr_str_e_expr_type;
@@ -1348,6 +1404,8 @@ AT_struct_display_form_cmd_nm AX_struct_display_form_cmd_nm;
 #define A_struct_display_form_cmd_nm (bufferstack + AX_struct_display_form_cmd_nm)
 AT_lint_warning_lineno AX_lint_warning_lineno;
 #define A_lint_warning_lineno (bufferstack + AX_lint_warning_lineno)
+AT_struct_spl_let_cmd_nm AX_struct_spl_let_cmd_nm;
+#define A_struct_spl_let_cmd_nm (bufferstack + AX_struct_spl_let_cmd_nm)
 AT_funcname_value AX_funcname_value;
 #define A_funcname_value (bufferstack + AX_funcname_value)
 AT_s_select_finish_nm AX_s_select_finish_nm;
@@ -1356,18 +1414,20 @@ AT_s_import_datatype_nm AX_s_import_datatype_nm;
 #define A_s_import_datatype_nm (bufferstack + AX_s_import_datatype_nm)
 AT_struct_put_cmd_nm AX_struct_put_cmd_nm;
 #define A_struct_put_cmd_nm (bufferstack + AX_struct_put_cmd_nm)
+AT_struct_spl_on_exception_cmd_resume AX_struct_spl_on_exception_cmd_resume;
+#define A_struct_spl_on_exception_cmd_resume (bufferstack + AX_struct_spl_on_exception_cmd_resume)
 AT_struct_open_form_gui_cmd_disable AX_struct_open_form_gui_cmd_disable;
 #define A_struct_open_form_gui_cmd_disable (bufferstack + AX_struct_open_form_gui_cmd_disable)
 AT_pdf_startrep_with_left_margin AX_pdf_startrep_with_left_margin;
 #define A_pdf_startrep_with_left_margin (bufferstack + AX_pdf_startrep_with_left_margin)
-AT_expr_str_si AX_expr_str_si;
-#define A_expr_str_si (bufferstack + AX_expr_str_si)
 AT_module_definition_namespace AX_module_definition_namespace;
 #define A_module_definition_namespace (bufferstack + AX_module_definition_namespace)
-AT_s_expr_shared_function_call_namespace AX_s_expr_shared_function_call_namespace;
-#define A_s_expr_shared_function_call_namespace (bufferstack + AX_s_expr_shared_function_call_namespace)
+AT_expr_str_si AX_expr_str_si;
+#define A_expr_str_si (bufferstack + AX_expr_str_si)
 AT_struct_goto_cmd_nm AX_struct_goto_cmd_nm;
 #define A_struct_goto_cmd_nm (bufferstack + AX_struct_goto_cmd_nm)
+AT_s_expr_shared_function_call_namespace AX_s_expr_shared_function_call_namespace;
+#define A_s_expr_shared_function_call_namespace (bufferstack + AX_s_expr_shared_function_call_namespace)
 AT_int_value AX_int_value;
 #define A_int_value (bufferstack + AX_int_value)
 AT_struct_disable_cmd_nm AX_struct_disable_cmd_nm;
@@ -1380,6 +1440,8 @@ AT_struct_input_array_cmd_helpno AX_struct_input_array_cmd_helpno;
 #define A_struct_input_array_cmd_helpno (bufferstack + AX_struct_input_array_cmd_helpno)
 AT_struct_init_cmd_nm AX_struct_init_cmd_nm;
 #define A_struct_init_cmd_nm (bufferstack + AX_struct_init_cmd_nm)
+AT_struct_spl_system_cmd_nm AX_struct_spl_system_cmd_nm;
+#define A_struct_spl_system_cmd_nm (bufferstack + AX_struct_spl_system_cmd_nm)
 AT_s_select_list_item_fcall_nm AX_s_select_list_item_fcall_nm;
 #define A_s_select_list_item_fcall_nm (bufferstack + AX_s_select_list_item_fcall_nm)
 AT_s_select_list_item_extend_from AX_s_select_list_item_extend_from;
@@ -1593,6 +1655,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
 %x ROOT_cons_list_entry AL_cons_list_entry E_cons_list_entry
 %x ROOT_constant_data AL_constant_data E_constant_data
 %x ROOT_convert AL_convert S_convert S_convert_1 S_convert_2 E_convert
+%x ROOT_create_proc_data AL_create_proc_data S_create_proc_data S_create_proc_data_1 S_create_proc_data_2 E_create_proc_data
 %x ROOT_dt_display AL_dt_display S_dt_display S_dt_display_1 S_dt_display_2 E_dt_display
 %x ROOT_event_data AL_event_data S_event_data S_event_data_1 S_event_data_2 E_event_data
 %x ROOT_expr_str AL_expr_str S_expr_str S_expr_str_1 S_expr_str_2 E_expr_str
@@ -1675,6 +1738,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
 %x ROOT_s_import_package AL_s_import_package E_s_import_package
 %x ROOT_s_limit AL_s_limit E_s_limit
 %x ROOT_s_module_entry_ptr_list AL_s_module_entry_ptr_list S_s_module_entry_ptr_list S_s_module_entry_ptr_list_1 S_s_module_entry_ptr_list_2 E_s_module_entry_ptr_list
+%x ROOT_s_named_param AL_s_named_param S_s_named_param S_s_named_param_1 S_s_named_param_2 E_s_named_param
 %x ROOT_s_pdf_report_definition AL_s_pdf_report_definition S_s_pdf_report_definition S_s_pdf_report_definition_1 S_s_pdf_report_definition_2 E_s_pdf_report_definition
 %x ROOT_s_report_definition AL_s_report_definition S_s_report_definition S_s_report_definition_1 S_s_report_definition_2 E_s_report_definition
 %x ROOT_s_select AL_s_select S_s_select S_s_select_1 S_s_select_2 E_s_select
@@ -1697,13 +1761,18 @@ Literal		\'[^'']*\'|\"[^""]*\"
 %x ROOT_s_sli_case_element AL_s_sli_case_element S_s_sli_case_element S_s_sli_case_element_1 S_s_sli_case_element_2 E_s_sli_case_element
 %x ROOT_s_sli_cast AL_s_sli_cast S_s_sli_cast S_s_sli_cast_1 S_s_sli_cast_2 E_s_sli_cast
 %x ROOT_s_source_code AL_s_source_code S_s_source_code S_s_source_code_1 S_s_source_code_2 E_s_source_code
+%x ROOT_s_spl_block AL_s_spl_block S_s_spl_block S_s_spl_block_1 S_s_spl_block_2 E_s_spl_block
+%x ROOT_s_spl_execute AL_s_spl_execute S_s_spl_execute S_s_spl_execute_1 S_s_spl_execute_2 E_s_spl_execute
+%x ROOT_s_spl_for_item AL_s_spl_for_item S_s_spl_for_item S_s_spl_for_item_1 S_s_spl_for_item_2 E_s_spl_for_item
 %x ROOT_s_table AL_s_table S_s_table S_s_table_1 S_s_table_2 E_s_table
 %x ROOT_s_table_list AL_s_table_list S_s_table_list S_s_table_list_1 S_s_table_list_2 E_s_table_list
 %x ROOT_s_table_list_element AL_s_table_list_element S_s_table_list_element S_s_table_list_element_1 S_s_table_list_element_2 E_s_table_list_element
 %x ROOT_s_update_pair AL_s_update_pair S_s_update_pair S_s_update_pair_1 S_s_update_pair_2 E_s_update_pair
 %x ROOT_short AL_short E_short
-%x ROOT_simple_variable AL_simple_variable E_simple_variable
+%x ROOT_simple_variable AL_simple_variable S_simple_variable S_simple_variable_1 S_simple_variable_2 E_simple_variable
 %x ROOT_single_option AL_single_option S_single_option S_single_option_1 S_single_option_2 E_single_option
+%x ROOT_spl_if_cond AL_spl_if_cond S_spl_if_cond S_spl_if_cond_1 S_spl_if_cond_2 E_spl_if_cond
+%x ROOT_spl_if_conds AL_spl_if_conds S_spl_if_conds S_spl_if_conds_1 S_spl_if_conds_2 E_spl_if_conds
 %x ROOT_sq_subquery AL_sq_subquery S_sq_subquery S_sq_subquery_1 S_sq_subquery_2 E_sq_subquery
 %x ROOT_sql_statement AL_sql_statement S_sql_statement S_sql_statement_1 S_sql_statement_2 E_sql_statement
 %x ROOT_startrep AL_startrep S_startrep S_startrep_1 S_startrep_2 E_startrep
@@ -1725,6 +1794,7 @@ Literal		\'[^'']*\'|\"[^""]*\"
 %x ROOT_struct_continue_cmd AL_struct_continue_cmd E_struct_continue_cmd
 %x ROOT_struct_convert_cmd AL_struct_convert_cmd S_struct_convert_cmd S_struct_convert_cmd_1 S_struct_convert_cmd_2 E_struct_convert_cmd
 %x ROOT_struct_copyback_cmd AL_struct_copyback_cmd S_struct_copyback_cmd S_struct_copyback_cmd_1 S_struct_copyback_cmd_2 E_struct_copyback_cmd
+%x ROOT_struct_create_proc_cmd AL_struct_create_proc_cmd S_struct_create_proc_cmd S_struct_create_proc_cmd_1 S_struct_create_proc_cmd_2 E_struct_create_proc_cmd
 %x ROOT_struct_current_win_cmd AL_struct_current_win_cmd S_struct_current_win_cmd S_struct_current_win_cmd_1 S_struct_current_win_cmd_2 E_struct_current_win_cmd
 %x ROOT_struct_dealloc_arr_cmd AL_struct_dealloc_arr_cmd S_struct_dealloc_arr_cmd S_struct_dealloc_arr_cmd_1 S_struct_dealloc_arr_cmd_2 E_struct_dealloc_arr_cmd
 %x ROOT_struct_declare_cmd AL_struct_declare_cmd S_struct_declare_cmd S_struct_declare_cmd_1 S_struct_declare_cmd_2 E_struct_declare_cmd
@@ -1805,8 +1875,22 @@ Literal		\'[^'']*\'|\"[^""]*\"
 %x ROOT_struct_skip_cmd AL_struct_skip_cmd S_struct_skip_cmd S_struct_skip_cmd_1 S_struct_skip_cmd_2 E_struct_skip_cmd
 %x ROOT_struct_skip_to_cmd AL_struct_skip_to_cmd S_struct_skip_to_cmd S_struct_skip_to_cmd_1 S_struct_skip_to_cmd_2 E_struct_skip_to_cmd
 %x ROOT_struct_sleep_cmd AL_struct_sleep_cmd S_struct_sleep_cmd S_struct_sleep_cmd_1 S_struct_sleep_cmd_2 E_struct_sleep_cmd
+%x ROOT_struct_spl_block_cmd AL_struct_spl_block_cmd S_struct_spl_block_cmd S_struct_spl_block_cmd_1 S_struct_spl_block_cmd_2 E_struct_spl_block_cmd
+%x ROOT_struct_spl_call_cmd AL_struct_spl_call_cmd S_struct_spl_call_cmd S_struct_spl_call_cmd_1 S_struct_spl_call_cmd_2 E_struct_spl_call_cmd
+%x ROOT_struct_spl_for_cmd AL_struct_spl_for_cmd S_struct_spl_for_cmd S_struct_spl_for_cmd_1 S_struct_spl_for_cmd_2 E_struct_spl_for_cmd
+%x ROOT_struct_spl_foreach_execute_cmd AL_struct_spl_foreach_execute_cmd S_struct_spl_foreach_execute_cmd S_struct_spl_foreach_execute_cmd_1 S_struct_spl_foreach_execute_cmd_2 E_struct_spl_foreach_execute_cmd
+%x ROOT_struct_spl_foreach_select_cmd AL_struct_spl_foreach_select_cmd S_struct_spl_foreach_select_cmd S_struct_spl_foreach_select_cmd_1 S_struct_spl_foreach_select_cmd_2 E_struct_spl_foreach_select_cmd
+%x ROOT_struct_spl_if_cmd AL_struct_spl_if_cmd S_struct_spl_if_cmd S_struct_spl_if_cmd_1 S_struct_spl_if_cmd_2 E_struct_spl_if_cmd
+%x ROOT_struct_spl_let_cmd AL_struct_spl_let_cmd S_struct_spl_let_cmd S_struct_spl_let_cmd_1 S_struct_spl_let_cmd_2 E_struct_spl_let_cmd
+%x ROOT_struct_spl_on_exception_cmd AL_struct_spl_on_exception_cmd S_struct_spl_on_exception_cmd S_struct_spl_on_exception_cmd_1 S_struct_spl_on_exception_cmd_2 E_struct_spl_on_exception_cmd
+%x ROOT_struct_spl_raise_exception_cmd AL_struct_spl_raise_exception_cmd S_struct_spl_raise_exception_cmd S_struct_spl_raise_exception_cmd_1 S_struct_spl_raise_exception_cmd_2 E_struct_spl_raise_exception_cmd
+%x ROOT_struct_spl_return_cmd AL_struct_spl_return_cmd S_struct_spl_return_cmd S_struct_spl_return_cmd_1 S_struct_spl_return_cmd_2 E_struct_spl_return_cmd
+%x ROOT_struct_spl_system_cmd AL_struct_spl_system_cmd S_struct_spl_system_cmd S_struct_spl_system_cmd_1 S_struct_spl_system_cmd_2 E_struct_spl_system_cmd
+%x ROOT_struct_spl_trace_cmd AL_struct_spl_trace_cmd S_struct_spl_trace_cmd S_struct_spl_trace_cmd_1 S_struct_spl_trace_cmd_2 E_struct_spl_trace_cmd
+%x ROOT_struct_spl_while_cmd AL_struct_spl_while_cmd S_struct_spl_while_cmd S_struct_spl_while_cmd_1 S_struct_spl_while_cmd_2 E_struct_spl_while_cmd
 %x ROOT_struct_sql_block_cmd AL_struct_sql_block_cmd S_struct_sql_block_cmd S_struct_sql_block_cmd_1 S_struct_sql_block_cmd_2 E_struct_sql_block_cmd
 %x ROOT_struct_sql_cmd AL_struct_sql_cmd S_struct_sql_cmd S_struct_sql_cmd_1 S_struct_sql_cmd_2 E_struct_sql_cmd
+%x ROOT_struct_sql_debug_file_cmd AL_struct_sql_debug_file_cmd S_struct_sql_debug_file_cmd S_struct_sql_debug_file_cmd_1 S_struct_sql_debug_file_cmd_2 E_struct_sql_debug_file_cmd
 %x ROOT_struct_sql_transact_cmd AL_struct_sql_transact_cmd S_struct_sql_transact_cmd S_struct_sql_transact_cmd_1 S_struct_sql_transact_cmd_2 E_struct_sql_transact_cmd
 %x ROOT_struct_start_cmd AL_struct_start_cmd S_struct_start_cmd S_struct_start_cmd_1 S_struct_start_cmd_2 E_struct_start_cmd
 %x ROOT_struct_start_rpc_cmd AL_struct_start_rpc_cmd S_struct_start_rpc_cmd S_struct_start_rpc_cmd_1 S_struct_start_rpc_cmd_2 E_struct_start_rpc_cmd
@@ -1942,6 +2026,12 @@ const char* *statenames=NULL;
   statenames[S_convert_1] = "convert";
   statenames[S_convert_2] = "convert";
   statenames[E_convert] = "convert";
+  statenames[ROOT_create_proc_data] = NULL;
+  statenames[AL_create_proc_data] = NULL;
+  statenames[S_create_proc_data] = "create_proc_data";
+  statenames[S_create_proc_data_1] = "create_proc_data";
+  statenames[S_create_proc_data_2] = "create_proc_data";
+  statenames[E_create_proc_data] = "create_proc_data";
   statenames[ROOT_dt_display] = NULL;
   statenames[AL_dt_display] = NULL;
   statenames[S_dt_display] = "dt_display";
@@ -2365,6 +2455,12 @@ const char* *statenames=NULL;
   statenames[S_s_module_entry_ptr_list_1] = "s_module_entry_ptr_list";
   statenames[S_s_module_entry_ptr_list_2] = "s_module_entry_ptr_list";
   statenames[E_s_module_entry_ptr_list] = "s_module_entry_ptr_list";
+  statenames[ROOT_s_named_param] = NULL;
+  statenames[AL_s_named_param] = NULL;
+  statenames[S_s_named_param] = "s_named_param";
+  statenames[S_s_named_param_1] = "s_named_param";
+  statenames[S_s_named_param_2] = "s_named_param";
+  statenames[E_s_named_param] = "s_named_param";
   statenames[ROOT_s_pdf_report_definition] = NULL;
   statenames[AL_s_pdf_report_definition] = NULL;
   statenames[S_s_pdf_report_definition] = "s_pdf_report_definition";
@@ -2497,6 +2593,24 @@ const char* *statenames=NULL;
   statenames[S_s_source_code_1] = "s_source_code";
   statenames[S_s_source_code_2] = "s_source_code";
   statenames[E_s_source_code] = "s_source_code";
+  statenames[ROOT_s_spl_block] = NULL;
+  statenames[AL_s_spl_block] = NULL;
+  statenames[S_s_spl_block] = "s_spl_block";
+  statenames[S_s_spl_block_1] = "s_spl_block";
+  statenames[S_s_spl_block_2] = "s_spl_block";
+  statenames[E_s_spl_block] = "s_spl_block";
+  statenames[ROOT_s_spl_execute] = NULL;
+  statenames[AL_s_spl_execute] = NULL;
+  statenames[S_s_spl_execute] = "s_spl_execute";
+  statenames[S_s_spl_execute_1] = "s_spl_execute";
+  statenames[S_s_spl_execute_2] = "s_spl_execute";
+  statenames[E_s_spl_execute] = "s_spl_execute";
+  statenames[ROOT_s_spl_for_item] = NULL;
+  statenames[AL_s_spl_for_item] = NULL;
+  statenames[S_s_spl_for_item] = "s_spl_for_item";
+  statenames[S_s_spl_for_item_1] = "s_spl_for_item";
+  statenames[S_s_spl_for_item_2] = "s_spl_for_item";
+  statenames[E_s_spl_for_item] = "s_spl_for_item";
   statenames[ROOT_s_table] = NULL;
   statenames[AL_s_table] = NULL;
   statenames[S_s_table] = "s_table";
@@ -2526,6 +2640,9 @@ const char* *statenames=NULL;
   statenames[E_short] = "short";
   statenames[ROOT_simple_variable] = NULL;
   statenames[AL_simple_variable] = NULL;
+  statenames[S_simple_variable] = "simple_variable";
+  statenames[S_simple_variable_1] = "simple_variable";
+  statenames[S_simple_variable_2] = "simple_variable";
   statenames[E_simple_variable] = "simple_variable";
   statenames[ROOT_single_option] = NULL;
   statenames[AL_single_option] = NULL;
@@ -2533,6 +2650,18 @@ const char* *statenames=NULL;
   statenames[S_single_option_1] = "single_option";
   statenames[S_single_option_2] = "single_option";
   statenames[E_single_option] = "single_option";
+  statenames[ROOT_spl_if_cond] = NULL;
+  statenames[AL_spl_if_cond] = NULL;
+  statenames[S_spl_if_cond] = "spl_if_cond";
+  statenames[S_spl_if_cond_1] = "spl_if_cond";
+  statenames[S_spl_if_cond_2] = "spl_if_cond";
+  statenames[E_spl_if_cond] = "spl_if_cond";
+  statenames[ROOT_spl_if_conds] = NULL;
+  statenames[AL_spl_if_conds] = NULL;
+  statenames[S_spl_if_conds] = "spl_if_conds";
+  statenames[S_spl_if_conds_1] = "spl_if_conds";
+  statenames[S_spl_if_conds_2] = "spl_if_conds";
+  statenames[E_spl_if_conds] = "spl_if_conds";
   statenames[ROOT_sq_subquery] = NULL;
   statenames[AL_sq_subquery] = NULL;
   statenames[S_sq_subquery] = "sq_subquery";
@@ -2641,6 +2770,12 @@ const char* *statenames=NULL;
   statenames[S_struct_copyback_cmd_1] = "struct_copyback_cmd";
   statenames[S_struct_copyback_cmd_2] = "struct_copyback_cmd";
   statenames[E_struct_copyback_cmd] = "struct_copyback_cmd";
+  statenames[ROOT_struct_create_proc_cmd] = NULL;
+  statenames[AL_struct_create_proc_cmd] = NULL;
+  statenames[S_struct_create_proc_cmd] = "struct_create_proc_cmd";
+  statenames[S_struct_create_proc_cmd_1] = "struct_create_proc_cmd";
+  statenames[S_struct_create_proc_cmd_2] = "struct_create_proc_cmd";
+  statenames[E_struct_create_proc_cmd] = "struct_create_proc_cmd";
   statenames[ROOT_struct_current_win_cmd] = NULL;
   statenames[AL_struct_current_win_cmd] = NULL;
   statenames[S_struct_current_win_cmd] = "struct_current_win_cmd";
@@ -3103,6 +3238,84 @@ const char* *statenames=NULL;
   statenames[S_struct_sleep_cmd_1] = "struct_sleep_cmd";
   statenames[S_struct_sleep_cmd_2] = "struct_sleep_cmd";
   statenames[E_struct_sleep_cmd] = "struct_sleep_cmd";
+  statenames[ROOT_struct_spl_block_cmd] = NULL;
+  statenames[AL_struct_spl_block_cmd] = NULL;
+  statenames[S_struct_spl_block_cmd] = "struct_spl_block_cmd";
+  statenames[S_struct_spl_block_cmd_1] = "struct_spl_block_cmd";
+  statenames[S_struct_spl_block_cmd_2] = "struct_spl_block_cmd";
+  statenames[E_struct_spl_block_cmd] = "struct_spl_block_cmd";
+  statenames[ROOT_struct_spl_call_cmd] = NULL;
+  statenames[AL_struct_spl_call_cmd] = NULL;
+  statenames[S_struct_spl_call_cmd] = "struct_spl_call_cmd";
+  statenames[S_struct_spl_call_cmd_1] = "struct_spl_call_cmd";
+  statenames[S_struct_spl_call_cmd_2] = "struct_spl_call_cmd";
+  statenames[E_struct_spl_call_cmd] = "struct_spl_call_cmd";
+  statenames[ROOT_struct_spl_for_cmd] = NULL;
+  statenames[AL_struct_spl_for_cmd] = NULL;
+  statenames[S_struct_spl_for_cmd] = "struct_spl_for_cmd";
+  statenames[S_struct_spl_for_cmd_1] = "struct_spl_for_cmd";
+  statenames[S_struct_spl_for_cmd_2] = "struct_spl_for_cmd";
+  statenames[E_struct_spl_for_cmd] = "struct_spl_for_cmd";
+  statenames[ROOT_struct_spl_foreach_execute_cmd] = NULL;
+  statenames[AL_struct_spl_foreach_execute_cmd] = NULL;
+  statenames[S_struct_spl_foreach_execute_cmd] = "struct_spl_foreach_execute_cmd";
+  statenames[S_struct_spl_foreach_execute_cmd_1] = "struct_spl_foreach_execute_cmd";
+  statenames[S_struct_spl_foreach_execute_cmd_2] = "struct_spl_foreach_execute_cmd";
+  statenames[E_struct_spl_foreach_execute_cmd] = "struct_spl_foreach_execute_cmd";
+  statenames[ROOT_struct_spl_foreach_select_cmd] = NULL;
+  statenames[AL_struct_spl_foreach_select_cmd] = NULL;
+  statenames[S_struct_spl_foreach_select_cmd] = "struct_spl_foreach_select_cmd";
+  statenames[S_struct_spl_foreach_select_cmd_1] = "struct_spl_foreach_select_cmd";
+  statenames[S_struct_spl_foreach_select_cmd_2] = "struct_spl_foreach_select_cmd";
+  statenames[E_struct_spl_foreach_select_cmd] = "struct_spl_foreach_select_cmd";
+  statenames[ROOT_struct_spl_if_cmd] = NULL;
+  statenames[AL_struct_spl_if_cmd] = NULL;
+  statenames[S_struct_spl_if_cmd] = "struct_spl_if_cmd";
+  statenames[S_struct_spl_if_cmd_1] = "struct_spl_if_cmd";
+  statenames[S_struct_spl_if_cmd_2] = "struct_spl_if_cmd";
+  statenames[E_struct_spl_if_cmd] = "struct_spl_if_cmd";
+  statenames[ROOT_struct_spl_let_cmd] = NULL;
+  statenames[AL_struct_spl_let_cmd] = NULL;
+  statenames[S_struct_spl_let_cmd] = "struct_spl_let_cmd";
+  statenames[S_struct_spl_let_cmd_1] = "struct_spl_let_cmd";
+  statenames[S_struct_spl_let_cmd_2] = "struct_spl_let_cmd";
+  statenames[E_struct_spl_let_cmd] = "struct_spl_let_cmd";
+  statenames[ROOT_struct_spl_on_exception_cmd] = NULL;
+  statenames[AL_struct_spl_on_exception_cmd] = NULL;
+  statenames[S_struct_spl_on_exception_cmd] = "struct_spl_on_exception_cmd";
+  statenames[S_struct_spl_on_exception_cmd_1] = "struct_spl_on_exception_cmd";
+  statenames[S_struct_spl_on_exception_cmd_2] = "struct_spl_on_exception_cmd";
+  statenames[E_struct_spl_on_exception_cmd] = "struct_spl_on_exception_cmd";
+  statenames[ROOT_struct_spl_raise_exception_cmd] = NULL;
+  statenames[AL_struct_spl_raise_exception_cmd] = NULL;
+  statenames[S_struct_spl_raise_exception_cmd] = "struct_spl_raise_exception_cmd";
+  statenames[S_struct_spl_raise_exception_cmd_1] = "struct_spl_raise_exception_cmd";
+  statenames[S_struct_spl_raise_exception_cmd_2] = "struct_spl_raise_exception_cmd";
+  statenames[E_struct_spl_raise_exception_cmd] = "struct_spl_raise_exception_cmd";
+  statenames[ROOT_struct_spl_return_cmd] = NULL;
+  statenames[AL_struct_spl_return_cmd] = NULL;
+  statenames[S_struct_spl_return_cmd] = "struct_spl_return_cmd";
+  statenames[S_struct_spl_return_cmd_1] = "struct_spl_return_cmd";
+  statenames[S_struct_spl_return_cmd_2] = "struct_spl_return_cmd";
+  statenames[E_struct_spl_return_cmd] = "struct_spl_return_cmd";
+  statenames[ROOT_struct_spl_system_cmd] = NULL;
+  statenames[AL_struct_spl_system_cmd] = NULL;
+  statenames[S_struct_spl_system_cmd] = "struct_spl_system_cmd";
+  statenames[S_struct_spl_system_cmd_1] = "struct_spl_system_cmd";
+  statenames[S_struct_spl_system_cmd_2] = "struct_spl_system_cmd";
+  statenames[E_struct_spl_system_cmd] = "struct_spl_system_cmd";
+  statenames[ROOT_struct_spl_trace_cmd] = NULL;
+  statenames[AL_struct_spl_trace_cmd] = NULL;
+  statenames[S_struct_spl_trace_cmd] = "struct_spl_trace_cmd";
+  statenames[S_struct_spl_trace_cmd_1] = "struct_spl_trace_cmd";
+  statenames[S_struct_spl_trace_cmd_2] = "struct_spl_trace_cmd";
+  statenames[E_struct_spl_trace_cmd] = "struct_spl_trace_cmd";
+  statenames[ROOT_struct_spl_while_cmd] = NULL;
+  statenames[AL_struct_spl_while_cmd] = NULL;
+  statenames[S_struct_spl_while_cmd] = "struct_spl_while_cmd";
+  statenames[S_struct_spl_while_cmd_1] = "struct_spl_while_cmd";
+  statenames[S_struct_spl_while_cmd_2] = "struct_spl_while_cmd";
+  statenames[E_struct_spl_while_cmd] = "struct_spl_while_cmd";
   statenames[ROOT_struct_sql_block_cmd] = NULL;
   statenames[AL_struct_sql_block_cmd] = NULL;
   statenames[S_struct_sql_block_cmd] = "struct_sql_block_cmd";
@@ -3115,6 +3328,12 @@ const char* *statenames=NULL;
   statenames[S_struct_sql_cmd_1] = "struct_sql_cmd";
   statenames[S_struct_sql_cmd_2] = "struct_sql_cmd";
   statenames[E_struct_sql_cmd] = "struct_sql_cmd";
+  statenames[ROOT_struct_sql_debug_file_cmd] = NULL;
+  statenames[AL_struct_sql_debug_file_cmd] = NULL;
+  statenames[S_struct_sql_debug_file_cmd] = "struct_sql_debug_file_cmd";
+  statenames[S_struct_sql_debug_file_cmd_1] = "struct_sql_debug_file_cmd";
+  statenames[S_struct_sql_debug_file_cmd_2] = "struct_sql_debug_file_cmd";
+  statenames[E_struct_sql_debug_file_cmd] = "struct_sql_debug_file_cmd";
   statenames[ROOT_struct_sql_transact_cmd] = NULL;
   statenames[AL_struct_sql_transact_cmd] = NULL;
   statenames[S_struct_sql_transact_cmd] = "struct_sql_transact_cmd";
@@ -3242,7 +3461,7 @@ const char* *statenames=NULL;
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-<ROOT_assoc_array_variable,AL_assoc_array_variable,S_assoc_array_variable,S_assoc_array_variable_1,S_assoc_array_variable_2,E_assoc_array_variable,ROOT_assoc_subscript,AL_assoc_subscript,S_assoc_subscript,S_assoc_subscript_1,S_assoc_subscript_2,E_assoc_subscript,ROOT_attrib,AL_attrib,S_attrib,S_attrib_1,S_attrib_2,E_attrib,ROOT_bluebar,AL_bluebar,E_bluebar,ROOT_call_list,AL_call_list,S_call_list,S_call_list_1,S_call_list_2,E_call_list,ROOT_clear_data,AL_clear_data,S_clear_data,S_clear_data_1,S_clear_data_2,E_clear_data,ROOT_cmd_int_list,AL_cmd_int_list,S_cmd_int_list,S_cmd_int_list_1,S_cmd_int_list_2,E_cmd_int_list,ROOT_command,AL_command,S_command,S_command_1,S_command_2,E_command,ROOT_command_data,AL_command_data,S_command_data,S_command_data_1,S_command_data_2,E_command_data,ROOT_commands,AL_commands,S_commands,S_commands_1,S_commands_2,E_commands,ROOT_cons_list,AL_cons_list,S_cons_list,S_cons_list_1,S_cons_list_2,E_cons_list,ROOT_cons_list_entry,AL_cons_list_entry,E_cons_list_entry,ROOT_constant_data,AL_constant_data,E_constant_data,ROOT_convert,AL_convert,S_convert,S_convert_1,S_convert_2,E_convert,ROOT_dt_display,AL_dt_display,S_dt_display,S_dt_display_1,S_dt_display_2,E_dt_display,ROOT_event_data,AL_event_data,S_event_data,S_event_data_1,S_event_data_2,E_event_data,ROOT_expr_str,AL_expr_str,S_expr_str,S_expr_str_1,S_expr_str_2,E_expr_str,ROOT_expr_str_list,AL_expr_str_list,S_expr_str_list,S_expr_str_list_1,S_expr_str_list_2,E_expr_str_list,ROOT_fgl_comment,AL_fgl_comment,E_fgl_comment,ROOT_fh_field_entry,AL_fh_field_entry,S_fh_field_entry,S_fh_field_entry_1,S_fh_field_entry_2,E_fh_field_entry,ROOT_fh_field_list,AL_fh_field_list,S_fh_field_list,S_fh_field_list_1,S_fh_field_list_2,E_fh_field_list,ROOT_field,AL_field,E_field,ROOT_file_description,AL_file_description,S_file_description,S_file_description_1,S_file_description_2,E_file_description,ROOT_flist,AL_flist,E_flist,ROOT_form_field,AL_form_field,S_form_field,S_form_field_1,S_form_field_2,E_form_field,ROOT_funcname,AL_funcname,E_funcname,ROOT_funcname_list,AL_funcname_list,S_funcname_list,S_funcname_list_1,S_funcname_list_2,E_funcname_list,ROOT_globals_definition,AL_globals_definition,S_globals_definition,S_globals_definition_1,S_globals_definition_2,E_globals_definition,ROOT_if_cond,AL_if_cond,S_if_cond,S_if_cond_1,S_if_cond_2,E_if_cond,ROOT_if_conds,AL_if_conds,S_if_conds,S_if_conds_1,S_if_conds_2,E_if_conds,ROOT_ilist,AL_ilist,E_ilist,ROOT_int,AL_int,E_int,ROOT_linked_variable,AL_linked_variable,S_linked_variable,S_linked_variable_1,S_linked_variable_2,E_linked_variable,ROOT_lint_warning,AL_lint_warning,E_lint_warning,ROOT_list_of_integers,AL_list_of_integers,S_list_of_integers,S_list_of_integers_1,S_list_of_integers_2,E_list_of_integers,ROOT_locate_pos,AL_locate_pos,S_locate_pos,S_locate_pos_1,S_locate_pos_2,E_locate_pos,ROOT_long,AL_long,E_long,ROOT_manyoptions,AL_manyoptions,S_manyoptions,S_manyoptions_1,S_manyoptions_2,E_manyoptions,ROOT_menuoption,AL_menuoption,S_menuoption,S_menuoption_1,S_menuoption_2,E_menuoption,ROOT_module_definition,AL_module_definition,S_module_definition,S_module_definition_1,S_module_definition_2,E_module_definition,ROOT_module_entry,AL_module_entry,S_module_entry,S_module_entry_1,S_module_entry_2,E_module_entry,ROOT_object_variable,AL_object_variable,S_object_variable,S_object_variable_1,S_object_variable_2,E_object_variable,ROOT_on_event,AL_on_event,S_on_event,S_on_event_1,S_on_event_2,E_on_event,ROOT_on_events,AL_on_events,S_on_events,S_on_events_1,S_on_events_2,E_on_events,ROOT_pdf_startrep,AL_pdf_startrep,S_pdf_startrep,S_pdf_startrep_1,S_pdf_startrep_2,E_pdf_startrep,ROOT_program_definition,AL_program_definition,S_program_definition,S_program_definition_1,S_program_definition_2,E_program_definition,ROOT_record_variable,AL_record_variable,S_record_variable,S_record_variable_1,S_record_variable_2,E_record_variable,ROOT_report_block_data,AL_report_block_data,S_report_block_data,S_report_block_data_1,S_report_block_data_2,E_report_block_data,ROOT_report_format_section,AL_report_format_section,S_report_format_section,S_report_format_section_1,S_report_format_section_2,E_report_format_section,ROOT_report_format_section_entry,AL_report_format_section_entry,S_report_format_section_entry,S_report_format_section_entry_1,S_report_format_section_entry_2,E_report_format_section_entry,ROOT_report_orderby_section,AL_report_orderby_section,S_report_orderby_section,S_report_orderby_section_1,S_report_orderby_section_2,E_report_orderby_section,ROOT_rowscols,AL_rowscols,S_rowscols,S_rowscols_1,S_rowscols_2,E_rowscols,ROOT_s_class_definition,AL_s_class_definition,S_s_class_definition,S_s_class_definition_1,S_s_class_definition_2,E_s_class_definition,ROOT_s_cur_def,AL_s_cur_def,S_s_cur_def,S_s_cur_def_1,S_s_cur_def_2,E_s_cur_def,ROOT_s_dependant_tables,AL_s_dependant_tables,E_s_dependant_tables,ROOT_s_exchange_clobber,AL_s_exchange_clobber,E_s_exchange_clobber,ROOT_s_expr_agg,AL_s_expr_agg,S_s_expr_agg,S_s_expr_agg_1,S_s_expr_agg_2,E_s_expr_agg,ROOT_s_expr_aligned,AL_s_expr_aligned,S_s_expr_aligned,S_s_expr_aligned_1,S_s_expr_aligned_2,E_s_expr_aligned,ROOT_s_expr_bound_fcall,AL_s_expr_bound_fcall,S_s_expr_bound_fcall,S_s_expr_bound_fcall_1,S_s_expr_bound_fcall_2,E_s_expr_bound_fcall,ROOT_s_expr_cached,AL_s_expr_cached,E_s_expr_cached,ROOT_s_expr_cast,AL_s_expr_cast,S_s_expr_cast,S_s_expr_cast_1,S_s_expr_cast_2,E_s_expr_cast,ROOT_s_expr_current,AL_s_expr_current,E_s_expr_current,ROOT_s_expr_datetime,AL_s_expr_datetime,E_s_expr_datetime,ROOT_s_expr_dynarr_extent,AL_s_expr_dynarr_extent,S_s_expr_dynarr_extent,S_s_expr_dynarr_extent_1,S_s_expr_dynarr_extent_2,E_s_expr_dynarr_extent,ROOT_s_expr_dynarr_function_call_n,AL_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n_1,S_s_expr_dynarr_function_call_n_2,E_s_expr_dynarr_function_call_n,ROOT_s_expr_exists_sq,AL_s_expr_exists_sq,S_s_expr_exists_sq,S_s_expr_exists_sq_1,S_s_expr_exists_sq_2,E_s_expr_exists_sq,ROOT_s_expr_extend,AL_s_expr_extend,S_s_expr_extend,S_s_expr_extend_1,S_s_expr_extend_2,E_s_expr_extend,ROOT_s_expr_external_call,AL_s_expr_external_call,S_s_expr_external_call,S_s_expr_external_call_1,S_s_expr_external_call_2,E_s_expr_external_call,ROOT_s_expr_field_touched,AL_s_expr_field_touched,S_s_expr_field_touched,S_s_expr_field_touched_1,S_s_expr_field_touched_2,E_s_expr_field_touched,ROOT_s_expr_form_is_compiled,AL_s_expr_form_is_compiled,S_s_expr_form_is_compiled,S_s_expr_form_is_compiled_1,S_s_expr_form_is_compiled_2,E_s_expr_form_is_compiled,ROOT_s_expr_function_call,AL_s_expr_function_call,S_s_expr_function_call,S_s_expr_function_call_1,S_s_expr_function_call_2,E_s_expr_function_call,ROOT_s_expr_get_fldbuf,AL_s_expr_get_fldbuf,S_s_expr_get_fldbuf,S_s_expr_get_fldbuf_1,S_s_expr_get_fldbuf_2,E_s_expr_get_fldbuf,ROOT_s_expr_in,AL_s_expr_in,S_s_expr_in,S_s_expr_in_1,S_s_expr_in_2,E_s_expr_in,ROOT_s_expr_in_sq,AL_s_expr_in_sq,S_s_expr_in_sq,S_s_expr_in_sq_1,S_s_expr_in_sq_2,E_s_expr_in_sq,ROOT_s_expr_infield,AL_s_expr_infield,S_s_expr_infield,S_s_expr_infield_1,S_s_expr_infield_2,E_s_expr_infield,ROOT_s_expr_interval,AL_s_expr_interval,E_s_expr_interval,ROOT_s_expr_member_function_call_n,AL_s_expr_member_function_call_n,S_s_expr_member_function_call_n,S_s_expr_member_function_call_n_1,S_s_expr_member_function_call_n_2,E_s_expr_member_function_call_n,ROOT_s_expr_op,AL_s_expr_op,S_s_expr_op,S_s_expr_op_1,S_s_expr_op_2,E_s_expr_op,ROOT_s_expr_parameter,AL_s_expr_parameter,E_s_expr_parameter,ROOT_s_expr_pdf_function_call,AL_s_expr_pdf_function_call,S_s_expr_pdf_function_call,S_s_expr_pdf_function_call_1,S_s_expr_pdf_function_call_2,E_s_expr_pdf_function_call,ROOT_s_expr_shared_function_call,AL_s_expr_shared_function_call,S_s_expr_shared_function_call,S_s_expr_shared_function_call_1,S_s_expr_shared_function_call_2,E_s_expr_shared_function_call,ROOT_s_expr_tag,AL_s_expr_tag,S_s_expr_tag,S_s_expr_tag_1,S_s_expr_tag_2,E_s_expr_tag,ROOT_s_expr_tmp,AL_s_expr_tmp,E_s_expr_tmp,ROOT_s_expr_wordwrap,AL_s_expr_wordwrap,S_s_expr_wordwrap,S_s_expr_wordwrap_1,S_s_expr_wordwrap_2,E_s_expr_wordwrap,ROOT_s_fetch,AL_s_fetch,S_s_fetch,S_s_fetch_1,S_s_fetch_2,E_s_fetch,ROOT_s_fetch_place,AL_s_fetch_place,S_s_fetch_place,S_s_fetch_place_1,S_s_fetch_place_2,E_s_fetch_place,ROOT_s_formhandler_definition,AL_s_formhandler_definition,S_s_formhandler_definition,S_s_formhandler_definition_1,S_s_formhandler_definition_2,E_s_formhandler_definition,ROOT_s_full_col,AL_s_full_col,E_s_full_col,ROOT_s_func,AL_s_func,E_s_func,ROOT_s_function_definition,AL_s_function_definition,S_s_function_definition,S_s_function_definition_1,S_s_function_definition_2,E_s_function_definition,ROOT_s_import_datatype,AL_s_import_datatype,E_s_import_datatype,ROOT_s_import_function_definition,AL_s_import_function_definition,E_s_import_function_definition,ROOT_s_import_legacy_definition,AL_s_import_legacy_definition,E_s_import_legacy_definition,ROOT_s_import_package,AL_s_import_package,E_s_import_package,ROOT_s_limit,AL_s_limit,E_s_limit,ROOT_s_module_entry_ptr_list,AL_s_module_entry_ptr_list,S_s_module_entry_ptr_list,S_s_module_entry_ptr_list_1,S_s_module_entry_ptr_list_2,E_s_module_entry_ptr_list,ROOT_s_pdf_report_definition,AL_s_pdf_report_definition,S_s_pdf_report_definition,S_s_pdf_report_definition_1,S_s_pdf_report_definition_2,E_s_pdf_report_definition,ROOT_s_report_definition,AL_s_report_definition,S_s_report_definition,S_s_report_definition_1,S_s_report_definition_2,E_s_report_definition,ROOT_s_select,AL_s_select,S_s_select,S_s_select_1,S_s_select_2,E_s_select,ROOT_s_select_finish,AL_s_select_finish,S_s_select_finish,S_s_select_finish_1,S_s_select_finish_2,E_s_select_finish,ROOT_s_select_list_item,AL_s_select_list_item,S_s_select_list_item,S_s_select_list_item_1,S_s_select_list_item_2,E_s_select_list_item,ROOT_s_select_list_item_agg_expr,AL_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr_1,S_s_select_list_item_agg_expr_2,E_s_select_list_item_agg_expr,ROOT_s_select_list_item_between_expr,AL_s_select_list_item_between_expr,S_s_select_list_item_between_expr,S_s_select_list_item_between_expr_1,S_s_select_list_item_between_expr_2,E_s_select_list_item_between_expr,ROOT_s_select_list_item_builtin_fcall,AL_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall_1,S_s_select_list_item_builtin_fcall_2,E_s_select_list_item_builtin_fcall,ROOT_s_select_list_item_column,AL_s_select_list_item_column,S_s_select_list_item_column,S_s_select_list_item_column_1,S_s_select_list_item_column_2,E_s_select_list_item_column,ROOT_s_select_list_item_complex_expr,AL_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr_1,S_s_select_list_item_complex_expr_2,E_s_select_list_item_complex_expr,ROOT_s_select_list_item_data,AL_s_select_list_item_data,S_s_select_list_item_data,S_s_select_list_item_data_1,S_s_select_list_item_data_2,E_s_select_list_item_data,ROOT_s_select_list_item_extend,AL_s_select_list_item_extend,S_s_select_list_item_extend,S_s_select_list_item_extend_1,S_s_select_list_item_extend_2,E_s_select_list_item_extend,ROOT_s_select_list_item_fcall,AL_s_select_list_item_fcall,S_s_select_list_item_fcall,S_s_select_list_item_fcall_1,S_s_select_list_item_fcall_2,E_s_select_list_item_fcall,ROOT_s_select_list_item_list,AL_s_select_list_item_list,S_s_select_list_item_list,S_s_select_list_item_list_1,S_s_select_list_item_list_2,E_s_select_list_item_list,ROOT_s_select_list_item_regex,AL_s_select_list_item_regex,S_s_select_list_item_regex,S_s_select_list_item_regex_1,S_s_select_list_item_regex_2,E_s_select_list_item_regex,ROOT_s_select_list_item_sli_expr,AL_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr_1,S_s_select_list_item_sli_expr_2,E_s_select_list_item_sli_expr,ROOT_s_select_list_item_slil_expr,AL_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr_1,S_s_select_list_item_slil_expr_2,E_s_select_list_item_slil_expr,ROOT_s_select_list_item_sq_expression,AL_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression_1,S_s_select_list_item_sq_expression_2,E_s_select_list_item_sq_expression,ROOT_s_sli_case,AL_s_sli_case,S_s_sli_case,S_s_sli_case_1,S_s_sli_case_2,E_s_sli_case,ROOT_s_sli_case_element,AL_s_sli_case_element,S_s_sli_case_element,S_s_sli_case_element_1,S_s_sli_case_element_2,E_s_sli_case_element,ROOT_s_sli_cast,AL_s_sli_cast,S_s_sli_cast,S_s_sli_cast_1,S_s_sli_cast_2,E_s_sli_cast,ROOT_s_source_code,AL_s_source_code,S_s_source_code,S_s_source_code_1,S_s_source_code_2,E_s_source_code,ROOT_s_table,AL_s_table,S_s_table,S_s_table_1,S_s_table_2,E_s_table,ROOT_s_table_list,AL_s_table_list,S_s_table_list,S_s_table_list_1,S_s_table_list_2,E_s_table_list,ROOT_s_table_list_element,AL_s_table_list_element,S_s_table_list_element,S_s_table_list_element_1,S_s_table_list_element_2,E_s_table_list_element,ROOT_s_update_pair,AL_s_update_pair,S_s_update_pair,S_s_update_pair_1,S_s_update_pair_2,E_s_update_pair,ROOT_short,AL_short,E_short,ROOT_simple_variable,AL_simple_variable,E_simple_variable,ROOT_single_option,AL_single_option,S_single_option,S_single_option_1,S_single_option_2,E_single_option,ROOT_sq_subquery,AL_sq_subquery,S_sq_subquery,S_sq_subquery_1,S_sq_subquery_2,E_sq_subquery,ROOT_sql_statement,AL_sql_statement,S_sql_statement,S_sql_statement_1,S_sql_statement_2,E_sql_statement,ROOT_startrep,AL_startrep,S_startrep,S_startrep_1,S_startrep_2,E_startrep,ROOT_str,AL_str,E_str,ROOT_str_list,AL_str_list,S_str_list,S_str_list_1,S_str_list_2,E_str_list,ROOT_struct_alloc_arr_cmd,AL_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd_1,S_struct_alloc_arr_cmd_2,E_struct_alloc_arr_cmd,ROOT_struct_at_term_cmd,AL_struct_at_term_cmd,E_struct_at_term_cmd,ROOT_struct_call_cmd,AL_struct_call_cmd,S_struct_call_cmd,S_struct_call_cmd_1,S_struct_call_cmd_2,E_struct_call_cmd,ROOT_struct_call_shared_cmd,AL_struct_call_shared_cmd,E_struct_call_shared_cmd,ROOT_struct_cancel_cmd,AL_struct_cancel_cmd,E_struct_cancel_cmd,ROOT_struct_case_cmd,AL_struct_case_cmd,S_struct_case_cmd,S_struct_case_cmd_1,S_struct_case_cmd_2,E_struct_case_cmd,ROOT_struct_check_menu_cmd,AL_struct_check_menu_cmd,S_struct_check_menu_cmd,S_struct_check_menu_cmd_1,S_struct_check_menu_cmd_2,E_struct_check_menu_cmd,ROOT_struct_clear_cmd,AL_struct_clear_cmd,S_struct_clear_cmd,S_struct_clear_cmd_1,S_struct_clear_cmd_2,E_struct_clear_cmd,ROOT_struct_close_cmd,AL_struct_close_cmd,S_struct_close_cmd,S_struct_close_cmd_1,S_struct_close_cmd_2,E_struct_close_cmd,ROOT_struct_close_sql_cmd,AL_struct_close_sql_cmd,S_struct_close_sql_cmd,S_struct_close_sql_cmd_1,S_struct_close_sql_cmd_2,E_struct_close_sql_cmd,ROOT_struct_code_cmd,AL_struct_code_cmd,E_struct_code_cmd,ROOT_struct_connect_cmd,AL_struct_connect_cmd,S_struct_connect_cmd,S_struct_connect_cmd_1,S_struct_connect_cmd_2,E_struct_connect_cmd,ROOT_struct_construct_cmd,AL_struct_construct_cmd,S_struct_construct_cmd,S_struct_construct_cmd_1,S_struct_construct_cmd_2,E_struct_construct_cmd,ROOT_struct_continue_cmd,AL_struct_continue_cmd,E_struct_continue_cmd,ROOT_struct_convert_cmd,AL_struct_convert_cmd,S_struct_convert_cmd,S_struct_convert_cmd_1,S_struct_convert_cmd_2,E_struct_convert_cmd,ROOT_struct_copyback_cmd,AL_struct_copyback_cmd,S_struct_copyback_cmd,S_struct_copyback_cmd_1,S_struct_copyback_cmd_2,E_struct_copyback_cmd,ROOT_struct_current_win_cmd,AL_struct_current_win_cmd,S_struct_current_win_cmd,S_struct_current_win_cmd_1,S_struct_current_win_cmd_2,E_struct_current_win_cmd,ROOT_struct_dealloc_arr_cmd,AL_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd_1,S_struct_dealloc_arr_cmd_2,E_struct_dealloc_arr_cmd,ROOT_struct_declare_cmd,AL_struct_declare_cmd,S_struct_declare_cmd,S_struct_declare_cmd_1,S_struct_declare_cmd_2,E_struct_declare_cmd,ROOT_struct_defer_cmd,AL_struct_defer_cmd,E_struct_defer_cmd,ROOT_struct_delete_cmd,AL_struct_delete_cmd,S_struct_delete_cmd,S_struct_delete_cmd_1,S_struct_delete_cmd_2,E_struct_delete_cmd,ROOT_struct_disable_cmd,AL_struct_disable_cmd,S_struct_disable_cmd,S_struct_disable_cmd_1,S_struct_disable_cmd_2,E_struct_disable_cmd,ROOT_struct_disable_form_cmd,AL_struct_disable_form_cmd,S_struct_disable_form_cmd,S_struct_disable_form_cmd_1,S_struct_disable_form_cmd_2,E_struct_disable_form_cmd,ROOT_struct_disable_menu_cmd,AL_struct_disable_menu_cmd,S_struct_disable_menu_cmd,S_struct_disable_menu_cmd_1,S_struct_disable_menu_cmd_2,E_struct_disable_menu_cmd,ROOT_struct_display_array_cmd,AL_struct_display_array_cmd,S_struct_display_array_cmd,S_struct_display_array_cmd_1,S_struct_display_array_cmd_2,E_struct_display_array_cmd,ROOT_struct_display_b_n_cmd,AL_struct_display_b_n_cmd,S_struct_display_b_n_cmd,S_struct_display_b_n_cmd_1,S_struct_display_b_n_cmd_2,E_struct_display_b_n_cmd,ROOT_struct_display_cmd,AL_struct_display_cmd,S_struct_display_cmd,S_struct_display_cmd_1,S_struct_display_cmd_2,E_struct_display_cmd,ROOT_struct_display_form_cmd,AL_struct_display_form_cmd,S_struct_display_form_cmd,S_struct_display_form_cmd_1,S_struct_display_form_cmd_2,E_struct_display_form_cmd,ROOT_struct_enable_cmd,AL_struct_enable_cmd,S_struct_enable_cmd,S_struct_enable_cmd_1,S_struct_enable_cmd_2,E_struct_enable_cmd,ROOT_struct_enable_form_cmd,AL_struct_enable_form_cmd,S_struct_enable_form_cmd,S_struct_enable_form_cmd_1,S_struct_enable_form_cmd_2,E_struct_enable_form_cmd,ROOT_struct_enable_menu_cmd,AL_struct_enable_menu_cmd,S_struct_enable_menu_cmd,S_struct_enable_menu_cmd_1,S_struct_enable_menu_cmd_2,E_struct_enable_menu_cmd,ROOT_struct_error_cmd,AL_struct_error_cmd,S_struct_error_cmd,S_struct_error_cmd_1,S_struct_error_cmd_2,E_struct_error_cmd,ROOT_struct_execute_cmd,AL_struct_execute_cmd,S_struct_execute_cmd,S_struct_execute_cmd_1,S_struct_execute_cmd_2,E_struct_execute_cmd,ROOT_struct_execute_immediate_cmd,AL_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd_1,S_struct_execute_immediate_cmd_2,E_struct_execute_immediate_cmd,ROOT_struct_exit_prog_cmd,AL_struct_exit_prog_cmd,S_struct_exit_prog_cmd,S_struct_exit_prog_cmd_1,S_struct_exit_prog_cmd_2,E_struct_exit_prog_cmd,ROOT_struct_ext_cmd,AL_struct_ext_cmd,E_struct_ext_cmd,ROOT_struct_fetch_cmd,AL_struct_fetch_cmd,S_struct_fetch_cmd,S_struct_fetch_cmd_1,S_struct_fetch_cmd_2,E_struct_fetch_cmd,ROOT_struct_finish_cmd,AL_struct_finish_cmd,S_struct_finish_cmd,S_struct_finish_cmd_1,S_struct_finish_cmd_2,E_struct_finish_cmd,ROOT_struct_flush_cmd,AL_struct_flush_cmd,S_struct_flush_cmd,S_struct_flush_cmd_1,S_struct_flush_cmd_2,E_struct_flush_cmd,ROOT_struct_for_cmd,AL_struct_for_cmd,S_struct_for_cmd,S_struct_for_cmd_1,S_struct_for_cmd_2,E_struct_for_cmd,ROOT_struct_foreach_cmd,AL_struct_foreach_cmd,S_struct_foreach_cmd,S_struct_foreach_cmd_1,S_struct_foreach_cmd_2,E_struct_foreach_cmd,ROOT_struct_free_blob_cmd,AL_struct_free_blob_cmd,S_struct_free_blob_cmd,S_struct_free_blob_cmd_1,S_struct_free_blob_cmd_2,E_struct_free_blob_cmd,ROOT_struct_free_cmd,AL_struct_free_cmd,S_struct_free_cmd,S_struct_free_cmd_1,S_struct_free_cmd_2,E_struct_free_cmd,ROOT_struct_free_rep_cmd,AL_struct_free_rep_cmd,E_struct_free_rep_cmd,ROOT_struct_goto_cmd,AL_struct_goto_cmd,E_struct_goto_cmd,ROOT_struct_hide_cmd,AL_struct_hide_cmd,S_struct_hide_cmd,S_struct_hide_cmd_1,S_struct_hide_cmd_2,E_struct_hide_cmd,ROOT_struct_hide_option_cmd,AL_struct_hide_option_cmd,S_struct_hide_option_cmd,S_struct_hide_option_cmd_1,S_struct_hide_option_cmd_2,E_struct_hide_option_cmd,ROOT_struct_if_cmd,AL_struct_if_cmd,S_struct_if_cmd,S_struct_if_cmd_1,S_struct_if_cmd_2,E_struct_if_cmd,ROOT_struct_init_cmd,AL_struct_init_cmd,S_struct_init_cmd,S_struct_init_cmd_1,S_struct_init_cmd_2,E_struct_init_cmd,ROOT_struct_input_array_cmd,AL_struct_input_array_cmd,S_struct_input_array_cmd,S_struct_input_array_cmd_1,S_struct_input_array_cmd_2,E_struct_input_array_cmd,ROOT_struct_input_cmd,AL_struct_input_cmd,S_struct_input_cmd,S_struct_input_cmd_1,S_struct_input_cmd_2,E_struct_input_cmd,ROOT_struct_insert_cmd,AL_struct_insert_cmd,S_struct_insert_cmd,S_struct_insert_cmd_1,S_struct_insert_cmd_2,E_struct_insert_cmd,ROOT_struct_label_cmd,AL_struct_label_cmd,E_struct_label_cmd,ROOT_struct_let_cmd,AL_struct_let_cmd,S_struct_let_cmd,S_struct_let_cmd_1,S_struct_let_cmd_2,E_struct_let_cmd,ROOT_struct_lint_expect_cmd,AL_struct_lint_expect_cmd,S_struct_lint_expect_cmd,S_struct_lint_expect_cmd_1,S_struct_lint_expect_cmd_2,E_struct_lint_expect_cmd,ROOT_struct_lint_ignore_cmd,AL_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd_1,S_struct_lint_ignore_cmd_2,E_struct_lint_ignore_cmd,ROOT_struct_load_cmd,AL_struct_load_cmd,S_struct_load_cmd,S_struct_load_cmd_1,S_struct_load_cmd_2,E_struct_load_cmd,ROOT_struct_locate_cmd,AL_struct_locate_cmd,S_struct_locate_cmd,S_struct_locate_cmd_1,S_struct_locate_cmd_2,E_struct_locate_cmd,ROOT_struct_menu_cmd,AL_struct_menu_cmd,S_struct_menu_cmd,S_struct_menu_cmd_1,S_struct_menu_cmd_2,E_struct_menu_cmd,ROOT_struct_message_cmd,AL_struct_message_cmd,S_struct_message_cmd,S_struct_message_cmd_1,S_struct_message_cmd_2,E_struct_message_cmd,ROOT_struct_move_cmd,AL_struct_move_cmd,S_struct_move_cmd,S_struct_move_cmd_1,S_struct_move_cmd_2,E_struct_move_cmd,ROOT_struct_msg_box_cmd,AL_struct_msg_box_cmd,S_struct_msg_box_cmd,S_struct_msg_box_cmd_1,S_struct_msg_box_cmd_2,E_struct_msg_box_cmd,ROOT_struct_need_cmd,AL_struct_need_cmd,S_struct_need_cmd,S_struct_need_cmd_1,S_struct_need_cmd_2,E_struct_need_cmd,ROOT_struct_next_field_cmd,AL_struct_next_field_cmd,S_struct_next_field_cmd,S_struct_next_field_cmd_1,S_struct_next_field_cmd_2,E_struct_next_field_cmd,ROOT_struct_next_form_cmd,AL_struct_next_form_cmd,E_struct_next_form_cmd,ROOT_struct_next_option_cmd,AL_struct_next_option_cmd,S_struct_next_option_cmd,S_struct_next_option_cmd_1,S_struct_next_option_cmd_2,E_struct_next_option_cmd,ROOT_struct_open_cursor_cmd,AL_struct_open_cursor_cmd,S_struct_open_cursor_cmd,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd_2,E_struct_open_cursor_cmd,ROOT_struct_open_form_cmd,AL_struct_open_form_cmd,S_struct_open_form_cmd,S_struct_open_form_cmd_1,S_struct_open_form_cmd_2,E_struct_open_form_cmd,ROOT_struct_open_form_gui_cmd,AL_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd_1,S_struct_open_form_gui_cmd_2,E_struct_open_form_gui_cmd,ROOT_struct_open_statusbox_cmd,AL_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd_1,S_struct_open_statusbox_cmd_2,E_struct_open_statusbox_cmd,ROOT_struct_open_window_cmd,AL_struct_open_window_cmd,S_struct_open_window_cmd,S_struct_open_window_cmd_1,S_struct_open_window_cmd_2,E_struct_open_window_cmd,ROOT_struct_options_cmd,AL_struct_options_cmd,S_struct_options_cmd,S_struct_options_cmd_1,S_struct_options_cmd_2,E_struct_options_cmd,ROOT_struct_output_cmd,AL_struct_output_cmd,S_struct_output_cmd,S_struct_output_cmd_1,S_struct_output_cmd_2,E_struct_output_cmd,ROOT_struct_pause_cmd,AL_struct_pause_cmd,S_struct_pause_cmd,S_struct_pause_cmd_1,S_struct_pause_cmd_2,E_struct_pause_cmd,ROOT_struct_pdf_call_cmd,AL_struct_pdf_call_cmd,S_struct_pdf_call_cmd,S_struct_pdf_call_cmd_1,S_struct_pdf_call_cmd_2,E_struct_pdf_call_cmd,ROOT_struct_prepare_cmd,AL_struct_prepare_cmd,S_struct_prepare_cmd,S_struct_prepare_cmd_1,S_struct_prepare_cmd_2,E_struct_prepare_cmd,ROOT_struct_print_cmd,AL_struct_print_cmd,S_struct_print_cmd,S_struct_print_cmd_1,S_struct_print_cmd_2,E_struct_print_cmd,ROOT_struct_print_file_cmd,AL_struct_print_file_cmd,S_struct_print_file_cmd,S_struct_print_file_cmd_1,S_struct_print_file_cmd_2,E_struct_print_file_cmd,ROOT_struct_print_img_cmd,AL_struct_print_img_cmd,S_struct_print_img_cmd,S_struct_print_img_cmd_1,S_struct_print_img_cmd_2,E_struct_print_img_cmd,ROOT_struct_prompt_cmd,AL_struct_prompt_cmd,S_struct_prompt_cmd,S_struct_prompt_cmd_1,S_struct_prompt_cmd_2,E_struct_prompt_cmd,ROOT_struct_put_cmd,AL_struct_put_cmd,S_struct_put_cmd,S_struct_put_cmd_1,S_struct_put_cmd_2,E_struct_put_cmd,ROOT_struct_resize_arr_cmd,AL_struct_resize_arr_cmd,S_struct_resize_arr_cmd,S_struct_resize_arr_cmd_1,S_struct_resize_arr_cmd_2,E_struct_resize_arr_cmd,ROOT_struct_return_cmd,AL_struct_return_cmd,S_struct_return_cmd,S_struct_return_cmd_1,S_struct_return_cmd_2,E_struct_return_cmd,ROOT_struct_run_cmd,AL_struct_run_cmd,S_struct_run_cmd,S_struct_run_cmd_1,S_struct_run_cmd_2,E_struct_run_cmd,ROOT_struct_run_waiting_for_cmd,AL_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd_1,S_struct_run_waiting_for_cmd_2,E_struct_run_waiting_for_cmd,ROOT_struct_scroll_cmd,AL_struct_scroll_cmd,S_struct_scroll_cmd,S_struct_scroll_cmd_1,S_struct_scroll_cmd_2,E_struct_scroll_cmd,ROOT_struct_select_cmd,AL_struct_select_cmd,S_struct_select_cmd,S_struct_select_cmd_1,S_struct_select_cmd_2,E_struct_select_cmd,ROOT_struct_set_database_cmd,AL_struct_set_database_cmd,S_struct_set_database_cmd,S_struct_set_database_cmd_1,S_struct_set_database_cmd_2,E_struct_set_database_cmd,ROOT_struct_set_session_cmd,AL_struct_set_session_cmd,S_struct_set_session_cmd,S_struct_set_session_cmd_1,S_struct_set_session_cmd_2,E_struct_set_session_cmd,ROOT_struct_show_cmd,AL_struct_show_cmd,S_struct_show_cmd,S_struct_show_cmd_1,S_struct_show_cmd_2,E_struct_show_cmd,ROOT_struct_show_menu_cmd,AL_struct_show_menu_cmd,S_struct_show_menu_cmd,S_struct_show_menu_cmd_1,S_struct_show_menu_cmd_2,E_struct_show_menu_cmd,ROOT_struct_show_option_cmd,AL_struct_show_option_cmd,S_struct_show_option_cmd,S_struct_show_option_cmd_1,S_struct_show_option_cmd_2,E_struct_show_option_cmd,ROOT_struct_skip_by_cmd,AL_struct_skip_by_cmd,S_struct_skip_by_cmd,S_struct_skip_by_cmd_1,S_struct_skip_by_cmd_2,E_struct_skip_by_cmd,ROOT_struct_skip_cmd,AL_struct_skip_cmd,S_struct_skip_cmd,S_struct_skip_cmd_1,S_struct_skip_cmd_2,E_struct_skip_cmd,ROOT_struct_skip_to_cmd,AL_struct_skip_to_cmd,S_struct_skip_to_cmd,S_struct_skip_to_cmd_1,S_struct_skip_to_cmd_2,E_struct_skip_to_cmd,ROOT_struct_sleep_cmd,AL_struct_sleep_cmd,S_struct_sleep_cmd,S_struct_sleep_cmd_1,S_struct_sleep_cmd_2,E_struct_sleep_cmd,ROOT_struct_sql_block_cmd,AL_struct_sql_block_cmd,S_struct_sql_block_cmd,S_struct_sql_block_cmd_1,S_struct_sql_block_cmd_2,E_struct_sql_block_cmd,ROOT_struct_sql_cmd,AL_struct_sql_cmd,S_struct_sql_cmd,S_struct_sql_cmd_1,S_struct_sql_cmd_2,E_struct_sql_cmd,ROOT_struct_sql_transact_cmd,AL_struct_sql_transact_cmd,S_struct_sql_transact_cmd,S_struct_sql_transact_cmd_1,S_struct_sql_transact_cmd_2,E_struct_sql_transact_cmd,ROOT_struct_start_cmd,AL_struct_start_cmd,S_struct_start_cmd,S_struct_start_cmd_1,S_struct_start_cmd_2,E_struct_start_cmd,ROOT_struct_start_rpc_cmd,AL_struct_start_rpc_cmd,S_struct_start_rpc_cmd,S_struct_start_rpc_cmd_1,S_struct_start_rpc_cmd_2,E_struct_start_rpc_cmd,ROOT_struct_term_rep_cmd,AL_struct_term_rep_cmd,E_struct_term_rep_cmd,ROOT_struct_uncheck_menu_cmd,AL_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd_1,S_struct_uncheck_menu_cmd_2,E_struct_uncheck_menu_cmd,ROOT_struct_unload_cmd,AL_struct_unload_cmd,S_struct_unload_cmd,S_struct_unload_cmd_1,S_struct_unload_cmd_2,E_struct_unload_cmd,ROOT_struct_update_cmd,AL_struct_update_cmd,S_struct_update_cmd,S_struct_update_cmd_1,S_struct_update_cmd_2,E_struct_update_cmd,ROOT_struct_validate_cmd,AL_struct_validate_cmd,S_struct_validate_cmd,S_struct_validate_cmd_1,S_struct_validate_cmd_2,E_struct_validate_cmd,ROOT_struct_whenever_cmd,AL_struct_whenever_cmd,E_struct_whenever_cmd,ROOT_struct_while_cmd,AL_struct_while_cmd,S_struct_while_cmd,S_struct_while_cmd_1,S_struct_while_cmd_2,E_struct_while_cmd,ROOT_user_details,AL_user_details,S_user_details,S_user_details_1,S_user_details_2,E_user_details,ROOT_variable,AL_variable,S_variable,S_variable_1,S_variable_2,E_variable,ROOT_variable_data,AL_variable_data,S_variable_data,S_variable_data_1,S_variable_data_2,E_variable_data,ROOT_variable_list,AL_variable_list,S_variable_list,S_variable_list_1,S_variable_list_2,E_variable_list,ROOT_variable_usage,AL_variable_usage,S_variable_usage,S_variable_usage_1,S_variable_usage_2,E_variable_usage,ROOT_variable_usage_with_asc_desc,AL_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc_1,S_variable_usage_with_asc_desc_2,E_variable_usage_with_asc_desc,ROOT_vname,AL_vname,E_vname,ROOT_vname_name_list,AL_vname_name_list,S_vname_name_list,S_vname_name_list_1,S_vname_name_list_2,E_vname_name_list,ROOT_when,AL_when,S_when,S_when_1,S_when_2,E_when,ROOT_whens,AL_whens,S_whens,S_whens_1,S_whens_2,E_whens,ROOT_windowtype,AL_windowtype,S_windowtype,S_windowtype_1,S_windowtype_2,E_windowtype,ROOT_x_y,AL_x_y,S_x_y,S_x_y_1,S_x_y_2,E_x_y,PROLOG,DOCTYPE,EPILOG>{
+<ROOT_assoc_array_variable,AL_assoc_array_variable,S_assoc_array_variable,S_assoc_array_variable_1,S_assoc_array_variable_2,E_assoc_array_variable,ROOT_assoc_subscript,AL_assoc_subscript,S_assoc_subscript,S_assoc_subscript_1,S_assoc_subscript_2,E_assoc_subscript,ROOT_attrib,AL_attrib,S_attrib,S_attrib_1,S_attrib_2,E_attrib,ROOT_bluebar,AL_bluebar,E_bluebar,ROOT_call_list,AL_call_list,S_call_list,S_call_list_1,S_call_list_2,E_call_list,ROOT_clear_data,AL_clear_data,S_clear_data,S_clear_data_1,S_clear_data_2,E_clear_data,ROOT_cmd_int_list,AL_cmd_int_list,S_cmd_int_list,S_cmd_int_list_1,S_cmd_int_list_2,E_cmd_int_list,ROOT_command,AL_command,S_command,S_command_1,S_command_2,E_command,ROOT_command_data,AL_command_data,S_command_data,S_command_data_1,S_command_data_2,E_command_data,ROOT_commands,AL_commands,S_commands,S_commands_1,S_commands_2,E_commands,ROOT_cons_list,AL_cons_list,S_cons_list,S_cons_list_1,S_cons_list_2,E_cons_list,ROOT_cons_list_entry,AL_cons_list_entry,E_cons_list_entry,ROOT_constant_data,AL_constant_data,E_constant_data,ROOT_convert,AL_convert,S_convert,S_convert_1,S_convert_2,E_convert,ROOT_create_proc_data,AL_create_proc_data,S_create_proc_data,S_create_proc_data_1,S_create_proc_data_2,E_create_proc_data,ROOT_dt_display,AL_dt_display,S_dt_display,S_dt_display_1,S_dt_display_2,E_dt_display,ROOT_event_data,AL_event_data,S_event_data,S_event_data_1,S_event_data_2,E_event_data,ROOT_expr_str,AL_expr_str,S_expr_str,S_expr_str_1,S_expr_str_2,E_expr_str,ROOT_expr_str_list,AL_expr_str_list,S_expr_str_list,S_expr_str_list_1,S_expr_str_list_2,E_expr_str_list,ROOT_fgl_comment,AL_fgl_comment,E_fgl_comment,ROOT_fh_field_entry,AL_fh_field_entry,S_fh_field_entry,S_fh_field_entry_1,S_fh_field_entry_2,E_fh_field_entry,ROOT_fh_field_list,AL_fh_field_list,S_fh_field_list,S_fh_field_list_1,S_fh_field_list_2,E_fh_field_list,ROOT_field,AL_field,E_field,ROOT_file_description,AL_file_description,S_file_description,S_file_description_1,S_file_description_2,E_file_description,ROOT_flist,AL_flist,E_flist,ROOT_form_field,AL_form_field,S_form_field,S_form_field_1,S_form_field_2,E_form_field,ROOT_funcname,AL_funcname,E_funcname,ROOT_funcname_list,AL_funcname_list,S_funcname_list,S_funcname_list_1,S_funcname_list_2,E_funcname_list,ROOT_globals_definition,AL_globals_definition,S_globals_definition,S_globals_definition_1,S_globals_definition_2,E_globals_definition,ROOT_if_cond,AL_if_cond,S_if_cond,S_if_cond_1,S_if_cond_2,E_if_cond,ROOT_if_conds,AL_if_conds,S_if_conds,S_if_conds_1,S_if_conds_2,E_if_conds,ROOT_ilist,AL_ilist,E_ilist,ROOT_int,AL_int,E_int,ROOT_linked_variable,AL_linked_variable,S_linked_variable,S_linked_variable_1,S_linked_variable_2,E_linked_variable,ROOT_lint_warning,AL_lint_warning,E_lint_warning,ROOT_list_of_integers,AL_list_of_integers,S_list_of_integers,S_list_of_integers_1,S_list_of_integers_2,E_list_of_integers,ROOT_locate_pos,AL_locate_pos,S_locate_pos,S_locate_pos_1,S_locate_pos_2,E_locate_pos,ROOT_long,AL_long,E_long,ROOT_manyoptions,AL_manyoptions,S_manyoptions,S_manyoptions_1,S_manyoptions_2,E_manyoptions,ROOT_menuoption,AL_menuoption,S_menuoption,S_menuoption_1,S_menuoption_2,E_menuoption,ROOT_module_definition,AL_module_definition,S_module_definition,S_module_definition_1,S_module_definition_2,E_module_definition,ROOT_module_entry,AL_module_entry,S_module_entry,S_module_entry_1,S_module_entry_2,E_module_entry,ROOT_object_variable,AL_object_variable,S_object_variable,S_object_variable_1,S_object_variable_2,E_object_variable,ROOT_on_event,AL_on_event,S_on_event,S_on_event_1,S_on_event_2,E_on_event,ROOT_on_events,AL_on_events,S_on_events,S_on_events_1,S_on_events_2,E_on_events,ROOT_pdf_startrep,AL_pdf_startrep,S_pdf_startrep,S_pdf_startrep_1,S_pdf_startrep_2,E_pdf_startrep,ROOT_program_definition,AL_program_definition,S_program_definition,S_program_definition_1,S_program_definition_2,E_program_definition,ROOT_record_variable,AL_record_variable,S_record_variable,S_record_variable_1,S_record_variable_2,E_record_variable,ROOT_report_block_data,AL_report_block_data,S_report_block_data,S_report_block_data_1,S_report_block_data_2,E_report_block_data,ROOT_report_format_section,AL_report_format_section,S_report_format_section,S_report_format_section_1,S_report_format_section_2,E_report_format_section,ROOT_report_format_section_entry,AL_report_format_section_entry,S_report_format_section_entry,S_report_format_section_entry_1,S_report_format_section_entry_2,E_report_format_section_entry,ROOT_report_orderby_section,AL_report_orderby_section,S_report_orderby_section,S_report_orderby_section_1,S_report_orderby_section_2,E_report_orderby_section,ROOT_rowscols,AL_rowscols,S_rowscols,S_rowscols_1,S_rowscols_2,E_rowscols,ROOT_s_class_definition,AL_s_class_definition,S_s_class_definition,S_s_class_definition_1,S_s_class_definition_2,E_s_class_definition,ROOT_s_cur_def,AL_s_cur_def,S_s_cur_def,S_s_cur_def_1,S_s_cur_def_2,E_s_cur_def,ROOT_s_dependant_tables,AL_s_dependant_tables,E_s_dependant_tables,ROOT_s_exchange_clobber,AL_s_exchange_clobber,E_s_exchange_clobber,ROOT_s_expr_agg,AL_s_expr_agg,S_s_expr_agg,S_s_expr_agg_1,S_s_expr_agg_2,E_s_expr_agg,ROOT_s_expr_aligned,AL_s_expr_aligned,S_s_expr_aligned,S_s_expr_aligned_1,S_s_expr_aligned_2,E_s_expr_aligned,ROOT_s_expr_bound_fcall,AL_s_expr_bound_fcall,S_s_expr_bound_fcall,S_s_expr_bound_fcall_1,S_s_expr_bound_fcall_2,E_s_expr_bound_fcall,ROOT_s_expr_cached,AL_s_expr_cached,E_s_expr_cached,ROOT_s_expr_cast,AL_s_expr_cast,S_s_expr_cast,S_s_expr_cast_1,S_s_expr_cast_2,E_s_expr_cast,ROOT_s_expr_current,AL_s_expr_current,E_s_expr_current,ROOT_s_expr_datetime,AL_s_expr_datetime,E_s_expr_datetime,ROOT_s_expr_dynarr_extent,AL_s_expr_dynarr_extent,S_s_expr_dynarr_extent,S_s_expr_dynarr_extent_1,S_s_expr_dynarr_extent_2,E_s_expr_dynarr_extent,ROOT_s_expr_dynarr_function_call_n,AL_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n_1,S_s_expr_dynarr_function_call_n_2,E_s_expr_dynarr_function_call_n,ROOT_s_expr_exists_sq,AL_s_expr_exists_sq,S_s_expr_exists_sq,S_s_expr_exists_sq_1,S_s_expr_exists_sq_2,E_s_expr_exists_sq,ROOT_s_expr_extend,AL_s_expr_extend,S_s_expr_extend,S_s_expr_extend_1,S_s_expr_extend_2,E_s_expr_extend,ROOT_s_expr_external_call,AL_s_expr_external_call,S_s_expr_external_call,S_s_expr_external_call_1,S_s_expr_external_call_2,E_s_expr_external_call,ROOT_s_expr_field_touched,AL_s_expr_field_touched,S_s_expr_field_touched,S_s_expr_field_touched_1,S_s_expr_field_touched_2,E_s_expr_field_touched,ROOT_s_expr_form_is_compiled,AL_s_expr_form_is_compiled,S_s_expr_form_is_compiled,S_s_expr_form_is_compiled_1,S_s_expr_form_is_compiled_2,E_s_expr_form_is_compiled,ROOT_s_expr_function_call,AL_s_expr_function_call,S_s_expr_function_call,S_s_expr_function_call_1,S_s_expr_function_call_2,E_s_expr_function_call,ROOT_s_expr_get_fldbuf,AL_s_expr_get_fldbuf,S_s_expr_get_fldbuf,S_s_expr_get_fldbuf_1,S_s_expr_get_fldbuf_2,E_s_expr_get_fldbuf,ROOT_s_expr_in,AL_s_expr_in,S_s_expr_in,S_s_expr_in_1,S_s_expr_in_2,E_s_expr_in,ROOT_s_expr_in_sq,AL_s_expr_in_sq,S_s_expr_in_sq,S_s_expr_in_sq_1,S_s_expr_in_sq_2,E_s_expr_in_sq,ROOT_s_expr_infield,AL_s_expr_infield,S_s_expr_infield,S_s_expr_infield_1,S_s_expr_infield_2,E_s_expr_infield,ROOT_s_expr_interval,AL_s_expr_interval,E_s_expr_interval,ROOT_s_expr_member_function_call_n,AL_s_expr_member_function_call_n,S_s_expr_member_function_call_n,S_s_expr_member_function_call_n_1,S_s_expr_member_function_call_n_2,E_s_expr_member_function_call_n,ROOT_s_expr_op,AL_s_expr_op,S_s_expr_op,S_s_expr_op_1,S_s_expr_op_2,E_s_expr_op,ROOT_s_expr_parameter,AL_s_expr_parameter,E_s_expr_parameter,ROOT_s_expr_pdf_function_call,AL_s_expr_pdf_function_call,S_s_expr_pdf_function_call,S_s_expr_pdf_function_call_1,S_s_expr_pdf_function_call_2,E_s_expr_pdf_function_call,ROOT_s_expr_shared_function_call,AL_s_expr_shared_function_call,S_s_expr_shared_function_call,S_s_expr_shared_function_call_1,S_s_expr_shared_function_call_2,E_s_expr_shared_function_call,ROOT_s_expr_tag,AL_s_expr_tag,S_s_expr_tag,S_s_expr_tag_1,S_s_expr_tag_2,E_s_expr_tag,ROOT_s_expr_tmp,AL_s_expr_tmp,E_s_expr_tmp,ROOT_s_expr_wordwrap,AL_s_expr_wordwrap,S_s_expr_wordwrap,S_s_expr_wordwrap_1,S_s_expr_wordwrap_2,E_s_expr_wordwrap,ROOT_s_fetch,AL_s_fetch,S_s_fetch,S_s_fetch_1,S_s_fetch_2,E_s_fetch,ROOT_s_fetch_place,AL_s_fetch_place,S_s_fetch_place,S_s_fetch_place_1,S_s_fetch_place_2,E_s_fetch_place,ROOT_s_formhandler_definition,AL_s_formhandler_definition,S_s_formhandler_definition,S_s_formhandler_definition_1,S_s_formhandler_definition_2,E_s_formhandler_definition,ROOT_s_full_col,AL_s_full_col,E_s_full_col,ROOT_s_func,AL_s_func,E_s_func,ROOT_s_function_definition,AL_s_function_definition,S_s_function_definition,S_s_function_definition_1,S_s_function_definition_2,E_s_function_definition,ROOT_s_import_datatype,AL_s_import_datatype,E_s_import_datatype,ROOT_s_import_function_definition,AL_s_import_function_definition,E_s_import_function_definition,ROOT_s_import_legacy_definition,AL_s_import_legacy_definition,E_s_import_legacy_definition,ROOT_s_import_package,AL_s_import_package,E_s_import_package,ROOT_s_limit,AL_s_limit,E_s_limit,ROOT_s_module_entry_ptr_list,AL_s_module_entry_ptr_list,S_s_module_entry_ptr_list,S_s_module_entry_ptr_list_1,S_s_module_entry_ptr_list_2,E_s_module_entry_ptr_list,ROOT_s_named_param,AL_s_named_param,S_s_named_param,S_s_named_param_1,S_s_named_param_2,E_s_named_param,ROOT_s_pdf_report_definition,AL_s_pdf_report_definition,S_s_pdf_report_definition,S_s_pdf_report_definition_1,S_s_pdf_report_definition_2,E_s_pdf_report_definition,ROOT_s_report_definition,AL_s_report_definition,S_s_report_definition,S_s_report_definition_1,S_s_report_definition_2,E_s_report_definition,ROOT_s_select,AL_s_select,S_s_select,S_s_select_1,S_s_select_2,E_s_select,ROOT_s_select_finish,AL_s_select_finish,S_s_select_finish,S_s_select_finish_1,S_s_select_finish_2,E_s_select_finish,ROOT_s_select_list_item,AL_s_select_list_item,S_s_select_list_item,S_s_select_list_item_1,S_s_select_list_item_2,E_s_select_list_item,ROOT_s_select_list_item_agg_expr,AL_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr_1,S_s_select_list_item_agg_expr_2,E_s_select_list_item_agg_expr,ROOT_s_select_list_item_between_expr,AL_s_select_list_item_between_expr,S_s_select_list_item_between_expr,S_s_select_list_item_between_expr_1,S_s_select_list_item_between_expr_2,E_s_select_list_item_between_expr,ROOT_s_select_list_item_builtin_fcall,AL_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall_1,S_s_select_list_item_builtin_fcall_2,E_s_select_list_item_builtin_fcall,ROOT_s_select_list_item_column,AL_s_select_list_item_column,S_s_select_list_item_column,S_s_select_list_item_column_1,S_s_select_list_item_column_2,E_s_select_list_item_column,ROOT_s_select_list_item_complex_expr,AL_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr_1,S_s_select_list_item_complex_expr_2,E_s_select_list_item_complex_expr,ROOT_s_select_list_item_data,AL_s_select_list_item_data,S_s_select_list_item_data,S_s_select_list_item_data_1,S_s_select_list_item_data_2,E_s_select_list_item_data,ROOT_s_select_list_item_extend,AL_s_select_list_item_extend,S_s_select_list_item_extend,S_s_select_list_item_extend_1,S_s_select_list_item_extend_2,E_s_select_list_item_extend,ROOT_s_select_list_item_fcall,AL_s_select_list_item_fcall,S_s_select_list_item_fcall,S_s_select_list_item_fcall_1,S_s_select_list_item_fcall_2,E_s_select_list_item_fcall,ROOT_s_select_list_item_list,AL_s_select_list_item_list,S_s_select_list_item_list,S_s_select_list_item_list_1,S_s_select_list_item_list_2,E_s_select_list_item_list,ROOT_s_select_list_item_regex,AL_s_select_list_item_regex,S_s_select_list_item_regex,S_s_select_list_item_regex_1,S_s_select_list_item_regex_2,E_s_select_list_item_regex,ROOT_s_select_list_item_sli_expr,AL_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr_1,S_s_select_list_item_sli_expr_2,E_s_select_list_item_sli_expr,ROOT_s_select_list_item_slil_expr,AL_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr_1,S_s_select_list_item_slil_expr_2,E_s_select_list_item_slil_expr,ROOT_s_select_list_item_sq_expression,AL_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression_1,S_s_select_list_item_sq_expression_2,E_s_select_list_item_sq_expression,ROOT_s_sli_case,AL_s_sli_case,S_s_sli_case,S_s_sli_case_1,S_s_sli_case_2,E_s_sli_case,ROOT_s_sli_case_element,AL_s_sli_case_element,S_s_sli_case_element,S_s_sli_case_element_1,S_s_sli_case_element_2,E_s_sli_case_element,ROOT_s_sli_cast,AL_s_sli_cast,S_s_sli_cast,S_s_sli_cast_1,S_s_sli_cast_2,E_s_sli_cast,ROOT_s_source_code,AL_s_source_code,S_s_source_code,S_s_source_code_1,S_s_source_code_2,E_s_source_code,ROOT_s_spl_block,AL_s_spl_block,S_s_spl_block,S_s_spl_block_1,S_s_spl_block_2,E_s_spl_block,ROOT_s_spl_execute,AL_s_spl_execute,S_s_spl_execute,S_s_spl_execute_1,S_s_spl_execute_2,E_s_spl_execute,ROOT_s_spl_for_item,AL_s_spl_for_item,S_s_spl_for_item,S_s_spl_for_item_1,S_s_spl_for_item_2,E_s_spl_for_item,ROOT_s_table,AL_s_table,S_s_table,S_s_table_1,S_s_table_2,E_s_table,ROOT_s_table_list,AL_s_table_list,S_s_table_list,S_s_table_list_1,S_s_table_list_2,E_s_table_list,ROOT_s_table_list_element,AL_s_table_list_element,S_s_table_list_element,S_s_table_list_element_1,S_s_table_list_element_2,E_s_table_list_element,ROOT_s_update_pair,AL_s_update_pair,S_s_update_pair,S_s_update_pair_1,S_s_update_pair_2,E_s_update_pair,ROOT_short,AL_short,E_short,ROOT_simple_variable,AL_simple_variable,S_simple_variable,S_simple_variable_1,S_simple_variable_2,E_simple_variable,ROOT_single_option,AL_single_option,S_single_option,S_single_option_1,S_single_option_2,E_single_option,ROOT_spl_if_cond,AL_spl_if_cond,S_spl_if_cond,S_spl_if_cond_1,S_spl_if_cond_2,E_spl_if_cond,ROOT_spl_if_conds,AL_spl_if_conds,S_spl_if_conds,S_spl_if_conds_1,S_spl_if_conds_2,E_spl_if_conds,ROOT_sq_subquery,AL_sq_subquery,S_sq_subquery,S_sq_subquery_1,S_sq_subquery_2,E_sq_subquery,ROOT_sql_statement,AL_sql_statement,S_sql_statement,S_sql_statement_1,S_sql_statement_2,E_sql_statement,ROOT_startrep,AL_startrep,S_startrep,S_startrep_1,S_startrep_2,E_startrep,ROOT_str,AL_str,E_str,ROOT_str_list,AL_str_list,S_str_list,S_str_list_1,S_str_list_2,E_str_list,ROOT_struct_alloc_arr_cmd,AL_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd_1,S_struct_alloc_arr_cmd_2,E_struct_alloc_arr_cmd,ROOT_struct_at_term_cmd,AL_struct_at_term_cmd,E_struct_at_term_cmd,ROOT_struct_call_cmd,AL_struct_call_cmd,S_struct_call_cmd,S_struct_call_cmd_1,S_struct_call_cmd_2,E_struct_call_cmd,ROOT_struct_call_shared_cmd,AL_struct_call_shared_cmd,E_struct_call_shared_cmd,ROOT_struct_cancel_cmd,AL_struct_cancel_cmd,E_struct_cancel_cmd,ROOT_struct_case_cmd,AL_struct_case_cmd,S_struct_case_cmd,S_struct_case_cmd_1,S_struct_case_cmd_2,E_struct_case_cmd,ROOT_struct_check_menu_cmd,AL_struct_check_menu_cmd,S_struct_check_menu_cmd,S_struct_check_menu_cmd_1,S_struct_check_menu_cmd_2,E_struct_check_menu_cmd,ROOT_struct_clear_cmd,AL_struct_clear_cmd,S_struct_clear_cmd,S_struct_clear_cmd_1,S_struct_clear_cmd_2,E_struct_clear_cmd,ROOT_struct_close_cmd,AL_struct_close_cmd,S_struct_close_cmd,S_struct_close_cmd_1,S_struct_close_cmd_2,E_struct_close_cmd,ROOT_struct_close_sql_cmd,AL_struct_close_sql_cmd,S_struct_close_sql_cmd,S_struct_close_sql_cmd_1,S_struct_close_sql_cmd_2,E_struct_close_sql_cmd,ROOT_struct_code_cmd,AL_struct_code_cmd,E_struct_code_cmd,ROOT_struct_connect_cmd,AL_struct_connect_cmd,S_struct_connect_cmd,S_struct_connect_cmd_1,S_struct_connect_cmd_2,E_struct_connect_cmd,ROOT_struct_construct_cmd,AL_struct_construct_cmd,S_struct_construct_cmd,S_struct_construct_cmd_1,S_struct_construct_cmd_2,E_struct_construct_cmd,ROOT_struct_continue_cmd,AL_struct_continue_cmd,E_struct_continue_cmd,ROOT_struct_convert_cmd,AL_struct_convert_cmd,S_struct_convert_cmd,S_struct_convert_cmd_1,S_struct_convert_cmd_2,E_struct_convert_cmd,ROOT_struct_copyback_cmd,AL_struct_copyback_cmd,S_struct_copyback_cmd,S_struct_copyback_cmd_1,S_struct_copyback_cmd_2,E_struct_copyback_cmd,ROOT_struct_create_proc_cmd,AL_struct_create_proc_cmd,S_struct_create_proc_cmd,S_struct_create_proc_cmd_1,S_struct_create_proc_cmd_2,E_struct_create_proc_cmd,ROOT_struct_current_win_cmd,AL_struct_current_win_cmd,S_struct_current_win_cmd,S_struct_current_win_cmd_1,S_struct_current_win_cmd_2,E_struct_current_win_cmd,ROOT_struct_dealloc_arr_cmd,AL_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd_1,S_struct_dealloc_arr_cmd_2,E_struct_dealloc_arr_cmd,ROOT_struct_declare_cmd,AL_struct_declare_cmd,S_struct_declare_cmd,S_struct_declare_cmd_1,S_struct_declare_cmd_2,E_struct_declare_cmd,ROOT_struct_defer_cmd,AL_struct_defer_cmd,E_struct_defer_cmd,ROOT_struct_delete_cmd,AL_struct_delete_cmd,S_struct_delete_cmd,S_struct_delete_cmd_1,S_struct_delete_cmd_2,E_struct_delete_cmd,ROOT_struct_disable_cmd,AL_struct_disable_cmd,S_struct_disable_cmd,S_struct_disable_cmd_1,S_struct_disable_cmd_2,E_struct_disable_cmd,ROOT_struct_disable_form_cmd,AL_struct_disable_form_cmd,S_struct_disable_form_cmd,S_struct_disable_form_cmd_1,S_struct_disable_form_cmd_2,E_struct_disable_form_cmd,ROOT_struct_disable_menu_cmd,AL_struct_disable_menu_cmd,S_struct_disable_menu_cmd,S_struct_disable_menu_cmd_1,S_struct_disable_menu_cmd_2,E_struct_disable_menu_cmd,ROOT_struct_display_array_cmd,AL_struct_display_array_cmd,S_struct_display_array_cmd,S_struct_display_array_cmd_1,S_struct_display_array_cmd_2,E_struct_display_array_cmd,ROOT_struct_display_b_n_cmd,AL_struct_display_b_n_cmd,S_struct_display_b_n_cmd,S_struct_display_b_n_cmd_1,S_struct_display_b_n_cmd_2,E_struct_display_b_n_cmd,ROOT_struct_display_cmd,AL_struct_display_cmd,S_struct_display_cmd,S_struct_display_cmd_1,S_struct_display_cmd_2,E_struct_display_cmd,ROOT_struct_display_form_cmd,AL_struct_display_form_cmd,S_struct_display_form_cmd,S_struct_display_form_cmd_1,S_struct_display_form_cmd_2,E_struct_display_form_cmd,ROOT_struct_enable_cmd,AL_struct_enable_cmd,S_struct_enable_cmd,S_struct_enable_cmd_1,S_struct_enable_cmd_2,E_struct_enable_cmd,ROOT_struct_enable_form_cmd,AL_struct_enable_form_cmd,S_struct_enable_form_cmd,S_struct_enable_form_cmd_1,S_struct_enable_form_cmd_2,E_struct_enable_form_cmd,ROOT_struct_enable_menu_cmd,AL_struct_enable_menu_cmd,S_struct_enable_menu_cmd,S_struct_enable_menu_cmd_1,S_struct_enable_menu_cmd_2,E_struct_enable_menu_cmd,ROOT_struct_error_cmd,AL_struct_error_cmd,S_struct_error_cmd,S_struct_error_cmd_1,S_struct_error_cmd_2,E_struct_error_cmd,ROOT_struct_execute_cmd,AL_struct_execute_cmd,S_struct_execute_cmd,S_struct_execute_cmd_1,S_struct_execute_cmd_2,E_struct_execute_cmd,ROOT_struct_execute_immediate_cmd,AL_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd_1,S_struct_execute_immediate_cmd_2,E_struct_execute_immediate_cmd,ROOT_struct_exit_prog_cmd,AL_struct_exit_prog_cmd,S_struct_exit_prog_cmd,S_struct_exit_prog_cmd_1,S_struct_exit_prog_cmd_2,E_struct_exit_prog_cmd,ROOT_struct_ext_cmd,AL_struct_ext_cmd,E_struct_ext_cmd,ROOT_struct_fetch_cmd,AL_struct_fetch_cmd,S_struct_fetch_cmd,S_struct_fetch_cmd_1,S_struct_fetch_cmd_2,E_struct_fetch_cmd,ROOT_struct_finish_cmd,AL_struct_finish_cmd,S_struct_finish_cmd,S_struct_finish_cmd_1,S_struct_finish_cmd_2,E_struct_finish_cmd,ROOT_struct_flush_cmd,AL_struct_flush_cmd,S_struct_flush_cmd,S_struct_flush_cmd_1,S_struct_flush_cmd_2,E_struct_flush_cmd,ROOT_struct_for_cmd,AL_struct_for_cmd,S_struct_for_cmd,S_struct_for_cmd_1,S_struct_for_cmd_2,E_struct_for_cmd,ROOT_struct_foreach_cmd,AL_struct_foreach_cmd,S_struct_foreach_cmd,S_struct_foreach_cmd_1,S_struct_foreach_cmd_2,E_struct_foreach_cmd,ROOT_struct_free_blob_cmd,AL_struct_free_blob_cmd,S_struct_free_blob_cmd,S_struct_free_blob_cmd_1,S_struct_free_blob_cmd_2,E_struct_free_blob_cmd,ROOT_struct_free_cmd,AL_struct_free_cmd,S_struct_free_cmd,S_struct_free_cmd_1,S_struct_free_cmd_2,E_struct_free_cmd,ROOT_struct_free_rep_cmd,AL_struct_free_rep_cmd,E_struct_free_rep_cmd,ROOT_struct_goto_cmd,AL_struct_goto_cmd,E_struct_goto_cmd,ROOT_struct_hide_cmd,AL_struct_hide_cmd,S_struct_hide_cmd,S_struct_hide_cmd_1,S_struct_hide_cmd_2,E_struct_hide_cmd,ROOT_struct_hide_option_cmd,AL_struct_hide_option_cmd,S_struct_hide_option_cmd,S_struct_hide_option_cmd_1,S_struct_hide_option_cmd_2,E_struct_hide_option_cmd,ROOT_struct_if_cmd,AL_struct_if_cmd,S_struct_if_cmd,S_struct_if_cmd_1,S_struct_if_cmd_2,E_struct_if_cmd,ROOT_struct_init_cmd,AL_struct_init_cmd,S_struct_init_cmd,S_struct_init_cmd_1,S_struct_init_cmd_2,E_struct_init_cmd,ROOT_struct_input_array_cmd,AL_struct_input_array_cmd,S_struct_input_array_cmd,S_struct_input_array_cmd_1,S_struct_input_array_cmd_2,E_struct_input_array_cmd,ROOT_struct_input_cmd,AL_struct_input_cmd,S_struct_input_cmd,S_struct_input_cmd_1,S_struct_input_cmd_2,E_struct_input_cmd,ROOT_struct_insert_cmd,AL_struct_insert_cmd,S_struct_insert_cmd,S_struct_insert_cmd_1,S_struct_insert_cmd_2,E_struct_insert_cmd,ROOT_struct_label_cmd,AL_struct_label_cmd,E_struct_label_cmd,ROOT_struct_let_cmd,AL_struct_let_cmd,S_struct_let_cmd,S_struct_let_cmd_1,S_struct_let_cmd_2,E_struct_let_cmd,ROOT_struct_lint_expect_cmd,AL_struct_lint_expect_cmd,S_struct_lint_expect_cmd,S_struct_lint_expect_cmd_1,S_struct_lint_expect_cmd_2,E_struct_lint_expect_cmd,ROOT_struct_lint_ignore_cmd,AL_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd_1,S_struct_lint_ignore_cmd_2,E_struct_lint_ignore_cmd,ROOT_struct_load_cmd,AL_struct_load_cmd,S_struct_load_cmd,S_struct_load_cmd_1,S_struct_load_cmd_2,E_struct_load_cmd,ROOT_struct_locate_cmd,AL_struct_locate_cmd,S_struct_locate_cmd,S_struct_locate_cmd_1,S_struct_locate_cmd_2,E_struct_locate_cmd,ROOT_struct_menu_cmd,AL_struct_menu_cmd,S_struct_menu_cmd,S_struct_menu_cmd_1,S_struct_menu_cmd_2,E_struct_menu_cmd,ROOT_struct_message_cmd,AL_struct_message_cmd,S_struct_message_cmd,S_struct_message_cmd_1,S_struct_message_cmd_2,E_struct_message_cmd,ROOT_struct_move_cmd,AL_struct_move_cmd,S_struct_move_cmd,S_struct_move_cmd_1,S_struct_move_cmd_2,E_struct_move_cmd,ROOT_struct_msg_box_cmd,AL_struct_msg_box_cmd,S_struct_msg_box_cmd,S_struct_msg_box_cmd_1,S_struct_msg_box_cmd_2,E_struct_msg_box_cmd,ROOT_struct_need_cmd,AL_struct_need_cmd,S_struct_need_cmd,S_struct_need_cmd_1,S_struct_need_cmd_2,E_struct_need_cmd,ROOT_struct_next_field_cmd,AL_struct_next_field_cmd,S_struct_next_field_cmd,S_struct_next_field_cmd_1,S_struct_next_field_cmd_2,E_struct_next_field_cmd,ROOT_struct_next_form_cmd,AL_struct_next_form_cmd,E_struct_next_form_cmd,ROOT_struct_next_option_cmd,AL_struct_next_option_cmd,S_struct_next_option_cmd,S_struct_next_option_cmd_1,S_struct_next_option_cmd_2,E_struct_next_option_cmd,ROOT_struct_open_cursor_cmd,AL_struct_open_cursor_cmd,S_struct_open_cursor_cmd,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd_2,E_struct_open_cursor_cmd,ROOT_struct_open_form_cmd,AL_struct_open_form_cmd,S_struct_open_form_cmd,S_struct_open_form_cmd_1,S_struct_open_form_cmd_2,E_struct_open_form_cmd,ROOT_struct_open_form_gui_cmd,AL_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd_1,S_struct_open_form_gui_cmd_2,E_struct_open_form_gui_cmd,ROOT_struct_open_statusbox_cmd,AL_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd_1,S_struct_open_statusbox_cmd_2,E_struct_open_statusbox_cmd,ROOT_struct_open_window_cmd,AL_struct_open_window_cmd,S_struct_open_window_cmd,S_struct_open_window_cmd_1,S_struct_open_window_cmd_2,E_struct_open_window_cmd,ROOT_struct_options_cmd,AL_struct_options_cmd,S_struct_options_cmd,S_struct_options_cmd_1,S_struct_options_cmd_2,E_struct_options_cmd,ROOT_struct_output_cmd,AL_struct_output_cmd,S_struct_output_cmd,S_struct_output_cmd_1,S_struct_output_cmd_2,E_struct_output_cmd,ROOT_struct_pause_cmd,AL_struct_pause_cmd,S_struct_pause_cmd,S_struct_pause_cmd_1,S_struct_pause_cmd_2,E_struct_pause_cmd,ROOT_struct_pdf_call_cmd,AL_struct_pdf_call_cmd,S_struct_pdf_call_cmd,S_struct_pdf_call_cmd_1,S_struct_pdf_call_cmd_2,E_struct_pdf_call_cmd,ROOT_struct_prepare_cmd,AL_struct_prepare_cmd,S_struct_prepare_cmd,S_struct_prepare_cmd_1,S_struct_prepare_cmd_2,E_struct_prepare_cmd,ROOT_struct_print_cmd,AL_struct_print_cmd,S_struct_print_cmd,S_struct_print_cmd_1,S_struct_print_cmd_2,E_struct_print_cmd,ROOT_struct_print_file_cmd,AL_struct_print_file_cmd,S_struct_print_file_cmd,S_struct_print_file_cmd_1,S_struct_print_file_cmd_2,E_struct_print_file_cmd,ROOT_struct_print_img_cmd,AL_struct_print_img_cmd,S_struct_print_img_cmd,S_struct_print_img_cmd_1,S_struct_print_img_cmd_2,E_struct_print_img_cmd,ROOT_struct_prompt_cmd,AL_struct_prompt_cmd,S_struct_prompt_cmd,S_struct_prompt_cmd_1,S_struct_prompt_cmd_2,E_struct_prompt_cmd,ROOT_struct_put_cmd,AL_struct_put_cmd,S_struct_put_cmd,S_struct_put_cmd_1,S_struct_put_cmd_2,E_struct_put_cmd,ROOT_struct_resize_arr_cmd,AL_struct_resize_arr_cmd,S_struct_resize_arr_cmd,S_struct_resize_arr_cmd_1,S_struct_resize_arr_cmd_2,E_struct_resize_arr_cmd,ROOT_struct_return_cmd,AL_struct_return_cmd,S_struct_return_cmd,S_struct_return_cmd_1,S_struct_return_cmd_2,E_struct_return_cmd,ROOT_struct_run_cmd,AL_struct_run_cmd,S_struct_run_cmd,S_struct_run_cmd_1,S_struct_run_cmd_2,E_struct_run_cmd,ROOT_struct_run_waiting_for_cmd,AL_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd_1,S_struct_run_waiting_for_cmd_2,E_struct_run_waiting_for_cmd,ROOT_struct_scroll_cmd,AL_struct_scroll_cmd,S_struct_scroll_cmd,S_struct_scroll_cmd_1,S_struct_scroll_cmd_2,E_struct_scroll_cmd,ROOT_struct_select_cmd,AL_struct_select_cmd,S_struct_select_cmd,S_struct_select_cmd_1,S_struct_select_cmd_2,E_struct_select_cmd,ROOT_struct_set_database_cmd,AL_struct_set_database_cmd,S_struct_set_database_cmd,S_struct_set_database_cmd_1,S_struct_set_database_cmd_2,E_struct_set_database_cmd,ROOT_struct_set_session_cmd,AL_struct_set_session_cmd,S_struct_set_session_cmd,S_struct_set_session_cmd_1,S_struct_set_session_cmd_2,E_struct_set_session_cmd,ROOT_struct_show_cmd,AL_struct_show_cmd,S_struct_show_cmd,S_struct_show_cmd_1,S_struct_show_cmd_2,E_struct_show_cmd,ROOT_struct_show_menu_cmd,AL_struct_show_menu_cmd,S_struct_show_menu_cmd,S_struct_show_menu_cmd_1,S_struct_show_menu_cmd_2,E_struct_show_menu_cmd,ROOT_struct_show_option_cmd,AL_struct_show_option_cmd,S_struct_show_option_cmd,S_struct_show_option_cmd_1,S_struct_show_option_cmd_2,E_struct_show_option_cmd,ROOT_struct_skip_by_cmd,AL_struct_skip_by_cmd,S_struct_skip_by_cmd,S_struct_skip_by_cmd_1,S_struct_skip_by_cmd_2,E_struct_skip_by_cmd,ROOT_struct_skip_cmd,AL_struct_skip_cmd,S_struct_skip_cmd,S_struct_skip_cmd_1,S_struct_skip_cmd_2,E_struct_skip_cmd,ROOT_struct_skip_to_cmd,AL_struct_skip_to_cmd,S_struct_skip_to_cmd,S_struct_skip_to_cmd_1,S_struct_skip_to_cmd_2,E_struct_skip_to_cmd,ROOT_struct_sleep_cmd,AL_struct_sleep_cmd,S_struct_sleep_cmd,S_struct_sleep_cmd_1,S_struct_sleep_cmd_2,E_struct_sleep_cmd,ROOT_struct_spl_block_cmd,AL_struct_spl_block_cmd,S_struct_spl_block_cmd,S_struct_spl_block_cmd_1,S_struct_spl_block_cmd_2,E_struct_spl_block_cmd,ROOT_struct_spl_call_cmd,AL_struct_spl_call_cmd,S_struct_spl_call_cmd,S_struct_spl_call_cmd_1,S_struct_spl_call_cmd_2,E_struct_spl_call_cmd,ROOT_struct_spl_for_cmd,AL_struct_spl_for_cmd,S_struct_spl_for_cmd,S_struct_spl_for_cmd_1,S_struct_spl_for_cmd_2,E_struct_spl_for_cmd,ROOT_struct_spl_foreach_execute_cmd,AL_struct_spl_foreach_execute_cmd,S_struct_spl_foreach_execute_cmd,S_struct_spl_foreach_execute_cmd_1,S_struct_spl_foreach_execute_cmd_2,E_struct_spl_foreach_execute_cmd,ROOT_struct_spl_foreach_select_cmd,AL_struct_spl_foreach_select_cmd,S_struct_spl_foreach_select_cmd,S_struct_spl_foreach_select_cmd_1,S_struct_spl_foreach_select_cmd_2,E_struct_spl_foreach_select_cmd,ROOT_struct_spl_if_cmd,AL_struct_spl_if_cmd,S_struct_spl_if_cmd,S_struct_spl_if_cmd_1,S_struct_spl_if_cmd_2,E_struct_spl_if_cmd,ROOT_struct_spl_let_cmd,AL_struct_spl_let_cmd,S_struct_spl_let_cmd,S_struct_spl_let_cmd_1,S_struct_spl_let_cmd_2,E_struct_spl_let_cmd,ROOT_struct_spl_on_exception_cmd,AL_struct_spl_on_exception_cmd,S_struct_spl_on_exception_cmd,S_struct_spl_on_exception_cmd_1,S_struct_spl_on_exception_cmd_2,E_struct_spl_on_exception_cmd,ROOT_struct_spl_raise_exception_cmd,AL_struct_spl_raise_exception_cmd,S_struct_spl_raise_exception_cmd,S_struct_spl_raise_exception_cmd_1,S_struct_spl_raise_exception_cmd_2,E_struct_spl_raise_exception_cmd,ROOT_struct_spl_return_cmd,AL_struct_spl_return_cmd,S_struct_spl_return_cmd,S_struct_spl_return_cmd_1,S_struct_spl_return_cmd_2,E_struct_spl_return_cmd,ROOT_struct_spl_system_cmd,AL_struct_spl_system_cmd,S_struct_spl_system_cmd,S_struct_spl_system_cmd_1,S_struct_spl_system_cmd_2,E_struct_spl_system_cmd,ROOT_struct_spl_trace_cmd,AL_struct_spl_trace_cmd,S_struct_spl_trace_cmd,S_struct_spl_trace_cmd_1,S_struct_spl_trace_cmd_2,E_struct_spl_trace_cmd,ROOT_struct_spl_while_cmd,AL_struct_spl_while_cmd,S_struct_spl_while_cmd,S_struct_spl_while_cmd_1,S_struct_spl_while_cmd_2,E_struct_spl_while_cmd,ROOT_struct_sql_block_cmd,AL_struct_sql_block_cmd,S_struct_sql_block_cmd,S_struct_sql_block_cmd_1,S_struct_sql_block_cmd_2,E_struct_sql_block_cmd,ROOT_struct_sql_cmd,AL_struct_sql_cmd,S_struct_sql_cmd,S_struct_sql_cmd_1,S_struct_sql_cmd_2,E_struct_sql_cmd,ROOT_struct_sql_debug_file_cmd,AL_struct_sql_debug_file_cmd,S_struct_sql_debug_file_cmd,S_struct_sql_debug_file_cmd_1,S_struct_sql_debug_file_cmd_2,E_struct_sql_debug_file_cmd,ROOT_struct_sql_transact_cmd,AL_struct_sql_transact_cmd,S_struct_sql_transact_cmd,S_struct_sql_transact_cmd_1,S_struct_sql_transact_cmd_2,E_struct_sql_transact_cmd,ROOT_struct_start_cmd,AL_struct_start_cmd,S_struct_start_cmd,S_struct_start_cmd_1,S_struct_start_cmd_2,E_struct_start_cmd,ROOT_struct_start_rpc_cmd,AL_struct_start_rpc_cmd,S_struct_start_rpc_cmd,S_struct_start_rpc_cmd_1,S_struct_start_rpc_cmd_2,E_struct_start_rpc_cmd,ROOT_struct_term_rep_cmd,AL_struct_term_rep_cmd,E_struct_term_rep_cmd,ROOT_struct_uncheck_menu_cmd,AL_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd_1,S_struct_uncheck_menu_cmd_2,E_struct_uncheck_menu_cmd,ROOT_struct_unload_cmd,AL_struct_unload_cmd,S_struct_unload_cmd,S_struct_unload_cmd_1,S_struct_unload_cmd_2,E_struct_unload_cmd,ROOT_struct_update_cmd,AL_struct_update_cmd,S_struct_update_cmd,S_struct_update_cmd_1,S_struct_update_cmd_2,E_struct_update_cmd,ROOT_struct_validate_cmd,AL_struct_validate_cmd,S_struct_validate_cmd,S_struct_validate_cmd_1,S_struct_validate_cmd_2,E_struct_validate_cmd,ROOT_struct_whenever_cmd,AL_struct_whenever_cmd,E_struct_whenever_cmd,ROOT_struct_while_cmd,AL_struct_while_cmd,S_struct_while_cmd,S_struct_while_cmd_1,S_struct_while_cmd_2,E_struct_while_cmd,ROOT_user_details,AL_user_details,S_user_details,S_user_details_1,S_user_details_2,E_user_details,ROOT_variable,AL_variable,S_variable,S_variable_1,S_variable_2,E_variable,ROOT_variable_data,AL_variable_data,S_variable_data,S_variable_data_1,S_variable_data_2,E_variable_data,ROOT_variable_list,AL_variable_list,S_variable_list,S_variable_list_1,S_variable_list_2,E_variable_list,ROOT_variable_usage,AL_variable_usage,S_variable_usage,S_variable_usage_1,S_variable_usage_2,E_variable_usage,ROOT_variable_usage_with_asc_desc,AL_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc_1,S_variable_usage_with_asc_desc_2,E_variable_usage_with_asc_desc,ROOT_vname,AL_vname,E_vname,ROOT_vname_name_list,AL_vname_name_list,S_vname_name_list,S_vname_name_list_1,S_vname_name_list_2,E_vname_name_list,ROOT_when,AL_when,S_when,S_when_1,S_when_2,E_when,ROOT_whens,AL_whens,S_whens,S_whens_1,S_whens_2,E_whens,ROOT_windowtype,AL_windowtype,S_windowtype,S_windowtype_1,S_windowtype_2,E_windowtype,ROOT_x_y,AL_x_y,S_x_y,S_x_y_1,S_x_y_2,E_x_y,PROLOG,DOCTYPE,EPILOG>{
  "<!--" ENTER(INCOMMENT);
  "<?" ENTER(INPI);
 }
@@ -3262,7 +3481,7 @@ const char* *statenames=NULL;
 
  /* SPACES: skipped uniformly */
 
-<ROOT_assoc_array_variable,AL_assoc_array_variable,S_assoc_array_variable,S_assoc_array_variable_1,S_assoc_array_variable_2,E_assoc_array_variable,ROOT_assoc_subscript,AL_assoc_subscript,S_assoc_subscript,S_assoc_subscript_1,S_assoc_subscript_2,E_assoc_subscript,ROOT_attrib,AL_attrib,S_attrib,S_attrib_1,S_attrib_2,E_attrib,ROOT_bluebar,AL_bluebar,E_bluebar,ROOT_call_list,AL_call_list,S_call_list,S_call_list_1,S_call_list_2,E_call_list,ROOT_clear_data,AL_clear_data,S_clear_data,S_clear_data_1,S_clear_data_2,E_clear_data,ROOT_cmd_int_list,AL_cmd_int_list,S_cmd_int_list,S_cmd_int_list_1,S_cmd_int_list_2,E_cmd_int_list,ROOT_command,AL_command,S_command,S_command_1,S_command_2,E_command,ROOT_command_data,AL_command_data,S_command_data,S_command_data_1,S_command_data_2,E_command_data,ROOT_commands,AL_commands,S_commands,S_commands_1,S_commands_2,E_commands,ROOT_cons_list,AL_cons_list,S_cons_list,S_cons_list_1,S_cons_list_2,E_cons_list,ROOT_cons_list_entry,AL_cons_list_entry,E_cons_list_entry,ROOT_constant_data,AL_constant_data,E_constant_data,ROOT_convert,AL_convert,S_convert,S_convert_1,S_convert_2,E_convert,ROOT_dt_display,AL_dt_display,S_dt_display,S_dt_display_1,S_dt_display_2,E_dt_display,ROOT_event_data,AL_event_data,S_event_data,S_event_data_1,S_event_data_2,E_event_data,ROOT_expr_str,AL_expr_str,S_expr_str,S_expr_str_1,S_expr_str_2,E_expr_str,ROOT_expr_str_list,AL_expr_str_list,S_expr_str_list,S_expr_str_list_1,S_expr_str_list_2,E_expr_str_list,ROOT_fgl_comment,AL_fgl_comment,E_fgl_comment,ROOT_fh_field_entry,AL_fh_field_entry,S_fh_field_entry,S_fh_field_entry_1,S_fh_field_entry_2,E_fh_field_entry,ROOT_fh_field_list,AL_fh_field_list,S_fh_field_list,S_fh_field_list_1,S_fh_field_list_2,E_fh_field_list,ROOT_field,AL_field,E_field,ROOT_file_description,AL_file_description,S_file_description,S_file_description_1,S_file_description_2,E_file_description,ROOT_flist,AL_flist,E_flist,ROOT_form_field,AL_form_field,S_form_field,S_form_field_1,S_form_field_2,E_form_field,ROOT_funcname,AL_funcname,E_funcname,ROOT_funcname_list,AL_funcname_list,S_funcname_list,S_funcname_list_1,S_funcname_list_2,E_funcname_list,ROOT_globals_definition,AL_globals_definition,S_globals_definition,S_globals_definition_1,S_globals_definition_2,E_globals_definition,ROOT_if_cond,AL_if_cond,S_if_cond,S_if_cond_1,S_if_cond_2,E_if_cond,ROOT_if_conds,AL_if_conds,S_if_conds,S_if_conds_1,S_if_conds_2,E_if_conds,ROOT_ilist,AL_ilist,E_ilist,ROOT_int,AL_int,E_int,ROOT_linked_variable,AL_linked_variable,S_linked_variable,S_linked_variable_1,S_linked_variable_2,E_linked_variable,ROOT_lint_warning,AL_lint_warning,E_lint_warning,ROOT_list_of_integers,AL_list_of_integers,S_list_of_integers,S_list_of_integers_1,S_list_of_integers_2,E_list_of_integers,ROOT_locate_pos,AL_locate_pos,S_locate_pos,S_locate_pos_1,S_locate_pos_2,E_locate_pos,ROOT_long,AL_long,E_long,ROOT_manyoptions,AL_manyoptions,S_manyoptions,S_manyoptions_1,S_manyoptions_2,E_manyoptions,ROOT_menuoption,AL_menuoption,S_menuoption,S_menuoption_1,S_menuoption_2,E_menuoption,ROOT_module_definition,AL_module_definition,S_module_definition,S_module_definition_1,S_module_definition_2,E_module_definition,ROOT_module_entry,AL_module_entry,S_module_entry,S_module_entry_1,S_module_entry_2,E_module_entry,ROOT_object_variable,AL_object_variable,S_object_variable,S_object_variable_1,S_object_variable_2,E_object_variable,ROOT_on_event,AL_on_event,S_on_event,S_on_event_1,S_on_event_2,E_on_event,ROOT_on_events,AL_on_events,S_on_events,S_on_events_1,S_on_events_2,E_on_events,ROOT_pdf_startrep,AL_pdf_startrep,S_pdf_startrep,S_pdf_startrep_1,S_pdf_startrep_2,E_pdf_startrep,ROOT_program_definition,AL_program_definition,S_program_definition,S_program_definition_1,S_program_definition_2,E_program_definition,ROOT_record_variable,AL_record_variable,S_record_variable,S_record_variable_1,S_record_variable_2,E_record_variable,ROOT_report_block_data,AL_report_block_data,S_report_block_data,S_report_block_data_1,S_report_block_data_2,E_report_block_data,ROOT_report_format_section,AL_report_format_section,S_report_format_section,S_report_format_section_1,S_report_format_section_2,E_report_format_section,ROOT_report_format_section_entry,AL_report_format_section_entry,S_report_format_section_entry,S_report_format_section_entry_1,S_report_format_section_entry_2,E_report_format_section_entry,ROOT_report_orderby_section,AL_report_orderby_section,S_report_orderby_section,S_report_orderby_section_1,S_report_orderby_section_2,E_report_orderby_section,ROOT_rowscols,AL_rowscols,S_rowscols,S_rowscols_1,S_rowscols_2,E_rowscols,ROOT_s_class_definition,AL_s_class_definition,S_s_class_definition,S_s_class_definition_1,S_s_class_definition_2,E_s_class_definition,ROOT_s_cur_def,AL_s_cur_def,S_s_cur_def,S_s_cur_def_1,S_s_cur_def_2,E_s_cur_def,ROOT_s_dependant_tables,AL_s_dependant_tables,E_s_dependant_tables,ROOT_s_exchange_clobber,AL_s_exchange_clobber,E_s_exchange_clobber,ROOT_s_expr_agg,AL_s_expr_agg,S_s_expr_agg,S_s_expr_agg_1,S_s_expr_agg_2,E_s_expr_agg,ROOT_s_expr_aligned,AL_s_expr_aligned,S_s_expr_aligned,S_s_expr_aligned_1,S_s_expr_aligned_2,E_s_expr_aligned,ROOT_s_expr_bound_fcall,AL_s_expr_bound_fcall,S_s_expr_bound_fcall,S_s_expr_bound_fcall_1,S_s_expr_bound_fcall_2,E_s_expr_bound_fcall,ROOT_s_expr_cached,AL_s_expr_cached,E_s_expr_cached,ROOT_s_expr_cast,AL_s_expr_cast,S_s_expr_cast,S_s_expr_cast_1,S_s_expr_cast_2,E_s_expr_cast,ROOT_s_expr_current,AL_s_expr_current,E_s_expr_current,ROOT_s_expr_datetime,AL_s_expr_datetime,E_s_expr_datetime,ROOT_s_expr_dynarr_extent,AL_s_expr_dynarr_extent,S_s_expr_dynarr_extent,S_s_expr_dynarr_extent_1,S_s_expr_dynarr_extent_2,E_s_expr_dynarr_extent,ROOT_s_expr_dynarr_function_call_n,AL_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n_1,S_s_expr_dynarr_function_call_n_2,E_s_expr_dynarr_function_call_n,ROOT_s_expr_exists_sq,AL_s_expr_exists_sq,S_s_expr_exists_sq,S_s_expr_exists_sq_1,S_s_expr_exists_sq_2,E_s_expr_exists_sq,ROOT_s_expr_extend,AL_s_expr_extend,S_s_expr_extend,S_s_expr_extend_1,S_s_expr_extend_2,E_s_expr_extend,ROOT_s_expr_external_call,AL_s_expr_external_call,S_s_expr_external_call,S_s_expr_external_call_1,S_s_expr_external_call_2,E_s_expr_external_call,ROOT_s_expr_field_touched,AL_s_expr_field_touched,S_s_expr_field_touched,S_s_expr_field_touched_1,S_s_expr_field_touched_2,E_s_expr_field_touched,ROOT_s_expr_form_is_compiled,AL_s_expr_form_is_compiled,S_s_expr_form_is_compiled,S_s_expr_form_is_compiled_1,S_s_expr_form_is_compiled_2,E_s_expr_form_is_compiled,ROOT_s_expr_function_call,AL_s_expr_function_call,S_s_expr_function_call,S_s_expr_function_call_1,S_s_expr_function_call_2,E_s_expr_function_call,ROOT_s_expr_get_fldbuf,AL_s_expr_get_fldbuf,S_s_expr_get_fldbuf,S_s_expr_get_fldbuf_1,S_s_expr_get_fldbuf_2,E_s_expr_get_fldbuf,ROOT_s_expr_in,AL_s_expr_in,S_s_expr_in,S_s_expr_in_1,S_s_expr_in_2,E_s_expr_in,ROOT_s_expr_in_sq,AL_s_expr_in_sq,S_s_expr_in_sq,S_s_expr_in_sq_1,S_s_expr_in_sq_2,E_s_expr_in_sq,ROOT_s_expr_infield,AL_s_expr_infield,S_s_expr_infield,S_s_expr_infield_1,S_s_expr_infield_2,E_s_expr_infield,ROOT_s_expr_interval,AL_s_expr_interval,E_s_expr_interval,ROOT_s_expr_member_function_call_n,AL_s_expr_member_function_call_n,S_s_expr_member_function_call_n,S_s_expr_member_function_call_n_1,S_s_expr_member_function_call_n_2,E_s_expr_member_function_call_n,ROOT_s_expr_op,AL_s_expr_op,S_s_expr_op,S_s_expr_op_1,S_s_expr_op_2,E_s_expr_op,ROOT_s_expr_parameter,AL_s_expr_parameter,E_s_expr_parameter,ROOT_s_expr_pdf_function_call,AL_s_expr_pdf_function_call,S_s_expr_pdf_function_call,S_s_expr_pdf_function_call_1,S_s_expr_pdf_function_call_2,E_s_expr_pdf_function_call,ROOT_s_expr_shared_function_call,AL_s_expr_shared_function_call,S_s_expr_shared_function_call,S_s_expr_shared_function_call_1,S_s_expr_shared_function_call_2,E_s_expr_shared_function_call,ROOT_s_expr_tag,AL_s_expr_tag,S_s_expr_tag,S_s_expr_tag_1,S_s_expr_tag_2,E_s_expr_tag,ROOT_s_expr_tmp,AL_s_expr_tmp,E_s_expr_tmp,ROOT_s_expr_wordwrap,AL_s_expr_wordwrap,S_s_expr_wordwrap,S_s_expr_wordwrap_1,S_s_expr_wordwrap_2,E_s_expr_wordwrap,ROOT_s_fetch,AL_s_fetch,S_s_fetch,S_s_fetch_1,S_s_fetch_2,E_s_fetch,ROOT_s_fetch_place,AL_s_fetch_place,S_s_fetch_place,S_s_fetch_place_1,S_s_fetch_place_2,E_s_fetch_place,ROOT_s_formhandler_definition,AL_s_formhandler_definition,S_s_formhandler_definition,S_s_formhandler_definition_1,S_s_formhandler_definition_2,E_s_formhandler_definition,ROOT_s_full_col,AL_s_full_col,E_s_full_col,ROOT_s_func,AL_s_func,E_s_func,ROOT_s_function_definition,AL_s_function_definition,S_s_function_definition,S_s_function_definition_1,S_s_function_definition_2,E_s_function_definition,ROOT_s_import_datatype,AL_s_import_datatype,E_s_import_datatype,ROOT_s_import_function_definition,AL_s_import_function_definition,E_s_import_function_definition,ROOT_s_import_legacy_definition,AL_s_import_legacy_definition,E_s_import_legacy_definition,ROOT_s_import_package,AL_s_import_package,E_s_import_package,ROOT_s_limit,AL_s_limit,E_s_limit,ROOT_s_module_entry_ptr_list,AL_s_module_entry_ptr_list,S_s_module_entry_ptr_list,S_s_module_entry_ptr_list_1,S_s_module_entry_ptr_list_2,E_s_module_entry_ptr_list,ROOT_s_pdf_report_definition,AL_s_pdf_report_definition,S_s_pdf_report_definition,S_s_pdf_report_definition_1,S_s_pdf_report_definition_2,E_s_pdf_report_definition,ROOT_s_report_definition,AL_s_report_definition,S_s_report_definition,S_s_report_definition_1,S_s_report_definition_2,E_s_report_definition,ROOT_s_select,AL_s_select,S_s_select,S_s_select_1,S_s_select_2,E_s_select,ROOT_s_select_finish,AL_s_select_finish,S_s_select_finish,S_s_select_finish_1,S_s_select_finish_2,E_s_select_finish,ROOT_s_select_list_item,AL_s_select_list_item,S_s_select_list_item,S_s_select_list_item_1,S_s_select_list_item_2,E_s_select_list_item,ROOT_s_select_list_item_agg_expr,AL_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr_1,S_s_select_list_item_agg_expr_2,E_s_select_list_item_agg_expr,ROOT_s_select_list_item_between_expr,AL_s_select_list_item_between_expr,S_s_select_list_item_between_expr,S_s_select_list_item_between_expr_1,S_s_select_list_item_between_expr_2,E_s_select_list_item_between_expr,ROOT_s_select_list_item_builtin_fcall,AL_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall_1,S_s_select_list_item_builtin_fcall_2,E_s_select_list_item_builtin_fcall,ROOT_s_select_list_item_column,AL_s_select_list_item_column,S_s_select_list_item_column,S_s_select_list_item_column_1,S_s_select_list_item_column_2,E_s_select_list_item_column,ROOT_s_select_list_item_complex_expr,AL_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr_1,S_s_select_list_item_complex_expr_2,E_s_select_list_item_complex_expr,ROOT_s_select_list_item_data,AL_s_select_list_item_data,S_s_select_list_item_data,S_s_select_list_item_data_1,S_s_select_list_item_data_2,E_s_select_list_item_data,ROOT_s_select_list_item_extend,AL_s_select_list_item_extend,S_s_select_list_item_extend,S_s_select_list_item_extend_1,S_s_select_list_item_extend_2,E_s_select_list_item_extend,ROOT_s_select_list_item_fcall,AL_s_select_list_item_fcall,S_s_select_list_item_fcall,S_s_select_list_item_fcall_1,S_s_select_list_item_fcall_2,E_s_select_list_item_fcall,ROOT_s_select_list_item_list,AL_s_select_list_item_list,S_s_select_list_item_list,S_s_select_list_item_list_1,S_s_select_list_item_list_2,E_s_select_list_item_list,ROOT_s_select_list_item_regex,AL_s_select_list_item_regex,S_s_select_list_item_regex,S_s_select_list_item_regex_1,S_s_select_list_item_regex_2,E_s_select_list_item_regex,ROOT_s_select_list_item_sli_expr,AL_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr_1,S_s_select_list_item_sli_expr_2,E_s_select_list_item_sli_expr,ROOT_s_select_list_item_slil_expr,AL_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr_1,S_s_select_list_item_slil_expr_2,E_s_select_list_item_slil_expr,ROOT_s_select_list_item_sq_expression,AL_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression_1,S_s_select_list_item_sq_expression_2,E_s_select_list_item_sq_expression,ROOT_s_sli_case,AL_s_sli_case,S_s_sli_case,S_s_sli_case_1,S_s_sli_case_2,E_s_sli_case,ROOT_s_sli_case_element,AL_s_sli_case_element,S_s_sli_case_element,S_s_sli_case_element_1,S_s_sli_case_element_2,E_s_sli_case_element,ROOT_s_sli_cast,AL_s_sli_cast,S_s_sli_cast,S_s_sli_cast_1,S_s_sli_cast_2,E_s_sli_cast,ROOT_s_source_code,AL_s_source_code,S_s_source_code,S_s_source_code_1,S_s_source_code_2,E_s_source_code,ROOT_s_table,AL_s_table,S_s_table,S_s_table_1,S_s_table_2,E_s_table,ROOT_s_table_list,AL_s_table_list,S_s_table_list,S_s_table_list_1,S_s_table_list_2,E_s_table_list,ROOT_s_table_list_element,AL_s_table_list_element,S_s_table_list_element,S_s_table_list_element_1,S_s_table_list_element_2,E_s_table_list_element,ROOT_s_update_pair,AL_s_update_pair,S_s_update_pair,S_s_update_pair_1,S_s_update_pair_2,E_s_update_pair,ROOT_short,AL_short,E_short,ROOT_simple_variable,AL_simple_variable,E_simple_variable,ROOT_single_option,AL_single_option,S_single_option,S_single_option_1,S_single_option_2,E_single_option,ROOT_sq_subquery,AL_sq_subquery,S_sq_subquery,S_sq_subquery_1,S_sq_subquery_2,E_sq_subquery,ROOT_sql_statement,AL_sql_statement,S_sql_statement,S_sql_statement_1,S_sql_statement_2,E_sql_statement,ROOT_startrep,AL_startrep,S_startrep,S_startrep_1,S_startrep_2,E_startrep,ROOT_str,AL_str,E_str,ROOT_str_list,AL_str_list,S_str_list,S_str_list_1,S_str_list_2,E_str_list,ROOT_struct_alloc_arr_cmd,AL_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd_1,S_struct_alloc_arr_cmd_2,E_struct_alloc_arr_cmd,ROOT_struct_at_term_cmd,AL_struct_at_term_cmd,E_struct_at_term_cmd,ROOT_struct_call_cmd,AL_struct_call_cmd,S_struct_call_cmd,S_struct_call_cmd_1,S_struct_call_cmd_2,E_struct_call_cmd,ROOT_struct_call_shared_cmd,AL_struct_call_shared_cmd,E_struct_call_shared_cmd,ROOT_struct_cancel_cmd,AL_struct_cancel_cmd,E_struct_cancel_cmd,ROOT_struct_case_cmd,AL_struct_case_cmd,S_struct_case_cmd,S_struct_case_cmd_1,S_struct_case_cmd_2,E_struct_case_cmd,ROOT_struct_check_menu_cmd,AL_struct_check_menu_cmd,S_struct_check_menu_cmd,S_struct_check_menu_cmd_1,S_struct_check_menu_cmd_2,E_struct_check_menu_cmd,ROOT_struct_clear_cmd,AL_struct_clear_cmd,S_struct_clear_cmd,S_struct_clear_cmd_1,S_struct_clear_cmd_2,E_struct_clear_cmd,ROOT_struct_close_cmd,AL_struct_close_cmd,S_struct_close_cmd,S_struct_close_cmd_1,S_struct_close_cmd_2,E_struct_close_cmd,ROOT_struct_close_sql_cmd,AL_struct_close_sql_cmd,S_struct_close_sql_cmd,S_struct_close_sql_cmd_1,S_struct_close_sql_cmd_2,E_struct_close_sql_cmd,ROOT_struct_code_cmd,AL_struct_code_cmd,E_struct_code_cmd,ROOT_struct_connect_cmd,AL_struct_connect_cmd,S_struct_connect_cmd,S_struct_connect_cmd_1,S_struct_connect_cmd_2,E_struct_connect_cmd,ROOT_struct_construct_cmd,AL_struct_construct_cmd,S_struct_construct_cmd,S_struct_construct_cmd_1,S_struct_construct_cmd_2,E_struct_construct_cmd,ROOT_struct_continue_cmd,AL_struct_continue_cmd,E_struct_continue_cmd,ROOT_struct_convert_cmd,AL_struct_convert_cmd,S_struct_convert_cmd,S_struct_convert_cmd_1,S_struct_convert_cmd_2,E_struct_convert_cmd,ROOT_struct_copyback_cmd,AL_struct_copyback_cmd,S_struct_copyback_cmd,S_struct_copyback_cmd_1,S_struct_copyback_cmd_2,E_struct_copyback_cmd,ROOT_struct_current_win_cmd,AL_struct_current_win_cmd,S_struct_current_win_cmd,S_struct_current_win_cmd_1,S_struct_current_win_cmd_2,E_struct_current_win_cmd,ROOT_struct_dealloc_arr_cmd,AL_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd_1,S_struct_dealloc_arr_cmd_2,E_struct_dealloc_arr_cmd,ROOT_struct_declare_cmd,AL_struct_declare_cmd,S_struct_declare_cmd,S_struct_declare_cmd_1,S_struct_declare_cmd_2,E_struct_declare_cmd,ROOT_struct_defer_cmd,AL_struct_defer_cmd,E_struct_defer_cmd,ROOT_struct_delete_cmd,AL_struct_delete_cmd,S_struct_delete_cmd,S_struct_delete_cmd_1,S_struct_delete_cmd_2,E_struct_delete_cmd,ROOT_struct_disable_cmd,AL_struct_disable_cmd,S_struct_disable_cmd,S_struct_disable_cmd_1,S_struct_disable_cmd_2,E_struct_disable_cmd,ROOT_struct_disable_form_cmd,AL_struct_disable_form_cmd,S_struct_disable_form_cmd,S_struct_disable_form_cmd_1,S_struct_disable_form_cmd_2,E_struct_disable_form_cmd,ROOT_struct_disable_menu_cmd,AL_struct_disable_menu_cmd,S_struct_disable_menu_cmd,S_struct_disable_menu_cmd_1,S_struct_disable_menu_cmd_2,E_struct_disable_menu_cmd,ROOT_struct_display_array_cmd,AL_struct_display_array_cmd,S_struct_display_array_cmd,S_struct_display_array_cmd_1,S_struct_display_array_cmd_2,E_struct_display_array_cmd,ROOT_struct_display_b_n_cmd,AL_struct_display_b_n_cmd,S_struct_display_b_n_cmd,S_struct_display_b_n_cmd_1,S_struct_display_b_n_cmd_2,E_struct_display_b_n_cmd,ROOT_struct_display_cmd,AL_struct_display_cmd,S_struct_display_cmd,S_struct_display_cmd_1,S_struct_display_cmd_2,E_struct_display_cmd,ROOT_struct_display_form_cmd,AL_struct_display_form_cmd,S_struct_display_form_cmd,S_struct_display_form_cmd_1,S_struct_display_form_cmd_2,E_struct_display_form_cmd,ROOT_struct_enable_cmd,AL_struct_enable_cmd,S_struct_enable_cmd,S_struct_enable_cmd_1,S_struct_enable_cmd_2,E_struct_enable_cmd,ROOT_struct_enable_form_cmd,AL_struct_enable_form_cmd,S_struct_enable_form_cmd,S_struct_enable_form_cmd_1,S_struct_enable_form_cmd_2,E_struct_enable_form_cmd,ROOT_struct_enable_menu_cmd,AL_struct_enable_menu_cmd,S_struct_enable_menu_cmd,S_struct_enable_menu_cmd_1,S_struct_enable_menu_cmd_2,E_struct_enable_menu_cmd,ROOT_struct_error_cmd,AL_struct_error_cmd,S_struct_error_cmd,S_struct_error_cmd_1,S_struct_error_cmd_2,E_struct_error_cmd,ROOT_struct_execute_cmd,AL_struct_execute_cmd,S_struct_execute_cmd,S_struct_execute_cmd_1,S_struct_execute_cmd_2,E_struct_execute_cmd,ROOT_struct_execute_immediate_cmd,AL_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd_1,S_struct_execute_immediate_cmd_2,E_struct_execute_immediate_cmd,ROOT_struct_exit_prog_cmd,AL_struct_exit_prog_cmd,S_struct_exit_prog_cmd,S_struct_exit_prog_cmd_1,S_struct_exit_prog_cmd_2,E_struct_exit_prog_cmd,ROOT_struct_ext_cmd,AL_struct_ext_cmd,E_struct_ext_cmd,ROOT_struct_fetch_cmd,AL_struct_fetch_cmd,S_struct_fetch_cmd,S_struct_fetch_cmd_1,S_struct_fetch_cmd_2,E_struct_fetch_cmd,ROOT_struct_finish_cmd,AL_struct_finish_cmd,S_struct_finish_cmd,S_struct_finish_cmd_1,S_struct_finish_cmd_2,E_struct_finish_cmd,ROOT_struct_flush_cmd,AL_struct_flush_cmd,S_struct_flush_cmd,S_struct_flush_cmd_1,S_struct_flush_cmd_2,E_struct_flush_cmd,ROOT_struct_for_cmd,AL_struct_for_cmd,S_struct_for_cmd,S_struct_for_cmd_1,S_struct_for_cmd_2,E_struct_for_cmd,ROOT_struct_foreach_cmd,AL_struct_foreach_cmd,S_struct_foreach_cmd,S_struct_foreach_cmd_1,S_struct_foreach_cmd_2,E_struct_foreach_cmd,ROOT_struct_free_blob_cmd,AL_struct_free_blob_cmd,S_struct_free_blob_cmd,S_struct_free_blob_cmd_1,S_struct_free_blob_cmd_2,E_struct_free_blob_cmd,ROOT_struct_free_cmd,AL_struct_free_cmd,S_struct_free_cmd,S_struct_free_cmd_1,S_struct_free_cmd_2,E_struct_free_cmd,ROOT_struct_free_rep_cmd,AL_struct_free_rep_cmd,E_struct_free_rep_cmd,ROOT_struct_goto_cmd,AL_struct_goto_cmd,E_struct_goto_cmd,ROOT_struct_hide_cmd,AL_struct_hide_cmd,S_struct_hide_cmd,S_struct_hide_cmd_1,S_struct_hide_cmd_2,E_struct_hide_cmd,ROOT_struct_hide_option_cmd,AL_struct_hide_option_cmd,S_struct_hide_option_cmd,S_struct_hide_option_cmd_1,S_struct_hide_option_cmd_2,E_struct_hide_option_cmd,ROOT_struct_if_cmd,AL_struct_if_cmd,S_struct_if_cmd,S_struct_if_cmd_1,S_struct_if_cmd_2,E_struct_if_cmd,ROOT_struct_init_cmd,AL_struct_init_cmd,S_struct_init_cmd,S_struct_init_cmd_1,S_struct_init_cmd_2,E_struct_init_cmd,ROOT_struct_input_array_cmd,AL_struct_input_array_cmd,S_struct_input_array_cmd,S_struct_input_array_cmd_1,S_struct_input_array_cmd_2,E_struct_input_array_cmd,ROOT_struct_input_cmd,AL_struct_input_cmd,S_struct_input_cmd,S_struct_input_cmd_1,S_struct_input_cmd_2,E_struct_input_cmd,ROOT_struct_insert_cmd,AL_struct_insert_cmd,S_struct_insert_cmd,S_struct_insert_cmd_1,S_struct_insert_cmd_2,E_struct_insert_cmd,ROOT_struct_label_cmd,AL_struct_label_cmd,E_struct_label_cmd,ROOT_struct_let_cmd,AL_struct_let_cmd,S_struct_let_cmd,S_struct_let_cmd_1,S_struct_let_cmd_2,E_struct_let_cmd,ROOT_struct_lint_expect_cmd,AL_struct_lint_expect_cmd,S_struct_lint_expect_cmd,S_struct_lint_expect_cmd_1,S_struct_lint_expect_cmd_2,E_struct_lint_expect_cmd,ROOT_struct_lint_ignore_cmd,AL_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd_1,S_struct_lint_ignore_cmd_2,E_struct_lint_ignore_cmd,ROOT_struct_load_cmd,AL_struct_load_cmd,S_struct_load_cmd,S_struct_load_cmd_1,S_struct_load_cmd_2,E_struct_load_cmd,ROOT_struct_locate_cmd,AL_struct_locate_cmd,S_struct_locate_cmd,S_struct_locate_cmd_1,S_struct_locate_cmd_2,E_struct_locate_cmd,ROOT_struct_menu_cmd,AL_struct_menu_cmd,S_struct_menu_cmd,S_struct_menu_cmd_1,S_struct_menu_cmd_2,E_struct_menu_cmd,ROOT_struct_message_cmd,AL_struct_message_cmd,S_struct_message_cmd,S_struct_message_cmd_1,S_struct_message_cmd_2,E_struct_message_cmd,ROOT_struct_move_cmd,AL_struct_move_cmd,S_struct_move_cmd,S_struct_move_cmd_1,S_struct_move_cmd_2,E_struct_move_cmd,ROOT_struct_msg_box_cmd,AL_struct_msg_box_cmd,S_struct_msg_box_cmd,S_struct_msg_box_cmd_1,S_struct_msg_box_cmd_2,E_struct_msg_box_cmd,ROOT_struct_need_cmd,AL_struct_need_cmd,S_struct_need_cmd,S_struct_need_cmd_1,S_struct_need_cmd_2,E_struct_need_cmd,ROOT_struct_next_field_cmd,AL_struct_next_field_cmd,S_struct_next_field_cmd,S_struct_next_field_cmd_1,S_struct_next_field_cmd_2,E_struct_next_field_cmd,ROOT_struct_next_form_cmd,AL_struct_next_form_cmd,E_struct_next_form_cmd,ROOT_struct_next_option_cmd,AL_struct_next_option_cmd,S_struct_next_option_cmd,S_struct_next_option_cmd_1,S_struct_next_option_cmd_2,E_struct_next_option_cmd,ROOT_struct_open_cursor_cmd,AL_struct_open_cursor_cmd,S_struct_open_cursor_cmd,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd_2,E_struct_open_cursor_cmd,ROOT_struct_open_form_cmd,AL_struct_open_form_cmd,S_struct_open_form_cmd,S_struct_open_form_cmd_1,S_struct_open_form_cmd_2,E_struct_open_form_cmd,ROOT_struct_open_form_gui_cmd,AL_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd_1,S_struct_open_form_gui_cmd_2,E_struct_open_form_gui_cmd,ROOT_struct_open_statusbox_cmd,AL_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd_1,S_struct_open_statusbox_cmd_2,E_struct_open_statusbox_cmd,ROOT_struct_open_window_cmd,AL_struct_open_window_cmd,S_struct_open_window_cmd,S_struct_open_window_cmd_1,S_struct_open_window_cmd_2,E_struct_open_window_cmd,ROOT_struct_options_cmd,AL_struct_options_cmd,S_struct_options_cmd,S_struct_options_cmd_1,S_struct_options_cmd_2,E_struct_options_cmd,ROOT_struct_output_cmd,AL_struct_output_cmd,S_struct_output_cmd,S_struct_output_cmd_1,S_struct_output_cmd_2,E_struct_output_cmd,ROOT_struct_pause_cmd,AL_struct_pause_cmd,S_struct_pause_cmd,S_struct_pause_cmd_1,S_struct_pause_cmd_2,E_struct_pause_cmd,ROOT_struct_pdf_call_cmd,AL_struct_pdf_call_cmd,S_struct_pdf_call_cmd,S_struct_pdf_call_cmd_1,S_struct_pdf_call_cmd_2,E_struct_pdf_call_cmd,ROOT_struct_prepare_cmd,AL_struct_prepare_cmd,S_struct_prepare_cmd,S_struct_prepare_cmd_1,S_struct_prepare_cmd_2,E_struct_prepare_cmd,ROOT_struct_print_cmd,AL_struct_print_cmd,S_struct_print_cmd,S_struct_print_cmd_1,S_struct_print_cmd_2,E_struct_print_cmd,ROOT_struct_print_file_cmd,AL_struct_print_file_cmd,S_struct_print_file_cmd,S_struct_print_file_cmd_1,S_struct_print_file_cmd_2,E_struct_print_file_cmd,ROOT_struct_print_img_cmd,AL_struct_print_img_cmd,S_struct_print_img_cmd,S_struct_print_img_cmd_1,S_struct_print_img_cmd_2,E_struct_print_img_cmd,ROOT_struct_prompt_cmd,AL_struct_prompt_cmd,S_struct_prompt_cmd,S_struct_prompt_cmd_1,S_struct_prompt_cmd_2,E_struct_prompt_cmd,ROOT_struct_put_cmd,AL_struct_put_cmd,S_struct_put_cmd,S_struct_put_cmd_1,S_struct_put_cmd_2,E_struct_put_cmd,ROOT_struct_resize_arr_cmd,AL_struct_resize_arr_cmd,S_struct_resize_arr_cmd,S_struct_resize_arr_cmd_1,S_struct_resize_arr_cmd_2,E_struct_resize_arr_cmd,ROOT_struct_return_cmd,AL_struct_return_cmd,S_struct_return_cmd,S_struct_return_cmd_1,S_struct_return_cmd_2,E_struct_return_cmd,ROOT_struct_run_cmd,AL_struct_run_cmd,S_struct_run_cmd,S_struct_run_cmd_1,S_struct_run_cmd_2,E_struct_run_cmd,ROOT_struct_run_waiting_for_cmd,AL_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd_1,S_struct_run_waiting_for_cmd_2,E_struct_run_waiting_for_cmd,ROOT_struct_scroll_cmd,AL_struct_scroll_cmd,S_struct_scroll_cmd,S_struct_scroll_cmd_1,S_struct_scroll_cmd_2,E_struct_scroll_cmd,ROOT_struct_select_cmd,AL_struct_select_cmd,S_struct_select_cmd,S_struct_select_cmd_1,S_struct_select_cmd_2,E_struct_select_cmd,ROOT_struct_set_database_cmd,AL_struct_set_database_cmd,S_struct_set_database_cmd,S_struct_set_database_cmd_1,S_struct_set_database_cmd_2,E_struct_set_database_cmd,ROOT_struct_set_session_cmd,AL_struct_set_session_cmd,S_struct_set_session_cmd,S_struct_set_session_cmd_1,S_struct_set_session_cmd_2,E_struct_set_session_cmd,ROOT_struct_show_cmd,AL_struct_show_cmd,S_struct_show_cmd,S_struct_show_cmd_1,S_struct_show_cmd_2,E_struct_show_cmd,ROOT_struct_show_menu_cmd,AL_struct_show_menu_cmd,S_struct_show_menu_cmd,S_struct_show_menu_cmd_1,S_struct_show_menu_cmd_2,E_struct_show_menu_cmd,ROOT_struct_show_option_cmd,AL_struct_show_option_cmd,S_struct_show_option_cmd,S_struct_show_option_cmd_1,S_struct_show_option_cmd_2,E_struct_show_option_cmd,ROOT_struct_skip_by_cmd,AL_struct_skip_by_cmd,S_struct_skip_by_cmd,S_struct_skip_by_cmd_1,S_struct_skip_by_cmd_2,E_struct_skip_by_cmd,ROOT_struct_skip_cmd,AL_struct_skip_cmd,S_struct_skip_cmd,S_struct_skip_cmd_1,S_struct_skip_cmd_2,E_struct_skip_cmd,ROOT_struct_skip_to_cmd,AL_struct_skip_to_cmd,S_struct_skip_to_cmd,S_struct_skip_to_cmd_1,S_struct_skip_to_cmd_2,E_struct_skip_to_cmd,ROOT_struct_sleep_cmd,AL_struct_sleep_cmd,S_struct_sleep_cmd,S_struct_sleep_cmd_1,S_struct_sleep_cmd_2,E_struct_sleep_cmd,ROOT_struct_sql_block_cmd,AL_struct_sql_block_cmd,S_struct_sql_block_cmd,S_struct_sql_block_cmd_1,S_struct_sql_block_cmd_2,E_struct_sql_block_cmd,ROOT_struct_sql_cmd,AL_struct_sql_cmd,S_struct_sql_cmd,S_struct_sql_cmd_1,S_struct_sql_cmd_2,E_struct_sql_cmd,ROOT_struct_sql_transact_cmd,AL_struct_sql_transact_cmd,S_struct_sql_transact_cmd,S_struct_sql_transact_cmd_1,S_struct_sql_transact_cmd_2,E_struct_sql_transact_cmd,ROOT_struct_start_cmd,AL_struct_start_cmd,S_struct_start_cmd,S_struct_start_cmd_1,S_struct_start_cmd_2,E_struct_start_cmd,ROOT_struct_start_rpc_cmd,AL_struct_start_rpc_cmd,S_struct_start_rpc_cmd,S_struct_start_rpc_cmd_1,S_struct_start_rpc_cmd_2,E_struct_start_rpc_cmd,ROOT_struct_term_rep_cmd,AL_struct_term_rep_cmd,E_struct_term_rep_cmd,ROOT_struct_uncheck_menu_cmd,AL_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd_1,S_struct_uncheck_menu_cmd_2,E_struct_uncheck_menu_cmd,ROOT_struct_unload_cmd,AL_struct_unload_cmd,S_struct_unload_cmd,S_struct_unload_cmd_1,S_struct_unload_cmd_2,E_struct_unload_cmd,ROOT_struct_update_cmd,AL_struct_update_cmd,S_struct_update_cmd,S_struct_update_cmd_1,S_struct_update_cmd_2,E_struct_update_cmd,ROOT_struct_validate_cmd,AL_struct_validate_cmd,S_struct_validate_cmd,S_struct_validate_cmd_1,S_struct_validate_cmd_2,E_struct_validate_cmd,ROOT_struct_whenever_cmd,AL_struct_whenever_cmd,E_struct_whenever_cmd,ROOT_struct_while_cmd,AL_struct_while_cmd,S_struct_while_cmd,S_struct_while_cmd_1,S_struct_while_cmd_2,E_struct_while_cmd,ROOT_user_details,AL_user_details,S_user_details,S_user_details_1,S_user_details_2,E_user_details,ROOT_variable,AL_variable,S_variable,S_variable_1,S_variable_2,E_variable,ROOT_variable_data,AL_variable_data,S_variable_data,S_variable_data_1,S_variable_data_2,E_variable_data,ROOT_variable_list,AL_variable_list,S_variable_list,S_variable_list_1,S_variable_list_2,E_variable_list,ROOT_variable_usage,AL_variable_usage,S_variable_usage,S_variable_usage_1,S_variable_usage_2,E_variable_usage,ROOT_variable_usage_with_asc_desc,AL_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc_1,S_variable_usage_with_asc_desc_2,E_variable_usage_with_asc_desc,ROOT_vname,AL_vname,E_vname,ROOT_vname_name_list,AL_vname_name_list,S_vname_name_list,S_vname_name_list_1,S_vname_name_list_2,E_vname_name_list,ROOT_when,AL_when,S_when,S_when_1,S_when_2,E_when,ROOT_whens,AL_whens,S_whens,S_whens_1,S_whens_2,E_whens,ROOT_windowtype,AL_windowtype,S_windowtype,S_windowtype_1,S_windowtype_2,E_windowtype,ROOT_x_y,AL_x_y,S_x_y,S_x_y_1,S_x_y_2,E_x_y,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
+<ROOT_assoc_array_variable,AL_assoc_array_variable,S_assoc_array_variable,S_assoc_array_variable_1,S_assoc_array_variable_2,E_assoc_array_variable,ROOT_assoc_subscript,AL_assoc_subscript,S_assoc_subscript,S_assoc_subscript_1,S_assoc_subscript_2,E_assoc_subscript,ROOT_attrib,AL_attrib,S_attrib,S_attrib_1,S_attrib_2,E_attrib,ROOT_bluebar,AL_bluebar,E_bluebar,ROOT_call_list,AL_call_list,S_call_list,S_call_list_1,S_call_list_2,E_call_list,ROOT_clear_data,AL_clear_data,S_clear_data,S_clear_data_1,S_clear_data_2,E_clear_data,ROOT_cmd_int_list,AL_cmd_int_list,S_cmd_int_list,S_cmd_int_list_1,S_cmd_int_list_2,E_cmd_int_list,ROOT_command,AL_command,S_command,S_command_1,S_command_2,E_command,ROOT_command_data,AL_command_data,S_command_data,S_command_data_1,S_command_data_2,E_command_data,ROOT_commands,AL_commands,S_commands,S_commands_1,S_commands_2,E_commands,ROOT_cons_list,AL_cons_list,S_cons_list,S_cons_list_1,S_cons_list_2,E_cons_list,ROOT_cons_list_entry,AL_cons_list_entry,E_cons_list_entry,ROOT_constant_data,AL_constant_data,E_constant_data,ROOT_convert,AL_convert,S_convert,S_convert_1,S_convert_2,E_convert,ROOT_create_proc_data,AL_create_proc_data,S_create_proc_data,S_create_proc_data_1,S_create_proc_data_2,E_create_proc_data,ROOT_dt_display,AL_dt_display,S_dt_display,S_dt_display_1,S_dt_display_2,E_dt_display,ROOT_event_data,AL_event_data,S_event_data,S_event_data_1,S_event_data_2,E_event_data,ROOT_expr_str,AL_expr_str,S_expr_str,S_expr_str_1,S_expr_str_2,E_expr_str,ROOT_expr_str_list,AL_expr_str_list,S_expr_str_list,S_expr_str_list_1,S_expr_str_list_2,E_expr_str_list,ROOT_fgl_comment,AL_fgl_comment,E_fgl_comment,ROOT_fh_field_entry,AL_fh_field_entry,S_fh_field_entry,S_fh_field_entry_1,S_fh_field_entry_2,E_fh_field_entry,ROOT_fh_field_list,AL_fh_field_list,S_fh_field_list,S_fh_field_list_1,S_fh_field_list_2,E_fh_field_list,ROOT_field,AL_field,E_field,ROOT_file_description,AL_file_description,S_file_description,S_file_description_1,S_file_description_2,E_file_description,ROOT_flist,AL_flist,E_flist,ROOT_form_field,AL_form_field,S_form_field,S_form_field_1,S_form_field_2,E_form_field,ROOT_funcname,AL_funcname,E_funcname,ROOT_funcname_list,AL_funcname_list,S_funcname_list,S_funcname_list_1,S_funcname_list_2,E_funcname_list,ROOT_globals_definition,AL_globals_definition,S_globals_definition,S_globals_definition_1,S_globals_definition_2,E_globals_definition,ROOT_if_cond,AL_if_cond,S_if_cond,S_if_cond_1,S_if_cond_2,E_if_cond,ROOT_if_conds,AL_if_conds,S_if_conds,S_if_conds_1,S_if_conds_2,E_if_conds,ROOT_ilist,AL_ilist,E_ilist,ROOT_int,AL_int,E_int,ROOT_linked_variable,AL_linked_variable,S_linked_variable,S_linked_variable_1,S_linked_variable_2,E_linked_variable,ROOT_lint_warning,AL_lint_warning,E_lint_warning,ROOT_list_of_integers,AL_list_of_integers,S_list_of_integers,S_list_of_integers_1,S_list_of_integers_2,E_list_of_integers,ROOT_locate_pos,AL_locate_pos,S_locate_pos,S_locate_pos_1,S_locate_pos_2,E_locate_pos,ROOT_long,AL_long,E_long,ROOT_manyoptions,AL_manyoptions,S_manyoptions,S_manyoptions_1,S_manyoptions_2,E_manyoptions,ROOT_menuoption,AL_menuoption,S_menuoption,S_menuoption_1,S_menuoption_2,E_menuoption,ROOT_module_definition,AL_module_definition,S_module_definition,S_module_definition_1,S_module_definition_2,E_module_definition,ROOT_module_entry,AL_module_entry,S_module_entry,S_module_entry_1,S_module_entry_2,E_module_entry,ROOT_object_variable,AL_object_variable,S_object_variable,S_object_variable_1,S_object_variable_2,E_object_variable,ROOT_on_event,AL_on_event,S_on_event,S_on_event_1,S_on_event_2,E_on_event,ROOT_on_events,AL_on_events,S_on_events,S_on_events_1,S_on_events_2,E_on_events,ROOT_pdf_startrep,AL_pdf_startrep,S_pdf_startrep,S_pdf_startrep_1,S_pdf_startrep_2,E_pdf_startrep,ROOT_program_definition,AL_program_definition,S_program_definition,S_program_definition_1,S_program_definition_2,E_program_definition,ROOT_record_variable,AL_record_variable,S_record_variable,S_record_variable_1,S_record_variable_2,E_record_variable,ROOT_report_block_data,AL_report_block_data,S_report_block_data,S_report_block_data_1,S_report_block_data_2,E_report_block_data,ROOT_report_format_section,AL_report_format_section,S_report_format_section,S_report_format_section_1,S_report_format_section_2,E_report_format_section,ROOT_report_format_section_entry,AL_report_format_section_entry,S_report_format_section_entry,S_report_format_section_entry_1,S_report_format_section_entry_2,E_report_format_section_entry,ROOT_report_orderby_section,AL_report_orderby_section,S_report_orderby_section,S_report_orderby_section_1,S_report_orderby_section_2,E_report_orderby_section,ROOT_rowscols,AL_rowscols,S_rowscols,S_rowscols_1,S_rowscols_2,E_rowscols,ROOT_s_class_definition,AL_s_class_definition,S_s_class_definition,S_s_class_definition_1,S_s_class_definition_2,E_s_class_definition,ROOT_s_cur_def,AL_s_cur_def,S_s_cur_def,S_s_cur_def_1,S_s_cur_def_2,E_s_cur_def,ROOT_s_dependant_tables,AL_s_dependant_tables,E_s_dependant_tables,ROOT_s_exchange_clobber,AL_s_exchange_clobber,E_s_exchange_clobber,ROOT_s_expr_agg,AL_s_expr_agg,S_s_expr_agg,S_s_expr_agg_1,S_s_expr_agg_2,E_s_expr_agg,ROOT_s_expr_aligned,AL_s_expr_aligned,S_s_expr_aligned,S_s_expr_aligned_1,S_s_expr_aligned_2,E_s_expr_aligned,ROOT_s_expr_bound_fcall,AL_s_expr_bound_fcall,S_s_expr_bound_fcall,S_s_expr_bound_fcall_1,S_s_expr_bound_fcall_2,E_s_expr_bound_fcall,ROOT_s_expr_cached,AL_s_expr_cached,E_s_expr_cached,ROOT_s_expr_cast,AL_s_expr_cast,S_s_expr_cast,S_s_expr_cast_1,S_s_expr_cast_2,E_s_expr_cast,ROOT_s_expr_current,AL_s_expr_current,E_s_expr_current,ROOT_s_expr_datetime,AL_s_expr_datetime,E_s_expr_datetime,ROOT_s_expr_dynarr_extent,AL_s_expr_dynarr_extent,S_s_expr_dynarr_extent,S_s_expr_dynarr_extent_1,S_s_expr_dynarr_extent_2,E_s_expr_dynarr_extent,ROOT_s_expr_dynarr_function_call_n,AL_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n,S_s_expr_dynarr_function_call_n_1,S_s_expr_dynarr_function_call_n_2,E_s_expr_dynarr_function_call_n,ROOT_s_expr_exists_sq,AL_s_expr_exists_sq,S_s_expr_exists_sq,S_s_expr_exists_sq_1,S_s_expr_exists_sq_2,E_s_expr_exists_sq,ROOT_s_expr_extend,AL_s_expr_extend,S_s_expr_extend,S_s_expr_extend_1,S_s_expr_extend_2,E_s_expr_extend,ROOT_s_expr_external_call,AL_s_expr_external_call,S_s_expr_external_call,S_s_expr_external_call_1,S_s_expr_external_call_2,E_s_expr_external_call,ROOT_s_expr_field_touched,AL_s_expr_field_touched,S_s_expr_field_touched,S_s_expr_field_touched_1,S_s_expr_field_touched_2,E_s_expr_field_touched,ROOT_s_expr_form_is_compiled,AL_s_expr_form_is_compiled,S_s_expr_form_is_compiled,S_s_expr_form_is_compiled_1,S_s_expr_form_is_compiled_2,E_s_expr_form_is_compiled,ROOT_s_expr_function_call,AL_s_expr_function_call,S_s_expr_function_call,S_s_expr_function_call_1,S_s_expr_function_call_2,E_s_expr_function_call,ROOT_s_expr_get_fldbuf,AL_s_expr_get_fldbuf,S_s_expr_get_fldbuf,S_s_expr_get_fldbuf_1,S_s_expr_get_fldbuf_2,E_s_expr_get_fldbuf,ROOT_s_expr_in,AL_s_expr_in,S_s_expr_in,S_s_expr_in_1,S_s_expr_in_2,E_s_expr_in,ROOT_s_expr_in_sq,AL_s_expr_in_sq,S_s_expr_in_sq,S_s_expr_in_sq_1,S_s_expr_in_sq_2,E_s_expr_in_sq,ROOT_s_expr_infield,AL_s_expr_infield,S_s_expr_infield,S_s_expr_infield_1,S_s_expr_infield_2,E_s_expr_infield,ROOT_s_expr_interval,AL_s_expr_interval,E_s_expr_interval,ROOT_s_expr_member_function_call_n,AL_s_expr_member_function_call_n,S_s_expr_member_function_call_n,S_s_expr_member_function_call_n_1,S_s_expr_member_function_call_n_2,E_s_expr_member_function_call_n,ROOT_s_expr_op,AL_s_expr_op,S_s_expr_op,S_s_expr_op_1,S_s_expr_op_2,E_s_expr_op,ROOT_s_expr_parameter,AL_s_expr_parameter,E_s_expr_parameter,ROOT_s_expr_pdf_function_call,AL_s_expr_pdf_function_call,S_s_expr_pdf_function_call,S_s_expr_pdf_function_call_1,S_s_expr_pdf_function_call_2,E_s_expr_pdf_function_call,ROOT_s_expr_shared_function_call,AL_s_expr_shared_function_call,S_s_expr_shared_function_call,S_s_expr_shared_function_call_1,S_s_expr_shared_function_call_2,E_s_expr_shared_function_call,ROOT_s_expr_tag,AL_s_expr_tag,S_s_expr_tag,S_s_expr_tag_1,S_s_expr_tag_2,E_s_expr_tag,ROOT_s_expr_tmp,AL_s_expr_tmp,E_s_expr_tmp,ROOT_s_expr_wordwrap,AL_s_expr_wordwrap,S_s_expr_wordwrap,S_s_expr_wordwrap_1,S_s_expr_wordwrap_2,E_s_expr_wordwrap,ROOT_s_fetch,AL_s_fetch,S_s_fetch,S_s_fetch_1,S_s_fetch_2,E_s_fetch,ROOT_s_fetch_place,AL_s_fetch_place,S_s_fetch_place,S_s_fetch_place_1,S_s_fetch_place_2,E_s_fetch_place,ROOT_s_formhandler_definition,AL_s_formhandler_definition,S_s_formhandler_definition,S_s_formhandler_definition_1,S_s_formhandler_definition_2,E_s_formhandler_definition,ROOT_s_full_col,AL_s_full_col,E_s_full_col,ROOT_s_func,AL_s_func,E_s_func,ROOT_s_function_definition,AL_s_function_definition,S_s_function_definition,S_s_function_definition_1,S_s_function_definition_2,E_s_function_definition,ROOT_s_import_datatype,AL_s_import_datatype,E_s_import_datatype,ROOT_s_import_function_definition,AL_s_import_function_definition,E_s_import_function_definition,ROOT_s_import_legacy_definition,AL_s_import_legacy_definition,E_s_import_legacy_definition,ROOT_s_import_package,AL_s_import_package,E_s_import_package,ROOT_s_limit,AL_s_limit,E_s_limit,ROOT_s_module_entry_ptr_list,AL_s_module_entry_ptr_list,S_s_module_entry_ptr_list,S_s_module_entry_ptr_list_1,S_s_module_entry_ptr_list_2,E_s_module_entry_ptr_list,ROOT_s_named_param,AL_s_named_param,S_s_named_param,S_s_named_param_1,S_s_named_param_2,E_s_named_param,ROOT_s_pdf_report_definition,AL_s_pdf_report_definition,S_s_pdf_report_definition,S_s_pdf_report_definition_1,S_s_pdf_report_definition_2,E_s_pdf_report_definition,ROOT_s_report_definition,AL_s_report_definition,S_s_report_definition,S_s_report_definition_1,S_s_report_definition_2,E_s_report_definition,ROOT_s_select,AL_s_select,S_s_select,S_s_select_1,S_s_select_2,E_s_select,ROOT_s_select_finish,AL_s_select_finish,S_s_select_finish,S_s_select_finish_1,S_s_select_finish_2,E_s_select_finish,ROOT_s_select_list_item,AL_s_select_list_item,S_s_select_list_item,S_s_select_list_item_1,S_s_select_list_item_2,E_s_select_list_item,ROOT_s_select_list_item_agg_expr,AL_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr,S_s_select_list_item_agg_expr_1,S_s_select_list_item_agg_expr_2,E_s_select_list_item_agg_expr,ROOT_s_select_list_item_between_expr,AL_s_select_list_item_between_expr,S_s_select_list_item_between_expr,S_s_select_list_item_between_expr_1,S_s_select_list_item_between_expr_2,E_s_select_list_item_between_expr,ROOT_s_select_list_item_builtin_fcall,AL_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall,S_s_select_list_item_builtin_fcall_1,S_s_select_list_item_builtin_fcall_2,E_s_select_list_item_builtin_fcall,ROOT_s_select_list_item_column,AL_s_select_list_item_column,S_s_select_list_item_column,S_s_select_list_item_column_1,S_s_select_list_item_column_2,E_s_select_list_item_column,ROOT_s_select_list_item_complex_expr,AL_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr,S_s_select_list_item_complex_expr_1,S_s_select_list_item_complex_expr_2,E_s_select_list_item_complex_expr,ROOT_s_select_list_item_data,AL_s_select_list_item_data,S_s_select_list_item_data,S_s_select_list_item_data_1,S_s_select_list_item_data_2,E_s_select_list_item_data,ROOT_s_select_list_item_extend,AL_s_select_list_item_extend,S_s_select_list_item_extend,S_s_select_list_item_extend_1,S_s_select_list_item_extend_2,E_s_select_list_item_extend,ROOT_s_select_list_item_fcall,AL_s_select_list_item_fcall,S_s_select_list_item_fcall,S_s_select_list_item_fcall_1,S_s_select_list_item_fcall_2,E_s_select_list_item_fcall,ROOT_s_select_list_item_list,AL_s_select_list_item_list,S_s_select_list_item_list,S_s_select_list_item_list_1,S_s_select_list_item_list_2,E_s_select_list_item_list,ROOT_s_select_list_item_regex,AL_s_select_list_item_regex,S_s_select_list_item_regex,S_s_select_list_item_regex_1,S_s_select_list_item_regex_2,E_s_select_list_item_regex,ROOT_s_select_list_item_sli_expr,AL_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr,S_s_select_list_item_sli_expr_1,S_s_select_list_item_sli_expr_2,E_s_select_list_item_sli_expr,ROOT_s_select_list_item_slil_expr,AL_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr,S_s_select_list_item_slil_expr_1,S_s_select_list_item_slil_expr_2,E_s_select_list_item_slil_expr,ROOT_s_select_list_item_sq_expression,AL_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression,S_s_select_list_item_sq_expression_1,S_s_select_list_item_sq_expression_2,E_s_select_list_item_sq_expression,ROOT_s_sli_case,AL_s_sli_case,S_s_sli_case,S_s_sli_case_1,S_s_sli_case_2,E_s_sli_case,ROOT_s_sli_case_element,AL_s_sli_case_element,S_s_sli_case_element,S_s_sli_case_element_1,S_s_sli_case_element_2,E_s_sli_case_element,ROOT_s_sli_cast,AL_s_sli_cast,S_s_sli_cast,S_s_sli_cast_1,S_s_sli_cast_2,E_s_sli_cast,ROOT_s_source_code,AL_s_source_code,S_s_source_code,S_s_source_code_1,S_s_source_code_2,E_s_source_code,ROOT_s_spl_block,AL_s_spl_block,S_s_spl_block,S_s_spl_block_1,S_s_spl_block_2,E_s_spl_block,ROOT_s_spl_execute,AL_s_spl_execute,S_s_spl_execute,S_s_spl_execute_1,S_s_spl_execute_2,E_s_spl_execute,ROOT_s_spl_for_item,AL_s_spl_for_item,S_s_spl_for_item,S_s_spl_for_item_1,S_s_spl_for_item_2,E_s_spl_for_item,ROOT_s_table,AL_s_table,S_s_table,S_s_table_1,S_s_table_2,E_s_table,ROOT_s_table_list,AL_s_table_list,S_s_table_list,S_s_table_list_1,S_s_table_list_2,E_s_table_list,ROOT_s_table_list_element,AL_s_table_list_element,S_s_table_list_element,S_s_table_list_element_1,S_s_table_list_element_2,E_s_table_list_element,ROOT_s_update_pair,AL_s_update_pair,S_s_update_pair,S_s_update_pair_1,S_s_update_pair_2,E_s_update_pair,ROOT_short,AL_short,E_short,ROOT_simple_variable,AL_simple_variable,S_simple_variable,S_simple_variable_1,S_simple_variable_2,E_simple_variable,ROOT_single_option,AL_single_option,S_single_option,S_single_option_1,S_single_option_2,E_single_option,ROOT_spl_if_cond,AL_spl_if_cond,S_spl_if_cond,S_spl_if_cond_1,S_spl_if_cond_2,E_spl_if_cond,ROOT_spl_if_conds,AL_spl_if_conds,S_spl_if_conds,S_spl_if_conds_1,S_spl_if_conds_2,E_spl_if_conds,ROOT_sq_subquery,AL_sq_subquery,S_sq_subquery,S_sq_subquery_1,S_sq_subquery_2,E_sq_subquery,ROOT_sql_statement,AL_sql_statement,S_sql_statement,S_sql_statement_1,S_sql_statement_2,E_sql_statement,ROOT_startrep,AL_startrep,S_startrep,S_startrep_1,S_startrep_2,E_startrep,ROOT_str,AL_str,E_str,ROOT_str_list,AL_str_list,S_str_list,S_str_list_1,S_str_list_2,E_str_list,ROOT_struct_alloc_arr_cmd,AL_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd,S_struct_alloc_arr_cmd_1,S_struct_alloc_arr_cmd_2,E_struct_alloc_arr_cmd,ROOT_struct_at_term_cmd,AL_struct_at_term_cmd,E_struct_at_term_cmd,ROOT_struct_call_cmd,AL_struct_call_cmd,S_struct_call_cmd,S_struct_call_cmd_1,S_struct_call_cmd_2,E_struct_call_cmd,ROOT_struct_call_shared_cmd,AL_struct_call_shared_cmd,E_struct_call_shared_cmd,ROOT_struct_cancel_cmd,AL_struct_cancel_cmd,E_struct_cancel_cmd,ROOT_struct_case_cmd,AL_struct_case_cmd,S_struct_case_cmd,S_struct_case_cmd_1,S_struct_case_cmd_2,E_struct_case_cmd,ROOT_struct_check_menu_cmd,AL_struct_check_menu_cmd,S_struct_check_menu_cmd,S_struct_check_menu_cmd_1,S_struct_check_menu_cmd_2,E_struct_check_menu_cmd,ROOT_struct_clear_cmd,AL_struct_clear_cmd,S_struct_clear_cmd,S_struct_clear_cmd_1,S_struct_clear_cmd_2,E_struct_clear_cmd,ROOT_struct_close_cmd,AL_struct_close_cmd,S_struct_close_cmd,S_struct_close_cmd_1,S_struct_close_cmd_2,E_struct_close_cmd,ROOT_struct_close_sql_cmd,AL_struct_close_sql_cmd,S_struct_close_sql_cmd,S_struct_close_sql_cmd_1,S_struct_close_sql_cmd_2,E_struct_close_sql_cmd,ROOT_struct_code_cmd,AL_struct_code_cmd,E_struct_code_cmd,ROOT_struct_connect_cmd,AL_struct_connect_cmd,S_struct_connect_cmd,S_struct_connect_cmd_1,S_struct_connect_cmd_2,E_struct_connect_cmd,ROOT_struct_construct_cmd,AL_struct_construct_cmd,S_struct_construct_cmd,S_struct_construct_cmd_1,S_struct_construct_cmd_2,E_struct_construct_cmd,ROOT_struct_continue_cmd,AL_struct_continue_cmd,E_struct_continue_cmd,ROOT_struct_convert_cmd,AL_struct_convert_cmd,S_struct_convert_cmd,S_struct_convert_cmd_1,S_struct_convert_cmd_2,E_struct_convert_cmd,ROOT_struct_copyback_cmd,AL_struct_copyback_cmd,S_struct_copyback_cmd,S_struct_copyback_cmd_1,S_struct_copyback_cmd_2,E_struct_copyback_cmd,ROOT_struct_create_proc_cmd,AL_struct_create_proc_cmd,S_struct_create_proc_cmd,S_struct_create_proc_cmd_1,S_struct_create_proc_cmd_2,E_struct_create_proc_cmd,ROOT_struct_current_win_cmd,AL_struct_current_win_cmd,S_struct_current_win_cmd,S_struct_current_win_cmd_1,S_struct_current_win_cmd_2,E_struct_current_win_cmd,ROOT_struct_dealloc_arr_cmd,AL_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd,S_struct_dealloc_arr_cmd_1,S_struct_dealloc_arr_cmd_2,E_struct_dealloc_arr_cmd,ROOT_struct_declare_cmd,AL_struct_declare_cmd,S_struct_declare_cmd,S_struct_declare_cmd_1,S_struct_declare_cmd_2,E_struct_declare_cmd,ROOT_struct_defer_cmd,AL_struct_defer_cmd,E_struct_defer_cmd,ROOT_struct_delete_cmd,AL_struct_delete_cmd,S_struct_delete_cmd,S_struct_delete_cmd_1,S_struct_delete_cmd_2,E_struct_delete_cmd,ROOT_struct_disable_cmd,AL_struct_disable_cmd,S_struct_disable_cmd,S_struct_disable_cmd_1,S_struct_disable_cmd_2,E_struct_disable_cmd,ROOT_struct_disable_form_cmd,AL_struct_disable_form_cmd,S_struct_disable_form_cmd,S_struct_disable_form_cmd_1,S_struct_disable_form_cmd_2,E_struct_disable_form_cmd,ROOT_struct_disable_menu_cmd,AL_struct_disable_menu_cmd,S_struct_disable_menu_cmd,S_struct_disable_menu_cmd_1,S_struct_disable_menu_cmd_2,E_struct_disable_menu_cmd,ROOT_struct_display_array_cmd,AL_struct_display_array_cmd,S_struct_display_array_cmd,S_struct_display_array_cmd_1,S_struct_display_array_cmd_2,E_struct_display_array_cmd,ROOT_struct_display_b_n_cmd,AL_struct_display_b_n_cmd,S_struct_display_b_n_cmd,S_struct_display_b_n_cmd_1,S_struct_display_b_n_cmd_2,E_struct_display_b_n_cmd,ROOT_struct_display_cmd,AL_struct_display_cmd,S_struct_display_cmd,S_struct_display_cmd_1,S_struct_display_cmd_2,E_struct_display_cmd,ROOT_struct_display_form_cmd,AL_struct_display_form_cmd,S_struct_display_form_cmd,S_struct_display_form_cmd_1,S_struct_display_form_cmd_2,E_struct_display_form_cmd,ROOT_struct_enable_cmd,AL_struct_enable_cmd,S_struct_enable_cmd,S_struct_enable_cmd_1,S_struct_enable_cmd_2,E_struct_enable_cmd,ROOT_struct_enable_form_cmd,AL_struct_enable_form_cmd,S_struct_enable_form_cmd,S_struct_enable_form_cmd_1,S_struct_enable_form_cmd_2,E_struct_enable_form_cmd,ROOT_struct_enable_menu_cmd,AL_struct_enable_menu_cmd,S_struct_enable_menu_cmd,S_struct_enable_menu_cmd_1,S_struct_enable_menu_cmd_2,E_struct_enable_menu_cmd,ROOT_struct_error_cmd,AL_struct_error_cmd,S_struct_error_cmd,S_struct_error_cmd_1,S_struct_error_cmd_2,E_struct_error_cmd,ROOT_struct_execute_cmd,AL_struct_execute_cmd,S_struct_execute_cmd,S_struct_execute_cmd_1,S_struct_execute_cmd_2,E_struct_execute_cmd,ROOT_struct_execute_immediate_cmd,AL_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd,S_struct_execute_immediate_cmd_1,S_struct_execute_immediate_cmd_2,E_struct_execute_immediate_cmd,ROOT_struct_exit_prog_cmd,AL_struct_exit_prog_cmd,S_struct_exit_prog_cmd,S_struct_exit_prog_cmd_1,S_struct_exit_prog_cmd_2,E_struct_exit_prog_cmd,ROOT_struct_ext_cmd,AL_struct_ext_cmd,E_struct_ext_cmd,ROOT_struct_fetch_cmd,AL_struct_fetch_cmd,S_struct_fetch_cmd,S_struct_fetch_cmd_1,S_struct_fetch_cmd_2,E_struct_fetch_cmd,ROOT_struct_finish_cmd,AL_struct_finish_cmd,S_struct_finish_cmd,S_struct_finish_cmd_1,S_struct_finish_cmd_2,E_struct_finish_cmd,ROOT_struct_flush_cmd,AL_struct_flush_cmd,S_struct_flush_cmd,S_struct_flush_cmd_1,S_struct_flush_cmd_2,E_struct_flush_cmd,ROOT_struct_for_cmd,AL_struct_for_cmd,S_struct_for_cmd,S_struct_for_cmd_1,S_struct_for_cmd_2,E_struct_for_cmd,ROOT_struct_foreach_cmd,AL_struct_foreach_cmd,S_struct_foreach_cmd,S_struct_foreach_cmd_1,S_struct_foreach_cmd_2,E_struct_foreach_cmd,ROOT_struct_free_blob_cmd,AL_struct_free_blob_cmd,S_struct_free_blob_cmd,S_struct_free_blob_cmd_1,S_struct_free_blob_cmd_2,E_struct_free_blob_cmd,ROOT_struct_free_cmd,AL_struct_free_cmd,S_struct_free_cmd,S_struct_free_cmd_1,S_struct_free_cmd_2,E_struct_free_cmd,ROOT_struct_free_rep_cmd,AL_struct_free_rep_cmd,E_struct_free_rep_cmd,ROOT_struct_goto_cmd,AL_struct_goto_cmd,E_struct_goto_cmd,ROOT_struct_hide_cmd,AL_struct_hide_cmd,S_struct_hide_cmd,S_struct_hide_cmd_1,S_struct_hide_cmd_2,E_struct_hide_cmd,ROOT_struct_hide_option_cmd,AL_struct_hide_option_cmd,S_struct_hide_option_cmd,S_struct_hide_option_cmd_1,S_struct_hide_option_cmd_2,E_struct_hide_option_cmd,ROOT_struct_if_cmd,AL_struct_if_cmd,S_struct_if_cmd,S_struct_if_cmd_1,S_struct_if_cmd_2,E_struct_if_cmd,ROOT_struct_init_cmd,AL_struct_init_cmd,S_struct_init_cmd,S_struct_init_cmd_1,S_struct_init_cmd_2,E_struct_init_cmd,ROOT_struct_input_array_cmd,AL_struct_input_array_cmd,S_struct_input_array_cmd,S_struct_input_array_cmd_1,S_struct_input_array_cmd_2,E_struct_input_array_cmd,ROOT_struct_input_cmd,AL_struct_input_cmd,S_struct_input_cmd,S_struct_input_cmd_1,S_struct_input_cmd_2,E_struct_input_cmd,ROOT_struct_insert_cmd,AL_struct_insert_cmd,S_struct_insert_cmd,S_struct_insert_cmd_1,S_struct_insert_cmd_2,E_struct_insert_cmd,ROOT_struct_label_cmd,AL_struct_label_cmd,E_struct_label_cmd,ROOT_struct_let_cmd,AL_struct_let_cmd,S_struct_let_cmd,S_struct_let_cmd_1,S_struct_let_cmd_2,E_struct_let_cmd,ROOT_struct_lint_expect_cmd,AL_struct_lint_expect_cmd,S_struct_lint_expect_cmd,S_struct_lint_expect_cmd_1,S_struct_lint_expect_cmd_2,E_struct_lint_expect_cmd,ROOT_struct_lint_ignore_cmd,AL_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd,S_struct_lint_ignore_cmd_1,S_struct_lint_ignore_cmd_2,E_struct_lint_ignore_cmd,ROOT_struct_load_cmd,AL_struct_load_cmd,S_struct_load_cmd,S_struct_load_cmd_1,S_struct_load_cmd_2,E_struct_load_cmd,ROOT_struct_locate_cmd,AL_struct_locate_cmd,S_struct_locate_cmd,S_struct_locate_cmd_1,S_struct_locate_cmd_2,E_struct_locate_cmd,ROOT_struct_menu_cmd,AL_struct_menu_cmd,S_struct_menu_cmd,S_struct_menu_cmd_1,S_struct_menu_cmd_2,E_struct_menu_cmd,ROOT_struct_message_cmd,AL_struct_message_cmd,S_struct_message_cmd,S_struct_message_cmd_1,S_struct_message_cmd_2,E_struct_message_cmd,ROOT_struct_move_cmd,AL_struct_move_cmd,S_struct_move_cmd,S_struct_move_cmd_1,S_struct_move_cmd_2,E_struct_move_cmd,ROOT_struct_msg_box_cmd,AL_struct_msg_box_cmd,S_struct_msg_box_cmd,S_struct_msg_box_cmd_1,S_struct_msg_box_cmd_2,E_struct_msg_box_cmd,ROOT_struct_need_cmd,AL_struct_need_cmd,S_struct_need_cmd,S_struct_need_cmd_1,S_struct_need_cmd_2,E_struct_need_cmd,ROOT_struct_next_field_cmd,AL_struct_next_field_cmd,S_struct_next_field_cmd,S_struct_next_field_cmd_1,S_struct_next_field_cmd_2,E_struct_next_field_cmd,ROOT_struct_next_form_cmd,AL_struct_next_form_cmd,E_struct_next_form_cmd,ROOT_struct_next_option_cmd,AL_struct_next_option_cmd,S_struct_next_option_cmd,S_struct_next_option_cmd_1,S_struct_next_option_cmd_2,E_struct_next_option_cmd,ROOT_struct_open_cursor_cmd,AL_struct_open_cursor_cmd,S_struct_open_cursor_cmd,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd_2,E_struct_open_cursor_cmd,ROOT_struct_open_form_cmd,AL_struct_open_form_cmd,S_struct_open_form_cmd,S_struct_open_form_cmd_1,S_struct_open_form_cmd_2,E_struct_open_form_cmd,ROOT_struct_open_form_gui_cmd,AL_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd,S_struct_open_form_gui_cmd_1,S_struct_open_form_gui_cmd_2,E_struct_open_form_gui_cmd,ROOT_struct_open_statusbox_cmd,AL_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd,S_struct_open_statusbox_cmd_1,S_struct_open_statusbox_cmd_2,E_struct_open_statusbox_cmd,ROOT_struct_open_window_cmd,AL_struct_open_window_cmd,S_struct_open_window_cmd,S_struct_open_window_cmd_1,S_struct_open_window_cmd_2,E_struct_open_window_cmd,ROOT_struct_options_cmd,AL_struct_options_cmd,S_struct_options_cmd,S_struct_options_cmd_1,S_struct_options_cmd_2,E_struct_options_cmd,ROOT_struct_output_cmd,AL_struct_output_cmd,S_struct_output_cmd,S_struct_output_cmd_1,S_struct_output_cmd_2,E_struct_output_cmd,ROOT_struct_pause_cmd,AL_struct_pause_cmd,S_struct_pause_cmd,S_struct_pause_cmd_1,S_struct_pause_cmd_2,E_struct_pause_cmd,ROOT_struct_pdf_call_cmd,AL_struct_pdf_call_cmd,S_struct_pdf_call_cmd,S_struct_pdf_call_cmd_1,S_struct_pdf_call_cmd_2,E_struct_pdf_call_cmd,ROOT_struct_prepare_cmd,AL_struct_prepare_cmd,S_struct_prepare_cmd,S_struct_prepare_cmd_1,S_struct_prepare_cmd_2,E_struct_prepare_cmd,ROOT_struct_print_cmd,AL_struct_print_cmd,S_struct_print_cmd,S_struct_print_cmd_1,S_struct_print_cmd_2,E_struct_print_cmd,ROOT_struct_print_file_cmd,AL_struct_print_file_cmd,S_struct_print_file_cmd,S_struct_print_file_cmd_1,S_struct_print_file_cmd_2,E_struct_print_file_cmd,ROOT_struct_print_img_cmd,AL_struct_print_img_cmd,S_struct_print_img_cmd,S_struct_print_img_cmd_1,S_struct_print_img_cmd_2,E_struct_print_img_cmd,ROOT_struct_prompt_cmd,AL_struct_prompt_cmd,S_struct_prompt_cmd,S_struct_prompt_cmd_1,S_struct_prompt_cmd_2,E_struct_prompt_cmd,ROOT_struct_put_cmd,AL_struct_put_cmd,S_struct_put_cmd,S_struct_put_cmd_1,S_struct_put_cmd_2,E_struct_put_cmd,ROOT_struct_resize_arr_cmd,AL_struct_resize_arr_cmd,S_struct_resize_arr_cmd,S_struct_resize_arr_cmd_1,S_struct_resize_arr_cmd_2,E_struct_resize_arr_cmd,ROOT_struct_return_cmd,AL_struct_return_cmd,S_struct_return_cmd,S_struct_return_cmd_1,S_struct_return_cmd_2,E_struct_return_cmd,ROOT_struct_run_cmd,AL_struct_run_cmd,S_struct_run_cmd,S_struct_run_cmd_1,S_struct_run_cmd_2,E_struct_run_cmd,ROOT_struct_run_waiting_for_cmd,AL_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd,S_struct_run_waiting_for_cmd_1,S_struct_run_waiting_for_cmd_2,E_struct_run_waiting_for_cmd,ROOT_struct_scroll_cmd,AL_struct_scroll_cmd,S_struct_scroll_cmd,S_struct_scroll_cmd_1,S_struct_scroll_cmd_2,E_struct_scroll_cmd,ROOT_struct_select_cmd,AL_struct_select_cmd,S_struct_select_cmd,S_struct_select_cmd_1,S_struct_select_cmd_2,E_struct_select_cmd,ROOT_struct_set_database_cmd,AL_struct_set_database_cmd,S_struct_set_database_cmd,S_struct_set_database_cmd_1,S_struct_set_database_cmd_2,E_struct_set_database_cmd,ROOT_struct_set_session_cmd,AL_struct_set_session_cmd,S_struct_set_session_cmd,S_struct_set_session_cmd_1,S_struct_set_session_cmd_2,E_struct_set_session_cmd,ROOT_struct_show_cmd,AL_struct_show_cmd,S_struct_show_cmd,S_struct_show_cmd_1,S_struct_show_cmd_2,E_struct_show_cmd,ROOT_struct_show_menu_cmd,AL_struct_show_menu_cmd,S_struct_show_menu_cmd,S_struct_show_menu_cmd_1,S_struct_show_menu_cmd_2,E_struct_show_menu_cmd,ROOT_struct_show_option_cmd,AL_struct_show_option_cmd,S_struct_show_option_cmd,S_struct_show_option_cmd_1,S_struct_show_option_cmd_2,E_struct_show_option_cmd,ROOT_struct_skip_by_cmd,AL_struct_skip_by_cmd,S_struct_skip_by_cmd,S_struct_skip_by_cmd_1,S_struct_skip_by_cmd_2,E_struct_skip_by_cmd,ROOT_struct_skip_cmd,AL_struct_skip_cmd,S_struct_skip_cmd,S_struct_skip_cmd_1,S_struct_skip_cmd_2,E_struct_skip_cmd,ROOT_struct_skip_to_cmd,AL_struct_skip_to_cmd,S_struct_skip_to_cmd,S_struct_skip_to_cmd_1,S_struct_skip_to_cmd_2,E_struct_skip_to_cmd,ROOT_struct_sleep_cmd,AL_struct_sleep_cmd,S_struct_sleep_cmd,S_struct_sleep_cmd_1,S_struct_sleep_cmd_2,E_struct_sleep_cmd,ROOT_struct_spl_block_cmd,AL_struct_spl_block_cmd,S_struct_spl_block_cmd,S_struct_spl_block_cmd_1,S_struct_spl_block_cmd_2,E_struct_spl_block_cmd,ROOT_struct_spl_call_cmd,AL_struct_spl_call_cmd,S_struct_spl_call_cmd,S_struct_spl_call_cmd_1,S_struct_spl_call_cmd_2,E_struct_spl_call_cmd,ROOT_struct_spl_for_cmd,AL_struct_spl_for_cmd,S_struct_spl_for_cmd,S_struct_spl_for_cmd_1,S_struct_spl_for_cmd_2,E_struct_spl_for_cmd,ROOT_struct_spl_foreach_execute_cmd,AL_struct_spl_foreach_execute_cmd,S_struct_spl_foreach_execute_cmd,S_struct_spl_foreach_execute_cmd_1,S_struct_spl_foreach_execute_cmd_2,E_struct_spl_foreach_execute_cmd,ROOT_struct_spl_foreach_select_cmd,AL_struct_spl_foreach_select_cmd,S_struct_spl_foreach_select_cmd,S_struct_spl_foreach_select_cmd_1,S_struct_spl_foreach_select_cmd_2,E_struct_spl_foreach_select_cmd,ROOT_struct_spl_if_cmd,AL_struct_spl_if_cmd,S_struct_spl_if_cmd,S_struct_spl_if_cmd_1,S_struct_spl_if_cmd_2,E_struct_spl_if_cmd,ROOT_struct_spl_let_cmd,AL_struct_spl_let_cmd,S_struct_spl_let_cmd,S_struct_spl_let_cmd_1,S_struct_spl_let_cmd_2,E_struct_spl_let_cmd,ROOT_struct_spl_on_exception_cmd,AL_struct_spl_on_exception_cmd,S_struct_spl_on_exception_cmd,S_struct_spl_on_exception_cmd_1,S_struct_spl_on_exception_cmd_2,E_struct_spl_on_exception_cmd,ROOT_struct_spl_raise_exception_cmd,AL_struct_spl_raise_exception_cmd,S_struct_spl_raise_exception_cmd,S_struct_spl_raise_exception_cmd_1,S_struct_spl_raise_exception_cmd_2,E_struct_spl_raise_exception_cmd,ROOT_struct_spl_return_cmd,AL_struct_spl_return_cmd,S_struct_spl_return_cmd,S_struct_spl_return_cmd_1,S_struct_spl_return_cmd_2,E_struct_spl_return_cmd,ROOT_struct_spl_system_cmd,AL_struct_spl_system_cmd,S_struct_spl_system_cmd,S_struct_spl_system_cmd_1,S_struct_spl_system_cmd_2,E_struct_spl_system_cmd,ROOT_struct_spl_trace_cmd,AL_struct_spl_trace_cmd,S_struct_spl_trace_cmd,S_struct_spl_trace_cmd_1,S_struct_spl_trace_cmd_2,E_struct_spl_trace_cmd,ROOT_struct_spl_while_cmd,AL_struct_spl_while_cmd,S_struct_spl_while_cmd,S_struct_spl_while_cmd_1,S_struct_spl_while_cmd_2,E_struct_spl_while_cmd,ROOT_struct_sql_block_cmd,AL_struct_sql_block_cmd,S_struct_sql_block_cmd,S_struct_sql_block_cmd_1,S_struct_sql_block_cmd_2,E_struct_sql_block_cmd,ROOT_struct_sql_cmd,AL_struct_sql_cmd,S_struct_sql_cmd,S_struct_sql_cmd_1,S_struct_sql_cmd_2,E_struct_sql_cmd,ROOT_struct_sql_debug_file_cmd,AL_struct_sql_debug_file_cmd,S_struct_sql_debug_file_cmd,S_struct_sql_debug_file_cmd_1,S_struct_sql_debug_file_cmd_2,E_struct_sql_debug_file_cmd,ROOT_struct_sql_transact_cmd,AL_struct_sql_transact_cmd,S_struct_sql_transact_cmd,S_struct_sql_transact_cmd_1,S_struct_sql_transact_cmd_2,E_struct_sql_transact_cmd,ROOT_struct_start_cmd,AL_struct_start_cmd,S_struct_start_cmd,S_struct_start_cmd_1,S_struct_start_cmd_2,E_struct_start_cmd,ROOT_struct_start_rpc_cmd,AL_struct_start_rpc_cmd,S_struct_start_rpc_cmd,S_struct_start_rpc_cmd_1,S_struct_start_rpc_cmd_2,E_struct_start_rpc_cmd,ROOT_struct_term_rep_cmd,AL_struct_term_rep_cmd,E_struct_term_rep_cmd,ROOT_struct_uncheck_menu_cmd,AL_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd,S_struct_uncheck_menu_cmd_1,S_struct_uncheck_menu_cmd_2,E_struct_uncheck_menu_cmd,ROOT_struct_unload_cmd,AL_struct_unload_cmd,S_struct_unload_cmd,S_struct_unload_cmd_1,S_struct_unload_cmd_2,E_struct_unload_cmd,ROOT_struct_update_cmd,AL_struct_update_cmd,S_struct_update_cmd,S_struct_update_cmd_1,S_struct_update_cmd_2,E_struct_update_cmd,ROOT_struct_validate_cmd,AL_struct_validate_cmd,S_struct_validate_cmd,S_struct_validate_cmd_1,S_struct_validate_cmd_2,E_struct_validate_cmd,ROOT_struct_whenever_cmd,AL_struct_whenever_cmd,E_struct_whenever_cmd,ROOT_struct_while_cmd,AL_struct_while_cmd,S_struct_while_cmd,S_struct_while_cmd_1,S_struct_while_cmd_2,E_struct_while_cmd,ROOT_user_details,AL_user_details,S_user_details,S_user_details_1,S_user_details_2,E_user_details,ROOT_variable,AL_variable,S_variable,S_variable_1,S_variable_2,E_variable,ROOT_variable_data,AL_variable_data,S_variable_data,S_variable_data_1,S_variable_data_2,E_variable_data,ROOT_variable_list,AL_variable_list,S_variable_list,S_variable_list_1,S_variable_list_2,E_variable_list,ROOT_variable_usage,AL_variable_usage,S_variable_usage,S_variable_usage_1,S_variable_usage_2,E_variable_usage,ROOT_variable_usage_with_asc_desc,AL_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc,S_variable_usage_with_asc_desc_1,S_variable_usage_with_asc_desc_2,E_variable_usage_with_asc_desc,ROOT_vname,AL_vname,E_vname,ROOT_vname_name_list,AL_vname_name_list,S_vname_name_list,S_vname_name_list_1,S_vname_name_list_2,E_vname_name_list,ROOT_when,AL_when,S_when,S_when_1,S_when_2,E_when,ROOT_whens,AL_whens,S_whens,S_whens_1,S_whens_2,E_whens,ROOT_windowtype,AL_windowtype,S_windowtype,S_windowtype_1,S_windowtype_2,E_windowtype,ROOT_x_y,AL_x_y,S_x_y,S_x_y_1,S_x_y_2,E_x_y,PROLOG,DOCTYPE,EPILOG>{S} SKIP;
 
  /* PROLOG: determine root element and process it. */
 
@@ -3272,224 +3491,127 @@ const char* *statenames=NULL;
 }
 
 <PROLOG,DOCTYPE>{
- "<!DOCTYPE"{S}"s_expr_exists_sq"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_exists_sq);
  "<!DOCTYPE"{S}"s_select_finish"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_finish);
  "<!DOCTYPE"{S}"s_expr_function_call"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_function_call);
  "<!DOCTYPE"{S}"s_expr_interval"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_interval);
- "<!DOCTYPE"{S}"s_expr_cast"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_cast);
  "<!DOCTYPE"{S}"struct_connect_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_connect_cmd);
  "<!DOCTYPE"{S}"struct_sleep_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_sleep_cmd);
  "<!DOCTYPE"{S}"s_cur_def"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_cur_def);
  "<!DOCTYPE"{S}"struct_show_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_show_cmd);
  "<!DOCTYPE"{S}"struct_disable_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_disable_menu_cmd);
  "<!DOCTYPE"{S}"s_sli_case"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_sli_case);
- "<!DOCTYPE"{S}"s_select"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select);
- "<!DOCTYPE"{S}"struct_let_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_let_cmd);
+ "<!DOCTYPE"{S}"struct_spl_block_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_block_cmd);
+ "<!DOCTYPE"{S}"s_spl_block"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_spl_block);
  "<!DOCTYPE"{S}"s_select_list_item_builtin_fcall"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_builtin_fcall);
  "<!DOCTYPE"{S}"rowscols"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_rowscols);
  "<!DOCTYPE"{S}"str"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_str);
- "<!DOCTYPE"{S}"s_select_list_item_column"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_column);
- "<!DOCTYPE"{S}"s_import_function_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_import_function_definition);
- "<!DOCTYPE"{S}"report_block_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_report_block_data);
  "<!DOCTYPE"{S}"globals_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_globals_definition);
- "<!DOCTYPE"{S}"struct_clear_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_clear_cmd);
- "<!DOCTYPE"{S}"s_sli_cast"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_sli_cast);
  "<!DOCTYPE"{S}"object_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_object_variable);
  "<!DOCTYPE"{S}"struct_call_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_call_cmd);
  "<!DOCTYPE"{S}"struct_declare_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_declare_cmd);
  "<!DOCTYPE"{S}"attrib"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_attrib);
- "<!DOCTYPE"{S}"struct_set_database_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_set_database_cmd);
- "<!DOCTYPE"{S}"struct_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_menu_cmd);
- "<!DOCTYPE"{S}"struct_open_statusbox_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_statusbox_cmd);
  "<!DOCTYPE"{S}"s_expr_bound_fcall"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_bound_fcall);
- "<!DOCTYPE"{S}"variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable);
  "<!DOCTYPE"{S}"s_import_legacy_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_import_legacy_definition);
  "<!DOCTYPE"{S}"s_expr_op"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_op);
- "<!DOCTYPE"{S}"struct_free_rep_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_free_rep_cmd);
- "<!DOCTYPE"{S}"s_select_list_item_slil_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_slil_expr);
- "<!DOCTYPE"{S}"windowtype"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_windowtype);
+ "<!DOCTYPE"{S}"s_spl_for_item"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_spl_for_item);
  "<!DOCTYPE"{S}"s_expr_infield"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_infield);
- "<!DOCTYPE"{S}"struct_goto_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_goto_cmd);
- "<!DOCTYPE"{S}"struct_finish_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_finish_cmd);
- "<!DOCTYPE"{S}"struct_locate_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_locate_cmd);
- "<!DOCTYPE"{S}"struct_skip_by_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_skip_by_cmd);
  "<!DOCTYPE"{S}"struct_show_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_show_menu_cmd);
- "<!DOCTYPE"{S}"simple_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_simple_variable);
- "<!DOCTYPE"{S}"struct_input_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_input_cmd);
- "<!DOCTYPE"{S}"s_select_list_item_complex_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_complex_expr);
- "<!DOCTYPE"{S}"assoc_array_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_assoc_array_variable);
  "<!DOCTYPE"{S}"s_expr_extend"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_extend);
  "<!DOCTYPE"{S}"command"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_command);
  "<!DOCTYPE"{S}"clear_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_clear_data);
- "<!DOCTYPE"{S}"ilist"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_ilist);
  "<!DOCTYPE"{S}"when"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_when);
- "<!DOCTYPE"{S}"struct_current_win_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_current_win_cmd);
- "<!DOCTYPE"{S}"expr_str"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_expr_str);
  "<!DOCTYPE"{S}"variable_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable_data);
  "<!DOCTYPE"{S}"report_orderby_section"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_report_orderby_section);
- "<!DOCTYPE"{S}"struct_msg_box_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_msg_box_cmd);
  "<!DOCTYPE"{S}"struct_unload_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_unload_cmd);
+ "<!DOCTYPE"{S}"struct_spl_let_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_let_cmd);
  "<!DOCTYPE"{S}"s_limit"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_limit);
  "<!DOCTYPE"{S}"struct_hide_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_hide_cmd);
- "<!DOCTYPE"{S}"struct_enable_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_enable_form_cmd);
- "<!DOCTYPE"{S}"linked_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_linked_variable);
- "<!DOCTYPE"{S}"struct_check_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_check_menu_cmd);
- "<!DOCTYPE"{S}"menuoption"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_menuoption);
  "<!DOCTYPE"{S}"struct_close_sql_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_close_sql_cmd);
- "<!DOCTYPE"{S}"single_option"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_single_option);
  "<!DOCTYPE"{S}"on_event"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_on_event);
  "<!DOCTYPE"{S}"if_cond"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_if_cond);
  "<!DOCTYPE"{S}"struct_uncheck_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_uncheck_menu_cmd);
  "<!DOCTYPE"{S}"struct_display_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_display_cmd);
  "<!DOCTYPE"{S}"struct_print_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_print_cmd);
- "<!DOCTYPE"{S}"s_expr_form_is_compiled"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_form_is_compiled);
  "<!DOCTYPE"{S}"struct_sql_block_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_sql_block_cmd);
- "<!DOCTYPE"{S}"s_dependant_tables"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_dependant_tables);
- "<!DOCTYPE"{S}"fh_field_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_fh_field_list);
  "<!DOCTYPE"{S}"struct_free_blob_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_free_blob_cmd);
  "<!DOCTYPE"{S}"struct_disable_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_disable_form_cmd);
- "<!DOCTYPE"{S}"struct_exit_prog_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_exit_prog_cmd);
- "<!DOCTYPE"{S}"struct_pause_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_pause_cmd);
  "<!DOCTYPE"{S}"struct_lint_expect_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_lint_expect_cmd);
- "<!DOCTYPE"{S}"vname_name_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_vname_name_list);
  "<!DOCTYPE"{S}"on_events"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_on_events);
+ "<!DOCTYPE"{S}"s_spl_execute"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_spl_execute);
  "<!DOCTYPE"{S}"s_expr_external_call"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_external_call);
- "<!DOCTYPE"{S}"struct_open_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_form_cmd);
- "<!DOCTYPE"{S}"struct_continue_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_continue_cmd);
  "<!DOCTYPE"{S}"s_expr_tmp"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_tmp);
- "<!DOCTYPE"{S}"struct_flush_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_flush_cmd);
  "<!DOCTYPE"{S}"struct_init_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_init_cmd);
- "<!DOCTYPE"{S}"x_y"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_x_y);
- "<!DOCTYPE"{S}"s_module_entry_ptr_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_module_entry_ptr_list);
- "<!DOCTYPE"{S}"s_expr_shared_function_call"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_shared_function_call);
  "<!DOCTYPE"{S}"struct_for_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_for_cmd);
  "<!DOCTYPE"{S}"s_expr_current"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_current);
- "<!DOCTYPE"{S}"s_sli_case_element"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_sli_case_element);
- "<!DOCTYPE"{S}"struct_label_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_label_cmd);
  "<!DOCTYPE"{S}"s_expr_in_sq"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_in_sq);
  "<!DOCTYPE"{S}"assoc_subscript"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_assoc_subscript);
+ "<!DOCTYPE"{S}"s_named_param"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_named_param);
  "<!DOCTYPE"{S}"s_function_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_function_definition);
- "<!DOCTYPE"{S}"struct_ext_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_ext_cmd);
- "<!DOCTYPE"{S}"s_select_list_item_agg_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_agg_expr);
- "<!DOCTYPE"{S}"struct_construct_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_construct_cmd);
  "<!DOCTYPE"{S}"struct_load_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_load_cmd);
  "<!DOCTYPE"{S}"struct_alloc_arr_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_alloc_arr_cmd);
  "<!DOCTYPE"{S}"s_expr_field_touched"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_field_touched);
- "<!DOCTYPE"{S}"module_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_module_entry);
- "<!DOCTYPE"{S}"struct_display_b_n_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_display_b_n_cmd);
  "<!DOCTYPE"{S}"struct_execute_immediate_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_execute_immediate_cmd);
  "<!DOCTYPE"{S}"struct_update_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_update_cmd);
- "<!DOCTYPE"{S}"variable_usage_with_asc_desc"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable_usage_with_asc_desc);
- "<!DOCTYPE"{S}"convert"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_convert);
- "<!DOCTYPE"{S}"s_expr_datetime"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_datetime);
  "<!DOCTYPE"{S}"s_expr_parameter"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_parameter);
- "<!DOCTYPE"{S}"s_expr_dynarr_extent"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_dynarr_extent);
  "<!DOCTYPE"{S}"struct_start_rpc_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_start_rpc_cmd);
  "<!DOCTYPE"{S}"variable_usage"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable_usage);
+ "<!DOCTYPE"{S}"create_proc_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_create_proc_data);
  "<!DOCTYPE"{S}"struct_prepare_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_prepare_cmd);
  "<!DOCTYPE"{S}"struct_hide_option_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_hide_option_cmd);
  "<!DOCTYPE"{S}"struct_display_array_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_display_array_cmd);
- "<!DOCTYPE"{S}"struct_skip_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_skip_cmd);
- "<!DOCTYPE"{S}"struct_fetch_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_fetch_cmd);
  "<!DOCTYPE"{S}"struct_delete_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_delete_cmd);
- "<!DOCTYPE"{S}"s_select_list_item_sq_expression"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_sq_expression);
- "<!DOCTYPE"{S}"funcname"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_funcname);
- "<!DOCTYPE"{S}"s_table_list_element"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_table_list_element);
- "<!DOCTYPE"{S}"struct_start_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_start_cmd);
  "<!DOCTYPE"{S}"locate_pos"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_locate_pos);
  "<!DOCTYPE"{S}"s_exchange_clobber"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_exchange_clobber);
  "<!DOCTYPE"{S}"struct_sql_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_sql_cmd);
- "<!DOCTYPE"{S}"struct_pdf_call_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_pdf_call_cmd);
  "<!DOCTYPE"{S}"s_select_list_item_regex"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_regex);
- "<!DOCTYPE"{S}"fh_field_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_fh_field_entry);
  "<!DOCTYPE"{S}"cons_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_cons_list);
  "<!DOCTYPE"{S}"dt_display"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_dt_display);
- "<!DOCTYPE"{S}"struct_message_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_message_cmd);
  "<!DOCTYPE"{S}"struct_defer_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_defer_cmd);
- "<!DOCTYPE"{S}"if_conds"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_if_conds);
- "<!DOCTYPE"{S}"report_format_section_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_report_format_section_entry);
- "<!DOCTYPE"{S}"s_import_datatype"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_import_datatype);
  "<!DOCTYPE"{S}"struct_cancel_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_cancel_cmd);
  "<!DOCTYPE"{S}"struct_insert_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_insert_cmd);
- "<!DOCTYPE"{S}"struct_next_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_next_form_cmd);
- "<!DOCTYPE"{S}"form_field"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_form_field);
- "<!DOCTYPE"{S}"s_select_list_item_sli_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_sli_expr);
- "<!DOCTYPE"{S}"s_expr_member_function_call_n"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_member_function_call_n);
+ "<!DOCTYPE"{S}"struct_spl_if_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_if_cmd);
  "<!DOCTYPE"{S}"s_func"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_func);
- "<!DOCTYPE"{S}"flist"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_flist);
- "<!DOCTYPE"{S}"manyoptions"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_manyoptions);
  "<!DOCTYPE"{S}"s_expr_pdf_function_call"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_pdf_function_call);
- "<!DOCTYPE"{S}"struct_if_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_if_cmd);
  "<!DOCTYPE"{S}"struct_close_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_close_cmd);
  "<!DOCTYPE"{S}"struct_lint_ignore_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_lint_ignore_cmd);
  "<!DOCTYPE"{S}"lint_warning"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_lint_warning);
  "<!DOCTYPE"{S}"command_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_command_data);
- "<!DOCTYPE"{S}"struct_need_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_need_cmd);
- "<!DOCTYPE"{S}"s_update_pair"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_update_pair);
- "<!DOCTYPE"{S}"struct_prompt_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_prompt_cmd);
- "<!DOCTYPE"{S}"struct_foreach_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_foreach_cmd);
+ "<!DOCTYPE"{S}"struct_spl_trace_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_trace_cmd);
  "<!DOCTYPE"{S}"sql_statement"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_sql_statement);
  "<!DOCTYPE"{S}"int"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_int);
- "<!DOCTYPE"{S}"struct_validate_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_validate_cmd);
  "<!DOCTYPE"{S}"s_import_package"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_import_package);
  "<!DOCTYPE"{S}"struct_run_waiting_for_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_run_waiting_for_cmd);
  "<!DOCTYPE"{S}"struct_disable_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_disable_cmd);
  "<!DOCTYPE"{S}"struct_whenever_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_whenever_cmd);
  "<!DOCTYPE"{S}"expr_str_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_expr_str_list);
  "<!DOCTYPE"{S}"variable_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable_list);
- "<!DOCTYPE"{S}"struct_call_shared_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_call_shared_cmd);
- "<!DOCTYPE"{S}"s_fetch_place"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_fetch_place);
  "<!DOCTYPE"{S}"struct_show_option_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_show_option_cmd);
  "<!DOCTYPE"{S}"s_table"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_table);
  "<!DOCTYPE"{S}"record_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_record_variable);
- "<!DOCTYPE"{S}"s_select_list_item_between_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_between_expr);
  "<!DOCTYPE"{S}"cons_list_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_cons_list_entry);
- "<!DOCTYPE"{S}"s_fetch"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_fetch);
  "<!DOCTYPE"{S}"struct_open_cursor_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_cursor_cmd);
  "<!DOCTYPE"{S}"s_expr_cached"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_cached);
- "<!DOCTYPE"{S}"s_formhandler_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_formhandler_definition);
- "<!DOCTYPE"{S}"struct_error_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_error_cmd);
  "<!DOCTYPE"{S}"struct_case_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_case_cmd);
  "<!DOCTYPE"{S}"s_full_col"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_full_col);
  "<!DOCTYPE"{S}"struct_print_file_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_print_file_cmd);
- "<!DOCTYPE"{S}"struct_open_form_gui_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_form_gui_cmd);
- "<!DOCTYPE"{S}"bluebar"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_bluebar);
  "<!DOCTYPE"{S}"struct_sql_transact_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_sql_transact_cmd);
  "<!DOCTYPE"{S}"s_select_list_item_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_list);
- "<!DOCTYPE"{S}"s_report_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_report_definition);
- "<!DOCTYPE"{S}"struct_print_img_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_print_img_cmd);
- "<!DOCTYPE"{S}"struct_next_option_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_next_option_cmd);
  "<!DOCTYPE"{S}"struct_output_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_output_cmd);
  "<!DOCTYPE"{S}"constant_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_constant_data);
- "<!DOCTYPE"{S}"struct_convert_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_convert_cmd);
  "<!DOCTYPE"{S}"report_format_section"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_report_format_section);
- "<!DOCTYPE"{S}"s_select_list_item_fcall"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_fcall);
  "<!DOCTYPE"{S}"struct_free_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_free_cmd);
  "<!DOCTYPE"{S}"s_source_code"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_source_code);
  "<!DOCTYPE"{S}"list_of_integers"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_list_of_integers);
- "<!DOCTYPE"{S}"field"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_field);
  "<!DOCTYPE"{S}"s_class_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_class_definition);
- "<!DOCTYPE"{S}"s_expr_dynarr_function_call_n"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_dynarr_function_call_n);
  "<!DOCTYPE"{S}"s_expr_tag"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_tag);
- "<!DOCTYPE"{S}"struct_code_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_code_cmd);
  "<!DOCTYPE"{S}"s_expr_aligned"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_aligned);
  "<!DOCTYPE"{S}"struct_enable_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_enable_menu_cmd);
- "<!DOCTYPE"{S}"s_expr_wordwrap"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_wordwrap);
- "<!DOCTYPE"{S}"whens"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_whens);
  "<!DOCTYPE"{S}"startrep"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_startrep);
- "<!DOCTYPE"{S}"struct_move_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_move_cmd);
- "<!DOCTYPE"{S}"struct_enable_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_enable_cmd);
  "<!DOCTYPE"{S}"struct_input_array_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_input_array_cmd);
- "<!DOCTYPE"{S}"struct_display_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_display_form_cmd);
  "<!DOCTYPE"{S}"struct_dealloc_arr_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_dealloc_arr_cmd);
  "<!DOCTYPE"{S}"struct_options_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_options_cmd);
  "<!DOCTYPE"{S}"s_pdf_report_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_pdf_report_definition);
- "<!DOCTYPE"{S}"struct_set_session_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_set_session_cmd);
- "<!DOCTYPE"{S}"struct_put_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_put_cmd);
  "<!DOCTYPE"{S}"cmd_int_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_cmd_int_list);
- "<!DOCTYPE"{S}"funcname_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_funcname_list);
- "<!DOCTYPE"{S}"s_expr_in"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_in);
- "<!DOCTYPE"{S}"commands"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_commands);
  "<!DOCTYPE"{S}"user_details"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_user_details);
  "<!DOCTYPE"{S}"struct_term_rep_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_term_rep_cmd);
  "<!DOCTYPE"{S}"struct_next_field_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_next_field_cmd);
@@ -3498,30 +3620,149 @@ const char* *statenames=NULL;
  "<!DOCTYPE"{S}"struct_at_term_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_at_term_cmd);
  "<!DOCTYPE"{S}"short"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_short);
  "<!DOCTYPE"{S}"call_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_call_list);
- "<!DOCTYPE"{S}"struct_skip_to_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_skip_to_cmd);
  "<!DOCTYPE"{S}"struct_execute_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_execute_cmd);
- "<!DOCTYPE"{S}"long"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_long);
  "<!DOCTYPE"{S}"struct_return_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_return_cmd);
  "<!DOCTYPE"{S}"str_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_str_list);
- "<!DOCTYPE"{S}"file_description"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_file_description);
- "<!DOCTYPE"{S}"sq_subquery"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_sq_subquery);
  "<!DOCTYPE"{S}"fgl_comment"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_fgl_comment);
  "<!DOCTYPE"{S}"event_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_event_data);
- "<!DOCTYPE"{S}"s_select_list_item_extend"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_extend);
+ "<!DOCTYPE"{S}"struct_spl_call_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_call_cmd);
  "<!DOCTYPE"{S}"module_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_module_definition);
- "<!DOCTYPE"{S}"s_select_list_item_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_data);
  "<!DOCTYPE"{S}"struct_resize_arr_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_resize_arr_cmd);
- "<!DOCTYPE"{S}"struct_copyback_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_copyback_cmd);
  "<!DOCTYPE"{S}"struct_open_window_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_window_cmd);
- "<!DOCTYPE"{S}"s_table_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_table_list);
- "<!DOCTYPE"{S}"program_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_program_definition);
  "<!DOCTYPE"{S}"struct_while_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_while_cmd);
  "<!DOCTYPE"{S}"struct_select_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_select_cmd);
- "<!DOCTYPE"{S}"struct_scroll_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_scroll_cmd);
- "<!DOCTYPE"{S}"vname"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_vname);
  "<!DOCTYPE"{S}"pdf_startrep"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_pdf_startrep);
- "<!DOCTYPE"{S}"s_expr_get_fldbuf"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_get_fldbuf);
+ "<!DOCTYPE"{S}"s_expr_exists_sq"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_exists_sq);
+ "<!DOCTYPE"{S}"s_expr_cast"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_cast);
+ "<!DOCTYPE"{S}"s_select"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select);
+ "<!DOCTYPE"{S}"struct_let_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_let_cmd);
+ "<!DOCTYPE"{S}"spl_if_conds"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_spl_if_conds);
+ "<!DOCTYPE"{S}"s_select_list_item_column"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_column);
+ "<!DOCTYPE"{S}"report_block_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_report_block_data);
+ "<!DOCTYPE"{S}"s_import_function_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_import_function_definition);
+ "<!DOCTYPE"{S}"s_sli_cast"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_sli_cast);
+ "<!DOCTYPE"{S}"struct_clear_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_clear_cmd);
+ "<!DOCTYPE"{S}"struct_spl_foreach_select_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_foreach_select_cmd);
+ "<!DOCTYPE"{S}"struct_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_menu_cmd);
+ "<!DOCTYPE"{S}"struct_set_database_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_set_database_cmd);
+ "<!DOCTYPE"{S}"struct_open_statusbox_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_statusbox_cmd);
+ "<!DOCTYPE"{S}"variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable);
+ "<!DOCTYPE"{S}"struct_free_rep_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_free_rep_cmd);
+ "<!DOCTYPE"{S}"s_select_list_item_slil_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_slil_expr);
+ "<!DOCTYPE"{S}"windowtype"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_windowtype);
+ "<!DOCTYPE"{S}"struct_finish_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_finish_cmd);
+ "<!DOCTYPE"{S}"struct_goto_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_goto_cmd);
+ "<!DOCTYPE"{S}"struct_locate_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_locate_cmd);
+ "<!DOCTYPE"{S}"simple_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_simple_variable);
+ "<!DOCTYPE"{S}"struct_skip_by_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_skip_by_cmd);
+ "<!DOCTYPE"{S}"assoc_array_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_assoc_array_variable);
+ "<!DOCTYPE"{S}"s_select_list_item_complex_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_complex_expr);
+ "<!DOCTYPE"{S}"struct_input_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_input_cmd);
+ "<!DOCTYPE"{S}"ilist"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_ilist);
+ "<!DOCTYPE"{S}"expr_str"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_expr_str);
+ "<!DOCTYPE"{S}"struct_current_win_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_current_win_cmd);
+ "<!DOCTYPE"{S}"struct_msg_box_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_msg_box_cmd);
+ "<!DOCTYPE"{S}"linked_variable"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_linked_variable);
+ "<!DOCTYPE"{S}"struct_enable_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_enable_form_cmd);
+ "<!DOCTYPE"{S}"struct_check_menu_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_check_menu_cmd);
+ "<!DOCTYPE"{S}"menuoption"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_menuoption);
+ "<!DOCTYPE"{S}"single_option"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_single_option);
+ "<!DOCTYPE"{S}"s_expr_form_is_compiled"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_form_is_compiled);
+ "<!DOCTYPE"{S}"s_dependant_tables"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_dependant_tables);
+ "<!DOCTYPE"{S}"fh_field_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_fh_field_list);
+ "<!DOCTYPE"{S}"struct_exit_prog_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_exit_prog_cmd);
+ "<!DOCTYPE"{S}"struct_pause_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_pause_cmd);
+ "<!DOCTYPE"{S}"vname_name_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_vname_name_list);
+ "<!DOCTYPE"{S}"struct_spl_while_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_while_cmd);
+ "<!DOCTYPE"{S}"struct_spl_for_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_for_cmd);
+ "<!DOCTYPE"{S}"struct_open_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_form_cmd);
+ "<!DOCTYPE"{S}"struct_continue_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_continue_cmd);
+ "<!DOCTYPE"{S}"struct_flush_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_flush_cmd);
+ "<!DOCTYPE"{S}"x_y"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_x_y);
+ "<!DOCTYPE"{S}"s_module_entry_ptr_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_module_entry_ptr_list);
+ "<!DOCTYPE"{S}"s_expr_shared_function_call"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_shared_function_call);
+ "<!DOCTYPE"{S}"struct_spl_foreach_execute_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_foreach_execute_cmd);
+ "<!DOCTYPE"{S}"s_sli_case_element"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_sli_case_element);
+ "<!DOCTYPE"{S}"struct_label_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_label_cmd);
+ "<!DOCTYPE"{S}"struct_ext_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_ext_cmd);
+ "<!DOCTYPE"{S}"s_select_list_item_agg_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_agg_expr);
+ "<!DOCTYPE"{S}"struct_construct_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_construct_cmd);
+ "<!DOCTYPE"{S}"module_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_module_entry);
+ "<!DOCTYPE"{S}"struct_display_b_n_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_display_b_n_cmd);
+ "<!DOCTYPE"{S}"variable_usage_with_asc_desc"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_variable_usage_with_asc_desc);
+ "<!DOCTYPE"{S}"s_expr_datetime"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_datetime);
+ "<!DOCTYPE"{S}"convert"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_convert);
+ "<!DOCTYPE"{S}"s_expr_dynarr_extent"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_dynarr_extent);
+ "<!DOCTYPE"{S}"struct_skip_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_skip_cmd);
+ "<!DOCTYPE"{S}"funcname"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_funcname);
+ "<!DOCTYPE"{S}"s_select_list_item_sq_expression"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_sq_expression);
+ "<!DOCTYPE"{S}"struct_fetch_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_fetch_cmd);
+ "<!DOCTYPE"{S}"s_table_list_element"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_table_list_element);
+ "<!DOCTYPE"{S}"struct_start_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_start_cmd);
+ "<!DOCTYPE"{S}"fh_field_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_fh_field_entry);
+ "<!DOCTYPE"{S}"struct_pdf_call_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_pdf_call_cmd);
+ "<!DOCTYPE"{S}"struct_message_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_message_cmd);
+ "<!DOCTYPE"{S}"if_conds"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_if_conds);
+ "<!DOCTYPE"{S}"report_format_section_entry"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_report_format_section_entry);
+ "<!DOCTYPE"{S}"s_import_datatype"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_import_datatype);
+ "<!DOCTYPE"{S}"struct_next_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_next_form_cmd);
+ "<!DOCTYPE"{S}"form_field"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_form_field);
+ "<!DOCTYPE"{S}"s_select_list_item_sli_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_sli_expr);
+ "<!DOCTYPE"{S}"s_expr_member_function_call_n"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_member_function_call_n);
+ "<!DOCTYPE"{S}"manyoptions"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_manyoptions);
+ "<!DOCTYPE"{S}"flist"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_flist);
+ "<!DOCTYPE"{S}"struct_if_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_if_cmd);
+ "<!DOCTYPE"{S}"struct_sql_debug_file_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_sql_debug_file_cmd);
+ "<!DOCTYPE"{S}"struct_need_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_need_cmd);
+ "<!DOCTYPE"{S}"s_update_pair"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_update_pair);
+ "<!DOCTYPE"{S}"struct_foreach_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_foreach_cmd);
+ "<!DOCTYPE"{S}"struct_prompt_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_prompt_cmd);
+ "<!DOCTYPE"{S}"struct_validate_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_validate_cmd);
+ "<!DOCTYPE"{S}"s_fetch_place"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_fetch_place);
+ "<!DOCTYPE"{S}"struct_call_shared_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_call_shared_cmd);
+ "<!DOCTYPE"{S}"struct_spl_on_exception_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_on_exception_cmd);
+ "<!DOCTYPE"{S}"s_select_list_item_between_expr"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_between_expr);
+ "<!DOCTYPE"{S}"s_fetch"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_fetch);
+ "<!DOCTYPE"{S}"s_formhandler_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_formhandler_definition);
+ "<!DOCTYPE"{S}"struct_error_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_error_cmd);
+ "<!DOCTYPE"{S}"struct_open_form_gui_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_open_form_gui_cmd);
+ "<!DOCTYPE"{S}"bluebar"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_bluebar);
+ "<!DOCTYPE"{S}"s_report_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_report_definition);
+ "<!DOCTYPE"{S}"struct_next_option_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_next_option_cmd);
+ "<!DOCTYPE"{S}"struct_print_img_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_print_img_cmd);
+ "<!DOCTYPE"{S}"struct_convert_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_convert_cmd);
+ "<!DOCTYPE"{S}"struct_spl_raise_exception_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_raise_exception_cmd);
+ "<!DOCTYPE"{S}"s_select_list_item_fcall"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_fcall);
+ "<!DOCTYPE"{S}"field"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_field);
+ "<!DOCTYPE"{S}"struct_spl_return_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_return_cmd);
+ "<!DOCTYPE"{S}"spl_if_cond"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_spl_if_cond);
+ "<!DOCTYPE"{S}"s_expr_dynarr_function_call_n"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_dynarr_function_call_n);
+ "<!DOCTYPE"{S}"struct_code_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_code_cmd);
+ "<!DOCTYPE"{S}"s_expr_wordwrap"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_wordwrap);
+ "<!DOCTYPE"{S}"whens"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_whens);
+ "<!DOCTYPE"{S}"struct_enable_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_enable_cmd);
+ "<!DOCTYPE"{S}"struct_move_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_move_cmd);
+ "<!DOCTYPE"{S}"struct_display_form_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_display_form_cmd);
+ "<!DOCTYPE"{S}"struct_put_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_put_cmd);
+ "<!DOCTYPE"{S}"struct_set_session_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_set_session_cmd);
+ "<!DOCTYPE"{S}"s_expr_in"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_in);
+ "<!DOCTYPE"{S}"funcname_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_funcname_list);
+ "<!DOCTYPE"{S}"commands"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_commands);
+ "<!DOCTYPE"{S}"struct_skip_to_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_skip_to_cmd);
+ "<!DOCTYPE"{S}"long"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_long);
+ "<!DOCTYPE"{S}"file_description"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_file_description);
+ "<!DOCTYPE"{S}"sq_subquery"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_sq_subquery);
+ "<!DOCTYPE"{S}"s_select_list_item_extend"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_extend);
+ "<!DOCTYPE"{S}"s_select_list_item_data"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item_data);
+ "<!DOCTYPE"{S}"struct_create_proc_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_create_proc_cmd);
+ "<!DOCTYPE"{S}"struct_copyback_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_copyback_cmd);
+ "<!DOCTYPE"{S}"s_table_list"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_table_list);
+ "<!DOCTYPE"{S}"program_definition"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_program_definition);
+ "<!DOCTYPE"{S}"struct_scroll_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_scroll_cmd);
+ "<!DOCTYPE"{S}"struct_spl_system_cmd"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_struct_spl_system_cmd);
+ "<!DOCTYPE"{S}"vname"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_vname);
  "<!DOCTYPE"{S}"s_select_list_item"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_select_list_item);
+ "<!DOCTYPE"{S}"s_expr_get_fldbuf"{S}SYSTEM{S}("'module_def.dtd'"|"\"module_def.dtd\""){s}">" SET(ROOT_s_expr_get_fldbuf);
  "<!"[^>-][^>]*">" FAIL("Bad declaration %s.",yytext);
  . 		FAIL("Unexpected character `%c' in prolog.", yytext[0]);
  <<EOF>> 	FAIL("EOF in prolog.");
@@ -4032,7 +4273,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</command_data>' expected.");
 }
 
-<ROOT_commands,S_s_function_definition_1,S_s_function_definition_2,S_struct_foreach_cmd_1,S_struct_case_cmd_1,S_when,S_struct_if_cmd,S_report_format_section_entry_1,S_report_format_section_entry_2,S_struct_for_cmd,S_when_1,S_struct_foreach_cmd,S_struct_if_cmd_2,S_struct_for_cmd_1,S_struct_if_cmd_1,S_if_cond_2,S_if_cond_1,S_on_event_1,S_struct_case_cmd_2,S_when_2,S_struct_foreach_cmd_2,S_report_format_section_entry,S_struct_while_cmd_2,S_on_event,S_struct_while_cmd_1,S_if_cond,S_on_event_2,S_s_function_definition,S_struct_while_cmd,S_struct_case_cmd,S_struct_for_cmd_2>"<commands"{s} {
+<ROOT_commands,S_s_function_definition_1,S_s_function_definition_2,S_struct_foreach_cmd_1,S_struct_case_cmd_1,S_when,S_struct_if_cmd,S_report_format_section_entry_1,S_report_format_section_entry_2,S_struct_for_cmd,S_when_1,S_struct_foreach_cmd,S_struct_if_cmd_2,S_struct_for_cmd_1,S_struct_if_cmd_1,S_s_spl_block,S_if_cond_2,S_if_cond_1,S_s_spl_block_2,S_on_event_1,S_struct_case_cmd_2,S_when_2,S_struct_foreach_cmd_2,S_s_spl_block_1,S_report_format_section_entry,S_struct_while_cmd_2,S_on_event,S_struct_while_cmd_1,S_if_cond,S_on_event_2,S_s_function_definition,S_struct_while_cmd,S_struct_case_cmd,S_struct_for_cmd_2>"<commands"{s} {
   AX_commands_nm = 0;
   ENTER(AL_commands); pushbuffer(0);
   }
@@ -4052,6 +4293,7 @@ const char* *statenames=NULL;
    case S_struct_foreach_cmd_1: case S_struct_foreach_cmd: case S_struct_foreach_cmd_2: SET(S_struct_foreach_cmd_2); break;
    case S_s_function_definition_1: case S_s_function_definition_2: case S_s_function_definition: SET(S_s_function_definition_2); break;
    case S_if_cond_2: case S_if_cond_1: case S_if_cond: SET(S_if_cond_2); break;
+   case S_s_spl_block: case S_s_spl_block_2: case S_s_spl_block_1: SET(S_s_spl_block_2); break;
    case S_struct_if_cmd: case S_struct_if_cmd_2: case S_struct_if_cmd_1: SET(S_struct_if_cmd_2); break;
    case S_struct_while_cmd_2: case S_struct_while_cmd_1: case S_struct_while_cmd: SET(S_struct_while_cmd_2); break;
    case S_on_event_1: case S_on_event: case S_on_event_2: SET(S_on_event_2); break;
@@ -4076,6 +4318,7 @@ const char* *statenames=NULL;
    case S_struct_foreach_cmd_1: case S_struct_foreach_cmd: case S_struct_foreach_cmd_2: SET(S_struct_foreach_cmd_2); break;
    case S_s_function_definition_1: case S_s_function_definition_2: case S_s_function_definition: SET(S_s_function_definition_2); break;
    case S_if_cond_2: case S_if_cond_1: case S_if_cond: SET(S_if_cond_2); break;
+   case S_s_spl_block: case S_s_spl_block_2: case S_s_spl_block_1: SET(S_s_spl_block_2); break;
    case S_struct_if_cmd: case S_struct_if_cmd_2: case S_struct_if_cmd_1: SET(S_struct_if_cmd_2); break;
    case S_struct_while_cmd_2: case S_struct_while_cmd_1: case S_struct_while_cmd: SET(S_struct_while_cmd_2); break;
    case S_on_event_1: case S_on_event: case S_on_event_2: SET(S_on_event_2); break;
@@ -4284,6 +4527,53 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</convert>' expected.");
 }
 
+<ROOT_create_proc_data,S_struct_create_proc_cmd,S_struct_create_proc_cmd_2,S_struct_create_proc_cmd_1>"<create_proc_data"{s} {
+  AX_create_proc_data_funcname = 0;
+  AX_create_proc_data_isDBA = 0;
+  AX_create_proc_data_nm = 0;
+  ENTER(AL_create_proc_data); pushbuffer(0);
+  }
+
+<AL_create_proc_data>{
+ "funcname"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_create_proc_data_funcname);
+ "funcname"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_create_proc_data_funcname);
+
+ "isDBA"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_create_proc_data_isDBA);
+ "isDBA"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_create_proc_data_isDBA);
+
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_create_proc_data_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_create_proc_data_nm);
+
+ ">" {
+  LEAVE; STag_create_proc_data();pcdata_ix = 0; ENTER(S_create_proc_data);
+ }
+ "/>" {
+  LEAVE; STag_create_proc_data(); pcdata_ix = 0; ETag_create_proc_data(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_create_proc_cmd: case S_struct_create_proc_cmd_2: case S_struct_create_proc_cmd_1: SET(S_struct_create_proc_cmd_2); break;
+   case ROOT_create_proc_data: SET(EPILOG); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of create_proc_data element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `create_proc_data' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `create_proc_data' element.");
+}
+
+<S_create_proc_data_2,S_create_proc_data,E_create_proc_data>{
+ "</create_proc_data"{s}">" {
+  LEAVE;
+  ETag_create_proc_data();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_create_proc_cmd: case S_struct_create_proc_cmd_2: case S_struct_create_proc_cmd_1: SET(S_struct_create_proc_cmd_2); break;
+   case ROOT_create_proc_data: SET(EPILOG); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</create_proc_data>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</create_proc_data>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</create_proc_data>' expected.");
+}
+
  /* <!-- Switch on -->
   * <!-- Switch on -->  */
 
@@ -4403,7 +4693,7 @@ const char* *statenames=NULL;
  /* <!-- Switch on -->
   * <!-- Switch on -->  */
 
-<ROOT_expr_str,S_struct_delete_cmd_1,S_struct_run_cmd_1,S_struct_flush_cmd_1,S_struct_print_file_cmd_2,S_struct_put_cmd,S_locate_pos_1,S_struct_pdf_call_cmd,S_assoc_subscript,S_struct_display_array_cmd,S_struct_load_cmd_1,S_struct_for_cmd,S_s_expr_aligned_2,S_struct_open_form_cmd_2,S_s_expr_op_1,S_struct_put_cmd_2,S_struct_display_form_cmd_2,S_pdf_startrep_1,S_struct_construct_cmd_1,S_expr_str_1,S_struct_open_window_cmd_2,S_struct_dealloc_arr_cmd_2,S_windowtype_1,S_struct_run_waiting_for_cmd_1,S_struct_disable_form_cmd_1,S_s_expr_op_2,S_locate_pos,S_s_expr_tag_1,S_s_fetch_place_2,S_s_cur_def_2,S_struct_enable_form_cmd_2,S_struct_sql_block_cmd_1,S_struct_copyback_cmd,S_struct_pause_cmd_1,S_struct_declare_cmd_1,S_struct_for_cmd_2,S_menuoption_2,S_struct_skip_cmd_1,S_struct_foreach_cmd_1,S_struct_msg_box_cmd,S_s_fetch_1,S_call_list_1,S_struct_select_cmd_2,S_struct_resize_arr_cmd_2,S_call_list_2,S_struct_skip_cmd,S_struct_start_rpc_cmd_1,S_windowtype_2,S_s_expr_form_is_compiled,S_struct_menu_cmd_2,S_struct_select_cmd,S_s_fetch_place,S_struct_exit_prog_cmd_2,S_struct_pause_cmd_2,S_struct_prepare_cmd,S_struct_unload_cmd,S_struct_print_img_cmd_2,S_s_expr_agg_1,S_struct_scroll_cmd,S_s_expr_in_sq,S_struct_enable_form_cmd,S_struct_execute_immediate_cmd_2,S_s_expr_dynarr_extent_1,S_s_expr_external_call_1,S_expr_str_2,S_struct_call_cmd,S_struct_menu_cmd,S_s_expr_in_1,S_struct_dealloc_arr_cmd_1,S_report_block_data_1,S_struct_scroll_cmd_1,S_struct_hide_cmd,S_if_cond,S_single_option,S_report_block_data,S_struct_insert_cmd_2,S_s_expr_tag_2,S_struct_case_cmd_1,S_struct_open_statusbox_cmd,S_struct_execute_cmd_1,S_single_option_2,S_struct_construct_cmd,S_struct_put_cmd_1,S_struct_need_cmd,S_struct_skip_to_cmd,S_struct_dealloc_arr_cmd,S_struct_close_cmd,S_x_y_1,S_startrep_2,S_struct_execute_immediate_cmd,S_struct_pause_cmd,S_struct_enable_form_cmd_1,S_struct_skip_to_cmd_2,S_struct_free_cmd_2,S_struct_open_window_cmd_1,S_s_expr_agg_2,S_windowtype,S_struct_skip_by_cmd_1,S_struct_set_session_cmd_2,S_struct_open_form_gui_cmd_2,S_struct_skip_by_cmd,S_struct_menu_cmd_1,S_struct_show_cmd_1,S_single_option_1,S_s_cur_def,S_struct_sql_block_cmd_2,S_s_expr_dynarr_function_call_n_2,S_struct_set_session_cmd,S_struct_load_cmd,S_when,S_convert_1,S_struct_resize_arr_cmd,S_s_expr_dynarr_function_call_n,S_struct_free_blob_cmd_1,S_struct_sql_cmd_1,S_struct_prompt_cmd,S_struct_display_array_cmd_2,S_fh_field_entry_1,S_struct_disable_form_cmd_2,S_struct_set_database_cmd_2,S_struct_delete_cmd_2,S_struct_prepare_cmd_2,S_struct_connect_cmd,S_struct_exit_prog_cmd,S_struct_select_cmd_1,S_struct_for_cmd_1,S_assoc_subscript_2,S_struct_open_form_gui_cmd,S_struct_set_session_cmd_1,S_s_expr_member_function_call_n,S_expr_str,S_struct_copyback_cmd_2,S_s_expr_extend_2,S_struct_prompt_cmd_1,S_s_expr_dynarr_extent_2,S_clear_data,S_s_expr_aligned,S_call_list,S_struct_declare_cmd_2,S_when_2,S_struct_hide_cmd_1,S_x_y,S_s_expr_op,S_s_expr_in_sq_2,S_struct_scroll_cmd_2,S_s_expr_member_function_call_n_2,S_struct_sql_transact_cmd_1,S_clear_data_1,S_startrep,S_struct_show_cmd_2,S_struct_need_cmd_1,S_struct_open_statusbox_cmd_2,S_struct_free_cmd,S_struct_alloc_arr_cmd_2,S_startrep_1,S_s_expr_external_call_2,S_struct_fetch_cmd_1,S_struct_open_form_gui_cmd_1,S_struct_print_img_cmd,S_struct_move_cmd,S_struct_skip_to_cmd_1,S_struct_free_cmd_1,S_struct_sql_cmd,S_struct_skip_by_cmd_2,S_struct_flush_cmd,S_expr_str_list_2,S_struct_connect_cmd_1,S_variable_usage_1,S_s_expr_dynarr_extent,S_struct_call_cmd_1,S_struct_exit_prog_cmd_1,S_struct_current_win_cmd,S_if_cond_1,S_struct_pdf_call_cmd_1,S_struct_update_cmd_2,S_struct_display_array_cmd_1,S_user_details_1,S_struct_show_menu_cmd_2,S_struct_unload_cmd_1,S_struct_input_array_cmd,S_struct_load_cmd_2,S_struct_case_cmd,S_struct_next_option_cmd_1,S_struct_close_cmd_2,S_struct_declare_cmd,S_struct_free_blob_cmd_2,S_struct_prompt_cmd_2,S_struct_update_cmd,S_struct_set_database_cmd,S_s_expr_form_is_compiled_2,S_struct_free_blob_cmd,S_s_expr_wordwrap_2,S_struct_call_cmd_2,S_struct_input_array_cmd_1,S_struct_sleep_cmd_1,S_struct_move_cmd_1,S_pdf_startrep,S_struct_fetch_cmd_2,S_struct_foreach_cmd,S_rowscols_2,S_struct_open_form_cmd,S_fh_field_entry_2,S_rowscols,S_attrib,S_attrib_1,S_s_expr_in_2,S_struct_print_file_cmd_1,S_pdf_startrep_2,S_x_y_2,S_user_details,S_struct_start_rpc_cmd,S_struct_insert_cmd,S_struct_next_option_cmd,S_struct_sleep_cmd_2,S_s_expr_extend,S_struct_prepare_cmd_1,S_s_expr_extend_1,S_struct_hide_cmd_2,S_struct_case_cmd_2,S_struct_close_sql_cmd_1,S_struct_sql_cmd_2,S_struct_execute_cmd,S_variable_usage_2,S_struct_run_waiting_for_cmd_2,S_struct_copyback_cmd_1,S_struct_sql_transact_cmd_2,S_struct_sql_block_cmd,S_struct_while_cmd_1,S_struct_current_win_cmd_2,S_s_expr_in_sq_1,S_s_expr_cast,S_locate_pos_2,S_s_expr_wordwrap_1,S_struct_alloc_arr_cmd_1,S_struct_open_statusbox_cmd_1,S_s_cur_def_1,S_s_expr_agg,S_struct_disable_form_cmd,S_menuoption,S_struct_sql_transact_cmd,S_s_expr_dynarr_function_call_n_1,S_struct_execute_immediate_cmd_1,S_convert_2,S_s_expr_tag,S_s_expr_external_call,S_struct_current_win_cmd_1,S_struct_construct_cmd_2,S_struct_show_cmd,S_struct_update_cmd_1,S_when_1,S_struct_open_cursor_cmd_2,S_struct_print_file_cmd,S_struct_msg_box_cmd_1,S_s_expr_aligned_1,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd,S_struct_show_menu_cmd_1,S_s_expr_cast_1,S_fh_field_entry,S_struct_pdf_call_cmd_2,S_s_expr_member_function_call_n_1,S_struct_print_img_cmd_1,S_struct_next_option_cmd_2,S_struct_display_form_cmd,S_struct_move_cmd_2,S_struct_skip_cmd_2,S_clear_data_2,S_struct_fetch_cmd,S_struct_sleep_cmd,S_struct_close_sql_cmd,S_struct_alloc_arr_cmd,S_user_details_2,S_struct_input_array_cmd_2,S_s_fetch,S_assoc_subscript_1,S_struct_connect_cmd_2,S_s_expr_form_is_compiled_1,S_struct_need_cmd_2,S_struct_show_menu_cmd,S_struct_open_form_cmd_1,S_attrib_2,S_struct_run_cmd,S_struct_unload_cmd_2,S_convert,S_struct_start_rpc_cmd_2,S_expr_str_list,S_struct_set_database_cmd_1,S_variable_usage,S_s_expr_in,S_rowscols_1,S_expr_str_list_1,S_struct_resize_arr_cmd_1,S_s_fetch_2,S_s_expr_cast_2,S_if_cond_2,S_struct_close_sql_cmd_2,S_struct_execute_cmd_2,S_s_expr_wordwrap,S_report_block_data_2,S_struct_flush_cmd_2,S_struct_close_cmd_1,S_menuoption_1,S_s_fetch_place_1,S_struct_foreach_cmd_2,S_struct_delete_cmd,S_struct_run_cmd_2,S_struct_insert_cmd_1,S_struct_while_cmd_2,S_struct_display_form_cmd_1,S_struct_open_window_cmd,S_struct_run_waiting_for_cmd,S_struct_msg_box_cmd_2,S_struct_while_cmd>"<expr_str"{s} {
+<ROOT_expr_str,S_struct_delete_cmd_1,S_struct_run_cmd_1,S_simple_variable_2,S_struct_flush_cmd_1,S_struct_print_file_cmd_2,S_struct_put_cmd,S_locate_pos_1,S_struct_pdf_call_cmd,S_assoc_subscript,S_struct_display_array_cmd,S_struct_load_cmd_1,S_struct_for_cmd,S_s_expr_aligned_2,S_struct_open_form_cmd_2,S_s_expr_op_1,S_struct_put_cmd_2,S_struct_display_form_cmd_2,S_pdf_startrep_1,S_struct_construct_cmd_1,S_expr_str_1,S_struct_open_window_cmd_2,S_struct_dealloc_arr_cmd_2,S_windowtype_1,S_struct_run_waiting_for_cmd_1,S_struct_disable_form_cmd_1,S_struct_spl_while_cmd_2,S_s_expr_op_2,S_locate_pos,S_s_expr_tag_1,S_s_fetch_place_2,S_s_cur_def_2,S_struct_enable_form_cmd_2,S_struct_spl_raise_exception_cmd_2,S_struct_sql_block_cmd_1,S_struct_copyback_cmd,S_struct_pause_cmd_1,S_struct_declare_cmd_1,S_struct_for_cmd_2,S_create_proc_data_1,S_menuoption_2,S_struct_skip_cmd_1,S_struct_foreach_cmd_1,S_struct_msg_box_cmd,S_s_fetch_1,S_call_list_1,S_s_named_param_2,S_struct_select_cmd_2,S_struct_resize_arr_cmd_2,S_call_list_2,S_struct_skip_cmd,S_struct_start_rpc_cmd_1,S_windowtype_2,S_s_expr_form_is_compiled,S_struct_menu_cmd_2,S_struct_select_cmd,S_s_fetch_place,S_s_spl_for_item,S_struct_exit_prog_cmd_2,S_struct_pause_cmd_2,S_struct_prepare_cmd,S_struct_unload_cmd,S_struct_print_img_cmd_2,S_s_expr_agg_1,S_struct_scroll_cmd,S_s_expr_in_sq,S_struct_enable_form_cmd,S_struct_execute_immediate_cmd_2,S_s_expr_dynarr_extent_1,S_s_expr_external_call_1,S_expr_str_2,S_struct_call_cmd,S_struct_menu_cmd,S_struct_spl_raise_exception_cmd,S_s_expr_in_1,S_report_block_data_1,S_struct_dealloc_arr_cmd_1,S_struct_scroll_cmd_1,S_struct_hide_cmd,S_struct_create_proc_cmd_1,S_if_cond,S_single_option,S_struct_spl_trace_cmd,S_report_block_data,S_struct_insert_cmd_2,S_s_expr_tag_2,S_struct_case_cmd_1,S_struct_open_statusbox_cmd,S_struct_execute_cmd_1,S_single_option_2,S_struct_construct_cmd,S_struct_put_cmd_1,S_struct_need_cmd,S_struct_skip_to_cmd,S_struct_dealloc_arr_cmd,S_struct_close_cmd,S_x_y_1,S_startrep_2,S_spl_if_cond_2,S_struct_spl_while_cmd,S_simple_variable_1,S_struct_execute_immediate_cmd,S_struct_spl_raise_exception_cmd_1,S_struct_pause_cmd,S_struct_enable_form_cmd_1,S_struct_skip_to_cmd_2,S_struct_free_cmd_2,S_struct_open_window_cmd_1,S_s_expr_agg_2,S_windowtype,S_struct_skip_by_cmd_1,S_struct_set_session_cmd_2,S_struct_open_form_gui_cmd_2,S_struct_skip_by_cmd,S_struct_menu_cmd_1,S_single_option_1,S_struct_show_cmd_1,S_s_cur_def,S_struct_sql_block_cmd_2,S_s_expr_dynarr_function_call_n_2,S_struct_set_session_cmd,S_struct_load_cmd,S_when,S_convert_1,S_struct_resize_arr_cmd,S_s_expr_dynarr_function_call_n,S_struct_sql_cmd_1,S_struct_free_blob_cmd_1,S_struct_prompt_cmd,S_struct_display_array_cmd_2,S_fh_field_entry_1,S_struct_disable_form_cmd_2,S_struct_set_database_cmd_2,S_struct_delete_cmd_2,S_struct_prepare_cmd_2,S_spl_if_cond,S_struct_connect_cmd,S_struct_exit_prog_cmd,S_struct_select_cmd_1,S_struct_for_cmd_1,S_assoc_subscript_2,S_struct_open_form_gui_cmd,S_struct_set_session_cmd_1,S_s_expr_member_function_call_n,S_expr_str,S_struct_copyback_cmd_2,S_s_expr_extend_2,S_create_proc_data,S_struct_prompt_cmd_1,S_s_expr_dynarr_extent_2,S_s_named_param,S_clear_data,S_s_expr_aligned,S_call_list,S_struct_declare_cmd_2,S_when_2,S_struct_hide_cmd_1,S_x_y,S_s_expr_op,S_s_expr_in_sq_2,S_struct_scroll_cmd_2,S_s_expr_member_function_call_n_2,S_struct_sql_transact_cmd_1,S_struct_spl_system_cmd_1,S_clear_data_1,S_startrep,S_struct_show_cmd_2,S_struct_need_cmd_1,S_struct_open_statusbox_cmd_2,S_struct_free_cmd,S_struct_alloc_arr_cmd_2,S_startrep_1,S_s_expr_external_call_2,S_struct_fetch_cmd_1,S_struct_open_form_gui_cmd_1,S_struct_print_img_cmd,S_struct_move_cmd,S_struct_skip_to_cmd_1,S_struct_free_cmd_1,S_struct_sql_cmd,S_struct_skip_by_cmd_2,S_struct_flush_cmd,S_expr_str_list_2,S_struct_connect_cmd_1,S_struct_spl_system_cmd,S_variable_usage_1,S_s_expr_dynarr_extent,S_struct_exit_prog_cmd_1,S_struct_call_cmd_1,S_struct_current_win_cmd,S_struct_spl_trace_cmd_1,S_struct_sql_debug_file_cmd,S_if_cond_1,S_struct_pdf_call_cmd_1,S_struct_update_cmd_2,S_struct_display_array_cmd_1,S_spl_if_cond_1,S_user_details_1,S_struct_show_menu_cmd_2,S_struct_sql_debug_file_cmd_2,S_struct_unload_cmd_1,S_struct_input_array_cmd,S_struct_load_cmd_2,S_struct_case_cmd,S_struct_next_option_cmd_1,S_struct_close_cmd_2,S_struct_declare_cmd,S_struct_sql_debug_file_cmd_1,S_struct_free_blob_cmd_2,S_struct_prompt_cmd_2,S_struct_update_cmd,S_struct_set_database_cmd,S_create_proc_data_2,S_s_expr_form_is_compiled_2,S_struct_free_blob_cmd,S_s_spl_for_item_2,S_struct_call_cmd_2,S_s_expr_wordwrap_2,S_struct_sleep_cmd_1,S_struct_input_array_cmd_1,S_pdf_startrep,S_struct_move_cmd_1,S_struct_fetch_cmd_2,S_struct_foreach_cmd,S_rowscols_2,S_struct_open_form_cmd,S_rowscols,S_fh_field_entry_2,S_attrib,S_attrib_1,S_s_expr_in_2,S_pdf_startrep_2,S_struct_print_file_cmd_1,S_x_y_2,S_struct_start_rpc_cmd,S_user_details,S_struct_insert_cmd,S_struct_next_option_cmd,S_struct_sleep_cmd_2,S_struct_create_proc_cmd,S_s_expr_extend,S_struct_prepare_cmd_1,S_s_expr_extend_1,S_struct_hide_cmd_2,S_struct_case_cmd_2,S_struct_sql_cmd_2,S_struct_close_sql_cmd_1,S_struct_execute_cmd,S_variable_usage_2,S_struct_run_waiting_for_cmd_2,S_struct_copyback_cmd_1,S_struct_sql_transact_cmd_2,S_struct_sql_block_cmd,S_struct_while_cmd_1,S_struct_current_win_cmd_2,S_s_expr_cast,S_s_expr_in_sq_1,S_locate_pos_2,S_struct_spl_system_cmd_2,S_s_expr_wordwrap_1,S_struct_open_statusbox_cmd_1,S_struct_alloc_arr_cmd_1,S_s_cur_def_1,S_s_expr_agg,S_menuoption,S_struct_disable_form_cmd,S_struct_sql_transact_cmd,S_s_expr_dynarr_function_call_n_1,S_struct_execute_immediate_cmd_1,S_convert_2,S_s_expr_tag,S_s_expr_external_call,S_struct_current_win_cmd_1,S_struct_construct_cmd_2,S_struct_show_cmd,S_struct_update_cmd_1,S_when_1,S_struct_open_cursor_cmd_2,S_struct_print_file_cmd,S_struct_msg_box_cmd_1,S_s_expr_aligned_1,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd,S_struct_spl_while_cmd_1,S_struct_show_menu_cmd_1,S_s_expr_cast_1,S_fh_field_entry,S_struct_pdf_call_cmd_2,S_struct_print_img_cmd_1,S_s_expr_member_function_call_n_1,S_struct_next_option_cmd_2,S_struct_display_form_cmd,S_struct_move_cmd_2,S_struct_skip_cmd_2,S_clear_data_2,S_struct_fetch_cmd,S_struct_sleep_cmd,S_struct_close_sql_cmd,S_struct_alloc_arr_cmd,S_user_details_2,S_struct_input_array_cmd_2,S_s_fetch,S_assoc_subscript_1,S_struct_connect_cmd_2,S_s_spl_for_item_1,S_s_expr_form_is_compiled_1,S_struct_need_cmd_2,S_struct_show_menu_cmd,S_struct_open_form_cmd_1,S_attrib_2,S_simple_variable,S_struct_run_cmd,S_struct_unload_cmd_2,S_convert,S_struct_start_rpc_cmd_2,S_expr_str_list,S_struct_spl_trace_cmd_2,S_struct_set_database_cmd_1,S_variable_usage,S_s_expr_in,S_rowscols_1,S_expr_str_list_1,S_struct_resize_arr_cmd_1,S_s_fetch_2,S_s_expr_cast_2,S_s_named_param_1,S_if_cond_2,S_struct_close_sql_cmd_2,S_struct_execute_cmd_2,S_s_expr_wordwrap,S_report_block_data_2,S_struct_flush_cmd_2,S_struct_close_cmd_1,S_struct_create_proc_cmd_2,S_menuoption_1,S_s_fetch_place_1,S_struct_foreach_cmd_2,S_struct_delete_cmd,S_struct_run_cmd_2,S_struct_insert_cmd_1,S_struct_while_cmd_2,S_struct_display_form_cmd_1,S_struct_open_window_cmd,S_struct_run_waiting_for_cmd,S_struct_msg_box_cmd_2,S_struct_while_cmd>"<expr_str"{s} {
   AX_expr_str_e_expr_type = 0;
   AX_expr_str_expr_long = 0;
   AX_expr_str_expr_string = 0;
@@ -4451,8 +4741,10 @@ const char* *statenames=NULL;
    case S_struct_alloc_arr_cmd_2: case S_struct_alloc_arr_cmd_1: case S_struct_alloc_arr_cmd: SET(S_struct_alloc_arr_cmd_2); break;
    case S_struct_open_statusbox_cmd: case S_struct_open_statusbox_cmd_2: case S_struct_open_statusbox_cmd_1: SET(S_struct_open_statusbox_cmd_2); break;
    case S_struct_insert_cmd_2: case S_struct_insert_cmd: case S_struct_insert_cmd_1: SET(S_struct_insert_cmd_2); break;
+   case S_struct_spl_system_cmd_1: case S_struct_spl_system_cmd: case S_struct_spl_system_cmd_2: SET(S_struct_spl_system_cmd_2); break;
    case S_s_expr_external_call_1: case S_s_expr_external_call_2: case S_s_expr_external_call: SET(S_s_expr_external_call_2); break;
    case S_s_expr_tag_1: case S_s_expr_tag_2: case S_s_expr_tag: SET(S_s_expr_tag_2); break;
+   case S_simple_variable_2: case S_simple_variable_1: case S_simple_variable: SET(S_simple_variable_2); break;
    case S_single_option: case S_single_option_2: case S_single_option_1: SET(S_single_option_2); break;
    case S_struct_print_file_cmd_2: case S_struct_print_file_cmd_1: case S_struct_print_file_cmd: SET(S_struct_print_file_cmd_2); break;
    case S_convert_1: case S_convert_2: case S_convert: SET(S_convert_2); break;
@@ -4465,10 +4757,12 @@ const char* *statenames=NULL;
    case S_struct_put_cmd: case S_struct_put_cmd_2: case S_struct_put_cmd_1: SET(S_struct_put_cmd_2); break;
    case S_startrep_2: case S_startrep: case S_startrep_1: SET(S_startrep_2); break;
    case S_struct_display_form_cmd_2: case S_struct_display_form_cmd: case S_struct_display_form_cmd_1: SET(S_struct_display_form_cmd_2); break;
+   case S_spl_if_cond_2: case S_spl_if_cond: case S_spl_if_cond_1: SET(S_spl_if_cond_2); break;
    case S_struct_open_window_cmd_2: case S_struct_open_window_cmd_1: case S_struct_open_window_cmd: SET(S_struct_open_window_cmd_2); break;
    case S_struct_dealloc_arr_cmd_2: case S_struct_dealloc_arr_cmd_1: case S_struct_dealloc_arr_cmd: SET(S_struct_dealloc_arr_cmd_2); break;
    case S_struct_skip_to_cmd: case S_struct_skip_to_cmd_2: case S_struct_skip_to_cmd_1: SET(S_struct_skip_to_cmd_2); break;
    case S_struct_free_cmd_2: case S_struct_free_cmd: case S_struct_free_cmd_1: SET(S_struct_free_cmd_2); break;
+   case S_struct_spl_while_cmd_2: case S_struct_spl_while_cmd: case S_struct_spl_while_cmd_1: SET(S_struct_spl_while_cmd_2); break;
    case S_s_expr_agg_1: case S_s_expr_agg_2: case S_s_expr_agg: SET(S_s_expr_agg_2); break;
    case S_s_expr_op_1: case S_s_expr_op_2: case S_s_expr_op: SET(S_s_expr_op_2); break;
    case S_struct_update_cmd_2: case S_struct_update_cmd: case S_struct_update_cmd_1: SET(S_struct_update_cmd_2); break;
@@ -4478,6 +4772,7 @@ const char* *statenames=NULL;
    case S_struct_enable_form_cmd_2: case S_struct_enable_form_cmd: case S_struct_enable_form_cmd_1: SET(S_struct_enable_form_cmd_2); break;
    case S_struct_next_option_cmd_1: case S_struct_next_option_cmd: case S_struct_next_option_cmd_2: SET(S_struct_next_option_cmd_2); break;
    case S_struct_move_cmd: case S_struct_move_cmd_1: case S_struct_move_cmd_2: SET(S_struct_move_cmd_2); break;
+   case S_struct_spl_raise_exception_cmd_2: case S_struct_spl_raise_exception_cmd: case S_struct_spl_raise_exception_cmd_1: SET(S_struct_spl_raise_exception_cmd_2); break;
    case S_struct_skip_cmd_1: case S_struct_skip_cmd: case S_struct_skip_cmd_2: SET(S_struct_skip_cmd_2); break;
    case S_clear_data: case S_clear_data_1: case S_clear_data_2: SET(S_clear_data_2); break;
    case S_user_details_1: case S_user_details: case S_user_details_2: SET(S_user_details_2); break;
@@ -4485,6 +4780,7 @@ const char* *statenames=NULL;
    case S_struct_show_menu_cmd_2: case S_struct_show_menu_cmd_1: case S_struct_show_menu_cmd: SET(S_struct_show_menu_cmd_2); break;
    case S_struct_set_session_cmd_2: case S_struct_set_session_cmd: case S_struct_set_session_cmd_1: SET(S_struct_set_session_cmd_2); break;
    case S_struct_open_form_gui_cmd_2: case S_struct_open_form_gui_cmd: case S_struct_open_form_gui_cmd_1: SET(S_struct_open_form_gui_cmd_2); break;
+   case S_struct_sql_debug_file_cmd: case S_struct_sql_debug_file_cmd_2: case S_struct_sql_debug_file_cmd_1: SET(S_struct_sql_debug_file_cmd_2); break;
    case S_struct_connect_cmd: case S_struct_connect_cmd_1: case S_struct_connect_cmd_2: SET(S_struct_connect_cmd_2); break;
    case S_struct_load_cmd_1: case S_struct_load_cmd: case S_struct_load_cmd_2: SET(S_struct_load_cmd_2); break;
    case S_struct_need_cmd: case S_struct_need_cmd_1: case S_struct_need_cmd_2: SET(S_struct_need_cmd_2); break;
@@ -4497,15 +4793,19 @@ const char* *statenames=NULL;
    case S_struct_unload_cmd: case S_struct_unload_cmd_1: case S_struct_unload_cmd_2: SET(S_struct_unload_cmd_2); break;
    case S_struct_free_blob_cmd_1: case S_struct_free_blob_cmd_2: case S_struct_free_blob_cmd: SET(S_struct_free_blob_cmd_2); break;
    case S_struct_prompt_cmd: case S_struct_prompt_cmd_1: case S_struct_prompt_cmd_2: SET(S_struct_prompt_cmd_2); break;
+   case S_s_named_param_2: case S_s_named_param: case S_s_named_param_1: SET(S_s_named_param_2); break;
    case S_struct_select_cmd_2: case S_struct_select_cmd: case S_struct_select_cmd_1: SET(S_struct_select_cmd_2); break;
    case S_struct_start_rpc_cmd_1: case S_struct_start_rpc_cmd: case S_struct_start_rpc_cmd_2: SET(S_struct_start_rpc_cmd_2); break;
+   case S_struct_spl_trace_cmd: case S_struct_spl_trace_cmd_1: case S_struct_spl_trace_cmd_2: SET(S_struct_spl_trace_cmd_2); break;
    case S_struct_resize_arr_cmd_2: case S_struct_resize_arr_cmd: case S_struct_resize_arr_cmd_1: SET(S_struct_resize_arr_cmd_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
    case S_call_list_1: case S_call_list_2: case S_call_list: SET(S_call_list_2); break;
    case S_s_expr_form_is_compiled: case S_s_expr_form_is_compiled_2: case S_s_expr_form_is_compiled_1: SET(S_s_expr_form_is_compiled_2); break;
    case S_struct_display_array_cmd: case S_struct_display_array_cmd_2: case S_struct_display_array_cmd_1: SET(S_struct_display_array_cmd_2); break;
    case S_windowtype_1: case S_windowtype_2: case S_windowtype: SET(S_windowtype_2); break;
    case S_struct_set_database_cmd_2: case S_struct_set_database_cmd: case S_struct_set_database_cmd_1: SET(S_struct_set_database_cmd_2); break;
    case S_struct_disable_form_cmd_1: case S_struct_disable_form_cmd_2: case S_struct_disable_form_cmd: SET(S_struct_disable_form_cmd_2); break;
+   case S_s_spl_for_item: case S_s_spl_for_item_2: case S_s_spl_for_item_1: SET(S_s_spl_for_item_2); break;
    case S_s_expr_wordwrap_2: case S_s_expr_wordwrap_1: case S_s_expr_wordwrap: SET(S_s_expr_wordwrap_2); break;
    case S_struct_menu_cmd_2: case S_struct_menu_cmd: case S_struct_menu_cmd_1: SET(S_struct_menu_cmd_2); break;
    case S_struct_call_cmd: case S_struct_call_cmd_1: case S_struct_call_cmd_2: SET(S_struct_call_cmd_2); break;
@@ -4531,10 +4831,11 @@ const char* *statenames=NULL;
    case S_struct_close_sql_cmd_1: case S_struct_close_sql_cmd: case S_struct_close_sql_cmd_2: SET(S_struct_close_sql_cmd_2); break;
    case S_s_expr_dynarr_extent_1: case S_s_expr_dynarr_extent_2: case S_s_expr_dynarr_extent: SET(S_s_expr_dynarr_extent_2); break;
    case S_struct_sleep_cmd_1: case S_struct_sleep_cmd_2: case S_struct_sleep_cmd: SET(S_struct_sleep_cmd_2); break;
-   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
    case S_struct_execute_cmd_1: case S_struct_execute_cmd: case S_struct_execute_cmd_2: SET(S_struct_execute_cmd_2); break;
+   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
    case S_struct_flush_cmd_1: case S_struct_flush_cmd: case S_struct_flush_cmd_2: SET(S_struct_flush_cmd_2); break;
    case S_report_block_data_1: case S_report_block_data: case S_report_block_data_2: SET(S_report_block_data_2); break;
+   case S_struct_create_proc_cmd_1: case S_struct_create_proc_cmd: case S_struct_create_proc_cmd_2: SET(S_struct_create_proc_cmd_2); break;
    case S_struct_declare_cmd_1: case S_struct_declare_cmd_2: case S_struct_declare_cmd: SET(S_struct_declare_cmd_2); break;
    case S_struct_hide_cmd: case S_struct_hide_cmd_1: case S_struct_hide_cmd_2: SET(S_struct_hide_cmd_2); break;
    case S_when: case S_when_2: case S_when_1: SET(S_when_2); break;
@@ -4569,8 +4870,10 @@ const char* *statenames=NULL;
    case S_struct_alloc_arr_cmd_2: case S_struct_alloc_arr_cmd_1: case S_struct_alloc_arr_cmd: SET(S_struct_alloc_arr_cmd_2); break;
    case S_struct_open_statusbox_cmd: case S_struct_open_statusbox_cmd_2: case S_struct_open_statusbox_cmd_1: SET(S_struct_open_statusbox_cmd_2); break;
    case S_struct_insert_cmd_2: case S_struct_insert_cmd: case S_struct_insert_cmd_1: SET(S_struct_insert_cmd_2); break;
+   case S_struct_spl_system_cmd_1: case S_struct_spl_system_cmd: case S_struct_spl_system_cmd_2: SET(S_struct_spl_system_cmd_2); break;
    case S_s_expr_external_call_1: case S_s_expr_external_call_2: case S_s_expr_external_call: SET(S_s_expr_external_call_2); break;
    case S_s_expr_tag_1: case S_s_expr_tag_2: case S_s_expr_tag: SET(S_s_expr_tag_2); break;
+   case S_simple_variable_2: case S_simple_variable_1: case S_simple_variable: SET(S_simple_variable_2); break;
    case S_single_option: case S_single_option_2: case S_single_option_1: SET(S_single_option_2); break;
    case S_struct_print_file_cmd_2: case S_struct_print_file_cmd_1: case S_struct_print_file_cmd: SET(S_struct_print_file_cmd_2); break;
    case S_convert_1: case S_convert_2: case S_convert: SET(S_convert_2); break;
@@ -4583,10 +4886,12 @@ const char* *statenames=NULL;
    case S_struct_put_cmd: case S_struct_put_cmd_2: case S_struct_put_cmd_1: SET(S_struct_put_cmd_2); break;
    case S_startrep_2: case S_startrep: case S_startrep_1: SET(S_startrep_2); break;
    case S_struct_display_form_cmd_2: case S_struct_display_form_cmd: case S_struct_display_form_cmd_1: SET(S_struct_display_form_cmd_2); break;
+   case S_spl_if_cond_2: case S_spl_if_cond: case S_spl_if_cond_1: SET(S_spl_if_cond_2); break;
    case S_struct_open_window_cmd_2: case S_struct_open_window_cmd_1: case S_struct_open_window_cmd: SET(S_struct_open_window_cmd_2); break;
    case S_struct_dealloc_arr_cmd_2: case S_struct_dealloc_arr_cmd_1: case S_struct_dealloc_arr_cmd: SET(S_struct_dealloc_arr_cmd_2); break;
    case S_struct_skip_to_cmd: case S_struct_skip_to_cmd_2: case S_struct_skip_to_cmd_1: SET(S_struct_skip_to_cmd_2); break;
    case S_struct_free_cmd_2: case S_struct_free_cmd: case S_struct_free_cmd_1: SET(S_struct_free_cmd_2); break;
+   case S_struct_spl_while_cmd_2: case S_struct_spl_while_cmd: case S_struct_spl_while_cmd_1: SET(S_struct_spl_while_cmd_2); break;
    case S_s_expr_agg_1: case S_s_expr_agg_2: case S_s_expr_agg: SET(S_s_expr_agg_2); break;
    case S_s_expr_op_1: case S_s_expr_op_2: case S_s_expr_op: SET(S_s_expr_op_2); break;
    case S_struct_update_cmd_2: case S_struct_update_cmd: case S_struct_update_cmd_1: SET(S_struct_update_cmd_2); break;
@@ -4596,6 +4901,7 @@ const char* *statenames=NULL;
    case S_struct_enable_form_cmd_2: case S_struct_enable_form_cmd: case S_struct_enable_form_cmd_1: SET(S_struct_enable_form_cmd_2); break;
    case S_struct_next_option_cmd_1: case S_struct_next_option_cmd: case S_struct_next_option_cmd_2: SET(S_struct_next_option_cmd_2); break;
    case S_struct_move_cmd: case S_struct_move_cmd_1: case S_struct_move_cmd_2: SET(S_struct_move_cmd_2); break;
+   case S_struct_spl_raise_exception_cmd_2: case S_struct_spl_raise_exception_cmd: case S_struct_spl_raise_exception_cmd_1: SET(S_struct_spl_raise_exception_cmd_2); break;
    case S_struct_skip_cmd_1: case S_struct_skip_cmd: case S_struct_skip_cmd_2: SET(S_struct_skip_cmd_2); break;
    case S_clear_data: case S_clear_data_1: case S_clear_data_2: SET(S_clear_data_2); break;
    case S_user_details_1: case S_user_details: case S_user_details_2: SET(S_user_details_2); break;
@@ -4603,6 +4909,7 @@ const char* *statenames=NULL;
    case S_struct_show_menu_cmd_2: case S_struct_show_menu_cmd_1: case S_struct_show_menu_cmd: SET(S_struct_show_menu_cmd_2); break;
    case S_struct_set_session_cmd_2: case S_struct_set_session_cmd: case S_struct_set_session_cmd_1: SET(S_struct_set_session_cmd_2); break;
    case S_struct_open_form_gui_cmd_2: case S_struct_open_form_gui_cmd: case S_struct_open_form_gui_cmd_1: SET(S_struct_open_form_gui_cmd_2); break;
+   case S_struct_sql_debug_file_cmd: case S_struct_sql_debug_file_cmd_2: case S_struct_sql_debug_file_cmd_1: SET(S_struct_sql_debug_file_cmd_2); break;
    case S_struct_connect_cmd: case S_struct_connect_cmd_1: case S_struct_connect_cmd_2: SET(S_struct_connect_cmd_2); break;
    case S_struct_load_cmd_1: case S_struct_load_cmd: case S_struct_load_cmd_2: SET(S_struct_load_cmd_2); break;
    case S_struct_need_cmd: case S_struct_need_cmd_1: case S_struct_need_cmd_2: SET(S_struct_need_cmd_2); break;
@@ -4615,15 +4922,19 @@ const char* *statenames=NULL;
    case S_struct_unload_cmd: case S_struct_unload_cmd_1: case S_struct_unload_cmd_2: SET(S_struct_unload_cmd_2); break;
    case S_struct_free_blob_cmd_1: case S_struct_free_blob_cmd_2: case S_struct_free_blob_cmd: SET(S_struct_free_blob_cmd_2); break;
    case S_struct_prompt_cmd: case S_struct_prompt_cmd_1: case S_struct_prompt_cmd_2: SET(S_struct_prompt_cmd_2); break;
+   case S_s_named_param_2: case S_s_named_param: case S_s_named_param_1: SET(S_s_named_param_2); break;
    case S_struct_select_cmd_2: case S_struct_select_cmd: case S_struct_select_cmd_1: SET(S_struct_select_cmd_2); break;
    case S_struct_start_rpc_cmd_1: case S_struct_start_rpc_cmd: case S_struct_start_rpc_cmd_2: SET(S_struct_start_rpc_cmd_2); break;
+   case S_struct_spl_trace_cmd: case S_struct_spl_trace_cmd_1: case S_struct_spl_trace_cmd_2: SET(S_struct_spl_trace_cmd_2); break;
    case S_struct_resize_arr_cmd_2: case S_struct_resize_arr_cmd: case S_struct_resize_arr_cmd_1: SET(S_struct_resize_arr_cmd_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
    case S_call_list_1: case S_call_list_2: case S_call_list: SET(S_call_list_2); break;
    case S_s_expr_form_is_compiled: case S_s_expr_form_is_compiled_2: case S_s_expr_form_is_compiled_1: SET(S_s_expr_form_is_compiled_2); break;
    case S_struct_display_array_cmd: case S_struct_display_array_cmd_2: case S_struct_display_array_cmd_1: SET(S_struct_display_array_cmd_2); break;
    case S_windowtype_1: case S_windowtype_2: case S_windowtype: SET(S_windowtype_2); break;
    case S_struct_set_database_cmd_2: case S_struct_set_database_cmd: case S_struct_set_database_cmd_1: SET(S_struct_set_database_cmd_2); break;
    case S_struct_disable_form_cmd_1: case S_struct_disable_form_cmd_2: case S_struct_disable_form_cmd: SET(S_struct_disable_form_cmd_2); break;
+   case S_s_spl_for_item: case S_s_spl_for_item_2: case S_s_spl_for_item_1: SET(S_s_spl_for_item_2); break;
    case S_s_expr_wordwrap_2: case S_s_expr_wordwrap_1: case S_s_expr_wordwrap: SET(S_s_expr_wordwrap_2); break;
    case S_struct_menu_cmd_2: case S_struct_menu_cmd: case S_struct_menu_cmd_1: SET(S_struct_menu_cmd_2); break;
    case S_struct_call_cmd: case S_struct_call_cmd_1: case S_struct_call_cmd_2: SET(S_struct_call_cmd_2); break;
@@ -4649,10 +4960,11 @@ const char* *statenames=NULL;
    case S_struct_close_sql_cmd_1: case S_struct_close_sql_cmd: case S_struct_close_sql_cmd_2: SET(S_struct_close_sql_cmd_2); break;
    case S_s_expr_dynarr_extent_1: case S_s_expr_dynarr_extent_2: case S_s_expr_dynarr_extent: SET(S_s_expr_dynarr_extent_2); break;
    case S_struct_sleep_cmd_1: case S_struct_sleep_cmd_2: case S_struct_sleep_cmd: SET(S_struct_sleep_cmd_2); break;
-   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
    case S_struct_execute_cmd_1: case S_struct_execute_cmd: case S_struct_execute_cmd_2: SET(S_struct_execute_cmd_2); break;
+   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
    case S_struct_flush_cmd_1: case S_struct_flush_cmd: case S_struct_flush_cmd_2: SET(S_struct_flush_cmd_2); break;
    case S_report_block_data_1: case S_report_block_data: case S_report_block_data_2: SET(S_report_block_data_2); break;
+   case S_struct_create_proc_cmd_1: case S_struct_create_proc_cmd: case S_struct_create_proc_cmd_2: SET(S_struct_create_proc_cmd_2); break;
    case S_struct_declare_cmd_1: case S_struct_declare_cmd_2: case S_struct_declare_cmd: SET(S_struct_declare_cmd_2); break;
    case S_struct_hide_cmd: case S_struct_hide_cmd_1: case S_struct_hide_cmd_2: SET(S_struct_hide_cmd_2); break;
    case S_when: case S_when_2: case S_when_1: SET(S_when_2); break;
@@ -4678,7 +4990,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</expr_str>' expected.");
 }
 
-<ROOT_expr_str_list,S_struct_put_cmd,S_struct_pdf_call_cmd,S_struct_return_cmd_1,S_struct_output_cmd_1,S_s_expr_pdf_function_call,S_struct_put_cmd_2,S_sql_statement_2,S_expr_str_1,S_struct_output_cmd,S_struct_sql_block_cmd_1,S_s_expr_function_call,S_s_pdf_report_definition_2,S_struct_foreach_cmd_1,S_struct_hide_option_cmd,S_struct_msg_box_cmd,S_struct_print_cmd,S_s_expr_form_is_compiled,S_struct_return_cmd,S_struct_locate_cmd,S_struct_let_cmd_2,S_s_expr_external_call_1,S_struct_error_cmd_1,S_expr_str_2,S_struct_call_cmd,S_s_expr_in_1,S_report_block_data_1,S_struct_init_cmd_2,S_s_formhandler_definition,S_report_block_data,S_struct_return_cmd_2,S_struct_execute_cmd_1,S_struct_validate_cmd,S_struct_put_cmd_1,S_s_select_1,S_s_expr_shared_function_call_1,S_struct_show_option_cmd,S_report_orderby_section_1,S_struct_let_cmd_1,S_struct_show_option_cmd_1,S_report_orderby_section,S_s_expr_bound_fcall_2,S_struct_init_cmd,S_struct_display_cmd_1,S_s_pdf_report_definition_1,S_struct_sql_block_cmd_2,S_struct_validate_cmd_2,S_s_expr_dynarr_function_call_n_2,S_struct_hide_option_cmd_2,S_struct_locate_cmd_1,S_s_expr_dynarr_function_call_n,S_s_expr_bound_fcall,S_struct_prompt_cmd,S_s_expr_member_function_call_n,S_s_expr_function_call_2,S_expr_str,S_struct_let_cmd,S_struct_prompt_cmd_1,S_struct_input_cmd_2,S_s_report_definition_2,S_s_expr_shared_function_call,S_s_expr_member_function_call_n_2,S_s_function_definition_1,S_s_expr_external_call_2,S_struct_error_cmd_2,S_struct_fetch_cmd_1,S_struct_init_cmd_1,S_s_select_2,S_struct_call_cmd_1,S_struct_input_cmd,S_struct_display_b_n_cmd_1,S_struct_pdf_call_cmd_1,S_s_class_definition_1,S_s_expr_shared_function_call_2,S_s_function_definition,S_s_function_definition_2,S_s_formhandler_definition_2,S_struct_validate_cmd_1,S_struct_prompt_cmd_2,S_sql_statement,S_s_expr_form_is_compiled_2,S_s_report_definition,S_struct_display_cmd_2,S_struct_call_cmd_2,S_s_expr_pdf_function_call_1,S_struct_fetch_cmd_2,S_struct_print_cmd_2,S_struct_foreach_cmd,S_s_expr_in_2,S_s_report_definition_1,S_struct_input_cmd_1,S_struct_message_cmd_2,S_s_select,S_struct_execute_cmd,S_struct_message_cmd,S_struct_locate_cmd_2,S_struct_show_option_cmd_2,S_struct_sql_block_cmd,S_s_expr_function_call_1,S_struct_hide_option_cmd_1,S_struct_display_cmd,S_s_expr_dynarr_function_call_n_1,S_s_expr_external_call,S_struct_error_cmd,S_struct_print_cmd_1,S_s_expr_pdf_function_call_2,S_struct_open_cursor_cmd_2,S_struct_msg_box_cmd_1,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd,S_report_orderby_section_2,S_sql_statement_1,S_struct_pdf_call_cmd_2,S_s_expr_member_function_call_n_1,S_struct_fetch_cmd,S_s_expr_bound_fcall_1,S_s_expr_form_is_compiled_1,S_struct_output_cmd_2,S_s_expr_in,S_s_class_definition_2,S_struct_display_b_n_cmd_2,S_s_class_definition,S_struct_execute_cmd_2,S_report_block_data_2,S_struct_message_cmd_1,S_struct_display_b_n_cmd,S_struct_foreach_cmd_2,S_s_pdf_report_definition,S_struct_msg_box_cmd_2,S_s_formhandler_definition_1>"<expr_str_list"{s} {
+<ROOT_expr_str_list,S_struct_put_cmd,S_struct_pdf_call_cmd,S_struct_return_cmd_1,S_struct_output_cmd_1,S_s_expr_pdf_function_call,S_struct_put_cmd_2,S_sql_statement_2,S_expr_str_1,S_struct_spl_let_cmd_1,S_struct_spl_for_cmd_2,S_struct_output_cmd,S_struct_sql_block_cmd_1,S_s_expr_function_call,S_s_pdf_report_definition_2,S_create_proc_data_1,S_struct_foreach_cmd_1,S_struct_hide_option_cmd,S_struct_msg_box_cmd,S_struct_print_cmd,S_s_expr_form_is_compiled,S_struct_return_cmd,S_struct_locate_cmd,S_struct_let_cmd_2,S_s_expr_external_call_1,S_struct_error_cmd_1,S_expr_str_2,S_struct_call_cmd,S_s_expr_in_1,S_report_block_data_1,S_struct_spl_let_cmd_2,S_struct_init_cmd_2,S_s_formhandler_definition,S_report_block_data,S_struct_return_cmd_2,S_struct_execute_cmd_1,S_struct_validate_cmd,S_struct_spl_return_cmd_1,S_struct_put_cmd_1,S_s_select_1,S_s_expr_shared_function_call_1,S_struct_show_option_cmd,S_report_orderby_section_1,S_struct_let_cmd_1,S_struct_show_option_cmd_1,S_report_orderby_section,S_s_expr_bound_fcall_2,S_struct_init_cmd,S_s_pdf_report_definition_1,S_struct_display_cmd_1,S_struct_sql_block_cmd_2,S_struct_validate_cmd_2,S_s_expr_dynarr_function_call_n_2,S_struct_hide_option_cmd_2,S_struct_locate_cmd_1,S_s_expr_dynarr_function_call_n,S_s_expr_bound_fcall,S_struct_prompt_cmd,S_s_expr_member_function_call_n,S_s_expr_function_call_2,S_expr_str,S_create_proc_data,S_struct_let_cmd,S_struct_prompt_cmd_1,S_struct_input_cmd_2,S_struct_spl_let_cmd,S_s_report_definition_2,S_s_expr_shared_function_call,S_s_expr_member_function_call_n_2,S_s_function_definition_1,S_s_expr_external_call_2,S_struct_error_cmd_2,S_struct_fetch_cmd_1,S_s_spl_execute,S_struct_init_cmd_1,S_s_spl_execute_1,S_s_select_2,S_struct_call_cmd_1,S_struct_input_cmd,S_struct_display_b_n_cmd_1,S_struct_pdf_call_cmd_1,S_s_class_definition_1,S_s_expr_shared_function_call_2,S_s_function_definition,S_s_function_definition_2,S_s_formhandler_definition_2,S_struct_validate_cmd_1,S_struct_prompt_cmd_2,S_sql_statement,S_create_proc_data_2,S_s_expr_form_is_compiled_2,S_s_report_definition,S_struct_call_cmd_2,S_struct_display_cmd_2,S_s_expr_pdf_function_call_1,S_struct_fetch_cmd_2,S_struct_print_cmd_2,S_struct_foreach_cmd,S_s_expr_in_2,S_s_report_definition_1,S_struct_input_cmd_1,S_struct_spl_for_cmd,S_struct_message_cmd_2,S_struct_spl_return_cmd,S_s_select,S_struct_execute_cmd,S_struct_message_cmd,S_struct_locate_cmd_2,S_struct_show_option_cmd_2,S_struct_sql_block_cmd,S_s_expr_function_call_1,S_struct_hide_option_cmd_1,S_struct_display_cmd,S_s_expr_dynarr_function_call_n_1,S_s_expr_external_call,S_struct_error_cmd,S_struct_print_cmd_1,S_s_expr_pdf_function_call_2,S_struct_open_cursor_cmd_2,S_struct_msg_box_cmd_1,S_struct_open_cursor_cmd_1,S_struct_open_cursor_cmd,S_struct_spl_for_cmd_1,S_report_orderby_section_2,S_sql_statement_1,S_struct_pdf_call_cmd_2,S_s_expr_member_function_call_n_1,S_struct_fetch_cmd,S_s_expr_bound_fcall_1,S_s_expr_form_is_compiled_1,S_struct_output_cmd_2,S_struct_spl_return_cmd_2,S_s_expr_in,S_s_class_definition_2,S_struct_display_b_n_cmd_2,S_s_class_definition,S_struct_execute_cmd_2,S_report_block_data_2,S_struct_message_cmd_1,S_struct_display_b_n_cmd,S_s_spl_execute_2,S_struct_foreach_cmd_2,S_s_pdf_report_definition,S_struct_msg_box_cmd_2,S_s_formhandler_definition_1>"<expr_str_list"{s} {
   AX_expr_str_list_nm = 0;
   ENTER(AL_expr_str_list); pushbuffer(0);
   }
@@ -4702,6 +5014,7 @@ const char* *statenames=NULL;
    case S_sql_statement_2: case S_sql_statement: case S_sql_statement_1: SET(S_sql_statement_2); break;
    case S_s_select_1: case S_s_select_2: case S_s_select: SET(S_s_select_2); break;
    case S_report_orderby_section_1: case S_report_orderby_section: case S_report_orderby_section_2: SET(S_report_orderby_section_2); break;
+   case S_struct_spl_for_cmd_2: case S_struct_spl_for_cmd: case S_struct_spl_for_cmd_1: SET(S_struct_spl_for_cmd_2); break;
    case S_struct_pdf_call_cmd: case S_struct_pdf_call_cmd_1: case S_struct_pdf_call_cmd_2: SET(S_struct_pdf_call_cmd_2); break;
    case S_s_expr_bound_fcall_2: case S_s_expr_bound_fcall: case S_s_expr_bound_fcall_1: SET(S_s_expr_bound_fcall_2); break;
    case S_s_expr_shared_function_call_1: case S_s_expr_shared_function_call: case S_s_expr_shared_function_call_2: SET(S_s_expr_shared_function_call_2); break;
@@ -4713,7 +5026,9 @@ const char* *statenames=NULL;
    case S_s_formhandler_definition: case S_s_formhandler_definition_2: case S_s_formhandler_definition_1: SET(S_s_formhandler_definition_2); break;
    case S_struct_hide_option_cmd: case S_struct_hide_option_cmd_2: case S_struct_hide_option_cmd_1: SET(S_struct_hide_option_cmd_2); break;
    case S_struct_output_cmd_1: case S_struct_output_cmd: case S_struct_output_cmd_2: SET(S_struct_output_cmd_2); break;
+   case S_struct_spl_return_cmd_1: case S_struct_spl_return_cmd: case S_struct_spl_return_cmd_2: SET(S_struct_spl_return_cmd_2); break;
    case S_struct_prompt_cmd: case S_struct_prompt_cmd_1: case S_struct_prompt_cmd_2: SET(S_struct_prompt_cmd_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
    case S_s_expr_form_is_compiled: case S_s_expr_form_is_compiled_2: case S_s_expr_form_is_compiled_1: SET(S_s_expr_form_is_compiled_2); break;
    case S_struct_display_cmd_1: case S_struct_display_cmd_2: case S_struct_display_cmd: SET(S_struct_display_cmd_2); break;
    case S_struct_call_cmd: case S_struct_call_cmd_1: case S_struct_call_cmd_2: SET(S_struct_call_cmd_2); break;
@@ -4730,8 +5045,10 @@ const char* *statenames=NULL;
    case S_report_block_data_1: case S_report_block_data: case S_report_block_data_2: SET(S_report_block_data_2); break;
    case S_struct_message_cmd_2: case S_struct_message_cmd: case S_struct_message_cmd_1: SET(S_struct_message_cmd_2); break;
    case S_struct_input_cmd_2: case S_struct_input_cmd: case S_struct_input_cmd_1: SET(S_struct_input_cmd_2); break;
+   case S_s_spl_execute: case S_s_spl_execute_1: case S_s_spl_execute_2: SET(S_s_spl_execute_2); break;
    case S_struct_foreach_cmd_1: case S_struct_foreach_cmd: case S_struct_foreach_cmd_2: SET(S_struct_foreach_cmd_2); break;
    case S_s_report_definition_2: case S_s_report_definition: case S_s_report_definition_1: SET(S_s_report_definition_2); break;
+   case S_struct_spl_let_cmd_1: case S_struct_spl_let_cmd_2: case S_struct_spl_let_cmd: SET(S_struct_spl_let_cmd_2); break;
    case S_struct_locate_cmd: case S_struct_locate_cmd_1: case S_struct_locate_cmd_2: SET(S_struct_locate_cmd_2); break;
    case S_struct_init_cmd_2: case S_struct_init_cmd: case S_struct_init_cmd_1: SET(S_struct_init_cmd_2); break;
    case S_struct_show_option_cmd: case S_struct_show_option_cmd_1: case S_struct_show_option_cmd_2: SET(S_struct_show_option_cmd_2); break;
@@ -4759,6 +5076,7 @@ const char* *statenames=NULL;
    case S_sql_statement_2: case S_sql_statement: case S_sql_statement_1: SET(S_sql_statement_2); break;
    case S_s_select_1: case S_s_select_2: case S_s_select: SET(S_s_select_2); break;
    case S_report_orderby_section_1: case S_report_orderby_section: case S_report_orderby_section_2: SET(S_report_orderby_section_2); break;
+   case S_struct_spl_for_cmd_2: case S_struct_spl_for_cmd: case S_struct_spl_for_cmd_1: SET(S_struct_spl_for_cmd_2); break;
    case S_struct_pdf_call_cmd: case S_struct_pdf_call_cmd_1: case S_struct_pdf_call_cmd_2: SET(S_struct_pdf_call_cmd_2); break;
    case S_s_expr_bound_fcall_2: case S_s_expr_bound_fcall: case S_s_expr_bound_fcall_1: SET(S_s_expr_bound_fcall_2); break;
    case S_s_expr_shared_function_call_1: case S_s_expr_shared_function_call: case S_s_expr_shared_function_call_2: SET(S_s_expr_shared_function_call_2); break;
@@ -4770,7 +5088,9 @@ const char* *statenames=NULL;
    case S_s_formhandler_definition: case S_s_formhandler_definition_2: case S_s_formhandler_definition_1: SET(S_s_formhandler_definition_2); break;
    case S_struct_hide_option_cmd: case S_struct_hide_option_cmd_2: case S_struct_hide_option_cmd_1: SET(S_struct_hide_option_cmd_2); break;
    case S_struct_output_cmd_1: case S_struct_output_cmd: case S_struct_output_cmd_2: SET(S_struct_output_cmd_2); break;
+   case S_struct_spl_return_cmd_1: case S_struct_spl_return_cmd: case S_struct_spl_return_cmd_2: SET(S_struct_spl_return_cmd_2); break;
    case S_struct_prompt_cmd: case S_struct_prompt_cmd_1: case S_struct_prompt_cmd_2: SET(S_struct_prompt_cmd_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
    case S_s_expr_form_is_compiled: case S_s_expr_form_is_compiled_2: case S_s_expr_form_is_compiled_1: SET(S_s_expr_form_is_compiled_2); break;
    case S_struct_display_cmd_1: case S_struct_display_cmd_2: case S_struct_display_cmd: SET(S_struct_display_cmd_2); break;
    case S_struct_call_cmd: case S_struct_call_cmd_1: case S_struct_call_cmd_2: SET(S_struct_call_cmd_2); break;
@@ -4787,8 +5107,10 @@ const char* *statenames=NULL;
    case S_report_block_data_1: case S_report_block_data: case S_report_block_data_2: SET(S_report_block_data_2); break;
    case S_struct_message_cmd_2: case S_struct_message_cmd: case S_struct_message_cmd_1: SET(S_struct_message_cmd_2); break;
    case S_struct_input_cmd_2: case S_struct_input_cmd: case S_struct_input_cmd_1: SET(S_struct_input_cmd_2); break;
+   case S_s_spl_execute: case S_s_spl_execute_1: case S_s_spl_execute_2: SET(S_s_spl_execute_2); break;
    case S_struct_foreach_cmd_1: case S_struct_foreach_cmd: case S_struct_foreach_cmd_2: SET(S_struct_foreach_cmd_2); break;
    case S_s_report_definition_2: case S_s_report_definition: case S_s_report_definition_1: SET(S_s_report_definition_2); break;
+   case S_struct_spl_let_cmd_1: case S_struct_spl_let_cmd_2: case S_struct_spl_let_cmd: SET(S_struct_spl_let_cmd_2); break;
    case S_struct_locate_cmd: case S_struct_locate_cmd_1: case S_struct_locate_cmd_2: SET(S_struct_locate_cmd_2); break;
    case S_struct_init_cmd_2: case S_struct_init_cmd: case S_struct_init_cmd_1: SET(S_struct_init_cmd_2); break;
    case S_struct_show_option_cmd: case S_struct_show_option_cmd_1: case S_struct_show_option_cmd_2: SET(S_struct_show_option_cmd_2); break;
@@ -5569,7 +5891,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</lint_warning>' expected.");
 }
 
-<ROOT_list_of_integers>"<list_of_integers"{s} {
+<ROOT_list_of_integers,S_struct_spl_on_exception_cmd,S_struct_spl_on_exception_cmd_1,S_struct_spl_on_exception_cmd_2>"<list_of_integers"{s} {
   AX_list_of_integers_nm = 0;
   ENTER(AL_list_of_integers); pushbuffer(0);
   }
@@ -5585,6 +5907,7 @@ const char* *statenames=NULL;
   LEAVE; STag_list_of_integers(); pcdata_ix = 0; ETag_list_of_integers(); popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_list_of_integers: SET(EPILOG); break;
+   case S_struct_spl_on_exception_cmd: case S_struct_spl_on_exception_cmd_1: case S_struct_spl_on_exception_cmd_2: SET(S_struct_spl_on_exception_cmd_2); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of list_of_integers element.", yytext[0]);
@@ -5599,6 +5922,7 @@ const char* *statenames=NULL;
   popbuffer(); /* attribute */
   switch (YY_START) {
    case ROOT_list_of_integers: SET(EPILOG); break;
+   case S_struct_spl_on_exception_cmd: case S_struct_spl_on_exception_cmd_1: case S_struct_spl_on_exception_cmd_2: SET(S_struct_spl_on_exception_cmd_2); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</list_of_integers>' expected.",yytext);
@@ -8608,6 +8932,49 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</s_module_entry_ptr_list>' expected.");
 }
 
+<ROOT_s_named_param,S_expr_str_1,S_expr_str_2,S_expr_str>"<s_named_param"{s} {
+  AX_s_named_param_nm = 0;
+  AX_s_named_param_param_name = 0;
+  ENTER(AL_s_named_param); pushbuffer(0);
+  }
+
+<AL_s_named_param>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_s_named_param_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_s_named_param_nm);
+
+ "param_name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_s_named_param_param_name);
+ "param_name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_s_named_param_param_name);
+
+ ">" {
+  LEAVE; STag_s_named_param();pcdata_ix = 0; ENTER(S_s_named_param);
+ }
+ "/>" {
+  LEAVE; STag_s_named_param(); pcdata_ix = 0; ETag_s_named_param(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_s_named_param: SET(EPILOG); break;
+   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of s_named_param element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `s_named_param' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `s_named_param' element.");
+}
+
+<E_s_named_param,S_s_named_param,S_s_named_param_2>{
+ "</s_named_param"{s}">" {
+  LEAVE;
+  ETag_s_named_param();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_s_named_param: SET(EPILOG); break;
+   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</s_named_param>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</s_named_param>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</s_named_param>' expected.");
+}
+
 <ROOT_s_pdf_report_definition,S_module_entry_2,S_module_entry_1,S_module_entry>"<s_pdf_report_definition"{s} {
   AX_s_pdf_report_definition_colno = 0;
   AX_s_pdf_report_definition_comment = 0;
@@ -8750,7 +9117,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</s_report_definition>' expected.");
 }
 
-<ROOT_s_select,S_s_cur_def_2,S_struct_select_cmd_2,S_struct_select_cmd,S_s_expr_in_sq,S_struct_insert_cmd_2,S_s_select_1,S_s_cur_def,S_s_expr_exists_sq,S_struct_select_cmd_1,S_s_expr_in_sq_2,S_s_select_2,S_s_expr_exists_sq_1,S_struct_insert_cmd,S_s_select,S_s_expr_in_sq_1,S_s_cur_def_1,S_s_select_list_item_data_1,S_s_select_list_item_data_2,S_s_select_list_item_data,S_struct_insert_cmd_1,S_s_expr_exists_sq_2>"<s_select"{s} {
+<ROOT_s_select,S_s_cur_def_2,S_struct_select_cmd_2,S_struct_spl_foreach_select_cmd,S_struct_select_cmd,S_s_expr_in_sq,S_struct_insert_cmd_2,S_s_select_1,S_s_cur_def,S_s_expr_exists_sq,S_struct_select_cmd_1,S_s_expr_in_sq_2,S_s_select_2,S_struct_spl_foreach_select_cmd_2,S_s_expr_exists_sq_1,S_struct_insert_cmd,S_s_select,S_s_expr_in_sq_1,S_s_cur_def_1,S_s_select_list_item_data_1,S_struct_spl_foreach_select_cmd_1,S_s_select_list_item_data_2,S_s_select_list_item_data,S_struct_insert_cmd_1,S_s_expr_exists_sq_2>"<s_select"{s} {
   AX_s_select_extra_statement = 0;
   AX_s_select_modifier = 0;
   AX_s_select_ncolumns = 0;
@@ -8784,6 +9151,7 @@ const char* *statenames=NULL;
    case S_struct_insert_cmd_2: case S_struct_insert_cmd: case S_struct_insert_cmd_1: SET(S_struct_insert_cmd_2); break;
    case S_s_select_list_item_data_1: case S_s_select_list_item_data_2: case S_s_select_list_item_data: SET(S_s_select_list_item_data_2); break;
    case S_s_select_1: case S_s_select_2: case S_s_select: SET(S_s_select_2); break;
+   case S_struct_spl_foreach_select_cmd: case S_struct_spl_foreach_select_cmd_2: case S_struct_spl_foreach_select_cmd_1: SET(S_struct_spl_foreach_select_cmd_2); break;
    case S_s_cur_def_2: case S_s_cur_def: case S_s_cur_def_1: SET(S_s_cur_def_2); break;
    case S_struct_select_cmd_2: case S_struct_select_cmd: case S_struct_select_cmd_1: SET(S_struct_select_cmd_2); break;
    case ROOT_s_select: SET(EPILOG); break;
@@ -8805,6 +9173,7 @@ const char* *statenames=NULL;
    case S_struct_insert_cmd_2: case S_struct_insert_cmd: case S_struct_insert_cmd_1: SET(S_struct_insert_cmd_2); break;
    case S_s_select_list_item_data_1: case S_s_select_list_item_data_2: case S_s_select_list_item_data: SET(S_s_select_list_item_data_2); break;
    case S_s_select_1: case S_s_select_2: case S_s_select: SET(S_s_select_2); break;
+   case S_struct_spl_foreach_select_cmd: case S_struct_spl_foreach_select_cmd_2: case S_struct_spl_foreach_select_cmd_1: SET(S_struct_spl_foreach_select_cmd_2); break;
    case S_s_cur_def_2: case S_s_cur_def: case S_s_cur_def_1: SET(S_s_cur_def_2); break;
    case S_struct_select_cmd_2: case S_struct_select_cmd: case S_struct_select_cmd_1: SET(S_struct_select_cmd_2); break;
    case ROOT_s_select: SET(EPILOG); break;
@@ -9683,6 +10052,143 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</s_source_code>' expected.");
 }
 
+<ROOT_s_spl_block,S_struct_spl_block_cmd_2,S_struct_spl_while_cmd_2,S_struct_spl_for_cmd_2,S_struct_spl_on_exception_cmd,S_create_proc_data_1,S_struct_spl_foreach_select_cmd,S_struct_spl_foreach_execute_cmd_1,S_spl_if_cond_2,S_struct_spl_while_cmd,S_struct_spl_foreach_execute_cmd_2,S_struct_spl_block_cmd_1,S_spl_if_cond,S_create_proc_data,S_struct_spl_foreach_select_cmd_2,S_spl_if_cond_1,S_create_proc_data_2,S_struct_spl_for_cmd,S_struct_spl_on_exception_cmd_1,S_struct_spl_foreach_select_cmd_1,S_struct_spl_while_cmd_1,S_struct_spl_for_cmd_1,S_struct_spl_block_cmd,S_struct_spl_on_exception_cmd_2,S_struct_spl_foreach_execute_cmd>"<s_spl_block"{s} {
+  AX_s_spl_block_nm = 0;
+  ENTER(AL_s_spl_block); pushbuffer(0);
+  }
+
+<AL_s_spl_block>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_s_spl_block_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_s_spl_block_nm);
+
+ ">" {
+  LEAVE; STag_s_spl_block();pcdata_ix = 0; ENTER(S_s_spl_block);
+ }
+ "/>" {
+  LEAVE; STag_s_spl_block(); pcdata_ix = 0; ETag_s_spl_block(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_spl_block_cmd_2: case S_struct_spl_block_cmd_1: case S_struct_spl_block_cmd: SET(S_struct_spl_block_cmd_2); break;
+   case S_spl_if_cond_2: case S_spl_if_cond: case S_spl_if_cond_1: SET(S_spl_if_cond_2); break;
+   case S_struct_spl_foreach_execute_cmd_1: case S_struct_spl_foreach_execute_cmd_2: case S_struct_spl_foreach_execute_cmd: SET(S_struct_spl_foreach_execute_cmd_2); break;
+   case S_struct_spl_while_cmd_2: case S_struct_spl_while_cmd: case S_struct_spl_while_cmd_1: SET(S_struct_spl_while_cmd_2); break;
+   case S_struct_spl_foreach_select_cmd: case S_struct_spl_foreach_select_cmd_2: case S_struct_spl_foreach_select_cmd_1: SET(S_struct_spl_foreach_select_cmd_2); break;
+   case S_struct_spl_for_cmd_2: case S_struct_spl_for_cmd: case S_struct_spl_for_cmd_1: SET(S_struct_spl_for_cmd_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
+   case ROOT_s_spl_block: SET(EPILOG); break;
+   case S_struct_spl_on_exception_cmd: case S_struct_spl_on_exception_cmd_1: case S_struct_spl_on_exception_cmd_2: SET(S_struct_spl_on_exception_cmd_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of s_spl_block element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `s_spl_block' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `s_spl_block' element.");
+}
+
+<E_s_spl_block,S_s_spl_block_2,S_s_spl_block>{
+ "</s_spl_block"{s}">" {
+  LEAVE;
+  ETag_s_spl_block();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_spl_block_cmd_2: case S_struct_spl_block_cmd_1: case S_struct_spl_block_cmd: SET(S_struct_spl_block_cmd_2); break;
+   case S_spl_if_cond_2: case S_spl_if_cond: case S_spl_if_cond_1: SET(S_spl_if_cond_2); break;
+   case S_struct_spl_foreach_execute_cmd_1: case S_struct_spl_foreach_execute_cmd_2: case S_struct_spl_foreach_execute_cmd: SET(S_struct_spl_foreach_execute_cmd_2); break;
+   case S_struct_spl_while_cmd_2: case S_struct_spl_while_cmd: case S_struct_spl_while_cmd_1: SET(S_struct_spl_while_cmd_2); break;
+   case S_struct_spl_foreach_select_cmd: case S_struct_spl_foreach_select_cmd_2: case S_struct_spl_foreach_select_cmd_1: SET(S_struct_spl_foreach_select_cmd_2); break;
+   case S_struct_spl_for_cmd_2: case S_struct_spl_for_cmd: case S_struct_spl_for_cmd_1: SET(S_struct_spl_for_cmd_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
+   case ROOT_s_spl_block: SET(EPILOG); break;
+   case S_struct_spl_on_exception_cmd: case S_struct_spl_on_exception_cmd_1: case S_struct_spl_on_exception_cmd_2: SET(S_struct_spl_on_exception_cmd_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</s_spl_block>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</s_spl_block>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</s_spl_block>' expected.");
+}
+
+<ROOT_s_spl_execute,S_struct_spl_foreach_execute_cmd_1,S_struct_spl_call_cmd_1,S_struct_spl_foreach_execute_cmd_2,S_struct_spl_call_cmd_2,S_struct_spl_call_cmd,S_struct_spl_foreach_execute_cmd>"<s_spl_execute"{s} {
+  AX_s_spl_execute_nm = 0;
+  AX_s_spl_execute_proc_name = 0;
+  ENTER(AL_s_spl_execute); pushbuffer(0);
+  }
+
+<AL_s_spl_execute>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_s_spl_execute_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_s_spl_execute_nm);
+
+ "proc_name"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_s_spl_execute_proc_name);
+ "proc_name"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_s_spl_execute_proc_name);
+
+ ">" {
+  LEAVE; STag_s_spl_execute();pcdata_ix = 0; ENTER(S_s_spl_execute);
+ }
+ "/>" {
+  LEAVE; STag_s_spl_execute(); pcdata_ix = 0; ETag_s_spl_execute(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_spl_foreach_execute_cmd_1: case S_struct_spl_foreach_execute_cmd_2: case S_struct_spl_foreach_execute_cmd: SET(S_struct_spl_foreach_execute_cmd_2); break;
+   case ROOT_s_spl_execute: SET(EPILOG); break;
+   case S_struct_spl_call_cmd_1: case S_struct_spl_call_cmd_2: case S_struct_spl_call_cmd: SET(S_struct_spl_call_cmd_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of s_spl_execute element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `s_spl_execute' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `s_spl_execute' element.");
+}
+
+<S_s_spl_execute_2,S_s_spl_execute,E_s_spl_execute>{
+ "</s_spl_execute"{s}">" {
+  LEAVE;
+  ETag_s_spl_execute();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_spl_foreach_execute_cmd_1: case S_struct_spl_foreach_execute_cmd_2: case S_struct_spl_foreach_execute_cmd: SET(S_struct_spl_foreach_execute_cmd_2); break;
+   case ROOT_s_spl_execute: SET(EPILOG); break;
+   case S_struct_spl_call_cmd_1: case S_struct_spl_call_cmd_2: case S_struct_spl_call_cmd: SET(S_struct_spl_call_cmd_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</s_spl_execute>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</s_spl_execute>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</s_spl_execute>' expected.");
+}
+
+<ROOT_s_spl_for_item,S_expr_str_1,S_expr_str_2,S_expr_str>"<s_spl_for_item"{s} {
+  AX_s_spl_for_item_nm = 0;
+  ENTER(AL_s_spl_for_item); pushbuffer(0);
+  }
+
+<AL_s_spl_for_item>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_s_spl_for_item_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_s_spl_for_item_nm);
+
+ ">" {
+  LEAVE; STag_s_spl_for_item();pcdata_ix = 0; ENTER(S_s_spl_for_item);
+ }
+ "/>" {
+  LEAVE; STag_s_spl_for_item(); pcdata_ix = 0; ETag_s_spl_for_item(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_s_spl_for_item: SET(EPILOG); break;
+   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of s_spl_for_item element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `s_spl_for_item' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `s_spl_for_item' element.");
+}
+
+<S_s_spl_for_item_2,E_s_spl_for_item,S_s_spl_for_item>{
+ "</s_spl_for_item"{s}">" {
+  LEAVE;
+  ETag_s_spl_for_item();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_s_spl_for_item: SET(EPILOG); break;
+   case S_expr_str_1: case S_expr_str_2: case S_expr_str: SET(S_expr_str_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</s_spl_for_item>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</s_spl_for_item>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</s_spl_for_item>' expected.");
+}
+
 <ROOT_s_table,S_s_table,S_s_table_1,S_s_select_1,S_s_select_2,S_s_select,S_s_table_2>"<s_table"{s} {
   AX_s_table_alias = 0;
   AX_s_table_nm = 0;
@@ -9926,7 +10432,7 @@ const char* *statenames=NULL;
  "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_simple_variable_nm);
 
  ">" {
-  LEAVE; STag_simple_variable();pcdata_ix = 0; ENTER(E_simple_variable);
+  LEAVE; STag_simple_variable();pcdata_ix = 0; ENTER(S_simple_variable);
  }
  "/>" {
   LEAVE; STag_simple_variable(); pcdata_ix = 0; ETag_simple_variable(); popbuffer(); /* attribute */
@@ -9940,7 +10446,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("EOF in attribute list of `simple_variable' element.");
 }
 
-<E_simple_variable>{
+<S_simple_variable,S_simple_variable_2,E_simple_variable>{
  "</simple_variable"{s}">" {
   LEAVE;
   ETag_simple_variable();
@@ -10004,6 +10510,84 @@ const char* *statenames=NULL;
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</single_option>' expected.",yytext);
  .       FAIL("Unexpected character `%c': `</single_option>' expected.",yytext[0]);
  <<EOF>> FAIL("Premature EOF: `</single_option>' expected.");
+}
+
+<ROOT_spl_if_cond,S_spl_if_conds_2,S_spl_if_conds_1,S_spl_if_conds>"<spl_if_cond"{s} {
+  AX_spl_if_cond_nm = 0;
+  ENTER(AL_spl_if_cond); pushbuffer(0);
+  }
+
+<AL_spl_if_cond>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_spl_if_cond_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_spl_if_cond_nm);
+
+ ">" {
+  LEAVE; STag_spl_if_cond();pcdata_ix = 0; ENTER(S_spl_if_cond);
+ }
+ "/>" {
+  LEAVE; STag_spl_if_cond(); pcdata_ix = 0; ETag_spl_if_cond(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_spl_if_conds_2: case S_spl_if_conds_1: case S_spl_if_conds: SET(S_spl_if_conds_2); break;
+   case ROOT_spl_if_cond: SET(EPILOG); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of spl_if_cond element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `spl_if_cond' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `spl_if_cond' element.");
+}
+
+<S_spl_if_cond,S_spl_if_cond_2,E_spl_if_cond>{
+ "</spl_if_cond"{s}">" {
+  LEAVE;
+  ETag_spl_if_cond();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_spl_if_conds_2: case S_spl_if_conds_1: case S_spl_if_conds: SET(S_spl_if_conds_2); break;
+   case ROOT_spl_if_cond: SET(EPILOG); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</spl_if_cond>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</spl_if_cond>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</spl_if_cond>' expected.");
+}
+
+<ROOT_spl_if_conds,S_struct_spl_if_cmd,S_struct_spl_if_cmd_2,S_struct_spl_if_cmd_1>"<spl_if_conds"{s} {
+  AX_spl_if_conds_nm = 0;
+  ENTER(AL_spl_if_conds); pushbuffer(0);
+  }
+
+<AL_spl_if_conds>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_spl_if_conds_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_spl_if_conds_nm);
+
+ ">" {
+  LEAVE; STag_spl_if_conds();pcdata_ix = 0; ENTER(S_spl_if_conds);
+ }
+ "/>" {
+  LEAVE; STag_spl_if_conds(); pcdata_ix = 0; ETag_spl_if_conds(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_spl_if_cmd: case S_struct_spl_if_cmd_2: case S_struct_spl_if_cmd_1: SET(S_struct_spl_if_cmd_2); break;
+   case ROOT_spl_if_conds: SET(EPILOG); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of spl_if_conds element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `spl_if_conds' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `spl_if_conds' element.");
+}
+
+<S_spl_if_conds,S_spl_if_conds_2,E_spl_if_conds>{
+ "</spl_if_conds"{s}">" {
+  LEAVE;
+  ETag_spl_if_conds();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case S_struct_spl_if_cmd: case S_struct_spl_if_cmd_2: case S_struct_spl_if_cmd_1: SET(S_struct_spl_if_cmd_2); break;
+   case ROOT_spl_if_conds: SET(EPILOG); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</spl_if_conds>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</spl_if_conds>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</spl_if_conds>' expected.");
 }
 
 <ROOT_sq_subquery>"<sq_subquery"{s} {
@@ -10222,7 +10806,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</str>' expected.");
 }
 
-<ROOT_str_list,S_struct_check_menu_cmd,S_struct_lint_ignore_cmd,S_struct_load_cmd_1,S_struct_lint_ignore_cmd_2,S_struct_enable_menu_cmd_1,S_menuoption_2,S_struct_lint_expect_cmd_1,S_event_data,S_struct_check_menu_cmd_1,S_event_data_2,S_struct_init_cmd_2,S_s_formhandler_definition,S_struct_disable_menu_cmd_1,S_module_definition,S_struct_insert_cmd_2,S_struct_validate_cmd,S_struct_lint_expect_cmd,S_struct_init_cmd,S_struct_validate_cmd_2,S_struct_load_cmd,S_struct_lint_expect_cmd_2,S_event_data_1,S_struct_init_cmd_1,S_struct_disable_menu_cmd_2,S_struct_uncheck_menu_cmd_1,S_struct_update_cmd_2,S_module_definition_1,S_struct_load_cmd_2,S_s_formhandler_definition_2,S_struct_uncheck_menu_cmd,S_struct_validate_cmd_1,S_struct_update_cmd,S_struct_insert_cmd,S_struct_enable_menu_cmd,S_menuoption,S_struct_update_cmd_1,S_struct_enable_menu_cmd_2,S_struct_uncheck_menu_cmd_2,S_module_definition_2,S_struct_disable_menu_cmd,S_struct_lint_ignore_cmd_1,S_menuoption_1,S_struct_check_menu_cmd_2,S_struct_insert_cmd_1,S_s_formhandler_definition_1>"<str_list"{s} {
+<ROOT_str_list,S_struct_check_menu_cmd,S_struct_lint_ignore_cmd,S_struct_load_cmd_1,S_struct_lint_ignore_cmd_2,S_struct_spl_let_cmd_1,S_struct_enable_menu_cmd_1,S_struct_spl_on_exception_cmd,S_menuoption_2,S_struct_lint_expect_cmd_1,S_event_data,S_struct_spl_foreach_execute_cmd_1,S_struct_check_menu_cmd_1,S_struct_spl_let_cmd_2,S_event_data_2,S_struct_init_cmd_2,S_s_formhandler_definition,S_struct_disable_menu_cmd_1,S_module_definition,S_struct_insert_cmd_2,S_struct_validate_cmd,S_struct_lint_expect_cmd,S_struct_spl_call_cmd_1,S_struct_spl_foreach_execute_cmd_2,S_struct_init_cmd,S_struct_validate_cmd_2,S_struct_load_cmd,S_struct_lint_expect_cmd_2,S_event_data_1,S_struct_spl_let_cmd,S_struct_init_cmd_1,S_struct_disable_menu_cmd_2,S_struct_uncheck_menu_cmd_1,S_struct_update_cmd_2,S_module_definition_1,S_struct_load_cmd_2,S_s_formhandler_definition_2,S_struct_uncheck_menu_cmd,S_struct_validate_cmd_1,S_struct_update_cmd,S_struct_insert_cmd,S_struct_spl_call_cmd_2,S_struct_enable_menu_cmd,S_struct_spl_on_exception_cmd_1,S_menuoption,S_struct_update_cmd_1,S_struct_enable_menu_cmd_2,S_struct_uncheck_menu_cmd_2,S_struct_spl_call_cmd,S_module_definition_2,S_struct_disable_menu_cmd,S_struct_lint_ignore_cmd_1,S_struct_spl_on_exception_cmd_2,S_menuoption_1,S_struct_spl_foreach_execute_cmd,S_struct_check_menu_cmd_2,S_struct_insert_cmd_1,S_s_formhandler_definition_1>"<str_list"{s} {
   AX_str_list_nm = 0;
   ENTER(AL_str_list); pushbuffer(0);
   }
@@ -10242,6 +10826,7 @@ const char* *statenames=NULL;
    case S_struct_lint_ignore_cmd: case S_struct_lint_ignore_cmd_2: case S_struct_lint_ignore_cmd_1: SET(S_struct_lint_ignore_cmd_2); break;
    case S_struct_disable_menu_cmd_1: case S_struct_disable_menu_cmd_2: case S_struct_disable_menu_cmd: SET(S_struct_disable_menu_cmd_2); break;
    case S_struct_uncheck_menu_cmd_1: case S_struct_uncheck_menu_cmd: case S_struct_uncheck_menu_cmd_2: SET(S_struct_uncheck_menu_cmd_2); break;
+   case S_struct_spl_foreach_execute_cmd_1: case S_struct_spl_foreach_execute_cmd_2: case S_struct_spl_foreach_execute_cmd: SET(S_struct_spl_foreach_execute_cmd_2); break;
    case S_struct_update_cmd_2: case S_struct_update_cmd: case S_struct_update_cmd_1: SET(S_struct_update_cmd_2); break;
    case S_module_definition: case S_module_definition_1: case S_module_definition_2: SET(S_module_definition_2); break;
    case S_struct_load_cmd_1: case S_struct_load_cmd: case S_struct_load_cmd_2: SET(S_struct_load_cmd_2); break;
@@ -10250,9 +10835,12 @@ const char* *statenames=NULL;
    case S_s_formhandler_definition: case S_s_formhandler_definition_2: case S_s_formhandler_definition_1: SET(S_s_formhandler_definition_2); break;
    case S_struct_lint_expect_cmd_1: case S_struct_lint_expect_cmd: case S_struct_lint_expect_cmd_2: SET(S_struct_lint_expect_cmd_2); break;
    case ROOT_str_list: SET(EPILOG); break;
+   case S_struct_spl_on_exception_cmd: case S_struct_spl_on_exception_cmd_1: case S_struct_spl_on_exception_cmd_2: SET(S_struct_spl_on_exception_cmd_2); break;
    case S_struct_check_menu_cmd: case S_struct_check_menu_cmd_1: case S_struct_check_menu_cmd_2: SET(S_struct_check_menu_cmd_2); break;
+   case S_struct_spl_let_cmd_1: case S_struct_spl_let_cmd_2: case S_struct_spl_let_cmd: SET(S_struct_spl_let_cmd_2); break;
    case S_event_data: case S_event_data_2: case S_event_data_1: SET(S_event_data_2); break;
    case S_struct_init_cmd_2: case S_struct_init_cmd: case S_struct_init_cmd_1: SET(S_struct_init_cmd_2); break;
+   case S_struct_spl_call_cmd_1: case S_struct_spl_call_cmd_2: case S_struct_spl_call_cmd: SET(S_struct_spl_call_cmd_2); break;
   }
  }
  .       FAIL("Unexpected character `%c' in attribute list of str_list element.", yytext[0]);
@@ -10271,6 +10859,7 @@ const char* *statenames=NULL;
    case S_struct_lint_ignore_cmd: case S_struct_lint_ignore_cmd_2: case S_struct_lint_ignore_cmd_1: SET(S_struct_lint_ignore_cmd_2); break;
    case S_struct_disable_menu_cmd_1: case S_struct_disable_menu_cmd_2: case S_struct_disable_menu_cmd: SET(S_struct_disable_menu_cmd_2); break;
    case S_struct_uncheck_menu_cmd_1: case S_struct_uncheck_menu_cmd: case S_struct_uncheck_menu_cmd_2: SET(S_struct_uncheck_menu_cmd_2); break;
+   case S_struct_spl_foreach_execute_cmd_1: case S_struct_spl_foreach_execute_cmd_2: case S_struct_spl_foreach_execute_cmd: SET(S_struct_spl_foreach_execute_cmd_2); break;
    case S_struct_update_cmd_2: case S_struct_update_cmd: case S_struct_update_cmd_1: SET(S_struct_update_cmd_2); break;
    case S_module_definition: case S_module_definition_1: case S_module_definition_2: SET(S_module_definition_2); break;
    case S_struct_load_cmd_1: case S_struct_load_cmd: case S_struct_load_cmd_2: SET(S_struct_load_cmd_2); break;
@@ -10279,9 +10868,12 @@ const char* *statenames=NULL;
    case S_s_formhandler_definition: case S_s_formhandler_definition_2: case S_s_formhandler_definition_1: SET(S_s_formhandler_definition_2); break;
    case S_struct_lint_expect_cmd_1: case S_struct_lint_expect_cmd: case S_struct_lint_expect_cmd_2: SET(S_struct_lint_expect_cmd_2); break;
    case ROOT_str_list: SET(EPILOG); break;
+   case S_struct_spl_on_exception_cmd: case S_struct_spl_on_exception_cmd_1: case S_struct_spl_on_exception_cmd_2: SET(S_struct_spl_on_exception_cmd_2); break;
    case S_struct_check_menu_cmd: case S_struct_check_menu_cmd_1: case S_struct_check_menu_cmd_2: SET(S_struct_check_menu_cmd_2); break;
+   case S_struct_spl_let_cmd_1: case S_struct_spl_let_cmd_2: case S_struct_spl_let_cmd: SET(S_struct_spl_let_cmd_2); break;
    case S_event_data: case S_event_data_2: case S_event_data_1: SET(S_event_data_2); break;
    case S_struct_init_cmd_2: case S_struct_init_cmd: case S_struct_init_cmd_1: SET(S_struct_init_cmd_2); break;
+   case S_struct_spl_call_cmd_1: case S_struct_spl_call_cmd_2: case S_struct_spl_call_cmd: SET(S_struct_spl_call_cmd_2); break;
   }
  }
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</str_list>' expected.",yytext);
@@ -10981,6 +11573,45 @@ const char* *statenames=NULL;
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_copyback_cmd>' expected.",yytext);
  .       FAIL("Unexpected character `%c': `</struct_copyback_cmd>' expected.",yytext[0]);
  <<EOF>> FAIL("Premature EOF: `</struct_copyback_cmd>' expected.");
+}
+
+<ROOT_struct_create_proc_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_create_proc_cmd"{s} {
+  AX_struct_create_proc_cmd_nm = 0;
+  ENTER(AL_struct_create_proc_cmd); pushbuffer(0);
+  }
+
+<AL_struct_create_proc_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_create_proc_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_create_proc_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_create_proc_cmd();pcdata_ix = 0; ENTER(S_struct_create_proc_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_create_proc_cmd(); pcdata_ix = 0; ETag_struct_create_proc_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_create_proc_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_create_proc_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_create_proc_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_create_proc_cmd' element.");
+}
+
+<S_struct_create_proc_cmd,E_struct_create_proc_cmd,S_struct_create_proc_cmd_2>{
+ "</struct_create_proc_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_create_proc_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_create_proc_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_create_proc_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_create_proc_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_create_proc_cmd>' expected.");
 }
 
 <ROOT_struct_current_win_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_current_win_cmd"{s} {
@@ -14409,6 +15040,533 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</struct_sleep_cmd>' expected.");
 }
 
+<ROOT_struct_spl_block_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_block_cmd"{s} {
+  AX_struct_spl_block_cmd_nm = 0;
+  ENTER(AL_struct_spl_block_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_block_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_block_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_block_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_block_cmd();pcdata_ix = 0; ENTER(S_struct_spl_block_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_block_cmd(); pcdata_ix = 0; ETag_struct_spl_block_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_block_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_block_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_block_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_block_cmd' element.");
+}
+
+<S_struct_spl_block_cmd,S_struct_spl_block_cmd_2,E_struct_spl_block_cmd>{
+ "</struct_spl_block_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_block_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_block_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_block_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_block_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_block_cmd>' expected.");
+}
+
+<ROOT_struct_spl_call_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_call_cmd"{s} {
+  AX_struct_spl_call_cmd_nm = 0;
+  ENTER(AL_struct_spl_call_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_call_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_call_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_call_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_call_cmd();pcdata_ix = 0; ENTER(S_struct_spl_call_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_call_cmd(); pcdata_ix = 0; ETag_struct_spl_call_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_call_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_call_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_call_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_call_cmd' element.");
+}
+
+<E_struct_spl_call_cmd,S_struct_spl_call_cmd,S_struct_spl_call_cmd_2>{
+ "</struct_spl_call_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_call_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_call_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_call_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_call_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_call_cmd>' expected.");
+}
+
+<ROOT_struct_spl_for_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_for_cmd"{s} {
+  AX_struct_spl_for_cmd_nm = 0;
+  AX_struct_spl_for_cmd_vname = 0;
+  ENTER(AL_struct_spl_for_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_for_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_for_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_for_cmd_nm);
+
+ "vname"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_for_cmd_vname);
+ "vname"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_for_cmd_vname);
+
+ ">" {
+  LEAVE; STag_struct_spl_for_cmd();pcdata_ix = 0; ENTER(S_struct_spl_for_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_for_cmd(); pcdata_ix = 0; ETag_struct_spl_for_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_for_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_for_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_for_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_for_cmd' element.");
+}
+
+<E_struct_spl_for_cmd,S_struct_spl_for_cmd,S_struct_spl_for_cmd_2>{
+ "</struct_spl_for_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_for_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_for_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_for_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_for_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_for_cmd>' expected.");
+}
+
+<ROOT_struct_spl_foreach_execute_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_foreach_execute_cmd"{s} {
+  AX_struct_spl_foreach_execute_cmd_nm = 0;
+  ENTER(AL_struct_spl_foreach_execute_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_foreach_execute_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_foreach_execute_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_foreach_execute_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_foreach_execute_cmd();pcdata_ix = 0; ENTER(S_struct_spl_foreach_execute_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_foreach_execute_cmd(); pcdata_ix = 0; ETag_struct_spl_foreach_execute_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_foreach_execute_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_foreach_execute_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_foreach_execute_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_foreach_execute_cmd' element.");
+}
+
+<S_struct_spl_foreach_execute_cmd_2,S_struct_spl_foreach_execute_cmd,E_struct_spl_foreach_execute_cmd>{
+ "</struct_spl_foreach_execute_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_foreach_execute_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_foreach_execute_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_foreach_execute_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_foreach_execute_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_foreach_execute_cmd>' expected.");
+}
+
+<ROOT_struct_spl_foreach_select_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_foreach_select_cmd"{s} {
+  AX_struct_spl_foreach_select_cmd_cursorName = 0;
+  AX_struct_spl_foreach_select_cmd_nm = 0;
+  AX_struct_spl_foreach_select_cmd_withHold = 0;
+  ENTER(AL_struct_spl_foreach_select_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_foreach_select_cmd>{
+ "cursorName"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_foreach_select_cmd_cursorName);
+ "cursorName"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_foreach_select_cmd_cursorName);
+
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_foreach_select_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_foreach_select_cmd_nm);
+
+ "withHold"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_foreach_select_cmd_withHold);
+ "withHold"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_foreach_select_cmd_withHold);
+
+ ">" {
+  LEAVE; STag_struct_spl_foreach_select_cmd();pcdata_ix = 0; ENTER(S_struct_spl_foreach_select_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_foreach_select_cmd(); pcdata_ix = 0; ETag_struct_spl_foreach_select_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_foreach_select_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_foreach_select_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_foreach_select_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_foreach_select_cmd' element.");
+}
+
+<S_struct_spl_foreach_select_cmd,S_struct_spl_foreach_select_cmd_2,E_struct_spl_foreach_select_cmd>{
+ "</struct_spl_foreach_select_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_foreach_select_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_foreach_select_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_foreach_select_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_foreach_select_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_foreach_select_cmd>' expected.");
+}
+
+<ROOT_struct_spl_if_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_if_cmd"{s} {
+  AX_struct_spl_if_cmd_nm = 0;
+  ENTER(AL_struct_spl_if_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_if_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_if_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_if_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_if_cmd();pcdata_ix = 0; ENTER(S_struct_spl_if_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_if_cmd(); pcdata_ix = 0; ETag_struct_spl_if_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_if_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_if_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_if_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_if_cmd' element.");
+}
+
+<S_struct_spl_if_cmd,E_struct_spl_if_cmd,S_struct_spl_if_cmd_2>{
+ "</struct_spl_if_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_if_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_if_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_if_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_if_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_if_cmd>' expected.");
+}
+
+<ROOT_struct_spl_let_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_let_cmd"{s} {
+  AX_struct_spl_let_cmd_nm = 0;
+  ENTER(AL_struct_spl_let_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_let_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_let_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_let_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_let_cmd();pcdata_ix = 0; ENTER(S_struct_spl_let_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_let_cmd(); pcdata_ix = 0; ETag_struct_spl_let_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_let_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_let_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_let_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_let_cmd' element.");
+}
+
+<E_struct_spl_let_cmd,S_struct_spl_let_cmd,S_struct_spl_let_cmd_2>{
+ "</struct_spl_let_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_let_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_let_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_let_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_let_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_let_cmd>' expected.");
+}
+
+<ROOT_struct_spl_on_exception_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_on_exception_cmd"{s} {
+  AX_struct_spl_on_exception_cmd_nm = 0;
+  AX_struct_spl_on_exception_cmd_resume = 0;
+  ENTER(AL_struct_spl_on_exception_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_on_exception_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_on_exception_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_on_exception_cmd_nm);
+
+ "resume"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_on_exception_cmd_resume);
+ "resume"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_on_exception_cmd_resume);
+
+ ">" {
+  LEAVE; STag_struct_spl_on_exception_cmd();pcdata_ix = 0; ENTER(S_struct_spl_on_exception_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_on_exception_cmd(); pcdata_ix = 0; ETag_struct_spl_on_exception_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_on_exception_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_on_exception_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_on_exception_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_on_exception_cmd' element.");
+}
+
+<S_struct_spl_on_exception_cmd_2,E_struct_spl_on_exception_cmd,S_struct_spl_on_exception_cmd>{
+ "</struct_spl_on_exception_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_on_exception_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_on_exception_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_on_exception_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_on_exception_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_on_exception_cmd>' expected.");
+}
+
+<ROOT_struct_spl_raise_exception_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_raise_exception_cmd"{s} {
+  AX_struct_spl_raise_exception_cmd_nm = 0;
+  ENTER(AL_struct_spl_raise_exception_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_raise_exception_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_raise_exception_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_raise_exception_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_raise_exception_cmd();pcdata_ix = 0; ENTER(S_struct_spl_raise_exception_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_raise_exception_cmd(); pcdata_ix = 0; ETag_struct_spl_raise_exception_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_raise_exception_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_raise_exception_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_raise_exception_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_raise_exception_cmd' element.");
+}
+
+<S_struct_spl_raise_exception_cmd,S_struct_spl_raise_exception_cmd_2,E_struct_spl_raise_exception_cmd>{
+ "</struct_spl_raise_exception_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_raise_exception_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_raise_exception_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_raise_exception_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_raise_exception_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_raise_exception_cmd>' expected.");
+}
+
+<ROOT_struct_spl_return_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_return_cmd"{s} {
+  AX_struct_spl_return_cmd_nm = 0;
+  AX_struct_spl_return_cmd_withResume = 0;
+  ENTER(AL_struct_spl_return_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_return_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_return_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_return_cmd_nm);
+
+ "withResume"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_return_cmd_withResume);
+ "withResume"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_return_cmd_withResume);
+
+ ">" {
+  LEAVE; STag_struct_spl_return_cmd();pcdata_ix = 0; ENTER(S_struct_spl_return_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_return_cmd(); pcdata_ix = 0; ETag_struct_spl_return_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_return_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_return_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_return_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_return_cmd' element.");
+}
+
+<S_struct_spl_return_cmd_2,S_struct_spl_return_cmd,E_struct_spl_return_cmd>{
+ "</struct_spl_return_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_return_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_return_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_return_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_return_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_return_cmd>' expected.");
+}
+
+<ROOT_struct_spl_system_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_system_cmd"{s} {
+  AX_struct_spl_system_cmd_nm = 0;
+  ENTER(AL_struct_spl_system_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_system_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_system_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_system_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_system_cmd();pcdata_ix = 0; ENTER(S_struct_spl_system_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_system_cmd(); pcdata_ix = 0; ETag_struct_spl_system_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_system_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_system_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_system_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_system_cmd' element.");
+}
+
+<S_struct_spl_system_cmd,S_struct_spl_system_cmd_2,E_struct_spl_system_cmd>{
+ "</struct_spl_system_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_system_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_system_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_system_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_system_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_system_cmd>' expected.");
+}
+
+<ROOT_struct_spl_trace_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_trace_cmd"{s} {
+  AX_struct_spl_trace_cmd_nm = 0;
+  ENTER(AL_struct_spl_trace_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_trace_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_trace_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_trace_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_trace_cmd();pcdata_ix = 0; ENTER(S_struct_spl_trace_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_trace_cmd(); pcdata_ix = 0; ETag_struct_spl_trace_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_trace_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_trace_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_trace_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_trace_cmd' element.");
+}
+
+<S_struct_spl_trace_cmd_2,S_struct_spl_trace_cmd,E_struct_spl_trace_cmd>{
+ "</struct_spl_trace_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_trace_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_trace_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_trace_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_trace_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_trace_cmd>' expected.");
+}
+
+<ROOT_struct_spl_while_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_spl_while_cmd"{s} {
+  AX_struct_spl_while_cmd_nm = 0;
+  ENTER(AL_struct_spl_while_cmd); pushbuffer(0);
+  }
+
+<AL_struct_spl_while_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_spl_while_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_spl_while_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_spl_while_cmd();pcdata_ix = 0; ENTER(S_struct_spl_while_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_spl_while_cmd(); pcdata_ix = 0; ETag_struct_spl_while_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_while_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_spl_while_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_spl_while_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_spl_while_cmd' element.");
+}
+
+<E_struct_spl_while_cmd,S_struct_spl_while_cmd_2,S_struct_spl_while_cmd>{
+ "</struct_spl_while_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_spl_while_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_spl_while_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_spl_while_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_spl_while_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_spl_while_cmd>' expected.");
+}
+
 <ROOT_struct_sql_block_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_sql_block_cmd"{s} {
   AX_struct_sql_block_cmd_convert = 0;
   AX_struct_sql_block_cmd_nm = 0;
@@ -14493,6 +15651,45 @@ const char* *statenames=NULL;
  "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_sql_cmd>' expected.",yytext);
  .       FAIL("Unexpected character `%c': `</struct_sql_cmd>' expected.",yytext[0]);
  <<EOF>> FAIL("Premature EOF: `</struct_sql_cmd>' expected.");
+}
+
+<ROOT_struct_sql_debug_file_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_sql_debug_file_cmd"{s} {
+  AX_struct_sql_debug_file_cmd_nm = 0;
+  ENTER(AL_struct_sql_debug_file_cmd); pushbuffer(0);
+  }
+
+<AL_struct_sql_debug_file_cmd>{
+ "nm"{Eq}\' ENTER(VALUE1); BUFFERSET(AX_struct_sql_debug_file_cmd_nm);
+ "nm"{Eq}\" ENTER(VALUE2); BUFFERSET(AX_struct_sql_debug_file_cmd_nm);
+
+ ">" {
+  LEAVE; STag_struct_sql_debug_file_cmd();pcdata_ix = 0; ENTER(S_struct_sql_debug_file_cmd);
+ }
+ "/>" {
+  LEAVE; STag_struct_sql_debug_file_cmd(); pcdata_ix = 0; ETag_struct_sql_debug_file_cmd(); popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_sql_debug_file_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ .       FAIL("Unexpected character `%c' in attribute list of struct_sql_debug_file_cmd element.", yytext[0]);
+ {Name} FAIL("Bad attribute `%s' in `struct_sql_debug_file_cmd' element start tag.",yytext);
+ <<EOF>> FAIL("EOF in attribute list of `struct_sql_debug_file_cmd' element.");
+}
+
+<E_struct_sql_debug_file_cmd,S_struct_sql_debug_file_cmd_2,S_struct_sql_debug_file_cmd>{
+ "</struct_sql_debug_file_cmd"{s}">" {
+  LEAVE;
+  ETag_struct_sql_debug_file_cmd();
+  popbuffer(); /* attribute */
+  switch (YY_START) {
+   case ROOT_struct_sql_debug_file_cmd: SET(EPILOG); break;
+   case S_command_data_2: case S_command_data: case S_command_data_1: SET(S_command_data_2); break;
+  }
+ }
+ "</"{Name}{s}">" FAIL("Unexpected end-tag `%s': `</struct_sql_debug_file_cmd>' expected.",yytext);
+ .       FAIL("Unexpected character `%c': `</struct_sql_debug_file_cmd>' expected.",yytext[0]);
+ <<EOF>> FAIL("Premature EOF: `</struct_sql_debug_file_cmd>' expected.");
 }
 
 <ROOT_struct_sql_transact_cmd,S_command_data_2,S_command_data,S_command_data_1>"<struct_sql_transact_cmd"{s} {
@@ -14958,7 +16155,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</user_details>' expected.");
 }
 
-<ROOT_variable,S_variable_data_2,S_variable_list,S_variable_data,S_record_variable_2,S_assoc_array_variable_1,S_variable_data_1,S_record_variable_1,S_assoc_array_variable_2,S_record_variable,S_object_variable_1,S_variable_list_1,S_object_variable_2,S_assoc_array_variable,S_object_variable,S_variable_list_2>"<variable"{s} {
+<ROOT_variable,S_variable_data_2,S_create_proc_data_1,S_variable_list,S_variable_data,S_record_variable_2,S_assoc_array_variable_1,S_variable_data_1,S_create_proc_data,S_record_variable_1,S_assoc_array_variable_2,S_record_variable,S_object_variable_1,S_create_proc_data_2,S_variable_list_1,S_object_variable_2,S_assoc_array_variable,S_object_variable,S_variable_list_2>"<variable"{s} {
   AX_variable_assigned = 0;
   AX_variable_defsrc = 0;
   AX_variable_escope = 0;
@@ -15015,6 +16212,7 @@ const char* *statenames=NULL;
   switch (YY_START) {
    case S_assoc_array_variable_1: case S_assoc_array_variable_2: case S_assoc_array_variable: SET(S_assoc_array_variable_2); break;
    case S_variable_data_2: case S_variable_data: case S_variable_data_1: SET(S_variable_data_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
    case S_object_variable_1: case S_object_variable_2: case S_object_variable: SET(S_object_variable_2); break;
    case S_variable_list: case S_variable_list_1: case S_variable_list_2: SET(S_variable_list_2); break;
    case ROOT_variable: SET(EPILOG); break;
@@ -15034,6 +16232,7 @@ const char* *statenames=NULL;
   switch (YY_START) {
    case S_assoc_array_variable_1: case S_assoc_array_variable_2: case S_assoc_array_variable: SET(S_assoc_array_variable_2); break;
    case S_variable_data_2: case S_variable_data: case S_variable_data_1: SET(S_variable_data_2); break;
+   case S_create_proc_data_1: case S_create_proc_data: case S_create_proc_data_2: SET(S_create_proc_data_2); break;
    case S_object_variable_1: case S_object_variable_2: case S_object_variable: SET(S_object_variable_2); break;
    case S_variable_list: case S_variable_list_1: case S_variable_list_2: SET(S_variable_list_2); break;
    case ROOT_variable: SET(EPILOG); break;
@@ -15093,7 +16292,7 @@ const char* *statenames=NULL;
  <<EOF>> FAIL("Premature EOF: `</variable_data>' expected.");
 }
 
-<ROOT_variable_list,S_s_pdf_report_definition_2,S_globals_definition,S_s_formhandler_definition,S_module_definition,S_s_pdf_report_definition_1,S_s_report_definition_2,S_s_function_definition_1,S_globals_definition_1,S_s_class_definition_1,S_module_definition_1,S_s_function_definition,S_s_function_definition_2,S_s_formhandler_definition_2,S_s_report_definition,S_s_report_definition_1,S_globals_definition_2,S_module_definition_2,S_s_class_definition_2,S_s_class_definition,S_s_pdf_report_definition,S_s_formhandler_definition_1>"<variable_list"{s} {
+<ROOT_variable_list,S_s_pdf_report_definition_2,S_s_spl_block,S_globals_definition,S_s_formhandler_definition,S_module_definition,S_s_pdf_report_definition_1,S_s_report_definition_2,S_s_function_definition_1,S_globals_definition_1,S_s_spl_block_2,S_s_class_definition_1,S_module_definition_1,S_s_function_definition,S_s_function_definition_2,S_s_formhandler_definition_2,S_s_report_definition,S_s_report_definition_1,S_globals_definition_2,S_s_spl_block_1,S_module_definition_2,S_s_class_definition_2,S_s_class_definition,S_s_pdf_report_definition,S_s_formhandler_definition_1>"<variable_list"{s} {
   AX_variable_list_nm = 0;
   AX_variable_list_sorted_list = 0;
   ENTER(AL_variable_list); pushbuffer(0);
@@ -15112,6 +16311,7 @@ const char* *statenames=NULL;
  "/>" {
   LEAVE; STag_variable_list(); pcdata_ix = 0; ETag_variable_list(); popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_s_spl_block: case S_s_spl_block_2: case S_s_spl_block_1: SET(S_s_spl_block_2); break;
    case S_globals_definition: case S_globals_definition_1: case S_globals_definition_2: SET(S_globals_definition_2); break;
    case S_module_definition: case S_module_definition_1: case S_module_definition_2: SET(S_module_definition_2); break;
    case S_s_pdf_report_definition_2: case S_s_pdf_report_definition_1: case S_s_pdf_report_definition: SET(S_s_pdf_report_definition_2); break;
@@ -15133,6 +16333,7 @@ const char* *statenames=NULL;
   ETag_variable_list();
   popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_s_spl_block: case S_s_spl_block_2: case S_s_spl_block_1: SET(S_s_spl_block_2); break;
    case S_globals_definition: case S_globals_definition_1: case S_globals_definition_2: SET(S_globals_definition_2); break;
    case S_module_definition: case S_module_definition_1: case S_module_definition_2: SET(S_module_definition_2); break;
    case S_s_pdf_report_definition_2: case S_s_pdf_report_definition_1: case S_s_pdf_report_definition: SET(S_s_pdf_report_definition_2); break;

@@ -68,12 +68,16 @@
 0x[0123456789ABCDEFabcdef]+ { strcpy(yylval.str, yytext); return(HEX_INT_VAL);}
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
 strcpy(yylval.str, yytext);colno+=strlen(yytext);
-//printf("::::::::::::::::: %s\n",yytext);
+if (yydebug) {
+printf("::::::::::::::::: %s\n",yytext);
+}
  return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
 strcpy(yylval.str, yytext);colno+=strlen(yytext); 
-//printf("::::::::::::::::: %s\n",yytext);
+if (yydebug) {
+	printf("::::::::::::::::: %s\n",yytext);
+}
 return(NAMED);}
 . {return CH;}
 %%

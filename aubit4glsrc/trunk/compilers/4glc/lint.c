@@ -163,6 +163,7 @@ static void set_lint_module (char *s);
 static void check_variable_name (char *modname, char *scope,
 				 struct variable *v);
 static void check_cmds_for_dead_code (struct commands *cmds);
+//expr_str * expr_cached (expr_str * l);
 //int has_variable (struct variable_list *v, char *name) ;
 //int get_lint_style(void) ;
 FILE *lintfile = 0;
@@ -1437,7 +1438,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 	  for (b = 0; b < if_c->conditions.conditions_len; b++)
 	    {
 	      //expr_str *e;
-	      struct command *r2;
+	      //struct command *r2;
 	      //int last_was_sql = 0;
 	      int done = 0;
 	      ensure_bool (r->module,
@@ -1632,8 +1633,8 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		    {
 		      char *ptr_l;
 		      char *ptr_r;
-		      expr_str *le;
-		      expr_str *re;
+		      //expr_str *le;
+		      //expr_str *re;
 		      ptr_l =
 			expr_as_string_when_possible (expr->expr_str_u.
 						      expr_op->left);
@@ -2157,6 +2158,9 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 		      lmax =
 			expr_char_length (module_name, r->lineno,
 					  expr_list->list.list_val[0]);
+
+			A4GL_pause_execution();
+
 		      var_length =
 			expr_datatype (module_name, r->lineno,
 				       varlist->list.list_val[0]) >> 16;
@@ -2348,7 +2352,7 @@ static void
 check_function (struct module_definition *d, struct s_function_definition *f)
 {
   struct commands *func_cmds = 0;
-  int a;
+  //int a;
   //int b;
   char *currfunc;
 
@@ -2458,7 +2462,7 @@ check_for_globals_abuse (module_definition * d)
   for (b = 0; b < d->imported_global_variables.variables.variables_len; b++)
     {
       variable_ptr p;
-      static char *lastname = 0;
+      //static char *lastname = 0;
 
       p = d->imported_global_variables.variables.variables_val[b];
       found = 0;
@@ -3850,7 +3854,7 @@ find_function_single_rtype (char *funcname)
 	  return -1;
 	}
 
-      if (get_bolton_nrets () < 1)
+      if (get_bolton_nrets (a) < 1)
 	{
 	  A4GL_lint (0, 0, "FUNCNOTRET",
 		     "Function does not return a value but is being used where it should return a value",
@@ -4835,7 +4839,7 @@ check_program (module_definition * mods, int nmodules)
   int bad_load = 0;
   int main_cnt = 0;
   struct commands *all_cmds = 0;
-  char *fname;
+  //char *fname;
   int mcnt;
   int fromLibrary[50000];
   int isCalled = 0;
@@ -6868,8 +6872,7 @@ add_cache_expression (struct expr_str_list *list, expr_str * e)
 }
 
 
-expr_str *
-expr_cached (expr_str * l)
+expr_str * expr_cached (expr_str * l)
 {
   int num;
   if (expr_cache == NULL)
@@ -6948,9 +6951,9 @@ check_expression_list (char *module, int lineno,
 static void
 cache_expressions (struct expr_str_list *list, struct commands *cmds)
 {
-  int a;
-  int b;
-  struct struct_display_cmd *disp;
+  //int a;
+  //int b;
+  //struct struct_display_cmd *disp;
   list->list.list_len = 0;
   list->list.list_val = 0;
 

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.46 2009-11-24 20:37:22 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.47 2009-12-10 19:19:02 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -154,6 +154,7 @@ enum cmd_type {
 	E_CMD_SELECT_CMD,
 	E_CMD_SQL_BLOCK_CMD,
 	E_CMD_SQL_CMD,
+	E_CMD_SQL_DEBUG_FILE_CMD,
 	E_CMD_SQL_TRANSACT_CMD,
 	E_CMD_START_CMD,
 	E_CMD_START_RPC_CMD,
@@ -178,7 +179,24 @@ enum cmd_type {
         E_CMD_DELETE_CMD,
 	E_CMD_LINT_IGNORE_CMD,
 	E_CMD_LINT_EXPECT_CMD,
-E_CMD_COPYBACK_CMD,
+	E_CMD_COPYBACK_CMD,
+
+	/* SPL Specific commands */
+	E_CMD_CREATE_PROCEDURE_CMD,
+	E_CMD_SPL_SYSTEM_CMD,
+	E_CMD_SPL_FOREACH_SELECT_CMD,
+	E_CMD_SPL_FOREACH_EXECUTE_CMD,
+	E_CMD_SPL_LET_CMD,
+	E_CMD_SPL_RAISE_EXCEPTION_CMD,
+	E_CMD_SPL_ON_EXCEPTION_CMD,
+	E_CMD_SPL_IF_CMD,
+	E_CMD_SPL_WHILE_CMD,
+	E_CMD_SPL_FOR_CMD,
+	E_CMD_SPL_CALL_CMD,
+	E_CMD_SPL_TRACE_CMD,
+E_CMD_SPL_RETURN_CMD,
+E_CMD_SPL_BLOCK_CMD,
+
 E_CMD_LAST
 };
 
@@ -241,7 +259,6 @@ struct attrib {
 
 
 
-
 struct funcname_list {
 	str name<>;
 	str namespaces<>;
@@ -249,6 +266,7 @@ struct funcname_list {
 
 
 /* ***************************************************** */
+
 struct struct_start_rpc_cmd  {
 	struct expr_str *valid_port;
 	funcname_list remote_func_list;
@@ -345,7 +363,8 @@ struct struct_free_blob_cmd {
 
 /* ***************************************************** */
 enum e_block_cmd {
-	EBC_WHILE, EBC_FOR, EBC_INPUT, EBC_FOREACH, EBC_CONSTRUCT, EBC_DISPLAY, EBC_MENU,EBC_PROMPT, EBC_CASE
+	EBC_WHILE, EBC_FOR, EBC_INPUT, EBC_FOREACH, EBC_CONSTRUCT, EBC_DISPLAY, EBC_MENU,EBC_PROMPT, EBC_CASE,
+	EBC_SPL_FOR, EBC_SPL_WHILE, EBC_SPL_FOREACH
 };
 
 struct struct_continue_cmd {
@@ -995,6 +1014,11 @@ struct struct_sql_cmd {
 	struct expr_str * connid;
 	str sql;
 };
+struct struct_sql_debug_file_cmd {
+	struct expr_str * connid;
+	struct expr_str * debugfile;
+};
+
 
 
 struct struct_select_cmd {
@@ -1356,7 +1380,240 @@ struct struct_set_session_cmd {
 	struct expr_str *s2;
 	struct expr_str *s3;
 };
+
+struct vname {
+	str name;
+	str alias;
+};
+
+struct vname_name_list { /* NAMELIST */
+	vname names<>;
+};
+
+enum e_constant_type {
+		CONST_TYPE_CHAR  ,
+		CONST_TYPE_FLOAT ,
+		CONST_TYPE_INTEGER,
+		CONST_TYPE_IDENT
+};
+
+union constant_data switch (enum e_constant_type consttype) {
+	case CONST_TYPE_CHAR: 	str data_c;
+	case CONST_TYPE_IDENT: 	str data_ident;
+	case CONST_TYPE_INTEGER: int data_i;
+	case CONST_TYPE_FLOAT: double data_f;
+};
+
+struct linked_variable
+{
+  str tabname;
+  struct vname_name_list col_list;
+};
+
+
+typedef struct variable* variable_ptr;
+
+
+struct assoc_array_variable
+{
+  variable_ptr variable;
+  int size;
+  int char_size;
+};
+
+
+
+struct simple_variable
+ {
+  int datatype;                 /* Integer data type */
+  int dimensions[2];            /* Size - eg char(5), or decimal(16,2) */
+  struct expr_str *defaultvalue;
+};
+
+
+struct record_variable
+{
+  variable_ptr variables<>;  		/* List of pointers to the variables */
+  int record_alloc;             		/* Number of slots allocated */
+  struct linked_variable *linked;       	/* Link to any table + pk or 0 */
+  str user_ptr;
+};
+
+
+struct object_variable {
+	str class_name;
+	variable_ptr definition;
+};
+
+
+
+struct assoc_subscript {
+	str subscript_string;	
+	struct expr_str *subscript_value;
+};
+
+
+enum e_variable_type {
+        VARIABLE_TYPE_SIMPLE   ,
+        VARIABLE_TYPE_RECORD    ,
+        VARIABLE_TYPE_ASSOC     ,
+        VARIABLE_TYPE_CONSTANT  ,
+        VARIABLE_TYPE_FUNCTION_DECLARE  ,
+        VARIABLE_TYPE_OBJECT    ,
+	VARIABLE_TYPE_TYPE_DECLARATION
+};
+
+union variable_data switch ( enum e_variable_type variable_type) {
+        case VARIABLE_TYPE_SIMPLE   		: struct simple_variable v_simple;
+        case VARIABLE_TYPE_RECORD    		: struct record_variable v_record;
+        case VARIABLE_TYPE_ASSOC     		: struct assoc_array_variable v_assoc;
+        case VARIABLE_TYPE_CONSTANT  		: constant_data v_const;
+        case VARIABLE_TYPE_FUNCTION_DECLARE  	: void;
+        case VARIABLE_TYPE_OBJECT 		: struct object_variable v_object;
+	case VARIABLE_TYPE_TYPE_DECLARATION	: struct variable *type_declaration;
+
+};
+
+struct variable
+{
+  struct vname_name_list names;
+  str defsrc;
+  char user_system;
+  enum e_scope escope;
+  int is_static;
+  int is_extern;
+  int arr_subscripts<>;
+  variable_data var_data;
+  str src_module;
+  int usage;
+  int assigned;
+  int flags;
+  int lineno;
+};
+
+
+struct lint_warning {
+	int lineno;
+	str warning;
+};
+
+
+struct variable_list {
+	variable_ptr variables<>;
+	int sorted_list;
+};
+
+
+/* Stored Procedure (SPL language) data 
+
+ Also -  struct s_spl_block  is defined a little later...
+*/
+
+struct create_proc_data {
+	str funcname;
+	variable_ptr parameters<>;
+	variable_ptr returning<>;
+	struct s_spl_block *block;
+	struct expr_str_list *document;
+	struct expr_str *listing;
+	enum e_boolean isDBA;
+};
+
 	
+
+struct struct_create_proc_cmd {
+	struct expr_str *connid;
+	struct create_proc_data *create_proc;
+};
+
+
+struct struct_spl_system_cmd {
+	struct expr_str *cmd;
+};
+
+
+struct  struct_spl_let_cmd {
+	struct str_list *vars;
+        struct expr_str_list *values;
+};
+
+struct  struct_spl_raise_exception_cmd {
+	struct expr_str *sql_err;
+	struct expr_str *isam_err;
+	struct expr_str *err_text;
+};
+
+
+struct spl_if_cond {
+	struct expr_str* test_expr;
+	struct s_spl_block *commands;
+};
+
+struct spl_if_conds {
+	spl_if_cond conditions<>;
+};
+
+struct  struct_spl_if_cmd {
+	spl_if_conds conditions;
+};
+
+struct  struct_spl_while_cmd {
+	struct expr_str *condition;
+	struct s_spl_block *block;
+};
+
+
+struct  struct_spl_return_cmd {
+	struct expr_str_list *rvals;	
+	int withResume;
+};
+
+struct struct_spl_block_cmd {
+	struct s_spl_block *block;
+};
+
+struct  struct_spl_trace_cmd {
+	struct expr_str *trace_expr;
+};
+
+struct  struct_spl_for_cmd {
+	str vname;
+	struct expr_str_list *value_list;
+	struct s_spl_block *block;
+};
+
+struct  struct_spl_on_exception_cmd {
+	struct list_of_integers *exception_list;
+	struct str_list * set_list;
+	struct s_spl_block *block;
+	int resume;
+
+};
+
+
+struct  struct_spl_foreach_select_cmd {
+	int withHold;
+	str cursorName;
+	struct s_select *select_stmt;
+	struct s_spl_block *block;
+};
+
+
+struct s_spl_execute {
+	str proc_name;
+	struct expr_str_list *parameters;
+};
+
+struct  struct_spl_call_cmd {
+	struct s_spl_execute *fcall;
+	str_list *return_variables;
+};
+
+struct  struct_spl_foreach_execute_cmd {
+	struct s_spl_execute *fcall;
+	str_list *into_vars;
+	struct s_spl_block *block;
+};
 
 
 
@@ -1373,6 +1630,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_CASE_CMD: struct_case_cmd case_cmd;
 	case E_CMD_CLOSE_CMD: struct_close_cmd close_cmd;
 	case E_CMD_CLOSE_SQL_CMD: struct_close_sql_cmd close_sql_cmd;
+	case E_CMD_SQL_DEBUG_FILE_CMD: struct_sql_debug_file_cmd sql_debug_file_cmd;
 	case E_CMD_CODE_CMD: struct_code_cmd code_cmd;
 	case E_CMD_CONSTRUCT_CMD: struct_construct_cmd construct_cmd;
 	case E_CMD_DEFER_CMD: struct_defer_cmd defer_cmd;
@@ -1477,7 +1735,22 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_LINT_IGNORE_CMD: struct_lint_ignore_cmd lint_ignore_cmd;
 	case E_CMD_LINT_EXPECT_CMD: struct_lint_expect_cmd lint_expect_cmd;
 	case E_CMD_COPYBACK_CMD: struct_copyback_cmd copyback_cmd;
-	
+	case E_CMD_CREATE_PROCEDURE_CMD : struct_create_proc_cmd create_proc_cmd;
+	case E_CMD_SPL_SYSTEM_CMD: struct_spl_system_cmd spl_system_cmd;
+	case E_CMD_SPL_FOREACH_SELECT_CMD: struct_spl_foreach_select_cmd spl_foreach_select_cmd ;
+
+	case E_CMD_SPL_FOREACH_EXECUTE_CMD: struct_spl_foreach_execute_cmd spl_foreach_execute_cmd;
+	case E_CMD_SPL_LET_CMD: struct_spl_let_cmd spl_let_cmd;
+	case E_CMD_SPL_RAISE_EXCEPTION_CMD: struct_spl_raise_exception_cmd spl_raise_exception_cmd;
+	case E_CMD_SPL_ON_EXCEPTION_CMD: struct_spl_on_exception_cmd spl_on_exception_cmd;
+	case E_CMD_SPL_IF_CMD: struct_spl_if_cmd spl_if_cmd;
+	case E_CMD_SPL_WHILE_CMD: struct_spl_while_cmd spl_while_cmd;
+	case E_CMD_SPL_FOR_CMD: struct_spl_for_cmd spl_for_cmd ;
+	case E_CMD_SPL_CALL_CMD: struct_spl_call_cmd spl_call_cmd ;
+	case E_CMD_SPL_TRACE_CMD: struct_spl_trace_cmd spl_trace_cmd ;
+	case E_CMD_SPL_RETURN_CMD: struct_spl_return_cmd spl_return_cmd ;
+	case E_CMD_SPL_BLOCK_CMD: struct_spl_block_cmd spl_block_cmd ;
+
 };
 
 
@@ -1502,126 +1775,6 @@ struct command {
 	struct cmd_int_list *ignore_error_list;
 };
 
-
-struct vname {
-	str name;
-	str alias;
-};
-
-struct vname_name_list { /* NAMELIST */
-	vname names<>;
-};
-
-enum e_constant_type {
-		CONST_TYPE_CHAR  ,
-		CONST_TYPE_FLOAT ,
-		CONST_TYPE_INTEGER,
-		CONST_TYPE_IDENT
-};
-
-union constant_data switch (enum e_constant_type consttype) {
-	case CONST_TYPE_CHAR: 	str data_c;
-	case CONST_TYPE_IDENT: 	str data_ident;
-	case CONST_TYPE_INTEGER: int data_i;
-	case CONST_TYPE_FLOAT: double data_f;
-};
-
-struct linked_variable
-{
-  str tabname;
-  struct vname_name_list col_list;
-};
-
-
-typedef struct variable* variable_ptr;
-
-struct assoc_array_variable
-{
-  variable_ptr variable;
-  int size;
-  int char_size;
-};
-
-
-
-struct simple_variable
- {
-  int datatype;                 /* Integer data type */
-  int dimensions[2];            /* Size - eg char(5), or decimal(16,2) */
-};
-
-
-struct record_variable
-{
-  variable_ptr variables<>;  		/* List of pointers to the variables */
-  int record_alloc;             		/* Number of slots allocated */
-  struct linked_variable *linked;       	/* Link to any table + pk or 0 */
-  str user_ptr;
-};
-
-
-struct object_variable {
-	str class_name;
-	variable_ptr definition;
-};
-
-
-
-struct assoc_subscript {
-	str subscript_string;	
-	struct expr_str *subscript_value;
-};
-
-
-enum e_variable_type {
-        VARIABLE_TYPE_SIMPLE   ,
-        VARIABLE_TYPE_RECORD    ,
-        VARIABLE_TYPE_ASSOC     ,
-        VARIABLE_TYPE_CONSTANT  ,
-        VARIABLE_TYPE_FUNCTION_DECLARE  ,
-        VARIABLE_TYPE_OBJECT    ,
-	VARIABLE_TYPE_TYPE_DECLARATION
-};
-
-union variable_data switch ( enum e_variable_type variable_type) {
-        case VARIABLE_TYPE_SIMPLE   		: struct simple_variable v_simple;
-        case VARIABLE_TYPE_RECORD    		: struct record_variable v_record;
-        case VARIABLE_TYPE_ASSOC     		: struct assoc_array_variable v_assoc;
-        case VARIABLE_TYPE_CONSTANT  		: constant_data v_const;
-        case VARIABLE_TYPE_FUNCTION_DECLARE  	: void;
-        case VARIABLE_TYPE_OBJECT 		: struct object_variable v_object;
-	case VARIABLE_TYPE_TYPE_DECLARATION	: struct variable *type_declaration;
-
-};
-
-struct variable
-{
-  struct vname_name_list names;
-  str defsrc;
-  char user_system;
-  enum e_scope escope;
-  int is_static;
-  int is_extern;
-  int arr_subscripts<>;
-  variable_data var_data;
-  str src_module;
-  int usage;
-  int assigned;
-  int flags;
-  int lineno;
-};
-
-
-struct lint_warning {
-	int lineno;
-	str warning;
-};
-
-
-struct variable_list {
-	variable_ptr variables<>;
-	int sorted_list;
-};
 
 
 
@@ -1709,6 +1862,14 @@ struct s_expr_op {
         struct expr_str *right;
         struct expr_str *escape;
 };
+
+
+struct s_spl_block {
+	variable_list variables;
+	commands *commands;
+};
+
+
 
 struct s_expr_function_call {
         str fname;
@@ -1883,6 +2044,11 @@ struct s_func {
 	str namespace;
 };
 
+struct  s_named_param {
+	str param_name;
+	struct expr_str *param_value;
+};
+
 enum e_expr_type {
                 ET_EXPR_EXPR_LIST,
                 ET_EXPR_BINDING,
@@ -2022,6 +2188,27 @@ enum e_expr_type {
 		ET_EXPR_TAG,
                 ET_EXPR_RETURN_NULL,
 		ET_EXPR_SQLERRMESSAGE,
+
+		ET_EXPR_OP_EQUAL_ALL,
+		ET_EXPR_OP_LESS_THAN_ALL,
+		ET_EXPR_OP_GREATER_THAN_ALL,
+		ET_EXPR_OP_NOT_EQUAL_ALL,
+		ET_EXPR_OP_LESS_THAN_EQ_ALL,
+		ET_EXPR_OP_GREATER_THAN_EQ_ALL,
+		ET_EXPR_OP_EQUAL_ANY,
+		ET_EXPR_OP_LESS_THAN_ANY,
+		ET_EXPR_OP_GREATER_THAN_ANY,
+		ET_EXPR_OP_NOT_EQUAL_ANY,
+		ET_EXPR_OP_LESS_THAN_EQ_ANY,
+		ET_EXPR_OP_GREATER_THAN_EQ_ANY,
+		ET_EXPR_SPL_TRACE_ON,
+		ET_EXPR_SPL_TRACE_OFF,
+		ET_EXPR_SPL_TRACE_PROCEDURE,
+		ET_EXPR_SPL_TRACE_EXPR,
+		ET_EXPR_NAMED_PARAM,
+
+		ET_EXPR_SPL_FOR_ITEM,
+
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 	
 };
@@ -2047,10 +2234,28 @@ struct s_expr_parameter {
           str  expr_string;
 };
 
+/*
+	 Use for a stored procedure for a FOR list - 
+	 eg FOR a = 1 TO 20 STEP 2
+	 Also - FOR a in (1,2,3) 
+	 would have 3 items - each with s NULL for 'end' and 'step' - and just 'start' populated.
+	 Another example ; 
+	 for a in (1, 4 to 40, 100 to 1000 step 10)
+	 would have 3 items : 
+	       start=1, end=NULL, STEP=NULL
+	       start=3, end=40, STEP=NULL
+	       start=100, end=1000, STEP=10
+*/
+struct s_spl_for_item  {
+	struct expr_str *start;
+	struct expr_str *end;
+	struct expr_str *step;
+};
+typedef struct s_spl_for_item *spl_for_item_ptr; 
 
 
 union expr_str switch ( enum e_expr_type expr_type) {
-		case ET_EXPR_RETURN_NULL: /*! void; !*/
+	case ET_EXPR_RETURN_NULL: /*! void; !*/
 	case ET_EXPR_TODAY: /*! void; !*/
 	case ET_EXPR_TIME: /*! void; !*/
 	case ET_EXPR_LINENO: /*! void; !*/
@@ -2070,6 +2275,9 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_PDF_CURRENT_X: /*! void; !*/
 	case ET_EXPR_PDF_CURRENT_Y: /*! void; !*/
 	case ET_EXPR_SQLERRMESSAGE: /*! void; !*/
+	case ET_EXPR_SPL_TRACE_ON: /*! void; !*/
+	case ET_EXPR_SPL_TRACE_OFF: /*! void; !*/
+	case ET_EXPR_SPL_TRACE_PROCEDURE: /*! void; !*/
 	case ET_EXPR_LAST:
 		void;
 
@@ -2196,6 +2404,33 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_EXISTS_SUBQUERY:
                 struct s_expr_exists_sq                   *expr_exists_sq;
 
+
+
+                case ET_EXPR_OP_EQUAL_ALL:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_LESS_THAN_ALL:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_GREATER_THAN_ALL:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_NOT_EQUAL_ALL:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_LESS_THAN_EQ_ALL:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_GREATER_THAN_EQ_ALL:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_EQUAL_ANY:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_LESS_THAN_ANY:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_GREATER_THAN_ANY:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_NOT_EQUAL_ANY:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_LESS_THAN_EQ_ANY:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+                case ET_EXPR_OP_GREATER_THAN_EQ_ANY:
+                /*! struct s_expr_in_sq                       *expr_in_sq; !*/
+
 	case ET_EXPR_OP_IN_SUBQUERY:
                 /*! struct s_expr_in_sq                       *expr_in_sq; !*/
 	case ET_EXPR_OP_NOTIN_SUBQUERY:
@@ -2234,6 +2469,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
 
 	case ET_EXPR_ASSOC:
 		struct assoc_subscript *expr_assoc_subscript;
+	case ET_EXPR_SPL_TRACE_EXPR:
+                /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_FGL_ISDYNARR_ALLOCATED:
                 /*! struct expr_str                         *expr_expr; !*/
 	case ET_EXPR_BRACKET:
@@ -2319,8 +2556,10 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_E_V_OR_LIT_STRING: 		str s;
 	case ET_E_V_OR_LIT_VAR_AS_STRING: 	str sv;
 	case ET_E_V_OR_LIT_IDENT: 		str si;
+	case ET_EXPR_NAMED_PARAM: struct s_named_param *expr_named_param;
 	case ET_EXPR_FUNC:	struct s_func expr_func; /* This is just to store a function name+namespace - its used for load filters..  Its not the same as a function call!!!!!*/
-};
+	case ET_EXPR_SPL_FOR_ITEM: struct s_spl_for_item *expr_spl_for_item; /* item in the SPL 'FOR' commands list of items */
+}; 
 
 
 

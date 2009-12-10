@@ -5,6 +5,7 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
 #include "parsehelp.h"
+#include "variables_new.h"
 
 extern char infilename[];
 extern int yylineno;
@@ -636,6 +637,12 @@ int sio_id=0;
 	case EBC_CASE:          // Exit CASE
 		block_no=get_exit_loop("CASE");
 		break;
+
+	case EBC_SPL_WHILE:
+	case EBC_SPL_FOREACH:
+	case EBC_SPL_FOR:
+		block_no=0;
+		break;
    }
 
    c->cmd_data.command_data_u.continue_cmd.block_id=block_no;
@@ -739,6 +746,11 @@ int block_no=-1;
 		break;
 	case EBC_CASE:          // Exit CASE
 		block_no=get_exit_loop("CASE");
+		break;
+	case EBC_SPL_WHILE:
+	case EBC_SPL_FOREACH:
+	case EBC_SPL_FOR:
+		block_no=0;
 		break;
    }
    A4GL_assertion(block_no<0, "Could not find block number");
@@ -1233,19 +1245,29 @@ struct command *c;
    c->cmd_data.command_data_u.sql_cmd.sql=strdup(p_sql);
    return c;
 }
- 
+
+
+
 /*
-struct command *new_sql_bound_cmd(char *p_connid, char * p_sql) {
+new_spl_proc
+new_spl_raise_exception_cmd
+new_spl_on_exception_cmd
+new_list_of_integers
+new_spl_foreach_select
+new_spl_foreach_execute
+new_spl_execute
+new_spl_fcall
+new_spl_trace_cmd
+*/
+
+struct command *new_sql_debug_file_to_cmd(expr_str *p_connid, expr_str *p_filename) {
 struct command *c;
-   c=new_command(E_CMD_SQL_BOUND_CMD);
-   c->cmd_data.command_data_u.sql_bound_cmd.connid=p_connid;
-   c->cmd_data.command_data_u.sql_bound_cmd.sql=strdup(p_sql);
-   c->cmd_data.command_data_u.sql_bound_cmd.inbind=copy_togenbind('i');
+   c=new_command(E_CMD_SQL_DEBUG_FILE_CMD);
+   c->cmd_data.command_data_u.sql_debug_file_cmd.connid=p_connid;
+   c->cmd_data.command_data_u.sql_debug_file_cmd.debugfile=p_filename;
    return c;
 }
-*/
  
-
 
 struct command *new_select_cmd(expr_str *p_connid, struct s_select * p_sql,char *forupdate) {
 struct command *c;
@@ -1536,9 +1558,9 @@ struct command *c;
 struct command *new_whenever_cmd(int p_whencode,char * p_whento) {
 struct command *c;
 
-static int local_last_whencode[10]={-1,-1,-1,-1,-1,-1,-1};
-static char *local_last_whento[10]={0,0,0,0,0,0,0,0,0,0};
-int type;
+//static int local_last_whencode[10]={-1,-1,-1,-1,-1,-1,-1};
+//static char *local_last_whento[10]={0,0,0,0,0,0,0,0,0,0};
+//int type;
 if (p_whencode==-1 && p_whento==NULL) {
 	return NULL;
 }
@@ -2670,3 +2692,262 @@ for (a=0;a<list->int_vals.int_vals_len;a++) {
 }
 return 0;
 }
+
+
+struct list_of_integers *append_list_of_integers(struct list_of_integers *p, int a) {
+	p->list.list_len++;
+	p->list.list_val=realloc(p->list.list_val, sizeof(p->list.list_val[0]*p->list.list_len));
+	p->list.list_val[p->list.list_len-1]=a;
+	return p;
+}
+
+struct list_of_integers *new_list_of_integers(int a) {
+	struct list_of_integers *p;
+	p=malloc(sizeof(struct list_of_integers));
+	p->list.list_val=0;
+	p->list.list_len=0;
+	append_list_of_integers(p,a);
+	return p;
+}
+
+// SPL stuff...
+struct create_proc_data*set_spl_proc_name(struct create_proc_data *cpd, char *name,int isDba) {
+	cpd->funcname=strdup(name);
+	if (isDba) {
+		cpd->isDBA=EB_TRUE;
+	} else {
+		cpd->isDBA=EB_FALSE;
+	}
+	return cpd;
+}
+
+struct create_proc_data* new_spl_proc(struct variable_list* parameters, struct variable_list *returning, struct s_spl_block *block,expr_str_list *document, expr_str *listing) {
+	struct create_proc_data* cpd;
+	cpd=malloc(sizeof(struct create_proc_data));
+	cpd->funcname=NULL;
+
+	cpd->parameters.parameters_len=0;
+	cpd->parameters.parameters_val=NULL;
+	if (parameters!=NULL) {
+		cpd->parameters.parameters_len=parameters->variables.variables_len;
+		cpd->parameters.parameters_val=parameters->variables.variables_val;
+	}
+
+	cpd->returning.returning_len=0;
+	cpd->returning.returning_val=NULL;
+	if (returning!=NULL) {
+		cpd->returning.returning_len=returning->variables.variables_len;
+		cpd->returning.returning_val=returning->variables.variables_val;
+	}
+
+	cpd->block=block;
+	cpd->document=document;
+	cpd->listing=listing;
+	cpd->isDBA=EB_FALSE;
+
+
+	return cpd;
+}
+
+struct s_spl_execute * new_spl_execute(char *proc_name, struct expr_str_list* parameters) {
+	struct s_spl_execute *p;
+	p=malloc(sizeof(struct s_spl_execute));
+	p->proc_name=strdup(proc_name);
+	p->parameters=parameters;
+	return p;
+}
+
+
+
+
+struct variable *new_references_blobtype(char *reftype, expr_str *default_value){
+	struct variable *v;
+	if (strstr(reftype,"text") || strstr(reftype,"TEXT")) {
+		v=new_simple_variable(NULL, DTYPE_TEXT,0,0);
+	} else {
+		v=new_simple_variable(NULL, DTYPE_BYTE,0,0);
+	}
+	set_variable_default(v,default_value);
+	return v;
+}
+
+void set_variable_default (variable *v, expr_str *defaultValue) {
+	if (v==NULL || defaultValue==NULL) return;
+	if (v->var_data.variable_type==VARIABLE_TYPE_SIMPLE) {
+		v->var_data.variable_data_u.v_simple.defaultvalue=defaultValue;
+	} else {
+		a4gl_yyerror("You cant set the default value for anything other than a simple variable");
+	}
+}
+
+struct s_spl_block *new_spl_block(struct variable_list*defines, struct commands * commands ) {
+struct s_spl_block *p;
+	p=malloc(sizeof(struct s_spl_block));
+	if (defines) {
+		p->variables.variables.variables_len=defines->variables.variables_len;
+		p->variables.variables.variables_val=defines->variables.variables_val;
+	} else {
+		p->variables.variables.variables_len=0;
+		p->variables.variables.variables_val=NULL;
+	}
+	p->commands=commands;
+	return p;
+}
+
+
+
+// --------------------------------------------------------------------------------
+//
+struct command *new_spl_system_cmd (expr_str *p_cmd) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_SYSTEM_CMD);
+   c->cmd_data.command_data_u.spl_system_cmd.cmd=p_cmd;
+   return c;
+}
+
+struct command *new_spl_raise_exception_cmd(expr_str *sql_err, expr_str *isam_err, expr_str *err_text) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_RAISE_EXCEPTION_CMD);
+   c->cmd_data.command_data_u.spl_raise_exception_cmd.sql_err =sql_err ;
+   c->cmd_data.command_data_u.spl_raise_exception_cmd.isam_err =isam_err ;
+   c->cmd_data.command_data_u.spl_raise_exception_cmd.err_text =err_text ;
+   return c;
+}
+
+struct command *new_spl_on_exception_cmd(list_of_integers *exception_list,str_list * set_list, struct s_spl_block *block, int resume ) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_ON_EXCEPTION_CMD);
+   c->cmd_data.command_data_u.spl_on_exception_cmd.exception_list=exception_list ;
+   c->cmd_data.command_data_u.spl_on_exception_cmd.set_list=set_list ;
+   c->cmd_data.command_data_u.spl_on_exception_cmd.block=block;
+   c->cmd_data.command_data_u.spl_on_exception_cmd.resume=resume;
+
+   return c;
+}
+
+struct command *new_spl_return_cmd(expr_str_list *rvals, int withResume) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_RETURN_CMD);
+   c->cmd_data.command_data_u.spl_return_cmd. rvals=  rvals ;
+   c->cmd_data.command_data_u.spl_return_cmd. withResume=  withResume ;
+   return c;
+}
+
+struct command *new_spl_trace_cmd(expr_str *trace_type ) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_TRACE_CMD);
+   c->cmd_data.command_data_u.spl_trace_cmd.trace_expr =trace_type ;
+   return c;
+}
+
+struct command *new_spl_foreach_execute_cmd(struct s_spl_execute *proc, str_list *into_vars, struct s_spl_block *block ) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_FOREACH_EXECUTE_CMD);
+   c->cmd_data.command_data_u.spl_foreach_execute_cmd.fcall  = proc  ;
+   c->cmd_data.command_data_u.spl_foreach_execute_cmd.into_vars  = into_vars  ;
+   c->cmd_data.command_data_u.spl_foreach_execute_cmd.block  = block  ;
+   return c;
+}
+
+struct command *new_spl_foreach_select_cmd( char *cursorname, int withHold, struct s_select *p_select, struct s_spl_block *block) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_FOREACH_SELECT_CMD);
+   if (cursorname==NULL) cursorname="";
+   c->cmd_data.command_data_u.spl_foreach_select_cmd.cursorName  = cursorname  ;
+   c->cmd_data.command_data_u.spl_foreach_select_cmd.withHold  = withHold  ;
+   c->cmd_data.command_data_u.spl_foreach_select_cmd.select_stmt  =p_select   ;
+   c->cmd_data.command_data_u.spl_foreach_select_cmd.block  = block  ;
+   return c;
+}
+
+struct command *new_spl_while_cmd(expr_str *expr, struct s_spl_block *block ) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_WHILE_CMD);
+   c->cmd_data.command_data_u.spl_while_cmd.condition =expr   ;
+   c->cmd_data.command_data_u.spl_while_cmd.block     =block   ;
+   return c;
+}
+
+struct command *new_spl_fcall_cmd( struct s_spl_execute *proc, str_list *returning) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_CALL_CMD);
+   c->cmd_data.command_data_u.spl_call_cmd.fcall  = proc  ;
+   c->cmd_data.command_data_u.spl_call_cmd.return_variables  = returning  ;
+   return c;
+}
+
+struct command *new_spl_block_cmd(struct s_spl_block *block ) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_BLOCK_CMD);
+   c->cmd_data.command_data_u.spl_block_cmd.block =  block ;
+   return c;
+}
+
+struct command *new_spl_for_cmd(char *vname, expr_str_list *list, struct s_spl_block *block ) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_FOR_CMD);
+   c->cmd_data.command_data_u.spl_for_cmd.vname  = vname  ;
+   c->cmd_data.command_data_u.spl_for_cmd.value_list  = list  ;
+   c->cmd_data.command_data_u.spl_for_cmd.block  = block  ;
+   return c;
+}
+
+struct command *new_spl_let_cmd(str_list *vars, expr_str_list *vals) {
+   struct command *c;
+   c=new_command(E_CMD_SPL_LET_CMD);
+   c->cmd_data.command_data_u.spl_let_cmd.vars  =  vars ;
+   c->cmd_data.command_data_u.spl_let_cmd.values  =  vals ;
+   return c;
+}
+
+struct command *new_create_procedure_cmd(expr_str *connid, struct create_proc_data *cpd ) {
+   struct command *c;
+   c=new_command(E_CMD_CREATE_PROCEDURE_CMD);
+   c->cmd_data.command_data_u.create_proc_cmd.connid  =  connid ;
+   c->cmd_data.command_data_u.create_proc_cmd.create_proc  =  cpd ;
+   return c;
+}
+
+struct command *new_spl_if_cmd (spl_if_conds *conditions) {
+struct command *c;
+struct spl_if_conds *reordered_conditions;
+int a;
+int b;
+   c=new_command(E_CMD_SPL_IF_CMD);
+	reordered_conditions=&c->cmd_data.command_data_u.spl_if_cmd.conditions;
+	reordered_conditions->conditions.conditions_val=malloc(sizeof(conditions->conditions.conditions_val[0])*conditions->conditions.conditions_len);
+	reordered_conditions->conditions.conditions_len=conditions->conditions.conditions_len;
+
+// When we get the list - the list is actually in reverse order (because of the way the parser works)
+// So - before we create the IF statement - lets reorder it to how it should be...
+	b=reordered_conditions->conditions.conditions_len-1;
+	for (a=0;a<reordered_conditions->conditions.conditions_len;a++) {
+		
+		memcpy(&reordered_conditions->conditions.conditions_val[a], &conditions->conditions.conditions_val[b--], sizeof(spl_if_cond));
+	}
+
+   return c;
+}
+
+
+struct spl_if_conds *append_spl_if_conds(struct spl_if_conds *conditions, spl_if_cond *testcase ) {
+	if (conditions==0) {
+		conditions=malloc(sizeof(struct spl_if_conds));
+		conditions->conditions.conditions_len=0;
+		conditions->conditions.conditions_val=NULL;
+	}
+	conditions->conditions.conditions_len++;
+	conditions->conditions.conditions_val=realloc(conditions->conditions.conditions_val, sizeof(conditions->conditions.conditions_val[0])*conditions->conditions.conditions_len);
+	memcpy(&conditions->conditions.conditions_val[conditions->conditions.conditions_len-1],testcase,sizeof(spl_if_cond));
+	return conditions;
+}
+
+struct spl_if_cond *new_spl_if_cond (struct expr_str *test_expr, struct s_spl_block *commands ) {
+	struct spl_if_cond *p;
+	p=malloc(sizeof(struct spl_if_cond));
+	p->test_expr=test_expr;
+	p->commands=commands;
+	return p;
+}
+
+

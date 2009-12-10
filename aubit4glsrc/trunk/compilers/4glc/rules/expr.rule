@@ -71,18 +71,42 @@ fgl_expr_c :
 	| fgl_expr_c KW_CLIPPED { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_CLIP); }
         | fgl_expr_c IS_NULL { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_ISNULL); }
         | fgl_expr_c IS_NOT_NULL { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_ISNOTNULL); }
+
 	| fgl_expr_c EQUAL           fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_EQUAL,0); }
 	| fgl_expr_c LESS_THAN       fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LESS_THAN,0); }
 	| fgl_expr_c GREATER_THAN    fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_GREATER_THAN,0); }
 	| fgl_expr_c NOT_EQUAL       fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_NOT_EQUAL,0); }
 	| fgl_expr_c LESS_THAN_EQ    fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_LESS_THAN_EQ,0); }
 	| fgl_expr_c GREATER_THAN_EQ fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_GREATER_THAN_EQ,0); }
+
+	| fgl_expr_c EQUAL           ALL OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_EQUAL_ALL,0); }
+	| fgl_expr_c LESS_THAN       ALL OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_LESS_THAN_ALL,0); }
+	| fgl_expr_c GREATER_THAN    ALL OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_GREATER_THAN_ALL,0); }
+	| fgl_expr_c NOT_EQUAL       ALL OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_NOT_EQUAL_ALL,0); }
+	| fgl_expr_c LESS_THAN_EQ    ALL OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_LESS_THAN_EQ_ALL,0); }
+	| fgl_expr_c GREATER_THAN_EQ ALL OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_GREATER_THAN_EQ_ALL,0); }
+
+	| fgl_expr_c EQUAL           ANY OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_EQUAL_ANY,0); }
+	| fgl_expr_c LESS_THAN       ANY OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_LESS_THAN_ANY,0); }
+	| fgl_expr_c GREATER_THAN    ANY OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_GREATER_THAN_ANY,0); }
+	| fgl_expr_c NOT_EQUAL       ANY OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_NOT_EQUAL_ANY,0); }
+	| fgl_expr_c LESS_THAN_EQ    ANY OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_LESS_THAN_EQ_ANY,0); }
+	| fgl_expr_c GREATER_THAN_EQ ANY OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_GREATER_THAN_EQ_ANY,0); }
+
+	| fgl_expr_c EQUAL           SOME OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_EQUAL_ANY,0); }
+	| fgl_expr_c LESS_THAN       SOME OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_LESS_THAN_ANY,0); }
+	| fgl_expr_c GREATER_THAN    SOME OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_GREATER_THAN_ANY,0); }
+	| fgl_expr_c NOT_EQUAL       SOME OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_NOT_EQUAL_ANY,0); }
+	| fgl_expr_c LESS_THAN_EQ    SOME OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_LESS_THAN_EQ_ANY,0); }
+	| fgl_expr_c GREATER_THAN_EQ SOME OPEN_BRACKET in_select_statement CLOSE_BRACKET { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>5,ET_EXPR_OP_GREATER_THAN_EQ_ANY,0); }
+
 	| fgl_expr_c UNITS_YEAR { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_YEAR); }
 	| fgl_expr_c UNITS_MONTH { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_MONTH); }
 	| fgl_expr_c UNITS_DAY { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_DAY); }
 	| fgl_expr_c UNITS_HOUR { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_HOUR); }
 	| fgl_expr_c UNITS_MINUTE { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_MINUTE); }
 	| fgl_expr_c UNITS_SECOND { $<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SECOND); }
+
  	| fgl_expr_c KW_IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
 		add_feature("ET_EXPR_IN_SELECT");
 		$<ptr>$=A4GL_expr_in_sq($<ptr>1,1,$<s_select>4);

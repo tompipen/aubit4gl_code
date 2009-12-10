@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.39 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: expr.c,v 1.40 2009-12-10 19:19:05 mikeaubury Exp $
 #
 */
 
@@ -357,7 +357,42 @@ case ET_EXPR_DYNARR_FCALL_NEW:
 case ET_EXPR_SQLERRMESSAGE:
 	return "ET_EXPR_SQLERRMESSAGE";
 
-
+case ET_EXPR_OP_EQUAL_ALL:
+	return "ET_EXPR_OP_EQUAL_ALL";
+case ET_EXPR_OP_LESS_THAN_ALL:
+	return "ET_EXPR_OP_LESS_THAN_ALL";
+case ET_EXPR_OP_GREATER_THAN_ALL:
+	return "ET_EXPR_OP_GREATER_THAN_ALL";
+case ET_EXPR_OP_NOT_EQUAL_ALL:
+	return "ET_EXPR_OP_NOT_EQUAL_ALL";
+case ET_EXPR_OP_GREATER_THAN_EQ_ALL:
+	return "ET_EXPR_OP_GREATER_THAN_EQ_ALL";
+case ET_EXPR_OP_EQUAL_ANY :
+	return "ET_EXPR_OP_EQUAL_ANY";
+case ET_EXPR_OP_NOT_EQUAL_ANY :
+	return "ET_EXPR_OP_NOT_EQUAL_ANY";
+case ET_EXPR_SPL_TRACE_ON :
+	return "ET_EXPR_SPL_TRACE_ON";
+case ET_EXPR_SPL_TRACE_PROCEDURE:
+	return "ET_EXPR_SPL_TRACE_PROCEDURE";
+case ET_EXPR_SPL_TRACE_EXPR:
+	return "ET_EXPR_SPL_TRACE_EXPR";
+case ET_EXPR_NAMED_PARAM :
+	return "ET_EXPR_NAMED_PARAM";
+case ET_EXPR_OP_LESS_THAN_EQ_ALL:
+	return "ET_EXPR_OP_LESS_THAN_EQ_ALL";
+case ET_EXPR_OP_LESS_THAN_ANY:
+	return "ET_EXPR_OP_LESS_THAN_ANY";
+case ET_EXPR_OP_GREATER_THAN_ANY:
+	return "ET_EXPR_OP_GREATER_THAN_ANY";
+case ET_EXPR_OP_LESS_THAN_EQ_ANY:
+	return "ET_EXPR_OP_LESS_THAN_EQ_ANY";
+case ET_EXPR_OP_GREATER_THAN_EQ_ANY:
+	return "ET_EXPR_OP_GREATER_THAN_EQ_ANY";
+case ET_EXPR_SPL_TRACE_OFF:
+	return "ET_EXPR_SPL_TRACE_OFF";
+case ET_EXPR_SPL_FOR_ITEM:
+	return "ET_EXPR_SPL_FOR_ITEM";
 
     }
   PRINTF ("Expression Type : %d\n", e);
@@ -760,6 +795,36 @@ A4GL_new_expr_simple (enum e_expr_type type)
   return ptr;
 }
 
+
+
+struct expr_str *
+A4GL_new_expr_named_param (char *name, expr_str *value) 
+{
+  struct expr_str *ptr;
+  struct s_named_param *p;
+  ptr = acl_malloc2 (sizeof (struct expr_str));
+  p = malloc (sizeof (struct s_named_param));
+  ptr = A4GL_new_expr_simple (ET_EXPR_NAMED_PARAM);
+  p->param_name  = acl_strdup (name);
+  p->param_value =value;
+  ptr->expr_str_u.expr_named_param = p;
+  return ptr;
+}
+
+struct expr_str *
+A4GL_new_spl_for_item_expr (expr_str *start,expr_str *end, expr_str *step) 
+{
+  struct expr_str *ptr;
+  struct s_spl_for_item *p;
+  ptr = acl_malloc2 (sizeof (struct expr_str));
+  p = malloc (sizeof (struct s_spl_for_item ));
+  ptr = A4GL_new_expr_simple (ET_EXPR_SPL_FOR_ITEM);
+  p->start =start;
+  p->end =end;
+  p->step =step;
+  ptr->expr_str_u.expr_spl_for_item = p;
+  return ptr;
+}
 
 struct expr_str *
 A4GL_new_expr_push_variable (struct variable_usage *v,int isinreport)

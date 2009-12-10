@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.64 2009-10-13 13:26:50 mikeaubury Exp $
+# $Id: globals.c,v 1.65 2009-12-10 19:19:03 mikeaubury Exp $
 #
 */
 
@@ -266,19 +266,19 @@ generate_globals_for (char *s)
 void
 read_glob (char *s)
 {
-  FILE *f;
+  //FILE *f;
   char ii[255];
   char ii4gl[255];
   char iiglb[255];
   char iii[256];
-  char override[2000];
-  char *fname;
+  //char override[2000];
+  //char *fname;
   char *dbname;
   int schemaonly;
-  int gvars;
-  int start = 0;
+  //int gvars;
+  //int start = 0;
   int a=0;
-  int b;
+  //int b;
   struct globals_definition g;
   int XMLBEST=0;
 
@@ -436,10 +436,10 @@ read_glob (char *s)
 void
 dump_gvars (void)
 {
-  FILE *f;
-  int a;
+  //FILE *f;
+  //int a;
   char ii[FNAMESIZE];
-  struct variable *v;
+  //struct variable *v;
   struct globals_definition *g;
 
 

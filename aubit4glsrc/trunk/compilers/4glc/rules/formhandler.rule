@@ -14,7 +14,7 @@ formhandler_def :
                                 clr_call_list();
 			 	push_blockcommand("FORMHANDLER");
 		} define_section {
-                        char errbuff[256];
+                        //char errbuff[256];
 
 			//set_local_variables($4);
 

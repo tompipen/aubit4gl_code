@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.112 2009-09-01 17:19:59 mikeaubury Exp $
+# $Id: variables.c,v 1.113 2009-12-10 19:19:03 mikeaubury Exp $
 #
 */
 
@@ -67,7 +67,10 @@ extern module_definition this_module;
 int mv_uses_constants=0; /* No of constants in module/globals */
 int lv_uses_constants=0; /* No of constants local to this function/report */
 
-
+static int isCreateProcedure=0;
+int procVariableListCnt=0;
+#define MAXPROCVARIABLESLEVELS 100
+struct variable_list *procVariableList[MAXPROCVARIABLESLEVELS];
 
 /******************************************************************************/
 /* Prototypes of static functions in this module...*/
@@ -853,6 +856,19 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
   struct variable *ptr=NULL;
   strcpy(errbuff,"");
 
+  if (isCreateProcedure) {
+	if (procVariableListCnt) {
+		int a;
+		for (a=procVariableListCnt-1;a>=0;a--) {
+			if (procVariableList[a]) {
+  				ptr = find_variable_vu_in_list (errbuff, v, procVariableList[a], err_if_whole_array,0);
+				if (ptr) break;
+			}
+		}
+	}
+	return ptr;
+  }
+
   if (local_variables) {
   	ptr = find_variable_vu_in_list (errbuff, v, local_variables, err_if_whole_array,0);
   }
@@ -894,4 +910,37 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
   return ptr; /* Will be NULL - or it would have been returned already... */
 }
 
+
+
+// This function is called when we process a 'create procedure'
+// to turn off all other variable checking
+// except that in the create procedure variable list
+void set_in_create_procedure(void) {
+	isCreateProcedure=1;
+}
+
+// This function claars the flag so that variables are processed as
+// normal again after the create procedure has been used..
+void clr_in_create_procedure(void) {
+	isCreateProcedure=0;
+}
+
+// This function pushes a block of variables onto the variable stack
+// this means we can use variables local to a 'block' within the procedure
+// as well as those defined at the top of it...
+void push_spl_block_variables(struct variable_list *p) {
+	A4GL_assertion(procVariableListCnt>=MAXPROCVARIABLESLEVELS,"Too many block levels in procedure");
+	procVariableListCnt++;
+	procVariableList[procVariableListCnt-1]=p;
+}
+
+
+// This function removes any functions associated with the current block
+// Its called when the block ends and therefore the contained variabled go out of scope
+void pop_spl_block_variables(struct variable_list *p) {
+	A4GL_assertion(procVariableListCnt<=0,"No variable list to pop!");
+	A4GL_assertion (procVariableList[procVariableListCnt-1]!=p,"Create procedure variable list is not the one I expected");
+	procVariableList[procVariableListCnt-1]=NULL;
+	procVariableListCnt--;
+}
 

@@ -33,6 +33,7 @@ struct command *new_sleep_cmd(expr_str* p_expr);
 struct command *new_move_cmd(expr_str *p_windowname, expr_str* p_x, expr_str* p_y, e_boolean relative);
 struct command *new_show_menu_cmd(char *p_menuname, char *p_menuhandler, expr_str* p_mn_file);
 struct command *new_show_cmd(expr_str *p_windowname);
+struct command *new_copyback_cmd(expr_str *var);
 struct command *new_hide_cmd(expr_str *p_windowname);
 struct command *new_run_cmd(expr_str* p_run_string, e_boolean p_wait, enum run_mode p_run_mode, struct expr_str *p_returning);
 struct command *new_run_waiting_for_cmd(expr_str *p_run_string, expr_str *p_sleep, expr_str *p_msg_repeat_every, int p_msg_type, expr_str *p_msgtext) ;
@@ -49,7 +50,6 @@ struct command *new_hide_option_cmd(expr_str_list* p_menuoptions);
 struct command *new_display_form_cmd(struct expr_str *p_formname, attrib *p_attributes);
 struct command *new_options_cmd(manyoptions* p_options) ;
 
-
 struct command *new_finish_cmd(char *p_repname, struct convert* p_c);
 struct command *new_start_cmd(char *p_repname, struct startrep* p_c);
 struct command *new_open_window_cmd(struct expr_str *p_windowname, expr_str* p_x, expr_str* p_y, windowtype *p_wt, struct attrib *p_attrib);
@@ -64,6 +64,7 @@ struct command *new_declare_cmd(expr_str *p_connid,expr_str *p_cursorname, struc
 struct command *new_current_win_cmd(struct expr_str *p_windowname);
 struct command *new_term_rep_cmd(char *p_reportname);
 struct command *new_sql_cmd(expr_str *p_connid, char * p_sql) ;
+struct command *new_sql_debug_file_to_cmd(expr_str *p_connid, expr_str *p_filename);
 struct command *new_lint_ignore_cmd(str_list *list);
 struct command *new_lint_expect_cmd(str_list *list);
 
@@ -179,6 +180,32 @@ int has_cmd_int_list(struct cmd_int_list *list, int l);
 struct command *check_for_member_call_alias(expr_str *p_fcall,expr_str_list *p_returning);
 
 
+// SPL ....
+struct create_proc_data*set_spl_proc_name(struct create_proc_data *cpd, char *name,int isDba);
+struct create_proc_data* new_spl_proc(struct variable_list* parameters, struct variable_list *returning, struct s_spl_block *block,expr_str_list *document, expr_str *listing) ;
+struct command *new_spl_system_cmd (expr_str *p_cmd);
+struct list_of_integers *append_list_of_integers(struct list_of_integers *p, int a);
+struct list_of_integers *new_list_of_integers(int a);
+struct variable *new_references_blobtype(char *reftype, expr_str *default_value);
+struct s_spl_block *new_spl_block(struct variable_list*defines, struct commands * commands );
+
+struct command *new_spl_raise_exception_cmd(expr_str *sql_err, expr_str *isam_err, expr_str *err_text);
+struct command *new_spl_on_exception_cmd(list_of_integers *exception_list,str_list * set_list, struct s_spl_block *block, int resume );
+struct command *new_spl_return_cmd(expr_str_list *rvals, int withResume);
+struct command *new_spl_trace_cmd(expr_str *trace_type );
+struct command *new_spl_foreach_execute_cmd(struct s_spl_execute *proc, str_list *into_vars, struct s_spl_block *block );
+struct command *new_spl_foreach_select_cmd( char *cursorname, int withHold, struct s_select *p_select, struct s_spl_block *block);
+struct command *new_spl_while_cmd(expr_str *expr, struct s_spl_block *block );
+struct command *new_spl_fcall_cmd( struct s_spl_execute *proc, str_list *returning);
+struct command *new_spl_block_cmd(struct s_spl_block *block );
+struct command *new_spl_for_cmd(char *vnme, expr_str_list *list, struct s_spl_block *block );
+struct s_spl_execute * new_spl_execute(char *proc_name, struct expr_str_list* parameters);
+struct command *new_spl_let_cmd(str_list *vars, expr_str_list *vals);
+struct command *new_create_procedure_cmd(expr_str *p_connid, create_proc_data *create_proc) ;
+void set_variable_default (variable *v, expr_str *defaultValue) ;
+struct command *new_spl_if_cmd (spl_if_conds *conditions);
+struct spl_if_conds *append_spl_if_conds(struct spl_if_conds *conditions, spl_if_cond *testcase );
+struct spl_if_cond *new_spl_if_cond (struct expr_str *test_expr, struct s_spl_block *commands ) ;
 #endif
 
 

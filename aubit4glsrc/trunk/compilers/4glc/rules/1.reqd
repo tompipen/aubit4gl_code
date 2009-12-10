@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.97 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: 1.reqd,v 1.98 2009-12-10 19:19:04 mikeaubury Exp $
 #
 */
 
@@ -374,6 +374,10 @@ extern struct report_orderby_section *current_orderby;
 	struct s_module_entry_ptr_list  *module_entry_list;
 	struct s_class_definition 	*class_definition;
 	struct cmd_int_list *cmd_int_list;
+	struct create_proc_data *create_procedure;
+	struct s_spl_execute *spl_execute;
+	struct s_spl_block *splblock;
+	struct spl_if_conds *spl_if_conds;
 	}
 
 /* ============================== 1.reqd ============================ */

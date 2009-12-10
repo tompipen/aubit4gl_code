@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.1 2008-11-12 11:04:28 mikeaubury Exp $
+# $Id: main.c,v 1.2 2009-12-10 19:19:05 mikeaubury Exp $
 #*/
 
 /**
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
   /* load settings from config file(s): */
 
   
-  yydebug = 0;
+  yydebug =0;
 
   strcpy (d, "");
 

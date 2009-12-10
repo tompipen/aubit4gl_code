@@ -13,10 +13,11 @@
 //int yylineno=0;
 
 
+static int process_module (module_definition *loaded_module_definition) ;
 
-main(int argc,char *argv[]) {
+int main(int argc,char *argv[]) {
 int ok;
-char buff[2000];
+//char buff[2000];
 	struct module_definition m;
 	if (argc!=2) {
 		int a;
@@ -33,7 +34,7 @@ char buff[2000];
 		process_module(&m);
 		exit(0);
 	} else {
-		printf("Failed to load file\n",ok);
+		printf("Failed to load file\n");
 		exit(11);
 	}
 exit(0);

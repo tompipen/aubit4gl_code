@@ -106,9 +106,9 @@ inp_rest:
 BY_NAME expanded_ibind_var_list opt_defs input_attributes  opt_help_no_i
 {
 	//struct fh_field_list *f;
-  	char tabname[40];
-	int a;
-  	char colname[40];
+  	//char tabname[40];
+	//int a;
+  	//char colname[40];
 	map_ui_block("INPUT");
 	add_feature("UI_INPUT_BY_NAME");
 	

@@ -3,7 +3,7 @@ if_cmd	:
 		add_feature("IF");
 	} atline op_else atline END_IF {
 		int a;
-		char wt;
+		//char wt;
 		int val_last;
 		if_conds x;
 		$<struct_if_cmd>$=$<struct_if_cmd>8;

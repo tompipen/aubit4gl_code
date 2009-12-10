@@ -1,6 +1,6 @@
 locate_cmd : LOCATE expanded_obind_var_list IN_MEMORY {
-	int vtype;
-	int a;
+	//int vtype;
+	//int a;
 	struct locate_pos p;
 		p.where=E_LOC_MEMORY;
 		add_feature("LOCATE_MEM");
@@ -19,8 +19,8 @@ locate_cmd : LOCATE expanded_obind_var_list IN_MEMORY {
 
 }
 | LOCATE expanded_obind_var_list IN_FILE file_name {
-	int vtype;
-	int a;
+	//int vtype;
+	//int a;
 	struct locate_pos p;
 	add_feature("LOCATE_FILE");
      
