@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.51 2009-05-27 12:55:26 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.52 2009-12-11 13:29:37 mikeaubury Exp $
 #*/
 
 /**
@@ -45,6 +45,8 @@
 
 /* FIXME: duplicated from a4gl_libaubit4gl.h : */
 int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
+char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
+
 
 /*
 =====================================================================

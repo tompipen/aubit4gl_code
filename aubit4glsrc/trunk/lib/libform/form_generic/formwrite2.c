@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.51 2009-10-28 09:55:47 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.52 2009-12-11 13:29:37 mikeaubury Exp $
 #*/
 
 /**
@@ -60,6 +60,8 @@ int maxline;
 struct struct_screen_record *curr_rec;
 char buff_xdr[30000];
 extern char *outputfilename;
+//char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
+
 
 /*
 #ifndef SIMPLIFIED
