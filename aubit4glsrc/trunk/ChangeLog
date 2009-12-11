@@ -1,4 +1,31 @@
 ---------------------------
+Fri Dec 11 11:34:40 GMT 2009
+---------------------------
+1.2_4 Released
+---------------------------
+	
+	Adding CREATE PROCEDURE parser logic
+	
+	Increase buffer size for formxml
+	
+	Add FGL_DIALOG_SETICON
+	
+	Add BASENAMEARGV0, which strips any directory name and extension
+	from the arg_val(0) return value
+	
+	Add 'copyback' functionality for COPYOF parameters..
+	
+	Add HEADER tag to fields for XML forms
+	
+	Small fgllint fixups
+	
+	Print all block data on the same line
+	
+	Add form_line to window packet
+	
+	label handling changed - labels with predefined text are now static
+	
+---------------------------
 Tue Nov  3 11:02:51 GMT 2009
 ---------------------------
 1.2_3 Released
