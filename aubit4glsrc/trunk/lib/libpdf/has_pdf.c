@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.64 2009-12-14 11:31:11 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.65 2009-12-14 12:17:42 mikeaubury Exp $
 #*/
 
 /**
@@ -1111,9 +1111,48 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		text=A4GL_char_pop();
 		PDF_fit_textline(p->pdf_ptr, text,strlen(text),llx,lly,optlist);
 	return 0;
-
 }
 
+  if (strcmp(fname,"texturl")==0) {
+		char *url;
+		char *text;
+		char optlist[20000];
+		url=A4GL_char_pop();
+		text=A4GL_char_pop();
+		double lly1;
+		double lly2;
+		double llx1;
+		double llx2;
+		int d;
+		//lly=A4GL_pop_double();
+		//llx=A4GL_pop_double();
+		A4GL_trim(url);
+	        sprintf(optlist,"url {%s}",url );
+	//printf("url=       %s\n",url);
+	//printf("optlist=   %s\n",optlist);
+
+		d=PDF_create_action(p->pdf_ptr,"URI",optlist);
+
+		lly1=p->page_length - p->line_no;
+		lly2=lly1+A4GLPDFREP_A4GL_pdf_size (1,'l',p);
+		llx1=p->col_no;
+		llx2=llx1+A4GLPDFREP_A4GL_pdf_size (strlen(text), 'c', p);
+
+
+		//PDF_setcolor(p->pdf_ptr,"both","rgb",0,0,1,0);
+
+	        PDF_fit_textline(p->pdf_ptr, text, strlen(text),llx1, lly1, "");
+		sprintf(optlist , "action={activate %d } linewidth=0",d);
+		PDF_create_annotation(p->pdf_ptr,
+						llx1,
+						lly1,
+						llx2,lly2,
+					 	"Link", optlist);
+
+		//A4GL_resetcolor(p->pdf_ptr);
+
+		return 0;
+  }
 
   if (strcmp(fname,"page_col_inches")==0) {
 	  double f1;
@@ -1298,7 +1337,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       return 1;
     }
 
-
+  A4GL_assertion(1,"Unknown PDF function");
 
   return 0;
 }
