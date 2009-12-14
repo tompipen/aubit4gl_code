@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.65 2009-12-14 12:17:42 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.66 2009-12-14 12:43:10 mikeaubury Exp $
 #*/
 
 /**
@@ -1136,7 +1136,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		lly1=p->page_length - p->line_no;
 		lly2=lly1+A4GLPDFREP_A4GL_pdf_size (1,'l',p);
 		llx1=p->col_no;
-		llx2=llx1+A4GLPDFREP_A4GL_pdf_size (strlen(text), 'c', p);
+		llx2=llx1+ PDF_stringwidth (p->pdf_ptr, text, p->font, p->font_size);
 
 
 		//PDF_setcolor(p->pdf_ptr,"both","rgb",0,0,1,0);
