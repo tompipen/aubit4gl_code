@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.52 2009-12-11 13:29:37 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.53 2009-12-14 20:31:25 mikeaubury Exp $
 #*/
 
 /**
@@ -1034,6 +1034,7 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 }
 
 
+
 /**
  * Intialize the memory needed to compile a 4gl screen form in order to
  * the lexical and sintatic parser to load the information found
@@ -1041,46 +1042,47 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 void
 A4GLFORM_A4GL_init_form (void)
 {
+  struct struct_form *the_form_ptr;
+  the_form_ptr=A4GL_get_the_form_ptr();
   A4GL_debug ("init_form\n");
-  the_form.dbname = strdup ("");
-  the_form.delim = strdup ("[]|");
-  the_form.maxcol = 0;
+  the_form_ptr->dbname = strdup ("");
+  the_form_ptr->delim = strdup ("[]|");
+  the_form_ptr->maxcol = 0;
 
-  the_form.magic = FCOMILE_XDR_MAGIC;	/* Just any number */
+  the_form_ptr->magic = FCOMILE_XDR_MAGIC;	/* Just any number */
 
-  the_form.magic1 = strdup ("A4GL_FORMSTART");
-  the_form.fcompile_version = FCOMILE_XDR_VERSION;
-  the_form.compiled_time = time (0);
+  the_form_ptr->magic1 = strdup ("A4GL_FORMSTART");
+  the_form_ptr->fcompile_version = FCOMILE_XDR_VERSION;
+  the_form_ptr->compiled_time = time (0);
 
-  the_form.magic2 = strdup ("FORMEND");
-  the_form.maxline = 0;
+  the_form_ptr->magic2 = strdup ("FORMEND");
+  the_form_ptr->maxline = 0;
 
-  the_form.snames.snames_len = 0;
-  the_form.snames.snames_val = 0;
+  the_form_ptr->snames.snames_len = 0;
+  the_form_ptr->snames.snames_val = 0;
 
-  the_form.attributes.attributes_len = 0;
-  the_form.attributes.attributes_val = 0;
+  the_form_ptr->attributes.attributes_len = 0;
+  the_form_ptr->attributes.attributes_val = 0;
 
-  the_form.metrics.metrics_len = 0;
-  the_form.metrics.metrics_val = 0;
+  the_form_ptr->metrics.metrics_len = 0;
+  the_form_ptr->metrics.metrics_val = 0;
 
-  the_form.fields.fields_len = 0;
-  the_form.fields.fields_val = 0;
+  the_form_ptr->fields.fields_len = 0;
+  the_form_ptr->fields.fields_val = 0;
 
-  the_form.records.records_len = 0;
-  the_form.records.records_val = 0;
-  
-  the_form.control_blocks.control_blocks_len=0;
-  the_form.control_blocks.control_blocks_val=0;
+  the_form_ptr->records.records_len = 0;
+  the_form_ptr->records.records_val = 0;
+  the_form_ptr->control_blocks.control_blocks_len=0;
+  the_form_ptr->control_blocks.control_blocks_val=0;
 
-  the_form.master_of.master_of_len=0;
-  the_form.master_of.master_of_val=0;
+  the_form_ptr->master_of.master_of_len=0;
+  the_form_ptr->master_of.master_of_val=0;
 
-  the_form.composites.composites_len=0;
-  the_form.composites.composites_val=0;
+  the_form_ptr->composites.composites_len=0;
+  the_form_ptr->composites.composites_val=0;
 
+	the_form_ptr->text="";
 }
-
 
 /**
  * If necessary locate memory to field attributes and insert it to the 

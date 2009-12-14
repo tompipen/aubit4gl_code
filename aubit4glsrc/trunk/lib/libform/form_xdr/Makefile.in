@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2006-07-27 16:02:29 mikeaubury Exp $
+# $Id: Makefile.in,v 1.15 2009-12-14 20:31:24 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 #require XDR frunctions, part of Sun RPClib:
-CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
+CMODS_FORM_XDR		=${ROOT}/common/dataio/form_x_xdr.c readforms.c formwrite2.c
 OBJS_FORM_XDR		=${CMODS_FORM_XDR:.c=.o}
 
 ## ==================================================================
@@ -58,7 +58,7 @@ OBJS_FORM_XDR		=${CMODS_FORM_XDR:.c=.o}
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile ${CFLAGS} -I${ROOT}/common/dataio
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/common/dataio ${CFLAGS} -I${ROOT}/common/dataio
 
 ## RPC type and XDR are not the same thing. RPC type represents Remote
 #Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
@@ -88,10 +88,6 @@ ${PLUGINDIR}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-#.PHONY : dllFORM_XDR
-#dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
-#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -l${AUBITLIBFULL}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
-#	${CP} libFORM_XDR.dll ${LIBROOT}
 
 
 ## ==================================================================
@@ -101,19 +97,16 @@ ${PLUGINDIR}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
 ci: $(CMODS)
 	ci -l  $^
 
-${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+${ROOT}/common/dataio/form_x_xdr.c  ${ROOT}/common/dataio/form_x.h:
+	${MAKE} -C ${ROOT}/common/dataio rpc
 
-${ROOT}/compilers/fcompile/form_x_xdr.o:
-	${MAKE} -C ${ROOT}/compilers/fcompile form_x_xdr.o
+${ROOT}/common/dataio/form_x_xdr.o:
+	${MAKE} -C ${ROOT}/common/dataio form_x_xdr.o
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
-#error.c : generated/tmperrs.h
-#array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
-#builtin.c: ${ROOT}/compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                        Clean Targets
