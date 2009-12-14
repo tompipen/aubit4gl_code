@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2006-07-27 16:02:32 mikeaubury Exp $
+# $Id: Makefile.in,v 1.9 2009-12-14 20:52:14 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -107,8 +107,8 @@ endif
 ci: $(CMODS)
 	ci -l  $^
 
-${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+${ROOT}/common/dataio/form_x_xdr.c  ${ROOT}/common/dataio/form_x.h:
+	${MAKE} -C ${ROOT}/common/dataio rpc
 
 ## ==================================================================
 ##                        Dependencies

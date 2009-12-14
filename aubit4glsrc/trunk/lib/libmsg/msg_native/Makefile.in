@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2006-07-27 16:03:23 mikeaubury Exp $
+# $Id: Makefile.in,v 1.11 2009-12-14 20:52:14 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -78,8 +78,6 @@ ci: $(CMODS)
 
 #readmsg.o: ${ROOT}/compilers/fcompile/form_x.h
 
-#${ROOT}/compilers/fcompile/form_x.h:
-#	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2009-07-10 11:55:55 mikeaubury Exp $
+# $Id: Makefile.in,v 1.24 2009-12-14 20:52:32 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -91,10 +91,6 @@ ${LIBROOT}/generated/project.c:
 ##                           Dependencies
 ## ==================================================================
 
-resource.o: ${ROOT}/compilers/fcompile/form_x.h
-
-${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 
 ## ==================================================================

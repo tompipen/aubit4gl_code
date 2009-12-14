@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2006-07-27 16:03:39 mikeaubury Exp $
+# $Id: Makefile.in,v 1.16 2009-12-14 20:52:32 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -87,7 +87,7 @@ ${PLUGINDIR}/libRPC_XDR${SO_EXT}: ${OBJS_RPC}
 ## ==================================================================
 
 form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+	${MAKE} -C ${ROOT}/common/dataio rpc
 
 ## ==================================================================
 ##                        Dependencies

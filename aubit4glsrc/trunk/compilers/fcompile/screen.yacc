@@ -151,7 +151,9 @@ form_def :
 database_section encoding_section screen_or_layout_section op_table_section attribute_section op_instruction_section {
 A4GL_check_compiled_form();
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
-A4GL_write_form();}
+A4GL_write_form();
+if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
+}
 ;
 
 encoding_section :

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.57 2009-11-23 11:23:09 mikeaubury Exp $
+# $Id: Makefile,v 1.58 2009-12-14 20:52:14 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -214,8 +214,8 @@ rules/generated/mk_states.o:  rules/generated/mk_states.c
 ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 	${MAKE} -C rules
 
-../fcompile/form_x.h:
-	${MAKE} -C ../fcompile rpc
+../common/dataio/form_x.h:
+	${MAKE} -C ../../common/dataio rpc
 commands.o: commands.c expr_as_string_when_possible.c
 
 API_lex.c: API_lex.spec ../../incl/a4gl_API_lex.h    ../../incl/a4gl_API_lex_lib.h
@@ -279,7 +279,7 @@ dim.o: 					rules/generated/kw.h rules/generated/y.tab.h a4gl_4glc_int.h ../../i
 compile.o: 				rules/generated/kw.h rules/generated/y.tab.h a4gl_4glc_int.h ../../incl/a4gl_API_lex.h ../../incl/a4gl_API_parse.h
 
 mod.o: 					mod.c ${Y_TAB_C}
-${GENRULES}/y.tab.o: 	../fcompile/form_x.h
+${GENRULES}/y.tab.o: 	${ROOT}/common/dataio/form_x.h
 
 lexer.o: ${GENRULES}/kw.h 
 lexer.o: ${GENRULES}/y.tab.h

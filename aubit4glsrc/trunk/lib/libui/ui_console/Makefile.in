@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2006-07-27 16:04:01 mikeaubury Exp $
+# $Id: Makefile.in,v 1.8 2009-12-14 20:52:32 mikeaubury Exp $
 #
 
 ROOT=../../..
@@ -89,14 +89,15 @@ endif
 ##                              Dependencies
 ## ==================================================================
 
-console.o: ${ROOT}/compilers/fcompile/form_x.h
+console.o: 
+#${ROOT}/compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
 
-${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+#${ROOT}/compilers/fcompile/form_x.h:
+	#${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 #invalid lvalue in assignment
 console.o: console.c

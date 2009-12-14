@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.55 2009-11-23 11:24:58 mikeaubury Exp $
+# $Id: Makefile,v 1.56 2009-12-14 20:52:14 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -272,10 +272,10 @@ ${LIBROOT}/generated/project.c:
 ${LIBROOT}/generated/tmperrs.h :
 	(cd ${LIBROOT}; ${SH} ${LIBROOT}/bin/mkerrors)
 
-${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
-	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+${ROOT}/common/dataio/form_x_xdr.c  ${ROOT}/common/dataio/form_x.h:
+	${MAKE} -C ${ROOT}/common/dataio rpc
 
-${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
+${ROOT}/common/dataio/form_x_xdr.o:  ${ROOT}/common/dataio/form_x_xdr.c
 	${CC} ${CFLAGS_FORM_X_XDR_C} -c -o $@ $^
 
 builtin.o: builtin.c
@@ -305,8 +305,8 @@ ${ROOT}/lib/generated/sql_convert_constants.h: ${ROOT}/lib/bin/convertsql.consta
 ## ==================================================================
 
 error.c : ${LIBROOT}/generated/tmperrs.h
-array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
-builtin.o API_ui.c: ${ROOT}/compilers/fcompile/form_x.h
+array.o: array.c ${ROOT}/common/dataio/form_x_xdr.c
+builtin.o API_ui.c: ${ROOT}/common/dataio/form_x.h
 ${COMMONSRC}: api ${ROOT}/common/dataio/form_x.x.h ${ROOT}/common/dataio/fgl.x.h
 ${CMODS_API}: ${ROOT}/common/dataio/form_x.x.h ${ROOT}/common/dataio/fgl.x.h
 

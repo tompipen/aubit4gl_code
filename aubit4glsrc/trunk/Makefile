@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.74 2009-11-26 16:15:39 mikeaubury Exp $
+# $Id: Makefile,v 1.75 2009-12-14 20:52:14 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2570,32 +2570,20 @@ endif
 ####################
 #Since we are using xgen now, this should be obsolete
 refresh.norpcgen:
-ifneq "${COMSPEC}" ""
-ifneq "${USE_RPCGEN}" "0"
 	@x=0; \
-	if diff -q compilers/fcompile/form_x.h tools/cygwin/form_x.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/fcompile/form_x_xdr.c tools/cygwin/form_x_xdr.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/menus/menu_x.h tools/cygwin/menu_x.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/menus/menu_x_xdr.c tools/cygwin/menu_x_xdr.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/ace/report.h tools/cygwin/report.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/ace/report_xdr.c tools/cygwin/report_xdr.c > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/form_x.h tools/cygwin/form_x.h > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/form_x_xdr.c tools/cygwin/form_x_xdr.c > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/report.h tools/cygwin/report.h > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/report_xdr.c tools/cygwin/report_xdr.c > /dev/null ; then x=1; fi; \
 	if test "$x" = "1"; then \
 		echo "Need to update"; \
-		${CP} compilers/fcompile/form_x.h tools/cygwin; \
-		${CP} compilers/fcompile/form_x_xdr.c tools/cygwin; \
-		${CP} compilers/menus/menu_x.h tools/cygwin; \
-		${CP} compilers/menus/menu_x_xdr.c tools/cygwin; \
-		${CP} compilers/ace/report.h tools/cygwin; \
-		${CP} compilers/ace/report_xdr.c tools/cygwin; \
+		${CP} common/dataio/form_x.h tools/cygwin; \
+		${CP} common/dataio/form_x_xdr.c tools/cygwin; \
+		${CP} common/dataio/report.h tools/cygwin; \
+		${CP} common/dataio/report_xdr.c tools/cygwin; \
 	else \
 		echo "All no_rpcgen files up-to-date"; \
 	fi
-else
-	@echo "Skipping refresh.norpcgen - USE_RPCGEN=0."
-endif
-else
-	@echo "Skipping refresh.norpcgen - Not on CygWin"
-endif
 
 ####################
 #Since we are using xgen now, this should be obsolete
