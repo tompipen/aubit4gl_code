@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.22 2009-11-01 18:41:43 mikeaubury Exp $
+# $Id: variables_new.c,v 1.23 2009-12-14 17:43:24 mikeaubury Exp $
 #
 */
 
@@ -171,6 +171,7 @@ struct variable *v;
         v->var_data.variable_data_u.v_simple.datatype=dtype;
         v->var_data.variable_data_u.v_simple.dimensions[0]=dim1;
         v->var_data.variable_data_u.v_simple.dimensions[1]=dim2;
+        v->var_data.variable_data_u.v_simple.defaultvalue=NULL;
         return v;
 }
 
