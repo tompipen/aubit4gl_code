@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.63 2009-07-10 11:55:53 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.64 2009-12-14 11:31:11 mikeaubury Exp $
 #*/
 
 /**
@@ -1079,7 +1079,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		double urx;
 		double ury;
 		char *optlist="";
-		char *rval;
+		const char *rval;
 
 		if (nargs>=5) {
 			optlist=A4GL_char_pop();
@@ -1091,10 +1091,28 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		table=A4GL_pop_long();
 
 		rval=PDF_fit_table(p->pdf_ptr, table, llx,lly,urx,ury,optlist);
-		A4GL_push_char(rval);
+		A4GL_push_char((char *)rval);
 		return 1;
   }
 
+
+  if (strcmp(fname,"fit_textline")==0) {
+	char *text;
+		double llx;
+		double lly;
+		char *optlist="";
+
+		if (nargs>=4) {
+			optlist=A4GL_char_pop();
+		}
+
+		lly=A4GL_pop_double();
+		llx=A4GL_pop_double();
+		text=A4GL_char_pop();
+		PDF_fit_textline(p->pdf_ptr, text,strlen(text),llx,lly,optlist);
+	return 0;
+
+}
 
 
   if (strcmp(fname,"page_col_inches")==0) {
