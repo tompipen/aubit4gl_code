@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.51 2009-07-04 18:45:54 mikeaubury Exp $
+# $Id: console.c,v 1.52 2009-12-15 12:22:14 mikeaubury Exp $
 #*/
 
 /**
@@ -122,7 +122,7 @@ void
 {
   A4GL_trim (s);
   printf ("%s\n", s);
-  free (s);
+  //free (s);
 }
 
 /**
