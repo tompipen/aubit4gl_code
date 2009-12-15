@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.59 2009-07-04 18:45:51 mikeaubury Exp $
+# $Id: rexp2.c,v 1.60 2009-12-15 20:24:39 mikeaubury Exp $
 #
 */
 
@@ -230,7 +230,7 @@ A4GL_construct (char *tabname, char *colname_s, char *val, int inc_quotes, int d
   int zz;
   int cnt;
   int k, k2 = 0;
-  char lastchar;
+  int lastchar;
   int ismatch;
   char colname[256];
   char *ptr;
