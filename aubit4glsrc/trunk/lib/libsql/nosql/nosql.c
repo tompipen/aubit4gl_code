@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.50 2009-06-25 08:15:50 mikeaubury Exp $
+# $Id: nosql.c,v 1.51 2009-12-16 14:43:15 mikeaubury Exp $
 #*/
 
 /**
@@ -129,3 +129,8 @@ int A4GLSQLLIB_SQL_initlib()  {
 // Does nothing
 return 1;
 }
+
+int A4GLSQLLIB_A4GLSQL_cancel (void) {
+return 1;
+}
+

@@ -23,8 +23,8 @@ ESQL=DYNAMIC
 # FORM:  DYNAMIC XDR GENERIC
 FORM=GENERIC
 
-# PACKER: DYNAMIC PACKED XML PERL
-PACKER=PACKED
+# PACKER: DYNAMIC PACKED XML PERL XMLBEST
+PACKER=XMLBEST
 
 
 LEXTYPE=WRITE
@@ -202,8 +202,14 @@ else
 	ifeq "${PACKER}" "PACKED"
 		API+=../libpacker/packed/pack_packed.o
 	endif
-endif
 
+	ifeq "${PACKER}" "XML"
+		API+=../libpacker/xml/pack_xml.o
+	endif
+	ifeq "${PACKER}" "XMLBEST"
+		API+= ../libpacker/xml_best/pack_xml.o ../libpacker/xml_best/fgl.xo.o ../libpacker/xml_best/overloads.o ../libpacker/xml_best/module_def.o ../libpacker/xml_best/lex.yy.o ../libpacker/xml_best/stack.o ../libpacker/xml_best/fgl.setparent.o ../libpacker/xml_best/overloads_read.o
+	endif
+endif
 
 
 ###############################################################################
@@ -232,3 +238,5 @@ appextra:
 	@echo "$(APPEXTRA)"
 
 
+../libpacker/xml/pack_xml.o: ../libpacker/xml/pack_xml.c
+	(cd ../libpacker/xml ; make pack_xml.o)

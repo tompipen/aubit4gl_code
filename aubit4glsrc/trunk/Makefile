@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.75 2009-12-14 20:52:14 mikeaubury Exp $
+# $Id: Makefile,v 1.76 2009-12-16 14:43:05 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2575,12 +2575,20 @@ refresh.norpcgen:
 	if diff -q common/dataio/form_x_xdr.c tools/cygwin/form_x_xdr.c > /dev/null ; then x=1; fi; \
 	if diff -q common/dataio/report.h tools/cygwin/report.h > /dev/null ; then x=1; fi; \
 	if diff -q common/dataio/report_xdr.c tools/cygwin/report_xdr.c > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/npcode.h tools/cygwin/npcode.h > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/npcode_xdr.c tools/cygwin/npcode_xdr.c > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/fgl.h tools/cygwin/fgl.h > /dev/null ; then x=1; fi; \
+	if diff -q common/dataio/fgl_xdr.c tools/cygwin/fgl_xdr.c > /dev/null ; then x=1; fi; \
 	if test "$x" = "1"; then \
 		echo "Need to update"; \
 		${CP} common/dataio/form_x.h tools/cygwin; \
 		${CP} common/dataio/form_x_xdr.c tools/cygwin; \
 		${CP} common/dataio/report.h tools/cygwin; \
 		${CP} common/dataio/report_xdr.c tools/cygwin; \
+		${CP} common/dataio/npcode.h tools/cygwin; \
+		${CP} common/dataio/npcode_xdr.c tools/cygwin; \
+		${CP} common/dataio/fgl.h tools/cygwin; \
+		${CP} common/dataio/fgl_xdr.c tools/cygwin; \
 	else \
 		echo "All no_rpcgen files up-to-date"; \
 	fi
