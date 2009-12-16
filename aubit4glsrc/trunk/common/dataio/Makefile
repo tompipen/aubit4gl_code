@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.10 2009-01-27 18:06:33 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2009-12-16 10:12:27 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -71,10 +71,10 @@ ALL 	+=${XGEN}
 ifeq "${USE_RPCGEN}" "0"
 	#FIXME: update this:
 	RPCGEN_FORM		=${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
-	RPCGEN_REPORT		=${CP} ${ROOT}/tools/cygwin/report_xdr.c .
-	RPCGEN_FGL		=${CP} ${ROOT}/tools/cygwin/fgl_xdr.c .
-	RPCGEN_MENU		=${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c .
-	RPCGEN_PCODE		=${CP} ${ROOT}/tools/cygwin/npcode_xdr.c .
+	RPCGEN_REPORT		=${CP} ${ROOT}/tools/cygwin/report_xdr.c  ${ROOT}/tools/cygwin/report.h .
+	RPCGEN_FGL		=${CP} ${ROOT}/tools/cygwin/fgl_xdr.c  ${ROOT}/tools/cygwin/fgl.h .
+	RPCGEN_MENU		=${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
+	RPCGEN_PCODE		=${CP} ${ROOT}/tools/cygwin/npcode_xdr.c ${ROOT}/tools/cygwin/npcode.h .
 	#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
     #allowed at link time, and we have no RPCLIB to link with anyway:
 	ifeq "${COMSPEC}" ""
