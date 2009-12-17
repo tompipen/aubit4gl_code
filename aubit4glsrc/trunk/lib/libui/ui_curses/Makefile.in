@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.23 2009-12-14 20:52:32 mikeaubury Exp $
+# $Id: Makefile.in,v 1.24 2009-12-17 12:56:05 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -45,7 +45,6 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS_W	:=@CURSES_INC_PATH@ -I/usr/include/ncursesw ${CFLAGS} -I.. -I. -I${ROOT}/incl -I/usr/local/include
 CFLAGS		:=@CURSES_INC_PATH@ -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl -I/usr/local/include
 #Note: On CygWin term.h is in -I/usr/include/ncurses
-#@RPCLIB_INCLUDE@
 #-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 
 ifneq "@HAVE_CURSES@" "0"
