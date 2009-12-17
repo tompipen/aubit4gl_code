@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.33 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: string.c,v 1.34 2009-12-17 17:36:11 mikeaubury Exp $
 #
 */
 
@@ -272,8 +272,13 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
   int cnt;
 
   cnt = width;
+  memset(buff,0,sizeof(buff));
   strcpy (buff, in);
   A4GL_trim (buff);
+
+
+
+
   while (cnt < strlen (buff))
     {
       int a;
@@ -281,6 +286,7 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
       if (buff[cnt - 1] == ' ' || buff[cnt] == ' ')
 	{
 	  cnt += width;
+		continue;
 	}
       // Need to pad out...
       for (a = 1; a < width; a++)
@@ -301,6 +307,7 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
 	{
 	  break;
 	}
+	printf("Buff=%s\n",buff);
       cnt += width;
     }
   A4GL_trim (buff);
