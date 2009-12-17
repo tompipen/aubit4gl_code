@@ -190,7 +190,6 @@ define use_indicators integer
 	LET mv_stage="OBJ0?"
 
 
-let mv_link_opts=mv_link_opts clipped," -fbounds-checking"
 
 
 	LET mv_import_symbols	=fgl_getenv("A4GL_IMPORT_DYNAMIC")
@@ -220,7 +219,7 @@ let mv_link_opts=mv_link_opts clipped," -fbounds-checking"
 	end if
 
 	if mv_link is null or mv_link matches " " then
-		let mv_link		="gcc -fbounds-checking"
+		let mv_link		="gcc "
 	end if
 
 	if mv_link_opts is null or mv_link_opts matches " " then
@@ -235,7 +234,7 @@ let mv_link_opts=mv_link_opts clipped," -fbounds-checking"
 	end if
 
 	if mv_compile_c is null or mv_compile_c matches " " then
-		let mv_compile_c	="gcc -fbounds-checking"
+		let mv_compile_c	="gcc "
 	end if
 
 	if mv_compile_c_debug is null or mv_compile_c_debug matches " " then
