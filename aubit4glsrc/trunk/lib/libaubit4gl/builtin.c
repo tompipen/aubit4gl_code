@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.154 2009-12-15 20:24:34 mikeaubury Exp $
+# $Id: builtin.c,v 1.155 2009-12-22 16:13:46 mikeaubury Exp $
 #
 */
 
@@ -348,13 +348,13 @@ A4GL_push_substr (char *ca, int dtype, int a, int b, ...)
       			c = malloc ( b-a+1);
 			memset(c,' ',b-a+1);
 			c[b-a+1]=0;
-      			A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE (1)) + DTYPE_MALLOCED);
+      			A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE (strlen(c))));
 		} else {
 			//printf("xx %d %d\n",a,b);
       			c = malloc ( 2);
 			strcpy(c," ");
 			//A4GL_push_null(DTYPE_CHAR,2);
-      			A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE (1)) + DTYPE_MALLOCED);
+      			A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE (1)) );
 		}
 		return 1;
   }
