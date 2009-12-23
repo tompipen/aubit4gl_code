@@ -232,7 +232,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
          QDomElement fieldElement = currentElement.firstChildElement();
 
-         int w = fieldElement.attribute("width").toInt();
+         //int w = fieldElement.attribute("width").toInt();
          int posX = fieldElement.attribute("posX").toInt();
          int posY = fieldElement.attribute("posY").toInt();
          int gridWidth = fieldElement.attribute("gridWidth").toInt();
@@ -252,7 +252,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
 
          widget->setFixedHeight(widget->height()*pageSize);
 
-         int w = fieldElement.attribute("width").toInt();
+         //int w = fieldElement.attribute("width").toInt();
          int posX = fieldElement.attribute("posX").toInt();
          int posY = fieldElement.attribute("posY").toInt();
          int gridWidth = fieldElement.attribute("gridWidth").toInt();
@@ -264,8 +264,8 @@ void Parser::parseElement(const QDomNode& xmlNode)
       }
 
       if(nodeName == "HLine"){
-         int posX = currentElement.attribute("posX").toInt();
-         int posY = currentElement.attribute("posY").toInt();
+         //int posX = currentElement.attribute("posX").toInt();
+         //int posY = currentElement.attribute("posY").toInt();
          int gridWidth = currentElement.attribute("gridWidth").toInt();
          bool hidden = currentElement.attribute("hidden").toInt();
 
@@ -403,7 +403,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       int h = wi->height();
       delete wi;
  
-      int fieldCount = ql_formFields.count();
+      //int fieldCount = ql_formFields.count();
  
       int fieldAt = ql_formFields.count() - children.count();
  
@@ -465,7 +465,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    
    int pageSize = matrixElement.attribute("pageSize").toInt();
    QString name = matrixElement.attribute("name");
-   int colCount = matrixElement.childNodes().count();
+   //int colCount = matrixElement.childNodes().count();
 
    TableModel *model = new TableModel(pageSize, 1);
 
@@ -496,7 +496,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    int recordHeight = 0;
    int recordWidth = 0;
 
-   int formW = matrixElement.firstChild().toElement().attribute("width").toInt();
+   //int formW = matrixElement.firstChild().toElement().attribute("width").toInt();
    int gridWidth = matrixElement.firstChild().toElement().attribute("gridWidth").toInt();
 
    QWidget *wi = WidgetHelper::createFormWidget(matrixElement);
@@ -576,8 +576,8 @@ void Parser::addLayout(QLayout *newLayout)
    if(currentLayout == NULL)
       return;
 
-   if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){
-   }
+//   if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){
+//   }
 
    if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (currentLayout)){
       layout->addLayout(newLayout);

@@ -58,7 +58,7 @@ void XML2Style::outputTree(const QDomNode& domNode)
    QString styleName;
    QString styleSheet;
 
-   bool dummy = false;
+//   bool dummy = false;
    for(int i=0; i<children.count(); ++i){
 
       QDomNode child = children.at(i);

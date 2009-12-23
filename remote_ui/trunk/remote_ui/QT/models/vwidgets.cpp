@@ -1003,8 +1003,8 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
    bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
-   bool required = formField.attribute("required").toInt();
-   bool notNull = formField.attribute("notNull").toInt();
+  // bool required = formField.attribute("required").toInt();
+  // bool notNull = formField.attribute("notNull").toInt();
 
    int w  = textEditElement.attribute("width").toInt();
 
@@ -1082,11 +1082,11 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
-   bool hidden   = formField.attribute("hidden").toInt();
+   //bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
-   bool required = formField.attribute("required").toInt();
-   bool notNull = formField.attribute("notNull").toInt();
+   //bool required = formField.attribute("required").toInt();
+   //bool notNull = formField.attribute("notNull").toInt();
 
    int w  = comboBoxElement.attribute("width").toInt();
 
@@ -1099,8 +1099,8 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
 
    QString include = comboBoxElement.attribute("include");
 
-   bool noEntry  = comboBoxElement.attribute("noEntry").toInt();
-   bool autoNext = comboBoxElement.attribute("autoNext").toInt();
+   //bool noEntry  = comboBoxElement.attribute("noEntry").toInt();
+   //bool autoNext = comboBoxElement.attribute("autoNext").toInt();
 
    QString scrollBars = comboBoxElement.attribute("scrollBars");
    QString sizePolicy = comboBoxElement.attribute("sizePolicy");
@@ -1159,10 +1159,10 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
-   bool hidden   = formField.attribute("hidden").toInt();
+   //bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
-   bool required = formField.attribute("required").toInt();
+   //bool required = formField.attribute("required").toInt();
    bool notNull = formField.attribute("notNull").toInt();
 
    int w  = checkBoxElement.attribute("width").toInt();
@@ -1176,8 +1176,8 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
 
    QString include = checkBoxElement.attribute("include");
 
-   bool noEntry  = checkBoxElement.attribute("noEntry").toInt();
-   bool autoNext = checkBoxElement.attribute("autoNext").toInt();
+   //bool noEntry  = checkBoxElement.attribute("noEntry").toInt();
+   //bool autoNext = checkBoxElement.attribute("autoNext").toInt();
 
    QString sizePolicy = checkBoxElement.attribute("sizePolicy");
    QString style = checkBoxElement.attribute("style");
@@ -1239,11 +1239,11 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
-   bool hidden   = formField.attribute("hidden").toInt();
+   //bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
-   bool required = formField.attribute("required").toInt();
-   bool notNull = formField.attribute("notNull").toInt();
+   //bool required = formField.attribute("required").toInt();
+   //bool notNull = formField.attribute("notNull").toInt();
 
    int w  = progressBarElement.attribute("width").toInt();
 
@@ -1253,8 +1253,8 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
 
    QString include = progressBarElement.attribute("include");
 
-   bool noEntry  = progressBarElement.attribute("noEntry").toInt();
-   bool autoNext = progressBarElement.attribute("autoNext").toInt();
+   //bool noEntry  = progressBarElement.attribute("noEntry").toInt();
+   //bool autoNext = progressBarElement.attribute("autoNext").toInt();
 
    QString sizePolicy = progressBarElement.attribute("sizePolicy");
    QString style = progressBarElement.attribute("style");

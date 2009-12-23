@@ -211,8 +211,8 @@ void TableView::keyPressEvent(QKeyEvent *event)
    if(event->key() == QKeySequence("Down")){
       QModelIndex current = this->currentIndex();
 
-      QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-      TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+      //QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+      //TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
        setScrLine(currentIndex().row()+1);
 
@@ -240,7 +240,7 @@ void TableView::nextfield()
 
    if(table->b_input){
       int currentRow = currentIndex().row();
-      int rowCount = table->rowCount(QModelIndex());
+      //int rowCount = table->rowCount(QModelIndex());
 
       int currentCol = currentIndex().column();
       int colCount = table->columnCount(QModelIndex());
@@ -319,7 +319,7 @@ void TableView::setInputEnabled(bool enable)
       QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
       TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
       table->b_input = enable;
-      QItemSelectionModel *selection = this->selectionModel();
+      //QItemSelectionModel *selection = this->selectionModel();
       QModelIndex index = table->index(0,0, QModelIndex());
       //selection->select(index, QItemSelectionModel::Clear);
    }
@@ -428,10 +428,10 @@ void TableView::setScrLine(int line)
 {
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
-      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+      //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex proxyIndex = proxyModel->index(currentIndex().column(), line);
          setCurrentIndex(proxyIndex);
-      }
+    //  }
 
    }
 }
@@ -441,11 +441,11 @@ void TableView::setArrLine(int line)
    return;
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
-      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+//      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex proxyIndex = proxyModel->index(currentIndex().column(), line);
          QModelIndex index = proxyModel->mapToSource(proxyIndex);
          setCurrentIndex(index);
-      }
+//      }
 
    }
 }
@@ -454,11 +454,11 @@ void TableView::setCurrentColumn(int col)
 {
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
-      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+      //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex proxyIndex = proxyModel->index(col, currentIndex().row());
          QModelIndex index = proxyModel->mapToSource(proxyIndex);
          setCurrentIndex(index);
-      }
+     // }
    }
 }
 
@@ -485,11 +485,11 @@ void TableView::setText(QString text, int row, int col)
 {
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
-      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+      //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
          //modelIndex = proxyModel->mapFromSource(modelIndex);
          model()->setData(modelIndex, text);
-      }
+      //}
 
    }
 }

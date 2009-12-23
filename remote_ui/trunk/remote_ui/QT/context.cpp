@@ -128,17 +128,17 @@ void Context::addField(QWidget *field)
       field->setEnabled(true);
 
       // INPUT || CONSTRUCT for TABLE // MATRIX (just one row)
-      if(TableView *tableView = qobject_cast<TableView *> (field)){
+     // if(TableView *tableView = qobject_cast<TableView *> (field)){
          //TODO
-      }
-      else{
+     // }
+     // else{
 
          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (field)){
             TableView *tableView = (TableView*) de->parent();
             tableView->setEnabled(true);
             ql_fieldList << field;
          }
-         else{
+//         else{
             /*
             if(ql_fieldList.count() == 1)
                field->setFocus();
@@ -162,8 +162,8 @@ void Context::addField(QWidget *field)
                   break;
                default:
                   break;
-            }
-         }
+          //  }
+         //}
       }
    }
 }

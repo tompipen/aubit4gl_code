@@ -739,8 +739,8 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (p_fglform->findFieldByName(tabName))){
             int col = de->column();
             if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
-               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+               //QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+               //TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
                QString fieldValue = fieldValues.at(i);
                tableView->setText(fieldValue, row, col);
