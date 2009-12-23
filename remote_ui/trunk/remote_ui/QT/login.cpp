@@ -244,8 +244,11 @@ HostsData::HostsData(QWidget *parent) : QDialog(parent)
           }
        else
           {
+          QString errorout;
           QVBoxLayout *errorlay   = new QVBoxLayout(this);
-          QLabel *errorlabel = new QLabel(tr("Your OS is not supported. Please contact us!"));
+          errorout = "Your OS is not supported. Please contact us! \n Error No. : ";
+          errorout.append(hostspath);
+          QLabel *errorlabel = new QLabel(errorout);
           errorlay->addWidget(errorlabel);
           setLayout(errorlay);
           setWindowTitle(tr("Error!"));
