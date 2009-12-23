@@ -20,6 +20,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QAction>
+#include <QProcessEnvironment>
 #include "login.h"
 #include "mainframe.h"
 
@@ -212,69 +213,86 @@ void LoginForm::hosts()
 HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {
        hostspath = checkOS();
-
-       QLabel *description = new QLabel(tr("<h2>Host Data</h2>"));
-       QLabel *description2 = new QLabel(tr("<b>CAUTION :</b> Be sure that you login as Admin/root <br> otherwise you can't edit these Settings"));
-       QVBoxLayout *mainLayout = new QVBoxLayout;
-       hostsTable = new QTableWidget(this);
-       QStringList labels;
-       labels << tr("IP-Adress") << tr("Host-Name") << tr("Comments");
-       hostsTable->setColumnCount(3);
-       hostsTable->setHorizontalHeaderLabels(labels);
-       hostsTable->verticalHeader()->hide();
-       hostsTable->setShowGrid(false);
-       hostsTable->resizeColumnsToContents();
-       hostsTable->horizontalHeader()->setStretchLastSection(true);
-readHost();
-
-       QPushButton *addButton = new QPushButton(tr("Add Host"));
-       QPushButton *saveButton = new QPushButton(tr("Save Hosts Data"));
-       connect(addButton, SIGNAL(clicked()), this, SLOT(addHost()));
-       connect(saveButton, SIGNAL(clicked()), this, SLOT(saveHost()));
-       mainLayout->addWidget(description);
-       mainLayout->addWidget(description2);
-       mainLayout->addWidget(hostsTable);
-       mainLayout->addWidget(addButton);
-       mainLayout->addWidget(saveButton);
-       setLayout(mainLayout);
-       setWindowTitle(tr("VDC - Hosts Settings"));
-       move(QCursor::pos());
-       show();
+       if (!hostspath.at(0).isNumber())
+          {
+          QLabel *description = new QLabel(tr("<h2>Host Data</h2>"));
+          QLabel *description2 = new QLabel(tr("<b>CAUTION :</b> Be sure that you login as Admin/root <br> otherwise you can't edit these Settings"));
+          QVBoxLayout *mainLayout = new QVBoxLayout;
+          hostsTable = new QTableWidget(this);
+          QStringList labels;
+          labels << tr("IP-Adress") << tr("Host-Name") << tr("Comments");
+          hostsTable->setColumnCount(3);
+          hostsTable->setHorizontalHeaderLabels(labels);
+          hostsTable->verticalHeader()->hide();
+          hostsTable->setShowGrid(false);
+          hostsTable->resizeColumnsToContents();
+          hostsTable->horizontalHeader()->setStretchLastSection(true);
+          readHost();
+          QPushButton *addButton = new QPushButton(tr("Add Host"));
+          QPushButton *saveButton = new QPushButton(tr("Save Hosts Data"));
+          connect(addButton, SIGNAL(clicked()), this, SLOT(addHost()));
+          connect(saveButton, SIGNAL(clicked()), this, SLOT(saveHost()));
+          mainLayout->addWidget(description);
+          mainLayout->addWidget(description2);
+          mainLayout->addWidget(hostsTable);
+          mainLayout->addWidget(addButton);
+          mainLayout->addWidget(saveButton);
+          setLayout(mainLayout);
+          setWindowTitle(tr("VDC - Hosts Settings"));
+          move(QCursor::pos());
+          show();
+          }
+       else
+          {
+          QVBoxLayout *errorlay   = new QVBoxLayout(this);
+          QLabel *errorlabel = new QLabel(tr("Your OS is not supported. Please contact us!"));
+          errorlay->addWidget(errorlabel);
+          setLayout(errorlay);
+          setWindowTitle(tr("Error!"));
+          }
 
 }
 
 QString HostsData::checkOS()
 {
-
    QString pfad;
-
+   pfad = "";
    #ifdef Q_WS_WIN
    int windows = QSysInfo::WindowsVersion;
    if (windows > 15 && windows < 159)
       {
-        QStringList system = QProcess::systemEnvironment();
-        pfad = system.filter("SYSTEMROOT").at(0).split("=").at(1);
-        pfad += "\\system32\\drivers\\etc\\hosts";
+       pfad = QProcessEnvironment::systemEnvironment().value("SYSTEMROOT", "");
+       if (pfad == "")
+          {
+          return "1";
+          }
+       pfad += "\\system32\\drivers\\etc\\hosts";
       }
    if (windows > 1 && windows < 15)
       {
         QStringList system = QProcess::systemEnvironment();
         pfad = system.filter("WINDIR").at(0).split("=").at(1);
+        if (pfad == "")
+           {
+           return "2";
+           }
         pfad += "\\hosts";
       }
+   return pfad;
    #endif
 
    #ifdef Q_WS_MAC
    pfad = "/private/etc/hosts";
+   return pfad;
    #endif
 
    #ifdef Q_WS_X11
    pfad = "/etc/hosts";
+   return pfad;
    #endif
 
+   return "3";
 
-
-    return pfad;
   }
 
 
@@ -554,7 +572,6 @@ void HostsData::writeHost()
   dia->close();
 
 }
-
 void LoginForm::option()
 {
        OptionsTab *optionsTab = new OptionsTab();

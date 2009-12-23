@@ -126,7 +126,6 @@ public:
    bool ipcheck;
 
 public slots:
-
    void addHost();
    void writeHost();
    void readHost();
