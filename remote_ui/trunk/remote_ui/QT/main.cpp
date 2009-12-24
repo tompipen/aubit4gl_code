@@ -35,14 +35,15 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QSplashScreen *splash = new QSplashScreen;
-    splash->setPixmap(QPixmap("./pics/splash.png"));
+    //splash->setPixmap(QPixmap("./pics/splash.png"));
+    splash->setPixmap(QPixmap("./pics/VENTAS_9_splashscreen.png"));
     splash->show();
     QString fileName; 
     QCoreApplication::setOrganizationName("VENTAS");
     QCoreApplication::setOrganizationDomain("ventas.com");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
-//sleep(3);
+    sleep(3);
 
 
 
