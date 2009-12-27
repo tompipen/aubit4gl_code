@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.163 2009-10-16 10:04:39 mikeaubury Exp $
+# $Id: ops.c,v 1.164 2009-12-27 14:13:18 mikeaubury Exp $
 #
 */
 
@@ -7138,6 +7138,9 @@ DTYPE_SERIAL
 
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INT, OP_MATH, A4GL_int_in_ops);
   A4GL_add_op_function (DTYPE_INT, DTYPE_INTERVAL, OP_MATH, A4GL_in_int_ops);
+
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_SMINT, OP_MATH, A4GL_int_in_ops);
+  A4GL_add_op_function (DTYPE_SMINT, DTYPE_INTERVAL, OP_MATH, A4GL_in_int_ops);
 
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_FLOAT, OP_MATH, A4GL_double_in_ops);
   A4GL_add_op_function (DTYPE_FLOAT, DTYPE_INTERVAL, OP_MATH, A4GL_in_double_ops);
