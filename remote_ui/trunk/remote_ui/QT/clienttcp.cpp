@@ -457,6 +457,7 @@ void ProtocolHandler::run()
    // request holds the current command from
    // the application server
    //
+qDebug() << "REQUEST:" << request;
    QString qs_protocolCommand = request;
 
 
