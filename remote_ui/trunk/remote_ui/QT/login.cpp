@@ -260,29 +260,29 @@ QString HostsData::checkOS()
 {
    QString pfad;
    pfad = "";
-   #ifdef Q_WS_WIN
-   int windows = QSysInfo::WindowsVersion;
-   if (windows > 15 && windows < 159)
-      {
-       pfad = QProcessEnvironment::systemEnvironment().value("SYSTEMROOT", "");
-       if (pfad == "")
-          {
-          return "1";
-          }
-       pfad += "\\system32\\drivers\\etc\\hosts";
-      }
-   if (windows > 1 && windows < 15)
-      {
-        QStringList system = QProcess::systemEnvironment();
-        pfad = system.filter("WINDIR").at(0).split("=").at(1);
-        if (pfad == "")
-           {
-           return "2";
-           }
-        pfad += "\\hosts";
-      }
-   return pfad;
-   #endif
+   //#ifdef Q_WS_WIN
+   // int windows = QSysInfo::WindowsVersion;
+    //if (windows > 15 && windows < 159)
+    //   {
+     //   pfad = QProcessEnvironment::systemEnvironment().value("SYSTEMROOT", "");
+       // if (pfad == "")
+      //     {
+        //   return "1";
+          // }
+ //       pfad += "\\system32\\drivers\\etc\\hosts";
+ //      }
+    //if (windows > 1 && windows < 15)
+   //    {
+     //    QStringList system = QProcess::systemEnvironment();
+       //  pfad = system.filter("WINDIR").at(0).split("=").at(1);
+         //if (pfad == "")
+          //  {
+          //  return "2";
+           // }
+        // pfad += "\\hosts";
+      // }
+   // return pfad;
+  //  #endif
 
    #ifdef Q_WS_MAC
    pfad = "/private/etc/hosts";
