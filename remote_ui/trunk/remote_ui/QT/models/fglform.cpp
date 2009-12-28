@@ -654,7 +654,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          status->toggleOverwriteMode();
          return true;
       }
-h
+
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
 
