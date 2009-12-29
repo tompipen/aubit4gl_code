@@ -77,9 +77,11 @@ public:
    bool b_read;
    bool b_write;
    int pid;
+   int id;
 
 private:
    QString filterUmlauts(QString);
+   QString decodeFile(QString);
    QString filterUmlauts2(QString);
    void outputTree(QDomNode);
 
@@ -180,6 +182,7 @@ class ClientSocket : public QTcpSocket
       ~ClientSocket();
       DebugWindow *dw;
       ProtocolHandler ph;
+      QTextCodec *codec;
 
    private:
       ScreenHandler *p_currScreenHandler;

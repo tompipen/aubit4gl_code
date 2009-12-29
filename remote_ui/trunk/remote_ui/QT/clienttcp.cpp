@@ -439,6 +439,12 @@ void ClientTcp::replyWith(QString qs_replyString)
 
          qs_replyString+="\n";
 
+         QDomDocument doc;
+         if(doc.setContent(qs_replyString)){
+            QDomElement envelope = doc.documentElement();
+            envelope.setAttribute("ENVELOPEID", cl->ph.id);
+            qs_replyString = doc.toString();
+         }
          out << qs_replyString;
       }
 }
@@ -457,7 +463,6 @@ void ProtocolHandler::run()
    // request holds the current command from
    // the application server
    //
-qDebug() << "REQUEST:" << request;
    QString qs_protocolCommand = request;
 
 
@@ -570,6 +575,7 @@ qDebug() << "REQUEST:" << request;
 
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("PID").toInt();
+         id = envelope.attribute("ID").toInt();
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -910,6 +916,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          QDomDocument doc;
          QDomElement triggeredElement = doc.createElement("TRIGGERED");
          triggeredElement.setAttribute("ID", -123);
+         triggeredElement.setAttribute("ENVELOPEID", id);
          doc.appendChild(triggeredElement);
 
          QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
@@ -1946,7 +1953,7 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
    QDomDocument doc;
    doc.setContent(qs_id);
    QDomElement triggeredElement = doc.documentElement();
-//   triggeredElement.setAttribute("PID", pid);
+   triggeredElement.setAttribute("ENVELOPEID", id);
    qs_id = doc.toString();
    qs_id = filterUmlauts2(qs_id);
    makeResponse(qs_id);
