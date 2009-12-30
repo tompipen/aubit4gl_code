@@ -1934,9 +1934,9 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
    }
 
    if(currentElement.firstChildElement().nodeName() == "VALUES"){
-   //   if(changed > 0){
+      if(changed > 0){
          handleDisplayToElement(currentElement, currentElement.nodeName());
-   //   }
+      }
    }
 
    return;
