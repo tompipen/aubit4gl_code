@@ -648,13 +648,21 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = (QKeyEvent*) event;
+      StatusBar *status = (StatusBar*) statusBar();
 
       if(keyEvent->key() == Qt::Key_Insert){
-         StatusBar *status = (StatusBar*) statusBar();
          status->toggleOverwriteMode();
          return true;
       }
+      if(status->b_overwrite)
+      {
+          QString keyEventString;
+          keyEventString = keyEvent->text();
+          if(LineEdit *le = qobject_cast<LineEdit *> (obj))
+          {
 
+          }
+      }
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
 

@@ -32,13 +32,14 @@ public:
    void displayMessage(QString);
    void displayError(QString);
    void toggleOverwriteMode();
+   bool b_overwrite;
 
 private:
    QLabel *commentLabel;
    QLabel *messageLabel;
    QLabel *errorLabel;
    QLabel *writeModeLabel;
-   bool b_overwrite;
+
 
 
 };

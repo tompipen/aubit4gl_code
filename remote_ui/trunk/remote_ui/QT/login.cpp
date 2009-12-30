@@ -127,15 +127,26 @@ welcomeBar();
 
    applicationLabel    = new QLabel(tr("Application"));
    applicationLineEdit = new QLineEdit;
-   applicationLineEdit->setText("p_master");
+   applicationLineEdit->setText("p_master.4ae");
 
    loadSettings();
+
+
+   QAction *action = new QAction("Connect", NULL);
+   QList<QKeySequence> ql_shortcuts;
+   ql_shortcuts << QKeySequence("Return");
+   ql_shortcuts << QKeySequence("Enter");
+   action->setShortcuts(ql_shortcuts);
+   connect(action, SIGNAL(triggered()), this, SLOT(okPressed()));
+
 
    // instantiating the buttons
    //
    QPushButton *okButton     = new QPushButton(tr("OK"));
+   okButton->addAction(action);
    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
-
+   
+   
    // functionalize the buttons by using connect
    // accept and reject are predefined by qt, so we can use them
    // without declaration
@@ -665,7 +676,6 @@ void LoginForm::saveEdits(){
 //------------------------------------------------------------------------------
 void LoginForm::okPressed()
 {
-
    //hideLogin();
    QSettings settings;
    QString server = serverLineEdit->text();
