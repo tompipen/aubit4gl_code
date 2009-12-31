@@ -1413,12 +1413,14 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
       //widget->clear();
       //widget->insert(fieldValue);
-      widget->setText(fieldValue.trimmed());
+      if(fieldValue.trimmed() != widget->text())
+         widget->setText(fieldValue.trimmed());
       return;
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
-      widget->setText(fieldValue);
+      if(fieldValue.trimmed() != widget->toPlainText())
+         widget->setPlainText(fieldValue.trimmed());
       return;
    }
 
