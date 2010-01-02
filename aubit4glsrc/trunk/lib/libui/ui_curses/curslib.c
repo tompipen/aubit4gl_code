@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.165 2009-10-26 08:23:35 mikeaubury Exp $
+# $Id: curslib.c,v 1.166 2010-01-02 15:33:57 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.165 2009-10-26 08:23:35 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.166 2010-01-02 15:33:57 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -177,6 +177,12 @@ static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
  * @todo Describe function
  */
 
+void
+A4GL_error_box (char *str_orig, int attr) {
+// This is a redundant function - which really needs to be removed.
+// For now - just make it call error_nobox
+A4GL_error_nobox(str_orig,attr);
+}
 
 
 /**

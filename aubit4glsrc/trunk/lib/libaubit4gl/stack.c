@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.246 2009-11-24 20:41:11 mikeaubury Exp $
+# $Id: stack.c,v 1.247 2010-01-02 15:33:57 mikeaubury Exp $
 #
 */
 
@@ -3429,7 +3429,7 @@ A4GL_null_other (char *buff, int type)
 	{
 	  if ((unsigned char) (buff[a]) != (unsigned char) (nset[type][a]))
 	    {
-	      A4GL_debug ("40 %d != %d", (unsigned char) (buff[a]), (unsigned char) (nset[type][a]));
+	      A4GL_debug ("40 %d != %d @ %d for type %d", (unsigned char) (buff[a]), (unsigned char) (nset[type][a]),a,type);
 	      return 0;
 	    }
 	}
