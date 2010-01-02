@@ -1,0 +1,23 @@
+#!/bin/sh
+#####################################################################
+#Create generated/single_words from data/kwords
+#Resulting file (generated/single_words) is used by convkw script to
+#create generated/kw.h generated/kw.c
+#
+######################### NOT WORKING !!!!! #########################
+
+#Get settings
+#. ../../../../etc/aubitrc
+. ../../../etc/aubitrc
+
+#$AWK -f bin/convkw.single.awk < data/kwords
+perl bin/convkw.single.pl < data/kwords
+
+# this doesnt work properly yet - so ignore all these anyway !
+#This would not create EOF and will cause problems at least on Solaris:
+#cat /dev/null > generated/single_words
+rm -f generated/single_words
+touch generated/single_words
+
+echo $0 : Done
+

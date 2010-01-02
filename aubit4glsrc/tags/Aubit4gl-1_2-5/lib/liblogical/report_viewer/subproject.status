@@ -1,0 +1,14 @@
+Name: report_viewer
+Parent: aubit4glsrc
+Description: GUI application that enables user to preview reports created using Logical Reports framework
+Functionality: Logical Reports report viewer
+Build: make liblogical in root
+Example:
+Depends: GTK+ version 2
+Documentation:
+Regressed: none
+Maintainer: MA
+Status:
+Todo:
+Notes:
+

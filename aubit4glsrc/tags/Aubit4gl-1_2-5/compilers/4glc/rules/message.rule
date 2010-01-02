@@ -1,0 +1,16 @@
+message_cmd : KWMESSAGE atline {
+		 set_cmdlineno($<integer_val>2);
+		} msg_next  {$<cmd>$=$<cmd>4; }
+;
+
+msg_next : 
+ 	fgl_expr_list_ptr opt_attributes op_msg_wait { 
+		$<cmd>$=new_message_cmd(make_fgl_expr_list($<ptr_list>1),$<attrib>2, $<e_boolean>3);
+		add_feature("MESSAGE");
+		map_ui("MESSAGE");
+	} 
+;
+
+
+op_msg_wait : {$<e_boolean>$=EB_FALSE;} | WAIT_FOR_KEY {$<e_boolean>$=EB_TRUE;} 
+;

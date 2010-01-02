@@ -1,0 +1,24 @@
+form_def	<Form definition>
+database_section	<database_section>
+screen_or_layout_section	<screen or_layout_section>
+table_section	<table_section>
+attribute_section	<attribute_section>
+op_instruction_section	<instruction_section>
+control_block	<control_block>
+column_list	<column_list>
+actions	<actions>
+screen_section	<screen_sction>
+layout_section	<layout_sction>
+field_tag	<field_tag>
+field_tag_name	<field_tag_name>
+desc	<desc>
+colors	<colors>
+where_clause	<where_clause>
+srec_field_list	<srec_field_list>
+datatype	<datatype>
+value	<value>
+lu_joincol	<lu_joincol>
+value_list	<value_list>
+layout_attributes	<layout_attributes>
+screen_layout	<screen_layout>
+layout_container	Layout Container

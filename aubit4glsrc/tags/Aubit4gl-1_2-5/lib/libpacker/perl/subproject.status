@@ -1,0 +1,14 @@
+Name: libPACKER_PERL
+Parent: aubit4glsrc
+Description: Output only packer module which generates a perl hash representing the output
+Functionality: PACKER 
+Build:
+Example: A4GL_PACKER
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Primarily for use with aace Perl runner and Perl LEX_ plug-in output.
+

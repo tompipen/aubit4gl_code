@@ -1,0 +1,22 @@
+database formonly
+screen
+{
+Program    [f000            ] Limit to User [usr     ]
+
+Directory  [f001                                                 ]
+Makefile   [f002                                                 ]
+Link flags [f003                                                 ]
+4glc flags [f004                                                 ]
+
+Last Upd   [f005             ]
+}
+end
+attributes
+f000 = formonly.progname,noentry;
+usr  = formonly.justuser,downshift,comments="Restrict to a single user?";
+f001 = formonly.progoutdir,comments="Optional: build directory";
+f002 = formonly.progmakefile,comments="Optional: Leave blank if and we'll use program.mk";
+f003 = formonly.linkflags,comments="Optional: link line flags";
+f004 = formonly.compflags,comments="Optional: custom CFLAGS ";
+f005 = formonly.lastupd, noentry;
+end

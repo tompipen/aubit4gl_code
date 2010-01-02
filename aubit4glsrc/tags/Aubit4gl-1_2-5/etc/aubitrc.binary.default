@@ -1,0 +1,92 @@
+##########################################################################
+# This is the default binary aubitrc file
+##########################################################################
+# 			Aubit 4gl configuration file.
+#
+#   Read by:
+#			all Aubit compilers (4glc,fcomile...) and compiler script (4glpc)
+#           All Aubit compiler make files (via incl/Makefile-common include)
+#           All Aubit compiled 4gl programs
+#
+#   Read from, in this order:
+#			1: /etc/opt/aubit4gl/aubitrc
+#			2: $AUBITDIR/etc/aubitrc
+#			3: ~/.aubit4gl/aubitrc  (`=$HOME=user's home directory)
+#			4: ./.aubitrc (current directory)
+#			5: $A4GL_INIFILE environment variable
+#
+#   Note: Defaults are in (), dependencies in []
+#
+# You can override any and all settings defaults as defined in Aubit compilers,
+# not just ones listed in this file. See output of "aubit-config -a" for list
+# of all defaults and there values.
+#
+# Note that some settings names like A4GL_DBPATH, are cumulated from all
+# available sources (Environment, Windows registry, aubitrc file(s)) and all
+# allow for both Aubit specific version of the name ("A4GL_DBPATH") and the
+# generic name like "DBPATH" to allow for compatibility with third-party product
+# that also use them. Aubit specific ones have priority in the non-cumulative,
+# cases and when setting can be cumulated, Aubit specific ones will appear
+# first in cumulated string.
+#
+# Because this file is used from different tools (make,sh,programs) it is
+# important to use syntax that can be provessed by all. This means:
+#
+#  * Use only # character as the first character in line as comment
+#  * Do not leave any space between variable name and equal (=) sign
+#  * Do not leave any spave between equal sign (=) and value
+#  * Do not enclose value for variables needed by Make in quotes, because
+#   	Make will take them litteraly
+#  * Do not leave spaecs in value without enclosing them in quotes, because
+#       this would cause shell scripts to report error
+#
+##########################################################################
+
+## ===================================================================
+## 				             Paths
+## ===================================================================
+
+#AUBITETC=/etc/opt/aubit4gl
+#WARNING - do not hard-code - use /home/aubit4gl/.aubit4gl instead!!
+
+## REMOVE THE FOLLOWING LINE ONCE YOU'VE SETUP THIS FILE  ##
+DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED=N
+
+
+
+## EDIT THESE  ##
+#
+AUBITDIR=/home/aubit4gl/aubit4glsrc
+ECPG_IFLAGS="-I/usr/local/pgsql/include -I/usr/local/pgsql/include"
+POSTGRESDIR="/usr/local/pgsql"
+LIBPQ_FE_H_IFLAGS="-I/usr/local/pgsql/include/"
+IFX_LIBS='-lifsql -lifasf -lifgen -lifos -lifgls -lc -ldl -lcrypt /home/informix/lib/esql/checkapi.o -lifglx'
+IFMX_ESQLC='/home/informix/bin/esql'
+PG_COPTS="-DUSING_PG_COPTS=1 -DHAVE_CONFIG_H"
+
+
+## You may want to edit these
+#
+A4GL_CINT="no"
+A4GL_SQLTYPE=esql
+A4GL_LEXTYPE=C
+A4GL_PDFTYPE=PDF
+A4GL_RPCTYPE=XDR
+A4GL_UI=TUI
+A4GL_FORMTYPE=GENERIC
+A4GL_MSGTYPE=NATIVE
+EXDTYPE=mpz
+EXDTYPE_DETECTED=" mpz"
+A4GL_PACKER=PACKED
+A4GL_RESERVEWORDS=NO
+A4GL_SQLCONVERT=YES
+A4GL_AUTONULL=Y
+A4GL_ANSI_WARN=Yes
+A4GL_NO_ALT_SCR=Y
+A4GL_SAPDB_ESQLC="no"
+MSYS_ROOTDIR=
+MINGW_ROOTDIR=
+
+#-------------------------------- EOF -----------------------------
+
+
