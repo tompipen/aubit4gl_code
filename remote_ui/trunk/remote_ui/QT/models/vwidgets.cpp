@@ -515,14 +515,16 @@ void TextEdit::setWantReturns(bool wr)
 
 void TextEdit::keyPressEvent(QKeyEvent *ev)
 {
-   if(!wantReturns()){
-      int key = ev->key();
-      if(key == Qt::Key_Return || key == Qt::Key_Enter){
-         ev->ignore();
-         emit returnPressed();
-         return;
-      }
-   }
+ //comment out because shift+enter in don't work
+
+ //  if(!wantReturns()){
+ //     int key = ev->key();
+ //     if(key == Qt::Key_Return || key == Qt::Key_Enter){
+ //        ev->ignore();
+ //        emit returnPressed();
+ //        return;
+ //     }
+ // }
    
    return QTextEdit::keyPressEvent(ev);
 }

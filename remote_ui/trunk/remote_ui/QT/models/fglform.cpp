@@ -62,8 +62,6 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    b_menu = false;
    b_input = false;
    b_screenRecord = false;
-   p_toolBar = NULL;
-   p_actionMenu = NULL;
    p_dialog = NULL;
    formWidget = NULL;
 
@@ -649,20 +647,41 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = (QKeyEvent*) event;
       StatusBar *status = (StatusBar*) statusBar();
-
+      QString keyEventString;
+      keyEventString = keyEvent->text();
       if(keyEvent->key() == Qt::Key_Insert){
          status->toggleOverwriteMode();
          return true;
       }
-      if(status->b_overwrite)
+      if(keyEventString != "" && status->b_overwrite )
       {
-          QString keyEventString;
-          keyEventString = keyEvent->text();
+
           if(LineEdit *le = qobject_cast<LineEdit *> (obj))
           {
+             QString lestring;
+             int pos;
+             lestring = le->text();
+             pos = le->cursorPosition();
+             lestring.replace(pos,1,keyEventString);
+             le->setText(lestring);
+             le->setCursorPosition(pos+1);
+             return true;
+          }
+          if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+          {
+             te->setOverwriteMode(true);
 
           }
       }
+          if(!status->b_overwrite)
+          {
+              if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+              {
+                  te->setOverwriteMode(false);
+              }
+          }
+
+
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
 
@@ -836,7 +855,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
       }
 
       if(TextEdit *textEdit = qobject_cast<TextEdit *> (formElements().at(i))){
-         connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
+       //  connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
          textEdit->installEventFilter(this);
       }
 
