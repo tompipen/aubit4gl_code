@@ -1551,10 +1551,11 @@ code
 char *dbsname[MAXDBS+1];
 char            dbsarea[FASIZ];
 ndbs=0;
+int i_ndbs;
 
 sqlca.sqlcode=0;
-sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
-
+sqlca.sqlcode = sqgetdbs(&i_ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+ndbs=i_ndbs;
 if (sqlca.sqlcode<0) {
 	EXEC SQL connect to default;
 	sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);

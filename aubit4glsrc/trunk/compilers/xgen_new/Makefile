@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.2 2009-03-01 11:44:15 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2010-01-04 15:41:25 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -63,7 +63,7 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
 ${ROOT}/bin/xgen_new: ${OBJS}
-	${CC} ${EXE_CFLAGS} $^ -o $@
+	${LD_EXE} ${EXE_CFLAGS} $^ -o $@
 #	${CP} $@ ${ROOT}/bin
 
 y.tab.c: x.yacc lex.yy.c

@@ -1,7 +1,7 @@
 include ../../../incl/Makefile-common
 
 ZLIB=-DHAVE_ZLIB 
-CFLAGS=-g -fPIC -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB)   
+CFLAGS+= -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB)   
 
 
 HAVE_FLEXML:=$(shell type flexml 2> /dev/null)
@@ -45,7 +45,7 @@ module_def.act: module_def.top.act  fgl.start.act fgl.end.act module_def.tail.ac
 	cat $^ > $@
 
 module_def.o: module_def.h module_def.c
-	$(CC) -c -rdynamic $(CFLAGS) module_def.c
+	$(CC) -c ${RDYNAMIC} $(CFLAGS) module_def.c
 
 lex.yy.o: lex.yy.c pack_xml.h
 	$(CC) $(CFLAGS) -c lex.yy.c

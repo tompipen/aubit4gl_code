@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.58 2009-12-14 20:52:14 mikeaubury Exp $
+# $Id: Makefile,v 1.59 2010-01-04 15:41:25 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -366,8 +366,7 @@ calltree_expr.o: expr_as_string_when_possible.c
 
 fglcalltree:../../bin/fglcalltree
 ../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o 
-	$(CC) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
-	gcc -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	#cp fglcalltree $(AUBITDIR)/bin
 
 #fglsplit: split.o API_lex.o  linearise.o
@@ -380,12 +379,12 @@ fgllink: fgllink.o API_lex.o expr_munging.o linearise.o common.o ../../lib/gener
 
 
 ${ROOT}/compilers/4glc/rules/generated/states_optimised.c: rules/generated/mk_states.c mk_states_opt.c
-	gcc -DMKSTATESOPTS -g -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated  rules/generated/mk_states.c  -o ${ROOT}/compilers/4glc/rules/generated/mk_states_optimised
+	$(CC) $(CFLAGS) -DMKSTATESOPTS -g -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated  rules/generated/mk_states.c  -o ${ROOT}/compilers/4glc/rules/generated/mk_states_optimised
 	${ROOT}/compilers/4glc/rules/generated/mk_states_optimised > ${ROOT}/compilers/4glc/rules/generated/states_optimised.c
 	
 
 %.op:%.c
-	gcc -Wall -DOPTIMIZED -c -o $@ -O3 -fPIC -DPIC -DSRC_TREE  -DHAVE_CONFIG_H  -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated -I${ROOT}/compilers/4glc/rules $<
+	$(CC)  -Wall -DOPTIMIZED -c -o $@ -O3 -fPIC -DPIC -DSRC_TREE  -DHAVE_CONFIG_H  -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated -I${ROOT}/compilers/4glc/rules $<
 
 optclean:
 	find . -name "*.op" -exec rm {} \;

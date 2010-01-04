@@ -23646,6 +23646,8 @@ $as_echo "$REDHAT_NAME ($REDHAT_VER)" >&6; }
 	*-ibm-aix*)
 		APIC=
 		LDFLAGS_SHARED="-s"
+        	SO_EXT=.a
+        	SO_EXT_LINKABLE=$SO_EXT
         ;;
 
 	*)
@@ -51670,11 +51672,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:51673: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:51675: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:51677: \$? = $ac_status" >&5
+   echo "$as_me:51679: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -51774,11 +51776,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:51777: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:51779: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:51781: \$? = $ac_status" >&5
+   echo "$as_me:51783: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -55836,7 +55838,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 55839 "configure"' > conftest.$ac_ext
+  echo '#line 55841 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -56904,7 +56906,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 56907 "configure"
+#line 56909 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -57004,7 +57006,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 57007 "configure"
+#line 57009 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -61965,7 +61967,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.433 2009-12-17 13:24:17 mikeaubury Exp $
+| $Id: configure,v 1.434 2010-01-04 15:41:17 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

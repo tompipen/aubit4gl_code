@@ -2618,6 +2618,8 @@ main (int argc, char *argv[])
       printf (" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
       printf (" -noProg = Exclude the XML and program tags\n");
       printf (" -Prog = Include the XML and program tags\n");
+      printf (" -start funcname = Run calltree from 'funcname'\n");
+      printf (" -end funcname = Run calltree for all calls to 'funcname'\n");
       exit (2);
     }
 
