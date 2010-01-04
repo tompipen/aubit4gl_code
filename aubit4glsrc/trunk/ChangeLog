@@ -1,4 +1,26 @@
 ---------------------------
+Mon Jan  4 08:36:46 GMT 2010
+---------------------------
+1.2_5 Released
+---------------------------
+	2010-01-02 15:33  mikeaubury
+	
+	AIX fixup
+	
+	DATE fixup
+	
+	Remove compilers/fcompile/form_x.x etc Fix form compilation problem
+	with A4GL_FORMTYPE=XDR
+	
+	Add ability to create a web link in a PDF - just use :
+	
+	set color 0,1,1 	# make text it
+	blue..
+	call pdf_function("texturl","text to
+	display", "http://url_to_go_to/"))
+	set color 0,0,0 	# back to black
+	
+---------------------------
 Fri Dec 11 11:34:40 GMT 2009
 ---------------------------
 1.2_4 Released
