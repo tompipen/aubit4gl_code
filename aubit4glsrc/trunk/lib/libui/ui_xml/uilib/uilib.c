@@ -2536,8 +2536,27 @@ uilib_save_file (char *id, char *s)
     {
 	unsigned char *buff;
 	int len;
+	int printed=0;
+
+	if (last_attr->sync.vals!=0) {
+		if (last_attr->sync.vals[0].value!=0) {
+			char *r;
+			if (strlen(last_attr->sync.vals[0].value)>200) {
+				r=strdup(last_attr->sync.vals[0].value);
+				strcpy(&r[80],"...");
+				UIdebug(4,"Saving file %s - len=%d should be %d\n",r, len, last_attr->filelen);
+				free(r);
+			} else {
+				UIdebug(4,"Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, len, last_attr->filelen);
+			}
+			printed++;
+		}
+	} 
+	if (!printed) {
+		fprintf(stderr,"couldnt save file - no synvalue");
+		exit(2);
+	}
 	len=A4GL_base64_decode(last_attr->sync.vals[0].value, &buff);
-	UIdebug(4,"Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, len, last_attr->filelen);
       //printf("FILELEN : %d\n", last_attr->filelen);
       fwrite (buff, len, 1, f);
 	free(buff);
