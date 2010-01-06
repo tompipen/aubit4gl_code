@@ -6,7 +6,7 @@ include ${ROOT}/incl/Makefile-common
 
 
 NAME=`uname | tr '-' '_'`
-CFLAGS=-fPIC -g -Wall  -Iaubit4gl -I$(AUBITDIR)/incl -I$(ROOT)/lib/libui/ui_xml -I$(ROOT)/lib/libui/ui_xml/uilib
+CFLAGS+=-I$(ROOT)/lib/libui/ui_xml -I$(ROOT)/lib/libui/ui_xml/uilib -I$(ROOT)/lib/libui/ui_xml/uilib/aubit4gl
 HASFLEXML:=$(shell type flexml 2> /dev/null)
 
 ifeq "$(HASFLEXML)" ""

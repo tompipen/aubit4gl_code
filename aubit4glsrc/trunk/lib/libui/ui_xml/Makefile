@@ -8,7 +8,7 @@ ifneq "${COMSPEC}" ""
 endif
 
 
-CFLAGS+=-I$(ROOT)/incl -I. -Iuilib -fPIC  
+CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl
 
 
 all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
