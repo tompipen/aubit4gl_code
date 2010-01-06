@@ -24745,7 +24745,7 @@ if test "${enable_aix_64bit+set}" = set; then
   enableval=$enable_aix_64bit;
 fi
 
-		)
+
 	AIX_OBJECT_MODE=
 	case $host in
 		*aix*)
@@ -61991,7 +61991,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.436 2010-01-06 16:04:21 mikeaubury Exp $
+| $Id: configure,v 1.437 2010-01-06 16:27:52 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
