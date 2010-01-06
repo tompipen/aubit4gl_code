@@ -81,7 +81,7 @@ int A4GL_check_isobject_name(char *s) {
 struct command *check_for_member_call_alias(expr_str *p_fcall,expr_str_list *p_returning) {
 	//struct variable_usage *u;
 	//struct variable_usage *utop;
-	struct variable_usage *ubottom;
+	//struct variable_usage *ubottom;
 	if (p_fcall->expr_type!=ET_EXPR_MEMBER_FCALL_NEW) {
 		return NULL;
 	}

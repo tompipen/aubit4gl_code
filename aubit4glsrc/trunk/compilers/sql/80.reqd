@@ -275,4 +275,5 @@ op_fgl_expr :  {strcpy($<str>$,"");}
 ;
 
 
-
+opt_use2_p:
+;

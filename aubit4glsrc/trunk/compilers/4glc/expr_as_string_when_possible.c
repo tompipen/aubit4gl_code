@@ -5,6 +5,11 @@
 
 #endif
 
+static char *local_field_name_as_char(char*fname,char *sub) {
+static char buff[256];
+SPRINTF2(buff,"%s[%s]",fname,sub);
+return buff;
+}
 
 static char *expr_as_string_ident_as_string(expr_str *f,int quote) {
 static char buff[2000];
@@ -27,11 +32,6 @@ static char buff[2000];
 }
 
 
-static char *local_field_name_as_char(char*fname,char *sub) {
-static char buff[256];
-SPRINTF2(buff,"%s[%s]",fname,sub);
-return buff;
-}
 
 
 static char *local_rettype (char *s) {

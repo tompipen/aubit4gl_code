@@ -1096,22 +1096,32 @@ simple_column_name : identifier {
 
 
 
-execute_procedure:
-	EXECUTE_PROCEDURE identifier OPEN_BRACKET CLOSE_BRACKET {
-		add_sql_function($<str>2);
+execute_procedure_cmd :
+	opt_use2_p EXECUTE_PROCEDURE identifier OPEN_BRACKET CLOSE_BRACKET {
+		insql=0;
+		add_sql_function($<str>3);
+		$<cmd>$=new_execute_procedure_cmd($<ptr>1,$<str>3,NULL);
+
+		/*
 		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
 			SPRINTF1($<str>$,"EXEC %s",$<str>2);
 		} else {
 			SPRINTF1($<str>$,"EXECUTE PROCEDURE %s ()",$<str>2);
 		}
+		*/
 	}
-	| EXECUTE_PROCEDURE identifier OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
-		add_sql_function($<str>2);
+	| opt_use2_p EXECUTE_PROCEDURE identifier OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+		insql=0;
+		add_sql_function($<str>4);
+		$<cmd>$=new_execute_procedure_cmd($<ptr>1,$<str>3,$<s_select_list_item_list>5);
+
+		/*
 		if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
 			SPRINTF2($<str>$,"EXEC %s %s",$<str>2, get_select_list_item_list(0, $<s_select_list_item_list>4));
 		} else {
 			SPRINTF2($<str>$,"EXECUTE PROCEDURE %s (%s)",$<str>2, get_select_list_item_list(0, $<s_select_list_item_list>4));
 		}
+		*/
 	}
 ;
 
@@ -1120,7 +1130,6 @@ misc_sql :
 	lock_stmt 		{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
 	| unlock_stmt  		{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
 	| rename_stmt  		{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
-	| execute_procedure  	{ $<sql_string>$=make_sql_string_and_free(acl_strdup($<str>1), NULL);}
 
 ;
 

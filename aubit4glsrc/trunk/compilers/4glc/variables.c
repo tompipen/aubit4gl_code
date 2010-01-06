@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.113 2009-12-10 19:19:03 mikeaubury Exp $
+# $Id: variables.c,v 1.114 2010-01-06 17:48:58 mikeaubury Exp $
 #
 */
 
@@ -149,6 +149,13 @@ void set_local_variables(struct variable_list *vlist) {
 }
 
 void make_constant_available(struct variable *v) {
+char *name;
+	name=v->names.names.names_val[0].name;
+
+  	if (A4GL_aubit_strcasecmp(name,"notfound")==0) return;
+	if (A4GL_aubit_strcasecmp(name,"true")==0)     return;
+ 	if (A4GL_aubit_strcasecmp(name,"false")==0)    return;
+
 	lv_uses_constants++;
 }
 
@@ -161,7 +168,14 @@ int cnt=0;
 	if (v->variables.variables_len==0) return 0;
 	for (a=0;a<v->variables.variables_len;a++) {
 		if (v->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_CONSTANT) {
+			char *name;
+			name= v->variables.variables_val[a]->names.names.names_val[0].name;
+   			if (A4GL_aubit_strcasecmp(name,"notfound")==0) continue;
+ 			if (A4GL_aubit_strcasecmp(name,"true")==0)     continue;
+ 			if (A4GL_aubit_strcasecmp(name,"false")==0)    continue;
+			A4GL_debug("CONSTANT: %s\n", v->variables.variables_val[a]->names.names.names_val[0].name);
 			cnt++;
+
 		}
 	}
 	return cnt;
@@ -394,9 +408,7 @@ check_for_constant (char *name, char *buff)
   char errbuff[256];
   enum e_scope scope;
   /*char buff2[256]; */
-  strcpy (buff, name);
 
-  A4GL_convlower (buff);
 
   if (dbg)
     {
@@ -413,7 +425,8 @@ check_for_constant (char *name, char *buff)
 // Constants can be costly to search for..
 // if we're not using them (over the builtin ones) - we can ignore this expense..
   if (uses_constants()==0 && !A4GL_isno(acl_getenv("CONSTANT_OPTIMISE"))){  
-	int builtin_Constant_usage=0;
+		int builtin_Constant_usage=0;
+
    		if (A4GL_aubit_strcasecmp(name,"notfound")==0) builtin_Constant_usage++;
  		if (A4GL_aubit_strcasecmp(name,"true")==0)     builtin_Constant_usage++;
  		if (A4GL_aubit_strcasecmp(name,"false")==0)    builtin_Constant_usage++;
@@ -421,6 +434,10 @@ check_for_constant (char *name, char *buff)
 	 	if (!builtin_Constant_usage) return 0; // none defined - so no point in searching
   }
 
+//A4GL_pause_execution();
+
+  strcpy (buff, name);
+  A4GL_convlower (buff);
 
 
 vu = make_variable_usage_from_string(buff);
@@ -917,12 +934,14 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
 // except that in the create procedure variable list
 void set_in_create_procedure(void) {
 	isCreateProcedure=1;
+	set_sli_variable_usage_as_string(1);
 }
 
 // This function claars the flag so that variables are processed as
 // normal again after the create procedure has been used..
 void clr_in_create_procedure(void) {
 	isCreateProcedure=0;
+	set_sli_variable_usage_as_string(0);
 }
 
 // This function pushes a block of variables onto the variable stack

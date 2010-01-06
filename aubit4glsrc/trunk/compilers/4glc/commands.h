@@ -15,6 +15,7 @@ struct single_option *new_option (char c, char *v,int isKey);
 struct single_option *new_option_expr (char c, struct expr_str *v,int isKey);
 
 struct command *new_cancel_cmd(enum cancel_type p_c);
+struct command *new_execute_procedure_cmd(expr_str *p_connid, char *nm, s_select_list_item_list *parameters) ;
 struct command *new_close_cmd(enum e_close_type_nosql p_type, expr_str *p_ident);
 struct command *new_close_sql_cmd(enum e_close_type_withsql p_type, expr_str *p_ident);
 struct command *new_free_cmd(expr_str *connid, expr_str *p_cursorname);

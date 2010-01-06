@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.12 2008-07-06 11:34:24 mikeaubury Exp $
+# $Id: field_handling.c,v 1.13 2010-01-06 17:48:58 mikeaubury Exp $
 #*/
 
 #include <stdlib.h>
@@ -42,7 +42,6 @@
 
 struct fh_field_entry *new_field_entry(expr_str *f,struct expr_str *n,int needs_quoting) {
 	struct fh_field_entry *field;
-	char buff[256];
 	field=acl_malloc2(sizeof(struct fh_field_entry));
 	field->field =f;
 	field->fieldsub  =n;

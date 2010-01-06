@@ -21,6 +21,8 @@ struct expr_str *A4GL_new_expr_funcdef(char *funcname, char *namespace);
 struct expr_str * A4GL_new_expr_binding (expr_str_list * list);
 struct expr_str * A4GL_new_expr_named_param (char *name, expr_str *value);
 struct expr_str * A4GL_new_spl_for_item_expr (expr_str *start,expr_str *end, expr_str *step);
+struct expr_str * A4GL_expr_select ( struct s_select *s);
+
 
 struct expr_str *report_position_expr_x(struct expr_str *expr) ;
 struct expr_str *report_position_expr_y(struct expr_str *expr) ;

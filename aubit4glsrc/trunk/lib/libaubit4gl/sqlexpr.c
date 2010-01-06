@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.84 2009-11-23 11:24:59 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.85 2010-01-06 17:48:59 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_expr.h"
 #include <ctype.h>
 #if HAVE_STRINGS_H
 #include <strings.h>
@@ -60,6 +61,10 @@ int place_holder_cnt = 0;
 int dont_set_for_single_table = 0;
 int set_sql_lineno = 0;
 int has_columns_cnt = 0;
+static char * local_expr_as_string_when_possible (expr_str * e);
+#define ET_EXPR_VARIABLE_USAGE_call local_get_variable_usage_as_string
+#define expr_as_string_when_possible  local_expr_as_string_when_possible 
+
 
 static char *convstrsql (char *s);
 //char *get_select_list_item_list(struct s_select *select, struct s_select_list_item_list *i) ;
@@ -726,6 +731,22 @@ static char *convert_escape_str(char *ptr) {
 
 
 
+
+int m_sli_variable_usage_as_string=0;
+
+void set_sli_variable_usage_as_string(int n) {
+	// Allows  a E_SLI_VARIABLE_USAGE to be output as a string
+	// This is normally a *bad* thing - but we want to do it when dumping a CREATE PROCEDURE
+	//
+	// For all other usages - the VARIABLE_USAGE should have been replaced by a placeholder "?" and the
+	// expression taken into a 'binding' to be used with the SQL...
+	m_sli_variable_usage_as_string=1;
+}
+
+static int sli_variable_usage_as_string(void) {
+return m_sli_variable_usage_as_string;
+}
+
 char *
 get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 {
@@ -755,6 +776,45 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
   return rval;
 }
 
+
+static char *local_get_variable_usage_as_string (struct variable_usage *var_usage) {
+        char buff[2000];
+
+        sprintf(buff, "%s",var_usage->variable_name);
+        if (var_usage->subscripts.subscripts_len) {
+                int a;
+                strcat(buff, "[");
+                for (a=0;a<var_usage->subscripts.subscripts_len;a++) {
+                        if(a) strcat(buff, ",");
+                        strcat(buff, local_expr_as_string_when_possible(var_usage->subscripts.subscripts_val[a]));
+                }
+                strcat(buff, "]");
+        }
+        if (var_usage->substrings_start) {
+                strcat(buff, "[");
+                strcat(buff, local_expr_as_string_when_possible(var_usage->substrings_start));
+                if (var_usage->substrings_end) {
+                        strcat(buff, ",");
+                        strcat(buff, local_expr_as_string_when_possible(var_usage->substrings_end));
+                }
+                strcat(buff, "]");
+        }
+        if (var_usage->next) {
+                char *ptr;
+                strcat(buff,".");
+                ptr=local_get_variable_usage_as_string(var_usage->next);
+                strcat(buff, ptr);
+                free(ptr);
+        }
+
+        return strdup(buff);
+}
+
+#define upshift a4gl_upshift
+#define downshift A4GL_make_downshift
+#include "../../compilers/4glc/expr_as_string_when_possible.c"
+
+
 static char *
 get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 {
@@ -776,8 +836,18 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
     case E_SLI_VARIABLE:
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
-    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
+
+
     case E_SLI_VARIABLE_USAGE:
+
+	if (sli_variable_usage_as_string()) {
+		return acl_strdup_With_Context(local_get_variable_usage_as_string(p->data.s_select_list_item_data_u.var_usage));
+	}
+      A4GL_assertion (1, "These should all have been removed by now...");
+      return "";
+
+
+    case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST:
       A4GL_assertion (1, "These should all have been removed by now...");
       return "";
 
@@ -1492,7 +1562,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 
     case E_SLI_VARIABLE_USAGE_LIST:
       A4GL_assertion (1,
-		      "Should get E_SLI_VARIABLE_USAGE_LIST - use the 'rationalize_select_list_item_list' function to flatten the list first");
+		      "Should not get E_SLI_VARIABLE_USAGE_LIST - use the 'rationalize_select_list_item_list' function to flatten the list first");
       break;
 
     }

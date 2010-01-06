@@ -3592,3 +3592,73 @@ static char *StaticKWForRecopy(void) {
 void set_global_curs(void) {
 	globalcurs=1;
 }
+
+
+
+/******************************************************************************/
+int print_execute_procedure_cmd(struct_execute_procedure_cmd *cmd_data) 
+{
+  char *ptr;
+ char str[20000]="";
+char *p;
+  int converted = 0;
+
+  clr_bindings ();
+  search_sql_variables (cmd_data->parameters, 'i');
+
+
+        if (cmd_data->parameters==NULL) {
+                if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
+                        SPRINTF1(str,"EXEC %s",cmd_data->funcname);
+                } else {
+                        SPRINTF1(str,"EXECUTE PROCEDURE %s ()",cmd_data->funcname);
+                }
+        } else {
+                if (A4GLSQLCV_check_requirement("EXECUTE_PROCEDURE_AS_EXEC")) {
+                        SPRINTF2(str,"EXEC %s %s",cmd_data->funcname, get_select_list_item_list(0, cmd_data->parameters));
+                } else {
+                        SPRINTF2(str,"EXECUTE PROCEDURE %s (%s)",cmd_data->funcname, get_select_list_item_list(0,cmd_data->parameters));
+                }
+        }
+
+// ---- 
+  print_cmd_start ();
+  print_use_session(cmd_data->connid);
+  printc("A4GL_set_logsqlstart();");
+
+  if (A4GL_compile_time_convert ())
+    {
+      ptr = A4GLSQLCV_check_sql (str, &converted);
+    }
+  else
+    {
+      ptr = str;
+    }
+
+
+	if (input_bind && input_bind->list.list_len) {
+		printc("{");
+  			print_bind_definition_g (input_bind,'i');
+  			print_bind_set_value_g (input_bind,'i');
+  			print_conversions_g (input_bind,'i');
+		}
+
+  p=strdup(ptr);
+  A4GL_trim(p);
+  if (strlen(p)) {
+  set_suppress_lines ();
+	// No variables used...
+  printc ("\nEXEC SQL %s;\n", p);
+  clr_suppress_lines ();
+	}
+
+  A4GL_trim(p);
+	if (input_bind && input_bind->list.list_len) {
+		printc("}");
+	}
+
+  print_copy_status_with_sql (0);
+  print_undo_use(cmd_data->connid);
+  A4GL_save_sql (p, 0,"SQL","");
+  return 1;
+}

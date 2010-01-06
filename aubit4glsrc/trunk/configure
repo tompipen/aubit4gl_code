@@ -24753,8 +24753,14 @@ fi
 $as_echo_n "checking AIX mode... " >&6; }
 			if test "$enable_aix_64bit" = "yes" ; then
 				AIX_OBJECT_MODE=64
+				OBJECT_MODE=64
+				export OBJECT_MODE
+				CFLAGS=-maix64
+				export CFLAGS
 			else
 				AIX_OBJECT_MODE=32
+				OBJECT_MODE=32
+				export OBJECT_MODE
 			fi
 		;;
 	esac
@@ -51696,11 +51702,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:51699: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:51701: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:51703: \$? = $ac_status" >&5
+   echo "$as_me:51705: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -51800,11 +51806,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:51803: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:51805: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:51807: \$? = $ac_status" >&5
+   echo "$as_me:51809: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -55862,7 +55868,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 55865 "configure"' > conftest.$ac_ext
+  echo '#line 55867 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -56930,7 +56936,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 56933 "configure"
+#line 56935 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -57030,7 +57036,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 57033 "configure"
+#line 57035 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -61991,7 +61997,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.437 2010-01-06 16:27:52 mikeaubury Exp $
+| $Id: configure,v 1.438 2010-01-06 17:48:37 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -1546,6 +1546,82 @@ int sbuffsz;
 }
    
 
+
+int
+print_execute_procedure_cmd (struct_execute_procedure_cmd * cmd_data)
+{
+  char str[20000] = "";
+  char *ptr;
+  int converted = 0;
+// ---- 
+  print_cmd_start ();
+  print_use_session (cmd_data->connid);
+
+  clr_bindings ();
+  search_sql_variables (cmd_data->parameters, 'i');
+
+  if (cmd_data->parameters == NULL)
+    {
+      if (A4GLSQLCV_check_requirement ("EXECUTE_PROCEDURE_AS_EXEC"))
+	{
+	  SPRINTF1 (str, "EXEC %s", cmd_data->funcname);
+	}
+      else
+	{
+	  SPRINTF1 (str, "EXECUTE PROCEDURE %s ()", cmd_data->funcname);
+	}
+    }
+  else
+    {
+      if (A4GLSQLCV_check_requirement ("EXECUTE_PROCEDURE_AS_EXEC"))
+	{
+	  SPRINTF2 (str, "EXEC %s %s", cmd_data->funcname, get_select_list_item_list (0, cmd_data->parameters));
+	}
+      else
+	{
+	  SPRINTF2 (str, "EXECUTE PROCEDURE %s (%s)", cmd_data->funcname, get_select_list_item_list (0, cmd_data->parameters));
+	}
+    }
+
+
+
+  if (A4GL_compile_time_convert ())
+    {
+      ptr = A4GLSQLCV_check_sql (str, &converted);
+    }
+  else
+    {
+      ptr = str;
+    }
+
+  ptr = escape_quotes_and_remove_nl (lowlevel_chk_sql (ptr));
+
+
+  if (input_bind && input_bind->list.list_len)
+    {
+      int c;
+      // We used some variables...
+      printc ("{\n");
+      c = print_bind_definition_g (input_bind, 'i');
+      print_bind_set_value_g (input_bind, 'i');
+      printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(ibind,%d,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", c, ptr,
+	      line_for_cmd, converted);
+      printc ("}\n");
+    }
+  else
+    {
+
+      printc ("A4GL_execute_implicit_sql(A4GL_prepare_select(0,0,0,0,\"%s\",_module_name,%d,%d,0),1,0,0);\n", ptr, line_for_cmd,
+	      converted);
+    }
+
+  print_copy_status_with_sql (0);
+  print_undo_use (cmd_data->connid);
+  return 1;
+}
+
+
+
 void set_global_curs(void) {
 }
 

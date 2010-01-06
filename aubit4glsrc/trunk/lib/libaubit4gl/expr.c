@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.40 2009-12-10 19:19:05 mikeaubury Exp $
+# $Id: expr.c,v 1.41 2010-01-06 17:48:59 mikeaubury Exp $
 #
 */
 
@@ -393,6 +393,10 @@ case ET_EXPR_SPL_TRACE_OFF:
 	return "ET_EXPR_SPL_TRACE_OFF";
 case ET_EXPR_SPL_FOR_ITEM:
 	return "ET_EXPR_SPL_FOR_ITEM";
+case ET_EXPR_SPL_VARIABLE_USAGE:
+	return "ET_EXPR_SPL_VARIABLE_USAGE";
+case ET_EXPR_SELECT:
+	return "ET_EXPR_SELECT";
 
     }
   PRINTF ("Expression Type : %d\n", e);
@@ -1259,6 +1263,14 @@ A4GL_new_expr_list ()
   return p;
 }
 
+struct expr_str * A4GL_expr_select ( struct s_select *s) 
+{
+struct expr_str *ptr;
+      ptr = A4GL_new_expr_simple (ET_EXPR_SELECT);
+      ptr->expr_str_u.select_stmt=s;
+
+      return ptr;
+}
 
 struct expr_str *
 A4GL_expr_exists_sq (int invert, struct s_select *s)

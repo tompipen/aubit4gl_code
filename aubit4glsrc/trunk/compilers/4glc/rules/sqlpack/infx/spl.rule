@@ -73,7 +73,7 @@ spl_parameter:
 ;
 
 spl_vname:  /* An SPL variable name - nothing complicated in SPL :-)  */
-	NAMED {strcpy($$,$<str>1);}
+	NAMED {strcpy($$,$<str>1); A4GL_make_downshift($$);}
 ;
 
 spl_op_default:
@@ -123,11 +123,17 @@ spl_returning:
 
 spl_return_dtype_list:
 	spl_return_dtype_list_item {
-		$$=create_variable_list(new_str_list("<notset>"),$1);
+		char buff[200];
+		static int cnt=0;
+		sprintf(buff,"acl_rvalx%d",cnt++);
+		$$=create_variable_list(new_str_list(strdup(buff)),$1);
 	}
 	| spl_return_dtype_list KW_COMMA spl_return_dtype_list_item {
 		struct variable_list * v;
-		v=create_variable_list(new_str_list("<notset>"),$3);
+		static int cnt=0;
+		char buff[200];
+		sprintf(buff,"acl_rval%d",cnt++);
+		v=create_variable_list(new_str_list(strdup(buff)),$3);
 		$$=merge_variable_list($1,v);
 	}
 ;
@@ -225,7 +231,7 @@ spl_command:
 
 
 spl_begin_command:
-	BEGIN spl_block END {
+	BEGIN spl_block END spl_op_semi {
 		$$=new_spl_block_cmd($2);
 	}
 ;
@@ -323,6 +329,10 @@ spl_call_command:
 		FCALL  spl_proc_name  spl_call_parameters opt_spl_returning SEMICOLON {
 			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),$4);
 		}
+		| EXECUTE_PROCEDURE  spl_proc_name  spl_call_parameters spl_op_semi {
+			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),NULL);
+		}
+
 ;
 
 opt_spl_returning : 
@@ -429,6 +439,9 @@ spl_let_command:
 spl_let_sources:
 	spl_expression_list {
 		$$=$1;
+	}
+	| OPEN_BRACKET select_statement_ss_select CLOSE_BRACKET {
+		$$=A4GL_new_ptr_list(A4GL_expr_select($<s_select>1));
 	}
 ;
 

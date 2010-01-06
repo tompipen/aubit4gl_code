@@ -120,6 +120,27 @@ switch(cd->type) {
    case E_CMD_PDF_CALL_CMD         : ok=print_pdf_call_cmd(&cd->command_data_u.pdf_call_cmd); break;
    case E_CMD_SET_SESSION_CMD      : ok=print_set_session_cmd(&cd->command_data_u.set_session_cmd); break;
    case E_CMD_COPYBACK_CMD      : ok=print_copyback_cmd(&cd->command_data_u.copyback_cmd); break;
+   case E_CMD_EXECUTE_PROCEDURE_CMD      : ok=print_execute_procedure_cmd(&cd->command_data_u.execute_procedure_cmd); break;
+
+/* These are SPL only - used for processing SPL to other dialects - not for C generation */
+   case E_CMD_SQL_DEBUG_FILE_CMD:
+   case E_CMD_CREATE_PROCEDURE_CMD:
+   case E_CMD_SPL_SYSTEM_CMD:
+   case E_CMD_SPL_FOREACH_SELECT_CMD:
+   case E_CMD_SPL_LET_CMD:
+   case E_CMD_SPL_ON_EXCEPTION_CMD:
+   case E_CMD_SPL_WHILE_CMD:
+   case E_CMD_SPL_FOR_CMD:
+   case E_CMD_SPL_FOREACH_EXECUTE_CMD:
+   case E_CMD_SPL_RAISE_EXCEPTION_CMD:
+   case E_CMD_SPL_TRACE_CMD:
+   case E_CMD_SPL_RETURN_CMD:
+   case E_CMD_SPL_IF_CMD:
+   case E_CMD_SPL_CALL_CMD:
+   case E_CMD_SPL_BLOCK_CMD: break;
+
+
+
 	case E_CMD_LAST: A4GL_assertion(1,"Shouldn't happen"); break;
 } /* end of switch */
 return ok;

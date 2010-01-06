@@ -109,3 +109,5 @@ int print_copyback_cmd(struct_copyback_cmd *cmd_data);
 int print_free_blob_cmd(struct_free_blob_cmd *cmd_data);
 void print_cmd_start(void);
 int print_close_sql_cmd(struct_close_sql_cmd *cmd_data,int already_in_command);
+int print_execute_procedure_cmd(struct_execute_procedure_cmd *p);
+

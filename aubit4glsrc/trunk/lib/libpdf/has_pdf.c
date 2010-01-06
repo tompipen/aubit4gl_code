@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.66 2009-12-14 12:43:10 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.67 2010-01-06 17:49:03 mikeaubury Exp $
 #*/
 
 /**
@@ -55,7 +55,7 @@ void set_barcode_type(char *s);
 #define SECTION_TRAILER 2
 static char * A4GL_report_char_pop (void);
 
-int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
+//int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
 void A4GL_pdf_add_spaces (void);
 int A4GL_pdf_new_page (struct pdf_rep_structure *p);
 double A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *rep);
@@ -524,7 +524,7 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
   PDF_begin_page (p->pdf_ptr, p->page_width, p->page_length);
   A4GL_debug ("Done\n");
   A4GL_debug ("find font %s\n", p->font_name);
-  p->font = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
+     p->font = PDF_load_font (p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), ""); //"embedding=true");
 
   if (p->font < 0)
     {
@@ -704,71 +704,6 @@ A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *p)
     }
 }
 
-/**
- *
- * @todo Describe function
- */
-int
-aclpdf (struct pdf_rep_structure *p, char *fname, int n)
-{
-  char *ptr;
-  int a;
-  double d;
-
-  if (strcmp (fname, "set_parameter") == 0)
-    {
-      char *ptr1;
-      char *ptr2;
-      ptr2 = A4GL_char_pop ();
-      ptr1 = A4GL_char_pop ();
-      PDF_set_parameter (p->pdf_ptr, ptr1, ptr2);
-      acl_free (ptr1);
-      acl_free (ptr2);
-      return 0;
-    }
-  if (strcmp (fname, "set_value") == 0)
-    {
-      char *ptr1;
-      int a;
-      a = A4GL_pop_int ();
-      ptr1 = A4GL_char_pop ();
-      A4GL_debug ("Setting pdf value %s to %d\n", ptr1, a);
-      PDF_set_value (p->pdf_ptr, ptr1, a);
-      acl_free (ptr1);
-      return 0;
-    }
-
-
-  if (strcmp (fname, "set_font_size") == 0)
-    {
-      d = A4GL_pop_double ();
-      p->font_size = d;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
-      return 0;
-    }
-
-  if (strcmp (fname, "set_font_name") == 0)
-    {
-      ptr = A4GL_char_pop ();
-      strcpy (p->font_name, ptr);
-      acl_free (ptr);
-      a = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
-      if (a < 0)
-	{
-	  A4GL_exitwith ("Unable to locate font");
-	  return 0;
-	}
-      else
-	{
-	  A4GL_debug ("Findfont ok");
-	}
-      p->font = a;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
-      return 0;
-    }
-  return 0;
-}
-
 
 
 /**
@@ -881,6 +816,17 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
   struct pdf_rep_structure *p;
   p = vp;
 
+
+  if (strcmp (fname, "EmbedFont") == 0)
+    {
+
+	char *ptr1;
+        ptr1 = A4GL_char_pop ();
+        a = PDF_load_font (p->pdf_ptr, ptr1, 0, A4GL_get_pdf_encoding(), "embedding");
+	acl_free(ptr1);
+	return 0;
+    }
+ 
 
   if (strcmp (fname, "set_parameter") == 0)
     {
@@ -1213,12 +1159,16 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       ptr = A4GL_char_pop ();
       strcpy (p->font_name, ptr);
       acl_free (ptr);
-      a = PDF_findfont (p->pdf_ptr, p->font_name, A4GL_get_pdf_encoding(), 0);
-      if (a < 0)
-	{
+
+      a = PDF_load_font (p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), "");
+	//printf("a=%d\n", p->font);
+
+		//a=PDF_load_font(p->pdf_ptr, p->font_name,A4GL_get_pdf_encoding(),"embedding");
+	if (a<0) {
 	  A4GL_exitwith ("Unable to locate font");
 	  return 0;
 	}
+
       p->font = a;
       PDF_setfont (p->pdf_ptr, p->font, p->font_size);
       return 0;

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.47 2009-12-10 19:19:02 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.48 2010-01-06 17:48:58 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -196,6 +196,7 @@ enum cmd_type {
 	E_CMD_SPL_TRACE_CMD,
 E_CMD_SPL_RETURN_CMD,
 E_CMD_SPL_BLOCK_CMD,
+E_CMD_EXECUTE_PROCEDURE_CMD,
 
 E_CMD_LAST
 };
@@ -1527,6 +1528,12 @@ struct struct_create_proc_cmd {
 };
 
 
+struct struct_execute_procedure_cmd {
+	struct expr_str *connid;
+	str funcname;
+	struct s_select_list_item_list* parameters;
+};
+
 struct struct_spl_system_cmd {
 	struct expr_str *cmd;
 };
@@ -1750,6 +1757,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_SPL_TRACE_CMD: struct_spl_trace_cmd spl_trace_cmd ;
 	case E_CMD_SPL_RETURN_CMD: struct_spl_return_cmd spl_return_cmd ;
 	case E_CMD_SPL_BLOCK_CMD: struct_spl_block_cmd spl_block_cmd ;
+	case E_CMD_EXECUTE_PROCEDURE_CMD: struct_execute_procedure_cmd execute_procedure_cmd ;
 
 };
 
@@ -2208,6 +2216,8 @@ enum e_expr_type {
 		ET_EXPR_NAMED_PARAM,
 
 		ET_EXPR_SPL_FOR_ITEM,
+		ET_EXPR_SPL_VARIABLE_USAGE,
+		ET_EXPR_SELECT,
 
                 ET_EXPR_LAST /* NOT USED - just there so the above can all have a trailing ',' !!! (and possibly checking later...) */
 	
@@ -2539,6 +2549,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_NEG:
                 struct expr_str                         *expr_expr;
 	case ET_EXPR_VARIABLE_USAGE:
+		/*! struct variable_usage 			*expr_variable_usage; !*/
+	case ET_EXPR_SPL_VARIABLE_USAGE:
 		struct variable_usage 			*expr_variable_usage;
 	case ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC:
 		struct variable_usage_with_asc_desc 			*expr_variable_usage_with_asc_desc;
@@ -2559,6 +2571,8 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_NAMED_PARAM: struct s_named_param *expr_named_param;
 	case ET_EXPR_FUNC:	struct s_func expr_func; /* This is just to store a function name+namespace - its used for load filters..  Its not the same as a function call!!!!!*/
 	case ET_EXPR_SPL_FOR_ITEM: struct s_spl_for_item *expr_spl_for_item; /* item in the SPL 'FOR' commands list of items */
+
+	case ET_EXPR_SELECT: struct s_select *select_stmt;
 }; 
 
 
