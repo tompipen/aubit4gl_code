@@ -1,0 +1,76 @@
+Name:  aace
+Parent: ace
+Description: Compiles an Informix compatible .ace report instructions source file into an executable program
+Functionality: Informix-Ace compatible reports  compiler
+Build: make aace (root makefile)
+Example: some files in tools/test/ace
+Depends:
+Documentation:
+Regressed: some files in tools/test/ace manual testing only
+Maintainer: MA
+Status: 3
+Todo:
+Notes:
+
+
+Name:  aace_4gl
+Parent: ace
+Description: Translates .ace source files to .4gl source files
+Functionality: Informix-Ace compatible reports  translator for x4GL
+Build: make aace (root makefile)
+Example: some files in tools/test/ace
+Depends:
+Documentation:
+Regressed: some files in tools/test/ace manual testing only
+Maintainer: MA
+Status: 3
+Priority: 2
+Todo:
+Notes:
+
+Name:  aace_perl
+Parent: ace
+Description: Translates .ace source files to .pl source files
+Functionality: Informix-Ace compatible reports  translator for Perl
+Build: make aace (root makefile)
+Example: some files in tools/test/ace
+Location: compilers/ace and compilers/ace/perl_runner
+Depends: Perl (runtime)
+Documentation:
+Regressed: some files in tools/test/ace manual testing only
+Maintainer: MA
+Status: 2
+Priority: 2
+Todo:
+Notes:
+
+Name:  adecompile
+Parent: ace
+Description: De-compiles Aubit compiled ACE forms back to .ace format
+Functionality: ACE forms de-compiler
+Build: make aace (root makefile)
+Example: 
+Depends:
+Documentation:
+Regressed: 
+Maintainer: MA
+Priority: 3
+Status: 3
+Todo:
+Notes: Useful mostly for debugging
+
+Name:  generate_aace
+Parent: ace
+Description: Generates default report .ace source file based on one database table
+Functionality: Default Ace report generator
+Build: make aace (root makefile)
+Example: See makefile
+Depends: SQL plug-in
+Documentation:
+Regressed: 
+Maintainer: MA
+Priority: 3
+Status: 3
+Todo:
+Notes: Useful mostly for debugging
+

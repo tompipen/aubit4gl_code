@@ -1,0 +1,384 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: 1.reqd,v 1.98 2009-12-10 19:19:04 mikeaubury Exp $
+#
+*/
+
+/**
+ * @file
+ *
+ * File generated/fgl.yacc is created from:
+ *
+ *		rules/*.rule
+ *      rules/*.reqd
+ *		rules/generated/single_words.rule
+ *      rules/generated/kw.yh
+ *
+ * using 'mkyacc' shell script. It is then processed by 'yacc' tool
+ * to make generated/y.tab.c
+ *
+ * generated/single_words.rule is created from file generated/single_words
+ * using shell script 'make_enable'
+ *
+ * generated/single_words is created from data/kwords file using
+ * shell script 'convkw.single'
+ *
+ * "1.reqd" file is allways the first file concernatad into fgl.yacc.
+ * Therefore, it is the only one in compilers/4glc/rules directory that
+ * contains copyrigh message and DoxyGen file comment.
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+
+/*
+=====================================================================
+                        Source: 1.reqd
+=====================================================================
+*/
+
+%{
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+
+#ifdef YYPURE
+#undef YYPURE
+#endif
+#define YYPURE 1
+#define YYLEX_PARAM yystate,yyssa,yyssp
+#define INCASE 		0
+#define INCONSTRUCT 1
+#define INDISPLAY 	2
+#define INFOR 		3
+#define INFOREACH 	4
+#define ININPUT 	5
+#define INMENU 		6
+#define INPROMPT 	7
+#define INWHILE 	8
+#define INIF 		9
+
+#include "gen_stack.h"
+//#define UPDCOL 		0
+//#define UPDVAL 		1
+//#define SELINTO 	2
+//#define PUTVAL 		3
+//#define UPDVAL2 	4
+//#define INSCOL 		5
+//#define INSVAL 		6
+
+// Hehe - This one is pretty cool if you have a fairly recent version of bison
+#define YYERROR_VERBOSE
+
+#define YYDEBUG 1
+
+
+
+/* prevent warning for redundant declaration of yyparse: */
+#define _BISON_SIMPLE_INCL_
+
+#define _NO_Y_TAB_H_
+#define _NO_WINDOWS_H_
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include "a4gl_4glc_int.h"
+#include "variables.h"
+#include "variables_new.h"
+#include "var_handling.h"
+#include "field_handling.h"
+#include "a4gl_gen_stack.h"
+#include "a4gl_API_parse_lib.h"
+#include "parsehelp.h"
+
+#ifndef ENCODE_SIZE
+#define ENCODE_SIZE(x) (x<<16)S
+#endif
+/*
+=====================================================================
+		                    Variables definitions
+=====================================================================
+*/
+
+extern struct module_definition this_module;
+//extern int 	lineno;
+extern int 	token_read_on_line;
+extern int 	token_read_on_col;
+extern int 	read_glob_var;
+extern int 	modlevel;
+extern int 	charno;
+extern int 	last_var_found;
+extern int 	varcnt;
+//extern int 	in_record;
+extern int 	rep_type;
+extern int 	yylineno;
+extern int compiling_system_4gl;
+extern int nreturn_values;
+extern int isin_formhandler;
+extern int sql_mode;
+extern char 		force_ui[FORCE_UI_SIZE];
+extern char 		debug_filename[DEBUG_FILENAME_SIZE];
+extern char 		curr_func[256];
+extern char 		infilename[];
+extern char 		current_upd_table[64];
+extern char 		current_ins_table[64];
+extern int 		is_schema;
+extern int 		in_define;
+extern struct s_kw *hashed_list[];
+extern int 		menu_cnt;
+extern int 		chk4var;
+extern int 		menu_cmd_cnt[MAXMENUOPTS] ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+extern int 		menu_blk[MAXMENU]         ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+extern int 		class_cnt ;
+extern char *kw_comma;
+extern char *kw_space;
+extern char *kw_ob;
+extern char *kw_cb;
+//extern struct binding_comp *ibind;
+//extern int ibindcnt;
+//extern struct binding_comp *ebind;
+//extern int ebindcnt;
+struct attrib curr_attrib;
+extern struct expr_str *menu_attrib_comment;
+extern struct expr_str *menu_attrib_style;
+extern struct expr_str *menu_attrib_image;
+
+
+
+extern int with_page_length;
+extern int with_left_margin;
+extern int with_right_margin;
+extern int with_top_margin;
+extern int with_bottom_margin;
+extern char *with_top_of_page;
+extern int table_cnt;
+
+extern char 		menuhandler[256];
+extern char 		last_var [256];
+extern char 		larr[4096];
+extern char 		larr2[4096];
+extern char 		clobber[64];
+extern char 		dtypelist[2048];
+extern char 		where_having[1024];
+extern char		menu[2048];
+extern char 		varstring[100];
+extern char 		current_del_table[64];
+
+// extern int 		rordcnt;
+extern int 		racnt;
+extern int 		ccode;
+extern int 		errbomb;
+extern int 		glob_only;
+extern int 		inp_flags;
+extern int 		lcnt;
+extern int 		vcnt;
+extern int 		rcnt;
+extern int 		lastlineno;
+extern int 		cnt;
+extern int 		inrec;
+extern int 		iskey;
+extern int 		insql;
+extern int 		in_sql;
+extern int 		continue_cmd[];
+extern int 		in_cmd[];
+extern int 		fcall_cnt;
+extern int 		doing_declare;
+extern int 		message_cnt;
+extern int posterror; 
+extern int 		doing_a_print;
+extern char mv_parent_class[255];
+extern char *last_style;
+extern char *last_text;
+extern char *into_temp_clause;
+extern struct 		rep_structure rep_struct;
+extern struct 		pdf_rep_structure pdf_rep_struct;
+extern struct 		form_attr form_attrib;
+extern struct 		input_array_attribs curr_input_array_attribs;
+//extern int 		if_print_stack[100][2];
+//extern int 	if_print_stack_cnt;
+//extern int 	if_print_section[100];
+extern char 	last_tmp_name[256];
+
+extern char last_orderby_ascdesc;
+extern char *order_asc_desc;
+
+
+char *		make_sql_string_and_free(char *first,...);
+//char *		get_namespace (char *s);
+int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
+//char *do_clobbering(char *f,char *s);
+//char *do_clobbering_sql (char *f, char *s);
+void print_expr_list_concat (struct expr_str_list *l);
+
+
+
+//char *get_namespace (char *s);
+
+#define ADDMAP(x,y) addmap(x,y,curr_func,yylineno,infilename)
+#define ADDMAP_P(x,y) addmap_p(x,y,curr_func,yylineno,infilename)
+#define ADDMAP_MODULE(x,y) addmap(x,y,"MODULE",yylineno,infilename) 
+
+#ifndef A4GL_strcpy_defined
+#define A4GL_strcpy_defined
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
+#endif
+extern struct report_orderby_section *current_orderby;
+
+#ifndef SIMPLIFIED
+#include "../field_handling.h"
+#else
+#include "field_handling.h"
+#endif
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+%}
+%name-prefix="a4gl_yy"
+%pure_parser
+//glr-parser
+%start module
+//%expect  634
+%union	  {
+
+
+
+	char	str[1024];  /* This would core dump in CygWin on call to */
+						/* yyparse in y.tab.c - 3100 in maximum. */
+
+	struct expr_str *ptr;
+	struct expr_str_list *ptr_list;
+	char *sql_string;
+	struct fh_field_entry *field_entry;
+	struct fh_field_list *field_list;
+	/* struct generic_entry_list *list; */
+	/* struct generic_entry *entry; */
+	/* struct generic_entry_ident *ident; */
+	/* struct generic_entry_variable *variable; */
+	/* struct generic_entry_literal *literal; */
+	struct variable_usage *var_usg;
+	struct num_list *num_list;
+	struct array_list *array_list;
+	int 	integer_val;
+	float 	float_val;
+	struct sql_statement *sql_stmt;
+	struct s_select_list_item_list *s_select_list_item_list;
+	struct s_select_list_item *s_select_list_item;
+	struct ilist int_list;
+	struct s_table *u_table;
+	struct s_select *s_select;
+	struct dt_display *display;
+	struct s_cur_def curDef;
+        struct list_of_integers *list_of_integers;
+	struct s_formhandler_dets formhandler_dets;
+
+
+
+	/*struct variable_or_literal * variable_or_literal; */
+	struct funcname_list funcname_list;
+	struct windowtype wt;
+
+	/* struct ow_open_window *open_window_type; */
+	/* struct binding_comp *binding_comp_old; */
+
+
+	struct command *cmd;
+	struct commands *commands;
+	struct attrib *attrib;
+	struct menu_attrib *menu_attrib;
+
+	//struct binding_list *binding_list;
+	struct s_select_finish *s_select_finish;
+	struct s_fetch_place 	*s_fetch_place;
+	struct s_fetch 	*s_fetch;
+	/* struct binding_comp_list *binding_comp_list; */
+	/* struct binding_comp *binding_comp; */
+	struct str_list *str_list;
+	struct manyoptions *manyoptions;
+	struct single_option *single_option;
+	struct convert *convert;
+	struct startrep *startrep;
+	struct pdf_startrep *pdf_startrep;
+	struct s_pair pair;
+	struct s_pair_expr pair_expr;
+	struct s_pair_expr_list pair_expr_list;
+	struct if_cond *if_cond;
+	struct if_conds *if_conds;
+	struct struct_if_cmd *struct_if_cmd;
+	struct vardets *vardets;
+	struct subscript *subscript;
+	/* variable_or_literal_list *vorl_list; */
+	user_details *user_details;
+	int e_boolean;
+	on_event *on_event;
+	on_events *on_events;
+	struct when *when;
+	struct whens *whens;
+	struct report_format_section_entry *report_format_section_entry;
+	struct report_format_section *report_format_section;
+	struct report_orderby_section *report_orderby_section;
+	struct cons_list *cons_list;
+	struct cons_list_entry *cons_list_entry;
+	struct module_entry *module_entry;
+	struct s_full_col s_full_col;
+	struct struct_update_cmd *update_cmd;
+	struct struct_insert_cmd *insert_cmd;
+	struct struct_delete_cmd *delete_cmd;
+	struct s_update_pair *upd_pair;
+
+	struct variable 		*variable_ptr;
+	struct record_variable 		*record_variable_ptr;
+        struct assoc_array_variable 	*v_assoc_ptr;
+        struct constant_data 		*v_const_ptr;
+        struct linked_variable 		*v_linked_ptr;
+	struct variable_list 		*variable_list_ptr;
+	struct s_module_entry_ptr_list  *module_entry_list;
+	struct s_class_definition 	*class_definition;
+	struct cmd_int_list *cmd_int_list;
+	struct create_proc_data *create_procedure;
+	struct s_spl_execute *spl_execute;
+	struct s_spl_block *splblock;
+	struct spl_if_conds *spl_if_conds;
+	}
+
+/* ============================== 1.reqd ============================ */
+

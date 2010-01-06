@@ -1,0 +1,13 @@
+Name: libaubit4gl
+Parent: aubit4glsrc
+Description: Implements core programming language run-time functionality and contains APIs for all plug-ins. Used by all Aubit compilers/tools (at compile-time), and all 4GL programs compiled with Aubit 4GL compiler (at run-time)
+Functionality: Core 4GL language library
+Build: Always created by root makefile
+Example: see aubit4gltest regression tests source code tree for many examples AUBITDIR
+Depends: -
+Documentation: Aubit manual
+Regressed: 4
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
