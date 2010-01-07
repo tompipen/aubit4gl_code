@@ -2,8 +2,12 @@
 // (c) 2006 Aubit Computing Ltd
 //
 
-#include <mysql.h>
 #include <stdio.h>
+#include <stdlib.h>
+#ifdef __WIN32__
+#include <my_global.h>
+#endif
+#include <mysql.h>
 #include "../a4gl_lib_sql_int.h"
 #include "a4gl_expr.h"
 
