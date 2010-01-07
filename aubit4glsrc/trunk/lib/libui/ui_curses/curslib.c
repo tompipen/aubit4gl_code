@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.166 2010-01-02 15:33:57 mikeaubury Exp $
+# $Id: curslib.c,v 1.167 2010-01-07 09:22:05 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.166 2010-01-02 15:33:57 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.167 2010-01-07 09:22:05 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -172,17 +172,6 @@ static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 =====================================================================
 */
 
-/**
- *
- * @todo Describe function
- */
-
-void
-A4GL_error_box (char *str_orig, int attr) {
-// This is a redundant function - which really needs to be removed.
-// For now - just make it call error_nobox
-A4GL_error_nobox(str_orig,attr);
-}
 
 
 /**
@@ -2170,6 +2159,38 @@ int local_field_opts(const FIELD *field) {
 	return field_opts(field);
 }
 
+
+/**
+ * Used.
+ * @todo Describe function
+ */
+void
+A4GL_error_box (char *str, int attr)
+{
+  int a, pos;
+  WINDOW *x;
+
+  A4GL_chkwin ();
+  /*YELLOW ON RED */
+  //A4GL_mja_setcolor (ERROR_COL);
+  a = 4;
+  pos = (A4GL_screen_width () - (strlen (str))) / 2;
+
+  A4GL_debug ("error_box - screen_width=%d pos=%d", A4GL_screen_width (),
+              pos);
+
+  x = A4GL_create_blank_window ("error", pos, a, strlen (str), 3, 1);
+  /*wmove(x,2,2); */
+  A4GL_mja_gotoxy (1, 1);
+  /* print ("%s", str); */
+  A4GL_tui_printr (1, "%s", str);
+  UILIB_A4GL_zrefresh ();
+  //A4GL_do_pause ();
+  UILIB_A4GL_remove_window ("error");
+  UILIB_A4GL_zrefresh ();
+  A4GL_debug ("All done in error box");
+  //A4GL_mja_setcolor (NORMAL_TEXT);
+}
 
 
 /* ============================== EOF ============================== */

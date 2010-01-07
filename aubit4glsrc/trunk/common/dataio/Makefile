@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.11 2009-12-16 10:12:27 mikeaubury Exp $
+# $Id: Makefile,v 1.12 2010-01-07 09:23:25 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -66,6 +66,7 @@ endif
 
 #ALL 	+=${XGEN} ${ANY}
 ALL 	+=${XGEN} 
+MAKERPC=0
 
 #...but we do need rpcgen:
 ifeq "${USE_RPCGEN}" "0"
@@ -89,6 +90,7 @@ ifeq "${USE_RPCGEN}" "0"
             #but since we now have packers, what's the point?
 			ifneq "1" "0"
 				ALL			+=${RPC}
+				MAKERPC=1
             endif
         endif
     endif
@@ -108,6 +110,10 @@ else
 endif
 ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
+endif
+
+ifeq "${MAKERPC}" "0"
+	RPC=form_x_xdr.c fgl_xdr.c npcode_xdr.c report_xdr.c
 endif
 
 ifeq "${HAVE_RPCLIB}" "0"
