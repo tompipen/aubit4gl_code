@@ -116,8 +116,8 @@ find_label (char *label)
 
 
 
-char *
-acl_strdup_full (void *a, char *r, char *f, int l)
+ char *
+xxx_acl_strdup_full (void *a, char *r, char *f, int l)
 {
 	  char *p;
 	    p = strdup (a);

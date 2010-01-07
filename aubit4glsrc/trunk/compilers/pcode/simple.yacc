@@ -20,8 +20,8 @@ int if_cnt=0;
 int while_stack[256];
 int while_stack_cnt=0;
 
-int if_stack[256];
-int if_stack_cnt=0;
+static int if_stack[256];
+static int if_stack_cnt=0;
 
 static char buff[20];
 extern module *this_module_ptr;
