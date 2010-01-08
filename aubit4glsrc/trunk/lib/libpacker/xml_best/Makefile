@@ -20,9 +20,9 @@ all: module_def.dtd libPACKER_XMLBEST${SO_EXT}
 
 
 %.o : %c
-	$(CC)  ${SO_LDFLAGS} -c $<
+	$(CC)  ${CFLAGS} -c $<
 fgl.setparent.o: fgl.setparent.c 
-	$(CC)  ${SO_LDFLAGS} $(CFLAGS) -c $<
+	$(CC)  $(CFLAGS) -c $<
 
 libPACKER_XMLBEST${SO_EXT}: pack_xml.o fgl.xo.o overloads.h overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o  overloads_read.o
 	$(CC) ${SO_LDFLAGS} $(CFLAGS) -shared -fPIC -I../../../incl pack_xml.o fgl.xo.o overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o overloads_read.o -o `aubit-config DEFAULT_PLUGINDIR`/libPACKER_XMLBEST${SO_EXT}  -lz -L${ROOT_DIR}/lib -laubit4gl
@@ -45,7 +45,7 @@ module_def.act: module_def.top.act  fgl.start.act fgl.end.act module_def.tail.ac
 	cat $^ > $@
 
 module_def.o: module_def.h module_def.c
-	$(CC) -c ${RDYNAMIC} $(CFLAGS) module_def.c
+	$(CC) -c $(CFLAGS) module_def.c
 
 lex.yy.o: lex.yy.c pack_xml.h
 	$(CC) $(CFLAGS) -c lex.yy.c
@@ -54,7 +54,7 @@ check:
 	xmllint --noout --valid cbenD.obj
 
 clean : 
-	rm *.o lex.yy.c module_def.c fgl.xo.c fgl.setparent.c fgl.end.act fgl.start.act module_def.act module_def.h fgl.xh.h fgl.xoh.h  fgl.attlist.dtd fgl.elements.dtd  module_def.dtd module_def.l reload libPACKER_XMLBEST.so
+	rm -f *.o lex.yy.c module_def.c fgl.xo.c fgl.setparent.c fgl.end.act fgl.start.act module_def.act module_def.h fgl.xh.h fgl.xoh.h  fgl.attlist.dtd fgl.elements.dtd  module_def.dtd module_def.l reload libPACKER_XMLBEST${SO_EXT}
 
 test:
 	echo "HAVE_FLEXML"="$(HAVE_FLEXML)"

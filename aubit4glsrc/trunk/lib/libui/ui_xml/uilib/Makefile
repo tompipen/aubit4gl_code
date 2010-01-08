@@ -16,6 +16,14 @@ else
 	TRIGGERS_O=xml/triggers.o xml/triggers_act.o
 endif
 
+USE_AR=${AR}
+USE_RANLIB=ranlib
+
+ifeq "${TARGET_OS}" "AIX"
+	USE_AR=ar -X 64 rc 
+	USE_RANLIB=ranlib -X 64
+endif
+
 all: libuilib.a 
 #uirunner uirunner_s
 clean:
@@ -29,8 +37,8 @@ deps:
 	echo comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
 
 libuilib.a: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
-	ar rc $@ $^
-	ranlib $@
+	${USE_AR} $@ $^
+	${USE_RANLIB } $@
 	
 
 xml/triggers_act.c: xml/triggers_act.act xml/triggers.dtd

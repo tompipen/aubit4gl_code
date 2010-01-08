@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.59 2010-01-04 15:41:25 mikeaubury Exp $
+# $Id: Makefile,v 1.60 2010-01-08 17:54:00 jcbatalha Exp $
 #
 
 ROOT		=../..
@@ -165,7 +165,11 @@ ifeq "something" "blah"
 	LD_EXE_FLAGS=-export-dynamic
 endif
 
-
+ifeq "${TARGET_OS}" "aix"
+	ifeq "${AIX_OBJECT_MODE}" "64"
+		STRIPFLAGS=-X64
+	endif
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -183,7 +187,7 @@ ${ROOT}/bin/4glc: ${4GLCAOBJ}
 	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
 ifeq "${STRIP_EXECUTABLES}" "yes"
 	${CP}  $@${EXEEXT} $@-strip${EXEEXT}
-	${STRIP} $@-strip${EXEEXT}
+	${STRIP} ${STRIPFLAGS} $@-strip${EXEEXT}
 endif
 
 ## ==================================================================
@@ -300,6 +304,7 @@ show:
 	@echo "Y_TAB_C=${Y_TAB_C}"
 	@echo "CFLAGS=${CFLAGS}"
 	@echo "Y_OUTPUT=${Y_OUTPUT}"
+	@echo "RDYNAMIC=${RDYNAMIC}"
 
 ## ==================================================================
 ##                            Clean Targets
@@ -353,13 +358,13 @@ fglreload_static:  ../../bin/fglreload_static
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/fglreload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
 ../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
-	$(LD_EXE) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
+	$(LD_EXE) ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 	#cp fgllint $(AUBITDIR)/bin
 
 mkglobals: ../../bin/mkglobals
 ../../bin/mkglobals: mk_globals.o API_lex_self.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  $(ROOT)/lib/liblex/lex_4gl/compile_4gl.c   $(ROOT)/lib/liblex/lex_4gl/common.o  $(ROOT)/lib/liblex/lex_4gl/binding.o  $(ROOT)/lib/liblex/lex_4gl/init.o   $(ROOT)/lib/liblex/lex_4gl/class.o
 
-	$(LD_EXE) -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
+	$(LD_EXE) ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 
 
 calltree_expr.o: expr_as_string_when_possible.c
@@ -374,7 +379,7 @@ fglcalltree:../../bin/fglcalltree
 	#cp $@ $(AUBITDIR)/bin
 
 fgllink: fgllink.o API_lex.o expr_munging.o linearise.o common.o ../../lib/generated/std_funcs.c
-	$(CC)  -I$(ROOT)/incl -rdynamic -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC)  -I$(ROOT)/incl ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	cp fgllink $(AUBITDIR)/bin
 
 
@@ -384,7 +389,7 @@ ${ROOT}/compilers/4glc/rules/generated/states_optimised.c: rules/generated/mk_st
 	
 
 %.op:%.c
-	$(CC)  -Wall -DOPTIMIZED -c -o $@ -O3 -fPIC -DPIC -DSRC_TREE  -DHAVE_CONFIG_H  -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated -I${ROOT}/compilers/4glc/rules $<
+	$(CC) ${CFLAGS} -Wall -DOPTIMIZED -c -o $@ -O3 -fPIC -DPIC -DSRC_TREE  -DHAVE_CONFIG_H  -I${ROOT}/incl -I${ROOT} -I${ROOT}/compilers/4glc -I${ROOT}/compilers/4glc/rules/generated -I${ROOT}/compilers/4glc/rules $<
 
 optclean:
 	find . -name "*.op" -exec rm {} \;
@@ -392,22 +397,22 @@ optclean:
 opt: ../../bin/4glc_opt
 ../../bin/4glc_opt: ${4GLCAOBJ_OPT} 
 	echo ${LD_EXE}
-	echo ${AUBIT_LIB} 
-	echo ${4GL_LIB} 
+	echo ${AUBIT_LIB}
+	echo ${4GL_LIB}
 	echo  ${EXTRASYSTEMLIBS}
-	${LD} -rdynamic -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
+	${LD}  ${CFLAGS} ${RDYNAMIC} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
 
 fglsplit:../../bin/fglsplit
 
 ../../bin/fglsplit:  split.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
-	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) $(CFLAGS) -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 
 
 expr_munging_proto.o: expr_munging.c
-	$(CC) $(CFLAGS)  -c -o expr_munging_proto.o expr_munging.c -Dfind_function_single_rtype=find_function_single_rtype_proto
+	$(CC) $(CFLAGS) -c -o expr_munging_proto.o expr_munging.c -Dfind_function_single_rtype=find_function_single_rtype_proto
 
 fglproto: ../../bin/fglproto
 ../../bin/fglproto:  prototypes.o API_lex.o  lint.o expr_munging_proto.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
-	$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) ${CFLAGS} -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 # --------------------------------- EOF -----------------------------
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.38 2008-11-26 12:21:35 mikeaubury Exp $
+# $Id: Makefile,v 1.39 2010-01-08 17:54:08 jcbatalha Exp $
 #
 
 ROOT    =../..
@@ -198,7 +198,7 @@ ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
 
 #${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.xs.h
-	$(CC) ${CFLAGS_NOWARN} -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} 
+	$(CC) ${CFLAGS_NOWARN} -g -DRPCGEN_HEADERS -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/link_fgl:  $(OBJ_LINKER) npcode.xs.h
@@ -209,7 +209,7 @@ ${BINROOT}/runner: $(OBJ_RUNNER_C)
 
 #${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)  npcode.xs.h
-	$(CC) ${CFLAGS_NOWARN} --export-dynamic -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS_NOWARN} ${RDYNAMIC} -DRPCGEN_HEADERS -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 #${RPCLINKLIBS}
 
 ${BINROOT}/runner_fgl_wrapper:

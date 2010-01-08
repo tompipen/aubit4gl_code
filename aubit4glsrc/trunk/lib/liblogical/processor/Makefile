@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2008-11-25 10:19:06 mikeaubury Exp $
+# $Id: Makefile,v 1.16 2010-01-08 17:54:46 jcbatalha Exp $
 #
 ROOT		=../../..
 
@@ -67,7 +67,7 @@ endif
 
 all: ${ROOT}/bin/process_report ${ROOT}/bin/quick_check_logrep
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	${LD_EXE} -g ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${LD_EXE_FLAGS} ${EXTRASYSTEMLIBS}
+	${LD} -g ${LDFLAGS} ${CFLAGS} ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${EXTRASYSTEMLIBS} ${LD_EXE_FLAGS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@
@@ -89,7 +89,7 @@ qc:${ROOT}/bin/quick_check_logrep
 
 ${ROOT}/bin/quick_check_logrep: $(LAYOUTDIR)/API_layout.h ${QCOBJS}
 #	${CC} -rdynamic -g ${QCOBJS} -o $@ ${LFLAGS}  
-	${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS}  ${EXTRASYSTEMLIBS}
+	${LD} -g ${LDFLAGS} ${CFLAGS} -o $@ ${QCOBJS} ${LINKLIBS}  ${EXTRASYSTEMLIBS} ${LD_EXE_FLAGS}
 
 
 clean:

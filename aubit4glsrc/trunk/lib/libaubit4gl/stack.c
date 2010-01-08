@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.247 2010-01-02 15:33:57 mikeaubury Exp $
+# $Id: stack.c,v 1.248 2010-01-08 17:54:39 jcbatalha Exp $
 #
 */
 
@@ -121,6 +121,11 @@ int get_null_as_pad_string (void);
 #define BYTE_ALIGN_HP
 #endif
 
+#if defined(__aix64__)
+#define BYTE_ALIGN_SET
+#define BYTE_ALIGN_AIX64
+#endif
+
 #ifndef BYTE_ALIGN_SET
 #define BYTE_ALIGN_x86
 #endif
@@ -143,7 +148,8 @@ int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// VCHAR
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}	// INTERVAL
 };
-#else
+#endif
+#ifdef BYTE_ALIGN_HP
 int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// CHAR
   {0x80, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// SMINT
@@ -161,8 +167,28 @@ int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},	// VCHAR
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}	// INTERVAL
 };
-
 #endif
+#ifdef BYTE_ALIGN_AIX64
+int nset[MAX_DTYPE][9] = {
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},    // CHAR
+  {0x80, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},   // SMINT
+  {0x80, 0x0, 0x0, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0},  // INT
+  {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},    // FLOAT
+  {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN},    // SMFLOAT
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN},  // DECIMAL
+  {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN},  // SERIAL
+  {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN},  // DATE
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN},  // MONEY
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},    // EMPTY
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN},  // DTIME
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},    // BYTE
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},    // TEXT
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},    // VCHAR
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}   // INTERVAL
+};
+#endif
+
+
 static int A4GL_null_other (char *buff, int type);
 
 char *A4GL_char_pop_size (int *sz);
@@ -3371,7 +3397,13 @@ A4GL_isnull (int type, char *buff)
       {
 	long i1;
 	long i2;
-
+#if defined(__aix64__)
+	if (memcmp(buff, &Aint32union.i_long,sizeof(Aint32union.i_long))==0) {
+		return 1;
+	} else {
+		return 0;
+	}
+#else
 	i1 = Aint32union.i_long & 0xffffffff;
 
 #ifdef DEBUG
@@ -3397,6 +3429,7 @@ A4GL_isnull (int type, char *buff)
 	      }
 	    return 0;
 	  }
+#endif
       }
     }
 

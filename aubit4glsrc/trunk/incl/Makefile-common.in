@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.236 2010-01-06 11:29:04 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.237 2010-01-08 17:54:36 jcbatalha Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -297,6 +297,7 @@ endif
 ##                   Global Makefile variables
 ## ==================================================================
 
+AIX_OBJECT_MODE             =@AIX_OBJECT_MODE@
 
 GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
 
@@ -377,6 +378,14 @@ RMDIR				=rm -rf
 LN_S 				=ln -s -f
 LN_H                =ln -f
 AR 					=ar rc
+RANLIB				=ranlib
+
+ifeq "${TARGET_OS}" "aix"
+	ifeq "${AIX_OBJECT_MODE}" "64"
+		AR=ar -X64 rc
+		RANLIB=ranlib -X64
+	endif
+endif
 
 #BISON will contatin full path to bison executable. It will already include
 #-y flag set from autoconf, or "no" if not found or disabled:
@@ -492,7 +501,16 @@ ifeq "${TARGET_OS}" "hpux"
 	RDYNAMIC=-a1 -z -Wl,+s -Wl,-E
 	CFLAGS+=-fPIC -D__hpux__
 endif
-
+ifeq "${TARGET_OS}" "aix"
+    #On IBM AIX: gcc: unrecognized option `-rdynamic'
+	ifeq "${AIX_OBJECT_MODE}" "64"
+		CFLAGS+=-maix64 -D__aix64__
+		RDYNAMIC=-Wl,-G,-brtl,-b64,-bexpall
+	else
+		CFLAGS+=-D__aix__
+		RDYNAMIC=-Wl,-G,-brtl
+	endif
+endif
 
 #FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',
 #use 'gcc -shared'.  If you MUST pass linker specific options to ld, use
@@ -589,7 +607,6 @@ ifeq "@GETOPT_LONG@" "no"
 endif
 
 YYDEBUG             =@YYDEBUG@
-AIX_OBJECT_MODE             =@AIX_OBJECT_MODE@
 C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
@@ -816,6 +833,16 @@ endif
 ifeq "${TARGET_OS}" "hpux"
 	#SO_LDFLAGS	=-b
 	SO_LDFLAGS	+=-fPIC
+endif
+
+ifeq "${TARGET_OS}" "aix"
+	ifeq "${CC}" "gcc"
+		ifeq "${AIX_OBJECT_MODE}" "64"
+			SO_LDFLAGS +=-maix64 -Wl,-G,-b64
+		else
+			SO_LDFLAGS +=-Wl,-G
+		endif
+	endif
 endif
 
 ## ==================================================================

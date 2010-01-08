@@ -14,7 +14,7 @@ CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl
 all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
 
 ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
-	${LD} ${SO_LDFLAGS}  -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
 
 
 ./uilib/xml/pregenerated/triggers.o: ./uilib/xml/pregenerated/triggers.c
@@ -24,10 +24,10 @@ ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/f
 	${CC} -c -o $@ ${CFLAGS} -I./uilib/xml ./uilib/xml/pregenerated/triggers_act.c
 
 proxy: proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o 
-	${CC} ${CFLAGS_NO_PEDANTIC} -g -o proxy proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o
+	${CC} ${CFLAGS} -g -o proxy proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o
 
 noproxy: noproxy.o pipe.o debug.o
-	${CC} ${CFLAGS_NO_PEDANTIC} -g -o noproxy noproxy.o pipe.o debug.o
+	${CC} ${CFLAGS} -g -o noproxy noproxy.o pipe.o debug.o
 
 uilib/libuilib.a: uilib/comms.c uilib/uilib.c uilib/xml/attr.c pipe.c debug.c  uilib/xml/triggers_act.act uilib/xml/triggers.dtd
 	cd uilib && make -f Makefile libuilib.a
