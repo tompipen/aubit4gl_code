@@ -55,10 +55,14 @@ call_ext: function_call_expr opt_return {
 	}
    | FORM_IS_COMPILED OPEN_BRACKET identifier KW_COMMA func_expr_call_args CLOSE_BRACKET {
 			expr_str *e;
-			//expr_str_list *p;
 			e=A4GL_new_expr_form_is_compiled($<str>3, $<ptr_list>5,infilename,lastlineno);
    			$<cmd>$=new_call_cmd(e,NULL);
 	}
+   | FORM_IS_COMPILED OPEN_BRACKET identifier CLOSE_BRACKET {
+			expr_str *e;
+			e=A4GL_new_expr_form_is_compiled($<str>3, NULL,infilename,lastlineno);
+   			$<cmd>$=new_call_cmd(e,NULL);
+   }
    | KW_CHANNEL_WRITE OPEN_BRACKET func_expr_call_args CLOSE_BRACKET  opt_return {
 		char buff[200];
 		$<ptr>$=A4GL_new_expr_shared_fcall("channel", "write",$<ptr_list>3,infilename,lastlineno, get_namespace("channel::write"),buff);

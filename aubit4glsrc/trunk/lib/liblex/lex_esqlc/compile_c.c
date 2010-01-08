@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.513 2009-11-23 15:25:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.514 2010-01-08 12:18:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.513 2009-11-23 15:25:25 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.514 2010-01-08 12:18:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3346,10 +3346,15 @@ real_print_func_call (t_expr_str * fcall)
       struct s_expr_form_is_compiled *x;
       x = fcall->expr_str_u.expr_form_is_compiled;
       printc ("{char *_packer; char *_formtype;int _retvars=0;");
+	if (x->params) {
       print_expr (x->params->list.list_val[0]);
       printc ("_packer=A4GL_char_pop();");
       print_expr (x->params->list.list_val[1]);
       printc ("_formtype=A4GL_char_pop();");
+	} else {
+		printc("_packer=strdup(\"MEMPACKED\");");
+		printc("_formtype=strdup(\"GENERIC\");");
+	}
       printc ("A4GL_add_compiled_form(\"%s\",_formtype,_packer,compiled_form_%s);",
 	      x->formname->expr_str_u.expr_string, x->formname->expr_str_u.expr_string);
       printc ("free(_packer);free(_formtype);");
