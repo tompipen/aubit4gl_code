@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.12 2010-01-07 09:23:25 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2010-01-08 19:39:11 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -84,14 +84,8 @@ ifeq "${USE_RPCGEN}" "0"
             #Would depend on cygwin1.dll, and MinGW GCC would not link it in. We can use XDR libs
             #compiled using CygWin GCC, if we provide cygwin1.dll at runtime, but why do we
             #want to use XDR format any more - we have PACKED, and XML?
-			
-			#In therory, we should be able to compile this from precompiled files,
-            #end we dont need to have rpclib to do this (we do to run it)
-            #but since we now have packers, what's the point?
-			ifneq "1" "0"
 				ALL			+=${RPC}
 				MAKERPC=1
-            endif
         endif
     endif
 else
@@ -106,6 +100,7 @@ else
         #compiled using CygWin GCC, if we provide cygwin1.dll at runtime, but why do we
         #want to use XDR format any more - we have PACKED, and XML?
 		ALL				+=${RPC}
+		MAKERPC=1
     endif
 endif
 ifneq "${COMSPEC}" ""
@@ -265,4 +260,3 @@ x_versions:  fgl.x form_x.x menu_x.x npcode.x report.x
 pluginsdir:
 	if test ! -d ${PLUGINDIR}; then mkdir ${PLUGINDIR} 2> /dev/null; fi
 #=============================== EOF ================================
-

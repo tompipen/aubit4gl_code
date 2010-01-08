@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.26 2009-01-14 18:07:29 mikeaubury Exp $
+# $Id: Makefile,v 1.27 2010-01-08 19:39:15 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -544,6 +544,7 @@ ${PLUGINDIR}/libDATA_struct_form${SO_EXT}  \
 	${PLUGINDIR}/libDATA_module_definition${SO_EXT} \
 	${PLUGINDIR}/libXDRPACKER_struct_form${SO_EXT}  \
 	${PLUGINDIR}/libXDRPACKER_report${SO_EXT} \
+	${PLUGINDIR}/libXDRPACKER_module${SO_EXT} \
 	${PLUGINDIR}/libXDRPACKER_module_definition${SO_EXT}: ${LIBDATA_DEPS}
 	${MAKE} -C ${LIBDATA_PATH}
 

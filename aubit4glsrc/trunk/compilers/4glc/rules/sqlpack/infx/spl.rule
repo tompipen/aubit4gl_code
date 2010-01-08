@@ -74,6 +74,8 @@ spl_parameter:
 
 spl_vname:  /* An SPL variable name - nothing complicated in SPL :-)  */
 	NAMED {strcpy($$,$<str>1); A4GL_make_downshift($$);}
+	| NAMED OPEN_SQUARE INT_VALUE CLOSE_SQUARE {sprintf($$,"%s[%s]",$<str>1,$<str>3); A4GL_make_downshift($$);}
+	| NAMED OPEN_SQUARE INT_VALUE KW_COMMA INT_VALUE CLOSE_SQUARE {sprintf($$,"%s[%s,%s]",$<str>1,$<str>3,$<str>5); A4GL_make_downshift($$);}
 ;
 
 spl_op_default:
@@ -329,8 +331,8 @@ spl_call_command:
 		FCALL  spl_proc_name  spl_call_parameters opt_spl_returning SEMICOLON {
 			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),$4);
 		}
-		| EXECUTE_PROCEDURE  spl_proc_name  spl_call_parameters spl_op_semi {
-			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),NULL);
+		| EXECUTE_PROCEDURE  spl_proc_name  spl_call_parameters opt_spl_into spl_op_semi {
+			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),$4);
 		}
 
 ;

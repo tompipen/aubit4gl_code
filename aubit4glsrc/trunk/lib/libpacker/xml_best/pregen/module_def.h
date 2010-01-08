@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/01/05 14:16:44.
+ * Generated 2010/01/08 19:00:12.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -393,6 +393,8 @@ extern void STag_struct_execute_cmd(void);
 extern void ETag_struct_execute_cmd(void);
 extern void STag_struct_execute_immediate_cmd(void);
 extern void ETag_struct_execute_immediate_cmd(void);
+extern void STag_struct_execute_procedure_cmd(void);
+extern void ETag_struct_execute_procedure_cmd(void);
 extern void STag_struct_exit_prog_cmd(void);
 extern void ETag_struct_exit_prog_cmd(void);
 extern void STag_struct_ext_cmd(void);
@@ -1531,6 +1533,8 @@ typedef int AT_s_exchange_clobber_important;
 #define AU_s_exchange_clobber_important NULL
 typedef int AT_struct_convert_cmd_nm;
 #define AU_struct_convert_cmd_nm NULL
+typedef int AT_struct_execute_procedure_cmd_nm;
+#define AU_struct_execute_procedure_cmd_nm NULL
 typedef int AT_s_select_list_item_agg_expr_aud;
 #define AU_s_select_list_item_agg_expr_aud NULL
 typedef int AT_s_select_list_item_slil_expr_nm;
@@ -1791,6 +1795,8 @@ typedef int AT_struct_display_array_cmd_slice_start;
 #define AU_struct_display_array_cmd_slice_start NULL
 typedef int AT_struct_input_cmd_sio;
 #define AU_struct_input_cmd_sio NULL
+typedef int AT_struct_execute_procedure_cmd_funcname;
+#define AU_struct_execute_procedure_cmd_funcname NULL
 typedef int AT_struct_at_term_cmd_nm;
 #define AU_struct_at_term_cmd_nm NULL
 typedef int AT_constant_data_data_i;
@@ -2936,6 +2942,8 @@ extern AT_s_exchange_clobber_important AX_s_exchange_clobber_important;
 #define A_s_exchange_clobber_important (bufferstack + AX_s_exchange_clobber_important)
 extern AT_struct_convert_cmd_nm AX_struct_convert_cmd_nm;
 #define A_struct_convert_cmd_nm (bufferstack + AX_struct_convert_cmd_nm)
+extern AT_struct_execute_procedure_cmd_nm AX_struct_execute_procedure_cmd_nm;
+#define A_struct_execute_procedure_cmd_nm (bufferstack + AX_struct_execute_procedure_cmd_nm)
 extern AT_s_select_list_item_agg_expr_aud AX_s_select_list_item_agg_expr_aud;
 #define A_s_select_list_item_agg_expr_aud (bufferstack + AX_s_select_list_item_agg_expr_aud)
 extern AT_s_select_list_item_slil_expr_nm AX_s_select_list_item_slil_expr_nm;
@@ -3196,6 +3204,8 @@ extern AT_struct_display_array_cmd_slice_start AX_struct_display_array_cmd_slice
 #define A_struct_display_array_cmd_slice_start (bufferstack + AX_struct_display_array_cmd_slice_start)
 extern AT_struct_input_cmd_sio AX_struct_input_cmd_sio;
 #define A_struct_input_cmd_sio (bufferstack + AX_struct_input_cmd_sio)
+extern AT_struct_execute_procedure_cmd_funcname AX_struct_execute_procedure_cmd_funcname;
+#define A_struct_execute_procedure_cmd_funcname (bufferstack + AX_struct_execute_procedure_cmd_funcname)
 extern AT_struct_at_term_cmd_nm AX_struct_at_term_cmd_nm;
 #define A_struct_at_term_cmd_nm (bufferstack + AX_struct_at_term_cmd_nm)
 extern AT_constant_data_data_i AX_constant_data_data_i;
