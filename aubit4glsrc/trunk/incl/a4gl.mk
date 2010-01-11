@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.64 2008-05-15 13:40:57 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.65 2010-01-11 14:01:50 mikeaubury Exp $
 
 ##########################################################################
 #
@@ -200,7 +200,11 @@ ifeq "${A4GL_FAKELEXTYPE}" "PCODE"
 	DEFAULT_LINK=cp prog${A4GL_OBJ_EXT} progname${A4GL_EXE_EXT}
 else
 	#Executable (compile):
+	ifdef COMSPEC
+	A4GL_EXE_EXT=.exe
+	else
 	A4GL_EXE_EXT=.4ae
+	endif
 	#Execute extension:
 	A4GL_RUN_EXT=${A4GL_EXE_EXT}	
 	#static object:
