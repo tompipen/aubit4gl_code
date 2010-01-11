@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.241 2009-09-23 17:49:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.242 2010-01-11 16:17:01 mikeaubury Exp $
 #
 */
 
@@ -136,6 +136,7 @@ static void internal_free_cursor (char *s,int reset_Sqlca);
 #define FETCH__ABSOLUTE 		6
 
 static void A4GL_sql_copy_interval(void *infxv, void *a4glv,int isnull,int size,int mode);
+static char *esql_clobbered(char *s) ;
 
 EXEC SQL BEGIN DECLARE SECTION;
 
@@ -180,7 +181,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.241 2009-09-23 17:49:48 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.242 2010-01-11 16:17:01 mikeaubury Exp $";
 #endif
 
 
@@ -413,7 +414,8 @@ getGlobalStatementName (void)
 
   statementCount++;
   SPRINTF1 (statementName, "a4gl_st_%d", statementCount);
-  return statementName;
+  
+  return esql_clobbered(statementName);
 }
 
 /*  =================== Connection manager =================== */
@@ -1040,7 +1042,7 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
 
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
-  EXEC SQL PREPARE:statementName FROM:statementText;
+  EXEC SQL PREPARE :statementName FROM:statementText;
 
   copy_sqlca_Stuff(1);
 
@@ -1951,6 +1953,63 @@ processOutputBind (struct s_sid *sid,char *descName, int bCount, struct BINDING 
   return 0;
 }
 
+
+struct s_esql_clobberings {
+	char *orig_name;
+	char *new_name;
+};
+static struct s_esql_clobberings *clobberings=NULL;
+static int nclobberings=0;
+
+
+static char *esql_add_clobber(char *s) {
+char buff[100];
+	// First - check to see if it already exists...
+	if (clobberings) {
+		int a;
+		for (a=0;a<nclobberings;a++) {
+			if (strcmp(clobberings[a].orig_name,s)==0) {
+				return clobberings[a].new_name;
+			}
+		}
+	}
+
+	//  its not there - so add a new one...
+	nclobberings++;
+	clobberings=realloc(clobberings,sizeof(clobberings[0])*nclobberings);
+	clobberings[nclobberings-1].orig_name=strdup(s);
+	sprintf(buff,"a4glC%x",nclobberings);
+	clobberings[nclobberings-1].new_name=strdup(buff);
+	return clobberings[nclobberings-1].new_name;
+}
+
+
+
+// Try to get a descriptor name thats shorteor that the maximum "ESQLDESCRIPTORLENGTH"
+static char *esql_clobbered(char *descriptorName) {
+static int max_length=-1;
+char *p;
+
+  if (max_length==-1) {
+  	p=acl_getenv_not_set_as_0("ESQLDESCRIPTORLENGTH");
+
+  	if (p) {
+		max_length=atol(p);
+   	}
+  }
+
+  if (strlen(descriptorName)>max_length) {
+	char *s;
+	// We need to reduce the length of this statement as its too long..
+	s=esql_add_clobber(descriptorName);
+	A4GL_debug("%s was too long - using %s instead", descriptorName,s);
+	return s;
+  }
+
+  return descriptorName;
+}
+
+
 /**
  * Generate the descriptor name.
  *
@@ -1966,7 +2025,8 @@ getDescriptorName (char *statementName, char bindType)
   char *descriptorName;
   descriptorName = acl_malloc2 (strlen (statementName) + 20);
   SPRINTF2 (descriptorName, "%s_%cbind", statementName, bindType);
-  return descriptorName;
+
+  return esql_clobbered(descriptorName);
 }
 
 /**
