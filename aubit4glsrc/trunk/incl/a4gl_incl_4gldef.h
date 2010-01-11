@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.130 2009-07-10 14:06:26 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.131 2010-01-11 13:29:51 mikeaubury Exp $
 */
 
 /**
@@ -294,6 +294,12 @@ struct s_field_name_list {
 };
 
 
+// Make Aubit4gl compatible by dumping any extra
+// parameters returned from a function
+// Only used when A4GL_C4GLFUNCRETCOMPAT=Y is set...
+int A4GL_fixup_for_broken_c4gl(int nrets, int nexpected);
+int A4GL_free_blob(fglbyte b) ;
+void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);
 
 
 #define CHECK_RETURN_AND_POP(x) if (_retvars!= x) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GL_set_status(-3001,0);A4GL_pop_args(_retvars);}} else { aclfgli_clr_err_flg(); A4GL_pop_params(ibind,x);}

@@ -2159,7 +2159,7 @@ check_linearised_commands (char *module_name, commands * func_cmds)
 			expr_char_length (module_name, r->lineno,
 					  expr_list->list.list_val[0]);
 
-			A4GL_pause_execution();
+			//A4GL_pause_execution();
 
 		      var_length =
 			expr_datatype (module_name, r->lineno,

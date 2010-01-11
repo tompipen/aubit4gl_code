@@ -141,6 +141,7 @@ struct variable_usage *new_usage;
         memcpy(new_usage,vu,sizeof(struct variable_usage));
         new_usage->next=0;
 	new_usage->object_type="";
+	new_usage->datatype_length=0;
         if (vu->next) {
                 new_usage->next=clone_variable_usage(vu->next);
         }
@@ -335,6 +336,8 @@ int c3;
 			p=A4GL_memdup(parent,sizeof(struct variable_usage));
 			p->next=0;
 			p->object_type="";
+			p->datatype_length=0;
+
 			append_variable_usage(p,u);
 
 			dim=0;
@@ -423,6 +426,7 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
   newv->variable_id = -1;
   newv->datatype = -1;
 newv->object_type="";
+			newv->datatype_length=0;
   newv->escope = E_SCOPE_NOTSET;
   newv->next = 0;
 
