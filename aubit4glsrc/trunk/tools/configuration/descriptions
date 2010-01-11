@@ -945,4 +945,12 @@ HASHNOCOMMENT UNKNOWN UNKNOWN
 HIDEEMPTYBUTTONS UNKNOWN UNKNOWN
 KEEPNLONREAD UNKNOWN UNKNOWN
 BINDDATEASINT UNKNOWN UNKNOWN
+C4GLFUNCRETCOMPAT COMPILE Sets the compiler to ignore any surpluss return values
+=YES|NO
+	The (some versions of the) Informix c4gl silently discards extra return values. 
+	Setting this will emulate that behaviour
+ESQLDESCRIPTORLENGTH ESQL/RUNTIME Sets the maximum length of the ESQL descriptors for the Informix connector
+	This sets the maximum length (normally 128) of the informix descriptor strings. These are used internally
+	for prepares and cursors etc. Some versions of the Informix ClientSDK have a smaller size for the descriptor
+	and this setting can be changed accordingly
 
