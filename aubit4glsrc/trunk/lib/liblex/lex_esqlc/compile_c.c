@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.514 2010-01-08 12:18:08 mikeaubury Exp $
+# $Id: compile_c.c,v 1.515 2010-01-11 13:19:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.514 2010-01-08 12:18:08 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.515 2010-01-11 13:19:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3005,6 +3005,18 @@ print_returning_g (int from_where, struct expr_str_list *bind, int allow_one_or_
 {
   int cnt;
   printc ("/* pr %d */", from_where);
+
+
+
+  if (A4GL_isyes(acl_getenv("C4GLFUNCRETCOMPAT"))) {
+	int n=0;
+		if( bind) {
+			n=bind->list.list_len;
+		}
+		// Pop off any *extra* parameters to leave us with just the ones we want...
+  		printc("_retvars=A4GL_fixup_for_broken_c4gl(_retvars, %d);", n);
+  }
+
 
 
   if (bind)
