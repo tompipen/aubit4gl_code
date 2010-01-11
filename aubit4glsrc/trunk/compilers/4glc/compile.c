@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.135 2009-09-16 15:13:56 mikeaubury Exp $
+# $Id: compile.c,v 1.136 2010-01-11 15:21:28 mikeaubury Exp $
 #*/
 
 /**
@@ -388,11 +388,13 @@ initArguments (int argc, char *argv[])
 				//.4ae or .exe - executable
 				compile_object = 1;
 				compile_exec = 1;
-			} else if ((strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) ||
-				(strcmp (ext, ".a") == 0)){ 
+			} else if ((strcmp (ext, acl_getenv ("A4GL_LIB_EXT")) == 0) || (strcmp (ext, ".a") == 0)){ 
 				//.aox or .a - static library (multiple static objects in one file)
 				compile_object = 1;
 				compile_lib = 1;
+			} else if ((strcmp (ext, acl_getenv ("A4GL_XML_EXT")) == 0) || (strcmp (ext, ".xml") == 0) || (strcmp (ext, ".xml.gz") == 0)){ 
+				compile_object = 0;
+				compile_lib = 0;
 			} else if ((strcmp (ext, acl_getenv ("A4GL_SOB_EXT")) == 0) ||
 				(strcmp (ext, ".la") == 0)){ 
 				//.aso or .la - shared object (object compiled with -PIC 

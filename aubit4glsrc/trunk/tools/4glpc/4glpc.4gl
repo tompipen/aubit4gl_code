@@ -454,6 +454,10 @@ endcode
 	END IF
 
 
+	if lv_arg matches "*.xml" or lv_arg matches "*.xml.gz" then
+			let mv_output_type="XML"
+	end if
+
 	# Does it look like a shared library ?
 	let lv_type=generate_ext("DLL")
 	if lv_arg matches "*.so" or lv_arg matches lv_type or mv_make_dll then # Its a library
@@ -1307,18 +1311,18 @@ if mv_output!=" " then
 	let lv_runstr="OVERRIDE_PACKER_OUTPUT=",mv_output
 end if
 if fgl_getenv("A4GL_PACKER") matches "*XML*" then
-	let lv_runstr=lv_runstr clipped," ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+	let lv_runstr=lv_runstr clipped," A4GL_LEXTYPE=WRITE ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
 else
-	let lv_runstr=lv_runstr clipped," A4GL_PACKER=XML ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+	let lv_runstr=lv_runstr clipped," A4GL_LEXTYPE=WRITE A4GL_PACKER=XML ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
 end if
 
-if mv_stacktrace is not null then
-	let lv_runstr=lv_runstr clipped," -s",mv_stacktrace
-end if
+#if mv_stacktrace is not null then
+	#let lv_runstr=lv_runstr clipped," -s",mv_stacktrace
+#end if
 
-if mv_make_globals then
-	let lv_runstr=lv_runstr clipped," -G"
-end if
+#if mv_make_globals then
+	#let lv_runstr=lv_runstr clipped," -G"
+#end if
 
 if mv_verbose>1 then
 	let lv_runstr=lv_runstr clipped, " -V"
@@ -1350,6 +1354,9 @@ RUN lv_runstr CLIPPED RETURNING lv_status
 
 call check_exit_status(lv_status,lv_fname,lv_runstr)
 
+if mv_verbose>3 then
+	display "Ran command"
+end if
 end function
 
 

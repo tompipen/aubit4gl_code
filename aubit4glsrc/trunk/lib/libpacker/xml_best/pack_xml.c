@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.1 2009-04-24 10:21:57 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.2 2010-01-11 15:21:31 mikeaubury Exp $
 #*/
 
 /**
@@ -134,7 +134,10 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 	if (strcmp(name,"module_definition")==0) {
 		char buff[256];
 		char *override;
-		override=acl_getenv_not_set_as_0("OVERRIDE_OUTPUT");
+			override=acl_getenv_not_set_as_0 ("OVERRIDE_PACKER_OUTPUT");
+		if (!override) {
+			override=acl_getenv_not_set_as_0("OVERRIDE_OUTPUT");
+		}
 
 		if (override) {
 			strcpy(buff,override);
@@ -153,7 +156,9 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 			strcat(buff,".xml");
 		}
 #ifdef HAVE_ZLIB
-		strcat(buff,".gz");
+		if (!strstr(buff,".gz")) {
+			strcat(buff,".gz");
+		}
 		ofile=gzfopen(buff,"wb");
 #else
 		ofile=gzfopen(buff,"wb");
