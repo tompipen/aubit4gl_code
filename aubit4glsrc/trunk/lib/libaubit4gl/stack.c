@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.248 2010-01-08 17:54:39 jcbatalha Exp $
+# $Id: stack.c,v 1.249 2010-01-11 13:11:46 mikeaubury Exp $
 #
 */
 
@@ -4684,7 +4684,7 @@ if (b) {
 			if ((b[a].dtype&DTYPE_MASK)==DTYPE_REFERENCE) {
 				int d1;
 				int s1;
-				void *ptr1;
+				//void *ptr1;
 				struct s_pass_reference *s;
 
 				A4GL_get_top_of_stack ((n-a), &d1, &s1, (void **) &s);
@@ -4881,5 +4881,10 @@ int a;
 A4GL_exitwith("Could not find copyback variable as a COPYOF parameter");
 }
 
+
+int A4GL_fixup_for_broken_c4gl(int nrets, int nexpected) {
+while (nrets>nexpected) {A4GL_drop_param(); nrets--;}
+return nrets;
+}
 
 // ================================ EOF ================================
