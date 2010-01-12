@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.26 2008-07-06 11:34:42 mikeaubury Exp $
+# $Id: array.c,v 1.27 2010-01-12 09:01:49 mikeaubury Exp $
 #
 */
 
@@ -401,6 +401,10 @@ A4GLSQLLIB_A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int s
 
     A4GL_err("****** ERROR unknown service :%s", service);
     return 0;
+}
+
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+        return s;
 }
 
 

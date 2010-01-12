@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ingres.ec,v 1.4 2009-02-03 19:57:24 mikeaubury Exp $
+# $Id: ingres.ec,v 1.5 2010-01-12 09:01:49 mikeaubury Exp $
 #*/
 
 
@@ -780,6 +780,9 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
     return 1;
 }
 
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+	return s;
+}
 
 
 /* =============================== EOF ============================== */

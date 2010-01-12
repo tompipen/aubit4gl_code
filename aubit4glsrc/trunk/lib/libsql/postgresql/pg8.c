@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.106 2009-07-29 12:14:18 mikeaubury Exp $
+# $Id: pg8.c,v 1.107 2010-01-12 09:01:49 mikeaubury Exp $
 #*/
 
 
@@ -4356,5 +4356,10 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
 {
     return 1;
 }
+
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+        return s;
+}
+
 
 /* =============================== EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.242 2010-01-11 16:17:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.243 2010-01-12 09:01:48 mikeaubury Exp $
 #
 */
 
@@ -181,7 +181,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.242 2010-01-11 16:17:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.243 2010-01-12 09:01:48 mikeaubury Exp $";
 #endif
 
 
@@ -2029,6 +2029,10 @@ getDescriptorName (char *statementName, char bindType)
   return esql_clobbered(descriptorName);
 }
 
+
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+	return esql_clobbered(s);
+}
 /**
  * Define the type of statement to be executed.
  * 

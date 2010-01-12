@@ -2706,4 +2706,7 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
 {
     return 1;
 }
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+        return s;
+}
 

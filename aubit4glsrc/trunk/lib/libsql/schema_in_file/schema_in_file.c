@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.32 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.33 2010-01-12 09:01:49 mikeaubury Exp $
 #*/
 
 /**
@@ -313,5 +313,9 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
     return 1;
 }
 
+
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+        return s;
+}
 
 /* =============================== EOF ============================== */
