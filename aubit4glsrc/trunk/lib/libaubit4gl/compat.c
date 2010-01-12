@@ -315,6 +315,14 @@ retstring (char *s)
   A4GL_push_char (s);
 }
 
+
+void
+retvchar (char *s)
+{
+  A4GL_push_char (s);
+}
+
+
 int
 rgetkey ()
 {
