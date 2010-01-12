@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.93 2009-11-21 12:47:08 mikeaubury Exp $
+# $Id: sql_common.c,v 1.94 2010-01-12 09:07:51 mikeaubury Exp $
 #
 */
 
@@ -650,12 +650,13 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
 			int singleton)
 {
   char buff[256];
-  char uniq_id[100];
+  char uniq_id_orig[100];
   struct s_sid *sid;
   char *ptr;
   char *sold;
   double t1;
   double t2;
+  char *new_uniqId;
 
 #ifdef DEBUG
   A4GL_debug ("A4GL_prepare_select  must_convert=%d s=%s\n", must_convert, s);
@@ -682,9 +683,10 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
 
 
 
-  SPRINTF2 (uniq_id, "a4gl_st_%s_%d", buff, line);
+  SPRINTF2 (uniq_id_orig, "a4gl_st_%s_%d", buff, line);
+  new_uniqId=A4GLSQL_fixup_descriptor(uniq_id_orig) ;
 
-  sid = A4GL_find_prepare (uniq_id);
+  sid = A4GL_find_prepare (new_uniqId);
   if (sid)
     {
 	sid->refcnt=0; // Force the free
@@ -692,7 +694,7 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
     }
 
   t1=get_now_as_double();
-  sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, uniq_id, singleton);
+  sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, new_uniqId, singleton);
   t2=get_now_as_double()-t1;
   log_sql("PREPARE"," ",s,t2,mod,line);
 
@@ -709,7 +711,7 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
 	}
     }
 
-  A4GL_addPreparedStatement ("ANON", uniq_id, sid, NULL);
+  A4GL_addPreparedStatement ("ANON", new_uniqId, sid, NULL);
   return (struct s_sid *) sid;
 }
 

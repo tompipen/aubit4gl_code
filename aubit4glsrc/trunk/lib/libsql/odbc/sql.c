@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.234 2009-07-03 10:53:54 mikeaubury Exp $
+# $Id: sql.c,v 1.235 2010-01-12 09:04:34 mikeaubury Exp $
 #
 */
 
@@ -5904,5 +5904,11 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
 {
     return 1;
 }
+
+char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
+        return s;
+}
+
+
 
 /* ================================ EOF ================================ */

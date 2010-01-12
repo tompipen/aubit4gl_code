@@ -84,7 +84,7 @@ A4GLSQL_map_tname char* code char* db -> void
 A4GLSQL_unmap_tname char* code -> void
 A4GLSQL_is_tname_mapped char* code -> int
 A4GLSQL_cancel -> int
-
+A4GLSQL_fixup_descriptor char* descriptorName -> char*
 
 * These duplicate functionality already available via the above calls - so
 * they've been removed from the API and made into calls to API functions
