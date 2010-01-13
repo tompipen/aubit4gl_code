@@ -3209,11 +3209,11 @@ print_define_char (char *var, int size, int isstatic_extern, int lvl, int vno, c
     {
       if (strlen (defsrc))
 	{
-	  printc ("%s%s%s\n", var, buff, comma);
+	  printc ("   %s%s%s\n", var, buff, comma);
 	}
       else
 	{
-	  printc ("%s%s(%d)%s\n", var, buff, size, comma);
+	  printc ("   %s%s(%d)%s\n", var, buff, size, comma);
 	}
     }
   else
@@ -3270,7 +3270,7 @@ print_define (char *varstring, int isstatic_extern, int lvl, int vno)
 
   if (lvl)
     {
-      printc ("%-18s%s%s\n", varstring, buff, comma);
+      printc ("   %-18s%s%s\n", varstring, buff, comma);
     }
   else
     {
@@ -3331,11 +3331,11 @@ print_start_record (int isstatic_extern, char *varname, struct variable *v, int 
 	{
 	  char arrbuff[256];
 	  make_arr_str (arrbuff, v);
-	  printc ("%s ARRAY[%s] OF RECORD \n", varname, arrbuff);
+	  printc ("   %s ARRAY[%s] OF RECORD \n", varname, arrbuff);
 	}
       else
 	{
-	  printc ("%s RECORD \n", varname);
+	  printc ("   %s RECORD \n", varname);
 	}
     }
   tmp_ccnt++;
@@ -3588,7 +3588,22 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
       int a;
       if (strcmp (name, "a4gl_sqlca") != 0)
 	{
+
+//A4GL_pause_execution();
+
+	if (v->defsrc && strlen(v->defsrc) && !A4GL_isno(acl_getenv("FGLRECORDLIKE"))) {
+		char comma[20]=",";
+		if (vno==0) strcpy(comma,"");
+		else strcpy(comma,",");
+
+		if (level) {
+			printc("   %-18s RECORD LIKE %s%s", name, v->defsrc,comma);
+		} else {
+			printc("DEFINE %-18s RECORD LIKE %s%s", name, v->defsrc,comma);
+		}
+	} else {
 	  print_start_record (static_extern_flg, name, v, level);
+
 	  for (a = 0; a < v->var_data.variable_data_u.v_record.variables.variables_len; a++)
 	    {
 	      struct variable *next_v;
@@ -3597,8 +3612,10 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 					   a != v->var_data.variable_data_u.v_record.variables.variables_len - 1);
 	    }
 	  print_end_record (name, v, level);
+	
 	  if (vno)
 	    printc (",");
+		}
 	}
       return;
     }
