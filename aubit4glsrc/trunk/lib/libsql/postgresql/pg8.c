@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.107 2010-01-12 09:01:49 mikeaubury Exp $
+# $Id: pg8.c,v 1.108 2010-01-13 15:11:58 mikeaubury Exp $
 #*/
 
 
@@ -539,9 +539,17 @@ char *ptr;
 
   currServerVersion=0;
 
+#ifndef  PG_VERSION_NUM
+// PG_VERSION_NUM doesn't seem to be set on earlier version...
+// so lets turn off some stuff that needs a later version..
+	A4GL_setenv("PG8USEINSERTRETURN","N",1);
+	A4GL_setenv("DISABLESAVEPOINTS","Y",1);
+#endif
+
   CanUseSavepoints = 0;
   if (current_con)
     {
+
 
 #if  ( PG_VERSION_NUM > 80100 )
         currServerVersion = PQserverVersion (current_con);
