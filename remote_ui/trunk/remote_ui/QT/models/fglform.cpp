@@ -111,6 +111,8 @@ void FglForm::createStatusBar()
 //------------------------------------------------------------------------------
 void FglForm::buttonClicked(QString id)
 {
+   Q_UNUSED(id);
+/*
       bool ok = false;
       int i_id = id.toInt(&ok);
       if(ok){
@@ -124,6 +126,8 @@ void FglForm::buttonClicked(QString id)
       }
       
       addToQueue(id);
+*/
+   qFatal("::buttonClicked called");
 }
 
 //------------------------------------------------------------------------------
@@ -133,6 +137,7 @@ void FglForm::buttonClicked(QString id)
 //------------------------------------------------------------------------------
 void FglForm::addToQueue(QString id)
 {
+/*
       for(int i=0; i<ql_formEvents.count(); i++){
          Fgl::Event event = ql_formEvents.at(i);
          if(event.type == Fgl::ONACTION_EVENT && event.attribute == id.toLower()){
@@ -140,6 +145,7 @@ void FglForm::addToQueue(QString id)
             break;
          }
       }
+*/
       ql_responseQueue << id;
       processResponse();
 }
@@ -165,6 +171,9 @@ void FglForm::setActions(QDomDocument xmlFile)
    for(int i=0; i<ql_actionDefaults.size(); i++){
       QAction *action = ql_actionDefaults.at(i);
       QString name = action->objectName();
+
+      addFormAction(action);
+      continue;
 
       this->addAction(action);
 
@@ -256,21 +265,30 @@ void FglForm::setActions(QDomDocument xmlFile)
 //------------------------------------------------------------------------------
 void FglForm::initActions()
 {
-   QAction *interruptAction = new QAction(tr("INTERRUPT"), this);
+   Action *acceptA = new Action("accept", tr("Accept"));
+   acceptA->setShortcut(Qt::Key_F12);
+   addFormAction(acceptA);
+
+   Action *cancelA = new Action("cancel", tr("Cancel"));
+   cancelA->setShortcut(Qt::Key_Escape);
+   addFormAction(cancelA);
+
+   return;
+   Action *interruptAction = new Action(tr("INTERRUPT"));
    interruptAction->setShortcut(Qt::Key_Escape);
    interruptAction->setVisible(true);
    interruptAction->setEnabled(true);
    connect(interruptAction, SIGNAL(triggered()), this, SLOT(cancelTriggered()));
    ql_defaultActions << interruptAction;
 
-   QAction *acceptAction = new QAction(tr("ACCEPT"), this);
+   Action *acceptAction = new Action(tr("ACCEPT"));
    acceptAction->setVisible(true);
    acceptAction->setEnabled(true);
    acceptAction->setShortcut(Qt::Key_F12);
    connect(acceptAction, SIGNAL(triggered()), this, SLOT(acceptTriggered()));
    ql_defaultActions << acceptAction;
 
-   QAction *enterAction = new QAction(tr("Next Field"), this);
+   Action *enterAction = new Action(tr("Next Field"));
    enterAction->setVisible(true);
    enterAction->setEnabled(true);
 
@@ -284,7 +302,7 @@ void FglForm::initActions()
    connect(enterAction, SIGNAL(triggered()), this, SLOT(nextfield()));
    ql_defaultActions << enterAction;
 
-   QAction *stabAction = new QAction(tr("Previous Field"), this);
+   Action *stabAction = new Action(tr("Previous Field"));
    stabAction->setVisible(true);
    stabAction->setEnabled(true);
 
@@ -296,7 +314,12 @@ void FglForm::initActions()
    connect(stabAction, SIGNAL(triggered()), this, SLOT(prevfield()));
    ql_defaultActions << stabAction;
 
-   this->addActions(ql_defaultActions);
+   //this->addActions(ql_defaultActions);
+/*
+   for(int i=0; i<ql_defaultActions.size(); i++){
+      this->addAction(ql_defaultActions.at(i));
+   }
+*/
 
 }
 
@@ -313,8 +336,10 @@ void FglForm::setMenu(RingMenu* p_menu)
 
    if(menu() != NULL && menu() != p_menu){
       menu()->setParent(NULL);
+/*
       disconnect(menu(), SIGNAL(menuButtonPressed(QString)),
                  this, SLOT(buttonClicked(QString)));
+*/
    }
 
    ql_menus << p_menu;
@@ -323,8 +348,10 @@ void FglForm::setMenu(RingMenu* p_menu)
       formSplitter->addWidget(p_menu);
       setRingMenuPosition(getRingMenuPosition());
 
+/*
       connect(p_menu, SIGNAL(menuButtonPressed(QString)),
               this, SLOT(buttonClicked(QString)));
+*/
    }
 }
 
@@ -371,6 +398,7 @@ void FglForm::setMenuEnabled(bool enable)
    if(this->p_toolBar == NULL)
       return;
 
+/*
    if(ToolBar *toolBar = qobject_cast<ToolBar *> (this->p_toolBar)){
       QList<QPushButton*> buttons = menu()->buttons();
       QList<QString> actions;
@@ -387,6 +415,7 @@ void FglForm::setMenuEnabled(bool enable)
          toolBarActions.at(i)->showStatusText(this);
       }
    }
+*/
 
    b_menu = enable;
 }
@@ -411,8 +440,10 @@ void FglForm::setActionMenu(ActionMenu* menu)
    QSplitter *formSplitter = (QSplitter*) this->centralWidget();
    formSplitter->addWidget(menu);
 
+/*
    connect(menu, SIGNAL(menuButtonPressed(QString)),
            this, SLOT(buttonClicked(QString)));
+*/
 
    setActionMenuEnabled(!b_menu);
 }
@@ -433,7 +464,7 @@ void FglForm::setActionMenuEnabled(bool enable)
    p_actionMenu->setEnabled(enable);
 
 
-   p_actionMenu->hideButtons(!enable);
+//   p_actionMenu->hideButtons(!enable);
 }
 
 //------------------------------------------------------------------------------
@@ -441,6 +472,30 @@ void FglForm::setActionMenuEnabled(bool enable)
 // Filename     : fglform.cpp
 // Description  : 
 //------------------------------------------------------------------------------
+void FglForm::actionTriggered()
+{
+   QObject *obj = QObject::sender();
+
+//   qDebug() << "ACTION TRIGGERED!" << obj;
+   if(Action *action = qobject_cast<Action *> (obj)){
+      if(!handleGuiAction(action)){
+         Fgl::Event ev;
+         ev.type = Fgl::ONACTION_EVENT;
+         ev.attribute = action->name();
+         emit fieldEvent(ev);
+      }
+   }
+   else{
+      qFatal("Action error");
+   }
+}
+
+//------------------------------------------------------------------------------
+// Method       : actionTriggered()
+// Filename     : fglform.cpp
+// Description  : 
+//------------------------------------------------------------------------------
+/*
 void FglForm::actionTriggered()
 {
    QObject *obj = QObject::sender();
@@ -473,8 +528,8 @@ void FglForm::actionTriggered()
          }
       }
    }
-   
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : toolBarActionTriggered()
@@ -521,10 +576,12 @@ void FglForm::setDialog(Dialog* dialog)
 
    p_dialog = dialog;
 
+/*
    if(dialog != NULL){
       connect(dialog, SIGNAL(dialogButtonPressed(QString)),
               this, SLOT(buttonClicked(QString)));
    }
+*/
 
 }
 
@@ -542,7 +599,8 @@ void FglForm::setToolBar(ToolBar *toolBar)
       if(this->p_toolBar != this->toolBar()){
          QList<QAction*> ql_actions = this->p_toolBar->actions();
          for(int i=0; i<ql_actions.size(); i++){
-            connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+//            connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+            connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(actionTriggered()));
          }
       }
       this->addToolBar(toolBarPosition(), this->p_toolBar);
@@ -551,11 +609,10 @@ void FglForm::setToolBar(ToolBar *toolBar)
       p_toolBar->setVisible(false);
       QList<QAction*> ql_actions = this->p_toolBar->actions();
       for(int i=0; i<ql_actions.size(); i++){
-         connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+         //connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+         connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(actionTriggered()));
       }
    }
-   checkToolBar();
-   checkMenu();
 }
 
 //------------------------------------------------------------------------------
@@ -573,7 +630,8 @@ void FglForm::setToolBar(QDomDocument xmlFile)
    if(toolBarPosition() != Qt::NoToolBarArea){
          QList<QAction*> ql_actions = this->p_toolBar->actions();
          for(int i=0; i<ql_actions.size(); i++){
-            connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+            //connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+            connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(actionTriggered()));
          }
       this->addToolBar(toolBarPosition(), this->p_toolBar);
    }
@@ -581,11 +639,10 @@ void FglForm::setToolBar(QDomDocument xmlFile)
       p_toolBar->setVisible(false);
       QList<QAction*> ql_actions = this->p_toolBar->actions();
       for(int i=0; i<ql_actions.size(); i++){
-         connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+         //connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(toolBarActionTriggered()));
+         connect(ql_actions.at(i), SIGNAL(triggered()), this, SLOT(actionTriggered()));
       }
    }
-   checkToolBar();
-
 }
 
 //------------------------------------------------------------------------------
@@ -644,6 +701,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
+/*
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = (QKeyEvent*) event;
       StatusBar *status = (StatusBar*) statusBar();
@@ -695,6 +753,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          }
       }
    }
+*/
 
    return QMainWindow::eventFilter(obj, event);
 }
@@ -707,15 +766,22 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 //------------------------------------------------------------------------------
 void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
 {
-   type.attribute = Fgl::stringToKey(type.attribute);
+   //type.attribute = Fgl::stringToKey(type.attribute);
+
+   QList<Fgl::Event> ql_events = ql_contextEvents.last();
+/*
+   ql_events << ql_dialogEvents;
+   ql_events << ql_menuEvents;
+   ql_events << ql_formEvents;
+*/
 
    switch(type.type)
    {
       case Fgl::BEFORE_FIELD_EVENT:
       case Fgl::AFTER_FIELD_EVENT:
 
-           for(int i=0; i<ql_formEvents.size(); i++){
-              Fgl::Event event = ql_formEvents.at(i);
+           for(int i=0; i<ql_events.size(); i++){
+              Fgl::Event event = ql_events.at(i);
               if(event.type == type.type){
                  if(widget != NULL){
                     if(widget->objectName() == event.attribute ||
@@ -746,8 +812,8 @@ void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
       case Fgl::AFTER_DISPLAY_EVENT:
       case Fgl::BEFORE_ROW_EVENT:
       case Fgl::AFTER_ROW_EVENT:
-           for(int i=0; i<ql_formEvents.size(); i++){
-              Fgl::Event event = ql_formEvents.at(i);
+           for(int i=0; i<ql_events.size(); i++){
+              Fgl::Event event = ql_events.at(i);
               if(event.type == type.type){
                  addToQueue(QString::number(event.id));
                  return;
@@ -755,15 +821,47 @@ void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
            }
            break;
 
+/*
       case Fgl::ONKEY_EVENT:
       case Fgl::ONACTION_EVENT:
-           for(int i=0; i<ql_formEvents.size(); i++){
-              Fgl::Event event = ql_formEvents.at(i);
+           for(int i=0; i<ql_events.size(); i++){
+              Fgl::Event event = ql_events.at(i);
               if(event.type == type.type && 
                  event.attribute.toLower() == type.attribute.toLower()){
                  addToQueue(QString::number(event.id));
                  return;
               }
+           }
+           break;
+      case Fgl::MENUCOMMAND_EVENT:
+         break;
+*/
+      case Fgl::ONACTION_EVENT:
+      case Fgl::ONKEY_EVENT:
+      case Fgl::MENUACTION_EVENT:
+           for(int i=0; i<ql_events.size(); i++){
+              Fgl::Event event = ql_events.at(i);
+/*
+              if((event.type == Fgl::ONACTION_EVENT ||
+                 event.type == Fgl::MENUACTION_EVENT) && 
+                 event.attribute.toLower() == type.attribute.toLower()){
+*/
+              if(event.attribute.toLower() == type.attribute.toLower()){
+                 if(event.id >= 0){
+                    addToQueue(QString::number(event.id));
+                    return;
+                 }
+              }
+           }
+           //if no action was found
+           if(type.attribute == "accept"){
+              accept();
+              return;
+           }
+
+           if(type.attribute == "cancel"){
+              cancelTriggered();
+              return;
            }
            break;
    }
@@ -1153,7 +1251,6 @@ void FglForm::editpaste()
 // Filename     : fglform.cpp
 // Description  : ActionDefaults
 //------------------------------------------------------------------------------
-
 void FglForm::nextfield()
 {
    if(!screenRecord()){
@@ -1227,7 +1324,6 @@ void FglForm::nextfield()
       }
    }
 }
-
 //------------------------------------------------------------------------------
 // Method       : prevfield()
 // Filename     : fglform.cpp
@@ -1353,150 +1449,6 @@ void FglForm::prevtab()
 };
 
 //------------------------------------------------------------------------------
-// Method       : enableActions()
-// Filename     : fglform.cpp
-// Description  : 
-//------------------------------------------------------------------------------
-void FglForm::enableActions(bool enable)
-{
-   for(int i=0; i<actions().size(); i++){
-      actions().at(i)->setEnabled(false);
-   }
-
-   QList<QString> menuActions;
-   if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
-      QList<QPushButton*> buttons = p_menu->buttons();
-      for(int j=0; j<buttons.size(); j++){
-         if(buttons.at(j)->isEnabled()){
-            QString action = buttons.at(j)->text();
-            action.remove(0,1);
-            menuActions << action;
-         }
-      }
-   }
-
-
-   for(int i=0; i<this->actions().size(); i++){
-
-      QAction *action = this->actions().at(i);
-      QString name = action->objectName();
-      
-      if(input() || construct() || screenRecord()){
-         if(name == "accept"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "cancel"){
-            action->setEnabled(enable);
-            continue;
-         }
-      }
-
-      if(inputArray()){
-         if(name == "insert"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "append"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "delete"){
-            action->setEnabled(enable);
-            continue;
-         }
-      }
-
-      if(input() || construct() || screenRecord() || dialog()){
-         if(name == "editcopy"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "editcut"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "editpaste"){
-            action->setEnabled(enable);
-            continue;
-         }
-      }
-
-      if(input() || construct() || (inputArray())){
-         if(name == "nextfield"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "prevfield"){
-            action->setEnabled(enable);
-            continue;
-         }
-      }
-
-      if(screenRecord()){
- 
-         if(name == "nextrow"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "prevrow"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "firstrow"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "lastrow"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "nextpage"){
-            action->setEnabled(enable);
-            continue;
-         }
-
-         if(name == "prevpage"){
-            action->setEnabled(enable);
-            continue;
-         }
-      }
-         
-
-      if(name == "nexttab"){
-         action->setEnabled(enable);
-            continue;
-      }
-
-      if(name == "prevtab"){
-         action->setEnabled(enable);
-            continue;
-      }
-
-
-      for(int k=0; k<menuActions.size(); k++){
-         if(name == menuActions.at(k)){
-            action->setEnabled(true);
-            break;
-         }
-      }
-
-   }
-
-   checkToolBar();
-}
-
-//------------------------------------------------------------------------------
 // Method       : validateFields()
 // Filename     : fglform.cpp
 // Description  : 
@@ -1529,6 +1481,7 @@ void FglForm::validateFields()
 // Filename     : fglform.cpp
 // Description  : 
 //------------------------------------------------------------------------------
+/*
 void FglForm::checkToolBar()
 {
    if(ToolBar *p_toolBar = qobject_cast<ToolBar *> (toolBar())){
@@ -1584,6 +1537,7 @@ void FglForm::checkToolBar()
       }
    }
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : revertState()
@@ -1595,9 +1549,11 @@ void FglForm::revertState(Fgl::State state){
    for(int i=ql_states.count()-1; i>=0; i--){
       if(state == ql_states.at(i)){
          ql_states.takeAt(i);
+         ql_contextEvents.takeAt(i);
          break;
       }
    }
+   checkState();
 }
 
 
@@ -1613,11 +1569,11 @@ void FglForm::checkState()
 
    Fgl::State state = ql_states.last();
 
-   if(state == Fgl::MENU){
-      setActionMenuEnabled(false);
-      setMenuEnabled(true);
-   }
+   bool enable = (state == Fgl::MENU);
+   setActionMenuEnabled(!enable);
+   setMenuEnabled(enable);
 
+/*
    if(state == Fgl::INPUT ||
       state == Fgl::CONSTRUCT ||
       state == Fgl::DISPLAYARRAY ||
@@ -1629,14 +1585,9 @@ void FglForm::checkState()
       setActionMenuEnabled(false);
       setMenuEnabled(true);
    }
-
-   if(state != Fgl::IDLE){
-     //bool en = (state == Fgl::INPUT || state == Fgl::CONSTRUCT || state == Fgl::DISPLAYARRAY || state == Fgl::INPUTARRAY);
-     checkToolBar();
-   }
+*/
 
    checkActions();
-   checkMenu();
 }
 
 //------------------------------------------------------------------------------
@@ -1644,6 +1595,7 @@ void FglForm::checkState()
 // Filename     : fglform.cpp
 // Description  : 
 //------------------------------------------------------------------------------
+/*
 void FglForm::checkMenu()
 {
 
@@ -1669,12 +1621,14 @@ void FglForm::checkMenu()
    }
 
 }
+*/
 
 //------------------------------------------------------------------------------
 // Method       : checkActions()
 // Filename     : fglform.cpp
 // Description  : 
 //------------------------------------------------------------------------------
+/*
 void FglForm::checkActions()
 {
    for(int i=0; i<actions().size(); i++){
@@ -1816,6 +1770,7 @@ void FglForm::checkActions()
 
    checkToolBar();
 }
+*/
 
 
 //------------------------------------------------------------------------------
@@ -1885,6 +1840,30 @@ void FglForm::createContextMenu(const QPoint &pos)
       menuPos = pos;
    }
 
+   //dbutest
+   QList<QAction*> ql_actions;
+   if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
+      ql_actions << p_menu->actions();
+   }
+
+   for(int i=0; i<actions().size(); i++){
+      //if(Action *action = qobject_cast<Action *> (actions.at(i))){
+      if(actions().at(i)->isEnabled() && actions().at(i)->isVisible())
+            ql_actions << actions().at(i);
+/*
+         if(action->isEnabled() && action->isVisible() && action->defaultView() != "no"){
+         }
+*/
+   }
+
+   contextMenu->addActions(ql_actions);
+
+   if(contextMenu->actions().count() > 0){
+      contextMenu->exec(menuPos);
+   }
+   delete contextMenu;
+   return;
+
    switch(state())
    {
       case Fgl::IDLE:
@@ -1909,7 +1888,7 @@ void FglForm::createContextMenu(const QPoint &pos)
                //Add all active formactions to the contextmenu
                for(int i=0; i<actions().size(); i++){
                   QAction *formAction = actions().at(i);
-                  if(formAction->isEnabled()){
+                  if(formAction->isEnabled() || formAction->isVisible()){
                      QAction *action = new QAction(formAction->text(), this);
                      contextMenu->addAction(action);
                      connect(action, SIGNAL(triggered()), formAction, SLOT(trigger()));
@@ -1927,7 +1906,7 @@ void FglForm::createContextMenu(const QPoint &pos)
          //Add all active formactions to the contextmenu
          for(int i=0; i<actions().size(); i++){
             QAction *formAction = actions().at(i);
-            if(formAction->isEnabled()){
+            if(formAction->isEnabled() && formAction->isVisible()){
                QAction *action = new QAction(formAction->text(), this);
                contextMenu->addAction(action);
                connect(action, SIGNAL(triggered()), formAction, SLOT(trigger()));
@@ -2030,4 +2009,555 @@ void FglForm::error(const QString& text){
 
    StatusBar *statusBar = (StatusBar*) this->statusBar();
    statusBar->displayError(text);
+}
+
+void FglForm::addFormAction(QAction *qaction)
+{
+   QList<QAction*> formActions = this->actions();
+   bool createAction = true;
+
+   Action *action = qobject_cast<Action *> (qaction);
+
+   if(!action)
+      return;
+
+   for(int i=0; i<formActions.count(); i++){
+      if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
+         if(fAction->name() == action->name()){
+
+            createAction = false;
+            if(!action->text().isEmpty())
+               fAction->setText(action->text());
+
+            if(!action->comment().isEmpty())
+               fAction->setComment(action->comment());
+
+            if(!action->image().isEmpty())
+               fAction->setImage(action->image());
+
+            if(!action->acceleratorName().isEmpty())
+               fAction->setAcceleratorName(action->acceleratorName());
+
+            if(!action->acceleratorName2().isEmpty())
+               fAction->setAcceleratorName2(action->acceleratorName2());
+
+            if(!action->acceleratorName3().isEmpty())
+               fAction->setAcceleratorName3(action->acceleratorName3());
+
+            if(!action->acceleratorName4().isEmpty())
+               fAction->setAcceleratorName4(action->acceleratorName4());
+
+            if(!action->defaultView().isEmpty())
+               fAction->setDefaultView(action->defaultView());
+
+            break;
+         }
+      }
+   }
+
+   if(createAction){
+      action->setEnabled(false);
+      this->addAction(action);
+      connect(action, SIGNAL(triggered()), this, SLOT(actionTriggered()));
+   }
+}
+
+void FglForm::addFormAction(QString name, QString text, QString comment, QString image, QString accName, QString accName2, QString accName3, QString accName4, QString defaultView)
+{
+   QList<QAction*> formActions = this->actions();
+   bool createAction = true;
+
+   for(int i=0; i<formActions.count(); i++){
+      if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
+         if(fAction->name() == name){
+
+            createAction = false;
+            if(!text.isEmpty())
+               fAction->setText(text);
+
+            if(!comment.isEmpty())
+               fAction->setComment(comment);
+
+            if(!image.isEmpty())
+               fAction->setImage(image);
+
+            if(!accName.isEmpty())
+               fAction->setAcceleratorName(accName);
+
+            if(!accName2.isEmpty())
+               fAction->setAcceleratorName2(accName2);
+
+            if(!accName3.isEmpty())
+               fAction->setAcceleratorName3(accName3);
+
+            if(!accName4.isEmpty())
+               fAction->setAcceleratorName4(accName4);
+
+            if(!defaultView.isEmpty())
+               fAction->setDefaultView(defaultView);
+         }
+      }
+   }
+
+   if(createAction){
+      Action *action = new Action(name, text, this);
+      action->setComment(comment);
+      action->setImage(image);
+      action->setAcceleratorName(accName);
+      action->setAcceleratorName2(accName2);
+      action->setAcceleratorName3(accName3);
+      action->setAcceleratorName4(accName4);
+      this->addAction(action);
+      connect(action, SIGNAL(triggered()), this, SLOT(actionTriggered()));
+   }
+}
+
+void FglForm::addFormEvent(Fgl::Event newEvent)
+{
+   QList<Fgl::Event> ql_events = ql_contextEvents.last();
+
+//old
+/*
+   for(int i=0; i<ql_formEvents.count(); i++){
+      Fgl::Event ev = ql_formEvents.at(i);
+
+      if(ev.attribute == newEvent.attribute){
+         ql_formEvents.replace(i, newEvent);
+         return;
+      }
+   }
+*/
+
+//new
+   for(int i=0; i<ql_events.count(); i++){
+      Fgl::Event ev = ql_events.at(i);
+
+      if(ev.type == newEvent.type &&
+         ev.attribute == newEvent.attribute){
+         ql_events.replace(i, newEvent);
+         return;
+      }
+   }
+
+   ql_formEvents << newEvent;
+   ql_events << newEvent;
+   ql_contextEvents.replace(ql_contextEvents.count()-1, ql_events);
+}
+
+void FglForm::checkToolBar()
+{
+   if(this->toolBar() == NULL)
+      return;
+
+   QList<QAction*> tbActions = this->toolBar()->actions();
+   QList<QAction*> menuActions;
+   QList<QAction*> formActions = this->actions();
+
+    //first disable all toolabr actions
+   for(int i=0; i<tbActions.count(); i++){
+      tbActions.at(i)->setEnabled(false);
+   }
+
+   if(state() == Fgl::IDLE)
+      return;
+
+   //if menu is enabled..
+   if(state() == Fgl::MENU){
+      //get alle menu entries
+      if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
+         menuActions << p_menu->actions();
+      }
+      for(int i=0; i<tbActions.count(); i++){
+         if(Action *tbAction = qobject_cast<Action *> (tbActions.at(i))){
+            for(int i=0; i<menuActions.count(); i++){
+               if(Action *menuAction = qobject_cast<Action *> (menuActions.at(i))){
+                  if(tbAction->name() == menuAction->name()){
+                     tbAction->setEnabled(true);
+                     break;
+                  }
+               }
+            }
+         }
+      }
+      return;
+   }
+
+
+   for(int i=0; i<tbActions.count(); i++){
+      if(Action *tbAction = qobject_cast<Action *> (tbActions.at(i))){
+         for(int i=0; i<formActions.count(); i++){
+            if(Action *formAction = qobject_cast<Action *> (formActions.at(i))){
+               if(tbAction->name() == formAction->name()){
+                  if(formAction->isEnabled())
+                     tbAction->setEnabled(true);
+                  break;
+               }
+            }
+         }
+      }
+   }
+}
+
+void FglForm::checkActions()
+{
+   QList<QAction*> formActions = this->actions();
+   for(int i=0; i<formActions.count(); i++){
+      formActions.at(i)->setEnabled(false);
+   }
+
+   checkGuiActions();
+
+   if(state() == Fgl::MENU){
+      //checkMenu();
+      if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
+         QList<QAction*> menuActions = p_menu->actions();
+
+         for(int i=0; i<menuActions.count(); i++){
+            if(Action *mAction = qobject_cast<Action *> (menuActions.at(i))){
+               for(int j=0; j<formActions.count(); j++){
+                  if(Action *fAction = qobject_cast<Action *> (formActions.at(j))){
+                     if(mAction->name() == fAction->name()){
+                        fAction->setEnabled(true);
+                        if(QPushButton *button = qobject_cast<QPushButton *> (mAction->parent())){
+                           if(!fAction->image().isEmpty()){
+                              mAction->setImage(fAction->image());
+                              button->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                           }
+                           if(p_menu->isActionButton(button)){
+                              button->setText(fAction->text());
+                           }
+                        }
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   if(input() || construct() || screenRecord()){
+      for(int i=0; i<formActions.count(); i++){
+         if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
+            for(int j=0; j<ql_contextEvents.last().count(); j++){
+               Fgl::Event ev = ql_contextEvents.last().at(j);
+               if(ev.type == Fgl::ONACTION_EVENT ||
+                  ev.type == Fgl::ONKEY_EVENT){
+                  if(fAction->name() == ev.attribute){
+                     fAction->setEnabled(true);
+                     if(fAction->defaultView() == "yes"){
+                        if(ActionMenu *aMenu = qobject_cast<ActionMenu *> (actionMenu())){
+                           if(!(fAction == actionMenu()->getAction(fAction->name()))){
+                              aMenu->createButton(fAction->name(), fAction->text(), fAction->comment(), fAction);
+                           }
+                        }
+                     }
+                     else{
+                        if(fAction->defaultView() == "auto"){
+                           //check Toolbar for action
+                           bool found = false;
+                           if(ToolBar *p_toolBar = qobject_cast<ToolBar *> (toolBar())){
+                              if(p_toolBar->isVisible()){
+                                 QList<QAction*> tbActions = p_toolBar->actions();
+                                 for(int i=0; i<tbActions.count(); i++){
+                                    if(Action *tbAction = qobject_cast<Action *> (tbActions.at(i))){
+                                       if(tbAction->name() == fAction->name() && tbAction->isVisible()){
+                                          found = true;
+                                          break;
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                           if(!found){
+                              if(ActionMenu *aMenu = qobject_cast<ActionMenu *> (actionMenu())){
+                                 if(!(fAction == actionMenu()->getAction(fAction->name()))){
+                                    aMenu->createButton(fAction->name(), fAction->text(), fAction->comment(), fAction);
+                                 }
+                              }
+                           }
+                        }
+                     }
+                     break;
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   checkShortcuts();
+   checkToolBar();
+}
+
+void FglForm::checkGuiActions()
+{
+   QList<QAction*> formActions = this->actions();
+   for(int i=0; i<formActions.count(); i++){
+      
+      if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
+         if(fAction->name() == "accept")
+            fAction->setEnabled((input() || construct() || screenRecord()));
+
+         if(fAction->name() == "cancel")
+            fAction->setEnabled((input() || construct() || screenRecord()));
+
+         if(fAction->name() == "insert")
+            fAction->setEnabled(inputArray());
+
+         if(fAction->name() == "append")
+            fAction->setEnabled(inputArray());
+
+         if(fAction->name() == "delete")
+            fAction->setEnabled(inputArray());
+
+         if(fAction->name() == "editcopy")
+            fAction->setEnabled((input() || construct() || screenRecord() || dialog()));
+
+         if(fAction->name() == "editcut")
+            fAction->setEnabled((input() || construct() || screenRecord() || dialog()));
+
+         if(fAction->name() == "editpaste")
+            fAction->setEnabled((input() || construct() || screenRecord() || dialog()));
+
+         if(fAction->name() == "nextfield")
+            fAction->setEnabled((input() || construct() || (inputArray())));
+
+         if(fAction->name() == "prevfield")
+            fAction->setEnabled((input() || construct() || (inputArray())));
+
+         if(fAction->name() == "nextrow")
+            fAction->setEnabled(screenRecord());
+
+         if(fAction->name() == "prevrow")
+            fAction->setEnabled(screenRecord());
+
+         if(fAction->name() == "firstrow")
+            fAction->setEnabled(screenRecord());
+
+         if(fAction->name() == "lastrow")
+            fAction->setEnabled(screenRecord());
+
+         if(fAction->name() == "nextpage")
+            fAction->setEnabled(screenRecord());
+
+         if(fAction->name() == "prevpage")
+            fAction->setEnabled(screenRecord());
+
+         if(fAction->name() == "nexttab")
+            fAction->setEnabled((state() != Fgl::IDLE));
+
+         if(fAction->name() == "prevtab")
+            fAction->setEnabled((state() != Fgl::IDLE));
+
+      }
+      
+   }
+
+}
+
+void FglForm::checkMenu()
+{
+
+   
+}
+
+bool FglForm::handleGuiAction(Action* fAction)
+{
+   for(int j=0; j<ql_contextEvents.last().count(); j++){
+      Fgl::Event ev = ql_contextEvents.last().at(j);
+      if(ev.type == Fgl::ONACTION_EVENT){
+         if(ev.attribute == fAction->name())
+            return false;
+      }
+   }
+
+   if(fAction->name() == "accept"){
+      accept();
+      return true;
+   }
+
+   if(fAction->name() == "cancel"){
+      cancelTriggered();
+      return true;
+   }
+
+   if(fAction->name() == "insert"){
+      return true;
+   }
+
+   if(fAction->name() == "append"){
+      return true;
+   }
+
+   if(fAction->name() == "delete"){
+      return true;
+   }
+
+   if(fAction->name() == "editcopy"){
+      editcopy();
+      return true;
+   }
+
+   if(fAction->name() == "editcut"){
+      editcut();
+      return true;
+   }
+
+   if(fAction->name() == "editpaste"){
+      editpaste();
+      return true;
+   }
+
+   if(fAction->name() == "nextfield"){
+      nextfield();
+      return true;
+   }
+
+   if(fAction->name() == "prevfield"){
+      prevfield();
+      return true;
+   }
+
+   if(fAction->name() == "nextrow"){
+      nextrow();
+      return true;
+   }
+
+   if(fAction->name() == "prevrow"){
+      prevrow();
+      return true;
+   }
+
+   if(fAction->name() == "firstrow"){
+      firstrow();
+      return true;
+   }
+
+   if(fAction->name() == "lastrow"){
+      lastrow();
+      return true;
+   }
+
+   if(fAction->name() == "nextpage"){
+      nextpage();
+      return true;
+   }
+
+   if(fAction->name() == "prevpage"){
+      prevpage();
+      return true;
+   }
+
+   if(fAction->name() == "nexttab"){
+      nexttab();
+      return true;
+   }
+
+   if(fAction->name() == "prevtab"){
+      prevtab();
+      return true;
+   }
+
+   return false;
+}
+
+void FglForm::checkShortcuts()
+{
+
+    QList<QAction*> actions = this->actions();
+    for(int i=0; i<actions.count(); i++){
+       if(Action *action = qobject_cast<Action *> (actions.at(i))){
+          action->setAccNameEnabled(true);
+       }
+    }
+
+
+    for(int i=actions.count()-1; i>=0; i--){
+       if(Action *action = qobject_cast<Action *> (actions.at(i))){
+          QString s1 = action->acceleratorName();
+          QString s2 = action->acceleratorName2();
+          QString s3 = action->acceleratorName3();
+          QString s4 = action->acceleratorName4();
+
+          if(!action->isEnabled() || !action->accNameEnabled())
+             continue;
+
+          if(!s1.isEmpty()){
+             for(int j=0; j<actions.count(); j++){
+                if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
+                   if(action == action2 || !action2->isEnabled())
+                      continue;
+   
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName()) == Fgl::stringToKey(s1)){
+                      action2->setAccNameEnabled(!enable);
+                   }
+
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName2()) == Fgl::stringToKey(s1)){
+                      action2->setAccName2Enabled(!enable);
+                   }
+
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName3()) == Fgl::stringToKey(s1)){
+                      action2->setAccName3Enabled(!enable);
+                   }
+
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName4()) == Fgl::stringToKey(s1)){
+                      action2->setAccName4Enabled(!enable);
+                   }
+                }
+             }
+          }
+
+          if(!s2.isEmpty()){
+             for(int j=0; j<actions.count(); j++){
+                if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
+                   if(action == action2 || !action2->isEnabled())
+                      continue;
+   
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName2()) == Fgl::stringToKey(s1)){
+                      action2->setAccName2Enabled(!enable);
+                   }
+
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName3()) == Fgl::stringToKey(s1)){
+                      action2->setAccName3Enabled(!enable);
+                   }
+
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName4()) == Fgl::stringToKey(s1)){
+                      action2->setAccName4Enabled(!enable);
+                   }
+                }
+             }
+          }
+
+          if(!s3.isEmpty()){
+             for(int j=0; j<actions.count(); j++){
+                if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
+                   if(action == action2 || !action2->isEnabled())
+                      continue;
+   
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName3()) == Fgl::stringToKey(s1)){
+                      action2->setAccName3Enabled(!enable);
+                   }
+
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName4()) == Fgl::stringToKey(s1)){
+                      action2->setAccName4Enabled(!enable);
+                   }
+                }
+             }
+          }
+
+          if(!s3.isEmpty()){
+             for(int j=0; j<actions.count(); j++){
+                if(Action *action2 = qobject_cast<Action *> (actions.at(j))){
+                   if(action == action2 || !action2->isEnabled())
+                      continue;
+   
+                   if(bool enable = Fgl::stringToKey(action2->acceleratorName4()) == Fgl::stringToKey(s1)){
+                      action2->setAccName4Enabled(!enable);
+                   }
+                }
+             }
+          }
+       }
+    }
 }

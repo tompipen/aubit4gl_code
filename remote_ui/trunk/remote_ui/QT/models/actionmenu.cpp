@@ -18,6 +18,7 @@
 #include <QKeyEvent>
 
 #include "actionmenu.h"
+#include "actions.h"
 
 //------------------------------------------------------------------------------
 // Method       : ActionMenu()
@@ -37,8 +38,10 @@ ActionMenu::ActionMenu(QWidget *parent) : QGroupBox(parent)
    layout->setAlignment(Qt::AlignTop);
 
    buttonGroup = new QButtonGroup;
+/*
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
            this, SLOT(buttonClicked(int)));
+*/
 
    this->layout = layout;
    setLayout(this->layout);
@@ -69,8 +72,10 @@ ActionMenu::ActionMenu(QString title, QString style, QString image,
 
    buttonGroup = new QButtonGroup;
 
+/*
    connect(buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)), 
            this, SLOT(buttonClicked(QAbstractButton*)));
+*/
 
    this->layout = layout;
    setLayout(this->layout);
@@ -82,29 +87,38 @@ ActionMenu::ActionMenu(QString title, QString style, QString image,
 // Filename     : actionmenu.cpp
 // Description  : creates the Buttons and adds them to the ActionMenu
 //------------------------------------------------------------------------------
-void ActionMenu::createButton(QString id, QString text, QString shortcut)
+void ActionMenu::createButton(QString id, QString text, QString shortcut, QAction *action)
 {
-
-   if(text.trimmed().isEmpty()){
-      return;
+   bool visible = true;
+   if(text.isEmpty()){
+      visible = false;
+//      text = id;
    }
 
-   for(int i=0; i<buttonGroup->buttons().size(); i++){
-      QString btnTxt = buttonGroup->buttons().at(i)->text();
-      if(btnTxt == text || text.trimmed().isEmpty())
-         return;
-      
-   }
+   // Make Shortcut for Button
+   QString pic = text.toLower();
+   //QString shortcut = text.at(0);
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text);
+   QPushButton *button = new QPushButton(text.trimmed());
    button->setFocusPolicy(Qt::NoFocus);
-   button->setObjectName(shortcut);
-   QIcon icon(QString("pics:blank.png"));
-   button->setIcon(icon);
+   button->setShortcut(shortcut);
+   button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
+   button->setVisible(visible);
 
+   if(action != NULL){
+      button->addAction(action);
+      connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+   }
 
+/*
+   Action *action = new Action(text.toLower(), text, button);
+   //action->setComment(tooltip);
+   action->setImage("blank.png");
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+*/
 
    // Add the Button to the Layout
    if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
@@ -115,7 +129,7 @@ void ActionMenu::createButton(QString id, QString text, QString shortcut)
       layout->addWidget(button);
    }
 
-   buttonGroup->addButton(button);
+   buttonGroup->addButton(button); //, id);
 }
 
 //------------------------------------------------------------------------------
@@ -168,9 +182,7 @@ QList<QPushButton*> ActionMenu::buttons()
 //------------------------------------------------------------------------------
 void ActionMenu::buttonClicked(int id)
 {
-
    emit menuButtonPressed(QString::number(id));
-
 }
 
 //------------------------------------------------------------------------------
@@ -254,4 +266,49 @@ void ActionMenu::hideButtons(bool hide)
       }
    }
    
+}
+
+QList<QAction*> ActionMenu::actions()
+{
+
+   QList<QAction*> ql_actions;
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         if(button->isVisible() && button->isEnabled())
+            ql_actions << button->actions();
+      }
+   }
+
+   return ql_actions;
+}
+
+QAction* ActionMenu::getAction(QString name)
+{
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         //if(button->text().toLower() == QString("%1").arg(name)){
+            QList<QAction*> actions = button->actions();
+            for(int j=0; j<actions.count(); j++){
+               if(Action *action = qobject_cast<Action *> (actions.at(j))){
+                  if(action->name() == name)
+                     return action;
+               }
+            }
+         //}
+      }
+   }
+
+   return new QAction(NULL);
+}
+
+void ActionMenu::setAction(QString name, QAction* action){
+
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         if(button->text().toLower() == QString("%1").arg(name)){
+            button->addAction(action);
+         }
+      }
+   }
+
 }

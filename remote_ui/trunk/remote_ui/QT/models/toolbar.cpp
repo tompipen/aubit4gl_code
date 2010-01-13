@@ -19,6 +19,7 @@
 #include <QIcon>
 
 #include "toolbar.h"
+#include "actions.h"
 
 ToolBar::ToolBar(QWidget *parent) : QToolBar(parent)
 {
@@ -101,20 +102,23 @@ void ToolBar::parseElement(QDomNode xmlNode)
       if(nodeName == "ToolBarItem"){
          QString name = currentElement.attribute("name");
 
+/*
          QString image = "pics:";
          image.append(currentElement.attribute("image"));
+*/
+         QString image = currentElement.attribute("image");
 
          QString text = currentElement.attribute("text");
 
          QString comment = currentElement.attribute("comment");
  
-         QAction *action = new QAction(QIcon(image), text, 0);
-
-         action->setObjectName(name);
+         //Action *action = new Action(QIcon(image), text, 0);
+         Action *action = new Action(name, text, 0);
+         action->setImage(image);
+         action->setComment(comment);
 
          action->setEnabled(false);
 
-         action->setToolTip(comment);
 
          this->addAction(action);
          ql_toolBarActions << action;

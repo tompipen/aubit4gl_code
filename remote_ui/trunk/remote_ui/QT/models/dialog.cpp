@@ -20,6 +20,7 @@
 #include <QKeyEvent>
 
 #include "dialog.h"
+#include "actions.h"
 
 //------------------------------------------------------------------------------
 // Method       : Dialog()
@@ -47,9 +48,10 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
    buttonLayout->setAlignment(Qt::AlignCenter);
 
    buttonGroup = new QButtonGroup;
+/*
    connect(buttonGroup, SIGNAL(buttonClicked(int)),
            this, SLOT(buttonClicked(int)));
-
+*/
 
    this->layout = layout;
    setLayout(this->layout);
@@ -89,23 +91,22 @@ void Dialog::createButton(int id, QString text, QString tooltip)
 {
 
    // Make Shortcut for Button
+   QString pic = text.toLower();
    QString shortcut = text.at(0);
-   text.prepend("&");
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text);
+   QPushButton *button = new QPushButton(text.trimmed());
    button->setShortcut(shortcut);
-   button->setToolTip(tooltip);
+   button->setIcon(QIcon(QString("pics:blank.png")));
+   button->setIconSize(QSize(40,25));
 
+   Action *action = new Action(text.toLower(), text, button);
+   action->setComment(tooltip);
+   action->setImage("blank.png");
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
-   // Add the Button to the Layout
-//   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
-      buttonLayout->addWidget(button);
-//   }
-
-//   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
-//      buttonLayout->addWidget(button);
-//   }
+   buttonLayout->addWidget(button);
 
    buttonGroup->addButton(button, id);
 }
@@ -117,19 +118,24 @@ void Dialog::createButton(int id, QString text, QString tooltip)
 //------------------------------------------------------------------------------
 void Dialog::createAction(int id, QString text)
 {
+   // Make Shortcut for Button
+   QString pic = text.toLower();
+   QString shortcut = text.at(0);
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text);
+   QPushButton *button = new QPushButton(text.trimmed());
    button->setVisible(false);
+   button->setShortcut(shortcut);
+   button->setIcon(QIcon(QString("pics:blank.png")));
+   button->setIconSize(QSize(40,25));
+
+   Action *action = new Action(text.toLower(), text, button);
+   action->setImage("blank.png");
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
    // Add the Button to the Layout
-//   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
-      buttonLayout->addWidget(button);
-//   }
-
-//   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
-//      buttonLayout->addWidget(button);
- //  }
+   buttonLayout->addWidget(button);
 
    buttonGroup->addButton(button, id);
 }
@@ -186,6 +192,7 @@ void Dialog::showButton(QString name)
 void Dialog::buttonClicked(int id)
 {
 
+   qDebug() << "BUTTON CLICKED!!!";
    emit dialogButtonPressed(QString::number(id));
 
 }
@@ -212,3 +219,38 @@ void Dialog::keyPressEvent(QKeyEvent *event)
 
    QDialog::keyPressEvent(event);
 }
+
+QList<QAction*> Dialog::actions()
+{
+
+   QList<QAction*> ql_actions;
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         if(button->isVisible() && button->isEnabled())
+            ql_actions << button->actions();
+      }
+   }
+
+   return ql_actions;
+}
+
+QAction* Dialog::getAction(QString name)
+{
+
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         if(button->text().toLower() == name){
+            QList<QAction*> actions = button->actions();
+            for(int j=0; j<actions.count(); j++){
+               if(Action *action = qobject_cast<Action *> (actions.at(j))){
+                  if(action->name() == name)
+                     return action;
+               }
+            }
+         }
+      }
+   }
+
+   return new QAction(NULL);
+}
+

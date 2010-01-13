@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("ventas.com");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
-    sleep(3);
+    //sleep(3);
 
 
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     app.setFont(yavcFont);
 
-    QIcon ventasLogo("./pics/ventas-ico.png");
+    QIcon ventasLogo("./pics/ventas.png");
 
     app.setWindowIcon(ventasLogo);
 

@@ -24,6 +24,54 @@
 #include <QDomNode>
 #include <QDomElement>
 
+class Action : public QAction
+{
+   Q_OBJECT
+
+public:
+   Action(QObject *parent);
+   Action(QString name, QString text="", QObject *parent=NULL);
+   void setName(QString);
+   void setComment(QString);
+   void setImage(QString);
+   void setAcceleratorName(QString);
+   void setAcceleratorName2(QString);
+   void setAcceleratorName3(QString);
+   void setAcceleratorName4(QString);
+   void setAccNameEnabled(bool e) { b_accName1 = e;  checkAccelerators(); };
+   void setAccName2Enabled(bool e) { b_accName2 = e;  checkAccelerators(); };
+   void setAccName3Enabled(bool e) { b_accName3 = e; checkAccelerators(); };
+   void setAccName4Enabled(bool e) { b_accName4 = e; checkAccelerators(); };
+   bool accNameEnabled() { return b_accName1; };
+   bool accName2Enabled() { return b_accName2; };
+   bool accName3Enabled() { return b_accName3; };
+   bool accName4Enabled() { return b_accName4; };
+   void checkAccelerators();
+   void setDefaultView(QString);
+   QString name() { return qs_name; };
+   QString comment() { return toolTip(); };
+   QString image() { return qs_image; };
+   QString acceleratorName() { return qs_acceleratorName; };
+   QString acceleratorName2() { return qs_acceleratorName2; };
+   QString acceleratorName3() { return qs_acceleratorName3; };
+   QString acceleratorName4() { return qs_acceleratorName4; };
+   QString defaultView() { return qs_defaultView; };
+
+private:
+   QString qs_name;
+   QString qs_comment;
+   QString qs_image;
+   QString qs_acceleratorName;
+   QString qs_acceleratorName2;
+   QString qs_acceleratorName3;
+   QString qs_acceleratorName4;
+   bool b_accName1;
+   bool b_accName2;
+   bool b_accName3;
+   bool b_accName4;
+   QString qs_defaultView;
+};
+
 class Actions : public QObject
 {
    Q_OBJECT
@@ -33,14 +81,15 @@ public:
    Actions(QString title, QObject *parent = 0);
    void parseFile(QDomDocument);
    void parseElement(QDomNode);
-   QList<QAction*> actions() { return ql_actions; };
+   QList<Action*> actions() { return ql_actions; };
    QStringList names() { return qsl_names; };
 
-   QList<QAction*> ql_actions;
+   QList<Action*> ql_actions;
    QStringList qsl_names;
 //   void checkActions(QList<QString> actions);
 
 private:
    QWidget *p_fglform;
 };
+
 #endif

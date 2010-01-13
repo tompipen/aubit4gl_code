@@ -20,7 +20,9 @@
 #include <QIcon>
 #include <QMenu>
 #include <QAction>
+#if QT_VERSION >= 0x040600
 #include <QProcessEnvironment>
+#endif
 #include "login.h"
 #include "mainframe.h"
 
@@ -41,7 +43,7 @@ LoginForm::LoginForm(QWidget *parent)
    QStatusBar *statusBar = mainFrame->statusBar();
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
-   trayIcon->setIcon(QIcon("./pics/ventas.ico"));
+   trayIcon->setIcon(QIcon("./pics/ventas.png"));
 
    QMenu *menu = new QMenu;
    QAction *showAction = menu->addAction("Show Login Window");
@@ -273,6 +275,11 @@ QString HostsData::checkOS()
    pfad = "";
    #ifdef Q_WS_WIN
    int windows = QSysInfo::WindowsVersion;
+   #if QT_VERSION >= 0x040600
+      if(windows == QSysInfo::WV_VISTA){
+         return "1";
+      }
+   #endif
    if (windows > 15 && windows < 159)
       {
         pfad = QProcessEnvironment::systemEnvironment().value("SYSTEMROOT", "");
@@ -284,7 +291,7 @@ QString HostsData::checkOS()
        }
     if (windows > 1 && windows < 15)
        {
-         QStringList system = QProcess::systemEnvironment();
+         QStringList system; //= QProcess::systemEnvironment();
          pfad = system.filter("WINDIR").at(0).split("=").at(1);
          if (pfad == "")
             {
@@ -734,5 +741,5 @@ void LoginForm::loadSettings()
 }
 void LoginForm::debugCheck()
 {
-        toggledebug->setChecked(false);
-    }
+   toggledebug->setChecked(false);
+}

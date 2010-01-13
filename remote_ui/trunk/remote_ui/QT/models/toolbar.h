@@ -19,7 +19,6 @@
 
 #include <QObject>
 #include <QToolBar>
-#include <QAction>
 
 #include <QDomDocument>
 #include <QDomNode>

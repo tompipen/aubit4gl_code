@@ -17,9 +17,9 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QSpacerItem>
-#include <QAction>
 
 #include "ringmenu.h"
+#include "actions.h"
 
 
 //------------------------------------------------------------------------------
@@ -75,8 +75,10 @@ RingMenu::RingMenu(QString title, QString style, QString image,
    layout->setSpacing(0);
 
    buttonGroup = new QButtonGroup(this);
+/*
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
            this, SLOT(buttonClicked(int)));
+*/
 
    this->layout = layout;
    setLayout(this->layout);
@@ -93,18 +95,20 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
    // Make Shortcut for Button
    QString pic = text.toLower();
    QString shortcut = text.at(0);
-   text.prepend("&");
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text.trimmed());
-   button->setObjectName(text.trimmed());
-   button->installEventFilter(this);
-   button->setShortcut(shortcut);
-   button->setToolTip(tooltip);
-//   QIcon icon(QString("pics:%0").arg(pic));
-   QIcon icon(QString("pics:blank.png"));
-   button->setIcon(icon);
+   QPushButton *button = new QPushButton(text.trimmed().prepend('&'));
+//   QPushButton *button = new QPushButton(text.trimmed());
+   button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
+   button->setShortcut(shortcut);
+
+   Action *action = new Action(text.toLower(), text, button);
+   action->setComment(tooltip);
+   action->setImage("blank.png");
+   //action->setAcceleratorName(shortcut);
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
    // Add the Button to the Layout
    if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
@@ -245,11 +249,22 @@ void RingMenu::buttonClicked(int id)
 void RingMenu::createAction(int id, QString text)
 {
 
+   // Make Shortcut for Button
+   QString pic = text.toLower();
+   QString shortcut = text.at(0);
+
    // Create the Button and set Text + ToolTip
+   //QPushButton *button = new QPushButton(text.trimmed().prepend("&"));
    QPushButton *button = new QPushButton(text.trimmed());
    button->setVisible(false);
-   button->setObjectName(text.trimmed());
-   button->installEventFilter(this);
+//   button->setShortcut(shortcut);
+   button->setIcon(QIcon(QString("pics:blank.png")));
+   button->setIconSize(QSize(40,25));
+
+   Action *action = new Action(text.toLower(), text, button);
+   action->setImage("blank.png");
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
    // Add the Button to the Layout
    if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
@@ -261,6 +276,9 @@ void RingMenu::createAction(int id, QString text)
    }
 
    buttonGroup->addButton(button, id);
+   button->setVisible(false);
+
+   //createButton(id, text, "");
 }
 
 //------------------------------------------------------------------------------
@@ -375,4 +393,43 @@ void RingMenu::setOrientation(const Qt::Orientation &o){
          if(o == Qt::Vertical) layout->setDirection(QBoxLayout::LeftToRight);
       }
    }
+}
+
+QList<QAction*> RingMenu::actions()
+{
+
+   QList<QAction*> ql_actions;
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         if(button->isVisible() && button->isEnabled())
+            ql_actions << button->actions();
+      }
+   }
+
+   return ql_actions;
+}
+
+QAction* RingMenu::getAction(QString name)
+{
+
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+//         if(button->text().toLower() == QString("&%1").arg(name)){
+            QList<QAction*> actions = button->actions();
+            for(int j=0; j<actions.count(); j++){
+               if(Action *action = qobject_cast<Action *> (actions.at(j))){
+                  if(action->name() == name)
+                     return action;
+               }
+            }
+         //}
+      }
+   }
+
+   return new QAction(NULL);
+}
+
+bool RingMenu::isActionButton(QPushButton* button)
+{
+   return false;
 }

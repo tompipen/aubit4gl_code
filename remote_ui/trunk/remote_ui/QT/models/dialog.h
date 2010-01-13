@@ -36,6 +36,8 @@ public:
    void hideButton(int);
    void hideButton(QString);
    void showButton(QString);
+   QList<QAction*> actions();
+   QAction* getAction(QString);
 
 private:
    QLayout* layout;

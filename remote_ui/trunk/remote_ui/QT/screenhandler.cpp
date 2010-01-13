@@ -202,8 +202,7 @@ void ScreenHandler::displayForm(QString formName)
       p_fglform->setFormLayout(xmlForm);
    }
    else{
-      QString error = QString("No such Form %1").arg(formName);
-      qFatal(error.toAscii());
+      qFatal("No such form %s", qPrintable(formName));
    }
 
    p_fglform->show();
@@ -284,8 +283,7 @@ void ScreenHandler::createMenu(QString title, QString comment, QString style, QS
    if(i_Frm < 0)
       return;
 
-   // If form already has a menu then display
-   // the menu as a dialog
+   // If menustyle is dialog
    if(style == "dialog"){
       createDialog(title, comment, style, image);
       return;
@@ -326,6 +324,15 @@ void ScreenHandler::createMenuButton(int buttonId, QString text, QString desc, Q
    RingMenu *ringMenu = p_fglform->menu();
 
    ringMenu->createButton(buttonId, text, desc);
+   QAction *action = ringMenu->getAction(text.toLower());
+   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
+
+   Fgl::Event event;
+   event.type = Fgl::MENUACTION_EVENT;
+   event.id = buttonId;
+   event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
+   p_fglform->ql_menuEvents << event;
+   p_fglform->addFormEvent(event);
 }
 
 //------------------------------------------------------------------------------
@@ -355,6 +362,16 @@ void ScreenHandler::createMenuAction(int buttonId, QString text)
    RingMenu *ringMenu = p_fglform->menu();
 
    ringMenu->createAction(buttonId, text);
+   QAction *action = ringMenu->getAction(text.toLower());
+   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
+
+   Fgl::Event event;
+   event.type = Fgl::MENUACTION_EVENT;
+   event.id = buttonId;
+   event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
+   p_fglform->ql_menuEvents << event;
+   p_fglform->addFormEvent(event);
+
 }
 
 //------------------------------------------------------------------------------
@@ -470,7 +487,15 @@ void ScreenHandler::createDialogButton(int buttonId, QString text, QString desc)
       return;
 
    p_dialog->createButton(buttonId, text, desc);
+   QAction *action = p_dialog->getAction(text.toLower());
+   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
 
+   Fgl::Event event;
+   event.type = Fgl::MENUACTION_EVENT;
+   event.id = buttonId;
+   event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
+   p_fglform->ql_dialogEvents << event;
+   p_fglform->addFormEvent(event);
 }
 
 //------------------------------------------------------------------------------
@@ -491,7 +516,15 @@ void ScreenHandler::createDialogAction(int buttonId, QString text)
       return;
 
    p_dialog->createAction(buttonId, text);
+   QAction *action = p_dialog->getAction(text.toLower());
+   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
 
+   Fgl::Event event;
+   event.type = Fgl::MENUACTION_EVENT;
+   event.id = buttonId;
+   event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
+   p_fglform->ql_dialogEvents << event;
+   p_fglform->addFormEvent(event);
 }
 
 //------------------------------------------------------------------------------
@@ -941,7 +974,7 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       }
 
       if(widget == NULL){
-         qFatal(QString("No Field found to set Focus: %1").arg(fieldName).toAscii());
+         qFatal("No Field found to set Focus: %s", qPrintable(fieldName));
          return;
       }
     
@@ -1086,7 +1119,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::BEFORE_INPUT_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1095,7 +1129,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::BEFORE_INPUT_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1104,7 +1139,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::BEFORE_CONSTRUCT_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1113,7 +1149,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::BEFORE_DISPLAY_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1122,7 +1159,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::AFTER_INPUT_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1131,7 +1169,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::AFTER_CONSTRUCT_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1140,7 +1179,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::AFTER_DISPLAY_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1150,7 +1190,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.id = id;
       event.attribute= attribute;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1160,7 +1201,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.id = id;
       event.attribute= attribute;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1169,7 +1211,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::BEFORE_ROW_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1178,7 +1221,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::AFTER_ROW_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1187,7 +1231,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::BEFORE_INSERT_DELETE_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1196,7 +1241,8 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.type = Fgl::AFTER_INSERT_DELETE_EVENT;
       event.id = id;
 
-      p_fglform->ql_formEvents << event;
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1204,9 +1250,16 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       Fgl::Event event;
       event.type = Fgl::ONKEY_EVENT;
       event.id = id;
-      event.attribute= Fgl::stringToKey(attribute);
+      event.attribute = attribute; //Fgl::stringToKey(attribute);
 
-      p_fglform->ql_formEvents << event;
+      Action *action = new Action(attribute);
+      action->setAcceleratorName(Fgl::keyToString(attribute));
+      action->setDefaultView("no");
+      p_fglform->addFormAction(action);
+      action->setEnabled(true);
+
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 
@@ -1214,9 +1267,14 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       Fgl::Event event;
       event.type = Fgl::ONACTION_EVENT;
       event.id = id;
-      event.attribute= Fgl::stringToKey(attribute);
+      event.attribute = attribute; //Fgl::stringToKey(attribute);
 
-      p_fglform->ql_formEvents << event;
+      Action *action = new Action(attribute);
+      p_fglform->addFormAction(action);
+      action->setEnabled(true);
+
+      //p_fglform->ql_formEvents << event;
+      p_fglform->addFormEvent(event);
       return;
    }
 }
@@ -1271,7 +1329,41 @@ void ScreenHandler::createActionMenuButton(QString buttonId, QString text, QStri
 
    ActionMenu *actionMenu = qh_formActionMenus[i_Frm];
 
+   Action *fAction = new Action(Fgl::stringToKey(desc), text);
+   fAction->setAcceleratorName(desc);
+   fAction->setDefaultView("yes");
+   fAction->setVisible(false);
+   p_fglform->addFormAction(fAction);
+
+//TODO
+/*
+   for(int i=0; i<p_fglform->ql_formEvents.count(); i++){
+      Fgl::Event ev = p_fglform->ql_formEvents.at(i);
+
+      if(ev.type == Fgl::ONKEY_EVENT && ev.attribute == Fgl::stringToKey(desc)){
+         ev.type = Fgl::ONACTION_EVENT;
+
+         p_fglform->ql_formEvents.replace(i, ev);
+      }
+   }
+*/
+   //actionMenu->createButton(fAction->name(), fAction->text(), fAction->comment(), fAction);
+
+
+/*
    actionMenu->createButton(buttonId, text, desc);
+
+   QAction *action = actionMenu->getAction(text.toLower());
+   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
+*/
+
+/*
+   Fgl::Event event;
+   event.type = Fgl::ONACTION_EVENT;
+   event.id = -1;
+   event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
+   p_fglform->addFormEvent(event);
+*/
 }
 
 //------------------------------------------------------------------------------
@@ -1308,21 +1400,76 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
       if(type == "INPUT"){
          p_fglform->setState(Fgl::INPUT);
          context->setState(Fgl::INPUT);
+//         p_fglform->addFormAction("accept", "Ok");
+
+         Fgl::Event event;
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "accept"; 
+
+         p_fglform->addFormEvent(event);
+
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "cancel";
+
+         p_fglform->addFormEvent(event);
       }
 
       if(type == "CONSTRUCT"){
          p_fglform->setState(Fgl::CONSTRUCT);
          context->setState(Fgl::CONSTRUCT);
+
+         Fgl::Event event;
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "accept"; 
+
+         p_fglform->addFormEvent(event);
+
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "cancel";
+
+         p_fglform->addFormEvent(event);
       }
 
       if(type == "DISPLAYARRAY"){
          p_fglform->setState(Fgl::DISPLAYARRAY);
          context->setState(Fgl::DISPLAYARRAY);
+//         p_fglform->addFormAction("accept", "Ok");
+
+         Fgl::Event event;
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "accept"; 
+
+         p_fglform->addFormEvent(event);
+
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "cancel";
+
+         p_fglform->addFormEvent(event);
       }
 
       if(type == "INPUTARRAY"){
          p_fglform->setState(Fgl::INPUTARRAY);
          context->setState(Fgl::INPUTARRAY);
+//         p_fglform->addFormAction("accept", "Ok");
+
+         Fgl::Event event;
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "accept"; 
+
+         p_fglform->addFormEvent(event);
+
+         event.type = Fgl::ONACTION_EVENT;
+         event.id = -1;
+         event.attribute = "cancel";
+
+         p_fglform->addFormEvent(event);
       }
    }
    else{
@@ -1332,12 +1479,14 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
             p_fglform->setDialog(NULL);
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
+            p_fglform->ql_dialogEvents.clear();
             return;
          }
          else{
             p_fglform->removeMenu();
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
+            p_fglform->ql_menuEvents.clear();
          }
       }
 

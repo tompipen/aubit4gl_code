@@ -58,6 +58,9 @@ public:
    QString getHideButtons() const { return m_hideButtons; };
    void setHideButtons(const QString &ms);
    void setOrientation(const Qt::Orientation &o);
+   QList<QAction*> actions();
+   QAction* getAction(QString);
+   bool isActionButton(QPushButton*);
 
 
 private:
@@ -67,6 +70,8 @@ private:
    QString m_hideButtons;
    bool b_hideButtons;
    QPushButton *currentButton;
+   QList<QAction*> ql_menuCommands;
+   QList<QAction*> ql_menuActions;
 
 protected:
    void resizeEvent(QResizeEvent *);

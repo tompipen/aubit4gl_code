@@ -93,8 +93,8 @@ void TableView::resize()
             width+= this->verticalScrollBar()->width();
          }
 
-         this->setFixedSize(width, height);
-//         this->setMinimumSize(width, height);
+//         this->setFixedSize(width, height);
+         this->setMinimumSize(width+5, height);
 //         this->setFixedWidth(width);
       }
    }
@@ -283,13 +283,6 @@ void TableView::prevfield()
          selectRow(currentRow-1);
       }
    }
-}
-
-void TableView::focusInEvent(QFocusEvent* event)
-{
-   QModelIndex currIndex = currentIndex();
-
-   return QTableView::focusInEvent(event);
 }
 
 void TableView::setInputEnabled(bool enable)

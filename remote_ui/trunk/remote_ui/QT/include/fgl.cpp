@@ -463,4 +463,46 @@ namespace Fgl {
          return s;
       };
 
+   QString keyToString(QString s)
+   {
+
+      bool ok = false;
+      int key = s.toInt(&ok);
+      if(!ok)
+         return s;
+
+      if(key > 2999){
+          return QString("f%1").arg(key-2999);
+      }
+
+      if(key == 2000)
+         return "up";
+
+      if(key == 2001)
+         return "down";
+
+      if(key == 2002)
+         return "left";
+
+      if(key == 2003)
+         return "right";
+
+      if(key == 2006)
+         return "prevpage";
+
+      if(key == 2008)
+         return "help";
+
+      if(key == 2016)
+         return "accept";
+
+      if(key == 27)
+         return "escape";
+
+      if(key == 13)
+         return "return";
+
+         return s;
+      };
+
 }

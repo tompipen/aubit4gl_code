@@ -24,6 +24,7 @@ namespace Fgl
    } Link;
 
   QString stringToKey(QString);
+  QString keyToString(QString);
 
       extern QHash<QString, QString> env;
       DataType decodeDataType(QString);

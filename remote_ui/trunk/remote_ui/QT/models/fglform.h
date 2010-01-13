@@ -94,11 +94,18 @@ public:
    void checkToolBar();
    void checkMenu();
    void checkActions();
+   void checkShortcuts();
+   void checkGuiActions();
+   bool handleGuiAction(Action*);
    ToolBar* toolBar(){ return p_toolBar; };
    Qt::ToolBarArea toolBarPosition();
    void setActions(QDomDocument);
-   QList<QAction*> actions(){ return ql_actionDefaults; };
-   QList<QAction*> defActions(){ return ql_defaultActions; };
+   QList<Action*> formActions(){ return ql_formActions; };
+   QList<Action*> defActions(){ return ql_defaultActions; };
+   QList<Action*> actionDefaults(){ return ql_actionDefaults; };
+   void addFormAction(QAction*);
+   void addFormAction(QString name, QString text="", QString comment="", QString image="", QString accName="", QString accName2="", QString accName3="", QString accName4="", QString defaultView="");
+   void addFormEvent(Fgl::Event);
    void focusNextField() { this->focusNextChild(); };
    QWidget* currentField() { return currentWidget; };
    void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
@@ -109,7 +116,6 @@ public:
    bool displayArray() { return (ql_states.last() == Fgl::DISPLAYARRAY); };
    bool inputArray() { return (ql_states.last() == Fgl::INPUTARRAY); };
 
-   void enableActions(bool);
    /*
    void setConstructEnabled(bool enable ) { b_construct = enable; };
    bool construct() { return b_construct; };
@@ -128,7 +134,10 @@ public:
    void setFormLayout(const QDomDocument&);
    void setStyles(const QDomDocument&);
 
+   QList<Fgl::Event> ql_menuEvents;
+   QList<Fgl::Event> ql_dialogEvents;
    QList<Fgl::Event> ql_formEvents;
+   QList< QList<Fgl::Event> > ql_contextEvents;
    QList<QWidget*> ql_formFields;
 
    // Contains all Fieldnames in the order they get their focus
@@ -155,7 +164,7 @@ public:
    QString getRingMenuPosition() const { return m_ringMenuPosition; };
    void setRingMenuPosition(const QString &sm);
 
-   void setState(Fgl::State state) { ql_states << state; } ;
+   void setState(Fgl::State state) { ql_states << state;  ql_contextEvents << QList<Fgl::Event>(); } ;
    void revertState(Fgl::State);
    Fgl::State state() { return ql_states.last(); };
    void checkState();
@@ -219,8 +228,9 @@ private:
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
    ToolBar *p_toolBar;
-   QList<QAction*> ql_actionDefaults;
-   QList<QAction*> ql_defaultActions;
+   QList<Action*> ql_formActions;
+   QList<Action*> ql_defaultActions;
+   QList<Action*> ql_actionDefaults;
    void addToQueue(QString);
    void createStatusBar();
    void writeSettingsLocal();

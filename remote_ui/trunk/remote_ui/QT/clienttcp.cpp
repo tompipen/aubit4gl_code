@@ -439,12 +439,6 @@ void ClientTcp::replyWith(QString qs_replyString)
 
          qs_replyString+="\n";
 
-         QDomDocument doc;
-         if(doc.setContent(qs_replyString)){
-            QDomElement envelope = doc.documentElement();
-            envelope.setAttribute("ENVELOPEID", cl->ph.id);
-            qs_replyString = doc.toString();
-         }
          out << qs_replyString;
       }
 }
@@ -575,7 +569,6 @@ void ProtocolHandler::run()
 
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("PID").toInt();
-         id = envelope.attribute("ID").toInt();
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -633,6 +626,12 @@ QString ProtocolHandler::filterUmlauts(QString text){
    text.replace(QChar(142), QString::fromUtf8("Ä"));
    text.replace(QChar(153), QString::fromUtf8("Ö"));
    text.replace(QChar(154), QString::fromUtf8("Ü"));
+   }
+
+   {
+   //filter other umlauts until the real encoding works right
+      text.replace(QString::fromUtf8("~A"), QString::fromUtf8("ü"));
+      text.replace(QString::fromUtf8("~T"), QString::fromUtf8("ö"));
    }
 
    return text;
@@ -916,7 +915,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          QDomDocument doc;
          QDomElement triggeredElement = doc.createElement("TRIGGERED");
          triggeredElement.setAttribute("ID", -123);
-         triggeredElement.setAttribute("ENVELOPEID", id);
          doc.appendChild(triggeredElement);
 
          QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
@@ -1192,12 +1190,17 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    }
 
    if(childElement.nodeName() == "DISPLAYARRAY"){
+      int context = childElement.attribute("CONTEXT").toInt();
+      setFormOpts("DISPLAYARRAY", true, context);
       handleEventsElement(childElement);
       handleDisplayArrayElement(childElement);
       return;
    }
 
    if(childElement.nodeName() == "INPUTARRAY"){
+      int context = childElement.attribute("CONTEXT").toInt();
+      setFormOpts("INPUTARRAY", true, context);
+
       handleEventsElement(childElement);
       handleDisplayArrayElement(childElement);
       return;
@@ -1233,8 +1236,10 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       setFormOpts(childElement.nodeName(), true, context);
       handleEventsElement(childElement);
       createActionMenu();
+/*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
+*/
       handleConstructElement(childElement);
       setFieldOrder(qsl_fieldList);
       setFieldFocus(qsl_fieldList.first());
@@ -1486,7 +1491,7 @@ void ProtocolHandler::handleDisplayToElement(const QDomNode& domNode, QString pa
 
             //DISPLAYTO
             if(textElement.nodeName() == "TEXT"){
-               qsl_fieldValues << textElement.text();
+               qsl_fieldValues << textElement.text().trimmed();
 
             }
 
@@ -1537,8 +1542,8 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
    if(arrayElement.nodeName() == "DISPLAYARRAY" ||
       arrayElement.nodeName() == "INPUTARRAY"){
 
-      int context = arrayElement.attribute("CONTEXT").toInt();
-      setFormOpts(arrayElement.nodeName(), true, context);
+      //int context = arrayElement.attribute("CONTEXT").toInt();
+      //setFormOpts(arrayElement.nodeName(), true, context);
 
       if(arrayElement.nodeName() == "INPUTARRAY"){
          input = true;
@@ -1554,8 +1559,10 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
       setFormOpts(arrayElement.nodeName(), QString("WRAP"), wrap);
 
       createActionMenu();
+/*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
+*/
 
 
    }
@@ -1660,8 +1667,10 @@ void ProtocolHandler::handleInputElement(const QDomNode& domNode)
       setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
 
       createActionMenu();
+/*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
+*/
    }
 
    QDomNodeList children = domNode.childNodes();
@@ -1939,6 +1948,7 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
       }
    }
 
+
    return;
 }
 
@@ -1953,7 +1963,7 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
    QDomDocument doc;
    doc.setContent(qs_id);
    QDomElement triggeredElement = doc.documentElement();
-   triggeredElement.setAttribute("ENVELOPEID", id);
+//   triggeredElement.setAttribute("PID", pid);
    qs_id = doc.toString();
    qs_id = filterUmlauts2(qs_id);
    makeResponse(qs_id);

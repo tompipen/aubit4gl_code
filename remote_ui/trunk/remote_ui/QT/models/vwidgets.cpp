@@ -26,6 +26,7 @@
 
 #include "vwidgets.h"
 #include "table.h"
+#include "actions.h"
 
 int defHeight = 21;
 
@@ -234,7 +235,8 @@ Button::Button(QWidget *parent)
 void Button::buttonClicked()
 {
    Fgl::Event event;
-   event.type = Fgl::ONKEY_EVENT;
+   //event.type = Fgl::ONKEY_EVENT;
+   event.type = Fgl::ONACTION_EVENT;
    event.attribute = this->action;
    emit fieldEvent(event);
 }
@@ -270,7 +272,6 @@ LineEdit::LineEdit(QWidget *parent)
    connect(this, SIGNAL(editingFinished()), this, SLOT(check()));
 //   connect(this, SIGNAL(textChanged(const QString)), this, SLOT(checkNext(const QString)));
 }
-
 
 void LineEdit::check()
 {
@@ -376,7 +377,8 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
 void ButtonEdit::setButtonKey(QString bk)
 {
   qs_buttonKey = bk;
-  QAction *keyButton = new QAction(bk, this);
+  Action *keyButton = new Action(bk, bk, this);
+  keyButton->setAcceleratorName(bk);
   QKeySequence shortcut(bk);
   connect(keyButton, SIGNAL(triggered()), this, SLOT(buttonClicked()));
   this->addAction(keyButton);
@@ -400,17 +402,10 @@ void ButtonEdit::buttonClicked()
       return;
 
    // For F-Key Events
-
-   bool ok = false;
-   int keyNum = buttonKey().mid(1,buttonKey().length()-1).toInt(&ok);
-
-   if(ok){
-      keyNum += 2999;
-      Fgl::Event event;
-      event.type = Fgl::ONKEY_EVENT;
-      event.attribute = QString::number(keyNum);
-      emit fieldEvent(event);
-   }
+   Fgl::Event event;
+   event.type = Fgl::ONACTION_EVENT;
+   event.attribute = Fgl::stringToKey(buttonKey());
+   emit fieldEvent(event);
 }
 
 //------------------------------------------------------------------------------
@@ -1386,8 +1381,6 @@ void WidgetHelper::paste(QObject* object)
 
 void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 {
-
-   fieldValue = fieldValue.trimmed();
 
    if(Label *widget = qobject_cast<Label *> (object)){
       if(widget->pixmap() == 0){
