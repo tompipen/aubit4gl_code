@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.43 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.44 2010-01-13 10:38:04 mikeaubury Exp $
 #*/
 
 /**
@@ -124,6 +124,7 @@ static int stackInfoInitialized = 0;
 =====================================================================
 */
 
+static void print_node(FILE *execprog, int cnt ,int lineno, char *rets) ;
 
 /**
  * Initialize the function call stack
@@ -192,8 +193,26 @@ void A4GLSTK_program_end(void) {
 	if (functionCallPointer>=1) {
 		FILE *execprog;
 		execprog=fopen(fname,"a");
+
+
 		if (execprog) {
+		int a;
 			fprintf(execprog,"node_%d->END [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n", functionCallStack[functionCallPointer-1].functionCallCnt,currentFglLineNumber);
+
+
+		if (functionCallPointer>1 ) {
+			for (a=functionCallPointer;a>=1;a--) {
+				print_node(execprog, a, 0, NULL);
+
+				if (a>1) {
+		  			fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
+			   		functionCallStack[a - 2].functionCallCnt, functionCallStack[a-1].functionCallCnt, functionCallStack[a-1].lineNumber
+					);
+				}
+				}
+			}
+
+
 			fprintf(execprog,"}\n");
 			fclose(execprog);
 		}
