@@ -1270,6 +1270,7 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
       Action *action = new Action(attribute);
+      action->setDefaultView("yes");
       p_fglform->addFormAction(action);
       action->setEnabled(true);
 

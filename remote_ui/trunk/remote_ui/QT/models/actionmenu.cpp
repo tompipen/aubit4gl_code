@@ -108,6 +108,7 @@ void ActionMenu::createButton(QString id, QString text, QString shortcut, QActio
    button->setVisible(visible);
 
    if(action != NULL){
+      button->setIcon(action->icon());
       button->addAction(action);
       connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
    }
