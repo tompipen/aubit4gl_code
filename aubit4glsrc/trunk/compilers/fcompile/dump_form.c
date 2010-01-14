@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.24 2009-06-12 11:31:40 mikeaubury Exp $
+# $Id: dump_form.c,v 1.25 2010-01-14 07:41:44 mikeaubury Exp $
 #*/
 
 /**
@@ -48,7 +48,14 @@
 int single_file_mode=0;
 #include "global.h"
 #include "common.h"
+#include "global_single.h"
+#include "common_single.h"
 #include "dump_form.h"
+
+// Remove all the complexities with handling multiple screens
+// and multiple tables ? 
+int simpleMode=0;
+static int print_zooms(struct_form * f,int tableNo,int screenNo,FILE *fout,char *mode) ;
 
 /*
 =====================================================================
@@ -134,6 +141,7 @@ typedef struct struct_join_tables struct_join_tables;
 typedef struct s_join_fields s_join_fields;
 typedef struct s_join_tables s_join_tables;
 
+char gv_table_no_subscripting[200]="[gv_table_no]";
 /*
 =====================================================================
                     Functions prototypes
@@ -155,6 +163,7 @@ static void dump_tables (FILE *fout,struct_form * f);
 //void dump_expr_instructions (struct_form *f, FILE *fout, t_expression * expr, int lvl);
 //void print_lvl (int lvl);
 
+static int  load_formgendata(void) ;
 
 //char *find_tag_for(struct_form * f, int n) ;
 static void dump_attribute(FILE *fout, struct_scr_field *a,char *tag) ;
@@ -563,8 +572,25 @@ dump_form_desc (struct_form * f,char *fname)
   char fname_split[300];
   make_screen(f);
 
+
+  if (A4GL_isyes(acl_getenv("SIMPLEMODE"))) {
+	set_single_file_mode();
+	simpleMode=1;
+  }
+
+
+  load_formgendata();
+
+    	if ( simpleMode==1) {
+		strcpy(gv_table_no_subscripting,"");
+	}
+
   for (a = 0; a < f->snames.snames_len; a++) {
-	sprintf(fname_split,"f_%s%02d.per",fname,a+1);
+    	if ( simpleMode==1) {
+		sprintf(fname_split,"f_%s.per",fname);
+	} else {
+		sprintf(fname_split,"f_%s%02d.per",fname,a+1);
+	}
 	fout=fopen(fname_split,"w");
 	if (!fout) {
 		printf("Unable to open output file\n");
@@ -734,7 +760,11 @@ printf("now in get_join_tables\n");
 
     fprintf(fout,"DATABASE %s\n", f->dbname);
     if (single_file_mode) {
-	fprintf(fout,"%s",file_global);
+	if (simpleMode==1) {
+		fprintf(fout,"%s",file_global_single);
+	} else {
+		fprintf(fout,"%s",file_global);
+	}
     } else {
     	fprintf(fout,"GLOBALS \"global.4gl\"\n");
     }
@@ -769,29 +799,46 @@ printf("now in get_join_tables\n");
     if (do_printed) {
 	fprintf(fout,"\n    END RECORD\n");
     }
-    fprintf(fout,"    DEFINE ga_oid ARRAY[10] OF INTEGER\n");
+	if (simpleMode==1) {
+    		fprintf(fout,"    DEFINE ga_oid INTEGER\n");
+	} else {
+    		fprintf(fout,"    DEFINE ga_oid ARRAY[10] OF INTEGER\n");
+	}
     fprintf(fout,"    DEFINE gv_rec_found, gv_mode, gv_idx INTEGER\n");
     fprintf(fout,"    DEFINE gv_cursor, gv_statement CHAR(32)\n");
     fprintf(fout,"    DEFINE where_part, query_text VARCHAR(1000)\n");
+
+    fprintf(fout,"    DEFINE mv_module CHAR(20)\n");
     fprintf(fout,"\n");
+
     fprintf(fout,"MAIN\n");
-    fprintf(fout,"    LET gv_module = \"%s\"\n", fname);
-    fprintf(fout,"    LET gv_show_detail = FALSE\n");
-    fprintf(fout,"    LET gv_screen_no = 1\n");
-    fprintf(fout,"    LET gv_screen_max = %d\n", f->snames.snames_len);
-    fprintf(fout,"    LET gv_table_no = 1\n");
-    fprintf(fout,"    LET gv_table_max = %d\n", max_table + 1);
+
+    fprintf(fout,"    LET mv_module = \"%s\"\n", fname);
+	if (simpleMode==0) {
+     		fprintf(fout,"    LET gv_show_detail = FALSE\n");
+	}
+    if ( simpleMode!=1) {
+    	fprintf(fout,"    LET gv_screen_no = 1\n");
+    	fprintf(fout,"    LET gv_screen_max = %d\n", f->snames.snames_len);
+    	fprintf(fout,"    LET gv_table_no = 1\n");
+    	fprintf(fout,"    LET gv_table_max = %d\n", max_table + 1);
+    }
     fprintf(fout,"\n");
 
     fprintf (fout,"   # n,1 tablename n,2 tabledesc\n");
     for (t=0; t<f->tables.tables_len; t++) {
-      	    fprintf (fout,"    LET ga_table_name[%d,1] = \"%s\"\n",
-		t+1, f->tables.tables_val[t].tabname);
-      	    fprintf (fout,"    LET ga_table_name[%d,2] =   \"%s\"\n",
-		t+1, f->tables.tables_val[t].tabname);
+		if (simpleMode==1) {
+      	    		fprintf (fout,"    LET ga_table_name[1] = \"%s\"\n", f->tables.tables_val[t].tabname);
+      	    		fprintf (fout,"    LET ga_table_name[2] = \"%s\"\n", f->tables.tables_val[t].tabname);
+		} else {
+      	    		fprintf (fout,"    LET ga_table_name[%d,1] = \"%s\"\n", t+1, f->tables.tables_val[t].tabname);
+      	    		fprintf (fout,"    LET ga_table_name[%d,2] =   \"%s\"\n", t+1, f->tables.tables_val[t].tabname);
+		}
     }
     fprintf(fout,"\n");
 
+
+	if (simpleMode!=1) {
     for (m=0; m<f->tables.tables_len; m++) {
 	int dt=0;
         for (t=0; t<j.join_tables_len;t++) {
@@ -818,17 +865,21 @@ printf("now in get_join_tables\n");
 //	    fprintf (fout,"    LET ga_master_of[%d] = 0\n", m+1);
 //	}
     }
+}
 
     fprintf(fout,"\n");
 	
     fprintf (fout,"   # n,1 formname n,2 formdesc n,3 formcolor\n");
     for (s=0; s<f->snames.snames_len; s++) {
-      	    fprintf (fout,"    LET ga_screen_name[%d,1] = \"f_%s%02d\"\n",
-		s+1, mung(fname), s+1);
-      	    fprintf (fout,"    LET ga_screen_name[%d,2] = \"%s%02d\"\n",
-		s+1, mung(fname), s+1);
-      	    fprintf (fout,"    LET ga_screen_name[%d,3] = \"GREEN\"\n",
-		s+1);
+		if (simpleMode==1) {
+      	    		fprintf (fout,"    LET ga_screen_name[1] = \"f_%s\"\n", mung(fname));
+      	    		fprintf (fout,"    LET ga_screen_name[2] = \"%s\"\n", mung(fname));
+      	    		fprintf (fout,"    LET ga_screen_name[3] = \"GREEN\"\n" );
+		} else {
+      	    		fprintf (fout,"    LET ga_screen_name[%d,1] = \"f_%s%02d\"\n", s+1, mung(fname), s+1);
+      	    		fprintf (fout,"    LET ga_screen_name[%d,2] = \"%s%02d\"\n", s+1, mung(fname), s+1);
+      	    		fprintf (fout,"    LET ga_screen_name[%d,3] = \"GREEN\"\n", s+1);
+		}
     }
     fprintf(fout,"\n");
 	
@@ -875,14 +926,16 @@ printf("now in table_screen\n");
 	}
 	if (first_in_screen) break;
       }
-      fprintf (fout,"    LET ga_table_screen[%d] = %d\n", t+1, first_in_screen);
+	if (simpleMode!=1) {
+      		fprintf (fout,"    LET ga_table_screen[%d] = %d\n", t+1, first_in_screen);
+	}
     }
     fprintf(fout,"\n");
 	
     fprintf(fout,"    CALL prog_init()\n");
     fprintf(fout,"    DEFER INTERRUPT\n");
     fprintf(fout,"\n");
-    fprintf(fout,"    CALL open_window()\n");
+    fprintf(fout,"    CALL open_window(mv_module)\n");
 
 //    fprintf(fout,"    CALL form_validation(\"AFTER\",\"DISPLAY\",\"%s\")\n",
 //	    f->tables.tables_val[0].tabname);
@@ -891,11 +944,17 @@ printf("now in table_screen\n");
     fprintf(fout,"    LET gv_attribute = set_delimiter(0,1)\n");
 
     fprintf(fout,"\n");
-    fprintf(fout,"    WHILE gv_screen_no <> 0\n");
-    fprintf(fout,"        CALL display_menu()\n");
-    fprintf(fout,"    END WHILE\n");
+
+
+	if (simpleMode!=1) {
+    		fprintf(fout,"    WHILE gv_screen_no <> 0\n");
+    		fprintf(fout,"        CALL display_menu(mv_module)\n");
+    		fprintf(fout,"    END WHILE\n");
+	} else {
+    		fprintf(fout,"        CALL display_menu(mv_module)\n");
+	}
     fprintf(fout,"\n");
-    fprintf(fout,"    CALL close_window()\n");
+    fprintf(fout,"    CALL close_window(mv_module)\n");
     fprintf(fout,"END MAIN\n");
 
     fprintf(fout,"\n");
@@ -904,15 +963,19 @@ printf("now in display_record\n");
     fprintf(fout,"FUNCTION display_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
-    fprintf(fout,"    IF ga_rec_found[gv_table_no] <= 0 THEN\n");
+    fprintf(fout,"    IF ga_rec_found%s <= 0 THEN\n",gv_table_no_subscripting);
     fprintf(fout,"        RETURN\n");
     fprintf(fout,"    END IF\n");
     fprintf(fout,"\n");
 
-    fprintf(fout,"    CASE gv_screen_no\n");
+	if (simpleMode!=1) {
+    		fprintf(fout,"    CASE gv_screen_no\n");
+	}
     /* display individual screen x tables */
     for (s=0;s< f->snames.snames_len; s++) {
-	fprintf(fout,"      WHEN %d\t# display screen %d\n", s+1, s+1);
+	if (simpleMode!=1) {
+		fprintf(fout,"      WHEN %d\t# display screen %d\n", s+1, s+1);
+	}
 
 	// char *ptr;
 	int attr_found, printed;
@@ -1036,8 +1099,7 @@ fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
 			case_printed++;
 		      }
 		      if (!printed) {
-		        fprintf(fout,"          WHEN %d\t# screen %d table %s\n",
-			    m+1, s+1, f->tables.tables_val[m].tabname);
+		        fprintf(fout,"          WHEN %d\t# screen %d table %s\n", m+1, s+1, f->tables.tables_val[m].tabname);
 		        fprintf(fout,"            LET gv_attribute = get_color(%d)\n", m+1);
 		        fprintf(fout,"            DISPLAY BY NAME\n");
 		        printed++;
@@ -1073,7 +1135,9 @@ fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
 	if (case_printed) fprintf(fout,"        END CASE #gv_table_no\n");
 	fprintf(fout,"\n");
     }
-    fprintf(fout,"    END CASE #gv_screen_no\n");
+	if (simpleMode!=1) {
+    		fprintf(fout,"    END CASE #gv_screen_no\n");
+	}
     fprintf(fout,"    CALL recpos_msg()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
@@ -1086,10 +1150,20 @@ printf("now in query_by_example\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
     fprintf(fout,"  LET int_flag = FALSE\n");
-    fprintf(fout,"  CASE gv_table_no\n");
+
+
+
+    if ( simpleMode!=1) {
+    	fprintf(fout,"  CASE gv_table_no\n");
+    }
+
+
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
-	fprintf(fout,"    WHEN %d\t# query table %s\n", t+1, f->tables.tables_val[t].tabname);
+
+    	if ( simpleMode!=1) {
+		fprintf(fout,"    WHEN %d\t# query table %s\n", t+1, f->tables.tables_val[t].tabname);
+	}
 	int mt = 0;
 	for (d=0; d<f->master_of.master_of_len; d++) {
 	    if (strcmp(f->master_of.master_of_val[d].tab_detail,
@@ -1104,7 +1178,7 @@ printf("now in query_by_example\n");
 		break;
 	    }
 	}
-	if (mt) {
+	if (mt && ! simpleMode) {
           fprintf(fout,"      IF gv_show_detail THEN\n");
 	    int printed=0;
 	    for (m=0; m<j.join_tables_len;m++) {
@@ -1171,14 +1245,16 @@ printf("now in query_by_example\n");
 	    }
           fprintf(fout,"      ELSE\n");
 	}
-        fprintf(fout,"        CASE gv_screen_no\n");
+	if (simpleMode!=1) {
+        	fprintf(fout,"        CASE gv_screen_no\n");
+	}
         for (s=0;s< f->snames.snames_len; s++) {
-	    fprintf(fout,"        WHEN %d\t# table %s screen %d\n",
-		s+1, f->tables.tables_val[t].tabname, s+1);
+		if (simpleMode!=1) {
+	    		fprintf(fout,"        WHEN %d\t# table %s screen %d\n", s+1, f->tables.tables_val[t].tabname, s+1);
+		}
 	    attr_found = 0; printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
-		if (strcmp(f->attributes.attributes_val[a].tabname,
-			       f->tables.tables_val[t].tabname)!=0) continue;
+		if (strcmp(f->attributes.attributes_val[a].tabname, f->tables.tables_val[t].tabname)!=0) continue;
 		ptr=screen_has_attribute(f,s, a);
 		if (!ptr) continue;
 		if (!attr_found) {
@@ -1194,36 +1270,49 @@ printf("now in query_by_example\n");
 	    if (attr_found) {
 	      fprintf(fout,"\n");
 	    }
-	    attr_found = 0; printed = 0;
-	    for (a=0;a<f->attributes.attributes_len;a++) {
-		if (strcmp(f->attributes.attributes_val[a].tabname,
-			       f->tables.tables_val[t].tabname)!=0) continue;
-		ptr=screen_has_attribute(f,s, a);
-		if (!ptr) continue;
-		if (!attr_found) {
-		    fprintf(fout,"            ON KEY CONTROL-C\n");
-		    fprintf(fout,"              CLEAR\n");
-		    attr_found++;
-		}
-		if (printed) fprintf(fout, ",\n");
-		fprintf(fout,"                    %s",
-			f->attributes.attributes_val[a].colname);
-		printed++;
-	    }
+
+
+
+		attr_found=0;
+	
+		attr_found+=print_zooms(f,t,s,fout,"ZOOM_CONSTRUCT");
+
+
+	
+
 	    if (attr_found) {
 	      fprintf(fout,"\n");
 	      fprintf(fout,"          END CONSTRUCT\n");
 	    }
         }
-        fprintf(fout,"        END CASE # gv_screen_no\n");
+	if (simpleMode!=1) {
+        	fprintf(fout,"        END CASE # gv_screen_no\n");
+	}
         fprintf(fout,"        IF int_flag THEN\n");
         fprintf(fout,"          LET int_flag = FALSE\n");
+	printed=0;
+	    for (a=0;a<f->attributes.attributes_len;a++) {
+		if (strcmp(f->attributes.attributes_val[a].tabname,
+			       f->tables.tables_val[t].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,s, a);
+		if (!ptr) continue;
+        	if (!printed) {fprintf(fout,"              CLEAR ");}
+		if (printed) fprintf(fout, ",\n");
+		fprintf(fout,"                    %s", f->attributes.attributes_val[a].colname);
+		printed++;
+	    }
+
         fprintf(fout,"          RETURN\n");
         fprintf(fout,"        END IF\n");
 	fprintf(fout,"\n");
-	fprintf(fout,"        FOR gv_idx = 1 TO %d\n", max_table+1);
-	fprintf(fout,"          LET ga_rec_found[gv_idx] = -1\n");
-	fprintf(fout,"        END FOR\n");
+
+    	if ( simpleMode!=1) {
+		fprintf(fout,"        FOR gv_idx = 1 TO %d\n", max_table+1);
+		fprintf(fout,"          LET ga_rec_found[gv_idx] = -1\n");
+		fprintf(fout,"        END FOR\n");
+	} else {
+		fprintf(fout,"          LET ga_rec_found = -1\n");
+	}
 	fprintf(fout,"\n");
 	if (mt) {
           fprintf(fout,"      END IF\n");
@@ -1233,27 +1322,45 @@ printf("now in query_by_example\n");
         fprintf(fout,"          \" WHERE \", where_part CLIPPED\n");
         fprintf(fout,"         #\" ORDER BY aaa, bbb\"\n");
     }
-    fprintf(fout,"  END CASE # gv_table_no\n");
+    if ( simpleMode!=1) {
+   		fprintf(fout,"  END CASE # gv_table_no\n");
+     }
     fprintf(fout,"\n");
 
-    fprintf(fout,"  LET gv_statement = \"s_\", gv_module CLIPPED, ");
-    fprintf(fout,"		gv_table_no using \"&&&\"\n");
-    fprintf(fout,"  LET gv_cursor    = \"c_\", gv_module CLIPPED, ");
-    fprintf(fout,"		gv_table_no using \"&&&\"\n");
-    fprintf(fout,"  PREPARE _variable(gv_statement) FROM query_text\n");
-    fprintf(fout,"  DECLARE _variable(gv_cursor) SCROLL CURSOR FOR _variable(gv_statement)\n");
+
+    if ( simpleMode!=1) {
+    		fprintf(fout,"  LET gv_statement = \"s_\", mv_module CLIPPED, ");
+    		fprintf(fout,"		gv_table_no using \"&&&\"\n");
+    		fprintf(fout,"  LET gv_cursor    = \"c_\", mv_module CLIPPED, ");
+    		fprintf(fout,"		gv_table_no using \"&&&\"\n");
+    		fprintf(fout,"  PREPARE _variable(gv_statement) FROM query_text\n");
+    		fprintf(fout,"  DECLARE _variable(gv_cursor) SCROLL CURSOR FOR _variable(gv_statement)\n");
+	} else {
+    		fprintf(fout,"  PREPARE p_%s FROM query_text\n",f->tables.tables_val[0].tabname);
+    		fprintf(fout,"  DECLARE c_%s SCROLL CURSOR FOR p_%s\n",f->tables.tables_val[0].tabname, f->tables.tables_val[0].tabname);
+	}
     fprintf(fout,"  LET gv_rec_found = 0\n");
-    fprintf(fout,"  FOREACH _variable(gv_cursor)\n");
+    if ( simpleMode!=1) {
+    	fprintf(fout,"  FOREACH _variable(gv_cursor)\n");
+	} else {
+    	fprintf(fout,"  FOREACH c_%s\n", f->tables.tables_val[0].tabname);
+	}
     fprintf(fout,"    LET gv_rec_found = gv_rec_found + 1\n");
     fprintf(fout,"  END FOREACH\n");
     fprintf(fout,"  IF gv_rec_found = 0 THEN\n");
     fprintf(fout,"    CALL notfound_msg()\n");
     fprintf(fout,"    RETURN\n");
     fprintf(fout,"  END IF\n");
-    fprintf(fout,"  CLOSE _variable(gv_cursor)\n");
-    fprintf(fout,"  LET ga_rec_found[gv_table_no] = gv_rec_found\n");
-    fprintf(fout,"  LET ga_rec_no[gv_table_no] = 1\n");
-    fprintf(fout,"  MESSAGE ga_rec_found[gv_table_no] using \"<<<<<<\", \" record\"\n");
+
+    	if ( simpleMode!=1) {
+    		fprintf(fout,"  CLOSE _variable(gv_cursor)\n");
+	} else {
+    		fprintf(fout,"  CLOSE c_%s\n",  f->tables.tables_val[0].tabname);
+	}
+
+    fprintf(fout,"  LET ga_rec_found%s = gv_rec_found\n",gv_table_no_subscripting);
+    fprintf(fout,"  LET ga_rec_no%s = 1\n",gv_table_no_subscripting);
+    fprintf(fout,"  MESSAGE ga_rec_found%s using \"<<<<<<\", \" record\"\n", gv_table_no_subscripting);
     fprintf(fout,"  CALL get_record()\n");
     fprintf(fout,"  \n");
     fprintf(fout,"END FUNCTION\n");
@@ -1264,29 +1371,54 @@ printf("now in get_record\n");
     fprintf(fout,"FUNCTION get_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
-    fprintf(fout,"  LET gv_cursor    = \"c_\", gv_module CLIPPED, ");
-    fprintf(fout,"gv_table_no using \"&&&\"\n");
-//    fprintf(fout,"message \"get_record:\", ");
-//    fprintf(fout,"\"oid=\", ga_oid[gv_table_no],\n");
-//    fprintf(fout,"\t\" table=\", gv_table_no using \"<<\",\n");
-//    fprintf(fout,"\t\" screen=\", gv_screen_no using \"<<\",\n");
-//    fprintf(fout,"\t\" rec=\", ga_rec_no[gv_table_no] using \"<<<<<<\",\n");
-//    fprintf(fout,"\t\" of \", ga_rec_found[gv_table_no] using \"<<<<<<\"\n");
+
+	if (simpleMode==1) {
+    		fprintf(fout,"   if ga_rec_found%s<=0 THEN INITIALIZE gr_%s.* TO NULL RETURN END IF\n", gv_table_no_subscripting, f->tables.tables_val[0].tabname);
+	}
+
+    	if ( simpleMode!=1) {
+    		fprintf(fout,"  LET gv_cursor    = \"c_\", mv_module CLIPPED, ");
+    		fprintf(fout,"gv_table_no using \"&&&\"\n");
+	}
+   if ( simpleMode!=1) {
     fprintf(fout,"  CASE gv_table_no\n");
+   }
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
+
+     if ( simpleMode!=1) {
 	fprintf(fout,"    WHEN %d\n", t+1);
+
+
 	fprintf(fout,"      OPEN _variable(gv_cursor)\n");
-	fprintf(fout,"      FETCH ABSOLUTE ga_rec_no[gv_table_no] ");
+	fprintf(fout,"      FETCH ABSOLUTE ga_rec_no%s ",gv_table_no_subscripting); 
 	fprintf(fout,"_variable(gv_cursor)\n");
-	fprintf(fout,"        INTO ga_oid[%d], gr_%s.*\n",
-		t+1, f->tables.tables_val[t].tabname);
+     } else {
+	fprintf(fout,"      OPEN c_%s\n",  f->tables.tables_val[0].tabname);
+	fprintf(fout,"      FETCH ABSOLUTE ga_rec_no%s ",gv_table_no_subscripting); 
+	fprintf(fout," c_%s\n", f->tables.tables_val[0].tabname);
+	}
+
+
+	if (simpleMode==1) {
+		fprintf(fout,"        INTO ga_oid, gr_%s.*\n",  f->tables.tables_val[t].tabname);
+	} else {
+		fprintf(fout,"        INTO ga_oid[%d], gr_%s.*\n", t+1, f->tables.tables_val[t].tabname);
+	}
 	fprintf(fout,"      IF STATUS <> 0 THEN\n");
+     if ( simpleMode!=1) {
 	fprintf(fout,"        CLOSE _variable(gv_cursor)\n");
+	} else {
+	fprintf(fout,"        CLOSE c_%s\n", f->tables.tables_val[0].tabname);
+	}
 	fprintf(fout,"        CALL notfound_msg()\n");
 	fprintf(fout,"        RETURN\n");
 	fprintf(fout,"      END IF\n");
-	fprintf(fout,"      CLOSE _variable(gv_cursor)\n");
+     if ( simpleMode!=1) {
+	fprintf(fout,"        CLOSE _variable(gv_cursor)\n");
+	} else {
+	fprintf(fout,"        CLOSE c_%s\n", f->tables.tables_val[0].tabname);
+	}
 	fprintf(fout,"      { get the derived tables row }\n");
 	for (s=t+1; s<f->tables.tables_len; s++) {
 //	    if (s<t) continue;
@@ -1299,8 +1431,12 @@ printf("now in get_record\n");
 		for (a=0; a<jf->join_fields_len;a++) {
 		    if (!printed) {
 			fprintf(fout,"      # get table %d\n",s+1);
-			fprintf(fout,"      IF ga_rec_found[%d] = -1 THEN\n",
-					s+1);
+    			if ( simpleMode!=1) {
+				fprintf(fout,"      IF ga_rec_found[%d] = -1 THEN\n", s+1);
+			} else {
+				fprintf(fout,"      IF ga_rec_found = -1 THEN\n");
+			}
+
 			fprintf(fout,"        DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
 			fprintf(fout,"          SELECT * FROM %s\n",
 			f->tables.tables_val[s].tabname);
@@ -1337,8 +1473,11 @@ printf("now in get_record\n");
 		for (a=0; a<jf->join_fields_len;a++) {
 		    if (!printed) {
 			fprintf(fout,"      # get table %d\n", s+1);
-			fprintf(fout,"      IF ga_rec_found[%d] = -1 THEN\n",
-				s+1);
+    			if ( simpleMode!=1) {
+				fprintf(fout,"      IF ga_rec_found[%d] = -1 THEN\n", s+1);
+			} else {
+				fprintf(fout,"      IF ga_rec_found = -1 THEN\n");
+			}
 			fprintf(fout,"        DECLARE c_%s%02d%02d CURSOR FOR\n", mung(fname),t+1,s+1);
 			fprintf(fout,"          SELECT * FROM %s\n",
 			f->tables.tables_val[s].tabname);
@@ -1366,7 +1505,9 @@ printf("now in get_record\n");
 	}
     }
 
-    fprintf(fout,"  END CASE # gv_table_no\n");
+     if ( simpleMode!=1) {
+    		fprintf(fout,"  END CASE # gv_table_no\n");
+	}
     fprintf(fout,"  CALL display_record()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
@@ -1376,10 +1517,15 @@ printf("now in add_record\n");
     fprintf(fout,"FUNCTION add_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
-    fprintf(fout,"  CASE gv_table_no\n");
+     if ( simpleMode!=1) {
+    		fprintf(fout,"  CASE gv_table_no\n");
+	} 
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
+
+     if ( simpleMode!=1) {
 	fprintf(fout,"    WHEN %d\n", t+1);
+	}
 	fprintf(fout,"      INITIALIZE gr_%s.* TO NULL\n",
 		f->tables.tables_val[t].tabname);
 	fprintf(fout,"      CALL display_record()\n");
@@ -1388,26 +1534,38 @@ printf("now in add_record\n");
 	fprintf(fout,"      LET gv_mode = 1\n");
 	fprintf(fout,"      CALL input_record()\n");
 	fprintf(fout,"      IF abort_flag THEN\n");
-	fprintf(fout,"        CALL abort_msg(\"%s\")\n",
-		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        EXIT CASE\n");
+	fprintf(fout,"        CALL abort_msg(\"%s\")\n", f->tables.tables_val[t].tabname);
+        fprintf(fout,"        CALL get_record()\n");
+
+     	if ( simpleMode!=1) {
+		fprintf(fout,"        EXIT CASE\n");
+	} else {
+        	fprintf(fout,"        CALL display_record()\n");
+        	fprintf(fout,"        RETURN\n");
+		
+	}
 	fprintf(fout,"      END IF\n");
-	fprintf(fout,"      INSERT INTO %s VALUES (gr_%s.*)\n",
-		f->tables.tables_val[t].tabname,
-		f->tables.tables_val[t].tabname);
+	fprintf(fout,"      INSERT INTO %s VALUES (gr_%s.*)\n", f->tables.tables_val[t].tabname, f->tables.tables_val[t].tabname);
 	fprintf(fout,"      IF status <> 0 THEN\n");
-	fprintf(fout,"        CALL err_msg(\"Error adding %s record\")\n",
-		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        EXIT CASE\n");
+	fprintf(fout,"        CALL err_msg(\"Error adding %s record\")\n", f->tables.tables_val[t].tabname);
+
+     	if ( simpleMode!=1) {
+		fprintf(fout,"        EXIT CASE\n");
+	} else {
+        	fprintf(fout,"        CALL display_record()\n");
+        	fprintf(fout,"        RETURN\n");
+	}
+
 	fprintf(fout,"      END IF\n");
-        fprintf(fout,"      CALL err_msg(\"%s record added\")\n",
-		f->tables.tables_val[t].tabname);
+        fprintf(fout,"      CALL err_msg(\"%s record added\")\n", f->tables.tables_val[t].tabname);
 	fprintf(fout,"\n");
     }
+     if ( simpleMode!=1) {
     fprintf(fout,"  END CASE #gv_table_no\n");
-    fprintf(fout,"  IF abort_flag THEN\n");
-    fprintf(fout,"    CALL get_record()\n");
-    fprintf(fout,"  END IF\n");
+    } 
+    //fprintf(fout,"  IF abort_flag THEN\n");
+    //fprintf(fout,"    CALL get_record()\n");
+    //fprintf(fout,"  END IF\n");
     fprintf(fout,"  CALL display_record()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
@@ -1417,36 +1575,56 @@ printf("now in update_record\n");
     fprintf(fout,"FUNCTION update_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
-    fprintf(fout,"  CASE gv_table_no\n");
+     if ( simpleMode!=1) {
+    	fprintf(fout,"  CASE gv_table_no\n");
+	}
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
+     if ( simpleMode!=1) {
 	fprintf(fout,"    WHEN %d\n", t+1);
+	}
 	fprintf(fout,"      CALL update_msg(\"%s\")\n",
 		f->tables.tables_val[t].tabname);
 	fprintf(fout,"      LET gv_mode = 2\n");
 	fprintf(fout,"      CALL input_record()\n");
 	fprintf(fout,"      IF abort_flag THEN\n");
-	fprintf(fout,"        CALL abort_msg(\"%s\")\n",
-		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        EXIT CASE\n");
+	fprintf(fout,"        CALL abort_msg(\"%s\")\n", f->tables.tables_val[t].tabname);
+        fprintf(fout,"        CALL get_record()\n");
+
+     	if ( simpleMode!=1) {
+		fprintf(fout,"        EXIT CASE\n");
+	} else {
+    		fprintf(fout,"        CALL display_record()\n");
+		fprintf(fout,"        RETURN\n");
+	}
 	fprintf(fout,"      END IF\n");
 	fprintf(fout,"      UPDATE %s SET * = gr_%s.*\n",
 		f->tables.tables_val[t].tabname,
 		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        WHERE oid = ga_oid[%d]\n", t+1);
+	if (simpleMode==1) {
+	fprintf(fout,"        WHERE rowid = ga_oid\n");
+	} else {
+	fprintf(fout,"        WHERE rowid = ga_oid[%d]\n", t+1);
+	}
 	fprintf(fout,"      IF status <> 0 THEN\n");
-	fprintf(fout,"        CALL err_msg(\"Error updating %s record\")\n",
-		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        EXIT CASE\n");
+	fprintf(fout,"        CALL err_msg(\"Error updating %s record\")\n", f->tables.tables_val[t].tabname);
+     	if ( simpleMode!=1) {
+		fprintf(fout,"        EXIT CASE\n");
+	} else {
+    		fprintf(fout,"        CALL display_record()\n");
+		fprintf(fout,"        RETURN\n");
+	}
 	fprintf(fout,"      END IF\n");
 	fprintf(fout,"      CALL err_msg(\"%s updated\")\n",
 		f->tables.tables_val[t].tabname);
 	fprintf(fout,"\n");
     }
-    fprintf(fout,"  END CASE #gv_table_no\n");
-    fprintf(fout,"  IF abort_flag THEN\n");
-    fprintf(fout,"    CALL get_record()\n");
-    fprintf(fout,"  END IF\n");
+     if ( simpleMode!=1) {
+    		fprintf(fout,"  END CASE #gv_table_no\n");
+	}
+    //fprintf(fout,"  IF abort_flag THEN\n");
+    //fprintf(fout,"    CALL get_record()\n");
+    //fprintf(fout,"  END IF\n");
     fprintf(fout,"  CALL display_record()\n");
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
@@ -1456,26 +1634,48 @@ printf("now in remove_record\n");
     fprintf(fout,"FUNCTION remove_record()\n");
     fprintf(fout,"##################################################\n");
     fprintf(fout,"\n");
+     if ( simpleMode!=1) {
     fprintf(fout,"  CASE gv_table_no\n");
+	}
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
+     if ( simpleMode!=1) {
 	fprintf(fout,"    WHEN %d\n", t+1);
+	}
 	fprintf(fout,"      IF NOT ok_to_delete() THEN\n");
-	fprintf(fout,"        EXIT CASE\n");
+     	if ( simpleMode!=1) {
+		fprintf(fout,"        EXIT CASE\n");
+	} else {
+    		fprintf(fout,"    CALL get_record()\n");
+    		fprintf(fout,"    CALL display_record()\n");
+    		fprintf(fout,"    RETURN\n");
+	}
 	fprintf(fout,"      END IF\n");
 	fprintf(fout,"      DELETE FROM %s\n",
 		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        WHERE oid = ga_oid[%d]\n", t+1);
+	if (simpleMode==1) {
+	fprintf(fout,"        WHERE rowid = ga_oid\n");
+	} else {
+	fprintf(fout,"        WHERE rowid = ga_oid[%d]\n", t+1);
+	}
 	fprintf(fout,"      IF status <> 0 THEN\n");
 	fprintf(fout,"        CALL err_msg(\"Error removing %s record\")\n",
 		f->tables.tables_val[t].tabname);
-	fprintf(fout,"        EXIT CASE\n");
+     	if ( simpleMode!=1) {
+		fprintf(fout,"        EXIT CASE\n");
+	}  else {
+    		fprintf(fout,"    CALL get_record()\n");
+    		fprintf(fout,"    CALL display_record()\n");
+    		fprintf(fout,"    RETURN\n");
+	}
 	fprintf(fout,"      END IF\n");
 	fprintf(fout,"      CALL err_msg(\"%s removed\")\n",
 		f->tables.tables_val[t].tabname);
 	fprintf(fout,"\n");
     }
+     if ( simpleMode!=1) {
     fprintf(fout,"  END CASE #gv_table_no\n");
+	}
     fprintf(fout,"  IF abort_flag THEN\n");
     fprintf(fout,"    CALL get_record()\n");
     fprintf(fout,"  END IF\n");
@@ -1519,15 +1719,23 @@ printf("now in input_record\n");
     fprintf(fout,"  LET int_flag = FALSE\n");
     fprintf(fout,"  LET abort_flag = FALSE\n");
     fprintf(fout,"  LET gv_attribute = get_color(0)\n");
+     if ( simpleMode!=1) {
     fprintf(fout,"  CASE gv_table_no\n");
+	}
     for (t=0;t< f->tables.tables_len; t++) {
 	if (t>max_table) continue;
+     if ( simpleMode!=1) {
 	fprintf(fout,"    WHEN %d\t# %s table\n", t+1,
 		f->tables.tables_val[t].tabname);
-        fprintf(fout,"      CASE gv_screen_no\n");
+	}
+		if (simpleMode!=1) {
+        		fprintf(fout,"      CASE gv_screen_no\n");
+		}
+
         for (s=0;s< f->snames.snames_len; s++) {
-	    fprintf(fout,"        WHEN %d\t# %s screen %d\n", s+1,
-		f->tables.tables_val[t].tabname, s+1);
+		if (simpleMode!=1) {
+	    		fprintf(fout,"        WHEN %d\t# %s screen %d\n", s+1, f->tables.tables_val[t].tabname, s+1);
+		}
 	    attr_found = 0; 
 
 
@@ -1583,7 +1791,7 @@ printf("now in input_record\n");
 	      fprintf(fout,"            WITHOUT DEFAULTS FROM \n");
 	    printed = 0;
 	    for (a=0;a<f->attributes.attributes_len;a++) {
-		int cnt;
+		//int cnt;
 		if (strcmp(f->attributes.attributes_val[a].tabname,
 			       f->tables.tables_val[t].tabname)!=0) continue;
 		int reject_field=0;
@@ -1598,7 +1806,7 @@ printf("now in input_record\n");
 		ptr=screen_has_attribute(f,s, a);
 		if (!ptr) continue;
 		if (printed) fprintf(fout, ",\n");
-		fprintf(fout,"            %s.%s", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+		fprintf(fout,"               %s.%s", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
 		printed++;
 		}
 	    
@@ -1609,41 +1817,61 @@ printf("now in input_record\n");
 
 
 	      fprintf(fout,"\n");
-	      fprintf(fout,"            ON KEY (INTERRUPT)\n");
-	      fprintf(fout,"                LET int_flag = TRUE\n");
-	      fprintf(fout,"                LET abort_flag = TRUE\n");
-	      fprintf(fout,"                EXIT INPUT\n");
+	      //fprintf(fout,"            ON KEY (INTERRUPT)\n");
+	      //fprintf(fout,"                LET int_flag = TRUE\n");
+	      //fprintf(fout,"                EXIT INPUT\n");
 	      fprintf(fout,"# before field validation\n");
 //	print_control_block(f, fout);
 	      print_validation(f, fout, t, s, 1, 7);
 	      fprintf(fout,"# after field validation\n");
 	      print_validation(f, fout, t, s, 2, 7);
-	      fprintf(fout,"            AFTER INPUT\n");
+
+		print_zooms(f,t,s,fout,"ZOOM");
+		print_zooms(f,t,s,fout,"AFTER FIELD");
+
+	      fprintf(fout,"                  AFTER INPUT\n");
+	      fprintf(fout,"                    IF int_flag THEN\n");
+	      fprintf(fout,"                       EXIT INPUT\n");
+	      fprintf(fout,"                    END IF\n");
+
 	      print_validation(f, fout, t, s, 3, 7);
-	      fprintf(fout,"              IF int_flag THEN\n");
-	      fprintf(fout,"                LET int_flag = FALSE\n");
-	      fprintf(fout,"                LET abort_flag = TRUE\n");
-	      fprintf(fout,"              END IF\n");
+		print_zooms(f,t,s,fout,"AFTER INPUT");
+		
+	      //fprintf(fout,"                LET int_flag = FALSE\n");
+	      //fprintf(fout,"                LET abort_flag = TRUE\n");
+	      //fprintf(fout,"              END IF\n");
 	      fprintf(fout,"          END INPUT\n");
+	      fprintf(fout,"\n");
+	
+	      fprintf(fout,"          IF int_flag = TRUE THEN\n");
+	      fprintf(fout,"             LET int_flag=FALSE\n");
+	      fprintf(fout,"             LET abort_flag = TRUE\n");
+	      fprintf(fout,"          END IF\n");
 	      fprintf(fout,"\n");
 	    }
         }
-        fprintf(fout,"        END CASE # gv_screen_no\n");
-        fprintf(fout,"        IF int_flag THEN\n");
-        fprintf(fout,"          LET int_flag = FALSE\n");
-	fprintf(fout,"          LET abort_flag = TRUE\n");
-        fprintf(fout,"          RETURN\n");
-        fprintf(fout,"        END IF\n");
+	if (simpleMode!=1) {
+        	fprintf(fout,"        END CASE # gv_screen_no\n");
+	}
+        fprintf(fout,"          IF abort_flag THEN\n");
+        fprintf(fout,"            RETURN\n");
+        fprintf(fout,"          END IF\n");
 	fprintf(fout,"\n");
     }
+     if ( simpleMode!=1) {
     fprintf(fout,"  END CASE # gv_table_no\n");
+	}
 
     fprintf(fout,"END FUNCTION\n");
     fprintf(fout,"\n");
 
 
     if (single_file_mode) {
-	fprintf(fout,"%s",file_common);
+	if (simpleMode==1) {
+		fprintf(fout,"%s",file_common_single);
+	} else {
+		fprintf(fout,"%s",file_common);
+	}
     }
 
 //    dump_attr_lookup(f, fout);
@@ -2269,7 +2497,7 @@ void print_control_block(struct_form *f, FILE *fout) {
 /* print field validation for input */
 /* ba = 1 before field, =2 after field =3 after input*/
 void print_validation(struct_form *f, FILE *fout, int t, int s, int beaf, int lvl) {
-if (beaf==1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
+//if (beaf==1 || 1) printf("now in print_validation t=%d s=%d beaf=%d lvl=%d\n", t,s,beaf,lvl);
     int a,b,c,d,g,l;
 	for (c=0;c< f->control_blocks.control_blocks_len;c++) {
 	    switch (f->control_blocks.control_blocks_val[c].cbtype) {
@@ -2540,25 +2768,38 @@ return 0;
 }
 
 
+static int  load_formgendata(void) {
+FILE *formdata;
+formdata=fopen("formgendata","r");
+if (formdata==NULL) return 0;
+
+while (1) {
+char buff[1024];
+	fgets(buff,sizeof(buff),formdata);
+	if (feof(formdata)) break;
+	A4GL_trim_nl(buff);
+	columns_codes[columns_codes_cnt++]=strdup(buff);
+}
+return 1;
+}
 
 void
 dump_record_4gl (struct struct_form *f,char *module_in)
 {
 int a;
-FILE *formdata;
+//FILE *formdata;
 int t;
 char *ptr;
 t = -1;
 char module[2000];
 char *columns[1000];
-char buff[1024];
+//char buff[1024];
 int need_validate=0;
 int columns_cnt=0;
 strcpy(module,module_in);
  ptr=strchr(module,'.');
 
-formdata=fopen("formgendata","r");
-if (formdata==NULL) {
+if (!load_formgendata()) {
 	printf("Unable to open formgendata\n");
 	printf("This should contain a list of table.column<tab>[VZ]\n");
 	printf("if the line contains 'V' then a validation          will be emitted\n");
@@ -2570,12 +2811,6 @@ if (formdata==NULL) {
 	exit(2);
 }
 
-while (1) {
-	fgets(buff,sizeof(buff),formdata);
-	if (feof(formdata)) break;
-	A4GL_trim_nl(buff);
-	columns_codes[columns_codes_cnt++]=strdup(buff);
-}
 
 printf("GLOBALS \"globals.4gl\"\n");
 if (ptr) {
@@ -2815,6 +3050,113 @@ printf("end function\n");
 
 
 
+static int print_zooms(struct_form * f,int tableNo,int screenNo,FILE *fout,char * mode) {
+int a;
+char buff[2000];
+int printed=0;
+
+
+if (strcmp(mode,"ZOOM")==0 || strcmp(mode,"ZOOM_CONSTRUCT")==0) {
+
+    for (a=0;a<f->attributes.attributes_len;a++) {
+	void *ptr;
+		if (strcmp(f->attributes.attributes_val[a].tabname, f->tables.tables_val[tableNo].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,screenNo,a);
+		if (!ptr) continue;
+		sprintf(buff,"%s.%s", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+
+
+		printed=0;
+		if (has_column_code(buff,'Z')) {
+			if (!printed) {
+				fprintf(fout,"                  ON KEY(f1,control-b)\n");
+				printed++;
+			}
+			fprintf(fout,"                   IF infield(%s) then\n", f->attributes.attributes_val[a].colname);
+			fprintf(fout,"                     CALL zoom(\"%s\", get_fldbuf(%s)) RETURNING gr_%s\n", f->attributes.attributes_val[a].colname,  f->attributes.attributes_val[a].colname, buff );
+
+			fprintf(fout,"                     DISPLAY BY NAME gr_%s\n",buff);
+
+			if (has_column_code(buff,'F') && strcmp(mode,"ZOOM")==0 ) {
+
+				fprintf(fout,"                     CALL display_fk(\"%s\", gr_%s)\n",  f->attributes.attributes_val[a].colname,buff);
+			}
+			
+			fprintf(fout,"                   END IF\n");
+
+		}
+	    }
+	return printed;
+}
+
+if (strcmp(mode,"AFTER FIELD")==0) {
+	int need_validate=0;
+    for (a=0;a<f->attributes.attributes_len;a++) {
+		void *ptr;
+		if (strcmp(f->attributes.attributes_val[a].tabname, f->tables.tables_val[tableNo].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,screenNo,a);
+		if (!ptr) continue;
+		sprintf(buff,"%s.%s", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+
+	if (has_column_code(buff,'V') || has_column_code(buff,'F')) {
+	printed++;
+		fprintf(fout,"\n");
+
+		fprintf(fout,"                  AFTER FIELD %s\n",  f->attributes.attributes_val[a].colname);
+		if (has_column_code(buff,'V')) {
+			need_validate++;
+			fprintf(fout,"                    IF NOT validate_column(\"%s\",gr_%s,gv_mode) THEN\n", f->attributes.attributes_val[a].colname,buff);
+			fprintf(fout,"                       NEXT FIELD %s\n", f->attributes.attributes_val[a].colname);
+			if (has_column_code(buff,'F')) {
+				fprintf(fout,"                    ELSE\n");
+				fprintf(fout,"                       CALL display_fk(\"%s\", gr_%s)\n", f->attributes.attributes_val[a].colname,buff);
+			}
+			fprintf(fout,"                    END IF\n");
+			fprintf(fout,"\n");
+		} else {
+			fprintf(fout,"                    CALL display_fk(\"%s\",gr_%s)\n", f->attributes.attributes_val[a].colname,buff);
+			fprintf(fout,"\n");
+		}
+	}
+   }
+}
+
+if (strcmp(mode,"AFTER INPUT")==0) {
+	int need_validate=0;
+
+    for (a=0;a<f->attributes.attributes_len;a++) {
+		void *ptr;
+		if (strcmp(f->attributes.attributes_val[a].tabname, f->tables.tables_val[tableNo].tabname)!=0) continue;
+		ptr=screen_has_attribute(f,screenNo,a);
+		if (!ptr) continue;
+		sprintf(buff,"%s.%s", f->attributes.attributes_val[a].tabname, f->attributes.attributes_val[a].colname);
+
+	if (has_column_code(buff,'V') || has_column_code(buff,'F')) {
+		//printf("  AFTER FIELD %s\n",  f->attributes.attributes_val[a].colname);
+		if (has_column_code(buff,'V')) {
+			printed++;
+			need_validate++;
+			fprintf(fout,"                    IF NOT validate_column(\"%s\",gr_%s,gv_mode) THEN\n", f->attributes.attributes_val[a].colname,buff);
+			fprintf(fout,"                       NEXT FIELD %s\n", f->attributes.attributes_val[a].colname);
+
+			//if (has_column_code(columns[a],'F')) {
+				//printf("    else\n");
+				//printf("       call display_fk(\"%s\", mv_%s)\n", cname(columns[a]),columns[a]);
+			//}
+			fprintf(fout,"                    END IF\n");
+			fprintf(fout,"\n");
+		} else {
+			//printf("    call display_fk(\"%s\",mv_%s)\n", cname(columns[a]),columns[a]);
+			//printf("\n");
+		}
+	}
+   }
+}
+
+return printed;
+
+
+}
 
 
 void set_single_file_mode(void) {

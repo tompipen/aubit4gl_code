@@ -2,7 +2,7 @@
 | Common Modules                                                       |
 +----------------------------------------------------------------------}
 
-# $Id: common.4gl,v 1.1 2008-05-06 20:06:16 mikeaubury Exp $
+# $Id: common.4gl,v 1.2 2010-01-14 07:41:41 mikeaubury Exp $
 
 
 { global.4gl will be added automagically..}
@@ -48,13 +48,14 @@ END FUNCTION
 # FUNCTION NAME : open_window()
 ###############################
 
-FUNCTION open_window()
+FUNCTION open_window(lv_module)
+DEFINE lv_module char(20)
 DEFINE i SMALLINT,
     lv_window, lv_form CHAR(32)
     SET PAUSE MODE ON
     FOR i = 1 TO gv_screen_max
-	LET lv_window = "w_", gv_module CLIPPED, i USING "&&&"
-	LET lv_form   = "f_", gv_module CLIPPED, i USING "&&&"
+	LET lv_window = "w_", lv_module CLIPPED, i USING "&&&"
+	LET lv_form   = "f_", lv_module CLIPPED, i USING "&&&"
 #display "lv_window=", lv_window clipped, " lv_form=", lv_form clipped
 	OPEN WINDOW _variable(lv_window) AT 1,1 WITH 24 ROWS, 80 COLUMNS
 #	    ATTRIBUTE (BLUE)
@@ -65,7 +66,7 @@ DEFINE i SMALLINT,
 	END IF
 	DISPLAY FORM _variable(lv_form) #ATTRIBUTE (BLACK) #ga_screen_name[i,3])
     END FOR
-    LET lv_window = "w_", gv_module CLIPPED, ga_table_screen[gv_table_no] USING "&&&"
+    LET lv_window = "w_", lv_module CLIPPED, ga_table_screen[gv_table_no] USING "&&&"
     CURRENT WINDOW IS _variable(lv_window)
     SET PAUSE MODE OFF
 END FUNCTION
@@ -74,12 +75,13 @@ END FUNCTION
 # FUNCTION NAME : close_window()
 ###############################
 
-FUNCTION close_window()
+FUNCTION close_window(lv_module)
+define lv_module char(20)
 DEFINE i SMALLINT,
     lv_window CHAR(32)
     SET PAUSE MODE ON
     FOR i = gv_screen_max TO 1 STEP -1
-	LET lv_window = "w_", gv_module CLIPPED, i USING "&&&"
+	LET lv_window = "w_", lv_module CLIPPED, i USING "&&&"
 	CLOSE WINDOW _variable(lv_window)
     END FOR
     SET PAUSE MODE OFF
@@ -89,13 +91,14 @@ END FUNCTION
 # FUNCTION NAME : display_menu()
 ###############################
 
-FUNCTION display_menu()
+FUNCTION display_menu(lv_module)
+define lv_module char(20)
 DEFINE lv_query, lv_next, lv_prev, lv_add, lv_update, lv_remove,
 	lv_master, lv_detail, lv_screen CHAR(72),
 	lv_window, lv_table CHAR(32),
 	i, lv_has_master SMALLINT
 
-    LET lv_window = "w_", gv_module CLIPPED, gv_screen_no USING "&&&"
+    LET lv_window = "w_", lv_module CLIPPED, gv_screen_no USING "&&&"
 #display lv_window clipped sleep 3
     CURRENT WINDOW IS _variable(lv_window)
 

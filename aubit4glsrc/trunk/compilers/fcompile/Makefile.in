@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.79 2009-12-14 20:52:14 mikeaubury Exp $
+# $Id: Makefile.in,v 1.80 2010-01-14 07:41:25 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -174,7 +174,7 @@ dump_form.o: dump_form.c common.h global.h
 	${CC} ${CFLAGS} -c dump_form.c
 	
 
-${ROOT}/bin/formgen_4gl : dump_form.o decompile_4gl.o 
+${ROOT}/bin/formgen_4gl : dump_form.o decompile_4gl.o  common_single.h global_single.h
 	${CC} ${CFLAGS} -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
 
 ${ROOT}/bin/make_binfiles: make_binfiles.c
@@ -217,5 +217,15 @@ mk_fstates.c: $(STATESDEP)
 	${SH} mkstates $(AWK)
 
 y.output: y.tab.c
+
+
+common_single.h: common_single.4gl ${ROOT}/bin/make_binfiles
+	${ROOT}/bin/make_binfiles common_single.4gl file_common_single > common_single.h
+
+global_single.h: global_single.4gl ${ROOT}/bin/make_binfiles
+	${ROOT}/bin/make_binfiles global_single.4gl file_global_single > global_single.h
+
+
+
 
 #-----------------------------------------------------------------------

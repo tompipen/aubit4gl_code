@@ -2,11 +2,10 @@
 | GLOBAL variable definition                                           |
 +----------------------------------------------------------------------}
 
-{ $Id: global.4gl,v 1.1 2008-05-06 20:06:17 mikeaubury Exp $ }
+{ $Id: global.4gl,v 1.2 2010-01-14 07:41:44 mikeaubury Exp $ }
 
 GLOBALS
   DEFINE
-	gv_module CHAR(20),
 	ga_rec_found ARRAY[10] OF SMALLINT,
 	ga_rec_no ARRAY[10] OF SMALLINT,
 	ga_table_name ARRAY[10,2] OF CHAR(32),
