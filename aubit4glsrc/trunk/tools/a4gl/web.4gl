@@ -49,6 +49,8 @@ define lv_password char(18)
 define lv_users chaR(2048)
 define lv_first integer
 define lv_runstr chaR(512)
+define app_buff char(1024)
+define lv_web_application record like web_application.*
 
 select * into lv_web_serverUrl.* 
 from web_serverUrl 
@@ -90,23 +92,32 @@ if lv_web_serverUrl.AuthMode="W" then
 
 	foreach c_wpweb into lv_username
 		
-		select * into lv_user from web_user where username matches lv_username
+		declare c_wusers cursor for
+			select * from web_user 
+				where username matches lv_username
 
-		let lv_password=aclfgl_tea_string_decipher(lv_user.password)
+		foreach c_wusers into lv_user.* 
+			let lv_password=aclfgl_tea_string_decipher(lv_user.password)
 
-		# Add our new entry in 'batch' mode...
-		if lv_first then
-			let lv_runstr= "htpasswd -c -b '"||lv_filename_passwd clipped||"' '"||lv_username clipped||"' '"||lv_password clipped||"'"
-			let lv_first=false
-		else
-			let lv_runstr= "htpasswd -b '"||lv_filename_passwd clipped||"' '"||lv_username clipped||"' '"||lv_password clipped||"'"
-		end if
-		display lv_runstr
-		run lv_runstr
 
-		sleep 4
+			# If a user is allocated to multiple applications - then this will execute multiple times..
+			# atm - we dont care - but we might want to filter it out later one....
 
-		let lv_users=lv_users clipped, " ",lv_username
+			# Add our new entry in 'batch' mode...
+			if lv_first then
+				let lv_runstr= "htpasswd -c -b '"||lv_filename_passwd clipped||"' '"||lv_user.username clipped||"' '"||lv_password clipped||"'"
+				let lv_first=false
+			else
+				let lv_runstr= "htpasswd -b '"||lv_filename_passwd clipped||"' '"||lv_user.username clipped||"' '"||lv_password clipped||"'"
+			end if
+
+			display lv_runstr clipped
+			run lv_runstr clipped
+
+			#sleep 1
+
+			let lv_users=lv_users clipped, " ",lv_user.username
+		end foreach
 
 	end foreach
 
@@ -118,31 +129,72 @@ if lv_web_serverUrl.AuthMode="W" then
 	call channel::write("htaccess","Require valid-user")
 	call channel::close("htaccess")
 end if
+sleep 1
 
 call channel::open_file("fglaccess",lv_filename_xml,"w")
 
 declare c_wp cursor for 
-	select distinct application from web_perms where lv_urlId matches Url_Id
+	select distinct web_application.application 
+	from web_perms, web_application  
+	where lv_urlId matches Url_Id 
+	and web_application.application matches web_perms.application
+
+call channel::write("fglaccess","<Configuration Name=\""||lv_urlId clipped||"\" AuthMode=\""||lv_web_serverUrl.AuthMode||"\">")
+call channel::write("fglaccess"," <Applications>");
 
 foreach c_wp into lv_web_perms.application
 
-	call channel::write("fglaccess","<Application Name=\""||lv_web_perms.application clipped||"\">")
+	if lv_web_perms.application="*" then
+		error "Unexpected..." sleep 10
+		continue foreach
+	end if
+
+	initialize lv_web_application.* to null
+
+	select * into lv_web_application.* 
+	from web_application
+	where application=lv_web_perms.application
+
+	case lv_web_application.connmode
+		when "P" 
+			let app_buff="connMode=\"", lv_web_application.connMode,"\"",
+					" ProgramName=\"", xml_encode(lv_web_application.pxy_ProgramName),"\"",
+					" Server=\"", xml_encode(lv_web_application.pxy_server),"\"",
+					" Port=\"", xml_encode(lv_web_application.pxy_port),"\"",
+					" Username=\"", xml_encode(lv_web_application.pxy_username),"\"",
+					" Password=\"", xml_encode(lv_web_application.pxy_password),"\""
+		when "C"
+			let app_buff="connMode=\"", lv_web_application.connMode,"\" cmdLine=\"",xml_encode(lv_web_application.auth_cmdline),"\""
+
+		otherwise 
+			error "Invalid connection mode"
+	end case
+			
+		
+
+	call channel::write("fglaccess","  <Application Name=\""||lv_web_perms.application clipped||"\" "||app_buff clipped||">")
+	call channel::write("fglaccess","   <Users>");
+
+	#call channel::write("fglaccess","   <!-- "|| lv_urlId clipped ||","|| lv_web_perms.application ||","||lv_web_application.application||" --!>")
 
 	declare c_wp2 cursor for
 		select distinct web_user.username,password from web_perms,web_user 
 			where lv_urlId matches Url_Id
-			and application=lv_web_perms.application
+			and lv_web_perms.application matches application
 			and web_user.username matches web_perms.username
 
 	foreach c_wp2 into lv_username,lv_password
-			call channel::write("fglaccess","<User Name=\""||lv_username clipped||"\" Password=\""||lv_password clipped||"\"/>")
+			call channel::write("fglaccess","    <User Name=\""||lv_username clipped||"\" Password=\""||xml_encode(lv_password clipped)||"\"/>")
 	end foreach
 
-	call channel::write("fglaccess","</Application>")
+	call channel::write("fglaccess","   </Users>");
+	call channel::write("fglaccess","  </Application>")
 
 	# Dump the stuff...
 
 end foreach
+call channel::write("fglaccess"," </Applications>");
+call channel::write("fglaccess","</Configuration>")
 
 call channel::close("fglaccess")
 message "File(s) have been dumped"
@@ -336,3 +388,135 @@ end if
 
 end function
 
+
+code
+static char *
+xml_escape_int (char *s)
+{
+  static char *buff = 0;
+  static int last_len = 0;
+  int c;
+  int a;
+  int l;
+  int b;
+  int allocated;
+
+
+  c = 0;
+  //if (s==0) return "";
+
+  if (strchr (s, '&'))
+    c++;
+  if (strchr (s, '<'))
+    c++;
+  if (strchr (s, '>'))
+    c++;
+  if (strchr (s, '"'))
+    c++;
+  if (strchr (s, '\''))
+    c++;
+  if (strchr (s, '\n'))
+    c++;
+  if (strchr (s, '\r'))
+    c++;
+
+
+  if (c == 0)
+    {
+      return s;
+    }
+
+  l = strlen (s);
+  allocated = (l * 6) + 1;
+
+  if (l > last_len)
+    {
+      buff = realloc (buff, allocated);
+      last_len = l;
+    }
+
+  b = 0;
+  for (a = 0; a < l; a++)
+    {
+      if (s[a] == '>')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'g';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '<')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'l';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '&')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'a';
+	  buff[b++] = 'm';
+	  buff[b++] = 'p';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '"')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'q';
+	  buff[b++] = 'u';
+	  buff[b++] = 'o';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '\'')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'a';
+	  buff[b++] = 'p';
+	  buff[b++] = 'o';
+	  buff[b++] = 's';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] < 31 || s[a] > 126)
+	{
+	  int z1;
+	  char buff2[20];
+	  z1 = ((unsigned char) s[a]);
+	  sprintf (buff2, "&#x%02X;", z1);
+	  for (z1 = 0; z1 < strlen (buff2); z1++)
+	    {
+	      buff[b++] = buff2[z1];
+	    }
+	  continue;
+	}
+      buff[b++] = s[a];
+    }
+if (b>=allocated) {
+
+fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
+}
+  if (b >= allocated ) {
+	fprintf(stderr, "XML escape buffer too small") ;
+	exit(2);
+  }
+  buff[b] = 0;
+  return buff;
+}
+endcode
+
+
+function xml_encode(lv_s)
+define lv_s char(512)
+define lv_snew char(1024)
+code
+	A4GL_trim(lv_s);
+	strcpy(lv_snew,xml_escape_int(lv_s));
+endcode
+return lv_snew clipped
+end function
