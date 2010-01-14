@@ -25,7 +25,7 @@ fgl.setparent.o: fgl.setparent.c
 	$(CC)  $(CFLAGS) -c $<
 
 libPACKER_XMLBEST${SO_EXT}: pack_xml.o fgl.xo.o overloads.h overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o  overloads_read.o
-	$(CC) ${SO_LDFLAGS} $(CFLAGS) -shared -fPIC -I../../../incl pack_xml.o fgl.xo.o overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o overloads_read.o -o `aubit-config DEFAULT_PLUGINDIR`/libPACKER_XMLBEST${SO_EXT}  -lz -L${ROOT_DIR}/lib -laubit4gl
+	$(LD) ${SO_LDFLAGS} $(CFLAGS) -fPIC -I../../../incl pack_xml.o fgl.xo.o overloads.o module_def.o lex.yy.o stack.o fgl.setparent.o overloads_read.o -o `aubit-config DEFAULT_PLUGINDIR`/libPACKER_XMLBEST${SO_EXT}  -lz -L${ROOT_DIR}/lib -laubit4gl
 
 
 
