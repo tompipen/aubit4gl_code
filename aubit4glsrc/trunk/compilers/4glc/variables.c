@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.114 2010-01-06 17:48:58 mikeaubury Exp $
+# $Id: variables.c,v 1.115 2010-01-14 08:08:05 mikeaubury Exp $
 #
 */
 
@@ -780,6 +780,9 @@ describe_variable (struct variable *v)
   strcpy (buff, "");
   switch (v->var_data.variable_type)
     {
+    case VARIABLE_TYPE_USERDTYPE:
+	sprintf(buff,"USERTYPE:%s",v->var_data.variable_data_u.datatypeName);
+	break;
     case VARIABLE_TYPE_SIMPLE:
       sprintf (buff, "{%d:%d}", v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK, v->var_data.variable_data_u.v_simple.dimensions[0]);
       break;

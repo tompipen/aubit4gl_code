@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.165 2010-01-04 15:41:25 mikeaubury Exp $
+# $Id: ops.c,v 1.166 2010-01-14 08:08:21 mikeaubury Exp $
 #
 */
 
@@ -6994,13 +6994,11 @@ static int A4GL_conv_nchar_to_char (int d1, void *p1, int d2, void *p2, int size
 }
 
 static int A4GL_conv_char_to_object (int d1, void *p1, int d2, void *p2, int size) { 
-	A4GL_pause_execution();
 	A4GL_assertion(1,"Not implemented yet");
 	return 0;
 }
 
 static int A4GL_conv_int_to_object (int d1, void *p1, int d2, void *p2, int size) { 
-	A4GL_pause_execution();
 	A4GL_assertion(1,"Not implemented yet");
 	return 0;
 }

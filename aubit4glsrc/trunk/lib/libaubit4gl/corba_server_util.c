@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.37 2009-05-26 08:06:10 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.38 2010-01-14 08:08:20 mikeaubury Exp $
 #
 */
 
@@ -539,7 +539,7 @@ A4GL_isyes (char *s)
       //debug("isyes = false");
       return 0;
     }
-  if (s[0] == 'y' || s[0] == 'Y' || s[0] == '1' || A4GL_aubit_strcasecmp (s, "true") == 0)
+  if (s[0] == 'y' || s[0] == 'Y' || s[0] == '1' || A4GL_aubit_strcasecmp (s, "true") == 0 || s[0] == 'S' || s[0] == 's' ||  s[0] == 'J' || s[0] == 'j' )
     {
       //debug("isyes = true");
       return 1;

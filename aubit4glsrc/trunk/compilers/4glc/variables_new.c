@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.23 2009-12-14 17:43:24 mikeaubury Exp $
+# $Id: variables_new.c,v 1.24 2010-01-14 08:08:06 mikeaubury Exp $
 #
 */
 
@@ -650,6 +650,16 @@ struct variable *make_new_type(char *name, struct variable *type) {
 
 }
 
+struct variable *new_variable_userdtype(char *name) {
+	struct variable *v;
+	if (A4GL_find_datatype(upshift(name))==-1) {
+		return NULL;
+	}
+	v=new_base_variable(NULL);
+	v->var_data.variable_type=VARIABLE_TYPE_USERDTYPE;
+	v->var_data.variable_data_u.datatypeName=strdup(name);
+	return v;
+}
 
 // Create a new variable based on a type defined + added via add_new_type
 struct variable *new_variable_dim(char *name) {
@@ -756,6 +766,7 @@ void set_variable_scope_for_variable_list(variable_list *list,enum e_scope escop
 			case VARIABLE_TYPE_CONSTANT:
 			case VARIABLE_TYPE_FUNCTION_DECLARE:
 			case VARIABLE_TYPE_TYPE_DECLARATION:
+			case VARIABLE_TYPE_USERDTYPE:
 				break;
 	
 			case VARIABLE_TYPE_ASSOC:

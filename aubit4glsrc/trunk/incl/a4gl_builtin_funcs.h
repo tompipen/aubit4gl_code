@@ -46,7 +46,7 @@ int aclfgl_fgl_winmessage(int n);
 int aclfgl_fgl_system(int n);
 int aclfgl_fgl_init4js(int n);
 int aclfgl_fgl_fglgui(int n);
-
+int aclfgl_aclfgl_delete_file(int n);
 
 int aclfgl_aclfgl_ui_interface_loadtoolbar(int n) ;
 int aclfgl_aclfgl_ui_interface_loadactiondefauts(int n) ;

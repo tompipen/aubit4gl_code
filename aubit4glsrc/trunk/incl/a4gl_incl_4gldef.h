@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.131 2010-01-11 13:29:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.132 2010-01-14 08:08:12 mikeaubury Exp $
 */
 
 /**
@@ -495,6 +495,10 @@ void A4GL_check_dependant_tables(char *module_name, const char *CompileTimeSQLTy
 
 
 
+int A4GL_get_user_dtype(char *name) ;
+void A4GL_push_user_dtype(char *type, void *data, int dtype_length);
+void A4GL_init_userdtype(char *type, void *data);
+void A4GL_pop_user_dtype(char *type, void *data, int dtype, int dtype_length) ;
 
 #include "a4gl_rep_structure.h"
 

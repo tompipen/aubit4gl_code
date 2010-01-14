@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.76 2009-12-16 14:43:05 mikeaubury Exp $
+# $Id: Makefile,v 1.77 2010-01-14 08:07:46 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -2968,5 +2968,17 @@ clean.rest:
 	./tools/quickguide/*.4ae ./tools/quickguide/*.ao ./tools/quickguide/*.o \
 	./tools/sqlmetrics/*.4ae ./tools/sqlmetrics/*.ao ./tools/sqlmetrics/*.o \
 	./tools/test/altris/*.4ae ./tools/test/altris/*.ao ./tools/test/altris/*.o \
+	/lib/libui/ui_xml/uilib/xml/pregenerated/triggers_act.o \
+	./lib/libui/ui_xml/uilib/xml/pregenerated/triggers.o \
+	./tools/getopt/getopt1.o \
+	./tools/getopt/getopt.o \
+	./compilers/4glc/4glc.op ./compilers/4glc/API_lex.op ./compilers/4glc/API_parse_self.op ./compilers/4glc/class.op \
+	./compilers/4glc/clobber.op ./compilers/4glc/commands.op ./compilers/4glc/common.op ./compilers/4glc/./compile.op ./compilers/4glc/dim.op \
+	./compilers/4glc/expr_munging.op ./compilers/4glc/extendedmap.op ./compilers/4glc/field_handling.op ./compilers/4glc/fix_insert.op \
+	./compilers/4glc/globals.op ./compilers/4glc/import.op ./compilers/4glc/insert_curs.op ./compilers/4glc/labels.op \
+	./compilers/4glc/lex.op ./compilers/4glc/lexer.op ./compilers/4glc/linearise.op ./compilers/4glc/lint.op \
+	./compilers/4glc/list.op ./compilers/4glc/load_prototypes.op ./compilers/4glc/map.op ./compilers/4glc/mod.op \
+	./compilers/4glc/parsehelp.op ./compilers/4glc/var_handling.op ./compilers/4glc/variables.op ./compilers/4glc/variables_new.op \
+	./lib/generated/std_funcs.op \
 	./tools/test_rep/*.4ae ./tools/test_rep/*.ao ./tools/test_rep/*.o
 

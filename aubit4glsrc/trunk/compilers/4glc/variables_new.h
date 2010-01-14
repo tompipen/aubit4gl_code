@@ -6,6 +6,7 @@ struct variable *make_new_type(char *name, struct variable *definition);
 struct variable_list *new_variable_list(struct variable *ptr);
 struct variable_list *merge_variable_list(struct variable_list *list, struct variable_list *list2);
 struct variable * new_constant (char int_or_char, char *value, char *name);
+struct variable *new_variable_userdtype(char *name);
 struct variable *new_variable_pushLikeAllTableColumns(char *tabname,str_list *linked_to_list);
 struct variable *new_variable_record(char *name, struct variable_list *vlist);
 struct variable *new_variable_pushLikeTableColumn(char *tabname,char *colname);

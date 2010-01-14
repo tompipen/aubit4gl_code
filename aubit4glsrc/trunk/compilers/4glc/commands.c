@@ -2246,6 +2246,7 @@ struct module_entry *c;
    c=new_module_entry(E_MET_IMPORT_DATATYPE);
    c->module_entry_u.import_datatype_definition.dtype_name=strdup(dtype_name);
    c->module_entry_u.import_datatype_definition.module=A4GL_compiling_module_basename();
+   c->module_entry_u.import_datatype_definition.usedDtypeNumber=A4GL_find_datatype(upshift(c->module_entry_u.import_datatype_definition.dtype_name));
    c->module_entry_u.import_datatype_definition.lineno=lineno;
    return c;
 }

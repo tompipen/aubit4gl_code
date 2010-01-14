@@ -568,16 +568,16 @@ void
 add_ex_dtype (char *sx)
 {
   char s[256];
-  char ss[256];
+  //char ss[256];
   strcpy (s, sx);
   A4GL_trim (s);
   strcpy (s, downshift (s));
   A4GL_debug ("Initializing datatype : %s\n", s);
-
   A4GLEXDATA_initlib (s);
-
   A4GL_debug ("Checking if we need an extra include...");
+  add_external_datatypes(s);
 
+#ifdef OLD
   if (A4GL_has_datatype_function_n (s, "INCLUDE"))
     {
       /* char *(*function) (); */
@@ -590,10 +590,10 @@ add_ex_dtype (char *sx)
 
       strcpy (ss, function ());
 
-      add_external_datatypes(ss);
 
       /* print_include (ss); */
     }
+#endif
 }
 
 

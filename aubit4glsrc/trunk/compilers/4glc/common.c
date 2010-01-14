@@ -141,6 +141,7 @@ struct variable_usage *new_usage;
         memcpy(new_usage,vu,sizeof(struct variable_usage));
         new_usage->next=0;
 	new_usage->object_type="";
+	new_usage->datatype=0;
 	new_usage->datatype_length=0;
         if (vu->next) {
                 new_usage->next=clone_variable_usage(vu->next);
@@ -425,8 +426,8 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
 
   newv->variable_id = -1;
   newv->datatype = -1;
-newv->object_type="";
-			newv->datatype_length=0;
+  newv->object_type="";
+  newv->datatype_length=0;
   newv->escope = E_SCOPE_NOTSET;
   newv->next = 0;
 
@@ -489,6 +490,14 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 	  /*debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name); */
 	  /*a4gl_yyerror("This is the name of a function!"); */
 		return 0;
+	}
+
+
+      if (v->var_data.variable_type == VARIABLE_TYPE_USERDTYPE) {
+	      	vu->variable_id = a;
+	      	vu->datatype = A4GL_find_datatype(v->var_data.variable_data_u.datatypeName);
+		vu->object_type=v->var_data.variable_data_u.datatypeName;
+		return v;
 	}
 
       if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE || v->var_data.variable_type == VARIABLE_TYPE_CONSTANT)

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.9 2009-02-11 13:17:19 mikeaubury Exp $
+# $Id: file.c,v 1.10 2010-01-14 08:08:21 mikeaubury Exp $
 #
 */
 
@@ -109,6 +109,14 @@ A4GL_move_file (char *from, char *to)
   return 1;
 }
 
+
+int aclfgl_aclfgl_delete_file(int n) {
+char *s;
+s=A4GL_char_pop();
+A4GL_trim(s);
+A4GL_delete_file(s);
+return 0;
+}
 
 int
 A4GL_delete_file (char *fname)

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.40 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: datatypes.c,v 1.41 2010-01-14 08:08:21 mikeaubury Exp $
 #
 */
 
@@ -332,6 +332,18 @@ A4GL_find_datatype (char *name)
 
 }
 
+int A4GL_get_user_dtype(char *name) {
+int a;
+a=A4GL_find_datatype(name);
+if (a==-1) {
+	//strcpy(a4gl_sqlca.sqlerrm,name);
+	A4GL_exitwith("Datatype has not been loaded");
+	return 0;
+}
+
+return a;
+}
+
 /**
  * Returns 1 on success
  * return 0 on failure
@@ -531,6 +543,8 @@ A4GL_add_default_datatypes (void)
   A4GL_add_datatype ("INTERVAL", 14, 0);
   A4GL_add_datatype ("NCHAR", 15, 0);
   A4GL_add_datatype ("NVCHAR", 16, 0);
+  A4GL_add_datatype ("INT8", 17, 0);
+  A4GL_add_datatype ("SERIAL8", 18, 0);
   A4GL_add_default_operations ();
 
 #ifdef DEBUG

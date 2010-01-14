@@ -401,11 +401,30 @@ dtype :
 		}
 
        |  USER_DTYPE_ORIG {
-			$$=new_variable_dim($<str>1);
-			if ($$==NULL) {
-				a4gl_yyerror("Unknown datatype");
-				YYERROR;
-			}
+                        char buff[256];
+                        strcpy(buff,$<str>1);
+                        if (A4GL_find_datatype(upshift(buff))!=-1)
+                        {
+				/*
+                                char *(*function) (void);
+                                function=A4GL_get_datatype_function_n(upshift(buff),"OUTPUT");
+                                if ((int)function != -1 && (int)function != 0)
+                                {
+                                        strcpy(buff,function());
+                                        push_type(function(),0,0);
+                                }
+				*/
+				$$=new_variable_userdtype(buff);
+				if ($$==NULL) {
+                               		a4gl_yyerror("Unknown datatype");
+				}
+				//A4GL_assertion(1,"Not implemented yet");
+                        } else {
+                               a4gl_yyerror("Unknown datatype");
+                        }
+
+
+
                 }
 	|	SMALLINT {
 			$$=new_simple_variable(NULL,DTYPE_SMINT,0,0);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.390 2010-01-06 17:48:59 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.391 2010-01-14 08:08:12 mikeaubury Exp $
 #
 */
 
@@ -530,6 +530,7 @@ int A4GL_aubit_strcasecmp_internal (char *a, char *b);
 #define DTYPE_NVCHAR  16
 #define DTYPE_INT8         17
 #define DTYPE_SERIAL8      18
+// If adding more datatypes -make sure we add to A4GL_add_default_datatypes in lib/libaubit4gl/datatypes.c
 
 #define DTYPE_OBJECT    99
 #define DTYPE_BINDING    95

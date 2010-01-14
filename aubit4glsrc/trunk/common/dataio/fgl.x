@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.48 2010-01-06 17:48:58 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.49 2010-01-14 08:07:50 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1461,7 +1461,8 @@ enum e_variable_type {
         VARIABLE_TYPE_CONSTANT  ,
         VARIABLE_TYPE_FUNCTION_DECLARE  ,
         VARIABLE_TYPE_OBJECT    ,
-	VARIABLE_TYPE_TYPE_DECLARATION
+	VARIABLE_TYPE_TYPE_DECLARATION,
+	VARIABLE_TYPE_USERDTYPE
 };
 
 union variable_data switch ( enum e_variable_type variable_type) {
@@ -1472,6 +1473,7 @@ union variable_data switch ( enum e_variable_type variable_type) {
         case VARIABLE_TYPE_FUNCTION_DECLARE  	: void;
         case VARIABLE_TYPE_OBJECT 		: struct object_variable v_object;
 	case VARIABLE_TYPE_TYPE_DECLARATION	: struct variable *type_declaration;
+	case VARIABLE_TYPE_USERDTYPE		: str datatypeName;
 
 };
 
@@ -3178,6 +3180,7 @@ struct s_import_legacy_definition {
 
 struct s_import_datatype {
 	str dtype_name;
+	int usedDtypeNumber;
 	str module;
 	int lineno;
 };

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.249 2010-01-11 13:11:46 mikeaubury Exp $
+# $Id: stack.c,v 1.250 2010-01-14 08:08:32 mikeaubury Exp $
 #
 */
 
@@ -4886,5 +4886,60 @@ int A4GL_fixup_for_broken_c4gl(int nrets, int nexpected) {
 while (nrets>nexpected) {A4GL_drop_param(); nrets--;}
 return nrets;
 }
+
+
+/*
+ * Push a USER_DTYPE onto the stack
+ *
+*/
+void A4GL_push_user_dtype(char *type, void *data, int dtype_orig) {
+int dtype;
+// Ok - we need to change the datatype 
+// from the one that was used at compile time
+// to the equivilent one from runtime
+// (It might be the same :-) )
+//
+// So - we need to remove the original datatype to just leave the dtype_length...
+dtype_orig=dtype_orig>>16;
+/* First - find the datatype number that was allocated when the load_datatype was executed..  */
+dtype=A4GL_get_user_dtype(type);
+
+/* Was it found ? 0 is normally a CHAR - but here - we know its not a USER_DTYPE - so its a fail */
+if (dtype==0) {
+	A4GL_push_null(DTYPE_INT,0);
+	return;
+}
+
+/* Push it using that new dtype number  - with the original length*/
+A4GL_push_param(data,dtype+(dtype_orig << 16));
+}
+
+/* Set a USER_DTYPE to null
+ * */
+void A4GL_init_userdtype(char *type, void *data) {
+int dtype;
+/* First - find the datatype number that was allocated when the load_datatype was executed..  */
+dtype=A4GL_get_user_dtype(type);
+
+/* Was it found ? 0 is normally a CHAR - but here - we know its not a USER_DTYPE - so its a fail */
+if (dtype==0) {
+	return;
+}
+
+/* initialize to null  using that new dtype number */
+A4GL_setnull(dtype,data,0);
+}
+
+void A4GL_pop_user_dtype(char *type, void *data, int dtype, int dtype_length) {
+	dtype=A4GL_get_user_dtype(type);
+/* Was it found ? 0 is normally a CHAR - but here - we know its not a USER_DTYPE - so its a fail */
+if (dtype==0) {
+	A4GL_drop_param();
+        return;
+}
+
+A4GL_pop_param(data,dtype,dtype_length);
+}
+
 
 // ================================ EOF ================================

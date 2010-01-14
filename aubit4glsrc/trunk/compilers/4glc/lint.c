@@ -3008,6 +3008,7 @@ local_is_valid_vname (struct variable *v, enum e_scope scope)
     case VARIABLE_TYPE_FUNCTION_DECLARE:
     case VARIABLE_TYPE_OBJECT:
     case VARIABLE_TYPE_TYPE_DECLARATION:
+    case VARIABLE_TYPE_USERDTYPE:
       //case VARIABLE_TYPE_LINKED:
       return 1;
 

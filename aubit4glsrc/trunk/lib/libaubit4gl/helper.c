@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.85 2009-07-10 11:55:45 mikeaubury Exp $
+# $Id: helper.c,v 1.86 2010-01-14 08:08:21 mikeaubury Exp $
 #
 */
 
@@ -1401,6 +1401,28 @@ hex_digit (int n)
 }
 
 
+int aclfgl_aclfgl_tea_string_encipher(int n) {
+char *p;
+if (n!=1) return 0;
+p=A4GL_char_pop();
+A4GL_trim(p);
+A4GL_push_char(A4GL_tea_string_encipher(p));
+acl_free(p);
+return 1;
+}
+
+int aclfgl_aclfgl_tea_string_decipher(int n) {
+char *p;
+if (n!=1) return 0;
+
+p=A4GL_char_pop();
+A4GL_trim(p);
+A4GL_push_char(A4GL_tea_string_decipher(p));
+acl_free(p);
+return 1;
+}
+
+
 char *
 A4GL_tea_string_encipher (char *s)
 {
@@ -1491,6 +1513,7 @@ hexToInt (int h)
       return 0;
     }
 }
+
 
 
 char *
