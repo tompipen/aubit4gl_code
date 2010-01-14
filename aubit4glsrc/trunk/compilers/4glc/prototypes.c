@@ -1060,7 +1060,7 @@ proto_program (module_definition * mods, int nmodules)
 
 
 int yylineno;
-FILE *lintfile;
+//FILE *lintfile;
 
 module_definition this_module;
 

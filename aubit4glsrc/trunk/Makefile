@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.77 2010-01-14 08:07:46 mikeaubury Exp $
+# $Id: Makefile,v 1.78 2010-01-14 10:04:39 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -1248,7 +1248,7 @@ endif
 ##############################
 # make rpm form autoconf-ed etc/aubit-rpm.conf
 rpm: rpm.refresh.specfile
-ifneq "${shell id --name --user}" "root"
+ifneq "${LOGNAME}" "root"
 ifneq "${RPM}" ""
 ifeq "${RPM}" "new"
 	${MAKE} rpm.clean
@@ -1444,7 +1444,7 @@ rpm.check.all.post:
 ###############################
 # Refresh vital files
 rpm.refresh.specfile:
-ifneq "${shell id --name --user}" "root"
+ifneq "${LOGNAME}" "root"
 	./config.status --file etc/aubit-rpm.spec
 	./config.status --file incl/Makefile-common
 else

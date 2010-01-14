@@ -12,7 +12,7 @@ define mv_cnt integer
 
 
 # Total number of programs to compile...
-define lc_num_compiles constant 103
+define lc_num_compiles constant 105
 
 define lv_fail array[200] of char(80)
 define lv_ok array[200] of  char(80)
@@ -373,7 +373,9 @@ function compile_optionals()
 	call run("adbload tool", "$A4GL_MAKE -C tools/adbload2",3)
 	call run("adbschema tool", "$A4GL_MAKE -C tools/adbschema",5)
 	call run("afinderr tool", "$A4GL_MAKE -C tools/afinderr",5)
-	call run("asql tool", "$A4GL_MAKE -C tools/asql",5)
+	call run("asql tool (informix)", "$A4GL_MAKE -C tools/asql asql_i.4ae",5)
+	call run("asql tool (postgresql)", "$A4GL_MAKE -C tools/asql asql_p.4ae",5)
+	call run("asql tool (generic)", "$A4GL_MAKE -C tools/asql asql_g.4ae",5)
 	call run("A4GL IDE tool", "$A4GL_MAKE -C tools/a4gl",5)
 	call run("aupscol tool", "$A4GL_MAKE -C tools/aupscol",5)
 	call run("configuration tool", "$A4GL_MAKE -C tools/configuration",1)
