@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.515 2010-01-11 13:19:34 mikeaubury Exp $
+# $Id: compile_c.c,v 1.516 2010-01-14 07:46:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.515 2010-01-11 13:19:34 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.516 2010-01-14 07:46:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -92,6 +92,7 @@ int set_dont_use_indicators = 0;
 #define find_variable_vu_ptr NONO_DONT_USE_find_variable_vu_ptr
 extern int yylineno;
 int useIntOptimization = 1;
+static void print_load_datatypes(void) ;
 
 #define rettype_integer ERROR
 //char *rettype_integer (int n);
@@ -2432,6 +2433,13 @@ real_print_expr (struct expr_str *ptr)
       break;
 
 
+	case ET_EXPR_TRANSLATED_STRING :
+		{
+			printc("A4GL_push_char(%s);", ptr->expr_str_u.expr_string);
+	
+		}
+		break;
+
     default:
       printf ("Expression type : %d (%s) \n", ptr->expr_type, decode_e_expr_type (ptr->expr_type));
       A4GL_assertion (1, "Unhandled expression type");
@@ -3549,6 +3557,11 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
     case VARIABLE_TYPE_TYPE_DECLARATION:
       // Or a type declaration ;-)
       break;
+
+    case VARIABLE_TYPE_USERDTYPE:
+	printc("A4GL_init_userdtype(\"%s\",&%s);",v->var_data.variable_data_u.datatypeName, prefix2);
+	break;
+
 
     case VARIABLE_TYPE_SIMPLE:
       {
@@ -4811,6 +4824,11 @@ local_print_bind_set_value_g (struct expr_str_list *bind, int ignore_esqlc, int 
 	      printc ("ibind[%d].ptr=&", a);
 	      print_variable_usage_for_bind (bind->list.list_val[a]);
 	      printc (";");
+
+		if (is_user_dtype(get_binding_dtype (bind->list.list_val[a]))) {
+			printc("ibind[%d].dtype=A4GL_get_user_dtype(%s);", a, get_user_dtype_string(get_binding_dtype (bind->list.list_val[a])));
+		}
+
 	      clr_nonewlines ();
 	      start_chr = get_start_char_subscript (bind->list.list_val[a]);
 	      if (start_chr && strcmp (start_chr, "0") != 0)
@@ -4832,6 +4850,10 @@ local_print_bind_set_value_g (struct expr_str_list *bind, int ignore_esqlc, int 
 	      print_variable_usage_for_bind (bind->list.list_val[a]);
 	      printc (";");
 	      clr_nonewlines ();
+
+		if (is_user_dtype(get_binding_dtype (bind->list.list_val[a]))) {
+			printc("ibind[%d].dtype=A4GL_get_user_dtype(%s);", a, get_user_dtype_string(get_binding_dtype (bind->list.list_val[a])));
+		}
 
 	      start_chr = get_start_char_subscript (bind->list.list_val[a]);
 	      if (start_chr && strcmp (start_chr, "0") != 0)
@@ -4914,6 +4936,10 @@ local_print_bind_set_value_g (struct expr_str_list *bind, int ignore_esqlc, int 
 	      print_variable_usage_for_bind (bind->list.list_val[a]);
 	      printc (";");
 	      clr_nonewlines ();
+
+		if (is_user_dtype(get_binding_dtype (bind->list.list_val[a]))) {
+			printc("obind[%d].dtype=A4GL_get_user_dtype(%s);", a, get_user_dtype_string(get_binding_dtype (bind->list.list_val[a])));
+		}
 	    }
 
 	  if (doing_esql ())
@@ -5295,6 +5321,11 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
   char arrbuff[256];
   char name[256];
   static_extern_flg = 0;
+
+//if (v->var_data.variable_type==VARIABLE_TYPE_USERDTYPE) {
+//A4GL_pause_execution();
+//}
+
   if (level == 0 && local_is_system_variable (v) && (strcmp (acl_getenv ("A4GL_LEXTYPE"), "CM") == 0))
     {
       // Ignore all system variables
@@ -5503,6 +5534,17 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
     }
 
 
+  if (v->var_data.variable_type == VARIABLE_TYPE_USERDTYPE) {
+      char tmpbuff[256];
+                                char *(*function) (void);
+                                function=A4GL_get_datatype_function_n(upshift(v->var_data.variable_data_u.datatypeName),"OUTPUT");
+                                if ((int)function != -1 && (int)function != 0)
+                                {
+					SPRINTF2(tmpbuff,"%s %s", function(), name);
+	  print_define (tmpbuff, static_extern_flg);
+                                }
+
+	}
 
 
   if (v->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
@@ -5991,7 +6033,7 @@ print_module_variable_init (variable_list * mvars)
 
       printc ("A4GL_check_version(_module_name,\"%s\",%d);", A4GL_internal_version (), A4GL_internal_build ());
       printc ("A4GL_check_dependant_tables(_module_name, _CompileTimeSQLType, _dependantTables);");
-
+      print_load_datatypes();
       print_nullify (E_SCOPE_MODULE, mvars);
       tmp_ccnt--;
       printc ("}");
@@ -6362,6 +6404,30 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
   printc ("};");
   printc ("#");
 
+  for (a = 0; a < m->module_entries.module_entries_len; a++) {
+	char *s;
+ 	char *(*function) (void);
+
+      switch (m->module_entries.module_entries_val[a]->met_type) {
+		case E_MET_IMPORT_DATATYPE:
+			s=m->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.dtype_name;
+			//add_ex_dtype(s);
+ 			A4GLEXDATA_initlib (s);
+			function = A4GL_get_datatype_function_n (s, "INCLUDE");
+			if (function) {
+				char *i;
+				i= function ();
+				if (i) {
+					printh("#include \"%s.h\"\n",i);
+				}
+			}
+			break;
+
+		default: 
+			break;
+		}
+  }
+
 
   if (m->imported_global_variables.variables.variables_len)
     {
@@ -6412,8 +6478,12 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 			m->module_entries.module_entries_val[a]->module_entry_u.import_function_definition.lineno);
 	  //struct s_import_function_definition import_function_definition;
 	  break;
+
 	case E_MET_IMPORT_DATATYPE:
+		break;
+	/*
 	  s = m->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.dtype_name;
+	
 	  A4GLEXDATA_initlib (s);
 	  if (A4GL_has_datatype_function_n (s, "INCLUDE"))
 	    {
@@ -6425,6 +6495,7 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 	      strcpy (ss, function ());
 	      printh ("#include <%s.h>\n", ss);
 	    }
+		*/
 	  break;
 
 	case E_MET_IMPORT_LEGACY_DEFINITION:
@@ -6804,8 +6875,11 @@ print_pop_usage (expr_str * v)
     {
       if (strlen (u->object_type))
 	{
-	  //A4GL_pause_execution();
-	  printc ("A4GL_pop_object(\"%s\",&", u->object_type);
+	  	if (u->datatype==DTYPE_OBJECT) {
+	  	printc ("A4GL_pop_object(\"%s\",&", u->object_type);
+		} else {
+	  	printc ("A4GL_pop_user_dtype(\"%s\",&", u->object_type);
+		}
 	}
       else
 	{
@@ -7148,11 +7222,24 @@ print_push_variable_usage (expr_str * ptr)
 	  printc (",sizeof(struct _dynelem_%s)", generation_get_variable_usage_as_string (ptr->expr_str_u.expr_variable_usage));
 	  printc (");");
 	  break;
-	default:
 
+	default:
+	if (strlen(u->object_type)) {
+		if ((get_binding_dtype (ptr) & DTYPE_MASK)==DTYPE_OBJECT) {
+	  		printc ("A4GL_push_variable(&");
+	  		print_variable_usage (ptr);
+	  		printc (",0x%x);", get_binding_dtype (ptr));
+			
+		} else {
+	  		printc ("A4GL_push_user_dtype(\"%s\",&",u->object_type);
+	  		print_variable_usage (ptr);
+	  		printc (",0x%x);", get_binding_dtype (ptr));
+		}
+	} else {
 	  printc ("A4GL_push_variable(&");
 	  print_variable_usage (ptr);
 	  printc (",0x%x);", get_binding_dtype (ptr));
+	}
 	}
     }
   else
@@ -8529,4 +8616,49 @@ dump_objdata (struct variable_list *variables)
 	}
     }
   printc ("NULL};");
+}
+
+
+
+
+
+//current_module
+//
+int is_user_dtype(int n) {
+int a;
+
+  for (a = 0; a < current_module->module_entries.module_entries_len; a++) {
+	if (current_module->module_entries.module_entries_val[a]->met_type==E_MET_IMPORT_DATATYPE) {
+			if (current_module->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.usedDtypeNumber==n) return 1;
+	}
+  }
+  return 0;
+
+}
+
+char *get_user_dtype_string(int n) {
+static char buff[200];
+int a;
+  for (a = 0; a < current_module->module_entries.module_entries_len; a++) {
+	if (current_module->module_entries.module_entries_val[a]->met_type==E_MET_IMPORT_DATATYPE) {
+			if (current_module->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.usedDtypeNumber==n) {
+				sprintf(buff,"\"%s\"", current_module->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.dtype_name);
+				return buff;
+			}
+	}
+  }
+  return "\"unknown\"";
+}
+
+
+static void print_load_datatypes(void) {
+int a;
+  for (a = 0; a < current_module->module_entries.module_entries_len; a++) {
+	if (current_module->module_entries.module_entries_val[a]->met_type==E_MET_IMPORT_DATATYPE) {
+			printc("A4GL_push_char(\"%s\");", current_module->module_entries.module_entries_val[a]->module_entry_u.import_datatype_definition.dtype_name);
+			printc("aclfgl_load_datatype(1);");
+			
+	}
+  }
+
 }

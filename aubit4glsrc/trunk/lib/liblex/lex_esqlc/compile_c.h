@@ -277,3 +277,5 @@ int clr_rep_print_entry(void);
 void print_generation_copy_status (void);
 int chk_ibind_select(struct s_select *s);
 void dump_objdata(struct variable_list *variables);
+int is_user_dtype(int n) ;
+char *get_user_dtype_string(int n);
