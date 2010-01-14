@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.18 2009-01-18 16:33:18 mikeaubury Exp $
+# $Id: Makefile,v 1.19 2010-01-14 09:12:09 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -182,9 +182,9 @@ ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}  -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite3${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 
 	${LD} ${SO_LDFLAGS} $^ -o $@ ${SQLITE_LINKLIBS} ${SQLITE_FLAGS} ${LINK_ALL} -l${SQLITE_LIBNAME} ${LINKLIBS} > link.log 2>&1
-#ifdef COMSPEC
+ifneq "${COMSPEC}" ""
 	@echo "Should NOT be empty: '`cygcheck $@ | grep -v libSQL_ | grep ${SQLITE_LIBNAME}.dll`'"
-#endif
+endif
 
 #The above target on windows will produce statically linked dll anyway
 #Failed to link dynamically, despite forcing linker with -Wl,-call_shared :
@@ -223,10 +223,9 @@ ${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE} -DSQLITE_DIRECT
 ${PLUGINDIR}/libSQL_sqlite3S${SO_EXT}: ${OBJECTS} sqlite3odbc.o
 	${LD} ${SO_LDFLAGS} $^ ${SQLITE_LINKLIBS} ${LINKLIBS} -L${SQLITE_LDPATH} -L${SQLITE_LDPATH2} -o $@  \
 		${LINKLIBS} -Wl,-static -l${SQLITE_LIBNAME} 
-#ifdef COMSPEC
+ifneq "${COMSPEC}" ""
 	@echo "Should be empty: '`cygcheck $@ | grep ${SQLITE_LIBNAME}.dll`'"
-#endif
-
+endif
 
 ## ==================================================================
 ##                              Clean
