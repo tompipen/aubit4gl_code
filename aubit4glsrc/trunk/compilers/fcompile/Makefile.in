@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.80 2010-01-14 07:41:25 mikeaubury Exp $
+# $Id: Makefile.in,v 1.81 2010-01-14 13:27:33 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -170,7 +170,7 @@ where.o : 	../../common/dataio/form_x.h
 y.tab.o :       screen.yacc
 
 
-dump_form.o: dump_form.c common.h global.h
+dump_form.o: dump_form.c common.h global.h common_single.h global_single.h
 	${CC} ${CFLAGS} -c dump_form.c
 	
 
