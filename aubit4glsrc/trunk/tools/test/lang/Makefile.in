@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2008-01-23 18:17:30 mikeaubury Exp $
+# $Id: Makefile.in,v 1.6 2010-01-14 09:17:23 mikeaubury Exp $
 #
 
 #Internationalization / language translation example
@@ -41,7 +41,7 @@ include ${ROOT}/incl/Makefile-common
 include ${ROOT}/incl/a4gl.mk
 
 
-MSGFILES	=english.msg french.msg german.msg italian.msg spanish.msg
+MSGFILES	=english.msg french.msg german.msg italian.msg spanish.msg portuguese.msg
 HLPFILES	=${MSGFILES:.msg=.hlp}
 
 4GLFILES	=lang.4gl
@@ -57,7 +57,7 @@ lang: ${HLPFILES} ${4GLFILES}
 	(export TRANSLATEFILE=source.lang;  ${FGLPCEXEC} ${4GLFILES} -o $@)
 
 %.hlp: %.msg
-	${MKMESS} $*.msg
+	${MKMESS} $*.msg $*.hlp
 
 source.lang:
 	(export DUMPSTRINGS=ident; xxxx what?)
