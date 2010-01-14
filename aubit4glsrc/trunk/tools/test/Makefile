@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.5 2008-02-11 17:13:14 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2010-01-14 07:42:40 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -70,7 +70,7 @@ endif
 
 
 #Targets still expected to fail, that need fixing:
-ALL_FAIL=pdf_report${A4GL_EXE_EXT}
+ALL_FAIL=
 
 #Targets that need database to compile
 ALL_DB  =test_select${A4GL_EXE_EXT}
@@ -184,7 +184,7 @@ help:
 clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae \
 	test_build *.hlp *.exe *.stackdump *.err *.c *.tmp *.42m *.glb \
-	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm pdf_report solitaire test_select test_mpz \
+	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm  solitaire test_select test_mpz \
 	test_build.c ${FILES.4gl:.4gl=.h} assoc file *.aso .\#* \
 	*${A4GL_FRM_EXT} *${A4GL_MNU_EXT} *.aox *.warn *.ec *.lst *.4gi *.4go \
 	*.cpc *.42f *.4qe *.qo *.pic *.pcl *.w2 *.w3 \
