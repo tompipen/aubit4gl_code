@@ -1,0 +1,33 @@
+{-------------------- Screen 1 / 1 --------------------}
+DATABASE syspgma4gl
+SCREEN
+{
+Application        [f000              ]
+
+Connection Mode    [a] (P = Proxy, C = Command Line)
+
+Proxy
+   program Name    [f001              ]
+   Server          [f002                            ]
+   Port            [f003      ]
+   Username        [f004              ] (Use '-' for Web perms userID)
+   Password        [f005              ] (Use '-' for Web perms password)
+
+Command Line
+[f006                                                                  ]
+}
+end
+tables
+   web_application 
+ATTRIBUTES
+f000	= web_application.application, UPSHIFT;
+a	= web_application.connmode, INCLUDE=("P","C"), COMMENTS="P = Proxy, C = Command Line", UPSHIFT;
+f001	= web_application.pxy_programname;
+f002	= web_application.pxy_server;
+f003	= web_application.pxy_port;
+f004	= web_application.pxy_username, COMMENTS="Note '-' can only be used when server 'AuthMode='F'";
+f005	= web_application.pxy_password, COMMENTS="Note '-' can only be used when server 'AuthMode='F'";
+f006	= web_application.auth_cmdline;
+INSTRUCTIONS
+  DELIMITERS '[]|'
+

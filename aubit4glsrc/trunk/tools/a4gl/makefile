@@ -32,3 +32,9 @@ $(ROOT)/bin/a4gl.4ae: a4gl${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} main${A4GL_OBJ_EXT
 
 clean:
 	rm -f a4gl${A4GL_OBJ_EXT} filehand${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} generic_db${A4GL_OBJ_EXT} main${A4GL_OBJ_EXT} module${A4GL_OBJ_EXT} pick${A4GL_OBJ_EXT} program${A4GL_OBJ_EXT} subrouts${A4GL_OBJ_EXT}  times${A4GL_OBJ_EXT} a4gl.4ae *.afr.*  ../asql/pick${A4GL_OBJ_EXT}  ../asql/filehand${A4GL_OBJ_EXT} ../asql/generic_db${A4GL_OBJ_EXT} warn.afr${A4GL_OBJ_EXT}
+
+
+web: web.4gl zoom.4gl data.4gl weburl.4gl webapp.4gl f_webapp.afr${A4GL_OBJ_EXT} f_webserver.afr${A4GL_OBJ_EXT} f_webusers.afr${A4GL_OBJ_EXT} findit.afr${A4GL_OBJ_EXT} finditnosql.afr${A4GL_OBJ_EXT}
+	4glpc -g -o web $^ 
+
+

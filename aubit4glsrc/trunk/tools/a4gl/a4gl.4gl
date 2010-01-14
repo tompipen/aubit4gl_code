@@ -185,9 +185,10 @@ if dbms_dialect()  MATCHES "*POSTGRES*" then
 
 	execute immediate "drop trigger sertrig_entity_entity on entity"
 	execute immediate "create trigger sertrig_entity_entity before insert on entity for each row execute procedure get_next_entity_entity()"
-if sqlca.sqlcode<0 then
-	call err_createtables()
-end if
+
+	if sqlca.sqlcode<0 then
+		call err_createtables()
+	end if
 
 end if
 

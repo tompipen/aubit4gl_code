@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/01/11 16:53:11.
+ * Generated 2010/01/13 20:27:13.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -633,6 +633,8 @@ typedef int AT_convert_towhat;
 #define AU_convert_towhat NULL
 typedef int AT_struct_spl_return_cmd_withResume;
 #define AU_struct_spl_return_cmd_withResume NULL
+typedef int AT_s_import_datatype_usedDtypeNumber;
+#define AU_s_import_datatype_usedDtypeNumber NULL
 typedef int AT_s_exchange_clobber_origval;
 #define AU_s_exchange_clobber_origval NULL
 typedef int AT_struct_print_file_cmd_semi;
@@ -1895,6 +1897,8 @@ typedef int AT_s_expr_agg_agg_type;
 #define AU_s_expr_agg_agg_type NULL
 typedef int AT_cons_list_nm;
 #define AU_cons_list_nm NULL
+typedef int AT_variable_data_datatypeName;
+#define AU_variable_data_datatypeName NULL
 typedef int AT_struct_sql_block_cmd_convert;
 #define AU_struct_sql_block_cmd_convert NULL
 typedef int AT_s_expr_parameter_expr_string;
@@ -2042,6 +2046,8 @@ extern AT_convert_towhat AX_convert_towhat;
 #define A_convert_towhat (bufferstack + AX_convert_towhat)
 extern AT_struct_spl_return_cmd_withResume AX_struct_spl_return_cmd_withResume;
 #define A_struct_spl_return_cmd_withResume (bufferstack + AX_struct_spl_return_cmd_withResume)
+extern AT_s_import_datatype_usedDtypeNumber AX_s_import_datatype_usedDtypeNumber;
+#define A_s_import_datatype_usedDtypeNumber (bufferstack + AX_s_import_datatype_usedDtypeNumber)
 extern AT_s_exchange_clobber_origval AX_s_exchange_clobber_origval;
 #define A_s_exchange_clobber_origval (bufferstack + AX_s_exchange_clobber_origval)
 extern AT_struct_print_file_cmd_semi AX_struct_print_file_cmd_semi;
@@ -3304,6 +3310,8 @@ extern AT_s_expr_agg_agg_type AX_s_expr_agg_agg_type;
 #define A_s_expr_agg_agg_type (bufferstack + AX_s_expr_agg_agg_type)
 extern AT_cons_list_nm AX_cons_list_nm;
 #define A_cons_list_nm (bufferstack + AX_cons_list_nm)
+extern AT_variable_data_datatypeName AX_variable_data_datatypeName;
+#define A_variable_data_datatypeName (bufferstack + AX_variable_data_datatypeName)
 extern AT_struct_sql_block_cmd_convert AX_struct_sql_block_cmd_convert;
 #define A_struct_sql_block_cmd_convert (bufferstack + AX_struct_sql_block_cmd_convert)
 extern AT_s_expr_parameter_expr_string AX_s_expr_parameter_expr_string;

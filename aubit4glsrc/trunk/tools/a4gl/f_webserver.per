@@ -1,0 +1,43 @@
+{-------------------- Screen 1 / 1 --------------------}
+DATABASE syspgma4gl
+SCREEN
+{
+Id     [f000              ]
+Url    [f001                                                            ]
+Access [f003                                                            ]
+Passwd [f004                                                            ]
+Xml    [f005                                                            ]
+
+                             Authentication Mode  [a] [f002             ]
+
+               ------------  Permissions  --------------
+
+                Application          Username           
+               [g001              ] [g002              ]
+               [g001              ] [g002              ]
+               [g001              ] [g002              ]
+               [g001              ] [g002              ]
+               [g001              ] [g002              ]
+               [g001              ] [g002              ]
+}
+end
+tables
+   web_serverurl 
+   web_perms
+ATTRIBUTES
+f000	= web_serverurl.url_id, COMMENTS="Unique 'server' Id", UPSHIFT;
+f001	= web_serverurl.relativeurl, COMMENTS="Relative URL";
+a	= web_serverurl.authmode, INCLUDE=("W","F","N"), COMMENTS="W = Web, F = 4GL web perms,  N = None ", UPSHIFT;
+f002	= formonly.authmode_desc, NOENTRY;
+
+f003 = web_serverurl.htaccessfile, comments="Location of the htaccess file";
+f004 = web_serverurl.htpasswdfile, comments="Location of the htpasswdfile file";
+f005 = web_serverurl.xmlfile, comments="Location of the XML access file";
+
+g001 = web_perms.application,upshift;
+g002 = web_perms.username,downshift;
+INSTRUCTIONS
+  DELIMITERS '[]|'
+
+screen record srec_perms[6]( application,username)
+
