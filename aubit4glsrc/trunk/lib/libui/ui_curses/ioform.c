@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.234 2009-12-16 13:59:40 mikeaubury Exp $
+# $Id: ioform.c,v 1.235 2010-01-14 07:43:31 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.234 2009-12-16 13:59:40 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.235 2010-01-14 07:43:31 mikeaubury Exp $";
 #endif
 
 /**
@@ -3454,7 +3454,7 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, ts_field_name * orig_field_list, va_l
 		{
 		  char *buff;
 		  // Found @ position b...
-		  A4GL_push_char (field_buffer (f, 0));
+		  //A4GL_push_char (field_buffer (f, 0));
 		  buff = strdup (field_buffer (f, 0));
 		  chk_for_picture (field_list[a], buff);
 		  A4GL_push_char (buff);
