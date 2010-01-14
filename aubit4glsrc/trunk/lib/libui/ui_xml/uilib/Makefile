@@ -38,7 +38,7 @@ deps:
 
 libuilib.a: comms.o uilib.o xml/attr.o $(TRIGGERS_O) ../pipe.o ../debug.o
 	${USE_AR} $@ $^
-	${USE_RANLIB } $@
+	${USE_RANLIB} $@
 	
 
 xml/triggers_act.c: xml/triggers_act.act xml/triggers.dtd
