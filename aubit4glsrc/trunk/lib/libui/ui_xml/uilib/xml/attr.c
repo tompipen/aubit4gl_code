@@ -7,8 +7,8 @@ extern struct s_attr lexed_attr;
 int xml_yylex (void);
 
 //static char *inbuff=0;
-char *myinputptr;
-int myinputlim;
+//char *myinputptr_xxx;
+//int myinputlim;
 //#define attr_min(X,Y) (((X) < (Y)) ? (X) : (Y))
 
 void dump_attr(struct s_attr *a) {
