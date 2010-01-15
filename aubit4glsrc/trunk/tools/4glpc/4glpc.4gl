@@ -1829,7 +1829,6 @@ let mv_errfile=lv_output clipped,get_ext("ERR")
 let lv_runstr="rm -f ",lv_output 
 RUN lv_runstr CLIPPED RETURNING lv_status
 
-# let lv_runstr="ar rc ",lv_output clipped, " ", mv_objects
 let lv_runstr= mv_ar_cmd clipped, " ", mv_ar_opts clipped, " ",
 					 lv_output clipped, " ", mv_objects
 
@@ -1851,8 +1850,6 @@ if mv_verbose>=5 then
 end if
 call check_exit_status(lv_status,lv_output,lv_runstr)
 
-RUN lv_runstr CLIPPED RETURNING lv_status
-# let lv_runstr="ranlib ",lv_output clipped
 let lv_runstr=mv_ranlib_cmd clipped, " ", mv_ranlib_opts clipped, " ", lv_output clipped
 
 if mv_verbose>=2 then
