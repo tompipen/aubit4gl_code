@@ -598,6 +598,16 @@ namespace AubitDesktop
             
         }
 
+        /// <summary>
+        /// Sets an exit message to display on the 'goodbye' screen..
+	/// This is used by the web client - not this client...
+        /// </summary>
+        /// <param name="errMsg">Error Message from 4gl program</param>
+        /// <returns>Always returns false to force a Program.Show</returns>
+        public bool setExitMessage(string errMsg) {
+            return false;
+        }
+
 
         public void removeTabPage(FGLApplicationPanel appPanel)
         {
