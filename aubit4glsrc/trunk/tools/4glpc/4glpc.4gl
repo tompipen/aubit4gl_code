@@ -59,6 +59,10 @@ define
 	mv_link_libs 		char(256),
 	mv_link_debug 		char(256),
 	mv_dll_opts 		char(256),
+	mv_ar_cmd		char(256),
+	mv_ar_opts		char(256),
+	mv_ranlib_cmd		char(256),
+	mv_ranlib_opts		char(256),
 	mv_include 		char(512),
 	mv_libs			char(5000),
 	mv_aubit4gllib 		char(5000)
@@ -131,7 +135,12 @@ define use_indicators integer
 			mv_link,
 			mv_dll_opts,	
 			mv_link_libs,
-			mv_link_opts 		to null
+			mv_link_opts,
+			mv_ar_cmd,
+			mv_ar_opts,
+			mv_ranlib_cmd,
+			mv_ranlib_opts
+ 		to null
 
 	initialize mv_newest_obj to null
 	let mv_ansi_mode=0
@@ -187,6 +196,11 @@ define use_indicators integer
 	LET mv_link_libs	=fgl_getenv("A4GL_LINK_LIBS")
 	LET mv_dll_opts		=fgl_getenv("A4GL_DLL_OPTS")
 
+	LET mv_ar_cmd		=fgl_getenv("A4GL_AR_CMD")
+	LET mv_ar_opts		=fgl_getenv("A4GL_AR_OPTS")
+	LET mv_ranlib_cmd	=fgl_getenv("A4GL_RANLIB_CMD")
+	LET mv_ranlib_opts	=fgl_getenv("A4GL_RANLIB_OPTS")
+
 	LET mv_stage="OBJ0?"
 
 
@@ -231,6 +245,19 @@ define use_indicators integer
 		
 	if mv_dll_opts is null or mv_dll_opts matches " " then
 		let mv_dll_opts		="--shared "
+	end if
+
+	if mv_ar_cmd is null or mv_ar_cmd matches " " then
+		let mv_ar_cmd		= "ar "
+	end if
+	if mv_ar_opts is null or mv_ar_opts matches " " then
+		let mv_ar_opts		= "rc  "
+	end if
+	if mv_ranlib_cmd is null or mv_ranlib_cmd matches " " then
+		let mv_ranlib_cmd	= "ranlib "
+	end if
+	if mv_ranlib_opts is null or mv_ranlib_opts matches " " then
+		let mv_ranlib_opts	= " "
 	end if
 
 	if mv_compile_c is null or mv_compile_c matches " " then
@@ -1801,7 +1828,10 @@ let mv_errfile=lv_output clipped,get_ext("ERR")
 
 let lv_runstr="rm -f ",lv_output 
 RUN lv_runstr CLIPPED RETURNING lv_status
-let lv_runstr="ar rc ",lv_output clipped, " ", mv_objects
+
+# let lv_runstr="ar rc ",lv_output clipped, " ", mv_objects
+let lv_runstr= mv_ar_cmd clipped, " ", mv_ar_opts clipped, " ",
+					 lv_output clipped, " ", mv_objects
 
 if mv_verbose>=1 then
 	display "Archiving ",lv_output  clipped
@@ -1822,7 +1852,8 @@ end if
 call check_exit_status(lv_status,lv_output,lv_runstr)
 
 RUN lv_runstr CLIPPED RETURNING lv_status
-let lv_runstr="ranlib ",lv_output clipped
+# let lv_runstr="ranlib ",lv_output clipped
+let lv_runstr=mv_ranlib_cmd clipped, " ", mv_ranlib_opts clipped, " ", lv_output clipped
 
 if mv_verbose>=2 then
 	display lv_runstr clipped
