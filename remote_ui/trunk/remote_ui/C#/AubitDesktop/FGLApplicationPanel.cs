@@ -2238,7 +2238,7 @@ namespace AubitDesktop
                         }
 
                         txt="Program Exited with non-zero exit status\n" + txt;
-			if (!setExitMessage(txt)) {
+			if (!TopWindow.setExitMessage(txt)) {
                         	Program.Show(txt);
 			}
                     }
