@@ -49,6 +49,15 @@ namespace AubitDesktop
         bool _hasApplicationtree;
         private event EventHandler EnvelopeReadyForConsumption;
         internal int applicationLauncherId;
+        private bool hasButtonsOnMenuBar=false;
+
+
+        /// <summary>
+        /// Marker set to indicate if we should prompt to allow the closing of the window..
+        /// </summary>
+        private bool dontPrompt=false;
+
+
 
         public Color defaultBackColor
         {
@@ -219,14 +228,28 @@ namespace AubitDesktop
         }
         */
 
+
+        public frmMainAppWindow()
+        {
+            InitializeComponent();
+            setUpMainAppWindow();
+        }
+
+        public void setConnection(AubitNetwork connection) {
+            stdNetworkConnection = connection;
+            stdNetworkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
+            stdNetworkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
+            stdNetworkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+            EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
+
+
+        }
+
         public frmMainAppWindow(AubitNetwork connection)
         {
 
-            InitializeComponent();
-            setUpMainAppWindow();
-            
-
-
+                InitializeComponent();
+                setUpMainAppWindow();
                 stdNetworkConnection = connection;
                 stdNetworkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
                 stdNetworkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
@@ -244,12 +267,20 @@ namespace AubitDesktop
             s = System.DateTime.Now;
             //Console.WriteLine("CONSUMING: " + System.DateTime.Now);
             this.ConsumeEnvelopeCommands();
-            Console.WriteLine("CONSUMED in " + (System.DateTime.Now-s));
+            //Console.WriteLine("CONSUMED in " + (System.DateTime.Now-s));
         }
 
          protected override bool  ProcessCmdKey(ref Message msg, Keys keyData)
         {
- 	            return base.ProcessCmdKey(ref msg, keyData);
+            KeyEventArgs e;
+            e = new KeyEventArgs(keyData);
+            if (handleKeyPress(e))
+            {
+                return true;
+            } 
+
+                return base.ProcessCmdKey(ref msg, keyData);
+           
         }
 
         void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
@@ -302,16 +333,23 @@ namespace AubitDesktop
         {
             MenuBarPanel.Controls.Clear();
 
+            hasButtonsOnMenuBar = false;
             if (a != null)
             {
+                a.Visible = true;
                 MenuBarPanel.Controls.Add(a);
+                if (hasSomethingVisible(a))
+                {
+                    hasButtonsOnMenuBar = true;
+                }
             }
+
+            
             showOrHideMenubar();
         }
 
         public void showOrHideMenubar() {
-            int visibleCount = 0;
-
+            //int visibleCount = 0;
             switch (this.showMenuBar)
             {
                 case showMode.ShowAlways:
@@ -333,7 +371,7 @@ namespace AubitDesktop
 
 
 
-            if (hasSomethingVisible(MenuBarPanel)) {
+            if (hasButtonsOnMenuBar) {
 
                 if (this.showMenuBar == showMode.ShowNever)
                 {
@@ -367,18 +405,43 @@ namespace AubitDesktop
         /// <param name="orig">Top level control to check</param>
         /// <returns>true if there are any visible controls which are not just containers...</returns>
         private static bool hasSomethingVisible(Control orig)
-        {           
-            if (orig.Visible == false) return false;
+        {
+
+            if (orig is UIMenuBarButton)
+            {
+                if (((UIMenuBarButton)orig).Hidden) return false;
+                return true;
+            }
+
+
+            if (orig.Visible == false)
+            {
+                if (orig is Panel || orig is GroupBox)
+                { 
+                    // Do nothing...
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+
+
+            // Is it a container control ? 
             if (orig.Controls != null && orig.Controls.Count>0)
             {
-                foreach (Control x in orig.Controls)
+                foreach ( Control x in  orig.Controls)
                 {
-                    if (hasSomethingVisible(x)) return true;                    
+                    if (hasSomethingVisible(x))
+                    {
+                               return true;
+                    }
                 }
                 return false;
             }
 
-            return true;
+            return false;
         }
 
         private void showOrHideApplicationLauncher()
@@ -458,7 +521,8 @@ namespace AubitDesktop
 
         public void ShowApplication()
         {
-            this.Show();
+
+                this.Show();
         }
 
 
@@ -529,7 +593,18 @@ namespace AubitDesktop
             
             //appPanel.AutoScroll = true;
             tabControl1.SelectTab(tp);
+            doChangedRequiredWhenTabChanges();
             
+        }
+
+        /// <summary>
+        /// Sets an exit message to display on the 'goodbye' screen..
+	/// This is used by the web client - not this client...
+        /// </summary>
+        /// <param name="errMsg">Error Message from 4gl program</param>
+        /// <returns>Always returns false to force a Program.Show</returns>
+        public bool setExitMessage(string errMsg) {
+            return false;
         }
 
 
@@ -546,7 +621,7 @@ namespace AubitDesktop
                 }
             }
             if (appPanel == null) return;
-
+            
             foreach (TabPage tp in this.tabControl1.TabPages)
             {
                 if (tp.Controls.Contains(appPanel))
@@ -561,6 +636,7 @@ namespace AubitDesktop
 
                     if (this.tabControl1.TabCount == 0 || forceClose)
                     {
+                        dontPrompt = true;
                         this.Close();
                         this.Dispose();
                     }
@@ -595,7 +671,7 @@ namespace AubitDesktop
 
                 }
             }
-            catch (Exception Ex) { } 
+            catch (Exception ) { } 
 
 
             stdNetworkConnection.SendString(finalString);
@@ -660,6 +736,11 @@ namespace AubitDesktop
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            doChangedRequiredWhenTabChanges();
+        }
+
+        private void doChangedRequiredWhenTabChanges()
+        {
             FGLApplicationPanel fGLApplicationPanel = null;
             TabPage tp = tabControl1.TabPages[tabControl1.SelectedIndex];
             if (tp == null) { return; }
@@ -672,7 +753,7 @@ namespace AubitDesktop
                 }
             }
 
-            if (currentPanel!=null)
+            if (currentPanel != null)
             {
                 currentPanel.NavigateAwayTab();
             }
@@ -681,6 +762,10 @@ namespace AubitDesktop
                 fGLApplicationPanel.NavigateToTab();
             }
             currentPanel = fGLApplicationPanel;
+
+            showOrHideMenubar();
+            //showOrHideToolbar();
+
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -730,7 +815,7 @@ namespace AubitDesktop
                         toolStripProgressBar2.Visible = false;
                     }
                 }
-                catch (Exception Ex)
+                catch (Exception )
                 {
 
                 }
@@ -741,7 +826,7 @@ namespace AubitDesktop
                 {
                     toolStripProgressBar2.Visible = false;
                 }
-                catch (Exception Ex) { } 
+                catch (Exception ) { } 
             }
         }
 
@@ -821,7 +906,7 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Console.WriteLine("Keypress");
+         //   Console.WriteLine("Keypress");
         }
 
 
@@ -829,26 +914,43 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            string key="";
+            
+        }
+
+        private bool handleKeyPress(KeyEventArgs e)
+        {
+            string key = "";
 
             int keycode;
             string rkey = "";
 
             key = FGLUtils.decodeKeycode(e.Control, e.Shift, e.Alt, e.KeyCode);
-            if (key == null) return;
+            if (key == null)
+            {
+                Console.WriteLine("Key : " + getWindowsKey(e.Control, e.Shift, e.Alt, key));
+            }
+            else
+            {
+                Console.WriteLine("Key : " + getWindowsKey(e.Control, e.Shift, e.Alt, key));
+            }
+            if (key == null) return false;
 
             if (key == "ControlKey")
             {
-                return;
+                return false;
             }
             if (key == "ShiftKey")
             {
-                return;
+                return false;
             }
+
+
+
+
 
             if (scanApplicationLauncherForKey(getWindowsKey(e.Control, e.Shift, e.Alt, key)))
             {
-                return;
+                return true;
             }
 
 
@@ -863,45 +965,51 @@ namespace AubitDesktop
                 rkey = "INTERRUPT";
             }
 
-            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("ACCEPT","Escape")))
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("ACCEPT", "Escape")))
             {
                 rkey = "ACCEPT";
+
             }
 
-            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("INSERT","F1")))
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("INSERT", "F1")))
             {
                 rkey = "INSERT";
             }
-            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("DELETE","F2")))
+            if (FGLUtils.getKeyCodeFromKeyName(key) == FGLUtils.getKeyCodeFromKeyName(getCurrentApplicationKey("DELETE", "F2")))
             {
                 rkey = "DELETE";
             }
 
-            
-            if (key == null) return;
 
-            setLastKeyInApplication(key); 
-           
+            if (key == null) return false;
+
+
+
+            setLastKeyInApplication(key);
+
 
             this.ErrorText = "";
 
             // Check for an explicit key name..
-            if (CheckForToolStripKey(e, key, getWindowsKey(e.Control, e.Shift, e.Alt, key))) return;
+            if (CheckForToolStripKey(e, getWindowsKey(e.Control, e.Shift, e.Alt, key), getWindowsKey(e.Control, e.Shift, e.Alt, key))) return true;
 
 
             if (rkey != "")
             {
                 // Check for a 4GL key name (insert, delete, accept, escape etc)
-                if (CheckForToolStripKey(e, rkey, getWindowsKey(e.Control, e.Shift, e.Alt,key))) return;
+                if (CheckForToolStripKey(e, rkey, null)) return true;
             }
+
+
             // Key wasnt found...
 
 
-            if (currentContext!=null)
+            if (currentContext != null)
             {
                 // currentContext.keyPreview(e,rkey);
-                if (currentContext.useKeyPress(e)) return;
+                if (currentContext.useKeyPress(e)) return true;
             }
+            return false;
         }
 
 
@@ -930,8 +1038,8 @@ namespace AubitDesktop
             {
                 if (nodes[iCount] is launcherCmdNode)
                 {
-                    string launcherKey=((launcherCmdNode)nodes[iCount]).hotKey;
-                    if (launcherKey==null) continue;
+                    string launcherKey = ((launcherCmdNode)nodes[iCount]).hotKey;
+                    if (launcherKey == null) continue;
 
                     if (launcherKey.ToLower() == hotKey.ToLower())
                     {
@@ -939,11 +1047,19 @@ namespace AubitDesktop
                     }
                 }
 
-
-                //Recursively search the text in the child nodes
-                return FindNodeInHierarchy(nodes[iCount].Nodes, hotKey);
-
+                if (nodes[iCount].Nodes != null)
+                {
+                    launcherCmdNode found = null;
+                    found=FindNodeInHierarchy(nodes[iCount].Nodes, hotKey);
+                    if (found!=null)
+                    {
+                        return found;
+                    }
+                }
             }
+                
+
+            
             return null;
         }
 
@@ -961,6 +1077,9 @@ namespace AubitDesktop
         private bool CheckForToolStripKey(KeyEventArgs e, string key,string altHotKey)
         {
             string fglKey;
+
+            //return false;
+
             foreach (ToolStripItem i in topWindowToolStrip.Items)
             {
                 if (i is AubitTSBtn)
@@ -1142,11 +1261,14 @@ namespace AubitDesktop
         private void autoToolbarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.showToolbar = showMode.ShowAuto;
+            
         }
 
         private void frmMainAppWindow_Load(object sender, EventArgs e)
         {
-           
+            if (stdNetworkConnection != null)
+            {
+            }
         }
 
         private void frmMainAppWindow_FormClosed(object sender, FormClosedEventArgs e)
@@ -1370,11 +1492,17 @@ namespace AubitDesktop
 
         private void frmMainAppWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (tabControl1.TabCount > 0)
+
+
+            if (e.CloseReason == CloseReason.UserClosing && !dontPrompt)
             {
-                if (MessageBox.Show("Are you sure you want to exit", "Active programs", MessageBoxButtons.YesNo) == DialogResult.No)
+                // Ok - so this is a closing down by using the 'x' button..
+                if (tabControl1.TabCount > 0)
                 {
-                    e.Cancel = true;
+                    if (MessageBox.Show("Are you sure you want to exit", "Active programs", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        e.Cancel = true;
+                    }
                 }
             }
         }

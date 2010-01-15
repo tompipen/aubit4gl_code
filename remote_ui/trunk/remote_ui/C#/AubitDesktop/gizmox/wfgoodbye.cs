@@ -16,9 +16,16 @@ namespace AubitDesktop
 {
     public partial class Goodbye : Form
     {
-        public Goodbye()
+        string errMsg;
+        public Goodbye(string p_errMsg)
         {
+            errMsg=p_errMsg;
             InitializeComponent();
+        }
+
+        private void Goodbye_Load(object sender, EventArgs e)
+        {
+            this.lblErrMsg.Text = errMsg;
         }
     }
 }

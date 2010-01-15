@@ -9,6 +9,9 @@ using System.Text;
 
 using Gizmox.WebGUI.Common;
 using Gizmox.WebGUI.Forms;
+using System.Xml.Serialization;
+using System.IO;
+using System.Web;
 
 #endregion
 
@@ -29,6 +32,9 @@ namespace AubitDesktop
         private bool hasQuit=false;
         Goodbye gwin = null;
         private bool _amWaitingForEvent = false;
+
+        private AubitDesktop.Xml.Authentication.Configuration appsConfig=null;
+
         private bool amWaitingForEvent
         {
             get
@@ -37,11 +43,26 @@ namespace AubitDesktop
             }
             set
             {
-                Console.WriteLine("amWaitingForEvent set to " + value);
+                log("amWaitingForEvent set to " + value);
                 _amWaitingForEvent = value;
             }
         }
 
+
+        static public void log(string s)
+        {
+            StreamWriter sw;
+
+            try
+            {
+
+                sw = File.AppendText("/tmp/run.log");
+                sw.WriteLine("Log:" + s);
+                sw.Flush();
+                sw.Close();
+            }
+            catch (Exception) { }       
+        }
 
         public string LineDisplayText
         {
@@ -130,14 +151,14 @@ namespace AubitDesktop
             amWaitingForEvent = true;
 
 
-            Console.WriteLine("Enable timer1");
+            log("Enable timer1");
             timer1.Interval = 100;
             timer1.Enabled = true;
         }
 
         void timer1_Tick(object sender, System.EventArgs e)
         {
-            Console.WriteLine("Timer1Tick");
+            log("Timer1Tick");
             if (hasQuit)
             {
                 doQuit();
@@ -145,10 +166,24 @@ namespace AubitDesktop
 
             if (amWaitingForEvent)
             {
-                Console.WriteLine("Stopping timer - as I'm waiting for an event");
+                log("Stopping timer - as I'm waiting for an event");
                 timer1.Enabled = false;
             }
         }
+
+        string exitMsg = "";
+
+        /// <summary>
+        /// Sets an exit message to display on the 'goodbye' screen..
+        /// 
+        /// </summary>
+        /// <param name="errMsg">Error Message from 4gl program</param>
+        /// <returns>Always returns true to inhibit the Program.Show</returns>
+        public bool setExitMessage(string errMsg) {
+            exitMsg = errMsg;
+            return true;
+        }
+
 
         private void doQuit()
         {
@@ -158,7 +193,7 @@ namespace AubitDesktop
             if (gwin == null)
             {
                 this.Enabled = false;
-                gwin = new Goodbye();
+                gwin = new Goodbye(exitMsg);
                 gwin.Closed += new EventHandler(amb_Closed);
                 gwin.ShowDialog();
             }
@@ -184,7 +219,7 @@ namespace AubitDesktop
             showOrHideMenubar();
             MenuBarPanel.Width = MenuBarPanel.Width;
             mainAppPanel.Width = mainAppPanel.Width;
-            Console.WriteLine("SET MENUBARBUTTONS Sizeof a=" + a.Width + " " + a.Height);
+            log("SET MENUBARBUTTONS Sizeof a=" + a.Width + " " + a.Height);
             
 
         }
@@ -240,7 +275,7 @@ namespace AubitDesktop
             {
                 timer1.Interval = 100;
                 timer1.Enabled = true;
-                this.ErrorText = "T...";
+                this.Error.WriteLineText = "T...";
             }
             else
             {
@@ -334,7 +369,7 @@ namespace AubitDesktop
 
         internal void AddTextToConsole(string p)
         {
-            Console.WriteLine(p);
+            log(p);
         }
 
         internal void removeTabPage(FGLApplicationPanel fGLApplicationPanel)
@@ -347,17 +382,165 @@ namespace AubitDesktop
             hasQuit = true;
         }
 
-    private void frmMainAppWindow_Load(object sender, EventArgs e)
+        private void frmMainAppWindow_Load(object sender, EventArgs e)
         {
             showOrHideToolbar();
             showOrHideMenubar();
-            
+
             MessageText = "";
             ErrorText = "";
             CommentText = "";
             LineDisplayText = "";
-           
-           // this.Context.CurrentTheme = new Theme("Black");
+
+            About.Click += new EventHandler(About_Click);
+
+
+
+            gbDebugDump.Visible = false; // Make the debug box invisible for normal users...
+
+            string settingsFile = AubitDesktop.Xml.Authentication.ConfigurationSettings.settingsFile;
+
+            if (settingsFile == null)
+            {
+                log("No settings file loaded");
+                //Program.Show("Settings file = null");
+            }
+            else
+            {
+                log("settings file :" + settingsFile);
+                //Program.Show("Settings File = " + settingsFile);
+            }
+
+
+
+
+
+            log("Username was : " + txtUsername.Text);
+
+            if (txtUsername.Text == "")
+            {
+                string uname;
+
+
+
+                String[] arr1 = HttpContext.Current.Request.ServerVariables.AllKeys;
+                for (int loop1 = 0; loop1 < arr1.Length; loop1++)
+                {
+                    log("Key: " + arr1[loop1]);
+                    String[] arr2 = HttpContext.Current.Request.ServerVariables.GetValues(arr1[loop1]);
+                    for (int loop2 = 0; loop2 < arr2.Length; loop2++)
+                    {
+                        log("Value " + loop2 + ": " + arr2[loop2]);
+                    }
+                }
+
+
+                log("Checking for LOGON_USER");
+                uname = HttpContext.Current.Request.ServerVariables["LOGON_USER"];
+                if (uname == null || uname == "")
+                {
+                    uname = HttpContext.Current.Request.ServerVariables["AUTH_USER"];
+                }
+                if (uname == null || uname == "")
+                {
+                    uname=HttpContext.Current.Request.ServerVariables["REMOTE_USER"];
+                }
+
+                if (uname != null)
+                {
+
+                    log("Checking for LOGON_USER was " + uname);
+                    if (uname.Contains("\\"))
+                    {
+                        uname = uname.Substring(uname.IndexOf("\\") + 1);
+                    }
+
+                    txtUsername.Text = uname;
+                    log("Checking for LOGON_USER fixed to " + uname);
+
+                }
+                else
+                {
+                    log("Checking for LOGON_USER = null");
+                }
+
+            }
+
+
+            // MessageBox.Show("Auth_user=" + HttpContext.Current.Request.ServerVariables["AUTH_USER"]);
+
+            if (settingsFile == null || settingsFile == "")
+            {
+                log("No settings file specified - trying default");
+                settingsFile = "settings.xml";
+            }
+            else
+            {
+                log("Settings file : " + settingsFile);
+            }
+
+              
+                cbApplications.Items.Clear();
+              
+                cbApplications.Text = "";
+              
+            
+
+            try
+            {
+                log("Loading " + settingsFile + " CWD=" + Directory.GetCurrentDirectory());
+             
+                appsConfig = loadAuthenticationSettings(settingsFile);
+                if (appsConfig == null)
+                {
+                    log("appsConfig=null");
+                   
+                }
+                if (appsConfig != null)
+                {
+                    log("Got a config file");
+                    
+                    log("Got a config...");
+                    // Lets add all of our applications into the combobox..
+
+                    foreach (AubitDesktop.Xml.Authentication.Application app in appsConfig.Applications)
+                    {
+                        log("Adding Item " + app.Name);
+                        cbApplications.Items.Add(app.Name);
+                    }
+
+
+                    // If we've got some items - select the first one..
+                    if (cbApplications.Items.Count > 0)
+                    {
+                        cbApplications.SelectedIndex = 0;
+                    }
+
+                    if (appsConfig.AuthMode != "F")
+                    {
+                        if (cbApplications.Items.Count == 1)
+                        {
+                            // Its pre-authenticated & selected...
+
+                            doLogin();
+                        }
+                        else
+                        {
+                            txtUsername.Enabled = false;
+                            txtPassword.Enabled = false;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                log("Unable to open settings file " + settingsFile);
+                Program.Show("Unable to open settings file " + settingsFile);
+            }
+
+
+
+            // this.Context.CurrentTheme = new Theme("Black");
 
             RunningApplications = new List<FGLApplicationPanel>();
             Program.AppSettings = new AubitDesktop.Xml.Settings();
@@ -371,20 +554,60 @@ namespace AubitDesktop
             Program.AppSettings.xscale = 9;
             Program.AppSettings.defaultEncoding = "ISO8859-1";
             Program.AppSettings.yscale = 23;
-  
-          //  frm = new frmWebLogin();
-          //  frm.Closed += new EventHandler(frm_Closed);
-          //  frm.Show();
-            Console.WriteLine("Enable timer1");
-           // timer1.Enabled = true;
+
+            log("Enable timer1");
+
             timer2.Enabled = true; /* Slow timer  - just to keep it pinging updates */
             txtUsername.SelectAll();
             txtUsername.Focus();
             this.MenuBarPanel.BackColor = Color.FromArgb(240, 240, 240);
             this.mainAppPanel.BackColor = Color.FromArgb(240, 240, 240);
             toolBarButton1.Click += new EventHandler(toolBarButton1_Click);
+
             btnPanel.Text = "";
         }
+
+        void About_Click(object sender, EventArgs e)
+        {
+             wfAbout abt;
+             abt = new wfAbout();
+             abt.ShowDialog();
+            
+        }
+
+
+
+    AubitDesktop.Xml.Authentication.Configuration loadAuthenticationSettings(string fileName)
+    {
+        XmlSerializer ser;
+        System.Type t;
+        AubitDesktop.Xml.Authentication.Configuration localAppsConfig;
+
+
+        t=typeof(AubitDesktop.Xml.Authentication.Configuration);
+        ser = new XmlSerializer(t);
+       // ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);
+       // ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
+       // ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
+
+        System.IO.StreamReader file =
+                new System.IO.StreamReader(fileName);
+        
+
+        
+
+        try
+        {
+            localAppsConfig = (AubitDesktop.Xml.Authentication.Configuration)ser.Deserialize(file);
+        }
+        catch (Exception e)
+        {
+            Program.Show("Unable to process XML file:" + e.ToString());
+            return null;
+        }
+        return localAppsConfig;
+    }
+
 
     void toolBarButton1_Click(object sender, EventArgs e)
     {
@@ -396,30 +619,150 @@ namespace AubitDesktop
 
 
 
-        void frm_Closed(object sender, EventArgs e)
+        void frm_doLoginHandler(object sender, EventArgs e)
         {
+            if (cbApplications.Text=="")
+            {
+                Program.Show("No application has been selected!");
+            }
+            else
+            {
+                doLogin();
+            }
+            return;
+        }
+
+
+
+        private void doLogin()
+        {
+            string appName;
+            string host="";
+            string port="";
+            string programName = "";
+            string userName="";
+            string passWord="";
+            string protocol="";
+            bool foundApp = false;
+
+          //  MessageBox.Show("Logon_user = " + HttpContext.Current.Request.ServerVariables["LOGON_USER"]);
+          //  MessageBox.Show("Auth_user=" + HttpContext.Current.Request.ServerVariables["AUTH_USER"]);
+
+            if (cbApplications.SelectedIndex==-1) return;
 
 
             
-                setWaitCursor();
-                networkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
-                networkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
-                networkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
-                networkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
-                networkConnection.ConnectionDied += new EventHandler(networkConnection_ConnectionDied);
+            appName=(string)cbApplications.SelectedItem;
 
-                EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
-            //    this.Update();
-                try
-                {
-                    networkConnection.NewConnection("192.168.2.217", "3490", txtUsername.Text, txtPassword.Text, txtApplication.Text, "PROXY", this);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+            if (appsConfig == null)
+            {
+                host = "192.168.2.217";
+                port= "3490";
+                userName=txtUsername.Text;
+                passWord=txtPassword.Text;
+                protocol = "PROXY";
+                programName = appName;
+                foundApp = true;
+            } else {
 
-            
+                
+
+                for (int appNo = 0; appNo < appsConfig.Applications.Length; appNo++)
+                {
+                    if (appsConfig.Applications[appNo].Name == appName)
+                    {
+                        programName = appsConfig.Applications[appNo].ProgramName;
+
+                        foundApp = true;
+                        // We've found our application...
+                        if (appsConfig.AuthMode == "F")
+                        {
+                            // We need to check the username/password...
+                            for (int user = 0; user < appsConfig.Applications[appNo].Users.Length; user++)
+                            {
+                                if (appsConfig.Applications[appNo].Users[user].Name == txtUsername.Text)
+                                {
+                                    string plainTextPassword=decipher(appsConfig.Applications[appNo].Users[user].Password);
+
+                                    if (plainTextPassword != txtPassword.Text)
+                                    {
+                                        Program.Show("Invalid username/password");
+                                        return;
+                                    }
+                                    else
+                                    {
+                                       
+
+                                        // A Match! 
+                                        //
+                                        host = appsConfig.Applications[appNo].Server;
+                                        port = appsConfig.Applications[appNo].Port;
+
+                                        if (appsConfig.Applications[appNo].connMode == "S")
+                                        {
+                                            // We'll use the tunnelling ssh...
+                                            protocol = "SSHT";
+                                        }
+
+                                        if (appsConfig.Applications[appNo].connMode == "P")
+                                        {
+                                            protocol = "PROXY";
+                                        }
+                                        // The username we use to connect to the sshd or proxy
+                                        // might well be different from the username entered for
+                                        // authentication
+                                        // If the Username in the application configuration is "-"
+                                        // then we want to re-use the entered password....
+                                        if (appsConfig.Applications[appNo].Username == "-" || appsConfig.Applications[appNo].Username == "" || appsConfig.Applications[appNo].Username == null)
+                                        {
+                                            userName = txtUsername.Text;
+                                        }
+                                        else
+                                        {
+                                            userName = appsConfig.Applications[appNo].Username;
+                                        }
+
+                                        if (appsConfig.Applications[appNo].Password == "-" || appsConfig.Applications[appNo].Password == "" || appsConfig.Applications[appNo].Password == null)
+                                        {
+                                            passWord = txtPassword.Text;
+                                        }
+                                        else
+                                        {
+                                            passWord = appsConfig.Applications[appNo].Password;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!foundApp)
+            {
+                Program.Show("Application not found");
+                return;
+            }
+
+
+            setWaitCursor();
+            networkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
+            networkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
+            networkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
+            networkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
+            networkConnection.ConnectionDied += new EventHandler(networkConnection_ConnectionDied);
+            EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
+
+            try
+            {
+                networkConnection.NewConnection(host, port, userName, passWord, programName, protocol, this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+
             if (networkConnection != null && networkConnection.connectionFailed)
             {
                 MessageBox.Show("Connection Failed");
@@ -429,56 +772,146 @@ namespace AubitDesktop
             else
             {
                 loginPanel.Visible = false;
-              //  amWaitingForEvent = true;
-                Console.WriteLine("Enable timer1");
-                //resetPing();
+                log("Enable timer1");
                 timer1.Interval = 100;
                 timer1.Enabled = true;
-               // clrWaitCursor(); 
             }
 
 
-            return;
-            /*
-
-
-            if (frm.logInClicked)
-            {
-                setWaitCursor();
-                networkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
-                networkConnection.ReceivedEnvelopeFromServer += new ReceivedEnvelopeEventHandler(n_ReceivedEnvelopeFromServer);
-                networkConnection.ConnectingFailed += new ConnectingFailedEventHandler(n_ConnectingFailed);
-                networkConnection.DisconnectedFromServer += new DisconnectedEventHandler(n_DisconnectedFromServer);
-                networkConnection.ConnectionDied += new EventHandler(networkConnection_ConnectionDied);
-                
-                EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
-                this.Update();
-                try
-                {
-                    networkConnection.NewConnection("192.168.2.217", "3490", frm.txtUsername.Text, frm.txtPassword.Text, frm.txtApplication.Text, "PROXY",this);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                
-            }
-            
-            if (networkConnection!=null && networkConnection.connectionFailed)
-            {
-               
-                frm.Show();
-                clrWaitCursor();
-
-            }
-            else
-            {
-                frm = null;
-                clrWaitCursor();
-                //timer1.Enabled = true;
-            }
-             * */
         }
+
+        private string decipher(string p)
+        {
+            
+            return A4GL_tea_string_decipher(p);
+            
+        }
+
+
+
+
+
+        uint hexToInt(string h)
+        {
+            switch (h.ToLower())
+            {
+                case "0": return 0;
+                case "1": return 1;
+                case "2": return 2;
+                case "3": return 3;
+                case "4": return 4;
+                case "5": return 5;
+                case "6": return 6;
+                case "7": return 7;
+                case "8": return 8;
+                case "9": return 9;
+                case "a": return 10;
+                case "b": return 11;
+                case "c": return 12;
+                case "d": return 13;
+                case "e": return 14;
+                case "f": return 15;
+            }
+            return 0;
+
+        }
+
+
+
+        string
+        A4GL_tea_string_decipher(string s)
+        {
+            string buff;
+            string buff_out;
+            string smbuff;
+            int a;
+            uint[] key = new uint[4];
+            string rbuff;
+            uint l;
+            byte[] outb = new byte[8];
+            uint[] lgptr = new uint[2];
+
+
+            key[0] = 0x12447469;
+            key[1] = 0x87873739;
+            key[2] = 0x908acd69;
+            key[3] = 0xfc892782;
+            buff = s;
+            buff_out = "";
+
+            for (a = 0; a < buff.Length; a += 16)
+            {
+                l = hexToInt(buff.Substring(a, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 1, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 2, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 3, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 4, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 5, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 6, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 7, 1));
+                lgptr[0] = l;
+
+                l = hexToInt(buff.Substring(a + 8, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 9, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 10, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 11, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 12, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 13, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 14, 1));
+                l = (l * 16) + hexToInt(buff.Substring(a + 15, 1));
+                lgptr[1] = l;
+
+                tea_8c_decipher(lgptr, key);
+
+
+                outb[3] = (byte)((lgptr[0] >> 24) & 0xff);
+                outb[2] = (byte)((lgptr[0] >> 16) & 0xff);
+                outb[1] = (byte)((lgptr[0] >> 8) & 0xff);
+                outb[0] = (byte)(lgptr[0] & 0xff);
+
+                outb[7] = (byte)((lgptr[1] >> 24) & 0xff);
+                outb[6] = (byte)((lgptr[1] >> 16) & 0xff);
+                outb[5] = (byte)((lgptr[1] >> 8) & 0xff);
+                outb[4] = (byte)(lgptr[1] & 0xff);
+
+
+               int len = outb.Length;
+                for (int cnt = 0; cnt < 8; cnt++)
+                {
+                    if (outb[cnt] == 0)
+                    {
+                        len = cnt - 1;
+                    }
+                }
+
+                smbuff = System.Text.ASCIIEncoding.ASCII.GetString(outb,0, len);
+
+                buff_out = buff_out + smbuff;
+
+            }
+            return buff_out.TrimEnd();
+        }
+
+        void tea_8c_decipher(uint[] v, uint[] k)
+        {
+            
+            uint y = v[0], z = v[1], sum = 0xC6EF3720, delta = 0x9E3779B9, n = 32;
+
+            
+
+            while (n-- > 0)
+            {
+                z -= (y << 4 ^ y >> 5) + (y ^ sum) + k[sum >> 11 & 3];
+                sum -= delta;
+                y -= (z << 4 ^ z >> 5) + (z ^ sum) + k[sum & 3];
+            }
+
+            v[0] = y;
+            v[1] = z;
+
+            
+        }
+
 
         void networkConnection_ConnectionDied(object sender, EventArgs e)
         {
@@ -499,9 +932,9 @@ namespace AubitDesktop
         {
             DateTime s;
             s = System.DateTime.Now;
-            //Console.WriteLine("CONSUMING: " + System.DateTime.Now);
+            //log("CONSUMING: " + System.DateTime.Now);
             ConsumeEnvelopeCommands();
-            Console.WriteLine("CONSUMED in " + (System.DateTime.Now - s));
+            log("CONSUMED in " + (System.DateTime.Now - s));
         }
 
         private void ConsumeEnvelopeCommands()
@@ -509,11 +942,11 @@ namespace AubitDesktop
             int a = 0;
             if (updating)
             {
-                Console.WriteLine("Cant consume - updating");
+                log("Cant consume - updating");
                 return;
             }
 
-            //Console.WriteLine("Consume1");
+            //log("Consume1");
             while (a < RunningApplications.Count)
             {
                 RunningApplications[a].ConsumeEnvelopeCommands();
@@ -666,7 +1099,7 @@ namespace AubitDesktop
                 throw new ApplicationException("Invalid control size/location");
             }
 
-            Console.WriteLine(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
+            log(level + " " + control.Name + " " + control.Height + " " + control.Width + " " + control.Left + " " + control.Top);
             if (control.HasChildren)
             {
                 foreach (Control d in control.Controls)
@@ -696,7 +1129,7 @@ namespace AubitDesktop
 
             if (control.Width == 100 && control.Height == 100)
             {
-                Console.WriteLine("Failed");
+                log("Failed");
                 //Program.Show((Gizmox.WebGUI.Forms.Form) null,"Unfixed");
             }
 
@@ -706,7 +1139,7 @@ namespace AubitDesktop
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            //Console.WriteLine("Timer2Tick");
+            //log("Timer2Tick");
             if (hasQuit)
             {
                 doQuit();
@@ -858,6 +1291,11 @@ namespace AubitDesktop
 
         private void statusBar1_Click(object sender, EventArgs e)
         {
+        }
+
+        private void topWindowToolStrip_Click_1(object objSource, ToolBarItemEventArgs objArgs)
+        {
+
         }
 
 

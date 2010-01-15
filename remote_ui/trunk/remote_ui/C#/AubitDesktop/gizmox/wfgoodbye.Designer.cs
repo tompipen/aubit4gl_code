@@ -31,12 +31,13 @@ namespace AubitDesktop
             this.label1 = new Gizmox.WebGUI.Forms.Label();
             this.label2 = new Gizmox.WebGUI.Forms.Label();
             this.linkLabel1 = new Gizmox.WebGUI.Forms.LinkLabel();
+            this.lblErrMsg = new Gizmox.WebGUI.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(67, 36);
+            this.label1.Location = new System.Drawing.Point(71, 27);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(228, 23);
             this.label1.TabIndex = 0;
@@ -55,25 +56,35 @@ namespace AubitDesktop
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(162, 60);
+            this.linkLabel1.Location = new System.Drawing.Point(152, 223);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(100, 23);
             this.linkLabel1.TabIndex = 2;
             this.linkLabel1.Text = "Aubit Computing Ltd";
             this.linkLabel1.Url = "http://www.aubit.com";
             // 
+            // lblErrMsg
+            // 
+            this.lblErrMsg.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Fixed3D;
+            this.lblErrMsg.Location = new System.Drawing.Point(71, 59);
+            this.lblErrMsg.Name = "lblErrMsg";
+            this.lblErrMsg.Size = new System.Drawing.Size(295, 129);
+            this.lblErrMsg.TabIndex = 3;
+            // 
             // Goodbye
             // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Fixed3D;
+            this.Controls.Add(this.lblErrMsg);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = Gizmox.WebGUI.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Size = new System.Drawing.Size(427, 92);
+            this.Size = new System.Drawing.Size(427, 260);
             this.Text = "Goodbye";
+            this.Load += new System.EventHandler(this.Goodbye_Load);
             this.ResumeLayout(false);
 
         }
@@ -83,6 +94,7 @@ namespace AubitDesktop
         private Gizmox.WebGUI.Forms.Label label1;
         private Gizmox.WebGUI.Forms.Label label2;
         private Gizmox.WebGUI.Forms.LinkLabel linkLabel1;
+        private Gizmox.WebGUI.Forms.Label lblErrMsg;
 
 
     }

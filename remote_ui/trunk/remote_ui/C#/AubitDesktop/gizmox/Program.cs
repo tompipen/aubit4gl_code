@@ -62,7 +62,7 @@ namespace AubitDesktop
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Control.CheckForIllegalCrossThreadCalls = false;
+           // Control.CheckForIllegalCrossThreadCalls = false;
             AppSettings = null;
             AppSettingsFile=Application.UserAppDataPath+"\\AubitSettings.xml";
                 
@@ -157,7 +157,7 @@ namespace AubitDesktop
                 {
                     remoteEncoding = System.Text.ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
                     remoteEncoding = System.Text.ASCIIEncoding.GetEncoding("UTF-8");
                 }
@@ -169,16 +169,7 @@ namespace AubitDesktop
             frmMain = new mainfrm(AllowEdit, Autorun, port, minimised,ListenMode);
             if (frmMain!=null && !frmMain.IsDisposed)
             {
-                //try
-               // {
                     Application.Run(frmMain);
-                //}
-                //catch (Exception e)
-               // {
-               //     Console.WriteLine(e.Message);
-               //     Console.WriteLine(e.StackTrace);
-                  //  throw(e);
-               // }
             }
         }
 

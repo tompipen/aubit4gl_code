@@ -1058,21 +1058,23 @@ namespace AubitDesktop
 
             foreach (ONKEY_EVENT a in keyList)
             {
-                if (Convert.ToInt32(a.KEY) == _fakeKeyId)
+                int res;
+                if (Int32.TryParse(a.KEY, out res))
                 {
-                    // The action is really a fake keypress...
-                    onActionID = a.ID;
-                    break;
-                }
-
-                if (Convert.ToInt32(a.KEY) == FGLUtils.getKeyCodeFromKeyName(Action))
-                {
-                    // The action is really a fake keypress...
-                    onActionID = a.ID;
+                    if (res == _fakeKeyId)
+                    {
+                        // The action is really a fake keypress...
+                        onActionID = a.ID;
+                        break;
+                    }
 
 
-
-                    break;
+                    if (res == FGLUtils.getKeyCodeFromKeyName(Action))
+                    {
+                        // The action is really a fake keypress...
+                        onActionID = a.ID;
+                        break;
+                    }
                 }
             }
 

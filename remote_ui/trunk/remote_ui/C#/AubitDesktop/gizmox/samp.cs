@@ -144,6 +144,24 @@ namespace AubitDesktop
         public string ID;
         */
 
+        public ONKEY_EVENT(string KEY)
+        {
+            this.ID = KEY;
+            this.KEY = KEY;
+        }
+
+        public ONKEY_EVENT()
+        {
+            this.ID = null;
+            this.KEY = null;
+        }
+
+        public ONKEY_EVENT(string KEY,string ID)
+        {
+            this.ID = KEY;
+            this.KEY = KEY;
+        }
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string KEY;
@@ -241,6 +259,19 @@ namespace AubitDesktop
         public TEXT[] VALUES;
     }
 
+    /// <remarks/>
+    public class CLEAR
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string todefault;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public FIELD[] FIELDLIST;
+
+    }
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -394,12 +425,12 @@ namespace AubitDesktop
         public string ATTRIBUTE;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string X;
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public int X;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string Y;
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public int Y;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
@@ -624,6 +655,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYFORM", Type = typeof(DISPLAYFORM))]
         [System.Xml.Serialization.XmlElementAttribute("CLOSEFORM", Type = typeof(CLOSEFORM))]
         [System.Xml.Serialization.XmlElementAttribute("DISPLAYTO", Type = typeof(DISPLAYTO))]
+        [System.Xml.Serialization.XmlElementAttribute("CLEAR", Type = typeof(CLEAR))]
         [System.Xml.Serialization.XmlElementAttribute("DUMPSCREEN", Type = typeof(DUMPSCREEN))]
         [System.Xml.Serialization.XmlElementAttribute("SETINTR", Type = typeof(SETINTR))]
         [System.Xml.Serialization.XmlElementAttribute("INPUT", Type = typeof(INPUT))]
@@ -723,15 +755,15 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string COMMENTLINE;
+        public string COMMENT_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ERRORLINE;
+        public string ERROR_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string FORMLINE;
+        public string FORM_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
@@ -739,11 +771,11 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string MENULINE;
+        public string MENU_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string MESSAGELINE;
+        public string MESSAGE_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
@@ -751,7 +783,7 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string PROMPTLINE;
+        public string PROMPT_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1227,6 +1259,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CLOSEFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DISPLAYTO), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(CLEAR), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(DUMPSCREEN), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETINTR), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(INPUT), IsNullable = false)]
@@ -1740,6 +1773,10 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string PROMPT_LINE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string FORM_LINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

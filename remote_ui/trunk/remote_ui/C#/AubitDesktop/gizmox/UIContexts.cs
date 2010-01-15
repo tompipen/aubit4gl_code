@@ -27,6 +27,7 @@ namespace AubitDesktop
 {
     public delegate void UIEventHandler(object source, string ID, string TriggeredText, UIContext u);
     public delegate void UIArrayTableHandler(int RowId, int columnId);
+    public delegate void UIArrayTableRowHandler(int RowId);
     public delegate void UIGotFocusHandler(object source, string comment);
     public delegate void UIFieldValidationHandler(object source, string failedText, out bool ignore);
     
@@ -82,7 +83,7 @@ namespace AubitDesktop
         /// </summary>
         /// <returns></returns>
         //string getAcceptString();
-        void toolBarAcceptClicked();
+    //    void toolBarAcceptClicked();
         void setNextField(string p);
 
     

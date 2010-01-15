@@ -23,13 +23,12 @@ using System.Data;
 using System.Collections.Generic;
 using System.Text;
 using Gizmox.WebGUI.Forms;
+using System.ComponentModel;
 
 
 
 namespace AubitDesktop
 {
-
-
 
 
     class UIInputArrayInTableContext : UIContext
@@ -38,7 +37,6 @@ namespace AubitDesktop
         private FGLApplicationPanel mainWin;
         FormattedGridView inputArrayGrid;
         private bool currLineIsInserted;
-      //  private bool []rowWasAutoInserted;
         private bool firstTime = true;
         private int maxRows;
         private string[] lastRowData;
@@ -64,14 +62,24 @@ namespace AubitDesktop
         private bool allowInsert=true;
         private bool allowDelete=true;
         private int rowLeft = -1;
-        
+        private int currentCol = -1;
+        private int currentRow = -1;
 
         /// <summary>
         /// Number of variables across the screen array..
         /// </summary>
         private int nCols;
 
+        /// <summary>
+        /// Last arrLine seen - just in case there is no 
+        /// currently active line...
+        /// </summary>
+        private int lastArrLine;
+
         //private bool[] rowDataChanged;
+     //   private DataTable Data;
+
+       // private BindingSource BS;
         private DataTable Data;
 
         private enum MoveType {
@@ -123,6 +131,7 @@ namespace AubitDesktop
 
         private AFTER_DELETE_EVENT afterDelete;
         private AFTER_INSERT_EVENT afterInsert;
+        private AFTER_INPUT_EVENT afterInput;
         private int[] beforeFieldEventIds;
         private int[] afterFieldEventIds;
 #endregion
@@ -145,14 +154,35 @@ namespace AubitDesktop
 
         public void toolBarAcceptClicked()
         {
-            //setLines();
-
-            lastKey = "ACCEPT";
-            sendTrigger("ACCEPT", -1);
+            if (inputArrayGrid.okToMove())
+            {
+                lastKey = "ACCEPT";
+                inputArrayGrid.EndEdit();
+                if (afterInput!=null)
+                {
+                    sendTrigger(afterInput.ID,-1);
+                }
+                sendTrigger("ACCEPT", -1);
+            }
+            else
+            {
+                MessageBox.Show("Can't ACCEPT at the minute...");
+            }
         }
 
         public bool externallyTriggeredID(string ID)
         {
+            switch (ID)
+            {
+                case "INSERT": InsertkeyPressed(); return true;
+                case "DELETE": DeletekeyPressed(); return true;
+                case "PGUP": pgUpkeyPressed(); return true;
+                case "PGDN": pgDownkeyPressed(); return true;
+                case "DOWN": downkeyPressed(); return true;
+                case "UP": upkeyPressed(); return true;
+                case "ACCEPT": toolBarAcceptClicked(); return true;
+                // INTERRUPT can pass through - we dont mind ;-)
+            }
             sendTrigger(ID, -1);
             return false;
         }
@@ -172,7 +202,8 @@ namespace AubitDesktop
 
 
             Data.BeginLoadData();
-
+            
+            
 
             for (int row = 0; row < rows.Length; row++)
             {
@@ -224,7 +255,16 @@ namespace AubitDesktop
         public UIInputArrayInTableContext(FGLApplicationPanel f, INPUTARRAY p)
         {
 
-           
+            bool haveDown = false;
+            bool haveUp = false;
+            bool havePgDn = false;
+            bool havePgUp = false;
+            bool haveAccept = false;
+            bool haveInterrupt = false;
+            bool haveDelete = false;
+            bool haveInsert = false;
+
+
             KeyList = new List<ONKEY_EVENT>();
             mainWin = f;
             nCols = p.ARRVARIABLES;
@@ -291,9 +331,13 @@ namespace AubitDesktop
             }
 
 
+            inputArrayGrid.DataSource = null;
+
             // Make sure the array is completely cleared down..
+            inputArrayGrid.ClearSelection();
             inputArrayGrid.Rows.Clear();
             inputArrayGrid.init();
+            inputArrayGrid.maxRows = maxRows;
 
             foreach (object evt in p.EVENTS)
             {
@@ -301,6 +345,43 @@ namespace AubitDesktop
                 {
                     ONKEY_EVENT e;
                     e = (ONKEY_EVENT)evt;
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("ACCEPT"))
+                    {
+                        haveAccept = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INTERRUPT"))
+                    {
+                        haveInterrupt = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DOWN"))
+                    {
+                        haveDown = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("UP"))
+                    {
+                        haveUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGUP"))
+                    {
+                        havePgUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGDN"))
+                    {
+                        havePgDn = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INSERT"))
+                    {
+                        haveInsert = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DELETE"))
+                    {
+                        haveDelete = true;
+                    }
                     KeyList.Add(e);
                     continue;
                 }
@@ -318,6 +399,7 @@ namespace AubitDesktop
                     BEFORE_DELETE_EVENT e;
                     e = (BEFORE_DELETE_EVENT)evt;
                     beforeDelete = e;
+                    continue;
                 }
 
                 if (evt is BEFORE_INSERT_EVENT)
@@ -325,6 +407,7 @@ namespace AubitDesktop
                     BEFORE_INSERT_EVENT e;
                     e = (BEFORE_INSERT_EVENT)evt;
                     beforeInsert = e;
+                    continue;
                 }
 
 
@@ -333,6 +416,13 @@ namespace AubitDesktop
                    AFTER_DELETE_EVENT e;
                     e = (AFTER_DELETE_EVENT)evt;
                     afterDelete = e;
+                    continue;
+                }
+
+                if (evt is AFTER_INPUT_EVENT)
+                {
+                    afterInput = (AFTER_INPUT_EVENT)evt;
+                    continue;
                 }
 
                 if (evt is AFTER_INSERT_EVENT)
@@ -340,6 +430,7 @@ namespace AubitDesktop
                     AFTER_INSERT_EVENT e;
                     e = (AFTER_INSERT_EVENT)evt;
                     afterInsert = e;
+                    continue;
                 }
 
                 if (evt is AFTER_ROW_EVENT)
@@ -416,6 +507,46 @@ namespace AubitDesktop
             {
                 allowDelete = false;
             }
+
+            if (!haveAccept)
+            {
+                KeyList.Add(new ONKEY_EVENT("ACCEPT"));
+            }
+
+            if (!haveInterrupt)
+            {
+                KeyList.Add(new ONKEY_EVENT("INTERRUPT"));
+            }
+
+            if (!haveDown)
+            {
+                KeyList.Add(new ONKEY_EVENT("DOWN"));
+            }
+
+            if (!haveUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("UP"));
+            }
+
+            if (!havePgDn)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGDN"));
+            }
+
+            if (!havePgUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGUP"));
+            }
+
+            if (!haveInsert && allowInsert)
+            {
+                KeyList.Add(new ONKEY_EVENT("INSERT"));
+            }
+
+            if (!haveDelete && allowDelete)
+            {
+                KeyList.Add(new ONKEY_EVENT("DELETE"));
+            }
         }
 
 
@@ -450,12 +581,13 @@ namespace AubitDesktop
         /// <param name="fieldName"></param>
         public void setNextField(string fieldName)
         {
+            Console.WriteLine("setnextfield : arrline=" + arrLine);
             setField(arrLine, fieldName);
         }
 
         public void NavigateToTab()
         {
-            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, true);
+            mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true, true, true);
         }
 
         public void NavigateAwayTab()
@@ -486,7 +618,6 @@ namespace AubitDesktop
 
 
 
-
             
             
 
@@ -502,20 +633,21 @@ namespace AubitDesktop
             {
                 string rowData;
                 subscript_string = "" + (row + 1);
+                if (row >= maxRows) continue;
+
                 rowData = " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
                 rowData += "  <SYNCVALUES>\n";
 
                 for (int col = 0; col < this.nCols; col++)
                 {
                     string rval = "";
-                    try
-                    {
+                    if (inputArrayGrid.Rows[row].Cells[col + 1].Value is DBNull) {
+                        rval="";
+                    }else {
+                    
                         rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].Value;   // Data.Rows[row][col + 1];
                     }
-                    catch
-                    {
-                        rval = "";
-                    }
+                    
 
                     rowData += "   <SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SYNCVALUE>\n";
                 }
@@ -546,6 +678,20 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
+            this.EventTriggered = UIInputArrayContext_EventTriggered;
+
+            if (PendingEvents.Count > 0)
+            {
+                s_pending p;
+                p = PendingEvents[0];
+                arrLine = p.scrLine;
+
+                string s = getTriggeredTag(p.ID, p.arrLine, p.scrLine); // p.triggeredText;
+                PendingEvents.RemoveAt(0);
+                sendPendingTrigger(s);
+
+                return;
+            }
 
             if (nextMove == MoveType.MoveTypeInsert)
             {
@@ -563,8 +709,8 @@ namespace AubitDesktop
                 }
             }
 
-            stopHandlers();
-            inputArrayGrid.ignEvents = true;
+            
+            //inputArrayGrid.ignEvents = true;
             foreach (ON_ACTION_EVENT e in onActionList)
             {
                 foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION))
@@ -576,104 +722,55 @@ namespace AubitDesktop
                 }
             }
 
-            this.EventTriggered = UIInputArrayContext_EventTriggered;
-
-            int crow = -1;
-            int ccol = -1;
-
-            // Do we have a current cell ? 
-            // If this is the first time around - assume we dont...
-            if (inputArrayGrid.CurrentCell != null && firstTime==false)
-            {
-                
-                crow = inputArrayGrid.CurrentCell.RowIndex;
-                ccol = inputArrayGrid.CurrentCell.ColumnIndex;
-                Console.WriteLine("Crow=" + crow + " ccol=" + ccol);
-            }            
+            
 
             if (rows != null)
             {
                 setUpData(rows);
             }
-          //  inputArrayGrid.allowInsertRow = allowInsert;
-          //  inputArrayGrid.maxRows = maxRows;
-  
+
+
+           
+           
             if (inputArrayGrid.DataSource != Data)
             {
-                if (inputArrayGrid.maxRows != maxRows)
-                {
-                    inputArrayGrid.maxRows = maxRows;
-                }
                 inputArrayGrid.DataSource = Data;
-            }
-
-            if (firstTime)
-            {
                 inputArrayGrid.CurrentCell = null;
+                inputArrayGrid.init();
             }
 
             startHandlers();
-            inputArrayGrid.ignEvents = false;
+            
 
 
 
-            mainWin.setActiveToolBarKeys(KeyList,onActionList, true ,true,true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList); //, true ,true,true);
 
             if (!_contextIsActive)
             {
                 _contextIsActive = true;
             }
 
-            if (crow != -1 && ccol != -1 && !firstTime)
-            {
-                if (inputArrayGrid.CurrentCell != null)
-                {
-                    if (crow != inputArrayGrid.CurrentCell.RowIndex || ccol != inputArrayGrid.CurrentCell.ColumnIndex)
-                    {
-                        Console.WriteLine("Moving to crow:" + crow + " ccol:" + ccol);
-                        inputArrayGrid.ignEvents = false;
-                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
-                        inputArrayGrid.ignEvents = true;
-                    }
-                }
-                else
-                {
-                    
-                    Console.WriteLine("Moving from nowhere to crow:" + crow + " ccol:" + ccol);
-                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[crow].Cells[ccol];
-                }
-            }
+
 
             inputArrayGrid.context = FGLContextType.ContextInputArray;
 
-            if (PendingEvents.Count > 0)
-            {
-                s_pending p;
-                p = PendingEvents[0];
-                arrLine = p.scrLine;
 
-                string s = getTriggeredTag(p.ID, p.arrLine, p.scrLine); // p.triggeredText;
-                PendingEvents.RemoveAt(0);
-                sendPendingTrigger(s);
-                
-                return;
-            }
 
 
 
 
             inputArrayGrid.allowInsertRow = allowInsert;
-            inputArrayGrid.maxRows = maxRows;
+
+            /*
             if ((crow == -1 && crow == -1) || firstTime)
             {
-                //if (inputArrayGrid.Rows.Count == 0)
-               // {
-
-             //   }
                 setField(1, null);
-
                 firstTime = false;
             }
+            */
+
+            
           
             inputArrayGrid.Enabled = true;
 
@@ -687,24 +784,17 @@ namespace AubitDesktop
                 inputArrayGrid.AllowUserToDeleteRows = false;
             }
 
-            if (inputArrayGrid.CurrentCell == null)
-            {
-                inputArrayGrid.setFieldToStart(); 
-            }
+            inputArrayGrid.setActiveFocus();
 
-
-
+            Console.WriteLine("CR=" + currentRow + " CC=" + currentCol);
         }
 
 
         internal void setField(int arrLine, string fieldName)
         {
-
-
             bool found = false;
             int cell = 0;
             string loweredFieldName;
-
 
             if (fieldName != null)
             {
@@ -776,7 +866,8 @@ namespace AubitDesktop
                 cell++;
             }
 
-            inputArrayGrid.CurrentCell = inputArrayGrid.Rows[arrLine - 1].Cells[cell + 1]; // Skip the first cell - its just the line number...
+            setCell(arrLine-1, cell+1);
+            //inputArrayGrid.CurrentCell = inputArrayGrid.Rows[arrLine - 1].Cells[cell + 1]; // Skip the first cell - its just the line number...
             PendingEvents.Clear();
         }
 
@@ -786,6 +877,7 @@ namespace AubitDesktop
 
         void beforeFieldHandler(int rowid, int columnId)
         {
+          
             mainWin.CommentText = inputArrayGrid.getComments(columnId);
             if (beforeFieldEventIds[columnId] != -1)
             {
@@ -795,6 +887,7 @@ namespace AubitDesktop
 
         void afterFieldHandler(int rowid, int columnId)
         {
+          
             if (afterFieldEventIds[columnId] != -1)
             {
                 sendTrigger(""+afterFieldEventIds[columnId], rowid);
@@ -835,7 +928,15 @@ namespace AubitDesktop
             }
             else
             {
-                arrLine = inputArrayGrid.CurrentRow.Index+1;
+                if (inputArrayGrid.CurrentRow != null)
+                {
+                    arrLine = inputArrayGrid.CurrentRow.Index + 1;
+                    lastArrLine = arrLine;
+                }
+                else
+                {
+                    arrLine = lastArrLine;
+                }
                 scrLine = arrLine;
             }
 
@@ -854,8 +955,8 @@ namespace AubitDesktop
             }
             else
             {
-                //PendingEvents.Add(new s_pending(getTriggeredTag(ID,arrLine,arrLine),arrLine));
-                PendingEvents.Add(new s_pending(ID, arrLine, arrLine));
+                Console.WriteLine("Adding pending event to " + arrLine + " " + scrLine);
+                PendingEvents.Add(new s_pending(ID, scrLine, arrLine));
             }
         }
 
@@ -864,12 +965,18 @@ namespace AubitDesktop
         {
             string infieldStr = inputArrayGrid.getInfield();
             string rval="";
+            int rows;
+            rows = inputArrayGrid.Rows.Count;
+            if (rows > maxRows)
+            {
+                rows = maxRows;
+            }
             try
             {
                 string syncValues = getSyncValues();
                 rval = "<TRIGGERED ID=\"" + ID + "\""+
                        " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\"" 
-                       + infieldStr + " ARRCOUNT=\""+ inputArrayGrid.Rows.Count+"\">" + syncValues +
+                       + infieldStr + " ARRCOUNT=\""+ Data.Rows.Count+"\">" + syncValues +
                     "</TRIGGERED>";
             } catch (Exception Ex) {
                 MessageBox.Show("Error getting value for return:"+Ex.Message);
@@ -881,7 +988,7 @@ namespace AubitDesktop
         }
 
 
-        void RowLeave(object sender, DataGridViewCellEventArgs e)
+        void RowLeave(int rowId)
         {
             if (inputArrayGrid.CurrentRow != null)
             {
@@ -891,33 +998,48 @@ namespace AubitDesktop
                     {
                         if (afterInsert!=null && currLineIsInserted)
                         {
-                            sendTrigger(afterInsert.ID, e.RowIndex);
+                            sendTrigger(afterInsert.ID, rowId);
                         }
-                        sendTrigger(afterRow.ID, e.RowIndex);
+                        sendTrigger(afterRow.ID, rowId);
                     }
                 }
             }
 
             currLineIsInserted = false;
-            rowLeft = e.RowIndex;
+            rowLeft = rowId;
+         
         }
 
-        void RowEnter(object sender, DataGridViewCellEventArgs e)
+        void RowEnter(int rowId)
         {
+ 
+
             if (beforeRow != null)
             {
                 if (beforeRow.ID != "")
                 {
-                    sendTrigger(beforeRow.ID, e.RowIndex);
+                    sendTrigger(beforeRow.ID, rowId);
                 }
             }
+            
         }
 
 
 
         public void DeactivateContext()
         {
-            mainWin.setActiveToolBarKeys(null, null, false);
+            mainWin.setActiveToolBarKeys(null, null);
+            if (inputArrayGrid.CurrentCell != null)
+            {
+                currentRow = inputArrayGrid.CurrentCell.RowIndex;
+                currentCol = inputArrayGrid.CurrentCell.ColumnIndex;
+            }
+            else
+            {
+                currentCol = -1;
+                currentRow = -1;
+            }
+            
             mainWin.SetContext(FGLContextType.ContextInputArrayInactive);
             inputArrayGrid.context = FGLContextType.ContextInputArrayInactive;
             EventTriggered = null;
@@ -926,14 +1048,16 @@ namespace AubitDesktop
 
         }
 
+
         private void stopHandlers()
         {
-            inputArrayGrid.fieldValidationFailed = null;            
+            inputArrayGrid.fieldValidationFailed = null;
             inputArrayGrid.BeforeRow = null;
             inputArrayGrid.AfterRow = null;
-            inputArrayGrid.beforeFieldHandler=null;
+            inputArrayGrid.beforeFieldHandler = null;
             inputArrayGrid.afterFieldHandler = null;
         }
+
 
         private void startHandlers()
         {
@@ -942,12 +1066,12 @@ namespace AubitDesktop
 
             if (beforeRow != null)
             {
-                inputArrayGrid.BeforeRow = new DataGridViewCellEventHandler(RowEnter);
+                inputArrayGrid.BeforeRow = new UIArrayTableRowHandler(RowEnter);
             }
 
             if (afterRow != null)
             {
-                inputArrayGrid.AfterRow = new DataGridViewCellEventHandler(RowLeave);
+                inputArrayGrid.AfterRow = new UIArrayTableRowHandler(RowLeave);
             }
             inputArrayGrid.beforeFieldHandler = new UIArrayTableHandler(beforeFieldHandler);
             inputArrayGrid.afterFieldHandler = new UIArrayTableHandler(afterFieldHandler);
@@ -959,59 +1083,63 @@ namespace AubitDesktop
             _contextIsActive = false;
             inputArrayGrid.context = FGLContextType.ContextNone;
             stopHandlers();
+            inputArrayGrid.copyFromDataset();
+            
         }
 
 
 
+        void setCell(int row, int col)
+        {
+            currentRow = row;
+            currentCol = col;
+            Console.WriteLine("setcell : row=" + row + " col="+col);
+            
+            if (inputArrayGrid.IsCurrentCellInEditMode)
+            {
+                inputArrayGrid.EndEdit();
+            }
+            if (inputArrayGrid.CurrentCell != null)
+            {
+                if (inputArrayGrid.CurrentCell.IsInEditMode) {
+                    inputArrayGrid.EndEdit();
+                }
+            }
+            try
+            {
+                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[row].Cells[col];
+            }
+            catch (Exception )
+            {
+
+            }
+        }
+
         internal void upkeyPressed()
         {
-            lastKey = "UP";
-            //if (inputArrayGrid.CurrentRow.Index > 0)
-            //{
-            //    inputArrayGrid.CurrentCell=inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index-1].Cells[1];
-            //}
+            inputArrayGrid.processUp();
         }
 
         internal void downkeyPressed()
         {
-            lastKey = "DOWN";
-            if (inputArrayGrid.CurrentRow.Index<inputArrayGrid.Rows.Count-1)
-            {
-                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentRow.Index + 1].Cells[1];
-            }
+            inputArrayGrid.processDown();
         }
 
         internal void pgDownkeyPressed()
         {
             int n;
-
-            lastKey = "PGDN";
-
-            n= inputArrayGrid.CurrentRow.Index+ inputArrayGrid.DisplayedRowCount(false);
-            if (n < inputArrayGrid.Rows.Count-1)
-            {
-                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[n].Cells[1];
-              
-            }
+            inputArrayGrid.processPgDn();
         }
 
         internal void pgUpkeyPressed()
         {
-            int n;
-            lastKey = "PGUP";
-
-            n = inputArrayGrid.CurrentRow.Index - inputArrayGrid.DisplayedRowCount(false);
-            if (inputArrayGrid.CurrentRow.Index >=0)
-            {
-                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[n].Cells[1];
-         
-            }
-            
+            inputArrayGrid.processPgUp();
         }
 
         internal void setArrLine(int p)
         {
-            inputArrayGrid.CurrentCell = inputArrayGrid.Rows[p - 1].Cells[1];
+            setCell(p - 1, 1);
+            //inputArrayGrid.CurrentCell = inputArrayGrid.Rows[p - 1].Cells[1];
         }
 
         internal void setScrLine(int p)
@@ -1021,24 +1149,27 @@ namespace AubitDesktop
 
         internal void InsertkeyPressed()
         {
-            if (!allowInsert) return;
+            if (inputArrayGrid.okToMove())
+            {
+                if (!allowInsert) return;
 
-            if (beforeInsert != null)
-            {
-                sendTrigger(beforeInsert.ID, -1);
-                nextMove = MoveType.MoveTypeInsert;
-            }
-            else
-            {
-                if (inputArrayGrid.Rows.Count < maxRows)
+                if (beforeInsert != null)
                 {
-                    int r = inputArrayGrid.CurrentRow.Index;
-                    doInsertRow();
-                    setField(r + 1, null);
+                    sendTrigger(beforeInsert.ID, -1);
+                    nextMove = MoveType.MoveTypeInsert;
                 }
                 else
                 {
-                    MessageBox.Show("Cant insert more rows - array is full");
+                    if (inputArrayGrid.Rows.Count < maxRows)
+                    {
+                        int r = inputArrayGrid.CurrentRow.Index;
+                        doInsertRow();
+                        setField(r + 1, null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Cant insert more rows - array is full");
+                    }
                 }
             }
         }
@@ -1079,18 +1210,20 @@ namespace AubitDesktop
 
         internal void DeletekeyPressed()
         {
-            if (!allowDelete) return;
-
-            try
+            if (inputArrayGrid.okToMove())
             {
-                doDeleteRow();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
+                if (!allowDelete) return;
 
-           
+                try
+                {
+                    doDeleteRow();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+            }
         }
 
         private void doDeleteRow()

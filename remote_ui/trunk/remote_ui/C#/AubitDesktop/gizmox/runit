@@ -1,13 +1,14 @@
+rm AubitDesktopWeb.dll
 
 if [ "$1" = "" ]
 then
 rm bin/AubitDesktopWeb.dll
 
- /usr/bin/gmcs  /noconfig /debug:full /debug+ /optimize- /out:bin/AubitDesktopWeb.dll wfAboutBox1.cs wfAboutBox1.Designer.cs Properties/AssemblyInfo.cs Properties/Resources.Designer.cs AppSettings.cs AubitMessageBox.cs AubitMessageBox.Designer.cs AubitTSBtn.cs EnvelopeReader.cs Eval.cs FGLApplicationPanel.cs FGLBrowserFieldWidget.cs FGLButtonFieldWidget.cs FGLCheckboxFieldWidget.cs FGLComboListBoxFieldWidget.cs FGLComboBoxFieldWidget.cs FGLDateFieldWidget.cs FGLForm.cs FGLLabelFieldWidget.cs FGLOptions.cs FGLPixmapFieldWidget.cs FGLProgressBarFieldWidget.cs FGLScreenRecord.cs FGLTextFieldWidget.cs FGLTxtControl.cs FGLTxtControl.Designer.cs FGLUsing.cs FGLWidget.cs FieldOverlay.cs frmFieldOverlay.cs frmFieldOverlay.Designer.cs HelperClasses.cs  \
-frmWebLogin.cs  frmWebLogin.Designer.cs \
+ /usr/bin/gmcs  /noconfig /debug:full /debug+ /optimize- /out:bin/AubitDesktopWeb.dll wfAbout.cs wfAbout.Designer.cs Properties/AssemblyInfo.cs Properties/Resources.Designer.cs AppSettings.cs AubitMessageBox.cs AubitMessageBox.Designer.cs AubitTSBtn.cs EnvelopeReader.cs Eval.cs FGLApplicationPanel.cs FGLBrowserFieldWidget.cs FGLButtonFieldWidget.cs FGLCheckboxFieldWidget.cs FGLComboListBoxFieldWidget.cs FGLComboBoxFieldWidget.cs FGLDateFieldWidget.cs FGLForm.cs FGLLabelFieldWidget.cs FGLOptions.cs FGLPixmapFieldWidget.cs FGLProgressBarFieldWidget.cs FGLScreenRecord.cs FGLTextFieldWidget.cs FGLTxtControl.cs FGLTxtControl.Designer.cs FGLUsing.cs FGLWidget.cs FieldOverlay.cs frmFieldOverlay.cs frmFieldOverlay.Designer.cs HelperClasses.cs  FglWindow.cs \
+wffrmWebLogin.cs  wffrmWebLogin.Designer.cs \
 FGLRadioFieldWidget.cs \
-wfgoodbye.Designer.cs \
-FormattedGridView.cs \
+wfgoodbye.Designer.cs  \
+FormattedGridView.cs wfAuthentication.cs \
 wfgoodbye.cs \
 UIContextInputArrayInTable.cs \
 Network_web.cs PromptWindow.cs PromptWindow.Designer.cs samp.cs ssh.cs StartMenuXMLParser.cs ToolBarImages.Designer.cs UIContextConstruct.cs UIContextDisplayArray.cs UIContextDisplayArrayInTable.cs UIContextInput.cs UIContextInputArray.cs UIContextMenu.cs UIContextMisc.cs UIContextPrompt.cs UIContexts.cs XMLForm.cs wfMainAppWindow.cs wfMainAppWindow.Designer.cs wfXref.cs /target:library /unsafe- "/define:DEBUG;TRACE" /reference:/usr/lib/mono/gac/System/2.0.0.0__b77a5c561934e089/System.dll /reference:/usr/lib/mono/gac/System.Configuration/2.0.0.0__b03f5f7f11d50a3a/System.Configuration.dll /reference:/usr/lib/mono/gac/System.Data/2.0.0.0__b77a5c561934e089/System.Data.dll /reference:/usr/lib/mono/gac/System.Drawing/2.0.0.0__b03f5f7f11d50a3a/System.Drawing.dll /reference:/usr/lib/mono/gac/System.Web/2.0.0.0__b03f5f7f11d50a3a/System.Web.dll /reference:/usr/lib/mono/gac/System.Xml/2.0.0.0__b77a5c561934e089/System.Xml.dll  \
@@ -15,14 +16,23 @@ Network_web.cs PromptWindow.cs PromptWindow.Designer.cs samp.cs ssh.cs StartMenu
 /reference:Gizmox.WebGUI.Common.dll \
 /reference:Gizmox.WebGUI.Forms.dll \
 /reference:Gizmox.WebGUI.Server.dll \
+/reference:Gizmox.WebGUI.Server.dll \
+/reference:Gizmox.WebGUI.Forms.Themes.dll \
 /reference:Org.Mentalis.Security \
 /reference:Tamir.SharpSSH \
 /warn:4  
 fi
 
+
+
+
 if [ -x bin/AubitDesktopWeb.dll ]
 then
+	cp bin/AubitDesktopWeb.dll /var/www/localhost/htdocs/gizmox/bin
+	cp Gizmox.WebGUI.Client.dll  Gizmox.WebGUI.Forms.dll   Org.Mentalis.Security.dll DiffieHellman.dll    Gizmox.WebGUI.Common.dll  Gizmox.WebGUI.Server.dll  Tamir.SharpSSH.dll Web.config /var/www/localhost/htdocs/gizmox/bin
+
+exit
 	export MONO_PATH=`pwd`
-	/usr/bin/xsp2 --verbose  --port 9999 --root `pwd` --applications '/:.'
+	/usr/bin/xsp2 --verbose  --port 9999 --root `pwd` --applications '/:.' 
 fi
 

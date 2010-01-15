@@ -129,6 +129,10 @@ namespace AubitDesktop.Xml.XMLForm
             public string width;
 
             /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string text;
+
+            /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("RecordView", Type = typeof(RecordView))]
@@ -290,6 +294,9 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string config;
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string fontPitch;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -718,6 +725,10 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string isPassword;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string comments;
 
             /// <remarks/>
@@ -825,10 +836,17 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string config;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string fontPitch;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string gridWidth;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string shift;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -850,11 +868,21 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string format;
 
-                        /// <remarks/>
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string name;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string justify;
+
+            /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string action;
+
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string guessAlign;
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string pixelHeight;
@@ -967,6 +995,10 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string config;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string fontPitch;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1208,6 +1240,10 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string text;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string header;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]

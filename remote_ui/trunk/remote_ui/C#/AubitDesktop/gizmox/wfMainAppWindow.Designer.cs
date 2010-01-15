@@ -45,7 +45,7 @@ namespace AubitDesktop
             this.mainAppPanel = new Gizmox.WebGUI.Forms.Panel();
             this.loginPanel = new Gizmox.WebGUI.Forms.Panel();
             this.panel2 = new Gizmox.WebGUI.Forms.Panel();
-            this.txtApplication = new Gizmox.WebGUI.Forms.TextBox();
+            this.cbApplications = new Gizmox.WebGUI.Forms.ComboBox();
             this.label4 = new Gizmox.WebGUI.Forms.Label();
             this.btnLogin = new Gizmox.WebGUI.Forms.Button();
             this.label1 = new Gizmox.WebGUI.Forms.Label();
@@ -56,7 +56,7 @@ namespace AubitDesktop
             this.button1 = new Gizmox.WebGUI.Forms.Button();
             this.groupBox1 = new Gizmox.WebGUI.Forms.GroupBox();
             this.MenuBarPanel = new Gizmox.WebGUI.Forms.Panel();
-            this.groupBox2 = new Gizmox.WebGUI.Forms.GroupBox();
+            this.gbDebugDump = new Gizmox.WebGUI.Forms.GroupBox();
             this.button2 = new Gizmox.WebGUI.Forms.Button();
             this.iconPB = new Gizmox.WebGUI.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.sbLineDisplayText)).BeginInit();
@@ -128,6 +128,7 @@ namespace AubitDesktop
             this.topWindowToolStrip.RightToLeft = false;
             this.topWindowToolStrip.ShowToolTips = true;
             this.topWindowToolStrip.TabIndex = 2;
+          //  this.topWindowToolStrip.Click += new Gizmox.WebGUI.Forms.ToolBarItemHandler(this.topWindowToolStrip_Click_1);
             // 
             // toolBarButton1
             // 
@@ -184,7 +185,7 @@ namespace AubitDesktop
             // panel2
             // 
             this.panel2.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Clear;
-            this.panel2.Controls.Add(this.txtApplication);
+            this.panel2.Controls.Add(this.cbApplications);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.btnLogin);
             this.panel2.Controls.Add(this.label1);
@@ -193,17 +194,17 @@ namespace AubitDesktop
             this.panel2.Controls.Add(this.txtPassword);
             this.panel2.Location = new System.Drawing.Point(51, 38);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(217, 108);
+            this.panel2.Size = new System.Drawing.Size(230, 108);
             this.panel2.TabIndex = 5;
             this.panel2.TabStop = false;
             // 
-            // txtApplication
+            // cbApplications
             // 
-            this.txtApplication.Location = new System.Drawing.Point(98, 52);
-            this.txtApplication.Name = "txtApplication";
-            this.txtApplication.Size = new System.Drawing.Size(100, 20);
-            this.txtApplication.TabIndex = 2;
-            this.txtApplication.Text = "menuprog";
+            this.cbApplications.Location = new System.Drawing.Point(98, 55);
+            this.cbApplications.Name = "cbApplications";
+            this.cbApplications.Size = new System.Drawing.Size(121, 21);
+            this.cbApplications.TabIndex = 4;
+            this.cbApplications.Text = "comboBox1";
             // 
             // label4
             // 
@@ -215,12 +216,12 @@ namespace AubitDesktop
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(123, 78);
+            this.btnLogin.Location = new System.Drawing.Point(142, 82);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(75, 23);
             this.btnLogin.TabIndex = 3;
             this.btnLogin.Text = "Login";
-            this.btnLogin.Click += new System.EventHandler(this.frm_Closed);
+            this.btnLogin.Click += new System.EventHandler(this.frm_doLoginHandler);
             // 
             // label1
             // 
@@ -242,16 +243,15 @@ namespace AubitDesktop
             // 
             this.txtUsername.Location = new System.Drawing.Point(98, 8);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(100, 20);
+            this.txtUsername.Size = new System.Drawing.Size(119, 20);
             this.txtUsername.TabIndex = 0;
-            this.txtUsername.Text = "aubit4gl";
             // 
             // txtPassword
             // 
             this.txtPassword.Location = new System.Drawing.Point(98, 31);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(100, 20);
+            this.txtPassword.Size = new System.Drawing.Size(119, 20);
             this.txtPassword.TabIndex = 1;
             // 
             // label3
@@ -276,7 +276,7 @@ namespace AubitDesktop
             // 
             this.groupBox1.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
             this.groupBox1.Controls.Add(this.MenuBarPanel);
-            this.groupBox1.Controls.Add(this.groupBox2);
+            this.groupBox1.Controls.Add(this.gbDebugDump);
             this.groupBox1.Controls.Add(this.iconPB);
             this.groupBox1.Dock = Gizmox.WebGUI.Forms.DockStyle.Right;
             this.groupBox1.FlatStyle = Gizmox.WebGUI.Forms.FlatStyle.Flat;
@@ -297,16 +297,16 @@ namespace AubitDesktop
             this.MenuBarPanel.TabIndex = 1;
             this.MenuBarPanel.Click += new System.EventHandler(this.MenuBarPanel_Click);
             // 
-            // groupBox2
+            // gbDebugDump
             // 
-            this.groupBox2.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Dock = Gizmox.WebGUI.Forms.DockStyle.Top;
-            this.groupBox2.FlatStyle = Gizmox.WebGUI.Forms.FlatStyle.Flat;
-            this.groupBox2.Location = new System.Drawing.Point(3, 16);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(150, 37);
-            this.groupBox2.TabIndex = 2;
+            this.gbDebugDump.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
+            this.gbDebugDump.Controls.Add(this.button2);
+            this.gbDebugDump.Dock = Gizmox.WebGUI.Forms.DockStyle.Top;
+            this.gbDebugDump.FlatStyle = Gizmox.WebGUI.Forms.FlatStyle.Flat;
+            this.gbDebugDump.Location = new System.Drawing.Point(3, 16);
+            this.gbDebugDump.Name = "gbDebugDump";
+            this.gbDebugDump.Size = new System.Drawing.Size(150, 37);
+            this.gbDebugDump.TabIndex = 2;
             // 
             // button2
             // 
@@ -365,7 +365,6 @@ namespace AubitDesktop
         private Gizmox.WebGUI.Forms.Panel mainAppPanel;
         public Gizmox.WebGUI.Forms.Panel loginPanel;
         public Gizmox.WebGUI.Forms.Panel panel2;
-        public Gizmox.WebGUI.Forms.TextBox txtApplication;
         public Gizmox.WebGUI.Forms.Label label4;
         public Gizmox.WebGUI.Forms.Button btnLogin;
         public Gizmox.WebGUI.Forms.Label label1;
@@ -379,8 +378,9 @@ namespace AubitDesktop
         private Gizmox.WebGUI.Forms.GroupBox groupBox1;
         private Gizmox.WebGUI.Forms.PictureBox iconPB;
         public Gizmox.WebGUI.Forms.Panel MenuBarPanel;
-        private Gizmox.WebGUI.Forms.GroupBox groupBox2;
+        private Gizmox.WebGUI.Forms.GroupBox gbDebugDump;
         private Gizmox.WebGUI.Forms.Button button2;
+        private Gizmox.WebGUI.Forms.ComboBox cbApplications;
 
 
     }

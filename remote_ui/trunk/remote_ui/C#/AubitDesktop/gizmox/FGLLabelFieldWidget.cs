@@ -158,26 +158,48 @@ namespace AubitDesktop
             ATTRIB a;
             
             a = createAttribForWidget(ff);
-            createWidget(a, ma,Convert.ToInt32(label.posY), index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, label.action, Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(label.posY), index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, label.action, Convert.ToInt32(ff.fieldId), ff.include,label.text);
             setPixelSize(label.pixelWidth, label.pixelHeight);
+            if (label.justify != null && label.justify.Length>0)
+            {
+                if (label.justify=="left") {
+                    l.TextAlign = ContentAlignment.MiddleLeft;
+                }
+                if (label.justify == "right")
+                {
+                    l.TextAlign = ContentAlignment.MiddleRight;
+                }
+                if (label.justify == "center")
+                {
+                    l.TextAlign = ContentAlignment.MiddleCenter;
+                }
+            }
+            if (label.fontPitch == "fixed")
+            {
+                l.Font = new Font(FontFamily.GenericMonospace, l.Font.Size); ;
+            }
         }
 
         public FGLLabelFieldWidget(AubitDesktop.Xml.XMLForm.FormField ff, AubitDesktop.Xml.XMLForm.RipLABEL label, string config, int index, AubitDesktop.Xml.XMLForm.Matrix ma)
         {
             ATTRIB a;
             a = createAttribForWidget(ff);
-            createWidget(a, ma,Convert.ToInt32(label.posY),index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include);
+            createWidget(a, ma,Convert.ToInt32(label.posY),index, Convert.ToInt32(label.posX), 1, Convert.ToInt32(label.gridWidth), "", config, -1, ff.sqlTabName + "." + ff.colName, "", Convert.ToInt32(ff.fieldId), ff.include,"");
             setPixelSize(label.pixelWidth, label.pixelHeight);
+            if (label.fontPitch == "fixed")
+            {
+                l.Font = new Font(FontFamily.GenericMonospace, l.Font.Size); ;
+            }
         }
 
 
         public FGLLabelFieldWidget(ATTRIB thisAttribute, int row, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
         {
 
-            createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            createWidget(thisAttribute,null, row,0, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl,"");
         }
 
-        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl)
+        private void createWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index, int column, int rows, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, string origText)
         {
             this.SetWidget(thisAttribute, ma,row,index, column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
             l = new Label();
@@ -185,6 +207,11 @@ namespace AubitDesktop
             l.BackColor = System.Drawing.SystemColors.Control;
             l.ForeColor = System.Drawing.SystemColors.ControlText;
             SizeControl(ma,index,l);
+            if (origText != "")
+            {
+                this.Text = origText;
+            }
+
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
             //if (this.Text == "") this.Text = tabcol;
             l.Click += new EventHandler(b_Click);

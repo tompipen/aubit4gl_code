@@ -27,12 +27,12 @@ namespace AubitDesktop
 {
     class FGLOptions
     {
-        private int _promptline;
-        private int _menuline;
-        private int _commentline;
-        private int _errorline;
-        private int _formline;
-        private int _messageline;
+        private int _promptline=1;
+        private int _menuline=1;
+        private int _commentline=-1;
+        private int _errorline=-1;
+        private int _formline=3;
+        private int _messageline=2;
 
         public int MenuLine
         {
@@ -143,6 +143,8 @@ namespace AubitDesktop
                 case "P":
                     _promptline = Convert.ToInt32(val);
                     break;
+                case "S": /* SQL Interrupt on/off */
+                    break;
                 case "I":
                     InsertKey = val; break;
                 case "D":
@@ -155,7 +157,7 @@ namespace AubitDesktop
                     AcceptKey = val; break;
 
                 default:
-                    Program.Show("Option " + s + " not implemented yet");
+                    Console.WriteLine("Option " + s + " not implemented yet");
                     break;
 
             }

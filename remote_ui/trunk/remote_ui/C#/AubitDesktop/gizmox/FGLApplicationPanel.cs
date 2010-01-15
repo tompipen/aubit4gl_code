@@ -46,17 +46,21 @@ namespace AubitDesktop
         private UIContext immediateContext = null;
         private ToolTip tooltips;
         FGLWindow winScreen;
+
+
+
+
         // Toolstrip buttons....
-        private AubitTSBtn tsBtnAccept;
-        private AubitTSBtn tsBtnCancel;
+  //      private AubitTSBtn tsBtnAccept;
+  //      private AubitTSBtn tsBtnCancel;
+  //      private AubitTSBtn tsBtnUp;
+  //      private AubitTSBtn tsBtnDown;
+  //      private AubitTSBtn tsBtnPgUp;
+  //      private AubitTSBtn tsBtnPgDown;
+  //      private AubitTSBtn tsBtnInsert;
+  //      private AubitTSBtn tsBtnDelete;
 
-        private AubitTSBtn tsBtnUp;
-        private AubitTSBtn tsBtnDown;
 
-        private AubitTSBtn tsBtnPgUp;
-        private AubitTSBtn tsBtnPgDown;
-        private AubitTSBtn tsBtnInsert;
-        private AubitTSBtn tsBtnDelete;
         private DateTime lastPing;
         private bool lastPingIsSet = false;
         private TimeSpan pingInterval = new TimeSpan(0, 0, 20);
@@ -158,6 +162,16 @@ namespace AubitDesktop
             {
                 _currentContext = value;
                 TopWindow.currentContext = value;
+
+            }
+        }
+
+        public void quitContext() {
+            if (_currentContext != null)
+            {
+                _currentContext.DeactivateContext();
+                _currentContext.FreeContext();    
+                _currentContext = null;
             }
         }
         
@@ -257,8 +271,11 @@ namespace AubitDesktop
         {
             foreach (AubitTSBtn i in toolStrip1) {
 
-                    if (i.ActiveKey == key) return true;
-
+                    if (i.ActiveKey.ToLower() == key.ToLower()) return true;
+                    if (i.ActiveKey.ToLower() == ("" + FGLUtils.getKeyNameFromFGLKeyCode(key)).ToLower())
+                    {
+                        return true;
+                    }
             }
             return false;
         }
@@ -277,8 +294,8 @@ namespace AubitDesktop
             {
 
 
-                if (i.ActiveKey == action) return true;
-                if (i.ActiveKey == ""+FGLUtils.getKeyCodeFromKeyName(action)) return true;
+                if (i.ActiveKey.ToLower() == action.ToLower()) return true;
+               // if (i.ActiveKey.ToLower() == (""+FGLUtils.getKeyCodeFromKeyName(action)).ToLower()) return true;
 
             }
             return false;
@@ -291,10 +308,24 @@ namespace AubitDesktop
 
             foreach (AubitTSBtn i in toolStrip1)
             {
-               
-               
-                    if (i.ActiveKey == key) return i;
-                    if (i.ActiveKey == ""+FGLUtils.getKeyCodeFromKeyName(key)) return i;
+
+
+                if (i.ActiveKey.ToLower() == key.ToLower())
+                {
+                    
+                    return i;
+                }
+
+                if (i.ActiveKey.ToLower() == ("" + FGLUtils.getKeyCodeFromKeyName(key)).ToLower()) {
+                    
+                    return i; 
+                }
+
+                if (i.ActiveKey.ToLower() == ("" + FGLUtils.getKeyNameFromFGLKeyCode(key)).ToLower())
+                {
+
+                    return i;
+                }
                 
             }
 
@@ -304,16 +335,11 @@ namespace AubitDesktop
         }
 
 
-        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, List<ON_ACTION_EVENT> actions, bool showAcceptInterrupt)
-        {
-            setActiveToolBarKeys(keys,actions, showAcceptInterrupt,false,false);
-        }
+        
 
-        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, List<ON_ACTION_EVENT> actions, bool showAcceptInterrupt, bool showUpDownButtons, bool showInsertDeleteButtons)
+        public void setActiveToolBarKeys(List<ONKEY_EVENT> keys, List<ON_ACTION_EVENT> actions)
         {
             this.SuspendLayout();
-
-
 
             // We dont want any keys active ? 
             if (keys == null && actions==null)
@@ -321,15 +347,8 @@ namespace AubitDesktop
                 foreach (AubitTSBtn o in toolStrip1)
                 {
                     if (AubitTSBtn.isSystemAction(o.ID)) continue;
-                        o.ID = null;
+                    o.ID = null;
                     
-                }
-
-                if (tsBtnCancel!=null)
-                {
-                    tsBtnCancel.Visible = false;
-                    tsBtnAccept.Visible = false;
-                    setStockButtons(false, false, false);
                 }
             }
             else
@@ -337,8 +356,8 @@ namespace AubitDesktop
 
 
 
-                ensureAcceptInterruptButtonsOnToolStrip();
-                setStockButtons(showAcceptInterrupt, showUpDownButtons, showInsertDeleteButtons);
+                //ensureAcceptInterruptButtonsOnToolStrip();
+                //setStockButtons(showAcceptInterrupt, showUpDownButtons, showInsertDeleteButtons);
 
 
                 // Ok - there are some keys - but not all of them will be used..
@@ -347,7 +366,6 @@ namespace AubitDesktop
                 {
                         if (AubitTSBtn.isSystemAction(o.ID)) continue;
                         o.ID = null;
-
                 }
 
                 if (keys != null)
@@ -419,7 +437,7 @@ namespace AubitDesktop
 
 
 
-
+        /*
         private void setStockButtons(bool showAcceptInterrupt, bool showUpDownButtons, bool showInsertDeleteButtons)
         {
             if (showAcceptInterrupt)
@@ -463,8 +481,9 @@ namespace AubitDesktop
                 tsBtnDown.Visible = false;
             }
         }
+        */
 
-
+        /*
         void tsBtnUp_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
@@ -508,7 +527,7 @@ namespace AubitDesktop
                     // matched keypress e would be null...
                     UIInputArrayInTableContext ic;
                     ic = (UIInputArrayInTableContext)currentContext;
-                    ic.downkeyPressed();
+                    ic.upkeyPressed();
                 }
                 return;
             }
@@ -530,7 +549,9 @@ namespace AubitDesktop
 
             throw new NotImplementedException();
         }
+         */
 
+        /*
         void tsBtnDown_Click(object sender, EventArgs e)
         {
            
@@ -639,7 +660,9 @@ namespace AubitDesktop
                 return;
             }
         }
+        */
 
+        /*
         void tsBtnDelete_Click(object sender, EventArgs e)
         {
             KeyEventArgs ke = null;
@@ -807,7 +830,7 @@ namespace AubitDesktop
             }
             throw new NotImplementedException();
         }
-
+        */
 
         void b_Click(object sender, EventArgs e)
         {
@@ -842,13 +865,13 @@ namespace AubitDesktop
             //currentContext.useKeyPress
 
 
-     
+     /*
             try
             {
                 currentContext.DeactivateContext();
             }
-            catch (Exception Ex)  { }
-
+            catch (Exception)  { }
+     */
 
             if (ke != null)
             {
@@ -857,20 +880,15 @@ namespace AubitDesktop
             
         }
 
-        public void ensureAcceptInterruptButtonsOnToolStrip()
-        {
-            //if (tsBtnAccept==null) {            
-                addDefaultToolstripItems();
-            //}
 
-        }
+        
 
 
         public void AddToolBarAction(string action, string ID)
         {
-            AubitTSBtn b;
+            //AubitTSBtn b;
             int keyCode;
-            string key;
+            //string key;
             keyCode=FGLUtils.getKeyCodeFromKeyName(action);
             if (keyCode != -1)
             {
@@ -904,8 +922,7 @@ namespace AubitDesktop
         {
             AubitTSBtn b;
 
-            ensureAcceptInterruptButtonsOnToolStrip();
-
+            
             // Does it already exist ? 
             for (int a = 0; a < toolStrip1.Count; a++)
             {
@@ -924,7 +941,47 @@ namespace AubitDesktop
             b.ActiveKey = Key;
             b.Text = Text;
             b.ID = ID;
-            
+            switch (b.ID)
+            {
+                case "ACCEPT":
+                     b.Image = "Icons.accept.png";
+                    b.Text = "Accept";
+                    break;
+                case "INTERRUPT":
+                     b.Image = "Icons.cancel.png";
+                    b.Text = "Cancel";
+                    break;
+
+                case "UP":
+                     b.Image = "Icons.arrup.png";
+                    b.Text = "Up";
+                    break;
+
+                case "DOWN":
+                     b.Image = "Icons.arrdown.png";
+                    b.Text = "Down";
+                    break;
+
+                case "PGUP":
+                     b.Image = "Icons.arrpgup.png";
+                    b.Text = "PageUp";
+                    break;
+
+                case "PGDN":
+                     b.Image = "Icons.arrpgdown.png";
+                    b.Text = "PageDown";
+                    break;
+
+                case "INSERT":
+                     b.Image = "Icons.insert.png";
+                    b.Text = "Insert";
+                    break;
+
+                case "DELETE":
+                     b.Image = "Icons.delete.png";
+                    b.Text = "Delete";
+                    break;
+            }
             b.Visible = false;
             //b.Click += new EventHandler(b_Click);
             b.clickHandler = b_Click;
@@ -936,7 +993,7 @@ namespace AubitDesktop
         {
             
 
-            ensureAcceptInterruptButtonsOnToolStrip();
+            
 
             // Does it already exist ? 
             for (int a = 0; a < toolStrip1.Count; a++)
@@ -950,6 +1007,7 @@ namespace AubitDesktop
             AddToolBarKey(Key, Text, "");
         }
 
+        /*
         private void addDefaultToolstripItems()
         {
             // If we've got no cancel button - 
@@ -1036,6 +1094,7 @@ namespace AubitDesktop
                     this.tsBtnAccept.clickHandler = new System.EventHandler(this.tsBtnAccept_Click);
                     this.tsBtnAccept.Visible = true;
                     this.toolStrip1.Add(tsBtnAccept);
+                    this.tsBtnAccept.alwaysShow = AubitDesktop.showMode.ShowAlways;
                 }
 
             
@@ -1054,6 +1113,7 @@ namespace AubitDesktop
                     this.tsBtnCancel.Text = "Cancel";
                     this.tsBtnCancel.clickHandler = new System.EventHandler(this.tsBtnCancel_Click);
                     this.tsBtnCancel.Visible = true;
+                    this.tsBtnCancel.alwaysShow = AubitDesktop.showMode.ShowAlways;
                     this.toolStrip1.Add(tsBtnCancel);
                 }
 
@@ -1067,6 +1127,7 @@ namespace AubitDesktop
                     tsBtnUp = new AubitTSBtn(true);
                     this.tsBtnUp.ActiveKey = "UP";
                     this.tsBtnUp.ID = "UP";
+                    this.tsBtnUp.alwaysShow = AubitDesktop.showMode.ShowAlways;
                      this.tsBtnUp.Image = "Icons.arrup.png";
                     this.tsBtnUp.Name = "tsBtnUp";
                     this.tsBtnUp.Text = "Up";
@@ -1087,7 +1148,7 @@ namespace AubitDesktop
                     this.tsBtnDown.Name = "tsBtnDown";
                     this.tsBtnDown.Text = "Down";
                     this.tsBtnDown.clickHandler = new System.EventHandler(this.tsBtnDown_Click);
-
+                    this.tsBtnDown.alwaysShow = AubitDesktop.showMode.ShowAlways;
                     this.tsBtnDown.Visible = true;
                     this.toolStrip1.Add(tsBtnDown);
                 }
@@ -1106,6 +1167,7 @@ namespace AubitDesktop
                     this.tsBtnPgDown.clickHandler = new System.EventHandler(this.tsBtnPgDown_Click);
 
                     this.tsBtnPgDown.Visible = true;
+                    this.tsBtnPgDown.alwaysShow = AubitDesktop.showMode.ShowAlways;
                     this.toolStrip1.Add(tsBtnPgDown);
                 }
 
@@ -1121,7 +1183,7 @@ namespace AubitDesktop
                     this.tsBtnPgUp.Name = "tsBtnPgUp";
                     this.tsBtnPgUp.Text = "PgUp";
                     this.tsBtnPgUp.clickHandler = new System.EventHandler(this.tsBtnPgUp_Click);
-
+                    this.tsBtnPgUp.alwaysShow = AubitDesktop.showMode.ShowAlways;
                     this.tsBtnPgUp.Visible = true;
                     this.toolStrip1.Add(tsBtnPgUp);
                 }
@@ -1137,7 +1199,7 @@ namespace AubitDesktop
                     this.tsBtnInsert.Name = "tsBtnInsert";
                     this.tsBtnInsert.Text = "Insert";
                     this.tsBtnInsert.clickHandler = new System.EventHandler(this.tsBtnInsert_Click);
-
+                    this.tsBtnInsert.alwaysShow = AubitDesktop.showMode.ShowAlways;
                     this.tsBtnInsert.Visible = true;
                     this.toolStrip1.Add(tsBtnInsert);
                 }
@@ -1153,7 +1215,7 @@ namespace AubitDesktop
                     this.tsBtnDelete.Name = "tsBtnDelete";
                     this.tsBtnDelete.Text = "Delete";
                     this.tsBtnDelete.clickHandler = new System.EventHandler(this.tsBtnDelete_Click);
-
+                    this.tsBtnDelete.alwaysShow = AubitDesktop.showMode.ShowAlways;
                     this.tsBtnDelete.Visible = true;
                     this.toolStrip1.Add(tsBtnDelete);
                 }
@@ -1164,6 +1226,7 @@ namespace AubitDesktop
 
 
         }
+         * */
 
 
         /*
@@ -1175,7 +1238,7 @@ namespace AubitDesktop
 
         }
          * */
-
+        /*
         private void tsBtnCancel_Click(object sender, EventArgs e)
         {
             this.ErrorText = "";
@@ -1195,8 +1258,9 @@ namespace AubitDesktop
                 ke.Handled = true;
             }
         }
-
-
+        */
+        
+        /*
         private void tsBtnAccept_Click(object sender, EventArgs e)
         {
             KeyEventArgs ke = null;
@@ -1208,14 +1272,7 @@ namespace AubitDesktop
                 }
             }
             this.ErrorText = "";
-            /*
-            string eventText = currentContext.getAcceptString();
-            if (eventText != null)
-            {
-                TopWindow.SendString(eventText,true);
-            }
-            currentContext.DeactivateContext();
-             * */
+            
             setLastKey("ACCEPT");
             
             currentContext.toolBarAcceptClicked();
@@ -1225,7 +1282,7 @@ namespace AubitDesktop
             }
             return ;
         }
-
+*/
         public void TabSelected()
         {
             TopWindow.MessageText = this.MessageText;
@@ -1281,7 +1338,11 @@ namespace AubitDesktop
                 {
                     lastPing = n;
                     //Program.Show("Ping!");
-                    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>", false);
+
+
+                //    TopWindow.SendString("<PING ENVELOPEID=\"" + this.ApplicationEnvelopeID+"\"/>", false);
+
+
                   //  TopWindow.SendString("<PING/>", false);
                 }
             }
@@ -1315,7 +1376,8 @@ namespace AubitDesktop
             {
                 Console.WriteLine("Cumtime before : " + (System.DateTime.Now - stime)+" "+a.GetType().ToString());
 
-
+                if (TopWindow == null) break;
+                if (TopWindow.IsDisposed) break;
                 TopWindow.setProgress( run_commands.Count,cnt);
                 cnt++;
 
@@ -1344,8 +1406,9 @@ namespace AubitDesktop
                         {
                             loadToolbar("default.4tb", this.ApplicationEnvelopeID);
                         }
+                    
                     }
-
+                    addDefaultButtonsToToolbar();
                     SetServerEnviron ( p.ENV);
                     commands.Remove(a);
                     //Program.Show("Application would like to start! Program=" + p.PROGRAMNAME + " ID=" + p.ID);
@@ -1376,12 +1439,20 @@ namespace AubitDesktop
                         if (f.CLIENTNAME != null && f.CLIENTNAME.Length > 0)
                         {
                             oname = f.CLIENTNAME;
+                            if (System.IO.File.Exists(f.CLIENTNAME))
+                            {
+                                System.IO.File.Delete(f.CLIENTNAME);
+                            }
                             fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
                         }
                         else
                         {
                             try
                             {
+                                if (System.IO.File.Exists(f.NAME))
+                                {
+                                    System.IO.File.Delete(f.NAME);
+                                }
                                 fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
                                 oname = f.NAME;
                             }
@@ -1401,7 +1472,7 @@ namespace AubitDesktop
                             fs.Close();
                             if (oname.EndsWith(".4sm"))
                             {
-                                this.TopWindow.loadApplicationLauncherTree(oname,this.ApplicationEnvelopeID);
+                                this.TopWindow.loadApplicationLauncherTree(oname, this.ApplicationEnvelopeID);
                             }
 
                             if (oname.EndsWith(".4tb"))
@@ -1409,11 +1480,27 @@ namespace AubitDesktop
                                 this.loadToolbar(oname, this.ApplicationEnvelopeID);
                             }
                         }
+                        else
+                        {
+                            MessageBox.Show("File could not be opened : "+oname);
+                        }
                     }
                     else
                     {
                         Program.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
                     }
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+
+                #region CLEAR
+                if (a is CLEAR)
+                {
+                    CLEAR z;
+                    z = (CLEAR)a;
+                    Console.WriteLine("Fix CLEAR");
+                    ApplicationWindows.Clear(z);
                     commands.Remove(a);
                     continue;
                 }
@@ -1439,8 +1526,16 @@ namespace AubitDesktop
                         {
                             int n;
                             n = prog.IndexOf(" ");
-                            args = prog.Substring(n + 1);
-                            prog = prog.Substring(0, n );
+                            if (n != -1)
+                            {
+                                args = prog.Substring(n + 1);
+                                prog = prog.Substring(0, n);
+                            }
+                            else
+                            {
+                                args = "";
+                            }
+
                         }
                         System.Diagnostics.Process.Start(prog,args);
                     }
@@ -1607,7 +1702,8 @@ namespace AubitDesktop
                 #region DISPLAYAT
                 if (a is DISPLAYAT)
                 {
-                    Console.WriteLine("DISPLAY .. AT is not support for GUI - please recode your application");
+                    ApplicationWindows.DisplayAt((DISPLAYAT)a);
+                  //  Console.WriteLine("DISPLAY .. AT is not support for GUI - please recode your application");
                  //   Program.Show("DISPLAY .. AT is not support for GUI - please recode your application");
                     commands.Remove(a);
                     continue;
@@ -1804,12 +1900,31 @@ namespace AubitDesktop
                     }
                     if (frm != null)
                     {
+                        int[] lines = new int[6];
                         if (w.BORDER == "0") border = false; else border = true;
-                        win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), border);
+                        lines[0] = Convert.ToInt32(w.ERROR_LINE);
+                        lines[1] = Convert.ToInt32(w.PROMPT_LINE);
+                        lines[2] = Convert.ToInt32(w.MENU_LINE);
+                        lines[3] = Convert.ToInt32(w.COMMENT_LINE);
+                        lines[4] = Convert.ToInt32(w.MESSAGE_LINE);
+                        lines[5] = Convert.ToInt32(w.FORM_LINE);
+                        if (lines[0] == 255) lines[0] = options.ErrorLine;
+                        if (lines[1] == 255) lines[1] = options.PromptLine;
+                        if (lines[2] == 255) lines[2] = options.MenuLine;
+                        if (lines[3] == 255) lines[3] = options.CommentLine;
+                        if (lines[4] == 255) lines[4] = options.MessageLine;
+                        if (lines[5] == 255) lines[5] = options.FormLine;
 
-                        win.setForm(frm, false);
+                        win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y),
+                            Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, 
+                            //Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), Convert.ToInt32(w.FORM_LINE),
+                             lines[0], lines[1], lines[2], lines[3], lines[4], lines[5],
+                            border);
 
                         win.sizeWindow(frm);
+                        win.setForm(frm, false);
+
+                        
 
                         // Our 'window' might be a proper windows forms window (with title bar etc)
                         // in which case - we dont want to add it to our windows panel - but just 
@@ -1842,11 +1957,32 @@ namespace AubitDesktop
                     FGLWindow win;
                     bool border;
                     CREATEWINDOW w;
+                    int[] lines;
+                    lines = new int[7];
                     w = (CREATEWINDOW)a;
                     if (w.BORDER == "0") border = false; else border = true;
-                    win = new FGLWindow(w.NAME, Convert.ToInt32(w.X), Convert.ToInt32(w.Y), Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, Convert.ToInt32(w.ERRORLINE), Convert.ToInt32(w.PROMPTLINE), Convert.ToInt32(w.MENULINE), Convert.ToInt32(w.COMMENTLINE), Convert.ToInt32(w.MESSAGELINE), border);
 
-                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H));             
+                    lines[0] = Convert.ToInt32(w.ERROR_LINE);
+                    lines[1] = Convert.ToInt32(w.PROMPT_LINE);
+                    lines[2] = Convert.ToInt32(w.MENU_LINE);
+                    lines[3] = Convert.ToInt32(w.COMMENT_LINE);
+                    lines[4] = Convert.ToInt32(w.MESSAGE_LINE);
+                    lines[5] = Convert.ToInt32(w.FORM_LINE);
+
+                    if (lines[0] == 255) lines[0] = options.ErrorLine;
+                    if (lines[1] == 255) lines[1] = options.PromptLine;
+                    if (lines[2] == 255) lines[2] = options.MenuLine;
+                    if (lines[3] == 255) lines[3] = options.CommentLine;
+                    if (lines[4] == 255) lines[4] = options.MessageLine;
+                    if (lines[5] == 255) lines[5] = options.FormLine;
+
+                    win = new FGLWindow(w.NAME, Convert.ToInt32(w.X), Convert.ToInt32(w.Y),
+                        Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE,
+                        lines[0],lines[1],lines[2],lines[3],lines[4],lines[5],
+
+                        border);
+
+                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H));
 
                     // Our 'window' might be a proper windows forms window (with title bar etc)
                     // in which case - we dont want to add it to our windows panel - but just 
@@ -2032,7 +2168,11 @@ namespace AubitDesktop
                                 txt += p.line[idx].Text + "\n";
                             }
                         }
-                        Program.Show("Program Exited with non-zero exit status\n" + txt);
+
+                        txt="Program Exited with non-zero exit status\n" + txt;
+			if (!TopWindow.setExitMessage(txt)) {
+                        	Program.Show(txt);
+			}
                     }
                     commands.Remove(a);
                     TopWindow.clrWaitCursor();
@@ -2207,10 +2347,10 @@ namespace AubitDesktop
                                         TopWindow.clrWaitCursor();
                                       
                                         currentContext = contexts[idx];
-                                        Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime));
+                                        //Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime));
                                         this.TopWindow.setActiveTab(this);
                                         contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
-                                        Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
+                                       // Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
                                     }
                                     else
                                     {
@@ -2237,14 +2377,19 @@ namespace AubitDesktop
                 this.TopWindow.AddTextToConsole(" Unhandled: " + a.ToString());
                 Program.Show(" Unhandled: " + a.ToString());
             }
-            try {
-                Console.WriteLine("Cumtime after : " + (System.DateTime.Now - stime));
+            try
+            {
+                //  Console.WriteLine("Cumtime after : " + (System.DateTime.Now - stime));
                 // This may fail if the window is closed because the application that
                 // was in it is now closed - but we dont care about updating the progress bar in an invisible window ;-)
-            TopWindow.setProgress(0,0);
+                if (!TopWindow.IsDisposed)
+                {
+                    TopWindow.setProgress(0, 0);
                 }
-            catch (Exception ) {
-                }
+            }
+            catch (Exception)
+            {
+            }
 
             // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
             this.ResumeLayout();
@@ -2312,7 +2457,7 @@ namespace AubitDesktop
                 //Image i = getImageFromName(o.IMAGE);
                 btn.Image = FGLUtils.getImageFromName(o.IMAGE);
             }
-            catch (Exception Ex)
+            catch (Exception )
             {
             }
             btn.ToolTipText = o.TOOLTIP;
@@ -2363,7 +2508,7 @@ namespace AubitDesktop
             }
             else
             {
-                setActiveToolBarKeys(null, null, false);
+                setActiveToolBarKeys(null, null);
             }
         }
 
@@ -2542,8 +2687,20 @@ namespace AubitDesktop
                     TopWindow.setToolstripImageSize(Convert.ToInt32(sToolbar.imageSize));
                 }
                 loadButtonsInToolbar(sToolbar, applicationLauncherId);
-                addDefaultToolstripItems();
+                addDefaultButtonsToToolbar();   
             }
+        }
+
+        private void addDefaultButtonsToToolbar()
+        {
+            string[] defaultKeys={"ACCEPT","INTERRUPT","UP","DOWN","PGUP","PGDN","INSERT","DELETE"};
+            foreach (string s in defaultKeys) {
+            if (!hasKeyInToolbar(s))
+            {
+                AddToolBarKey(s, s);
+            }
+            }
+            
         }
 
         internal bool hasToolbarButton(string text)

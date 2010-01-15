@@ -488,7 +488,14 @@ namespace AubitDesktop
         public UIInputArrayContext(FGLApplicationPanel f, INPUTARRAY p)
         {
             int cnt;
-
+            bool haveDown = false;
+            bool haveUp = false;
+            bool havePgDn = false;
+            bool havePgUp = false;
+            bool haveAccept = false;
+            bool haveInterrupt = false;
+            bool haveDelete = false;
+            bool haveInsert = false;
             nCols = Convert.ToInt32(p.ARRVARIABLES);
             KeyList = new List<ONKEY_EVENT>();
             onActionList = new List<ON_ACTION_EVENT>();
@@ -536,6 +543,43 @@ namespace AubitDesktop
                 {
                     ONKEY_EVENT e;
                     e = (ONKEY_EVENT)evt;
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("ACCEPT"))
+                    {
+                        haveAccept = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INTERRUPT"))
+                    {
+                        haveInterrupt = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DOWN"))
+                    {
+                        haveDown = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("UP"))
+                    {
+                        haveUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGUP"))
+                    {
+                        havePgUp = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("PGDN"))
+                    {
+                        havePgDn = true;
+                    }
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INSERT"))
+                    {
+                        haveInsert = true;
+                    }
+
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DELETE"))
+                    {
+                        haveDelete = true;
+                    }
                     KeyList.Add(e);
                     continue;
                 }
@@ -548,10 +592,47 @@ namespace AubitDesktop
                     onActionList.Add(e);
                     continue;
                 }
-
-
             }
 
+            if (!haveAccept)
+            {
+                KeyList.Add(new ONKEY_EVENT("ACCEPT"));
+            }
+
+            if (!haveInterrupt)
+            {
+                KeyList.Add(new ONKEY_EVENT("INTERRUPT"));
+            }
+
+            if (!haveDown)
+            {
+                KeyList.Add(new ONKEY_EVENT("DOWN"));
+            }
+ 
+            if (!haveUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("UP"));
+            }
+ 
+            if (!havePgDn)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGDN"));
+            }
+ 
+            if (!havePgUp)
+            {
+                KeyList.Add(new ONKEY_EVENT("PGUP"));
+            }
+
+            if (!haveInsert)
+            {
+                KeyList.Add(new ONKEY_EVENT("INSERT"));
+            }
+
+            if (!haveDelete)
+            {
+                KeyList.Add(new ONKEY_EVENT("DELETE"));
+            }
 
             activeFields = f.FindFieldArray(p.FIELDLIST);
             scrRecLines = activeFields.Count / nCols;
@@ -571,6 +652,17 @@ namespace AubitDesktop
 
         public bool externallyTriggeredID(string ID)
         {
+            switch (ID)
+            {
+                case "INSERT": InsertkeyPressed(); return true;
+                case "DELETE": DeletekeyPressed(); return true;
+                case "PGUP": pgUpkeyPressed(); return true;
+                case "PGDN": pgDownkeyPressed(); return true;
+                case "DOWN": downkeyPressed(); return true;
+                case "UP": upkeyPressed(); return true;
+                case "ACCEPT": toolBarAcceptClicked(); return true;
+                // INTERRUPT can pass through - we dont mind ;-)
+            }
             sendTrigger(ID);
             return true;
         }
@@ -752,7 +844,7 @@ namespace AubitDesktop
 
         public void NavigateToTab()
         {
-            mainWin.setActiveToolBarKeys(KeyList, onActionList, true, true, true);
+            mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true, true, true);
         }
 
         public void NavigateAwayTab()
@@ -929,7 +1021,7 @@ namespace AubitDesktop
             }
 
 
-            mainWin.setActiveToolBarKeys(KeyList,onActionList, true, true, true);
+            mainWin.setActiveToolBarKeys(KeyList,onActionList); //, true, true, true);
             redisplay_arr(true);
 
 
@@ -1019,7 +1111,7 @@ namespace AubitDesktop
         public void DeactivateContext()
         {
             Console.WriteLine("Deactivate start at " + (DateTime.Now - ActivateStime));
-            mainWin.setActiveToolBarKeys(null, null, false);
+            mainWin.setActiveToolBarKeys(null, null); //, false);
             inputFocusActive = false;
             mainWin.SetContext( FGLContextType.ContextInputArrayInactive);
 

@@ -29,7 +29,6 @@ namespace AubitDesktop
 
     class UIMenuContext : UIContext
     {
-        //private List<Button> MenuButtons;
         MENU thismenu;
         private bool _contextIsActive;
         FGLApplicationPanel mainWin;
@@ -140,7 +139,7 @@ namespace AubitDesktop
                             {
                                 kval = Convert.ToInt32(keys[n]);
                             }
-                            catch (Exception Ex) { } 
+                            catch (Exception ) { } 
 
                             if (isNormalKey(ke, kval))
                             {
@@ -263,7 +262,7 @@ namespace AubitDesktop
                         {
                             n = Convert.ToInt32(s);
                         }
-                        catch (Exception Ex) { }
+                        catch (Exception ) { }
 
 
                         if (s.Trim() != "" && n != -1)
@@ -385,7 +384,7 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIMenuContext_EventTriggered, VALUE[] values, ROW[] rows)
         {
-            mainWin.setActiveToolBarKeys(keyList,onActionList,false);
+            mainWin.setActiveToolBarKeys(keyList,onActionList); //,false);
             ensureKeyAndActionsAreDisabledOrEnabled();
 
 
@@ -428,7 +427,7 @@ namespace AubitDesktop
         public void NavigateToTab()
         {
             mainWin.SetMenuBarButtons(this.menuPanel);
-            mainWin.setActiveToolBarKeys(keyList, onActionList, false);
+            mainWin.setActiveToolBarKeys(keyList, onActionList); //, false);
         }
 
 
