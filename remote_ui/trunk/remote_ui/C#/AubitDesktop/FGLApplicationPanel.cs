@@ -2236,7 +2236,11 @@ namespace AubitDesktop
                                 txt += p.line[idx].Text + "\n";
                             }
                         }
-                        Program.Show("Program Exited with non-zero exit status\n" + txt);
+
+                        txt="Program Exited with non-zero exit status\n" + txt;
+			if (!setExitMessage(txt)) {
+                        	Program.Show(txt);
+			}
                     }
                     commands.Remove(a);
                     TopWindow.clrWaitCursor();
