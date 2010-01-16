@@ -4,10 +4,10 @@ SCREEN
 {
 Application        [f000              ]
 
-Connection Mode    [a] (P = Proxy, C = Command Line)
+Connection Mode    [a] (P = Proxy, S = SSH, C = Command Line)
 
-Proxy
-   program Name    [f001              ]
+Proxy + Ssh
+   program Name    [f001                                                  ]
    Server          [f002                            ]
    Port            [f003      ]
    Username        [f004              ] (Use '-' for Web perms userID)
@@ -21,7 +21,7 @@ tables
    web_application 
 ATTRIBUTES
 f000	= web_application.application, UPSHIFT;
-a	= web_application.connmode, INCLUDE=("P","C"), COMMENTS="P = Proxy, C = Command Line", UPSHIFT;
+a	= web_application.connmode, INCLUDE=("P","C","S"), COMMENTS="P = Proxy, C = Command Line, S=SSH", UPSHIFT;
 f001	= web_application.pxy_programname;
 f002	= web_application.pxy_server;
 f003	= web_application.pxy_port;

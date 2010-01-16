@@ -179,7 +179,8 @@ end if
 			LET mv_cnt=2
 			let lv_sql="-"
                         let mv_rec[1].code="P" let mv_rec[1].txt="PROXY"
-                        let mv_rec[2].code="C" let mv_rec[2].txt="CMDLINE"
+                        let mv_rec[2].code="S" let mv_rec[1].txt="SSH"
+                        let mv_rec[3].code="C" let mv_rec[2].txt="CMDLINE"
 
 		when "application"
 			let lv_sql="select application,application from web_application where application matches ?"

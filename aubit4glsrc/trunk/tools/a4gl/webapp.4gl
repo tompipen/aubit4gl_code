@@ -3,7 +3,7 @@ DATABASE syspgma4gl
 | GLOBAL variable definition                                           |
 +----------------------------------------------------------------------}
 
-{ $Id: webapp.4gl,v 1.1 2010-01-14 08:15:57 mikeaubury Exp $ }
+{ $Id: webapp.4gl,v 1.2 2010-01-16 17:50:27 mikeaubury Exp $ }
 
   DEFINE
 	ga_rec_found SMALLINT,
@@ -15,6 +15,8 @@ DATABASE syspgma4gl
 	abort_flag INTEGER,
 	answer CHAR(1)
 
+define mc_default_proxy_port constant "3490"
+define mc_default_ssh_port constant "22"
 
     DEFINE gr_web_application      RECORD LIKE      web_application.*
     DEFINE ga_oid INTEGER
@@ -312,6 +314,22 @@ LOCAL FUNCTION input_record()
                                         gr_web_application.pxy_port,
                                         gr_web_application.pxy_username,
                                         gr_web_application.pxy_password 
+
+				if gr_web_application.connmode="P" and gr_web_application.pxy_port=mc_default_ssh_port then
+					let gr_web_application.pxy_port=mc_default_proxy_port
+				end if
+				if gr_web_application.connmode="S" and gr_web_application.pxy_port=mc_default_proxy_port then
+					let gr_web_application.pxy_port=mc_default_ssh_port
+				end if
+			 if gr_web_application.pxy_port is null or gr_web_application.pxy_port matches " " then
+				if gr_web_application.connmode="P" then
+					let gr_web_application.pxy_port=mc_default_proxy_port
+				else
+					let gr_web_application.pxy_port=mc_default_ssh_port
+				end if
+			 end if
+				display by name gr_web_application.pxy_port
+
 			end if
 
 		BEFORE FIELD pxy_ProgramName
@@ -358,7 +376,7 @@ END FUNCTION
 | Common Modules                                                       |
 +----------------------------------------------------------------------}
 
-# $Id: webapp.4gl,v 1.1 2010-01-14 08:15:57 mikeaubury Exp $
+# $Id: webapp.4gl,v 1.2 2010-01-16 17:50:27 mikeaubury Exp $
 
 
 

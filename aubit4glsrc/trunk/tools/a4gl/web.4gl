@@ -4,7 +4,8 @@ define lc_max_password_length constant 48
 
 main
 defer interrupt
-options form line 5
+#options form line 5
+options message line last
 
 call form_is_compiled(f_webapp)
 call form_is_compiled(f_webserver)
@@ -139,6 +140,7 @@ declare c_wp cursor for
 	where lv_urlId matches Url_Id 
 	and web_application.application matches web_perms.application
 
+call channel::write("fglaccess","<?xml version=\"1.0\"?>")
 call channel::write("fglaccess","<Configuration Name=\""||lv_urlId clipped||"\" AuthMode=\""||lv_web_serverUrl.AuthMode||"\">")
 call channel::write("fglaccess"," <Applications>");
 
@@ -156,7 +158,16 @@ foreach c_wp into lv_web_perms.application
 	where application=lv_web_perms.application
 
 	case lv_web_application.connmode
+
 		when "P" 
+			let app_buff="connMode=\"", lv_web_application.connMode,"\"",
+					" ProgramName=\"", xml_encode(lv_web_application.pxy_ProgramName),"\"",
+					" Server=\"", xml_encode(lv_web_application.pxy_server),"\"",
+					" Port=\"", xml_encode(lv_web_application.pxy_port),"\"",
+					" Username=\"", xml_encode(lv_web_application.pxy_username),"\"",
+					" Password=\"", xml_encode(lv_web_application.pxy_password),"\""
+
+		when "S" 
 			let app_buff="connMode=\"", lv_web_application.connMode,"\"",
 					" ProgramName=\"", xml_encode(lv_web_application.pxy_ProgramName),"\"",
 					" Server=\"", xml_encode(lv_web_application.pxy_server),"\"",
@@ -229,6 +240,7 @@ let lv_cnt=lv_cnt-1
 let int_Flag=false
 call set_count(lv_cnt)
 
+options message line 1
 input array lv_arr without defaults from srec1.*
 
 before field password
@@ -239,7 +251,8 @@ on key(control-b)
 	if infield(password) then
 		let lv_arrline=arr_curr()
 		let lv_newval=lv_arr[lv_arrline].password 
-		message aclfgl_tea_string_decipher(lv_newval)
+		message "Password:",aclfgl_tea_string_decipher(lv_newval) attribute(blue)
+		sleep 1
 	end if
 
 after field password
@@ -308,9 +321,14 @@ declare c_loadperms cursor for
 	where url_id=lv_urlid
 	order by application,username
 
+
+for lv_cnt=1 to 6 
+	clear srec_perms[lv_cnt].*
+end for
+
+
 let lv_cnt=1
 
-clear srec_perms.*
 foreach c_loadperms into lv_arr[lv_cnt].*
 	if lv_cnt<6 then
 		display lv_arr[lv_cnt].* to srec_perms[lv_cnt].*
