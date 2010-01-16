@@ -1,0 +1,702 @@
+
+create_procedure:
+	CREATE_PROCEDURE  
+		{ set_in_create_procedure(); }
+		spl_proc_name spl_proc_rest {
+			$$=set_spl_proc_name($4,$3,0);
+			clr_in_create_procedure();
+			}
+	| CREATE_DBA_PROCEDURE  
+		{ set_in_create_procedure(); }
+		spl_proc_name spl_proc_rest {
+			$$=set_spl_proc_name($4,$3,1);
+			clr_in_create_procedure();
+			}
+	| CREATE_FUNCTION { set_in_create_procedure(); }
+		spl_proc_name spl_func_rest {
+			$$=set_spl_proc_name($4,$3,0);
+			clr_in_create_procedure();
+			}
+	| CREATE_DBA_FUNCTION
+		{ set_in_create_procedure(); }
+		spl_proc_name spl_func_rest {
+			$$=set_spl_proc_name($4,$3,1);
+			clr_in_create_procedure();
+			}
+;
+
+
+spl_proc_rest: OPEN_BRACKET op_spl_parameters {
+			push_spl_block_variables($2);
+			} CLOSE_BRACKET spl_opt_returning spl_block END_PROCEDURE op_spl_document op_spl_listing {
+					$$=new_spl_proc($2,$5,$6,$8,$9);
+					pop_spl_block_variables($2);
+			}
+;
+
+spl_func_rest: OPEN_BRACKET op_spl_parameters {
+			push_spl_block_variables($2);
+			} CLOSE_BRACKET spl_returning spl_block END_FUNCTION op_spl_document op_spl_listing {
+					$$=new_spl_proc($2,$5,$6,$8,$9);
+					pop_spl_block_variables($2);
+			}
+;
+
+op_spl_parameters: 	
+	{$$=NULL;}
+	| spl_parameters {$$=$1;}
+;
+spl_proc_name:
+	NAMED {strcpy($<str>$,$<str>1);}
+	| NAMED KW_DOT NAMED 				{sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
+	| CHAR_VALUE KW_DOT NAMED 				{sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
+	| NAMED COLON NAMED KW_DOT NAMED 			{sprintf($<str>$,"%s:%s.%s",$<str>1,$<str>3,$<str>5);}
+	| NAMED COLON CHAR_VALUE KW_DOT NAMED 		{sprintf($<str>$,"%s:%s.%s",$<str>1,$<str>3,$<str>5);}
+	| NAMED ATSIGN NAMED COLON NAMED KW_DOT NAMED 	{sprintf($<str>$,"%s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7);}
+	| NAMED ATSIGN NAMED COLON CHAR_VALUE KW_DOT NAMED {sprintf($<str>$,"%s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7);}
+;
+
+spl_parameters:
+	spl_parameter {
+		$$=$1;
+	}
+	| spl_parameters KW_COMMA spl_parameter {
+		$$=merge_variable_list($1,$3);
+	}
+;
+
+
+spl_parameter: 
+	spl_vname spl_dtype_with_references {
+		$$=create_variable_list(new_str_list($1),$2);
+	}
+;
+
+spl_vname:  /* An SPL variable name - nothing complicated in SPL :-)  */
+	NAMED {strcpy($$,$<str>1); A4GL_make_downshift($$);}
+	| NAMED OPEN_SQUARE INT_VALUE CLOSE_SQUARE {sprintf($$,"%s[%s]",$<str>1,$<str>3); A4GL_make_downshift($$);}
+	| NAMED OPEN_SQUARE INT_VALUE KW_COMMA INT_VALUE CLOSE_SQUARE {sprintf($$,"%s[%s,%s]",$<str>1,$<str>3,$<str>5); A4GL_make_downshift($$);}
+;
+
+spl_op_default:
+	{ $$=NULL;}
+	| DEFAULT spl_expression {$$=$2;}
+;
+
+spl_dtype_with_references:
+	spl_dtype spl_op_default {
+		$$=$1;
+		set_variable_default($$,$2);
+	}
+	| REFERENCES_BLOBTYPE {
+		$$=new_references_blobtype($<str>1,NULL);
+	}
+	| REFERENCES_BLOBTYPE_DEFAULT_NULL  {
+		$$=new_references_blobtype($<str>1,A4GL_new_expr_simple(ET_EXPR_NULL));
+	}
+;
+
+
+	
+
+spl_dtype:
+	spl_dtype_explicit {
+		$$=$1;
+	}
+	| like_var {
+		$$=new_variable_like($<str>1);
+	}
+;
+
+spl_opt_returning: {
+		$$=NULL;
+	}
+	| RETURNING  spl_return_dtype_list SEMICOLON {
+		$$=$2;
+	}
+;
+
+spl_returning: 
+	RETURNING  spl_return_dtype_list SEMICOLON {
+		$$=$2;
+	}
+;
+
+
+spl_return_dtype_list:
+	spl_return_dtype_list_item {
+		char buff[200];
+		static int cnt=0;
+		sprintf(buff,"acl_rvalx%d",cnt++);
+		$$=create_variable_list(new_str_list(strdup(buff)),$1);
+	}
+	| spl_return_dtype_list KW_COMMA spl_return_dtype_list_item {
+		struct variable_list * v;
+		static int cnt=0;
+		char buff[200];
+		sprintf(buff,"acl_rval%d",cnt++);
+		v=create_variable_list(new_str_list(strdup(buff)),$3);
+		$$=merge_variable_list($1,v);
+	}
+;
+
+spl_return_dtype_list_item:
+	spl_dtype {$$=$1;}
+	| REFERENCES_BLOBTYPE {$$=new_references_blobtype($<str>1,NULL);}
+;
+
+op_spl_document:
+	{$$=NULL;}
+	 | DOCUMENT expanded_fgl_expr_list_ptr {$$=$<ptr_list>2;}
+;
+
+op_spl_listing:
+	{ $$=NULL;}
+	| WITH_LISTING_IN  spl_expression {
+		$$=$2;
+	}
+;
+
+
+spl_block:
+	spl_op_define_stmts {
+			push_spl_block_variables($1);
+		} op_spl_commands {
+			$$=new_spl_block($1,$3);
+			pop_spl_block_variables($1);
+		}
+;
+
+op_spl_commands  : 
+	{$$=NULL;}
+	| spl_commands {$$=$1;}
+;
+
+
+spl_op_define_stmts: 
+	{$$=NULL;}
+	| spl_define_stmts {$$=$1;}
+;
+
+spl_define_stmts : 
+	spl_define_stmt 		{$$=$1;}
+	| spl_define_stmts spl_define_stmt {
+		$$=merge_variable_list($1,$2);
+	}
+;
+
+spl_commands: spl_command {
+                $$=malloc(sizeof(commands));
+                $$->cmds.cmds_len=1;
+                $$->cmds.cmds_val=malloc(sizeof($$->cmds.cmds_val[0]) * $$->cmds.cmds_len);
+                $$->cmds.cmds_val[$$->cmds.cmds_len-1]=$1;
+
+	}
+	| spl_commands spl_command {
+                $$=$1;
+                $$->cmds.cmds_len=$1->cmds.cmds_len+1;
+                $$->cmds.cmds_val=realloc($1->cmds.cmds_val, sizeof($$->cmds.cmds_val[0]) * $$->cmds.cmds_len);
+                $$->cmds.cmds_val[$$->cmds.cmds_len-1]=$2;
+                lastlineno=yylineno;
+
+	}
+;
+
+
+//--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
+//                   SPL COMMANDS...
+//--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
+
+spl_command:
+	spl_call_command 		{$$=$1;}
+	| spl_continue_command 		{$$=$1;}
+	| spl_exit_command 		{$$=$1;}
+	| spl_for_command 		{$$=$1;}
+	| spl_foreach_command 		{$$=$1;}
+	| spl_if_command 		{$$=$1;}
+	| spl_let_command 		{$$=$1;}
+	| spl_on_exception_command 	{$$=$1;}
+	| spl_raise_exception_command 	{$$=$1;}
+	| spl_return_command 		{$$=$1;}
+	| spl_system_command 		{$$=$1;}
+	| spl_trace_command 		{$$=$1;}
+	| spl_while_command 		{$$=$1;}
+	| spl_begin_command 		{$$=$1;}
+	| sql_commands spl_op_semi			{$$=new_sql_cmd(NULL, $<sql_string>1);}
+	| select_cmd spl_op_semi			{$$=$1;}
+	| set_cmd spl_op_semi 			{$$=$1;}
+	| sql_transact_cmd spl_op_semi		{$$=$1;}
+	| sql_bound_cmd	spl_op_semi 		{$$=$1;}
+;
+
+
+spl_begin_command:
+	BEGIN spl_block END spl_op_semi {
+		$$=new_spl_block_cmd($2);
+	}
+;
+
+
+//1-------------------------------------------------------------------------------
+spl_continue_command:
+	CONTINUE_FOR SEMICOLON		{$<cmd>$=new_continue_cmd(EBC_SPL_FOR); }
+	| CONTINUE_WHILE SEMICOLON	{$<cmd>$=new_continue_cmd(EBC_SPL_WHILE); }
+	| CONTINUE_FOREACH SEMICOLON	{$<cmd>$=new_continue_cmd(EBC_SPL_FOREACH); }
+;
+
+//1-------------------------------------------------------------------------------
+spl_define_stmt:
+	define_spl_stmt  		{$$=$1;}
+	| define_global_spl_stmt 	{$$=$1;}
+;
+
+define_spl_stmt:
+	DEFINE spl_vname_list spl_dtype SEMICOLON {
+		$$=create_variable_list($2,$3);
+	}
+	| DEFINE spl_vname_list REFERENCES_BLOBTYPE_DEFAULT_NULL SEMICOLON {
+		struct variable *v;
+		v=new_references_blobtype($<str>3,A4GL_new_expr_simple(ET_EXPR_NULL));
+		$$=create_variable_list($2,v);
+		
+	}
+;
+
+define_global_spl_stmt:
+	DEFINE_GLOBAL spl_vname_list spl_dtype DEFAULT spl_expression SEMICOLON {
+		$3->is_extern=1;
+		$$=create_variable_list($2,$3);
+	}
+	| DEFINE_GLOBAL spl_vname_list REFERENCES_BLOBTYPE_DEFAULT_NULL SEMICOLON {
+		struct variable *v;
+		v=new_references_blobtype($<str>3,A4GL_new_expr_simple(ET_EXPR_NULL));
+		$$=create_variable_list($2,v);
+		v->is_extern=1;
+	}
+;
+
+//1-------------------------------------------------------------------------------
+spl_exit_command:
+	EXIT_FOR SEMICOLON	{$<cmd>$=new_ext_cmd(EBC_SPL_FOR); }
+	| EXIT_WHILE SEMICOLON	{$<cmd>$=new_ext_cmd(EBC_SPL_WHILE); }
+	| EXIT_FOREACH SEMICOLON	{$<cmd>$=new_ext_cmd(EBC_SPL_FOREACH); }
+;
+
+//1-------------------------------------------------------------------------------
+spl_for_command:
+	KW_FOR spl_vname KW_IN OPEN_BRACKET spl_for_list CLOSE_BRACKET spl_block END_FOR spl_op_semi {
+		$$=new_spl_for_cmd($2,$5,$7);
+	}
+	| KW_FOR spl_vname EQUAL spl_for_list_val_loop  spl_block END_FOR spl_op_semi {
+		$$=new_spl_for_cmd($2,A4GL_new_ptr_list($4),$5);
+	}
+; 
+
+
+spl_for_list:
+	spl_for_list_val {
+		$$=A4GL_new_ptr_list($1);
+	}
+	| spl_for_list KW_COMMA spl_for_list_val {
+		$$=A4GL_new_append_ptr_list($1,$3);
+	}
+;
+
+spl_for_list_val: 
+	spl_expression {
+		$$=$1;
+	}
+	| spl_expression KW_TO spl_expression {
+		$$=A4GL_new_spl_for_item_expr($1,$3,NULL);
+	}
+	| spl_expression KW_TO spl_expression STEP spl_expression {
+		$$=A4GL_new_spl_for_item_expr($1,$3,$5);
+	}
+;
+
+spl_for_list_val_loop : /* same as spl_for_list_val - but it must have a 'TO' - cant just be an expression */
+	spl_expression KW_TO spl_expression {
+		$$=A4GL_new_spl_for_item_expr($1,$3,NULL);
+	}
+	| spl_expression KW_TO spl_expression STEP spl_expression {
+		$$=A4GL_new_spl_for_item_expr($1,$3,$5);
+	}
+;
+
+
+//--------------------------------------------------------------------------------
+spl_call_command: 
+		FCALL  spl_proc_name  spl_call_parameters opt_spl_returning SEMICOLON {
+			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),$4);
+		}
+		| EXECUTE_PROCEDURE  spl_proc_name  spl_call_parameters opt_spl_into spl_op_semi {
+			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),$4);
+		}
+
+;
+
+opt_spl_returning : 
+	{$$=NULL;}
+	| RETURNING spl_vname_list {
+			$$=$2;
+		}
+;
+
+
+spl_vname_list : 
+	spl_vname {
+		$$=new_str_list($1);
+	}
+	| spl_vname_list KW_COMMA spl_vname {
+		 add_str_list($1,$3);
+	}
+;
+
+spl_call_parameters : OPEN_BRACKET CLOSE_BRACKET  {
+			$$=NULL;
+	}
+	| OPEN_BRACKET spl_execute_procedure_param_list CLOSE_BRACKET {
+			$$=$2;
+	}
+;
+
+spl_execute_procedure:
+        EXECUTE_PROCEDURE spl_proc_name spl_call_parameters {
+		$$=new_spl_execute($2,$3);
+	}
+;
+
+
+spl_execute_procedure_param_list: 
+	spl_execute_procedure_param {
+		$$=A4GL_new_ptr_list($1);
+	}
+	| spl_execute_procedure_param_list KW_COMMA spl_execute_procedure_param {
+		$$=A4GL_new_append_ptr_list($1,$3);
+	}
+;
+
+spl_execute_procedure_param:
+	spl_expression {
+		$$=$1;
+	}
+	| spl_vname EQUAL spl_expression {
+		/* Named parameter*/
+		$$=A4GL_new_expr_named_param($1,$3);
+	}
+;
+
+
+//--------------------------------------------------------------------------------
+spl_foreach_command: 
+	FOREACH spl_execute_procedure opt_spl_into spl_block END_FOREACH spl_op_semi {
+			$$=new_spl_foreach_execute_cmd($2,$3,$4);
+	}
+	| FOREACH spl_cursor_name spl_opt_with_hold spl_opt_for opt_spl_select_into spl_block END_FOREACH spl_op_semi {
+			$$=new_spl_foreach_select_cmd($2,$3,$5,$6);
+	}
+	| FOREACH spl_opt_with_hold opt_spl_select_into spl_block END_FOREACH spl_op_semi {
+			$$=new_spl_foreach_select_cmd(NULL,$2,$3,$4);
+	}
+;
+
+spl_opt_with_hold:
+	{$<integer_val>$=0;}
+	| WITH_HOLD {$<integer_val>$=1;}
+;
+
+spl_opt_for: /*Syntactic sugar - we dont care if they put it in or not */
+	| KW_FOR 
+;
+
+opt_spl_select_into: 
+	select_statement_ss_select {$$=$<s_select>1;}
+;
+
+opt_spl_into: {
+		$$=NULL;
+	}
+	| INTO spl_vname_list {
+		$$=$2;
+	}
+;
+
+
+
+spl_cursor_name: NAMED {
+		strcpy($$,$<str>1);
+	}
+;
+
+
+//--------------------------------------------------------------------------------
+spl_let_command: 
+	KW_LET spl_vname_list EQUAL spl_let_sources SEMICOLON {
+		$$=new_spl_let_cmd($2,$4);
+	}
+;
+
+spl_let_sources:
+	spl_expression_list {
+		$$=$1;
+	}
+	| OPEN_BRACKET select_statement_ss_select CLOSE_BRACKET {
+		$$=A4GL_new_ptr_list(A4GL_expr_select($<s_select>1));
+	}
+;
+
+
+//--------------------------------------------------------------------------------
+spl_raise_exception_command: 
+	RAISE_EXCEPTION spl_expression  SEMICOLON {
+		$$=new_spl_raise_exception_cmd($2,NULL,NULL);
+	}
+	| RAISE_EXCEPTION spl_expression KW_COMMA spl_expression  SEMICOLON {
+		$$=new_spl_raise_exception_cmd($2,$4,NULL);
+	}
+	| RAISE_EXCEPTION spl_expression KW_COMMA spl_expression KW_COMMA spl_expression  SEMICOLON {
+		$$=new_spl_raise_exception_cmd($2,$4,$6);
+	}
+
+;
+
+//--------------------------------------------------------------------------------
+spl_on_exception_command: 
+	ON_EXCEPTION  spl_raise_exception_set spl_block END_EXCEPTION op_spl_with_resume spl_op_semi {
+		$$=new_spl_on_exception_cmd(NULL,$2,$3,$5);
+	}
+	| ON_EXCEPTION  spl_raise_exception_list spl_block END_EXCEPTION op_spl_with_resume spl_op_semi {
+		$$=new_spl_on_exception_cmd($2,NULL,$3,$5);
+	}
+	| ON_EXCEPTION   spl_raise_exception_list spl_raise_exception_set  spl_block END_EXCEPTION op_spl_with_resume spl_op_semi {
+		$$=new_spl_on_exception_cmd($2,$3,$4,$6);
+	}
+;
+
+/*
+spl_on_exception_data: 
+	spl_raise_exception_set   
+	| spl_raise_exception_list 
+	| spl_raise_exception_list spl_raise_exception_set 
+;
+*/
+
+spl_raise_exception_set:
+	XSET spl_vname_list { /* Should be at most *3* in that list - need to check in generation */
+		$$=$2;
+	}
+;
+
+
+spl_raise_exception_list: 
+	KW_IN OPEN_BRACKET spl_raise_exception_num_list CLOSE_BRACKET {
+		$$=$3;
+	}
+;
+
+
+spl_neg_int_value: KW_MINUS INT_VALUE {
+		$<integer_val>$=atol($<str>2)*-1;
+	}
+;
+
+spl_raise_exception_num_list:
+	spl_neg_int_value {
+		$$=new_list_of_integers($1);
+	}
+	| spl_raise_exception_num_list KW_COMMA spl_neg_int_value {
+		$$=append_list_of_integers($1,$3);
+
+	}
+;
+
+
+
+
+//--------------------------------------------------------------------------------
+spl_if_command:
+	KW_IF spl_condition KW_THEN spl_block spl_if_rest spl_op_semi {
+		$$=new_spl_if_cmd(append_spl_if_conds($5,new_spl_if_cond($2, $4)));
+	}
+;
+
+spl_if_rest:
+	ELIF spl_condition KW_THEN spl_block spl_if_rest {
+		$$=append_spl_if_conds($5,new_spl_if_cond($2, $4));
+		
+	}
+	| ELSE spl_block END_IF {
+		$$=append_spl_if_conds(NULL , new_spl_if_cond(A4GL_new_expr_simple(ET_EXPR_TRUE), $2));
+	}
+	| END_IF {
+		$$=NULL;
+	}
+;
+
+
+//1-------------------------------------------------------------------------------
+spl_return_command:
+	KW_RETURN SEMICOLON {
+		$$=new_spl_return_cmd(NULL,0);
+	}
+	| KW_RETURN spl_expression_list  op_spl_with_resume SEMICOLON {
+			$$=new_spl_return_cmd($2,$3);
+	}
+;
+
+spl_expression_list:
+	spl_expression {$$=A4GL_new_ptr_list($1);}
+	| spl_expression_list KW_COMMA spl_expression {
+		$$=A4GL_new_append_ptr_list($1,$3);
+	}
+;
+
+
+op_spl_with_resume:
+	{$$=0;}
+	| WITH_RESUME {$$=1;}
+;
+
+//--------------------------------------------------------------------------------
+spl_system_command:
+	SYSTEM spl_expression SEMICOLON {
+		$$=new_spl_system_cmd($2);
+	}
+;
+
+//1-------------------------------------------------------------------------------
+spl_trace_command:
+	TRACE_ON 		spl_op_semi {
+		$$=new_spl_trace_cmd(A4GL_new_expr_simple(ET_EXPR_SPL_TRACE_ON));
+	}
+	| TRACE_OFF  		spl_op_semi {
+		$$=new_spl_trace_cmd(A4GL_new_expr_simple(ET_EXPR_SPL_TRACE_OFF));
+	}
+	| TRACE_PROCEDURE 	spl_op_semi {
+		$$=new_spl_trace_cmd(A4GL_new_expr_simple(ET_EXPR_SPL_TRACE_PROCEDURE));
+	}
+	| TRACE spl_expression  spl_op_semi {
+		$$=new_spl_trace_cmd(A4GL_new_expr_simple_expr($2,ET_EXPR_SPL_TRACE_EXPR));
+	}
+;
+
+
+//1-------------------------------------------------------------------------------
+spl_while_command:
+	WHILE spl_condition spl_block END_WHILE  spl_op_semi {
+		$$=new_spl_while_cmd($2,$3);
+	}
+;
+
+spl_condition:
+	spl_expression {$$=$1;}
+;
+
+//--------------------------------------------------------------------------------
+spl_expression:  fgl_expr_c { $$=$<ptr>1;}
+;
+
+
+
+
+
+spl_dtype_explicit:
+	KW_CHAR {
+		$$=new_simple_variable(NULL,DTYPE_CHAR,1,0);
+	} 
+	| NCHAR {
+		$$=new_simple_variable(NULL,DTYPE_NCHAR,1,0);
+	} 
+	| KW_CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		if (atoi($<str>3)>32767) {
+			a4gl_yyerror("Character column size is too big");
+			YYERROR;
+		}	
+		$$=new_simple_variable(NULL,DTYPE_CHAR,atol($<str>3),0);
+	} 
+	| NCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_NCHAR,atol($<str>3),0);
+	} 
+	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_VCHAR,atol($<str>3),0);
+	} 
+	| VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_VCHAR,atol($<str>3),0);
+	} 
+	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_CHAR,atol($<str>3),0);
+	} 
+	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_CHAR,atol($<str>3),0);
+	} 
+	| INTEGER {
+		$$=new_simple_variable(NULL,DTYPE_INT,0,0);
+	} 
+	| SERIAL {
+		$$=new_simple_variable(NULL,DTYPE_SERIAL,0,0);
+	} 
+	| INTEGER8 {
+		$$=new_simple_variable(NULL,DTYPE_INT8,0,0);
+        }
+        | SERIAL8 {
+		$$=new_simple_variable(NULL,DTYPE_SERIAL8,0,0);
+        }
+	| SMALLINT {
+		$$=new_simple_variable(NULL,DTYPE_SMINT,0,0);
+	} 
+	| KW_DECIMAL {
+		$$=new_simple_variable(NULL,DTYPE_DECIMAL,16*256+2,0);
+	} 
+	| KW_DECIMAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_DECIMAL,atoi($<str>3)*256+2,0);
+	} 
+	| KW_DECIMAL OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_DECIMAL,atoi($<str>3)*256+atoi($<str>5),0);
+	} 
+	| MONEY {
+		$$=new_simple_variable(NULL,DTYPE_MONEY,16*256+2,0);
+	} 
+	| MONEY OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_MONEY,atoi($<str>3)*256+2,0);
+	} 
+	| MONEY OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+		$$=new_simple_variable(NULL,DTYPE_MONEY,atoi($<str>3)*256+atoi($<str>5),0);
+	} 
+	| KW_FLOAT op_prec {
+		$$=new_simple_variable(NULL,DTYPE_FLOAT,0,0);
+	}
+	| DOUBLE_PRECISION op_prec {
+		$$=new_simple_variable(NULL,DTYPE_FLOAT,0,0);
+	}
+	| REAL { 
+		$$=new_simple_variable(NULL,DTYPE_FLOAT,0,0);
+	}  
+	| SMALLFLOAT op_prec {
+		$$=new_simple_variable(NULL,DTYPE_SMFLOAT,0,0);
+	}  
+	| KW_DATE {
+		$$=new_simple_variable(NULL,DTYPE_DATE,0,0);
+	} 
+	| KW_BYTE {
+		$$=new_simple_variable(NULL,DTYPE_BYTE,0,0);
+	} 
+	| KW_TEXT {
+		$$=new_simple_variable(NULL,DTYPE_TEXT,0,0);
+	} 
+	| DATETIME datetime_qual {
+		$$=new_simple_variable(NULL,DTYPE_DTIME,$<integer_val>2,0);
+	} 
+	| time_dtypes {
+		$$=$1;
+	}
+	| INTERVAL interval_qual {
+		$$=new_simple_variable(NULL,DTYPE_INTERVAL,$<integer_val>2,0);
+	} 
+;
+
+
+spl_op_semi: 
+	| SEMICOLON
+;

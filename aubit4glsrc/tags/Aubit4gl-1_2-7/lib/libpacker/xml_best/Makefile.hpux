@@ -1,0 +1,75 @@
+
+ZLIB=-DHAVE_ZLIB 
+CFLAGS=   -g  -fPIC -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB) -I/usr/local/include -L/usr/local/lib -I/usr/local/include -L/usr/local/lib -L/opt/gnu/lib -L$(AUBITDIR)/lib
+CFLAGS2=  -g -b  -fPIC -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB) -I/usr/local/include -L/usr/local/lib -I/usr/local/include -L/usr/local/lib -L/opt/gnu/lib -L$(AUBITDIR)/lib
+
+CC=gcc
+
+FLEXML=flexml -v
+
+%.l %.h: %.dtd
+	flexml -L -v $< -i pack_xml.h
+
+
+%.o : %c
+	$(CC) -c $<
+
+
+all: module_def.dtd libPACKER_XMLBEST.sl reload
+
+
+cmds.setparent.o: cmds.setparent.c expr.xoh.h cmds.xoh.h
+	$(CC) $(CFLAGS) -c $<
+
+libPACKER_XMLBEST.sl: pack_xml.o cmds.xo.o expr.xo.o overloads.h overloads.o module_def.o lex.yy.o stack.o cmds.setparent.o expr.setparent.o overloads_read.o
+	$(CC) $(CFLAGS) -shared -fPIC -I../../../incl pack_xml.o cmds.xo.o expr.xo.o overloads.o module_def.o lex.yy.o stack.o cmds.setparent.o expr.setparent.o overloads_read.o -o libPACKER_XMLBEST.sl   -laubit4gl -lz
+
+	cp *.sl ../../../plugins-1.00_14
+
+
+reload: reload.c $(AUBITDIR)/compilers/4glc/API_lex.c
+	$(CC) -z -Wl,+s -Wl,-E -g -fPIC -I.  -I../../.. -I../../../incl  $(ZLIB) -rdynamic reload.c $(AUBITDIR)/compilers/4glc/API_lex.c -o reload -L$(AUBITDIR)/lib -laubit4gl -lz
+	cp reload $(AUBITDIR)/bin
+
+expr.x: ../../../compilers/4glc/expr.x
+	cp ../../../compilers/4glc/expr.x .
+
+cmds.x: ../../../compilers/4glc/cmds.x
+	cp ../../../compilers/4glc/cmds.x .
+	
+${AUBITDIR}/bin/xgen_new:
+	cd ${AUBITDIR}/compilers/xgen_new && make
+
+cmds.xo.c cmds.xoh.h cmds.attlist.dtd cmds.setparent.c: cmds.x ${AUBITDIR}/bin/xgen_new
+	${AUBITDIR}/bin/xgen_new cmds.x
+
+expr.xo.c expr.xoh.h expr.attlist.dtd expr.setparent.c: expr.x ${AUBITDIR}/bin/xgen_new
+	${AUBITDIR}/bin/xgen_new expr.x
+
+module_def.dtd: cmds.attlist.dtd cmds.elements.dtd expr.attlist.dtd expr.elements.dtd default.dtd
+		cat default.dtd cmds.attlist.dtd cmds.elements.dtd expr.attlist.dtd expr.elements.dtd | sort -k2 -k1r | uniq > module_def.dtd
+	
+module_def.act: module_def.top.act expr.start.act expr.end.act cmds.start.act cmds.end.act module_def.tail.act
+	cat $^ > $@
+
+module_def.o: module_def.h module_def.c
+	$(CC) -c -rdynamic $(CFLAGS) module_def.c
+
+module_def.c : module_def.act  module_def.dtd
+	$(FLEXML) -D -a $^
+
+lex.yy.o: lex.yy.c pack_xml.h
+	/usr/bin/cc $(CFLAGS2) -c lex.yy.c
+lex.yy.c: module_def.l
+	#/home/aubitnew/aubit4glsrc/compilers/4glc/xml/extflex/bin/flex --tables-file=lexdata -Cem -B -s module_def.l
+	${AUBITDIR}/compilers/4glc/xml/extflex/bin/flex  -Cem -I -s module_def.l
+
+module_def.l module_def.h : module_def.dtd
+	flexml -L module_def.dtd -i pack_xml.h
+
+check:
+	xmllint --noout --valid cbenD.obj
+
+clean : 
+	rm *.o lex.yy.c module_def.c expr.xo.c expr.setparent.c cmds.xo.c cmds.setparent.c cmds.end.act cmds.start.act expr.end.act expr.start.act module_def.act module_def.h cmds.xh.h expr.xh.h cmds.xoh.h expr.xoh.h cmds.attlist.dtd cmds.elements.dtd expr.attlist.dtd expr.elements.dtd module_def.dtd module_def.l reload libPACKER_XMLBEST.sl
+

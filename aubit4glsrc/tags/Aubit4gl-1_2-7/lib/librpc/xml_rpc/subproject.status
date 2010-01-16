@@ -1,0 +1,14 @@
+Name: lib_RPC_XMLRPC
+Parent: aubit4glsrc
+Description: XML RPC-API library.Enables Remote Procedure Calls between XML-RPC compatible applications
+Functionality: RPC 
+Build:
+Example:
+Depends: XML-RPC library (w3c-www and libxmlrpc)
+Documentation:
+Regressed:
+Maintainer: AF
+Status: 2
+Todo: Implement server component
+Notes:
+

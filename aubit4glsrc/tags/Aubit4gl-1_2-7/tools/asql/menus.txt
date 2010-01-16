@@ -1,0 +1,153 @@
+MENU|main_menu|ADBACCESS
+Query-language|q|Use SQL query language|query_menu
+Connection|c|Connect or disconnect from a database environment.|connection_menu
+Database|d|Select, Create, Info, Drop or Close a database.|database_menu
+Table|t|Create, Alter, or Drop a database table.|table_menu
+Session|s|Retrieve information about the current DB-Access session.|session_menu
+Utilities|u|Forms, Reports, User Menus etc.|tools_menu
+Exit|e|Exit ADBACCESS.|EXIT
+
+
+MENU|connection_menu|CONNECTION
+Connect|c|Connect to a database environment.|connection_connect
+Disconnect|d|Disconnect from the current database environment.|connection_disconnect
+Exit|e|Returns to the DB-Access Menu.|EXIT
+
+SINGLEMENU|connection_disconnect|DISCONNECT
+Yes|y|Disconnect from current database environment.|do_disconnect
+No|n|Do not disconnect from current database environment.|EXIT
+
+MENU|table_menu_int|TABLE
+Create|c|Create a new Table (not implemented)|niy
+Alter|a|Alter a table (not implemented)|niy
+Info|i|Info for a table|table_info
+Drop|d|Drop a table|table_drop
+Exit|e|Return to ADBACCESS Menu|EXIT
+
+MENU|database_menu|DATABASE
+Select|s|Select a database to work with.|select_db
+Create|c|Create a new database.|create_db
+Info|i|Retrieve information about a database.|niy
+Drop|d|Drop a database.|drop_db
+cLose|l|Close the current database.|do_disconnect
+Exit|e|Return to the ADBACCESS menu.|EXIT
+
+
+SINGLEMENU|confirm_drop|CONFIRM
+No|n|Don't drop the table|RETURN "Yes"
+Yes|y|Yes - really drop the table|RETURN "No"
+
+
+
+
+MENU|tools_menu|Utilities
+Form|f|Form maintenance|form_menu
+Report|r|Reports maintenance|report_menu
+User-Menus|u|User menus maintenance|user_menu
+Exit|e|Return to main menu|EXIT
+
+
+MENU|user_menu_int|User Menu
+Run|r|Run a user menu|run_user_menu
+Modify|m|Modify a user menu|modify_user_menu
+Exit|e|Exit|EXIT
+
+
+SINGLEMENU|cr_db_menu|EXIT
+Create-new-database|c|Create-new-database|RETURN "Create"
+Discard-new-database|d|Discard-new-database|RETURN "Discard"
+
+SINGLEMENU|cr_db_menu_options|EXIT
+Dbspace|d|Select a dbspace for storing the databases's data.|RETURN "DBSpace"
+Log|l|Specify the type of transaction logging.|RETURN "Log"
+Exit|e|Return to the Database Menu.|RETURN "Exit"
+							                exit menu
+
+SINGLEMENU|get_log|LOG
+None|n|None|RETURN ""
+Log|n|LOG|RETURN "WITH LOG"
+Buffered_log|b|Buffered Log|RETURN "WITH BUFFERED LOG"
+log_Mode_ansi|m|Ansi Log|RETURN "LOG MODE ANSI"
+
+SINGLEMENU|ask_commit_rollback|COMMIT ?
+Commit|c|Commit Work|RETURN "Commit"
+Rollback|r|Rollback Work|RETURN "Rollback"
+
+SINGLEMENU|confirm_yn|Confirm
+Yes|y|Really do it|RETURN "Yes"
+No|n|Don't do it|RETURN "No"
+
+
+SINGLEMENU|confirm_drop_db|CONFIRM >>
+YES|y|Really Drop the database|RETURN "Yes"
+NO|n|Don't drop it|RETURN "No"
+
+
+KEEPMENU|info_menu|INFO
+Columns|c|List columns for the table|RETURN "Columns"
+Indexes|i|List indexes for the table|RETURN "Indexes"
+Privileges|p|List privileges for the table|RETURN "Privileges"
+References|r|List references for the table|RETURN "References"
+Status|s|Display status for the table|RETURN "Status"
+cOnstraints|o|List constraints for the table|RETURN "cOnstraints"
+triGgers|g|List triggers for the table|RETURN "triGgers"
+Table|t|Change table|RETURN "Table"
+Fragments|f|List fragments for the table|RETURN "Fragments"
+Exit|e|Exit|RETURN "Exit"
+
+KEEPMENU|form_menu_int|FORM
+Run|r|Run a form|RETURN "Run"
+Modify|m|Modify a form|RETURN "Modify"
+Generate|g|Generate a form|RETURN "Generate"
+New|n|Create a new form|RETURN "New"
+Compile|c|Compile a form|RETURN "Compile"
+Drop|d|Drop a form|RETURN "Drop"
+Exit|e|Exit Menu|RETURN "Exit"
+
+SINGLEMENU|modify_compile|Modify Form
+Compile|c|Compile the form|RETURN "Compile"
+Save-and-exit|s|Save the form|RETURN "Save-and-exit"
+Discard-and-exit|d|Discard the form|RETURN "Discard-and-exit"
+
+
+SINGLEMENU|correct_compile_form|COMPILE FORM
+Correct|c|Correct the errors in the form|RETURN "Correct"
+Exit|e|Exit the compilation|RETURN "Exit"
+
+SINGLEMENU|confirm_drop_form|CONFIRM
+No|n|No - I don't want to drop it|RETURN "No"
+Yes|y|Yes - I do want to drop it|RETURN "Yes"
+
+
+SINGLEMENU|form_table_selection|Generate
+Table selection complete|t|Table selection complete|RETURN "Table selection complete"
+Select more|s|Select more|RETURN "Select more"
+Exit|e|Exit|RETURN "Exit"
+
+
+
+KEEPMENU|query_menu_translate_int|SQL
+New|n|Type in new SQL commands|RETURN "New"
+Run|r|Run the SQL commands|RETURN "Run"
+Modify|m|Modify the SQL commands|RETURN "Modify"
+Use-editor|u|Use the editor to modify SQL|RETURN "Use-editor"
+Output|o|Output the results of the SQL|RETURN "Output"
+Choose|c|Choose an SQL file|RETURN "Choose"
+Save|s|Save an SQL file|RETURN "Save"
+Info|i|Info for tables|RETURN "Info"
+Drop|d|Drop an SQL file|RETURN "Drop"
+Translate|t|Translate SQL into a different dialect|RETURN "Translate"
+Exit|e|Return to ADBACCESS menu|RETURN "Exit"
+
+KEEPMENU|query_menu_int|SQL
+New|n|Type in new SQL commands|RETURN "New"
+Run|r|Run the SQL commands|RETURN "Run"
+Modify|m|Modify the SQL commands|RETURN "Modify"
+Use-editor|u|Use the editor to modify SQL|RETURN "Use-editor"
+Output|o|Output the results of the SQL|RETURN "Output"
+Choose|c|Choose an SQL file|RETURN "Choose"
+Save|s|Save an SQL file|RETURN "Save"
+Info|i|Info for tables|RETURN "Info"
+Drop|d|Drop an SQL file|RETURN "Drop"
+Exit|e|Return to ADBACCESS menu|RETURN "Exit"
+
