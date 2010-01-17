@@ -1,0 +1,313 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8329F520-87D5-4F7A-AB39-13AF99C13271}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AubitDesktopWeb</RootNamespace>
+    <AssemblyName>AubitDesktopWeb</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <StartPageUrl>Form1.wgx</StartPageUrl>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <StartPageUrl>Form1.wgx</StartPageUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DiffieHellman, Version=0.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\\DiffieHellman.dll</HintPath>
+    </Reference>
+    <Reference Include="Org.Mentalis.Security, Version=1.0.13.715, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\\Org.Mentalis.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Gizmox.WebGUI.Forms, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=c508b41386c60f1d">
+      <SpecificVersion>True</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Gizmox.WebGUI.Common, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=263fa4ef694acff6">
+      <SpecificVersion>True</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Gizmox.WebGUI.Server, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=3de6eb684226c24d">
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
+    <Reference Include="Tamir.SharpSSH, Version=1.1.1.13, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\\Tamir.SharpSSH.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\AppSettings.cs">
+      <Link>AppSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\AubitMessageBox.cs">
+      <Link>AubitMessageBox.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\AubitMessageBox.designer.cs">
+      <Link>AubitMessageBox.designer.cs</Link>
+      <DependentUpon>AubitMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="..\AubitTSBtn.cs">
+      <Link>AubitTSBtn.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\EnvelopeReader.cs">
+      <Link>EnvelopeReader.cs</Link>
+    </Compile>
+    <Compile Include="..\Eval.cs">
+      <Link>Eval.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLApplicationPanel.cs">
+      <Link>FGLApplicationPanel.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\FGLBrowserFieldWidget.cs">
+      <Link>FGLBrowserFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLButtonFieldWidget.cs">
+      <Link>FGLButtonFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLCheckboxFieldWidget.cs">
+      <Link>FGLCheckboxFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLComboBoxFieldWidget.cs">
+      <Link>FGLComboBoxFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLComboListBoxFieldWidget.cs">
+      <Link>FGLComboListBoxFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLDateFieldWidget.cs">
+      <Link>FGLDateFieldWidget.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\FGLForm.cs">
+      <Link>FGLForm.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLLabelFieldWidget.cs">
+      <Link>FGLLabelFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLOptions.cs">
+      <Link>FGLOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLPixmapFieldWidget.cs">
+      <Link>FGLPixmapFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLProgressBarFieldWidget.cs">
+      <Link>FGLProgressBarFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLRadioFieldWidget.cs">
+      <Link>FGLRadioFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLScreenRecord.cs">
+      <Link>FGLScreenRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLTextFieldWidget.cs">
+      <Link>FGLTextFieldWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLTxtControl.cs">
+      <Link>FGLTxtControl.cs</Link>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="..\FGLTxtControl.Designer.cs">
+      <Link>FGLTxtControl.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLUsing.cs">
+      <Link>FGLUsing.cs</Link>
+    </Compile>
+    <Compile Include="..\FGLWidget.cs">
+      <Link>FGLWidget.cs</Link>
+    </Compile>
+    <Compile Include="..\FglWindow.cs">
+      <Link>FglWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\FieldOverlay.cs">
+      <Link>FieldOverlay.cs</Link>
+    </Compile>
+    <Compile Include="..\FormattedGridView.cs">
+      <Link>FormattedGridView.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\frmFieldOverlay.cs">
+      <Link>frmFieldOverlay.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\frmFieldOverlay.Designer.cs">
+      <Link>frmFieldOverlay.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\HelperClasses.cs">
+      <Link>HelperClasses.cs</Link>
+    </Compile>
+    <Compile Include="..\Network_web.cs">
+      <Link>Network_web.cs</Link>
+    </Compile>
+    <Compile Include="..\PromptWindow.cs">
+      <Link>PromptWindow.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\PromptWindow.Designer.cs">
+      <Link>PromptWindow.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\samp.cs">
+      <Link>samp.cs</Link>
+    </Compile>
+    <Compile Include="..\ssh.cs">
+      <Link>ssh.cs</Link>
+    </Compile>
+    <Compile Include="..\StartMenuXMLParser.cs">
+      <Link>StartMenuXMLParser.cs</Link>
+    </Compile>
+    <Compile Include="..\ToolBarImages.Designer.cs">
+      <Link>ToolBarImages.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextConstruct.cs">
+      <Link>UIContextConstruct.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextDisplayArray.cs">
+      <Link>UIContextDisplayArray.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextDisplayArrayInTable.cs">
+      <Link>UIContextDisplayArrayInTable.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextInput.cs">
+      <Link>UIContextInput.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextInputArray.cs">
+      <Link>UIContextInputArray.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextInputArrayInTable.cs">
+      <Link>UIContextInputArrayInTable.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextMenu.cs">
+      <Link>UIContextMenu.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\UIContextMisc.cs">
+      <Link>UIContextMisc.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContextPrompt.cs">
+      <Link>UIContextPrompt.cs</Link>
+    </Compile>
+    <Compile Include="..\UIContexts.cs">
+      <Link>UIContexts.cs</Link>
+    </Compile>
+    <Compile Include="..\wfAbout.cs">
+      <Link>wfAbout.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\wfAbout.Designer.cs">
+      <Link>wfAbout.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\wfAuthentication.cs">
+      <Link>wfAuthentication.cs</Link>
+    </Compile>
+    <Compile Include="..\wfFileHandling.cs">
+      <Link>wfFileHandling.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\wffrmWebLogin.cs">
+      <Link>wffrmWebLogin.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\wffrmWebLogin.Designer.cs">
+      <Link>wffrmWebLogin.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\wfgoodbye.cs">
+      <Link>wfgoodbye.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\wfgoodbye.Designer.cs">
+      <Link>wfgoodbye.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\wfMainAppWindow.cs">
+      <Link>wfMainAppWindow.cs</Link>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="..\wfMainAppWindow.Designer.cs">
+      <Link>wfMainAppWindow.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\wfXref.cs">
+      <Link>wfXref.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\XMLForm.cs">
+      <Link>XMLForm.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\AubitMessageBox.resx">
+      <Link>AubitMessageBox.resx</Link>
+      <DependentUpon>AubitMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+
+	
+  -->
+  <Import Condition="" Project="$(MSBuildExtensionsPath)\Gizmox\v9.0\Gizmox.VWGApplication.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53118</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
