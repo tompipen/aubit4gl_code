@@ -12,6 +12,7 @@ using Gizmox.WebGUI.Forms;
 using System.Xml.Serialization;
 using System.IO;
 using System.Web;
+using ISupportTrack;
 
 #endregion
 
@@ -183,6 +184,8 @@ namespace AubitDesktop
             exitMsg = errMsg;
             return true;
         }
+
+	public bool isWebUI=true;
 
 
         private void doQuit()
@@ -648,11 +651,11 @@ namespace AubitDesktop
           //  MessageBox.Show("Logon_user = " + HttpContext.Current.Request.ServerVariables["LOGON_USER"]);
           //  MessageBox.Show("Auth_user=" + HttpContext.Current.Request.ServerVariables["AUTH_USER"]);
 
-            if (cbApplications.SelectedIndex==-1) return;
+            if (cbApplications.Text.Trim()=="") return;
 
 
             
-            appName=(string)cbApplications.SelectedItem;
+            appName=(string)cbApplications.Text;
 
             if (appsConfig == null)
             {
@@ -1302,6 +1305,26 @@ namespace AubitDesktop
 
 
 
-        
+
+
+        internal void sendFileToClient(FILE file)
+        {
+            FileDownloadGateway oDownloader = new FileDownloadGateway();
+
+            
+            if (file.CLIENTNAME != null && file.CLIENTNAME.Length > 0)
+            {
+                oDownloader.Filename = file.CLIENTNAME;
+            }
+            else
+            {
+                oDownloader.Filename = file.NAME;
+            }
+            
+           
+            oDownloader.StartBytesDownload(this,Convert.FromBase64String(file.Text));
+        }
     }
+
+
 }

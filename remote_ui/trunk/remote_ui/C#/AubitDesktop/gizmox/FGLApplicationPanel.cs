@@ -1428,6 +1428,10 @@ namespace AubitDesktop
                 #region FILE
                 if (a is FILE)
                 {
+
+			if (this.TopWindow.isWebUI) {
+				TopWindow.sendFileToClient((FILE)a);
+			} else {
                     if (Program.AppSettings.allowReceiveFile)
                     {
                         FILE f;
@@ -1489,6 +1493,7 @@ namespace AubitDesktop
                     {
                         Program.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
                     }
+		} 
                     commands.Remove(a);
                     continue;
                 }
