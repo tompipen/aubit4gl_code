@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.235 2010-01-14 07:43:31 mikeaubury Exp $
+# $Id: ioform.c,v 1.236 2010-01-17 14:50:48 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.235 2010-01-14 07:43:31 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.236 2010-01-17 14:50:48 mikeaubury Exp $";
 #endif
 
 /**
@@ -2172,14 +2172,11 @@ A4GL_gen_field_list_from_slist_internal (FIELD *** field_list,
 		      return -1;
 
 		    }
+
+
 		  metric_no = formdets->fileform->fields.fields_val[fno].metric.metric_val[fmetric];
 		  A4GL_debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, fmetric, mno, metric_no);
 		  k = &formdets->fileform->metrics.metrics_val[metric_no];
-#ifdef DEBUG
-		  {
-		    A4GL_debug ("cnt=%d a=%d", cnt, max_number);
-		  }
-#endif
 
 		  if (cnt >= max_number)
 		    {

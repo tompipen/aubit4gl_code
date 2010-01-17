@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.235 2010-01-12 09:04:34 mikeaubury Exp $
+# $Id: sql.c,v 1.236 2010-01-17 14:50:48 mikeaubury Exp $
 #
 */
 
@@ -1184,6 +1184,10 @@ int allocated_nsid=0;
     struct s_sid *nsid = NULL;
     struct s_sid *sid;
     struct s_cid *cid=0;
+	char cursormode[200]=""; // Used to detect whether we force CURSOR_DYNAMIC
+				// This *might* be needed by ODBC for SQLSERVER to allow
+				// multiple cursors
+				// See http://msdn.microsoft.com/en-us/library/ms345109%28SQL.90%29.aspx
     SQLRETURN rc;
     int forupdate = 0;
 
@@ -1347,6 +1351,30 @@ int allocated_nsid=0;
     
     A4GL_trc ("cid->statement=%p (same as nsid)", cid->statement);
     cid->mode = upd_hold + scroll * 256;
+
+
+	if (scroll) {
+		if (upd_hold) {
+    			sprintf(cursormode,"ODBC_CURSOR_DYNAMIC_SCROLL_WITHHOLD");
+		}  else {
+    			sprintf(cursormode,"ODBC_CURSOR_DYNAMIC_SCROLL");
+		}
+	} else {
+		if (upd_hold) {
+    			sprintf(cursormode,"ODBC_CURSOR_DYNAMIC_WITHHOLD");
+		}  else {
+    			sprintf(cursormode,"ODBC_CURSOR_DYNAMIC");
+		}
+	}
+
+	if (strlen(cursormode)) {
+    		A4GL_debug("Mode = %d - checking if we need to force DYNAMIC mode (getenv on %s)...\n", cid->mode, cursormode);
+    		if (A4GLSQLCV_check_requirement(cursormode)) {
+    			rc = SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_DYNAMIC);
+    		}
+	}
+
+
     cid_set_open(cid, False);
 
     A4GL_trc ("Adding cursor %s", cursname);
