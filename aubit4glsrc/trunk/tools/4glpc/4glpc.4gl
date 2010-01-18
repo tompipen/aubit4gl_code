@@ -1336,10 +1336,19 @@ end if
 if mv_output!=" " then
 	let lv_runstr="OVERRIDE_PACKER_OUTPUT=",mv_output
 end if
-if fgl_getenv("A4GL_PACKER") matches "*XML*" then
-	let lv_runstr=lv_runstr clipped," A4GL_LEXTYPE=WRITE ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+if fgl_getenv("TARGET_OS")="mingw" then
+	if fgl_getenv("A4GL_PACKER") matches "*XML*" then
+		let lv_runstr=lv_runstr clipped,"set A4GL_LEXTYPE=WRITE&& ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+	else
+		let lv_runstr=lv_runstr clipped,"set A4GL_LEXTYPE=WRITE&& set A4GL_PACKER=XML&& ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+	end if
 else
-	let lv_runstr=lv_runstr clipped," A4GL_LEXTYPE=WRITE A4GL_PACKER=XML ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+
+	if fgl_getenv("A4GL_PACKER") matches "*XML*" then
+		let lv_runstr=lv_runstr clipped," A4GL_LEXTYPE=WRITE ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+	else
+		let lv_runstr=lv_runstr clipped," A4GL_LEXTYPE=WRITE A4GL_PACKER=XML ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+	end if
 end if
 
 #if mv_stacktrace is not null then
@@ -1418,10 +1427,19 @@ if mv_verbose>=2 then
 	display "Hopefully generating : ", lv_base
 end if
 
-if mv_output!=" " then
-	let lv_runstr="OVERRIDE_PACKER_OUTPUT=",mv_output
+
+if fgl_getenv("TARGET_OS")="mingw" then
+	if mv_output!=" " then
+		let lv_runstr="set OVERRIDE_PACKER_OUTPUT=",mv_output clipped,"&&"
+	end if
+	let lv_runstr=lv_runstr clipped," set A4GL_PACKER=PACKED&& ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+else
+	if mv_output!=" " then
+		let lv_runstr="OVERRIDE_PACKER_OUTPUT=",mv_output
+	end if
+	let lv_runstr=lv_runstr clipped," A4GL_PACKER=PACKED ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
 end if
-let lv_runstr=lv_runstr clipped," A4GL_PACKER=PACKED ",mv_compile_4gl clipped, " ",mv_compile_4gl_opts clipped
+
 
 if mv_stacktrace is not null then
 	let lv_runstr=lv_runstr clipped," -s",mv_stacktrace
