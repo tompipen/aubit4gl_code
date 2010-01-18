@@ -1311,6 +1311,11 @@ namespace AubitDesktop
 
         internal void sendFileToClient(FILE file)
         {
+
+            //Program.Show("Cant send files to the client yet..");
+            return;
+
+
             FileDownloadGateway oDownloader = new FileDownloadGateway();
 
             
