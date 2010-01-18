@@ -1608,7 +1608,7 @@ void ScreenHandler::waitForEvent()
       connect(p_fglform->context, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
    }
 
-   if(b_newForm && p_fglform->dialog () == NULL){
+   if(b_newForm && p_fglform->dialog () == NULL && p_fglform->state() != Fgl::IDLE){
       b_newForm = false;
       p_fglform->show();
    }
