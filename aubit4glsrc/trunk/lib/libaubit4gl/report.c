@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.191 2009-08-27 17:25:39 mikeaubury Exp $
+# $Id: report.c,v 1.192 2010-01-18 14:33:25 mikeaubury Exp $
 #
 */
 
@@ -1666,7 +1666,7 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
      Andrej say: yes it can!
    */
 
-  if (A4GL_isyes (acl_getenv ("USEREALTABLEFORREP")))
+  if ( A4GLSQLCV_check_requirement("USEREALTABLEFORREP"))
     {
       SPRINTF1 (buff_3, "create table %s (\n", gen_rep_tab_name (b, 1));
     }

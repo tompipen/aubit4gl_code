@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.237 2010-01-18 14:06:04 mikeaubury Exp $
+# $Id: sql.c,v 1.238 2010-01-18 14:33:27 mikeaubury Exp $
 #
 */
 
@@ -2649,7 +2649,7 @@ Bool ODBC_exec_stmt (SQLHSTMT *ptr_hstmt,struct s_sid *sid)
             A4GLSQLLIB_A4GLSQL_commit_rollback (-1);
         }
     }
-    if (strncmp(sid->select,"CREATE TABLE #",14)==0 && A4GL_isyes(acl_getenv("SQLSERVERTEMPS"))) {
+    if (strncmp(sid->select,"CREATE TABLE #",14)==0 && A4GLSQLCV_check_requirement("SQLSERVERTEMPS")) {
 		HSTMT hstmt=0;
 	
         	if (A4GL_new_hstmt ((SQLHSTMT *) & hstmt)) {

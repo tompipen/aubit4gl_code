@@ -1079,7 +1079,6 @@ if mv_verbose>=4 then display "STRAIGHT TO OBJ - NO C FIRST" end if
 END IF
 
 
-
 IF (lv_to="EXE" OR lv_to="DLL") and lv_from in ("EC","C") THEN
 	# We need to get these to object code instead of EXE
 	CALL make_into(lv_fname,lv_from,"OBJ")

@@ -133,3 +133,5 @@ ODBC_CURSOR_DYNAMIC_SCROLL_WITHHOLD Use dynamic cursors for a SCROLL cursor, WIT
 ODBC_CURSOR_DYNAMIC_SCROLL Use dynamic cursors for a SCROLL cursor
 ODBC_CURSOR_DYNAMIC Use dynamic cursors for a non-scroll, non-hold cursor
 ODBC_CURSOR_DYNAMIC_WITHHOLD Use dynamic cursors for a non-scroll, with hold cursor
+USEREALTABLEFORREP Use a CREATE TABLE instead of a CREATE TEMP TABLE for a REPORT with ORDER BY
+SQLSERVERTEMPS Fixup for SQLServer when using ODBC connection 
