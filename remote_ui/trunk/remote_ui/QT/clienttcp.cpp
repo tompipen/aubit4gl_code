@@ -568,7 +568,7 @@ void ProtocolHandler::run()
    emit debugtext(qsl_xmlCommands.at(i));
 
          QDomElement envelope = doc.documentElement();
-         pid = envelope.attribute("PID").toInt();
+         pid = envelope.attribute("ID").toInt();
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -1963,7 +1963,7 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
    QDomDocument doc;
    doc.setContent(qs_id);
    QDomElement triggeredElement = doc.documentElement();
-//   triggeredElement.setAttribute("PID", pid);
+   triggeredElement.setAttribute("ENVELOPEID", pid);
    qs_id = doc.toString();
    qs_id = filterUmlauts2(qs_id);
    makeResponse(qs_id);
