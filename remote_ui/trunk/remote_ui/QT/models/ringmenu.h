@@ -69,7 +69,6 @@ private:
    QString m_menuStyle;
    QString m_hideButtons;
    bool b_hideButtons;
-   QPushButton *currentButton;
    QList<QAction*> ql_menuCommands;
    QList<QAction*> ql_menuActions;
 

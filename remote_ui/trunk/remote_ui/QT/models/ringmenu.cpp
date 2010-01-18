@@ -30,7 +30,6 @@
 RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 {
    b_hideButtons = false;
-   currentButton = NULL;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
    this->setEnabled(false);
@@ -54,7 +53,6 @@ RingMenu::RingMenu(QString title, QString style, QString image,
                    QWidget *parent) : QGroupBox(title, parent)
 {
    b_hideButtons = false;
-   currentButton = NULL;
 
    if(!style.isEmpty()){
       this->setProperty("menuStyle", style);
@@ -204,7 +202,6 @@ void RingMenu::selectButton(QString name)
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text() == name){
             button->setFocus();
-            currentButton = button;
             return;
          }
       }
@@ -295,12 +292,7 @@ void RingMenu::resizeEvent(QResizeEvent *event)
 
 void RingMenu::focusInEvent(QFocusEvent* event)
 {
-   if(currentButton == NULL){
-      this->focusNextChild();
-   }
-   else{
-      currentButton->setFocus();
-   }
+   this->focusNextChild();
    return QGroupBox::focusInEvent(event);
 }
 
@@ -308,11 +300,11 @@ void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
 {
          if(keyEvent->key() == Qt::Key_Enter ||
             keyEvent->key() == Qt::Key_Return){
-/*
-            QPushButton *button = (QPushButton*) obj;
-            button->animateClick();
-*/
-qDebug() << "BUTTON PRESSED";
+
+            if(QPushButton *btn = qobject_cast<QPushButton *> (this->focusWidget())){
+               btn->animateClick();
+            }
+
             return ;
          }
 
