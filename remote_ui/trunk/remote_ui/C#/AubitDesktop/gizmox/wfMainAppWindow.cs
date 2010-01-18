@@ -884,6 +884,7 @@ namespace AubitDesktop
                     if (outb[cnt] == 0)
                     {
                         len = cnt - 1;
+                        break;
                     }
                 }
 

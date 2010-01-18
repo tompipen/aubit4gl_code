@@ -229,8 +229,9 @@
       <Link>wfAbout.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\wfAbout.Designer.cs">
-      <Link>wfAbout.Designer.cs</Link>
+    <Compile Include="..\wfAbout.designer.cs">
+      <Link>wfAbout.designer.cs</Link>
+      <DependentUpon>wfAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="..\wfAuthentication.cs">
       <Link>wfAuthentication.cs</Link>
@@ -243,22 +244,25 @@
       <Link>wffrmWebLogin.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\wffrmWebLogin.Designer.cs">
-      <Link>wffrmWebLogin.Designer.cs</Link>
+    <Compile Include="..\wffrmWebLogin.designer.cs">
+      <Link>wffrmWebLogin.designer.cs</Link>
+      <DependentUpon>wffrmWebLogin.cs</DependentUpon>
     </Compile>
     <Compile Include="..\wfgoodbye.cs">
       <Link>wfgoodbye.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\wfgoodbye.Designer.cs">
-      <Link>wfgoodbye.Designer.cs</Link>
+    <Compile Include="..\wfgoodbye.designer.cs">
+      <Link>wfgoodbye.designer.cs</Link>
+      <DependentUpon>wfgoodbye.cs</DependentUpon>
     </Compile>
     <Compile Include="..\wfMainAppWindow.cs">
       <Link>wfMainAppWindow.cs</Link>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="..\wfMainAppWindow.Designer.cs">
-      <Link>wfMainAppWindow.Designer.cs</Link>
+    <Compile Include="..\wfMainAppWindow.designer.cs">
+      <Link>wfMainAppWindow.designer.cs</Link>
+      <DependentUpon>wfMainAppWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="..\wfXref.cs">
       <Link>wfXref.cs</Link>
@@ -275,6 +279,22 @@
     <EmbeddedResource Include="..\AubitMessageBox.resx">
       <Link>AubitMessageBox.resx</Link>
       <DependentUpon>AubitMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\wfAbout.resx">
+      <Link>wfAbout.resx</Link>
+      <DependentUpon>wfAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\wffrmWebLogin.resx">
+      <Link>wffrmWebLogin.resx</Link>
+      <DependentUpon>wffrmWebLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\wfgoodbye.resx">
+      <Link>wfgoodbye.resx</Link>
+      <DependentUpon>wfgoodbye.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\wfMainAppWindow.resx">
+      <Link>wfMainAppWindow.resx</Link>
+      <DependentUpon>wfMainAppWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

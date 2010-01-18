@@ -4,7 +4,8 @@ if [ "$1" = "" ]
 then
 rm bin/AubitDesktopWeb.dll
 
- /usr/bin/gmcs  /noconfig /debug:full /debug+ /optimize- /out:bin/AubitDesktopWeb.dll wfAbout.cs wfAbout.Designer.cs Properties/AssemblyInfo.cs Properties/Resources.Designer.cs AppSettings.cs AubitMessageBox.cs AubitMessageBox.Designer.cs AubitTSBtn.cs EnvelopeReader.cs Eval.cs FGLApplicationPanel.cs FGLBrowserFieldWidget.cs FGLButtonFieldWidget.cs FGLCheckboxFieldWidget.cs FGLComboListBoxFieldWidget.cs FGLComboBoxFieldWidget.cs FGLDateFieldWidget.cs FGLForm.cs FGLLabelFieldWidget.cs FGLOptions.cs FGLPixmapFieldWidget.cs FGLProgressBarFieldWidget.cs FGLScreenRecord.cs FGLTextFieldWidget.cs FGLTxtControl.cs FGLTxtControl.Designer.cs FGLUsing.cs FGLWidget.cs FieldOverlay.cs frmFieldOverlay.cs frmFieldOverlay.Designer.cs HelperClasses.cs  FglWindow.cs \
+ /usr/bin/gmcs  /noconfig /debug:full /debug+ /optimize- /out:bin/AubitDesktopWeb.dll wfAbout.cs wfAbout.Designer.cs  \
+AppSettings.cs AubitMessageBox.cs AubitMessageBox.Designer.cs AubitTSBtn.cs EnvelopeReader.cs Eval.cs FGLApplicationPanel.cs FGLBrowserFieldWidget.cs FGLButtonFieldWidget.cs FGLCheckboxFieldWidget.cs FGLComboListBoxFieldWidget.cs FGLComboBoxFieldWidget.cs FGLDateFieldWidget.cs FGLForm.cs FGLLabelFieldWidget.cs FGLOptions.cs FGLPixmapFieldWidget.cs FGLProgressBarFieldWidget.cs FGLScreenRecord.cs FGLTextFieldWidget.cs FGLTxtControl.cs FGLTxtControl.Designer.cs FGLUsing.cs FGLWidget.cs FieldOverlay.cs frmFieldOverlay.cs frmFieldOverlay.Designer.cs HelperClasses.cs  FglWindow.cs \
 wffrmWebLogin.cs  wffrmWebLogin.Designer.cs \
 FGLRadioFieldWidget.cs \
 wfgoodbye.Designer.cs  \
@@ -37,3 +38,4 @@ exit
 	/usr/bin/xsp2 --verbose  --port 9999 --root `pwd` --applications '/:.' 
 fi
 
+#Properties/AssemblyInfo.cs Properties/Resources.Designer.cs 
