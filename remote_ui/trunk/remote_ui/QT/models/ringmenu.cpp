@@ -304,19 +304,17 @@ void RingMenu::focusInEvent(QFocusEvent* event)
    return QGroupBox::focusInEvent(event);
 }
 
-bool RingMenu::eventFilter(QObject *obj, QEvent *event)
+void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
 {
-   if(obj->inherits("QPushButton")){
-      if(event->type() == QEvent::KeyPress){
-         QKeyEvent *keyEvent = (QKeyEvent*) event;
          if(keyEvent->key() == Qt::Key_Enter ||
             keyEvent->key() == Qt::Key_Return){
+/*
             QPushButton *button = (QPushButton*) obj;
             button->animateClick();
-            return true;
+*/
+qDebug() << "BUTTON PRESSED";
+            return ;
          }
-      }
-   }
 
 /*
    if(event->type() == QEvent::KeyPress){
@@ -362,7 +360,7 @@ bool RingMenu::eventFilter(QObject *obj, QEvent *event)
    }
 */
 
-   return QGroupBox::eventFilter(obj, event);
+   return QGroupBox::keyPressEvent(keyEvent);
 }
 
 void RingMenu::setMenuStyle(const QString &ms)

@@ -75,8 +75,8 @@ private:
 
 protected:
    void resizeEvent(QResizeEvent *);
-   bool eventFilter(QObject *obj, QEvent *event);
    void focusInEvent(QFocusEvent*);
+   void keyPressEvent(QKeyEvent*);
 
 signals:
    void menuButtonPressed(QString);
