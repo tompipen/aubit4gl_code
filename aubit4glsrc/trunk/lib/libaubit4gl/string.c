@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.34 2009-12-17 17:36:11 mikeaubury Exp $
+# $Id: string.c,v 1.35 2010-01-18 14:08:54 mikeaubury Exp $
 #
 */
 
@@ -307,7 +307,6 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
 	{
 	  break;
 	}
-	printf("Buff=%s\n",buff);
       cnt += width;
     }
   A4GL_trim (buff);

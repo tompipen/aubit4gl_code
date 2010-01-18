@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.236 2010-01-17 14:50:48 mikeaubury Exp $
+# $Id: sql.c,v 1.237 2010-01-18 14:06:04 mikeaubury Exp $
 #
 */
 
@@ -616,7 +616,11 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
     char sbuff[20000];
     int b;
     static int log_sql = -1;
+#ifdef __WIN32__
+    static char * log_sql_file = "c:\\log.sql";
+#else
     static char * log_sql_file = "/tmp/log.sql";
+#endif
     static int first_open = 1;
 
     if (log_sql == -1)
