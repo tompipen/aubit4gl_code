@@ -20,6 +20,7 @@
 #define CONTEXT_PROMPT 3
 
 
+static void merge_files (void);
 char *current_stmt_table = 0;
 struct expr_str *input_array_variable = 0;
 
@@ -443,8 +444,7 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
     }
 }
 
-void
-merge_files (void)
+static void merge_files (void)
 {
   FILE *h;
   FILE *c;
