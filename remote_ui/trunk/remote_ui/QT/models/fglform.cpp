@@ -701,7 +701,6 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
-/*
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = (QKeyEvent*) event;
       StatusBar *status = (StatusBar*) statusBar();
@@ -731,15 +730,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
           }
       }
-          if(!status->b_overwrite)
-          {
-              if(TextEdit *te = qobject_cast<TextEdit *> (obj))
-              {
+      if(!status->b_overwrite)
+      {
+         if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+         {
                   te->setOverwriteMode(false);
-              }
-          }
+         }
+      }
+   }
 
 
+/*
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
 
