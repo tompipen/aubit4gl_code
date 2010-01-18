@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.516 2010-01-14 07:46:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.517 2010-01-18 12:49:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.516 2010-01-14 07:46:19 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.517 2010-01-18 12:49:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -87,6 +87,7 @@ char *local_rettype (char *s);
 //static int print_bind_expr_portion (void *ptr, char i, int portion);
 //
 int tmp_ccnt = 0;
+static int is_char_dtype (int dtype);
 
 int set_dont_use_indicators = 0;
 #define find_variable_vu_ptr NONO_DONT_USE_find_variable_vu_ptr
@@ -7595,8 +7596,14 @@ local_expr_as_string (expr_str * s)
 
 	if (fcall->parameters && strcmp (fcall->fname, "length") == 0 && fcall->parameters->list.list_len == 1)
 	  {
+	int dtype;
 	    char buff[20000];
-	    sprintf (buff, "A4GL_get_length(%s)", local_expr_as_string (fcall->parameters->list.list_val[0]));
+		dtype=simple_expr_datatype(fcall->parameters->list.list_val[0]);
+		if (dtype==-1 || is_char_dtype(dtype)) {
+	    		sprintf (buff, "A4GL_get_length(%s)", local_expr_as_string (fcall->parameters->list.list_val[0]));
+		} else {
+			a4gl_yyerror("You cannot use a non-character string for a LENGTH in this situation");
+		}
 	    strcpy (rbuff, buff);
 	    return rbuff;
 	  }
@@ -8662,3 +8669,18 @@ int a;
   }
 
 }
+
+
+
+static int is_char_dtype (int dtype)
+{
+  dtype = dtype & DTYPE_MASK;
+  if (dtype == DTYPE_CHAR)
+    return 1;
+  if (dtype == DTYPE_NCHAR)
+    return 1;
+  if (dtype == DTYPE_VCHAR)
+    return 1;
+  return 0;
+}
+
