@@ -689,6 +689,7 @@ namespace AubitDesktop
 
                                     if (plainTextPassword != txtPassword.Text)
                                     {
+                                        //Program.Show("Invalid username/password : "+plainTextPassword+"!="+txtPassword.Text);
                                         Program.Show("Invalid username/password");
                                         return;
                                     }
@@ -883,7 +884,7 @@ namespace AubitDesktop
                 {
                     if (outb[cnt] == 0)
                     {
-                        len = cnt - 1;
+                        len = cnt ;
                         break;
                     }
                 }
