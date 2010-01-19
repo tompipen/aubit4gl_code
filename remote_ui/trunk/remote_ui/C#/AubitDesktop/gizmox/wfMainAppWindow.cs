@@ -646,6 +646,8 @@ namespace AubitDesktop
             string userName="";
             string passWord="";
             string protocol="";
+            string cwd = "";
+
             bool foundApp = false;
 
           //  MessageBox.Show("Logon_user = " + HttpContext.Current.Request.ServerVariables["LOGON_USER"]);
@@ -675,6 +677,11 @@ namespace AubitDesktop
                     if (appsConfig.Applications[appNo].Name == appName)
                     {
                         programName = appsConfig.Applications[appNo].ProgramName;
+
+                        if (appsConfig.Applications[appNo].cwd != null && appsConfig.Applications[appNo].cwd.Length > 0)
+                        {
+                            Directory.SetCurrentDirectory(appsConfig.Applications[appNo].cwd);
+                        }
 
                         foundApp = true;
                         // We've found our application...

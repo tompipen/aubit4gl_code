@@ -79,7 +79,7 @@ namespace AubitDesktop
             this.sbCommentText,
             this.btnPanel});
             this.statusBar1.ShowPanels = true;
-            this.statusBar1.Size = new System.Drawing.Size(763, 22);
+            this.statusBar1.Size = new System.Drawing.Size(847, 22);
             this.statusBar1.TabIndex = 0;
             this.statusBar1.TabStop = false;
             this.statusBar1.Click += new System.EventHandler(this.statusBar1_Click);
@@ -128,7 +128,6 @@ namespace AubitDesktop
             this.topWindowToolStrip.RightToLeft = false;
             this.topWindowToolStrip.ShowToolTips = true;
             this.topWindowToolStrip.TabIndex = 2;
-          //  this.topWindowToolStrip.Click += new Gizmox.WebGUI.Forms.ToolBarItemHandler(this.topWindowToolStrip_Click_1);
             // 
             // toolBarButton1
             // 
@@ -168,7 +167,7 @@ namespace AubitDesktop
             this.mainAppPanel.Dock = Gizmox.WebGUI.Forms.DockStyle.Fill;
             this.mainAppPanel.Location = new System.Drawing.Point(0, 28);
             this.mainAppPanel.Name = "mainAppPanel";
-            this.mainAppPanel.Size = new System.Drawing.Size(763, 449);
+            this.mainAppPanel.Size = new System.Drawing.Size(847, 449);
             this.mainAppPanel.TabIndex = 4;
             // 
             // loginPanel
@@ -280,7 +279,7 @@ namespace AubitDesktop
             this.groupBox1.Controls.Add(this.iconPB);
             this.groupBox1.Dock = Gizmox.WebGUI.Forms.DockStyle.Right;
             this.groupBox1.FlatStyle = Gizmox.WebGUI.Forms.FlatStyle.Flat;
-            this.groupBox1.Location = new System.Drawing.Point(607, 28);
+            this.groupBox1.Location = new System.Drawing.Point(691, 28);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(156, 449);
             this.groupBox1.TabIndex = 5;
@@ -337,7 +336,7 @@ namespace AubitDesktop
             this.Controls.Add(this.mainAppPanel);
             this.Controls.Add(this.topWindowToolStrip);
             this.Controls.Add(this.statusBar1);
-            this.Size = new System.Drawing.Size(763, 499);
+            this.Size = new System.Drawing.Size(847, 499);
             this.Text = "wfMainAppWindow";
             this.Load += new System.EventHandler(this.frmMainAppWindow_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sbLineDisplayText)).EndInit();

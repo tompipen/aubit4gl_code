@@ -60,12 +60,17 @@ namespace AubitDesktop.Xml.Authentication
         public string cmdLine;
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string cwd;
+
+        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute]
         public string connMode;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
         public User[] Users;
+
     }
 
     /// <remarks/>
