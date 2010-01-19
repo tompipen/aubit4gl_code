@@ -1811,6 +1811,15 @@ end if
 let lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 RUN lv_runstr CLIPPED RETURNING lv_status
 
+
+if file_exists(mv_errfile) and fgl_getenv("DISPLAYLINKERRFILE")="Y" then
+if fgl_getenv("TARGET_OS")="mingw" then
+	RUN "type "||mv_errfile CLIPPED 
+else
+	RUN "cat "||mv_errfile CLIPPED 
+end if
+end if
+
 if mv_verbose>=5 then
 	display "Ran command"
 end if
