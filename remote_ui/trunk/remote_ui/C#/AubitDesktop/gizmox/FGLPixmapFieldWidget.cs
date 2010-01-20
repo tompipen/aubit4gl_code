@@ -117,7 +117,7 @@ namespace AubitDesktop
                 else
                 {
                     
-                    pb.Image = FGLUtils.getImageFromName(value);
+                    pb.Image = FGLWebUtils.getImageFromName(value);
                     if (pb.Image == null)
                     {
                         byte[]file=Convert.FromBase64String(value);
@@ -179,9 +179,9 @@ namespace AubitDesktop
             if (configSettings.ContainsKey("FILENAME"))
             {
                 string dir;
-                Image obj;
+                 Gizmox.WebGUI.Common.Resources.ResourceHandle obj; 
 
-                obj = (Image) FGLUtils.getImageFromName((string)configSettings["FILENAME"]);
+                obj = FGLWebUtils.getImageFromName((string)configSettings["FILENAME"]);
                 //pb.BackColor = Color.AliceBlue;
 
 

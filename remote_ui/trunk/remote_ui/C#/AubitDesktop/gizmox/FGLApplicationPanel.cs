@@ -1816,9 +1816,9 @@ namespace AubitDesktop
                             TopWindow.loadApplicationLauncherTree(u.VALUE,this.ApplicationEnvelopeID);
                             break;
                         case "WORKSPACEBACKGROUND":
-                            //this.BackgroundImage = FGLUtils.getImageFromName(u.VALUE);
+                            //this.BackgroundImage = FGLWebUtils.getImageFromName(u.VALUE);
                             //this.BackgroundImageLayout = ImageLayout.Stretch;
-                            winScreen.WindowWidget.BackgroundImage = FGLUtils.getImageFromName(u.VALUE);
+                            winScreen.WindowWidget.BackgroundImage = FGLWebUtils.getImageFromName(u.VALUE);
                             winScreen.WindowWidget.BackgroundImageLayout = ImageLayout.Center;
                             break;
                     }
@@ -2459,14 +2459,11 @@ namespace AubitDesktop
 
             try
             {
-                Image i;
-
-                i = FGLUtils.getImageFromName(o.IMAGE);
-                btn.Image = i;
+ 		        TopWindow.SetToolbarImage(btn,o); // needed because the webclient can't handle images normally...
+                //btn.Image = FGLWebUtils.getImageFromName(o.IMAGE);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                Console.WriteLine(ex.Message);
             }
             btn.ToolTipText = o.TOOLTIP;
             toolStrip1.Add(btn);

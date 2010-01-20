@@ -37,7 +37,7 @@ namespace AubitDesktop
             this.Text = winQuestion.TITLE;
             if (winQuestion.ICON != "")
             {
-                this.lblPb.Image = FGLUtils.getImageFromName(winQuestion.ICON);
+                this.lblPb.Image = FGLWebUtils.getImageFromName(winQuestion.ICON);
             }
             string[] s=winQuestion.POS.Split('|');
             for (int a=0;a<s.Length;a++) {

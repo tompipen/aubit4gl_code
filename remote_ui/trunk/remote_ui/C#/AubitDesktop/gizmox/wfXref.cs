@@ -181,5 +181,16 @@ namespace AubitDesktop
     }
 
 
+    static class FGLWebUtils
+    {
+
+        internal static Gizmox.WebGUI.Common.Resources.ResourceHandle getImageFromName(string p)
+        {
+             Gizmox.WebGUI.Common.Resources.ImageResourceHandle irh;
+            irh=new  Gizmox.WebGUI.Common.Resources.ImageResourceHandle(p);
+            return irh;
+
+        }
+    }
 
 }

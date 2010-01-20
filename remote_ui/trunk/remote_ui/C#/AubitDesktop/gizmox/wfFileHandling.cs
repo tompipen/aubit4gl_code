@@ -154,4 +154,11 @@ namespace ISupportTrack
         MicrosoftWord,
         PlainText
     }
+
+
+
+     static class FGLWebUtils
+    {
+
+    }
 }

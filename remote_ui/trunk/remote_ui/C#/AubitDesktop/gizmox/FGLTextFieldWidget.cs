@@ -687,11 +687,11 @@ namespace AubitDesktop
 
                 if (configSettings["IMAGE"] == null)
                 {
-                    b.Image = FGLUtils.getImageFromName("zoom");
+                    b.Image = FGLWebUtils.getImageFromName("zoom");
                 }
                 else
                 {
-                    b.Image = FGLUtils.getImageFromName((string)configSettings["IMAGE"]);
+                    b.Image = FGLWebUtils.getImageFromName((string)configSettings["IMAGE"]);
                 }
               
           

@@ -1338,7 +1338,13 @@ namespace AubitDesktop
            
             oDownloader.StartBytesDownload(this,Convert.FromBase64String(file.Text));
         }
+
+               internal void SetToolbarImage(AubitTSBtn btn, ADDTOTOOLBAR o)
+        {
+            btn.Image=FGLWebUtils.getImageFromName(o.IMAGE);
+        }
+ 
     }
 
-
+         
 }
