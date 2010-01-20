@@ -430,8 +430,8 @@ namespace AubitDesktop
 
                     //pb.AutoSize = true;
                     pb.Image = i;
-                    
-                   pb.Size = new Size(i.Width+10, i.Height+2);
+
+                    pb.Size = new Size(i.Width + 10, i.Height + 2); //NOTWEBGUI
                     
                     fakeKeyId = FGLUtils.getKeyCodeFromKeyName(str[1]);
                 }
@@ -451,7 +451,7 @@ namespace AubitDesktop
                 if (i != null)
                 {
                     pb.Image = i;
-                    pb.ClientSize = new Size(i.Width, i.Height);
+                    pb.ClientSize = new Size(i.Width, i.Height); //NOTWEBGUI
 
                 }
                 fakeKeyId = FGLUtils.getKeyCodeFromKeyName(str[0]);
