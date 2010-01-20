@@ -179,7 +179,8 @@ namespace AubitDesktop
             if (configSettings.ContainsKey("FILENAME"))
             {
                 string dir;
-                Image obj;
+                Image obj; // NOTWEBGUI
+                //WEBGUI Gizmox.WebGUI.Common.Resources.ResourceHandle i; 
 
                 obj = FGLUtils.getImageFromName((string)configSettings["FILENAME"]);
                 //pb.BackColor = Color.AliceBlue;
