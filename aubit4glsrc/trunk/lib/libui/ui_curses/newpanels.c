@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.178 2009-09-10 15:33:10 mikeaubury Exp $
+# $Id: newpanels.c,v 1.179 2010-01-20 13:14:42 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.178 2009-09-10 15:33:10 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.179 2010-01-20 13:14:42 mikeaubury Exp $";
 #endif
 
 /**
@@ -349,9 +349,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   if (win == 0)
     {
 #ifdef DEBUG
-      A4GL_debug ("Couldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
+      A4GL_debug ("Couldn't create window h=%d w=%d y=%d x=%d", h, w, y, x);
 #endif
-      A4GL_exitwith ("Couldnt create window");
+      A4GL_exitwith ("Couldn't create window");
       return 0;
     }
 
@@ -397,7 +397,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 
   if (pan == 0)
     {
-      A4GL_error_box ("Couldnt create panel",0);
+      A4GL_error_box ("Couldn't create panel",0);
     }
 
 
@@ -662,18 +662,18 @@ char buff[256]="";
 					//free(fld->buf);
     A4GL_debug ("Here1..");
 					
-					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
+					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldn't free field"); }
 
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm1;
     A4GL_debug ("Here2..");
-					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
+					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldn't free field"); }
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm2;
-					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldnt free field"); }
+					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldn't free field"); }
     A4GL_debug ("Here3..");
 	
 				}
 				if (free_form(curses_form)!=E_OK) {
-					A4GL_debug("Couldnt free form");
+					A4GL_debug("Couldn't free form");
 				}
 				f->form=0;
 
@@ -1225,11 +1225,15 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
 		     f->form_details.border,
 		     f->form_details.comment_line,
 		     f->form_details.message_line, f->form_details.colour,1);
+  if (w==0) {
+	return 0;
+  }
 
   if (A4GL_display_form (f,attr))
     return w;
   else
     return 0;
+  
 }
 
 /**
@@ -3212,7 +3216,7 @@ LIBEXPORT int
 
   if (r != 0)
     {
-      A4GL_exitwith ("Couldnt move window");
+      A4GL_exitwith ("Couldn't move window");
       return 0;
     }
 
