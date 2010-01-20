@@ -181,7 +181,7 @@ namespace AubitDesktop
                 string dir;
                 Image obj;
 
-                obj = (Image) FGLUtils.getImageFromName((string)configSettings["FILENAME"]);
+                obj = FGLUtils.getImageFromName((string)configSettings["FILENAME"]);
                 //pb.BackColor = Color.AliceBlue;
 
 
