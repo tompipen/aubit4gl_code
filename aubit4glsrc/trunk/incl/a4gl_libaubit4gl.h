@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.391 2010-01-14 08:08:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.392 2010-01-20 16:30:22 mikeaubury Exp $
 #
 */
 
@@ -1305,6 +1305,7 @@ void A4GL_set_last_cursor(int n);
   void A4GL_push_chars (char *p, int dtype, int size);
   void A4GL_push_sqlerrmessage(void);
   void A4GL_push_char (char *p);
+  void A4GL_push_char_not_null (char *p);
   void A4GL_push_empty_char(void);
   void A4GL_push_variable (void *ptr, int dtype);
   void A4GL_push_interval (struct ival *p,int size);

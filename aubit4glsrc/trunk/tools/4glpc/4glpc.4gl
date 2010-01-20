@@ -587,7 +587,7 @@ end if
 		WHEN "--globals"		let mv_make_globals=1 continue for
 		WHEN "-G"			let mv_make_globals=1 continue for
 	
-		WHEN "-N"		let a=a+1 let mv_namespace=arg_val(a) continue for
+		WHEN "-N"		let a=a+1 let mv_namespace=arg_val(a) if mv_namespace is null then let mv_namespace=" " end if continue for
 		WHEN "--namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 		WHEN "-namespace"		let a=a+1 let mv_namespace=arg_val(a) continue for
 
@@ -1813,11 +1813,13 @@ RUN lv_runstr CLIPPED RETURNING lv_status
 
 
 if file_exists(mv_errfile) and fgl_getenv("DISPLAYLINKERRFILE")="Y" then
-if fgl_getenv("TARGET_OS")="mingw" then
-	RUN "type "||mv_errfile CLIPPED 
-else
-	RUN "cat "||mv_errfile CLIPPED 
-end if
+	if file_size(mv_errfile) then
+		if fgl_getenv("TARGET_OS")="mingw" then
+			RUN "type "||mv_errfile CLIPPED 
+		else
+			RUN "cat "||mv_errfile CLIPPED 
+		end if
+	end if
 end if
 
 if mv_verbose>=5 then

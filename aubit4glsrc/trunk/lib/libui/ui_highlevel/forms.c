@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.49 2009-05-05 14:12:38 mikeaubury Exp $";
+  "$Id: forms.c,v 1.50 2010-01-20 16:30:25 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1009,7 +1009,9 @@ A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x, int y,
 
   //A4GL_gui_dispform (name, A4GL_getform_line ());
 
-
+   if (w==0) {
+		return 0;
+   }
   windows[A4GL_get_currwinno ()].form = f;
   A4GL_chkwin ();
   if (A4GL_LL_display_form

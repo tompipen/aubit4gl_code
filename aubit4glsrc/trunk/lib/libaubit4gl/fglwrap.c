@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.151 2010-01-11 13:11:21 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.152 2010-01-20 16:30:25 mikeaubury Exp $
 #
 */
 
@@ -488,7 +488,7 @@ int exit_status=0;
 			}
 
 			if (lastmsg==0 || (repeat_sec>0 && timesince>=lastmsg+repeat_sec) ) {
-			   	A4GL_push_char(msg);
+			   	A4GL_push_char_not_null(msg);
 				if (repeat_sec>0) {
 					char buff[200];
 					// We want to update every few seconds on the progress..
@@ -824,7 +824,7 @@ aclfgl_arg_val (int n)
 		if (dot) {
 			*dot=0;
 		}
-		A4GL_push_char(ptr);
+		A4GL_push_char_not_null(ptr);
 		return 1;
 	}
   }
@@ -832,7 +832,7 @@ aclfgl_arg_val (int n)
 
   if (k < p_numargs)
     {
-      A4GL_push_char (p_args[k]);
+      A4GL_push_char_not_null (p_args[k]);
     }
   else
     {

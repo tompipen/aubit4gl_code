@@ -362,3 +362,13 @@
 363|Internal error
 364|Database name not seted
 366|Datatype has not been loaded
+368|Invalid Form
+369|Unknown widget ID
+370|Unable to open LOGREP library...
+371|Unable to open LOGREPPROC library...
+372|Unable to open file
+374|Couldn't create window
+375|Couldn't move window
+376|Internal Error : Couldn't process datatype \n
+377|Couldn't open form - does not appear to be a valid form file
+378|Couldn't open form

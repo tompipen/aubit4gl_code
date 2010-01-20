@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.109 2009-08-19 06:49:06 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.110 2010-01-20 16:30:25 mikeaubury Exp $
 #
 */
 
@@ -506,6 +506,28 @@ A4GL_push_empty_char (void)
   ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 
+}
+
+
+void A4GL_push_char_not_null(char *p) {
+/* Whan A4GL_push_char is used - the data is read to determine if the string is NULL 
+ * because a NULL string will have a 0 followed by a 0
+ * whereas a non-null empty string will have a 0 followed by 1
+ * Here - we know the data is coming from some C routine that doesn't know anything about DB 'NULLs'
+ * so - we need to make sure we're pushing empty strings - not DBNULLs 
+ * */
+char buff[2]={0,1};
+if (p==0) {
+	A4GL_push_char(buff);
+	return;
+}
+if (strlen(p)==0) {
+	A4GL_push_char(buff);
+	return;
+}
+
+
+A4GL_push_char(p);
 }
 
 /**
@@ -1496,7 +1518,7 @@ case DTYPE_OBJECT:
   A4GL_debug ("Couldnt process datatype %x", dtype);
 #endif
   /* exitwith("Internal Error : Couldnt process datatype %x\n",dtype);  too many arguments to function `exitwith' */
-  A4GL_exitwith ("Internal Error : Couldnt process datatype \n");
+  A4GL_exitwith ("Internal Error : Couldn't process datatype \n");
 
 
 }

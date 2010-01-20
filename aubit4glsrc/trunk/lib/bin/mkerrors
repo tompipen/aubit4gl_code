@@ -19,7 +19,7 @@ cd $LIBROOT/lib/bin
 #SOURCES="$a $b $c"
 
 
-sh mkerrors2
+sh mkerrors2_alt
 
 $AWK '
 BEGIN {

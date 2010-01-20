@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.48 2008-07-06 11:34:36 mikeaubury Exp $
+# $Id: readforms.c,v 1.49 2010-01-20 16:30:25 mikeaubury Exp $
 #*/
 
 /**
@@ -203,7 +203,7 @@ real_read_form (char *fname, char *formname)
 
       if (chkint != FCOMILE_XDR_MAGIC)
 	{
-	  A4GL_exitwith ("Couldnt open form - does not appear to be a valid form file");
+	  A4GL_exitwith ("Couldn't open form - does not appear to be a valid form file");
 	  return 0;
 	}
     }
@@ -215,7 +215,7 @@ real_read_form (char *fname, char *formname)
 
       if (ofile == 0)
 	{
-	  A4GL_exitwith ("Couldnt open form");
+	  A4GL_exitwith ("Couldn't open form");
 	  return 0;
 	}
 
@@ -226,7 +226,7 @@ real_read_form (char *fname, char *formname)
 
       if (chkint != FCOMILE_XDR_MAGIC)
 	{
-	  A4GL_exitwith ("Couldnt open form - does not appear to be a valid form file");
+	  A4GL_exitwith ("Couldn't open form - does not appear to be a valid form file");
 	  return 0;
 	}
 
