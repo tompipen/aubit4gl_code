@@ -1520,6 +1520,12 @@ public bool isWebUI=false;
                 }
             }
         }
+
+        internal void SetToolbarImage(AubitTSBtn btn, ADDTOTOOLBAR o)
+        {
+            btn.Image = FGLUtils.getImageFromName(o.IMAGE);
+            //throw new NotImplementedException();
+        }
     }
 
     class launcherCmdNode : TreeNode

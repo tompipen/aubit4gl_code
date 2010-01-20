@@ -2527,7 +2527,7 @@ namespace AubitDesktop
 
             try
             {
- 		TopWindow.SetToolbarImage(btn,o); // needed because the webclient can't handle images normally...
+ 		        TopWindow.SetToolbarImage(btn,o); // needed because the webclient can't handle images normally...
                 //btn.Image = FGLUtils.getImageFromName(o.IMAGE);
             }
             catch (Exception )
