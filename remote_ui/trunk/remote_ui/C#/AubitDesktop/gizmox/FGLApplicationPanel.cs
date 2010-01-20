@@ -2459,11 +2459,14 @@ namespace AubitDesktop
 
             try
             {
-                //Image i = getImageFromName(o.IMAGE);
-                btn.Image = FGLUtils.getImageFromName(o.IMAGE);
+                Image i;
+
+                i = FGLUtils.getImageFromName(o.IMAGE);
+                btn.Image = i;
             }
-            catch (Exception )
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
             }
             btn.ToolTipText = o.TOOLTIP;
             toolStrip1.Add(btn);

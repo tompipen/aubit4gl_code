@@ -837,7 +837,9 @@ namespace AubitDesktop
                 i = System.Drawing.Image.FromFile(f);
                 if (i != null) return i;
             }
-            catch (Exception ) { }
+            catch (Exception ex) {
+                Console.WriteLine("getImageFromImageFile failed: "+ex.Message);
+            }
 
             return null;
         }
@@ -863,6 +865,12 @@ namespace AubitDesktop
 
 
                 i = getImageFromImagePath(name, "C:/aubit4gl;" + FGLImageSettings.ImageDirectory);
+
+                if (i != null)
+                {
+                    return i;
+                }
+
                 try
                 {
                     FileStream stream = File.OpenRead(name);
@@ -874,7 +882,11 @@ namespace AubitDesktop
                 catch (Exception)
                 {
                 }
-                if (i != null) return i;
+
+                if (i != null)
+                {
+                    return i;
+                }
 
                 return null; // (System.Drawing.Image)resourceInterface.getObject("attention");
             }

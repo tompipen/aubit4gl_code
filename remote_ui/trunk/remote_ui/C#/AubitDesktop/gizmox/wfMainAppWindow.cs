@@ -929,7 +929,7 @@ namespace AubitDesktop
         {
             this.mainAppPanel.Controls.Clear();
             this.ErrorText = "Connection died";
-
+            hasQuit = true;
             //throw new NotImplementedException();
         }
 

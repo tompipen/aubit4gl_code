@@ -1496,6 +1496,10 @@ namespace AubitDesktop
                 #region FILE
                 if (a is FILE)
                 {
+
+			if (this.TopWindow.isWebUI) {
+				TopWindow.sendFileToClient((FILE)a);
+			} else {
                     if (Program.AppSettings.allowReceiveFile)
                     {
                         FILE f;
@@ -1557,6 +1561,7 @@ namespace AubitDesktop
                     {
                         Program.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
                     }
+		} 
                     commands.Remove(a);
                     continue;
                 }
@@ -2522,8 +2527,8 @@ namespace AubitDesktop
 
             try
             {
-                //Image i = getImageFromName(o.IMAGE);
-                btn.Image = FGLUtils.getImageFromName(o.IMAGE);
+ 		TopWindow.SetToolbarImage(btn,o); // needed because the webclient can't handle images normally...
+                //btn.Image = FGLUtils.getImageFromName(o.IMAGE);
             }
             catch (Exception )
             {
