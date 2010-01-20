@@ -418,8 +418,8 @@ namespace AubitDesktop
             fakeKeyId = -1;
             if (str.Length == 2)
             {
-                Image i;
-                
+                Image i; // NOTWEBGUI
+                //WEBGUI Gizmox.WebGUI.Common.Resources.ResourceHandle i; 
                 i = FGLUtils.getImageFromName(str[0]);
                 if (i == null)
                 {
@@ -444,7 +444,9 @@ namespace AubitDesktop
             }
             if (str.Length == 1)
             {
-                Image i;
+                Image i; // NOTWEBGUI
+                //WEBGUI Gizmox.WebGUI.Common.Resources.ResourceHandle i; 
+                
                 i = FGLUtils.getImageFromName("zoom");
                 if (i != null)
                 {
