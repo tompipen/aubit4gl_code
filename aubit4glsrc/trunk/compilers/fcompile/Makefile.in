@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.81 2010-01-14 13:27:33 mikeaubury Exp $
+# $Id: Makefile.in,v 1.82 2010-01-20 13:29:12 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -174,7 +174,7 @@ dump_form.o: dump_form.c common.h global.h common_single.h global_single.h
 	${CC} ${CFLAGS} -c dump_form.c
 	
 
-${ROOT}/bin/formgen_4gl : dump_form.o decompile_4gl.o  common_single.h global_single.h
+${ROOT}/bin/formgen_4gl : dump_form.o decompile_4gl.o  
 	${CC} ${CFLAGS} -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
 
 ${ROOT}/bin/make_binfiles: make_binfiles.c
