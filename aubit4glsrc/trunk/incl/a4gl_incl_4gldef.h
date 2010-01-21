@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.132 2010-01-14 08:08:12 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.133 2010-01-21 18:19:47 mikeaubury Exp $
 */
 
 /**
@@ -435,7 +435,7 @@ void A4GL_set_err_txt(char *s);
   int A4GL_esql_db_open(int a,char *src,char *target,char *dbname);
 void *A4GL_find_prepare (char *pname);
 int A4GL_call_4gl_dll (char *filename, char *function, int args);
-
+int A4GL_qsort(void *array, int tot_sz, int sz_elem,  void *callback);
   /*double A4GL_pop_double(void); */
   /* ======================= API_ui.c ===================== */
 

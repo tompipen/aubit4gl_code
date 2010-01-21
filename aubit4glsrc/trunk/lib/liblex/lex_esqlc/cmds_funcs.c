@@ -3532,6 +3532,22 @@ int rep_type;
 }
 
 
+int print_sort_cmd(struct struct_sort_cmd *c) {
+	set_nonewlines();
+	printc("A4GL_qsort(");
+	print_variable_usage(c->variable);
+	printc(",sizeof("); print_variable_usage(c->variable); printc(")");
+	printc(",sizeof("); print_variable_usage(c->variable); printc("[0]),");
+	A4GL_assertion(c->callback->expr_type!=ET_EXPR_FCALL,"Expecting a function call");
+	printc("%s%s", c->callback->expr_str_u.expr_function_call->namespace,c->callback->expr_str_u.expr_function_call->fname);
+	printc(");");
+	
+	clr_nonewlines();
+  	print_copy_status_not_sql (0);
+
+	return 1;
+}
+
 int print_copyback_cmd(struct struct_copyback_cmd *c) {
 struct variable_usage *u;
 int a=0;

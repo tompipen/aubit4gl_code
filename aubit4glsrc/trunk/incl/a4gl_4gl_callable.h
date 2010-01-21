@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.65 2010-01-20 16:30:20 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.66 2010-01-21 18:19:47 mikeaubury Exp $
 */
 
 /**
@@ -72,6 +72,7 @@ extern "C"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
 #include "a4gl_builtin_funcs.h"
+#include "a4gl_sql.h"
 
 
 #ifndef A4GL_aubit_strcasecmp
@@ -118,7 +119,6 @@ void A4GL_copy_sqlca_sqlawarn_8chars( char c0, char c1, char c2, char c3, char c
 //void A4GL_set_sqlerrm (char *m, char *p);
 
 //**********
-
 double A4GL_pop_double(void);
 double A4GL_pop_double_null_as_zero(void);
 void A4GL_pop_into_double (double *d);

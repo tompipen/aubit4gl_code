@@ -811,6 +811,16 @@ struct command *c;
    c->cmd_data.command_data_u.uncheck_menu_cmd.strlist=p_list;
    return c;
 }
+
+
+struct command *new_sort_cmd(expr_str *variable, expr_str *callback) {
+struct command *c;
+	c=new_command(E_CMD_SORT_CMD);
+	c->cmd_data.command_data_u.sort_cmd.variable=variable;
+	c->cmd_data.command_data_u.sort_cmd.callback=callback;
+	return c;
+}
+
  
 struct command *new_goto_cmd(char * p_label) { //!
 struct command *c;

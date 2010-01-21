@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.86 2010-01-14 08:08:21 mikeaubury Exp $
+# $Id: helper.c,v 1.87 2010-01-21 18:19:47 mikeaubury Exp $
 #
 */
 
@@ -1961,6 +1961,84 @@ p=A4GL_char_pop();
 A4GL_trim_nl(p);
 A4GL_push_char(p);
 free(p);
+return 1;
+}
+
+
+int (*qsort_callback) (int) =NULL;
+int qsort_sz=0;
+
+
+
+// Used by 'qsort' to call our 4gl callback function
+// the callback function must be declared using COPYOF parameters - eg
+//
+// FUNCTION qsort_tabname(COPYOF lv_sys1, COPYOF lv_sys2)
+//   define lv_sys1,lv_sys2 record like systables.*
+//
+static int qsort_compare(const void *a, const void *b) {
+int z;
+A4GL_push_reference((void *)a,qsort_sz);
+A4GL_push_reference((void *)b,qsort_sz);
+
+z=qsort_callback(2);
+
+if (z!=1) {
+	if (z) {
+		A4GL_pop_args(z);
+	}
+	A4GL_exitwith("Function returned incorrect number of values");
+	return 0;
+}
+z=A4GL_pop_int();
+return z;
+}
+
+// Do a quick sort on an array
+// used by code generated for a 
+//
+//     SORT array USING callback_function
+//
+// The callback function should return -1,0 or 1
+//
+// depending on the required sort order
+// 
+// eg. - assuming you have an array : 
+//              DEFINE lv_a                  RECORD LIKE systables.*
+//
+// You could use : 
+//    SORT lv_a USING qsort_tabname
+//
+// where  the callback function is defined : 
+//
+//     FUNCTION qsort_tabname (COPYOF lv_sys1,COPYOF lv_sys2)
+//     DEFINE lv_sys1            RECORD LIKE systables.*
+//     DEFINE lv_sys2            RECORD LIKE systables.*
+//     IF lv_sys1.tabname>lv_sys2.tabname THEN RETURN 1 END IF
+//     IF lv_sys1.tabname=lv_sys2.tabname THEN RETURN 0 END IF
+//     RETURN -1
+//     END FUNCTION
+
+
+int A4GL_qsort(void *array, int tot_sz, int sz_elem,  void *callback) {
+A4GL_assertion(qsort_callback!=NULL,"Callback already in use");
+qsort_callback=callback;
+qsort_sz=sz_elem;
+
+a4gl_status=0;
+
+qsort(array,tot_sz/sz_elem,sz_elem, qsort_compare);
+qsort_callback=NULL;
+/*
+printf("Status=%d\n",a4gl_status);
+
+if (a4gl_status!=0) {
+	int o;
+	o=a4gl_status;
+	aclfgli_clr_err_flg();
+	A4GL_set_status(o,0);
+}
+*/
 return 1;
 }
 

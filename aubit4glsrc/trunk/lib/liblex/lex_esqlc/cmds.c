@@ -120,6 +120,7 @@ switch(cd->type) {
    case E_CMD_PDF_CALL_CMD         : ok=print_pdf_call_cmd(&cd->command_data_u.pdf_call_cmd); break;
    case E_CMD_SET_SESSION_CMD      : ok=print_set_session_cmd(&cd->command_data_u.set_session_cmd); break;
    case E_CMD_COPYBACK_CMD      : ok=print_copyback_cmd(&cd->command_data_u.copyback_cmd); break;
+   case E_CMD_SORT_CMD      	: ok=print_sort_cmd(&cd->command_data_u.sort_cmd); break;
    case E_CMD_EXECUTE_PROCEDURE_CMD      : ok=print_execute_procedure_cmd(&cd->command_data_u.execute_procedure_cmd); break;
 
 /* These are SPL only - used for processing SPL to other dialects - not for C generation */

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.49 2010-01-14 08:07:50 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.50 2010-01-21 18:19:46 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -180,6 +180,7 @@ enum cmd_type {
 	E_CMD_LINT_IGNORE_CMD,
 	E_CMD_LINT_EXPECT_CMD,
 	E_CMD_COPYBACK_CMD,
+	E_CMD_SORT_CMD,
 
 	/* SPL Specific commands */
 	E_CMD_CREATE_PROCEDURE_CMD,
@@ -281,6 +282,12 @@ struct struct_lint_ignore_cmd {
 struct struct_lint_expect_cmd {
 	struct str_list *values;
 };
+
+struct struct_sort_cmd {
+	struct expr_str *variable;
+	struct expr_str *callback;
+};
+
 
 struct struct_copyback_cmd {
 	struct expr_str *variable;
@@ -1744,6 +1751,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_LINT_IGNORE_CMD: struct_lint_ignore_cmd lint_ignore_cmd;
 	case E_CMD_LINT_EXPECT_CMD: struct_lint_expect_cmd lint_expect_cmd;
 	case E_CMD_COPYBACK_CMD: struct_copyback_cmd copyback_cmd;
+	case E_CMD_SORT_CMD: struct_sort_cmd sort_cmd;
 	case E_CMD_CREATE_PROCEDURE_CMD : struct_create_proc_cmd create_proc_cmd;
 	case E_CMD_SPL_SYSTEM_CMD: struct_spl_system_cmd spl_system_cmd;
 	case E_CMD_SPL_FOREACH_SELECT_CMD: struct_spl_foreach_select_cmd spl_foreach_select_cmd ;
