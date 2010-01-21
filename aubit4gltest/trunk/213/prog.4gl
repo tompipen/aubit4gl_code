@@ -62,12 +62,14 @@ define confirm char
 			exit input
 
 		on key(f2)
-			if medarr[1].price!=2222 then
+			if medarr[1].price=2222 then
+			else
 				exit program 2
 			end if
 
 		on key(f3)
-			if medarr[2].price!=123456 then
+			if medarr[2].price=123456 then
+			else
 				exit program 3
 			end if
 

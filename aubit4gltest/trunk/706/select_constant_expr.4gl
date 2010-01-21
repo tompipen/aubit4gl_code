@@ -492,7 +492,7 @@ define aSecond interval second to second
     LET exitStatus = 1
   END IF
   IF r_.currMinuteMinute != 	CURRENT MINUTE TO MINUTE  THEN
-    DISPLAY "Diferent value 49"
+    DISPLAY "Diferent value 49:",r_.currMinuteMinute , " ",    CURRENT MINUTE TO MINUTE 
     LET exitStatus = 1
   END IF
   IF r_.currMinuteSecond != 	CURRENT MINUTE TO SECOND THEN

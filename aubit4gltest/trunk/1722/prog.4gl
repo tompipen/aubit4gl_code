@@ -36,6 +36,7 @@ MAIN
    END IF
  
 
+   PREPARE test_query FROM "SELECT * FROM log_div_sel_cntl WHERE program_name = ? "
    DISPLAY ""
    DISPLAY "Test: CHAR to database VARCHAR comparison using prepared query"
    EXECUTE test_query USING var1 INTO p_ldsc.*
@@ -55,7 +56,6 @@ MAIN
    END IF
 
 
-   PREPARE test_query FROM "SELECT * FROM log_div_sel_cntl WHERE program_name = ? "
    DISPLAY ""
    DISPLAY "Test: VARCHAR (from CHAR) to database VARCHAR comparison using prepared query"
    EXECUTE test_query USING var3 INTO p_ldsc.*

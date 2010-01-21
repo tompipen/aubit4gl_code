@@ -40,6 +40,7 @@ DEFINE
 	let handle = "pipe_ls"
 	let result = test_reading(handle,"pipe")
 	if result <> 0 then
+		display "test_reading returned non-zero for pipe"
 		exit program (1)
 	end if
 	
@@ -48,6 +49,7 @@ DEFINE
 	let handle = "file"
 	let result = test_reading(handle,"file")
 	if result <> 0 then
+		display "test_reading returned non-zero for file"
 		exit program (1)
 	end if
 
@@ -134,15 +136,18 @@ define
 	
 	if read_from = "pipe" then 
 		if buffer_line <> "prog.4gl" then 
+			display "R1 **********************: ", buffer_line clipped
 			let result = 1		
 		end if
 	else
 		if buffer_line <> compare_with then 
+			display "R2 **********************"
 			let result = 1
 		end if
 	end if
 	
 	if not success then 
+			display "R3 **********************"
 		let result = 1
 	end if
 	display "--------------------------------------------------------------"
@@ -167,15 +172,18 @@ define
 
 	if read_from = "pipe" then 
 		if buffer_array[1] <> "prog.4gl" then 
+			display "R4 **********************"
 			let result = 1		
 		end if
 	else
 		if buffer_line <> compare_with then 
+			display "R5 **********************"
 			let result = 1
 		end if		
 	end if
 	
 	if not success then
+			display "R6 **********************"
 		let result = 1
 	end if
 	display "--------------------------------------------------------------"
@@ -187,9 +195,6 @@ define
 		call open_file(handle)
 	end if
 	
-#To record:
-
-#Commented out because it failes to compile with Aubit ATM:
 	let ret = channel::read(handle, [buffer_record.Buff1, buffer_record.Buff2, buffer_record.Buff3])
 	let tmp_status = status
 	display "ret=",ret
@@ -201,14 +206,17 @@ define
 	display "buffer_record.Buff3=", buffer_record.Buff3	clipped
 	if read_from = "pipe" then 
 		if buffer_record.Buff1 <> "prog.4gl" then 
+			display "R7 **********************"
 			let result = 1		
 		end if
 	else
 		if buffer_line <> compare_with then 
+			display "R8 **********************"
 			let result = 1
 		end if		
 	end if
 	if not success then
+			display "R9 **********************"
 		let result = 1
 	end if
 	display "--------------------------------------------------------------"
