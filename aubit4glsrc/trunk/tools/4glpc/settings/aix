@@ -11,10 +11,10 @@ A4GL_C_OPTS=-maix64
 #A4GL_AR_CMD=
 
 #redefine ar command options
-#A4GL_AR_OPTS=
+A4GL_AR_OPTS=-q -X64
 
 #redefine ranlib command
 #A4GL_RANLIB_CMD=
 
 #redefine ranlib options
-#A4GL_RANLIB_OPTS=
+A4GL_RANLIB_OPTS=-X64
