@@ -63,6 +63,7 @@ namespace AubitDesktop.Xml.Authentication
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string cwd;
 
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute]
         public string connMode;

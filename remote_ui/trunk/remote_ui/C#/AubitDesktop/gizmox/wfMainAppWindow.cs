@@ -12,7 +12,9 @@ using Gizmox.WebGUI.Forms;
 using System.Xml.Serialization;
 using System.IO;
 using System.Web;
-using ISupportTrack;
+
+using Gizmox.WebGUI.Common.Interfaces;
+using Gizmox.WebGUI.Common.Gateways;
 
 #endregion
 
@@ -22,7 +24,7 @@ namespace AubitDesktop
     {
         public UIContext currentContext = null;
 
-        public  showMode showMenuBar;
+        public showMode showMenuBar;
         public showMode showToolbar;
         public showMode showApplicationLauncher;
         private event EventHandler EnvelopeReadyForConsumption;
@@ -30,11 +32,11 @@ namespace AubitDesktop
         private List<FGLApplicationPanel> RunningApplications;
         AubitNetwork networkConnection;
         //frmWebLogin frm;
-        private bool hasQuit=false;
+        private bool hasQuit = false;
         Goodbye gwin = null;
         private bool _amWaitingForEvent = false;
 
-        private AubitDesktop.Xml.Authentication.Configuration appsConfig=null;
+        private AubitDesktop.Xml.Authentication.Configuration appsConfig = null;
 
         private bool amWaitingForEvent
         {
@@ -62,7 +64,7 @@ namespace AubitDesktop
                 sw.Flush();
                 sw.Close();
             }
-            catch (Exception) { }       
+            catch (Exception) { }
         }
 
         public string LineDisplayText
@@ -121,7 +123,7 @@ namespace AubitDesktop
 
         internal void SendString(string TriggeredText, bool callSetWaitCursor)
         {
-            
+
 
             string finalString;
             if (callSetWaitCursor) { setWaitCursor(); }
@@ -180,19 +182,20 @@ namespace AubitDesktop
         /// </summary>
         /// <param name="errMsg">Error Message from 4gl program</param>
         /// <returns>Always returns true to inhibit the Program.Show</returns>
-        public bool setExitMessage(string errMsg) {
+        public bool setExitMessage(string errMsg)
+        {
             exitMsg = errMsg;
             return true;
         }
 
-	public bool isWebUI=true;
+        public bool isWebUI = true;
 
 
         private void doQuit()
         {
 
-       
-          
+
+
             if (gwin == null)
             {
                 this.Enabled = false;
@@ -207,7 +210,7 @@ namespace AubitDesktop
         void amb_Closed(object sender, EventArgs e)
         {
             this.Close();
-            
+
         }
 
 
@@ -223,7 +226,7 @@ namespace AubitDesktop
             MenuBarPanel.Width = MenuBarPanel.Width;
             mainAppPanel.Width = mainAppPanel.Width;
             log("SET MENUBARBUTTONS Sizeof a=" + a.Width + " " + a.Height);
-            
+
 
         }
 
@@ -259,20 +262,20 @@ namespace AubitDesktop
         public void setWaitCursor()
         {
             this.Cursor = Cursors.WaitCursor;
-            
-          //  timer1.Enabled = false;
+
+            //  timer1.Enabled = false;
         }
 
         public void clrWaitCursor()
         {
             amWaitingForEvent = true;
             this.Cursor = Cursors.Arrow;
-            
+
             //Application.DoEvents();
-        //      if (timer1.Enabled == false)
-        //     {
-        //        timer1.Enabled = true;
-        //    }
+            //      if (timer1.Enabled == false)
+            //     {
+            //        timer1.Enabled = true;
+            //    }
             /*
             if (timer1.Enabled == false)
             {
@@ -322,14 +325,14 @@ namespace AubitDesktop
             // Ignore for this one..
         }
 
-        internal void loadApplicationLauncherTree(string oname,int applicationID)
+        internal void loadApplicationLauncherTree(string oname, int applicationID)
         {
             // Does nothing on purpose..
         }
 
         internal void setTabTitle(FGLApplicationPanel fGLApplicationPanel, string p)
         {
-            
+
         }
 
 
@@ -338,13 +341,15 @@ namespace AubitDesktop
             // Does nothing on purpose..
         }
 
-	internal void setToolstripHeight(int p) {
+        internal void setToolstripHeight(int p)
+        {
             // Does nothing on purpose..
-	}
+        }
 
-	internal void setToolstripImageSize(int p) {
+        internal void setToolstripImageSize(int p)
+        {
             // Does nothing on purpose..
-	}
+        }
 
         private void topWindowToolStrip_Click(object objSource, ToolBarItemEventArgs objArgs)
         {
@@ -358,8 +363,8 @@ namespace AubitDesktop
             this.SuspendLayout();
             mainAppPanel.AutoSize = true;
             mainAppPanel.Visible = true;
-            
-           
+
+
             mainAppPanel.Controls.Add(fGLApplicationPanel);
             this.Width = this.Width;
             mainAppPanel.Focus();
@@ -446,7 +451,7 @@ namespace AubitDesktop
                 }
                 if (uname == null || uname == "")
                 {
-                    uname=HttpContext.Current.Request.ServerVariables["REMOTE_USER"];
+                    uname = HttpContext.Current.Request.ServerVariables["REMOTE_USER"];
                 }
 
                 if (uname != null)
@@ -482,27 +487,27 @@ namespace AubitDesktop
                 log("Settings file : " + settingsFile);
             }
 
-              
-                cbApplications.Items.Clear();
-              
-                cbApplications.Text = "";
-              
-            
+
+            cbApplications.Items.Clear();
+
+            cbApplications.Text = "";
+
+
 
             try
             {
                 log("Loading " + settingsFile + " CWD=" + Directory.GetCurrentDirectory());
-             
+
                 appsConfig = loadAuthenticationSettings(settingsFile);
                 if (appsConfig == null)
                 {
                     log("appsConfig=null");
-                   
+
                 }
                 if (appsConfig != null)
                 {
                     log("Got a config file");
-                    
+
                     log("Got a config...");
                     // Lets add all of our applications into the combobox..
 
@@ -572,59 +577,59 @@ namespace AubitDesktop
 
         void About_Click(object sender, EventArgs e)
         {
-             wfAbout abt;
-             abt = new wfAbout();
-             abt.ShowDialog();
-            
+            wfAbout abt;
+            abt = new wfAbout();
+            abt.ShowDialog();
+
         }
 
 
 
-    AubitDesktop.Xml.Authentication.Configuration loadAuthenticationSettings(string fileName)
-    {
-        XmlSerializer ser;
-        System.Type t;
-        AubitDesktop.Xml.Authentication.Configuration localAppsConfig;
-
-
-        t=typeof(AubitDesktop.Xml.Authentication.Configuration);
-        ser = new XmlSerializer(t);
-       // ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);
-       // ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
-       // ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
-
-        System.IO.StreamReader file =
-                new System.IO.StreamReader(fileName);
-        
-
-        
-
-        try
+        AubitDesktop.Xml.Authentication.Configuration loadAuthenticationSettings(string fileName)
         {
-            localAppsConfig = (AubitDesktop.Xml.Authentication.Configuration)ser.Deserialize(file);
+            XmlSerializer ser;
+            System.Type t;
+            AubitDesktop.Xml.Authentication.Configuration localAppsConfig;
+
+
+            t = typeof(AubitDesktop.Xml.Authentication.Configuration);
+            ser = new XmlSerializer(t);
+            // ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);
+            // ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
+            // ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
+
+            System.IO.StreamReader file =
+                    new System.IO.StreamReader(fileName);
+
+
+
+
+            try
+            {
+                localAppsConfig = (AubitDesktop.Xml.Authentication.Configuration)ser.Deserialize(file);
+            }
+            catch (Exception e)
+            {
+                Program.Show("Unable to process XML file:" + e.ToString());
+                return null;
+            }
+            return localAppsConfig;
         }
-        catch (Exception e)
+
+
+        void toolBarButton1_Click(object sender, EventArgs e)
         {
-            Program.Show("Unable to process XML file:" + e.ToString());
-            return null;
+            wfAbout abt;
+            abt = new wfAbout();
+            abt.Show();
+
         }
-        return localAppsConfig;
-    }
-
-
-    void toolBarButton1_Click(object sender, EventArgs e)
-    {
-        wfAbout abt;
-        abt = new wfAbout();
-        abt.Show();
-
-    }
 
 
 
         void frm_doLoginHandler(object sender, EventArgs e)
         {
-            if (cbApplications.Text=="")
+            if (cbApplications.Text == "")
             {
                 Program.Show("No application has been selected!");
             }
@@ -640,37 +645,39 @@ namespace AubitDesktop
         private void doLogin()
         {
             string appName;
-            string host="";
-            string port="";
+            string host = "";
+            string port = "";
             string programName = "";
-            string userName="";
-            string passWord="";
-            string protocol="";
+            string userName = "";
+            string passWord = "";
+            string protocol = "";
             string cwd = "";
 
             bool foundApp = false;
 
-          //  MessageBox.Show("Logon_user = " + HttpContext.Current.Request.ServerVariables["LOGON_USER"]);
-          //  MessageBox.Show("Auth_user=" + HttpContext.Current.Request.ServerVariables["AUTH_USER"]);
+            //  MessageBox.Show("Logon_user = " + HttpContext.Current.Request.ServerVariables["LOGON_USER"]);
+            //  MessageBox.Show("Auth_user=" + HttpContext.Current.Request.ServerVariables["AUTH_USER"]);
 
-            if (cbApplications.Text.Trim()=="") return;
+            if (cbApplications.Text.Trim() == "") return;
 
 
-            
-            appName=(string)cbApplications.Text;
+
+            appName = (string)cbApplications.Text;
 
             if (appsConfig == null)
             {
                 host = "192.168.2.217";
-                port= "3490";
-                userName=txtUsername.Text;
-                passWord=txtPassword.Text;
+                port = "3490";
+                userName = txtUsername.Text;
+                passWord = txtPassword.Text;
                 protocol = "PROXY";
                 programName = appName;
                 foundApp = true;
-            } else {
+            }
+            else
+            {
 
-                
+
 
                 for (int appNo = 0; appNo < appsConfig.Applications.Length; appNo++)
                 {
@@ -692,7 +699,7 @@ namespace AubitDesktop
                             {
                                 if (appsConfig.Applications[appNo].Users[user].Name == txtUsername.Text)
                                 {
-                                    string plainTextPassword=decipher(appsConfig.Applications[appNo].Users[user].Password);
+                                    string plainTextPassword = decipher(appsConfig.Applications[appNo].Users[user].Password);
 
                                     if (plainTextPassword != txtPassword.Text)
                                     {
@@ -702,7 +709,7 @@ namespace AubitDesktop
                                     }
                                     else
                                     {
-                                       
+
 
                                         // A Match! 
                                         //
@@ -793,9 +800,9 @@ namespace AubitDesktop
 
         private string decipher(string p)
         {
-            
+
             return A4GL_tea_string_decipher(p);
-            
+
         }
 
 
@@ -886,17 +893,17 @@ namespace AubitDesktop
                 outb[4] = (byte)(lgptr[1] & 0xff);
 
 
-               int len = outb.Length;
+                int len = outb.Length;
                 for (int cnt = 0; cnt < 8; cnt++)
                 {
                     if (outb[cnt] == 0)
                     {
-                        len = cnt ;
+                        len = cnt;
                         break;
                     }
                 }
 
-                smbuff = System.Text.ASCIIEncoding.ASCII.GetString(outb,0, len);
+                smbuff = System.Text.ASCIIEncoding.ASCII.GetString(outb, 0, len);
 
                 buff_out = buff_out + smbuff;
 
@@ -906,10 +913,10 @@ namespace AubitDesktop
 
         void tea_8c_decipher(uint[] v, uint[] k)
         {
-            
+
             uint y = v[0], z = v[1], sum = 0xC6EF3720, delta = 0x9E3779B9, n = 32;
 
-            
+
 
             while (n-- > 0)
             {
@@ -921,7 +928,7 @@ namespace AubitDesktop
             v[0] = y;
             v[1] = z;
 
-            
+
         }
 
 
@@ -964,13 +971,13 @@ namespace AubitDesktop
                 RunningApplications[a].ConsumeEnvelopeCommands();
                 a++;
             }
-            
+
         }
 
         void n_ConnectingFailed(object sender, EventArgs e)
         {
-            this.MessageText=("Connection failed");
-        //    this.Close();
+            this.MessageText = ("Connection failed");
+            //    this.Close();
         }
 
         void n_DisconnectedFromServer(object sender, EventArgs e)
@@ -978,7 +985,7 @@ namespace AubitDesktop
             EnvelopeReadyForConsumption(null, null);
             this.MessageText = "Server disconnected";
             //MessageBox.Show("Server disconnect");
-           // this.Close();
+            // this.Close();
         }
 
         void n_ReceivedEnvelopeFromServer(object sender, ReceivedEventArgs e)
@@ -1035,14 +1042,14 @@ namespace AubitDesktop
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         internal void ShowApplication()
         {
             this.MessageText = ("Connected!");
             mainAppPanel.Controls.Clear();
-           // Application.DoEvents();
+            // Application.DoEvents();
         }
 
         internal bool FailedToStart()
@@ -1070,7 +1077,7 @@ namespace AubitDesktop
 
         private static void ensureParentSize(Control c, int maxWidth, int maxHeight)
         {
-            if (c.Parent == null) return; 
+            if (c.Parent == null) return;
             if (c.Parent.Width < maxWidth || c.Parent.Height < maxHeight)
             {
                 ensureParentSize(c.Parent, maxWidth, maxHeight);
@@ -1133,7 +1140,7 @@ namespace AubitDesktop
             if (control.Height < maxHeight || control.Width < maxWidth)
             {
                 control.MinimumSize = new Size(maxWidth, maxHeight);
-               frmMainAppWindow. ensureParentSize(control, maxWidth, maxHeight);
+                frmMainAppWindow.ensureParentSize(control, maxWidth, maxHeight);
                 control.Size = new Size(maxWidth, maxHeight);
             }
 
@@ -1162,7 +1169,7 @@ namespace AubitDesktop
 
         string doDump(Control c, string lvl)
         {
-            string rval="";
+            string rval = "";
 
             if (c.GetType().Name == "AubitDesktop.UIMenuBarButton") return "";
 
@@ -1171,48 +1178,48 @@ namespace AubitDesktop
                 c.Name = "nm_" + cntrl_cnt++;
             }
 
-           
-                rval += lvl+c.GetType().ToString() + " " + c.Name + "= new " + c.GetType().ToString() + "();\n";
-                if (c.Text!="")
-                {
-                    rval+=lvl+c.Name+".Text=\""+c.Text+"\";\n";
-                }
-                rval += lvl + c.Name + ".Left=" + c.Left + ";\n";
-                rval += lvl + c.Name + ".Top=" + c.Top + ";\n";
-                rval += lvl + c.Name + ".Width=" + c.Width + ";\n";
-                rval += lvl + c.Name + ".Height=" + c.Height + ";\n";
-                rval += lvl + c.Name + ".BorderStyle=BorderStyle." + c.BorderStyle + ";\n";
-                if (c.Enabled)
-                {
-                    rval += lvl + c.Name + ".Enabled=true;\n";
-                }
-                else
-                {
-                    rval += lvl + c.Name + ".Enabled=false;\n";
-                }
-                if (c.Visible)
-                {
-                    rval += lvl + c.Name + ".Visible=true;\n";
-                }
-                else
-                {
-                    rval += lvl + c.Name + ".Visible=false;\n";
-                }
-                if (c.AutoSize)
-                {
-                    rval += lvl + c.Name + ".Width=2000;\n";
-                    rval += lvl + c.Name + ".Height=2000;\n";
-                    //rval += lvl + c.Name + ".AutoSize=true;\n";
-                }
-                else
-                {
-                    rval += lvl + c.Name + ".AutoSize=false;\n";
-                }
 
-                rval += lvl + c.Name + ".Dock=DockStyle." + c.Dock + ";\n";
+            rval += lvl + c.GetType().ToString() + " " + c.Name + "= new " + c.GetType().ToString() + "();\n";
+            if (c.Text != "")
+            {
+                rval += lvl + c.Name + ".Text=\"" + c.Text + "\";\n";
+            }
+            rval += lvl + c.Name + ".Left=" + c.Left + ";\n";
+            rval += lvl + c.Name + ".Top=" + c.Top + ";\n";
+            rval += lvl + c.Name + ".Width=" + c.Width + ";\n";
+            rval += lvl + c.Name + ".Height=" + c.Height + ";\n";
+            rval += lvl + c.Name + ".BorderStyle=BorderStyle." + c.BorderStyle + ";\n";
+            if (c.Enabled)
+            {
+                rval += lvl + c.Name + ".Enabled=true;\n";
+            }
+            else
+            {
+                rval += lvl + c.Name + ".Enabled=false;\n";
+            }
+            if (c.Visible)
+            {
+                rval += lvl + c.Name + ".Visible=true;\n";
+            }
+            else
+            {
+                rval += lvl + c.Name + ".Visible=false;\n";
+            }
+            if (c.AutoSize)
+            {
+                rval += lvl + c.Name + ".Width=2000;\n";
+                rval += lvl + c.Name + ".Height=2000;\n";
+                //rval += lvl + c.Name + ".AutoSize=true;\n";
+            }
+            else
+            {
+                rval += lvl + c.Name + ".AutoSize=false;\n";
+            }
 
-                //rval=(lvl+c.GetType().ToString()+"("+c.Name +","+ c.Text+")\n");
-            
+            rval += lvl + c.Name + ".Dock=DockStyle." + c.Dock + ";\n";
+
+            //rval=(lvl+c.GetType().ToString()+"("+c.Name +","+ c.Text+")\n");
+
 
             if (c is Panel)
             {
@@ -1265,7 +1272,7 @@ namespace AubitDesktop
                 return rval;
             }
 
-            
+
             if (c is frmMainAppWindow)
             {
                 frmMainAppWindow p;
@@ -1273,7 +1280,7 @@ namespace AubitDesktop
                 foreach (Control n in p.Controls)
                 {
                     rval += doDump(n, lvl + " ");
-                    rval += lvl +  "topPanel.Controls.Add(" + n.Name + ");\n";
+                    rval += lvl + "topPanel.Controls.Add(" + n.Name + ");\n";
                 }
                 if (c.AutoSize)
                 {
@@ -1292,7 +1299,7 @@ namespace AubitDesktop
         private void button2_Click(object sender, EventArgs e)
         {
             string str;
-            str=doDump(this,"");
+            str = doDump(this, "");
             MessageBox.Show(str);
         }
 
@@ -1308,42 +1315,107 @@ namespace AubitDesktop
         private void topWindowToolStrip_Click_1(object objSource, ToolBarItemEventArgs objArgs)
         {
 
+
         }
 
 
+        internal static void writeFile(string filename,byte[] bytes) {                   
+                        FileStream fs = null;
+                        BinaryWriter sw;
+                        byte[] data;
+                            if (System.IO.File.Exists(filename))
+                            {
+                                System.IO.File.Delete(filename);
+                            }
+                            fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+                            if (fs != null)
+                            {
+                                sw = new BinaryWriter(fs);
+                                data = bytes;
+                                sw.Write(data);
+                                sw.Flush();
+                                sw.Close();
+                                fs.Close();
+                            }
+
+        }
 
 
-
-
-
-        internal void sendFileToClient(FILE file)
+        internal bool sendFileToClient(FILE file)
         {
+            string fileName;
+            wfFileDownloader wf;
+            wf = new wfFileDownloader();
+            
 
-            //Program.Show("Cant send files to the client yet..");
-            return;
+            // Lets handle any UI files normally...
+            if (file.NAME.EndsWith(".4tb")) return false;
+            if (file.NAME.EndsWith(".4sm")) return false;
 
 
-            FileDownloadGateway oDownloader = new FileDownloadGateway();
+
+
+
 
             
+
+            // Anything else we should pass through...
             if (file.CLIENTNAME != null && file.CLIENTNAME.Length > 0)
             {
-                oDownloader.Filename = file.CLIENTNAME;
+                fileName = file.CLIENTNAME;
             }
             else
             {
-                oDownloader.Filename = file.NAME;
+                fileName = file.NAME;
             }
+
             
-           
-            oDownloader.StartBytesDownload(this,Convert.FromBase64String(file.Text));
+            
+            if (file.NAME.ToUpper(). EndsWith(".PDF"))
+            {
+                wf.SetContentType(DownloadContentType.PDF);
+            }
+            if (file.NAME.ToUpper().EndsWith(".DOC"))
+            {
+                wf.SetContentType(DownloadContentType.MicrosoftWord);
+            }
+            if (file.NAME.ToUpper().EndsWith(".XLS") || file.NAME.ToUpper().EndsWith(".CSV"))
+            {
+                wf.SetContentType(DownloadContentType.MicrosoftExcel);
+            }
+            if (file.NAME.ToUpper().EndsWith(".TXT"))
+            {
+                wf.SetContentType(DownloadContentType.PlainText);
+            }
+            wf.StartBytesDownload(fileName, Convert.FromBase64String(file.Text));
+
+            
+            return true;
         }
 
-               internal void SetToolbarImage(AubitTSBtn btn, ADDTOTOOLBAR o)
+
+
+
+
+        internal void SetToolbarImage(AubitTSBtn btn, ADDTOTOOLBAR o)
         {
-            btn.Image=FGLWebUtils.getImageFromName(o.IMAGE);
+            btn.Image = FGLWebUtils.getImageFromName(o.IMAGE);
         }
- 
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            FILE f;
+            f = new FILE();
+            f.CLIENTNAME = "new.txt";
+            f.NAME = "readme.txt";
+            f.Text = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPEZvcm0gbmFtZT0iY3VzdDEiIHNxbERiTmFtZT0ib3JkZXJzbnIiIHdpZHRoPSI0NyIgaGVpZ2h0PSIxMiIgZGVsaW1pdGVycz0iW118IiBlbmNvZGluZz0iIj4KPEhCb3ggPgo8R3JpZCB3aWR0aD0iNDYiIGhlaWdodD0iMTIiID4KPExhYmVsIHRleHQ9IkN1c3RvbWVyIE51bWJlciIgcG9zWT0iMCIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxNSIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQ3VzdG9tZXIgTmFtZSIgcG9zWT0iMSIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxMyIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQ3VzdG9tZXIgQWRkcmVzcyIgcG9zWT0iMiIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxNiIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iVGVsZXBob25lIE51bWJlciIgcG9zWT0iNyIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxNiIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQWNjb3VudCBUeXBlIiBwb3NZPSIxMCIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxMiIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQWNjb3VudCBEZXNjcmlwdGlvbiIgcG9zWT0iMTEiIHBvc1g9IjAiIGdyaWRXaWR0aD0iMTkiIGd1ZXNzQWxpZ249IkwiLz4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X25vIiBjb2xOYW1lPSJjdXN0X25vIiBmaWVsZElkPSIwIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IlNFUklBTCIgcmVxdWlyZWQ9IjEiIGRlZmF1bHRWYWx1ZT0iMzMiIHRhYkluZGV4PSIxIiA+CiAgPEVkaXQgd2lkdGg9IjExIiAgY29tbWVudHM9IkVudGVyIGN1c3RvbWVyIE51bWJlciIgIHBvc1k9IjAiIHBvc1g9IjIxIiBncmlkV2lkdGg9IjExIi8+CjwvRm9ybUZpZWxkPgo8Rm9ybUZpZWxkIG5hbWU9ImN1c3RvbWVyLmN1c3RfbmFtZSIgY29sTmFtZT0iY3VzdF9uYW1lIiBmaWVsZElkPSIxIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iMiIgPgogIDxFZGl0IHdpZHRoPSIyNSIgIHNoaWZ0PSJ1cCIgY29tbWVudHM9IkNVc3RvbWVyIE5hbWUiICBwb3NZPSIxIiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHIxIiBjb2xOYW1lPSJjdXN0X2FkZHIxIiBmaWVsZElkPSIyIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iMyIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSIyIiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHIyIiBjb2xOYW1lPSJjdXN0X2FkZHIyIiBmaWVsZElkPSIzIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNCIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSIzIiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHIzIiBjb2xOYW1lPSJjdXN0X2FkZHIzIiBmaWVsZElkPSI0IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNSIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSI0IiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHI0IiBjb2xOYW1lPSJjdXN0X2FkZHI0IiBmaWVsZElkPSI1IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNiIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSI1IiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHI1IiBjb2xOYW1lPSJjdXN0X2FkZHI1IiBmaWVsZElkPSI2IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNyIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSI2IiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X3RlbCIgY29sTmFtZT0iY3VzdF90ZWwiIGZpZWxkSWQ9IjciIHNxbFRhYk5hbWU9ImN1c3RvbWVyIiAgc3FsVHlwZT0iQ0hBUigxNSkiIHRhYkluZGV4PSI4IiA+CiAgPEVkaXQgd2lkdGg9IjE1IiAgIHBvc1k9IjciIHBvc1g9IjIxIiBncmlkV2lkdGg9IjE1Ii8+CjwvRm9ybUZpZWxkPgo8Rm9ybUZpZWxkIG5hbWU9ImN1c3RvbWVyLmFjY291bnRfdHlwZSIgY29sTmFtZT0iYWNjb3VudF90eXBlIiBmaWVsZElkPSI5IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMSkiIHRhYkluZGV4PSI5IiA+CiAgPEVkaXQgd2lkdGg9IjIiICAgcG9zWT0iMTAiIHBvc1g9IjIxIiBncmlkV2lkdGg9IjIiLz4KPC9Gb3JtRmllbGQ+CjxGb3JtRmllbGQgbmFtZT0iYWNjb3VudC5hY2NvdW50X2Rlc2MiIGNvbE5hbWU9ImFjY291bnRfZGVzYyIgZmllbGRJZD0iOCIgc3FsVGFiTmFtZT0iYWNjb3VudCIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iMTAiID4KICA8RWRpdCB3aWR0aD0iMjUiICAgcG9zWT0iMTEiIHBvc1g9IjIxIiBncmlkV2lkdGg9IjI1Ii8+CjwvRm9ybUZpZWxkPgo8L0dyaWQ+CjxHcmlkIHdpZHRoPSI2IiBoZWlnaHQ9IjEiID4KPEZvcm1GaWVsZCBuYW1lPSJmb3Jtb25seS5tYXAiIGNvbE5hbWU9Im1hcCIgZmllbGRJZD0iMTAiIHNxbFRhYk5hbWU9ImZvcm1vbmx5IiAgc3FsVHlwZT0iQ0hBUig1KSIgdGFiSW5kZXg9IjExIiA+CiAgPEJyb3dzZXIgIHBpeGVsV2lkdGg9IjQ0MCIgcGl4ZWxIZWlnaHQ9IjM1MCIgd2lkdGg9IjUiICBwb3NZPSIwIiBwb3NYPSIxIiBncmlkV2lkdGg9IjUiLz4KPC9Gb3JtRmllbGQ+CjwvR3JpZD4KPC9IQm94Pgo8UmVjb3JkVmlldyB0YWJOYW1lPSJjdXN0b21lciI+CiAgIDxMaW5rIGNvbE5hbWU9ImN1c3Rfbm8iIGZpZWxkSWRSZWY9IjAiLz4KICAgPExpbmsgY29sTmFtZT0iY3VzdF9uYW1lIiBmaWVsZElkUmVmPSIxIi8+CiAgIDxMaW5rIGNvbE5hbWU9ImN1c3RfYWRkcjEiIGZpZWxkSWRSZWY9IjIiLz4KICAgPExpbmsgY29sTmFtZT0iY3VzdF9hZGRyMiIgZmllbGRJZFJlZj0iMyIvPgogICA8TGluayBjb2xOYW1lPSJjdXN0X2FkZHIzIiBmaWVsZElkUmVmPSI0Ii8+CiAgIDxMaW5rIGNvbE5hbWU9ImN1c3RfYWRkcjQiIGZpZWxkSWRSZWY9IjUiLz4KICAgPExpbmsgY29sTmFtZT0iY3VzdF9hZGRyNSIgZmllbGRJZFJlZj0iNiIvPgogICA8TGluayBjb2xOYW1lPSJjdXN0X3RlbCIgZmllbGRJZFJlZj0iNyIvPgogICA8TGluayBjb2xOYW1lPSJhY2NvdW50X3R5cGUiIGZpZWxkSWRSZWY9IjkiLz4KPC9SZWNvcmRWaWV3Pgo8UmVjb3JkVmlldyB0YWJOYW1lPSJhY2NvdW50Ij4KICAgPExpbmsgY29sTmFtZT0iYWNjb3VudF9kZXNjIiBmaWVsZElkUmVmPSI4Ii8+CjwvUmVjb3JkVmlldz4KPFJlY29yZFZpZXcgdGFiTmFtZT0iZm9ybW9ubHkiPgogICA8TGluayBjb2xOYW1lPSJtYXAiIGZpZWxkSWRSZWY9IjEwIi8+CjwvUmVjb3JkVmlldz4KPC9Gb3JtPgo=";
+            sendFileToClient( f);
+        }
+
+
+
+
+
     }
 
          

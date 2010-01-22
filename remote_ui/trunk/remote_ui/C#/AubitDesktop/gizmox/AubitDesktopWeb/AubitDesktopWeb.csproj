@@ -367,7 +367,6 @@
     </Compile>
     <Compile Include="..\wfFileHandling.cs">
       <Link>wfFileHandling.cs</Link>
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="..\wffrmWebLogin.cs">
       <Link>wffrmWebLogin.cs</Link>
@@ -400,6 +399,12 @@
     <Compile Include="..\XMLForm.cs">
       <Link>XMLForm.cs</Link>
     </Compile>
+    <Compile Include="wfFileDownloader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wfFileDownloader.Designer.cs">
+      <DependentUpon>wfFileDownloader.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.config" />
@@ -424,6 +429,10 @@
     <EmbeddedResource Include="..\wfMainAppWindow.resx">
       <Link>wfMainAppWindow.resx</Link>
       <DependentUpon>wfMainAppWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="wfFileDownloader.resx">
+      <DependentUpon>wfFileDownloader.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

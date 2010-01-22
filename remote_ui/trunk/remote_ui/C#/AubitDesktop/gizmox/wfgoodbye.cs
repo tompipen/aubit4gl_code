@@ -25,7 +25,15 @@ namespace AubitDesktop
 
         private void Goodbye_Load(object sender, EventArgs e)
         {
-            this.lblErrMsg.Text = errMsg;
+            if (errMsg == "")
+            {
+                lblErrMsg.Text = "Program exited successfully";
+                lblErrMsg.BorderStyle = BorderStyle.Clear;
+            }
+            else
+            {
+                this.lblErrMsg.Text = errMsg;
+            }
         }
     }
 }

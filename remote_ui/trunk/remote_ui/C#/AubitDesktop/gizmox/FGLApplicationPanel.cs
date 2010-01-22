@@ -1395,7 +1395,8 @@ namespace AubitDesktop
                     }
                     
                     this.TopWindow.addNewTabPage(Convert.ToInt32(p.ID), progname, this);
-                    Console.Write("Looking for 4tb files in "+ System.IO.Directory.GetCurrentDirectory());
+                    string cwd_msg="Looking for 4tb files in "+ System.IO.Directory.GetCurrentDirectory();
+                    Console.Write(cwd_msg);
                     if (System.IO.File.Exists(progname + ".4tb"))
                     {
                         loadToolbar(progname + ".4tb", this.ApplicationEnvelopeID);
@@ -1429,9 +1430,7 @@ namespace AubitDesktop
                 if (a is FILE)
                 {
 
-			if (this.TopWindow.isWebUI) {
-				TopWindow.sendFileToClient((FILE)a);
-			} else {
+		if (!TopWindow.sendFileToClient((FILE)a)) {
                     if (Program.AppSettings.allowReceiveFile)
                     {
                         FILE f;
