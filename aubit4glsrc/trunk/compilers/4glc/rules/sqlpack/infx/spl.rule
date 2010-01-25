@@ -203,11 +203,11 @@ spl_commands: spl_command {
 ;
 
 
-//--------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------
-//                   SPL COMMANDS...
-//--------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------
+/*
+--------------------------------------------------------------------------------
+                   SPL COMMANDS...
+--------------------------------------------------------------------------------
+*/
 
 spl_command:
 	spl_call_command 		{$$=$1;}
@@ -239,14 +239,12 @@ spl_begin_command:
 ;
 
 
-//1-------------------------------------------------------------------------------
 spl_continue_command:
 	CONTINUE_FOR SEMICOLON		{$<cmd>$=new_continue_cmd(EBC_SPL_FOR); }
 	| CONTINUE_WHILE SEMICOLON	{$<cmd>$=new_continue_cmd(EBC_SPL_WHILE); }
 	| CONTINUE_FOREACH SEMICOLON	{$<cmd>$=new_continue_cmd(EBC_SPL_FOREACH); }
 ;
 
-//1-------------------------------------------------------------------------------
 spl_define_stmt:
 	define_spl_stmt  		{$$=$1;}
 	| define_global_spl_stmt 	{$$=$1;}
@@ -277,14 +275,14 @@ define_global_spl_stmt:
 	}
 ;
 
-//1-------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_exit_command:
 	EXIT_FOR SEMICOLON	{$<cmd>$=new_ext_cmd(EBC_SPL_FOR); }
 	| EXIT_WHILE SEMICOLON	{$<cmd>$=new_ext_cmd(EBC_SPL_WHILE); }
 	| EXIT_FOREACH SEMICOLON	{$<cmd>$=new_ext_cmd(EBC_SPL_FOREACH); }
 ;
 
-//1-------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_for_command:
 	KW_FOR spl_vname KW_IN OPEN_BRACKET spl_for_list CLOSE_BRACKET spl_block END_FOR spl_op_semi {
 		$$=new_spl_for_cmd($2,$5,$7);
@@ -326,7 +324,7 @@ spl_for_list_val_loop : /* same as spl_for_list_val - but it must have a 'TO' - 
 ;
 
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_call_command: 
 		FCALL  spl_proc_name  spl_call_parameters opt_spl_returning SEMICOLON {
 			$$=new_spl_fcall_cmd(new_spl_execute($2,$3),$4);
@@ -389,7 +387,7 @@ spl_execute_procedure_param:
 ;
 
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_foreach_command: 
 	FOREACH spl_execute_procedure opt_spl_into spl_block END_FOREACH spl_op_semi {
 			$$=new_spl_foreach_execute_cmd($2,$3,$4);
@@ -431,7 +429,7 @@ spl_cursor_name: NAMED {
 ;
 
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_let_command: 
 	KW_LET spl_vname_list EQUAL spl_let_sources SEMICOLON {
 		$$=new_spl_let_cmd($2,$4);
@@ -448,7 +446,7 @@ spl_let_sources:
 ;
 
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_raise_exception_command: 
 	RAISE_EXCEPTION spl_expression  SEMICOLON {
 		$$=new_spl_raise_exception_cmd($2,NULL,NULL);
@@ -462,7 +460,7 @@ spl_raise_exception_command:
 
 ;
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_on_exception_command: 
 	ON_EXCEPTION  spl_raise_exception_set spl_block END_EXCEPTION op_spl_with_resume spl_op_semi {
 		$$=new_spl_on_exception_cmd(NULL,$2,$3,$5);
@@ -515,7 +513,7 @@ spl_raise_exception_num_list:
 
 
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_if_command:
 	KW_IF spl_condition KW_THEN spl_block spl_if_rest spl_op_semi {
 		$$=new_spl_if_cmd(append_spl_if_conds($5,new_spl_if_cond($2, $4)));
@@ -536,7 +534,7 @@ spl_if_rest:
 ;
 
 
-//1-------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_return_command:
 	KW_RETURN SEMICOLON {
 		$$=new_spl_return_cmd(NULL,0);
@@ -559,14 +557,14 @@ op_spl_with_resume:
 	| WITH_RESUME {$$=1;}
 ;
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_system_command:
 	SYSTEM spl_expression SEMICOLON {
 		$$=new_spl_system_cmd($2);
 	}
 ;
 
-//1-------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_trace_command:
 	TRACE_ON 		spl_op_semi {
 		$$=new_spl_trace_cmd(A4GL_new_expr_simple(ET_EXPR_SPL_TRACE_ON));
@@ -583,7 +581,7 @@ spl_trace_command:
 ;
 
 
-//1-------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_while_command:
 	WHILE spl_condition spl_block END_WHILE  spl_op_semi {
 		$$=new_spl_while_cmd($2,$3);
@@ -594,7 +592,7 @@ spl_condition:
 	spl_expression {$$=$1;}
 ;
 
-//--------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------- */
 spl_expression:  fgl_expr_c { $$=$<ptr>1;}
 ;
 

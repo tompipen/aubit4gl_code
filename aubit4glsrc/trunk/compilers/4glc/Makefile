@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.60 2010-01-08 17:54:00 jcbatalha Exp $
+# $Id: Makefile,v 1.61 2010-01-25 21:02:22 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -414,5 +414,7 @@ expr_munging_proto.o: expr_munging.c
 fglproto: ../../bin/fglproto
 ../../bin/fglproto:  prototypes.o API_lex.o  lint.o expr_munging_proto.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
 	$(CC) ${CFLAGS} -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+
+
 # --------------------------------- EOF -----------------------------
 
