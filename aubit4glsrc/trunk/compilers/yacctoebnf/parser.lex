@@ -20,7 +20,6 @@
 [ ]		{ colno++;}
 [	]	{colno+=3;}
 [	 \n]	;
-\/\/.*$ 	;
 <body>[\r] ;
 <body>[\n] 		{lineno++;colno=0;REJECT}
 <body>[ ]		{ colno++;}

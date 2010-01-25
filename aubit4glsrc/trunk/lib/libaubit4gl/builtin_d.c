@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.110 2010-01-20 16:30:25 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.111 2010-01-25 21:12:07 mikeaubury Exp $
 #
 */
 
@@ -179,6 +179,13 @@ A4GL_push_objectID (long p)
   A4GL_push_param (ptr, DTYPE_OBJECT + DTYPE_MALLOCED);
 }
 
+
+void A4GL_push_date_in_char(char *s) {
+int l;
+A4GL_push_char(s);
+l=A4GL_pop_date();
+A4GL_push_date(l);
+}
 /**
  * Called at run-time by the generated C code.
  * Its used to push a date (long because of julian) to the parameters stack.

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.66 2010-01-21 18:19:47 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.67 2010-01-25 21:11:50 mikeaubury Exp $
 */
 
 /**
@@ -152,6 +152,7 @@ int A4GL_push_binding_onto_stack(struct BINDING *b, int n);
 int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) ;
 void A4GL_push_long (long p);
 void A4GL_push_date (long p);
+void A4GL_push_date_in_char(char *s);
 void A4GL_push_float (float p);
 void A4GL_push_dec (char *p, int ismoney,int size);
 void A4GL_push_double (double p);

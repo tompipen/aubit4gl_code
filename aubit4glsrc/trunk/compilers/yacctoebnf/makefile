@@ -27,7 +27,8 @@ parser:  main.o y.tab.o kw.o
 
 
 clean:
-	rm main.o y.tab.o parser ebnf.tab.cacc ebnf.tab.c kw.c ebnf.output y.output ebnf.tab.o kw.o main_ebnf.o *.png *.vcg *.dot *.gif lex.yyx.c lex.yy.c y.tab.c ebnftodot
+	rm main.o y.tab.o parser ebnf.tab.cacc ebnf.tab.c kw.c ebnf.output y.output ebnf.tab.o kw.o main_ebnf.o *.png *.vcg *.dot *.gif lex.yyx.c lex.yy.c y.tab.c ebnftodot ./per/ebnf-eps-directory/screen.ebnf ./ebnf-eps-directory/fgl.ebnf ./ace/ebnf-eps-directory/ace.ebnf
+
 
 mja1.gif:  mja1.dot
 	dot -o mja1.gif -Tgif mja1.dot && gimp mja1.gif 

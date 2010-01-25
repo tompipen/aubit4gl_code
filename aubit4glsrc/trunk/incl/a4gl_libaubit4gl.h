@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.392 2010-01-20 16:30:22 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.393 2010-01-25 21:11:50 mikeaubury Exp $
 #
 */
 
@@ -1298,6 +1298,8 @@ void A4GL_set_last_cursor(int n);
   void A4GL_push_int (short p);
   void A4GL_push_long (long p);
   void A4GL_push_date (long p);
+  void A4GL_push_date_in_char(char *s);
+
   void A4GL_push_float (float p);
   void A4GL_push_dec (char *p, int ismoney,int size);
   void A4GL_push_dec_dec (fgldecimal *p, int ismoney,int size);

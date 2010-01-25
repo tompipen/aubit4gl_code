@@ -52,17 +52,17 @@ endobj
 endobj
 12 0 obj
 <</Type/Metadata
-/Subtype/XML/Length 1336>>stream
+/Subtype/XML/Length 1326>>stream
 <?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>
 <?adobe-xap-filters esc="CRLF"?>
 <x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='XMP toolkit 2.9.1-13, framework 1.6'>
 <rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:iX='http://ns.adobe.com/iX/1.0/'>
-<rdf:Description rdf:about='19b100cd-a86c-11e9-0000-f00c30211f14' xmlns:pdf='http://ns.adobe.com/pdf/1.3/' pdf:Producer='GPL Ghostscript 8.64'/>
-<rdf:Description rdf:about='19b100cd-a86c-11e9-0000-f00c30211f14' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2009-07-14T09:23:04+01:00</xmp:ModifyDate>
-<xmp:CreateDate>2009-07-14T09:23:04+01:00</xmp:CreateDate>
+<rdf:Description rdf:about='1eaf6e8a-3f5a-11ea-0000-f00c30211f14' xmlns:pdf='http://ns.adobe.com/pdf/1.3/' pdf:Producer='GPL Ghostscript 8.70'/>
+<rdf:Description rdf:about='1eaf6e8a-3f5a-11ea-0000-f00c30211f14' xmlns:xmp='http://ns.adobe.com/xap/1.0/'><xmp:ModifyDate>2010-01-22T10:04:47Z</xmp:ModifyDate>
+<xmp:CreateDate>2010-01-22T10:04:47Z</xmp:CreateDate>
 <xmp:CreatorTool>\(using ebnf2ps v4.3\)</xmp:CreatorTool></rdf:Description>
-<rdf:Description rdf:about='19b100cd-a86c-11e9-0000-f00c30211f14' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='19b100cd-a86c-11e9-0000-f00c30211f14'/>
-<rdf:Description rdf:about='19b100cd-a86c-11e9-0000-f00c30211f14' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>ebnf--module_code.eps</rdf:li></rdf:Alt></dc:title></rdf:Description>
+<rdf:Description rdf:about='1eaf6e8a-3f5a-11ea-0000-f00c30211f14' xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/' xapMM:DocumentID='1eaf6e8a-3f5a-11ea-0000-f00c30211f14'/>
+<rdf:Description rdf:about='1eaf6e8a-3f5a-11ea-0000-f00c30211f14' xmlns:dc='http://purl.org/dc/elements/1.1/' dc:format='application/pdf'><dc:title><rdf:Alt><rdf:li xml:lang='x-default'>ebnf--module_code.eps</rdf:li></rdf:Alt></dc:title></rdf:Description>
 </rdf:RDF>
 </x:xmpmeta>
                                                                         
@@ -71,16 +71,16 @@ endobj
 endstream
 endobj
 2 0 obj
-<</Producer(GPL Ghostscript 8.64)
-/CreationDate(D:20090714092304+01'00')
-/ModDate(D:20090714092304+01'00')
+<</Producer(GPL Ghostscript 8.70)
+/CreationDate(D:20100122100447Z00'00')
+/ModDate(D:20100122100447Z00'00')
 /Title(ebnf--module_code.eps)
 /Creator(\(using ebnf2ps v4.3\))>>endobj
 xref
 0 13
 0000000000 65535 f 
 0000000672 00000 n 
-0000002391 00000 n 
+0000002381 00000 n 
 0000000613 00000 n 
 0000000464 00000 n 
 0000000015 00000 n 
@@ -93,8 +93,8 @@ xref
 0000000978 00000 n 
 trailer
 << /Size 13 /Root 1 0 R /Info 2 0 R
-/ID [<467EF1A17E4C7705F62645321F32AAAF><467EF1A17E4C7705F62645321F32AAAF>]
+/ID [<090BB5F18EB2F1EE7BFC92AAE996AB75><090BB5F18EB2F1EE7BFC92AAE996AB75>]
 >>
 startxref
-2577
+2567
 %%EOF

@@ -30,6 +30,7 @@
 "=" 		{ return EQUAL;}
 "|" 		{ return PIPE;}
 .		 {printf("Unexpected character....'%s'\n",yytext); exit(2);}
+
 %%
 
 

@@ -90,3 +90,13 @@ cursor_specification1_ins_ss	<insert statement>
 cursor_specification1_all_ss	<sql statement>
 opt_use2_p	<use session>
 key_value	<key>
+spl_opt_returning	<returning>
+spl_return_dtype_list	<datatype list>
+spl_block	<spl_block>
+spl_command	<spl_command>
+spl_proc_name	<procedure name>
+op_spl_parameters	<procedure parameters>
+spl_dtype_with_reference	<spl datatype with reference>
+spl_vname	<spl variable>
+win_attributes	<windows attribute>
+spl_dtype	<spl datatype>
