@@ -233,7 +233,7 @@ spl_command:
 
 
 spl_begin_command:
-	BEGIN spl_block END spl_op_semi {
+	KWBEGIN spl_block END spl_op_semi {
 		$$=new_spl_block_cmd($2);
 	}
 ;
