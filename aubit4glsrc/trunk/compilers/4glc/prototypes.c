@@ -1684,7 +1684,8 @@ dump_soap (void)
 
   output_soap = fopen ("prototypes_server.c", "w");
   fprintf (output_soap, "#include \"soapH.h\"\n");
-  fprintf (output_soap, "#include \"a4gl_libaubit4gl.h\"\n");
+  fprintf (output_soap, "#include \"a4gl_incl_4glhdr.h\"\n");
+  fprintf (output_soap, "extern long a4gl_status;\n");
   fprintf (output_soap, "//GSOAP marshalling code\n");
   fprintf (output_soap, "//This code was automatically generated\n");
 
@@ -1918,7 +1919,7 @@ dump_soap (void)
 
   output_soap = fopen ("prototypes_client.c", "w");
   fprintf (output_soap, "#include \"soapH.h\"\n");
-  fprintf (output_soap, "#include \"a4gl_libaubit4gl.h\"\n");
+  fprintf (output_soap, "#include \"a4gl_incl_4glhdr.h\"\n");
   fprintf (output_soap, "#include \"fglserver.nsmap\"\n");
   fprintf (output_soap, "//GSOAP marshalling code\n");
   fprintf (output_soap, "//This code was automatically generated\n");

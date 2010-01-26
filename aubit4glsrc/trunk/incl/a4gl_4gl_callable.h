@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.67 2010-01-25 21:11:50 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.68 2010-01-26 20:21:19 mikeaubury Exp $
 */
 
 /**
@@ -72,7 +72,8 @@ extern "C"
 #include "a4gl_API_sqlparse.h"
 #include "a4gl_API_ui.h"
 #include "a4gl_builtin_funcs.h"
-#include "a4gl_sql.h"
+// Cant add a4gl_sql.h - its not always available - because its not copied by a make install
+//#include "a4gl_sql.h"
 
 
 #ifndef A4GL_aubit_strcasecmp

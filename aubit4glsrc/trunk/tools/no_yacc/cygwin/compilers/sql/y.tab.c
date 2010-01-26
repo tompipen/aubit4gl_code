@@ -495,7 +495,7 @@ int db_used=0;
      COPYBACK = 2224,
      REFERENCES_BLOBTYPE_DEFAULT_NULL = 2225,
      REFERENCES_BLOBTYPE = 2226,
-     BEGIN = 2227
+     SORT = 2227
    };
 #endif
 /* Tokens.  */
@@ -772,7 +772,7 @@ int db_used=0;
 #define COPYBACK 2224
 #define REFERENCES_BLOBTYPE_DEFAULT_NULL 2225
 #define REFERENCES_BLOBTYPE 2226
-#define BEGIN 2227
+#define SORT 2227
 
 
 
@@ -1684,7 +1684,7 @@ static const char *const yytname[] =
   "KW_IN", "KW_ON", "KW_OR", "KW_TO", "BEFORE", "END", "TILDE", "ILIKE",
   "FILLFACTOR", "TIME", "KW_TODAY", "KW_ROWID", "TIMESTAMP", "KW_TAG",
   "LINTMODULEISLIBRARY", "KW_PUBLIC", "KW_PRIVATE", "COPYBACK",
-  "REFERENCES_BLOBTYPE_DEFAULT_NULL", "REFERENCES_BLOBTYPE", "BEGIN",
+  "REFERENCES_BLOBTYPE_DEFAULT_NULL", "REFERENCES_BLOBTYPE", "SORT",
   "$accept", "update_statement_c", "where_upd_p", "where_del_p",
   "set_clause_list_uc", "upd_columns_uc", "upd_column_name",
   "upd_column_name_specific", "col_1_up", "upd_col_list_sl",
