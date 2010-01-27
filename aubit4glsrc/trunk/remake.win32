@@ -11,7 +11,7 @@ then
 	rm /usr/bin/aubit-config.exe
 	rm /usr/bin/aubit
 	rm /usr/src/aubit/aubit4glsrc/bin/aubit-config.exe
-	
+	rm $AUBITDIR/bin/*.exe
 	/usr/bin/find lib -name "*.a" -exec rm {} \;
 	/usr/bin/find bin -name "*.a" -exec rm {} \;
 	/usr/bin/find . -name "*.dll" -exec rm {} \;
