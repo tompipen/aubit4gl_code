@@ -74,6 +74,7 @@ namespace AubitDesktop
             this.Name = "AubitMessageBox";
             this.Text = "AubitMessageBox";
             this.Load += new System.EventHandler(this.AubitMessageBox_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AubitMessageBox_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

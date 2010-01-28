@@ -8,22 +8,27 @@ using System.Windows.Forms;
 
 namespace AubitDesktop
 {
+
     public partial class AubitMessageBox : Form
     {
         private WINQUESTION winQuestion;
         private string result="";
+        public delegate void AubitMessageBoxResponse(object sender, string result);
+        public event AubitMessageBoxResponse responseHandler;
 
-
-        public static string Show(WINQUESTION wq)
+        public void Show(WINQUESTION wq)
         {
-            AubitMessageBox b;
-            string res;
-            b = new AubitMessageBox(wq);
-            b.ShowDialog();
-            res= b.result;
-            b.Dispose();
-            return res;
+            //AubitMessageBox b;
+            //string res;
+            //b = new AubitMessageBox(wq);
+
+            this.ShowDialog();
+
+
         }
+
+
+
 
         public AubitMessageBox(WINQUESTION wq)
         {
@@ -65,5 +70,19 @@ namespace AubitDesktop
         {
 
         }
+
+        private void AubitMessageBox_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (responseHandler != null)
+            {
+                responseHandler(sender, this.result);
+            }
+            //res = b.result;
+            // b.Dispose();
+            // return res;
+        }
+    }
+    public class AubitMessageBoxResponse {
+        string response;
     }
 }
