@@ -22,8 +22,7 @@ namespace AubitDesktop
 {
     public partial class frmMainAppWindow : Form
     {
-        public UIContext currentContext = null;
-
+        public UIContext currentContext = null;        
         public showMode showMenuBar;
         public showMode showToolbar;
         public showMode showApplicationLauncher;
@@ -294,8 +293,12 @@ namespace AubitDesktop
 
         internal void setToolbar(List<AubitTSBtn> toolStrip)
         {
-
-            this.topWindowToolStrip.Buttons.Clear();
+            while (this.topWindowToolStrip.Buttons.Count > 0)
+            {
+                ToolBarButton b = this.topWindowToolStrip.Buttons[0];
+                this.topWindowToolStrip.Buttons.Remove(b);
+            }
+            //this.topWindowToolStrip.Buttons.Clear();
             if (toolStrip.Count > 0)
             {
                 for (int a = 0; a < toolStrip.Count; a++)
@@ -399,7 +402,7 @@ namespace AubitDesktop
             ErrorText = "";
             CommentText = "";
             LineDisplayText = "";
-
+            
             About.Click += new EventHandler(About_Click);
 
 
