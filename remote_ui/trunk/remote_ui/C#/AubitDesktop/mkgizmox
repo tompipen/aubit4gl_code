@@ -1,4 +1,6 @@
 svn update
+
+
 cp *.res* gizmox
 for a in *.cs
 do
@@ -28,6 +30,7 @@ do
 		grep -v "Program.setWindowPosition(this" | \
 		sed 's/Gizmox.WebGUI.Forms.PictureBox/Gizmox.WebGUI.Forms.PictureBoxCompat/g' | \
 		sed 's/PictureBox pb/PictureBoxCompat pb/g' | \
+		sed 's/FGLUtils.getImageFromName/FGLWebUtils.getImageFromName/g' | \
 		grep -v "    MacroEditor me = new MacroEditor();" | \
         	grep -v "    me.Show();"   | \
 		grep -v "this.ShowIcon = " | \

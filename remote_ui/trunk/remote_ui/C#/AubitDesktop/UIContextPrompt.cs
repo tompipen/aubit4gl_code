@@ -159,18 +159,20 @@ namespace AubitDesktop
             }
 
 
-
             public void DeactivateContext()
             {
                 mainWin.setActiveToolBarKeys(null,null); //,false);
 
                 _contextIsActive = false;
-                promptForm.clrEventTrigger();
-                if (promptStyle == "NORMAL")
+                if (promptForm != null)
                 {
-                    Control promptPanel;
-                    promptPanel = promptForm.GetPromptControls();
-                    promptPanel.Enabled = false;
+                    promptForm.clrEventTrigger();
+                    if (promptStyle == "NORMAL")
+                    {
+                        Control promptPanel;
+                        promptPanel = promptForm.GetPromptControls();
+                        promptPanel.Enabled = false;
+                    }
                 }
             }
 

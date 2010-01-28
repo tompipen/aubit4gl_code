@@ -598,14 +598,12 @@ namespace AubitDesktop
             
         }
 
- 	// Should never be called...
- 	// used by the web client to send a file to the browser...
-        internal void sendFileToClient(FILE fILE)
+        internal bool sendFileToClient(FILE fILE)
         {
-            MessageBox.Show("This function is just for the C# web client");
+	// always returns false to force normal default behaviour
+	return false;
         }
 
-public bool isWebUI=false;
 
         /// <summary>
         /// Sets an exit message to display on the 'goodbye' screen..

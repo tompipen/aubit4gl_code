@@ -1127,7 +1127,6 @@ namespace AubitDesktop
 
         internal void pgDownkeyPressed()
         {
-            int n;
             inputArrayGrid.processPgDn();
         }
 

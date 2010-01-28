@@ -38,6 +38,7 @@ namespace AubitDesktop
         private MiscContextType contextType;
         private WINQUESTION wq;
         private GETKEY gk;
+        AubitMessageBox amsgBox;
         private FRONTCALL frontCall;
         FGLApplicationPanel appPanel;
         private event UIEventHandler EventTriggered;
@@ -220,32 +221,40 @@ namespace AubitDesktop
 
 
                 case MiscContextType.MiscContextWinquestion:
-                    string r = AubitMessageBox.Show(wq);
-                    r = r.Trim();
-                    string rd = "ACCEPT";
-                    switch (r.ToUpper())
-                    {
-                        case "YES": rd = "-101"; break;
-
-
-                        case "IGNORE": rd = "-120"; break;
-                        case "CANCEL": rd = "-118"; break;
-                        case "OK": rd = "-119"; break;
-                        case "RETRY": rd = "-121"; break;
-                        case "NO": rd = "-102"; break;
-                    }
-
-                    if (rd == "ACCEPT")
-                    { // We can't decode it do an ID - send it back as the 'LASTKEY'...
-                        this.EventTriggered(null, r, "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>", this);
-                    }
-                    else
-                    {
-                        this.EventTriggered(null, r, "<TRIGGERED ID=\"" + rd + "\"/>", this);
-                    }
-                    //this.DeactivateContext();
+                    
+                    amsgBox = new AubitMessageBox(wq);
+                    amsgBox.responseHandler += new AubitMessageBox.AubitMessageBoxResponse(b_responseHandler);
+                    amsgBox.ShowDialog(appPanel.TopWindow);
                     break;
             }
+        }
+
+        void b_responseHandler(object sender, string r)
+        {
+            
+            r = r.Trim();
+            string rd = "ACCEPT";
+            switch (r.ToUpper())
+            {
+                case "YES": rd = "-101"; break;
+
+
+                case "IGNORE": rd = "-120"; break;
+                case "CANCEL": rd = "-118"; break;
+                case "OK": rd = "-119"; break;
+                case "RETRY": rd = "-121"; break;
+                case "NO": rd = "-102"; break;
+            }
+
+            if (rd == "ACCEPT")
+            { // We can't decode it do an ID - send it back as the 'LASTKEY'...
+                this.EventTriggered(null, r, "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>", this);
+            }
+            else
+            {
+                this.EventTriggered(null, r, "<TRIGGERED ID=\"" + rd + "\"/>", this);
+            }
+
         }
 
 

@@ -547,7 +547,14 @@ namespace AubitDesktop
             }
 
 
-
+            if (cbApplications.Items.Count == 1)
+            { // Dont bother stopping if theres nothing to change...
+                cbApplications.TabStop = false;
+            }
+            else
+            {
+                cbApplications.TabStop = true;
+            }
             // this.Context.CurrentTheme = new Theme("Black");
 
             RunningApplications = new List<FGLApplicationPanel>();
@@ -1369,24 +1376,9 @@ namespace AubitDesktop
                 fileName = file.NAME;
             }
 
-            
-            
-            if (file.NAME.ToUpper(). EndsWith(".PDF"))
-            {
-                wf.SetContentType(DownloadContentType.PDF);
-            }
-            if (file.NAME.ToUpper().EndsWith(".DOC"))
-            {
-                wf.SetContentType(DownloadContentType.MicrosoftWord);
-            }
-            if (file.NAME.ToUpper().EndsWith(".XLS") || file.NAME.ToUpper().EndsWith(".CSV"))
-            {
-                wf.SetContentType(DownloadContentType.MicrosoftExcel);
-            }
-            if (file.NAME.ToUpper().EndsWith(".TXT"))
-            {
-                wf.SetContentType(DownloadContentType.PlainText);
-            }
+
+            //wf.StartFileDownload("c:\\users\\mike\\readme.txt");
+
             wf.StartBytesDownload(fileName, Convert.FromBase64String(file.Text));
 
             
@@ -1412,6 +1404,15 @@ namespace AubitDesktop
             sendFileToClient( f);
         }
 
+        /*
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            AubitMessageBox amsgBox;
+            amsgBox = new AubitMessageBox();
+            //amsgBox.responseHandler += new AubitMessageBox.AubitMessageBoxResponse(b_responseHandler);
+            amsgBox.Show();
+        }
+        */
 
 
 

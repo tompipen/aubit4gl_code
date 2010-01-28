@@ -225,7 +225,7 @@ namespace AubitDesktop
                     
                     amsgBox = new AubitMessageBox(wq);
                     amsgBox.responseHandler += new AubitMessageBox.AubitMessageBoxResponse(b_responseHandler);
-                    amsgBox.ShowDialog();
+                    amsgBox.ShowDialog(appPanel.TopWindow);
                     break;
             }
         }

@@ -38,7 +38,7 @@ namespace AubitDesktop
             this.lblTarget.Name = "lblTarget";
             this.lblTarget.Size = new System.Drawing.Size(216, 23);
             this.lblTarget.TabIndex = 0;
-            this.lblTarget.Text = "label1";
+            this.lblTarget.Text = "lblTarget";
             // 
             // lblFilename
             // 
@@ -46,7 +46,7 @@ namespace AubitDesktop
             this.lblFilename.Name = "lblFilename";
             this.lblFilename.Size = new System.Drawing.Size(100, 23);
             this.lblFilename.TabIndex = 1;
-            this.lblFilename.Text = "label1";
+            this.lblFilename.Text = "lblFilename";
             // 
             // wfFileDownloader
             // 

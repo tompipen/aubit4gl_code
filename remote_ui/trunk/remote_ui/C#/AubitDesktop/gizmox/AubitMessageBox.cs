@@ -8,31 +8,24 @@ using Gizmox.WebGUI.Forms;
 
 namespace AubitDesktop
 {
+
     public partial class AubitMessageBox : Form
     {
         private WINQUESTION winQuestion;
         private string result="";
-
-
-        public static string Show(WINQUESTION wq)
-        {
-            AubitMessageBox b;
-            string res;
-            b = new AubitMessageBox(wq);
-            b.ShowDialog();
-            res= b.result;
-            b.Dispose();
-            return res;
-        }
+        public delegate void AubitMessageBoxResponse(object sender, string result);
+        public event AubitMessageBoxResponse responseHandler;
 
         public AubitMessageBox(WINQUESTION wq)
         {
-            winQuestion=wq;
             InitializeComponent();
+            winQuestion=wq;
+            
         }
 
         private void AubitMessageBox_Load(object sender, EventArgs e)
         {
+            
             lbltext.Text = winQuestion.TEXT;
             this.Text = winQuestion.TITLE;
             if (winQuestion.ICON != "")
@@ -65,5 +58,14 @@ namespace AubitDesktop
         {
 
         }
+
+        private void AubitMessageBox_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (responseHandler != null)
+            {
+                responseHandler(sender, this.result);
+            }
+        }
     }
+
 }
