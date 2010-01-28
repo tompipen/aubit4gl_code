@@ -370,7 +370,7 @@ static int is_just_start(char *s,int n) {
 
 void
 pipe_clear (void) {
-	UIdebug(2,"Critical problem... program is exiting");
+	//UIdebug(2,"Critical problem... program is exiting");
 
 	
 	if (cantflush) {
