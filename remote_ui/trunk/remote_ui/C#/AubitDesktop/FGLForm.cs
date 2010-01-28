@@ -1951,7 +1951,7 @@ namespace AubitDesktop
                 }
 
 
-                bool added = false;
+              //  bool added = false;
 
                 #region search through screen records
                 // we need to look up the tabName and column from the screen record....
@@ -1981,7 +1981,7 @@ namespace AubitDesktop
                                 }
                                 else
                                 {
-                                    added = true;
+                                  //  added = true;
                                     dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
                                     
                                 }
@@ -1998,7 +1998,7 @@ namespace AubitDesktop
 
                             while (dg.Rows.Count < subscript)
                             {
-                                added = true;
+                              //  added = true;
                                 if (dg.DataSource == null)
                                 {
                                     dg.Rows.Add();

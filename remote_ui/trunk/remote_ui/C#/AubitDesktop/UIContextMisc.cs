@@ -38,6 +38,7 @@ namespace AubitDesktop
         private MiscContextType contextType;
         private WINQUESTION wq;
         private GETKEY gk;
+        AubitMessageBox amsgBox;
         private FRONTCALL frontCall;
         FGLApplicationPanel appPanel;
         private event UIEventHandler EventTriggered;
@@ -221,14 +222,10 @@ namespace AubitDesktop
 
 
                 case MiscContextType.MiscContextWinquestion:
-                    AubitMessageBox b;
-                    b = new AubitMessageBox(wq);
-                    b.responseHandler += new AubitMessageBox.AubitMessageBoxResponse(b_responseHandler);
-                    b.Show();
                     
-                    
-
-                    //this.DeactivateContext();
+                    amsgBox = new AubitMessageBox(wq);
+                    amsgBox.responseHandler += new AubitMessageBox.AubitMessageBoxResponse(b_responseHandler);
+                    amsgBox.ShowDialog();
                     break;
             }
         }

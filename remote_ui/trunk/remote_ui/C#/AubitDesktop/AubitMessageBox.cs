@@ -16,28 +16,16 @@ namespace AubitDesktop
         public delegate void AubitMessageBoxResponse(object sender, string result);
         public event AubitMessageBoxResponse responseHandler;
 
-        public void Show(WINQUESTION wq)
-        {
-            //AubitMessageBox b;
-            //string res;
-            //b = new AubitMessageBox(wq);
-
-            this.ShowDialog();
-
-
-        }
-
-
-
-
         public AubitMessageBox(WINQUESTION wq)
         {
-            winQuestion=wq;
             InitializeComponent();
+            winQuestion=wq;
+            
         }
 
         private void AubitMessageBox_Load(object sender, EventArgs e)
         {
+            
             lbltext.Text = winQuestion.TEXT;
             this.Text = winQuestion.TITLE;
             if (winQuestion.ICON != "")
@@ -77,12 +65,7 @@ namespace AubitDesktop
             {
                 responseHandler(sender, this.result);
             }
-            //res = b.result;
-            // b.Dispose();
-            // return res;
         }
     }
-    public class AubitMessageBoxResponse {
-        string response;
-    }
+
 }
