@@ -296,7 +296,10 @@ namespace AubitDesktop
             while (this.topWindowToolStrip.Buttons.Count > 0)
             {
                 ToolBarButton b = this.topWindowToolStrip.Buttons[0];
-                this.topWindowToolStrip.Buttons.Remove(b);
+                if (b != null)
+                {
+                    this.topWindowToolStrip.Buttons.Remove(b);
+                }
             }
             //this.topWindowToolStrip.Buttons.Clear();
             if (toolStrip.Count > 0)
@@ -1026,11 +1029,15 @@ namespace AubitDesktop
 
                     if (EnvelopeReadyForConsumption != null)
                     {
+                        object target = EnvelopeReadyForConsumption.Target;
+                        
                         EnvelopeReadyForConsumption(null, null);
                     }
                     return;
                 }
             }
+
+
 
             // If we get to here - we have no FGLApplication panel to use :-(
             appPanel = new FGLApplicationPanel(this, this.networkConnection.username, this.networkConnection.application, Convert.ToInt32(enew.ID));
@@ -1050,6 +1057,75 @@ namespace AubitDesktop
         }
 
 
+
+        internal void setUpWinQuestionButtons(WINQUESTION winQuestion)
+        {
+            lblText.Text = winQuestion.TEXT;
+            gbWinQuestion.Text = winQuestion.TITLE;
+
+            if (winQuestion.ICON != "")
+            {
+                this.lblPb.Image = FGLWebUtils.getImageFromName(winQuestion.ICON);
+            }
+            else
+            {
+                this.lblPb.Image = null;
+            }
+
+            buttonBox.Controls.Clear();
+
+            string[] s = winQuestion.POS.Split('|');
+
+            for (int a = 0; a < s.Length; a++)
+            {
+                Button b;
+                b = new Button();
+                b.Text = s[a];
+                b.Click += new EventHandler(b_winQuestionClick);
+                if (s[a] == winQuestion.DEFAULT)
+                {
+                    b.Select();
+                }
+                buttonBox.Controls.Add(b);
+            }
+
+            gbWinQuestion.Visible = true;
+            gbWinQuestion.BringToFront();
+        }
+
+        private void b_winQuestionClick(object sender, EventArgs e)
+        {
+            string retstr;
+            string r;
+            Button b;
+            b = (Button)sender;
+
+            r = b.Text;
+            string rd = "ACCEPT";
+            switch (r.ToUpper())
+            {
+                case "YES": rd = "-101"; break;
+
+
+                case "IGNORE": rd = "-120"; break;
+                case "CANCEL": rd = "-118"; break;
+                case "OK": rd = "-119"; break;
+                case "RETRY": rd = "-121"; break;
+                case "NO": rd = "-102"; break;
+            }
+
+            if (rd == "ACCEPT")
+            { // We can't decode it do an ID - send it back as the 'LASTKEY'...
+                retstr = "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>";
+            }
+            else
+            {
+                retstr= "<TRIGGERED ID=\"" + rd + "\"/>";
+            }
+            gbWinQuestion.Visible = false;
+            SendString(retstr, true);
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -1058,7 +1134,7 @@ namespace AubitDesktop
         internal void ShowApplication()
         {
             this.MessageText = ("Connected!");
-            mainAppPanel.Controls.Clear();
+          //  mainAppPanel.Controls.Clear();
             // Application.DoEvents();
         }
 
@@ -1405,6 +1481,11 @@ namespace AubitDesktop
             f.NAME = "readme.txt";
             f.Text = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPEZvcm0gbmFtZT0iY3VzdDEiIHNxbERiTmFtZT0ib3JkZXJzbnIiIHdpZHRoPSI0NyIgaGVpZ2h0PSIxMiIgZGVsaW1pdGVycz0iW118IiBlbmNvZGluZz0iIj4KPEhCb3ggPgo8R3JpZCB3aWR0aD0iNDYiIGhlaWdodD0iMTIiID4KPExhYmVsIHRleHQ9IkN1c3RvbWVyIE51bWJlciIgcG9zWT0iMCIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxNSIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQ3VzdG9tZXIgTmFtZSIgcG9zWT0iMSIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxMyIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQ3VzdG9tZXIgQWRkcmVzcyIgcG9zWT0iMiIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxNiIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iVGVsZXBob25lIE51bWJlciIgcG9zWT0iNyIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxNiIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQWNjb3VudCBUeXBlIiBwb3NZPSIxMCIgcG9zWD0iMCIgZ3JpZFdpZHRoPSIxMiIgZ3Vlc3NBbGlnbj0iTCIvPgo8TGFiZWwgdGV4dD0iQWNjb3VudCBEZXNjcmlwdGlvbiIgcG9zWT0iMTEiIHBvc1g9IjAiIGdyaWRXaWR0aD0iMTkiIGd1ZXNzQWxpZ249IkwiLz4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X25vIiBjb2xOYW1lPSJjdXN0X25vIiBmaWVsZElkPSIwIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IlNFUklBTCIgcmVxdWlyZWQ9IjEiIGRlZmF1bHRWYWx1ZT0iMzMiIHRhYkluZGV4PSIxIiA+CiAgPEVkaXQgd2lkdGg9IjExIiAgY29tbWVudHM9IkVudGVyIGN1c3RvbWVyIE51bWJlciIgIHBvc1k9IjAiIHBvc1g9IjIxIiBncmlkV2lkdGg9IjExIi8+CjwvRm9ybUZpZWxkPgo8Rm9ybUZpZWxkIG5hbWU9ImN1c3RvbWVyLmN1c3RfbmFtZSIgY29sTmFtZT0iY3VzdF9uYW1lIiBmaWVsZElkPSIxIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iMiIgPgogIDxFZGl0IHdpZHRoPSIyNSIgIHNoaWZ0PSJ1cCIgY29tbWVudHM9IkNVc3RvbWVyIE5hbWUiICBwb3NZPSIxIiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHIxIiBjb2xOYW1lPSJjdXN0X2FkZHIxIiBmaWVsZElkPSIyIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iMyIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSIyIiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHIyIiBjb2xOYW1lPSJjdXN0X2FkZHIyIiBmaWVsZElkPSIzIiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNCIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSIzIiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHIzIiBjb2xOYW1lPSJjdXN0X2FkZHIzIiBmaWVsZElkPSI0IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNSIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSI0IiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHI0IiBjb2xOYW1lPSJjdXN0X2FkZHI0IiBmaWVsZElkPSI1IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNiIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSI1IiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X2FkZHI1IiBjb2xOYW1lPSJjdXN0X2FkZHI1IiBmaWVsZElkPSI2IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iNyIgPgogIDxFZGl0IHdpZHRoPSIyNSIgICBwb3NZPSI2IiBwb3NYPSIyMSIgZ3JpZFdpZHRoPSIyNSIvPgo8L0Zvcm1GaWVsZD4KPEZvcm1GaWVsZCBuYW1lPSJjdXN0b21lci5jdXN0X3RlbCIgY29sTmFtZT0iY3VzdF90ZWwiIGZpZWxkSWQ9IjciIHNxbFRhYk5hbWU9ImN1c3RvbWVyIiAgc3FsVHlwZT0iQ0hBUigxNSkiIHRhYkluZGV4PSI4IiA+CiAgPEVkaXQgd2lkdGg9IjE1IiAgIHBvc1k9IjciIHBvc1g9IjIxIiBncmlkV2lkdGg9IjE1Ii8+CjwvRm9ybUZpZWxkPgo8Rm9ybUZpZWxkIG5hbWU9ImN1c3RvbWVyLmFjY291bnRfdHlwZSIgY29sTmFtZT0iYWNjb3VudF90eXBlIiBmaWVsZElkPSI5IiBzcWxUYWJOYW1lPSJjdXN0b21lciIgIHNxbFR5cGU9IkNIQVIoMSkiIHRhYkluZGV4PSI5IiA+CiAgPEVkaXQgd2lkdGg9IjIiICAgcG9zWT0iMTAiIHBvc1g9IjIxIiBncmlkV2lkdGg9IjIiLz4KPC9Gb3JtRmllbGQ+CjxGb3JtRmllbGQgbmFtZT0iYWNjb3VudC5hY2NvdW50X2Rlc2MiIGNvbE5hbWU9ImFjY291bnRfZGVzYyIgZmllbGRJZD0iOCIgc3FsVGFiTmFtZT0iYWNjb3VudCIgIHNxbFR5cGU9IkNIQVIoMjUpIiB0YWJJbmRleD0iMTAiID4KICA8RWRpdCB3aWR0aD0iMjUiICAgcG9zWT0iMTEiIHBvc1g9IjIxIiBncmlkV2lkdGg9IjI1Ii8+CjwvRm9ybUZpZWxkPgo8L0dyaWQ+CjxHcmlkIHdpZHRoPSI2IiBoZWlnaHQ9IjEiID4KPEZvcm1GaWVsZCBuYW1lPSJmb3Jtb25seS5tYXAiIGNvbE5hbWU9Im1hcCIgZmllbGRJZD0iMTAiIHNxbFRhYk5hbWU9ImZvcm1vbmx5IiAgc3FsVHlwZT0iQ0hBUig1KSIgdGFiSW5kZXg9IjExIiA+CiAgPEJyb3dzZXIgIHBpeGVsV2lkdGg9IjQ0MCIgcGl4ZWxIZWlnaHQ9IjM1MCIgd2lkdGg9IjUiICBwb3NZPSIwIiBwb3NYPSIxIiBncmlkV2lkdGg9IjUiLz4KPC9Gb3JtRmllbGQ+CjwvR3JpZD4KPC9IQm94Pgo8UmVjb3JkVmlldyB0YWJOYW1lPSJjdXN0b21lciI+CiAgIDxMaW5rIGNvbE5hbWU9ImN1c3Rfbm8iIGZpZWxkSWRSZWY9IjAiLz4KICAgPExpbmsgY29sTmFtZT0iY3VzdF9uYW1lIiBmaWVsZElkUmVmPSIxIi8+CiAgIDxMaW5rIGNvbE5hbWU9ImN1c3RfYWRkcjEiIGZpZWxkSWRSZWY9IjIiLz4KICAgPExpbmsgY29sTmFtZT0iY3VzdF9hZGRyMiIgZmllbGRJZFJlZj0iMyIvPgogICA8TGluayBjb2xOYW1lPSJjdXN0X2FkZHIzIiBmaWVsZElkUmVmPSI0Ii8+CiAgIDxMaW5rIGNvbE5hbWU9ImN1c3RfYWRkcjQiIGZpZWxkSWRSZWY9IjUiLz4KICAgPExpbmsgY29sTmFtZT0iY3VzdF9hZGRyNSIgZmllbGRJZFJlZj0iNiIvPgogICA8TGluayBjb2xOYW1lPSJjdXN0X3RlbCIgZmllbGRJZFJlZj0iNyIvPgogICA8TGluayBjb2xOYW1lPSJhY2NvdW50X3R5cGUiIGZpZWxkSWRSZWY9IjkiLz4KPC9SZWNvcmRWaWV3Pgo8UmVjb3JkVmlldyB0YWJOYW1lPSJhY2NvdW50Ij4KICAgPExpbmsgY29sTmFtZT0iYWNjb3VudF9kZXNjIiBmaWVsZElkUmVmPSI4Ii8+CjwvUmVjb3JkVmlldz4KPFJlY29yZFZpZXcgdGFiTmFtZT0iZm9ybW9ubHkiPgogICA8TGluayBjb2xOYW1lPSJtYXAiIGZpZWxkSWRSZWY9IjEwIi8+CjwvUmVjb3JkVmlldz4KPC9Gb3JtPgo=";
             sendFileToClient( f);
+        }
+
+        private void gbWinQuestion_VisibleChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("Visible changed");
         }
 
         /*

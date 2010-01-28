@@ -221,10 +221,9 @@ namespace AubitDesktop
 
 
                 case MiscContextType.MiscContextWinquestion:
-                    
-                    amsgBox = new AubitMessageBox(wq);
-                    amsgBox.responseHandler += new AubitMessageBox.AubitMessageBoxResponse(b_responseHandler);
-                    amsgBox.ShowDialog(appPanel.TopWindow);
+			 appPanel.TopWindow.setUpWinQuestionButtons(wq); 
+
+
                     break;
             }
         }
