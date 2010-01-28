@@ -29,8 +29,8 @@ namespace AubitDesktop
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            Gizmox.WebGUI.Common.Resources.IconResourceHandle iconResourceHandle1 = new Gizmox.WebGUI.Common.Resources.IconResourceHandle();
-            Gizmox.WebGUI.Common.Resources.IconResourceHandle iconResourceHandle2 = new Gizmox.WebGUI.Common.Resources.IconResourceHandle();
+            Gizmox.WebGUI.Common.Resources.IconResourceHandle iconResourceHandle13 = new Gizmox.WebGUI.Common.Resources.IconResourceHandle();
+            Gizmox.WebGUI.Common.Resources.IconResourceHandle iconResourceHandle14 = new Gizmox.WebGUI.Common.Resources.IconResourceHandle();
             this.statusBar1 = new Gizmox.WebGUI.Forms.StatusBar();
             this.sbLineDisplayText = new Gizmox.WebGUI.Forms.StatusBarPanel();
             this.sbErrorText = new Gizmox.WebGUI.Forms.StatusBarPanel();
@@ -60,6 +60,10 @@ namespace AubitDesktop
             this.gbDebugDump = new Gizmox.WebGUI.Forms.GroupBox();
             this.button2 = new Gizmox.WebGUI.Forms.Button();
             this.iconPB = new Gizmox.WebGUI.Forms.PictureBox();
+            this.gbWinQuestion = new Gizmox.WebGUI.Forms.GroupBox();
+            this.lblText = new Gizmox.WebGUI.Forms.Label();
+            this.lblPb = new Gizmox.WebGUI.Forms.Label();
+            this.buttonBox = new Gizmox.WebGUI.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.sbLineDisplayText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbErrorText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbMessageText)).BeginInit();
@@ -142,8 +146,8 @@ namespace AubitDesktop
             // About
             // 
             this.About.CustomStyle = "";
-            iconResourceHandle1.File = "Aubit.ico";
-            this.About.Image = iconResourceHandle1;
+            iconResourceHandle13.File = "Aubit.ico";
+            this.About.Image = iconResourceHandle13;
             this.About.Name = "About";
             this.About.Pushed = true;
             this.About.Size = 24;
@@ -164,6 +168,7 @@ namespace AubitDesktop
             // 
             this.mainAppPanel.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
             this.mainAppPanel.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Clear;
+            this.mainAppPanel.Controls.Add(this.gbWinQuestion);
             this.mainAppPanel.Controls.Add(this.loginPanel);
             this.mainAppPanel.Dock = Gizmox.WebGUI.Forms.DockStyle.Fill;
             this.mainAppPanel.Location = new System.Drawing.Point(0, 28);
@@ -185,12 +190,11 @@ namespace AubitDesktop
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(177, 158);
+            this.button3.Location = new System.Drawing.Point(97, 152);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 7;
             this.button3.Text = "button3";
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // panel2
             // 
@@ -213,7 +217,7 @@ namespace AubitDesktop
             this.cbApplications.Location = new System.Drawing.Point(98, 55);
             this.cbApplications.Name = "cbApplications";
             this.cbApplications.Size = new System.Drawing.Size(121, 21);
-            this.cbApplications.TabIndex = 4;
+            this.cbApplications.TabIndex = 3;
             this.cbApplications.Text = "comboBox1";
             // 
             // label4
@@ -229,7 +233,7 @@ namespace AubitDesktop
             this.btnLogin.Location = new System.Drawing.Point(142, 82);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(75, 23);
-            this.btnLogin.TabIndex = 3;
+            this.btnLogin.TabIndex = 4;
             this.btnLogin.Text = "Login";
             this.btnLogin.Click += new System.EventHandler(this.frm_doLoginHandler);
             // 
@@ -331,13 +335,59 @@ namespace AubitDesktop
             // 
             this.iconPB.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
             this.iconPB.Dock = Gizmox.WebGUI.Forms.DockStyle.Bottom;
-            iconResourceHandle2.File = "Aubit.gif";
-            this.iconPB.Image = iconResourceHandle2;
+            iconResourceHandle14.File = "Aubit.gif";
+            this.iconPB.Image = iconResourceHandle14;
             this.iconPB.Location = new System.Drawing.Point(3, 351);
             this.iconPB.Name = "iconPB";
             this.iconPB.Size = new System.Drawing.Size(150, 95);
             this.iconPB.SizeMode = Gizmox.WebGUI.Forms.PictureBoxSizeMode.CenterImage;
             this.iconPB.TabIndex = 0;
+            // 
+            // gbWinQuestion
+            // 
+            this.gbWinQuestion.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Fixed3D;
+            this.gbWinQuestion.Controls.Add(this.buttonBox);
+            this.gbWinQuestion.Controls.Add(this.lblText);
+            this.gbWinQuestion.Controls.Add(this.lblPb);
+            this.gbWinQuestion.FlatStyle = Gizmox.WebGUI.Forms.FlatStyle.Flat;
+            this.gbWinQuestion.Location = new System.Drawing.Point(196, 26);
+            this.gbWinQuestion.Name = "gbWinQuestion";
+            this.gbWinQuestion.Size = new System.Drawing.Size(323, 100);
+            this.gbWinQuestion.TabIndex = 1;
+            this.gbWinQuestion.Text = "winQuestion";
+            this.gbWinQuestion.Visible = false;
+            this.gbWinQuestion.VisibleChanged += new System.EventHandler(this.gbWinQuestion_VisibleChanged);
+            // 
+            // lblText
+            // 
+            this.lblText.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
+            this.lblText.Dock = Gizmox.WebGUI.Forms.DockStyle.Fill;
+            this.lblText.Location = new System.Drawing.Point(3, 16);
+            this.lblText.Name = "lblText";
+            this.lblText.Size = new System.Drawing.Size(250, 81);
+            this.lblText.TabIndex = 0;
+            this.lblText.Text = "label5";
+            // 
+            // lblPb
+            // 
+            this.lblPb.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
+            this.lblPb.Dock = Gizmox.WebGUI.Forms.DockStyle.Right;
+            this.lblPb.Location = new System.Drawing.Point(253, 16);
+            this.lblPb.Name = "lblPb";
+            this.lblPb.Size = new System.Drawing.Size(67, 81);
+            this.lblPb.TabIndex = 1;
+            // 
+            // buttonBox
+            // 
+            this.buttonBox.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
+            this.buttonBox.AutoSize = true;
+            this.buttonBox.Dock = Gizmox.WebGUI.Forms.DockStyle.Bottom;
+            this.buttonBox.FlowDirection = Gizmox.WebGUI.Forms.FlowDirection.LeftToRight;
+            this.buttonBox.Location = new System.Drawing.Point(3, 97);
+            this.buttonBox.Name = "buttonBox";
+            this.buttonBox.Size = new System.Drawing.Size(250, 0);
+            this.buttonBox.TabIndex = 2;
+            this.buttonBox.WrapContents = false;
             // 
             // frmMainAppWindow
             // 
@@ -392,6 +442,10 @@ namespace AubitDesktop
         private Gizmox.WebGUI.Forms.Button button2;
         private Gizmox.WebGUI.Forms.ComboBox cbApplications;
         private Gizmox.WebGUI.Forms.Button button3;
+        private Gizmox.WebGUI.Forms.GroupBox gbWinQuestion;
+        private Gizmox.WebGUI.Forms.FlowLayoutPanel buttonBox;
+        private Gizmox.WebGUI.Forms.Label lblPb;
+        private Gizmox.WebGUI.Forms.Label lblText;
 
 
     }

@@ -1057,11 +1057,21 @@ namespace AubitDesktop
         }
 
 
+        // Ok - this is going to mean we can only have one question at a time...
+        int questionEnvelopeId = -1;
 
-        internal void setUpWinQuestionButtons(WINQUESTION winQuestion)
+        internal void setUpWinQuestionButtons(WINQUESTION winQuestion,int envelopeId)
         {
             lblText.Text = winQuestion.TEXT;
             gbWinQuestion.Text = winQuestion.TITLE;
+            if (questionEnvelopeId != -1)
+            {
+                // Internal error..
+                MessageBox.Show("Internal error -more than one messagebox");
+                return;
+            }
+
+            questionEnvelopeId = envelopeId;
 
             if (winQuestion.ICON != "")
             {
@@ -1114,14 +1124,17 @@ namespace AubitDesktop
                 case "NO": rd = "-102"; break;
             }
 
+            
             if (rd == "ACCEPT")
+                
             { // We can't decode it do an ID - send it back as the 'LASTKEY'...
-                retstr = "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>";
+                retstr = "<TRIGGERED ENVELOPEID=\"" + questionEnvelopeId + "\" ID=\"ACCEPT\" LASTKEY=\"" + r + "\"/>";
             }
             else
             {
-                retstr= "<TRIGGERED ID=\"" + rd + "\"/>";
+                retstr = "<TRIGGERED ENVELOPEID=\"" + questionEnvelopeId + "\" ID=\"" + rd + "\"/>";
             }
+            questionEnvelopeId = -1;
             gbWinQuestion.Visible = false;
             SendString(retstr, true);
         }

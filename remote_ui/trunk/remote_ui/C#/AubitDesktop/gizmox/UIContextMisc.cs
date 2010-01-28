@@ -221,7 +221,7 @@ namespace AubitDesktop
 
 
                 case MiscContextType.MiscContextWinquestion:
-			 appPanel.TopWindow.setUpWinQuestionButtons(wq); 
+			 appPanel.TopWindow.setUpWinQuestionButtons(wq, appPanel.ApplicationEnvelopeID); 
 
 
                     break;
