@@ -176,7 +176,9 @@ strcpy(buff,"");
         fake_select.first->alias = fake_select.first->tabname;
 
         fake_select.first->next = NULL;
+        fake_select.first->outer_type = 0;
         fake_select.first->outer_next = NULL;
+        fake_select.first->outer_join_condition = NULL;
 
         fake_select.table_elements.tables.tables_len = 0;
         fake_select.table_elements.tables.tables_val = 0;
