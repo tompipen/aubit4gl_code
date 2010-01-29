@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/01/19 15:31:03.
+ * Generated 2010/01/26 22:01:51.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -519,6 +519,8 @@ extern void STag_struct_skip_to_cmd(void);
 extern void ETag_struct_skip_to_cmd(void);
 extern void STag_struct_sleep_cmd(void);
 extern void ETag_struct_sleep_cmd(void);
+extern void STag_struct_sort_cmd(void);
+extern void ETag_struct_sort_cmd(void);
 extern void STag_struct_spl_block_cmd(void);
 extern void ETag_struct_spl_block_cmd(void);
 extern void STag_struct_spl_call_cmd(void);
@@ -1901,6 +1903,8 @@ typedef int AT_variable_data_datatypeName;
 #define AU_variable_data_datatypeName NULL
 typedef int AT_struct_sql_block_cmd_convert;
 #define AU_struct_sql_block_cmd_convert NULL
+typedef int AT_struct_sort_cmd_nm;
+#define AU_struct_sort_cmd_nm NULL
 typedef int AT_s_expr_parameter_expr_string;
 #define AU_s_expr_parameter_expr_string NULL
 typedef int AT_simple_variable_dimensions_1;
@@ -3314,6 +3318,8 @@ extern AT_variable_data_datatypeName AX_variable_data_datatypeName;
 #define A_variable_data_datatypeName (bufferstack + AX_variable_data_datatypeName)
 extern AT_struct_sql_block_cmd_convert AX_struct_sql_block_cmd_convert;
 #define A_struct_sql_block_cmd_convert (bufferstack + AX_struct_sql_block_cmd_convert)
+extern AT_struct_sort_cmd_nm AX_struct_sort_cmd_nm;
+#define A_struct_sort_cmd_nm (bufferstack + AX_struct_sort_cmd_nm)
 extern AT_s_expr_parameter_expr_string AX_s_expr_parameter_expr_string;
 #define A_s_expr_parameter_expr_string (bufferstack + AX_s_expr_parameter_expr_string)
 extern AT_simple_variable_dimensions_1 AX_simple_variable_dimensions_1;
