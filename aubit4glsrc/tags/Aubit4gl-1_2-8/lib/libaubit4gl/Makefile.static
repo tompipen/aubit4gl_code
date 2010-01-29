@@ -1,0 +1,264 @@
+###############################################################################
+#
+# Simple makefile for generating static libraries
+#
+# you must already have compiled to get the .o's that this will use....
+# 
+###############################################################################
+#
+# Configuration section : 
+#
+###############################################################################
+
+
+# SQL : DYNAMIC FILESCHEMA c_ecpg esql ifxodbc nosql pg8 pg pgodbc sqlite3 unixodbc mysql 
+SQL=odbc
+
+# UI : DYNAMIC TUI HL_TUI HL_GTK CONSOLE
+UI=TUI
+
+# ESQL:DYNAMIC POSTGRES INFORMIX
+ESQL=DYNAMIC
+
+# FORM:  DYNAMIC XDR GENERIC
+FORM=GENERIC
+
+# PACKER: DYNAMIC PACKED XML PERL XMLBEST
+PACKER=PACKED
+
+
+LEXTYPE=C
+ifeq "$(CC)" ""
+	CC=gcc
+endif
+
+###############################################################################
+
+API=
+APPEXTRA=
+CFLAGS=-g -DDEBUG -I. -I../../incl -DSTATIC_LIBAUBIT4GL
+
+
+ifeq "$(COMSPEC)" ""
+	EXTRAWIN32OBJS=
+else
+	EXTRAWIN32OBJS=libobjs/*.o
+endif
+
+###############################################################################
+#####
+##### SQL
+#####
+###############################################################################
+ifeq "${SQL}" "DYNAMIC"
+	API+=API_sql.o
+else
+	API+=API_sql_self.o
+	SETOBJ=0
+
+	ifeq "${SQL}" "esql"
+		SETOBJ=1
+		API += ../../lib/libsql/esqlc/esql.o 
+	endif
+
+	ifeq "${SQL}" "odbc" # Will be the last ODBC compiled....
+		SETOBJ=1
+		API += ../../lib/libsql/odbc/sql_nodllimport.o ../../lib/libsql/odbc/sqlex.o ../../lib/libsql/odbc/array.o ../../lib/libsql/odbc/sqlstates.o
+	endif
+
+	ifeq "${SQL}" "FILESCHEMA" 
+		SETOBJ=1
+		API += ../../lib/libsql/schema_in_file/schema_in_file.o
+	endif
+
+	ifeq "${SQL}" "nosql" 
+		SETOBJ=1
+		API += ../../lib/libsql/nosql/nosql.o
+	endif
+
+	ifeq "${SQL}" "pg" 
+		SETOBJ=1
+		APPEXTRA=-lpq
+		API += ../../lib/libsql/postgresql/simple.o
+	endif
+	ifeq "${SQL}" "pg8" 
+		SETOBJ=1
+		APPEXTRA=-lpq
+		API += ../../lib/libsql/postgresql/pg8.o
+	endif
+	ifeq "${SQL}" "mysql" 
+		SETOBJ=1
+		APPEXTRA=-lmysqlclient
+		API += ../../lib/libsql/mysql/mysql.o
+	endif
+
+	ifeq "${SETOBJ}" "0"
+		echo "No SQL modules set"
+	endif
+endif
+
+
+###############################################################################
+#####
+##### SQL
+#####
+###############################################################################
+
+ifeq "${UI}" "DYNAMIC"
+	API+=API_ui.o
+else
+	API+=API_ui_self.o
+
+	SETOBJ=0
+	ifeq "${UI}" "CONSOLE"
+		API+= ../libui/ui_console/*.o  
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "TUI"
+		API+= ../libui/ui_curses/curslib.o ../libui/ui_curses/dump_scr.o ../libui/ui_curses/newpanels.o ../libui/ui_curses/formcntrl.o ../libui/ui_curses/ioform.o ../libui/ui_curses/colours.o ../libui/ui_curses/array.o ../libui/ui_curses/iarray.o ../libui/ui_curses/prompt.o ../libui/ui_curses/generic_ui.o ../libui/ui_curses/acs_mappings.o
+		APPEXTRA=-lncurses_g -lform_g -lpanel_g
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "TUIw"
+		API+= ../libui/ui_curses/curslib.o ../libui/ui_curses/dump_scr.o ../libui/ui_curses/newpanels.o ../libui/ui_curses/formcntrl.o ../libui/ui_curses/ioform.o ../libui/ui_curses/colours.o ../libui/ui_curses/array.o ../libui/ui_curses/iarray.o ../libui/ui_curses/prompt.o ../libui/ui_curses/generic_ui.o
+		APPEXTRA=-LC:/gnu/cygwin/usr/src/aubit/aubit4glsrc  -lncurses -lform_g -lpanel
+		SETOBJ=1
+	endif
+
+
+	ifeq "${UI}" "HL_TUIw"
+		API+= ../libui/ui_highlevel/forms.o ../libui/ui_highlevel/generic_ui.o ../libui/ui_highlevel/menu.o ../libui/ui_highlevel/display_array.o ../libui/ui_highlevel/formcntrl.o ../libui/ui_highlevel/input_array.o ../libui/ui_highlevel/common_hlui.o ../libui/ui_highlevel/misc.o  ../libui/ui_highlevel/lowlevel_tui_win32.o ../libui/ui_highlevel/width_narrow.o
+		APPEXTRA=-LC:/gnu/cygwin/usr/src/aubit/aubit4glsrc  -lncurses -lform_g -lpanel
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "HL_TUI"
+		API+= ../libui/ui_highlevel/forms.o ../libui/ui_highlevel/generic_ui.o ../libui/ui_highlevel/menu.o ../libui/ui_highlevel/display_array.o ../libui/ui_highlevel/formcntrl.o ../libui/ui_highlevel/input_array.o ../libui/ui_highlevel/common_hlui.o ../libui/ui_highlevel/misc.o  ../libui/ui_highlevel/lowlevel_tui.o ../libui/ui_highlevel/width_narrow.o
+		APPEXTRA=-lncurses -lform -lpanel
+		SETOBJ=1
+	endif
+
+	ifeq "${UI}" "HL_GTK"
+		API+=  ../libui/ui_highlevel/forms.o ../libui/ui_highlevel/generic_ui.o ../libui/ui_highlevel/menu.o ../libui/ui_highlevel/display_array.o ../libui/ui_highlevel/formcntrl.o ../libui/ui_highlevel/input_array.o ../libui/ui_highlevel/common_hlui.o ../libui/ui_highlevel/misc.o  ../libui/ui_highlevel/lowlevel_gtk.o ../libui/ui_highlevel/widget_gtk.o ../libui/ui_highlevel/menu_gtk.o ../libui/ui_highlevel/width_narrow.o
+		APPEXTRA=`/usr/bin/pkg-config --libs gtk+-2.0`
+		SETOBJ=1
+	endif
+
+	ifeq "${SETOBJ}" "0"
+		echo "No UI modules set"
+	endif
+
+endif
+
+
+
+
+###############################################################################
+#####
+##### ESQL
+#####
+###############################################################################
+
+
+ifeq "${ESQL}" "DYNAMIC"
+	API+=API_esql.o
+else
+	API+=API_esql_self.o
+	SETOBJ=0
+
+	ifeq "${ESQL}" "INFORMIX"
+		SETOBJ=1
+		API+=../libesql/helper_funcs_informix.o
+	endif
+
+	ifeq "${ESQL}" "POSTGRES"
+		SETOBJ=1
+		API+=../libesql/helper_funcs_postgres.o
+	endif
+
+	ifeq "${ESQL}" "INFOFLEX"
+		SETOBJ=1
+		API+=../libesql/helper_funcs_infoflex.o
+	endif
+
+	ifeq "${SETOBJ}" "0"
+		echo "No ESQL modules set"
+	endif
+endif
+
+
+
+###############################################################################
+#####
+##### FORM
+#####
+###############################################################################
+ifeq "${FORM}" "DYNAMIC"
+	API+=API_form.o
+else
+	API+=API_form_self.o 
+	ifeq "${FORM}" "GENERIC"
+		API+=../libform/form_generic/formwrite2.o ../libform/form_generic/readforms.o
+	endif
+endif
+
+
+ifeq "${PACKER}" "DYNAMIC"
+	API+=API_packer.o
+else
+	API+=API_packer_self.o 
+	ifeq "${PACKER}" "PACKED"
+		API+=../libpacker/packed/pack_packed.o
+	endif
+
+	ifeq "${PACKER}" "XML"
+		API+=../libpacker/xml/pack_xml.o
+	endif
+	ifeq "${PACKER}" "XMLBEST"
+		API+= ../libpacker/xml_best/pack_xml.o ../libpacker/xml_best/fgl.xo.o ../libpacker/xml_best/overloads.o ../libpacker/xml_best/module_def.o ../libpacker/xml_best/lex.yy.o ../libpacker/xml_best/stack.o ../libpacker/xml_best/fgl.setparent.o ../libpacker/xml_best/overloads_read.o
+	endif
+endif
+
+
+###############################################################################
+
+CORE_OBJS=attributes.o builtin.o builtin_d.o dir.o calldll.o mem.o assert.o fglextra.o net.o conv.o compat.o corba_server_util.o data_if.o common_ui.o dates.o dmy.o datatypes.o dataio.o decimal.o dynmem.o debug.o err.o error.o errfile.o sqlexpr.o expr.o  extfile.o eval_field.o fglwrap.o funcs_d.o function_call_stack.o file.o gtime.o gen_stack.o gui_io.o gui.o helper.o io.o interval.o keys.o load.o match.o maths.o memfile.o ns.o others.o ops.o outer.o pointers.o read_dty.o readkeys.o report.o rexp2.o ../resource/resource.o screen.o sql_common.o sqlconvert.o stack_ops.o stack.o string.o sqlca.o translate.o ui.o ../generated/project.o  API_sqlparse_self.o API_help_self.o API_menu.o  curl.o finderr.o int8.o mapm/mapm_add.o mapm/mapm_div.o mapm/mapm_fft.o mapm/mapm_flr.o mapm/mapm_fpf.o mapm/mapm_mul.o mapm/mapm_rcp.o mapm/mapm_rnd.o mapm/mapm_set.o mapm/mapmcnst.o mapm/mapmfmul.o mapm/mapmgues.o mapm/mapmistr.o mapm/mapmstck.o mapm/mapmutil.o mapm/mapmutl1.o mapm/mapmutl2.o missing.o parsecommon.o passreference.o API_rpc.o API_exreport.o  ../../compilers/sql/y.tab.o ../libhelp/helplib_static.o ../libhelp/a4gl_xxhelp.afr.o basechannel.o ui_window.o ui_interface.o object.o ui_objects/ui_combobox.o
+
+ALL_OBJS=$(CORE_OBJS) $(API) $(EXTRAWIN32OBJS)
+
+
+
+libaubit4gl.a: $(ALL_OBJS)
+	ar rc $@ $(ALL_OBJS) 
+	ranlib $@
+	cp libaubit4gl.a libaubit4gl_static.a
+
+clean:
+	rm libaubit4gl.a libaubit4gl_static.a ../libsql/odbc/sql_nodllimport.o ../libhelp/helplib_static.o
+
+API_%_self.c: API_%.spec
+	sh ../bin/dlmagic  $^ -S > $@
+
+API_%_self.o: API_%_self.c
+	gcc -DDEBUG -mms-bitfields -g -c -I$(AUBITDIR)/incl $<
+
+appextra: 
+	@echo "$(APPEXTRA)"
+
+
+../libpacker/xml/pack_xml.o: ../libpacker/xml/pack_xml.c
+	(cd ../libpacker/xml ; make pack_xml.o)
+../../lib/libsql/odbc/sql_nodllimport.o: ../../lib/libsql/odbc/sqlex.c 
+		gcc -g -c -DSTATIC_LIBAUBIT4GL -o ../../lib/libsql/odbc/sql_nodllimport.o -I../../../incl -I../../incl -I../../lib/libsql -I../../lib/libsql/odbc ../../lib/libsql/odbc/sql.c 
+
+
+../libhelp/helplib_static.o: ../libhelp/helplib.c
+	gcc -g -c -DSTATIC_LIBAUBIT4GL -o ../libhelp/helplib_static.o ../libhelp/helplib.c -I../../incl -I../libhelp
+
+test:
+	echo $(EXTRAWIN32OBJS)
+
+libobjs:
+	(cd libobjs; ar x c:/gnu/pdc27_ming_w32/panel.a; ar x ../../../tools/cygwin/libform/libform_g.a  ;  ar x  c:/gnu/pdc27_ming_w32/pdcurses.a )

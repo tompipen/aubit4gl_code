@@ -1,0 +1,15 @@
+Name: aubit4gl_pl.pm (Perl module)
+Parent: aubit4glsrc
+Description: Provides a wrapper for Aubit libaubit4gl to be accessed from scripting languages
+Functionality: Aubit library scripting languages wrapper
+Build: 'make perl' in root makefile
+Example:
+Depends: SWIG toolset
+Documentation:
+Regressed:
+Maintainer:
+Status:
+Todo:
+Notes: Currently used only for Aubit programs compiled in Perl output mode and aace Perl runner. SWIG itself supports several scripting languages and Java
+
+

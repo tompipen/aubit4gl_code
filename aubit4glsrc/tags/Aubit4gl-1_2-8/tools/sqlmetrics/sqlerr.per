@@ -1,0 +1,31 @@
+database formonly
+screen
+{
+ Count   SQL                                                          SQL Code
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+[f0002|t|f0003                                                         |f0004]
+}
+end
+attributes
+
+f0002 = formonly.count,noentry;
+t     = formonly.trap,autonext,upshift,invisible,
+        comments='Type "X" to see detail';
+f0003 = formonly.sql,noentry;
+f0004 = formonly.sql_code,noentry;
+end
+
+instructions 
+delimiters "  "
+screen record srec1[13] (count,trap,sql,sql_code)

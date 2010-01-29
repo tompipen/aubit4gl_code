@@ -1,0 +1,107 @@
+'\" @(#)m4gl.man	1.2 90/09/20
+'\" @(#)Manual page: M4GL -- Preprocessor for I4GL
+.ds fC "Version: 1.2 (90/09/20)
+.TH M4GL 1J "JLSS Informix Tools"
+.SH NAME
+m4gl \(em pre-processor for I4GL
+.SH SYNOPSIS
+\fBm4gl\fP [-o file] file [...]
+.SH DESCRIPTION
+\fBM4gl\fP is a preprocessor script which uses \fBm4\fP(1)
+to preprocess files.
+It defines a single \fBm4\fP macro, `\fBi4gl_include\fP(\fIfile\fP)'
+which is used to import a series of \fBm4\fP definitions.
+Outside of the scope of \fIi4gl_include\fP, the normal definition
+of the \fBm4\fP built-in \fIdefine\fP is suppressed.
+The \fIi4gl_include\fP macro echoes a copy of the invocation
+preceded by a hash `#'; this preserves the line numbering of the
+original input file.
+Within the scope of \fIi4gl_include\fP, all output except the echo mentioned
+above is suppressed.
+.P
+The types of definitions that can be used are illustrated below:
+.eS
+define(CONST1, 1)
+define(CONST2, 2)
+define(CONST3, `eval(CONST1 + CONST2)')
+.eE
+Note the use of \fIeval\fP in the last example; \fBm4\fP has a built-in integer
+arithmetic capability, which is more than can be said for Informix-4GL,
+and therefore \fIeval\fP should be used for complex definitions so that the
+result can be used anywhere.
+.P
+You can nest calls to \fIi4gl_include\fP arbitrarily
+within the limits of \fBm4\fP.
+All the other facilities of \fBm4\fP are available.
+You should not alter the variable
+\fIin_i4gl_include\fP anywhere; it is used internally.
+If you undivert the output in a set of defines, please ensure you divert it
+back to channel -1 before you finish;
+if you don't do this, the mess you produce is your own affair.
+.SH "EXAMPLE"
+The source file \*cxxx.4gm\*d is:
+.eS
+i4gl_include(i4gl1.4gh)
+i4gl_include(i4gl2.4gh)
+
+define
+	i integer
+main
+	define
+		len		integer
+	for_loop(i, CONST1, CONST2)
+		display i, CONST3
+	end for
+	create index ix_1 on abidjan(pkey)
+end main
+.eE
+The include file \*ci4gl1.4gh\*d is:
+.eS
+define(CONST1, 1)
+define(CONST2, 2)
+i4gl_include(i4gl3.4gh)
+.eE
+The include file \*ci4gl2.4gh\*d is:
+.eS
+define(CONST3, `eval(CONST1 + CONST2)')
+.eE
+The include file \*ci4gl3.4gh\*d is:
+.eS
+define(for_loop, FOR $1 = $2 TO $3)
+.eE
+The command run is:
+.eS
+$ m4gl -o xxx.4gl xxx.4gm
+$
+.eE
+The output file is
+.eS
+#i4gl_include(i4gl1.4gh)
+#i4gl_include(i4gl2.4gh)
+
+define
+	i integer
+main
+	define
+		len		integer
+	FOR i = 1 TO 2
+		display i, 3
+	end for
+	create index ix_1 on abidjan(pkey)
+end main
+.eE
+.SH "SEE ALSO"
+\fBm4\fP(1)
+.SH DIAGNOSTICS
+From \fBm4\fP.
+.SH BUGS
+Beware the use of m4 built-ins in source code.
+The only ones you are protected from automatically
+are \fIdefine\fP, \fIindex\fP and \fIlen\fP.
+\fBM4\fP is case-sensitive.
+.SH AUTHOR
+Jonathan Leffler
+.br
+IRL Project Services
+.br
+20th September 1990

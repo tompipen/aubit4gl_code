@@ -1,0 +1,29 @@
+Source: @SHORTNAME@
+Section: devel
+Priority: optional
+Maintainer: Andrej Falout <andrej@falout.org>
+Build-Depends: debhelper (>= 4.1.16), debconf, gmake, gcc, gawk, bison, flex, bash
+XBS-Comment1: is there Build-Recommends for libncurses5-dev, libgtk2.0-dev, libglade2-dev, ...
+Standards-Version: 3.6.1.0
+XBS-Comment2: The following empty line is MANDATORY:
+ 
+XBS-Comment3: ------------------------ Package: --------------------------------
+Package: @SHORTNAME@
+Architecture: @target_cpu@
+Essential: no
+Depends: libc6 (>= 2.2.3), glibc2.2
+Recommends: libncurses5 (>= 5.2), gtk+ (>= 2.0)
+Suggests: mysql, unixodbc, postgresql, @SHORTNAME@-doc
+Provides: x4gl-compiler
+Version: @AUBIT_VERSION@.@AUBIT_BUILD@
+Description: @FULLNAME@
+ .
+ Aubit 4gl (Fourth Generation programing Language) compiler compiles source
+ files to several low-level programming languages (C, Perl, Java...). It has
+ conectivity to many databases, several UI interfaces and many features.
+ .
+ Install Aubit compiler if you want to write new or compile existing Business
+ Related Database Oriented (BRDO) applications.
+ .
+ See http://@AUBIT_WEBSITE@ for documentation
+ .
