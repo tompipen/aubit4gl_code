@@ -7,33 +7,13 @@ Fri Jan 29 13:07:17 GMT 2010
 	
 	fix sql_parse segfault reported by "navrc"
 	
-	2010-01-28 21:02  mikeaubury
-	
-	2010-01-27 14:51  mikeaubury
-	
-	2010-01-27 14:48  mikeaubury
-	
-	2010-01-26 20:25  mikeaubury
-	
-	2010-01-26 20:21  mikeaubury
-	
 	2010-01-26 15:49  jcbatalha
 	
 	Added some more include paths
 	
-	2010-01-26 12:09  mikeaubury
-	
-	2010-01-26 12:03  mikeaubury
-	
-	2010-01-25 21:11  mikeaubury
-	
-	2010-01-25 21:08  mikeaubury
-	
 	2010-01-25 21:02  mikeaubury
 	
 	Some initial SOA XML handling
-	
-	2010-01-25 21:00  mikeaubury
 	
 	2010-01-22 14:21  jcbatalha
 	
@@ -44,20 +24,10 @@ Fri Jan 29 13:07:17 GMT 2010
 	Implement 1346: An option to order an ARRAY would be useful
 	SORT lv_array USING callback_function
 	
-	2010-01-20 16:30  mikeaubury
-	
-	2010-01-20 13:29  mikeaubury
-	
 	2010-01-20 13:14  mikeaubury
 	
 	Fix problem where a form is still displayed - even if a form cant
 	be opened
-	
-	2010-01-20 12:47  mikeaubury
-	
-	2010-01-19 18:34  mikeaubury
-	
-	2010-01-19 18:29  mikeaubury
 	
 	2010-01-19 14:44  mikeaubury
 	
@@ -67,30 +37,16 @@ Fri Jan 29 13:07:17 GMT 2010
 	
 	4glpc -t WRITE for windows fixup
 	
-	2010-01-18 14:33  mikeaubury
-	
-	2010-01-18 14:06  mikeaubury
-	
 	2010-01-18 12:49  mikeaubury
 	
 	Issue a compile time error when taking the LENGTH of a
-	non-character variable in a Substring...  eg:	 LET x	    = x[1,
-	LENGTH(int_var)]
-	
-	2010-01-18 07:57  mikeaubury
-	
-	2010-01-17 22:21  mikeaubury
-	
-	2010-01-17 22:17  mikeaubury
-	
-	2010-01-17 14:50  mikeaubury
+	non-character variable in a Substring...  eg:	 LET x	    = x[1, LENGTH(int_var)]
 	
 ---------------------------
 Sun Jan 17 14:49:11 GMT 2010
 ---------------------------
 1.2_7 Released
 ---------------------------
-	2010-01-16 17:50  mikeaubury
 	
 	2010-01-15 17:35  jcbatalha
 	
@@ -111,30 +67,6 @@ Sun Jan 17 14:49:11 GMT 2010
 	
 	#ranlib options A4GL_RANLIB_OPTS=
 	
-	2010-01-15 09:52  jcbatalha
-	
-	2010-01-14 15:18  mikeaubury
-	
-	2010-01-14 14:47  mikeaubury
-	
-	2010-01-14 13:58  mikeaubury
-	
-	2010-01-14 13:51  mikeaubury
-	
-	2010-01-14 13:25  mikeaubury
-	
-	2010-01-14 10:04  mikeaubury
-	
-	2010-01-14 09:32  mikeaubury
-	
-	2010-01-14 09:17  mikeaubury
-	
-	2010-01-14 09:11  mikeaubury
-	
-	2010-01-14 08:15  mikeaubury
-	
-	2010-01-14 08:07  mikeaubury
-	
 	2010-01-14 07:46  mikeaubury
 	
 	USERDTYPEs (mpz) fixups - should work now, and no longer need
@@ -145,8 +77,6 @@ Sun Jan 17 14:49:11 GMT 2010
 	
 	Fixup for extra 'A4GL_push_char' for get_fldbuf in an INPUT ARRAY
 	
-	2010-01-14 07:42  mikeaubury
-	
 	2010-01-14 07:41  mikeaubury
 	
 	dump_form.c - 4gl code generation , add "Simple mode"
@@ -156,17 +86,9 @@ Sun Jan 17 14:49:11 GMT 2010
 	generate RECORD LIKE ... when refactoring using A4GL_LEXTYPE=FGL
 	instead of generating a full column list
 	
-	2010-01-13 15:11  mikeaubury
-	
 	2010-01-13 10:38  mikeaubury
 	
 	TRACE4GLEXEC fixup when a program abends..
-	
-	2010-01-12 09:55  jcbatalha
-	
-	2010-01-12 09:07  mikeaubury
-	
-	2010-01-12 09:04  mikeaubury
 	
 	2010-01-12 09:01  mikeaubury
 	
@@ -177,47 +99,9 @@ Sun Jan 17 14:49:11 GMT 2010
 	
 	Add retvchar
 	
-	2010-01-11 17:43  mikeaubury
-	
-	2010-01-11 17:28  mikeaubury
-	
-	2010-01-11 17:22  mikeaubury
-	
-	2010-01-11 16:17  mikeaubury
-	
-	2010-01-11 15:21  mikeaubury
-	
-	2010-01-11 14:01  mikeaubury
-	
-	2010-01-11 13:29  mikeaubury
-	
-	2010-01-11 13:19  mikeaubury
-	
-	2010-01-11 13:11  mikeaubury
-	
-	2010-01-11 10:57  mikeaubury
-	
-	2010-01-11 10:52  mikeaubury
-	
-	2010-01-08 19:39  mikeaubury
-	
-	2010-01-08 17:54  jcbatalha
-	
-	2010-01-08 14:57  mikeaubury
-	
-	2010-01-08 12:17  mikeaubury
-	
-	2010-01-07 14:07  mikeaubury
-	
-	2010-01-07 09:27  mikeaubury
-	
 	2010-01-07 09:27  mikeaubury
 	
 	win32 fixup
-	
-	2010-01-07 09:22  mikeaubury
-	
-	2010-01-07 08:10  mikeaubury
 	
 ---------------------------
 Thu Jan  7 08:09:48 GMT 2010
@@ -228,21 +112,10 @@ Thu Jan  7 08:09:48 GMT 2010
 	
 	fix EXECUTE PROCEDURE
 	
-	2010-01-06 16:27  mikeaubury
-	
-	2010-01-06 16:04  mikeaubury
-	
-	2010-01-06 11:29  mikeaubury
-	
-	2010-01-06 11:06  mikeaubury
-	
-	2010-01-04 16:59  mikeaubury
-	
 	2010-01-04 15:41  mikeaubury
 	
 	Small build fixups
 	
-	2010-01-04 08:38  mikeaubury
 	
 ---------------------------
 Mon Jan  4 08:36:46 GMT 2010
