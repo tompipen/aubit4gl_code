@@ -696,6 +696,10 @@ void LoginForm::okPressed()
    ClientSocket *socket = new ClientSocket(0, user, pass, applicationLineEdit->text());
 
    socket->connectToHost(server, 3490);
+   if(!socket->waitForConnected(4000)){
+      QErrorMessage *errorMsg = new QErrorMessage(this);
+      errorMsg->showMessage(tr("Could not connect to Host"));
+   }
 }
 
 //------------------------------------------------------------------------------
