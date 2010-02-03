@@ -46247,6 +46247,9 @@ _ACEOF
 				*solaris*)
 					CURSES_LIB_NAME="-lform -lpanel -lncurses"
 					;;
+				*aix*)
+					CURSES_LIB_NAME="-lform -lpanel -lncurses"
+					;;
 				*)
 					CURSES_LIB_NAME="-lform -lpanel"
 					if test "$ac_cv_lib_curses_main" = "yes"; then
@@ -61997,7 +62000,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.438 2010-01-06 17:48:37 mikeaubury Exp $
+| $Id: configure,v 1.439 2010-02-03 09:49:22 jcbatalha Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
