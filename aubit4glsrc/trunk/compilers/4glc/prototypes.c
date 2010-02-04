@@ -1798,7 +1798,7 @@ dump_soap (void)
 		case DTYPE_SMINT:
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
-		  fprintf (output_soap, "A4GL_push_int(");
+		  fprintf (output_soap, "A4GL_push_long(");
 		  break;
 
 
@@ -2159,7 +2159,7 @@ dump_soap (void)
 		case DTYPE_SMINT:
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
-		  fprintf (output_soap, "A4GL_push_int(ret);\n");
+		  fprintf (output_soap, "A4GL_push_long(ret);\n");
 		  break;
 
 
@@ -2210,7 +2210,7 @@ dump_soap (void)
 		    case DTYPE_SMINT:
 		    case DTYPE_SERIAL:
 		    case DTYPE_INT:
-		      fprintf (output_soap, "A4GL_push_int(ret.rval_%d);\n", b);
+		      fprintf (output_soap, "A4GL_push_long(ret.rval_%d);\n", b);
 		      break;
 
 
