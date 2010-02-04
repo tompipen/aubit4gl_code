@@ -337,6 +337,9 @@ char *ptr;
               fake_select.sf = 0;
               fake_select.union_op = 0;
               fake_select.into = 0;
+        fake_select.first->outer_type = 0;
+        fake_select.first->outer_next = NULL;
+        fake_select.first->outer_join_condition = NULL;
 
               fake_select.first = &t;
 
