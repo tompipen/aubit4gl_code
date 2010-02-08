@@ -359,7 +359,7 @@ param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_
 				$<define_var>$->name_id=add_id($<str>2); 
 				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[0]=x;
-				evaluate_param_i_into_integer($<e_id>4,&x);
+				evaluate_param_i_into_integer($<e_id>7,&x);
 				$<define_var>$->i_arr_size[1]=x;
 				$<define_var>$->i_arr_size[2]=0;
 
@@ -370,9 +370,9 @@ param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_
 				$<define_var>$->name_id=add_id($<str>2); 
 				evaluate_param_i_into_integer($<e_id>4,&x);
 				$<define_var>$->i_arr_size[0]=x;
-				evaluate_param_i_into_integer($<e_id>4,&x);
+				evaluate_param_i_into_integer($<e_id>7,&x);
 				$<define_var>$->i_arr_size[1]=x;
-				evaluate_param_i_into_integer($<e_id>4,&x);
+				evaluate_param_i_into_integer($<e_id>10,&x);
 				$<define_var>$->i_arr_size[2]=x;
 
 	}
@@ -781,7 +781,7 @@ int_constant_val :
 int_val: int_constant_val {
 			char buff[256];
 			unsigned long n=0;
-			sprintf(buff,$<str>1);
+			strcpy(buff,$<str>1);
 			if (buff[0]=='0') {
 				
 				if (buff[1]=='x'||buff[1]=='X') {
