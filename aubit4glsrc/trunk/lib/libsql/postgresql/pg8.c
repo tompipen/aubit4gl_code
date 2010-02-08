@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.108 2010-01-13 15:11:58 mikeaubury Exp $
+# $Id: pg8.c,v 1.109 2010-02-08 12:27:36 mikeaubury Exp $
 #*/
 
 
@@ -1525,6 +1525,7 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
   int a;
   int ccnt = 1;
   struct s_sid *n;
+  int instr=0;
   // we dont do much here - so lets clear the sqlca.sqlcode down...
   A4GL_set_a4gl_sqlca_sqlcode (0); 
 
@@ -1565,10 +1566,43 @@ void * A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *ob
 
   l = strlen (s);
   b = 0;
+  instr=0;
+
+
   for (a = 0; a < l; a++)
     {
       char c[20];
-      if (s[a] == '?')
+	int escp=0;
+	int isPlaceholder=0;
+	
+	if (a ) {
+		if (s[a-1]=='\\') {
+			escp=1;
+		}
+	}
+
+	if (s[a]=='"' && (instr==0 || instr==1) && !escp) {
+		if ( instr==1) {
+			instr=0;
+		}  else {
+			instr=1;
+		}
+	}
+
+	if (s[a]=='\'' && (instr==0 || instr==2) && !escp) {
+		if ( instr==2) {
+			instr=0;
+		}  else {
+			instr=2;
+		}
+	}
+
+
+      if (s[a] == '?' && instr==0 && !escp) {
+		isPlaceholder=1;
+	}
+
+      if (isPlaceholder)
 	{
 	  buff[b++] = '$';
 	  buff[b] = 0;
