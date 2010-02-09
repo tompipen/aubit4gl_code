@@ -590,10 +590,10 @@ char buff[400];
 				isSingleton=1;
 				strcpy(buff,"");
 			} else {
-	      			sprintf (buff, "-> /* %s %d */", param->dtype,v->singleton);
+	      			sprintf (buff, "->"); //, param->dtype,v->singleton);
 			}
 		} else {
-	      		sprintf (buff, "-> /* %s */", param->dtype);
+	      		sprintf (buff, "->"); // /* %s */", param->dtype);
 		}
 	      strcat (prefix, buff);	// or '.' ? ???
 	    }
@@ -632,77 +632,91 @@ char buff[400];
 
 
 
+	fprintf(getOuputFile(),"// Parameter %d - %s", npop_param+1,  param->name);
 
       if (strcasecmp (param->dtype, "long") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();\n", name);
-	pop_param_buff[npop_param++]=strdup(buff);
+		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," INTEGER\n");
+
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "char") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_single_char();\n", name);
 	pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," CHAR(1)\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "char*") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_char_pop();\n", name);
 	pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," CHAR(...)\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "double") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_double();\n", name);
 	pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," DOUBLE\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "float") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_float();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," FLOAT\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "longlong") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," LONG\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "short") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," SHORT\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "time_t") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_time_t();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," TIME_T\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "uchar") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_single_char();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," CHAR(1)\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "ulong") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," INTEGER\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "ulonglong") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," INTEGER\n");
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "ushort") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
 		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," INTEGER\n");
 	  return 1;
 	}
     
@@ -745,10 +759,10 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
 				isSingleton=1;
 				strcpy(buff,"");
 			} else {
-	      			sprintf (buff, "-> /* %s %d */", param->dtype,v->singleton);
+	      			sprintf (buff, "->"); // , param->dtype,v->singleton);
 			}
 		} else {
-	      		sprintf (buff, "-> /* %s */", param->dtype);
+	      		sprintf (buff, "->"); //, param->dtype);
 		}
 	      strcat (prefix, buff);	// or '.' ? ???
 	    }
@@ -997,20 +1011,24 @@ for (a=0;a<params->var_len;a++) {
 
 fprintf(getOuputFile(),"if (!_init) {\n");
 fprintf(getOuputFile(),"   _init=1;\n");
-fprintf(getOuputFile(),"}\n");
+fprintf(getOuputFile(),"}\n\n");
 
 
 nparams=set_4gl_pop( "",&params->var_val[0],0);
 fprintf(getOuputFile(),"if (nparam!=%d && nparam!=%d) {\n", nparams, nparams+1);
 fprintf(getOuputFile(),"   A4GL_pop_args(nparam); A4GL_set_status(-3002,0);return 0;\n");
 fprintf(getOuputFile(),"}\n");
+fprintf(getOuputFile(),"\n");
+fprintf(getOuputFile(),"// 4gl Parameters:\n");
+
 for (a=npop_param-1;a>=0;a--) {
 	fprintf(getOuputFile(),"%s\n",pop_param_buff[a]);
 }
-fprintf(getOuputFile(),"if (nparam==%d) {\n", nparams+1) ;
+fprintf(getOuputFile(),"\nif (nparam==%d) {\n", nparams+1) ;
 fprintf(getOuputFile(),"   if (url) acl_free(url);\n");
 fprintf(getOuputFile(),"   url=A4GL_char_pop();\n") ;
 fprintf(getOuputFile(),"}\n") ;
+fprintf(getOuputFile(),"\n") ;
 
 
 
@@ -1023,7 +1041,7 @@ for (a=0;a<params->var_len;a++) {
 	fprintf(getOuputFile(),"%s",  params->var_val[a].name );
 }
 
-fprintf(getOuputFile(),")==SOAP_OK) { /* Cool - it worked... */\n");
+fprintf(getOuputFile(),")==SOAP_OK) {\n   /* Cool - it worked... */\n");
 rvals=print_4gl_push( "", &params->var_val[params->var_len-1],0);
 
 fprintf(getOuputFile(),"   return %d;\n",rvals);
