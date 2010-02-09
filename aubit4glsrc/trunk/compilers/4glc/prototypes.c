@@ -1436,6 +1436,7 @@ dump_soap (void)
 //char freebuff[20000]="";
   output_soap = fopen ("prototypes.h", "w");
   fprintf (output_soap, "//gsoap ns service name: fglserver\n");
+  fprintf (output_soap, "//gsoap ns service port: http://localhost:9090/\n");
   fprintf (output_soap, "//gsoap ns service namespace: http://www.mysite.com/fglserver.wsdl\n");
   fprintf (output_soap, "/* %d functions in total */\n", functions_cnt);
 
@@ -2039,11 +2040,11 @@ dump_soap (void)
 	if (functions[a].return_datatypes && functions[a].return_datatypes[0]->nreturns) {
       		fprintf (output_soap, "%s; // MJA\n", return_string_client[a]);
 	} else {
-      		fprintf (output_soap, "long ret; // MJA\n", return_string_client[a]);
+      		fprintf (output_soap, "long ret; // MJA\n");
 	}
       fprintf (output_soap, "struct soap *soap = soap_new();\n");
-      fprintf (output_soap, "   if (nparam==%d || nparam==%d) {\n", functions[a].nparameters, functions[a].nparameters + 1);
-      fprintf (output_soap, "       A4GL_pop_args(nparam); A4GL_set_status(-3002,0);\n");
+      fprintf (output_soap, "   if (nparam!=%d && nparam!=%d) {\n", functions[a].nparameters, functions[a].nparameters + 1);
+      fprintf (output_soap, "       A4GL_pop_args(nparam); A4GL_set_status(-3002,0); return 0;\n");
       fprintf (output_soap, "   }\n");
 
       if (functions[a].nparameters)
