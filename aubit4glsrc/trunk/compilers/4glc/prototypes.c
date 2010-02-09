@@ -1437,7 +1437,7 @@ dump_soap (void)
   output_soap = fopen ("prototypes.h", "w");
   fprintf (output_soap, "//gsoap ns service name: fglserver\n");
   fprintf (output_soap, "//gsoap ns service port: http://localhost:9090/\n");
-  fprintf (output_soap, "//gsoap ns service namespace: http://www.mysite.com/fglserver.wsdl\n");
+  fprintf (output_soap, "//gsoap ns service namespace: http://localhost:9090/fglserver.wsdl\n");
   fprintf (output_soap, "/* %d functions in total */\n", functions_cnt);
 
   for (a = 0; a < functions_cnt; a++)
