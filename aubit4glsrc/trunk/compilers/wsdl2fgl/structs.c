@@ -649,7 +649,7 @@ char buff[400];
 			fprintf(getOuputFile()," CHAR(1)\n");
 	  return 1;
 	}
-      if (strcasecmp (param->dtype, "char*") == 0)
+      if (strcasecmp (param->dtype, "char*") == 0 || strcasecmp (param->dtype, "xml") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_char_pop();\n", name);
 	pop_param_buff[npop_param++]=strdup(buff);
@@ -809,7 +809,7 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
 	  fprintf (getOuputFile (), "   A4GL_push_single_char(%s);\n", name);
 	  return 1;
 	}
-      if (strcasecmp (param->dtype, "char*") == 0)
+      if (strcasecmp (param->dtype, "char*") || strcasecmp (param->dtype, "xml" ) == 0)
 	{
 	  fprintf (getOuputFile (), "   A4GL_push_char(%s);\n", name);
 	  return 1;
@@ -1014,6 +1014,8 @@ fprintf(getOuputFile(),"   _init=1;\n");
 fprintf(getOuputFile(),"}\n\n");
 
 
+
+fprintf(getOuputFile(),"// An extra URL parameter can optionally be passed in first\n");
 nparams=set_4gl_pop( "",&params->var_val[0],0);
 fprintf(getOuputFile(),"if (nparam!=%d && nparam!=%d) {\n", nparams, nparams+1);
 fprintf(getOuputFile(),"   A4GL_pop_args(nparam); A4GL_set_status(-3002,0);return 0;\n");

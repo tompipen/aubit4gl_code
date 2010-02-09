@@ -145,7 +145,7 @@ if (fOut==NULL) {
 	exit(2);
 }
 
-fprintf(fOut,"#include \"soapH.h\"\n");
+//fprintf(fOut,"#include \"soapH.h\"\n");
 fprintf(fOut,"#include \"a4gl_incl_4glhdr.h\"\n");
 //fprintf(fOut,"#define soap_namespaces namespaces\n");
 

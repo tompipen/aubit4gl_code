@@ -55,6 +55,7 @@ void linecomment (void );
 "int"			{ count(); return(INT); }
 "long"			{ count(); return(LONG); }
 "LONG64"			{ count(); return(LONG); }
+"_XML"			{ count(); return(XML); }
 "time_t"		{ count(); return(TIME_T); }
 "register"		{ count(); return(REGISTER); }
 "return"		{ count(); return(RETURN); }

@@ -12,11 +12,11 @@ int enum_cnt=0;
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN TYPE_NAME  FGLDATE   FGLDECIMAL FGLMONEY FGLSDTIME
-%type <define_var>   dtype struct_entry function_call_param struct_def_type_and_name struct_has_define
+%token XOR_ASSIGN OR_ASSIGN TYPE_NAME  FGLDATE   FGLDECIMAL FGLMONEY FGLSDTIME 
+%type <define_var>   dtype struct_entry function_call_param struct_def_type_and_name struct_has_define anon_struct
 
 %token TYPEDEF EXTERN STATIC AUTO REGISTER
-%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID TIME_T
+%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID TIME_T XML
 %token STRUCT UNION ENUM ELLIPSIS FUNCTION
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
@@ -188,7 +188,18 @@ function_call_param :
 
 struct_def_type_and_name: /* Used to define the contents of a struct element */
 	dtype starlist 			{$$=$1; $$->name=strdup($<str>2); }
-	| dtype id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name=strdup($<str>2); }
+	| dtype id_list 		{
+			struct variable_element *ve;
+			$$=$1; 
+			ve=$$;
+			if ($$==NULL) {
+				A4GL_assertion(1,"No datatype ?");
+			} else {
+				
+				printf("%s\n",$<str>2);
+				$$->name=strdup($<str>2); 
+			}
+			}
 	| dtype id_list '[' dtype_int_val ']' 	{
 				$$=$<define_var>1; 
 				$$->i_arr_size[0]=$4;
@@ -318,6 +329,7 @@ dtype :
 	| SIGNED SHORT INT 		{$$=new_variable_element_string("short");}
 	| LONG 				{$$=new_variable_element_string("long");}
 	| TIME_T 			{$$=new_variable_element_string("time_t");}
+	| XML 			{$$=new_variable_element_string("xml");}
 	| LONG INT 				{$$=new_variable_element_string("long");}
 
 	| UNSIGNED LONG 		{$$=new_variable_element_string("ulong");}
@@ -334,6 +346,7 @@ dtype :
 	| DOUBLE			{$$=new_variable_element_string("double");}
 	| VOID				{$$=new_variable_element_string("void");}
 	| ENUM TYPE_NAME  		{char buff[2000];sprintf(buff,"ENUM:%s",$<str>2); $$=new_variable_element_string(buff); }
+	| anon_struct {$$=$1;}
 	| STRUCT struct_has_define  	{$$=$2; }
 	| TYPE_NAME 			{
 						struct define_variables *v;
@@ -347,19 +360,22 @@ dtype :
 struct_has_define: 
 		TYPE_NAME { $$=new_variable_struct(add_named_struct($<str>1),$<str>1); }
 		| IDENTIFIER {$$=new_variable_struct(add_named_struct($<str>1),$<str>1);}
-		|  '{' has_struct_entry '}' {
+		| anon_struct {$$=$1;}
+		| IDENTIFIER anon_struct {$$=$2;}
+;
+
+
+
+anon_struct : 
+		  '{' has_struct_entry '}' {
 			/* An anonymous structure... */
 			char anonbuff[200];
 			static int anonCnt=0;
 			sprintf(anonbuff,"anon_struct_%d", anonCnt);
 			printf("Structure : %p\n",$<define_variables>2);
-			$$==new_variable_struct($<define_variables>2,anonbuff);
+			$$=new_variable_struct($<define_variables>2,anonbuff);
 			A4GL_debug("BBB : %p from %p\n",$<define_variables>$,$<define_variables>2);
 		}  
-;
-
-
-
 
 int_constant_val :
 		CONSTANT 
