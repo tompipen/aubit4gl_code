@@ -141,6 +141,16 @@ else
 fi
 
 
+cd /home/aubit4gl/aubit4glsrc/compilers/wsdl2fgl
+if make
+then
+	:
+else
+	echo "Failed"
+	exit
+fi
+
+
 cd /home/aubit4gl/aubit4glsrc/lib/liblex/lex_spl
 if make
 then
@@ -169,7 +179,7 @@ else
 fi
 
 cd /home/aubit4gl/aubit4glsrc/compilers/4glc
-if make fgllint fglcalltree
+if make fgllint fglcalltree fglproto
 then
 	:
 else
