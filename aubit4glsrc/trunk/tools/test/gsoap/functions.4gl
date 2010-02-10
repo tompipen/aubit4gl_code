@@ -17,16 +17,12 @@ return lv_id
 end function
 
 
-local function get_blah(lv_a)
-define lv_a integer
-
-end function
-
-
 
 function get_tabname(lv_id)
 define lv_tabname char(18)
 define lv_id integer
+
+display "lv_id=",lv_id
 
 select tabname into lv_tabname
 	from systables where tabid=lv_id
@@ -46,14 +42,4 @@ return lv_rec.*
 end function
 
 
-function  do_something()
 
-end function
-
-function  do_something_param(lv_a)
-define lv_a integer
-end function
-
-function  do_something_ret()
-return 1
-end function
