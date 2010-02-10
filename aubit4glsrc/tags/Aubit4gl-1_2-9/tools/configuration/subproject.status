@@ -1,0 +1,13 @@
+Name: configurator
+Parent: aubit4glsrc
+Description: Interactive TUI or GUI tool to inspect and set Aubit configuration options in configuration files
+Functionality: Aubit configuration tool
+Build: Always built by root makefile
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3 
+Todo: Not sure if it writes changed settings to config files correctly
+Notes: Written in 4GL
