@@ -38278,16 +38278,16 @@ if test "x$ac_cv_header_dlfcn_h" = x""yes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_DLFCN_H 1
 _ACEOF
-
+ have_dlfcn="yes"
+else
+  have_dlfcn="no"
 fi
 
 done
 
         fi
 
-		TMP456=`eval echo '${'$as_ac_Header'}'`
-		#if test `eval echo '${'$as_ac_Header'}'` != "yes"; then
-        if test "$TMP456" != "yes"; then
+        if test "$have_dlfcn" != "yes"; then
 			if test "$GCC_MINGW" != "yes"; then
 				as_fn_error "No dlfcn.h found - please install dl library. Stop." "$LINENO" 5
             fi
@@ -48457,7 +48457,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.440 2010-02-10 09:57:38 mikeaubury Exp $
+| $Id: configure,v 1.441 2010-02-10 14:30:24 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
