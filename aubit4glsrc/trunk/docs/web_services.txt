@@ -6,7 +6,7 @@ There are two situations that might arise for use with web services
 1) Serving 4gl functions for use as web services
 2) Using web services with 4gl
 
-There is a special case of '2' - wher you want to use a 4gl function being
+There is a special case of '2' - when you want to use a 4gl function being
 served as a web service with a 4gl function.
 
 In order to create the web services - you will need to have installed the
@@ -20,7 +20,7 @@ and
 If you cannot run these commands - you will not be able to generate the code
 necessary to serve or use webservices using this mechanism. 
 
-IMPORTANT : Please check the licensing for gSOAP is ok for your situation..
+IMPORTANT : Please check the licensing for gSOAP is ok for your situation. Project page http://gsoap2.sourceforge.net/ or http://www.cs.fsu.edu/~engelen/soap.html (license frame http://www.cs.fsu.edu/~engelen/soaplicense.html).
 
 
 
