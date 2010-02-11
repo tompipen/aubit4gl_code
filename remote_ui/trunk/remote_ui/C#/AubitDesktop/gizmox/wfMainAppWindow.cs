@@ -25,6 +25,7 @@ namespace AubitDesktop
         public UIContext currentContext = null;        
         public showMode showMenuBar;
         public showMode showToolbar;
+        public IContext normalContext=null;
         public showMode showApplicationLauncher;
         private event EventHandler EnvelopeReadyForConsumption;
         private bool updating;
@@ -154,17 +155,31 @@ namespace AubitDesktop
 
 
             log("Enable timer1");
-            timer1.Interval = 100;
+            timer1.Interval = 300;
             timer1.Enabled = true;
         }
 
         void timer1_Tick(object sender, System.EventArgs e)
         {
+
+            
+
+            if (fileDownloads != null)
+            {
+                wfFileDownloader wf = null;
+                while (fileDownloads.Count > 0)
+                {
+                    wf = new wfFileDownloader();
+                    wf.StartBytesDownload(fileDownloads[0].fileName, fileDownloads[0].bytes);
+                }
+            }
+
             log("Timer1Tick");
             if (hasQuit)
             {
                 doQuit();
             }
+
 
             if (amWaitingForEvent)
             {
@@ -296,19 +311,26 @@ namespace AubitDesktop
             while (this.topWindowToolStrip.Buttons.Count > 0)
             {
                 ToolBarButton b = this.topWindowToolStrip.Buttons[0];
+                this.topWindowToolStrip.SuspendLayout();
                 if (b != null)
                 {
                     this.topWindowToolStrip.Buttons.Remove(b);
                 }
+                this.topWindowToolStrip.ResumeLayout();
             }
             //this.topWindowToolStrip.Buttons.Clear();
             if (toolStrip.Count > 0)
             {
+               // this.topWindowToolStrip.Buttons.AddRange(toolStrip);
+                this.topWindowToolStrip.SuspendLayout();
                 for (int a = 0; a < toolStrip.Count; a++)
                 {
-
+                    
                     this.topWindowToolStrip.Buttons.Add(toolStrip[a]);
+
+
                 }
+               this.topWindowToolStrip.ResumeLayout();
             }
             showOrHideToolbar();
 
@@ -357,12 +379,14 @@ namespace AubitDesktop
             // Does nothing on purpose..
         }
 
+        /*
         private void topWindowToolStrip_Click(object objSource, ToolBarItemEventArgs objArgs)
         {
             wfAbout abt;
             abt = new wfAbout();
             abt.Show();
         }
+        */
 
         internal void addNewTabPage(int p, string progname, FGLApplicationPanel fGLApplicationPanel)
         {
@@ -406,7 +430,7 @@ namespace AubitDesktop
             CommentText = "";
             LineDisplayText = "";
             
-            About.Click += new EventHandler(About_Click);
+            // About.Click += new EventHandler(About_Click);
 
 
 
@@ -426,7 +450,7 @@ namespace AubitDesktop
             }
 
 
-
+            normalContext = this.Context;
 
 
             log("Username was : " + txtUsername.Text);
@@ -583,7 +607,7 @@ namespace AubitDesktop
             txtUsername.Focus();
             this.MenuBarPanel.BackColor = Color.FromArgb(240, 240, 240);
             this.mainAppPanel.BackColor = Color.FromArgb(240, 240, 240);
-            toolBarButton1.Click += new EventHandler(toolBarButton1_Click);
+           //  toolBarButton1.Click += new EventHandler(toolBarButton1_Click);
 
             btnPanel.Text = "";
         }
@@ -634,7 +658,7 @@ namespace AubitDesktop
         {
             wfAbout abt;
             abt = new wfAbout();
-            abt.Show();
+            abt.ShowDialog();
 
         }
 
@@ -804,7 +828,7 @@ namespace AubitDesktop
             {
                 loginPanel.Visible = false;
                 log("Enable timer1");
-                timer1.Interval = 100;
+                timer1.Interval = 300;
                 timer1.Enabled = true;
             }
 
@@ -1471,10 +1495,29 @@ namespace AubitDesktop
 
             //wf.StartFileDownload("c:\\users\\mike\\readme.txt");
 
-            wf.StartBytesDownload(fileName, Convert.FromBase64String(file.Text));
-
+            if (wf.Context != null)
+            {
+                wf.StartBytesDownload(fileName, Convert.FromBase64String(file.Text));
+            }
+            else
+            {
+                addQueuedFileDownload(fileName, Convert.FromBase64String(file.Text));
+            }
             
             return true;
+        }
+
+
+
+        List<AubitDesktopWeb.fileDownload> fileDownloads=null;
+        private void addQueuedFileDownload(string fileName, byte[] p)
+        {
+            if (fileDownloads == null)
+            {
+                fileDownloads = new List<AubitDesktopWeb.fileDownload>();
+            }
+            fileDownloads.Add(new AubitDesktopWeb.fileDownload(fileName,p));
+            
         }
 
 
@@ -1499,6 +1542,29 @@ namespace AubitDesktop
         private void gbWinQuestion_VisibleChanged(object sender, EventArgs e)
         {
             Console.WriteLine("Visible changed");
+        }
+
+        private void txtPassword_Enter(object sender, EventArgs e)
+        {
+            Console.WriteLine("Here");
+        }
+
+        private void topWindowToolStrip_ButtonClick(object sender, ToolBarButtonClickEventArgs e)
+        {
+            if (e.Button == this.About || e.Button == toolBarButton1)
+            {
+                wfAbout abt;
+                abt = new wfAbout();
+                abt.ShowDialog();
+            }
+        }
+
+        private void topWindowToolStrip_Click(object sender, EventArgs e)
+        {
+            if (sender == this.About)
+            {
+                Console.WriteLine("1");
+            }
         }
 
         /*

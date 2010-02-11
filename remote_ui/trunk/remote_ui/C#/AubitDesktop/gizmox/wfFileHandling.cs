@@ -15,4 +15,16 @@ namespace AubitDesktopWeb {
     {
 
     }
+
+     class fileDownload
+     {
+         public string fileName;
+         public byte[] bytes;
+
+         public fileDownload(string f, byte[] b)
+         {
+             fileName = f;
+             bytes = b;
+         }
+     }
 }

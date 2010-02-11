@@ -20,8 +20,6 @@ Network_web.cs PromptWindow.cs PromptWindow.Designer.cs samp.cs ssh.cs StartMenu
 /reference:Gizmox.WebGUI.Common.dll \
 /reference:Gizmox.WebGUI.Forms.dll \
 /reference:Gizmox.WebGUI.Server.dll \
-/reference:Gizmox.WebGUI.Server.dll \
-/reference:Gizmox.WebGUI.Forms.Themes.dll \
 /reference:Org.Mentalis.Security \
 /reference:Tamir.SharpSSH \
 /warn:4  
@@ -33,9 +31,9 @@ fi
 if [ -x bin/AubitDesktopWeb.dll ]
 then
 	cp bin/AubitDesktopWeb.dll /var/www/localhost/htdocs/gizmox/bin
-	cp Gizmox.WebGUI.Client.dll  Gizmox.WebGUI.Forms.dll   Org.Mentalis.Security.dll DiffieHellman.dll    Gizmox.WebGUI.Common.dll  Gizmox.WebGUI.Server.dll  Tamir.SharpSSH.dll Web.config /var/www/localhost/htdocs/gizmox/bin
+	cp Gizmox.WebGUI.Forms.dll   Org.Mentalis.Security.dll DiffieHellman.dll    Gizmox.WebGUI.Common.dll  Gizmox.WebGUI.Server.dll  Tamir.SharpSSH.dll Web.config /var/www/localhost/htdocs/gizmox/bin
 
-exit
+#exit
 	export MONO_PATH=`pwd`
 	/usr/bin/xsp2 --verbose  --port 9999 --root `pwd` --applications '/:.' 
 fi

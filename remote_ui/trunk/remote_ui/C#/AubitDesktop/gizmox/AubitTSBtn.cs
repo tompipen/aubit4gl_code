@@ -108,7 +108,7 @@ namespace AubitDesktop
             }
         }
 
-        public string ID
+        public string EventID
         {
             get
             {

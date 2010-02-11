@@ -78,3 +78,36 @@ Look for the Visual WebGui section in toolbox and from there you should drag com
 
 
 
+
+
+Mike Auburys additions....
+
+
+7. I get a blank screen when running the application
+----------------------------------------------------
+    View the source - if you're getting something then try clicking on some of the links..
+    For the one I had - I got an error in one of the files : 
+    Culture name Default is not supported. Parameter name: name
+
+    Description: Error processing request.
+
+    Error Message: HTTP 500. System.ArgumentException: Culture name Default is not supported. Parameter name: name
+    
+    
+    I had to add a             
+            culture="en-GB"
+            uiCulture="en-GB"
+    to the <globalization..> tag under <system.web> in the Web.config file..
+
+    <system.web>
+            .....
+            <globalization
+            requestEncoding="utf-8"
+            responseEncoding="utf-8"
+
+            culture="en-GB"
+                        uiCulture="en-GB"
+            />
+    </system.web>
+
+    
