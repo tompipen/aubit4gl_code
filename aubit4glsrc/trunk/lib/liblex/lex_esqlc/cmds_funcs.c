@@ -1450,7 +1450,7 @@ print_start_cmd (struct_start_cmd * cmd_data)
 
 
 
-  add_function_to_header (cmd_data->repname, cmd_data->namespace, 2, 0);
+  add_function_to_header (cmd_data->repname, cmd_data->n_namespace, 2, 0);
 
   if (where==0)  {
   	printc ("A4GL_push_char(\"\");\n");
@@ -1474,7 +1474,7 @@ print_start_cmd (struct_start_cmd * cmd_data)
 	  cmd_data->sc_c->with_left_margin,
 	  cmd_data->sc_c->with_right_margin,
 	  cmd_data->sc_c->with_top_margin, cmd_data->sc_c->with_bottom_margin, cmd_data->sc_c->with_top_of_page);
-  printc ("%s%s(2,REPORT_START);", cmd_data->namespace, cmd_data->repname);
+  printc ("%s%s(2,REPORT_START);", cmd_data->n_namespace, cmd_data->repname);
 
   print_copy_status_with_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
   return 1;
@@ -1497,7 +1497,7 @@ print_convert_cmd (struct_convert_cmd * cmd_data)
 		//
 		str=cmd_data->conv_c->s1->expr_str_u.expr_string;
 		        add_function_to_header(str,"",1,0);
-        		printc("A4GL_via_functionname(\"%s\",&%s%s,&%s);",cmd_data->repname,cmd_data->namespace,cmd_data->repname,str);
+        		printc("A4GL_via_functionname(\"%s\",&%s%s,&%s);",cmd_data->repname,cmd_data->n_namespace,cmd_data->repname,str);
 			
 			// A4GL_via_functionname("r1",&aclfgl_r1,&aclfgl_test1);
 		
@@ -1546,7 +1546,7 @@ print_convert_cmd (struct_convert_cmd * cmd_data)
       printc ("A4GL_push_char(\"\");");
     }
 
-  printc ("%s%s(3,REPORT_CONVERT);", cmd_data->namespace, cmd_data->repname);
+  printc ("%s%s(3,REPORT_CONVERT);", cmd_data->n_namespace, cmd_data->repname);
   print_copy_status_not_sql (0);
   return 1;
 
@@ -1558,7 +1558,7 @@ int
 print_free_rep_cmd (struct_free_rep_cmd * cmd_data)
 {
   print_cmd_start ();
-  printc ("%s%s(3,REPORT_FREE);", cmd_data->namespace, cmd_data->repname);
+  printc ("%s%s(3,REPORT_FREE);", cmd_data->n_namespace, cmd_data->repname);
   print_copy_status_not_sql (0);
   return 1;
 
@@ -2442,8 +2442,8 @@ struct expr_str_list *li;
   printc ("SET(\"s_screenio\",_sio_%d,\"field_list\",0);\n",sio_id);
 
   if (cmd_data->callback_function!=NULL) {
-              add_function_to_header(cmd_data->callback_function->expr_str_u.expr_func.funcname,cmd_data->callback_function->expr_str_u.expr_func.namespace,1,0);
-              printc("_filterfunc=%s%s;",cmd_data->callback_function->expr_str_u.expr_func.namespace,cmd_data->callback_function->expr_str_u.expr_func.funcname);
+              add_function_to_header(cmd_data->callback_function->expr_str_u.expr_func.funcname,cmd_data->callback_function->expr_str_u.expr_func.n_namespace,1,0);
+              printc("_filterfunc=%s%s;",cmd_data->callback_function->expr_str_u.expr_func.n_namespace,cmd_data->callback_function->expr_str_u.expr_func.funcname);
   }
 
   printc ("SET(\"s_screenio\",_sio_%d,\"callback_function\", _filterfunc);\n",sio_id);
@@ -3327,8 +3327,8 @@ int n;
   } else {
 	n=0;
   }
-  add_function_to_header (cmd_data->repname,cmd_data->namespace, 2,0);
-  printc ("%s%s(%d,REPORT_SENDDATA);\n", cmd_data->namespace, cmd_data->repname, n);
+  add_function_to_header (cmd_data->repname,cmd_data->n_namespace, 2,0);
+  printc ("%s%s(%d,REPORT_SENDDATA);\n", cmd_data->n_namespace, cmd_data->repname, n);
   printc("if (aclfgli_get_err_flg()) {");
   print_copy_status_with_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
   printc("} else {");
@@ -3340,8 +3340,8 @@ int n;
 /******************************************************************************/
 int print_finish_cmd(struct_finish_cmd *cmd_data) {
   print_cmd_start ();
-  add_function_to_header (cmd_data->repname,cmd_data->namespace, 2,0);
-  printc("%s%s(0,REPORT_FINISH);\n", cmd_data->namespace, cmd_data->repname);
+  add_function_to_header (cmd_data->repname,cmd_data->n_namespace, 2,0);
+  printc("%s%s(0,REPORT_FINISH);\n", cmd_data->n_namespace, cmd_data->repname);
   printc("if (aclfgli_get_err_flg()) {");
   print_copy_status_with_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
   printc("} else {");
@@ -3352,11 +3352,11 @@ int print_finish_cmd(struct_finish_cmd *cmd_data) {
 		if (cmd_data->conv_c->towhat=='M') { // ignore it - its a CONVERT TO MANY...
 		} else {
 			struct struct_convert_cmd cc;
-			cc.namespace=cmd_data->namespace;
+			cc.n_namespace=cmd_data->n_namespace;
 			cc.repname=cmd_data->repname;
 			cc.conv_c=cmd_data->conv_c;
 	 		print_convert_cmd (&cc);
-	 		printc("%s%s(3,REPORT_FREE);", cmd_data->namespace, cmd_data->repname);
+	 		printc("%s%s(3,REPORT_FREE);", cmd_data->n_namespace, cmd_data->repname);
 		}
   }
 
@@ -3366,8 +3366,8 @@ int print_finish_cmd(struct_finish_cmd *cmd_data) {
 /******************************************************************************/
 int print_term_rep_cmd(struct_term_rep_cmd *cmd_data) {
   print_cmd_start ();
-  add_function_to_header (cmd_data->repname,cmd_data->namespace, 2,0);
-  printc ("%s%s(0,REPORT_TERMINATE);\n", cmd_data->namespace, cmd_data->repname);
+  add_function_to_header (cmd_data->repname,cmd_data->n_namespace, 2,0);
+  printc ("%s%s(0,REPORT_TERMINATE);\n", cmd_data->n_namespace, cmd_data->repname);
   print_copy_status_not_sql (0);
   return 1;
 }
@@ -3539,7 +3539,7 @@ int print_sort_cmd(struct struct_sort_cmd *c) {
 	printc(",sizeof("); print_variable_usage(c->variable); printc(")");
 	printc(",sizeof("); print_variable_usage(c->variable); printc("[0]),");
 	A4GL_assertion(c->callback->expr_type!=ET_EXPR_FCALL,"Expecting a function call");
-	printc("%s%s", c->callback->expr_str_u.expr_function_call->namespace,c->callback->expr_str_u.expr_function_call->fname);
+	printc("%s%s", c->callback->expr_str_u.expr_function_call->n_namespace,c->callback->expr_str_u.expr_function_call->fname);
 	printc(");");
 	
 	clr_nonewlines();

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.68 2010-01-26 20:21:19 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.69 2010-02-12 14:39:41 mikeaubury Exp $
 */
 
 /**
@@ -164,7 +164,7 @@ void A4GL_push_char (char *p);
 void A4GL_push_char_not_null (char *p);
 void A4GL_push_variable (void *ptr, int dtype);
 void A4GL_push_interval (struct ival *p);
-char *acl_getenv (char *);
+char *acl_getenv (const char *);
 void A4GL_pushop (int a);
 void A4GL_push_null (int dtype,int size);
 void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
@@ -222,7 +222,7 @@ int A4GL_menu_hide (ACL_Menu * menu, ...);
 int A4GL_menu_show (ACL_Menu * menu, ...);
 //int A4GL_free_blob(fglbyte b);
 
-char * acl_getenv_not_set_as_0 (char *s);
+char * acl_getenv_not_set_as_0 (const char *s);
 int A4GL_fgl_fieldtouched_current(void *sio, char itype);
 void A4GL_dec_refcount(void **obj);
 

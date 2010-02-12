@@ -6,6 +6,8 @@
 #include "lint.h"
 #include "linearise.h"
 #include "expr_munging.h"
+static char fglservername[2000]="fglserver";
+static char default_url[2000]="http://localhost:9090/";
 
 #define MODE_TRY 0
 #define MODE_BUY 1
@@ -61,11 +63,11 @@ struct function
   int nparameters;
   int *parameters;
   char **paramnames;
-  commands return_commands;
+  s_commands return_commands;
   struct rettypes **return_datatypes;
   int nreturn_datatypes;
   int processed_returns;
-  call_list *call_list;
+  s_call_list *call_list;
   int called;
   int isInLibraryModule;
   int isStatic;
@@ -466,10 +468,10 @@ call_report_called (void)
 
 
 static void
-add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr, int isInLibrary, commands * commands,
-	      expr_str_list * params, call_list * call_list, int isInLibraryModule, int isStatic)
+add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr, int isInLibrary, s_commands * commands,
+	      expr_str_list * params, s_call_list * call_list, int isInLibraryModule, int isStatic)
 {
-  struct commands *all_cmds;
+  struct s_commands *all_cmds;
   int a;
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
@@ -1152,6 +1154,12 @@ main (int argc, char *argv[])
 	  mode = MODE_SOAP;
 	  continue;
 	}
+      if (strcmp (argv[z], "-url") == 0)
+	{
+		z++;
+		strcpy(default_url,argv[z]);
+	  	continue;
+	}
 
       a++;
       sprintf (buff, "%s", argv[z]);
@@ -1275,7 +1283,7 @@ find_function_single_rtype_proto (char *funcname)
 
 
 static void
-run_calltree_for (call_list * call_list)
+run_calltree_for (s_call_list * call_list)
 {
   int a;
   struct s_expr_function_call *fcall;
@@ -1435,9 +1443,9 @@ dump_soap (void)
 //char fbuff[200];
 //char freebuff[20000]="";
   output_soap = fopen ("prototypes.h", "w");
-  fprintf (output_soap, "//gsoap ns service name: fglserver\n");
-  fprintf (output_soap, "//gsoap ns service port: http://localhost:9090/\n");
-  fprintf (output_soap, "//gsoap ns service namespace: http://localhost:9090/fglserver.wsdl\n");
+  fprintf (output_soap, "//gsoap ns service name: %s\n",fglservername);
+  fprintf (output_soap, "//gsoap ns service port: %s\n",default_url);
+  fprintf (output_soap, "//gsoap ns service namespace: %s/%s.wsdl\n",default_url, fglservername);
   fprintf (output_soap, "/* %d functions in total */\n", functions_cnt);
 
   for (a = 0; a < functions_cnt; a++)
@@ -1921,7 +1929,7 @@ dump_soap (void)
   output_soap = fopen ("prototypes_client.c", "w");
   fprintf (output_soap, "#include \"soapH.h\"\n");
   fprintf (output_soap, "#include \"a4gl_incl_4glhdr.h\"\n");
-  fprintf (output_soap, "#include \"fglserver.nsmap\"\n");
+  fprintf (output_soap, "#include \"%s.nsmap\"\n",fglservername);
   fprintf (output_soap, "//GSOAP marshalling code\n");
   fprintf (output_soap, "//This code was automatically generated\n");
 

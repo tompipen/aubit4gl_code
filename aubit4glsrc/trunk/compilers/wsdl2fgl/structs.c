@@ -27,7 +27,9 @@ struct s_named_enums
 {
   char *name;
   struct enum_elements *v;
+	int isPtr;
 };
+
 
 struct s_named_enums *named_enums;
 int named_enums_cnt = 0;
@@ -390,13 +392,14 @@ int as;
 
 }
 
-void make_named_enum(char * name, struct enum_elements *elem_list) {
+void make_named_enum(char * name, struct enum_elements *elem_list,int isPtr) {
   named_enums_cnt++;
   named_enums =
     realloc (named_enums,
              sizeof (struct define_variables) * named_enums_cnt);
   named_enums[named_enums_cnt - 1].name = strdup (name);
   named_enums[named_enums_cnt - 1].v = elem_list;
+  named_enums[named_enums_cnt - 1].isPtr = isPtr;
 
 	
 }
@@ -526,20 +529,20 @@ if (param->next.next_len ) {
 } else  {
 	printf("Looking at : %s\n", param->dtype);
 	print_indent(lvl);
-	if (strstr(param->dtype,"ENUM:")) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"long")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"char")==0) { fprintf(getOuputFile(),"%s CHAR(1)", name); return 1;}
-	if (strcasecmp(param->dtype,"char*")==0) { fprintf(getOuputFile(),"%s CHAR(256)", name); return 1;}
-	if (strcasecmp(param->dtype,"double")==0) { fprintf(getOuputFile(),"%s FLOAT", name); return 1;}
-	if (strcasecmp(param->dtype,"float")==0) { fprintf(getOuputFile(),"%s SMALLFLOAT", name); return 1;}
-	if (strcasecmp(param->dtype,"long")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"longlong")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"short")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"time_t")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"uchar")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"ulong")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"ulonglong")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
-	if (strcasecmp(param->dtype,"ushort")==0) { fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strstr(param->dtype,"ENUM:")) 		{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"long")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"char")==0) 	{ fprintf(getOuputFile(),"%s CHAR(1)", name); return 1;}
+	if (strcasecmp(param->dtype,"char*")==0) 	{ fprintf(getOuputFile(),"%s CHAR(256)", name); return 1;}
+	if (strcasecmp(param->dtype,"double")==0) 	{ fprintf(getOuputFile(),"%s FLOAT", name); return 1;}
+	if (strcasecmp(param->dtype,"float")==0) 	{ fprintf(getOuputFile(),"%s SMALLFLOAT", name); return 1;}
+	if (strcasecmp(param->dtype,"long")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"longlong")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"short")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"time_t")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"uchar")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"ulong")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"ulonglong")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
+	if (strcasecmp(param->dtype,"ushort")==0) 	{ fprintf(getOuputFile(),"%s INTEGER", name); return 1;}
 }
 return 1;
 }
@@ -968,6 +971,7 @@ for (a=0;a<params->var_len;a++) {
 			char *p;
 			p=params->var_val[a].dtype;
 			p+=5; // Skip the ENUM:
+			
 			fprintf(getOuputFile(),"static enum %s %s; //3\n",  p, params->var_val[a].name);
 		} else {
 			fprintf(getOuputFile(),"static %s %s; //2\n", params->var_val[a].dtype,  params->var_val[a].name);

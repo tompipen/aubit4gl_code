@@ -223,7 +223,7 @@ void print_returning_g (int from_where, struct expr_str_list *bind,int allow_one
 void print_event_actions (char *loopvar, struct on_events*events) ;
 
 
-void dump_commands(commands *c) ;
+void dump_commands(s_commands *c) ;
 char *local_expr_as_string(expr_str *s);
 char *local_ident_as_string(expr_str *s,int quote);
 void print_field_list(struct fh_field_list *flist);

@@ -65,7 +65,7 @@ PDF_fill_stroke (p);
 
 }
 
-static void BarCharPDF39(PDF *p, char *mapstring, float p_page_height) {
+static void BarCharPDF39(PDF *p, const char *mapstring, float p_page_height) {
 int x, barsize  ;
 for (x=0;x<9;x++) {
    if (mapstring[x]=='0') 
@@ -82,8 +82,8 @@ atx +=  littlebar;       //# gap between each bar code character
 
 }
 
-static void BarChar_25(PDF *p, char *mapstring, float p_page_height) {
-        int  x;
+static void BarChar_25(PDF *p, const char *mapstring, float p_page_height) {
+        unsigned int  x;
 	float barsize;
         for (x=0;x<strlen(mapstring);x++) {
                 if (mapstring[x]=='0')  {
@@ -102,7 +102,7 @@ static void BarChar_25(PDF *p, char *mapstring, float p_page_height) {
 	}
 }
 
-static char *checa_char_25(char c) {
+static const char *checa_char_25(char c) {
 switch (c) {
     case '1':  return "10001";
     case '2':  return "01001";
@@ -234,7 +234,7 @@ PutBarsPDF39(p, '*',p_page_height);   //# ending delimiter
 }
 
 
-static void PrintThisPDF25(PDF *p, char *s,float p_page_height) {
+static void PrintThisPDF25(PDF *p, const char *s,float p_page_height) {
 int x;
 char buff[2000]; // Allow some space for a trailing space- needed if its a noneven length
 even_odd=1;
@@ -369,7 +369,7 @@ generate_qrcode (PDF * p, char *str, double xpos, double ypos, double pdfwidth, 
 {
   int ret = -1;
   int version = 1;
-  int level = QR_ECLEVEL_L;
+  QRecLevel level = QR_ECLEVEL_L;
   int mask = -1;
   QRcode *qrcode=NULL;
   QRinput *input = 0;

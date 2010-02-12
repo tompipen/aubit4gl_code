@@ -83,7 +83,7 @@ static char *decode_ival_define2 (int n);
 static void print_varbind (expr_str * var_usage, char dir, int no);
 static char *local_has_comment (int n, int c, char *type);
 static int dump_report (struct s_report_definition *report_definition);
-static int dump_cmds (struct commands *c, struct command *parent);
+static int dump_cmds (struct s_commands *c, struct command *parent);
 static int dump_pdf_report (struct s_pdf_report_definition *pdf_report_definition);
 static int dump_cmd (struct command *r, struct command *parent);
 static int dump_function (struct s_function_definition *function_definition, int ismain);
@@ -4340,7 +4340,7 @@ dump_report (struct s_report_definition *report_definition)
   tmp_ccnt++;
   for (a = 0; a < report_definition->report_format_section->entries.entries_len; a++)
     {
-      report_format_section_entry *re;
+      s_report_format_section_entry *re;
       re = report_definition->report_format_section->entries.entries_val[a];
       need_daylight ();		//printc ("#");
       switch (re->rb_block.rb)
@@ -4388,7 +4388,7 @@ dump_report (struct s_report_definition *report_definition)
 
 
 static int
-dump_cmds (struct commands *c, struct command *parent)
+dump_cmds (struct s_commands *c, struct command *parent)
 {
   int a;
   if (c == 0)

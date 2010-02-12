@@ -57,7 +57,7 @@ struct define_variables
   struct variable_element *var_val;
 };
 
-void make_named_enum(char * name, struct enum_elements *elem_list);
+void make_named_enum(char * name, struct enum_elements *elem_list,int isptr);
 struct define_variables *add_named_struct (char *s);
 struct variable_element *new_variable_struct (struct define_variables *v,char *struct_name);
 FILE *getOuputFile(void );

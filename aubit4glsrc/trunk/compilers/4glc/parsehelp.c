@@ -71,9 +71,9 @@ extern char variable_scope ;
 //static int print_agg_defines(char t,int a);
 
 
-struct report_orderby_section *current_orderby=0;
+struct s_report_orderby_section *current_orderby=0;
 
-struct call_list *this_functions_call_list=0;
+struct s_call_list *this_functions_call_list=0;
 
 //static void write_variable_header (struct variable *v);
 //static void write_variable_simple (struct variable *v);
@@ -109,7 +109,7 @@ void reset_report_aggregates() {
 	list_of_aggregates.list.list_val=0;
 }
 
-int scan_orderby(struct report_orderby_section *c_orderby, expr_str *v) {
+int scan_orderby(struct s_report_orderby_section *c_orderby, expr_str *v) {
 struct variable_usage *u;
 int a;
 
@@ -1079,7 +1079,7 @@ void add_module_entry(module_entry *m) {
 
 void clr_call_list() {
 	if (this_functions_call_list==0) {
-		this_functions_call_list=malloc(sizeof(struct call_list));
+		this_functions_call_list=malloc(sizeof(struct s_call_list));
 		this_functions_call_list->calls_by_call.calls_by_call_len=0;
 		this_functions_call_list->calls_by_call.calls_by_call_val=0;
 		this_functions_call_list->calls_by_expr.calls_by_expr_len=0;
@@ -1543,7 +1543,7 @@ void A4GL_ensure_dtype_variables(expr_str_list *s) {
 //...
 }
 
-void set_report_orderby(struct variable_list *v, struct expr_str_list*params, struct report_orderby_section *orderby) {
+void set_report_orderby(struct variable_list *v, struct expr_str_list*params, struct s_report_orderby_section *orderby) {
 	expr_str_list *Eslist;
 	int number_of_variables_in_orderby=0;
 

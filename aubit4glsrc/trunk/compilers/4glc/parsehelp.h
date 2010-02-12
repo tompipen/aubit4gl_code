@@ -61,7 +61,7 @@ struct s_select_list_item_list *make_select_list_item_list_from_variable_record(
 char * get_id_from_variable_usage_expression(expr_str *ptr);
 char *get_variable_as_string_from_variable_usage_expression(expr_str *ptr);
 void A4GL_ensure_dtype_variables(expr_str_list *s);
-void set_report_orderby(struct variable_list *v, struct expr_str_list*params, struct report_orderby_section *orderby);
+void set_report_orderby(struct variable_list *v, struct expr_str_list*params, struct s_report_orderby_section *orderby);
 int set_bind_var_dtype(char *type, char *errbuff,struct expr_str_list *bindlist);
 struct expr_str *ensure_variable(char *errbuff, struct expr_str *ptr, int err_if_whole_array);
 int check_parameters(char *errbuff,struct variable_list *var_list, expr_str_list *parameters);

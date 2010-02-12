@@ -28,7 +28,7 @@
 
 
 code
-char *acl_getenv_not_set_as_0(char *s);
+char *acl_getenv_not_set_as_0(const char *s);
 FILE *f_unloadFile=0;
 struct BINDING *gen_obind=0;
 struct BINDING *gen_obind_copy=0;

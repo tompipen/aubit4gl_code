@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.98 2009-12-10 19:19:04 mikeaubury Exp $
+# $Id: 1.reqd,v 1.99 2010-02-12 14:39:40 mikeaubury Exp $
 #
 */
 
@@ -256,7 +256,7 @@ void print_expr_list_concat (struct expr_str_list *l);
 #define A4GL_strcpy_defined
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 #endif
-extern struct report_orderby_section *current_orderby;
+extern struct s_report_orderby_section *current_orderby;
 
 #ifndef SIMPLIFIED
 #include "../field_handling.h"
@@ -322,7 +322,7 @@ extern struct report_orderby_section *current_orderby;
 
 
 	struct command *cmd;
-	struct commands *commands;
+	struct s_commands *commands;
 	struct attrib *attrib;
 	struct menu_attrib *menu_attrib;
 
@@ -353,9 +353,9 @@ extern struct report_orderby_section *current_orderby;
 	on_events *on_events;
 	struct when *when;
 	struct whens *whens;
-	struct report_format_section_entry *report_format_section_entry;
-	struct report_format_section *report_format_section;
-	struct report_orderby_section *report_orderby_section;
+	struct s_report_format_section_entry *report_format_section_entry;
+	struct s_report_format_section *report_format_section;
+	struct s_report_orderby_section *report_orderby_section;
 	struct cons_list *cons_list;
 	struct cons_list_entry *cons_list_entry;
 	struct module_entry *module_entry;

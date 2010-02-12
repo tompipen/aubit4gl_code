@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.56 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: error.c,v 1.57 2010-02-12 14:39:42 mikeaubury Exp $
 #
 */
 
@@ -272,9 +272,9 @@ A4GL_set_error (char *fmt, ...)
 
 
 void
-A4GL_set_lasterrorstr (char *s)
+A4GL_set_lasterrorstr (const char *s)
 {
-  strcpy (lasterrorstr, s);
+  strcpy (lasterrorstr, (char *)s);
 }
 
 /**

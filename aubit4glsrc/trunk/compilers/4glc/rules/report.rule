@@ -401,7 +401,7 @@ term_rep_cmd : TERMINATE_REPORT rep_name {
 
 
 format_section: FORMAT EVERY_ROW {
-	        $<report_format_section>$=malloc(sizeof(report_format_section));
+	        $<report_format_section>$=malloc(sizeof(s_report_format_section));
                 $<report_format_section>$->entries.entries_len=1;
                 $<report_format_section>$->entries.entries_val=malloc(sizeof($<report_format_section>$->entries.entries_val[0]) * $<report_format_section>$->entries.entries_len);
                 $<report_format_section>$->entries.entries_val[$<report_format_section>$->entries.entries_len-1]=new_report_format_section_entry(RB_FORMAT_EVERY_ROW,0, NULL,0, yylineno);
@@ -418,7 +418,7 @@ FORMAT format_actions {$<report_format_section>$=$<report_format_section>2;
 ;
 
 format_actions : format_action  {
-		$<report_format_section>$=malloc(sizeof(report_format_section));
+		$<report_format_section>$=malloc(sizeof(s_report_format_section));
 		$<report_format_section>$->entries.entries_len=1;
 		$<report_format_section>$->entries.entries_val=malloc(sizeof($<report_format_section>$->entries.entries_val[0]) * $<report_format_section>$->entries.entries_len);
 		$<report_format_section>$->entries.entries_val[$<report_format_section>$->entries.entries_len-1]=$<report_format_section_entry>1;

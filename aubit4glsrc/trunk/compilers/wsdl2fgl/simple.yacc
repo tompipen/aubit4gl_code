@@ -77,11 +77,15 @@ typedef_decl:
 		replace_named_struct ($<str>2, $4);
 	}
 	| ENUM IDENTIFIER '{' enum_elements '}' {
-		make_named_enum ($<str>2, $4);
+		make_named_enum ($<str>2, $4,0);
+		enum_cnt=0;
+	}
+	| ENUM '*' IDENTIFIER '{' enum_elements '}' {
+		make_named_enum ($<str>3, $5,1);
 		enum_cnt=0;
 	}
 	| TYPEDEF ENUM IDENTIFIER '{' enum_elements '}' {
-		make_named_enum ($<str>3, $5);
+		make_named_enum ($<str>3, $5,0);
 		enum_cnt=0;
 	}
 ;
@@ -94,6 +98,7 @@ enum_elements:
 	| enum_elements ',' enum_element {
 		$$=append_enum_element($1,$3);
 	}
+	| enum_elements ','
 ;
 
 

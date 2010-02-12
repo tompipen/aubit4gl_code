@@ -16,7 +16,7 @@ int nlints = 0;
 int last_was_sql = 0;
 //void check_expression (struct expr_str *e) ;
 void check_expression (char *module, int lineno, struct expr_str *e);
-static void check_expressions_cmd (struct commands *cmds);
+static void check_expressions_cmd (struct s_commands *cmds);
 static void check_boolean (char *module_name, int lineno, expr_str * s,
 			   int last_was_sql, int done_true_false);
 static int A4GL_is_just_literal (expr_str * ptr,
@@ -139,12 +139,12 @@ static void clr_lint_expect (void);
 
 //void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
 //void dump_prototypes(void) ;
-//static struct commands * linearise_commands(struct commands *master_list, struct commands *cmds) ;
-//static void linearise_commands_from_events(struct commands *master_list, struct on_events* evt_list) ;
+//static struct s_commands * linearise_commands(struct s_commands *master_list, struct s_commands *cmds) ;
+//static void linearise_commands_from_events(struct s_commands *master_list, struct on_events* evt_list) ;
 static char *get_lint_filename (char *s);
 static char *local_xml_escape (char *s);
 static void cache_expressions (struct expr_str_list *list,
-			       struct commands *cmds);
+			       struct s_commands *cmds);
 static void cache_expression (struct expr_str_list *list,
 			      struct expr_str **eptr);
 static void cache_expression_list (struct expr_str_list *list,
@@ -156,13 +156,13 @@ static struct module_definition *find_module (module_definition * mods,
 					      int nmodules, char *name);
 
 static void scan_functions (char *infuncname, int calltree_entry,
-			    int *calltree, struct call_list *f,
-			    struct commands *calling_funcs_commands);
+			    int *calltree, struct s_call_list *f,
+			    struct s_commands *calling_funcs_commands);
 static void set_lint_module (char *s);
 
 static void check_variable_name (char *modname, char *scope,
 				 struct variable *v);
-static void check_cmds_for_dead_code (struct commands *cmds);
+static void check_cmds_for_dead_code (struct s_commands *cmds);
 //expr_str * expr_cached (expr_str * l);
 //int has_variable (struct variable_list *v, char *name) ;
 //int get_lint_style(void) ;
@@ -606,7 +606,7 @@ check_cmds_for_dead_code_from_events (struct on_events *evt_list)
 
 
 static void
-check_cmds_for_dead_code (struct commands *cmds)
+check_cmds_for_dead_code (struct s_commands *cmds)
 {
   int a;
   int cnt;
@@ -787,7 +787,7 @@ check_function_for_complexity (struct module_definition *d,
 {
   int ncomments = 0;
   int a = 0;
-  struct commands *func_cmds = 0;
+  struct s_commands *func_cmds = 0;
   int flow = 0;
   char *lines_used;
   int nlines = 0;
@@ -1075,7 +1075,7 @@ check_variables (char *module_name, struct module_definition *d,
 
 
 static void
-check_linearised_commands (char *module_name, commands * func_cmds)
+check_linearised_commands (char *module_name, s_commands * func_cmds)
 {
   int cnt;
   int nreturns = 0;
@@ -2269,7 +2269,7 @@ check_report (struct module_definition *d, struct s_report_definition *r)
 	  if (r->report_format_section->entries.entries_val[a]->
 	      rep_sec_commands != NULL)
 	    {
-	      struct commands *func_cmds = 0;
+	      struct s_commands *func_cmds = 0;
 	      check_cmds_for_dead_code (r->report_format_section->entries.
 					entries_val[a]->rep_sec_commands);
 
@@ -2316,7 +2316,7 @@ check_pdf_report (struct module_definition *d,
 	  if (r->report_format_section->entries.entries_val[a]->
 	      rep_sec_commands != NULL)
 	    {
-	      struct commands *func_cmds = 0;
+	      struct s_commands *func_cmds = 0;
 	      check_cmds_for_dead_code (r->report_format_section->entries.
 					entries_val[a]->rep_sec_commands);
 
@@ -2351,7 +2351,7 @@ check_pdf_report (struct module_definition *d,
 static void
 check_function (struct module_definition *d, struct s_function_definition *f)
 {
-  struct commands *func_cmds = 0;
+  struct s_commands *func_cmds = 0;
   //int a;
   //int b;
   char *currfunc;
@@ -2509,7 +2509,7 @@ check_whenever_abuse (module_definition * d)
   int a;
   //int b;
   int cmd;
-  struct commands *all_cmds = 0;
+  struct s_commands *all_cmds = 0;
   struct command *c;
   int when_set_to_call = 0;
   //struct report_format_section *report_format_section;
@@ -3240,7 +3240,7 @@ has_variable (struct variable_list *v, char *name)
 void
 check_module (struct module_definition *d)
 {
-  struct commands *all_cmds = 0;
+  struct s_commands *all_cmds = 0;
   int a;
   int b;
 
@@ -3954,7 +3954,7 @@ static void
 scan_module_entry (int *calltree, int a)
 {
   struct module_entry *m;
-  struct commands *rep_commands = 0;
+  struct s_commands *rep_commands = 0;
 
   m = this_module.module_entries.module_entries_val[a];
 
@@ -4183,11 +4183,11 @@ promoteable (int a, int b)
 //
 static void
 scan_functions (char *infuncname, int calltree_entry, int *calltree,
-		struct call_list *f, struct commands *calling_funcs_cmds)
+		struct s_call_list *f, struct s_commands *calling_funcs_cmds)
 {
   int a;
   int b;
-  struct commands *func_cmds = 0;
+  struct s_commands *func_cmds = 0;
   struct command *r = 0;
   if (dbg)
     {
@@ -4706,7 +4706,7 @@ isCalledFromOtherModule (module_definition * mod, char *module,
   int a;
   int b;
   char *called_from;
-  call_list *l = NULL;
+  s_call_list *l = NULL;
 
 // We need to check if a function is called from a function in another module...
 // It might well be that *that* function isn't called from MAIN - but if we the
@@ -4839,7 +4839,7 @@ check_program (module_definition * mods, int nmodules)
   int *calltree;
   int bad_load = 0;
   int main_cnt = 0;
-  struct commands *all_cmds = 0;
+  struct s_commands *all_cmds = 0;
   //char *fname;
   int mcnt;
   int fromLibrary[50000];
@@ -6950,7 +6950,7 @@ check_expression_list (char *module, int lineno,
 
 
 static void
-cache_expressions (struct expr_str_list *list, struct commands *cmds)
+cache_expressions (struct expr_str_list *list, struct s_commands *cmds)
 {
   //int a;
   //int b;
@@ -7270,7 +7270,7 @@ check_expression (char *module, int lineno, struct expr_str *e)
 }
 
 static void
-check_expressions_cmd (struct commands *cmds)
+check_expressions_cmd (struct s_commands *cmds)
 {
   int a;
 
@@ -7540,7 +7540,7 @@ void
 gen_function_prototypes (int e,
 			 struct s_function_definition *function_definition)
 {
-  struct commands *func_cmds;
+  struct s_commands *func_cmds;
   int nreturns;
   int a;
   struct command *r = 0;

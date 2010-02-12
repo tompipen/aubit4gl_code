@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.50 2010-01-21 18:19:46 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.51 2010-02-12 14:39:39 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -20,7 +20,7 @@ struct form_field {
 } 
 ;
 
-struct x_y {
+struct s_x_y {
           struct expr_str* y;
           struct expr_str* x;
 };
@@ -55,7 +55,7 @@ enum e_scope {
 
 union dt_display switch ( enum dt_display_type dttype) {
 		case DT_DISPLAY_TYPE_LINE: void;
-		case DT_DISPLAY_TYPE_AT: x_y x_y;
+		case DT_DISPLAY_TYPE_AT: s_x_y x_y;
                 case DT_DISPLAY_TYPE_FORM_CAPTION: str caption;
                 case DT_DISPLAY_TYPE_FIELD_LIST: struct fh_field_list *field_list;
 		case DT_DISPLAY_TYPE_FORM_FIELD: form_field fldform_field;
@@ -515,7 +515,7 @@ struct struct_exit_prog_cmd {
 
 typedef struct command * command_ptr;
 
-struct commands {
+struct s_commands {
 	command_ptr cmds<>;
 };
 
@@ -594,7 +594,7 @@ struct struct_for_cmd {
 	struct expr_str* start;
 	struct expr_str* end;
 	struct expr_str* step;
-	commands *for_commands;
+	s_commands *for_commands;
 	int block_id;
 };
 
@@ -605,7 +605,7 @@ struct struct_display_form_cmd {
 
 typedef struct expr_str * expr_str_ptr; 
 
-struct call_list {
+struct s_call_list {
 	command_ptr calls_by_call<>;
 	expr_str_ptr calls_by_expr<>;
 };
@@ -623,7 +623,7 @@ struct struct_pdf_call_cmd {
 struct if_cond {
 	int lineno;
 	struct expr_str* test_expr;
-	commands *whentrue;
+	s_commands *whentrue;
 };
 
 struct if_conds {
@@ -634,7 +634,7 @@ struct struct_if_cmd {
 	if_conds truths;
 	int lineno;
 	int else_lineno;
-	commands *whenfalse;
+	s_commands *whenfalse;
 };
 
 struct struct_foreach_cmd {
@@ -642,7 +642,7 @@ struct struct_foreach_cmd {
 	struct expr_str * cursorname;
 	struct expr_str_list* inputvals;
 	struct expr_str_list* outputvals;
-	commands *foreach_commands;
+	s_commands *foreach_commands;
 	int block_id;
 };
 
@@ -723,19 +723,19 @@ struct convert {
 
 struct struct_convert_cmd {
 	str repname;
-	str namespace;
+	str n_namespace;
 	struct convert *conv_c;
 };
 
 struct struct_finish_cmd {
 	str repname;
-	str namespace;
+	str n_namespace;
 	struct convert *conv_c;
 };
 
 struct struct_start_cmd {
 	str repname;
-	str namespace;
+	str n_namespace;
 	struct startrep *sc_c;
 };
 
@@ -853,15 +853,15 @@ union report_block_data switch (enum report_blocks rb) {
 
 };
 
-struct report_format_section_entry {
+struct s_report_format_section_entry {
 	report_block_data rb_block;
-	commands* rep_sec_commands;
+	s_commands* rep_sec_commands;
         int lineno;
 	int orderby_var_no;
 };
 
-typedef struct report_format_section_entry* report_format_section_entry_ptr;
-struct report_format_section {
+typedef struct s_report_format_section_entry* report_format_section_entry_ptr;
+struct s_report_format_section {
 	report_format_section_entry_ptr entries<>;
         int lines_in_header ;
         int lines_in_first_header ;
@@ -874,7 +874,7 @@ enum e_report_orderby {
 	REPORT_ORDERBY
 };
 
-struct report_orderby_section  {
+struct s_report_orderby_section  {
 	enum e_report_orderby rord_type;
 	struct expr_str_list* variables;
 	/* str asc_desc; */
@@ -941,7 +941,7 @@ struct  struct_validate_cmd {
 
 struct struct_while_cmd {
 	struct expr_str* while_expr;
-	commands *while_commands;
+	s_commands *while_commands;
 	int block_id;
 };
 
@@ -955,7 +955,7 @@ struct when {
 	int lineno;
 	int colno;
 	struct expr_str* when_expr;
-	commands *when_commands;
+	s_commands *when_commands;
 	
 };
 
@@ -969,13 +969,13 @@ struct whens {
 struct struct_case_cmd  {
 	struct expr_str* case_expr;
 	struct whens *whens;
-	commands *otherwise;
+	s_commands *otherwise;
 	int block_id;
 };
 
 struct struct_output_cmd {
 	str repname;
-	str namespace;
+	str n_namespace;
 	struct expr_str_list* expressions;
 };
 
@@ -983,7 +983,7 @@ struct struct_output_cmd {
 
 struct struct_term_rep_cmd {
 	str repname;
-	str namespace;
+	str n_namespace;
 };
 
 
@@ -1194,7 +1194,7 @@ union event_data switch (enum e_event event_type) {
 
 struct on_event {
 	event_data evt_data;
-	commands *on_event_commands;
+	s_commands *on_event_commands;
 	int lineno;
 	int colno;
 };
@@ -1310,7 +1310,7 @@ struct user_details {
 
 struct struct_free_rep_cmd {
 	str repname;
-	str namespace;
+	str n_namespace;
 };
 
 
@@ -1844,7 +1844,7 @@ struct s_source_code {
 
 struct module_definition {
 	str mod_dbname;
-	str namespace;
+	str n_namespace;
 	str force_ui;
 	str debug_filename;
 	str external_datatypes<>;
@@ -1884,14 +1884,14 @@ struct s_expr_op {
 
 struct s_spl_block {
 	variable_list variables;
-	commands *commands;
+	s_commands *commands;
 };
 
 
 
 struct s_expr_function_call {
         str fname;
-	str namespace;
+	str n_namespace;
         struct expr_str_list *parameters;
         str module;
         int line;
@@ -1899,7 +1899,7 @@ struct s_expr_function_call {
 
 struct s_expr_pdf_function_call {
         str fname;
-	str namespace;
+	str n_namespace;
         struct expr_str_list *parameters;
         str module;
         int line;
@@ -1908,7 +1908,7 @@ struct s_expr_pdf_function_call {
 struct s_expr_shared_function_call {
         str lib;
         str fname;
-	str namespace;
+	str n_namespace;
         struct expr_str_list *parameters;
         str module;
         int line;
@@ -1954,7 +1954,7 @@ struct s_expr_member_function_call_n {
 	struct expr_str *var_usage_ptr;
 	str funcName;
 	str objectType;
-	str namespace;
+	str n_namespace;
 	int datatype;
         expr_str_list *parameters;
         str module;
@@ -1964,7 +1964,7 @@ struct s_expr_member_function_call_n {
 struct s_expr_dynarr_function_call_n {
 	struct expr_str *var_usage_ptr;
 	str funcName;
-	str namespace;
+	str n_namespace;
         expr_str_list *parameters;
         str module;
         int line;
@@ -1980,7 +1980,7 @@ struct s_expr_external_call {
         str host;
         str func;
         struct expr_str * port;
-        str namespace;
+        str n_namespace;
 
         struct expr_str_list *parameters;
         int without_waiting;
@@ -2007,7 +2007,7 @@ struct s_expr_datetime {
 };
 
 struct s_expr_tmp {
-        str str;
+        str s_str;
         int dtype;
 };
 
@@ -2035,7 +2035,7 @@ struct s_expr_cast {
 
 struct s_expr_bound_fcall {
         str lib;
-	str namespace;
+	str n_namespace;
         str fname;
         str module;
         int line;
@@ -2059,7 +2059,7 @@ struct s_expr_dynarr_extent {
 
 struct s_func {
 	str funcname;
-	str namespace;
+	str n_namespace;
 };
 
 struct  s_named_param {
@@ -3086,16 +3086,16 @@ struct s_select_list_item {
 
 struct s_function_definition {
 	str funcname;
-	str namespace;
+	str n_namespace;
 	enum e_boolean isstatic;
 	struct expr_str_list expression_list;
 	struct expr_str_list* parameters;
 	str module;
 	int lineno;
 	int lastlineno;
-	call_list call_list;
+	s_call_list call_list;
 	variable_list variables;
-	commands* func_commands;
+	s_commands* func_commands;
 	lint_warning extra_warnings<>;
 	str comment;
 };
@@ -3104,20 +3104,20 @@ struct s_function_definition {
 
 struct s_report_definition {
 	str funcname;
-	str namespace;
+	str n_namespace;
 	enum e_boolean isstatic;
 	struct expr_str_list expression_list;
 	variable_list variables;
 	struct expr_str_list* parameters;
 	startrep *report_output_section;
-	report_orderby_section *report_orderby_section;
-	report_format_section *report_format_section;
+	s_report_orderby_section *report_orderby_section;
+	s_report_format_section *report_format_section;
 	struct expr_str_list aggregates;
 	str module;
 	int lineno;
 	int colno;
 	int lastlineno;
-	call_list call_list;
+	s_call_list call_list;
 
 	lint_warning extra_warnings<>;
 	str comment;
@@ -3126,20 +3126,20 @@ struct s_report_definition {
 
 struct s_pdf_report_definition {
 	str funcname;
-	str namespace;
+	str n_namespace;
 	enum e_boolean isstatic;
 	struct expr_str_list expression_list;
 	variable_list variables;
 	struct expr_str_list* parameters;
 	pdf_startrep *report_output_section;
-	report_orderby_section *report_orderby_section;
-	report_format_section *report_format_section;
+	s_report_orderby_section *report_orderby_section;
+	s_report_format_section *report_format_section;
 	struct expr_str_list aggregates;
 	str module;
 	int lineno;
 	int colno;
 	int lastlineno;
-	call_list call_list;
+	s_call_list call_list;
 	lint_warning extra_warnings<>;
 	str comment;
 };

@@ -11,7 +11,7 @@ void LEXLIB_CLASS_add_method(char *name,char *sig) {
 
 
 
-void LEXLIB_CLASS_print_reflector() {
+void LEXLIB_CLASS_print_reflector(void) {
 }
 
 

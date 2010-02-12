@@ -14,14 +14,14 @@ extern int token_read_on_col;
 
 extern int rep_type;
 
-struct commands * linearise_commands(struct commands *master_list, struct commands *cmds) ;
+struct s_commands * linearise_commands(struct s_commands *master_list, struct s_commands *cmds) ;
 //static char *get_expr_list_as_string(struct expr_str_list *l) ;
-//static void linearise_commands_from_events(struct commands *master_list, struct on_events* evt_list) ;
+//static void linearise_commands_from_events(struct s_commands *master_list, struct on_events* evt_list) ;
 //char *A4GL_get_current_comments();
 static int get_exit_loop (char *cmd_type);
 //struct expr_str *A4GL_new_expr_list_with_list(expr_str_list *l);
 extern struct expr_str_list list_of_aggregates;
-extern struct call_list *this_functions_call_list;
+extern struct s_call_list *this_functions_call_list;
 extern int lastlineno;
 int llineno=0;
 
@@ -1111,7 +1111,7 @@ struct command *new_finish_cmd(char * p_repname,struct convert *p_c) { //!
 struct command *c;
    c=new_command(E_CMD_FINISH_CMD);
    c->cmd_data.command_data_u.finish_cmd.repname=strdup(p_repname);
-   c->cmd_data.command_data_u.finish_cmd.namespace=strdup(get_namespace(p_repname));
+   c->cmd_data.command_data_u.finish_cmd.n_namespace=strdup(get_namespace(p_repname));
    c->cmd_data.command_data_u.finish_cmd.conv_c=p_c;
    return c;
 }
@@ -1120,7 +1120,7 @@ struct command *new_start_cmd(char * p_repname,struct startrep *p_c) {
 struct command *c;
    c=new_command(E_CMD_START_CMD);
    c->cmd_data.command_data_u.start_cmd.repname=strdup(p_repname);
-   c->cmd_data.command_data_u.start_cmd.namespace=strdup(get_namespace(p_repname));
+   c->cmd_data.command_data_u.start_cmd.n_namespace=strdup(get_namespace(p_repname));
    c->cmd_data.command_data_u.start_cmd.sc_c=p_c;
    return c;
 }
@@ -1254,7 +1254,7 @@ struct command *new_term_rep_cmd(char * p_reportname) { //!
 struct command *c;
    c=new_command(E_CMD_TERM_REP_CMD);
    c->cmd_data.command_data_u.term_rep_cmd.repname=strdup(p_reportname);
-   c->cmd_data.command_data_u.term_rep_cmd.namespace=strdup(get_namespace(p_reportname));
+   c->cmd_data.command_data_u.term_rep_cmd.n_namespace=strdup(get_namespace(p_reportname));
    return c;
 }
  
@@ -1318,7 +1318,7 @@ struct command *c;
    return c;
 }
 
-struct command *new_case_cmd(expr_str* p_case_expr,struct whens *p_whens,commands *p_otherwise,int block_id) {
+struct command *new_case_cmd(expr_str* p_case_expr,struct whens *p_whens,s_commands *p_otherwise,int block_id) {
 struct command *c;
    c=new_command(E_CMD_CASE_CMD);
    c->cmd_data.command_data_u.case_cmd.case_expr=p_case_expr;
@@ -1361,7 +1361,7 @@ struct command *c;
    return c;
 }
 
-struct command *new_foreach_cmd(expr_str *p_connid, expr_str * p_cursorname,expr_str_list* p_inputvals,expr_str_list* p_outputvals,commands *p_cmds) {
+struct command *new_foreach_cmd(expr_str *p_connid, expr_str * p_cursorname,expr_str_list* p_inputvals,expr_str_list* p_outputvals,s_commands *p_cmds) {
 struct command *c;
    c=new_command(E_CMD_FOREACH_CMD);
    c->cmd_data.command_data_u.foreach_cmd.cursorname=p_cursorname;
@@ -1697,7 +1697,7 @@ struct command *new_free_rep_cmd(char * p_repname) {
 struct command *c;
    c=new_command(E_CMD_FREE_REP_CMD);
    c->cmd_data.command_data_u.free_rep_cmd.repname=strdup(p_repname);
-   c->cmd_data.command_data_u.free_rep_cmd.namespace=strdup(get_namespace(p_repname));
+   c->cmd_data.command_data_u.free_rep_cmd.n_namespace=strdup(get_namespace(p_repname));
    return c;
 }
 
@@ -1738,7 +1738,7 @@ int b;
 }
 
 
-struct command *new_for_cmd(expr_str*var, expr_str* p_start,expr_str* p_end,expr_str* p_step,commands *p_commands,int lineno) { //!
+struct command *new_for_cmd(expr_str*var, expr_str* p_start,expr_str* p_end,expr_str* p_step,s_commands *p_commands,int lineno) { //!
 struct command *c;
    c=new_command(E_CMD_FOR_CMD);
 
@@ -1786,7 +1786,7 @@ struct command *c;
    return c;
 }
 
-struct command *new_while_cmd(expr_str* p_expr,commands *p_commands) {
+struct command *new_while_cmd(expr_str* p_expr,s_commands *p_commands) {
 struct command *c;
    c=new_command(E_CMD_WHILE_CMD);
    c->cmd_data.command_data_u.while_cmd.while_expr=p_expr;
@@ -1872,7 +1872,7 @@ struct command *c;
    return c;
 }
 
-struct command *new_if_cmd(if_conds *p_truths,commands *p_whenfalse,int else_lineno, int lineno) {
+struct command *new_if_cmd(if_conds *p_truths,s_commands *p_whenfalse,int else_lineno, int lineno) {
 struct command *c;
    c=new_command(E_CMD_IF_CMD);
    memcpy(&c->cmd_data.command_data_u.if_cmd.truths,p_truths,sizeof(if_conds));
@@ -2019,7 +2019,7 @@ struct command *c;
 }
 
 
-struct on_event *new_event(e_event event_type, void *data, commands *cmds,int lineno) {
+struct on_event *new_event(e_event event_type, void *data, s_commands *cmds,int lineno) {
 	on_event *oe;
 	oe=malloc(sizeof(on_event));
 	oe->evt_data.event_type=event_type;
@@ -2149,16 +2149,16 @@ struct command *new_convert_cmd(char * p_repname,struct convert* p_c) {
 struct command *c;
    c=new_command(E_CMD_CONVERT_CMD);
    c->cmd_data.command_data_u.convert_cmd.repname=strdup(p_repname);
-   c->cmd_data.command_data_u.convert_cmd.namespace=strdup(get_namespace(p_repname));
+   c->cmd_data.command_data_u.convert_cmd.n_namespace=strdup(get_namespace(p_repname));
    c->cmd_data.command_data_u.convert_cmd.conv_c=p_c;
    return c;
 }
 
 
-struct report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, commands* cmds, int orderby_var_no,int lineno) {
-	struct report_format_section_entry*r;
-	r=malloc(sizeof(struct report_format_section_entry));
-	memset(r,0,sizeof(report_format_section_entry));
+struct s_report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds, int orderby_var_no,int lineno) {
+	struct s_report_format_section_entry*r;
+	r=malloc(sizeof(struct s_report_format_section_entry));
+	memset(r,0,sizeof(s_report_format_section_entry));
 	r->rb_block.rb=rb;
 	r->orderby_var_no=orderby_var_no;
 	r->lineno=lineno;
@@ -2180,15 +2180,15 @@ struct command *new_output_cmd(char * p_reportname,expr_str_list* p_expressions)
 struct command *c;
    c=new_command(E_CMD_OUTPUT_CMD);
    c->cmd_data.command_data_u.output_cmd.repname=strdup(p_reportname);
-   c->cmd_data.command_data_u.output_cmd.namespace=strdup(get_namespace(p_reportname));
+   c->cmd_data.command_data_u.output_cmd.n_namespace=strdup(get_namespace(p_reportname));
    c->cmd_data.command_data_u.output_cmd.expressions=p_expressions;
    return c;
 }
 
 
-struct report_orderby_section *new_report_orderby_section(e_report_orderby p_type,expr_str_list* p_variables) {
-struct report_orderby_section *c;
-	c=malloc(sizeof(report_orderby_section));
+struct s_report_orderby_section *new_report_orderby_section(e_report_orderby p_type,expr_str_list* p_variables) {
+struct s_report_orderby_section *c;
+	c=malloc(sizeof(s_report_orderby_section));
    	c->variables=p_variables;
 	c->rord_type=p_type;
    return c;
@@ -2288,12 +2288,12 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,commands* p_commands,int lineno,char *doc4glcomment) {
+struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,s_commands* p_commands,int lineno,char *doc4glcomment) {
 struct module_entry *c;
 //int a;
    c=new_module_entry(E_MET_FUNCTION_DEFINITION);
    c->module_entry_u.function_definition.funcname=strdup(p_funcname);
-   c->module_entry_u.function_definition.namespace=strdup(get_namespace(p_funcname));
+   c->module_entry_u.function_definition.n_namespace=strdup(get_namespace(p_funcname));
    c->module_entry_u.function_definition.isstatic=p_isstatic;
    c->module_entry_u.function_definition.variables.variables.variables_len=0;
    c->module_entry_u.function_definition.variables.sorted_list=0;
@@ -2328,11 +2328,11 @@ struct module_entry *c;
 
 
 
-struct module_entry *new_main_definition(commands* p_commands,int lineno,char *doc4glcomment) {
+struct module_entry *new_main_definition(s_commands* p_commands,int lineno,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_MAIN_DEFINITION);
    c->module_entry_u.function_definition.funcname=strdup("MAIN");
-   c->module_entry_u.function_definition.namespace=strdup(get_namespace("MAIN"));
+   c->module_entry_u.function_definition.n_namespace=strdup(get_namespace("MAIN"));
    c->module_entry_u.function_definition.isstatic=EB_FALSE;
    c->module_entry_u.function_definition.variables.variables.variables_len=0;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
@@ -2489,11 +2489,11 @@ struct command *c;
 }
 
 
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_PDF_REPORT_DEFINITION);
    c->module_entry_u.pdf_report_definition.funcname=strdup(p_funcname);
-   c->module_entry_u.pdf_report_definition.namespace=strdup(get_namespace(p_funcname));
+   c->module_entry_u.pdf_report_definition.n_namespace=strdup(get_namespace(p_funcname));
    c->module_entry_u.pdf_report_definition.isstatic=p_isstatic;
    c->module_entry_u.pdf_report_definition.comment=doc4glcomment;
 
@@ -2538,11 +2538,11 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
+struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_REPORT_DEFINITION);
    c->module_entry_u.report_definition.funcname=strdup(p_funcname);
-   c->module_entry_u.report_definition.namespace=strdup(get_namespace(p_funcname));
+   c->module_entry_u.report_definition.n_namespace=strdup(get_namespace(p_funcname));
    c->module_entry_u.report_definition.isstatic=p_isstatic;
    c->module_entry_u.report_definition.comment=doc4glcomment;
 
@@ -2801,7 +2801,7 @@ void set_variable_default (variable *v, expr_str *defaultValue) {
 	}
 }
 
-struct s_spl_block *new_spl_block(struct variable_list*defines, struct commands * commands ) {
+struct s_spl_block *new_spl_block(struct variable_list*defines, struct s_commands * commands ) {
 struct s_spl_block *p;
 	p=malloc(sizeof(struct s_spl_block));
 	if (defines) {

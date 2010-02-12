@@ -3116,8 +3116,8 @@ set_suppress_lines();
         if (cmd_data->delimiter->expr_type==ET_EXPR_FUNC) {
                 //char *p;
                 //p=cmd_data->delimiter->expr_str_u.expr_func;
-                add_function_to_header(cmd_data->delimiter->expr_str_u.expr_func.funcname,cmd_data->delimiter->expr_str_u.expr_func.namespace,1,0);
-                printc("_filterfunc=%s%s;",cmd_data->delimiter->expr_str_u.expr_func.namespace,cmd_data->delimiter->expr_str_u.expr_func.funcname);
+                add_function_to_header(cmd_data->delimiter->expr_str_u.expr_func.funcname,cmd_data->delimiter->expr_str_u.expr_func.n_namespace,1,0);
+                printc("_filterfunc=%s%s;",cmd_data->delimiter->expr_str_u.expr_func.n_namespace,cmd_data->delimiter->expr_str_u.expr_func.funcname);
       		printc ("_delimiter=0;");
 		uses_filter=1;
         } else {

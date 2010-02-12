@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.24 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: main.c,v 1.25 2010-02-12 14:39:41 mikeaubury Exp $
 #*/
 
 /**
@@ -297,8 +297,16 @@ main (int argc, char *argv[])
 
   fclose (cfo);
   fclose (cfi);
+  fprintf (hsf, "#ifdef __cplusplus\n");
+  fprintf (hsf, "}\n");
+  fprintf (hsf, "#endif /* __cplusplus */\n");
   fprintf (hsf, "\n\n#endif /*XS_%s_XS_H*/\n", outputfilename);
+
+  fprintf (hf, "#ifdef __cplusplus\n");
+  fprintf (hf, "}\n");
+  fprintf (hf, "#endif /* c++ */\n");
   fprintf (hf, "\n\n#endif /*X_%s_X_H*/\n", outputfilename);
+
   fclose (hf);
   fclose (hsf);
 
@@ -380,9 +388,19 @@ write_genout (void)
   fprintf (cfo, "#include \"a4gl_libaubit4gl.h\"\n");
   fprintf (hf, "#ifndef X_%s_X_H\n", outputfilename);
   fprintf (hf, "#define X_%s_X_H\n", outputfilename);
+        fprintf (hf, "#ifdef __cplusplus\n");
+        fprintf (hf, "extern \"C\"\n");
+        fprintf (hf, "{\n");
+        fprintf (hf, "#endif\n");
+
 
   fprintf (hsf, "#ifndef XS_%s_XS_H\n", outputfilename);
   fprintf (hsf, "#define XS_%s_XS_H\n", outputfilename);
+        fprintf (hsf, "#ifdef __cplusplus\n");
+        fprintf (hsf, "extern \"C\"\n");
+        fprintf (hsf, "{\n");
+        fprintf (hsf, "#endif\n");
+
   fprintf(hsf,"#ifndef bool\n");
   fprintf (hsf, "#define bool int\n");
   fprintf(hsf,"#endif\n");

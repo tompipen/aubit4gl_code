@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 void
-A4GL_assertion_failed (char *s)
+A4GL_assertion_failed (const char *s)
 {
   static int asserting = 0;
   fflush (stdout);
@@ -54,7 +54,7 @@ A4GL_assertion_failed (char *s)
  * @param s The message if the expression is not true.
  */
 void
-A4GL_assertion (int a, char *s)
+A4GL_assertion (int a, const char *s)
 {
   if (a)
     {
@@ -74,7 +74,7 @@ A4GL_assertion (int a, char *s)
  * @param s The message if the expression is not true.
  */
 void
-A4GL_assertion_full (int a, char *s, char *mod, int ln)
+A4GL_assertion_full (int a, const char *s, char *mod, int ln)
 {
   if (a)
     {

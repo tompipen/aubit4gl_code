@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.517 2010-01-18 12:49:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.518 2010-02-12 14:39:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.517 2010-01-18 12:49:13 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.518 2010-02-12 14:39:44 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1594,7 +1594,7 @@ real_print_expr (struct expr_str *ptr)
 		  }
 		printc ("} // FCALL 2");
 	      }
-	    add_function_to_header (ptr->expr_str_u.expr_function_call->fname, ptr->expr_str_u.expr_function_call->namespace, 1, 0);
+	    add_function_to_header (ptr->expr_str_u.expr_function_call->fname, ptr->expr_str_u.expr_function_call->n_namespace, 1, 0);
 	  }
 
 	if (is_in_report ())
@@ -3145,7 +3145,7 @@ real_print_func_call (t_expr_str * fcall)
 
       real_print_expr_list (p->parameters);
       printc ("/* done print expr */");
-      add_function_to_header (p->fname, p->namespace, 1, 0);
+      add_function_to_header (p->fname, p->n_namespace, 1, 0);
 
 
       if (A4GL_module_has_function (current_module, p->fname, lib, 0))
@@ -6048,7 +6048,7 @@ print_module_variable_init (variable_list * mvars)
 void
 dump_command_list (struct command **clist, int nvals)
 {				// another way to call dump_commands when we only have a list and a count
-  struct commands c;
+  struct s_commands c;
   c.cmds.cmds_val = clist;
   c.cmds.cmds_len = nvals;
   dump_commands (&c);
@@ -6057,7 +6057,7 @@ dump_command_list (struct command **clist, int nvals)
 
 
 void
-dump_commands (commands * c)
+dump_commands (s_commands * c)
 {
   int a;
   if (c == 0)
@@ -6135,7 +6135,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     {
       //set_nonewlines ();
       printc ("\nA4GL_FUNCTION %sint %s%s (int _nargs){ \n",
-	      function_definition->isstatic == EB_TRUE ? "static " : "", function_definition->namespace,
+	      function_definition->isstatic == EB_TRUE ? "static " : "", function_definition->n_namespace,
 	      function_definition->funcname);
       printc ("void *_blobdata=0;");
 
@@ -6143,7 +6143,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 
       //clr_nonewlines ();
       printDeclareFunctionStack (function_definition->funcname);
-      add_function_to_header (function_definition->funcname, function_definition->namespace, 1,
+      add_function_to_header (function_definition->funcname, function_definition->n_namespace, 1,
 			      function_definition->isstatic == EB_TRUE);
 
 // local variables...
@@ -6336,14 +6336,14 @@ dump_function_prototypes (module_definition * m)
 
 	case E_MET_REPORT_DEFINITION:
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.report_definition.funcname,
-				  m->module_entries.module_entries_val[a]->module_entry_u.report_definition.namespace,
+				  m->module_entries.module_entries_val[a]->module_entry_u.report_definition.n_namespace,
 				  2, m->module_entries.module_entries_val[a]->module_entry_u.report_definition.isstatic == EB_TRUE);
 
 	  break;
 
 	case E_MET_PDF_REPORT_DEFINITION:
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.funcname,
-				  m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.namespace,
+				  m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.n_namespace,
 				  2,
 				  m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.isstatic ==
 				  EB_TRUE);
@@ -6356,7 +6356,7 @@ dump_function_prototypes (module_definition * m)
 
 	case E_MET_FUNCTION_DEFINITION:
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname,
-				  m->module_entries.module_entries_val[a]->module_entry_u.function_definition.namespace,
+				  m->module_entries.module_entries_val[a]->module_entry_u.function_definition.n_namespace,
 				  1,
 				  m->module_entries.module_entries_val[a]->module_entry_u.function_definition.isstatic == EB_TRUE);
 	  break;
@@ -6383,7 +6383,7 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
   LEX_initlib ();
   strcpy (this_module_name, m->module_name);
   current_module = m;
-  set_namespace (current_module->namespace);
+  set_namespace (current_module->n_namespace);
 
   open_outfile ();		// this_module_name);
   if (outfile == 0)
@@ -7590,7 +7590,7 @@ local_expr_as_string (expr_str * s)
 
 	if (fcall->parameters == 0 || (fcall->parameters && fcall->parameters->list.list_len == 0))
 	  {
-	    sprintf (rbuff, "A4GL_get_single_int_returned_from_call(%s%s(0))", fcall->namespace, fcall->fname);
+	    sprintf (rbuff, "A4GL_get_single_int_returned_from_call(%s%s(0))", fcall->n_namespace, fcall->fname);
 	    return rbuff;
 	  }
 

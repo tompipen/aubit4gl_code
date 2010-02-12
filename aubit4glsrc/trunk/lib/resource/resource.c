@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.162 2009-03-13 17:13:51 mikeaubury Exp $
+# $Id: resource.c,v 1.163 2010-02-12 14:39:49 mikeaubury Exp $
 #
 */
 
@@ -74,7 +74,7 @@ char *debug_level=0;
 static int setfrom=-1;
 
 static char * A4GL_strip_quotes_resource (char *s);
-static char * acl_getenv_internal (char *s,int rcfiles);
+static char * acl_getenv_internal (const char *s,int rcfiles);
 char *an_empty_string="";
 
 #define USE_OPTIMISATION 1
@@ -504,13 +504,13 @@ static int next_resource (void);
 int A4GL_chk_dbdate (char *p);
 
 
-static char *chk_str_resource (char *s, struct str_resource *res);
+static char *chk_str_resource (const char *s, struct str_resource *res);
 static int add_userptr (void *ptr);
-static char *find_str_resource (char *s);
+static char *find_str_resource (const char *s);
 int A4GL_replace_str_resource (char *s, char *neww);
 void A4GL_dump_all_resource_vars (int export);
 
-char * A4GL_getenv_registry (char *s,char *prefixed_string);
+char * A4GL_getenv_registry (const char *s,char *prefixed_string);
 
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
@@ -537,7 +537,7 @@ char *get_login (void);
  * @param
  */
 static char *
-chk_str_resource (char *s, struct str_resource *res)
+chk_str_resource (const char *s, struct str_resource *res)
 {
   register int a;
 
@@ -625,7 +625,7 @@ A4GL_find_str_resource_int (char *search, int a)
  * @param
  */
 static char *
-find_str_resource (char *s)
+find_str_resource (const char *s)
 {
   char *ptr;
   int f;
@@ -663,14 +663,14 @@ find_str_resource (char *s)
 }
 
 
-char * acl_getenv (char *s) {
+char * acl_getenv (const char *s) {
 	char *ptr;
 	ptr=acl_getenv_internal(s,1);
 	return ptr;
 }
 
 
-char * acl_getenv_not_set_as_0 (char *s) {
+char * acl_getenv_not_set_as_0 (const char *s) {
 	char *ptr;
 	ptr=acl_getenv_internal(s,1);
 	if (ptr==an_empty_string) {
@@ -680,7 +680,7 @@ char * acl_getenv_not_set_as_0 (char *s) {
 	}
 }
 
-char * acl_getenv_only (char *s) {
+char * acl_getenv_only (const char *s) {
 	return acl_getenv_internal(s,0);
 }
 
@@ -691,7 +691,7 @@ char * acl_getenv_only (char *s) {
  * @param s The environment variable name.
  * @param rcfiles Check rc files too
  */
-static char * acl_getenv_internal (char *s,int rcfiles)
+static char * acl_getenv_internal (const char *s,int rcfiles)
 {
 static char prefixed_string[1024];
 static char *value_not_set="VALUE_NOT_SET";
@@ -898,7 +898,7 @@ setfrom=-1;
 }
 
 char *
-A4GL_getenv_registry (char *s,char *prefixed_string)
+A4GL_getenv_registry (const char *s,char *prefixed_string)
 {
 char *ptr=0;
 	#if ( (defined (WIN32) || defined (__MINGW32__)) && ! defined (__CYGWIN__))

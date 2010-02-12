@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.336 2009-10-26 08:23:24 mikeaubury Exp $
+# $Id: mod.c,v 1.337 2010-02-12 14:39:40 mikeaubury Exp $
 #
 */
 
@@ -3127,7 +3127,7 @@ int current_is_report(void) {
 
 
 int
-A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
+A4GL_check_lines_for_prints (struct s_commands *cmds, int *lineno, char *err)
 {
   int a;
   int cnt;
@@ -3135,7 +3135,7 @@ A4GL_check_lines_for_prints (struct commands *cmds, int *lineno, char *err)
   int match;
   struct on_events *evt_list;
   int nprints = 0;
-  struct commands master_list;
+  struct s_commands master_list;
   master_list.cmds.cmds_val = 0;
   master_list.cmds.cmds_len = 0;
 

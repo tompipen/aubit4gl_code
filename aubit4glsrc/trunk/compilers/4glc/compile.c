@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.136 2010-01-11 15:21:28 mikeaubury Exp $
+# $Id: compile.c,v 1.137 2010-02-12 14:39:40 mikeaubury Exp $
 #*/
 
 /**
@@ -1284,7 +1284,7 @@ compiled_4gl++;
   this_module.full_path_filename=strdup(A4GL_get_full_filename(fgl_file));
 	//printf("%s\n",this_module.full_path_filename);
 
-  this_module.namespace = strdup (get_namespace(""));
+  this_module.n_namespace = strdup (get_namespace(""));
   this_module.compiled_time = time (0);
   this_module.genStackInfo=genStackInfo;
 

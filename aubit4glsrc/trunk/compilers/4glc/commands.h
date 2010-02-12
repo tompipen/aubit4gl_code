@@ -106,13 +106,13 @@ struct command *new_free_rep_cmd(char *p_niy);
 struct command *new_execute_immediate_cmd(expr_str *connid, struct expr_str *p_sql_stmt);
 struct command *new_flush_cmd(expr_str *connid, expr_str *p_cursorname);
 struct command *new_start_rpc_cmd(struct expr_str *p_valid_port, funcname_list p_remote_func_list);
-struct command *new_for_cmd(expr_str*var, expr_str* p_start,expr_str* p_end,expr_str* p_step,commands *p_commands,int lineno);
+struct command *new_for_cmd(expr_str*var, expr_str* p_start,expr_str* p_end,expr_str* p_step,s_commands *p_commands,int lineno);
 struct command *new_print_cmd(expr_str_list *p_print_expr, e_boolean p_semi);
 struct command *new_put_cmd(expr_str * p_connid,expr_str *p_cursorname,struct expr_str_list* p_list);
 struct command *new_error_cmd(expr_str_list *p_expr_list,e_boolean p_wait_for_key,attrib *p_attributes);
 struct command *new_call_cmd(expr_str* p_fcall,expr_str_list* p_returning);
 struct command *new_output_cmd(char *p_reportname, expr_str_list *p_expressions);
-struct command *new_while_cmd(expr_str* p_expr, commands *p_commands);
+struct command *new_while_cmd(expr_str* p_expr, s_commands *p_commands);
 struct command *new_display_cmd(expr_str_list* p_exprs,dt_display* p_where,attrib *p_attributes,e_boolean byName);
 struct command *new_locate_cmd(expr_str_list* p_variables, locate_pos *p_where);
 struct command *new_message_cmd(expr_str_list *p_expr, attrib *p_attributes, e_boolean p_wait);
@@ -120,22 +120,22 @@ struct command *new_return_cmd(expr_str_list *p_retvals,int p_with_resume);
 struct command *new_execute_cmd(expr_str *connid, expr_str_list* p_inbind, expr_str_list* p_outbind, expr_str *p_sql_stmtid);
 struct command *new_sql_block_cmd( expr_str *connid, expr_str_list* p_list,int convert);
 struct command *new_let_cmd(expr_str_list* p_vars, expr_str_list *p_vals);
-struct command *new_case_cmd(expr_str* p_case_expr, struct whens *p_whens, commands *p_otherwise,int block_id);
+struct command *new_case_cmd(expr_str* p_case_expr, struct whens *p_whens, s_commands *p_otherwise,int block_id);
 struct command *new_validate_cmd(expr_str_list* p_list, str_list* p_tablist);
 struct command *new_display_b_n_cmd(expr_str_list* p_vars, attrib *p_attributes);
-struct command *new_foreach_cmd(expr_str *connid, expr_str * p_cursorname, expr_str_list* p_inputvals, expr_str_list* p_outputvals, commands *p_cmds);
-struct command *new_if_cmd(if_conds *p_truths,commands *p_whenfalse,int else_lineno, int last_lineno);
+struct command *new_foreach_cmd(expr_str *connid, expr_str * p_cursorname, expr_str_list* p_inputvals, expr_str_list* p_outputvals, s_commands *p_cmds);
+struct command *new_if_cmd(if_conds *p_truths,s_commands *p_whenfalse,int else_lineno, int last_lineno);
 struct command *new_pdf_call_cmd(expr_str* p_fcall,expr_str_list* p_returning);
 struct command *new_pdf_specific_cmd (char *p_type, struct expr_str_list *return_values, ...);
 
-struct on_event *new_event(e_event event_type, void *data, commands *cmds,int lineno);
+struct on_event *new_event(e_event event_type, void *data, s_commands *cmds,int lineno);
 struct menuoption *new_menu_option(str_list  *keys, struct expr_str *mnoption, struct expr_str *mndescription, int helpno);
 struct command *new_prompt_cmd(expr_str_list* p_prompt_str ,struct attrib* p_prompt_str_attrib,struct attrib* p_prompt_fld_attrib,e_boolean p_for_char,expr_str* p_promptvar,int p_helpno,struct on_events* p_events,int p_sio,int p_blk);
 struct command *new_menu_cmd(struct expr_str* p_menu_title,struct attrib *p_menu_attrib,struct on_events* p_events,int p_sio ,struct expr_str * menu_attrib_comment,struct expr_str *menu_attrib_style, struct expr_str *menu_attrib_image);
 struct command *new_clear_cmd(e_clear e, void *data ,e_boolean todefaults) ;
 struct command *new_convert_cmd(char * p_repname,struct convert* p_c) ;
-struct report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, commands* cmds,int orderby_var_no,int lineno);
-struct report_orderby_section *new_report_orderby_section(e_report_orderby p_type,expr_str_list* p_variables);
+struct s_report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds,int orderby_var_no,int lineno);
+struct s_report_orderby_section *new_report_orderby_section(e_report_orderby p_type,expr_str_list* p_variables);
 struct command *new_input_cmd(expr_str_list* p_variables,fh_field_list* p_field_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio);
 struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio, expr_str *p_callback_function);
 struct command *new_input_array_cmd(struct expr_str* p_srec,struct expr_str * p_arrayname,struct attrib *p_attrib,struct on_events* p_events,e_boolean p_without_defaults,int p_helpno,int p_sio,int p_blk,char *slice) ;
@@ -146,14 +146,14 @@ struct command *new_set_session_cmd(char * p_type,expr_str* p_s1,expr_str * p_s2
 struct module_entry *new_import_legacy_definition(char * p_funcname,int lineno);
 struct module_entry *new_import_function_definition(char * p_funcname,int p_nparam,int lineno);
 struct module_entry *new_module_entry(enum module_entry_type met_type);
-struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,commands* p_commands,int lineno,char *doc4glcomment);
-struct module_entry *new_main_definition(commands* p_commands,int lineno,char *doc4glcomment);
+struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,s_commands* p_commands,int lineno,char *doc4glcomment);
+struct module_entry *new_main_definition(s_commands* p_commands,int lineno,char *doc4glcomment);
 struct module_entry *new_module_code_cmd(struct command *cmd);
 struct module_entry *new_formhandler_definition(char *name, struct str_list *fld_list, on_events *fld_events, on_events *before_events, on_events *after_events );
 
 struct command *new_fetch_cmd(expr_str * p_connid, struct s_fetch* p_fetch,expr_str_list* p_outbind);
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
+struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
 int set_cmdlineno(int n) ;
 void add_class_module_entry(void) ;
 void new_class(char *cname, char *pname);
@@ -188,7 +188,7 @@ struct command *new_spl_system_cmd (expr_str *p_cmd);
 struct list_of_integers *append_list_of_integers(struct list_of_integers *p, int a);
 struct list_of_integers *new_list_of_integers(int a);
 struct variable *new_references_blobtype(char *reftype, expr_str *default_value);
-struct s_spl_block *new_spl_block(struct variable_list*defines, struct commands * commands );
+struct s_spl_block *new_spl_block(struct variable_list*defines, struct s_commands * commands );
 
 struct command *new_spl_raise_exception_cmd(expr_str *sql_err, expr_str *isam_err, expr_str *err_text);
 struct command *new_spl_on_exception_cmd(list_of_integers *exception_list,str_list * set_list, struct s_spl_block *block, int resume );
@@ -207,7 +207,7 @@ struct command *new_create_procedure_cmd(expr_str *p_connid, create_proc_data *c
 void set_variable_default (variable *v, expr_str *defaultValue) ;
 struct command *new_spl_if_cmd (spl_if_conds *conditions);
 struct spl_if_conds *append_spl_if_conds(struct spl_if_conds *conditions, spl_if_cond *testcase );
-struct spl_if_cond *new_spl_if_cond (struct expr_str *test_expr, struct s_spl_block *commands ) ;
+struct spl_if_cond *new_spl_if_cond (struct expr_str *test_expr, struct s_spl_block *s_commands ) ;
 #endif
 
 

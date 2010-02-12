@@ -28,7 +28,7 @@ int xps = 0;
 char *record_headers[100];
 
 struct variable_usage *usage_bottom_level (variable_usage * u);	// parsehelp.c
-struct commands *linearise_commands (struct commands *master_list, struct commands *cmds);
+struct s_commands *linearise_commands (struct s_commands *master_list, struct s_commands *cmds);
 expr_str_list *expand_parameters (struct variable_list *var_list, expr_str_list * parameters);
 char *current_stmt_table = 0;
 struct expr_str *input_array_variable = 0;
@@ -95,7 +95,7 @@ static char *decode_ival_define2 (int n);
 static void print_varbind (expr_str * var_usage, char dir, int no);
 static char *local_has_comment (int n, int c, char *type);
 static int dump_report (struct s_report_definition *report_definition);
-static int dump_cmds (struct commands *c, struct command *parent);
+static int dump_cmds (struct s_commands *c, struct command *parent);
 static int dump_pdf_report (struct s_pdf_report_definition *pdf_report_definition);
 static int dump_cmd (struct command *r, struct command *parent);
 static int dump_function (struct s_function_definition *function_definition, int ismain);
@@ -934,7 +934,7 @@ static char *
 A4GL_get_expr_list_concat (struct expr_str_list *l)
 {
   l = A4GL_rationalize_list_concat (l);
-  A4GL_get_expr_list_sep (l, ",");
+  return A4GL_get_expr_list_sep (l, ",");
 }
 
 
@@ -1104,7 +1104,7 @@ real_print_expr (struct expr_str *ptr)
 
 
 
-  printc ("%s", str, ptr->expr_type);
+  printc ("%s", str);
   printing_expr = 0;
 
   free (str);
@@ -3381,7 +3381,7 @@ print_varbind (expr_str * var_usage, char dir, int no)
 
 
 static int
-dump_cmds (struct commands *c, struct command *parent)
+dump_cmds (struct s_commands *c, struct command *parent)
 {
   int a;
   if (c == 0)
@@ -3484,7 +3484,7 @@ print_spl_dtype (int dtype)
 static char *
 get_dump_function_returning (struct s_function_definition *function_definition)
 {
-  struct commands *func_cmds = 0;
+  struct s_commands *func_cmds = 0;
   struct command *r;
   int dtypes_new[MAX_RETURN_VALUES];
   int dtypes_cur[MAX_RETURN_VALUES];
@@ -3526,7 +3526,7 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 		{
 		  yylineno = r->lineno;
 		  a4gl_yyerror ("Too many return values");
-		  return;
+		  return NULL;
 		}
 	      for (b = 0; b < nreturns; b++)
 		{
@@ -3549,7 +3549,7 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 		    {
 		      yylineno = r->lineno;
 		      a4gl_yyerror ("Return types differ");
-		      return;
+		      return NULL;
 		    }
 		}
 	    }
@@ -5122,7 +5122,7 @@ dump_cmd (struct command *r, struct command *parent)
 	}
       else
 	{
-	  printc ("%s", r->cmd_data.command_data_u.load_cmd.sqlvar);
+	  printc ("%s", local_get_expr_as_string(r->cmd_data.command_data_u.load_cmd.sqlvar));
 	}
       printc (";");
       clr_nonewlines ();

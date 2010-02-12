@@ -3,29 +3,9 @@ Wed Feb 10 13:06:27 GMT 2010
 ---------------------------
 1.2_9 Released
 ---------------------------
-	2010-02-10 11:43  mikeaubury
-	
-	2010-02-10 10:07  mikeaubury
-	
-	2010-02-10 10:04  mikeaubury
-	
-	2010-02-10 09:57  mikeaubury
-	
-	2010-02-10 09:48  mikeaubury
-	
-	2010-02-09 21:17  mikeaubury
-	
-	2010-02-09 20:58  mikeaubury
-	
-	2010-02-09 18:12  mikeaubury
-	
-	2010-02-09 15:08  mikeaubury
-	
 	2010-02-09 14:15  mikeaubury
 	
 	Initial wsdl2fgl compiler
-	
-	2010-02-08 12:27  mikeaubury
 	
 	2010-02-08 09:48  mikeaubury
 	
@@ -35,25 +15,9 @@ Wed Feb 10 13:06:27 GMT 2010
 	
 	Fix ints with gsoap generation
 	
-	2010-02-04 12:28  mikeaubury
-	
-	2010-02-04 10:49  mikeaubury
-	
 	2010-02-03 09:49  jcbatalha
 	
 	AIX ncurses detection fix.
-	
-	2010-01-29 15:47  mikeaubury
-	
-	2010-01-29 15:39  mikeaubury
-	
-	2010-01-29 15:35  mikeaubury
-	
-	2010-01-29 13:47  mikeaubury
-	
-	2010-01-29 13:30  mikeaubury
-	
-	2010-01-29 13:08  mikeaubury
 	
 	2010-01-29 12:59  mikeaubury
 	

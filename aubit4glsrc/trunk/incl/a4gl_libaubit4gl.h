@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.393 2010-01-25 21:11:50 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.394 2010-02-12 14:39:42 mikeaubury Exp $
 #
 */
 
@@ -1233,7 +1233,7 @@ enum cmd_types {
 #define DECODE_SIZE(x) 	(x>>16)
 
   char *A4GL_new_string (int a);
-  void A4GL_set_lasterrorstr(char *s);
+  void A4GL_set_lasterrorstr(const char *s);
 
 
 #ifndef ALREADY_DONE_POP_PUSH_ETC
@@ -1242,8 +1242,8 @@ enum cmd_types {
   void A4GL_debug_full_extended_ln (char *s, long l, const char *level, const char * func, char *fmt, ...);
   int A4GLSTK_isStackInfo (void);
   void A4GLSTK_program_end(void);
-  char *acl_getenv (char *);
-  char * acl_getenv_not_set_as_0 (char *s);
+  char *acl_getenv (const char *);
+  char * acl_getenv_not_set_as_0 (const char *s);
   char *A4GLSTK_getStackTrace (void);
   void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
   char *A4GLSTK_topFunction(void);
@@ -1567,7 +1567,7 @@ void A4GL_push_decimal_str(char *p);
   /*void acl_free_full (void *ptr, char *f, long line); */
   void a4gl_using (char *str, int s, char *fmt, double num);
   int A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size);
-  void A4GL_strmaxcpy(char *dest,char *src,int max);
+  void A4GL_strmaxcpy(char *dest,const char *src,int max);
   void A4GL_logsql(int lineno,char *module, char *s,char *type,char *cursor);
 
 
@@ -1616,7 +1616,7 @@ void A4GL_push_decimal_str(char *p);
   void A4GL_exitwith_sql (char *s);
   void A4GL_exitwith_sql_detail (char *s,char *detail);
   void A4GL_set_sqlerrmessage(char *s) ;
-  void A4GL_set_errm (char *s);
+  void A4GL_set_errm (const char *s);
   void A4GL_set_error (char *fmt, ...);
 
   /* ============================ from a4gl_stack.h ================= */
@@ -1670,10 +1670,10 @@ void A4GL_push_decimal_str(char *p);
   int A4GL_stod (void *zz, void *aa, int sz_ignore);
   int A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size);
   void A4GL_set_convmatrix (int dtype1, int dtype2, void *ptr);
-  void A4GL_assertion (int a, char *s);
+  void A4GL_assertion (int a, const char *s);
 
 #define A4GL_assertion(a,b) A4GL_assertion_full(a,b,__FILE__,__LINE__)
-void A4GL_assertion_full (int a, char *s, char *mod, int ln);
+void A4GL_assertion_full (int a, const char *s, char *mod, int ln);
 int A4GL_stodec (void *a, void *z, int size);
 int A4GL_stol (void *aa, void *zi, int sz_ignore);
 int A4GL_valid_int (char *s, int *data, int size);
@@ -1840,7 +1840,7 @@ void A4GL_set_ccnt(int a);
 
   /* ============================ pointers.c ============================= */
   int A4GL_has_pointer (char *pname, char t);
-  void A4GL_add_pointer (char *orig_name, char type, void *ptr);
+  void A4GL_add_pointer (const char *orig_name, char type, void *ptr);
   void A4GL_del_pointer (char *pname, char t);
   int A4GL_find_pointer_ptr (char *name, char *type, void *ptr);
   void *A4GL_find_pointer_val (char *pname, char t);
@@ -2132,7 +2132,7 @@ void A4GL_error_nobox (char *str,int attr);
 void A4GL_clr_error_nobox (char *dbg_fromwhere);
 void A4GL_core_dump(void);
 void A4GL_set_core_dump (void);
-char *A4GL_null_as_null(char *s);
+const char *A4GL_null_as_null(const char *s);
 int A4GL_has_errorlog (void);
 #ifdef CSCC
 	/*int A4GL_add_datatype_function_i (int a, char *funcname, void (*function)(int)); */
@@ -2177,7 +2177,7 @@ char *A4GLSQLCV_get_sqlconst(char *cval);
 char *A4GLSQLCV_generate_current(char *from,char *to) ;
 int A4GLSQLCV_check_requirement(char *s) ;
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
-char *A4GLSQLCV_matches_string(char *not,char *str,char *esc) ;
+char *A4GLSQLCV_matches_string(char *notmatches,char *str,char *esc) ;
 //char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
 //char *A4GLSQLCV_make_substr_s(char *colname,int n, struct expr_str *l,struct expr_str *r) ;
 char *A4GLSQLCV_make_substr(char *colname,int i0,int i1,int i2) ;
@@ -2286,8 +2286,8 @@ int a4gl_tolower(int n);
 #endif
 #endif
 
-char *A4GL_strcat  (char *d,char *s,char *fname,int l,int sdest);
-char *A4GL_strcpy  (char *d,char *s,char *fname,int l,int sdest);
+char *A4GL_strcat  (char *d,const char *s,char *fname,int l,int sdest);
+char *A4GL_strcpy  (char *d,const char *s,char *fname,int l,int sdest);
 int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 // When we 'grep' for a printf (often used for debugging) - we'll ignore anything
 // using PRINTF (as these are known to not be used for debugging)
@@ -2381,7 +2381,7 @@ void A4GL_start_monitor (void);
 void A4GL_monitor_close (void);
 int A4GL_has_monitor(void);
 int a4gl_isalpha(int a);
-void A4GL_assertion_failed(char *s);
+void A4GL_assertion_failed(const char *s);
 int A4GL_was_last_empty(void);
 void A4GL_clr_last_was_empty(void);
 void A4GL_push_date_expr(void);
@@ -2389,7 +2389,7 @@ void A4GL_push_time_expr(void);
 void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap,int replace_0);
 //int aclfgl_aclfgl_setenv(int n);
 int A4GL_setenv(char *name, char *value, int overwrite);
-char * acl_getenv_only (char *s);
+char * acl_getenv_only (const char *s);
 void A4GL_log_changed_envvar(char *name,char *value);
 int A4GL_strstartswith(char *s,char *w);
 int A4GL_strendswith (char *s, char *w);
@@ -2644,7 +2644,7 @@ struct s_select_list_item *new_select_list_item_builtin_const (enum e_sli type) 
 struct s_select_list_item *new_select_list_item_agg1 (enum e_sli type,char *aud, struct s_select_list_item *i) ;
 struct s_select_list_item *new_select_list_item_op_sli (struct s_select_list_item *left, struct s_select_list_item *right, enum e_sli op) ;
 struct s_select_list_item *new_select_list_item_op_expr (struct s_select_list_item *left, struct s_select_list_item *right, char* op) ;
-struct s_select_list_item *new_select_list_item_op_between (char *not,struct s_select_list_item *v, struct s_select_list_item *from, struct s_select_list_item *to,int not_between) ;
+struct s_select_list_item *new_select_list_item_op_between (char *not_,struct s_select_list_item *v, struct s_select_list_item *from, struct s_select_list_item *to,int not_between) ;
 struct s_select_list_item *new_select_list_item_builtin_fcall (enum e_sli type, struct s_select_list_item_list *params) ;
 struct s_select_list_item *new_select_list_item_simple_expr (enum e_sli type, struct s_select_list_item *expr) ;
 struct s_select_list_item *new_select_list_item_regex (enum e_sli type, struct s_select_list_item *val,struct s_select_list_item *regex,char *escape);

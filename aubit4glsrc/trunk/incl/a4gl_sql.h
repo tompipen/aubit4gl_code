@@ -96,7 +96,7 @@ void A4GL_free_cursor(char* cursor_name,int partOfAnotherCommand) ;
 int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) ;
 int A4GL_open_cursor(char* s,int no,void* vibind) ;
 void A4GL_flush_cursor(char* cursor) ;
-int A4GL_close_cursor(char* currname,int explicit) ;
+int A4GL_close_cursor(char* currname,int explicit_) ;
 void* A4GL_declare_cursor(int upd_hold,void* sid,int scroll,char* cursname) ;
 void A4GL_put_insert(void* ibind,int n) ;
 void *A4GL_find_cursor (char *cname);

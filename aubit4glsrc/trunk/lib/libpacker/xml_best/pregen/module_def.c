@@ -1,6 +1,6 @@
 /* XML application for module_def.dtd.
  * Includes actions from module_def.act.
- * Generated 2010/02/10 13:22:08.
+ * Generated 2010/02/12 11:23:38.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -91,15 +91,15 @@ tmpVar->field_list=0;
 
 } /* STag_form_field */
 
-void STag_x_y(void)
+void STag_s_x_y(void)
 {
 #line 43 "module_def.act"
 
 
 {
-t_x_y *tmpVar;
-XMLPushOntoStack("x_y",  sizeof(t_x_y),1,0,1,A_x_y_nm);
-tmpVar=(t_x_y *)XMLGetTopOfStack();
+t_s_x_y *tmpVar;
+XMLPushOntoStack("s_x_y",  sizeof(t_s_x_y),1,0,1,A_s_x_y_nm);
+tmpVar=(t_s_x_y *)XMLGetTopOfStack();
 /* tmpVar->y; is_vararray=0 skip=0 */
 tmpVar->y=0;
 /* tmpVar->x; is_vararray=0 skip=0 */
@@ -107,7 +107,7 @@ tmpVar->x=0;
 }
 
 
-} /* STag_x_y */
+} /* STag_s_x_y */
 
 void STag_s_full_col(void)
 {
@@ -1023,22 +1023,22 @@ tmpVar->exit_val=0;
 
 } /* STag_struct_exit_prog_cmd */
 
-void STag_commands(void)
+void STag_s_commands(void)
 {
 #line 840 "module_def.act"
 
 
 {
-t_commands *tmpVar;
-XMLPushOntoStack("commands",  sizeof(t_commands),1,0,1,A_commands_nm);
-tmpVar=(t_commands *)XMLGetTopOfStack();
+t_s_commands *tmpVar;
+XMLPushOntoStack("s_commands",  sizeof(t_s_commands),1,0,1,A_s_commands_nm);
+tmpVar=(t_s_commands *)XMLGetTopOfStack();
 /* tmpVar->cmds; is_vararray=1 skip=0 */
 tmpVar->cmds.cmds_len=0; // Blah
 tmpVar->cmds.cmds_val=0;
 }
 
 
-} /* STag_commands */
+} /* STag_s_commands */
 
 void STag_struct_return_cmd(void)
 {
@@ -1295,15 +1295,15 @@ tmpVar->attributes=0;
 
 } /* STag_struct_display_form_cmd */
 
-void STag_call_list(void)
+void STag_s_call_list(void)
 {
 #line 1070 "module_def.act"
 
 
 {
-t_call_list *tmpVar;
-XMLPushOntoStack("call_list",  sizeof(t_call_list),1,0,1,A_call_list_nm);
-tmpVar=(t_call_list *)XMLGetTopOfStack();
+t_s_call_list *tmpVar;
+XMLPushOntoStack("s_call_list",  sizeof(t_s_call_list),1,0,1,A_s_call_list_nm);
+tmpVar=(t_s_call_list *)XMLGetTopOfStack();
 /* tmpVar->calls_by_call; is_vararray=1 skip=0 */
 tmpVar->calls_by_call.calls_by_call_len=0; // Blah
 tmpVar->calls_by_call.calls_by_call_val=0;
@@ -1313,7 +1313,7 @@ tmpVar->calls_by_expr.calls_by_expr_val=0;
 }
 
 
-} /* STag_call_list */
+} /* STag_s_call_list */
 
 void STag_struct_call_cmd(void)
 {
@@ -1662,8 +1662,8 @@ tmpVar=(t_struct_convert_cmd *)XMLGetTopOfStack();
 if (AU_struct_convert_cmd_repname) {tmpVar->repname=0;} /* CCC */
 else {tmpVar->repname=strdup(A_struct_convert_cmd_repname);}
 
-if (AU_struct_convert_cmd_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_struct_convert_cmd_namespace);}
+if (AU_struct_convert_cmd_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_struct_convert_cmd_n_namespace);}
 
 /* tmpVar->conv_c; is_vararray=0 skip=0 */
 tmpVar->conv_c=0;
@@ -1684,8 +1684,8 @@ tmpVar=(t_struct_finish_cmd *)XMLGetTopOfStack();
 if (AU_struct_finish_cmd_repname) {tmpVar->repname=0;} /* CCC */
 else {tmpVar->repname=strdup(A_struct_finish_cmd_repname);}
 
-if (AU_struct_finish_cmd_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_struct_finish_cmd_namespace);}
+if (AU_struct_finish_cmd_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_struct_finish_cmd_n_namespace);}
 
 /* tmpVar->conv_c; is_vararray=0 skip=0 */
 tmpVar->conv_c=0;
@@ -1706,8 +1706,8 @@ tmpVar=(t_struct_start_cmd *)XMLGetTopOfStack();
 if (AU_struct_start_cmd_repname) {tmpVar->repname=0;} /* CCC */
 else {tmpVar->repname=strdup(A_struct_start_cmd_repname);}
 
-if (AU_struct_start_cmd_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_struct_start_cmd_namespace);}
+if (AU_struct_start_cmd_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_struct_start_cmd_n_namespace);}
 
 /* tmpVar->sc_c; is_vararray=0 skip=0 */
 tmpVar->sc_c=0;
@@ -2009,74 +2009,74 @@ tmpVar->report_block_data_u.af_variable=0;
 
 } /* STag_report_block_data */
 
-void STag_report_format_section_entry(void)
+void STag_s_report_format_section_entry(void)
 {
 #line 1694 "module_def.act"
 
 
 {
-t_report_format_section_entry *tmpVar;
-XMLPushOntoStack("report_format_section_entry",  sizeof(t_report_format_section_entry),1,0,1,A_report_format_section_entry_nm);
-tmpVar=(t_report_format_section_entry *)XMLGetTopOfStack();
+t_s_report_format_section_entry *tmpVar;
+XMLPushOntoStack("s_report_format_section_entry",  sizeof(t_s_report_format_section_entry),1,0,1,A_s_report_format_section_entry_nm);
+tmpVar=(t_s_report_format_section_entry *)XMLGetTopOfStack();
 /* tmpVar->rb_block; is_vararray=0 skip=0 */
 memset(&tmpVar->rb_block,0,sizeof(tmpVar->rb_block));
 /* tmpVar->rep_sec_commands; is_vararray=0 skip=0 */
 tmpVar->rep_sec_commands=0;
-if (AU_report_format_section_entry_lineno) {tmpVar->lineno=0;} /* ZZZ */
-else {tmpVar->lineno=atol(A_report_format_section_entry_lineno);}
+if (AU_s_report_format_section_entry_lineno) {tmpVar->lineno=0;} /* ZZZ */
+else {tmpVar->lineno=atol(A_s_report_format_section_entry_lineno);}
 
-if (AU_report_format_section_entry_orderby_var_no) {tmpVar->orderby_var_no=0;} /* ZZZ */
-else {tmpVar->orderby_var_no=atol(A_report_format_section_entry_orderby_var_no);}
+if (AU_s_report_format_section_entry_orderby_var_no) {tmpVar->orderby_var_no=0;} /* ZZZ */
+else {tmpVar->orderby_var_no=atol(A_s_report_format_section_entry_orderby_var_no);}
 
 }
 
 
-} /* STag_report_format_section_entry */
+} /* STag_s_report_format_section_entry */
 
-void STag_report_format_section(void)
+void STag_s_report_format_section(void)
 {
 #line 1715 "module_def.act"
 
 
 {
-t_report_format_section *tmpVar;
-XMLPushOntoStack("report_format_section",  sizeof(t_report_format_section),1,0,1,A_report_format_section_nm);
-tmpVar=(t_report_format_section *)XMLGetTopOfStack();
+t_s_report_format_section *tmpVar;
+XMLPushOntoStack("s_report_format_section",  sizeof(t_s_report_format_section),1,0,1,A_s_report_format_section_nm);
+tmpVar=(t_s_report_format_section *)XMLGetTopOfStack();
 /* tmpVar->entries; is_vararray=1 skip=0 */
 tmpVar->entries.entries_len=0; // Blah
 tmpVar->entries.entries_val=0;
-if (AU_report_format_section_lines_in_header) {tmpVar->lines_in_header=0;} /* ZZZ */
-else {tmpVar->lines_in_header=atol(A_report_format_section_lines_in_header);}
+if (AU_s_report_format_section_lines_in_header) {tmpVar->lines_in_header=0;} /* ZZZ */
+else {tmpVar->lines_in_header=atol(A_s_report_format_section_lines_in_header);}
 
-if (AU_report_format_section_lines_in_first_header) {tmpVar->lines_in_first_header=0;} /* ZZZ */
-else {tmpVar->lines_in_first_header=atol(A_report_format_section_lines_in_first_header);}
+if (AU_s_report_format_section_lines_in_first_header) {tmpVar->lines_in_first_header=0;} /* ZZZ */
+else {tmpVar->lines_in_first_header=atol(A_s_report_format_section_lines_in_first_header);}
 
-if (AU_report_format_section_lines_in_trailer) {tmpVar->lines_in_trailer=0;} /* ZZZ */
-else {tmpVar->lines_in_trailer=atol(A_report_format_section_lines_in_trailer);}
+if (AU_s_report_format_section_lines_in_trailer) {tmpVar->lines_in_trailer=0;} /* ZZZ */
+else {tmpVar->lines_in_trailer=atol(A_s_report_format_section_lines_in_trailer);}
 
 }
 
 
-} /* STag_report_format_section */
+} /* STag_s_report_format_section */
 
-void STag_report_orderby_section(void)
+void STag_s_report_orderby_section(void)
 {
 #line 1738 "module_def.act"
 
 
 {
-t_report_orderby_section *tmpVar;
-XMLPushOntoStack("report_orderby_section",  sizeof(t_report_orderby_section),1,0,1,A_report_orderby_section_nm);
-tmpVar=(t_report_orderby_section *)XMLGetTopOfStack();
-if (AU_report_orderby_section_rord_type) {tmpVar->rord_type=0;}/* EEE */
-else {tmpVar->rord_type=xmlbest_reader__decode_e_report_orderby(A_report_orderby_section_rord_type);}
+t_s_report_orderby_section *tmpVar;
+XMLPushOntoStack("s_report_orderby_section",  sizeof(t_s_report_orderby_section),1,0,1,A_s_report_orderby_section_nm);
+tmpVar=(t_s_report_orderby_section *)XMLGetTopOfStack();
+if (AU_s_report_orderby_section_rord_type) {tmpVar->rord_type=0;}/* EEE */
+else {tmpVar->rord_type=xmlbest_reader__decode_e_report_orderby(A_s_report_orderby_section_rord_type);}
 
 /* tmpVar->variables; is_vararray=0 skip=0 */
 tmpVar->variables=0;
 }
 
 
-} /* STag_report_orderby_section */
+} /* STag_s_report_orderby_section */
 
 void STag_struct_display_cmd(void)
 {
@@ -2350,8 +2350,8 @@ tmpVar=(t_struct_output_cmd *)XMLGetTopOfStack();
 if (AU_struct_output_cmd_repname) {tmpVar->repname=0;} /* CCC */
 else {tmpVar->repname=strdup(A_struct_output_cmd_repname);}
 
-if (AU_struct_output_cmd_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_struct_output_cmd_namespace);}
+if (AU_struct_output_cmd_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_struct_output_cmd_n_namespace);}
 
 /* tmpVar->expressions; is_vararray=0 skip=0 */
 tmpVar->expressions=0;
@@ -2372,8 +2372,8 @@ tmpVar=(t_struct_term_rep_cmd *)XMLGetTopOfStack();
 if (AU_struct_term_rep_cmd_repname) {tmpVar->repname=0;} /* CCC */
 else {tmpVar->repname=strdup(A_struct_term_rep_cmd_repname);}
 
-if (AU_struct_term_rep_cmd_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_struct_term_rep_cmd_namespace);}
+if (AU_struct_term_rep_cmd_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_struct_term_rep_cmd_n_namespace);}
 
 }
 
@@ -3160,8 +3160,8 @@ tmpVar=(t_struct_free_rep_cmd *)XMLGetTopOfStack();
 if (AU_struct_free_rep_cmd_repname) {tmpVar->repname=0;} /* CCC */
 else {tmpVar->repname=strdup(A_struct_free_rep_cmd_repname);}
 
-if (AU_struct_free_rep_cmd_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_struct_free_rep_cmd_namespace);}
+if (AU_struct_free_rep_cmd_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_struct_free_rep_cmd_n_namespace);}
 
 }
 
@@ -4972,8 +4972,8 @@ tmpVar=(t_module_definition *)XMLGetTopOfStack();
 if (AU_module_definition_mod_dbname) {tmpVar->mod_dbname=0;} /* CCC */
 else {tmpVar->mod_dbname=strdup(A_module_definition_mod_dbname);}
 
-if (AU_module_definition_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_module_definition_namespace);}
+if (AU_module_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_module_definition_n_namespace);}
 
 if (AU_module_definition_force_ui) {tmpVar->force_ui=0;} /* CCC */
 else {tmpVar->force_ui=strdup(A_module_definition_force_ui);}
@@ -5102,8 +5102,8 @@ tmpVar=(t_s_expr_function_call *)XMLGetTopOfStack();
 if (AU_s_expr_function_call_fname) {tmpVar->fname=0;} /* CCC */
 else {tmpVar->fname=strdup(A_s_expr_function_call_fname);}
 
-if (AU_s_expr_function_call_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_function_call_namespace);}
+if (AU_s_expr_function_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_function_call_n_namespace);}
 
 /* tmpVar->parameters; is_vararray=0 skip=0 */
 tmpVar->parameters=0;
@@ -5130,8 +5130,8 @@ tmpVar=(t_s_expr_pdf_function_call *)XMLGetTopOfStack();
 if (AU_s_expr_pdf_function_call_fname) {tmpVar->fname=0;} /* CCC */
 else {tmpVar->fname=strdup(A_s_expr_pdf_function_call_fname);}
 
-if (AU_s_expr_pdf_function_call_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_pdf_function_call_namespace);}
+if (AU_s_expr_pdf_function_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_pdf_function_call_n_namespace);}
 
 /* tmpVar->parameters; is_vararray=0 skip=0 */
 tmpVar->parameters=0;
@@ -5161,8 +5161,8 @@ else {tmpVar->lib=strdup(A_s_expr_shared_function_call_lib);}
 if (AU_s_expr_shared_function_call_fname) {tmpVar->fname=0;} /* CCC */
 else {tmpVar->fname=strdup(A_s_expr_shared_function_call_fname);}
 
-if (AU_s_expr_shared_function_call_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_shared_function_call_namespace);}
+if (AU_s_expr_shared_function_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_shared_function_call_n_namespace);}
 
 /* tmpVar->parameters; is_vararray=0 skip=0 */
 tmpVar->parameters=0;
@@ -5311,8 +5311,8 @@ else {tmpVar->funcName=strdup(A_s_expr_member_function_call_n_funcName);}
 if (AU_s_expr_member_function_call_n_objectType) {tmpVar->objectType=0;} /* CCC */
 else {tmpVar->objectType=strdup(A_s_expr_member_function_call_n_objectType);}
 
-if (AU_s_expr_member_function_call_n_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_member_function_call_n_namespace);}
+if (AU_s_expr_member_function_call_n_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_member_function_call_n_n_namespace);}
 
 if (AU_s_expr_member_function_call_n_datatype) {tmpVar->datatype=0;} /* ZZZ */
 else {tmpVar->datatype=atol(A_s_expr_member_function_call_n_datatype);}
@@ -5344,8 +5344,8 @@ tmpVar->var_usage_ptr=0;
 if (AU_s_expr_dynarr_function_call_n_funcName) {tmpVar->funcName=0;} /* CCC */
 else {tmpVar->funcName=strdup(A_s_expr_dynarr_function_call_n_funcName);}
 
-if (AU_s_expr_dynarr_function_call_n_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_dynarr_function_call_n_namespace);}
+if (AU_s_expr_dynarr_function_call_n_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_dynarr_function_call_n_n_namespace);}
 
 /* tmpVar->parameters; is_vararray=0 skip=0 */
 tmpVar->parameters=0;
@@ -5396,8 +5396,8 @@ else {tmpVar->func=strdup(A_s_expr_external_call_func);}
 
 /* tmpVar->port; is_vararray=0 skip=0 */
 tmpVar->port=0;
-if (AU_s_expr_external_call_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_external_call_namespace);}
+if (AU_s_expr_external_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_external_call_n_namespace);}
 
 /* tmpVar->parameters; is_vararray=0 skip=0 */
 tmpVar->parameters=0;
@@ -5482,8 +5482,8 @@ void STag_s_expr_tmp(void)
 t_s_expr_tmp *tmpVar;
 XMLPushOntoStack("s_expr_tmp",  sizeof(t_s_expr_tmp),1,0,1,A_s_expr_tmp_nm);
 tmpVar=(t_s_expr_tmp *)XMLGetTopOfStack();
-if (AU_s_expr_tmp_str) {tmpVar->str=0;} /* CCC */
-else {tmpVar->str=strdup(A_s_expr_tmp_str);}
+if (AU_s_expr_tmp_s_str) {tmpVar->s_str=0;} /* CCC */
+else {tmpVar->s_str=strdup(A_s_expr_tmp_s_str);}
 
 if (AU_s_expr_tmp_dtype) {tmpVar->dtype=0;} /* ZZZ */
 else {tmpVar->dtype=atol(A_s_expr_tmp_dtype);}
@@ -5587,8 +5587,8 @@ tmpVar=(t_s_expr_bound_fcall *)XMLGetTopOfStack();
 if (AU_s_expr_bound_fcall_lib) {tmpVar->lib=0;} /* CCC */
 else {tmpVar->lib=strdup(A_s_expr_bound_fcall_lib);}
 
-if (AU_s_expr_bound_fcall_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_expr_bound_fcall_namespace);}
+if (AU_s_expr_bound_fcall_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_expr_bound_fcall_n_namespace);}
 
 if (AU_s_expr_bound_fcall_fname) {tmpVar->fname=0;} /* CCC */
 else {tmpVar->fname=strdup(A_s_expr_bound_fcall_fname);}
@@ -5667,8 +5667,8 @@ tmpVar=(t_s_func *)XMLGetTopOfStack();
 if (AU_s_func_funcname) {tmpVar->funcname=0;} /* CCC */
 else {tmpVar->funcname=strdup(A_s_func_funcname);}
 
-if (AU_s_func_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_func_namespace);}
+if (AU_s_func_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_func_n_namespace);}
 
 }
 
@@ -7472,8 +7472,8 @@ tmpVar=(t_s_function_definition *)XMLGetTopOfStack();
 if (AU_s_function_definition_funcname) {tmpVar->funcname=0;} /* CCC */
 else {tmpVar->funcname=strdup(A_s_function_definition_funcname);}
 
-if (AU_s_function_definition_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_function_definition_namespace);}
+if (AU_s_function_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_function_definition_n_namespace);}
 
 if (AU_s_function_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
 else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_function_definition_isstatic);}
@@ -7520,8 +7520,8 @@ tmpVar=(t_s_report_definition *)XMLGetTopOfStack();
 if (AU_s_report_definition_funcname) {tmpVar->funcname=0;} /* CCC */
 else {tmpVar->funcname=strdup(A_s_report_definition_funcname);}
 
-if (AU_s_report_definition_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_report_definition_namespace);}
+if (AU_s_report_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_report_definition_n_namespace);}
 
 if (AU_s_report_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
 else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_report_definition_isstatic);}
@@ -7577,8 +7577,8 @@ tmpVar=(t_s_pdf_report_definition *)XMLGetTopOfStack();
 if (AU_s_pdf_report_definition_funcname) {tmpVar->funcname=0;} /* CCC */
 else {tmpVar->funcname=strdup(A_s_pdf_report_definition_funcname);}
 
-if (AU_s_pdf_report_definition_namespace) {tmpVar->namespace=0;} /* CCC */
-else {tmpVar->namespace=strdup(A_s_pdf_report_definition_namespace);}
+if (AU_s_pdf_report_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
+else {tmpVar->n_namespace=strdup(A_s_pdf_report_definition_n_namespace);}
 
 if (AU_s_pdf_report_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
 else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_pdf_report_definition_isstatic);}
@@ -7892,23 +7892,23 @@ Call_Callback ("form_field", nm, tmpVar);
 
 } /* ETag_form_field */
 
-void ETag_x_y(void)
+void ETag_s_x_y(void)
 {
 #line 7037 "module_def.act"
 
 
 {
-t_x_y *tmpVar;
-char *nm=0;ChkTopOfStack("x_y");
-tmpVar=(t_x_y *)XMLGetTopOfStack();
+t_s_x_y *tmpVar;
+char *nm=0;ChkTopOfStack("s_x_y");
+tmpVar=(t_s_x_y *)XMLGetTopOfStack();
 nm=XMLGetTopOfStackParentElem();
-XMLPopOffStack("x_y",1);
+XMLPopOffStack("s_x_y",1);
 SetParent(nm,XMLGetTopOfStack(), tmpVar);
-Call_Callback ("x_y", nm, tmpVar);
+Call_Callback ("s_x_y", nm, tmpVar);
 }
 
 
-} /* ETag_x_y */
+} /* ETag_s_x_y */
 
 void ETag_s_full_col(void)
 {
@@ -8702,23 +8702,23 @@ Call_Callback ("struct_exit_prog_cmd", nm, tmpVar);
 
 } /* ETag_struct_exit_prog_cmd */
 
-void ETag_commands(void)
+void ETag_s_commands(void)
 {
 #line 7712 "module_def.act"
 
 
 {
-t_commands *tmpVar;
-char *nm=0;ChkTopOfStack("commands");
-tmpVar=(t_commands *)XMLGetTopOfStack();
+t_s_commands *tmpVar;
+char *nm=0;ChkTopOfStack("s_commands");
+tmpVar=(t_s_commands *)XMLGetTopOfStack();
 nm=XMLGetTopOfStackParentElem();
-XMLPopOffStack("commands",1);
+XMLPopOffStack("s_commands",1);
 SetParent(nm,XMLGetTopOfStack(), tmpVar);
-Call_Callback ("commands", nm, tmpVar);
+Call_Callback ("s_commands", nm, tmpVar);
 }
 
 
-} /* ETag_commands */
+} /* ETag_s_commands */
 
 void ETag_struct_return_cmd(void)
 {
@@ -8954,23 +8954,23 @@ Call_Callback ("struct_display_form_cmd", nm, tmpVar);
 
 } /* ETag_struct_display_form_cmd */
 
-void ETag_call_list(void)
+void ETag_s_call_list(void)
 {
 #line 7922 "module_def.act"
 
 
 {
-t_call_list *tmpVar;
-char *nm=0;ChkTopOfStack("call_list");
-tmpVar=(t_call_list *)XMLGetTopOfStack();
+t_s_call_list *tmpVar;
+char *nm=0;ChkTopOfStack("s_call_list");
+tmpVar=(t_s_call_list *)XMLGetTopOfStack();
 nm=XMLGetTopOfStackParentElem();
-XMLPopOffStack("call_list",1);
+XMLPopOffStack("s_call_list",1);
 SetParent(nm,XMLGetTopOfStack(), tmpVar);
-Call_Callback ("call_list", nm, tmpVar);
+Call_Callback ("s_call_list", nm, tmpVar);
 }
 
 
-} /* ETag_call_list */
+} /* ETag_s_call_list */
 
 void ETag_struct_call_cmd(void)
 {
@@ -9494,59 +9494,59 @@ Call_Callback ("report_block_data", nm, tmpVar);
 
 } /* ETag_report_block_data */
 
-void ETag_report_format_section_entry(void)
+void ETag_s_report_format_section_entry(void)
 {
 #line 8372 "module_def.act"
 
 
 {
-t_report_format_section_entry *tmpVar;
-char *nm=0;ChkTopOfStack("report_format_section_entry");
-tmpVar=(t_report_format_section_entry *)XMLGetTopOfStack();
+t_s_report_format_section_entry *tmpVar;
+char *nm=0;ChkTopOfStack("s_report_format_section_entry");
+tmpVar=(t_s_report_format_section_entry *)XMLGetTopOfStack();
 nm=XMLGetTopOfStackParentElem();
-XMLPopOffStack("report_format_section_entry",1);
+XMLPopOffStack("s_report_format_section_entry",1);
 SetParent(nm,XMLGetTopOfStack(), tmpVar);
-Call_Callback ("report_format_section_entry", nm, tmpVar);
+Call_Callback ("s_report_format_section_entry", nm, tmpVar);
 }
 
 
-} /* ETag_report_format_section_entry */
+} /* ETag_s_report_format_section_entry */
 
-void ETag_report_format_section(void)
+void ETag_s_report_format_section(void)
 {
 #line 8387 "module_def.act"
 
 
 {
-t_report_format_section *tmpVar;
-char *nm=0;ChkTopOfStack("report_format_section");
-tmpVar=(t_report_format_section *)XMLGetTopOfStack();
+t_s_report_format_section *tmpVar;
+char *nm=0;ChkTopOfStack("s_report_format_section");
+tmpVar=(t_s_report_format_section *)XMLGetTopOfStack();
 nm=XMLGetTopOfStackParentElem();
-XMLPopOffStack("report_format_section",1);
+XMLPopOffStack("s_report_format_section",1);
 SetParent(nm,XMLGetTopOfStack(), tmpVar);
-Call_Callback ("report_format_section", nm, tmpVar);
+Call_Callback ("s_report_format_section", nm, tmpVar);
 }
 
 
-} /* ETag_report_format_section */
+} /* ETag_s_report_format_section */
 
-void ETag_report_orderby_section(void)
+void ETag_s_report_orderby_section(void)
 {
 #line 8402 "module_def.act"
 
 
 {
-t_report_orderby_section *tmpVar;
-char *nm=0;ChkTopOfStack("report_orderby_section");
-tmpVar=(t_report_orderby_section *)XMLGetTopOfStack();
+t_s_report_orderby_section *tmpVar;
+char *nm=0;ChkTopOfStack("s_report_orderby_section");
+tmpVar=(t_s_report_orderby_section *)XMLGetTopOfStack();
 nm=XMLGetTopOfStackParentElem();
-XMLPopOffStack("report_orderby_section",1);
+XMLPopOffStack("s_report_orderby_section",1);
 SetParent(nm,XMLGetTopOfStack(), tmpVar);
-Call_Callback ("report_orderby_section", nm, tmpVar);
+Call_Callback ("s_report_orderby_section", nm, tmpVar);
 }
 
 
-} /* ETag_report_orderby_section */
+} /* ETag_s_report_orderby_section */
 
 void ETag_struct_display_cmd(void)
 {

@@ -55,7 +55,7 @@ static int cache_expression_list (char *s, struct expr_str_list *srclist, int mo
 extern int yylineno;
 char *lint_module = 0;
 static void load_boltons (char *fname);
-static int add_calltree_calls (char *s, commands * func_commands, int mode);
+static int add_calltree_calls (char *s, s_commands * func_commands, int mode);
 static int find_function (char *s);
 char *decode_rb (enum report_blocks a);
 char *endTarget=0;
@@ -126,7 +126,7 @@ struct function
   int whenever_error_func_line;
   int whenever_any_error_func_line;
   int whenever_sql_error_func_line;
-  call_list *call_list;
+  s_call_list *call_list;
 
 };
 
@@ -617,7 +617,7 @@ local_is_valid_vname (struct variable *v, enum e_scope scope)
 void
 check_module (struct module_definition *d)
 {
-  struct commands *all_cmds = 0;
+  struct s_commands *all_cmds = 0;
 
   all_cmds = linearise_commands (0, 0);
 
@@ -916,7 +916,7 @@ system_function (char *funcname)
 
 
 static void
-add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary,  call_list * call_list)
+add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary,  s_call_list * call_list)
 {
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
@@ -1513,13 +1513,13 @@ print_whenever (int mode)
 
 
 static int
-calls_something (commands * func_commands)
+calls_something (s_commands * func_commands)
 {
   return add_calltree_calls ("", func_commands, MODE_TRY);
 }
 
 static int
-add_calltree_calls (char *s, commands * func_commands, int mode)
+add_calltree_calls (char *s, s_commands * func_commands, int mode)
 {
   int a;
   struct on_events *evt_list;
@@ -2761,7 +2761,7 @@ decode_rb (enum report_blocks a)
 
 
 static int
-run_calltree_for (call_list * call_list)
+run_calltree_for (s_call_list * call_list)
 {
   int a;
 int cnt=0;

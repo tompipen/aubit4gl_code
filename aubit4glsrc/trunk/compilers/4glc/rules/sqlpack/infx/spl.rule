@@ -186,7 +186,7 @@ spl_define_stmts :
 ;
 
 spl_commands: spl_command {
-                $$=malloc(sizeof(commands));
+                $$=malloc(sizeof(s_commands));
                 $$->cmds.cmds_len=1;
                 $$->cmds.cmds_val=malloc(sizeof($$->cmds.cmds_val[0]) * $$->cmds.cmds_len);
                 $$->cmds.cmds_val[$$->cmds.cmds_len-1]=$1;

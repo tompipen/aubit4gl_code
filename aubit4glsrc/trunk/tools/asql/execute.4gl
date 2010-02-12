@@ -66,7 +66,7 @@ int field_widths(void) ;
 char **columnNames=0;
 int *columnWidths=0;
 int *columnAlign=0;
-char * acl_getenv_not_set_as_0 (char *s);
+char * acl_getenv_not_set_as_0 (const char *s);
 #define EXEC_MODE_INTERACTIVE   0
 #define EXEC_MODE_FILE          1
 #define EXEC_MODE_OUTPUT        2

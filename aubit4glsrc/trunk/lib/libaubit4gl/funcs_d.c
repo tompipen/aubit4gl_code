@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.115 2009-12-15 20:24:38 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.116 2010-02-12 14:39:43 mikeaubury Exp $
 #
 */
 
@@ -1265,7 +1265,7 @@ a_strchr (char *s, int c)
 
 
 void
-A4GL_strmaxcpy (char *dest, char *src, int max)
+A4GL_strmaxcpy (char *dest, const char *src, int max)
 {
   strncpy (dest, src, max);
   dest[max] = 0;

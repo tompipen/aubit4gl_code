@@ -68,7 +68,7 @@ typedef enum { SQL_NOCOMMENT, SQL_OPTIMIZERHINT, SQL_COMMENT, SQL_INCOMPLETE } S
 
 
 char delimchar;
-char *acl_getenv_not_set_as_0 (char *v);
+char *acl_getenv_not_set_as_0 (const char *v);
 char * skipblanks (char *s);
 char * iustoken (const char *input, const char **end);
 void free_blobs (Sqlda * u);

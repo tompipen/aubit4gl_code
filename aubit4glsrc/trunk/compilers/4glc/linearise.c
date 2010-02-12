@@ -10,7 +10,7 @@
 
 
 void
-linearise_commands_from_events (struct commands *master_list, struct on_events *evt_list)
+linearise_commands_from_events (struct s_commands *master_list, struct on_events *evt_list)
 {
   int a;
 
@@ -26,8 +26,8 @@ linearise_commands_from_events (struct commands *master_list, struct on_events *
 
 }
 
-struct commands *
-linearise_commands (struct commands *master_list, struct commands *cmds)
+struct s_commands *
+linearise_commands (struct s_commands *master_list, struct s_commands *cmds)
 {
   int a;
   int cnt;
@@ -35,7 +35,7 @@ linearise_commands (struct commands *master_list, struct commands *cmds)
 
   if (master_list == 0)
     {
-      master_list = malloc (sizeof (struct commands));
+      master_list = malloc (sizeof (struct s_commands));
       master_list->cmds.cmds_val = 0;
       master_list->cmds.cmds_len = 0;
     }
@@ -124,8 +124,8 @@ linearise_commands (struct commands *master_list, struct commands *cmds)
 }
 
 
-struct commands *
-linearise_report (struct commands *all_cmds, report_format_section * report_format_section)
+struct s_commands *
+linearise_report (struct s_commands *all_cmds, s_report_format_section * report_format_section)
 {
   int b;
   if (all_cmds == 0)
@@ -140,7 +140,7 @@ linearise_report (struct commands *all_cmds, report_format_section * report_form
 }
 
 void
-linearise_module (struct commands *all_cmds, module_definition * d)
+linearise_module (struct s_commands *all_cmds, module_definition * d)
 {
   int a;
 //int b;

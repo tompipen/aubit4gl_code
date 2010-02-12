@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.41 2010-01-06 17:48:59 mikeaubury Exp $
+# $Id: expr.c,v 1.42 2010-02-12 14:39:43 mikeaubury Exp $
 #
 */
 
@@ -600,7 +600,7 @@ A4GL_new_expr_funcdef (char *funcname, char *namespace)
   struct expr_str *ptr_new;
   ptr_new = A4GL_new_expr_simple (ET_EXPR_FUNC);
   ptr_new->expr_str_u.expr_func.funcname = strdup (funcname);
-  ptr_new->expr_str_u.expr_func.namespace = strdup (namespace);
+  ptr_new->expr_str_u.expr_func.n_namespace = strdup (namespace);
   return ptr_new;
 }
 
@@ -700,7 +700,7 @@ A4GL_new_expr_temp (char *s, int dtype)
   struct expr_str *ptr;
   ptr = A4GL_new_expr_simple (ET_EXPR_TEMP);
   ptr->expr_str_u.expr_tmp = malloc (sizeof (struct s_expr_tmp));
-  ptr->expr_str_u.expr_tmp->str = acl_strdup (s);
+  ptr->expr_str_u.expr_tmp->s_str = acl_strdup (s);
   ptr->expr_str_u.expr_tmp->dtype = dtype;
   return ptr;
 }
@@ -944,7 +944,7 @@ A4GL_new_expr_fcall (char *function, struct expr_str_list *params, char *mod, in
   p2 = A4GL_new_expr_simple (ET_EXPR_FCALL);
   p->fname = acl_strdup (function);
   p->parameters = A4GL_rationalize_list (params);
-  p->namespace = p_namespace;
+  p->n_namespace = p_namespace;
   p->module = mod;
   p->line = line;
   p2->expr_str_u.expr_function_call = p;
@@ -960,7 +960,7 @@ A4GL_new_expr_pdf_fcall (char *function, struct expr_str_list *params, char *mod
   p2 = A4GL_new_expr_simple (ET_EXPR_PDF_FCALL);
   p->fname = acl_strdup (function);
   p->parameters = params;
-  p->namespace = p_namespace;
+  p->n_namespace = p_namespace;
   p->module = mod;
   p->line = line;
   p2->expr_str_u.expr_pdf_function_call = p;
@@ -1084,7 +1084,7 @@ static struct expr_str * A4GL_new_expr_dynarr_fcall_n (struct expr_str *var_usag
   p->var_usage_ptr = var_usage_ptr;
   p->funcName=strdup(funcname);
   p->parameters = params;
-  p->namespace = strdup (p_namespace);
+  p->n_namespace = strdup (p_namespace);
   p->module = strdup (mod);
   p->line = line;
   p2->expr_str_u.expr_dynarr_function_call_n = p;
@@ -1119,7 +1119,7 @@ A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, ch
   p->objectType=strdup(objtype);
   p->datatype=datatype;
   p->parameters = params;
-  p->namespace = strdup (p_namespace);
+  p->n_namespace = strdup (p_namespace);
   p->module = strdup (mod);
   p->line = line;
   p2->expr_str_u.expr_member_function_call_n = p;
@@ -1136,7 +1136,7 @@ A4GL_new_expr_member_fcall (struct expr_str *var_usage_ptr, struct expr_str_list
   p2 = A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL);
   p->var_usage_ptr = var_usage_ptr;
   p->parameters = params;
-  p->namespace = strdup (p_namespace);
+  p->n_namespace = strdup (p_namespace);
   p->module = strdup (mod);
   p->line = line;
   p2->expr_str_u.expr_member_function_call = p;
@@ -1153,7 +1153,7 @@ A4GL_new_expr_bound_fcall (char *lib, char *function, char *mod, int line, expr_
   struct expr_str *p2;
   p = malloc (sizeof (struct s_expr_bound_fcall));
   p2 = A4GL_new_expr_simple (ET_EXPR_BOUND_FCALL);
-  p->namespace = p_namespace;
+  p->n_namespace = p_namespace;
   p->fname = acl_strdup (function);
   p->lib = acl_strdup (lib);
   p->module = mod;
@@ -1176,7 +1176,7 @@ A4GL_new_expr_shared_fcall (char *lib, char *function, struct expr_str_list *par
   p = malloc (sizeof (struct s_expr_shared_function_call));
   p2 = A4GL_new_expr_simple (ET_EXPR_SHARED_FCALL);
   p->fname = acl_strdup (function);
-  p->namespace = p_namespace;
+  p->n_namespace = p_namespace;
   p->lib = acl_strdup (lib);
   p->parameters = params;
   p->module = mod;
@@ -1245,7 +1245,7 @@ A4GL_new_expr_call_external (char *host, char *func, expr_str * port, struct exp
   p->host = acl_strdup (host);
   p->func = acl_strdup (func);
   p->port = port;
-  p->namespace = namespace;
+  p->n_namespace = namespace;
   p->parameters = params;
   p->module = mod;
   p->line = line;

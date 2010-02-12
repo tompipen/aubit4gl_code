@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.67 2010-01-06 17:49:03 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.68 2010-02-12 14:39:48 mikeaubury Exp $
 #*/
 
 /**
@@ -134,7 +134,7 @@ int entry=0;
   struct pdf_rep_structure *rep;
   //static int resetting=0;
 
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
   A4GL_debug ("In rep_print");
   if (right_margin != 0)
@@ -169,10 +169,10 @@ int entry=0;
 		}
 	      else
 		{
-		  rep->pdf_ptr = PDF_new ();
-		  PDF_set_parameter(rep->pdf_ptr,"compatibility","1.4");
+		  rep->pdf_ptr = (void *)PDF_new ();
+		  PDF_set_parameter((PDF *)rep->pdf_ptr,"compatibility","1.4");
 		  A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
-		  if (PDF_open_file (rep->pdf_ptr, rep->output_loc_str) == -1)
+		  if (PDF_open_file ((PDF*)rep->pdf_ptr, rep->output_loc_str) == -1)
 		    {
 		      A4GL_exitwith ("Error opening output\n");
 		      return;
@@ -263,7 +263,7 @@ int entry=0;
 	  A4GL_debug ("A\n");
 	  str =  A4GL_report_char_pop ();
 	  A4GL_pdf_move (rep); 
-	  PDF_show (rep->pdf_ptr, str);
+	  PDF_show ((PDF *)rep->pdf_ptr, str);
 	  A4GL_debug ("Adding %f to col_no\n", A4GL_pdf_metric (strlen (str), 'c', rep));
 	  rep->col_no += A4GL_pdf_metric (strlen (str), 'c', rep);
 	  acl_free (str);
@@ -313,7 +313,7 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
   double req;
   struct pdf_rep_structure *rep;
   int force_move;
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
   A4GL_debug ("Set column");
   req = (double) A4GL_pop_double ();
@@ -375,7 +375,7 @@ void
 A4GLPDFREP_A4GL_pdf_skip_to (void *vrep, double a)
 {
   struct pdf_rep_structure *rep;
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
   A4GL_debug ("pdf_skip_by");
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
@@ -393,7 +393,7 @@ void
 A4GLPDFREP_A4GL_pdf_skip_by (void *vrep, double a)
 {
   struct pdf_rep_structure *rep;
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
   A4GL_debug ("pdf_skip_by");
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
@@ -410,7 +410,7 @@ A4GLPDFREP_A4GL_pdf_aclfgli_skip_lines (void *vrep)
 {
   long a;
   struct pdf_rep_structure *rep;
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
 
   A4GL_debug ("skip lines");
@@ -427,7 +427,7 @@ A4GLPDFREP_A4GL_pdf_need_lines (void *vrep)
 {
   int a;
   struct pdf_rep_structure *rep;
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
   A4GL_debug ("need lines");
   a = A4GL_pdf_metric (A4GL_pop_int (), 'l', rep);
@@ -449,7 +449,7 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
   int a;
   double ad;
 
-  rep = vrep;
+  rep = (struct pdf_rep_structure *)vrep;
 
 			A4GL_debug("pdf_skip_top_of_page");
 
@@ -514,17 +514,17 @@ int
 A4GL_pdf_new_page (struct pdf_rep_structure *p)
 {
   A4GL_debug ("NEW PAGE : %d\n", p->page_no);
-  /* PDF_begin_page(p->pdf_ptr, width, height); */
+  /* PDF_begin_page((PDF *)p->pdf_ptr, width, height); */
   if (p->page_no)
     {
-      PDF_end_page (p->pdf_ptr);
+      PDF_end_page ((PDF *)p->pdf_ptr);
     }
 
   A4GL_debug ("Begin page width = %lf length=%lf\n", p->page_width, p->page_length);
-  PDF_begin_page (p->pdf_ptr, p->page_width, p->page_length);
+  PDF_begin_page ((PDF *)p->pdf_ptr, p->page_width, p->page_length);
   A4GL_debug ("Done\n");
   A4GL_debug ("find font %s\n", p->font_name);
-     p->font = PDF_load_font (p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), ""); //"embedding=true");
+     p->font = PDF_load_font ((PDF *)p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), ""); //"embedding=true");
 
   if (p->font < 0)
     {
@@ -537,7 +537,7 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
     }
 
   A4GL_debug ("set font\n");
-  PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+  PDF_setfont ((PDF *)p->pdf_ptr, p->font, p->font_size);
 
 // do we need bluebars ? 
   if (p->bluebar_style!=E_BLUEBAR_NONE) {
@@ -548,8 +548,8 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
 	//printable = p->page_height - (p->top_margin);
   	//eachline = printable / h;
   	eachline = A4GLPDFREP_A4GL_pdf_size (1, 'l', p);
-  	PDF_setcolor (p->pdf_ptr, "both", "rgb", p->bluebar_r, p->bluebar_g, p->bluebar_b, 0);
-  	PDF_setlinewidth (p->pdf_ptr, eachline / 20);
+  	PDF_setcolor ((PDF *)p->pdf_ptr, "both", "rgb", p->bluebar_r, p->bluebar_g, p->bluebar_b, 0);
+  	PDF_setlinewidth ((PDF *)p->pdf_ptr, eachline / 20);
 
     if (p->bluebar_style == E_BLUEBAR_5LINE)
         {
@@ -566,13 +566,13 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
               for (bb = 0; bb < 5; bb++)
                 {
                   spacing -= 2.0 * (float) eachline / 10;
-                  PDF_moveto (p->pdf_ptr, (0), ypos + spacing);
-                  PDF_lineto (p->pdf_ptr, (p->page_width),ypos+spacing);
+                  PDF_moveto ((PDF *)p->pdf_ptr, (0), ypos + spacing);
+                  PDF_lineto ((PDF *)p->pdf_ptr, (p->page_width),ypos+spacing);
                 }
 		ypos=ypos-(eachline*2);
 		if (ypos+eachline<p->bottom_margin) break;
             }
-      PDF_stroke (p->pdf_ptr);
+      PDF_stroke ((PDF *)p->pdf_ptr);
         }
 
       if (p->bluebar_style == E_BLUEBAR_RECTANGLE)
@@ -589,14 +589,15 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
               //spacing -= (float) eachline / 10;
               offset = 2.0 * (float) eachline / 10;
 		if (ypos+eachline>(p->page_length)) break;
-                PDF_rect (p->pdf_ptr, (0), ypos -offset , p->page_width, eachline*0.9); PDF_fill_stroke (p->pdf_ptr);
+                PDF_rect ((PDF *)p->pdf_ptr, (0), ypos -offset , p->page_width, eachline*0.9); 
+		PDF_fill_stroke ((PDF *)p->pdf_ptr);
 		ypos=ypos-(eachline*2);
 		if (ypos+eachline<p->bottom_margin) break;
             }
         }
 
 
-	A4GL_resetcolor(p->pdf_ptr);
+	A4GL_resetcolor((PDF *)p->pdf_ptr);
 
   }
 
@@ -611,9 +612,9 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
 void
 A4GLPDFREP_A4GL_pdf_set_info (void *p, char *creator)
 {
-  PDF_set_info (p, "Creator", creator);
-  PDF_set_info (p, "Author", "Auto");
-  PDF_set_info (p, "Title", "Auto");
+  PDF_set_info ((PDF*)p, "Creator", creator);
+  PDF_set_info ((PDF*)p, "Author", "Auto");
+  PDF_set_info ((PDF*)p, "Title", "Auto");
 }
 
 
@@ -626,7 +627,7 @@ A4GL_pdf_move (struct pdf_rep_structure *p)
 {
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
   //printf ("Move to %f %f\n", p->col_no, p->page_length -p->line_no);
-  PDF_set_text_pos (p->pdf_ptr, p->col_no, p->page_length - p->line_no);
+  PDF_set_text_pos ((PDF *)p->pdf_ptr, p->col_no, p->page_length - p->line_no);
 }
 
 
@@ -638,15 +639,15 @@ void
 A4GLPDFREP_A4GL_pdf_rep_close (void *vp)
 {
   struct pdf_rep_structure *p;
-  p = vp;
+  p = (struct pdf_rep_structure *)vp;
 
   A4GL_debug ("Closing report %f\n", p->line_no);
   if (p->line_no != 0.0)
     {
       A4GL_debug ("A");
-      PDF_end_page (p->pdf_ptr);
+      PDF_end_page ((PDF *)p->pdf_ptr);
       A4GL_debug ("A");
-      PDF_close (p->pdf_ptr);
+      PDF_close ((PDF *)p->pdf_ptr);
     }
       p->pdf_ptr=0;
   A4GL_debug ("All done...");
@@ -662,7 +663,7 @@ A4GLPDFREP_A4GL_pdf_size (double f, char c, void *vp)
 {
   int size;
   struct pdf_rep_structure *p;
-  p = vp;
+  p = ( struct pdf_rep_structure *)vp;
 
   A4GL_debug ("pdf_size (%lf %c %p)", f, c, p);
 
@@ -691,7 +692,7 @@ A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *p)
     {
       A4GL_debug ("metric C %d %c", a, c);
       if (p->pdf_ptr) {
-      	return (double) ((double) a * PDF_stringwidth (p->pdf_ptr, "W", p->font, p->font_size));
+      	return (double) ((double) a * PDF_stringwidth ((PDF *)p->pdf_ptr, "W", p->font, p->font_size));
       } else {
       	return (double) ((double) a * 8);
       }
@@ -723,8 +724,8 @@ double ox;
 double oy;
   struct pdf_rep_structure *p;
   struct fgl_int_loc *blob;
-  p = vp;
-  blob = vblob;
+  p = (struct pdf_rep_structure *)vp;
+  blob = (struct fgl_int_loc *)vblob;
 
 
   sx = A4GL_pop_double ();
@@ -743,7 +744,7 @@ double oy;
     }
 
   A4GL_debug ("Opening blob\n");
-  n = PDF_open_image_file (p->pdf_ptr, type, blob->filename, "", 0);
+  n = PDF_open_image_file ((PDF *)p->pdf_ptr, type, blob->filename, "", 0);
   A4GL_debug ("Image handle=%d\n", n);
 
   if (n < 0)
@@ -755,8 +756,8 @@ double oy;
       return;
     }
 
-  y = PDF_get_value (p->pdf_ptr, "imageheight", n);
-  x = PDF_get_value (p->pdf_ptr, "imagewidth", n);
+  y = PDF_get_value ((PDF *)p->pdf_ptr, "imageheight", n);
+  x = PDF_get_value ((PDF *)p->pdf_ptr, "imagewidth", n);
 
   ox=(double)x;
   oy=(double)y;
@@ -790,10 +791,10 @@ double oy;
     }
   A4GL_debug ("x=%lf y=%lf", p->col_no, p->page_length - p->line_no - y);
 
-  PDF_place_image (p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y, sx);
+  PDF_place_image ((PDF *)p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y, sx);
 
   A4GL_debug ("Closing");
-  PDF_close_image (p->pdf_ptr, n);
+  PDF_close_image ((PDF *)p->pdf_ptr, n);
 
 A4GL_debug("lineno (%lf) +=  %lf", p->line_no,(double)y);
 A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
@@ -814,7 +815,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
   int a;
   double d;
   struct pdf_rep_structure *p;
-  p = vp;
+  p = (struct pdf_rep_structure  *)vp;
 
 
   if (strcmp (fname, "EmbedFont") == 0)
@@ -822,7 +823,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 
 	char *ptr1;
         ptr1 = A4GL_char_pop ();
-        a = PDF_load_font (p->pdf_ptr, ptr1, 0, A4GL_get_pdf_encoding(), "embedding");
+        a = PDF_load_font ((PDF *)p->pdf_ptr, ptr1, 0, A4GL_get_pdf_encoding(), "embedding");
 	acl_free(ptr1);
 	return 0;
     }
@@ -834,7 +835,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       char *ptr2;
       ptr2 = A4GL_char_pop ();
       ptr1 = A4GL_char_pop ();
-      PDF_set_parameter (p->pdf_ptr, ptr1, ptr2);
+      PDF_set_parameter ((PDF *)p->pdf_ptr, ptr1, ptr2);
       acl_free (ptr1);
       acl_free (ptr2);
       return 0;
@@ -851,7 +852,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		}
 
 
-      PDF_moveto (p->pdf_ptr, f1, f2);
+      PDF_moveto ((PDF *)p->pdf_ptr, f1, f2);
       return 0;
     }
 
@@ -863,7 +864,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       f3 = A4GL_pop_double ();
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
-      A4GL_setcolor (p->pdf_ptr, "both","rgb",f1, f2,f3,0);
+      A4GL_setcolor ((PDF*)p->pdf_ptr, "both","rgb",f1, f2,f3,0);
       return 0;
     }
   if (strcmp (fname, "setstrokecolor") == 0)
@@ -874,14 +875,14 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       f3 = A4GL_pop_double ();
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
-      A4GL_setcolor (p->pdf_ptr, "stroke","rgb",f1, f2,f3,0);
+      A4GL_setcolor ((PDF*)p->pdf_ptr, "stroke","rgb",f1, f2,f3,0);
       return 0;
     }
 
    if (strcmp(fname,"bookmark")==0) {
 	char *buf;
 	buf=A4GL_char_pop();
-	PDF_create_bookmark(p->pdf_ptr, buf, 0, "");
+	PDF_create_bookmark((PDF *)p->pdf_ptr, buf, 0, "");
 	free(buf);
    }
 
@@ -890,7 +891,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	int a;
 	a=A4GL_pop_int();
 	buf=A4GL_char_pop();
-	a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	a=PDF_add_bookmark((PDF *)p->pdf_ptr, buf, a, 0);
 	A4GL_push_int(a);
 	free(buf);
 	return 1;
@@ -900,7 +901,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	int a;
 	a=A4GL_pop_int();
 	buf=A4GL_char_pop();
-	a=PDF_add_bookmark(p->pdf_ptr, buf, a, 0);
+	a=PDF_add_bookmark((PDF *)p->pdf_ptr, buf, a, 0);
 	//A4GL_push_int(a);
 	//free(buf);
 	return 0;
@@ -914,13 +915,13 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       f3 = A4GL_pop_double ();
       f2 = A4GL_pop_double ();
       f1 = A4GL_pop_double ();
-      A4GL_setcolor (p->pdf_ptr, "fill","rgb",f1, f2,f3,0);
+      A4GL_setcolor ((PDF*)p->pdf_ptr, "fill","rgb",f1, f2,f3,0);
       return 0;
     }
 
   if (strcmp (fname, "stroke") == 0)
     {
-      PDF_stroke (p->pdf_ptr);
+      PDF_stroke ((PDF *)p->pdf_ptr);
       return 0;
     }
 
@@ -940,7 +941,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	x=A4GL_pop_double();
 	y=y+h;
 
-	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length,1);
+	generate_barcode((PDF*)p->pdf_ptr, x,y,w,h,str,p->page_length,1);
 
 	free(str);
       return 0;
@@ -969,20 +970,20 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	y=A4GL_pop_double();
 	x=A4GL_pop_double();
 	y=y+h;
-	generate_barcode(p->pdf_ptr, x,y,w,h,str,p->page_length,0);
+	generate_barcode((PDF*)p->pdf_ptr, x,y,w,h,str,p->page_length,0);
 	free(str);
       return 0;
     }
 
   if (strcmp (fname, "fill_stroke") == 0)
     {
-      PDF_fill_stroke (p->pdf_ptr);
+      PDF_fill_stroke ((PDF *)p->pdf_ptr);
       return 0;
     }
 
   if (strcmp (fname, "fill") == 0)
     {
-      PDF_fill (p->pdf_ptr);
+      PDF_fill ((PDF *)p->pdf_ptr);
       return 0;
     }
 
@@ -995,7 +996,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		if (strcmp (fname, "lineto_top") == 0) {
 			f2=p->page_length-f2;
 		}
-      PDF_lineto (p->pdf_ptr, f1, f2);
+      PDF_lineto ((PDF *)p->pdf_ptr, f1, f2);
       return 0;
     }
 
@@ -1013,7 +1014,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		row=A4GL_pop_long();
 		column=A4GL_pop_long();
 		table=A4GL_pop_long();
-		table=PDF_add_table_cell(p->pdf_ptr, table,column,row,text,strlen(text),optlist);
+		table=PDF_add_table_cell((PDF *)p->pdf_ptr, table,column,row,text,strlen(text),optlist);
 		A4GL_push_int(table);
 		return 1;
   }
@@ -1036,7 +1037,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		llx=A4GL_pop_double();
 		table=A4GL_pop_long();
 
-		rval=PDF_fit_table(p->pdf_ptr, table, llx,lly,urx,ury,optlist);
+		rval=PDF_fit_table((PDF *)p->pdf_ptr, table, llx,lly,urx,ury,optlist);
 		A4GL_push_char((char *)rval);
 		return 1;
   }
@@ -1055,7 +1056,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		lly=A4GL_pop_double();
 		llx=A4GL_pop_double();
 		text=A4GL_char_pop();
-		PDF_fit_textline(p->pdf_ptr, text,strlen(text),llx,lly,optlist);
+		PDF_fit_textline((PDF *)p->pdf_ptr, text,strlen(text),llx,lly,optlist);
 	return 0;
 }
 
@@ -1077,19 +1078,19 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 	//printf("url=       %s\n",url);
 	//printf("optlist=   %s\n",optlist);
 
-		d=PDF_create_action(p->pdf_ptr,"URI",optlist);
+		d=PDF_create_action((PDF *)p->pdf_ptr,"URI",optlist);
 
 		lly1=p->page_length - p->line_no;
 		lly2=lly1+A4GLPDFREP_A4GL_pdf_size (1,'l',p);
 		llx1=p->col_no;
-		llx2=llx1+ PDF_stringwidth (p->pdf_ptr, text, p->font, p->font_size);
+		llx2=llx1+ PDF_stringwidth ((PDF *)p->pdf_ptr, text, p->font, p->font_size);
 
 
 		//PDF_setcolor(p->pdf_ptr,"both","rgb",0,0,1,0);
 
-	        PDF_fit_textline(p->pdf_ptr, text, strlen(text),llx1, lly1, "");
+	        PDF_fit_textline((PDF *)p->pdf_ptr, text, strlen(text),llx1, lly1, "");
 		sprintf(optlist , "action={activate %d } linewidth=0",d);
-		PDF_create_annotation(p->pdf_ptr,
+		PDF_create_annotation((PDF *)p->pdf_ptr,
 						llx1,
 						lly1,
 						llx2,lly2,
@@ -1140,7 +1141,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       a = A4GL_pop_int ();
       ptr1 = A4GL_char_pop ();
       A4GL_debug ("Setting pdf value %s to %d\n", ptr1, a);
-      PDF_set_value (p->pdf_ptr, ptr1, a);
+      PDF_set_value ((PDF *)p->pdf_ptr, ptr1, a);
       acl_free (ptr1);
       return 0;
     }
@@ -1150,7 +1151,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
     {
       d = A4GL_pop_double ();
       p->font_size = d;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+      PDF_setfont ((PDF *)p->pdf_ptr, p->font, p->font_size);
       return 0;
     }
 
@@ -1160,17 +1161,17 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       strcpy (p->font_name, ptr);
       acl_free (ptr);
 
-      a = PDF_load_font (p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), "");
+      a = PDF_load_font ((PDF *)p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), "");
 	//printf("a=%d\n", p->font);
 
-		//a=PDF_load_font(p->pdf_ptr, p->font_name,A4GL_get_pdf_encoding(),"embedding");
+		//a=PDF_load_font((PDF *)p->pdf_ptr, p->font_name,A4GL_get_pdf_encoding(),"embedding");
 	if (a<0) {
 	  A4GL_exitwith ("Unable to locate font");
 	  return 0;
 	}
 
       p->font = a;
-      PDF_setfont (p->pdf_ptr, p->font, p->font_size);
+      PDF_setfont ((PDF *)p->pdf_ptr, p->font, p->font_size);
       return 0;
     }
 
@@ -1201,8 +1202,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		fy=p->page_length-fy;
 	}
       fx = A4GL_pop_double ();
-      PDF_rect (p->pdf_ptr, fx, fy, fw, fh);
-      PDF_stroke (p->pdf_ptr);
+      PDF_rect ((PDF *)p->pdf_ptr, fx, fy, fw, fh);
+      PDF_stroke ((PDF *)p->pdf_ptr);
       return 0;
     }
 
@@ -1216,8 +1217,8 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		fy=p->page_length-fy;
 	}
       fx = A4GL_pop_double ();
-       PDF_set_text_pos (p->pdf_ptr, fx, fy - p->font_size);
-        PDF_show (p->pdf_ptr, ptr);
+       PDF_set_text_pos ((PDF *)p->pdf_ptr, fx, fy - p->font_size);
+        PDF_show ((PDF *)p->pdf_ptr, ptr);
 	free(ptr);
       return 0;
     }
@@ -1245,7 +1246,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 		char *s;
 		double d;
 		s=A4GL_char_pop();
-		d=PDF_stringwidth (p->pdf_ptr, s, p->font, p->font_size);
+		d=PDF_stringwidth ((PDF *)p->pdf_ptr, s, p->font, p->font_size);
 		A4GL_push_double(d);
 		return 1;
 		
@@ -1282,7 +1283,7 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
 
       if (strcmp (feature, "blind") != 0) feature = "";
 	//printf("fx=%f, fy=%f, fw=%f, fh=%f\n",fx, fy, fw, fh);
-      c = PDF_show_boxed (p->pdf_ptr, text, fx, fy, fw, fh, mode, feature);
+      c = PDF_show_boxed ((PDF *)p->pdf_ptr, text, fx, fy, fw, fh, mode, feature);
       A4GL_push_double ((double) c);
       return 1;
     }
@@ -1303,7 +1304,7 @@ A4GL_report_char_pop (void)
   char *(*function) (void *, int, int, struct struct_scr_field *, int);
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
-  function = A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
+  function = (char* (*)(void*, int, int, struct_scr_field*, int)) A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
   A4GL_assertion (function == 0,
                   "No report display function for this datatype");
   ptr =

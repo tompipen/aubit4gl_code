@@ -706,7 +706,7 @@ struct s_pair {
         struct expr_str *s2;
 };
 int get_block_no (int n);
-int scan_orderby(struct report_orderby_section *c_orderby, expr_str *v) ;
+int scan_orderby(struct s_report_orderby_section *c_orderby, expr_str *v) ;
 
 void chk_for_update_on_serial(char *tab);
 //char *A4GLSQLCV_make_substr_s(char *colname,int n, struct expr_str *l,struct expr_str *r) ;
@@ -734,7 +734,7 @@ expr_str_list *expand_parameters(struct variable_list *var_list, expr_str_list *
 void A4GL_new_append_ptr_list_with_expand(expr_str_list *l,struct expr_str *e);
 cons_list* append_constr_col_list(struct cons_list *c ,struct cons_list_entry *new_entry);
 int ignore_var_usage_for_builtin_variable(expr_str *str );
-int A4GL_check_lines_for_prints(struct commands *cmds,int *lineno, char*errmsg);
+int A4GL_check_lines_for_prints(struct s_commands *cmds,int *lineno, char*errmsg);
 char *remap_top_level_variables(char *invarname) ;
 struct module_entry *new_import_package(char *package ,int lineno);
 struct module_entry *new_import_datatype(char *dtype_name ,int lineno);
@@ -764,7 +764,7 @@ int A4GL_has_serial_column_marker(char *tabname,char *colname) ;
 int current_is_report(void) ;
 void setIsLibraryModule(int n);
 int has_variable_name (struct vname_name_list *namelist, char *name);
-void linearise_commands_from_events (struct commands *master_list, struct on_events *evt_list);
+void linearise_commands_from_events (struct s_commands *master_list, struct on_events *evt_list);
 struct s_module_entry_ptr_list  * new_module_entry_list(struct  module_entry *p) ;
 struct s_module_entry_ptr_list  * append_module_entry_list(struct s_module_entry_ptr_list  *l, struct  module_entry *p);
 int A4GL_check_fcall_for_builtin_functions(expr_str* p_fcall,char *buff,struct expr_str_list* returning,int isFuncCall  );

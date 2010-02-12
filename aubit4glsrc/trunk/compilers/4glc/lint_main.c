@@ -1,6 +1,6 @@
 #include "a4gl_4glc_int.h"
 #include "lint.h"
-expr_str *expr_cached(expr_str *l) ;
+//expr_str *expr_cached(expr_str *l) ;
 
 //#include "a4gl_libaubit4gl.h"
 //#include "lint.h"

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.152 2010-01-20 16:30:25 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.153 2010-02-12 14:39:43 mikeaubury Exp $
 #
 */
 
@@ -772,7 +772,7 @@ A4GL_err_continue_log (int lineno, char *fname)
  * @param s The error message
  */
 void
-A4GL_set_errm (char *s)
+A4GL_set_errm (const char *s)
 {
   A4GL_strmaxcpy (a4gl_sqlca.sqlerrm, s, sizeof (a4gl_sqlca.sqlerrm) - 1);
 }

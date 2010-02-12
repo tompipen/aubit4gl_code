@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.54 2008-12-01 17:27:04 mikeaubury Exp $
+# $Id: pointers.c,v 1.55 2010-02-12 14:39:43 mikeaubury Exp $
 #
 */
 
@@ -183,11 +183,13 @@ A4GL_action (const void *nodep, const VISIT which, const int depth)
  * @param ptr A pointer to the information to store.
  */
 void
-A4GL_add_pointer (char *orig_name, char type, void *ptr)
+A4GL_add_pointer (const char *orig_name_x, char type, void *ptr)
 {
   void *a;
   struct s_node *buff=NULL;
   struct s_node *anode;
+  char orig_name[2000];
+  strcpy(orig_name,orig_name_x);
   A4GL_trim (orig_name);
 
 
