@@ -950,7 +950,7 @@ call channel::write("make","LIBS=")
 call channel::write("make","FGLOBJS=")
 call channel::write("make","OTHOBJS=")
 call channel::write("make","OBJS_CFORMS=")
-call channel::write("make","GLOBALS=phony.globals")
+call channel::write("make","GLOBALS=")
 call channel::write("make","GLOBALS_DEFS=")
 
 if fgl_getenv("VMAKE")!=" "  then
@@ -1184,9 +1184,9 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 
 	if lv_type="M"  then # Normal modules
-		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl $(GLOBALS)")
+		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl  $(GLOBALS_DEFS)")
 		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
-		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl $(GLOBALS)")
+		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl  $(GLOBALS_DEFS)")
 		call channel::write("make","	A4GL_PACKER_EXT=.mif A4GL_PACKER=PACKED 4glpc -t WRITE -o $@ $<")
 	end if
 
@@ -1232,9 +1232,9 @@ call channel::write("make","	@rm -f $(GLOBALS_DEFS)")
 
 if lv_uses_4gls then
    if lv_uses_forms then
-      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
+      call channel::write("make","compile: prerequisits phony.globals "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT) $(FORMS)")
    else
-      call channel::write("make","compile: prerequisits "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT)")
+      call channel::write("make","compile: prerequisits phony.globals "||lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT)")
    end if
 else
    if lv_uses_forms then
