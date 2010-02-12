@@ -950,7 +950,7 @@ call channel::write("make","LIBS=")
 call channel::write("make","FGLOBJS=")
 call channel::write("make","OTHOBJS=")
 call channel::write("make","OBJS_CFORMS=")
-call channel::write("make","GLOBALS=")
+call channel::write("make","GLOBALS=phony.globals")
 call channel::write("make","GLOBALS_DEFS=")
 
 if fgl_getenv("VMAKE")!=" "  then
@@ -1265,6 +1265,15 @@ if fgl_getenv("VMAKE")!= " " then
 	call channel::write("make","	rm -f $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
 end if
 
+
+if fgl_getenv("VMAKE")!=" " then
+	   call channel::write("make","phony.globals: $(G_TXX) $(LFILE_DIR)/g_vkopftxv.4gl $(GLOBALS_DEFS)")
+else
+	   call channel::write("make","phony.globals: $(GLOBALS_DEFS)")
+end if
+call channel::write("make"," ")
+call channel::write("make","%.glb.dat: %.4gl")
+call channel::write("make","	4glc -G $<")
 
 call channel::write("make"," ")
 
