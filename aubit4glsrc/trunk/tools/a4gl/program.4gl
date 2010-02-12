@@ -1267,7 +1267,7 @@ end if
 
 
 if fgl_getenv("VMAKE")!=" " then
-	   call channel::write("make","phony.globals: $(G_TXX) $(LFILE_DIR)/g_vkopftxv.4gl $(GLOBALS_DEFS)")
+	   #call channel::write("make","phony.globals: $(G_TXX) $(LFILE_DIR)/g_vkopftxv.4gl $(GLOBALS_DEFS)")
 else
 	   call channel::write("make","phony.globals: $(GLOBALS_DEFS)")
 end if
@@ -1279,7 +1279,7 @@ call channel::write("make"," ")
 
 if fgl_getenv("VMAKE") !=" " then
 	# Special code for Ventas to generate the global txt file
-	   call channel::write("make","phony.g_"||lv_prog clipped||"txv: $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
+	   call channel::write("make","phony.globals: $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl $(GLOBAL_DEFS)")
 	   call channel::write("make","$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl: ")
 	   #call channel::write("make","$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl: $(G_TXX)")
 	   call channel::write("make","	mktxx $(G_TXX) $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl $(LFILE_DIR)/t_"||lv_prog clipped||".4gl '$(LFILE_DIR_NOT_EXPANDED)/g_"||lv_prog clipped||"txv.4gl'")
