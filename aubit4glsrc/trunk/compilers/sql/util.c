@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.74 2009-04-22 20:04:33 mikeaubury Exp $
+# $Id: util.c,v 1.75 2010-02-15 13:20:30 mikeaubury Exp $
 #
 */
 
@@ -78,7 +78,7 @@ struct sql_stmt
   char *val;
 };
 struct sql_stmt *stmts = 0;
-int stmts_cnt = 0;
+static int stmts_cnt = 0;
 char last_conversion[256];
 char m_module[256] = "unknown";
 char m_ln = 0;
@@ -1421,7 +1421,7 @@ int clr_ignore_indicators(void) {
  * these indirect to the ones in lib/libaubit4gl so that we can do some expansions of variables first
  * and some checks/debugs/breakpoints etc
  * */
-struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i)
+struct s_select_list_item_list *local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i)
 {
 struct s_select_list_item_list * prval;
  //A4GL_pause_execution();

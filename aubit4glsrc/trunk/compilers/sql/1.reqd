@@ -20,8 +20,31 @@ int sqlparse_yylex(int yystate);
 #define SQL_SET_ISOLATION_COMMITTED_READ 7
 
 
-#define add_feature A4GL_add_feature
 void add_sql_function(char *s);
+#define A4GL_add_feature sqlc_A4GL_add_feature
+#define A4GL_cursor_current sqlc_A4GL_cursor_current
+#define A4GL_warn sqlc_A4GL_warn
+#define add_feature sqlc_A4GL_add_feature
+#define add_sql_function sqlc_add_sql_function
+#define add_sql_function sqlc_add_sql_function
+#define expand_slil sqlc_expand_slil
+#define expand_slil sqlc_expand_slil
+#define generate_update_column_list_for sqlc_generate_update_column_list_for
+#define generate_update_column_list_for sqlc_generate_update_column_list_for
+#define local_add_select_list_item_list sqlc_local_add_select_list_item_list
+#define local_add_select_list_item_list sqlc_local_add_select_list_item_list
+#define set_ignore_indicators sqlc_set_ignore_indicators
+#define clr_ignore_indicators sqlc_clr_ignore_indicators
+#define local_new_select_list_item_list sqlc_local_new_select_list_item_list
+#define addmap sqlc_addmap
+#define map_select_stmt sqlc_map_select_stmt
+#define map_create_temp sqlc_map_create_temp
+#define A4GL_db_used sqlc_A4GL_db_used
+#define map_delete_update sqlc_map_delete_update
+
+
+void A4GL_add_feature (char *feature);
+
 
 int A4GL_cursor_current(expr_str *s);
 struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l);
@@ -49,7 +72,7 @@ int yylineno;
 //int table_cnt=0;
 //char* curr_func="";
 //char *infilename="";
-int doing_declare=0;
+static int doing_declare=0;
 #define YY_NEVER_INTERACTIVE 1
 
 char current_upd_table[256];
