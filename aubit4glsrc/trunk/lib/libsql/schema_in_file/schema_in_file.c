@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.33 2010-01-12 09:01:49 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.34 2010-02-15 13:21:17 mikeaubury Exp $
 #*/
 
 /**
@@ -316,6 +316,82 @@ int A4GLSQLLIB_A4GLSQL_cancel ()
 
 char *A4GLSQLLIB_A4GLSQL_fixup_descriptor(char *s) {
         return s;
+}
+
+
+
+
+
+
+char *A4GLSQLLIB_A4GLSQL_dbms_name() {
+	return "INDXFILESCHEMA";
+}
+
+
+int A4GLSQLLIB_A4GLSQL_next_column_detailed(char** colname,int* dtype,int* size,int* prec,int* raw_dtype) {
+return 0;
+}
+void A4GLSQLLIB_A4GLSQL_commit_rollback(int mode) {
+}
+int A4GLSQLLIB_A4GLSQL_init_session_internal(char* sessname,char* dsn,char* usr,char* pwd) {
+	return 0;
+}
+int A4GLSQLLIB_A4GLSQL_set_conn_internal(char* sessname) {
+return 0;
+}
+int A4GLSQLLIB_A4GLSQL_close_session_internal(char* sessname) {
+return 0;
+}
+int A4GLSQLLIB_A4GLSQL_execute_implicit_select(void* sid,int singleton) {
+return 0;
+}
+int A4GLSQLLIB_A4GLSQL_execute_implicit_sql(void* sid,int singleton,int no,void* ibind) {
+return 0;
+}
+
+void A4GLSQLLIB_A4GLSQL_free_cursor_internal(char* cursor_name) {
+}
+int A4GLSQLLIB_A4GLSQL_fetch_cursor_internal(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) {
+return 0;
+}
+int A4GLSQLLIB_A4GLSQL_open_cursor_internal(char* s,int no,void* vibind) {
+return 0;
+}
+void A4GLSQLLIB_A4GLSQL_flush_cursor_internal(char* cursor){
+}
+int A4GLSQLLIB_A4GLSQL_close_cursor_internal(char* currname,int explicit_){
+return 0;
+}
+void* A4GLSQLLIB_A4GLSQL_declare_cursor_internal(int upd_hold,void* sid,int scroll,char* cursname){
+return NULL;
+}
+void* A4GLSQLLIB_A4GLSQL_prepare_select_internal(void* ibind,int ni,void* obind,int no,char* s,char* uniqid,int singleton){
+return NULL;
+}
+char* A4GLSQLLIB_A4GLSQL_get_curr_conn(void ){
+return NULL;
+}
+char* A4GLSQLLIB_A4GLSQL_get_currdbname(void ){
+return NULL;
+}
+void A4GLSQLLIB_A4GLSQL_put_insert_internal(char* cursorname,void* ibind,int n) {
+}
+void A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode(int a){
+}
+void A4GLSQLLIB_A4GLSQL_unload_data_internal(char* fname,char* delims,char* sql1,int nbind,void* ibind){
+}
+long A4GLSQLLIB_A4GLSQL_describe_stmt(char* stmt,int colno,int type){
+return 0;
+}
+int A4GLSQLLIB_A4GLSQL_fill_array(int mx,char* arr1,int szarr1,char* arr2,int szarr2,char* service,int mode,char* info){
+return 0;
+}
+void A4GLSQLLIB_A4GLSQL_map_tname(char* code,char* db){
+}
+void A4GLSQLLIB_A4GLSQL_unmap_tname(char* code){
+}
+int A4GLSQLLIB_A4GLSQL_is_tname_mapped(char* code) {
+return 0;
 }
 
 /* =============================== EOF ============================== */

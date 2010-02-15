@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.62 2010-02-15 12:03:21 mikeaubury Exp $
+# $Id: Makefile,v 1.63 2010-02-15 13:24:25 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -408,7 +408,7 @@ sopt: ../../bin/4glc_sopt
 	echo ${AUBIT_LIB}
 	echo ${4GL_LIB}
 	echo  ${EXTRASYSTEMLIBS}
-	${LD}  ${CFLAGS} ${RDYNAMIC} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} -L$(ROOT)/lib/libaubit4gl -laubit4gl_static
+	${LD}  ${CFLAGS} ${RDYNAMIC} -L${ROOT}/lib -o $@ $^  -L$(ROOT)/lib/libaubit4gl -laubit4gl_static -lm -lz -ldl
 
 fglsplit:../../bin/fglsplit
 
