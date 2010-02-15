@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.52 2009-12-15 12:22:14 mikeaubury Exp $
+# $Id: console.c,v 1.53 2010-02-15 12:53:49 mikeaubury Exp $
 #*/
 
 /**
@@ -792,6 +792,20 @@ return 0;
 int UILIB_aclfgl_aclfgl_set_application_xml (int nargs) {
         A4GL_drop_param();
         return 0;
+}
+
+int UILIB_aclfgl_aclfgl_add_to_toolbar(int nparam) {
+	return 0;
+}
+
+void UILIB_A4GL_ui_frontcall(char* module,char* name,void* ibind,int ni,void* obind,int no) {
+}
+
+void UILIB_A4GL_ui_cancel(int type) {
+}
+
+int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int nparam) {
+return 0;
 }
 
 
