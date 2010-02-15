@@ -130,7 +130,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 {
   //char buff[256];
   //char tname[256];
-  void *r;
+  //void *r;
 struct s_idx_table tab_search;
 
 tab_search.tablename=tabname;
@@ -162,7 +162,7 @@ for (a=0;a<current_tables.tables.tables_len;a++) {
 			compare_tabnames);
     currCol=0;
 
-    if (r) {
+    if (currTable) {
 	      return 1;
     } else {
   	A4GL_set_errm (tabname);
