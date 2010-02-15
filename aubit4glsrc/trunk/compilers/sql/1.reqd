@@ -38,16 +38,17 @@ extern char *kw_comma;
 extern char *kw_ob;
 extern char *kw_cb;
 
-int insql=0;
+#define insql c_sql_insql
+int c_sql_insql=0;
 static char *make_sql_string_and_free(char *,...);
 char last_tmp_name[256];
 #define ADDMAP(x,y) addmap_runtime(x,y)
 #define ADDMAP_MODULE(x,y) addmap_runtime(x,y)
 
 int yylineno;
-int table_cnt=0;
-char* curr_func="";
-char *infilename="";
+//int table_cnt=0;
+//char* curr_func="";
+//char *infilename="";
 int doing_declare=0;
 #define YY_NEVER_INTERACTIVE 1
 

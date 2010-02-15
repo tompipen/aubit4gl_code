@@ -16,6 +16,6 @@ char *xml_encode_char(char c);
 int XMLWrite_str(char *nm, str *val);
 int XMLWrite_elements_ptr(char *nm, elements_ptr p);
 void gzoutstr(FILE *o, char *name, char *value) ;
-char * acl_getenv_not_set_as_0 (char *s);
+char * acl_getenv_not_set_as_0 (const char *s);
 
 #define  lng long;
