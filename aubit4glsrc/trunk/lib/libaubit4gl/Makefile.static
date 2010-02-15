@@ -12,10 +12,10 @@
 
 
 # SQL : DYNAMIC FILESCHEMA c_ecpg esql ifxodbc nosql pg8 pg pgodbc sqlite3 unixodbc mysql 
-SQL=odbc
+SQL=INDXFILESCHEMA
 
 # UI : DYNAMIC TUI HL_TUI HL_GTK CONSOLE
-UI=TUI
+UI=CONSOLE
 
 # ESQL:DYNAMIC POSTGRES INFORMIX
 ESQL=DYNAMIC
@@ -69,6 +69,10 @@ else
 	ifeq "${SQL}" "FILESCHEMA" 
 		SETOBJ=1
 		API += ../../lib/libsql/schema_in_file/schema_in_file.o
+	endif
+	ifeq "${SQL}" "INDXFILESCHEMA" 
+		SETOBJ=1
+		API += ../../lib/libsql/indx_schema_in_file/read_fileschema.o ../../lib/libsql/indx_schema_in_file/fileschema.xio.o ../../lib/libsql/indx_schema_in_file/fileschema.xo.o ../../lib/libsql/indx_schema_in_file/fileschema.xi.o
 	endif
 
 	ifeq "${SQL}" "nosql" 
