@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "fileschema.h"
+FILE *A4GL_open_file_dbpath(char *s);
 
 
 int write_s_idx_tables(struct s_idx_tables *s,char *filename) {
@@ -38,7 +39,7 @@ return 1;
 int read_s_idx_tables(struct s_idx_tables *s,char *filename) {
 FILE *f;
 int a;
-f=fopen(filename,"r");
+f=A4GL_open_file_dbpath(filename);
 if (f==0) {
 	// Couldn't open the file...
 	return 0;
