@@ -373,3 +373,4 @@
 377|Couldn't open form - does not appear to be a valid form file
 378|Couldn't open form
 380|Function returned incorrect number of values
+382|No current table

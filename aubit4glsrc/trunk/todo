@@ -164,4 +164,21 @@ Ad-Hoc Bug Fixes
 
 
 
+Add a TODO command - like a CASE - except that it tries to do the things in the todo loops - and keeps trying until they are all DONE...
+eg
 
+
+	TODO [ looping pause ]
+		WHEN mode=1
+			do something
+			let mode=2
+			DONE
+		WHEN mode=2
+			do something else
+			DONE
+		WHEN TRUE
+			do something
+			DONE
+	END TODO
+
+TODO list will only exit when all things have been marked as DONE
