@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.69 2009-07-04 12:40:10 mikeaubury Exp $
+# $Id: debug.c,v 1.70 2010-02-16 13:48:58 mikeaubury Exp $
 #
 */
 
@@ -691,6 +691,11 @@ A4GL_getTimecode (void) // Also used by SQLMETRICS for its timestamp - so make s
   return buff;
 }
 
+
+
+void null_func() {
+// Does nothing by design - this is a blank used when NODEBUG is set...
+}
 
 
 /* =============================== EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.68 2010-02-12 14:39:48 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.69 2010-02-16 13:48:58 mikeaubury Exp $
 #*/
 
 /**
@@ -136,10 +136,14 @@ int entry=0;
 
   rep = (struct pdf_rep_structure *)vrep;
 
+#ifdef DEBUG
   A4GL_debug ("In rep_print");
+#endif
   if (right_margin != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("***** WARNING ***** wordwrap margin not implemented..");
+#endif
     }
   if (rep->line_no == 0 && rep->page_no == 0)
     {
@@ -171,13 +175,17 @@ int entry=0;
 		{
 		  rep->pdf_ptr = (void *)PDF_new ();
 		  PDF_set_parameter((PDF *)rep->pdf_ptr,"compatibility","1.4");
+#ifdef DEBUG
 		  A4GL_debug ("Opening file: %s\n", rep->output_loc_str);
+#endif
 		  if (PDF_open_file ((PDF*)rep->pdf_ptr, rep->output_loc_str) == -1)
 		    {
 		      A4GL_exitwith ("Error opening output\n");
 		      return;
 		    }
+#ifdef DEBUG
 		  A4GL_debug ("Set info");
+#endif
 		  A4GLPDFREP_A4GL_pdf_set_info (rep->pdf_ptr, "A4GL");
 		}
 	    }
@@ -216,11 +224,15 @@ int entry=0;
 
           if (rep->line_no > rep->page_length - rep->bottom_margin)
             {
+#ifdef DEBUG
 			A4GL_debug("setting line_no=0");
+#endif
               rep->line_no = 0;
               if (rep->lines_in_trailer)
                 {
+#ifdef DEBUG
                   A4GL_debug ("Calling rep_print");
+#endif
                   A4GL_pdf_rep_print (rep, 0, 1, 0, -10);
                 }
             }
@@ -231,14 +243,22 @@ int entry=0;
 
   if (rep->line_no == 0 && !rep->finishing)
     {
+#ifdef DEBUG
       A4GL_debug ("New page...");
+#endif
       A4GL_pdf_new_page (rep);
+#ifdef DEBUG
       A4GL_debug ("set line 1");
+#endif
       rep->line_no = A4GL_pdf_metric (1, 'l', rep);
+#ifdef DEBUG
       A4GL_debug ("Adding to page no...");
+#endif
       rep->page_no++;
 
+#ifdef DEBUG
       A4GL_debug ("Need page header");
+#endif
      rep->print_section = SECTION_HEADER;
 
 
@@ -247,7 +267,9 @@ int entry=0;
 	return;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Popping %d parameters", a);
+#endif
 
 
   if (a > 0)
@@ -260,37 +282,53 @@ int entry=0;
       for (b = 0; b < a; b++)
 	{
 
+#ifdef DEBUG
 	  A4GL_debug ("A\n");
+#endif
 	  str =  A4GL_report_char_pop ();
 	  A4GL_pdf_move (rep); 
 	  PDF_show ((PDF *)rep->pdf_ptr, str);
+#ifdef DEBUG
 	  A4GL_debug ("Adding %f to col_no\n", A4GL_pdf_metric (strlen (str), 'c', rep));
+#endif
 	  rep->col_no += A4GL_pdf_metric (strlen (str), 'c', rep);
 	  acl_free (str);
 	}
       A4GL_pdf_move (rep);
     }
 
+#ifdef DEBUG
   A4GL_debug ("Newline : %d", s);
+#endif
 
   if (s == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("B\n");
+#endif
       A4GL_pdf_move (rep);
       rep->col_no = 0;
+#ifdef DEBUG
       A4GL_debug ("CR lineno was %lf\n",rep->line_no);
+#endif
       rep->line_no += A4GL_pdf_metric (1, 'l', rep);
+#ifdef DEBUG
       A4GL_debug ("CR lineno now %lf\n",rep->line_no);
+#endif
 
       if (rep->line_no > rep->page_length - rep->bottom_margin)
 	{
+#ifdef DEBUG
 			A4GL_debug("setting line_no=0 lineno=%lf page_length=%lf bottom_margin=%lf", rep->line_no, rep->page_length, rep->bottom_margin);
+#endif
 	  rep->line_no = 0;
 	  A4GL_pdf_rep_print (rep, 0, 0, 0, -1);
 	}
     }
   fflush (rep->output);
+#ifdef DEBUG
   A4GL_debug ("Done\n");
+#endif
   return;
 }
 
@@ -315,7 +353,9 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
   int force_move;
   rep = (struct pdf_rep_structure *)vrep;
 
+#ifdef DEBUG
   A4GL_debug ("Set column");
+#endif
   req = (double) A4GL_pop_double ();
   force_move=0;
   if (req<0) {
@@ -325,7 +365,9 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
 
   if (rep->col_no == 0.0)
     {
+#ifdef DEBUG
       A4GL_debug ("setcol");
+#endif
       rep->col_no = A4GL_pdf_metric (1, 'c', rep);
     }
 
@@ -377,9 +419,13 @@ A4GLPDFREP_A4GL_pdf_skip_to (void *vrep, double a)
   struct pdf_rep_structure *rep;
   rep = (struct pdf_rep_structure *)vrep;
 
+#ifdef DEBUG
   A4GL_debug ("pdf_skip_by");
+#endif
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
+#ifdef DEBUG
 			A4GL_debug("setting line_no=%lf",a);
+#endif
   rep->line_no = a;
   rep->col_no = 0;
 }
@@ -395,10 +441,14 @@ A4GLPDFREP_A4GL_pdf_skip_by (void *vrep, double a)
   struct pdf_rep_structure *rep;
   rep = (struct pdf_rep_structure *)vrep;
 
+#ifdef DEBUG
   A4GL_debug ("pdf_skip_by");
+#endif
   a = A4GLPDFREP_A4GL_pdf_size (a, 'l', rep);
   rep->line_no += a;
+#ifdef DEBUG
   A4GL_debug ("DOne skip by line_no=%f", rep->line_no);
+#endif
 }
 
 /**
@@ -413,7 +463,9 @@ A4GLPDFREP_A4GL_pdf_aclfgli_skip_lines (void *vrep)
   rep = (struct pdf_rep_structure *)vrep;
 
 
+#ifdef DEBUG
   A4GL_debug ("skip lines");
+#endif
   a = A4GL_pop_long ();
   rep->line_no += A4GL_pdf_metric (a, 'l', rep);
 }
@@ -429,10 +481,14 @@ A4GLPDFREP_A4GL_pdf_need_lines (void *vrep)
   struct pdf_rep_structure *rep;
   rep = (struct pdf_rep_structure *)vrep;
 
+#ifdef DEBUG
   A4GL_debug ("need lines");
+#endif
   a = A4GL_pdf_metric (A4GL_pop_int (), 'l', rep);
   if (rep->line_no > (rep->page_length - rep->bottom_margin - a)) {
+#ifdef DEBUG
 			A4GL_debug("need forcing new page");
+#endif
     		A4GL_pdf_skip_top_of_page (rep, 2);
 	}
 }
@@ -451,7 +507,9 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 
   rep = (struct pdf_rep_structure *)vrep;
 
+#ifdef DEBUG
 			A4GL_debug("pdf_skip_top_of_page");
+#endif
 
   /* a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer; */
 
@@ -513,17 +571,23 @@ A4GL_pdf_add_spaces (void)
 int
 A4GL_pdf_new_page (struct pdf_rep_structure *p)
 {
+#ifdef DEBUG
   A4GL_debug ("NEW PAGE : %d\n", p->page_no);
+#endif
   /* PDF_begin_page((PDF *)p->pdf_ptr, width, height); */
   if (p->page_no)
     {
       PDF_end_page ((PDF *)p->pdf_ptr);
     }
 
+#ifdef DEBUG
   A4GL_debug ("Begin page width = %lf length=%lf\n", p->page_width, p->page_length);
+#endif
   PDF_begin_page ((PDF *)p->pdf_ptr, p->page_width, p->page_length);
+#ifdef DEBUG
   A4GL_debug ("Done\n");
   A4GL_debug ("find font %s\n", p->font_name);
+#endif
      p->font = PDF_load_font ((PDF *)p->pdf_ptr, p->font_name, 0, A4GL_get_pdf_encoding(), ""); //"embedding=true");
 
   if (p->font < 0)
@@ -533,10 +597,14 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("findfont ok");
+#endif
     }
 
+#ifdef DEBUG
   A4GL_debug ("set font\n");
+#endif
   PDF_setfont ((PDF *)p->pdf_ptr, p->font, p->font_size);
 
 // do we need bluebars ? 
@@ -601,7 +669,9 @@ A4GL_pdf_new_page (struct pdf_rep_structure *p)
 
   }
 
+#ifdef DEBUG
   A4GL_debug ("ok!\n");
+#endif
   return 1;
 }
 
@@ -625,7 +695,9 @@ A4GLPDFREP_A4GL_pdf_set_info (void *p, char *creator)
 void
 A4GL_pdf_move (struct pdf_rep_structure *p)
 {
+#ifdef DEBUG
   A4GL_debug ("Move to %f %f", p->col_no, p->line_no);
+#endif
   //printf ("Move to %f %f\n", p->col_no, p->page_length -p->line_no);
   PDF_set_text_pos ((PDF *)p->pdf_ptr, p->col_no, p->page_length - p->line_no);
 }
@@ -641,16 +713,24 @@ A4GLPDFREP_A4GL_pdf_rep_close (void *vp)
   struct pdf_rep_structure *p;
   p = (struct pdf_rep_structure *)vp;
 
+#ifdef DEBUG
   A4GL_debug ("Closing report %f\n", p->line_no);
+#endif
   if (p->line_no != 0.0)
     {
+#ifdef DEBUG
       A4GL_debug ("A");
+#endif
       PDF_end_page ((PDF *)p->pdf_ptr);
+#ifdef DEBUG
       A4GL_debug ("A");
+#endif
       PDF_close ((PDF *)p->pdf_ptr);
     }
       p->pdf_ptr=0;
+#ifdef DEBUG
   A4GL_debug ("All done...");
+#endif
 }
 
 
@@ -665,11 +745,15 @@ A4GLPDFREP_A4GL_pdf_size (double f, char c, void *vp)
   struct pdf_rep_structure *p;
   p = ( struct pdf_rep_structure *)vp;
 
+#ifdef DEBUG
   A4GL_debug ("pdf_size (%lf %c %p)", f, c, p);
+#endif
 
   if (f < 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Returning 0-%lf", f);
+#endif
       return 0 - f;		/* This is already in PDF units */
     }
 
@@ -686,11 +770,15 @@ A4GLPDFREP_A4GL_pdf_size (double f, char c, void *vp)
 double
 A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *p)
 {
+#ifdef DEBUG
   A4GL_debug ("pdf_metric a=%d c=%c p=%p", a, c, p);
+#endif
 
   if (c == 'c')
     {
+#ifdef DEBUG
       A4GL_debug ("metric C %d %c", a, c);
+#endif
       if (p->pdf_ptr) {
       	return (double) ((double) a * PDF_stringwidth ((PDF *)p->pdf_ptr, "W", p->font, p->font_size));
       } else {
@@ -700,7 +788,9 @@ A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *p)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("metric L %d %c", a, c);
+#endif
       return (double) (a * p->font_size);	/* 18 */
     }
 }
@@ -730,7 +820,9 @@ double oy;
 
   sx = A4GL_pop_double ();
   sy = A4GL_pop_double ();
+#ifdef DEBUG
   A4GL_debug ("Scaling by %f %f", sx, sy);
+#endif
   if (blob->where != 'F' && blob->where != 'M')
     {
       A4GL_exitwith ("Blob not located");
@@ -743,9 +835,13 @@ double oy;
       return;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Opening blob\n");
+#endif
   n = PDF_open_image_file ((PDF *)p->pdf_ptr, type, blob->filename, "", 0);
+#ifdef DEBUG
   A4GL_debug ("Image handle=%d\n", n);
+#endif
 
   if (n < 0)
     {
@@ -768,7 +864,9 @@ double oy;
 // If its just way to large to fit on the page - scale it back...
 // this doesn't care if we're too far down the page etc - thats a different problem :-)
 	while (y > (int)p->page_length) {
+#ifdef DEBUG
 			A4GL_debug("Too high %d %lf",y,p->page_length);
+#endif
 			sx*=0.99;
 			sy*=0.99;
   			y = (int) (oy * sy);
@@ -776,28 +874,38 @@ double oy;
 	}
 
 	while (x > (int)p->page_width) {
+#ifdef DEBUG
 			A4GL_debug("Too wide %d %lf",x,p->page_width);
+#endif
 			sx*=0.99;
 			sy*=0.99;
   			y = (int) (oy * sy);
   			x = (int) (ox * sx);
 	}
 
+#ifdef DEBUG
   A4GL_debug ("Placing heght of image =%d col=%f line=%f length=%f scale=%lf", y, p->col_no, p->line_no, p->page_length,sx);
+#endif
 
   if (p->col_no == 0)
     {
       p->col_no += p->left_margin;
     }
+#ifdef DEBUG
   A4GL_debug ("x=%lf y=%lf", p->col_no, p->page_length - p->line_no - y);
+#endif
 
   PDF_place_image ((PDF *)p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y, sx);
 
+#ifdef DEBUG
   A4GL_debug ("Closing");
+#endif
   PDF_close_image ((PDF *)p->pdf_ptr, n);
 
+#ifdef DEBUG
 A4GL_debug("lineno (%lf) +=  %lf", p->line_no,(double)y);
 A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
+#endif
 
   p->line_no = p->line_no + (double) y;
   p->col_no = p->col_no + (double) x;
@@ -1140,7 +1248,9 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       int a;
       a = A4GL_pop_int ();
       ptr1 = A4GL_char_pop ();
+#ifdef DEBUG
       A4GL_debug ("Setting pdf value %s to %d\n", ptr1, a);
+#endif
       PDF_set_value ((PDF *)p->pdf_ptr, ptr1, a);
       acl_free (ptr1);
       return 0;
@@ -1333,7 +1443,9 @@ A4GL_report_char_pop (void)
  */
 int  A4GLPDFREP_EXREPORT_initlib(void)
 {
+#ifdef DEBUG
   A4GL_debug ("Calling PDF_boot");
+#endif
   PDF_boot ();
   return 1;
 }

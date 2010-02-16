@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.395 2010-02-16 13:16:22 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.396 2010-02-16 13:48:58 mikeaubury Exp $
 #
 */
 
@@ -1435,7 +1435,8 @@ char *A4GL_get_pdf_encoding(void) ;
 
 
 #ifdef NODEBUG
-#define A4GL_debug error error A4GL_debug shouldnt be used
+#define A4GL_debug null_func
+// error error A4GL_debug shouldnt be used
 
 //void A4GL_debug(); 
 #endif

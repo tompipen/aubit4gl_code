@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: barcodelookup.c,v 1.4 2008-09-22 06:31:00 mikeaubury Exp $
+# $Id: barcodelookup.c,v 1.5 2010-02-16 13:48:58 mikeaubury Exp $
 #*/
 
 
@@ -89,7 +89,9 @@ die_if_fault_occurred (xmlrpc_env * env, int line)
 {
   if (env->fault_occurred)
     {
+#ifdef DEBUG
       A4GL_debug ("XML-RPC Fault: %s (%d) @ line %d\n", env->fault_string, env->fault_code, line);
+#endif
       A4GL_exitwith ("XMLRPC Error");
       return 1;
     }
@@ -263,7 +265,9 @@ A4GL_trim(str);
       die_if_fault_occurred (&env);
 
 
+#ifdef DEBUG
   A4GL_debug ("Calling %s %s with array", host, func);
+#endif
 
   result = xmlrpc_client_call_params (&env, host, func, array);
 
